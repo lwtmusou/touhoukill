@@ -1,0 +1,5 @@
+
+setPile:30,31
+general:hmx002 role:renegade acquireSkills:duxin draw:0 equip:159,67 hand:51,104,0,66,1,83 
+general:fsl006 role:lord starter:true acquireSkills:tansuo draw:0 equip:65 hand:42,48,60,64 
+general:caocao role:loyalist hp:2 
