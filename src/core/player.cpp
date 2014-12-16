@@ -9,7 +9,7 @@ Player::Player(QObject *parent)
     : QObject(parent), owner(false), general(NULL), general2(NULL),
       m_gender(General::Sexless), hp(-1), max_hp(-1), state("online"), seat(0), alive(true),
       phase(NotActive),
-      weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
+      weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),treasure(NULL),
       face_up(true), chained(false),
       role_shown(false), pile_open(QMap<QString, QStringList>())
 {
@@ -43,7 +43,11 @@ void Player::setShownRole(bool shown) {
 }
 
 void Player::setHp(int hp) {
-    if (this->hp != hp) {
+     if (this->hasSkill("banling")) {
+        this->hp = this->getHp(); //由于半灵hp和标记关联，最好不要乱set
+        emit hp_changed();
+    }
+	else if (this->hp != hp) {
         this->hp = hp;
         emit hp_changed();
     }
@@ -54,13 +58,29 @@ int Player::getHp() const{
 		return 0;
 	}
 	if (this->hasSkill("banling") ){
-		int x=this->getMark("@lingtili");
-		int y=this->getMark("@rentili");
+		int x=this->getMark("lingtili")-this->getMark("minus_lingtili");
+		int y=this->getMark("rentili")-this->getMark("minus_rentili");
 		if (y>x){
 			return x;}
 		else{
 			return y;
 		}
+	}
+	return hp;
+}
+
+int Player::getLingHp() const{
+	if (this->hasSkill("banling") ){
+		int x=this->getMark("lingtili")-this->getMark("minus_lingtili");
+		return x;
+	}
+	return hp;
+}
+
+int Player::getRenHp() const{
+	if (this->hasSkill("banling") ){
+		int y=this->getMark("rentili")-this->getMark("minus_rentili");
+			return y;
 	}
 	return hp;
 }
@@ -82,21 +102,10 @@ void Player::setMaxHp(int max_hp) {
 }
 
 int Player::getLostHp() const{
-    /*if (this->hasSkill("banling") ){
-		int x=this->getMark("@lingtili");
-		int y=this->getMark("@rentili");
-		if (y>x)
-			return max_hp-qMax(x, 0);
-		else
-			return max_hp-qMax(y, 0);
-	}*/
 	return max_hp - qMax(hp, 0);
 }
 
 bool Player::isWounded() const{
-    //半灵
-	//if (hasSkill("banling") && (getMark("@lingtili")< getMaxHp()||getMark("@rentili")< getMaxHp()))
-	//	return true;
 	if (hp < 0)
         return true;
     else
@@ -393,19 +402,15 @@ bool Player::isLord() const{
 }
 
 
-bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
-    //QStringList eternal_skills; //永久技
-	//eternal_skills<<"changshi" << "huanmeng" << "xuying"
-	//		<< "banling" << "chuanghuan" << "shenzhu" << "hezou" << "tymh_tianxiang";
-	//if (eternal_skills.contains(skill_name))
-	
-			
+bool Player::hasSkill(const QString &skill_name, bool include_lose,bool include_invalidity) const{
+	bool skill_invalid=false;//  invalid but maybe not lost this skill	
 	if (!include_lose) {
         if (!hasEquipSkill(skill_name)) {
             if (Sanguosha->getSkill(skill_name) && Sanguosha->getSkill(skill_name)->getFrequency() == Skill::Eternal)
 				return (skills.contains(skill_name)|| acquired_skills.contains(skill_name));
 			if (getMark("Qingcheng" + skill_name) > 0) //perform Qingcheng
-                return false;
+                skill_invalid=true;
+				//return false;
 			
             const Skill *skill = Sanguosha->getSkill(skill_name);
             if (!skill || !skill->isAttachedLordSkill()){
@@ -419,29 +424,49 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
                     }
                     if (current){
                         if (current->hasSkill("huoshui") && hp >= (max_hp + 1) / 2) //huoshui
-                            return false;
+                            skill_invalid=true;
+							//return false;
                         if (current->hasSkill("neo2013huoshui") && current->getEquips().length() == 0) //neo2013huoshui
-                            return false;
+                            skill_invalid=true;
+							//return false;
                     }
                 }
                 if (hasFlag("neo2013qingcheng") && phase != NotActive) //neo2013qingcheng
-                    return false;
+                    skill_invalid=true;
+					//return false;
                 if (skill_name != "chanyuan" && hasSkill("chanyuan") && hp == 1 ) //chanyuan
-                    return false;
+                   skill_invalid=true;
+				   // return false;
 				if (getMark("changshi")>0) 
-					return false;
+					skill_invalid=true;
+					//return false;
             }
+			
+			if (skill_invalid){
+				if (include_invalidity)
+					return skills.contains(skill_name)
+					|| acquired_skills.contains(skill_name);
+				else
+					return false; 
+			}
+			//check zun
+			if (skill_name !="chuanghuan" && this->hasSkill("chuanghuan")){
+				QVariantList huashen_skills = this->tag["FantasySkills"].toList();
+				foreach (QVariant huashen_skill, huashen_skills)
+					if (skill_name==huashen_skill.toString()) 
+						return true;
+			}
         }
     }
     return skills.contains(skill_name)
            || acquired_skills.contains(skill_name);
 }
 
-bool Player::hasSkills(const QString &skill_name, bool include_lose) const{
+bool Player::hasSkills(const QString &skill_name, bool include_lose,bool include_invalidity) const{
     foreach (QString skill, skill_name.split("|")) {
         bool checkpoint = true;
         foreach (QString sk, skill.split("+")) {
-            if (!hasSkill(sk, include_lose)) {
+            if (!hasSkill(sk, include_lose,include_invalidity)) {
                 checkpoint = false;
                 break;
             }
@@ -461,7 +486,7 @@ bool Player::hasInnateSkill(const QString &skill_name) const{
     return false;
 }
 
-bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const{ 
+bool Player::hasLordSkill(const QString &skill_name, bool include_lose,bool include_invalidity) const{ 
     if (!isLord() && hasSkill("weidi")) {
         foreach (const Player *player, getAliveSiblings()) {
             if (player->isLord()) {
@@ -472,7 +497,7 @@ bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const{
         }
     }
 
-    if (!hasSkill(skill_name, include_lose))
+    if (!hasSkill(skill_name, include_lose,include_invalidity))
         return false;
 
     if (acquired_skills.contains(skill_name))
@@ -544,12 +569,15 @@ void Player::setPhaseString(const QString &phase_str) {
 
 void Player::setEquip(WrappedCard *equip) {
     const EquipCard *card = qobject_cast<const EquipCard *>(equip->getRealCard());
+	//if (card == NULL) // for jianshu and zhengyi
+	//	return;
     Q_ASSERT(card != NULL);
     switch(card->location()) {
     case EquipCard::WeaponLocation: weapon = equip; break;
     case EquipCard::ArmorLocation: armor = equip; break;
     case EquipCard::DefensiveHorseLocation: defensive_horse = equip; break;
     case EquipCard::OffensiveHorseLocation: offensive_horse = equip; break;
+	case EquipCard::TreasureLocation: treasure = equip; break;
     }
 }
 
@@ -561,34 +589,35 @@ void Player::removeEquip(WrappedCard *equip) {
     case EquipCard::ArmorLocation: armor = NULL; break;
     case EquipCard::DefensiveHorseLocation: defensive_horse = NULL; break;
     case EquipCard::OffensiveHorseLocation: offensive_horse = NULL; break;
+	case EquipCard::TreasureLocation: treasure = NULL; break;
     }
 }
 
 bool Player::hasEquip(const Card *card) const{
     Q_ASSERT(card != NULL);
-    int weapon_id = -1, armor_id = -1, def_id = -1, off_id = -1;
+    int weapon_id = -1, armor_id = -1, def_id = -1, off_id = -1 ,tr_id = -1;
     if (weapon) weapon_id = weapon->getEffectiveId();
     if (armor) armor_id = armor->getEffectiveId();
     if (defensive_horse) def_id = defensive_horse->getEffectiveId();
     if (offensive_horse) off_id = offensive_horse->getEffectiveId();
+	if (treasure) tr_id = treasure->getEffectiveId();
     QList<int> ids;
     if (card->isVirtualCard())
         ids << card->getSubcards();
     else
         ids << card->getId();
-	//QList<int> e = getPile("renou");
-	//if (e.length()>0) return true;
+
 	
     if (ids.isEmpty()) return false;
     foreach (int id, ids) {
-        if (id != weapon_id && id != armor_id && id != def_id && id != off_id)
+        if (id != weapon_id && id != armor_id && id != def_id && id != off_id && id != tr_id)
             return false;
     }
     return true;
 }
 
 bool Player::hasEquip() const{
-    return weapon != NULL || armor != NULL || defensive_horse != NULL || offensive_horse != NULL;
+    return weapon != NULL || armor != NULL || defensive_horse != NULL || offensive_horse != NULL || treasure != NULL;
 }
 
 WrappedCard *Player::getWeapon() const{
@@ -607,6 +636,10 @@ WrappedCard *Player::getOffensiveHorse() const{
     return offensive_horse;
 }
 
+WrappedCard *Player::getTreasure() const{
+    return treasure;
+}
+
 QList<const Card *> Player::getEquips() const{
     QList<const Card *> equips;
     if (weapon)
@@ -617,13 +650,9 @@ QList<const Card *> Player::getEquips() const{
         equips << defensive_horse;
     if (offensive_horse)
         equips << offensive_horse;
-	//QList<int> e = getPile("renou");
-	//if (e.length()>0) {
-	//	foreach (int id, e) {
-	//		equips << Sanguosha->getCard(id);
-	//	}
-	//}
-	
+	if (treasure)
+        equips << treasure;
+
     return equips;
 }
 
@@ -634,6 +663,7 @@ const EquipCard *Player::getEquip(int index) const{
     case 1: equip = armor; break;
     case 2: equip = defensive_horse; break;
     case 3: equip = offensive_horse; break;
+	case 4: equip = treasure; break;
     default:
             return NULL;
     }
@@ -644,7 +674,7 @@ const EquipCard *Player::getEquip(int index) const{
 }
 
 bool Player::hasWeapon(const QString &weapon_name) const{
-    if (!weapon || getMark("Equips_Nullified_to_Yourself") > 0) return false;
+    if (!weapon || getMark("Equips_Nullified_to_Yourself") > 0||getMark("@tianyi_Weapon")>0) return false;
     if (weapon->objectName() == weapon_name || weapon->isKindOf(weapon_name.toStdString().c_str())) return true;
     const Card *real_weapon = Sanguosha->getEngineCard(weapon->getEffectiveId());
     return real_weapon->objectName() == weapon_name || real_weapon->isKindOf(weapon_name.toStdString().c_str());
@@ -652,7 +682,7 @@ bool Player::hasWeapon(const QString &weapon_name) const{
 
 bool Player::hasArmorEffect(const QString &armor_name) const{
     if (!tag["Qinggang"].toStringList().isEmpty() || getMark("Armor_Nullified") > 0
-        || getMark("Equips_Nullified_to_Yourself") > 0)
+        || getMark("Equips_Nullified_to_Yourself") > 0||getMark("@tianyi_Armor")>0)
         return false;
     if (armor_name == "bazhen")
         return armor == NULL && alive && hasSkill("bazhen");
@@ -663,6 +693,13 @@ bool Player::hasArmorEffect(const QString &armor_name) const{
         return real_armor->objectName() == armor_name || real_armor->isKindOf(armor_name.toStdString().c_str());
     }
     return false;
+}
+
+bool Player::hasTreasure(const QString &treasure_name) const{
+    if (!treasure || getMark("Equips_Nullified_to_Yourself") > 0||getMark("@tianyi_Treasure")>0) return false;
+    if (treasure->objectName() == treasure_name || treasure->isKindOf(treasure_name.toStdString().c_str())) return true;
+    const Card *real_treasure = Sanguosha->getEngineCard(treasure->getEffectiveId());
+    return real_treasure->objectName() == treasure_name || real_treasure->isKindOf(treasure_name.toStdString().c_str());
 }
 
 QList<const Card *> Player::getJudgingArea() const{
@@ -737,64 +774,77 @@ bool Player::isAllNude() const{
     return isNude() && judging_area.isEmpty();
 }
 
-bool Player::canDiscard(const Player *to, const QString &flags) const{
+bool Player::canDiscard(const Player *to, const QString &flags, QString reason) const{
     static QChar handcard_flag('h');
     static QChar equip_flag('e');
     static QChar judging_flag('j');
-
+	
     if (flags.contains(handcard_flag) && !to->isKongcheng()) return true;
     if (flags.contains(judging_flag) && !to->getJudgingArea().isEmpty()) return true;
     if (flags.contains(equip_flag)) {
-        if (to->getDefensiveHorse() || to->getOffensiveHorse()) return true;
-        //if (to->getDefensiveHorse() && (to->getMark("@tianyi_DefensiveHorse")==0 )) return true;
-		//if (to->getOffensiveHorse() && (to->getMark("@tianyi_OffensiveHorse")==0 )) return true;
-		//源代码对奇才的定义
-		//if ((to->getWeapon() || to->getArmor()) && (!to->hasSkill("qicai") || this == to)) return true;
-		//前面保证马匹不存在
-		//&& !to->getEquip(0)->objectName().startsWith("renou")  人偶装备牌
-		if (this->getMark("sidou")>0){
-			if (to->getEquips().length() == 1 && to->getWeapon() 
-			&& to->getMark("@tianyi_Weapon") ==0){
-				
-				return false;
+        QSet<QString> Equips;
+		if (to->getWeapon()){
+			if (to->getMark("@tianyi_Weapon") ==0)
+				Equips<<"weapon";
+			else
+				Equips<<"tianyi";
+		}
+		if (to->getArmor()){
+			if (to->getMark("@tianyi_Armor") ==0)
+				Equips<<"armor";
+			else
+				Equips<<"tianyi";
+		}
+		if (to->getDefensiveHorse()){
+			if (to->getMark("@tianyi_DefensiveHorse") ==0)
+				Equips<<"dh";
+			else
+				Equips<<"tianyi";
+		}
+		if (to->getOffensiveHorse()){
+			if (to->getMark("@tianyi_OffensiveHorse") ==0)
+				Equips<<"oh";
+			else
+				Equips<<"tianyi";
+		}
+		if (to->getTreasure()){
+			if (to->getMark("@tianyi_Treasure") ==0)
+				Equips<<"treasure";
+			else
+				Equips<<"tianyi";
+		}
+
+		if (reason=="sidou"){
+			if (Equips.contains("weapon"))
+				Equips.remove("weapon");
+		}
+		if (to->hasSkill("qicai") && this != to){
+			foreach (QString str, Equips) {
+				if (str !="dh" && str !="oh")
+					Equips.remove(str);
 			}
 		}
-		if (to->getWeapon() && to->getArmor()) {
-			if (!to->hasSkill("qicai") || this == to)
-				return true;
-		}
-		else
-		{	if (to->getWeapon() &&  this->getMark("sidou")==0) {
-				if (!to->hasSkill("qicai") || this == to)
-					return true;
-			}
-			if (to->getArmor() ){
-				if (to->getMark("@wolf")==0|| this == to)
-					return true;
-			}
-		}
-		//QList<int> e = to->getPile("renou");
-		//if (e.length()>0) return true;
+		if (!Equips.isEmpty())
+			return true;
+
 	}
     return false;
 }
 
-bool Player::canDiscard(const Player *to, int card_id) const{
-    if (this->getMark("sidou")>0){
+bool Player::canDiscard(const Player *to, int card_id, QString reason) const{
+	if (reason=="sidou"){//
 		if (to->getWeapon() && card_id == to->getWeapon()->getEffectiveId()
 		&& to->getMark("@tianyi_Weapon") ==0 )
 			return false;
-	} //&& !to->getEquip(0)->objectName().startsWith("renou")
+	}
+	
 	if (to->hasSkill("qicai") && this != to) {
         if ((to->getWeapon() && card_id == to->getWeapon()->getEffectiveId())
             || (to->getArmor() && card_id == to->getArmor()->getEffectiveId()))
             return false;
-    } else if(to->hasSkill("renlang") && to->getMark("@wolf")>0 && this != to)
-	{
-		if (to->getArmor() && card_id == to->getArmor()->getEffectiveId())
-            return false;
-	}
-	else if (this == to) {
+    }
+	
+	if (this == to) {
         if (isJilei(Sanguosha->getCard(card_id)))
             return false;
     }
@@ -883,9 +933,7 @@ int Player::getCardCount(bool include_equip, bool include_judging) const{
         if (armor != NULL) count++;
         if (defensive_horse != NULL) count++;
         if (offensive_horse != NULL) count++;
-		//QList<int> e = getPile("renou");
-		//if (e.length()>0) 
-		//	count=count+e.length();
+		if (treasure) count++;
     }
     if (include_judging)
         count += judging_area.length();
@@ -956,6 +1004,11 @@ bool Player::hasEquipSkill(const QString &skill_name) const{
         if (Sanguosha->getSkill(armorc) && Sanguosha->getSkill(armorc)->objectName() == skill_name)
             return true;
     }
+	if (treasure) {
+        const Treasure *treasurec = qobject_cast<const Treasure *>(treasure->getRealCard());
+        if (Sanguosha->getSkill(treasurec) && Sanguosha->getSkill(treasurec)->objectName() == skill_name)
+            return true;
+    }
     return false;
 }
 
@@ -1006,8 +1059,13 @@ QString Player::getSkillDescription(bool yellow) const{
     QString color = yellow ? "#FFFF33" : "#FF0080";
 
     foreach (const Skill *skill, getVisibleSkillList()) {
-        if (skill->isAttachedLordSkill() || !hasSkill(skill->objectName()))
-            continue;
+        if (skill->isAttachedLordSkill()||!hasSkill(skill->objectName()))
+			continue;
+		//除魏武帝外，非主公状态的主公技Description没有必要!this->isLord() 
+		if (skill->isLordSkill()&& 
+		!hasLordSkill(skill->objectName()) && !hasSkill("nosguixin",false,true))
+			continue;
+		
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription(yellow);
         desc.replace("\n", "<br/>");
@@ -1073,6 +1131,8 @@ void Player::clearCardLimitation(bool single_turn) {
 bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool isHandcard) const{
     if (method == Card::MethodNone)
         return false;
+	//if (this->hasFlag("yuanfei"))
+	//	return true;
     if (card->getTypeId() == Card::TypeSkill && method == card->getHandlingMethod()) {
         foreach (int card_id, card->getSubcards()) {
             const Card *c = Sanguosha->getCard(card_id);
@@ -1134,6 +1194,7 @@ void Player::copyFrom(Player *p) {
     b->armor            = a->armor;
     b->defensive_horse  = a->defensive_horse;
     b->offensive_horse  = a->offensive_horse;
+	 b->treasure         = a->treasure;
     b->face_up          = a->face_up;
     b->chained          = a->chained;
     b->judging_area     = QList<int>(a->judging_area);

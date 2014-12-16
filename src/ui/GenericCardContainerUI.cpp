@@ -323,9 +323,23 @@ void PlayerCardContainer::updatePhase() {
 
 void PlayerCardContainer::updateHp() {
     Q_ASSERT(_m_hpBox && _m_saveMeIcon && m_player);
-    _m_hpBox->setHp(m_player->getHp());
+    if (!m_player->hasSkill("banling")){
+	_m_hpBox->setHp(m_player->getHp());
     _m_hpBox->setMaxHp(m_player->getMaxHp());
     _m_hpBox->update();
+	_m_sub_hpBox->setHp(0);
+	_m_sub_hpBox->setMaxHp(0);
+	_m_sub_hpBox->update();
+	}else
+	{
+		_m_hpBox->setHp(m_player->getRenHp());
+		_m_hpBox->setMaxHp(m_player->getMaxHp());
+		_m_hpBox->update();
+		_m_sub_hpBox->setHp(m_player->getLingHp());
+		_m_sub_hpBox->setMaxHp(m_player->getMaxHp());
+		_m_sub_hpBox->update();
+	}
+	
     if (m_player->getHp() > 0 || m_player->getMaxHp() == 0)
         _m_saveMeIcon->setVisible(false);
 }
@@ -336,6 +350,9 @@ static bool CompareByNumber(const Card *card1, const Card *card2) {
 
 void PlayerCardContainer::updatePile(const QString &pile_name) {
     ClientPlayer *player = (ClientPlayer *)sender();
+	QString treasure_name;
+    if (player->getTreasure()) treasure_name = player->getTreasure()->objectName();
+	
     const QList<int> &pile = player->getPile(pile_name);
     if (pile.size() == 0) {
         if (_m_privatePiles.contains(pile_name)) {
@@ -350,8 +367,12 @@ void PlayerCardContainer::updatePile(const QString &pile_name) {
         if (!_m_privatePiles.contains(pile_name)) {
             button = new QPushButton;
             button->setObjectName(pile_name);
-            button->setProperty("private_pile", "true");
+			//if (treasure_name == pile_name)
+            //    button->setProperty("treasure", "true");
+            //else
+				button->setProperty("private_pile", "true");
             QGraphicsProxyWidget *button_widget = new QGraphicsProxyWidget(_getPileParent());
+			button_widget->setObjectName(pile_name);
             button_widget->setWidget(button);
             _m_privatePiles[pile_name] = button_widget;
         } else {
@@ -361,7 +382,10 @@ void PlayerCardContainer::updatePile(const QString &pile_name) {
 
         button->setText(QString("%1(%2)").arg(Sanguosha->translate(pile_name)).arg(pile.length()));
         menu = new QMenu(button);
-        menu->setProperty("private_pile", "true");
+		//if (treasure_name == pile_name)
+        //    menu->setProperty("treasure", "true");
+        //else
+			menu->setProperty("private_pile", "true");
 
         //Sort the cards in pile by number can let players know what is in this pile more clear.
         //If someone has "buqu", we can got which card he need or which he hate easier.
@@ -383,11 +407,18 @@ void PlayerCardContainer::updatePile(const QString &pile_name) {
             button->setMenu(NULL);
         }
     }
-
+	//set treasure pile at first
     QPoint start = _m_layout->m_privatePileStartPos;
     QPoint step = _m_layout->m_privatePileStep;
     QSize size = _m_layout->m_privatePileButtonSize;
-    QList<QGraphicsProxyWidget *> widgets = _m_privatePiles.values();
+    QList<QGraphicsProxyWidget *> widgets_t, widgets_p, widgets = _m_privatePiles.values();
+    foreach (QGraphicsProxyWidget *widget, widgets) {
+        if (widget->objectName() == treasure_name)
+            widgets_t << widget;
+        else
+            widgets_p << widget;
+    }
+    widgets = widgets_t + widgets_p;
     for (int i = 0; i < widgets.length(); i++) {
         QGraphicsProxyWidget *widget = widgets[i];
         widget->setPos(start + i * step);
@@ -424,12 +455,15 @@ void PlayerCardContainer::updateMarks() {
         _m_markItem->setPos(newRect.topLeft());
     else
         _m_markItem->setPos(newRect.left(), newRect.top() + newRect.height() / 2);
+	//for tianyi
+	_updateEquips();
 }
 
 void PlayerCardContainer::_updateEquips() {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 5; i++) {
         CardItem *equip = _m_equipCards[i];
         if (equip == NULL) continue;
+			
         const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard()->getRealCard());
         QPixmap pixmap = _getEquipPixmap(equip_card);
         _m_equipLabel[i]->setPixmap(pixmap);
@@ -486,7 +520,7 @@ void PlayerCardContainer::repaintAll() {
     }
 	if (_m_roleComboBox != NULL)
         _m_roleComboBox->setPos(_m_layout->m_roleComboBoxPos);
-
+	
     _m_hpBox->setIconSize(_m_layout->m_magatamaSize);
     _m_hpBox->setOrientation(_m_layout->m_magatamasHorizontal ?  Qt::Horizontal : Qt::Vertical);
     _m_hpBox->setBackgroundVisible(_m_layout->m_magatamasBgVisible);
@@ -494,7 +528,17 @@ void PlayerCardContainer::repaintAll() {
     _m_hpBox->setAnchor(_m_layout->m_magatamasAnchor, _m_layout->m_magatamasAlign);
     _m_hpBox->setImageArea(_m_layout->m_magatamaImageArea);
     _m_hpBox->update();
+	//if (m_player && m_player->hasSkill("banling")){
 
+		_m_sub_hpBox->setIconSize(_m_layout->m_magatamaSize);
+		_m_sub_hpBox->setOrientation(_m_layout->m_magatamasHorizontal ?  Qt::Horizontal : Qt::Vertical);
+		_m_sub_hpBox->setBackgroundVisible(_m_layout->m_magatamasBgVisible);
+		_m_sub_hpBox->setAnchorEnable(true);
+		_m_sub_hpBox->setAnchor(_m_layout->m_sub_magatamasAnchor, _m_layout->m_sub_magatamasAlign);
+		_m_sub_hpBox->setImageArea(_m_layout->m_sub_magatamaImageArea);
+		_m_sub_hpBox->update();	
+	//}
+	
     _adjustComponentZValues();
     refresh();
 }
@@ -583,13 +627,32 @@ QPixmap PlayerCardContainer::_getEquipPixmap(const EquipCard *equip) {
     QPainter painter(&equipIcon);
     // icon / background
     painter.drawPixmap(_m_layout->m_equipImageArea, _getPixmap(QSanRoomSkin::S_SKIN_KEY_EQUIP_ICON, equip->objectName()));
-    // equip name
+    
+	// equip name
     _m_layout->m_equipFont.paintText(&painter,
                                      _m_layout->m_equipTextArea,
                                      Qt::AlignLeft | Qt::AlignCenter,
                                      Sanguosha->translate(equip->objectName()));
     // equip suit
     painter.drawPixmap(_m_layout->m_equipSuitArea, G_ROOM_SKIN.getCardSuitPixmap(realCard->getSuit()));
+	// equip tianyi for skill mokai
+	if (m_player !=NULL){
+		
+		bool isTianyi=false;
+		if (realCard->isKindOf("Weapon") && m_player->getMark("@tianyi_Weapon") >0)
+			isTianyi=true;
+		else if (realCard->isKindOf("Armor") &&  m_player->getMark("@tianyi_Armor") >0)
+			isTianyi=true;
+		else if (realCard->isKindOf("DefensiveHorse") &&  m_player->getMark("@tianyi_DefensiveHorse") >0)
+			isTianyi=true;
+		else if (realCard->isKindOf("OffensiveHorse") &&  m_player->getMark("@tianyi_OffensiveHorse") >0)
+			isTianyi=true;
+		else if (realCard->isKindOf("Treasure") &&  m_player->getMark("@tianyi_Treasure") >0)
+			isTianyi=true;
+		if (isTianyi){
+			painter.drawPixmap(_m_layout->m_equipTianyiArea, G_ROOM_SKIN.getCardTianyiPixmap());
+		}
+	}
     // equip point
     if (realCard->isRed()) {
         _m_layout->m_equipPointFontRed.paintText(&painter,
@@ -619,7 +682,7 @@ QPixmap PlayerCardContainer::_getEquipPixmap(const EquipCard *equip) {
         Q_ASSERT(horse);
         if (horse) distance = QString::number(horse->getCorrect());
     }
-    if (index != 1) {
+    if (index != 1 && index != 4 ) {//防具和宝物不需要
         _m_layout->m_equipFont.paintText(&painter,
                                          _m_layout->m_equipDistanceArea,
                                          Qt::AlignLeft | Qt::AlignVCenter,
@@ -640,7 +703,9 @@ void PlayerCardContainer::setFloatingArea(QRect rect) {
 }
 
 void PlayerCardContainer::addEquips(QList<CardItem *> &equips) {
-    foreach (CardItem *equip, equips) {
+    //for tianyi
+	//_updateEquips();
+	foreach (CardItem *equip, equips) {
         const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard()->getRealCard());
         int index = (int)(equip_card->location());
         Q_ASSERT(_m_equipCards[index] == NULL);
@@ -650,6 +715,8 @@ void PlayerCardContainer::addEquips(QList<CardItem *> &equips) {
         equip->setHomePos(_m_layout->m_equipAreas[index].center());
         _m_equipRegions[index]->setToolTip(equip_card->getDescription());
         QPixmap pixmap = _getEquipPixmap(equip_card);
+		
+		
         _m_equipLabel[index]->setPixmap(pixmap);
 
         _mutexEquipAnim.lock();
@@ -677,7 +744,9 @@ void PlayerCardContainer::addEquips(QList<CardItem *> &equips) {
 }
 
 QList<CardItem *> PlayerCardContainer::removeEquips(const QList<int> &cardIds) {
-    QList<CardItem *> result;
+    //for tianyi
+	//_updateEquips();
+	QList<CardItem *> result;
     foreach (int card_id, cardIds) {
         const EquipCard *equip_card = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card_id));
         int index = (int)(equip_card->location());
@@ -779,7 +848,7 @@ PlayerCardContainer::PlayerCardContainer() {
     m_player = NULL;
     _m_selectedFrame = NULL;
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 5; i++) {
         _m_equipCards[i] = NULL;
         _m_equipRegions[i] = NULL;
         _m_equipAnim[i] = NULL;
@@ -856,8 +925,10 @@ void PlayerCardContainer::_adjustComponentZValues(bool killed) {
     _layUnder(_m_markItem);
     _layUnder(_m_progressBarItem);
     _layUnder(_m_roleComboBox);
-    _layUnder(_m_chainIcon);
+   // _layUnder(_m_chainIcon);
     _layUnder(_m_hpBox);
+	_layUnder(_m_sub_hpBox);
+	
     _layUnder(_m_handCardNumText);
     _layUnder(_m_handCardBg);
     _layUnder(_m_actionIcon);
@@ -868,8 +939,10 @@ void PlayerCardContainer::_adjustComponentZValues(bool killed) {
     _layUnder(_m_kingdomIcon);
     _layUnder(_m_kingdomColorMaskIcon);
 	_layUnder(_m_dashboardKingdomColorMaskIcon);
+	_layUnder(_m_chainIcon);
+	
     _layUnder(_m_screenNameItem);
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
         _layUnder(_m_equipRegions[i]);
     _layUnder(_m_selectedFrame);
     _layUnder(_m_extraSkillText);
@@ -922,7 +995,7 @@ void PlayerCardContainer::_createControls() {
     _m_handCardNumText = new QGraphicsPixmapItem(_getAvatarParent());
 
     _m_hpBox = new MagatamasBoxItem(_getAvatarParent());
-
+	_m_sub_hpBox = new MagatamasBoxItem(_getAvatarParent());
      // Now set up progress bar
     _m_progressBar = new QSanCommandProgressBar;
     _m_progressBar->setAutoHide(true);
@@ -931,7 +1004,7 @@ void PlayerCardContainer::_createControls() {
     _m_progressBarItem->setWidget(_m_progressBar);
     _updateProgressBar();
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 5; i++) {
         _m_equipLabel[i] = new QLabel;
         _m_equipLabel[i]->setStyleSheet("QLabel { background-color: transparent; }");
         _m_equipLabel[i]->setPixmap(QPixmap(_m_layout->m_equipAreas[i].size()));
@@ -1313,14 +1386,14 @@ QPixmap PlayerCardContainer::getSmallAvatarIcon(const QString &generalName)
     return smallAvatarIcon;
 }
 
-/*void PlayerCardContainer::showSkillName(const QString &skill_name) {
-    ClientPlayer *player = ClientInstance->getPlayer(player_name);
+void PlayerCardContainer::showSkillName(const QString &skill_name,bool isSelf) {
+   // ClientPlayer *player = ClientInstance->getPlayer(player_name);
    
 	//getSkillNameFont().paintText(_m_skillNameItem,
    //     getSkillNameArea(),
     //    Qt::AlignLeft,
     //    Sanguosha->translate(skill_name));
-	if (player != Self){
+	if (!isSelf){
 		G_PHOTO_LAYOUT.m_skillNameFont.paintText(_m_skillNameItem,
         G_PHOTO_LAYOUT.m_skillNameArea,//getSkillNameArea()
         Qt::AlignLeft,
@@ -1334,4 +1407,13 @@ QPixmap PlayerCardContainer::getSmallAvatarIcon(const QString &generalName)
 	}
     _m_skillNameItem->show();
     QTimer::singleShot(1000, this, SLOT(hideSkillName()));
-}*/
+
+}
+
+void PlayerCardContainer::hideSkillName() {
+    _m_skillNameItem->hide();
+}
+
+void PlayerCardContainer::updateWoyuRole(QString role) {
+    _m_roleComboBox->fix(role);
+}

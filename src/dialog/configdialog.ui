@@ -597,9 +597,7 @@
       <bool>true</bool>
      </property>
     </widget>
-   </widget>
-  </widget>
-  <widget class="QWidget" name="layoutWidget">
+	<widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>11</x>
@@ -640,6 +638,9 @@
       </item>
      </layout>
     </widget>
+   </widget>
+  </widget>
+  
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>

@@ -1,6 +1,7 @@
 #include "lua-wrapper.h"
 #include "util.h"
-#include "wind.h"
+//#include "wind.h" //guhuo dialog
+#include "th10.h"
 
 LuaTriggerSkill::LuaTriggerSkill(const char *name, Frequency frequency, const char *limit_mark)
     : TriggerSkill(name), on_trigger(0), can_trigger(0)
@@ -37,7 +38,7 @@ QDialog *LuaViewAsSkill::getDialog() const{
     bool has_left = (dialog_type & 1);
     bool has_right = (dialog_type & 2);
 
-    return GuhuoDialog::getInstance(objectName(), has_left, has_right);
+    return qijiDialog::getInstance(objectName(), has_left, has_right);
 }
 
 LuaFilterSkill::LuaFilterSkill(const char *name)
@@ -276,3 +277,21 @@ LuaArmor *LuaArmor::clone(Card::Suit suit, int number) const{
     return new_card;
 }
 
+/*LuaTreasure::LuaTreasure(Card::Suit suit, int number, const char *obj_name, const char *class_name)
+    : Treasure(suit, number)
+{
+    setObjectName(obj_name);
+    this->class_name = class_name;
+}
+
+LuaTreasure *LuaTreasure::clone(Card::Suit suit, int number) const{
+    if (suit == Card::SuitToBeDecided) suit = this->getSuit();
+    if (number == -1) number = this->getNumber();
+    LuaTreasure *new_card = new LuaTreasure(suit, number, objectName().toStdString().c_str(), class_name.toStdString().c_str());
+
+    new_card->on_install = on_install;
+    new_card->on_uninstall = on_uninstall;
+
+    return new_card;
+}
+*/

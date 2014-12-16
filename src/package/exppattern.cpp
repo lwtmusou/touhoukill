@@ -1,4 +1,5 @@
 #include <exppattern.h>
+#include "engine.h"
 
 ExpPattern::ExpPattern(const QString &exp) {
     this->exp = exp;
@@ -101,11 +102,47 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
     if (!checkpoint) return false;
     if (factors.size() < 4) return true;
 
-    checkpoint = false;
+    /*checkpoint = false;
     QString place = factors.at(3);
     if (place == ".") checkpoint = true;
     else if (place == "equipped" && player->hasEquip(card)) checkpoint = true;
-    else if (place == "hand" && card->getEffectiveId() >= 0 && !player->hasEquip(card)) checkpoint = true;
+    else if (place == "hand" && card->getEffectiveId() >= 0 && !player->hasEquip(card)) checkpoint = true;*/
+	checkpoint = false;
+    QString place = factors.at(3);
+    if (!player || place == ".") checkpoint = true;
+    if (!checkpoint) {
+        QList<int> ids;
+        if (card->isVirtualCard())
+            ids = card->getSubcards();
+        else
+            ids << card->getEffectiveId();
+        if (!ids.isEmpty()) {
+            foreach (int id, ids) {
+                checkpoint = false;
+                const Card *card = Sanguosha->getCard(id);
+                foreach (QString p, place.split(",")) {
+                    if (p == "equipped" && player->hasEquip(card)) {
+                        checkpoint = true;
+                    } else if (p == "hand" && card->getEffectiveId() >= 0) {
+                        foreach (const Card *c, player->getHandcards()) {
+                            if (c->getEffectiveId() == id) {
+                                checkpoint = true;
+                                break;
+                            }
+                        }
+                    } else if (!player->getPile(p).isEmpty() && player->getPile(p).contains(id)) {
+                        checkpoint = true;
+                    } 
+                    if (checkpoint)
+                        break;
+                }
+                if (!checkpoint)
+                    break;
+            }
+        }
+    }
+	
+	
     if (!checkpoint) return false;
     if (factors.size() < 5) return true;
 

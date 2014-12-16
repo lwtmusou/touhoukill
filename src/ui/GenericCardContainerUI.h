@@ -101,7 +101,8 @@ public:
     GraphicsPixmapHoverItem *getSmallAvartarItem() const { return _m_smallAvatarIcon; }
 
 	void stopHeroSkinChangingAnimation();
-	//void showSkillName(const QString &skill_name);
+	void showSkillName(const QString &skill_name,bool isSelf);
+	void updateWoyuRole(QString role);
 	
 public slots:
     void updateAvatar();
@@ -118,7 +119,7 @@ public slots:
     void updateReformState();
     void showDistance();
     virtual void refresh(bool killed = false);
-
+	void hideSkillName();
 protected:
     // overrider parent functions
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
@@ -141,7 +142,9 @@ protected:
 	virtual QPointF getHeroSkinContainerPosition() const = 0;
 	//virtual const QRect &getSkillNameArea() const = 0;
 	//virtual const QSanShadowTextFont &getSkillNameFont() const = 0;
-    
+	
+    QGraphicsPixmapItem *_m_skillNameItem;
+	
     void _createRoleComboBox();
     void _updateProgressBar(); // a dirty function used by the class itself only.
     void _updateDeathIcon();
@@ -213,14 +216,15 @@ protected:
     QList<QGraphicsPixmapItem *> _m_judgeIcons;
     QList<CardItem *> _m_judgeCards;
 
-    QGraphicsProxyWidget *_m_equipRegions[4];
-    CardItem *_m_equipCards[4];
-    QLabel *_m_equipLabel[4];
-    QParallelAnimationGroup *_m_equipAnim[4];
+    QGraphicsProxyWidget *_m_equipRegions[5];
+    CardItem *_m_equipCards[5];
+    QLabel *_m_equipLabel[5];
+    QParallelAnimationGroup *_m_equipAnim[5];
     QMutex _mutexEquipAnim;
 
     // controls
     MagatamasBoxItem *_m_hpBox;
+	MagatamasBoxItem *_m_sub_hpBox;
     RoleComboBox *_m_roleComboBox;
     QSanCommandProgressBar *_m_progressBar;
     QGraphicsProxyWidget *_m_progressBarItem;

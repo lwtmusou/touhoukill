@@ -52,6 +52,7 @@ const char *QSanRoomSkin::S_SKIN_KEY_SAVE_ME_ICON = "saveMe";
 const char *QSanRoomSkin::S_SKIN_KEY_ACTIONED_ICON = "playerActioned";
 const char *QSanRoomSkin::S_SKIN_KEY_HAND_CARD_BACK = "handCardBack";
 const char *QSanRoomSkin::S_SKIN_KEY_HAND_CARD_SUIT = "handCardSuit-%1";
+const char *QSanRoomSkin::S_SKIN_KEY_CARD_TIANYI = "cardTianyi-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_JUDGE_CARD_ICON = "judgeCardIcon-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_HAND_CARD_FRAME = "handCardFrame-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_HAND_CARD_MAIN_PHOTO = "handCardMainPhoto-%1";
@@ -267,6 +268,10 @@ QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName) const{
 
 QPixmap QSanRoomSkin::getCardSuitPixmap(Card::Suit suit) const{
     return getPixmap(QSanRoomSkin::S_SKIN_KEY_HAND_CARD_SUIT, Card::Suit2String(suit));
+}
+
+QPixmap QSanRoomSkin::getCardTianyiPixmap() const{
+    return getPixmap(QSanRoomSkin::S_SKIN_KEY_CARD_TIANYI, "tianyi");
 }
 
 QPixmap QSanRoomSkin::getCardNumberPixmap(int point, bool isBlack) const{
@@ -704,7 +709,7 @@ QAbstractAnimation *QSanRoomSkin::createHuaShenAnimation(QPixmap &huashenAvatar,
     widget->setPos(topLeft);
 
     QPropertyAnimation *animation = new QPropertyAnimation(widget, "opacity");
-    animation->setLoopCount(2000);
+    animation->setLoopCount(200); //2000
     Json::Value huashenConfig = _m_animationConfig["huashen"];
     int duration;
     if (tryParse(huashenConfig[0], duration) && huashenConfig[1].isArray()) {
@@ -809,13 +814,14 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
 
         tryParse(playerConfig["normalHeight"], layout->m_normalHeight);
         tryParse(playerConfig["handCardNumIconArea"], layout->m_handCardArea);
-        for (int j = 0; j < 4; j++)
+        for (int j = 0; j < 5; j++)
             tryParse(playerConfig["equipAreas"][j], layout->m_equipAreas[j]);
         tryParse(playerConfig["equipImageArea"], layout->m_equipImageArea);
         tryParse(playerConfig["equipTextArea"], layout->m_equipTextArea);
         tryParse(playerConfig["equipSuitArea"], layout->m_equipSuitArea);
         tryParse(playerConfig["equipDistanceArea"], layout->m_equipDistanceArea);
         tryParse(playerConfig["equipPointArea"], layout->m_equipPointArea);
+		tryParse(playerConfig["equipTianyiArea"], layout->m_equipTianyiArea);
         layout->m_equipFont.tryParse(playerConfig["equipFont"]);
         if (!layout->m_equipPointFontBlack.tryParse(playerConfig["equipPointFontBlack"]))
             layout->m_equipPointFontBlack.tryParse(playerConfig["equipPointFont"]);
@@ -855,12 +861,16 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
         tryParse(playerConfig["progressBarHorizontal"], layout->m_isProgressBarHorizontal);
         tryParse(playerConfig["magatamaSize"], layout->m_magatamaSize);
         tryParse(playerConfig["magatamaImageArea"], layout->m_magatamaImageArea);
+		tryParse(playerConfig["magatamaImageSubArea"], layout->m_sub_magatamaImageArea);
         tryParse(playerConfig["magatamasHorizontal"], layout->m_magatamasHorizontal);
         tryParse(playerConfig["magatamasBgVisible"], layout->m_magatamasBgVisible);
         tryParse(playerConfig["magatamasAnchor"][1], layout->m_magatamasAnchor);
+		tryParse(playerConfig["magatamasSubAnchor"][1], layout->m_sub_magatamasAnchor);
         if (playerConfig["magatamasAnchor"][0].isString())
             tryParse(playerConfig["magatamasAnchor"][0], layout->m_magatamasAlign);
-
+		if (playerConfig["magatamasSubAnchor"][0].isString())
+            tryParse(playerConfig["magatamasSubAnchor"][0], layout->m_sub_magatamasAlign);
+			
         layout->m_phaseArea.tryParse(playerConfig["phaseArea"]);
         tryParse(playerConfig["privatePileStartPos"], layout->m_privatePileStartPos);
         tryParse(playerConfig["privatePileStep"], layout->m_privatePileStep);
@@ -914,6 +924,8 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
     tryParse(config["equipSelectedOffset"], _m_dashboardLayout.m_equipSelectedOffset);
     tryParse(config["disperseWidth"], _m_dashboardLayout.m_disperseWidth);
     tryParse(config["trustEffectColor"], _m_dashboardLayout.m_trustEffectColor);
+	tryParse(config["skillNameArea"], _m_dashboardLayout.m_skillNameArea);
+    _m_dashboardLayout.m_skillNameFont.tryParse(config["skillNameFont"]);
     config = layoutConfig["skillButton"];
     for (int i = 0; i < 3; i++) {
         int height = 0;

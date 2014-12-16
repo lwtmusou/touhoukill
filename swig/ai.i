@@ -1,7 +1,7 @@
 %{
 
 #include "ai.h"
-#include "joypackage.h"
+//#include "joypackage.h"
 
 %}
 
@@ -91,12 +91,12 @@ public:
 };
 
 // for some AI use
-class Shit:public BasicCard{
-public:
-    Shit(Card::Suit suit, int number);
+//class Shit:public BasicCard{
+//public:
+//    Shit(Card::Suit suit, int number);
 
-    static bool HasShit(const Card *card);
-};
+//    static bool HasShit(const Card *card);
+// };
 
 %{
 

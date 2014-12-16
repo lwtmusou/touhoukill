@@ -137,12 +137,13 @@ public:
         QRect m_handCardArea;
 
         // equips
-        QRect m_equipAreas[4];
+        QRect m_equipAreas[5];
         QRect m_equipImageArea;
         QRect m_equipTextArea;
         QRect m_equipSuitArea;
         QRect m_equipDistanceArea;
         QRect m_equipPointArea;
+		QRect m_equipTianyiArea;
         QSanShadowTextFont m_equipFont;
         QSanShadowTextFont m_equipPointFontBlack;
         QSanShadowTextFont m_equipPointFontRed;
@@ -181,11 +182,13 @@ public:
         AnchoredRect m_progressBarArea;
         QSize m_magatamaSize;
         QRect m_magatamaImageArea;
+		QRect m_sub_magatamaImageArea;
         bool m_magatamasHorizontal;
         bool m_magatamasBgVisible;
         QPoint m_magatamasAnchor;
+		QPoint m_sub_magatamasAnchor;
         Qt::Alignment m_magatamasAlign;
-
+		Qt::Alignment m_sub_magatamasAlign;
         AnchoredRect m_phaseArea;
 
         // private pile (e.g. 7 stars, buqu)
@@ -236,6 +239,8 @@ public:
         int m_disperseWidth;
         QColor m_trustEffectColor;
         QSanShadowTextFont m_skillTextFonts[3];
+		QRect m_skillNameArea;
+        QSanShadowTextFont m_skillNameFont;
         QColor m_skillTextColors[QSanButton::S_NUM_BUTTON_STATES * QSanInvokeSkillButton::S_NUM_SKILL_TYPES];
         QColor m_skillTextShadowColors[QSanButton::S_NUM_BUTTON_STATES * QSanInvokeSkillButton::S_NUM_SKILL_TYPES];
 
@@ -297,6 +302,7 @@ public:
                                  QSanInvokeSkillButton::SkillButtonWidth width) const;
     QPixmap getCardMainPixmap(const QString &cardName) const;
     QPixmap getCardSuitPixmap(Card::Suit suit) const;
+	QPixmap getCardTianyiPixmap() const;
     QPixmap getCardNumberPixmap(int point, bool isBlack) const;
     QPixmap getCardJudgeIconPixmap(const QString &judgeName) const;
     QPixmap getCardFramePixmap(const QString &frameType) const;
@@ -357,6 +363,7 @@ public:
     static const char *S_SKIN_KEY_VOTES_NUMBER;
     static const char *S_SKIN_KEY_HAND_CARD_BACK;
     static const char *S_SKIN_KEY_HAND_CARD_SUIT;
+	static const char *S_SKIN_KEY_CARD_TIANYI;
     static const char *S_SKIN_KEY_JUDGE_CARD_ICON;
     static const char *S_SKIN_KEY_HAND_CARD_MAIN_PHOTO;
     static const char *S_SKIN_KEY_HAND_CARD_NUMBER_BLACK;

@@ -117,10 +117,18 @@ QWidget *PlayerCardDialog::createHandcardButton() {
 QWidget *PlayerCardDialog::createEquipArea() {
     QGroupBox *area = new QGroupBox(tr("Equip area"));
     QVBoxLayout *layout = new QVBoxLayout;
-
+	QString suffix1="";
+	QString suffix2="";
+	QString suffix3="";
+	QString suffix4="";
+	QString suffix5="";
     WrappedCard *weapon = player->getWeapon();
     if (weapon) {
-        PlayerCardButton *button = new PlayerCardButton(weapon->getFullName());
+		if (player->getMark("@tianyi_Weapon") >0)
+			suffix1=tr("tianyi_equip");
+		
+		PlayerCardButton *button = new PlayerCardButton(weapon->getFullName()+suffix1);
+		
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(weapon->getId())->getSuit()));
         button->setEnabled(!disabled_ids.contains(weapon->getEffectiveId())
                             && (method != Card::MethodDiscard || Self->canDiscard(player, weapon->getEffectiveId())));
@@ -131,7 +139,9 @@ QWidget *PlayerCardDialog::createEquipArea() {
 
     WrappedCard *armor = player->getArmor();
     if (armor) {
-        PlayerCardButton *button = new PlayerCardButton(armor->getFullName());
+        if (player->getMark("@tianyi_Armor") >0)
+			suffix2=tr("tianyi_equip");
+		PlayerCardButton *button = new PlayerCardButton(armor->getFullName()+suffix2);
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(armor->getId())->getSuit()));
         button->setEnabled(!disabled_ids.contains(armor->getEffectiveId())
                             && (method != Card::MethodDiscard || Self->canDiscard(player, armor->getEffectiveId())));
@@ -142,7 +152,9 @@ QWidget *PlayerCardDialog::createEquipArea() {
 
     WrappedCard *horse = player->getDefensiveHorse();
     if (horse) {
-        PlayerCardButton *button = new PlayerCardButton(horse->getFullName() + tr("(+1 horse)"));
+		if (player->getMark("@tianyi_DefensiveHorse") >0)
+			suffix3=tr("tianyi_equip");
+        PlayerCardButton *button = new PlayerCardButton(horse->getFullName() + tr("(+1 horse)")+suffix3);
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(horse->getId())->getSuit()));
         button->setEnabled(!disabled_ids.contains(horse->getEffectiveId())
                             && (method != Card::MethodDiscard || Self->canDiscard(player, horse->getEffectiveId())));
@@ -153,7 +165,9 @@ QWidget *PlayerCardDialog::createEquipArea() {
 
     horse = player->getOffensiveHorse();
     if (horse) {
-        PlayerCardButton *button = new PlayerCardButton(horse->getFullName() + tr("(-1 horse)"));
+		if (player->getMark("@tianyi_OffensiveHorse") >0)
+			suffix4=tr("tianyi_equip");
+        PlayerCardButton *button = new PlayerCardButton(horse->getFullName() + tr("(-1 horse)")+suffix4);
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(horse->getId())->getSuit()));
         button->setEnabled(!disabled_ids.contains(horse->getEffectiveId())
                             && (method != Card::MethodDiscard || Self->canDiscard(player, horse->getEffectiveId())));
@@ -162,6 +176,19 @@ QWidget *PlayerCardDialog::createEquipArea() {
         layout->addWidget(button);
     }
 
+	WrappedCard *treasure = player->getTreasure();
+    if (treasure) {
+		if (player->getMark("@tianyi_Treasure") >0)
+			suffix5=tr("tianyi_equip");
+        PlayerCardButton *button = new PlayerCardButton(treasure->getFullName()+suffix5);
+        button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(treasure->getId())->getSuit()));
+        button->setEnabled(!disabled_ids.contains(treasure->getEffectiveId())
+                           && (method != Card::MethodDiscard || Self->canDiscard(player, treasure->getEffectiveId())));
+        mapper.insert(button, treasure->getId());
+        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
+        layout->addWidget(button);
+    }
+	
     if (layout->count() == 0) {
         PlayerCardButton *no_equip = new PlayerCardButton(tr("No equip"));
         no_equip->setEnabled(false);

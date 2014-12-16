@@ -2,12 +2,15 @@
 #include "clientplayer.h"
 #include "SkinBank.h"
 #include "engine.h"
+//#include "client.h"
 
 #include <QPixmap>
 #include <qbitmap.h>
 #include <QPainter>
 #include <QGraphicsSceneHoverEvent>
 #include <QGraphicsView>
+
+
 
 QSanButton::QSanButton(QGraphicsItem *parent): QGraphicsObject(parent)
 {
@@ -37,8 +40,10 @@ QSanButton::QSanButton(const QString &groupName, const QString &buttonName, QGra
 }
 
 void QSanButton::click() {
-    if (isEnabled())
+    
+	if (isEnabled()){
         _onMouseClick(true);
+	}
 }
 
 QRectF QSanButton::boundingRect() const{
@@ -70,8 +75,8 @@ void QSanButton::setStyle(ButtonStyle style) {
 }
 
 void QSanButton::setEnabled(bool enabled) {
-    bool changed = (enabled != isEnabled());
-    if (!changed) return;
+    //bool changed = (enabled != isEnabled());
+    //if (!changed) return;
     if (enabled) {
         setState(S_STATE_UP);
         _m_mouseEntered = false;
@@ -82,8 +87,12 @@ void QSanButton::setEnabled(bool enabled) {
     emit enable_changed();
 }
 
-void QSanButton::setState(QSanButton::ButtonState state) {
-    if (this->_m_state != state) {
+void QSanButton::setState(QSanButton::ButtonState state, bool ignore_change) {
+    if (ignore_change){
+		this->_m_state = state;
+        update();
+	}
+	else if (this->_m_state != state) {
         this->_m_state = state;
         update();
     }
@@ -98,7 +107,10 @@ void QSanButton::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
     QPointF point = event->pos();
     if (_m_mouseEntered || !insideButton(point)) return; // fake event;
 	
+
+
     Q_ASSERT(_m_state != S_STATE_HOVER);
+	
     _m_mouseEntered = true;
     if (_m_state == S_STATE_UP)
         setState(S_STATE_HOVER);
@@ -107,7 +119,9 @@ void QSanButton::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
 void QSanButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
     if (_m_state == S_STATE_DISABLED) return;
     if (!_m_mouseEntered) return;
+	
 
+	
     Q_ASSERT(_m_state != S_STATE_DISABLED);
     if (_m_state == S_STATE_HOVER)
         setState(S_STATE_UP);
@@ -180,7 +194,8 @@ void QSanSkillButton::_setSkillType(SkillType type) {
 
 void QSanSkillButton::onMouseClick() {
     if (_m_skill == NULL) return;
-    if ((_m_style == S_STYLE_TOGGLE && isDown() && _m_emitActivateSignal) || _m_style == S_STYLE_PUSH) {
+
+	if ((_m_style == S_STYLE_TOGGLE && isDown() && _m_emitActivateSignal) || _m_style == S_STYLE_PUSH) {
         emit skill_activated();
         emit skill_activated(_m_skill);
     } else if (!isDown() && _m_emitDeactivateSignal) {
@@ -197,7 +212,7 @@ void QSanSkillButton::setSkill(const Skill *skill) {
      // Since the trigger skill is not relevant, we flatten it before we create the button.
      _m_viewAsSkill = ViewAsSkill::parseViewAsSkill(_m_skill);
      if (skill == NULL) skill = _m_skill;
-
+	
      Skill::Frequency freq = skill->getFrequency();
      if (freq == Skill::Frequent
          || (freq == Skill::NotFrequent && skill->inherits("TriggerSkill") && !skill->inherits("WeaponSkill")
@@ -217,6 +232,7 @@ void QSanSkillButton::setSkill(const Skill *skill) {
              _setSkillType(QSanInvokeSkillButton::S_SKILL_ONEOFF_SPELL);
          else
              _setSkillType(QSanInvokeSkillButton::S_SKILL_PROACTIVE);
+			
 
          setStyle(QSanButton::S_STYLE_TOGGLE);
 
@@ -296,8 +312,11 @@ void QSanInvokeSkillDock::setWidth(int width) {
 void QSanInvokeSkillDock::update() {
     if (!_m_buttons.isEmpty()) {
         QList<QSanInvokeSkillButton *> regular_buttons, lordskill_buttons, all_buttons;
-        foreach (QSanInvokeSkillButton *btn, _m_buttons) {
-            if (btn->getSkill()->isAttachedLordSkill())
+        int banling_fix=0;
+		foreach (QSanInvokeSkillButton *btn, _m_buttons) {
+            if (btn->getSkill()->objectName()=="banling")
+				banling_fix=5;
+			if (btn->getSkill()->isAttachedLordSkill())
                 lordskill_buttons << btn;
             else
                 regular_buttons << btn;
@@ -306,22 +325,27 @@ void QSanInvokeSkillDock::update() {
 
         int numButtons = regular_buttons.length();
         int lordskillNum = lordskill_buttons.length();
-        Q_ASSERT(lordskillNum <= 6); // HuangTian, ZhiBa, DrJiuYuan and XianSi
+        //Q_ASSERT(lordskillNum <= 6); // HuangTian, ZhiBa, DrJiuYuan and XianSi
         int rows = (numButtons == 0) ? 0 : (numButtons - 1) / 3 + 1;
         int rowH = G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height();
-        int *btnNum = new int[rows + 2 + 1]; // we allocate one more row in case we need it.
+		//G_DASHBOARD_LAYOUT.m_normalHeight
+		//  _m_width  G_DASHBOARD_LAYOUT.m_rightWidth
+        int *btnNum = new int[rows + 2 + 1]; //new int[rows + 2 + 1]; // we allocate one more row in case we need it.
         int remainingBtns = numButtons;
-        for (int i = 0; i < rows; i++) {
+		 int *lordBtnNum = new int[2 + 1]; //just consider 2 rows lord skills 
+		 
+        //set button width
+		for (int i = 0; i < rows; i++) {
             btnNum[i] = qMin(3, remainingBtns);
             remainingBtns -= 3;
         }
         if (lordskillNum > 3) {
             int half = lordskillNum / 2;
-            btnNum[rows] = half;
-            btnNum[rows + 1] = lordskillNum - half;
-        } else if (lordskillNum > 0) {
-            btnNum[rows] = lordskillNum;
-        }
+            lordBtnNum[0]=half;//btnNum[rows] = half;
+            lordBtnNum[1]=lordskillNum - half; //btnNum[rows + 1] = lordskillNum - half;
+		} else if (lordskillNum > 0) {
+             lordBtnNum[0]=lordskillNum;//btnNum[rows] = lordskillNum;
+		}
 
         // If the buttons in rows are 3, 1, then balance them to 2, 2
         if (rows >= 2) {
@@ -329,27 +353,54 @@ void QSanInvokeSkillDock::update() {
                 btnNum[rows - 1] = 2;
                 btnNum[rows - 2] = 2;
             }
-        } else if (rows == 1 && btnNum[0] == 3 && lordskillNum == 0) {
+        } else if (rows == 1 && btnNum[0] == 3 ) {//&& lordskillNum == 0
             btnNum[0] = 2;
             btnNum[1] = 1;
             rows = 2;
         }
-
+		
         int m = 0;
-        int x_ls = 0;
+        
+		
+		//for regular skill
+        for (int i = 0; i < rows ; i++) {
+			int rowTop = (RoomSceneInstance->m_skillButtonSank) ? (-rowH - 2 * (rows  - i - 1)) :
+                                                                  ((-rows  + i) * rowH);
+            int btnWidth = (_m_width-10) / btnNum[i];
+            for (int j = 0; j < btnNum[i]; j++) {
+                QSanInvokeSkillButton *button = regular_buttons[m++];//all_buttons[m++];
+                button->setButtonWidth((QSanInvokeSkillButton::SkillButtonWidth)(btnNum[i] - 1));
+				button->setPos(btnWidth * j+banling_fix, rowTop);
+            }
+
+        }
+		
+		//for lord skill
+		int w = 0;
+		int x_ls = 0;
         if (lordskillNum > 0) x_ls++;
         if (lordskillNum > 3) x_ls++;
-        for (int i = 0; i < rows + x_ls; i++) {
-            int rowTop = (RoomSceneInstance->m_skillButtonSank) ? (-rowH - 2 * (rows + x_ls - i - 1)) :
-                                                                  ((-rows - x_ls + i) * rowH);
-            int btnWidth = _m_width / btnNum[i];
-            for (int j = 0; j < btnNum[i]; j++) {
-                QSanInvokeSkillButton *button = all_buttons[m++];
-                button->setButtonWidth((QSanInvokeSkillButton::SkillButtonWidth)(btnNum[i] - 1));
-                button->setPos(btnWidth * j, rowTop);
+		for (int i = 0; i < x_ls ; i++) {
+			int rowTop = (RoomSceneInstance->m_skillButtonSank) ? (-rowH - 2 * (x_ls  - i - 1)) :
+                                                                  ((-x_ls  + i) * rowH);
+            int btnWidth = _m_width / lordBtnNum[i];
+			if (lordBtnNum[i]==1)
+				btnWidth=_m_width /2;
+            for (int j = 0; j < lordBtnNum[i]; j++) {
+                QSanInvokeSkillButton *button = lordskill_buttons[w++];
+				int btntype=lordBtnNum[i] - 1;
+				if (btntype==0)
+					btntype=1;
+                button->setButtonWidth((QSanInvokeSkillButton::SkillButtonWidth)(btntype));
+				button->setPos(0- btnWidth * (j+1)-15,  rowTop-G_DASHBOARD_LAYOUT.m_normalHeight);
+				//-G_DASHBOARD_LAYOUT.m_rightWidth
             }
+
         }
+		
+		
         delete btnNum;
+		delete lordBtnNum;
     }
     QGraphicsObject::update();
 }

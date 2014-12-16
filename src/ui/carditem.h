@@ -81,7 +81,8 @@ protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *);
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-
+	//virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *);
+	
 private:
     int m_cardId;
     QString _m_frameType, _m_avatarName;
@@ -97,6 +98,7 @@ signals:
     void enter_hover();
     void leave_hover();
     void movement_animation_finished();
+	
 };
 
 #endif

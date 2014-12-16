@@ -19,7 +19,7 @@ public:
     enum ButtonStyle { S_STYLE_PUSH, S_STYLE_TOGGLE };
     void setSize(QSize size);
     void setStyle(ButtonStyle style);
-    void setState(ButtonState state);
+    void setState(ButtonState state,bool ignore_change=false);
     inline void setButtonName(QString buttonName) { _m_buttonName = buttonName; }
     inline QString getButtonName() { return _m_buttonName; }
     inline ButtonState getState() const{ return _m_state; }

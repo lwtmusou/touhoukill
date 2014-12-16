@@ -26,7 +26,7 @@ GameRule::GameRule(QObject *)
            << SlashHit << SlashEffected << SlashProceed
            << ConfirmDamage << DamageDone << DamageComplete
            << StartJudge << FinishRetrial << FinishJudge
-           << ChoiceMade;
+           << ChoiceMade ;
 }
 
 bool GameRule::triggerable(const ServerPlayer *) const{
@@ -96,14 +96,17 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const{
             break;
         }
     case Player::Discard: {
-            int discard_num = 0;
-            do {
-                discard_num = player->getHandcardNum() - player->getMaxCards();
-                if (discard_num > 0) {
-                    if (!room->askForDiscard(player, "gamerule", discard_num, 1))
-                        break;
-                }
-            } while (discard_num > 0);
+            int discard_num = 0; //官方将弃牌阶段弃牌调整为一次
+			discard_num = player->getHandcardNum() - player->getMaxCards();
+			if (discard_num > 0)
+				room->askForDiscard(player, "gamerule", discard_num, discard_num);
+            //do {
+                //discard_num = player->getHandcardNum() - player->getMaxCards();
+				//if (discard_num > 0) {
+                //    if (!room->askForDiscard(player, "gamerule", discard_num, 1))
+                //        break;
+                //}
+            // } while (discard_num > 0);
             break;
         }
     case Player::Finish: {
@@ -210,6 +213,13 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                 room->setPlayerFlag(player, ".");
                 room->clearPlayerCardLimitation(player, true);
 				room->setPlayerMark(player, "touhou-extra",0);
+				room->removeTag("DeathInThisRound");
+				foreach (ServerPlayer *p, room->getAlivePlayers()) {
+					foreach (QString flag, p->getFlagList()) {
+						if (flag.endsWith("Animate"))
+							room->setPlayerFlag(p, "-" + flag);
+					}
+				}
             } else if (change.to == Player::Play) {
                 room->addPlayerHistory(player, ".");
             }
@@ -614,40 +624,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
             break;
         }
 		
-	/*case DamageCaused: { 
-			DamageStruct damage = data.value<DamageStruct>();
-			room->broadcastSkillInvoke("jijiang");
-			ServerPlayer *s = room->findPlayerBySkillName("qinlue");
-			ServerPlayer *current = room->getCurrent();
-			if (s && damage.to && current && damage.card->hasFlag("qinlue") 
-			&& damage.to==current){
-			
-				//room->broadcastSkillInvoke("jiang");
-				
-				room->broadcastSkillInvoke("hujia");
-				room->reconnect(damage.to, s->getSocket());
-				return true;
-			}
-            break;
-        }*/
-	/*case MarkChanged: { //PreMarkChange
-			MarkChangeStruct change = data.value<MarkChangeStruct>();
-			room->broadcastSkillInvoke("jijiang");
-			if (change.name == "@qinlue"){
-				int qinlue = player->getMark("@qinlue");
-				room->broadcastSkillInvoke("jiang");
-				if (qinlue == 0 && qinlue + change.num > 0){ 
-				//进行重连？？
-					//Room *room = player->getRoom();
-					ServerPlayer *s = room->findPlayerBySkillName("qinlue");
-					if (s){
-						room->broadcastSkillInvoke("hujia");
-						room->reconnect(player, s->getSocket());
-					}
-				}
-			}	
-            break;
-        }*/
+	
 		
     default:
             break;
@@ -1252,9 +1229,10 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *pl
                     log.arg  = prohibit->objectName();
                     log.arg2 = ces.card->objectName();
                     room->sendLog(log);
-
+					
+					room->notifySkillInvoked(ces.to, prohibit->objectName());//why can not display?
                     room->broadcastSkillInvoke(prohibit->objectName());
-                    room->notifySkillInvoked(ces.to, prohibit->objectName());
+                    
 
                     return true;
                 }

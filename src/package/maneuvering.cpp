@@ -98,6 +98,7 @@ class FanSkill: public OneCardViewAsSkill {
 public:
     FanSkill(): OneCardViewAsSkill("Fan") {
         filter_pattern = "%slash";
+		response_or_use = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -332,14 +333,33 @@ bool IronChain::targetFilter(const QList<const Player *> &targets, const Player 
 }
 
 bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
-    if (Self->isCardLimited(this, Card::MethodUse))
+    bool rec = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+	QList<int> sub;
+    if (isVirtualCard())
+        sub = subcards;
+    else
+        sub << getEffectiveId();
+    foreach (int id, sub) {
+        if (Self->getPile("piao").contains(id)) {
+            rec = false;
+            break;
+        }
+		 if (Self->getPile("wooden_ox").contains(id)) {
+            rec = false;
+            break;
+        }
+    }
+	
+	if (rec && Self->isCardLimited(this, Card::MethodUse))
         return targets.length() == 0;
-
+	
+	
+	
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
         return targets.length() != 0;
 
     int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    if (getSkillName().contains("guhuo") || getSkillName() == "qice")
+    if (!rec ||getSkillName().contains("guhuo") || getSkillName() == "qice")
         return targets.length() > 0 && targets.length() <= total_num;
     else
         return targets.length() <= total_num;
@@ -387,7 +407,8 @@ SupplyShortage::SupplyShortage(Card::Suit suit, int number)
 bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if (!targets.isEmpty() || to_select->containsTrick(objectName()) || to_select == Self)
         return false;
-
+	if (hasFlag("fahua"))
+        return true;
     int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
     int rangefix = 0;
     if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))

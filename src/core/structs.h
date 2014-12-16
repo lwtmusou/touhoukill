@@ -367,35 +367,47 @@ struct CardResponseStruct {
         m_card = NULL;
         m_who = NULL;
         m_isUse = false;
+		m_isRetrial = false;
+		m_isProvision = false;
     }
 
     inline CardResponseStruct(const Card *card) {
         m_card = card;
         m_who = NULL;
         m_isUse = false;
+		m_isRetrial = false;
+		m_isProvision = false;
     }
 
     inline CardResponseStruct(const Card *card, ServerPlayer *who) {
         m_card = card;
         m_who = who;
         m_isUse = false;
+		m_isRetrial = false;
+		m_isProvision = false;
     }
 
     inline CardResponseStruct(const Card *card, bool isUse) {
         m_card = card;
         m_who = NULL;
         m_isUse = isUse;
+		m_isRetrial = false;
+		m_isProvision = false;
     }
 
-    inline CardResponseStruct(const Card *card, ServerPlayer *who, bool isUse) {
+    inline CardResponseStruct(const Card *card, ServerPlayer *who, bool isUse,bool isRetrial,bool isProvision) {
         m_card = card;
         m_who = who;
         m_isUse = isUse;
+		m_isRetrial = isRetrial;
+		m_isProvision = isProvision;
     }
 
     const Card *m_card;
     ServerPlayer *m_who;
     bool m_isUse;
+	bool m_isRetrial;
+	bool m_isProvision;
 };
 
 struct JsonValueForLUA{

@@ -275,6 +275,10 @@ public:
 
     void sortByActionOrder(QList<ServerPlayer *> &players);
 	void defaultHeroSkin();
+	bool canInsertExtraTurn();
+	void touhouLogmessage(const QString logtype, ServerPlayer *logfrom,  const QString logarg =NULL,  QList<ServerPlayer *>  &logto=QList<ServerPlayer *>(), const QString logarg2=NULL);
+	
+	
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
 
     void setTag(const QString &key, const QVariant &value);
@@ -332,7 +336,7 @@ public:
                            Card::HandlingMethod method = Card::MethodDiscard, ServerPlayer *to = NULL, bool isRetrial = false,
                            const QString &skill_name = QString(), bool isProvision = false);
     const Card *askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index = -1,
-                       Card::HandlingMethod method = Card::MethodUse, bool addHistory = true);
+                       Card::HandlingMethod method = Card::MethodUse, bool addHistory = true ,const QString &skill_name = QString());
     const Card *askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const QString &prompt,
                                     bool distance_limit = true, bool disable_extra = false, bool addHistory = false);
     const Card *askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt,
@@ -515,7 +519,11 @@ private:
     bool m_surrenderRequestReceived;
     bool _virtual;
     RoomState _m_roomState;
-
+	
+	Json::Value m_fillAGarg;
+    Json::Value m_takeAGargs;
+	
+	
     static QString generatePlayerName();
     void prepareForStart();
     void assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign);

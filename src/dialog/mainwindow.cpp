@@ -11,6 +11,7 @@
 #include "pixmapanimation.h"
 #include "record-analysis.h"
 #include "AboutUs.h"
+#include "audio.h"
 
 #include <qmath.h>
 #include <QGraphicsView>
@@ -111,6 +112,17 @@ MainWindow::MainWindow(QWidget *parent)
     addAction(ui->actionFullscreen);
 
     systray = NULL;
+	
+	
+	//play title BGM
+	if(Config.EnableBgMusic) {
+        QString bgm = "audio/title/main.ogg";
+        if (QFile::exists(bgm)) {
+            Audio::stopBGM();
+            Audio::playBGM(bgm);
+            Audio::setBGMVolume(Config.BGMVolume);
+        }
+    }
 }
 
 void MainWindow::restoreFromConfig() {

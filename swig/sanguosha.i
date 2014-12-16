@@ -151,10 +151,10 @@ public:
     void detachAllSkills();
     virtual void addSkill(const char *skill_name);
     virtual void loseSkill(const char *skill_name);
-    bool hasSkill(const char *skill_name, bool include_lose = false) const;
-    bool hasSkills(const char *skill_name, bool include_lose = false) const;
+    bool hasSkill(const char *skill_name, bool include_lose = false, bool include_invalidity=false) const;
+    bool hasSkills(const char *skill_name, bool include_lose = false,bool include_invalidity=false) const;
     bool hasInnateSkill(const char *skill_name) const;
-    bool hasLordSkill(const char *skill_name, bool include_lose = false) const;
+    bool hasLordSkill(const char *skill_name, bool include_lose = false,bool include_invalidity=false) const;
     virtual QString getGameMode() const = 0;
 
     void setEquip(WrappedCard *equip);
@@ -177,12 +177,14 @@ public:
     WrappedCard *getArmor() const;
     WrappedCard *getDefensiveHorse() const;
     WrappedCard *getOffensiveHorse() const;
+	WrappedCard *getTreasure() const;
     QList<const Card *> getEquips() const;
     const EquipCard *getEquip(int index) const;
 
     bool hasWeapon(const char *weapon_name) const;
     bool hasArmorEffect(const char *armor_name) const;
-
+	bool hasTreasure(const char *treasure_name) const;
+	 
     bool isKongcheng() const;
     bool isNude() const;
     bool isAllNude() const;
@@ -452,7 +454,8 @@ struct DamageStruct {
     enum Nature {
         Normal, // normal slash, duel and most damage caused by skill
         Fire,  // fire slash, fire attack and few damage skill (Yeyan, etc)
-        Thunder // lightning, thunder slash, and few damage skill (Leiji, etc)
+        Thunder, // lightning, thunder slash, and few damage skill (Leiji, etc)
+		Ice
     };
 
     ServerPlayer *from;
@@ -623,6 +626,8 @@ struct CardResponseStruct {
     const Card *m_card;
     ServerPlayer *m_who;
     bool m_isUse;
+	bool m_isRetrial;
+	bool m_isProvision;
 };
 
 struct MarkChangeStruct{
@@ -1296,6 +1301,7 @@ public:
     void resetCard(int cardId);
 
     void updateStateItem();
+	bool canInsertExtraTurn();
 };
 
 %extend Room {

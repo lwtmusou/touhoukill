@@ -130,7 +130,6 @@ zhu001                                  hmx003                                  
 zhu001                                  yym002                                  0.4                      
 zhu001                                  yym009                                  0.9
 zhu001                                  zhan004                                  0.3
-zhu001                                  zhan007                                  1.1
 zhu001                                  zhan008                                  0.7
 zhu001                                  dld002                                  0.3
 zhu001                                  dld005                                  0.3
@@ -153,6 +152,7 @@ hmx001                                  dld007                                  
 hmx001                                  dld008                                  0.8
 hmx001                                  xlc004                                  0.8
 hmx001                                  slm006                                  1.0
+hmx001                                  wai006                                  0.4
 yym001                                  hmx005                                  0.7
 yym001                                  yym002                                  0.3
 yym001                                  yym004                                  1.0
@@ -221,6 +221,7 @@ zhan007                                   dld007                                
 zhan007                                   dld008                                  1.1
 zhan007                                   xlc004                                  0.8
 zhan007                                  slm006                                  1.0
+zhan007                                  wai006                                  0.6
 fsl001                                  yyc009                                   1.0
 fsl001                                  fsl002                                   1.0
 fsl001                                  fsl003                                   1.0
@@ -241,6 +242,8 @@ xlc001                                  xlc003                                  
 xlc001                                  xlc005                                   0.5
 slm001                                  zhu006                                   0.7
 slm001                                  yyc006                                   0.5
+slm005                                  yyc010                                   0.6
+slm005                                  wai006                                   0.8
 slm007                                  zhan008                                   1.1
 slm007                                  xlc004                                   0.7
 yym002                                  fsl007                                   -1.4
@@ -265,3 +268,10 @@ shen014                                  fsl007                                 
 fsl011                                 yym011                                   0.8
 shen005                                yyc001                                     1.0
 shen005                                sp001                                     1.0
+shen005                                 xlc001                                   -1.1
+shen005                                 hmx001                                    -1.3
+shen005                                 yyc002                                    -1.0
+zhu003                                  xwm003                                      0.7
+zhu003                                  xwm004                                      0.7
+xwm003                                   zhu003                                      0.7
+xwm004                                   zhu003                                      0.5

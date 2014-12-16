@@ -275,6 +275,8 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidge
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardAvatarArea, G_ROOM_SKIN.getCardAvatarPixmap(_m_avatarName));
 }
 
+
+
 void CardItem::setFootnote(const QString &desc) {
     const IQSanComponentSkin::QSanShadowTextFont &font = G_COMMON_LAYOUT.m_cardFootnoteFont;
     QRect rect = G_COMMON_LAYOUT.m_cardFootnoteArea;

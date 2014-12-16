@@ -3,8 +3,8 @@
 {
     "cardNormalWidth": 93,
     "cardNormalHeight": 130,
-    "cardMainArea": [0, 0, 93, 130],
-    "cardFrameArea": [-5, -5, 98, 135],
+    "cardMainArea": [0, 0, 93, 130], 
+    "cardFrameArea": [-5,-5,98, 135],
     "cardSuitArea": [3, 19, 21, 17],
     "cardNumberArea": [0, 2, 27, 28],
     "cardFootnoteArea": [0, 70, 93, 50],
@@ -59,30 +59,30 @@
 },
 "photo":
 {
-	"normalWidth": 165,
-    "normalHeight": 192,
+	"normalWidth": 175,//163
+    "normalHeight": 210,//192,
 	
-	"mainFrameArea": [0, 0, 165, 192],
+	"mainFrameArea": [0, 0, 175, 210],
 	
-	"canvasArea": [0, 0, 165, 192],
+	"canvasArea": [0, 0, 175, 210],
 	
-    "handCardNumIconArea": [-8, 120, 30, 18],
+    "handCardNumIconArea": [-8, 125, 30, 18],
     "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255], 1, 30, [0, 0], [20, 20, 20, 200]],
-    "equipAreas": [[1, 132, 162, 21], [1, 146, 162, 21], [1, 160, 162, 21], [1, 174, 162, 21]],
-    //"equipAreas": [[1, 120, 112, 15], [1, 134, 112, 15], [1, 148, 112, 15], [1, 162, 112, 15]],
+    "equipAreas": [[1, 137, 162, 21], [1, 151, 162, 21], [1, 165, 162, 21], [1, 179, 162, 21], [1, 193, 162, 21]],
+    
     
 	"equipImageArea": [0, 1, 150, 19],
-	//"equipImageArea": [0, 1, 110, 14],
     //"equipTextArea": [35, -5, 85, 21], // need adjustment
     "equipSuitArea": [117, 2, 21, 17],
 	//"equipSuitArea": [117, 2, 20, 13],
     //"equipDistanceArea": [14, -5, 30, 21], // need adjustment
     "equipPointArea": [106, -4, 25, 25],
+	"equipTianyiArea": [20, 2, 21, 17],// for skill mokai
     //"equipFont": ["FZLiBian-S02", [14, 14, 0], 50, [0, 0, 0, 255], 3, 50, [0, 0], [255, 255, 190, 255]],
     "equipPointFont": ["arial", [13, 13, 3], 20, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]], 
     "delayedTrickFirstRegion": [-13, 16, 28, 28],
     "delayedTrickStep": [0, 19],
-    "roleComboBoxPos": [130, 1],
+    "roleComboBoxPos": [140, 1],
 	"changePrimaryHeroSkinBtnPos": [25, 35],
 
 	
@@ -92,7 +92,7 @@
     "primaryAvatarImageType": 6,
     "circleImageType": 0,
 	
-	"avatarArea": [1, 1, 163, 190],
+	"avatarArea": [0, 0, 175, 210],//163, 190
 	
     "secondaryAvatarArea": [78, 1, 77, 179],
     "circleArea": [1, 1, 155, 179],
@@ -107,20 +107,22 @@
     "screenNameArea": [0, 0, 157, 15],
     "screenNameFont": ["SimSun", 12, 0, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
     "magatamasHorizontal": false,
-    "magatamaSize": [18, 17],
-    "magatamaImageArea": [2, 2, 14, 17],
+    "magatamaSize": [22, 20],
+    "magatamaImageArea": [2, 2, 18, 19],
+	"magatamaImageSubArea": [3, 2, 18, 19], //for skill banling
     "magatamasBgVisible": true,
     //"magatamasAnchor": ["bottomRight", [156, 194]],
-	"magatamasAnchor": ["bottomRight", [166, 204]],
+	"magatamasAnchor": ["bottomRight", [174, 225]],
+	"magatamasSubAnchor": ["topRight", [174, 35]],
 	
     "cardMoveArea": [-15, 35, 200, 130],
-    "phaseArea": [25, 191, 140, 12],
-    "onlineStatusArea": [122, 24, 30, 25],
+    "phaseArea": [25, 207, 140, 12],
+    "onlineStatusArea": [127, 24, 30, 25],
     "onlineStatusBgColor": [0, 0, 0, 0],
     "onlineStatusFont": ["SimSun",12, 0, [255, 255, 255, 255], 3, 10, [0, 0], [20, 20, 20, 155]],
     "skillNameArea": [45, 30, 300, 50],
     "skillNameFont": ["SimLi", 30, 0, [255, 255, 255, 255], 2, 20, [0, 0], [255, 20, 255, 128]],
-    "progressBarArea": ["topLeft", "bottomLeft", [0, 8], [160, 10]],
+    "progressBarArea": ["topLeft", "bottomLeft", [0, 10], [160, 10]],
     "progressBarHorizontal": true,
     "privatePileStartPos": [27, 18],
     "privatePileStep": [0, 16],
@@ -128,26 +130,27 @@
     "actionedIconRegion": [100, 78, 52, 21],
     "saveMeIconRegion": [25, 46, 122, 50],
     "votesIconRegion": [53, 66, 50, 50],
-    "chainedIconRegion": [0, 95, 166, 19],
+    "chainedIconRegion": [0, 95, 175, 19],
     "deathIconRegion": [0, 50, 157, 102],
     "drankMaskColor": [250, 0, 0, 115],
     "duanchangMaskColor": [255, 255, 255, 128],
     "deathEffectColor": [50, 50, 50, 255],
-    "extraSkillArea": [32, 96, 56, 20],
+    "extraSkillArea": [32, 116, 56, 20],
     "extraSkillFont": ["SimLi", [16, 16, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
-    "extraSkillTextArea": [32, 93, 56, 20]
+    "extraSkillTextArea": [32, 113, 56, 20]
 },
 "dashboard":
 {
     "leftWidth": 164,
-   "rightWidth": 170,
+   "rightWidth": 175,
 	"reverseSelectionWidth": 10,
 	"normalHeight": 140,
     "floatingAreaHeight": 50,
 	
-    "handCardNumIconArea": [-119, 161, 30, 18],
+    "handCardNumIconArea": [-119, 181, 30, 18],
     "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255], 1, 30, [0, 0], [20, 20, 20, 200]],
-    "equipAreas": [[5, 7, 149, 25], [5, 40, 149, 25], [5, 72, 149, 25], [5, 102, 149, 25]],
+	//ensure that these areas belong to left frame
+    "equipAreas": [[5, 26, 149, 22], [5, 49, 149, 22], [5, 72, 149, 22], [5, 95, 149, 22],[5, 118, 149, 22]],
     "equipBorderPos": [-6, -6],
     "equipSelectedOffset": [10, 0],
     "equipImageArea": [0, 0, 149, 25],
@@ -155,14 +158,15 @@
     "equipSuitArea": [128, 5, 21, 17],
     "equipDistanceArea": [0, 0, 0, 0],
     "equipPointArea": [117, -5, 30, 30],
+	"equipTianyiArea": [0, 5, 21, 17],// for skill mokai
     "equipFont": ["SimLi", 9, 60, [0, 0, 0, 255], 3, 8, [0, 0], [240, 240, 240, 200]],
     "equipPointFont": ["arial", [14, 14, 3], 20, [0, 0, 0, 255], 1, 0, [0, 0], [240, 240, 240, 200]], 
-    "delayedTrickFirstRegion": [193, -23, 28, 28],
+    "delayedTrickFirstRegion": [0, 0, 28, 28],//80 210, -23,28, 28
     "delayedTrickStep": [28, 0],
     // the width of the region to disperse cards when the cards are to be moved to the special pile. 
     "disperseWidth": 250,
     "markTextArea": [0, 0, 50, 50],
-    "roleComboBoxPos": [-28, 52],
+    "roleComboBoxPos": [-28, 72],
 	//Í·ÏñÇø
 	"changePrimaryHeroSkinBtnPos": [25, 30],
     "borderWidth": 6,
@@ -170,13 +174,13 @@
     "secondaryAvatarImageType": 4,
     "primaryAvatarImageType": 6,
     "circleImageType": 1,
-	"avatarArea": [0,  0, 170, 190],
+	"avatarArea": [0,  0, 175, 210],
 	//"avatarArea": [-104,  -100, 163, 190],
 	
     "secondaryAvatarArea": [81, 10, 70, 70],
     "circleArea": [8, 10, 134, 134],
-	"avatarNameArea": [-77, -20, 100, 100],
-    "focusFrameArea": [4, 0, 163, 190],
+	"avatarNameArea": [-77, -38, 100, 100],
+    "focusFrameArea": [0, 0, 175, 210],
 	
     "smallAvatarNameArea": [84, 36, 18, 36],
      //"avatarNameFont": ["@simli", [12, 12, 1], 60, [255, 255, 255, 255], 5, 8, [0, 0], [50, 50, 50, 150]],
@@ -200,8 +204,8 @@
     "markTextArea": ["bottomRight", "bottomRight",  [-10, -10]],
     "phaseArea": ["bottomRight", "bottomRight", [-100, 0], [209, 20]],
     
-	"kingdomIconArea": [-104, 13, 28, 28],
-	"dashboardKingdomMaskArea": [-98, 13, 130, 40],
+	"kingdomIconArea": [-104, 2, 28, 28],
+	"dashboardKingdomMaskArea": [-108, -5, 140, 40],
 	
     "screenNameArea": [0, 0, 157, 25],
 	 //"screenNameArea": [-200, -197, 157, 25],
@@ -209,8 +213,10 @@
     "magatamasHorizontal": false,
     "magatamaSize": [23, 30],
     "magatamaImageArea": [0, 3, 22, 26],
+	"magatamaImageSubArea": [0, 3, 22, 26], //for skill banling
     "magatamasBgVisible": true,
-    "magatamasAnchor": ["rightBottom", [175, 220]], //rightTop
+    "magatamasAnchor": ["rightBottom", [175, 240]], //right
+	"magatamasSubAnchor": ["leftBottom", [-2, 240]], //rightTop
     "cardMoveArea": [-50, 65, 200, 130], 
     "progressBarArea": ["bottomCenter", "bottomCenter", [-8, 0], [300, 18]],
     "progressBarHorizontal": true,
@@ -221,10 +227,13 @@
     "actionedIconRegion": [80, 37, 52, 21],
     "saveMeIconRegion": [5, 15, 122, 50],
     "votesIconRegion": [50, 52, 50, 50],
-    "chainedIconRegion": [8, 90, 154, 19],
+    "chainedIconRegion": [0, 90, 174, 19],
     "deathIconRegion": ["center", "center", [0, 0], [157, 102]],
     "drankMaskColor": [250, 0, 0, 115],
     "duanchangMaskColor": [255, 255, 255, 128],
+	//"extraSkillArea": [32, 116, 56, 20],
+    //"extraSkillFont": ["SimLi", [16, 16, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
+    //"extraSkillTextArea": [32, 113, 56, 20],
     //°´Å¥
 	"buttonSetSize": [96, 148],
     "confirmButtonArea": [5, 3, 61, 75],

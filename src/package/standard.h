@@ -54,7 +54,8 @@ public:
         WeaponLocation,
         ArmorLocation,
         DefensiveHorseLocation,
-        OffensiveHorseLocation
+        OffensiveHorseLocation,
+		TreasureLocation
     };
 
     EquipCard(Suit suit, int number): Card(suit, number, true) { handling_method = MethodUse; }
@@ -260,6 +261,21 @@ public:
     virtual Location location() const;
     virtual QString getCommonEffectName() const;
 };
+
+
+
+class Treasure: public EquipCard {
+    Q_OBJECT
+
+public:
+    Treasure(Suit suit, int number): EquipCard(suit, number) {}
+    virtual QString getSubtype() const;
+
+    virtual Location location() const;
+
+    virtual QString getCommonEffectName() const;
+};
+
 
 class Horse: public EquipCard {
     Q_OBJECT

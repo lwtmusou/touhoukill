@@ -206,7 +206,8 @@ public slots:
     void doOkButton();
     void doCancelButton();
     void doDiscardButton();
-
+	void highlightSkillButton(QString skill_name, bool highlight);
+	bool isHighlightStatus(Client::Status status);
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);

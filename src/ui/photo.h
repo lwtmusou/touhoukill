@@ -28,7 +28,7 @@ public:
 
     void setEmotion(const QString &emotion, bool permanent = false);
     void tremble();
-    void showSkillName(const QString &skill_name);
+    //void showSkillName(const QString &skill_name,bool isSelf);
 
     enum FrameType {
         S_FRAME_PLAYING,
@@ -44,7 +44,7 @@ public:
 public slots:
     void updatePhase();
     void hideEmotion();
-    void hideSkillName();
+    //void hideSkillName();
     virtual void updateDuanchang();
     virtual void refresh(bool killed = false);
 
@@ -75,7 +75,7 @@ protected:
     FrameType _m_frameType;
     QGraphicsPixmapItem *_m_mainFrame;
     Sprite *emotion_item;
-    QGraphicsPixmapItem *_m_skillNameItem;
+    //QGraphicsPixmapItem *_m_skillNameItem;
     QGraphicsPixmapItem *_m_focusFrame;
     QGraphicsPixmapItem *_m_onlineStatusItem;
     QGraphicsRectItem *_m_duanchangMask;

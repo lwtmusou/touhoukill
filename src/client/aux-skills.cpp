@@ -2,7 +2,8 @@
 #include "client.h"
 #include "standard.h"
 #include "clientplayer.h"
-#include "nostalgia.h"
+//#include "nostalgia.h" //YijiCard
+#include "touhoucard.h"//YijiCard
 #include "engine.h"
 
 DiscardSkill::DiscardSkill()
@@ -92,7 +93,9 @@ bool ShowOrPindianSkill::matchPattern(const Player *player, const Card *card) co
     return pattern && pattern->match(player, card);
 }
 
+
 // -------------------------------------------
+
 
 class YijiCard: public NosRendeCard {
 public:

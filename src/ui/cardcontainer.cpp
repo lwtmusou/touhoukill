@@ -87,7 +87,6 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
 		
 		//卡牌需要支持鼠标左键，以便双击选择
         item->setAcceptedMouseButtons(Qt::LeftButton);
-		
         if (disabled_ids.contains(item->getCard()->getEffectiveId())) item->setEnabled(false);
         item->show();
     }

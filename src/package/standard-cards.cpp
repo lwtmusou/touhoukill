@@ -39,7 +39,7 @@ bool Slash::IsAvailable(const Player *player, const Card *slash, bool considerSp
             }
         }
         bool has_weapon = (player->hasWeapon("Crossbow") || player->hasWeapon("VSCrossbow")) && ids.contains(player->getWeapon()->getEffectiveId());
-        if ((!has_weapon && player->hasWeapon("Crossbow")) || player->canSlashWithoutCrossbow(THIS_SLASH))
+        if ((!has_weapon && player->hasWeapon("Crossbow") && player->getMark("@tianyi_Weapon")==0) || player->canSlashWithoutCrossbow(THIS_SLASH))
             return true;
         int used = player->getSlashCount();
         int valid = 1 + Sanguosha->correctCardTarget(TargetModSkill::Residue, player, newslash);
@@ -312,7 +312,15 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const{
 }
 
 bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
-    if (Self->hasSkill("shikong")&& Self->getPhase() == Player::Play){
+    
+	if (Self->hasSkill("shikong")&& Self->getPhase() == Player::Play){
+		//检测必须指定的目标 一般此为被动响应使用杀 失控无效
+		foreach (const Player *p, Self->getAliveSiblings()) {
+			if (Slash::IsSpecificAssignee(p, Self, this)) {
+					return !targets.isEmpty();;
+			}
+		}
+		
 		//检测合法性
 		int rangefix = 0;
 		if (Self->getWeapon() && subcards.contains(Self->getWeapon()->getId())) {
@@ -323,19 +331,7 @@ bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *
 		if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
 			rangefix += 1;
 		//zun  双技能时可能会影响 单将没必要
-		/*if (Self->hasSkill("junshi")){
-			QList<int> renouids;
-			QList<int> renouids1 = Self->getPile("renou");	
-			
-			if ( !renouids1.isEmpty() &&renouids1.contains(subcards.first())) {
-				foreach (const Card *tmp, Self->getEquips()){//
-					if (tmp->objectName().startsWith("renou"))
-						renouids<<tmp->getId();
-				}
-				if (renouids.length()<2 )
-					rangefix += 1;
-			}
-		}*/
+		
 		
 		//查询攻击范围内的合法目标是否都选择了
 		foreach (const Player *p, Self->getAliveSiblings()) {
@@ -347,13 +343,13 @@ bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *
 			}
 		}
 		//检测必须指定的目标
-		foreach (const Player *p, Self->getAliveSiblings()) {
+		/*foreach (const Player *p, Self->getAliveSiblings()) {
 			if (Slash::IsSpecificAssignee(p, Self, this)) {
 				if (!targets.contains(p)){
 					return false;
 				}
 			}
-		}
+		}*/
 		return !targets.isEmpty();
 	}
 	else{
@@ -376,20 +372,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
         rangefix += 1;
 		
-	//拿人偶当杀时的rangefix问题
-	/*if (Self->hasSkill("junshi")){
-			QList<int> renouids;
-			QList<int> renouids1 = Self->getPile("renou");	
-			
-			if ( !renouids1.isEmpty() &&renouids1.contains(subcards.first())) {
-				foreach (const Card *tmp, Self->getEquips()){//
-					if (tmp->objectName().startsWith("renou"))
-						renouids<<tmp->getId();
-				}
-				if (renouids.length()<2 )
-					rangefix += 1;
-			}
-		}*/
+	
     bool has_specific_assignee = false;
     foreach (const Player *p, Self->getAliveSiblings()) {
         if (Slash::IsSpecificAssignee(p, Self, this)) {
@@ -399,7 +382,11 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     }
 
     if (has_specific_assignee) {
-        if (targets.isEmpty())
+        if (Self->getWeapon() && Self->getWeapon()->isKindOf("Blade") && Self->getWeapon()->hasFlag("using")){ //直接用baldeuse这个flag不行 player类的关系？
+			if (subcards.contains(Self->getWeapon()->getId()))
+				return false;
+		}
+		if (targets.isEmpty())
             return Slash::IsSpecificAssignee(to_select, Self, this) && Self->canSlash(to_select, this, distance_limit, rangefix);
         else {
             if (Self->hasFlag("slashDisableExtraTarget")) return false;
@@ -609,16 +596,19 @@ Blade::Blade(Suit suit, int number)
 class SpearSkill: public ViewAsSkill {
 public:
     SpearSkill(): ViewAsSkill("Spear") {
+		response_or_use = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->getHandcardNum() >= 2 && Slash::IsAvailable(player)
+        return  Slash::IsAvailable(player)
                && player->getMark("Equips_Nullified_to_Yourself") == 0 && player->getMark("@tianyi_Weapon") == 0;
-    }
+		//player->getHandcardNum() >= 2 &&
+	}
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return player->getHandcardNum() >= 2 && pattern == "slash" && player->getMark("Equips_Nullified_to_Yourself") == 0 && player->getMark("@tianyi_Weapon") == 0;
-    }
+        return  pattern == "slash" && player->getMark("Equips_Nullified_to_Yourself") == 0 && player->getMark("@tianyi_Weapon") == 0;
+		//player->getHandcardNum() >= 2 &&
+	}
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
         return selected.length() < 2 && !to_select->isEquipped();
@@ -778,7 +768,18 @@ public:
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         QString asked = data.toStringList().first();
         if (asked == "jink") {
-            if (room->askForSkillInvoke(player, "EightDiagram",data)) {
+            //since yuanfei,we need check
+			Card *jink = Sanguosha->cloneCard("jink");
+			if (Sanguosha->getCurrentCardUseReason()== CardUseStruct::CARD_USE_REASON_RESPONSE){
+			    if (player->isCardLimited(jink, Card::MethodResponse) )
+					return false;
+			}
+			else if (Sanguosha->getCurrentCardUseReason()== CardUseStruct::CARD_USE_REASON_RESPONSE_USE){
+				if (player->isCardLimited(jink, Card::MethodUse))
+					return false;
+			}
+			
+			if (room->askForSkillInvoke(player, "EightDiagram",data)) {
                 int armor_id = player->getArmor()->getId();
                 room->setCardFlag(armor_id, "using");
                 room->setEmotion(player, "armor/eight_diagram");
@@ -823,17 +824,31 @@ AmazingGrace::AmazingGrace(Suit suit, int number)
 
 void AmazingGrace::clearRestCards(Room *room) const{
     room->clearAG();
-
+	//为了断线重连
+	//room->removeTag("CurrentAmazingGracePlayer");
+	//room->removeTag("CurrentAmazingGraceId");
+	//room->removeTag("CurrentAmazingGraceMovecards");
+		
     QVariantList ag_list = room->getTag("AmazingGrace").toList();
+	room->removeTag("AmazingGrace");
     if (ag_list.isEmpty()) return;
     DummyCard *dummy = new DummyCard(VariantList2IntList(ag_list));
     CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString(), "amazing_grace", QString());
     room->throwCard(dummy, reason, NULL);
     delete dummy;
+	
 }
 
 void AmazingGrace::doPreAction(Room *room, const CardUseStruct &) const{
-    QList<int> card_ids = room->getNCards(room->getAllPlayers().length());
+    int count = room->getAllPlayers().length();
+	foreach(ServerPlayer *p,room->getAllPlayers()){
+		if (p->hasSkill("shouhuo")){
+			room->notifySkillInvoked(p, "shouhuo");
+			room->touhouLogmessage("#TriggerSkill",p,"shouhuo");
+			count++;
+		}
+	}
+	QList<int> card_ids = room->getNCards(count);
     room->fillAG(card_ids);
     room->setTag("AmazingGrace", IntList2VariantList(card_ids));
 }
@@ -866,7 +881,15 @@ void AmazingGrace::onEffect(const CardEffectStruct &effect) const{
 
     room->takeAG(effect.to, card_id);
     ag_list.removeOne(card_id);
+	
+	if (effect.to->hasSkill("shouhuo")) {
+		int card_id1 = room->askForAG(effect.to, card_ids, false, objectName());
+		card_ids.removeOne(card_id1);
 
+		room->takeAG(effect.to, card_id1);
+		ag_list.removeOne(card_id1);
+	}
+	
     room->setTag("AmazingGrace", ag_list);
 }
 
@@ -1160,7 +1183,8 @@ bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *to
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     if (targets.length() >= total_num || to_select->isAllNude() || to_select == Self)
         return false;
-
+	if (hasFlag("fahua"))
+        return true;
     int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
     int rangefix = 0;
     if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
@@ -1168,7 +1192,7 @@ bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *to
 
     if (getSkillName() == "jixi")
         rangefix += 1;
-
+	
     if (Self->distanceTo(to_select, rangefix) > distance_limit)
         return false;
 
@@ -1295,11 +1319,11 @@ public:
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-
         if (damage.card && damage.by_user && damage.card->isKindOf("Slash") && player->getMark("@tianyi_Weapon")==0
             && damage.to->getMark("Equips_of_Others_Nullified_to_You") == 0
             && !damage.to->isNude() 
-            && !damage.chain && !damage.transfer && player->askForSkillInvoke("IceSword", data)) {
+            && !damage.chain && !damage.transfer && player !=damage.to
+			&& player->askForSkillInvoke("IceSword", data)) {
                 room->setEmotion(player, "weapon/ice_sword");
                 if (damage.from->canDiscard(damage.to, "he")) {
                     int card_id = room->askForCardChosen(player, damage.to, "he", "IceSword", false, Card::MethodDiscard);
@@ -1372,6 +1396,132 @@ public:
         return correct;
     }
 };
+
+WoodenOxCard::WoodenOxCard() {
+    target_fixed = true;
+    will_throw = false;
+    handling_method = Card::MethodNone;
+    m_skillName = "wooden_ox";
+}
+
+void WoodenOxCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
+    source->addToPile("wooden_ox", subcards, false);
+
+    QList<ServerPlayer *> targets;
+    foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
+        if (!p->getTreasure())
+            targets << p;
+    }
+    if (targets.isEmpty())
+        return;
+    ServerPlayer *target = room->askForPlayerChosen(source, targets, "wooden_ox", "@wooden_ox-move", true);
+    if (target) {
+        const Card *treasure = source->getTreasure();
+        if (treasure)
+            room->moveCardTo(treasure, source, target, Player::PlaceEquip,
+                             CardMoveReason(CardMoveReason::S_REASON_TRANSFER,
+                                            source->objectName(), "wooden_ox", QString()));
+    }
+}
+
+class WoodenOxSkill: public OneCardViewAsSkill {
+public:
+    WoodenOxSkill(): OneCardViewAsSkill("wooden_ox") {
+        filter_pattern = ".|.|.|hand";
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return  !player->hasUsed("WoodenOxCard") && player->getMark("@tianyi_Treasure")==0;
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        WoodenOxCard *card = new WoodenOxCard;
+        card->addSubcard(originalCard);
+        card->setSkillName("wooden_ox");
+        return card;
+    }
+};
+
+class WoodenOxTriggerSkill: public TreasureSkill {
+public:
+    WoodenOxTriggerSkill(): TreasureSkill("wooden_ox_trigger") {
+        events << CardsMoveOneTime << PreMarkChange;
+        frequency = Compulsory;
+        global = true;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL && target->isAlive();
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent==CardsMoveOneTime){
+			CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+			if (!move.from || move.from != player)
+				return false;
+			if (player->hasTreasure("wooden_ox") && player->getMark("@tianyi_Treasure")==0) {
+				int count = 0;
+				for (int i = 0; i < move.card_ids.size(); i++) {
+					if (move.from_pile_names[i] == "wooden_ox") count++;
+				}
+				if (count > 0) {
+					LogMessage log;
+					log.type = "#WoodenOx";
+					log.from = player;
+					log.arg = QString::number(count);
+					log.arg2 = "wooden_ox";
+					room->sendLog(log);
+				}
+			}
+			if (player->getPile("wooden_ox").isEmpty())
+				return false;
+			for (int i = 0; i < move.card_ids.size(); i++) {
+				if (move.from_places[i] != Player::PlaceEquip && move.from_places[i] != Player::PlaceTable) continue;
+				const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
+				if (card->objectName() == "wooden_ox") {
+					ServerPlayer *to = (ServerPlayer *)move.to;
+					if (to && to->getTreasure() && to->getTreasure()->objectName() == "wooden_ox"
+						&& move.to_place == Player::PlaceEquip) {
+						//QList<ServerPlayer *> p_list;
+						//p_list << to;
+						//to->addToPile("wooden_ox", player->getPile("wooden_ox"), false, p_list);
+						CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, "", NULL, "wooden_ox", "");
+						to->addToPile("wooden_ox", player->getPile("wooden_ox"), false, reason);
+					} else {
+						player->clearOnePrivatePile("wooden_ox");
+					}
+					return false;
+				}
+			}
+		}
+		else if (triggerEvent==PreMarkChange){
+			MarkChangeStruct change = data.value<MarkChangeStruct>();
+			if (change.name != "@tianyi_Treasure")
+				return false;
+			if (player->getPile("wooden_ox").isEmpty())
+				return false;
+			int mark = player->getMark("@tianyi_Treasure");
+                
+			if (mark == 0 && mark + change.num > 0) {
+				player->clearOnePrivatePile("wooden_ox");
+			}
+		}
+        return false;
+    }
+};
+
+WoodenOx::WoodenOx(Suit suit, int number)
+    : Treasure(suit, number)
+{
+    setObjectName("wooden_ox");
+}
+
+void WoodenOx::onUninstall(ServerPlayer *player) const{
+    player->getRoom()->addPlayerHistory(player, "WoodenOxCard", 0);
+    Treasure::onUninstall(player);
+}
+
+
 
 StandardCardPackage::StandardCardPackage()
     : Package("standard_cards", Package::CardPack)
@@ -1522,12 +1672,14 @@ StandardExCardPackage::StandardExCardPackage()
     cards << new IceSword(Card::Spade, 2)
           << new RenwangShield(Card::Club, 2)
           << new Lightning(Card::Heart, 12)
-          << new Nullification(Card::Diamond, 12);
-
-    skills << new RenwangShieldSkill << new IceSwordSkill;
+          << new Nullification(Card::Diamond, 12)
+		  << new WoodenOx(Card::Diamond, 5);
+    skills << new RenwangShieldSkill << new IceSwordSkill << new WoodenOxSkill << new WoodenOxTriggerSkill;
 
     foreach (Card *card, cards)
         card->setParent(this);
+		
+	addMetaObject<WoodenOxCard>();
 }
 
 ADD_PACKAGE(StandardCard)

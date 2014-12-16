@@ -461,7 +461,10 @@ bool ServerPlayer::hasNullification() const{
         if (card->objectName() == "nullification")
             return true;
     }
-
+	foreach (int id, getPile("wooden_ox")) {
+        if (Sanguosha->getCard(id)->objectName() == "nullification")
+            return true;
+    }
     foreach (const Skill *skill, getVisibleSkillList(true)) {
         if (hasSkill("shanji")){
 			foreach (int i, getPile("piao")){
@@ -688,9 +691,14 @@ void ServerPlayer::play(QList<Player::Phase> set_phases) {
 	if (!set_phases.isEmpty()) {
         if (!set_phases.contains(NotActive) )//&& this->getMark("touhou-extra")==0
             set_phases << NotActive;
-    } else
+    } 
+	else if(this->getMark("shitu")>0){
+		set_phases  << Draw << NotActive;
+	}
+	else {
         set_phases << RoundStart << Start << Judge << Draw << Play
                    << Discard << Finish << NotActive;
+	}
 
     phases = set_phases;
     _m_phases_state.clear();
@@ -1130,7 +1138,9 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
         }
     }
 
-    foreach(const QString skill_name, skills) {
+	//这种处理法，断线重连后 附加技能和丈八等装备技能的按钮会消失 
+	//非主公角色会出现的主公技按钮,觉醒后获得的技能也会消失。。。
+    /*foreach(const QString skill_name, skills) {
         if (Sanguosha->getSkill(skill_name)->isVisible()) {
             Json::Value args1;
             args1[0] = S_GAME_EVENT_ACQUIRE_SKILL;
@@ -1148,8 +1158,23 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
                 room->doNotify(player, S_COMMAND_LOG_EVENT, args2);
             }
         }
+    }*/
+	
+	foreach(const Skill *skill, getVisibleSkillList(true)) {
+        //枚举特殊的魏武帝 !player->isLord() 
+		if (this ==player && skill->isLordSkill() && !hasLordSkill(skill->objectName()) 
+		&& !hasSkill("nosguixin",false,true)){
+		//	Sanguosha->playSystemAudioEffect("win");
+			continue;
+		}
+		QString skill_name = skill->objectName();
+        Json::Value args1;
+        args1[0] = S_GAME_EVENT_ACQUIRE_SKILL;
+        args1[1] = toJsonString(objectName());
+        args1[2] = toJsonString(skill_name);
+        room->doNotify(player, S_COMMAND_LOG_EVENT, args1);
     }
-
+	
     foreach (QString flag, flags)
         room->notifyProperty(player, this, "flags", flag);
 
@@ -1191,10 +1216,6 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
 void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool open, CardMoveReason reason) {
     QList<ServerPlayer *> open_players;
     if (!open) {
-        //if (pile_name=="siling"){
-		//	open_players << this;
-		//	open=!open;
-		//}
 		foreach(int id, card_ids) {
             ServerPlayer *owner = room->getCardOwner(id);
             if (owner && !open_players.contains(owner))
@@ -1290,7 +1311,8 @@ void ServerPlayer::exchangeFreelyFromPrivatePile(const QString &skill_name, cons
 void ServerPlayer::gainAnExtraTurn() {
     ServerPlayer *current = room->getCurrent();
     try {
-        room->setCurrent(this);
+        
+		room->setCurrent(this);
 		room->setPlayerMark(this, "touhou-extra",1);
         room->getThread()->trigger(TurnStart, room, this);
         room->setPlayerMark(this, "touhou-extra",0);
@@ -1313,6 +1335,7 @@ void ServerPlayer::gainAnExtraTurn() {
         throw triggerEvent;
     }
 }
+
 
 void ServerPlayer::copyFrom(ServerPlayer *sp) {
     ServerPlayer *b = this;

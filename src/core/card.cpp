@@ -386,7 +386,7 @@ const Card *Card::Parse(const QString &str) {
         // skill card
         QRegExp pattern("@(\\w+)=([^:]+)(:.+)?");
         QRegExp ex_pattern("@(\\w*)\\[(\\w+):(.+)\\]=([^:]+)(:.+)?");
-
+		
         QStringList texts;
         QString card_name, card_suit, card_number;
         QStringList subcard_ids;

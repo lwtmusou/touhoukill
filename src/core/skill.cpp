@@ -125,7 +125,7 @@ QDialog *Skill::getDialog() const{
 }
 
 ViewAsSkill::ViewAsSkill(const QString &name)
-    : Skill(name), response_pattern(QString())
+    : Skill(name), response_pattern(QString()), response_or_use(false), expand_pile(QString())
 {
 }
 
@@ -202,8 +202,10 @@ bool OneCardViewAsSkill::viewFilter(const Card *to_select) const{
     if (!inherits("FilterSkill") && !filter_pattern.isEmpty()) {
         QString pat = filter_pattern;
         if (pat.endsWith("!")) {
-            if (Self->isJilei(to_select)) return false;
+			if (Self->isJilei(to_select)) return false;
             pat.chop(1);
+        } else if (response_or_use && pat.contains("hand")) {
+            pat.replace("hand", "hand,wooden_ox,piao");
         }
         ExpPattern pattern(pat);
         return pattern.match(Self, to_select);
@@ -242,6 +244,7 @@ int TriggerSkill::getPriority(TriggerEvent) const{
 }
 
 bool TriggerSkill::triggerable(const ServerPlayer *target) const{
+	//在此处设置zun的“triggerable”?
     return target != NULL && target->isAlive() && target->hasSkill(objectName());
 }
 
@@ -504,6 +507,23 @@ bool ArmorSkill::triggerable(const ServerPlayer *target) const{
         return false;
     return target->hasArmorEffect(objectName());
 }
+
+
+TreasureSkill::TreasureSkill(const QString &name)
+    : TriggerSkill(name)
+{
+}
+
+int TreasureSkill::getPriority(TriggerEvent) const{
+    return 2;
+}
+
+bool TreasureSkill::triggerable(const ServerPlayer *target) const{
+    if (target == NULL)
+        return false;
+    return target->hasTreasure(objectName());
+}
+
 
 MarkAssignSkill::MarkAssignSkill(const QString &mark, int n)
     : GameStartSkill(QString("#%1-%2").arg(mark).arg(n)), mark_name(mark), n(n)

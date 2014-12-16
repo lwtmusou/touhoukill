@@ -1,6 +1,7 @@
 #include "configdialog.h"
 #include "ui_configdialog.h"
 #include "settings.h"
+#include "engine.h"
 
 #include <QFileDialog>
 #include <QDesktopServices>
@@ -89,12 +90,19 @@ void ConfigDialog::on_browseBgButton_clicked() {
 
 void ConfigDialog::on_resetBgButton_clicked() {
     ui->bgPathLineEdit->clear();
-
-    QString filename = "backdrop/new-version.jpg";
+    QStringList backimages;
+	backimages<<"1" <<"2"<<"3"<<"4"<<"5"<<"6"<<"7"<<"8";
+	
+    qShuffle(backimages);
+	QString backimage= backimages.at(0);
+	
+    QString filename = "backdrop/new-version"+backimage+".jpg";
     Config.BackgroundImage = filename;
     Config.setValue("BackgroundImage", filename);
 
     emit bg_changed();
+	//Config.setValue("BackgroundImage", "");
+	Config.remove("BackgroundImage");
 }
 
 void ConfigDialog::on_browseTableBgButton_clicked() {

@@ -39,6 +39,7 @@ sgs.ai_skill_invoke.Fan = function(self, data)
 		else
 			if not self:damageIsEffective(target, sgs.DamageStruct_Fire) then return false end
 			if target:isChained() and not self:isGoodChainTarget(target, nil, nil, nil, use.card) then return false end
+			if target:isChained() and self:isGoodChainTarget(target, nil, nil, nil, use.card) then return true end
 			if target:hasArmorEffect("Vine") or target:getMark("@gale") > 0 or (jinxuandi and jinxuandi:getMark("@wind") > 0) then
 				return true
 			end
@@ -61,6 +62,7 @@ fan_skill.name="Fan"
 table.insert(sgs.ai_skills,fan_skill)
 fan_skill.getTurnUseCard=function(self)
 	local cards = self.player:getCards("h")
+	cards=self:touhouAppendExpandPileToList(self.player,cards)
 	cards=sgs.QList2Table(cards)
 	local slash_card
 	--冰杀出问题
@@ -115,9 +117,29 @@ end
 
 function SmartAI:shouldUseAnaleptic(target, slash)
 	if sgs.turncount <= 1 and self.role == "renegade" and sgs.isLordHealthy() and self:getOverflow() < 2 then return false end
+	--【冰魄】对策
+	local fakeDamage=sgs.DamageStruct()
+	fakeDamage.card=slash
+	fakeDamage.nature= self:touhouDamageNature(slash,self.player,target)
+	fakeDamage.damage=2
+	fakeDamage.from=self.player
+	fakeDamage.to=target
+	local fakeDamage1 = fakeDamage
+	if not self:touhouNeedAvoidAttack(fakeDamage,self.player,target) or fakeDamage.damage<2 then
+		return
+	end
+	
 	if target:hasArmorEffect("SilverLion") and not (self.player:hasWeapon("QinggangSword") or self.player:hasSkill("jueqing")) then
 		return
 	end
+	--【战操对策】
+	local shrx=self.room:findPlayerBySkillName("zhancao")
+	if shrx and self:isEnemy(shrx) then
+		if self:isFriend(shrx,target) and shrx:inMyAttackRange(target) then
+			return false 
+		end
+	end
+	
 	if target:hasSkill("zhenlie") then return false end
 	if target:hasSkill("xiangle") then
 		local basicnum = 0
@@ -138,7 +160,7 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 	if self.player:hasSkill("tieji") then return true end
 
 	if self.player:hasWeapon("axe") and self.player:getCards("he"):length() > 4 then return true end
-	if target:hasFlag("dahe") then return true end
+	--if target:hasFlag("dahe") then return true end
 
 	if ((self.player:hasSkill("roulin") and target:isFemale()) or (self.player:isFemale() and target:hasSkill("roulin"))) or self.player:hasSkill("wushuang") then
 		if getKnownCard(target, player, "Jink", true, "he") >= 2 then return false end
@@ -249,6 +271,13 @@ function SmartAI:useCardSupplyShortage(card, use)
 					(getKnownCard(sb_daqiao, self.player, "diamond", nil, "he") > 0
 					or sb_daqiao:getHandcardNum() + self:ImitateResult_DrawNCards(sb_daqiao, sb_daqiao:getVisibleSkillList()) > 3
 					or sb_daqiao:containsTrick("YanxiaoCard"))
+	--东方杀中类张郃的角色	
+	local mouko = self.room:findPlayerBySkillName("sidou")
+	local mouko_seat = mouko and mouko:faceUp() and not self:isFriend(mouko) and mouko:getSeat() or 0
+	local tiger = self.room:findPlayerBySkillName("jinghua")
+	local tiger_seat = tiger and tiger:faceUp()  and not self:isFriend(tiger) and tiger:getSeat() or 0
+	local marisa = self.room:findPlayerBySkillName("jiezou")
+	local marisa_seat = marisa and card:getSuit()==sgs.Card_Spade and marisa:faceUp()  and not self:isFriend(marisa) and marisa:getSeat() or 0			
 
 	if #enemies == 0 then return end
 
@@ -258,6 +287,12 @@ function SmartAI:useCardSupplyShortage(card, use)
 		if enemy:getMark("juao") > 0 then return -100 end
 		if enemy:hasSkill("qiaobian") and not enemy:containsTrick("supply_shortage") and not enemy:containsTrick("indulgence") then return -100 end
 		if zhanghe_seat > 0 and (self:playerGetRound(zhanghe) <= self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 or not enemy:faceUp()) then
+			return - 100 end
+		if mouko_seat > 0 and (self:playerGetRound(mouko) <= self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 or not enemy:faceUp()) then
+			return - 100 end
+		if tiger_seat > 0 and (self:playerGetRound(tiger) <= self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 or not enemy:faceUp()) then
+			return - 100 end
+		if marisa_seat > 0 and (self:playerGetRound(marisa) < self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 or not enemy:faceUp()) then
 			return - 100 end
 		if yanxiao and (self:playerGetRound(sb_daqiao) <= self:playerGetRound(enemy) and self:enemiesContainsTrick(true) <= 1 or not enemy:faceUp()) then
 			return -100 end
@@ -706,7 +741,9 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 	local enemies, targets = {}, {}
 	for _, enemy in ipairs(self.enemies) do
 		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName())) and can_attack(enemy) then
-			table.insert(enemies, enemy)
+			if not self:touhouCardAttackWaste(fire_attack,self.player,enemy)  then
+				table.insert(enemies, enemy)
+			end
 		end
 	end
 

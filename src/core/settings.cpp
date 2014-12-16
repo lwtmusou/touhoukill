@@ -63,9 +63,9 @@ void Settings::init() {
     QStringList banpackagelist = value("BanPackages").toStringList();
     if (banpackagelist.isEmpty()) {
         banpackagelist << "nostalgia" << "nostal_standard" << "yitian" << "wisdom" << "nostal_wind"
-                       << "disaster" << "god" << "YJCM" /*<< "yitian_cards"*/ << "test"
+                       /*<< "disaster"*/ << "god" << "YJCM" /*<< "yitian_cards"*/ << "test"
                        << "sp" << "sp_cards" << "BGM" << "YJCM2012" << "Special3v3"
-                       << "New3v3Card" /*<< "joy"*/ << "joy_equip" << "hegemony_card"
+                       << "New3v3Card" /*<< "joy" << "joy_equip"*/ << "hegemony_card"
                        << "hegemony" << "ling" << "BGMDIY" << "New3v3_2013Card"
                        << "nostal_yjcm" << "nostal_yjcm2012" << "YJCM2013" << "New1v1Card" << "assassins"
                        << "hegemony_sp" << "Special1v1" << "Special1v1OL" << "Special3v3_2013";
@@ -131,8 +131,14 @@ void Settings::init() {
     EnableBgMusic = value("EnableBgMusic", true).toBool();
     BGMVolume = value("BGMVolume", 1.0f).toFloat();
     EffectVolume = value("EffectVolume", 1.0f).toFloat();
-
-    BackgroundImage = value("BackgroundImage", "backdrop/new-version.jpg").toString();
+    
+	QStringList backimages;
+	backimages<<"1" <<"2"<<"3"<<"4"<<"5"<<"6"<<"7"<<"8";
+	
+    qShuffle(backimages);
+	QString backimage= backimages.at(0);
+	
+    BackgroundImage = value("BackgroundImage", "backdrop/new-version"+backimage+".jpg").toString();
     TableBgImage = value("TableBgImage", "backdrop/default.jpg").toString();
 
     EnableSurprisingGenerals = value("EnableSurprisingGenerals", false).toBool();

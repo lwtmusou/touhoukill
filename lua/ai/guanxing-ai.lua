@@ -313,9 +313,15 @@ local function GuanXing(self, cards)
 	end
 
 	up, bottom = getOwnCards(self, up, bottom, next_judge)
-
+	
+	if self.player:hasSkill("fengshui") then
+		if #up>0 then
+			self.player:setTag("fengshui_id",sgs.QVariant(up[1]:getId()))
+		end
+	end
 	up = getBackToId(self, up)
 	bottom = getBackToId(self, bottom)
+	
 	return up, bottom
 end
 

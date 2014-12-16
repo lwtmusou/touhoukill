@@ -82,7 +82,7 @@ public:
     inline virtual void setFlags(const QStringList &fs) { flags = fs; }
     bool hasFlag(const QString &flag) const;
     virtual void clearFlags() const;
-
+	
     virtual QString getPackage() const;
     inline virtual QString getClassName() const{ return metaObject()->className(); }
     virtual bool isVirtualCard() const;

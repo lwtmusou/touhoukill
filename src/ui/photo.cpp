@@ -150,18 +150,35 @@ void Photo::tremble() {
     vibrate->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void Photo::showSkillName(const QString &skill_name) {
-    G_PHOTO_LAYOUT.m_skillNameFont.paintText(_m_skillNameItem,
-                                             G_PHOTO_LAYOUT.m_skillNameArea,
-                                             Qt::AlignLeft,
-                                             Sanguosha->translate(skill_name));
+/*void Photo::showSkillName(const QString &skill_name,bool isSelf) {
+    //ClientPlayer *player = ClientInstance->getPlayer(player_name);
+	//const ClientPlayer *player = getPlayer();
+	if (!isSelf){
+		G_PHOTO_LAYOUT.m_skillNameFont.paintText(_m_skillNameItem,
+        G_PHOTO_LAYOUT.m_skillNameArea,
+        Qt::AlignLeft,
+        Sanguosha->translate(skill_name));
+	}
+	else{
+		G_DASHBOARD_LAYOUT.m_skillNameFont.paintText(_m_skillNameItem,
+        G_DASHBOARD_LAYOUT.m_skillNameArea,
+        Qt::AlignLeft,
+        Sanguosha->translate(skill_name));
+	}
+	
+	
+	//G_PHOTO_LAYOUT.m_skillNameFont.paintText(_m_skillNameItem,
+    //                                         G_PHOTO_LAYOUT.m_skillNameArea,
+    //                                         Qt::AlignLeft,
+    //                                         Sanguosha->translate(skill_name)); 
+	//											
     _m_skillNameItem->show();
     QTimer::singleShot(1000, this, SLOT(hideSkillName()));
-}
+}*/
 
-void Photo::hideSkillName() {
-    _m_skillNameItem->hide();
-}
+//void Photo::hideSkillName() {
+//    _m_skillNameItem->hide();
+//}
 
 void Photo::hideEmotion() {
     QPropertyAnimation *disappear = new QPropertyAnimation(emotion_item, "opacity");

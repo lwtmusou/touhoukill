@@ -361,7 +361,8 @@ void Weapon::onUse(Room *room, const CardUseStruct &card_use) const{
     if (room->getMode() == "04_1v3"
         && use.card->isKindOf("Weapon")
         && (player->isCardLimited(use.card, Card::MethodUse)
-            || player->askForSkillInvoke("weapon_recast", QVariant::fromValue(use)))) {
+		||(!player->getPile("wooden_ox").contains(getEffectiveId())
+            || player->askForSkillInvoke("weapon_recast", QVariant::fromValue(use))))) {
         CardMoveReason reason(CardMoveReason::S_REASON_RECAST, player->objectName());
         reason.m_eventName = "weapon_recast";
         room->moveCardTo(use.card, player, NULL, Player::DiscardPile, reason);
@@ -443,10 +444,24 @@ EquipCard::Location Horse::location() const{
         return OffensiveHorseLocation;
 }
 
+QString Treasure::getSubtype() const{
+    return "treasure";
+}
+
+EquipCard::Location Treasure::location() const{
+    return TreasureLocation;
+}
+
+QString Treasure::getCommonEffectName() const{
+    return "treasure";
+}
+
+
 StandardPackage::StandardPackage()
     : Package("standard")
 {
-    addGenerals();
+	//标准包武将
+    //addGenerals();
 
     patterns["."] = new ExpPattern(".|.|.|hand");
     patterns[".S"] = new ExpPattern(".|spade|.|hand");
@@ -482,4 +497,17 @@ StandardPackage::StandardPackage()
 }
 
 ADD_PACKAGE(Standard)
+
+
+TestPackage::TestPackage()
+    : Package("test")
+{
+    // for test only
+	new General(this, "sujiang", "touhougod", 5, true, true);
+    new General(this, "sujiangf", "touhougod", 5, false, true);
+
+    new General(this, "anjiang", "touhougod", 4, true, true, true);
+}
+
+ADD_PACKAGE(Test)
 

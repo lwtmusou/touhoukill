@@ -75,10 +75,12 @@ public:
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const;
     static const ViewAsSkill *parseViewAsSkill(const Skill *skill);
 	inline bool isResponseOrUse() const{ return response_or_use; }
-
+	inline QString getExpandPile() const{ return expand_pile; }
+	
 protected:
     QString response_pattern;
 	bool response_or_use;
+	 QString expand_pile;
 };
 
 class ZeroCardViewAsSkill: public ViewAsSkill {
@@ -328,6 +330,19 @@ public:
 
     virtual bool triggerable(const ServerPlayer *target) const;
 };
+
+
+class TreasureSkill: public TriggerSkill {
+    Q_OBJECT
+
+public:
+    TreasureSkill(const QString &name);
+
+    virtual int getPriority(TriggerEvent triggerEvent) const;
+    virtual bool triggerable(const ServerPlayer *target) const;
+};
+
+
 
 class MarkAssignSkill: public GameStartSkill {
     Q_OBJECT

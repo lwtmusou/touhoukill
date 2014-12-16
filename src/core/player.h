@@ -59,6 +59,8 @@ public:
 
     // property setters/getters
     int getHp() const;
+	int getLingHp() const;//for banling  lingttili
+	int getRenHp() const;//for banling  rentili
     void setHp(int hp);
     int getMaxHp() const;
     void setMaxHp(int max_hp);
@@ -133,10 +135,10 @@ public:
     void detachAllSkills();
     virtual void addSkill(const QString &skill_name);
     virtual void loseSkill(const QString &skill_name);
-    bool hasSkill(const QString &skill_name, bool include_lose = false) const;
-    bool hasSkills(const QString &skill_name, bool include_lose = false) const;
+    bool hasSkill(const QString &skill_name, bool include_lose = false,bool include_invalidity=false) const;
+    bool hasSkills(const QString &skill_name, bool include_lose = false,bool include_invalidity=false) const;
     bool hasInnateSkill(const QString &skill_name) const;
-    bool hasLordSkill(const QString &skill_name, bool include_lose = false) const;
+    bool hasLordSkill(const QString &skill_name, bool include_lose = false,bool include_invalidity=false) const;
     virtual QString getGameMode() const = 0;
 
     void setEquip(WrappedCard *equip);
@@ -159,18 +161,20 @@ public:
     WrappedCard *getArmor() const;
     WrappedCard *getDefensiveHorse() const;
     WrappedCard *getOffensiveHorse() const;
+	WrappedCard *getTreasure() const;
     QList<const Card *> getEquips() const;
     const EquipCard *getEquip(int index) const;
 
     bool hasWeapon(const QString &weapon_name) const;
     bool hasArmorEffect(const QString &armor_name) const;
-
+	bool hasTreasure(const QString &treasure_name) const;
+	
     bool isKongcheng() const;
     bool isNude() const;
     bool isAllNude() const;
 
-    bool canDiscard(const Player *to, const QString &flags) const;
-    bool canDiscard(const Player *to, int card_id) const;
+    bool canDiscard(const Player *to, const QString &flags,QString reason="") const;
+    bool canDiscard(const Player *to, int card_id,QString reason="") const;
 
     void addMark(const QString &mark, int add_num = 1);
     void removeMark(const QString &mark, int remove_num = 1);
@@ -254,7 +258,7 @@ private:
     bool alive;
 
     Phase phase;
-    WrappedCard *weapon, *armor, *defensive_horse, *offensive_horse;
+    WrappedCard *weapon, *armor, *defensive_horse, *offensive_horse, *treasure;
     bool face_up;
     bool chained;
     QList<int> judging_area;

@@ -203,7 +203,7 @@ void GraphicsPixmapHoverItem::initSkinChangingFrames()
             .arg(CHANGE_SKIN_EMOTION_NAME).arg(QString::number(i));
 
         QPixmap framePixmap = G_ROOM_SKIN.getPixmapFromFileName(fileName);
-        m_skinChangingFrames << framePixmap.scaled(framePixmap.width() + 15,
+        m_skinChangingFrames << framePixmap.scaled(framePixmap.width() + 25,//15
             framePixmap.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     }
 }
