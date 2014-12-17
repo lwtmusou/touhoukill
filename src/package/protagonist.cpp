@@ -168,6 +168,8 @@ public:
 		JudgeStar judge = data.value<JudgeStar>();
 		ServerPlayer *source =room->findPlayerBySkillName(objectName());
         if (source !=NULL){
+			if (judge->who->getHandcardNum() >= source->getMaxHp())
+				return false;
 			source->tag["qixiang_judge"] =data;                        
 			
 			QString prompt="target:"+judge->who->objectName()+":"+judge->reason;
@@ -582,7 +584,7 @@ public:
         } else if (triggerEvent == Death||(triggerEvent == EventLoseSkill && data.toString() == "wuyu")) {
             if (triggerEvent==Death){
 				 DeathStruct death = data.value<DeathStruct>();
-				if (!death.who->hasSkill(objectName()))//³£Ê¶µÄ»ØºÏÄÚËÀÍö ºÜÂé·³¡£¡£¡£
+				if (!death.who->hasSkill(objectName()))//å¸¸è¯†çš„å›åˆå†…æ­»äº¡ å¾ˆéº»çƒ¦ã€‚ã€‚ã€‚
 					return false;	
 			}
 			QList<ServerPlayer *> lords;
@@ -741,7 +743,7 @@ public:
 
 
 baoyiCard::baoyiCard() {
-    will_throw = true;//ºÍÅĞ¶¨ÇøÒ»ÆğÆúÖÃ
+    will_throw = true;//å’Œåˆ¤å®šåŒºä¸€èµ·å¼ƒç½®
 	target_fixed = true;
     handling_method = Card::MethodDiscard;
     mute = true;
@@ -866,19 +868,19 @@ public:
 			}
             ServerPlayer *target = room->askForPlayerChosen(player, players, objectName(), "@@zhize", true, true);
             if (target !=NULL){
-                //·½°¸1 ask for ag  µ«ÊÇÃ»ÓĞÒÑÖªÅÆ¼ÇÂ¼ Ìí¼ÓÆğÀ´Âé·³
+                //æ–¹æ¡ˆ1 ask for ag  ä½†æ˜¯æ²¡æœ‰å·²çŸ¥ç‰Œè®°å½• æ·»åŠ èµ·æ¥éº»çƒ¦
 				/*room->fillAG(target->handCards(),player);
                 int id=room->askForAG(player,target->handCards(),false,objectName());
                 room->clearAG(player);
 				*/
-				//·½°¸2 gongxin  ÓĞÒÑÖªÅÆ¼ÇÂ¼ µ«ÊÇ¿ÉÒÔ·µ»Ø-1£¬Ã»ÓĞrefusableÑ¡Ïî ¸ÄÆğÀ´Âé·³
+				//æ–¹æ¡ˆ2 gongxin  æœ‰å·²çŸ¥ç‰Œè®°å½• ä½†æ˜¯å¯ä»¥è¿”å›-1ï¼Œæ²¡æœ‰refusableé€‰é¡¹ æ”¹èµ·æ¥éº»çƒ¦
 				/*QList<int>  ids;
 				foreach (const Card *c, target->getCards("h"))
 					ids<< c->getEffectiveId();
 							
 				int id = room->doGongxin(player, target, ids, "zhize");
 				*/
-				//·½°¸3 cardchosen
+				//æ–¹æ¡ˆ3 cardchosen
 				int id = room->askForCardChosen(player,target,"h",objectName(),true);
                 if (id>-1)
                     room->obtainCard(player,id,false);
