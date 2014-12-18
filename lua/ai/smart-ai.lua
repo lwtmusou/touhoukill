@@ -7023,7 +7023,7 @@ function SmartAI:touhouIgnoreArmor(card,from,to)
 end
 --东方杀相关
 --【幻视】
-function SmartAI:touhouCanHuanshi(card,from,to)
+--[[function SmartAI:touhouCanHuanshi(card,from,to)
 	targets1={}
 	targets2={}
 	if not to:hasSkill("lxhuanshi") then return 0 end
@@ -7043,7 +7043,7 @@ function SmartAI:touhouCanHuanshi(card,from,to)
 	else
 		return 1- #targets1
 	end
-end
+end]]
 
 --东方杀相关
 --【死蝶】
@@ -7055,9 +7055,9 @@ function SmartAI:touhouSidieTarget(card,from)
 	end
 	for _,p in sgs.qlist(self.room:getOtherPlayers(from)) do
 		if self:isFriend(from,p) and from:canSlash(p,card,true) then
-			if p:hasSkill("lxhuanshi") then
-				table.insert(targets,p:objectName())
-			end
+			--if p:hasSkill("lxhuanshi") then
+			--	table.insert(targets,p:objectName())
+			--end
 			if p:hasSkill("guaili") then
 				table.insert(targets,p:objectName())
 			end

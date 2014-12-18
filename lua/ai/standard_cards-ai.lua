@@ -501,11 +501,11 @@ function SmartAI:isPriorFriendOfSlash(friend, card, source)
 	--可以取消伤害 所以和hasheavyslashdamage无关？？
 	if source:hasSkill("dongjie") and not friend:faceUp() then return true end
 	if friend:hasSkill("anyu") and not friend:faceUp() and card:isBlack() and sgs.card_lack[friend:objectName()]["Jink"] == 0 then return true end
-	if friend:hasSkill("lxhuanshi") and self:touhouCanHuanshi(card,source,friend)>0 then
+	--[[if friend:hasSkill("lxhuanshi") and self:touhouCanHuanshi(card,source,friend)>0 then
 		if sgs.card_lack[friend:objectName()]["Jink"] == 0 then 
 			return true 
 		end
-	end
+	end]]
 	--local lingxian = self.room:findPlayerBySkillName("lxhuanshi")
 	--要求自己已经跳身份，且敌人数量不为0
 	--特定对象优先死蝶 不行么。。。
@@ -639,7 +639,14 @@ function SmartAI:useCardSlash(card, use)
 	if #targets == 0 and #forbidden > 0 then targets = forbidden end
 
 	if #targets == 1 and card:getSkillName() == "lihuo" and not targets[1]:hasArmorEffect("Vine") then return end
-
+	if self.player:hasSkill("guaili")  then
+		for _,c in pairs (self:getCards("Slash")) do
+			if c:isRed() and not card:isRed() then
+				use.card = c
+				break
+			end
+		end
+	end
 	for _, target in ipairs(targets) do
 		local canliuli = false
 		for _, friend in ipairs(self.friends_noself) do
@@ -951,9 +958,9 @@ sgs.ai_card_intention.Slash = function(self, card, from, tos)
 		if self:isFriend(from,to) and from:hasSkill("dongjie") and not self.player:faceUp() then value=-10 end
 		if self:sidieEffect(from)  then value = 0 end
 		if from:hasSkill("lizhi") and self:isFriend(from,to) then value = 0 end
-		if to:hasSkill("lxhuanshi") and self:touhouCanHuanshi(card,from,to)>0 then
-			value = 0
-		end
+		--if to:hasSkill("lxhuanshi") and self:touhouCanHuanshi(card,from,to)>0 then
+		--	value = 0
+		--end
 		if kosuzu and to:hasFlag("bihuo_"..kosuzu:objectName()) then
 			value=0
 		end

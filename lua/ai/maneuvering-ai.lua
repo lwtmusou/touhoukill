@@ -126,11 +126,11 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 	fakeDamage.to=target
 	local fakeDamage1 = fakeDamage
 	if not self:touhouNeedAvoidAttack(fakeDamage,self.player,target) or fakeDamage.damage<2 then
-		return
+		return false
 	end
 	
 	if target:hasArmorEffect("SilverLion") and not (self.player:hasWeapon("QinggangSword") or self.player:hasSkill("jueqing")) then
-		return
+		return 
 	end
 	--【战操对策】
 	local shrx=self.room:findPlayerBySkillName("zhancao")
@@ -158,7 +158,9 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 	if self.player:hasSkill("liegong") and self.player:getPhase() == sgs.Player_Play and (hcard >= self.player:getHp() or hcard <= self.player:getAttackRange()) then return true end
 	if self.player:hasSkill("kofliegong") and self.player:getPhase() == sgs.Player_Play and hcard >= self.player:getHp() then return true end
 	if self.player:hasSkill("tieji") then return true end
-
+	--勇仪主动吃酒
+	if self.player:hasSkill("haoyin") and self.player:hasSkill("guaili") then return true end
+	
 	if self.player:hasWeapon("axe") and self.player:getCards("he"):length() > 4 then return true end
 	--if target:hasFlag("dahe") then return true end
 
