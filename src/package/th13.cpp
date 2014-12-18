@@ -507,7 +507,7 @@ public:
 };
 
 shijieCard::shijieCard() {
-    will_throw = true;//和判定区一起弃置
+    will_throw = true;
     target_fixed = true;
     handling_method = Card::MethodDiscard;
     mute = true;
@@ -695,7 +695,7 @@ bool xiefaCard::targetFilter(const QList<const Player *> &targets, const Player 
         if (to_select == Self)
             return false;
         //Card *slash = Sanguosha->cloneCard("slash");
-        //slash->deleteLater();//重要
+        //slash->deleteLater();
         //万能的依姬 先凭依远吠，使用远吠，再凭依邪法。居然可以指定远吠的目标。
         //if (to_select->isCardLimited(slash,Card::MethodUse))
         //	return false;
@@ -709,7 +709,7 @@ bool xiefaCard::targetFilter(const QList<const Player *> &targets, const Player 
     }
     else if (targets.length() == 1){
         Card *slash = Sanguosha->cloneCard("slash");
-        slash->deleteLater();//重要
+        slash->deleteLater();
         if (!targets.first()->canSlash(to_select, slash, true))
             return false;
         return targets.first()->inMyAttackRange(to_select);
@@ -999,14 +999,13 @@ public:
                     room->setTag("huisheng_use", data);
                     QString prompt = "@huisheng-use:" + use.from->objectName() + ":" + card->objectName();
                     room->setPlayerProperty(source, "huisheng_card", card->objectName());
-                    room->setPlayerProperty(source, "huisheng_target", use.from->objectName());
-                    //player的flag和serverplayer不同步。。。		
+                    room->setPlayerProperty(source, "huisheng_target", use.from->objectName());		
                     room->askForUseCard(source, "@@huisheng", prompt);
                     room->setPlayerProperty(source, "huisheng_target", QVariant());
                 }
             }
         }
-        else if (triggerEvent == PreCardUsed){//--目标调整
+        else if (triggerEvent == PreCardUsed){//change aoe target for huisheng
             if (use.card->getSkillName() == "huisheng"){
                 foreach(ServerPlayer *p, room->getAlivePlayers()){
                     if (use.card->isKindOf("AOE") || use.card->isKindOf("GlobalEffect")){
@@ -1173,7 +1172,7 @@ bool bumingCard::targetFilter(const QList<const Player *> &targets, const Player
         rangefix = rangefix + 1;
 
     if (subcards.length() > 0) {
-        slash->addSubcard(subcards.first());//添加subcard重要，关系rangefix
+        slash->addSubcard(subcards.first());//need add subcard,since we need  check rangefix
         QList<const Player *> &targets2 = QList<const Player *>();
         return (slash->targetFilter(targets2, to_select, Self) && !(Self->isCardLimited(slash, Card::MethodUse)))
             || (Self->distanceTo(to_select, rangefix) <= Self->getAttackRange() &&
@@ -1327,7 +1326,7 @@ public:
                 arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
                 arg[1] = QSanProtocol::Utils::toJsonString(p->objectName());
                 arg[2] = QSanProtocol::Utils::toJsonString(p->getGeneral()->objectName());
-                arg[3] = QSanProtocol::Utils::toJsonString("clear");//QString()
+                arg[3] = QSanProtocol::Utils::toJsonString("clear");
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
             }
 
@@ -1347,7 +1346,7 @@ public:
                     arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
                     arg[1] = QSanProtocol::Utils::toJsonString(p->objectName());
                     arg[2] = QSanProtocol::Utils::toJsonString(zhengti->getGeneral()->objectName());
-                    arg[3] = QSanProtocol::Utils::toJsonString("zhengti");//QString()
+                    arg[3] = QSanProtocol::Utils::toJsonString("zhengti");
                     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
                 }
             }

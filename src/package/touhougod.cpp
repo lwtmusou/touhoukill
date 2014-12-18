@@ -1871,7 +1871,8 @@ public:
         int firstcard = -1;
         if (!drawpile.isEmpty())
             firstcard = drawpile.first();
-        //处理五谷//cardused时第一次开五谷时firstcard还没有更新。。。
+        //deal the amazinggrace 
+		//update firstcard。。。
         if (triggerEvent == TargetConfirming){
             CardUseStruct use = data.value<CardUseStruct>();
             if (!use.card->isKindOf("AmazingGrace"))

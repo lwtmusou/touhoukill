@@ -52,7 +52,7 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const{
     case Player::Judge: {
         QList<const Card *> tricks = player->getJudgingArea();
         while (!tricks.isEmpty() && player->isAlive()) {
-            //【惊吓】可以在此阶段拆除延时锦囊。。。
+            //Skill "jingxia" can discard tricks in this phase
             tricks = player->getJudgingArea();
             if (tricks.length() == 0)
                 break;
@@ -96,7 +96,7 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const{
         break;
     }
     case Player::Discard: {
-        int discard_num = 0; //官方将弃牌阶段弃牌调整为一次
+        int discard_num = 0; //discard in one time
         discard_num = player->getHandcardNum() - player->getMaxCards();
         if (discard_num > 0)
             room->askForDiscard(player, "gamerule", discard_num, discard_num);
@@ -887,7 +887,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
         }
     }
     else {
-        if (victim->getMark("tianxiang") > 0)   //sp妹红天翔的情况
+        if (victim->getMark("tianxiang") > 0)   //lord skill tianxiang need change gameover judge
         {
             QStringList alive_roles = room->aliveRoles(victim);
             switch (victim->getRoleEnum()) {
@@ -933,7 +933,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
                 break;
             }
         }
-        else //通常情况
+        else //normal case (without the effect of lord skill tianxiang)
         {
             QStringList alive_roles = room->aliveRoles(victim);
             switch (victim->getRoleEnum()) {

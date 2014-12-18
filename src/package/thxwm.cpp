@@ -84,7 +84,8 @@ void woyuCard::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *to = card_use.to.at(0);
     room->doLightbox("$woyuAnimate", 4000);
     //this mark is for displaying the revealed true role
-    //UI端 photo内的m_player getrole 返回为空。。。 为什么呢? 只有这里具体给出了。。。
+    //since UI/photo/m_player->getrole return a nil value。。。 
+	//we need give the role string here。。。
     room->setPlayerMark(to, "woyuVictim_" + to->getRole(), 1);
     SkillCard::onUse(room, card_use);
 }

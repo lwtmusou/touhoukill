@@ -567,7 +567,7 @@ public:
             if (effect.card != NULL && effect.card->hasFlag("luanyingSkillNullify"))
                 return true;
         }
-        else if (triggerEvent == CardResponded){//打出无效 包括使用闪。。。
+        else if (triggerEvent == CardResponded){
             CardStar card_star = data.value<CardResponseStruct>().m_card;
             if (!card_star->isKindOf("BasicCard") || data.value<CardResponseStruct>().m_isRetrial
                 || data.value<CardResponseStruct>().m_isProvision)

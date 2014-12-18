@@ -27,8 +27,7 @@ GeneralSelector::GeneralSelector() {
     load1v1Table();
 }
 
-//选将评估
-//一路乘法...
+//GeneralSelect score
 QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &candidates) {
     QMap<QString, qreal> values;
     QString role = player->getRole();
@@ -60,7 +59,7 @@ QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &ca
         QString key2 = QString("%1:%2:%3").arg(lord->getGeneralName()).arg(candidate).arg(role);
         value *= qPow(1.1, first_general_table.value(key2, 0.0));
 
-        //位置因素
+        //considering seat
         QString seat_key = QString("_:%1:%2").arg(candidate).arg(role);
         QString seat_str = general_seat_table.value(seat_key, "_");
         if (seat_str != "_"){

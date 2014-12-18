@@ -846,7 +846,7 @@ QGroupBox *ServerDialog::createGameModeBox() {
     mini_scenes->setChecked(true);*/
     if (Config.GameMode == "custom_scenario")
         mini_scenes->setChecked(true);
-    //强行屏蔽
+    
     //mini_scene_ComboBox->setEnabled(false);
 
     mini_scene_button = new QPushButton(tr("Custom Mini Scene"));
@@ -868,7 +868,6 @@ QGroupBox *ServerDialog::createGameModeBox() {
 
     for (int i = 0; i < item_list.length(); i++) {
         QObject *item = item_list.at(i);
-        //原规划是取半然后减4
         QVBoxLayout *side = i <= item_list.length() / 2 - 2 ? left : right;
 
         if (item->isWidgetType()) {

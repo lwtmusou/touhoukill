@@ -478,7 +478,7 @@ public:
 
                 if (use.card && room->getCardPlace(use.card->getEffectiveId()) == Player::PlaceTable)
                     src->addToPile("lishi", use.card, true);
-                //添加pile可能导致ai用的牌flag消失。。。所以flag设置往后放
+                //addtopile will clear cardflag(especially  use.from is robot ai )
 
                 if (use.card->isKindOf("Nullification")){
                     room->touhouLogmessage("#weiya", use.from, objectName(), QList<ServerPlayer *>(), use.card->objectName());
@@ -911,10 +911,6 @@ void chuangshiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     QList<ServerPlayer *>logto;
     logto << to1 << to2;
 
-
-    //不知道为何经常报错为空。。。 改用user_string得了
-    //const Card *card = Self->tag.value("chuangshi").value<const Card *>();
-    //user_string;
     Card *card = Sanguosha->cloneCard(user_string);
     if (card->isKindOf("Collateral")){
         ServerPlayer *chuangshi_user = chuangshi::getChuangshiUser1(from);
@@ -930,7 +926,6 @@ void chuangshiCard::onUse(Room *room, const CardUseStruct &card_use) const{
         room->useCard(use);
     } else
         SkillCard::onUse(room, card_use);
-    //:cardOnUse(room, cardUse)--声明about to use 后需要引用onuse
 }
 void chuangshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     //const Card *card = Self->tag.value("chuangshi").value<const Card *>();
@@ -1019,7 +1014,7 @@ public:
     }
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
         Card *tmpslash = Sanguosha->cloneCard("slash");
-        tmpslash->deleteLater();//重要
+        tmpslash->deleteLater();
         if (player->isCardLimited(tmpslash, Card::MethodUse))
             return false;
         return (!player->hasFlag("Global_huweiFailed") && pattern == "slash" && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE);

@@ -69,7 +69,8 @@ public:
                 QString	prompt = "target:" + player->objectName() + ":" + use.card->objectName();
 
                 if (use.from->askForSkillInvoke(objectName(), prompt)){
-                    //考虑ai 还是这个方便
+                    //for ai to judge a card if it is already SkillNullified for this player,
+					//the first line is more suitable than the second one.
                     room->setCardFlag(use.card, "huiwu" + player->objectName());
                     //room->setCardFlag(use.card, "huiwuSkillNullify",player);
 
@@ -253,7 +254,7 @@ public:
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if (effect.card->hasFlag("weiyaSkillNullify")) //effect.card!=NULL && 
                 return true;
-        } else if (triggerEvent == CardResponded){//打出无效 包括使用闪。。。
+        } else if (triggerEvent == CardResponded){
             CardStar card_star = data.value<CardResponseStruct>().m_card;
             if (player == current || !card_star->isKindOf("BasicCard")
                 || data.value<CardResponseStruct>().m_isRetrial
@@ -412,7 +413,7 @@ public:
                 return false;
             if (!use.to.contains(player) || player->getPhase() != Player::Play)
                 return false;
-            ServerPlayer *target = player; // player equals use.from
+            ServerPlayer *target = player; 
             //if (target->hasFlag("Global_Dying") )
             //	return false;
             if (target->isKongcheng() || target->getHp() < 1)
@@ -761,7 +762,9 @@ public:
 
 
         QList<ServerPlayer *> lieges = room->getLieges("zhan", player);
-        if (pattern == "slash")//for ai global flag tianrensource
+        //for ai  to add global flag
+		//slashsource or jinksource
+		if (pattern == "slash")
             room->setTag("tianren_slash", true);
         else
             room->setTag("tianren_slash", false);

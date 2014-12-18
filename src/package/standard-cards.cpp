@@ -312,16 +312,14 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const{
 }
 
 bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
-
+	//check targets feasible for skill "shikong"
     if (Self->hasSkill("shikong") && Self->getPhase() == Player::Play){
-        //检测必须指定的目标 一般此为被动响应使用杀 失控无效
         foreach(const Player *p, Self->getAliveSiblings()) {
             if (Slash::IsSpecificAssignee(p, Self, this)) {
-                return !targets.isEmpty();;
+                return !targets.isEmpty();
             }
         }
 
-        //检测合法性
         int rangefix = 0;
         if (Self->getWeapon() && subcards.contains(Self->getWeapon()->getId())) {
             const Weapon *weapon = qobject_cast<const Weapon *>(Self->getWeapon()->getRealCard());
@@ -330,30 +328,16 @@ bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *
 
         if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
             rangefix += 1;
-        //zun  双技能时可能会影响 单将没必要
 
-
-        //查询攻击范围内的合法目标是否都选择了
         foreach(const Player *p, Self->getAliveSiblings()) {
-            //find=false;
             if (Self->inMyAttackRange(p) && Self->canSlash(p, this, true, rangefix)) {
                 if (!targets.contains(p)){
                     return false;
                 }
             }
         }
-        //检测必须指定的目标
-        /*foreach (const Player *p, Self->getAliveSiblings()) {
-            if (Slash::IsSpecificAssignee(p, Self, this)) {
-            if (!targets.contains(p)){
-            return false;
-            }
-            }
-            }*/
-        return !targets.isEmpty();
-    } else {
-        return !targets.isEmpty();
-    }
+    } 
+    return !targets.isEmpty(); 
 }
 
 bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -717,13 +701,9 @@ public:
         if (damage.card && damage.card->isKindOf("Slash") && damage.by_user && !damage.chain && !damage.transfer
             && damage.to->getMark("Equips_of_Others_Nullified_to_You") == 0) {
             if (damage.to->getDefensiveHorse() && damage.from->canDiscard(damage.to, damage.to->getDefensiveHorse()->getEffectiveId()) && (damage.to->getMark("@tianyi_DefensiveHorse") == 0)) {
-                //麒麟弓射“人偶”马的问题
-                //if (!(damage.to->getEquip(2) &&  damage.to->getEquip(2)->objectName().startsWith("renou")))
                 horses << "dhorse";
             }
             if (damage.to->getOffensiveHorse() && damage.from->canDiscard(damage.to, damage.to->getOffensiveHorse()->getEffectiveId()) && (damage.to->getMark("@tianyi_OffensiveHorse") == 0)) {
-                //麒麟弓射“人偶”马的问题
-                //if (!(damage.to->getEquip(3) &&  damage.to->getEquip(3)->objectName().startsWith("renou")))
                 horses << "ohorse";
             }
             if (player->getMark("@tianyi_Weapon") > 0)
@@ -819,10 +799,6 @@ AmazingGrace::AmazingGrace(Suit suit, int number)
 
 void AmazingGrace::clearRestCards(Room *room) const{
     room->clearAG();
-    //为了断线重连
-    //room->removeTag("CurrentAmazingGracePlayer");
-    //room->removeTag("CurrentAmazingGraceId");
-    //room->removeTag("CurrentAmazingGraceMovecards");
 
     QVariantList ag_list = room->getTag("AmazingGrace").toList();
     room->removeTag("AmazingGrace");

@@ -580,7 +580,7 @@ public:
         else if (triggerEvent == Death || (triggerEvent == EventLoseSkill && data.toString() == "wuyu")) {
             if (triggerEvent == Death){
                 DeathStruct death = data.value<DeathStruct>();
-                if (!death.who->hasSkill(objectName()))//常识的回合内死亡 很麻烦。。。
+                if (!death.who->hasSkill(objectName(),false,true))//deal the case that death in round of changshi?
                     return false;
             }
             QList<ServerPlayer *> lords;
@@ -736,7 +736,7 @@ public:
 
 
 baoyiCard::baoyiCard() {
-    will_throw = true;//和判定区一起弃置
+    will_throw = true;
     target_fixed = true;
     handling_method = Card::MethodDiscard;
     mute = true;
@@ -860,19 +860,19 @@ public:
             }
             ServerPlayer *target = room->askForPlayerChosen(player, players, objectName(), "@@zhize", true, true);
             if (target != NULL) {
-                //方案1 ask for ag  但是没有已知牌记录 添加起来麻烦
+                //case1 ask for ag  
                 /*room->fillAG(target->handCards(),player);
                 int id=room->askForAG(player,target->handCards(),false,objectName());
                 room->clearAG(player);
                 */
-                //方案2 gongxin  有已知牌记录 但是可以返回-1，没有refusable选项 改起来麻烦
+                //case2 gongxin  
                 /*QList<int>  ids;
                 foreach (const Card *c, target->getCards("h"))
                 ids<< c->getEffectiveId();
 
                 int id = room->doGongxin(player, target, ids, "zhize");
                 */
-                //方案3 cardchosen
+                //case3 cardchosen
                 int id = room->askForCardChosen(player, target, "h", objectName(), true);
                 if (id > -1)
                     room->obtainCard(player, id, false);
@@ -933,11 +933,9 @@ public:
 };
 
 
-bllmwuyuCard::bllmwuyuCard() { // about_to_use = function(self, room, cardUse)
+bllmwuyuCard::bllmwuyuCard() {
     mute = true;
-    //will_throw = false;
     target_fixed = true;
-    //handling_method = Card::MethodNone;
 }
 void bllmwuyuCard::use(Room *room, ServerPlayer *bllm, QList<ServerPlayer *> &targets) const{
     QStringList uselist;

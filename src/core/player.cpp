@@ -1057,7 +1057,7 @@ QString Player::getSkillDescription(bool yellow) const{
     foreach (const Skill *skill, getVisibleSkillList()) {
         if (skill->isAttachedLordSkill() || !hasSkill(skill->objectName()))
             continue;
-        //除魏武帝外，非主公状态的主公技Description没有必要!this->isLord() 
+        //remove lord skill Description 
         if (skill->isLordSkill() &&
             !hasLordSkill(skill->objectName()) && !hasSkill("nosguixin", false, true))
             continue;

@@ -1147,8 +1147,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
         }
     }
 
-    //这种处理法，断线重连后 附加技能和丈八等装备技能的按钮会消失 
-    //非主公角色会出现的主公技按钮,觉醒后获得的技能也会消失。。。
+
     /*foreach(const QString skill_name, skills) {
         if (Sanguosha->getSkill(skill_name)->isVisible()) {
         Json::Value args1;
@@ -1170,10 +1169,9 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
         }*/
 
     foreach(const Skill *skill, getVisibleSkillList(true)) {
-        //枚举特殊的魏武帝 !player->isLord() 
+        //lord skill
         if (this == player && skill->isLordSkill() && !hasLordSkill(skill->objectName())
             && !hasSkill("nosguixin", false, true)){
-            //	Sanguosha->playSystemAudioEffect("win");
             continue;
         }
         QString skill_name = skill->objectName();

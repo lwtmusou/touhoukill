@@ -206,7 +206,7 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason) {
         if (thread->trigger(Dying, this, p, dying_data) || player->getHp() > 0 || player->isDead())
             break;
     }
-    //插入半灵判断
+    //insert banling
 
     if (player->isAlive()) {
         if (player->getHp() > 0) {
@@ -471,7 +471,7 @@ void Room::gameOver(const QString &winner) {
     }
 
     game_finished = true;
-    //皮肤初始化
+    
     defaultHeroSkin();
     emit game_over(winner);
 
@@ -2663,7 +2663,7 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign) {
 
 void Room::chooseGenerals() {
     QStringList ban_list = Config.value("Banlist/Roles").toStringList();
-    //Sanguosha->banRandomGods(); //限制神的数量不是直接把其他备选神写进禁表啊。。。 我擦
+    //Sanguosha->banRandomGods(); //why this function add the rest gods into banlist....
     // for lord.
     int lord_num = Config.value("LordMaxChoice", -1).toInt();
     int nonlord_num = Config.value("NonLordMaxChoice", 2).toInt();
@@ -3431,7 +3431,7 @@ void Room::recover(ServerPlayer *player, const RecoverStruct &recover, bool set_
 
     recover_struct = data.value<RecoverStruct>();
     int recover_num = recover_struct.recover;
-    //插入半灵  preHprecover之后
+    //insert banling  after preHprecover
     if (player->hasSkill("banling")){
         int x = player->getMark("lingtili") - player->getMark("minus_lingtili");
         int y = player->getMark("rentili") - player->getMark("minus_rentili");
@@ -3439,7 +3439,6 @@ void Room::recover(ServerPlayer *player, const RecoverStruct &recover, bool set_
         setPlayerProperty(player, "hp", z);
     }
     else
-        //直接跟随getHp移动 不用再改了？？
     {
         int new_hp = qMin(player->getHp() + recover_num, player->getMaxHp());
         setPlayerProperty(player, "hp", new_hp);
@@ -3656,7 +3655,7 @@ void Room::reconnect(ServerPlayer *player, ClientSocket *socket) {
     broadcastProperty(player, "state");
 
 
-    //断线重连后双体力显示
+    //show double Hp bar for banling when reconnecting
     foreach(ServerPlayer *p, getAlivePlayers()){
         if (p->hasSkill("banling")){
             int x = player->getMark("lingtili") - player->getMark("minus_lingtili");
@@ -4853,7 +4852,8 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use) {
 
     if (player->hasFlag("Global_PlayPhaseTerminated")) {
         setPlayerFlag(player, "-Global_PlayPhaseTerminated");
-        //当家记录被强制跳阶段
+        //for "dangjia" intention ai  
+		//need record  PlayPhaseTerminated
         setPlayerFlag(player, "PlayPhaseTerminated");
         card_use.card = NULL;
         return;
@@ -5061,7 +5061,7 @@ QString Room::askForKingdom(ServerPlayer *player) {
     AI *ai = player->getAI();
     if (ai)
         return ai->askForKingdom();
-    //加入了一个player的kingdom信息
+
     Json::Value arg(Json::arrayValue);
     arg[0] = toJsonString(player->getGeneral()->getKingdom());
 
@@ -5799,10 +5799,7 @@ void Room::takeAG(ServerPlayer *player, int card_id, bool move_cards, QList<Serv
         }
 
         doBroadcastNotify(to_notify, S_COMMAND_TAKE_AMAZING_GRACE, arg);
-        //为了断线重连
-        //setTag("CurrentAmazingGracePlayer", player->objectName());
-        //setTag("CurrentAmazingGraceId", card_id);
-        //setTag("CurrentAmazingGraceMovecards", true);//arg[2]
+        
 
         if (moveOneTime.card_ids.length() > 0 && moveOneTime.to == NULL) {
             Card *dummy = Sanguosha->cloneCard("Slash");
@@ -6320,10 +6317,8 @@ void Room::sortByActionOrder(QList<ServerPlayer *> &players) {
 }
 
 void Room::defaultHeroSkin(){
-    //默认皮肤初始化
     if (Config.DefaultHeroSkin){
         QStringList all = Sanguosha->getLimitedGeneralNames();
-        //全人物
         //all.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
         Config.beginGroup("HeroSkin");
         foreach(QString general_name, all) {
@@ -6334,7 +6329,7 @@ void Room::defaultHeroSkin(){
     }
 }
 
-//检测额外回合
+
 bool Room::canInsertExtraTurn(){
     foreach(ServerPlayer *player, getAlivePlayers()){
         if (player->getMark("touhou-extra") > 0 || player->getMark("siyuinvoke") > 0)

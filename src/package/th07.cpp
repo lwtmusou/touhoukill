@@ -1236,8 +1236,7 @@ public:
                         room->fillAG(list, player, disabled);
                         player->tag["wangwu_card"] = QVariant::fromValue(use.card);
                         if (same.isEmpty()){
-                            //int id =room->askForAG(player, same, true, objectName());
-                            //避免暴露死灵牌颜色
+                            //give a delay to avoid lacking "siling" shortage  
                             room->getThread()->delay(1000);
                             room->clearAG(player);
                         } else {
@@ -1290,9 +1289,9 @@ public:
                 room->setCardFlag(Sanguosha->getCard(id), "-using");
         }
 
-        //特殊处理 劝诫 和侵略
+        //check "qinlue"  "quanjie"
         //if current->hasFlag("qinlue")
-        //cardfinish能被触发。。。妖术 回声	?
+        //need check cardfinish "yaoshu"  "huisheng"	?
         ServerPlayer *current = room->getCurrent();
         if (current->getMark("quanjie") > 0) {
             room->setPlayerMark(current, "quanjie", 0);
@@ -1302,7 +1301,7 @@ public:
         //	room->setPlayerProperty(current, "yaoshu_card", QVariant());
 
         foreach(ServerPlayer *p, room->getAlivePlayers()) {
-            p->clearFlags();  //flag不应该单独清理??
+            p->clearFlags();
             if (p->getMark("@duanzui-extra") > 0)
                 p->loseMark("@duanzui-extra");
 

@@ -79,7 +79,6 @@ public:
             if (targets.length() > 0){
                 ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@sidou_target", true, true);
                 if (target != NULL){
-                    //disable_id需要自己加。。。
                     QList<int> disable;
                     foreach(const Card *equip, target->getEquips()){
                         if (equip->isKindOf("Weapon") && player->getMark("@tianyi_Weapon") == 0)

@@ -142,7 +142,7 @@ public:
             room->useCard(CardUseStruct(peach, player, victim), false);
             if (victim->getHp() > 0){
                 room->setPlayerFlag(victim, "-Global_Dying");
-                return true; //否则仍旧触发askforpeach
+                return true; //avoid triggering askforpeach
             }
 
             hasPeach = false;
@@ -618,8 +618,7 @@ public:
             foreach(int id, move.card_ids){
                 Card *card = Sanguosha->getCard(id);
                 if (card->isKindOf("Peach") && !temp_ids.contains(id)
-                    && room->getCardPlace(id) == Player::DiscardPile)
-                    //有同时机的【搜集】存在，需要检测位置								
+                    && room->getCardPlace(id) == Player::DiscardPile)								
                     shizhu_ids << id;
             }
             room->setTag("shizhuPeach", shizhu_ids);
@@ -693,7 +692,7 @@ public:
 th14Package::th14Package()
     : Package("th14")
 {
-    //General *hzc001 = new General(this, "hzc001$", "hzc",4,false);
+    General *hzc001 = new General(this, "hzc001$", "hzc",3,false);
 
 
     General *hzc002 = new General(this, "hzc002", "hzc", 4, false);

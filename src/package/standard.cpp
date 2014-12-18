@@ -460,7 +460,6 @@ QString Treasure::getCommonEffectName() const{
 StandardPackage::StandardPackage()
     : Package("standard")
 {
-    //标准包武将
     //addGenerals();
 
     patterns["."] = new ExpPattern(".|.|.|hand");

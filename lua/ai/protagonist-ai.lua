@@ -996,6 +996,27 @@ sgs.ai_playerchosen_intention.zhize =function(self, from, to)
 	end
 	sgs.updateIntention(from, to, intention)
 end
+sgs.ai_skill_cardchosen.zhize = function(self, who, flags)
+	local hearts={}
+	local others={}
+	for _,c in sgs.qlist(who:getCards("h")) do
+		if self.player:hasSkill("chunxi") and c:getSuit() ==sgs.Card_Heatrt then
+			table.insert(hearts,c)
+		else
+			table.insert(others,c)
+		end
+	end
+	local inverse = not self:isFriend(who)
+	if #hearts>0 then
+		self:sortByKeepValue(hearts, inverse)
+		return hearts[1]
+	else
+		self:sortByKeepValue(others, inverse)
+		return others[1]
+	end
+end
+
+
 --¡¾´ºÏ¢¡¿ai
 sgs.ai_skill_playerchosen.chunxi = function(self, targets)
 	local preheart=false

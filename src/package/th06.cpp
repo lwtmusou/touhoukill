@@ -97,7 +97,7 @@ public:
         } else if (triggerEvent == Death || (triggerEvent == EventLoseSkill && data.toString() == "skltkexue")) {
             if (triggerEvent == Death){
                 DeathStruct death = data.value<DeathStruct>();
-                if (!death.who->hasSkill(objectName()))
+                if (!death.who->hasSkill(objectName(),false,true))//deal the case that death in round of changshi?
                     return false;
             }
             QList<ServerPlayer *> lords;

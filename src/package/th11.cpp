@@ -293,7 +293,7 @@ public:
 
                 if (use.card->getSubcards().length() > 0)
                     new_slash->addSubcards(use.card->getSubcards());
-                else {//ai使用时获取单个id需要这样 为什么？？
+                else {//use.from is ai...
                     int id = use.card->getEffectiveId();
                     if (id > -1)
                         new_slash->addSubcard(id);

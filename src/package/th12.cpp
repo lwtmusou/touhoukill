@@ -69,7 +69,7 @@ public:
         if (use.card->isKindOf("TrickCard") && use.from != NULL &&  use.from != player && use.to.contains(player)
             && player->hasLordSkill(objectName())){
             if (use.card->isKindOf("Lightning")) return false;
-            room->setCardFlag(use.card, "fahua"); //目前仅用于rangefix
+            room->setCardFlag(use.card, "fahua"); //for rangefix in target filter
             QList<ServerPlayer *> lieges = room->getLieges("xlc", player);
             QList<ServerPlayer *> targets;
             foreach(ServerPlayer *p, lieges){
@@ -246,12 +246,15 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isBlack() && (use.card->isNDTrick() || use.card->isKindOf("Slash"))
                 && use.to.contains(player)){
-                room->setTag("zhengyi_use", data);
-                if (room->askForSkillInvoke(player, "zhengyi", "drawcard:" + use.from->objectName() + ":" + use.card->objectName()))
-                    player->drawCards(1);
-                else
-                    room->setCardFlag(use.card, "zhengyi" + player->objectName());
-            }
+                room->setCardFlag(use.card, "zhengyi" + player->objectName());
+		        if (use.from->isAlive()){
+				    CardsMoveStruct move;
+                    move.to = use.from;
+                    move.to_place = Player::PlaceHand;
+                    move.card_ids << (room->getDrawPile().last());
+                    room->moveCardsAtomic(move, false);
+				}
+			}
         }
         else if (triggerEvent == CardEffected){
             CardEffectStruct effect = data.value<CardEffectStruct>();

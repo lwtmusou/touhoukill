@@ -1516,7 +1516,7 @@ public:
             else if (use.to.length() > 1 && qishuMod::isLastHandCard(player, use.card)) {
                 if (use.card->isKindOf("Slash") || use.card->isNDTrick()){
 
-                    //sanguosha:correctCardTarget只能拿到修正后的记录。。。
+                    //sanguosha:correctCardTarget
                     if (isQishu(use.to, use.card))
                         room->notifySkillInvoked(player, "qishu");
 
