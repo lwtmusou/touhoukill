@@ -1,4 +1,5 @@
 
 general:zhu008 role:rebel starter:true chained:true acquireSkills:huisu draw:0 equip:65,67,148 hand:44,60,71,72,110,1 
-general:slm002 role:lord draw:0 equip:69 hand:57,0,59,75 
-general:dld001 role:loyalist 
+general:yyc004 role:lord hp:2 draw:5 equip:69 hand:27,0 
+general:wai002 role:rebel 
+general:zhu002 role:rebel draw:8 
