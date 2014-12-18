@@ -106,7 +106,7 @@ QRectF Window::boundingRect() const{
 void Window::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
     QRectF window_rect = boundingRect();
 
-    painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing |QPainter::SmoothPixmapTransform);
+    painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
     painter->drawImage(window_rect, *outimg);
 }
 

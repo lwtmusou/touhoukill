@@ -18,7 +18,7 @@
 
 class QSanSelectableItem;
 
-class BlackEdgeTextItem: public QGraphicsObject{
+class BlackEdgeTextItem : public QGraphicsObject{
     Q_OBJECT
 
 public:
@@ -45,7 +45,7 @@ private:
     int outline;
 };
 
-class AATextItem: public QGraphicsTextItem{
+class AATextItem : public QGraphicsTextItem{
 public:
     AATextItem(const QString &text, QGraphicsItem *parent);
 
@@ -55,7 +55,7 @@ protected:
 
 class SkillTitle;
 
-class SkillBox: public QGraphicsObject{
+class SkillBox : public QGraphicsObject{
     Q_OBJECT
 
 public:
@@ -93,7 +93,7 @@ private:
     QGraphicsTextItem *copyright_text;
 };
 
-class AvatarRectItem: public QGraphicsRectItem{
+class AvatarRectItem : public QGraphicsRectItem{
 public:
     AvatarRectItem(qreal width, qreal height, const QRectF &box_rect, int font_size);
     void toCenter(QGraphicsScene *scene);
@@ -105,7 +105,7 @@ private:
     BlackEdgeTextItem *name;
 };
 
-class CardScene: public QGraphicsScene{
+class CardScene : public QGraphicsScene{
     Q_OBJECT
 
 public:
@@ -170,10 +170,10 @@ private:
 
     QWidget *createLeft();
     QGroupBox *createTextItemBox(const QString &text,
-                                 const QFont &font,
-                                 int skip,
-                                 BlackEdgeTextItem *item
-                                 );
+        const QFont &font,
+        int skip,
+        BlackEdgeTextItem *item
+        );
     QLayout *createGeneralLayout();
     QWidget *createSkillBox();
 

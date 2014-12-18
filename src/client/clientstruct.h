@@ -41,7 +41,7 @@ extern ServerInfoStruct ServerInfo;
 class QLabel;
 class QListWidget;
 
-class ServerInfoWidget: public QWidget {
+class ServerInfoWidget : public QWidget {
     Q_OBJECT
 
 public:

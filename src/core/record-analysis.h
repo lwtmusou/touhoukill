@@ -9,7 +9,7 @@
 
 struct PlayerRecordStruct;
 
-class RecAnalysis: public QObject {
+class RecAnalysis : public QObject {
     Q_OBJECT
 
 public:
@@ -43,13 +43,13 @@ public:
 
     void setDesignation();
     void addDesignation(const QString &designation,
-                        unsigned long designation_union,
-                        unsigned int data_requirement = M_ALL_PLAYER,
-                        bool custom_condition = true,
-                        const QString &addition_option_role = QString(),
-                        bool need_alive = false,
-                        bool need_dead = false,
-                        bool need_win = false, bool need_lose = false);
+        unsigned long designation_union,
+        unsigned int data_requirement = M_ALL_PLAYER,
+        bool custom_condition = true,
+        const QString &addition_option_role = QString(),
+        bool need_alive = false,
+        bool need_dead = false,
+        bool need_win = false, bool need_lose = false);
     void initialDesignation();
 
 private:

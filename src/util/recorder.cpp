@@ -34,9 +34,11 @@ bool Recorder::save(const QString &filename) const{
             return file.write(data) != -1;
         else
             return false;
-    } else if (filename.endsWith(".png")) {
+    }
+    else if (filename.endsWith(".png")) {
         return TXT2PNG(data).save(filename);
-    } else
+    }
+    else
         return false;
 }
 
@@ -65,14 +67,15 @@ QImage Recorder::TXT2PNG(QByteArray txtData) {
 
 Replayer::Replayer(QObject *parent, const QString &filename)
     : QThread(parent), m_commandSeriesCounter(1),
-      filename(filename), speed(1.0), playing(true)
+    filename(filename), speed(1.0), playing(true)
 {
     QIODevice *device = NULL;
     if (filename.endsWith(".png")) {
         QByteArray *data = new QByteArray(PNG2TXT(filename));
         QBuffer *buffer = new QBuffer(data);
         device = buffer;
-    } else if (filename.endsWith(".txt")) {
+    }
+    else if (filename.endsWith(".txt")) {
         QFile *file = new QFile(filename);
         device = file;
     }
@@ -124,19 +127,20 @@ QString &Replayer::commandProceed(QString &cmd) {
     if (split_flags.isEmpty())
         split_flags << ":" << "+" << "_" << "->";
 
-    foreach (QString flag, split_flags) {
+    foreach(QString flag, split_flags) {
         QStringList messages = cmd.split(flag);
         if (messages.length() > 1) {
             QStringList message_analyse;
-            foreach (QString message, messages)
+            foreach(QString message, messages)
                 message_analyse << commandProceed(message);
             cmd = "[" + message_analyse.join(",") + "]";
-        } else {
+        }
+        else {
             bool ok = false;
             cmd.toInt(&ok);
 
             if (!cmd.startsWith("\"") && !cmd.startsWith("[") && !ok)
-                cmd = "\"" + cmd +"\"";
+                cmd = "\"" + cmd + "\"";
         }
     }
 
@@ -202,12 +206,12 @@ void Replayer::run() {
     QStringList nondelays;
     nondelays << "addPlayer" << "removePlayer" << "speak";
 
-    foreach (Pair pair, pairs) {
+    foreach(Pair pair, pairs) {
         int delay = qMin(pair.elapsed - last, 2500);
         last = pair.elapsed;
 
         bool delayed = true;
-        foreach (QString nondelay, nondelays) {
+        foreach(QString nondelay, nondelays) {
             if (pair.cmd.startsWith(nondelay)) {
                 delayed = false;
                 break;

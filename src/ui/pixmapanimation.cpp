@@ -31,7 +31,7 @@ void PixmapAnimation::setPath(const QString &path) {
     do {
         frames << G_ROOM_SKIN.getPixmapFromFileName(pic_path);
         pic_path = QString("%1%2%3").arg(path).arg(i++).arg(".png");
-    } while(QFile::exists(pic_path));
+    } while (QFile::exists(pic_path));
 }
 
 void PixmapAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
@@ -70,13 +70,15 @@ PixmapAnimation *PixmapAnimation::GetPixmapAnimation(QGraphicsItem *parent, cons
     if (pma->valid()) {
         if (emotion == "no-success") {
             pma->moveBy(pma->boundingRect().width() * 0.25,
-                        pma->boundingRect().height() * 0.25);
+                pma->boundingRect().height() * 0.25);
             pma->setScale(0.5);
-        } else if (emotion == "success") {
+        }
+        else if (emotion == "success") {
             pma->moveBy(pma->boundingRect().width() * 0.1,
-                        pma->boundingRect().height() * 0.1);
+                pma->boundingRect().height() * 0.1);
             pma->setScale(0.8);
-        } else if (emotion.contains("double_sword"))
+        }
+        else if (emotion.contains("double_sword"))
             pma->moveBy(13, -20);
         else if (emotion.contains("fan") || emotion.contains("guding_blade"))
             pma->moveBy(0, -20);
@@ -84,19 +86,21 @@ PixmapAnimation *PixmapAnimation::GetPixmapAnimation(QGraphicsItem *parent, cons
             pma->moveBy(-20, -20);
 
         pma->moveBy((parent->boundingRect().width() - pma->boundingRect().width()) / 2,
-                    (parent->boundingRect().height() - pma->boundingRect().height()) / 2);
+            (parent->boundingRect().height() - pma->boundingRect().height()) / 2);
 
         pma->setParentItem(parent);
         pma->setZValue(20002.0);
         if (emotion.contains("weapon")) {
             pma->hide();
             QTimer::singleShot(600, pma, SLOT(preStart()));
-        } else
+        }
+        else
             pma->startTimer(S_DEFAULT_INTERVAL);
 
         connect(pma, SIGNAL(finished()), pma, SLOT(deleteLater()));
         return pma;
-    } else {
+    }
+    else {
         delete pma;
         return NULL;
     }

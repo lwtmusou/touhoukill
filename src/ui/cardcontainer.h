@@ -10,7 +10,7 @@ class ClientPlayer;
 
 #include <QStack>
 
-class CloseButton: public QSanSelectableItem {
+class CloseButton : public QSanSelectableItem {
     Q_OBJECT
 
 public:
@@ -24,7 +24,7 @@ signals:
     void clicked();
 };
 
-class CardContainer: public GenericCardContainer {
+class CardContainer : public GenericCardContainer {
     Q_OBJECT
 
 public:
@@ -68,7 +68,7 @@ signals:
     void item_gongxined(int card_id);
 };
 
-class GuanxingBox: public QSanSelectableItem {
+class GuanxingBox : public QSanSelectableItem {
     Q_OBJECT
 
 public:
@@ -84,7 +84,7 @@ private:
     QList<CardItem *> up_items, down_items;
     bool up_only;
 
-    static const int start_x = 76;
+    static const int start_x = 76; // 考虑下这里的编译问题，有些编译器不支持这里写数字
     static const int start_y1 = 105;
     static const int start_y2 = 249;
     static const int middle_y = 173;

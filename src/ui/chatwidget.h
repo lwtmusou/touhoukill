@@ -9,7 +9,7 @@
 #include <QGraphicsProxyWidget>
 #include <QGraphicsPixmapItem>
 
-class MyPixmapItem: public QObject , public QGraphicsPixmapItem {
+class MyPixmapItem : public QObject, public QGraphicsPixmapItem {
     Q_OBJECT
 
 public:
@@ -41,7 +41,7 @@ signals:
     void my_pixmap_item_msg(QString);
 };
 
-class ChatWidget: public QGraphicsObject {
+class ChatWidget : public QGraphicsObject {
     Q_OBJECT
 
 public:

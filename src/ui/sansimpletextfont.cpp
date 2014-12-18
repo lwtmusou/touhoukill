@@ -13,14 +13,14 @@ using namespace QSanProtocol::Utils;
 QHash<QString, const int *> SanSimpleTextFont::m_fontBank;
 
 SanSimpleTextFont::SanSimpleTextFont() : m_fontFace(NULL),
-    m_fontSize(QSize(12, 12)), m_color(Qt::white),
-    m_spacing(0), m_weight(0), m_vertical(false)
+m_fontSize(QSize(12, 12)), m_color(Qt::white),
+m_spacing(0), m_weight(0), m_vertical(false)
 {
 }
 
 SanSimpleTextFont::SanSimpleTextFont(const QString &fontName)
-     : m_fontSize(QSize(12, 12)), m_color(Qt::white),
-     m_spacing(0), m_weight(0), m_vertical(false)
+    : m_fontSize(QSize(12, 12)), m_color(Qt::white),
+    m_spacing(0), m_weight(0), m_vertical(false)
 {
     _initFontFace(fontName);
 }

@@ -219,7 +219,7 @@ namespace QSanProtocol {
         virtual CommandType getCommandType() const = 0;
     };
 
-    class QSanGeneralPacket: public QSanPacket {
+    class QSanGeneralPacket : public QSanPacket {
     public:
         //format: [global_serial, local_serial, packet_type, command_name, command_body]
         unsigned int m_globalSerial;

@@ -16,7 +16,7 @@ AI::AI(ServerPlayer *player)
 
 typedef QPair<QString, QString> RolePair;
 
-struct RoleMapping: public QMap<RolePair, AI::Relation> {
+struct RoleMapping : public QMap < RolePair, AI::Relation > {
     void set(const QString &role1, const QString &role2, AI::Relation relation, bool bidirectional = false) {
         insert(qMakePair(role1, role2), relation);
         if (bidirectional)
@@ -43,16 +43,16 @@ AI::Relation AI::GetRelationHegemony(const ServerPlayer *a, const ServerPlayer *
     const bool bShown = b->getRoom()->getTag(b->objectName()).toStringList().isEmpty();
 
     const QString aName = aShown ? a->getGeneralName() :
-                                   a->getRoom()->getTag(a->objectName()).toStringList().first();
+        a->getRoom()->getTag(a->objectName()).toStringList().first();
     const QString bName = bShown ? b->getGeneralName() :
-                                   b->getRoom()->getTag(b->objectName()).toStringList().first();
+        b->getRoom()->getTag(b->objectName()).toStringList().first();
 
     Q_ASSERT(Sanguosha->getGeneral(aName) != NULL);
     const QString aKingdom = Sanguosha->getGeneral(aName)->getKingdom();
     Q_ASSERT(Sanguosha->getGeneral(bName) != NULL);
     const QString bKingdom = Sanguosha->getGeneral(bName)->getKingdom();
 
-    qDebug() << aKingdom << bKingdom <<aShown << bShown;
+    qDebug() << aKingdom << bKingdom << aShown << bShown;
 
     return aKingdom == bKingdom ? Friend : Enemy;
 }
@@ -102,7 +102,7 @@ AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b) {
 
     int good = 0, bad = 0;
     QList<ServerPlayer *> players = room->getAlivePlayers();
-    foreach (ServerPlayer *player, players) {
+    foreach(ServerPlayer *player, players) {
         switch (player->getRoleEnum()) {
         case Player::Lord:
         case Player::Loyalist: good++; break;
@@ -146,7 +146,7 @@ bool AI::isEnemy(const ServerPlayer *other) const{
 QList<ServerPlayer *> AI::getEnemies() const{
     QList<ServerPlayer *> players = room->getOtherPlayers(self);
     QList<ServerPlayer *> enemies;
-    foreach (ServerPlayer *p, players)
+    foreach(ServerPlayer *p, players)
         if (isEnemy(p)) enemies << p;
 
     return enemies;
@@ -155,7 +155,7 @@ QList<ServerPlayer *> AI::getEnemies() const{
 QList<ServerPlayer *> AI::getFriends() const{
     QList<ServerPlayer *> players = room->getOtherPlayers(self);
     QList<ServerPlayer *> friends;
-    foreach (ServerPlayer *p, players)
+    foreach(ServerPlayer *p, players)
         if (isFriend(p)) friends << p;
 
     return friends;
@@ -174,7 +174,7 @@ TrustAI::TrustAI(ServerPlayer *player)
 
 void TrustAI::activate(CardUseStruct &card_use) {
     QList<const Card *> cards = self->getHandcards();
-    foreach (const Card *card, cards) {
+    foreach(const Card *card, cards) {
         if (card->targetFixed()) {
             if (useCard(card)) {
                 card_use.card = card;
@@ -190,19 +190,19 @@ bool TrustAI::useCard(const Card *card) {
         const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
         switch (equip->location()) {
         case EquipCard::WeaponLocation: {
-                WrappedCard *weapon = self->getWeapon();
-                if (weapon == NULL)
-                    return true;
-                const Weapon *new_weapon = qobject_cast<const Weapon *>(equip);
-                const Weapon *ole_weapon = qobject_cast<const Weapon *>(weapon->getRealCard());
-                return new_weapon->getRange() > ole_weapon->getRange();
-            }
+            WrappedCard *weapon = self->getWeapon();
+            if (weapon == NULL)
+                return true;
+            const Weapon *new_weapon = qobject_cast<const Weapon *>(equip);
+            const Weapon *ole_weapon = qobject_cast<const Weapon *>(weapon->getRealCard());
+            return new_weapon->getRange() > ole_weapon->getRange();
+        }
         case EquipCard::ArmorLocation: return !self->getArmor();
         case EquipCard::OffensiveHorseLocation: return !self->getOffensiveHorse();
         case EquipCard::DefensiveHorseLocation: return !self->getDefensiveHorse();
-		case EquipCard::TreasureLocation: return !self->getTreasure();
+        case EquipCard::TreasureLocation: return !self->getTreasure();
         default:
-                return true;
+            return true;
         }
     }
     return false;
@@ -217,55 +217,55 @@ QString TrustAI::askForKingdom() {
     ServerPlayer *lord = room->getLord();
     QStringList kingdoms = Sanguosha->getKingdoms();
     kingdoms.removeOne("god");
-	kingdoms.removeOne("zhu");
-	kingdoms.removeOne("touhougod");
-	QStringList sanguokingdoms;
-	sanguokingdoms<<"wei" << "shu" << "wu"<< "qun";
-	QString selfKingdom =self->getGeneral()->getKingdom();
-	if (selfKingdom=="god"){
-		foreach (QString king, kingdoms) {
-			if (!sanguokingdoms.contains(king))
-				kingdoms.removeOne(king);
-		}
-	}
-	if (selfKingdom=="zhu"||selfKingdom=="touhougod"){
-		foreach (QString king, sanguokingdoms)
-				kingdoms.removeOne(king);
-	}
+    kingdoms.removeOne("zhu");
+    kingdoms.removeOne("touhougod");
+    QStringList sanguokingdoms;
+    sanguokingdoms << "wei" << "shu" << "wu" << "qun";
+    QString selfKingdom = self->getGeneral()->getKingdom();
+    if (selfKingdom == "god"){
+        foreach(QString king, kingdoms) {
+            if (!sanguokingdoms.contains(king))
+                kingdoms.removeOne(king);
+        }
+    }
+    if (selfKingdom == "zhu" || selfKingdom == "touhougod"){
+        foreach(QString king, sanguokingdoms)
+            kingdoms.removeOne(king);
+    }
     if (!lord) return kingdoms.at(qrand() % kingdoms.length());
 
-    switch(self->getRoleEnum()) {
+    switch (self->getRoleEnum()) {
     case Player::Lord: role = kingdoms.at(qrand() % kingdoms.length()); break;
     case Player::Renegade:
     case Player::Rebel: {
-            if ((lord->hasLordSkill("xueyi") && self->getRoleEnum() == Player::Rebel) || lord->hasLordSkill("shichou"))
-				role = "wei";
-            else
-                role = lord->getKingdom();
-            break;
+        if ((lord->hasLordSkill("xueyi") && self->getRoleEnum() == Player::Rebel) || lord->hasLordSkill("shichou"))
+            role = "wei";
+        else
+            role = lord->getKingdom();
+        break;
     }
     case Player::Loyalist: {
-            if (lord->getGeneral()->isLord())
-                role = lord->getKingdom();
-            else if (lord->getGeneral2() && lord->getGeneral2()->isLord())
-                role = lord->getGeneral2()->getKingdom();
-            else {
-                if (lord->hasSkill("yongsi")) kingdoms.removeOne(lord->getKingdom());
-                role = kingdoms.at(qrand() % kingdoms.length());
-            }
-            break;
+        if (lord->getGeneral()->isLord())
+            role = lord->getKingdom();
+        else if (lord->getGeneral2() && lord->getGeneral2()->isLord())
+            role = lord->getGeneral2()->getKingdom();
+        else {
+            if (lord->hasSkill("yongsi")) kingdoms.removeOne(lord->getKingdom());
+            role = kingdoms.at(qrand() % kingdoms.length());
         }
-    default:
-            break;
+        break;
     }
-	if (kingdoms.contains(role))
-		return role;
-	else{
-		if (kingdoms.contains("wei"))
-			return "wei";
-		else
-			return "wai";
-	}
+    default:
+        break;
+    }
+    if (kingdoms.contains(role))
+        return role;
+    else{
+        if (kingdoms.contains("wei"))
+            return "wei";
+        else
+            return "wai";
+    }
 }
 
 bool TrustAI::askForSkillInvoke(const QString &, const QVariant &) {
@@ -284,7 +284,7 @@ QString TrustAI::askForChoice(const QString &skill_name, const QString &choice, 
     return choices.at(qrand() % choices.length());
 }
 
-QList<int> TrustAI::askForDiscard(const QString &, int discard_num, int , bool optional, bool include_equip) {
+QList<int> TrustAI::askForDiscard(const QString &, int discard_num, int, bool optional, bool include_equip) {
     QList<int> to_discard;
     if (optional)
         return to_discard;
@@ -306,7 +306,7 @@ const Card *TrustAI::askForCard(const QString &pattern, const QString &prompt, c
 
     response_skill->setPattern(pattern);
     QList<const Card *> cards = self->getHandcards();
-    foreach (const Card *card, cards)
+    foreach(const Card *card, cards)
         if (response_skill->matchPattern(self, card)) return card;
 
     return NULL;
@@ -356,11 +356,11 @@ ServerPlayer *TrustAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, 
 const Card *TrustAI::askForSinglePeach(ServerPlayer *dying) {
     if (isFriend(dying)) {
         QList<const Card *> cards = self->getHandcards();
-        foreach (const Card *card, cards) {
+        foreach(const Card *card, cards) {
             if (card->isKindOf("Peach"))
                 return card;
-            if (card->isKindOf("Analeptic") 
-			&& (dying == self||(dying->hasLordSkill("yanhui") && self->getKingdom() == "zhan")))
+            if (card->isKindOf("Analeptic")
+                && (dying == self || (dying->hasLordSkill("yanhui") && self->getKingdom() == "zhan")))
                 return card;
         }
     }
@@ -379,7 +379,8 @@ void TrustAI::askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int>
     if (guanxing_type == Room::GuanxingDownOnly) {
         bottom = cards;
         up.clear();
-    } else {
+    }
+    else {
         up = cards;
         bottom.clear();
     }

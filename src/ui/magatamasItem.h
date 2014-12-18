@@ -5,7 +5,7 @@
 #include <qpixmap.h>
 #include "SkinBank.h"
 
-class MagatamasBoxItem: public QGraphicsObject {
+class MagatamasBoxItem : public QGraphicsObject {
     Q_OBJECT
 
 public:

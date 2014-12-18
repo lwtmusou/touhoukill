@@ -6,7 +6,7 @@
 
 typedef int LuaFunction;
 
-class LuaTriggerSkill: public TriggerSkill {
+class LuaTriggerSkill : public TriggerSkill {
     Q_OBJECT
 
 public:
@@ -28,7 +28,7 @@ protected:
     QMap<TriggerEvent, int> priority_table;
 };
 
-class LuaProhibitSkill: public ProhibitSkill {
+class LuaProhibitSkill : public ProhibitSkill {
     Q_OBJECT
 
 public:
@@ -39,7 +39,7 @@ public:
     LuaFunction is_prohibited;
 };
 
-class LuaViewAsSkill: public ViewAsSkill {
+class LuaViewAsSkill : public ViewAsSkill {
     Q_OBJECT
     Q_ENUMS(GuhuoDialogType)
 
@@ -74,7 +74,7 @@ private:
     GuhuoDialogType guhuo_dialog_type; //left, right, left+right
 };
 
-class LuaFilterSkill: public FilterSkill {
+class LuaFilterSkill : public FilterSkill {
     Q_OBJECT
 
 public:
@@ -87,7 +87,7 @@ public:
     LuaFunction view_as;
 };
 
-class LuaDistanceSkill: public DistanceSkill {
+class LuaDistanceSkill : public DistanceSkill {
     Q_OBJECT
 
 public:
@@ -98,7 +98,7 @@ public:
     LuaFunction correct_func;
 };
 
-class LuaMaxCardsSkill: public MaxCardsSkill {
+class LuaMaxCardsSkill : public MaxCardsSkill {
     Q_OBJECT
 
 public:
@@ -111,7 +111,7 @@ public:
     LuaFunction fixed_func;
 };
 
-class LuaTargetModSkill: public TargetModSkill {
+class LuaTargetModSkill : public TargetModSkill {
     Q_OBJECT
 
 public:
@@ -126,7 +126,7 @@ public:
     LuaFunction extra_target_func;
 };
 
-class LuaAttackRangeSkill: public AttackRangeSkill{
+class LuaAttackRangeSkill : public AttackRangeSkill{
     Q_OBJECT
 
 public:
@@ -139,7 +139,7 @@ public:
     LuaFunction fixed_func;
 };
 
-class LuaSkillCard: public SkillCard {
+class LuaSkillCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -176,7 +176,7 @@ public:
     LuaFunction on_validate_in_response;
 };
 
-class LuaBasicCard: public BasicCard {
+class LuaBasicCard : public BasicCard {
     Q_OBJECT
 
 public:
@@ -217,7 +217,7 @@ private:
     QString class_name, subtype;
 };
 
-class LuaTrickCard: public TrickCard {
+class LuaTrickCard : public TrickCard {
     Q_OBJECT
 
 public:
@@ -258,8 +258,8 @@ public:
             case TypeGlobalEffect: return strcmp(cardType, "GlobalEffect") == 0; break;
             case TypeNormal:
             default:
-                    return false;
-                    break;
+                return false;
+                break;
             }
         }
     }
@@ -279,7 +279,7 @@ private:
     QString class_name, subtype;
 };
 
-class LuaWeapon: public Weapon {
+class LuaWeapon : public Weapon {
     Q_OBJECT
 
 public:
@@ -308,7 +308,7 @@ private:
     QString class_name;
 };
 
-class LuaArmor: public Armor {
+class LuaArmor : public Armor {
     Q_OBJECT
 
 public:
@@ -341,7 +341,7 @@ private:
 /*class LuaTreasure: public Treasure {
     Q_OBJECT
 
-public:
+    public:
     Q_INVOKABLE LuaTreasure(Card::Suit suit, int number, const char *obj_name, const char *class_name);
     LuaTreasure *clone(Card::Suit suit = Card::SuitToBeDecided, int number = -1) const;
 
@@ -353,18 +353,18 @@ public:
 
     inline virtual QString getClassName() const{ return class_name; }
     inline virtual bool isKindOf(const char *cardType) const{
-        if (strcmp(cardType, "LuaCard") == 0 || QString(cardType) == class_name)
-            return true;
-        else
-            return Card::isKindOf(cardType);
+    if (strcmp(cardType, "LuaCard") == 0 || QString(cardType) == class_name)
+    return true;
+    else
+    return Card::isKindOf(cardType);
     }
 
     // the lua callbacks
     LuaFunction on_install;
     LuaFunction on_uninstall;
 
-private:
+    private:
     QString class_name;
-};*/
+    };*/
 
 #endif

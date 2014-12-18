@@ -77,12 +77,12 @@ void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 
     QList<CardsMoveStruct> exchangeMove;
     CardsMoveStruct move1(getEffectiveId(), target, Player::PlaceEquip,
-                          CardMoveReason(CardMoveReason::S_REASON_USE, target->objectName()));
+        CardMoveReason(CardMoveReason::S_REASON_USE, target->objectName()));
     exchangeMove.push_back(move1);
     if (equipped_id != Card::S_UNKNOWN_CARD_ID) {
-         CardsMoveStruct move2(equipped_id, NULL, Player::DiscardPile,
-                               CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, target->objectName()));
-         exchangeMove.push_back(move2);
+        CardsMoveStruct move2(equipped_id, NULL, Player::DiscardPile,
+            CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, target->objectName()));
+        exchangeMove.push_back(move2);
     }
     LogMessage log;
     log.from = target;
@@ -120,7 +120,7 @@ QString GlobalEffect::getSubtype() const{
 void GlobalEffect::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *source = card_use.from;
     QList<ServerPlayer *> targets, all_players = room->getAllPlayers();
-    foreach (ServerPlayer *player, all_players) {
+    foreach(ServerPlayer *player, all_players) {
         const ProhibitSkill *skill = room->isProhibited(source, player, this);
         if (skill) {
             LogMessage log;
@@ -144,7 +144,7 @@ bool GlobalEffect::isAvailable(const Player *player) const{
     bool canUse = false;
     QList<const Player *> players = player->getAliveSiblings();
     players << player;
-    foreach (const Player *p, players) {
+    foreach(const Player *p, players) {
         if (player->isProhibited(p, this))
             continue;
 
@@ -162,7 +162,7 @@ QString AOE::getSubtype() const{
 bool AOE::isAvailable(const Player *player) const{
     bool canUse = false;
     QList<const Player *> players = player->getAliveSiblings();
-    foreach (const Player *p, players) {
+    foreach(const Player *p, players) {
         if (player->isProhibited(p, this))
             continue;
 
@@ -176,7 +176,7 @@ bool AOE::isAvailable(const Player *player) const{
 void AOE::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *source = card_use.from;
     QList<ServerPlayer *> targets, other_players = room->getOtherPlayers(source);
-    foreach (ServerPlayer *player, other_players) {
+    foreach(ServerPlayer *player, other_players) {
         const ProhibitSkill *skill = room->isProhibited(source, player, this);
         if (skill) {
             LogMessage log;
@@ -288,7 +288,7 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
         players << target;
         ServerPlayer *p = NULL;
 
-        foreach (ServerPlayer *player, players) {
+        foreach(ServerPlayer *player, players) {
             if (player->containsTrick(objectName()))
                 continue;
 
@@ -322,7 +322,7 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
                 break;
             }
 
-            foreach (ServerPlayer *p, room->getAllPlayers())
+            foreach(ServerPlayer *p, room->getAllPlayers())
                 thread->trigger(TargetConfirmed, room, p, data);
             break;
         }
@@ -361,8 +361,8 @@ void Weapon::onUse(Room *room, const CardUseStruct &card_use) const{
     if (room->getMode() == "04_1v3"
         && use.card->isKindOf("Weapon")
         && (player->isCardLimited(use.card, Card::MethodUse)
-		||(!player->getPile("wooden_ox").contains(getEffectiveId())
-            || player->askForSkillInvoke("weapon_recast", QVariant::fromValue(use))))) {
+        || (!player->getPile("wooden_ox").contains(getEffectiveId())
+        || player->askForSkillInvoke("weapon_recast", QVariant::fromValue(use))))) {
         CardMoveReason reason(CardMoveReason::S_REASON_RECAST, player->objectName());
         reason.m_eventName = "weapon_recast";
         room->moveCardTo(use.card, player, NULL, Player::DiscardPile, reason);
@@ -460,7 +460,7 @@ QString Treasure::getCommonEffectName() const{
 StandardPackage::StandardPackage()
     : Package("standard")
 {
-	//标准包武将
+    //标准包武将
     //addGenerals();
 
     patterns["."] = new ExpPattern(".|.|.|hand");
@@ -503,7 +503,7 @@ TestPackage::TestPackage()
     : Package("test")
 {
     // for test only
-	new General(this, "sujiang", "touhougod", 5, true, true);
+    new General(this, "sujiang", "touhougod", 5, true, true);
     new General(this, "sujiangf", "touhougod", 5, false, true);
 
     new General(this, "anjiang", "touhougod", 4, true, true, true);

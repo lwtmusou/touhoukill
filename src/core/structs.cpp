@@ -57,7 +57,7 @@ Json::Value CardMoveReason::toJsonValue() const{
     return result;
 }
 
-JsonValueForLUA::JsonValueForLUA(bool isarray): m_realvalue(isarray ? Json::Value(Json::arrayValue) : Json::Value()){
+JsonValueForLUA::JsonValueForLUA(bool isarray) : m_realvalue(isarray ? Json::Value(Json::arrayValue) : Json::Value()){
 
 }
 
@@ -101,7 +101,7 @@ void JsonValueForLUA::setBoolAt(int n, bool v){
 void JsonValueForLUA::setNumberAt(int n, int v){
     if (n < 0)
         m_realvalue = v;
-    else 
+    else
         m_realvalue[n] = v;
 }
 

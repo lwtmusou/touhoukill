@@ -97,7 +97,7 @@ bool ShowOrPindianSkill::matchPattern(const Player *player, const Card *card) co
 // -------------------------------------------
 
 
-class YijiCard: public NosRendeCard {
+class YijiCard : public NosRendeCard {
 public:
     YijiCard() {
         target_fixed = false;
@@ -150,7 +150,7 @@ const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards) const{
 
 // ------------------------------------------------
 
-class ChoosePlayerCard: public DummyCard {
+class ChoosePlayerCard : public DummyCard {
 public:
     ChoosePlayerCard() {
         target_fixed = false;

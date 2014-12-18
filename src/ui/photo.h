@@ -16,7 +16,7 @@ class ClientPlayer;
 class RoleComboBox;
 class QPushButton;
 
-class Photo: public PlayerCardContainer {
+class Photo : public PlayerCardContainer {
     Q_OBJECT
 
 public:
@@ -55,19 +55,19 @@ protected:
     inline virtual QGraphicsItem *_getMarkParent() { return _m_floatingArea; }
     inline virtual QGraphicsItem *_getPhaseParent() { return _m_groupMain; }
     inline virtual QGraphicsItem *_getRoleComboBoxParent() { return _m_groupMain; }
-    inline virtual QGraphicsItem *_getProgressBarParent() { return this;}
+    inline virtual QGraphicsItem *_getProgressBarParent() { return this; }
     inline virtual QGraphicsItem *_getFocusFrameParent() { return _m_groupMain; }
-    inline virtual QGraphicsItem *_getDeathIconParent() { return _m_groupDeath;}
+    inline virtual QGraphicsItem *_getDeathIconParent() { return _m_groupDeath; }
     virtual QGraphicsItem *_getPileParent() { return _m_groupMain; }
     inline virtual QString getResourceKeyName() { return QSanRoomSkin::S_SKIN_KEY_PHOTO; }
     virtual QPointF getHeroSkinContainerPosition() const;
-	
-	//virtual const QSanShadowTextFont &getSkillNameFont() const {
+
+    //virtual const QSanShadowTextFont &getSkillNameFont() const {
     //    return G_PHOTO_LAYOUT.m_skillNameFont;
     //}
-	//virtual const QRect &getSkillNameArea() const { return G_PHOTO_LAYOUT.m_skillNameArea; }
-   
-	virtual void _adjustComponentZValues(bool killed = false);
+    //virtual const QRect &getSkillNameArea() const { return G_PHOTO_LAYOUT.m_skillNameArea; }
+
+    virtual void _adjustComponentZValues(bool killed = false);
     bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
 
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

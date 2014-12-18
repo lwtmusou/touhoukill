@@ -46,7 +46,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent)
     ui->connectButton->setFocus();
 
     ui->avatarPixmap->setPixmap(G_ROOM_SKIN.getGeneralPixmap(Config.UserAvatar,
-                                QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE));
+        QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE));
 
     hideAvatarList();
 
@@ -115,7 +115,7 @@ void ConnectionDialog::on_clearHistoryButton_clicked() {
 void ConnectionDialog::on_detectLANButton_clicked() {
     UdpDetectorDialog *detector_dialog = new UdpDetectorDialog(this);
     connect(detector_dialog, SIGNAL(address_chosen(QString)),
-            ui->hostComboBox->lineEdit(), SLOT(setText(QString)));
+        ui->hostComboBox->lineEdit(), SLOT(setText(QString)));
 
     detector_dialog->exec();
 }

@@ -30,7 +30,7 @@ GeneralSearch::GeneralSearch(GeneralOverview *parent)
     setLayout(layout);
 
     connect(this, SIGNAL(search(bool, QString, QString, QStringList, QStringList, int, int, QStringList)),
-            parent, SLOT(startSearch(bool, QString, QString, QStringList, QStringList, int, int, QStringList)));
+        parent, SLOT(startSearch(bool, QString, QString, QStringList, QStringList, int, int, QStringList)));
 }
 
 QWidget *GeneralSearch::createInfoTab() {
@@ -308,7 +308,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
 
         QString nickname = Sanguosha->translate("#" + general_name);
         if (nickname.startsWith("#") && general_name.contains("_"))
-            nickname = Sanguosha->translate("#" +general_name.split("_").last());
+            nickname = Sanguosha->translate("#" + general_name.split("_").last());
         QTableWidgetItem *nickname_item;
         if (!nickname.startsWith("#"))
             nickname_item = new QTableWidgetItem(nickname);
@@ -346,73 +346,73 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
 
         QTableWidgetItem *package_item = new QTableWidgetItem(package);
         package_item->setTextAlignment(Qt::AlignCenter);
-		
+
         if (Config.value("LuaPackages", QString()).toString().split("+").contains(general->getPackage())) {
             //package_item->setBackgroundColor(QColor(0x66, 0xCC, 0xFF));
             package_item->setToolTip(tr("<font color=#FFFF33>This is an Lua extension</font>"));
         }
         //对东方武将的“势力”“包”信息添加颜色.
-		if (general->getPackage()=="protagonist")
-			package_item->setBackgroundColor(QColor(138, 43, 226));
-		if (general->getKingdom()=="zhu")
-			kingdom_item->setBackgroundColor(QColor(138, 43, 226));
-			
-		if (general->getPackage()=="th06")
-			package_item->setBackgroundColor(QColor(255, 80, 1));
-		if (general->getKingdom()=="hmx")
-			kingdom_item->setBackgroundColor(QColor(255, 80, 1));
-			
-		if (general->getPackage()=="th07")
-			package_item->setBackgroundColor(QColor(102, 102, 255));
-		if (general->getKingdom()=="yym")
-			kingdom_item->setBackgroundColor(QColor(102, 102, 255));
-			
-		if (general->getPackage()=="th08")
-			package_item->setBackgroundColor(QColor(102, 102, 102));
-		if (general->getKingdom()=="yyc")
-			kingdom_item->setBackgroundColor(QColor(102, 102, 102));
-		
-		if (general->getPackage()=="th09")
-			package_item->setBackgroundColor(QColor(51, 204, 0));
-		if (general->getKingdom()=="zhan")
-			kingdom_item->setBackgroundColor(QColor(51, 204, 0));
-		
-		if (general->getPackage()=="th10")
-			package_item->setBackgroundColor(QColor(139, 69, 19));
-		if (general->getKingdom()=="fsl")
-			kingdom_item->setBackgroundColor(QColor(139, 69, 19));
-		
-		if (general->getPackage()=="th11")
-			package_item->setBackgroundColor(QColor(255, 102, 153));
-		if (general->getKingdom()=="dld")
-			kingdom_item->setBackgroundColor(QColor(255, 102, 153));
-			
-		if (general->getPackage()=="th12")
-			package_item->setBackgroundColor(QColor(32, 178, 170));
-		if (general->getKingdom()=="xlc")
-			kingdom_item->setBackgroundColor(QColor(32, 178, 170));	
-			
-		if (general->getPackage()=="th13")
-			package_item->setBackgroundColor(QColor(0, 102, 0));
-		if (general->getKingdom()=="slm")
-			kingdom_item->setBackgroundColor(QColor(0, 102, 0));	
-		
-		if (general->getPackage()=="th14")
-			package_item->setBackgroundColor(QColor(138, 43, 226));
-		if (general->getKingdom()=="hzc")
-			kingdom_item->setBackgroundColor(QColor(138, 43, 226));
+        if (general->getPackage() == "protagonist")
+            package_item->setBackgroundColor(QColor(138, 43, 226));
+        if (general->getKingdom() == "zhu")
+            kingdom_item->setBackgroundColor(QColor(138, 43, 226));
 
-		
-		if (general->getPackage()=="th99")
-			package_item->setBackgroundColor(QColor(255, 165, 0));
-		if (general->getKingdom()=="wai")
-			kingdom_item->setBackgroundColor(QColor(255, 165, 0));	
-			
-		if (general->getPackage()=="touhougods")
-			package_item->setBackgroundColor(QColor(238, 238, 0));
-		if (general->getKingdom()=="touhougod")
-			kingdom_item->setBackgroundColor(QColor(238, 238, 0));		
-			
+        if (general->getPackage() == "th06")
+            package_item->setBackgroundColor(QColor(255, 80, 1));
+        if (general->getKingdom() == "hmx")
+            kingdom_item->setBackgroundColor(QColor(255, 80, 1));
+
+        if (general->getPackage() == "th07")
+            package_item->setBackgroundColor(QColor(102, 102, 255));
+        if (general->getKingdom() == "yym")
+            kingdom_item->setBackgroundColor(QColor(102, 102, 255));
+
+        if (general->getPackage() == "th08")
+            package_item->setBackgroundColor(QColor(102, 102, 102));
+        if (general->getKingdom() == "yyc")
+            kingdom_item->setBackgroundColor(QColor(102, 102, 102));
+
+        if (general->getPackage() == "th09")
+            package_item->setBackgroundColor(QColor(51, 204, 0));
+        if (general->getKingdom() == "zhan")
+            kingdom_item->setBackgroundColor(QColor(51, 204, 0));
+
+        if (general->getPackage() == "th10")
+            package_item->setBackgroundColor(QColor(139, 69, 19));
+        if (general->getKingdom() == "fsl")
+            kingdom_item->setBackgroundColor(QColor(139, 69, 19));
+
+        if (general->getPackage() == "th11")
+            package_item->setBackgroundColor(QColor(255, 102, 153));
+        if (general->getKingdom() == "dld")
+            kingdom_item->setBackgroundColor(QColor(255, 102, 153));
+
+        if (general->getPackage() == "th12")
+            package_item->setBackgroundColor(QColor(32, 178, 170));
+        if (general->getKingdom() == "xlc")
+            kingdom_item->setBackgroundColor(QColor(32, 178, 170));
+
+        if (general->getPackage() == "th13")
+            package_item->setBackgroundColor(QColor(0, 102, 0));
+        if (general->getKingdom() == "slm")
+            kingdom_item->setBackgroundColor(QColor(0, 102, 0));
+
+        if (general->getPackage() == "th14")
+            package_item->setBackgroundColor(QColor(138, 43, 226));
+        if (general->getKingdom() == "hzc")
+            kingdom_item->setBackgroundColor(QColor(138, 43, 226));
+
+
+        if (general->getPackage() == "th99")
+            package_item->setBackgroundColor(QColor(255, 165, 0));
+        if (general->getKingdom() == "wai")
+            kingdom_item->setBackgroundColor(QColor(255, 165, 0));
+
+        if (general->getPackage() == "touhougods")
+            package_item->setBackgroundColor(QColor(238, 238, 0));
+        if (general->getKingdom() == "touhougod")
+            kingdom_item->setBackgroundColor(QColor(238, 238, 0));
+
         ui->tableWidget->setItem(i, 0, nickname_item);
         ui->tableWidget->setItem(i, 1, name_item);
         ui->tableWidget->setItem(i, 2, kingdom_item);
@@ -560,33 +560,33 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
 
         addCopyAction(death_button);
     }
-	
-	QString declaration_title = Sanguosha->translate("lord_declaration");
-	QString declaration = Sanguosha->translate("$" + general->objectName());
+
+    QString declaration_title = Sanguosha->translate("lord_declaration");
+    QString declaration = Sanguosha->translate("$" + general->objectName());
     if (declaration.startsWith("$") && general->objectName().contains("_"))
         declaration = Sanguosha->translate(("$") + general->objectName().split("_").last());
 
     if (!declaration.startsWith("$")) {
         QCommandLinkButton *declaration_button = new QCommandLinkButton(declaration_title, declaration);
-        
-		
-		QString declaration_path="audio/declaration/"+general_name+".ogg";
-		declaration_button->setObjectName(declaration_path); //
-		//declaration_button->setObjectName("audio/system/win-cc.ogg");
-		button_layout->addWidget(declaration_button);
+
+
+        QString declaration_path = "audio/declaration/" + general_name + ".ogg";
+        declaration_button->setObjectName(declaration_path); //
+        //declaration_button->setObjectName("audio/system/win-cc.ogg");
+        button_layout->addWidget(declaration_button);
         connect(declaration_button, SIGNAL(clicked()), general, SLOT(playAudioEffect()));
-		//if (general->objectName().contains("zhu"))
-		//	Sanguosha->playAudioEffect("audio/system/win-cc.ogg");
-    
-		addCopyAction(declaration_button);
+        //if (general->objectName().contains("zhu"))
+        //	Sanguosha->playAudioEffect("audio/system/win-cc.ogg");
+
+        addCopyAction(declaration_button);
     }
-	
+
     if (general_name.contains("caocao")) {
         QCommandLinkButton *win_button = new QCommandLinkButton(tr("Victory"),
-                                                                tr("Six dragons lead my chariot, "
-                                                                   "I will ride the wind with the greatest speed."
-                                                                   "With all of the feudal lords under my command,"
-                                                                   "to rule the world with one name!"));
+            tr("Six dragons lead my chariot, "
+            "I will ride the wind with the greatest speed."
+            "With all of the feudal lords under my command,"
+            "to rule the world with one name!"));
 
         button_layout->addWidget(win_button);
         addCopyAction(win_button);
@@ -597,7 +597,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
 
     if (general_name == "shenlvbu1" || general_name == "shenlvbu2") {
         QCommandLinkButton *stage_change_button = new QCommandLinkButton(tr("Stage Change"),
-                                                                         tr("Trashes, the real fun is just beginning!"));
+            tr("Trashes, the real fun is just beginning!"));
 
         button_layout->addWidget(stage_change_button);
         addCopyAction(stage_change_button);
@@ -630,7 +630,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
 
 void GeneralOverview::playAudioEffect() {
     QObject *button = sender();
-	if (button) {
+    if (button) {
         QString source = button->objectName();
         if (!source.isEmpty())
             Sanguosha->playAudioEffect(source);
@@ -681,7 +681,7 @@ void GeneralOverview::askChangeSkin() {
 }
 
 void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,
-                                  const QStringList &kingdoms, int lower, int upper, const QStringList &packages) {
+    const QStringList &kingdoms, int lower, int upper, const QStringList &packages) {
     QList<const General *> generals;
     foreach (const General *general, all_generals) {
         QString general_name = general->objectName();

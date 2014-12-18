@@ -7,7 +7,7 @@
 #include <QGraphicsPixmapItem>
 
 SanShadowTextFont::SanShadowTextFont() : m_shadowRadius(-1),
-    m_shadowDecadeFactor(1.0), m_shadowColor(Qt::black), m_shadowOffset(QPoint(0, 0))
+m_shadowDecadeFactor(1.0), m_shadowColor(Qt::black), m_shadowOffset(QPoint(0, 0))
 {
 }
 

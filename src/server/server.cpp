@@ -102,7 +102,7 @@ QWidget *ServerDialog::createPackageTab() {
 
     int i = 0, j = 0;
     int row = 0, column = 0;
-    foreach (QString extension, extensions) {
+    foreach(QString extension, extensions) {
         const Package *package = Sanguosha->findChild<const Package *>(extension);
         if (package == NULL)
             continue;
@@ -118,27 +118,27 @@ QWidget *ServerDialog::createPackageTab() {
 
         switch (package->getType()) {
         case Package::GeneralPack: {
-                if (extension=="standard")
-					continue;
-				row = i / 5;
-                column = i % 5;
-                i++;
+            if (extension == "standard")
+                continue;
+            row = i / 5;
+            column = i % 5;
+            i++;
 
-                layout1->addWidget(checkbox, row, column + 1);
-                break;
-            }
+            layout1->addWidget(checkbox, row, column + 1);
+            break;
+        }
         case Package::CardPack: {
-                if (extension=="touhoucard")
-					continue;
-				row = j / 5;
-                column = j % 5;
-                j++;
+            if (extension == "touhoucard")
+                continue;
+            row = j / 5;
+            column = j % 5;
+            j++;
 
-                layout2->addWidget(checkbox, row, column + 1);
-                break;
-            }
+            layout2->addWidget(checkbox, row, column + 1);
+            break;
+        }
         default:
-                break;
+            break;
         }
     }
 
@@ -169,7 +169,8 @@ void ServerDialog::setMaxHpSchemeBox() {
         scheme0_subtraction_spinbox->setVisible(true);
         scheme0_subtraction_spinbox->setValue(Config.value("Scheme0Subtraction", 3).toInt());
         scheme0_subtraction_spinbox->setEnabled(true);
-    } else {
+    }
+    else {
         prevent_awaken_below3_checkbox->setVisible(true);
         prevent_awaken_below3_checkbox->setChecked(Config.value("PreventAwakenBelow3", false).toBool());
         prevent_awaken_below3_checkbox->setEnabled(true);
@@ -248,7 +249,7 @@ QWidget *ServerDialog::createAdvancedTab() {
     second_general_checkbox = new QCheckBox(tr("Enable second general"));
     second_general_checkbox->setChecked(Config.Enable2ndGeneral);
 
-    scene_checkbox  = new QCheckBox(tr("Enable Scene"));
+    scene_checkbox = new QCheckBox(tr("Enable Scene"));
     scene_checkbox->setChecked(Config.EnableScene);    //changjing
 
     //same_checkbox = new QCheckBox(tr("Enable Same"));
@@ -274,7 +275,7 @@ QWidget *ServerDialog::createAdvancedTab() {
     scheme0_subtraction_spinbox->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
 
     connect(max_hp_scheme_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setMaxHpSchemeBox()));
-	//暗将国战
+    //暗将国战
     /*basara_checkbox = new QCheckBox(tr("Enable Basara"));
     basara_checkbox->setChecked(Config.EnableBasara);
     updateButtonEnablility(mode_group->checkedButton());
@@ -295,7 +296,7 @@ QWidget *ServerDialog::createAdvancedTab() {
     hegemony_maxshown_spinbox = new QSpinBox;
     hegemony_maxshown_spinbox->setRange(1, 11);
     hegemony_maxshown_spinbox->setValue(Config.value("HegemonyMaxShown", 2).toInt());
-	*/
+    */
     //enable_surprising_generals_checkbox = new QCheckBox(tr("Enable surprising generals"));
     //enable_surprising_generals_checkbox->setChecked(Config.EnableSurprisingGenerals);
 
@@ -350,7 +351,8 @@ QWidget *ServerDialog::createAdvancedTab() {
         prevent_awaken_below3_checkbox->setVisible(max_hp_scheme_ComboBox->currentIndex() != 0);
         scheme0_subtraction_label->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
         scheme0_subtraction_spinbox->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
-    } else {
+    }
+    else {
         prevent_awaken_below3_checkbox->setVisible(false);
         scheme0_subtraction_label->setVisible(false);
         scheme0_subtraction_spinbox->setVisible(false);
@@ -366,7 +368,7 @@ QWidget *ServerDialog::createAdvancedTab() {
     connect(hegemony_checkbox, SIGNAL(toggled(bool)), hegemony_maxshown_label, SLOT(setVisible(bool)));
     hegemony_maxshown_spinbox->setVisible(Config.EnableHegemony);
     connect(hegemony_checkbox, SIGNAL(toggled(bool)), hegemony_maxshown_spinbox, SLOT(setVisible(bool)));
-	*/
+    */
     return widget;
 }
 
@@ -452,7 +454,8 @@ void ServerDialog::updateButtonEnablility(QAbstractButton *button) {
         || button->objectName().contains("1v3")) {
         //basara_checkbox->setChecked(false);
         //basara_checkbox->setEnabled(false);
-    } else {
+    }
+    else {
         //basara_checkbox->setEnabled(true);
     }
 
@@ -460,7 +463,8 @@ void ServerDialog::updateButtonEnablility(QAbstractButton *button) {
         mini_scene_button->setEnabled(true);
         second_general_checkbox->setChecked(false);
         second_general_checkbox->setEnabled(false);
-    } else {
+    }
+    else {
         second_general_checkbox->setEnabled(true);
         mini_scene_button->setEnabled(false);
     }
@@ -469,7 +473,7 @@ void ServerDialog::updateButtonEnablility(QAbstractButton *button) {
 void BanlistDialog::switchTo(int item) {
     this->item = item;
     list = lists.at(item);
-    if (add2nd) add2nd->setVisible((list->objectName()=="Pairs"));
+    if (add2nd) add2nd->setVisible((list->objectName() == "Pairs"));
 }
 
 BanlistDialog::BanlistDialog(QWidget *parent, bool view)
@@ -485,7 +489,7 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
     layout->addWidget(tab);
     connect(tab, SIGNAL(currentChanged(int)), this, SLOT(switchTo(int)));
 
-    foreach (QString item, ban_list) {
+    foreach(QString item, ban_list) {
         if (item == "Pairs") continue;
         QWidget *apage = new QWidget;
 
@@ -493,7 +497,7 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
         list->setObjectName(item);
 
         QStringList banlist = Config.value(QString("Banlist/%1").arg(item)).toStringList();
-        foreach (QString name, banlist)
+        foreach(QString name, banlist)
             addGeneral(name);
 
         lists << list;
@@ -510,11 +514,11 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
     list = new QListWidget;
     list->setObjectName("Pairs");
     this->list = list;
-    foreach (QString banned, BanPair::getAllBanSet().toList())
+    foreach(QString banned, BanPair::getAllBanSet().toList())
         addGeneral(banned);
-    foreach (QString banned, BanPair::getSecondBanSet().toList())
+    foreach(QString banned, BanPair::getSecondBanSet().toList())
         add2ndGeneral(banned);
-    foreach (BanPair pair, BanPair::getBanPairSet().toList())
+    foreach(BanPair pair, BanPair::getBanPairSet().toList())
         addPair(pair.first, pair.second);
 
     QVBoxLayout *vlay = new QVBoxLayout;
@@ -549,7 +553,7 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
 
     setLayout(layout);
 
-    foreach (QListWidget *alist, lists) {
+    foreach(QListWidget *alist, lists) {
         if (alist->objectName() == "Pairs") continue;
         alist->setViewMode(QListView::IconMode);
         alist->setDragDropMode(QListView::NoDragDrop);
@@ -562,7 +566,8 @@ void BanlistDialog::addGeneral(const QString &name) {
         QListWidgetItem *item = new QListWidgetItem(text);
         item->setData(Qt::UserRole, QVariant::fromValue(name));
         list->addItem(item);
-    } else {
+    }
+    else {
         QIcon icon(G_ROOM_SKIN.getGeneralPixmap(name, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY));
         QString text = Sanguosha->translate(name);
         QListWidgetItem *item = new QListWidgetItem(icon, text, list);
@@ -686,10 +691,10 @@ QGroupBox *ServerDialog::create3v3Box() {
 
     QString rule = Config.value("3v3/OfficialRule", "2013").toString();
     if (rule == "2012")
-        officialComboBox->setCurrentIndex(1);
+    officialComboBox->setCurrentIndex(1);
     else if (rule == "2013")
-        officialComboBox->setCurrentIndex(2);
-	*/
+    officialComboBox->setCurrentIndex(2);
+    */
     QRadioButton *extend = new QRadioButton(tr("Extension mode"));
     QPushButton *extend_edit_button = new QPushButton(tr("General selection ..."));
     extend_edit_button->setEnabled(false);
@@ -720,9 +725,9 @@ QGroupBox *ServerDialog::create3v3Box() {
 
     //bool using_extension = Config.value("3v3/UsingExtension", false).toBool();
     //if (using_extension)
-        extend->setChecked(true);
-   // else
-   //     official_3v3_radiobutton->setChecked(true);
+    extend->setChecked(true);
+    // else
+    //     official_3v3_radiobutton->setChecked(true);
 
     return box;
 }
@@ -770,17 +775,20 @@ QGroupBox *ServerDialog::createGameModeBox() {
             connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
 
             item_list << button << box;
-        } else if (itor.key() == "06_3v3") {
+        }
+        else if (itor.key() == "06_3v3") {
             QGroupBox *box = create3v3Box();
             connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
 
             item_list << button << box;
-        } else if (itor.key() == "06_XMode") {
+        }
+        else if (itor.key() == "06_XMode") {
             QGroupBox *box = createXModeBox();
             connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
 
             item_list << button << box;
-        } else {
+        }
+        else {
             item_list << button;
         }
 
@@ -796,19 +804,19 @@ QGroupBox *ServerDialog::createGameModeBox() {
     scenario_ComboBox = new QComboBox;
     QStringList names = Sanguosha->getModScenarioNames();
     foreach (QString name, names) {
-        QString scenario_name = Sanguosha->translate(name);
-        const Scenario *scenario = Sanguosha->getScenario(name);
-        int count = scenario->getPlayerCount();
-        QString text = tr("%1 (%2 persons)").arg(scenario_name).arg(count);
-        scenario_ComboBox->addItem(text, name);
+    QString scenario_name = Sanguosha->translate(name);
+    const Scenario *scenario = Sanguosha->getScenario(name);
+    int count = scenario->getPlayerCount();
+    QString text = tr("%1 (%2 persons)").arg(scenario_name).arg(count);
+    scenario_ComboBox->addItem(text, name);
     }
 
     if (mode_group->checkedButton() == NULL) {
-        int index = names.indexOf(Config.GameMode);
-        if (index != -1) {
-            scenario_button->setChecked(true);
-            scenario_ComboBox->setCurrentIndex(index);
-        }
+    int index = names.indexOf(Config.GameMode);
+    if (index != -1) {
+    scenario_button->setChecked(true);
+    scenario_ComboBox->setCurrentIndex(index);
+    }
     }*/
 
     //mini scenes
@@ -821,34 +829,34 @@ QGroupBox *ServerDialog::createGameModeBox() {
     int stage = qMin(Sanguosha->getMiniSceneCounts(), Config.value("MiniSceneStage", 1).toInt());
 
     for (int i = 1; i <= stage; i++) {
-        QString name = QString(MiniScene::S_KEY_MINISCENE).arg(QString::number(i));
-        QString scenario_name = Sanguosha->translate(name);
-        const Scenario *scenario = Sanguosha->getScenario(name);
-        int count = scenario->getPlayerCount();
-        QString text = tr("%1 (%2 persons)").arg(scenario_name).arg(count);
-        mini_scene_ComboBox->addItem(text, name);
+    QString name = QString(MiniScene::S_KEY_MINISCENE).arg(QString::number(i));
+    QString scenario_name = Sanguosha->translate(name);
+    const Scenario *scenario = Sanguosha->getScenario(name);
+    int count = scenario->getPlayerCount();
+    QString text = tr("%1 (%2 persons)").arg(scenario_name).arg(count);
+    mini_scene_ComboBox->addItem(text, name);
 
-        if (name == Config.GameMode) index = i - 1;
+    if (name == Config.GameMode) index = i - 1;
     }
 
     if (index >= 0) {
-        mini_scene_ComboBox->setCurrentIndex(index);
-        mini_scenes->setChecked(true);
+    mini_scene_ComboBox->setCurrentIndex(index);
+    mini_scenes->setChecked(true);
     } else if (Config.GameMode == "custom_scenario")
-        mini_scenes->setChecked(true);*/
-	if (Config.GameMode == "custom_scenario")
+    mini_scenes->setChecked(true);*/
+    if (Config.GameMode == "custom_scenario")
         mini_scenes->setChecked(true);
-	//强行屏蔽
-	//mini_scene_ComboBox->setEnabled(false);
-	
+    //强行屏蔽
+    //mini_scene_ComboBox->setEnabled(false);
+
     mini_scene_button = new QPushButton(tr("Custom Mini Scene"));
     connect(mini_scene_button, SIGNAL(clicked()), this, SLOT(doCustomAssign()));
 
     /*mini_scene_button->setEnabled(mode_group->checkedButton() ?
                                       mode_group->checkedButton()->objectName() == "mini" :
                                       false);*/
-									 
-	mini_scene_button->setEnabled(true);
+
+    mini_scene_button->setEnabled(true);
     //item_list << HLay(scenario_button, scenario_ComboBox);
     //item_list << HLay(mini_scenes, mini_scene_ComboBox);
     item_list << HLay(mini_scenes, mini_scene_button);
@@ -860,13 +868,14 @@ QGroupBox *ServerDialog::createGameModeBox() {
 
     for (int i = 0; i < item_list.length(); i++) {
         QObject *item = item_list.at(i);
-		//原规划是取半然后减4
+        //原规划是取半然后减4
         QVBoxLayout *side = i <= item_list.length() / 2 - 2 ? left : right;
-		
+
         if (item->isWidgetType()) {
             QWidget *widget = qobject_cast<QWidget *>(item);
             side->addWidget(widget);
-        } else {
+        }
+        else {
             QLayout *item_layout = qobject_cast<QLayout *>(item);
             side->addLayout(item_layout);
         }
@@ -904,9 +913,9 @@ QLayout *ServerDialog::createButtonLayout() {
 void ServerDialog::onDetectButtonClicked() {
     QHostInfo vHostInfo = QHostInfo::fromName(QHostInfo::localHostName());
     QList<QHostAddress> vAddressList = vHostInfo.addresses();
-    foreach (QHostAddress address, vAddressList) {
+    foreach(QHostAddress address, vAddressList) {
         if (!address.isNull() && address != QHostAddress::LocalHost
-            && address.protocol() ==  QAbstractSocket::IPv4Protocol) {
+            && address.protocol() == QAbstractSocket::IPv4Protocol) {
             address_edit->setText(address.toString());
             return;
         }
@@ -942,26 +951,26 @@ Select3v3GeneralDialog::Select3v3GeneralDialog(QDialog *parent)
 
 void Select3v3GeneralDialog::fillTabWidget() {
     QList<const Package *> packages = Sanguosha->findChildren<const Package *>();
-    foreach (const Package *package, packages) {
+    foreach(const Package *package, packages) {
         switch (package->getType()) {
         case Package::GeneralPack:
         case Package::MixedPack: {
-                QListWidget *list = new QListWidget;
-                list->setViewMode(QListView::IconMode);
-                list->setDragDropMode(QListView::NoDragDrop);
-                fillListWidget(list, package);
+            QListWidget *list = new QListWidget;
+            list->setViewMode(QListView::IconMode);
+            list->setDragDropMode(QListView::NoDragDrop);
+            fillListWidget(list, package);
 
-                tab_widget->addTab(list, Sanguosha->translate(package->objectName()));
-            }
+            tab_widget->addTab(list, Sanguosha->translate(package->objectName()));
+        }
         default:
-                break;
+            break;
         }
     }
 }
 
 void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pack) {
     QList<const General *> generals = pack->findChildren<const General *>();
-    foreach (const General *general, generals) {
+    foreach(const General *general, generals) {
         if (Sanguosha->isGeneralHidden(general->objectName())) continue;
 
         QListWidgetItem *item = new QListWidgetItem(list);
@@ -971,8 +980,9 @@ void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pa
         bool checked = false;
         if (ex_generals.isEmpty()) {
             checked = (pack->objectName() == "standard" || pack->objectName() == "wind")
-                      && general->objectName() != "yuji";
-        } else
+                && general->objectName() != "yuji";
+        }
+        else
             checked = ex_generals.contains(general->objectName());
 
         if (checked)
@@ -1061,7 +1071,8 @@ bool ServerDialog::config() {
     if (Config.MaxHpScheme == 0) {
         Config.Scheme0Subtraction = scheme0_subtraction_spinbox->value();
         Config.PreventAwakenBelow3 = false;
-    } else {
+    }
+    else {
         Config.Scheme0Subtraction = 3;
         Config.PreventAwakenBelow3 = prevent_awaken_below3_checkbox->isChecked();
     }
@@ -1088,8 +1099,9 @@ bool ServerDialog::config() {
         //if (mini_scene_ComboBox->isEnabled())
         //    Config.GameMode = mini_scene_ComboBox->itemData(mini_scene_ComboBox->currentIndex()).toString();
         //else
-            Config.GameMode = "custom_scenario";
-    } else
+        Config.GameMode = "custom_scenario";
+    }
+    else
         Config.GameMode = objname;
 
     Config.setValue("ServerName", Config.ServerName);
@@ -1153,7 +1165,7 @@ bool ServerDialog::config() {
 
     QSet<QString> ban_packages;
     QList<QAbstractButton *> checkboxes = extension_group->buttons();
-    foreach (QAbstractButton *checkbox, checkboxes) {
+    foreach(QAbstractButton *checkbox, checkboxes) {
         if (!checkbox->isChecked()) {
             QString package_name = checkbox->objectName();
             Sanguosha->addBanPackage(package_name);
@@ -1186,7 +1198,7 @@ Server::Server(QObject *parent)
 void Server::broadcast(const QString &msg) {
     QString to_sent = msg.toUtf8().toBase64();
     to_sent = ".:" + to_sent;
-    foreach (Room *room, rooms)
+    foreach(Room *room, rooms)
         room->broadcastInvoke("speak", to_sent);
 }
 
@@ -1216,7 +1228,8 @@ void Server::processNewConnection(ClientSocket *socket) {
             socket->disconnectFromHost();
             emit server_message(tr("Forbid the connection of address %1").arg(addr));
             return;
-        } else
+        }
+        else
             addresses.insert(addr);
     }
 
@@ -1251,7 +1264,7 @@ void Server::processRequest(const char *request) {
     QString avatar = texts.at(3);
 
     if (command == "signupr") {
-        foreach (QString objname, name2objname.values(screen_name)) {
+        foreach(QString objname, name2objname.values(screen_name)) {
             ServerPlayer *player = players.value(objname);
             if (player && player->getState() == "offline" && !player->getRoom()->isFinished()) {
                 player->getRoom()->reconnect(player, socket);
@@ -1282,7 +1295,7 @@ void Server::gameOver() {
     Room *room = qobject_cast<Room *>(sender());
     rooms.remove(room);
 
-    foreach (ServerPlayer *player, room->findChildren<ServerPlayer *>()) {
+    foreach(ServerPlayer *player, room->findChildren<ServerPlayer *>()) {
         name2objname.remove(player->screenName(), player->objectName());
         players.remove(player->objectName());
     }

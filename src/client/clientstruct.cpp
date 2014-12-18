@@ -15,10 +15,10 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
     if (OperationTimeout == 0)
         return 0;
     else if (command == QSanProtocol::S_COMMAND_CHOOSE_GENERAL
-             || command == QSanProtocol::S_COMMAND_ASK_GENERAL)
+        || command == QSanProtocol::S_COMMAND_ASK_GENERAL)
         timeOut = OperationTimeout * 1500;
     else if (command == QSanProtocol::S_COMMAND_SKILL_GUANXING
-             || command == QSanProtocol::S_COMMAND_ARRANGE_GENERAL)
+        || command == QSanProtocol::S_COMMAND_ARRANGE_GENERAL)
         timeOut = OperationTimeout * 2000;
     else if (command == QSanProtocol::S_COMMAND_NULLIFICATION)
         timeOut = NullificationCountDown * 1000;
@@ -75,7 +75,7 @@ bool ServerInfoStruct::parse(const QString &str) {
         Enable2ndGeneral = flags.contains("S");
         EnableScene = flags.contains("N"); // changjing
         EnableSame = flags.contains("T");
-        EnableBasara= flags.contains("B");
+        EnableBasara = flags.contains("B");
         EnableHegemony = flags.contains("H");
         EnableAI = flags.contains("A");
         DisableChat = flags.contains("M");

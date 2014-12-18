@@ -10,11 +10,11 @@
 #include <QGraphicsObject>
 #include <QPixmap>
 
-class TablePile: public GenericCardContainer {
+class TablePile : public GenericCardContainer {
     Q_OBJECT
 
 public:
-    inline TablePile(): GenericCardContainer(), m_currentTime(0) { m_timer = startTimer(S_CLEARANCE_UPDATE_INTERVAL_MSEC); }
+    inline TablePile() : GenericCardContainer(), m_currentTime(0) { m_timer = startTimer(S_CLEARANCE_UPDATE_INTERVAL_MSEC); }
     virtual QList<CardItem *> removeCardItems(const QList<int> &card_ids, Player::Place place);
     inline void setSize(QSize newSize) { setSize(newSize.width(), newSize.height()); }
     void setSize(double width, double height);

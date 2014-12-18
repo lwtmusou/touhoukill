@@ -6,18 +6,18 @@
 
 
 
-class puduCard: public SkillCard {
+class puduCard : public SkillCard {
     Q_OBJECT
 
 public:
     Q_INVOKABLE puduCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-	virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 
-class weizhiCard: public SkillCard {
+class weizhiCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -27,7 +27,7 @@ public:
 };
 
 
-class chuannanCard: public SkillCard {
+class chuannanCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -38,17 +38,17 @@ public:
 
 };
 
-class nuhuoCard: public SkillCard {
+class nuhuoCard : public SkillCard {
     Q_OBJECT
 
 public:
     Q_INVOKABLE nuhuoCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-	virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class th12Package: public Package {
+class th12Package : public Package {
     Q_OBJECT
 
 public:

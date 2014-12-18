@@ -8,7 +8,7 @@
 #include <QPixmap>
 #include <QBrush>
 
-class Settings: public QSettings {
+class Settings : public QSettings {
     Q_OBJECT
 
 public:
@@ -16,8 +16,8 @@ public:
     void init();
 
     const QRectF Rect;
-	
-	static const QString &getQSSFileContent();
+
+    static const QString &getQSSFileContent();
     QFont BigFont;
     QFont SmallFont;
     QFont TinyFont;
@@ -74,10 +74,10 @@ public:
     bool EnableAutoTarget;
     bool EnableIntellectualSelection;
     bool EnableDoubleClick;
-	
-	bool DefaultHeroSkin;
-	
-	int BubbleChatBoxDelaySeconds;
+
+    bool DefaultHeroSkin;
+
+    int BubbleChatBoxDelaySeconds;
     int OperationTimeout;
     bool OperationNoLimit;
     bool EnableEffects;

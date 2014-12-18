@@ -16,7 +16,7 @@ struct PhaseStruct;
 #include <QSemaphore>
 #include <QDateTime>
 
-class ServerPlayer: public Player {
+class ServerPlayer : public Player {
     Q_OBJECT
     Q_PROPERTY(QString ip READ getIp)
 
@@ -131,7 +131,7 @@ public:
     inline void releaseLock(SemaphoreType type) { semas[type]->release(); }
     inline void drainLock(SemaphoreType type) { while (semas[type]->tryAcquire()) {} }
     inline void drainAllLocks() {
-        for (int i  =0; i < S_NUM_SEMAPHORES; i++) {
+        for (int i = 0; i < S_NUM_SEMAPHORES; i++) {
             drainLock((SemaphoreType)i);
         }
     }

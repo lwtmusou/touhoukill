@@ -35,7 +35,7 @@ IceSlash::IceSlash(Suit suit, int number)
     : NatureSlash(suit, number, DamageStruct::Ice)
 {
     setObjectName("ice_slash");
-	nature = DamageStruct::Ice;
+    nature = DamageStruct::Ice;
 }
 
 Analeptic::Analeptic(Card::Suit suit, int number)
@@ -73,9 +73,9 @@ void Analeptic::onUse(Room *room, const CardUseStruct &card_use) const{
 
 /*
 void Analeptic::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    BasicCard::use(room, source, targets);
-    if (targets.isEmpty())
-        room->cardEffect(this, source, source);
+BasicCard::use(room, source, targets);
+if (targets.isEmpty())
+room->cardEffect(this, source, source);
 }
 */
 
@@ -94,11 +94,11 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const{
     }
 }
 
-class FanSkill: public OneCardViewAsSkill {
+class FanSkill : public OneCardViewAsSkill {
 public:
-    FanSkill(): OneCardViewAsSkill("Fan") {
+    FanSkill() : OneCardViewAsSkill("Fan") {
         filter_pattern = "%slash";
-		response_or_use = true;
+        response_or_use = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -107,7 +107,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
         return Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
-               && pattern == "slash" && player->getMark("Equips_Nullified_to_Yourself") == 0;
+            && pattern == "slash" && player->getMark("Equips_Nullified_to_Yourself") == 0;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -124,29 +124,29 @@ Fan::Fan(Suit suit, int number)
     setObjectName("Fan");
 }
 
-class GudingBladeSkill: public WeaponSkill {
+class GudingBladeSkill : public WeaponSkill {
 public:
-    GudingBladeSkill(): WeaponSkill("GudingBlade") {
+    GudingBladeSkill() : WeaponSkill("GudingBlade") {
         events << DamageCaused;
     }
 
-    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        
-		if (damage.card && damage.card->isKindOf("Slash")
+
+        if (damage.card && damage.card->isKindOf("Slash")
             && damage.to->getMark("Equips_of_Others_Nullified_to_You") == 0
             && damage.to->isKongcheng() && damage.by_user && !damage.chain && !damage.transfer) {
-            
-			if (damage.from->getMark("@tianyi_Weapon")>0)
-				return false;
-			room->setEmotion(player, "weapon/guding_blade");
+
+            if (damage.from->getMark("@tianyi_Weapon") > 0)
+                return false;
+            room->setEmotion(player, "weapon/guding_blade");
 
             LogMessage log;
             log.type = "#GudingBladeEffect";
             log.from = player;
             log.to << damage.to;
             log.arg = QString::number(damage.damage);
-            log.arg2 = QString::number(++ damage.damage);
+            log.arg2 = QString::number(++damage.damage);
             room->sendLog(log);
 
             data = QVariant::fromValue(damage);
@@ -162,9 +162,9 @@ GudingBlade::GudingBlade(Suit suit, int number)
     setObjectName("GudingBlade");
 }
 
-class VineSkill: public ArmorSkill {
+class VineSkill : public ArmorSkill {
 public:
-    VineSkill(): ArmorSkill("Vine") {
+    VineSkill() : ArmorSkill("Vine") {
         events << DamageInflicted << SlashEffected << CardEffected;
     }
 
@@ -205,7 +205,7 @@ public:
                 log.type = "#VineDamage";
                 log.from = player;
                 log.arg = QString::number(damage.damage);
-                log.arg2 = QString::number(++ damage.damage);
+                log.arg2 = QString::number(++damage.damage);
                 room->sendLog(log);
 
                 data = QVariant::fromValue(damage);
@@ -222,9 +222,9 @@ Vine::Vine(Suit suit, int number)
     setObjectName("Vine");
 }
 
-class SilverLionSkill: public ArmorSkill {
+class SilverLionSkill : public ArmorSkill {
 public:
-    SilverLionSkill(): ArmorSkill("SilverLion") {
+    SilverLionSkill() : ArmorSkill("SilverLion") {
         events << DamageInflicted << CardsMoveOneTime;
     }
 
@@ -334,7 +334,7 @@ bool IronChain::targetFilter(const QList<const Player *> &targets, const Player 
 
 bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     bool rec = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
-	QList<int> sub;
+    QList<int> sub;
     if (isVirtualCard())
         sub = subcards;
     else
@@ -344,22 +344,22 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
             rec = false;
             break;
         }
-		 if (Self->getPile("wooden_ox").contains(id)) {
+        if (Self->getPile("wooden_ox").contains(id)) {
             rec = false;
             break;
         }
     }
-	
-	if (rec && Self->isCardLimited(this, Card::MethodUse))
+
+    if (rec && Self->isCardLimited(this, Card::MethodUse))
         return targets.length() == 0;
-	
-	
-	
+
+
+
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
         return targets.length() != 0;
 
     int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    if (!rec ||getSkillName().contains("guhuo") || getSkillName() == "qice")
+    if (!rec || getSkillName().contains("guhuo") || getSkillName() == "qice")
         return targets.length() > 0 && targets.length() <= total_num;
     else
         return targets.length() <= total_num;
@@ -407,7 +407,7 @@ SupplyShortage::SupplyShortage(Card::Suit suit, int number)
 bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if (!targets.isEmpty() || to_select->containsTrick(objectName()) || to_select == Self)
         return false;
-	if (hasFlag("fahua"))
+    if (hasFlag("fahua"))
         return true;
     int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
     int rangefix = 0;
@@ -431,73 +431,73 @@ ManeuveringPackage::ManeuveringPackage()
 
     // spade
     cards //<< new IceSlash(Card::Spade, 4)
-			<< new GudingBlade(Card::Spade, 1)
-          << new Vine(Card::Spade, 2)
-          << new Analeptic(Card::Spade, 3)
-          << new ThunderSlash(Card::Spade, 4)
-          << new ThunderSlash(Card::Spade, 5)
-          << new ThunderSlash(Card::Spade, 6)
-          << new ThunderSlash(Card::Spade, 7)
-          << new ThunderSlash(Card::Spade, 8)
-          << new Analeptic(Card::Spade, 9)
-          << new SupplyShortage(Card::Spade, 10)
-          << new IronChain(Card::Spade, 11)
-          << new IronChain(Card::Spade, 12)
-          << new Nullification(Card::Spade, 13);
-   // club
+        << new GudingBlade(Card::Spade, 1)
+        << new Vine(Card::Spade, 2)
+        << new Analeptic(Card::Spade, 3)
+        << new ThunderSlash(Card::Spade, 4)
+        << new ThunderSlash(Card::Spade, 5)
+        << new ThunderSlash(Card::Spade, 6)
+        << new ThunderSlash(Card::Spade, 7)
+        << new ThunderSlash(Card::Spade, 8)
+        << new Analeptic(Card::Spade, 9)
+        << new SupplyShortage(Card::Spade, 10)
+        << new IronChain(Card::Spade, 11)
+        << new IronChain(Card::Spade, 12)
+        << new Nullification(Card::Spade, 13);
+    // club
     cards << new SilverLion(Card::Club, 1)
-          << new Vine(Card::Club, 2)
-          << new Analeptic(Card::Club, 3)
-          << new SupplyShortage(Card::Club, 4)
-          << new ThunderSlash(Card::Club, 5)
-          << new ThunderSlash(Card::Club, 6)
-          << new ThunderSlash(Card::Club, 7)
-          << new ThunderSlash(Card::Club, 8)
-          << new Analeptic(Card::Club, 9)
-          << new IronChain(Card::Club, 10)
-          << new IronChain(Card::Club, 11)
-          << new IronChain(Card::Club, 12)
-          << new IronChain(Card::Club, 13);
+        << new Vine(Card::Club, 2)
+        << new Analeptic(Card::Club, 3)
+        << new SupplyShortage(Card::Club, 4)
+        << new ThunderSlash(Card::Club, 5)
+        << new ThunderSlash(Card::Club, 6)
+        << new ThunderSlash(Card::Club, 7)
+        << new ThunderSlash(Card::Club, 8)
+        << new Analeptic(Card::Club, 9)
+        << new IronChain(Card::Club, 10)
+        << new IronChain(Card::Club, 11)
+        << new IronChain(Card::Club, 12)
+        << new IronChain(Card::Club, 13);
 
-     // heart
+    // heart
     cards << new Nullification(Card::Heart, 1)
-          << new FireAttack(Card::Heart, 2)
-          << new FireAttack(Card::Heart, 3)
-          << new FireSlash(Card::Heart, 4)
-          << new Peach(Card::Heart, 5)
-          << new Peach(Card::Heart, 6)
-          << new FireSlash(Card::Heart, 7)
-          << new Jink(Card::Heart, 8)
-          << new Jink(Card::Heart, 9)
-          << new FireSlash(Card::Heart, 10)
-          << new Jink(Card::Heart, 11)
-          << new Jink(Card::Heart, 12)
-          << new Nullification(Card::Heart, 13);
+        << new FireAttack(Card::Heart, 2)
+        << new FireAttack(Card::Heart, 3)
+        << new FireSlash(Card::Heart, 4)
+        << new Peach(Card::Heart, 5)
+        << new Peach(Card::Heart, 6)
+        << new FireSlash(Card::Heart, 7)
+        << new Jink(Card::Heart, 8)
+        << new Jink(Card::Heart, 9)
+        << new FireSlash(Card::Heart, 10)
+        << new Jink(Card::Heart, 11)
+        << new Jink(Card::Heart, 12)
+        << new Nullification(Card::Heart, 13);
 
     // diamond
     cards << new Fan(Card::Diamond, 1)
-          << new Peach(Card::Diamond, 2)
-          << new Peach(Card::Diamond, 3)
-          << new FireSlash(Card::Diamond, 4)
-          << new FireSlash(Card::Diamond, 5)
-          << new Jink(Card::Diamond, 6)
-          << new Jink(Card::Diamond, 7)
-          << new Jink(Card::Diamond, 8)
-          << new Analeptic(Card::Diamond, 9)
-          << new Jink(Card::Diamond, 10)
-          << new Jink(Card::Diamond, 11)
-          << new FireAttack(Card::Diamond, 12);
+        << new Peach(Card::Diamond, 2)
+        << new Peach(Card::Diamond, 3)
+        << new FireSlash(Card::Diamond, 4)
+        << new FireSlash(Card::Diamond, 5)
+        << new Jink(Card::Diamond, 6)
+        << new Jink(Card::Diamond, 7)
+        << new Jink(Card::Diamond, 8)
+        << new Analeptic(Card::Diamond, 9)
+        << new Jink(Card::Diamond, 10)
+        << new Jink(Card::Diamond, 11)
+        << new FireAttack(Card::Diamond, 12);
 
     DefensiveHorse *hualiu = new DefensiveHorse(Card::Diamond, 13);
     hualiu->setObjectName("HuaLiu");
 
     cards << hualiu;
 
-    foreach (Card *card, cards)
+    foreach(Card *card, cards)
         card->setParent(this);
 
     skills << new GudingBladeSkill << new FanSkill
-           << new VineSkill << new SilverLionSkill;
+        << new VineSkill << new SilverLionSkill;
 }
 
 ADD_PACKAGE(Maneuvering)

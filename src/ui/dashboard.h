@@ -20,14 +20,14 @@
 #include <QPropertyAnimation>
 
 
-class Dashboard: public PlayerCardContainer {
+class Dashboard : public PlayerCardContainer {
     Q_OBJECT
     Q_ENUMS(SortType)
 
 public:
     enum SortType { ByType, BySuit, ByNumber };
-	
-	Dashboard(QGraphicsItem *button_widget);
+
+    Dashboard(QGraphicsItem *button_widget);
     //Dashboard(QGraphicsPixmapItem *button_widget);
     virtual QRectF boundingRect() const;
     void setWidth(int width);
@@ -42,10 +42,10 @@ public:
 
     void hideControlButtons();
     void showControlButtons();
-	
+
     virtual void showProgressBar(QSanProtocol::Countdown countdown);
 
-	QRectF getAvatarAreaSceneBoundingRect() const {
+    QRectF getAvatarAreaSceneBoundingRect() const {
         return _m_rightFrame->sceneBoundingRect();
     }
     QSanSkillButton *removeSkillButton(const QString &skillName);
@@ -84,10 +84,10 @@ public:
     const ViewAsSkill *currentSkill() const;
     const Card *pendingCard() const;
 
-	void expandPileCards(const QString &pile_name);
-    void retractPileCards(const QString &pile_name, QList<int> remove_ids= QList<int>());
-	
-	
+    void expandPileCards(const QString &pile_name);
+    void retractPileCards(const QString &pile_name, QList<int> remove_ids = QList<int>());
+
+
     void selectCard(CardItem *item, bool isSelected);
 
     int getButtonWidgetWidth() const;
@@ -115,7 +115,7 @@ public slots:
     void skillButtonDeactivated();
     void selectAll();
     void controlNullificationButton(bool show);
-	
+
 protected:
     void _createExtraButtons();
     virtual void _adjustComponentZValues(bool killed = false);
@@ -132,23 +132,23 @@ protected:
     inline virtual QGraphicsItem *_getPileParent() { return _m_rightFrame; }
     inline virtual QGraphicsItem *_getProgressBarParent() { return _m_floatingArea; }
     inline virtual QGraphicsItem *_getFocusFrameParent() { return _m_rightFrame; }
-    inline virtual QGraphicsItem *_getDeathIconParent() { return _m_middleFrame;}
+    inline virtual QGraphicsItem *_getDeathIconParent() { return _m_middleFrame; }
     inline virtual QString getResourceKeyName() { return QSanRoomSkin::S_SKIN_KEY_DASHBOARD; }
-	virtual QPointF getHeroSkinContainerPosition() const;
-	//virtual const QSanShadowTextFont &getSkillNameFont() const {
+    virtual QPointF getHeroSkinContainerPosition() const;
+    //virtual const QSanShadowTextFont &getSkillNameFont() const {
     //    return G_DASHBOARD_LAYOUT.m_skillNameFont;
     //}
-	//virtual const QRect &getSkillNameArea() const { return G_DASHBOARD_LAYOUT.m_skillNameArea; }
-    
+    //virtual const QRect &getSkillNameArea() const { return G_DASHBOARD_LAYOUT.m_skillNameArea; }
+
     bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent);
-    
-	//virtual bool sceneEventFilter(QGraphicsItem *watched, QEvent *event);
-	
-	//void _addHandCard(CardItem *card_item);
+
+    //virtual bool sceneEventFilter(QGraphicsItem *watched, QEvent *event);
+
+    //void _addHandCard(CardItem *card_item);
     void _addHandCard(CardItem *card_item, bool prepend = false, const QString &footnote = QString());
-	void _adjustCards();
+    void _adjustCards();
     void _adjustCards(const QList<CardItem *> &list, int y);
 
     int _m_width;
@@ -176,8 +176,8 @@ protected:
 
     //for animated effects
     EffectAnimation *animations;
-	
-	
+
+
     // for parts creation
     void _createLeft();
     void _createRight();
@@ -189,8 +189,8 @@ protected:
     const Card *pending_card;
     const ViewAsSkill *view_as_skill;
     const FilterSkill *filter;
-	QStringList _m_pile_expanded;
-	
+    QStringList _m_pile_expanded;
+
     // for equip skill/selections
     PixmapAnimation *_m_equipBorders[5];
     QSanSkillButton *_m_equipSkillBtns[5];
@@ -204,28 +204,28 @@ protected:
     void setSelectedItem(CardItem *card_item);
 
     QMenu *_m_sort_menu;
-	//QMenu *_m_carditem_context_menu;
-	
-	//保存当前移进Dashboard可使用的卡牌
+    //QMenu *_m_carditem_context_menu;
+
+    //保存当前移进Dashboard可使用的卡牌
     QList<CardItem *> _m_cardItemsAnimationFinished;
     QMutex m_mutexCardItemsAnimationFinished;
-	
+
 protected slots:
     virtual void _onEquipSelectChanged();
-	//在播放卡牌移进Dashboard的动画过程中，玩家误操作时可产生按住卡牌后不让其移动的Bug，
+    //在播放卡牌移进Dashboard的动画过程中，玩家误操作时可产生按住卡牌后不让其移动的Bug，
     //为避免该问题，Dashboard需要重写这个槽方法
     virtual void onAnimationFinished();
-	 //自己的头像区不固定显示昵称，而是在鼠标悬停在上面时才显示
+    //自己的头像区不固定显示昵称，而是在鼠标悬停在上面时才显示
     virtual void onAvatarHoverEnter();
-	virtual void doAvatarHoverLeave() { _m_screenNameItem->hide(); }
-    
-	virtual bool isItemUnderMouse(QGraphicsItem *item);
-	
+    virtual void doAvatarHoverLeave() { _m_screenNameItem->hide(); }
+
+    virtual bool isItemUnderMouse(QGraphicsItem *item);
+
 private slots:
     void onCardItemClicked();
-	//将主界面移除的"反选"和"整理手牌"功能，转移到右键菜单来实现
+    //将主界面移除的"反选"和"整理手牌"功能，转移到右键菜单来实现
     //void onCardItemContextMenu();
-	
+
     void onCardItemDoubleClicked();
     void onCardItemThrown();
     void onCardItemHover();

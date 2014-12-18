@@ -43,7 +43,7 @@ CardOverview::CardOverview(QWidget *parent)
 void CardOverview::loadFromAll() {
     int n = Sanguosha->getCardCount();
     ui->tableWidget->setRowCount(n);
-    for (int i = 0; i < n ;i++) {
+    for (int i = 0; i < n; i++) {
         const Card *card = Sanguosha->getEngineCard(i);
         addCard(i, card);
     }

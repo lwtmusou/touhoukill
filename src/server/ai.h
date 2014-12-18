@@ -16,7 +16,7 @@ typedef int LuaFunction;
 #include <QString>
 #include <QObject>
 
-class AI: public QObject {
+class AI : public QObject {
     Q_OBJECT
     Q_ENUMS(Relation)
 
@@ -58,7 +58,7 @@ protected:
     ServerPlayer *self;
 };
 
-class TrustAI: public AI {
+class TrustAI : public AI {
     Q_OBJECT
 
 public:
@@ -88,7 +88,7 @@ private:
     ResponseSkill *response_skill;
 };
 
-class LuaAI: public TrustAI {
+class LuaAI : public TrustAI {
     Q_OBJECT
 
 public:

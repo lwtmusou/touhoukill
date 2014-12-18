@@ -74,7 +74,8 @@ static bool _initLibrary() {
     if (error) {
         qWarning("error loading library");
         return false;
-    } else {
+    }
+    else {
         _ftLibInitialized = true;
         return true;
     }
@@ -93,8 +94,8 @@ QString QSanUiUtils::QSanFreeTypeFont::resolveFont(const QString &fontName) {
         dirsToResolve.push_back("./font");
         extsToTry.push_back("ttf");
         extsToTry.push_back("ttc");
-        foreach (QString sdir, dirsToResolve) {
-            foreach (QString ext, extsToTry) {
+        foreach(QString sdir, dirsToResolve) {
+            foreach(QString ext, extsToTry) {
                 QDir dir(sdir);
                 QString filePath = dir.filePath(QString("%1.%2").arg(fontName).arg(ext));
                 if (QFile::exists(filePath)) {
@@ -127,8 +128,8 @@ int *QSanUiUtils::QSanFreeTypeFont::loadFont(const QString &fontName) {
 static QMutex _paintTextMutex;
 
 bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text, int *font, QColor color,
-                                                 QSize &fontSize, int spacing, int weight, QRect boundingBox,
-                                                 Qt::Orientation orient, Qt::Alignment align) {
+    QSize &fontSize, int spacing, int weight, QRect boundingBox,
+    Qt::Orientation orient, Qt::Alignment align) {
     if (!_ftLibInitialized || font == NULL || painter == NULL || text.isNull())
         return false;
 
@@ -156,7 +157,8 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
             if (fontSize.height() + spacing > ystep)
                 fontSize.setHeight(ystep - spacing);
         }
-    } else {
+    }
+    else {
         ystep = 0;
         if (fontSize.height() > boundingBox.height())
             fontSize.setHeight(boundingBox.height());
@@ -215,7 +217,8 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
         FT_Bitmap bitmap;
         if (weight == 0) {
             FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER);
-        } else {
+        }
+        else {
             FT_Outline_Embolden(&slot->outline, weight);
             FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
         }
@@ -254,7 +257,8 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
                     fontPtr++;
                     imagePtr += 4;
                 }
-            } else {
+            }
+            else {
                 int mask = 0x80;
                 for (int x = 0; x < fontClippedCols; x++) {
                     if (*fontPtr & mask)
@@ -301,7 +305,8 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
             ystart = 0;
             Q_ASSERT(false);
         }
-    } else {
+    }
+    else {
         if (vAlign & Qt::AlignTop)
             ystart = spacing;
         else if (vAlign & Qt::AlignVCenter)
@@ -332,9 +337,9 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
 }
 
 bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QString text,
-                                                          int *font, QColor color,
-                                                          QSize &fontSize, int spacing, QRect boundingBox,
-                                                          Qt::Alignment align) {
+    int *font, QColor color,
+    QSize &fontSize, int spacing, QRect boundingBox,
+    Qt::Alignment align) {
     if (!_ftLibInitialized || font == NULL || painter == NULL)
         return false;
 
@@ -440,7 +445,8 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QSt
                     fontPtr++;
                     imagePtr += 4;
                 }
-            } else {
+            }
+            else {
                 int mask = 0x80;
                 for (int x = 0; x < fontClippedCols; x++) {
                     if (*fontPtr & mask)

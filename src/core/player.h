@@ -15,7 +15,7 @@ class DelayedTrick;
 class DistanceSkill;
 class TriggerSkill;
 
-class Player: public QObject {
+class Player : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(QString screenname READ screenName WRITE setScreenName)
@@ -47,9 +47,11 @@ class Player: public QObject {
 
 public:
     enum Phase { RoundStart, Start, Judge, Draw, Play, Discard, Finish, NotActive, PhaseNone };
-    enum Place { PlaceHand, PlaceEquip, PlaceDelayedTrick, PlaceJudge,
-                 PlaceSpecial, DiscardPile, DrawPile, PlaceTable, PlaceUnknown,
-                 PlaceWuGu };
+    enum Place {
+        PlaceHand, PlaceEquip, PlaceDelayedTrick, PlaceJudge,
+        PlaceSpecial, DiscardPile, DrawPile, PlaceTable, PlaceUnknown,
+        PlaceWuGu
+    };
     enum Role { Lord, Loyalist, Rebel, Renegade };
 
     explicit Player(QObject *parent);
@@ -59,8 +61,8 @@ public:
 
     // property setters/getters
     int getHp() const;
-	int getLingHp() const;//for banling  lingttili
-	int getRenHp() const;//for banling  rentili
+    int getLingHp() const;//for banling  lingttili
+    int getRenHp() const;//for banling  rentili
     void setHp(int hp);
     int getMaxHp() const;
     void setMaxHp(int max_hp);
@@ -135,10 +137,10 @@ public:
     void detachAllSkills();
     virtual void addSkill(const QString &skill_name);
     virtual void loseSkill(const QString &skill_name);
-    bool hasSkill(const QString &skill_name, bool include_lose = false,bool include_invalidity=false) const;
-    bool hasSkills(const QString &skill_name, bool include_lose = false,bool include_invalidity=false) const;
+    bool hasSkill(const QString &skill_name, bool include_lose = false, bool include_invalidity = false) const;
+    bool hasSkills(const QString &skill_name, bool include_lose = false, bool include_invalidity = false) const;
     bool hasInnateSkill(const QString &skill_name) const;
-    bool hasLordSkill(const QString &skill_name, bool include_lose = false,bool include_invalidity=false) const;
+    bool hasLordSkill(const QString &skill_name, bool include_lose = false, bool include_invalidity = false) const;
     virtual QString getGameMode() const = 0;
 
     void setEquip(WrappedCard *equip);
@@ -161,20 +163,20 @@ public:
     WrappedCard *getArmor() const;
     WrappedCard *getDefensiveHorse() const;
     WrappedCard *getOffensiveHorse() const;
-	WrappedCard *getTreasure() const;
+    WrappedCard *getTreasure() const;
     QList<const Card *> getEquips() const;
     const EquipCard *getEquip(int index) const;
 
     bool hasWeapon(const QString &weapon_name) const;
     bool hasArmorEffect(const QString &armor_name) const;
-	bool hasTreasure(const QString &treasure_name) const;
-	
+    bool hasTreasure(const QString &treasure_name) const;
+
     bool isKongcheng() const;
     bool isNude() const;
     bool isAllNude() const;
 
-    bool canDiscard(const Player *to, const QString &flags,QString reason="") const;
-    bool canDiscard(const Player *to, int card_id,QString reason="") const;
+    bool canDiscard(const Player *to, const QString &flags, QString reason = "") const;
+    bool canDiscard(const Player *to, int card_id, QString reason = "") const;
 
     void addMark(const QString &mark, int add_num = 1);
     void removeMark(const QString &mark, int remove_num = 1);
@@ -185,9 +187,9 @@ public:
     bool isChained() const;
 
     bool canSlash(const Player *other, const Card *slash, bool distance_limit = true,
-                  int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
+        int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
     bool canSlash(const Player *other, bool distance_limit = true,
-                  int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
+        int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
     int getCardCount(bool include_equip = true, bool = false) const;
 
     QList<int> getPile(const QString &pile_name) const;

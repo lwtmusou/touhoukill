@@ -40,16 +40,16 @@ HeroSkinContainer::HeroSkinContainer(const QString &generalName,
 {
     setFlag(ItemIsMovable);
     setCursor(Qt::ArrowCursor);
-	
-	
-    QSanButton *closeButton =    new QSanButton("player_container",
+
+
+    QSanButton *closeButton = new QSanButton("player_container",
         "close-heroskin", this); //"change-heroskin"
-	//这个路径就是死活不行 为什么。。。
-	//QSanButton *closeButton = new QSanButton("card_container", 
-	//"close", this); 
-	
-	closeButton->setPos(385, 5);
-	
+    //这个路径就是死活不行 为什么。。。
+    //QSanButton *closeButton = new QSanButton("card_container", 
+    //"close", this); 
+
+    closeButton->setPos(385, 5);
+
     connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
 
     QGraphicsPixmapItem *kingdomColorMaskIcon = NULL;
@@ -67,7 +67,7 @@ HeroSkinContainer::HeroSkinContainer(const QString &generalName,
     QGraphicsPixmapItem *avatarNameItem = new QGraphicsPixmapItem(this);
     getAvatarNameFont().paintText(avatarNameItem, QRect(34, -8, 100, 40), //34, -8, 60, 40
         Qt::AlignLeft | Qt::AlignJustify, name);
-	
+
     initSkins();
     fillSkins();
 }
@@ -76,7 +76,7 @@ bool HeroSkinContainer::hasSkin(const QString &generalName)
 {
     if (!m_generalToHasSkin.contains(generalName)) {
         QStringList files = HeroSkinContainer::getHeroSkinFiles(generalName);
-        foreach (const QString &file, files) {
+        foreach(const QString &file, files) {
             if (SKIN_FILE_NAME_PATTERN.exactMatch(file)) {
                 m_generalToHasSkin[generalName] = true;
                 break;
@@ -92,7 +92,7 @@ int HeroSkinContainer::getNextSkinIndex(const QString &generalName, int skinInde
     int result = skinIndex;
 
     QStringList files = HeroSkinContainer::getHeroSkinFiles(generalName);
-    foreach (const QString &file, files) {
+    foreach(const QString &file, files) {
         if (SKIN_FILE_NAME_PATTERN.exactMatch(file)) {
             int num = SKIN_FILE_NAME_PATTERN.capturedTexts().at(1).toInt();
             if (num > skinIndex) {
@@ -148,7 +148,7 @@ void HeroSkinContainer::initSkins()
     createSkinItem(skinIndexUsed, dummyRectItem, true);
 
     QStringList files = getHeroSkinFiles(m_generalName);
-    foreach (const QString &file, files) {
+    foreach(const QString &file, files) {
         if (SKIN_FILE_NAME_PATTERN.exactMatch(file)) {
             int skinIndex = SKIN_FILE_NAME_PATTERN.capturedTexts().at(1).toInt();
             if (skinIndexUsed != skinIndex) {
@@ -285,7 +285,7 @@ const SanShadowTextFont &HeroSkinContainer::getAvatarNameFont()
     static const SanShadowTextFont avatarNameFont("SimLi", QSize(18, 18),
         1, 10, QColor(50, 50, 50, 200));
     //SanShadowTextFont avatarNameFont("SimLi");
-	return avatarNameFont;
+    return avatarNameFont;
 }
 
 void HeroSkinContainer::mousePressEvent(QGraphicsSceneMouseEvent *)
@@ -321,7 +321,7 @@ void HeroSkinContainer::wheelEvent(QGraphicsSceneWheelEvent *event)
 void HeroSkinContainer::scrollBarValueChanged(int newValue)
 {
     int diff = newValue - m_oldScrollValue;
-    foreach (SkinItem *skinItem, m_skins) {
+    foreach(SkinItem *skinItem, m_skins) {
         skinItem->moveBy(0, -diff);
     }
 

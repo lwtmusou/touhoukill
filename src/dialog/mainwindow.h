@@ -24,7 +24,7 @@ class QToolButton;
 class QGroupBox;
 class RoomItem;
 
-class BroadcastBox: public QDialog {
+class BroadcastBox : public QDialog {
     Q_OBJECT
 
 public:
@@ -43,7 +43,7 @@ public:
     static void preload();
 };
 
-class MainWindow: public QMainWindow {
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:

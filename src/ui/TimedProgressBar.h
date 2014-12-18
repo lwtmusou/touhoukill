@@ -7,12 +7,12 @@
 #include <QPaintEvent>
 #include <QMutex>
 
-class TimedProgressBar: public QProgressBar {
-Q_OBJECT
+class TimedProgressBar : public QProgressBar {
+    Q_OBJECT
 public:
     inline TimedProgressBar()
         : m_hasTimer(false), m_autoHide(false), m_timer(0),
-          m_step(0), m_max(0), m_val(0), m_mutex(QMutex::Recursive)
+        m_step(0), m_max(0), m_val(0), m_mutex(QMutex::Recursive)
     {
         this->setTextVisible(false);
     }
@@ -47,7 +47,7 @@ protected:
 #include "protocol.h"
 #include "settings.h"
 
-class QSanCommandProgressBar: public TimedProgressBar {
+class QSanCommandProgressBar : public TimedProgressBar {
     Q_OBJECT
 
 public:

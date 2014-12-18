@@ -41,7 +41,7 @@ touhoucardPackage::touhoucardPackage()
     QList<Card *> cards;
 
     cards << new IceSlash(Card::Spade, 4);
-			
+
 
     foreach(Card *card, cards)
         card->setParent(this);
@@ -53,7 +53,7 @@ touhouskillcardPackage::touhouskillcardPackage()
     : Package("touhouskillcard")
 {
     addMetaObject<NosRendeCard>();
-    
+
 }
 
 ADD_PACKAGE(touhoucard)

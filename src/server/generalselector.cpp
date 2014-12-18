@@ -33,55 +33,55 @@ QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &ca
     QMap<QString, qreal> values;
     QString role = player->getRole();
     ServerPlayer *lord = player->getRoom()->getLord();
-	
-	QString seat_place;
-	if (player->getSeat()-1 <=2)
-		seat_place="1";
-	else if(player->getRoom()->alivePlayerCount()-player->getSeat()<=2)
-		seat_place="3";
-	else
-		seat_place="2";
-	
-    foreach (QString candidate, candidates) {
+
+    QString seat_place;
+    if (player->getSeat() - 1 <= 2)
+        seat_place = "1";
+    else if (player->getRoom()->alivePlayerCount() - player->getSeat() <= 2)
+        seat_place = "3";
+    else
+        seat_place = "2";
+
+    foreach(QString candidate, candidates) {
         qreal value = 5.0;
         const General *general = Sanguosha->getGeneral(candidate);
-        if (role == "loyalist" && 
-		(general->getKingdom() == lord->getKingdom() || general->getKingdom() == "god" 
-		|| general->getKingdom() == "zhu" || general->getKingdom() == "touhougod" ))
+        if (role == "loyalist" &&
+            (general->getKingdom() == lord->getKingdom() || general->getKingdom() == "god"
+            || general->getKingdom() == "zhu" || general->getKingdom() == "touhougod"))
             value *= 1.04;
         if (role == "rebel" && lord->getGeneral() && lord->getGeneral()->hasSkill("xueyi")
-				&& general->getKingdom() == "qun")
+            && general->getKingdom() == "qun")
             value *= 0.8;
         if (role != "loyalist" && lord->getGeneral() && lord->getGeneral()->hasSkill("shichou")
-				&& general->getKingdom() == "shu")
+            && general->getKingdom() == "shu")
             value *= 0.1;
         QString key = QString("_:%1:%2").arg(candidate).arg(role);
         value *= qPow(1.1, first_general_table.value(key, 0.0));
         QString key2 = QString("%1:%2:%3").arg(lord->getGeneralName()).arg(candidate).arg(role);
         value *= qPow(1.1, first_general_table.value(key2, 0.0));
-		
-		//位置因素
-		QString seat_key =  QString("_:%1:%2").arg(candidate).arg(role);
-		QString seat_str = general_seat_table.value(seat_key,"_");
-		if (seat_str != "_"){
-			QStringList seat_strs =seat_str.split(":");
-			if (seat_strs.contains(seat_place+"0"))
-				value *= 1.2;
-			else if (seat_strs.contains(seat_place+"1"))
-				value *= 0.8;
-		}
-		QString seat_key2 = QString("%1:%2:%3").arg(lord->getGeneralName()).arg(candidate).arg(role);
-		QString seat_str2 = general_seat_table.value(seat_key2,"_");
-		if (seat_str2 != "_"){
-			QStringList seat_strs2 =seat_str2.split(":");
-			if (seat_strs2.contains(seat_place+"0"))
-				value *= 1.2;
-			else if (seat_strs2.contains(seat_place+"1"))
-				value *= 0.8;
-		}
-		
-		
-		
+
+        //位置因素
+        QString seat_key = QString("_:%1:%2").arg(candidate).arg(role);
+        QString seat_str = general_seat_table.value(seat_key, "_");
+        if (seat_str != "_"){
+            QStringList seat_strs = seat_str.split(":");
+            if (seat_strs.contains(seat_place + "0"))
+                value *= 1.2;
+            else if (seat_strs.contains(seat_place + "1"))
+                value *= 0.8;
+        }
+        QString seat_key2 = QString("%1:%2:%3").arg(lord->getGeneralName()).arg(candidate).arg(role);
+        QString seat_str2 = general_seat_table.value(seat_key2, "_");
+        if (seat_str2 != "_"){
+            QStringList seat_strs2 = seat_str2.split(":");
+            if (seat_strs2.contains(seat_place + "0"))
+                value *= 1.2;
+            else if (seat_strs2.contains(seat_place + "1"))
+                value *= 0.8;
+        }
+
+
+
         values.insert(candidate, value);
     }
     QStringList _candidates = candidates;
@@ -89,7 +89,7 @@ QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &ca
     while (!_candidates.isEmpty() && choice_list.length() < 6) {
         qreal max = -1;
         QString choice = QString();
-        foreach (QString candidate, _candidates) {
+        foreach(QString candidate, _candidates) {
             qreal value = values.value(candidate, 5.0);
             if (value > max) {
                 max = value;
@@ -122,7 +122,7 @@ QString GeneralSelector::selectSecond(ServerPlayer *player, const QStringList &c
     int max = -1;
     QString max_general;
 
-    foreach (QString candidate, candidates) {
+    foreach(QString candidate, candidates) {
         QString key = QString("%1+%2").arg(first).arg(candidate);
         int value = second_general_table.value(key, 0);
         if (value == 0) {
@@ -153,7 +153,7 @@ QString GeneralSelector::selectHighest(const QHash<QString, int> &table, const Q
     int max = -1;
     QString max_general;
 
-    foreach (QString candidate, candidates) {
+    foreach(QString candidate, candidates) {
         int value = table.value(candidate, default_value);
 
         if (value > max) {
@@ -212,7 +212,8 @@ QStringList GeneralSelector::arrange1v1(ServerPlayer *player) {
         int strong = (i == 0) ? 1 : 0;
         int weak = (i == 2) ? 1 : 2;
         result << arranged[weak] << arranged[strong];
-    } else {
+    }
+    else {
         result << arranged[1] << arranged[2] << arranged[0];
     }
 
@@ -223,7 +224,7 @@ void GeneralSelector::loadFirstGeneralTable() {
     loadFirstGeneralTable("loyalist");
     loadFirstGeneralTable("rebel");
     loadFirstGeneralTable("renegade");
-	loadGeneralSeatTable();
+    loadGeneralSeatTable();
 }
 
 void GeneralSelector::loadFirstGeneralTable(const QString &role) {
@@ -314,14 +315,14 @@ void GeneralSelector::loadGeneralSeatTable() {
     if (file.open(QIODevice::ReadOnly)) {
         QTextStream stream(&file);
         while (!stream.atEnd()) {
-            QString lord_name, name,loyalist_seat,rebel_seat,renegade_seat ;
+            QString lord_name, name, loyalist_seat, rebel_seat, renegade_seat;
             stream >> lord_name >> name >> loyalist_seat >> rebel_seat >> renegade_seat;
-			QString key1 = QString("%1:%2:%3").arg(lord_name).arg(name).arg("loyalist");
-			general_seat_table.insert(key1, loyalist_seat);
+            QString key1 = QString("%1:%2:%3").arg(lord_name).arg(name).arg("loyalist");
+            general_seat_table.insert(key1, loyalist_seat);
             QString key2 = QString("%1:%2:%3").arg(lord_name).arg(name).arg("rebel");
             general_seat_table.insert(key2, rebel_seat);
-			QString key3 = QString("%1:%2:%3").arg(lord_name).arg(name).arg("renegade");
-			general_seat_table.insert(key3, renegade_seat);
+            QString key3 = QString("%1:%2:%3").arg(lord_name).arg(name).arg("renegade");
+            general_seat_table.insert(key3, renegade_seat);
         }
         file.close();
     }

@@ -112,26 +112,26 @@ void DistanceViewDialog::showDistance() {
     ui->to_seat->setText(QString::number(to->getSeat()));
 
     int left_distance = qAbs(from->getSeat()
-                             + ((from->getSeat() < to->getSeat()) ? from->aliveCount() : -from->aliveCount())
-                             - to->getSeat());
+        + ((from->getSeat() < to->getSeat()) ? from->aliveCount() : -from->aliveCount())
+        - to->getSeat());
     ui->left->setText(QString("|%1%2%3-%4|=%5")
-                              .arg(from->getSeat())
-                              .arg((from->getSeat()<to->getSeat()) ? "+" : "-")
-                              .arg(from->aliveCount())
-                              .arg(to->getSeat())
-                              .arg(left_distance));
+        .arg(from->getSeat())
+        .arg((from->getSeat() < to->getSeat()) ? "+" : "-")
+        .arg(from->aliveCount())
+        .arg(to->getSeat())
+        .arg(left_distance));
 
     int right_distance = qAbs(from->getSeat() - to->getSeat());
     ui->right->setText(QString("|%1-%2|=%3")
-                               .arg(from->getSeat())
-                               .arg(to->getSeat())
-                               .arg(right_distance));
+        .arg(from->getSeat())
+        .arg(to->getSeat())
+        .arg(right_distance));
 
     int min = qMin(left_distance, right_distance);
     ui->min->setText(QString("min(%1, %2)=%3")
-                             .arg(left_distance)
-                             .arg(right_distance)
-                             .arg(min));
+        .arg(left_distance)
+        .arg(right_distance)
+        .arg(min));
 
     foreach (QLineEdit *edit, ui->distance_edits) {
         const Skill *skill = Sanguosha->getSkill(edit->objectName());

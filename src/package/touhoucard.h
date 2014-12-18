@@ -6,21 +6,21 @@
 #include "package.h"
 #include "standard.h"
 
-class touhoucardPackage: public Package{
+class touhoucardPackage : public Package{
     Q_OBJECT
 
 public:
     touhoucardPackage();
 };
 
-class touhouskillcardPackage: public Package {
+class touhouskillcardPackage : public Package {
     Q_OBJECT
 
 public:
     touhouskillcardPackage();
 };
 
-class NosRendeCard: public SkillCard {
+class NosRendeCard : public SkillCard {
     Q_OBJECT
 
 public:

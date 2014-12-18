@@ -9,7 +9,7 @@ class ScenarioRule;
 
 #include <QMap>
 
-class Scenario: public Package {
+class Scenario : public Package {
     Q_OBJECT
 
 public:

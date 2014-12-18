@@ -92,9 +92,9 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
         } else if (number.toInt(&isInt) == cdn && isInt) {
             checkpoint = true;
         } else if ((number == "A" && cdn == 1)
-                   || (number == "J" && cdn == 11)
-                   || (number == "Q" && cdn == 12)
-                   || (number == "K" && cdn == 13)) {
+            || (number == "J" && cdn == 11)
+            || (number == "Q" && cdn == 12)
+            || (number == "K" && cdn == 13)) {
             checkpoint = true;
         }
         if (checkpoint) break;
@@ -107,7 +107,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
     if (place == ".") checkpoint = true;
     else if (place == "equipped" && player->hasEquip(card)) checkpoint = true;
     else if (place == "hand" && card->getEffectiveId() >= 0 && !player->hasEquip(card)) checkpoint = true;*/
-	checkpoint = false;
+    checkpoint = false;
     QString place = factors.at(3);
     if (!player || place == ".") checkpoint = true;
     if (!checkpoint) {
@@ -132,7 +132,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                         }
                     } else if (!player->getPile(p).isEmpty() && player->getPile(p).contains(id)) {
                         checkpoint = true;
-                    } 
+                    }
                     if (checkpoint)
                         break;
                 }
@@ -141,8 +141,8 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
             }
         }
     }
-	
-	
+
+
     if (!checkpoint) return false;
     if (factors.size() < 5) return true;
 

@@ -8,7 +8,7 @@
 
 using namespace QSanProtocol;
 
-RecAnalysis::RecAnalysis(QString dir): m_recordPlayers(0), m_currentPlayer(NULL) {
+RecAnalysis::RecAnalysis(QString dir) : m_recordPlayers(0), m_currentPlayer(NULL) {
     initialize(dir);
 }
 
@@ -112,7 +112,7 @@ void RecAnalysis::initialize(QString dir) {
             speaker.remove(0, speaker.lastIndexOf(" ") + 1);
             QString words = line.split(":").last().remove(" ");
             words = QString::fromUtf8(QByteArray::fromBase64(words.toAscii()));
-            m_recordChat += getPlayer(speaker)->m_screenName+": "+words;
+            m_recordChat += getPlayer(speaker)->m_screenName + ": " + words;
             m_recordChat.append("<br/>");
 
             continue;
@@ -125,8 +125,8 @@ void RecAnalysis::initialize(QString dir) {
                     general.remove(QRegExp("[^a-z_]+"));
 
                     line.contains("general2") ?
-                            getPlayer(object)->m_general2Name = general :
-                            getPlayer(object)->m_generalName = general;
+                        getPlayer(object)->m_general2Name = general :
+                        getPlayer(object)->m_generalName = general;
                 }
             }
 
@@ -362,12 +362,12 @@ void RecAnalysis::setDesignation() {
     addDesignation(tr("Burning Soul"), MostDamage | MostDamaged);
     addDesignation(tr("Regretful Lose"), MostDamage | ZeroKill, M_ALL_PLAYER, true, QString(), false, false, false, true);
     addDesignation(tr("Fall Short"), NoOption, findPlayerOfKills(m_recordPlayers - 2), m_recordWinners.contains("lord"),
-                   "renegade", false, false, false, true);
+        "renegade", false, false, false, true);
     addDesignation(tr("Wicked Kill"), LeastDamage | MostKill);
     addDesignation(tr("Peaceful Watcher"), ZeroDamage | LeastDamaged, findPlayerOfRecover(1));
     addDesignation(tr("MVP"), MostKill | MostDamage | MostRecover, findPlayerOfDamage(10) & findPlayerOfRecover(10),
-                   true, QString(), true, false, true);
-    addDesignation(tr("Useless alive"), ZeroDamage | ZeroDamaged | ZeroRecover|ZeroKill);
+        true, QString(), true, false, true);
+    addDesignation(tr("Useless alive"), ZeroDamage | ZeroDamaged | ZeroRecover | ZeroKill);
     addDesignation(tr("Awe Prestige"), MostKill | MostDamage, findPlayerOfKills(3), true, "lord", true);
 
     addDesignation(tr("Wisely Loyalist"), ZeroDamaged, M_ALL_PLAYER, true, "loyalist", true, false, true);
@@ -419,14 +419,14 @@ void RecAnalysis::setDesignation() {
 }
 
 void RecAnalysis::addDesignation(const QString &designation,
-                                 unsigned long designation_union,
-                                 unsigned int data_requirement,
-                                 bool custom_condition,
-                                 const QString &addition_option_role,
-                                 bool need_alive,
-                                 bool need_dead,
-                                 bool need_win,
-                                 bool need_lose) {
+    unsigned long designation_union,
+    unsigned int data_requirement,
+    bool custom_condition,
+    const QString &addition_option_role,
+    bool need_alive,
+    bool need_dead,
+    bool need_win,
+    bool need_lose) {
     if (!custom_condition) return;
 
     QList<DesignationType> des_union;
@@ -455,7 +455,7 @@ void RecAnalysis::addDesignation(const QString &designation,
 
         if (need_lose
             && (m_recordWinners.contains(m_recordMap[objectName]->m_role)
-                || m_recordWinners.contains(objectName))) {
+            || m_recordWinners.contains(objectName))) {
             has_player = false;
         }
 
@@ -491,7 +491,7 @@ void RecAnalysis::initialDesignation() {
     QStringList leastDamagePlayer, leastDamagedPlayer, leastRecoverPlayer, leastKillPlayer;
 
     foreach (PlayerRecordStruct *s, m_recordMap.values()) {
-        QString objectName =  m_recordMap.key(s);
+        QString objectName = m_recordMap.key(s);
         if (s->m_damage >= max_damage && s->m_damage > 0) {
             if (s->m_damage > max_damage) {
                 max_damage = s->m_damage;

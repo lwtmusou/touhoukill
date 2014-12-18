@@ -13,7 +13,7 @@ static FMOD_CHANNEL *BGMChannel;
 
 class Sound {
 public:
-    Sound(const QString &filename): sound(NULL), channel(NULL) {
+    Sound(const QString &filename) : sound(NULL), channel(NULL) {
         FMOD_System_CreateSound(System, filename.toAscii(), FMOD_DEFAULT, NULL, &sound);
     }
 
@@ -63,7 +63,7 @@ void Audio::play(const QString &filename) {
     Sound *sound = SoundCache[filename];
     if (sound == NULL) {
         sound = new Sound(filename);
-		SoundCache.insert(filename, sound);
+        SoundCache.insert(filename, sound);
     } else if (sound->isPlaying())
         return;
 
@@ -99,10 +99,9 @@ void Audio::playBGM(const QString &filename) {
         FMOD_System_PlaySound(System, FMOD_CHANNEL_FREE, BGM, false, &BGMChannel);
 
         FMOD_System_Update(System);
+    } else if (filename != "audio/system/background.ogg"){
+        playBGM("audio/system/background.ogg");
     }
-	else if (filename !="audio/system/background.ogg"){
-		playBGM("audio/system/background.ogg");
-	}
 }
 
 void Audio::setBGMVolume(float volume) {

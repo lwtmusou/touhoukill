@@ -17,8 +17,8 @@ struct DamageStruct {
         Normal, // normal slash, duel and most damage caused by skill
         Fire,  // fire slash, fire attack and few damage skill (Yeyan, etc)
         Thunder, // lightning, thunder slash, and few damage skill (Leiji, etc)
-		Ice
-	};
+        Ice
+    };
 
     DamageStruct();
     DamageStruct(const Card *card, ServerPlayer *from, ServerPlayer *to, int damage = 1, Nature nature = Normal);
@@ -89,8 +89,8 @@ public:
     int m_reason;
     QString m_playerId; // the cause (not the source) of the movement, such as "lusu" when "dimeng", or "zhanghe" when "qiaobian"
     QString m_targetId; // To keep this structure lightweight, currently this is only used for UI purpose.
-                        // It will be set to empty if multiple targets are involved. NEVER use it for trigger condition
-                        // judgement!!! It will not accurately reflect the real reason.
+    // It will be set to empty if multiple targets are involved. NEVER use it for trigger condition
+    // judgement!!! It will not accurately reflect the real reason.
     QString m_skillName; // skill that triggers movement of the cards, such as "longdang", "dimeng"
     QString m_eventName; // additional arg such as "lebusishu" on top of "S_REASON_JUDGE"
     inline CardMoveReason() { m_reason = S_REASON_UNKNOWN; }
@@ -119,9 +119,9 @@ public:
 
     inline bool operator == (const CardMoveReason &other) const{
         return m_reason == other.m_reason
-               && m_playerId == other.m_playerId && m_targetId == other.m_targetId
-               && m_skillName == other.m_skillName
-               && m_eventName == other.m_eventName;
+            && m_playerId == other.m_playerId && m_targetId == other.m_targetId
+            && m_skillName == other.m_skillName
+            && m_eventName == other.m_eventName;
     }
 
     static const int S_REASON_UNKNOWN = 0x00;
@@ -169,7 +169,7 @@ public:
 
     //subcategory of put
     static const int S_REASON_NATURAL_ENTER = 0x1A;     //  a card with no-owner move into discardpile
-                                                        //  e.g. delayed trick enters discardpile
+    //  e.g. delayed trick enters discardpile
     static const int S_REASON_REMOVE_FROM_PILE = 0x2A;  //  cards moved out of game go back into discardpile
     static const int S_REASON_JUDGEDONE = 0x3A;         //  judge card move into discardpile
     static const int S_REASON_CHANGE_EQUIP = 0x4A;      //  replace existed equip
@@ -206,7 +206,7 @@ struct CardsMoveStruct {
     }
 
     inline CardsMoveStruct(const QList<int> &ids, Player *from, Player *to, Player::Place from_place,
-                           Player::Place to_place, CardMoveReason reason) {
+        Player::Place to_place, CardMoveReason reason) {
         this->card_ids = ids;
         this->from_place = from_place;
         this->to_place = to_place;
@@ -230,7 +230,7 @@ struct CardsMoveStruct {
     }
 
     inline CardsMoveStruct(int id, Player *from, Player *to, Player::Place from_place,
-                           Player::Place to_place, CardMoveReason reason) {
+        Player::Place to_place, CardMoveReason reason) {
         this->card_ids << id;
         this->from_place = from_place;
         this->to_place = to_place;
@@ -255,12 +255,12 @@ struct CardsMoveStruct {
 
     inline bool operator == (const CardsMoveStruct &other) const{
         return from == other.from && from_place == other.from_place
-               && from_pile_name == other.from_pile_name && from_player_name == other.from_player_name;
+            && from_pile_name == other.from_pile_name && from_player_name == other.from_player_name;
     }
 
     inline bool operator < (const CardsMoveStruct &other) const{
         return from < other.from || from_place < other.from_place
-               || from_pile_name < other.from_pile_name || from_player_name < other.from_player_name;
+            || from_pile_name < other.from_pile_name || from_player_name < other.from_player_name;
     }
 
     QList<int> card_ids;
@@ -303,7 +303,7 @@ struct RecoverStruct {
     int recover;
     ServerPlayer *who;
     const Card *card;
-	QString reason;
+    QString reason;
 };
 
 struct PindianStruct {
@@ -367,47 +367,47 @@ struct CardResponseStruct {
         m_card = NULL;
         m_who = NULL;
         m_isUse = false;
-		m_isRetrial = false;
-		m_isProvision = false;
+        m_isRetrial = false;
+        m_isProvision = false;
     }
 
     inline CardResponseStruct(const Card *card) {
         m_card = card;
         m_who = NULL;
         m_isUse = false;
-		m_isRetrial = false;
-		m_isProvision = false;
+        m_isRetrial = false;
+        m_isProvision = false;
     }
 
     inline CardResponseStruct(const Card *card, ServerPlayer *who) {
         m_card = card;
         m_who = who;
         m_isUse = false;
-		m_isRetrial = false;
-		m_isProvision = false;
+        m_isRetrial = false;
+        m_isProvision = false;
     }
 
     inline CardResponseStruct(const Card *card, bool isUse) {
         m_card = card;
         m_who = NULL;
         m_isUse = isUse;
-		m_isRetrial = false;
-		m_isProvision = false;
+        m_isRetrial = false;
+        m_isProvision = false;
     }
 
-    inline CardResponseStruct(const Card *card, ServerPlayer *who, bool isUse,bool isRetrial,bool isProvision) {
+    inline CardResponseStruct(const Card *card, ServerPlayer *who, bool isUse, bool isRetrial, bool isProvision) {
         m_card = card;
         m_who = who;
         m_isUse = isUse;
-		m_isRetrial = isRetrial;
-		m_isProvision = isProvision;
+        m_isRetrial = isRetrial;
+        m_isProvision = isProvision;
     }
 
     const Card *m_card;
     ServerPlayer *m_who;
     bool m_isUse;
-	bool m_isRetrial;
-	bool m_isProvision;
+    bool m_isRetrial;
+    bool m_isProvision;
 };
 
 struct JsonValueForLUA{
@@ -461,8 +461,8 @@ enum TriggerEvent {
 
     DrawNCards,
     AfterDrawNCards,
-    DrawInitialCards ,
-    AfterDrawInitialCards ,
+    DrawInitialCards,
+    AfterDrawInitialCards,
 
     PreHpRecover,
     HpRecover,

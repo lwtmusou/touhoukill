@@ -86,10 +86,10 @@ Engine::Engine()
         addPackage(name);
 
     SurprisingGenerals = GetConfigFromLuaState(lua, "surprising_generals").toStringList();
-	TouhouKingdoms << "zhu" <<"hmx" << "yym" << "yyc"
-				<< "zhan" << "fsl" << "dld" << "xlc" << "slm"<<"hzc"
-				<<"wai" <<"touhougod";
-	
+    TouhouKingdoms << "zhu" << "hmx" << "yym" << "yyc"
+        << "zhan" << "fsl" << "dld" << "xlc" << "slm" << "hzc"
+        << "wai" << "touhougod";
+
     _loadMiniScenarios();
     _loadModScenarios();
     m_customScene = new CustomScenario();
@@ -249,9 +249,9 @@ void Engine::addPackage(Package *package) {
             Q_ASSERT(lcard != NULL);
             luaTreasure_className2objectName.insert(lcard->getClassName(), lcard->objectName());
             if (!luaTreasures.keys().contains(lcard->getClassName()))
-                luaTreasures.insert(lcard->getClassName(), lcard->clone());
-        }*/
-		else {
+            luaTreasures.insert(lcard->getClassName(), lcard->clone());
+            }*/
+        else {
             QString class_name = card->metaObject()->className();
             metaobjects.insert(class_name, card->metaObject());
             className2objectName.insert(class_name, card->objectName());
@@ -265,7 +265,7 @@ void Engine::addPackage(Package *package) {
         addSkills(general->findChildren<const Skill *>());
         foreach (QString skill_name, general->getExtraSkillSet()) {
             if (skill_name.startsWith("#")) continue;
-            foreach (const Skill *related, getRelatedSkills(skill_name))
+            foreach(const Skill *related, getRelatedSkills(skill_name))
                 general->addSkill(related->objectName());
         }
         if (sp_convert_pairs.keys().contains(general->objectName())) {
@@ -377,23 +377,23 @@ int Engine::getGeneralCount(bool include_banned) const{
         if (getBanPackages().contains(general->getPackage()))
             total--;
         else if ((isNormalGameMode(ServerInfo.GameMode)
-                  || ServerInfo.GameMode.contains("_mini_")
-                  || ServerInfo.GameMode == "custom_scenario")
-                 && Config.value("Banlist/Roles").toStringList().contains(general->objectName()))
+            || ServerInfo.GameMode.contains("_mini_")
+            || ServerInfo.GameMode == "custom_scenario")
+            && Config.value("Banlist/Roles").toStringList().contains(general->objectName()))
             total--;
         else if (ServerInfo.GameMode == "04_1v3"
-                 && Config.value("Banlist/HulaoPass").toStringList().contains(general->objectName()))
+            && Config.value("Banlist/HulaoPass").toStringList().contains(general->objectName()))
             total--;
         else if (ServerInfo.GameMode == "06_XMode"
-                 && Config.value("Banlist/XMode").toStringList().contains(general->objectName()))
+            && Config.value("Banlist/XMode").toStringList().contains(general->objectName()))
             total--;
         else if (ServerInfo.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
             total--;
         else if (ServerInfo.EnableBasara
-                 && Config.value("Banlist/Basara").toStringList().contains(general->objectName()))
+            && Config.value("Banlist/Basara").toStringList().contains(general->objectName()))
             total--;
         else if (ServerInfo.EnableHegemony
-                 && Config.value("Banlist/Hegemony").toStringList().contains(general->objectName()))
+            && Config.value("Banlist/Hegemony").toStringList().contains(general->objectName()))
             total--;
     }
 
@@ -557,13 +557,13 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
         const LuaTreasure *lcard = luaTreasures.value(name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
-    } else if (luaTreasure_className2objectName.values().contains(name)) {
+        } else if (luaTreasure_className2objectName.values().contains(name)) {
         QString class_name = luaTreasure_className2objectName.key(name, name);
         const LuaTreasure *lcard = luaTreasures.value(class_name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
-    }*/
-	else {
+        }*/
+    else {
         const QMetaObject *meta = metaobjects.value(name, NULL);
         if (meta == NULL)
             meta = metaobjects.value(className2objectName.key(name, QString()), NULL);
@@ -700,11 +700,11 @@ QString Engine::getSetupString() const{
     else if (mode == "06_3v3")
         mode = mode + Config.value("3v3/OfficialRule", "2013").toString();
     setup_items << server_name
-                << Config.GameMode
-                << QString::number(timeout)
-                << QString::number(Config.NullificationCountDown)
-                << Sanguosha->getBanPackages().join("+")
-                << flags;
+        << Config.GameMode
+        << QString::number(timeout)
+        << QString::number(Config.NullificationCountDown)
+        << Sanguosha->getBanPackages().join("+")
+        << flags;
 
     return setup_items.join(":");
 }
@@ -805,7 +805,7 @@ QStringList Engine::getRoleList(const QString &mode) const{
     QStringList role_list;
     for (int i = 0; roles[i] != '\0'; i++) {
         QString role;
-        switch(roles[i].toAscii()) {
+        switch (roles[i].toAscii()) {
         case 'Z': role = "lord"; break;
         case 'C': role = "loyalist"; break;
         case 'N': role = "renegade"; break;
@@ -857,13 +857,13 @@ QStringList Engine::getRandomLords() const{
         banlist_ban.append(Config.value("Banlist/Roles").toStringList());
 
     QStringList lords;
-	QStringList splords_package; //lords  in sp package will be not count as a lord.
-	splords_package<<"thxwm"<<"thndj";
+    QStringList splords_package; //lords  in sp package will be not count as a lord.
+    splords_package << "thxwm" << "thndj";
     foreach (QString alord, getLords()) {
         if (banlist_ban.contains(alord)) continue;
-		const General *general = getGeneral(alord);
-		if (splords_package.contains(general->getPackage()))
-			continue;
+        const General *general = getGeneral(alord);
+        if (splords_package.contains(general->getPackage()))
+            continue;
         lords << alord;
     }
 
@@ -879,57 +879,54 @@ QStringList Engine::getRandomLords() const{
     foreach (QString nonlord, generals.keys()) {
         if (isGeneralHidden(nonlord)) continue;
         const General *general = generals.value(nonlord);
-		if (lord_list.contains(nonlord)){
-			if (!splords_package.contains(general->getPackage()))
-				continue;
-		}
+        if (lord_list.contains(nonlord)){
+            if (!splords_package.contains(general->getPackage()))
+                continue;
+        }
         if (getBanPackages().contains(general->getPackage()))
             continue;
         if (Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
             continue;
         if (banlist_ban.contains(general->objectName()))
             continue;
-		
+
         nonlord_list << nonlord;
     }
 
     qShuffle(nonlord_list);
 
     int i;
-	int addcount=0;
+    int addcount = 0;
     int extra = Config.value("NonLordMaxChoice", 2).toInt();
-	
+
     int godmax = Config.value("GodLimit", 5).toInt();
-	int godCount=0; 
-	
-	if (lord_num == 0 && extra == 0)
+    int godCount = 0;
+
+    if (lord_num == 0 && extra == 0)
         extra = 1;
     for (i = 0; addcount < extra; i++) {
-		
-		if (godmax == 0){//全面禁止神
-			if (getGeneral(nonlord_list.at(i))->getKingdom() != "god"&& getGeneral(nonlord_list.at(i))->getKingdom() != "touhougod") {
-				lords << nonlord_list.at(i);
-				 addcount++;
-			}
-		}
-        else if (godmax > 0){
-			if (getGeneral(nonlord_list.at(i))->getKingdom() != "god"&& getGeneral(nonlord_list.at(i))->getKingdom() != "touhougod") {
-				lords << nonlord_list.at(i);
-				addcount++;
-			}
-			else{
-				if (godCount< godmax){
-					lords << nonlord_list.at(i);
-					godCount++;
-					addcount++;
-				} 
-			}
-		}
-		else {//不禁神
-			lords << nonlord_list.at(i);
-			addcount++;
-		}
-		
+
+        if (godmax == 0) {//全面禁止神
+            if (getGeneral(nonlord_list.at(i))->getKingdom() != "god"&& getGeneral(nonlord_list.at(i))->getKingdom() != "touhougod") {
+                lords << nonlord_list.at(i);
+                addcount++;
+            }
+        } else if (godmax > 0) {
+            if (getGeneral(nonlord_list.at(i))->getKingdom() != "god"&& getGeneral(nonlord_list.at(i))->getKingdom() != "touhougod") {
+                lords << nonlord_list.at(i);
+                addcount++;
+            } else {
+                if (godCount < godmax) {
+                    lords << nonlord_list.at(i);
+                    godCount++;
+                    addcount++;
+                }
+            }
+        } else {//不禁神
+            lords << nonlord_list.at(i);
+            addcount++;
+        }
+
         if (i == nonlord_list.length() - 1) break;
     }
 
@@ -942,8 +939,8 @@ QStringList Engine::getLimitedGeneralNames() const{
     if (ServerInfo.GameMode == "04_1v3") {
         QList<const General *> hulao_generals = QList<const General *>();
         foreach (QString pack_name, GetConfigFromLuaState(lua, "hulao_packages").toStringList()) {
-             const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
-             if (pack) hulao_generals << pack->findChildren<const General *>();
+            const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
+            if (pack) hulao_generals << pack->findChildren<const General *>();
         }
 
         foreach (const General *general, hulao_generals) {
@@ -960,13 +957,13 @@ QStringList Engine::getLimitedGeneralNames() const{
         }
     }
 
-/*
-    if (!getBanPackages().contains("sp") && !getBanPackages().contains("assassins")) {
+    /*
+        if (!getBanPackages().contains("sp") && !getBanPackages().contains("assassins")) {
         general_names.removeOne("liuxie");
         general_names.removeOne("lingju");
         general_names.removeOne("fuwan");
-    }
-*/
+        }
+        */
 
     return general_names;
 }
@@ -984,10 +981,10 @@ void Engine::banRandomGods() const{
 
     QStringList gods;
 
-    foreach(const QString &general, all_generals) {
-        if (getGeneral(general)->getKingdom() == "god"|| getGeneral(general)->getKingdom() == "touhougod") {
+    foreach (const QString &general, all_generals) {
+        if (getGeneral(general)->getKingdom() == "god" || getGeneral(general)->getKingdom() == "touhougod") {
             gods << general;
-            count ++;
+            count++;
         }
     };
     int bancount = count - max;
@@ -1027,43 +1024,40 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
     // shuffle them
     qShuffle(all_generals);
 
-	
-	int i;
-	int addcount=0;
+
+    int i;
+    int addcount = 0;
     QStringList general_list;
     int godmax = Config.value("GodLimit", 5).toInt();
-	int godCount=0; 
+    int godCount = 0;
     for (i = 0; addcount < count; i++) {
-		
-		if (godmax == 0){//全面禁止神
-			if (getGeneral(all_generals.at(i))->getKingdom() != "god"&& getGeneral(all_generals.at(i))->getKingdom() != "touhougod") {
-				general_list << all_generals.at(i);
-				 addcount++;
-			}
-		}
-        else if (godmax > 0){
-			if (getGeneral(all_generals.at(i))->getKingdom() != "god"&& getGeneral(all_generals.at(i))->getKingdom() != "touhougod") {
-				general_list << all_generals.at(i);
-				 addcount++;
-			}
-			else{
-				if (godCount< godmax){
-					general_list << all_generals.at(i);
-					godCount++;
-					 addcount++;
-				} 
-			}
-		}
-		else {//不禁神
-			general_list << all_generals.at(i);	
-			 addcount++;
-		}
-		
-        if ( i == all_generals.length() - 1) break;
+
+        if (godmax == 0) {//全面禁止神
+            if (getGeneral(all_generals.at(i))->getKingdom() != "god"&& getGeneral(all_generals.at(i))->getKingdom() != "touhougod") {
+                general_list << all_generals.at(i);
+                addcount++;
+            }
+        } else if (godmax > 0) {
+            if (getGeneral(all_generals.at(i))->getKingdom() != "god"&& getGeneral(all_generals.at(i))->getKingdom() != "touhougod") {
+                general_list << all_generals.at(i);
+                addcount++;
+            } else {
+                if (godCount < godmax) {
+                    general_list << all_generals.at(i);
+                    godCount++;
+                    addcount++;
+                }
+            }
+        } else {//不禁神
+            general_list << all_generals.at(i);
+            addcount++;
+        }
+
+        if (i == all_generals.length() - 1) break;
     }
-	
-	
-	
+
+
+
     //QStringList general_list = all_generals.mid(0, count);
     Q_ASSERT(general_list.count() == count);
 
@@ -1198,7 +1192,7 @@ int Engine::correctDistance(const Player *from, const Player *to) const{
     foreach (const DistanceSkill *skill, distance_skills) {
         correct += skill->getCorrect(from, to);
     }
-	
+
 
     return correct;
 }

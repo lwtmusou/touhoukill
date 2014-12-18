@@ -20,7 +20,7 @@ StartScene::StartScene()
     QGraphicsSimpleTextItem *website_text = addSimpleText("http://qsanguosha.org", website_font);
     website_text->setBrush(Qt::white);
     website_text->setPos(Config.Rect.width() / 2 - website_text->boundingRect().width(),
-                         Config.Rect.height() / 2 - website_text->boundingRect().height());
+        Config.Rect.height() / 2 - website_text->boundingRect().height());
     server_log = NULL;
 }
 
@@ -34,7 +34,7 @@ void StartScene::addButton(QAction *action) {
     QRectF rect = button->boundingRect();
     int n = buttons.length();
     if (n < 5)
-        button->setPos(- rect.width() - 5, (n - 1) * (rect.height() * 1.2));
+        button->setPos(-rect.width() - 5, (n - 1) * (rect.height() * 1.2));
     else
         button->setPos(5, (n - 6) * (rect.height() * 1.2));
 
@@ -66,7 +66,7 @@ void StartScene::switchToServer(Server *server) {
     group->addAnimation(logo_shrink);
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
-    foreach (Button *button, buttons)
+    foreach(Button *button, buttons)
         delete button;
     buttons.clear();
 
@@ -92,7 +92,7 @@ void StartScene::switchToServer(Server *server) {
 void StartScene::printServerInfo() {
     QStringList items;
     QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
-    foreach (QHostAddress address, addresses) {
+    foreach(QHostAddress address, addresses) {
         quint32 ipv4 = address.toIPv4Address();
         if (ipv4)
             items << address.toString();
@@ -100,7 +100,7 @@ void StartScene::printServerInfo() {
 
     items.sort();
 
-    foreach (QString item, items) {
+    foreach(QString item, items) {
         if (item.startsWith("192.168.") || item.startsWith("10."))
             server_log->append(tr("Your LAN address: %1, this address is available only for hosts that in the same LAN").arg(item));
         else if (item == "127.0.0.1")
@@ -115,8 +115,8 @@ void StartScene::printServerInfo() {
     server_log->append(tr("Game mode is %1").arg(Sanguosha->getModeName(Config.GameMode)));
     server_log->append(tr("Player count is %1").arg(Sanguosha->getPlayerCount(Config.GameMode)));
     server_log->append(Config.OperationNoLimit ?
-                           tr("There is no time limit") :
-                           tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));
+        tr("There is no time limit") :
+        tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));
     server_log->append(Config.EnableCheat ? tr("Cheat is enabled") : tr("Cheat is disabled"));
     if (Config.EnableCheat)
         server_log->append(Config.FreeChoose ? tr("Free choose is enabled") : tr("Free choose is disabled"));
@@ -130,25 +130,27 @@ void StartScene::printServerInfo() {
         case 3: scheme_str = tr("Average"); break;
         }
         server_log->append(tr("Secondary general is enabled, max hp scheme is %1").arg(scheme_str));
-    } else
+    }
+    else
         server_log->append(tr("Seconardary general is disabled"));
 
     server_log->append(Config.EnableScene ?
-                           tr("Scene Mode is enabled") :
-                           tr("Scene Mode is disabled"));
+        tr("Scene Mode is enabled") :
+        tr("Scene Mode is disabled"));
     server_log->append(Config.EnableSame ?
-                           tr("Same Mode is enabled") :
-                           tr("Same Mode is disabled"));
+        tr("Same Mode is enabled") :
+        tr("Same Mode is disabled"));
     server_log->append(Config.EnableBasara ?
-                           tr("Basara Mode is enabled") :
-                           tr("Basara Mode is disabled"));
+        tr("Basara Mode is enabled") :
+        tr("Basara Mode is disabled"));
     server_log->append(Config.EnableHegemony ?
-                           tr("Hegemony Mode is enabled") :
-                           tr("Hegemony Mode is disabled"));
+        tr("Hegemony Mode is enabled") :
+        tr("Hegemony Mode is disabled"));
 
     if (Config.EnableAI) {
         server_log->append(tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));
-    } else
+    }
+    else
         server_log->append(tr("This server is AI disabled"));
 }
 

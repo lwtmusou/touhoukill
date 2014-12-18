@@ -16,7 +16,7 @@ class CardItem;
 struct CardEffectStruct;
 struct CardUseStruct;
 
-class Card: public QObject {
+class Card : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString suit READ getSuitString CONSTANT)
     Q_PROPERTY(bool red READ isRed STORED false CONSTANT)
@@ -82,7 +82,7 @@ public:
     inline virtual void setFlags(const QStringList &fs) { flags = fs; }
     bool hasFlag(const QString &flag) const;
     virtual void clearFlags() const;
-	
+
     virtual QString getPackage() const;
     inline virtual QString getClassName() const{ return metaObject()->className(); }
     virtual bool isVirtualCard() const;
@@ -110,7 +110,7 @@ public:
     // @todo: the following two functions should be merged into one.
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self,
-                              int &maxVotes) const;
+        int &maxVotes) const;
     virtual bool isAvailable(const Player *player) const;
 
     inline virtual const Card *getRealCard() const{ return this; }
@@ -158,7 +158,7 @@ protected:
     mutable QStringList flags;
 };
 
-class SkillCard: public Card {
+class SkillCard : public Card {
     Q_OBJECT
 
 public:
@@ -175,7 +175,7 @@ protected:
     QString user_string;
 };
 
-class DummyCard: public SkillCard {
+class DummyCard : public SkillCard {
     Q_OBJECT
 
 public:

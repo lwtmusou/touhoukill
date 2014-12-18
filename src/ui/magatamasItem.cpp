@@ -27,14 +27,15 @@ void MagatamasBoxItem::_updateLayout() {
     if (this->m_orientation == Qt::Horizontal) {
         xStep = m_iconSize.width();
         yStep = 0;
-    } else {
+    }
+    else {
         xStep = 0;
         yStep = m_iconSize.height();
     }
 
     for (int i = 0; i < 6; i++) {
         _icons[i] = G_ROOM_SKIN.getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS).arg(QString::number(i)))
-                                          .scaled(m_iconSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+            .scaled(m_iconSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     }
 
     for (int i = 1; i < 6; i++) {
@@ -42,12 +43,13 @@ void MagatamasBoxItem::_updateLayout() {
         if (this->m_orientation == Qt::Horizontal) {
             bgSize.setWidth((xStep + 1) * i);
             bgSize.setHeight(m_iconSize.height());
-        } else {
+        }
+        else {
             bgSize.setWidth((yStep + 1) * i);
             bgSize.setHeight(m_iconSize.width());
         }
         _bgImages[i] = G_ROOM_SKIN.getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_BG).arg(QString::number(i)))
-                                             .scaled(bgSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+            .scaled(bgSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     }
 }
 
@@ -115,7 +117,8 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp) {
     if (this->m_orientation == Qt::Horizontal) {
         xStep = width;
         yStep = 0;
-    } else {
+    }
+    else {
         xStep = 0;
         yStep = height;
     }
@@ -162,7 +165,8 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     if (this->m_orientation == Qt::Horizontal) {
         xStep = m_iconSize.width();
         yStep = 0;
-    } else {
+    }
+    else {
         xStep = 0;
         yStep = m_iconSize.height();
     }
@@ -190,7 +194,8 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
             rect.translate(m_imageArea.topLeft());
             painter->drawPixmap(rect, _icons[0]);
         }
-    } else {
+    }
+    else {
         painter->drawPixmap(m_imageArea, _icons[imageIndex]);
         QRect rect(xStep, yStep, m_imageArea.width(), m_imageArea.height());
         rect.translate(m_imageArea.topLeft());

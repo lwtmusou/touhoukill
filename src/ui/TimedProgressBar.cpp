@@ -82,7 +82,7 @@ void QSanCommandProgressBar::paintEvent(QPaintEvent *) {
     }
     QPixmap progBg = G_ROOM_SKIN.getProgressBarPixmap(0);
     painter.drawPixmap(0, 0, width, height, progBg);
-    double percent = 1 - (double) val / max;
+    double percent = 1 - (double)val / max;
     QPixmap prog = G_ROOM_SKIN.getProgressBarPixmap((int)(percent * 100));
     int drawWidth = percent * prog.width();
     painter.drawPixmap(0, 0, percent * width, height, prog, 0, 0, drawWidth, prog.height());

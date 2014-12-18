@@ -33,7 +33,7 @@ void Scenario::assign(QStringList &generals, QStringList &roles) const{
     generals << lord << loyalists << rebels << renegades;
     qShuffle(generals);
 
-    foreach (QString general, generals) {
+    foreach(QString general, generals) {
         if (general == lord)
             roles << "lord";
         else if (loyalists.contains(general))

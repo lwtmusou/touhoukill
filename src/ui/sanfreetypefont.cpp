@@ -39,9 +39,9 @@ QString SanFreeTypeFont::resolveFont(const QString &fontName)
     extsToTry.push_back("ttf");
     extsToTry.push_back("ttc");
 
-    foreach (const QString &sdir, dirsToResolve)
+    foreach(const QString &sdir, dirsToResolve)
     {
-        foreach (const QString &ext, extsToTry)
+        foreach(const QString &ext, extsToTry)
         {
             QDir dir(sdir);
             QString filePath = dir.filePath(QString("%1.%2").arg(fontName).arg(ext));
@@ -199,7 +199,7 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text,
         if (useKerning && previous && glyph_index)
         {
             error = FT_Get_Kerning(face, previous, glyph_index,
-                           FT_KERNING_DEFAULT, &delta);
+                FT_KERNING_DEFAULT, &delta);
             currentX += delta.x >> 6;
         }
         previous = glyph_index;

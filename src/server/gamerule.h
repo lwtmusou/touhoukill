@@ -5,7 +5,7 @@
 
 static QVariant _dummy_variant;
 
-class GameRule: public TriggerSkill {
+class GameRule : public TriggerSkill {
     Q_OBJECT
 
 public:
@@ -22,7 +22,7 @@ private:
     QString getWinner(ServerPlayer *victim) const;
 };
 
-class HulaoPassMode: public GameRule {
+class HulaoPassMode : public GameRule {
     Q_OBJECT
 
 public:
@@ -30,7 +30,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data = _dummy_variant) const;
 };
 
-class BasaraMode: public GameRule {
+class BasaraMode : public GameRule {
     Q_OBJECT
 
 public:

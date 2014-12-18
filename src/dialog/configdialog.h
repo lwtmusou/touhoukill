@@ -8,7 +8,7 @@ namespace Ui {
     class ConfigDialog;
 }
 
-class ConfigDialog: public QDialog {
+class ConfigDialog : public QDialog {
     Q_OBJECT
 public:
     ConfigDialog(QWidget *parent = 0);

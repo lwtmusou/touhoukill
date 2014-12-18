@@ -44,7 +44,7 @@ protected:
 
 private:
     //CloseButton *close_button;
-	void initSkins();
+    void initSkins();
     void createSkinItem(int skinIndex, QGraphicsItem *parent, bool used = false);
     void fillSkins();
     void swapWithSkinItemUsed(int skinIndex);

@@ -30,9 +30,9 @@
 #include <QLabel>
 #include <QStatusBar>
 
-class FitView: public QGraphicsView {
+class FitView : public QGraphicsView {
 public:
-    FitView(QGraphicsScene *scene): QGraphicsView(scene) {
+    FitView(QGraphicsScene *scene) : QGraphicsView(scene) {
         setSceneRect(Config.Rect);
         setRenderHints(QPainter::TextAntialiasing | QPainter::Antialiasing);
     }
@@ -55,7 +55,7 @@ public:
         } else if (scene()->inherits("StartScene")) {
             StartScene *start_scene = qobject_cast<StartScene *>(scene());
             QRectF newSceneRect(-event->size().width() / 2, -event->size().height() / 2,
-                                event->size().width(), event->size().height());
+                event->size().width(), event->size().height());
             start_scene->setSceneRect(newSceneRect);
             setSceneRect(start_scene->sceneRect());
             if (newSceneRect != start_scene->sceneRect())
@@ -88,17 +88,17 @@ MainWindow::MainWindow(QWidget *parent)
 
     QList<QAction *> actions;
     actions << ui->actionStart_Game
-            << ui->actionStart_Server
-            << ui->actionPC_Console_Start
-            << ui->actionReplay
-            << ui->actionConfigure
-            << ui->actionGeneral_Overview
-            << ui->actionCard_Overview
-            << ui->actionScenario_Overview
-            << ui->actionAbout
-            << ui->actionAbout_Us;
+        << ui->actionStart_Server
+        << ui->actionPC_Console_Start
+        << ui->actionReplay
+        << ui->actionConfigure
+        << ui->actionGeneral_Overview
+        << ui->actionCard_Overview
+        << ui->actionScenario_Overview
+        << ui->actionAbout
+        << ui->actionAbout_Us;
 
-    foreach (QAction *action, actions)
+    foreach(QAction *action, actions)
         start_scene->addButton(action);
     view = new FitView(scene);
 
@@ -112,10 +112,10 @@ MainWindow::MainWindow(QWidget *parent)
     addAction(ui->actionFullscreen);
 
     systray = NULL;
-	
-	
-	//play title BGM
-	if(Config.EnableBgMusic) {
+
+
+    //play title BGM
+    if (Config.EnableBgMusic) {
         QString bgm = "audio/title/main.ogg";
         if (QFile::exists(bgm)) {
             Audio::stopBGM();
@@ -161,9 +161,9 @@ void MainWindow::gotoScene(QGraphicsScene *scene) {
 void MainWindow::on_actionExit_triggered() {
     QMessageBox::StandardButton result;
     result = QMessageBox::question(this,
-                                   tr("Sanguosha"),
-                                   tr("Are you sure to exit?"),
-                                   QMessageBox::Ok | QMessageBox::Cancel);
+        tr("Sanguosha"),
+        tr("Are you sure to exit?"),
+        QMessageBox::Ok | QMessageBox::Cancel);
     if (result == QMessageBox::Ok) {
         delete systray;
         systray = NULL;
@@ -238,9 +238,9 @@ void MainWindow::on_actionReplay_triggered() {
         location = last_dir;
 
     QString filename = QFileDialog::getOpenFileName(this,
-                                                    tr("Select a reply file"),
-                                                    location,
-                                                    tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
+        tr("Select a reply file"),
+        location,
+        tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
 
     if (filename.isEmpty())
         return;
@@ -330,15 +330,15 @@ void MainWindow::gotoStartScene() {
 
     QList<QAction *> actions;
     actions << ui->actionStart_Game
-            << ui->actionStart_Server
-            << ui->actionPC_Console_Start
-            << ui->actionReplay
-            << ui->actionConfigure
-            << ui->actionGeneral_Overview
-            << ui->actionCard_Overview
-            << ui->actionScenario_Overview
-            << ui->actionAbout
-            << ui->actionAbout_Us;
+        << ui->actionStart_Server
+        << ui->actionPC_Console_Start
+        << ui->actionReplay
+        << ui->actionConfigure
+        << ui->actionGeneral_Overview
+        << ui->actionCard_Overview
+        << ui->actionScenario_Overview
+        << ui->actionAbout
+        << ui->actionAbout_Us;
 
     foreach (QAction *action, actions)
         start_scene->addButton(action);
@@ -399,7 +399,7 @@ void MainWindow::on_actionNever_nullify_my_trick_toggled(bool checked) {
 
 void MainWindow::on_actionAbout_triggered() {
     // Cao Cao's pixmap
-    QString content =  "<center><img src='image/system/shencc.png'> <br /> </center>";
+    QString content = "<center><img src='image/system/shencc.png'> <br /> </center>";
 
     // Cao Cao' poem
     QString poem = tr("Disciples dressed in blue, my heart worries for you. You are the cause, of this song without pause");
@@ -411,10 +411,10 @@ void MainWindow::on_actionAbout_triggered() {
 
     QString email = "moligaloo@gmail.com";
     content.append(tr("This is the open source clone of the popular <b>Sanguosha</b> game,"
-                      "totally written in C++ Qt GUI framework <br />"
-                      "My Email: <a href='mailto:%1' style = \"color:#0072c1; \">%1</a> <br/>"
-                      "My QQ: 365840793 <br/>"
-                      "My Weibo: http://weibo.com/moligaloo <br/>").arg(email));
+        "totally written in C++ Qt GUI framework <br />"
+        "My Email: <a href='mailto:%1' style = \"color:#0072c1; \">%1</a> <br/>"
+        "My QQ: 365840793 <br/>"
+        "My Weibo: http://weibo.com/moligaloo <br/>").arg(email));
 
     QString config;
 
@@ -425,9 +425,9 @@ void MainWindow::on_actionAbout_triggered() {
 #endif
 
     content.append(tr("Current version: %1 %2 (%3)<br/>")
-                      .arg(Sanguosha->getVersion())
-                      .arg(config)
-                      .arg(Sanguosha->getVersionName()));
+        .arg(Sanguosha->getVersion())
+        .arg(config)
+        .arg(Sanguosha->getVersionName()));
 
     const char *date = __DATE__;
     const char *time = __TIME__;
@@ -446,7 +446,7 @@ void MainWindow::on_actionAbout_triggered() {
     window->addContent(content);
     window->addCloseButton(tr("OK"));
     window->shift(scene->inherits("RoomScene") ? scene->width() : 0,
-                  scene->inherits("RoomScene") ? scene->height() : 0);
+        scene->inherits("RoomScene") ? scene->height() : 0);
 
     window->appear();
 }
@@ -500,7 +500,7 @@ void MainWindow::on_actionFullscreen_triggered()
 void MainWindow::on_actionShow_Hide_Menu_triggered()
 {
     QMenuBar *menu_bar = menuBar();
-    menu_bar->setVisible(! menu_bar->isVisible());
+    menu_bar->setVisible(!menu_bar->isVisible());
 }
 
 void MainWindow::on_actionMinimize_to_system_tray_triggered()
@@ -541,10 +541,10 @@ void MainWindow::on_actionRole_assign_table_triggered()
 
     QStringList rows;
     rows << "2 1 0 1 0" << "3 1 0 1 1" << "4 1 0 2 1"
-         << "5 1 1 2 1" << "6 1 1 3 1" << "6d 1 1 2 2"
-         << "7 1 2 3 1" << "8 1 2 4 1" << "8d 1 2 3 2"
-         << "8z 1 3 4 0" << "9 1 3 4 1" << "10 1 3 4 2"
-         << "10z 1 4 5 0" << "10o 1 3 5 1";
+        << "5 1 1 2 1" << "6 1 1 3 1" << "6d 1 1 2 2"
+        << "7 1 2 3 1" << "8 1 2 4 1" << "8d 1 2 3 2"
+        << "8z 1 3 4 0" << "9 1 3 4 1" << "10 1 3 4 2"
+        << "10z 1 4 5 0" << "10o 1 3 5 1";
 
     foreach (QString row, rows) {
         QStringList cells = row.split(" ");
@@ -578,7 +578,7 @@ void MainWindow::on_actionRole_assign_table_triggered()
     window->addContent(content);
     window->addCloseButton(tr("OK"));
     window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0,
-                  scene && scene->inherits("RoomScene") ? scene->height() : 0);
+        scene && scene->inherits("RoomScene") ? scene->height() : 0);
     window->setZValue(32766);
 
     window->appear();
@@ -637,7 +637,7 @@ void MainWindow::on_actionAcknowledgement_triggered() {
     button->moveBy(-85, -35);
     window->setZValue(32766);
     window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0,
-                    scene && scene->inherits("RoomScene") ? scene->height() : 0);
+        scene && scene->inherits("RoomScene") ? scene->height() : 0);
 
     window->appear();
 }
@@ -668,9 +668,9 @@ void MainWindow::on_actionPC_Console_Start_triggered() {
 
 void MainWindow::on_actionReplay_file_convert_triggered() {
     QString filename = QFileDialog::getOpenFileName(this,
-                                                    tr("Please select a replay file"),
-                                                    Config.value("LastReplayDir").toString(),
-                                                    tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
+        tr("Please select a replay file"),
+        Config.value("LastReplayDir").toString(),
+        tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
 
     if (filename.isEmpty())
         return;
@@ -702,9 +702,9 @@ void MainWindow::on_actionReplay_file_convert_triggered() {
 void MainWindow::on_actionRecord_analysis_triggered() {
     QString location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
     QString filename = QFileDialog::getOpenFileName(this,
-                                                    tr("Load replay record"),
-                                                    location,
-                                                    tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
+        tr("Load replay record"),
+        location,
+        tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
 
     if (filename.isEmpty()) return;
 
@@ -722,7 +722,7 @@ void MainWindow::on_actionRecord_analysis_triggered() {
     static QStringList labels;
     if (labels.isEmpty()) {
         labels << tr("ScreenName") << tr("General") << tr("Role") << tr("Living") << tr("WinOrLose") << tr("TurnCount")
-               << tr("Recover") << tr("Damage") << tr("Damaged") << tr("Kill") << tr("Designation");
+            << tr("Recover") << tr("Damage") << tr("Damaged") << tr("Kill") << tr("Designation");
     }
     table->setHorizontalHeaderLabels(labels);
     table->setSelectionBehavior(QTableWidget::SelectRows);
@@ -754,7 +754,7 @@ void MainWindow::on_actionRecord_analysis_triggered() {
 
         item = new QTableWidgetItem;
         bool is_win = record->getRecordWinners().contains(rec->m_role)
-                      || record->getRecordWinners().contains(record_map.key(rec));
+            || record->getRecordWinners().contains(record_map.key(rec));
         item->setText(is_win ? tr("Win") : tr("Lose"));
         table->setItem(i, 4, item);
 
@@ -840,7 +840,7 @@ void MainWindow::on_actionAbout_fmod_triggered() {
     window->addCloseButton(tr("OK"));
     window->setZValue(32766);
     window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0,
-                  scene && scene->inherits("RoomScene") ? scene->height() : 0);
+        scene && scene->inherits("RoomScene") ? scene->height() : 0);
 
     window->appear();
 }
@@ -864,7 +864,7 @@ void MainWindow::on_actionAbout_Lua_triggered() {
     window->addCloseButton(tr("OK"));
     window->setZValue(32766);
     window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0,
-                  scene && scene->inherits("RoomScene") ? scene->height() : 0);
+        scene && scene->inherits("RoomScene") ? scene->height() : 0);
 
     window->appear();
 }
@@ -883,7 +883,7 @@ void MainWindow::on_actionAbout_GPLv3_triggered() {
     window->addCloseButton(tr("OK"));
     window->setZValue(32766);
     window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0,
-                  scene && scene->inherits("RoomScene") ? scene->height() : 0);
+        scene && scene->inherits("RoomScene") ? scene->height() : 0);
 
     window->appear();
 }

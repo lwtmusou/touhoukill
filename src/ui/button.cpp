@@ -131,7 +131,7 @@ QRectF Button::boundingRect() const{
 void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
     QRectF rect = boundingRect();
 
-    painter->drawImage(rect,*outimg);
+    painter->drawImage(rect, *outimg);
     painter->fillRect(rect, QColor(255, 255, 255, glow * 10));
 }
 
@@ -139,7 +139,8 @@ void Button::timerEvent(QTimerEvent *) {
     update();
     if (hasFocus()) {
         if (glow < 5) glow++;
-    } else {
+    }
+    else {
         if (glow > 0)
             glow--;
         else if (timer_id) {

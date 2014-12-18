@@ -5,7 +5,7 @@
 #include "engine.h"
 #include "room.h"
 
-class MiniSceneRule: public ScenarioRule {
+class MiniSceneRule : public ScenarioRule {
     Q_OBJECT
 
 public:
@@ -31,7 +31,7 @@ protected:
     QList<int> m_fixedDrawCards;
 };
 
-class MiniScene: public Scenario {
+class MiniScene : public Scenario {
     Q_OBJECT
 
 public:
@@ -50,18 +50,18 @@ public:
     }
 };
 
-class CustomScenario: public MiniScene {
+class CustomScenario : public MiniScene {
     Q_OBJECT
 
 public:
-    CustomScenario(): MiniScene("custom_scenario") { setupCustom(NULL); }
+    CustomScenario() : MiniScene("custom_scenario") { setupCustom(NULL); }
 };
 
-class LoadedScenario: public MiniScene {
+class LoadedScenario : public MiniScene {
     Q_OBJECT
 
 public:
-    LoadedScenario(const QString &name): MiniScene(QString(MiniScene::S_KEY_MINISCENE).arg(name)) { setupCustom(name); }
+    LoadedScenario(const QString &name) : MiniScene(QString(MiniScene::S_KEY_MINISCENE).arg(name)) { setupCustom(name); }
 };
 
 #endif

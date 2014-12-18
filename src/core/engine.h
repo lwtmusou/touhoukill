@@ -27,7 +27,7 @@ class LuaArmor;
 
 struct lua_State;
 
-class Engine: public QObject {
+class Engine : public QObject {
     Q_OBJECT
 
 public:
@@ -125,7 +125,7 @@ public:
     bool isGeneralHidden(const QString &general_name) const;
 
     QStringList SurprisingGenerals;
-	QStringList TouhouKingdoms;
+    QStringList TouhouKingdoms;
 private:
     void _loadMiniScenarios();
     void _loadModScenarios();
@@ -166,7 +166,7 @@ private:
     QHash<QString, const LuaWeapon*> luaWeapons;
     QHash<QString, QString> luaArmor_className2objectName;
     QHash<QString, const LuaArmor *> luaArmors;
-	//QHash<QString, QString> luaTreasure_className2objectName;
+    //QHash<QString, QString> luaTreasure_className2objectName;
     //QHash<QString, const LuaTreasure *> luaTreasures;
 
     QMultiMap<QString, QString> sp_convert_pairs;

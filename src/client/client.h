@@ -12,7 +12,7 @@ class Recorder;
 class Replayer;
 class QTextDocument;
 
-class Client: public QObject {
+class Client : public QObject {
     Q_OBJECT
     Q_PROPERTY(Client::Status status READ getStatus WRITE setStatus)
 
@@ -144,7 +144,7 @@ public:
     void askForDiscard(const Json::Value &);
     void askForExchange(const Json::Value &);
     void askForSuit(const Json::Value &);
-    void askForKingdom(const Json::Value &arg =NULL);
+    void askForKingdom(const Json::Value &arg = NULL);
     void askForNullification(const Json::Value &);
     void askForPindian(const Json::Value &);
     void askForCardChosen(const Json::Value &);
@@ -191,8 +191,8 @@ public:
     }
 
     inline QList<int> getAvailableCards() const{ return available_cards; }
-	void clearHighlightSkillName();
-	void clearLordInfo();
+    void clearHighlightSkillName();
+    void clearLordInfo();
     // public fields
     bool m_isDiscardActionRefusable;
     bool m_canDiscardEquip;
@@ -201,14 +201,14 @@ public:
     int discard_num;
     int min_num;
     QString skill_name;
-	QString highlight_skill_name;//for highlighting skill button when client is asked to use skill
+    QString highlight_skill_name;//for highlighting skill button when client is asked to use skill
     QString lord_kingdom; //for playing touhou bgm
-	QString lord_name;
-	
-	QList<const Card *> discarded_list;
+    QString lord_name;
+
+    QList<const Card *> discarded_list;
     QStringList players_to_choose;
 
-public slots:
+    public slots:
     void signup();
     void onPlayerChooseGeneral(const QString &_name);
     void onPlayerMakeChoice();
@@ -281,7 +281,7 @@ signals:
     void suits_got(const QStringList &suits);
     void options_got(const QString &skillName, const QStringList &options);
     void cards_got(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible,
-                    Card::HandlingMethod method, QList<int> disabled_ids);
+        Card::HandlingMethod method, QList<int> disabled_ids);
     void roles_got(const QString &scheme, const QStringList &roles);
     void directions_got();
     void orders_got(QSanProtocol::Game3v3ChooseOrderCommand reason);
@@ -306,8 +306,8 @@ signals:
     void animated(int name, const QStringList &args);
     void text_spoken(const QString &text);
     void line_spoken(const QString &line);
-	void player_spoken(const QString &who, const QString &line);
-   
+    void player_spoken(const QString &who, const QString &line);
+
     void card_used();
 
     void game_started();

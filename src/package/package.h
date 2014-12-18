@@ -18,7 +18,7 @@ public:
     }
 };
 
-class Package: public QObject {
+class Package : public QObject {
     Q_OBJECT
     Q_ENUMS(Type)
 

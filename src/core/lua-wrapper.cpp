@@ -72,7 +72,7 @@ static QHash<QString, QString> LuaSkillCardsSkillName;
 
 LuaSkillCard::LuaSkillCard(const char *name, const char *skillName)
     : SkillCard(), filter(0), feasible(0),
-        about_to_use(0), on_use(0), on_effect(0), on_validate(0), on_validate_in_response(0)
+      about_to_use(0), on_use(0), on_effect(0), on_validate(0), on_validate_in_response(0)
 {
     if (name) {
         LuaSkillCards.insert(name, this);
@@ -179,8 +179,8 @@ LuaSkillCard *LuaSkillCard::Parse(const QString &str) {
 QString LuaSkillCard::toString(bool hidden) const{
     Q_UNUSED(hidden);
     return QString("#%1[%2:%3]:%4:%5").arg(objectName())
-           .arg(getSuitString()).arg(getNumberString())
-           .arg(subcardString()).arg(user_string);
+        .arg(getSuitString()).arg(getNumberString())
+        .arg(subcardString()).arg(user_string);
 }
 
 LuaBasicCard::LuaBasicCard(Card::Suit suit, int number, const char *obj_name, const char *class_name, const char *subtype)
@@ -279,12 +279,12 @@ LuaArmor *LuaArmor::clone(Card::Suit suit, int number) const{
 
 /*LuaTreasure::LuaTreasure(Card::Suit suit, int number, const char *obj_name, const char *class_name)
     : Treasure(suit, number)
-{
+    {
     setObjectName(obj_name);
     this->class_name = class_name;
-}
+    }
 
-LuaTreasure *LuaTreasure::clone(Card::Suit suit, int number) const{
+    LuaTreasure *LuaTreasure::clone(Card::Suit suit, int number) const{
     if (suit == Card::SuitToBeDecided) suit = this->getSuit();
     if (number == -1) number = this->getNumber();
     LuaTreasure *new_card = new LuaTreasure(suit, number, objectName().toStdString().c_str(), class_name.toStdString().c_str());
@@ -293,5 +293,5 @@ LuaTreasure *LuaTreasure::clone(Card::Suit suit, int number) const{
     new_card->on_uninstall = on_uninstall;
 
     return new_card;
-}
-*/
+    }
+    */

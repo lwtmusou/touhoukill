@@ -8,18 +8,20 @@
 #include <qlist.h>
 #include "skill.h"
 
-class QSanButton: public QGraphicsObject{
+class QSanButton : public QGraphicsObject{
     Q_OBJECT
 
 public:
     QSanButton(QGraphicsItem *parent);
     QSanButton(const QString &groupName, const QString &buttonName, QGraphicsItem *parent);
-    enum ButtonState { S_STATE_UP, S_STATE_HOVER, S_STATE_DOWN,
-                       S_STATE_DISABLED, S_NUM_BUTTON_STATES };
+    enum ButtonState {
+        S_STATE_UP, S_STATE_HOVER, S_STATE_DOWN,
+        S_STATE_DISABLED, S_NUM_BUTTON_STATES
+    };
     enum ButtonStyle { S_STYLE_PUSH, S_STYLE_TOGGLE };
     void setSize(QSize size);
     void setStyle(ButtonStyle style);
-    void setState(ButtonState state,bool ignore_change=false);
+    void setState(ButtonState state, bool ignore_change = false);
     inline void setButtonName(QString buttonName) { _m_buttonName = buttonName; }
     inline QString getButtonName() { return _m_buttonName; }
     inline ButtonState getState() const{ return _m_state; }
@@ -29,8 +31,8 @@ public:
     bool insideButton(QPointF pos) const;
     void setEnabled(bool enabled);
     bool isDown();
-	bool isMouseInside() const;
-public slots:
+    bool isMouseInside() const;
+    public slots:
     void click();
 
 protected:
@@ -51,23 +53,25 @@ protected:
     // get rid of it.
     bool _m_mouseEntered;
     QPixmap _m_bgPixmap[S_NUM_BUTTON_STATES];
-	
+
 private:
-	bool _isMouseInside(const QPointF &pos) const {
+    bool _isMouseInside(const QPointF &pos) const {
         return _m_mask.contains(QPoint(pos.x(), pos.y()));
     }
-	
+
 signals:
     void clicked();
     void enable_changed();
 };
 
-class QSanSkillButton: public QSanButton {
+class QSanSkillButton : public QSanButton {
     Q_OBJECT
 
 public:
-    enum SkillType { S_SKILL_ATTACHEDLORD, S_SKILL_PROACTIVE, S_SKILL_FREQUENT, S_SKILL_COMPULSORY,
-                     S_SKILL_AWAKEN, S_SKILL_ONEOFF_SPELL, S_NUM_SKILL_TYPES };
+    enum SkillType {
+        S_SKILL_ATTACHEDLORD, S_SKILL_PROACTIVE, S_SKILL_FREQUENT, S_SKILL_COMPULSORY,
+        S_SKILL_AWAKEN, S_SKILL_ONEOFF_SPELL, S_NUM_SKILL_TYPES
+    };
 
     inline static QString getSkillTypeString(SkillType type) {
         QString arg1;
@@ -111,15 +115,15 @@ signals:
     void skill_deactivated();
 };
 
-class QSanInvokeSkillButton: public QSanSkillButton {
+class QSanInvokeSkillButton : public QSanSkillButton {
     Q_OBJECT
 
 public:
-    inline QSanInvokeSkillButton(QGraphicsItem *parent = NULL): QSanSkillButton(parent)
+    inline QSanInvokeSkillButton(QGraphicsItem *parent = NULL) : QSanSkillButton(parent)
     {
         _m_enumWidth = S_WIDTH_NARROW;
     }
-    enum SkillButtonWidth { S_WIDTH_WIDE, S_WIDTH_MED, S_WIDTH_NARROW, S_NUM_BUTTON_WIDTHS};
+    enum SkillButtonWidth { S_WIDTH_WIDE, S_WIDTH_MED, S_WIDTH_NARROW, S_NUM_BUTTON_WIDTHS };
     inline void setButtonWidth(SkillButtonWidth width) { _m_enumWidth = width; _repaint(); }
     inline SkillButtonWidth getButtonWidth() { return _m_enumWidth; }
 
@@ -131,15 +135,15 @@ protected:
     SkillButtonWidth _m_enumWidth;
 };
 
-class QSanInvokeSkillDock: public QGraphicsObject {
+class QSanInvokeSkillDock : public QGraphicsObject {
     Q_OBJECT
 
 public:
-    QSanInvokeSkillDock(QGraphicsItem *parent): QGraphicsObject(parent) {}
+    QSanInvokeSkillDock(QGraphicsItem *parent) : QGraphicsObject(parent) {}
     int width() const;
     int height() const;
     void setWidth(int width);
-    inline void addSkillButton(QSanInvokeSkillButton *button) { _m_buttons.push_back(button);  }
+    inline void addSkillButton(QSanInvokeSkillButton *button) { _m_buttons.push_back(button); }
     inline void removeSkillButton(QSanInvokeSkillButton *button) {
         if (button == NULL) return;
         _m_buttons.removeAll(button);

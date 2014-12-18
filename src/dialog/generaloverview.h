@@ -16,7 +16,7 @@ class QCommandLinkButton;
 
 class GeneralOverview;
 
-class GeneralSearch: public QDialog {
+class GeneralSearch : public QDialog {
     Q_OBJECT
 
 public:
@@ -38,7 +38,7 @@ private:
 
 signals:
     void search(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,
-                const QStringList &kingdoms, int lower, int upper, const QStringList &packages);
+        const QStringList &kingdoms, int lower, int upper, const QStringList &packages);
 
 protected:
     virtual void accept();
@@ -57,7 +57,7 @@ namespace Ui {
     class GeneralOverview;
 }
 
-class GeneralOverview: public QDialog {
+class GeneralOverview : public QDialog {
     Q_OBJECT
 
 public:
@@ -83,7 +83,7 @@ private:
 
 public slots:
     void startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,
-                     const QStringList &kingdoms, int lower, int upper, const QStringList &packages);
+        const QStringList &kingdoms, int lower, int upper, const QStringList &packages);
 
 private slots:
     void playAudioEffect();

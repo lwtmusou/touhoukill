@@ -65,7 +65,7 @@ int Skill::getEffectIndex(const ServerPlayer *, const Card *) const{
 
 void Skill::initMediaSource() {
     sources.clear();
-    for (int i = 1; ;i++) {
+    for (int i = 1;; i++) {
         QString effect_file = QString("audio/skill/%1%2.ogg").arg(objectName()).arg(QString::number(i));
         if (QFile::exists(effect_file))
             sources << effect_file;
@@ -130,17 +130,17 @@ ViewAsSkill::ViewAsSkill(const QString &name)
 }
 
 bool ViewAsSkill::isAvailable(const Player *invoker,
-                              CardUseStruct::CardUseReason reason,
-                              const QString &pattern) const{
-    if (!invoker->hasSkill(objectName()) && !invoker->hasLordSkill(objectName()) 
-            && !invoker->hasFlag(objectName())) // For Shuangxiong
+    CardUseStruct::CardUseReason reason,
+    const QString &pattern) const{
+    if (!invoker->hasSkill(objectName()) && !invoker->hasLordSkill(objectName())
+        && !invoker->hasFlag(objectName())) // For Shuangxiong
         return false;
     switch (reason) {
     case CardUseStruct::CARD_USE_REASON_PLAY: return isEnabledAtPlay(invoker);
     case CardUseStruct::CARD_USE_REASON_RESPONSE:
     case CardUseStruct::CARD_USE_REASON_RESPONSE_USE: return isEnabledAtResponse(invoker, pattern);
     default:
-            return false;
+        return false;
     }
 }
 
@@ -202,7 +202,7 @@ bool OneCardViewAsSkill::viewFilter(const Card *to_select) const{
     if (!inherits("FilterSkill") && !filter_pattern.isEmpty()) {
         QString pat = filter_pattern;
         if (pat.endsWith("!")) {
-			if (Self->isJilei(to_select)) return false;
+            if (Self->isJilei(to_select)) return false;
             pat.chop(1);
         } else if (response_or_use && pat.contains("hand")) {
             pat.replace("hand", "hand,wooden_ox,piao");
@@ -244,7 +244,7 @@ int TriggerSkill::getPriority(TriggerEvent) const{
 }
 
 bool TriggerSkill::triggerable(const ServerPlayer *target) const{
-	//在此处设置zun的“triggerable”?
+    //在此处设置zun的“triggerable”?
     return target != NULL && target->isAlive() && target->hasSkill(objectName());
 }
 
@@ -332,7 +332,7 @@ bool SPConvertSkill::triggerable(const ServerPlayer *target) const{
         }
     }
     return GameStartSkill::triggerable(target)
-           && (target->getGeneralName() == from || target->getGeneral2Name() == from) && available;
+        && (target->getGeneralName() == from || target->getGeneral2Name() == from) && available;
 }
 
 void SPConvertSkill::onGameStart(ServerPlayer *player) const{
@@ -416,7 +416,7 @@ int TargetModSkill::getExtraTargetNum(const Player *, const Card *) const{
     return 0;
 }
 
-AttackRangeSkill::AttackRangeSkill(const QString &name): Skill(name, Skill::Compulsory){
+AttackRangeSkill::AttackRangeSkill(const QString &name) : Skill(name, Skill::Compulsory){
 
 }
 

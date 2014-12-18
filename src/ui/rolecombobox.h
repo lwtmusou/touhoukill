@@ -9,7 +9,7 @@
 
 class Photo;
 
-class RoleComboBoxItem: public QSanSelectableItem {
+class RoleComboBoxItem : public QSanSelectableItem {
     Q_OBJECT
 
 public:
@@ -29,7 +29,7 @@ signals:
     void clicked();
 };
 
-class RoleComboBox: public QGraphicsObject{
+class RoleComboBox : public QGraphicsObject{
     Q_OBJECT
 
 public:

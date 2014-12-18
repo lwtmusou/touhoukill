@@ -42,10 +42,10 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->autoTargetCheckBox->setChecked(Config.EnableAutoTarget);
     ui->intellectualSelectionCheckBox->setChecked(Config.EnableIntellectualSelection);
     ui->defaultHeroskinCheckBox->setChecked(Config.DefaultHeroSkin);
-    
-	ui->doubleClickCheckBox->setChecked(Config.EnableDoubleClick);
-	ui->bubbleChatBoxDelaySpinBox->setSuffix(tr(" second"));
-	ui->bubbleChatBoxDelaySpinBox->setValue(Config.BubbleChatBoxDelaySeconds);
+
+    ui->doubleClickCheckBox->setChecked(Config.EnableDoubleClick);
+    ui->bubbleChatBoxDelaySpinBox->setSuffix(tr(" second"));
+    ui->bubbleChatBoxDelaySpinBox->setValue(Config.BubbleChatBoxDelaySeconds);
 
     connect(this, SIGNAL(accepted()), this, SLOT(saveConfig()));
 
@@ -74,9 +74,9 @@ ConfigDialog::~ConfigDialog() {
 
 void ConfigDialog::on_browseBgButton_clicked() {
     QString filename = QFileDialog::getOpenFileName(this,
-                                                    tr("Select a background image"),
-                                                    "backdrop/",
-                                                    tr("Images (*.png *.bmp *.jpg)"));
+        tr("Select a background image"),
+        "backdrop/",
+        tr("Images (*.png *.bmp *.jpg)"));
 
     if (!filename.isEmpty()) {
         ui->bgPathLineEdit->setText(filename);
@@ -91,18 +91,18 @@ void ConfigDialog::on_browseBgButton_clicked() {
 void ConfigDialog::on_resetBgButton_clicked() {
     ui->bgPathLineEdit->clear();
     QStringList backimages;
-	backimages<<"1" <<"2"<<"3"<<"4"<<"5"<<"6"<<"7"<<"8";
-	
+    backimages << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8";
+
     qShuffle(backimages);
-	QString backimage= backimages.at(0);
-	
-    QString filename = "backdrop/new-version"+backimage+".jpg";
+    QString backimage = backimages.at(0);
+
+    QString filename = "backdrop/new-version" + backimage + ".jpg";
     Config.BackgroundImage = filename;
     Config.setValue("BackgroundImage", filename);
 
     emit bg_changed();
-	//Config.setValue("BackgroundImage", "");
-	Config.remove("BackgroundImage");
+    //Config.setValue("BackgroundImage", "");
+    Config.remove("BackgroundImage");
 }
 
 void ConfigDialog::on_browseTableBgButton_clicked() {
@@ -165,21 +165,21 @@ void ConfigDialog::saveConfig() {
 
     Config.EnableDoubleClick = ui->doubleClickCheckBox->isChecked();
     Config.setValue("EnableDoubleClick", Config.EnableDoubleClick);
-	
-	Config.DefaultHeroSkin = ui->defaultHeroskinCheckBox->isChecked();
+
+    Config.DefaultHeroSkin = ui->defaultHeroskinCheckBox->isChecked();
     Config.setValue("DefaultHeroSkin", Config.DefaultHeroSkin);
 
-	
-	Config.BubbleChatBoxDelaySeconds = ui->bubbleChatBoxDelaySpinBox->value();
+
+    Config.BubbleChatBoxDelaySeconds = ui->bubbleChatBoxDelaySpinBox->value();
     Config.setValue("BubbleChatBoxDelaySeconds", Config.BubbleChatBoxDelaySeconds);
 
-	}
+}
 
 void ConfigDialog::on_browseBgMusicButton_clicked() {
     QString filename = QFileDialog::getOpenFileName(this,
-                                                    tr("Select a background music"),
-                                                    "audio/system",
-                                                    tr("Audio files (*.wav *.mp3 *.ogg)"));
+        tr("Select a background music"),
+        "audio/system",
+        tr("Audio files (*.wav *.mp3 *.ogg)"));
     if (!filename.isEmpty()) {
         ui->bgMusicPathLineEdit->setText(filename);
         Config.setValue("BackgroundMusic", filename);

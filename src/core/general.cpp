@@ -9,7 +9,7 @@
 #include <QFile>
 
 General::General(Package *package, const QString &name, const QString &kingdom,
-                 int max_hp, bool male, bool hidden, bool never_shown)
+    int max_hp, bool male, bool hidden, bool never_shown)
     : QObject(package), kingdom(kingdom), max_hp(max_hp), gender(male ? Male : Female),
       hidden(hidden), never_shown(never_shown)
 {
@@ -67,7 +67,7 @@ bool General::isTotallyHidden() const{
 
 bool General::isVisible() const{
     return !Sanguosha->SurprisingGenerals.contains(objectName())
-            || Config.KnownSurprisingGenerals.contains(objectName());
+        || Config.KnownSurprisingGenerals.contains(objectName());
 }
 
 void General::addSkill(Skill *skill) {

@@ -30,7 +30,7 @@ Settings::Settings()
 #else
     : QSettings("QSanguosha.org", "QSanguosha"),
 #endif
-                Rect(-ViewWidth / 2, -ViewHeight / 2, ViewWidth, ViewHeight)
+      Rect(-ViewWidth / 2, -ViewHeight / 2, ViewWidth, ViewHeight)
 {
 }
 
@@ -63,12 +63,12 @@ void Settings::init() {
     QStringList banpackagelist = value("BanPackages").toStringList();
     if (banpackagelist.isEmpty()) {
         banpackagelist << "nostalgia" << "nostal_standard" << "yitian" << "wisdom" << "nostal_wind"
-                       /*<< "disaster"*/ << "god" << "YJCM" /*<< "yitian_cards"*/ << "test"
-                       << "sp" << "sp_cards" << "BGM" << "YJCM2012" << "Special3v3"
-                       << "New3v3Card" /*<< "joy" << "joy_equip"*/ << "hegemony_card"
-                       << "hegemony" << "ling" << "BGMDIY" << "New3v3_2013Card"
-                       << "nostal_yjcm" << "nostal_yjcm2012" << "YJCM2013" << "New1v1Card" << "assassins"
-                       << "hegemony_sp" << "Special1v1" << "Special1v1OL" << "Special3v3_2013";
+            /*<< "disaster"*/ << "god" << "YJCM" /*<< "yitian_cards"*/ << "test"
+            << "sp" << "sp_cards" << "BGM" << "YJCM2012" << "Special3v3"
+            << "New3v3Card" /*<< "joy" << "joy_equip"*/ << "hegemony_card"
+            << "hegemony" << "ling" << "BGMDIY" << "New3v3_2013Card"
+            << "nostal_yjcm" << "nostal_yjcm2012" << "YJCM2013" << "New1v1Card" << "assassins"
+            << "hegemony_sp" << "Special1v1" << "Special1v1OL" << "Special3v3_2013";
     }
     setValue("BanPackages", banpackagelist);
 
@@ -121,9 +121,9 @@ void Settings::init() {
     EnableIntellectualSelection = value("EnableIntellectualSelection", true).toBool();
     EnableDoubleClick = value("EnableDoubleClick", false).toBool();
     BubbleChatBoxDelaySeconds = value("BubbleChatBoxDelaySeconds", 2).toInt();
-	DefaultHeroSkin = value("DefaultHeroSkin", true).toBool();
-	
-	NullificationCountDown = value("NullificationCountDown", 8).toInt();
+    DefaultHeroSkin = value("DefaultHeroSkin", true).toBool();
+
+    NullificationCountDown = value("NullificationCountDown", 8).toInt();
     OperationTimeout = value("OperationTimeout", 15).toInt();
     OperationNoLimit = value("OperationNoLimit", false).toBool();
     EnableEffects = value("EnableEffects", true).toBool();
@@ -131,14 +131,14 @@ void Settings::init() {
     EnableBgMusic = value("EnableBgMusic", true).toBool();
     BGMVolume = value("BGMVolume", 1.0f).toFloat();
     EffectVolume = value("EffectVolume", 1.0f).toFloat();
-    
-	QStringList backimages;
-	backimages<<"1" <<"2"<<"3"<<"4"<<"5"<<"6"<<"7"<<"8";
-	
+
+    QStringList backimages;
+    backimages << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8";
+
     qShuffle(backimages);
-	QString backimage= backimages.at(0);
-	
-    BackgroundImage = value("BackgroundImage", "backdrop/new-version"+backimage+".jpg").toString();
+    QString backimage = backimages.at(0);
+
+    BackgroundImage = value("BackgroundImage", "backdrop/new-version" + backimage + ".jpg").toString();
     TableBgImage = value("TableBgImage", "backdrop/default.jpg").toString();
 
     EnableSurprisingGenerals = value("EnableSurprisingGenerals", false).toBool();
@@ -163,7 +163,7 @@ void Settings::init() {
     QStringList banlist = value("Banlist/Roles").toStringList();
     if (banlist.isEmpty()) {
         foreach (QString ban_general, roles_ban)
-                banlist << ban_general;
+            banlist << ban_general;
 
         setValue("Banlist/Roles", banlist);
     }

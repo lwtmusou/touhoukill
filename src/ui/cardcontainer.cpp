@@ -36,10 +36,11 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
     else if (card_ids.isEmpty() && !items.isEmpty()) {
         card_items = items;
         items.clear();
-    } else if (!items.isEmpty()) {
+    }
+    else if (!items.isEmpty()) {
         retained_stack.push(retained());
         items_stack.push(items);
-        foreach (CardItem *item, items)
+        foreach(CardItem *item, items)
             item->hide();
         items.clear();
     }
@@ -62,18 +63,21 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
             if (i < 5) {
                 pos = pos1;
                 pos.setX(pos.x() + i * skip);
-            } else {
+            }
+            else {
                 pos = pos2;
                 pos.setX(pos.x() + (i - 5) * skip);
             }
-        } else {
+        }
+        else {
             int half = (n + 1) / 2;
             qreal real_skip = whole_width / (half - 1);
 
             if (i < half) {
                 pos = pos1;
                 pos.setX(pos.x() + i * real_skip);
-            } else {
+            }
+            else {
                 pos = pos2;
                 pos.setX(pos.x() + (i - half) * real_skip);
             }
@@ -84,8 +88,8 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
         item->setOpacity(1.0);
         item->setHomeOpacity(1.0);
         item->setFlag(QGraphicsItem::ItemIsFocusable);
-		
-		//卡牌需要支持鼠标左键，以便双击选择
+
+        //卡牌需要支持鼠标左键，以便双击选择
         item->setAcceptedMouseButtons(Qt::LeftButton);
         if (disabled_ids.contains(item->getCard()->getEffectiveId())) item->setEnabled(false);
         item->show();
@@ -101,7 +105,7 @@ bool CardContainer::retained() {
 }
 
 void CardContainer::clear() {
-    foreach (CardItem *item, items) {
+    foreach(CardItem *item, items) {
         item->hide();
         item = NULL;
         delete item;
@@ -114,22 +118,23 @@ void CardContainer::clear() {
         fillCards();
         if (retained && close_button)
             close_button->show();
-    } else {
+    }
+    else {
         close_button->hide();
         hide();
     }
 }
 
 void CardContainer::freezeCards(bool is_frozen) {
-    foreach (CardItem *item, items)
+    foreach(CardItem *item, items)
         item->setFrozen(is_frozen);
 }
 
-QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Player::Place ) {
+QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Player::Place) {
     QList<CardItem *> result;
-    foreach (int card_id, card_ids) {
+    foreach(int card_id, card_ids) {
         CardItem *to_take = NULL;
-        foreach (CardItem *item, items) {
+        foreach(CardItem *item, items) {
             if (item->getCard()->getId() == card_id) {
                 to_take = item;
                 break;
@@ -143,10 +148,10 @@ QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Pla
         copy->setPos(mapToScene(to_take->pos()));
         copy->setEnabled(false);
         result.append(copy);
-		
-		//移出去的卡牌恢复成默认不支持鼠标按键的状态
+
+        //移出去的卡牌恢复成默认不支持鼠标按键的状态
         copy->setAcceptedMouseButtons(0);
-		
+
         if (m_currentPlayer)
             to_take->showAvatar(m_currentPlayer->getGeneral());
     }
@@ -154,7 +159,7 @@ QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Pla
 }
 
 int CardContainer::getFirstEnabled() const{
-    foreach (CardItem *card, items) {
+    foreach(CardItem *card, items) {
         if (card->isEnabled())
             return card->getCard()->getId();
     }
@@ -163,7 +168,7 @@ int CardContainer::getFirstEnabled() const{
 
 void CardContainer::startChoose() {
     close_button->hide();
-    foreach (CardItem *item, items) {
+    foreach(CardItem *item, items) {
         connect(item, SIGNAL(leave_hover()), this, SLOT(grabItem()));
         connect(item, SIGNAL(double_clicked()), this, SLOT(chooseItem()));
     }
@@ -171,7 +176,7 @@ void CardContainer::startChoose() {
 
 void CardContainer::startGongxin(const QList<int> &enabled_ids) {
     if (enabled_ids.isEmpty()) return;
-    foreach (CardItem *item, items) {
+    foreach(CardItem *item, items) {
         const Card *card = item->getCard();
         if (card && enabled_ids.contains(card->getEffectiveId()))
             connect(item, SIGNAL(double_clicked()), this, SLOT(gongxinItem()));
@@ -226,7 +231,7 @@ void CloseButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *) {
 void CardContainer::view(const ClientPlayer *player) {
     QList<int> card_ids;
     QList<const Card *> cards = player->getHandcards();
-    foreach (const Card *card, cards)
+    foreach(const Card *card, cards)
         card_ids << card->getEffectiveId();
 
     fillCards(card_ids);
@@ -239,7 +244,7 @@ GuanxingBox::GuanxingBox()
     setFlag(ItemIsMovable);
 }
 
-void GuanxingBox::doGuanxing (const QList<int> &card_ids, bool up_only) {
+void GuanxingBox::doGuanxing(const QList<int> &card_ids, bool up_only) {
     if (card_ids.isEmpty()) {
         clear();
         return;
@@ -248,7 +253,7 @@ void GuanxingBox::doGuanxing (const QList<int> &card_ids, bool up_only) {
     this->up_only = up_only;
     up_items.clear();
 
-    foreach (int card_id, card_ids) {
+    foreach(int card_id, card_ids) {
         CardItem *card_item = new CardItem(Sanguosha->getCard(card_id));
         card_item->setAutoBack(false);
         card_item->setFlag(QGraphicsItem::ItemIsFocusable);
@@ -256,7 +261,7 @@ void GuanxingBox::doGuanxing (const QList<int> &card_ids, bool up_only) {
 
         up_items << card_item;
         card_item->setParentItem(this);
-		//卡牌需要支持鼠标左键，以便拖动选择
+        //卡牌需要支持鼠标左键，以便拖动选择
         card_item->setAcceptedMouseButtons(Qt::LeftButton);
 
     }
@@ -299,9 +304,9 @@ void GuanxingBox::adjust() {
 }
 
 void GuanxingBox::clear() {
-    foreach (CardItem *card_item, up_items)
+    foreach(CardItem *card_item, up_items)
         card_item->deleteLater();
-    foreach (CardItem *card_item, down_items)
+    foreach(CardItem *card_item, down_items)
         card_item->deleteLater();
 
     up_items.clear();
@@ -312,10 +317,10 @@ void GuanxingBox::clear() {
 
 void GuanxingBox::reply() {
     QList<int> up_cards, down_cards;
-    foreach (CardItem *card_item, up_items)
+    foreach(CardItem *card_item, up_items)
         up_cards << card_item->getCard()->getId();
 
-    foreach (CardItem *card_item, down_items)
+    foreach(CardItem *card_item, down_items)
         down_cards << card_item->getCard()->getId();
 
     ClientInstance->onPlayerReplyGuanxing(up_cards, down_cards);

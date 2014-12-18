@@ -60,7 +60,7 @@ void NativeClientSocket::init() {
     connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
     connect(socket, SIGNAL(readyRead()), this, SLOT(getMessage()));
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)),
-            this, SLOT(raiseError(QAbstractSocket::SocketError)));
+        this, SLOT(raiseError(QAbstractSocket::SocketError)));
     connect(socket, SIGNAL(connected()), this, SIGNAL(connected()));
 }
 
@@ -72,7 +72,8 @@ void NativeClientSocket::connectToHost() {
         QStringList texts = Config.HostAddress.split(QChar(':'));
         address = texts.value(0);
         port = texts.value(1).toUShort();
-    } else {
+    }
+    else {
         address = Config.HostAddress;
         if (address == "127.0.0.1")
             port = Config.value("ServerPort", "9527").toString().toUShort();

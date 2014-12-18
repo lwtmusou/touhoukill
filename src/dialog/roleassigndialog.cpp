@@ -26,8 +26,8 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
 
     if (Config.FreeAssignSelf) {
         QString text = QString("%1[%2]")
-                               .arg(Self->screenName())
-                               .arg(Sanguosha->translate("lord"));
+            .arg(Self->screenName())
+            .arg(Sanguosha->translate("lord"));
 
         QListWidgetItem *item = new QListWidgetItem(text, list);
         item->setData(Qt::UserRole, Self->objectName());
@@ -39,8 +39,8 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
             QString role = role_list.at(i);
             const ClientPlayer *player = players.at(i);
             QString text = QString("%1[%2]")
-                                   .arg(player->screenName())
-                                   .arg(Sanguosha->translate(role));
+                .arg(player->screenName())
+                .arg(Sanguosha->translate(role));
 
             QListWidgetItem *item = new QListWidgetItem(text, list);
             item->setData(Qt::UserRole, player->objectName());
@@ -83,7 +83,7 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
 
     connect(role_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateRole(int)));
     connect(list, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
-            this, SLOT(updateRole(QListWidgetItem *)));
+        this, SLOT(updateRole(QListWidgetItem *)));
     connect(moveUpButton, SIGNAL(clicked()), this, SLOT(moveUp()));
     connect(moveDownButton, SIGNAL(clicked()), this, SLOT(moveDown()));
     connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
@@ -128,7 +128,7 @@ void RoleAssignDialog::accept() {
         QDialog::accept();
     } else {
         QMessageBox::warning(this, tr("Warning"),
-                             tr("The roles that you assigned do not comform with the current game mode"));
+            tr("The roles that you assigned do not comform with the current game mode"));
     }
 }
 

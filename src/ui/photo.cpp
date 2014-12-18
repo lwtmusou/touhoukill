@@ -36,7 +36,7 @@ using namespace QSanProtocol;
 // kingdom mask and kingdom icon (decouple from player)
 // make layers (drawing order) configurable
 
-Photo::Photo(): PlayerCardContainer() {
+Photo::Photo() : PlayerCardContainer() {
     _m_mainFrame = NULL;
     m_player = NULL;
     _m_focusFrame = NULL;
@@ -72,13 +72,14 @@ void Photo::refresh(bool killed) {
         QPainter painter(&image);
         painter.fillRect(QRect(0, 0, rect.width(), rect.height()), G_PHOTO_LAYOUT.m_onlineStatusBgColor);
         G_PHOTO_LAYOUT.m_onlineStatusFont.paintText(&painter, QRect(QPoint(0, 0), rect.size()),
-                                                    Qt::AlignCenter,
-                                                    Sanguosha->translate(state_str));
+            Qt::AlignCenter,
+            Sanguosha->translate(state_str));
         QPixmap pixmap = QPixmap::fromImage(image);
         _paintPixmap(_m_onlineStatusItem, rect, pixmap, _m_groupMain);
         _layBetween(_m_onlineStatusItem, _m_mainFrame, _m_chainIcon);
         if (!_m_onlineStatusItem->isVisible()) _m_onlineStatusItem->show();
-    } else if (_m_onlineStatusItem != NULL && state_str == "online")
+    }
+    else if (_m_onlineStatusItem != NULL && state_str == "online")
         _m_onlineStatusItem->hide();
 
 }
@@ -94,7 +95,7 @@ void Photo::repaintAll() {
     _paintPixmap(_m_mainFrame, G_PHOTO_LAYOUT.m_mainFrameArea, QSanRoomSkin::S_SKIN_KEY_MAINFRAME);
     setFrame(_m_frameType);
     hideSkillName(); // @todo: currently we don't adjust skillName's position for simplicity,
-                     // consider repainting it instead of hiding it in the future.
+    // consider repainting it instead of hiding it in the future.
     PlayerCardContainer::repaintAll();
     refresh();
 }
@@ -118,7 +119,7 @@ void Photo::setEmotion(const QString &emotion, bool permanent) {
         QPixmap pixmap = QPixmap(path);
         emotion_item->setPixmap(pixmap);
         emotion_item->setPos((G_PHOTO_LAYOUT.m_normalWidth - pixmap.width()) / 2,
-                                (G_PHOTO_LAYOUT.m_normalHeight - pixmap.height()) / 2);
+            (G_PHOTO_LAYOUT.m_normalHeight - pixmap.height()) / 2);
         _layBetween(emotion_item, _m_chainIcon, _m_roleComboBox);
 
         QPropertyAnimation *appear = new QPropertyAnimation(emotion_item, "opacity");
@@ -126,14 +127,16 @@ void Photo::setEmotion(const QString &emotion, bool permanent) {
         if (permanent) {
             appear->setEndValue(1.0);
             appear->setDuration(500);
-        } else {
+        }
+        else {
             appear->setKeyValueAt(0.25, 1.0);
             appear->setKeyValueAt(0.75, 1.0);
             appear->setEndValue(0.0);
             appear->setDuration(2000);
         }
         appear->start(QAbstractAnimation::DeleteWhenStopped);
-    } else {
+    }
+    else {
         PixmapAnimation::GetPixmapAnimation(this, emotion);
     }
 }
@@ -152,29 +155,29 @@ void Photo::tremble() {
 
 /*void Photo::showSkillName(const QString &skill_name,bool isSelf) {
     //ClientPlayer *player = ClientInstance->getPlayer(player_name);
-	//const ClientPlayer *player = getPlayer();
-	if (!isSelf){
-		G_PHOTO_LAYOUT.m_skillNameFont.paintText(_m_skillNameItem,
-        G_PHOTO_LAYOUT.m_skillNameArea,
-        Qt::AlignLeft,
-        Sanguosha->translate(skill_name));
-	}
-	else{
-		G_DASHBOARD_LAYOUT.m_skillNameFont.paintText(_m_skillNameItem,
-        G_DASHBOARD_LAYOUT.m_skillNameArea,
-        Qt::AlignLeft,
-        Sanguosha->translate(skill_name));
-	}
-	
-	
-	//G_PHOTO_LAYOUT.m_skillNameFont.paintText(_m_skillNameItem,
+    //const ClientPlayer *player = getPlayer();
+    if (!isSelf){
+    G_PHOTO_LAYOUT.m_skillNameFont.paintText(_m_skillNameItem,
+    G_PHOTO_LAYOUT.m_skillNameArea,
+    Qt::AlignLeft,
+    Sanguosha->translate(skill_name));
+    }
+    else{
+    G_DASHBOARD_LAYOUT.m_skillNameFont.paintText(_m_skillNameItem,
+    G_DASHBOARD_LAYOUT.m_skillNameArea,
+    Qt::AlignLeft,
+    Sanguosha->translate(skill_name));
+    }
+
+
+    //G_PHOTO_LAYOUT.m_skillNameFont.paintText(_m_skillNameItem,
     //                                         G_PHOTO_LAYOUT.m_skillNameArea,
     //                                         Qt::AlignLeft,
-    //                                         Sanguosha->translate(skill_name)); 
-	//											
+    //                                         Sanguosha->translate(skill_name));
+    //
     _m_skillNameItem->show();
     QTimer::singleShot(1000, this, SLOT(hideSkillName()));
-}*/
+    }*/
 
 //void Photo::hideSkillName() {
 //    _m_skillNameItem->hide();
@@ -206,9 +209,11 @@ QList<CardItem *> Photo::removeCardItems(const QList<int> &card_ids, Player::Pla
     if (place == Player::PlaceHand || place == Player::PlaceSpecial) {
         result = _createCards(card_ids);
         updateHandcardNum();
-    } else if (place == Player::PlaceEquip) {
+    }
+    else if (place == Player::PlaceEquip) {
         result = removeEquips(card_ids);
-    } else if (place == Player::PlaceDelayedTrick) {
+    }
+    else if (place == Player::PlaceDelayedTrick) {
         result = removeDelayedTricks(card_ids);
     }
 
@@ -228,15 +233,17 @@ bool Photo::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &
 
     Player::Place place = moveInfo.to_place;
 
-    foreach (CardItem *card_item, card_items)
+    foreach(CardItem *card_item, card_items)
         card_item->setHomeOpacity(homeOpacity);
     if (place == Player::PlaceEquip) {
         addEquips(card_items);
         destroy = false;
-    } else if (place == Player::PlaceDelayedTrick) {
+    }
+    else if (place == Player::PlaceDelayedTrick) {
         addDelayedTricks(card_items);
         destroy = false;
-    } else if (place == Player::PlaceHand) {
+    }
+    else if (place == Player::PlaceHand) {
         updateHandcardNum();
     }
     return destroy;
@@ -253,10 +260,11 @@ void Photo::setFrame(FrameType type) {
             else
                 _m_focusFrame->hide();
         }
-    } else {
+    }
+    else {
         _paintPixmap(_m_focusFrame, G_PHOTO_LAYOUT.m_focusFrameArea,
-                     _getPixmap(QSanRoomSkin::S_SKIN_KEY_FOCUS_FRAME, QString::number(type)),
-                     _m_groupMain);
+            _getPixmap(QSanRoomSkin::S_SKIN_KEY_FOCUS_FRAME, QString::number(type)),
+            _m_groupMain);
         _layBetween(_m_focusFrame, _m_avatarArea, _m_mainFrame);
         _m_focusFrame->show();
     }
@@ -290,7 +298,7 @@ QPointF Photo::getHeroSkinContainerPosition() const
     /*QRectF heroSkinContainerRect = (m_primaryHeroSkinContainer != NULL)
         ? m_primaryHeroSkinContainer->boundingRect()
         : m_secondaryHeroSkinContainer->boundingRect();*/
-	QRectF heroSkinContainerRect =  m_primaryHeroSkinContainer->boundingRect();
+    QRectF heroSkinContainerRect = m_primaryHeroSkinContainer->boundingRect();
     int heroSkinContainerWidth = heroSkinContainerRect.width();
     int heroSkinContainerHeight = heroSkinContainerRect.height();
 
@@ -312,7 +320,7 @@ QPointF Photo::getHeroSkinContainerPosition() const
 
         return result;
     }
-    //上边区域
+    //上边区域 // @lwtmusou 严格来讲Qt的编码规范中，右括号与else要在同一行，在中间插入注释是不规范写法
     else if (photoRect.bottom() <= tableRect.top()) {
         QPointF result(photoRect.left()
             - ((heroSkinContainerWidth - photoWidth) / 2), photoRect.bottom() + 10);

@@ -37,7 +37,7 @@ class BubbleChatBox;
 #include <QMutex>
 #include <QStack>
 
-class ScriptExecutor: public QDialog {
+class ScriptExecutor : public QDialog {
     Q_OBJECT
 
 public:
@@ -47,7 +47,7 @@ public slots:
     void doScript();
 };
 
-class DeathNoteDialog: public QDialog {
+class DeathNoteDialog : public QDialog {
     Q_OBJECT
 
 public:
@@ -60,7 +60,7 @@ private:
     QComboBox *killer, *victim;
 };
 
-class DamageMakerDialog: public QDialog {
+class DamageMakerDialog : public QDialog {
     Q_OBJECT
 
 public:
@@ -81,7 +81,7 @@ private slots:
     void disableSource();
 };
 
-class KOFOrderBox: public QGraphicsPixmapItem {
+class KOFOrderBox : public QGraphicsPixmapItem {
 public:
     KOFOrderBox(bool self, QGraphicsScene *scene);
     void revealGeneral(const QString &name);
@@ -92,7 +92,7 @@ private:
     int revealed;
 };
 
-class ReplayerControlBar: public QGraphicsObject{
+class ReplayerControlBar : public QGraphicsObject{
     Q_OBJECT
 
 public:
@@ -116,7 +116,7 @@ private:
     qreal speed;
 };
 
-class TimeLabel: public QGraphicsObject{
+class TimeLabel : public QGraphicsObject{
     Q_OBJECT
 
 public:
@@ -137,7 +137,7 @@ private:
     QTimer *timer;
 };
 
-class RoomScene: public QGraphicsScene {
+class RoomScene : public QGraphicsScene {
     Q_OBJECT
 
 public:
@@ -151,21 +151,21 @@ public:
     inline QMainWindow *mainWindow() { return main_window; }
 
     void changeTableBg();
-	void changeTableBg(const QString &tableBgImage_path);
-	
+    void changeTableBg(const QString &tableBgImage_path);
+
     inline bool isCancelButtonEnabled() const{ return cancel_button != NULL && cancel_button->isEnabled(); }
     inline void setGuhuoLog(const QString &log) { guhuo_log = log; }
 
     bool m_skillButtonSank;
-	
-	const QRectF &getTableRect() const { return m_tableRect; }
 
-	void addHeroSkinContainer(ClientPlayer *player,
+    const QRectF &getTableRect() const { return m_tableRect; }
+
+    void addHeroSkinContainer(ClientPlayer *player,
         HeroSkinContainer *heroSkinContainer);
     HeroSkinContainer *findHeroSkinContainer(const QString &generalName) const;
-	QSet<HeroSkinContainer *> getHeroSkinContainers();
-	
-public slots:
+    QSet<HeroSkinContainer *> getHeroSkinContainers();
+
+    public slots:
     void addPlayer(ClientPlayer *player);
     void removePlayer(const QString &player_name);
     void loseCards(int moveId, QList<CardsMoveStruct> moves);
@@ -176,7 +176,7 @@ public slots:
     void chooseGeneral(const QStringList &generals);
     void chooseSuit(const QStringList &suits);
     void chooseCard(const ClientPlayer *playerName, const QString &flags, const QString &reason,
-                    bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids);
+        bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids);
     void chooseKingdom(const QStringList &kingdoms);
     void chooseOption(const QString &skillName, const QStringList &options);
     void chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand reason);
@@ -206,8 +206,8 @@ public slots:
     void doOkButton();
     void doCancelButton();
     void doDiscardButton();
-	void highlightSkillButton(QString skill_name, bool highlight);
-	bool isHighlightStatus(Client::Status status);
+    void highlightSkillButton(QString skill_name, bool highlight);
+    bool isHighlightStatus(Client::Status status);
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -286,9 +286,9 @@ private:
     int m_tableh;
 
     TimeLabel *time_label_wedgit;
-	
-	QMap<QString, BubbleChatBox *> m_bubbleChatBoxs;
-	
+
+    QMap<QString, BubbleChatBox *> m_bubbleChatBoxs;
+
     // for 3v3 & 1v1 mode
     QSanSelectableItem *selector_box;
     QList<CardItem *> general_items, up_generals, down_generals;
@@ -327,7 +327,7 @@ private:
 
     void freeze();
     void addRestartButton(QDialog *dialog);
-	//dashboard换了个类
+    //dashboard换了个类
     QGraphicsItem *createDashboardButtons();
     void createReplayControlBar();
 
@@ -336,7 +336,7 @@ private:
 
     void showPindianBox(const QString &from_name, int from_id, const QString &to_name, int to_id, const QString &reason);
     void setChatBoxVisible(bool show);
-	QRect getBubbleChatBoxShowArea(const QString &who) const;
+    QRect getBubbleChatBoxShowArea(const QString &who) const;
 
     // animation related functions
     typedef void (RoomScene::*AnimationFunc)(const QString &, const QStringList &);
@@ -359,10 +359,10 @@ private:
     int _m_currentStage;
 
     QRectF _m_infoPlane;
-	QRectF m_tableRect;
-	QSet<HeroSkinContainer *> m_heroSkinContainers;
-	
-private slots:
+    QRectF m_tableRect;
+    QSet<HeroSkinContainer *> m_heroSkinContainers;
+
+    private slots:
     void fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids = QList<int>());
     void updateSkillButtons();
     void acquireSkill(const ClientPlayer *player, const QString &skill_name);
@@ -400,7 +400,7 @@ private slots:
 
     void appendChatEdit(QString txt);
     void appendChatBox(QString txt);
-	void showBubbleChatBox(const QString &who, const QString &line);
+    void showBubbleChatBox(const QString &who, const QString &line);
 
     //animations
     void onEnabledChange();

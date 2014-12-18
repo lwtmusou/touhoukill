@@ -22,12 +22,12 @@
 #include <qvariant.h>
 #include <qlabel.h>
 
-class GenericCardContainer: public QGraphicsObject {
+class GenericCardContainer : public QGraphicsObject {
     Q_OBJECT
 
 public:
     inline GenericCardContainer() { _m_highestZ = 10000; }
-    virtual QList<CardItem *> removeCardItems(const QList<int> &card_ids,  Player::Place place) = 0;
+    virtual QList<CardItem *> removeCardItems(const QList<int> &card_ids, Player::Place place) = 0;
     virtual void addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
     virtual QList<CardItem *> cloneCardItems(QList<int> card_ids);
 
@@ -58,7 +58,7 @@ class GraphicsPixmapHoverItem;
 class GraphicsWidgetHoverItem;
 class HeroSkinContainer;
 
-class PlayerCardContainer: public GenericCardContainer {
+class PlayerCardContainer : public GenericCardContainer {
     Q_OBJECT
 
 public:
@@ -67,8 +67,8 @@ public:
     void hideProgressBar();
     void hideAvatars();
     //const ClientPlayer *getPlayer() const;
-	const ClientPlayer *getPlayer() const { return m_player; }
-   
+    const ClientPlayer *getPlayer() const { return m_player; }
+
     void setPlayer(ClientPlayer *player);
     inline int getVotes() { return _m_votesGot; }
     inline void setMaxVotes(int maxVotes) { _m_maxVotes = maxVotes; }
@@ -88,22 +88,22 @@ public:
     virtual void startHuaShen(QString generalName, QString skillName);
     virtual void stopHuaShen();
     virtual void updateAvatarTooltip();
-	
-	static void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect,
+
+    static void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect,
         const QPixmap &pixmap, QGraphicsItem *parent);
 
     inline void hookMouseEvents();
 
     QPixmap paintByMask(QPixmap& source);
-	QPixmap _getAvatarIcon(const QString &generalName);
+    QPixmap _getAvatarIcon(const QString &generalName);
     QPixmap getSmallAvatarIcon(const QString &generalName);
-	GraphicsPixmapHoverItem *getAvartarItem() const { return _m_avatarIcon; }
+    GraphicsPixmapHoverItem *getAvartarItem() const { return _m_avatarIcon; }
     GraphicsPixmapHoverItem *getSmallAvartarItem() const { return _m_smallAvatarIcon; }
 
-	void stopHeroSkinChangingAnimation();
-	void showSkillName(const QString &skill_name,bool isSelf);
-	void updateWoyuRole(QString role);
-	
+    void stopHeroSkinChangingAnimation();
+    void showSkillName(const QString &skill_name, bool isSelf);
+    void updateWoyuRole(QString role);
+
 public slots:
     void updateAvatar();
     void updateSmallAvatar();
@@ -119,7 +119,7 @@ public slots:
     void updateReformState();
     void showDistance();
     virtual void refresh(bool killed = false);
-	void hideSkillName();
+    void hideSkillName();
 protected:
     // overrider parent functions
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
@@ -139,12 +139,12 @@ protected:
     virtual QGraphicsItem *_getProgressBarParent() = 0;
     virtual QGraphicsItem *_getDeathIconParent() = 0;
     virtual QString getResourceKeyName() = 0;
-	virtual QPointF getHeroSkinContainerPosition() const = 0;
-	//virtual const QRect &getSkillNameArea() const = 0;
-	//virtual const QSanShadowTextFont &getSkillNameFont() const = 0;
-	
+    virtual QPointF getHeroSkinContainerPosition() const = 0;
+    //virtual const QRect &getSkillNameArea() const = 0;
+    //virtual const QSanShadowTextFont &getSkillNameFont() const = 0;
+
     QGraphicsPixmapItem *_m_skillNameItem;
-	
+
     void _createRoleComboBox();
     void _updateProgressBar(); // a dirty function used by the class itself only.
     void _updateDeathIcon();
@@ -153,8 +153,8 @@ protected:
     void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QString &key, QGraphicsItem *parent);
     void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QPixmap &pixmap);
     //变成public
-	//void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QPixmap &pixmap, QGraphicsItem *parent);	
-	void _clearPixmap(QGraphicsPixmapItem *item);
+    //void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QPixmap &pixmap, QGraphicsItem *parent);	
+    void _clearPixmap(QGraphicsPixmapItem *item);
     QPixmap _getPixmap(const QString &key);
     QPixmap _getPixmap(const QString &key, const QString &arg);
     QPixmap _getEquipPixmap(const EquipCard *equip);
@@ -174,7 +174,7 @@ protected:
     void _createControls();
     void _layBetween(QGraphicsItem *middle, QGraphicsItem *item1, QGraphicsItem *item2);
     void _layUnder(QGraphicsItem *item);
-	
+
     //QPixmap _getAvatarIcon(QString generalName);
 
     // layout
@@ -187,14 +187,14 @@ protected:
     QGraphicsPixmapItem *_m_avatarNameItem, *_m_smallAvatarNameItem;
     GraphicsPixmapHoverItem *_m_avatarIcon, *_m_smallAvatarIcon;
     //需要为_m_avatarIcon和_m_smallAvatarIcon重写一个类，
-	//QGraphicsPixmapItem *_m_avatarIcon, *_m_smallAvatarIcon, *_m_circleItem;
+    //QGraphicsPixmapItem *_m_avatarIcon, *_m_smallAvatarIcon, *_m_circleItem;
     QGraphicsPixmapItem  *_m_circleItem;
-    
-	QGraphicsPixmapItem *_m_screenNameItem;
+
+    QGraphicsPixmapItem *_m_screenNameItem;
     QGraphicsPixmapItem *_m_chainIcon, *_m_faceTurnedIcon;
     QGraphicsPixmapItem *_m_handCardBg, *_m_handCardNumText;
     QGraphicsPixmapItem *_m_kingdomColorMaskIcon;
-	QGraphicsPixmapItem *_m_dashboardKingdomColorMaskIcon;
+    QGraphicsPixmapItem *_m_dashboardKingdomColorMaskIcon;
     QGraphicsPixmapItem *_m_deathIcon;
     QGraphicsPixmapItem *_m_actionIcon;
     QGraphicsPixmapItem *_m_kingdomIcon;
@@ -224,7 +224,7 @@ protected:
 
     // controls
     MagatamasBoxItem *_m_hpBox;
-	MagatamasBoxItem *_m_sub_hpBox;
+    MagatamasBoxItem *_m_sub_hpBox;
     RoleComboBox *_m_roleComboBox;
     QSanCommandProgressBar *_m_progressBar;
     QGraphicsProxyWidget *_m_progressBarItem;
@@ -246,20 +246,20 @@ protected:
     // animations
     QAbstractAnimation *_m_huashenAnimation;
     QGraphicsItem *_m_huashenItem;
-	//GraphicsWidgetHoverItem *_m_huashenItem;
-	//GraphicsPixmapHoverItem *_m_huashenItem;
-	//QGraphicsPixmapItem *_m_huashenItem;
-	
+    //GraphicsWidgetHoverItem *_m_huashenItem;
+    //GraphicsPixmapHoverItem *_m_huashenItem;
+    //QGraphicsPixmapItem *_m_huashenItem;
+
     QString _m_huashenGeneralName;
     QString _m_huashenSkillName;
 
-	QSanButton *m_changePrimaryHeroSKinBtn;
+    QSanButton *m_changePrimaryHeroSKinBtn;
     HeroSkinContainer *m_primaryHeroSkinContainer;
-	
+
 protected slots:
     virtual void _onEquipSelectChanged();
 
-	void showHeroSkinList();
+    void showHeroSkinList();
     void heroSkinBtnMouseOutsideClicked();
 
     virtual void onAvatarHoverEnter();
@@ -267,21 +267,21 @@ protected slots:
     virtual void onSkinChangingStart();
     virtual void onSkinChangingFinished();
 
-	virtual void doAvatarHoverLeave() {}
+    virtual void doAvatarHoverLeave() {}
     virtual bool isItemUnderMouse(QGraphicsItem *item) const {
         return item->isUnderMouse();
     }
-	
+
 private:
     bool _startLaying();
     void clearVotes();
     int _lastZ;
     bool _allZAdjusted;
-	
-	void showHeroSkinListHelper(const General *general,
+
+    void showHeroSkinListHelper(const General *general,
         GraphicsPixmapHoverItem *avatarIcon,
         HeroSkinContainer *&heroSkinContainer);
-		
+
 signals:
     void selected_changed();
     void enable_changed();

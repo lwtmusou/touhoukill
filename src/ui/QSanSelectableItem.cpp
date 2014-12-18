@@ -29,20 +29,23 @@ bool QSanSelectableItem::_load(const QString &filename, QSize size, bool useNewS
         QImageReader reader(filename);
         QString error_string = reader.errorString();
         QString warning = tr("Can not load image %1[%2], error string is %3")
-                             .arg(filename).arg(metaObject()->className()).arg(error_string);
+            .arg(filename).arg(metaObject()->className()).arg(error_string);
         QMessageBox::warning(NULL, tr("Warning"), warning);
-    } else {
+    }
+    else {
         if (useNewSize) {
             _m_width = size.width();
             _m_height = size.height();
-        } else {
+        }
+        else {
             _m_width = _m_mainPixmap.width();
             _m_height = _m_mainPixmap.height();
         }
         if (center_as_origin) {
             resetTransform();
             setTransform(QTransform::fromTranslate(-_m_width / 2, -_m_height / 2), true);
-        } else
+        }
+        else
             this->prepareGeometryChange();
     }
     return success;
@@ -87,11 +90,13 @@ QVariant QSanSelectableItem::itemChange(GraphicsItemChange change, const QVarian
             QGraphicsColorizeEffect *effect = new QGraphicsColorizeEffect(this);
             effect->setColor(QColor(0xCC, 0x00, 0x00));
             setGraphicsEffect(effect);
-        } else
+        }
+        else
             setGraphicsEffect(NULL);
 
         emit selected_changed();
-    } else if (change == ItemEnabledHasChanged) {
+    }
+    else if (change == ItemEnabledHasChanged) {
         emit enable_changed();
     }
 

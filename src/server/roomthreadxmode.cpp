@@ -24,28 +24,28 @@ void RoomThreadXMode::run() {
     assignRoles(scheme);
     room->adjustSeats();
 
-    foreach (ServerPlayer *player, room->m_players) {
+    foreach(ServerPlayer *player, room->m_players) {
         switch (player->getRoleEnum()) {
         case Player::Lord: warm_leader = player; break;
         case Player::Renegade: cool_leader = player; break;
         default:
-                break;
+            break;
         }
     }
 
     QList<const General *> generals = QList<const General *>();
-    foreach (QString pack_name, GetConfigFromLuaState(Sanguosha->getLuaState(), "xmode_packages").toStringList()) {
-         const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
-         if (pack) generals << pack->findChildren<const General *>();
+    foreach(QString pack_name, GetConfigFromLuaState(Sanguosha->getLuaState(), "xmode_packages").toStringList()) {
+        const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
+        if (pack) generals << pack->findChildren<const General *>();
     }
 
-    foreach (const General *general, generals) {
+    foreach(const General *general, generals) {
         if (general->isTotallyHidden())
             continue;
         general_names << general->objectName();
     }
 
-    foreach (QString name, Config.value("Banlist/XMode").toStringList())
+    foreach(QString name, Config.value("Banlist/XMode").toStringList())
         if (general_names.contains(name)) general_names.removeOne(name);
 
     qShuffle(general_names);
@@ -64,18 +64,19 @@ void RoomThreadXMode::run() {
     startArrange(room->m_players, all_names);
 
     QStringList warm_backup, cool_backup;
-    foreach (ServerPlayer *player, room->m_players) {
+    foreach(ServerPlayer *player, room->m_players) {
         if (player->getRole().startsWith("r")) {
             player->tag["XModeLeader"] = QVariant::fromValue((PlayerStar)cool_leader);
             cool_backup.append(player->tag["XModeBackup"].toStringList());
-        } else {
+        }
+        else {
             player->tag["XModeLeader"] = QVariant::fromValue((PlayerStar)warm_leader);
             warm_backup.append(player->tag["XModeBackup"].toStringList());
         }
         player->tag.remove("XModeBackup");
     }
     startArrange(QList<ServerPlayer *>() << warm_leader << cool_leader,
-                 QList<QStringList>() << warm_backup << cool_backup);
+        QList<QStringList>() << warm_backup << cool_backup);
 }
 
 void RoomThreadXMode::startArrange(QList<ServerPlayer *> &players, QList<QStringList> &to_arrange) {
@@ -90,7 +91,8 @@ void RoomThreadXMode::startArrange(QList<ServerPlayer *> &players, QList<QString
             qShuffle(mutable_to_arrange);
             QStringList arranged = mutable_to_arrange.mid(0, 3);
             arrange(player, arranged);
-        } else {
+        }
+        else {
             online << player;
             online_index << i;
         }
@@ -111,7 +113,8 @@ void RoomThreadXMode::startArrange(QList<ServerPlayer *> &players, QList<QString
             QStringList arranged;
             tryParse(clientReply, arranged);
             arrange(player, arranged);
-        } else {
+        }
+        else {
             QStringList mutable_to_arrange = to_arrange.at(online_index.at(i));
             qShuffle(mutable_to_arrange);
             QStringList arranged = mutable_to_arrange.mid(0, 3);
@@ -128,7 +131,8 @@ void RoomThreadXMode::arrange(ServerPlayer *player, const QStringList &arranged)
         player->tag["XModeBackup"] = QVariant::fromValue(left);
         player->setGeneralName(arranged.first());
         player->setFlags("Global_XModeGeneralSelected");
-    } else {
+    }
+    else {
         player->setFlags("-Global_XModeGeneralSelected");
         QStringList backup = arranged;
         player->tag["XModeBackup"] = QVariant::fromValue(backup);
@@ -143,7 +147,7 @@ void RoomThreadXMode::assignRoles(const QStringList &roles, const QString &schem
     for (int i = 0; i < 6; i++)
         new_players << NULL;
 
-    foreach (ServerPlayer *player, room->m_players) {
+    foreach(ServerPlayer *player, room->m_players) {
         if (player->isOnline()) {
             QString role = room->askForRole(player, roleChoices, scheme);
             if (role != "abstain") {
@@ -187,18 +191,20 @@ void RoomThreadXMode::assignRoles(const QStringList &roles, const QString &schem
 void RoomThreadXMode::assignRoles(const QString &scheme) {
     QStringList roles;
     roles << "lord" << "loyalist" << "rebel"
-          << "renegade" << "rebel" << "loyalist";
+        << "renegade" << "rebel" << "loyalist";
 
     if (scheme == "Random") {
         qShuffle(roles);
         for (int i = 0; i < roles.length(); i++)
             room->m_players.at(i)->setRole(roles.at(i));
-    } else if (scheme == "AllRoles") {
+    }
+    else if (scheme == "AllRoles") {
         assignRoles(roles, scheme);
-    } else {
+    }
+    else {
         QStringList all_roles;
         all_roles << "leader1" << "guard1" << "guard2"
-                  << "leader2" << "guard2" << "guard1";
+            << "leader2" << "guard2" << "guard1";
         assignRoles(all_roles, scheme);
 
         QMap<QString, QString> map;
@@ -207,14 +213,15 @@ void RoomThreadXMode::assignRoles(const QString &scheme) {
             map["guard1"] = "loyalist";
             map["leader2"] = "renegade";
             map["guard2"] = "rebel";
-        } else {
+        }
+        else {
             map["leader1"] = "renegade";
             map["guard1"] = "rebel";
             map["leader2"] = "lord";
             map["guard2"] = "loyalist";
         }
 
-        foreach (ServerPlayer *player, room->m_players)
+        foreach(ServerPlayer *player, room->m_players)
             player->setRole(map[player->getRole()]);
     }
 
@@ -236,7 +243,7 @@ void RoomThreadXMode::assignRoles(const QString &scheme) {
     } while (!valid);
     room->m_players = players;
 
-    foreach (ServerPlayer *player, room->m_players)
+    foreach(ServerPlayer *player, room->m_players)
         room->broadcastProperty(player, "role");
 }
 
