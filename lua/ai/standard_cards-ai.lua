@@ -511,7 +511,15 @@ function SmartAI:isPriorFriendOfSlash(friend, card, source)
 	--特定对象优先死蝶 不行么。。。
 	if self:sidieEffect(source) then 
 		if sgs.ai_role[source:objectName()]  ~= "netural" then
-			local enemy_table
+			local sidieTargets=sgs.SPlayerList()
+			for _,p in sgs.qlist(self.room:getOtherPlayers(friend)) do
+				if friend:canSlash(p,nil,false) then
+					sidieTargets:append(p)
+				end
+			end
+			local sidieTarget =getSidieVictim(self, sidieTargets)
+			if sidieTarget then return true end
+			--[[local enemy_table
 			if self:isFriend(source) then
 				enemy_table=self.enemies
 			end
@@ -520,7 +528,7 @@ function SmartAI:isPriorFriendOfSlash(friend, card, source)
 			end
 			if enemy_table and #enemy_table>0 then
 				return true
-			end
+			end]]
 		end
 	end
 	

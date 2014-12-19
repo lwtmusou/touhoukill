@@ -647,114 +647,22 @@ sgs.ai_skill_use["@@shoucang"] = function(self, prompt)
 		return "."
 	end
 	local needNum=math.min(4,self:getOverflow())
-	--各个花色分开
-	local spades={}
-	local hearts={}
-	local clubs={}
-	local diamonds={}
-	
-	for _,card in sgs.qlist(self.player:getCards("h")) do
-		if card:getSuit()==sgs.Card_Spade then
-			table.insert(spades,card)
+	local cards = sgs.QList2Table(self.player:getHandcards())				
+	self:sortByKeepValue(cards)
+	local suits = {}
+	local show={}
+	for _,c in pairs(cards)do
+		local suit = c:getSuitString()
+        if not suits[suit] then 
+			suits[suit] = 1
+			table.insert(show, tostring(c:getId()))
 		end
-		if card:getSuit()==sgs.Card_Heart then
-			table.insert(hearts,card)
-		end
-		if card:getSuit()==sgs.Card_Club then
-			table.insert(clubs,card)
-		end
-		if card:getSuit()==sgs.Card_Diamond then
-			table.insert(diamonds,card)
+		if #show>=needNum then
+			break
 		end
 	end
-	
-	shows={}
-	s=true
-	h=true
-	c=true
-	d=true
-	showNum=0
-	--顺序为梅花，方块，黑桃,红桃，
-	if #clubs>0 and showNum<needNum then
-		for _,card in pairs(clubs) do
-			if not keycard_shoucang(card) then
-				table.insert(shows,tostring(card:getId()))
-				c=false
-				showNum=showNum+1
-				break
-			end
-		end
-	end
-	if #diamonds>0 and showNum<needNum then
-		for _,card in pairs(diamonds) do
-			if not keycard_shoucang(card) then
-				table.insert(shows,tostring(card:getId()))
-				c=false
-				break
-			end
-		end
-	end
-	if #spades>0 and showNum<needNum then
-		for _,card in pairs(spades) do
-			if not keycard_shoucang(card) then
-				table.insert(shows,tostring(card:getId()))
-				s=false
-				break
-			end
-		end
-	end
-	if #hearts>0 and showNum<needNum then
-		for _,card in pairs(hearts) do
-			if  keycard_shoucang(card) then
-				table.insert(shows,tostring(card:getId()))
-				h=false
-				break
-			end
-		end
-	end
-	if showNum<needNum then --关键牌也得展示了
-		--顺序为梅花，方块，黑桃,红桃，
-		if #clubs>0 and showNum<needNum and c then
-		for _,card in pairs(clubs) do
-			if  keycard_shoucang(card) then
-				table.insert(shows,tostring(card:getId()))
-				c=false
-				showNum=showNum+1
-				break
-			end
-		end
-		end
-		if #diamonds>0 and showNum<needNum and d then
-		for _,card in pairs(diamonds) do
-			if  keycard_shoucang(card) then
-				table.insert(shows,tostring(card:getId()))
-				c=false
-				break
-			end
-		end
-		end
-		if #spades>0 and showNum<needNum and s then
-		for _,card in pairs(spades) do
-			if  keycard_shoucang(card) then
-				table.insert(shows,tostring(card:getId()))
-				s=false
-				break
-			end
-		end
-		end
-		if #hearts>0 and showNum<needNum and h then
-		for _,card in pairs(hearts) do
-			if  keycard_shoucang(card) then
-				table.insert(shows,tostring(card:getId()))
-				h=false
-				break
-			end
-		end
-		end
-	end
-	if #shows>0 then
-		--return "#shoucang:" ..table.concat(shows, "+")..":"
-		return "@shoucangCard=" ..table.concat(shows, "+").."->."
+	if #show>0 then
+		return "@shoucangCard=" ..table.concat(show, "+").."->."
 	end
 	return "."
 end	
@@ -1076,7 +984,7 @@ function bllmwuyu_discard(player)
 	end
 	return all_hearts
 end
-function needSkipJudgePhase(player)
+function needSkipJudgePhase(self,player)
 	if (player:containsTrick("supply_shortage") or player:containsTrick("indulgence")) then
 		return true
 	elseif player:containsTrick("lightning") then
@@ -1091,7 +999,7 @@ sgs.ai_skill_cardask["@bllm-discard"] = function(self, data)
 		if #all_hearts==0 then return "." end
         return "$" .. all_hearts[1]
 	elseif prompt=="bllmmingyu" then
-		if not needSkipJudgePhase(self.player) then return "." end
+		if not needSkipJudgePhase(self,self.player) then return "." end
 		local all_hearts=bllmwuyu_discard(self.player)	
 		if #all_hearts==0 then return "." end
 		return "$" .. all_hearts[1]
@@ -1130,7 +1038,7 @@ sgs.ai_skill_invoke.bllmwuyu = function(self,data)
 	if prompt=="bllmcaiyu" or prompt=="bllmwuyu" then 
 		return true
 	elseif prompt=="bllmmingyu" then
-		return  needSkipJudgePhase(self.player) 
+		return  needSkipJudgePhase(self,self.player) 
 	elseif prompt=="bllmshuiyu" then
 		if self:getOverflow() >0 then
 			if  self.player:getMark("@yu")>1 or self:isWeak(self.player) then

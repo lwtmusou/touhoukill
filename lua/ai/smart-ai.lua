@@ -4591,6 +4591,7 @@ function SmartAI:damageIsEffective(to, nature, from)
 		return false
 	end
 	if to:hasSkill("mingshi") and from:getEquips():length() - (self.equipsToDec or 0) <= to:getEquips():length() then return false end
+	if from:hasSkill("lizhi") and self:isFriend(from,to) then return false end
 	if to:hasSkill("yuce") and not to:isKongcheng() and to:getHp() > 1 then
 		if self:isFriend(to, from) then return false
 		else
