@@ -213,15 +213,6 @@ void xiufuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     room->moveCardsAtomic(exchangeMove, true);
 
 }
-/*about_to_use = function(self, room, cardUse)
-                local discardpile = room:getDiscardPile()
-                for _, id in sgs.qlist(discardpile) do
-                if sgs.Sanguosha:getCard(id):isKindOf("EquipCard") then
-                self:cardOnUse(room, cardUse)
-                return
-                end
-                end
-                end ,*/
 
 
 class xiufu : public ZeroCardViewAsSkill {
@@ -297,13 +288,18 @@ public:
         events << EventPhaseStart << Damaged;
     }
     static void do_fandu(ServerPlayer *player){
-        player->drawCards(2);//need check handcard is zero? 
+        player->drawCards(2); 
         Room *room = player->getRoom();
-        ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), "fandu", "@fandu-select");
-        if (target != NULL){//need check candiscard??
-            int to_throw = room->askForCardChosen(target, player, "h", "fandu", false, Card::MethodDiscard);
-            room->throwCard(to_throw, player, target);
-        }
+        QList<ServerPlayer *> listt;
+		foreach (ServerPlayer *p, room->getOtherPlayers(player)){
+			if (p->canDiscard(player, "h"))
+				listt << p;
+		}
+		if (listt.isEmpty())
+			return;
+		ServerPlayer *target = room->askForPlayerChosen(player, listt, "fandu", "@fandu-select",false,true);
+        int to_throw = room->askForCardChosen(target, player, "h", "fandu", false, Card::MethodDiscard);
+        room->throwCard(to_throw, player, target);
     }
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == EventPhaseStart){

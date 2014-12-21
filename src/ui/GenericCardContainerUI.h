@@ -102,7 +102,7 @@ public:
 
     void stopHeroSkinChangingAnimation();
     void showSkillName(const QString &skill_name, bool isSelf);
-    void updateWoyuRole(QString role);
+    
 
 public slots:
     void updateAvatar();

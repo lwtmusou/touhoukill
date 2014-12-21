@@ -569,25 +569,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
         if (container)
             container->showSkillName(skill_name, player == Self);
-        //for woyu UI update a fix role 
-        if (skill_name == "woyu"){
-            foreach(const Player *p, ClientInstance->getPlayers()) {
-                QString woyuRole = "";
-                if (p->getMark("woyuVictim_rebel") > 0)
-                    woyuRole = "rebel";
-                else if (p->getMark("woyuVictim_loyalist") > 0)
-                    woyuRole = "loyalist";
-                else if (p->getMark("woyuVictim_renegade") > 0)
-                    woyuRole = "renegade";
-
-                if (woyuRole != ""){
-                    Photo *photo = name2photo[p->objectName()];
-                    if (photo && p != Self)
-                        photo->updateWoyuRole(woyuRole);
-                }
-            }
-        }
-
+        
         break;
     }
     case S_GAME_EVENT_PAUSE: {

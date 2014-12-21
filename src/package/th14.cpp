@@ -117,7 +117,7 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *victim = room->getCurrentDyingPlayer();
-        if (!victim->hasSkill("guizha") || victim == player)
+        if (victim == NULL || !victim->hasSkill("guizha") || victim == player)
             return false;
         Card *peach = Sanguosha->cloneCard("peach");
         if (player->isCardLimited(peach, Card::MethodUse))

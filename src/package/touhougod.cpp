@@ -10,7 +10,7 @@
 #include "client.h"
 //#include "ai.h"
 #include "jsonutils.h"
-
+#include "maneuvering.h" // for iceslash
 
 
 class chuanghuan : public GameStartSkill {
@@ -260,8 +260,7 @@ public:
 
             QList<int> idlist = room->getNCards(1);
             int cd_id = idlist.first();
-            room->fillAG(idlist, NULL);
-            //room->askForAG(player,idlist,true,objectName());				
+            room->fillAG(idlist, NULL);			
             room->getThread()->delay();
 
             room->clearAG();
@@ -463,8 +462,8 @@ public:
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        Card *slash = Sanguosha->cloneCard("ice_slash", originalCard->getSuit(), originalCard->getNumber());
-        slash->setSkillName(objectName());
+        IceSlash *slash = new IceSlash(originalCard->getSuit(), originalCard->getNumber());
+		slash->setSkillName(objectName());
         WrappedCard *card = Sanguosha->getWrappedCard(originalCard->getId());
         card->takeOver(slash);
         return card;
@@ -541,20 +540,18 @@ public:
             return false;
 
         if (card->isKindOf("Slash") && damage.to->getCards("e").length() > 0) {
-            Card *dummy = Sanguosha->cloneCard("Slash");
-            int count = 0;
+            DummyCard *dummy = new DummyCard;
+			dummy->deleteLater();
             foreach(const Card *c, damage.to->getCards("e")){
                 if (player->canDiscard(damage.to, c->getEffectiveId())){
                     dummy->addSubcard(c);
-                    count = count + 1;
                 }
             }
-            if (count > 0){
+            if (dummy->subcardsLength() > 0){
                 room->touhouLogmessage("#TriggerSkill", player, objectName());
                 room->notifySkillInvoked(player, objectName());
                 room->throwCard(dummy, damage.to, player);
             }
-
         }
         return false;
     }
@@ -622,7 +619,7 @@ public:
 class huanmeng : public TriggerSkill {
 public:
     huanmeng() : TriggerSkill("huanmeng") {
-        events << GameStart << PreHpLost << TurnStart << EventPhaseChanging;
+        events << GameStart << PreHpLost << EventPhaseStart << EventPhaseChanging;
         frequency = Eternal;
     }
 
@@ -637,9 +634,9 @@ public:
             room->notifySkillInvoked(player, objectName());
             return true;
         }
-        else if (triggerEvent == TurnStart) {
+        else if (triggerEvent == EventPhaseStart 
+		    && player->getPhase() == Player::RoundStart) {
             if (player->getHandcardNum() == 0) {
-
                 room->touhouLogmessage("#TriggerSkill", player, objectName());
                 room->notifySkillInvoked(player, objectName());
                 room->killPlayer(player);
@@ -677,16 +674,19 @@ public:
         QList<int> idlist;
 
         foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (p->getHandcardNum() > 0) {
+            if (p->canDiscard(p, "h")) {
                 const Card *cards = room->askForExchange(p, objectName(), 1, false, "cuixiang-exchange:" + player->objectName() + ":" + objectName());
-                int id = cards->getSubcards().first();
+				int id = cards->getSubcards().first();
                 room->throwCard(id, p, p);
-                if (room->getCardPlace(id) == Player::DiscardPile)
+                //we need id to check cardplace,
+				//since skill "jinian",  the last handcard will be return.
+				if (room->getCardPlace(id) == Player::DiscardPile)
                     idlist << id;
             }
             else{
                 QList<int> cards = room->getNCards(1);
-                idlist << cards.first();
+                room->throwCard(cards.first(), NULL, p);
+				idlist << cards.first();
             }
         }
 
@@ -747,7 +747,7 @@ public:
         if (who != player)
             return false;
         ServerPlayer *current = room->getCurrent();
-        if (!current->isAlive() || player == current)
+        if (current == NULL || !current->isAlive() || player == current)
             return false;
         if (player->askForSkillInvoke(objectName(), "recover:" + current->objectName())){
             player->gainMark("@kinki");
@@ -821,8 +821,6 @@ public:
                 if (x == 0)
                     return false;
                 int y = x / 2;
-                //if (2*y<x)
-                //	y=y+1;
                 if (x > player->getCards("he").length())
                     room->loseHp(player, y);
                 else{
@@ -859,7 +857,7 @@ public:
 class shiting : public TriggerSkill {
 public:
     shiting() : TriggerSkill("shiting") {
-        events << EventPhaseChanging;
+        events << TurnStart;
     }
     virtual bool triggerable(const ServerPlayer *target) const{
         return target != NULL;
@@ -867,8 +865,6 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *current = room->getCurrent();
-        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if (change.from == Player::NotActive && change.to != Player::NotActive){
             ServerPlayer *skillowner = room->findPlayerBySkillName(objectName());
             if (skillowner != NULL && skillowner->getMark("@clock") > 0
                 && room->canInsertExtraTurn() && skillowner->isAlive()){
@@ -878,11 +874,8 @@ public:
                     room->touhouLogmessage("#touhouExtraTurn", skillowner, NULL);
 
                     skillowner->gainAnExtraTurn();
-
-                    room->getThread()->trigger(EventPhaseChanging, room, skillowner, data);
                 }
             }
-        }
         return false;
     }
 };
@@ -1117,10 +1110,10 @@ public:
                     ServerPlayer *s = room->askForPlayerChosen(player, all, "renguidiscard", "@rengui-discard:" + QString::number(y), true, true);
                     if (s != NULL) {
                         room->notifySkillInvoked(player, objectName());
-                        Card *dummy = Sanguosha->cloneCard("slash");
+                        DummyCard *dummy = new DummyCard;
+						dummy->deleteLater();
                         QList<int> card_ids;
                         QList<Player::Place> original_places;
-                        int count = 0;
                         s->setFlags("rengui_InTempMoving");
                         for (int i = 0; i < y; i++){
                             if (!player->canDiscard(s, "he"))
@@ -1130,14 +1123,13 @@ public:
                             original_places << room->getCardPlace(id);
                             dummy->addSubcard(id);
                             s->addToPile("#rengui", id, false);
-                            count = count + 1;
                         }
-                        for (int i = 0; i < count; i++) {
+                        for (int i = 0; i < dummy->subcardsLength(); i++) {
                             Card *c = Sanguosha->getCard(card_ids.at(i));
                             room->moveCardTo(c, s, original_places.at(i), false);
                         }
                         s->setFlags("-rengui_InTempMoving");
-                        if (count > 0)
+                        if (dummy->subcardsLength() > 0)
                             room->throwCard(dummy, s, player);
 
                     }
@@ -1278,13 +1270,9 @@ void shenshouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
             if (listt.length() > 0){
                 ServerPlayer *slashtarget = room->askForPlayerChosen(source, listt, "shenshou", "@shenshou-slash:" + target->objectName());
                 if (slashtarget != NULL) {
-                    Card *slash = Sanguosha->cloneCard("slash");
-                    slash->setSkillName("shenshou");
-                    CardUseStruct carduse;
-                    carduse.card = slash;
-                    carduse.from = target;
-                    carduse.to << slashtarget;
-                    room->useCard(carduse);
+					Slash *slash = new Slash(Card::NoSuit, 0);
+					slash->setSkillName("shenshou");
+                    room->useCard(CardUseStruct(slash, target, slashtarget));
                 }
             }
         }
@@ -1388,14 +1376,12 @@ public:
 class duanzui : public TriggerSkill {
 public:
     duanzui() : TriggerSkill("duanzui") {
-        events << EventPhaseStart;// EventPhaseChanging ;
+        events << EventPhaseStart;
     }
     virtual bool triggerable(const ServerPlayer *target) const{
         return target != NULL;
     }
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        //PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        //change.to == Player::NotActive
         ServerPlayer * current = room->getCurrent();
         if (current->getPhase() == Player::NotActive) {
             ServerPlayer *ymsnd = room->findPlayerBySkillName(objectName());
@@ -1508,21 +1494,21 @@ public:
         else if (cards.length() == 1 && Self->getMark("hualong") > 0){
             const Card *card = cards.first();
             if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
-                Card *slash = Sanguosha->cloneCard("slash", card->getSuit(), card->getNumber());
-                slash->addSubcards(cards);
+                Slash *slash = new Slash(card->getSuit(), card->getNumber());
+				slash->addSubcards(cards);
                 slash->setSkillName(objectName());
                 return slash;
             }
             else if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE || Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
                 QString pattern = Sanguosha->getCurrentCardUsePattern();
                 if (pattern == "jink"){
-                    Card *jink = Sanguosha->cloneCard("jink", card->getSuit(), card->getNumber());
-                    jink->addSubcards(cards);
+                    Jink *jink = new Jink(card->getSuit(), card->getNumber());
+					jink->addSubcards(cards);
                     jink->setSkillName(objectName());
                     return jink;
                 }
                 else if (pattern == "slash"){
-                    Card *slash = Sanguosha->cloneCard("slash", card->getSuit(), card->getNumber());
+                    Slash *slash = new Slash(card->getSuit(), card->getNumber());
                     slash->addSubcards(cards);
                     slash->setSkillName(objectName());
                     return slash;
@@ -1531,7 +1517,7 @@ public:
         }
         else if (cards.length() == 2){
             if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY){
-                Card *slash = Sanguosha->cloneCard("slash", Card::SuitToBeDecided, 0);
+                Slash *slash = new Slash(Card::SuitToBeDecided, 0);
                 slash->addSubcards(cards);
                 slash->setSkillName(objectName());
                 return slash;
@@ -1539,13 +1525,13 @@ public:
             else if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE || Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE){
                 QString pattern = Sanguosha->getCurrentCardUsePattern();
                 if (pattern == "jink"){
-                    Card *jink = Sanguosha->cloneCard("jink", Card::SuitToBeDecided, 0);
+                    Jink *jink = new Jink(Card::SuitToBeDecided, 0);
                     jink->addSubcards(cards);
                     jink->setSkillName(objectName());
                     return jink;
                 }
                 else if (pattern == "slash") {
-                    Card *slash = Sanguosha->cloneCard("slash", Card::SuitToBeDecided, 0);
+                    Slash *slash = new Slash(Card::SuitToBeDecided, 0);
                     slash->addSubcards(cards);
                     slash->setSkillName(objectName());
                     return slash;
@@ -1631,7 +1617,8 @@ public:
             player->gainMark("@qiannian", 1);
         }
         if (triggerEvent == PreMarkChange) {
-            MarkChangeStruct change = data.value<MarkChangeStruct>();
+            //gainMark when Room::swapPile()
+			MarkChangeStruct change = data.value<MarkChangeStruct>();
             if (change.name == "@qiannian" && change.num > 0){
                 room->sendLog(log);
                 room->notifySkillInvoked(player, objectName());
@@ -1713,7 +1700,8 @@ public:
                     foreach(const Card *c, player->getHandcards())
                         ids << (c->getId());
                     player->addToPile("qinlue", ids, false);
-                    Card *dummy = Sanguosha->cloneCard("Slash");
+					DummyCard *dummy = new DummyCard;
+                    dummy->deleteLater();
                     dummy->addSubcards(target->getHandcards());
                     room->obtainCard(player, dummy, false);
                 }
@@ -1723,12 +1711,14 @@ public:
             if (player->hasFlag("qinlue")){
                 ServerPlayer *target = player->tag["qinlue_current"].value<ServerPlayer *>();
                 if (target != NULL && target->isAlive()) {
-                    Card *dummy = Sanguosha->cloneCard("Slash");
+					DummyCard *dummy = new DummyCard;
+                    dummy->deleteLater();
                     dummy->addSubcards(player->getHandcards());
                     room->obtainCard(target, dummy, false);
                 }
                 if (!player->getPile("qinlue").isEmpty()){
-                    Card *dummy1 = Sanguosha->cloneCard("Slash");
+                    DummyCard *dummy1 = new DummyCard;
+                    dummy1->deleteLater();
                     foreach(int c, player->getPile("qinlue"))
                         dummy1->addSubcard(c);
                     room->obtainCard(player, dummy1, false);

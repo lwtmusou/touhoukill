@@ -16,7 +16,7 @@
 class kongpiao : public TriggerSkill {
 public:
     kongpiao() : TriggerSkill("kongpiao") {
-        events << EventPhaseChanging;
+        events << EventPhaseStart;
         frequency = Compulsory;
     }
 
@@ -24,14 +24,11 @@ public:
         return target != NULL;
     }
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        ServerPlayer *satori = room->findPlayerBySkillName(objectName());
-        if (satori == NULL)
-            return false;
-        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if (change.to == Player::Play && satori->getPhase() == Player::NotActive) {
-
-            ServerPlayer *current = room->getCurrent();
-            if (satori->getHandcardNum() < 5 && current->getHandcardNum() > satori->getHandcardNum()){
+        if (player->getPhase() == Player::Play) {
+            ServerPlayer *satori = room->findPlayerBySkillName(objectName());
+            if (satori == NULL || satori == player)
+                return false;
+            if (satori->getHandcardNum() < 5 && player->getHandcardNum() > satori->getHandcardNum()){
                 room->touhouLogmessage("#TriggerSkill", satori, objectName());
                 room->notifySkillInvoked(player, objectName());
                 satori->drawCards(1);
@@ -81,12 +78,7 @@ woyuCard::woyuCard() {
     mute = true;
 }
 void woyuCard::onUse(Room *room, const CardUseStruct &card_use) const{
-    ServerPlayer *to = card_use.to.at(0);
     room->doLightbox("$woyuAnimate", 4000);
-    //this mark is for displaying the revealed true role
-    //since UI/photo/m_player->getrole return a nil value。。。 
-	//we need give the role string here。。。
-    room->setPlayerMark(to, "woyuVictim_" + to->getRole(), 1);
     SkillCard::onUse(room, card_use);
 }
 
@@ -95,7 +87,8 @@ void woyuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targ
     ServerPlayer *target = targets.first();
     QString role = target->getRole();
     room->touhouLogmessage("#WoyuAnnounce", source, role, room->getAllPlayers(), target->getGeneralName());
-    if (role == "rebel")
+    room->broadcastProperty(target, "role");
+	if (role == "rebel")
         source->drawCards(3);
     else if (role == "loyalist")
         source->throwAllHandCardsAndEquips();
@@ -157,7 +150,7 @@ public:
                 choices << "losehp";
             QString choice = room->askForChoice(player, objectName(), choices.join("+"));
             if (choice == "useslash"){
-                Card *slash = Sanguosha->cloneCard("slash");
+                Slash *slash = new Slash(Card::NoSuit, 0);
                 slash->setSkillName("_" + objectName());
                 room->useCard(CardUseStruct(slash, player, target));
             }

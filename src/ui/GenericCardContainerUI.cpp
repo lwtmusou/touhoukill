@@ -1430,6 +1430,4 @@ void PlayerCardContainer::hideSkillName() {
     _m_skillNameItem->hide();
 }
 
-void PlayerCardContainer::updateWoyuRole(QString role) {
-    _m_roleComboBox->fix(role);
-}
+

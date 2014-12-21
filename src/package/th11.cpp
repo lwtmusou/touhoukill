@@ -408,6 +408,8 @@ public:
             DamageStruct damage;
             damage.from = player;
             room->killPlayer(victim, &damage);
+            room->setPlayerFlag(victim, "-Global_Dying");
+            return true; //avoid triggering askforpeach
         }
         return false;
     }

@@ -1978,7 +1978,7 @@ void Room::swapPile() {
     qShuffle(*m_drawPile);
     foreach(int card_id, *m_drawPile)
         setCardMapping(card_id, NULL, Player::DrawPile);
-
+    //for skill "qiannian" in touhougod.cpp
     ServerPlayer *player = findPlayerBySkillName("qiannian");
     if (player != NULL)
         player->gainMark("@qiannian", 1);
