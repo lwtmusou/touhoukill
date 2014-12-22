@@ -260,7 +260,7 @@ public:
 
             QList<int> idlist = room->getNCards(1);
             int cd_id = idlist.first();
-            room->fillAG(idlist, NULL);			
+            room->fillAG(idlist, NULL);
             room->getThread()->delay();
 
             room->clearAG();
@@ -463,7 +463,7 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         IceSlash *slash = new IceSlash(originalCard->getSuit(), originalCard->getNumber());
-		slash->setSkillName(objectName());
+        slash->setSkillName(objectName());
         WrappedCard *card = Sanguosha->getWrappedCard(originalCard->getId());
         card->takeOver(slash);
         return card;
@@ -541,7 +541,7 @@ public:
 
         if (card->isKindOf("Slash") && damage.to->getCards("e").length() > 0) {
             DummyCard *dummy = new DummyCard;
-			dummy->deleteLater();
+            dummy->deleteLater();
             foreach(const Card *c, damage.to->getCards("e")){
                 if (player->canDiscard(damage.to, c->getEffectiveId())){
                     dummy->addSubcard(c);
@@ -635,7 +635,7 @@ public:
             return true;
         }
         else if (triggerEvent == EventPhaseStart 
-		    && player->getPhase() == Player::RoundStart) {
+            && player->getPhase() == Player::RoundStart) {
             if (player->getHandcardNum() == 0) {
                 room->touhouLogmessage("#TriggerSkill", player, objectName());
                 room->notifySkillInvoked(player, objectName());
@@ -676,17 +676,17 @@ public:
         foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
             if (p->canDiscard(p, "h")) {
                 const Card *cards = room->askForExchange(p, objectName(), 1, false, "cuixiang-exchange:" + player->objectName() + ":" + objectName());
-				int id = cards->getSubcards().first();
+                int id = cards->getSubcards().first();
                 room->throwCard(id, p, p);
                 //we need id to check cardplace,
-				//since skill "jinian",  the last handcard will be return.
-				if (room->getCardPlace(id) == Player::DiscardPile)
+                //since skill "jinian",  the last handcard will be return.
+                if (room->getCardPlace(id) == Player::DiscardPile)
                     idlist << id;
             }
             else{
                 QList<int> cards = room->getNCards(1);
                 room->throwCard(cards.first(), NULL, p);
-				idlist << cards.first();
+                idlist << cards.first();
             }
         }
 
@@ -1111,7 +1111,7 @@ public:
                     if (s != NULL) {
                         room->notifySkillInvoked(player, objectName());
                         DummyCard *dummy = new DummyCard;
-						dummy->deleteLater();
+                        dummy->deleteLater();
                         QList<int> card_ids;
                         QList<Player::Place> original_places;
                         s->setFlags("rengui_InTempMoving");
@@ -1270,8 +1270,8 @@ void shenshouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
             if (listt.length() > 0){
                 ServerPlayer *slashtarget = room->askForPlayerChosen(source, listt, "shenshou", "@shenshou-slash:" + target->objectName());
                 if (slashtarget != NULL) {
-					Slash *slash = new Slash(Card::NoSuit, 0);
-					slash->setSkillName("shenshou");
+                    Slash *slash = new Slash(Card::NoSuit, 0);
+                    slash->setSkillName("shenshou");
                     room->useCard(CardUseStruct(slash, target, slashtarget));
                 }
             }
@@ -1495,7 +1495,7 @@ public:
             const Card *card = cards.first();
             if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
                 Slash *slash = new Slash(card->getSuit(), card->getNumber());
-				slash->addSubcards(cards);
+                slash->addSubcards(cards);
                 slash->setSkillName(objectName());
                 return slash;
             }
@@ -1503,7 +1503,7 @@ public:
                 QString pattern = Sanguosha->getCurrentCardUsePattern();
                 if (pattern == "jink"){
                     Jink *jink = new Jink(card->getSuit(), card->getNumber());
-					jink->addSubcards(cards);
+                    jink->addSubcards(cards);
                     jink->setSkillName(objectName());
                     return jink;
                 }
@@ -1618,7 +1618,7 @@ public:
         }
         if (triggerEvent == PreMarkChange) {
             //gainMark when Room::swapPile()
-			MarkChangeStruct change = data.value<MarkChangeStruct>();
+            MarkChangeStruct change = data.value<MarkChangeStruct>();
             if (change.name == "@qiannian" && change.num > 0){
                 room->sendLog(log);
                 room->notifySkillInvoked(player, objectName());
@@ -1700,7 +1700,7 @@ public:
                     foreach(const Card *c, player->getHandcards())
                         ids << (c->getId());
                     player->addToPile("qinlue", ids, false);
-					DummyCard *dummy = new DummyCard;
+                    DummyCard *dummy = new DummyCard;
                     dummy->deleteLater();
                     dummy->addSubcards(target->getHandcards());
                     room->obtainCard(player, dummy, false);
@@ -1711,7 +1711,7 @@ public:
             if (player->hasFlag("qinlue")){
                 ServerPlayer *target = player->tag["qinlue_current"].value<ServerPlayer *>();
                 if (target != NULL && target->isAlive()) {
-					DummyCard *dummy = new DummyCard;
+                    DummyCard *dummy = new DummyCard;
                     dummy->deleteLater();
                     dummy->addSubcards(player->getHandcards());
                     room->obtainCard(target, dummy, false);
@@ -1862,7 +1862,7 @@ public:
         if (!drawpile.isEmpty())
             firstcard = drawpile.first();
         //deal the amazinggrace 
-		//update firstcard。。。
+        //update firstcard。。。
         if (triggerEvent == TargetConfirming){
             CardUseStruct use = data.value<CardUseStruct>();
             if (!use.card->isKindOf("AmazingGrace"))
@@ -2001,7 +2001,7 @@ public:
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (triggerEvent == BeforeCardsMove){
             if (move.from != NULL && move.from == player && player->getCards("e").length() == 1){
-                foreach(int id, move.card_ids)	{
+                foreach(int id, move.card_ids){
                     if (room->getCardPlace(id) == Player::PlaceEquip){
                         room->setCardFlag(Sanguosha->getCard(id), "shifang");
                         room->setPlayerFlag(player, "shifangInvoked");
@@ -2014,7 +2014,7 @@ public:
             if (move.from != NULL && move.from == player){ //&& move.from_place == Player::Equip
                 if (player->hasFlag("shifangInvoked") && player->getMark("shifang") == 0) {
                     bool t = false;
-                    foreach(int id, move.card_ids)	{
+                    foreach(int id, move.card_ids){
                         if (Sanguosha->getCard(id)->hasFlag("shifang")){
                             t = true;
                             break;

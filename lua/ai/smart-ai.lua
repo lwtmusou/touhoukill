@@ -255,6 +255,14 @@ function SmartAI:initialize(player)
 	self:updatePlayers()
 end
 
+function sgs.cloneCard(name, suit, number)
+	suit = suit or sgs.Card_SuitToBeDecided
+	number = number or -1
+	local card = sgs.Sanguosha:cloneCard(name, suit, number)
+	card:deleteLater()
+	return card
+end
+
 function sgs.getCardNumAtCertainPlace(card, player, place)
 	if not card:isVirtualCard() and place == sgs.Player_PlaceHand then return 1
 	elseif card:subcardsLength() == 0 then return 0
@@ -584,7 +592,7 @@ function SmartAI:getUseValue(card)
 	if card:isKindOf("GuhuoCard") or card:isKindOf("NosGuhuoCard") then
 		local userstring = card:toString()
 		userstring = (userstring:split(":"))[3]
-		local guhuocard = sgs.Sanguosha:cloneCard(userstring, card:getSuit(), card:getNumber())
+		local guhuocard = sgs.cloneCard(userstring, card:getSuit(), card:getNumber())
 		local usevalue = self:getUseValue(guhuocard) + #self.enemies * 0.3
 		if sgs.Sanguosha:getCard(card:getSubcards():first()):objectName() == userstring
 			and (card:isKindOf("GuhuoCard") or card:getSuit() == sgs.Card_Heart) then usevalue = usevalue + 3 end
@@ -688,6 +696,7 @@ function SmartAI:adjustUsePriority(card, v)
 		if card:getSkillName() == "longdan" and self:hasSkills("chongzhen") then v = v + 0.21 end
 		if card:getSkillName() == "fuhun" then v = v + (self.player:getPhase() == sgs.Player_Play and 0.21 or -0.1) end
 		if self.player:hasSkill("jiang") and card:isRed() then v = v + 0.21 end
+		if self.player:hasSkill("guaili") and card:isRed() then v = v + 0.21 end
 		if self.player:hasSkill("wushen") and card:getSuit() == sgs.Card_Heart then v = v + 0.11 end
 		if self.player:hasSkill("jinjiu") and card:getEffectiveId() >= 0 and sgs.Sanguosha:getEngineCard(card:getEffectiveId()):isKindOf("Analeptic") then v = v + 0.11 end
 	end
@@ -723,7 +732,7 @@ function SmartAI:getDynamicUsePriority(card)
 	local dynamic_value
 
 	-- direct control
-	if card:isKindOf("AmazingGrace") then
+	if card:isKindOf("AmazingGrace") or card:isKindOf("fengrangCard") then
 		local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
 		if zhugeliang and self:isEnemy(zhugeliang) and zhugeliang:isKongcheng() then
 			return math.max(sgs.ai_use_priority.Slash, sgs.ai_use_priority.Duel) + 0.1
@@ -748,7 +757,7 @@ function SmartAI:getDynamicUsePriority(card)
 		if self:hasCrossbowEffect()
 			or self.player:hasFlag("XianzhenSuccess")
 			or self.player:canSlashWithoutCrossbow()
-			or sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_Residue, self.player, sgs.Sanguosha:cloneCard("slash")) > 0
+			or sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_Residue, self.player, sgs.cloneCard("slash")) > 0
 			or self.player:hasUsed("FenxunCard") then
 			return sgs.ai_use_priority.Slash - 0.1
 		end
@@ -759,7 +768,7 @@ function SmartAI:getDynamicUsePriority(card)
 		if self:hasSkills(sgs.lose_equip_skill) then value = value + 12 end
 	end
 
-	if card:isKindOf("AmazingGrace") then
+	if card:isKindOf("AmazingGrace") or card:isKindOf("fengrangCard") then
 		dynamic_value = 10
 		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 			dynamic_value = dynamic_value - 1
@@ -936,6 +945,7 @@ function SmartAI:sortByKeepValue(cards, inverse, kept, Write)
 			if card:isRed() then v = v + 0.02 end
 			if card:isKindOf("NatureSlash") then v = v + 0.03 end
 			if self.player:hasSkill("jiang") and card:isRed() then v = v + 0.04 end
+			if self.player:hasSkill("guaili") and card:isRed() then v = v + 0.04 end
 			if self.player:hasSkill("wushen") and card:getSuit() == sgs.Card_Heart then v = v + 0.03 end
 			if self.player:hasSkill("jinjiu") and card:getEffectiveId() >= 0 and
 				sgs.Sanguosha:getEngineCard(card:getEffectiveId()):isKindOf("Analeptic") then v = v - 0.1 end
@@ -2283,7 +2293,7 @@ function SmartAI:filterEvent(event, player, data)
 		if card:isKindOf("Collateral") then 
 			local victim
 			local CollateralTargets={}
-			local dummySlash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+			local dummySlash = sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
 		
 			for _,p in sgs.qlist(self.room:getOtherPlayers(struct.to:first())) do
 				if p:hasFlag("SlashAssignee") then
@@ -3014,7 +3024,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 							elseif analeptic_num > 0 and (enemy:hasWeapon("Axe") or getCardsNum("Axe", enemy, self.player) > 0) then
 								return null_card
 							elseif crossbow_num > 0 and getCardsNum("Slash", enemy, self.player) >= 3 then
-								local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+								local slash = sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
 								for _, friend in ipairs(self.friends) do
 									if enemy:distanceTo(friend) == 1 and self:slashIsEffective(slash, friend, enemy) then
 										return null_card
@@ -3480,7 +3490,7 @@ function SmartAI:needKongcheng(player, keep)
 
 	if not player:hasFlag("stack_overflow_xiangle") then
 		if player:hasSkill("beifa") and not player:isKongcheng() then
-			local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+			local slash = sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
 			for _, to in ipairs(self:getEnemies(player)) do
 				if player:canSlash(to, slash) and not self:slashProhibit(slash, to)
 				  and self:slashIsEffective(slash, to) and not self:getDamagedEffects(to, player, true)
@@ -3939,7 +3949,7 @@ function SmartAI:ableToSave(saver, dying)
 	end
 	
 	
-	local peach = sgs.Sanguosha:cloneCard("peach", sgs.Card_NoSuitRed, 0)
+	local peach = sgs.cloneCard("peach", sgs.Card_NoSuitRed, 0)
 	
 	if saver:isCardLimited(peach, sgs.Card_MethodUse, true) and not saver:hasSkills("jiuzhu|chunlao|nosjiefan|renxin") then return false end
 	
@@ -3951,7 +3961,7 @@ end
 function SmartAI:willUsePeachTo(dying)
 	
 	local card_str
-	local forbid = sgs.Sanguosha:cloneCard("peach")
+	local forbid = sgs.cloneCard("peach")
 	
 	if self.player:isLocked(forbid) or dying:isLocked(forbid) then 
 		if not self:ableToSave(self.player, dying) then --【远吠】的问题
@@ -3959,7 +3969,7 @@ function SmartAI:willUsePeachTo(dying)
 		end
 	end
 	if self.player:objectName() == dying:objectName() and not self:needDeath(dying) then
-		local analeptic = sgs.Sanguosha:cloneCard("analeptic")
+		local analeptic = sgs.cloneCard("analeptic")
 		if not self.player:isLocked(analeptic) and self:getCardId("Analeptic") then return self:getCardId("Analeptic") end
 		if self:getCardId("Peach") then return self:getCardId("Peach") end
 	end
@@ -3976,7 +3986,7 @@ function SmartAI:willUsePeachTo(dying)
 		end
 		if wuyu_save then
 			if self.player:objectName() == dying:objectName() then
-				local analeptic = sgs.Sanguosha:cloneCard("analeptic")
+				local analeptic = sgs.cloneCard("analeptic")
 				if not self.player:isLocked(analeptic) and self:getCardId("Analeptic") then return self:getCardId("Analeptic") end
 			end
 			if self:getCardId("Peach") then return self:getCardId("Peach") end
@@ -4144,7 +4154,7 @@ function SmartAI:getTurnUse()
 	cards = sgs.QList2Table(cards)
 
 	local turnUse = {}
-	local slash = sgs.Sanguosha:cloneCard("slash")
+	local slash = sgs.cloneCard("slash")
 	local slashAvail = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_Residue, self.player, slash)
 	self.slashAvail = slashAvail
 	self.predictedRange = self.player:getAttackRange()
@@ -4493,13 +4503,13 @@ function SmartAI:getRetrialCardId(cards, judge, self_card)
 	for _, card in ipairs(cards) do
 		local card_x = sgs.Sanguosha:getEngineCard(card:getEffectiveId())
 		if who:hasSkill("hongyan") and card_x:getSuit() == sgs.Card_Spade then
-			card_x = sgs.Sanguosha:cloneCard(card_x:objectName(), sgs.Card_Heart, card:getNumber())
+			card_x = sgs.cloneCard(card_x:objectName(), sgs.Card_Heart, card:getNumber())
 		end
 		--if who:hasSkill("hongbai") and card_x:isBlack() then
-		--	card_x = sgs.Sanguosha:cloneCard(card_x:objectName(), sgs.Card_Heart, card:getNumber())
+		--	card_x = sgs.cloneCard(card_x:objectName(), sgs.Card_Heart, card:getNumber())
 		--end
 		if who:hasSkill("bendan") then
-			card_x = sgs.Sanguosha:cloneCard(card_x:objectName(), card_x:getSuit(), 9)
+			card_x = sgs.cloneCard(card_x:objectName(), card_x:getSuit(), 9)
 		end
 		if reason == "beige" and not isCard("Peach", card_x, self.player) then
 			local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
@@ -5510,8 +5520,8 @@ function SmartAI:getAoeValueTo(card, to, from)
 	if card:isKindOf("SavageAssault") then sj_num = getCardsNum("Slash", to, from) end
 	
 	if self:aoeIsEffective(card, to, from) then
-		local jink = sgs.Sanguosha:cloneCard("jink")
-		local slash = sgs.Sanguosha:cloneCard("slash")
+		local jink = sgs.cloneCard("jink")
+		local slash = sgs.cloneCard("slash")
 		local isLimited
 		if card:isKindOf("ArcheryAttack") and to:isCardLimited(jink, sgs.Card_MethodResponse) then isLimited = true
 		elseif card:isKindOf("SavageAssault") and to:isCardLimited(slash, sgs.Card_MethodResponse) then isLimited = true end
@@ -6357,7 +6367,7 @@ function SmartAI:needToThrowArmor(player)
 			return true
 		end
 	end
-	local FS = sgs.Sanguosha:cloneCard("fire_slash", sgs.Card_NoSuit, 0)
+	local FS = sgs.cloneCard("fire_slash", sgs.Card_NoSuit, 0)
 	if not self.player:hasSkill("moukui") and player:hasArmorEffect("Vine") and player:objectName() ~= self.player:objectName() and self:isEnemy(player)
 		and self.player:getPhase() == sgs.Player_Play and self:slashIsAvailable() and not self:slashProhibit(FS, player, self.player) and not IgnoreArmor(self.player, player)
 		and (self:getCard("FireSlash") or (self:getCard("Slash") and (self.player:hasWeapon("Fan") or self.player:hasSkills("lihuo|zonghuo") or self:getCardsNum("Fan") >= 1)))
@@ -7499,7 +7509,7 @@ function SmartAI:willSkipPlayPhase(player, NotContains_Null)
 	if self.player:objectName() == cp:objectName() and self.player:objectName() ~= player:objectName() and self:isFriend(player) then
 		for _, hcard in sgs.qlist(self.player:getCards("he")) do
 			if (isCard("Snatch", hcard, self.player) and self.player:distanceTo(player) == 1) or isCard("Dismantlement", hcard, self.player) then
-				local trick = sgs.Sanguosha:cloneCard(hcard:objectName(), hcard:getSuit(), hcard:getNumber())
+				local trick = sgs.cloneCard(hcard:objectName(), hcard:getSuit(), hcard:getNumber())
 				if self:hasTrickEffective(trick, player) then friend_snatch_dismantlement = friend_snatch_dismantlement + 1 end
 			end
 		end
@@ -7532,7 +7542,7 @@ function SmartAI:willSkipDrawPhase(player, NotContains_Null)
 	if self.player:objectName() == cp:objectName() and self.player:objectName() ~= player:objectName() and self:isFriend(player) then
 		for _, hcard in sgs.qlist(self.player:getCards("he")) do
 			if (isCard("Snatch", hcard, self.player) and self.player:distanceTo(player) == 1) or isCard("Dismantlement", hcard, self.player) then
-				local trick = sgs.Sanguosha:cloneCard(hcard:objectName(), hcard:getSuit(), hcard:getNumber())
+				local trick = sgs.cloneCard(hcard:objectName(), hcard:getSuit(), hcard:getNumber())
 				if self:hasTrickEffective(trick, player) then friend_snatch_dismantlement = friend_snatch_dismantlement + 1 end
 			end
 		end
@@ -7626,7 +7636,7 @@ function SmartAI:findLeijiTarget(player, leiji_value, slasher, latest_version)
 	end
 	if not player:hasSkill(latest_version == 1 and "leiji" or "nosleiji") then return nil end
 	if slasher then
-		if not self:slashIsEffective(sgs.Sanguosha:cloneCard("slash"), player, slasher, slasher:hasWeapon("QinggangSword")) then return nil end
+		if not self:slashIsEffective(sgs.cloneCard("slash"), player, slasher, slasher:hasWeapon("QinggangSword")) then return nil end
 		if slasher:hasSkill("liegong") and slasher:getPhase() == sgs.Player_Play and self:isEnemy(player, slasher)
 			and (player:getHandcardNum() >= slasher:getHp() or player:getHandcardNum() <= slasher:getAttackRange()) then
 			return nil

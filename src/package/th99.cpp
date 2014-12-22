@@ -291,13 +291,13 @@ public:
         player->drawCards(2); 
         Room *room = player->getRoom();
         QList<ServerPlayer *> listt;
-		foreach (ServerPlayer *p, room->getOtherPlayers(player)){
-			if (p->canDiscard(player, "h"))
-				listt << p;
-		}
-		if (listt.isEmpty())
-			return;
-		ServerPlayer *target = room->askForPlayerChosen(player, listt, "fandu", "@fandu-select",false,true);
+        foreach (ServerPlayer *p, room->getOtherPlayers(player)){
+            if (p->canDiscard(player, "h"))
+                listt << p;
+        }
+        if (listt.isEmpty())
+            return;
+        ServerPlayer *target = room->askForPlayerChosen(player, listt, "fandu", "@fandu-select",false,true);
         int to_throw = room->askForCardChosen(target, player, "h", "fandu", false, Card::MethodDiscard);
         room->throwCard(to_throw, player, target);
     }
@@ -757,7 +757,7 @@ public:
 
                 if (player->getMark("pingyi_steal") > 0)
                     skill_comeback(room, player);
-                //record pingyi	 relation and content.
+                //record pingyi     relation and content.
                 QString pingyi_record = player->objectName() + "pingyi" + damage.from->objectName();
                 room->setTag(pingyi_record, skill_name);
 
@@ -1041,8 +1041,8 @@ public:
         ServerPlayer *target = room->askForPlayerChosen(player, targets, "ganying", "@ganying", true, true);
         if (target == NULL)
             return;
-        //if (target==player)	
-        //	player->drawCards(1);
+        //if (target==player)    
+        //    player->drawCards(1);
         //else{
         int id = room->askForCardChosen(player, target, "h", "ganying", false, Card::MethodDiscard);
         room->throwCard(id, target, player);

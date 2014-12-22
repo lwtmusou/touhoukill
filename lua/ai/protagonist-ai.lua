@@ -756,7 +756,7 @@ sgs.ai_skill_playerchosen.baoyi = function(self, targets)
 	local target_table = sgs.QList2Table(targets)
 	self:sort(target_table, "hp")
 	local baoyi_target
-	local slash= sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+	local slash= sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
 	for _,target in pairs(target_table) do 
 		if  self:isEnemy(target) and self:slashIsEffective(slash, target, self.player)  then
 			if not baoyi_target  then
@@ -1103,7 +1103,7 @@ function bllmwuyu_skill.getTurnUseCard(self)
 	if can_shiyu then 
 		local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 	--先暂时随意指定一个card...
-		local card=sgs.Sanguosha:cloneCard("Slash", sgs.Card_NoSuit, 0)
+		local card=sgs.cloneCard("Slash", sgs.Card_NoSuit, 0)
 		self:useBasicCard(card, dummy_use)
 		if  dummy_use.card and not dummy_use.to:isEmpty()  then
 			if not self:shouldUseAnaleptic(dummy_use.to:first(), dummy_use.card) then

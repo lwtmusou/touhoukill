@@ -765,7 +765,7 @@ bool fengshenCard::targetFilter(const QList<const Player *> &targets, const Play
 void fengshenCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
     const Card *card = room->askForCard(effect.to, "Slash", "@fengshen-discard:" + effect.from->objectName());
-    if (card == NULL)
+	if (card == NULL)
         room->damage(DamageStruct("fenshen", effect.from, effect.to));
 }
 
