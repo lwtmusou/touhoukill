@@ -312,7 +312,7 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const{
 }
 
 bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *) const{
-	//check targets feasible for skill "shikong"
+    //check targets feasible for skill "shikong"
     if (Self->hasSkill("shikong") && Self->getPhase() == Player::Play){
         foreach(const Player *p, Self->getAliveSiblings()) {
             if (Slash::IsSpecificAssignee(p, Self, this)) {

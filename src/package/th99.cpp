@@ -8,7 +8,7 @@
 #include "client.h"
 //#include "ai.h"
 #include "jsonutils.h"
-
+#include "maneuvering.h" //for skill lianxi
 
 
 
@@ -602,7 +602,8 @@ lianxiCard::lianxiCard() {
 bool lianxiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if (targets.length() <= 1){
         QList<const Player *> &targets2 = QList<const Player *>();
-        Card *card = Sanguosha->cloneCard("iron_chain");
+        IronChain *card = new IronChain(Card::NoSuit, 0);
+        card->deleteLater();
         return (card->isAvailable(Self) && !Self->isProhibited(to_select, card) && card->targetFilter(targets2, to_select, Self));
     }
     else
@@ -614,7 +615,7 @@ bool lianxiCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 }
 const Card *lianxiCard::validate(CardUseStruct &use) const{
     if (use.to.length() <= 2){
-        Card *card = Sanguosha->cloneCard("iron_chain");
+        IronChain *card = new IronChain(Card::NoSuit, 0);
         card->setSkillName("lianxi");
         return card;
     }
@@ -1041,13 +1042,8 @@ public:
         ServerPlayer *target = room->askForPlayerChosen(player, targets, "ganying", "@ganying", true, true);
         if (target == NULL)
             return;
-        //if (target==player)    
-        //    player->drawCards(1);
-        //else{
         int id = room->askForCardChosen(player, target, "h", "ganying", false, Card::MethodDiscard);
         room->throwCard(id, target, player);
-
-        //}
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -1152,12 +1148,10 @@ public:
             QString prompt = "@bihuo-playerchosen:" + use.from->objectName();
             ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), prompt, true, true);
             if (target != NULL){
-                Card *dummy = Sanguosha->cloneCard("jink");
-                int num = 0;
-                foreach(const Card *c, player->getCards("h")){
-                    dummy->addSubcard(c);
-                    num = num + 1;
-                }
+                DummyCard *dummy = new DummyCard;
+                dummy->deleteLater();
+                dummy->addSubcards(player->getCards("h"));
+                int num = dummy->subcardsLength();
                 room->obtainCard(target, dummy, false);
 
                 int tmp = player->tag["bihuo_num_" + player->objectName()].toInt();

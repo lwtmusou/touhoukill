@@ -3879,7 +3879,12 @@ wooden_ox_skill.getTurnUseCard = function(self)
 	self:sortByUseValue(cards, true)
 	local card, friend = self:getCardNeedPlayer(cards)
 	if card and friend and friend:objectName() ~= self.player:objectName() and (self:getOverflow() > 0 or self:isWeak(friend)) then
-		self.wooden_ox_assist = friend
+		if not self:cautionRenegade(friend)  then
+			self.wooden_ox_assist = friend
+		else
+			local lord = self.room:getLord()
+			if lord then self.wooden_ox_assist = lord end
+		end
 		return sgs.Card_Parse("@WoodenOxCard=" .. card:getEffectiveId())
 	end
 	if self:getOverflow() > 0 or (self:needKongcheng() and #cards == 1) then

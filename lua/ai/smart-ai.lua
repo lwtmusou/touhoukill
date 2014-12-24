@@ -1627,19 +1627,29 @@ end
 
 function SmartAI:isFriend(other, another)
 	if not other then self.room:writeToConsole(debug.traceback()) return end
-	if another then return self:isFriend(other) == self:isFriend(another) end
+	if another then
+		local of, af = self:isFriend(other), self:isFriend(another)
+		return of ~= nil and af ~= nil and of == af
+	end
 	if sgs.isRolePredictable(true) and self.lua_ai:relationTo(other) ~= sgs.AI_Neutrality then return self.lua_ai:isFriend(other) end
 	if self.player:objectName() == other:objectName() then return true end
-	if self:objectiveLevel(other) < 0 then return true end
+	local obj_level = self:objectiveLevel(other)
+	if obj_level < 0 then return true
+	elseif obj_level == 0 then return nil end
 	return false
 end
 
 function SmartAI:isEnemy(other, another)
 	if not other then self.room:writeToConsole(debug.traceback()) return end
-	if another then return self:isFriend(other) ~= self:isFriend(another) end
+	if another then
+		local of, af = self:isFriend(other), self:isFriend(another)
+		return of ~= nil and af ~= nil and of ~= af
+	end
 	if sgs.isRolePredictable(true) and self.lua_ai:relationTo(other) ~= sgs.AI_Neutrality then return self.lua_ai:isEnemy(other) end
 	if self.player:objectName() == other:objectName() then return false end
-	if self:objectiveLevel(other) > 0 then return true end
+	local obj_level = self:objectiveLevel(other)
+	if obj_level > 0 then return true
+	elseif obj_level == 0 then return nil end
 	return false
 end
 
@@ -1756,6 +1766,9 @@ function SmartAI:updatePlayers(clear_flags)
 		return
 	end
 
+	self:updateAlivePlayerRoles()
+	sgs.evaluateAlivePlayersRole()
+	
 	self.enemies = {}
 	self.friends = {}
 	self.friends_noself = {}
@@ -1776,7 +1789,7 @@ function SmartAI:updatePlayers(clear_flags)
 
 	if sgs.isRolePredictable() then return end
 	self:updateAlivePlayerRoles()
-	sgs.evaluateAlivePlayersRole()
+	--sgs.evaluateAlivePlayersRole()
 end
 
 function sgs.evaluateAlivePlayersRole()
@@ -1810,6 +1823,10 @@ function sgs.evaluateAlivePlayersRole()
 		if sgs.current_mode_players["rebel"] == 0 and sgs.current_mode_players["loyalist"] == 0 and not p:isLord() then
 			sgs.ai_role[p:objectName()] = "renegade"
 			sgs.explicit_renegade = true
+		end
+		--woyu target isRolePredictable
+		if p:getMark("woyuRole")>0 then
+			sgs.ai_role[p:objectName()] = p:getRole()
 		end
 	end
 	sgs.modifiedRoleEvaluation()
@@ -2070,6 +2087,12 @@ function SmartAI:filterEvent(event, player, data)
 		local struct = data:toCardUse()
 		local from  = struct.from
 		local card = struct.card
+		--this mark will lock ai_role for woyu target
+		if struct.to and from:objectName() == player:objectName() 
+			and card:isKindOf("woyuCard") then
+			self.room:setPlayerMark(struct.to:first(), "woyuRole",1)
+			self:updatePlayers()
+		end
 		if from and from:objectName() == player:objectName() then
 			if card:isKindOf("SingleTargetTrick") then sgs.TrickUsefrom = from end
 			local to = sgs.QList2Table(struct.to)
@@ -2164,7 +2187,7 @@ function SmartAI:filterEvent(event, player, data)
 		local to = struct.to
 		local card = struct.card
 		local lord = getLord(player)
-
+		
 		if card and card:isKindOf("AOE") and to and to:isLord() and (sgs.ai_lord_in_danger_SA or sgs.ai_lord_in_danger_AA) then
 			sgs.ai_lord_in_danger_SA = nil
 			sgs.ai_lord_in_danger_AA = nil
@@ -7403,6 +7426,15 @@ function SmartAI:touhouIsDamageCard(card)
 			return true
 		end
 	--end
+	return false
+end
+
+function SmartAI:cautionRenegade(friend)
+	if self.player:getRole() == "loyalist" then
+	--单纯数人头 --目前只有忠防内
+		return sgs.current_mode_players["loyalist"] ==1  
+		and sgs.current_mode_players["loyalist"]+ sgs.current_mode_players["renegade"] >= sgs.current_mode_players["rebel"]
+	end
 	return false
 end
 

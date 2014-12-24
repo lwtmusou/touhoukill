@@ -1181,8 +1181,8 @@ public:
             room->touhouLogmessage("#TriggerSkill", player, objectName());
             room->notifySkillInvoked(player, objectName());
             //Card *dummy = Sanguosha->cloneCard("Slash");
-            //foreach (int id, move.card_ids) 							
-            //	dummy->addSubcard(Sanguosha->getCard(id)); 
+            //foreach (int id, move.card_ids)                             
+            //    dummy->addSubcard(Sanguosha->getCard(id)); 
             CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), objectName(), "");
             //room->throwCard(dummy,reason,NULL);
 
@@ -1196,7 +1196,7 @@ public:
             data = QVariant::fromValue(move);
             foreach(ServerPlayer *p, room->getAllPlayers())
                 room->getThread()->trigger(BeforeCardsMove, room, p, data);
-            //return true;	
+            //return true;    
         }
         return false;
     }
@@ -1240,12 +1240,12 @@ void shenshouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
 
     room->showCard(source, subcards.first());
 
-    //	tempcard=sgs.Sanguosha:cloneCard("slash",sgs.Card_Spade,5)
+    //    tempcard=sgs.Sanguosha:cloneCard("slash",sgs.Card_Spade,5)
 
-    //	local mes=sgs.LogMessage()
+    //    local mes=sgs.LogMessage()
     //    mes.type="$ShenshouTurnOver"
     //    mes.from=source
-    //	mes.arg="shenshou"
+    //    mes.arg="shenshou"
     //    mes.card_str=tempcard:toString() 
     //    room:sendLog(mes)
 
