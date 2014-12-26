@@ -1316,7 +1316,7 @@ function SmartAI:useCardPeach(card, use)
 			if friend:isWounded() and friend:isMale() then return end
 		end
 	end
-
+	--³ÔÌÒÇ°ÏÈ¸ÊÂ¶»»×°
 	if self.player:hasSkill("ganlu") and not self.player:hasUsed("GanluCard") then
 		local dummy_use = {isDummy = true}
 		self:useSkillCard(sgs.Card_Parse("@GanluCard=."),dummy_use)
@@ -2199,17 +2199,7 @@ function SmartAI:useCardDuel(duel, use)
 	local targets = {}
 
 	local canUseDuelTo=function(target)
-		local prohibit=false
-		for _, askill in sgs.qlist(target:getVisibleSkillList()) do
-			local s_name = askill:objectName()
-			if not target:hasSkill(s_name) then continue end
-			local filter = sgs.ai_trick_prohibit[s_name]
-			if filter and type(filter) == "function" 
-			and filter(self, self.player, target, duel) then
-				prohibit=true
-				break
-			end
-		end
+		local prohibit=self:trickProhibit(duel, target, self.player)
 		if not prohibit and  not self:isFriend(target) 
 		and self:touhouCardAttackWaste(duel,self.player,target) then
 			prohibit=true

@@ -139,6 +139,9 @@ yym001                                  slm007                                  
 yym001                                  slm008                                  0.5
 yym001                                  ndj004                                  0.3
 yym011                                  yym012                                  -1.0
+yym011                                  wai005                                  -1.0
+yym011                                  fsl007                                   1.2
+yym012                                  fsl007                                   1.2
 yym012                                  yym011                                  1.0
 yyc001                                  zhu004                                  0.4
 yyc001                                  zhu006                                  -1.0
@@ -229,8 +232,6 @@ sp001                                  wai003                                  -
 sp001                                  sp002                                  -0.5
 sp001                                  shen008                                  -0.1
 sp005                                   fsl007                                   1.2
-yym011                                  fsl007                                   1.2
-yym012                                  fsl007                                   1.2
 fsl011                                  fsl007                                   1.2
 zhu008                                  fsl007                                   1.2
 shen002                                  fsl007                                   1.2
@@ -241,3 +242,4 @@ sp005                                 yym011                                   1
 fsl011                                 yym011                                   -0.8
 shen005                                yyc001                                     1.0
 shen005                                sp001                                     1.0
+shen009                                  fsl009                                  0.7

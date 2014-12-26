@@ -1,4 +1,5 @@
 
-general:zhu001 role:lord draw:0 equip:148,67 hand:48,1,110,74 
-general:fsl004 role:rebel starter:true draw:0 equip:62 hand:141 
-general:select role:loyalist 
+general:fsl008 role:lord starter:true equip:148,67 hand:1 
+general:hmx002 role:loyalist draw:0 hand:0 
+general:hmx001 role:loyalist 
+general:shen012 role:rebel draw:0 

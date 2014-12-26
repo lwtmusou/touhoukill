@@ -743,7 +743,8 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 	local enemies, targets = {}, {}
 	for _, enemy in ipairs(self.enemies) do
 		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName())) and can_attack(enemy) then
-			if not self:touhouCardAttackWaste(fire_attack,self.player,enemy)  then
+			if not self:touhouCardAttackWaste(fire_attack,self.player,enemy)  
+			and not self:trickProhibit(fire_attack, enemy, self.player)  then
 				table.insert(enemies, enemy)
 			end
 		end

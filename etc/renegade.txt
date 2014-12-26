@@ -13,8 +13,9 @@ _						yangxiu					-1.8
 _						yuanshu					0.5
 _						nos_liubei				-1.5
 _						nos_xushu				-1.8
-_                                               zhu003                                  -0.4
-_                                               hmx008                                  -1.3
+_                       zhu003                  -0.4
+_                       hmx008                  -1.3
+_						yym001				        -0.4
 _						yym003				        -1.4
 _						yyc003				        1.1
 _						dld002				        -1.2

@@ -103,13 +103,49 @@ sgs.ai_skill_playerchosen.skltxueyi = function(self, targets)
 end
 sgs.ai_playerchosen_intention.skltxueyi = -80
 
---【破坏】ai  无需AI锁定技
---function SmartAI:filterEvent(event, player, data)
-
---【浴血】ai  pattern为slash的askForUseCard无需AI
-sgs.ai_cardneed.yuxue = function(to, card, self)
-	return  isCard("Slash", card, to) 
+--【破坏】ai
+function SmartAI:pohuaiBenefit(player)
+	local value=0
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if player:distanceTo(p) > 1 then continue end
+		local damage=sgs.DamageStruct("pohuai", player, p, 1, sgs.DamageStruct_Normal)
+		local final_damage=self:touhouDamage(damage,player, p)
+		if final_damage.damage>0 then
+			if self:isFriend(p) then
+				if self:getDamagedEffects(player) then
+					value = value+1
+				else
+					value = value-1
+				end
+			elseif self:isEnemy(p) then
+				if self:getDamagedEffects(player) then
+					value = value-1
+				else
+					value = value+1
+				end
+			end
+			if player:hasSkill("shengyan") then
+				if self:isFriend(player) then
+					value = value + 1
+				else
+					value = value - 1
+				end
+			end
+		end
+	end
+	return value
 end
+sgs.ai_cardneed.pohuai = function(to, card, self)
+	if to:hasSkill("shengyan") then
+		if not to:getOffensiveHorse() and getCardsNum("OffensiveHorse", to, self.player) < 1 then
+			return  card:isKindOf("OffensiveHorse")
+		end
+	end
+end
+--【浴血】ai  pattern为slash的askForUseCard无需AI
+--[[sgs.ai_cardneed.yuxue = function(to, card, self)
+	return  isCard("Slash", card, to) 
+end]]
 sgs.yuxue_keep_value = {
 	Peach 			= 5.5,
 	Analeptic 		= 5.5,
@@ -119,7 +155,7 @@ sgs.yuxue_keep_value = {
 	ThunderSlash 	= 5.5
 }
 sgs.ai_need_damaged.yuxue = function(self, attacker, player)
-	if not attacker then return end
+	--if not attacker then return end
 	--if self:getDamagedEffects(attacker, player) then return self:isFriend(attacker, player) end
 	local hasGoodTarget=false
 	local hasGoodState=false
@@ -133,15 +169,15 @@ sgs.ai_need_damaged.yuxue = function(self, attacker, player)
 		end
 	end
 	
-	if self:getCardsNum("Slash") > 0 then
+	if getCardsNum("Slash",player,self.player) > 0 then
 		hasSlash=true
 	end
 	if player:getHp()>2 then
 		hasGoodState=true
 	elseif player:getHp()==2 then
-			if self:getCardsNum("Peach") > 0 then
-				hasGoodState=true
-			end
+		if getCardsNum("Peach",player,self.player) > 0 then
+			hasGoodState=true
+		end
 	end
 	
 	if hasGoodTarget and hasGoodState and hasSlash then

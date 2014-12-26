@@ -874,6 +874,8 @@ public:
                     room->touhouLogmessage("#touhouExtraTurn", skillowner, NULL);
 
                     skillowner->gainAnExtraTurn();
+					if (player->isAlive())
+						room->getThread()->trigger(TurnStart, room, player, data);
                 }
             }
         return false;

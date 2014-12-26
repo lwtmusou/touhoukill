@@ -1292,7 +1292,22 @@ function sgs.isLordHealthy()
 	local lord_hp
 	if not lord then return true end
 	if lord:hasSkill("benghuai") and lord:getHp() > 4 then lord_hp = 4
+	elseif lord:hasSkill("huanmeng") then
+		lord_hp = lord:getHandcardNum()/2
+	elseif lord:hasSkill("banling") then
+		lord_hp = lord:getMark("lingtili")+ lord:getMark("rentili")-1
+	elseif lord:hasSkill("bumie") then
+		lord_hp =  lord:getMaxHp()
 	else lord_hp = lord:getHp() end
+	if lord:hasSkill("juxian") and lord:faceUp() then
+		lord_hp = lord_hp+1
+	end
+	if lord:hasSkill("hualong")  and player:getMark("hulong") == 0 then
+		lord_hp = lord_hp+lord:getMaxHp()
+	end
+	if lord:hasSkill("yizhi")  and player:getMark("yizhi") == 0 then
+		lord_hp = lord_hp+1
+	end
 	return lord_hp > 3 or (lord_hp > 2 and sgs.getDefense(lord) > 3)
 end
 
@@ -1301,7 +1316,22 @@ function sgs.isLordInDanger()
 	local lord_hp
 	if not lord then return false end
 	if lord:hasSkill("benghuai") and lord:getHp() > 4 then lord_hp = 4
+	elseif lord:hasSkill("huanmeng") then
+		lord_hp = lord:getHandcardNum()/2
+	elseif lord:hasSkill("banling") then
+		lord_hp = lord:getMark("lingtili")+ lord:getMark("rentili")-1
+	elseif lord:hasSkill("bumie") then
+		lord_hp =  lord:getMaxHp()
 	else lord_hp = lord:getHp() end
+	if lord:hasSkill("juxian") and lord:faceUp() then
+		lord_hp = lord_hp+1
+	end
+	if lord:hasSkill("hualong")  and player:getMark("hulong") == 0 then
+		lord_hp = lord_hp+lord:getMaxHp()
+	end
+	if lord:hasSkill("yizhi")  and player:getMark("yizhi") == 0 then
+		lord_hp = lord_hp+1
+	end
 	return lord_hp < 3
 end
 
@@ -2088,7 +2118,7 @@ function SmartAI:filterEvent(event, player, data)
 		local from  = struct.from
 		local card = struct.card
 		--this mark will lock ai_role for woyu target
-		if struct.to and from:objectName() == player:objectName() 
+		if struct.to and from and from:objectName() == player:objectName() 
 			and card:isKindOf("woyuCard") then
 			self.room:setPlayerMark(struct.to:first(), "woyuRole",1)
 			self:updatePlayers()
@@ -4315,6 +4345,7 @@ function SmartAI:isWeak(player)
 	if hasBuquEffect(player) then return false end
 	if player:hasSkill("longhun") and player:getCards("he"):length() > 2 then return false end
 	if player:hasSkill("hunzi") and player:getMark("hunzi") == 0 and player:getHp() > 1 then return false end
+	if player:hasSkill("hualong") and player:getMark("hualong") == 0 then return false end
 	if (player:getHp() <= 2 and hcard <= 2) or player:getHp() <= 1 then return true end
 	return false
 end
@@ -4528,9 +4559,7 @@ function SmartAI:getRetrialCardId(cards, judge, self_card)
 		if who:hasSkill("hongyan") and card_x:getSuit() == sgs.Card_Spade then
 			card_x = sgs.cloneCard(card_x:objectName(), sgs.Card_Heart, card:getNumber())
 		end
-		--if who:hasSkill("hongbai") and card_x:isBlack() then
-		--	card_x = sgs.cloneCard(card_x:objectName(), sgs.Card_Heart, card:getNumber())
-		--end
+
 		if who:hasSkill("bendan") then
 			card_x = sgs.cloneCard(card_x:objectName(), card_x:getSuit(), 9)
 		end
@@ -4561,6 +4590,28 @@ function SmartAI:getRetrialCardId(cards, judge, self_card)
 					if not self:toTurnOver(damage.from, 0) and card_x:getSuit() ~= sgs.Card_Spade and judge.card:getSuit() == sgs.Card_Spade then
 						table.insert(can_use, card)
 					end
+				end
+			end
+		elseif reason == "pohuai" and self:isFriend(who) then
+			local need_pohuai=false
+			if self:pohuaiBenefit(who)>0 then
+				need_pohuai=true
+			end
+			if not need_pohuai and who:hasSkill("yuxue") then 
+				local callback=sgs.ai_need_damaged["yuxue"]
+				if callback(self, who, who) then
+					 need_pohuai=true
+				end
+			end
+			if need_pohuai then
+				if judge:isGood(card_x) and 
+				not (self_card and (self:getFinalRetrial() == 2 or self:dontRespondPeachInJudge(judge)) and isCard("Peach", card_x, self.player)) then
+					table.insert(can_use, card) 
+				end
+			else
+				if not judge:isGood(card_x) and 
+				not (self_card and (self:getFinalRetrial() == 2 or self:dontRespondPeachInJudge(judge)) and isCard("Peach", card_x, self.player)) then
+					table.insert(can_use, card) 
 				end
 			end
 		elseif self:isFriend(who) and judge:isGood(card_x)
@@ -7438,7 +7489,19 @@ function SmartAI:cautionRenegade(friend)
 	return false
 end
 
-
+function SmartAI:trickProhibit(card, enemy, from)
+	from = from or self.player
+	for _, askill in sgs.qlist(enemy:getVisibleSkillList()) do
+		local s_name = askill:objectName()
+		if not enemy:hasSkill(s_name) then continue end
+		local filter = sgs.ai_trick_prohibit[s_name]
+			if filter and type(filter) == "function" 
+			and filter(self, from, enemy, card) then
+			return true
+		end
+	end
+	return false
+end
 -----*****由此开始为原三国杀武将包中的smart-ai
 --不要对其伤害 god-ai
 function SmartAI:cantbeHurt(player, from, damageNum)
