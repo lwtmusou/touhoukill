@@ -1006,7 +1006,8 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 			end
 			return "."
 		end]]
-		return self:getCardId("Jink") or "."
+		--return self:getCardId("Jink") or "."
+		return self:getCardId("Jink")
 	end
 	
 	local slash
@@ -1019,7 +1020,9 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	if (not target or self:isFriend(target)) and slash:hasFlag("nosjiefan-slash") then return "." end
 	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
+	
 	if not target then return getJink() end
+	
 	if not self:hasHeavySlashDamage(target, slash, self.player) and self:getDamagedEffects(self.player, target, slash) then return "." end
 	if slash:isKindOf("NatureSlash") and self.player:isChained() and self:isGoodChainTarget(self.player, nil, nil, nil, slash) then return "." end
 	
@@ -1101,7 +1104,7 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 			end
 		end
 	end
-	return getJink() or "."
+	return getJink() --or "."
 end
 sgs.ai_choicemade_filter.cardResponded["slash-jink"] = function(self, player, promptlist)
 	--目前只有闪死蝶杀有仇恨
@@ -3236,7 +3239,8 @@ function SmartAI:useCardIndulgence(card, use)
 		if enemy:hasSkills("tuxi|noszhenlie|guanxing|qinyin|zongshi|tiandu") then value = value - 3 end
 		if enemy:hasSkill("conghui") then value = value - 20 end
 		if self:needBear(enemy) then value = value - 20 end
-		if self:needChuixue(enemy) then value = value - 20 end
+		--if self:needChuixue(enemy) then 
+		if self:touhouNeedBear(card) then value = value - 20 end
 		if not sgs.isGoodTarget(enemy, self.enemies, self) then value = value - 1 end
 		return value
 	end

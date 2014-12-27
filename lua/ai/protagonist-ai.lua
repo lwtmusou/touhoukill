@@ -670,47 +670,27 @@ end
 
 
 --¡¾±¬ÒÂ¡¿ai
---useEquipCard
+sgs.ai_need_bear.baoyi = function(self, card,from,tos) 
+	from = from or self.player
+	local Overflow = self:getOverflow(from) >1
+	if not card:isKindOf("EquipCard") then return false end
+	if self:getSameEquip(card,from) and not Overflow then
+		return true
+	end
+	return false
+end
 function SmartAI:needBaoyiEquip(card,player)
 	player = player or self.player
 	if not player:hasSkill("baoyi") then return false end
 	t =false
 	Overflow = self:getOverflow() <2
 	if not card:isKindOf("EquipCard") then return false end
-	--local equip = card:getRealCard():toEquipCard()
-                
-	--if  player:getEquip(equip:location()) and Overflow then 
-	--	return true
-	--end
 	if self:getSameEquip(card) and Overflow then
 		return true
 	end
 	return false
 end
---[[sgs.ai_skill_invoke.baoyi = function(self,data)
-	--·¢¶¯±¬ÒÂµÄÅÐ¶Ï
-	if self.player:getCards("j"):length() >0 then
-		return true
-	else
-		target_table = self:getEnemies(self.player)
-		if #target_table==0 then return false end
-		cards=self.player:getCards("e")
-		if cards:length()>=2 then
-			return true
-		else	
-			local t =false
-			for _,card in sgs.qlist(cards) do
-				if card:getSuit()==sgs.Card_Spade then
-					t=true
-					break
-				end
-			end
-			return t
-		end
-	end
-end
-]]
---drawcard
+
 sgs.ai_skill_invoke.baoyi = true
 sgs.ai_skill_use["@@baoyi"] = function(self, prompt)
 	local target_table = self:getEnemies(self.player)

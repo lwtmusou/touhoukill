@@ -99,6 +99,8 @@ sgs.ai_damageInflicted= {}
 sgs.ai_needToWake= {}
 sgs.ai_no_playerchosen_intention = {}
 sgs.ai_damage_prohibit =		{} 
+sgs.ai_need_bear =		{} 
+
 --东方杀相关各类列表
 --没做定义的【红白】【黑白】【赛钱】【收藏】【五欲】【渴血】【血裔】
 --			【盛宴】【博览】【斗魂】【战意】【冻结】【冰魄】【笨蛋】
@@ -5446,7 +5448,7 @@ function SmartAI:useBasicCard(card, use)
 	if not card then global_room:writeToConsole(debug.traceback()) return end
 	if self.player:hasSkill("ytchengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 then return end
 	if not (card:isKindOf("Peach") and self.player:getLostHp() > 1) and self:needBear() then return end
-	if self:needChuixue() then return end
+	if self:touhouNeedBear(card)  then return end
 	if self:needRende() then return end
 	if self:hasSkill("chaoren") then
 		local acard = sgs.Sanguosha:getCard(self.room:getDrawPile():first())  
@@ -5987,7 +5989,7 @@ function SmartAI:useTrickCard(card, use)
 	if not card then global_room:writeToConsole(debug.traceback()) return end
 	if self.player:hasSkill("ytchengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 then return end
 	if self:needBear() and not ("amazing_grace|ex_nihilo|snatch|iron_chain|collateral"):match(card:objectName()) then return end
-	if self:needChuixue() and not ("amazing_grace|ex_nihilo|snatch|iron_chain|collateral"):match(card:objectName()) then return end
+	if self:touhouNeedBear(card) and not ("amazing_grace|ex_nihilo|snatch|iron_chain|collateral"):match(card:objectName()) then  return end
 	if self.player:hasSkill("wumou") and self.player:getMark("@wrath") < 7 then
 		if not (card:isKindOf("AOE") or card:isKindOf("DelayedTrick") or card:isKindOf("IronChain") or card:isKindOf("Drowning"))
 			and not (card:isKindOf("Duel") and self.player:getMark("@wrath") > 0) then return end
@@ -6139,44 +6141,19 @@ end
 --不能乱顶掉装备
 function SmartAI:useEquipCard(card, use)
 	if not card then global_room:writeToConsole(debug.traceback()) return end
-	if self:needBaoyiEquip(card) then return end
-	if self:hasSkill("jiaoxia") then
-		if self:getOverflow() <= 0 then
-			return 
-		elseif (self.player:getHp()==1 and self.player:getCards("e"):length()==0) then
-			return 
-		end
-	end	
-	if self.player:hasSkills("here|yexing") and card:isKindOf("Vine") then return end
-	if self.player:hasSkill("yiwang") then
-		local yiwang = self:getSameEquip(card)
-		local yiwang_f=false
-		for _,p in pairs(self.friends) do
-			if p:getLostHp()>0 then
-				yiwang_f=true
-				break
-			end
-		end
-		--避免浪费
-		if yiwang and not yiwang_f then
-			return 
-		end
+	
+	if self:touhouNeedBear(card)  then  return end
+	--似乎应该分具体装备种类
+	
+	--除了藤甲外，还应该有 感应之于马匹，魔操等拆装流
+	if card:isKindOf("Vine") then
+		if self.player:hasSkills("here|yexing")  then return end
+		local lunar = self.room:findPlayerBySkillName("zhuonong")
+		if lunar and not self.isFriend(lunar) then return end
+		local utsuho = self.room:findPlayerBySkillName("here") 
+		if utsuho and not self.isFriend(utsuho) then return end
 	end
-	if self.player:hasSkill("zhancao") then
-		if self:getSameEquip(card) then
-			if card:isKindOf("Weapon") then
-				if self:getOverflow() >= 0 then
-					local old_range=sgs.weapon_range[self.player:getWeapon():getClassName()] or 0
-					local new_range = sgs.weapon_range[card:getClassName()] or 0
-					if new_range<=old_range then
-						return 
-					end
-				end
-			else
-				return 
-			end
-		end
-	end
+	
 	
 	if self.player:hasSkill("ytchengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 and self:getSameEquip(card) then return end
 	if self:hasSkills("kofxiaoji|xiaoji") and self:evaluateArmor(card) > -5 then
@@ -6216,7 +6193,6 @@ function SmartAI:useEquipCard(card, use)
 	if use.card then return end
 	if card:isKindOf("Weapon") then
 		if self:needBear() then return end
-		if self:needChuixue() then return end
 		if self.player:hasSkill("jiehuo") and self.player:getMark("jiehuo") < 0 and card:isRed() then return end
 		if self.player:hasSkill("zhulou") and same then return end
 		if self.player:hasSkill("taichen") and same then
@@ -6245,7 +6221,6 @@ function SmartAI:useEquipCard(card, use)
 		end
 	elseif card:isKindOf("Armor") then
 		if self:needBear() and self.player:getLostHp() == 0 then return end
-		if self:needChuixue() then return end
 		local lion = self:getCard("SilverLion")
 		if lion and self.player:isWounded() and not self.player:hasArmorEffect("SilverLion") and not card:isKindOf("SilverLion")
 			and not (self:hasSkills("bazhen|yizhong") and not self.player:getArmor()) then
@@ -6267,7 +6242,6 @@ function SmartAI:useEquipCard(card, use)
 			use.card = card
 		end
 	elseif self:needBear() then return
-	elseif self:needChuixue() then return  
 	elseif card:isKindOf("OffensiveHorse") then
 		if self.player:hasSkill("jiehuo") and self.player:getMark("jiehuo") < 0 and card:isRed() then return end
 		if (self.player:hasSkill("nosrende") or (self.player:hasSkill("rende") and not self.player:hasUsed("RendeCard"))) then
@@ -6358,11 +6332,17 @@ function getBestHp(player)
 	local arr = {ganlu = 1, yinghun = 2, nosmiji = 1, xueji = 1, baobian = math.max(0, player:getMaxHp() - 3)}
 	if player:hasSkill("tymhhuwei") then return 3 end
 	if player:hasSkill("wunian") then
-		if player:getEquip(1) and player:getEquip(2) then
+		if player:getArmor() or player:getDefen(2) then
 			return player:getMaxHp()-1
 		end
 	end
 	if player:hasSkill("bllmwuyu") then
+		return player:getMaxHp()-2
+	end
+	if player:hasSkills("banling+rengui") then
+		return player:getMaxHp()-1
+	end
+	if player:hasSkill("jiushu") then
 		return player:getMaxHp()-2
 	end
 	if player:hasSkill("longhun") and player:getCards("he"):length() > 2 then return 1 end
@@ -6392,6 +6372,7 @@ function SmartAI:needToLoseHp(to, from, isSlash, passive, recover)
 	end
 	if self:hasHeavySlashDamage(from, nil, to) then return false end
 	if from:hasSkill("jueqing") and self:hasSkills(sgs.masochism_skill, to) then return false end
+	if to:hasSkill("pudu") and not recover then return false end
 	local n = getBestHp(to)
 
 	if not passive then
@@ -7502,6 +7483,22 @@ function SmartAI:trickProhibit(card, enemy, from)
 	end
 	return false
 end
+
+function SmartAI:touhouNeedBear(card,from,tos)
+	from = from or self.player
+	tos = tos or sgs.SPlayerList()
+	for _, askill in sgs.qlist(from:getVisibleSkillList()) do
+		local s_name = askill:objectName()
+		if not from:hasSkill(s_name) then continue end
+		local filter = sgs.ai_need_bear[s_name]
+			if filter and type(filter) == "function" 
+			and filter(self, card,from,tos) then
+			return true
+		end
+	end
+	return false
+end
+
 -----*****由此开始为原三国杀武将包中的smart-ai
 --不要对其伤害 god-ai
 function SmartAI:cantbeHurt(player, from, damageNum)
