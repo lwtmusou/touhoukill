@@ -10,7 +10,7 @@
 #include "client.h"
 //#include "ai.h"
 #include "jsonutils.h"
-
+#include "maneuvering.h"
 //#include <QCommandLinkButton>
 
 class shengge : public TriggerSkill {
@@ -616,12 +616,13 @@ leishiCard::leishiCard() {
     mute = true;
 }
 bool leishiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    Card *slash = Sanguosha->cloneCard("thunder_slash");
+	ThunderSlash *slash = new ThunderSlash(Card::NoSuit, 0);
+	slash->deleteLater();
     return targets.length() == 0 && !to_select->isKongcheng() && Self->canSlash(to_select, slash, false);
 }
 void leishiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-    Card *slash = Sanguosha->cloneCard("thunder_slash");
+	ThunderSlash *slash = new ThunderSlash(Card::NoSuit, 0);
     slash->setFlags("leishislash");
     slash->setSkillName("_leishi");
     room->useCard(CardUseStruct(slash, effect.from, effect.to), false);
@@ -633,8 +634,9 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        Card *slash = Sanguosha->cloneCard("thunder_slash");
-        return !player->hasUsed("leishiCard") && !player->isCardLimited(slash, Card::MethodUse);
+        ThunderSlash *slash = new ThunderSlash(Card::NoSuit, 0);
+	    slash->deleteLater();
+		return !player->hasUsed("leishiCard") && !player->isCardLimited(slash, Card::MethodUse);
     }
 
     virtual const Card *viewAs() const{
@@ -708,7 +710,7 @@ bool xiefaCard::targetFilter(const QList<const Player *> &targets, const Player 
         return true;
     }
     else if (targets.length() == 1){
-        Card *slash = Sanguosha->cloneCard("slash");
+		Slash *slash = new Slash(Card::NoSuit, 0);
         slash->deleteLater();
         if (!targets.first()->canSlash(to_select, slash, true))
             return false;
@@ -732,7 +734,7 @@ void xiefaCard::onUse(Room *room, const CardUseStruct &card_use) const{
     Card *card = Sanguosha->getCard(subcards.first());
     to1->obtainCard(card, false);
 
-    Card *slash = Sanguosha->cloneCard("slash");
+	Slash *slash = new Slash(Card::NoSuit, 0);
     slash->setSkillName("_xiefa");
     CardUseStruct use;
     use.from = to1;
@@ -806,7 +808,8 @@ public:
             ServerPlayer *current = room->getCurrent();
             if (!current->isAlive() || (current->getWeapon() != NULL && current->getMark("@tianyi_Weapon") == 0))
                 return false;
-            Card *jink = Sanguosha->cloneCard("jink");
+			Jink *jink = new Jink(Card::NoSuit, 0);
+		    jink->deleteLater();
             //need check
             if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE){
                 if (player->isCardLimited(jink, Card::MethodResponse))
@@ -1161,8 +1164,10 @@ bumingCard::bumingCard() {
 bool bumingCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if (to_select == Self || targets.length() > 0)
         return false;
-    Card *slash = Sanguosha->cloneCard("slash");
-    Card *duel = Sanguosha->cloneCard("duel");
+	Slash *slash = new Slash(Card::NoSuit, 0);
+    slash->deleteLater();
+	Duel *duel = new Duel(Card::NoSuit, 0);
+    duel->deleteLater();
     int rangefix = 0;
     if (Self->getWeapon() != NULL && Self->getWeapon()->getId() == subcards.first()){
         if (Self->getAttackRange() > Self->getAttackRange(false))
@@ -1183,8 +1188,10 @@ bool bumingCard::targetFilter(const QList<const Player *> &targets, const Player
 void bumingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.first();
     QStringList	choices;
-    Card *slash = Sanguosha->cloneCard("slash");
-    Card *duel = Sanguosha->cloneCard("duel");
+	Slash *slash = new Slash(Card::NoSuit, 0);
+    slash->deleteLater();
+	Duel *duel = new Duel(Card::NoSuit, 0);
+    duel->deleteLater();
     if (source->canSlash(target, slash, true) && !source->isCardLimited(slash, Card::MethodUse))
         choices << "slash_buming";
     if (!source->isProhibited(target, duel) && !source->isCardLimited(duel, Card::MethodUse))

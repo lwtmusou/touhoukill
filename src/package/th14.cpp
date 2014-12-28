@@ -23,7 +23,6 @@ void leitingCard::onEffect(const CardEffectStruct &effect) const{
         room->damage(DamageStruct("leiting", NULL, effect.to, 1, DamageStruct::Thunder));
     }
     else if (discard->getSuit() == Card::Spade){
-        //Card *slash = Sanguosha->cloneCard("thunder_slash");
 		ThunderSlash *slash = new ThunderSlash(Card::NoSuit, 0);
 		// if return without usecard,we need delete this new thunderslash?
         if (effect.to->isCardLimited(slash, Card::MethodUse))
@@ -78,7 +77,6 @@ public:
                 if (use.from == NULL || use.from->isDead() || use.from->getLostHp() >= target->getLostHp())
                     return false;
 
-                //Card *slash = Sanguosha->cloneCard("slash");
 				Slash *slash = new Slash(Card::NoSuit, 0);
                 slash->setSkillName("_" + objectName());
                 if (target->isCardLimited(slash, Card::MethodUse) || !target->canSlash(use.from, slash, false))
@@ -122,7 +120,6 @@ public:
         ServerPlayer *victim = room->getCurrentDyingPlayer();
         if (victim == NULL || !victim->hasSkill("guizha") || victim == player)
             return false;
-        //Card *peach = Sanguosha->cloneCard("peach");
 		Peach *dummy_peach = new Peach(Card::SuitToBeDecided, -1);
 		dummy_peach->deleteLater();
         if (player->isCardLimited(dummy_peach, Card::MethodUse))
@@ -141,7 +138,6 @@ public:
         room->clearAG();
         while (hasPeach && victim->getHp() < 1){
             const Card *supply_card = room->askForCard(player, "Peach|.|.|hand!", "@guizha:" + victim->objectName(), data, Card::MethodNone, victim, false, objectName(), false);
-            //Card *peach = Sanguosha->cloneCard("Peach", Card::SuitToBeDecided, 0);
             Peach *peach = new Peach(Card::SuitToBeDecided, -1);
 			peach->addSubcard(supply_card->getEffectiveId());
             peach->setSkillName("_guizha");
@@ -200,7 +196,6 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         QString pattern = data.toStringList().first();
         if (pattern == "jink") {
-            //Card *jink = Sanguosha->cloneCard("jink");
 			Jink *jink = new Jink(Card::NoSuit, 0);
 			jink->deleteLater();
             //need check
@@ -319,7 +314,6 @@ public:
             if (player->getEquips().length() == 0)
                 return false;
 
-            //Card *jink = Sanguosha->cloneCard("jink");
 			Jink *jink = new Jink(Card::NoSuit, 0);
 			jink->deleteLater();
             //need check
@@ -347,7 +341,6 @@ public:
                 move.to = player;
 
                 room->moveCardsAtomic(move, true);
-                //Card *jink = Sanguosha->cloneCard("jink");
 				Jink *card = new Jink(Card::NoSuit, 0);
                 card->setSkillName("_langying");
                 room->provide(card);

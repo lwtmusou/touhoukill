@@ -345,8 +345,8 @@ public:
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        Card *nul = Sanguosha->cloneCard("nullification", originalCard->getSuit(), originalCard->getNumber());
-        nul->setSkillName(objectName());
+        Nullification *nul = new Nullification(originalCard->getSuit(), originalCard->getNumber());
+		nul->setSkillName(objectName());
         WrappedCard *card = Sanguosha->getWrappedCard(originalCard->getId());
         card->takeOver(nul);
         return card;
@@ -433,8 +433,10 @@ public:
             player->drawCards(1);
         }
 
-        const Card *supply = Sanguosha->cloneCard("supply_shortage");
-        if (player->isCardLimited(supply, Card::MethodUse, true))
+        //const Card *supply = Sanguosha->cloneCard("supply_shortage");
+        SupplyShortage *supply = new SupplyShortage(Card::NoSuit, 0);
+		supply->deleteLater();
+		if (player->isCardLimited(supply, Card::MethodUse, true))
             return false;
         if (target->containsTrick("supply_shortage") || player->isProhibited(target, supply))
             return false;
@@ -726,9 +728,8 @@ void nuhuoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     room->damage(DamageStruct("nuhuo", target, source));
 
     QList<ServerPlayer *> all;
-    Card *slash = Sanguosha->cloneCard("slash");
     foreach(ServerPlayer *p, room->getOtherPlayers(source)){
-        if (source->canSlash(p, slash, true))
+        if (source->canSlash(p, NULL, true))
             all << p;
     }
     if (!all.isEmpty()) {
@@ -736,7 +737,8 @@ void nuhuoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
         QList<ServerPlayer *> logto;
         logto << victim;
         room->touhouLogmessage("#nuhuoChoose", target, "nuhuo", logto);
-
+        
+		Slash *slash = new Slash(Card::NoSuit, 0);
         CardUseStruct carduse;
         slash->setSkillName("_nuhuo");
         carduse.card = slash;
@@ -751,7 +753,8 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        Card *slash = Sanguosha->cloneCard("slash");
+		Slash *slash = new Slash(Card::NoSuit, 0);
+        slash->deleteLater();
         if (!player->isCardLimited(slash, Card::MethodUse)
             && !player->hasUsed("nuhuoCard")){
             foreach(const Player *p, player->getAliveSiblings()){

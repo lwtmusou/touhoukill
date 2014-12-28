@@ -1090,8 +1090,10 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
-        Room *room = player->getRoom();
-        if (player->getPhase() == Player::Start && player->hasSkill("banling")) {//左慈 zun 依姬时会有问题
+        if (player->hasSkill("banling"))
+			return false;
+		Room *room = player->getRoom();
+		if (player->getPhase() == Player::Start && player->hasSkill("banling")) {//左慈 zun 依姬时会有问题
             if (player->getLingHp() < player->getMaxHp()){ //使用专门的gethp函数 直接取mark值也行
                 int  x = player->getMaxHp() - player->getLingHp();
                 x = qMin(x, 2);

@@ -324,10 +324,7 @@ function SmartAI:slashProhibit(card, enemy, from)
 	local nature = card:isKindOf("FireSlash") and sgs.DamageStruct_Fire
 					or card:isKindOf("ThunderSlash") and sgs.DamageStruct_Thunder
 	if self:isEnemy(enemy,from) and from:hasSkill("shende") and self:getOverflow(from,from:getMaxCards())>0 then
-		--if nature and nature==sgs.DamageStruct_Thunder  and to:hasSkill("jingdian") then
-		--else
-			return false
-		--end
+		return false
 	end
 	for _, askill in sgs.qlist(enemy:getVisibleSkillList()) do
 		local filter = sgs.ai_slash_prohibit[askill:objectName()]
@@ -493,7 +490,7 @@ end
 function SmartAI:isPriorFriendOfSlash(friend, card, source)
 	source = source or self.player
 	local huatuo = self.room:findPlayerBySkillName("jijiu")
-	if self.player:hasSkill("here") or friend:hasSkill("here") then
+	if source:hasSkill("here") or friend:hasSkill("here") then
 		card= self:copyHereSlash(card)
 	end
 	if friend:hasSkill("xuying") then return false end
@@ -518,16 +515,6 @@ function SmartAI:isPriorFriendOfSlash(friend, card, source)
 			end
 			local sidieTarget =getSidieVictim(self, sidieTargets)
 			if sidieTarget then return true end
-			--[[local enemy_table
-			if self:isFriend(source) then
-				enemy_table=self.enemies
-			end
-			if self:isEnemy(source) then
-				enemy_table=self.friends
-			end
-			if enemy_table and #enemy_table>0 then
-				return true
-			end]]
 		end
 	end
 	
@@ -541,6 +528,35 @@ function SmartAI:isPriorFriendOfSlash(friend, card, source)
 	end
 	if not source:hasSkill("jueqing") and card:isKindOf("NatureSlash") and friend:isChained() and self:isGoodChainTarget(friend, source, nil, nil, card) then return true end
 	return
+end
+
+--东方杀自创:目前只考虑多余的杀杀队友,不同于优先杀，属于顺带
+function SmartAI:isTargetForRedundantSlash(card, target,source,targets)
+	source = source or self.player
+	if not self:isFriend(source,target) then
+		return false
+	end
+	
+	targets = targets or sgs.SPlayerList()
+	for _,p in sgs.qlist(targets) do
+		if p:hasSkill("here")  then
+			card= self:copyHereSlash(card)
+			break
+		end 
+	end
+	if source:hasSkill("here")  then
+		card= self:copyHereSlash(card)
+	end
+	for _, askill in sgs.qlist(target:getVisibleSkillList()) do
+		local s_name = askill:objectName()
+		if not target:hasSkill(s_name) then continue end
+		local filter = sgs.ai_benefitBySlashed[s_name]
+			if filter and type(filter) == "function" 
+			and filter(self, card,source,target) then
+			return true
+		end
+	end
+	return false
 end
 
 --擦 只会对着当前防御低的下手，，，忠凭什么帮主挡刀。。
@@ -775,6 +791,18 @@ function SmartAI:useCardSlash(card, use)
 			end
 		end
 	end
+	--for RedundantSlash 
+	for _, friend in ipairs(self.friends_noself) do
+		if (not use.to or not use.to:contains(friend)) then
+			if self:isTargetForRedundantSlash(card, friend,self.player,use.to) then
+				use.card = card
+				if use.to and canAppendTarget(friend) then
+					use.to:append(friend)
+				end
+				if not use.to or self.slash_targets <= use.to:length() then return end
+			end
+		end
+	end
 end
 
 --被动用？
@@ -948,6 +976,7 @@ sgs.ai_card_intention.Slash = function(self, card, from, tos)
 	if card:getSkillName() =="shenshou" then return end
 	if card:getSkillName() =="sidie" then return end
 	if card:getSkillName() =="xiefa" then return end
+	
 	local kosuzu = self.room:findPlayerBySkillName("bihuo")
 	
 	--失控杀仇恨不参与别的技能联动计算。。。
@@ -962,6 +991,16 @@ sgs.ai_card_intention.Slash = function(self, card, from, tos)
 	for _, to in ipairs(tos) do
 		local value = 80
 		speakTrigger(card, from, to)
+		for _, askill in sgs.qlist(to:getVisibleSkillList()) do
+			local s_name = askill:objectName()
+			if not to:hasSkill(s_name) then continue end
+			local filter = sgs.ai_benefitBySlashed[s_name]
+			if filter and type(filter) == "function" 
+				and filter(self, card,from,to) then
+				value = 0
+				continue
+			end
+		end
 		if self:isFriend(from,to) and from:hasSkill("dongjie") and not self.player:faceUp() then value=-10 end
 		if self:sidieEffect(from)  then value = 0 end
 		if from:hasSkill("lizhi") and self:isFriend(from,to) then value = 0 end

@@ -100,6 +100,8 @@ sgs.ai_needToWake= {}
 sgs.ai_no_playerchosen_intention = {}
 sgs.ai_damage_prohibit =		{} 
 sgs.ai_need_bear =		{} 
+sgs.ai_benefitBySlashed ={}
+sgs.ai_DamagedBenefit ={}
 
 --东方杀相关各类列表
 --没做定义的【红白】【黑白】【赛钱】【收藏】【五欲】【渴血】【血裔】
@@ -2162,6 +2164,7 @@ function SmartAI:filterEvent(event, player, data)
 		for _, p in ipairs(to) do
 			if sgs.ai_role[p:objectName()] ~= "neutral" then isneutral = false break end
 		end
+		--盲狙？
 		local who = to[1]
 		if sgs.turncount <= 1 and lord and who and from and from:objectName() == player:objectName() and sgs.evaluatePlayerRole(from) == "neutral" then
 				if  (card:isKindOf("YinlingCard") or card:isKindOf("FireAttack")
@@ -2186,7 +2189,10 @@ function SmartAI:filterEvent(event, player, data)
 				--
 				if not touhou_target_confirm then
 					if CanUpdateIntention(from) and exclude_lord and sgs.evaluatePlayerRole(who) == "neutral" and isneutral then sgs.updateIntention(from, lord, -10)
-					else sgs.updateIntention(from, who, 10)end
+					elseif card:isKindOf("ThunderSlash") and who:hasSkill("jingdian") then
+					else
+						sgs.updateIntention(from, who, 10)
+					end
 				end
 			end
 		end
@@ -4441,7 +4447,7 @@ function SmartAI:needRetrial(judge)
 	local lord = getLord(self.player)
 	local who = judge.who
 	if reason == "lightning" then
-		if who:hasSkills("wuyan|hongyan|bingpo|jingdian") then return false end
+		if who:hasSkills("wuyan|hongyan|bingpo") then return false end
 
 		if lord and (who:isLord() or (who:isChained() and lord:isChained())) and self:objectiveLevel(lord) <= 3 then
 			if lord:hasArmorEffect("SilverLion") and lord:getHp() >= 2 and self:isGoodChainTarget(lord, self.player, sgs.DamageStruct_Thunder) then return false end
@@ -4544,17 +4550,21 @@ end
 -- @param judge the JudgeStruct that contains the judge information
 -- @return the retrial card id or -1 if not found
 --东方杀相关
---【红白】【笨蛋】
---【冰魄】【静电】??
---【灵气】的对应状况。。。 特别是敌友区别。。。
---比如一个桃园对敌 队友
---一个南蛮 对敌 队友 这是不一样的
+--add new factor :need_reverse
 function SmartAI:getRetrialCardId(cards, judge, self_card)
 	if self_card == nil then self_card = true end
 	local can_use = {}
 	local reason = judge.reason
 	local who = judge.who
-
+    local need_reverse=false
+	local function judgeIsGood(isGood,need_reverse)
+		if need_reverse then
+			return not isGood
+		else
+			return  isGood
+		end
+	end
+	
 	local other_suit, hasSpade = {}
 	for _, card in ipairs(cards) do
 		local card_x = sgs.Sanguosha:getEngineCard(card:getEffectiveId())
@@ -4565,6 +4575,23 @@ function SmartAI:getRetrialCardId(cards, judge, self_card)
 		if who:hasSkill("bendan") then
 			card_x = sgs.cloneCard(card_x:objectName(), card_x:getSuit(), 9)
 		end
+		
+		--静电 和 破坏 有逆转judgeisgood的时候
+		if reason == "lightning" and who:hasSkill("jingdian") then
+			need_reverse = true
+		elseif reason == "pohuai" and self:isFriend(who) then
+			local need_pohuai=false
+			if self:pohuaiBenefit(who)>0 then
+				need_pohuai=true
+			elseif not need_pohuai and who:hasSkill("yuxue") then 
+				local callback=sgs.ai_need_damaged["yuxue"]
+				if callback(self, who, who) then
+					 need_pohuai=true
+				end
+			end
+			need_reverse = not need_pohuai
+		end
+		
 		if reason == "beige" and not isCard("Peach", card_x, self.player) then
 			local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
 			if damage.from then
@@ -4594,32 +4621,10 @@ function SmartAI:getRetrialCardId(cards, judge, self_card)
 					end
 				end
 			end
-		elseif reason == "pohuai" and self:isFriend(who) then
-			local need_pohuai=false
-			if self:pohuaiBenefit(who)>0 then
-				need_pohuai=true
-			end
-			if not need_pohuai and who:hasSkill("yuxue") then 
-				local callback=sgs.ai_need_damaged["yuxue"]
-				if callback(self, who, who) then
-					 need_pohuai=true
-				end
-			end
-			if need_pohuai then
-				if judge:isGood(card_x) and 
-				not (self_card and (self:getFinalRetrial() == 2 or self:dontRespondPeachInJudge(judge)) and isCard("Peach", card_x, self.player)) then
-					table.insert(can_use, card) 
-				end
-			else
-				if not judge:isGood(card_x) and 
-				not (self_card and (self:getFinalRetrial() == 2 or self:dontRespondPeachInJudge(judge)) and isCard("Peach", card_x, self.player)) then
-					table.insert(can_use, card) 
-				end
-			end
-		elseif self:isFriend(who) and judge:isGood(card_x)
+		elseif self:isFriend(who) and judgeIsGood(judge:isGood(card_x),need_reverse)  
 				and not (self_card and (self:getFinalRetrial() == 2 or self:dontRespondPeachInJudge(judge)) and isCard("Peach", card_x, self.player)) then
 			table.insert(can_use, card)
-		elseif self:isEnemy(who) and not judge:isGood(card_x)
+		elseif self:isEnemy(who) and not judgeIsGood(judge:isGood(card_x), need_reverse) 
 				and not (self_card and (self:getFinalRetrial() == 2 or self:dontRespondPeachInJudge(judge)) and isCard("Peach", card_x, self.player)) then
 			table.insert(can_use, card)
 		end
@@ -6332,7 +6337,7 @@ function getBestHp(player)
 	local arr = {ganlu = 1, yinghun = 2, nosmiji = 1, xueji = 1, baobian = math.max(0, player:getMaxHp() - 3)}
 	if player:hasSkill("tymhhuwei") then return 3 end
 	if player:hasSkill("wunian") then
-		if player:getArmor() or player:getDefen(2) then
+		if player:getArmor() or player:getDefensiveHorse() then
 			return player:getMaxHp()-1
 		end
 	end
