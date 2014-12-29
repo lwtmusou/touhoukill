@@ -66,17 +66,17 @@ public:
     }
 
     //virtual bool triggerable(const ServerPlayer *target) const{
-    //	 return (target != NULL && target->isAlive());
+    //     return (target != NULL && target->isAlive());
     // }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
             //if (player !=use.from )
-            //	return false;
+            //    return false;
             //ServerPlayer *lingmeng = room->findPlayerBySkillName(objectName());
             //if  (lingmeng==NULL || lingmeng->isNude())
-            //	return false;
+            //    return false;
             if (!use.card->isKindOf("Slash") && !use.card->isNDTrick())
                 return false;
             //lingmeng->tag["lingqicarduse"] = data;
@@ -85,13 +85,13 @@ public:
             //player->tag["lingcard"]= QVariant::fromValue(use.card);
             //QStringList lingqitargets;
             //foreach (ServerPlayer *p, use.to)
-            //	lingqitargets<<p->objectName();
+            //    lingqitargets<<p->objectName();
 
             //if (lingqitargets.isEmpty())
-            //	 return false;
+            //     return false;
             //room->setPlayerProperty(lingmeng, "lingqi_targets", lingqitargets.join("+"));
-            //QString	prompt="@lingqi:"+use.from->objectName()+":"+use.card->objectName();
-            QString	prompt = "target:" + use.from->objectName() + ":" + use.card->objectName();
+            //QString    prompt="@lingqi:"+use.from->objectName()+":"+use.card->objectName();
+            QString    prompt = "target:" + use.from->objectName() + ":" + use.card->objectName();
 
             if (!player->askForSkillInvoke(objectName(), prompt))
                 return false;
@@ -104,7 +104,7 @@ public:
             if (judge.isGood())
                 room->setCardFlag(use.card, "lingqi" + player->objectName());
             //room->askForUseCard(lingmeng, "@@lingqi",prompt );
-            //room->setPlayerProperty(lingmeng, "lingqi_targets", QVariant());		
+            //room->setPlayerProperty(lingmeng, "lingqi_targets", QVariant());        
         } else if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (effect.slash != NULL && effect.slash->hasFlag("lingqi" + player->objectName())) {
@@ -165,7 +165,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
         ServerPlayer *source = room->findPlayerBySkillName(objectName());
-        if (source != NULL){
+        if (source){
             if (judge->who->getHandcardNum() >= source->getMaxHp())
                 return false;
             source->tag["qixiang_judge"] = data;
@@ -302,14 +302,14 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == CardUsed) {
-            if (player != NULL && player->hasFlag("mofa_invoked")){
+            if (player && player->hasFlag("mofa_invoked")){
                 CardUseStruct use = data.value<CardUseStruct>();
                 room->setCardFlag(use.card, "mofa_card");
             }
         } else if (triggerEvent == ConfirmDamage) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.card != NULL && damage.card->hasFlag("mofa_card")) {
-                if (damage.from != NULL){
+            if (damage.card && damage.card->hasFlag("mofa_card")) {
+                if (damage.from ){
                     room->touhouLogmessage("#TouhouBuff", damage.from, objectName());
                     QList<ServerPlayer *> logto;
                     logto << damage.to;
@@ -324,7 +324,7 @@ public:
 };
 
 
-class heibai : public FilterSkill{
+/*class heibai : public FilterSkill{
 public:
     heibai() : FilterSkill("heibai"){
 
@@ -334,7 +334,7 @@ public:
         Room *room = Sanguosha->currentRoom();
         if (room->getCardPlace(to_select->getEffectiveId()) == Player::PlaceHand) {
             ServerPlayer *marisa = room->getCardOwner(to_select->getEffectiveId());
-            if (marisa != NULL && marisa->hasSkill(objectName())){
+            if (marisa && marisa->hasSkill(objectName())){
                 return (to_select->isRed() && !to_select->isKindOf("Slash"));
             }
         }
@@ -348,7 +348,7 @@ public:
         wrap->setModified(true);
         return wrap;
     }
-};
+};*/
 
 
 wuyuCard::wuyuCard() {
@@ -753,7 +753,7 @@ void baoyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 
     while (num > 0) {
         QList<ServerPlayer *> listt;
-        Card *slash = Sanguosha->cloneCard("slash");
+		Slash *slash = new Slash(Card::NoSuit, 0);
         foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
             if (source->canSlash(p, slash, false))
                 listt << p;
@@ -859,7 +859,7 @@ public:
                 return false;
             }
             ServerPlayer *target = room->askForPlayerChosen(player, players, objectName(), "@@zhize", true, true);
-            if (target != NULL) {
+            if (target) {
                 //case1 ask for ag  
                 /*room->fillAG(target->handCards(),player);
                 int id=room->askForAG(player,target->handCards(),false,objectName());
@@ -971,7 +971,8 @@ public:
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
         if (pattern.contains("@@bllmwuyu"))
             return true;
-        Card *card = Sanguosha->cloneCard("analeptic");
+		Analeptic *card = new Analeptic(Card::NoSuit, 0);
+		card->deleteLater();
         if (player->isCardLimited(card, Card::MethodUse))
             return false;
         if (pattern.contains("analeptic"))
@@ -1147,11 +1148,10 @@ const Card *bllmshiyuCard::validate(CardUseStruct &cardUse) const{
         room->setPlayerFlag(bllm, "Global_expandpileFailed");
         const Card *dummy = room->askForCard(bllm, "@@bllmwuyu", "@bllmshiyu-basics", QVariant(), Card::MethodNone);
         room->setPlayerFlag(bllm, "-Global_expandpileFailed");
-        if (dummy != NULL) {
-            Card *ana = Sanguosha->cloneCard("analeptic", Card::SuitToBeDecided, -1);
-            foreach(int id, dummy->getSubcards())
+        if (dummy) {
+            Analeptic *ana = new Analeptic(Card::SuitToBeDecided, -1);
+			foreach(int id, dummy->getSubcards())
                 ana->addSubcard(id);
-            //ana->setSkillName("_bllmwuyu");
             ana->setSkillName("bllmshiyu");
             return ana;
         }
@@ -1164,11 +1164,10 @@ const Card *bllmshiyuCard::validateInResponse(ServerPlayer *bllm) const{
         room->setPlayerFlag(bllm, "Global_expandpileFailed");
         const Card *dummy = room->askForCard(bllm, "@@bllmwuyu", "@bllmshiyu-basics", QVariant(), Card::MethodNone);
         room->setPlayerFlag(bllm, "-Global_expandpileFailed");
-        if (dummy != NULL){
-            Card *ana = Sanguosha->cloneCard("analeptic", Card::SuitToBeDecided, -1);
-            foreach (int id, dummy->getSubcards())
+        if (dummy){
+            Analeptic *ana = new Analeptic(Card::SuitToBeDecided, -1);
+			foreach (int id, dummy->getSubcards())
                 ana->addSubcard(id);
-            //ana->setSkillName("_bllmwuyu");
             ana->setSkillName("bllmshiyu");
             return ana;
         }
@@ -1216,7 +1215,7 @@ public:
         if (move.to && move.to == player  && move.to_place == Player::PlaceHand && player->hasFlag("qiangyu")){
             room->setPlayerFlag(player, "-qiangyu");
             const Card *card = room->askForCard(player, ".S", "qiangyu_spadecard", data, Card::MethodDiscard, NULL, false, objectName(), false);
-            if (card == NULL)
+            if (!card)
                 room->askForDiscard(player, objectName(), 2, 2, false, false);
         }
         return false;

@@ -66,11 +66,11 @@ public:
                 use.from->tag["huiwu"] = QVariant::fromValue(player);
                 room->setTag("huiwu_use", data);
 
-                QString	prompt = "target:" + player->objectName() + ":" + use.card->objectName();
+                QString    prompt = "target:" + player->objectName() + ":" + use.card->objectName();
 
                 if (use.from->askForSkillInvoke(objectName(), prompt)){
                     //for ai to judge a card if it is already SkillNullified for this player,
-					//the first line is more suitable than the second one.
+                    //the first line is more suitable than the second one.
                     room->setCardFlag(use.card, "huiwu" + player->objectName());
                     //room->setCardFlag(use.card, "huiwuSkillNullify",player);
 
@@ -312,8 +312,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();
-        Card *card = Sanguosha->cloneCard("archery_attack");
+        ArcheryAttack *card = new ArcheryAttack(Card::NoSuit, 0);
         if (player->isCardLimited(card, Card::MethodUse))
             return false;
         if (player->askForSkillInvoke(objectName(), data)){
@@ -386,7 +385,7 @@ public:
             && room->askForSkillInvoke(player, objectName(), data)) {
             CardUseStruct ana_use;
             ana_use.from = player;
-            Card *card = Sanguosha->cloneCard("analeptic");
+            Analeptic *card = new Analeptic(Card::NoSuit, 0);
             card->setSkillName(objectName());
             ana_use.card = card;
             room->useCard(ana_use);
@@ -415,7 +414,7 @@ public:
                 return false;
             ServerPlayer *target = player; 
             //if (target->hasFlag("Global_Dying") )
-            //	return false;
+            //    return false;
             if (target->isKongcheng() || target->getHp() < 1)
                 return false;
             ServerPlayer *source = room->findPlayerBySkillName(objectName());
@@ -653,7 +652,7 @@ tianrenCard::tianrenCard() {
     //m_skillName = "skltkexuepeach";
 }
 bool tianrenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    Card *slash = Sanguosha->cloneCard("slash");
+    Slash *slash = new Slash(Card::NoSuit, 0);
     slash->deleteLater();
     return slash->targetFilter(targets, to_select, Self);
 }
@@ -763,8 +762,8 @@ public:
 
         QList<ServerPlayer *> lieges = room->getLieges("zhan", player);
         //for ai  to add global flag
-		//slashsource or jinksource
-		if (pattern == "slash")
+        //slashsource or jinksource
+        if (pattern == "slash")
             room->setTag("tianren_slash", true);
         else
             room->setTag("tianren_slash", false);
@@ -815,7 +814,7 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         if (originalCard != NULL){
-            Card *card = Sanguosha->cloneCard("lightning", originalCard->getSuit(), originalCard->getNumber());
+            Lightning *card = new Lightning(originalCard->getSuit(), originalCard->getNumber());
             card->addSubcard(originalCard);
             card->setSkillName("leiyun");
             return card;

@@ -109,11 +109,11 @@ public:
             (move.to_place == Player::PlaceHand && move.to != NULL && move.to != player
             && move.to->getKingdom() == "slm")){
 
-            //transfer player to serverplayer						 
+            //transfer player to serverplayer                         
             ServerPlayer *target;
             foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
                 if (p->objectName() == move.to->objectName())
-                    //||p->objectName() == move.origin_to->objectName())				 
+                    //||p->objectName() == move.origin_to->objectName())                 
                     target = p;
             }
             if (target == NULL)
@@ -616,13 +616,13 @@ leishiCard::leishiCard() {
     mute = true;
 }
 bool leishiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-	ThunderSlash *slash = new ThunderSlash(Card::NoSuit, 0);
-	slash->deleteLater();
+    ThunderSlash *slash = new ThunderSlash(Card::NoSuit, 0);
+    slash->deleteLater();
     return targets.length() == 0 && !to_select->isKongcheng() && Self->canSlash(to_select, slash, false);
 }
 void leishiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-	ThunderSlash *slash = new ThunderSlash(Card::NoSuit, 0);
+    ThunderSlash *slash = new ThunderSlash(Card::NoSuit, 0);
     slash->setFlags("leishislash");
     slash->setSkillName("_leishi");
     room->useCard(CardUseStruct(slash, effect.from, effect.to), false);
@@ -635,8 +635,8 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         ThunderSlash *slash = new ThunderSlash(Card::NoSuit, 0);
-	    slash->deleteLater();
-		return !player->hasUsed("leishiCard") && !player->isCardLimited(slash, Card::MethodUse);
+        slash->deleteLater();
+        return !player->hasUsed("leishiCard") && !player->isCardLimited(slash, Card::MethodUse);
     }
 
     virtual const Card *viewAs() const{
@@ -700,7 +700,7 @@ bool xiefaCard::targetFilter(const QList<const Player *> &targets, const Player 
         //slash->deleteLater();
         //万能的依姬 先凭依远吠，使用远吠，再凭依邪法。居然可以指定远吠的目标。
         //if (to_select->isCardLimited(slash,Card::MethodUse))
-        //	return false;
+        //    return false;
         //isCardLimited() did not worked...
         if (to_select->hasSkill("zhouye") && to_select->getMark("@ye") == 0)
             return false;
@@ -710,7 +710,7 @@ bool xiefaCard::targetFilter(const QList<const Player *> &targets, const Player 
         return true;
     }
     else if (targets.length() == 1){
-		Slash *slash = new Slash(Card::NoSuit, 0);
+        Slash *slash = new Slash(Card::NoSuit, 0);
         slash->deleteLater();
         if (!targets.first()->canSlash(to_select, slash, true))
             return false;
@@ -734,7 +734,7 @@ void xiefaCard::onUse(Room *room, const CardUseStruct &card_use) const{
     Card *card = Sanguosha->getCard(subcards.first());
     to1->obtainCard(card, false);
 
-	Slash *slash = new Slash(Card::NoSuit, 0);
+    Slash *slash = new Slash(Card::NoSuit, 0);
     slash->setSkillName("_xiefa");
     CardUseStruct use;
     use.from = to1;
@@ -785,7 +785,7 @@ public:
                 if (damage.chain || damage.transfer)
                     return false;
                 //if (damage.from==NULL ||  damage.to==NULL ) 
-                //	return false;
+                //    return false;
                 if (damage.from == damage.to)
                     return false;
                 if (source != NULL)
@@ -808,8 +808,8 @@ public:
             ServerPlayer *current = room->getCurrent();
             if (!current->isAlive() || (current->getWeapon() != NULL && current->getMark("@tianyi_Weapon") == 0))
                 return false;
-			Jink *jink = new Jink(Card::NoSuit, 0);
-		    jink->deleteLater();
+            Jink *jink = new Jink(Card::NoSuit, 0);
+            jink->deleteLater();
             //need check
             if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE){
                 if (player->isCardLimited(jink, Card::MethodResponse))
@@ -947,7 +947,7 @@ bool huishengCard::targetsFeasible(const QList<const Player *> &targets, const P
     Card *new_card = Sanguosha->cloneCard(cardname);
     new_card->setSkillName("huisheng");
     //if ((new_card->isKindOf("IronChain")|| new_card->isKindOf("Peach"))&& targets.length()!=1)
-    //	return false;
+    //    return false;
     if (targets.length() < 1)
         return false;
     return new_card && new_card->targetsFeasible(targets, Self);
@@ -1002,7 +1002,7 @@ public:
                     room->setTag("huisheng_use", data);
                     QString prompt = "@huisheng-use:" + use.from->objectName() + ":" + card->objectName();
                     room->setPlayerProperty(source, "huisheng_card", card->objectName());
-                    room->setPlayerProperty(source, "huisheng_target", use.from->objectName());		
+                    room->setPlayerProperty(source, "huisheng_target", use.from->objectName());        
                     room->askForUseCard(source, "@@huisheng", prompt);
                     room->setPlayerProperty(source, "huisheng_target", QVariant());
                 }
@@ -1164,9 +1164,9 @@ bumingCard::bumingCard() {
 bool bumingCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if (to_select == Self || targets.length() > 0)
         return false;
-	Slash *slash = new Slash(Card::NoSuit, 0);
+    Slash *slash = new Slash(Card::NoSuit, 0);
     slash->deleteLater();
-	Duel *duel = new Duel(Card::NoSuit, 0);
+    Duel *duel = new Duel(Card::NoSuit, 0);
     duel->deleteLater();
     int rangefix = 0;
     if (Self->getWeapon() != NULL && Self->getWeapon()->getId() == subcards.first()){
@@ -1187,10 +1187,10 @@ bool bumingCard::targetFilter(const QList<const Player *> &targets, const Player
 }
 void bumingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.first();
-    QStringList	choices;
-	Slash *slash = new Slash(Card::NoSuit, 0);
+    QStringList    choices;
+    Slash *slash = new Slash(Card::NoSuit, 0);
     slash->deleteLater();
-	Duel *duel = new Duel(Card::NoSuit, 0);
+    Duel *duel = new Duel(Card::NoSuit, 0);
     duel->deleteLater();
     if (source->canSlash(target, slash, true) && !source->isCardLimited(slash, Card::MethodUse))
         choices << "slash_buming";
@@ -1387,7 +1387,7 @@ public:
                     p->tag["qingyu_source"] = QVariant::fromValue(player);
                     //if (!room->askForDiscard(p, objectName(), 1, 1, true, true, "@qingyu-discard:"+player->objectName()))
                     //in order to update intention,we use askForCard() instead of  askForDiscard()
-                    //QVariant &data= QVariant::fromValue(player);	
+                    //QVariant &data= QVariant::fromValue(player);    
                     const Card *cards = room->askForCard(p, ".|.|.|.", "@qingyu-discard:" + player->objectName(), QVariant::fromValue(player), Card::MethodDiscard);
 
                     if (cards == NULL)

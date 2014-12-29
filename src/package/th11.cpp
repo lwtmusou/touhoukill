@@ -54,17 +54,6 @@ public:
     }
 };
 
-/*class duxin: public TriggerSkill {
-public:
-duxin(): TriggerSkill("duxin") {
-events <<GameStart;
-frequency = Compulsory;
-}
-
-virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-return false;
-}
-};*/
 
 
 class huzhu : public TriggerSkill {
@@ -135,7 +124,8 @@ void maihuoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     room->moveCardsAtomic(move, true);
     room->getThread()->delay();
     bool bothred = true;
-    Card *dummy = Sanguosha->cloneCard("Slash");
+    DummyCard *dummy = new DummyCard;
+    dummy->deleteLater();
     foreach(int id, card_to_show){
         dummy->addSubcard(id);
         if (!Sanguosha->getCard(id)->isRed())
@@ -289,8 +279,7 @@ public:
                 room->notifySkillInvoked(source, objectName());
                 if (use.from != NULL)
                     room->touhouLogmessage("#HereFilter", use.from, "here");
-                Card *new_slash = Sanguosha->cloneCard("fire_slash", use.card->getSuit(), use.card->getNumber());
-
+                FireSlash *new_slash = new FireSlash(use.card->getSuit(), use.card->getNumber());
                 if (use.card->getSubcards().length() > 0)
                     new_slash->addSubcards(use.card->getSubcards());
                 else {//use.from is ai...
@@ -326,7 +315,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.from != NULL && damage.from->isAlive()
             && damage.from != player){
-            Card *slash = Sanguosha->cloneCard("fire_slash");
+            FireSlash *slash = new FireSlash(Card::NoSuit, 0);
             if (player->isCardLimited(slash, Card::MethodUse))
                 return false;
             player->tag["yuanling"] = QVariant::fromValue(damage.from);
@@ -471,7 +460,7 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         if (originalCard != NULL){
-            Card *sa = Sanguosha->cloneCard("savage_assault", Card::SuitToBeDecided, -1);
+            SavageAssault *sa = new SavageAssault(Card::SuitToBeDecided, -1);
             sa->addSubcard(originalCard);
             sa->setSkillName(objectName());
             return sa;
@@ -626,7 +615,7 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         if (originalCard != NULL){
-            Card *duel = Sanguosha->cloneCard("Duel", Card::SuitToBeDecided, -1);
+            Duel *duel = new Duel(Card::SuitToBeDecided, -1);
             duel->addSubcard(originalCard);
             duel->setSkillName(objectName());
             return duel;
@@ -643,7 +632,7 @@ public:
     }
 
     virtual void onDamaged(ServerPlayer *player, const DamageStruct &damage) const{
-        if (damage.card != NULL && damage.card->isKindOf("Duel")){
+        if (damage.card && damage.card->isKindOf("Duel")){
             if (player->askForSkillInvoke(objectName(), QVariant::fromValue(damage)))
                 player->drawCards(1);
         }
@@ -672,11 +661,11 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->isKindOf("Slash") && use.to.contains(player)){
-            if (use.from != NULL && use.from->isAlive()){
+            if (use.from  && use.from->isAlive()){
 
                 room->touhouLogmessage("#TriggerSkill", player, objectName());
                 room->notifySkillInvoked(player, objectName());
-                const Card *supply = Sanguosha->cloneCard("supply_shortage");
+                SupplyShortage *supply = new SupplyShortage(Card::NoSuit, 0);
                 QString choice;
                 bool canchoice = true;
 
@@ -694,8 +683,7 @@ public:
                 }
                 else{
                     Card *first = Sanguosha->getCard(room->drawCard());
-
-                    Card *supplyshortage = Sanguosha->cloneCard("supply_shortage", first->getSuit(), first->getNumber());
+                    SupplyShortage *supplyshortage = new SupplyShortage(first->getSuit(), first->getNumber());
                     WrappedCard *vs_card = Sanguosha->getWrappedCard(first->getId());
                     vs_card->setSkillName("_gelong");
                     vs_card->takeOver(supplyshortage);
@@ -735,15 +723,14 @@ void chuanranCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
     ServerPlayer *target = targets.first();
     int id = source->tag["chuanran_id"].toInt();
     Card *card = Sanguosha->getCard(id);
-    WrappedCard *vs_card;
     CardsMoveStruct  move;
     move.to = target;
     move.to_place = Player::PlaceDelayedTrick;
     QString trick_name = card->objectName();
     if (!card->isKindOf("DelayedTrick")){
-        Card *supplyshortage = Sanguosha->cloneCard("supply_shortage", card->getSuit(), card->getNumber());
+        SupplyShortage *supplyshortage = new SupplyShortage(card->getSuit(), card->getNumber());
         trick_name = supplyshortage->objectName();
-        vs_card = Sanguosha->getWrappedCard(card->getId());
+        WrappedCard *vs_card = Sanguosha->getWrappedCard(card->getId());
         vs_card->setSkillName("_chuanran");
         vs_card->takeOver(supplyshortage);
         room->broadcastUpdateCard(room->getAlivePlayers(), vs_card->getId(), vs_card);
@@ -840,10 +827,10 @@ public:
                     const Card *dummy = room->askForUseCard(source, "@@chuanran", "@chuanran:" + trickname);
                     room->setPlayerProperty(source, "chuanran", QVariant());
                     //if (dummy==NULL)
-                    //	 room->obtainCard(source,id,true);
+                    //     room->obtainCard(source,id,true);
                 }
                 //else
-                //	room->obtainCard(source,id,true);
+                //    room->obtainCard(source,id,true);
                 //}
             }
         }
@@ -862,9 +849,6 @@ public:
     rebing() : MasochismSkill("rebing") {
     }
 
-    //virtual bool triggerable(const ServerPlayer *target) const{
-    //	 return (target != NULL);
-    // }
 
     virtual void onDamaged(ServerPlayer *player, const DamageStruct &damage) const{
         Room *room = player->getRoom();
@@ -967,7 +951,6 @@ th11Package::th11Package()
 {
     General *dld001 = new General(this, "dld001$", "dld", 3, false);
     dld001->addSkill(new xiangqi);
-    //dld001->addSkill(new duxin);
     dld001->addSkill(new Skill("duxin", Skill::Compulsory));
     dld001->addSkill(new huzhu);
 

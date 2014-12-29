@@ -48,7 +48,7 @@ const Card *shendeFakeMoveCard::validate(CardUseStruct &use) const{
     room->notifyMoveCards(false, moves1, true, players);
 
     if (card != NULL){
-        Card *peach = Sanguosha->cloneCard("peach");
+        Peach *peach = new Peach(Card::SuitToBeDecided, -1);
         foreach(int id, card->getSubcards())
             peach->addSubcard(id);
         peach->setSkillName("shende");
@@ -67,7 +67,8 @@ public:
     virtual bool isEnabledAtPlay(const Player *player) const{
         if (player->getPile("ShenDePile").length() < 2)
             return false;
-        Card *peach = Sanguosha->cloneCard("peach");
+        Peach *peach = new Peach(Card::NoSuit, 0);
+        peach->deleteLater();
         return peach->isAvailable(player);
     }
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const {
@@ -324,13 +325,13 @@ public:
         if (death.who != player)
             return false;
         ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "@chuancheng", true, true);
-        if (target != NULL) {
+        if (target) {
             room->handleAcquireDetachSkills(target, "qiankun");
             room->handleAcquireDetachSkills(target, "chuancheng");
             if (player->getCards("hej").length() > 0){
-                Card *allcard = Sanguosha->cloneCard("archery_attack");
+                DummyCard *allcard = new DummyCard;
+                allcard->deleteLater();                
                 allcard->addSubcards(player->getCards("hej"));
-
                 room->obtainCard(target, allcard, CardMoveReason(CardMoveReason::S_REASON_RECYCLE, target->objectName()), false);
             }
         }
@@ -406,7 +407,7 @@ qijiDialog::qijiDialog(const QString &object, bool left, bool right) : object_na
 
 void qijiDialog::popup() {
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY
-        &&	object_name != "chuangshi") {
+        &&    object_name != "chuangshi") {
         emit onButtonClick();
         return;
     }
@@ -765,7 +766,7 @@ bool fengshenCard::targetFilter(const QList<const Player *> &targets, const Play
 void fengshenCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
     const Card *card = room->askForCard(effect.to, "Slash", "@fengshen-discard:" + effect.from->objectName());
-	if (card == NULL)
+    if (card == NULL)
         room->damage(DamageStruct("fenshen", effect.from, effect.to));
 }
 
@@ -1193,7 +1194,7 @@ fengrangCard::fengrangCard() {
     mute = true;
 }
 const Card *fengrangCard::validate(CardUseStruct &card_use) const{
-    Card *card = Sanguosha->cloneCard("amazing_grace");
+    AmazingGrace *card = new AmazingGrace(Card::NoSuit, 0);
     card->setSkillName("fengrang");
     return card;
 }
@@ -1204,7 +1205,8 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        Card *card = Sanguosha->cloneCard("amazing_grace");
+        AmazingGrace *card = new AmazingGrace(Card::NoSuit, 0);
+        card->deleteLater();
         return !player->hasUsed("fengrangCard")
             && card->isAvailable(player);
     }

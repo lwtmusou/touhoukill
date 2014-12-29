@@ -247,14 +247,14 @@ public:
             if (use.card->isBlack() && (use.card->isNDTrick() || use.card->isKindOf("Slash"))
                 && use.to.contains(player)){
                 room->setCardFlag(use.card, "zhengyi" + player->objectName());
-		        if (use.from->isAlive()){
-				    CardsMoveStruct move;
+                if (use.from->isAlive()){
+                    CardsMoveStruct move;
                     move.to = use.from;
                     move.to_place = Player::PlaceHand;
                     move.card_ids << (room->getDrawPile().last());
                     room->moveCardsAtomic(move, false);
-				}
-			}
+                }
+            }
         }
         else if (triggerEvent == CardEffected){
             CardEffectStruct effect = data.value<CardEffectStruct>();
@@ -346,7 +346,7 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         Nullification *nul = new Nullification(originalCard->getSuit(), originalCard->getNumber());
-		nul->setSkillName(objectName());
+        nul->setSkillName(objectName());
         WrappedCard *card = Sanguosha->getWrappedCard(originalCard->getId());
         card->takeOver(nul);
         return card;
@@ -433,10 +433,9 @@ public:
             player->drawCards(1);
         }
 
-        //const Card *supply = Sanguosha->cloneCard("supply_shortage");
         SupplyShortage *supply = new SupplyShortage(Card::NoSuit, 0);
-		supply->deleteLater();
-		if (player->isCardLimited(supply, Card::MethodUse, true))
+        supply->deleteLater();
+        if (player->isCardLimited(supply, Card::MethodUse, true))
             return false;
         if (target->containsTrick("supply_shortage") || player->isProhibited(target, supply))
             return false;
@@ -738,7 +737,7 @@ void nuhuoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
         logto << victim;
         room->touhouLogmessage("#nuhuoChoose", target, "nuhuo", logto);
         
-		Slash *slash = new Slash(Card::NoSuit, 0);
+        Slash *slash = new Slash(Card::NoSuit, 0);
         CardUseStruct carduse;
         slash->setSkillName("_nuhuo");
         carduse.card = slash;
@@ -753,7 +752,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-		Slash *slash = new Slash(Card::NoSuit, 0);
+        Slash *slash = new Slash(Card::NoSuit, 0);
         slash->deleteLater();
         if (!player->isCardLimited(slash, Card::MethodUse)
             && !player->hasUsed("nuhuoCard")){

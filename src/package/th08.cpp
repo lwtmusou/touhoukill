@@ -48,15 +48,15 @@ public:
                     adjustHandcardNum(player, 4, objectName());
                 else {
                     ServerPlayer *source = room->findPlayerBySkillName("yongheng");
-                    if (source != NULL && source->getPhase() == Player::NotActive)
+                    if (source && source->getPhase() == Player::NotActive)
                         adjustHandcardNum(source, 4, "yongheng");
                 }
             }
         } else if (triggerEvent == CardsMoveOneTime && player->hasSkill(objectName())){
             if (player->getPhase() == Player::NotActive){
                 CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-                if ((move.from != NULL && move.from == player && move.from_places.contains(Player::PlaceHand))
-                    || (move.to != NULL && move.to == player && move.to_place == Player::PlaceHand))
+                if ((move.from && move.from == player && move.from_places.contains(Player::PlaceHand))
+                    || (move.to && move.to == player && move.to_place == Player::PlaceHand))
                     adjustHandcardNum(player, 4, objectName());
             }
         } else if (triggerEvent == EventAcquireSkill &&  data.toString() == "yongheng"){
@@ -81,7 +81,6 @@ public:
         JudgeStar judge = data.value<JudgeStar>();
         if (judge->card->getSuit() != Card::Diamond)
             return false;
-
         QList<ServerPlayer *> lords;
         foreach(ServerPlayer *p, room->getOtherPlayers(player)){
             if (p->hasLordSkill(objectName()) && p->isWounded())
@@ -89,15 +88,14 @@ public:
         }
         while (!lords.isEmpty()) {
             ServerPlayer *target = room->askForPlayerChosen(player, lords, objectName(), "@zhuqu", true, true);
-            if (target == NULL)
-                return false;
-
-            room->notifySkillInvoked(target, objectName());
-            lords.removeOne(target);
-            RecoverStruct recov;
-            recov.recover = 1;
-            recov.who = player;
-            room->recover(target, recov);
+            if (target){
+				room->notifySkillInvoked(target, objectName());
+				lords.removeOne(target);
+				RecoverStruct recov;
+				recov.recover = 1;
+				recov.who = player;
+				room->recover(target, recov);
+			}
         }
         return false;
     }
@@ -236,7 +234,7 @@ public:
                 need_judge = true;
         } else if (triggerEvent == CardsMoveOneTime){
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (player == src && player->getHp() == 1 && move.from != NULL && move.from == player
+            if (player == src && player->getHp() == 1 && move.from && move.from == player
                 && move.from_places.contains(Player::PlaceHand) && move.is_last_handcard)
                 need_judge = true;
         } else if (triggerEvent == EventPhaseChanging){
@@ -320,10 +318,8 @@ public:
                 int id = room->askForAG(source, all, false, objectName());
                 room->clearAG(source);
                 Card *lizhan_slash = Sanguosha->getCard(id);
-
                 source->obtainCard(lizhan_slash, true);
-
-                Card *tmpslash = Sanguosha->cloneCard("slash");
+				Slash *tmpslash = new Slash(Card::NoSuit, 0);
                 if (source->isCardLimited(tmpslash, Card::MethodUse, true))
                     return false;
                 if (!source->canSlash(current, tmpslash, false))
@@ -332,8 +328,6 @@ public:
                 victims << current;
                 room->askForUseSlashTo(source, victims, prompt1,
                     false, false, false);
-                //room->useCard(CardUseStruct(lizhan_slash, source, current),false);
-                // }
             }
         } else if (triggerEvent == EventPhaseChanging){
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -460,12 +454,9 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        ServerPlayer *src = room->findPlayerBySkillName(objectName());
-
         if (triggerEvent == CardUsed){
-            if (src == NULL)
-                return false;
-            if (src->getPile("lishi").length() > 0)
+            ServerPlayer *src = room->findPlayerBySkillName(objectName());
+			if (!src || src->getPile("lishi").length() > 0)
                 return false;
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.from && use.from == src)
@@ -489,7 +480,6 @@ public:
         } else if (triggerEvent == SlashEffected){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (effect.slash->hasFlag("shishiSkillNullify")){
-                //effect.slash!=NULL &&
                 room->touhouLogmessage("#LingqiAvoid", effect.to, effect.slash->objectName(), QList<ServerPlayer *>(), objectName());
                 room->setEmotion(effect.to, "skill_nullify");
                 return true;
@@ -497,7 +487,6 @@ public:
         } else if (triggerEvent == CardEffected){
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if (effect.card->hasFlag("shishiSkillNullify")) {
-                //effect.card!=NULL &&
                 room->touhouLogmessage("#LingqiAvoid", effect.to, effect.card->objectName(), QList<ServerPlayer *>(), objectName());
                 room->setEmotion(effect.to, "skill_nullify");
                 return true;
@@ -512,10 +501,6 @@ public:
     sbzhyshouye() : TriggerSkill("sbzhyshouye") {
         events << EventPhaseStart << Damaged;
     }
-
-    //virtual bool triggerable(const ServerPlayer *target) const{
-    //     return (target != NULL );
-    // }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
 
@@ -561,13 +546,12 @@ public:
 
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        if (originalCard != NULL){
+        if (originalCard){
             buxianCard *card = new buxianCard;
             card->addSubcard(originalCard);
             return card;
         }
-        else
-            return NULL;
+        return NULL;
     }
 };
 class buxian : public TriggerSkill {
@@ -663,13 +647,13 @@ public:
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        if (originalCard != NULL){
-            Card *indl = Sanguosha->cloneCard("indulgence", originalCard->getSuit(), originalCard->getNumber());
-            indl->addSubcard(originalCard);
+        if (originalCard){
+            Indulgence *indl = new Indulgence(originalCard->getSuit(), originalCard->getNumber());
+			indl->addSubcard(originalCard);
             indl->setSkillName(objectName());
             return indl;
-        } else
-            return NULL;
+        }
+        return NULL;
     }
 };
 class gesheng : public TriggerSkill {
@@ -710,7 +694,7 @@ public:
         if (card->isKindOf("Slash")) {
             bool offensive_horse = false;
             foreach(int id, card->getSubcards()){
-                if (from->getOffensiveHorse() != NULL && from->getOffensiveHorse()->getId() == id){
+                if (from->getOffensiveHorse() && from->getOffensiveHorse()->getId() == id){
                     offensive_horse = true;
                     break;
                 }
@@ -735,7 +719,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         QString pattern = data.toStringList().first();
         if (pattern == "jink") {
-            Card *jink = Sanguosha->cloneCard("jink");
+			Jink *jink = new Jink(Card::NoSuit, 0);
             //need check
             if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE){
                 if (player->isCardLimited(jink, Card::MethodResponse))
@@ -747,7 +731,7 @@ public:
 
 
             const Card *card = room->askForCard(player, "Jink", "@yinghuo", data, Card::MethodNone, NULL, false, objectName());
-            if (card != NULL) {
+            if (card) {
                 room->notifySkillInvoked(player, objectName());
                 room->showCard(player, card->getId());
                 room->getThread()->delay();
@@ -786,7 +770,7 @@ public:
             if (targets.isEmpty())
                 return false;
             ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@chongqun_target", true, true);
-            if (target != NULL)
+            if (target)
                 room->askForDiscard(target, "chongqun", 1, 1, false, true, "chongqun_discard:" + player->objectName());
         }
         return false;
@@ -1013,7 +997,7 @@ public:
         return false;
     }
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        Card *tmpslash = Sanguosha->cloneCard("slash");
+		Slash *tmpslash = new Slash(Card::NoSuit, 0);
         tmpslash->deleteLater();
         if (player->isCardLimited(tmpslash, Card::MethodUse))
             return false;
@@ -1028,7 +1012,7 @@ public:
     }
     static bool targetChoiceForHuwei(Room *room, ServerPlayer *player, QString skillname, int num) {
         ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), skillname, "@tymhhuwei_targetdraw:" + QString::number(num), true, true);
-        if (target != NULL){
+        if (target){
             target->drawCards(2);
             return true;
         } else
@@ -1040,8 +1024,8 @@ public:
         if (triggerEvent == CardAsked){
             QString pattern = data.toStringList().first();
             if (pattern == "slash") {
-                Card *tmpslash = Sanguosha->cloneCard("slash");
-                if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE){
+                Slash *tmpslash = new Slash(Card::NoSuit, 0);
+				if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE){
                     if (player->isCardLimited(tmpslash, Card::MethodResponse))
                         return false;
                 }
@@ -1059,7 +1043,7 @@ public:
                 targetChoiceForHuwei(room, player, objectName(), 1);
         } else if (triggerEvent == BeforeCardsMove) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.from != NULL && move.to_place == Player::DiscardPile && move.from == player){
+            if (move.from && move.to_place == Player::DiscardPile && move.from == player){
                 if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
 
                     foreach(int id, move.card_ids){

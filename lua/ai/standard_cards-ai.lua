@@ -439,6 +439,13 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 	local armor = to:getArmor()
 	if armor then
 		if armor:objectName() == "RenwangShield" then
+			if not self:isFriend(to,from) and from:hasSkill("guaili") 
+			and from:getHandcardNum()>1 then
+				return true
+			end
+			if from:hasSkill("louguan") then
+				return true
+			end
 			return not slash:isBlack()
 		elseif armor:objectName() == "Vine" then
 			local skill_name = slash:getSkillName() or ""
@@ -3324,13 +3331,18 @@ function SmartAI:willUseLightning(card)
 	if self.player:containsTrick("lightning") then return end
 	if self.player:hasSkill("weimu") and card:isBlack() then return end
 	if self.room:isProhibited(self.player, self.player, card) then return end
-	--忠内残局 忠不放闪电 哪怕是改判系 先作为一般性规则
-	local current_rebel_num, current_loyalist_num = 0, 0
-	local rebel_num = sgs.current_mode_players["rebel"]
 	
-	if rebel_num==0 then
-		if self.player:getRole() == "loyalist" then
-			return
+	local rebel_num = sgs.current_mode_players["rebel"]
+	local avoidLightning ="jingdian|bingpo|bumie"
+	local retrialType, wizarder= self:getFinalRetrial(self.player)
+	--忠内残局使用闪电的原则 独立于一般时候
+	if rebel_num==0 and (self.player:getRole() == "loyalist" or self.player:isLord()) then
+		if wizarder and wizarder:isLord() then
+			return true
+		elseif not wizarder and self.room:getLord():hasSkill("jingdian") then
+			return true
+		else
+			return false
 		end
 	end
 	
@@ -3342,19 +3354,19 @@ function SmartAI:willUseLightning(card)
 		end
 		for _, aplayer in ipairs(self.enemies) do
 			if aplayer:hasSkill("guanxing") or (aplayer:hasSkill("gongxin") and hashy)
-			or aplayer:hasSkill("xinzhan") then
+			or aplayer:hasSkill("xinzhan") or aplayer:hasSkill("tianyan")  then
 				if self:isFriend(aplayer:getNextAlive()) then return true end
 			end
 		end
 		return false
 	end
-	
-	if self.player:hasSkill("jingdian") and self:getFinalRetrial(self.player)==0 then
-		return  true
+	--静电果断挂 无念等也可以?
+	if self.player:hasSkill("jingdian") then
+		return retrialType ==1 or  not wizarder
 	end
-	if self:getFinalRetrial(self.player) == 2 then
+	if retrialType == 2 then
 	return
-	elseif self:getFinalRetrial(self.player) == 1 then
+	elseif retrialType == 1 then
 		return true
 	elseif not hasDangerousFriend() then
 		local players = self.room:getAllPlayers()
@@ -3362,13 +3374,14 @@ function SmartAI:willUseLightning(card)
 
 		local friends = 0
 		local enemies = 0
-
 		for _,player in ipairs(players) do
 			if self:objectiveLevel(player) >= 4 and not player:hasSkill("hongyan") and not player:hasSkill("wuyan")
-			  and not (player:hasSkill("weimu") and card:isBlack()) then
+			  and not (player:hasSkill("weimu") and card:isBlack()) 
+			  and not player:hasSkills(avoidLightning) then
 				enemies = enemies + 1
 			elseif self:isFriend(player) and not player:hasSkill("hongyan") and not player:hasSkill("wuyan")
-			  and not (player:hasSkill("weimu") and card:isBlack()) then
+			  and not (player:hasSkill("weimu") and card:isBlack()) 
+			  and not player:hasSkills(avoidLightning) then
 				friends = friends + 1
 			end
 		end
@@ -3403,7 +3416,6 @@ sgs.ai_card_intention.Lightning = function(self, card, from, to)
 	local loyalist_num=self.room:getAlivePlayers():length()-rebel_num
 	local lord=getLord(self.player)
 	if rebel_num<= loyalist_num-1 then
-		--if   sgs.ai_role[from:objectName()]  ~= "lord" then
 		if lord and not self:touhouHasLightningBenefit(lord) then
 			if not from:isLord() then
 				sgs.updateIntention(from, lord, 50)
@@ -3411,15 +3423,15 @@ sgs.ai_card_intention.Lightning = function(self, card, from, to)
 			end
 		end
 	end
-	
-	local wizard={}
+	local retrialType, wizarder= self:getFinalRetrial(from)
+	--[[local wizard={}
 	for _, aplayer in sgs.qlist(self.room:getOtherPlayers(from)) do
 		if self:hasSkills(sgs.wizard_harm_skill .. "|huanshi", aplayer) then
 			table.insert(wizard,aplayer)
 		end
-	end
-	if #wizard==1 then
-		sgs.updateIntention(from, wizard[1], -50)
+	end]]
+	if wizarder then
+		sgs.updateIntention(from, wizarder, -50)
 	end
 	return 0
 end

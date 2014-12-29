@@ -498,7 +498,7 @@ public:
                 room->doLightbox("$huisuAnimate", 2000);
                 room->setPlayerFlag(player, "huisuAnimate");
             }
-            //for ( int i=0; i<x ;i++) {		
+            //for ( int i=0; i<x ;i++) {        
             JudgeStruct judge;
             if (isLoseHp)
                 judge.pattern = ".|heart|2~9";
@@ -518,7 +518,7 @@ public:
                 recov.who = player;
                 room->recover(player, recov);
             }
-            // }	
+            // }    
         }
         return false;
     }
@@ -681,7 +681,7 @@ public:
             douhun_type = 2;
             other = effect.from;
         }
-        QList<ServerPlayer *>	logto;
+        QList<ServerPlayer *>    logto;
         logto << other;
 
         room->touhouLogmessage("#douhun_invoke" + QString::number(douhun_type), douhun_src, "douhun", logto);
@@ -966,8 +966,8 @@ public:
                 room->touhouLogmessage("#ChooseSuit", player, Card::Suit2String(suit));
 
                 QList<int> get;
-                Card *dummy = Sanguosha->cloneCard("savage_assault");
-                foreach(int id, list){
+                DummyCard *dummy = new DummyCard;
+				foreach(int id, list){
                     if (Sanguosha->getCard(id)->getSuit() != suit)
                         get << id;
                     else

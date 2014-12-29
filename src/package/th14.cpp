@@ -23,8 +23,8 @@ void leitingCard::onEffect(const CardEffectStruct &effect) const{
         room->damage(DamageStruct("leiting", NULL, effect.to, 1, DamageStruct::Thunder));
     }
     else if (discard->getSuit() == Card::Spade){
-		ThunderSlash *slash = new ThunderSlash(Card::NoSuit, 0);
-		// if return without usecard,we need delete this new thunderslash?
+        ThunderSlash *slash = new ThunderSlash(Card::NoSuit, 0);
+        // if return without usecard,we need delete this new thunderslash?
         if (effect.to->isCardLimited(slash, Card::MethodUse))
             return;
         QList<ServerPlayer *> listt;
@@ -77,7 +77,7 @@ public:
                 if (use.from == NULL || use.from->isDead() || use.from->getLostHp() >= target->getLostHp())
                     return false;
 
-				Slash *slash = new Slash(Card::NoSuit, 0);
+                Slash *slash = new Slash(Card::NoSuit, 0);
                 slash->setSkillName("_" + objectName());
                 if (target->isCardLimited(slash, Card::MethodUse) || !target->canSlash(use.from, slash, false))
                     return false;
@@ -120,8 +120,8 @@ public:
         ServerPlayer *victim = room->getCurrentDyingPlayer();
         if (victim == NULL || !victim->hasSkill("guizha") || victim == player)
             return false;
-		Peach *dummy_peach = new Peach(Card::SuitToBeDecided, -1);
-		dummy_peach->deleteLater();
+        Peach *dummy_peach = new Peach(Card::SuitToBeDecided, -1);
+        dummy_peach->deleteLater();
         if (player->isCardLimited(dummy_peach, Card::MethodUse))
             return false;
         bool hasPeach = false;
@@ -139,7 +139,7 @@ public:
         while (hasPeach && victim->getHp() < 1){
             const Card *supply_card = room->askForCard(player, "Peach|.|.|hand!", "@guizha:" + victim->objectName(), data, Card::MethodNone, victim, false, objectName(), false);
             Peach *peach = new Peach(Card::SuitToBeDecided, -1);
-			peach->addSubcard(supply_card->getEffectiveId());
+            peach->addSubcard(supply_card->getEffectiveId());
             peach->setSkillName("_guizha");
             room->useCard(CardUseStruct(peach, player, victim), false);
             if (victim->getHp() > 0){
@@ -196,8 +196,8 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         QString pattern = data.toStringList().first();
         if (pattern == "jink") {
-			Jink *jink = new Jink(Card::NoSuit, 0);
-			jink->deleteLater();
+            Jink *jink = new Jink(Card::NoSuit, 0);
+            jink->deleteLater();
             //need check
             if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE){
                 if (player->isCardLimited(jink, Card::MethodResponse))
@@ -314,8 +314,8 @@ public:
             if (player->getEquips().length() == 0)
                 return false;
 
-			Jink *jink = new Jink(Card::NoSuit, 0);
-			jink->deleteLater();
+            Jink *jink = new Jink(Card::NoSuit, 0);
+            jink->deleteLater();
             //need check
             if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE){
                 if (player->isCardLimited(jink, Card::MethodResponse))
@@ -341,7 +341,7 @@ public:
                 move.to = player;
 
                 room->moveCardsAtomic(move, true);
-				Jink *card = new Jink(Card::NoSuit, 0);
+                Jink *card = new Jink(Card::NoSuit, 0);
                 card->setSkillName("_langying");
                 room->provide(card);
             }
@@ -558,7 +558,7 @@ public:
         if (triggerEvent == EventPhaseStart){
             if (player->getPhase() == Player::Finish){
                 ServerPlayer *source = room->findPlayerBySkillName(objectName());
-                QList<int>	temp_ids;
+                QList<int>    temp_ids;
                 QVariantList shizhu_ids = room->getTag("shizhuPeach").toList();
                 foreach(QVariant card_data, shizhu_ids)
                     temp_ids << card_data.toInt();
@@ -614,7 +614,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.to_place == Player::DiscardPile){
-            QList<int>	temp_ids;
+            QList<int>    temp_ids;
             QVariantList shizhu_ids = room->getTag("shizhuPeach").toList();
             foreach(QVariant card_data, shizhu_ids)
                 temp_ids << card_data.toInt();
@@ -622,7 +622,7 @@ public:
             foreach(int id, move.card_ids){
                 Card *card = Sanguosha->getCard(id);
                 if (card->isKindOf("Peach") && !temp_ids.contains(id)
-                    && room->getCardPlace(id) == Player::DiscardPile)								
+                    && room->getCardPlace(id) == Player::DiscardPile)                                
                     shizhu_ids << id;
             }
             room->setTag("shizhuPeach", shizhu_ids);

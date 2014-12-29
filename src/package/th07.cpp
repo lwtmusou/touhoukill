@@ -31,9 +31,8 @@ public:
             return false;
 
         if (damage.card != NULL && damage.card->isKindOf("Slash")){
-
-            Card *slash = Sanguosha->cloneCard("slash");
-            if (damage.to->isCardLimited(slash, Card::MethodUse))
+            Slash *slash = new Slash(Card::NoSuit, 0);
+			if (damage.to->isCardLimited(slash, Card::MethodUse))
                 return false;
             QList<ServerPlayer *> listt;
             foreach(ServerPlayer *p, room->getAlivePlayers()) {
@@ -202,8 +201,8 @@ public:
                 recover.who = yukari;
                 room->recover(who, recover);
             }
-            //	else
-            //		break;
+            //    else
+            //        break;
             //}
 
         }
@@ -308,7 +307,7 @@ public:
 
                 room->obtainCard(player, cards, false);
                 QString choice;
-                Card *exnihilo = Sanguosha->cloneCard("ex_nihilo");
+				ExNihilo *exnihilo = new ExNihilo(Card::SuitToBeDecided, -1);
                 if (player->isKongcheng()){
                     bool expand_pile = false;
                     if (!player->getPile("wooden_ox").isEmpty())
@@ -326,16 +325,12 @@ public:
                     s->drawCards(1);
                 else {
                     room->setPlayerFlag(player, "Global_expandpileFailed");
-                    //const Card *card = room->askForExchange(player, objectName(), 1, false, "zhaoliaouse");
                     const Card *card = room->askForCard(player, ".|.|.|hand,wooden_ox,piao!", "zhaoliaouse", data, Card::MethodNone);
                     room->setPlayerFlag(player, "-Global_expandpileFailed");
-
                     int id = card->getSubcards().first();
                     exnihilo->addSubcard(id);
                     exnihilo->setSkillName("_zhaoliao");
-
                     room->useCard(CardUseStruct(exnihilo, player, QList<ServerPlayer *>()), true);
-
                 }
             }
 
@@ -1291,14 +1286,14 @@ public:
 
         //check "qinlue"  "quanjie"
         //if current->hasFlag("qinlue")
-        //need check cardfinish "yaoshu"  "huisheng"	?
+        //need check cardfinish "yaoshu"  "huisheng"    ?
         ServerPlayer *current = room->getCurrent();
         if (current->getMark("quanjie") > 0) {
             room->setPlayerMark(current, "quanjie", 0);
             room->removePlayerCardLimitation(current, "use", "Slash$1");
         }
         //if (current->hasSkill("yaoshu") )
-        //	room->setPlayerProperty(current, "yaoshu_card", QVariant());
+        //    room->setPlayerProperty(current, "yaoshu_card", QVariant());
 
         foreach(ServerPlayer *p, room->getAlivePlayers()) {
             p->clearFlags();
@@ -1340,7 +1335,7 @@ public:
 
         touhou_siyu_clear(player);
 
-        //remain bugs: yaoshu, the second trick card??					
+        //remain bugs: yaoshu, the second trick card??                    
         player->gainAnExtraTurn();
 
         throw TurnBroken;

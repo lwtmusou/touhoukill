@@ -4393,9 +4393,9 @@ function SmartAI:canRetrial(player, to_retrial, reason)
 	if player:hasSkill("guicai") and player:getHandcardNum() > 0 then return true end
 	if player:hasSkill("huanshi") and not player:isNude() then return true end
 	if player:hasSkill("jilve") and player:getHandcardNum() > 0 and player:getMark("@bear") > 0 then return true end
-	if player:hasSkill("mingyun") then return true end
-	if player:hasSkill("feixiang") then return true end
-	if player:hasSkill("fengshui") then return true end
+	if player:hasSkills("mingyun|feixiang|fengshui") then return true end
+	--博丽的改判略微妙
+	--if player:hasLordSkill("boli") then return true end
 	return
 end
 
@@ -4404,15 +4404,48 @@ end
 function SmartAI:getFinalRetrial(player, reason)
 	local maxfriendseat = -1
 	local maxenemyseat = -1
+	local maxneturalseat = -1
 	local tmpfriend
 	local tmpenemy
-	local wizardf, wizarde
+	local tmpnetural
+	local wizardf, wizarde, wizardn
 	player = player or self.room:getCurrent()
-	for _, aplayer in ipairs(self.friends) do
+	local sklt = self.room:findPlayerBySkillName("mingyun") 
+	if sklt then
+		if self:isFriend(sklt) then
+			wizardf = sklt			
+		elseif self:isEnemy(sklt) then
+			wizarde = sklt
+		else
+			wizardn = sklt
+		end 
+	end
+	for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
 		if self:hasSkills(sgs.wizard_harm_skill .. "|huanshi", aplayer) and self:canRetrial(aplayer, player, reason) then
-			if wizardf and aplayer:hasSkill("mingyun")  then 
-				continue
+			if aplayer:hasSkill("mingyun") then continue end 
+			if self:isFriend(aplayer) then
+				tmpfriend = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
+				if tmpfriend > maxfriendseat then
+					maxfriendseat = tmpfriend
+					wizardf = aplayer
+				end
+			elseif self:isEnemy(aplayer) then
+				tmpenemy = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
+				if tmpenemy > maxenemyseat then
+					maxenemyseat = tmpenemy
+					wizarde = aplayer
+				end
+			else
+				tmpnetural = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
+				if tmpnetural > maxneturalseat then
+					maxneturalseat = tmpnetural
+					wizardn = aplayer
+				end
 			end
+		end
+	end
+	--[[for _, aplayer in ipairs(self.friends) do
+		if self:hasSkills(sgs.wizard_harm_skill .. "|huanshi", aplayer) and self:canRetrial(aplayer, player, reason) then
 			tmpfriend = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
 			if tmpfriend > maxfriendseat then
 				maxfriendseat = tmpfriend
@@ -4422,19 +4455,25 @@ function SmartAI:getFinalRetrial(player, reason)
 	end
 	for _, aplayer in ipairs(self.enemies) do
 		if self:hasSkills(sgs.wizard_harm_skill .. "|huanshi", aplayer) and self:canRetrial(aplayer, player, reason) then
-			if wizarde and aplayer:hasSkill("mingyun")  then 
-				continue
-			end
 			tmpenemy = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
 			if tmpenemy > maxenemyseat then
 				maxenemyseat = tmpenemy
 				wizarde = aplayer
 			end
 		end
+	end]]
+	if not wizardf  and not wizarde and not wizardn then return 0, nil 
+	elseif wizardn and maxfriendseat<=maxneturalseat and  maxenemyseat<=maxneturalseat then 
+		return 0, wizardn
+	elseif wizardf and maxfriendseat>=maxneturalseat and maxenemyseat<=maxfriendseat then
+		return 1, wizardf
+	elseif wizarde and maxenemyseat>=maxneturalseat and maxenemyseat>=maxfriendseat then
+		return 2, wizarde
 	end
-	if maxfriendseat == -1 and maxenemyseat == -1 then return 0, nil
+		
+	--[[if maxfriendseat == -1 and maxenemyseat == -1 then return 0, nil
 	elseif maxfriendseat > maxenemyseat then return 1, wizardf
-	else return 2, wizarde end
+	else return 2, wizarde end]]
 end
 
 --- Determine that the current judge is worthy retrial
@@ -6973,6 +7012,7 @@ function SmartAI:touhouEffectNullify(card,from,to)
 		if from:hasSkill("jingtao") and card:isKindOf("Slash") then
 			return false
 		end
+		
 		--防具相关
 		if to:hasArmorEffect("Vine") then
 			if card:isKindOf("Slash") and not card:isKindOf("NatureSlash") and not self:touhouIgnoreArmor(card,from,to) then
@@ -6983,6 +7023,10 @@ function SmartAI:touhouEffectNullify(card,from,to)
 			end
 		end
 		if to:hasArmorEffect("RenwangShield") and not self:touhouIgnoreArmor(card,from,to) then
+			if not self:isFriend(to,from) and from:hasSkill("guaili") 
+			and from:getHandcardNum()>1 and card:isKindOf("Slash") then
+				return false
+			end
 			if  card:isKindOf("Slash") and card:isBlack() then
 				return true
 			end
@@ -7351,7 +7395,7 @@ function SmartAI:touhouRecoverAfterAttack(damage,player)
 end
 
 function SmartAI:touhouHasLightningBenefit(player)
-	if player:hasSkills("feixiang|mingyun|jingdian") then
+	if player:hasSkills("feixiang|mingyun|mingyun|jingdian") then
 		return true
 	end
 	return false
