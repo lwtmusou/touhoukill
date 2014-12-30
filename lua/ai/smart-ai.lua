@@ -5259,6 +5259,8 @@ function getCardsNum(class_name, player, from)
 			return num + player:getPile("wine"):length()
 		elseif player:hasSkill("jiuzhu") then
 			return math.max(num, math.max(0, math.min(player:getCardCount(true), player:getHp() - 1)))
+		elseif player:hasSkill("shende") then
+			return num+player:getPile("ShenDePile"):length()/2
 		else
 			return num
 		end
