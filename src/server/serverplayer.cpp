@@ -997,7 +997,7 @@ int ServerPlayer::getGeneralMaxHp() const{
     if (room->hasWelfare(this))
         max_hp++;
     //if (this->hasSkill("huanmeng"))
-    //	max_hp=0;
+    //    max_hp=0;
 
     return max_hp;
 }

@@ -128,6 +128,7 @@ slm001                                  yyc001                                  
 slm001                                  wai003                                   0.2
 slm004                                  zhan008                                  0.9
 slm005                                  wai002                                    1.1
+slm005                                  yym004                                    -1.1
 slm007                                  zhan008                                   -0.9
 slm007                                  xlc004                                  -1.1
 wai001                                  zhu006                                  0.7

@@ -967,7 +967,7 @@ public:
 
                 QList<int> get;
                 DummyCard *dummy = new DummyCard;
-				foreach(int id, list){
+                foreach(int id, list){
                     if (Sanguosha->getCard(id)->getSuit() != suit)
                         get << id;
                     else

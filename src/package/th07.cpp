@@ -32,7 +32,7 @@ public:
 
         if (damage.card != NULL && damage.card->isKindOf("Slash")){
             Slash *slash = new Slash(Card::NoSuit, 0);
-			if (damage.to->isCardLimited(slash, Card::MethodUse))
+            if (damage.to->isCardLimited(slash, Card::MethodUse))
                 return false;
             QList<ServerPlayer *> listt;
             foreach(ServerPlayer *p, room->getAlivePlayers()) {
@@ -307,7 +307,7 @@ public:
 
                 room->obtainCard(player, cards, false);
                 QString choice;
-				ExNihilo *exnihilo = new ExNihilo(Card::SuitToBeDecided, -1);
+                ExNihilo *exnihilo = new ExNihilo(Card::SuitToBeDecided, -1);
                 if (player->isKongcheng()){
                     bool expand_pile = false;
                     if (!player->getPile("wooden_ox").isEmpty())

@@ -2179,20 +2179,17 @@ function SmartAI:filterEvent(event, player, data)
 						and not (self:getDamagedEffects(who, player) or self:needToLoseHp(who, player, nil, true, true))))
 				then
 				local exclude_lord = #self:exclude({lord}, card, from) > 0
-				from=self.room:getCurrent()
 				--东方杀特定判断
-				local touhou_target_confirm=false
 				--local yyc009
-				if ( card:getSkillName() =="chuangshi") then
-					touhou_target_confirm=true
+				if (card:getSkillName() =="chuangshi") then
+					from=self.room:getCurrent()
 				end
-				--
-				if not touhou_target_confirm then
-					if CanUpdateIntention(from) and exclude_lord and sgs.evaluatePlayerRole(who) == "neutral" and isneutral then sgs.updateIntention(from, lord, -10)
-					elseif card:isKindOf("ThunderSlash") and who:hasSkill("jingdian") then
-					else
-						sgs.updateIntention(from, who, 10)
-					end
+				if CanUpdateIntention(from) and exclude_lord and sgs.evaluatePlayerRole(who) == "neutral" and isneutral then 
+					sgs.updateIntention(from, lord, -10)
+					--elseif card:isKindOf("ThunderSlash") and who:hasSkill("jingdian") then
+				--else
+						--对已知身份的话 纯属多余?
+					--sgs.updateIntention(from, who, 10)
 				end
 			end
 		end
@@ -5131,7 +5128,7 @@ function getCardsNum(class_name, player, from)
 	local diamondcard = 0
 	local clubcard = 0
 	local slashjink = 0
-
+	local ndtrick = 0
 	from = from or global_room:getCurrent()
 
 	if not player then
@@ -5185,6 +5182,9 @@ function getCardsNum(class_name, player, from)
 				end
 				if card:getSuit() == sgs.Card_Club then
 					clubcard = clubcard + 1
+				end
+				if card:isNDTrick() then
+					ndtrick = ndtrick+1
 				end
 			end
 		end
@@ -5261,6 +5261,8 @@ function getCardsNum(class_name, player, from)
 			return math.max(num, math.max(0, math.min(player:getCardCount(true), player:getHp() - 1)))
 		elseif player:hasSkill("shende") then
 			return num+player:getPile("ShenDePile"):length()/2
+		elseif player:hasSkill("qiyao") then
+			return num + ndtrick
 		else
 			return num
 		end
@@ -7364,7 +7366,6 @@ function SmartAI:touhouNeedAvoidAttack(damage,from,to)
 			return false 
 		end
 	else
-		
 		recover=self:touhouRecoverAfterAttack(real_damage,to)
 		if not effect and to:getHp() <= to:getHp()-real_damage.damage+recover then
 			return false

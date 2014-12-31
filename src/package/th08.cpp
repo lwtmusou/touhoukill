@@ -89,13 +89,13 @@ public:
         while (!lords.isEmpty()) {
             ServerPlayer *target = room->askForPlayerChosen(player, lords, objectName(), "@zhuqu", true, true);
             if (target){
-				room->notifySkillInvoked(target, objectName());
-				lords.removeOne(target);
-				RecoverStruct recov;
-				recov.recover = 1;
-				recov.who = player;
-				room->recover(target, recov);
-			}
+                room->notifySkillInvoked(target, objectName());
+                lords.removeOne(target);
+                RecoverStruct recov;
+                recov.recover = 1;
+                recov.who = player;
+                room->recover(target, recov);
+            }
         }
         return false;
     }
@@ -319,7 +319,7 @@ public:
                 room->clearAG(source);
                 Card *lizhan_slash = Sanguosha->getCard(id);
                 source->obtainCard(lizhan_slash, true);
-				Slash *tmpslash = new Slash(Card::NoSuit, 0);
+                Slash *tmpslash = new Slash(Card::NoSuit, 0);
                 if (source->isCardLimited(tmpslash, Card::MethodUse, true))
                     return false;
                 if (!source->canSlash(current, tmpslash, false))
@@ -456,7 +456,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == CardUsed){
             ServerPlayer *src = room->findPlayerBySkillName(objectName());
-			if (!src || src->getPile("lishi").length() > 0)
+            if (!src || src->getPile("lishi").length() > 0)
                 return false;
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.from && use.from == src)
@@ -649,7 +649,7 @@ public:
     virtual const Card *viewAs(const Card *originalCard) const{
         if (originalCard){
             Indulgence *indl = new Indulgence(originalCard->getSuit(), originalCard->getNumber());
-			indl->addSubcard(originalCard);
+            indl->addSubcard(originalCard);
             indl->setSkillName(objectName());
             return indl;
         }
@@ -719,7 +719,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         QString pattern = data.toStringList().first();
         if (pattern == "jink") {
-			Jink *jink = new Jink(Card::NoSuit, 0);
+            Jink *jink = new Jink(Card::NoSuit, 0);
             //need check
             if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE){
                 if (player->isCardLimited(jink, Card::MethodResponse))
@@ -997,7 +997,7 @@ public:
         return false;
     }
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-		Slash *tmpslash = new Slash(Card::NoSuit, 0);
+        Slash *tmpslash = new Slash(Card::NoSuit, 0);
         tmpslash->deleteLater();
         if (player->isCardLimited(tmpslash, Card::MethodUse))
             return false;
@@ -1025,7 +1025,7 @@ public:
             QString pattern = data.toStringList().first();
             if (pattern == "slash") {
                 Slash *tmpslash = new Slash(Card::NoSuit, 0);
-				if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE){
+                if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE){
                     if (player->isCardLimited(tmpslash, Card::MethodResponse))
                         return false;
                 }

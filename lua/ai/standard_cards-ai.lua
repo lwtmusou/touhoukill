@@ -39,6 +39,7 @@ function sgs.isGoodHp(player)
 	end
 end
 
+--½ç¶¨ÂôÑª£¿
 function sgs.isGoodTarget(player, targets, self, isSlash)
 	local arr = {"jieming", "yiji", "guixin", "fangzhu", "neoganglie", "nosmiji", "xuehen", "xueji"}
 	local m_skill = false

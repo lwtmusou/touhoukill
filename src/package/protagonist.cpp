@@ -753,7 +753,7 @@ void baoyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 
     while (num > 0) {
         QList<ServerPlayer *> listt;
-		Slash *slash = new Slash(Card::NoSuit, 0);
+        Slash *slash = new Slash(Card::NoSuit, 0);
         foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
             if (source->canSlash(p, slash, false))
                 listt << p;
@@ -971,8 +971,8 @@ public:
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
         if (pattern.contains("@@bllmwuyu"))
             return true;
-		Analeptic *card = new Analeptic(Card::NoSuit, 0);
-		card->deleteLater();
+        Analeptic *card = new Analeptic(Card::NoSuit, 0);
+        card->deleteLater();
         if (player->isCardLimited(card, Card::MethodUse))
             return false;
         if (pattern.contains("analeptic"))
@@ -1150,7 +1150,7 @@ const Card *bllmshiyuCard::validate(CardUseStruct &cardUse) const{
         room->setPlayerFlag(bllm, "-Global_expandpileFailed");
         if (dummy) {
             Analeptic *ana = new Analeptic(Card::SuitToBeDecided, -1);
-			foreach(int id, dummy->getSubcards())
+            foreach(int id, dummy->getSubcards())
                 ana->addSubcard(id);
             ana->setSkillName("bllmshiyu");
             return ana;
@@ -1166,7 +1166,7 @@ const Card *bllmshiyuCard::validateInResponse(ServerPlayer *bllm) const{
         room->setPlayerFlag(bllm, "-Global_expandpileFailed");
         if (dummy){
             Analeptic *ana = new Analeptic(Card::SuitToBeDecided, -1);
-			foreach (int id, dummy->getSubcards())
+            foreach (int id, dummy->getSubcards())
                 ana->addSubcard(id);
             ana->setSkillName("bllmshiyu");
             return ana;

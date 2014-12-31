@@ -248,6 +248,7 @@ public:
                 && use.to.contains(player)){
                 room->setCardFlag(use.card, "zhengyi" + player->objectName());
                 if (use.from->isAlive()){
+                    room->touhouLogmessage("#TriggerSkill", player, "zhengyi");
                     CardsMoveStruct move;
                     move.to = use.from;
                     move.to_place = Player::PlaceHand;
