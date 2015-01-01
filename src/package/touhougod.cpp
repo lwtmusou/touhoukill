@@ -1098,7 +1098,7 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
-        if (player->hasSkill("banling"))
+        if (!player->hasSkill("banling"))
             return false;
         Room *room = player->getRoom();
         if (player->getPhase() == Player::Start && player->hasSkill("banling")) {//左慈 zun 依姬时会有问题

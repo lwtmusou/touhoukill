@@ -331,7 +331,7 @@ function SmartAI:slashProhibit(card, enemy, from)
 		local filter = sgs.ai_slash_prohibit[askill:objectName()]
 		if filter and type(filter) == "function" and filter(self, from, enemy, card) then return true end
 	end
-
+    
 	if self:isFriend(enemy, from) then
 		if self:sidieEffect(from) then return false end
 		if from:hasSkill("dongjie") and not enemy:faceUp() then return false end
@@ -344,6 +344,9 @@ function SmartAI:slashProhibit(card, enemy, from)
 		if enemy:isLord() and self:isWeak(enemy) and self:slashIsEffective(card, enemy, from) then return true end
 		if from:hasWeapon("GudingBlade") and enemy:isKongcheng() then return true end
 	else
+		if self:slashProhibitToEghitDiagram(card,from,enemy) then
+			return true
+		end
 		if (card:isKindOf("NatureSlash") or from:hasSkill("zonghuo")) and not from:hasSkill("jueqing") and enemy:isChained()
 			and not self:isGoodChainTarget(enemy, from, nature, nil, card) and self:slashIsEffective(card, enemy, from) then
 			return true
@@ -658,13 +661,13 @@ function SmartAI:useCardSlash(card, use)
 	self:sort(self.enemies, "defenseSlash")
 	for _, enemy in ipairs(self.enemies) do
 		if not self:slashProhibit(card, enemy) and sgs.isGoodTarget(enemy, self.enemies, self, true) then
-			if self:slashEightDiagram(enemey) then
+			--if self:slashEightDiagram(enemey) then
 				if not self:getDamagedEffects(enemy, self.player, true) and not self:touhouCardAttackWaste(card,self.player,enemy) then 
 					table.insert(targets, enemy) 
 				else 
 					table.insert(forbidden, enemy) 
 				end
-			end
+			--end
 		end
 	end
 	if #targets == 0 and #forbidden > 0 then targets = forbidden end

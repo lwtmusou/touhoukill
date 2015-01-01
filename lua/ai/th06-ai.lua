@@ -30,28 +30,32 @@ function SmartAI:invokeTouhouJudge(player)
 	end
 	return true
 end
-function SmartAI:needtouhouDamageJudge()
+function SmartAI:needtouhouDamageJudge(player)
+	player = player or self.player
 	local wizard_type ,wizard = self:getFinalRetrial()
 	local leimi=self.room:findPlayerBySkillName("mingyun")
 	if not wizard then
 		if leimi then
-			return self:isFriend(leimi)
+			return self:isFriend(leimi,player)
 		end
 		return false
 	end
 	if wizard then
 		if wizard:hasSkills("feixiang|fengshui") then
-			return self:isFriend(wizard)
+			return self:isFriend(wizard,player)
 		end
 	end
 	return false
 end
-function SmartAI:slashEightDiagram(player)
-	if self:hasEightDiagramEffect(player) then
-		return  self:invokeTouhouJudge()
-	else
-		return true
+function SmartAI:slashProhibitToEghitDiagram(card,from,enemy)
+	if self:isFriend(from,enemy) then return false end
+	if self:hasEightDiagramEffect(enemy) and self:needtouhouDamageJudge(enemy) then
+		if not self:touhouIgnoreArmor(card,from,enemy) 
+		or not (from:hasSkill("guaili") and from:getHandcardNum()>=3 and from:getPhase()== sgs.Player_Play) then
+			return true
+		end
 	end
+	return false
 end
 --【命运】ai 如果对此判定的好坏无法判断 此AI可能会导致闪退
 --sgs.ai_skill_invoke.EightDiagram 

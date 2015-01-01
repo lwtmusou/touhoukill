@@ -71,6 +71,7 @@ yyc001                                  xwm001                                  
 yyc001                                  xwm006                                  0.7
 yyc001                                  shen005                                  1.0
 yyc001                                  shen008                                  -1.0
+yyc003                                  slm001                                   -0.4
 yyc009                                  yyc010                                  1.0
 yyc010                                  yyc009                                  1.0
 zhan001                                 zhan002                                  1.2
@@ -124,6 +125,7 @@ xlc001                                  xlc003                                  
 xlc001                                  xlc005                                   0.5
 slm001                                  zhu006                                   0.7
 slm001                                  yyc001                                   0.5
+slm001                                  yyc003                                   -0.6
 slm001                                  yyc006                                   0.5
 slm001                                  xwm004                                   0.5
 slm004                                  zhan008                                  0.4
