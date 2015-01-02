@@ -742,7 +742,7 @@ public:
                     continue;
                 else{
 
-                    if (!player->hasSkill(skill->objectName()))
+                    if (!player->hasSkill(skill->objectName(),false,true))
                         skill_names << skill->objectName();
                 }
             }

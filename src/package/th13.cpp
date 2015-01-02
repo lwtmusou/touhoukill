@@ -672,7 +672,7 @@ public:
         ServerPlayer *current = room->getCurrent();
         if (!current->isAlive() || who != player || current == player)
             return false;
-
+        player->tag["fenyuanDying"] = data;
         QString prompt = "invoke:" + current->objectName();
         if (room->askForSkillInvoke(player, objectName(), prompt)) {
             room->killPlayer(player);

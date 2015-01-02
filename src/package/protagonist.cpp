@@ -197,10 +197,10 @@ public:
             QString prompt = "judge:" + judge->who->objectName() + ":" + judge->reason;
             if (!room->askForSkillInvoke(player, "boli", prompt))
                 return false;
-            if (player->getGeneralName() == "zhu001" && !player->hasFlag("boliAnimate")){
+            /*if (player->getGeneralName() == "zhu001" && !player->hasFlag("boliAnimate")){
                 room->doLightbox("$boliAnimate", 2000);
                 room->setPlayerFlag(player, "boliAnimate");
-            }
+            }*/
             foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
                 QStringList prompts;
                 prompts << "@boli-retrial" << judge->who->objectName() << player->objectName() << judge->reason;
@@ -225,8 +225,8 @@ mofaCard::mofaCard() {
     mute = true;
 }
 void mofaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    if (source->getGeneralName() == "zhu002")
-        room->doLightbox("$mofaAnimate", 2000);
+    //if (source->getGeneralName() == "zhu002")
+    //    room->doLightbox("$mofaAnimate", 2000);
     Card *card = Sanguosha->getCard(subcards.first());
     if (card->getSuit() == Card::Spade)
         source->drawCards(1);
@@ -361,8 +361,8 @@ wuyuCard::wuyuCard() {
 void wuyuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *marisa = targets.first();
     if (marisa->hasLordSkill("wuyu")) {
-        if (marisa->getGeneralName() == "zhu002")
-            room->doLightbox("$wuyuAnimate", 2000);
+        //if (marisa->getGeneralName() == "zhu002")
+        //    room->doLightbox("$wuyuAnimate", 2000);
         room->setPlayerFlag(marisa, "wuyuInvoked");
 
         room->notifySkillInvoked(marisa, "wuyu");
@@ -482,8 +482,8 @@ bool saiqianCard::targetFilter(const QList<const Player *> &targets, const Playe
 void saiqianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *reimu = targets.first();
     if (reimu->hasSkill("saiqian")) {
-        if (reimu->getGeneralName() == "zhu003")
-            room->doLightbox("$saiqianAnimate", 2000);
+        //if (reimu->getGeneralName() == "zhu003")
+        //    room->doLightbox("$saiqianAnimate", 2000);
 
         reimu->tag["saiqian_source"] = QVariant::fromValue(source);
 
@@ -624,10 +624,10 @@ jiezouCard::jiezouCard() {
     mute = true;
 }
 void jiezouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    if (source->getGeneralName() == "zhu004" && !source->hasFlag("jiezouAnimate")) {
+    /*if (source->getGeneralName() == "zhu004" && !source->hasFlag("jiezouAnimate")) {
         room->doLightbox("$jiezouAnimate", 2000);
         room->setPlayerFlag(source, "jiezouAnimate");
-    }
+    }*/
     ServerPlayer *target = targets.first();
     int id = room->askForCardChosen(source, target, "hej", objectName());
     room->obtainCard(source, id, room->getCardPlace(id) != Player::PlaceHand);
@@ -661,8 +661,8 @@ shoucangCard::shoucangCard() {
     mute = true;
 }
 void shoucangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    if (source->getGeneralName() == "zhu004")
-        room->doLightbox("$shoucangAnimate", 2000);
+    //if (source->getGeneralName() == "zhu004")
+    //    room->doLightbox("$shoucangAnimate", 2000);
     foreach (int id, subcards)
         room->showCard(source, id);
     room->touhouLogmessage("#shoucang_max", source, "shoucang", QList<ServerPlayer *>(), QString::number(subcards.length()));
@@ -742,8 +742,8 @@ baoyiCard::baoyiCard() {
     mute = true;
 }
 void baoyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    if (source->getGeneralName() == "zhu005")
-        room->doLightbox("$baoyiAnimate", 2000);
+    //if (source->getGeneralName() == "zhu005")
+    //    room->doLightbox("$baoyiAnimate", 2000);
     int num = subcards.length();
     foreach (int id, subcards) {
         Card *c = Sanguosha->getCard(id);
@@ -843,8 +843,8 @@ public:
         if (player->getPhase() == Player::Draw) {
 
             Room *room = player->getRoom();
-            if (player->getGeneralName() == "zhu006")
-                room->doLightbox("$zhizeAnimate", 2000);
+            //if (player->getGeneralName() == "zhu006")
+            //    room->doLightbox("$zhizeAnimate", 2000);
 
             QList<ServerPlayer *> players;
             foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
@@ -916,11 +916,11 @@ public:
                     ServerPlayer *s = room->askForPlayerChosen(player, targets, objectName(), "@@chunxi", true, true);
                     if (s == NULL)
                         break;
-                    if (player->getPhase() != Player::Draw &&
+                    /*if (player->getPhase() != Player::Draw &&
                         player->getGeneralName() == "zhu006" && !player->hasFlag("chunxiAnimate")) {
                         room->doLightbox("$chunxiAnimate", 2000);
                         room->setPlayerFlag(player, "chunxiAnimate");
-                    }
+                    }*/
                     room->showCard(player, id);
                     room->getThread()->delay();
                     int id = room->askForCardChosen(player, s, "h", objectName());
@@ -1037,8 +1037,8 @@ public:
                 QString prompt = "bllmwuyu";
                 player->tag["wuyu_prompt"] = QVariant::fromValue(prompt);
                 if (player->askForSkillInvoke(objectName())) {
-                    if (player->getGeneralName() == "zhu007")
-                        player->getRoom()->doLightbox("$bllmwuyuAnimate", 2000);
+                    //if (player->getGeneralName() == "zhu007")
+                    //    player->getRoom()->doLightbox("$bllmwuyuAnimate", 2000);
                     player->gainMark("@yu", z);
                 }
             }
@@ -1298,8 +1298,8 @@ public:
 
             if (card_id <= -1)
                 return false;
-            if (player->getGeneralName() == "zhu008")
-                room->doLightbox("$mokaiAnimate", 2000);
+            //if (player->getGeneralName() == "zhu008")
+            //    room->doLightbox("$mokaiAnimate", 2000);
             if (!player->hasSkill("#touhou_tianyi"))
                 room->handleAcquireDetachSkills(player, "#touhou_tianyi");
 

@@ -3853,9 +3853,9 @@ void Room::drawCards(QList<ServerPlayer *> players, QList<int> n_list, const QSt
             CardsMoveOneTimeStruct moveOneTime;
             QVariant data = QVariant::fromValue(moveOneTime);
             if (!unenable && (player->askForSkillInvoke("qiangyu", data))){
-                if (player->getPhase() == Player::Draw &&
-                    player->getGeneralName() == "zhu008")
-                    doLightbox("$qiangyuAnimate", 2000);
+                //if (player->getPhase() == Player::Draw &&
+                //    player->getGeneralName() == "zhu008")
+                //    doLightbox("$qiangyuAnimate", 2000);
                 setPlayerFlag(player, "qiangyu");
                 card_ids = getNCards(n + 2, false);
             }

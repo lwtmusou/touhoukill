@@ -250,7 +250,6 @@ sgs.ai_use_priority.suodingCard =7
 sgs.ai_card_intention.suodingCard = 20
 
 --¡¾»ØËÝ¡¿ai
-
 sgs.ai_skill_invoke.huisu = function(self)
 	return self:invokeTouhouJudge()
 end

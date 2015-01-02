@@ -22,10 +22,10 @@ skltkexueCard::skltkexueCard() {
 void skltkexueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *who = room->getCurrentDyingPlayer();
     if (who != NULL && who->hasSkill("skltkexue")){
-        if (who->getGeneralName() == "hmx001" && !who->hasFlag("skltkexueAnimate")){
+        /*if (who->getGeneralName() == "hmx001" && !who->hasFlag("skltkexueAnimate")){
             room->doLightbox("$skltkexueAnimate", 2000);
             room->setPlayerFlag(who, "skltkexueAnimate");
-        }
+        }*/
         room->notifySkillInvoked(who, "skltkexue");
         room->loseHp(source);
         source->drawCards(2);
@@ -138,11 +138,11 @@ public:
             sklt->tag["mingyun_judge"] = data;
             QString prompt = "judge:" + judge->who->objectName() + ":" + judge->reason;
             if (sklt->askForSkillInvoke(objectName(), prompt)){
-                if (room->getCurrent() && room->getCurrent()->getPhase() == Player::Judge &&
+                /*if (room->getCurrent() && room->getCurrent()->getPhase() == Player::Judge &&
                     sklt->getGeneralName() == "hmx001" && !sklt->hasFlag("mingyunAnimate")){
                     room->doLightbox("$mingyunAnimate", 2000);
                     room->setPlayerFlag(sklt, "mingyunAnimate");
-                }
+                }*/
                 QList<int> list = room->getNCards(2);
                 room->fillAG(list, sklt);
                 int obtain_id = room->askForAG(sklt, list, false, objectName());
@@ -177,10 +177,10 @@ public:
         while (!targets.isEmpty()){
             ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@@skltxueyi", true, true);
             if (target != NULL){
-                if (target->getGeneralName() == "hmx001" && !target->hasFlag("skltxueyiAnimate")){
+                /*if (target->getGeneralName() == "hmx001" && !target->hasFlag("skltxueyiAnimate")){
                     room->doLightbox("$skltxueyiAnimate", 2000);
                     room->setPlayerFlag(target, "skltxueyiAnimate");
-                }
+                }*/
                 room->notifySkillInvoked(target, objectName());
                 targets.removeOne(target);
                 target->drawCards(1);
@@ -202,8 +202,8 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (player->getPhase() == Player::Start){
-            if (player->getGeneralName() == "hmx002")
-                room->doLightbox("$pohuaiAnimate", 2000);
+            //if (player->getGeneralName() == "hmx002")
+            //    room->doLightbox("$pohuaiAnimate", 2000);
 
             room->touhouLogmessage("#TriggerSkill", player, "pohuai");
             room->notifySkillInvoked(player, objectName());
@@ -252,10 +252,10 @@ public:
         } else if (triggerEvent == PreCardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             if (player->getMark("yuxue") > 0 && use.card->isKindOf("Slash")){
-                if (player->getGeneralName() == "hmx002" && !player->hasFlag("yuxueAnimate")){
+                /*if (player->getGeneralName() == "hmx002" && !player->hasFlag("yuxueAnimate")){
                     room->doLightbox("$yuxueAnimate", 2000);
                     room->setPlayerFlag(player, "yuxueAnimate");
-                }
+                }*/
                 room->setPlayerMark(player, "yuxue", 0);
                 room->setCardFlag(use.card, "yuxueinvoked");
                 room->touhouLogmessage("#ChoosePlayerWithSkill", player, "yuxue", use.to, NULL);
@@ -322,10 +322,10 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         for (int i = 0; i < damage.damage; i++){
             if (room->askForSkillInvoke(player, objectName(), data)){
-                if (player->getGeneralName() == "hmx002" && !player->hasFlag("shengyanAnimate")){
+                /*if (player->getGeneralName() == "hmx002" && !player->hasFlag("shengyanAnimate")){
                     room->doLightbox("$shengyanAnimate", 2000);
                     room->setPlayerFlag(player, "shengyanAnimate");
-                }
+                }*/
                 player->drawCards(1);
             } else
                 break;
@@ -372,8 +372,8 @@ bool suodingCard::targetsFeasible(const QList<const Player *> &targets, const Pl
     return true;
 }
 void suodingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    if (source->getGeneralName() == "hmx003")
-        room->doLightbox("$suodingAnimate", 2000);
+    //if (source->getGeneralName() == "hmx003")
+    //    room->doLightbox("$suodingAnimate", 2000);
 
     QMap<ServerPlayer *, int> map;
 
@@ -494,10 +494,10 @@ public:
         if (x <= 0 || !player->isAlive())
             return false;
         if (room->askForSkillInvoke(player, "huisu")){
-            if (player->getGeneralName() == "hmx003" && !player->hasFlag("huisuAnimate")){
+            /*if (player->getGeneralName() == "hmx003" && !player->hasFlag("huisuAnimate")){
                 room->doLightbox("$huisuAnimate", 2000);
                 room->setPlayerFlag(player, "huisuAnimate");
-            }
+            }*/
             //for ( int i=0; i<x ;i++) {        
             JudgeStruct judge;
             if (isLoseHp)
@@ -553,10 +553,10 @@ public:
                 && player != move.from){
                 QString prompt = "obtain:" + card->objectName();
                 if (room->askForSkillInvoke(player, objectName(), prompt)){
-                    if (player->getGeneralName() == "hmx004" && !player->hasFlag("bolanAnimate")){
+                    /*if (player->getGeneralName() == "hmx004" && !player->hasFlag("bolanAnimate")){
                         room->doLightbox("$bolanAnimate", 2000);
                         room->setPlayerFlag(player, "bolanAnimate");
-                    }
+                    }*/
                     player->addToPile("yao_mark", card);
                     room->setCardFlag(card, "-realNDTrick");
                 }
@@ -839,8 +839,8 @@ public:
         if (player->getPhase() == Player::Finish){
             ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "@zhenye-select", true, true);
             if (target != NULL){
-                if (player->getGeneralName() == "hmx007")
-                    room->doLightbox("$zhenyeAnimate", 2000);
+                //if (player->getGeneralName() == "hmx007")
+                //    room->doLightbox("$zhenyeAnimate", 2000);
 
                 player->turnOver();
                 target->turnOver();
@@ -939,8 +939,8 @@ public:
         ServerPlayer *who = room->getCurrentDyingPlayer();
         if (player == who && player->faceUp()){
             if (player->askForSkillInvoke(objectName(), data)) {
-                if (player->getGeneralName() == "hmx009")
-                    room->doLightbox("$juxianAnimate", 2000);
+                //if (player->getGeneralName() == "hmx009")
+                //    room->doLightbox("$juxianAnimate", 2000);
                 player->turnOver();
                 QList<int> list = room->getNCards(3);
                 room->fillAG(list);

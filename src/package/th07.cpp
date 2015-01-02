@@ -1217,7 +1217,7 @@ public:
             if (use.to.contains(player)){
                 QList<int> list = player->getPile("siling");
                 if (!list.isEmpty() && use.from->isAlive()){
-                    player->tag["wangwu_target"] = QVariant::fromValue(use.from);
+                    player->tag["wangwu_use"] = data;
                     QString prompt = "invoke:" + use.from->objectName() + ":" + use.card->objectName();
                     if (player->askForSkillInvoke(objectName(), prompt)){
                         QList<int> same;

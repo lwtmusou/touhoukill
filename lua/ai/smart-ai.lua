@@ -102,6 +102,8 @@ sgs.ai_damage_prohibit =		{}
 sgs.ai_need_bear =		{} 
 sgs.ai_benefitBySlashed ={}
 sgs.ai_DamagedBenefit ={}
+sgs.siling_lack =				{}
+
 
 --东方杀相关各类列表
 --没做定义的【红白】【黑白】【赛钱】【收藏】【五欲】【渴血】【血裔】
@@ -179,7 +181,6 @@ function setInitialTables()
 			sgs.ai_role[aplayer:objectName()] = "neutral"
 		end
 	end
-
 end
 
 function SmartAI:initialize(player)
@@ -248,7 +249,11 @@ function SmartAI:initialize(player)
 	sgs.card_lack[player:objectName()]["Jink"] = 0
 	sgs.card_lack[player:objectName()]["Peach"] = 0
 	sgs.ai_NeedPeach[player:objectName()] = 0
-
+	--死灵的判断
+	sgs.siling_lack[player:objectName()] = {}
+	sgs.siling_lack[player:objectName()]["Black"] = 0
+	sgs.siling_lack[player:objectName()]["Red"] = 0
+	
 	if self.player:isLord() and not sgs.GetConfig("EnableHegemony", false) then
 		if (sgs.ai_chaofeng[self.player:getGeneralName()] or 0) < 3 then
 			sgs.ai_chaofeng[self.player:getGeneralName()] = 3
@@ -3231,7 +3236,7 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 	else
 		local dangerous = self:getDangerousCard(who)
 		if flags:match("e") and dangerous and (not isDiscard or self.player:canDiscard(who, dangerous)) then return dangerous end
-		--和木牛是否被天仪无关
+		--拆木牛的优先度是否该提高呢？ 比dangerousCard还高
 		if flags:match("e") and who:getTreasure()  and who:getPile("wooden_ox"):length() > 1 and (not isDiscard or self.player:canDiscard(who, who:getTreasure():getId())) then
 			return who:getTreasure():getId()
 		end
