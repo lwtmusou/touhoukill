@@ -133,7 +133,9 @@ public:
         }
         room->touhouLogmessage("#TriggerSkill", victim, objectName());
         room->notifySkillInvoked(victim, objectName());
-        room->showAllCards(player);
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, victim->objectName(), player->objectName());
+            
+		room->showAllCards(player);
         room->getThread()->delay(1000);
         room->clearAG();
         while (hasPeach && victim->getHp() < 1){
@@ -212,7 +214,9 @@ public:
             if (!current->isAlive())
                 return false;
             if (player->askForSkillInvoke(objectName(), "throw:" + current->objectName())){
-                const Card *card = room->askForCard(current, ".|red|.|hand", "@juwang:" + player->objectName(), data, Card::MethodDiscard, NULL, false, objectName());
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), current->objectName());
+            
+				const Card *card = room->askForCard(current, ".|red|.|hand", "@juwang:" + player->objectName(), data, Card::MethodDiscard, NULL, false, objectName());
                 if (card == NULL)
                     room->damage(DamageStruct(objectName(), player, current, 1));
             }
@@ -288,7 +292,9 @@ public:
                 QString prompt = "target:" + current->objectName();
                 if (!room->askForSkillInvoke(source, objectName(), prompt))
                     return false;
-                room->askForDiscard(current, objectName(), 1, 1, false, false, "wuchang_discard");
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), current->objectName());
+            
+				room->askForDiscard(current, objectName(), 1, 1, false, false, "wuchang_discard");
             }
         }
         else if (triggerEvent == EventPhaseChanging){

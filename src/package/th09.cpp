@@ -69,7 +69,9 @@ public:
                 QString    prompt = "target:" + player->objectName() + ":" + use.card->objectName();
 
                 if (use.from->askForSkillInvoke(objectName(), prompt)){
-                    //for ai to judge a card if it is already SkillNullified for this player,
+                    room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, use.from->objectName(), player->objectName());
+            
+					//for ai to judge a card if it is already SkillNullified for this player,
                     //the first line is more suitable than the second one.
                     room->setCardFlag(use.card, "huiwu" + player->objectName());
                     //room->setCardFlag(use.card, "huiwuSkillNullify",player);
@@ -287,7 +289,7 @@ public:
             QVariant _data = QVariant::fromValue(damage.to);
             if (!player->askForSkillInvoke(objectName(), _data))
                 return false;
-
+			room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.to->objectName());
             JudgeStruct judge;
             judge.reason = objectName();
             judge.who = player;
@@ -424,7 +426,9 @@ public:
                 source->tag["doujiu_target"] = _data;
                 if (!room->askForSkillInvoke(source, objectName(), _data))
                     return false;
-                source->drawCards(1);
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), target->objectName());
+            
+				source->drawCards(1);
                 if (!source->isKongcheng() && source->pindian(target, objectName())){
                     if (source->isWounded()){
                         RecoverStruct recover;
@@ -607,9 +611,12 @@ public:
             source->tag["dizhen_judge"] = data;
 
             QString prompt = "target:" + judge->who->objectName() + ":" + judge->reason;
-            if (room->askForSkillInvoke(source, objectName(), prompt))
-                room->damage(DamageStruct(objectName(), source, judge->who, 1, DamageStruct::Normal));
-        }
+            if (room->askForSkillInvoke(source, objectName(), prompt)){
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), judge->who->objectName());
+            
+				room->damage(DamageStruct(objectName(), source, judge->who, 1, DamageStruct::Normal));
+			}
+		}
         return false;
     }
 };

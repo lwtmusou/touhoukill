@@ -675,6 +675,7 @@ function SmartAI:getUsePriority(card)
 	if class_name == "LuaSkillCard" and card:isKindOf("LuaSkillCard") then
 		v = sgs.ai_use_priority[card:objectName()] or 0
 	end
+	
 	return self:adjustUsePriority(card, v)
 end
 
@@ -724,6 +725,8 @@ function SmartAI:adjustUsePriority(card, v)
 		end
 	end
 	
+	
+	
 	local suits_value = {}
 	for index, suit in ipairs(suits) do
 		suits_value[suit] = -index
@@ -763,6 +766,9 @@ function SmartAI:getDynamicUsePriority(card)
 				if p:getHp() == 1 then return sgs.ai_use_priority.FireAttack + 0.1 end
 			end
 		end]]
+		if self.player:hasSkill("jidu") then
+			return 8
+		end
 		if self:hasCrossbowEffect()
 			or self.player:hasFlag("XianzhenSuccess")
 			or self.player:canSlashWithoutCrossbow()
@@ -773,6 +779,7 @@ function SmartAI:getDynamicUsePriority(card)
 	end
 
 	local value = self:getUsePriority(card) or 0
+	
 	if card:getTypeId() == sgs.Card_TypeEquip then
 		if self:hasSkills(sgs.lose_equip_skill) then value = value + 12 end
 	end
@@ -2480,7 +2487,8 @@ function SmartAI:filterEvent(event, player, data)
 						if target:hasSkill("fangzhu") and target:getLostHp() < 2 then
 							has_slash_prohibit_skill = true
 						end
-                        if self:slashProhibitToEghitDiagram(card,player,target) then
+                        if self:slashProhibitToEghitDiagram(card,player,target) 
+						or self:slashProhibitToDiaopingTarget(card,player,target) then
 							has_slash_prohibit_skill = true
 						end
 						if player:canSlash(target, card, true) and self:slashIsEffective(card, target)
@@ -3416,6 +3424,7 @@ function SmartAI:askForAG(card_ids, refusable, reason)
 		end
 		return -1
 	end
+
 	local ids = card_ids
 	local cards = {}
 	for _, id in ipairs(ids) do
@@ -6201,7 +6210,7 @@ function SmartAI:useEquipCard(card, use)
 	--似乎应该分具体装备种类
 	
 	--除了藤甲外，还应该有 感应之于马匹，魔操等拆装流
-	if card:isKindOf("Vine") then
+	if card:isKindOf("Vine") and not self.player:hasSkill("huanmeng") then
 		if self.player:hasSkills("here|yexing")  then return end
 		local lunar = self.room:findPlayerBySkillName("zhuonong")
 		if lunar and not self.isFriend(lunar) then return end

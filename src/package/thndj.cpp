@@ -175,7 +175,9 @@ public:
         if (s != NULL){
             const Card *ask_card = room->askForCard(s, ".|black|.|hand", "@huanyue-discard:" + damage.to->objectName(), data, Card::MethodDiscard, NULL, true, "huanyue");
             if (ask_card != NULL){
-                QList<ServerPlayer *>logto;
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, s->objectName(), damage.to->objectName());
+            
+				QList<ServerPlayer *>logto;
                 logto << damage.to;
                 room->touhouLogmessage("#huanyue_log", damage.from, QString::number(damage.damage), logto, QString::number(damage.damage + 1));
                 damage.damage = damage.damage + 1;
@@ -298,13 +300,19 @@ public:
         source->tag["fanji_damage"] = data;
         QString prompt = "target:" + damage.from->objectName() + ":" + damage.to->objectName();
         if (damage.to == source){
-            if (room->askForSkillInvoke(source, objectName(), prompt))
-                room->damage(DamageStruct("fanji", source, damage.from));
+            if (room->askForSkillInvoke(source, objectName(), prompt)){
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), damage.from->objectName());
+            
+				room->damage(DamageStruct("fanji", source, damage.from));
+				
+			}	
         }
         else{
             if (source->inMyAttackRange(damage.to) && source->getMaxHp() > 1
                 && room->askForSkillInvoke(source, objectName(), prompt)){
-                room->loseMaxHp(source, 1);
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), damage.from->objectName());
+            
+				room->loseMaxHp(source, 1);
                 room->damage(DamageStruct("fanji", source, damage.from));
             }
         }

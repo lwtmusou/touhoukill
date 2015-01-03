@@ -154,11 +154,11 @@ zhu008                                  fsl007                                  
 shen002                                  fsl007                                   -1.4
 shen014                                  fsl007                                   -1.4
 fsl011                                 yym011                                   0.8
-shen005                                yyc001                                     1.0
-shen005                                xwm001                                     1.0
-shen005                                 xlc001                                   -1.1
 shen005                                 hmx001                                    -1.3
+shen005                                yyc001                                     1.0
 shen005                                 yyc002                                    -1.0
+shen005                                 xlc001                                   -1.1
+shen005                                xwm001                                     1.0
 shen009                                  fsl009                                  -1.3
 shen009                                  dld002                                  -1.3
 shen009                                  hmx009                                  -1.3

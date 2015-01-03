@@ -138,7 +138,9 @@ public:
             sklt->tag["mingyun_judge"] = data;
             QString prompt = "judge:" + judge->who->objectName() + ":" + judge->reason;
             if (sklt->askForSkillInvoke(objectName(), prompt)){
-                /*if (room->getCurrent() && room->getCurrent()->getPhase() == Player::Judge &&
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, sklt->objectName(), judge->who->objectName());
+            
+				/*if (room->getCurrent() && room->getCurrent()->getPhase() == Player::Judge &&
                     sklt->getGeneralName() == "hmx001" && !sklt->hasFlag("mingyunAnimate")){
                     room->doLightbox("$mingyunAnimate", 2000);
                     room->setPlayerFlag(sklt, "mingyunAnimate");
@@ -230,6 +232,8 @@ public:
             room->getThread()->delay();
             room->sortByActionOrder(all);
             foreach(ServerPlayer *p, all)
+				room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
+			foreach(ServerPlayer *p, all)
                 room->damage(DamageStruct(objectName(), player, p));
         }
         return false;
@@ -764,11 +768,13 @@ public:
         if (damage.card != NULL && damage.card->isKindOf("Slash")){
             player->tag["dongjie_damage"] = QVariant::fromValue(damage);
             if (room->askForSkillInvoke(player, "dongjie", QVariant::fromValue(damage.to))){
-                if (player->getGeneralName() == "hmx006" && !player->hasFlag("dongjieAnimate")
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.to->objectName());
+            
+				/*if (player->getGeneralName() == "hmx006" && !player->hasFlag("dongjieAnimate")
                     && damage.to->faceUp()){
                     room->doLightbox("$dongjieAnimate", 2000);
                     room->setPlayerFlag(player, "dongjieAnimate");
-                }
+                }*/
 
                 QList<ServerPlayer *> logto;
                 logto << damage.to;
@@ -890,7 +896,9 @@ public:
         if (player->getPhase() == Player::Start){
             QString prompt = "target:" + player->objectName();
             if (room->askForSkillInvoke(source, objectName(), prompt)){
-                source->drawCards(1);
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), player->objectName());
+            
+				source->drawCards(1);
                 QString choice = room->askForChoice(source, objectName(), "hp_moxue+maxhp_moxue", data);
                 if (choice == "hp_moxue")
                     room->loseHp(source, 1);

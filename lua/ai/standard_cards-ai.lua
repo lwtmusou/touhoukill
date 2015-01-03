@@ -344,7 +344,8 @@ function SmartAI:slashProhibit(card, enemy, from)
 		if enemy:isLord() and self:isWeak(enemy) and self:slashIsEffective(card, enemy, from) then return true end
 		if from:hasWeapon("GudingBlade") and enemy:isKongcheng() then return true end
 	else
-		if self:slashProhibitToEghitDiagram(card,from,enemy) then
+		if self:slashProhibitToEghitDiagram(card,from,enemy) 
+		or self:slashProhibitToDiaopingTarget(card,from,enemy) then
 			return true
 		end
 		if (card:isKindOf("NatureSlash") or from:hasSkill("zonghuo")) and not from:hasSkill("jueqing") and enemy:isChained()

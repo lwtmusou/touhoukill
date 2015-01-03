@@ -171,8 +171,10 @@ public:
             source->tag["qixiang_judge"] = data;
 
             QString prompt = "target:" + judge->who->objectName() + ":" + judge->reason;
-            if (room->askForSkillInvoke(source, objectName(), prompt))
-                judge->who->drawCards(1);
+            if (room->askForSkillInvoke(source, objectName(), prompt)){
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), judge->who->objectName());
+				judge->who->drawCards(1);
+			}
         }
         return false;
     }
@@ -197,7 +199,9 @@ public:
             QString prompt = "judge:" + judge->who->objectName() + ":" + judge->reason;
             if (!room->askForSkillInvoke(player, "boli", prompt))
                 return false;
-            /*if (player->getGeneralName() == "zhu001" && !player->hasFlag("boliAnimate")){
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), judge->who->objectName());
+			
+			/*if (player->getGeneralName() == "zhu001" && !player->hasFlag("boliAnimate")){
                 room->doLightbox("$boliAnimate", 2000);
                 room->setPlayerFlag(player, "boliAnimate");
             }*/

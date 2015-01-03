@@ -1240,6 +1240,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     if (player->hasSkill("duxin")){
         handcard_visible = true;
         notifySkillInvoked(player, "duxin");
+		doAnimate(S_ANIMATE_INDICATE, player->objectName(), who->objectName());
     }
 
     if (handcard_visible && !who->isKongcheng()) {
@@ -1483,45 +1484,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         result = askForCard(player, pattern, prompt, data, method, to, isRetrial);
     }
 
-    /*
-        //process weiya
-        ServerPlayer *weiya_player = getCurrent();
-        if (card && !isRetrial && !isProvision
-        && weiya_player->isAlive() && weiya_player != player &&(method == Card::MethodResponse ||method == Card::MethodUse) && weiya_player->hasSkill("weiya") ) {
-
-        QString weiya_pattern = card->objectName();
-        if (card->isKindOf("Slash"))
-        weiya_pattern="slash";
-        notifySkillInvoked(weiya_player, "weiya");
-        touhouLogmessage("#weiya_ask",player,"weiya",QList<ServerPlayer *>(),result->objectName());
-        const Card *card1=askForCard(player, weiya_pattern, "@weiya:"+result->objectName(), data, Card::MethodDiscard, to, isRetrial);
-
-        if (!card1){
-        touhouLogmessage("#weiya",player,"weiya",QList<ServerPlayer *>(),result->objectName());
-        skill_nullify =true;
-
-        }
-        }
-        //process luanying
-        ServerPlayer *splayer = findPlayerBySkillName("luanying");
-        if (card && !isRetrial &&(method == Card::MethodResponse ||method == Card::MethodUse)&&(splayer != NULL && player != NULL && splayer != player && player->isAlive())
-        && card->isKindOf("BasicCard") && splayer->getPile("jingjie").length()>0){
-        QList<int> jingjies = splayer->getPile("jingjie");
-        //for ai
-        QVariant ai_data = QVariant::fromValue(player);
-        setTag("luanying_target",ai_data);
-        if (askForSkillInvoke(splayer,"luanying")){
-        fillAG(jingjies, splayer);//disabled
-        int card_id =-1;
-        card_id = askForAG(splayer, jingjies, true, "luanying");
-        clearAG(splayer);
-        if (card_id >-1) {
-        obtainCard(player,card_id,true);
-        touhouLogmessage("#weiya",player,"luanying",QList<ServerPlayer *>(),card->objectName());
-        skill_nullify =true;
-        }
-        }
-        }*/
+    
     if (skill_nullify)
         return NULL;
     return result;

@@ -192,7 +192,8 @@ public:
                 CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
                 room->clearAG(yukari);
                 room->throwCard(Sanguosha->getCard(id), reason, NULL);
-
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, yukari->objectName(), who->objectName());
+            
                 int id2 = room->askForCardChosen(yukari, who, "he", objectName(), false, Card::MethodDiscard);
                 if (yukari->canDiscard(who, id2))
                     room->throwCard(id2, who, yukari);
@@ -238,7 +239,9 @@ public:
                 CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
                 room->throwCard(Sanguosha->getCard(id), reason, NULL);
                 room->clearAG(s);
-                player->skip(Player::Discard);
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, s->objectName(), player->objectName());
+            
+				player->skip(Player::Discard);
             }
             s->tag.remove("jingdong_target");
         }
@@ -983,6 +986,8 @@ public:
                             room->setCardFlag(use.card, "zhancao" + to->objectName());
                             if (room->askForCard(player, ".Equip", "@zhancao-discard", data, objectName()) == NULL)
                                 room->loseHp(player);
+							room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), to->objectName());
+            
                         }
                         player->tag.remove("zhancao_carduse");
                     }
@@ -1240,7 +1245,9 @@ public:
                             if (id > -1){
                                 CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
                                 room->throwCard(Sanguosha->getCard(id), reason, NULL);
-                                player->drawCards(1);
+                                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), use.from->objectName());
+            
+								player->drawCards(1);
 
                                 room->damage(DamageStruct("wangwu", player, use.from));
                             }

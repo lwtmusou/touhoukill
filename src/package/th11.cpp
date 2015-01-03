@@ -36,7 +36,10 @@ public:
 
 
         if (source->askForSkillInvoke("xiangqi", prompt)){
-            int id = room->askForCardChosen(source, damage.from, "h", objectName());
+
+			room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), damage.from->objectName());
+		
+			int id = room->askForCardChosen(source, damage.from, "h", objectName());
             room->showCard(damage.from, id);
             Card *showcard = Sanguosha->getCard(id);
             bool same = false;
@@ -45,7 +48,9 @@ public:
 
             if (same && damage.to != source){
                 room->throwCard(id, damage.from, source);
-                room->damage(DamageStruct("xiangqi", source, damage.to));
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), damage.to->objectName());
+		
+				room->damage(DamageStruct("xiangqi", source, damage.to));
             }
             else
                 room->obtainCard(damage.to, showcard);
@@ -392,8 +397,10 @@ public:
             return false;
         player->tag["songzang_dying"] = data;
 
-        const Card * c = room->askForCard(player, ".|spade", "@songzang:" + victim->objectName(), data, objectName());
+        const Card *c = room->askForCard(player, ".|spade", "@songzang:" + victim->objectName(), data, objectName());
         if (c){
+			room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), victim->objectName());
+			
             DamageStruct damage;
             damage.from = player;
             room->killPlayer(victim, &damage);
@@ -665,7 +672,9 @@ public:
 
                 room->touhouLogmessage("#TriggerSkill", player, objectName());
                 room->notifySkillInvoked(player, objectName());
-                SupplyShortage *supply = new SupplyShortage(Card::NoSuit, 0);
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), use.from->objectName());
+		
+				SupplyShortage *supply = new SupplyShortage(Card::NoSuit, 0);
                 QString choice;
                 bool canchoice = true;
 
@@ -906,7 +915,8 @@ public:
 
                     if (!room->askForSkillInvoke(skillowner, "diaoping", prompt))
                         return false;
-
+					room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, skillowner->objectName(), use.from->objectName());
+		
                     if (skillowner->pindian(use.from, "diaoping", NULL)){
                         use.from->turnOver();
                         good_result = true;

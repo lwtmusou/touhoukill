@@ -202,7 +202,9 @@ public:
         if (triggerEvent == DamageInflicted){
             const Card *card = room->askForCard(source, "..H", "@jiexiandamage:" + player->objectName(), data, objectName());
             if (card != NULL) {
-                DamageStruct damage = data.value<DamageStruct>();
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), player->objectName());
+            
+				DamageStruct damage = data.value<DamageStruct>();
                 room->touhouLogmessage("#jiexiandamage", player, objectName(), QList<ServerPlayer *>(), QString::number(damage.damage));
                 if (player->isWounded()) {
                     RecoverStruct recover;
@@ -217,7 +219,9 @@ public:
         else if (triggerEvent == PreHpRecover) {
             const Card *card = room->askForCard(source, "..S", "@jiexianrecover:" + player->objectName(), QVariant::fromValue(player), objectName());
             if (card != NULL){
-                room->touhouLogmessage("#jiexianrecover", player, objectName(), QList<ServerPlayer *>(), QString::number(data.value<RecoverStruct>().recover));
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), player->objectName());
+            
+				room->touhouLogmessage("#jiexianrecover", player, objectName(), QList<ServerPlayer *>(), QString::number(data.value<RecoverStruct>().recover));
                 room->damage(DamageStruct(objectName(), NULL, player));
                 return true;
             }
@@ -672,7 +676,9 @@ public:
         room->touhouLogmessage("#TriggerSkill", player, objectName());
         room->notifySkillInvoked(player, objectName());
         QList<int> idlist;
-
+		foreach(ServerPlayer *p, room->getOtherPlayers(player))
+			room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
+            
         foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
             if (p->canDiscard(p, "h")) {
                 const Card *cards = room->askForExchange(p, objectName(), 1, false, "cuixiang-exchange:" + player->objectName() + ":" + objectName());
@@ -750,7 +756,9 @@ public:
         if (current == NULL || !current->isAlive() || player == current)
             return false;
         if (player->askForSkillInvoke(objectName(), "recover:" + current->objectName())){
-            player->gainMark("@kinki");
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), current->objectName());
+            
+			player->gainMark("@kinki");
             RecoverStruct recover;
             recover.recover = 1 - player->getHp();
             room->recover(player, recover);
@@ -1351,7 +1359,9 @@ public:
                 return false;
             room->setPlayerMark(player, objectName(), 0);
             if (ymsnd->askForSkillInvoke(objectName(), QVariant::fromValue(player))){
-                const Card *card = room->askForCard(player, "%slash,%thunder_slash,%fire_slash", "@quanjie-discard");
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, ymsnd->objectName(), player->objectName());
+            
+				const Card *card = room->askForCard(player, "%slash,%thunder_slash,%fire_slash", "@quanjie-discard");
                 if (card == NULL){
                     player->drawCards(1);
                     room->setPlayerMark(player, objectName(), 1);
@@ -1569,7 +1579,9 @@ public:
 
                 if (player->getMark("hualong") > 0) {
                     if (player->canDiscard(use.from, "he") && room->askForSkillInvoke(player, objectName(), QVariant::fromValue(use.from))){
-                        int id = room->askForCardChosen(player, use.from, "he", objectName(), false, Card::MethodDiscard);
+                        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), use.from->objectName());
+            
+						int id = room->askForCardChosen(player, use.from, "he", objectName(), false, Card::MethodDiscard);
                         room->throwCard(id, use.from, player);
                         if (player->canDiscard(use.from, "he")){
                             int id1 = room->askForCardChosen(player, use.from, "he", objectName(), false, Card::MethodDiscard);
@@ -1578,9 +1590,13 @@ public:
                     }
                 }
                 else{
-                    if (use.from->canDiscard(use.from, "he") && room->askForSkillInvoke(player, objectName(), QVariant::fromValue(use.from)))
-                        room->askForDiscard(use.from, objectName(), 1, 1, false, true, "@longwei-askfordiscard:" + player->objectName() + ":" + QString::number(1));
-                }
+                    if (use.from->canDiscard(use.from, "he") && room->askForSkillInvoke(player, objectName(), QVariant::fromValue(use.from))){
+                        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), use.from->objectName());
+            
+						room->askForDiscard(use.from, objectName(), 1, 1, false, true, "@longwei-askfordiscard:" + player->objectName() + ":" + QString::number(1));
+						
+					}
+				}
 
             }
         }
@@ -1659,7 +1675,9 @@ public:
             QString  prompt = "@qinlue-discard:" + current->objectName();
             const Card *card = room->askForCard(source, "Slash,EquipCard", prompt, QVariant::fromValue(current), Card::MethodDiscard, current, false, "qinlue");
             if (card != NULL){
-                QString  prompt = "@qinlue-discard1:" + source->objectName();
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), current->objectName());
+            
+				QString  prompt = "@qinlue-discard1:" + source->objectName();
                 const Card *card1 = room->askForCard(current, "Jink", prompt, QVariant::fromValue(source), Card::MethodDiscard);
                 if (!card1){
                     current->skip(Player::Play);
@@ -2068,7 +2086,9 @@ public:
                 int x = player->getMaxHp() - player->getHp();
                 QString prompt = "invoke:" + damage.from->objectName() + ":" + QString::number(x);
                 if (room->askForSkillInvoke(player, objectName(), QVariant::fromValue(damage.from))) {
-                    player->drawCards(x);
+                    room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.from->objectName());
+            
+					player->drawCards(x);
                     room->askForDiscard(damage.from, objectName(), x, x, false, true);
                 }
             }

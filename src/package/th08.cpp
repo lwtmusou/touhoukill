@@ -466,7 +466,8 @@ public:
                 src->tag["shishi_use"] = data;
                 if (!room->askForSkillInvoke(src, objectName(), prompt))
                     return false;
-
+				room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, src->objectName(), use.from->objectName());
+            
                 if (use.card && room->getCardPlace(use.card->getEffectiveId()) == Player::PlaceTable)
                     src->addToPile("lishi", use.card, true);
                 //addtopile will clear cardflag(especially  use.from is robot ai )
@@ -962,7 +963,9 @@ public:
             player->tag["wangyue_target"] = QVariant::fromValue(damage.from);
             QString prompt = "target:" + damage.from->objectName() + "::" + QString::number(player->getHp());
             if (room->askForSkillInvoke(player, objectName(), prompt)){
-                int x = damage.from->getHandcardNum() - player->getHp();
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.from->objectName());
+            
+				int x = damage.from->getHandcardNum() - player->getHp();
                 room->askForDiscard(damage.from, "wangyue", x, x, false, false);
             }
         }
