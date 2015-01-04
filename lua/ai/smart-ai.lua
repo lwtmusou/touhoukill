@@ -1342,10 +1342,10 @@ function sgs.isLordInDanger()
 	if lord:hasSkill("juxian") and lord:faceUp() then
 		lord_hp = lord_hp+1
 	end
-	if lord:hasSkill("hualong")  and player:getMark("hulong") == 0 then
+	if lord:hasSkill("hualong")  and lord:getMark("hulong") == 0 then
 		lord_hp = lord_hp+lord:getMaxHp()
 	end
-	if lord:hasSkill("yizhi")  and player:getMark("yizhi") == 0 then
+	if lord:hasSkill("yizhi")  and lord:getMark("yizhi") == 0 then
 		lord_hp = lord_hp+1
 	end
 	return lord_hp < 3

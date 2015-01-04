@@ -958,7 +958,8 @@ function bllmwuyu_discard(player)
 	local cards = sgs.QList2Table(player:getCards("he"))
     local all_hearts={}
 	for _,c in pairs(cards) do
-		if c:getSuit()==sgs.Card_Heart and not (c:isKindOf("Peach") or c:isKindOf("DefensiveHorse"))then
+		if c:getSuit()==sgs.Card_Heart 
+		and not (c:isKindOf("Peach") or c:isKindOf("Slash") or c:isKindOf("DefensiveHorse"))then
 			table.insert(all_hearts,c:getId())
 		end
 	end
@@ -1076,7 +1077,7 @@ function bllmwuyu_skill.getTurnUseCard(self)
 	local can_shiyu=true
 	local slash_num=getCardsNum("Slash", self.player, self.player)
 
-	if  slash_num< 1 then return nil end
+	if  slash_num< 2 then return nil end
 	if not sgs.Analeptic_IsAvailable(self.player) then 
 		can_shiyu=false
 	end
@@ -1092,7 +1093,7 @@ function bllmwuyu_skill.getTurnUseCard(self)
 		end
 	end
 	if not can_shiyu then
-		if slash_num>= 1 and not sgs.Slash_IsAvailable(self.player) then
+		if slash_num>= 2 and not sgs.Slash_IsAvailable(self.player) then
 			self.player:setTag("wuyu_choose",sgs.QVariant(1))
 			return sgs.Card_Parse("@bllmwuyuCard=.")
 		end
