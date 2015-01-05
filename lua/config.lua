@@ -178,6 +178,12 @@ config = {
 		"kof_zhurong",
 		"kof_sunshangxiang",
 		"kof_nos_diaochan",
+		"wai011", 
+		"hzc001", 
+		"ndj010",  
+		"shen011",  
+		"zhan010", 
+		"shen000"
 	},
 
 	kof_ban = {

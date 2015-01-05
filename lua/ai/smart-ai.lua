@@ -130,14 +130,16 @@ function setInitialTables()
 	sgs.need_kongcheng = "lianying|kongcheng|sijian|micai"
 	sgs.masochism_skill = 		"guixin|yiji|fankui|jieming|xuehen|neoganglie|ganglie|vsganglie|enyuan|fangzhu|nosenyuan|langgu|quanji|" ..
 						"zhiyu|renjie|tanlan|tongxin|huashen"..
-						"|yuxue"
+						"|baochun|jingxia|qingyu"
 	sgs.wizard_skill = 		"guicai|guidao|jilve|tiandu|luoying|noszhenlie|huanshi|feixiang|mingyun|fengshui|boli"
 	sgs.wizard_harm_skill = 	"guicai|guidao|jilve|feixiang|mingyun|fengshui|boli"
+	--急火优先 包养优先?
 	sgs.priority_skill = 		"dimeng|haoshi|qingnang|nosjizhi|jizhi|guzheng|qixi|jieyin|guose|duanliang|jujian|fanjian|neofanjian|lijian|" ..
 						"noslijian|manjuan|tuxi|qiaobian|yongsi|zhiheng|luoshen|nosrende|rende|mingce|wansha|gongxin|jilve|anxu|" ..
 						"qice|yinling|qingcheng|houyuan|zhaoxin|shuangren"..
-						"|jiezou|qiangyu|suoding"
+						"|saiqian|qiangyu|miyao|maihuo|jiushu|weizhi|qingting|shenshou"
 	sgs.save_skill = 		"jijiu|buyi|nosjiefan|chunlao|longhun|qiyao"
+	--攻击除外 --其实只有查询雷击目标用到了
 	sgs.exclusive_skill = 		"huilei|duanchang|wuhun|buqu|dushi"
 	sgs.cardneed_skill =		"paoxiao|tianyi|xianzhen|shuangxiong|nosjizhi|jizhi|guose|duanliang|qixi|qingnang|yinling|luoyi|guhuo|nosguhuo|kanpo|" ..
 						"jieyin|renjie|zhiheng|nosrende|rende|nosjujian|guicai|guidao|longhun|luanji|qiaobian|beige|jieyuan|" ..
@@ -146,12 +148,12 @@ function setInitialTables()
 	sgs.drawpeach_skill =		"tuxi|qiaobian|zhize|chunxi|toupai"
 	sgs.recover_skill =		"nosrende|rende|kofkuanggu|kuanggu|zaiqi|jieyin|qingnang|yinghun|hunzi|shenzhi|longhun|nosmiji|zishou|ganlu|xueji|shangshi|" ..
 						"nosshangshi|ytchengxiang|buqu|miji"..
-						"|juxian|banyue"
+						"|juxian"
 	sgs.use_lion_skill =		 "longhun|duanliang|qixi|guidao|noslijian|lijian|jujian|nosjujian|zhiheng|mingce|yongsi|fenxun|gongqi|" ..
 						"yinling|jilve|qingcheng|neoluoyi|diyyicong"..
-						"|baoyi"
+						"|baoyi|junshi|zhancao|chuanran|weizhi|buming|pingyi|shouhui|youming|meilingluanwu|qinlue"
 	sgs.need_equip_skill = 		"shensu|mingce|jujian|beige|yuanhu|huyuan|gongqi|nosgongqi|yanzheng|qingcheng|neoluoyi|longhun|shuijian"..
-							"|baoyi|mokai"
+							"|baoyi|mokai|junshi|zhancao|wunian|yiwang"
 	sgs.judge_reason =		"bazhen|EightDiagram|wuhun|supply_shortage|tuntian|nosqianxi|nosmiji|indulgence|lightning|baonue"..
 									"|nosleiji|leiji|caizhaoji_hujia|tieji|luoshen|ganglie|neoganglie|vsganglie|kofkuanggu"..
 							"|lingqi|pohuai|huisu"		

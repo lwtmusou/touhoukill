@@ -874,12 +874,12 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         //since limit skill,this character can play one more extraturn in a turnstart event,
         //do not use trigger turn start
-        while (true){
-            ServerPlayer *skillowner = room->findPlayerBySkillName(objectName());
+        ServerPlayer *skillowner = room->findPlayerBySkillName(objectName());
+		while (true){
             ServerPlayer *current = room->getCurrent();
             if (current && current==player &&current->isAlive()
-                && skillowner->getMark("@clock") > 0
-                && room->canInsertExtraTurn() && skillowner->isAlive()){
+                && skillowner &&  skillowner->isAlive()
+                && room->canInsertExtraTurn()  && skillowner->getMark("@clock") > 0){
                 QString prompt = "extraturn:" + current->objectName();
                 if (room->askForSkillInvoke(skillowner, objectName(), prompt)) {
                     skillowner->loseAllMarks("@clock");
