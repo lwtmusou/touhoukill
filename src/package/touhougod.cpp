@@ -2182,6 +2182,60 @@ public:
 };
 
 
+class chuanwu : public TargetModSkill {
+public:
+    chuanwu() : TargetModSkill("chuanwu") {
+        pattern = "BasicCard,TrickCard";
+    }
+    
+    virtual int getDistanceLimit(const Player *from, const Card *card) const{
+        if (from->hasSkill("chuanwu") && from->getPhase() == Player::Play)
+            return 1000;
+        else
+            return 0;
+    }
+
+};
+
+
+class huanming : public TriggerSkill {
+public:
+    huanming() : TriggerSkill("huanming") {
+        events << DamageCaused;
+        frequency = Limited;
+        limit_mark = "@huanming";
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        
+        DamageStruct damage = data.value<DamageStruct>();
+        if (!damage.to || player == damage.to 
+		|| player->getMark("@huanming") == 0
+		|| damage.to->getHp()<=0)
+            return false;
+
+        if (room->askForSkillInvoke(player, objectName(), QVariant::fromValue(damage.to))) {
+			room->removePlayerMark(player, "@huanming");
+			int source_newHp = qMin(damage.to->getHp(), player->getMaxHp());
+			int victim_newHp = qMin(player->getHp(), damage.to->getMaxHp());
+			room->setPlayerProperty(player, "hp", source_newHp);
+			if (damage.to->hasSkill("banling")){
+				room->setPlayerMark(damage.to, "lingtili", victim_newHp);
+				room->setPlayerMark(damage.to, "rentili", victim_newHp);
+				//room->setPlayerMark(player, "minus_lingtili", minus_x);
+				//room->setPlayerMark(player, "minus_rentili", minus_y); 
+				room->setPlayerProperty(damage.to, "hp", victim_newHp);
+			}
+			else
+				room->setPlayerProperty(damage.to, "hp", victim_newHp);
+			
+			return true;
+		}
+        return false;
+    }
+};
+
+
 touhougodPackage::touhougodPackage()
     : Package("touhougod")
 {
@@ -2280,7 +2334,11 @@ touhougodPackage::touhougodPackage()
     shen017->addRelateSkill("benwo");
     shen017->addRelateSkill("chaowo");
 
-
+	//General *shen018 = new General(this, "shen018", "touhougod", 4, false);
+	//shen018->addSkill(new chuanwu);
+	//shen018->addSkill(new Skill("yindu", Skill::Compulsory));
+	//shen018->addSkill(new huanming);
+	
     General *shen000 = new General(this, "shen000", "touhougod", 4, true);
     shen000->addSkill(new chuanghuan);
     shen000->addSkill(new chuanghuanGet);

@@ -414,20 +414,20 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *target;
-        if (damage.from == NULL || damage.from->isDead())
-            return false;
-        if (damage.to == NULL || damage.to->isDead())
-            return false;
         if (triggerEvent == Damaged){
-            if (damage.from != NULL  && damage.from->isAlive() && player != damage.from)
+            if (damage.from  && damage.from->isAlive() && player != damage.from)
                 target = damage.from;
+			else
+				return false;
         }
         else if (triggerEvent == Damage){
-            if (damage.to->isAlive() && player != damage.to)
+            if (damage.to && damage.to->isAlive() && player != damage.to)
                 target = damage.to;
+			else
+				return false;
         }
-        if (target == NULL || target->isDead())
-            return false;
+		
+		
         if (triggerEvent == Damaged){
             if (!room->askForSkillInvoke(player, objectName(), data))
                 return false;

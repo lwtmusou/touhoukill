@@ -1320,10 +1320,10 @@ function sgs.isLordHealthy()
 	if lord:hasSkill("juxian") and lord:faceUp() then
 		lord_hp = lord_hp+1
 	end
-	if lord:hasSkill("hualong")  and player:getMark("hulong") == 0 then
+	if lord:hasSkill("hualong")  and lord:getMark("hulong") == 0 then
 		lord_hp = lord_hp+lord:getMaxHp()
 	end
-	if lord:hasSkill("yizhi")  and player:getMark("yizhi") == 0 then
+	if lord:hasSkill("yizhi")  and lord:getMark("yizhi") == 0 then
 		lord_hp = lord_hp+1
 	end
 	return lord_hp > 3 or (lord_hp > 2 and sgs.getDefense(lord) > 3)
@@ -2601,6 +2601,7 @@ function SmartAI:filterEvent(event, player, data)
 		if player:isLord() then
 			if sgs.debugmode then logmsg("ai.html","<meta charset='utf-8'/>") end
 		end
+		self:lordThreat()--为主忠盲狙  自动增加克制主公的明反的仇恨
 	end
 	--东方杀中更新仇恨的时机 （三国杀ai没有考虑这些时机）
 	if event == sgs.EventLoseSkill then
@@ -7420,6 +7421,17 @@ function SmartAI:touhouHasLightningBenefit(player)
 		return true
 	end
 	return false
+end
+
+function SmartAI:lordThreat()--为主忠盲狙  自动增加克制主公的明反的仇恨
+	local lord = self.room:getLord()
+	if lord and lord:hasSkills("shanji|jingjie|shende") then
+		for _,p in sgs.qlist(self.room:getOtherPlayers(lord)) do
+			if p:hasSkill("changshi") then
+				sgs.updateIntention(p, lord, 150)
+			end
+		end
+	end
 end
 
 --将木牛 票等id 加入 手牌的list中

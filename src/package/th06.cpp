@@ -394,8 +394,10 @@ void suodingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
                 sp->addToPile("suoding_cards", id, false);
         } else {
             for (int i = 0; i < map[sp]; i++){
-                int card_id = room->askForCardChosen(source, sp, "h", "suoding");
-                sp->addToPile("suoding_cards", card_id, false);
+                if (!sp->isKongcheng()){
+					int card_id = room->askForCardChosen(source, sp, "h", "suoding");
+					sp->addToPile("suoding_cards", card_id, false);
+				}
             }
         }
     }
