@@ -55,7 +55,7 @@ Room::Room(QObject *parent, const QString &mode)
     DoLuaScript(L, "lua/sanguosha.lua");
     DoLuaScript(L, QFile::exists("lua/ai/private-smart-ai.lua") ?
         "lua/ai/private-smart-ai.lua" : "lua/ai/smart-ai.lua");
-    //for reconnect		
+    //for reconnect        
     m_fillAGarg = Json::Value::null;
     m_takeAGargs = Json::Value(Json::arrayValue);
 }
@@ -1240,7 +1240,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     if (player->hasSkill("duxin")){
         handcard_visible = true;
         notifySkillInvoked(player, "duxin");
-		doAnimate(S_ANIMATE_INDICATE, player->objectName(), who->objectName());
+        doAnimate(S_ANIMATE_INDICATE, player->objectName(), who->objectName());
     }
 
     if (handcard_visible && !who->isKongcheng()) {
@@ -1573,7 +1573,7 @@ const Card *Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> 
 
     const Card *slash = askForUseCard(slasher, "slash", prompt, -1, Card::MethodUse, addHistory);
     //if (slasher->hasFlag("Global_qijislashFailed")){
-    //	slash = NULL;
+    //    slash = NULL;
     // } 
     if (slash == NULL) {
         setPlayerFlag(slasher, "-slashTargetFix");
@@ -4816,7 +4816,7 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use) {
     if (player->hasFlag("Global_PlayPhaseTerminated")) {
         setPlayerFlag(player, "-Global_PlayPhaseTerminated");
         //for "dangjia" intention ai  
-		//need record  PlayPhaseTerminated
+        //need record  PlayPhaseTerminated
         setPlayerFlag(player, "PlayPhaseTerminated");
         card_use.card = NULL;
         return;

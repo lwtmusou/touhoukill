@@ -131,8 +131,8 @@ function setInitialTables()
 	sgs.masochism_skill = 		"guixin|yiji|fankui|jieming|xuehen|neoganglie|ganglie|vsganglie|enyuan|fangzhu|nosenyuan|langgu|quanji|" ..
 						"zhiyu|renjie|tanlan|tongxin|huashen"..
 						"|baochun|jingxia|qingyu"
-	sgs.wizard_skill = 		"guicai|guidao|jilve|tiandu|luoying|noszhenlie|huanshi|feixiang|mingyun|fengshui|boli"
-	sgs.wizard_harm_skill = 	"guicai|guidao|jilve|feixiang|mingyun|fengshui|boli"
+	sgs.wizard_skill = 		"guicai|guidao|jilve|tiandu|luoying|noszhenlie|huanshi|feixiang|mingyun|fengshui"--boli
+	sgs.wizard_harm_skill = 	"guicai|guidao|jilve|feixiang|mingyun|fengshui" --boli
 	--急火优先 包养优先?
 	sgs.priority_skill = 		"dimeng|haoshi|qingnang|nosjizhi|jizhi|guzheng|qixi|jieyin|guose|duanliang|jujian|fanjian|neofanjian|lijian|" ..
 						"noslijian|manjuan|tuxi|qiaobian|yongsi|zhiheng|luoshen|nosrende|rende|mingce|wansha|gongxin|jilve|anxu|" ..
@@ -4426,6 +4426,7 @@ function SmartAI:getFinalRetrial(player, reason)
 	local tmpnetural
 	local wizardf, wizarde, wizardn
 	player = player or self.room:getCurrent()
+	--命运必然是第一个改判
 	local sklt = self.room:findPlayerBySkillName("mingyun") 
 	if sklt then
 		if self:isFriend(sklt) then
@@ -4891,6 +4892,14 @@ function isCard(class_name, card, player)
 	return false
 end
 
+function SmartAI:getRealNumber(card,player) 
+	player = player or self.player
+	if player:hasSkill("bendan")  then
+		return 9
+	end
+	return card:getNumber()
+end
+
 function SmartAI:getMaxCard(player)
 	player = player or self.player
 
@@ -4904,7 +4913,7 @@ function SmartAI:getMaxCard(player)
 	for _, card in sgs.qlist(cards) do
 		local flag = string.format("%s_%s_%s", "visible", global_room:getCurrent():objectName(), player:objectName())
 		if (player:objectName() == self.player:objectName() and not self:isValuableCard(card)) or card:hasFlag("visible") or card:hasFlag(flag) then
-			local point = card:getNumber()
+			local point = self:getRealNumber(card,player) 
 			if point > max_point then
 				max_point = point
 				max_card = card
@@ -4913,7 +4922,7 @@ function SmartAI:getMaxCard(player)
 	end
 	if player:objectName() == self.player:objectName() and not max_card then
 		for _, card in sgs.qlist(cards) do
-			local point = card:getNumber()
+			local point = self:getRealNumber(card,player)
 			if point > max_point then
 				max_point = point
 				max_card = card
@@ -4925,14 +4934,14 @@ function SmartAI:getMaxCard(player)
 
 	if (player:hasSkills("tianyi|dahe|xianzhen") or self.player:hasFlag("AI_XiechanUsing")) and max_point > 0 then
 		for _, card in sgs.qlist(cards) do
-			if card:getNumber() == max_point and not isCard("Slash", card, player) then
+			if self:getRealNumber(card,player) == max_point and not isCard("Slash", card, player) then
 				return card
 			end
 		end
 	end
 	if player:hasSkill("qiaoshui") and max_point > 0 then
 		for _, card in sgs.qlist(cards) do
-			if card:getNumber() == max_point and not card:isNDTrick() then
+			if self:getRealNumber(card,player) == max_point and not card:isNDTrick() then
 				return card
 			end
 		end
@@ -4953,7 +4962,7 @@ function SmartAI:getMinCard(player)
 	for _, card in sgs.qlist(cards) do
 		local flag = string.format("%s_%s_%s", "visible", global_room:getCurrent():objectName(), player:objectName())
 		if player:objectName() == self.player:objectName() or card:hasFlag("visible") or card:hasFlag(flag) then
-			local point = card:getNumber()
+			local point = self:getRealNumber(card,player)
 			if point < min_point then
 				min_point = point
 				min_card = card
@@ -5974,21 +5983,39 @@ function SmartAI:hasTrickEffective(card, to, from)
 	if self.room:isProhibited(from, to, card) then return false end
 	if to:hasSkill("zhengyi")  and not card:isKindOf("DelayedTrick") and card:isBlack() then return false end
 	if to:hasSkill("yunshang") and not from:inMyAttackRange(to) then return false end
+	if to:hasSkill("weizhuang") and card:isNDTrick() then
+		local basics = getCardsNum("BasicCard", from, self.player)
+		if sgs.dynamic_value.damage_card[card:getClassName()] then
+			if not self:isFriend(to, from) and basics < 1 then
+				return false
+			end
+		elseif sgs.dynamic_value.benefit[card:getClassName()] then
+			if not self:isFriend(to, from)  then
+				return false
+			end
+		elseif sgs.dynamic_value.control_card[card:getClassName()] then
+			if not self:isFriend(to, from) and basics < 1 then
+				return false
+			end
+		end
+	end
 	if to:hasLordSkill("fahua") then
 		canFahua=false
 		for _,p in sgs.qlist(self.room:getOtherPlayers(to)) do
 			if p:getKingdom() =="xlc" and self:isFriend(p,to) then
-				if p:hasSkill("zhengyi")  and not card:isKindOf("DelayedTrick") and card:isBlack() then
+				canFahua= self:hasTrickEffective(card, p, from)
+				if canFahua then return true end
+				--[[if p:hasSkill("zhengyi")  and not card:isKindOf("DelayedTrick") and card:isBlack() then
 					canFahua=true
 					break
 				end
 				if p:hasSkill("yunshang") and not from:inMyAttackRange(p)  then
 					canFahua=true
 					break
-				end
+				end]]
 			end
 		end
-		if canFahua then return canFahua end
+		--if canFahua then return canFahua end
 	end
 	if to:getMark("@late") > 0 and not card:isKindOf("DelayedTrick") then return false end
 	if to:getPile("dream"):length() > 0 and to:isLocked(card) then return false end

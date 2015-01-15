@@ -241,7 +241,7 @@ public:
                 room->clearAG(s);
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, s->objectName(), player->objectName());
             
-				player->skip(Player::Discard);
+                player->skip(Player::Discard);
             }
             s->tag.remove("jingdong_target");
         }
@@ -986,7 +986,7 @@ public:
                             room->setCardFlag(use.card, "zhancao" + to->objectName());
                             if (room->askForCard(player, ".Equip", "@zhancao-discard", data, objectName()) == NULL)
                                 room->loseHp(player);
-							room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), to->objectName());
+                            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), to->objectName());
             
                         }
                         player->tag.remove("zhancao_carduse");
@@ -1247,7 +1247,7 @@ public:
                                 room->throwCard(Sanguosha->getCard(id), reason, NULL);
                                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), use.from->objectName());
             
-								player->drawCards(1);
+                                player->drawCards(1);
 
                                 room->damage(DamageStruct("wangwu", player, use.from));
                             }

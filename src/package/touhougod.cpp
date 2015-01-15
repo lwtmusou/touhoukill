@@ -204,7 +204,7 @@ public:
             if (card != NULL) {
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), player->objectName());
             
-				DamageStruct damage = data.value<DamageStruct>();
+                DamageStruct damage = data.value<DamageStruct>();
                 room->touhouLogmessage("#jiexiandamage", player, objectName(), QList<ServerPlayer *>(), QString::number(damage.damage));
                 if (player->isWounded()) {
                     RecoverStruct recover;
@@ -221,7 +221,7 @@ public:
             if (card != NULL){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), player->objectName());
             
-				room->touhouLogmessage("#jiexianrecover", player, objectName(), QList<ServerPlayer *>(), QString::number(data.value<RecoverStruct>().recover));
+                room->touhouLogmessage("#jiexianrecover", player, objectName(), QList<ServerPlayer *>(), QString::number(data.value<RecoverStruct>().recover));
                 room->damage(DamageStruct(objectName(), NULL, player));
                 return true;
             }
@@ -676,8 +676,8 @@ public:
         room->touhouLogmessage("#TriggerSkill", player, objectName());
         room->notifySkillInvoked(player, objectName());
         QList<int> idlist;
-		foreach(ServerPlayer *p, room->getOtherPlayers(player))
-			room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
+        foreach(ServerPlayer *p, room->getOtherPlayers(player))
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
             
         foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
             if (p->canDiscard(p, "h")) {
@@ -758,7 +758,7 @@ public:
         if (player->askForSkillInvoke(objectName(), "recover:" + current->objectName())){
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), current->objectName());
             
-			player->gainMark("@kinki");
+            player->gainMark("@kinki");
             RecoverStruct recover;
             recover.recover = 1 - player->getHp();
             room->recover(player, recover);
@@ -875,7 +875,7 @@ public:
         //since limit skill,this character can play one more extraturn in a turnstart event,
         //do not use trigger turn start
         ServerPlayer *skillowner = room->findPlayerBySkillName(objectName());
-		while (true){
+        while (true){
             ServerPlayer *current = room->getCurrent();
             if (current && current==player &&current->isAlive()
                 && skillowner &&  skillowner->isAlive()
@@ -887,8 +887,8 @@ public:
 
                     skillowner->gainAnExtraTurn();
                 }
-				else
-				    break;
+                else
+                    break;
             }
             else
                 break;
@@ -1361,7 +1361,7 @@ public:
             if (ymsnd->askForSkillInvoke(objectName(), QVariant::fromValue(player))){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, ymsnd->objectName(), player->objectName());
             
-				const Card *card = room->askForCard(player, "%slash,%thunder_slash,%fire_slash", "@quanjie-discard");
+                const Card *card = room->askForCard(player, "%slash,%thunder_slash,%fire_slash", "@quanjie-discard");
                 if (card == NULL){
                     player->drawCards(1);
                     room->setPlayerMark(player, objectName(), 1);
@@ -1581,7 +1581,7 @@ public:
                     if (player->canDiscard(use.from, "he") && room->askForSkillInvoke(player, objectName(), QVariant::fromValue(use.from))){
                         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), use.from->objectName());
             
-						int id = room->askForCardChosen(player, use.from, "he", objectName(), false, Card::MethodDiscard);
+                        int id = room->askForCardChosen(player, use.from, "he", objectName(), false, Card::MethodDiscard);
                         room->throwCard(id, use.from, player);
                         if (player->canDiscard(use.from, "he")){
                             int id1 = room->askForCardChosen(player, use.from, "he", objectName(), false, Card::MethodDiscard);
@@ -1593,10 +1593,10 @@ public:
                     if (use.from->canDiscard(use.from, "he") && room->askForSkillInvoke(player, objectName(), QVariant::fromValue(use.from))){
                         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), use.from->objectName());
             
-						room->askForDiscard(use.from, objectName(), 1, 1, false, true, "@longwei-askfordiscard:" + player->objectName() + ":" + QString::number(1));
-						
-					}
-				}
+                        room->askForDiscard(use.from, objectName(), 1, 1, false, true, "@longwei-askfordiscard:" + player->objectName() + ":" + QString::number(1));
+                        
+                    }
+                }
 
             }
         }
@@ -1677,7 +1677,7 @@ public:
             if (card != NULL){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), current->objectName());
             
-				QString  prompt = "@qinlue-discard1:" + source->objectName();
+                QString  prompt = "@qinlue-discard1:" + source->objectName();
                 const Card *card1 = room->askForCard(current, "Jink", prompt, QVariant::fromValue(source), Card::MethodDiscard);
                 if (!card1){
                     current->skip(Player::Play);
@@ -2088,7 +2088,7 @@ public:
                 if (room->askForSkillInvoke(player, objectName(), QVariant::fromValue(damage.from))) {
                     room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.from->objectName());
             
-					player->drawCards(x);
+                    player->drawCards(x);
                     room->askForDiscard(damage.from, objectName(), x, x, false, true);
                 }
             }
@@ -2210,27 +2210,27 @@ public:
         
         DamageStruct damage = data.value<DamageStruct>();
         if (!damage.to || player == damage.to 
-		|| player->getMark("@huanming") == 0
-		|| damage.to->getHp()<=0)
+        || player->getMark("@huanming") == 0
+        || damage.to->getHp()<=0)
             return false;
 
         if (room->askForSkillInvoke(player, objectName(), QVariant::fromValue(damage.to))) {
-			room->removePlayerMark(player, "@huanming");
-			int source_newHp = qMin(damage.to->getHp(), player->getMaxHp());
-			int victim_newHp = qMin(player->getHp(), damage.to->getMaxHp());
-			room->setPlayerProperty(player, "hp", source_newHp);
-			if (damage.to->hasSkill("banling")){
-				room->setPlayerMark(damage.to, "lingtili", victim_newHp);
-				room->setPlayerMark(damage.to, "rentili", victim_newHp);
-				//room->setPlayerMark(player, "minus_lingtili", minus_x);
-				//room->setPlayerMark(player, "minus_rentili", minus_y); 
-				room->setPlayerProperty(damage.to, "hp", victim_newHp);
-			}
-			else
-				room->setPlayerProperty(damage.to, "hp", victim_newHp);
-			
-			return true;
-		}
+            room->removePlayerMark(player, "@huanming");
+            int source_newHp = qMin(damage.to->getHp(), player->getMaxHp());
+            int victim_newHp = qMin(player->getHp(), damage.to->getMaxHp());
+            room->setPlayerProperty(player, "hp", source_newHp);
+            if (damage.to->hasSkill("banling")){
+                room->setPlayerMark(damage.to, "lingtili", victim_newHp);
+                room->setPlayerMark(damage.to, "rentili", victim_newHp);
+                //room->setPlayerMark(player, "minus_lingtili", minus_x);
+                //room->setPlayerMark(player, "minus_rentili", minus_y); 
+                room->setPlayerProperty(damage.to, "hp", victim_newHp);
+            }
+            else
+                room->setPlayerProperty(damage.to, "hp", victim_newHp);
+            
+            return true;
+        }
         return false;
     }
 };
@@ -2334,11 +2334,11 @@ touhougodPackage::touhougodPackage()
     shen017->addRelateSkill("benwo");
     shen017->addRelateSkill("chaowo");
 
-	//General *shen018 = new General(this, "shen018", "touhougod", 4, false);
-	//shen018->addSkill(new chuanwu);
-	//shen018->addSkill(new Skill("yindu", Skill::Compulsory));
-	//shen018->addSkill(new huanming);
-	
+    //General *shen018 = new General(this, "shen018", "touhougod", 4, false);
+    //shen018->addSkill(new chuanwu);
+    //shen018->addSkill(new Skill("yindu", Skill::Compulsory));
+    //shen018->addSkill(new huanming);
+    
     General *shen000 = new General(this, "shen000", "touhougod", 4, true);
     shen000->addSkill(new chuanghuan);
     shen000->addSkill(new chuanghuanGet);

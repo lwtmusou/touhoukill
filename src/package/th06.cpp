@@ -140,7 +140,7 @@ public:
             if (sklt->askForSkillInvoke(objectName(), prompt)){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, sklt->objectName(), judge->who->objectName());
             
-				/*if (room->getCurrent() && room->getCurrent()->getPhase() == Player::Judge &&
+                /*if (room->getCurrent() && room->getCurrent()->getPhase() == Player::Judge &&
                     sklt->getGeneralName() == "hmx001" && !sklt->hasFlag("mingyunAnimate")){
                     room->doLightbox("$mingyunAnimate", 2000);
                     room->setPlayerFlag(sklt, "mingyunAnimate");
@@ -232,8 +232,8 @@ public:
             room->getThread()->delay();
             room->sortByActionOrder(all);
             foreach(ServerPlayer *p, all)
-				room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
-			foreach(ServerPlayer *p, all)
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
+            foreach(ServerPlayer *p, all)
                 room->damage(DamageStruct(objectName(), player, p));
         }
         return false;
@@ -395,9 +395,9 @@ void suodingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
         } else {
             for (int i = 0; i < map[sp]; i++){
                 if (!sp->isKongcheng()){
-					int card_id = room->askForCardChosen(source, sp, "h", "suoding");
-					sp->addToPile("suoding_cards", card_id, false);
-				}
+                    int card_id = room->askForCardChosen(source, sp, "h", "suoding");
+                    sp->addToPile("suoding_cards", card_id, false);
+                }
             }
         }
     }
@@ -772,7 +772,7 @@ public:
             if (room->askForSkillInvoke(player, "dongjie", QVariant::fromValue(damage.to))){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.to->objectName());
             
-				/*if (player->getGeneralName() == "hmx006" && !player->hasFlag("dongjieAnimate")
+                /*if (player->getGeneralName() == "hmx006" && !player->hasFlag("dongjieAnimate")
                     && damage.to->faceUp()){
                     room->doLightbox("$dongjieAnimate", 2000);
                     room->setPlayerFlag(player, "dongjieAnimate");
@@ -900,7 +900,7 @@ public:
             if (room->askForSkillInvoke(source, objectName(), prompt)){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), player->objectName());
             
-				source->drawCards(1);
+                source->drawCards(1);
                 QString choice = room->askForChoice(source, objectName(), "hp_moxue+maxhp_moxue", data);
                 if (choice == "hp_moxue")
                     room->loseHp(source, 1);

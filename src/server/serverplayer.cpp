@@ -1199,6 +1199,37 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
 
     if (hasShownRole())
         room->notifyProperty(player, this, "role");
+    //for huashen  like skill pingyi or zhengti
+    if (getMark("pingyi_steal") > 0){
+        foreach (ServerPlayer *p, room->getAllPlayers()){
+            if (this != p && p->getMark("pingyi") > 0){
+                QString pingyi_record = this->objectName() + "pingyi" + p->objectName();
+                QString skillname = room->getTag(pingyi_record).toString();
+                if (skillname != NULL && skillname != ""){
+                    Json::Value huanshen_arg(Json::arrayValue);
+                    huanshen_arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+                    huanshen_arg[1] = QSanProtocol::Utils::toJsonString(this->objectName());
+                    huanshen_arg[2] = QSanProtocol::Utils::toJsonString(p->getGeneral()->objectName());
+                    huanshen_arg[3] = QSanProtocol::Utils::toJsonString(skillname);
+                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, huanshen_arg);    
+                    break;
+                }
+            }
+        }
+    }
+    else if(hasSkill("zhengti", false, true)) {
+        foreach (ServerPlayer *p, room->getAllPlayers()){
+            if (p->getMark("@zhengti")>0){
+                Json::Value zhengti_arg(Json::arrayValue);
+                zhengti_arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+                zhengti_arg[1] = QSanProtocol::Utils::toJsonString(this->objectName());
+                zhengti_arg[2] = QSanProtocol::Utils::toJsonString(p->getGeneral()->objectName());
+                zhengti_arg[3] = QSanProtocol::Utils::toJsonString("zhengti");
+                room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, zhengti_arg);    
+                break;
+            }
+        }
+    }
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool open) {

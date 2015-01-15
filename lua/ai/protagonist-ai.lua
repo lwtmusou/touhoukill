@@ -510,43 +510,44 @@ sgs.saiqian_suit_value = {
 }
 
 --【借走】ai
+function jiezouSpade(self,player)
+	local cards
+	if player:objectName() == self.player:objectName() then
+		cards =self.player:getCards("he")
+	else
+		cards=player:getCards("e")
+	end
+	for _,card in sgs.qlist(cards) do
+		if card:getSuit()==sgs.Card_Spade then
+			return true
+		end
+	end
+	return false
+end
 local jiezou_skill = {}
 jiezou_skill.name = "jiezou"
 table.insert(sgs.ai_skills, jiezou_skill)
 jiezou_skill.getTurnUseCard = function(self)
 	--没考虑自己人的情况.
 	local targets=self:getEnemies(self.player)
-	cards=self.player:getCards("h")
-	can_use=false
-	for _,card in sgs.qlist(cards) do
-		if card:getSuit()==sgs.Card_Spade then
-			can_use=true
-			break
-		end
-	end
-	for _,target in pairs(targets) do
-		if can_use then
-			break
-		end
-		ecards=target:getCards("e")
-		for _,card in sgs.qlist(ecards) do
-			if card:getSuit()==sgs.Card_Spade then
-				can_use=true
+	local can_use= jiezouSpade(self,self.player)
+	if not can_use then
+		for _,target in pairs(targets) do
+			can_use = jiezouSpade(self,target)
+			if can_use then
 				break
 			end
 		end
 	end
 	if can_use then
-		--return sgs.Card_Parse("#jiezou:.:")
 		return sgs.Card_Parse("@jiezouCard=.")
 	end
 	return nil
 end
-sgs.ai_skill_use_func.jiezouCard = function(card, use, self)
---sgs.ai_skill_use_func["#jiezou"] = function(card, use, self)        
+sgs.ai_skill_use_func.jiezouCard = function(card, use, self)        
 		local friends={}
-		local enemies_e={}
-		local enemies_h={}
+		local enemies_spade={}
+		local enemies ={}
 		
 		for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
             if p:isAllNude() then continue end
@@ -559,14 +560,10 @@ sgs.ai_skill_use_func.jiezouCard = function(card, use, self)
 				end
 			end
 			if self:isEnemy(p) then
-				local ecards=p:getCards("e")
-				for _,card in sgs.qlist(ecards) do
-					if card:getSuit()==sgs.Card_Spade then
-						table.insert(enemies_e,p)
-					end
-				end
-				if not p:isKongcheng() then
-					table.insert(enemies_h,p)
+				if jiezouSpade(self,p) then
+					table.insert(enemies_spade,p)
+				elseif not p:isNude() then
+					table.insert(enemies,p)
 				end
 			end
         end
@@ -577,18 +574,18 @@ sgs.ai_skill_use_func.jiezouCard = function(card, use, self)
 				use.to:append(friends[1])
 				if use.to:length() >= 1 then return end
             end
-		elseif #enemies_e>0 then
+		elseif #enemies_spade>0 then
 			use.card = card
             if use.to then
-                self:sort(enemies_e,"value")
-				use.to:append(enemies_e[1])
+                self:sort(enemies_spade,"value")
+				use.to:append(enemies_spade[1])
 				if use.to:length() >= 1 then return end
             end
-		elseif #enemies_h>0 then
+		elseif #enemies>0 and jiezouSpade(self,self.player) then
 			use.card = card
             if use.to then
-                self:sort(enemies_h,"value")
-				use.to:append(enemies_h[1])
+                self:sort(enemies,"value")
+				use.to:append(enemies[1])
 				if use.to:length() >= 1 then return end
             end
 		end
@@ -608,14 +605,15 @@ sgs.ai_skill_cardchosen.jiezou = function(self, who, flags)
 				return card
 			end
 		end
-		local hcards=who:getCards("h")
-		return hcards:first()
+		local id = self:askForCardChosen(who, "he", "snatch", sgs.Card_MethodNone) --reason 不能用jiezou， 会成为死循环
+		return sgs.Sanguosha:getCard(id)
 	end
 end
-sgs.ai_skill_cardask["jiezou_spadecard"] = function(self, data)
-        local cards = sgs.QList2Table(self.player:getCards("he"))
+sgs.ai_skill_cardask["@jiezou_spadecard"] = function(self, data)
+		local cards = sgs.QList2Table(self.player:getCards("he"))
         if #cards==0 then return "." end
-		self:sortByCardNeed(cards)
+		--self:sortByCardNeed(cards)
+		self:sortByKeepValue(cards)
 		for _,card in pairs (cards) do
 			if card:getSuit()==sgs.Card_Spade then
 				return "$" .. card:getId()
@@ -624,9 +622,10 @@ sgs.ai_skill_cardask["jiezou_spadecard"] = function(self, data)
 		return "."
 end
 
-sgs.ai_choicemade_filter.cardChosen.jiezou = sgs.ai_choicemade_filter.cardChosen.snatch
+sgs.ai_choicemade_filter.cardChosen.jiezou = sgs.ai_choicemade_filter.cardChosen.snatch 
 sgs.ai_use_value.jiezouCard = 8
-sgs.ai_use_priority.jiezouCard =5
+sgs.ai_use_priority.jiezouCard =6 --怎么过拆的动态优先度还是那么高！！！
+sgs.dynamic_value.control_card.jiezouCard = true
 sgs.ai_cardneed.jiezou = function(to, card, self)
 	return card:getSuit()==sgs.Card_Spade
 end

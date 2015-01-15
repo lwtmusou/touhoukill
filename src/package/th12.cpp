@@ -251,8 +251,8 @@ public:
                     room->touhouLogmessage("#TriggerSkill", player, "zhengyi");
                     CardsMoveStruct move;
                     move.to = use.from;
-                    move.to_place = Player::PlaceHand;
-                    move.card_ids << (room->getDrawPile().last());
+                    move.to_place = Player::PlaceHand; 
+                    move.card_ids << (room->drawCard(true));//(room->getDrawPile().last());
                     room->moveCardsAtomic(move, false);
                 }
             }
@@ -417,17 +417,17 @@ public:
         if (triggerEvent == Damaged){
             if (damage.from  && damage.from->isAlive() && player != damage.from)
                 target = damage.from;
-			else
-				return false;
+            else
+                return false;
         }
         else if (triggerEvent == Damage){
             if (damage.to && damage.to->isAlive() && player != damage.to)
                 target = damage.to;
-			else
-				return false;
+            else
+                return false;
         }
-		
-		
+        
+        
         if (triggerEvent == Damaged){
             if (!room->askForSkillInvoke(player, objectName(), data))
                 return false;
@@ -567,10 +567,11 @@ public:
                     CardsMoveStruct move;
                     move.to = player;
                     move.to_place = Player::PlaceHand;
-
-                    int len = room->getDrawPile().length();
-                    move.card_ids << (room->getDrawPile().last());
-                    move.card_ids << (room->getDrawPile().at(len - 2));
+                    for (int i = 1; i <= 2; i++)
+                        move.card_ids << room->drawCard(true);
+                    //int len = room->getDrawPile().length();
+                    //move.card_ids << (room->getDrawPile().last());
+                    //move.card_ids << (room->getDrawPile().at(len - 2));
 
                     room->moveCardsAtomic(move, false);
                 }

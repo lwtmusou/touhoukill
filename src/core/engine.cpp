@@ -593,7 +593,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
 }
 
 QString Engine::getVersionNumber() const{
-    return "20150105";
+    return "20150115";
 }
 
 QString Engine::getVersion() const{
@@ -605,7 +605,7 @@ QString Engine::getVersionName() const{
 }
 
 QString Engine::getMODName() const{
-    return "Rara";
+    return "TouhouKill";
 }
 
 QStringList Engine::getExtensions() const{

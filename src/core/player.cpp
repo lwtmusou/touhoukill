@@ -399,7 +399,7 @@ bool Player::isLord() const{
 
 
 bool Player::hasSkill(const QString &skill_name, bool include_lose, bool include_invalidity) const{
-    bool skill_invalid = false;//  invalid but maybe not lost this skill	
+    bool skill_invalid = false;//  invalid but maybe not lost this skill    
     if (!include_lose) {
         if (!hasEquipSkill(skill_name)) {
             if (Sanguosha->getSkill(skill_name) && Sanguosha->getSkill(skill_name)->getFrequency() == Skill::Eternal)
@@ -566,7 +566,7 @@ void Player::setPhaseString(const QString &phase_str) {
 void Player::setEquip(WrappedCard *equip) {
     const EquipCard *card = qobject_cast<const EquipCard *>(equip->getRealCard());
     //if (card == NULL) // for jianshu and zhengyi
-    //	return;
+    //    return;
     Q_ASSERT(card != NULL);
     switch (card->location()) {
     case EquipCard::WeaponLocation: weapon = equip; break;
@@ -1128,7 +1128,7 @@ bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool i
     if (method == Card::MethodNone)
         return false;
     //if (this->hasFlag("yuanfei"))
-    //	return true;
+    //    return true;
     if (card->getTypeId() == Card::TypeSkill && method == card->getHandlingMethod()) {
         foreach (int card_id, card->getSubcards()) {
             const Card *c = Sanguosha->getCard(card_id);

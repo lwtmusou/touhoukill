@@ -135,7 +135,7 @@ public:
         room->notifySkillInvoked(victim, objectName());
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, victim->objectName(), player->objectName());
             
-		room->showAllCards(player);
+        room->showAllCards(player);
         room->getThread()->delay(1000);
         room->clearAG();
         while (hasPeach && victim->getHp() < 1){
@@ -216,7 +216,7 @@ public:
             if (player->askForSkillInvoke(objectName(), "throw:" + current->objectName())){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), current->objectName());
             
-				const Card *card = room->askForCard(current, ".|red|.|hand", "@juwang:" + player->objectName(), data, Card::MethodDiscard, NULL, false, objectName());
+                const Card *card = room->askForCard(current, ".|red|.|hand", "@juwang:" + player->objectName(), data, Card::MethodDiscard, NULL, false, objectName());
                 if (card == NULL)
                     room->damage(DamageStruct(objectName(), player, current, 1));
             }
@@ -294,7 +294,7 @@ public:
                     return false;
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), current->objectName());
             
-				room->askForDiscard(current, objectName(), 1, 1, false, false, "wuchang_discard");
+                room->askForDiscard(current, objectName(), 1, 1, false, false, "wuchang_discard");
             }
         }
         else if (triggerEvent == EventPhaseChanging){
@@ -637,6 +637,44 @@ public:
     }
 };
 
+liangeCard::liangeCard() {
+    will_throw = false;
+    handling_method = Card::MethodNone;
+    mute = true;
+}
+void liangeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    room->moveCardTo(Sanguosha->getCard(subcards.first()), NULL, Player::DrawPile);
+    QList<int> idlist = room->getNCards(2);//(2, false)
+    
+    room->fillAG(idlist, targets.first());
+    int card_id = room->askForAG(targets.first(), idlist, false, "liange");
+    room->clearAG(targets.first());
+    room->obtainCard(targets.first(), card_id, false);
+    idlist.removeOne(card_id);
+    
+    DummyCard *dummy = new DummyCard;
+    foreach(int id, idlist)
+        dummy->addSubcard(id);
+    CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, targets.first()->objectName(), objectName(), "");
+    room->throwCard(dummy, reason, NULL);
+}
+class liange : public OneCardViewAsSkill {
+public:
+    liange() :OneCardViewAsSkill("liange") {
+        filter_pattern = ".|.|.|.";
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->hasUsed("liangeCard");
+    }
+
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        liangeCard *card = new liangeCard;
+        card->addSubcard(originalCard);
+        return card;
+    }
+};
 
 class aige : public TriggerSkill {
 public:
@@ -737,12 +775,14 @@ th14Package::th14Package()
     hzc008->addSkill(new shizhu);
     hzc008->addSkill(new shizhuCount);
     related_skills.insertMulti("shizhu", "#shizhu");
+    hzc008->addSkill(new liange);
     //hzc008->addSkill(new aige);
-    hzc008->addSkill(new jingtao);
+    //hzc008->addSkill(new jingtao);
 
     addMetaObject<leitingCard>();
     addMetaObject<yuanfeiCard>();
     addMetaObject<yuanfeiNearCard>();
+    addMetaObject<liangeCard>();
 }
 
 ADD_PACKAGE(th14)

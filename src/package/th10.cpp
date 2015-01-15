@@ -1,6 +1,5 @@
 #include "th10.h"
-
-
+    
 #include "general.h"
 #include "settings.h"
 #include "skill.h"
@@ -294,7 +293,7 @@ public:
             if (suwako->askForSkillInvoke(objectName(), prompt)){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, suwako->objectName(), damage.from->objectName());
             
-				if (suwako->pindian(damage.from, objectName(), NULL)){
+                if (suwako->pindian(damage.from, objectName(), NULL)){
                     RecoverStruct recov;
                     recov.who = suwako;
                     room->recover(damage.to, recov);
@@ -989,9 +988,9 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Start){
             foreach(ServerPlayer *p, room->getOtherPlayers(player))
-				room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
-		
-			room->touhouLogmessage("#changshi01", player, "changshi");
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
+        
+            room->touhouLogmessage("#changshi01", player, "changshi");
             room->notifySkillInvoked(player, objectName());
             //for zhengti huashen UI
 
@@ -1302,9 +1301,9 @@ public:
         if (room->askForSkillInvoke(player, objectName(), prompt)) {
             room->removePlayerMark(player, "@zhongyan");
             room->doLightbox("$zhongyanAnimate", 4000);
-			room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.from->objectName());
-		
-			int x = damage.from->getLostHp();
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.from->objectName());
+        
+            int x = damage.from->getLostHp();
             room->loseHp(damage.from, qMax(1, x));
             return true;
         }

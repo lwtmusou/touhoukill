@@ -14,42 +14,43 @@ sgs.ai_card_intention.skltkexueCard = sgs.ai_card_intention.Peach
 
 function SmartAI:invokeTouhouJudge(player)
 	player = player or self.player
-	local leimi=self.room:findPlayerBySkillName("mingyun")
 	local wizard_type ,wizard = self:getFinalRetrial()
-	if not wizard then
-		if leimi then
-			return not self:isEnemy(leimi,player)
-		else
-			return true
+	local value = 0
+	if wizard  and self:isFriend(wizard,player) then
+		value = value + 1
+	end
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if p:hasSkills("feixiang|mingyun") then
+			if self:isFriend(p,player) then
+				value = value + 1
+			else
+				value = value - 1
+			end
 		end
 	end
-	if wizard then
-		if self:isEnemy(wizard,player) and wizard:hasSkill("feixiang") then
-			return false
-		end
-	end
-	return true
+	return value>=0
 end
 function SmartAI:needtouhouDamageJudge(player)
 	player = player or self.player
 	local wizard_type ,wizard = self:getFinalRetrial()
-	local leimi=self.room:findPlayerBySkillName("mingyun")
-	if not wizard then
-		if leimi then
-			return self:isFriend(leimi,player)
-		end
-		return false
+	local value = 0
+	if wizard  and self:isFriend(wizard,player) then
+		value = value + 1
 	end
-	if wizard then
-		if wizard:hasSkills("feixiang|fengshui") then
-			return self:isFriend(wizard,player)
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if p:hasSkills("feixiang|mingyun") then
+			if self:isFriend(p,player) then
+				value = value + 1
+			else
+				value = value - 1
+			end
 		end
 	end
-	return false
+	return value>0
 end
 function SmartAI:slashProhibitToEghitDiagram(card,from,enemy)
 	if self:isFriend(from,enemy) then return false end
-	if self:hasEightDiagramEffect(enemy) and self:needtouhouDamageJudge(enemy) then
+	if self:hasEightDiagramEffect(enemy) and self:invokeTouhouJudge(enemy) then
 		if not self:touhouIgnoreArmor(card,from,enemy) 
 		or not (from:hasSkill("guaili") and from:getHandcardNum()>=3 and from:getPhase()== sgs.Player_Play) then
 			return true

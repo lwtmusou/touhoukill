@@ -173,8 +173,8 @@ public:
             QString prompt = "target:" + judge->who->objectName() + ":" + judge->reason;
             if (room->askForSkillInvoke(source, objectName(), prompt)){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), judge->who->objectName());
-				judge->who->drawCards(1);
-			}
+                judge->who->drawCards(1);
+            }
         }
         return false;
     }
@@ -200,8 +200,8 @@ public:
             if (!room->askForSkillInvoke(player, "boli", prompt))
                 return false;
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), judge->who->objectName());
-			
-			/*if (player->getGeneralName() == "zhu001" && !player->hasFlag("boliAnimate")){
+            
+            /*if (player->getGeneralName() == "zhu001" && !player->hasFlag("boliAnimate")){
                 room->doLightbox("$boliAnimate", 2000);
                 room->setPlayerFlag(player, "boliAnimate");
             }*/
@@ -633,7 +633,7 @@ void jiezouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
         room->setPlayerFlag(source, "jiezouAnimate");
     }*/
     ServerPlayer *target = targets.first();
-    int id = room->askForCardChosen(source, target, "hej", objectName());
+    int id = room->askForCardChosen(source, target, "hej", "jiezou");
     room->obtainCard(source, id, room->getCardPlace(id) != Player::PlaceHand);
     const Card *spade = room->askForCard(source, ".|spade", "@jiezou_spadecard", QVariant(), Card::MethodDiscard, NULL, false, "jiezou", false);
     if (spade == NULL) {

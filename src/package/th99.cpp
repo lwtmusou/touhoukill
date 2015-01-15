@@ -400,7 +400,7 @@ public:
                 break;
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), target->objectName());
             
-			player->setFlags("pindian");
+            player->setFlags("pindian");
             count--;
             if (player->pindian(target, "taohuan", NULL) && !target->isNude()){
                 int id = room->askForCardChosen(player, target, "he", objectName());
@@ -709,12 +709,12 @@ public:
         }
 
         if (back != NULL){
-			
+            
             room->setPlayerMark(player, "pingyi_steal", 0);
             if (back->isAlive()){
                 room->setPlayerMark(back, "pingyi", back->getMark("pingyi") - 1);
-				room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), back->objectName());
-			}
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), back->objectName());
+            }
             room->handleAcquireDetachSkills(player, "-" + back_skillname);
 
             Json::Value arg(Json::arrayValue);
@@ -764,10 +764,10 @@ public:
                 //record pingyi     relation and content.
                 QString pingyi_record = player->objectName() + "pingyi" + damage.from->objectName();
                 room->setTag(pingyi_record, skill_name);
-				
-				room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.from->objectName());
+                
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.from->objectName());
             
-				
+                
                 room->setPlayerMark(player, "pingyi_steal", 1);
                 room->setPlayerMark(damage.from, "pingyi", damage.from->getMark("pingyi") + 1);//can be stealed any times.
                 room->handleAcquireDetachSkills(damage.from, "-" + skill_name);

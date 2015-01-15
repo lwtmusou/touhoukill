@@ -71,7 +71,7 @@ public:
                 if (use.from->askForSkillInvoke(objectName(), prompt)){
                     room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, use.from->objectName(), player->objectName());
             
-					//for ai to judge a card if it is already SkillNullified for this player,
+                    //for ai to judge a card if it is already SkillNullified for this player,
                     //the first line is more suitable than the second one.
                     room->setCardFlag(use.card, "huiwu" + player->objectName());
                     //room->setCardFlag(use.card, "huiwuSkillNullify",player);
@@ -289,7 +289,7 @@ public:
             QVariant _data = QVariant::fromValue(damage.to);
             if (!player->askForSkillInvoke(objectName(), _data))
                 return false;
-			room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.to->objectName());
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.to->objectName());
             JudgeStruct judge;
             judge.reason = objectName();
             judge.who = player;
@@ -428,7 +428,7 @@ public:
                     return false;
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), target->objectName());
             
-				source->drawCards(1);
+                source->drawCards(1);
                 if (!source->isKongcheng() && source->pindian(target, objectName())){
                     if (source->isWounded()){
                         RecoverStruct recover;
@@ -614,9 +614,9 @@ public:
             if (room->askForSkillInvoke(source, objectName(), prompt)){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), judge->who->objectName());
             
-				room->damage(DamageStruct(objectName(), source, judge->who, 1, DamageStruct::Normal));
-			}
-		}
+                room->damage(DamageStruct(objectName(), source, judge->who, 1, DamageStruct::Normal));
+            }
+        }
         return false;
     }
 };

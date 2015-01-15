@@ -41,11 +41,11 @@ qingtingCard::qingtingCard() {
 }
 void qingtingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     foreach(ServerPlayer *p, room->getOtherPlayers(source)){
-		if (p->isKongcheng())
+        if (p->isKongcheng())
             continue;
-		room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), p->objectName());    
-	}
-	foreach(ServerPlayer *p, room->getOtherPlayers(source)){
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), p->objectName());    
+    }
+    foreach(ServerPlayer *p, room->getOtherPlayers(source)){
         if (p->isKongcheng())
             continue;
         const Card *card;
@@ -606,7 +606,7 @@ public:
             if (player->askForSkillInvoke("fengshui_retrial", data)){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), judge->who->objectName());
             
-				player->setFlags("-shijie_judge");
+                player->setFlags("-shijie_judge");
                 QList<int> list1 = room->getNCards(1);
                 Card *card = Sanguosha->getCard(list1.first());
                 room->retrial(card, player, judge, objectName());
@@ -1287,7 +1287,7 @@ public:
                 room->touhouLogmessage("#TriggerSkill", player, objectName());
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.from->objectName());
             
-				damage.from->gainMark("@zhengti", 1);
+                damage.from->gainMark("@zhengti", 1);
                 room->setTag("zhengti_target", QVariant::fromValue(damage.from));
                 //for huashen UI
                 QList<ServerPlayer *> owners = room->findPlayersBySkillName(objectName());
@@ -1392,9 +1392,9 @@ public:
 
         if (player->askForSkillInvoke(objectName())){
             foreach(ServerPlayer *p, targets)
-				room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
             
-			foreach(ServerPlayer *p, targets){
+            foreach(ServerPlayer *p, targets){
                 if (p->canDiscard(p, "he")){
                     p->tag["qingyu_source"] = QVariant::fromValue(player);
                     //if (!room->askForDiscard(p, objectName(), 1, 1, true, true, "@qingyu-discard:"+player->objectName()))

@@ -177,7 +177,7 @@ public:
             if (ask_card != NULL){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, s->objectName(), damage.to->objectName());
             
-				QList<ServerPlayer *>logto;
+                QList<ServerPlayer *>logto;
                 logto << damage.to;
                 room->touhouLogmessage("#huanyue_log", damage.from, QString::number(damage.damage), logto, QString::number(damage.damage + 1));
                 damage.damage = damage.damage + 1;
@@ -303,16 +303,16 @@ public:
             if (room->askForSkillInvoke(source, objectName(), prompt)){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), damage.from->objectName());
             
-				room->damage(DamageStruct("fanji", source, damage.from));
-				
-			}	
+                room->damage(DamageStruct("fanji", source, damage.from));
+                
+            }    
         }
         else{
             if (source->inMyAttackRange(damage.to) && source->getMaxHp() > 1
                 && room->askForSkillInvoke(source, objectName(), prompt)){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), damage.from->objectName());
             
-				room->loseMaxHp(source, 1);
+                room->loseMaxHp(source, 1);
                 room->damage(DamageStruct("fanji", source, damage.from));
             }
         }
