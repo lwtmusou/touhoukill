@@ -131,7 +131,7 @@ function setInitialTables()
 	sgs.masochism_skill = 		"guixin|yiji|fankui|jieming|xuehen|neoganglie|ganglie|vsganglie|enyuan|fangzhu|nosenyuan|langgu|quanji|" ..
 						"zhiyu|renjie|tanlan|tongxin|huashen"..
 						"|baochun|jingxia|qingyu"
-	sgs.wizard_skill = 		"guicai|guidao|jilve|tiandu|luoying|noszhenlie|huanshi|feixiang|mingyun|fengshui"--boli
+	sgs.wizard_skill = 		"guicai|guidao|jilve|tiandu|luoying|noszhenlie|feixiang|mingyun|fengshui"--boli --huanshi
 	sgs.wizard_harm_skill = 	"guicai|guidao|jilve|feixiang|mingyun|fengshui" --boli
 	--急火优先 包养优先?
 	sgs.priority_skill = 		"dimeng|haoshi|qingnang|nosjizhi|jizhi|guzheng|qixi|jieyin|guose|duanliang|jujian|fanjian|neofanjian|lijian|" ..
@@ -151,7 +151,7 @@ function setInitialTables()
 						"|juxian"
 	sgs.use_lion_skill =		 "longhun|duanliang|qixi|guidao|noslijian|lijian|jujian|nosjujian|zhiheng|mingce|yongsi|fenxun|gongqi|" ..
 						"yinling|jilve|qingcheng|neoluoyi|diyyicong"..
-						"|baoyi|junshi|zhancao|chuanran|weizhi|buming|pingyi|shouhui|youming|meilingluanwu|qinlue"
+						"|baoyi|junshi|zhancao|chuanran|weizhi|buming|pingyi|shouhui|youming|luanwu|qinlue"
 	sgs.need_equip_skill = 		"shensu|mingce|jujian|beige|yuanhu|huyuan|gongqi|nosgongqi|yanzheng|qingcheng|neoluoyi|longhun|shuijian"..
 							"|baoyi|mokai|junshi|zhancao|wunian|yiwang"
 	sgs.judge_reason =		"bazhen|EightDiagram|wuhun|supply_shortage|tuntian|nosqianxi|nosmiji|indulgence|lightning|baonue"..
@@ -358,7 +358,7 @@ function sgs.getDefense(player, gameProcess)
 	if player:getHp() > getBestHp(player) then defense = defense + 0.8 end
 	if player:getHp() <= 2 then defense = defense - 0.4 end
 
-	if player:hasSkill("tianxiang") then defense = defense + player:getHandcardNum() * 0.5 end
+	--if player:hasSkill("tianxiang") then defense = defense + player:getHandcardNum() * 0.5 end
 
 	if not gameProcess and player:getHandcardNum() == 0 then
 		if player:getHp() <= 1 then defense = defense - 2.5 end
@@ -388,7 +388,7 @@ function sgs.getDefense(player, gameProcess)
 		if player:hasSkills("noslijian|lijian") then defense = defense - 2.2 end
 		if player:hasSkill("nosmiji") and player:isWounded() then defense = defense - 1.5 end
 		if player:hasSkill("xiliang") and getKnownCard(player, attacker, "Jink", true) == 0 then defense = defense - 2 end
-		if player:hasSkill("shouye") then defense = defense - 2 end
+		--if player:hasSkill("shouye") then defense = defense - 2 end
 	end
 
 	defense = defense + player:getHandcardNum() * 0.25
@@ -701,8 +701,9 @@ function SmartAI:adjustUsePriority(card, v)
 	if card:isKindOf("Slash") then
 		if card:getSkillName() == "Spear" then v = v - 0.1 end
 		if card:isRed() then
-			if self.slashAvail == 1 and self.player:hasSkill("jie") then v = v + 0.21
-			else v = v - 0.05 end
+			v = v - 0.05
+			--if self.slashAvail == 1 and self.player:hasSkill("jie") then v = v + 0.21
+			--else v = v - 0.05 end
 		end
 		if card:isKindOf("NatureSlash") then v = v - 0.1 end
 		if card:getSkillName() == "longdan" and self:hasSkills("chongzhen") then v = v + 0.21 end
@@ -3355,11 +3356,14 @@ function sgs.ai_skill_cardask.nullfilter(self, data, pattern, target)
 	if self:needBear() and self.player:getHp() > 2 then return "." end
 	if self.player:hasSkill("zili") and not self.player:hasSkill("paiyi") and self.player:getLostHp() < 2 then return "." end
 	if self.player:hasSkill("wumou") and self.player:getMark("@wrath") < 7 and self.player:getHp() > 2 then return "." end
-	if self.player:hasSkill("tianxiang") then
+	--[[if self.player:hasSkill("tianxiang") then
 		local dmgStr = {damage = 1, nature = damage_nature or sgs.DamageStruct_Normal}
 		local willTianxiang = sgs.ai_skill_use["@@tianxiang"](self, dmgStr, sgs.Card_MethodDiscard)
 		if willTianxiang ~= "." then return "." end
 	elseif self.player:hasSkill("longhun") and self.player:getHp() > 1 then
+		return "."
+	end]]
+	if self.player:hasSkill("longhun") and self.player:getHp() > 1 then
 		return "."
 	end
 end
@@ -3532,7 +3536,7 @@ function SmartAI:hasHeavySlashDamage(from, slash, to, getValue)
 	end
 	if from:hasFlag("luoyi") then dmg = dmg + 1 end
 	if from:hasFlag("neoluoyi") then dmg = dmg + 1 end
-	if slash and from:hasSkill("jie") and slash:isRed() then dmg = dmg + 1 end
+	--if slash and from:hasSkill("jie") and slash:isRed() then dmg = dmg + 1 end
 	if slash and from:hasSkill("wenjiu") and slash:isBlack() then dmg = dmg + 1 end
 	if slash and from:hasFlag("shenli") and from:getMark("@struggle") > 0 then dmg = dmg + math.min(3, from:getMark("@struggle")) end
 
@@ -4407,7 +4411,7 @@ function SmartAI:canRetrial(player, to_retrial, reason)
 		if blackequipnum + player:getHandcardNum() > 0 then return true end
 	end
 	if player:hasSkill("guicai") and player:getHandcardNum() > 0 then return true end
-	if player:hasSkill("huanshi") and not player:isNude() then return true end
+	--if player:hasSkill("huanshi") and not player:isNude() then return true end
 	if player:hasSkill("jilve") and player:getHandcardNum() > 0 and player:getMark("@bear") > 0 then return true end
 	if player:hasSkills("mingyun|feixiang|fengshui") then return true end
 	--博丽的改判略微妙
@@ -4438,7 +4442,9 @@ function SmartAI:getFinalRetrial(player, reason)
 		end 
 	end
 	for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
-		if self:hasSkills(sgs.wizard_harm_skill .. "|huanshi", aplayer) and self:canRetrial(aplayer, player, reason) then
+		--if self:hasSkills(sgs.wizard_harm_skill .. "|huanshi", aplayer) and self:canRetrial(aplayer, player, reason) then
+		if self:hasSkills(sgs.wizard_harm_skill , aplayer) and self:canRetrial(aplayer, player, reason) then
+		
 			if aplayer:hasSkill("mingyun") then continue end 
 			if self:isFriend(aplayer) then
 				tmpfriend = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
@@ -6424,7 +6430,7 @@ end
 --【护卫】不然坑死了  【五欲】
 function getBestHp(player)
 	local arr = {ganlu = 1, yinghun = 2, nosmiji = 1, xueji = 1, baobian = math.max(0, player:getMaxHp() - 3)}
-	if player:hasSkill("tymhhuwei") then return 3 end
+	if player:hasSkill("huwei") then return 3 end
 	if player:hasSkill("wunian") then
 		if player:getArmor() or player:getDefensiveHorse() then
 			return player:getMaxHp()-1
@@ -7191,7 +7197,7 @@ end
 --[[function SmartAI:touhouCanHuanshi(card,from,to)
 	targets1={}
 	targets2={}
-	if not to:hasSkill("lxhuanshi") then return 0 end
+	if not to:hasSkill("huanshi") then return 0 end
 	for _,p in sgs.qlist(self.room:getOtherPlayers(from)) do
 		--if p:objectName()==to:objectName() then continue end
 		if  from:canSlash(p,card,true)  and from:inMyAttackRange(p)  then
@@ -7220,7 +7226,7 @@ function SmartAI:touhouSidieTarget(card,from)
 	end
 	for _,p in sgs.qlist(self.room:getOtherPlayers(from)) do
 		if self:isFriend(from,p) and from:canSlash(p,card,true) then
-			--if p:hasSkill("lxhuanshi") then
+			--if p:hasSkill("huanshi") then
 			--	table.insert(targets,p:objectName())
 			--end
 			if p:hasSkill("guaili") then
@@ -7244,7 +7250,7 @@ function SmartAI:touhouHandCardsFix(player)
 end
 --【永恒】【吸散】【死宅】【集厄】【控牌】
 function SmartAI:touhouDrawCardsInNotActive(player)
-	if player:hasSkills("yongheng|xisan|sizhai|hina_jie|kongpiao") then
+	if player:hasSkills("yongheng|xisan|sizhai|jie|kongpiao") then
 		return true
 	end
 	return false
@@ -7261,7 +7267,7 @@ function SmartAI:touhouGetAoeValueTo(card, to, from)
 	if current:hasSkill("weiya") then weight=2 end
 	if to:hasSkill("huiwu") and self:isFriend(to,from) then value = 100 end
 	if card:isKindOf("SavageAssault") then
-		if to:hasSkill("tymhhuwei")   then
+		if to:hasSkill("huwei")   then
 			value = value + 120*weight
 		end
 		if to:hasSkill("shende") and  getCardsNum("Slash", to, from) >= 1  then
@@ -7641,7 +7647,7 @@ function SmartAI:cantbeHurt(player, from, damageNum)
 			if from:getMaxHp() <= 3 or (self.room:getLord() and from:getRole() == "renegade") then return true end
 		end
 	end
-	if player:hasSkill("tianxiang") and getKnownCard(player, from, "diamond", false) + getKnownCard(player, from, "club", false) < player:getHandcardNum() then
+	--[[if player:hasSkill("tianxiang") and getKnownCard(player, from, "diamond", false) + getKnownCard(player, from, "club", false) < player:getHandcardNum() then
 		local peach_num = self.player:objectName() == from:objectName() and self:getCardsNum("Peach") or getCardsNum("Peach", from, self.player)
 		for _, friend in ipairs(self:getFriends(from)) do
 			if friend:getHp() < 2 and peach_num then
@@ -7651,7 +7657,7 @@ function SmartAI:cantbeHurt(player, from, damageNum)
 		if dyingfriend > 0 and player:getHandcardNum() > 0 then
 			return true
 		end
-	end
+	end]]
 	return false
 end
 

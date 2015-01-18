@@ -1485,9 +1485,9 @@ public:
     }
 };
 
-class meilingluanwu : public ViewAsSkill {
+class luanwu : public ViewAsSkill {
 public:
-    meilingluanwu() : ViewAsSkill("meilingluanwu") {
+    luanwu() : ViewAsSkill("luanwu") {
         response_or_use = true;
     }
 
@@ -2182,19 +2182,157 @@ public:
 };
 
 
-class chuanwu : public TargetModSkill {
+class shenhua : public TriggerSkill {
 public:
-    chuanwu() : TargetModSkill("chuanwu") {
-        pattern = "BasicCard,TrickCard";
-    }
-    
-    virtual int getDistanceLimit(const Player *from, const Card *card) const{
-        if (from->hasSkill("chuanwu") && from->getPhase() == Player::Play)
-            return 1000;
-        else
-            return 0;
+    shenhua() : TriggerSkill("shenhua") {
+        events << GameStart << EventPhaseStart;
+        frequency = Compulsory;
     }
 
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == GameStart) {
+            room->notifySkillInvoked(player, objectName());
+			room->setPlayerProperty(player, "maxhp", player->getMaxHp() + 2);
+            room->touhouLogmessage("#TriggerSkill", player, objectName());
+            room->touhouLogmessage("#GainMaxHp", player, QString::number(2));
+            room->touhouLogmessage("#GetHp", player, QString::number(player->getHp()), QList<ServerPlayer *>(), QString::number(player->getMaxHp()));
+
+        }
+		else if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Finish){
+			room->notifySkillInvoked(player, objectName());
+			room->touhouLogmessage("#TriggerSkill", player, objectName());
+			room->loseMaxHp(player, 1);
+		}
+		/*if (player->getPhase() == Player::Start){
+			foreach (ServerPlayer *p, room->getOtherPlayers(player)){
+				if (p->getHp() > player->getHp() && player->isWounded()){
+					room->notifySkillInvoked(player, objectName());
+					RecoverStruct recover;
+					recover.recover = 1;
+					room->recover(player, recover);
+					break;
+				}
+			}
+		
+		}*/
+        return false;
+    }
+};
+
+class zuosui : public TriggerSkill {
+public:
+    zuosui() : TriggerSkill("zuosui") {
+        events << DamageCaused;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        
+        DamageStruct damage = data.value<DamageStruct>();
+		//if (damage.chain || damage.transfer || !damage.by_user)
+        //    return false;
+        if (!damage.from  || !damage.to || damage.from == damage.to)
+            return false;
+		if (damage.card ){ //&& damage.card->isKindOf("Slash")
+			if (room->askForSkillInvoke(player, objectName(), QVariant::fromValue(damage.to))){
+				room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.to->objectName());
+                
+				room->setPlayerProperty(player, "maxhp", player->getMaxHp() + 1);
+				room->touhouLogmessage("#GainMaxHp", player, QString::number(1));
+				room->touhouLogmessage("#GetHp", player, QString::number(player->getHp()), QList<ServerPlayer *>(), QString::number(player->getMaxHp()));
+
+			    
+			   
+				QString choice = room->askForChoice(damage.to, objectName(), "1+2+3+4");
+				int x;
+				if (choice =="1")
+					x=1;
+				else if (choice =="2")
+					x=2;
+				else if (choice =="3")
+					x=3;
+				else
+					x=4;
+				room->touhouLogmessage("#zuosuichoice", damage.to, objectName(), QList<ServerPlayer *>(), QString::number(x));
+				choice = room->askForChoice(player, objectName(), "losehp+discard");
+				if (choice == "losehp"){
+					damage.to->drawCards(x);
+
+					room->loseHp(damage.to, x);
+				}
+				else{
+					int discardNum = damage.to->getCards("he").length()> x ? damage.to->getCards("he").length() - x: 0;
+					if (discardNum >0)
+						room->askForDiscard(damage.to, objectName(), discardNum, discardNum, false, true);
+				}
+				return true;
+			}
+		}
+
+        return false;
+    }
+};
+
+class worao : public TriggerSkill {
+public:
+    worao() : TriggerSkill("worao") {
+        events << TargetConfirming;
+    }
+
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == TargetConfirming){
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from  && player != use.from  &&  use.to.contains(player)
+				//&& use.to.length() ==1 
+                && (use.card->isKindOf("Slash") || use.card->isNDTrick())){
+				QString prompt = "invoke:" + use.from->objectName() + ":" + use.card->objectName();
+                if (room->askForSkillInvoke(player, objectName(), prompt)){
+					room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), use.from->objectName());
+			
+					room->setPlayerProperty(player, "maxhp", player->getMaxHp() + 1);
+					room->touhouLogmessage("#GainMaxHp", player, QString::number(1));
+					room->touhouLogmessage("#GetHp", player, QString::number(player->getHp()), QList<ServerPlayer *>(), QString::number(player->getMaxHp()));
+					player->drawCards(2);
+					if (!player->isKongcheng()){
+						const Card *card = room->askForExchange(player, objectName(), 1, false, "woraoGive:" + use.from->objectName());
+						use.from->obtainCard(card, false);
+					}
+				}
+            }
+        }
+        return false;
+    }
+};
+
+class yindu : public TriggerSkill {
+public:
+    yindu() : TriggerSkill("yindu") {
+        events << Death;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *source = room->findPlayerBySkillName(objectName());
+		DeathStruct death = data.value<DeathStruct>();
+        
+		if (source && death.who && death.who == player && death.who != source){
+			QString prompt = "invoke:" + death.who->objectName();
+			if (room->askForSkillInvoke(source, objectName(), prompt)){
+				room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), death.who->objectName());
+                //QList<ServerPlayer *> logto;
+                //logto << source;
+                //room->touhouLogmessage("#InvokeOthersSkill", death.who, objectName(), logto);
+                //room->notifySkillInvoked(source, objectName());
+				
+				source->drawCards(3);
+				room->setPlayerFlag(death.who,"skipRewardAndPunish");
+			} 
+		}
+        return false;
+    }
 };
 
 
@@ -2216,7 +2354,10 @@ public:
 
         if (room->askForSkillInvoke(player, objectName(), QVariant::fromValue(damage.to))) {
             room->removePlayerMark(player, "@huanming");
-            int source_newHp = qMin(damage.to->getHp(), player->getMaxHp());
+            room->doLightbox("$huanmingAnimate", 4000);
+			room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.to->objectName());
+               
+			int source_newHp = qMin(damage.to->getHp(), player->getMaxHp());
             int victim_newHp = qMin(player->getHp(), damage.to->getMaxHp());
             room->setPlayerProperty(player, "hp", source_newHp);
             if (damage.to->hasSkill("banling")){
@@ -2228,7 +2369,9 @@ public:
             }
             else
                 room->setPlayerProperty(damage.to, "hp", victim_newHp);
-            
+				
+            room->touhouLogmessage("#GetHp", player, QString::number(player->getHp()), QList<ServerPlayer *>(), QString::number(player->getMaxHp()));
+			room->touhouLogmessage("#GetHp", damage.to, QString::number(damage.to->getHp()), QList<ServerPlayer *>(), QString::number(damage.to->getMaxHp()));		
             return true;
         }
         return false;
@@ -2307,7 +2450,7 @@ touhougodPackage::touhougodPackage()
 
     General *shen013 = new General(this, "shen013", "touhougod", 3, false);
     shen013->addSkill(new hualong);
-    shen013->addSkill(new meilingluanwu);
+    shen013->addSkill(new luanwu);
     shen013->addSkill(new longwei);
 
 
@@ -2334,10 +2477,17 @@ touhougodPackage::touhougodPackage()
     shen017->addRelateSkill("benwo");
     shen017->addRelateSkill("chaowo");
 
-    //General *shen018 = new General(this, "shen018", "touhougod", 4, false);
-    //shen018->addSkill(new chuanwu);
-    //shen018->addSkill(new Skill("yindu", Skill::Compulsory));
-    //shen018->addSkill(new huanming);
+	General *shen018 = new General(this, "shen018", "touhougod", 3, false);
+	shen018->addSkill(new shenhua);
+	shen018->addSkill(new zuosui);
+	shen018->addSkill(new worao);
+	
+	General *shen020 = new General(this, "shen020", "touhougod", 4, false);
+	shen020->addSkill(new Skill("wunan", Skill::Compulsory));
+
+    General *shen021 = new General(this, "shen021", "touhougod", 4, false);
+    shen021->addSkill(new yindu);
+    shen021->addSkill(new huanming);
     
     General *shen000 = new General(this, "shen000", "touhougod", 4, true);
     shen000->addSkill(new chuanghuan);

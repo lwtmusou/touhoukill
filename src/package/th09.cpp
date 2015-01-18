@@ -192,11 +192,9 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.chain || damage.transfer || !damage.by_user)
             return false;
-        if (damage.from == NULL || damage.to == NULL)
+        if (!damage.from  || !damage.to || damage.from == damage.to)
             return false;
-        if (damage.from == damage.to)
-            return false;
-        if (damage.card != NULL && damage.card->isKindOf("Slash") && damage.to->getHp() == 1){
+        if (damage.card && damage.card->isKindOf("Slash") && damage.to->getHp() == 1){
             QList<ServerPlayer *> logto;
             logto << damage.to;
             room->touhouLogmessage("#TriggerSkill", player, "silian", logto);

@@ -96,7 +96,7 @@ sgs.ai_skill_askforag.mingyun = function(self, card_ids)
 end
 
 --¡¾ÑªÒá¡¿ai 
-sgs.ai_skill_playerchosen.skltxueyi = function(self, targets)
+sgs.ai_skill_playerchosen.xueyi = function(self, targets)
 	target_table =sgs.QList2Table(targets)
 	if #target_table==0 then return false end
 	for _,target in pairs(target_table) do	
@@ -106,7 +106,7 @@ sgs.ai_skill_playerchosen.skltxueyi = function(self, targets)
 	end
 	return nil
 end
-sgs.ai_playerchosen_intention.skltxueyi = -80
+sgs.ai_playerchosen_intention.xueyi = -80
 
 --¡¾ÆÆ»µ¡¿ai
 function SmartAI:pohuaiBenefit(player)

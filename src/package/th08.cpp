@@ -367,33 +367,33 @@ public:
     }
 };
 
-/*lxhuanshiCard::lxhuanshiCard() {
+/*huanshiCard::huanshiCard() {
     mute = true;
 }
-bool lxhuanshiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool huanshiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     QString str = Self->property("huanshi").toString();
     QStringList huanshi_targets = str.split("+");
     return  huanshi_targets.contains(to_select->objectName());
 }
-void lxhuanshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+void huanshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     foreach (ServerPlayer *p, targets)
         p->addMark("huanshi_target");
 }
 
 class huanshivs: public ZeroCardViewAsSkill {
 public:
-    huanshivs(): ZeroCardViewAsSkill("lxhuanshi") {
-        response_pattern ="@@lxhuanshi";
+    huanshivs(): ZeroCardViewAsSkill("huanshi") {
+        response_pattern ="@@huanshi";
     }
 
     virtual const Card *viewAs() const{
-        return new lxhuanshiCard;
+        return new huanshiCard;
     }
 };
 */
-class lxhuanshi: public TriggerSkill {
+class huanshi: public TriggerSkill {
 public:
-    lxhuanshi(): TriggerSkill("lxhuanshi") {
+    huanshi(): TriggerSkill("huanshi") {
         events  <<TargetConfirming;
         //view_as_skill= new huanshivs;
     }
@@ -416,8 +416,8 @@ public:
             //room->setPlayerProperty(player, "huanshi", huanshiTargets.join("+"));
             player->tag["huanshi_source"]=data;
             
-            //room->askForUseCard(player, "@@lxhuanshi", "@lxhuanshi:"+use.from->objectName());
-            ServerPlayer *target =   room->askForPlayerChosen(player,listt,objectName(),"@lxhuanshi:"+use.from->objectName(),true,true);         
+            //room->askForUseCard(player, "@@huanshi", "@huanshi:"+use.from->objectName());
+            ServerPlayer *target =   room->askForPlayerChosen(player,listt,objectName(),"@huanshi:"+use.from->objectName(),true,true);         
 
             // huanshi effect
             //foreach ( ServerPlayer *p, room->getOtherPlayers(player)) {
@@ -497,9 +497,9 @@ public:
     }
 };
 
-class sbzhyshouye : public TriggerSkill {
+class shouye : public TriggerSkill {
 public:
-    sbzhyshouye() : TriggerSkill("sbzhyshouye") {
+    shouye() : TriggerSkill("shouye") {
         events << EventPhaseStart << Damaged;
     }
 
@@ -598,9 +598,9 @@ public:
     }
 };
 
-class yfdxingyun : public TriggerSkill {
+class xingyun : public TriggerSkill {
 public:
-    yfdxingyun() : TriggerSkill("yfdxingyun") {
+    xingyun() : TriggerSkill("xingyun") {
         events << CardsMoveOneTime;
     }
 
@@ -973,27 +973,27 @@ public:
 };
 
 
-tymhhuweiCard::tymhhuweiCard() {
+huweiCard::huweiCard() {
     mute = true;
     target_fixed = true;
 }
-const Card *tymhhuweiCard::validate(CardUseStruct &cardUse) const{
+const Card *huweiCard::validate(CardUseStruct &cardUse) const{
     Room *room = cardUse.from->getRoom();
-    room->touhouLogmessage("#InvokeSkill", cardUse.from, "tymhhuwei");
-    room->notifySkillInvoked(cardUse.from, "tymhhuwei");
+    room->touhouLogmessage("#InvokeSkill", cardUse.from, "huwei");
+    room->notifySkillInvoked(cardUse.from, "huwei");
     cardUse.from->drawCards(2);
     room->setPlayerFlag(cardUse.from, "Global_huweiFailed");
     return NULL;
 }
 
 
-class tymhhuweivs : public ZeroCardViewAsSkill {
+class huweivs : public ZeroCardViewAsSkill {
 public:
-    tymhhuweivs() : ZeroCardViewAsSkill("tymhhuwei") {
+    huweivs() : ZeroCardViewAsSkill("huwei") {
     }
 
     virtual const Card *viewAs() const{
-        return new tymhhuweiCard;
+        return new huweiCard;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -1007,14 +1007,14 @@ public:
         return (!player->hasFlag("Global_huweiFailed") && pattern == "slash" && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
     }
 };
-class tymhhuwei : public TriggerSkill {
+class huwei : public TriggerSkill {
 public:
-    tymhhuwei() : TriggerSkill("tymhhuwei") {
+    huwei() : TriggerSkill("huwei") {
         events << CardAsked << CardUsed << CardsMoveOneTime << BeforeCardsMove << CardResponded;
-        view_as_skill = new tymhhuweivs;
+        view_as_skill = new huweivs;
     }
     static bool targetChoiceForHuwei(Room *room, ServerPlayer *player, QString skillname, int num) {
-        ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), skillname, "@tymhhuwei_targetdraw:" + QString::number(num), true, true);
+        ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), skillname, "@huwei_targetdraw:" + QString::number(num), true, true);
         if (target){
             target->drawCards(2);
             return true;
@@ -1130,16 +1130,16 @@ th08Package::th08Package()
 
     General *yyc004 = new General(this, "yyc004", "yyc", 4, false);
     yyc004->addSkill(new kuangzao);
-    yyc004->addSkill(new lxhuanshi);
+    yyc004->addSkill(new huanshi);
 
     General *yyc005 = new General(this, "yyc005", "yyc", 3, false);
     yyc005->addSkill(new shishi);
-    yyc005->addSkill(new sbzhyshouye);
+    yyc005->addSkill(new shouye);
 
     General *yyc006 = new General(this, "yyc006", "yyc", 3, false);
     yyc006->addSkill(new buxian);
     yyc006->addSkill(new buxian_effect);
-    yyc006->addSkill(new yfdxingyun);
+    yyc006->addSkill(new xingyun);
     related_skills.insertMulti("buxian", "#buxian");
 
     General *yyc007 = new General(this, "yyc007", "yyc", 3, false);
@@ -1159,16 +1159,16 @@ th08Package::th08Package()
     related_skills.insertMulti("chuangshi", "#chuangshi");
 
     General *yyc010 = new General(this, "yyc010", "yyc", 4, false);
-    yyc010->addSkill(new tymhhuwei);
+    yyc010->addSkill(new huwei);
     yyc010->addSkill(new jinxi);
 
 
     addMetaObject<miyaoCard>();
     addMetaObject<kuangzaoCard>();
-    //addMetaObject<lxhuanshiCard>();
+    //addMetaObject<huanshiCard>();
     addMetaObject<buxianCard>();
     addMetaObject<chuangshiCard>();
-    addMetaObject<tymhhuweiCard>();
+    addMetaObject<huweiCard>();
     addMetaObject<jinxiCard>();
 }
 

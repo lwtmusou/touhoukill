@@ -245,7 +245,7 @@ function sgs.getDefenseSlash(player, self)
 		defense = defense - 0.4
 	end
 
-	if player:hasSkill("tianxiang") then defense = defense + player:getHandcardNum() * 0.5 end
+	--if player:hasSkill("tianxiang") then defense = defense + player:getHandcardNum() * 0.5 end
 
 	if player:getHandcardNum() == 0 and player:getPile("wooden_ox"):isEmpty() 
 	and hujiaJink == 0  and tianrenJink==0
@@ -301,7 +301,7 @@ function sgs.getDefenseSlash(player, self)
 		if player:hasSkills("noslijian|lijian") then defense = defense - 2.2 end
 		if player:hasSkill("nosmiji") and player:isWounded() then defense = defense - 1.5 end
 		if player:hasSkill("xiliang") and knownJink == 0 then defense = defense - 2 end
-		if player:hasSkill("shouye") then defense = defense - 2 end
+		--if player:hasSkill("shouye") then defense = defense - 2 end
 	end
 	return defense
 end
@@ -509,12 +509,12 @@ function SmartAI:isPriorFriendOfSlash(friend, card, source)
 	--可以取消伤害 所以和hasheavyslashdamage无关？？
 	if source:hasSkill("dongjie") and not friend:faceUp() then return true end
 	if friend:hasSkill("anyu") and not friend:faceUp() and card:isBlack() and sgs.card_lack[friend:objectName()]["Jink"] == 0 then return true end
-	--[[if friend:hasSkill("lxhuanshi") and self:touhouCanHuanshi(card,source,friend)>0 then
+	--[[if friend:hasSkill("huanshi") and self:touhouCanHuanshi(card,source,friend)>0 then
 		if sgs.card_lack[friend:objectName()]["Jink"] == 0 then 
 			return true 
 		end
 	end]]
-	--local lingxian = self.room:findPlayerBySkillName("lxhuanshi")
+	--local lingxian = self.room:findPlayerBySkillName("huanshi")
 	--要求自己已经跳身份，且敌人数量不为0
 	--特定对象优先死蝶 不行么。。。
 	if self:sidieEffect(source) then 
@@ -981,7 +981,7 @@ end
 --死蝶神授对于原使用者的仇恨更新  暂时没想好
 sgs.ai_card_intention.Slash = function(self, card, from, tos)
 	if sgs.ai_liuli_effect then sgs.ai_liuli_effect = false return end
-	--if sgs.ai_lxhuanshi_effect then sgs.ai_lxhuanshi_effect = false return end
+	--if sgs.ai_huanshi_effect then sgs.ai_huanshi_effect = false return end
 	--if sgs.ai_bihuo_effect then sgs.ai_bihuo_effect = false return end
 	if sgs.ai_collateral then sgs.ai_collateral = false return end
 	if card:hasFlag("nosjiefan-slash") then return end
@@ -1016,7 +1016,7 @@ sgs.ai_card_intention.Slash = function(self, card, from, tos)
 		if self:isFriend(from,to) and from:hasSkill("dongjie") and not self.player:faceUp() then value=-10 end
 		if self:sidieEffect(from)  then value = 0 end
 		if from:hasSkill("lizhi") and self:isFriend(from,to) then value = 0 end
-		--if to:hasSkill("lxhuanshi") and self:touhouCanHuanshi(card,from,to)>0 then
+		--if to:hasSkill("huanshi") and self:touhouCanHuanshi(card,from,to)>0 then
 		--	value = 0
 		--end
 		if kosuzu and to:hasFlag("bihuo_"..kosuzu:objectName()) then
@@ -1896,7 +1896,7 @@ end
 function sgs.ai_armor_value.EightDiagram(player, self)
 	if self.player:hasSkill("douhun") then
 		if self.role == "loyalist" and self.player:getKingdom()=="hmx" 
-		and getLord(self.player) and getLord(self.player):hasLordSkill("skltxueyi") then
+		and getLord(self.player) and getLord(self.player):hasLordSkill("xueyi") then
 			return 3
 		else
 			return 0

@@ -948,9 +948,9 @@ public:
     }
 };
 
-class hina_jie : public TriggerSkill {
+class jie : public TriggerSkill {
 public:
-    hina_jie() : TriggerSkill("hina_jie") {
+    jie() : TriggerSkill("jie") {
         events << Damaged;
         frequency = Frequent;
     }
@@ -1572,7 +1572,7 @@ th10Package::th10Package()
 
     General *fsl006 = new General(this, "fsl006", "fsl", 3, false);
     fsl006->addSkill(new zaihuo);
-    fsl006->addSkill(new hina_jie);
+    fsl006->addSkill(new jie);
 
     General *fsl007 = new General(this, "fsl007", "fsl", 3, false);
     fsl007->addSkill(new changshi);

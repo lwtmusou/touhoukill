@@ -305,7 +305,7 @@ function SmartAI:useCardSupplyShortage(card, use)
 		  or (enemy:hasSkill("zaiqi") and enemy:getLostHp() > 1)
 			then value = value + 10
 		end
-		if self:hasSkills(sgs.cardneed_skill,enemy) or self:hasSkills("zhaolie|tianxiang|qinyin|yanxiao|zhaoxin|toudu|renjie",enemy)
+		if self:hasSkills(sgs.cardneed_skill,enemy) or self:hasSkills("zhaolie|qinyin|yanxiao|zhaoxin|toudu|renjie",enemy) --tianxiang
 			then value = value + 5
 		end
 		if self:hasSkills("yingzi|shelie|xuanhuo|buyi|jujian|jiangchi|mizhao|hongyuan|chongzhen|duoshi",enemy) then value = value + 1 end

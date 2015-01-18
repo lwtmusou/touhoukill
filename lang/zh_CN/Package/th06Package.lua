@@ -15,10 +15,10 @@ return{ ["th06"] = "红魔乡",
         ["mingyun:judge"] = "<font color=\"#00FF00\"><b>%src </b></font> 将要进行 “%dest” 的判定，你可以发动“命运”。",
         ["$mingyunAnimate"]="image=image/animate/mingyun.png",
 		
-		["skltxueyi"] = "血裔",
-        [":skltxueyi"] = "<font color=\"orange\"><b>主公技，</b></font>每当其他红势力角色回复一次体力后，该角色可令你摸一张牌。",
-        ["@@skltxueyi"]="指定拥有主公技“血裔”的角色，该角色摸一张牌。",
-		["$skltxueyiAnimate"]="image=image/animate/skltxueyi.png",
+		["xueyi"] = "血裔",
+        [":xueyi"] = "<font color=\"orange\"><b>主公技，</b></font>每当其他红势力角色回复一次体力后，该角色可令你摸一张牌。",
+        ["@@xueyi"]="指定拥有主公技“血裔”的角色，该角色摸一张牌。",
+		["$xueyiAnimate"]="image=image/animate/xueyi.png",
 		
 
 

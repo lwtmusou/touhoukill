@@ -56,8 +56,8 @@ return{
  ["yazhi"] ="压制",
  [":yazhi"]="出牌阶段，你可以将一张手牌作为“票”面朝下置于你的人物牌上。<font color=\"green\"><b>每阶段限一次。</b></font>",
  
- ["tymhtianxiang"] = "天翔", 
- [":tymhtianxiang"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"blue\"><b>锁定技，</b></font>游戏开始时，将反贼的胜利条件改为：主公、忠臣、内奸全部死亡。将内奸的胜利条件改为：其他角色全部死亡。",
+ ["tianxiang"] = "天翔", 
+ [":tianxiang"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"blue\"><b>锁定技，</b></font>游戏开始时，将反贼的胜利条件改为：主公、忠臣、内奸全部死亡。将内奸的胜利条件改为：其他角色全部死亡。",
  
 ["xwm006"] = "线外萌sp蕾米莉亚",["&xwm006"] = "线外萌蕾米",["#xwm006"] = "第二届线外萌准萌",
       ["!xwm006"] = "线外萌sp蕾米莉亚",

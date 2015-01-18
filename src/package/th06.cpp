@@ -159,9 +159,9 @@ public:
     }
 };
 
-class skltxueyi : public TriggerSkill {
+class xueyi : public TriggerSkill {
 public:
-    skltxueyi() : TriggerSkill("skltxueyi$") {
+    xueyi() : TriggerSkill("xueyi$") {
         events << HpRecover;
     }
 
@@ -177,11 +177,11 @@ public:
         }
 
         while (!targets.isEmpty()){
-            ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@@skltxueyi", true, true);
+            ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@@xueyi", true, true);
             if (target != NULL){
-                /*if (target->getGeneralName() == "hmx001" && !target->hasFlag("skltxueyiAnimate")){
-                    room->doLightbox("$skltxueyiAnimate", 2000);
-                    room->setPlayerFlag(target, "skltxueyiAnimate");
+                /*if (target->getGeneralName() == "hmx001" && !target->hasFlag("xueyiAnimate")){
+                    room->doLightbox("$xueyiAnimate", 2000);
+                    room->setPlayerFlag(target, "xueyiAnimate");
                 }*/
                 room->notifySkillInvoked(target, objectName());
                 targets.removeOne(target);
@@ -1040,7 +1040,7 @@ th06Package::th06Package()
     General *hmx001 = new General(this, "hmx001$", "hmx", 3, false);
     hmx001->addSkill(new skltkexue);
     hmx001->addSkill(new mingyun);
-    hmx001->addSkill(new skltxueyi);
+    hmx001->addSkill(new xueyi);
 
     General *hmx002 = new General(this, "hmx002", "hmx", 3, false);
     hmx002->addSkill(new pohuai);

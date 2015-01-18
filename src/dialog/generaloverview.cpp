@@ -408,7 +408,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         if (general->getKingdom() == "wai")
             kingdom_item->setBackgroundColor(QColor(255, 165, 0));
 
-        if (general->getPackage() == "touhougods")
+        if (general->getPackage() == "touhougod")
             package_item->setBackgroundColor(QColor(238, 238, 0));
         if (general->getKingdom() == "touhougod")
             kingdom_item->setBackgroundColor(QColor(238, 238, 0));

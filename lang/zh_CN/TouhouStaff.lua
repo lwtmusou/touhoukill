@@ -1389,6 +1389,16 @@ return {
 	["illustrator:shen017_2"] = "月本葵 (p号:45610081)",
 	--个人id:246176
 	["cv:shen017"] = "暂无",
+	
+	
+	["designer:shen020"] = "星野梦美 | 程序:三国有单", 
+	["illustrator:shen020"] = "しまちょ (p号:1051695)",
+	--个人id:12647
+	["cv:shen020"] = "暂无",
+	
+	["designer:shen021"] = "星野梦美 | 程序:三国有单", 
+	["illustrator:shen021"] = "藤原 (p号:无, 个人id:27517)",
+	["cv:shen021"] = "暂无",
  }
 
  

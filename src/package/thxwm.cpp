@@ -325,9 +325,9 @@ public:
 };
 
 
-class tymhtianxiang : public TriggerSkill {
+class tianxiang : public TriggerSkill {
 public:
-    tymhtianxiang() : TriggerSkill("tymhtianxiang$") {
+    tianxiang() : TriggerSkill("tianxiang$") {
         events << GameStart;
         frequency = Compulsory;
     }
@@ -426,7 +426,7 @@ thxwmPackage::thxwmPackage()
     General *xwm005 = new General(this, "xwm005$", "yyc", 3, false);
     xwm005->addSkill(new shanji);
     xwm005->addSkill(new yazhi);
-    xwm005->addSkill(new tymhtianxiang);
+    xwm005->addSkill(new tianxiang);
 
 
     General *xwm006 = new General(this, "xwm006", "hmx", 3, false);

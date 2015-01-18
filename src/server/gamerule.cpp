@@ -529,18 +529,18 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
             room->gameOver(winner);
             return true;
         }
-
         break;
     }
     case BuryVictim: {
         DeathStruct death = data.value<DeathStruct>();
-        player->bury();
+        bool skipRewardAndPunish = death.who->hasFlag("skipRewardAndPunish") ? true : false;
+		player->bury();
 
         if (room->getTag("SkipNormalDeathProcess").toBool())
             return false;
 
         ServerPlayer *killer = death.damage ? death.damage->from : NULL;
-        if (killer)
+        if (killer && !skipRewardAndPunish)
             rewardAndPunish(killer, player);
 
         if (room->getMode() == "02_1v1") {

@@ -86,12 +86,12 @@ function SmartAI:AtomDamageCount(target, source, nature, card)
 				count = count + 1
 				self.room:writeToConsole("drank+1")
 			end
-			if source:hasSkill("jie") then --如果来源有技能疾恶
+			--[[if source:hasSkill("jie") then --如果来源有技能疾恶
 				if card:isRed() then --如果是红杀
 					count = count + 1
 					self.room:writeToConsole("jie+1")
 				end
-			end
+			end]]
 		end
 	end
 	return count
