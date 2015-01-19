@@ -6249,9 +6249,9 @@ function SmartAI:useEquipCard(card, use)
 	if card:isKindOf("Vine") and not self.player:hasSkill("huanmeng") then
 		if self.player:hasSkills("here|yexing")  then return end
 		local lunar = self.room:findPlayerBySkillName("zhuonong")
-		if lunar and not self.isFriend(lunar) then return end
+		if lunar and not self:isFriend(lunar) then return end
 		local utsuho = self.room:findPlayerBySkillName("here") 
-		if utsuho and not self.isFriend(utsuho) then return end
+		if utsuho and not self:isFriend(utsuho) then return end
 	end
 	
 	
@@ -7919,7 +7919,7 @@ dofile "lua/ai/maneuvering-ai.lua"
 dofile "lua/ai/classical-ai.lua"
 --dofile "lua/ai/standard-ai.lua"
 dofile "lua/ai/chat-ai.lua"
-dofile "lua/ai/basara-ai.lua"
+--dofile "lua/ai/basara-ai.lua"
 --dofile "lua/ai/hegemony-ai.lua"
 --dofile "lua/ai/hulaoguan-ai.lua"
 

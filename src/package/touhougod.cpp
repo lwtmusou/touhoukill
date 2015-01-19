@@ -2232,7 +2232,8 @@ public:
         //    return false;
         if (!damage.from  || !damage.to || damage.from == damage.to)
             return false;
-		if (damage.card ){ //&& damage.card->isKindOf("Slash")
+		//if (damage.card ){ //&& damage.card->isKindOf("Slash")
+			player->tag["zuosui_damage"] = data;
 			if (room->askForSkillInvoke(player, objectName(), QVariant::fromValue(damage.to))){
 				room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.to->objectName());
                 
@@ -2241,7 +2242,7 @@ public:
 				room->touhouLogmessage("#GetHp", player, QString::number(player->getHp()), QList<ServerPlayer *>(), QString::number(player->getMaxHp()));
 
 			    
-			   
+				damage.to->tag["zuosui_source"] = QVariant::fromValue(player);
 				QString choice = room->askForChoice(damage.to, objectName(), "1+2+3+4");
 				int x;
 				if (choice =="1")
@@ -2253,6 +2254,7 @@ public:
 				else
 					x=4;
 				room->touhouLogmessage("#zuosuichoice", damage.to, objectName(), QList<ServerPlayer *>(), QString::number(x));
+				player->tag["zuosui_number"] = QVariant::fromValue(x);
 				choice = room->askForChoice(player, objectName(), "losehp+discard");
 				if (choice == "losehp"){
 					damage.to->drawCards(x);
@@ -2266,7 +2268,7 @@ public:
 				}
 				return true;
 			}
-		}
+		//}
 
         return false;
     }
@@ -2286,7 +2288,8 @@ public:
 				//&& use.to.length() ==1 
                 && (use.card->isKindOf("Slash") || use.card->isNDTrick())){
 				QString prompt = "invoke:" + use.from->objectName() + ":" + use.card->objectName();
-                if (room->askForSkillInvoke(player, objectName(), prompt)){
+                player->tag["worao_use"] = data;
+				if (room->askForSkillInvoke(player, objectName(), prompt)){
 					room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), use.from->objectName());
 			
 					room->setPlayerProperty(player, "maxhp", player->getMaxHp() + 1);
@@ -2482,12 +2485,12 @@ touhougodPackage::touhougodPackage()
 	shen018->addSkill(new zuosui);
 	shen018->addSkill(new worao);
 	
-	General *shen020 = new General(this, "shen020", "touhougod", 4, false);
-	shen020->addSkill(new Skill("wunan", Skill::Compulsory));
+	//General *shen020 = new General(this, "shen020", "touhougod", 4, false);
+	//shen020->addSkill(new Skill("wunan", Skill::Compulsory));
 
-    General *shen021 = new General(this, "shen021", "touhougod", 4, false);
-    shen021->addSkill(new yindu);
-    shen021->addSkill(new huanming);
+    //General *shen021 = new General(this, "shen021", "touhougod", 4, false);
+   //shen021->addSkill(new yindu);
+    //shen021->addSkill(new huanming);
     
     General *shen000 = new General(this, "shen000", "touhougod", 4, true);
     shen000->addSkill(new chuanghuan);
