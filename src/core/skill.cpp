@@ -244,7 +244,7 @@ int TriggerSkill::getPriority(TriggerEvent) const{
 }
 
 bool TriggerSkill::triggerable(const ServerPlayer *target) const{
-    //在此处设置zun的“triggerable”?
+    //zun triggerable?
     return target != NULL && target->isAlive() && target->hasSkill(objectName());
 }
 

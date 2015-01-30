@@ -84,7 +84,7 @@ private:
     QList<CardItem *> up_items, down_items;
     bool up_only;
 
-    static const int start_x = 76; // ¿¼ÂÇÏÂÕâÀïµÄ±àÒëÎÊÌâ£¬ÓĞĞ©±àÒëÆ÷²»Ö§³ÖÕâÀïĞ´Êı×Ö
+    static const int start_x = 76; // ¿¼ÂÇÏÂÕâÀEÄ±àÒEÊÌâ£¬ÓĞĞ©±àÒE÷²»Ö§³ÖÕâÀE´Êı×Ö
     static const int start_y1 = 105;
     static const int start_y2 = 249;
     static const int middle_y = 173;

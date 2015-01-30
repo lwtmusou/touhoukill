@@ -1194,19 +1194,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
         result = false;
         setPlayerFlag(repliedPlayer, "-nullifiationNul");
     }
-    /*ServerPlayer *weiya_player = getCurrent();
-    if (weiya_player->isAlive() &&weiya_player != repliedPlayer && weiya_player->hasSkill("weiya") ) {
-    notifySkillInvoked(weiya_player, "weiya");
-    touhouLogmessage("#weiya_ask",repliedPlayer,"weiya",QList<ServerPlayer *>(),"nullification");
-    const Card *card1=askForCard(repliedPlayer, "nullification", "@weiya:nullification", data, Card::MethodDiscard, to, false);
-    if (card1){
-    result = true;
-    }
-    else{
-    touhouLogmessage("#weiya",repliedPlayer,"weiya",QList<ServerPlayer *>(),"nullification");
-    result = false;
-    }
-    }*/
+    
 
     if (card->isCancelable(effect)){
         if (result) {

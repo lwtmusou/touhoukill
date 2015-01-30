@@ -1049,7 +1049,7 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 		if self:hasWeiya() then
 			if self:getCardsNum("Jink") < 2 and not (self.player:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng)) then return "." end
 		end
-		--
+		--天人出闪的耦合。。。
 		
 		--[[if target and target:hasSkill("dahe") and self.player:hasFlag("dahe") then
 			for _, card in ipairs(self:getCards("Jink")) do

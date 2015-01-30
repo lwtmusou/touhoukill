@@ -13,7 +13,7 @@
 #include <QPropertyAnimation>
 
 void CardItem::_initialize() {
-    //卡牌默认不支持任何鼠标按键，以避免出现玩家误操作导致卡牌遗留在界面上无法消失的问题
+    
     setAcceptedMouseButtons(0);
 
     setFlag(QGraphicsItem::ItemIsMovable);

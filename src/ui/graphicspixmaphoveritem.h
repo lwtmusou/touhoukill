@@ -6,10 +6,7 @@
 
 class PlayerCardContainer;
 
-//自己的头像区不固定显示昵称，而是在鼠标悬停在上面时才显示，
-//所以需要为_m_avatarIcon和_m_smallAvatarIcon重写一个类，以便能捕获GraphicsSceneHoverEnter
-//和GraphicsSceneHoverLeave事件
-//之前尝试使用installSceneEventFilter和setFiltersChildEvents的方法来实现未获得满意效果
+
 class GraphicsPixmapHoverItem : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT

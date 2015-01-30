@@ -59,8 +59,7 @@ private:
     QList<SkinItem *> m_skins;
     QMap<int, SkinItem *> m_skinIndexToItem;
 
-    //本类对ZValue的处理，是为了保证窗口在被选中或移动过程中，
-    //始终保持在最上层，不被其他QGraphicsItem对象遮掩
+
     qreal m_originalZValue;
 
     QScrollBar *m_vScrollBar;

@@ -365,7 +365,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     }
 
     if (has_specific_assignee) {
-        if (Self->getWeapon() && Self->getWeapon()->isKindOf("Blade") && Self->getWeapon()->hasFlag("using")){ //直接用baldeuse这个flag不行 player类的关系？
+        if (Self->getWeapon() && Self->getWeapon()->isKindOf("Blade") && Self->getWeapon()->hasFlag("using")){ //flag baldeuse didnot work..
             if (subcards.contains(Self->getWeapon()->getId()))
                 return false;
         }

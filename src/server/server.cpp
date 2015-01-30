@@ -275,7 +275,7 @@ QWidget *ServerDialog::createAdvancedTab() {
     scheme0_subtraction_spinbox->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
 
     connect(max_hp_scheme_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setMaxHpSchemeBox()));
-    //°µ½«¹úÕ½
+
     /*basara_checkbox = new QCheckBox(tr("Enable Basara"));
     basara_checkbox->setChecked(Config.EnableBasara);
     updateButtonEnablility(mode_group->checkedButton());

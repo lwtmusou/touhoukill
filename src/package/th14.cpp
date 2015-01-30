@@ -211,7 +211,7 @@ public:
             }
 
             ServerPlayer *current = room->getCurrent();
-            if (!current->isAlive())
+            if (!current || !current->isAlive())
                 return false;
             if (player->askForSkillInvoke(objectName(), "throw:" + current->objectName())){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), current->objectName());
@@ -263,8 +263,10 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *current = room->getCurrent();
+		if (!current)
+		    return false;
         ServerPlayer *source = room->findPlayerBySkillName(objectName());
-        if (source == NULL || source->getPhase() != Player::NotActive)
+        if (!source || source->isCurrent())//source->getPhase() != Player::NotActive
             return false;
 
         if (triggerEvent == CardsMoveOneTime){
@@ -285,7 +287,6 @@ public:
         else if (triggerEvent == EventPhaseEnd && current->getPhase() == Player::Discard){
             if (!room->getTag("wuchang").toBool())
                 return false;
-            ServerPlayer * current = room->getCurrent();
             room->setTag("wuchang", true);
             if (!current->isKongcheng() && current->canDiscard(current, "h")){
                 source->tag["wuchang_target"] = QVariant::fromValue(current);
@@ -564,15 +565,18 @@ public:
         if (triggerEvent == EventPhaseStart){
             if (player->getPhase() == Player::Finish){
                 ServerPlayer *source = room->findPlayerBySkillName(objectName());
+				if (!source || source->isCurrent())
+                    return false;  
+				//if (source->getPhase() != Player::NotActive)
                 QList<int>    temp_ids;
                 QVariantList shizhu_ids = room->getTag("shizhuPeach").toList();
-                foreach(QVariant card_data, shizhu_ids)
-                    temp_ids << card_data.toInt();
-
-                if (source == NULL || temp_ids.length() == 0)
+                foreach(QVariant card_data, shizhu_ids){
+                     if (room->getCardPlace(card_data.toInt()) == Player::DiscardPile)
+					     temp_ids << card_data.toInt();
+				}
+                if (temp_ids.length() == 0)
                     return false;
-                if (source->getPhase() != Player::NotActive)
-                    return false;
+                
 
                 if (room->askForSkillInvoke(source, objectName(), data)) {
                     room->fillAG(temp_ids, source);

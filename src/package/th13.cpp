@@ -677,7 +677,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *who = room->getCurrentDyingPlayer();
         ServerPlayer *current = room->getCurrent();
-        if (!current->isAlive() || who != player || current == player)
+        if (!current || !current->isAlive() || who != player || current == player)
             return false;
         player->tag["fenyuanDying"] = data;
         QString prompt = "invoke:" + current->objectName();
@@ -705,7 +705,8 @@ bool xiefaCard::targetFilter(const QList<const Player *> &targets, const Player 
             return false;
         //Card *slash = Sanguosha->cloneCard("slash");
         //slash->deleteLater();
-        //万能的依姬 先凭依远吠，使用远吠，再凭依邪法。居然可以指定远吠的目标。
+        //pingyi yuanfei then use yuanfei. now pingyi xiefa and use xiefa in this round 
+		//can select yuanfei target...
         //if (to_select->isCardLimited(slash,Card::MethodUse))
         //    return false;
         //isCardLimited() did not worked...
@@ -813,7 +814,7 @@ public:
         QString pattern = data.toStringList().first();
         if (pattern == "jink") {
             ServerPlayer *current = room->getCurrent();
-            if (!current->isAlive() || (current->getWeapon() != NULL && current->getMark("@tianyi_Weapon") == 0))
+            if (!current && !current->isAlive() || (current->getWeapon() != NULL && current->getMark("@tianyi_Weapon") == 0))
                 return false;
             Jink *jink = new Jink(Card::NoSuit, 0);
             jink->deleteLater();
@@ -998,7 +999,7 @@ public:
                 if (use.card->isKindOf("Jink"))
                     return false;
                 Card *card = Sanguosha->cloneCard(use.card->objectName());
-                if (use.card->isNDTrick() && use.from->hasSkill("aoyi")){//锁视技 ai存在问题，暂时枚举解决。。。
+                if (use.card->isNDTrick() && use.from->hasSkill("aoyi")){//for a bug in filtersviewkill, then ai has this skill
                     if (use.from->getAI())
                         card = Sanguosha->cloneCard("ice_slash");
                 }

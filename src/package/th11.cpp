@@ -781,7 +781,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-
+        //need check null current?
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *source = room->findPlayerBySkillName(objectName());
         if (source == NULL || room->getCurrent()->getPhase() != Player::Judge || player != room->getCurrent())

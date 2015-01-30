@@ -206,16 +206,15 @@ protected:
     QMenu *_m_sort_menu;
     //QMenu *_m_carditem_context_menu;
 
-    //保存当前移进Dashboard可使用的卡牌
+
     QList<CardItem *> _m_cardItemsAnimationFinished;
     QMutex m_mutexCardItemsAnimationFinished;
 
 protected slots:
     virtual void _onEquipSelectChanged();
-    //在播放卡牌移进Dashboard的动画过程中，玩家误操作时可产生按住卡牌后不让其移动的Bug，
-    //为避免该问题，Dashboard需要重写这个槽方法
+
     virtual void onAnimationFinished();
-    //自己的头像区不固定显示昵称，而是在鼠标悬停在上面时才显示
+
     virtual void onAvatarHoverEnter();
     virtual void doAvatarHoverLeave() { _m_screenNameItem->hide(); }
 
@@ -223,7 +222,7 @@ protected slots:
 
 private slots:
     void onCardItemClicked();
-    //将主界面移除的"反选"和"整理手牌"功能，转移到右键菜单来实现
+
     //void onCardItemContextMenu();
 
     void onCardItemDoubleClicked();

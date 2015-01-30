@@ -219,7 +219,7 @@ bool Dashboard::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStru
         return true;
     }
 
-    //保存当前移进Dashboard可使用的卡牌
+    
     m_mutexCardItemsAnimationFinished.lock();
     _m_cardItemsAnimationFinished << card_items;
     m_mutexCardItemsAnimationFinished.unlock();
@@ -261,7 +261,6 @@ void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &f
     else
         m_handCards.append(card_item);
 
-    //将主界面移除的"反选"和"整理手牌"功能，转移到右键菜单来实现
     //connect(card_item, SIGNAL(context_menu_event_triggered()), this, SLOT(onCardItemContextMenu()));
 
     connect(card_item, SIGNAL(clicked()), this, SLOT(onCardItemClicked()));
@@ -486,7 +485,7 @@ void Dashboard::_createExtraButtons() {
     m_btnReverseSelection = new QSanButton("handcard", "reverse-selection", this);
     m_btnSortHandcard = new QSanButton("handcard", "sort", this);
     m_btnNoNullification = new QSanButton("handcard", "nullification", this);
-    //反选按钮暂时不要了...
+
     m_btnReverseSelection->hide();
 
     m_btnNoNullification->setStyle(QSanButton::S_STYLE_TOGGLE);
@@ -775,7 +774,6 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
     else
         Q_ASSERT(false);
 
-    //移出去的卡牌恢复成默认不支持鼠标按键的状态
     foreach(CardItem *card, result) {
         card->setAcceptedMouseButtons(0);
     }
@@ -1013,7 +1011,6 @@ void Dashboard::expandPileCards(const QString &pile_name) {
 
     adjustCards();
     _playMoveCardsAnimation(card_items, false);
-    //需要支持鼠标左键
     foreach(CardItem *card_item, card_items)
         card_item->setAcceptedMouseButtons(Qt::LeftButton);
     update();
@@ -1205,26 +1202,23 @@ QPointF Dashboard::getHeroSkinContainerPosition() const
 
 bool Dashboard::isItemUnderMouse(QGraphicsItem *item)
 {
-    //鼠标指针在头像区且不在技能框上，或在技能框的透明区域时显示换肤按钮
-    return (item->isUnderMouse() && !_m_skillDock->isUnderMouse())
+     return (item->isUnderMouse() && !_m_skillDock->isUnderMouse())
         || (_m_skillDock->isUnderMouse() && _m_screenNameItem->isVisible());
 }
 
 void Dashboard::onAvatarHoverEnter()
 {
     //hideControlButtons();
-    //screenName的绘制工作在repaintAll里
     _m_screenNameItem->show();
 
     PlayerCardContainer::onAvatarHoverEnter();
 }
 
-//在播放卡牌移进Dashboard的动画过程中，玩家误操作时可产生按住卡牌后不让其移动的Bug，
-//为避免该问题，Dashboard需要重写这个槽方法
+
 void Dashboard::onAnimationFinished()
 {
-    //移进Dashboard的卡牌需要支持鼠标左键
-    m_mutexCardItemsAnimationFinished.lock();
+   
+	m_mutexCardItemsAnimationFinished.lock();
 
     foreach(CardItem *cardItem, _m_cardItemsAnimationFinished) {
         if (NULL != cardItem) {
@@ -1240,7 +1234,7 @@ void Dashboard::onAnimationFinished()
 
 
 
-//将主界面移除的"反选"和"整理手牌"功能，转移到右键菜单来实现
+
 /*void Dashboard::onCardItemContextMenu()
 {
 if (NULL != _m_carditem_context_menu) {

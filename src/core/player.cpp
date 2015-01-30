@@ -44,7 +44,7 @@ void Player::setShownRole(bool shown) {
 
 void Player::setHp(int hp) {
     if (this->hasSkill("banling")) {
-        this->hp = this->getHp(); //由于半灵hp和标记关联，最好不要乱set
+        this->hp = this->getHp(); //set for banling
         emit hp_changed();
     } else if (this->hp != hp) {
         this->hp = hp;
@@ -235,8 +235,8 @@ int Player::distanceTo(const Player *other, int distance_fix) const{
         return fixed_distance.value(other);
 
 
-    //***运算结界距离
-    if (getMark("@in_jiejie") > 0 || other->getMark("@in_jiejie") > 0)//做两次是避免分别移动时被【感应】检测到
+    //jiejie
+    if (getMark("@in_jiejie") > 0 || other->getMark("@in_jiejie") > 0)
         return 900;
     if (getPile("jiejie_left").length() > 0 &&
         other->getPile("jiejie_right").length() > 0)
@@ -281,7 +281,7 @@ int Player::distanceTo(const Player *other, int distance_fix) const{
     if (clockwise && anticlockwise)
         return 900;
 
-    //***运算结界距离完毕
+    //jiejie
 
 
     int right = qAbs(seat - other->seat);
@@ -395,6 +395,14 @@ const General *Player::getGeneral() const{
 
 bool Player::isLord() const{
     return getRole() == "lord";
+}
+
+bool Player::isCurrent() const{
+    if (getPhase() == Player::NotActive)
+		return false;
+	else if (hasFlag("qinlue") &&  getPhase() == Player::Play)
+		return false;
+	return true;
 }
 
 

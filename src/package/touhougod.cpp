@@ -28,7 +28,7 @@ public:
         n = qMin(n, list.length());
 
         QStringList acquired = list.mid(0, n);
-        //获得的化身加入thread的skillset？
+        //get thread skillset？
         foreach(QString name, acquired) {
             huashens << name;
             const General *general = Sanguosha->getGeneral(name);
@@ -40,7 +40,7 @@ public:
             }
         }
         zun->tag["Fantasy"] = huashens;
-        //添加什么将 不需要hidden
+
         room->doAnimate(QSanProtocol::S_ANIMATE_HUASHEN, zun->objectName(), acquired.join(":"), room->getAllPlayers());
 
 
@@ -60,8 +60,7 @@ public:
 
         room->setPlayerMark(zun, "@huanxiangs", huashens.length());
 
-        //以上为获得幻想牌
-        //以下为预装技能
+
         QVariantList huashen_skills = zun->tag["FantasySkills"].toList();
 
         if (huashens.isEmpty()) return;
@@ -70,7 +69,7 @@ public:
         foreach(QVariant huashen, huashens)
             huashen_generals << huashen.toString();
 
-        //没有考虑ai
+
         foreach(QString general_name, huashen_generals) {
             const General *general = Sanguosha->getGeneral(general_name);
             foreach(const Skill *skill, general->getVisibleSkillList()) {
@@ -197,7 +196,7 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *source = room->findPlayerBySkillName(objectName());
-        if (source == NULL || source->isNude())
+        if (!source || source->isNude())
             return false;
         if (triggerEvent == DamageInflicted){
             const Card *card = room->askForCard(source, "..H", "@jiexiandamage:" + player->objectName(), data, objectName());
@@ -753,7 +752,7 @@ public:
         if (who != player)
             return false;
         ServerPlayer *current = room->getCurrent();
-        if (current == NULL || !current->isAlive() || player == current)
+        if (!current || !current->isAlive() || player == current)
             return false;
         if (player->askForSkillInvoke(objectName(), "recover:" + current->objectName())){
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), current->objectName());
@@ -1109,8 +1108,8 @@ public:
         if (!player->hasSkill("banling"))
             return false;
         Room *room = player->getRoom();
-        if (player->getPhase() == Player::Start && player->hasSkill("banling")) {//左慈 zun 依姬时会有问题
-            if (player->getLingHp() < player->getMaxHp()){ //使用专门的gethp函数 直接取mark值也行
+        if (player->getPhase() == Player::Start && player->hasSkill("banling")) {
+            if (player->getLingHp() < player->getMaxHp()){ 
                 int  x = player->getMaxHp() - player->getLingHp();
                 x = qMin(x, 2);
                 ServerPlayer *s = room->askForPlayerChosen(player, room->getAlivePlayers(), "renguidraw", "@rengui-draw:" + QString::number(x), true, true);
@@ -1191,7 +1190,8 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->getPhase() != Player::NotActive)
+         if (player->isCurrent())
+		//if (player->getPhase() != Player::NotActive)
             return false;
         if (room->getTag("FirstRound").toBool())
             return false;
@@ -1405,9 +1405,9 @@ public:
     }
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer * current = room->getCurrent();
-        if (current->getPhase() == Player::NotActive) {
+        if (current && current->getPhase() == Player::NotActive) {
             ServerPlayer *ymsnd = room->findPlayerBySkillName(objectName());
-            if (ymsnd == NULL || !room->getTag("duanzui").toBool())
+            if (!ymsnd || !room->getTag("duanzui").toBool())
                 return false;
 
             room->setTag("duanzui", false);
@@ -1438,7 +1438,7 @@ public:
         events << PreMarkChange;
     }
     virtual bool triggerable(const ServerPlayer *target) const{
-        return (target->getMark("@duanzui-extra") > 0 || target->hasSkill("duanzui")) && target->getPhase() == Player::NotActive;
+        return (target->getMark("@duanzui-extra") > 0 || target->hasSkill("duanzui")) && !target->isCurrent();//target->getPhase() == Player::NotActive
     }
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         MarkChangeStruct change = data.value<MarkChangeStruct>();
@@ -1667,9 +1667,9 @@ public:
     }
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *source = room->findPlayerBySkillName(objectName());
-        if (source == NULL) return false;
+        if (!source) return false;
         ServerPlayer *current = room->getCurrent();
-        if (current->getMark("touhou-extra") > 0)  return false;
+        if (!current || current->getMark("touhou-extra") > 0)  return false;
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to == Player::Play && current != source && !current->isSkipped(Player::Play)){
             QString  prompt = "@qinlue-discard:" + current->objectName();
@@ -1683,11 +1683,12 @@ public:
                     current->skip(Player::Play);
 
                     source->tag["qinlue_current"] = QVariant::fromValue(current);
-                    room->setPlayerMark(source, "touhou-extra", 1);
+                    //room->setPlayerMark(source, "touhou-extra", 1);
                     source->setFlags("qinlue");
                     source->setPhase(Player::Play);
-                    current->setPhase(Player::NotActive);
-                    room->setCurrent(source);
+                    //current->setPhase(Player::NotActive);
+					current->setPhase(Player::PhaseNone);
+                    //room->setCurrent(source);
                     room->broadcastProperty(source, "phase");
                     room->broadcastProperty(current, "phase");
                     RoomThread *thread = room->getThread();
@@ -1695,11 +1696,11 @@ public:
                         thread->trigger(EventPhaseProceeding, room, source);
 
                     thread->trigger(EventPhaseEnd, room, source);
-                    room->setCurrent(current);
+                    //room->setCurrent(current);
 
                     source->changePhase(Player::Play, Player::NotActive);
 
-                    room->setPlayerMark(source, "touhou-extra", 0);
+                    //room->setPlayerMark(source, "touhou-extra", 0);
                     current->setPhase(Player::PhaseNone);
 
                     source->setFlags("-qinlue");
@@ -1753,8 +1754,8 @@ public:
                         dummy1->addSubcard(c);
                     room->obtainCard(player, dummy1, false);
                 }
-                if (target != NULL)  //for siyu broken
-                    room->setCurrent(target);
+                //if (target != NULL)  //for siyu broken
+                //    room->setCurrent(target);
 
             }
         }
@@ -2218,7 +2219,7 @@ public:
         return false;
     }
 };
-
+ 
 class zuosui : public TriggerSkill {
 public:
     zuosui() : TriggerSkill("zuosui") {

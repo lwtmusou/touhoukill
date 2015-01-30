@@ -181,7 +181,7 @@ void PlayerCardContainer::updateAvatar() {
     if (_m_avatarIcon == NULL) {
         _m_avatarIcon = new GraphicsPixmapHoverItem(this, _getAvatarParent());
         _m_avatarIcon->setTransformationMode(Qt::SmoothTransformation);
-        //妈蛋 怎么能在parent后面。。。dashboard的avatarIcon会一直在下面的图层里。。。
+        
         // _m_avatarIcon->setFlag(QGraphicsItem::ItemStacksBehindParent);
     }
 
@@ -193,7 +193,7 @@ void PlayerCardContainer::updateAvatar() {
             Qt::AlignCenter,
             m_player->screenName());
     }
-    //隐藏self==player时的screenname
+
     /*if (m_player) {
         general = m_player->getAvatarGeneral();
         if (Self != m_player) {
@@ -694,7 +694,7 @@ QPixmap PlayerCardContainer::_getEquipPixmap(const EquipCard *equip) {
         Q_ASSERT(horse);
         if (horse) distance = QString::number(horse->getCorrect());
     }
-    if (index != 1 && index != 4) {//防具和宝物不需要
+    if (index != 1 && index != 4) {
         _m_layout->m_equipFont.paintText(&painter,
             _m_layout->m_equipDistanceArea,
             Qt::AlignLeft | Qt::AlignVCenter,
@@ -1184,7 +1184,6 @@ void PlayerCardContainer::_onEquipSelectChanged() {
 void PlayerCardContainer::showHeroSkinList()
 {
 
-    //检查roomscene的m_heroSkinContainers，如果有在显示的，就hide
     foreach(HeroSkinContainer *heroSkinContainer, RoomSceneInstance->getHeroSkinContainers()) {
         if (heroSkinContainer->isVisible()) {
             heroSkinContainer->hide();
@@ -1225,9 +1224,9 @@ void PlayerCardContainer::showHeroSkinListHelper(const General *general,
         RoomSceneInstance->addItem(heroSkinContainer);
         QRectF photoRect = _m_avatarIcon->sceneBoundingRect();
         if (Self == m_player)
-            //目前固定位置了事。。。
+
             heroSkinContainer->setPos(photoRect.left() - 400, photoRect.top() - 60);  //QPointF(100,100)
-        else{//需要从各个全身像位置向不动的方位移动 以便减少选择时鼠标移动距离
+        else{
 
             heroSkinContainer->setPos(photoRect.left(), photoRect.top());
         }
@@ -1278,7 +1277,7 @@ void PlayerCardContainer::onAvatarHoverEnter()
         QSanButton *heroSKinBtn = NULL;
 
         if (senderObj == _m_avatarIcon)
-        {  // || (senderObj == _m_huashenItem && !second_zuoci)) 鼠标悬停时 左慈暂不考虑
+        {  // || (senderObj == _m_huashenItem && !second_zuoci)) 
             general = m_player->getGeneral();
             avatarItem = _m_avatarIcon;
             heroSKinBtn = m_changePrimaryHeroSKinBtn;

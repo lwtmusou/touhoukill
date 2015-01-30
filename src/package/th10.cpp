@@ -963,7 +963,7 @@ public:
         ServerPlayer *hina = room->findPlayerBySkillName(objectName());
         if (damage.to == NULL || damage.to->isDead())
             return false;
-        if (hina == NULL || hina->getPhase() != Player::NotActive
+        if (hina == NULL || hina->isCurrent() //hina->getPhase() != Player::NotActive
             || !hina->inMyAttackRange(damage.to))
             return false;
         QString prompt = "target:" + damage.to->objectName();

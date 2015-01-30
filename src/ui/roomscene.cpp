@@ -837,8 +837,7 @@ void RoomScene::adjustItems() {
     m_tableh = displayRegion.height();// - dashboard->boundingRect().height();
 
     QString image_path;
-    //根据具体选将 修改bgm和背景图
-    //命名仍是编号+数字
+
     QString lord_kingdom = ClientInstance->lord_kingdom;
     QString lord_name = ClientInstance->lord_name;
     if (lord_kingdom != NULL && lord_name != NULL
@@ -1117,8 +1116,8 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats) {
         }
     }
 
-    //玩家座位确定后需要同步更新气泡聊天框的位置
-    QList<QString> names = name2photo.keys();
+   
+	QList<QString> names = name2photo.keys();
     foreach(const QString &who, names) {
         if (m_bubbleChatBoxs.contains(who)) {
             m_bubbleChatBoxs[who]->setArea(getBubbleChatBoxShowArea(who));
@@ -1257,8 +1256,7 @@ void RoomScene::enableTargets(const Card *card) {
 
     updateTargetsEnablity(card);
 
-    //失控自动选择 应该加在这里？
-    //自动为失控添加to_select
+    
 
     if (selected_targets.isEmpty()) {
         if (card->isKindOf("Slash") && Self->hasFlag("slashTargetFixToOne")) {
@@ -2456,7 +2454,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             else if (newStatus == Client::Playing)
                 reason = CardUseStruct::CARD_USE_REASON_PLAY;
             button->setEnabled(vsSkill->isAvailable(Self, reason, pattern) && !pattern.endsWith("!"));
-            //非首位的skillbutton不能预亮。。。笨办法 强制预亮
+            
             if (vsSkill->isAvailable(Self, reason, pattern) && !pattern.endsWith("!") && rx.exactMatch(pattern) && pattern.startsWith("@@"))
             {
                 if (!pattern.startsWith("@@chuangshi"))
@@ -2543,7 +2541,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                             && vsSkill->isAvailable(Self, reason, pattern))
                             if (pattern.startsWith("@@chuangshi"))
                                 button->click();
-                        //非首位的skillbutton不能预亮。。。笨办法 强制预亮
+                       
                         //button->setState(QSanButton::S_STATE_DOWN,true);
                         break;
                     }
@@ -3749,8 +3747,6 @@ void RoomScene::onGameStart() {
 #ifdef AUDIO_SUPPORT
     QString bgmusic_path = Config.value("BackgroundMusic", "audio/system/background.ogg").toString();
     QString image_path = "";
-    //根据具体选将 修改bgm和背景图
-    //命名仍是编号+数字
     QString lord_kingdom = ClientInstance->lord_kingdom;
     QString lord_name = ClientInstance->lord_name;
     if (lord_kingdom != NULL && lord_name != NULL
@@ -4145,9 +4141,8 @@ void RoomScene::fillGenerals1v1(const QStringList &names) {
         general_item->scaleSmoothly(scaleRatio);
         general_item->setParentItem(selector_box);
         general_item->setPos(start_x + width * column, start_y + height * row);
-        general_item->setHomePos(general_item->pos());
-        //卡牌需要支持鼠标左键，以便双击选择
-        general_item->setAcceptedMouseButtons(Qt::LeftButton);
+        general_item->setHomePos(general_item->pos());   
+		general_item->setAcceptedMouseButtons(Qt::LeftButton);
     }
 }
 
@@ -4188,8 +4183,7 @@ void RoomScene::fillGenerals3v3(const QStringList &names) {
         general_item->setPos(start_x + width * column, row_y[row]);
         general_item->setHomePos(general_item->pos());
         general_item->setObjectName(names.at(i));
-        //卡牌需要支持鼠标左键，以便双击选择
-        general_item->setAcceptedMouseButtons(Qt::LeftButton);
+        //卡牌需要支持鼠眮E蠹丒员闼餮≡丒        general_item->setAcceptedMouseButtons(Qt::LeftButton);
 
         general_items << general_item;
     }
@@ -4615,7 +4609,6 @@ void RoomScene::addHeroSkinContainer(ClientPlayer *player,
 {
     m_heroSkinContainers.insert(heroSkinContainer);
 
-    //同名武将的皮肤要求能做到同步替换
     QList<PlayerCardContainer *> playerCardContainers;
     foreach(Photo *photo, photos) {
         if (photo->getPlayer() == player) {

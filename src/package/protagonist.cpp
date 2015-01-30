@@ -152,9 +152,9 @@ return wrap;
 };
 */
 
-class bllmqixiang : public TriggerSkill {
+class qixiang : public TriggerSkill {
 public:
-    bllmqixiang() : TriggerSkill("bllmqixiang") {
+    qixiang() : TriggerSkill("qixiang") {
         events << FinishJudge;
     }
 
@@ -563,7 +563,7 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == GameStart
-            || (triggerEvent == EventAcquireSkill && data.toString() == "wuyu")) {
+            || (triggerEvent == EventAcquireSkill && data.toString() == "saiqian")) {
             QList<ServerPlayer *> lords;
             foreach (ServerPlayer *p, room->getAlivePlayers()) {
                 if (p->hasSkill(objectName()))
@@ -581,7 +581,7 @@ public:
                     room->attachSkillToPlayer(p, "saiqianvs");
             }
         }
-        else if (triggerEvent == Death || (triggerEvent == EventLoseSkill && data.toString() == "wuyu")) {
+        else if (triggerEvent == Death || (triggerEvent == EventLoseSkill && data.toString() == "saiqian")) {
             if (triggerEvent == Death){
                 DeathStruct death = data.value<DeathStruct>();
                 if (!death.who->hasSkill(objectName(),false,true))//deal the case that death in round of changshi?
@@ -1473,7 +1473,7 @@ protagonistPackage::protagonistPackage()
 
     General *zhu001 = new General(this, "zhu001$", "zhu", 4, false);
     zhu001->addSkill(new lingqi);
-    zhu001->addSkill(new bllmqixiang);
+    zhu001->addSkill(new qixiang);
     //zhu001->addSkill(new hongbai);
     zhu001->addSkill(new boli);
 

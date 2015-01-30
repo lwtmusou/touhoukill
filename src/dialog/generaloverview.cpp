@@ -351,7 +351,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
             //package_item->setBackgroundColor(QColor(0x66, 0xCC, 0xFF));
             package_item->setToolTip(tr("<font color=#FFFF33>This is an Lua extension</font>"));
         }
-        //对东方武将的“势力”“包”信息添加颜色.
+        //add color for touhou kingdoms and packages.
         if (general->getPackage() == "protagonist")
             package_item->setBackgroundColor(QColor(138, 43, 226));
         if (general->getKingdom() == "zhu")

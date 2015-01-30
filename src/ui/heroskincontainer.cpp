@@ -4,7 +4,7 @@
 #include "settings.h"
 #include "GenericCardContainerUI.h"
 #include "engine.h"
-//编译时莫名缺失的2个。。。
+
 #include "sanshadowtextfont.h"
 #include <QGraphicsProxyWidget>
 
@@ -25,7 +25,7 @@ const int Y_START_POS = 32;
 
 const int SKIN_ITEM_WIDTH = SKIN_ITEM_AREA.width();
 const int SKIN_ITEM_HEIGHT = SKIN_ITEM_AREA.height();
-//正则表达式应该支持数字。。。(?:[A-Za-z_]+)(\\d+).png
+//(?:[A-Za-z_]+)(\\d+).png
 const QRegExp SKIN_FILE_NAME_PATTERN = QRegExp("(?:[A-Za-z_0-9]+)(\\d+).png");
 
 HeroSkinContainer *HeroSkinContainer::m_currentTopMostContainer = NULL;
@@ -44,7 +44,7 @@ HeroSkinContainer::HeroSkinContainer(const QString &generalName,
 
     QSanButton *closeButton = new QSanButton("player_container",
         "close-heroskin", this); //"change-heroskin"
-    //这个路径就是死活不行 为什么。。。
+    
     //QSanButton *closeButton = new QSanButton("card_container", 
     //"close", this); 
 
@@ -138,7 +138,7 @@ QStringList HeroSkinContainer::getHeroSkinFiles(const QString &generalName)
 
 void HeroSkinContainer::initSkins()
 {
-    //dummyRectItem对象的用途是作为SkinItem对象们的滚动剪切区域
+    
     QGraphicsRectItem *dummyRectItem = new QGraphicsRectItem(QRectF(LEFT_MARGIN, 35,
         AVAILABLE_AREA_WIDTH, 174), this);
     dummyRectItem->setFlag(ItemHasNoContents);
@@ -157,7 +157,7 @@ void HeroSkinContainer::initSkins()
         }
     }
 
-    //默认武将皮肤
+    
     if (0 != skinIndexUsed) {
         createSkinItem(0, dummyRectItem);
     }

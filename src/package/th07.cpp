@@ -619,7 +619,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer  *current = room->getCurrent();
-        if (current->getPhase() != Player::Finish)
+        if (!current || current->getPhase() != Player::Finish)
             return false;
         ServerPlayer *source = room->findPlayerBySkillName(objectName());
 
@@ -1101,13 +1101,13 @@ public:
         ServerPlayer  *current = room->getCurrent();
         bool can_invoke = false;
 
-        if (triggerEvent == EventPhaseStart && current->getPhase() == Player::Finish){
+        if (triggerEvent == EventPhaseStart && current && current->getPhase() == Player::Finish){
             if (player != current)
                 return false;
             can_invoke = true;
         } else if (triggerEvent == Damaged){
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.to == NULL || !damage.to->isAlive())
+            if (!damage.to || !damage.to->isAlive())
                 return false;
             current = damage.to;
             can_invoke = true;
@@ -1319,7 +1319,7 @@ public:
 
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->getPhase() != Player::NotActive || player->getHp() >= 1)
+        if ( player->getHp() >= 1 || player->isCurrent()) //player->getPhase() != Player::NotActive ||
             return false;
         if (!player->faceUp())
             player->turnOver();
@@ -1334,11 +1334,18 @@ public:
         room->touhouLogmessage("#TriggerSkill", player, objectName());
         room->notifySkillInvoked(player, objectName());
 
-        ServerPlayer *current = room->getCurrent();
+        
 
 
         room->touhouLogmessage("#touhouExtraTurn", player, objectName());
-        current->changePhase(current->getPhase(), Player::NotActive);
+        //for skill qinlue
+		foreach(ServerPlayer *p, room->getAlivePlayers()) {
+            if (p->hasFlag("qinlue"))		
+				p->changePhase(p->getPhase(), Player::NotActive);
+		}
+		ServerPlayer *current = room->getCurrent();
+		if (current)
+		    current->changePhase(current->getPhase(), Player::NotActive);
 
         touhou_siyu_clear(player);
 

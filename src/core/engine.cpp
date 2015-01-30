@@ -133,9 +133,9 @@ void Engine::addTranslationEntry(const char *key, const char *value) {
     translations.insert(key, QString::fromUtf8(value));
 }
 
+
 Engine::~Engine() {
-    lua_close(lua); //此条语句会导致闪退（只不过是正在退出的过程中闪退，看不出来），不知什么原因
-    //实测，在载入LUA扩展包时会闪退，不载入LUA包没问题
+    lua_close(lua); 
 #ifdef AUDIO_SUPPORT
     Audio::quit();
 #endif
@@ -593,7 +593,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
 }
 
 QString Engine::getVersionNumber() const{
-    return "20150119";
+    return "20150130";
 }
 
 QString Engine::getVersion() const{
@@ -906,7 +906,7 @@ QStringList Engine::getRandomLords() const{
         extra = 1;
     for (i = 0; addcount < extra; i++) {
 
-        if (godmax == 0) {//全面禁止神
+        if (godmax == 0) {
             if (getGeneral(nonlord_list.at(i))->getKingdom() != "god"&& getGeneral(nonlord_list.at(i))->getKingdom() != "touhougod") {
                 lords << nonlord_list.at(i);
                 addcount++;
@@ -922,7 +922,7 @@ QStringList Engine::getRandomLords() const{
                     addcount++;
                 }
             }
-        } else {//不禁神
+        } else {
             lords << nonlord_list.at(i);
             addcount++;
         }
@@ -1032,7 +1032,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
     int godCount = 0;
     for (i = 0; addcount < count; i++) {
 
-        if (godmax == 0) {//全面禁止神
+        if (godmax == 0) {
             if (getGeneral(all_generals.at(i))->getKingdom() != "god"&& getGeneral(all_generals.at(i))->getKingdom() != "touhougod") {
                 general_list << all_generals.at(i);
                 addcount++;
@@ -1048,7 +1048,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
                     addcount++;
                 }
             }
-        } else {//不禁神
+        } else {
             general_list << all_generals.at(i);
             addcount++;
         }

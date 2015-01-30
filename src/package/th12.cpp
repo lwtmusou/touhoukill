@@ -509,8 +509,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
 
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        ServerPlayer *current = room->getCurrent();
-        if (current != NULL && current == player){
+        if (player->isCurrent()){
             if (move.from != NULL && move.from != player
                 && move.to_place == Player::DiscardPile){
 

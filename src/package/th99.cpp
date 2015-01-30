@@ -969,7 +969,7 @@ public:
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *luna = room->findPlayerBySkillName(objectName());
-        if (luna == NULL || luna->getPhase() == Player::NotActive)
+        if (!luna || !luna->isCurrent())//luna->getPhase() == Player::NotActive
             return false;
         if (damage.to == NULL || damage.to->isDead() || damage.to == luna)
             return false;

@@ -1,16 +1,17 @@
---【渴血】ai
 --function SmartAI:isWeak
 --SmartAI:ableToSave-- 【远吠】的问题
 function sgs.ai_cardsview_valuable.skltkexuepeach(self, class_name, player)
 	if class_name == "Peach" and player:getHp()>1 then
 		local dying = player:getRoom():getCurrentDyingPlayer()
 		if not dying or not dying:hasSkill("skltkexue") or self:isEnemy(dying, player) or dying:objectName() == player:objectName() then return nil end
-		--if self:isFriend(dying, player) then return "#skltkexuepeach:.:" end
+		
 		if self:isFriend(dying, player) then return "@skltkexueCard=." end
 		return nil
 	end
 end
 sgs.ai_card_intention.skltkexueCard = sgs.ai_card_intention.Peach
+sgs.ai_use_priority.skltkexueCard = sgs.ai_use_priority.Peach + 0.1
+
 
 function SmartAI:invokeTouhouJudge(player)
 	player = player or self.player
@@ -58,14 +59,13 @@ function SmartAI:slashProhibitToEghitDiagram(card,from,enemy)
 	end
 	return false
 end
---【命运】ai 如果对此判定的好坏无法判断 此AI可能会导致闪退
+
 --sgs.ai_skill_invoke.EightDiagram 
 --sgs.ai_armor_value.EightDiagram 
 --SmartAI:getFinalRetrial
 --SmartAI:canRetrial
 sgs.ai_skill_invoke.mingyun = true 
 sgs.ai_skill_askforag.mingyun = function(self, card_ids)
-	--card_ids为table
 	local judge = self.player:getTag("mingyun_judge"):toJudge()
 	local mingyun={}
 	local mingyun1={}
@@ -81,10 +81,8 @@ sgs.ai_skill_askforag.mingyun = function(self, card_ids)
 	table.insert(mingyun,judge.card)
 	local ex_id2=self:getRetrialCardId(mingyun2, judge)
 	
-	--local result1 = self:needRetrial(judge)  很难用 效果不好。。。
-	--ex_id==-1 说明预设的判定不符合雷米的利益
+	--ex_id==-1 means the Retrial result are not good for remilia
 	if ex_id1==ex_id2 or (ex_id1~=-1 and  ex_id2~=-1) then
-		--哪一个都无所谓
 		self:sortByKeepValue(mingyun,true)
 		return mingyun[1]:getId()
 	elseif ex_id1==-1 then
@@ -95,7 +93,7 @@ sgs.ai_skill_askforag.mingyun = function(self, card_ids)
 	return card_ids[1]
 end
 
---【血裔】ai 
+
 sgs.ai_skill_playerchosen.xueyi = function(self, targets)
 	target_table =sgs.QList2Table(targets)
 	if #target_table==0 then return false end
@@ -108,7 +106,7 @@ sgs.ai_skill_playerchosen.xueyi = function(self, targets)
 end
 sgs.ai_playerchosen_intention.xueyi = -80
 
---【破坏】ai
+
 function SmartAI:pohuaiBenefit(player)
 	local value=0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
@@ -147,10 +145,8 @@ sgs.ai_cardneed.pohuai = function(to, card, self)
 		end
 	end
 end
---【浴血】ai  pattern为slash的askForUseCard无需AI
---[[sgs.ai_cardneed.yuxue = function(to, card, self)
-	return  isCard("Slash", card, to) 
-end]]
+
+
 sgs.yuxue_keep_value = {
 	Peach 			= 5.5,
 	Analeptic 		= 5.5,
@@ -160,8 +156,6 @@ sgs.yuxue_keep_value = {
 	ThunderSlash 	= 5.5
 }
 sgs.ai_need_damaged.yuxue = function(self, attacker, player)
-	--if not attacker then return end
-	--if self:getDamagedEffects(attacker, player) then return self:isFriend(attacker, player) end
 	local hasGoodTarget=false
 	local hasGoodState=false
 	local hasSlash=false
@@ -194,22 +188,20 @@ sgs.ai_cardneed.yuxue = function(to, card, self)
 	return getCardsNum("Slash", to, self.player) <2
 	 and card:isKindOf("Slash")
 end
---【盛宴】ai
+
 sgs.ai_skill_invoke.shengyan = function(self)
         return not self:needKongcheng(self.player, true)
 end
 
---【锁定】ai
+
 local suoding_skill = {}
 suoding_skill.name = "suoding"
 table.insert(sgs.ai_skills, suoding_skill)
 function suoding_skill.getTurnUseCard(self)
         if self.player:hasUsed("suodingCard") then return nil end
-        --return sgs.Card_Parse("#suoding:.:")
 		return sgs.Card_Parse("@suodingCard=.")
 end
 sgs.ai_skill_use_func.suodingCard = function(card, use, self)
---sgs.ai_skill_use_func["#suoding"] = function(card, use, self)
         self:sort(self.enemies, "handcard")
 		over=math.min(self:getOverflow(),3)
 		enemy_check=false;
@@ -250,7 +242,7 @@ sgs.ai_use_value.suodingCard = 8
 sgs.ai_use_priority.suodingCard =7
 sgs.ai_card_intention.suodingCard = 20
 
---【回溯】ai
+
 sgs.ai_skill_invoke.huisu = function(self)
 	return self:invokeTouhouJudge()
 end
@@ -261,7 +253,7 @@ sgs.ai_need_damaged.huisu = function(self, attacker, player)
 	return false
 end
 
---【博览】ai
+
 sgs.ai_skill_invoke.bolan = function(self)
 	if self.player:getPile("yao_mark"):length()>0 then
 		return true
@@ -273,13 +265,10 @@ sgs.ai_skill_invoke.bolan = function(self)
 	return true
 end
 
---丢拍策略要重新考虑。。。要保留锦囊牌。。。
+
 sgs.ai_skill_discard.qiyao_got = sgs.ai_skill_discard.gamerule
 
---【七曜】ai
---七曜留牌策略 依靠1 SmartAI:assignKeep(num, start)
---2 还是keepvalue呢？？
---七曜的viewas如何早于桃子？ 非得靠cardsview_valuable？？？
+
 function sgs.ai_cardsview_valuable.qiyao(self, class_name, player)
 	if class_name == "Peach" then
 		if (sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE) then
@@ -336,7 +325,7 @@ sgs.ai_cardneed.qiyao = function(to, card, self)
 	 and card:isKindOf("TrickCard")
 end
 
---【斗魂】ai
+
 sgs.ai_skill_cardask["douhun-slash"]  = function(self, data, pattern, target)
 	local effect = data:toSlashEffect()
 	local p
@@ -363,7 +352,7 @@ sgs.ai_cardneed.douhun = function(to, card, self)
 	return getCardsNum("Slash", to, self.player) <2
 	 and card:isKindOf("Slash")
 end
---function(self, data,pattern,target)
+
 sgs.ai_slash_prohibit.douhun = function(self, from, to, card)
 	
 	if self.player:objectName()~=from:objectName() then return false end
@@ -378,10 +367,7 @@ sgs.ai_slash_prohibit.douhun = function(self, from, to, card)
 	end
 	return false
 end	
---【战意】ai
---[[相关ai
-sgs.ai_skill_cardask["duel-slash"]
-]]
+
 --[[sgs.ai_view_as.zhanyi = function(card, player, card_place)
         local suit = card:getSuitString()
         local number = card:getNumberString()
@@ -410,6 +396,7 @@ function sgs.ai_cardsview_valuable.zhanyi(self, class_name, player)
 				table.insert(blacks,c)
 			end
 		end
+		--need sort
 		if #reds>0 then
 			card=reds[1]
 		elseif #blacks>0 then
@@ -427,10 +414,7 @@ end
 sgs.ai_cardneed.zhanyi = function(to, card, self)
 	return  card:isRed()
 end
---【冻结】ai 
---1修改函数isPriorFriendOfSlash  主动杀队友
---2function SmartAI:slashProhibit(card, enemy, from)
---3 sgs.ai_card_intention.Slash 杀翻面队友仇恨为0
+
 sgs.ai_skill_invoke.dongjie = function(self, data)
         local damage =self.player:getTag("dongjie_damage"):toDamage()
         local to =data:toPlayer()
@@ -462,10 +446,7 @@ sgs.dongjie_keep_value = {
 	Slash 			= 6.4
 }
 
---【冰魄】ai 无需AI锁定技
---function SmartAI:needRetrial(judge)
---sgs.ai_skill_cardask["slash-jink"]
---function SmartAI:damageIsEffective(to, nature, from)
+
 sgs.ai_slash_prohibit.bingpo = function(self, from, to, card)
 	if card:isKindOf("FireSlash") or from:hasSkill("here") then
 		if not self:isFriend(to) then
@@ -500,10 +481,8 @@ sgs.ai_damageInflicted.bingpo =function(self, damage)
 end
 
 
---【笨蛋】ai 无需AI锁定技
---function SmartAI:getRetrialCardId(cards, judge, self_card)
 
---【真夜】ai
+
 sgs.ai_skill_playerchosen.zhenye = function(self, targets)
 	local target_table= sgs.QList2Table(targets)
     self:sort(target_table,"hp")
@@ -527,42 +506,8 @@ sgs.ai_playerchosen_intention.zhenye =function(self, from, to)
 	sgs.updateIntention(from, to, intention)
 end
 
---【暗域】ai 
---sgs.ai_card_intention.Slash = function(self, card, from, tos)
---function SmartAI:isPriorFriendOfSlash
---[[sgs.ai_skill_invoke.anyu = function(self,data)
-	local use=self.room:getTag("anyu_use"):toCardUse()
-	weiya_current=self.room:getCurrent()
-	--self.player:hasFlag("weiya_target") 
-	
-	if use.card:isKindOf("Slash") then
-		if self:isEnemy(use.from)  and use.from:hasWeapon("Axe") and use.from:getCards("he"):length()>=2 then
-			return false
-		end
-		if weiya_current:isAlive() and  weiya_current:objectName() ~=self.player:objectName()
-		and weiya_current:hasSkill("weiya") 
-		and not self.player:hasFlag("weiya_ask")then
-			return false
-		end
-		if self:getCardsNum("Jink") > 0 then
-			return true
-		end
-		if use.from:hasSkill("sidie") and self:isFriend(use.from)  then
-			return true
-		end
-	end
-	if use.card:isKindOf("Duel") then
-		if self:isEnemy(use.from) then
-			if self:getCardsNum("Slash") > 2 and not self:isWeak(self.player) then
-				return true
-			end
-		else
-			return true
-		end
-	end
-	return false 
-end
-]]
+
+
 sgs.ai_skill_choice.anyu= function(self, choices, data)	
 	if self.player:faceUp() then
 		return "draw"
@@ -588,8 +533,6 @@ sgs.ai_skill_choice.anyu= function(self, choices, data)
 	return "turnover"
 end
 
---【契约】ai 技能非常复杂 没想好细节  ai可能会变成猪队友
---契约帮助队友没想好
 --function SmartAI:getEnemyNumBySeat(from, to, target, include_neutral)
 qiyue_find_righter = function(room,target) 
 	local righter
@@ -606,15 +549,11 @@ qiyue_find_righter = function(room,target)
 	return righter
 end
 sgs.ai_skill_invoke.qiyue = function(self,data)
-	--没有考虑没有魔血 只有契约时。。。
 	local current=self.room:getCurrent()
-	--先得到敌人数目
 	if self:isEnemy(current) then
 		if self.player:getMaxHp()==1 then return false end
 		if self.player:getMaxHp()<3 or self.player:getHp()<3 then return true end 
-		--等敌人全出来？
 		if #self.enemies<3 then return false end
-		--计算起始第一次契约
 		enemyseat= current:getSeat()
 		selfseat=self.player:getSeat()
 		count=1
@@ -648,10 +587,8 @@ sgs.ai_choicemade_filter.skillInvoke.qiyue = function(self, player, promptlist)
 		end
 	end
 end
---【魔血】ai 无需AI锁定技
 
---【具现】ai
---function SmartAI:isWeak
+
 sgs.ai_skill_invoke.juxian = true
 
 sgs.string2suit = {
@@ -675,22 +612,18 @@ sgs.ai_skill_suit.juxian = function(self)
         return sgs.string2suit[maxsuit] or sgs.Card_Spade
 end
 
---【半月】ai
---ai本身可以执行 但是此策略不赞同  有时还需要主动卖血配合【具现】求爆发。
+
 
 local banyue_skill = {}
 banyue_skill.name = "banyue"
 table.insert(sgs.ai_skills, banyue_skill)
 function banyue_skill.getTurnUseCard(self)
         if self.player:getHp() <= 2 and not self.player:hasSkill("juxian") then return nil end
-        --还是让大妖精可以主动卖血 具现吧
 		if self.player:getHp() == 2 and self.player:hasSkill("juxian") then return nil end
 		if self.player:hasUsed("banyueCard") then return nil end
-        --return sgs.Card_Parse("#banyue:.:")
 		return sgs.Card_Parse("@banyueCard=.")
 end
 sgs.ai_skill_use_func.banyueCard = function(card, use, self)
---sgs.ai_skill_use_func["#banyue"] = function(card, use, self)
         self:sort(self.friends_noself)
         if #self.friends_noself == 1 then return end
         for _, p in ipairs(self.friends) do

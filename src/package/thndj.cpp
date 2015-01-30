@@ -209,7 +209,7 @@ public:
         }
         else if (triggerEvent == EventPhaseStart){
             ServerPlayer *current = room->getCurrent();
-            if (current->getPhase() == Player::Finish){
+            if (current && current->getPhase() == Player::Finish){
                 if (!current->hasFlag("sizhai")){
                     ServerPlayer *s = room->findPlayerBySkillName(objectName());
                     if (s != NULL && room->askForSkillInvoke(s, objectName(), "draw:" + current->objectName()))

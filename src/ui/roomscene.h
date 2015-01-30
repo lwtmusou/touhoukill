@@ -327,7 +327,6 @@ private:
 
     void freeze();
     void addRestartButton(QDialog *dialog);
-    //dashboardªª¡À∏ˆ¿‡
     QGraphicsItem *createDashboardButtons();
     void createReplayControlBar();
 

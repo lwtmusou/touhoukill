@@ -43,14 +43,22 @@ public:
                 room->touhouLogmessage("#TriggerSkill", player, "yongheng");
                 room->notifySkillInvoked(player, objectName());
                 player->skip(change.to);
-            } else if (change.to == Player::NotActive){ //注意对常识的那个回合结束时的处理
+            } else if (change.to == Player::NotActive){
                 if (player->hasSkill("yongheng"))
+                    adjustHandcardNum(player, 4, objectName());
+                else {
+					foreach (ServerPlayer *source, room->findPlayersBySkillName("yongheng")){
+						if (!source->isCurrent())
+							adjustHandcardNum(source, 4, "yongheng");
+					}
+				}
+				/*if (player->hasSkill("yongheng"))
                     adjustHandcardNum(player, 4, objectName());
                 else {
                     ServerPlayer *source = room->findPlayerBySkillName("yongheng");
                     if (source && source->getPhase() == Player::NotActive)
                         adjustHandcardNum(source, 4, "yongheng");
-                }
+                }*/
             }
         } else if (triggerEvent == CardsMoveOneTime && player->hasSkill(objectName())){
             if (player->getPhase() == Player::NotActive){
@@ -282,7 +290,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *current = room->getCurrent();
         ServerPlayer *source = room->findPlayerBySkillName(objectName());
-        if (source == NULL || source->getPhase() != Player::NotActive)
+        if (!source || !current || source->getPhase() != Player::NotActive)
             return false;
 
         if (triggerEvent == CardsMoveOneTime){

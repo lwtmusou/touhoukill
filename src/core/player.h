@@ -131,7 +131,8 @@ public:
     const General *getGeneral() const;
 
     bool isLord() const;
-
+    bool isCurrent() const;
+	
     void acquireSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);
     void detachAllSkills();

@@ -22,9 +22,9 @@ return {
 		
         --["hongbai"] = "红白",
         --[":hongbai"] ="<font color=\"blue\"><b>锁定技，</b></font>你的黑色判定牌均视为<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌。",
-		["bllmqixiang"] = "绮想",
-		[":bllmqixiang"] = "当一名角色的判定牌生效后，若该角色的手牌数小于你的体力上限，你可令该角色摸一张牌。",
-		["bllmqixiang:target"] = "<font color=\"#00FF00\"><b>%src </b></font> 的 “%dest” 的判定牌已生效，你可以对其发动“绮想”，令其摸一牌。",
+		["qixiang"] = "绮想",
+		[":qixiang"] = "当一名角色的判定牌生效后，若该角色的手牌数小于你的体力上限，你可令该角色摸一张牌。",
+		["qixiang:target"] = "<font color=\"#00FF00\"><b>%src </b></font> 的 “%dest” 的判定牌已生效，你可以对其发动“绮想”，令其摸一牌。",
         
 		["boli"] = "博丽",
 		["@boli-retrial"]="你可以响应 <font color=\"#00FF00\"><b>%dest </b></font> 的主公技“博丽”，打出一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌，代替 <font color=\"#FF8000\"><b>%src </b></font> 的 “%arg” 判定。",

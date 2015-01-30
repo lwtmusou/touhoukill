@@ -304,7 +304,6 @@ QPointF Photo::getHeroSkinContainerPosition() const
 
     const int tablePadding = 5;
 
-    //左边区域
     if (photoRect.right() <= tableRect.left()) {
         QPointF result(photoRect.right() + 10, photoRect.top()
             - ((heroSkinContainerHeight - photoHeight) / 2));
@@ -320,7 +319,6 @@ QPointF Photo::getHeroSkinContainerPosition() const
 
         return result;
     }
-    //上边区域 // @lwtmusou 严格来讲Qt的编码规范中，右括号与else要在同一行，在中间插入注释是不规范写法
     else if (photoRect.bottom() <= tableRect.top()) {
         QPointF result(photoRect.left()
             - ((heroSkinContainerWidth - photoWidth) / 2), photoRect.bottom() + 10);
@@ -336,7 +334,6 @@ QPointF Photo::getHeroSkinContainerPosition() const
 
         return result;
     }
-    //右边区域
     else {
         QPointF result(photoRect.left() - heroSkinContainerWidth - 10, photoRect.top()
             - ((heroSkinContainerHeight - photoHeight) / 2));

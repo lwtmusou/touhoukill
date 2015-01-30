@@ -610,7 +610,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
         return   pattern.contains("peach")
-            && player->getPhase() == Player::NotActive
+            && !player->isCurrent()   //&& player->getPhase() == Player::NotActive
             && player->getMark("Global_PreventPeach") == 0
             && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
     }

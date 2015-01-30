@@ -100,7 +100,7 @@ void GraphicsPixmapHoverItem::paint(QPainter *painter,
         return;
     }
 
-    //此处不能使用static来定义tempPix，因为普通界面和全幅界面使用的图片尺寸不一样
+    
     QPixmap tempPix(pixmap().size());
     tempPix.fill(Qt::transparent);
 
@@ -122,8 +122,7 @@ void GraphicsPixmapHoverItem::paint(QPainter *painter,
         tempPainter.drawPixmap(rect.left() - 9, rect.bottom() - 25,
             m_skinChangingFrames[m_currentSkinChangingFrameIndex]);
 
-        //由于可能需要在外部额外处理tempPix，因此必须调用tempPainter.end()
-        //来释放tempPainter对tempPix的控制权，否则会出现异常
+        
         tempPainter.end();
         if (isSecondaryAvartarItem()) {
             tempPix = m_playerCardContainer->paintByMask(tempPix);

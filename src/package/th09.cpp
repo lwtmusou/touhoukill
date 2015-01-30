@@ -727,8 +727,8 @@ public:
         return hasZhanGenerals(player) && (pattern == "slash")
             && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
             && (!player->hasFlag("Global_tianrenFailed"))
-            && (player->getPhase() == Player::NotActive);
-
+            && player->isCurrent();
+            //(player->getPhase() == Player::NotActive)
     }
 
     virtual const Card *viewAs() const{
@@ -747,7 +747,7 @@ public:
         return (target != NULL && target->hasLordSkill(objectName()));
     }
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->getPhase() != Player::NotActive)
+        if (player->isCurrent())//if (player->getPhase() != Player::NotActive)
             return false;
         QString pattern = data.toStringList().first();
         QString prompt = data.toStringList().at(1);

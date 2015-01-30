@@ -89,7 +89,7 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
         item->setHomeOpacity(1.0);
         item->setFlag(QGraphicsItem::ItemIsFocusable);
 
-        //卡牌需要支持鼠标左键，以便双击选择
+        
         item->setAcceptedMouseButtons(Qt::LeftButton);
         if (disabled_ids.contains(item->getCard()->getEffectiveId())) item->setEnabled(false);
         item->show();
@@ -149,7 +149,7 @@ QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Pla
         copy->setEnabled(false);
         result.append(copy);
 
-        //移出去的卡牌恢复成默认不支持鼠标按键的状态
+        
         copy->setAcceptedMouseButtons(0);
 
         if (m_currentPlayer)
@@ -261,7 +261,6 @@ void GuanxingBox::doGuanxing(const QList<int> &card_ids, bool up_only) {
 
         up_items << card_item;
         card_item->setParentItem(this);
-        //卡牌需要支持鼠标左键，以便拖动选择
         card_item->setAcceptedMouseButtons(Qt::LeftButton);
 
     }

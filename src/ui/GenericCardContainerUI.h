@@ -186,7 +186,6 @@ protected:
     // graphicsitem to cache the result
     QGraphicsPixmapItem *_m_avatarNameItem, *_m_smallAvatarNameItem;
     GraphicsPixmapHoverItem *_m_avatarIcon, *_m_smallAvatarIcon;
-    //需要为_m_avatarIcon和_m_smallAvatarIcon重写一个类，
     //QGraphicsPixmapItem *_m_avatarIcon, *_m_smallAvatarIcon, *_m_circleItem;
     QGraphicsPixmapItem  *_m_circleItem;
 

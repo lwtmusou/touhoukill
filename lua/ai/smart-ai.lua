@@ -329,7 +329,6 @@ function sgs.getDefense(player, gameProcess)
 		if player:hasSkill("nosleiji") then defense = defense + 0.4 end
 		if player:hasSkill("noszhenlie") then defense = defense + 0.2 end
 		if player:hasSkill("hongyan") then defense = defense + 0.2 end
-		--if player:hasSkill("hongbai") then defense = defense + 0.4 end
 	end
 
 	if player:hasSkills("tuntian+zaoxian") then defense = defense + player:getHandcardNum() * 0.4 end
@@ -714,8 +713,8 @@ function SmartAI:adjustUsePriority(card, v)
 		if self.player:hasSkill("jinjiu") and card:getEffectiveId() >= 0 and sgs.Sanguosha:getEngineCard(card:getEffectiveId()):isKindOf("Analeptic") then v = v + 0.11 end
 	end
 	if self.player:hasSkill("mingzhe") and card:isRed() then v = v + (self.player:getPhase() ~= sgs.Player_NotActive and 0.05 or -0.05) end
-	
-	
+	if card:isKindOf("Peach") and card:getSkillName() == "shende" then v = v + 0.21 end 
+	if card:isKindOf("Peach") and card:getSkillName() == "qiyao" then v = v + 0.21 end 
 	if not self.player:getPile("wooden_ox"):isEmpty() and self.player:getMark("@tianyi_Treasure") ==0 then
 		local id_table = {}
 		if not card:isVirtualCard() then id_table = { card:getEffectiveId() }
@@ -1029,6 +1028,7 @@ function SmartAI:sortByUsePriority(cards, player)
 		if value1 ~= value2 then
 			return value1 > value2
 		else
+			--should consider the skill dangjia if your kingdonm is belong to "wai"
 			return a:getNumber() > b:getNumber()
 		end
 	end
@@ -7306,27 +7306,16 @@ end
 
 function SmartAI:touhouDelayTrickBadTarget(card, to, from)
 	from = from or self.player
-	--通用类
-	--trick_prohibit更多用于表示badtarget 不代表完全不能对该目标使用
-	--这个留给各usecard判断
+
 	for _, askill in sgs.qlist(to:getVisibleSkillList()) do
-		local s_name = askill:objectName()--延时锦囊不需要check技能无效
+		local s_name = askill:objectName()
 		local filter = sgs.ai_trick_prohibit[s_name]
 		if filter and type(filter) == "function" 
 		and filter(self, from, to, card) then
 			return true
 		end
 	end
-	--if to:hasSkills("jinghua|gaoao|baoyi") then
-	--	return true
-	--end
-	--针对乐
-	if card:isKindOf("Indulgence")  then
-		--if to:hasSkills("hongbai") then
-		--	return true
-		--end
-	end
-	--针对兵
+
 	if card:isKindOf("SupplyShortage") then 
 		if to:hasSkills("huanmeng|songjing|guoke") then
 			return true
