@@ -279,6 +279,7 @@ class judu : public TriggerSkill {
 public:
     judu() : TriggerSkill("judu") {
         events << Damage;
+		skill_property = "cause_judge";
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -565,6 +566,7 @@ class feixiang : public TriggerSkill {
 public:
     feixiang() : TriggerSkill("feixiang") {
         events << AskForRetrial;
+		skill_property = "wizard_harm";
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -814,6 +816,7 @@ public:
     leiyun() : OneCardViewAsSkill("leiyun") {
         response_or_use = true;
         filter_pattern = ".|spade,heart|.|hand";
+		skill_property = "use_delayed_trick";
     }
 
 

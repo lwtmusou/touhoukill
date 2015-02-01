@@ -53,6 +53,7 @@ public:
     int OriginAIDelay;
     bool AlterAIDelayAD;
     int AIDelayAD;
+	bool AIProhibitBlindAttack;
     bool SurrenderAtDeath;
     int LuckCardLimitation;
     ushort ServerPort;

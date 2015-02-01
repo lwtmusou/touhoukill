@@ -47,6 +47,7 @@ public:
     void playAudioEffect(int index = -1) const;
     Frequency getFrequency() const;
     QString getLimitMark() const;
+	QString getSkillProperty() const;
     QStringList getSources() const;
 
 protected:
@@ -54,6 +55,7 @@ protected:
     QString limit_mark;
     QString default_choice;
     bool attached_lord_skill;
+    QString skill_property;
 
 private:
     bool lord_skill;

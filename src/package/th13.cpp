@@ -900,6 +900,7 @@ class taotie : public TriggerSkill {
 public:
     taotie() : TriggerSkill("taotie") {
         events << CardResponded;
+		skill_property = "cause_judge";
     }
     virtual bool triggerable(const ServerPlayer *target) const{
         return (target != NULL);

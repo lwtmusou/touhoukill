@@ -408,6 +408,7 @@ public:
     chuannan() : TriggerSkill("chuannan") {
         events << Damaged << Damage;
         view_as_skill = new chuannanvs;
+		skill_property = "use_delayed_trick";
     }
 
 

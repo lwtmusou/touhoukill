@@ -144,7 +144,7 @@ local function GuanXing(self, cards)
 	local judge = self.player:getCards("j")
 	judge = sgs.QList2Table(judge)
 	judge = sgs.reverse(judge)
-
+    --需要加入正在改判的judge reason
 	for judge_count, need_judge in ipairs(judge) do
 		local index = 1
 		local lightning_flag = false
@@ -333,7 +333,7 @@ local function XinZhan(self, cards)
 	local judge = next_player:getCards("j")
 	judge = sgs.QList2Table(judge)
 	judge = sgs.reverse(judge)
-
+    --check 天眼
 	bottom = getIdToCard(self, cards)
 	for judge_count, need_judge in ipairs(judge) do
 		local index = 1

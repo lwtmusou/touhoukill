@@ -37011,6 +37011,30 @@ fail:
 }
 
 
+static int _wrap_Skill_getSkillProperty(lua_State* L) {
+  int SWIG_arg = 0;
+  Skill *arg1 = (Skill *) 0 ;
+  QString result;
+  
+  SWIG_check_num_args("Skill::getSkillProperty",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Skill::getSkillProperty",1,"Skill const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Skill,0))){
+    SWIG_fail_ptr("Skill_getSkillProperty",1,SWIGTYPE_p_Skill);
+  }
+  
+  result = ((Skill const *)arg1)->getSkillProperty();
+  lua_pushstring(L, (&result)->toUtf8()); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_Skill_getSources(lua_State* L) {
   int SWIG_arg = 0;
   Skill *arg1 = (Skill *) 0 ;
@@ -37085,6 +37109,7 @@ static swig_lua_method swig_Skill_methods[] = {
     {"initMediaSource", _wrap_Skill_initMediaSource}, 
     {"playAudioEffect", _wrap_Skill_playAudioEffect}, 
     {"getFrequency", _wrap_Skill_getFrequency}, 
+    {"getSkillProperty", _wrap_Skill_getSkillProperty}, 
     {"getSources", _wrap_Skill_getSources}, 
     {"toTriggerSkill", _wrap_Skill_toTriggerSkill}, 
     {0,0}

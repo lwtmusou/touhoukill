@@ -114,6 +114,7 @@ class ruizhi : public TriggerSkill {
 public:
     ruizhi() : TriggerSkill("ruizhi") {
         events << PostCardEffected << CardEffected;
+		skill_property = "cause_judge";
     }
 
 

@@ -1014,6 +1014,7 @@ public:
     void initMediaSource();
     void playAudioEffect(int index = -1) const;
     Frequency getFrequency() const;
+	QString getSkillProperty() const;
     QStringList getSources() const;
 };
 

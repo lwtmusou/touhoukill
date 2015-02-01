@@ -2602,7 +2602,10 @@ function SmartAI:filterEvent(event, player, data)
 		if player:isLord() then
 			if sgs.debugmode then logmsg("ai.html","<meta charset='utf-8'/>") end
 		end
-		self:lordThreat()--为主忠盲狙  自动增加克制主公的明反的仇恨
+		
+		if not sgs.GetConfig("AIProhibitBlindAttack", false) then
+			self:roleParse()--为主忠盲狙  自动增加克制主公的明反的仇恨
+		end
 	end
 	--东方杀中更新仇恨的时机 （三国杀ai没有考虑这些时机）
 	if event == sgs.EventLoseSkill then
@@ -7444,17 +7447,43 @@ function SmartAI:touhouHasLightningBenefit(player)
 	end
 	return false
 end
-
-function SmartAI:lordThreat()--为主忠盲狙  自动增加克制主公的明反的仇恨
+-- a test for predict role by parsing skill property
+function SmartAI:roleParse()--为主忠盲狙  自动增加克制主公的明反的仇恨
 	local lord = self.room:getLord()
-	if lord and lord:hasSkills("shanji|jingjie|shende") then
+	if not lord then return end
+	
+	if  lord:hasSkills("shanji|jingjie|shende") then
 		for _,p in sgs.qlist(self.room:getOtherPlayers(lord)) do
 			if p:hasSkill("changshi") then
 				sgs.updateIntention(p, lord, 150)
 			end
 		end
 	end
+	--need check player number and current role 
+	for _,p in sgs.qlist(self.room:getOtherPlayers(lord)) do
+		for _,skill in sgs.qlist(p:getVisibleSkillList()) do
+			if self:skillPropertyParse(skill,lord) == "loyalist" then
+				sgs.updateIntention(p, lord, -150)
+			end
+		end
+	end
 end
+function SmartAI:skillPropertyParse(skill,lord)
+	for _,s in sgs.qlist(lord:getVisibleSkillList()) do
+		if skillPropertyCompare(skill:getSkillProperty(),s:getSkillProperty())== "benefit" then
+			return "loyalist"
+		end
+	end
+	return nil
+end
+
+function skillPropertyCompare(skill1,skill2)
+	if (skill1 == "cause_judge" or skill1 =="use_delayed_trick")  and  skill2 =="wizard_harm" then
+		return "benefit"
+	end
+	return ""
+end
+
 
 --将木牛 票等id 加入 手牌的list中
 function SmartAI:touhouAppendExpandPileToList(player,cards)

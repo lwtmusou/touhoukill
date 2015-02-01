@@ -420,11 +420,19 @@ QWidget *ServerDialog::createMiscTab() {
     ai_delay_ad_spinbox->setEnabled(ai_delay_altered_checkbox->isChecked());
     connect(ai_delay_altered_checkbox, SIGNAL(toggled(bool)), ai_delay_ad_spinbox, SLOT(setEnabled(bool)));
 
+	ai_prohibit_blind_attack_checkbox = new QCheckBox(tr("Prohibit Blind Attack"));
+	ai_prohibit_blind_attack_checkbox->setToolTip(tr("<font color=#FFFF33>ai will not blindly attack,if this is checked</font>"));
+    ai_prohibit_blind_attack_checkbox->setChecked(Config.AIProhibitBlindAttack);
+	
     layout->addWidget(ai_enable_checkbox);
     layout->addLayout(HLay(new QLabel(tr("AI delay")), ai_delay_spinbox));
     layout->addWidget(ai_delay_altered_checkbox);
     layout->addLayout(HLay(new QLabel(tr("AI delay After Death")), ai_delay_ad_spinbox));
+    layout->addWidget(ai_prohibit_blind_attack_checkbox);
+	
+	
 
+	
     ai_groupbox->setLayout(layout);
 
     QVBoxLayout *tablayout = new QVBoxLayout;
@@ -1085,6 +1093,7 @@ bool ServerDialog::config() {
     Config.AIDelay = Config.OriginAIDelay;
     Config.AIDelayAD = ai_delay_ad_spinbox->value();
     Config.AlterAIDelayAD = ai_delay_altered_checkbox->isChecked();
+	Config.AIProhibitBlindAttack =  ai_prohibit_blind_attack_checkbox->isChecked();
     Config.ServerPort = port_edit->text().toInt();
     Config.DisableLua = disable_lua_checkbox->isChecked();
     Config.SurrenderAtDeath = surrender_at_death_checkbox->isChecked();
@@ -1139,6 +1148,8 @@ bool ServerDialog::config() {
     Config.setValue("OriginAIDelay", Config.OriginAIDelay);
     Config.setValue("AlterAIDelayAD", ai_delay_altered_checkbox->isChecked());
     Config.setValue("AIDelayAD", Config.AIDelayAD);
+	Config.setValue("AIProhibitBlindAttack", Config.AIProhibitBlindAttack);
+	
     Config.setValue("SurrenderAtDeath", Config.SurrenderAtDeath);
     Config.setValue("LuckCardLimitation", Config.LuckCardLimitation);
     Config.setValue("ServerPort", Config.ServerPort);

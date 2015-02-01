@@ -62,6 +62,7 @@ class lingqi : public TriggerSkill {
 public:
     lingqi() : TriggerSkill("lingqi") {
         events << TargetConfirming << SlashEffected << CardEffected;
+		skill_property = "cause_judge";
         //view_as_skill=new lingqivs;
     }
 
