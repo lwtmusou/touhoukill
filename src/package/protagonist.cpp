@@ -1208,11 +1208,13 @@ public:
     }
 };
 
-
+//triggered when drawCards  
+//SeverPlayer::drawCards() 
 class qiangyu : public TriggerSkill {
 public:
     qiangyu() : TriggerSkill("qiangyu") {
         events << CardsMoveOneTime;
+		frequency = Frequent;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -1229,7 +1231,8 @@ public:
 
 
 
-
+//mokai (old version)
+/*
 class mokai : public TriggerSkill {
 public:
     mokai() : TriggerSkill("mokai") {
@@ -1467,6 +1470,107 @@ public:
         return to->getMark("@tianyi_Weapon") > 0 && card->isKindOf("Collateral");
     }
 };
+*/
+
+class mokai : public TriggerSkill {
+public:
+    mokai() : TriggerSkill("mokai") {
+        events << CardUsed;
+    }
+
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->isKindOf("TrickCard")){
+			const Card *pilecard = room->askForCard(player, ".Equip", "@mokai", data, Card::MethodNone, NULL, false, objectName(),false);
+            if (pilecard){
+				int id = pilecard->getSubcards().first();
+                player->addToPile("tianyi", id);
+				QList<int> pile = player->getPile("tianyi");
+				if (pile.length() > player->getHp()){
+					if (player->askForSkillInvoke(objectName(), data)){
+						room->fillAG(pile, player);
+						int id = room->askForAG(player, pile, false, objectName());
+						CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
+						room->clearAG(player);
+						room->throwCard(Sanguosha->getCard(id), reason, NULL);
+					}
+				}
+			}
+			
+        }
+        return false;
+    }
+};
+
+
+class guangji : public TriggerSkill {
+public:
+    guangji() : TriggerSkill("guangji") {
+        events << TargetConfirming << SlashEffected;
+    }
+
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == TargetConfirming){
+			CardUseStruct use = data.value<CardUseStruct>();
+			if (use.card->isKindOf("Slash") ){
+				QList<int> pile = player->getPile("tianyi");
+				if (pile.isEmpty())
+					return false;
+				QString prompt = "invoke:" + use.from->objectName();
+				player->tag["guangji_use"] = data;
+				if (player->askForSkillInvoke(objectName(), prompt)){
+					room->fillAG(pile, player);
+					int id = room->askForAG(player, pile, false, objectName());
+					CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
+					room->clearAG(player);
+					room->throwCard(Sanguosha->getCard(id), reason, NULL);
+					
+					room->setCardFlag(use.card, objectName() + player->objectName());
+				}
+			}
+		}
+		else if (triggerEvent == SlashEffected) {
+			SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            if (effect.slash != NULL && effect.slash->hasFlag(objectName() + effect.to->objectName())){
+                room->touhouLogmessage("#LingqiAvoid", effect.to, effect.slash->objectName(), QList<ServerPlayer *>(), objectName());
+                room->setEmotion(effect.to, "skill_nullify");
+                return true;
+            }
+		} 
+        return false;
+    }
+};
+
+
+class xinghui : public TriggerSkill {
+public:
+    xinghui() : TriggerSkill("xinghui") {
+        events << CardsMoveOneTime;
+		frequency = Frequent;
+    }
+
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        if (move.from  && move.from == player && move.from_places.contains(Player::PlaceSpecial)){
+            int count = 0;
+			for (int i = 0; i < move.card_ids.size(); i++) {
+                if (move.from_pile_names[i] == "tianyi") count++;
+			}
+			if (count <= 0) return false;
+			for (int j = 0; j < count; j++){
+				if (player->askForSkillInvoke(objectName(), data)){
+					player->drawCards(1);
+				}
+			}
+        }
+        return false;
+    }
+};
+
+
 
 protagonistPackage::protagonistPackage()
     : Package("protagonist")
@@ -1518,11 +1622,12 @@ protagonistPackage::protagonistPackage()
     General *zhu008 = new General(this, "zhu008", "zhu", 3, false);
     zhu008->addSkill(new qiangyu);
     zhu008->addSkill(new mokai);
-
-    zhu008->addSkill(new tianyi_targetmod);
-    zhu008->addSkill(new tianyi_horse);
-    zhu008->addSkill(new tianyi_attackrange);
-    zhu008->addSkill(new tianyi_collateral);
+	zhu008->addSkill(new guangji);
+	zhu008->addSkill(new xinghui);
+    //zhu008->addSkill(new tianyi_targetmod);
+    //zhu008->addSkill(new tianyi_horse);
+    //zhu008->addSkill(new tianyi_attackrange);
+    //zhu008->addSkill(new tianyi_collateral);
 
 
 
@@ -1539,7 +1644,8 @@ protagonistPackage::protagonistPackage()
     addMetaObject<bllmwuyuCard>();
 
 
-    skills << new wuyuvs << new saiqianvs << new touhou_tianyi;
+    skills << new wuyuvs << new saiqianvs; 
+	// << new touhou_tianyi;
 }
 
 ADD_PACKAGE(protagonist)

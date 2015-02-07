@@ -1072,7 +1072,8 @@ public:
         ServerPlayer *to = damage.to;
         if (!to->isNude()){
             QVariant _data = QVariant::fromValue(to);
-            if (room->askForSkillInvoke(player, objectName(), _data)) {
+            player->tag["shenyin_damage"] = data;
+			if (room->askForSkillInvoke(player, objectName(), _data)) {
                 int to_throw = room->askForCardChosen(player, to, "he", objectName());
                 player->addToPile("yin_mark", to_throw);
                 if (!to->isNude()){

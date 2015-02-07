@@ -89,6 +89,7 @@ sgs.ai_skill_invoke.lingqi =function(self,data)
 	if parse==2 then
 		return true
 	end
+	return false
 end
 
 
@@ -1027,7 +1028,25 @@ sgs.qiangyu_suit_value = {
 }
 
 sgs.ai_skill_invoke.mokai = true
-sgs.ai_skill_cardchosen.mokai = function(self, who, flags)
+sgs.ai_skill_cardask["@mokai"] = function(self, data)
+	local cards = {}
+	for _,c in sgs.qlist(self.player:getCards("he")) do
+		if c:isKindOf("EquipCard") then
+			table.insert(cards,c)
+		end
+	end
+	if #cards == 0 then
+		return "." 
+	end
+	if self.player:getPhase() == sgs.Player_NotActive then
+		self:sortByCardNeed(cards)
+	else
+		self:sortByUseValue(cards)
+	end
+	return "$" .. cards[1]:getId()
+end
+
+--[[sgs.ai_skill_cardchosen.mokai = function(self, who, flags)
 	local equips = {}
 	for _,equip in sgs.qlist(self.player:getEquips()) do
 		if (equip:isKindOf("Weapon") and self.player:getMark("@tianyi_Weapon") ==0) then
@@ -1046,6 +1065,7 @@ sgs.ai_skill_cardchosen.mokai = function(self, who, flags)
 	return equips[1]
 
 end
+]]
 sgs.ai_cardneed.mokai = function(to, card, self)
 	if not self:willSkipPlayPhase(to) then
 		return card:isKindOf("TrickCard") or card:isKindOf("EquipCard")
@@ -1053,8 +1073,28 @@ sgs.ai_cardneed.mokai = function(to, card, self)
 end
 
 
+sgs.ai_skill_invoke.guangji =function(self,data)
+   local use = self.player:getTag("guangji_use"):toCardUse()
+   if self:touhouCardEffectNullify(use.card,self.player) then return false end --此杀已经无效
+   --check whether player need providing jink
+ 
+	local pattern = nil
+	local _data=sgs.QVariant()
+		
+	local fakeEffect =sgs.SlashEffectStruct()
+	fakeEffect.slash = use.card
+	fakeEffect.from = use.from
+	fakeEffect.to = self.player
+	_data:setValue(fakeEffect)
+	if sgs.ai_skill_cardask["slash-jink"] (self, _data, pattern, use.from) ~= "." then
+		return true
+	end
+	return false
+end
+sgs.ai_skill_invoke.xinghui = true
 
-sgs.ai_slash_prohibit.mokai = function(self, from, to, card)
+
+--[[sgs.ai_slash_prohibit.mokai = function(self, from, to, card)
 	local suit=card:getSuit()
 	if to:getMark("@tianyi_Weapon")>0 and to:getEquip(0):getSuit()==suit then
 		return self:isEnemy(to)
@@ -1073,7 +1113,7 @@ sgs.ai_slash_prohibit.mokai = function(self, from, to, card)
 	end
 	return false
 end
-
+]]
 
 --嘲讽值设定
 --[[sgs.ai_chaofeng.zhu001 = 2

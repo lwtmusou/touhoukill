@@ -2486,11 +2486,13 @@ touhougodPackage::touhougodPackage()
 	shen018->addSkill(new zuosui);
 	shen018->addSkill(new worao);
 	
+	//General *shen019 = new General(this, "shen019", "touhougod", 4, false);
+	
 	//General *shen020 = new General(this, "shen020", "touhougod", 4, false);
 	//shen020->addSkill(new Skill("wunan", Skill::Compulsory));
 
     //General *shen021 = new General(this, "shen021", "touhougod", 4, false);
-   //shen021->addSkill(new yindu);
+    //shen021->addSkill(new yindu);
     //shen021->addSkill(new huanming);
     
     General *shen000 = new General(this, "shen000", "touhougod", 4, true);

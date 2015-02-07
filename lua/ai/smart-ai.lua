@@ -161,7 +161,7 @@ function setInitialTables()
 	sgs.intention_damage ="jiexian"
 	sgs.intention_recover="jiexian|saiqian"
 	sgs.cardEffect_nullify_all={"shishi","weiya","diaoping","luanying"}
-	sgs.cardEffect_nullify_specific={"lingqi","huiwu","weizhuang","zhengyi","zhancao","yunshang","doujiu","nizhuan"}
+	sgs.cardEffect_nullify_specific={"lingqi","guangji","huiwu","weizhuang","zhengyi","zhancao","yunshang","doujiu","nizhuan"}
 	--需要保证无效的flag的命名标准统一
 	
 	sgs.Friend_All = 0
@@ -307,9 +307,9 @@ function sgs.getDefense(player, gameProcess)
 	if player:hasSkill("shanji") then
 		handcard = handcard+player:getPile("piao"):length()
 	end
-	if  player:getMark("@tianyi_Treasure") ==0 then
+	--if  player:getMark("@tianyi_Treasure") ==0 then
 		handcard = handcard+player:getPile("wooden_ox"):length()
-	end
+	--end
 	local defense = math.min(player:getHp() * 2 + handcard , player:getHp() * 3)
 	
 	local attacker = global_room:getCurrent()
@@ -715,7 +715,7 @@ function SmartAI:adjustUsePriority(card, v)
 	if self.player:hasSkill("mingzhe") and card:isRed() then v = v + (self.player:getPhase() ~= sgs.Player_NotActive and 0.05 or -0.05) end
 	if card:isKindOf("Peach") and card:getSkillName() == "shende" then v = v + 0.21 end 
 	if card:isKindOf("Peach") and card:getSkillName() == "qiyao" then v = v + 0.21 end 
-	if not self.player:getPile("wooden_ox"):isEmpty() and self.player:getMark("@tianyi_Treasure") ==0 then
+	if not self.player:getPile("wooden_ox"):isEmpty()  then  --and self.player:getMark("@tianyi_Treasure") ==0
 		local id_table = {}
 		if not card:isVirtualCard() then id_table = { card:getEffectiveId() }
 		else id_table = sgs.QList2Table(card:getSubcards()) end
@@ -7190,7 +7190,7 @@ function SmartAI:touhouIgnoreArmor(card,from,to)
 	end
 	if not card then return false end
 	if from:hasSkill("louguan") and card:isKindOf("Slash") 
-		and card:isBlack() then
+		and not card:isRed() then
 		return true
 	end
 	return false
@@ -7487,11 +7487,11 @@ end
 
 --将木牛 票等id 加入 手牌的list中
 function SmartAI:touhouAppendExpandPileToList(player,cards)
-	if player:getMark("@tianyi_Treasure") ==0 then
+	--if player:getMark("@tianyi_Treasure") ==0 then
 		for _, id in sgs.qlist(player:getPile("wooden_ox")) do
 			cards:prepend(sgs.Sanguosha:getCard(id))
 		end
-	end
+	--end
 	if player:hasSkill("shanji") then
 		for _, id in sgs.qlist(player:getPile("piao")) do
 			cards:prepend(sgs.Sanguosha:getCard(id))
@@ -7501,11 +7501,11 @@ function SmartAI:touhouAppendExpandPileToList(player,cards)
 end
 
 function sgs.touhouAppendExpandPileToList(player,cards)
-	if player:getMark("@tianyi_Treasure") ==0 then
+	--if player:getMark("@tianyi_Treasure") ==0 then
 		for _, id in sgs.qlist(player:getPile("wooden_ox")) do
 			cards:prepend(sgs.Sanguosha:getCard(id))
 		end
-	end
+	--end
 	if player:hasSkill("shanji") then
 		for _, id in sgs.qlist(player:getPile("piao")) do
 			cards:prepend(sgs.Sanguosha:getCard(id))

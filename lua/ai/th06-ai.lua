@@ -17,8 +17,12 @@ function SmartAI:invokeTouhouJudge(player)
 	player = player or self.player
 	local wizard_type ,wizard = self:getFinalRetrial()
 	local value = 0
-	if wizard  and self:isFriend(wizard,player) then
-		value = value + 1
+	if wizard   then
+		if self:isFriend(wizard,player) then
+			value = value + 1
+		elseif  self:isEnemy(wizard,player) then
+			value = value - 1
+		end
 	end
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
 		if p:hasSkills("feixiang|mingyun") then
@@ -29,7 +33,7 @@ function SmartAI:invokeTouhouJudge(player)
 			end
 		end
 	end
-	return value>=0
+	return value>=0,value
 end
 function SmartAI:needtouhouDamageJudge(player)
 	player = player or self.player
@@ -51,10 +55,13 @@ function SmartAI:needtouhouDamageJudge(player)
 end
 function SmartAI:slashProhibitToEghitDiagram(card,from,enemy)
 	if self:isFriend(from,enemy) then return false end
-	if self:hasEightDiagramEffect(enemy) and self:invokeTouhouJudge(enemy) then
-		if not self:touhouIgnoreArmor(card,from,enemy) 
-		or not (from:hasSkill("guaili") and from:getHandcardNum()>=3 and from:getPhase()== sgs.Player_Play) then
+	if self:hasEightDiagramEffect(enemy) then
+		local invoke, value = self:invokeTouhouJudge(enemy)
+		if value>0 then
+			if not self:touhouIgnoreArmor(card,from,enemy) 
+			or not (from:hasSkill("guaili") and from:getHandcardNum()>=3 and from:getPhase()== sgs.Player_Play) then
 			return true
+			end
 		end
 	end
 	return false

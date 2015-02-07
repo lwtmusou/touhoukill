@@ -137,15 +137,27 @@ return {
  ["$qiangyuAnimate"]="image=image/animate/qiangyu.png",
  
 ["mokai"] = "魔开",
-[":mokai"] = "每当你使用一张锦囊牌时，你可以将你装备区里的一张牌横置，此牌视为【天仪】（装备/特殊：<font color=\"blue\"><b>锁定技，</b></font>你使用与【天仪】花色相同的【杀】时无距离限制；与【天仪】花色相同的【杀】对你无效；当你失去装备区里的【天仪】时，你摸两张牌；你可同时装备任意数量的【天仪】，但装备区里最多只能有五张牌）。",
- ["@tianyi_Weapon"]="武器视为天仪",
- ["@tianyi_Armor"]="防具视为天仪",
- ["@tianyi_DefensiveHorse"]="+1坐骑视为天仪",
- ["@tianyi_OffensiveHorse"]="-1坐骑视为天仪",
- ["@tianyi_Treasure"]="宝物视为天仪",
- ["#tianyiEquip"]="%from 失去了装备区里的【天仪】，【天仪】的效果被触发。",
- ["#tianyiEquip1"]="%from 的【天仪】效果被触发，%arg 对其无效。",
- ["#tianyi_set"]="%from 的 %arg 被视为【天仪】。",
- --["tianyi"]="天仪",
+--[":mokai"] = "每当你使用一张锦囊牌时，你可以将你装备区里的一张牌横置，此牌视为【天仪】（装备/特殊：<font color=\"blue\"><b>锁定技，</b></font>你使用与【天仪】花色相同的【杀】时无距离限制；与【天仪】花色相同的【杀】对你无效；当你失去装备区里的【天仪】时，你摸两张牌；你可同时装备任意数量的【天仪】，但装备区里最多只能有五张牌）。",
+ 
+ [":mokai"] ="每当你使用一张锦囊牌时，你可以将一张装备牌置于你的人物牌上，称为“天仪”。然后若你的人物牌上有大于X张“天仪”（X为你当前的体力值），你可以将一张“天仪”置入弃牌堆。",
+ ["tianyi"]="天仪",
+ ["@mokai"] = "你可以将一张装备牌作为“天仪”置于人物牌上",
+ 
+ --["@tianyi_Weapon"]="武器视为天仪",
+ --["@tianyi_Armor"]="防具视为天仪",
+ --["@tianyi_DefensiveHorse"]="+1坐骑视为天仪",
+ --["@tianyi_OffensiveHorse"]="-1坐骑视为天仪",
+ --["@tianyi_Treasure"]="宝物视为天仪",
+ --["#tianyiEquip"]="%from 失去了装备区里的【天仪】，【天仪】的效果被触发。",
+ --["#tianyiEquip1"]="%from 的【天仪】效果被触发，%arg 对其无效。",
+ --["#tianyi_set"]="%from 的 %arg 被视为【天仪】。",
+ 
  ["$mokaiAnimate"]="image=image/animate/mokai.png",
+ 
+ 
+ ["guangji"] = "光击",
+ [":guangji"] = "当你成为【杀】的目标时，你可以将一张“天仪”置入弃牌堆，令此【杀】对你无效。",
+ ["guangji:invoke"] = "<font color=\"#00FF00\"><b>%src </b></font>使用【杀】指定了你为目标，你可以发动“光击”。" ,
+ ["xinghui"] = "星辉",
+ [":xinghui"] = "每当一张“天仪”从你的人物牌上离开时，你可以摸一张牌。 ",
  }
