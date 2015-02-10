@@ -15,7 +15,7 @@
 class yongheng : public TriggerSkill {
 public:
     yongheng() : TriggerSkill("yongheng") {
-        events << EventPhaseChanging << CardsMoveOneTime << EventAcquireSkill;
+        events << EventPhaseChanging << CardsMoveOneTime << EventAcquireSkill << MarkChanged;
         frequency = Compulsory;
     }
 
@@ -46,18 +46,11 @@ public:
             } else if (change.to == Player::NotActive){
                 if (player->hasSkill("yongheng"))
                     adjustHandcardNum(player, 4, objectName());
-                else {
-					foreach (ServerPlayer *source, room->findPlayersBySkillName("yongheng")){
-						if (!source->isCurrent())
-							adjustHandcardNum(source, 4, "yongheng");
-					}
-				}
-				/*if (player->hasSkill("yongheng"))
-                    adjustHandcardNum(player, 4, objectName());
-                else {
-                    ServerPlayer *source = room->findPlayerBySkillName("yongheng");
-                    if (source && source->getPhase() == Player::NotActive)
-                        adjustHandcardNum(source, 4, "yongheng");
+                /*else {
+                    foreach (ServerPlayer *source, room->findPlayersBySkillName("yongheng")){
+                        if (!source->isCurrent())
+                            adjustHandcardNum(source, 4, "yongheng");
+                    }
                 }*/
             }
         } else if (triggerEvent == CardsMoveOneTime && player->hasSkill(objectName())){
@@ -71,6 +64,13 @@ public:
             if (player->getPhase() == Player::NotActive && player->hasSkill(objectName()))
                 adjustHandcardNum(player, 4, objectName());
         }
+		else if (triggerEvent ==MarkChanged){
+			MarkChangeStruct change = data.value<MarkChangeStruct>();
+			if (change.name != "@pingyi" && change.name != "@changshi")
+				return false;
+			if (player->getPhase() == Player::NotActive && player->hasSkill(objectName()))
+			    adjustHandcardNum(player, 4, objectName());
+		}
         return false;
     }
 };
@@ -114,7 +114,7 @@ class ruizhi : public TriggerSkill {
 public:
     ruizhi() : TriggerSkill("ruizhi") {
         events << PostCardEffected << CardEffected;
-		skill_property = "cause_judge";
+        skill_property = "cause_judge";
     }
 
 

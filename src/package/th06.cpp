@@ -80,7 +80,7 @@ public:
             || (triggerEvent == EventAcquireSkill && data.toString() == "skltkexue")) {
             QList<ServerPlayer *> lords;
             foreach(ServerPlayer *p, room->getAlivePlayers()) {
-                if (p->hasSkill(objectName()))
+                if (p->hasSkill(objectName(),false,true))
                     lords << p;
             }
             if (lords.isEmpty()) return false;
@@ -102,7 +102,7 @@ public:
             }
             QList<ServerPlayer *> lords;
             foreach(ServerPlayer *p, room->getAlivePlayers()) {
-                if (p->hasSkill(objectName()))
+                if (p->hasSkill(objectName(),false,true))
                     lords << p;
             }
             if (lords.length() > 2) return false;
@@ -125,7 +125,7 @@ class mingyun : public TriggerSkill {
 public:
     mingyun() : TriggerSkill("mingyun") {
         events << StartJudge;
-		skill_property = "wizard_harm";
+        skill_property = "wizard_harm";
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -200,7 +200,7 @@ public:
     pohuai() : TriggerSkill("pohuai") {
         events << EventPhaseStart;
         frequency = Compulsory;
-		skill_property = "cause_judge";
+        skill_property = "cause_judge";
     }
 
 
@@ -480,7 +480,7 @@ class huisu : public TriggerSkill {
 public:
     huisu() : TriggerSkill("huisu") {
         events << PreHpLost << PostHpReduced << Damaged;
-		skill_property = "cause_judge";
+        skill_property = "cause_judge";
     }
 
 

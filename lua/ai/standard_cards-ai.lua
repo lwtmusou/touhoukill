@@ -579,11 +579,13 @@ function SmartAI:useCardSlash(card, use)
 	--end
 	
 	local basicnum = 0
+	local blacknum = 0
 	local cards = self.player:getCards("he")
 	cards = sgs.QList2Table(cards)
 	for _, acard in ipairs(cards) do
 		if acard:getTypeId() == sgs.Card_TypeBasic and not acard:isKindOf("Peach") then basicnum = basicnum + 1 end
 	end
+	local blacknum =self:getSuitNum("black", true)
 	local no_distance = sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, card) > 50
 						or self.player:hasFlag("slashNoDistanceLimit")
 						or card:getSkillName() == "qiaoshui"
@@ -693,6 +695,7 @@ function SmartAI:useCardSlash(card, use)
 			and self:objectiveLevel(target) > 3
 			and self:slashIsEffective(card, target)
 			and not (target:hasSkill("xiangle") and basicnum < 2) and not canliuli
+			and not (target:hasSkill("junwei") and target:getKingdom()~=self.player:getKingdom() and blacknum < 2)
 			and not (not self:isWeak(target) and #self.enemies > 1 and #self.friends > 1 and self.player:hasSkill("keji")
 			and self:getOverflow() > 0 and not self:hasCrossbowEffect()) then
 			-- fill the card use struct

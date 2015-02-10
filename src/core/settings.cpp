@@ -93,7 +93,7 @@ void Settings::init() {
     OriginAIDelay = value("OriginAIDelay", 1000).toInt();
     AlterAIDelayAD = value("AlterAIDelayAD", false).toBool();
     AIDelayAD = value("AIDelayAD", 0).toInt();
-	AIProhibitBlindAttack = value("AIProhibitBlindAttack", false).toBool();
+    AIProhibitBlindAttack = value("AIProhibitBlindAttack", false).toBool();
     SurrenderAtDeath = value("SurrenderAtDeath", false).toBool();
     LuckCardLimitation = value("LuckCardLimitation", 0).toInt();
     ServerPort = value("ServerPort", 9527u).toUInt();

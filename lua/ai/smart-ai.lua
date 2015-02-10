@@ -161,7 +161,7 @@ function setInitialTables()
 	sgs.intention_damage ="jiexian"
 	sgs.intention_recover="jiexian|saiqian"
 	sgs.cardEffect_nullify_all={"shishi","weiya","diaoping","luanying"}
-	sgs.cardEffect_nullify_specific={"lingqi","guangji","huiwu","weizhuang","zhengyi","zhancao","yunshang","doujiu","nizhuan"}
+	sgs.cardEffect_nullify_specific={"lingqi","guangji","huiwu","weizhuang","zhengyi","zhancao","yunshang","doujiu","nizhuan","junwei"}
 	--需要保证无效的flag的命名标准统一
 	
 	sgs.Friend_All = 0
@@ -7025,6 +7025,21 @@ function SmartAI:touhouDamageEffect(damage,from,to)
 	end
 	if from:hasSkills("shenyin|lizhi") then
 		return true
+	end
+	if from:hasSkill("huanming")  and from:getMark("huanming") == 0 then
+		if  not self:isFriend(from,to) and to:getHp() > from:getHp() then
+			return true
+		end
+	end
+	if from:hasSkill("zuosui")  then
+		if self:isFriend(from,to) then
+			if to:getCards("he"):length()<=4 then
+				return true
+			end
+		else
+			return true
+		end
+		
 	end
 	return false
 end

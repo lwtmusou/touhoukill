@@ -121,7 +121,7 @@ public:
             || (triggerEvent == EventAcquireSkill && data.toString() == "dangjia")) {
             QList<ServerPlayer *> lords;
             foreach(ServerPlayer *p, room->getAlivePlayers()) {
-                if (p->hasLordSkill(objectName()))
+                if (p->hasLordSkill(objectName(),false,true))
                     lords << p;
             }
             if (lords.isEmpty()) return false;
@@ -139,7 +139,7 @@ public:
         else if (triggerEvent == EventLoseSkill && data.toString() == "dangjia") {
             QList<ServerPlayer *> lords;
             foreach(ServerPlayer *p, room->getAlivePlayers()) {
-                if (p->hasLordSkill(objectName()))
+                if (p->hasLordSkill(objectName(),false,true))
                     lords << p;
             }
             if (lords.length() > 2) return false;
@@ -697,7 +697,7 @@ public:
         ServerPlayer * back;
         QString back_skillname;
         foreach(ServerPlayer *p, room->getOtherPlayers(player, true)){
-            if (p->getMark("pingyi") > 0){
+            if (p->getMark("@pingyi") > 0){
                 QString pingyi_record = player->objectName() + "pingyi" + p->objectName();
                 back_skillname = room->getTag(pingyi_record).toString();
                 if (back_skillname != NULL && back_skillname != ""){
@@ -712,7 +712,7 @@ public:
             
             room->setPlayerMark(player, "pingyi_steal", 0);
             if (back->isAlive()){
-                room->setPlayerMark(back, "pingyi", back->getMark("pingyi") - 1);
+                //room->setPlayerMark(back, "pingyi", back->getMark("pingyi") - 1);
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), back->objectName());
             }
             room->handleAcquireDetachSkills(player, "-" + back_skillname);
@@ -724,8 +724,13 @@ public:
             arg[3] = QSanProtocol::Utils::toJsonString("clear");
             room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 
-            if (back->isAlive())
-                room->handleAcquireDetachSkills(back, back_skillname);
+            if (back->isAlive()){
+                //room->handleAcquireDetachSkills(back, back_skillname);
+				room->setPlayerMark(back, "pingyi"+back_skillname, 0); 
+				back->loseMark("@pingyi",1);
+				if (back->hasSkill(back_skillname))
+					room->touhouLogmessage("#pingyiReturnSkill", back, back_skillname);
+			}
         }
 
     }
@@ -744,8 +749,8 @@ public:
                     || skill->getFrequency() == Skill::Eternal)
                     continue;
                 else{
-
-                    if (!player->hasSkill(skill->objectName(),false,true))
+                    //need check skill both sides
+                    if (!player->hasSkill(skill->objectName(),false,true) && damage.from->hasSkill(skill->objectName()))
                         skill_names << skill->objectName();
                 }
             }
@@ -756,7 +761,7 @@ public:
             if (skill_name == "cancel")
                 return false;
 
-            const Card *card = room->askForCard(player, ".|.|.|.!", "@pingyi:" + damage.from->objectName() + ":" + skill_name, data, Card::MethodDiscard, NULL, true, objectName());
+            const Card *card = room->askForCard(player, ".|.|.|.!", "@pingyi-discard:" + damage.from->objectName() + ":" + skill_name, data, Card::MethodDiscard, NULL, true, objectName());
             if (card != NULL){
 
                 if (player->getMark("pingyi_steal") > 0)
@@ -769,11 +774,13 @@ public:
             
                 
                 room->setPlayerMark(player, "pingyi_steal", 1);
-                room->setPlayerMark(damage.from, "pingyi", damage.from->getMark("pingyi") + 1);//can be stealed any times.
-                room->handleAcquireDetachSkills(damage.from, "-" + skill_name);
+                //room->setPlayerMark(damage.from, "pingyi", damage.from->getMark("pingyi") + 1);//it can be stealed any times.
+				room->setPlayerMark(damage.from, "pingyi"+skill_name, 1); // skill nullify mark, like Qingcheng
+                //room->handleAcquireDetachSkills(damage.from, "-" + skill_name);
                 room->handleAcquireDetachSkills(player, skill_name);
-
-
+                damage.from->gainMark("@pingyi"); // marks could be greater than 1,since it can be stealed any times.
+                room->touhouLogmessage("#pingyiLoseSkill", damage.from, skill_name);
+				
                 Json::Value arg(Json::arrayValue);
                 arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
                 arg[1] = QSanProtocol::Utils::toJsonString(player->objectName());
@@ -796,7 +803,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *player) const{
-        return player->getMark("pingyi") > 0 || player->getMark("pingyi_steal") > 0;
+        return player->getMark("@pingyi") > 0 || player->getMark("pingyi_steal") > 0;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -809,7 +816,7 @@ public:
             DeathStruct death = data.value<DeathStruct>();
             if (death.who == player && player->getMark("pingyi_steal") > 0)
                 pingyi::skill_comeback(room, player);
-            if (death.who == player && player->getMark("pingyi") > 0){
+            if (death.who == player && player->getMark("@pingyi") > 0){
 
                 foreach(ServerPlayer *p, room->getOtherPlayers(player)){
                     if (p->getMark("pingyi_steal") > 0){
@@ -1039,8 +1046,9 @@ public:
 class ganying_handle : public TriggerSkill {
 public:
     ganying_handle() : TriggerSkill("#ganying_handle") {
-        events << EventAcquireSkill << HpChanged << Death << CardsMoveOneTime << EventPhaseChanging;
-        //<< MarkChanged
+        events << EventAcquireSkill << EventLoseSkill << HpChanged << Death << CardsMoveOneTime 
+        << MarkChanged;
+		//<< EventPhaseChanging
     }
 
     static void ganying_effect(ServerPlayer *player, QList<ServerPlayer *> targets){
@@ -1062,7 +1070,11 @@ public:
             if (move.from != NULL && move.from->hasFlag("rengui_InTempMoving"))
                 return false;
         }
-        ;
+        if (triggerEvent ==MarkChanged){
+			MarkChangeStruct change = data.value<MarkChangeStruct>();
+			if (change.name != "@pingyi" && change.name != "@changshi")
+				return false;
+		}
         foreach(ServerPlayer *p, room->getAlivePlayers()){
             if (p->getMark("ganying_owner") > 0){//cause skill "changshi", we need record distance any time.
                 bool distance_change_one_time = false;

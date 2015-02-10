@@ -706,7 +706,7 @@ bool xiefaCard::targetFilter(const QList<const Player *> &targets, const Player 
         //Card *slash = Sanguosha->cloneCard("slash");
         //slash->deleteLater();
         //pingyi yuanfei then use yuanfei. now pingyi xiefa and use xiefa in this round 
-		//can select yuanfei target...
+        //can select yuanfei target...
         //if (to_select->isCardLimited(slash,Card::MethodUse))
         //    return false;
         //isCardLimited() did not worked...
@@ -900,7 +900,7 @@ class taotie : public TriggerSkill {
 public:
     taotie() : TriggerSkill("taotie") {
         events << CardResponded;
-		skill_property = "cause_judge";
+        skill_property = "cause_judge";
     }
     virtual bool triggerable(const ServerPlayer *target) const{
         return (target != NULL);

@@ -45,14 +45,14 @@ public:
         //PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         //change.to == Player::NotActive
         if (player->getPhase() == Player::NotActive && player->getHp() == 1
-            && !room->getTag("rexue_count").toBool()
+            && !room->getTag("rexue_count").toBool() && player->getMark("touhou-extra") == 0
             ) {
 
             room->touhouLogmessage("#TriggerSkill", player, "rexue");
             room->notifySkillInvoked(player, "rexue");
             room->recover(player, RecoverStruct());
-            //need set extra turn mark to zero,since canInsertExtraTurn()
-            room->setPlayerMark(player, "touhou-extra", 0);
+            //if you want to invoke rexue at extraturn , you need set extra turn mark to zero,since canInsertExtraTurn()
+            //room->setPlayerMark(player, "touhou-extra", 0);
 
             if (room->canInsertExtraTurn()) {
                 room->touhouLogmessage("#touhouExtraTurn", player, objectName());

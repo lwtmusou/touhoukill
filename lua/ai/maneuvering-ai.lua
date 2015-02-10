@@ -148,7 +148,10 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 		end
 		if basicnum < 3 then return false end
 	end
-
+    if target:hasSkill("junwei") and target:getKingdom() ~=self.player:getKingdom() then
+		local blacknum = self:getSuitNum("black", true)
+		if blacknum < 3 then return false end
+	end
 	if self:hasSkills(sgs.masochism_skill .. "|longhun|buqu|nosbuqu|" .. sgs.recover_skill, target)
 		and self.player:hasSkill("nosqianxi") and self.player:distanceTo(target) == 1 then
 		return

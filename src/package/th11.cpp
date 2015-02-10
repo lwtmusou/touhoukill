@@ -961,6 +961,7 @@ th11Package::th11Package()
 {
     General *dld001 = new General(this, "dld001$", "dld", 3, false);
     dld001->addSkill(new xiangqi);
+    //Room::askForCardChosen
     dld001->addSkill(new Skill("duxin", Skill::Compulsory));
     dld001->addSkill(new huzhu);
 

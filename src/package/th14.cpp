@@ -263,8 +263,8 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *current = room->getCurrent();
-		if (!current)
-		    return false;
+        if (!current)
+            return false;
         ServerPlayer *source = room->findPlayerBySkillName(objectName());
         if (!source || source->isCurrent())//source->getPhase() != Player::NotActive
             return false;
@@ -565,15 +565,15 @@ public:
         if (triggerEvent == EventPhaseStart){
             if (player->getPhase() == Player::Finish){
                 ServerPlayer *source = room->findPlayerBySkillName(objectName());
-				if (!source || source->isCurrent())
+                if (!source || source->isCurrent())
                     return false;  
-				//if (source->getPhase() != Player::NotActive)
+                //if (source->getPhase() != Player::NotActive)
                 QList<int>    temp_ids;
                 QVariantList shizhu_ids = room->getTag("shizhuPeach").toList();
                 foreach(QVariant card_data, shizhu_ids){
                      if (room->getCardPlace(card_data.toInt()) == Player::DiscardPile)
-					     temp_ids << card_data.toInt();
-				}
+                         temp_ids << card_data.toInt();
+                }
                 if (temp_ids.length() == 0)
                     return false;
                 

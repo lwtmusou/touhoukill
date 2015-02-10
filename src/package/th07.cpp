@@ -773,7 +773,7 @@ class yexing_effect : public TriggerSkill {
 public:
     yexing_effect() : TriggerSkill("#yexing") {
         frequency = Compulsory;
-        events << GameStart << PreMarkChange << CardEffected << SlashEffected << EventAcquireSkill << EventLoseSkill;
+        events << GameStart << PreMarkChange << CardEffected << SlashEffected << EventAcquireSkill << EventLoseSkill << MarkChanged;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -793,6 +793,25 @@ public:
                 room->removePlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick$0");
             }
         }
+		else if (triggerEvent == MarkChanged){
+			MarkChangeStruct change = data.value<MarkChangeStruct>();
+			if (change.name == "@changshi"||change.name == "@pingyi" ) {
+				if (!player->hasSkill("yexing") && player->getMark("yexing_limit") > 0) {
+					room->setPlayerMark(player, "yexing_limit", 0);
+					room->removePlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick$0");
+				}
+				else if (player->hasSkill("yexing")) {
+					if (player->getMark("@shi")>0 && player->getMark("yexing_limit") > 0){
+						room->setPlayerMark(player, "yexing_limit", 0);
+						room->removePlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick$0");
+					}
+					else if (player->getMark("@shi")==0 && player->getMark("yexing_limit") == 0){
+						room->setPlayerMark(player, "yexing_limit", 1);
+						room->setPlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick", false);
+					}
+				}
+			}
+		}
         if (!player->hasSkill("yexing"))
             return false;
         if (triggerEvent == PreMarkChange) {
@@ -1073,7 +1092,7 @@ public:
         if (!to->isNude()){
             QVariant _data = QVariant::fromValue(to);
             player->tag["shenyin_damage"] = data;
-			if (room->askForSkillInvoke(player, objectName(), _data)) {
+            if (room->askForSkillInvoke(player, objectName(), _data)) {
                 int to_throw = room->askForCardChosen(player, to, "he", objectName());
                 player->addToPile("yin_mark", to_throw);
                 if (!to->isNude()){
@@ -1340,13 +1359,13 @@ public:
 
         room->touhouLogmessage("#touhouExtraTurn", player, objectName());
         //for skill qinlue
-		foreach(ServerPlayer *p, room->getAlivePlayers()) {
-            if (p->hasFlag("qinlue"))		
-				p->changePhase(p->getPhase(), Player::NotActive);
-		}
-		ServerPlayer *current = room->getCurrent();
-		if (current)
-		    current->changePhase(current->getPhase(), Player::NotActive);
+        foreach(ServerPlayer *p, room->getAlivePlayers()) {
+            if (p->hasFlag("qinlue"))        
+                p->changePhase(p->getPhase(), Player::NotActive);
+        }
+        ServerPlayer *current = room->getCurrent();
+        if (current)
+            current->changePhase(current->getPhase(), Player::NotActive);
 
         touhou_siyu_clear(player);
 

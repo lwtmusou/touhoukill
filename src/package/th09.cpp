@@ -279,7 +279,7 @@ class judu : public TriggerSkill {
 public:
     judu() : TriggerSkill("judu") {
         events << Damage;
-		skill_property = "cause_judge";
+        skill_property = "cause_judge";
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -512,7 +512,7 @@ public:
             || (triggerEvent == EventAcquireSkill && data.toString() == "yanhui")) {
             QList<ServerPlayer *> lords;
             foreach(ServerPlayer *p, room->getAlivePlayers()) {
-                if (p->hasLordSkill(objectName()))
+                if (p->hasLordSkill(objectName(),false,true))
                     lords << p;
             }
             if (lords.isEmpty()) return false;
@@ -529,7 +529,7 @@ public:
         } else if (triggerEvent == EventLoseSkill && data.toString() == "yanhui") {
             QList<ServerPlayer *> lords;
             foreach(ServerPlayer *p, room->getAlivePlayers()) {
-                if (p->hasLordSkill(objectName()))
+                if (p->hasLordSkill(objectName(),false,true))
                     lords << p;
             }
             if (lords.length() > 2) return false;
@@ -566,7 +566,7 @@ class feixiang : public TriggerSkill {
 public:
     feixiang() : TriggerSkill("feixiang") {
         events << AskForRetrial;
-		skill_property = "wizard_harm";
+        skill_property = "wizard_harm";
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -816,7 +816,7 @@ public:
     leiyun() : OneCardViewAsSkill("leiyun") {
         response_or_use = true;
         filter_pattern = ".|spade,heart|.|hand";
-		skill_property = "use_delayed_trick";
+        skill_property = "use_delayed_trick";
     }
 
 

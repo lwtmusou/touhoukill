@@ -217,7 +217,7 @@ public:
             || (triggerEvent == EventAcquireSkill && data.toString() == "gongfeng")) {
             QList<ServerPlayer *> lords;
             foreach(ServerPlayer *p, room->getAlivePlayers()) {
-                if (p->hasLordSkill(objectName()))
+                if (p->hasLordSkill(objectName(),false,true))
                     lords << p;
             }
             if (lords.isEmpty()) return false;
@@ -234,7 +234,7 @@ public:
         } else if (triggerEvent == EventLoseSkill && data.toString() == "gongfeng") {
             QList<ServerPlayer *> lords;
             foreach(ServerPlayer *p, room->getAlivePlayers()) {
-                if (p->hasLordSkill(objectName()))
+                if (p->hasLordSkill(objectName(),false,true))
                     lords << p;
             }
             if (lords.length() > 2) return false;
@@ -1004,10 +1004,10 @@ public:
                     arg[3] = QSanProtocol::Utils::toJsonString("clear");//QString()
                     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
                 }
-                room->setPlayerMark(p, "changshi", 1);
+                room->setPlayerMark(p, "changshi", 1); // real mark for   Player::hasSkill()
                 room->filterCards(p, p->getCards("he"), true);
-
-                if (p->getMark("zhouye_limit") > 0){
+                
+                /*if (p->getMark("zhouye_limit") > 0){
                     room->setPlayerMark(p, "zhouye_limit", 0);
                     room->removePlayerCardLimitation(p, "use", "Slash$0");
                 }
@@ -1019,10 +1019,13 @@ public:
                 if (p->getMark("aoyi_limit") > 0){
                     room->removePlayerCardLimitation(p, "use", "TrickCard+^DelayedTrick$0");
                     room->setPlayerMark(p, "aoyi_limit", 0);
-                }
+                }*/
 
             }
-
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+				p->gainMark("@changshi");
+			}
+			
             QStringList marks;
             marks << "@an" << "@bian" << "@clock" << "@kinki" << "@qiannian" << "@shi" << "@ye" << "@yu" << "@zhengti"
                 << "@huanyue" << "@kuangqi" << "@in_jiejie";
@@ -1063,7 +1066,8 @@ public:
             foreach(ServerPlayer *p, room->getOtherPlayers(player)){
                 room->setPlayerMark(p, "changshi", 0);
                 room->filterCards(p, p->getCards("he"), true);
-                if (p->hasSkill("zhouye") && p->getMark("zhouye_limit") == 0){
+				
+                /*if (p->hasSkill("zhouye") && p->getMark("zhouye_limit") == 0){
                     room->setPlayerMark(p, "zhouye_limit", 1);
                     room->setPlayerCardLimitation(p, "use", "Slash", false);
                 }
@@ -1074,8 +1078,11 @@ public:
                 if (p->hasSkill("aoyi") && p->getMark("yexing_limit") == 0){
                     room->setPlayerMark(p, "aoyi_limit", 1);
                     room->setPlayerCardLimitation(p, "use", "TrickCard+^DelayedTrick", false);
-                }
+                }*/
             }
+			foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+				p->loseMark("@changshi",1);
+			}
         }
         return false;
     }

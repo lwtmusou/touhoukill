@@ -230,12 +230,18 @@ int Player::distanceTo(const Player *other, int distance_fix) const{
     if (this == other)
         return 0;
 
-
-    if (fixed_distance.contains(other))
-        return fixed_distance.value(other);
-
+    int distance_limit = 0;
+	if (hasSkill("chuanwu"))
+		distance_limit =qMax(other->getHp(), 1); 
+    if (fixed_distance.contains(other)){
+	    if (distance_limit > 0 && fixed_distance.value(other) > distance_limit)
+		    return distance_limit;
+		else
+            return fixed_distance.value(other);
+    }
 
     //jiejie
+	/*
     if (getMark("@in_jiejie") > 0 || other->getMark("@in_jiejie") > 0)
         return 900;
     if (getPile("jiejie_left").length() > 0 &&
@@ -280,20 +286,21 @@ int Player::distanceTo(const Player *other, int distance_fix) const{
     }
     if (clockwise && anticlockwise)
         return 900;
-
+    */
     //jiejie
 
 
     int right = qAbs(seat - other->seat);
     int left = aliveCount() - right;
     int distance = qMin(left, right);
-    if (clockwise)
-        distance = dis_anticlockwise;
-    if (anticlockwise)
-        distance = dis_clockwise;
+    //if (clockwise)
+    //    distance = dis_anticlockwise;
+    //if (anticlockwise)
+    //    distance = dis_clockwise;
     distance += Sanguosha->correctDistance(this, other);
     distance += distance_fix;
-
+    if (distance_limit > 0)
+        distance = qMin(distance_limit, distance);
     // keep the distance >=1
     if (distance < 1)
         distance = 1;
@@ -399,10 +406,10 @@ bool Player::isLord() const{
 
 bool Player::isCurrent() const{
     if (getPhase() == Player::NotActive)
-		return false;
-	else if (hasFlag("qinlue") &&  getPhase() == Player::Play)
-		return false;
-	return true;
+        return false;
+    else if (hasFlag("qinlue") &&  getPhase() == Player::Play)
+        return false;
+    return true;
 }
 
 
@@ -415,7 +422,8 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose, bool include
             if (getMark("Qingcheng" + skill_name) > 0) //perform Qingcheng
                 skill_invalid = true;
             //return false;
-
+            if (getMark("pingyi" + skill_name) > 0) 
+                skill_invalid = true;
             const Skill *skill = Sanguosha->getSkill(skill_name);
             if (!skill || !skill->isAttachedLordSkill()) {
                 if (phase == NotActive) {
@@ -1066,10 +1074,12 @@ QString Player::getSkillDescription(bool yellow) const{
         if (skill->isAttachedLordSkill() || !hasSkill(skill->objectName()))
             continue;
         //remove lord skill Description 
-        if (skill->isLordSkill() &&
-            !hasLordSkill(skill->objectName()) && !hasSkill("nosguixin", false, true))
-            continue;
+        if (skill->isLordSkill()){
+            if (!hasLordSkill(skill->objectName()) && !hasSkill("nosguixin", false, true))
+				continue;
+        }
 
+		
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription(yellow);
         desc.replace("\n", "<br/>");

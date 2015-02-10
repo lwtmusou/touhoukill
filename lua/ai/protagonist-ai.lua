@@ -116,7 +116,7 @@ sgs.ai_skill_cardask["@boli-retrial"] = function(self, data)
         local lord = getLord(self.player)
 		if not self:isFriend(lord) then return "." end
 		local cards = sgs.QList2Table(self.player:getCards("h"))
-		cards1={}
+		local cards1={}
 		for _,card in pairs(cards) do
 			if card:getSuit()==sgs.Card_Heart then
 				table.insert(cards1,card)

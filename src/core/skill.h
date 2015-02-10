@@ -47,7 +47,7 @@ public:
     void playAudioEffect(int index = -1) const;
     Frequency getFrequency() const;
     QString getLimitMark() const;
-	QString getSkillProperty() const;
+    QString getSkillProperty() const;
     QStringList getSources() const;
 
 protected:
