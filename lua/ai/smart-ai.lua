@@ -5265,6 +5265,11 @@ function getCardsNum(class_name, player, from)
 		else
 			slashnum = num+(player:getHandcardNum() - shownum)*0.35
 		end
+		if player:hasSkill("yongheng") and player:getPhase() == sgs.Player_NotActive  then
+			if player:hasWeapon("Spear") then
+				slashnum = 1000
+			end
+		end
 		return player:hasSkill("wushuang") and slashnum*2 or slashnum
 	elseif class_name == "Jink" then
 		--if player:hasSkill("yingguang") and player:getMark("@yingguang")>0 then

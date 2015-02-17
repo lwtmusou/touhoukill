@@ -1006,7 +1006,9 @@ public:
                 }
                 room->setPlayerMark(p, "changshi", 1); // real mark for   Player::hasSkill()
                 room->filterCards(p, p->getCards("he"), true);
-                
+                Json::Value args;
+				args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+				room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
                 /*if (p->getMark("zhouye_limit") > 0){
                     room->setPlayerMark(p, "zhouye_limit", 0);
                     room->removePlayerCardLimitation(p, "use", "Slash$0");
@@ -1066,7 +1068,9 @@ public:
             foreach(ServerPlayer *p, room->getOtherPlayers(player)){
                 room->setPlayerMark(p, "changshi", 0);
                 room->filterCards(p, p->getCards("he"), true);
-				
+				Json::Value args;
+                args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+                room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
                 /*if (p->hasSkill("zhouye") && p->getMark("zhouye_limit") == 0){
                     room->setPlayerMark(p, "zhouye_limit", 1);
                     room->setPlayerCardLimitation(p, "use", "Slash", false);

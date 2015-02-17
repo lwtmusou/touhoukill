@@ -104,6 +104,8 @@ public:
                 recov.who = player;
                 room->recover(target, recov);
             }
+			else
+                break;
         }
         return false;
     }

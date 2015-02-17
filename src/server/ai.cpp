@@ -240,12 +240,18 @@ QString TrustAI::askForKingdom() {
     case Player::Rebel: {
         if ((lord->hasLordSkill("xueyi") && self->getRoleEnum() == Player::Rebel) || lord->hasLordSkill("shichou"))
             role = "wei";
-        else
-            role = lord->getKingdom();
+        else if (self->hasSkill("hongfo")){
+			kingdoms.removeOne(lord->getKingdom());
+			role = kingdoms.at(qrand() % kingdoms.length());
+		}
+		else if (lord->getGeneral()->isLord())
+            role = lord->getKingdom();	
+		else
+            role = kingdoms.at(qrand() % kingdoms.length());
         break;
     }
     case Player::Loyalist: {
-        if (lord->getGeneral()->isLord())
+        if (lord->getGeneral()->isLord()||self->hasSkill("hongfo"))
             role = lord->getKingdom();
         else if (lord->getGeneral2() && lord->getGeneral2()->isLord())
             role = lord->getGeneral2()->getKingdom();

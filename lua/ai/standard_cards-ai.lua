@@ -731,19 +731,26 @@ function SmartAI:useCardSlash(card, use)
 						here=true
 					end
 					--连弩的话 先用普杀？
-					if self:hasCrossbowEffect() and card:isKindOf("NatureSlash") 
-					and not here then
-						local slashes = self:getCards("Slash")
-						for _, slash in ipairs(slashes) do
-							if not slash:isKindOf("NatureSlash") and self:slashIsEffective(slash, target)
-								and not self:slashProhibit(slash, target) then
-								usecard = slash
-								break
+					if here then
+						--有usecard 不会使返回use.card为 空？
+					else
+						if  card:isKindOf("NatureSlash")   then
+							if self:hasCrossbowEffect() and sgs.card_lack[target:objectName()]["Jink"] == 0 then
+								local slashes = self:getCards("Slash")
+									for _, slash in ipairs(slashes) do
+									if not slash:isKindOf("NatureSlash") and self:slashIsEffective(slash, target)
+										and not self:slashProhibit(slash, target) then
+										usecard = slash
+										break
+									end
+								end
+							end
+						elseif  not card:isKindOf("NatureSlash")  then
+							if not self:hasCrossbowEffect() or  sgs.card_lack[target:objectName()]["Jink"] > 0 then
+								local slash = self:getCard("NatureSlash")
+								if slash and self:slashIsEffective(slash, target) and not self:slashProhibit(slash, target) then usecard = slash end
 							end
 						end
-					elseif not card:isKindOf("NatureSlash") and not here then
-						local slash = self:getCard("NatureSlash")
-						if slash and self:slashIsEffective(slash, target) and not self:slashProhibit(slash, target) then usecard = slash end
 					end
 				end
 				local godsalvation = self:getCard("GodSalvation")
@@ -1736,8 +1743,10 @@ function turnUse_spear(self, inclusive, skill_name)
 	for _, card in ipairs(cards) do
 		if not isCard("Slash", card, self.player) and not isCard("Peach", card, self.player) and not (isCard("ExNihilo", card, self.player) and self.player:getPhase() == sgs.Player_Play) then table.insert(newcards, card) end
 	end
-	if #cards <= self.player:getHp() - 1 and self.player:getHp() <= 4 and not self:hasHeavySlashDamage(self.player)
+	if not self.player:hasSkill("yongheng") then
+		if #cards <= self.player:getHp() - 1 and self.player:getHp() <= 4 and not self:hasHeavySlashDamage(self.player)
 		and not self:hasSkills("kongcheng|lianying|paoxiao|shangshi|noshangshi|zhiji|benghuai") then return end
+	end
 	if #newcards < 2 then return end
 
 	local card_id1 = newcards[1]:getEffectiveId()
@@ -1787,7 +1796,7 @@ end
 
 function sgs.ai_weapon_value.Spear(self, enemy, player)
 	if self.player:hasSkill("yongheng") then
-		return 3
+		return 4
 	end
 	if enemy and getCardsNum("Slash", player, self.player) == 0 then
 		if self:getOverflow(player) > 0 then return 2
