@@ -147,6 +147,16 @@
          </property>
         </widget>
        </item>
+	    <item>
+        <widget class="QCheckBox" name="UseLordBGMBox">
+         <property name="text">
+          <string>Enable lord background music</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="layoutWidget3">
@@ -320,6 +330,19 @@
       </property>
       <property name="text">
        <string>No equip anim</string>
+      </property>
+     </widget>
+	  <widget class="QCheckBox" name="UseLordBackdropBox">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>170</y>
+        <width>120</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Use Lord Backdrop</string>
       </property>
      </widget>
      <widget class="QWidget" name="layoutWidget4_2">

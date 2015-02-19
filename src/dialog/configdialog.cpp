@@ -22,7 +22,7 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     if (!tableBg_path.startsWith(":"))
         ui->tableBgPathLineEdit->setText(tableBg_path);
 
-    ui->bgMusicPathLineEdit->setText(Config.value("BackgroundMusic", "audio/system/background.ogg").toString());
+    ui->bgMusicPathLineEdit->setText(Config.value("BackgroundMusic", "audio/title/main.ogg").toString());
 
     ui->enableEffectCheckBox->setChecked(Config.EnableEffects);
 
@@ -31,8 +31,10 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     connect(ui->enableEffectCheckBox, SIGNAL(toggled(bool)), ui->enableLastWordCheckBox, SLOT(setEnabled(bool)));
 
     ui->enableBgMusicCheckBox->setChecked(Config.EnableBgMusic);
+	ui->UseLordBGMBox->setChecked(Config.UseLordBGM);
     ui->noIndicatorCheckBox->setChecked(Config.value("NoIndicator", false).toBool());
     ui->noEquipAnimCheckBox->setChecked(Config.value("NoEquipAnim", false).toBool());
+    ui->UseLordBackdropBox->setChecked(Config.UseLordBackdrop);
 
     ui->bgmVolumeSlider->setValue(100 * Config.BGMVolume);
     ui->effectVolumeSlider->setValue(100 * Config.EffectVolume);
@@ -151,6 +153,14 @@ void ConfigDialog::saveConfig() {
     Config.EnableBgMusic = enabled;
     Config.setValue("EnableBgMusic", enabled);
 
+	enabled = ui->UseLordBGMBox->isChecked();
+    Config.UseLordBGM = enabled;
+    Config.setValue("UseLordBGM", enabled);
+	
+	enabled = ui->UseLordBackdropBox->isChecked();
+    Config.UseLordBackdrop = enabled;
+    Config.setValue("UseLordBackdrop", enabled);
+	
     Config.setValue("NoIndicator", ui->noIndicatorCheckBox->isChecked());
     Config.setValue("NoEquipAnim", ui->noEquipAnimCheckBox->isChecked());
 
@@ -187,7 +197,7 @@ void ConfigDialog::on_browseBgMusicButton_clicked() {
 }
 
 void ConfigDialog::on_resetBgMusicButton_clicked() {
-    QString default_music = "audio/system/background.ogg";
+    QString default_music = "audio/title/main.ogg";
     Config.setValue("BackgroundMusic", default_music);
     ui->bgMusicPathLineEdit->setText(default_music);
 }

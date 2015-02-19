@@ -84,12 +84,13 @@ public:
     bool EnableEffects;
     bool EnableLastWord;
     bool EnableBgMusic;
+	bool UseLordBGM;
     float BGMVolume;
     float EffectVolume;
 
     QString BackgroundImage;
     QString TableBgImage;
-
+    bool UseLordBackdrop;
     bool EnableSurprisingGenerals;
     QStringList KnownSurprisingGenerals;
 

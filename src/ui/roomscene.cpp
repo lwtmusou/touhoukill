@@ -3571,7 +3571,7 @@ void RoomScene::speak() {
             Config.setValue("EnableBgMusic", true);
 #ifdef AUDIO_SUPPORT
             Audio::stopBGM();
-            QString bgmusic_path = Config.value("BackgroundMusic", "audio/system/background.ogg").toString();
+            QString bgmusic_path = Config.value("BackgroundMusic", "audio/title/main.ogg").toString();
             Audio::playBGM(bgmusic_path);
             Audio::setBGMVolume(Config.BGMVolume);
 #endif
@@ -3745,16 +3745,20 @@ void RoomScene::onGameStart() {
     connect(Self, SIGNAL(skill_state_changed(QString)), this, SLOT(skillStateChange(QString)));
     trust_button->setEnabled(true);
 #ifdef AUDIO_SUPPORT
-    QString bgmusic_path = Config.value("BackgroundMusic", "audio/system/background.ogg").toString();
+    QString bgmusic_path = Config.value("BackgroundMusic", "audio/title/main.ogg").toString();
     QString image_path = "";
     QString lord_kingdom = ClientInstance->lord_kingdom;
     QString lord_name = ClientInstance->lord_name;
     if (lord_kingdom != NULL && lord_name != NULL
         && Sanguosha->TouhouKingdoms.contains(lord_kingdom)) {
-        bgmusic_path = "audio/bgm/" + lord_name + ".ogg";
-        image_path = "backdrop/" + lord_name + ".jpg";
+        bool changeBGM = Config.value("UseLordBGM", true).toBool();
+		bool changeBackdrop = Config.value("UseLordBackdrop", true).toBool();
+		if (changeBGM)
+			bgmusic_path = "audio/bgm/" + lord_name + ".ogg";
+        if (changeBackdrop)
+			image_path = "backdrop/" + lord_name + ".jpg";
     }
-
+    
 
     if ((image_path != "") && QFile::exists(image_path))
         changeTableBg(image_path);

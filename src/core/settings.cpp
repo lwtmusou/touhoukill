@@ -130,18 +130,20 @@ void Settings::init() {
     EnableEffects = value("EnableEffects", true).toBool();
     EnableLastWord = value("EnableLastWord", true).toBool();
     EnableBgMusic = value("EnableBgMusic", true).toBool();
+	UseLordBGM = value("UseLordBGM", true).toBool();
     BGMVolume = value("BGMVolume", 1.0f).toFloat();
     EffectVolume = value("EffectVolume", 1.0f).toFloat();
 
     QStringList backimages;
     backimages << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8";
-
+    
     qShuffle(backimages);
     QString backimage = backimages.at(0);
 
     BackgroundImage = value("BackgroundImage", "backdrop/new-version" + backimage + ".jpg").toString();
     TableBgImage = value("TableBgImage", "backdrop/default.jpg").toString();
-
+    UseLordBackdrop = value("UseLordBackdrop", true).toBool();
+	
     EnableSurprisingGenerals = value("EnableSurprisingGenerals", false).toBool();
     KnownSurprisingGenerals = value("KnownSurprisingGenerals", QStringList()).toStringList();
 

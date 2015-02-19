@@ -3310,18 +3310,21 @@ function SmartAI:useCardIndulgence(card, use)
 	
 	--你妹 这个求值根本不考虑座次加权。。。值高了 直接乐上家，
 --隔了6，7个人还想乐中？？？？？？？各种拆教做人 必须座位加权
-	local getWeight = function(enemies,enemy)
-		local weight= #enemies
+--进一步该升级考量回合内外的能力 
+--考量找到乐拆的能力
+	local getSeatWeight = function(enemies,enemy)
+		--local weight= #enemies
+		local weight = 0
 		for _,s in pairs(enemies) do
 			if (self:playerGetRound(s) < self:playerGetRound(enemy)) then
-				weight=weight-1
+				weight=weight-10
 			end
 		end
 		return weight
 	end
 	
 	local cmp = function(a,b)
-		return getvalue(a)*getWeight(enemies,a) > getvalue(b)*getWeight(enemies,b)
+		return (getvalue(a)+getSeatWeight(enemies,a)) >  (getvalue(b)+getSeatWeight(enemies,b))  
 	end
 	
 	table.sort(enemies, cmp)

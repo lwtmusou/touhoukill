@@ -99,8 +99,8 @@ void Audio::playBGM(const QString &filename) {
         FMOD_System_PlaySound(System, FMOD_CHANNEL_FREE, BGM, false, &BGMChannel);
 
         FMOD_System_Update(System);
-    } else if (filename != "audio/system/background.ogg"){
-        playBGM("audio/system/background.ogg");
+    } else if (filename != "audio/title/main.ogg"){
+        playBGM("audio/title/main.ogg");
     }
 }
 
