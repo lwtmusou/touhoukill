@@ -577,6 +577,10 @@ sgs.ai_skill_use["@@baoyi"] = function(self, prompt)
 	if has_spade then
 		return "@baoyiCard=" .. table.concat(delay_ids, "+")
 	end
+	local target = sgs.ai_skill_playerchosen.zero_card_as_slash(self, self.room:getOtherPlayers(self.player))
+	if not  target then 
+		return "@baoyiCard="..table.concat(delay_ids, "+")
+	end
 	local equips={}
 	for _,c in sgs.qlist(self.player:getCards("he")) do
 		if c:isKindOf("EquipCard") then 
@@ -602,7 +606,12 @@ sgs.ai_skill_use["@@baoyi"] = function(self, prompt)
 end
 
 sgs.ai_skill_playerchosen.baoyi = function(self, targets)
-	local target_table = sgs.QList2Table(targets)
+	local target = sgs.ai_skill_playerchosen.zero_card_as_slash(self, targets)
+	if target then
+		return target
+	end
+	return nil
+	--[[local target_table = sgs.QList2Table(targets)
 	self:sort(target_table, "hp")
 	local baoyi_target
 	local slash= sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
@@ -622,8 +631,9 @@ sgs.ai_skill_playerchosen.baoyi = function(self, targets)
 	if baoyi_target then
 		return baoyi_target
 	end
-	return nil
+	return nil]]
 end
+
 sgs.ai_cardneed.baoyi = function(to, card, self)
 	return  card:isKindOf("EquipCard")
 end

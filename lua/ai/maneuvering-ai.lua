@@ -284,7 +284,7 @@ function SmartAI:useCardSupplyShortage(card, use)
 	local marisa = self.room:findPlayerBySkillName("jiezou")
 	local marisa_seat = marisa and card:getSuit()==sgs.Card_Spade and marisa:faceUp()  and not self:isFriend(marisa) and marisa:getSeat() or 0			
 
-	if #enemies == 0 then return end
+	
 
 	local getvalue = function(enemy)
 		if enemy:containsTrick("supply_shortage") or enemy:containsTrick("YanxiaoCard") then return -100 end
@@ -325,17 +325,32 @@ function SmartAI:useCardSupplyShortage(card, use)
 		if enemy:getMark("@kuiwei") > 0 then value = value - 2 end
 		return value
 	end
-
+    
 	local cmp = function(a,b)
 		return getvalue(a) > getvalue(b)
 	end
+    if #enemies > 0 then 
+		table.sort(enemies, cmp)
 
-	table.sort(enemies, cmp)
-
-	local target = enemies[1]
-	if getvalue(target) > -100 then
+		local target = enemies[1]
+		if getvalue(target) > -100 then
+			use.card = card
+			if use.to then use.to:append(target) end
+			return
+		end
+	end
+	
+	--use to friends
+	local friends  = self:exclude(self.friends_noself, card)
+	local friendNames ={}
+	for _,p in pairs(friends) do
+		table.insert(friendNames,p:objectName())
+	end
+	local baoyi = self.room:findPlayerBySkillName("baoyi")
+	
+	if baoyi and self:isFriend(baoyi) and table.contains(friendNames,baoyi:objectName())  then
 		use.card = card
-		if use.to then use.to:append(target) end
+		if use.to then use.to:append(baoyi) end
 		return
 	end
 end
@@ -343,8 +358,13 @@ end
 sgs.ai_use_value.SupplyShortage = 7
 sgs.ai_keep_value.SupplyShortage = 3.48
 sgs.ai_use_priority.SupplyShortage = 0.5
-sgs.ai_card_intention.SupplyShortage = 120
-
+--sgs.ai_card_intention.SupplyShortage = 120
+sgs.ai_card_intention.SupplyShortage = function(self, card, from, tos)
+	if not tos[1]:hasSkill("baoyi") then
+		sgs.updateIntentions(from, to, 120)
+	end
+	
+end
 sgs.dynamic_value.control_usecard.SupplyShortage = true
 
 function SmartAI:getChainedFriends(player)

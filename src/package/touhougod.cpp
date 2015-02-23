@@ -2394,7 +2394,7 @@ public:
 
                 use.from->tag["junwei_target"] = QVariant::fromValue(player);
                 QString prompt = "@junwei-discard:" + player->objectName() + ":" + use.card->objectName();
-                const Card *card = room->askForCard(use.from, ".|black|.|hand,equipped!", prompt, data, Card::MethodDiscard);
+                const Card *card = room->askForCard(use.from, ".|black|.|hand,equipped", prompt, data, Card::MethodDiscard);
                 if (card == NULL) {
                     room->setCardFlag(use.card, "junwei" + player->objectName());
                 }

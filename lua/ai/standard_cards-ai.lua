@@ -3269,7 +3269,7 @@ function SmartAI:useCardIndulgence(card, use)
 	local marisa = self.room:findPlayerBySkillName("jiezou")
 	local marisa_seat = marisa and card:getSuit()==sgs.Card_Spade and marisa:faceUp()  and not self:isFriend(marisa) and marisa:getSeat() or 0			
 		
-	if #enemies == 0 then return end
+	
 
 	local getvalue = function(enemy)
 		if self:touhouDelayTrickBadTarget(card, enemy, self.player) then return -100 end
@@ -3326,20 +3326,39 @@ function SmartAI:useCardIndulgence(card, use)
 	local cmp = function(a,b)
 		return (getvalue(a)+getSeatWeight(enemies,a)) >  (getvalue(b)+getSeatWeight(enemies,b))  
 	end
-	
-	table.sort(enemies, cmp)
+	if #enemies > 0 then 
+		table.sort(enemies, cmp)
 
-	local target = enemies[1]
-	if getvalue(target) > -100 then
+		local target = enemies[1]
+		if getvalue(target) > -100 then
+			use.card = card
+			if use.to then use.to:append(target) end
+			return
+		end
+	end
+	--use to friends
+	local friends  = self:exclude(self.friends_noself, card)
+	local friendNames ={}
+	for _,p in pairs(friends) do
+		table.insert(friendNames,p:objectName())
+	end
+	local baoyi = self.room:findPlayerBySkillName("baoyi")
+	
+	if baoyi and self:isFriend(baoyi) and table.contains(friendNames,baoyi:objectName())  then
 		use.card = card
-		if use.to then use.to:append(target) end
+		if use.to then use.to:append(baoyi) end
 		return
 	end
 end
 
 sgs.ai_use_value.Indulgence = 8
 sgs.ai_use_priority.Indulgence = 0.5
-sgs.ai_card_intention.Indulgence = 120
+--sgs.ai_card_intention.Indulgence = 120
+sgs.ai_card_intention.Indulgence = function(self, card, from, tos)
+	if not tos[1]:hasSkill("baoyi") then
+		sgs.updateIntentions(from, to, 120)
+	end
+end
 sgs.ai_keep_value.Indulgence = 3.5
 
 sgs.dynamic_value.control_usecard.Indulgence = true

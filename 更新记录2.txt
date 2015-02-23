@@ -190,6 +190,31 @@
 20150207 
 1 人物推重： 神灵庙sp魔理沙 
 
+20150209 
+1 新增人物 神 小町
+
+20150210
+1 新增人物 神 丰聪耳神子
+2 【凭依】效果微调
+3 削弱年代记妹红  【热血】增加限制
+
+20150211
+1 优化ai 【永恒】对于丈八的使用更加积极
+
+20150217
+1 解决一个【竹取】返回值为空导致的卡机bug
+
+20150218
+1 调整ai 加大使用乐时对座位的考量
+
+20150219
+1 增加关闭 “bgm，背景对应本局主公”的菜单按钮   默认为开启“对应本局主公”
+
+20150220
+1 修复【君威】弃牌时不能主动取消的bug
+
+20150223
+1 优化ai 可以对己方的【爆衣】贴延时锦囊 【爆衣】的使用杀更为合理
 
 有天子在时，不要闪饕餮啊 我日
 五谷开你妹 有杀先杀了空城的桑尼啊
@@ -201,7 +226,7 @@ cardask返回nil和“.”的区别
 灵气ai相关 parse函数 和 needretrial
 附带悔悟parse?
 
-
+雷米主 全场铁索有闪电的时候 尼玛属性杀解锁我擦
 
 
 ai待解决清单：
@@ -373,15 +398,3 @@ UI： 进入房间，还是打开游戏时的随机背景
 
 
 正邪逆转你妹 我的冻结翻面啊 
-
-4 isFriend相关。。。。
-lua/ai/smart-ai.lua:1677: attempt to index field 'room' (a nil value)
-activate
-stack traceback:
-	lua/ai/smart-ai.lua:213: in function <lua/ai/smart-ai.lua:193>
-Event Stack:
-event[4], room[0], target = sgs3[hzc002]
-event[2], room[0], target = sgs3[hzc002]
-End of Event Stack.
-
-basara ai 导致的？？
