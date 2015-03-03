@@ -3356,7 +3356,7 @@ sgs.ai_use_priority.Indulgence = 0.5
 --sgs.ai_card_intention.Indulgence = 120
 sgs.ai_card_intention.Indulgence = function(self, card, from, tos)
 	if not tos[1]:hasSkill("baoyi") then
-		sgs.updateIntentions(from, to, 120)
+		sgs.updateIntentions(from, tos, 120)
 	end
 end
 sgs.ai_keep_value.Indulgence = 3.5

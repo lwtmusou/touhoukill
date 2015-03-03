@@ -3174,8 +3174,16 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 			if acard:getEffectiveId() == cardchosen then return cardchosen end
 		end
 	end
-
-	if ("snatch|dismantlement|yinling"):match(reason) then
+	
+    local duxinHandcards = {}
+	if self.player:hasSkill("duxin") and flags:match("h") then
+		duxinHandcards =  sgs.QList2Table(who:getCards("h"))
+		if #duxinHandcards >0 then
+			self:sortByKeepValue(duxinHandcards,true)
+		end
+	end
+	
+	if ("snatch|dismantlement|yinling"):match(reason)  then
 		local flag = "AIGlobal_SDCardChosen_" .. reason
 		local to_choose
 		for _, card in sgs.qlist(who:getCards(flags)) do
@@ -3185,7 +3193,7 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 				break
 			end
 		end
-		if to_choose then
+		if to_choose  then
 			local is_handcard
 			if not who:isKongcheng() and who:handCards():contains(to_choose) then is_handcard = true end
 			if is_handcard and reason == "dismantlement" and self.room:getMode() == "02_1v1" and sgs.GetConfig("1v1/Rule", "Classical") == "2013" then
@@ -3200,11 +3208,15 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 				self:sortByKeepValue(cards, true)
 				return cards[1]:getEffectiveId()
 			else
-				return to_choose
+				if not self:isFriend(who) and #duxinHandcards >0  and  self.room:getCardPlace(to_choose) ~=  sgs.Player_PlaceDelayedTrick and duxinHandcards[1]:getId() ~= to_choose then
+					return duxinHandcards[1]:getId()
+				else
+					return to_choose
+				end
 			end
 		end
 	end
-
+	
 	if self:isFriend(who) then
 		if flags:match("j") and not who:containsTrick("YanxiaoCard") and not (who:hasSkill("qiaobian") and who:getHandcardNum() > 0) then
 			local tricks = who:getCards("j")
@@ -3249,6 +3261,10 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 			end
 		end
 	else
+		if #duxinHandcards >0 and duxinHandcards[1]:isKindOf("Peach") or duxinHandcards[1]:isKindOf("Analeptic") then
+			return duxinHandcards[1]:getId()
+		end 
+		
 		local dangerous = self:getDangerousCard(who)
 		if flags:match("e") and dangerous and (not isDiscard or self.player:canDiscard(who, dangerous)) then return dangerous end
 		--拆木牛的优先度是否该提高呢？ 比dangerousCard还高
@@ -3273,7 +3289,7 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 				return valuable
 			end
 		end
-		if flags:match("h") and (not isDiscard or self.player:canDiscard(who, "h")) then
+		if flags:match("h") and (not isDiscard or self.player:canDiscard(who, "h")) and  #duxinHandcards <=0 then 
 			if self:hasSkills("jijiu|qingnang|qiaobian|jieyin|beige|buyi|manjuan", who)
 				and not who:isKongcheng() and who:getHandcardNum() <= 2 and not self:doNotDiscard(who, "h", false, 1, reason) then
 				return self:getCardRandomly(who, "h")
@@ -3307,9 +3323,13 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 			end
 		end
 
-		if flags:match("h") and not self:doNotDiscard(who, "h") then
+		if flags:match("h") and not self:doNotDiscard(who, "h") then	
 			if (who:getHandcardNum() == 1 and sgs.getDefenseSlash(who, self) < 3 and who:getHp() <= 2) or self:hasSkills(sgs.cardneed_skill, who) then
-				return self:getCardRandomly(who, "h")
+				if #duxinHandcards >0 then
+					return duxinHandcards[1]:getId()
+				else
+					return self:getCardRandomly(who, "h")
+				end
 			end
 		end
 
@@ -3322,7 +3342,11 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 
 		if flags:match("h") then
 			if (not who:isKongcheng() and who:getHandcardNum() <= 2) and not self:doNotDiscard(who, "h", false, 1, reason) then
-				return self:getCardRandomly(who, "h")
+				if #duxinHandcards >0 then
+					return duxinHandcards[1]:getId()
+				else
+					return self:getCardRandomly(who, "h")
+				end
 			end
 		end
 	end

@@ -361,7 +361,7 @@ sgs.ai_use_priority.SupplyShortage = 0.5
 --sgs.ai_card_intention.SupplyShortage = 120
 sgs.ai_card_intention.SupplyShortage = function(self, card, from, tos)
 	if not tos[1]:hasSkill("baoyi") then
-		sgs.updateIntentions(from, to, 120)
+		sgs.updateIntentions(from, tos, 120)
 	end
 	
 end
