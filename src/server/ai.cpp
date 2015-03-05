@@ -236,7 +236,17 @@ QString TrustAI::askForKingdom() {
 
     switch (self->getRoleEnum()) {
     case Player::Lord: role = kingdoms.at(qrand() % kingdoms.length()); break;
-    case Player::Renegade:
+    case Player::Renegade:{
+		if (lord->getGeneral()->isLord()||self->hasSkill("hongfo"))
+            role = lord->getKingdom();
+        else if (lord->getGeneral2() && lord->getGeneral2()->isLord())
+            role = lord->getGeneral2()->getKingdom();
+        else {
+            if (lord->hasSkill("yongsi")) kingdoms.removeOne(lord->getKingdom());
+            role = kingdoms.at(qrand() % kingdoms.length());
+        }
+        break;
+	}
     case Player::Rebel: {
         if ((lord->hasLordSkill("xueyi") && self->getRoleEnum() == Player::Rebel) || lord->hasLordSkill("shichou"))
             role = "wei";

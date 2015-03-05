@@ -5008,10 +5008,14 @@ Card::Suit Room::askForSuit(ServerPlayer *player, const QString &reason) {
 QString Room::askForKingdom(ServerPlayer *player) {
     while (isPaused()) {}
     notifyMoveFocus(player, S_COMMAND_CHOOSE_KINGDOM);
-
+    
+	QString kingdomChoice = ""; 
+	
+		
     AI *ai = player->getAI();
     if (ai)
-        return ai->askForKingdom();
+        kingdomChoice = ai->askForKingdom();
+		//return ai->askForKingdom();
 
     Json::Value arg(Json::arrayValue);
     arg[0] = toJsonString(player->getGeneral()->getKingdom());
@@ -5022,12 +5026,23 @@ QString Room::askForKingdom(ServerPlayer *player) {
     if (success && clientReply.isString()) {
         QString kingdom = toQString(clientReply.asCString());
         if (Sanguosha->getKingdoms().contains(kingdom))
-            return kingdom;
+            kingdomChoice = kingdom;
     }
-    if (player->getKingdom() == "god")
+	
+	//set default
+	if ( kingdomChoice == "" ){
+		if (player->getKingdom() == "god")
+			kingdomChoice = "wei";
+		else
+			kingdomChoice = "wai";
+	}
+    /*if (player->getKingdom() == "god")
         return "wei";
     else
-        return "wai";
+        return "wai";*/
+	QVariant decisionData = QVariant::fromValue("KingdomChoice:"  + kingdomChoice);
+    thread->trigger(ChoiceMade, this, player, decisionData);
+	return kingdomChoice;
 }
 
 bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discard_num, int min_num,

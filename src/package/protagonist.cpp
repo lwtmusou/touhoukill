@@ -64,6 +64,7 @@ public:
         events << TargetConfirming << SlashEffected << CardEffected;
         skill_property = "cause_judge";
         //view_as_skill=new lingqivs;
+		
     }
 
     //virtual bool triggerable(const ServerPlayer *target) const{
@@ -187,6 +188,7 @@ class boli : public TriggerSkill {
 public:
     boli() : TriggerSkill("boli$") {
         events << AskForRetrial;
+		skill_property = "noKingdom";
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -413,6 +415,7 @@ class wuyu : public TriggerSkill {
 public:
     wuyu() : TriggerSkill("wuyu$") {
         events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging;
+		skill_property = "noKingdom";
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{

@@ -1503,6 +1503,8 @@ sgs.ai_skill_invoke.IceSword = function(self, data)
 		elseif target:getLostHp() < 1 then return false end
 		return true
 	else
+		local canDamage = self:touhouNeedAvoidAttack(damage,self.player,target,true)
+		if not canDamage then return true end
 		if self:isWeak(target) then return false end
 		if damage.damage > 1 or self:hasHeavySlashDamage(self.player, damage.card, target) then return false end
 		if target:hasSkill("lirang") and #self:getFriendsNoself(target) > 0 then return false end
@@ -2219,7 +2221,7 @@ end
 sgs.ai_use_priority.GodSalvation = 1.1
 sgs.ai_keep_value.GodSalvation = 3.32
 sgs.dynamic_value.benefit.GodSalvation = true
-sgs.ai_card_intention.GodSalvation = function(self, card, from, tos)
+sgs.ai_card_intention.GodSalvation = function(self, card, from, tos) --’‚Ã“‘∞≥∫ﬁ’Ê «≥∂µ≠
 	local can, first
 	for _, to in ipairs(tos) do
 		if to:isWounded() and not first then

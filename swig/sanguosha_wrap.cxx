@@ -14285,6 +14285,106 @@ static int _wrap_Player_hasLordSkill(lua_State* L) {
 }
 
 
+static int _wrap_Player_hasKingdomLordSkill__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  Player *arg1 = (Player *) 0 ;
+  bool arg2 ;
+  bool result;
+  
+  SWIG_check_num_args("Player::hasKingdomLordSkill",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Player::hasKingdomLordSkill",1,"Player const *");
+  if(!lua_isboolean(L,2)) SWIG_fail_arg("Player::hasKingdomLordSkill",2,"bool");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Player,0))){
+    SWIG_fail_ptr("Player_hasKingdomLordSkill",1,SWIGTYPE_p_Player);
+  }
+  
+  arg2 = (lua_toboolean(L, 2)!=0);
+  result = (bool)((Player const *)arg1)->hasKingdomLordSkill(arg2);
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Player_hasKingdomLordSkill__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  Player *arg1 = (Player *) 0 ;
+  bool result;
+  
+  SWIG_check_num_args("Player::hasKingdomLordSkill",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Player::hasKingdomLordSkill",1,"Player const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Player,0))){
+    SWIG_fail_ptr("Player_hasKingdomLordSkill",1,SWIGTYPE_p_Player);
+  }
+  
+  result = (bool)((Player const *)arg1)->hasKingdomLordSkill();
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Player_hasKingdomLordSkill(lua_State* L) {
+  int argc;
+  int argv[3]={
+    1,2,3
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 1) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_Player, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      return _wrap_Player_hasKingdomLordSkill__SWIG_1(L);
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_Player, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isboolean(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_Player_hasKingdomLordSkill__SWIG_0(L);
+      }
+    }
+  }
+  
+  lua_pushstring(L,"Wrong arguments for overloaded function 'Player_hasKingdomLordSkill'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    Player::hasKingdomLordSkill(bool) const\n"
+    "    Player::hasKingdomLordSkill() const\n");
+  lua_error(L);return 0;
+}
+
+
 static int _wrap_Player_getGameMode(lua_State* L) {
   int SWIG_arg = 0;
   Player *arg1 = (Player *) 0 ;
@@ -18614,6 +18714,7 @@ static swig_lua_method swig_Player_methods[] = {
     {"hasSkills", _wrap_Player_hasSkills}, 
     {"hasInnateSkill", _wrap_Player_hasInnateSkill}, 
     {"hasLordSkill", _wrap_Player_hasLordSkill}, 
+    {"hasKingdomLordSkill", _wrap_Player_hasKingdomLordSkill}, 
     {"getGameMode", _wrap_Player_getGameMode}, 
     {"setEquip", _wrap_Player_setEquip}, 
     {"removeEquip", _wrap_Player_removeEquip}, 

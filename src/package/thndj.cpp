@@ -99,6 +99,7 @@ class tymhwuyu : public TriggerSkill {
 public:
     tymhwuyu() : TriggerSkill("tymhwuyu$") {
         events << Death;
+		skill_property = "noKingdom";
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{

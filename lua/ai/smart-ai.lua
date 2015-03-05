@@ -2071,6 +2071,7 @@ function SmartAI:filterEvent(event, player, data)
 		elseif data:toString() then
 			promptlist = data:toString():split(":")
 			local callbacktable = sgs.ai_choicemade_filter[promptlist[1]]
+			
 			if callbacktable and type(callbacktable) == "table" then
 				local index = 2
 				if promptlist[1] == "cardResponded" then
@@ -2104,6 +2105,13 @@ function SmartAI:filterEvent(event, player, data)
 						self:updatePlayers()
 						break
 					end
+				end
+			end
+			local lord = self.room:getLord()
+			if lord and lord:getGeneral():isLord() and lord:hasKingdomLordSkill() and promptlist[1] == "KingdomChoice"  then
+				local kingdomChoice  = promptlist[2]
+				if kingdomChoice ~= lord:getKingdom() then
+					sgs.updateIntention(player, lord, 50)
 				end
 			end
 		end
@@ -3261,7 +3269,7 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 			end
 		end
 	else
-		if #duxinHandcards >0 and duxinHandcards[1]:isKindOf("Peach") or duxinHandcards[1]:isKindOf("Analeptic") then
+		if #duxinHandcards >0 and (duxinHandcards[1]:isKindOf("Peach") or duxinHandcards[1]:isKindOf("Analeptic")) then
 			return duxinHandcards[1]:getId()
 		end 
 		
@@ -7442,11 +7450,14 @@ function SmartAI:touhouIsSameWithLordKingdom(player)
 end
 
 --主要用于要求出杀闪等respone时
-function SmartAI:touhouNeedAvoidAttack(damage,from,to)
+function SmartAI:touhouNeedAvoidAttack(damage,from,to,ignoreDamageEffect)
 	if to:hasSkill("huanmeng")  and damage.card and damage.card:isKindOf("Slash") then return true end
-	local effect=self:touhouDamageEffect(damage,from,to)
-	if from and effect and self:isFriend(from,to) then 
+	ignoreDamageEffect = ignoreDamageEffect or false 
+	if not ignoreDamageEffect then 
+		local effect=self:touhouDamageEffect(damage,from,to)
+		if from and effect and self:isFriend(from,to) then 
 			return false
+		end
 	end
 	local real_damage=self:touhouDamage(damage,from,to)
 	if real_damage.damage<1 then
