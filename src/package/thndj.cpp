@@ -11,10 +11,53 @@
 
 
 
+
+class rexue : public TriggerSkill {
+public:
+    rexue() : TriggerSkill("rexue") {
+        events << EventPhaseChanging << EventPhaseStart;
+        frequency = Compulsory;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == EventPhaseChanging){
+			PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+			if (change.to == Player::NotActive){
+				if (player->hasFlag("rexueDeath")) {
+                    room->setPlayerFlag(player, "-rexueDeath");
+                    return false;
+                }
+
+                if (player->getMark("touhou-extra") > 0){
+                    player->removeMark("touhou-extra");
+                    return false;
+                }
+                if (room->canInsertExtraTurn())
+                    player->tag["RexueInvoke"] = QVariant::fromValue(true);
+			}
+		}
+        
+        else if (triggerEvent == EventPhaseStart && player->getPhase() == Player::NotActive ){
+            bool rexue = player->tag["RexueInvoke"].toBool();
+            player->tag["RexueInvoke"] = QVariant::fromValue(false);
+            if (rexue && player->getHp() == 1){
+				room->touhouLogmessage("#TriggerSkill", player, "rexue");
+				room->notifySkillInvoked(player, "rexue");
+				room->recover(player, RecoverStruct());
+
+				if (room->canInsertExtraTurn()) {
+					room->touhouLogmessage("#touhouExtraTurn", player, objectName());
+					player->gainAnExtraTurn();
+				}	
+			} 
+        }
+        return false;
+    }
+};
 class rexue_count : public TriggerSkill {
 public:
     rexue_count() : TriggerSkill("#rexue_count") {
-        events << Death << TurnStart;
+        events << Death;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -26,42 +69,20 @@ public:
             DeathStruct death = data.value<DeathStruct>();
             if (death.who != player)
                 return false;
-            room->setTag("rexue_count", true);
-        }
-        if (triggerEvent == TurnStart)
-            room->setTag("rexue_count", false);
-
-        return false;
-    }
-};
-class rexue : public TriggerSkill {
-public:
-    rexue() : TriggerSkill("rexue") {
-        events << EventPhaseStart;// EventPhaseChanging;
-        frequency = Compulsory;
-    }
-
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        //PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        //change.to == Player::NotActive
-        if (player->getPhase() == Player::NotActive && player->getHp() == 1
-            && !room->getTag("rexue_count").toBool() && player->getMark("touhou-extra") == 0
-            ) {
-
-            room->touhouLogmessage("#TriggerSkill", player, "rexue");
-            room->notifySkillInvoked(player, "rexue");
-            room->recover(player, RecoverStruct());
-            //if you want to invoke rexue at extraturn , you need set extra turn mark to zero,since canInsertExtraTurn()
-            //room->setPlayerMark(player, "touhou-extra", 0);
-
-            if (room->canInsertExtraTurn()) {
-                room->touhouLogmessage("#touhouExtraTurn", player, objectName());
-                player->gainAnExtraTurn();
-            }
+            //room->setTag("rexue_count", true);
+			ServerPlayer *source = room->findPlayerBySkillName("rexue");
+			if (room->getCurrent() == source){
+				if (source->getMark("touhou-extra") > 0)
+					return false;
+				room->setPlayerFlag(source, "rexueDeath");
+			}
         }
         return false;
     }
 };
+
+
+
 class sidou : public TriggerSkill {
 public:
     sidou() : TriggerSkill("sidou") {
@@ -87,7 +108,7 @@ public:
                     int card_id = room->askForCardChosen(player, target, "je", objectName(), false, Card::MethodDiscard, disable);
                     room->throwCard(card_id, target, player);
                     player->drawCards(1);
-                    room->loseHp(player);
+					room->damage(DamageStruct(objectName(), player, player, 1, DamageStruct::Fire));
                 }
             }
         }
@@ -129,7 +150,7 @@ public:
 };
 
 
-
+/*
 class huanyue : public TriggerSkill {
 public:
     huanyue() : TriggerSkill("huanyue") {
@@ -188,63 +209,80 @@ public:
         return false;
     }
 };
+*/
+
+class huanyue : public TriggerSkill {
+public:
+    huanyue() : TriggerSkill("huanyue") {
+        events << DamageInflicted;
+    }
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.card == NULL || !damage.card->isNDTrick())
+            return false;
+        ServerPlayer *source = room->findPlayerBySkillName("huanyue");
+        if (source && source != damage.to && damage.to->canDiscard(source, "h")){
+            QString prompt = "target:" + damage.to->objectName() + ":" + damage.card->objectName();
+			source->tag["huanyue_damage"] = data;
+			if (room->askForSkillInvoke(source, objectName(), prompt)){
+				room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), damage.to->objectName());
+				int card_id = room->askForCardChosen(damage.to, source, "h", objectName(), false, Card::MethodDiscard);
+				room->throwCard(card_id, source, damage.to);
+				if (Sanguosha->getCard(card_id)->isBlack()){
+					QList<ServerPlayer *>logto;
+					logto << damage.to;
+					room->touhouLogmessage("#huanyue_log", damage.from, QString::number(damage.damage), logto, QString::number(damage.damage + 1));
+					damage.damage = damage.damage + 1;
+					data = QVariant::fromValue(damage);
+				}
+			}
+        }
+        return false;
+    }
+};
 
 class sizhai : public TriggerSkill {
 public:
     sizhai() : TriggerSkill("sizhai") {
-        events << GameStart << EventPhaseStart;
+        events  << EventPhaseStart << CardUsed << CardResponded;
         frequency = Frequent;
     }
     virtual bool triggerable(const ServerPlayer *target) const{
         return target != NULL;
     }
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == GameStart){
-            if (player != NULL && player->hasSkill("sizhai")){
-
-                foreach(ServerPlayer *p, room->getAlivePlayers()){
-                    if (!p->hasSkill("#sizhai_count"))
-                        room->acquireSkill(p, "#sizhai_count");
-                }
-            }
-        }
-        else if (triggerEvent == EventPhaseStart){
+        if (triggerEvent == EventPhaseStart){
             ServerPlayer *current = room->getCurrent();
             if (current && current->getPhase() == Player::Finish){
                 if (!current->hasFlag("sizhai")){
                     ServerPlayer *s = room->findPlayerBySkillName(objectName());
-                    if (s != NULL && room->askForSkillInvoke(s, objectName(), "draw:" + current->objectName()))
+                    if (s && room->askForSkillInvoke(s, objectName(), "draw:" + current->objectName()))
                         s->drawCards(1);
                 }
             }
         }
+		else{//set cardused flag to current player
+			ServerPlayer *current = room->getCurrent();
+			if (player != current)
+				return false;
+			if (triggerEvent == CardUsed){
+				CardUseStruct use = data.value<CardUseStruct>();
+				if (use.card->isKindOf("BasicCard") || use.card->isKindOf("TrickCard"))
+					player->setFlags("sizhai");
+			}
+			else if (triggerEvent == CardResponded) {
+				CardStar card_star = data.value<CardResponseStruct>().m_card;
+				if (card_star->isKindOf("BasicCard") || card_star->isKindOf("TrickCard") )
+					player->setFlags("sizhai");
+			}
+		}
         return false;
     }
 };
-class sizhai_count : public TriggerSkill {
-public:
-    sizhai_count() : TriggerSkill("#sizhai_count") {
-        events << CardUsed << CardResponded;
-    }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-
-        ServerPlayer *current = room->getCurrent();
-        if (player != current)
-            return false;
-        if (triggerEvent == CardUsed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("BasicCard"))
-                player->setFlags("sizhai");
-        }
-        else if (triggerEvent == CardResponded) {
-            CardStar card_star = data.value<CardResponseStruct>().m_card;
-            if (card_star->isKindOf("BasicCard"))
-                player->setFlags("sizhai");
-        }
-        return false;
-    }
-};
 
 youmingCard::youmingCard() {
     will_throw = true;
@@ -409,9 +447,8 @@ thndjPackage::thndjPackage()
 
     General *ndj002 = new General(this, "ndj002", "zhu", 3, false);
     ndj002->addSkill(new huanyue);
-    ndj002->addSkill(new huanyue_damage);
     ndj002->addSkill(new sizhai);
-    related_skills.insertMulti("huanyue", "#huanyue_damage");
+
 
     General *ndj004 = new General(this, "ndj004", "yym", 3, false);
     ndj004->addSkill(new youming);
@@ -426,7 +463,7 @@ thndjPackage::thndjPackage()
     related_skills.insertMulti("kexue", "#kexue-effect");
 
     addMetaObject<youmingCard>();
-    skills << new sizhai_count;
+    //skills << new sizhai_count;
 }
 
 ADD_PACKAGE(thndj)

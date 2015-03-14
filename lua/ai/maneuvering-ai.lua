@@ -117,6 +117,7 @@ end
 
 function SmartAI:shouldUseAnaleptic(target, slash)
 	if sgs.turncount <= 1 and self.role == "renegade" and sgs.isLordHealthy() and self:getOverflow() < 2 then return false end
+
 	--¡¾±ùÆÇ¡¿¶Ô²ß
 	local fakeDamage=sgs.DamageStruct()
 	fakeDamage.card=slash

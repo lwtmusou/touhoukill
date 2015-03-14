@@ -398,6 +398,11 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 			return false
 		end
 	end
+	if to:hasSkill("yicun")  then
+		if self:yicunEffective(slash, to, from) then
+			return false 
+		end
+	end
 	if to:getMark("@late") > 0 then return false end
 
 	local natures = {
@@ -613,28 +618,41 @@ function SmartAI:useCardSlash(card, use)
 		return card:targetFilter(targets, target, self.player)
 	end
 	
-	--for shikong 没考虑双将等复杂情况
-	if  self.player:hasSkill("shikong") and self.player:getPhase()==sgs.Player_Play then
-		local shikong_f=0
-		local shikong_e=0
+	--for shikong 
+	--简单粗暴
+	if  self.player:hasSkill("shikong") and self.player:getPhase()==sgs.Player_Play  
+	and not self.player:hasFlag("slashTargetFixToOne") then
+		--[[for _,p in sgs.qlist(self.player:getAliveSiblings()) { 
+            if (card:IsSpecificAssignee(p, self.player, this)) {
+                return !targets.isEmpty();
+            }
+        }]]
+		local shikong_f = 0
+		local shikong_e = 0
+		local shikongTargets = sgs.SPlayerList()
 		for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-			if use.to and self.player:inMyAttackRange(p) and canAppendTarget(p) then
-				use.to:append(p)
-				if self:isFriend(p) then
-					shikong_f=shikong_f+1
-				else
-					shikong_e=shikong_e+1
-				end
+			if (self.player:canSlash(p, card, not no_distance, rangefix)
+						or (use.isDummy and (self.player:distanceTo(p, rangefix) <= self.predictedRange))) then
+				--if  use.to and self.player:inMyAttackRange(p) and canAppendTarget(p)
+					shikongTargets:append(p)
+					if self:isFriend(p) then
+						shikong_f=shikong_f+1
+					else
+						shikong_e=shikong_e+1
+					end
+				--end
 			end
 		end
-		if shikong_f> shikong_e then return end
-		for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if shikong_f > shikong_e then return end
+		
+		for _,p in sgs.qlist(shikongTargets) do
+			--shikongTargets are checked
 			use.card = card
-			if use.to and self.player:inMyAttackRange(p) and canAppendTarget(p) then
+			if use.to then
 				use.to:append(p)
 			end
 		end
-		--此处return会导致前面添加的use.to被继续使用 出现一桃多个目标的局面
+		--不考虑双将可以添加其他目标，直接return
 		return
 	end
 	
@@ -814,9 +832,12 @@ function SmartAI:useCardSlash(card, use)
 		end
 	end
 	--for RedundantSlash 
+	-- do not consider slash is effective
 	for _, friend in ipairs(self.friends_noself) do
 		if (not use.to or not use.to:contains(friend)) then
-			if self:isTargetForRedundantSlash(card, friend,self.player,use.to) then
+			if (self.player:canSlash(friend, card, not no_distance, rangefix) 
+			or (use.isDummy and (self.player:distanceTo(friend, rangefix) <= self.predictedRange)))
+			and self:isTargetForRedundantSlash(card, friend,self.player,use.to) then
 				use.card = card
 				if use.to and canAppendTarget(friend) then
 					use.to:append(friend)
@@ -1426,6 +1447,8 @@ sgs.ai_skill_invoke.DoubleSword = function(self, data)
 	return not self:needKongcheng(self.player, true)
 end
 
+
+
 function sgs.ai_slash_weaponfilter.DoubleSword(self, to, player)
 	--return player:getGender()~=to:getGender()
 	return self:touhouIsSameWithLordKingdom(player)~=self:touhouIsSameWithLordKingdom(to)
@@ -1487,6 +1510,16 @@ sgs.ai_skill_cardask["double-sword-card"] = function(self, data, pattern, target
 		end
 	end
 	return "."
+end
+
+
+sgs.ai_choicemade_filter.cardResponded["double-sword-card"] = function(self, player, promptlist)
+	--QString prompt = "double-sword-card:" + use.from->objectName();
+	--"cardResponded:%1:%2:_%3_").arg(pattern).arg(prompt)
+	local user = findPlayerByObjectName(self.room, promptlist[4])
+	if user and promptlist[#promptlist] ~= "_nil_" then	
+		sgs.updateIntention(player, user, 80)
+	end
 end
 
 function sgs.ai_weapon_value.QinggangSword(self, enemy)

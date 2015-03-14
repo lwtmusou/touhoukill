@@ -821,27 +821,22 @@ function needSkipJudgePhase(self,player)
 end
 sgs.ai_skill_cardask["@bllm-discard"] = function(self, data)
     local prompt=self.player:getTag("wuyu_prompt"):toString() 
+	local all_hearts=bllmwuyu_discard(self.player)
+	if #all_hearts==0 then return "." end
+	
+	
 	if prompt=="bllmcaiyu" then
-		local all_hearts=bllmwuyu_discard(self.player)
-		if #all_hearts==0 then return "." end
         return "$" .. all_hearts[1]
 	elseif prompt=="bllmmingyu" then
 		if not needSkipJudgePhase(self,self.player) then return "." end
-		local all_hearts=bllmwuyu_discard(self.player)	
-		if #all_hearts==0 then return "." end
 		return "$" .. all_hearts[1]
-	
 	elseif prompt=="bllmshuiyu" then
 		if self:getOverflow() >0 and self.player:getMaxCards()<4 then
-			num=self.player:getHandcardNum()-self.player:getMaxCards()
+			local num=self.player:getHandcardNum()-self.player:getMaxCards()
 			if num<2 then return "." end
-			local all_hearts=bllmwuyu_discard(self.player)	
-			if #all_hearts==0 then return "." end
 			return "$" .. all_hearts[1]	
 		end
 	elseif prompt=="bllmseyu" then
-		local all_hearts=bllmwuyu_discard(self.player)	
-		if #all_hearts==0 then return "." end
 		return "$" .. all_hearts[1]	
 	elseif prompt=="bllmshiyu" then
 		local mustuse=false
@@ -851,8 +846,6 @@ sgs.ai_skill_cardask["@bllm-discard"] = function(self, data)
 			mustuse=true
 		end	
 		if not mustuse then return "." end
-		local all_hearts=bllmwuyu_discard(self.player)	
-		if #all_hearts==0 then return "." end
 		
 		return "$" .. all_hearts[1]	
 	end
@@ -953,21 +946,7 @@ sgs.ai_skill_use_func.bllmwuyuCard = function(card, use, self)
 	use.card=card
 end
 
-sgs.ai_skill_choice.bllmwuyu= function(self)
-	--[[local cards=self.player:getCards("h")
-	local t=sgs.Slash_IsAvailable(self.player)
-	local slashs={}
-	for _,c in sgs.qlist(cards) do
-		if c:isKindOf("Slash") then
-			table.insert(slashs,c)
-		end
-	end
-	if t and #slashs>0 then
-		return "bllmseyu"
-	end
-	if t==false and #slashs>1 then
-		return "bllmseyu"
-	end]]
+sgs.ai_skill_choice.bllmwuyu= function(self, choices, data)
 	local id =self.player:getTag("wuyu_choose"):toInt()
 	if id==1 then
 		return "bllmseyu"

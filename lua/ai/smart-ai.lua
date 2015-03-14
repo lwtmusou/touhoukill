@@ -161,7 +161,7 @@ function setInitialTables()
 	sgs.intention_damage ="jiexian"
 	sgs.intention_recover="jiexian|saiqian"
 	sgs.cardEffect_nullify_all={"shishi","weiya","diaoping","luanying"}
-	sgs.cardEffect_nullify_specific={"lingqi","guangji","huiwu","weizhuang","zhengyi","zhancao","yunshang","doujiu","nizhuan","junwei"}
+	sgs.cardEffect_nullify_specific={"lingqi","guangji","huiwu","weizhuang","zhengyi","zhancao","yunshang","doujiu","nizhuan","yicun","junwei"}
 	--需要保证无效的flag的命名标准统一
 	
 	sgs.Friend_All = 0
@@ -2502,7 +2502,7 @@ function SmartAI:filterEvent(event, player, data)
 						or self:slashProhibitToDiaopingTarget(card,player,target) then
 							has_slash_prohibit_skill = true
 						end
-						if player:canSlash(target, card, true) and self:slashIsEffective(card, target)
+						if player:canSlash(target, card, true) and self:slashIsEffective(card, target) --没有用from?
 								and not has_slash_prohibit_skill and sgs.isGoodTarget(target,self.enemies, self) then
 							if is_neutral then
 								sgs.updateIntention(player, target, -35)
@@ -6029,6 +6029,11 @@ function SmartAI:hasTrickEffective(card, to, from)
 	if self.room:isProhibited(from, to, card) then return false end
 	if to:hasSkill("zhengyi")  and not card:isKindOf("DelayedTrick") and card:isBlack() then return false end
 	if to:hasSkill("yunshang") and not from:inMyAttackRange(to) then return false end
+	if to:hasSkill("yicun") and card:isKindOf("Duel") then
+		if self:yicunEffective(card, to, from) then
+			return false 
+		end
+	end
 	if to:hasSkill("weizhuang") and card:isNDTrick() then
 		local basics = getCardsNum("BasicCard", from, self.player)
 		if sgs.dynamic_value.damage_card[card:getClassName()] then
@@ -6990,12 +6995,12 @@ function SmartAI:touhouDamageInflicted(damage,from,to)
 	
 	--幻月的时机真蛋疼。。。比其他防止伤害系可能早触发 也可能晚触发
 	--而且本身也只是一个可能事件 不是必然事件。。。
-	if to:getMark("@huanyue")>0 and damage.card and damage.card:isKindOf("TrickCard") then
+	--[[if to:getMark("@huanyue")>0 and damage.card and damage.card:isKindOf("TrickCard") then
 		local neet= self.room:findPlayerBySkillName("huanyue")
 		if neet and neet:getHandcardNum()>3 and self:isEnemy(neet,to) then
 			damage.damage=damage.damage+1
 		end
-	end
+	end]]
 	--限定技终焉也不是必然事件 蛋疼。。。
 	--变幻也不是必然事件。。。
 	--折射。。正体。。。一个比一个蛋疼。。。
