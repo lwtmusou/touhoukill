@@ -16,13 +16,13 @@ public:
     }
 	
 	virtual bool triggerable(const ServerPlayer *target) const{
-        return (target != NULL);
+        return (target != NULL && target->isAlive());
     }
 	
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (player->getPhase() == Player::Start && player->getHandcardNum() < 3){
 			ServerPlayer *src = room->findPlayerBySkillName(objectName());
-			if (src){
+			if (src && src->canDiscard(src, "he")){
 				const Card *card = room->askForCard(src, ".|.|.|hand,equipped", "@baochui:" + player->objectName(), QVariant::fromValue(player), Card::MethodDiscard,
 					NULL, false, objectName());
 				if (card){
@@ -93,7 +93,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *current = room->getCurrent();
         //ServerPlayer *source = room->findPlayerBySkillName(objectName());
-        if (!current)
+        if (!current) //
             return false;
 		if (triggerEvent == CardsMoveOneTime){
             if (current->getPhase() != Player::Discard)
@@ -112,7 +112,7 @@ public:
             QVariantList ids = current->tag["moyi_basics"].toList();
             if (ids.length() == 0)
                 return false;
-			if (current->getKingdom() == "hzc"){
+			if (current->getKingdom() == "hzc" && current->isAlive()){
 				QList<int> all;
 				foreach(QVariant card_data, ids){
 					if (room->getCardPlace(card_data.toInt()) == Player::DiscardPile)
@@ -134,7 +134,7 @@ public:
                     room->fillAG(all, current);
 					int moyiId = room->askForAG(current, all, false, objectName());
 					room->clearAG(current);
-					player->tag["huazhong"] = QVariant::fromValue(target);
+					//player->tag["huazhong"] = QVariant::fromValue(target);
                     targets.removeOne(target);
 					all.removeOne(moyiId);
 					room->obtainCard(target, moyiId, true);

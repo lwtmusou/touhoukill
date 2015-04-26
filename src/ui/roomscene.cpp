@@ -447,6 +447,8 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             dashboard->expandPileCards("piao");
         if (ClientInstance->getStatus() == Client::Playing && skill_name == "feitou")
             dashboard->expandPileCards("feitou");
+		if (ClientInstance->getStatus() == Client::Playing && skill_name == "shende")
+            dashboard->expandPileCards("shende");
         break;
     }
     case S_GAME_EVENT_ADD_SKILL: {
@@ -473,6 +475,8 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             dashboard->retractPileCards("piao");
         if (skill_name == "feitou")
             dashboard->retractPileCards("feitou");
+		if (skill_name == "shende")
+            dashboard->retractPileCards("shende");
         break;
     }
     case S_GAME_EVENT_PREPARE_SKILL:
@@ -2282,7 +2286,7 @@ void RoomScene::useSelectedCard() {
         dashboard->retractPileCards("wooden_ox");
         dashboard->retractPileCards("piao");
         dashboard->retractPileCards("feitou");
-
+		dashboard->retractPileCards("shende");
     }
 }
 

@@ -616,7 +616,11 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
 
         if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge) {
             CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), judge->reason);
-            room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);
+            if (judge->retrial_by_response){
+				reason.m_provider = QVariant::fromValue(judge->retrial_by_response);
+				reason.m_extraData = QVariant::fromValue(judge->card);
+			}
+			room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);
         }
 
         break;

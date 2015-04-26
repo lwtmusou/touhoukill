@@ -10,7 +10,8 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
 
-version = "QSanguosha AI 20140901 (V1.414213562 Alpha)"
+--version = "QSanguosha AI 20140901 (V1.414213562 Alpha)"
+version = "TouhouKill AI 20150405"
 
 -- checkout https://github.com/haveatry823/QSanguoshaAI for details
 
@@ -27,6 +28,7 @@ sgs.ai_card_intention = 	{}
 sgs.ai_playerchosen_intention = {}
 sgs.ai_Yiji_intention = {}
 sgs.role_evaluation = 		{}
+sgs.explicit_renegade_players = 		{}
 sgs.ai_role = 				{}
 sgs.ai_keep_value = 		{}
 sgs.ai_use_value = 			{}
@@ -151,9 +153,9 @@ function setInitialTables()
 						"|juxian"
 	sgs.use_lion_skill =		 "longhun|duanliang|qixi|guidao|noslijian|lijian|jujian|nosjujian|zhiheng|mingce|yongsi|fenxun|gongqi|" ..
 						"yinling|jilve|qingcheng|neoluoyi|diyyicong"..
-						"|baoyi|junshi|zhancao|chuanran|weizhi|buming|pingyi|shouhui|youming|luanwu|qinlue"
+						"|baoyi|zhanzhen|zhancao|chuanran|weizhi|buming|pingyi|shouhui|youming|luanwu|qinlue"
 	sgs.need_equip_skill = 		"shensu|mingce|jujian|beige|yuanhu|huyuan|gongqi|nosgongqi|yanzheng|qingcheng|neoluoyi|longhun|shuijian"..
-							"|baoyi|mokai|junshi|zhancao|wunian|yiwang"
+							"|baoyi|mokai|zhanzhen|zhancao|chuanran|weizhi|buming|pingyi|shouhui|youming|luanwu|qinlue|zhancao|wunian|yiwang"
 	sgs.judge_reason =		"bazhen|EightDiagram|wuhun|supply_shortage|tuntian|nosqianxi|nosmiji|indulgence|lightning|baonue"..
 									"|nosleiji|leiji|caizhaoji_hujia|tieji|luoshen|ganglie|neoganglie|vsganglie|kofkuanggu"..
 							"|lingqi|pohuai|huisu"		
@@ -175,6 +177,7 @@ function setInitialTables()
 	for _, aplayer in sgs.qlist(global_room:getAllPlayers()) do
 		table.insert(sgs.role_evaluation, aplayer:objectName())
 		table.insert(sgs.ai_role, aplayer:objectName())
+		table.insert(sgs.explicit_renegade_players, aplayer:objectName())
 		if aplayer:isLord() then
 			sgs.role_evaluation[aplayer:objectName()] = {lord = 99999, rebel = 0, loyalist = 99999, renegade = 0}
 			sgs.ai_role[aplayer:objectName()] = "loyalist"
@@ -182,6 +185,7 @@ function setInitialTables()
 			sgs.role_evaluation[aplayer:objectName()] = {rebel = 0, loyalist = 0, renegade = 0}
 			sgs.ai_role[aplayer:objectName()] = "neutral"
 		end
+		sgs.explicit_renegade_players[aplayer:objectName()] = false
 	end
 end
 
@@ -1198,6 +1202,12 @@ sgs.ai_card_intention.general = function(from, to, level)
 
 
 	if sgs.evaluatePlayerRole(to) == "loyalist" then
+		
+		if sgs.current_mode_players["rebel"] == 0 and to:isLord() and level > 0 then
+			--残局对主不利者，视为绝对的内。主公可以下杀手打死
+			sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + 200
+			sgs.explicit_renegade_players[from:objectName()] = true
+		end
 		if not isLord(to) and (sgs.UnknownRebel or (sgs.role_evaluation[to:objectName()]["renegade"] > 0 or sgs.current_mode_players["rebel"] == 0) and not sgs.explicit_renegade) then
 		else
 			sgs.role_evaluation[from:objectName()]["loyalist"] = sgs.role_evaluation[from:objectName()]["loyalist"] - level
@@ -1589,7 +1599,12 @@ function SmartAI:objectiveLevel(player)
 				if self.player:isLord() then
 					if sgs.ai_role[player:objectName()] == "loyalist" then return -2
 					else
-						return player:getHp() > 1 and 4 or 0
+						--对于主忠内残局跳得内 可以下杀手
+						if (sgs.explicit_renegade_players[player:objectName()]) then
+							return 4
+						else
+							return player:getHp() > 1 and 4 or 0
+						end
 					end
 				else
 					if self.role == "loyalist" and sgs.ai_role[self.player:objectName()] == "renegade" then
@@ -1917,6 +1932,9 @@ function getTrickIntention(trick_class, target)
 	if trick_class == "Collateral" then 
 		return 0 
 	end
+	if trick_class == "SupplyShortage" or trick_class == "Indulgence" then
+		return 70
+	end
 	if sgs.dynamic_value.damage_card[trick_class] then
 		return 70
 	end
@@ -2071,7 +2089,6 @@ function SmartAI:filterEvent(event, player, data)
 		elseif data:toString() then
 			promptlist = data:toString():split(":")
 			local callbacktable = sgs.ai_choicemade_filter[promptlist[1]]
-			
 			if callbacktable and type(callbacktable) == "table" then
 				local index = 2
 				if promptlist[1] == "cardResponded" then
@@ -2092,6 +2109,7 @@ function SmartAI:filterEvent(event, player, data)
 					index = 3
 				end
 				local callback = callbacktable[promptlist[index]] or callbacktable.general
+
 				if type(callback) == "function" then
 					callback(self, player, promptlist)
 				end
@@ -2466,12 +2484,13 @@ function SmartAI:filterEvent(event, player, data)
 			if player:hasFlag("AI_Playing") and player:hasSkill("leiji") and player:getPhase() == sgs.Player_Discard and isCard("Jink", card, player)
 			and player:getHandcardNum() >= 2 and reason.m_reason == sgs.CardMoveReason_S_REASON_RULEDISCARD then sgs.card_lack[player:objectName()]["Jink"] = 2 end
 			--弃杀时的辅助判断  被禁止出杀
+			--and sgs.turncount <= 3 --为什么有轮次限制。。。。
 			if player:hasFlag("AI_Playing") and sgs.turncount <= 3 and player:getPhase() == sgs.Player_Discard
 				and reason.m_reason == sgs.CardMoveReason_S_REASON_RULEDISCARD
 				and not (player:hasSkills("renjie+baiyin") and not player:hasSkill("jilve")) and not player:hasFlag("ShuangrenSkipPlay") then
 
 				local is_neutral = sgs.evaluatePlayerRole(player) == "neutral" and CanUpdateIntention(player)
-
+				
 				if isCard("Slash", card, player) and not player:hasFlag("hasUsedSlash") or player:hasFlag("JiangchiInvoke") then
 					for _, target in sgs.qlist(self.room:getOtherPlayers(player)) do
 						local has_slash_prohibit_skill = false
@@ -2504,9 +2523,12 @@ function SmartAI:filterEvent(event, player, data)
 						end
 						if player:canSlash(target, card, true) and self:slashIsEffective(card, target) --没有用from?
 								and not has_slash_prohibit_skill and sgs.isGoodTarget(target,self.enemies, self) then
-							if is_neutral then
+							if is_neutral  then --or (CanUpdateIntention(player) and self:isEnemy(player, target))
 								sgs.updateIntention(player, target, -35)
 								self:updatePlayers()
+							end
+							if (sgs.evaluatePlayerRole(player) ~= "neutral" and not player:isLord()) then
+								
 							end
 						end
 					end
@@ -3404,6 +3426,7 @@ function sgs.ai_skill_cardask.nullfilter(self, data, pattern, target)
 end
 
 function SmartAI:askForCard(pattern, prompt, data)
+	
 	local target, target2
 	local parsedPrompt = prompt:split(":")
 	local players
@@ -4403,7 +4426,7 @@ function SmartAI:isWeak(player)
 	end
 	if player:hasSkill("bumie") then return false end
 	if player:hasSkill("huanmeng") then return false end
-	if player:hasSkill("shende") and player:getPile("ShenDePile"):length()>=4 then return false end 
+	if player:hasSkill("shende") and player:getPile("shende"):length()>=4 then return false end 
 	if player:hasSkill("jinguo") and player:getMark("@kinki")>=4 then return true end 
 	if hasBuquEffect(player) then return false end
 	if player:hasSkill("longhun") and player:getCards("he"):length() > 2 then return false end
@@ -5334,7 +5357,7 @@ function getCardsNum(class_name, player, from)
 		elseif player:hasSkill("jiuzhu") then
 			return math.max(num, math.max(0, math.min(player:getCardCount(true), player:getHp() - 1)))
 		elseif player:hasSkill("shende") then
-			return num+player:getPile("ShenDePile"):length()/2
+			return num+player:getPile("shende"):length()/2
 		elseif player:hasSkill("qiyao") then
 			return num + ndtrick
 		else
@@ -7023,8 +7046,9 @@ function SmartAI:touhouDamageInflicted(damage,from,to)
 	
 	--技能优先于藤甲等防具
 	if from and not self:touhouIgnoreArmor(damage.card,from,to)  then
-		if to:hasArmorEffect("Vine") then
-			if nature==sgs.DamageStruct_Fire  then
+		
+		if to:hasArmorEffect("Vine") then	
+			if damage.nature == sgs.DamageStruct_Fire  then
 				damage.damage=damage.damage+1
 			end
 		end
@@ -7511,14 +7535,22 @@ end
 function SmartAI:roleParse()--为主忠盲狙  自动增加克制主公的明反的仇恨
 	local lord = self.room:getLord()
 	if not lord then return end
-	
+	--可以转化为列表型
 	if  lord:hasSkills("shanji|jingjie|shende") then
 		for _,p in sgs.qlist(self.room:getOtherPlayers(lord)) do
-			if p:hasSkill("changshi") then
+			if p:hasSkills("changshi|xijian") then
 				sgs.updateIntention(p, lord, 150)
 			end
 		end
 	end
+	if  lord:hasSkills("yongheng") then
+		for _,p in sgs.qlist(self.room:getOtherPlayers(lord)) do
+			if p:hasSkills("fengrang|maihuo|shitu|jiyi|banyue|huwei|baochun") then
+				sgs.updateIntention(p, lord, 150) --|mocao
+			end
+		end
+	end
+
 	--need check player number and current role 
 	for _,p in sgs.qlist(self.room:getOtherPlayers(lord)) do
 		for _,skill in sgs.qlist(p:getVisibleSkillList()) do

@@ -167,7 +167,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
         ServerPlayer *source = room->findPlayerBySkillName(objectName());
-        if (source){
+        if (source && judge->who->isAlive()){
             if (judge->who->getHandcardNum() >= source->getMaxHp())
                 return false;
             source->tag["qixiang_judge"] = data;
@@ -558,7 +558,7 @@ public:
 class saiqian : public TriggerSkill {
 public:
     saiqian() : TriggerSkill("saiqian") {
-        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Death;
+        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Death <<Debut;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -566,7 +566,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == GameStart
+        if (triggerEvent == GameStart || triggerEvent == Debut
             || (triggerEvent == EventAcquireSkill && data.toString() == "saiqian")) {
             QList<ServerPlayer *> lords;
             foreach (ServerPlayer *p, room->getAlivePlayers()) {

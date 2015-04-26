@@ -112,6 +112,12 @@ sgs.ai_skill_playerchosen.xueyi = function(self, targets)
 	return nil
 end
 sgs.ai_playerchosen_intention.xueyi = -80
+sgs.ai_no_playerchosen_intention.xueyi =function(self, from)
+	local lord = self.room:getLord()
+	if lord then
+		sgs.updateIntention(from, lord, 10)
+	end
+end
 
 
 function SmartAI:pohuaiBenefit(player)
@@ -349,7 +355,7 @@ sgs.ai_skill_cardask["douhun-slash"]  = function(self, data, pattern, target)
 		if self.player:hasSkill("weiya") and self:hasWeiya(p) then
 			rate=2
 		end
-		if self:getCardsNum("Slash") > p:getHandcardNum()*rate then
+		if self:getCardsNum("Slash") > (getCardsNum("Slash", p, self.player)+p:getPile("qi"):length())*rate then
 			return self:getCardId("Slash")
 		end
 	end
@@ -368,7 +374,8 @@ sgs.ai_slash_prohibit.douhun = function(self, from, to, card)
 		if from:hasSkill("weiya") and self:hasWeiya() then
 			rate=2
 		end
-		if self:getCardsNum("Slash") <= to:getHandcardNum()*rate then
+		if self:getCardsNum("Slash") <= 
+		(getCardsNum("Slash", to, from)+to:getPile("qi"):length())*rate then
 			return true
 		end
 	end
@@ -383,12 +390,53 @@ end
                 return ("slash:zhanyi[%s:%s]=%d"):format(suit, number, card_id)
         end
 end]]
+sgs.ai_skill_cardask["@zhanyi"] = function(self, data)
+	
+	local cards = self.player:getCards("h")
+	cards = sgs.QList2Table(cards)
+	self:sortByUseValue(cards)
+	
+	local maxNum = #cards - self.player:getMaxCards()
+	local qis={}
+	for _,c in pairs(cards) do
+		if  not c:isKindOf("Peach") and not c:isKindOf("Slash")  then
+			table.insert(qis,c:getEffectiveId())
+		end
+		if #qis >= maxNum then
+			break
+		end
+	end
+	local canAddSlash = #qis < maxNum
+	if canAddSlash then
+		for _,c in sgs.qlist(cards) do
+			if  c:isKindOf("Slash")  then
+				table.insert(qis,c:getEffectiveId())
+			end
+			if #qis >= maxNum then
+				break
+			end
+		end
+	end
+
+	if #qis==0 then return "." end
+	return "$" .. table.concat(qis, "+")
+end
+
+
 function sgs.ai_cardsview_valuable.zhanyi(self, class_name, player)
 	if class_name == "Slash" then
 		if (sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE) then
 			return nil
 		end
-		local card
+		if self.player:getPile("qi"):isEmpty() then return nil end
+		local ids=self.player:getPile("qi")
+		local card= sgs.Sanguosha:getCard(ids:first())
+		local suit = card:getSuitString()
+        local number = card:getNumberString()
+        local card_id = card:getEffectiveId()
+		return ("slash:zhanyi[%s:%s]=%d"):format(suit, number, card_id)
+		--[[local card
+
 		local peaches={}
 		local blacks={}
 		local reds={}
@@ -403,6 +451,7 @@ function sgs.ai_cardsview_valuable.zhanyi(self, class_name, player)
 				table.insert(blacks,c)
 			end
 		end
+		
 		--need sort
 		if #reds>0 then
 			card=reds[1]
@@ -415,11 +464,15 @@ function sgs.ai_cardsview_valuable.zhanyi(self, class_name, player)
 		local suit = card:getSuitString()
         local number = card:getNumberString()
         local card_id = card:getEffectiveId()
-		return ("slash:zhanyi[%s:%s]=%d"):format(suit, number, card_id)
+		return ("slash:zhanyi[%s:%s]=%d"):format(suit, number, card_id)]]
 	end
 end
 sgs.ai_cardneed.zhanyi = function(to, card, self)
-	return  card:isRed()
+	return card:isKindOf("Slash")
+	--return  card:isRed()
+end
+sgs.ai_skill_invoke.zhanyi = function(self)
+	return true
 end
 
 sgs.ai_skill_invoke.dongjie = function(self, data)
@@ -644,8 +697,19 @@ end
 
 sgs.ai_use_value.banyueCard = 3
 sgs.ai_use_priority.banyueCard =6
-sgs.ai_card_intention.banyueCard = -40
-
+sgs.ai_card_intention.banyueCard = function(self, card, from, tos)
+	sgs.updateIntentions(from, tos, -40)
+	if #tos <3 then
+		local lord = self.room:getLord()
+		local targetList = sgs.SPlayerList()
+		for _,to in pairs (tos) do
+			targetList:append(to)
+		end
+		if lord and lord:isAlive() and not targetList:contains(lord) and not lord:hasSkills("yongheng|gaoao") then
+			sgs.updateIntention(from,lord, 40)
+		end
+	end
+end
 
 --³°·íÖµÉè¶¨
 --[[sgs.ai_chaofeng.hmx001 = 2

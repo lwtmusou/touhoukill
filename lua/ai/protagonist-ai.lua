@@ -772,8 +772,8 @@ sgs.ai_skill_playerchosen.chunxi = function(self, targets)
 		self.player:setTag("pre_heart",sgs.QVariant(false))
 		return pre_zhize 
 	end
-	target_table = self:getEnemies(self.player)
-	if #target_table==0 then return false end
+	local target_table = self:getEnemies(self.player)
+	if #target_table == 0 then return false end
 	local chunxi_target
 	self:sort(target_table, "value")
 	for _,target in pairs(target_table) do	

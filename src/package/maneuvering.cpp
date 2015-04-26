@@ -311,7 +311,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
         else
             effect.from->setFlags("FireAttackFailed_" + effect.to->objectName()); // For AI
     }
-
+	//can show VirtualCard???
     if (card->isVirtualCard())
         delete card;
 }

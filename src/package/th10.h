@@ -14,7 +14,7 @@
 #include <QVBoxLayout>
 //#include <QCommandLinkButton>
 
-class shendeDummyCard : public SkillCard {
+/*class shendeDummyCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -29,7 +29,7 @@ public:
     Q_INVOKABLE shendeFakeMoveCard();
 
     virtual const Card *validate(CardUseStruct &card_use) const;
-};
+};*/
 
 
 class gongfengCard : public SkillCard {
@@ -106,14 +106,14 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class zaihuoCard : public SkillCard {
+/*class zaihuoCard : public SkillCard {
     Q_OBJECT
 
 public:
     Q_INVOKABLE zaihuoCard();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-};
+};*/
 
 class tianyanCard : public SkillCard {
     Q_OBJECT

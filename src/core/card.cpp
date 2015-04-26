@@ -622,6 +622,21 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
         CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), card_use.card->getSkillName(), QString());
         if (card_use.to.size() == 1)
             reason.m_targetId = card_use.to.first()->objectName();
+			
+		reason.m_extraData = QVariant::fromValue(card_use.card);
+		ServerPlayer *provider = NULL;
+		foreach (QString flag ,card_use.card->getFlags()){
+			if (flag.startsWith("CardProvider_")){
+				QStringList patterns = flag.split("_");
+				provider = room->findPlayerByObjectName(patterns.at(1));
+				break;
+			}
+		}
+		reason.m_provider = QVariant::fromValue(provider);
+		
+		
+		
+		
         CardsMoveStruct move(used_cards, card_use.from, NULL, Player::PlaceUnknown, Player::PlaceTable, reason);
         moves.append(move);
         room->moveCardsAtomic(moves, true);
@@ -651,7 +666,18 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
     if (room->getCardPlace(getEffectiveId()) == Player::PlaceTable) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
         if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
-        room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+        reason.m_extraData = QVariant::fromValue(this);
+		ServerPlayer *provider = NULL;
+		foreach (QString flag , this->getFlags()){
+			if (flag.startsWith("CardProvider_")){
+				QStringList patterns = flag.split("_");
+				provider = room->findPlayerByObjectName(patterns.at(1));
+				break;
+			}
+		}
+		reason.m_provider = QVariant::fromValue(provider);
+
+		room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
     }
 }
 
@@ -677,9 +703,13 @@ QList<int> Card::getSubcards() const{
     return subcards;
 }
 
+
+
 void Card::clearSubcards() {
     subcards.clear();
 }
+
+
 
 bool Card::isAvailable(const Player *player) const{
     return !player->isCardLimited(this, handling_method)
@@ -732,6 +762,7 @@ void Card::setFlags(const QString &flag) const{
 bool Card::hasFlag(const QString &flag) const{
     return flags.contains(flag);
 }
+
 
 void Card::clearFlags() const{
     flags.clear();

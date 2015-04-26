@@ -607,7 +607,7 @@ public:
 };
 
 
-class renou : public TriggerSkill {
+/*class renou : public TriggerSkill {
 public:
     renou() : TriggerSkill("renou") {
         events << EventPhaseStart;
@@ -685,12 +685,78 @@ public:
         }
         return false;
     }
+};*/
+
+class renou : public TriggerSkill {
+public:
+    renou() : TriggerSkill("renou") {
+        events << EventPhaseStart;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (player->getPhase() == Player::Start && room->askForSkillInvoke(player, objectName(), data)){
+			QList<int> list = room->getNCards(5);
+			QList<int> able;
+            QList<int> disabled;
+			foreach(int id, list){
+                Card *tmp_card = Sanguosha->getCard(id);
+                if (tmp_card->isKindOf("EquipCard")){
+                    able << id;
+                }
+                else{
+					foreach(const Card *c, player->getCards("e")){
+						if (c->getSuit() == tmp_card->getSuit()){
+							disabled << id;
+							break;
+						}
+					}
+					if (!disabled.contains(id)) 
+						able << id;
+				}
+            }
+			room->fillAG(list, NULL, disabled);
+			QStringList cardinfo;
+            //for log
+			foreach(int id, list){
+				cardinfo << Sanguosha->getCard(id)->toString();
+			}
+			LogMessage mes;
+			mes.type = "$TurnOver";
+			mes.from = player;
+			mes.card_str = cardinfo.join("+");
+			room->sendLog(mes);
+			
+			int obtainId = -1;
+			if (able.length()>0){
+				obtainId = room->askForAG(player, able, true, objectName());
+				if (obtainId != -1)
+					room->obtainCard(player, obtainId, true);
+			}
+			//
+			room->getThread()->delay(1000);
+            
+			//throw other cards
+			DummyCard *dummy = new DummyCard;
+			foreach(int id, list){
+                if (id != obtainId)
+                    dummy->addSubcard(id);
+            }
+			if (dummy->getSubcards().length() > 0){
+                CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), objectName(), "");
+                room->throwCard(dummy, reason, NULL);   
+            }
+			
+			
+			room->clearAG();
+		}
+        return false;
+    }
 };
 
 
-class junshi : public OneCardViewAsSkill {
+class zhanzhenvs : public OneCardViewAsSkill {
 public:
-    junshi() : OneCardViewAsSkill("junshi") {
+    zhanzhenvs() : OneCardViewAsSkill("zhanzhen") {
         filter_pattern = "EquipCard";
         response_or_use = true;
     }
@@ -723,6 +789,50 @@ public:
             return NULL;
     }
 };
+
+class zhanzhen : public TriggerSkill {
+public:
+    zhanzhen() : TriggerSkill("zhanzhen") {
+        events  << CardsMoveOneTime;
+		view_as_skill = new zhanzhenvs;
+    }
+
+	
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+		if (triggerEvent == CardsMoveOneTime){
+			CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>(); 
+			// move.from_places.contains(Player::PlaceTable)
+			if (move.card_ids.length() == 1 && move.to_place == Player::DiscardPile 
+				 //(move.reason.m_reason == CardMoveReason::S_REASON_USE || move.reason.m_reason == CardMoveReason::S_REASON_RESPONSE
+				) {
+				// only use or response will add the extradata 
+				//if it exist, we need not check the move reason again?				
+				const Card *card = move.reason.m_extraData.value<const Card *>();
+				const Card *realcard = Sanguosha->getEngineCard(move.card_ids.first());
+				ServerPlayer *provider = move.reason.m_provider.value<ServerPlayer *>();
+
+				if (  card && card->getSkillName() == objectName() 
+				 && room->getCardPlace(move.card_ids.first()) == Player::DiscardPile
+					&& (player == move.from || (provider && provider == player))
+				){
+					player->tag["zhanzhen"] = QVariant::fromValue(realcard);
+					ServerPlayer *target =	room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), 
+					"@zhanzhen:"+card->objectName()+":"+realcard->objectName(), true, true);
+					if (target){
+						CardsMoveStruct mo;
+						mo.card_ids = move.card_ids;
+						mo.to = target;
+						mo.to_place = Player::PlaceHand;
+						room->moveCardsAtomic(mo, true);
+					}
+				}
+			}
+		}
+        return false;
+    }
+};
+
+
 
 class shishen : public TriggerSkill {
 public:
@@ -885,12 +995,13 @@ public:
             }
             if (use.card->isVirtualCard() && use.card->getSubcards().length() == 0)
                 return false;
-
-
-
+			//for turnbroken
+			if (player->hasFlag("Global_ProcessBroken"))
+				return false;
+            
             if (player->isCardLimited(Sanguosha->cloneCard(use.card->objectName()), Card::MethodUse))
                 return false;
-
+			
             room->setPlayerProperty(player, "yaoshu_card", use.card->objectName());
             room->askForUseCard(player, "@@yaoshu", "@yaoshu:" + use.card->objectName());
 
@@ -1466,7 +1577,7 @@ th07Package::th07Package()
 
     General *yym006 = new General(this, "yym006", "yym", 4, false);
     yym006->addSkill(new renou);
-    yym006->addSkill(new junshi);
+    yym006->addSkill(new zhanzhen);
 
 
     General *yym007 = new General(this, "yym007", "yym", 3, false);

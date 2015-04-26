@@ -68,7 +68,7 @@ return{
     ["#shanji"] = "%from 使用/打出了 %arg 张 %arg2 牌。",
  
     ["yazhi"] ="压制",
-    [":yazhi"]="出牌阶段，你可以将一张手牌作为“票”面朝下置于你的人物牌上。<font color=\"green\"><b>每阶段限一次。</b></font>",
+    [":yazhi"]="<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一张手牌作为“票”面朝下置于你的人物牌上。",
  
     ["tianxiang"] = "天翔", 
     [":tianxiang"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"blue\"><b>锁定技，</b></font>游戏开始时，将反贼的胜利条件改为：主公、忠臣、内奸全部死亡。将内奸的胜利条件改为：其他角色全部死亡。",

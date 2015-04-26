@@ -104,7 +104,7 @@ public:
     void fillAG(const QList<int> &card_ids, ServerPlayer *who = NULL, const QList<int> &disabled_ids = QList<int>());
     void takeAG(ServerPlayer *player, int card_id, bool move_cards = true, QList<ServerPlayer *> to_notify = QList<ServerPlayer *>());
     void clearAG(ServerPlayer *player = NULL);
-    void provide(const Card *card);
+    void provide(const Card *card, ServerPlayer *who = NULL);
     QList<ServerPlayer *> getLieges(const QString &kingdom, ServerPlayer *lord) const;
     void sendLog(const LogMessage &log);
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
@@ -256,6 +256,7 @@ public:
     ServerPlayer *findPlayer(const QString &general_name, bool include_dead = false) const;
     QList<ServerPlayer *> findPlayersBySkillName(const QString &skill_name) const;
     ServerPlayer *findPlayerBySkillName(const QString &skill_name) const;
+	ServerPlayer *findPlayerByObjectName(const QString &name) const;
     void installEquip(ServerPlayer *player, const QString &equip_name);
     void resetAI(ServerPlayer *player);
     void changeHero(ServerPlayer *player, const QString &new_general, bool full_state, bool invoke_start = true,
@@ -512,7 +513,9 @@ private:
 
     const Card *provided;
     bool has_provided;
-
+	ServerPlayer *provider;
+	
+	
     QVariantMap tag;
     const Scenario *scenario;
 

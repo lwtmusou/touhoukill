@@ -530,7 +530,7 @@ function SmartAI:isPriorFriendOfSlash(friend, card, source)
 					sidieTargets:append(p)
 				end
 			end
-			local sidieTarget =getSidieVictim(self, sidieTargets)
+			local sidieTarget =getSidieVictim(self, sidieTargets,friend)
 			if sidieTarget then return true end
 		end
 	end
@@ -2112,9 +2112,21 @@ end
 sgs.ai_skill_cardask["savage-assault-slash"] = function(self, data, pattern, target)
 	return sgs.ai_skill_cardask.aoe(self, data, pattern, target, "savage_assault")
 end
+sgs.ai_choicemade_filter.cardResponded["savage-assault-slash"] = function(self, player, promptlist)
+	local target = findPlayerByObjectName(self.room, promptlist[4])
+	if target:hasSkill("lizhi") and promptlist[#promptlist] ~= "_nil_" then
+		sgs.updateIntention(player, target, 80)
+	end
+end
 
 sgs.ai_skill_cardask["archery-attack-jink"] = function(self, data, pattern, target)
 	return sgs.ai_skill_cardask.aoe(self, data, pattern, target, "archery_attack")
+end
+sgs.ai_choicemade_filter.cardResponded["archery-attack-jink"] = function(self, player, promptlist)
+	local target = findPlayerByObjectName(self.room, promptlist[4])
+	if target:hasSkill("lizhi") and promptlist[#promptlist] ~= "_nil_" then
+		sgs.updateIntention(player, target, 80)
+	end
 end
 
 sgs.ai_keep_value.Nullification = 3.8
@@ -2492,6 +2504,10 @@ sgs.dynamic_value.benefit.ExNihilo = true
 function SmartAI:getDangerousCard(who)
 	local weapon = who:getWeapon()
 	local armor = who:getArmor()
+	local treasure = who:getTreasure()
+	if treasure and treasure:isKindOf("WoodenOx") and who:getPile("wooden_ox"):length() > 1 then
+		return treasure:getEffectiveId()
+	end
 	if weapon and (weapon:isKindOf("Crossbow") or weapon:isKindOf("GudingBlade")) then
 		for _, friend in ipairs(self.friends) do
 			if weapon:isKindOf("Crossbow") and who:distanceTo(friend) <= 1 and getCardsNum("Slash", who, self.player) > 0 then
@@ -4033,4 +4049,11 @@ sgs.ai_skill_playerchosen.wooden_ox = function(self, targets)
 end
 
 sgs.ai_playerchosen_intention.wooden_ox = -60
-
+sgs.ai_no_playerchosen_intention.wooden_ox =function(self, from)
+	if sgs.current_mode_players["rebel"] == 0 then
+		local lord =self.room:getLord()
+		if lord  then
+			sgs.updateIntention(from, lord, 10)
+		end
+	end
+end

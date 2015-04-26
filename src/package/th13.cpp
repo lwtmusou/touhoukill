@@ -999,7 +999,10 @@ public:
                 && use.to.contains(source) && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())){
                 if (use.card->isKindOf("Jink"))
                     return false;
-                Card *card = Sanguosha->cloneCard(use.card->objectName());
+                //for turnbroken
+				if (use.from->hasFlag("Global_ProcessBroken"))
+					return false;
+				Card *card = Sanguosha->cloneCard(use.card->objectName());
                 if (use.card->isNDTrick() && use.from->hasSkill("aoyi")){//for a bug in filtersviewkill, then ai has this skill
                     if (use.from->getAI())
                         card = Sanguosha->cloneCard("ice_slash");

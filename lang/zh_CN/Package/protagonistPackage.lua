@@ -30,7 +30,7 @@ return {
     ["#zhu002"] = "普通的魔法使",
     ["!zhu002"] = "雾雨魔理沙",
     ["mofa"] = "魔法",
-    [":mofa"] = "出牌阶段，你可以弃置一张手牌，若如此做，你使用的牌造成的伤害+1，直到回合结束。若以此法弃置了<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，你摸一张牌。<font color=\"green\"><b>每阶段限一次。</b></font>",
+    [":mofa"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张手牌，若如此做，你使用的牌造成的伤害+1，直到回合结束。若以此法弃置了<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，你摸一张牌。",
     ["#mofa_notice"]="由于 %arg 的效果，此回合内 %from 使用的牌造成的伤害+1。",
     ["#mofa_damage"]="%from 对 %to 的伤害由 %arg2 点增加到 %arg 点。",
     ["#TouhouBuff"]="%from 的 %arg 效果被触发。",
@@ -38,7 +38,7 @@ return {
         
         
     ["wuyu"] = "雾雨",
-    [":wuyu"] = "<font color=\"orange\"><b>主公技，</b></font>其他角色的出牌阶段，该角色可以将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌交给你。<font color=\"green\"><b>每阶段限一次。</b></font>",
+    [":wuyu"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"green\"><b>其他角色的出牌阶段限一次，</b></font>该角色可以将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌交给你。",
     [":wuyuvs"]="出牌阶段，你可以将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌交给拥有主公技“雾雨”的角色。每阶段限一次。",
     ["wuyuvs"]="雾雨送牌",
         
@@ -47,7 +47,7 @@ return {
     ["#zhu003"] = "十万巫女",
     ["!zhu003"] = "SP无节操灵梦",
     ["saiqian"] = "赛钱",
-    [":saiqian"] = "其他角色的出牌阶段，该角色可以将一至三张手牌交给你，然后你可以选择一至两项：弃置一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌，或失去1点体力。你每选择一项，该角色回复1点体力。<font color=\"green\"><b>每阶段限一次。</b></font>",
+    [":saiqian"] = "<font color=\"green\"><b>其他角色的出牌阶段限一次，</b></font>该角色可以将一至三张手牌交给你，然后你可以选择一至两项：弃置一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌，或失去1点体力。你每选择一项，该角色回复1点体力。",
     ["saiqianvs"] ="赛钱送牌", 
     [":saiqianvs"] ="你可以将一至三张手牌交给拥有“赛钱”的角色。",
     ["losehp_saiqian"]="失去1点体力，该角色回复1点体力",
