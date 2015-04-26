@@ -3,7 +3,7 @@
 #include "engine.h"
 #include "general.h"
 #include "room.h"
-
+    
 NatureSlash::NatureSlash(Suit suit, int number, DamageStruct::Nature nature)
     : Slash(suit, number)
 {
@@ -311,7 +311,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const{
         else
             effect.from->setFlags("FireAttackFailed_" + effect.to->objectName()); // For AI
     }
-	//can show VirtualCard???
+    //can show VirtualCard???
     if (card->isVirtualCard())
         delete card;
 }

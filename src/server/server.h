@@ -133,7 +133,7 @@ private:
     QSpinBox *ai_delay_spinbox;
     QCheckBox *ai_delay_altered_checkbox;
     QSpinBox *ai_delay_ad_spinbox;
-	QCheckBox *ai_prohibit_blind_attack_checkbox;
+    QCheckBox *ai_prohibit_blind_attack_checkbox;
     QCheckBox *surrender_at_death_checkbox;
     QLabel *luck_card_label;
     QSpinBox *luck_card_spinbox;

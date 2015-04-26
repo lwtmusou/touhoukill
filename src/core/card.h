@@ -100,7 +100,7 @@ public:
     virtual int subcardsLength() const;
 
 
-	
+    
     virtual QString getType() const = 0;
     virtual QString getSubtype() const = 0;
     virtual CardType getTypeId() const = 0;

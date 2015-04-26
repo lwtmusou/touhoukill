@@ -1298,7 +1298,7 @@ void PlayerCardContainer::onAvatarHoverEnter()
             heroSKinBtn->show();
         }
         //if (heroSKinBtn == NULL)
-        //	_m_screenNameItem->hide();
+        //    _m_screenNameItem->hide();
         //showProgressBar(Countdown countdown)
     }
 }

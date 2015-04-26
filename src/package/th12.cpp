@@ -509,43 +509,43 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-		CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         
-		if (player->isCurrent() && move.from  && move.from != player
+        if (player->isCurrent() && move.from  && move.from != player
                 && move.to_place == Player::DiscardPile){
-			//check provider
-			ServerPlayer *provider = move.reason.m_provider.value<ServerPlayer *>();
-			if (provider && provider == player) 
-				return false;
-						
+            //check provider
+            ServerPlayer *provider = move.reason.m_provider.value<ServerPlayer *>();
+            if (provider && provider == player) 
+                return false;
+                        
             QList<int> obtain_ids;
-			foreach(int id, move.card_ids) {
-				if (room->getCardPlace(id) != Player::DiscardPile)
-					continue;
-					
+            foreach(int id, move.card_ids) {
+                if (room->getCardPlace(id) != Player::DiscardPile)
+                    continue;
+                    
                 switch (move.from_places.at(move.card_ids.indexOf(id))) {
-				case Player::PlaceHand: obtain_ids << id; break;
-				case Player::PlaceEquip: obtain_ids << id; break;
-				case Player::PlaceTable: {
-					//if (move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE ||
-						//move.reason.m_reason == CardMoveReason::S_REASON_USE || move.reason.m_reason == CardMoveReason::S_REASON_RESPONSE)
-							QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
-							bool ocurrence = false;
-							foreach(QVariant card_data, record_ids) {
-								int card_id = card_data.toInt();
-								if (card_id == id){
-									ocurrence = true;
-									break;
-								}
-							}
-							if (!ocurrence)
-								obtain_ids << id;	
+                case Player::PlaceHand: obtain_ids << id; break;
+                case Player::PlaceEquip: obtain_ids << id; break;
+                case Player::PlaceTable: {
+                    //if (move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE ||
+                        //move.reason.m_reason == CardMoveReason::S_REASON_USE || move.reason.m_reason == CardMoveReason::S_REASON_RESPONSE)
+                            QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
+                            bool ocurrence = false;
+                            foreach(QVariant card_data, record_ids) {
+                                int card_id = card_data.toInt();
+                                if (card_id == id){
+                                    ocurrence = true;
+                                    break;
+                                }
+                            }
+                            if (!ocurrence)
+                                obtain_ids << id;    
 
-						break;
-					}
-				default:
-					break;
-				}
+                        break;
+                    }
+                default:
+                    break;
+                }
             }
 
             if (obtain_ids.length() > 0 && room->askForSkillInvoke(player, objectName(), data)) {
@@ -556,9 +556,9 @@ public:
                 room->moveCardsAtomic(mo, true);
             }
 
-		}  
-		
-		 
+        }  
+        
+         
         return false;
     }
 };
@@ -569,64 +569,64 @@ public:
     soujiRecord() : TriggerSkill("#souji") {
         events << CardsMoveOneTime << BeforeCardsMove;
     }
-	
-	virtual int getPriority(TriggerEvent) const{
+    
+    virtual int getPriority(TriggerEvent) const{
         return -1;
     }
-	
-	virtual bool triggerable(const ServerPlayer *target) const{
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
         return (target != NULL);
     }
-	
+    
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-		CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-		if (triggerEvent == BeforeCardsMove){
-			if (move.to_place != Player::PlaceTable)
-				return false;
-			
-			if  (move.reason.m_reason == CardMoveReason::S_REASON_RETRIAL || move.reason.m_reason == CardMoveReason::S_REASON_USE
-					||	move.reason.m_reason == CardMoveReason::S_REASON_LETUSE || move.reason.m_reason == CardMoveReason::S_REASON_RESPONSE)
-			{
-				QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
-				QVariantList tmp_ids = room->getTag("UseOrResponseFromPile").toList();
-				//QList<int> tmp_ids
-				QList<int> pile_ids;
-				foreach(int id, move.card_ids){
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        if (triggerEvent == BeforeCardsMove){
+            if (move.to_place != Player::PlaceTable)
+                return false;
+            
+            if  (move.reason.m_reason == CardMoveReason::S_REASON_RETRIAL || move.reason.m_reason == CardMoveReason::S_REASON_USE
+                    ||    move.reason.m_reason == CardMoveReason::S_REASON_LETUSE || move.reason.m_reason == CardMoveReason::S_REASON_RESPONSE)
+            {
+                QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
+                QVariantList tmp_ids = room->getTag("UseOrResponseFromPile").toList();
+                //QList<int> tmp_ids
+                QList<int> pile_ids;
+                foreach(int id, move.card_ids){
                     if (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceHand && move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceEquip)
-						pile_ids << id;
-				}
-				foreach (int id, pile_ids) {
-					//check ocurrence	
-					bool ocurrence = false;
-					foreach(QVariant card_data, record_ids) {
-							int card_id = card_data.toInt();
-							if (card_id == id){
-								ocurrence = true;
-								break;
-							}
-					}
-					if (!ocurrence)
-						tmp_ids << id;
-				}
-				//room->setTag("UseOrResponseFromPile", IntList2VariantList(tmp_ids));
-				room->setTag("UseOrResponseFromPile", tmp_ids);
-			}		
-		}
-		else if (triggerEvent == CardsMoveOneTime){
-			QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
-			
-			QVariantList tmp_ids = room->getTag("UseOrResponseFromPile").toList();
-			foreach(int id, move.card_ids){
+                        pile_ids << id;
+                }
+                foreach (int id, pile_ids) {
+                    //check ocurrence    
+                    bool ocurrence = false;
+                    foreach(QVariant card_data, record_ids) {
+                            int card_id = card_data.toInt();
+                            if (card_id == id){
+                                ocurrence = true;
+                                break;
+                            }
+                    }
+                    if (!ocurrence)
+                        tmp_ids << id;
+                }
+                //room->setTag("UseOrResponseFromPile", IntList2VariantList(tmp_ids));
+                room->setTag("UseOrResponseFromPile", tmp_ids);
+            }        
+        }
+        else if (triggerEvent == CardsMoveOneTime){
+            QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
+            
+            QVariantList tmp_ids = room->getTag("UseOrResponseFromPile").toList();
+            foreach(int id, move.card_ids){
                 if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceTable){
-					foreach(QVariant card_data, record_ids){
-						int card_id = card_data.toInt();
-						if (card_id == id)
-							tmp_ids.removeOne(id);
-					}
-				}
-			}
-			room->setTag("UseOrResponseFromPile", tmp_ids);
-		}
+                    foreach(QVariant card_data, record_ids){
+                        int card_id = card_data.toInt();
+                        if (card_id == id)
+                            tmp_ids.removeOne(id);
+                    }
+                }
+            }
+            room->setTag("UseOrResponseFromPile", tmp_ids);
+        }
         return false;
     }
 };
@@ -893,9 +893,9 @@ th12Package::th12Package()
 
     General *xlc006 = new General(this, "xlc006", "xlc", 3, false);
     xlc006->addSkill(new souji);
-	xlc006->addSkill(new soujiRecord);
+    xlc006->addSkill(new soujiRecord);
     xlc006->addSkill(new tansuo);
-	related_skills.insertMulti("souji", "#souji");
+    related_skills.insertMulti("souji", "#souji");
 
     General *xlc007 = new General(this, "xlc007", "xlc", 3, false);
     xlc007->addSkill(new yiwang);

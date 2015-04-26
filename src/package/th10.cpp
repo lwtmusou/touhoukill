@@ -114,7 +114,7 @@ public:
 class shendevs : public ViewAsSkill {
 public:
     shendevs() : ViewAsSkill("shende") {
-		response_or_use = true;
+        response_or_use = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -133,15 +133,15 @@ public:
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
-		if (selected.length()>=2)
-			return false;
+        if (selected.length()>=2)
+            return false;
         return Self->getPile("shende").contains(to_select->getEffectiveId());
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if (cards.length() != 2)
             return NULL;
-		Peach *peach = new Peach(Card::SuitToBeDecided, -1);
+        Peach *peach = new Peach(Card::SuitToBeDecided, -1);
         peach->addSubcards(cards);
         peach->setSkillName("shende");
         return peach;
@@ -779,22 +779,22 @@ public:
     }
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == EventPhaseChanging){
-			foreach(ServerPlayer *p, room->getAlivePlayers()){
-				if (p->getMark("@qiji") > 0)
+            foreach(ServerPlayer *p, room->getAlivePlayers()){
+                if (p->getMark("@qiji") > 0)
                 room->setPlayerMark(p, "@qiji", 0);
-			}
-		}
-		if (triggerEvent == PreCardUsed){
-			 CardUseStruct use = data.value<CardUseStruct>();
-			if (use.card->getSkillName() == "qiji"){
-				use.from->gainMark("@qiji");
-			}
-		}
-		if (triggerEvent == CardResponded){
-			CardStar card_star = data.value<CardResponseStruct>().m_card;
-			if (card_star->getSkillName() == "qiji")
-				player->gainMark("@qiji");
-		}
+            }
+        }
+        if (triggerEvent == PreCardUsed){
+             CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->getSkillName() == "qiji"){
+                use.from->gainMark("@qiji");
+            }
+        }
+        if (triggerEvent == CardResponded){
+            CardStar card_star = data.value<CardResponseStruct>().m_card;
+            if (card_star->getSkillName() == "qiji")
+                player->gainMark("@qiji");
+        }
         return false;
     }
 };
@@ -1037,28 +1037,28 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *hina = room->findPlayerBySkillName(objectName());
         if (hina && damage.to != hina ){
-			QString prompt;
-			QString nature;
-			switch (damage.nature) {
-				case DamageStruct::Normal: nature = "normal_nature"; break;
-				case DamageStruct::Fire: nature = "fire_nature"; break;
-				case DamageStruct::Thunder: nature = "thunder_nature"; break;
-				case DamageStruct::Ice: nature = "ice_nature"; break;
-			}
-			
-			if (damage.from)
-				prompt = "transfer1:" + damage.to->objectName()+ ":" + damage.from->objectName() + ":" + QString::number(damage.damage) + ":" + nature;
-			else
-				prompt = "transfer2:" + damage.to->objectName()  + ":" + QString::number(damage.damage) + ":" + nature;
-			hina->tag["jie_damage"] = data;	
-			if (room->askForSkillInvoke(hina, objectName(), prompt)){
-				hina->drawCards(1);
-				damage.to = hina;
+            QString prompt;
+            QString nature;
+            switch (damage.nature) {
+                case DamageStruct::Normal: nature = "normal_nature"; break;
+                case DamageStruct::Fire: nature = "fire_nature"; break;
+                case DamageStruct::Thunder: nature = "thunder_nature"; break;
+                case DamageStruct::Ice: nature = "ice_nature"; break;
+            }
+            
+            if (damage.from)
+                prompt = "transfer1:" + damage.to->objectName()+ ":" + damage.from->objectName() + ":" + QString::number(damage.damage) + ":" + nature;
+            else
+                prompt = "transfer2:" + damage.to->objectName()  + ":" + QString::number(damage.damage) + ":" + nature;
+            hina->tag["jie_damage"] = data;    
+            if (room->askForSkillInvoke(hina, objectName(), prompt)){
+                hina->drawCards(1);
+                damage.to = hina;
                 damage.transfer = true;
                 room->damage(damage);
-				return true;
-			}
-		}
+                return true;
+            }
+        }
         return false;
     }
 };
@@ -1068,32 +1068,32 @@ public:
     liuxing() : TriggerSkill("liuxing") {
         events << EventPhaseStart;
     }
-	
-	virtual bool triggerable(const ServerPlayer *target) const{
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
         return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         
-		if (player->getPhase() == Player::Finish ){
+        if (player->getPhase() == Player::Finish ){
             ServerPlayer *hina = room->findPlayerBySkillName(objectName());
-			if (hina && hina != player && hina->isWounded() && !hina->isKongcheng()){
-				const Card *card = room->askForCard(hina, ".|black|.|hand", "@liuxing:" + player->objectName(), data, Card::MethodNone,player, false, objectName());
-				if (card){
-					room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, hina->objectName(), player->objectName());
-					room->notifySkillInvoked(hina, objectName());
-					room->touhouLogmessage("#InvokeSkill", hina, objectName());
-					
-					room->obtainCard(player, card, true);
-					//need add player information to help ai  make decision 
-					player->tag["liuxing_source"] = QVariant::fromValue(hina);
-					QString choice = room->askForChoice(player, objectName(), "losehp+recover",QVariant::fromValue(hina));
-					if (choice == "losehp")
-						room->loseHp(player, 1);
-					else
-						room->recover(hina, RecoverStruct());
-				}
-			}
+            if (hina && hina != player && hina->isWounded() && !hina->isKongcheng()){
+                const Card *card = room->askForCard(hina, ".|black|.|hand", "@liuxing:" + player->objectName(), data, Card::MethodNone,player, false, objectName());
+                if (card){
+                    room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, hina->objectName(), player->objectName());
+                    room->notifySkillInvoked(hina, objectName());
+                    room->touhouLogmessage("#InvokeSkill", hina, objectName());
+                    
+                    room->obtainCard(player, card, true);
+                    //need add player information to help ai  make decision 
+                    player->tag["liuxing_source"] = QVariant::fromValue(hina);
+                    QString choice = room->askForChoice(player, objectName(), "losehp+recover",QVariant::fromValue(hina));
+                    if (choice == "losehp")
+                        room->loseHp(player, 1);
+                    else
+                        room->recover(hina, RecoverStruct());
+                }
+            }
         }
         return false;
     }
@@ -1133,8 +1133,8 @@ public:
                 room->setPlayerMark(p, "changshi", 1); // real mark for   Player::hasSkill()
                 room->filterCards(p, p->getCards("he"), true);
                 Json::Value args;
-				args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
-				room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+                args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+                room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
                 /*if (p->getMark("zhouye_limit") > 0){
                     room->setPlayerMark(p, "zhouye_limit", 0);
                     room->removePlayerCardLimitation(p, "use", "Slash$0");
@@ -1151,9 +1151,9 @@ public:
 
             }
             foreach(ServerPlayer *p, room->getOtherPlayers(player)){
-				p->gainMark("@changshi");
-			}
-			
+                p->gainMark("@changshi");
+            }
+            
             QStringList marks;
             marks << "@an" << "@bian" << "@clock" << "@kinki" << "@qiannian" << "@shi" << "@ye" << "@yu" << "@zhengti"
                 << "@huanyue" << "@kuangqi" << "@in_jiejie";
@@ -1194,7 +1194,7 @@ public:
             foreach(ServerPlayer *p, room->getOtherPlayers(player)){
                 room->setPlayerMark(p, "changshi", 0);
                 room->filterCards(p, p->getCards("he"), true);
-				Json::Value args;
+                Json::Value args;
                 args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
                 /*if (p->hasSkill("zhouye") && p->getMark("zhouye_limit") == 0){
@@ -1210,9 +1210,9 @@ public:
                     room->setPlayerCardLimitation(p, "use", "TrickCard+^DelayedTrick", false);
                 }*/
             }
-			foreach(ServerPlayer *p, room->getOtherPlayers(player)){
-				p->loseMark("@changshi",1);
-			}
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+                p->loseMark("@changshi",1);
+            }
         }
         return false;
     }
@@ -1228,42 +1228,42 @@ public:
         if (triggerEvent == BeforeCardsMove){
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.from && move.from_places.contains(Player::PlaceHand) && move.from == player){
-				if (player->hasFlag("jinian_used"))
+                if (player->hasFlag("jinian_used"))
                     return false;
-				if (move.to_place != Player::PlaceJudge && move.to_place != Player::PlaceTable
-				&& move.to_place != Player::DiscardPile)
-					return false;
-				//special fakemove??
+                if (move.to_place != Player::PlaceJudge && move.to_place != Player::PlaceTable
+                && move.to_place != Player::DiscardPile)
+                    return false;
+                //special fakemove??
                 QVariantList record_ids = player->tag["jinian"].toList(); 
-				QVariantList tmp_ids = player->tag["jinian"].toList(); 
-				QList<int> h_ids;
-				foreach(int id, move.card_ids){
+                QVariantList tmp_ids = player->tag["jinian"].toList(); 
+                QList<int> h_ids;
+                foreach(int id, move.card_ids){
                     if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand )
-						h_ids << id;
-				}
-				
-				//is the last cards
-				if (move.from->getHandcardNum() <= h_ids.length()){
-					foreach (int id, h_ids) {
-						//check ocurrence	
-						bool ocurrence = false;
-						foreach(QVariant card_data, record_ids) {
-							int card_id = card_data.toInt();
-							if (card_id == id){
-								ocurrence = true;
-								break;
-							}
-						}
-						if (!ocurrence){
-							tmp_ids << id;
-						}
-					
-					}
-					//record ids before move 
-					player->tag["jinian"] = tmp_ids;
-				}
-				
-				
+                        h_ids << id;
+                }
+                
+                //is the last cards
+                if (move.from->getHandcardNum() <= h_ids.length()){
+                    foreach (int id, h_ids) {
+                        //check ocurrence    
+                        bool ocurrence = false;
+                        foreach(QVariant card_data, record_ids) {
+                            int card_id = card_data.toInt();
+                            if (card_id == id){
+                                ocurrence = true;
+                                break;
+                            }
+                        }
+                        if (!ocurrence){
+                            tmp_ids << id;
+                        }
+                    
+                    }
+                    //record ids before move 
+                    player->tag["jinian"] = tmp_ids;
+                }
+                
+                
 
             }
         }
@@ -1271,75 +1271,75 @@ public:
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (player->hasFlag("jinian_used"))
                 return false;
-			if (player->isDead())
+            if (player->isDead())
                 return false;
-			
-			QVariantList ids = player->tag["jinian"].toList();
-			QList<int> get_ids;
-			QList<int> delete_ids;
+            
+            QVariantList ids = player->tag["jinian"].toList();
+            QList<int> get_ids;
+            QList<int> delete_ids;
             foreach(QVariant card_data, ids) {
                 int card_id = card_data.toInt();
-				if (move.card_ids.contains(card_id)){
-					Player::Place place = room->getCardPlace(card_id);
-					if (place == Player::DiscardPile){
-						get_ids << card_id;
-					}
-					else if (place == Player::PlaceHand || place == Player::PlaceEquip || place == Player::PlaceDelayedTrick
-						||place == Player::PlaceSpecial ||place == Player::DrawPile){
-						delete_ids << card_id; 
-					}
-				}
+                if (move.card_ids.contains(card_id)){
+                    Player::Place place = room->getCardPlace(card_id);
+                    if (place == Player::DiscardPile){
+                        get_ids << card_id;
+                    }
+                    else if (place == Player::PlaceHand || place == Player::PlaceEquip || place == Player::PlaceDelayedTrick
+                        ||place == Player::PlaceSpecial ||place == Player::DrawPile){
+                        delete_ids << card_id; 
+                    }
+                }
             }
-			if (delete_ids.length() > 0){
-				foreach (int id, delete_ids)
-					ids.removeOne(id);
-				player->tag["jinian"] = ids;
-			}
-			if (get_ids.length() == 0)
-				return false;
-			//need check from 
-			bool delete_get_ids = false;
-			if (move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE || move.reason.m_reason == CardMoveReason::S_REASON_OVERRIDE
-			|| move.reason.m_reason == CardMoveReason::S_REASON_USE || move.reason.m_reason == CardMoveReason::S_REASON_RESPONSE){
-				
-				if (!move.from)
-					delete_get_ids = true;
-				ServerPlayer *provider = move.reason.m_provider.value<ServerPlayer *>();
-				if (provider){
-					if  (player != provider)
-						delete_get_ids = true;
-				}
-				else if (move.from != player)
-					delete_get_ids = true;
-			}
-			else {
-				if (!move.from || move.from != player )
-					delete_get_ids = true;
-			}
-			if (delete_get_ids){
-				foreach (int id, get_ids)
-					ids.removeOne(id);
-				player->tag["jinian"] = ids;
-				return false;
-			}
-			
-				
+            if (delete_ids.length() > 0){
+                foreach (int id, delete_ids)
+                    ids.removeOne(id);
+                player->tag["jinian"] = ids;
+            }
+            if (get_ids.length() == 0)
+                return false;
+            //need check from 
+            bool delete_get_ids = false;
+            if (move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE || move.reason.m_reason == CardMoveReason::S_REASON_OVERRIDE
+            || move.reason.m_reason == CardMoveReason::S_REASON_USE || move.reason.m_reason == CardMoveReason::S_REASON_RESPONSE){
+                
+                if (!move.from)
+                    delete_get_ids = true;
+                ServerPlayer *provider = move.reason.m_provider.value<ServerPlayer *>();
+                if (provider){
+                    if  (player != provider)
+                        delete_get_ids = true;
+                }
+                else if (move.from != player)
+                    delete_get_ids = true;
+            }
+            else {
+                if (!move.from || move.from != player )
+                    delete_get_ids = true;
+            }
+            if (delete_get_ids){
+                foreach (int id, get_ids)
+                    ids.removeOne(id);
+                player->tag["jinian"] = ids;
+                return false;
+            }
+            
+                
             if (room->askForSkillInvoke(player, objectName(), data)){
-				player->setFlags("jinian_used");
+                player->setFlags("jinian_used");
                    
-				CardsMoveStruct mo;
-				mo.card_ids = get_ids;
+                CardsMoveStruct mo;
+                mo.card_ids = get_ids;
                 mo.to = player;
                 mo.to_place = Player::PlaceHand;
                 room->moveCardsAtomic(mo, true);
             }
-			if (player->hasFlag("jinian_used"))
-				player->tag.remove("jinian");
-			else{ 
-				foreach (int id, get_ids)
-					ids.removeOne(id);
-				player->tag["jinian"] = ids;
-			}
+            if (player->hasFlag("jinian_used"))
+                player->tag.remove("jinian");
+            else{ 
+                foreach (int id, get_ids)
+                    ids.removeOne(id);
+                player->tag["jinian"] = ids;
+            }
         }
         return false;
     }
@@ -1353,16 +1353,16 @@ public:
     virtual bool triggerable(const ServerPlayer *target) const{
         return target != NULL;
     }
-	
-	
+    
+    
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == EventPhaseChanging){
-			foreach(ServerPlayer *p, room->getAlivePlayers()){
-				p->tag.remove("jinian");
-				if (p->hasFlag("jinian_used"))
-					p->setFlags("-jinian_used");
-			}
-		}
+            foreach(ServerPlayer *p, room->getAlivePlayers()){
+                p->tag.remove("jinian");
+                if (p->hasFlag("jinian_used"))
+                    p->setFlags("-jinian_used");
+            }
+        }
         return false;
     }
 };
@@ -1783,8 +1783,8 @@ th10Package::th10Package()
     General *fsl006 = new General(this, "fsl006", "fsl", 3, false);
     //fsl006->addSkill(new zaihuo);
     fsl006->addSkill(new jie);
-	fsl006->addSkill(new liuxing);
-	
+    fsl006->addSkill(new liuxing);
+    
     General *fsl007 = new General(this, "fsl007", "fsl", 3, false);
     fsl007->addSkill(new changshi);
     fsl007->addSkill(new jinian);

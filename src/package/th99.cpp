@@ -726,14 +726,14 @@ public:
 
             if (back->isAlive()){
                 //room->handleAcquireDetachSkills(back, back_skillname);
-				room->setPlayerMark(back, "pingyi"+back_skillname, 0); 
-				Json::Value args;
+                room->setPlayerMark(back, "pingyi"+back_skillname, 0); 
+                Json::Value args;
                 args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
-				back->loseMark("@pingyi",1);
-				if (back->hasSkill(back_skillname))
-					room->touhouLogmessage("#pingyiReturnSkill", back, back_skillname);
-			}
+                back->loseMark("@pingyi",1);
+                if (back->hasSkill(back_skillname))
+                    room->touhouLogmessage("#pingyiReturnSkill", back, back_skillname);
+            }
         }
 
     }
@@ -778,17 +778,17 @@ public:
                 
                 room->setPlayerMark(player, "pingyi_steal", 1);
                 //room->setPlayerMark(damage.from, "pingyi", damage.from->getMark("pingyi") + 1);//it can be stealed any times.
-				room->setPlayerMark(damage.from, "pingyi"+skill_name, 1); // skill nullify mark, like Qingcheng
+                room->setPlayerMark(damage.from, "pingyi"+skill_name, 1); // skill nullify mark, like Qingcheng
                 //room->handleAcquireDetachSkills(damage.from, "-" + skill_name);
                 room->handleAcquireDetachSkills(player, skill_name);
-				
-				Json::Value args;
+                
+                Json::Value args;
                 args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
-				
+                
                 damage.from->gainMark("@pingyi"); // marks could be greater than 1,since it can be stealed any times.
                 room->touhouLogmessage("#pingyiLoseSkill", damage.from, skill_name);
-				
+                
                 Json::Value arg(Json::arrayValue);
                 arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
                 arg[1] = QSanProtocol::Utils::toJsonString(player->objectName());
@@ -1056,7 +1056,7 @@ public:
     ganying_handle() : TriggerSkill("#ganying_handle") {
         events << EventAcquireSkill << EventLoseSkill << HpChanged << Death << CardsMoveOneTime 
         << MarkChanged;
-		//<< EventPhaseChanging
+        //<< EventPhaseChanging
     }
 
     static void ganying_effect(ServerPlayer *player, QList<ServerPlayer *> targets){
@@ -1079,10 +1079,10 @@ public:
                 return false;
         }
         if (triggerEvent ==MarkChanged){
-			MarkChangeStruct change = data.value<MarkChangeStruct>();
-			if (change.name != "@pingyi" && change.name != "@changshi")
-				return false;
-		}
+            MarkChangeStruct change = data.value<MarkChangeStruct>();
+            if (change.name != "@pingyi" && change.name != "@changshi")
+                return false;
+        }
         foreach(ServerPlayer *p, room->getAlivePlayers()){
             if (p->getMark("ganying_owner") > 0){//cause skill "changshi", we need record distance any time.
                 bool distance_change_one_time = false;

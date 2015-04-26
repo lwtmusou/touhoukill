@@ -21,9 +21,9 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == EventPhaseChanging){
-			PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-			if (change.to == Player::NotActive){
-				if (player->hasFlag("rexueDeath")) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive){
+                if (player->hasFlag("rexueDeath")) {
                     room->setPlayerFlag(player, "-rexueDeath");
                     return false;
                 }
@@ -34,22 +34,22 @@ public:
                 }
                 if (room->canInsertExtraTurn())
                     player->tag["RexueInvoke"] = QVariant::fromValue(true);
-			}
-		}
+            }
+        }
         
         else if (triggerEvent == EventPhaseStart && player->getPhase() == Player::NotActive ){
             bool rexue = player->tag["RexueInvoke"].toBool();
             player->tag["RexueInvoke"] = QVariant::fromValue(false);
             if (rexue && player->getHp() == 1){
-				room->touhouLogmessage("#TriggerSkill", player, "rexue");
-				room->notifySkillInvoked(player, "rexue");
-				room->recover(player, RecoverStruct());
+                room->touhouLogmessage("#TriggerSkill", player, "rexue");
+                room->notifySkillInvoked(player, "rexue");
+                room->recover(player, RecoverStruct());
 
-				if (room->canInsertExtraTurn()) {
-					room->touhouLogmessage("#touhouExtraTurn", player, objectName());
-					player->gainAnExtraTurn();
-				}	
-			} 
+                if (room->canInsertExtraTurn()) {
+                    room->touhouLogmessage("#touhouExtraTurn", player, objectName());
+                    player->gainAnExtraTurn();
+                }    
+            } 
         }
         return false;
     }
@@ -70,12 +70,12 @@ public:
             if (death.who != player)
                 return false;
             //room->setTag("rexue_count", true);
-			ServerPlayer *source = room->findPlayerBySkillName("rexue");
-			if (room->getCurrent() == source){
-				if (source->getMark("touhou-extra") > 0)
-					return false;
-				room->setPlayerFlag(source, "rexueDeath");
-			}
+            ServerPlayer *source = room->findPlayerBySkillName("rexue");
+            if (room->getCurrent() == source){
+                if (source->getMark("touhou-extra") > 0)
+                    return false;
+                room->setPlayerFlag(source, "rexueDeath");
+            }
         }
         return false;
     }
@@ -108,7 +108,7 @@ public:
                     int card_id = room->askForCardChosen(player, target, "je", objectName(), false, Card::MethodDiscard, disable);
                     room->throwCard(card_id, target, player);
                     player->drawCards(1);
-					room->damage(DamageStruct(objectName(), player, player, 1, DamageStruct::Fire));
+                    room->damage(DamageStruct(objectName(), player, player, 1, DamageStruct::Fire));
                 }
             }
         }
@@ -120,7 +120,7 @@ class tymhwuyu : public TriggerSkill {
 public:
     tymhwuyu() : TriggerSkill("tymhwuyu$") {
         events << Death;
-		skill_property = "noKingdom";
+        skill_property = "noKingdom";
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -226,19 +226,19 @@ public:
         ServerPlayer *source = room->findPlayerBySkillName("huanyue");
         if (source && source != damage.to && damage.to->canDiscard(source, "h")){
             QString prompt = "target:" + damage.to->objectName() + ":" + damage.card->objectName();
-			source->tag["huanyue_damage"] = data;
-			if (room->askForSkillInvoke(source, objectName(), prompt)){
-				room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), damage.to->objectName());
-				int card_id = room->askForCardChosen(damage.to, source, "h", objectName(), false, Card::MethodDiscard);
-				room->throwCard(card_id, source, damage.to);
-				if (Sanguosha->getCard(card_id)->isBlack()){
-					QList<ServerPlayer *>logto;
-					logto << damage.to;
-					room->touhouLogmessage("#huanyue_log", damage.from, QString::number(damage.damage), logto, QString::number(damage.damage + 1));
-					damage.damage = damage.damage + 1;
-					data = QVariant::fromValue(damage);
-				}
-			}
+            source->tag["huanyue_damage"] = data;
+            if (room->askForSkillInvoke(source, objectName(), prompt)){
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), damage.to->objectName());
+                int card_id = room->askForCardChosen(damage.to, source, "h", objectName(), false, Card::MethodDiscard);
+                room->throwCard(card_id, source, damage.to);
+                if (Sanguosha->getCard(card_id)->isBlack()){
+                    QList<ServerPlayer *>logto;
+                    logto << damage.to;
+                    room->touhouLogmessage("#huanyue_log", damage.from, QString::number(damage.damage), logto, QString::number(damage.damage + 1));
+                    damage.damage = damage.damage + 1;
+                    data = QVariant::fromValue(damage);
+                }
+            }
         }
         return false;
     }
@@ -264,21 +264,21 @@ public:
                 }
             }
         }
-		else{//set cardused flag to current player
-			ServerPlayer *current = room->getCurrent();
-			if (player != current)
-				return false;
-			if (triggerEvent == CardUsed){
-				CardUseStruct use = data.value<CardUseStruct>();
-				if (use.card->isKindOf("BasicCard") || use.card->isKindOf("TrickCard"))
-					player->setFlags("sizhai");
-			}
-			else if (triggerEvent == CardResponded) {
-				CardStar card_star = data.value<CardResponseStruct>().m_card;
-				if (card_star->isKindOf("BasicCard") || card_star->isKindOf("TrickCard") )
-					player->setFlags("sizhai");
-			}
-		}
+        else{//set cardused flag to current player
+            ServerPlayer *current = room->getCurrent();
+            if (player != current)
+                return false;
+            if (triggerEvent == CardUsed){
+                CardUseStruct use = data.value<CardUseStruct>();
+                if (use.card->isKindOf("BasicCard") || use.card->isKindOf("TrickCard"))
+                    player->setFlags("sizhai");
+            }
+            else if (triggerEvent == CardResponded) {
+                CardStar card_star = data.value<CardResponseStruct>().m_card;
+                if (card_star->isKindOf("BasicCard") || card_star->isKindOf("TrickCard") )
+                    player->setFlags("sizhai");
+            }
+        }
         return false;
     }
 };

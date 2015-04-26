@@ -447,7 +447,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             dashboard->expandPileCards("piao");
         if (ClientInstance->getStatus() == Client::Playing && skill_name == "feitou")
             dashboard->expandPileCards("feitou");
-		if (ClientInstance->getStatus() == Client::Playing && skill_name == "shende")
+        if (ClientInstance->getStatus() == Client::Playing && skill_name == "shende")
             dashboard->expandPileCards("shende");
         break;
     }
@@ -475,7 +475,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             dashboard->retractPileCards("piao");
         if (skill_name == "feitou")
             dashboard->retractPileCards("feitou");
-		if (skill_name == "shende")
+        if (skill_name == "shende")
             dashboard->retractPileCards("shende");
         break;
     }
@@ -1121,7 +1121,7 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats) {
     }
 
    
-	QList<QString> names = name2photo.keys();
+    QList<QString> names = name2photo.keys();
     foreach(const QString &who, names) {
         if (m_bubbleChatBoxs.contains(who)) {
             m_bubbleChatBoxs[who]->setArea(getBubbleChatBoxShowArea(who));
@@ -2286,7 +2286,7 @@ void RoomScene::useSelectedCard() {
         dashboard->retractPileCards("wooden_ox");
         dashboard->retractPileCards("piao");
         dashboard->retractPileCards("feitou");
-		dashboard->retractPileCards("shende");
+        dashboard->retractPileCards("shende");
     }
 }
 
@@ -2891,7 +2891,7 @@ void RoomScene::startInXs() {
 void RoomScene::changeTableBg() {
 
     QRectF displayRegion = sceneRect();
-    QPixmap	tableBg = QPixmap(Config.TableBgImage)
+    QPixmap    tableBg = QPixmap(Config.TableBgImage)
         .scaled(displayRegion.width(), displayRegion.height() + 5,
         Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     m_tableh -= _m_roomLayout->m_photoDashboardPadding;
@@ -3756,18 +3756,18 @@ void RoomScene::onGameStart() {
     if (lord_kingdom != NULL && lord_name != NULL
         && Sanguosha->TouhouKingdoms.contains(lord_kingdom)) {
         bool changeBGM = Config.value("UseLordBGM", true).toBool();
-		bool changeBackdrop = Config.value("UseLordBackdrop", true).toBool();
-		if (changeBGM)
-			bgmusic_path = "audio/bgm/" + lord_name + ".ogg";
+        bool changeBackdrop = Config.value("UseLordBackdrop", true).toBool();
+        if (changeBGM)
+            bgmusic_path = "audio/bgm/" + lord_name + ".ogg";
         if (changeBackdrop)
-			image_path = "backdrop/" + lord_name + ".jpg";
+            image_path = "backdrop/" + lord_name + ".jpg";
     }
     
 
     if ((image_path != "") && QFile::exists(image_path))
         changeTableBg(image_path);
     if (Config.EnableBgMusic) {
-        // start playing background music 	
+        // start playing background music     
         Audio::playBGM(bgmusic_path);
 
         Audio::setBGMVolume(Config.BGMVolume);
@@ -4150,7 +4150,7 @@ void RoomScene::fillGenerals1v1(const QStringList &names) {
         general_item->setParentItem(selector_box);
         general_item->setPos(start_x + width * column, start_y + height * row);
         general_item->setHomePos(general_item->pos());   
-		general_item->setAcceptedMouseButtons(Qt::LeftButton);
+        general_item->setAcceptedMouseButtons(Qt::LeftButton);
     }
 }
 
@@ -4736,7 +4736,7 @@ bool RoomScene::isHighlightStatus(Client::Status status) {
         return true;
     }
         //case Client::RespondingForDiscard: {
-        //		return true;
+        //        return true;
         // }
 
     default:

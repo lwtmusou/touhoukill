@@ -93,11 +93,11 @@ public:
     // judgement!!! It will not accurately reflect the real reason.
     QString m_skillName; // skill that triggers movement of the cards, such as "longdang", "dimeng"
     QString m_eventName; // additional arg such as "lebusishu" on top of "S_REASON_JUDGE"
-	QVariant m_extraData; // additional data and will not be parsed to clients
-	QVariant m_provider; // additional data recording who provide this card for otherone to use or response, 
+    QVariant m_extraData; // additional data and will not be parsed to clients
+    QVariant m_provider; // additional data recording who provide this card for otherone to use or response, 
 
-	
-	//etc. guanyu provide a slash for "jijiang" 
+    
+    //etc. guanyu provide a slash for "jijiang" 
     inline CardMoveReason() { m_reason = S_REASON_UNKNOWN; }
     inline CardMoveReason(int moveReason, QString playerId) {
         m_reason = moveReason;
@@ -342,7 +342,7 @@ struct JudgeStruct {
     bool time_consuming;
     bool negative;
     bool play_animation;
-	ServerPlayer *retrial_by_response; // record whether the current judge card is provided by a response retrial
+    ServerPlayer *retrial_by_response; // record whether the current judge card is provided by a response retrial
 
 private:
     enum TrialResult {

@@ -53,11 +53,11 @@ public:
                     }
                 }*/
             }else {
-				foreach (ServerPlayer *source, room->findPlayersBySkillName("yongheng")){
+                foreach (ServerPlayer *source, room->findPlayersBySkillName("yongheng")){
                     if (!source->isCurrent())
                         adjustHandcardNum(source, 4, "yongheng");
                 }
-			}
+            }
         } else if (triggerEvent == CardsMoveOneTime && player->hasSkill(objectName())){
             if (player->getPhase() == Player::NotActive){
                 CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
@@ -69,13 +69,13 @@ public:
             if (player->getPhase() == Player::NotActive && player->hasSkill(objectName()))
                 adjustHandcardNum(player, 4, objectName());
         }
-		else if (triggerEvent ==MarkChanged){
-			MarkChangeStruct change = data.value<MarkChangeStruct>();
-			if (change.name != "@pingyi" && change.name != "@changshi")
-				return false;
-			if (player->getPhase() == Player::NotActive && player->hasSkill(objectName()))
-			    adjustHandcardNum(player, 4, objectName());
-		}
+        else if (triggerEvent ==MarkChanged){
+            MarkChangeStruct change = data.value<MarkChangeStruct>();
+            if (change.name != "@pingyi" && change.name != "@changshi")
+                return false;
+            if (player->getPhase() == Player::NotActive && player->hasSkill(objectName()))
+                adjustHandcardNum(player, 4, objectName());
+        }
         return false;
     }
 };
@@ -109,7 +109,7 @@ public:
                 recov.who = player;
                 room->recover(target, recov);
             }
-			else
+            else
                 break;
         }
         return false;
@@ -128,19 +128,19 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == CardEffected){
             CardEffectStruct effect = data.value<CardEffectStruct>();
-			if (effect.card->isNDTrick()){
+            if (effect.card->isNDTrick()){
                 player->tag["ruizhi_effect"] = data;//for ai need damage
-				//when triggerEvent  postcardeffected,the effect card information which is transformed willbe cleared.
-				//we can not find the real name in cardused,if this card is transformed
-				player->setFlags("ruizhi_effect");
+                //when triggerEvent  postcardeffected,the effect card information which is transformed willbe cleared.
+                //we can not find the real name in cardused,if this card is transformed
+                player->setFlags("ruizhi_effect");
             }
         } else if (triggerEvent == PostCardEffected){
             CardEffectStruct effect = data.value<CardEffectStruct>();
             QVariantList ids1 =  player->tag["ruizhi_effect"].toList();
-			if (effect.card->isNDTrick() && effect.to == player
+            if (effect.card->isNDTrick() && effect.to == player
                 && player->isWounded() && player->hasFlag("ruizhi_effect")){
-				player->setFlags("-ruizhi_effect");
-				QString prompt = "invoke:" + effect.card->objectName();
+                player->setFlags("-ruizhi_effect");
+                QString prompt = "invoke:" + effect.card->objectName();
                 if (room->askForSkillInvoke(player, objectName(), prompt)) {
                     JudgeStruct  judge;
                     judge.who = player;
@@ -665,8 +665,8 @@ geshengCard::geshengCard()
 bool geshengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const 
 { 
     if (!targets.isEmpty()) return false; 
-	if (to_select->getPhase() != Player :: Judge) return false;
-	Indulgence *indl = new Indulgence(getSuit(), getNumber());
+    if (to_select->getPhase() != Player :: Judge) return false;
+    Indulgence *indl = new Indulgence(getSuit(), getNumber());
     indl->addSubcard(getEffectiveId());
     indl->setSkillName("gesheng");
     indl->deleteLater();
@@ -675,7 +675,7 @@ bool geshengCard::targetFilter(const QList<const Player *> &targets, const Playe
     if (canUse &&  to_select != Self
         && !to_select->containsTrick("indulgence") && !Self->isProhibited(to_select, indl))
         return true;
-	return false;
+    return false;
 } 
  
  
@@ -700,11 +700,11 @@ public:
         filter_pattern = ".|.|.|hand";
         response_or_use = true;
     }
-	
-	virtual bool isEnabledAtPlay(const Player *player) const{
-		return false;
-	}
-	
+    
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+    
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const {
         if (pattern == "@@gesheng")
             return true;
@@ -715,7 +715,7 @@ public:
         if (originalCard){
             //Indulgence *indl = new Indulgence(originalCard->getSuit(), originalCard->getNumber());
             geshengCard *indl = new geshengCard();
-			indl->addSubcard(originalCard);
+            indl->addSubcard(originalCard);
             indl->setSkillName(objectName());
             return indl;
         }
@@ -750,66 +750,66 @@ class gesheng : public TriggerSkill {
 public:
     gesheng() : TriggerSkill("gesheng") {
         events << EventPhaseChanging <<  EventPhaseStart << EventPhaseEnd ;
-		view_as_skill = new geshengvs;
+        view_as_skill = new geshengvs;
     }
 
-	virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *target) const{
         return (target != NULL);
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         
-		if (triggerEvent == EventPhaseStart && player->getPhase()== Player::Judge){
-			ServerPlayer *src = room->findPlayerBySkillName(objectName());
-			if (!src || src == player)
-				return false;
-			foreach (ServerPlayer *p, room->getAlivePlayers()){
-				foreach (const Card *c, p->getCards("j")){
-					if (c->isKindOf("Indulgence") && c->getSuit() != Card::Diamond)
-						return false;
-				}
-			}
+        if (triggerEvent == EventPhaseStart && player->getPhase()== Player::Judge){
+            ServerPlayer *src = room->findPlayerBySkillName(objectName());
+            if (!src || src == player)
+                return false;
+            foreach (ServerPlayer *p, room->getAlivePlayers()){
+                foreach (const Card *c, p->getCards("j")){
+                    if (c->isKindOf("Indulgence") && c->getSuit() != Card::Diamond)
+                        return false;
+                }
+            }
             if (room->askForSkillInvoke(src, objectName(), QVariant::fromValue(player))){
                 room->setPlayerFlag(src, "gesheng");
-				src->drawCards(2);
-			}
+                src->drawCards(2);
+            }
         }
-		else if (triggerEvent == EventPhaseEnd && player->getPhase()== Player::Judge){
+        else if (triggerEvent == EventPhaseEnd && player->getPhase()== Player::Judge){
             ServerPlayer *src = NULL;
-			foreach (ServerPlayer *p, room->getOtherPlayers(player)){
-				if (p->hasFlag("gesheng")){
-					src = p;
-					break;
-				}
-			}
-			if (!src)
-				return false;
-			bool canuse = true;	
-			if ( player->isDead())
-				canuse = false;
-			Indulgence *indl = new Indulgence(Card::NoSuit, 0);
-			indl->deleteLater();
-			if (src->isCardLimited(indl, Card::MethodUse, true))
-				canuse = false;
-			if (player->containsTrick("indulgence") || src->isProhibited(player, indl))
-				canuse = false;
-			if (canuse){
-				QString prompt = "@gesheng:"+ player->objectName();
-				const Card *card = room->askForUseCard(src, "@@gesheng", prompt);
-				if (!card)
-					room->loseHp(src, 2);
-			}
-			else
-				room->loseHp(src, 2);
+            foreach (ServerPlayer *p, room->getOtherPlayers(player)){
+                if (p->hasFlag("gesheng")){
+                    src = p;
+                    break;
+                }
+            }
+            if (!src)
+                return false;
+            bool canuse = true;    
+            if ( player->isDead())
+                canuse = false;
+            Indulgence *indl = new Indulgence(Card::NoSuit, 0);
+            indl->deleteLater();
+            if (src->isCardLimited(indl, Card::MethodUse, true))
+                canuse = false;
+            if (player->containsTrick("indulgence") || src->isProhibited(player, indl))
+                canuse = false;
+            if (canuse){
+                QString prompt = "@gesheng:"+ player->objectName();
+                const Card *card = room->askForUseCard(src, "@@gesheng", prompt);
+                if (!card)
+                    room->loseHp(src, 2);
+            }
+            else
+                room->loseHp(src, 2);
         }
         else if (triggerEvent == EventPhaseChanging){
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.from == Player::Judge){
-				foreach (ServerPlayer *p, room->getAlivePlayers()){
-					if (p->hasFlag("gesheng"))
-						room->setPlayerFlag(p, "-gesheng");
-				}
-			}  
+                foreach (ServerPlayer *p, room->getAlivePlayers()){
+                    if (p->hasFlag("gesheng"))
+                        room->setPlayerFlag(p, "-gesheng");
+                }
+            }  
         }
         return false;
     }
@@ -1296,7 +1296,7 @@ th08Package::th08Package()
     addMetaObject<kuangzaoCard>();
     //addMetaObject<huanshiCard>();
     addMetaObject<buxianCard>();
-	addMetaObject<geshengCard>();
+    addMetaObject<geshengCard>();
     addMetaObject<chuangshiCard>();
     addMetaObject<huweiCard>();
     addMetaObject<jinxiCard>();

@@ -84,7 +84,7 @@ public:
     bool EnableEffects;
     bool EnableLastWord;
     bool EnableBgMusic;
-	bool UseLordBGM;
+    bool UseLordBGM;
     float BGMVolume;
     float EffectVolume;
 

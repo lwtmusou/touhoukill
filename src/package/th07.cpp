@@ -695,60 +695,60 @@ public:
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (player->getPhase() == Player::Start && room->askForSkillInvoke(player, objectName(), data)){
-			QList<int> list = room->getNCards(5);
-			QList<int> able;
+            QList<int> list = room->getNCards(5);
+            QList<int> able;
             QList<int> disabled;
-			foreach(int id, list){
+            foreach(int id, list){
                 Card *tmp_card = Sanguosha->getCard(id);
                 if (tmp_card->isKindOf("EquipCard")){
                     able << id;
                 }
                 else{
-					foreach(const Card *c, player->getCards("e")){
-						if (c->getSuit() == tmp_card->getSuit()){
-							disabled << id;
-							break;
-						}
-					}
-					if (!disabled.contains(id)) 
-						able << id;
-				}
+                    foreach(const Card *c, player->getCards("e")){
+                        if (c->getSuit() == tmp_card->getSuit()){
+                            disabled << id;
+                            break;
+                        }
+                    }
+                    if (!disabled.contains(id)) 
+                        able << id;
+                }
             }
-			room->fillAG(list, NULL, disabled);
-			QStringList cardinfo;
+            room->fillAG(list, NULL, disabled);
+            QStringList cardinfo;
             //for log
-			foreach(int id, list){
-				cardinfo << Sanguosha->getCard(id)->toString();
-			}
-			LogMessage mes;
-			mes.type = "$TurnOver";
-			mes.from = player;
-			mes.card_str = cardinfo.join("+");
-			room->sendLog(mes);
-			
-			int obtainId = -1;
-			if (able.length()>0){
-				obtainId = room->askForAG(player, able, true, objectName());
-				if (obtainId != -1)
-					room->obtainCard(player, obtainId, true);
-			}
-			//
-			room->getThread()->delay(1000);
+            foreach(int id, list){
+                cardinfo << Sanguosha->getCard(id)->toString();
+            }
+            LogMessage mes;
+            mes.type = "$TurnOver";
+            mes.from = player;
+            mes.card_str = cardinfo.join("+");
+            room->sendLog(mes);
             
-			//throw other cards
-			DummyCard *dummy = new DummyCard;
-			foreach(int id, list){
+            int obtainId = -1;
+            if (able.length()>0){
+                obtainId = room->askForAG(player, able, true, objectName());
+                if (obtainId != -1)
+                    room->obtainCard(player, obtainId, true);
+            }
+            //
+            room->getThread()->delay(1000);
+            
+            //throw other cards
+            DummyCard *dummy = new DummyCard;
+            foreach(int id, list){
                 if (id != obtainId)
                     dummy->addSubcard(id);
             }
-			if (dummy->getSubcards().length() > 0){
+            if (dummy->getSubcards().length() > 0){
                 CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), objectName(), "");
                 room->throwCard(dummy, reason, NULL);   
             }
-			
-			
-			room->clearAG();
-		}
+            
+            
+            room->clearAG();
+        }
         return false;
     }
 };
@@ -794,40 +794,40 @@ class zhanzhen : public TriggerSkill {
 public:
     zhanzhen() : TriggerSkill("zhanzhen") {
         events  << CardsMoveOneTime;
-		view_as_skill = new zhanzhenvs;
+        view_as_skill = new zhanzhenvs;
     }
 
-	
+    
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-		if (triggerEvent == CardsMoveOneTime){
-			CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>(); 
-			// move.from_places.contains(Player::PlaceTable)
-			if (move.card_ids.length() == 1 && move.to_place == Player::DiscardPile 
-				 //(move.reason.m_reason == CardMoveReason::S_REASON_USE || move.reason.m_reason == CardMoveReason::S_REASON_RESPONSE
-				) {
-				// only use or response will add the extradata 
-				//if it exist, we need not check the move reason again?				
-				const Card *card = move.reason.m_extraData.value<const Card *>();
-				const Card *realcard = Sanguosha->getEngineCard(move.card_ids.first());
-				ServerPlayer *provider = move.reason.m_provider.value<ServerPlayer *>();
+        if (triggerEvent == CardsMoveOneTime){
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>(); 
+            // move.from_places.contains(Player::PlaceTable)
+            if (move.card_ids.length() == 1 && move.to_place == Player::DiscardPile 
+                 //(move.reason.m_reason == CardMoveReason::S_REASON_USE || move.reason.m_reason == CardMoveReason::S_REASON_RESPONSE
+                ) {
+                // only use or response will add the extradata 
+                //if it exist, we need not check the move reason again?                
+                const Card *card = move.reason.m_extraData.value<const Card *>();
+                const Card *realcard = Sanguosha->getEngineCard(move.card_ids.first());
+                ServerPlayer *provider = move.reason.m_provider.value<ServerPlayer *>();
 
-				if (  card && card->getSkillName() == objectName() 
-				 && room->getCardPlace(move.card_ids.first()) == Player::DiscardPile
-					&& (player == move.from || (provider && provider == player))
-				){
-					player->tag["zhanzhen"] = QVariant::fromValue(realcard);
-					ServerPlayer *target =	room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), 
-					"@zhanzhen:"+card->objectName()+":"+realcard->objectName(), true, true);
-					if (target){
-						CardsMoveStruct mo;
-						mo.card_ids = move.card_ids;
-						mo.to = target;
-						mo.to_place = Player::PlaceHand;
-						room->moveCardsAtomic(mo, true);
-					}
-				}
-			}
-		}
+                if (  card && card->getSkillName() == objectName() 
+                 && room->getCardPlace(move.card_ids.first()) == Player::DiscardPile
+                    && (player == move.from || (provider && provider == player))
+                ){
+                    player->tag["zhanzhen"] = QVariant::fromValue(realcard);
+                    ServerPlayer *target =    room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), 
+                    "@zhanzhen:"+card->objectName()+":"+realcard->objectName(), true, true);
+                    if (target){
+                        CardsMoveStruct mo;
+                        mo.card_ids = move.card_ids;
+                        mo.to = target;
+                        mo.to_place = Player::PlaceHand;
+                        room->moveCardsAtomic(mo, true);
+                    }
+                }
+            }
+        }
         return false;
     }
 };
@@ -903,25 +903,25 @@ public:
                 room->removePlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick$0");
             }
         }
-		else if (triggerEvent == MarkChanged){
-			MarkChangeStruct change = data.value<MarkChangeStruct>();
-			if (change.name == "@changshi"||change.name == "@pingyi" ) {
-				if (!player->hasSkill("yexing") && player->getMark("yexing_limit") > 0) {
-					room->setPlayerMark(player, "yexing_limit", 0);
-					room->removePlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick$0");
-				}
-				else if (player->hasSkill("yexing")) {
-					if (player->getMark("@shi")>0 && player->getMark("yexing_limit") > 0){
-						room->setPlayerMark(player, "yexing_limit", 0);
-						room->removePlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick$0");
-					}
-					else if (player->getMark("@shi")==0 && player->getMark("yexing_limit") == 0){
-						room->setPlayerMark(player, "yexing_limit", 1);
-						room->setPlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick", false);
-					}
-				}
-			}
-		}
+        else if (triggerEvent == MarkChanged){
+            MarkChangeStruct change = data.value<MarkChangeStruct>();
+            if (change.name == "@changshi"||change.name == "@pingyi" ) {
+                if (!player->hasSkill("yexing") && player->getMark("yexing_limit") > 0) {
+                    room->setPlayerMark(player, "yexing_limit", 0);
+                    room->removePlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick$0");
+                }
+                else if (player->hasSkill("yexing")) {
+                    if (player->getMark("@shi")>0 && player->getMark("yexing_limit") > 0){
+                        room->setPlayerMark(player, "yexing_limit", 0);
+                        room->removePlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick$0");
+                    }
+                    else if (player->getMark("@shi")==0 && player->getMark("yexing_limit") == 0){
+                        room->setPlayerMark(player, "yexing_limit", 1);
+                        room->setPlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick", false);
+                    }
+                }
+            }
+        }
         if (!player->hasSkill("yexing"))
             return false;
         if (triggerEvent == PreMarkChange) {
@@ -995,13 +995,13 @@ public:
             }
             if (use.card->isVirtualCard() && use.card->getSubcards().length() == 0)
                 return false;
-			//for turnbroken
-			if (player->hasFlag("Global_ProcessBroken"))
-				return false;
+            //for turnbroken
+            if (player->hasFlag("Global_ProcessBroken"))
+                return false;
             
             if (player->isCardLimited(Sanguosha->cloneCard(use.card->objectName()), Card::MethodUse))
                 return false;
-			
+            
             room->setPlayerProperty(player, "yaoshu_card", use.card->objectName());
             room->askForUseCard(player, "@@yaoshu", "@yaoshu:" + use.card->objectName());
 

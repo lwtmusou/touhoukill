@@ -98,7 +98,7 @@ public:
     woyu() : ZeroCardViewAsSkill("woyu$") {
         frequency = Limited;
         limit_mark = "@woyu";
-		skill_property = "noKingdom";
+        skill_property = "noKingdom";
     }
 
     virtual const Card *viewAs() const{
@@ -331,7 +331,7 @@ public:
     tianxiang() : TriggerSkill("tianxiang$") {
         events << GameStart;
         frequency = Compulsory;
-		skill_property = "noKingdom";
+        skill_property = "noKingdom";
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{

@@ -299,7 +299,7 @@ public:
 
             if (judge.isGood()){
                 //room->damage(DamageStruct(objectName(), player, damage.to, 1, DamageStruct::Normal));
-				room->loseHp(damage.to);
+                room->loseHp(damage.to);
             }
         }
 
@@ -318,22 +318,22 @@ public:
     }
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == Damaged) { //DamageDone?
-			DamageStruct damage = data.value<DamageStruct>();
-			ServerPlayer *current = room->getCurrent();
-			if (!current || current == damage.to || current->getPhase() != Player::Play)
-				return false;
-			if (player == damage.to)
-				player->setFlags("henyi");
+            DamageStruct damage = data.value<DamageStruct>();
+            ServerPlayer *current = room->getCurrent();
+            if (!current || current == damage.to || current->getPhase() != Player::Play)
+                return false;
+            if (player == damage.to)
+                player->setFlags("henyi");
         }
         else if (triggerEvent == EventPhaseChanging){
-			PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
+            PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
             if (phase_change.from == Player::Play){
-				foreach (ServerPlayer *p, room->getAlivePlayers()){
-					if (p->hasFlag("henyi"))
-						p->setFlags("-henyi");
-				}
-			}
-		}
+                foreach (ServerPlayer *p, room->getAlivePlayers()){
+                    if (p->hasFlag("henyi"))
+                        p->setFlags("-henyi");
+                }
+            }
+        }
         return false;
     }
 };
@@ -348,34 +348,34 @@ public:
     }
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == EventPhaseEnd){
-			if (player->getPhase() != Player::Play) return false;
-			ServerPlayer *src = room->findPlayerBySkillName(objectName());
-			//do not consider more than one players?
-			if (!src || src->isCurrent()) return false;
-			if (src->hasFlag("henyi")){
-				ArcheryAttack *card = new ArcheryAttack(Card::NoSuit, 0);
-				if (src->isCardLimited(card, Card::MethodUse))
-					return false;
-				if (src->askForSkillInvoke(objectName(), data)){
-					card->setSkillName("_henyi");
-					CardUseStruct carduse;
-					carduse.card = card;
-					carduse.from = src;
-					room->useCard(carduse);
-				}
-			}
+            if (player->getPhase() != Player::Play) return false;
+            ServerPlayer *src = room->findPlayerBySkillName(objectName());
+            //do not consider more than one players?
+            if (!src || src->isCurrent()) return false;
+            if (src->hasFlag("henyi")){
+                ArcheryAttack *card = new ArcheryAttack(Card::NoSuit, 0);
+                if (src->isCardLimited(card, Card::MethodUse))
+                    return false;
+                if (src->askForSkillInvoke(objectName(), data)){
+                    card->setSkillName("_henyi");
+                    CardUseStruct carduse;
+                    carduse.card = card;
+                    carduse.from = src;
+                    room->useCard(carduse);
+                }
+            }
         }
-		else if (triggerEvent == DamageCaused){ //need not check weather damage.from has this skill
-			DamageStruct damage = data.value<DamageStruct>();
-			if (damage.card && damage.card->getSkillName() == "henyi" && damage.to->isCurrent()){
-				//need log
-				room->touhouLogmessage("#TriggerSkill", player, objectName());
-				room->notifySkillInvoked(player, objectName());
-				room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, damage.from->objectName(), damage.to->objectName());
-				RecoverStruct recov;
+        else if (triggerEvent == DamageCaused){ //need not check weather damage.from has this skill
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.card && damage.card->getSkillName() == "henyi" && damage.to->isCurrent()){
+                //need log
+                room->touhouLogmessage("#TriggerSkill", player, objectName());
+                room->notifySkillInvoked(player, objectName());
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, damage.from->objectName(), damage.to->objectName());
+                RecoverStruct recov;
                 room->recover(damage.from, recov);
-			}
-		}
+            }
+        }
         return false;
     }
 };
@@ -748,7 +748,7 @@ const Card *tianrenCard::validate(CardUseStruct &cardUse) const{
 
         if (slash) {
             room->setCardFlag(slash, "CardProvider_"+liege->objectName());
-			foreach(ServerPlayer *target, targets)
+            foreach(ServerPlayer *target, targets)
                 target->setFlags("-tianrenTarget");
 
             return slash;
@@ -968,9 +968,9 @@ th09Package::th09Package()
     General *zhan004 = new General(this, "zhan004", "zhan", 3, false);
     zhan004->addSkill(new judu);
     zhan004->addSkill(new henyi);
-	zhan004->addSkill(new henyiCount);
-	related_skills.insertMulti("henyi", "#henyi-count");
-	
+    zhan004->addSkill(new henyiCount);
+    related_skills.insertMulti("henyi", "#henyi-count");
+    
     General *zhan005 = new General(this, "zhan005", "zhan", 4, false);
     zhan005->addSkill(new toupai);
 

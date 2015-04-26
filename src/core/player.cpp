@@ -231,17 +231,17 @@ int Player::distanceTo(const Player *other, int distance_fix) const{
         return 0;
 
     int distance_limit = 0;
-	if (hasSkill("chuanwu"))
-		distance_limit =qMax(other->getHp(), 1); 
+    if (hasSkill("chuanwu"))
+        distance_limit =qMax(other->getHp(), 1); 
     if (fixed_distance.contains(other)){
-	    if (distance_limit > 0 && fixed_distance.value(other) > distance_limit)
-		    return distance_limit;
-		else
+        if (distance_limit > 0 && fixed_distance.value(other) > distance_limit)
+            return distance_limit;
+        else
             return fixed_distance.value(other);
     }
 
     //jiejie
-	/*
+    /*
     if (getMark("@in_jiejie") > 0 || other->getMark("@in_jiejie") > 0)
         return 900;
     if (getPile("jiejie_left").length() > 0 &&
@@ -529,12 +529,12 @@ bool Player::hasLordSkill(const QString &skill_name, bool include_lose, bool inc
 }
 
 bool Player::hasKingdomLordSkill( bool include_lose) const{
-	foreach(const Skill *skill, this->getVisibleSkillList()){
-		if (skill->isLordSkill() && skill->getSkillProperty() != "noKingdom"){
-			return true;
-		}
-	}
-	return false;	
+    foreach(const Skill *skill, this->getVisibleSkillList()){
+        if (skill->isLordSkill() && skill->getSkillProperty() != "noKingdom"){
+            return true;
+        }
+    }
+    return false;    
 }
 
 void Player::acquireSkill(const QString &skill_name) {
@@ -1085,10 +1085,10 @@ QString Player::getSkillDescription(bool yellow) const{
         //remove lord skill Description 
         if (skill->isLordSkill()){
             if (!hasLordSkill(skill->objectName()) && !hasSkill("nosguixin", false, true))
-				continue;
+                continue;
         }
 
-		
+        
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription(yellow);
         desc.replace("\n", "<br/>");
