@@ -710,7 +710,7 @@ sgs.ai_skill_cardask["@fire-attack"] = function(self, data, pattern, target)
 	return card and card:getId() or "."
 end
 
-function SmartAI:useCardFireAttack(fire_attack, use)
+function SmartAI:useCardFireAttack(fire_attack, use) --ÄáÂê ³Ô¾Æ+»ğ¹¥+¶ªÉ± È»ºó¶ÏÉ±¡£¡£¡£
 	if self.player:hasSkill("wuyan") and not self.player:hasSkill("jueqing") then return end
 	if self.player:hasSkill("noswuyan") then return end
 

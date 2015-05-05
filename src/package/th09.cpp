@@ -320,14 +320,14 @@ public:
         if (triggerEvent == Damaged) { //DamageDone?
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *current = room->getCurrent();
-            if (!current || current == damage.to || current->getPhase() != Player::Play)
-                return false;
+            //if (!current) //|| current == damage.to || current->getPhase() != Player::Play
+            //    return false;
             if (player == damage.to)
                 player->setFlags("henyi");
         }
         else if (triggerEvent == EventPhaseChanging){
             PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
-            if (phase_change.from == Player::Play){
+            if (phase_change.from == Player::NotActive){//Player::Play
                 foreach (ServerPlayer *p, room->getAlivePlayers()){
                     if (p->hasFlag("henyi"))
                         p->setFlags("-henyi");
@@ -351,7 +351,7 @@ public:
             if (player->getPhase() != Player::Play) return false;
             ServerPlayer *src = room->findPlayerBySkillName(objectName());
             //do not consider more than one players?
-            if (!src || src->isCurrent()) return false;
+            if (!src) return false; 
             if (src->hasFlag("henyi")){
                 ArcheryAttack *card = new ArcheryAttack(Card::NoSuit, 0);
                 if (src->isCardLimited(card, Card::MethodUse))

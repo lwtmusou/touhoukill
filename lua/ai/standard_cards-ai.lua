@@ -117,6 +117,11 @@ function sgs.getDefenseSlash(player, self)
 
 	local hasEightDiagram = false
 
+	if player:hasSkill("juwang") then
+		defense = defense + 0.8
+	end
+	
+	
 	if (player:hasArmorEffect("EightDiagram") or (player:hasSkill("bazhen") and not player:getArmor()))
 	  and not IgnoreArmor(attacker, player) then
 		hasEightDiagram = true
@@ -391,7 +396,9 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 	end
 
 	if self:touhouEffectNullify(slash,from,to) then return false end
-
+	if self:canNizhuan(to, from) then
+		return false
+	end
 	if to:hasSkill("zuixiang") and to:isLocked(slash) then return false end
 	if to:hasSkill("yizhong") and not to:getArmor() then
 		if slash:isBlack() then
@@ -402,6 +409,9 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 		if self:yicunEffective(slash, to, from) then
 			return false 
 		end
+	end
+	if to:hasSkill("huiwu")  and self:isFriend(to, from) then--没考虑死蝶
+		return false
 	end
 	if to:getMark("@late") > 0 then return false end
 
@@ -481,7 +491,7 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 	
 	if to:hasSkill("xuying") then return true end
 	if to:hasSkill("zhengti") then--结果就不杀了。。。哪怕正体的是敌人。。。
-		return not self:zhengtiParse(from,to)
+		return self:zhengtiParse(from,to)
 	end
 	if self:touhouDamage(fakeDamage,from,to).damage<=0  then 
 		if not self:touhouDamageEffect(fakeDamage,from,to) then
@@ -1044,7 +1054,7 @@ sgs.ai_card_intention.Slash = function(self, card, from, tos)
 				continue
 			end
 		end
-		if self:isFriend(from,to) and from:hasSkill("dongjie") and not self.player:faceUp() then value=-10 end
+		if  from:hasSkill("dongjie") and not to:faceUp() then value= 0 end --self:isFriend(from,to) and
 		if self:sidieEffect(from)  then value = 0 end
 		if from:hasSkill("lizhi") and self:isFriend(from,to) then value = 0 end
 		--if to:hasSkill("huanshi") and self:touhouCanHuanshi(card,from,to)>0 then
@@ -1414,6 +1424,9 @@ end
 sgs.ai_card_intention.Peach = function(self, card, from, tos)
 	for _, to in ipairs(tos) do
 		if to:hasSkill("wuhun") then continue end
+		if to:hasSkill("guizha") and not card:isVirtualCard() then
+			continue
+		end
 		sgs.updateIntention(from, to, -120)
 	end
 end
@@ -1941,9 +1954,11 @@ sgs.ai_skill_invoke.EightDiagram = function(self, data)
 end
 --【命运】【绯想】【红白】【无寿】【斗魂】
 function sgs.ai_armor_value.EightDiagram(player, self)
+	--其实需要先确定目的
+	--直接return其实很武断
 	if self.player:hasSkill("douhun") then
-		if self.role == "loyalist" and self.player:getKingdom()=="hmx" 
-		and getLord(self.player) and getLord(self.player):hasLordSkill("xueyi") then
+		if self.role == "loyalist" and self.player:getKingdom()=="zhan" 
+		and getLord(self.player) and getLord(self.player):hasLordSkill("tianren") then
 			return 3
 		else
 			return 0
@@ -2124,7 +2139,7 @@ sgs.ai_skill_cardask["archery-attack-jink"] = function(self, data, pattern, targ
 end
 sgs.ai_choicemade_filter.cardResponded["archery-attack-jink"] = function(self, player, promptlist)
 	local target = findPlayerByObjectName(self.room, promptlist[4])
-	if target:hasSkill("lizhi") and promptlist[#promptlist] ~= "_nil_" then
+	if target and target:hasSkill("lizhi") and promptlist[#promptlist] ~= "_nil_" then
 		sgs.updateIntention(player, target, 80)
 	end
 end
@@ -2185,6 +2200,15 @@ sgs.ai_use_value.AmazingGrace = 3
 sgs.ai_keep_value.AmazingGrace = -1
 sgs.ai_use_priority.AmazingGrace = 1.2
 sgs.dynamic_value.benefit.AmazingGrace = true
+sgs.ai_card_intention.AmazingGrace = function(self, card, from, tos) 
+	if sgs.turncount <= 1 and  from:getSeat() == 2 then
+		local lord = self.room:getLord()
+		if lord then
+			sgs.updateIntention(from, lord, 10)
+		end
+	end
+end
+
 
 function SmartAI:willUseGodSalvation(card)
 	if not card then self.room:writeToConsole(debug.traceback()) return false end
@@ -2266,7 +2290,7 @@ end
 sgs.ai_use_priority.GodSalvation = 1.1
 sgs.ai_keep_value.GodSalvation = 3.32
 sgs.dynamic_value.benefit.GodSalvation = true
-sgs.ai_card_intention.GodSalvation = function(self, card, from, tos) --这桃园仇恨真是扯淡
+sgs.ai_card_intention.GodSalvation = function(self, card, from, tos) 
 	local can, first
 	for _, to in ipairs(tos) do
 		if to:isWounded() and not first then
@@ -2519,8 +2543,10 @@ function SmartAI:getDangerousCard(who)
 		end
 	end
 	if (weapon and weapon:isKindOf("Spear") and who:hasSkill("paoxiao") and who:getHandcardNum() >=1 ) then return weapon:getEffectiveId() end
-	if weapon and weapon:isKindOf("Axe") and self:hasSkills("luoyi|pojun|jiushi|jiuchi|jie|wenjiu|shenli|jieyuan", who) then
-		return weapon:getEffectiveId()
+	if weapon and weapon:isKindOf("Axe")  then
+		if  self:hasSkills("luoyi|pojun|jiushi|jiuchi|jie|wenjiu|shenli|jieyuan", who) or who:getCards("he"):length() >=4 then
+			return weapon:getEffectiveId()
+		end
 	end
 	if armor and armor:isKindOf("EightDiagram") and who:hasSkill("leiji") then return armor:getEffectiveId() end
 
@@ -2677,9 +2703,9 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 			end
 		end
 	end
-
 	local enemies = {}
-	if #self.enemies == 0 and self:getOverflow() > 0 then
+	if #self.enemies == 0 and self:getOverflow() > 0 then--尼玛其实当时getoverflow为0，装了几个装备（优先度低）就变成浪费牌了 草
+		--sgs.ai_use_priority.Snatch = true and 0 or 4.3 
 		local lord = self.room:getLord()
 		for _, player in ipairs(players) do
 			if not self:isFriend(player) then
@@ -4011,7 +4037,7 @@ wooden_ox_skill.getTurnUseCard = function(self)
 	 then return end  --or self.player:getMark("@tianyi_Treasure") >0
 	self.wooden_ox_assist = nil
 	local cards = sgs.QList2Table(self.player:getHandcards())
-	self:sortByUseValue(cards, true)
+	self:sortByUseValue(cards, true)--usevalue好不好？？尼玛留下一堆红桃给人摸
 	local card, friend = self:getCardNeedPlayer(cards)
 	if card and friend and friend:objectName() ~= self.player:objectName() and (self:getOverflow() > 0 or self:isWeak(friend)) then
 		if not self:cautionRenegade(friend)  then

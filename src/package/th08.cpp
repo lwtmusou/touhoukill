@@ -177,8 +177,11 @@ void miyaoCard::onEffect(const CardEffectStruct &effect) const{
         recover.who = effect.from;
         room->recover(effect.to, recover);
     }
-    const Card *cards = room->askForExchange(effect.to, "miyao", 1, false, "miyao_cardchosen");
-    room->throwCard(cards, effect.to);
+	if (effect.to->canDiscard(effect.to, "h")){
+	    const Card *cards = room->askForExchange(effect.to, "miyao", 1, false, "miyao_cardchosen");
+        room->throwCard(cards, effect.to);
+	}
+    
 }
 class miyao : public ZeroCardViewAsSkill {
 public:
@@ -771,7 +774,7 @@ public:
             }
             if (room->askForSkillInvoke(src, objectName(), QVariant::fromValue(player))){
                 room->setPlayerFlag(src, "gesheng");
-                src->drawCards(2);
+                src->drawCards(1);
             }
         }
         else if (triggerEvent == EventPhaseEnd && player->getPhase()== Player::Judge){

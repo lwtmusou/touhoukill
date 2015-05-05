@@ -341,6 +341,8 @@ sgs.ai_skill_use_func.saiqianCard = function(card, use, self)
 		end
 	end
 end
+sgs.ai_card_intention.saiqianCard = -60
+
 sgs.ai_skill_choice.saiqian= function(self, choices, data)	
 	local source=self.player:getTag("saiqian_source"):toPlayer()
 	if not source or not source:isWounded() or not self:isFriend(source) then return "cancel_saiqian" end
@@ -356,6 +358,16 @@ sgs.ai_skill_choice.saiqian= function(self, choices, data)
 	end
 	return "cancel_saiqian"
 end
+sgs.ai_choicemade_filter.skillChoice.saiqian = function(self, player, promptlist)
+	local choice = promptlist[#promptlist]
+	local target =player:getTag("saiqian_source"):toPlayer()
+	
+	if not target or not target:isWounded() then return end
+	if  choice == "losehp_saiqian" then 
+		sgs.updateIntention(player, target, -80) 
+	end
+end
+
 sgs.ai_skill_cardask["@saiqian-discard"] = function(self,data)
         local cards = sgs.QList2Table(self.player:getCards("h"))
         if #cards==0 then return "." end
@@ -367,16 +379,14 @@ sgs.ai_skill_cardask["@saiqian-discard"] = function(self,data)
 		end
 		return "."
 end
-sgs.ai_card_intention.saiqianCard = -60
---[[sgs.ai_choicemade_filter.skillChoice.saiqian = function(self, player, promptlist)
-	local choice = promptlist[#promptlist]
-	local target =player:getTag("saiqian_source"):toPlayer()
-	
-	if not target then return end
-	if  choice == "losehp_saiqian" then 
-		sgs.updateIntention(player, target, -10) 
+sgs.ai_choicemade_filter.cardResponded["@saiqian-discard"] = function(self, player, promptlist)
+	if promptlist[#promptlist] ~= "_nil_" then
+		local target =player:getTag("saiqian_source"):toPlayer()
+		if not target or not target:isWounded() then return end	
+		sgs.updateIntention(player, target, -80)
 	end
-end]]
+end
+
 sgs.saiqian_suit_value = {
 	heart = 4.9
 }
@@ -491,6 +501,7 @@ sgs.ai_skill_cardask["@jiezou_spadecard"] = function(self, data)
 		end
 		return "."
 end
+
 
 sgs.ai_choicemade_filter.cardChosen.jiezou = sgs.ai_choicemade_filter.cardChosen.snatch 
 sgs.ai_use_value.jiezouCard = 8

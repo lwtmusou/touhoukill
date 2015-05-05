@@ -160,8 +160,6 @@ function setInitialTables()
 									"|nosleiji|leiji|caizhaoji_hujia|tieji|luoshen|ganglie|neoganglie|vsganglie|kofkuanggu"..
 							"|lingqi|pohuai|huisu"		
 	sgs.no_intention_damage="nuhuo|pohuai|zhuonong"
-	sgs.intention_damage ="jiexian"
-	sgs.intention_recover="jiexian|saiqian"
 	sgs.cardEffect_nullify_all={"shishi","weiya","diaoping","luanying"}
 	sgs.cardEffect_nullify_specific={"lingqi","guangji","huiwu","weizhuang","zhengyi","zhancao","yunshang","doujiu","nizhuan","yicun","junwei"}
 	--需要保证无效的flag的命名标准统一
@@ -1126,6 +1124,7 @@ function sgs.modifiedRoleEvaluation()
 				sgs.role_evaluation[loyalist[1]:objectName()]["renegade"] = sgs.role_evaluation[loyalist[1]:objectName()]["renegade"] + 5
 				sgs.ai_role[loyalist[1]:objectName()] = "renegade"
 				sgs.outputRoleValues(loyalist[1], 5)
+				--五谷的错误根源在这里。。。。
 				global_room:writeToConsole("renegade:" .. loyalist[1]:getGeneralName() .." Modified Success!")
 			end
 		end
@@ -1191,10 +1190,9 @@ sgs.ai_card_intention.general = function(from, to, level)
 	if sgs.isRolePredictable() then return end
 	if not to then global_room:writeToConsole(debug.traceback()) return end
 	if from:isLord() or level == 0 then return end
-
 	-- 将level固定为 10或者-10，目的是由原来的忠反值的变化 更改为 统计AI跳身份的行为次数，因为感觉具体的level值不太好把握，容易出现忠反值不合理飙涨的情况
 	level = level > 0 and 10 or -10
-
+	
 	sgs.outputRoleValues(from, level)
 
 	local loyalist_value = sgs.role_evaluation[from:objectName()]["loyalist"]
@@ -1306,7 +1304,6 @@ end
 function sgs.updateIntention(from, to, intention, card)
 	if not to then global_room:writeToConsole(debug.traceback()) return end
 	if from:objectName() == to:objectName() then return end
-
 	sgs.ai_card_intention.general(from, to, intention)
 end
 
@@ -1364,7 +1361,7 @@ function sgs.isLordInDanger()
 	return lord_hp < 3
 end
 
-function sgs.gameProcess(room, arg)
+function sgs.gameProcess(room, arg)  --尼玛 不看具体技能和牌的数量么 卧槽  只有一些枚举。。。 
 	local rebel_num = sgs.current_mode_players["rebel"]
 	local loyal_num = sgs.current_mode_players["loyalist"]
 	if rebel_num == 0 and loyal_num> 0 then return "loyalist"
@@ -1389,6 +1386,11 @@ function sgs.gameProcess(room, arg)
 				rebel_value = rebel_value + 0.4
 			end
 			if aplayer:getMark("@duanchang") > 0 and aplayer:getMaxHp() <= 3 then rebel_value = rebel_value - 1 end
+			--老子仇视乱影 我会乱说？？
+			--克制主的反贼都需要加入这里。。。
+			--if aplayer:hasSkills("luanying+jingjie") and aplayer:hasSkills("mengxian+jingjie") then rebel_value = rebel_value + 2 end
+			if aplayer:hasSkill("ganying") and lord:hasSkill("fengsu") then rebel_value = rebel_value + 2 end
+			if aplayer:hasSkill("baochun+chunyi")  then rebel_value = rebel_value + 1 end
 		elseif role == "loyalist" or role == "lord" then
 			local loyal_hp
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then loyal_hp = 4
@@ -1445,6 +1447,10 @@ function SmartAI:objectiveLevel(player)
 
 	if self.role == "renegade" then
 		if player:isLord() and player:getHp() <= 0 and player:hasFlag("Global_Dying") then return -2 end
+		--if target_role == "rebel" and player:getHp() <= 1 and not hasBuquEffect(player) and not player:hasSkills("kongcheng|tianming") and player:isKongcheng()
+		--	and getCardsNum("Peach", player, self.player) == 0 and getCardsNum("Analepic", player, self.player) == 0 then return 5 end
+		--内与其保反贼，不如痛快地收掉这个反贼？
+		
 		if rebel_num == 0 or loyal_num == 0 then
 			if rebel_num > 0 then
 				if rebel_num > 1 then
@@ -1478,7 +1484,7 @@ function SmartAI:objectiveLevel(player)
 						if target_role == "rebel" then
 							return 5
 						else
-							return -1
+							return -1  
 						end
 					else
 						if player:isLord() then
@@ -1525,14 +1531,24 @@ function SmartAI:objectiveLevel(player)
 				end
 			end
 			if player:isLord() then return -1 end
+			--尼玛 这里的逻辑我认为问题很大 
+			--应该是对象的有些技能强度过高 导致局面倾斜 所以内奸要先去攻击 --我觉得判断 很大程度应该 process就应该完成。
+			--而不是局势平衡的前提下去攻击这些对象
 			local renegade_attack_skill = string.format("buqu|nosbuqu|%s|%s|%s|%s", sgs.priority_skill, sgs.save_skill, sgs.recover_skill, sgs.drawpeach_skill)
 			for i = 1, #players, 1 do
 				if not players[i]:isLord() and self:hasSkills(renegade_attack_skill, players[i]) then return 5 end
 				if not players[i]:isLord() and math.abs(sgs.ai_chaofeng[players[i]:getGeneralName()] or 0) > 3 then return 5 end
 			end
-			return 3
+			if self.player:getPhase() == sgs.Player_NotActive then
+				return 0
+			else
+				return self:getOverflow() > 0 and 3 or 0
+			end
+			--检测溢出只是单纯考虑存牌吧。。。不去白白浪费牌吧 但是那些不涉及用牌的技能呢？？？
+			--主要目的是局势均衡时把身份跳出来？？
+			--return 3  --尼玛对于忠和反都是3这个太没节操了
 		elseif process:match("rebel") then
-			return target_role == "rebel" and 5 or -1
+			return target_role == "rebel" and 5 or target_role == "neutral" and 0 or -1
 		elseif process:match("dilemma") then
 			if target_role == "rebel" then return 5
 			elseif target_role == "loyalist" or target_role == "renegade" then return 0
@@ -1555,7 +1571,7 @@ function SmartAI:objectiveLevel(player)
 		if player:isLord() then return -2 end
 
 		if loyal_num == 0 and renegade_num == 0 then return 5 end
-
+		
 		if self.role == "loyalist" and loyal_num == 1 and renegade_num == 0 then return 5 end
 
 		if sgs.ai_role[player:objectName()] == "neutral" then
@@ -1583,13 +1599,33 @@ function SmartAI:objectiveLevel(player)
 
 		if rebel_num == 0 then
 			if #players == 2 and self.role == "loyalist" then return 5 end
-
+			---对于主忠内残局跳得内 可以下杀手
+			if (sgs.explicit_renegade_players[player:objectName()]) then
+				return 4
+			end
+			
 			if self.player:isLord() and not self.player:hasFlag("stack_overflow_jijiang") and player:getHp() <= 2 and self:hasHeavySlashDamage(self.player, nil, player) then
 				return 0
 			end
 
 			if not sgs.explicit_renegade then
 				if sgs.ai_role[player:objectName()] == "rebel" then return player:getHp() > 1 and 5 or 1 end
+				--给排一个序列
+				local sort_func = {
+						loyalist = function(a, b)
+							return sgs.role_evaluation[a:objectName()]["loyalist"] > sgs.role_evaluation[b:objectName()]["loyalist"]
+						end
+				}
+				--忠内3人以上存在时，对于劳苦功高的忠优先保证其存活
+				--保证明忠健康 同时也是对内多一份钳制
+				--最大限度避免内翻盘 特别是现在这个不愿意对内下手的尿性 
+				if #players > 2 then
+					table.sort(players, sort_func["loyalist"])
+					if players[1]:objectName() == player:objectName()  and sgs.role_evaluation[players[1]:objectName()]["loyalist"] > 0 then
+						return -1
+					end
+				end
+				
 				self:sort(players, "hp")
 				local maxhp = players[#players]:isLord() and players[#players - 1]:getHp() or players[#players]:getHp()
 				if maxhp > 2 then return player:getHp() == maxhp and 5 or 0 end
@@ -1599,12 +1635,7 @@ function SmartAI:objectiveLevel(player)
 				if self.player:isLord() then
 					if sgs.ai_role[player:objectName()] == "loyalist" then return -2
 					else
-						--对于主忠内残局跳得内 可以下杀手
-						if (sgs.explicit_renegade_players[player:objectName()]) then
-							return 4
-						else
-							return player:getHp() > 1 and 4 or 0
-						end
+						return player:getHp() > 1 and 4 or 0
 					end
 				else
 					if self.role == "loyalist" and sgs.ai_role[self.player:objectName()] == "renegade" then
@@ -1684,12 +1715,12 @@ function SmartAI:objectiveLevel(player)
 		elseif sgs.ai_role[player:objectName()] == "loyalist" then return 5 end
 		local gameProcess = sgs.gameProcess(self.room)
 		if target_role == "rebel" then return (rebel_num > 1 or renegade_num > 0 and gameProcess:match("loyal")) and -2 or 5 end
-		if target_role == "renegade" then return gameProcess:match("loyal") and -1 or 4 end
+		if target_role == "renegade" then return gameProcess:match("loyal") and -1 or 4 end --卧槽 中立的时候，内奸也要被反贼操啊
 		return 0
 	end
 end
 
-function SmartAI:isFriend(other, another)
+function SmartAI:isFriend(other, another)   
 	if not other then self.room:writeToConsole(debug.traceback()) return end
 	if another then
 		local of, af = self:isFriend(other), self:isFriend(another)
@@ -1831,7 +1862,7 @@ function SmartAI:updatePlayers(clear_flags)
 	end
 
 	self:updateAlivePlayerRoles()
-	sgs.evaluateAlivePlayersRole()
+	sgs.evaluateAlivePlayersRole()--先更新role列表 再更新friend enemy列表
 	
 	self.enemies = {}
 	self.friends = {}
@@ -2339,13 +2370,8 @@ function SmartAI:filterEvent(event, player, data)
 			end
 
 			if damage.transfer or damage.chain then intention = 0 end
-			if sgs.no_intention_damage:match(reason) then
-			  intention = 0 end
-			if not from and sgs.intention_damage:match(reason) then
-				local real_from = self.room:findPlayerBySkillName(reason)
-				intention = 80
-				from = real_from
-			end
+			if sgs.no_intention_damage:match(reason) then  intention = 0 end
+
 			if from and intention ~= 0 then sgs.updateIntention(from, to, intention) end
 		end
 	elseif event == sgs.CardUsed then
@@ -2487,7 +2513,8 @@ function SmartAI:filterEvent(event, player, data)
 			--and sgs.turncount <= 3 --为什么有轮次限制。。。。
 			if player:hasFlag("AI_Playing") and sgs.turncount <= 3 and player:getPhase() == sgs.Player_Discard
 				and reason.m_reason == sgs.CardMoveReason_S_REASON_RULEDISCARD
-				and not (player:hasSkills("renjie+baiyin") and not player:hasSkill("jilve")) and not player:hasFlag("ShuangrenSkipPlay") then
+				and not (player:hasSkills("renjie+baiyin") and not player:hasSkill("jilve")) and not player:hasFlag("ShuangrenSkipPlay") 
+				and not  player:hasFlag("PlayPhaseTerminated") then
 
 				local is_neutral = sgs.evaluatePlayerRole(player) == "neutral" and CanUpdateIntention(player)
 				
@@ -2602,7 +2629,8 @@ function SmartAI:filterEvent(event, player, data)
 		player:setFlags("AI_Playing")
 		self:dangjiaIntention(player)
 	elseif event == sgs.EventPhaseStart and player:getPhase() ==  sgs.Player_NotActive then
-		if player:isLord() then sgs.turncount = sgs.turncount + 1 end
+		if player:isLord()  and player:getMark("touhou-extra") == 0
+		then sgs.turncount = sgs.turncount + 1 end
 
 		sgs.debugmode = io.open("lua/ai/debug")
 		if sgs.debugmode then sgs.debugmode:close() end
@@ -2635,30 +2663,6 @@ function SmartAI:filterEvent(event, player, data)
 		
 		if not sgs.GetConfig("AIProhibitBlindAttack", false) then
 			self:roleParse()--为主忠盲狙  自动增加克制主公的明反的仇恨
-		end
-	end
-	--东方杀中更新仇恨的时机 （三国杀ai没有考虑这些时机）
-	if event == sgs.EventLoseSkill then
-		local skillName=data:toString()
-		for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-			if not p:hasSkill("pingyi") then continue end
-			for _,s in sgs.qlist(self.room:getOtherPlayers(p)) do
-				if p:getMark("pingyi_steal")>0 and s:getMark("pingyi")>0 then
-					key=p:objectName().."pingyi"..s:objectName()
-					tempSkillName=self.room:getTag(key):toString()
-					if tempSkillName and skillName==tempSkillName then
-						sgs.updateIntention(p, s, 100)
-						break
-					end
-				end
-			end
-		end
-	elseif event == sgs.HpRecover then
-		local recover = data:toRecover()
-		if recover.reason and sgs.intention_recover:match(recover.reason) then
-			if recover.who and  recover.who:objectName() ~=player:objectName() then
-				sgs.updateIntention(recover.who, player, -80)
-			end
 		end
 	end
 end
@@ -2910,7 +2914,7 @@ end
 --待加入【幻梦】一系列取消伤害
 --留住无邪防乐怎么弄？
 --【威压】
-function SmartAI:askForNullification(trick, from, to, positive)
+function SmartAI:askForNullification(trick, from, to, positive) --尼玛一把明杀 就因为自己1血就把无邪打出去了？？？？？
 	if self.player:isDead() then return nil end
 	local cards = self.player:getCards("he")
 	cards = sgs.QList2Table(cards)
@@ -4098,7 +4102,8 @@ end
 ----东方杀相关
 --【威压】
 function SmartAI:willUsePeachTo(dying)
-	
+	--不是简单的friend啊。。。 比如反贼劣势 有人濒死求桃  但是你麻痹内得看求桃的是谁啊  还有对面有几个桃啊
+	--对面一把桃子时 你一个内先出桃是个毛意思啊
 	local card_str
 	local forbid = sgs.cloneCard("peach")
 	
@@ -4162,7 +4167,8 @@ function SmartAI:willUsePeachTo(dying)
 			end
 		end
 	end
-
+    --if self.role == "renegade"  内奸的桃子不是一个判断一个friend之流的就可以随便救人啊 哪怕 反贼确实劣势 反贼被判为friend
+	
 	if self:isFriend(dying) then
 		if self:needDeath(dying) then return "." end
 
@@ -6052,11 +6058,11 @@ function SmartAI:hasTrickEffective(card, to, from)
 	if self.room:isProhibited(from, to, card) then return false end
 	if to:hasSkill("zhengyi")  and not card:isKindOf("DelayedTrick") and card:isBlack() then return false end
 	if to:hasSkill("yunshang") and not from:inMyAttackRange(to) then return false end
-	if to:hasSkill("yicun") and card:isKindOf("Duel") then
+	--[[if to:hasSkill("yicun") and card:isKindOf("Duel") then
 		if self:yicunEffective(card, to, from) then
 			return false 
 		end
-	end
+	end]]
 	if to:hasSkill("weizhuang") and card:isNDTrick() then
 		local basics = getCardsNum("BasicCard", from, self.player)
 		if sgs.dynamic_value.damage_card[card:getClassName()] then
@@ -6071,6 +6077,14 @@ function SmartAI:hasTrickEffective(card, to, from)
 			if not self:isFriend(to, from) and basics < 1 then
 				return false
 			end
+		end
+	end
+	if to:hasSkill("huiwu")  then
+		if  self:isFriend(to, from) and sgs.dynamic_value.damage_card[card:getClassName()]  then
+			return false
+		end
+		if sgs.dynamic_value.benefit[card:getClassName()] and self:isEnemy(to, from) then
+			return false
 		end
 	end
 	if to:hasLordSkill("fahua") then
@@ -6926,6 +6940,7 @@ end
 ---*****由此开始为东方杀自建的ai函数
 function SmartAI:touhouDamageNature(card,from,to)
 	local nature=sgs.DamageStruct_Normal 
+	if not card then return nature end
 	if  card:isKindOf("FireSlash") then
 		nature= sgs.DamageStruct_Fire 
 	end
@@ -6977,7 +6992,7 @@ function SmartAI:touhouConfirmDamage(damage,from,to)
 			end
 		end
 		--【魔法】加成
-		if damage.card:hasFlag("mofa_card") then
+		if damage.card:hasFlag("mofa_card") then --这是已经使用了卡。。。如果是player的dummyuse呢？？？
 			damage.damage=damage.damage+1
 		end
 		--【浴血】加成
@@ -7545,12 +7560,23 @@ function SmartAI:roleParse()--为主忠盲狙  自动增加克制主公的明反
 	end
 	if  lord:hasSkills("yongheng") then
 		for _,p in sgs.qlist(self.room:getOtherPlayers(lord)) do
-			if p:hasSkills("fengrang|maihuo|shitu|jiyi|banyue|huwei|baochun") then
-				sgs.updateIntention(p, lord, 150) --|mocao
+			if p:hasSkills("fengrang|maihuo|shitu|jiyi|banyue|huwei|baochun|mocao") then
+				sgs.updateIntention(p, lord, 150) 
 			end
 		end
 	end
-
+	local minoriko = self.room:findPlayerBySkillName("fengrang")
+	if minoriko and not minoriko:isLord() and  minoriko:getSeat() - 1 <= 2 then
+		sgs.updateIntention(minoriko, lord, 40) 
+	end
+	local reisen = self.room:findPlayerBySkillName("ningshi")
+	if reisen and not reisen:isLord() and  reisen:getSeat() - 1 <= 2 then
+		sgs.updateIntention(reisen, lord, 40) 
+	end
+    --local miko = self.room:findPlayerBySkillName("hongfo") 
+	--if miko and not miko:isLord() and miko:getKingdom() ~= lord:getKingdom() then
+	--	sgs.updateIntention(miko, lord, 150) 
+	--end
 	--need check player number and current role 
 	for _,p in sgs.qlist(self.room:getOtherPlayers(lord)) do
 		for _,skill in sgs.qlist(p:getVisibleSkillList()) do

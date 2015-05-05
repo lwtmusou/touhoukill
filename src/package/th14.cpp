@@ -44,21 +44,21 @@ class yicun : public TriggerSkill {
 public:
     yicun() : TriggerSkill("yicun") {
         frequency = Compulsory;
-        events << TargetConfirming << CardEffected << SlashEffected;
+        events << TargetConfirming  << SlashEffected; //<< CardEffected
     }
 
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == TargetConfirming){
             CardUseStruct use = data.value<CardUseStruct>();
-            if ((use.card->isKindOf("Slash") ||  use.card->isKindOf("Duel")) 
+            if (use.card->isKindOf("Slash")  //  use.card->isKindOf("Duel")
             && use.to.contains(player) &&   use.from->getHandcardNum() >=  player->getHandcardNum()){
                 room->notifySkillInvoked(player, objectName());
                 room->touhouLogmessage("#TriggerSkill", player, objectName());
                 room->setCardFlag(use.card, objectName() + player->objectName());
             }
         }
-        else if (triggerEvent == CardEffected){
+        /*else if (triggerEvent == CardEffected){
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if (effect.card->isKindOf("Duel") && effect.card->hasFlag(objectName() + effect.to->objectName())){
                 room->touhouLogmessage("#LingqiAvoid", effect.to, effect.card->objectName(), QList<ServerPlayer *>(), objectName());
@@ -66,7 +66,7 @@ public:
                 room->setEmotion(effect.to, "skill_nullify");
                 return true;
             }
-        }
+        }*/
         else if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (effect.slash != NULL && effect.slash->hasFlag(objectName() + player->objectName())) {

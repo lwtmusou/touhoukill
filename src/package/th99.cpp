@@ -506,7 +506,9 @@ public:
             room->notifySkillInvoked(player, objectName());
             room->addPlayerMark(player, objectName());
             if (room->changeMaxHpForAwakenSkill(player)){
-                player->drawCards(4);
+                //player->drawCards(4);
+				RecoverStruct recov;
+				room->recover(player, recov);
                 room->handleAcquireDetachSkills(player, "luanying");
             }
         }
@@ -517,7 +519,6 @@ public:
 class luanying : public TriggerSkill {
 public:
     luanying() : TriggerSkill("luanying") {
-        frequency = Compulsory;
         events << CardUsed << SlashEffected << CardEffected << CardResponded;
     }
 
@@ -526,32 +527,61 @@ public:
         return (target != NULL);
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        ServerPlayer *merry = room->findPlayerBySkillName(objectName());
-        if (triggerEvent == CardUsed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (merry == NULL || merry->getPile("jingjie").length() == 0)
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{  
+        if (triggerEvent == CardUsed || triggerEvent == CardResponded){
+            ServerPlayer *merry = room->findPlayerBySkillName(objectName());
+			if (!merry || merry->getPile("jingjie").length() == 0)
                 return false;
-            if (!use.card->isKindOf("BasicCard"))
+			if (player == NULL || player == merry || player->isDead())
                 return false;
-            if (use.from == NULL || use.from == merry || use.from->isDead())
-                return false;
-
+			
+			bool isRed = true;
+			QString cardName;
+			if (triggerEvent == CardUsed){
+				CardUseStruct use = data.value<CardUseStruct>();
+				if (!use.card->isKindOf("BasicCard") || use.card->getSuit() ==  Card::NoSuit)
+					return false;
+				isRed = use.card->isRed();
+				cardName = use.card->objectName();
+			}
+			else if(triggerEvent == CardResponded){
+				CardStar card_star = data.value<CardResponseStruct>().m_card;
+				if (!card_star->isKindOf("BasicCard") || data.value<CardResponseStruct>().m_isRetrial
+                || data.value<CardResponseStruct>().m_isProvision || card_star->getSuit() ==  Card::NoSuit)
+					return false;
+				isRed = card_star->isRed();
+				cardName = card_star->objectName();
+			}
+			
+			
             QList<int> jingjies = merry->getPile("jingjie");
-            room->setTag("luanying_target", QVariant::fromValue(use.from));
-            merry->tag["luanying_use"] = data;
+			QList<int> able;
+			QList<int> disabled;
+			foreach(int id, jingjies){
+                if (Sanguosha->getCard(id)->isRed() == isRed)
+                    able << id;
+                else
+                    disabled << id;
+            }
+			if (able.isEmpty())
+				return false;
+            room->setTag("luanying_target", QVariant::fromValue(player));
+            if (triggerEvent == CardUsed)
+				merry->tag["luanying_use"] = data;
+			
             if (room->askForSkillInvoke(merry, objectName(), data)) {
                 room->removeTag("luanying_target");
 
-                room->fillAG(jingjies, merry);//, disabled
+                room->fillAG(jingjies, merry, disabled);
                 int card_id = -1;
-                card_id = room->askForAG(merry, jingjies, true, "luanying");
+                card_id = room->askForAG(merry, able, true, "luanying");
                 room->clearAG(merry);
                 if (card_id > -1){
-                    room->obtainCard(use.from, card_id, true);
-                    room->touhouLogmessage("#weiya", use.from, objectName(), QList<ServerPlayer *>(), use.card->objectName());
-
-                    room->setCardFlag(use.card, "luanyingSkillNullify");
+                    room->obtainCard(player, card_id, true);
+                    room->touhouLogmessage("#weiya", player, objectName(), QList<ServerPlayer *>(), cardName);
+					if (triggerEvent == CardUsed) 
+						room->setCardFlag(data.value<CardUseStruct>().card, "luanyingSkillNullify");					if(triggerEvent == CardResponded)
+						room->setPlayerFlag(player, "respNul");
                 }
             }
         }
@@ -564,30 +594,6 @@ public:
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if (effect.card != NULL && effect.card->hasFlag("luanyingSkillNullify"))
                 return true;
-        }
-        else if (triggerEvent == CardResponded){
-            CardStar card_star = data.value<CardResponseStruct>().m_card;
-            if (!card_star->isKindOf("BasicCard") || data.value<CardResponseStruct>().m_isRetrial
-                || data.value<CardResponseStruct>().m_isProvision)
-                return false;
-            if (merry == NULL || merry->getPile("jingjie").length() == 0)
-                return false;
-            if (player == NULL || player == merry || player->isDead())
-                return false;
-            QList<int> jingjies = merry->getPile("jingjie");
-            room->setTag("luanying_target", QVariant::fromValue(player));
-            if (room->askForSkillInvoke(merry, objectName(), data)) {
-                room->removeTag("luanying_target");
-                room->fillAG(jingjies, merry);
-                int card_id = -1;
-                card_id = room->askForAG(merry, jingjies, true, "luanying");
-                room->clearAG(merry);
-                if (card_id > -1){
-                    room->obtainCard(player, card_id, true);
-                    room->touhouLogmessage("#weiya", player, objectName(), QList<ServerPlayer *>(), card_star->objectName());
-                    room->setPlayerFlag(player, "respNul");
-                }
-            }
         }
         return false;
     }
