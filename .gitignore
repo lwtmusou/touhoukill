@@ -65,3 +65,7 @@ ai.html
 *.opensdf
 *.sdf
 *.vcxproj.user
+icu*.dll
+libEGL.dll
+libGLESv2.dll
+msvc[pr]1[023]0.dll
