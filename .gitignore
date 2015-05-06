@@ -50,8 +50,6 @@ tags
 card_intention.txt
 ai.html
 *.sh
-/src/lua/print.c
-/src/lua/luac.c
 /image/system/ark.png
 /image/system/big-back.png
 /image/system/settings.png
