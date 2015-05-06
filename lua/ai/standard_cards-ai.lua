@@ -116,11 +116,13 @@ function sgs.getDefenseSlash(player, self)
 	defense = defense + knownJink * 1.2
 
 	local hasEightDiagram = false
-
+	
 	if player:hasSkill("juwang") then
 		defense = defense + 0.8
 	end
-	
+	if player:hasSkill("langying") and player:getCards("e"):length()>0 then
+		defense = defense + 2.2
+	end
 	
 	if (player:hasArmorEffect("EightDiagram") or (player:hasSkill("bazhen") and not player:getArmor()))
 	  and not IgnoreArmor(attacker, player) then
@@ -182,7 +184,7 @@ function sgs.getDefenseSlash(player, self)
 		if attacker:hasSkill("liegong") and (hcard >= attacker:getHp() or hcard <= attacker:getAttackRange()) then defense = 0 end
 		if attacker:hasSkill("kofliegong") and hcard >= attacker:getHp() then defense = 0 end
 	end
-
+	--¿¼ÂÇÍþÑ¹£¿£¿
 	local jiangqin = global_room:findPlayerBySkillName("niaoxiang")
 	local need_double_jink = attacker:hasSkills("wushuang|drwushuang")
 							or (attacker:hasSkill("roulin") and player:isFemale())
@@ -1630,6 +1632,7 @@ sgs.ai_skill_cardask["@Axe"] = function(self, data, pattern, target)
 	local effect = data:toSlashEffect()
 	local allcards = self.player:getCards("he")
 	allcards = sgs.QList2Table(allcards)
+	--¿¼ÂÇÓÀºã£¿£¿
 	if self:hasHeavySlashDamage(self.player, effect.slash, target)
 	  or (#allcards - 3 >= self.player:getHp())
 	  or (self.player:hasSkill("kuanggu") and self.player:isWounded() and self.player:distanceTo(effect.to) == 1)

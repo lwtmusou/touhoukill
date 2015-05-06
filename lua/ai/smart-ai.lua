@@ -1201,7 +1201,8 @@ sgs.ai_card_intention.general = function(from, to, level)
 
 	if sgs.evaluatePlayerRole(to) == "loyalist" then
 		
-		if sgs.current_mode_players["rebel"] == 0 and to:isLord() and level > 0 then
+		if sgs.current_mode_players["rebel"] == 0 and to:isLord() and level > 0 
+			and not  (sgs.explicit_renegade_players[from:objectName()]) then
 			--残局对主不利者，视为绝对的内。主公可以下杀手打死
 			sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + 200
 			sgs.explicit_renegade_players[from:objectName()] = true

@@ -382,6 +382,7 @@ const Card *chuannanCard::validate(CardUseStruct &cardUse) const{
         SupplyShortage *supply = new SupplyShortage(getSuit(), getNumber());
         supply->addSubcard(getEffectiveId());
         supply->setSkillName("chuannan");
+		cardUse.from->getRoom()->setPlayerProperty(cardUse.from, "chuanan", QVariant());
         return supply;
     }
     return NULL;
