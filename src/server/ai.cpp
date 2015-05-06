@@ -460,11 +460,8 @@ bool LuaAI::getTable(lua_State *L, QList<int> &table) {
         return false;
     }
 
-#if (LUA_VERSION_NUM==501)
-    size_t len = lua_objlen(L, -1);
-#else
     size_t len = lua_rawlen(L, -1);
-#endif
+
     size_t i;
     for (i = 0; i < len; i++) {
         lua_rawgeti(L, -1, i + 1);
