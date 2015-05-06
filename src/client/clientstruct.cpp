@@ -44,7 +44,7 @@ bool ServerInfoStruct::parse(const QString &str) {
         DuringGame = true;
 
         QString server_name = texts.at(1);
-        Name = QString::fromUtf8(QByteArray::fromBase64(server_name.toAscii()));
+        Name = QString::fromUtf8(QByteArray::fromBase64(server_name.toLatin1()));
 
         GameMode = texts.at(2);
         if (GameMode.startsWith("02_1v1") || GameMode.startsWith("06_3v3")) {

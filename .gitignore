@@ -61,3 +61,7 @@ ai.html
 /Qt*.dll
 /dmp/*.dmp
 *thumbs.db
+*.suo
+*.opensdf
+*.sdf
+*.vcxproj.user

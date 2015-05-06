@@ -2,7 +2,6 @@
 #define _AI_H
 
 class Room;
-class ServerPlayer;
 class TrickCard;
 class ResponseSkill;
 
@@ -12,6 +11,7 @@ typedef int LuaFunction;
 
 #include "card.h"
 #include "roomthread.h"
+#include "serverplayer.h"
 
 #include <QString>
 #include <QObject>
