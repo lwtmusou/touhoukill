@@ -105,6 +105,8 @@ function sgs.isGoodTarget(player, targets, self, isSlash)
 end
 
 function sgs.getDefenseSlash(player, self)
+--必中的前提下，1血的优先度啊 我擦
+--实例中会出现 手持贯石斧 一把牌 去砍2血空手牌而不去砍1血4张牌的。。。。
 	if not player then return 0 end
 	local attacker = global_room:getCurrent()
 	local defense = getCardsNum("Jink", player, attacker)

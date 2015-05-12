@@ -1387,11 +1387,11 @@ function sgs.gameProcess(room, arg)  --尼玛 不看具体技能和牌的数量�
 				rebel_value = rebel_value + 0.4
 			end
 			if aplayer:getMark("@duanchang") > 0 and aplayer:getMaxHp() <= 3 then rebel_value = rebel_value - 1 end
-			--老子仇视乱影 我会乱说？？
-			--克制主的反贼都需要加入这里。。。
-			--if aplayer:hasSkills("luanying+jingjie") and aplayer:hasSkills("mengxian+jingjie") then rebel_value = rebel_value + 2 end
+
+			if aplayer:hasSkills("luanying+jingjie") and aplayer:hasSkills("mengxian+jingjie") then rebel_value = rebel_value + 2 end
 			if aplayer:hasSkill("ganying") and lord:hasSkill("fengsu") then rebel_value = rebel_value + 2 end
 			if aplayer:hasSkill("baochun+chunyi")  then rebel_value = rebel_value + 1 end
+			if rebel_num > 1 and aplayer:hasSkill("hpymsiyu+juhe") then rebel_value = rebel_value + 1 end
 		elseif role == "loyalist" or role == "lord" then
 			local loyal_hp
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then loyal_hp = 4
