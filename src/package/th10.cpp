@@ -424,9 +424,9 @@ public:
 
 qijiDialog *qijiDialog::getInstance(const QString &object, bool left, bool right) {
     static qijiDialog *instance;
-    if (instance == NULL || instance->objectName() != object ){
+    if (instance == NULL || instance->objectName() != object)
         instance = new qijiDialog(object, left, right);
-    }
+
     return instance;
 }
 
@@ -434,7 +434,7 @@ qijiDialog::qijiDialog(const QString &object, bool left, bool right) : object_na
     setObjectName(object);
     setWindowTitle(Sanguosha->translate(object)); //need translate title?
     group = new QButtonGroup(this);
-    
+
     QHBoxLayout *layout = new QHBoxLayout;
     if (left) layout->addWidget(createLeft());
     if (right) layout->addWidget(createRight());
@@ -445,11 +445,8 @@ qijiDialog::qijiDialog(const QString &object, bool left, bool right) : object_na
 
 
 void qijiDialog::popup() {
-    bool doNotShow = false;
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY
-        && object_name != "chuangshi" &&  !Sanguosha->currentRoomState()->getCurrentCardUsePattern().contains("slash"))
-        doNotShow = true;
-    if (doNotShow) {
+        &&    object_name != "chuangshi") {
         emit onButtonClick();
         return;
     }
@@ -468,19 +465,8 @@ void qijiDialog::popup() {
             user = Self;
         if (user == NULL)
             user = Self;
-        
         bool enabled = !user->isCardLimited(card, Card::MethodUse, true) && card->isAvailable(user);
-        QStringList response_use_salsh;
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY  
-        &&  Sanguosha->currentRoomState()->getCurrentCardUsePattern().contains("slash")){
-            response_use_salsh << "Slash" << "ThunderSlash" << "FireSlash";
-        }
-            
-        if (!response_use_salsh.isEmpty() && !response_use_salsh.contains(card->getClassName())){
-            button->setEnabled(false);
-        }
-        else
-            button->setEnabled(enabled);
+        button->setEnabled(enabled);
     }
 
     Self->tag.remove(object_name);
@@ -508,7 +494,6 @@ QGroupBox *qijiDialog::createLeft() {
     QStringList ban_list; //no need to ban
     if (object_name == "chuangshi")
         ban_list << "Analeptic";
-
     foreach(const Card *card, cards) {
         if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName())
             && !ban_list.contains(card->getClassName()) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
@@ -532,7 +517,7 @@ QGroupBox *qijiDialog::createRight() {
 
     QGroupBox *box2 = new QGroupBox(Sanguosha->translate("multiple_target_trick"));
     QVBoxLayout *layout2 = new QVBoxLayout;
-    
+
 
     QStringList ban_list; //no need to ban
     if (object_name == "chuangshi")
@@ -592,13 +577,12 @@ qijiCard::qijiCard() {
 
 bool qijiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const {
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+        const Card *card = NULL;
         if (!user_string.isEmpty()) {
             const Card *oc = Sanguosha->getCard(subcards.first());
-            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), oc->getSuit(), oc->getNumber());
-            card->addSubcard(oc);
-            return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
+            card = Sanguosha->cloneCard(user_string.split("+").first(), oc->getSuit(), oc->getNumber());
         }
-        return false;
+        return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
     } else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
         return false;
     }
@@ -613,13 +597,12 @@ bool qijiCard::targetFilter(const QList<const Player *> &targets, const Player *
 
 bool qijiCard::targetFixed() const {
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+        const Card *card = NULL;
         if (!user_string.isEmpty()) {
             const Card *oc = Sanguosha->getCard(subcards.first());
-            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), oc->getSuit(), oc->getNumber());
-            card->addSubcard(oc);
-            return card && card->targetFixed();
+            card = Sanguosha->cloneCard(user_string.split("+").first(), oc->getSuit(), oc->getNumber());
         }
-        return false;
+        return card && card->targetFixed();
     } else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
         return true;
     }
@@ -634,13 +617,13 @@ bool qijiCard::targetFixed() const {
 
 bool qijiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+        const Card *card = NULL;
         if (!user_string.isEmpty()) {
             const Card *oc = Sanguosha->getCard(subcards.first());
-            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), oc->getSuit(), oc->getNumber());
-            card->addSubcard(oc);
-            return card && card->targetsFeasible(targets, Self);
+            card = Sanguosha->cloneCard(user_string.split("+").first(), oc->getSuit(), oc->getNumber());
         }
-        return false;
+
+        return card && card->targetsFeasible(targets, Self);
     } else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
         return true;
     }
@@ -656,13 +639,28 @@ bool qijiCard::targetsFeasible(const QList<const Player *> &targets, const Playe
 }
 
 const Card *qijiCard::validate(CardUseStruct &card_use) const {
+    ServerPlayer *qiji_general = card_use.from;
+
+    Room *room = qiji_general->getRoom();
     QString to_use = user_string;
+
+    if (user_string == "slash"
+        &&
+        (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE
+        || Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)) {
+        QStringList use_list;
+        use_list << "slash";
+        if (!Config.BanPackages.contains("maneuvering"))
+            use_list << "thunder_slash" << "fire_slash";
+        to_use = room->askForChoice(qiji_general, "qiji_skill_slash", use_list.join("+"));
+    }
 
     const Card *card = Sanguosha->getCard(subcards.first());
     Card *use_card = Sanguosha->cloneCard(to_use, card->getSuit(), card->getNumber());
     use_card->setSkillName("qiji");
     use_card->addSubcard(subcards.first());
     use_card->deleteLater();
+    //qiji_general->gainMark("@qiji");
     return use_card;
 }
 
@@ -679,8 +677,13 @@ const Card *qijiCard::validateInResponse(ServerPlayer *user) const{
         if (!Config.BanPackages.contains("maneuvering") && !user->isCardLimited(ana, Card::MethodResponse, true))
             use_list << "analeptic";
         to_use = room->askForChoice(user, "qiji_skill_saveself", use_list.join("+"));
-    } 
-    else
+    } else if (user_string == "slash") {
+        QStringList use_list;
+        use_list << "slash";
+        if (!Config.BanPackages.contains("maneuvering"))
+            use_list << "thunder_slash" << "fire_slash";
+        to_use = room->askForChoice(user, "qiji_skill_slash", use_list.join("+"));
+    } else
         to_use = user_string;
 
     const Card *card = Sanguosha->getCard(subcards.first());
@@ -688,7 +691,7 @@ const Card *qijiCard::validateInResponse(ServerPlayer *user) const{
     use_card->setSkillName("qiji");
     use_card->addSubcard(subcards.first());
     use_card->deleteLater();
-
+    //user->gainMark("@qiji");
     return use_card;
 }
 
@@ -737,19 +740,10 @@ public:
     virtual const Card *viewAs(const Card *originalCard) const {
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE
             || Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-            if (pattern.contains("slash")) {
-                const Card *c = Self->tag.value("qiji").value<const Card *>();
-                if (c) 
-                    pattern = c->objectName();
-                else
-                    return NULL;
-            }
             qijiCard *card = new qijiCard;
-            card->setUserString(pattern);
+            card->setUserString(Sanguosha->currentRoomState()->getCurrentCardUsePattern());
             card->addSubcard(originalCard);
             return card;
-            
         }
 
         const Card *c = Self->tag.value("qiji").value<const Card *>();
@@ -1750,8 +1744,6 @@ public:
         return false;
     }
 };
-
-
 
 th10Package::th10Package()
     : Package("th10")

@@ -275,7 +275,7 @@ void Client::disconnectFromHost() {
 typedef char buffer_t[65535];
 
 void Client::processServerPacket(const QString &cmd) {
-    processServerPacket(cmd.toAscii().data());
+    processServerPacket(cmd.toLatin1().data());
 }
 
 void Client::processServerPacket(const char *cmd) {
@@ -332,7 +332,7 @@ void Client::addPlayer(const QString &player_info) {
     QStringList texts = player_info.split(":");
     QString name = texts.at(0);
     QString base64 = texts.at(1);
-    QByteArray data = QByteArray::fromBase64(base64.toAscii());
+    QByteArray data = QByteArray::fromBase64(base64.toLatin1());
     QString screen_name = QString::fromUtf8(data);
     QString avatar = texts.at(2);
 
@@ -1698,7 +1698,7 @@ void Client::speak(const QString &speak_data) {
     QString who = words.at(0);
     QString base64 = words.at(1);
 
-    QByteArray data = QByteArray::fromBase64(base64.toAscii());
+    QByteArray data = QByteArray::fromBase64(base64.toLatin1());
     QString text = QString::fromUtf8(data);
     emit text_spoken(text);
 

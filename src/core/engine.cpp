@@ -593,7 +593,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
 }
 
 QString Engine::getVersionNumber() const{
-    return "20150514";
+    return "20150503";
 }
 
 QString Engine::getVersion() const{
@@ -805,7 +805,7 @@ QStringList Engine::getRoleList(const QString &mode) const{
     QStringList role_list;
     for (int i = 0; roles[i] != '\0'; i++) {
         QString role;
-        switch (roles[i].toAscii()) {
+        switch (roles[i].toLatin1()) {
         case 'Z': role = "lord"; break;
         case 'C': role = "loyalist"; break;
         case 'N': role = "renegade"; break;

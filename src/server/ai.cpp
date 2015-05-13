@@ -414,8 +414,8 @@ QString LuaAI::askForUseCard(const QString &pattern, const QString &prompt, cons
     lua_State *L = room->getLuaState();
 
     pushCallback(L, __FUNCTION__);
-    lua_pushstring(L, pattern.toAscii());
-    lua_pushstring(L, prompt.toAscii());
+    lua_pushstring(L, pattern.toLatin1());
+    lua_pushstring(L, prompt.toLatin1());
     lua_pushinteger(L, method);
 
     int error = lua_pcall(L, 4, 1, 0);
@@ -435,7 +435,7 @@ QList<int> LuaAI::askForDiscard(const QString &reason, int discard_num, int min_
     lua_State *L = room->getLuaState();
 
     pushCallback(L, __FUNCTION__);
-    lua_pushstring(L, reason.toAscii());
+    lua_pushstring(L, reason.toLatin1());
     lua_pushinteger(L, discard_num);
     lua_pushinteger(L, min_num);
     lua_pushboolean(L, optional);
@@ -460,11 +460,8 @@ bool LuaAI::getTable(lua_State *L, QList<int> &table) {
         return false;
     }
 
-#if (LUA_VERSION_NUM==501)
-    size_t len = lua_objlen(L, -1);
-#else
     size_t len = lua_rawlen(L, -1);
-#endif
+
     size_t i;
     for (i = 0; i < len; i++) {
         lua_rawgeti(L, -1, i + 1);
@@ -483,7 +480,7 @@ int LuaAI::askForAG(const QList<int> &card_ids, bool refusable, const QString &r
     pushCallback(L, __FUNCTION__);
     pushQIntList(L, card_ids);
     lua_pushboolean(L, refusable);
-    lua_pushstring(L, reason.toAscii());
+    lua_pushstring(L, reason.toLatin1());
 
     int error = lua_pcall(L, 4, 1, 0);
     if (error) {

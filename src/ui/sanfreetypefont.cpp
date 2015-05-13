@@ -32,7 +32,7 @@ QString SanFreeTypeFont::resolveFont(const QString &fontName)
 
     QStringList dirsToResolve;
     QStringList extsToTry;
-    QString sysfolder = QDesktopServices::storageLocation(QDesktopServices::FontsLocation);
+    QString sysfolder = QStandardPaths::writableLocation(QStandardPaths::FontsLocation);
     dirsToResolve.push_back(sysfolder);
     dirsToResolve.push_back(QDir::currentPath());
     dirsToResolve.push_back("./font");
@@ -63,7 +63,7 @@ const int *const SanFreeTypeFont::loadFont(const QString &fontName)
     }
 
     QString resolvedPath = resolveFont(fontName);
-    QByteArray arr = resolvedPath.toAscii();
+    QByteArray arr = resolvedPath.toLatin1();
     const char *const fontPath = arr.constData();
 
     FT_Face face = NULL;

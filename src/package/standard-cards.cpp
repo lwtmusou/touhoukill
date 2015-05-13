@@ -675,12 +675,7 @@ public:
     virtual int getExtraTargetNum(const Player *from, const Card *card) const{
         if (from->getMark("@tianyi_Weapon") > 0)
             return 0;
-        bool isLastHandCard = false;
-        if (from->isLastHandCard(card))
-            isLastHandCard = true;
-        else if (card->getSkillName() == "xihua" && from->getHandcardNum() == 1 )
-            isLastHandCard = true;
-        if (from->hasWeapon("Halberd") && isLastHandCard)
+        if (from->hasWeapon("Halberd") && from->isLastHandCard(card))
             return 2;
         else
             return 0;

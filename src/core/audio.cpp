@@ -14,7 +14,7 @@ static FMOD_CHANNEL *BGMChannel;
 class Sound {
 public:
     Sound(const QString &filename) : sound(NULL), channel(NULL) {
-        FMOD_System_CreateSound(System, filename.toAscii(), FMOD_DEFAULT, NULL, &sound);
+        FMOD_System_CreateSound(System, filename.toLatin1(), FMOD_DEFAULT, NULL, &sound);
     }
 
     ~Sound() {
@@ -112,7 +112,13 @@ void Audio::stopBGM() {
     if (BGMChannel) FMOD_Channel_Stop(BGMChannel);
 }
 
-QString Audio::getVersion() {
-    return "4.38.06";
+QString Audio::getVersion()
+{
+    unsigned int version = 0;
+    FMOD_System_GetVersion(System, &version);
+    // convert it to QString
+    return QString("%1.%2.%3").arg((version & 0xFFFF0000) >> 16, 0, 16)
+        .arg((version & 0xFF00) >> 8, 2, 16, QChar('0'))
+        .arg((version & 0xFF), 2, 16, QChar('0'));
 }
 
