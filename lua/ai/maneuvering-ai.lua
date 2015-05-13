@@ -316,7 +316,7 @@ function SmartAI:useCardSupplyShortage(card, use)
 		if enemy:hasSkill("zishou") then value = value + enemy:getLostHp() end
 		if self:isWeak(enemy) then value = value + 5 end
 		if enemy:isLord() then value = value + 3 end
-
+		--这一句作何解。。。我根本不相信现在的objectivelevel。。。。  
 		if self:objectiveLevel(enemy) < 3 then value = value - 10 end
 		if not enemy:faceUp() then value = value - 10 end
 		if self:hasSkills("keji|shensu|qingyi", enemy) then value = value - enemy:getHandcardNum() end
@@ -327,9 +327,20 @@ function SmartAI:useCardSupplyShortage(card, use)
 		return value
 	end
     
-	local cmp = function(a,b)
-		return getvalue(a) > getvalue(b)
+	local getSeatWeight = function(enemies,enemy)
+		local weight = 0
+		for _,s in pairs(enemies) do
+			if (self:playerGetRound(s) < self:playerGetRound(enemy)) then
+				weight=weight-10
+			end
+		end
+		return weight
 	end
+	
+	local cmp = function(a,b)
+		return (getvalue(a)+getSeatWeight(enemies,a)) >  (getvalue(b)+getSeatWeight(enemies,b))  
+	end
+	
     if #enemies > 0 then 
 		table.sort(enemies, cmp)
 
