@@ -18,7 +18,6 @@
 #include <QInputDialog>
 #include <QBitmap>
 #include <QClipboard>
-#include <QTransform>
 
 BlackEdgeTextItem::BlackEdgeTextItem()
     :skip(0), color(Qt::white), outline(3)
@@ -490,7 +489,7 @@ CardScene::CardScene()
 
     resetPhoto();
 
-    QGraphicsItemGroup *magatama_group = new QGraphicsItemGroup;
+    QGraphicsItemGroup *magatama_group = new QGraphicsItemGroup(NULL, this);
 
     int i;
     for (i = 0; i < 10; i++) {
@@ -718,8 +717,7 @@ void CardScene::resetPhoto(){
 }
 
 void CardScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event){
-    QTransform transform;
-    QGraphicsItem *item = itemAt(event->scenePos(), transform);
+    QGraphicsItem *item = itemAt(event->scenePos());
     if (item) {
         if (item->parentItem() == skill_box){
             QGraphicsScene::contextMenuEvent(event);

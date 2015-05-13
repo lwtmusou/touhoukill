@@ -1,5 +1,3 @@
 
-general:fsl008 role:lord starter:true equip:148,67 hand:1 
-general:hmx002 role:loyalist draw:0 hand:0 
-general:hmx001 role:loyalist 
-general:shen012 role:rebel draw:0 
+general:zhu003 role:rebel acquireSkills:tianyan draw:0 equip:53,62,108 hand:28,0,1,2 
+general:wai005 role:lord starter:true equip:58 hand:112 

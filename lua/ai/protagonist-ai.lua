@@ -851,6 +851,7 @@ sgs.ai_skill_cardask["@bllm-discard"] = function(self, data)
 		return "$" .. all_hearts[1]	
 	elseif prompt=="bllmshiyu" then
 		local mustuse=false
+		--who= self.room:getCurrentDyingPlayer()
 		if self.player:hasFlag("Global_Dying") then
 			mustuse=true
 		elseif sgs.Slash_IsAvailable(self.player) and getCardsNum("Slash", self.player, self.player) > 0 then

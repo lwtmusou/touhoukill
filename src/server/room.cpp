@@ -2442,7 +2442,7 @@ bool Room::processRequestSurrender(ServerPlayer *player, const QSanProtocol::QSa
 void Room::processClientPacket(const QString &request) {
     QSanGeneralPacket packet;
     //@todo: remove this thing after the new protocol is fully deployed
-    if (packet.parse(request.toLatin1().constData())) {
+    if (packet.parse(request.toAscii().constData())) {
         ServerPlayer *player = qobject_cast<ServerPlayer *>(sender());
         if (packet.getPacketType() == S_TYPE_REPLY) {
             if (player == NULL) return;
@@ -2979,7 +2979,7 @@ void Room::speakCommand(ServerPlayer *player, const QString &arg) {
                                }
     bool broadcast = true;
     if (player && Config.EnableCheat) {
-        QString sentence = QString::fromUtf8(QByteArray::fromBase64(arg.toLatin1()));
+        QString sentence = QString::fromUtf8(QByteArray::fromBase64(arg.toAscii()));
         if (sentence == ".BroadcastRoles") {
             _NO_BROADCAST_SPEAKING
                 foreach(ServerPlayer *p, m_alivePlayers)
@@ -3097,7 +3097,7 @@ void Room::speakCommand(ServerPlayer *player, const QString &arg) {
     if (broadcast) {
         broadcastInvoke("speak", QString("%1:%2").arg(player->objectName()).arg(arg));
         if (game_started && Config.EnableSurprisingGenerals){
-            QString real_str = QString::fromUtf8(QByteArray::fromBase64(arg.toLatin1()));
+            QString real_str = QString::fromUtf8(QByteArray::fromBase64(arg.toAscii()));
             //-----------------@SurprisingGeneral:Rara---------------------
             if (real_str.contains(tr("Rara")) && player->getGeneralName() != "Rara")
                 changeHero(player, "Rara", false);
@@ -5952,7 +5952,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge, cons
 
     const Card *oldJudge = judge->card;
     judge->card = Sanguosha->getCard(card->getEffectiveId());
-    ServerPlayer *rebyre = judge->retrial_by_response;//old judge provider
+    //ServerPlayer *rebyre = judge->retrial_by_response;//old judge provider
     judge->retrial_by_response = player;
     
     CardsMoveStruct move1(QList<int>(),

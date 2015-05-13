@@ -319,9 +319,6 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == Damaged) { //DamageDone?
             DamageStruct damage = data.value<DamageStruct>();
-            ServerPlayer *current = room->getCurrent();
-            //if (!current) //|| current == damage.to || current->getPhase() != Player::Play
-            //    return false;
             if (player == damage.to)
                 player->setFlags("henyi");
         }

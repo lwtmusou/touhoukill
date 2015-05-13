@@ -97,7 +97,7 @@ void RecAnalysis::initialize(QString dir) {
 
         if (line.contains("addPlayer")) {
             QStringList info_assemble = line.split(" ").last().split(":");
-            getPlayer(info_assemble.at(0))->m_screenName = QString::fromUtf8(QByteArray::fromBase64(info_assemble.at(1).toLatin1()));
+            getPlayer(info_assemble.at(0))->m_screenName = QString::fromUtf8(QByteArray::fromBase64(info_assemble.at(1).toAscii()));
             continue;
         }
 
@@ -111,7 +111,7 @@ void RecAnalysis::initialize(QString dir) {
             QString speaker = line.split(":").first();
             speaker.remove(0, speaker.lastIndexOf(" ") + 1);
             QString words = line.split(":").last().remove(" ");
-            words = QString::fromUtf8(QByteArray::fromBase64(words.toLatin1()));
+            words = QString::fromUtf8(QByteArray::fromBase64(words.toAscii()));
             m_recordChat += getPlayer(speaker)->m_screenName + ": " + words;
             m_recordChat.append("<br/>");
 

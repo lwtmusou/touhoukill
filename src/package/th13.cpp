@@ -291,12 +291,13 @@ bool xihuaCard::do_xihua(ServerPlayer *tanuki) const{
 bool xihuaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const {
 
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-        const Card *card = NULL;
         if (!user_string.isEmpty()) {
             const Card *oc = Sanguosha->getCard(subcards.first());
-            card = Sanguosha->cloneCard(user_string.split("+").first(), oc->getSuit(), oc->getNumber());
+            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), oc->getSuit(), oc->getNumber());
+            card->setSkillName("xihua");
+            return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
         }
-        return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
+        return false;
     }
     else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
         return false;
@@ -314,15 +315,16 @@ bool xihuaCard::targetFilter(const QList<const Player *> &targets, const Player 
 
 bool xihuaCard::targetFixed() const {
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-        const Card *card = NULL;
         if (!user_string.isEmpty()) {
             const Card *oc = Sanguosha->getCard(subcards.first());
-            card = Sanguosha->cloneCard(user_string.split("+").first(), oc->getSuit(), oc->getNumber());
+            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), oc->getSuit(), oc->getNumber());
+            card->setSkillName("xihua");
+            return card && card->targetFixed();
         }
-        return card && card->targetFixed();
+        return false;
     }
     else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
-        return true;//true;
+        return true;
     }
 
     const Card *card = Self->tag.value("xihua").value<const Card *>();
@@ -337,13 +339,13 @@ bool xihuaCard::targetFixed() const {
 
 bool xihuaCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-        const Card *card = NULL;
         if (!user_string.isEmpty()) {
             const Card *oc = Sanguosha->getCard(subcards.first());
-            card = Sanguosha->cloneCard(user_string.split("+").first(), oc->getSuit(), oc->getNumber());
+            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), oc->getSuit(), oc->getNumber());
+            card->setSkillName("xihua");
+            return card && card->targetsFeasible(targets, Self);
         }
-
-        return card && card->targetsFeasible(targets, Self);
+        return false;
     }
     else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
         return true;
@@ -364,17 +366,6 @@ const Card *xihuaCard::validate(CardUseStruct &card_use) const {
 
     Room *room = xihua_general->getRoom();
     QString to_use = user_string;
-
-    if (user_string == "slash"
-        &&
-        (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE
-        || Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)) {
-        QStringList use_list;
-        use_list << "slash";
-        if (!Config.BanPackages.contains("maneuvering"))
-            use_list << "thunder_slash" << "fire_slash";
-        to_use = room->askForChoice(xihua_general, "xihua_skill_slash", use_list.join("+"));
-    }
 
     LogMessage log;
     log.type = card_use.to.isEmpty() ? "#XihuaNoTarget" : "#Xihua";
@@ -410,13 +401,6 @@ const Card *xihuaCard::validateInResponse(ServerPlayer *user) const{
             && !xihua_clear::xihua_choice_limit(user, "analeptic", Card::MethodResponse))
             use_list << "analeptic";
         to_use = room->askForChoice(user, "xihua_skill_saveself", use_list.join("+"));
-    }
-    else if (user_string == "slash") {
-        QStringList use_list;
-        use_list << "slash";
-        if (!Config.BanPackages.contains("maneuvering"))
-            use_list << "thunder_slash" << "fire_slash";
-        to_use = room->askForChoice(user, "xihua_skill_slash", use_list.join("+"));
     }
     else
         to_use = user_string;
@@ -479,9 +463,16 @@ public:
     virtual const Card *viewAs() const{
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE
             || Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+            if (pattern.contains("slash")) {
+                const Card *c = Self->tag.value("xihua").value<const Card *>();
+                if (c) 
+                    pattern = c->objectName();
+                else
+                    return NULL;
+            }
             xihuaCard *card = new xihuaCard;
-            card->setUserString(Sanguosha->currentRoomState()->getCurrentCardUsePattern());
-            //card->addSubcard(originalCard);
+            card->setUserString(pattern);
             return card;
         }
 
@@ -490,7 +481,6 @@ public:
         if (c) {
             xihuaCard *card = new xihuaCard;
             card->setUserString(c->objectName());
-
             return card;
         }
         else
