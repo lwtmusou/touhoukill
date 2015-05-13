@@ -833,7 +833,8 @@ public:
                     room->setPlayerProperty(source, "chuanran", chuanranTargets.join("+"));
                     source->tag["chuanran_cardname"] == QVariant::fromValue(trickname);
                     source->tag["chuanran_id"] = QVariant::fromValue(id);
-                    const Card *dummy = room->askForUseCard(source, "@@chuanran", "@chuanran:" + trickname);
+                    //const Card *dummy = 
+					room->askForUseCard(source, "@@chuanran", "@chuanran:" + trickname);
                     room->setPlayerProperty(source, "chuanran", QVariant());
                     //if (dummy==NULL)
                     //     room->obtainCard(source,id,true);
