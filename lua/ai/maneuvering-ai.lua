@@ -259,6 +259,13 @@ sgs.ai_use_value.Analeptic = 5.98
 sgs.ai_keep_value.Analeptic = 4.1
 sgs.ai_use_priority.Analeptic = 3.0
 
+sgs.ai_card_intention.Analeptic = function(self, card, from, tos)
+	for _, to in ipairs(tos) do
+		if not to:hasFlag("Global_Dying") then continue end
+		sgs.updateIntention(from, to, -120)
+	end
+end
+
 local function handcard_subtract_hp(a, b)
 	local diff1 = a:getHandcardNum() - a:getHp()
 	local diff2 = b:getHandcardNum() - b:getHp()
