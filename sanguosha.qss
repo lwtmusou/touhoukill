@@ -16,7 +16,10 @@ QToolTip{
 }
 
 QTextEdit{
-    background-color: rgba(0,0,0,80);
+    border: 10px;
+    border-image: url(image/system/border.png) 10 10 10 10;
+    background-color: rgba(43, 45, 31, 120);
+
 }
 
 QLabel#guhuo_text {
@@ -24,7 +27,7 @@ QLabel#guhuo_text {
     border-radius: 5px;
 }
 
-QTextEdit[description="true"]{
+QTextEdit[description = true]{
     border: 10px;
     border-image: none;
     background-color: rgba(255,255,255,255);
@@ -94,19 +97,19 @@ QStatusBar{
     color:white;
 }
 
-QMenu[private_pile="true"]{
+QMenu[private_pile = true]{
     background-color: rgba(43,63,53,200);
     border-radius: 1px;
     color: white;
 }
 
-QPushButton[private_pile="true"]{
+QPushButton[private_pile = true]{
     background-color: rgba(43,63,53,200);
     border-radius: 1px;
     color: white;
 }
 
-QPushButton[game_control="true"]{
+QPushButton[game_control = true]{
     border: 0px solid gray;
     font: 12px;
     border-radius: 5px;
@@ -133,71 +136,14 @@ QPushButton#uniform{
     background-image: url(image/system/button/uniform.png);
 }
 
-#skill_bar_container QPushButton{
-    background-image: url(image/system/button/back.png);
-        border: 1px solid gray;
-        border-radius: 4px;
-    color: yellow;
-    font: 12px;
-    padding: 6px 12px 6px 12px;
-}
-#skill_bar_container QPushButton:disabled{
-    background-image: url(image/system/button/back_shade.png);
-        border-radius: 4px;
+QMenu[treasure = true] {
+    background-color: rgba(64, 52, 0, 200);
+    border-radius: 5px;
     color: white;
-    font: 12px;
 }
-#skill_bar_container QCheckBox{
-    border: 1px solid gray;
-        border-radius: 4px;
-    color: yellow;
-    font: 12px;
-    padding: 1px 12px 1px 8px;
-}
-#skill_bar_container QCheckBox::indicator{
-    height: 0px;
-    width: 0px;
-}
-#skill_bar_container QCheckBox:unchecked{
-    background-image: url(image/system/button/frequent_checkbox/unchecked.png);
-}
-#skill_bar_container QCheckBox:unchecked:hover{
-    background-image: url(image/system/button/frequent_checkbox/unchecked_hover.png);
-}
-#skill_bar_container QCheckBox:unchecked:pressed{
-    background-image: url(image/system/button/frequent_checkbox/unchecked_press.png);
-}
-#skill_bar_container QCheckBox:checked{
-    background-image: url(image/system/button/frequent_checkbox/checked.png);
-}
-#skill_bar_container QCheckBox:checked:hover{
-    background-image: url(image/system/button/frequent_checkbox/checked_hover.png);
-}
-#skill_bar_container QCheckBox:checked:pressed{
-    background-image: url(image/system/button/frequent_checkbox/checked_press.png);
-}
-#skill_bar_container QComboBox{
-    background-image: url(image/system/button/back2.png);
-    border: 1px solid gray;
-    border-radius: 3px;
+
+QPushButton[treasure = true] {
+    background-color: rgba(64, 52, 0, 200);
+    border-radius: 5px;
     color: white;
-    padding: 1px 18px 1px 3px;
-}
-#skill_bar_container QComboBox:on{
-    padding-left: 4px;
-    padding-top: 3px;
-}
-#skill_bar_container QComboBox::drop-down{
-    border-bottom-right-radius: 3px;
-    border-left-color: darkgray;
-    border-left-style: solid;
-    border-left-width: 1px;
-    border-top-right-radius: 3px;
-    subcontrol-origin: padding;
-    subcontrol-position: top right;
-    width: 15px;
-}
-#skill_bar_container QComboBox::down-arrow:on{
-    left: 1px;
-    top: 1px;
 }
