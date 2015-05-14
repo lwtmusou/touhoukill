@@ -4120,6 +4120,14 @@ function SmartAI:willUsePeachTo(dying)
 		if self:getCardId("Peach") then return self:getCardId("Peach") end
 	end
 	
+	--宴会用酒
+	if self.player:objectName() ~= dying:objectName() and self:isFriend(dying) 
+    and	 dying:hasLordSkill("yanhui") and self.player:getKingdom() == "zhan"
+	and not self:needDeath(dying) then
+		local analeptic = sgs.cloneCard("analeptic")
+		if not self.player:isLocked(analeptic) and self:getCardId("Analeptic") then return self:getCardId("Analeptic") end
+	end
+	
 	--物语必须救
 	local lord_mouko = getLord(self.player)
 	if lord_mouko and lord_mouko:hasLordSkill("tymhwuyu") then

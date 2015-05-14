@@ -1276,6 +1276,27 @@ end
 --应该建一个函数【救赎】
 --【斗酒】
 function SmartAI:useCardPeach(card, use)
+	--对主公发动宴会使用桃
+	if (self.player:getKingdom() == "zhan") then
+		local yanhuiTargets = {}
+		for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+			if p:hasLordSkill("yanhui") and p:isAlive() and p:isWounded() and p:getHp()<=self.player:getHp() then
+				if self:isFriend(p) then
+					table.insert(yanhuiTargets,p)
+				end
+			end
+		end
+		if (#yanhuiTargets >= 1) then 
+			self:sort(yanhuiTargets,"hp")
+			use.card = card
+			if use.to then
+				use.to:append(yanhuiTargets[1])
+				if use.to:length() >= 1 then return end
+			end
+		end
+	end
+	
+	
 	local mustusepeach = false
 	if not self.player:isWounded() then return end
 	if self.player:hasSkill("jiushu") and self.player:getHp()>2 then 
