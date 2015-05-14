@@ -5,15 +5,7 @@
 #include "card.h"
 
 
-class yanhuiCard : public SkillCard {
-    Q_OBJECT
 
-public:
-    Q_INVOKABLE yanhuiCard();
-
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual const Card *validate(CardUseStruct &card_use) const;
-};
 
 class tianrenCard : public SkillCard {
     Q_OBJECT

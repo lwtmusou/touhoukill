@@ -503,53 +503,11 @@ public:
 };
 
 
-
-yanhuiCard::yanhuiCard() {
-    //will_throw = false;
-    handling_method = Card::MethodUse;
-    m_skillName = "yanhuivs";
-    //mute = true;
-}
-bool yanhuiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select != Self && to_select->isWounded() && to_select->hasLordSkill("yanhui");
-}
-
-const Card *yanhuiCard::validate(CardUseStruct &card_use) const{
-    Card *card = Sanguosha->getCard(subcards.first());
-    card->setSkillName("yanhui");
-    return card;
-}
-
-
-class yanhuivs : public OneCardViewAsSkill {
-public:
-    yanhuivs() :OneCardViewAsSkill("yanhuivs") {
-        attached_lord_skill = true;
-        filter_pattern = "Peach";
-        response_or_use = true;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        if (player->getKingdom() != "zhan")
-            return false;
-        foreach(const Player *p, player->getSiblings()){
-            if (p->hasLordSkill("yanhui") && p->isAlive() && p->isWounded())
-                return true;
-        }
-        return false;
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const{
-        yanhuiCard *card = new yanhuiCard;
-        card->addSubcard(originalCard);
-
-        return card;
-    }
-};
+//rewrite Peach::targetFilter
 class yanhui : public TriggerSkill {
 public:
     yanhui() : TriggerSkill("yanhui$") {
-        events << GameStart << EventAcquireSkill << EventLoseSkill << PreCardUsed;
+        events  << PreCardUsed; //<< GameStart << EventAcquireSkill << EventLoseSkill
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -557,51 +515,17 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if ((triggerEvent == GameStart && player->isLord())
-            || (triggerEvent == EventAcquireSkill && data.toString() == "yanhui")) {
-            QList<ServerPlayer *> lords;
-            foreach(ServerPlayer *p, room->getAlivePlayers()) {
-                if (p->hasLordSkill(objectName(),false,true))
-                    lords << p;
-            }
-            if (lords.isEmpty()) return false;
-
-            QList<ServerPlayer *> players;
-            if (lords.length() > 1)
-                players = room->getAlivePlayers();
-            else
-                players = room->getOtherPlayers(lords.first());
-            foreach(ServerPlayer *p, players) {
-                if (!p->hasSkill("yanhuivs"))
-                    room->attachSkillToPlayer(p, "yanhuivs");
-            }
-        } else if (triggerEvent == EventLoseSkill && data.toString() == "yanhui") {
-            QList<ServerPlayer *> lords;
-            foreach(ServerPlayer *p, room->getAlivePlayers()) {
-                if (p->hasLordSkill(objectName(),false,true))
-                    lords << p;
-            }
-            if (lords.length() > 2) return false;
-
-            QList<ServerPlayer *> players;
-            if (lords.isEmpty())
-                players = room->getAlivePlayers();
-            else
-                players << lords.first();
-            foreach(ServerPlayer *p, players) {
-                if (p->hasSkill("yanhuivs"))
-                    room->detachSkillFromPlayer(p, "yanhuivs", true);
-            }
-        } else if (triggerEvent == PreCardUsed){
+		if (triggerEvent == PreCardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             foreach(ServerPlayer *p, use.to){
                 if (p->hasSkill("yanhui") && p != use.from){
-                    if (use.card->isKindOf("Analeptic") && p->hasFlag("Global_Dying")){
-                        room->notifySkillInvoked(p, objectName());
-                    }
-                    else if (use.card->isKindOf("Peach") && use.from->getPhase() == Player::Play){
-                        room->notifySkillInvoked(p, objectName());
-                    }
+					if ((use.card->isKindOf("Analeptic") && p->hasFlag("Global_Dying"))
+					||(use.card->isKindOf("Peach") && use.m_reason == CardUseStruct::CARD_USE_REASON_PLAY)){
+                        QList<ServerPlayer *> logto;
+						logto << p;
+						room->touhouLogmessage("#InvokeOthersSkill", use.from, objectName(), logto);
+						room->notifySkillInvoked(p, objectName());
+                    }	
                 }
             }
         }
@@ -994,9 +918,7 @@ th09Package::th09Package()
 
     General *zhan010 = new General(this, "zhan010", "zhan", 4, false);
 
-    addMetaObject<yanhuiCard>();
     addMetaObject<tianrenCard>();
-    skills << new yanhuivs;
 }
 
 ADD_PACKAGE(th09)

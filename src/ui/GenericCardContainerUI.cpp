@@ -1269,8 +1269,8 @@ void PlayerCardContainer::onAvatarHoverEnter()
     if (NULL != m_player) {
         QObject *senderObj = sender();
 
-        bool second_zuoci = (m_player->getGeneralName() != "zuoci")
-            && (m_player->getGeneral2Name() == "zuoci");
+        //bool second_zuoci = (m_player->getGeneralName() != "zuoci")
+        //    && (m_player->getGeneral2Name() == "zuoci");
 
         const General *general = NULL;
         GraphicsPixmapHoverItem *avatarItem = NULL;
@@ -1309,8 +1309,8 @@ void PlayerCardContainer::onAvatarHoverLeave()
     if (NULL != m_player) {
         QObject *senderObj = sender();
 
-        bool second_zuoci = (m_player->getGeneralName() != "zuoci")
-            && (m_player->getGeneral2Name() == "zuoci");
+        //bool second_zuoci = (m_player->getGeneralName() != "zuoci")
+        //    && (m_player->getGeneral2Name() == "zuoci");
 
         QSanButton *heroSKinBtn = NULL;
 

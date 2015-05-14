@@ -388,7 +388,10 @@ public:
                         // judgement!!! It will not accurately reflect the real reason.
     QString m_skillName; // skill that triggers movement of the cards, such as "longdang", "dimeng"
     QString m_eventName; // additional arg such as "lebusishu" on top of "S_REASON_JUDGE"
-
+	QVariant m_extraData; // additional data and will not be parsed to clients
+	QVariant m_provider; // additional data record who provide this card for otherone to use or response, 
+	//etc. guanyu provide a slash for "jijiang" 
+	
     CardMoveReason();
     CardMoveReason(int moveReason, char *playerId);
     CardMoveReason(int moveReason, char *playerId, char *skillName, char *eventName);
@@ -595,6 +598,8 @@ struct JudgeStruct {
     bool good;
     QString reason;
     bool time_consuming;
+	ServerPlayer *retrial_by_response; // record whether the current judge card is provided by a response retrial
+
 };
 
 typedef JudgeStruct *JudgeStar;
@@ -797,6 +802,7 @@ public:
     virtual void addSubcards(const QList<const Card *> &cards);
     virtual void addSubcards(const QList<int> &subcards_list);
     virtual int subcardsLength() const;
+
 
     virtual QString getType() const = 0;
     virtual QString getSubtype() const = 0;
@@ -1148,7 +1154,7 @@ public:
     void fillAG(const QList<int> &card_ids, ServerPlayer *who = NULL, const QList<int> &disabled_ids = QList<int>());
     void takeAG(ServerPlayer *player, int card_id, bool move_cards = true, QList<ServerPlayer *> to_notify = QList<ServerPlayer *>());
     void clearAG(ServerPlayer *player = NULL);
-    void provide(const Card *card);
+    void provide(const Card *card, ServerPlayer *who = NULL);
     QList<ServerPlayer *> getLieges(const char *kingdom, ServerPlayer *lord) const;
     void sendLog(const LogMessage &log);
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
@@ -1205,6 +1211,7 @@ public:
     ServerPlayer *findPlayer(const char *general_name, bool include_dead = false) const;
     QList<ServerPlayer *> findPlayersBySkillName(const char *skill_name) const;
     ServerPlayer *findPlayerBySkillName(const char *skill_name) const;
+	ServerPlayer *findPlayerByObjectName(const char *name) const;
     void installEquip(ServerPlayer *player, const char *equip_name);
     void resetAI(ServerPlayer *player);
     void changeHero(ServerPlayer *player, const char *new_general, bool full_state, bool invoke_start = true, bool isSecondaryHero = false, bool sendLog = true);

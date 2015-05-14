@@ -420,7 +420,7 @@ bool Jink::isAvailable(const Player *) const{
 
 Peach::Peach(Suit suit, int number) : BasicCard(suit, number) {
     setObjectName("peach");
-    target_fixed = true;
+    //target_fixed = true;
 }
 
 QString Peach::getSubtype() const{
@@ -431,6 +431,7 @@ void Peach::onUse(Room *room, const CardUseStruct &card_use) const{
     CardUseStruct use = card_use;
     if (use.to.isEmpty())
         use.to << use.from;
+	
     BasicCard::onUse(room, use);
 }
 
@@ -444,9 +445,30 @@ void Peach::onEffect(const CardEffectStruct &effect) const{
     recover.who = effect.from;
     room->recover(effect.to, recover);
 }
+;
+
+
+bool Peach::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if (targets.isEmpty() && to_select->isWounded()){
+		if (to_select == Self ) return true;
+		if (Self->getKingdom()=="zhan" && to_select->hasLordSkill("yanhui")) return true;
+	}
+	return false;
+}
 
 bool Peach::isAvailable(const Player *player) const{
-    return player->isWounded() && !player->isProhibited(player, this) && BasicCard::isAvailable(player);
+	if (!player->isProhibited(player, this) && BasicCard::isAvailable(player)){
+		if (player->isWounded()) return true;
+		if (player->getKingdom()=="zhan"){
+			foreach(const Player *p, Self->getAliveSiblings()){
+				if (p->hasLordSkill("yanhui") && p->isWounded())
+					return true;
+			}
+		}
+		
+	}
+	return false;
+    //return player->isWounded() && !player->isProhibited(player, this) && BasicCard::isAvailable(player);
 }
 
 Crossbow::Crossbow(Suit suit, int number)
