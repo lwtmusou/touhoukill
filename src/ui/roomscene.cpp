@@ -49,6 +49,7 @@
 #include <QTransform>
 #include "uiUtils.h"
 
+
 using namespace QSanProtocol;
 
 RoomScene *RoomSceneInstance;
@@ -298,7 +299,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     m_tableBg = new QGraphicsPixmapItem;
     m_tableBg->setZValue(-100000);
-
+	addItem(m_tableBg);
+	
     QHBoxLayout *skill_dock_layout = new QHBoxLayout;
     QMargins margins = skill_dock_layout->contentsMargins();
     margins.setTop(0);
@@ -853,6 +855,7 @@ void RoomScene::adjustItems() {
     if ((image_path == NULL) || !QFile::exists(image_path)){
         image_path = Config.TableBgImage;
     }
+	
     QPixmap tableBg = QPixmap(image_path)
         .scaled(m_tablew, m_tableh, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     m_tableh -= _m_roomLayout->m_photoDashboardPadding;
@@ -3764,9 +3767,10 @@ void RoomScene::onGameStart() {
             image_path = "backdrop/" + lord_name + ".jpg";
     }
     
-
-    if ((image_path != "") && QFile::exists(image_path))
-        changeTableBg(image_path);
+    if ((image_path != "") && QFile::exists(image_path)){
+		
+		changeTableBg(image_path);
+	}
     if (Config.EnableBgMusic) {
         // start playing background music     
         Audio::playBGM(bgmusic_path);
