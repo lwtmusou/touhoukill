@@ -450,9 +450,15 @@ void Peach::onEffect(const CardEffectStruct &effect) const{
 
 bool Peach::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if (targets.isEmpty() && to_select->isWounded()){
-		if (to_select == Self ) return true;
-		if (Self->getKingdom()=="zhan" && to_select->hasLordSkill("yanhui")) return true;
-	}
+		if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE){
+			if (to_select->hasFlag("Global_Dying") &&  to_select->objectName() ==  Self->property("currentdying").toString()) return true;
+		}
+		else
+		{
+			if (to_select == Self ) return true;
+			if (Self->getKingdom()=="zhan" && to_select->hasLordSkill("yanhui")) return true;
+		}
+	} 
 	return false;
 }
 
