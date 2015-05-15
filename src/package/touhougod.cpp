@@ -714,9 +714,16 @@ public:
             
         foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
             if (p->canDiscard(p, "h")) {
-                const Card *cards = room->askForExchange(p, objectName(), 1, false, "cuixiang-exchange:" + player->objectName() + ":" + objectName());
-                int id = cards->getSubcards().first();
-                room->throwCard(id, p, p);
+                int id = -1;
+				//auto throw
+				if (p->getHandcardNum()==1)
+					id = p->getCards("h").first()->getEffectiveId();
+				else{
+					const Card *cards = room->askForExchange(p, objectName(), 1, false, "cuixiang-exchange:" + player->objectName() + ":" + objectName());
+					id = cards->getSubcards().first();
+					
+				}
+				room->throwCard(id, p, p);
                 //we need id to check cardplace,
                 //since skill "jinian",  the last handcard will be return.
                 if (room->getCardPlace(id) == Player::DiscardPile)

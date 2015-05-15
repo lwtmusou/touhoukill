@@ -105,7 +105,7 @@ return{ ["th06"] = "红魔乡",
     ["#Dongjie"] = "%from 发动了“%arg”，防止了对 %to 的伤害",
 
     ["bingpo"] = "冰魄",
-    [":bingpo"] = "<font color=\"blue\"><b>锁定技，</b></font>每当你受到一次火焰伤害以外的伤害时，若此伤害多于1点或你的体力值为1，防止此伤害。",
+    [":bingpo"] = "<font color=\"blue\"><b>锁定技，</b></font>每当你受到一次火焰伤害以外的伤害时，若此伤害多于1点或你的体力值不大于1，防止此伤害。",
     ["#bingpolog"] ="%from的“%arg”被触发, %from 防止了%arg2点伤害.",
     
     ["bendan"] = "笨蛋",

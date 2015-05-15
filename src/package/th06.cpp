@@ -897,7 +897,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.nature != DamageStruct::Fire) {
-            if (damage.damage > 1 || player->getHp() == 1){
+            if (damage.damage > 1 || player->getHp() <= 1){
                 room->touhouLogmessage("#bingpolog", player, "bingpo", QList<ServerPlayer *>(), QString::number(damage.damage));
                 room->notifySkillInvoked(player, objectName());
                 return true;
