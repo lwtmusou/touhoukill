@@ -1322,6 +1322,9 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
     _m_roomState.setCurrentCardUsePattern(pattern);
 
+	//we need check cardLimit at here , instead of check it in eghitDiagram cardasked? 
+	
+	
     const Card *card = NULL;
 
     QStringList asked;
@@ -1330,10 +1333,15 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial && !player->hasFlag("continuing"))
         thread->trigger(CardAsked, this, player, asked_data);
     
-    //for the player died since a counter attack from juwang target
-    if (player->isDead())
+    //case 1. for the player died since a counter attack from juwang target
+	//case 2. figure out dizhen and eghitDiagram and tianren
+	//we also need clear the provider info
+    if (!player->isAlive() && !isProvision){
+		provided = NULL;
+        has_provided = false;
+        provider = NULL;
         return NULL;
-    
+    }
     CardUseStruct::CardUseReason reason = CardUseStruct::CARD_USE_REASON_UNKNOWN;
     if (method == Card::MethodResponse)
         reason = CardUseStruct::CARD_USE_REASON_RESPONSE;
@@ -1353,6 +1361,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         provided = NULL;
         has_provided = false;
         provider = NULL;
+		
     }
     else {
         AI *ai = player->getAI();
