@@ -466,7 +466,7 @@ public:
     NeoAocai(): TriggerSkill("neoaocai"){
         events << EventPhaseChanging;
         frequency = Limited;
-        limit_mark = "@neoaocai"; //Todo：加入这个Mark的图片
+        limit_mark = "@neoaocai";
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -480,7 +480,7 @@ public:
             if (count.length() > 0)
                 if (room->askForSkillInvoke(player, objectName())){
                     room->broadcastSkillInvoke(objectName());
-                    room->doLightbox("$neoaocai", 5000); //ToAsk: 这里没有Animate的翻译和图像文件，这里只能显示大黑框
+                    room->doLightbox("$neoaocai", 5000);
                     player->loseMark("@neoaocai");
                     foreach(ServerPlayer *victim, count){
                         QString choice = "give";
@@ -2483,7 +2483,7 @@ public:
         if (target->getPhase() == Player::Draw){
             if (target->getMark("@baozheng") <= 0 || !target->askForSkillInvoke(objectName()))
                 return false;
-            
+
             target->setFlags("baozhengused");
 
             Room *room = target->getRoom();
@@ -3002,7 +3002,7 @@ public:
                 room->setTag("QiaobianTarget", QVariant::fromValue(target1));
                 ServerPlayer *to = room->askForPlayerChosen(player, tos, objectName() + "_movefield_target2", "@xuanying-movefield2:::" + card->objectName());
                 if (to)
-                    room->moveCardTo(card, target1, to, place, 
+                    room->moveCardTo(card, target1, to, place,
                         CardMoveReason(CardMoveReason::S_REASON_TRANSFER, player->objectName(), objectName(), QString()));
                 room->removeTag("QiaobianTarget");
             }
@@ -3046,12 +3046,12 @@ public:
 
                 ServerPlayer *target = room->askForPlayerChosen(player, players, objectName() + "_exchangehandcards_target", "@xuanying-exchangehandcards1", false);
                 int num = target->getHandcardNum();
-                
+
                 DummyCard *handcards = target->wholeHandCards();
                 player->obtainCard(handcards, false);
                 delete handcards;
 
-                const Card *to_exchange = room->askForExchange(player, objectName() + "_exchangehandcards_exchange", num, false, 
+                const Card *to_exchange = room->askForExchange(player, objectName() + "_exchangehandcards_exchange", num, false,
                         "@xuanying-exchangehandcards2:" + target->objectName() + "::" + QString::number(num));
                 target->obtainCard(to_exchange);
 

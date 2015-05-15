@@ -14,11 +14,11 @@ public:
     baochui() : TriggerSkill("baochui") {
         events << EventPhaseStart;;
     }
-    
+
     virtual bool triggerable(const ServerPlayer *target) const{
         return (target != NULL && target->isAlive());
     }
-    
+
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (player->getPhase() == Player::Start && player->getHandcardNum() < 3){
             ServerPlayer *src = room->findPlayerBySkillName(objectName());
@@ -28,7 +28,7 @@ public:
                 if (card){
                     player->drawCards(3-player->getHandcardNum());
                     room->setPlayerFlag(player, objectName());
-                }    
+                }
             }
         }
         else if (player->getPhase() == Player::Discard && player->getHandcardNum() < 3 && player->hasFlag(objectName())){
@@ -85,11 +85,11 @@ public:
     moyi() : TriggerSkill("moyi$") {
         events << EventPhaseEnd  << CardsMoveOneTime << EventPhaseChanging;
     }
-    
+
     virtual bool triggerable(const ServerPlayer *target) const{
         return (target != NULL);
     }
-    
+
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *current = room->getCurrent();
         //ServerPlayer *source = room->findPlayerBySkillName(objectName());
@@ -120,7 +120,7 @@ public:
                 }
                 if (all.length() == 0)
                     return false;
-                    
+
                 QList<ServerPlayer *> targets;
                 foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
                     if (p->hasLordSkill(objectName()))
@@ -145,7 +145,7 @@ public:
             if (change.from == Player::Discard)
                 current->tag.remove("moyi_basics");
         }
-        
+
         return false;
     }
 };
@@ -274,7 +274,7 @@ public:
         room->touhouLogmessage("#TriggerSkill", victim, objectName());
         room->notifySkillInvoked(victim, objectName());
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, victim->objectName(), player->objectName());
-            
+
         room->showAllCards(player);
         room->getThread()->delay(1000);
         room->clearAG();
@@ -355,7 +355,7 @@ public:
                 return false;
             if (player->askForSkillInvoke(objectName(), "throw:" + current->objectName())){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), current->objectName());
-            
+
                 const Card *card = room->askForCard(current, ".|red|.|hand", "@juwang:" + player->objectName(), data, Card::MethodDiscard, NULL, false, objectName());
                 if (card == NULL)
                     room->damage(DamageStruct(objectName(), player, current, 1));
@@ -434,7 +434,7 @@ public:
                 if (!room->askForSkillInvoke(source, objectName(), prompt))
                     return false;
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), current->objectName());
-            
+
                 room->askForDiscard(current, objectName(), 1, 1, false, false, "wuchang_discard");
             }
         }
@@ -520,7 +520,7 @@ void yuanfeiCard::onEffect(const CardEffectStruct &effect) const{
     //room:setPlayerCardLimitation(target, "use,response", ".|.|.|hand$1", true)
     room->setPlayerFlag(target, "yuanfei");
     room->touhouLogmessage("#yuanfei", target, "yuanfei");
-    //room:removePlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick$0")   
+    //room:removePlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick$0")
 }
 
 yuanfeiNearCard::yuanfeiNearCard() {
@@ -706,7 +706,7 @@ public:
             if (player->getPhase() == Player::Finish){
                 ServerPlayer *source = room->findPlayerBySkillName(objectName());
                 if (!source || source->isCurrent())
-                    return false;  
+                    return false;
                 //if (source->getPhase() != Player::NotActive)
                 QList<int>    temp_ids;
                 QVariantList shizhu_ids = room->getTag("shizhuPeach").toList();
@@ -716,7 +716,7 @@ public:
                 }
                 if (temp_ids.length() == 0)
                     return false;
-                
+
 
                 if (room->askForSkillInvoke(source, objectName(), data)) {
                     room->fillAG(temp_ids, source);
@@ -772,7 +772,7 @@ public:
             foreach(int id, move.card_ids){
                 Card *card = Sanguosha->getCard(id);
                 if (card->isKindOf("Peach") && !temp_ids.contains(id)
-                    && room->getCardPlace(id) == Player::DiscardPile)                                
+                    && room->getCardPlace(id) == Player::DiscardPile)
                     shizhu_ids << id;
             }
             room->setTag("shizhuPeach", shizhu_ids);
@@ -789,13 +789,13 @@ liangeCard::liangeCard() {
 void liangeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     room->moveCardTo(Sanguosha->getCard(subcards.first()), NULL, Player::DrawPile);
     QList<int> idlist = room->getNCards(2);//(2, false)
-    
+
     room->fillAG(idlist, targets.first());
     int card_id = room->askForAG(targets.first(), idlist, false, "liange");
     room->clearAG(targets.first());
     room->obtainCard(targets.first(), card_id, false);
     idlist.removeOne(card_id);
-    
+
     DummyCard *dummy = new DummyCard;
     foreach(int id, idlist)
         dummy->addSubcard(id);
@@ -888,7 +888,7 @@ th14Package::th14Package()
     hzc001->addSkill(new baochui);
     hzc001->addSkill(new yicun);
     hzc001->addSkill(new moyi);
-    
+
     General *hzc002 = new General(this, "hzc002", "hzc", 4, false);
     hzc002->addSkill(new leiting);
 

@@ -147,7 +147,7 @@ public:
     virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.from) {
-            if (damage.from->getCards("he").length() <= player->getCards("he").length() 
+            if (damage.from->getCards("he").length() <= player->getCards("he").length()
                     && room->askForDiscard(player, objectName(), 1, 1, true, true, "@mingshi-discard")) {
                 room->notifySkillInvoked(player, objectName());
                 room->broadcastSkillInvoke(objectName());
@@ -198,7 +198,7 @@ public:
                                     QList<ServerPlayer *>(), move.reason, "@lirang-distribute", true)) {
                 if (kongrong->isDead()) break;
             }*/
-            room->askForRende(kongrong, lirang_card, objectName(), true, true, -1, 
+            room->askForRende(kongrong, lirang_card, objectName(), true, true, -1,
                               QList<ServerPlayer *>(), move.reason, "@lirang-distribute", true);
 
             QList<int> ids = move.card_ids;

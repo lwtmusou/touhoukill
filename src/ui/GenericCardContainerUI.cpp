@@ -181,7 +181,7 @@ void PlayerCardContainer::updateAvatar() {
     if (_m_avatarIcon == NULL) {
         _m_avatarIcon = new GraphicsPixmapHoverItem(this, _getAvatarParent());
         _m_avatarIcon->setTransformationMode(Qt::SmoothTransformation);
-        
+
         // _m_avatarIcon->setFlag(QGraphicsItem::ItemStacksBehindParent);
     }
 
@@ -1277,7 +1277,7 @@ void PlayerCardContainer::onAvatarHoverEnter()
         QSanButton *heroSKinBtn = NULL;
 
         if (senderObj == _m_avatarIcon)
-        {  // || (senderObj == _m_huashenItem && !second_zuoci)) 
+        {  // || (senderObj == _m_huashenItem && !second_zuoci))
             general = m_player->getGeneral();
             avatarItem = _m_avatarIcon;
             heroSKinBtn = m_changePrimaryHeroSKinBtn;

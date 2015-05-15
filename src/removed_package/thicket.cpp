@@ -110,7 +110,7 @@ class Duanliang: public OneCardViewAsSkill {
 public:
     Duanliang(): OneCardViewAsSkill("duanliang") {
         filter_pattern = "BasicCard,EquipCard|black";
-		response_or_use = true;
+        response_or_use = true;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -208,7 +208,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *target = damage.to;
         if (damage.card && damage.card->isKindOf("Slash") && !zhurong->isKongcheng()
-            && !target->isKongcheng() && target->isAlive() && !target->hasFlag("Global_DebutFlag") && target != zhurong 
+            && !target->isKongcheng() && target->isAlive() && !target->hasFlag("Global_DebutFlag") && target != zhurong
             && !damage.chain && !damage.transfer && room->askForSkillInvoke(zhurong, objectName(), data)) {
             room->broadcastSkillInvoke(objectName(), 1);
 
@@ -595,8 +595,8 @@ public:
             DyingStruct dying = data.value<DyingStruct>();
             ServerPlayer *jiaxu = room->getCurrent();
             if (!jiaxu->hasInnateSkill("wansha") && !jiaxu->hasSkill("jilve"))
-				return false;
-			if (jiaxu->hasInnateSkill("wansha") || !jiaxu->hasSkill("jilve"))
+                return false;
+            if (jiaxu->hasInnateSkill("wansha") || !jiaxu->hasSkill("jilve"))
                 room->broadcastSkillInvoke(objectName());
             else
                 room->broadcastSkillInvoke("jilve", 3);
@@ -691,7 +691,7 @@ class Jiuchi: public OneCardViewAsSkill {
 public:
     Jiuchi(): OneCardViewAsSkill("jiuchi") {
         filter_pattern = ".|spade|.|hand";
-		response_or_use = true;
+        response_or_use = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{

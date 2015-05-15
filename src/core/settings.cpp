@@ -136,14 +136,14 @@ void Settings::init() {
 
     QStringList backimages;
     backimages << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8";
-    
+
     qShuffle(backimages);
     QString backimage = backimages.at(0);
 
     BackgroundImage = value("BackgroundImage", "backdrop/new-version" + backimage + ".jpg").toString();
     TableBgImage = value("TableBgImage", "backdrop/default.jpg").toString();
     UseLordBackdrop = value("UseLordBackdrop", true).toBool();
-    
+
     EnableSurprisingGenerals = value("EnableSurprisingGenerals", false).toBool();
     KnownSurprisingGenerals = value("KnownSurprisingGenerals", QStringList()).toStringList();
 

@@ -1,4 +1,4 @@
-﻿#include "bubblechatbox.h"
+#include "bubblechatbox.h"
 #include "settings.h"
 
 #include <QGraphicsScene>

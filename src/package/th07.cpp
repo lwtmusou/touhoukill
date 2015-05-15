@@ -193,7 +193,7 @@ public:
                 room->clearAG(yukari);
                 room->throwCard(Sanguosha->getCard(id), reason, NULL);
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, yukari->objectName(), who->objectName());
-            
+
                 int id2 = room->askForCardChosen(yukari, who, "he", objectName(), false, Card::MethodDiscard);
                 if (yukari->canDiscard(who, id2))
                     room->throwCard(id2, who, yukari);
@@ -240,7 +240,7 @@ public:
                 room->throwCard(Sanguosha->getCard(id), reason, NULL);
                 room->clearAG(s);
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, s->objectName(), player->objectName());
-            
+
                 player->skip(Player::Discard);
             }
             s->tag.remove("jingdong_target");
@@ -710,7 +710,7 @@ public:
                             break;
                         }
                     }
-                    if (!disabled.contains(id)) 
+                    if (!disabled.contains(id))
                         able << id;
                 }
             }
@@ -725,7 +725,7 @@ public:
             mes.from = player;
             mes.card_str = cardinfo.join("+");
             room->sendLog(mes);
-            
+
             int obtainId = -1;
             if (able.length()>0){
                 obtainId = room->askForAG(player, able, true, objectName());
@@ -734,7 +734,7 @@ public:
             }
             //
             room->getThread()->delay(1000);
-            
+
             //throw other cards
             DummyCard *dummy = new DummyCard;
             foreach(int id, list){
@@ -743,10 +743,10 @@ public:
             }
             if (dummy->getSubcards().length() > 0){
                 CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), objectName(), "");
-                room->throwCard(dummy, reason, NULL);   
+                room->throwCard(dummy, reason, NULL);
             }
-            
-            
+
+
             room->clearAG();
         }
         return false;
@@ -797,26 +797,26 @@ public:
         view_as_skill = new zhanzhenvs;
     }
 
-    
+
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == CardsMoveOneTime){
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>(); 
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             // move.from_places.contains(Player::PlaceTable)
-            if (move.card_ids.length() == 1 && move.to_place == Player::DiscardPile 
+            if (move.card_ids.length() == 1 && move.to_place == Player::DiscardPile
                  //(move.reason.m_reason == CardMoveReason::S_REASON_USE || move.reason.m_reason == CardMoveReason::S_REASON_RESPONSE
                 ) {
-                // only use or response will add the extradata 
-                //if it exist, we need not check the move reason again?                
+                // only use or response will add the extradata
+                //if it exist, we need not check the move reason again?
                 const Card *card = move.reason.m_extraData.value<const Card *>();
                 const Card *realcard = Sanguosha->getEngineCard(move.card_ids.first());
                 ServerPlayer *provider = move.reason.m_provider.value<ServerPlayer *>();
 
-                if (  card && card->getSkillName() == objectName() 
+                if (  card && card->getSkillName() == objectName()
                  && room->getCardPlace(move.card_ids.first()) == Player::DiscardPile
                     && (player == move.from || (provider && provider == player))
                 ){
                     player->tag["zhanzhen"] = QVariant::fromValue(realcard);
-                    ServerPlayer *target =    room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), 
+                    ServerPlayer *target =    room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(),
                     "@zhanzhen:"+card->objectName()+":"+realcard->objectName(), true, true);
                     if (target){
                         CardsMoveStruct mo;
@@ -998,10 +998,10 @@ public:
             //for turnbroken
             if (player->hasFlag("Global_ProcessBroken"))
                 return false;
-            
+
             if (player->isCardLimited(Sanguosha->cloneCard(use.card->objectName()), Card::MethodUse))
                 return false;
-            
+
             room->setPlayerProperty(player, "yaoshu_card", use.card->objectName());
             room->askForUseCard(player, "@@yaoshu", "@yaoshu:" + use.card->objectName());
 
@@ -1094,7 +1094,7 @@ public:
 class zhancao : public TriggerSkill {
 public:
     zhancao() : TriggerSkill("zhancao") {
-        events << TargetConfirmed << SlashEffected; //TargetConfirming 
+        events << TargetConfirmed << SlashEffected; //TargetConfirming
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1117,7 +1117,7 @@ public:
                             if (room->askForCard(player, ".Equip", "@zhancao-discard", data, objectName()) == NULL)
                                 room->loseHp(player);
                             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), to->objectName());
-            
+
                         }
                         player->tag.remove("zhancao_carduse");
                     }
@@ -1367,7 +1367,7 @@ public:
                         room->fillAG(list, player, disabled);
                         player->tag["wangwu_card"] = QVariant::fromValue(use.card);
                         if (same.isEmpty()){
-                            //give a delay to avoid lacking "siling" shortage  
+                            //give a delay to avoid lacking "siling" shortage
                             room->getThread()->delay(1000);
                             room->clearAG(player);
                         } else {
@@ -1377,7 +1377,7 @@ public:
                                 CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
                                 room->throwCard(Sanguosha->getCard(id), reason, NULL);
                                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), use.from->objectName());
-            
+
                                 player->drawCards(1);
 
                                 room->damage(DamageStruct("wangwu", player, use.from));
@@ -1465,13 +1465,13 @@ public:
         room->touhouLogmessage("#TriggerSkill", player, objectName());
         room->notifySkillInvoked(player, objectName());
 
-        
+
 
 
         room->touhouLogmessage("#touhouExtraTurn", player, objectName());
         //for skill qinlue
         foreach(ServerPlayer *p, room->getAlivePlayers()) {
-            if (p->hasFlag("qinlue"))        
+            if (p->hasFlag("qinlue"))
                 p->changePhase(p->getPhase(), Player::NotActive);
         }
         ServerPlayer *current = room->getCurrent();
@@ -1480,7 +1480,7 @@ public:
 
         touhou_siyu_clear(player);
 
-        //remain bugs: yaoshu, the second trick card??                    
+        //remain bugs: yaoshu, the second trick card??
         player->gainAnExtraTurn();
 
         throw TurnBroken;

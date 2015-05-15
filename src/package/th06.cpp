@@ -140,7 +140,7 @@ public:
             QString prompt = "judge:" + judge->who->objectName() + ":" + judge->reason;
             if (sklt->askForSkillInvoke(objectName(), prompt)){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, sklt->objectName(), judge->who->objectName());
-            
+
                 /*if (room->getCurrent() && room->getCurrent()->getPhase() == Player::Judge &&
                     sklt->getGeneralName() == "hmx001" && !sklt->hasFlag("mingyunAnimate")){
                     room->doLightbox("$mingyunAnimate", 2000);
@@ -507,7 +507,7 @@ public:
                 room->doLightbox("$huisuAnimate", 2000);
                 room->setPlayerFlag(player, "huisuAnimate");
             }*/
-            //for ( int i=0; i<x ;i++) {        
+            //for ( int i=0; i<x ;i++) {
             JudgeStruct judge;
             if (isLoseHp)
                 judge.pattern = ".|heart|2~9";
@@ -527,7 +527,7 @@ public:
                 recov.who = player;
                 room->recover(player, recov);
             }
-            // }    
+            // }
         }
         return false;
     }
@@ -542,12 +542,12 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.card_ids.length() == 1 && move.from_places.contains(Player::PlaceTable) 
+            if (move.card_ids.length() == 1 && move.from_places.contains(Player::PlaceTable)
             && move.to_place == Player::DiscardPile
             && move.reason.m_reason == CardMoveReason::S_REASON_USE ) {
                 const Card *card = move.reason.m_extraData.value<const Card *>();
-                
-                
+
+
                 if (!card || !card->isNDTrick() || card->isKindOf("Nullification"))
                     return false;
                 if (card->isVirtualCard()){
@@ -555,16 +555,16 @@ public:
                     if (realcard->objectName() != card->objectName())
                         return false;
                 }
-                    
+
                 if ( room->getCardPlace(move.card_ids.first()) == Player::DiscardPile
                     && player != move.from){
                     QString prompt = "obtain:" + card->objectName();
                     if (room->askForSkillInvoke(player, objectName(), prompt))
                         player->addToPile("yao_mark", card);
                 }
-                
+
             }
-        } 
+        }
         return false;
     }
 };
@@ -578,7 +578,7 @@ public:
     virtual bool triggerable(const ServerPlayer *target) const{
         return target != NULL;
     }
-    
+
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -782,7 +782,7 @@ public:
     zhanyivs() : ViewAsSkill("zhanyi") {
         response_or_use = true;
     }
-    
+
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
         //return to_select->isKindOf("TrickCard");
         QString pattern = Sanguosha->getCurrentCardUsePattern();
@@ -797,10 +797,10 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return ((pattern == "slash" && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) 
+        return ((pattern == "slash" && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         || pattern == "@@zhanyi");
     }
-    
+
     virtual const Card *viewAs(const QList<const Card *> &cards) const{
         //Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE
         QString pattern = Sanguosha->getCurrentCardUsePattern();
@@ -819,7 +819,7 @@ public:
                 return slash;
             }
         }
-        
+
         return NULL;
     }
 };
@@ -836,7 +836,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Slash") && player->askForSkillInvoke(objectName(), data)){
                 player->drawCards(1);
-                const Card *cards = room->askForCard(player, "@@zhanyi", "@zhanyi", data, Card::MethodNone, 
+                const Card *cards = room->askForCard(player, "@@zhanyi", "@zhanyi", data, Card::MethodNone,
                     player, false, objectName());
 
                 if (cards){
@@ -844,7 +844,7 @@ public:
                     player->addToPile("qi", cards, true);
                 }
             }
-        } 
+        }
         return false;
     }
 };
@@ -866,7 +866,7 @@ public:
             player->tag["dongjie_damage"] = QVariant::fromValue(damage);
             if (room->askForSkillInvoke(player, "dongjie", QVariant::fromValue(damage.to))){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.to->objectName());
-            
+
                 /*if (player->getGeneralName() == "hmx006" && !player->hasFlag("dongjieAnimate")
                     && damage.to->faceUp()){
                     room->doLightbox("$dongjieAnimate", 2000);
@@ -994,7 +994,7 @@ public:
             QString prompt = "target:" + player->objectName();
             if (room->askForSkillInvoke(source, objectName(), prompt)){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), player->objectName());
-            
+
                 source->drawCards(1);
                 QString choice = room->askForChoice(source, objectName(), "hp_moxue+maxhp_moxue", data);
                 if (choice == "hp_moxue")
@@ -1155,7 +1155,7 @@ th06Package::th06Package()
     hmx004->addSkill(new bolanObtain);
     hmx004->addSkill(new qiyao);
     related_skills.insertMulti("bolan", "#bolan");
-    
+
     General *hmx005 = new General(this, "hmx005", "hmx", 4, false);
     hmx005->addSkill(new douhun);
     hmx005->addSkill(new zhanyi);

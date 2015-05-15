@@ -6,7 +6,7 @@
 
 class PowerPackage: public Package{
     Q_OBJECT
-        
+
 public:
     PowerPackage();
 };

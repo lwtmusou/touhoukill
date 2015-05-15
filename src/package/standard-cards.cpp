@@ -336,8 +336,8 @@ bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *
                 }
             }
         }
-    } 
-    return !targets.isEmpty(); 
+    }
+    return !targets.isEmpty();
 }
 
 bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -431,7 +431,7 @@ void Peach::onUse(Room *room, const CardUseStruct &card_use) const{
     CardUseStruct use = card_use;
     if (use.to.isEmpty())
         use.to << use.from;
-	
+
     BasicCard::onUse(room, use);
 }
 
@@ -450,30 +450,30 @@ void Peach::onEffect(const CardEffectStruct &effect) const{
 
 bool Peach::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if (targets.isEmpty() && to_select->isWounded()){
-		if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE){
-			if (to_select->hasFlag("Global_Dying") &&  to_select->objectName() ==  Self->property("currentdying").toString()) return true;
-		}
-		else
-		{
-			if (to_select == Self ) return true;
-			if (Self->getKingdom()=="zhan" && to_select->hasLordSkill("yanhui")) return true;
-		}
-	} 
-	return false;
+        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE){
+            if (to_select->hasFlag("Global_Dying") &&  to_select->objectName() ==  Self->property("currentdying").toString()) return true;
+        }
+        else
+        {
+            if (to_select == Self ) return true;
+            if (Self->getKingdom()=="zhan" && to_select->hasLordSkill("yanhui")) return true;
+        }
+    }
+    return false;
 }
 
 bool Peach::isAvailable(const Player *player) const{
-	if (!player->isProhibited(player, this) && BasicCard::isAvailable(player)){
-		if (player->isWounded()) return true;
-		if (player->getKingdom()=="zhan"){
-			foreach(const Player *p, Self->getAliveSiblings()){
-				if (p->hasLordSkill("yanhui") && p->isWounded())
-					return true;
-			}
-		}
-		
-	}
-	return false;
+    if (!player->isProhibited(player, this) && BasicCard::isAvailable(player)){
+        if (player->isWounded()) return true;
+        if (player->getKingdom()=="zhan"){
+            foreach(const Player *p, Self->getAliveSiblings()){
+                if (p->hasLordSkill("yanhui") && p->isWounded())
+                    return true;
+            }
+        }
+
+    }
+    return false;
     //return player->isWounded() && !player->isProhibited(player, this) && BasicCard::isAvailable(player);
 }
 

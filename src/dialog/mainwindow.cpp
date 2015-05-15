@@ -415,9 +415,9 @@ void MainWindow::on_actionAbout_triggered() {
     //    "My Email: <a href='mailto:%1' style = \"color:#0072c1; \">%1</a> <br/>"
     //    "My QQ: 365840793 <br/>"
     //    "My Weibo: http://weibo.com/moligaloo <br/>").arg(email));
-	content.append(tr("This is the open source clone of the popular <b>Sanguosha</b> game,"
+    content.append(tr("This is the open source clone of the popular <b>Sanguosha</b> game,"
         "totally written in C++ Qt GUI framework <br />"));
-		//"My QQ: 384318315 <br/>" //ÈººÅ
+        //"My QQ: 384318315 <br/>"
     QString config;
 
 #ifdef QT_NO_DEBUG

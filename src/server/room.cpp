@@ -55,7 +55,7 @@ Room::Room(QObject *parent, const QString &mode)
     DoLuaScript(L, "lua/sanguosha.lua");
     DoLuaScript(L, QFile::exists("lua/ai/private-smart-ai.lua") ?
         "lua/ai/private-smart-ai.lua" : "lua/ai/smart-ai.lua");
-    //for reconnect        
+    //for reconnect
     m_fillAGarg = Json::Value::null;
     m_takeAGargs = Json::Value(Json::arrayValue);
 }
@@ -471,7 +471,7 @@ void Room::gameOver(const QString &winner) {
     }
 
     game_finished = true;
-    
+
     defaultHeroSkin();
     emit game_over(winner);
 
@@ -1178,7 +1178,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     log.arg = trick_name;
     sendLog(log);
     thread->delay(500);
-    //though weiya cancel the effect,but choicemade should be triggerable 
+    //though weiya cancel the effect,but choicemade should be triggerable
     QVariant decisionData = QVariant::fromValue("Nullification:" + QString(trick->getClassName())
         + ":" + to->objectName() + ":" + (positive ? "true" : "false"));
     thread->trigger(ChoiceMade, this, repliedPlayer, decisionData);
@@ -1189,12 +1189,12 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     effect.card = card;
     effect.to = repliedPlayer;
 
-    //for processing weiya 
+    //for processing weiya
     if (repliedPlayer->hasFlag("nullifiationNul")){
         result = false;
         setPlayerFlag(repliedPlayer, "-nullifiationNul");
     }
-    
+
 
     if (card->isCancelable(effect)){
         if (result) {
@@ -1322,9 +1322,9 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
     _m_roomState.setCurrentCardUsePattern(pattern);
 
-	//we need check cardLimit at here , instead of check it in eghitDiagram cardasked? 
-	
-	
+    //we need check cardLimit at here , instead of check it in eghitDiagram cardasked?
+
+
     const Card *card = NULL;
 
     QStringList asked;
@@ -1332,12 +1332,12 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     QVariant asked_data = QVariant::fromValue(asked);
     if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial && !player->hasFlag("continuing"))
         thread->trigger(CardAsked, this, player, asked_data);
-    
+
     //case 1. for the player died since a counter attack from juwang target
-	//case 2. figure out dizhen and eghitDiagram and tianren
-	//we also need clear the provider info
+    //case 2. figure out dizhen and eghitDiagram and tianren
+    //we also need clear the provider info
     if (!player->isAlive() && !isProvision){
-		provided = NULL;
+        provided = NULL;
         has_provided = false;
         provider = NULL;
         return NULL;
@@ -1351,17 +1351,17 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
     if (player->hasFlag("continuing"))
         setPlayerFlag(player, "-continuing");
-        
+
     ServerPlayer *theProvider = NULL;
     if (has_provided || !player->isAlive()) {
         card = provided;
         theProvider = provider;
-        
+
         if (player->isCardLimited(card, method)) card = NULL;
         provided = NULL;
         has_provided = false;
         provider = NULL;
-		
+
     }
     else {
         AI *ai = player->getAI();
@@ -1446,7 +1446,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
         if (method == Card::MethodUse) {
             CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, player->objectName(), QString(), card->getSkillName(), QString());
-            
+
             reason.m_extraData = QVariant::fromValue(card);
             if (theProvider)
                 reason.m_provider = QVariant::fromValue(theProvider);
@@ -1589,7 +1589,7 @@ const Card *Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> 
     const Card *slash = askForUseCard(slasher, "slash", prompt, -1, Card::MethodUse, addHistory);
     //if (slasher->hasFlag("Global_qijislashFailed")){
     //    slash = NULL;
-    // } 
+    // }
     if (slash == NULL) {
         setPlayerFlag(slasher, "-slashTargetFix");
         setPlayerFlag(slasher, "-slashTargetFixToOne");
@@ -4839,7 +4839,7 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use) {
 
     if (player->hasFlag("Global_PlayPhaseTerminated")) {
         setPlayerFlag(player, "-Global_PlayPhaseTerminated");
-        //for "dangjia" intention ai  
+        //for "dangjia" intention ai
         //need record  PlayPhaseTerminated
         setPlayerFlag(player, "PlayPhaseTerminated");
         card_use.card = NULL;
@@ -5044,10 +5044,10 @@ Card::Suit Room::askForSuit(ServerPlayer *player, const QString &reason) {
 QString Room::askForKingdom(ServerPlayer *player) {
     while (isPaused()) {}
     notifyMoveFocus(player, S_COMMAND_CHOOSE_KINGDOM);
-    
-    QString kingdomChoice = ""; 
-    
-        
+
+    QString kingdomChoice = "";
+
+
     AI *ai = player->getAI();
     if (ai)
         kingdomChoice = ai->askForKingdom();
@@ -5064,7 +5064,7 @@ QString Room::askForKingdom(ServerPlayer *player) {
         if (Sanguosha->getKingdoms().contains(kingdom))
             kingdomChoice = kingdom;
     }
-    
+
     //set default
     if ( kingdomChoice == "" ){
         if (player->getKingdom() == "god")
@@ -5801,7 +5801,7 @@ void Room::takeAG(ServerPlayer *player, int card_id, bool move_cards, QList<Serv
         }
 
         doBroadcastNotify(to_notify, S_COMMAND_TAKE_AMAZING_GRACE, arg);
-        
+
 
         if (moveOneTime.card_ids.length() > 0 && moveOneTime.to == NULL) {
             Card *dummy = Sanguosha->cloneCard("Slash");
@@ -5846,7 +5846,7 @@ void Room::provide(const Card *card, ServerPlayer *who) {
     Q_ASSERT(provided == NULL);
     Q_ASSERT(!has_provided);
     Q_ASSERT(!provider);
-    
+
     provided = card;
     has_provided = true;
     provider = who;
@@ -5963,7 +5963,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge, cons
     judge->card = Sanguosha->getCard(card->getEffectiveId());
     ServerPlayer *rebyre = judge->retrial_by_response;//old judge provider
     judge->retrial_by_response = player;
-    
+
     CardsMoveStruct move1(QList<int>(),
         judge->who,
         Player::PlaceJudge,
@@ -5980,7 +5980,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge, cons
     else {
         reasonType = CardMoveReason::S_REASON_JUDGEDONE;
     }
-    
+
     CardMoveReason reason(reasonType,
         player->objectName(),
         exchange ? skill_name : QString(),
@@ -5989,9 +5989,9 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge, cons
         reason.m_provider = QVariant::fromValue(player);
         reason.m_extraData = QVariant::fromValue(card);
     }
-    
 
-        
+
+
     CardsMoveStruct move2(QList<int>(),
         judge->who,
         exchange ? player : NULL,

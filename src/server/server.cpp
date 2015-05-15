@@ -423,16 +423,16 @@ QWidget *ServerDialog::createMiscTab() {
     ai_prohibit_blind_attack_checkbox = new QCheckBox(tr("Prohibit Blind Attack"));
     ai_prohibit_blind_attack_checkbox->setToolTip(tr("<font color=#FFFF33>ai will not blindly attack,if this is checked</font>"));
     ai_prohibit_blind_attack_checkbox->setChecked(Config.AIProhibitBlindAttack);
-    
+
     layout->addWidget(ai_enable_checkbox);
     layout->addLayout(HLay(new QLabel(tr("AI delay")), ai_delay_spinbox));
     layout->addWidget(ai_delay_altered_checkbox);
     layout->addLayout(HLay(new QLabel(tr("AI delay After Death")), ai_delay_ad_spinbox));
     layout->addWidget(ai_prohibit_blind_attack_checkbox);
-    
-    
 
-    
+
+
+
     ai_groupbox->setLayout(layout);
 
     QVBoxLayout *tablayout = new QVBoxLayout;
@@ -854,7 +854,7 @@ QGroupBox *ServerDialog::createGameModeBox() {
     mini_scenes->setChecked(true);*/
     if (Config.GameMode == "custom_scenario")
         mini_scenes->setChecked(true);
-    
+
     //mini_scene_ComboBox->setEnabled(false);
 
     mini_scene_button = new QPushButton(tr("Custom Mini Scene"));
@@ -1149,7 +1149,7 @@ bool ServerDialog::config() {
     Config.setValue("AlterAIDelayAD", ai_delay_altered_checkbox->isChecked());
     Config.setValue("AIDelayAD", Config.AIDelayAD);
     Config.setValue("AIProhibitBlindAttack", Config.AIProhibitBlindAttack);
-    
+
     Config.setValue("SurrenderAtDeath", Config.SurrenderAtDeath);
     Config.setValue("LuckCardLimitation", Config.LuckCardLimitation);
     Config.setValue("ServerPort", Config.ServerPort);

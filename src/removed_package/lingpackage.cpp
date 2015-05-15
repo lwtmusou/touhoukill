@@ -298,18 +298,18 @@ public:
 
             return maxcards;
         }
-		if ( target->hasFlag("bllmshuiyu")) 
-			return 4;
-		else{
-			/*if (target->hasSkill("banling")){
-				if (target->getHp() > target->getMark("@lingtili"))
-					return  target->getMark("@lingtili");
-				else
-					return target->getHp();
-			}
-			else*/
-			return -1;
-		}
+        if ( target->hasFlag("bllmshuiyu"))
+            return 4;
+        else{
+            /*if (target->hasSkill("banling")){
+                if (target->getHp() > target->getMark("@lingtili"))
+                    return  target->getMark("@lingtili");
+                else
+                    return target->getHp();
+            }
+            else*/
+            return -1;
+        }
     }
 };
 
@@ -823,7 +823,7 @@ public:
             recover.who = player;
             recover.recover = 1;
             room->recover(player, recover);
-            
+
             QList<ServerPlayer *> DelayedTricks;
             foreach(ServerPlayer *p, room->getAlivePlayers()){
                 if (!p->getJudgingArea().isEmpty())
@@ -1149,7 +1149,7 @@ public:
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
         Room *room = target->getRoom();
         for (int i = 1; i <= damage.damage; i++) {
-            if (!target->askForSkillInvoke(objectName(), QVariant::fromValue(damage))) 
+            if (!target->askForSkillInvoke(objectName(), QVariant::fromValue(damage)))
                 return;
             room->broadcastSkillInvoke(objectName());
 
@@ -1413,17 +1413,17 @@ public:
 
             if (current != NULL)
                 return current->getHp() > 0 ? current->getHp(): 0;
-			return -1;
-		}
-		
+            return -1;
+        }
 
-		if (target->hasSkill("duanjiao")) 
-			return 3;
-		else if (target->hasSkill("yicun") && target->getEquips().length())
-			return target->getEquips().length();
-		else
-			return -1;
-		
+
+        if (target->hasSkill("duanjiao"))
+            return 3;
+        else if (target->hasSkill("yicun") && target->getEquips().length())
+            return target->getEquips().length();
+        else
+            return -1;
+
     }
 };
 
@@ -2405,7 +2405,7 @@ public:
                             room->setTag("QiaobianTarget", QVariant::fromValue(target1));
                             ServerPlayer *to = room->askForPlayerChosen(player, tos, objectName() + "_move2", "@neo2013jiewei-move2:::" + card->objectName());
                             if (to)
-                                room->moveCardTo(card, target1, to, place, 
+                                room->moveCardTo(card, target1, to, place,
                                 CardMoveReason(CardMoveReason::S_REASON_TRANSFER, player->objectName(), objectName(), QString()));
                             room->removeTag("QiaobianTarget");
                         }
@@ -2429,7 +2429,7 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *yuanshu = room->findPlayerBySkillName(objectName());
-        if (yuanshu != NULL && yuanshu != player && player->getHandcardNum() > yuanshu->getHandcardNum() 
+        if (yuanshu != NULL && yuanshu != player && player->getHandcardNum() > yuanshu->getHandcardNum()
                 && yuanshu->askForSkillInvoke(objectName(), QVariant::fromValue(player))){
             yuanshu->drawCards(1);
             room->setPlayerFlag(player, "neo2013yongsidec");
@@ -2467,7 +2467,7 @@ public:
             if (p->getKingdom() == lord->getKingdom())
                 num++;
         }
-        
+
         return num;
     }
 };
@@ -2568,7 +2568,7 @@ public:
             }
             if (c == NULL || c->isKindOf("SkillCard"))
                 return false;
-              
+
             int to_add = 0;
             switch (c->getSuit()){
                 case Card::Spade:
@@ -3161,7 +3161,7 @@ void PeaceSpell::onUninstall(ServerPlayer *player) const{
 }
 
 PeaceSpellCard::PeaceSpellCard(){
-    
+
 }
 
 bool PeaceSpellCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{

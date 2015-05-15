@@ -155,7 +155,7 @@ public:
     bool hasSkills(const char *skill_name, bool include_lose = false,bool include_invalidity=false) const;
     bool hasInnateSkill(const char *skill_name) const;
     bool hasLordSkill(const char *skill_name, bool include_lose = false,bool include_invalidity=false) const;
-	bool hasKingdomLordSkill( bool include_lose = false) const;
+    bool hasKingdomLordSkill( bool include_lose = false) const;
     virtual QString getGameMode() const = 0;
 
     void setEquip(WrappedCard *equip);
@@ -178,14 +178,14 @@ public:
     WrappedCard *getArmor() const;
     WrappedCard *getDefensiveHorse() const;
     WrappedCard *getOffensiveHorse() const;
-	WrappedCard *getTreasure() const;
+    WrappedCard *getTreasure() const;
     QList<const Card *> getEquips() const;
     const EquipCard *getEquip(int index) const;
 
     bool hasWeapon(const char *weapon_name) const;
     bool hasArmorEffect(const char *armor_name) const;
-	bool hasTreasure(const char *treasure_name) const;
-	 
+    bool hasTreasure(const char *treasure_name) const;
+
     bool isKongcheng() const;
     bool isNude() const;
     bool isAllNude() const;
@@ -388,10 +388,10 @@ public:
                         // judgement!!! It will not accurately reflect the real reason.
     QString m_skillName; // skill that triggers movement of the cards, such as "longdang", "dimeng"
     QString m_eventName; // additional arg such as "lebusishu" on top of "S_REASON_JUDGE"
-	QVariant m_extraData; // additional data and will not be parsed to clients
-	QVariant m_provider; // additional data record who provide this card for otherone to use or response, 
-	//etc. guanyu provide a slash for "jijiang" 
-	
+    QVariant m_extraData; // additional data and will not be parsed to clients
+    QVariant m_provider; // additional data record who provide this card for otherone to use or response,
+    //etc. guanyu provide a slash for "jijiang"
+
     CardMoveReason();
     CardMoveReason(int moveReason, char *playerId);
     CardMoveReason(int moveReason, char *playerId, char *skillName, char *eventName);
@@ -459,7 +459,7 @@ struct DamageStruct {
         Normal, // normal slash, duel and most damage caused by skill
         Fire,  // fire slash, fire attack and few damage skill (Yeyan, etc)
         Thunder, // lightning, thunder slash, and few damage skill (Leiji, etc)
-		Ice
+        Ice
     };
 
     ServerPlayer *from;
@@ -578,7 +578,7 @@ struct RecoverStruct {
     int recover;
     ServerPlayer *who;
     const Card *card;
-	QString reason;
+    QString reason;
 };
 
 struct JudgeStruct {
@@ -598,7 +598,7 @@ struct JudgeStruct {
     bool good;
     QString reason;
     bool time_consuming;
-	ServerPlayer *retrial_by_response; // record whether the current judge card is provided by a response retrial
+    ServerPlayer *retrial_by_response; // record whether the current judge card is provided by a response retrial
 
 };
 
@@ -632,8 +632,8 @@ struct CardResponseStruct {
     const Card *m_card;
     ServerPlayer *m_who;
     bool m_isUse;
-	bool m_isRetrial;
-	bool m_isProvision;
+    bool m_isRetrial;
+    bool m_isProvision;
 };
 
 struct MarkChangeStruct{
@@ -1021,7 +1021,7 @@ public:
     void initMediaSource();
     void playAudioEffect(int index = -1) const;
     Frequency getFrequency() const;
-	QString getSkillProperty() const;
+    QString getSkillProperty() const;
     QStringList getSources() const;
 };
 
@@ -1211,7 +1211,7 @@ public:
     ServerPlayer *findPlayer(const char *general_name, bool include_dead = false) const;
     QList<ServerPlayer *> findPlayersBySkillName(const char *skill_name) const;
     ServerPlayer *findPlayerBySkillName(const char *skill_name) const;
-	ServerPlayer *findPlayerByObjectName(const char *name) const;
+    ServerPlayer *findPlayerByObjectName(const char *name) const;
     void installEquip(ServerPlayer *player, const char *equip_name);
     void resetAI(ServerPlayer *player);
     void changeHero(ServerPlayer *player, const char *new_general, bool full_state, bool invoke_start = true, bool isSecondaryHero = false, bool sendLog = true);
@@ -1310,7 +1310,7 @@ public:
     void resetCard(int cardId);
 
     void updateStateItem();
-	bool canInsertExtraTurn();
+    bool canInsertExtraTurn();
 };
 
 %extend Room {

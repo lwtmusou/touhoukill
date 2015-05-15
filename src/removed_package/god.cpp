@@ -1232,7 +1232,7 @@ public:
 };
 
 Longhun::Longhun(): ViewAsSkill("longhun") {
-	response_or_use = true;
+    response_or_use = true;
 }
 
 bool Longhun::isEnabledAtResponse(const Player *player, const QString &pattern) const{
@@ -1402,7 +1402,7 @@ GodPackage::GodPackage()
     shensimayi->addSkill(new Lianpo);
     shensimayi->addSkill(new LianpoCount);
     related_skills.insertMulti("lianpo", "#lianpo-count");
-    
+
 
 
     addMetaObject<GongxinCard>();
@@ -1416,7 +1416,7 @@ GodPackage::GodPackage()
     addMetaObject<JilveCard>();
 
     skills << new Jilve << new JilveClear;
-	
+
 }
 
 ADD_PACKAGE(God)

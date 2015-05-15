@@ -1,4 +1,4 @@
-﻿#ifndef _BUBBLECHATBOX_H
+#ifndef _BUBBLECHATBOX_H
 #define _BUBBLECHATBOX_H
 
 #include <QGraphicsObject>

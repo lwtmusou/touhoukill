@@ -63,7 +63,7 @@ public:
 
             foreach (const Card *shit, shits){
                 l.card_str = QString::number(shit->getEffectiveId());
-                
+
                 if (shit->getSuit() == Card::Spade){
                     l.type = "$ShitLostHp";
                     room->sendLog(l);
@@ -236,7 +236,7 @@ void Volcano::takeEffect(ServerPlayer *target) const{
             damage.card = this;
             damage.damage = point;
             damage.to = player;
-            damage.nature = DamageStruct::Fire;           
+            damage.nature = DamageStruct::Fire;
             room->damage(damage);
         }
     }
@@ -259,7 +259,7 @@ void MudSlide::takeEffect(ServerPlayer *target) const{
     QList<ServerPlayer *> players = room->getAllPlayers();
     int to_destroy = 4;
     foreach(ServerPlayer *player, players){
-        
+
 
         QList<const Card *> equips = player->getEquips();
         if(equips.isEmpty()){
@@ -380,7 +380,7 @@ JoyPackage::JoyPackage()
     QList<Card *> cards;
 
     cards << new IceSlash(Card::Spade, 4)
-			<< new Shit(Card::Club, 1)
+            << new Shit(Card::Club, 1)
             << new Shit(Card::Heart, 8)
             << new Shit(Card::Diamond, 13)
             << new Shit(Card::Spade, 10);
@@ -557,7 +557,7 @@ bool NumaNRNMCard::targetFilter(const QList<const Player *> &targets, const Play
         return true;
     else if (targets.length() == 1)
         return (to_select != targets[0] && !to_select->isKongcheng());
-    
+
     return false;
 }
 
@@ -756,7 +756,7 @@ public:
                     room->setPlayerMark(player, "drank", 0);
                 else
                     room->setPlayerMark(player, "drank", 1);
-                
+
                 int ri = (to_speak == "rnm") ? yulu[0] : yulu[1];
                 int riPoint = Sanguosha->getCard(ri)->getNumber();
 
@@ -851,7 +851,7 @@ public:
                     }
                     else
                         break;
-                
+
                 for (int i = 0; i < discard_ids.length(); i++)
                     room->moveCardTo(Sanguosha->getCard(discard_ids[i]), victim, discard_places[i], false);
                 room->setPlayerFlag(victim, "-numa_nrwmm_InTempMoving");
@@ -866,7 +866,7 @@ public:
                     ServerPlayer *victim = room->askForPlayerChosen(player, room->getAlivePlayers(), objectName() + "_wrnmm", "@numa_wrnmm", false, true);
 
                     DamageStruct damage(objectName() + "_wrnmm", player, victim);
-                
+
                     damage.nature = DamageStruct::Thunder;
                     if (victim->isAlive())
                         room->damage(damage);
@@ -1012,7 +1012,7 @@ DCPackage::DCPackage(): Package("DC"){
 
 }
 
-ADD_PACKAGE(Joy) 
+ADD_PACKAGE(Joy)
 ADD_PACKAGE(Disaster)
 ADD_PACKAGE(JoyEquip)
 ADD_PACKAGE(DC)

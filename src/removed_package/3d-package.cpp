@@ -88,7 +88,7 @@ public:
             xinve->setUserString(c->objectName());
             return xinve;
         }
-        
+
         return NULL;
     }
 };
@@ -170,7 +170,7 @@ public:
                             room->loseHp(player, 1);
                             player->setFlags("sand1xielulosehp");
                             player->tag["sand1xielu_losehp"] = use.card->toString();
-                            
+
                         }
                         room->setPlayerFlag(to, "sand1xieluinvoke");
                         room->setCardFlag(use.card, "sand1xieluinvoke");
@@ -598,7 +598,7 @@ public:
                     judge.who = player;
                     judge.pattern = pattern;
                     judge.good = true;
-                    
+
                     room->judge(judge);
 
                     if (judge.isGood()){
@@ -727,7 +727,7 @@ public:
         if (target->getPhase() == Player::Draw && target->askForSkillInvoke(objectName())){
             Room *room = target->getRoom();
             QList<int> card_ids = room->getNCards(3);
-            
+
             CardMoveReason reason(CardMoveReason::S_REASON_TURNOVER, target->objectName(), objectName(), QString());
             CardsMoveStruct move(card_ids, NULL, Player::PlaceTable, reason);
             room->moveCardsAtomic(move, true);
@@ -756,12 +756,12 @@ public:
                 QList<ServerPlayer *> _target;
                 _target << target;
                 QList<CardsMoveStruct> _clientmovelist;
-                _clientmovelist << CardsMoveStruct(card_ids, NULL, target, Player::PlaceTable, Player::PlaceHand, 
+                _clientmovelist << CardsMoveStruct(card_ids, NULL, target, Player::PlaceTable, Player::PlaceHand,
                         CardMoveReason(CardMoveReason::S_REASON_PREVIEW, target->objectName()));
 
                 room->notifyMoveCards(true, _clientmovelist, true, _target);
                 room->notifyMoveCards(false, _clientmovelist, true, _target);
-                
+
                 room->setPlayerProperty(target, "doudan_table", l);
                 room->askForUseCard(target, "@@sand1doudan!", "@sand1doudan-put", -1, Card::MethodNone);
                 room->setPlayerProperty(target, "doudan_table", QVariant());
@@ -781,7 +781,7 @@ public:
                     dummy.addSubcard(id.toInt());
                 }
 
-                room->moveCardTo(&dummy, NULL, Player::DrawPile, 
+                room->moveCardTo(&dummy, NULL, Player::DrawPile,
                         CardMoveReason(CardMoveReason::S_REASON_PUT, target->objectName(), objectName(), QString()), true);
             }
 

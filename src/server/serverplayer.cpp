@@ -1211,7 +1211,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
                     huanshen_arg[1] = QSanProtocol::Utils::toJsonString(this->objectName());
                     huanshen_arg[2] = QSanProtocol::Utils::toJsonString(p->getGeneral()->objectName());
                     huanshen_arg[3] = QSanProtocol::Utils::toJsonString(skillname);
-                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, huanshen_arg);    
+                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, huanshen_arg);
                     break;
                 }
             }
@@ -1225,7 +1225,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
                 zhengti_arg[1] = QSanProtocol::Utils::toJsonString(this->objectName());
                 zhengti_arg[2] = QSanProtocol::Utils::toJsonString(p->getGeneral()->objectName());
                 zhengti_arg[3] = QSanProtocol::Utils::toJsonString("zhengti");
-                room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, zhengti_arg);    
+                room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, zhengti_arg);
                 break;
             }
         }

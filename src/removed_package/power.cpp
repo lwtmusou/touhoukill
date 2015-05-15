@@ -99,7 +99,7 @@ public:
 
                 DamageStruct damage = data.value<DamageStruct>();
 
-                ServerPlayer *current = room->getCurrent(); //当前回合角色躺枪
+                ServerPlayer *current = room->getCurrent();
                 if (current && current->isAlive() && current->getPhase() != Player::NotActive){
                     player->tag["hengjiang_damage"] = data;
                     if (player->askForSkillInvoke(objectName(), "maxcard:" + current->objectName()))
@@ -140,7 +140,7 @@ public:
                         lidian->drawCards(1);
                 }
                 room->setPlayerMark(player, "hengjiang_discard", 0);
-                
+
                 break;
             }
         }
@@ -324,7 +324,7 @@ public:
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to == Player::Start || change.to == Player::Draw || change.to == Player::Play || change.to == Player::Discard || change.to == Player::Finish){
             room->setPlayerProperty(player, "cunsi_phase", static_cast<int>(change.to));
-            if (room->askForUseCard(player, "@@cunsi", 
+            if (room->askForUseCard(player, "@@cunsi",
                     "@cunsi:::" + Card::Suit2String(CunsiVS::getCorrespondingSuit(change.to)) + ":" + getPhaseString(change.to)))
                 player->skip(change.to, true);
         }
@@ -389,7 +389,7 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         PindianStruct *pindian = data.value<PindianStruct *>();
-        
+
         ServerPlayer *invoker = NULL;
         int *number_tochange;
 
@@ -420,7 +420,7 @@ public:
             }
             data = QVariant::fromValue(pindian);
         }
-        
+
         return false;
     }
 };
@@ -494,7 +494,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if ((triggerEvent == GameStart && player->isLord()) 
+        if ((triggerEvent == GameStart && player->isLord())
                 || (triggerEvent == EventAcquireSkill && data.toString() == "powerzhiba")) {
             QList<ServerPlayer *> lords;
             foreach (ServerPlayer *p, room->getAlivePlayers()) {
@@ -592,8 +592,6 @@ public:
     }
 };
 
-//技能暂时没有任何用途
-
 class Baoling: public TriggerSkill{
 public:
     Baoling(): TriggerSkill("baoling"){
@@ -625,7 +623,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == DamageCaused){
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.card != NULL && (damage.card->isKindOf("Duel") || damage.card->isKindOf("Slash")) 
+            if (damage.card != NULL && (damage.card->isKindOf("Duel") || damage.card->isKindOf("Slash"))
                     && damage.by_user && !damage.chain && damage.transfer){
                 QList<const Skill *> skills = damage.to->getVisibleSkillList();
                 QList<const Skill *> fix_skills;
@@ -766,7 +764,7 @@ const Card *WuxinCard::validate(CardUseStruct &cardUse) const{
             theslash->setSkillName("wuxin");
             theslash->addSubcard(id);
             theslash->deleteLater();
-            bool can_slash = theslash->isAvailable(cardUse.from) && 
+            bool can_slash = theslash->isAvailable(cardUse.from) &&
                 theslash->targetsFeasible(ServerPlayerList2PlayerList(cardUse.to), cardUse.from);
             if (can_slash)
                 black_skysoldier << id;
@@ -963,7 +961,7 @@ void WendaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
                 break;
             }
         }
-        
+
     if (tpys == NULL)
         return;
 
@@ -1058,7 +1056,7 @@ const Card *HongfaCard::validate(CardUseStruct &cardUse) const{
             theslash->setSkillName("hongfa");
             theslash->addSubcard(id);
             theslash->deleteLater();
-            bool can_slash = theslash->isAvailable(cardUse.from) && 
+            bool can_slash = theslash->isAvailable(cardUse.from) &&
                 theslash->targetsFeasible(WuxinCard::ServerPlayerList2PlayerList(cardUse.to), cardUse.from);
             if (can_slash)
                 black_skysoldier << id;

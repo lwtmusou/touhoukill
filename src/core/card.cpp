@@ -622,7 +622,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
         CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), card_use.card->getSkillName(), QString());
         if (card_use.to.size() == 1)
             reason.m_targetId = card_use.to.first()->objectName();
-            
+
         reason.m_extraData = QVariant::fromValue(card_use.card);
         ServerPlayer *provider = NULL;
         foreach (QString flag ,card_use.card->getFlags()){
@@ -633,10 +633,10 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
             }
         }
         reason.m_provider = QVariant::fromValue(provider);
-        
-        
-        
-        
+
+
+
+
         CardsMoveStruct move(used_cards, card_use.from, NULL, Player::PlaceUnknown, Player::PlaceTable, reason);
         moves.append(move);
         room->moveCardsAtomic(moves, true);

@@ -102,7 +102,7 @@ public:
 
     void stopHeroSkinChangingAnimation();
     void showSkillName(const QString &skill_name, bool isSelf);
-    
+
 
 public slots:
     void updateAvatar();
@@ -153,7 +153,7 @@ protected:
     void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QString &key, QGraphicsItem *parent);
     void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QPixmap &pixmap);
     //±ä³Épublic
-    //void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QPixmap &pixmap, QGraphicsItem *parent);    
+    //void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QPixmap &pixmap, QGraphicsItem *parent);
     void _clearPixmap(QGraphicsPixmapItem *item);
     QPixmap _getPixmap(const QString &key);
     QPixmap _getPixmap(const QString &key, const QString &arg);

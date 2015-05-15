@@ -43,7 +43,7 @@ void qingtingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
     foreach(ServerPlayer *p, room->getOtherPlayers(source)){
         if (p->isKongcheng())
             continue;
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), p->objectName());    
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), p->objectName());
     }
     foreach(ServerPlayer *p, room->getOtherPlayers(source)){
         if (p->isKongcheng())
@@ -114,11 +114,11 @@ public:
             (move.to_place == Player::PlaceHand && move.to != NULL && move.to != player
             && move.to->getKingdom() == "slm")){
 
-            //transfer player to serverplayer                         
+            //transfer player to serverplayer
             ServerPlayer *target;
             foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
                 if (p->objectName() == move.to->objectName())
-                    //||p->objectName() == move.origin_to->objectName())                 
+                    //||p->objectName() == move.origin_to->objectName())
                     target = p;
             }
             if (target == NULL)
@@ -441,7 +441,7 @@ public:
             QChar ch = pattern[i];
             if (ch.isUpper() || ch.isDigit()) return false; // This is an extremely dirty hack!! For we need to prevent patterns like 'BasicCard'
         }
-        //just check basic card 
+        //just check basic card
         if (pattern == "slash")
             return !(xihua_clear::xihua_choice_limit(player, "slash", Card::MethodResponse));
         if (pattern == "jink")
@@ -466,7 +466,7 @@ public:
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
             if (pattern.contains("slash")) {
                 const Card *c = Self->tag.value("xihua").value<const Card *>();
-                if (c) 
+                if (c)
                     pattern = c->objectName();
                 else
                     return NULL;
@@ -595,7 +595,7 @@ public:
 
             if (player->askForSkillInvoke("fengshui_retrial", data)){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), judge->who->objectName());
-            
+
                 player->setFlags("-shijie_judge");
                 QList<int> list1 = room->getNCards(1);
                 Card *card = Sanguosha->getCard(list1.first());
@@ -695,7 +695,7 @@ bool xiefaCard::targetFilter(const QList<const Player *> &targets, const Player 
             return false;
         //Card *slash = Sanguosha->cloneCard("slash");
         //slash->deleteLater();
-        //pingyi yuanfei then use yuanfei. now pingyi xiefa and use xiefa in this round 
+        //pingyi yuanfei then use yuanfei. now pingyi xiefa and use xiefa in this round
         //can select yuanfei target...
         //if (to_select->isCardLimited(slash,Card::MethodUse))
         //    return false;
@@ -782,7 +782,7 @@ public:
             if (damage.card != NULL && damage.card->getSkillName() == objectName()){
                 if (damage.chain || damage.transfer)
                     return false;
-                //if (damage.from==NULL ||  damage.to==NULL ) 
+                //if (damage.from==NULL ||  damage.to==NULL )
                 //    return false;
                 if (damage.from == damage.to)
                     return false;
@@ -1004,7 +1004,7 @@ public:
                     room->setTag("huisheng_use", data);
                     QString prompt = "@huisheng-use:" + use.from->objectName() + ":" + card->objectName();
                     room->setPlayerProperty(source, "huisheng_card", card->objectName());
-                    room->setPlayerProperty(source, "huisheng_target", use.from->objectName());        
+                    room->setPlayerProperty(source, "huisheng_target", use.from->objectName());
                     room->askForUseCard(source, "@@huisheng", prompt);
                     room->setPlayerProperty(source, "huisheng_target", QVariant());
                 }
@@ -1281,7 +1281,7 @@ public:
 
                 room->touhouLogmessage("#TriggerSkill", player, objectName());
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.from->objectName());
-            
+
                 damage.from->gainMark("@zhengti", 1);
                 room->setTag("zhengti_target", QVariant::fromValue(damage.from));
                 //for huashen UI
@@ -1388,13 +1388,13 @@ public:
         if (player->askForSkillInvoke(objectName())){
             foreach(ServerPlayer *p, targets)
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
-            
+
             foreach(ServerPlayer *p, targets){
                 if (p->canDiscard(p, "he")){
                     p->tag["qingyu_source"] = QVariant::fromValue(player);
                     //if (!room->askForDiscard(p, objectName(), 1, 1, true, true, "@qingyu-discard:"+player->objectName()))
                     //in order to update intention,we use askForCard() instead of  askForDiscard()
-                    //QVariant &data= QVariant::fromValue(player);    
+                    //QVariant &data= QVariant::fromValue(player);
                     const Card *cards = room->askForCard(p, ".|.|.|.", "@qingyu-discard:" + player->objectName(), QVariant::fromValue(player), Card::MethodDiscard);
 
                     if (cards == NULL)

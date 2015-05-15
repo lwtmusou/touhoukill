@@ -371,7 +371,7 @@ public:
     Qingguo(): OneCardViewAsSkill("qingguo") {
         filter_pattern = ".|black|.|hand";
         response_pattern = "jink";
-		response_or_use = true;
+        response_or_use = true;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -534,7 +534,7 @@ public:
 class Wusheng: public OneCardViewAsSkill {
 public:
     Wusheng(): OneCardViewAsSkill("wusheng") {
-		response_or_use = true;
+        response_or_use = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -582,7 +582,7 @@ public:
 class Longdan: public OneCardViewAsSkill {
 public:
     Longdan(): OneCardViewAsSkill("longdan") {
-		response_or_use = true;
+        response_or_use = true;
     }
 
     virtual bool viewFilter(const Card *to_select) const{
@@ -997,7 +997,7 @@ public:
 class Qixi: public OneCardViewAsSkill {
 public:
     Qixi(): OneCardViewAsSkill("qixi") {
-		response_or_use = true;
+        response_or_use = true;
     }
 
     virtual bool viewFilter(const Card *to_select) const{
@@ -1026,7 +1026,7 @@ class Guose: public OneCardViewAsSkill {
 public:
     Guose(): OneCardViewAsSkill("guose") {
         filter_pattern = ".|diamond";
-		response_or_use = true;
+        response_or_use = true;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -1292,7 +1292,7 @@ class Jijiu: public OneCardViewAsSkill {
 public:
     Jijiu(): OneCardViewAsSkill("jijiu") {
         filter_pattern = ".|red";
-		response_or_use = true;
+        response_or_use = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *) const{
@@ -1812,7 +1812,7 @@ public:
                 do {
                     skill = Sanguosha->getSkill(skills[qrand() % skills.length()]);
                 }
-                while (!(skill && skill->isVisible() && !skill->isLordSkill() && !skill->isAttachedLordSkill() 
+                while (!(skill && skill->isVisible() && !skill->isLordSkill() && !skill->isAttachedLordSkill()
                         && !skill->inherits("WeaponSkill") && !skill->inherits("ArmorSkill") && !target->hasSkill(skill->objectName())));
                 room->acquireSkill(target, skill->objectName());
             }
@@ -1921,7 +1921,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == TargetConfirmed){
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card != NULL && ((use.card->isKindOf("Slash") && use.card->isRed()) || use.card->isKindOf("Duel")) 
+            if (use.card != NULL && ((use.card->isKindOf("Slash") && use.card->isRed()) || use.card->isKindOf("Duel"))
                     && TriggerSkill::triggerable(player) && use.from == player && !player->getCards("e").isEmpty()) {
                 foreach (ServerPlayer *to, use.to)
                     if (player->askForSkillInvoke(objectName(), QVariant::fromValue(to))) {
@@ -1929,7 +1929,7 @@ public:
                         room->setCardFlag(use.card, objectName());
 
                         int x = player->getCards("e").length();
-                        if (player->getHp() == player->getMaxHp() || player->getCardCount(true) < x 
+                        if (player->getHp() == player->getMaxHp() || player->getCardCount(true) < x
                                 || !room->askForDiscard(to, objectName(), x, x, true, true, "@lzxpudao-discard")) {
                             player->drawCards(x);
                             room->loseHp(to);
@@ -2021,7 +2021,7 @@ public:
             room->fillAG(cards, target);
             int id = room->askForAG(target, cards, false, objectName());
             room->clearAG(target);
-            room->moveCardTo(Sanguosha->getCard(id), NULL, Player::DiscardPile, 
+            room->moveCardTo(Sanguosha->getCard(id), NULL, Player::DiscardPile,
                 CardMoveReason(CardMoveReason::S_REASON_NATURAL_ENTER, target->objectName()));
 
             cards.removeOne(id);
@@ -2066,7 +2066,7 @@ public:
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const{
-        if (cards.isEmpty()) 
+        if (cards.isEmpty())
             return NULL;
 
         NimaAojiaoCard *c = new NimaAojiaoCard;
@@ -2149,7 +2149,7 @@ TestPackage::TestPackage()
     nobenghuai_dongzhuo->addSkill("baonue");
 
 
-    
+
 
     skills << new SuperMaxCards << new SuperOffensiveDistance << new SuperDefensiveDistance << new ExtraRound;
     addMetaObject<ExtraRoundCard>();
@@ -2190,7 +2190,7 @@ TestPackage::TestPackage()
 
     addMetaObject<NimeiCard>();
     addMetaObject<NimaAojiaoCard>();*/
-	new General(this, "sujiang", "god", 5, true, true);
+    new General(this, "sujiang", "god", 5, true, true);
     new General(this, "sujiangf", "god", 5, false, true);
 
     new General(this, "anjiang", "god", 4, true, true, true);

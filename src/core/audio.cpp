@@ -3,7 +3,7 @@
 #include "settings.h"
 
 #include <QCache>
-    
+
 class Sound;
 
 static FMOD_SYSTEM *System;

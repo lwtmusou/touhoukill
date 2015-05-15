@@ -255,7 +255,7 @@ QString TrustAI::askForKingdom() {
             role = kingdoms.at(qrand() % kingdoms.length());
         }
         else if (lord->getGeneral()->isLord())
-            role = lord->getKingdom();    
+            role = lord->getKingdom();
         else
             role = kingdoms.at(qrand() % kingdoms.length());
         break;

@@ -991,7 +991,7 @@ public:
     virtual bool trigger(TriggerEvent , Room *, ServerPlayer *, QVariant &data) const{
         if (Config.GameMode != "02_1v1"){
             DeathStruct death = data.value<DeathStruct>();
-            if (death.damage && death.damage->from != NULL && death.damage->from->hasSkill("liewei") 
+            if (death.damage && death.damage->from != NULL && death.damage->from->hasSkill("liewei")
                     && death.damage->from->askForSkillInvoke("liewei", data))
                 death.damage->from->drawCards(3, "liewei");
         }
@@ -1004,7 +1004,7 @@ public:
     NiluanViewAsSkill(): OneCardViewAsSkill("niluan") {
         filter_pattern = ".|black";
         response_pattern = "@@niluan";
-		response_or_use = true;
+        response_or_use = true;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -1029,7 +1029,7 @@ public:
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
         if (player->getPhase() == Player::Finish) {
             ServerPlayer *hansui = room->findPlayerBySkillName(objectName());
-            if (hansui && hansui != player && hansui->canSlash(player) && hansui->inMyAttackRange(player) 
+            if (hansui && hansui != player && hansui->canSlash(player) && hansui->inMyAttackRange(player)
                 && (player->getHp() > hansui->getHp() || player->hasFlag("NiluanSlashUsed"))) {
                     if (hansui->isKongcheng()) {
                         bool has_black = false;

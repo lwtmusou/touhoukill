@@ -288,7 +288,7 @@ public:
         events << EventPhaseStart << Damaged;
     }
     static void do_fandu(ServerPlayer *player){
-        player->drawCards(2); 
+        player->drawCards(2);
         Room *room = player->getRoom();
         QList<ServerPlayer *> listt;
         foreach (ServerPlayer *p, room->getOtherPlayers(player)){
@@ -399,7 +399,7 @@ public:
             if (!room->askForSkillInvoke(player, "taohuan", QVariant::fromValue(target)))
                 break;
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), target->objectName());
-            
+
             player->setFlags("pindian");
             count--;
             if (player->pindian(target, "taohuan", NULL) && !target->isNude()){
@@ -507,8 +507,8 @@ public:
             room->addPlayerMark(player, objectName());
             if (room->changeMaxHpForAwakenSkill(player)){
                 //player->drawCards(4);
-				RecoverStruct recov;
-				room->recover(player, recov);
+                RecoverStruct recov;
+                room->recover(player, recov);
                 room->handleAcquireDetachSkills(player, "luanying");
             }
         }
@@ -527,48 +527,48 @@ public:
         return (target != NULL);
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{  
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == CardUsed || triggerEvent == CardResponded){
             ServerPlayer *merry = room->findPlayerBySkillName(objectName());
-			if (!merry || merry->getPile("jingjie").length() == 0)
+            if (!merry || merry->getPile("jingjie").length() == 0)
                 return false;
-			if (player == NULL || player == merry || player->isDead())
+            if (player == NULL || player == merry || player->isDead())
                 return false;
-			
-			bool isRed = true;
-			QString cardName;
-			if (triggerEvent == CardUsed){
-				CardUseStruct use = data.value<CardUseStruct>();
-				if (!use.card->isKindOf("BasicCard") || use.card->getSuit() ==  Card::NoSuit)
-					return false;
-				isRed = use.card->isRed();
-				cardName = use.card->objectName();
-			}
-			else if(triggerEvent == CardResponded){
-				CardStar card_star = data.value<CardResponseStruct>().m_card;
-				if (!card_star->isKindOf("BasicCard") || data.value<CardResponseStruct>().m_isRetrial
+
+            bool isRed = true;
+            QString cardName;
+            if (triggerEvent == CardUsed){
+                CardUseStruct use = data.value<CardUseStruct>();
+                if (!use.card->isKindOf("BasicCard") || use.card->getSuit() ==  Card::NoSuit)
+                    return false;
+                isRed = use.card->isRed();
+                cardName = use.card->objectName();
+            }
+            else if(triggerEvent == CardResponded){
+                CardStar card_star = data.value<CardResponseStruct>().m_card;
+                if (!card_star->isKindOf("BasicCard") || data.value<CardResponseStruct>().m_isRetrial
                 || data.value<CardResponseStruct>().m_isProvision || card_star->getSuit() ==  Card::NoSuit)
-					return false;
-				isRed = card_star->isRed();
-				cardName = card_star->objectName();
-			}
-			
-			
+                    return false;
+                isRed = card_star->isRed();
+                cardName = card_star->objectName();
+            }
+
+
             QList<int> jingjies = merry->getPile("jingjie");
-			QList<int> able;
-			QList<int> disabled;
-			foreach(int id, jingjies){
+            QList<int> able;
+            QList<int> disabled;
+            foreach(int id, jingjies){
                 if (Sanguosha->getCard(id)->isRed() == isRed)
                     able << id;
                 else
                     disabled << id;
             }
-			if (able.isEmpty())
-				return false;
+            if (able.isEmpty())
+                return false;
             room->setTag("luanying_target", QVariant::fromValue(player));
             if (triggerEvent == CardUsed)
-				merry->tag["luanying_use"] = data;
-			
+                merry->tag["luanying_use"] = data;
+
             if (room->askForSkillInvoke(merry, objectName(), data)) {
                 room->removeTag("luanying_target");
 
@@ -579,9 +579,9 @@ public:
                 if (card_id > -1){
                     room->obtainCard(player, card_id, true);
                     room->touhouLogmessage("#weiya", player, objectName(), QList<ServerPlayer *>(), cardName);
-					if (triggerEvent == CardUsed) 
-						room->setCardFlag(data.value<CardUseStruct>().card, "luanyingSkillNullify");					if(triggerEvent == CardResponded)
-						room->setPlayerFlag(player, "respNul");
+                    if (triggerEvent == CardUsed)
+                        room->setCardFlag(data.value<CardUseStruct>().card, "luanyingSkillNullify");                    if(triggerEvent == CardResponded)
+                        room->setPlayerFlag(player, "respNul");
                 }
             }
         }
@@ -715,7 +715,7 @@ public:
         }
 
         if (back != NULL){
-            
+
             room->setPlayerMark(player, "pingyi_steal", 0);
             if (back->isAlive()){
                 //room->setPlayerMark(back, "pingyi", back->getMark("pingyi") - 1);
@@ -732,7 +732,7 @@ public:
 
             if (back->isAlive()){
                 //room->handleAcquireDetachSkills(back, back_skillname);
-                room->setPlayerMark(back, "pingyi"+back_skillname, 0); 
+                room->setPlayerMark(back, "pingyi"+back_skillname, 0);
                 Json::Value args;
                 args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
@@ -778,23 +778,23 @@ public:
                 //record pingyi     relation and content.
                 QString pingyi_record = player->objectName() + "pingyi" + damage.from->objectName();
                 room->setTag(pingyi_record, skill_name);
-                
+
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.from->objectName());
-            
-                
+
+
                 room->setPlayerMark(player, "pingyi_steal", 1);
                 //room->setPlayerMark(damage.from, "pingyi", damage.from->getMark("pingyi") + 1);//it can be stealed any times.
                 room->setPlayerMark(damage.from, "pingyi"+skill_name, 1); // skill nullify mark, like Qingcheng
                 //room->handleAcquireDetachSkills(damage.from, "-" + skill_name);
                 room->handleAcquireDetachSkills(player, skill_name);
-                
+
                 Json::Value args;
                 args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
-                
+
                 damage.from->gainMark("@pingyi"); // marks could be greater than 1,since it can be stealed any times.
                 room->touhouLogmessage("#pingyiLoseSkill", damage.from, skill_name);
-                
+
                 Json::Value arg(Json::arrayValue);
                 arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
                 arg[1] = QSanProtocol::Utils::toJsonString(player->objectName());
@@ -1060,7 +1060,7 @@ public:
 class ganying_handle : public TriggerSkill {
 public:
     ganying_handle() : TriggerSkill("#ganying_handle") {
-        events << EventAcquireSkill << EventLoseSkill << HpChanged << Death << CardsMoveOneTime 
+        events << EventAcquireSkill << EventLoseSkill << HpChanged << Death << CardsMoveOneTime
         << MarkChanged;
         //<< EventPhaseChanging
     }

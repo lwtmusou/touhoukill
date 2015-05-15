@@ -646,9 +646,9 @@ void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
     else {
         const Card *card1 = room->askForExchange(effect.from, "shangyi", 1, false, "@shangyi-swap");
         const Card *card2 = room->askForExchange(effect.to, "shangyi", 1, false, "@shangyi-swap");
-        CardsMoveStruct move1(card1->getEffectiveId(), effect.to, Player::PlaceHand, 
+        CardsMoveStruct move1(card1->getEffectiveId(), effect.to, Player::PlaceHand,
             CardMoveReason(CardMoveReason::S_REASON_SWAP, effect.from->objectName(), effect.to->objectName(), "shangyi", QString()));
-        CardsMoveStruct move2(card2->getEffectiveId(), effect.from, Player::PlaceHand, 
+        CardsMoveStruct move2(card2->getEffectiveId(), effect.from, Player::PlaceHand,
             CardMoveReason(CardMoveReason::S_REASON_SWAP, effect.to->objectName(), effect.from->objectName(), "shangyi", QString()));
 
         QList<CardsMoveStruct> exchangeMove;
@@ -782,7 +782,7 @@ public:
                 rec.who = player;
                 room->recover(player, rec);
             }
-            
+
             room->handleAcquireDetachSkills(player, "-shouyue|rende|neo2013renwang");
             if (player->isLord())
                 room->handleAcquireDetachSkills(player, "jijiang");

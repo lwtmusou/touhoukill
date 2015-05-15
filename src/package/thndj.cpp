@@ -36,7 +36,7 @@ public:
                     player->tag["RexueInvoke"] = QVariant::fromValue(true);
             }
         }
-        
+
         else if (triggerEvent == EventPhaseStart && player->getPhase() == Player::NotActive ){
             bool rexue = player->tag["RexueInvoke"].toBool();
             player->tag["RexueInvoke"] = QVariant::fromValue(false);
@@ -48,8 +48,8 @@ public:
                 if (room->canInsertExtraTurn()) {
                     room->touhouLogmessage("#touhouExtraTurn", player, objectName());
                     player->gainAnExtraTurn();
-                }    
-            } 
+                }
+            }
         }
         return false;
     }
@@ -198,7 +198,7 @@ public:
             const Card *ask_card = room->askForCard(s, ".|black|.|hand", "@huanyue-discard:" + damage.to->objectName(), data, Card::MethodDiscard, NULL, true, "huanyue");
             if (ask_card != NULL){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, s->objectName(), damage.to->objectName());
-            
+
                 QList<ServerPlayer *>logto;
                 logto << damage.to;
                 room->touhouLogmessage("#huanyue_log", damage.from, QString::number(damage.damage), logto, QString::number(damage.damage + 1));
@@ -341,16 +341,16 @@ public:
         if (damage.to == source){
             if (room->askForSkillInvoke(source, objectName(), prompt)){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), damage.from->objectName());
-            
+
                 room->damage(DamageStruct("fanji", source, damage.from));
-                
-            }    
+
+            }
         }
         else{
             if (source->inMyAttackRange(damage.to) && source->getMaxHp() > 1
                 && room->askForSkillInvoke(source, objectName(), prompt)){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), damage.from->objectName());
-            
+
                 room->loseMaxHp(source, 1);
                 room->damage(DamageStruct("fanji", source, damage.from));
             }

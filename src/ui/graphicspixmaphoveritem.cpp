@@ -100,7 +100,7 @@ void GraphicsPixmapHoverItem::paint(QPainter *painter,
         return;
     }
 
-    
+
     QPixmap tempPix(pixmap().size());
     tempPix.fill(Qt::transparent);
 
@@ -122,7 +122,7 @@ void GraphicsPixmapHoverItem::paint(QPainter *painter,
         tempPainter.drawPixmap(rect.left() - 9, rect.bottom() - 25,
             m_skinChangingFrames[m_currentSkinChangingFrameIndex]);
 
-        
+
         tempPainter.end();
         if (isSecondaryAvartarItem()) {
             tempPix = m_playerCardContainer->paintByMask(tempPix);

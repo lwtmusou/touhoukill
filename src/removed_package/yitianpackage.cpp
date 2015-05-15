@@ -1009,7 +1009,7 @@ public:
                 if (targets.isEmpty())
                     return false;
 
-                
+
                 ServerPlayer *target = room->askForPlayerChosen(damage.from, targets, objectName(), "@shaoying", true, true);
                 if (target != NULL){
                     LogMessage log;
@@ -1542,7 +1542,7 @@ public:
                 dengshizai->gainAnExtraTurn();
             }
         }
-        else if (triggerEvent == EventPhaseStart && TriggerSkill::triggerable(player) 
+        else if (triggerEvent == EventPhaseStart && TriggerSkill::triggerable(player)
                 && player->getPhase() == Player::RoundStart && player->hasFlag("zhenggong")){
             player->setFlags("-zhenggong");
             player->turnOver();

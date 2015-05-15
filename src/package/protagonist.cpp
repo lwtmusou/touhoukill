@@ -6,7 +6,7 @@
 #include "standard.h"
 //#include "clientplayer.h"
 #include "client.h"
-//#include "ai.h" 
+//#include "ai.h"
 #include "maneuvering.h"
 
 
@@ -64,7 +64,7 @@ public:
         events << TargetConfirming << SlashEffected << CardEffected;
         skill_property = "cause_judge";
         //view_as_skill=new lingqivs;
-        
+
     }
 
     //virtual bool triggerable(const ServerPlayer *target) const{
@@ -106,7 +106,7 @@ public:
             if (judge.isGood())
                 room->setCardFlag(use.card, "lingqi" + player->objectName());
             //room->askForUseCard(lingmeng, "@@lingqi",prompt );
-            //room->setPlayerProperty(lingmeng, "lingqi_targets", QVariant());        
+            //room->setPlayerProperty(lingmeng, "lingqi_targets", QVariant());
         } else if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (effect.slash != NULL && effect.slash->hasFlag("lingqi" + player->objectName())) {
@@ -203,7 +203,7 @@ public:
             if (!room->askForSkillInvoke(player, "boli", prompt))
                 return false;
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), judge->who->objectName());
-            
+
             /*if (player->getGeneralName() == "zhu001" && !player->hasFlag("boliAnimate")){
                 room->doLightbox("$boliAnimate", 2000);
                 room->setPlayerFlag(player, "boliAnimate");
@@ -868,12 +868,12 @@ public:
             }
             ServerPlayer *target = room->askForPlayerChosen(player, players, objectName(), "@@zhize", true, true);
             if (target) {
-                //case1 ask for ag  
+                //case1 ask for ag
                 /*room->fillAG(target->handCards(),player);
                 int id=room->askForAG(player,target->handCards(),false,objectName());
                 room->clearAG(player);
                 */
-                //case2 gongxin  
+                //case2 gongxin
                 /*QList<int>  ids;
                 foreach (const Card *c, target->getCards("h"))
                 ids<< c->getEffectiveId();
@@ -1211,8 +1211,8 @@ public:
     }
 };
 
-//triggered when drawCards  
-//SeverPlayer::drawCards() 
+//triggered when drawCards
+//SeverPlayer::drawCards()
 class qiangyu : public TriggerSkill {
 public:
     qiangyu() : TriggerSkill("qiangyu") {
@@ -1500,7 +1500,7 @@ public:
                     }
                 }
             }
-            
+
         }
         return false;
     }
@@ -1529,7 +1529,7 @@ public:
                     CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
                     room->clearAG(player);
                     room->throwCard(Sanguosha->getCard(id), reason, NULL);
-                    
+
                     room->setCardFlag(use.card, objectName() + player->objectName());
                 }
             }
@@ -1541,7 +1541,7 @@ public:
                 room->setEmotion(effect.to, "skill_nullify");
                 return true;
             }
-        } 
+        }
         return false;
     }
 };
@@ -1647,7 +1647,7 @@ protagonistPackage::protagonistPackage()
     addMetaObject<bllmwuyuCard>();
 
 
-    skills << new wuyuvs << new saiqianvs; 
+    skills << new wuyuvs << new saiqianvs;
     // << new touhou_tianyi;
 }
 

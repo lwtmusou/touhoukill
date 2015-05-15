@@ -299,8 +299,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     m_tableBg = new QGraphicsPixmapItem;
     m_tableBg->setZValue(-100000);
-	addItem(m_tableBg);
-	
+    addItem(m_tableBg);
+
     QHBoxLayout *skill_dock_layout = new QHBoxLayout;
     QMargins margins = skill_dock_layout->contentsMargins();
     margins.setTop(0);
@@ -562,7 +562,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
         if (!player) return;
 
         if (!player->hasSkill(skill_name)){
-            if (player->hasSkill("bllmwuyu")){ //for bllmwuyu 
+            if (player->hasSkill("bllmwuyu")){ //for bllmwuyu
                 QStringList bllmwuyu;
                 bllmwuyu << "bllmcaiyu" << "bllmmingyu" << "bllmseyu" << "bllmshuiyu" << "bllmshiyu";
                 if (!bllmwuyu.contains(skill_name))
@@ -576,7 +576,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
         if (container)
             container->showSkillName(skill_name, player == Self);
-        
+
         break;
     }
     case S_GAME_EVENT_PAUSE: {
@@ -855,7 +855,7 @@ void RoomScene::adjustItems() {
     if ((image_path == NULL) || !QFile::exists(image_path)){
         image_path = Config.TableBgImage;
     }
-	
+
     QPixmap tableBg = QPixmap(image_path)
         .scaled(m_tablew, m_tableh, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     m_tableh -= _m_roomLayout->m_photoDashboardPadding;
@@ -1124,7 +1124,7 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats) {
         }
     }
 
-   
+
     QList<QString> names = name2photo.keys();
     foreach(const QString &who, names) {
         if (m_bubbleChatBoxs.contains(who)) {
@@ -1264,7 +1264,7 @@ void RoomScene::enableTargets(const Card *card) {
 
     updateTargetsEnablity(card);
 
-    
+
 
     if (selected_targets.isEmpty()) {
         if (card->isKindOf("Slash") && Self->hasFlag("slashTargetFixToOne")) {
@@ -2462,7 +2462,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             else if (newStatus == Client::Playing)
                 reason = CardUseStruct::CARD_USE_REASON_PLAY;
             button->setEnabled(vsSkill->isAvailable(Self, reason, pattern) && !pattern.endsWith("!"));
-            
+
             if (vsSkill->isAvailable(Self, reason, pattern) && !pattern.endsWith("!") && rx.exactMatch(pattern) && pattern.startsWith("@@"))
             {
                 if (!pattern.startsWith("@@chuangshi"))
@@ -2549,7 +2549,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                             && vsSkill->isAvailable(Self, reason, pattern))
                             if (pattern.startsWith("@@chuangshi"))
                                 button->click();
-                       
+
                         //button->setState(QSanButton::S_STATE_DOWN,true);
                         break;
                     }
@@ -3766,13 +3766,13 @@ void RoomScene::onGameStart() {
         if (changeBackdrop)
             image_path = "backdrop/" + lord_name + ".jpg";
     }
-    
+
     if ((image_path != "") && QFile::exists(image_path)){
-		
-		changeTableBg(image_path);
-	}
+
+        changeTableBg(image_path);
+    }
     if (Config.EnableBgMusic) {
-        // start playing background music     
+        // start playing background music
         Audio::playBGM(bgmusic_path);
 
         Audio::setBGMVolume(Config.BGMVolume);
@@ -4154,7 +4154,7 @@ void RoomScene::fillGenerals1v1(const QStringList &names) {
         general_item->scaleSmoothly(scaleRatio);
         general_item->setParentItem(selector_box);
         general_item->setPos(start_x + width * column, start_y + height * row);
-        general_item->setHomePos(general_item->pos());   
+        general_item->setHomePos(general_item->pos());
         general_item->setAcceptedMouseButtons(Qt::LeftButton);
     }
 }

@@ -514,8 +514,8 @@ private:
     const Card *provided;
     bool has_provided;
     ServerPlayer *provider;
-    
-    
+
+
     QVariantMap tag;
     const Scenario *scenario;
 

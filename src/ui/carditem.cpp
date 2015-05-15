@@ -13,7 +13,7 @@
 #include <QPropertyAnimation>
 
 void CardItem::_initialize() {
-    
+
     setAcceptedMouseButtons(0);
 
     setFlag(QGraphicsItem::ItemIsMovable);

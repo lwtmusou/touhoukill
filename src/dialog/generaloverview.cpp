@@ -576,7 +576,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
         button_layout->addWidget(declaration_button);
         connect(declaration_button, SIGNAL(clicked()), general, SLOT(playAudioEffect()));
         //if (general->objectName().contains("zhu"))
-        //	Sanguosha->playAudioEffect("audio/system/win-cc.ogg");
+        //  Sanguosha->playAudioEffect("audio/system/win-cc.ogg");
 
         addCopyAction(declaration_button);
     }

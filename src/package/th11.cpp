@@ -38,7 +38,7 @@ public:
         if (source->askForSkillInvoke("xiangqi", prompt)){
 
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), damage.from->objectName());
-        
+
             int id = room->askForCardChosen(source, damage.from, "h", objectName());
             room->showCard(damage.from, id);
             Card *showcard = Sanguosha->getCard(id);
@@ -49,7 +49,7 @@ public:
             if (same && damage.to != source){
                 room->throwCard(id, damage.from, source);
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), damage.to->objectName());
-        
+
                 room->damage(DamageStruct("xiangqi", source, damage.to));
             }
             else
@@ -400,7 +400,7 @@ public:
         const Card *c = room->askForCard(player, ".|spade", "@songzang:" + victim->objectName(), data, objectName());
         if (c){
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), victim->objectName());
-            
+
             DamageStruct damage;
             damage.from = player;
             room->killPlayer(victim, &damage);
@@ -673,7 +673,7 @@ public:
                 room->touhouLogmessage("#TriggerSkill", player, objectName());
                 room->notifySkillInvoked(player, objectName());
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), use.from->objectName());
-        
+
                 SupplyShortage *supply = new SupplyShortage(Card::NoSuit, 0);
                 QString choice;
                 bool canchoice = true;
@@ -833,8 +833,8 @@ public:
                     room->setPlayerProperty(source, "chuanran", chuanranTargets.join("+"));
                     source->tag["chuanran_cardname"] == QVariant::fromValue(trickname);
                     source->tag["chuanran_id"] = QVariant::fromValue(id);
-                    //const Card *dummy = 
-					room->askForUseCard(source, "@@chuanran", "@chuanran:" + trickname);
+                    //const Card *dummy =
+                    room->askForUseCard(source, "@@chuanran", "@chuanran:" + trickname);
                     room->setPlayerProperty(source, "chuanran", QVariant());
                     //if (dummy==NULL)
                     //     room->obtainCard(source,id,true);
@@ -917,7 +917,7 @@ public:
                     if (!room->askForSkillInvoke(skillowner, "diaoping", prompt))
                         return false;
                     room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, skillowner->objectName(), use.from->objectName());
-        
+
                     if (skillowner->pindian(use.from, "diaoping", NULL)){
                         use.from->turnOver();
                         good_result = true;

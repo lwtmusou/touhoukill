@@ -338,7 +338,7 @@ void QSanInvokeSkillDock::update() {
         //  _m_width  G_DASHBOARD_LAYOUT.m_rightWidth
         int *btnNum = new int[rows + 2 + 1]; //new int[rows + 2 + 1]; // we allocate one more row in case we need it.
         int remainingBtns = numButtons;
-        int *lordBtnNum = new int[2 + 1]; //just consider 2 rows lord skills 
+        int *lordBtnNum = new int[2 + 1]; //just consider 2 rows lord skills
 
         //set button width
         for (int i = 0; i < rows; i++) {

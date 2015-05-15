@@ -70,7 +70,7 @@ public:
 
                 if (use.from->askForSkillInvoke(objectName(), prompt)){
                     room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, use.from->objectName(), player->objectName());
-            
+
                     //for ai to judge a card if it is already SkillNullified for this player,
                     //the first line is more suitable than the second one.
                     room->setCardFlag(use.card, "huiwu" + player->objectName());
@@ -252,7 +252,7 @@ public:
                 return true;
         } else if (triggerEvent == CardEffected){
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (effect.card->hasFlag("weiyaSkillNullify")) //effect.card!=NULL && 
+            if (effect.card->hasFlag("weiyaSkillNullify")) //effect.card!=NULL &&
                 return true;
         } else if (triggerEvent == CardResponded){
             CardStar card_star = data.value<CardResponseStruct>().m_card;
@@ -348,7 +348,7 @@ public:
             if (player->getPhase() != Player::Play) return false;
             ServerPlayer *src = room->findPlayerBySkillName(objectName());
             //do not consider more than one players?
-            if (!src) return false; 
+            if (!src) return false;
             if (src->hasFlag("henyi")){
                 ArcheryAttack *card = new ArcheryAttack(Card::NoSuit, 0);
                 if (src->isCardLimited(card, Card::MethodUse))
@@ -462,7 +462,7 @@ public:
                 return false;
             if (!use.to.contains(player) || player->getPhase() != Player::Play)
                 return false;
-            ServerPlayer *target = player; 
+            ServerPlayer *target = player;
             //if (target->hasFlag("Global_Dying") )
             //    return false;
             if (target->isKongcheng() || target->getHp() < 1)
@@ -475,7 +475,7 @@ public:
                 if (!room->askForSkillInvoke(source, objectName(), _data))
                     return false;
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), target->objectName());
-            
+
                 source->drawCards(1);
                 if (!source->isKongcheng() && source->pindian(target, objectName())){
                     if (source->isWounded()){
@@ -515,17 +515,17 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-		if (triggerEvent == PreCardUsed){
+        if (triggerEvent == PreCardUsed){
             CardUseStruct use = data.value<CardUseStruct>();
             foreach(ServerPlayer *p, use.to){
                 if (p->hasSkill("yanhui") && p != use.from){
-					if ((use.card->isKindOf("Analeptic") && p->hasFlag("Global_Dying"))
-					||(use.card->isKindOf("Peach") && use.m_reason == CardUseStruct::CARD_USE_REASON_PLAY)){
+                    if ((use.card->isKindOf("Analeptic") && p->hasFlag("Global_Dying"))
+                    ||(use.card->isKindOf("Peach") && use.m_reason == CardUseStruct::CARD_USE_REASON_PLAY)){
                         QList<ServerPlayer *> logto;
-						logto << p;
-						room->touhouLogmessage("#InvokeOthersSkill", use.from, objectName(), logto);
-						room->notifySkillInvoked(p, objectName());
-                    }	
+                        logto << p;
+                        room->touhouLogmessage("#InvokeOthersSkill", use.from, objectName(), logto);
+                        room->notifySkillInvoked(p, objectName());
+                    }
                 }
             }
         }
@@ -586,7 +586,7 @@ public:
             QString prompt = "target:" + judge->who->objectName() + ":" + judge->reason;
             if (room->askForSkillInvoke(source, objectName(), prompt)){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), judge->who->objectName());
-            
+
                 room->damage(DamageStruct(objectName(), source, judge->who, 1, DamageStruct::Normal));
             }
         }
@@ -891,7 +891,7 @@ th09Package::th09Package()
     zhan004->addSkill(new henyi);
     zhan004->addSkill(new henyiCount);
     related_skills.insertMulti("henyi", "#henyi-count");
-    
+
     General *zhan005 = new General(this, "zhan005", "zhan", 4, false);
     zhan005->addSkill(new toupai);
 

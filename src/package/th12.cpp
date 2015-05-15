@@ -251,7 +251,7 @@ public:
                     room->touhouLogmessage("#TriggerSkill", player, "zhengyi");
                     CardsMoveStruct move;
                     move.to = use.from;
-                    move.to_place = Player::PlaceHand; 
+                    move.to_place = Player::PlaceHand;
                     move.card_ids << (room->drawCard(true));//(room->getDrawPile().last());
                     room->moveCardsAtomic(move, false);
                 }
@@ -382,7 +382,7 @@ const Card *chuannanCard::validate(CardUseStruct &cardUse) const{
         SupplyShortage *supply = new SupplyShortage(getSuit(), getNumber());
         supply->addSubcard(getEffectiveId());
         supply->setSkillName("chuannan");
-		cardUse.from->getRoom()->setPlayerProperty(cardUse.from, "chuanan", QVariant());
+        cardUse.from->getRoom()->setPlayerProperty(cardUse.from, "chuanan", QVariant());
         return supply;
     }
     return NULL;
@@ -428,8 +428,8 @@ public:
             else
                 return false;
         }
-        
-        
+
+
         if (triggerEvent == Damaged){
             if (!room->askForSkillInvoke(player, objectName(), data))
                 return false;
@@ -511,19 +511,19 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        
+
         if (player->isCurrent() && move.from  && move.from != player
                 && move.to_place == Player::DiscardPile){
             //check provider
             ServerPlayer *provider = move.reason.m_provider.value<ServerPlayer *>();
-            if (provider && provider == player) 
+            if (provider && provider == player)
                 return false;
-                        
+
             QList<int> obtain_ids;
             foreach(int id, move.card_ids) {
                 if (room->getCardPlace(id) != Player::DiscardPile)
                     continue;
-                    
+
                 switch (move.from_places.at(move.card_ids.indexOf(id))) {
                 case Player::PlaceHand: obtain_ids << id; break;
                 case Player::PlaceEquip: obtain_ids << id; break;
@@ -540,7 +540,7 @@ public:
                                 }
                             }
                             if (!ocurrence)
-                                obtain_ids << id;    
+                                obtain_ids << id;
 
                         break;
                     }
@@ -557,9 +557,9 @@ public:
                 room->moveCardsAtomic(mo, true);
             }
 
-        }  
-        
-         
+        }
+
+
         return false;
     }
 };
@@ -570,21 +570,21 @@ public:
     soujiRecord() : TriggerSkill("#souji") {
         events << CardsMoveOneTime << BeforeCardsMove;
     }
-    
+
     virtual int getPriority(TriggerEvent) const{
         return -1;
     }
-    
+
     virtual bool triggerable(const ServerPlayer *target) const{
         return (target != NULL);
     }
-    
+
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (triggerEvent == BeforeCardsMove){
             if (move.to_place != Player::PlaceTable)
                 return false;
-            
+
             if  (move.reason.m_reason == CardMoveReason::S_REASON_RETRIAL || move.reason.m_reason == CardMoveReason::S_REASON_USE
                     ||    move.reason.m_reason == CardMoveReason::S_REASON_LETUSE || move.reason.m_reason == CardMoveReason::S_REASON_RESPONSE)
             {
@@ -597,7 +597,7 @@ public:
                         pile_ids << id;
                 }
                 foreach (int id, pile_ids) {
-                    //check ocurrence    
+                    //check ocurrence
                     bool ocurrence = false;
                     foreach(QVariant card_data, record_ids) {
                             int card_id = card_data.toInt();
@@ -611,11 +611,11 @@ public:
                 }
                 //room->setTag("UseOrResponseFromPile", IntList2VariantList(tmp_ids));
                 room->setTag("UseOrResponseFromPile", tmp_ids);
-            }        
+            }
         }
         else if (triggerEvent == CardsMoveOneTime){
             QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
-            
+
             QVariantList tmp_ids = room->getTag("UseOrResponseFromPile").toList();
             foreach(int id, move.card_ids){
                 if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceTable){
@@ -756,7 +756,7 @@ public:
             else{
                 //local aidelay = sgs.GetConfig("AIDelay", 0)
                 // sgs.SetConfig("AIDelay", 0)
-                //        ---------------AIDELAY == 0-------------------        
+                //        ---------------AIDELAY == 0-------------------
                 ServerPlayer *player1 = room->askForPlayerChosen(player, fieldcard, objectName(), "@jingxia-discardfield");
                 int card1 = room->askForCardChosen(player, player1, "ej", objectName(), false, Card::MethodDiscard);
                 //objectName()+"-discardfield"
@@ -829,7 +829,7 @@ void nuhuoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
         QList<ServerPlayer *> logto;
         logto << victim;
         room->touhouLogmessage("#nuhuoChoose", target, "nuhuo", logto);
-        
+
         Slash *slash = new Slash(Card::NoSuit, 0);
         CardUseStruct carduse;
         slash->setSkillName("_nuhuo");

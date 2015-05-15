@@ -733,7 +733,7 @@ class LihuoViewAsSkill: public OneCardViewAsSkill {
 public:
     LihuoViewAsSkill(): OneCardViewAsSkill("lihuo") {
         filter_pattern = "%slash";
-		response_or_use = true;
+        response_or_use = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{

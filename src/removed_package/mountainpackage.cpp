@@ -774,7 +774,7 @@ void ZhijianCard::onEffect(const CardEffectStruct &effect) const{
     erzhang->getRoom()->moveCardTo(this, erzhang, effect.to, Player::PlaceEquip,
                                    CardMoveReason(CardMoveReason::S_REASON_PUT,
                                                   erzhang->objectName(), "zhijian", QString()));
-	//
+    //
     LogMessage log;
     log.type = "$ZhijianEquip";
     log.from = effect.to;
@@ -787,10 +787,10 @@ void ZhijianCard::onEffect(const CardEffectStruct &effect) const{
 class Zhijian: public OneCardViewAsSkill {
 public:
     Zhijian():OneCardViewAsSkill("zhijian") {
-        filter_pattern = "EquipCard|.|.|hand";  
+        filter_pattern = "EquipCard|.|.|hand";
     }
-	virtual bool viewFilter(const Card *to_select) const{
-		return to_select->isKindOf("EquipCard") && !to_select->isEquipped();    
+    virtual bool viewFilter(const Card *to_select) const{
+        return to_select->isKindOf("EquipCard") && !to_select->isEquipped();
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -1337,7 +1337,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target) && 
+        return PhaseChangeSkill::triggerable(target) &&
                 (target->getPhase() == Player::RoundStart || target->getPhase() == Player::NotActive);
     }
 

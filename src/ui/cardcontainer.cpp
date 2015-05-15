@@ -89,7 +89,7 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
         item->setHomeOpacity(1.0);
         item->setFlag(QGraphicsItem::ItemIsFocusable);
 
-        
+
         item->setAcceptedMouseButtons(Qt::LeftButton);
         if (disabled_ids.contains(item->getCard()->getEffectiveId())) item->setEnabled(false);
         item->show();
@@ -149,7 +149,7 @@ QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Pla
         copy->setEnabled(false);
         result.append(copy);
 
-        
+
         copy->setAcceptedMouseButtons(0);
 
         if (m_currentPlayer)

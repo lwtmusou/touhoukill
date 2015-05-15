@@ -232,7 +232,7 @@ int Player::distanceTo(const Player *other, int distance_fix) const{
 
     int distance_limit = 0;
     if (hasSkill("chuanwu"))
-        distance_limit =qMax(other->getHp(), 1); 
+        distance_limit =qMax(other->getHp(), 1);
     if (fixed_distance.contains(other)){
         if (distance_limit > 0 && fixed_distance.value(other) > distance_limit)
             return distance_limit;
@@ -414,7 +414,7 @@ bool Player::isCurrent() const{
 
 
 bool Player::hasSkill(const QString &skill_name, bool include_lose, bool include_invalidity) const{
-    bool skill_invalid = false;//  invalid but maybe not lost this skill    
+    bool skill_invalid = false;//  invalid but maybe not lost this skill
     if (!include_lose) {
         if (!hasEquipSkill(skill_name)) {
             if (Sanguosha->getSkill(skill_name) && Sanguosha->getSkill(skill_name)->getFrequency() == Skill::Eternal)
@@ -422,7 +422,7 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose, bool include
             if (getMark("Qingcheng" + skill_name) > 0) //perform Qingcheng
                 skill_invalid = true;
             //return false;
-            if (getMark("pingyi" + skill_name) > 0) 
+            if (getMark("pingyi" + skill_name) > 0)
                 skill_invalid = true;
             const Skill *skill = Sanguosha->getSkill(skill_name);
             if (!skill || !skill->isAttachedLordSkill()) {
@@ -534,7 +534,7 @@ bool Player::hasKingdomLordSkill( bool include_lose) const{
             return true;
         }
     }
-    return false;    
+    return false;
 }
 
 void Player::acquireSkill(const QString &skill_name) {
@@ -1082,13 +1082,13 @@ QString Player::getSkillDescription(bool yellow) const{
     foreach (const Skill *skill, getVisibleSkillList()) {
         if (skill->isAttachedLordSkill() || !hasSkill(skill->objectName()))
             continue;
-        //remove lord skill Description 
+        //remove lord skill Description
         if (skill->isLordSkill()){
             if (!hasLordSkill(skill->objectName()) && !hasSkill("nosguixin", false, true))
                 continue;
         }
 
-        
+
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription(yellow);
         desc.replace("\n", "<br/>");

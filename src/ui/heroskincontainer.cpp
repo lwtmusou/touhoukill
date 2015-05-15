@@ -44,9 +44,9 @@ HeroSkinContainer::HeroSkinContainer(const QString &generalName,
 
     QSanButton *closeButton = new QSanButton("player_container",
         "close-heroskin", this); //"change-heroskin"
-    
-    //QSanButton *closeButton = new QSanButton("card_container", 
-    //"close", this); 
+
+    //QSanButton *closeButton = new QSanButton("card_container",
+    //"close", this);
 
     closeButton->setPos(385, 5);
 
@@ -138,7 +138,7 @@ QStringList HeroSkinContainer::getHeroSkinFiles(const QString &generalName)
 
 void HeroSkinContainer::initSkins()
 {
-    
+
     QGraphicsRectItem *dummyRectItem = new QGraphicsRectItem(QRectF(LEFT_MARGIN, 35,
         AVAILABLE_AREA_WIDTH, 174), this);
     dummyRectItem->setFlag(ItemHasNoContents);
@@ -157,7 +157,7 @@ void HeroSkinContainer::initSkins()
         }
     }
 
-    
+
     if (0 != skinIndexUsed) {
         createSkinItem(0, dummyRectItem);
     }

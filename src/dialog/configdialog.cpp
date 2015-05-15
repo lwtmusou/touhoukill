@@ -31,7 +31,7 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     connect(ui->enableEffectCheckBox, SIGNAL(toggled(bool)), ui->enableLastWordCheckBox, SLOT(setEnabled(bool)));
 
     ui->enableBgMusicCheckBox->setChecked(Config.EnableBgMusic);
-	ui->UseLordBGMBox->setChecked(Config.UseLordBGM);
+    ui->UseLordBGMBox->setChecked(Config.UseLordBGM);
     ui->noIndicatorCheckBox->setChecked(Config.value("NoIndicator", false).toBool());
     ui->noEquipAnimCheckBox->setChecked(Config.value("NoEquipAnim", false).toBool());
     ui->UseLordBackdropBox->setChecked(Config.UseLordBackdrop);
@@ -153,14 +153,14 @@ void ConfigDialog::saveConfig() {
     Config.EnableBgMusic = enabled;
     Config.setValue("EnableBgMusic", enabled);
 
-	enabled = ui->UseLordBGMBox->isChecked();
+    enabled = ui->UseLordBGMBox->isChecked();
     Config.UseLordBGM = enabled;
     Config.setValue("UseLordBGM", enabled);
-	
-	enabled = ui->UseLordBackdropBox->isChecked();
+
+    enabled = ui->UseLordBackdropBox->isChecked();
     Config.UseLordBackdrop = enabled;
     Config.setValue("UseLordBackdrop", enabled);
-	
+
     Config.setValue("NoIndicator", ui->noIndicatorCheckBox->isChecked());
     Config.setValue("NoEquipAnim", ui->noEquipAnimCheckBox->isChecked());
 

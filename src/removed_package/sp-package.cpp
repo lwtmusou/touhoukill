@@ -283,7 +283,7 @@ public:
         if (skill_name.isEmpty()) return false;
         const ViewAsSkill *vs_skill = Sanguosha->getViewAsSkill(skill_name);
         if (vs_skill) return vs_skill->viewFilter(selected, to_select);
-        return false;	
+        return false;
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const{
@@ -2522,7 +2522,7 @@ public:
         if (triggerEvent == StartJudge && TriggerSkill::triggerable(player)){
             if (!player->property("qixiang_stack").canConvert(QVariant::StringList))
                 room->setPlayerProperty(player, "qixiang_stack", QStringList());
-            
+
             if (player->property("qixiang_currentjudge").canConvert(QVariant::String)){
                 QString s = player->property("qixiang_currentjudge").toString();
                 QStringList stack = player->property("qixiang_stack").toStringList();

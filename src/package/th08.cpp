@@ -177,11 +177,11 @@ void miyaoCard::onEffect(const CardEffectStruct &effect) const{
         recover.who = effect.from;
         room->recover(effect.to, recover);
     }
-	if (effect.to->canDiscard(effect.to, "h")){
-	    const Card *cards = room->askForExchange(effect.to, "miyao", 1, false, "miyao_cardchosen");
+    if (effect.to->canDiscard(effect.to, "h")){
+        const Card *cards = room->askForExchange(effect.to, "miyao", 1, false, "miyao_cardchosen");
         room->throwCard(cards, effect.to);
-	}
-    
+    }
+
 }
 class miyao : public ZeroCardViewAsSkill {
 public:
@@ -428,20 +428,20 @@ public:
             //QStringList huanshiTargets;
             QList<ServerPlayer *> listt;
             foreach ( ServerPlayer *p, room->getOtherPlayers(player)) {
-                if ( use.from->canSlash(p,use.card,true)&& !use.to.contains(p) 
+                if ( use.from->canSlash(p,use.card,true)&& !use.to.contains(p)
                     && use.from->inMyAttackRange(p) ) //need check attackrange
-                    //huanshiTargets<< p->objectName(); 
+                    //huanshiTargets<< p->objectName();
                     listt<<p;
             }
                 //if (huanshiTargets.isEmpty() )
             if (listt.isEmpty() )
                 return false;
-                
+
             //room->setPlayerProperty(player, "huanshi", huanshiTargets.join("+"));
             player->tag["huanshi_source"]=data;
-            
+
             //room->askForUseCard(player, "@@huanshi", "@huanshi:"+use.from->objectName());
-            ServerPlayer *target =   room->askForPlayerChosen(player,listt,objectName(),"@huanshi:"+use.from->objectName(),true,true);         
+            ServerPlayer *target =   room->askForPlayerChosen(player,listt,objectName(),"@huanshi:"+use.from->objectName(),true,true);
 
             // huanshi effect
             //foreach ( ServerPlayer *p, room->getOtherPlayers(player)) {
@@ -491,7 +491,7 @@ public:
                 if (!room->askForSkillInvoke(src, objectName(), prompt))
                     return false;
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, src->objectName(), use.from->objectName());
-            
+
                 if (use.card && room->getCardPlace(use.card->getEffectiveId()) == Player::PlaceTable)
                     src->addToPile("lishi", use.card, true);
                 //addtopile will clear cardflag(especially  use.from is robot ai )
@@ -659,15 +659,15 @@ public:
 
 
 
-geshengCard::geshengCard() 
- { 
-     handling_method = Card::MethodNone; 
- } 
- 
- 
-bool geshengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const 
-{ 
-    if (!targets.isEmpty()) return false; 
+geshengCard::geshengCard()
+ {
+     handling_method = Card::MethodNone;
+ }
+
+
+bool geshengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    if (!targets.isEmpty()) return false;
     if (to_select->getPhase() != Player :: Judge) return false;
     Indulgence *indl = new Indulgence(getSuit(), getNumber());
     indl->addSubcard(getEffectiveId());
@@ -679,22 +679,22 @@ bool geshengCard::targetFilter(const QList<const Player *> &targets, const Playe
         && !to_select->containsTrick("indulgence") && !Self->isProhibited(to_select, indl))
         return true;
     return false;
-} 
- 
- 
- const Card *geshengCard::validate(CardUseStruct &cardUse) const 
- { 
-     ServerPlayer *to = cardUse.to.first(); 
-     if (!to->containsTrick("indulgence")) { 
-         Indulgence *indulgence = new Indulgence(getSuit(), getNumber()); 
-         indulgence->addSubcard(getEffectiveId()); 
-         indulgence->setSkillName("gesheng"); 
-         return indulgence; 
-     } 
-     return this; 
- } 
+}
 
- 
+
+ const Card *geshengCard::validate(CardUseStruct &cardUse) const
+ {
+     ServerPlayer *to = cardUse.to.first();
+     if (!to->containsTrick("indulgence")) {
+         Indulgence *indulgence = new Indulgence(getSuit(), getNumber());
+         indulgence->addSubcard(getEffectiveId());
+         indulgence->setSkillName("gesheng");
+         return indulgence;
+     }
+     return this;
+ }
+
+
 
 
 class geshengvs : public OneCardViewAsSkill {
@@ -703,11 +703,11 @@ public:
         filter_pattern = ".|.|.|hand";
         response_or_use = true;
     }
-    
+
     virtual bool isEnabledAtPlay(const Player *player) const{
         return false;
     }
-    
+
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const {
         if (pattern == "@@gesheng")
             return true;
@@ -761,7 +761,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        
+
         if (triggerEvent == EventPhaseStart && player->getPhase()== Player::Judge){
             ServerPlayer *src = room->findPlayerBySkillName(objectName());
             if (!src || src == player)
@@ -787,7 +787,7 @@ public:
             }
             if (!src)
                 return false;
-            bool canuse = true;    
+            bool canuse = true;
             if ( player->isDead())
                 canuse = false;
             Indulgence *indl = new Indulgence(Card::NoSuit, 0);
@@ -812,7 +812,7 @@ public:
                     if (p->hasFlag("gesheng"))
                         room->setPlayerFlag(p, "-gesheng");
                 }
-            }  
+            }
         }
         return false;
     }
@@ -1096,7 +1096,7 @@ public:
             QString prompt = "target:" + damage.from->objectName() + "::" + QString::number(player->getHp());
             if (room->askForSkillInvoke(player, objectName(), prompt)){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.from->objectName());
-            
+
                 int x = damage.from->getHandcardNum() - player->getHp();
                 room->askForDiscard(damage.from, "wangyue", x, x, false, false);
             }

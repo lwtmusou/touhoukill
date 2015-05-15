@@ -219,7 +219,7 @@ bool Dashboard::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStru
         return true;
     }
 
-    
+
     m_mutexCardItemsAnimationFinished.lock();
     _m_cardItemsAnimationFinished << card_items;
     m_mutexCardItemsAnimationFinished.unlock();
@@ -491,7 +491,7 @@ void Dashboard::_createExtraButtons() {
     m_btnNoNullification->setStyle(QSanButton::S_STYLE_TOGGLE);
     // @todo: auto hide.
     m_btnReverseSelection->setPos(G_DASHBOARD_LAYOUT.m_rswidth, -m_btnReverseSelection->boundingRect().height());
-    //m_btnReverseSelection->boundingRect().right() + G_DASHBOARD_LAYOUT.m_rswidth,G_DASHBOARD_LAYOUT.m_leftWidth  
+    //m_btnReverseSelection->boundingRect().right() + G_DASHBOARD_LAYOUT.m_rswidth,G_DASHBOARD_LAYOUT.m_leftWidth
     //QRectF sortHandRect = this->boundingRect();
     //sortHandRect = this->mapRectToItem(this, sortHandRect);//_m_rightFrame
     m_btnSortHandcard->setPos(0,
@@ -1243,7 +1243,7 @@ void Dashboard::onAvatarHoverEnter()
 
 void Dashboard::onAnimationFinished()
 {
-   
+
     m_mutexCardItemsAnimationFinished.lock();
 
     foreach(CardItem *cardItem, _m_cardItemsAnimationFinished) {
