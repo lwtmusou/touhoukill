@@ -1,5 +1,5 @@
 --function SmartAI:isWeak
---SmartAI:ableToSave-- ¡¾Ô¶·Í¡¿µÄÎÊÌâ
+--SmartAI:ableToSave-- ã€è¿œå ã€‘çš„é—®é¢˜
 function sgs.ai_cardsview_valuable.skltkexuepeach(self, class_name, player)
 	if class_name == "Peach" and player:getHp()>1 then
 		local dying = player:getRoom():getCurrentDyingPlayer()
@@ -711,7 +711,7 @@ sgs.ai_card_intention.banyueCard = function(self, card, from, tos)
 	end
 end
 
---³°·íÖµÉè¶¨
+--å˜²è®½å€¼è®¾å®š
 --[[sgs.ai_chaofeng.hmx001 = 2
 sgs.ai_chaofeng.hmx002 = -2
 sgs.ai_chaofeng.hmx003 = -2

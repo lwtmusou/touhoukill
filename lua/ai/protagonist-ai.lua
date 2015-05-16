@@ -987,7 +987,7 @@ sgs.ai_use_priority.bllmwuyuCard =sgs.ai_use_priority.Slash +0.2
 
 sgs.ai_skill_invoke.qiangyu = true
 --[[sgs.ai_skill_cardask["qiangyu_spadecard"] = function(self, data)
-	--Ö÷¶¯ÏÂÌìÒÇÔö¼Ó±¬·¢
+	--ä¸»åŠ¨ä¸‹å¤©ä»ªå¢åŠ çˆ†å‘
 	if self.player:getMark("@tianyi_Weapon")>0 then
 		if self.player:getEquip(0):getSuit()==sgs.Card_Spade then
 			return "$" ..self.player:getEquip(0):getId()
@@ -1009,8 +1009,8 @@ sgs.ai_skill_invoke.qiangyu = true
 		end
 	end
 	
-	--ÊÖÅÆÀïµÄÇé¿ö
-	--ÔİÊ±Ã»¿¼ÂÇÌ«¶à¡£¡£¡£Ç¿ÓûÆúÅÆ²ßÂÔÒªÔõÃ´Ğ´ÄØ£¿
+	--æ‰‹ç‰Œé‡Œçš„æƒ…å†µ
+	--æš‚æ—¶æ²¡è€ƒè™‘å¤ªå¤šã€‚ã€‚ã€‚å¼ºæ¬²å¼ƒç‰Œç­–ç•¥è¦æ€ä¹ˆå†™å‘¢ï¼Ÿ
 	for _, card in sgs.qlist(self.player:getHandcards()) do
 		if card:getSuit()==sgs.Card_Spade  and (card:isKindOf("BasicCard"))  then
 			return "$" ..card:getId()
@@ -1076,7 +1076,7 @@ end
 
 sgs.ai_skill_invoke.guangji =function(self,data)
    local use = self.player:getTag("guangji_use"):toCardUse()
-   if self:touhouCardEffectNullify(use.card,self.player) then return false end --´ËÉ±ÒÑ¾­ÎŞĞ§
+   if self:touhouCardEffectNullify(use.card,self.player) then return false end --æ­¤æ€å·²ç»æ— æ•ˆ
    --check whether player need providing jink
  
 	local pattern = nil
@@ -1116,12 +1116,3 @@ sgs.ai_skill_invoke.xinghui = true
 end
 ]]
 
---³°·íÖµÉè¶¨
---[[sgs.ai_chaofeng.zhu001 = 2
-sgs.ai_chaofeng.zhu002 = 0
-sgs.ai_chaofeng.zhu003 = 0
-sgs.ai_chaofeng.zhu004 = 2
-sgs.ai_chaofeng.zhu005 = 0
-sgs.ai_chaofeng.zhu006 = 2
-sgs.ai_chaofeng.zhu007 = -1
-sgs.ai_chaofeng.zhu008 = 2]]
