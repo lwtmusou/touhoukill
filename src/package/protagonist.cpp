@@ -164,7 +164,7 @@ public:
         return (target != NULL);
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
         ServerPlayer *source = room->findPlayerBySkillName(objectName());
         if (source && judge->who->isAlive()){
@@ -195,7 +195,7 @@ public:
         return (target != NULL && target->isAlive() && target->hasLordSkill(objectName()));
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
         if (judge->card->getSuit() != Card::Heart){
             player->tag["boli_judge"] = data;
@@ -231,7 +231,7 @@ mofaCard::mofaCard() {
     handling_method = Card::MethodDiscard;
     mute = true;
 }
-void mofaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+void mofaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     //if (source->getGeneralName() == "zhu002")
     //    room->doLightbox("$mofaAnimate", 2000);
     Card *card = Sanguosha->getCard(subcards.first());
@@ -303,7 +303,7 @@ public:
         view_as_skill = new mofavs;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 
@@ -668,7 +668,7 @@ shoucangCard::shoucangCard() {
     m_skillName = "shoucang";
     mute = true;
 }
-void shoucangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+void shoucangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     //if (source->getGeneralName() == "zhu004")
     //    room->doLightbox("$shoucangAnimate", 2000);
     foreach (int id, subcards)
@@ -749,7 +749,7 @@ baoyiCard::baoyiCard() {
     handling_method = Card::MethodDiscard;
     mute = true;
 }
-void baoyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+void baoyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     //if (source->getGeneralName() == "zhu005")
     //    room->doLightbox("$baoyiAnimate", 2000);
     int num = subcards.length();
@@ -788,7 +788,7 @@ public:
     }
 
 
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
+    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const{
         return  to_select->isKindOf("EquipCard") && !Self->isJilei(to_select);
     }
 
@@ -819,7 +819,7 @@ public:
         return (target != NULL) && (target->hasFlag(objectName()) || target->hasSkill(objectName()));
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
         if (player->getPhase() != Player::Start)
             return false;
 
@@ -906,7 +906,7 @@ public:
     }
 
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.to != NULL && move.to == player && move.to_place == Player::PlaceHand){
             if (room->getTag("FirstRound").toBool())
@@ -945,7 +945,7 @@ bllmwuyuCard::bllmwuyuCard() {
     mute = true;
     target_fixed = true;
 }
-void bllmwuyuCard::use(Room *room, ServerPlayer *bllm, QList<ServerPlayer *> &targets) const{
+void bllmwuyuCard::use(Room *room, ServerPlayer *bllm, QList<ServerPlayer *> &) const{
     QStringList uselist;
     if (Analeptic::IsAvailable(bllm))
         uselist << "bllmshiyu";
@@ -1092,7 +1092,7 @@ public:
         frequency = NotFrequent;
     }
 
-    virtual int getResidueNum(const Player *from, const Card *card) const{
+    virtual int getResidueNum(const Player *from, const Card *) const{
         return from->getMark("bllmseyu");
     }
 };
@@ -1106,7 +1106,7 @@ public:
         return (target != NULL && target->getMark("bllmseyu") > 0);
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
         if (player->getMark("bllmseyu") > 0)
             room->setPlayerMark(player, "bllmseyu", 0);
 
@@ -1120,7 +1120,7 @@ public:
         events << EventPhaseChanging;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *bllm, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *bllm, QVariant &data) const{
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to == Player::Judge) {
             if (bllm->getCards("j").length() == 0) return false;
@@ -1139,7 +1139,7 @@ bllmshiyudummy::bllmshiyudummy() {
     handling_method = Card::MethodNone;
 }
 
-void bllmshiyudummy::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
+void bllmshiyudummy::use(Room *, ServerPlayer *, QList<ServerPlayer *> &) const{
 
 }
 
@@ -1220,7 +1220,7 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.to && move.to == player  && move.to_place == Player::PlaceHand && player->hasFlag("qiangyu")){
             room->setPlayerFlag(player, "-qiangyu");
@@ -1482,7 +1482,7 @@ public:
     }
 
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->isKindOf("TrickCard")){
             const Card *pilecard = room->askForCard(player, ".Equip", "@mokai", data, Card::MethodNone, NULL, false, objectName(),false);
@@ -1555,7 +1555,7 @@ public:
     }
 
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.from  && move.from == player && move.from_places.contains(Player::PlaceSpecial)){
             int count = 0;

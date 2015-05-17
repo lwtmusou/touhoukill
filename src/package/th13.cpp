@@ -1180,7 +1180,7 @@ bool bumingCard::targetFilter(const QList<const Player *> &targets, const Player
 
     if (subcards.length() > 0) {
         slash->addSubcard(subcards.first());//need add subcard,since we need  check rangefix
-        QList<const Player *> &targets2 = QList<const Player *>();
+        QList<const Player *> targets2;
         return (slash->targetFilter(targets2, to_select, Self) && !(Self->isCardLimited(slash, Card::MethodUse)))
             || (Self->distanceTo(to_select, rangefix) <= Self->getAttackRange() &&
             !Self->isProhibited(to_select, duel) && !Self->isCardLimited(duel, Card::MethodUse));

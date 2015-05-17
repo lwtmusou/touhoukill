@@ -2,29 +2,22 @@
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
 TARGET = QSanguosha
-QT += network sql declarative
+QT += network widgets
+!winrt: QT += declarative
 TEMPLATE = app
-CONFIG += warn_on audio
+CONFIG += audio
 
-# choose luajit if you like it, the default is to use lua.
-win32 {
-    CONFIG += lua
-}
-unix {
-    CONFIG += lua51
-#    CONFIG += luajit
-}
 
-# If you want to enable joystick support, please uncomment the following line:
-# CONFIG += joystick
-# However, joystick is not supported under Mac OS X temporarily
-
-# If you want enable voice reading for chat content, uncomment the following line:
-# CONFIG += chatvoice
-# Also, this function can only enabled under Windows system as it make use of Microsoft TTS
+CONFIG += lua
 
 SOURCES += \
-    src/main.cpp \
+    src/jsoncpp/src/json_writer.cpp \
+    src/jsoncpp/src/json_valueiterator.inl \
+    src/jsoncpp/src/json_value.cpp \
+    src/jsoncpp/src/json_reader.cpp \
+    src/jsoncpp/src/json_internalmap.inl \
+    src/jsoncpp/src/json_internalarray.inl \
+    swig/sanguosha_wrap.cxx \
     src/client/aux-skills.cpp \
     src/client/client.cpp \
     src/client/clientplayer.cpp \
@@ -37,10 +30,14 @@ SOURCES += \
     src/core/lua-wrapper.cpp \
     src/core/player.cpp \
     src/core/protocol.cpp \
+    src/core/record-analysis.cpp \
+    src/core/RoomState.cpp \
     src/core/settings.cpp \
     src/core/skill.cpp \
     src/core/structs.cpp \
     src/core/util.cpp \
+    src/core/WrappedCard.cpp \
+    src/dialog/AboutUs.cpp \
     src/dialog/cardeditor.cpp \
     src/dialog/cardoverview.cpp \
     src/dialog/choosegeneraldialog.cpp \
@@ -54,35 +51,29 @@ SOURCES += \
     src/dialog/playercarddialog.cpp \
     src/dialog/roleassigndialog.cpp \
     src/dialog/scenario-overview.cpp \
-    src/package/bgm-package.cpp \
     src/package/exppattern.cpp \
-    src/package/firepackage.cpp \
-    src/package/god.cpp \
-    src/package/joypackage.cpp \
-    src/package/lingpackage.cpp \
     src/package/maneuvering.cpp \
-    src/package/mountainpackage.cpp \
-    src/package/nostalgia.cpp \
     src/package/package.cpp \
-    src/package/special3v3-package.cpp \
-    src/package/sp-package.cpp \
-    src/package/standard.cpp \
+    src/package/protagonist.cpp \
     src/package/standard-cards.cpp \
-    src/package/standard-generals.cpp \
-    src/package/standard-skillcards.cpp \
-    src/package/thicket.cpp \
-    src/package/wind.cpp \
-    src/package/wisdompackage.cpp \
-    src/package/yitianpackage.cpp \
-    src/package/yjcm-package.cpp \
-    src/package/yjcm2012-package.cpp \
-    src/scenario/boss-mode-scenario.cpp \
-    src/scenario/couple-scenario.cpp \
-    src/scenario/guandu-scenario.cpp \
+    src/package/standard.cpp \
+    src/package/th06.cpp \
+    src/package/th07.cpp \
+    src/package/th08.cpp \
+    src/package/th09.cpp \
+    src/package/th10.cpp \
+    src/package/th11.cpp \
+    src/package/th12.cpp \
+    src/package/th13.cpp \
+    src/package/th14.cpp \
+    src/package/th99.cpp \
+    src/package/thndj.cpp \
+    src/package/thxwm.cpp \
+    src/package/touhoucard.cpp \
+    src/package/touhougod.cpp \
     src/scenario/miniscenarios.cpp \
     src/scenario/scenario.cpp \
     src/scenario/scenerule.cpp \
-    src/scenario/zombie-scenario.cpp \
     src/server/ai.cpp \
     src/server/gamerule.cpp \
     src/server/generalselector.cpp \
@@ -93,6 +84,7 @@ SOURCES += \
     src/server/roomthreadxmode.cpp \
     src/server/server.cpp \
     src/server/serverplayer.cpp \
+    src/ui/bubblechatbox.cpp \
     src/ui/button.cpp \
     src/ui/cardcontainer.cpp \
     src/ui/carditem.cpp \
@@ -100,6 +92,8 @@ SOURCES += \
     src/ui/clientlogbox.cpp \
     src/ui/dashboard.cpp \
     src/ui/GenericCardContainerUI.cpp \
+    src/ui/graphicspixmaphoveritem.cpp \
+    src/ui/heroskincontainer.cpp \
     src/ui/indicatoritem.cpp \
     src/ui/magatamasItem.cpp \
     src/ui/photo.cpp \
@@ -108,7 +102,12 @@ SOURCES += \
     src/ui/QSanSelectableItem.cpp \
     src/ui/rolecombobox.cpp \
     src/ui/roomscene.cpp \
+    src/ui/sanfreetypefont.cpp \
+    src/ui/sanshadowtextfont.cpp \
+    src/ui/sansimpletextfont.cpp \
+    src/ui/sanuiutils.cpp \
     src/ui/SkinBank.cpp \
+    src/ui/skinitem.cpp \
     src/ui/sprite.cpp \
     src/ui/startscene.cpp \
     src/ui/TablePile.cpp \
@@ -118,117 +117,9 @@ SOURCES += \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
-    src/jsoncpp/src/json_writer.cpp \
-    src/jsoncpp/src/json_valueiterator.inl \
-    src/jsoncpp/src/json_value.cpp \
-    src/jsoncpp/src/json_reader.cpp \
-    src/jsoncpp/src/json_internalmap.inl \
-    src/jsoncpp/src/json_internalarray.inl \
-    swig/sanguosha_wrap.cxx \
-    src/core/RoomState.cpp \
-    src/core/WrappedCard.cpp \
-    src/core/record-analysis.cpp \
-    src/package/assassinspackage.cpp \
-    src/package/hegemony.cpp \
-    src/scenario/fancheng-scenario.cpp \
-    src/package/yjcm2013-package.cpp
+    src/main.cpp
+
 HEADERS += \
-    src/client/aux-skills.h \
-    src/client/client.h \
-    src/client/clientplayer.h \
-    src/client/clientstruct.h \
-    src/ui/SkinBank.h \
-    src/core/audio.h \
-    src/core/banpair.h \
-    src/core/card.h \
-    src/core/compiler-specific.h \
-    src/core/engine.h \
-    src/core/general.h \
-    src/core/jsonutils.h \
-    src/core/lua-wrapper.h \
-    src/core/player.h \
-    src/core/protocol.h \
-    src/core/settings.h \
-    src/core/skill.h \
-    src/core/structs.h \
-    src/core/util.h \
-    src/dialog/cardeditor.h \
-    src/dialog/cardoverview.h \
-    src/dialog/choosegeneraldialog.h \
-    src/dialog/configdialog.h \
-    src/dialog/connectiondialog.h \
-    src/dialog/customassigndialog.h \
-    src/dialog/distanceviewdialog.h \
-    src/dialog/generaloverview.h \
-    src/dialog/mainwindow.h \
-    src/dialog/packagingeditor.h \
-    src/dialog/playercarddialog.h \
-    src/dialog/roleassigndialog.h \ 
-    src/dialog/scenario-overview.h \
-    src/package/bgm-package.h \
-    src/package/exppattern.h \
-    src/package/firepackage.h \
-    src/package/god.h \
-    src/package/joypackage.h \
-    src/package/lingpackage.h \
-    src/package/maneuvering.h \
-    src/package/mountainpackage.h \
-    src/package/nostalgia.h \
-    src/package/package.h \
-    src/package/special3v3-package.h \
-    src/package/sp-package.h \
-    src/package/standard.h \
-    src/package/standard-equips.h \
-    src/package/standard-skillcards.h \
-    src/package/thicket.h \
-    src/package/wind.h \
-    src/package/wisdompackage.h \
-    src/package/yitianpackage.h \
-    src/package/yjcm-package.h \
-    src/package/yjcm2012-package.h \
-    src/scenario/boss-mode-scenario.h \
-    src/scenario/couple-scenario.h \
-    src/scenario/guandu-scenario.h \
-    src/scenario/miniscenarios.h \
-    src/scenario/scenario.h \
-    src/scenario/scenerule.h \
-    src/scenario/zombie-scenario.h \
-    src/server/ai.h \
-    src/server/gamerule.h \
-    src/server/generalselector.h \
-    src/server/room.h \
-    src/server/roomthread.h \
-    src/server/roomthread1v1.h \
-    src/server/roomthread3v3.h \
-    src/server/roomthreadxmode.h \
-    src/server/server.h \
-    src/server/serverplayer.h \
-    src/ui/button.h \
-    src/ui/cardcontainer.h \
-    src/ui/carditem.h \
-    src/ui/chatwidget.h \
-    src/ui/clientlogbox.h \
-    src/ui/dashboard.h \
-    src/ui/GenericCardContainerUI.h \
-    src/ui/indicatoritem.h \
-    src/ui/magatamasItem.h \
-    src/ui/photo.h \
-    src/ui/pixmapanimation.h \
-    src/ui/qsanbutton.h \
-    src/ui/QSanSelectableItem.h \
-    src/ui/rolecombobox.h \
-    src/ui/roomscene.h \
-    src/ui/SkinBank.h \
-    src/ui/sprite.h \
-    src/ui/startscene.h \
-    src/ui/TablePile.h \
-    src/ui/TimedProgressBar.h \
-    src/ui/uiUtils.h \
-    src/ui/window.h \
-    src/util/detector.h \
-    src/util/nativesocket.h \
-    src/util/recorder.h \
-    src/util/socket.h \
     src/jsoncpp/src/json_tool.h \
     src/jsoncpp/src/json_batchallocator.h \
     src/jsoncpp/include/json/writer.h \
@@ -240,13 +131,109 @@ HEADERS += \
     src/jsoncpp/include/json/config.h \
     src/jsoncpp/include/json/autolink.h \
     src/jsoncpp/include/json/assertions.h \
-    src/core/RoomState.h \
-    src/core/WrappedCard.h \
+    src/client/aux-skills.h \
+    src/client/client.h \
+    src/client/clientplayer.h \
+    src/client/clientstruct.h \
+    src/core/audio.h \
+    src/core/banpair.h \
+    src/core/card.h \
+    src/core/compiler-specific.h \
+    src/core/engine.h \
+    src/core/general.h \
+    src/core/jsonutils.h \
+    src/core/lua-wrapper.h \
+    src/core/player.h \
+    src/core/protocol.h \
     src/core/record-analysis.h \
-    src/package/assassinspackage.h \
-    src/package/hegemony.h \
-    src/scenario/fancheng-scenario.h \
-    src/package/yjcm2013-package.h
+    src/core/RoomState.h \
+    src/core/settings.h \
+    src/core/skill.h \
+    src/core/structs.h \
+    src/core/util.h \
+    src/core/WrappedCard.h \
+    src/dialog/AboutUs.h \
+    src/dialog/cardeditor.h \
+    src/dialog/cardoverview.h \
+    src/dialog/choosegeneraldialog.h \
+    src/dialog/configdialog.h \
+    src/dialog/connectiondialog.h \
+    src/dialog/customassigndialog.h \
+    src/dialog/distanceviewdialog.h \
+    src/dialog/generaloverview.h \
+    src/dialog/mainwindow.h \
+    src/dialog/packagingeditor.h \
+    src/dialog/playercarddialog.h \
+    src/dialog/roleassigndialog.h \
+    src/dialog/scenario-overview.h \
+    src/package/exppattern.h \
+    src/package/maneuvering.h \
+    src/package/package.h \
+    src/package/protagonist.h \
+    src/package/standard-equips.h \
+    src/package/standard.h \
+    src/package/th06.h \
+    src/package/th07.h \
+    src/package/th08.h \
+    src/package/th09.h \
+    src/package/th10.h \
+    src/package/th11.h \
+    src/package/th12.h \
+    src/package/th13.h \
+    src/package/th14.h \
+    src/package/th99.h \
+    src/package/thndj.h \
+    src/package/thxwm.h \
+    src/package/touhoucard.h \
+    src/package/touhougod.h \
+    src/scenario/miniscenarios.h \
+    src/scenario/scenario.h \
+    src/scenario/scenerule.h \
+    src/server/ai.h \
+    src/server/gamerule.h \
+    src/server/generalselector.h \
+    src/server/room.h \
+    src/server/roomthread.h \
+    src/server/roomthread1v1.h \
+    src/server/roomthread3v3.h \
+    src/server/roomthreadxmode.h \
+    src/server/server.h \
+    src/server/serverplayer.h \
+    src/ui/bubblechatbox.h \
+    src/ui/button.h \
+    src/ui/cardcontainer.h \
+    src/ui/carditem.h \
+    src/ui/chatwidget.h \
+    src/ui/clientlogbox.h \
+    src/ui/dashboard.h \
+    src/ui/GenericCardContainerUI.h \
+    src/ui/graphicspixmaphoveritem.h \
+    src/ui/heroskincontainer.h \
+    src/ui/indicatoritem.h \
+    src/ui/magatamasItem.h \
+    src/ui/photo.h \
+    src/ui/pixmapanimation.h \
+    src/ui/qsanbutton.h \
+    src/ui/QSanSelectableItem.h \
+    src/ui/rolecombobox.h \
+    src/ui/roomscene.h \
+    src/ui/sanfreetypefont.h \
+    src/ui/sanshadowtextfont.h \
+    src/ui/sansimpletextfont.h \
+    src/ui/sanuiutils.h \
+    src/ui/SkinBank.h \
+    src/ui/skinitem.h \
+    src/ui/sprite.h \
+    src/ui/startscene.h \
+    src/ui/TablePile.h \
+    src/ui/TimedProgressBar.h \
+    src/ui/uiUtils.h \
+    src/ui/window.h \
+    src/util/detector.h \
+    src/util/nativesocket.h \
+    src/util/recorder.h \
+    src/util/socket.h
+
 
 FORMS += \
     src/dialog/cardoverview.ui \
@@ -276,30 +263,105 @@ macx{
 
 
 LIBS += -L.
+win32-msvc*{
+    DEFINES += _CRT_SECURE_NO_WARNINGS
+    !contains(QMAKE_HOST.arch, x86_64) {
+        DEFINES += WIN32
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/win/x86"
+    } else {
+        DEFINES += WIN64
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/win/x64"
+    }
+    CONFIG(debug, debug|release) {
+        !winrt:INCLUDEPATH += include/vld
+    } else {
+        QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO
+        DEFINES += USE_BREAKPAD
+
+        SOURCES += src/breakpad/client/windows/crash_generation/client_info.cc \
+            src/breakpad/client/windows/crash_generation/crash_generation_client.cc \
+            src/breakpad/client/windows/crash_generation/crash_generation_server.cc \
+            src/breakpad/client/windows/crash_generation/minidump_generator.cc \
+            src/breakpad/client/windows/handler/exception_handler.cc \
+            src/breakpad/common/windows/guid_string.cc
+
+        HEADERS += src/breakpad/client/windows/crash_generation/client_info.h \
+            src/breakpad/client/windows/crash_generation/crash_generation_client.h \
+            src/breakpad/client/windows/crash_generation/crash_generation_server.h \
+            src/breakpad/client/windows/crash_generation/minidump_generator.h \
+            src/breakpad/client/windows/handler/exception_handler.h \
+            src/breakpad/common/windows/guid_string.h
+
+        INCLUDEPATH += src/breakpad
+        INCLUDEPATH += src/breakpad/client/windows
+    }
+}
+win32-g++{
+    DEFINES += WIN32
+    LIBS += -L"$$_PRO_FILE_PWD_/lib/win/MinGW"
+    DEFINES += GPP
+}
+winrt{
+    DEFINES += _CRT_SECURE_NO_WARNINGS
+    DEFINES += WINRT
+    !winphone {
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/winrt/x64"
+    } else {
+        DEFINES += WINPHONE
+        contains($$QMAKESPEC, arm): LIBS += -L"$$_PRO_FILE_PWD_/lib/winphone/arm"
+        else : LIBS += -L"$$_PRO_FILE_PWD_/lib/winphone/x86"
+    }
+}
+macx{
+    DEFINES += MAC
+    LIBS += -L"$$_PRO_FILE_PWD_/lib/mac/lib"
+}
+ios{
+    DEFINES += IOS
+    CONFIG(iphonesimulator){
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/ios/simulator/lib"
+    }
+    else {
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/ios/device/lib"
+    }
+}
+linux{
+    android{
+        DEFINES += ANDROID
+        ANDROID_LIBPATH = $$_PRO_FILE_PWD_/lib/android/$$ANDROID_ARCHITECTURE/lib
+        LIBS += -L"$$ANDROID_LIBPATH"
+    }
+    else {
+        DEFINES += LINUX
+        !contains(QMAKE_HOST.arch, x86_64) {
+            LIBS += -L"$$_PRO_FILE_PWD_/lib/linux/x86"
+            QMAKE_LFLAGS += -Wl,--rpath=lib/linux/x86
+        }
+        else {
+            LIBS += -L"$$_PRO_FILE_PWD_/lib/linux/x64"
+            QMAKE_LFLAGS += -Wl,--rpath=lib/linux/x64
+        }
+    }
+}
 
 CONFIG(audio){
     DEFINES += AUDIO_SUPPORT
     INCLUDEPATH += include/fmod
-    LIBS += -lfmodex
+    CONFIG(debug, debug|release): LIBS += -lfmodexL
+    else:LIBS += -lfmodex
     SOURCES += src/core/audio.cpp
-}
 
-CONFIG(joystick){
-    DEFINES += JOYSTICK_SUPPORT
-    HEADERS += src/ui/joystick.h
-    SOURCES += src/ui/joystick.cpp
-    win32: LIBS += -lplibjs -lplibul -lwinmm
-    unix: LIBS += -lplibjs -lplibul
-}
-
-CONFIG(chatvoice){
-    win32{
-        CONFIG += qaxcontainer
-        DEFINES += CHAT_VOICE
+    android{
+        CONFIG(debug, debug|release):ANDROID_EXTRA_LIBS += $$ANDROID_LIBPATH/libfmodexL.so
+        else:ANDROID_EXTRA_LIBS += $$ANDROID_LIBPATH/libfmodex.so
     }
 }
 
+
 CONFIG(lua){
+
+android:DEFINES += "\"getlocaledecpoint()='.'\""
+
     SOURCES += \
         src/lua/lzio.c \
         src/lua/lvm.c \
@@ -355,94 +417,29 @@ CONFIG(lua){
         src/lua/lfunc.h \
         src/lua/ldo.h \
         src/lua/ldebug.h \
+        src/lua/lctype.h \
         src/lua/lcode.h \
         src/lua/lauxlib.h \
         src/lua/lapi.h
     INCLUDEPATH += src/lua
 }
 
-CONFIG(lua51){
-    SOURCES += \
-        src/lua51/lzio.c \
-        src/lua51/lvm.c \
-        src/lua51/lundump.c \
-        src/lua51/ltm.c \
-        src/lua51/ltablib.c \
-        src/lua51/ltable.c \
-        src/lua51/lstrlib.c \
-        src/lua51/lstring.c \
-        src/lua51/lstate.c \
-        src/lua51/lparser.c \
-        src/lua51/loslib.c \
-        src/lua51/lopcodes.c \
-        src/lua51/lobject.c \
-        src/lua51/loadlib.c \
-        src/lua51/lmem.c \
-        src/lua51/lmathlib.c \
-        src/lua51/llex.c \
-        src/lua51/liolib.c \
-        src/lua51/linit.c \
-        src/lua51/lgc.c \
-        src/lua51/lfunc.c \
-        src/lua51/ldump.c \
-        src/lua51/ldo.c \
-        src/lua51/ldebug.c \
-        src/lua51/ldblib.c \
-        src/lua51/lcode.c \
-        src/lua51/lbaselib.c \
-        src/lua51/lauxlib.c \
-        src/lua51/lapi.c
-    HEADERS += \
-        src/lua51/lzio.h \
-        src/lua51/lvm.h \
-        src/lua51/lundump.h \
-        src/lua51/lualib.h \
-        src/lua51/luaconf.h \
-        src/lua51/lua.hpp \
-        src/lua51/lua.h \
-        src/lua51/ltm.h \
-        src/lua51/ltable.h \
-        src/lua51/lstring.h \
-        src/lua51/lstate.h \
-        src/lua51/lparser.h \
-        src/lua51/lopcodes.h \
-        src/lua51/lobject.h \
-        src/lua51/lmem.h \
-        src/lua51/llimits.h \
-        src/lua51/llex.h \
-        src/lua51/lgc.h \
-        src/lua51/lfunc.h \
-        src/lua51/ldo.h \
-        src/lua51/ldebug.h \
-        src/lua51/lcode.h \
-        src/lua51/lauxlib.h \
-        src/lua51/lapi.h
-    INCLUDEPATH += src/lua51
+
+!build_pass{
+    system("lrelease $$_PRO_FILE_PWD_/builds/sanguosha.ts -qm $$_PRO_FILE_PWD_/sanguosha.qm")
+
+    SWIG_bin = "swig"
+    contains(QMAKE_HOST.os, "Windows"): SWIG_bin = "$$_PRO_FILE_PWD_/tools/swig/swig.exe"
+
+    system("$$SWIG_bin -c++ -lua $$_PRO_FILE_PWD_/swig/sanguosha.i")
 }
 
-CONFIG(luajit){
-    HEADERS += \
-        src/luajit/lauxlib.h \
-        src/luajit/luaconf.h \
-        src/luajit/lua.h \
-        src/luajit/lua.hpp \
-        src/luajit/luajit.h \
-        src/luajit/lualib.h \
-        src/luajit/luatools.h
-    INCLUDEPATH += src/luajit
-    unix: LIBS += -L/usr/local/lib -lluajit-5.1
-}
+TRANSLATIONS += builds/sanguosha.ts
 
-TRANSLATIONS += sanguosha.ts
+CONFIG(debug, debug|release): LIBS += -lfreetype_D
+else:LIBS += -lfreetype
 
-OTHER_FILES += \
-    sanguosha.qss \
-    acknowledgement/main.qml \
-    acknowledgement/list.png \
-    acknowledgement/back.png
+INCLUDEPATH += $$_PRO_FILE_PWD_/include/freetype
+DEPENDPATH += $$_PRO_FILE_PWD_/include/freetype
 
-symbian: LIBS += -lfreetype
-else:unix|win32: LIBS += -L$$PWD/lib/ -lfreetype
-
-INCLUDEPATH += $$PWD/include/freetype
-DEPENDPATH += $$PWD/include/freetype
+ANDROID_PACKAGE_SOURCE_DIR = $$_PRO_FILE_PWD_/resource/android

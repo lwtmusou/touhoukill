@@ -478,18 +478,19 @@ bool ServerPlayer::hasNullification() const{
                     return true;
             }
         }
-        if (hasSkill(skill->objectName()))
+        if (hasSkill(skill->objectName())) {
             if (skill->inherits("ViewAsSkill")) {
-            const ViewAsSkill *vsskill = qobject_cast<const ViewAsSkill *>(skill);
-            if (vsskill->isEnabledAtNullification(this)) return true;
-            }
-            else if (skill->inherits("TriggerSkill")) {
+                const ViewAsSkill *vsskill = qobject_cast<const ViewAsSkill *>(skill);
+                if (vsskill->isEnabledAtNullification(this))
+                    return true;
+            } else if (skill->inherits("TriggerSkill")) {
                 const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
                 if (trigger_skill && trigger_skill->getViewAsSkill()) {
                     const ViewAsSkill *vsskill = qobject_cast<const ViewAsSkill *>(trigger_skill->getViewAsSkill());
                     if (vsskill && vsskill->isEnabledAtNullification(this)) return true;
                 }
             }
+        }
     }
 
     return false;
@@ -1365,8 +1366,10 @@ void ServerPlayer::gainAnExtraTurn() {
                     game_rule = qobject_cast<const GameRule *>(Sanguosha->getTriggerSkill("hulaopass_mode"));
                 else
                     game_rule = qobject_cast<const GameRule *>(Sanguosha->getTriggerSkill("game_rule"));
-                if (game_rule)
-                    game_rule->trigger(EventPhaseEnd, room, this, QVariant());
+                if (game_rule) {
+                    QVariant _;
+                    game_rule->trigger(EventPhaseEnd, room, this, _);
+                }
                 changePhase(getPhase(), Player::NotActive);
             }
             room->setCurrent(current);

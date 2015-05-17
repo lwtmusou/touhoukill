@@ -144,7 +144,7 @@ public:
     void askForDiscard(const Json::Value &);
     void askForExchange(const Json::Value &);
     void askForSuit(const Json::Value &);
-    void askForKingdom(const Json::Value &arg = NULL);
+    void askForKingdom(const Json::Value &arg = Json::Value::null);
     void askForNullification(const Json::Value &);
     void askForPindian(const Json::Value &);
     void askForCardChosen(const Json::Value &);

@@ -609,12 +609,12 @@ public:
         PindianStar pindian = data.value<PindianStar>();
         if (pindian->reason != "buxian")
             return false;
-        ServerPlayer *bigger;
+        ServerPlayer *bigger = NULL;
         if (pindian->from_number > pindian->to_number)
             bigger = pindian->from;
         else if (pindian->to_number > pindian->from_number)
             bigger = pindian->to;
-        if (bigger == pindian->to || bigger == pindian->from) {
+        if (bigger != NULL && (bigger == pindian->to || bigger == pindian->from)) {
             bigger->drawCards(1);
             room->damage(DamageStruct("buxian", NULL, bigger));
         }

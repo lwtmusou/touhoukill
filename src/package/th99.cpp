@@ -609,7 +609,7 @@ lianxiCard::lianxiCard() {
 }
 bool lianxiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if (targets.length() <= 1){
-        QList<const Player *> &targets2 = QList<const Player *>();
+        QList<const Player *> targets2;
         IronChain *card = new IronChain(Card::NoSuit, 0);
         card->deleteLater();
         return (card->isAvailable(Self) && !Self->isProhibited(to_select, card) && card->targetFilter(targets2, to_select, Self));

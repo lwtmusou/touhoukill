@@ -19,7 +19,7 @@ skltkexueCard::skltkexueCard() {
     handling_method = Card::MethodNone;
     m_skillName = "skltkexuepeach";
 }
-void skltkexueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+void skltkexueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     ServerPlayer *who = room->getCurrentDyingPlayer();
     if (who != NULL && who->hasSkill("skltkexue")){
         /*if (who->getGeneralName() == "hmx001" && !who->hasFlag("skltkexueAnimate")){
@@ -75,7 +75,7 @@ public:
 
 
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
         if (triggerEvent == GameStart  || triggerEvent == Debut
             || (triggerEvent == EventAcquireSkill && data.toString() == "skltkexue")) {
             QList<ServerPlayer *> lords;
@@ -132,7 +132,7 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
         ServerPlayer *sklt = room->findPlayerBySkillName(objectName());
         if (sklt != NULL){
@@ -170,7 +170,7 @@ public:
         return (target != NULL && target->isAlive() && target->getKingdom() == "hmx");
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &) const{
         QList<ServerPlayer *> targets;
         foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
             if (p->hasLordSkill(objectName()))
@@ -204,7 +204,7 @@ public:
     }
 
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &) const{
         if (player->getPhase() == Player::Start){
             //if (player->getGeneralName() == "hmx002")
             //    room->doLightbox("$pohuaiAnimate", 2000);
@@ -277,11 +277,11 @@ public:
         events << ConfirmDamage;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
 
         DamageStruct damage = data.value<DamageStruct>();
 

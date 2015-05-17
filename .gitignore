@@ -69,3 +69,4 @@ icu*.dll
 libEGL.dll
 libGLESv2.dll
 msvc[pr]1[023]0.dll
+OGLdpf.log

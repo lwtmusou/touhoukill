@@ -1023,7 +1023,8 @@ public:
 
         if (player->askForSkillInvoke(objectName(), data)){
             player->drawCards(2);
-            room->askForRende(player, player->handCards(), objectName(), false, true, qMin(2, player->getHandcardNum()));
+            QList<int> hc = player->handCards();
+            room->askForRende(player, hc, objectName(), false, true, qMin(2, player->getHandcardNum()));
         }
         return false;
     }

@@ -1264,7 +1264,7 @@ void Client::askForKingdom(const Json::Value &arg) {
     touhou_kingdoms.removeOne("zhu");
     touhou_kingdoms.removeOne("touhougod");
     // these kingdoms does not really exist
-    if (arg != NULL && arg.isArray() && arg.size() == 1 && arg[0].isString()){ //
+    if (!arg.isNull() && arg.isArray() && arg.size() == 1 && arg[0].isString()){ //
         QString kingdom = toQString(arg[0]);
         if (kingdom == "god"){
             foreach(QString k, kingdoms) {

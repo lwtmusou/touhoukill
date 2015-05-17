@@ -277,7 +277,7 @@ public:
     void sortByActionOrder(QList<ServerPlayer *> &players);
     void defaultHeroSkin();
     bool canInsertExtraTurn();
-    void touhouLogmessage(const QString logtype, ServerPlayer *logfrom, const QString logarg = NULL, QList<ServerPlayer *>  &logto = QList<ServerPlayer *>(), const QString logarg2 = NULL);
+    void touhouLogmessage(const QString logtype, ServerPlayer *logfrom, const QString logarg = NULL, const QList<ServerPlayer *> &logto = QList<ServerPlayer *>(), const QString logarg2 = NULL);
 
 
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;

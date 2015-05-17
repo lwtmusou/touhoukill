@@ -2071,7 +2071,8 @@ void Room::changeHero(ServerPlayer *player, const QString &new_general, bool ful
             }
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
                 addPlayerMark(player, skill->getLimitMark());
-            thread->trigger(EventAcquireSkill, this, player, QVariant::fromValue(skill->objectName()));
+            QVariant _skillobjectName = skill->objectName();
+            thread->trigger(EventAcquireSkill, this, player, _skillobjectName);
         }
     }
     if (invokeStart) {
@@ -3682,8 +3683,8 @@ void Room::marshal(ServerPlayer *player) {
     ServerPlayer *lord = getLord();
     Json::Value lord_info(Json::arrayValue);
 
-    lord_info[0] = lord ? toJsonString(lord->getGeneralName()) : NULL;
-    lord_info[1] = lord ? toJsonString(lord->getKingdom()) : NULL;
+    lord_info[0] = lord ? toJsonString(lord->getGeneralName()) : Json::Value::null;
+    lord_info[1] = lord ? toJsonString(lord->getKingdom()) : Json::Value::null;
 
     doNotify(player, S_COMMAND_GAME_START, lord_info);
     //doNotify(player, S_COMMAND_GAME_START, Json::Value::null);
@@ -3755,8 +3756,8 @@ void Room::startGame() {
 
     ServerPlayer *lord = getLord();
     Json::Value lord_info(Json::arrayValue);
-    lord_info[0] = lord ? toJsonString(lord->getGeneralName()) : NULL;
-    lord_info[1] = lord ? toJsonString(lord->getKingdom()) : NULL;
+    lord_info[0] = lord ? toJsonString(lord->getGeneralName()) : Json::Value::null;
+    lord_info[1] = lord ? toJsonString(lord->getKingdom()) : Json::Value::null;
 
     doBroadcastNotify(S_COMMAND_GAME_START, lord_info);
     //doBroadcastNotify(S_COMMAND_GAME_START, Json::Value::null);
@@ -5961,7 +5962,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge, cons
 
     const Card *oldJudge = judge->card;
     judge->card = Sanguosha->getCard(card->getEffectiveId());
-    ServerPlayer *rebyre = judge->retrial_by_response;//old judge provider
+    //ServerPlayer *rebyre = judge->retrial_by_response;//old judge provider
     judge->retrial_by_response = player;
 
     CardsMoveStruct move1(QList<int>(),
@@ -6352,7 +6353,7 @@ bool Room::canInsertExtraTurn(){
     return true;
 }
 
-void Room::touhouLogmessage(const QString logtype, ServerPlayer *logfrom, const QString logarg, QList<ServerPlayer *>  &logto, const QString logarg2){
+void Room::touhouLogmessage(const QString logtype, ServerPlayer *logfrom, const QString logarg, const QList<ServerPlayer *>  &logto, const QString logarg2){
     LogMessage alog;
 
     alog.type = logtype;

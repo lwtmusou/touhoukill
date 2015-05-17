@@ -566,8 +566,7 @@ namespace Json {
                          const InArgs &in, 
                          InArgs::const_iterator &itInArg, 
                          PathArgument::Kind kind );
-      void invalidPath( const std::string &path, 
-                        int location );
+      void invalidPath(const std::string &path, int);
 
       Args args_;
    };
