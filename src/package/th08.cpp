@@ -171,16 +171,17 @@ bool miyaoCard::targetFilter(const QList<const Player *> &targets, const Player 
 }
 void miyaoCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    if (effect.to->isWounded()){
+    if (effect.to->canDiscard(effect.to, "h")){
+        const Card *cards = room->askForExchange(effect.to, "miyao", 1, false, "miyao_cardchosen");
+        room->throwCard(cards, effect.to);
+    }
+	if (effect.to->isWounded()){
         RecoverStruct     recover;
         recover.recover = 1;
         recover.who = effect.from;
         room->recover(effect.to, recover);
     }
-    if (effect.to->canDiscard(effect.to, "h")){
-        const Card *cards = room->askForExchange(effect.to, "miyao", 1, false, "miyao_cardchosen");
-        room->throwCard(cards, effect.to);
-    }
+    
 
 }
 class miyao : public ZeroCardViewAsSkill {
