@@ -450,13 +450,26 @@ void Peach::onEffect(const CardEffectStruct &effect) const{
 
 bool Peach::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if (targets.isEmpty() && to_select->isWounded()){
-        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE){
-            if (to_select->hasFlag("Global_Dying") &&  to_select->objectName() ==  Self->property("currentdying").toString()) return true;
+        bool globalDying = false;
+        
+        QList<const Player *> players = Self->getSiblings();
+        players << Self;
+        foreach(const Player *p, players){
+            if (p->hasFlag("Global_Dying")){
+                globalDying = true;
+                break;
+            }
+        } 
+        
+        //if (this->getSkillName() == "chuangshi") chuangshi is  RESPONSE_USE,askfor peach is also response use ..... 
+        //Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
+        if (globalDying){
+            return to_select->hasFlag("Global_Dying") &&  to_select->objectName() ==  Self->property("currentdying").toString();
         }
         else
         {
             if (to_select == Self ) return true;
-            if (Self->getKingdom()=="zhan" && to_select->hasLordSkill("yanhui")) return true;
+            if (Self->getKingdom()=="zhan" && Self->getPhase() == Player::Play &&  to_select->hasLordSkill("yanhui")) return true;
         }
     }
     return false;

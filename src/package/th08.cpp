@@ -175,7 +175,7 @@ void miyaoCard::onEffect(const CardEffectStruct &effect) const{
         const Card *cards = room->askForExchange(effect.to, "miyao", 1, false, "miyao_cardchosen");
         room->throwCard(cards, effect.to);
     }
-	if (effect.to->isWounded()){
+    if (effect.to->isWounded()){
         RecoverStruct     recover;
         recover.recover = 1;
         recover.who = effect.from;
@@ -997,10 +997,9 @@ chuangshiCard::chuangshiCard() {
 bool chuangshiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const {
     const Player *user = chuangshi::getChuangshiUser(Self);
     const Card *card = Self->tag.value("chuangshi").value<const Card *>();
-    const Card *oc = Sanguosha->getCard(subcards.first());
-    Card *new_card = Sanguosha->cloneCard(card->objectName(), oc->getSuit(), oc->getNumber());
-    new_card->addSubcard(oc);
+    Card *new_card = Sanguosha->cloneCard(card->objectName());
     new_card->setSkillName("chuangshi");
+
     if (new_card->targetFixed())
         return false;
     if (new_card->isKindOf("FireAttack"))
@@ -1013,9 +1012,7 @@ bool chuangshiCard::targetFilter(const QList<const Player *> &targets, const Pla
 bool chuangshiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
     const Player *user = chuangshi::getChuangshiUser(Self);
     const Card *card = Self->tag.value("chuangshi").value<const Card *>();
-    const Card *oc = Sanguosha->getCard(subcards.first());
-    Card *new_card = Sanguosha->cloneCard(card->objectName(), oc->getSuit(), oc->getNumber());
-    new_card->addSubcard(oc);
+    Card *new_card = Sanguosha->cloneCard(card->objectName());
     new_card->setSkillName("chuangshi");
     if (card->isKindOf("IronChain") && targets.length() == 0)
         return false;
