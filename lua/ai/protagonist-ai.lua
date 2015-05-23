@@ -571,7 +571,7 @@ function SmartAI:needBaoyiEquip(card,player)
 	return false
 end
 
-sgs.ai_skill_invoke.baoyi = true
+
 sgs.ai_skill_use["@@baoyi"] = function(self, prompt)
 	local target_table = self:getEnemies(self.player)
 	if #target_table==0 then return "." end

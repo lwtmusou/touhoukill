@@ -11,52 +11,7 @@
 
 
 
-/*lingqiCard::lingqiCard() {
-    will_throw = true;
-    handling_method = Card::MethodDiscard;
-    mute = true;
-    }
-    void lingqiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    const Card *card = source->tag["lingcard"].value<const Card *>();
-    if (card==NULL)
-    return;
-    //for UI
-    if  (targets.length()>1 && source->getGeneralName()=="zhu001"){
-    room->getThread()->delay(1000);
-    room->doLightbox("$lingqiAnimate", 2000);
-    }
-    foreach(ServerPlayer *p, targets){
-    JudgeStruct judge;
-    judge.reason="lingqi";
-    judge.who=p;
-    judge.good=true;
-    judge.pattern = ".|red";
-    room->judge(judge);
-    if (judge.isGood())
-    room->setCardFlag(card, "lingqi"+p->objectName());
-    }
-    }
 
-    bool lingqiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    QString str = Self->property("lingqi_targets").toString();
-    QStringList lingqi_targets = str.split("+");
-    return  lingqi_targets.contains(to_select->objectName());
-    }
-
-    class lingqivs: public OneCardViewAsSkill {
-    public:
-    lingqivs():OneCardViewAsSkill("lingqi") {
-    filter_pattern = ".|.|.|.!";
-    response_pattern ="@@lingqi";
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const{
-    lingqiCard *card = new lingqiCard;
-    card->addSubcard(originalCard);
-    return card;
-    }
-    };
-    */
 
 class lingqi : public TriggerSkill {
 public:
@@ -127,32 +82,6 @@ public:
     }
 };
 
-/*class hongbai: public FilterSkill{
-public:
-hongbai(): FilterSkill("hongbai"){
-
-}
-
-virtual bool viewFilter(const Card *to_select) const{
-Room *room = Sanguosha->currentRoom();
-if (room->getCardPlace(to_select->getEffectiveId()) == Player::PlaceJudge){
-ServerPlayer *reimu = room->getCardOwner(to_select->getEffectiveId());
-if (reimu != NULL && reimu->hasSkill(objectName())){
-return (to_select->isBlack());
-}
-}
-return false;
-}
-
-virtual const Card *viewAs(const Card *originalCard) const{
-WrappedCard *wrap = Sanguosha->getWrappedCard(originalCard->getEffectiveId());
-wrap->setSuit(Card::Heart);
-wrap->setSkillName(objectName());
-wrap->setModified(true);
-return wrap;
-}
-};
-*/
 
 class qixiang : public TriggerSkill {
 public:
@@ -204,10 +133,6 @@ public:
                 return false;
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), judge->who->objectName());
 
-            /*if (player->getGeneralName() == "zhu001" && !player->hasFlag("boliAnimate")){
-                room->doLightbox("$boliAnimate", 2000);
-                room->setPlayerFlag(player, "boliAnimate");
-            }*/
             foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
                 QStringList prompts;
                 prompts << "@boli-retrial" << judge->who->objectName() << player->objectName() << judge->reason;
@@ -261,41 +186,6 @@ public:
     }
 };
 
-/*class mofavs: public ViewAsSkill {
-public:
-mofavs(): ViewAsSkill("mofa") {
-
-}
-
-virtual bool isEnabledAtPlay(const Player *player) const{
-return !player->isKongcheng() && !player->hasUsed("mofaCard") && !player->hasUsed("mofaFullCard");
-}
-
-virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
-if (selected.length() >= 1)
-return false;
-
-if (to_select->isEquipped())
-return false;
-
-if (Self->isJilei(to_select))
-return false;
-
-return true;
-}
-
-virtual const Card *viewAs(const QList<const Card *> &cards) const{
-if (cards.length()  == 0)
-return new mofaFullCard;
-if (cards.length() != 1)
-return NULL;
-
-mofaCard *card = new mofaCard;
-card->addSubcards(cards);
-
-return card;
-}
-}; */
 class mofa : public TriggerSkill {
 public:
     mofa() : TriggerSkill("mofa") {
@@ -330,32 +220,6 @@ public:
     }
 };
 
-
-/*class heibai : public FilterSkill{
-public:
-    heibai() : FilterSkill("heibai"){
-
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        Room *room = Sanguosha->currentRoom();
-        if (room->getCardPlace(to_select->getEffectiveId()) == Player::PlaceHand) {
-            ServerPlayer *marisa = room->getCardOwner(to_select->getEffectiveId());
-            if (marisa && marisa->hasSkill(objectName())){
-                return (to_select->isRed() && !to_select->isKindOf("Slash"));
-            }
-        }
-        return false;
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const{
-        WrappedCard *wrap = Sanguosha->getWrappedCard(originalCard->getEffectiveId());
-        wrap->setSuit(Card::Spade);
-        wrap->setSkillName(objectName());
-        wrap->setModified(true);
-        return wrap;
-    }
-};*/
 
 
 wuyuCard::wuyuCard() {
@@ -632,10 +496,6 @@ jiezouCard::jiezouCard() {
     mute = true;
 }
 void jiezouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    /*if (source->getGeneralName() == "zhu004" && !source->hasFlag("jiezouAnimate")) {
-        room->doLightbox("$jiezouAnimate", 2000);
-        room->setPlayerFlag(source, "jiezouAnimate");
-    }*/
     ServerPlayer *target = targets.first();
     int id = room->askForCardChosen(source, target, "hej", "jiezou");
     room->obtainCard(source, id, room->getCardPlace(id) != Player::PlaceHand);
@@ -822,7 +682,6 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
         if (player->getPhase() != Player::Start)
             return false;
-
         if (triggerEvent == EventPhaseStart) {
             if (player->isAllNude())
                 return false;
@@ -830,10 +689,8 @@ public:
         } else if (triggerEvent == EventPhaseEnd) {
             if (player->hasFlag("baoyi")){
                 player->setFlags("-baoyi");
-                if (room->askForSkillInvoke(player, "baoyi", "drawcard")) {
-                    room->touhouLogmessage("#TouhouBuff", player, "baoyi");
-                    player->drawCards(2);
-                }
+                room->touhouLogmessage("#TouhouBuff", player, "baoyi");
+                player->drawCards(2);
             }
         }
         return false;
@@ -874,14 +731,14 @@ public:
                 room->clearAG(player);
                 */
                 //case2 gongxin
-                /*QList<int>  ids;
+                QList<int>  ids;
                 foreach (const Card *c, target->getCards("h"))
-                ids<< c->getEffectiveId();
+                    ids<< c->getEffectiveId();
 
-                int id = room->doGongxin(player, target, ids, "zhize");
-                */
+                int id = room->doGongxin(player, target, ids, objectName());
+                
                 //case3 cardchosen
-                int id = room->askForCardChosen(player, target, "h", objectName(), true);
+                //int id = room->askForCardChosen(player, target, "h", objectName(), true);
                 if (id > -1)
                     room->obtainCard(player, id, false);
 
@@ -924,11 +781,6 @@ public:
                     ServerPlayer *s = room->askForPlayerChosen(player, targets, objectName(), "@@chunxi", true, true);
                     if (s == NULL)
                         break;
-                    /*if (player->getPhase() != Player::Draw &&
-                        player->getGeneralName() == "zhu006" && !player->hasFlag("chunxiAnimate")) {
-                        room->doLightbox("$chunxiAnimate", 2000);
-                        room->setPlayerFlag(player, "chunxiAnimate");
-                    }*/
                     room->showCard(player, id);
                     room->getThread()->delay();
                     int id = room->askForCardChosen(player, s, "h", objectName());
