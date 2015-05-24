@@ -1067,7 +1067,7 @@ public:
 class chuixue : public TriggerSkill {
 public:
     chuixue() : TriggerSkill("chuixue") {
-        events << CardsMoveOneTime;
+        events << CardsMoveOneTime << EventPhaseEnd << EventPhaseChanging;
     }
     static void recordChuixue(ServerPlayer *player, Card *card){
         Room *room = player->getRoom();
@@ -1081,27 +1081,19 @@ public:
             room->setPlayerMark(player, "chuixuediamond", 1);
     }
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (move.from != NULL && move.from == player && player->getPhase() == Player::Discard
+        if (triggerEvent ==  CardsMoveOneTime){
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.from  && move.from == player && player->getPhase() == Player::Discard
             && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)){
-            foreach(int id, move.card_ids) {
-                Card *card = Sanguosha->getCard(id);
-                recordChuixue(player, card);
+                foreach(int id, move.card_ids) {
+                    if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand){
+                        Card *card = Sanguosha->getCard(id);
+                        recordChuixue(player, card);
+                    }
+                }
             }
         }
-        return false;
-    }
-};
-
-class chuixueget : public TriggerSkill {
-public:
-    chuixueget() : TriggerSkill("#chuixue-get") {
-        events << EventPhaseEnd;
-    }
-
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->getPhase() == Player::Discard){
+        else if (triggerEvent ==  EventPhaseEnd && player->getPhase() == Player::Discard){
 
             QStringList allsuits;
             allsuits << "spade" << "heart" << "club" << "diamond";
@@ -1132,6 +1124,17 @@ public:
 
             }
 
+        }
+        else if (triggerEvent ==  EventPhaseChanging)
+        {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.from == Player::Discard){
+                QStringList allsuits;
+                allsuits << "spade" << "heart" << "club" << "diamond";
+                foreach(QString suit, allsuits){
+                    room->setPlayerMark(player, "chuixue" + suit, 0);
+                }
+            }
         }
         return false;
     }
@@ -1479,9 +1482,7 @@ th13Package::th13Package()
 
     General *slm008 = new General(this, "slm008", "slm", 3, false);
     slm008->addSkill(new chuixue);
-    slm008->addSkill(new chuixueget);
     slm008->addSkill(new wushou);
-    related_skills.insertMulti("chuixue", "#chuixue-get");
 
     General *slm009 = new General(this, "slm009", "slm", 3, false);
     slm009->addSkill(new buming);

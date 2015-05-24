@@ -37,12 +37,13 @@ public:
         } else if (triggerEvent == EventPhaseEnd) {
             player->setFlags("-shenpan");
             ServerPlayer *target = player->tag["shenpan"].value<ServerPlayer *>();
-            if (target != NULL){
+            if (target){
                 player->tag.remove("shenpan");
                 if (target->getHandcardNum() > target->getHp()){
-                    if (room->askForSkillInvoke(player, "shenpan", "drawcard:" + target->objectName()))
-                        room->drawCards(player, 1);
-                }
+                    //if (room->askForSkillInvoke(player, "shenpan", "drawcard:" + target->objectName()))
+                    room->touhouLogmessage("#TouhouBuff", player, objectName());
+					room->drawCards(player, 1);
+                }    
             }
         }
         return false;
