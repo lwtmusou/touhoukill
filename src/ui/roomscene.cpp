@@ -103,7 +103,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(dashboard, SIGNAL(card_to_use()), this, SLOT(doOkButton()));
     //connect(dashboard, SIGNAL(add_equip_skill(const Skill *, bool)), this, SLOT(addSkillButton(const Skill *, bool)));
     //connect(dashboard, SIGNAL(remove_equip_skill(QString)), this, SLOT(detachSkill(QString)));
-
+    
     connect(Self, SIGNAL(pile_changed(QString)), dashboard, SLOT(updatePile(QString)));
 
     // add role ComboBox

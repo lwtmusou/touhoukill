@@ -96,6 +96,7 @@ public:
     int width();
     int height();
 
+    
     void showNullificationButton();
     void hideNullificationButton();
 
@@ -107,6 +108,8 @@ public:
     }
 
 public slots:
+    virtual void updateAvatar();
+
     void sortCards();
     void beginSorting();
     void reverseSelection();

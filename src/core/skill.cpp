@@ -33,6 +33,11 @@ bool Skill::isAttachedLordSkill() const{
     return attached_lord_skill;
 }
 
+bool Skill::shouldBeVisible(const Player *Self) const
+{
+    return Self != NULL;
+}
+
 QString Skill::getDescription(bool yellow) const{
     bool normal_game = ServerInfo.DuringGame && isNormalGameMode(ServerInfo.GameMode);
     QString name = QString("%1%2").arg(objectName()).arg(normal_game ? "_p" : "");

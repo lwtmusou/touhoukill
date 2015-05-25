@@ -136,6 +136,8 @@ int Dashboard::width() {
     return this->_m_width;
 }
 
+
+
 void Dashboard::_createRight() {
     QRect rect = QRect(_m_width - G_DASHBOARD_LAYOUT.m_rightWidth, -70,
         G_DASHBOARD_LAYOUT.m_rightWidth,
@@ -800,6 +802,12 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
     }
     update();
     return result;
+}
+
+void Dashboard::updateAvatar()
+{
+    PlayerCardContainer::updateAvatar();
+    _m_skillDock->update();
 }
 
 static bool CompareByNumber(const CardItem *a, const CardItem *b)  {

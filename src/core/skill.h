@@ -33,6 +33,7 @@ public:
     explicit Skill(const QString &name, Frequency frequent = NotFrequent);
     bool isLordSkill() const;
     bool isAttachedLordSkill() const;
+    virtual bool shouldBeVisible(const Player *Self) const; // usually for attached skill
     QString getDescription(bool yellow = true) const;
     QString getNotice(int index) const;
     bool isVisible() const;

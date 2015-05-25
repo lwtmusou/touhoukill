@@ -316,12 +316,18 @@ void QSanInvokeSkillDock::setWidth(int width) {
 
 #include "roomscene.h"
 void QSanInvokeSkillDock::update() {
-    if (!_m_buttons.isEmpty()) {
+    if (!_m_buttons.isEmpty()) {    
         QList<QSanInvokeSkillButton *> regular_buttons, lordskill_buttons, all_buttons;
         int banling_fix = 0;
         foreach(QSanInvokeSkillButton *btn, _m_buttons) {
             if (btn->getSkill()->objectName() == "banling")
                 banling_fix = 5;
+            if (!btn->getSkill()->shouldBeVisible(Self)) {
+                btn->setVisible(false);
+                continue;
+            } else {
+                btn->setVisible(true);
+            }
             if (btn->getSkill()->isAttachedLordSkill())
                 lordskill_buttons << btn;
             else
