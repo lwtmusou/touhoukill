@@ -109,8 +109,24 @@ public:
                             move.to = p;
                             room->moveCardsAtomic(move, true);
                         }
-
-
+                        else if (use.card->isKindOf("Collateral")){
+                            QList<ServerPlayer *> listt;
+                            foreach(ServerPlayer *victim, room->getOtherPlayers(p)) {
+                                if (p->canSlash(victim))
+                                    listt << victim;
+                            }
+                            //the list will not be empty since we utilizing targetFilter 
+                            ServerPlayer *newVictim = room->askForPlayerChosen(use.from, listt, objectName(), "@fahuaCollateral:" + p->objectName(), false, false);
+                            CardUseStruct new_use;
+                            new_use.from = use.from;
+                            new_use.to << p;
+                            new_use.card = use.card;
+                            p->tag["collateralVictim"] = QVariant::fromValue((PlayerStar)newVictim);
+                            data = QVariant::fromValue(new_use);
+                            logto.removeOne(p);
+                            logto << newVictim;
+                            room->touhouLogmessage("#CollateralSlash", use.from, use.card->objectName(), logto);
+                        }
                         room->getThread()->trigger(TargetConfirming, room, p, data);
                         break;
                     }

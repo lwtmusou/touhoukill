@@ -42,7 +42,7 @@ public:
                 if (target->getHandcardNum() > target->getHp()){
                     //if (room->askForSkillInvoke(player, "shenpan", "drawcard:" + target->objectName()))
                     room->touhouLogmessage("#TouhouBuff", player, objectName());
-					room->drawCards(player, 1);
+                    room->drawCards(player, 1);
                 }    
             }
         }

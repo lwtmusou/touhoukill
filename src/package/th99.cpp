@@ -99,9 +99,14 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return  player->getKingdom() == "wai"  && !player->hasFlag("Forbiddangjia") && !player->isKongcheng();
+        return  shouldBeVisible(player) && !player->hasFlag("Forbiddangjia") && !player->isKongcheng();
     }
 
+    virtual bool shouldBeVisible(const Player *Self) const
+    {
+        return Self && Self->getKingdom() == "wai";
+    }
+    
     virtual const Card *viewAs() const{
         return new dangjiaCard;
     }

@@ -20,6 +20,7 @@ return{
     ["fahua_change"]="法华",
     ["fahua_change:tricktarget"]="你可以响应 <font color=\"#00FF00\"><b>%dest </b></font> 的主公技“法华”，代替 <font color=\"#00FF00\"><b>%dest </b></font> 成为 <font color=\"#FF8000\"><b>%src </b></font> 使用的【%arg】的目标。",
     ["#fahua_change"]="%to 代替其成为 %from 使用的 %arg 的目标。",
+     ["@fahuaCollateral"] = "<font color=\"#00FF00\"><b>%src </b></font>响应法华成为新目标，你须重新指定<font color=\"#00FF00\"><b>%src </b></font>使用【杀】的对象。" ,
     
     --xlc002  势力：星 3血
     ["xlc002"]="封兽鵺",
