@@ -280,7 +280,9 @@ bool xihuaCard::do_xihua(ServerPlayer *tanuki) const{
     tanuki->tag["xihua_id"] = QVariant::fromValue(to_show);
     if (!success){
         room->throwCard(to_show, tanuki);
-        xihua_clear::xihua_limit(room, tanuki, xihuacard->objectName());
+        ServerPlayer *current = room->getCurrent();
+        if (current && current->isAlive() && current->getPhase() != Player::NotActive)
+            xihua_clear::xihua_limit(room, tanuki, xihuacard->objectName());
         room->touhouLogmessage("#Xihua_failed", tanuki, "xihua", QList<ServerPlayer *>(), xihuacard->objectName());
     }
 

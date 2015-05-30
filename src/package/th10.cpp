@@ -699,17 +699,23 @@ public:
                 room->setPlayerMark(p, "@qiji", 0);
             }
         }
-        if (triggerEvent == PreCardUsed){
-             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->getSkillName() == "qiji"){
-                use.from->gainMark("@qiji");
+	    else{
+            ServerPlayer *current = room->getCurrent();
+            if (!current || !current->isAlive() || current->getPhase() == Player::NotActive)
+                return false;
+            if (triggerEvent == PreCardUsed){
+                CardUseStruct use = data.value<CardUseStruct>();
+                if (use.card->getSkillName() == "qiji"){
+                    use.from->gainMark("@qiji");
+                }
+            }
+            if (triggerEvent == CardResponded){
+                CardStar card_star = data.value<CardResponseStruct>().m_card;
+                if (card_star->getSkillName() == "qiji")
+                    player->gainMark("@qiji");
             }
         }
-        if (triggerEvent == CardResponded){
-            CardStar card_star = data.value<CardResponseStruct>().m_card;
-            if (card_star->getSkillName() == "qiji")
-                player->gainMark("@qiji");
-        }
+
         return false;
     }
 };
@@ -1173,9 +1179,12 @@ public:
                 return false;
             }
 
-
+            bool jinian_invoked = false;
             if (room->askForSkillInvoke(player, objectName(), data)){
-                player->setFlags("jinian_used");
+                jinian_invoked =true;
+                ServerPlayer *current = room->getCurrent();
+                if (current && current->isAlive() && current->getPhase() != Player::NotActive)
+                    player->setFlags("jinian_used");
 
                 CardsMoveStruct mo;
                 mo.card_ids = get_ids;
@@ -1183,7 +1192,7 @@ public:
                 mo.to_place = Player::PlaceHand;
                 room->moveCardsAtomic(mo, true);
             }
-            if (player->hasFlag("jinian_used"))
+            if (jinian_invoked)
                 player->tag.remove("jinian");
             else{
                 foreach (int id, get_ids)
