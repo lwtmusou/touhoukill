@@ -2570,7 +2570,7 @@ function SmartAI:getDangerousCard(who)
 			end
 		end
 	end
-	if (weapon and who:getAttackRange() > 1 and  self:hasSkills(sgs.attackRange_skill)) then
+	if (weapon and who:getAttackRange() > 1 and  who:hasSkills(sgs.attackRange_skill)) then
 		return weapon:getEffectiveId()
 	end
 	if (weapon and weapon:isKindOf("Spear") and who:hasSkill("paoxiao") and who:getHandcardNum() >=1 ) then return weapon:getEffectiveId() end
