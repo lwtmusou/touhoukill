@@ -2176,7 +2176,9 @@ sgs.ai_use_value.Nullification = 8
 --【伪装】【高傲】【收获】【永恒】【控票】【吸散】
 function SmartAI:useCardAmazingGrace(card, use)
 	if self.player:hasSkill("noswuyan") then use.card = card return end
-	if (self.role == "lord" or self.role == "loyalist") and sgs.turncount <= 2 and self.player:getSeat() <= 3 and self.player:aliveCount() > 5 then return end
+	if (self.role == "lord" or self.role == "loyalist" ) and sgs.turncount <= 2 and self.player:getSeat() <= 3 and self.player:aliveCount() > 5 then return end
+	if (self.role == "renegade" and sgs.turncount <=1 and self.player:getSeat() <= 3) then return end
+	--内奸开局五谷简直坑爹 贴别是二号位还是忠
 	local value = 1
 	local suf, coeff = 0.8, 0.8
 	if self:needKongcheng() and self.player:getHandcardNum() == 1 or self.player:hasSkills("nosjizhi|jizhi") then
@@ -2227,7 +2229,7 @@ sgs.ai_keep_value.AmazingGrace = -1
 sgs.ai_use_priority.AmazingGrace = 1.2
 sgs.dynamic_value.benefit.AmazingGrace = true
 sgs.ai_card_intention.AmazingGrace = function(self, card, from, tos) 
-	if sgs.turncount <= 1 and  from:getSeat() == 2 then
+	if sgs.turncount <= 1 and  from:getSeat() <= 3 then
 		local lord = self.room:getLord()
 		if lord then
 			sgs.updateIntention(from, lord, 10)
@@ -2567,6 +2569,9 @@ function SmartAI:getDangerousCard(who)
 				return weapon:getEffectiveId()
 			end
 		end
+	end
+	if (weapon and who:getAttackRange() > 1 and  self:hasSkills(sgs.attackRange_skill)) then
+		return weapon:getEffectiveId()
 	end
 	if (weapon and weapon:isKindOf("Spear") and who:hasSkill("paoxiao") and who:getHandcardNum() >=1 ) then return weapon:getEffectiveId() end
 	if weapon and weapon:isKindOf("Axe")  then

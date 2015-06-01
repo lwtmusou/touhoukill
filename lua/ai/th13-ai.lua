@@ -1089,3 +1089,15 @@ sgs.ai_skill_choice.guoke= function(self, choices, data)
 	end
 	return "draw"
 end
+sgs.ai_trick_prohibit.guoke = function(self, from, to, card)
+	if card:isKindOf("DelayedTrick")  then 
+		if self:isFriend(from,to) then return false end
+		if card:isKindOf("Indulgence") and from:getPhase() == sgs.Player_Play then
+			if to:getHandcardNum() >= 6 then 
+				return false
+			end
+		end
+		return true 
+	end
+	return false
+end

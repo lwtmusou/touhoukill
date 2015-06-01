@@ -105,7 +105,7 @@ sgs.ai_need_bear =		{}
 sgs.ai_benefitBySlashed ={}
 sgs.ai_DamagedBenefit ={}
 sgs.siling_lack =				{}
-
+sgs.attackRange_skill = {}
 
 --东方杀相关各类列表
 --没做定义的【红白】【黑白】【赛钱】【收藏】【五欲】【渴血】【血裔】
@@ -163,6 +163,7 @@ function setInitialTables()
 	sgs.cardEffect_nullify_all={"shishi","weiya","diaoping","luanying"}
 	sgs.cardEffect_nullify_specific={"lingqi","guangji","huiwu","weizhuang","zhengyi","zhancao","yunshang","doujiu","nizhuan","yicun","junwei"}
 	--需要保证无效的flag的命名标准统一
+	sgs.attackRange_skill = "bushu|xiangqi|fanji"
 	
 	sgs.Friend_All = 0
 	sgs.Friend_Draw = 1
@@ -1373,7 +1374,7 @@ function sgs.gameProcess(room, arg)  --尼玛 不看具体技能和牌的数量�
 	local lord = room:getLord()
 	local currentplayer = room:getCurrent()
 	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
-		local role=aplayer:getRole()
+		local role=aplayer:getRole()--读取的是真实身份？不是预测！！！！！！？？？？？
 		if role == "rebel" then
 			local rebel_hp
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then rebel_hp = 4
@@ -1717,7 +1718,15 @@ function SmartAI:objectiveLevel(player)
 		elseif sgs.ai_role[player:objectName()] == "loyalist" then return 5 end
 		local gameProcess = sgs.gameProcess(self.room)
 		if target_role == "rebel" then return (rebel_num > 1 or renegade_num > 0 and gameProcess:match("loyal")) and -2 or 5 end
-		if target_role == "renegade" then return gameProcess:match("loyal") and -1 or 4 end --卧槽 中立的时候，内奸也要被反贼操啊
+		if target_role == "renegade" then --对内的态度需要多样化 内中立时杀内简直逗比
+			if gameProcess:match("loyal") then
+				return -1 
+			elseif gameProcess:match("rebel") then
+				return 4
+			else
+				return 0
+			end
+		end 
 		return 0
 	end
 end
