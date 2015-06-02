@@ -1401,6 +1401,11 @@ function sgs.gameProcess(room, arg)  --尼玛 不看具体技能和牌的数量�
 	local danger = sgs.isLordInDanger()
 	local lord = room:getLord()
 	local currentplayer = room:getCurrent()
+	local averageCardnum = 0
+	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
+		averageCardnum = averageCardnum + aplayer:getCards("he"):length() 
+	end
+	averageCardnum = averageCardnum /(room:getAlivePlayers():length())
 	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
 		local role=aplayer:getRole()--读取的是真实身份？不是预测！！！！！！？？？？？
 		if role == "rebel" then
@@ -1408,8 +1413,12 @@ function sgs.gameProcess(room, arg)  --尼玛 不看具体技能和牌的数量�
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then rebel_hp = 4
 			else rebel_hp = aplayer:getHp() end
 			if aplayer:getMaxHp() == 3 then rebel_value = rebel_value + 0.5 end
+			--只评估防御能力？不看进攻能力！！！！！？？？？？各种爆将教做人 和奶妈教做人
 			rebel_value = rebel_value + rebel_hp + math.max(sgs.getDefense(aplayer, true) - rebel_hp * 2, 0) * 0.7
 			if aplayer:getDefensiveHorse() then
+				rebel_value = rebel_value + 0.3
+			end
+			if aplayer:getCards("e"):length() >= averageCardnum then
 				rebel_value = rebel_value + 0.3
 			end
 			if lord and aplayer:inMyAttackRange(lord) then
@@ -1434,10 +1443,14 @@ function sgs.gameProcess(room, arg)  --尼玛 不看具体技能和牌的数量�
 			if aplayer:getDefensiveHorse() then
 				loyal_value = loyal_value + 0.5
 			end
+			if aplayer:getCards("he"):length() >= averageCardnum  then
+				loyal_value = loyal_value + 0.3
+			end
 			if aplayer:getMark("@duanchang")==1 and aplayer:getMaxHp() <=3 then loyal_value = loyal_value - 1 end
 		end
 	end
 	local diff = loyal_value - rebel_value + (loyal_num + 1 - rebel_num) * 2
+
 	if arg and arg == 1 then return diff end
 
 	if diff >= 2 then
