@@ -106,7 +106,10 @@ sgs.ai_benefitBySlashed ={}
 sgs.ai_DamagedBenefit ={}
 sgs.siling_lack =				{}
 sgs.attackRange_skill = {}
-
+sgs.fake_loyalist =     false
+sgs.fake_rebel = false
+sgs.fake_loyalist_players = {}
+sgs.fake_rebel_players = {}
 --东方杀相关各类列表
 --没做定义的【红白】【黑白】【赛钱】【收藏】【五欲】【渴血】【血裔】
 --			【盛宴】【博览】【斗魂】【战意】【冻结】【冰魄】【笨蛋】
@@ -185,6 +188,8 @@ function setInitialTables()
 			sgs.ai_role[aplayer:objectName()] = "neutral"
 		end
 		sgs.explicit_renegade_players[aplayer:objectName()] = false
+		sgs.fake_loyalist_players[aplayer:objectName()] = false
+		sgs.fake_rebel_players[aplayer:objectName()] = false
 	end
 end
 
@@ -1198,8 +1203,8 @@ sgs.ai_card_intention.general = function(from, to, level)
 
 	local loyalist_value = sgs.role_evaluation[from:objectName()]["loyalist"]
 	local renegade_value = sgs.role_evaluation[from:objectName()]["renegade"]
-
-
+	
+	
 	if sgs.evaluatePlayerRole(to) == "loyalist" then
 		
 		if sgs.current_mode_players["rebel"] == 0 and to:isLord() and level > 0 
@@ -1233,35 +1238,58 @@ sgs.ai_card_intention.general = function(from, to, level)
 		end
 	end
 	
-	--盲狙的仇恨 (两个未知的中立者) --主要是帮助被盲狙方做出判断
-	if  sgs.evaluatePlayerRole(to) == "neutral" and sgs.evaluatePlayerRole(from) == "neutral" and level>0 then
-		local rebel_num = sgs.current_mode_players["rebel"]
-		local room=to:getRoom()
-		local loyalist_num = room:getAlivePlayers():length() - sgs.current_mode_players["rebel"]
-		local loyalist_count=0
-		local rebel_count=0
-		local tmp_rebel
-		for _,aplayer in sgs.qlist(room:getOtherPlayers(to)) do
-			if aplayer:objectName() ~= from:objectName() then
-				if aplayer:isLord() or sgs.ai_role[aplayer:objectName()] == "loyalist" or  sgs.ai_role[aplayer:objectName()] == "renegade" then
-					 loyalist_count=loyalist_count+1
-				elseif sgs.ai_role[aplayer:objectName()] == "rebel" then
-					rebel_count=rebel_count+1
-					tmp_rebel=aplayer
-				end
+	--统计人头 预测盲狙者身份 或 用于推断有装反/装忠的行为
+	local rebel_num = sgs.current_mode_players["rebel"]
+	local room=to:getRoom()
+	local loyalist_num = room:getAlivePlayers():length() - sgs.current_mode_players["rebel"]
+	local loyalist_count=0
+	local rebel_count=0
+	local tmp_rebel
+	for _,aplayer in sgs.qlist(room:getOtherPlayers(to)) do
+		if aplayer:objectName() ~= from:objectName() then
+			if aplayer:isLord() or sgs.ai_role[aplayer:objectName()] == "loyalist" or  sgs.ai_role[aplayer:objectName()] == "renegade" then
+				loyalist_count=loyalist_count+1
+			elseif sgs.ai_role[aplayer:objectName()] == "rebel" then
+				rebel_count=rebel_count+1
+				tmp_rebel=aplayer
 			end
 		end
+	end
+	
+	
+	--盲狙的仇恨 (两个未知的中立者) --主要是帮助被盲狙方做出判断
+	if  sgs.evaluatePlayerRole(to) == "neutral" and sgs.evaluatePlayerRole(from) == "neutral" and level>0 then
 		--一般而言，单纯的78位互相盲狙
 		if  loyalist_count+1==loyalist_num  and rebel_count+1==rebel_num then
 		elseif loyalist_count+1>=loyalist_num then
 			sgs.role_evaluation[from:objectName()]["loyalist"] = sgs.role_evaluation[from:objectName()]["loyalist"] + level
 		elseif  rebel_count+1>=rebel_num then
-			sgs.role_evaluation[from:objectName()]["rebel"] = sgs.role_evaluation[from:objectName()]["rebel"] + level
+			sgs.role_evaluation[from:objectName()]["loyalist"] = sgs.role_evaluation[from:objectName()]["loyalist"] - level
 		end
 	end
 	
-	
 	sgs.evaluateAlivePlayersRole()
+	
+    --此角色第一次跳身份时就导致反贼数量比额定数量还多，那么说明绝对有人在装
+    --目前仅用于忠内残局时通过记录识别内奸	
+	if loyalist_value== 0 and renegade_value == 0  then
+		if sgs.evaluatePlayerRole(from) == "loyalist" and loyalist_count+1>=loyalist_num then
+			sgs.fake_loyalist = true
+			for _,aplayer in sgs.qlist(room:getAlivePlayers()) do
+				if sgs.evaluatePlayerRole(aplayer) == "loyalist" and not aplayer:isLord() then
+					sgs.fake_loyalist_players[aplayer:objectName()] = true
+				end
+			end
+		elseif sgs.evaluatePlayerRole(from) == "rebel" and rebel_count+1>=rebel_num then
+			sgs.fake_rebel = true
+			for _,aplayer in sgs.qlist(room:getAlivePlayers()) do
+				if sgs.evaluatePlayerRole(aplayer) == "rebel"  then
+					sgs.fake_rebel_players[aplayer:objectName()] = true
+				end
+			end
+		end
+	end
+	
 	--[[
 	if global_room:getTag("humanCount") and global_room:getTag("humanCount"):toInt() ==1 then
 		local diffarr = {
@@ -1635,6 +1663,8 @@ function SmartAI:objectiveLevel(player)
 				if maxhp == 2 then return self.player:isLord() and 0 or (player:getHp() == maxhp and 5 or 1) end
 				return self.player:isLord() and 0 or 5
 			else
+				-- 一开始就跳反的必须是内
+				if sgs.fake_rebel and sgs.fake_rebel_players[player:objectName()]  then  return 5 end
 				if self.player:isLord() then
 					if sgs.ai_role[player:objectName()] == "loyalist" then return -2
 					else
@@ -1645,7 +1675,7 @@ function SmartAI:objectiveLevel(player)
 						if #players == 2 then return 5 end
 						local renegade_value, renegade_player = 0
 						for _, p in ipairs(players) do
-							if sgs.role_evaluation[p:objectName()]["renegade"] > 0 then
+							if sgs.role_evaluation[p:objectName()]["renegade"] > renegade_value then
 								renegade_value = sgs.role_evaluation[p:objectName()]["renegade"]
 								renegade_player = p
 							end
@@ -1895,7 +1925,7 @@ function SmartAI:updatePlayers(clear_flags)
 
 	if sgs.isRolePredictable() then return end
 	self:updateAlivePlayerRoles()
-	--sgs.evaluateAlivePlayersRole()
+	--sgs.evaluateAlivePlayersRole()--删除？
 end
 
 function sgs.evaluateAlivePlayersRole()
