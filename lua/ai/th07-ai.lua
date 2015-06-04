@@ -759,7 +759,7 @@ sgs.ai_skill_use_func.mocaoCard = function(card, use, self)
 			table.insert(targets,p)
 		end
 	end
-	
+	--需要一个全新的sort
 	self:sort(targets,"value")
 	for _, p in ipairs(targets) do
         if (p:getLostHp()<2 and self:isEnemy(p)) or (p:getLostHp()>1 and self:isFriend(p))  then
