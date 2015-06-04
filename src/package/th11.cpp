@@ -327,7 +327,7 @@ public:
             QString prompt = "target:" + damage.from->objectName();
             if (room->askForSkillInvoke(player, objectName(), prompt)){
                 slash->setSkillName("_" + objectName());
-                room->useCard(CardUseStruct(slash, player, damage.from));
+                room->useCard(CardUseStruct(slash, player, damage.from),  false);
             }
         }
         return false;
