@@ -4071,7 +4071,7 @@ wooden_ox_skill.getTurnUseCard = function(self)
 	self:sortByUseValue(cards, true)--usevalue好不好？？尼玛留下一堆红桃给人摸
 	local card, friend = self:getCardNeedPlayer(cards)
 	if card and friend and friend:objectName() ~= self.player:objectName() and (self:getOverflow() > 0 or self:isWeak(friend)) then
-		if not self:cautionRenegade(friend)  then
+		if not self:cautionRenegade()  then
 			self.wooden_ox_assist = friend
 		else
 			local lord = self.room:getLord()

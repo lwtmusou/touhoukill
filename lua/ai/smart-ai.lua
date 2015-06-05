@@ -7783,19 +7783,29 @@ function SmartAI:touhouIsDamageCard(card)
 	return false
 end
 
-function SmartAI:cautionRenegade(friend)
+function SmartAI:cautionRenegade()
 	if sgs.current_mode_players["renegade"] == 0 or self.player:getRole() == "renegade" then
 		return false
 	end
+	local role = self.player:getRole()
+	local friends =  self:getFriends()
+	if role == "loyalist" or self.player:isLord()  then
+		if #friends < sgs.current_mode_players["loyalist"]+ sgs.current_mode_players["renegade"]+sgs.current_mode_players["lord"] then
+			return false
+		end
+	elseif role == "rebel" then
+		if #friends <= sgs.current_mode_players["rebel"] then
+			return false
+		end
+	end
 	process = sgs.gameProcess(self.room)
-	if self.player:getRole() == "loyalist" or self.player:isLord()  then
+	if role == "loyalist" or self.player:isLord()  then
 		if process:match("loyal") or process == "neutral" then
 			return true
 		end
 		--return sgs.current_mode_players["loyalist"] ==1  
 		--and sgs.current_mode_players["loyalist"]+ sgs.current_mode_players["renegade"] >= sgs.current_mode_players["rebel"]
-	end
-	if self.player:getRole() == "rebel"   then
+	elseif role == "rebel"   then
 		if process:match("rebel") or process == "neutral" then
 			return true
 		end
