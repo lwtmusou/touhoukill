@@ -1426,9 +1426,9 @@ function sgs.gameProcess(room, arg)  --尼玛 不看具体技能和牌的数量�
 			end
 			if aplayer:getMark("@duanchang") > 0 and aplayer:getMaxHp() <= 3 then rebel_value = rebel_value - 1 end
 
-			if aplayer:hasSkills("luanying+jingjie") and aplayer:hasSkills("mengxian+jingjie") then rebel_value = rebel_value + 2 end
+			if aplayer:hasSkills("luanying+jingjie") or aplayer:hasSkills("mengxian+jingjie") then rebel_value = rebel_value + 2 end
 			if aplayer:hasSkill("ganying") and lord:hasSkill("fengsu") then rebel_value = rebel_value + 2 end
-			if aplayer:hasSkill("baochun+chunyi")  then rebel_value = rebel_value + 1 end
+			if aplayer:hasSkill("baochun") and aplayer:getMaxHp() >3 then rebel_value = rebel_value + aplayer:getMaxHp() - 3 end
 			if rebel_num > 1 and aplayer:hasSkill("hpymsiyu+juhe") then rebel_value = rebel_value + 1 end
 			if  aplayer:hasSkill("shizhu") then rebel_value = rebel_value + 1 end
 		elseif role == "loyalist" or role == "lord" then
@@ -7784,10 +7784,21 @@ function SmartAI:touhouIsDamageCard(card)
 end
 
 function SmartAI:cautionRenegade(friend)
-	if self.player:getRole() == "loyalist" then
-	--单纯数人头 --目前只有忠防内
-		return sgs.current_mode_players["loyalist"] ==1  
-		and sgs.current_mode_players["loyalist"]+ sgs.current_mode_players["renegade"] >= sgs.current_mode_players["rebel"]
+	if sgs.current_mode_players["renegade"] == 0 or self.player:getRole() == "renegade" then
+		return false
+	end
+	process = sgs.gameProcess(self.room)
+	if self.player:getRole() == "loyalist" or self.player:isLord()  then
+		if process:match("loyal") or process == "neutral" then
+			return true
+		end
+		--return sgs.current_mode_players["loyalist"] ==1  
+		--and sgs.current_mode_players["loyalist"]+ sgs.current_mode_players["renegade"] >= sgs.current_mode_players["rebel"]
+	end
+	if self.player:getRole() == "rebel"   then
+		if process:match("rebel") or process == "neutral" then
+			return true
+		end
 	end
 	return false
 end

@@ -4075,7 +4075,7 @@ wooden_ox_skill.getTurnUseCard = function(self)
 			self.wooden_ox_assist = friend
 		else
 			local lord = self.room:getLord()
-			if lord then self.wooden_ox_assist = lord end
+			if lord and self.player:objectName() ~= lord:objectName() and self:isFriend(lord) then self.wooden_ox_assist = lord end
 		end
 		return sgs.Card_Parse("@WoodenOxCard=" .. card:getEffectiveId())
 	end
