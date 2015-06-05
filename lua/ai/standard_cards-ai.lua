@@ -4071,13 +4071,22 @@ wooden_ox_skill.getTurnUseCard = function(self)
 	self:sortByUseValue(cards, true)--usevalue好不好？？尼玛留下一堆红桃给人摸
 	local card, friend = self:getCardNeedPlayer(cards)
 	if card and friend and friend:objectName() ~= self.player:objectName() and (self:getOverflow() > 0 or self:isWeak(friend)) then
-		if not self:cautionRenegade()  then
-			self.wooden_ox_assist = friend
-		else
-			local lord = self.room:getLord()
-			if lord and self.player:objectName() ~= lord:objectName() and self:isFriend(lord) then self.wooden_ox_assist = lord end
+		if  self:cautionRenegade()  then
+			local target_role = sgs.evaluatePlayerRole(friend)
+			if sgs.explicit_renegade and target_role == "renegade"  then
+				friend = nil
+			elseif sgs.explicit_renegade_players[friend:objectName()]  then
+				friend = nil
+			end
+			if not friend then
+				local lord = self.room:getLord()
+				if lord and self.player:objectName() ~= lord:objectName() and self:isFriend(lord) then friend = lord end
+			end
 		end
-		return sgs.Card_Parse("@WoodenOxCard=" .. card:getEffectiveId())
+		self.wooden_ox_assist = friend
+		if self.wooden_ox_assist then
+			return sgs.Card_Parse("@WoodenOxCard=" .. card:getEffectiveId())
+		end
 	end
 	if self:getOverflow() > 0 or (self:needKongcheng() and #cards == 1) then
 		return sgs.Card_Parse("@WoodenOxCard=" .. cards[1]:getEffectiveId())

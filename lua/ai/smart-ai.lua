@@ -1564,7 +1564,10 @@ function SmartAI:objectiveLevel(player)
 			end
 		end
 		local process = sgs.gameProcess(self.room)
-		
+		local diff = sgs.gameProcess(self.room, 1)
+		local diff_threshold = diff 
+		if self:isWeak() then diff_threshold = diff_threshold +1.5 end
+		diff_threshold = diff_threshold + 1 + loyal_num - rebel_num
 		if process == "neutral" or (sgs.turncount <= 1 and sgs.isLordHealthy()) then
 			if sgs.turncount <= 1 and sgs.isLordHealthy() then
 				if self:getOverflow() <= 0 then return 0 end
@@ -1608,10 +1611,6 @@ function SmartAI:objectiveLevel(player)
 			end
 		else
 			if player:isLord() or target_role == "renegade" then return 0 end
-			local diff = sgs.gameProcess(self.room, 1)
-			local diff_threshold = diff 
-			if self:isWeak() then diff_threshold = 3.5 end
-			diff_threshold = diff_threshold + 1 + loyal_num - rebel_num
 			if diff >= diff_threshold then
 				return target_role == "rebel" and -2 or 5
 			else
