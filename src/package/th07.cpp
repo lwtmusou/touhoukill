@@ -801,10 +801,10 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == CardsMoveOneTime){
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            // move.from_places.contains(Player::PlaceTable)
             if (move.card_ids.length() == 1 && move.to_place == Player::DiscardPile
-                 //(move.reason.m_reason == CardMoveReason::S_REASON_USE || move.reason.m_reason == CardMoveReason::S_REASON_RESPONSE
-                ) {
+               && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
+			   || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE
+               )) {
                 // only use or response will add the extradata
                 //if it exist, we need not check the move reason again?
                 const Card *card = move.reason.m_extraData.value<const Card *>();
