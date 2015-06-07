@@ -2556,7 +2556,9 @@ sgs.dynamic_value.benefit.ExNihilo = true
 function SmartAI:getDangerousCard(who)
 	local weapon = who:getWeapon()
 	local armor = who:getArmor()
-	local treasure = who:getTreasure()
+	local treasure = who:getTreasure() 
+	local denfensiveHorse = who:getOffensiveHorse()
+	
 	if treasure and treasure:isKindOf("WoodenOx") and who:getPile("wooden_ox"):length() > 1 then
 		return treasure:getEffectiveId()
 	end
@@ -2580,7 +2582,9 @@ function SmartAI:getDangerousCard(who)
 		end
 	end
 	if armor and armor:isKindOf("EightDiagram") and who:hasSkill("leiji") then return armor:getEffectiveId() end
-
+    if armor and who:hasSkill("wunian") then return armor:getEffectiveId() end
+	if denfensiveHorse and who:hasSkill("wunian") then return denfensiveHorse end
+	
 	local lord = self.room:getLord()
 	if lord and lord:hasLordSkill("hujia") and self:isEnemy(lord) and armor and armor:isKindOf("EightDiagram") and who:getKingdom() == "wei" then
 		return armor:getEffectiveId()
