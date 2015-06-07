@@ -2557,7 +2557,7 @@ function SmartAI:getDangerousCard(who)
 	local weapon = who:getWeapon()
 	local armor = who:getArmor()
 	local treasure = who:getTreasure() 
-	local denfensiveHorse = who:getOffensiveHorse()
+	local defensiveHorse = who:getDefensiveHorse()
 	
 	if treasure and treasure:isKindOf("WoodenOx") and who:getPile("wooden_ox"):length() > 1 then
 		return treasure:getEffectiveId()
@@ -2583,7 +2583,7 @@ function SmartAI:getDangerousCard(who)
 	end
 	if armor and armor:isKindOf("EightDiagram") and who:hasSkill("leiji") then return armor:getEffectiveId() end
     if armor and who:hasSkill("wunian") then return armor:getEffectiveId() end
-	if denfensiveHorse and who:hasSkill("wunian") then return denfensiveHorse end
+	if defensiveHorse and who:hasSkill("wunian") then return defensiveHorse end
 	
 	local lord = self.room:getLord()
 	if lord and lord:hasLordSkill("hujia") and self:isEnemy(lord) and armor and armor:isKindOf("EightDiagram") and who:getKingdom() == "wei" then
