@@ -1430,6 +1430,7 @@ function sgs.gameProcess(room, arg)  --尼玛 不看具体技能和牌的数量�
 			if aplayer:hasSkill("ganying") and lord:hasSkill("fengsu") then rebel_value = rebel_value + 2 end
 			if aplayer:hasSkill("baochun") and aplayer:getMaxHp() >3 then rebel_value = rebel_value + aplayer:getMaxHp() - 3 end
 			if rebel_num > 1 and aplayer:hasSkill("hpymsiyu+juhe") then rebel_value = rebel_value + 1 end
+			if aplayer:hasSkill("wuchang")  then rebel_value = rebel_value + 2 end
 			if  aplayer:hasSkill("shizhu") then rebel_value = rebel_value + 1 end
 		elseif role == "loyalist" or role == "lord" then
 			local loyal_hp

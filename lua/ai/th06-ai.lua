@@ -5,7 +5,19 @@ function sgs.ai_cardsview_valuable.skltkexuepeach(self, class_name, player)
 		local dying = player:getRoom():getCurrentDyingPlayer()
 		if not dying or not dying:hasSkill("skltkexue") or self:isEnemy(dying, player) or dying:objectName() == player:objectName() then return nil end
 		
-		if self:isFriend(dying, player) then return "@skltkexueCard=." end
+		if self:isFriend(dying, player) then
+			if self.role == "renegade" then
+				local need_hp = math.abs(1 - dying:getHp())
+				local others_hp = 0
+				for _,p in pairs(self.friends_noself)do
+					if p:getHp()>1 then
+						others_hp = others_hp + p:getHp() - 1 
+					end
+				end
+				if others_hp >= need_hp then return nil end
+			end
+			return "@skltkexueCard=." 
+		end
 		return nil
 	end
 end
