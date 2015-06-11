@@ -216,6 +216,9 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         room->notifySkillInvoked(player, "xuedian");
     } else if (use.to.size() > 1 && player->hasSkill("shikong") && player->getPhase() == Player::Play) {
         room->notifySkillInvoked(player, "shikong");
+    }else if (use.to.size() > 1 && player->hasSkill("shuangren")) {
+        room->broadcastSkillInvoke("shuangren");
+        room->notifySkillInvoked(player, "shuangren");
     }
 
     int rangefix = 0;
@@ -384,6 +387,18 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
         }
     }
 
+    if (Self->hasSkill("shuangren") && distance_limit){
+        bool has_shuangren_target = false;
+        foreach (const Player *p, targets) {
+            if (Self->distanceTo(p, rangefix) > Self->getAttackRange(true) && !Slash::IsSpecificAssignee(p, Self, this))
+            {    
+                has_shuangren_target = true;
+                break;
+            }
+        }
+        if (!has_shuangren_target)
+            distance_limit = false;
+    }
     if (!Self->canSlash(to_select, this, distance_limit, rangefix, targets)) return false;
     if (targets.length() >= slash_targets) {
         if (Self->hasSkill("duanbing") && targets.length() == slash_targets) {

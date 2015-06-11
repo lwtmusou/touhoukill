@@ -284,19 +284,19 @@ public:
 };
 
 
-youmingCard::youmingCard() {
+hunpoCard::hunpoCard() {
     will_throw = true;
     target_fixed = true;
     mute = true;
 }
-void youmingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+void hunpoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     room->setPlayerProperty(source, "maxhp", source->getMaxHp() + 1);
     room->touhouLogmessage("#GainMaxHp", source, QString::number(1));
     room->touhouLogmessage("#GetHp", source, QString::number(source->getHp()), QList<ServerPlayer *>(), QString::number(source->getMaxHp()));
 }
-class youming : public OneCardViewAsSkill {
+class hunpo : public OneCardViewAsSkill {
 public:
-    youming() : OneCardViewAsSkill("youming") {
+    hunpo() : OneCardViewAsSkill("hunpo") {
         filter_pattern = ".|.|.|.!";
     }
 
@@ -312,7 +312,7 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const{
         if (originalCard != NULL){
-            youmingCard *card = new youmingCard;
+            hunpoCard *card = new hunpoCard;
             card->addSubcard(originalCard);
             return card;
         }
@@ -451,7 +451,7 @@ thndjPackage::thndjPackage()
 
 
     General *ndj004 = new General(this, "ndj004", "yym", 3, false);
-    ndj004->addSkill(new youming);
+    ndj004->addSkill(new hunpo);
     ndj004->addSkill(new fanji);
 
     General *ndj010 = new General(this, "ndj010", "wai", 1, false);
@@ -462,7 +462,7 @@ thndjPackage::thndjPackage()
     ndj011->addSkill(new kexueEffect);
     related_skills.insertMulti("kexue", "#kexue-effect");
 
-    addMetaObject<youmingCard>();
+    addMetaObject<hunpoCard>();
     //skills << new sizhai_count;
 }
 

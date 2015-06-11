@@ -6,11 +6,11 @@
 
 
 
-class youmingCard : public SkillCard {
+class hunpoCard : public SkillCard {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE youmingCard();
+    Q_INVOKABLE hunpoCard();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };

@@ -531,10 +531,13 @@ public:
         if (player->isCurrent() && move.from  && move.from != player
                 && move.to_place == Player::DiscardPile){
             //check provider
-            ServerPlayer *provider = move.reason.m_provider.value<ServerPlayer *>();
-            if (provider && provider == player)
-                return false;
-
+            if((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
+			   || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE)
+			{
+				ServerPlayer *provider = move.reason.m_provider.value<ServerPlayer *>();
+				if (provider && provider == player)
+					return false;
+			}
             QList<int> obtain_ids;
             foreach(int id, move.card_ids) {
                 if (room->getCardPlace(id) != Player::DiscardPile)
@@ -544,8 +547,6 @@ public:
                 case Player::PlaceHand: obtain_ids << id; break;
                 case Player::PlaceEquip: obtain_ids << id; break;
                 case Player::PlaceTable: {
-                    //if (move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE ||
-                        //move.reason.m_reason == CardMoveReason::S_REASON_USE || move.reason.m_reason == CardMoveReason::S_REASON_RESPONSE)
                             QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
                             bool ocurrence = false;
                             foreach(QVariant card_data, record_ids) {
@@ -601,8 +602,8 @@ public:
             if (move.to_place != Player::PlaceTable)
                 return false;
 
-            if  (move.reason.m_reason == CardMoveReason::S_REASON_RETRIAL || move.reason.m_reason == CardMoveReason::S_REASON_USE
-                    ||    move.reason.m_reason == CardMoveReason::S_REASON_LETUSE || move.reason.m_reason == CardMoveReason::S_REASON_RESPONSE)
+            if((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
+			   || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE)
             {
                 QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
                 QVariantList tmp_ids = room->getTag("UseOrResponseFromPile").toList();
