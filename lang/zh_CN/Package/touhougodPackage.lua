@@ -23,7 +23,7 @@ return{
     ["#shen001"] = "幻想之界",
     ["!shen001"] = "神八云紫",  
     ["jiexian"] = "界线",
-    [":jiexian"] = "每当一名角色受到一次伤害时，你可以弃置一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，防止此伤害，并令该角色回复1点体力。每当一名角色回复一次体力时，你可以弃置一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，防止此体力回复效果，并令该角色受到无来源的1点伤害。",
+    [":jiexian"] = "每当一名角色受到伤害时，你可以弃置一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，防止此伤害，并令该角色回复1点体力。每当一名角色回复体力时，你可以弃置一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，防止此体力回复效果，并令该角色受到无来源的1点伤害。",
     ["@jiexiandamage"] = "你可以发动“界线”，弃置一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，防止 <font color=\"#00FF00\"><b>%src </b></font> 受到的伤害，并使其回复1点体力。",
     ["@jiexianrecover"] = "你可以发动“界线”，弃置一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，防止 <font color=\"#00FF00\"><b>%src </b></font> 的体力回复效果，并令其受到无来源的1点伤害。",
     ["#jiexianrecover"]="由于“%arg”的效果，%from 受到的 %arg2 点体力回复效果被防止。",
@@ -45,7 +45,7 @@ return{
     [":shenqiang"] = "出牌阶段，若你有“夜”标记，你可以弃置一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌或武器牌，对一名其他角色造成1点伤害。",
 
     ["yewang"] = "夜王",
-    [":yewang"] = "<font color=\"blue\"><b>锁定技，</b></font>每当你受到一次伤害时，若你有“夜”标记，此伤害-1。",
+    [":yewang"] = "<font color=\"blue\"><b>锁定技，</b></font>每当你受到伤害时，若你有“夜”标记，此伤害-1。",
     ["#YewangTrigger"]="%from 的 “%arg” 被触发，减少了 %arg2 点伤害。",
      
     --shen003  势力：神 4血
@@ -71,7 +71,7 @@ return{
     [":shikong"] = "<font color=\"blue\"><b>锁定技，</b></font>出牌阶段，你使用【杀】时可以且须指定你攻击范围内的所有角色为目标。", 
  
     ["ronghui"] = "熔毁", 
-    [":ronghui"] = "<font color=\"blue\"><b>锁定技，</b></font>出牌阶段，每当你使用【杀】对目标角色造成一次伤害时，你须弃置其装备区里的所有牌。", 
+    [":ronghui"] = "<font color=\"blue\"><b>锁定技，</b></font>出牌阶段，每当你使用【杀】对目标角色造成伤害时，你须弃置其装备区里的所有牌。", 
 
     ["jubian"] = "聚变", 
     [":jubian"] = "<font color=\"blue\"><b>锁定技，</b></font>出牌阶段，在你使用的牌结算后，若此牌对不少于两名角色造成过伤害，你须回复1点体力。",
@@ -131,7 +131,7 @@ return{
     ["$huanzaiAnimate"]="image=image/animate/huanzai.png",
 
     ["shanghun"] = "伤魂",
-    [":shanghun"] = "<font color=\"red\"><b>限定技，</b></font>当你受到一次伤害后，你可以获得一枚“时”标记。",
+    [":shanghun"] = "<font color=\"red\"><b>限定技，</b></font>当你受到伤害后，你可以获得一枚“时”标记。",
     ["$shanghunAnimate"]="image=image/animate/shanghun.png",
     ["@shanghun"]="伤魂",
     ["#touhouExtraTurn"]="%from 将进行一个额外的回合。",
@@ -282,7 +282,7 @@ return{
     ["$biaoxiangAnimate"]="image=image/animate/biaoxiang.png",
   
     ["shifang"] = "释放", 
-    [":shifang"] = "<font color=\"purple\"><b>觉醒技，</b></font>当你失去装备区里的最后的牌时，你须增加体力上限至4，并失去所有技能（觉醒技除外），然后获得技能“本我”（每当你受到一次伤害时，若你已受伤，你可以摸X张牌，然后令伤害来源弃置X张牌，X为你已损失的体力值）。", 
+    [":shifang"] = "<font color=\"purple\"><b>觉醒技，</b></font>当你失去装备区里的最后的牌时，你须增加体力上限至4，并失去所有技能（觉醒技除外），然后获得技能“本我”（每当你受到伤害时，若你已受伤，你可以摸X张牌，然后令伤害来源弃置X张牌，X为你已损失的体力值）。", 
     ["#ShifangWake"]="%from 失去装备区里的最后的牌，触发“%arg”觉醒。",
     ["$shifangAnimate"]="image=image/animate/shifang.png",
   
@@ -295,7 +295,7 @@ return{
     [":ziwo"] ="出牌阶段，你可以弃置两张手牌，回复1点体力。",
  
     ["benwo"] = "本我",
-    [":benwo"] ="每当你受到一次伤害时，若你已受伤，你可以摸X张牌，然后令伤害来源弃置X张牌，X为你已损失的体力值。",
+    [":benwo"] ="每当你受到伤害时，若你已受伤，你可以摸X张牌，然后令伤害来源弃置X张牌，X为你已损失的体力值。",
     ["benwo:invoke"] = "你将受到来自 <font color=\"#00FF00\"><b>%src </b></font> 的伤害，你可以发动“本我”，摸 %dest 张牌，然后令 <font color=\"#00FF00\"><b>%src </b></font> 弃置 %dest 张牌。",
  
     ["chaowo"] = "超我",
@@ -310,8 +310,8 @@ return{
     ["&shen018"] = "神泄矢诹访子",
     ["!shen018"] = "神泄矢诹访子",
     ["zuosui"] = "作祟",
-    --[":zuosui"] = "每当你使用【杀】对目标角色造成一次伤害时，你可以防止此伤害，令该角色选择一个不大于4的正整数X，然后你选择一项：令该角色失去X点体力；或令该角色将牌弃至X张。",
-    [":zuosui"] = "每当你对其他角色造成一次伤害时，你可以防止此伤害并增加1点体力上限，令该角色选择一个不大于4的正整数X，然后你选择一项：令该角色摸X张牌，然后该角色失去X点体力；或令该角色将牌弃至X张。",
+    --[":zuosui"] = "每当你使用【杀】对目标角色造成伤害时，你可以防止此伤害，令该角色选择一个不大于4的正整数X，然后你选择一项：令该角色失去X点体力；或令该角色将牌弃至X张。",
+    [":zuosui"] = "每当你对其他角色造成伤害时，你可以防止此伤害并增加1点体力上限，令该角色选择一个不大于4的正整数X，然后你选择一项：令该角色摸X张牌，然后该角色失去X点体力；或令该角色将牌弃至X张。",
     ["#zuosuichoice"]="由于“%arg”的效果，%from 选择了一个数字 %arg2 ",
     ["zuosui:losehp"]="流失体力",
     ["zuosui:discard"]="弃牌",
@@ -374,7 +374,7 @@ return{
     ["yindu:invoke"] = "你是否发动“引渡”，摸 3 张牌，若如此做，<font color=\"#00FF00\"><b>%src </b></font>的死亡将不会执行奖惩",
 
     ["huanming"] = "换命",
-    [":huanming"] = "<font color=\"red\"><b>限定技，</b></font>当你对其他角色造成一次伤害时，若该角色的体力值不小于1，你可以防止此伤害，并与该角色交换体力。",
+    [":huanming"] = "<font color=\"red\"><b>限定技，</b></font>当你对其他角色造成伤害时，若该角色的体力值不小于1，你可以防止此伤害，并与该角色交换体力。",
     ["$huanmingAnimate"]="image=image/animate/huanming.png",
     
     ["chuanwu"] = "川雾",
