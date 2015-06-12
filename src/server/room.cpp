@@ -538,9 +538,9 @@ void Room::slashResult(const SlashEffectStruct &effect, const Card *jink) {
     SlashEffectStruct result_effect = effect;
     result_effect.jink = jink;
     QVariant data = QVariant::fromValue(result_effect);
-
+    
     if (jink == NULL) {
-        if (effect.to->isAlive())
+		if (effect.to->isAlive())
             thread->trigger(SlashHit, this, effect.from, data);
     }
     else {
@@ -551,7 +551,10 @@ void Room::slashResult(const SlashEffectStruct &effect, const Card *jink) {
         if (effect.slash)
             effect.to->removeQinggangTag(effect.slash);
         thread->trigger(SlashMissed, this, effect.from, data);
+		if (effect.from && effect.from->hasFlag("hitAfterMissed"))
+			setPlayerFlag(effect.from, "-hitAfterMissed");
     }
+	
 }
 
 void Room::attachSkillToPlayer(ServerPlayer *player, const QString &skill_name, bool is_other_attach) {

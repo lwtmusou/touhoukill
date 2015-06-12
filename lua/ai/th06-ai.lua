@@ -70,9 +70,8 @@ function SmartAI:slashProhibitToEghitDiagram(card,from,enemy)
 	if self:hasEightDiagramEffect(enemy) then
 		local invoke, value = self:invokeTouhouJudge(enemy)
 		if value>0 then
-			if not self:touhouIgnoreArmor(card,from,enemy) 
-			or not (from:hasSkill("guaili") and from:getHandcardNum()>=3 and from:getPhase()== sgs.Player_Play) then
-			return true
+			if not self:touhouIgnoreArmor(card,from,enemy)  then
+				return true
 			end
 		end
 	end

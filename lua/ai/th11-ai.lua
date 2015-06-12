@@ -547,38 +547,42 @@ sgs.ai_cardneed.jiuchong = function(to, card, self)
 	return  card:getSuit()==sgs.Card_Heart
 end
 
-
-sgs.ai_skill_invoke.guaili =function(self,data)
-	local target =self.player:getTag("guaili_target"):toPlayer()
-	if self:isEnemy(target) then
-		return true
-	else
-		return false
-	end
-end
-sgs.ai_skill_cardask["@guaili"] = function(self, data)
-	local use = data:toCardUse()
-	local need_hit=false
-	if self.player:getHandcardNum()==0 then return "." end
-	for _,p in sgs.qlist(use.to) do
-		if self:isEnemy(p) and (not p:isKongcheng()) then
-			if getCardsNum("Jink", p, self.player) < 1 or sgs.card_lack[p:objectName()]["Jink"] >0 then
-				continue
-			end
-			if  self:isWeak(p) then
-				need_hit=true
-			else 
-				if self.player:getHandcardNum()>1 then
-					need_hit= true
-				end
-			end
+function SmartAI:canGuaili(slash)
+	if not self.player:hasSkill("guaili") then return false end
+	for _,c in sgs.qlist(self.player:getCards("h")) do
+		if c:getEffectiveId() ~= slash:getEffectiveId() and c:isRed() then
+			return true
 		end
 	end
-	
-	if need_hit then
-		local handcards = sgs.QList2Table(self.player:getHandcards())
-		self:sortByKeepValue(handcards)	
-		return "$" .. handcards[#handcards]:getId()
+	return false
+end
+sgs.ai_skill_cardask["@guaili"] = function(self, data)
+	local effect = data:toSlashEffect()
+	if self:isEnemy(effect.to) then
+		local redCards = {}
+		for _,c in sgs.qlist(self.player:getCards("h")) do
+			if  c:isRed() then
+				table.insert(redCards, c)
+			end
+		end
+		if #redCards == 0 then return "." end
+		
+		self:sortByKeepValue(redCards)
+		local need_discard = false
+		if self:getOverflow(self.player) <=1 and redCards[#redCards]:isKindOf("Peach") then
+			if self:hasHeavySlashDamage(effect.from, effect.slash, effect.to) then
+				need_discard = true
+			elseif getCardsNum("Jink", effect.to, self.player) < 1 or sgs.card_lack[effect.to:objectName()]["Jink"] >0 then
+				need_discard = true
+			elseif self:isWeak(effect.to) then
+				need_discard = true
+			end
+		else
+			need_discard= true
+		end
+		if need_discard then
+			return "$" .. redCards[#redCards]:getId()
+		end
 	end
 	return "."
 end
@@ -591,7 +595,7 @@ sgs.guaili_keep_value = {
 }
 sgs.ai_cardneed.guaili = function(to, card, self)
 	if not self:willSkipPlayPhase(to) then
-		return card:isKindOf("Slash") and card:isRed()
+		return card:isKindOf("Slash") or card:isRed()
 	end
 end
 

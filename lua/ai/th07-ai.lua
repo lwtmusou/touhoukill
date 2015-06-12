@@ -278,7 +278,42 @@ sgs.ai_need_bear.jiaoxia = function(self, card,from,tos)
 	return false
 end
 
-sgs.ai_cardneed.jianshu = function(to, card, self)
+sgs.ai_skill_invoke.youming = function(self, data)
+	local handcard = self.player:getHandcardNum()
+	local max_card = self.player:getMaxCards()
+	local target = 0
+	local slashnum = 0
+
+	for _, slash in ipairs(self:getCards("Slash")) do
+		for _,enemy in ipairs(self.enemies) do
+			if self.player:canSlash(enemy, slash) and self:slashIsEffective(slash, enemy) and self:slashIsEffective(slash, enemy)
+			  and not self:slashProhibit(slash, enemy) and sgs.isGoodTarget(enemy, self.enemies, self) then
+				slashnum = slashnum + 1
+				target = target + 1
+				break
+			end
+		end
+	end
+
+	local prompt = data:toString()
+	if prompt == "draw2play" then
+		if self:needBear() then return false end
+		if slashnum > 1 and target > 0 then return true end
+		if self.player:isSkipped(sgs.Player_Play) and #(self:getTurnUse()) > 0 then return true end
+		return false
+	elseif prompt == "play2draw" then
+		if self:needBear() then return true end
+		if slashnum > 0 and target > 0 then return false end
+		if #(self:getTurnUse()) == 0 then return true end
+		return false
+	end
+end
+
+function sgs.ai_cardneed.youming(to, card, self)
+	return isCard("Slash", card, to) and getKnownCard(to, self.player, "Slash", true) < 2
+end
+
+--[[sgs.ai_cardneed.jianshu = function(to, card, self)
 	if not to:getOffensiveHorse() and getCardsNum("OffensiveHorse", to, self.player) < 1 then
 		return  card:isKindOf("OffensiveHorse")
 	end
@@ -296,7 +331,7 @@ sgs.ai_cardneed.bailou = function(to, card, self)
 		return card:isKindOf("Slash") and card:isRed()
 	end
 end
-
+]]
 
 sgs.ai_skill_use["@@xiezou"] = function(self, prompt)
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }

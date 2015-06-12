@@ -139,6 +139,11 @@ sgs.ai_choicemade_filter.skillInvoke.huiwu = function(self, player, promptlist)
 		end
 	end
 end
+sgs.ai_benefitBySlashed.huiwu = function(self, card,source,target)
+	return true
+	--return self:isFriend(source, target)  
+end
+
 
 sgs.ai_skill_playerchosen.huazhong = function(self, targets)
 	if not self:invokeTouhouJudge() then return nil end
@@ -505,7 +510,7 @@ sgs.ai_playerchosen_intention.feixiang = 50
 
 sgs.ai_slash_prohibit.feixiang = function(self, from, to, card)
 	if to:hasArmorEffect("EightDiagram") 
-		and (not from:hasWeapon("QinggangSword") or not from:hasSkills("louguan+bailou")) then 
+		and (not from:hasWeapon("QinggangSword")) then 
 		if self:isEnemy(from,to) then
 			local tianzi=self.room:findPlayerBySkillName("feixiang")
 			if tianzi and self:isEnemy(from,tianzi) and #self.enemies>1 then

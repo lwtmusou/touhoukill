@@ -508,44 +508,23 @@ public:
 class guaili : public TriggerSkill {
 public:
     guaili() : TriggerSkill("guaili") {
-        events << TargetConfirmed << SlashProceed << CardUsed;
+        events << SlashMissed;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (!player->hasSkill("guaili"))
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        if (player->hasFlag("hitAfterMissed"))
+		    return false;
+		if (!effect.to->isAlive())
             return false;
-        if (triggerEvent == TargetConfirmed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (player == use.from && use.card->isKindOf("Slash") && use.card->isRed()){
-                foreach(ServerPlayer *target, use.to){
-                    player->tag["guaili_target"] = QVariant::fromValue(target);
-                    if (player->askForSkillInvoke(objectName(), "cannotjink:" + target->objectName()))
-                        room->setCardFlag(use.card, "guailiTarget" + target->objectName());
-
-                    player->tag.remove("guaili_target");
-                }
-            }
-        }
-        else if (triggerEvent == SlashProceed){
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.slash->hasFlag("guailiTarget" + effect.to->objectName())){
-                room->slashResult(effect, NULL);
-                return true;
-            }
-        }
-        else if (triggerEvent == CardUsed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("Slash") && !use.card->isRed()){
-                const Card *ask_card = room->askForCard(player, ".|.|.|hand", "@guaili", data, Card::MethodDiscard, NULL, true, objectName());
-                if (ask_card){
-                    Card *slash = Sanguosha->cloneCard(use.card->objectName(), Card::NoSuitRed, use.card->getNumber());
-                    slash->addSubcard(use.card->getId());
-                    slash->setSkillName("guaili");
-                    use.card = slash;
-                    room->touhouLogmessage("#guaili1", use.from, "guaili");
-                    data = QVariant::fromValue(use);
-                }
-            }
+		const Card *card = NULL;
+		player->tag["guaili_target"] = QVariant::fromValue(effect.to);
+		if (player->canDiscard(player, "h"))
+			card = room->askForCard(player, ".|red|.|hand", "@guaili:" + effect.to->objectName(), data, objectName());
+		if (card) {
+			player->drawCards(1);	
+            room->setPlayerFlag(player, "hitAfterMissed");
+			room->slashResult(effect, NULL);
         }
         return false;
     }

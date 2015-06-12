@@ -463,13 +463,13 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 	local armor = to:getArmor()
 	if armor then
 		if armor:objectName() == "RenwangShield" then
-			if not self:isFriend(to,from) and from:hasSkill("guaili") 
+			--[[if not self:isFriend(to,from) and from:hasSkill("guaili") 
 			and from:getHandcardNum()>1 then
 				return true
-			end
-			if from:hasSkill("louguan") then
-				return true
-			end
+			end]]
+			--if from:hasSkill("louguan") then
+			--	return true
+			--end
 			return not slash:isBlack()
 		elseif armor:objectName() == "Vine" then
 			local skill_name = slash:getSkillName() or ""

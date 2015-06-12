@@ -716,7 +716,7 @@ function SmartAI:adjustUsePriority(card, v)
 		if card:getSkillName() == "longdan" and self:hasSkills("chongzhen") then v = v + 0.21 end
 		if card:getSkillName() == "fuhun" then v = v + (self.player:getPhase() == sgs.Player_Play and 0.21 or -0.1) end
 		if self.player:hasSkill("jiang") and card:isRed() then v = v + 0.21 end
-		if self.player:hasSkill("guaili") and card:isRed() then v = v + 0.21 end
+		--if self.player:hasSkill("guaili") and card:isRed() then v = v + 0.21 end
 		if self.player:hasSkill("wushen") and card:getSuit() == sgs.Card_Heart then v = v + 0.11 end
 		if self.player:hasSkill("jinjiu") and card:getEffectiveId() >= 0 and sgs.Sanguosha:getEngineCard(card:getEffectiveId()):isKindOf("Analeptic") then v = v + 0.11 end
 	end
@@ -971,7 +971,7 @@ function SmartAI:sortByKeepValue(cards, inverse, kept, Write)
 			if card:isRed() then v = v + 0.02 end
 			if card:isKindOf("NatureSlash") then v = v + 0.03 end
 			if self.player:hasSkill("jiang") and card:isRed() then v = v + 0.04 end
-			if self.player:hasSkill("guaili") and card:isRed() then v = v + 0.04 end
+			--if self.player:hasSkill("guaili") and card:isRed() then v = v + 0.04 end
 			if self.player:hasSkill("wushen") and card:getSuit() == sgs.Card_Heart then v = v + 0.03 end
 			if self.player:hasSkill("jinjiu") and card:getEffectiveId() >= 0 and
 				sgs.Sanguosha:getEngineCard(card:getEffectiveId()):isKindOf("Analeptic") then v = v - 0.1 end
@@ -7249,10 +7249,10 @@ function SmartAI:touhouEffectNullify(card,from,to)
 			end
 		end
 		if to:hasArmorEffect("RenwangShield") and not self:touhouIgnoreArmor(card,from,to) then
-			if not self:isFriend(to,from) and from:hasSkill("guaili") 
+			--[[if not self:isFriend(to,from) and from:hasSkill("guaili") 
 			and from:getHandcardNum()>1 and card:isKindOf("Slash") then
 				return false
-			end
+			end]]
 			if  card:isKindOf("Slash") and card:isBlack() then
 				return true
 			end
@@ -7356,10 +7356,10 @@ function SmartAI:touhouIgnoreArmor(card,from,to)
 		return true
 	end
 	if not card then return false end
-	if from:hasSkill("louguan") and card:isKindOf("Slash") 
-		and not card:isRed() then
-		return true
-	end
+	--if from:hasSkill("louguan") and card:isKindOf("Slash") 
+	--	and not card:isRed() then
+	--	return true
+	--end
 	return false
 end
 --东方杀相关
@@ -7399,10 +7399,7 @@ function SmartAI:touhouSidieTarget(card,from)
 			--if p:hasSkill("huanshi") then
 			--	table.insert(targets,p:objectName())
 			--end
-			if p:hasSkill("guaili") then
-				table.insert(targets,p:objectName())
-			end
-			if p:hasSkill("bailou")  and p:hasSkill("louguan")  then
+			if p:hasSkills("guaili|shuangren|huwei") then
 				table.insert(targets,p:objectName())
 			end
 		end

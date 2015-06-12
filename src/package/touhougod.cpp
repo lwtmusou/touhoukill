@@ -949,8 +949,8 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->getPhase() == Player::Finish) {		
-			if ( player->getMark("@huanzai") > 0 && player->getMark("@clock") == 0){
+        if (player->getPhase() == Player::Finish) {        
+            if ( player->getMark("@huanzai") > 0 && player->getMark("@clock") == 0){
                 if (room->askForSkillInvoke(player, objectName())){
                     room->doLightbox("$huanzaiAnimate", 4000);
                     player->gainMark("@clock", 1);

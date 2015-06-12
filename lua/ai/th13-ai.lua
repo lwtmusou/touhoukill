@@ -806,7 +806,7 @@ sgs.ai_slash_prohibit.wushou = function(self, from, to, card)
 	if to:getHp()<=3 and to:hasSkill("wushou") 
 	and self:isEnemy(from,to)  then
 		if to:hasArmorEffect("EightDiagram") 
-		and (not from:hasWeapon("QinggangSword") or not from:hasSkills("louguan+bailou")) then 
+		and (not from:hasWeapon("QinggangSword") ) then 
 				return self:lastEnemy(from,to) 
 		elseif not self:lastEnemy(from,to) then
 			if self:getAllPeachNum(to) > 0 then

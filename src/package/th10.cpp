@@ -699,7 +699,7 @@ public:
                 room->setPlayerMark(p, "@qiji", 0);
             }
         }
-	    else{
+        else{
             ServerPlayer *current = room->getCurrent();
             if (!current || !current->isAlive() || current->getPhase() == Player::NotActive)
                 return false;

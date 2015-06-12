@@ -387,17 +387,22 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
         }
     }
 
-    if (Self->hasSkill("shuangren") && distance_limit){
-        bool has_shuangren_target = false;
-        foreach (const Player *p, targets) {
-            if (Self->distanceTo(p, rangefix) > Self->getAttackRange(true) && !Slash::IsSpecificAssignee(p, Self, this))
-            {    
-                has_shuangren_target = true;
-                break;
-            }
-        }
-        if (!has_shuangren_target)
-            distance_limit = false;
+    if (Self->hasSkill("shuangren") && distance_limit && targets.length() >= 1 ){
+        if (this->isVirtualCard() && this->subcardsLength() == 0 && !Self->hasFlag("slashDisableExtraTarget")) 
+		    distance_limit = false; 
+		else{
+			bool has_shuangren_target = false;
+			foreach (const Player *p, targets) {
+				if (Self->distanceTo(p, rangefix) > Self->getAttackRange(true) && !Slash::IsSpecificAssignee(p, Self, this))
+				{    
+					has_shuangren_target = true;
+					break;
+				}
+			}
+			if (!has_shuangren_target)
+				distance_limit = false;
+		}
+		
     }
     if (!Self->canSlash(to_select, this, distance_limit, rangefix, targets)) return false;
     if (targets.length() >= slash_targets) {
@@ -699,7 +704,8 @@ public:
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-
+        if (player->hasFlag("hitAfterMissed"))
+		    return false;
         if (!effect.to->isAlive() || effect.to->getMark("Equips_of_Others_Nullified_to_You") > 0)
             return false;
         if (player->getMark("@tianyi_Weapon") > 0)
@@ -709,6 +715,7 @@ public:
             card = room->askForCard(player, "@Axe", "@Axe:" + effect.to->objectName(), data, objectName());
         if (card) {
             room->setEmotion(player, "weapon/axe");
+			room->setPlayerFlag(player, "hitAfterMissed");
             room->slashResult(effect, NULL);
         }
 

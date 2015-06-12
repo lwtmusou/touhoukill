@@ -163,7 +163,7 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 	if self.player:hasSkill("kofliegong") and self.player:getPhase() == sgs.Player_Play and hcard >= self.player:getHp() then return true end
 	if self.player:hasSkill("tieji") then return true end
 	--ÓÂÒÇÖ÷¶¯³Ô¾Æ
-	if self.player:hasSkill("haoyin") and self.player:hasSkill("guaili") then return true end
+	if self.player:hasSkill("haoyin") and self:canGuaili(slash) then return true end
 	
 	if self.player:hasWeapon("axe") and self.player:getCards("he"):length() > 4 then return true end
 	--if target:hasFlag("dahe") then return true end
