@@ -4196,7 +4196,7 @@ void RoomScene::fillGenerals3v3(const QStringList &names) {
         general_item->setPos(start_x + width * column, row_y[row]);
         general_item->setHomePos(general_item->pos());
         general_item->setObjectName(names.at(i));
-        //卡牌需要支持鼠眮E蠹丒员闼餮≡丒        general_item->setAcceptedMouseButtons(Qt::LeftButton);
+        general_item->setAcceptedMouseButtons(Qt::LeftButton);
 
         general_items << general_item;
     }
