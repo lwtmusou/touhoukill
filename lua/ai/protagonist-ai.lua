@@ -1,7 +1,7 @@
 
 --SmartAI:needRetrial(judge) 
-function SmartAI:lingqiParse(self,target)
-	local use=self.player:getTag("lingqicarduse"):toCardUse()
+function SmartAI:lingqiParse(self,target,use)
+	use = use or self.player:getTag("lingqicarduse"):toCardUse()
 	--if not use or not use.card  or not use.from then return 3 end
 	if not use or not use.card   then return 3 end
 	local card=use.card
@@ -48,36 +48,34 @@ function SmartAI:lingqiParse(self,target)
 	if sgs.dynamic_value.damage_card[card:getClassName()] then	
 		return 2
 	end
-			if card:isKindOf("ExNihilo") then
+	if card:isKindOf("ExNihilo") then
+		return 1
+	end
+	if card:isKindOf("GodSalvation") and target:isWounded() then
+		return 1
+	end
+	if card:isKindOf("IronChain")  then
+		if target:isChained() then
 			return 1
+		else
+			return 2
 		end
-		if card:isKindOf("GodSalvation") and target:isWounded() then
+	end
+	
+	if card:isKindOf("Snatch") or card:isKindOf("Dismantlement") then
+		local cards=target:getCards("j")
+		local throw_delay=false
+		for _,card in sgs.qlist(cards) do
+			if card:isKindOf("Indulgence") or card:isKindOf("SupplyShortage") then
+				throw_delay=true
+			end
+		end
+		if  throw_delay and not self:isEnemy(from,target) then
 			return 1
+		else
+			return 2
 		end
-		if card:isKindOf("IronChain")  then
-			if target:isChained() then
-				return 1
-			else
-				return 2
-			end
-		end
-	
-		if card:isKindOf("Snatch") or card:isKindOf("Dismantlement") then
-			local cards=target:getCards("j")
-			local throw_delay=false
-			for _,card in sgs.qlist(cards) do
-				if card:isKindOf("Indulgence") or card:isKindOf("SupplyShortage") then
-					throw_delay=true
-				end
-			end
-			if  throw_delay and self:isFriend(from,target) then
-				return 1
-			else
-				return 2
-			end
-		end
-
-	
+	end
 	return 3
 end
 

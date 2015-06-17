@@ -6127,7 +6127,7 @@ function SmartAI:hasTrickEffective(card, to, from)
 	from = from or self.room:getCurrent()
 	to = to or self.player
 	if self.room:isProhibited(from, to, card) then return false end
-	if to:hasSkill("zhengyi")  and not card:isKindOf("DelayedTrick") and card:isBlack() then return false end
+	--if to:hasSkill("zhengyi")  and not card:isKindOf("DelayedTrick") and card:isBlack() then return false end
 	if to:hasSkill("yunshang") and not from:inMyAttackRange(to) then return false end
 	--[[if to:hasSkill("yicun") and card:isKindOf("Duel") then
 		if self:yicunEffective(card, to, from) then
@@ -6164,14 +6164,6 @@ function SmartAI:hasTrickEffective(card, to, from)
 			if p:getKingdom() =="xlc" and self:isFriend(p,to) then
 				canFahua= self:hasTrickEffective(card, p, from)
 				if canFahua then return true end
-				--[[if p:hasSkill("zhengyi")  and not card:isKindOf("DelayedTrick") and card:isBlack() then
-					canFahua=true
-					break
-				end
-				if p:hasSkill("yunshang") and not from:inMyAttackRange(p)  then
-					canFahua=true
-					break
-				end]]
 			end
 		end
 		--if canFahua then return canFahua end

@@ -85,8 +85,11 @@ public:
     const Card *pendingCard() const;
 
     void expandPileCards(const QString &pile_name);
-    void retractPileCards(const QString &pile_name, QList<int> remove_ids = QList<int>());
-
+    void retractPileCards(const QString &pile_name);
+    inline const QStringList &getPileExpanded() const
+    {
+        return _m_pile_expanded;
+    }
 
     void selectCard(CardItem *item, bool isSelected);
 

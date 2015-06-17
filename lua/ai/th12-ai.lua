@@ -339,7 +339,7 @@ sgs.ai_trick_prohibit.weizhuang = function(self, from, to, card)
 end
 
 
-sgs.ai_skill_playerchosen.jinghua = function(self, targets)
+--[[sgs.ai_skill_playerchosen.jinghua = function(self, targets)
 
 	local current=self.player:getRoom():getCurrent()
 	local list1={}
@@ -438,65 +438,36 @@ sgs.ai_trick_prohibit.jinghua = function(self, from, to, card)
 	if self:isFriend(from,to) then return false end
 	return true
 end
-
-
---function SmartAI:hasTrickEffective(card, to, from)
---[[sgs.ai_skill_invoke.zhengyi = function(self,data)
-	local use=self.room:getTag("zhengyi_use"):toCardUse()
-	luanying=self.room:findPlayerBySkillName("luanying")
-	weiya_current=self.room:getCurrent()
-	if use.card:isKindOf("Slash") then
-		if self:isEnemy(use.from)  and use.from:hasWeapon("Axe") and use.from:getCards("he"):length()>=2 then
-			return false
-		end
-		if self:hasWeiya() then
-			return false
-		end
-		if luanying and self:isEnemy(luanying) and luanying:getPile("jingjie"):length()>0 then
-			return false
-		end
-		if self:getCardsNum("Jink") > 0 then
-			return true
-		end
-		if use.from:hasSkill("sidie") and self:isFriend(use.from)  then
-			return true
-		end
-	end
-	if use.card:isKindOf("GlobalEffect") then
-		return true
-	end
-	if use.card:isKindOf("IronChain") then
-		return self.player:isChained()
-	end
-	if use.from:hasSkill("lizhi") and self:isFriend(use.from)  then
-		if use.card:isKindOf("Slash") or use.card:isKindOf("SavageAssault")  then
-			return true
-		end
-	end
-	if use.card:isKindOf("SavageAssault") and self:getCardsNum("Slash") > 1 then
-		if self:hasWeiya() then
-			return false
-		end
-		if luanying and self:isEnemy(luanying) and luanying:getPile("jingjie"):length()>0 then
-			return false
-		end
-		return true
-	end
-	return false 
-end
 ]]
---[[sgs.ai_slash_prohibit.zhengyi = function(self, from, to, card)
-	if not card:isBlack() then 
-		return false
-	else
-		if from:hasSkill("shende") and self:getOverflow(from,from:getMaxCards())>0 then
-			return false
-		end
+
+--function SmartAI:hasTrickEffective(card, to, from) ??
+sgs.ai_skill_cardask["@zhengyi"] = function(self, data)
+	local use =data:toCardUse() 
+	if self:touhouCardEffectNullify(use.card,self.player) then 
+		return "."
 	end
-	return true
-end]]
+	if use.card:isNDTrick() and not self:hasTrickEffective(use.card, self.player, use.from)then 
+		return "."
+	end
+	if use.card:isKindOf("Slash") and not self:slashIsEffective(use.card, self.player, use.from) then 
+		return "."
+	end
+	local pattern = self:lingqiParse(self,self.player,use)
+	if pattern == 2 then
+		local handcards = {}
+		for _,c in sgs.qlist(self.player:getCards("h")) do
+			if c:isRed() then
+				table.insert(handcards, c)
+			end
+		end
+		if #handcards==0 then return "." end
+		self:sortByUseValue(handcards)
+		return "$" .. handcards[1]:getId()
+	end
+	return "."
+end
 sgs.ai_cardneed.zhengyi = function(to, card, self)
-	return  card:isKindOf("Armor")
+	return  card:isRed()
 end
 
 

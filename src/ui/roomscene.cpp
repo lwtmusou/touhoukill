@@ -2752,6 +2752,13 @@ void RoomScene::onSkillActivated() {
             if (!instance_use){
                 QList<const Card *> cards;
                 cards << Self->getHandcards() << Self->getEquips();
+                
+                foreach (const QString &name, dashboard->getPileExpanded()) {
+                    QList<int> pile = Self->getPile(name);
+                    foreach(int id, pile)
+                        cards << Sanguosha->getCard(id);
+                }
+                
                 foreach(const Card *c, cards){
                     if (skill->viewFilter(QList<const Card *>(), c))
                         return;

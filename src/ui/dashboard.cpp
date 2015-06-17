@@ -548,11 +548,10 @@ void Dashboard::skillButtonDeactivated() {
 }
 
 void Dashboard::selectAll() {
-    retractPileCards("piao");
-    retractPileCards("feitou");
-    retractPileCards("qi");
-    retractPileCards("shende");
-    retractPileCards("wooden_ox");
+    foreach (const QString &pile, Self->getPileNames()) {
+        if (pile.startsWith("&") || pile == "wooden_ox" || pile == "piao")
+            retractPileCards(pile);
+    }
     if (view_as_skill) {
         unselectAll();
         foreach(CardItem *card_item, m_handCards) {
@@ -902,21 +901,15 @@ void Dashboard::disableAllCards() {
 
 void Dashboard::enableCards() {
     m_mutexEnableCards.lock();
-    expandPileCards("wooden_ox");
-    if (Self->hasSkill("shanji"))
-        expandPileCards("piao");
-    if (Self->hasSkill("feitou"))
-        expandPileCards("feitou");
-    if (Self->hasSkill("shende"))
-        expandPileCards("shende");
-    QList<int> feitous = Self->getPile("feitou");
-    QList<int> shendes = Self->getPile("shende");
+    foreach (const QString &pile, Self->getPileNames()) {
+        if (pile.startsWith("&") || pile == "wooden_ox")
+            expandPileCards(pile);
+        if (Self->hasSkill("shanji") && pile == "piao")
+            expandPileCards("piao");
+    }
+
     foreach(CardItem *card_item, m_handCards){
-        if (!feitous.contains(card_item->getCard()->getEffectiveId())
-        && !shendes.contains(card_item->getCard()->getEffectiveId()))
-            card_item->setEnabled(card_item->getCard()->isAvailable(Self));
-        else
-            card_item->setEnabled(false);
+        card_item->setEnabled(card_item->getCard()->isAvailable(Self));
     }
     m_mutexEnableCards.unlock();
 }
@@ -944,30 +937,32 @@ void Dashboard::startPending(const ViewAsSkill *skill) {
         expand = true;
     else if (Self->hasFlag("Global_cardshowFailed") || Self->hasFlag("Global_carddiscardFailed")) //we need prohibit expanding pile when show card
         expand = false;
-    //for example fire attack
-    if (expand){
-        expandPileCards("wooden_ox");
-        if (Self->hasSkill("shanji"))
-            expandPileCards("piao");
-        if (Self->hasSkill("feitou") && Sanguosha->getCurrentCardUsePattern().contains("slash")){
-            //Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
-            expandPileCards("feitou");
+
+    //retractAllSkillPileCards();
+    foreach (const QString &pileName, _m_pile_expanded) {
+        if (!(pileName.startsWith("&") || pileName == "wooden_ox" || pileName == "piao"))
+            retractPileCards(pileName);
+    }
+    if (expand) {
+        foreach (const QString &pile, Self->getPileNames()) {
+            if (pile.startsWith("&") || pile == "wooden_ox")
+                expandPileCards(pile);
+            if (Self->hasSkill("shanji") && pile == "piao")
+                expandPileCards("piao");
         }
-        if (Self->hasSkill("shende") && Sanguosha->getCurrentCardUsePattern().contains("peach")){
-            expandPileCards("shende");
+    } else {
+        foreach (const QString &pile, Self->getPileNames()) {
+            if (pile.startsWith("&") || pile == "wooden_ox" || pile == "piao")
+                retractPileCards(pile);
+            
         }
-        if (Self->hasSkill("zhanyi") && Sanguosha->getCurrentCardUsePattern().contains("slash")
-        && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE){
-            expandPileCards("qi");
+        if (skill && !skill->getExpandPile().isEmpty()) {
+            foreach(const QString &pile_name, skill->getExpandPile().split(","))
+                expandPileCards(pile_name);
         }
     }
-    else {
-        retractPileCards("wooden_ox");
-        retractPileCards("piao");
-        retractPileCards("feitou");
-        retractPileCards("qi");
-        retractPileCards("shende");
-    }
+    
+    
     for (int i = 0; i < 5; i++) {
         if (_m_equipCards[i] != NULL)
             connect(_m_equipCards[i], SIGNAL(mark_changed()), this, SLOT(onMarkChanged()));
@@ -980,17 +975,22 @@ void Dashboard::startPending(const ViewAsSkill *skill) {
 
 void Dashboard::stopPending() {
     m_mutexEnableCards.lock();
-    if (view_as_skill && view_as_skill->objectName().contains("guhuo")) {
-        foreach(CardItem *item, m_handCards)
-            item->hideFootnote();
+    if (view_as_skill){
+        if (view_as_skill->objectName().contains("guhuo")) {
+            foreach(CardItem *item, m_handCards)
+                item->hideFootnote();
+        }
+        else if (!view_as_skill->getExpandPile().isEmpty()) {
+            retractPileCards(view_as_skill->getExpandPile());
+        }
     }
+
     view_as_skill = NULL;
     pending_card = NULL;
-    retractPileCards("wooden_ox");
-    retractPileCards("piao");
-    retractPileCards("feitou");
-    retractPileCards("qi");
-    retractPileCards("shende");
+    foreach (const QString &pile, Self->getPileNames()) {
+        if (pile.startsWith("&") || pile == "wooden_ox" || pile == "piao")
+            retractPileCards(pile);
+    }
     emit card_selected(NULL);
 
     foreach(CardItem *item, m_handCards) {
@@ -1041,7 +1041,7 @@ void Dashboard::expandPileCards(const QString &pile_name) {
     update();
 }
 
-void Dashboard::retractPileCards(const QString &pile_name, QList<int> remove_ids) {
+void Dashboard::retractPileCards(const QString &pile_name) {
     if (!_m_pile_expanded.contains(pile_name)) return;
     _m_pile_expanded.removeOne(pile_name);
     QList<int> pile = Self->getPile(pile_name);
@@ -1104,27 +1104,13 @@ void Dashboard::updatePending() {
     foreach(CardItem *item, pendings)
         cards.append(item->getCard());
 
-    QList<int> feitous = Self->getPile("feitou");
-    QList<int> qis = Self->getPile("qi");
-    QList<int> shendes = Self->getPile("shende");
+
     QList<const Card *> pended;
     if (!view_as_skill->inherits("OneCardViewAsSkill"))
         pended = cards;
     foreach(CardItem *item, m_handCards) {
         if (!item->isSelected() || pendings.isEmpty())
             item->setEnabled(view_as_skill->viewFilter(pended, item->getCard()));
-        if (feitous.contains(item->getCard()->getEffectiveId())){
-            if (!view_as_skill->objectName().contains("feitou"))
-                item->setEnabled(false);
-        }
-        if (qis.contains(item->getCard()->getEffectiveId())){
-            if (!view_as_skill->objectName().contains("zhanyi"))
-                item->setEnabled(false);
-        }
-        if (shendes.contains(item->getCard()->getEffectiveId())){
-            if (!view_as_skill->objectName().contains("shende"))
-                item->setEnabled(false);
-        }
         if (!item->isEnabled())
             animations->effectOut(item);
     }

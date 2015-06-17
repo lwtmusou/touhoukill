@@ -780,7 +780,7 @@ void zhanyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
 class zhanyivs : public ViewAsSkill {
 public:
     zhanyivs() : ViewAsSkill("zhanyi") {
-        response_or_use = true;
+        expand_pile = "qi";
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{

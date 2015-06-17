@@ -514,17 +514,17 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if (player->hasFlag("hitAfterMissed"))
-		    return false;
-		if (!effect.to->isAlive())
             return false;
-		const Card *card = NULL;
-		player->tag["guaili_target"] = QVariant::fromValue(effect.to);
-		if (player->canDiscard(player, "h"))
-			card = room->askForCard(player, ".|red|.|hand", "@guaili:" + effect.to->objectName(), data, objectName());
-		if (card) {
-			player->drawCards(1);	
+        if (!effect.to->isAlive())
+            return false;
+        const Card *card = NULL;
+        player->tag["guaili_target"] = QVariant::fromValue(effect.to);
+        if (player->canDiscard(player, "h"))
+            card = room->askForCard(player, ".|red|.|hand", "@guaili:" + effect.to->objectName(), data, objectName());
+        if (card) {
+            player->drawCards(1);    
             room->setPlayerFlag(player, "hitAfterMissed");
-			room->slashResult(effect, NULL);
+            room->slashResult(effect, NULL);
         }
         return false;
     }

@@ -3844,9 +3844,6 @@ void Room::drawCards(QList<ServerPlayer *> players, QList<int> n_list, const QSt
             CardsMoveOneTimeStruct moveOneTime;
             QVariant data = QVariant::fromValue(moveOneTime);
             if (!unenable && (player->askForSkillInvoke("qiangyu", data))){
-                //if (player->getPhase() == Player::Draw &&
-                //    player->getGeneralName() == "zhu008")
-                //    doLightbox("$qiangyuAnimate", 2000);
                 setPlayerFlag(player, "qiangyu");
                 card_ids = getNCards(n + 2, false);
             }
@@ -4219,7 +4216,7 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
 }
 
 
-void Room::moveCardsToEndOfDrawpile(QList<int> card_ids) {
+void Room::moveCardsToEndOfDrawpile(QList<int> card_ids, bool forceVisible) {
     QList<CardsMoveStruct> moves;
     CardsMoveStruct move(card_ids, NULL, Player::DrawPile, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()));
     moves << move;
@@ -4240,7 +4237,8 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids) {
     }
     cards_moves = _separateMoves(moveOneTimes);
 
-    notifyMoveCards(true, cards_moves, false);
+    //notifyMoveCards(true, cards_moves, false);
+	notifyMoveCards(true, cards_moves, forceVisible);
     // First, process remove card
     for (int i = 0; i < cards_moves.size(); i++) {
         CardsMoveStruct &cards_move = cards_moves[i];
@@ -4274,8 +4272,8 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids) {
     }
     foreach(CardsMoveStruct move, cards_moves)
         updateCardsOnGet(move);
-    notifyMoveCards(false, cards_moves, false);
-
+    //notifyMoveCards(false, cards_moves, false);
+	notifyMoveCards(false, cards_moves, forceVisible);
     // Now, process add cards
     for (int i = 0; i < cards_moves.size(); i++) {
         CardsMoveStruct &cards_move = cards_moves[i];

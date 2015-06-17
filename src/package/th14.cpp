@@ -616,7 +616,7 @@ class feitouvs : public OneCardViewAsSkill {
 public:
     feitouvs() : OneCardViewAsSkill("feitou") {
         filter_pattern = ".|.|.|feitou";
-        response_or_use = true;
+        expand_pile = "feitou";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{

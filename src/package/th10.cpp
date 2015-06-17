@@ -18,7 +18,7 @@
 class shendevs : public ViewAsSkill {
 public:
     shendevs() : ViewAsSkill("shende") {
-        response_or_use = true;
+        expand_pile = "shende";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{

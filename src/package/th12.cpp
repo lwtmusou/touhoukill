@@ -211,48 +211,11 @@ public:
     }
 };
 
-class jinghua : public TriggerSkill {
+
+
+class zhengyi : public TriggerSkill {
 public:
-    jinghua() : TriggerSkill("jinghua") {
-        events << EventPhaseStart;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return (target != NULL);
-    }
-
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-
-        ServerPlayer *source = room->findPlayerBySkillName(objectName());
-        if (source == NULL)
-            return false;
-        if (player->getPhase() == Player::Start){
-            QList<ServerPlayer *> xx;
-            foreach(ServerPlayer *p, room->getAlivePlayers()){
-                if (p->getCards("j").length() > 0)
-                    xx << p;
-            }
-            if (xx.length() > 0){
-                ServerPlayer * target = room->askForPlayerChosen(source, xx, objectName(), "@targetchoose", true, true);
-                if (target != NULL){
-                    int card_id = room->askForCardChosen(source, target, "j", objectName());
-                    QList<int> card_ids;
-                    card_ids << card_id;
-                    room->moveCardsToEndOfDrawpile(card_ids);
-                    if (player != source)
-                        room->loseHp(source, 1);
-                }
-            }
-        }
-        return false;
-    }
-};
-
-
-class zhengyiEffect : public TriggerSkill {
-public:
-    zhengyiEffect() : TriggerSkill("#zhengyi") {
-        frequency = Compulsory;
+    zhengyi() : TriggerSkill("zhengyi") {
         events << TargetConfirming << CardEffected << SlashEffected;
     }
 
@@ -262,14 +225,16 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isBlack() && (use.card->isNDTrick() || use.card->isKindOf("Slash"))
                 && use.to.contains(player)){
-                room->setCardFlag(use.card, "zhengyi" + player->objectName());
-                if (use.from->isAlive()){
-                    room->touhouLogmessage("#TriggerSkill", player, "zhengyi");
-                    CardsMoveStruct move;
-                    move.to = use.from;
-                    move.to_place = Player::PlaceHand;
-                    move.card_ids << (room->drawCard(true));//(room->getDrawPile().last());
-                    room->moveCardsAtomic(move, false);
+                if (player->isKongcheng())  
+                    return false;
+                QString prompt = "@zhengyi:"  + use.card->objectName();
+                const Card *card = room->askForCard(player, ".|red|.|hand", prompt, data, Card::MethodNone, NULL, false, objectName());
+                if (card){
+                    room->touhouLogmessage("#InvokeSkill", player, objectName());
+                    QList<int> card_ids;
+                    card_ids << card->getEffectiveId();
+                    room->moveCardsToEndOfDrawpile(card_ids, true);
+                    room->setCardFlag(use.card, "zhengyi" + player->objectName());
                 }
             }
         }
@@ -296,79 +261,19 @@ public:
     }
 };
 
-class zhengyiArmor : public TriggerSkill {
+
+class weiguang : public TriggerSkill {
 public:
-    zhengyiArmor() : TriggerSkill("#zhengyiArmor") {
-        frequency = Compulsory;
-        events << CardsMoveOneTime << EventAcquireSkill;
+    weiguang() : TriggerSkill("weiguang") {
+        events << TargetConfirming << CardEffected << SlashEffected;
     }
 
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == CardsMoveOneTime) {
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            QList<int> t_ids;
-            if (move.to != NULL && move.to == player && move.to_place == Player::PlaceEquip){
-                foreach(int id, move.card_ids){
-                    if (Sanguosha->getCard(id)->isKindOf("Armor")) {
-                        t_ids << id;
-                    }
-                }
-                if (t_ids.length() > 0){
-                    room->touhouLogmessage("#ZhengyiUninstall", player, "zhengyi");
-                    foreach(int id, t_ids){
-                        room->throwCard(id, player, player);
-
-                    }
-                }
-            }
-        }
-        else if (triggerEvent == EventAcquireSkill) {
-            if (data.toString() != "zhengyi")
-                return false;
-            if (player->hasSkill(objectName())){
-                QList<int> t_ids;
-                foreach(const Card *card, player->getCards("e")) {
-                    if (card->isKindOf("Armor"))
-                        t_ids << card->getId();
-                }
-                if (t_ids.length() > 0){
-                    room->touhouLogmessage("#ZhengyiUninstall", player, "zhengyi");
-                    foreach(int id, t_ids){
-                        room->throwCard(id, player, player);
-                    }
-                }
-            }
-
-        }
         return false;
     }
 };
 
-class zhengyi : public FilterSkill {
-public:
-    zhengyi() : FilterSkill("zhengyi") {
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        Room *room = Sanguosha->currentRoom();
-        if (room->getCardPlace(to_select->getEffectiveId()) == Player::PlaceHand){
-            ServerPlayer *xing = room->getCardOwner(to_select->getEffectiveId());
-            if (xing != NULL && xing->hasSkill(objectName())){
-                return to_select->isKindOf("Armor");
-            }
-        }
-        return false;
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const{
-        Nullification *nul = new Nullification(originalCard->getSuit(), originalCard->getNumber());
-        nul->setSkillName(objectName());
-        WrappedCard *card = Sanguosha->getWrappedCard(originalCard->getId());
-        card->takeOver(nul);
-        return card;
-    }
-};
 
 chuannanCard::chuannanCard() {
     handling_method = Card::MethodNone;
@@ -895,12 +800,8 @@ th12Package::th12Package()
     xlc002->addSkill(new weizhuang);
 
     General *xlc003 = new General(this, "xlc003", "xlc", 4, false);
-    xlc003->addSkill(new jinghua);
-    xlc003->addSkill(new zhengyiEffect);
-    xlc003->addSkill(new zhengyiArmor);
     xlc003->addSkill(new zhengyi);
-    related_skills.insertMulti("zhengyi", "#zhengyiArmor");
-    related_skills.insertMulti("zhengyi", "#zhengyi");
+    xlc003->addSkill(new weiguang);
 
     General *xlc004 = new General(this, "xlc004", "xlc", 4, false);
     xlc004->addSkill(new chuannan);
