@@ -274,109 +274,59 @@ public:
     }
 };
 
-
-chuannanCard::chuannanCard() {
-    handling_method = Card::MethodNone;
-}
-
-bool chuannanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if (!targets.isEmpty()) return false;
-    int id = getEffectiveId();
-
-    SupplyShortage *supply = new SupplyShortage(getSuit(), getNumber());
-    supply->addSubcard(id);
-    supply->setSkillName("chuannan");
-    supply->deleteLater();
-
-    QString str = Self->property("chuannan").toString();
-    QStringList chuannan_targets = str.split("+");
-    bool canUse = !Self->isLocked(supply);
-    if (canUse && chuannan_targets.contains(to_select->objectName()) && to_select != Self
-        && !to_select->containsTrick("supply_shortage") && !Self->isProhibited(to_select, supply))
-        return true;
-    return false;
-}
-
-const Card *chuannanCard::validate(CardUseStruct &cardUse) const{
-    ServerPlayer *to = cardUse.to.first();
-    if (!to->containsTrick("supply_shortage")) {
-        SupplyShortage *supply = new SupplyShortage(getSuit(), getNumber());
-        supply->addSubcard(getEffectiveId());
-        supply->setSkillName("chuannan");
-        cardUse.from->getRoom()->setPlayerProperty(cardUse.from, "chuanan", QVariant());
-        return supply;
-    }
-    return NULL;
-}
-
-
-class chuannanvs : public OneCardViewAsSkill {
+class shuinan : public TriggerSkill {
 public:
-    chuannanvs() : OneCardViewAsSkill("chuannan") {
-        filter_pattern = ".|.|.|hand";
-        response_or_use = true;
-        response_pattern = "@@chuannan";
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const{
-        chuannanCard *card = new chuannanCard;
-        card->addSubcard(originalCard);
-        card->setSkillName(objectName());
-        return card;
-    }
-};
-class chuannan : public TriggerSkill {
-public:
-    chuannan() : TriggerSkill("chuannan") {
-        events << Damaged << Damage;
-        view_as_skill = new chuannanvs;
-        skill_property = "use_delayed_trick";
+    shuinan() : TriggerSkill("shuinan") {
+        events << TargetConfirming;
     }
 
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();
-        ServerPlayer *target;
-        if (triggerEvent == Damaged){
-            if (damage.from  && damage.from->isAlive() && player != damage.from)
-                target = damage.from;
-            else
-                return false;
+        if (triggerEvent == TargetConfirming){
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from  && player != use.from  &&  use.to.contains(player) && use.card->isNDTrick()){
+                player->tag["shuinan_use"] = data;
+				if (player->canDiscard(use.from, "h") && room->askForSkillInvoke(player, objectName(), QVariant::fromValue(use.from))){
+                    room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), use.from->objectName());
+					int id = room->askForCardChosen(player, use.from, "h", objectName());
+					room->throwCard(id, use.from, player);
+				}
+            }
         }
-        else if (triggerEvent == Damage){
-            if (damage.to && damage.to->isAlive() && player != damage.to)
-                target = damage.to;
-            else
-                return false;
-        }
-
-
-        if (triggerEvent == Damaged){
-            if (!room->askForSkillInvoke(player, objectName(), data))
-                return false;
-            player->drawCards(1);
-        }
-
-        SupplyShortage *supply = new SupplyShortage(Card::NoSuit, 0);
-        supply->deleteLater();
-        if (player->isCardLimited(supply, Card::MethodUse, true))
-            return false;
-        if (target->containsTrick("supply_shortage") || player->isProhibited(target, supply))
-            return false;
-
-
-        player->tag["chuannan_damage"] = QVariant::fromValue(damage);
-        QStringList    chuannanTargets;
-        chuannanTargets << target->objectName();
-        room->setPlayerProperty(player, "chuannan", chuannanTargets.join("+"));
-        room->askForUseCard(player, "@@chuannan", "@chuannan:" + target->objectName());
-        room->setPlayerProperty(player, "chuanan", QVariant());
-        player->tag.remove("chuannan_damage");
         return false;
     }
 };
 
+nihuoCard::nihuoCard() {
+    mute = true;
+}
+bool nihuoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if (!targets.isEmpty()) return false;
+	
+	Duel *duel = new Duel(Card::NoSuit, 0);
+    duel->deleteLater();
+	return to_select != Self && !to_select->isProhibited(Self, duel) && !to_select->isCardLimited(duel, Card::MethodUse);
+}
+void nihuoCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+	Duel *duel = new Duel(Card::NoSuit, 0);
+	duel->setSkillName("_nihuo");
+	room->useCard(CardUseStruct(duel, effect.to, effect.from));
+}
 
+class nihuo : public ZeroCardViewAsSkill {
+public:
+    nihuo() : ZeroCardViewAsSkill("nihuo") {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->hasUsed("nihuoCard");
+    }
+
+    virtual const Card *viewAs() const{
+        return new nihuoCard;
+    }
+};
 
 class lizhi : public TriggerSkill {
 public:
@@ -804,8 +754,9 @@ th12Package::th12Package()
     xlc003->addSkill(new weiguang);
 
     General *xlc004 = new General(this, "xlc004", "xlc", 4, false);
-    xlc004->addSkill(new chuannan);
-
+    xlc004->addSkill(new shuinan);
+	xlc004->addSkill(new nihuo);
+	
     General *xlc005 = new General(this, "xlc005", "xlc", 4, false);
     xlc005->addSkill(new lizhi);
     xlc005->addSkill(new yunshang);
@@ -827,7 +778,7 @@ th12Package::th12Package()
 
     addMetaObject<puduCard>();
     addMetaObject<weizhiCard>();
-    addMetaObject<chuannanCard>();
+	addMetaObject<nihuoCard>();
     addMetaObject<nuhuoCard>();
 }
 

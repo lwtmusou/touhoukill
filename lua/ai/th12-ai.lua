@@ -471,7 +471,7 @@ sgs.ai_cardneed.zhengyi = function(to, card, self)
 end
 
 
-sgs.ai_skill_invoke.chuannan = function(self,data)
+--[[sgs.ai_skill_invoke.chuannan = function(self,data)
 	return true
 end
 sgs.ai_skill_use["@@chuannan"] = function(self, prompt)
@@ -495,6 +495,101 @@ sgs.ai_skill_use["@@chuannan"] = function(self, prompt)
 	if #cards==0 then return "." end
 	return "@chuannanCard=".. cards[1]:getId() .."->" .. target:objectName()
 end
+]]
+sgs.ai_skill_invoke.shuinan = function(self,data)
+	local target=data:toPlayer()
+	if target and self:isEnemy(target) then
+		return true
+	end
+	return false
+end
+sgs.ai_choicemade_filter.skillInvoke.shuinan = function(self, player, promptlist)
+	local use = player:getTag("shuinan_use"):toCardUse()
+	if use and use.from then
+		if promptlist[#promptlist] == "yes" then
+			sgs.updateIntention(player, use.from, 40)
+		end
+	end
+end
+
+
+local nihuo_skill = {}
+nihuo_skill.name = "nihuo"
+table.insert(sgs.ai_skills, nihuo_skill)
+nihuo_skill.getTurnUseCard = function(self)
+	if self.player:hasUsed("nihuoCard") then return nil end
+	return sgs.Card_Parse("@nihuoCard=.")
+end
+sgs.ai_skill_use_func.nihuoCard=function(card,use,self)
+	if #self.enemies == 0 then return end
+	local n1 = self:getCardsNum("Slash")
+	if n1 == 0 then return end
+
+	local duel = sgs.cloneCard("duel")
+	local targets = {}
+	for _, from in ipairs(self.enemies) do
+		if not from:isCardLimited(duel,sgs.Card_MethodUse) and not self.room:isProhibited(from, self.player, duel) then
+			table.insert(targets, from)
+		end
+		--self:touhouCardAttackWaste(duel,self.player,enemy)
+	end
+	
+	local cmp = function(a, b)
+		local v1 = getCardsNum("Slash", a) + a:getHp()
+		local v2 = getCardsNum("Slash", b) + b:getHp()
+
+		if self:getDamagedEffects(a, self.player) then v1 = v1 + 20 end
+		if self:getDamagedEffects(b, self.player) then v2 = v2 + 20 end
+
+		if not self:isWeak(a) and a:hasSkill("jianxiong") and not self.player:hasSkill("jueqing") then v1 = v1 + 10 end
+		if not self:isWeak(b) and b:hasSkill("jianxiong") and not self.player:hasSkill("jueqing") then v2 = v2 + 10 end
+
+		if self:needToLoseHp(a) then v1 = v1 + 5 end
+		if self:needToLoseHp(b) then v2 = v2 + 5 end
+
+		if self:hasSkills(sgs.masochism_skill, a) then v1 = v1 + 5 end
+		if self:hasSkills(sgs.masochism_skill, b) then v2 = v2 + 5 end
+
+		if not self:isWeak(a) and a:hasSkill("jiang") then v1 = v1 + 5 end
+		if not self:isWeak(b) and b:hasSkill("jiang") then v2 = v2 + 5 end
+
+		if a:hasLordSkill("jijiang") or a:hasLordSkill("tianren")  then v1 = v1 + self:JijiangSlash(a) * 2 end
+		if b:hasLordSkill("jijiang") or b:hasLordSkill("tianren")  then v2 = v2 + self:JijiangSlash(b) * 2 end
+
+		if v1 == v2 then return sgs.getDefenseSlash(a, self) < sgs.getDefenseSlash(b, self) end
+
+		return v1 < v2
+	end
+	
+	if #targets == 0 then return end
+
+	table.sort(targets, cmp)
+	local nihuo_targets = {}
+	for _, enemy in ipairs(targets) do
+		local useduel
+		local n2 = getCardsNum("Slash",enemy)
+		if sgs.card_lack[enemy:objectName()]["Slash"] == 1 then n2 = 0 end
+		useduel = n1 > n2 or self:needToLoseHp(self.player, nil, nil, true)
+					or self:getDamagedEffects(self.player, enemy) or (n2 < 1 and sgs.isGoodHp(self.player))
+					or ((self:hasSkill("jianxiong") or self.player:getMark("shuangxiong") > 0) and sgs.isGoodHp(self.player))
+		-- 需要仇恨达到3么。。。
+		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName()))
+			and self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and useduel and sgs.isGoodTarget(enemy, enemies, self) then
+			if not table.contains(nihuo_targets, enemy) then table.insert(nihuo_targets, enemy) end
+		end
+	end
+	if #nihuo_targets == 0 then return end
+
+	self:sort(nihuo_targets, "hp")
+	use.card = card
+	if use.to then
+		use.to:append(nihuo_targets[1])
+		if use.to:length() >= 1 then return end
+	end
+end
+sgs.ai_use_priority.nihuoCard = sgs.ai_use_priority.Duel - 0.2
+sgs.ai_card_intention.nihuoCard = 70
+
 
 
 --SmartAI:getAoeValue(card, player)

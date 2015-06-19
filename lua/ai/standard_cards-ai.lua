@@ -2481,11 +2481,11 @@ function SmartAI:useCardDuel(duel, use)
 
 end
 
---东方杀相关
---【创史】
+
 sgs.ai_card_intention.Duel = function(self, card, from, tos)
 	if string.find(card:getSkillName(), "lijian") then return end
 	if string.find(card:getSkillName(), "chuangshi") then return end
+	if string.find(card:getSkillName(), "nihuo") then return end
 	sgs.updateIntentions(from, tos, 80)
 end
 
