@@ -11,9 +11,10 @@ return{
     ["xiangqi:show"]="<font color=\"#FF8000\"><b>%src </b></font> 使用【%arg】对 <font color=\"#00FF00\"><b>%dest </b></font> 造成了伤害，你可以发动“想起”。",    
         
     ["duxin"] = "读心",
-    [":duxin"] = "<font color=\"blue\"><b>锁定技，</b></font>当你需要弃置、获得、展示其他角色的手牌时，你观看其手牌并进行选择。",
-        
-    ["huzhu"] = "护主",
+    --[":duxin"] = "<font color=\"blue\"><b>锁定技，</b></font>当你需要弃置、获得、展示其他角色的手牌时，你观看其手牌并进行选择。",
+    [":duxin"] = "<font color=\"blue\"><b>锁定技，</b></font>当你需要选择其他角色的手牌时，其手牌对你可见。",    
+    
+	["huzhu"] = "护主",
     [":huzhu"] = "<font color=\"orange\"><b>主公技，</b></font>当你成为【杀】的目标时，你可令其他地势力角色（不能是此【杀】的使用者或目标）依次选择是否代替你成为此【杀】的目标。",
     ["huzhu_change"]="护主",
     ["huzhu_change:slashtarget"]="你可以响应 <font color=\"#00FF00\"><b>%dest </b></font> 的主公技“护主”，代替 <font color=\"#00FF00\"><b>%dest </b></font> 成为 <font color=\"#FF8000\"><b>%src </b></font> 使用的【%arg】的目标。",    

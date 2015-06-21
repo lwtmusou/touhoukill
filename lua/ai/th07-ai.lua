@@ -891,12 +891,10 @@ sgs.ai_skill_askforag.xijian = function(self, card_ids)
 end
 sgs.ai_no_playerchosen_intention.xijian =function(self, from)
 	local target_willobtain = from:getTag("xijian_target"):toPlayer()
-	if target_willobtain then
+	if target_willobtain  and sgs.ai_role[target_willobtain:objectName()]  ~= "netural" then
 		for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-			if checkXijianPile(p) and   sgs.ai_role[p:objectName()]  ~= "netural"   then
+			if checkXijianPile(p) and   sgs.ai_role[p:objectName()]  ~= "netural" and not self:isFriend(p, target_willobtain) then
 				sgs.updateIntention(from, p, -10)
-				--and not self:isFriend(target_willobtain, p)
-				--if target_willobtain:objectName() ~= from:objectName() then
 			end
 		end
 	end

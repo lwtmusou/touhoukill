@@ -276,6 +276,13 @@ end
 function SmartAI:useCardSupplyShortage(card, use)
 	local enemies = self:exclude(self.enemies, card)
 
+	--ËÐ¾­
+	for _, e in pairs(enemies) do
+		if e:hasSkill("songjing") then
+			return
+		end
+	end
+	
 	local zhanghe = self.room:findPlayerBySkillName("qiaobian")
 	local zhanghe_seat = zhanghe and zhanghe:faceUp() and not zhanghe:isKongcheng() and not self:isFriend(zhanghe) and zhanghe:getSeat() or 0
 
