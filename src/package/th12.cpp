@@ -228,12 +228,9 @@ public:
                 if (player->isKongcheng())  
                     return false;
                 QString prompt = "@zhengyi:"  + use.card->objectName();
-                const Card *card = room->askForCard(player, ".|red|.|hand", prompt, data, Card::MethodNone, NULL, false, objectName());
+                const Card *card = room->askForCard(player, ".|red|.|.", prompt, data, Card::MethodDiscard, NULL, false, objectName());
                 if (card){
-                    room->touhouLogmessage("#InvokeSkill", player, objectName());
-                    QList<int> card_ids;
-                    card_ids << card->getEffectiveId();
-                    room->moveCardsToEndOfDrawpile(card_ids, true);
+                    //room->touhouLogmessage("#InvokeSkill", player, objectName()); 
                     room->setCardFlag(use.card, "zhengyi" + player->objectName());
                 }
             }
@@ -262,14 +259,64 @@ public:
 };
 
 
-class weiguang : public TriggerSkill {
+class baota : public TriggerSkill {
 public:
-    weiguang() : TriggerSkill("weiguang") {
-        events << TargetConfirming << CardEffected << SlashEffected;
+    baota() : TriggerSkill("baota") {
+        events << CardsMoveOneTime << EventPhaseStart;
     }
 
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == CardsMoveOneTime ){
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.from && move.from == player && move.to_place == Player::DiscardPile){
+                QList<int> ids;
+                foreach(int id, move.card_ids){
+                    if (room->getCardPlace(id) == Player::DiscardPile 
+                    && move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial){
+                        //need check RETRIAL provider
+                        if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_JUDGEDONE  ){
+                            if (Sanguosha->getCard(id)->hasFlag("isRetrial")){
+                                ServerPlayer *provider = move.reason.m_provider.value<ServerPlayer *>();
+                                if (provider && provider == player )
+                                    ids << id;
+                            }
+                        }
+                        else 
+                            ids << id;
+                    }
+                }
+                if (!ids.isEmpty()){
+                    room->fillAG(ids, player);
+                    int card_id = room->askForAG(player, ids, true, objectName());
+                    room->clearAG(player);
+                    if (card_id > -1){
+                        LogMessage mes;
+                        mes.type = "$baota";
+                        mes.from = player;
+                        mes.arg = objectName();
+                        mes.card_str = Sanguosha->getCard(card_id)->toString();
+                        room->sendLog(mes);
+                        
+                        QList<int> buttom_ids;
+                        buttom_ids << card_id;
+                        room->moveCardsToEndOfDrawpile(buttom_ids, true);
+                    }
+                }
+            }
+        }
+        else if  (triggerEvent == EventPhaseStart) {
+            if (player->getPhase() == Player::Finish){
+                ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "@baota", true, true);
+                if (target){
+                    CardsMoveStruct move;
+                    move.to = target;
+                    move.to_place = Player::PlaceHand;
+                    move.card_ids << room->drawCard(true);
+                    room->moveCardsAtomic(move, false);
+                }
+            } 
+        }
         return false;
     }
 };
@@ -286,11 +333,11 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.from  && player != use.from  &&  use.to.contains(player) && use.card->isNDTrick()){
                 player->tag["shuinan_use"] = data;
-				if (player->canDiscard(use.from, "h") && room->askForSkillInvoke(player, objectName(), QVariant::fromValue(use.from))){
+                if (player->canDiscard(use.from, "h") && room->askForSkillInvoke(player, objectName(), QVariant::fromValue(use.from))){
                     room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), use.from->objectName());
-					int id = room->askForCardChosen(player, use.from, "h", objectName());
-					room->throwCard(id, use.from, player);
-				}
+                    int id = room->askForCardChosen(player, use.from, "h", objectName());
+                    room->throwCard(id, use.from, player);
+                }
             }
         }
         return false;
@@ -302,16 +349,16 @@ nihuoCard::nihuoCard() {
 }
 bool nihuoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if (!targets.isEmpty()) return false;
-	
-	Duel *duel = new Duel(Card::NoSuit, 0);
+    
+    Duel *duel = new Duel(Card::NoSuit, 0);
     duel->deleteLater();
-	return to_select != Self && !to_select->isProhibited(Self, duel) && !to_select->isCardLimited(duel, Card::MethodUse);
+    return to_select != Self && !to_select->isProhibited(Self, duel) && !to_select->isCardLimited(duel, Card::MethodUse);
 }
 void nihuoCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-	Duel *duel = new Duel(Card::NoSuit, 0);
-	duel->setSkillName("_nihuo");
-	room->useCard(CardUseStruct(duel, effect.to, effect.from));
+    Duel *duel = new Duel(Card::NoSuit, 0);
+    duel->setSkillName("_nihuo");
+    room->useCard(CardUseStruct(duel, effect.to, effect.from));
 }
 
 class nihuo : public ZeroCardViewAsSkill {
@@ -751,12 +798,12 @@ th12Package::th12Package()
 
     General *xlc003 = new General(this, "xlc003", "xlc", 4, false);
     xlc003->addSkill(new zhengyi);
-    xlc003->addSkill(new weiguang);
+    xlc003->addSkill(new baota);
 
     General *xlc004 = new General(this, "xlc004", "xlc", 4, false);
     xlc004->addSkill(new shuinan);
-	xlc004->addSkill(new nihuo);
-	
+    xlc004->addSkill(new nihuo);
+    
     General *xlc005 = new General(this, "xlc005", "xlc", 4, false);
     xlc005->addSkill(new lizhi);
     xlc005->addSkill(new yunshang);
@@ -778,7 +825,7 @@ th12Package::th12Package()
 
     addMetaObject<puduCard>();
     addMetaObject<weizhiCard>();
-	addMetaObject<nihuoCard>();
+    addMetaObject<nihuoCard>();
     addMetaObject<nuhuoCard>();
 }
 

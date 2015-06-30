@@ -540,7 +540,7 @@ void Room::slashResult(const SlashEffectStruct &effect, const Card *jink) {
     QVariant data = QVariant::fromValue(result_effect);
     
     if (jink == NULL) {
-		if (effect.to->isAlive())
+        if (effect.to->isAlive())
             thread->trigger(SlashHit, this, effect.from, data);
     }
     else {
@@ -551,10 +551,10 @@ void Room::slashResult(const SlashEffectStruct &effect, const Card *jink) {
         if (effect.slash)
             effect.to->removeQinggangTag(effect.slash);
         thread->trigger(SlashMissed, this, effect.from, data);
-		if (effect.from && effect.from->hasFlag("hitAfterMissed"))
-			setPlayerFlag(effect.from, "-hitAfterMissed");
+        if (effect.from && effect.from->hasFlag("hitAfterMissed"))
+            setPlayerFlag(effect.from, "-hitAfterMissed");
     }
-	
+    
 }
 
 void Room::attachSkillToPlayer(ServerPlayer *player, const QString &skill_name, bool is_other_attach) {
@@ -4238,7 +4238,7 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids, bool forceVisible) {
     cards_moves = _separateMoves(moveOneTimes);
 
     //notifyMoveCards(true, cards_moves, false);
-	notifyMoveCards(true, cards_moves, forceVisible);
+    notifyMoveCards(true, cards_moves, forceVisible);
     // First, process remove card
     for (int i = 0; i < cards_moves.size(); i++) {
         CardsMoveStruct &cards_move = cards_moves[i];
@@ -4273,7 +4273,7 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids, bool forceVisible) {
     foreach(CardsMoveStruct move, cards_moves)
         updateCardsOnGet(move);
     //notifyMoveCards(false, cards_moves, false);
-	notifyMoveCards(false, cards_moves, forceVisible);
+    notifyMoveCards(false, cards_moves, forceVisible);
     // Now, process add cards
     for (int i = 0; i < cards_moves.size(); i++) {
         CardsMoveStruct &cards_move = cards_moves[i];
@@ -5978,9 +5978,11 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge, cons
     int reasonType;
     if (exchange) {
         reasonType = CardMoveReason::S_REASON_OVERRIDE;
+        
     }
     else {
         reasonType = CardMoveReason::S_REASON_JUDGEDONE;
+        setCardFlag(card, "isRetrial");
     }
 
     CardMoveReason reason(reasonType,
@@ -6002,7 +6004,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge, cons
         reason);
 
     move2.card_ids.append(oldJudge->getEffectiveId());
-
+     
     LogMessage log;
     log.type = "$ChangedJudge";
     log.arg = skill_name;
@@ -6016,7 +6018,9 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge, cons
     moves.append(move2);
     moveCardsAtomic(moves, true);
     judge->updateResult();
-
+    
+    setCardFlag(card, "-isRetrial");
+    
     if (triggerResponded) {
         CardResponseStruct resp(card, judge->who, false, true, false);
         QVariant data = QVariant::fromValue(resp);

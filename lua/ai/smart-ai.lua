@@ -667,7 +667,7 @@ function SmartAI:getUseValue(card)
 	return v
 end
 
-function SmartAI:getUsePriority(card)
+function SmartAI:getUsePriority(card)  --优先度 要考虑目标角色才合适。。。。比如使用杀 目标为司马时 能不能先吃桃。。。
 	local class_name = card:getClassName()
 	local v = 0
 	if card:isKindOf("EquipCard") then
@@ -1392,6 +1392,8 @@ function sgs.isLordInDanger()
 end
 
 function sgs.gameProcess(room, arg)  --尼玛 不看具体技能和牌的数量么 卧槽  只有一些枚举。。。 
+
+	
 	local rebel_num = sgs.current_mode_players["rebel"]
 	local loyal_num = sgs.current_mode_players["loyalist"]
 	if rebel_num == 0 and loyal_num> 0 then return "loyalist"

@@ -192,7 +192,7 @@ sgs.ai_skill_invoke.jingdong = function(self)
 			return true
 		end
 		if num>1   then
-			if cards:length()>3 then
+			if self:cautionChangshi() or cards:length()>3 then
 				return true
 			else
 				if num>3 then

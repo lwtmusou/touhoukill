@@ -454,15 +454,15 @@ sgs.ai_skill_cardask["@zhengyi"] = function(self, data)
 	end
 	local pattern = self:lingqiParse(self,self.player,use)
 	if pattern == 2 then
-		local handcards = {}
-		for _,c in sgs.qlist(self.player:getCards("h")) do
+		local cards = {}
+		for _,c in sgs.qlist(self.player:getCards("he")) do
 			if c:isRed() then
-				table.insert(handcards, c)
+				table.insert(cards, c)
 			end
 		end
-		if #handcards==0 then return "." end
-		self:sortByUseValue(handcards)
-		return "$" .. handcards[1]:getId()
+		if #cards==0 then return "." end
+		self:sortByUseValue(cards)
+		return "$" .. cards[1]:getId()
 	end
 	return "."
 end
@@ -470,6 +470,17 @@ sgs.ai_cardneed.zhengyi = function(to, card, self)
 	return  card:isRed()
 end
 
+
+sgs.ai_skill_playerchosen.baota = function(self, targets)
+	local target =self:touhouFindPlayerToDraw(false, 1)
+	if not target and #self.friends_noself>0 then
+		target= self.friends_noself[1] 
+	end
+	if target then 
+		return target
+	end
+	return nil
+end
 
 --[[sgs.ai_skill_invoke.chuannan = function(self,data)
 	return true
