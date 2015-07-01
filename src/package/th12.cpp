@@ -271,21 +271,28 @@ public:
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.from && move.from == player && move.to_place == Player::DiscardPile){
                 QList<int> ids;
-                foreach(int id, move.card_ids){
-                    if (room->getCardPlace(id) == Player::DiscardPile 
-                    && move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial){
-                        //need check RETRIAL provider
-                        if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_JUDGEDONE  ){
-                            if (Sanguosha->getCard(id)->hasFlag("isRetrial")){
-                                ServerPlayer *provider = move.reason.m_provider.value<ServerPlayer *>();
-                                if (provider && provider == player )
-                                    ids << id;
-                            }
-                        }
-                        else 
-                            ids << id;
-                    }
+				//need check RETRIAL provider
+				if (move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE){   
+                    QVariantList record_ids = player->tag["baotaRETRIAL"].toList();
+					foreach(QVariant record_id, record_ids){
+						int r_id = record_id.toInt();
+						if (move.card_ids.contains(r_id) && room->getCardPlace(r_id) == Player::DiscardPile)
+							ids << r_id;
+					}
+					player->tag.remove("baotaRETRIAL");
                 }
+				else{
+					foreach(int id, move.card_ids){
+						if (room->getCardPlace(id) == Player::DiscardPile 
+						&& move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial)
+							ids << id;
+						
+					}
+				
+				}
+				
+				
+               
                 if (!ids.isEmpty()){
                     room->fillAG(ids, player);
                     int card_id = room->askForAG(player, ids, true, objectName());
@@ -304,7 +311,16 @@ public:
                     }
                 }
             }
-        }
+			else if  (move.from && move.from == player && move.to_place == Player::PlaceJudge)
+			{
+				if (move.reason.m_reason == CardMoveReason::S_REASON_RETRIAL){
+					QVariantList record_ids = player->tag["baotaRETRIAL"].toList();
+					foreach(int id, move.card_ids)
+						record_ids << id;
+					player->tag["baotaRETRIAL"] = record_ids ;
+				}
+			}
+		}
         else if  (triggerEvent == EventPhaseStart) {
             if (player->getPhase() == Player::Finish){
                 ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "@baota", true, true);
@@ -463,6 +479,15 @@ public:
 
                         break;
                     }
+				case Player::PlaceJudge: {
+					QVariantList record_ids = player->tag["soujiRETRIAL"].toList();
+					foreach(QVariant record_id, record_ids){
+						int r_id = record_id.toInt();
+						if (id == r_id)
+							obtain_ids << r_id;
+						player->tag.remove("soujiRETRIAL");
+					}
+				}
                 default:
                     break;
                 }
@@ -494,9 +519,9 @@ public:
         return -1;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return (target != NULL);
-    }
+    //virtual bool triggerable(const ServerPlayer *target) const{
+    //    return (target != NULL);
+    //}
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
@@ -546,6 +571,13 @@ public:
                 }
             }
             room->setTag("UseOrResponseFromPile", tmp_ids);
+			if (move.reason.m_reason == CardMoveReason::S_REASON_RETRIAL && move.from && move.from != player){
+				QVariantList r_ids = player->tag["soujiRETRIAL"].toList();
+				foreach(int id, move.card_ids)
+					r_ids << id;
+				player->tag["soujiRETRIAL"] = r_ids ;
+			}
+			
         }
         return false;
     }

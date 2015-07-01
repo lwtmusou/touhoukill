@@ -5963,7 +5963,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge, cons
 
     const Card *oldJudge = judge->card;
     judge->card = Sanguosha->getCard(card->getEffectiveId());
-    //ServerPlayer *rebyre = judge->retrial_by_response;//old judge provider
+    ServerPlayer *rebyre = judge->retrial_by_response;//old judge provider
     judge->retrial_by_response = player;
 
     CardsMoveStruct move1(QList<int>(),
@@ -5982,16 +5982,15 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge, cons
     }
     else {
         reasonType = CardMoveReason::S_REASON_JUDGEDONE;
-        setCardFlag(card, "isRetrial");
     }
 
     CardMoveReason reason(reasonType,
         player->objectName(),
         exchange ? skill_name : QString(),
         QString());
-    if (player){
-        reason.m_provider = QVariant::fromValue(player);
-        reason.m_extraData = QVariant::fromValue(card);
+    if (rebyre){
+        reason.m_provider = QVariant::fromValue(rebyre);
+        reason.m_extraData = QVariant::fromValue(oldJudge);
     }
 
 
@@ -6019,7 +6018,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge, cons
     moveCardsAtomic(moves, true);
     judge->updateResult();
     
-    setCardFlag(card, "-isRetrial");
+
     
     if (triggerResponded) {
         CardResponseStruct resp(card, judge->who, false, true, false);
