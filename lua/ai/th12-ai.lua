@@ -481,6 +481,13 @@ sgs.ai_skill_playerchosen.baota = function(self, targets)
 	end
 	return nil
 end
+sgs.ai_playerchosen_intention.baota = -70
+sgs.ai_no_playerchosen_intention.baota =function(self, from)
+	local lord =self.room:getLord()
+	if lord  then
+		sgs.updateIntention(from, lord, 10)
+	end
+end
 
 --[[sgs.ai_skill_invoke.chuannan = function(self,data)
 	return true
