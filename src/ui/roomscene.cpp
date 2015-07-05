@@ -318,29 +318,39 @@ RoomScene::RoomScene(QMainWindow *main_window)
     m_pileCardNumInfoTextBox->setDefaultTextColor(Config.TextEditColor);
     updateRoles(roles);
 
+    control_panel = addRect(0, 0, 500, 150, Qt::NoPen);
+    control_panel->hide();
+    
     add_robot = NULL;
-    fill_robots = NULL;
+    fill_robots = NULL;   
+    return_to_main_menu = NULL;
     if (ServerInfo.EnableAI) {
-        control_panel = addRect(0, 0, 500, 150, Qt::NoPen);
-        control_panel->hide();
-
         add_robot = new Button(tr("Add a robot"));
         add_robot->setParentItem(control_panel);
         add_robot->setTransform(QTransform::fromTranslate(-add_robot->boundingRect().width() / 2, -add_robot->boundingRect().height() / 2), true);
         add_robot->setPos(0, -add_robot->boundingRect().height() - 10);
-
+        add_robot->hide();
+        
         fill_robots = new Button(tr("Fill robots"));
         fill_robots->setParentItem(control_panel);
         fill_robots->setTransform(QTransform::fromTranslate(-fill_robots->boundingRect().width() / 2, -fill_robots->boundingRect().height() / 2), true);
-        add_robot->setPos(0, add_robot->boundingRect().height() + 10);
+        //add_robot->setPos(0, add_robot->boundingRect().height() + 10);
+        fill_robots->setPos(0, 0);
+        fill_robots->hide();
 
         connect(add_robot, SIGNAL(clicked()), ClientInstance, SLOT(addRobot()));
         connect(fill_robots, SIGNAL(clicked()), ClientInstance, SLOT(fillRobots()));
         connect(Self, SIGNAL(owner_changed(bool)), this, SLOT(showOwnerButtons(bool)));
     }
-    else {
-        control_panel = NULL;
-    }
+    
+    return_to_main_menu = new Button(tr("Return to main menu"));
+    return_to_main_menu->setParentItem(control_panel);
+    return_to_main_menu->setTransform(QTransform::fromTranslate(-return_to_main_menu->boundingRect().width() / 2, -return_to_main_menu->boundingRect().height() / 2), true);
+    return_to_main_menu->setPos(0, return_to_main_menu->boundingRect().height() + 10);
+    return_to_main_menu->show();
+
+    connect(return_to_main_menu, SIGNAL(clicked()), this, SIGNAL(return_to_start()));
+    control_panel->show();
     animations = new EffectAnimation();
 
     pausing_item = new QGraphicsRectItem;
@@ -2896,6 +2906,7 @@ void RoomScene::hideAvatars() {
 void RoomScene::startInXs() {
     if (add_robot) add_robot->hide();
     if (fill_robots) fill_robots->hide();
+    if (return_to_main_menu) return_to_main_menu->hide();
     time_label_wedgit->startCounting();
 }
 
@@ -3091,8 +3102,10 @@ void RoomScene::addRestartButton(QDialog *dialog) {
 
     connect(restart_button, SIGNAL(clicked()), dialog, SLOT(accept()));
     connect(return_button, SIGNAL(clicked()), dialog, SLOT(accept()));
+    
     connect(save_button, SIGNAL(clicked()), this, SLOT(saveReplayRecord()));
-    connect(dialog, SIGNAL(accepted()), this, SIGNAL(restart()));
+    //connect(dialog, SIGNAL(accepted()), this, SIGNAL(restart()));
+    connect(restart_button, SIGNAL(clicked()), this, SIGNAL(restart()));
     connect(return_button, SIGNAL(clicked()), this, SIGNAL(return_to_start()));
 }
 
@@ -3647,8 +3660,10 @@ void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart, QList<i
 }
 
 void RoomScene::showOwnerButtons(bool owner) {
-    if (control_panel && !game_started)
-        control_panel->setVisible(owner);
+    if (add_robot && fill_robots && !game_started && ServerInfo.EnableAI) {
+        add_robot->setVisible(owner);
+        fill_robots->setVisible(owner);
+    }
 }
 
 void RoomScene::showPlayerCards() {

@@ -85,7 +85,16 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionAcknowledgement_2, SIGNAL(triggered()), this, SLOT(on_actionAcknowledgement_triggered()));
 
     StartScene *start_scene = new StartScene;
-
+    //play title BGM
+    if (Config.EnableBgMusic) {
+        QString bgm = "audio/title/main.ogg";
+        if (QFile::exists(bgm)) {
+            Audio::stopBGM();
+            Audio::playBGM(bgm);
+            Audio::setBGMVolume(Config.BGMVolume);
+        }
+    }
+    
     QList<QAction *> actions;
     actions << ui->actionStart_Game
         << ui->actionStart_Server
@@ -114,15 +123,7 @@ MainWindow::MainWindow(QWidget *parent)
     systray = NULL;
 
 
-    //play title BGM
-    if (Config.EnableBgMusic) {
-        QString bgm = "audio/title/main.ogg";
-        if (QFile::exists(bgm)) {
-            Audio::stopBGM();
-            Audio::playBGM(bgm);
-            Audio::setBGMVolume(Config.BGMVolume);
-        }
-    }
+
 }
 
 void MainWindow::restoreFromConfig() {
@@ -319,6 +320,7 @@ void MainWindow::enterRoom() {
 
     gotoScene(room_scene);
 }
+
 
 void MainWindow::gotoStartScene() {
     ServerInfo.DuringGame = false;
