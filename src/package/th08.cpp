@@ -913,7 +913,7 @@ public:
 
 
 
-//for using dialog, viewas Skill should be the main skill.
+//for using dialog while responsing, viewas Skill should be the main skill.
 class chuangshivs : public ZeroCardViewAsSkill {
 public:
     chuangshivs() : ZeroCardViewAsSkill("chuangshi") {
@@ -940,14 +940,18 @@ public:
 
 };
 
-class chuangshi : public DrawCardsSkill {
+
+
+class chuangshi : public TriggerSkill {
 public:
-    chuangshi() : DrawCardsSkill("#chuangshi") {
+    chuangshi() : TriggerSkill("#chuangshi") {
+        events << EventPhaseStart << DrawNCards << EventPhaseChanging;
         view_as_skill = new chuangshivs;
     }
+
     static bool use_chuangshi(Room *room, ServerPlayer *player){
 
-        ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), "chuangshi", "@chuangshi_target:" + QString::number(player->getMark("chuangshi") + 1), true, true);
+        ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), "chuangshi", "@chuangshi_target", true, true);
         if (target != NULL){
             target->gainMark("chuangshi_user");//need use gainMark to notify the client player.
 
@@ -977,16 +981,24 @@ public:
         }
         return NULL;
     }
-
-    virtual int getDrawNum(ServerPlayer *player, int n) const{
-        Room *room = player->getRoom();
-        if (use_chuangshi(room, player) || player->getMark("chuangshi") > 0){ //  for ai, we need get mark
-            n = n - 1;
-            if (player->hasSkill("chuangshi") && (use_chuangshi(room, player) || player->getMark("chuangshi") > 1)){
-                n = n - 1;
+    
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == EventPhaseStart) {
+            if (player->getPhase() == Player::Draw){
+                if (use_chuangshi(room, player))
+                    player->setFlags("chuangshi");
             }
         }
-        return  n;
+        else if (triggerEvent == DrawNCards) {
+            if (player->hasFlag("chuangshi")){
+                data = QVariant::fromValue(data.toInt() -1);
+            }
+        }
+        else if (triggerEvent == EventPhaseChanging){
+            if (player->hasFlag("chuangshi"))
+                player->setFlags("-chuangshi");
+        }
+        return false;
     }
 };
 
@@ -1063,23 +1075,7 @@ void chuangshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> 
 
 }
 
-class chuangshi_effect : public TriggerSkill {
-public:
-    chuangshi_effect() : TriggerSkill("#chuangshi_effect") {
-        events << EventPhaseEnd;
-    }
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return (target != NULL && target->getMark("chuangshi") > 0);
-    }
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->getPhase() == Player::Draw){
-            if (player->getMark("chuangshi") > 1)
-                room->loseHp(player, 2);
-            room->setPlayerMark(player, "chuangshi", 0);
-        }
-        return false;
-    }
-};
+
 
 class wangyue : public MasochismSkill {
 public:
@@ -1281,13 +1277,11 @@ th08Package::th08Package()
     yyc008->addSkill(new chongqun);
 
     General *yyc009 = new General(this, "yyc009", "yyc", 3, false);
-    yyc009->addSkill(new chuangshivs);
+    yyc009->addSkill(new chuangshivs);//for using dialog while responsing, viewas Skill should be the main skill.
     yyc009->addSkill(new chuangshi);
-    yyc009->addSkill(new chuangshi_effect);
     yyc009->addSkill(new wangyue);
-    related_skills.insertMulti("chuangshi", "#chuangshi_effect");
     related_skills.insertMulti("chuangshi", "#chuangshi");
-
+    
     General *yyc010 = new General(this, "yyc010", "yyc", 4, false);
     yyc010->addSkill(new huwei);
     yyc010->addSkill(new jinxi);
