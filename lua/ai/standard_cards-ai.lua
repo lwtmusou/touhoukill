@@ -493,7 +493,7 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 	fakeDamage.from=from
 	fakeDamage.to=to
 	
-	if to:hasSkill("xuying") then return true end
+	if to:hasSkill("xuying") and to:getHandcardNum() > 0 then return true end
 	if to:hasSkill("zhengti") then--结果就不杀了。。。哪怕正体的是敌人。。。
 		return self:zhengtiParse(from,to)
 	end

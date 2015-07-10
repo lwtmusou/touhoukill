@@ -7557,7 +7557,7 @@ end
 
 --主要用于要求出杀闪等respone时
 function SmartAI:touhouNeedAvoidAttack(damage,from,to,ignoreDamageEffect)
-	if to:hasSkill("huanmeng")  and damage.card and damage.card:isKindOf("Slash") then return true end
+	if to:hasSkill("xuying") and to:getHandcardNum() > 0 and damage.card and damage.card:isKindOf("Slash") then return true end
 	ignoreDamageEffect = ignoreDamageEffect or false 
 	if not ignoreDamageEffect then 
 		local effect=self:touhouDamageEffect(damage,from,to)
