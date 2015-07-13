@@ -988,14 +988,22 @@ function SmartAI:zhengtiParse(from,to)
 			end
 		end
 	end
+	
+	local result = true
+	local target = nil
 	if #weak_friends>0 then
-		return true
+		result = true
+		target = weak_friends[1]
 	elseif #enemies==0 then
-		return false
+		result = false
 	elseif #friends==0  and  #t_enemies>0 then
-		return false
+		result = false
+		target = t_enemies[1]
 	end
-	return true
+	if #friends >0 and not target then
+		target = friends[1]
+	end
+	return result, target
 end
 
 sgs.ai_skill_invoke.qingyu = true

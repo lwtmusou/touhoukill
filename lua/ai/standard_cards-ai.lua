@@ -494,8 +494,17 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 	fakeDamage.to=to
 	
 	if to:hasSkill("xuying") and to:getHandcardNum() > 0 then return true end
-	if to:hasSkill("zhengti") then--结果就不杀了。。。哪怕正体的是敌人。。。
-		return self:zhengtiParse(from,to)
+	if to:hasSkill("zhengti") then--严格来讲应该往后挪
+	    local zhengti, transfer_to = self:zhengtiParse(from,to)
+		if zhengti then
+			return false
+		elseif transfer_to then
+			if self:isFriend(from, transfer_to) then 
+				return false
+			else
+				to = transfer_to
+			end
+		end
 	end
 	if self:touhouDamage(fakeDamage,from,to).damage<=0  then 
 		if not self:touhouDamageEffect(fakeDamage,from,to) then
