@@ -354,7 +354,14 @@ public:
                 ArcheryAttack *card = new ArcheryAttack(Card::NoSuit, 0);
                 if (src->isCardLimited(card, Card::MethodUse))
                     return false;
-                if (src->askForSkillInvoke(objectName(), data)){
+                bool hasTarget = false;
+                foreach(ServerPlayer *p, room->getOtherPlayers(src)){
+                    if (!src->isProhibited(p, card)){
+						hasTarget = true;
+                        break;
+                    }    
+                }    
+                if (hasTarget && src->askForSkillInvoke(objectName(), data)){
                     card->setSkillName("_henyi");
                     CardUseStruct carduse;
                     carduse.card = card;
