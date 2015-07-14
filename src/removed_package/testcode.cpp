@@ -234,8 +234,68 @@ public:
 };
 */
 
+//*************deleted version of dld006
+/*
+class haoyin : public TriggerSkill {
+public:
+    haoyin() : TriggerSkill("haoyin") {
+        events << CardEffected;
+        frequency = Compulsory;
+    }
 
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        if (effect.card->isKindOf("Analeptic") && effect.from == player){
+            room->setEmotion(effect.to, "analeptic");
+            if (effect.to->hasFlag("Global_Dying") && Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY){
+                room->touhouLogmessage("#haoyin1", effect.from, "haoyin");
+                room->notifySkillInvoked(effect.from, objectName());
+                RecoverStruct recover;
+                recover.card = effect.card;
+                recover.recover = 2;
+                recover.who = effect.from;
 
+                room->recover(effect.to, recover);
+                return true;
+            }
+            else{
+                room->touhouLogmessage("#haoyin2", effect.to, "haoyin");
+                room->notifySkillInvoked(effect.to, objectName());
+                room->addPlayerMark(effect.to, "drank", 2);
+                return true;
+            }
+        }
+
+        return false;
+    }
+};
+class haoyin_draw : public TriggerSkill {
+public:
+    haoyin_draw() : TriggerSkill("#haoyin_draw") {
+        events << CardUsed;
+        frequency = Compulsory;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return (target != NULL);
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *source = room->findPlayerBySkillName(objectName());
+        if (source == NULL)
+            return false;
+
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->isKindOf("Analeptic")){
+
+            room->touhouLogmessage("#TriggerSkill", source, "haoyin");
+            room->notifySkillInvoked(source, "haoyin");
+            source->drawCards(1);
+        }
+        return false;
+    }
+};
+*/
 
 
 //*************deleted version of xlc003

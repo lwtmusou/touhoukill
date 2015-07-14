@@ -530,66 +530,65 @@ public:
     }
 };
 
-class haoyin : public TriggerSkill {
+class jiuhaovs : public ZeroCardViewAsSkill {
 public:
-    haoyin() : TriggerSkill("haoyin") {
-        events << CardEffected;
-        frequency = Compulsory;
+    jiuhaovs() : ZeroCardViewAsSkill("jiuhao") {
+
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        CardEffectStruct effect = data.value<CardEffectStruct>();
-        if (effect.card->isKindOf("Analeptic") && effect.from == player){
-            room->setEmotion(effect.to, "analeptic");
-            if (effect.to->hasFlag("Global_Dying") && Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY){
-                room->touhouLogmessage("#haoyin1", effect.from, "haoyin");
-                room->notifySkillInvoked(effect.from, objectName());
-                RecoverStruct recover;
-                recover.card = effect.card;
-                recover.recover = 2;
-                recover.who = effect.from;
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->hasFlag("jiuhao") && !player->hasFlag("jiuhaoused");
+    }
 
-                room->recover(effect.to, recover);
-                return true;
-            }
-            else{
-                room->touhouLogmessage("#haoyin2", effect.to, "haoyin");
-                room->notifySkillInvoked(effect.to, objectName());
-                room->addPlayerMark(effect.to, "drank", 2);
-                return true;
-            }
-        }
-
-        return false;
+    virtual const Card *viewAs() const{
+        Slash *slash = new Slash(Card::NoSuit, 0);
+        slash->setSkillName("jiuhao");
+        return slash;
     }
 };
-class haoyin_draw : public TriggerSkill {
+
+class jiuhao : public TriggerSkill {
 public:
-    haoyin_draw() : TriggerSkill("#haoyin_draw") {
-        events << CardUsed;
-        frequency = Compulsory;
+    jiuhao() : TriggerSkill("jiuhao") {
+        events << PreCardUsed << EventPhaseChanging;
+		view_as_skill = new jiuhaovs;
     }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return (target != NULL);
-    }
-
+	
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        ServerPlayer *source = room->findPlayerBySkillName(objectName());
-        if (source == NULL)
-            return false;
-
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->isKindOf("Analeptic")){
-
-            room->touhouLogmessage("#TriggerSkill", source, "haoyin");
-            room->notifySkillInvoked(source, "haoyin");
-            source->drawCards(1);
-        }
+        if (triggerEvent == PreCardUsed) {
+			CardUseStruct use = data.value<CardUseStruct>();
+			if (use.card->isKindOf("Peach") || use.card->isKindOf("Analeptic")){
+				room->setPlayerFlag(player, "jiuhao");
+			}
+			if (use.card->getSkillName() == "jiuhao" )
+				room->setPlayerFlag(player, "jiuhaoused");
+		}
+		else if (triggerEvent == EventPhaseChanging) {
+			PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.from == Player::Play) {
+				player->setFlags("-jiuhao");
+				player->setFlags("-jiuhaoused");
+			}
+		}
         return false;
     }
 };
 
+class jiuhaoTargetMod : public TargetModSkill {
+public:
+    jiuhaoTargetMod() : TargetModSkill("#jiuhaoTargetMod") {
+        frequency = NotFrequent;
+        pattern = "Slash";
+    }
+
+    virtual int getResidueNum(const Player *from, const Card *card) const{
+        if (from->hasSkill("jiuhao") && card->getSkillName() == "jiuhao")
+            return 1;
+        else
+            return 0;
+    }
+
+};
 
 class jiduvs : public OneCardViewAsSkill {
 public:
@@ -967,9 +966,10 @@ th11Package::th11Package()
 
     General *dld006 = new General(this, "dld006", "dld", 4, false);
     dld006->addSkill(new guaili);
-    dld006->addSkill(new haoyin);
-    dld006->addSkill(new haoyin_draw);
-    related_skills.insertMulti("haoyin", "#haoyin_draw");
+	dld006->addSkill(new jiuhao);
+    dld006->addSkill(new jiuhaoTargetMod);;
+    related_skills.insertMulti("jiuhao", "#jiuhaoTargetMod");
+    
 
     General *dld007 = new General(this, "dld007", "dld", 3, false);
     dld007->addSkill(new jidu);

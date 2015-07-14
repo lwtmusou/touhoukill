@@ -876,7 +876,6 @@ public:
 class duzhuaTargetMod : public TargetModSkill {
 public:
     duzhuaTargetMod() : TargetModSkill("#duzhuaTargetMod") {
-        frequency = NotFrequent;
         pattern = "Slash";
     }
 

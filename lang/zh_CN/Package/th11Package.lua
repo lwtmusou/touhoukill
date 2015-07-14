@@ -89,7 +89,9 @@ return{
 	--["guaili:cannotjink"] = "你可以发动“怪力”令此【杀】不可被 <font color=\"#00FF00\"><b>%src </b></font> 使用的【闪】响应。",
 
         
-    
+    ["jiuhao"] = "酒豪",
+	[":jiuhao"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>若此阶段内你使用过【桃】或【酒】，你可以选择：视为你使用一张【杀】，此【杀】不计入每阶段的使用限制。",
+	
     ["haoyin"] = "豪饮",
     [":haoyin"] = "<font color=\"blue\"><b>锁定技，</b></font>你使用的【酒】的效果+1。每当一名角色使用一张【酒】时，你须摸一张牌。",
     ["#haoyin1"]="%from 的 “%arg” 被触发,【酒】的回复效果+1。",
