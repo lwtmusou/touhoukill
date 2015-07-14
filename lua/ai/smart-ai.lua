@@ -4398,6 +4398,9 @@ function SmartAI:getTurnUse()
 
 		if dummy_use.card then
 			if dummy_use.card:isKindOf("Slash") then
+				if dummy_use.card:getSkillName() == "jiuhao" or dummy_use.card:getSkillName() == "duzhua" then
+					slashAvail = slashAvail+1
+				end
 				if slashAvail > 0 then
 					slashAvail = slashAvail - 1
 					table.insert(turnUse, dummy_use.card)

@@ -599,8 +599,20 @@ sgs.ai_cardneed.guaili = function(to, card, self)
 	end
 end
 
-sgs.ai_cardneed.haoyin = function(to, card, self)
-	return  card:isKindOf("Analeptic")
+
+local jiuhao_skill = {}
+jiuhao_skill.name = "jiuhao"
+table.insert(sgs.ai_skills, jiuhao_skill)
+jiuhao_skill.getTurnUseCard = function(self, inclusive)
+	if not self.player:hasFlag("jiuhao") or self.player:hasFlag("jiuhaoused") then return false end
+	--local tmpSlash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+	local tmpSlash = sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
+	tmpSlash:setSkillName("jiuhao")
+    assert(tmpSlash)
+    return tmpSlash
+end
+sgs.ai_cardneed.jiuhao = function(to, card, self)
+	return  card:isKindOf("Analeptic") or card:isKindOf("Peach")
 end
 
 

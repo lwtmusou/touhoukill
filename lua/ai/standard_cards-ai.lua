@@ -679,6 +679,8 @@ function SmartAI:useCardSlash(card, use)
 		return
 	end
 	
+
+	
 	if not use.isDummy and self.player:hasSkill("qingnang") and self:isWeak() and self:getOverflow() == 0 then return end
 	for _, friend in ipairs(self.friends_noself) do
 		local slash_prohibit = false
@@ -700,6 +702,8 @@ function SmartAI:useCardSlash(card, use)
 	end
 
 
+
+	
 	local targets = {}
 	local forbidden = {}
 	self:sort(self.enemies, "defenseSlash")
@@ -725,6 +729,9 @@ function SmartAI:useCardSlash(card, use)
 			end
 		end
 	end]]
+	
+
+	
 	for _, target in ipairs(targets) do
 		local canliuli = false
 		for _, friend in ipairs(self.friends_noself) do
@@ -802,6 +809,7 @@ function SmartAI:useCardSlash(card, use)
 				end
 			end
 			
+
 			use.card = use.card or usecard
 			if use.to and not use.to:contains(target) and canAppendTarget(target) then
 				use.to:append(target)
@@ -832,6 +840,9 @@ function SmartAI:useCardSlash(card, use)
 		end
 	end
 
+	
+
+	
 	for _, friend in ipairs(self.friends_noself) do
 		local slash_prohibit = self:slashProhibit(card, friend)
 		if (not use.current_targets or not table.contains(use.current_targets, friend:objectName()))
