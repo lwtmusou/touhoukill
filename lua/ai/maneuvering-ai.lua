@@ -140,6 +140,16 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 			return false 
 		end
 	end
+	--【噬史对策】
+	local huiyin = self.room:findPlayerBySkillName("shishi")
+	if huiyin  and huiyin:getPile("lishi"):isEmpty() and self:isEnemy(huiyin) then
+		return false
+	end
+	--【乱影对策】
+	local merry = self.room:findPlayerBySkillName("shishi")
+	if merry and self:isFriend(merry, target) and self:canLuanying(merry, slash) then
+		return false
+	end
 	
 	if target:hasSkill("zhenlie") then return false end
 	if target:hasSkill("xiangle") then
