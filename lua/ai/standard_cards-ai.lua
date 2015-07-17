@@ -2579,6 +2579,13 @@ function SmartAI:getDangerousCard(who)
 	local treasure = who:getTreasure() 
 	local defensiveHorse = who:getDefensiveHorse()
 	
+	--Ä§²Ù¶Ô²ß
+	local shrx = self.room:findPlayerBySkillName("mocao")
+	if shrx and shrx:objectName() ~= who:objectName()  and self:isFriend(shrx, who) and who:getLostHp() >= 2 then
+		for _,equip in sgs.qlist(who:getEquips()) do
+			return equip:getEffectiveId()
+		end
+	end
 	if treasure and treasure:isKindOf("WoodenOx") and who:getPile("wooden_ox"):length() > 1 then
 		return treasure:getEffectiveId()
 	end
