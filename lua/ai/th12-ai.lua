@@ -607,7 +607,9 @@ sgs.ai_skill_use_func.nihuoCard=function(card,use,self)
 end
 sgs.ai_use_priority.nihuoCard = sgs.ai_use_priority.Duel - 0.2
 sgs.ai_card_intention.nihuoCard = 70
-
+sgs.ai_cardneed.nihuo = function(to, card, self)
+	return  card:isKindOf("Slash")
+end
 
 
 --SmartAI:getAoeValue(card, player)
