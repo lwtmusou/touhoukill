@@ -5,7 +5,8 @@
 #include "card.h"
 
 
-class maihuoCard : public SkillCard {
+class maihuoCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -14,7 +15,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class yaobanCard : public SkillCard {
+class yaobanCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -33,7 +35,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     };*/
 
-class chuanranCard : public SkillCard {
+class chuanranCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -43,7 +46,8 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
-class th11Package : public Package {
+class th11Package : public Package
+{
     Q_OBJECT
 
 public:

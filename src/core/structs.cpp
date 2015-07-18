@@ -4,7 +4,8 @@
 
 using namespace QSanProtocol::Utils;
 
-bool CardsMoveStruct::tryParse(const Json::Value &arg) {
+bool CardsMoveStruct::tryParse(const Json::Value &arg)
+{
     if (!arg.isArray() || arg.size() != 8) return false;
     if ((!arg[0].isInt() && !arg[0].isArray()) ||
         !isIntArray(arg, 1, 2) || !isStringArray(arg, 3, 6)) return false;
@@ -24,7 +25,8 @@ bool CardsMoveStruct::tryParse(const Json::Value &arg) {
     return true;
 }
 
-Json::Value CardsMoveStruct::toJsonValue() const{
+Json::Value CardsMoveStruct::toJsonValue() const
+{
     Json::Value arg(Json::arrayValue);
     if (open) arg[0] = toJsonArray(card_ids);
     else arg[0] = card_ids.size();
@@ -38,7 +40,8 @@ Json::Value CardsMoveStruct::toJsonValue() const{
     return arg;
 }
 
-bool CardMoveReason::tryParse(const Json::Value &arg) {
+bool CardMoveReason::tryParse(const Json::Value &arg)
+{
     m_reason = arg[0].asInt();
     m_playerId = arg[1].asCString();
     m_skillName = arg[2].asCString();
@@ -47,7 +50,8 @@ bool CardMoveReason::tryParse(const Json::Value &arg) {
     return true; // @todo: fix this
 }
 
-Json::Value CardMoveReason::toJsonValue() const{
+Json::Value CardMoveReason::toJsonValue() const
+{
     Json::Value result;
     result[0] = m_reason;
     result[1] = toJsonString(m_playerId);
@@ -57,32 +61,37 @@ Json::Value CardMoveReason::toJsonValue() const{
     return result;
 }
 
-JsonValueForLUA::JsonValueForLUA(bool isarray) : m_realvalue(isarray ? Json::Value(Json::arrayValue) : Json::Value()){
+JsonValueForLUA::JsonValueForLUA(bool isarray) : m_realvalue(isarray ? Json::Value(Json::arrayValue) : Json::Value())
+{
 
 }
 
-bool JsonValueForLUA::getBoolAt(int n) const{
+bool JsonValueForLUA::getBoolAt(int n) const
+{
     if (n < 0)
         return m_realvalue.asBool();
     else
         return m_realvalue[n].asBool();
 }
 
-int JsonValueForLUA::getNumberAt(int n) const{
+int JsonValueForLUA::getNumberAt(int n) const
+{
     if (n < 0)
         return m_realvalue.asInt();
     else
         return m_realvalue[n].asInt();
 }
 
-QString JsonValueForLUA::getStringAt(int n) const{
+QString JsonValueForLUA::getStringAt(int n) const
+{
     if (n < 0)
         return m_realvalue.asCString();
     else
         return m_realvalue[n].asCString();
 }
 
-JsonValueForLUA JsonValueForLUA::getArrayAt(int n) const{
+JsonValueForLUA JsonValueForLUA::getArrayAt(int n) const
+{
     JsonValueForLUA temp;
     if (n < 0)
         temp.m_realvalue = m_realvalue;
@@ -91,28 +100,32 @@ JsonValueForLUA JsonValueForLUA::getArrayAt(int n) const{
     return temp;
 }
 
-void JsonValueForLUA::setBoolAt(int n, bool v){
+void JsonValueForLUA::setBoolAt(int n, bool v)
+{
     if (n < 0)
         m_realvalue = v;
     else
         m_realvalue[n] = v;
 }
 
-void JsonValueForLUA::setNumberAt(int n, int v){
+void JsonValueForLUA::setNumberAt(int n, int v)
+{
     if (n < 0)
         m_realvalue = v;
     else
         m_realvalue[n] = v;
 }
 
-void JsonValueForLUA::setStringAt(int n, const QString &v){
+void JsonValueForLUA::setStringAt(int n, const QString &v)
+{
     if (n < 0)
         m_realvalue = toJsonString(v);
     else
         m_realvalue[n] = toJsonString(v);
 }
 
-void JsonValueForLUA::setArrayAt(int n, const JsonValueForLUA &v){
+void JsonValueForLUA::setArrayAt(int n, const JsonValueForLUA &v)
+{
     if (n < 0)
         m_realvalue = (Json::Value)v;
     else

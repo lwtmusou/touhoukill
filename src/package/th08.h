@@ -5,7 +5,8 @@
 #include "card.h"
 
 
-class miyaoCard : public SkillCard {
+class miyaoCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -15,7 +16,8 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class kuangzaoCard : public SkillCard {
+class kuangzaoCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -28,14 +30,15 @@ public:
 /*class huanshiCard: public SkillCard {
     Q_OBJECT
 
-public:
+    public:
     Q_INVOKABLE huanshiCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-};*/
+    };*/
 
-class buxianCard : public SkillCard {
+class buxianCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -47,20 +50,21 @@ public:
 };
 
 class geshengCard : public SkillCard
- {
-     Q_OBJECT
+{
+    Q_OBJECT
 
 
- public:
-     Q_INVOKABLE geshengCard();
+public:
+    Q_INVOKABLE geshengCard();
 
 
-     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-     virtual const Card *validate(CardUseStruct &cardUse) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual const Card *validate(CardUseStruct &cardUse) const;
 
- };
+};
 
-class chuangshiCard : public SkillCard{
+class chuangshiCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -79,7 +83,8 @@ public:
 
 
 
-class huweiCard : public SkillCard {
+class huweiCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -88,7 +93,8 @@ public:
     virtual const Card *validate(CardUseStruct &card_use) const;
 };
 
-class jinxiCard : public SkillCard {
+class jinxiCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -98,7 +104,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class th08Package : public Package {
+class th08Package : public Package
+{
     Q_OBJECT
 
 public:

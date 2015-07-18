@@ -7,7 +7,8 @@
 
 
 
-class tianrenCard : public SkillCard {
+class tianrenCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -18,7 +19,8 @@ public:
 };
 
 
-class th09Package : public Package {
+class th09Package : public Package
+{
     Q_OBJECT
 
 public:

@@ -12,10 +12,8 @@ void SanUiUtils::makeGray(QPixmap &pixmap)
 {
     QImage img = pixmap.toImage();
 
-    for (int i = 0, w = img.width(); i < w; ++i)
-    {
-        for (int j = 0, h = img.height(); j < h; ++j)
-        {
+    for (int i = 0, w = img.width(); i < w; ++i) {
+        for (int j = 0, h = img.height(); j < h; ++j) {
             QColor color = QColor::fromRgba(img.pixel(i, j));
             int gray = qGray(color.rgb());
             img.setPixel(i, j, qRgba(gray, gray, gray, color.alpha()));
@@ -36,10 +34,8 @@ QImage SanUiUtils::produceShadow(const QImage &image,
 
     uchar *const newImage = new uchar[cols * rows * 4];
 
-    for (int y = 0; y < rows; ++y)
-    {
-        for (int x = 0; x < cols; ++x)
-        {
+    for (int y = 0; y < rows; ++y) {
+        for (int x = 0; x < cols; ++x) {
             NEW_PIXEL_CHANNEL(x, y, 0) = shadowColor.blue();
             NEW_PIXEL_CHANNEL(x, y, 1) = shadowColor.green();
             NEW_PIXEL_CHANNEL(x, y, 2) = shadowColor.red();
@@ -47,31 +43,24 @@ QImage SanUiUtils::produceShadow(const QImage &image,
         }
     }
 
-    for (int y = 0; y < rows; ++y)
-    {
-        for (int x = 0; x < cols; ++x)
-        {
+    for (int y = 0; y < rows; ++y) {
+        for (int x = 0; x < cols; ++x) {
             uchar oldVal = OLD_PIXEL(x, y);
-            if (oldVal == 0)
-            {
+            if (oldVal == 0) {
                 continue;
             }
 
-            for (int dy = -radius; dy <= radius; ++dy)
-            {
-                for (int dx = -radius; dx <= radius; ++dx)
-                {
+            for (int dy = -radius; dy <= radius; ++dy) {
+                for (int dx = -radius; dx <= radius; ++dx) {
                     int wx = x + dx;
                     int wy = y + dy;
                     int dist = dx * dx + dy * dy;
 
-                    if (wx < 0 || wy < 0 || wx >= cols || wy >= rows)
-                    {
+                    if (wx < 0 || wy < 0 || wx >= cols || wy >= rows) {
                         continue;
                     }
 
-                    if (dx * dx + dy * dy > radius * radius)
-                    {
+                    if (dx * dx + dy * dy > radius * radius) {
                         continue;
                     }
 

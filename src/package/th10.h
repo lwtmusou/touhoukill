@@ -17,22 +17,23 @@
 /*class shendeDummyCard : public SkillCard {
     Q_OBJECT
 
-public:
+    public:
     Q_INVOKABLE shendeDummyCard();
 
-};
+    };
 
-class shendeFakeMoveCard : public SkillCard {
+    class shendeFakeMoveCard : public SkillCard {
     Q_OBJECT
 
-public:
+    public:
     Q_INVOKABLE shendeFakeMoveCard();
 
     virtual const Card *validate(CardUseStruct &card_use) const;
-};*/
+    };*/
 
 
-class gongfengCard : public SkillCard {
+class gongfengCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -43,7 +44,8 @@ public:
 };
 
 
-class qijiDialog : public QDialog {
+class qijiDialog : public QDialog
+{
     Q_OBJECT
 
 public:
@@ -68,7 +70,8 @@ signals:
     void onButtonClick();
 };
 
-class qijiCard : public SkillCard{
+class qijiCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -87,7 +90,8 @@ public:
 
 
 
-class fengshenCard : public SkillCard {
+class fengshenCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -97,7 +101,8 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class xinshangCard : public SkillCard {
+class xinshangCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -109,13 +114,14 @@ public:
 /*class zaihuoCard : public SkillCard {
     Q_OBJECT
 
-public:
+    public:
     Q_INVOKABLE zaihuoCard();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-};*/
+    };*/
 
-class tianyanCard : public SkillCard {
+class tianyanCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -124,7 +130,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class fengrangCard : public SkillCard {
+class fengrangCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -135,7 +142,8 @@ public:
 
 
 
-class jiliaoCard : public SkillCard {
+class jiliaoCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -145,7 +153,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class dfgzmsiyuCard : public SkillCard {
+class dfgzmsiyuCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -154,7 +163,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class ExtraCollateralCard : public SkillCard {
+class ExtraCollateralCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -164,7 +174,8 @@ public:
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
-class th10Package : public Package {
+class th10Package : public Package
+{
     Q_OBJECT
 
 public:

@@ -30,14 +30,17 @@
 #include <QLabel>
 #include <QStatusBar>
 
-class FitView : public QGraphicsView {
+class FitView : public QGraphicsView
+{
 public:
-    FitView(QGraphicsScene *scene) : QGraphicsView(scene) {
+    FitView(QGraphicsScene *scene) : QGraphicsView(scene)
+    {
         setSceneRect(Config.Rect);
         setRenderHints(QPainter::TextAntialiasing | QPainter::Antialiasing);
     }
 
-    virtual void resizeEvent(QResizeEvent *event) {
+    virtual void resizeEvent(QResizeEvent *event)
+    {
         QGraphicsView::resizeEvent(event);
         MainWindow *main_window = qobject_cast<MainWindow *>(parentWidget());
         if (scene()->inherits("RoomScene")) {
@@ -94,7 +97,7 @@ MainWindow::MainWindow(QWidget *parent)
             Audio::setBGMVolume(Config.BGMVolume);
         }
     }
-    
+
     QList<QAction *> actions;
     actions << ui->actionStart_Game
         << ui->actionStart_Server
@@ -126,7 +129,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 }
 
-void MainWindow::restoreFromConfig() {
+void MainWindow::restoreFromConfig()
+{
     resize(Config.value("WindowSize", QSize(1366, 706)).toSize());
     move(Config.value("WindowPosition", QPoint(-8, -8)).toPoint());
 
@@ -139,16 +143,19 @@ void MainWindow::restoreFromConfig() {
     ui->actionNever_nullify_my_trick->setEnabled(false);
 }
 
-void MainWindow::closeEvent(QCloseEvent *) {
+void MainWindow::closeEvent(QCloseEvent *)
+{
     Config.setValue("WindowSize", size());
     Config.setValue("WindowPosition", pos());
 }
 
-MainWindow::~MainWindow() {
+MainWindow::~MainWindow()
+{
     delete ui;
 }
 
-void MainWindow::gotoScene(QGraphicsScene *scene) {
+void MainWindow::gotoScene(QGraphicsScene *scene)
+{
     if (this->scene)
         this->scene->deleteLater();
     this->scene = scene;
@@ -159,7 +166,8 @@ void MainWindow::gotoScene(QGraphicsScene *scene) {
     changeBackground();
 }
 
-void MainWindow::on_actionExit_triggered() {
+void MainWindow::on_actionExit_triggered()
+{
     QMessageBox::StandardButton result;
     result = QMessageBox::question(this,
         tr("Sanguosha"),
@@ -172,7 +180,8 @@ void MainWindow::on_actionExit_triggered() {
     }
 }
 
-void MainWindow::on_actionStart_Server_triggered() {
+void MainWindow::on_actionStart_Server_triggered()
+{
     ServerDialog *dialog = new ServerDialog(this);
     if (!dialog->config())
         return;
@@ -196,7 +205,8 @@ void MainWindow::on_actionStart_Server_triggered() {
     }
 }
 
-void MainWindow::checkVersion(const QString &server_version, const QString &server_mod) {
+void MainWindow::checkVersion(const QString &server_version, const QString &server_mod)
+{
     QString client_mod = Sanguosha->getMODName();
     if (client_mod != server_mod) {
         QMessageBox::warning(this, tr("Warning"), tr("Client MOD name is not same as the server!"));
@@ -225,14 +235,16 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
     QMessageBox::warning(this, tr("Warning"), text);
 }
 
-void MainWindow::startConnection() {
+void MainWindow::startConnection()
+{
     Client *client = new Client(this);
 
     connect(client, SIGNAL(version_checked(QString, QString)), SLOT(checkVersion(QString, QString)));
     connect(client, SIGNAL(error_message(QString)), SLOT(networkError(QString)));
 }
 
-void MainWindow::on_actionReplay_triggered() {
+void MainWindow::on_actionReplay_triggered()
+{
     QString location = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
     QString last_dir = Config.value("LastReplayDir").toString();
     if (!last_dir.isEmpty())
@@ -255,12 +267,14 @@ void MainWindow::on_actionReplay_triggered() {
     client->signup();
 }
 
-void MainWindow::networkError(const QString &error_msg) {
+void MainWindow::networkError(const QString &error_msg)
+{
     if (isVisible())
         QMessageBox::warning(this, tr("Network error"), error_msg);
 }
 
-void BackLoader::preload() {
+void BackLoader::preload()
+{
     QStringList emotions = G_ROOM_SKIN.getAnimationFileNames();
 
     foreach (QString emotion, emotions) {
@@ -272,7 +286,8 @@ void BackLoader::preload() {
     }
 }
 
-void MainWindow::enterRoom() {
+void MainWindow::enterRoom()
+{
     // add current ip to history
     if (!Config.HistoryIPs.contains(Config.HostAddress)) {
         Config.HistoryIPs << Config.HostAddress;
@@ -322,7 +337,8 @@ void MainWindow::enterRoom() {
 }
 
 
-void MainWindow::gotoStartScene() {
+void MainWindow::gotoStartScene()
+{
     ServerInfo.DuringGame = false;
     QList<Server *> servers = findChildren<Server *>();
     if (!servers.isEmpty())
@@ -342,7 +358,7 @@ void MainWindow::gotoStartScene() {
         << ui->actionAbout
         << ui->actionAbout_Us;
 
-    foreach (QAction *action, actions)
+    foreach(QAction *action, actions)
         start_scene->addButton(action);
 
     setCentralWidget(view);
@@ -369,37 +385,43 @@ void MainWindow::gotoStartScene() {
     }
 }
 
-void MainWindow::startGameInAnotherInstance() {
+void MainWindow::startGameInAnotherInstance()
+{
     QProcess::startDetached(QApplication::applicationFilePath(), QStringList());
 }
 
-void MainWindow::on_actionGeneral_Overview_triggered() {
+void MainWindow::on_actionGeneral_Overview_triggered()
+{
     GeneralOverview *overview = GeneralOverview::getInstance(this);
     overview->fillGenerals(Sanguosha->findChildren<const General *>());
     overview->show();
 }
 
-void MainWindow::on_actionCard_Overview_triggered() {
+void MainWindow::on_actionCard_Overview_triggered()
+{
     CardOverview *overview = CardOverview::getInstance(this);
     overview->loadFromAll();
     overview->show();
 }
 
-void MainWindow::on_actionEnable_Hotkey_toggled(bool checked) {
+void MainWindow::on_actionEnable_Hotkey_toggled(bool checked)
+{
     if (Config.EnableHotKey != checked) {
         Config.EnableHotKey = checked;
         Config.setValue("EnableHotKey", checked);
     }
 }
 
-void MainWindow::on_actionNever_nullify_my_trick_toggled(bool checked) {
+void MainWindow::on_actionNever_nullify_my_trick_toggled(bool checked)
+{
     if (Config.NeverNullifyMyTrick != checked) {
         Config.NeverNullifyMyTrick = checked;
         Config.setValue("NeverNullifyMyTrick", checked);
     }
 }
 
-void MainWindow::on_actionAbout_triggered() {
+void MainWindow::on_actionAbout_triggered()
+{
     // Cao Cao's pixmap
     QString content = "<center><img src='image/system/shencc.png'> <br /> </center>";
 
@@ -419,7 +441,7 @@ void MainWindow::on_actionAbout_triggered() {
     //    "My Weibo: http://weibo.com/moligaloo <br/>").arg(email));
     content.append(tr("This is the open source clone of the popular <b>Sanguosha</b> game,"
         "totally written in C++ Qt GUI framework <br />"));
-        //"My QQ: 384318315 <br/>"
+    //"My QQ: 384318315 <br/>"
     QString config;
 
 #ifdef QT_NO_DEBUG
@@ -455,12 +477,14 @@ void MainWindow::on_actionAbout_triggered() {
     window->appear();
 }
 
-void MainWindow::on_actionAbout_Us_triggered() {
+void MainWindow::on_actionAbout_Us_triggered()
+{
     AboutUsDialog *dialog = new AboutUsDialog(this);
     dialog->show();
 }
 
-void MainWindow::setBackgroundBrush(bool centerAsOrigin) {
+void MainWindow::setBackgroundBrush(bool centerAsOrigin)
+{
     if (scene) {
         QPixmap pixmap(Config.BackgroundImage);
         QBrush brush(pixmap);
@@ -476,7 +500,8 @@ void MainWindow::setBackgroundBrush(bool centerAsOrigin) {
     }
 }
 
-void MainWindow::changeBackground() {
+void MainWindow::changeBackground()
+{
     bool centerAsOrigin = scene != NULL && !scene->inherits("RoomScene");
     setBackgroundBrush(centerAsOrigin);
 
@@ -486,7 +511,8 @@ void MainWindow::changeBackground() {
     }
 }
 
-void MainWindow::changeTableBg() {
+void MainWindow::changeTableBg()
+{
     if (!scene->inherits("RoomScene"))
         return;
 
@@ -538,7 +564,7 @@ void MainWindow::on_actionRole_assign_table_triggered()
 
     QStringList headers;
     headers << tr("Count") << tr("Lord") << tr("Loyalist") << tr("Rebel") << tr("Renegade");
-    foreach (QString header, headers)
+    foreach(QString header, headers)
         content += QString("<th>%1</th>").arg(header);
 
     content = QString("<tr>%1</tr>").arg(content);
@@ -568,7 +594,7 @@ void MainWindow::on_actionRole_assign_table_triggered()
 
         QString row_content;
         row_content = QString("<td>%1</td>").arg(header);
-        foreach (QString cell, cells)
+        foreach(QString cell, cells)
             row_content += QString("<td>%1</td>").arg(cell);
 
         content += QString("<tr>%1</tr>").arg(row_content);
@@ -617,12 +643,14 @@ BroadcastBox::BroadcastBox(Server *server, QWidget *parent)
     connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
 }
 
-void BroadcastBox::accept() {
+void BroadcastBox::accept()
+{
     QDialog::accept();
     server->broadcast(text_edit->toPlainText());
 }
 
-void MainWindow::on_actionBroadcast_triggered() {
+void MainWindow::on_actionBroadcast_triggered()
+{
     Server *server = findChild<Server *>();
     if (server == NULL) {
         QMessageBox::warning(this, tr("Warning"), tr("Server is not started yet!"));
@@ -633,7 +661,8 @@ void MainWindow::on_actionBroadcast_triggered() {
     dialog->exec();
 }
 
-void MainWindow::on_actionAcknowledgement_triggered() {
+void MainWindow::on_actionAcknowledgement_triggered()
+{
     Window *window = new Window(QString(), QSize(1000, 677), "image/system/acknowledgement.png");
     scene->addItem(window);
 
@@ -646,7 +675,8 @@ void MainWindow::on_actionAcknowledgement_triggered() {
     window->appear();
 }
 
-void MainWindow::on_actionPC_Console_Start_triggered() {
+void MainWindow::on_actionPC_Console_Start_triggered()
+{
     ServerDialog *dialog = new ServerDialog(this);
     dialog->ensureEnableAI();
     if (!dialog->config())
@@ -670,7 +700,8 @@ void MainWindow::on_actionPC_Console_Start_triggered() {
 #include <QFormLayout>
 #include "recorder.h"
 
-void MainWindow::on_actionReplay_file_convert_triggered() {
+void MainWindow::on_actionReplay_file_convert_triggered()
+{
     QString filename = QFileDialog::getOpenFileName(this,
         tr("Please select a replay file"),
         Config.value("LastReplayDir").toString(),
@@ -703,7 +734,8 @@ void MainWindow::on_actionReplay_file_convert_triggered() {
     }
 }
 
-void MainWindow::on_actionRecord_analysis_triggered() {
+void MainWindow::on_actionRecord_analysis_triggered()
+{
     QString location = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
     QString filename = QFileDialog::getOpenFileName(this,
         tr("Load replay record"),
@@ -819,14 +851,16 @@ void MainWindow::on_actionRecord_analysis_triggered() {
     rec_dialog->exec();
 }
 
-void MainWindow::on_actionView_ban_list_triggered() {
+void MainWindow::on_actionView_ban_list_triggered()
+{
     BanlistDialog *dialog = new BanlistDialog(this, true);
     dialog->exec();
 }
 
 #include "audio.h"
 
-void MainWindow::on_actionAbout_fmod_triggered() {
+void MainWindow::on_actionAbout_fmod_triggered()
+{
     QString content = tr("FMOD is a proprietary audio library made by Firelight Technologies");
     content.append("<p align='center'> <img src='image/logo/fmod.png' /> </p> <br/>");
 
@@ -851,7 +885,8 @@ void MainWindow::on_actionAbout_fmod_triggered() {
 
 #include "lua.hpp"
 
-void MainWindow::on_actionAbout_Lua_triggered() {
+void MainWindow::on_actionAbout_Lua_triggered()
+{
     QString content = tr("Lua is a powerful, fast, lightweight, embeddable scripting language.");
     content.append("<p align='center'> <img src='image/logo/lua.png' /> </p> <br/>");
 
@@ -873,7 +908,8 @@ void MainWindow::on_actionAbout_Lua_triggered() {
     window->appear();
 }
 
-void MainWindow::on_actionAbout_GPLv3_triggered() {
+void MainWindow::on_actionAbout_GPLv3_triggered()
+{
     QString content = tr("The GNU General Public License is the most widely used free software license, which guarantees end users the freedoms to use, study, share, and modify the software.");
     content.append("<p align='center'> <img src='image/logo/gplv3.png' /> </p> <br/>");
 

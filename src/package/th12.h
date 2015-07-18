@@ -6,7 +6,8 @@
 
 
 
-class puduCard : public SkillCard {
+class puduCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -17,7 +18,8 @@ public:
 };
 
 
-class weizhiCard : public SkillCard {
+class weizhiCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -27,7 +29,8 @@ public:
 };
 
 
-class nihuoCard : public SkillCard {
+class nihuoCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -37,7 +40,8 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class nuhuoCard : public SkillCard {
+class nuhuoCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -47,7 +51,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class th12Package : public Package {
+class th12Package : public Package
+{
     Q_OBJECT
 
 public:

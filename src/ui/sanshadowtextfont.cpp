@@ -31,25 +31,20 @@ SanShadowTextFont::SanShadowTextFont(const QString &fontName, const QSize &fontS
 
 bool SanShadowTextFont::tryParse(const Json::Value &arg)
 {
-    if (!arg.isArray() || arg.size() < 4)
-    {
+    if (!arg.isArray() || arg.size() < 4) {
         return false;
     }
 
-    if (!SanSimpleTextFont::tryParse(arg))
-    {
+    if (!SanSimpleTextFont::tryParse(arg)) {
         return false;
     }
 
-    if (arg.size() >= 8)
-    {
+    if (arg.size() >= 8) {
         m_shadowRadius = arg[4].asInt();
         m_shadowDecadeFactor = arg[5].asDouble();
         QSanProtocol::Utils::tryParse(arg[6], m_shadowOffset);
         m_shadowColor = QColor(arg[7][0].asInt(), arg[7][1].asInt(), arg[7][2].asInt(), arg[7][3].asInt());
-    }
-    else
-    {
+    } else {
         m_shadowRadius = -1;
     }
 
@@ -60,8 +55,7 @@ void SanShadowTextFont::paintText(QPainter *const painter, const QRect &pos,
     const Qt::Alignment &align, const QString &text) const
 {
     QPixmap pixmap;
-    if (_paintTextHelper(pos, align, text, pixmap))
-    {
+    if (_paintTextHelper(pos, align, text, pixmap)) {
         painter->drawPixmap(pos.topLeft(), pixmap);
     }
 }
@@ -70,8 +64,7 @@ void SanShadowTextFont::paintText(QGraphicsPixmapItem *const item, const QRect &
     const Qt::Alignment &align, const QString &text) const
 {
     QPixmap pixmap;
-    if (_paintTextHelper(pos, align, text, pixmap))
-    {
+    if (_paintTextHelper(pos, align, text, pixmap)) {
         item->setPixmap(pixmap);
         item->setPos(pos.x(), pos.y());
     }
@@ -82,8 +75,7 @@ bool SanShadowTextFont::_paintTextHelper(const QRect &pos,
     QPixmap &pixmap) const
 {
     if (pos.width() <= 0 || pos.height() <= 0
-        || m_fontSize.width() <= 0 || m_fontSize.height() <= 0)
-    {
+        || m_fontSize.width() <= 0 || m_fontSize.height() <= 0) {
         return false;
     }
 
@@ -98,8 +90,7 @@ bool SanShadowTextFont::_paintTextHelper(const QRect &pos,
     if (m_shadowRadius < 0
         || (m_shadowRadius == 0
         && m_shadowOffset.x() == 0
-        && m_shadowOffset.y() == 0))
-    {
+        && m_shadowOffset.y() == 0)) {
         pixmap = QPixmap::fromImage(image);
         return true;
     }

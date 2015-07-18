@@ -16,7 +16,10 @@ public:
         QGraphicsItem *parent = 0);
 
     void stopChangeHeroSkinAnimation();
-    bool isSkinChangingFinished() const { return (0 == m_timer); }
+    bool isSkinChangingFinished() const
+    {
+        return (0 == m_timer);
+    }
 
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *);
 

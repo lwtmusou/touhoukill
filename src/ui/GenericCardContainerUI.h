@@ -22,11 +22,15 @@
 #include <qvariant.h>
 #include <qlabel.h>
 
-class GenericCardContainer : public QGraphicsObject {
+class GenericCardContainer : public QGraphicsObject
+{
     Q_OBJECT
 
 public:
-    inline GenericCardContainer() { _m_highestZ = 10000; }
+    inline GenericCardContainer()
+    {
+        _m_highestZ = 10000;
+    }
     virtual QList<CardItem *> removeCardItems(const QList<int> &card_ids, Player::Place place) = 0;
     virtual void addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
     virtual QList<CardItem *> cloneCardItems(QList<int> card_ids);
@@ -58,7 +62,8 @@ class GraphicsPixmapHoverItem;
 class GraphicsWidgetHoverItem;
 class HeroSkinContainer;
 
-class PlayerCardContainer : public GenericCardContainer {
+class PlayerCardContainer : public GenericCardContainer
+{
     Q_OBJECT
 
 public:
@@ -67,14 +72,29 @@ public:
     void hideProgressBar();
     void hideAvatars();
     //const ClientPlayer *getPlayer() const;
-    const ClientPlayer *getPlayer() const { return m_player; }
+    const ClientPlayer *getPlayer() const
+    {
+        return m_player;
+    }
 
     void setPlayer(ClientPlayer *player);
-    inline int getVotes() { return _m_votesGot; }
-    inline void setMaxVotes(int maxVotes) { _m_maxVotes = maxVotes; }
+    inline int getVotes()
+    {
+        return _m_votesGot;
+    }
+    inline void setMaxVotes(int maxVotes)
+    {
+        _m_maxVotes = maxVotes;
+    }
     // See _m_floatingArea for more information
-    inline QRect getFloatingArea() const{ return _m_floatingAreaRect; }
-    inline void setSaveMeIcon(bool visible) { _m_saveMeIcon->setVisible(visible); }
+    inline QRect getFloatingArea() const
+    {
+        return _m_floatingAreaRect;
+    }
+    inline void setSaveMeIcon(bool visible)
+    {
+        _m_saveMeIcon->setVisible(visible);
+    }
     void setFloatingArea(QRect rect);
 
     // repaintAll is different from refresh in that it recreates all controls and is
@@ -97,8 +117,14 @@ public:
     QPixmap paintByMask(QPixmap& source);
     QPixmap _getAvatarIcon(const QString &generalName);
     QPixmap getSmallAvatarIcon(const QString &generalName);
-    GraphicsPixmapHoverItem *getAvartarItem() const { return _m_avatarIcon; }
-    GraphicsPixmapHoverItem *getSmallAvartarItem() const { return _m_smallAvatarIcon; }
+    GraphicsPixmapHoverItem *getAvartarItem() const
+    {
+        return _m_avatarIcon;
+    }
+    GraphicsPixmapHoverItem *getSmallAvartarItem() const
+    {
+        return _m_smallAvatarIcon;
+    }
 
     void stopHeroSkinChangingAnimation();
     void showSkillName(const QString &skill_name, bool isSelf);
@@ -266,8 +292,11 @@ protected slots:
     virtual void onSkinChangingStart();
     virtual void onSkinChangingFinished();
 
-    virtual void doAvatarHoverLeave() {}
-    virtual bool isItemUnderMouse(QGraphicsItem *item) const {
+    virtual void doAvatarHoverLeave()
+    {
+    }
+    virtual bool isItemUnderMouse(QGraphicsItem *item) const
+    {
         return item->isUnderMouse();
     }
 

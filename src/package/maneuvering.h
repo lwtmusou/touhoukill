@@ -3,7 +3,8 @@
 
 #include "standard.h"
 
-class NatureSlash : public Slash {
+class NatureSlash : public Slash
+{
     Q_OBJECT
 
 public:
@@ -11,28 +12,32 @@ public:
     virtual bool match(const QString &pattern) const;
 };
 
-class ThunderSlash : public NatureSlash {
+class ThunderSlash : public NatureSlash
+{
     Q_OBJECT
 
 public:
     Q_INVOKABLE ThunderSlash(Card::Suit suit, int number);
 };
 
-class FireSlash : public NatureSlash {
+class FireSlash : public NatureSlash
+{
     Q_OBJECT
 
 public:
     Q_INVOKABLE FireSlash(Card::Suit suit, int number);
 };
 
-class IceSlash : public NatureSlash {
+class IceSlash : public NatureSlash
+{
     Q_OBJECT
 
 public:
     Q_INVOKABLE IceSlash(Card::Suit suit, int number);
 };
 
-class Analeptic : public BasicCard {
+class Analeptic : public BasicCard
+{
     Q_OBJECT
 
 public:
@@ -46,28 +51,32 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class Fan : public Weapon {
+class Fan : public Weapon
+{
     Q_OBJECT
 
 public:
     Q_INVOKABLE Fan(Card::Suit suit, int number);
 };
 
-class GudingBlade : public Weapon {
+class GudingBlade : public Weapon
+{
     Q_OBJECT
 
 public:
     Q_INVOKABLE GudingBlade(Card::Suit suit, int number);
 };
 
-class Vine : public Armor {
+class Vine : public Armor
+{
     Q_OBJECT
 
 public:
     Q_INVOKABLE Vine(Card::Suit suit, int number);
 };
 
-class SilverLion : public Armor {
+class SilverLion : public Armor
+{
     Q_OBJECT
 
 public:
@@ -76,7 +85,8 @@ public:
     virtual void onUninstall(ServerPlayer *player) const;
 };
 
-class IronChain : public TrickCard {
+class IronChain : public TrickCard
+{
     Q_OBJECT
 
 public:
@@ -91,7 +101,8 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class FireAttack : public SingleTargetTrick {
+class FireAttack : public SingleTargetTrick
+{
     Q_OBJECT
 
 public:
@@ -101,7 +112,8 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class SupplyShortage : public DelayedTrick {
+class SupplyShortage : public DelayedTrick
+{
     Q_OBJECT
 
 public:
@@ -111,7 +123,8 @@ public:
     virtual void takeEffect(ServerPlayer *target) const;
 };
 
-class ManeuveringPackage : public Package {
+class ManeuveringPackage : public Package
+{
     Q_OBJECT
 
 public:

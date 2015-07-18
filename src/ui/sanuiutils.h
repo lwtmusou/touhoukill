@@ -5,8 +5,7 @@ class QPixmap;
 class QImage;
 class QColor;
 
-namespace SanUiUtils
-{
+namespace SanUiUtils {
     void makeGray(QPixmap &pixmap);
 
     // This is in no way a generic diation fuction. It is some dirty trick that

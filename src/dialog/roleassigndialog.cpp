@@ -90,7 +90,8 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 }
 
-void RoleAssignDialog::accept() {
+void RoleAssignDialog::accept()
+{
     QStringList role_list = Sanguosha->getRoleList(ServerInfo.GameMode);
     QStringList real_list;
 
@@ -132,12 +133,14 @@ void RoleAssignDialog::accept() {
     }
 }
 
-void RoleAssignDialog::reject() {
+void RoleAssignDialog::reject()
+{
     ClientInstance->replyToServer(S_COMMAND_CHOOSE_ROLE, Json::Value::null);
     QDialog::reject();
 }
 
-void RoleAssignDialog::updateRole(int index) {
+void RoleAssignDialog::updateRole(int index)
+{
     QString name = list->currentItem()->data(Qt::UserRole).toString();
     QString role = role_ComboBox->itemData(index).toString();
     ClientPlayer *player = ClientInstance->getPlayer(name);
@@ -146,7 +149,8 @@ void RoleAssignDialog::updateRole(int index) {
     role_mapping[name] = role;
 }
 
-void RoleAssignDialog::updateRole(QListWidgetItem *current) {
+void RoleAssignDialog::updateRole(QListWidgetItem *current)
+{
     static QMap<QString, int> mapping;
     if (mapping.isEmpty()) {
         mapping["lord"] = 0;
@@ -161,21 +165,24 @@ void RoleAssignDialog::updateRole(QListWidgetItem *current) {
     role_ComboBox->setCurrentIndex(index);
 }
 
-void RoleAssignDialog::moveUp() {
+void RoleAssignDialog::moveUp()
+{
     int index = list->currentRow();
     QListWidgetItem *item = list->takeItem(index);
     list->insertItem(index - 1, item);
     list->setCurrentItem(item);
 }
 
-void RoleAssignDialog::moveDown() {
+void RoleAssignDialog::moveDown()
+{
     int index = list->currentRow();
     QListWidgetItem *item = list->takeItem(index);
     list->insertItem(index + 1, item);
     list->setCurrentItem(item);
 }
 
-void RoomScene::startAssign() {
+void RoomScene::startAssign()
+{
     RoleAssignDialog *dialog = new RoleAssignDialog(main_window);
     dialog->exec();
 }

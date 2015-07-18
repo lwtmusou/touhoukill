@@ -10,7 +10,8 @@ ServerInfoStruct ServerInfo;
 #include <QListWidget>
 #include <QCheckBox>
 
-time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance) {
+time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance)
+{
     time_t timeOut;
     if (OperationTimeout == 0)
         return 0;
@@ -30,7 +31,8 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
     return timeOut;
 }
 
-bool ServerInfoStruct::parse(const QString &str) {
+bool ServerInfoStruct::parse(const QString &str)
+{
     QRegExp rx("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w]*):([RCFSTBHAMN123a-r]*)");
     if (!rx.exactMatch(str)) {
         qWarning("%s", qPrintable("Setup string error!"));
@@ -100,7 +102,8 @@ bool ServerInfoStruct::parse(const QString &str) {
     return true;
 }
 
-ServerInfoWidget::ServerInfoWidget(bool show_lack) {
+ServerInfoWidget::ServerInfoWidget(bool show_lack)
+{
     name_label = new QLabel;
     address_label = new QLabel;
     port_label = new QLabel;
@@ -150,7 +153,8 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack) {
     setLayout(layout);
 }
 
-void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address) {
+void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address)
+{
     name_label->setText(info.Name);
     address_label->setText(address);
     game_mode_label->setText(Sanguosha->getModeName(info.GameMode));
@@ -203,14 +207,16 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
     }
 }
 
-void ServerInfoWidget::updateLack(int count) {
+void ServerInfoWidget::updateLack(int count)
+{
     if (lack_label) {
         QString path = QString("image/system/number/%1.png").arg(count);
         lack_label->setPixmap(QPixmap(path));
     }
 }
 
-void ServerInfoWidget::clear() {
+void ServerInfoWidget::clear()
+{
     name_label->clear();
     address_label->clear();
     port_label->clear();

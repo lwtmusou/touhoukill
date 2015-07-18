@@ -9,14 +9,16 @@
 
 struct PlayerRecordStruct;
 
-class RecAnalysis : public QObject {
+class RecAnalysis : public QObject
+{
     Q_OBJECT
 
 public:
     explicit RecAnalysis(QString dir = QString());
 
     static const unsigned int M_ALL_PLAYER = 0xFFFF;
-    enum DesignationType {
+    enum DesignationType
+    {
         NoOption = 0x00,
         MostKill = 0x01,
         MostRecover = 0x02,
@@ -74,7 +76,8 @@ private:
     mutable QStringList m_tempSatisfiedObject;
 };
 
-struct PlayerRecordStruct {
+struct PlayerRecordStruct
+{
     PlayerRecordStruct();
 
     bool isNull();

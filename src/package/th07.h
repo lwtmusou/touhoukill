@@ -5,7 +5,8 @@
 #include "card.h"
 
 
-class zhaoliaoCard : public SkillCard {
+class zhaoliaoCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -16,7 +17,8 @@ public:
 
 
 
-class mocaoCard : public SkillCard {
+class mocaoCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -27,7 +29,8 @@ public:
 };
 
 
-class th07Package : public Package {
+class th07Package : public Package
+{
     Q_OBJECT
 
 public:

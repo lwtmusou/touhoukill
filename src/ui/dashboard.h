@@ -20,19 +20,24 @@
 #include <QPropertyAnimation>
 
 
-class Dashboard : public PlayerCardContainer {
+class Dashboard : public PlayerCardContainer
+{
     Q_OBJECT
-    Q_ENUMS(SortType)
+        Q_ENUMS(SortType)
 
 public:
-    enum SortType { ByType, BySuit, ByNumber };
+    enum SortType
+    {
+        ByType, BySuit, ByNumber
+    };
 
     Dashboard(QGraphicsItem *button_widget);
     //Dashboard(QGraphicsPixmapItem *button_widget);
     virtual QRectF boundingRect() const;
     void setWidth(int width);
     int getMiddleWidth();
-    inline QRectF getAvatarArea() {
+    inline QRectF getAvatarArea()
+    {
         QRectF rect;
         rect.setSize(_dlayout->m_avatarArea.size());
         QPointF topLeft = mapFromItem(_getAvatarParent(), _dlayout->m_avatarArea.topLeft());
@@ -45,7 +50,8 @@ public:
 
     virtual void showProgressBar(QSanProtocol::Countdown countdown);
 
-    QRectF getAvatarAreaSceneBoundingRect() const {
+    QRectF getAvatarAreaSceneBoundingRect() const
+    {
         return _m_rightFrame->sceneBoundingRect();
     }
     QSanSkillButton *removeSkillButton(const QString &skillName);
@@ -99,13 +105,14 @@ public:
     int width();
     int height();
 
-    
+
     void showNullificationButton();
     void hideNullificationButton();
 
     static const int S_PENDING_OFFSET_Y = -25;
 
-    inline void updateSkillButton() {
+    inline void updateSkillButton()
+    {
         if (_m_skillDock)
             _m_skillDock->update();
     }
@@ -129,17 +136,50 @@ protected:
     virtual QList<CardItem *> removeHandCards(const QList<int> &cardIds);
 
     // initialization of _m_layout is compulsory for children classes.
-    inline virtual QGraphicsItem *_getEquipParent() { return _m_leftFrame; }
-    inline virtual QGraphicsItem *_getDelayedTrickParent() { return _m_leftFrame; }
-    inline virtual QGraphicsItem *_getAvatarParent() { return _m_rightFrame; }
-    inline virtual QGraphicsItem *_getMarkParent() { return _m_floatingArea; }
-    inline virtual QGraphicsItem *_getPhaseParent() { return _m_floatingArea; }
-    inline virtual QGraphicsItem *_getRoleComboBoxParent() { return _m_rightFrame; }
-    inline virtual QGraphicsItem *_getPileParent() { return _m_rightFrame; }
-    inline virtual QGraphicsItem *_getProgressBarParent() { return _m_floatingArea; }
-    inline virtual QGraphicsItem *_getFocusFrameParent() { return _m_rightFrame; }
-    inline virtual QGraphicsItem *_getDeathIconParent() { return _m_middleFrame; }
-    inline virtual QString getResourceKeyName() { return QSanRoomSkin::S_SKIN_KEY_DASHBOARD; }
+    inline virtual QGraphicsItem *_getEquipParent()
+    {
+        return _m_leftFrame;
+    }
+    inline virtual QGraphicsItem *_getDelayedTrickParent()
+    {
+        return _m_leftFrame;
+    }
+    inline virtual QGraphicsItem *_getAvatarParent()
+    {
+        return _m_rightFrame;
+    }
+    inline virtual QGraphicsItem *_getMarkParent()
+    {
+        return _m_floatingArea;
+    }
+    inline virtual QGraphicsItem *_getPhaseParent()
+    {
+        return _m_floatingArea;
+    }
+    inline virtual QGraphicsItem *_getRoleComboBoxParent()
+    {
+        return _m_rightFrame;
+    }
+    inline virtual QGraphicsItem *_getPileParent()
+    {
+        return _m_rightFrame;
+    }
+    inline virtual QGraphicsItem *_getProgressBarParent()
+    {
+        return _m_floatingArea;
+    }
+    inline virtual QGraphicsItem *_getFocusFrameParent()
+    {
+        return _m_rightFrame;
+    }
+    inline virtual QGraphicsItem *_getDeathIconParent()
+    {
+        return _m_middleFrame;
+    }
+    inline virtual QString getResourceKeyName()
+    {
+        return QSanRoomSkin::S_SKIN_KEY_DASHBOARD;
+    }
     virtual QPointF getHeroSkinContainerPosition() const;
     //virtual const QSanShadowTextFont &getSkillNameFont() const {
     //    return G_DASHBOARD_LAYOUT.m_skillNameFont;
@@ -222,7 +262,10 @@ protected slots:
     virtual void onAnimationFinished();
 
     virtual void onAvatarHoverEnter();
-    virtual void doAvatarHoverLeave() { _m_screenNameItem->hide(); }
+    virtual void doAvatarHoverLeave()
+    {
+        _m_screenNameItem->hide();
+    }
 
     virtual bool isItemUnderMouse(QGraphicsItem *item);
 

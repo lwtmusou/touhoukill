@@ -9,7 +9,7 @@
 #include "exppattern.h"
 #include "protocol.h"
 #include "util.h"
-    
+
 #include <QHash>
 #include <QStringList>
 #include <QMetaObject>
@@ -27,7 +27,8 @@ class LuaArmor;
 
 struct lua_State;
 
-class Engine : public QObject {
+class Engine : public QObject
+{
     Q_OBJECT
 
 public:
@@ -172,7 +173,8 @@ private:
     QMultiMap<QString, QString> sp_convert_pairs;
 };
 
-static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key) {
+static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key)
+{
     return GetValueFromLuaState(L, "config", key);
 }
 

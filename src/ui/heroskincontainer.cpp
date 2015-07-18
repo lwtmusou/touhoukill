@@ -76,7 +76,7 @@ bool HeroSkinContainer::hasSkin(const QString &generalName)
 {
     if (!m_generalToHasSkin.contains(generalName)) {
         QStringList files = HeroSkinContainer::getHeroSkinFiles(generalName);
-        foreach(const QString &file, files) {
+        foreach (const QString &file, files) {
             if (SKIN_FILE_NAME_PATTERN.exactMatch(file)) {
                 m_generalToHasSkin[generalName] = true;
                 break;
@@ -92,7 +92,7 @@ int HeroSkinContainer::getNextSkinIndex(const QString &generalName, int skinInde
     int result = skinIndex;
 
     QStringList files = HeroSkinContainer::getHeroSkinFiles(generalName);
-    foreach(const QString &file, files) {
+    foreach (const QString &file, files) {
         if (SKIN_FILE_NAME_PATTERN.exactMatch(file)) {
             int num = SKIN_FILE_NAME_PATTERN.capturedTexts().at(1).toInt();
             if (num > skinIndex) {
@@ -112,11 +112,9 @@ bool caseInsensitiveLessThan(const QString &s1, const QString &s2)
 
     if (s1Length > s2Length) {
         return false;
-    }
-    else if (s1Length == s2Length) {
+    } else if (s1Length == s2Length) {
         return s1.toLower() < s2.toLower();
-    }
-    else {
+    } else {
         return true;
     }
 }
@@ -148,7 +146,7 @@ void HeroSkinContainer::initSkins()
     createSkinItem(skinIndexUsed, dummyRectItem, true);
 
     QStringList files = getHeroSkinFiles(m_generalName);
-    foreach(const QString &file, files) {
+    foreach (const QString &file, files) {
         if (SKIN_FILE_NAME_PATTERN.exactMatch(file)) {
             int skinIndex = SKIN_FILE_NAME_PATTERN.capturedTexts().at(1).toInt();
             if (skinIndexUsed != skinIndex) {
@@ -321,7 +319,7 @@ void HeroSkinContainer::wheelEvent(QGraphicsSceneWheelEvent *event)
 void HeroSkinContainer::scrollBarValueChanged(int newValue)
 {
     int diff = newValue - m_oldScrollValue;
-    foreach(SkinItem *skinItem, m_skins) {
+    foreach (SkinItem *skinItem, m_skins) {
         skinItem->moveBy(0, -diff);
     }
 

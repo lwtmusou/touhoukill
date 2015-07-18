@@ -17,16 +17,14 @@ SanFreeTypeFont *const SanFreeTypeFont::m_instance = new SanFreeTypeFont;
 SanFreeTypeFont::SanFreeTypeFont() : m_ftLib(NULL)
 {
     FT_Error error = FT_Init_FreeType(&m_ftLib);
-    if (error)
-    {
+    if (error) {
         qWarning("Error loading FreeType library.");
     }
 }
 
 QString SanFreeTypeFont::resolveFont(const QString &fontName)
 {
-    if (QFile::exists(fontName))
-    {
+    if (QFile::exists(fontName)) {
         return fontName;
     }
 
@@ -39,14 +37,11 @@ QString SanFreeTypeFont::resolveFont(const QString &fontName)
     extsToTry.push_back("ttf");
     extsToTry.push_back("ttc");
 
-    foreach(const QString &sdir, dirsToResolve)
-    {
-        foreach(const QString &ext, extsToTry)
-        {
+    foreach (const QString &sdir, dirsToResolve) {
+        foreach (const QString &ext, extsToTry) {
             QDir dir(sdir);
             QString filePath = dir.filePath(QString("%1.%2").arg(fontName).arg(ext));
-            if (QFile::exists(filePath))
-            {
+            if (QFile::exists(filePath)) {
                 return filePath;
             }
         }
@@ -57,8 +52,7 @@ QString SanFreeTypeFont::resolveFont(const QString &fontName)
 
 const int *const SanFreeTypeFont::loadFont(const QString &fontName)
 {
-    if (!m_ftLib)
-    {
+    if (!m_ftLib) {
         return NULL;
     }
 
@@ -68,21 +62,15 @@ const int *const SanFreeTypeFont::loadFont(const QString &fontName)
 
     FT_Face face = NULL;
     FT_Error error = FT_New_Face(m_ftLib, fontPath, 0, &face);
-    if (error)
-    {
-        if (error == FT_Err_Unknown_File_Format)
-        {
+    if (error) {
+        if (error == FT_Err_Unknown_File_Format) {
             qWarning("Unsupported font format: %s.", fontPath);
-        }
-        else
-        {
+        } else {
             qWarning("Cannot open font file: %s.", fontPath);
         }
 
         return NULL;
-    }
-    else
-    {
+    } else {
         return (const int *const)face;
     }
 }
@@ -92,19 +80,16 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text,
     int spacing, int weight, QRect &boundingBox,
     const Qt::Orientation &orient, const Qt::Alignment &align)
 {
-    if (!m_ftLib || font == NULL || painter == NULL || text.isEmpty())
-    {
+    if (!m_ftLib || font == NULL || painter == NULL || text.isEmpty()) {
         return false;
     }
 
     Qt::Alignment hAlign = align & Qt::AlignHorizontal_Mask;
     Qt::Alignment vAlign = align & Qt::AlignVertical_Mask;
-    if (hAlign == 0)
-    {
+    if (hAlign == 0) {
         hAlign = Qt::AlignHCenter;
     }
-    if (vAlign == 0)
-    {
+    if (vAlign == 0) {
         vAlign = Qt::AlignVCenter;
     }
 
@@ -115,47 +100,37 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text,
     int len = charcodes.size();
     int xstep, ystep;
 
-    if (orient == Qt::Vertical)
-    {
+    if (orient == Qt::Vertical) {
         xstep = 0;
-        if (fontSize.width() > boundingBox.width())
-        {
+        if (fontSize.width() > boundingBox.width()) {
             fontSize.setWidth(boundingBox.width());
         }
         ystep = spacing + fontSize.height();
         // AlignJustify means the text should fill out the whole rect space
         // so we increase the step
-        if (align & Qt::AlignJustify)
-        {
+        if (align & Qt::AlignJustify) {
             ystep = boundingBox.height() / len;
-            if (fontSize.height() + spacing > ystep)
-            {
+            if (fontSize.height() + spacing > ystep) {
                 fontSize.setHeight(ystep - spacing);
             }
         }
-    }
-    else
-    {
+    } else {
         ystep = 0;
-        if (fontSize.height() > boundingBox.height())
-        {
+        if (fontSize.height() > boundingBox.height()) {
             fontSize.setHeight(boundingBox.height());
         }
         xstep = spacing + fontSize.width();
         // AlignJustifx means the text should fill out the whole rect space
         // so we increase the step
-        if (align & Qt::AlignJustify)
-        {
+        if (align & Qt::AlignJustify) {
             xstep = boundingBox.width() / len;
-            if (fontSize.width() + spacing > xstep)
-            {
+            if (fontSize.width() + spacing > xstep) {
                 fontSize.setWidth(xstep - spacing);
             }
         }
     }
 
-    if (fontSize.width() <= 0 || fontSize.height() <= 0)
-    {
+    if (fontSize.width() <= 0 || fontSize.height() <= 0) {
         return false;
     }
 
@@ -167,8 +142,7 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text,
     int imageBytes = imageSize * 4;
     uchar *const newImage = new uchar[imageBytes];
 
-    for (int i = 0; i < imageBytes;)
-    {
+    for (int i = 0; i < imageBytes;) {
         newImage[i++] = color.blue();
         newImage[i++] = color.green();
         newImage[i++] = color.red();
@@ -186,18 +160,15 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text,
     int currentX = 0;
     int currentY = 0;
 
-    for (int i = 0; i < len; ++i)
-    {
+    for (int i = 0; i < len; ++i) {
         FT_Vector delta;
         FT_UInt glyph_index = FT_Get_Char_Index(face, charcodes[i]);
         error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT | FT_LOAD_NO_BITMAP);
-        if (error)
-        {
+        if (error) {
             continue;
         }
 
-        if (useKerning && previous && glyph_index)
-        {
+        if (useKerning && previous && glyph_index) {
             error = FT_Get_Kerning(face, previous, glyph_index,
                 FT_KERNING_DEFAULT, &delta);
             currentX += delta.x >> 6;
@@ -205,12 +176,9 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text,
         previous = glyph_index;
 
         FT_Bitmap bitmap;
-        if (weight == 0)
-        {
+        if (weight == 0) {
             FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER);
-        }
-        else
-        {
+        } else {
             FT_Outline_Embolden(&slot->outline, weight);
             FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
         }
@@ -221,8 +189,7 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text,
             bitmap.pitch == (bitmap.width - 1) / 8 + 1);
 
         bool mono = true;
-        if (bitmap.pitch == bitmap.width)
-        {
+        if (bitmap.pitch == bitmap.width) {
             mono = false;
         }
 
@@ -232,25 +199,20 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text,
         int tmpYOffset = fontSize.height() - slot->bitmap_top;
         currentY = currentY + tmpYOffset;
 
-        if (orient == Qt::Vertical)
-        {
+        if (orient == Qt::Vertical) {
             currentX = (fontSize.width() - bitmap.width) / 2;
         }
 
         // now paint the bitmap to the new region
-        if (currentX < 0)
-        {
+        if (currentX < 0) {
             currentX = 0;
         }
-        if (currentY < 0)
-        {
+        if (currentY < 0) {
             currentY = 0;
         }
 
-        for (int y = 0; y < fontRows; ++y)
-        {
-            if (currentY + y >= rows)
-            {
+        for (int y = 0; y < fontRows; ++y) {
+            if (currentY + y >= rows) {
                 break;
             }
 
@@ -258,37 +220,27 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text,
             uchar *imagePtr = &NEW_FONT_PIXEL(currentX, currentY + y, 3);
 
             int fontClippedCols;
-            if (fontCols + currentX < cols)
-            {
+            if (fontCols + currentX < cols) {
                 fontClippedCols = fontCols;
-            }
-            else
-            {
+            } else {
                 fontClippedCols = cols - 1 - currentX;
             }
 
-            if (!mono)
-            {
-                for (int x = 0; x < fontClippedCols; ++x)
-                {
+            if (!mono) {
+                for (int x = 0; x < fontClippedCols; ++x) {
                     *imagePtr = *fontPtr;
                     ++fontPtr;
                     imagePtr += 4;
                 }
-            }
-            else
-            {
+            } else {
                 int mask = 0x80;
-                for (int x = 0; x < fontClippedCols; ++x)
-                {
-                    if (*fontPtr & mask)
-                    {
+                for (int x = 0; x < fontClippedCols; ++x) {
+                    if (*fontPtr & mask) {
                         *imagePtr = 255;
                     }
 
                     mask = mask >> 1;
-                    if (mask == 0)
-                    {
+                    if (mask == 0) {
                         ++fontPtr;
                         mask = 0x80;
                     }
@@ -298,12 +250,9 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text,
             }
         }
 
-        if (useKerning)
-        {
+        if (useKerning) {
             currentX += (slot->advance.x >> 6) + spacing;
-        }
-        else
-        {
+        } else {
             currentX += xstep;
         }
 
@@ -313,89 +262,56 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text,
     m_paintTextMutex.unlock();
 
     int xstart, ystart;
-    if (orient == Qt::Vertical)
-    {
-        if (hAlign & Qt::AlignLeft)
-        {
+    if (orient == Qt::Vertical) {
+        if (hAlign & Qt::AlignLeft) {
             xstart = spacing;
-        }
-        else if (hAlign & Qt::AlignHCenter)
-        {
+        } else if (hAlign & Qt::AlignHCenter) {
             xstart = (boundingBox.width() - fontSize.width()) / 2;
-        }
-        else if (hAlign & Qt::AlignRight)
-        {
+        } else if (hAlign & Qt::AlignRight) {
             xstart = boundingBox.right() - spacing - fontSize.width();
-        }
-        else
-        {
+        } else {
             xstart = 0;
             Q_ASSERT(false);
         }
 
-        if (vAlign & Qt::AlignTop)
-        {
+        if (vAlign & Qt::AlignTop) {
             ystart = spacing;
-        }
-        else if (vAlign & Qt::AlignVCenter || align & Qt::AlignJustify)
-        {
+        } else if (vAlign & Qt::AlignVCenter || align & Qt::AlignJustify) {
             ystart = (boundingBox.height() - currentY) / 2;
-        }
-        else if (vAlign & Qt::AlignBottom)
-        {
+        } else if (vAlign & Qt::AlignBottom) {
             ystart = boundingBox.height() - currentY - spacing;
-        }
-        else
-        {
+        } else {
             ystart = 0;
             Q_ASSERT(false);
         }
-    }
-    else
-    {
-        if (vAlign & Qt::AlignTop)
-        {
+    } else {
+        if (vAlign & Qt::AlignTop) {
             ystart = spacing;
-        }
-        else if (vAlign & Qt::AlignVCenter)
-        {
+        } else if (vAlign & Qt::AlignVCenter) {
             ystart = (boundingBox.height() - fontSize.height()) / 2;
-        }
-        else if (vAlign & Qt::AlignBottom)
-        {
+        } else if (vAlign & Qt::AlignBottom) {
             ystart = boundingBox.bottom() - spacing - fontSize.height();
-        }
-        else
-        {
+        } else {
             ystart = 0;
             Q_ASSERT(false);
         }
 
-        if (hAlign & Qt::AlignLeft)
-        {
+        if (hAlign & Qt::AlignLeft) {
             xstart = spacing;
-        }
-        else if (hAlign & Qt::AlignHCenter || align & Qt::AlignJustify)
-        {
+        } else if (hAlign & Qt::AlignHCenter || align & Qt::AlignJustify) {
             xstart = (boundingBox.width() - currentX) / 2;
-        }
-        else if (hAlign & Qt::AlignRight)
-        {
+        } else if (hAlign & Qt::AlignRight) {
             xstart = boundingBox.right() - currentX - spacing;
-        }
-        else
-        {
+        } else {
             xstart = 0;
             Q_ASSERT(false);
         }
     }
 
-    if (xstart < 0)
-    {
+    if (xstart < 0) {
         xstart = 0;
     }
-    if (ystart < 0)
-    {
+    if (ystart < 0) {
         ystart = 0;
     }
 
@@ -412,8 +328,7 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
     int spacing, int weight, QRect &boundingBox,
     const Qt::Alignment &align)
 {
-    if (!m_ftLib || font == NULL || painter == NULL || text.isEmpty())
-    {
+    if (!m_ftLib || font == NULL || painter == NULL || text.isEmpty()) {
         return false;
     }
 
@@ -428,28 +343,22 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
     int xstep;
     // AlignJustifx means the text should fill out the whole rect space
     // so we increase the step
-    if (align & Qt::AlignJustify)
-    {
+    if (align & Qt::AlignJustify) {
         xstep = boundingBox.width() / len;
-        if (fontSize.width() + spacing > xstep)
-        {
+        if (fontSize.width() + spacing > xstep) {
             fontSize.setWidth(xstep - spacing);
         }
-    }
-    else
-    {
+    } else {
         xstep = spacing + fontSize.width();
     }
 
-    if (fontSize.height() * numLines > boundingBox.height())
-    {
+    if (fontSize.height() * numLines > boundingBox.height()) {
         fontSize.setHeight(boundingBox.height() / numLines - spacing);
     }
 
     int ystep = fontSize.height() + spacing;
 
-    if (fontSize.width() <= 0 || fontSize.height() <= 0)
-    {
+    if (fontSize.width() <= 0 || fontSize.height() <= 0) {
         return false;
     }
 
@@ -461,8 +370,7 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
     int imageBytes = imageSize * 4;
     uchar *const newImage = new uchar[imageBytes];
 
-    for (int i = 0; i < imageBytes;)
-    {
+    for (int i = 0; i < imageBytes;) {
         newImage[i++] = color.blue();
         newImage[i++] = color.green();
         newImage[i++] = color.red();
@@ -482,10 +390,8 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
 
     FT_GlyphSlot slot = face->glyph;
     FT_Error error = FT_Set_Pixel_Sizes(face, fontSize.width(), fontSize.height());
-    for (int i = 0, j = 0; i < len; ++i, ++j)
-    {
-        if (QChar('\n').unicode() == charcodes[i])
-        {
+    for (int i = 0, j = 0; i < len; ++i, ++j) {
+        if (QChar('\n').unicode() == charcodes[i]) {
             currentY += ystep;
             currentX = 0;
             j = -1;
@@ -496,8 +402,7 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
         int line = j / charsPerLine;
         int cursor = j % charsPerLine;
         // whenever we start a new line, reset X and increment Y
-        if (cursor == 0 && line > 0)
-        {
+        if (cursor == 0 && line > 0) {
             currentY += ystep;
             currentX = 0;
             j = 0;
@@ -506,25 +411,20 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
         FT_Vector delta;
         FT_UInt glyph_index = FT_Get_Char_Index(face, charcodes[i]);
         error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT | FT_LOAD_NO_BITMAP);
-        if (error)
-        {
+        if (error) {
             continue;
         }
 
-        if (useKerning && previous && glyph_index)
-        {
+        if (useKerning && previous && glyph_index) {
             error = FT_Get_Kerning(face, previous, glyph_index,
                 FT_KERNING_DEFAULT, &delta);
             currentX += delta.x >> 6;
         }
         previous = glyph_index;
 
-        if (weight == 0)
-        {
+        if (weight == 0) {
             FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER);
-        }
-        else
-        {
+        } else {
             FT_Outline_Embolden(&slot->outline, weight);
             FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
         }
@@ -541,18 +441,15 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
 
         //@todo put it back
         bool mono = true;
-        if (bitmap.pitch == bitmap.width)
-        {
+        if (bitmap.pitch == bitmap.width) {
             mono = false;
         }
 
         // now paint the bitmap to the new region
         Q_ASSERT(currentX >= 0 && currentY >= 0);
 
-        for (int y = 0; y < fontRows; ++y)
-        {
-            if (currentY + y >= rows)
-            {
+        for (int y = 0; y < fontRows; ++y) {
+            if (currentY + y >= rows) {
                 break;
             }
 
@@ -560,37 +457,27 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
             uchar *imagePtr = &NEW_FONT_PIXEL(currentX, currentY + y, 3);
 
             int fontClippedCols;
-            if (fontCols + currentX < cols)
-            {
+            if (fontCols + currentX < cols) {
                 fontClippedCols = fontCols;
-            }
-            else
-            {
+            } else {
                 fontClippedCols = cols - 1 - currentX;
             }
 
-            if (!mono)
-            {
-                for (int x = 0; x < fontClippedCols; ++x)
-                {
+            if (!mono) {
+                for (int x = 0; x < fontClippedCols; ++x) {
                     *imagePtr = *fontPtr;
                     ++fontPtr;
                     imagePtr += 4;
                 }
-            }
-            else
-            {
+            } else {
                 int mask = 0x80;
-                for (int x = 0; x < fontClippedCols; ++x)
-                {
-                    if (*fontPtr & mask)
-                    {
+                for (int x = 0; x < fontClippedCols; ++x) {
+                    if (*fontPtr & mask) {
                         *imagePtr = 255;
                     }
 
                     mask = mask >> 1;
-                    if (mask == 0)
-                    {
+                    if (mask == 0) {
                         ++fontPtr;
                         mask = 0x80;
                     }
@@ -600,17 +487,13 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
             }
         }
 
-        if (useKerning)
-        {
+        if (useKerning) {
             currentX += (slot->metrics.width >> 6) + spacing;
-        }
-        else
-        {
+        } else {
             currentX += xstep;
         }
 
-        if (currentX > maxX)
-        {
+        if (currentX > maxX) {
             maxX = currentX;
         }
 
@@ -625,48 +508,32 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
     Qt::Alignment vAlign = align & Qt::AlignVertical_Mask;
 
     int xstart, ystart;
-    if (hAlign & Qt::AlignLeft)
-    {
+    if (hAlign & Qt::AlignLeft) {
         xstart = spacing;
-    }
-    else if (hAlign & Qt::AlignHCenter || align & Qt::AlignJustify)
-    {
+    } else if (hAlign & Qt::AlignHCenter || align & Qt::AlignJustify) {
         xstart = (boundingBox.width() - maxX) / 2;
-    }
-    else if (hAlign & Qt::AlignRight)
-    {
+    } else if (hAlign & Qt::AlignRight) {
         xstart = boundingBox.right() - maxX - spacing;
-    }
-    else
-    {
+    } else {
         xstart = 0;
         Q_ASSERT(false);
     }
 
-    if (vAlign & Qt::AlignTop)
-    {
+    if (vAlign & Qt::AlignTop) {
         ystart = spacing;
-    }
-    else if (vAlign & Qt::AlignVCenter)
-    {
+    } else if (vAlign & Qt::AlignVCenter) {
         ystart = (boundingBox.height() - maxY) / 2;
-    }
-    else if (vAlign & Qt::AlignBottom)
-    {
+    } else if (vAlign & Qt::AlignBottom) {
         ystart = boundingBox.height() - maxY - spacing;
-    }
-    else
-    {
+    } else {
         ystart = 0;
         Q_ASSERT(false);
     }
 
-    if (xstart < 0)
-    {
+    if (xstart < 0) {
         xstart = 0;
     }
-    if (ystart < 0)
-    {
+    if (ystart < 0) {
         ystart = 0;
     }
 

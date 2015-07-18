@@ -16,7 +16,8 @@
     };*/
 
 
-class mofaCard : public SkillCard {
+class mofaCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -27,7 +28,8 @@ public:
 
 
 
-class wuyuCard : public SkillCard {
+class wuyuCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -37,7 +39,8 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
 };
 
-class saiqianCard : public SkillCard {
+class saiqianCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -47,7 +50,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class jiezouCard : public SkillCard {
+class jiezouCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -57,7 +61,8 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
 };
 
-class shoucangCard : public SkillCard {
+class shoucangCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -66,7 +71,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class baoyiCard : public SkillCard {
+class baoyiCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -75,7 +81,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class bllmseyuCard : public SkillCard {
+class bllmseyuCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -85,7 +92,8 @@ public:
     virtual const Card *validate(CardUseStruct &cardUse) const;
 };
 
-class bllmshiyudummy : public SkillCard {
+class bllmshiyudummy : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -94,7 +102,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const;
 };
 
-class bllmshiyuCard : public SkillCard {
+class bllmshiyuCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -104,7 +113,8 @@ public:
     virtual const Card *validateInResponse(ServerPlayer *user) const;
 };
 
-class bllmwuyuCard : public SkillCard {
+class bllmwuyuCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -113,7 +123,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class protagonistPackage : public Package {
+class protagonistPackage : public Package
+{
     Q_OBJECT
 
 public:

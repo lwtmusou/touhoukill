@@ -12,7 +12,8 @@
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
 
-void CardItem::_initialize() {
+void CardItem::_initialize()
+{
 
     setAcceptedMouseButtons(0);
 
@@ -30,13 +31,15 @@ void CardItem::_initialize() {
     setTransform(QTransform::fromTranslate(-_m_width / 2, -_m_height / 2), true);
 }
 
-CardItem::CardItem(const Card *card) {
+CardItem::CardItem(const Card *card)
+{
     _initialize();
     setCard(card);
     setAcceptHoverEvents(true);
 }
 
-CardItem::CardItem(const QString &general_name) {
+CardItem::CardItem(const QString &general_name)
+{
     m_cardId = Card::S_UNKNOWN_CARD_ID;
     _initialize();
     changeGeneral(general_name);
@@ -44,29 +47,32 @@ CardItem::CardItem(const QString &general_name) {
     m_opacityAtHome = 1.0;
 }
 
-QRectF CardItem::boundingRect() const{
+QRectF CardItem::boundingRect() const
+{
     return G_COMMON_LAYOUT.m_cardFrameArea;
 }
 
-void CardItem::setCard(const Card *card) {
+void CardItem::setCard(const Card *card)
+{
     if (card != NULL) {
         m_cardId = card->getId();
         const Card *engineCard = Sanguosha->getEngineCard(m_cardId);
         Q_ASSERT(engineCard != NULL);
         setObjectName(engineCard->objectName());
         setToolTip(engineCard->getDescription());
-    }
-    else {
+    } else {
         m_cardId = Card::S_UNKNOWN_CARD_ID;
         setObjectName("unknown");
     }
 }
 
-void CardItem::setEnabled(bool enabled) {
+void CardItem::setEnabled(bool enabled)
+{
     QSanSelectableItem::setEnabled(enabled);
 }
 
-CardItem::~CardItem() {
+CardItem::~CardItem()
+{
     m_animationMutex.lock();
     if (m_currentAnimation != NULL) {
         m_currentAnimation->deleteLater();
@@ -75,38 +81,41 @@ CardItem::~CardItem() {
     m_animationMutex.unlock();
 }
 
-void CardItem::changeGeneral(const QString &general_name) {
+void CardItem::changeGeneral(const QString &general_name)
+{
     setObjectName(general_name);
     const General *general = Sanguosha->getGeneral(general_name);
     if (general) {
         _m_isUnknownGeneral = false;
         setToolTip(general->getSkillDescription(true));
-    }
-    else {
+    } else {
         _m_isUnknownGeneral = true;
         setToolTip(QString());
     }
 }
 
-const Card *CardItem::getCard() const{
+const Card *CardItem::getCard() const
+{
     return Sanguosha->getCard(m_cardId);
 }
 
-void CardItem::setHomePos(QPointF home_pos) {
+void CardItem::setHomePos(QPointF home_pos)
+{
     this->home_pos = home_pos;
 }
 
-QPointF CardItem::homePos() const{
+QPointF CardItem::homePos() const
+{
     return home_pos;
 }
 
-void CardItem::goBack(bool playAnimation, bool doFade) {
+void CardItem::goBack(bool playAnimation, bool doFade)
+{
     if (playAnimation) {
         getGoBackAnimation(doFade);
         if (m_currentAnimation != NULL)
             m_currentAnimation->start();
-    }
-    else {
+    } else {
         m_animationMutex.lock();
         if (m_currentAnimation != NULL) {
             m_currentAnimation->stop();
@@ -118,7 +127,8 @@ void CardItem::goBack(bool playAnimation, bool doFade) {
     }
 }
 
-QAbstractAnimation *CardItem::getGoBackAnimation(bool doFade, bool smoothTransition, int duration) {
+QAbstractAnimation *CardItem::getGoBackAnimation(bool doFade, bool smoothTransition, int duration)
+{
     m_animationMutex.lock();
     if (m_currentAnimation != NULL) {
         m_currentAnimation->stop();
@@ -146,13 +156,12 @@ QAbstractAnimation *CardItem::getGoBackAnimation(bool doFade, bool smoothTransit
         group->addAnimation(disappear);
 
         m_currentAnimation = group;
-    }
-    else {
+    } else {
         m_currentAnimation = goback;
     }
     m_animationMutex.unlock();
     connect(m_currentAnimation, SIGNAL(finished()), this, SIGNAL(movement_animation_finished()));
-	connect(m_currentAnimation, SIGNAL(destroyed()), this, SLOT(currentAnimationDestroyed()));
+    connect(m_currentAnimation, SIGNAL(destroyed()), this, SLOT(currentAnimationDestroyed()));
     return m_currentAnimation;
 }
 
@@ -163,38 +172,46 @@ void CardItem::currentAnimationDestroyed()
         m_currentAnimation = NULL;
 }
 
-void CardItem::showFrame(const QString &result) {
+void CardItem::showFrame(const QString &result)
+{
     _m_frameType = result;
 }
 
-void CardItem::hideFrame() {
+void CardItem::hideFrame()
+{
     _m_frameType = QString();
 }
 
-void CardItem::showAvatar(const General *general) {
+void CardItem::showAvatar(const General *general)
+{
     _m_avatarName = general->objectName();
 }
 
-void CardItem::hideAvatar() {
+void CardItem::hideAvatar()
+{
     _m_avatarName = QString();
 }
 
-void CardItem::setAutoBack(bool auto_back) {
+void CardItem::setAutoBack(bool auto_back)
+{
     this->auto_back = auto_back;
 }
 
-bool CardItem::isEquipped() const{
+bool CardItem::isEquipped() const
+{
     const Card *card = getCard();
     Q_ASSERT(card);
     return Self->hasEquip(card);
 }
 
-void CardItem::setFrozen(bool is_frozen) {
+void CardItem::setFrozen(bool is_frozen)
+{
     frozen = is_frozen;
 }
 
-CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id) {
-    foreach(CardItem *item, items) {
+CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id)
+{
+    foreach (CardItem *item, items) {
         if (item->getCard() == NULL) {
             if (card_id == Card::S_UNKNOWN_CARD_ID)
                 return item;
@@ -211,12 +228,14 @@ CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id) {
 const int CardItem::_S_CLICK_JITTER_TOLERANCE = 1600;
 const int CardItem::_S_MOVE_JITTER_TOLERANCE = 200;
 
-void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) {
+void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
     if (frozen) return;
     _m_lastMousePressScenePos = mapToParent(mouseEvent->pos());
 }
 
-void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) {
+void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
     if (frozen) return;
 
     QPointF totalMove = mapToParent(mouseEvent->pos()) - _m_lastMousePressScenePos;
@@ -230,7 +249,8 @@ void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) {
     }
 }
 
-void CardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) {
+void CardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
     if (!(flags() & QGraphicsItem::ItemIsMovable)) return;
     QPointF newPos = mapToParent(mouseEvent->pos());
     QPointF totalMove = newPos - _m_lastMousePressScenePos;
@@ -240,27 +260,30 @@ void CardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) {
     }
 }
 
-void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
     if (frozen) return;
 
     if (hasFocus()) {
         event->accept();
         emit double_clicked();
-    }
-    else
+    } else
         emit toggle_discards();
 }
 
-void CardItem::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
+void CardItem::hoverEnterEvent(QGraphicsSceneHoverEvent *)
+{
     emit enter_hover();
 }
 
-void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
+void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
+{
     emit leave_hover();
 }
 
 
-void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
+void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+{
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
     if (!_m_frameType.isEmpty())
@@ -290,7 +313,8 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidge
 
 
 
-void CardItem::setFootnote(const QString &desc) {
+void CardItem::setFootnote(const QString &desc)
+{
     const IQSanComponentSkin::QSanShadowTextFont &font = G_COMMON_LAYOUT.m_cardFootnoteFont;
     QRect rect = G_COMMON_LAYOUT.m_cardFootnoteArea;
     rect.moveTopLeft(QPoint(0, 0));

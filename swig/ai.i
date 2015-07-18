@@ -100,11 +100,12 @@ public:
 
 %{
 
-AI *Room::cloneAI(ServerPlayer *player) {
+AI *Room::cloneAI(ServerPlayer *player)
+{
     if (L == NULL)
         return new TrustAI(player);
 
-    if(!Config.EnableAI)
+    if (!Config.EnableAI)
         return new TrustAI(player);
 
     lua_getglobal(L, "CloneAI");
@@ -129,7 +130,8 @@ AI *Room::cloneAI(ServerPlayer *player) {
     return new TrustAI(player);
 }
 
-const Card *LuaAI::askForCardShow(ServerPlayer *requestor, const QString &reason) {
+const Card *LuaAI::askForCardShow(ServerPlayer *requestor, const QString &reason)
+{
     lua_State *L = room->getLuaState();
 
     pushCallback(L, __FUNCTION__);
@@ -153,7 +155,8 @@ const Card *LuaAI::askForCardShow(ServerPlayer *requestor, const QString &reason
         return TrustAI::askForCardShow(requestor, reason);
 }
 
-bool LuaAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) {
+bool LuaAI::askForSkillInvoke(const QString &skill_name, const QVariant &data)
+{
     if (callback == 0)
         return TrustAI::askForSkillInvoke(skill_name, data);
 
@@ -177,7 +180,8 @@ bool LuaAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) {
     return false;
 }
 
-void LuaAI::activate(CardUseStruct &card_use) {
+void LuaAI::activate(CardUseStruct &card_use)
+{
     Q_ASSERT(callback);
 
     lua_State *L = room->getLuaState();
@@ -195,7 +199,8 @@ void LuaAI::activate(CardUseStruct &card_use) {
     }
 }
 
-const Card *LuaAI::askForNullification(const Card *trick, ServerPlayer *from, ServerPlayer *to, bool positive) {
+const Card *LuaAI::askForNullification(const Card *trick, ServerPlayer *from, ServerPlayer *to, bool positive)
+{
     lua_State *L = room->getLuaState();
 
     pushCallback(L, __FUNCTION__);
@@ -222,7 +227,8 @@ const Card *LuaAI::askForNullification(const Card *trick, ServerPlayer *from, Se
         return TrustAI::askForNullification(trick, from, to, positive);
 }
 
-QString LuaAI::askForChoice(const QString &skill_name, const QString &choices, const QVariant &data) {
+QString LuaAI::askForChoice(const QString &skill_name, const QString &choices, const QVariant &data)
+{
     if (callback == 0)
         return TrustAI::askForChoice(skill_name, choices, data);
 
@@ -238,10 +244,11 @@ QString LuaAI::askForChoice(const QString &skill_name, const QString &choices, c
         room->output(result);
         return TrustAI::askForChoice(skill_name, choices, data);
     }
-   return result;
+    return result;
 }
 
-int LuaAI::askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason, Card::HandlingMethod method) {
+int LuaAI::askForCardChosen(ServerPlayer *who, const QString &flags, const QString &reason, Card::HandlingMethod method)
+{
     lua_State *L = room->getLuaState();
 
     pushCallback(L, __FUNCTION__);
@@ -270,7 +277,8 @@ int LuaAI::askForCardChosen(ServerPlayer *who, const QString &flags, const QStri
     return TrustAI::askForCardChosen(who, flags, reason, method);
 }
 
-const Card *LuaAI::askForCard(const QString &pattern, const QString &prompt, const QVariant &data) {
+const Card *LuaAI::askForCard(const QString &pattern, const QString &prompt, const QVariant &data)
+{
     lua_State *L = room->getLuaState();
 
     pushCallback(L, __FUNCTION__);
@@ -292,7 +300,8 @@ const Card *LuaAI::askForCard(const QString &pattern, const QString &prompt, con
     return Card::Parse(result);
 }
 
-ServerPlayer *LuaAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason) {
+ServerPlayer *LuaAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason)
+{
     lua_State *L = room->getLuaState();
 
     pushCallback(L, __FUNCTION__);
@@ -317,7 +326,8 @@ ServerPlayer *LuaAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, co
         return TrustAI::askForPlayerChosen(targets, reason);
 }
 
-const Card *LuaAI::askForSinglePeach(ServerPlayer *dying) {
+const Card *LuaAI::askForSinglePeach(ServerPlayer *dying)
+{
     lua_State *L = room->getLuaState();
 
     pushCallback(L, __FUNCTION__);
@@ -339,7 +349,8 @@ const Card *LuaAI::askForSinglePeach(ServerPlayer *dying) {
     return Card::Parse(result);
 }
 
-const Card *LuaAI::askForPindian(ServerPlayer *requestor, const QString &reason) {
+const Card *LuaAI::askForPindian(ServerPlayer *requestor, const QString &reason)
+{
     lua_State *L = room->getLuaState();
 
     pushCallback(L, __FUNCTION__);
@@ -364,7 +375,8 @@ const Card *LuaAI::askForPindian(ServerPlayer *requestor, const QString &reason)
         return TrustAI::askForPindian(requestor, reason);
 }
 
-Card::Suit LuaAI::askForSuit(const QString &reason) {
+Card::Suit LuaAI::askForSuit(const QString &reason)
+{
     lua_State *L = room->getLuaState();
 
     pushCallback(L, __FUNCTION__);
@@ -387,7 +399,8 @@ Card::Suit LuaAI::askForSuit(const QString &reason) {
     return TrustAI::askForSuit(reason);
 }
 
-ServerPlayer *LuaAI::askForYiji(const QList<int> &cards, const QString &reason, int &card_id) {
+ServerPlayer *LuaAI::askForYiji(const QList<int> &cards, const QString &reason, int &card_id)
+{
     if (callback == 0)
         return TrustAI::askForYiji(cards, reason, card_id);
 
@@ -424,7 +437,8 @@ ServerPlayer *LuaAI::askForYiji(const QList<int> &cards, const QString &reason, 
     return NULL;
 }
 
-void LuaAI::filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant &data) {
+void LuaAI::filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant &data)
+{
     if (callback == 0)
         return;
 

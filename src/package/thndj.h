@@ -6,7 +6,8 @@
 
 
 
-class hunpoCard : public SkillCard {
+class hunpoCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -15,7 +16,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class thndjPackage : public Package {
+class thndjPackage : public Package
+{
     Q_OBJECT
 
 public:

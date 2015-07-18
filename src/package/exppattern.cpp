@@ -1,12 +1,14 @@
 #include <exppattern.h>
 #include "engine.h"
 
-ExpPattern::ExpPattern(const QString &exp) {
+ExpPattern::ExpPattern(const QString &exp)
+{
     this->exp = exp;
 }
 
-bool ExpPattern::match(const Player *player, const Card *card) const{
-    foreach (QString one_exp, this->exp.split('#'))
+bool ExpPattern::match(const Player *player, const Card *card) const
+{
+    foreach(QString one_exp, this->exp.split('#'))
         if (this->matchOne(player, card, one_exp)) return true;
 
     return false;
@@ -18,7 +20,8 @@ bool ExpPattern::match(const Player *player, const Card *card) const{
 // 2nd patt means the card suit, and ',' means more than one options.
 // 3rd part means the card number, and ',' means more than one options,
 // the number uses '~' to make a scale for valid expressions
-bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) const{
+bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) const
+{
     QStringList factors = exp.split('|');
 
     bool checkpoint = false;
@@ -52,7 +55,9 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
     checkpoint = false;
     QStringList card_suits = factors.at(1).split(',');
     foreach (QString suit, card_suits) {
-        if (suit == ".") { checkpoint = true; break; }
+        if (suit == ".") {
+            checkpoint = true; break;
+        }
         bool positive = true;
         if (suit.startsWith('^')) {
             positive = false;
@@ -74,7 +79,9 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
     int cdn = card->getNumber();
 
     foreach (QString number, card_numbers) {
-        if (number == ".") { checkpoint = true; break; }
+        if (number == ".") {
+            checkpoint = true; break;
+        }
         bool isInt = false;
         if (number.contains('~')) {
             QStringList params = number.split('~');

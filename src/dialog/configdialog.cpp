@@ -65,16 +65,19 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->textEditFontLineEdit->setPalette(palette);
 }
 
-void ConfigDialog::showFont(QLineEdit *lineedit, const QFont &font) {
+void ConfigDialog::showFont(QLineEdit *lineedit, const QFont &font)
+{
     lineedit->setFont(font);
     lineedit->setText(QString("%1 %2").arg(font.family()).arg(font.pointSize()));
 }
 
-ConfigDialog::~ConfigDialog() {
+ConfigDialog::~ConfigDialog()
+{
     delete ui;
 }
 
-void ConfigDialog::on_browseBgButton_clicked() {
+void ConfigDialog::on_browseBgButton_clicked()
+{
     QString filename = QFileDialog::getOpenFileName(this,
         tr("Select a background image"),
         "backdrop/",
@@ -90,7 +93,8 @@ void ConfigDialog::on_browseBgButton_clicked() {
     }
 }
 
-void ConfigDialog::on_resetBgButton_clicked() {
+void ConfigDialog::on_resetBgButton_clicked()
+{
     ui->bgPathLineEdit->clear();
     QStringList backimages;
     backimages << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8";
@@ -107,7 +111,8 @@ void ConfigDialog::on_resetBgButton_clicked() {
     Config.remove("BackgroundImage");
 }
 
-void ConfigDialog::on_browseTableBgButton_clicked() {
+void ConfigDialog::on_browseTableBgButton_clicked()
+{
     QString filename = QFileDialog::getOpenFileName(this,
         tr("Select a tableBg image"),
         "backdrop/",
@@ -123,7 +128,8 @@ void ConfigDialog::on_browseTableBgButton_clicked() {
     }
 }
 
-void ConfigDialog::on_resetTableBgButton_clicked() {
+void ConfigDialog::on_resetTableBgButton_clicked()
+{
     ui->tableBgPathLineEdit->clear();
 
     QString filename = "backdrop/default.jpg";
@@ -133,7 +139,8 @@ void ConfigDialog::on_resetTableBgButton_clicked() {
     emit tableBg_changed();
 }
 
-void ConfigDialog::saveConfig() {
+void ConfigDialog::saveConfig()
+{
     float volume = ui->bgmVolumeSlider->value() / 100.0;
     Config.BGMVolume = volume;
     Config.setValue("BGMVolume", volume);
@@ -185,7 +192,8 @@ void ConfigDialog::saveConfig() {
 
 }
 
-void ConfigDialog::on_browseBgMusicButton_clicked() {
+void ConfigDialog::on_browseBgMusicButton_clicked()
+{
     QString filename = QFileDialog::getOpenFileName(this,
         tr("Select a background music"),
         "audio/system",
@@ -196,13 +204,15 @@ void ConfigDialog::on_browseBgMusicButton_clicked() {
     }
 }
 
-void ConfigDialog::on_resetBgMusicButton_clicked() {
+void ConfigDialog::on_resetBgMusicButton_clicked()
+{
     QString default_music = "audio/title/main.ogg";
     Config.setValue("BackgroundMusic", default_music);
     ui->bgMusicPathLineEdit->setText(default_music);
 }
 
-void ConfigDialog::on_changeAppFontButton_clicked() {
+void ConfigDialog::on_changeAppFontButton_clicked()
+{
     bool ok;
     QFont font = QFontDialog::getFont(&ok, Config.AppFont, this);
     if (ok) {
@@ -215,7 +225,8 @@ void ConfigDialog::on_changeAppFontButton_clicked() {
 }
 
 
-void ConfigDialog::on_setTextEditFontButton_clicked() {
+void ConfigDialog::on_setTextEditFontButton_clicked()
+{
     bool ok;
     QFont font = QFontDialog::getFont(&ok, Config.UIFont, this);
     if (ok) {
@@ -227,7 +238,8 @@ void ConfigDialog::on_setTextEditFontButton_clicked() {
     }
 }
 
-void ConfigDialog::on_setTextEditColorButton_clicked() {
+void ConfigDialog::on_setTextEditColorButton_clicked()
+{
     QColor color = QColorDialog::getColor(Config.TextEditColor, this);
     if (color.isValid()) {
         Config.TextEditColor = color;

@@ -20,7 +20,8 @@ using namespace google_breakpad;
 static bool callback(const wchar_t *dump_path, const wchar_t *id,
     void *, EXCEPTION_POINTERS *,
     MDRawAssertionInfo *,
-    bool succeeded) {
+    bool succeeded)
+{
     if (succeeded)
         qWarning("Dump file created in %s, dump guid is %ws\n", dump_path, id);
     else
@@ -28,16 +29,17 @@ static bool callback(const wchar_t *dump_path, const wchar_t *id,
     return succeeded;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     ExceptionHandler eh(L"./dmp", NULL, callback, NULL,
         ExceptionHandler::HANDLER_ALL);
 #else
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 #endif
-    if (argc > 1 && strcmp(argv[1], "-server") == 0){
+    if (argc > 1 && strcmp(argv[1], "-server") == 0) {
         new QCoreApplication(argc, argv);
-    }
-    else {
+    } else {
         new QApplication(argc, argv);
         QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins");
     }
@@ -52,8 +54,7 @@ int main(int argc, char *argv[]) {
     QDir dir(QString("lua"));
     if (dir.exists() && (dir.exists(QString("config.lua")))) {
         // things look good and use current dir
-    }
-    else {
+    } else {
         QDir::setCurrent(qApp->applicationFilePath().replace("games", "share"));
     }
 #endif
@@ -100,7 +101,7 @@ int main(int argc, char *argv[]) {
     Sanguosha->setParent(main_window);
     main_window->show();
 
-    foreach(QString arg, qApp->arguments()) {
+    foreach (QString arg, qApp->arguments()) {
         if (arg.startsWith("-connect:")) {
             arg.remove("-connect:");
             Config.HostAddress = arg;

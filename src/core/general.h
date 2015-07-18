@@ -11,7 +11,8 @@ class QSize;
 #include <QMap>
 #include <QStringList>
 
-class General : public QObject {
+class General : public QObject
+{
     Q_OBJECT
     Q_ENUMS(Gender)
     Q_PROPERTY(QString kingdom READ getKingdom CONSTANT)
@@ -38,7 +39,10 @@ public:
 
     bool isVisible() const;
 
-    enum Gender { Sexless, Male, Female, Neuter };
+    enum Gender
+    {
+        Sexless, Male, Female, Neuter
+    };
     Gender getGender() const;
     void setGender(Gender gender);
 
@@ -56,7 +60,10 @@ public:
     QString getPackage() const;
     QString getSkillDescription(bool include_name = false, bool yellow = true) const;
 
-    inline QSet<QString> getExtraSkillSet() const{ return extra_set; }
+    inline QSet<QString> getExtraSkillSet() const
+    {
+        return extra_set;
+    }
 
 public slots:
     void lastWord() const;

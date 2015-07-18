@@ -16,7 +16,8 @@ class CardItem;
 struct CardEffectStruct;
 struct CardUseStruct;
 
-class Card : public QObject {
+class Card : public QObject
+{
     Q_OBJECT
     Q_PROPERTY(QString suit READ getSuitString CONSTANT)
     Q_PROPERTY(bool red READ isRed STORED false CONSTANT)
@@ -36,14 +37,26 @@ class Card : public QObject {
 
 public:
     // enumeration type
-    enum Suit { Spade, Club, Heart, Diamond, NoSuitBlack, NoSuitRed, NoSuit, SuitToBeDecided = -1 };
-    enum Color { Red, Black, Colorless };
-    enum HandlingMethod { MethodNone, MethodUse, MethodResponse, MethodDiscard, MethodRecast, MethodPindian };
+    enum Suit
+    {
+        Spade, Club, Heart, Diamond, NoSuitBlack, NoSuitRed, NoSuit, SuitToBeDecided = -1
+    };
+    enum Color
+    {
+        Red, Black, Colorless
+    };
+    enum HandlingMethod
+    {
+        MethodNone, MethodUse, MethodResponse, MethodDiscard, MethodRecast, MethodPindian
+    };
 
     static const Suit AllSuits[4];
 
     // card types
-    enum CardType { TypeSkill, TypeBasic, TypeTrick, TypeEquip };
+    enum CardType
+    {
+        TypeSkill, TypeBasic, TypeTrick, TypeEquip
+    };
 
     // constructor
     Card(Suit suit, int number, bool target_fixed = false);
@@ -79,12 +92,18 @@ public:
     virtual Card::HandlingMethod getHandlingMethod() const;
 
     virtual void setFlags(const QString &flag) const;
-    inline virtual void setFlags(const QStringList &fs) { flags = fs; }
+    inline virtual void setFlags(const QStringList &fs)
+    {
+        flags = fs;
+    }
     bool hasFlag(const QString &flag) const;
     virtual void clearFlags() const;
 
     virtual QString getPackage() const;
-    inline virtual QString getClassName() const{ return metaObject()->className(); }
+    inline virtual QString getClassName() const
+    {
+        return metaObject()->className();
+    }
     virtual bool isVirtualCard() const;
     virtual bool isEquipped() const;
     virtual QString getCommonEffectName() const;
@@ -115,7 +134,10 @@ public:
         int &maxVotes) const;
     virtual bool isAvailable(const Player *player) const;
 
-    inline virtual const Card *getRealCard() const{ return this; }
+    inline virtual const Card *getRealCard() const
+    {
+        return this;
+    }
     virtual const Card *validate(CardUseStruct &cardUse) const;
     virtual const Card *validateInResponse(ServerPlayer *user) const;
 
@@ -125,11 +147,23 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
-    inline virtual bool isKindOf(const char *cardType) const{ Q_ASSERT(cardType); return inherits(cardType); }
-    inline virtual QStringList getFlags() const{ return flags; }
+    inline virtual bool isKindOf(const char *cardType) const
+    {
+        Q_ASSERT(cardType); return inherits(cardType);
+    }
+    inline virtual QStringList getFlags() const
+    {
+        return flags;
+    }
 
-    inline virtual bool isModified() const{ return false; }
-    inline virtual void onNullified(ServerPlayer * /* target */) const{ return; }
+    inline virtual bool isModified() const
+    {
+        return false;
+    }
+    inline virtual void onNullified(ServerPlayer * /* target */) const
+    {
+        return;
+    }
 
     // static functions
     static bool CompareByNumber(const Card *a, const Card *b);
@@ -160,7 +194,8 @@ protected:
     mutable QStringList flags;
 };
 
-class SkillCard : public Card {
+class SkillCard : public Card
+{
     Q_OBJECT
 
 public:
@@ -177,7 +212,8 @@ protected:
     QString user_string;
 };
 
-class DummyCard : public SkillCard {
+class DummyCard : public SkillCard
+{
     Q_OBJECT
 
 public:

@@ -18,17 +18,41 @@ public:
         const QPoint &shadowOffset = QPoint(0, 0),
         const QColor &color = Qt::white, int spacing = 0, int weight = 0);
 
-    int shadowRadius() const { return m_shadowRadius; }
-    void setShadowRadius(int shadowRadius) { m_shadowRadius = shadowRadius; }
+    int shadowRadius() const
+    {
+        return m_shadowRadius;
+    }
+    void setShadowRadius(int shadowRadius)
+    {
+        m_shadowRadius = shadowRadius;
+    }
 
-    double shadowDecadeFactor() const { return m_shadowDecadeFactor; }
-    void setShadowDecadeFactor(double shadowDecadeFactor) { m_shadowDecadeFactor = shadowDecadeFactor; }
+    double shadowDecadeFactor() const
+    {
+        return m_shadowDecadeFactor;
+    }
+    void setShadowDecadeFactor(double shadowDecadeFactor)
+    {
+        m_shadowDecadeFactor = shadowDecadeFactor;
+    }
 
-    const QColor &shadowColor() const { return m_shadowColor; }
-    void setShadowColor(const QColor &shadowColor) { m_shadowColor = shadowColor; }
+    const QColor &shadowColor() const
+    {
+        return m_shadowColor;
+    }
+    void setShadowColor(const QColor &shadowColor)
+    {
+        m_shadowColor = shadowColor;
+    }
 
-    const QPoint &shadowOffset() const { return m_shadowOffset; }
-    void setShadowOffset(const QPoint &shadowOffset) { m_shadowOffset = shadowOffset; }
+    const QPoint &shadowOffset() const
+    {
+        return m_shadowOffset;
+    }
+    void setShadowOffset(const QPoint &shadowOffset)
+    {
+        m_shadowOffset = shadowOffset;
+    }
 
     bool tryParse(const Json::Value &arg);
 

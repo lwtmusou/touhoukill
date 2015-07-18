@@ -18,7 +18,8 @@ typedef const QSettings *SettingsStar;
 
 Q_DECLARE_METATYPE(SettingsStar);
 
-MetaInfoWidget::MetaInfoWidget(bool load_config){
+MetaInfoWidget::MetaInfoWidget(bool load_config)
+{
     setTitle(tr("Meta information"));
 
     QFormLayout *layout = new QFormLayout;
@@ -55,20 +56,22 @@ MetaInfoWidget::MetaInfoWidget(bool load_config){
     setLayout(layout);
 }
 
-void MetaInfoWidget::saveToSettings(QSettings &settings){
+void MetaInfoWidget::saveToSettings(QSettings &settings)
+{
     QList<const QLineEdit *> edits = findChildren<const QLineEdit *>();
 
-    foreach(const QLineEdit *edit, edits){
+    foreach (const QLineEdit *edit, edits) {
         settings.setValue(edit->objectName(), edit->text());
     }
 
     settings.setValue("Description", description_edit->toPlainText());
 }
 
-void MetaInfoWidget::showSettings(const QSettings *settings){
+void MetaInfoWidget::showSettings(const QSettings *settings)
+{
     QList<QLineEdit *> edits = findChildren<QLineEdit *>();
 
-    foreach(QLineEdit *edit, edits){
+    foreach (QLineEdit *edit, edits) {
         edit->setText(settings->value(edit->objectName()).toString());
     }
 
@@ -95,10 +98,11 @@ PackagingEditor::PackagingEditor(QWidget *parent)
     setLayout(layout);
 }
 
-void PackagingEditor::loadPackageList(){
+void PackagingEditor::loadPackageList()
+{
     QDir dir("extensions");
     QIcon icon("image/system/ark.png");
-    foreach(QFileInfo info, dir.entryInfoList(QStringList() << "*.ini")){
+    foreach (QFileInfo info, dir.entryInfoList(QStringList() << "*.ini")) {
         const QSettings *settings = new QSettings(info.filePath(), QSettings::IniFormat, package_list);
 
         QString name = settings->value("Name").toString();
@@ -111,7 +115,8 @@ void PackagingEditor::loadPackageList(){
     }
 }
 
-QWidget *PackagingEditor::createManagerTab(){
+QWidget *PackagingEditor::createManagerTab()
+{
     QWidget *widget = new QWidget;
 
     package_list = new QListWidget;
@@ -153,14 +158,16 @@ QWidget *PackagingEditor::createManagerTab(){
     return widget;
 }
 
-void PackagingEditor::updateMetaInfo(QListWidgetItem *item){
+void PackagingEditor::updateMetaInfo(QListWidgetItem *item)
+{
     SettingsStar settings = item->data(Qt::UserRole).value<SettingsStar>();
     if (settings) {
         package_list_meta->showSettings(settings);
     }
 }
 
-void PackagingEditor::rescanPackage(){
+void PackagingEditor::rescanPackage()
+{
     QList<QSettings *> settings_list = findChildren<QSettings *>();
     foreach(QSettings *settings, settings_list)
         settings->deleteLater();
@@ -170,7 +177,8 @@ void PackagingEditor::rescanPackage(){
     loadPackageList();
 }
 
-QWidget *PackagingEditor::createPackagingTab(){
+QWidget *PackagingEditor::createPackagingTab()
+{
     QWidget *widget = new QWidget;
 
     file_list = new QListWidget;
@@ -200,14 +208,15 @@ QWidget *PackagingEditor::createPackagingTab(){
     return widget;
 }
 
-void PackagingEditor::installPackage(){
+void PackagingEditor::installPackage()
+{
     QString filename = QFileDialog::getOpenFileName(this,
         tr("Select a package to install"),
         QString(),
         tr("7z format (*.7z)")
         );
 
-    if (!filename.isEmpty()){
+    if (!filename.isEmpty()) {
         QProcess *process = new QProcess(this);
         QStringList args;
         args << "x" << filename;
@@ -217,7 +226,8 @@ void PackagingEditor::installPackage(){
     }
 }
 
-void PackagingEditor::uninstallPackage(){
+void PackagingEditor::uninstallPackage()
+{
     QListWidgetItem *item = package_list->currentItem();
     if (item == NULL)
         return;
@@ -245,25 +255,27 @@ void PackagingEditor::uninstallPackage(){
     delete item;
 }
 
-void PackagingEditor::browseFiles(){
+void PackagingEditor::browseFiles()
+{
     QStringList files = QFileDialog::getOpenFileNames(this,
         tr("Select one or more files to package"),
         ".",
         tr("Any files (*.*)"));
 
     QDir dir;
-    foreach(QString file, files){
+    foreach (QString file, files) {
         new QListWidgetItem(dir.relativeFilePath(file), file_list);
     }
 }
 
-void PackagingEditor::makePackage(){
+void PackagingEditor::makePackage()
+{
     if (file_list->count() == 0)
         return;
 
     QList<const QLineEdit *> edits = file_list_meta->findChildren<const QLineEdit *>();
-    foreach (const QLineEdit *edit, edits){
-        if (edit->text().isEmpty()){
+    foreach (const QLineEdit *edit, edits) {
+        if (edit->text().isEmpty()) {
             QMessageBox::warning(this, tr("Warning"), tr("Please fill the meta information before making package"));
             return;
         }
@@ -278,7 +290,7 @@ void PackagingEditor::makePackage(){
         ".",
         tr("7z format (*.7z)"));
 
-    if (!filename.isEmpty()){
+    if (!filename.isEmpty()) {
         QFileInfo info(filename);
         QString spec_name = QString("extensions/%1.ini").arg(info.baseName());
         QSettings settings(spec_name, QSettings::IniFormat);
@@ -298,7 +310,8 @@ void PackagingEditor::makePackage(){
     }
 }
 
-void PackagingEditor::done7zProcess(int exit_code){
+void PackagingEditor::done7zProcess(int exit_code)
+{
     if (exit_code != 0)
         QMessageBox::warning(this, tr("Warning"), tr("Package compress/decompress error!"));
     else

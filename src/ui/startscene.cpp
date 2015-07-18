@@ -24,7 +24,8 @@ StartScene::StartScene()
     server_log = NULL;
 }
 
-void StartScene::addButton(QAction *action) {
+void StartScene::addButton(QAction *action)
+{
     Button *button = new Button(action->text());
     button->setMute(false);
 
@@ -41,7 +42,8 @@ void StartScene::addButton(QAction *action) {
     buttons << button;
 }
 
-void StartScene::setServerLogBackground() {
+void StartScene::setServerLogBackground()
+{
     if (server_log) {
         // make its background the same as background, looks transparent
         QPalette palette;
@@ -50,7 +52,8 @@ void StartScene::setServerLogBackground() {
     }
 }
 
-void StartScene::switchToServer(Server *server) {
+void StartScene::switchToServer(Server *server)
+{
 #ifdef AUDIO_SUPPORT
     Audio::quit();
 #endif
@@ -89,10 +92,11 @@ void StartScene::switchToServer(Server *server) {
     update();
 }
 
-void StartScene::printServerInfo() {
+void StartScene::printServerInfo()
+{
     QStringList items;
     QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
-    foreach(QHostAddress address, addresses) {
+    foreach (QHostAddress address, addresses) {
         quint32 ipv4 = address.toIPv4Address();
         if (ipv4)
             items << address.toString();
@@ -100,7 +104,7 @@ void StartScene::printServerInfo() {
 
     items.sort();
 
-    foreach(QString item, items) {
+    foreach (QString item, items) {
         if (item.startsWith("192.168.") || item.startsWith("10."))
             server_log->append(tr("Your LAN address: %1, this address is available only for hosts that in the same LAN").arg(item));
         else if (item == "127.0.0.1")
@@ -130,8 +134,7 @@ void StartScene::printServerInfo() {
         case 3: scheme_str = tr("Average"); break;
         }
         server_log->append(tr("Secondary general is enabled, max hp scheme is %1").arg(scheme_str));
-    }
-    else
+    } else
         server_log->append(tr("Seconardary general is disabled"));
 
     server_log->append(Config.EnableScene ?
@@ -149,8 +152,7 @@ void StartScene::printServerInfo() {
 
     if (Config.EnableAI) {
         server_log->append(tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));
-    }
-    else
+    } else
         server_log->append(tr("This server is AI disabled"));
 }
 

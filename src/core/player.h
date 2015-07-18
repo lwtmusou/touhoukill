@@ -15,7 +15,8 @@ class DelayedTrick;
 class DistanceSkill;
 class TriggerSkill;
 
-class Player : public QObject {
+class Player : public QObject
+{
     Q_OBJECT
 
     Q_PROPERTY(QString screenname READ screenName WRITE setScreenName)
@@ -46,13 +47,20 @@ class Player : public QObject {
     Q_ENUMS(Role)
 
 public:
-    enum Phase { RoundStart, Start, Judge, Draw, Play, Discard, Finish, NotActive, PhaseNone };
-    enum Place {
+    enum Phase
+    {
+        RoundStart, Start, Judge, Draw, Play, Discard, Finish, NotActive, PhaseNone
+    };
+    enum Place
+    {
         PlaceHand, PlaceEquip, PlaceDelayedTrick, PlaceJudge,
         PlaceSpecial, DiscardPile, DrawPile, PlaceTable, PlaceUnknown,
         PlaceWuGu
     };
-    enum Role { Lord, Loyalist, Rebel, Renegade };
+    enum Role
+    {
+        Lord, Loyalist, Rebel, Renegade
+    };
 
     explicit Player(QObject *parent);
 
@@ -220,8 +228,14 @@ public:
     bool canSlashWithoutCrossbow(const Card *slash = NULL) const;
     virtual bool isLastHandCard(const Card *card, bool contain = false) const = 0;
 
-    inline bool isJilei(const Card *card) const{ return isCardLimited(card, Card::MethodDiscard); }
-    inline bool isLocked(const Card *card) const{ return isCardLimited(card, Card::MethodUse); }
+    inline bool isJilei(const Card *card) const
+    {
+        return isCardLimited(card, Card::MethodDiscard);
+    }
+    inline bool isLocked(const Card *card) const
+    {
+        return isCardLimited(card, Card::MethodUse);
+    }
 
     void setCardLimitation(const QString &limit_list, const QString &pattern, bool single_turn = false);
     void removeCardLimitation(const QString &limit_list, const QString &pattern);

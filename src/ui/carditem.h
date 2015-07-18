@@ -12,7 +12,8 @@
 class FilterSkill;
 class General;
 
-class CardItem : public QSanSelectableItem {
+class CardItem : public QSanSelectableItem
+{
     Q_OBJECT
 
 public:
@@ -25,7 +26,10 @@ public:
 
     const Card *getCard() const;
     void setCard(const Card *card);
-    inline int getId() const{ return m_cardId; }
+    inline int getId() const
+    {
+        return m_cardId;
+    }
 
     // For move card animation
     void setHomePos(QPointF home_pos);
@@ -33,9 +37,18 @@ public:
     QAbstractAnimation *getGoBackAnimation(bool doFadeEffect, bool smoothTransition = false,
         int duration = Config.S_MOVE_CARD_ANIMATION_DURATION);
     void goBack(bool playAnimation, bool doFade = true);
-    inline QAbstractAnimation *getCurrentAnimation() { return m_currentAnimation; }
-    inline void setHomeOpacity(double opacity) { m_opacityAtHome = opacity; }
-    inline double getHomeOpacity() { return m_opacityAtHome; }
+    inline QAbstractAnimation *getCurrentAnimation()
+    {
+        return m_currentAnimation;
+    }
+    inline void setHomeOpacity(double opacity)
+    {
+        m_opacityAtHome = opacity;
+    }
+    inline double getHomeOpacity()
+    {
+        return m_opacityAtHome;
+    }
 
     void showFrame(const QString &frame);
     void hideFrame();
@@ -45,22 +58,38 @@ public:
     void changeGeneral(const QString &general_name);
     void setFootnote(const QString &desc);
 
-    inline bool isSelected() const{ return m_isSelected; }
-    inline void setSelected(bool selected) { m_isSelected = selected; }
+    inline bool isSelected() const
+    {
+        return m_isSelected;
+    }
+    inline void setSelected(bool selected)
+    {
+        m_isSelected = selected;
+    }
     bool isEquipped() const;
 
     void setFrozen(bool is_frozen);
 
-    inline void showFootnote() { _m_showFootnote = true; }
-    inline void hideFootnote() { _m_showFootnote = false; }
+    inline void showFootnote()
+    {
+        _m_showFootnote = true;
+    }
+    inline void hideFootnote()
+    {
+        _m_showFootnote = false;
+    }
 
     static CardItem *FindItem(const QList<CardItem *> &items, int card_id);
 
-    struct UiHelper {
+    struct UiHelper
+    {
         int tablePileClearTimeStamp;
     } m_uiHelper;
 
-    void clickItem() { emit clicked(); }
+    void clickItem()
+    {
+        emit clicked();
+    }
 
 
 private slots:

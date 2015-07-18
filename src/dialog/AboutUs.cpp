@@ -41,7 +41,8 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
         loadContent(0);
 }
 
-void AboutUsDialog::loadContent(int row) {
+void AboutUsDialog::loadContent(int row)
+{
     QString name = list->item(row)->data(Qt::UserRole).toString();
     QString filename = QString("developers/%1.htm").arg(name);
     QFile file(filename);

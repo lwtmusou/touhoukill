@@ -30,11 +30,12 @@ Settings::Settings()
 #else
     : QSettings("QSanguosha.org", "QSanguosha"),
 #endif
-      Rect(-ViewWidth / 2, -ViewHeight / 2, ViewWidth, ViewHeight)
+    Rect(-ViewWidth / 2, -ViewHeight / 2, ViewWidth, ViewHeight)
 {
 }
 
-void Settings::init() {
+void Settings::init()
+{
     if (!qApp->arguments().contains("-server")) {
         QString font_path = value("DefaultFontPath", "font/simli.ttf").toString();
         int font_id = QFontDatabase::addApplicationFont(font_path);
@@ -165,7 +166,7 @@ void Settings::init() {
 
     QStringList banlist = value("Banlist/Roles").toStringList();
     if (banlist.isEmpty()) {
-        foreach (QString ban_general, roles_ban)
+        foreach(QString ban_general, roles_ban)
             banlist << ban_general;
 
         setValue("Banlist/Roles", banlist);
@@ -173,7 +174,7 @@ void Settings::init() {
 
     banlist = value("Banlist/1v1").toStringList();
     if (banlist.isEmpty()) {
-        foreach (QString ban_general, kof_ban)
+        foreach(QString ban_general, kof_ban)
             banlist << ban_general;
 
         setValue("Banlist/1v1", banlist);
@@ -181,7 +182,7 @@ void Settings::init() {
 
     banlist = value("Banlist/HulaoPass").toStringList();
     if (banlist.isEmpty()) {
-        foreach (QString ban_general, hulao_ban)
+        foreach(QString ban_general, hulao_ban)
             banlist << ban_general;
 
         setValue("Banlist/HulaoPass", banlist);
@@ -189,7 +190,7 @@ void Settings::init() {
 
     banlist = value("Banlist/XMode").toStringList();
     if (banlist.isEmpty()) {
-        foreach (QString ban_general, xmode_ban)
+        foreach(QString ban_general, xmode_ban)
             banlist << ban_general;
 
         setValue("Banlist/XMode", banlist);
@@ -197,7 +198,7 @@ void Settings::init() {
 
     banlist = value("Banlist/Basara").toStringList();
     if (banlist.isEmpty()) {
-        foreach (QString ban_general, basara_ban)
+        foreach(QString ban_general, basara_ban)
             banlist << ban_general;
 
         setValue("Banlist/Basara", banlist);
@@ -205,14 +206,14 @@ void Settings::init() {
 
     banlist = value("Banlist/Hegemony").toStringList();
     if (banlist.isEmpty()) {
-        foreach (QString ban_general, hegemony_ban)
+        foreach(QString ban_general, hegemony_ban)
             banlist << ban_general;
         setValue("Banlist/Hegemony", banlist);
     }
 
     banlist = value("Banlist/Pairs").toStringList();
     if (banlist.isEmpty()) {
-        foreach (QString ban_general, pairs_ban)
+        foreach(QString ban_general, pairs_ban)
             banlist << ban_general;
 
         setValue("Banlist/Pairs", banlist);

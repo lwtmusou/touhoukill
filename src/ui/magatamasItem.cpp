@@ -17,18 +17,19 @@ MagatamasBoxItem::MagatamasBoxItem(QGraphicsItem *parent)
     m_maxHp = 0;
 }
 
-void MagatamasBoxItem::setOrientation(Qt::Orientation orientation) {
+void MagatamasBoxItem::setOrientation(Qt::Orientation orientation)
+{
     m_orientation = orientation;
     _updateLayout();
 }
 
-void MagatamasBoxItem::_updateLayout() {
+void MagatamasBoxItem::_updateLayout()
+{
     int xStep, yStep;
     if (this->m_orientation == Qt::Horizontal) {
         xStep = m_iconSize.width();
         yStep = 0;
-    }
-    else {
+    } else {
         xStep = 0;
         yStep = m_iconSize.height();
     }
@@ -43,8 +44,7 @@ void MagatamasBoxItem::_updateLayout() {
         if (this->m_orientation == Qt::Horizontal) {
             bgSize.setWidth((xStep + 1) * i);
             bgSize.setHeight(m_iconSize.height());
-        }
-        else {
+        } else {
             bgSize.setWidth((yStep + 1) * i);
             bgSize.setHeight(m_iconSize.width());
         }
@@ -53,12 +53,14 @@ void MagatamasBoxItem::_updateLayout() {
     }
 }
 
-void MagatamasBoxItem::setIconSize(QSize size) {
+void MagatamasBoxItem::setIconSize(QSize size)
+{
     m_iconSize = size;
     _updateLayout();
 }
 
-QRectF MagatamasBoxItem::boundingRect() const{
+QRectF MagatamasBoxItem::boundingRect() const
+{
     int buckets = qMin(m_maxHp, 5) + G_COMMON_LAYOUT.m_hpExtraSpaceHolder;
     if (m_orientation == Qt::Horizontal)
         return QRectF(0, 0, buckets * m_iconSize.width(), m_iconSize.height());
@@ -66,23 +68,27 @@ QRectF MagatamasBoxItem::boundingRect() const{
         return QRectF(0, 0, m_iconSize.width(), buckets * m_iconSize.height());
 }
 
-void MagatamasBoxItem::setHp(int hp) {
+void MagatamasBoxItem::setHp(int hp)
+{
     _doHpChangeAnimation(hp);
     m_hp = hp;
     update();
 }
 
-void MagatamasBoxItem::setAnchor(QPoint anchor, Qt::Alignment align) {
+void MagatamasBoxItem::setAnchor(QPoint anchor, Qt::Alignment align)
+{
     m_anchor = anchor;
     m_align = align;
 }
 
-void MagatamasBoxItem::setMaxHp(int maxHp) {
+void MagatamasBoxItem::setMaxHp(int maxHp)
+{
     m_maxHp = maxHp;
     _autoAdjustPos();
 }
 
-void MagatamasBoxItem::_autoAdjustPos() {
+void MagatamasBoxItem::_autoAdjustPos()
+{
     if (!anchorEnabled) return;
     QRectF rect = boundingRect();
     Qt::Alignment hAlign = m_align & Qt::AlignHorizontal_Mask;
@@ -101,14 +107,16 @@ void MagatamasBoxItem::_autoAdjustPos() {
         setY(m_anchor.y());
 }
 
-void MagatamasBoxItem::update() {
+void MagatamasBoxItem::update()
+{
     _updateLayout();
     _autoAdjustPos();
     QGraphicsItem::update();
 }
 
 #include "sprite.h"
-void MagatamasBoxItem::_doHpChangeAnimation(int newHp) {
+void MagatamasBoxItem::_doHpChangeAnimation(int newHp)
+{
     if (newHp >= m_hp) return;
 
     int width = m_imageArea.width();
@@ -117,8 +125,7 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp) {
     if (this->m_orientation == Qt::Horizontal) {
         xStep = width;
         yStep = 0;
-    }
-    else {
+    } else {
         xStep = 0;
         yStep = height;
     }
@@ -156,7 +163,8 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp) {
     }
 }
 
-void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
+void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+{
     if (m_maxHp <= 0) return;
     int imageIndex = qBound(0, m_hp, 5);
     if (m_hp == m_maxHp) imageIndex = 5;
@@ -165,8 +173,7 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     if (this->m_orientation == Qt::Horizontal) {
         xStep = m_iconSize.width();
         yStep = 0;
-    }
-    else {
+    } else {
         xStep = 0;
         yStep = m_iconSize.height();
     }
@@ -194,8 +201,7 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
             rect.translate(m_imageArea.topLeft());
             painter->drawPixmap(rect, _icons[0]);
         }
-    }
-    else {
+    } else {
         painter->drawPixmap(m_imageArea, _icons[imageIndex]);
         QRect rect(xStep, yStep, m_imageArea.width(), m_imageArea.height());
         rect.translate(m_imageArea.topLeft());

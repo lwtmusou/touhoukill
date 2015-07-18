@@ -11,7 +11,7 @@
 General::General(Package *package, const QString &name, const QString &kingdom,
     int max_hp, bool male, bool hidden, bool never_shown)
     : QObject(package), kingdom(kingdom), max_hp(max_hp), gender(male ? Male : Female),
-      hidden(hidden), never_shown(never_shown)
+    hidden(hidden), never_shown(never_shown)
 {
     static QChar lord_symbol('$');
     if (name.endsWith(lord_symbol)) {
@@ -25,70 +25,85 @@ General::General(Package *package, const QString &name, const QString &kingdom,
     }
 }
 
-int General::getMaxHp() const{
+int General::getMaxHp() const
+{
     return max_hp;
 }
 
-QString General::getKingdom() const{
+QString General::getKingdom() const
+{
     return kingdom;
 }
 
-bool General::isMale() const{
+bool General::isMale() const
+{
     return gender == Male;
 }
 
-bool General::isFemale() const{
+bool General::isFemale() const
+{
     return gender == Female;
 }
 
-bool General::isNeuter() const{
+bool General::isNeuter() const
+{
     return gender == Neuter;
 }
 
-void General::setGender(Gender gender) {
+void General::setGender(Gender gender)
+{
     this->gender = gender;
 }
 
-General::Gender General::getGender() const{
+General::Gender General::getGender() const
+{
     return gender;
 }
 
-bool General::isLord() const{
+bool General::isLord() const
+{
     return lord;
 }
 
-bool General::isHidden() const{
+bool General::isHidden() const
+{
     return hidden;
 }
 
-bool General::isTotallyHidden() const{
+bool General::isTotallyHidden() const
+{
     return never_shown || !isVisible();
 }
 
-bool General::isVisible() const{
+bool General::isVisible() const
+{
     return !Sanguosha->SurprisingGenerals.contains(objectName())
         || Config.KnownSurprisingGenerals.contains(objectName());
 }
 
-void General::addSkill(Skill *skill) {
+void General::addSkill(Skill *skill)
+{
     skill->setParent(this);
     skill_set << skill->objectName();
     if (!skillname_list.contains(skill->objectName()))
         skillname_list << skill->objectName();
 }
 
-void General::addSkill(const QString &skill_name) {
+void General::addSkill(const QString &skill_name)
+{
     if (extra_set.contains(skill_name)) return;
     extra_set << skill_name;
     if (!skillname_list.contains(skill_name))
         skillname_list << skill_name;
 }
 
-bool General::hasSkill(const QString &skill_name) const{
+bool General::hasSkill(const QString &skill_name) const
+{
     return skill_set.contains(skill_name) || extra_set.contains(skill_name);
 }
 
-QList<const Skill *> General::getSkillList() const{
+QList<const Skill *> General::getSkillList() const
+{
     QList<const Skill *> skills;
     foreach (QString skill_name, skillname_list) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
@@ -98,7 +113,8 @@ QList<const Skill *> General::getSkillList() const{
     return skills;
 }
 
-QList<const Skill *> General::getVisibleSkillList() const{
+QList<const Skill *> General::getVisibleSkillList() const
+{
     QList<const Skill *> skills;
     foreach (const Skill *skill, getSkillList()) {
         if (skill->isVisible())
@@ -108,11 +124,13 @@ QList<const Skill *> General::getVisibleSkillList() const{
     return skills;
 }
 
-QSet<const Skill *> General::getVisibleSkills() const{
+QSet<const Skill *> General::getVisibleSkills() const
+{
     return getVisibleSkillList().toSet();
 }
 
-QSet<const TriggerSkill *> General::getTriggerSkills() const{
+QSet<const TriggerSkill *> General::getTriggerSkills() const
+{
     QSet<const TriggerSkill *> skills;
     foreach (QString skill_name, skillname_list) {
         const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
@@ -122,15 +140,18 @@ QSet<const TriggerSkill *> General::getTriggerSkills() const{
     return skills;
 }
 
-void General::addRelateSkill(const QString &skill_name) {
+void General::addRelateSkill(const QString &skill_name)
+{
     related_skills << skill_name;
 }
 
-QStringList General::getRelatedSkillNames() const{
+QStringList General::getRelatedSkillNames() const
+{
     return related_skills;
 }
 
-QString General::getPackage() const{
+QString General::getPackage() const
+{
     QObject *p = parent();
     if (p)
         return p->objectName();
@@ -138,7 +159,8 @@ QString General::getPackage() const{
         return QString(); // avoid null pointer exception;
 }
 
-QString General::getSkillDescription(bool include_name, bool yellow) const{
+QString General::getSkillDescription(bool include_name, bool yellow) const
+{
     QString description;
 
     foreach (const Skill *skill, getVisibleSkillList()) {
@@ -161,7 +183,8 @@ QString General::getSkillDescription(bool include_name, bool yellow) const{
     return description;
 }
 
-void General::lastWord() const{
+void General::lastWord() const
+{
     QString filename = QString("audio/death/%1.ogg").arg(objectName());
     bool fileExists = QFile::exists(filename);
     if (!fileExists) {

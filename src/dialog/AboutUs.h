@@ -6,7 +6,8 @@
 class QListWidget;
 class QTextBrowser;
 
-class AboutUsDialog : public QDialog {
+class AboutUsDialog : public QDialog
+{
     Q_OBJECT
 
 public:

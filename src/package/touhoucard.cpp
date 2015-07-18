@@ -9,13 +9,15 @@
 
 
 
-NosRendeCard::NosRendeCard() {
+NosRendeCard::NosRendeCard()
+{
     mute = true;
     will_throw = false;
     handling_method = Card::MethodNone;
 }
 
-void NosRendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+void NosRendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
     ServerPlayer *target = targets.first();
 
     room->broadcastSkillInvoke("rende");

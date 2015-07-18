@@ -21,17 +21,41 @@ public:
     SanSimpleTextFont(const QString &fontName, const QSize &fontSize,
         const QColor &color = Qt::white, int spacing = 0, int weight = 0);
 
-    const QSize &size() const { return m_fontSize; }
-    void setSize(const QSize &size) { m_fontSize = size; }
+    const QSize &size() const
+    {
+        return m_fontSize;
+    }
+    void setSize(const QSize &size)
+    {
+        m_fontSize = size;
+    }
 
-    const QColor &color() const { return m_color; }
-    void setColor(const QColor &color) { m_color = color; }
+    const QColor &color() const
+    {
+        return m_color;
+    }
+    void setColor(const QColor &color)
+    {
+        m_color = color;
+    }
 
-    int spacing() const { return m_spacing; }
-    void setSpacing(int spacing) { m_spacing = spacing; }
+    int spacing() const
+    {
+        return m_spacing;
+    }
+    void setSpacing(int spacing)
+    {
+        m_spacing = spacing;
+    }
 
-    int weight() const { return m_weight; }
-    void setWeight(int weight) { m_weight = weight; }
+    int weight() const
+    {
+        return m_weight;
+    }
+    void setWeight(int weight)
+    {
+        m_weight = weight;
+    }
 
     bool tryParse(const Json::Value &arg);
 

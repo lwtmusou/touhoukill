@@ -5,7 +5,8 @@
 #include "card.h"
 #include "generaloverview.h" //for zun?
 
-class hongwuCard : public SkillCard {
+class hongwuCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -15,7 +16,8 @@ public:
 };
 
 
-class shenqiangCard : public SkillCard {
+class shenqiangCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -24,7 +26,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class huimieCard : public SkillCard {
+class huimieCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -34,7 +37,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class shenshouCard : public SkillCard {
+class shenshouCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -43,7 +47,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class chaorenpreventrecast : public SkillCard {
+class chaorenpreventrecast : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -55,7 +60,8 @@ public:
 
 };
 
-class ziwoCard : public SkillCard {
+class ziwoCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -64,7 +70,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class chaowoCard : public SkillCard {
+class chaowoCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -75,7 +82,8 @@ public:
 };
 
 
-class wendaoCard : public SkillCard {
+class wendaoCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -85,7 +93,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class touhougodPackage : public Package {
+class touhougodPackage : public Package
+{
     Q_OBJECT
 
 public:

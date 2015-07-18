@@ -5,7 +5,8 @@
 #include "card.h"
 
 
-class shouhuiCard : public SkillCard {
+class shouhuiCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -14,7 +15,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class woyuCard : public SkillCard {
+class woyuCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -25,7 +27,8 @@ public:
 };
 
 
-class yazhiCard : public SkillCard {
+class yazhiCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -35,7 +38,8 @@ public:
 };
 
 
-class thxwmPackage : public Package {
+class thxwmPackage : public Package
+{
     Q_OBJECT
 
 public:

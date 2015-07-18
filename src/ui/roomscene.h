@@ -37,7 +37,8 @@ class BubbleChatBox;
 #include <QMutex>
 #include <QStack>
 
-class ScriptExecutor : public QDialog {
+class ScriptExecutor : public QDialog
+{
     Q_OBJECT
 
 public:
@@ -47,7 +48,8 @@ public slots:
     void doScript();
 };
 
-class DeathNoteDialog : public QDialog {
+class DeathNoteDialog : public QDialog
+{
     Q_OBJECT
 
 public:
@@ -60,7 +62,8 @@ private:
     QComboBox *killer, *victim;
 };
 
-class DamageMakerDialog : public QDialog {
+class DamageMakerDialog : public QDialog
+{
     Q_OBJECT
 
 public:
@@ -81,7 +84,8 @@ private slots:
     void disableSource();
 };
 
-class KOFOrderBox : public QGraphicsPixmapItem {
+class KOFOrderBox : public QGraphicsPixmapItem
+{
 public:
     KOFOrderBox(bool self, QGraphicsScene *scene);
     void revealGeneral(const QString &name);
@@ -92,7 +96,8 @@ private:
     int revealed;
 };
 
-class ReplayerControlBar : public QGraphicsObject{
+class ReplayerControlBar : public QGraphicsObject
+{
     Q_OBJECT
 
 public:
@@ -116,7 +121,8 @@ private:
     qreal speed;
 };
 
-class TimeLabel : public QGraphicsObject{
+class TimeLabel : public QGraphicsObject
+{
     Q_OBJECT
 
 public:
@@ -137,7 +143,8 @@ private:
     QTimer *timer;
 };
 
-class RoomScene : public QGraphicsScene {
+class RoomScene : public QGraphicsScene
+{
     Q_OBJECT
 
 public:
@@ -148,17 +155,29 @@ public:
     void showPromptBox();
     static void FillPlayerNames(QComboBox *ComboBox, bool add_none);
     void updateTable();
-    inline QMainWindow *mainWindow() { return main_window; }
+    inline QMainWindow *mainWindow()
+    {
+        return main_window;
+    }
 
     void changeTableBg();
     void changeTableBg(const QString &tableBgImage_path);
 
-    inline bool isCancelButtonEnabled() const{ return cancel_button != NULL && cancel_button->isEnabled(); }
-    inline void setGuhuoLog(const QString &log) { guhuo_log = log; }
+    inline bool isCancelButtonEnabled() const
+    {
+        return cancel_button != NULL && cancel_button->isEnabled();
+    }
+    inline void setGuhuoLog(const QString &log)
+    {
+        guhuo_log = log;
+    }
 
     bool m_skillButtonSank;
 
-    const QRectF &getTableRect() const { return m_tableRect; }
+    const QRectF &getTableRect() const
+    {
+        return m_tableRect;
+    }
 
     void addHeroSkinContainer(ClientPlayer *player,
         HeroSkinContainer *heroSkinContainer);
@@ -300,10 +319,20 @@ private:
     QPointF m_tableCenterPos;
     ReplayerControlBar *m_replayControl;
 
-    struct _MoveCardsClassifier {
-        inline _MoveCardsClassifier(const CardsMoveStruct &move) { m_card_ids = move.card_ids; }
-        inline bool operator ==(const _MoveCardsClassifier &other) const{ return m_card_ids == other.m_card_ids; }
-        inline bool operator <(const _MoveCardsClassifier &other) const{ return m_card_ids.first() < other.m_card_ids.first(); }
+    struct _MoveCardsClassifier
+    {
+        inline _MoveCardsClassifier(const CardsMoveStruct &move)
+        {
+            m_card_ids = move.card_ids;
+        }
+        inline bool operator ==(const _MoveCardsClassifier &other) const
+        {
+            return m_card_ids == other.m_card_ids;
+        }
+        inline bool operator <(const _MoveCardsClassifier &other) const
+        {
+            return m_card_ids.first() < other.m_card_ids.first();
+        }
         QList<int> m_card_ids;
     };
 

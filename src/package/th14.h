@@ -5,7 +5,8 @@
 #include "card.h"
 
 
-class leitingCard : public SkillCard {
+class leitingCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -14,7 +15,8 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class yuanfeiCard : public SkillCard {
+class yuanfeiCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -24,7 +26,8 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class yuanfeiNearCard : public SkillCard {
+class yuanfeiNearCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -34,7 +37,8 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class liangeCard : public SkillCard {
+class liangeCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -45,7 +49,8 @@ public:
 
 
 
-class th14Package : public Package {
+class th14Package : public Package
+{
     Q_OBJECT
 
 public:

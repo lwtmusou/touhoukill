@@ -6,7 +6,8 @@
 
 
 
-class qingtingCard : public SkillCard {
+class qingtingCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -15,7 +16,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class xihuaCard : public SkillCard{
+class xihuaCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -31,7 +33,8 @@ public:
 };
 
 
-class shijieCard : public SkillCard {
+class shijieCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -40,7 +43,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class leishiCard : public SkillCard {
+class leishiCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -51,7 +55,8 @@ public:
 };
 
 
-class xiefaCard : public SkillCard {
+class xiefaCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -64,7 +69,8 @@ public:
 };
 
 
-class huishengCard : public SkillCard {
+class huishengCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -77,7 +83,8 @@ public:
 
 
 
-class bumingCard : public SkillCard {
+class bumingCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -88,7 +95,8 @@ public:
 };
 
 
-class th13Package : public Package {
+class th13Package : public Package
+{
     Q_OBJECT
 
 public:

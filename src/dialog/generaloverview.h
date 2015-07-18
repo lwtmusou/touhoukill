@@ -16,7 +16,8 @@ class QCommandLinkButton;
 
 class GeneralOverview;
 
-class GeneralSearch : public QDialog {
+class GeneralSearch : public QDialog
+{
     Q_OBJECT
 
 public:
@@ -57,7 +58,8 @@ namespace Ui {
     class GeneralOverview;
 }
 
-class GeneralOverview : public QDialog {
+class GeneralOverview : public QDialog
+{
     Q_OBJECT
 
 public:

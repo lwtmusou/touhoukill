@@ -37,7 +37,8 @@ OptionButton::OptionButton(QString icon_path, const QString &caption, QWidget *p
     }
 }
 
-void OptionButton::mouseDoubleClickEvent(QMouseEvent *) {
+void OptionButton::mouseDoubleClickEvent(QMouseEvent *)
+{
     emit double_clicked();
 }
 
@@ -234,7 +235,8 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     setLayout(dialog_layout);
 }
 
-void ChooseGeneralDialog::done(int result) {
+void ChooseGeneralDialog::done(int result)
+{
     if (m_freeChooseDialog != NULL) {
         m_freeChooseDialog->reject();
         delete m_freeChooseDialog;
@@ -243,7 +245,8 @@ void ChooseGeneralDialog::done(int result) {
     QDialog::done(result);
 }
 
-void ChooseGeneralDialog::freeChoose() {
+void ChooseGeneralDialog::freeChoose()
+{
     QDialog *dialog = new FreeChooseDialog(this);
 
     connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
@@ -307,7 +310,8 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
         group->buttons().first()->click();
 }
 
-void FreeChooseDialog::chooseGeneral() {
+void FreeChooseDialog::chooseGeneral()
+{
     if (pair_choose) {
         QList<QAbstractButton *> buttons = group->buttons();
         QString first, second;
@@ -332,7 +336,8 @@ void FreeChooseDialog::chooseGeneral() {
     accept();
 }
 
-QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals) {
+QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals)
+{
     QWidget *tab = new QWidget;
 
     QGridLayout *layout = new QGridLayout;
@@ -382,7 +387,8 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals) {
     return tab;
 }
 
-void FreeChooseDialog::uncheckExtraButton(QAbstractButton *click_button) {
+void FreeChooseDialog::uncheckExtraButton(QAbstractButton *click_button)
+{
     QAbstractButton *first = NULL;
     QList<QAbstractButton *> buttons = group->buttons();
     foreach (QAbstractButton *button, buttons) {

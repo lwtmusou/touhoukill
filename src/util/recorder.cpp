@@ -15,11 +15,13 @@ Recorder::Recorder(QObject *parent)
     watch.start();
 }
 
-void Recorder::record(const char *line) {
+void Recorder::record(const char *line)
+{
     recordLine(line);
 }
 
-void Recorder::recordLine(const QString &line) {
+void Recorder::recordLine(const QString &line)
+{
     int elapsed = watch.elapsed();
     if (line.endsWith("\n"))
         data.append(QString("%1 %2").arg(elapsed).arg(line));
@@ -27,28 +29,29 @@ void Recorder::recordLine(const QString &line) {
         data.append(QString("%1 %2\n").arg(elapsed).arg(line));
 }
 
-bool Recorder::save(const QString &filename) const{
+bool Recorder::save(const QString &filename) const
+{
     if (filename.endsWith(".txt")) {
         QFile file(filename);
         if (file.open(QIODevice::WriteOnly | QIODevice::Text))
             return file.write(data) != -1;
         else
             return false;
-    }
-    else if (filename.endsWith(".png")) {
+    } else if (filename.endsWith(".png")) {
         return TXT2PNG(data).save(filename);
-    }
-    else
+    } else
         return false;
 }
 
-QList<QString> Recorder::getRecords() const{
+QList<QString> Recorder::getRecords() const
+{
     QString record_data(data);
     QList<QString> records = record_data.split("\n");
     return records;
 }
 
-QImage Recorder::TXT2PNG(QByteArray txtData) {
+QImage Recorder::TXT2PNG(QByteArray txtData)
+{
     QByteArray data = qCompress(txtData, 9);
     qint32 actual_size = data.size();
     data.prepend((const char *)&actual_size, sizeof(qint32));
@@ -74,8 +77,7 @@ Replayer::Replayer(QObject *parent, const QString &filename)
         QByteArray *data = new QByteArray(PNG2TXT(filename));
         QBuffer *buffer = new QBuffer(data);
         device = buffer;
-    }
-    else if (filename.endsWith(".txt")) {
+    } else if (filename.endsWith(".txt")) {
         QFile *file = new QFile(filename);
         device = file;
     }
@@ -111,7 +113,8 @@ Replayer::Replayer(QObject *parent, const QString &filename)
     delete device;
 }
 
-QByteArray Replayer::PNG2TXT(const QString filename) {
+QByteArray Replayer::PNG2TXT(const QString filename)
+{
     QImage image(filename);
     image = image.convertToFormat(QImage::Format_ARGB32);
     const uchar *imageData = image.bits();
@@ -122,20 +125,20 @@ QByteArray Replayer::PNG2TXT(const QString filename) {
     return data;
 }
 
-QString &Replayer::commandProceed(QString &cmd) {
+QString &Replayer::commandProceed(QString &cmd)
+{
     static QStringList split_flags;
     if (split_flags.isEmpty())
         split_flags << ":" << "+" << "_" << "->";
 
-    foreach(QString flag, split_flags) {
+    foreach (QString flag, split_flags) {
         QStringList messages = cmd.split(flag);
         if (messages.length() > 1) {
             QStringList message_analyse;
             foreach(QString message, messages)
                 message_analyse << commandProceed(message);
             cmd = "[" + message_analyse.join(",") + "]";
-        }
-        else {
+        } else {
             bool ok = false;
             cmd.toInt(&ok);
 
@@ -147,11 +150,13 @@ QString &Replayer::commandProceed(QString &cmd) {
     return cmd;
 }
 
-int Replayer::getDuration() const{
+int Replayer::getDuration() const
+{
     return pairs.last().elapsed / 1000.0;
 }
 
-qreal Replayer::getSpeed() {
+qreal Replayer::getSpeed()
+{
     qreal speed;
     mutex.lock();
     speed = this->speed;
@@ -159,7 +164,8 @@ qreal Replayer::getSpeed() {
     return speed;
 }
 
-void Replayer::uniform() {
+void Replayer::uniform()
+{
     mutex.lock();
 
     if (speed != 1.0) {
@@ -170,7 +176,8 @@ void Replayer::uniform() {
     mutex.unlock();
 }
 
-void Replayer::speedUp() {
+void Replayer::speedUp()
+{
     mutex.lock();
 
     if (speed < 6.0) {
@@ -182,7 +189,8 @@ void Replayer::speedUp() {
     mutex.unlock();
 }
 
-void Replayer::slowDown() {
+void Replayer::slowDown()
+{
     mutex.lock();
 
     if (speed >= 1.0) {
@@ -194,24 +202,26 @@ void Replayer::slowDown() {
     mutex.unlock();
 }
 
-void Replayer::toggle() {
+void Replayer::toggle()
+{
     playing = !playing;
     if (playing)
         play_sem.release(); // to play
 }
 
-void Replayer::run() {
+void Replayer::run()
+{
     int last = 0;
 
     QStringList nondelays;
     nondelays << "addPlayer" << "removePlayer" << "speak";
 
-    foreach(Pair pair, pairs) {
+    foreach (Pair pair, pairs) {
         int delay = qMin(pair.elapsed - last, 2500);
         last = pair.elapsed;
 
         bool delayed = true;
-        foreach(QString nondelay, nondelays) {
+        foreach (QString nondelay, nondelays) {
             if (pair.cmd.startsWith(nondelay)) {
                 delayed = false;
                 break;
@@ -232,7 +242,8 @@ void Replayer::run() {
     }
 }
 
-QString Replayer::getPath() const{
+QString Replayer::getPath() const
+{
     return filename;
 }
 

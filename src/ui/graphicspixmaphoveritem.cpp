@@ -127,8 +127,7 @@ void GraphicsPixmapHoverItem::paint(QPainter *painter,
         if (isSecondaryAvartarItem()) {
             tempPix = m_playerCardContainer->paintByMask(tempPix);
         }
-    }
-    else {
+    } else {
         tempPainter.drawPixmap(offset(), pixmap());
     }
 
@@ -167,8 +166,7 @@ void GraphicsPixmapHoverItem::startChangeHeroSkinAnimation(const QString &genera
     if (NULL != m_playerCardContainer) {
         if (isPrimaryAvartarItem()) {
             m_heroSkinPixmap = m_playerCardContainer->_getAvatarIcon(generalName);
-        }
-        else {
+        } else {
             m_heroSkinPixmap = m_playerCardContainer->getSmallAvatarIcon(generalName);
         }
 

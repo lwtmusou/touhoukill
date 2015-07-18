@@ -5,7 +5,8 @@ static QSet<BanPair> BanPairSet;
 static QSet<QString> AllBanSet;
 static QSet<QString> SecondBanSet;
 
-BanPair::BanPair() {
+BanPair::BanPair()
+{
 }
 
 BanPair::BanPair(const QString &first, const QString &second)
@@ -18,11 +19,13 @@ BanPair::BanPair(const QString &first, const QString &second)
 
 Q_DECLARE_METATYPE(BanPair)
 
-bool BanPair::isBanned(const QString &general) {
+bool BanPair::isBanned(const QString &general)
+{
     return AllBanSet.contains(general);
 }
 
-bool BanPair::isBanned(const QString &first, const QString &second) {
+bool BanPair::isBanned(const QString &first, const QString &second)
+{
     if (SecondBanSet.contains(second))
         return true;
 
@@ -33,7 +36,8 @@ bool BanPair::isBanned(const QString &first, const QString &second) {
     return BanPairSet.contains(pair);
 }
 
-void BanPair::loadBanPairs() {
+void BanPair::loadBanPairs()
+{
     AllBanSet.clear();
     SecondBanSet.clear();
     BanPairSet.clear();
@@ -61,26 +65,30 @@ void BanPair::loadBanPairs() {
     }
 }
 
-void BanPair::saveBanPairs() {
+void BanPair::saveBanPairs()
+{
     QStringList stream;
-    foreach (QString banned, AllBanSet)
+    foreach(QString banned, AllBanSet)
         stream << banned;
-    foreach (QString banned, SecondBanSet)
+    foreach(QString banned, SecondBanSet)
         stream << QString("+%1").arg(banned);
-    foreach (BanPair pair, BanPairSet)
+    foreach(BanPair pair, BanPairSet)
         stream << QString("%1+%2").arg(pair.first, pair.second);
     Config.setValue("Banlist/Pairs", stream);
 }
 
-const QSet<QString> BanPair::getAllBanSet() {
+const QSet<QString> BanPair::getAllBanSet()
+{
     return AllBanSet;
 }
 
-const QSet<QString> BanPair::getSecondBanSet() {
+const QSet<QString> BanPair::getSecondBanSet()
+{
     return SecondBanSet;
 }
 
-const QSet<BanPair> BanPair::getBanPairSet() {
+const QSet<BanPair> BanPair::getBanPairSet()
+{
     return BanPairSet;
 }
 

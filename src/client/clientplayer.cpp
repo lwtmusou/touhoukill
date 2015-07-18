@@ -15,15 +15,18 @@ ClientPlayer::ClientPlayer(Client *client)
     mark_doc = new QTextDocument(this);
 }
 
-int ClientPlayer::aliveCount() const{
+int ClientPlayer::aliveCount() const
+{
     return ClientInstance->alivePlayerCount();
 }
 
-int ClientPlayer::getHandcardNum() const{
+int ClientPlayer::getHandcardNum() const
+{
     return handcard_num;
 }
 
-void ClientPlayer::addCard(const Card *card, Place place) {
+void ClientPlayer::addCard(const Card *card, Place place)
+{
     switch (place) {
     case PlaceHand: {
         if (card) known_cards << card;
@@ -44,12 +47,14 @@ void ClientPlayer::addCard(const Card *card, Place place) {
     }
 }
 
-void ClientPlayer::addKnownHandCard(const Card *card) {
+void ClientPlayer::addKnownHandCard(const Card *card)
+{
     if (!known_cards.contains(card))
         known_cards << card;
 }
 
-bool ClientPlayer::isLastHandCard(const Card *card, bool contain) const{
+bool ClientPlayer::isLastHandCard(const Card *card, bool contain) const
+{
     if (!card->isVirtualCard()) {
         if (known_cards.length() != 1)
             return false;
@@ -72,7 +77,8 @@ bool ClientPlayer::isLastHandCard(const Card *card, bool contain) const{
     return false;
 }
 
-void ClientPlayer::removeCard(const Card *card, Place place) {
+void ClientPlayer::removeCard(const Card *card, Place place)
+{
     switch (place) {
     case PlaceHand: {
         handcard_num--;
@@ -94,21 +100,25 @@ void ClientPlayer::removeCard(const Card *card, Place place) {
     }
 }
 
-QList<const Card *> ClientPlayer::getHandcards() const{
+QList<const Card *> ClientPlayer::getHandcards() const
+{
     return known_cards;
 }
 
-void ClientPlayer::setCards(const QList<int> &card_ids) {
+void ClientPlayer::setCards(const QList<int> &card_ids)
+{
     known_cards.clear();
-    foreach (int cardId, card_ids)
+    foreach(int cardId, card_ids)
         known_cards.append(Sanguosha->getCard(cardId));
 }
 
-QTextDocument *ClientPlayer::getMarkDoc() const{
+QTextDocument *ClientPlayer::getMarkDoc() const
+{
     return mark_doc;
 }
 
-void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids) {
+void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids)
+{
     if (add)
         piles[name].append(card_ids);
     else {
@@ -127,7 +137,8 @@ void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids
         emit pile_changed(name);
 }
 
-QString ClientPlayer::getDeathPixmapPath() const{
+QString ClientPlayer::getDeathPixmapPath() const
+{
     QString basename;
     if (ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode") {
         if (getRole() == "lord" || getRole() == "renegade")
@@ -145,15 +156,18 @@ QString ClientPlayer::getDeathPixmapPath() const{
     return QString("image/system/death/%1.png").arg(basename);
 }
 
-void ClientPlayer::setHandcardNum(int n) {
+void ClientPlayer::setHandcardNum(int n)
+{
     handcard_num = n;
 }
 
-QString ClientPlayer::getGameMode() const{
+QString ClientPlayer::getGameMode() const
+{
     return ServerInfo.GameMode;
 }
 
-void ClientPlayer::setFlags(const QString &flag) {
+void ClientPlayer::setFlags(const QString &flag)
+{
     Player::setFlags(flag);
 
     if (flag.endsWith("actioned"))
@@ -162,7 +176,8 @@ void ClientPlayer::setFlags(const QString &flag) {
     emit skill_state_changed(flag);
 }
 
-void ClientPlayer::setMark(const QString &mark, int value) {
+void ClientPlayer::setMark(const QString &mark, int value)
+{
     if (marks[mark] == value)
         return;
     marks[mark] = value;
@@ -188,17 +203,17 @@ void ClientPlayer::setMark(const QString &mark, int value) {
                 if (itor.key() == QString("@%1").arg(#markname)) {\
                     markname##_mark = itor.value();\
                     continue;\
-                }\
-            }
+                                }\
+                    }
 
             _EXCLUDE_MARK(huashen)
-            _EXCLUDE_MARK(yongsi_test)
-            _EXCLUDE_MARK(jushou_test)
-            _EXCLUDE_MARK(max_cards_test)
-            _EXCLUDE_MARK(offensive_distance_test)
-            _EXCLUDE_MARK(defensive_distance_test)
+                _EXCLUDE_MARK(yongsi_test)
+                _EXCLUDE_MARK(jushou_test)
+                _EXCLUDE_MARK(max_cards_test)
+                _EXCLUDE_MARK(offensive_distance_test)
+                _EXCLUDE_MARK(defensive_distance_test)
 #undef _EXCLUDE_MARK
-            QString mark_text = QString("<img src='image/mark/%1.png' />").arg(itor.key());
+                QString mark_text = QString("<img src='image/mark/%1.png' />").arg(itor.key());
             if (itor.value() != 1)
                 mark_text.append(QString("%1").arg(itor.value()));
             if (this != Self)
@@ -213,22 +228,22 @@ void ClientPlayer::setMark(const QString &mark, int value) {
             QString mark_text = QString("<img src='image/mark/test/@%1.png' />").arg(#markname);\
             if (markname##_mark != 1) {\
                 mark_text.append(QString("%1").arg(markname##_mark));\
-            }\
+                        }\
             if (this != Self) {\
                 mark_text.append("<br>");\
                 text.prepend(mark_text);\
-            } else {\
+                        } else {\
                 text.append(mark_text);\
-            }\
-        }\
-    }
+                        }\
+                }\
+        }
 
     _SET_MARK(huashen)
-    _SET_MARK(yongsi_test)
-    _SET_MARK(jushou_test)
-    _SET_MARK(max_cards_test)
-    _SET_MARK(offensive_distance_test)
-    _SET_MARK(defensive_distance_test)
+        _SET_MARK(yongsi_test)
+        _SET_MARK(jushou_test)
+        _SET_MARK(max_cards_test)
+        _SET_MARK(offensive_distance_test)
+        _SET_MARK(defensive_distance_test)
 #undef _SET_MARK
         mark_doc->setHtml(text);
 

@@ -15,21 +15,31 @@
 #include <QTextEdit>
 #include <QLineEdit>
 
-class LabelButton : public QLabel {
+class LabelButton : public QLabel
+{
     Q_OBJECT
 
 public:
-    LabelButton() : QLabel() {}
+    LabelButton() : QLabel()
+    {
+    }
 
-    void mouseDoubleClickEvent(QMouseEvent *) { emit double_clicked(); }
-    void mousePressEvent(QMouseEvent *) { emit clicked(); }
+    void mouseDoubleClickEvent(QMouseEvent *)
+    {
+        emit double_clicked();
+    }
+    void mousePressEvent(QMouseEvent *)
+    {
+        emit clicked();
+    }
 
 signals:
     void double_clicked();
     void clicked();
 };
 
-class CustomAssignDialog : public QDialog {
+class CustomAssignDialog : public QDialog
+{
     Q_OBJECT
 
 public:
@@ -156,7 +166,8 @@ signals:
 };
 
 
-class GeneralAssignDialog : public QDialog {
+class GeneralAssignDialog : public QDialog
+{
     Q_OBJECT
 
 public:
@@ -175,7 +186,8 @@ signals:
     void general_cleared();
 };
 
-class CardAssignDialog : public QDialog {
+class CardAssignDialog : public QDialog
+{
     Q_OBJECT
 
 public:
@@ -197,7 +209,8 @@ signals:
     void card_chosen(int card_id);
 };
 
-class SkillAssignDialog : public QDialog {
+class SkillAssignDialog : public QDialog
+{
     Q_OBJECT
 
 public:

@@ -20,20 +20,28 @@ class BubbleChatLabel : public QGraphicsTextItem
 {
 public:
     explicit BubbleChatLabel(QGraphicsItem *parent = 0)
-        : QGraphicsTextItem(parent), m_doc(document()) {}
+        : QGraphicsTextItem(parent), m_doc(document())
+    {
+    }
 
-    virtual QRectF boundingRect() const { return m_rect; }
-    void setBoundingRect(const QRectF &newRect) {
+    virtual QRectF boundingRect() const
+    {
+        return m_rect;
+    }
+    void setBoundingRect(const QRectF &newRect)
+    {
         m_rect = newRect;
     }
 
-    void setAlignment(Qt::Alignment alignment) {
+    void setAlignment(Qt::Alignment alignment)
+    {
         QTextOption opt = m_doc->defaultTextOption();
         opt.setAlignment(alignment);
         m_doc->setDefaultTextOption(opt);
     }
 
-    void setWrapMode(QTextOption::WrapMode wrap) {
+    void setWrapMode(QTextOption::WrapMode wrap)
+    {
         QTextOption opt = m_doc->defaultTextOption();
         opt.setWrapMode(wrap);
         m_doc->setDefaultTextOption(opt);
@@ -103,8 +111,7 @@ void BubbleChatBox::setText(const QString &text)
         lineCount = width / PIXELS_PER_LINE;
         if (lineCount >= MAX_LINE_COUNT) {
             lineCount = MAX_LINE_COUNT;
-        }
-        else if (width % PIXELS_PER_LINE != 0) {
+        } else if (width % PIXELS_PER_LINE != 0) {
             ++lineCount;
         }
 
@@ -115,8 +122,7 @@ void BubbleChatBox::setText(const QString &text)
     if (boxWidth <= BOX_MIN_WIDTH) {
         boxWidth = BOX_MIN_WIDTH;
         m_chatLabel->setAlignment(Qt::AlignHCenter);
-    }
-    else {
+    } else {
         m_chatLabel->setAlignment(Qt::AlignLeft);
     }
     m_chatLabel->setTextWidth(boxWidth);
@@ -140,8 +146,7 @@ void BubbleChatBox::setText(const QString &text)
     if (m_oldRect.width() > m_rect.width()) {
         QRectF sceneRect = mapRectToScene(m_oldRect);
         scene()->update(sceneRect);
-    }
-    else {
+    } else {
         update();
     }
 

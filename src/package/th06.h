@@ -5,7 +5,8 @@
 #include "card.h"
 
 
-class skltkexueCard : public SkillCard {
+class skltkexueCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -14,7 +15,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class suodingCard : public SkillCard {
+class suodingCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -29,7 +31,8 @@ public:
 };
 
 
-class zhanyiCard : public SkillCard {
+class zhanyiCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -38,7 +41,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class banyueCard : public SkillCard {
+class banyueCard : public SkillCard
+{
     Q_OBJECT
 
 public:
@@ -48,7 +52,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class th06Package : public Package {
+class th06Package : public Package
+{
     Q_OBJECT
 
 public:

@@ -38,22 +38,18 @@ SanSimpleTextFont::SanSimpleTextFont(const QString &fontName, const QSize &fontS
 
 bool SanSimpleTextFont::tryParse(const Json::Value &arg)
 {
-    if (!arg.isArray() || arg.size() < 4)
-    {
+    if (!arg.isArray() || arg.size() < 4) {
         return false;
     }
 
     m_vertical = false;
     _initFontFace(toQString(arg[0]));
 
-    if (arg[1].isInt())
-    {
+    if (arg[1].isInt()) {
         m_fontSize.setWidth(arg[1].asInt());
         m_fontSize.setHeight(arg[1].asInt());
         m_spacing = 0;
-    }
-    else
-    {
+    } else {
         m_fontSize.setWidth(arg[1][0].asInt());
         m_fontSize.setHeight(arg[1][1].asInt());
         m_spacing = arg[1][2].asInt();
@@ -70,20 +66,16 @@ void SanSimpleTextFont::paintText(QPainter *const painter,
     const QRect &pos, const Qt::Alignment &align, const QString &text) const
 {
     if (pos.width() <= 0 || pos.height() <= 0
-        || m_fontSize.width() <= 0 || m_fontSize.height() <= 0)
-    {
+        || m_fontSize.width() <= 0 || m_fontSize.height() <= 0) {
         return;
     }
 
     QSize actualSize = m_fontSize;
     QRect actualRect = pos;
-    if ((align & Qt::TextWrapAnywhere) && !m_vertical)
-    {
+    if ((align & Qt::TextWrapAnywhere) && !m_vertical) {
         SanFreeTypeFont::getInstance()->paintStringMultiLine(painter, text, m_fontFace,
             m_color, actualSize, m_spacing, m_weight, actualRect, align);
-    }
-    else
-    {
+    } else {
         SanFreeTypeFont::getInstance()->paintString(painter, text, m_fontFace,
             m_color, actualSize, m_spacing, m_weight, actualRect,
             m_vertical ? Qt::Vertical : Qt::Horizontal, align);
@@ -106,18 +98,14 @@ void SanSimpleTextFont::paintText(QGraphicsPixmapItem *const item,
 void SanSimpleTextFont::_initFontFace(const QString &fontName)
 {
     QString fontPath(fontName);
-    if (fontPath.startsWith("@"))
-    {
+    if (fontPath.startsWith("@")) {
         m_vertical = true;
         fontPath.remove(0, 1);
     }
 
-    if (m_fontBank.contains(fontPath))
-    {
+    if (m_fontBank.contains(fontPath)) {
         m_fontFace = m_fontBank[fontPath];
-    }
-    else
-    {
+    } else {
         m_fontFace = SanFreeTypeFont::getInstance()->loadFont(fontPath);
         m_fontBank[fontPath] = m_fontFace;
     }

@@ -12,14 +12,15 @@ class Recorder;
 class Replayer;
 class QTextDocument;
 
-class Client : public QObject {
+class Client : public QObject
+{
     Q_OBJECT
     Q_PROPERTY(Client::Status status READ getStatus WRITE setStatus)
-
     Q_ENUMS(Status)
 
 public:
-    enum Status {
+    enum Status
+    {
         NotActive = 0x00,
         Responding = 0x01,
         Playing = 0x02,
@@ -174,23 +175,34 @@ public:
 
     void attachSkill(const Json::Value &skill);
 
-    inline virtual RoomState *getRoomState() { return &_m_roomState; }
-    inline virtual Card *getCard(int cardId) const{ return _m_roomState.getCard(cardId); }
+    inline virtual RoomState *getRoomState()
+    {
+        return &_m_roomState;
+    }
+    inline virtual Card *getCard(int cardId) const
+    {
+        return _m_roomState.getCard(cardId);
+    }
 
-    inline void setCountdown(QSanProtocol::Countdown countdown) {
+    inline void setCountdown(QSanProtocol::Countdown countdown)
+    {
         m_mutexCountdown.lock();
         m_countdown = countdown;
         m_mutexCountdown.unlock();
     }
 
-    inline QSanProtocol::Countdown getCountdown() {
+    inline QSanProtocol::Countdown getCountdown()
+    {
         m_mutexCountdown.lock();
         QSanProtocol::Countdown countdown = m_countdown;
         m_mutexCountdown.unlock();
         return countdown;
     }
 
-    inline QList<int> getAvailableCards() const{ return available_cards; }
+    inline QList<int> getAvailableCards() const
+    {
+        return available_cards;
+    }
     void clearHighlightSkillName();
     void clearLordInfo();
     // public fields
