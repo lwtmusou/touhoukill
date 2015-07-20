@@ -1427,7 +1427,7 @@ function sgs.gameProcess(room, arg)  --尼玛 不看具体技能和牌的数量�
 				rebel_value = rebel_value + 0.4
 			end
 			if aplayer:getMark("@duanchang") > 0 and aplayer:getMaxHp() <= 3 then rebel_value = rebel_value - 1 end
-
+            if aplayer:hasSkill("xisan") then  rebel_value = rebel_value + 2 end
 			if aplayer:hasSkills("luanying+jingjie") or aplayer:hasSkills("mengxian+jingjie") then rebel_value = rebel_value + 2 end
 			if aplayer:hasSkill("ganying") and lord:hasSkill("fengsu") then rebel_value = rebel_value + 2 end
 			if aplayer:hasSkill("baochun") and aplayer:getMaxHp() >3 then rebel_value = rebel_value + aplayer:getMaxHp() - 3 end

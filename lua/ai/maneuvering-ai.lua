@@ -146,7 +146,7 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 		return false
 	end
 	--¡¾ÂÒÓ°¶Ô²ß¡¿
-	local merry = self.room:findPlayerBySkillName("shishi")
+	local merry = self.room:findPlayerBySkillName("luanying")
 	if merry and self:isFriend(merry, target) and self:canLuanying(merry, slash) then
 		return false
 	end
