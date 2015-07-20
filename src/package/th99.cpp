@@ -1229,8 +1229,117 @@ public:
     }
 };
 
+class zhujiu : public TriggerSkill
+{
+public:
+    zhujiu() : TriggerSkill("zhujiu")
+    {
+        events << TargetConfirmed << SlashEffected; //TargetConfirming
+    }
 
 
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+    {
+
+        if (triggerEvent == TargetConfirmed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isKindOf("Peach") || use.card->isKindOf("Analeptic")) {
+                foreach (ServerPlayer *to, use.to) {
+                    if (player != to) {
+                        player->tag["yushou_target"] = QVariant::fromValue(to);
+                        const Card *card = room->askForExchange(player, objectName(), 1, true, "@zhujiu:" + to->objectName(), true);
+                        if (card){
+                            room->notifySkillInvoked(player, objectName());
+                            room->touhouLogmessage("#InvokeSkill", player, objectName());
+                            room->obtainCard(to, card->getEffectiveId(), room->getCardPlace(card->getEffectiveId()) != Player::PlaceHand);
+                            player->drawCards(1);
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+};
+
+
+yushouCard::yushouCard()
+{
+    m_skillName = "yushou";
+    mute = true;
+}
+bool yushouCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+
+    if (targets.length() == 0) {
+        return !to_select->getEquips().isEmpty();
+    } else if (targets.length() == 1) {
+        foreach (const Card *e, targets.first()->getEquips()) {
+            const EquipCard *equip = qobject_cast<const EquipCard *>(e->getRealCard());
+            if (!to_select->getEquip(equip->location()))
+                return true;
+        }
+    }
+    return false;
+}
+bool yushouCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+    return targets.length() == 2;
+}
+
+void yushouCard::onUse(Room *room, const CardUseStruct &card_use) const
+{
+    ServerPlayer *from = card_use.from;
+    ServerPlayer *to1 = card_use.to.at(0);
+    ServerPlayer *to2 = card_use.to.at(1);
+    QList<ServerPlayer *>logto;
+    logto << to1 << to2;
+    room->touhouLogmessage("#ChoosePlayerWithSkill", from, "yushou", logto, "");
+    room->notifySkillInvoked(card_use.from, "yushou");
+    QList<int> ids;
+    QStringList choices;
+    foreach (const Card *e, to1->getEquips()){
+        const EquipCard *equip = qobject_cast<const EquipCard *>(e->getRealCard());
+        if (!to2->getEquip(equip->location())){
+            ids << e->getEffectiveId();
+            choices << QString::number(equip->location());
+        }        
+    }
+    from->tag["yushou_target1"] = QVariant::fromValue(to1);
+    from->tag["yushou_target2"] = QVariant::fromValue(to2);
+    QString choice = room->askForChoice(from, "yushou", choices.join("+"));
+    int index = 0;
+    foreach (QString str, choices){
+        index = index +1;
+        if (str == choice)
+            break;
+    }
+    const Card *card = Sanguosha->getCard(ids.at(index - 1));
+    room->moveCardTo(card, to1, to2, Player::PlaceEquip,
+                             CardMoveReason(CardMoveReason::S_REASON_TRANSFER,
+                                            from->objectName(), "yushou", QString()));
+
+    if (room->askForSkillInvoke(to1, "yushou-damage", QVariant::fromValue(to2)))
+        room->damage(DamageStruct("yushou", to1, to2, 1, DamageStruct::Normal));
+
+}
+class yushou : public ZeroCardViewAsSkill
+{
+public:
+    yushou() :ZeroCardViewAsSkill("yushou")
+    {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->hasUsed("yushouCard");
+    }
+
+    virtual const Card *viewAs() const
+    {
+        return new yushouCard;
+    }
+};
 
 panduCard::panduCard()
 {
@@ -1419,7 +1528,9 @@ th99Package::th99Package()
     wai010->addSkill(new ganying);
 
     General *wai011 = new General(this, "wai011", "wai", 4, false);
-
+    wai011->addSkill(new zhujiu);
+    wai011->addSkill(new yushou);
+    
     General *wai012 = new General(this, "wai012", "wai", 3, false);
     wai012->addSkill(new pandu);
     wai012->addSkill(new bihuo);
@@ -1432,6 +1543,7 @@ th99Package::th99Package()
     addMetaObject<lianxiCard>();
     addMetaObject<zhesheCard>();
     addMetaObject<zhuonongCard>();
+    addMetaObject<yushouCard>();
     addMetaObject<panduCard>();
     skills << new dangjiavs << new luanying << new ganying_handle;
 }

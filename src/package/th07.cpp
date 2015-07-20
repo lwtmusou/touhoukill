@@ -1059,23 +1059,6 @@ public:
                 }
             }
         }
-
-        /*if (triggerEvent == TargetConfirming ) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            ServerPlayer *shrx =room->findPlayerBySkillName(objectName());
-            if (shrx != NULL && shrx->inMyAttackRange(player) && use.card !=NULL && use.card->isKindOf("Slash")){
-            shrx->tag["zhancao_carduse"] =data;
-            shrx->tag["zhancao_target"] =QVariant::fromValue(player);
-            QString prompt="target:"+use.from->objectName()+":"+player->objectName();
-            if (room->askForSkillInvoke(shrx,objectName(), prompt) ){
-            room->setCardFlag(use.card, "zhancao"+player->objectName());
-            if (room->askForCard(shrx, ".Equip", "@zhancao-discard") ==NULL)
-            room->loseHp(shrx);
-            }
-            shrx->tag.remove("zhancao_carduse");
-            }
-
-            }*/
         else if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (effect.slash != NULL && effect.slash->hasFlag("zhancao" + effect.to->objectName())) {
