@@ -1246,8 +1246,8 @@ public:
             if (use.card->isKindOf("Peach") || use.card->isKindOf("Analeptic")) {
                 foreach (ServerPlayer *to, use.to) {
                     if (player != to) {
-                        player->tag["yushou_target"] = QVariant::fromValue(to);
-                        const Card *card = room->askForExchange(player, objectName(), 1, true, "@zhujiu:" + to->objectName(), true);
+                        player->tag["zhujiu_target"] = QVariant::fromValue(to);
+                        const Card *card = room->askForCard(player, "..", "@zhujiu:" + to->objectName(), data, Card::MethodNone); 
                         if (card){
                             room->notifySkillInvoked(player, objectName());
                             room->touhouLogmessage("#InvokeSkill", player, objectName());
@@ -1296,30 +1296,26 @@ void yushouCard::onUse(Room *room, const CardUseStruct &card_use) const
     logto << to1 << to2;
     room->touhouLogmessage("#ChoosePlayerWithSkill", from, "yushou", logto, "");
     room->notifySkillInvoked(card_use.from, "yushou");
-    QList<int> ids;
-    QStringList choices;
+	QList<int> disable;
+    
+    
     foreach (const Card *e, to1->getEquips()){
         const EquipCard *equip = qobject_cast<const EquipCard *>(e->getRealCard());
-        if (!to2->getEquip(equip->location())){
-            ids << e->getEffectiveId();
-            choices << QString::number(equip->location());
+        if (to2->getEquip(equip->location())){
+            disable << e->getEffectiveId();
         }        
     }
-    from->tag["yushou_target1"] = QVariant::fromValue(to1);
-    from->tag["yushou_target2"] = QVariant::fromValue(to2);
-    QString choice = room->askForChoice(from, "yushou", choices.join("+"));
-    int index = 0;
-    foreach (QString str, choices){
-        index = index +1;
-        if (str == choice)
-            break;
-    }
-    const Card *card = Sanguosha->getCard(ids.at(index - 1));
+    from->tag["yushou_target"] = QVariant::fromValue(to2);
+    to1->tag["yushou_target"] = QVariant::fromValue(to2);
+    int card_id = room->askForCardChosen(from, to1, "e", "yushou", false, Card::MethodNone, disable);
+
+    const Card *card = Sanguosha->getCard(card_id);
     room->moveCardTo(card, to1, to2, Player::PlaceEquip,
                              CardMoveReason(CardMoveReason::S_REASON_TRANSFER,
                                             from->objectName(), "yushou", QString()));
-
-    if (room->askForSkillInvoke(to1, "yushou-damage", QVariant::fromValue(to2)))
+    
+    QString choice = room->askForChoice(to1, "yushou", "damage+cancel");
+    if (choice == "damage")
         room->damage(DamageStruct("yushou", to1, to2, 1, DamageStruct::Normal));
 
 }
