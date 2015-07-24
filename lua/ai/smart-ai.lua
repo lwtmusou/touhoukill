@@ -7201,9 +7201,9 @@ end
 --先天性无效
 function SmartAI:touhouEffectNullify(card,from,to)
 	if not card then return false end
-		if card:isBlack() and to:hasSkill("zhengyi") then
-			return true
-		end
+		--if card:isBlack() and to:hasSkill("zhengyi") then
+		--	return true
+		--end
 		if card:isKindOf("TrickCard") then
 			if to:hasSkill("yunshang") and not from:inMyAttackRange(to) then
 				return true
