@@ -7168,11 +7168,14 @@ function SmartAI:touhouDamageEffect(damage,from,to)
 		if self:sidieEffect(from) then
 			return true
 		end
-		if from:hasWeapon("IceSword") then
+		if from:hasWeapon("IceSword") and not to:isNude() then
 			return true
 		end
 	end
-	if from:hasSkills("shenyin|lizhi") then
+	if from:hasSkill("lizhi") then
+		return true
+	end
+	if from:hasSkill("shenyin") and not to:isNude() then
 		return true
 	end
 	if from:hasSkill("huanming")  and from:getMark("huanming") == 0 then

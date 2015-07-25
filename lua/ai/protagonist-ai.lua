@@ -102,6 +102,14 @@ sgs.ai_choicemade_filter.skillInvoke.qixiang = function(self, player, promptlist
 	if target then
 		if promptlist[#promptlist] == "yes" then
 			sgs.updateIntention(player, target, -50)
+		elseif promptlist[#promptlist] == "no" and sgs.ai_role[target:objectName()] ~= "netural" then
+			if target:isLord() then
+				sgs.updateIntention(player, target, 10)
+			elseif sgs.ai_role[target:objectName()] == "loyalist" and not self:cautionRenegade() then
+				sgs.updateIntention(player, target, 10)
+			elseif sgs.ai_role[target:objectName()] == "rebel" then
+				sgs.updateIntention(player, target, 10)
+			end
 		end	
 	end
 end
