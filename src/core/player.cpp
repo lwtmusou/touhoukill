@@ -469,39 +469,12 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose, bool include
         if (!hasEquipSkill(skill_name)) {
             if (Sanguosha->getSkill(skill_name) && Sanguosha->getSkill(skill_name)->getFrequency() == Skill::Eternal)
                 return (skills.contains(skill_name) || acquired_skills.contains(skill_name));
-            if (getMark("Qingcheng" + skill_name) > 0) //perform Qingcheng
-                skill_invalid = true;
-            //return false;
             if (getMark("pingyi" + skill_name) > 0)
                 skill_invalid = true;
             const Skill *skill = Sanguosha->getSkill(skill_name);
             if (!skill || !skill->isAttachedLordSkill()) {
-                if (phase == NotActive) {
-                    const Player *current = NULL;
-                    foreach (const Player *p, getAliveSiblings()) {
-                        if (p->phase != NotActive) {
-                            current = p;
-                            break;
-                        }
-                    }
-                    if (current) {
-                        if (current->hasSkill("huoshui") && hp >= (max_hp + 1) / 2) //huoshui
-                            skill_invalid = true;
-                        //return false;
-                        if (current->hasSkill("neo2013huoshui") && current->getEquips().length() == 0) //neo2013huoshui
-                            skill_invalid = true;
-                        //return false;
-                    }
-                }
-                if (hasFlag("neo2013qingcheng") && phase != NotActive) //neo2013qingcheng
-                    skill_invalid = true;
-                //return false;
-                if (skill_name != "chanyuan" && hasSkill("chanyuan") && hp == 1) //chanyuan
-                    skill_invalid = true;
-                // return false;
                 if (getMark("changshi") > 0)
                     skill_invalid = true;
-                //return false;
             }
 
             if (skill_invalid) {
@@ -510,13 +483,6 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose, bool include
                     || acquired_skills.contains(skill_name);
                 else
                     return false;
-            }
-            //check zun
-            if (skill_name != "chuanghuan" && this->hasSkill("chuanghuan")) {
-                QVariantList huashen_skills = this->tag["FantasySkills"].toList();
-                foreach(QVariant huashen_skill, huashen_skills)
-                    if (skill_name == huashen_skill.toString())
-                        return true;
             }
         }
     }
