@@ -490,7 +490,7 @@ thndjPackage::thndjPackage()
     ndj004->addSkill(new hunpo);
     ndj004->addSkill(new fanji);
 
-    General *ndj010 = new General(this, "ndj010", "wai", 1, false);
+    //General *ndj010 = new General(this, "ndj010", "wai", 1, false);
 
     General *ndj011 = new General(this, "ndj011", "wai", 4, false);
     ndj011->addSkill(new liangzi);

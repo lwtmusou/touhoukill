@@ -2929,33 +2929,9 @@ touhougodPackage::touhougodPackage()
     shen021->addSkill(new chuanwu);
 
 
-
-
-    //General *shen022 = new General(this, "shen022", "touhougod", 4, false);
-    //General *shen023 = new General(this, "shen023", "touhougod", 3, false);
-    //General *shen024 = new General(this, "shen024", "touhougod", 4, false);
-    //General *shen025 = new General(this, "shen025", "touhougod", 4, false);
-    //General *shen026 = new General(this, "shen026", "touhougod", 4, false);
-    //General *shen027 = new General(this, "shen027", "touhougod", 3, false);
-    //General *shen028 = new General(this, "shen028", "touhougod", 4, false);
-    //General *shen029 = new General(this, "shen029", "touhougod", 4, false);
-    //General *shen030 = new General(this, "shen030", "touhougod", 4, false);
-    //General *shen031 = new General(this, "shen031", "touhougod", 3, false);
-    //General *shen032 = new General(this, "shen032", "touhougod", 4, false);
-    //General *shen033 = new General(this, "shen033", "touhougod", 3, false);
-    //General *shen034 = new General(this, "shen034", "touhougod", 4, false);
-    //General *shen035 = new General(this, "shen035", "touhougod", 3, false);
-    //General *shen036 = new General(this, "shen036", "touhougod", 4, false);
-    //General *shen037 = new General(this, "shen037", "touhougod", 3, false);
-    //General *shen038 = new General(this, "shen038", "touhougod", 4, false);
-    //General *shen039 = new General(this, "shen039", "touhougod", 3, false);
-    //General *shen040 = new General(this, "shen040", "touhougod", 4, false);
-    //General *shen041 = new General(this, "shen041", "touhougod", 3, false);
-
-    General *shen000 = new General(this, "shen000", "touhougod", 4, true);
-    shen000->addSkill(new chuanghuan);
-    shen000->addSkill(new chuanghuanGet);
-    related_skills.insertMulti("chuanghuan", "#chuanghuan-get");
+    //shen000->addSkill(new chuanghuan);
+    //shen000->addSkill(new chuanghuanGet);
+    //related_skills.insertMulti("chuanghuan", "#chuanghuan-get");
 
     addMetaObject<hongwuCard>();
     addMetaObject<shenqiangCard>();
