@@ -2,7 +2,6 @@
 #include "client.h"
 #include "standard.h"
 #include "clientplayer.h"
-//#include "nostalgia.h" //YijiCard
 #include "touhoucard.h"//YijiCard
 #include "engine.h"
 
@@ -109,12 +108,15 @@ bool ShowOrPindianSkill::matchPattern(const Player *player, const Card *card) co
 // -------------------------------------------
 
 
-class YijiCard : public NosRendeCard
+class YijiCard : public SkillCard
 {
 public:
     YijiCard()
     {
         target_fixed = false;
+        mute = true;
+        will_throw = false;
+        handling_method = Card::MethodNone;
     }
 
     void setPlayerNames(const QStringList &names)
@@ -127,6 +129,25 @@ public:
         return targets.isEmpty() && set.contains(to_select->objectName());
     }
 
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+    {
+        ServerPlayer *target = targets.first();
+
+        room->broadcastSkillInvoke("rende");
+        CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), target->objectName(), "nosrende", QString());
+        room->obtainCard(target, this, reason, false);
+
+        int old_value = source->getMark("nosrende");
+        int new_value = old_value + subcards.length();
+        room->setPlayerMark(source, "nosrende", new_value);
+
+        if (old_value < 2 && new_value >= 2) {
+            RecoverStruct recover;
+            recover.card = this;
+            recover.who = source;
+            room->recover(source, recover);
+        }
+    }
 private:
     QSet<QString> set;
 };
