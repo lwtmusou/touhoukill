@@ -265,7 +265,7 @@ class bumie_maxhp : public TriggerSkill
 public:
     bumie_maxhp() : TriggerSkill("#bumie")
     {
-        events << HpChanged << CardsMoveOneTime << EventPhaseChanging;
+        events << HpChanged << CardsMoveOneTime << EventPhaseChanging << EventAcquireSkill;
         frequency = Compulsory;
     }
     virtual bool triggerable(const ServerPlayer *target) const
@@ -291,6 +291,11 @@ public:
             if (src->getHp() == 1 && src->isKongcheng())
                 need_judge = true;
         }
+		 else if (triggerEvent == EventAcquireSkill &&  data.toString() == "bumie") {
+            if (src->getHp() == 1 && src->isKongcheng())
+                need_judge = true;
+        }
+		
         if (need_judge) {
             JudgeStruct judge;
             judge.who = src;
