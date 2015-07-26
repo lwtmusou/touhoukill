@@ -8,7 +8,7 @@ require "middleclass"
 math.randomseed(os.time())
 
 -- SmartAI is the base class for all other specialized AI classes
-SmartAI = class "SmartAI"
+SmartAI = (require "middleclass").class("SmartAI")
 
 --version = "QSanguosha AI 20140901 (V1.414213562 Alpha)"
 version = "TouhouKill AI 20150405"
