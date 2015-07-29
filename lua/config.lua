@@ -164,13 +164,10 @@ config = {
 		"罪袋" ,
 	},
 
-	roles_ban = {
-		--"wai011", 
-		"hzc001", 
-		"ndj010",  
+	roles_ban = { 
+		"zhan010",
 		"shen011",  
-		"zhan010", 
-		"shen000"
+		"shen020"
 	},
 
 	kof_ban = {

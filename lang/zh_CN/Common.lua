@@ -76,7 +76,7 @@ CommonTranslationTable = {
 
 	["use upon"] = "对",
 	["yourself"] = "你",
-
+	
 	["attack_card"] = "进攻牌",
 	["defense_card"] = "防御牌",
 	["recover_card"] = "恢复牌",

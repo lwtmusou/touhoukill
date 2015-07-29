@@ -210,7 +210,10 @@ QWidget *PlayerCardDialog::createJudgingArea()
     QList<const Card *> cards = player->getJudgingArea();
     foreach (const Card *card, cards) {
         const Card *real = Sanguosha->getEngineCard(card->getId());
-        PlayerCardButton *button = new PlayerCardButton(real->getFullName());
+        QString name = real->getFullName();
+        if (name != card->getFullName())
+            name = name + "as" + card->getName();
+        PlayerCardButton *button = new PlayerCardButton(name);
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(real->getSuit()));
         layout->addWidget(button);
         button->setEnabled(!disabled_ids.contains(card->getEffectiveId())

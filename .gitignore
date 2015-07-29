@@ -36,6 +36,7 @@ Bin/
 /builds/vs2010/*.user
 /builds/vs2010/*.opensdf
 tags
+platforms/
 /extensions
 *~
 *.kdev4
