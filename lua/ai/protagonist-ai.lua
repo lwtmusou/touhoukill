@@ -938,6 +938,7 @@ function bllmwuyu_skill.getTurnUseCard(self)
 	if not sgs.Analeptic_IsAvailable(self.player) then 
 		can_shiyu=false
 	end
+
 	if can_shiyu then 
 		local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 		local card=sgs.cloneCard("Slash", sgs.Card_NoSuit, 0)
@@ -948,6 +949,7 @@ function bllmwuyu_skill.getTurnUseCard(self)
 			end
 		end
 	end
+
 	if not can_shiyu then
 		if slash_num>= 2 and not sgs.Slash_IsAvailable(self.player) then
 			self.player:setTag("wuyu_choose",sgs.QVariant(1))
@@ -971,8 +973,7 @@ sgs.ai_skill_choice.bllmwuyu= function(self, choices, data)
 	elseif id ==2 then
 		return "bllmshiyu"
 	end
-	return "dismiss"
-	
+	return "dismiss"	
 end
 sgs.ai_skill_cardask["@bllmshiyu-basics"] = function(self, data)
 	local cards = self.player:getHandcards()

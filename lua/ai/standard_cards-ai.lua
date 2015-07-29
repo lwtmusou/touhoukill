@@ -640,7 +640,7 @@ function SmartAI:useCardSlash(card, use)
 		end
 		return card:targetFilter(targets, target, self.player)
 	end
-	
+
 	--for shikong 
 	--¼òµ¥´Ö±©
 	if  self.player:hasSkill("shikong") and self.player:getPhase()==sgs.Player_Play  
@@ -731,7 +731,6 @@ function SmartAI:useCardSlash(card, use)
 	end]]
 	
 
-	
 	for _, target in ipairs(targets) do
 		local canliuli = false
 		for _, friend in ipairs(self.friends_noself) do
@@ -772,7 +771,6 @@ function SmartAI:useCardSlash(card, use)
 						return
 					end
 				end
-
 				if target:isChained() and self:isGoodChainTarget(target, nil, nil, nil, card) and not use.card then
 					local here=false
 					if self.player:hasSkill("here") or target:hasSkill("here") then
@@ -816,11 +814,14 @@ function SmartAI:useCardSlash(card, use)
 			end
 			if not use.isDummy then
 				local analeptic = self:searchForAnaleptic(use, target, use.card)
-				if analeptic and self:shouldUseAnaleptic(target, use.card) and analeptic:getEffectiveId() ~= card:getEffectiveId() then
+				
+				if analeptic and self:shouldUseAnaleptic(target, use.card) and analeptic:getEffectiveId() ~= card:getEffectiveId() 
+				and not  (analeptic:getSkillName() == "bllmshiyu" and card:getSubcards():length() > 1) then 
 					use.card = analeptic
 					if use.to then use.to = sgs.SPlayerList() end
 					return
 				end
+				
 				if self.player:hasSkill("jilve") and self.player:getMark("@bear") > 0 and not self.player:hasFlag("JilveWansha") and target:getHp() == 1 and not self.room:getCurrent():hasSkill("wansha")
 					and (target:isKongcheng() or getCardsNum("Jink", target, self.player) < 1 or sgs.card_lack[target:objectName()]["Jink"] == 1) then
 					use.card = sgs.Card_Parse("@JilveCard=.")
