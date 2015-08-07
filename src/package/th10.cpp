@@ -420,6 +420,9 @@ void qijiDialog::popup()
             user = Self;
 
         bool enabled = !user->isCardLimited(card, Card::MethodUse, true) && card->isAvailable(user);
+        if (object_name == "huaxiang" && user->getMaxHp() > 2 && card->isKindOf("Peach"))
+            enabled = false;
+        
         QStringList response_use_salsh;
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY
             &&  Sanguosha->currentRoomState()->getCurrentCardUsePattern().contains("slash")) {
@@ -432,6 +435,9 @@ void qijiDialog::popup()
             button->setEnabled(enabled);
     }
 
+    //if only one choice
+    
+    
     Self->tag.remove(object_name);
     exec();
 }
@@ -459,7 +465,10 @@ QGroupBox *qijiDialog::createLeft()
     QStringList ban_list; //no need to ban
     if (object_name == "chuangshi")
         ban_list << "Analeptic";
-
+    
+    
+    
+    
     foreach (const Card *card, cards) {
         if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName())
             && !ban_list.contains(card->getClassName()) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {

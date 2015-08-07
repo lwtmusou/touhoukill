@@ -6,12 +6,10 @@
 #include "engine.h"
 #include "standard.h"
 #include "generaloverview.h" //for zun?
-//#include "clientplayer.h"
 #include "client.h"
-//#include "ai.h"
 #include "jsonutils.h"
 #include "maneuvering.h" // for iceslash
-
+#include "th10.h" //for huaxiang
 
 class jiexian : public TriggerSkill
 {
@@ -1423,161 +1421,302 @@ public:
 };
 
 
-
-
-class hualong : public TriggerSkill
+HuaxiangCard::HuaxiangCard()
 {
-public:
-    hualong() : TriggerSkill("hualong")
-    {
-        events << Dying;
-        frequency = Wake;
-    }
+    mute = true;
+    will_throw = false;
+}
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
-    {
-
-
-        ServerPlayer *who = room->getCurrentDyingPlayer();
-        if (who != player)
-            return false;
-
-        if (player->getMark("hualong") == 0) {
-            room->doLightbox("$hualongAnimate", 4000);
-            room->touhouLogmessage("#YizhiWake", player, objectName());
-            room->notifySkillInvoked(player, objectName());
-            if (room->changeMaxHpForAwakenSkill(player, 1)) {
-                RecoverStruct recover;
-                recover.recover = player->getMaxHp() - player->getHp();;
-                room->recover(player, recover);
-                room->setPlayerMark(player, "hualong", 1);
-            }
+bool HuaxiangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+        if (!user_string.isEmpty()) {
+            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+            return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
         }
         return false;
+    } else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+        return false;
     }
-};
 
-class luanwu : public ViewAsSkill
+    const Card *card = Self->tag.value("huaxiang").value<const Card *>();
+    Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+    new_card->setSkillName("huaxiang");
+    return new_card && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
+}
+
+bool HuaxiangCard::targetFixed() const
+{
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+        if (!user_string.isEmpty()) {
+            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+            return card && card->targetFixed();
+        }
+        return false;
+    } else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+        return true;
+    }
+
+    const Card *card = Self->tag.value("huaxiang").value<const Card *>();
+    Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+    new_card->setSkillName("huaxiang");
+    return new_card && new_card->targetFixed();
+}
+
+bool HuaxiangCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+        if (!user_string.isEmpty()) {
+            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+            return card && card->targetsFeasible(targets, Self);
+        }
+        return false;
+    } else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+        return true;
+    }
+
+    const Card *card = Self->tag.value("huaxiang").value<const Card *>();
+    Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+    new_card->setSkillName("huaxiang");
+    return new_card && new_card->targetsFeasible(targets, Self);
+}
+
+const Card *HuaxiangCard::validate(CardUseStruct &card_use) const
+{
+    QString to_use = user_string;
+    card_use.from->getRoom()->touhouLogmessage("#InvokeSkill", card_use.from, "huaxiang");    
+    card_use.from->addToPile("rainbow", subcards.first());
+
+    Card *use_card = Sanguosha->cloneCard(to_use, Card::NoSuit, 0);
+    use_card->setSkillName("huaxiang");
+    use_card->deleteLater();
+    return use_card;
+}
+
+const Card *HuaxiangCard::validateInResponse(ServerPlayer *user) const
+{
+    Room *room = user->getRoom();
+        
+    QString to_use;
+    if (user_string == "peach+analeptic") {
+        QStringList use_list;
+        Card *peach = Sanguosha->cloneCard("peach");
+        if (!user->isCardLimited(peach, Card::MethodResponse, true) && user->getMaxHp() <= 2 )
+            use_list << "peach";
+        Card *ana = Sanguosha->cloneCard("analeptic");
+        if (!Config.BanPackages.contains("maneuvering") && !user->isCardLimited(ana, Card::MethodResponse, true))
+            use_list << "analeptic";
+        to_use = room->askForChoice(user, "huaxiang_skill_saveself", use_list.join("+"));
+    } else
+        to_use = user_string;
+        
+    room->touhouLogmessage("#InvokeSkill", user, "huaxiang");    
+    user->addToPile("rainbow", subcards.first());
+    Card *use_card = Sanguosha->cloneCard(to_use, Card::NoSuit, 0);
+    use_card->setSkillName("huaxiang");
+    use_card->deleteLater();
+
+    return use_card;
+}
+
+
+
+class Huaxiang : public ViewAsSkill
 {
 public:
-    luanwu() : ViewAsSkill("luanwu")
+    Huaxiang() : ViewAsSkill("huaxiang")
     {
         response_or_use = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return Slash::IsAvailable(player);
+        if (player->getPile("rainbow").length() > 3) return false;
+        
+        if  (Slash::IsAvailable(player) || Analeptic::IsAvailable(player))
+            return true;
+        if (player->getMaxHp() <= 2){
+            Card *card = Sanguosha->cloneCard("peach", Card::NoSuit, 0);
+            card->deleteLater();
+            return card->isAvailable(player);
+        }
+        return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        return (pattern == "slash" || pattern == "jink");
+        if (player->getPile("rainbow").length() > 3) return false;
+        QStringList validPatterns;
+        validPatterns << "slash" <<  "analeptic";
+        if (player->getMaxHp() <= 3)
+            validPatterns << "jink";
+        if (player->getMaxHp() <= 2)
+            validPatterns << "peach";
+        if (player->getMaxHp() <= 1)
+            validPatterns << "nullification";
+        bool valid = false;
+        foreach (QString str, validPatterns) {
+            if (pattern.contains(str)){
+                valid = true;
+                break;
+            }
+        }    
+        if (!valid) return false;
+        
+        if (pattern == "peach" && player->hasFlag("Global_PreventPeach")) return false;
+        for (int i = 0; i < pattern.length(); i++) {
+            QChar ch = pattern[i];
+            if (ch.isUpper() || ch.isDigit()) return false;
+        }
+        
+        if (pattern == "slash" || pattern == "jink") {
+            Card *card = Sanguosha->cloneCard(pattern);
+            return !player->isCardLimited(card, Card::MethodResponse, true);
+        }
+        
+        
+            
+        if (pattern.contains("peach") && pattern.contains("analeptic")) {
+            Card *peach = Sanguosha->cloneCard("peach");
+            Card *ana = Sanguosha->cloneCard("analeptic");
+            return !player->isCardLimited(peach, Card::MethodResponse, true) ||
+                !player->isCardLimited(ana, Card::MethodResponse, true);
+        } else if (pattern == "peach") {
+            Card *peach = Sanguosha->cloneCard("peach");
+            return !player->isCardLimited(peach, Card::MethodResponse, true);
+        } else if (pattern == "analeptic") {
+            Card *ana = Sanguosha->cloneCard("analeptic");
+            return !player->isCardLimited(ana, Card::MethodResponse, true);
+        }
+
+        return true;
     }
 
+    
+    
+    
+    
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
     {
-        if (Self->getMark("hualong") > 0)
-            return selected.isEmpty();
-        else if (selected.isEmpty())
-            return !to_select->isEquipped();
-        if (selected.length() == 1)
-            return !to_select->isEquipped() && selected.first()->sameColorWith(to_select);
-        return false;
+        if (to_select->isEquipped() || !selected.isEmpty()) return false;
+        
+        foreach(int id, Self->getPile("rainbow")) {
+            Card *card = Sanguosha->getCard(id);
+            if (card->getSuit() == to_select->getSuit())
+                return false;
+        }
+        
+        return selected.isEmpty();
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const
     {
-        Sanguosha->getCurrentCardUseReason();
-        if (cards.length() == 0)
-            return NULL;
-        else if (cards.length() == 1 && Self->getMark("hualong") > 0) {
-            const Card *card = cards.first();
-            if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
-                Slash *slash = new Slash(card->getSuit(), card->getNumber());
-                slash->addSubcards(cards);
-                slash->setSkillName(objectName());
-                return slash;
-            } else if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE || Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-                QString pattern = Sanguosha->getCurrentCardUsePattern();
-                if (pattern == "jink") {
-                    Jink *jink = new Jink(card->getSuit(), card->getNumber());
-                    jink->addSubcards(cards);
-                    jink->setSkillName(objectName());
-                    return jink;
-                } else if (pattern == "slash") {
-                    Slash *slash = new Slash(card->getSuit(), card->getNumber());
-                    slash->addSubcards(cards);
-                    slash->setSkillName(objectName());
-                    return slash;
-                }
+        if (cards.length() != 1) return NULL;
+        
+        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE
+            || Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+            if (pattern.contains("slash")) {
+                const Card *c = Self->tag.value("huaxiang").value<const Card *>();
+                if (c)
+                    pattern = c->objectName();
+                else
+                    return NULL;
             }
-        } else if (cards.length() == 2) {
-            if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
-                Slash *slash = new Slash(Card::SuitToBeDecided, 0);
-                slash->addSubcards(cards);
-                slash->setSkillName(objectName());
-                return slash;
-            } else if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE || Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-                QString pattern = Sanguosha->getCurrentCardUsePattern();
-                if (pattern == "jink") {
-                    Jink *jink = new Jink(Card::SuitToBeDecided, 0);
-                    jink->addSubcards(cards);
-                    jink->setSkillName(objectName());
-                    return jink;
-                } else if (pattern == "slash") {
-                    Slash *slash = new Slash(Card::SuitToBeDecided, 0);
-                    slash->addSubcards(cards);
-                    slash->setSkillName(objectName());
-                    return slash;
-                }
-            }
+            HuaxiangCard *card = new HuaxiangCard;
+            card->setUserString(pattern);
+            card->addSubcards(cards);
+            return card;
+
         }
-        return NULL;
+
+        const Card *c = Self->tag.value("huaxiang").value<const Card *>();
+        if (c) {
+            HuaxiangCard *card = new HuaxiangCard;
+            card->setUserString(c->objectName());
+            card->addSubcards(cards);
+            return card;
+        } else
+            return NULL;
+    }
+    
+    virtual QDialog *getDialog() const
+    {
+        return qijiDialog::getInstance("huaxiang", true, false);
+    }
+    
+    
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const
+    {
+        if (player->getPile("rainbow").length() > 3) return false;
+        if (player->isCardLimited(Sanguosha->cloneCard("nullification"), Card::MethodResponse, true))
+            return false;
+        return player->getMaxHp() <= 1;
     }
 };
 
-class longwei : public TriggerSkill
+
+class Caiyu : public TriggerSkill
 {
 public:
-    longwei() : TriggerSkill("longwei")
+    Caiyu() : TriggerSkill("caiyu")
     {
-        events << TargetConfirming;
+        events << EventPhaseStart;
     }
 
-
+    virtual bool triggerable(const ServerPlayer *target) const
+    {
+        return target != NULL;
+    }
+    
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
-        if (triggerEvent == TargetConfirming) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from != NULL && player != use.from  &&  use.to.contains(player)
-                && (use.card->isKindOf("Slash") || use.card->isKindOf("TrickCard"))) {
-
-                if (player->getMark("hualong") > 0) {
-                    if (player->canDiscard(use.from, "he") && room->askForSkillInvoke(player, objectName(), QVariant::fromValue(use.from))) {
-                        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), use.from->objectName());
-
-                        int id = room->askForCardChosen(player, use.from, "he", objectName(), false, Card::MethodDiscard);
-                        room->throwCard(id, use.from, player);
-                        if (player->canDiscard(use.from, "he")) {
-                            int id1 = room->askForCardChosen(player, use.from, "he", objectName(), false, Card::MethodDiscard);
-                            room->throwCard(id1, use.from, player);
-                        }
-                    }
-                } else {
-                    if (use.from->canDiscard(use.from, "he") && room->askForSkillInvoke(player, objectName(), QVariant::fromValue(use.from))) {
-                        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), use.from->objectName());
-
-                        room->askForDiscard(use.from, objectName(), 1, 1, false, true, "@longwei-askfordiscard:" + player->objectName() + ":" + QString::number(1));
-
+        if (player->getPhase() == Player::Finish) {
+            ServerPlayer *merin = room->findPlayerBySkillName(objectName());
+            if (merin && merin->getPile("rainbow").length() > 3) {
+                
+                if (room->askForSkillInvoke(merin, objectName(), "discard")) {
+                    QList<int>  idlist = merin->getPile("rainbow");
+                    CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, merin->objectName(), NULL, objectName(), "");
+                    CardsMoveStruct move(idlist, merin, Player::DiscardPile,
+                        reason);
+                    room->moveCardsAtomic(move, true);
+                
+                    merin->drawCards(2);
+                    
+                    if (room->askForSkillInvoke(merin, objectName(), "loseMaxHp")) {
+                        room->loseMaxHp(merin, 1);
                     }
                 }
-
             }
+            
+            
         }
         return false;
     }
 };
+
+
+class Xuanlan : public TriggerSkill
+{
+public:
+    Xuanlan() : TriggerSkill("xuanlan")
+    {
+        events << EventPhaseChanging;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+    {
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        
+        if (change.to == Player::Discard) {
+            if (!player->isWounded() &&  room->askForSkillInvoke(player, objectName()))
+                player->skip(Player::Discard);
+        }
+        return false;
+    }
+};
+
 
 
 class qiannian_draw : public DrawCardsSkill
@@ -2700,10 +2839,10 @@ touhougodPackage::touhougodPackage()
     related_skills.insertMulti("duanzui", "#duanzui-shenpan");
 
 
-    General *shen013 = new General(this, "shen013", "touhougod", 3, false);
-    shen013->addSkill(new hualong);
-    shen013->addSkill(new luanwu);
-    shen013->addSkill(new longwei);
+    General *shen013 = new General(this, "shen013", "touhougod", 4, false);
+    shen013->addSkill(new Huaxiang);
+    shen013->addSkill(new Caiyu);
+    shen013->addSkill(new Xuanlan);
 
 
     General *shen014 = new General(this, "shen014", "touhougod", 4, false);
@@ -2753,6 +2892,7 @@ touhougodPackage::touhougodPackage()
     addMetaObject<shenqiangCard>();
     addMetaObject<huimieCard>();
     addMetaObject<shenshouCard>();
+    addMetaObject<HuaxiangCard>();
     addMetaObject<chaorenpreventrecast>();
     addMetaObject<ziwoCard>();
     addMetaObject<chaowoCard>();

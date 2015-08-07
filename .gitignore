@@ -37,6 +37,7 @@ Bin/
 /builds/vs2010/*.opensdf
 tags
 platforms/
+/src/package/blackhistory.*
 /extensions
 *~
 *.kdev4
