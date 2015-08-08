@@ -803,7 +803,7 @@ huaxiang_skill.getTurnUseCard = function(self)
 	if not current or current:isDead() or current:getPhase() == sgs.Player_NotActive then return end
 
 	local cards = self.player:getCards("h")
-	cards=self:touhouAppendExpandPileToList(self.player,cards)
+	--cards=self:touhouAppendExpandPileToList(self.player,cards)
 	local validCards = {}
 	for _,c in sgs.qlist(cards) do
 		local can = true
@@ -875,7 +875,7 @@ function sgs.ai_cardsview_valuable.huaxiang(self, class_name, player)
 	
 	
 	local cards = self.player:getCards("h")
-	cards=self:touhouAppendExpandPileToList(self.player,cards)
+	--cards=self:touhouAppendExpandPileToList(self.player,cards)
 	local validCards = {}
 	for _,c in sgs.qlist(cards) do
 		local can = true

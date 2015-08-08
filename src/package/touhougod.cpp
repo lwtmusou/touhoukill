@@ -1526,7 +1526,7 @@ class Huaxiang : public ViewAsSkill
 public:
     Huaxiang() : ViewAsSkill("huaxiang")
     {
-        response_or_use = true;
+        //response_or_use = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
