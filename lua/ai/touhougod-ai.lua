@@ -657,7 +657,7 @@ end
 
 sgs.ai_skill_invoke.duanzui = true 
 
-
+--[[
 sgs.ai_needToWake.hualong=function(self,player)
 	return "Dying","Unknown"
 end
@@ -791,7 +791,153 @@ sgs.ai_skill_invoke.longwei = function(self,data)
 	end
 	return false
 end
+]]
 
+
+local huaxiang_skill = {}
+huaxiang_skill.name = "huaxiang"
+table.insert(sgs.ai_skills, huaxiang_skill)
+huaxiang_skill.getTurnUseCard = function(self)
+	
+	local current = self.room:getCurrent()
+	if not current or current:isDead() or current:getPhase() == sgs.Player_NotActive then return end
+
+	local cards = self.player:getCards("h")
+	cards=self:touhouAppendExpandPileToList(self.player,cards)
+	local validCards = {}
+	for _,c in sgs.qlist(cards) do
+		local can = true
+		for _,id in sgs.qlist(self.player:getPile("rainbow")) do
+			if c:getSuit() == sgs.Sanguosha:getCard(id):getSuit() then
+				can = false
+				break
+			end
+		end
+		if can then
+			table.insert( validCards, c)
+		end
+	end
+	
+	if #validCards == 0 then return nil end
+	self:sortByKeepValue(validCards)
+	
+	
+	
+	
+	local huaxiangCards = {}
+	local huaxiang = "slash|thunder_slash|fire_slash|analeptic"
+	if self.player:getMaxHp() <= 2 then
+		huaxiang = huaxiang .. "|peach"
+	end
+	--local guhuo = "slash|jink|peach"
+	--local ban = table.concat(sgs.Sanguosha:getBanPackages(), "|")
+	--if not ban:match("maneuvering") then guhuo = guhuo .. "|analeptic|thunder_slash|fire_slash" end
+	local huaxiangs = huaxiang:split("|")
+	for i = 1, #huaxiangs do
+		local forbidden = huaxiangs[i]
+		local forbid = sgs.cloneCard(forbidden)
+		if not self.player:isLocked(forbid) and self:canUseXihuaCard(forbid, true) then
+			table.insert(huaxiangCards,forbid)
+		end
+	end
+
+	
+	
+	self:sortByUseValue(huaxiangCards, false)
+	for _,huaxiangCard in pairs (huaxiangCards) do
+		local dummyuse = { isDummy = true }
+		self:useBasicCard(huaxiangCard, dummyuse) 
+		if dummyuse.card then
+			fakeCard = sgs.Card_Parse("@HuaxiangCard=" .. validCards[1]:getId() .. ":" .. huaxiangCard:objectName())
+			return fakeCard
+		end
+	end
+	return nil
+end
+sgs.ai_skill_use_func.HuaxiangCard=function(card,use,self)
+	local userstring=card:toString()
+	userstring=(userstring:split(":"))[3]
+	local huaxiangcard=sgs.cloneCard(userstring)
+	huaxiangcard:setSkillName("huaxiang")
+	self:useBasicCard(huaxiangcard, use) 
+	if not use.card then return end
+	use.card=card
+end
+
+
+function sgs.ai_cardsview_valuable.huaxiang(self, class_name, player)
+	if (sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_UNKNOWN) then
+		return nil
+	end
+	if self.player:getPile("rainbow"):length() > 3 then
+		return nil
+	end
+	
+	
+	local cards = self.player:getCards("h")
+	cards=self:touhouAppendExpandPileToList(self.player,cards)
+	local validCards = {}
+	for _,c in sgs.qlist(cards) do
+		local can = true
+		for _,id in sgs.qlist(self.player:getPile("rainbow")) do
+			if c:getSuit() == sgs.Sanguosha:getCard(id):getSuit() then
+				can = false
+				break
+			end
+		end
+		if can then
+			table.insert( validCards, c)
+		end
+	end
+	
+	if #validCards == 0 then return nil end
+	self:sortByKeepValue(validCards)
+	
+	local classname2objectname = {
+		["Slash"] = "slash",  ["Analeptic"] = "analeptic",
+		["FireSlash"] = "fire_slash", ["ThunderSlash"] = "thunder_slash"
+	}
+	if self.player:getMaxHp() <= 3 then
+		classname2objectname["Jink"] = "jink"
+	end
+	if self.player:getMaxHp() <= 2 then
+		classname2objectname["Peach"] = "peach"
+	end
+	if self.player:getMaxHp() <= 1 then
+		classname2objectname["Nullification"] = "nullification"
+	end
+	if classname2objectname[class_name] then
+		local viewcard = sgs.cloneCard(classname2objectname[class_name])
+		if self.player:isLocked(viewcard) then
+			return nil
+		end
+		return "@HuaxiangCard=" .. validCards[1]:getEffectiveId() .. ":" .. classname2objectname[class_name]
+	end
+end
+
+sgs.ai_skill_choice.huaxiang_skill_saveself = function(self, choices)
+	if choices:match("peach") then 
+		return "peach"
+	else
+		return "analeptic"
+	end
+end
+sgs.ai_skill_choice.huaxiang_skill_slash = function(self, choices)
+	return "slash"
+end
+
+
+sgs.ai_skill_invoke.caiyu = function(self,data)
+	local prompt = data:toString()
+	if prompt:match("discard") then
+		return true
+	elseif prompt:match("loseMaxHp") then
+		return self.player:getMaxHp() > 1
+	end
+	return false
+end
+
+sgs.ai_skill_invoke.xuanlan = true
 
 sgs.ai_choicemade_filter.cardResponded["@qinlue-discard"] = function(self, player, promptlist)
 	if promptlist[#promptlist] ~= "_nil_" then

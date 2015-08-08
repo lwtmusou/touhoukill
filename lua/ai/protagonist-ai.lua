@@ -286,7 +286,7 @@ sgs.ai_card_intention.wuyuCard = -40
 
 function SmartAI:hasSkillsForSaiqian(player)
 	player = player or self.player
-	if player:hasSkills("xisan|yongheng") then
+	if player:hasSkills("xisan|yongheng|kongpiao") then
 		return true
 	end
 	if player:hasSkills("zaozu+qiuwen") then
