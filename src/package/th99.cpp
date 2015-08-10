@@ -1245,7 +1245,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Peach") || use.card->isKindOf("Analeptic")) {
                 foreach (ServerPlayer *to, use.to) {
-                    if (player != to) {
+                    if (player != to && !player->isNude()) {
                         player->tag["zhujiu_target"] = QVariant::fromValue(to);
                         const Card *card = room->askForCard(player, "..", "@zhujiu:" + to->objectName(), data, Card::MethodNone); 
                         if (card){

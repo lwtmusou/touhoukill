@@ -1532,7 +1532,7 @@ public:
     virtual bool isEnabledAtPlay(const Player *player) const
     {
         if (player->getPile("rainbow").length() > 3) return false;
-        
+        if (player->isKongcheng()) return false;
         if  (Slash::IsAvailable(player) || Analeptic::IsAvailable(player))
             return true;
         if (player->getMaxHp() <= 2){
@@ -1546,7 +1546,8 @@ public:
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
         if (player->getPile("rainbow").length() > 3) return false;
-        QStringList validPatterns;
+        if (player->isKongcheng()) return false;
+		QStringList validPatterns;
         validPatterns << "slash" <<  "analeptic";
         if (player->getMaxHp() <= 3)
             validPatterns << "jink";
@@ -1649,7 +1650,8 @@ public:
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const
     {
         if (player->getPile("rainbow").length() > 3) return false;
-        if (player->isCardLimited(Sanguosha->cloneCard("nullification"), Card::MethodResponse, true))
+        if (player->isKongcheng()) return false;
+		if (player->isCardLimited(Sanguosha->cloneCard("nullification"), Card::MethodResponse, true))
             return false;
         return player->getMaxHp() <= 1;
     }
