@@ -1547,7 +1547,7 @@ public:
     {
         if (player->getPile("rainbow").length() > 3) return false;
         if (player->isKongcheng()) return false;
-		QStringList validPatterns;
+        QStringList validPatterns;
         validPatterns << "slash" <<  "analeptic";
         if (player->getMaxHp() <= 3)
             validPatterns << "jink";
@@ -1651,7 +1651,7 @@ public:
     {
         if (player->getPile("rainbow").length() > 3) return false;
         if (player->isKongcheng()) return false;
-		if (player->isCardLimited(Sanguosha->cloneCard("nullification"), Card::MethodResponse, true))
+        if (player->isCardLimited(Sanguosha->cloneCard("nullification"), Card::MethodResponse, true))
             return false;
         return player->getMaxHp() <= 1;
     }
@@ -1721,19 +1721,6 @@ public:
 
 
 
-class qiannian_draw : public DrawCardsSkill
-{
-public:
-    qiannian_draw() : DrawCardsSkill("#qiannian_draw")
-    {
-    }
-
-    virtual int getDrawNum(ServerPlayer *player, int n) const
-    {
-        return  n + player->getMark("@qiannian");
-    }
-};
-
 class qiannian_max : public MaxCardsSkill
 {
 public:
@@ -1755,7 +1742,7 @@ class qiannian : public TriggerSkill
 public:
     qiannian() : TriggerSkill("qiannian")
     {
-        events << GameStart << PreMarkChange;
+        events << GameStart  << DrawNCards << DrawPileSwaped ;
         frequency = Compulsory;
     }
 
@@ -1764,18 +1751,20 @@ public:
         LogMessage log;
         log.type = "#TriggerSkill";
         log.from = player;
-        log.arg = objectName();
+        log.arg = objectName();	
+        if (triggerEvent == GameStart || triggerEvent == DrawPileSwaped) {  
+            room->sendLog(log);
+            room->notifySkillInvoked(player, objectName());
 
-        if (triggerEvent == GameStart) {
             player->gainMark("@qiannian", 1);
         }
-        if (triggerEvent == PreMarkChange) {
-            //gainMark when Room::swapPile()
-            MarkChangeStruct change = data.value<MarkChangeStruct>();
-            if (change.name == "@qiannian" && change.num > 0) {
+        else if (triggerEvent == DrawNCards){
+            if (player->getMark("@qiannian") > 0) {
+                data = QVariant::fromValue(data.toInt() + player->getMark("@qiannian"));
+
                 room->sendLog(log);
                 room->notifySkillInvoked(player, objectName());
-            }
+			}
         }
         return false;
     }
@@ -2850,9 +2839,8 @@ touhougodPackage::touhougodPackage()
     General *shen014 = new General(this, "shen014", "touhougod", 4, false);
     shen014->addSkill(new qiannian);
     shen014->addSkill(new qiannian_max);
-    shen014->addSkill(new qiannian_draw);
     related_skills.insertMulti("qiannian", "#qiannian_max");
-    related_skills.insertMulti("qiannian", "#qiannian_draw");
+
 
     General *shen015 = new General(this, "shen015", "touhougod", 4, false);
     shen015->addSkill(new qinlue);

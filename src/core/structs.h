@@ -586,6 +586,8 @@ enum TriggerEvent
 
     ChoiceMade,
 
+
+    
     StageChange, // For hulao pass only
     FetchDrawPileCard, // For miniscenarios only
     ActionedReset, // For 3v3 only
@@ -593,6 +595,9 @@ enum TriggerEvent
 
     TurnBroken, // For the skill 'DanShou'. Do not use it to trigger events
 
+    //new events for touhoukill, 
+    DrawPileSwaped,//like qiannian
+    
     NumOfEvents
 };
 
