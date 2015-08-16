@@ -1178,26 +1178,34 @@ public:
     }
 };
 
-//triggered when drawCards
-//SeverPlayer::drawCards()
+
 class qiangyu : public TriggerSkill
 {
 public:
     qiangyu() : TriggerSkill("qiangyu")
     {
-        events << CardsMoveOneTime;
+        events << CardsMoveOneTime << DrawCardsFromDrawPile;
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (move.to && move.to == player  && move.to_place == Player::PlaceHand && player->hasFlag("qiangyu")) {
-            room->setPlayerFlag(player, "-qiangyu");
-            const Card *card = room->askForCard(player, ".S", "qiangyu_spadecard", data, Card::MethodDiscard, NULL, false, objectName(), false);
-            if (!card)
-                room->askForDiscard(player, objectName(), 2, 2, false, false);
+        if (triggerEvent == DrawCardsFromDrawPile){
+            if (player->askForSkillInvoke(objectName(), data)){
+                data = QVariant::fromValue(data.toInt() + 2);
+                room->setPlayerFlag(player, "qiangyu");
+            }
         }
+        else if (triggerEvent == CardsMoveOneTime){
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.to && move.to == player  && move.to_place == Player::PlaceHand && player->hasFlag("qiangyu")) {
+                room->setPlayerFlag(player, "-qiangyu");
+                const Card *card = room->askForCard(player, ".S", "qiangyu_spadecard", data, Card::MethodDiscard, NULL, false, objectName(), false);
+                if (!card)
+                    room->askForDiscard(player, objectName(), 2, 2, false, false);
+            }
+        }
+        
         return false;
     }
 };

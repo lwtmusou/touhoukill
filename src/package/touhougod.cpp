@@ -1751,7 +1751,7 @@ public:
         LogMessage log;
         log.type = "#TriggerSkill";
         log.from = player;
-        log.arg = objectName();	
+        log.arg = objectName();    
         if (triggerEvent == GameStart || triggerEvent == DrawPileSwaped) {  
             room->sendLog(log);
             room->notifySkillInvoked(player, objectName());
@@ -1764,7 +1764,7 @@ public:
 
                 room->sendLog(log);
                 room->notifySkillInvoked(player, objectName());
-			}
+            }
         }
         return false;
     }
