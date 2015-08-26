@@ -3725,7 +3725,7 @@ end
 function SmartAI:getLeastHandcardNum(player)
 	player = player or self.player
 	local least = 0
-	if player:hasSkill("yongheng") and player:getPhase()==sgs.Player_NotActive then least = 4 end
+	if player:hasSkill("yongheng") and player:getPhase()==sgs.Player_NotActive then least = 3 end
 	if player:hasSkill("lianying") and least < 1 then least = 1 end
 	local jwfy = self.room:findPlayerBySkillName("shoucheng")
 	if least < 1 and jwfy and self:isFriend(jwfy, player) then least = 1 end

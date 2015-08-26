@@ -2041,8 +2041,6 @@ void Room::swapPile()
     qtimes.setValue(times);
     foreach (ServerPlayer *player, getAllPlayers()) 
         thread->trigger(DrawPileSwaped, this, player, qtimes);
-
-
 }
 
 QList<int> Room::getDiscardPile()

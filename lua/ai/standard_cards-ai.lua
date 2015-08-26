@@ -1503,7 +1503,11 @@ sgs.weapon_range.Halberd = 4
 sgs.weapon_range.KylinBow = 5
 
 sgs.ai_skill_invoke.DoubleSword = function(self, data)
-	return not self:needKongcheng(self.player, true)
+	local target = self.player:getTag("DoubleSwordTarget"):toPlayer()
+	if target then
+		return not self:needKongcheng(self.player, true) and not self:hasLoseHandcardEffective(target)
+	end
+	return true
 end
 
 

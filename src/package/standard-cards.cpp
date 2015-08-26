@@ -564,6 +564,7 @@ public:
                 && use.card->isKindOf("Slash"))
                 && (use.from->getKingdom() == lordKingdom || to->getKingdom() == lordKingdom));
             if (can) {
+			    use.from->tag["DoubleSwordTarget"] = QVariant::fromValue(to);
                 if (use.from->askForSkillInvoke(objectName())) {
                     room->setEmotion(use.from, "weapon/double_sword");
 
@@ -578,6 +579,7 @@ public:
                     if (draw_card)
                         use.from->drawCards(1);
                 }
+				use.from->tag.remove("DoubleSwordTarget");
             }
         }
 
