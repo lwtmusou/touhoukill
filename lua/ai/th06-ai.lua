@@ -350,6 +350,30 @@ sgs.ai_cardneed.qiyao = function(to, card, self)
 end
 
 
+sgs.ai_skill_invoke.neijin = function(self)
+	local current = self.room:getCurrent() 
+	if current then
+		return self:isFriend(current)
+	end
+	return false
+end
+sgs.ai_choicemade_filter.skillInvoke.neijin = function(self, player, promptlist)
+	local current = self.room:getCurrent() 
+	if  current and  promptlist[#promptlist] == "yes" then
+		sgs.updateIntention(player, current, -40)
+	end
+end
+
+sgs.ai_skill_playerchosen.taiji = function(self, targets)
+	if #self.enemies > 0 then
+		self:sort(self.enemies, "hp")
+		return self.enemies[1]
+	end
+    return nil	
+end
+
+
+--[[
 sgs.ai_skill_cardask["douhun-slash"]  = function(self, data, pattern, target)
 	local effect = data:toSlashEffect()
 	local p
@@ -392,7 +416,7 @@ sgs.ai_slash_prohibit.douhun = function(self, from, to, card)
 	end
 	return false
 end	
-
+]]
 --[[sgs.ai_view_as.zhanyi = function(card, player, card_place)
         local suit = card:getSuitString()
         local number = card:getNumberString()
@@ -401,6 +425,7 @@ end
                 return ("slash:zhanyi[%s:%s]=%d"):format(suit, number, card_id)
         end
 end]]
+--[[
 sgs.ai_skill_cardask["@zhanyi"] = function(self, data)
 	
 	local cards = self.player:getCards("h")
@@ -432,8 +457,8 @@ sgs.ai_skill_cardask["@zhanyi"] = function(self, data)
 	if #qis==0 then return "." end
 	return "$" .. table.concat(qis, "+")
 end
-
-
+]]
+--[[
 function sgs.ai_cardsview_valuable.zhanyi(self, class_name, player)
 	if class_name == "Slash" then
 		if (sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE) then
@@ -446,38 +471,9 @@ function sgs.ai_cardsview_valuable.zhanyi(self, class_name, player)
         local number = card:getNumberString()
         local card_id = card:getEffectiveId()
 		return ("slash:zhanyi[%s:%s]=%d"):format(suit, number, card_id)
-		--[[local card
-
-		local peaches={}
-		local blacks={}
-		local reds={}
-		local cards = self.player:getHandcards()
-		cards=self:touhouAppendExpandPileToList(self.player,cards)
-		for _,c in sgs.qlist(cards) do
-			if c:isKindOf("Peach") then
-				table.insert(peaches,c)
-			elseif c:isRed() then
-				table.insert(reds,c)
-			elseif c:isBlack() then
-				table.insert(blacks,c)
-			end
-		end
-		
-		--need sort
-		if #reds>0 then
-			card=reds[1]
-		elseif #blacks>0 then
-			card=blacks[1]
-		elseif #peaches>0 then
-			card=peaches[1]
-		end
-		if not card then return nil end
-		local suit = card:getSuitString()
-        local number = card:getNumberString()
-        local card_id = card:getEffectiveId()
-		return ("slash:zhanyi[%s:%s]=%d"):format(suit, number, card_id)]]
 	end
-end
+end]]
+
 sgs.ai_cardneed.zhanyi = function(to, card, self)
 	return card:isKindOf("Slash")
 	--return  card:isRed()
@@ -485,6 +481,8 @@ end
 sgs.ai_skill_invoke.zhanyi = function(self)
 	return true
 end
+
+
 
 sgs.ai_skill_invoke.dongjie = function(self, data)
         local damage =self.player:getTag("dongjie_damage"):toDamage()

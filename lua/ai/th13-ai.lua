@@ -589,9 +589,9 @@ sgs.ai_slash_prohibit.chuanbi = function(self, from, to, card)
 	if self:hasWeiya(to) then
 		return false
 	end
-	if from:hasSkill("douhun") then
-		return false
-	end
+	--if from:hasSkill("douhun") then
+	--	return false
+	--end
 	local current =self.room:getCurrent()
 	if not current or  current:isDead() then
 		return false
@@ -800,9 +800,9 @@ sgs.ai_slash_prohibit.wushou = function(self, from, to, card)
 	if self:hasWeiya(to) then
 		return false
 	end
-	if from:hasSkill("douhun") then
-		return false
-	end
+	--if from:hasSkill("douhun") then
+	--	return false
+	--end
 	if to:getHp()<=3 and to:hasSkill("wushou") 
 	and self:isEnemy(from,to)  then
 		if to:hasArmorEffect("EightDiagram") 

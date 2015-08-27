@@ -732,204 +732,70 @@ public:
     }
 };
 
-
-
-class douhun : public TriggerSkill
+class Neijin : public TriggerSkill
 {
 public:
-    douhun() : TriggerSkill("douhun")
+    Neijin() : TriggerSkill("neijin")
     {
-        events << SlashProceed;
-        frequency = Compulsory;
-    }
-
-    virtual int getPriority(TriggerEvent) const
-    {
-        return 10;
+        events << EventPhaseEnd;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const
     {
-        return target != NULL && target->isAlive();
+        return target != NULL;
     }
-
+    
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
-    {
-        SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if (!effect.from->hasSkill(objectName()) && !effect.to->hasSkill(objectName()))
-            return false;
-
-        int douhun_type;
-        ServerPlayer *douhun_src;
-        ServerPlayer *other;
-        if (effect.from->hasSkill(objectName())) {
-            douhun_src = effect.from;
-            douhun_type = 1;
-            other = effect.to;
-        } else {
-            douhun_src = effect.to;
-            douhun_type = 2;
-            other = effect.from;
-        }
-        QList<ServerPlayer *>    logto;
-        logto << other;
-
-        room->touhouLogmessage("#douhun_invoke" + QString::number(douhun_type), douhun_src, "douhun", logto);
-        room->notifySkillInvoked(douhun_src, objectName());
-
-        ServerPlayer *first = effect.to;
-        ServerPlayer *second = effect.from;
-        room->setEmotion(first, "duel");
-        room->setEmotion(second, "duel");
-        forever{
-            if (first->isDead())
-            break;
-            const Card *card = room->askForCard(first, "slash", "douhun-slash:" + douhun_src->objectName(), data, Card::MethodResponse, second, false, objectName());
-            if (card == NULL)
-                break;
-            qSwap(first, second);
-        }
-        effect.to = first;
-
-        room->slashResult(effect, NULL);
-        return true;
-    }
-};
-
-/*class zhanyivs : public OneCardViewAsSkill {
-public:
-zhanyivs() : OneCardViewAsSkill("zhanyi") {
-filter_pattern = ".|.|.|hand";
-response_or_use = true;
-}
-
-
-virtual bool isEnabledAtPlay(const Player *player) const{
-return false;
-}
-
-virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-return  pattern == "slash" && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE;
-}
-
-virtual const Card *viewAs(const Card *originalCard) const{
-if (originalCard != NULL){
-
-Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
-slash->addSubcard(originalCard);
-slash->setSkillName("zhanyi");
-return slash;
-} else
-return NULL;
-}
-};
-class zhanyi : public TriggerSkill {
-public:
-zhanyi() : TriggerSkill("zhanyi") {
-events << CardResponded;
-view_as_skill = new zhanyivs;
-}
-
-virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-CardStar card_star = data.value<CardResponseStruct>().m_card;
-if (card_star->getSkillName() == "zhanyi" && card_star->isRed())
-player->drawCards(1);
-return false;
-}
-};
-*/
-zhanyiCard::zhanyiCard()
-{
-    //mute = true;
-    will_throw = false;
-    target_fixed = true;
-    handling_method = Card::MethodNone;
-}
-
-void zhanyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
-{
-
-}
-
-class zhanyivs : public ViewAsSkill
-{
-public:
-    zhanyivs() : ViewAsSkill("zhanyi")
-    {
-        expand_pile = "qi";
-    }
-
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
-    {
-        //return to_select->isKindOf("TrickCard");
-        QString pattern = Sanguosha->getCurrentCardUsePattern();
-        if (pattern == "@@zhanyi")
-            return !to_select->isEquipped();
-        else
-            return selected.isEmpty() && Self->getPile("qi").contains(to_select->getEffectiveId());
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const
-    {
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
-    {
-        return ((pattern == "slash" && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
-            || pattern == "@@zhanyi");
-    }
-
-    virtual const Card *viewAs(const QList<const Card *> &cards) const
-    {
-        //Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE
-        QString pattern = Sanguosha->getCurrentCardUsePattern();
-        if (pattern == "@@zhanyi") {
-            if (cards.length() > 0) {
-                zhanyiCard *card = new zhanyiCard;
-                card->addSubcards(cards);
-                return card;
-            }
-        } else {
-            if (cards.length() == 1) {
-                Slash *slash = new Slash(Card::SuitToBeDecided, -1);
-                slash->addSubcards(cards);
-                slash->setSkillName("zhanyi");
-                return slash;
-            }
-        }
-
-        return NULL;
-    }
-};
-
-class zhanyi : public TriggerSkill
-{
-public:
-    zhanyi() : TriggerSkill("zhanyi")
-    {
-        events << CardUsed;
-        view_as_skill = new zhanyivs;
-    }
-
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
-    {
-        if (triggerEvent == CardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("Slash") && player->askForSkillInvoke(objectName(), data)) {
-                player->drawCards(1);
-                const Card *cards = room->askForCard(player, "@@zhanyi", "@zhanyi", data, Card::MethodNone,
-                    player, false, objectName());
-
-                if (cards) {
-                    //room->notifySkillInvoked(player, objectName());
-                    player->addToPile("qi", cards, true);
+    {    
+        if (player->getPhase() == Player::Play) {
+            ServerPlayer *meirin = room->findPlayerBySkillName(objectName());
+            if (meirin && meirin != player && meirin->getHandcardNum() < meirin->getMaxHp() && !meirin->isChained()){
+                if (room->askForSkillInvoke(meirin, objectName(), data)){
+                    meirin->setChained(true);
+                    Sanguosha->playSystemAudioEffect("chained");
+                    room->broadcastProperty(meirin, "chained");
+                    room->setEmotion(meirin, "chain");
+                    
+                    int num = meirin->getMaxHp() - meirin->getHandcardNum();
+                    meirin->drawCards(num);
+                    const Card *giveCards = room->askForExchange(meirin, objectName(), num, false, "neijin_exchange:" + player->objectName() + ":" + QString::number(num));
+                    room->obtainCard(player, giveCards, false);
                 }
-            }
+            }  
         }
         return false;
     }
 };
+
+class Taiji : public TriggerSkill
+{
+public:
+    Taiji() : TriggerSkill("taiji")
+    {
+        events << Damaged;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+    {
+
+        DamageStruct damage = data.value<DamageStruct>();
+        if (!player->isChained()  || damage.nature != DamageStruct::Normal)
+            return false;
+        ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "@taiji", true, true);
+        
+        if (target) {
+            //player->setChained(!player->isChained());
+            player->setChained(false);
+            Sanguosha->playSystemAudioEffect("chained");
+            room->broadcastProperty(player, "chained");
+            room->setEmotion(player, "chain");
+            room->damage(DamageStruct(objectName(), player, target, 1, DamageStruct::Normal));
+        }
+        return false;
+    }
+
+};
+
 
 
 class dongjie : public TriggerSkill
@@ -1272,8 +1138,8 @@ th06Package::th06Package()
     related_skills.insertMulti("bolan", "#bolan");
 
     General *hmx005 = new General(this, "hmx005", "hmx", 4, false);
-    hmx005->addSkill(new douhun);
-    hmx005->addSkill(new zhanyi);
+    hmx005->addSkill(new Neijin);
+    hmx005->addSkill(new Taiji);
 
     General *hmx006 = new General(this, "hmx006", "hmx", 3, false);
     hmx006->addSkill(new dongjie);
@@ -1296,7 +1162,6 @@ th06Package::th06Package()
 
     addMetaObject<skltkexueCard>();
     addMetaObject<suodingCard>();
-    addMetaObject<zhanyiCard>();
     addMetaObject<banyueCard>();
 
     skills << new skltkexuepeach;

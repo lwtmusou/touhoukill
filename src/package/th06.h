@@ -31,15 +31,7 @@ public:
 };
 
 
-class zhanyiCard : public SkillCard
-{
-    Q_OBJECT
 
-public:
-    Q_INVOKABLE zhanyiCard();
-
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-};
 
 class banyueCard : public SkillCard
 {

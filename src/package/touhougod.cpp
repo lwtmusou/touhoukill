@@ -1675,6 +1675,7 @@ public:
     {
         if (player->getPhase() == Player::Finish) {
             ServerPlayer *merin = room->findPlayerBySkillName(objectName());
+			
             if (merin && merin->getPile("rainbow").length() > 3) {
                 
                 if (room->askForSkillInvoke(merin, objectName(), "discard")) {

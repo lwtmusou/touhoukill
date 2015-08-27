@@ -1,6 +1,7 @@
 --SmartAI:damageIsEffective(to, nature, from)
 sgs.ai_skill_playerchosen.shenpan = function(self, targets)
-	target_table = self:getEnemies(self.player)
+	--需要check damage prohibit
+	local target_table = self:getEnemies(self.player)
 	if #target_table==0 then return nil end
 	self:sort(target_table, "hp")
 	local shenpan_targets={}
