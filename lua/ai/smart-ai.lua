@@ -28,7 +28,6 @@ sgs.ai_card_intention = 	{}
 sgs.ai_playerchosen_intention = {}
 sgs.ai_Yiji_intention = {}
 sgs.role_evaluation = 		{}
-sgs.explicit_renegade_players = 		{}
 sgs.ai_role = 				{}
 sgs.ai_keep_value = 		{}
 sgs.ai_use_value = 			{}
@@ -179,7 +178,6 @@ function setInitialTables()
 	for _, aplayer in sgs.qlist(global_room:getAllPlayers()) do
 		table.insert(sgs.role_evaluation, aplayer:objectName())
 		table.insert(sgs.ai_role, aplayer:objectName())
-		table.insert(sgs.explicit_renegade_players, aplayer:objectName())
 		if aplayer:isLord() then
 			sgs.role_evaluation[aplayer:objectName()] = {lord = 99999, rebel = 0, loyalist = 99999, renegade = 0}
 			sgs.ai_role[aplayer:objectName()] = "loyalist"
@@ -187,7 +185,6 @@ function setInitialTables()
 			sgs.role_evaluation[aplayer:objectName()] = {rebel = 0, loyalist = 0, renegade = 0}
 			sgs.ai_role[aplayer:objectName()] = "neutral"
 		end
-		sgs.explicit_renegade_players[aplayer:objectName()] = false
 		sgs.fake_loyalist_players[aplayer:objectName()] = false
 		sgs.fake_rebel_players[aplayer:objectName()] = false
 	end
@@ -1212,11 +1209,9 @@ sgs.ai_card_intention.general = function(from, to, level)
 	
 	if sgs.evaluatePlayerRole(to) == "loyalist" then
 		
-		if sgs.current_mode_players["rebel"] == 0 and to:isLord() and level > 0 
-			and not  (sgs.explicit_renegade_players[from:objectName()]) then
+		if sgs.current_mode_players["rebel"] == 0 and to:isLord() and level > 0  then
 			--残局对主不利者，视为绝对的内。主公可以下杀手打死
-			sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + 200
-			sgs.explicit_renegade_players[from:objectName()] = true
+			sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + 50
 		end
 		if not isLord(to) and (sgs.UnknownRebel or (sgs.role_evaluation[to:objectName()]["renegade"] > 0 or sgs.current_mode_players["rebel"] == 0) and not sgs.explicit_renegade) then
 		else
@@ -1501,8 +1496,8 @@ function SmartAI:objectiveLevel(player)
 		if player:isLord() and player:getHp() <= 0 and player:hasFlag("Global_Dying") then return -2 end
 		--if target_role == "rebel" and player:getHp() <= 1 and not hasBuquEffect(player) and not player:hasSkills("kongcheng|tianming") and player:isKongcheng()
 		--	and getCardsNum("Peach", player, self.player) == 0 and getCardsNum("Analepic", player, self.player) == 0 then return 5 end
-		--内与其保反贼，不如痛快地收掉这个反贼？
 		
+	
 		if rebel_num == 0 or loyal_num == 0 then
 			if rebel_num > 0 then
 				if rebel_num > 1 then
@@ -1660,7 +1655,7 @@ function SmartAI:objectiveLevel(player)
 		if rebel_num == 0 then
 			if #players == 2 and self.role == "loyalist" then return 5 end
 			---对于主忠内残局跳得内 可以下杀手
-			if (sgs.explicit_renegade_players[player:objectName()]) then
+			if sgs.role_evaluation[player:objectName()]["renegade"] >= 50 then
 				return 4
 			end
 			

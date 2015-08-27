@@ -1505,9 +1505,11 @@ sgs.weapon_range.KylinBow = 5
 sgs.ai_skill_invoke.DoubleSword = function(self, data)
 	local target = self.player:getTag("DoubleSwordTarget"):toPlayer()
 	if target then
-		return not self:needKongcheng(self.player, true) and not self:hasLoseHandcardEffective(target)
+		return not self:needKongcheng(self.player, true) and  not self:needKongcheng(target, true) 
+		--and self:doNotDiscard(target, "h")
+		and not (self:getLeastHandcardNum(target) > 0 and self:hasLoseHandcardEffective(target))
 	end
-	return true
+	return not self:needKongcheng(self.player, true)
 end
 
 
@@ -2007,14 +2009,14 @@ end
 function sgs.ai_armor_value.EightDiagram(player, self)
 	--其实需要先确定目的
 	--直接return其实很武断
-	if self.player:hasSkill("douhun") then
+	--[[if self.player:hasSkill("douhun") then
 		if self.role == "loyalist" and self.player:getKingdom()=="zhan" 
 		and getLord(self.player) and getLord(self.player):hasLordSkill("tianren") then
 			return 3
 		else
 			return 0
 		end
-	end
+	end]]
 	
 	local haszj = self:hasSkills("guidao", self:getEnemies(player))
 	if haszj then
