@@ -4113,8 +4113,6 @@ wooden_ox_skill.getTurnUseCard = function(self)
 			local target_role = sgs.evaluatePlayerRole(friend)
 			if sgs.explicit_renegade and target_role == "renegade"  then
 				friend = nil
-			elseif sgs.explicit_renegade_players[friend:objectName()]  then
-				friend = nil
 			end
 			if not friend then
 				local lord = self.room:getLord()
