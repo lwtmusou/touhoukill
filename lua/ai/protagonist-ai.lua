@@ -89,7 +89,9 @@ sgs.ai_skill_invoke.lingqi =function(self,data)
 	end
 	return false
 end
-
+sgs.ai_skillProperty.lingqi = function(self)
+	return "cause_judge"
+end
 
 sgs.ai_skill_invoke.qixiang =function(self,data)
 	local target=self.player:getTag("qixiang_judge"):toJudge().who
@@ -133,7 +135,9 @@ sgs.ai_skill_cardask["@boli-retrial"] = function(self, data)
 		if #cards1==0 then return "." end
         return "$" .. self:getRetrialCardId(cards1, judge) or judge.card:getEffectiveId()  --tostring()
 end
-
+sgs.ai_skillProperty.boli = function(self)
+	return "noKingdom"
+end
 
 --function SmartAI:hasHeavySlashDamage(from, slash, to, getValue)
 local mofa_skill = {}
@@ -282,7 +286,9 @@ sgs.ai_skill_use_func.wuyuCard = function(card, use, self)
 end
 
 sgs.ai_card_intention.wuyuCard = -40
-
+sgs.ai_skillProperty.wuyu = function(self)
+	return "noKingdom"
+end
 
 function SmartAI:hasSkillsForSaiqian(player)
 	player = player or self.player

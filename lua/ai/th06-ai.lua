@@ -110,7 +110,9 @@ sgs.ai_skill_askforag.mingyun = function(self, card_ids)
 	end
 	return card_ids[1]
 end
-
+sgs.ai_skillProperty.mingyun = function(self)
+	return "wizard_harm"
+end
 
 sgs.ai_skill_playerchosen.xueyi = function(self, targets)
 	target_table =sgs.QList2Table(targets)
@@ -168,6 +170,9 @@ sgs.ai_cardneed.pohuai = function(to, card, self)
 			return  card:isKindOf("OffensiveHorse")
 		end
 	end
+end
+sgs.ai_skillProperty.pohuai = function(self)
+	return "cause_judge"
 end
 
 
@@ -276,7 +281,9 @@ sgs.ai_need_damaged.huisu = function(self, attacker, player)
 	end
 	return false
 end
-
+sgs.ai_skillProperty.huisu = function(self)
+	return "cause_judge"
+end
 
 sgs.ai_skill_invoke.bolan = function(self)
 	if self.player:getPile("yao_mark"):length()>0 then

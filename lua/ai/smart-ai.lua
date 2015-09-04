@@ -105,6 +105,8 @@ sgs.ai_benefitBySlashed ={}
 sgs.ai_DamagedBenefit ={}
 sgs.siling_lack =				{}
 sgs.attackRange_skill = {}
+sgs.ai_skillProperty = {}
+
 sgs.fake_loyalist =     false
 sgs.fake_rebel = false
 sgs.fake_loyalist_players = {}
@@ -2222,10 +2224,23 @@ function SmartAI:filterEvent(event, player, data)
 				end
 			end
 			local lord = self.room:getLord()
-			if lord and lord:getGeneral():isLord() and lord:hasKingdomLordSkill() and promptlist[1] == "KingdomChoice"  then
-				local kingdomChoice  = promptlist[2]
-				if kingdomChoice ~= lord:getKingdom() then
-					sgs.updateIntention(player, lord, 50)
+			if lord and lord:getGeneral():isLord() and promptlist[1] == "KingdomChoice"  then
+				local hasKingdomLordSkill = false
+				for _,s in sgs.qlist(lord:getVisibleSkillList()) do
+					if not s:isLordSkill() then
+						continue
+					end
+					local callback = sgs.ai_skillProperty[s:objectName()]
+					if not callback or callback(self) ~= "noKingdom" then
+						hasKingdomLordSkill = true
+						break
+					end
+				end
+				if hasKingdomLordSkill then
+					local kingdomChoice  = promptlist[2]
+					if kingdomChoice ~= lord:getKingdom() then
+						sgs.updateIntention(player, lord, 50)
+					end
 				end
 			end
 		end
@@ -7656,15 +7671,19 @@ function SmartAI:roleParse()--为主忠盲狙  自动增加克制主公的明反
 end
 function SmartAI:skillPropertyParse(skill,lord)
 	for _,s in sgs.qlist(lord:getVisibleSkillList()) do
-		if skillPropertyCompare(skill:getSkillProperty(),s:getSkillProperty())== "benefit" then
-			return "loyalist"
+		local callback1 = sgs.ai_skillProperty[skill:objectName()]
+		local callback2 = sgs.ai_skillProperty[s:objectName()]
+		if callback1 and callback2 then
+			if 	skillPropertyCompare(callback1(self),callback2(self))== "benefit" then
+				return "loyalist"
+			end
 		end
 	end
 	return nil
 end
 
-function skillPropertyCompare(skill1,skill2)
-	if (skill1 == "cause_judge" or skill1 =="use_delayed_trick")  and  skill2 =="wizard_harm" then
+function skillPropertyCompare(skillProperty1,skillProperty2)
+	if (skillProperty1 == "cause_judge" or skillProperty1 =="use_delayed_trick")  and  skillProperty2 =="wizard_harm" then
 		return "benefit"
 	end
 	return ""

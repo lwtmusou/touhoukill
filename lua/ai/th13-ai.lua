@@ -651,7 +651,9 @@ end
 sgs.ai_skill_invoke.taotie =  function(self)
 	return self:invokeTouhouJudge()
 end
-
+sgs.ai_skillProperty.taotie = function(self)
+	return "cause_judge"
+end
 
 
 sgs.ai_skill_use["@@huisheng"] = function(self, prompt)

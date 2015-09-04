@@ -963,7 +963,6 @@ public:
     taotie() : TriggerSkill("taotie")
     {
         events << CardResponded;
-        skill_property = "cause_judge";
     }
     virtual bool triggerable(const ServerPlayer *target) const
     {

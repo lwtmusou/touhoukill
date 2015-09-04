@@ -138,7 +138,6 @@ public:
     mingyun() : TriggerSkill("mingyun")
     {
         events << StartJudge;
-        skill_property = "wizard_harm";
     }
 
     virtual bool triggerable(const ServerPlayer *target) const
@@ -221,7 +220,6 @@ public:
     {
         events << EventPhaseStart;
         frequency = Compulsory;
-        skill_property = "cause_judge";
     }
 
 
@@ -530,7 +528,6 @@ public:
     huisu() : TriggerSkill("huisu")
     {
         events << PreHpLost << PostHpReduced << Damaged;
-        skill_property = "cause_judge";
     }
 
 

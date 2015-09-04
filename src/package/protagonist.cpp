@@ -19,14 +19,8 @@ public:
     lingqi() : TriggerSkill("lingqi")
     {
         events << TargetConfirming << SlashEffected << CardEffected;
-        skill_property = "cause_judge";
-        //view_as_skill=new lingqivs;
 
     }
-
-    //virtual bool triggerable(const ServerPlayer *target) const{
-    //     return (target != NULL && target->isAlive());
-    // }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
@@ -126,7 +120,6 @@ public:
     boli() : TriggerSkill("boli$")
     {
         events << AskForRetrial;
-        skill_property = "noKingdom";
     }
 
     virtual bool triggerable(const ServerPlayer *target) const
@@ -309,7 +302,6 @@ public:
     wuyu() : TriggerSkill("wuyu$")
     {
         events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging;
-        skill_property = "noKingdom";
     }
 
     virtual bool triggerable(const ServerPlayer *target) const

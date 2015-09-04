@@ -223,7 +223,9 @@ sgs.ai_choicemade_filter.skillInvoke.judu = function(self, player, promptlist)
 	sgs.updateIntention(damage.from, damage.to, 70)
 	end
 end
-
+sgs.ai_skillProperty.judu = function(self)
+	return "cause_judge"
+end
 
 --function SmartAI:getAoeValueTo(card, to, from)
 --function SmartAI:getAoeValue(card, player)
@@ -522,6 +524,10 @@ sgs.ai_slash_prohibit.feixiang = function(self, from, to, card)
 	
 	return false
 end
+sgs.ai_skillProperty.feixiang = function(self)
+	return "wizard_harm"
+end
+
 
 sgs.ai_skill_invoke.dizhen =function(self,data)
 	local target=self.player:getTag("dizhen_judge"):toJudge().who
@@ -798,6 +804,9 @@ sgs.leiyun_suit_value = {
 	spade = 3.9,
 	heart = 3.9
 }
+sgs.ai_skillProperty.leiyun = function(self)
+	return "use_delayed_trick"
+end
 
 
 function SmartAI:kuaizhaoValue(player)

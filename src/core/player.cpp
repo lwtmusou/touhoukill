@@ -547,15 +547,7 @@ bool Player::hasLordSkill(const QString &skill_name, bool include_lose, bool inc
     return false;
 }
 
-bool Player::hasKingdomLordSkill(bool include_lose) const
-{
-    foreach (const Skill *skill, this->getVisibleSkillList()) {
-        if (skill->isLordSkill() && skill->getSkillProperty() != "noKingdom") {
-            return true;
-        }
-    }
-    return false;
-}
+
 
 void Player::acquireSkill(const QString &skill_name)
 {

@@ -10,7 +10,7 @@
 #include <QFile>
 
 Skill::Skill(const QString &name, Frequency frequency)
-    : frequency(frequency), limit_mark(QString()), default_choice("no"), attached_lord_skill(false), skill_property(QString())
+    : frequency(frequency), limit_mark(QString()), default_choice("no"), attached_lord_skill(false)
 {
     static QChar lord_symbol('$');
 
@@ -135,10 +135,7 @@ QString Skill::getLimitMark() const
     return limit_mark;
 }
 
-QString Skill::getSkillProperty() const
-{
-    return skill_property;
-}
+
 
 QStringList Skill::getSources() const
 {
