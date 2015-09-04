@@ -2383,7 +2383,9 @@ end
 function SmartAI:useCardDuel(duel, use)
 	if self.player:hasSkill("wuyan") and not self.player:hasSkill("jueqing") then return end
 	if self.player:hasSkill("noswuyan") then return end
-
+	
+    self:updatePlayers() --为何self.enemies没有被及时更新？？？ phasestart时不是要更新么 卧槽
+	
 	local enemies = self:exclude(self.enemies, duel)
 	local friends = self:exclude(self.friends_noself, duel)
 	local n1 = self:getCardsNum("Slash")

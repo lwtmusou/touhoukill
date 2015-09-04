@@ -1488,7 +1488,12 @@ function SmartAI:objectiveLevel(player)
 			if self.lua_ai:getEnemies():isEmpty() then return 4 else return 0 end
 		else return 0 end
 	end
-
+	
+	local blindAttack = false
+    if not sgs.GetConfig("AIProhibitBlindAttack", false) then
+		blindAttack = true
+	end
+	
 	local rebel_num = sgs.current_mode_players["rebel"]
 	local loyal_num = sgs.current_mode_players["loyalist"]
 	local renegade_num = sgs.current_mode_players["renegade"]
@@ -1636,6 +1641,7 @@ function SmartAI:objectiveLevel(player)
 				local current_friend_num = 0
 				local current_enemy_num = 0
 				local current_renegade_num = 0
+				local current_neutral_num = 0
 				local rebelish = sgs.gameProcess(self.room):match("rebel")
 				for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
 					if sgs.ai_role[aplayer:objectName()] == "loyalist" or aplayer:objectName() == self.player:objectName() then
@@ -1644,12 +1650,18 @@ function SmartAI:objectiveLevel(player)
 						current_renegade_num = current_renegade_num + 1
 					elseif sgs.ai_role[aplayer:objectName()] == "rebel" then
 						current_enemy_num = current_enemy_num + 1
+					elseif sgs.ai_role[aplayer:objectName()] == "neutral" then 
+						current_neutral_num = current_neutral_num + 1
 					end
 				end
 				if current_friend_num >= loyal_num + (rebelish and renegade_num or 0) + 1 then
 					return 5
 				elseif current_enemy_num + (rebelish and 0 or current_renegade_num) >= rebel_num + (rebelish and 0 or renegade_num) then
 					return -1
+				end
+				if blindAttack and not rebelish 
+				and current_friend_num >= loyal_num and current_enemy_num < rebel_num - 1 then
+					return 4
 				end
 			elseif sgs.explicit_renegade and renegade_num == 1 then return -1 end
 		end
