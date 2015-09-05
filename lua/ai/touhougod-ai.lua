@@ -977,7 +977,9 @@ local chaoren_skill = {}
 chaoren_skill.name = "chaoren"
 table.insert(sgs.ai_skills, chaoren_skill)
 chaoren_skill.getTurnUseCard = function(self, inclusive)
-        local acard = sgs.Sanguosha:getCard(self.room:getDrawPile():first())  
+        local drawpile = self.room:getDrawPile()
+		if drawpile:isEmpty() then return false end
+		local acard = sgs.Sanguosha:getCard(drawpile:first())  
 		if not acard:isAvailable(self.player) then return false end
 		local suit =acard:getSuitString()
 		local number = acard:getNumberString()
