@@ -4154,9 +4154,12 @@ end
 
 sgs.ai_playerchosen_intention.wooden_ox = -60
 sgs.ai_no_playerchosen_intention.wooden_ox =function(self, from)
-	if sgs.current_mode_players["rebel"] == 0 then
-		local lord =self.room:getLord()
-		if lord  then
+	
+	local lord =self.room:getLord()
+	if lord  then
+		if sgs.current_mode_players["rebel"] == 0 then
+			sgs.updateIntention(from, lord, 10)
+		elseif not self:isWeak(from) and self:isWeak(lord)  then
 			sgs.updateIntention(from, lord, 10)
 		end
 	end
