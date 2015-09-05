@@ -553,6 +553,7 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 	return good >= bad
 end
 
+--铁索能不能有其他目标时，不要锁卖血流啊
 function SmartAI:useCardIronChain(card, use)
 	
 	local needTarget = (card:getSkillName() == "guhuo" or card:getSkillName() == "nosguhuo" or card:getSkillName() == "qice")
