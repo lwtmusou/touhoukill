@@ -608,6 +608,18 @@ sgs.ai_skill_choice.anyu= function(self, choices, data)
 	end
 	return "turnover"
 end
+sgs.ai_slash_prohibit.anyu = function(self, from, to, card)
+	if not card:isBlack() or not to:hasSkill("zhenye") then return false end
+	if self:isFriend(from, to) then return false end
+	local turnFriend =false
+	for _,p in pairs (self.friends) do
+		if not p:faceUp() then
+			turnFriend = true
+		end
+	end
+	return not self:isWeak(to) and turnFriend
+end
+
 
 --function SmartAI:getEnemyNumBySeat(from, to, target, include_neutral)
 qiyue_find_righter = function(room,target) 
