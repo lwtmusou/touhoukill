@@ -601,11 +601,11 @@ public:
 
                 if (!card || !card->isNDTrick() || card->isKindOf("Nullification"))
                     return false;
-                if (card->isVirtualCard()) {
-                    const Card *realcard = Sanguosha->getEngineCard(move.card_ids.first());
-                    if (realcard->objectName() != card->objectName())
-                        return false;
-                }
+                //if (card->isVirtualCard()) {
+                //    const Card *realcard = Sanguosha->getEngineCard(move.card_ids.first());
+                //    if (realcard->objectName() != card->objectName())
+                //        return false;
+                //}
 
                 if (room->getCardPlace(move.card_ids.first()) == Player::DiscardPile
                     && player != move.from) {
