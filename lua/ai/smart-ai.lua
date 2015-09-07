@@ -3783,6 +3783,9 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 
 	local friends_table = include_self and self.friends or self.friends_noself
 	for _, player in ipairs(friends_table) do
+		if player:getPhase()==sgs.Player_NotActive and player:hasSkills("gaoao")  then
+			continue
+		end
 		local exclude = self:needKongcheng(player) or self:willSkipPlayPhase(player)
 		if self:hasSkills("keji|qiaobian|shensu", player) or player:getHp() - player:getHandcardNum() >= 3
 			or (player:isLord() and self:isWeak(player) and self:getEnemyNumBySeat(self.player, player) >= 1) then
