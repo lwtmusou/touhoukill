@@ -125,7 +125,7 @@ function sgs.getDefenseSlash(player, self)
 	if player:hasSkill("langying") and player:getCards("e"):length()>0 then
 		defense = defense + 2.2
 	end
-	if self:canKexue(player) then
+	if self and self:canKexue(player) then
 		defense = defense + 3.2
 	end
 	
