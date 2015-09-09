@@ -23,7 +23,17 @@ function sgs.ai_cardsview_valuable.skltkexuepeach(self, class_name, player)
 end
 sgs.ai_card_intention.skltkexueCard = sgs.ai_card_intention.Peach
 sgs.ai_use_priority.skltkexueCard = sgs.ai_use_priority.Peach + 0.1
-
+function SmartAI:canKexue(player)
+    if not player:hasSkill("skltkexue") then
+		return false
+	end
+	for _,p in sgs.qlist(player:getOtherPlayers(player)) do
+		if self:isFriend(p, player) and p:getHp() > 1  then
+			return true
+		end
+	end
+	return false 
+end
 
 function SmartAI:invokeTouhouJudge(player)
 	player = player or self.player
