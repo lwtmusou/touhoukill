@@ -27,7 +27,7 @@ function SmartAI:canKexue(player)
     if not player:hasSkill("skltkexue") then
 		return false
 	end
-	for _,p in sgs.qlist(player:getOtherPlayers(player)) do
+	for _,p in sgs.qlist(self.room:getOtherPlayers(player)) do
 		if self:isFriend(p, player) and p:getHp() > 1  then
 			return true
 		end
