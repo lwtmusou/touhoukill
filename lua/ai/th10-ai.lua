@@ -642,6 +642,16 @@ end
 		or (not to:getOffensiveHorse() and  getCardsNum("OffensiveHorse",to,self.player)<1 and card:isKindOf("OffensiveHorse"))
 	end
 end]]
+function SmartAI:canJie(player)
+	for _,p in sgs.qlist(self.room:getOtherPlayers(player)) do
+		if self:isFriend(p, player) and p:hasSkill("jie") and p:getHp() > 1  then
+			return true
+		end
+	end
+	return false 
+end
+
+
 
 sgs.ai_skill_cardask["@liuxing"] = function(self,data)
     local blacks ={}

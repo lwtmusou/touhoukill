@@ -128,6 +128,9 @@ function sgs.getDefenseSlash(player, self)
 	if self and self:canKexue(player) then
 		defense = defense + 3.2
 	end
+	if self and self:canJie(player) then
+		defense = defense + 1.2
+	end
 	
 	if (player:hasArmorEffect("EightDiagram") or (player:hasSkill("bazhen") and not player:getArmor()))
 	  and not IgnoreArmor(attacker, player) then
