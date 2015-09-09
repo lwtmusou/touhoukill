@@ -2188,7 +2188,7 @@ sgs.ai_skill_cardask["savage-assault-slash"] = function(self, data, pattern, tar
 end
 sgs.ai_choicemade_filter.cardResponded["savage-assault-slash"] = function(self, player, promptlist)
 	local target = findPlayerByObjectName(self.room, promptlist[4])
-	if target:hasSkill("lizhi") and promptlist[#promptlist] ~= "_nil_" then
+	if target and target:hasSkill("lizhi") and promptlist[#promptlist] ~= "_nil_" then
 		sgs.updateIntention(player, target, 80)
 	end
 end
