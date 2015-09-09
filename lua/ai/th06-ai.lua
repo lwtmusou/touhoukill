@@ -620,14 +620,17 @@ sgs.ai_skill_choice.anyu= function(self, choices, data)
 end
 sgs.ai_slash_prohibit.anyu = function(self, from, to, card)
 	if not card:isBlack() or not to:hasSkill("zhenye") then return false end
+
 	if self:isFriend(from, to) then return false end
-	local turnFriend =false
-	for _,p in pairs (self.friends) do
-		if not p:faceUp() then
-			turnFriend = true
-		end
-	end
-	return not self:isWeak(to) and turnFriend
+	return not self:isWeak(to) and not to:faceUp() 
+
+	--local turnFriend =false
+	--for _,p in pairs (self.friends) do
+	--	if not p:faceUp() then
+	--		turnFriend = true
+	--	end
+	--end
+	--return not self:isWeak(to) and turnFriend
 end
 
 
@@ -722,8 +725,8 @@ function banyue_skill.getTurnUseCard(self)
 		return sgs.Card_Parse("@banyueCard=.")
 end
 sgs.ai_skill_use_func.banyueCard = function(card, use, self)
-        self:sort(self.friends_noself)
-        if #self.friends_noself == 1 then return end
+        if #self.friends < 2 then return end
+		self:sort(self.friends)
         for _, p in ipairs(self.friends) do
                 use.card = card
                 if use.to then

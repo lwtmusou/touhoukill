@@ -95,9 +95,10 @@ end
 
 sgs.ai_skill_invoke.qixiang =function(self,data)
 	local target=self.player:getTag("qixiang_judge"):toJudge().who
-	if self:isFriend(target) then
+	if target and self:isFriend(target) then
 		return true
 	end
+	return false
 end
 sgs.ai_choicemade_filter.skillInvoke.qixiang = function(self, player, promptlist)
 	local target=player:getTag("qixiang_judge"):toJudge().who

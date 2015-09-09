@@ -1579,8 +1579,10 @@ function SmartAI:objectiveLevel(player)
 		if self:isWeak() then diff_threshold = diff_threshold +1.5 end
 		diff_threshold = diff_threshold + 1 + loyal_num - rebel_num
 		if process == "neutral" or (sgs.turncount <= 1 and sgs.isLordHealthy()) then
-			if sgs.turncount <= 1 and sgs.isLordHealthy() then
+			if sgs.turncount <= 1 and sgs.isLordHealthy()  then
 				if self:getOverflow() <= 0 then return 0 end
+				--尼玛 这里是第一轮内比反还反的原因么。。。第一轮两个忠被打残 只要主健康 妈的天塌下来都不管。。。
+				--第一轮也要考虑diff
 				local rebelish = (sgs.current_mode_players["loyalist"] + 1 < sgs.current_mode_players["rebel"])
 				if player:isLord() then return rebelish and -1 or 0 end
 				if target_role == "loyalist" then return rebelish and 0 or 3.5

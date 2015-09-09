@@ -2799,8 +2799,10 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 			end
 		end
 		enemies = self:exclude(enemies, card)
-		self:sort(enemies, "defense")
-		enemies = sgs.reverse(enemies)
+		self:sort(enemies, "defense")--拆顺盲狙的情况下，用defense牌序是什么意思。 不该是threat之流的么。。。
+		enemies = sgs.reverse(enemies)--这就是妈的二位忠默默装上装备过，三位忠起手就拆的原因么。。。全场就二号位最高。。。
+		--解决方案，1 self.enemy 的判断加入盲狙因素
+		--2这里引入对主公的威胁值的判断。
 	else
 		enemies = self:exclude(self.enemies, card)
 		self:sort(enemies, "defense")
