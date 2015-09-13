@@ -19,6 +19,7 @@ table.insert(sgs.ai_skills, shende_skill)
 function shende_skill.getTurnUseCard(self)
     if self.player:getPile("shende"):length() < 2 then return nil end
 	if not self.player:isWounded() then return nil end
+	if self:hasWeiya() then return nil end
 	local need_useshende=false
 	if self:cautionChangshi()  then 
 		need_useshende=true

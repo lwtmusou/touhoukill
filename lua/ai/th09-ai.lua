@@ -244,7 +244,11 @@ function SmartAI:toupaiValue(player)
 	if self:touhouHandCardsFix(player) or player:hasSkill("heibai") then
 		return 0
 	end
+	
 	local value=0
+	if player:hasSkills("xisan|yongheng|kongpiao") then
+		value= - 20
+	end
 	for _, card in sgs.qlist(player:getHandcards()) do
 		local flag = string.format("%s_%s_%s", "visible", global_room:getCurrent():objectName(), player:objectName())
 		if  card:hasFlag("visible") or card:hasFlag(flag) then
