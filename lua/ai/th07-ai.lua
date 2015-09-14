@@ -540,16 +540,12 @@ sgs.ai_skill_choice.shishen=function(self)
 	return "cancel"
 end
 sgs.ai_slash_prohibit.yexing = function(self, from, to, card)
-	if to:hasSkill("yexing") and to:getMark("@shi") ==0 then
-		if card:isKindOf("NatureSlash")  then 
-			return false
-		else
-			if from:hasSkill("here")then
-				return false
-			end
+	if to:hasSkill("yexing") and to:getMark("@shi") == 0 then
+		if not card:isKindOf("NatureSlash") or  from:hasSkill("here") then 
+			return true
 		end
 	end
-	return true
+	return false
 end
 
 
