@@ -131,7 +131,9 @@ function sgs.getDefenseSlash(player, self)
 	if self and self:canJie(player) then
 		defense = defense + 1.2
 	end
-	
+	if player:hasSkill("wushou") then
+		defense = defense + (0.6 * (1 + player:getLostHp()))
+	end
 	if (player:hasArmorEffect("EightDiagram") or (player:hasSkill("bazhen") and not player:getArmor()))
 	  and not IgnoreArmor(attacker, player) then
 		hasEightDiagram = true
