@@ -134,6 +134,9 @@ function sgs.getDefenseSlash(player, self)
 	if player:hasSkill("wushou") then
 		defense = defense + (0.6 * (1 + player:getLostHp()))
 	end
+	if player:hasSkill("guangji") and not player:getPile("tianyi"):isEmpty() then
+		defense = defense + 10
+	end
 	if (player:hasArmorEffect("EightDiagram") or (player:hasSkill("bazhen") and not player:getArmor()))
 	  and not IgnoreArmor(attacker, player) then
 		hasEightDiagram = true
