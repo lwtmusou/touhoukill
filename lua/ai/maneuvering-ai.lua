@@ -133,6 +133,10 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 	if target:hasArmorEffect("SilverLion") and not (self.player:hasWeapon("QinggangSword") or self.player:hasSkill("jueqing")) then
 		return 
 	end
+	
+	if target:hasSkill("guangji") and not target:getPile("tianyi"):isEmpty() then
+		return false
+	end
 	--¡¾Õ½²Ù¶Ô²ß¡¿
 	local shrx=self.room:findPlayerBySkillName("zhancao")
 	if shrx and self:isEnemy(shrx) then
