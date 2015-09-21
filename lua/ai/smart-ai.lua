@@ -7423,7 +7423,7 @@ end]]
 --【死蝶】
 --【白楼】【楼观】【怪力】【幻视】
 function SmartAI:touhouSidieTarget(card,from)
-	targets={}
+	local targets={}
 	if from:getPhase() ~=sgs.Player_Play then
 		return targets
 	end
@@ -7432,7 +7432,7 @@ function SmartAI:touhouSidieTarget(card,from)
 			--if p:hasSkill("huanshi") then
 			--	table.insert(targets,p:objectName())
 			--end
-			if p:hasSkills("guaili|shuangren|huwei") then
+			if p:hasSkills("guaili|shuangren|huwei|lianxi|shende") then
 				table.insert(targets,p:objectName())
 			end
 		end

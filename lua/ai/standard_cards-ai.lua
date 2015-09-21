@@ -557,6 +557,8 @@ function SmartAI:isPriorFriendOfSlash(friend, card, source)
 	--要求自己已经跳身份，且敌人数量不为0
 	--特定对象优先死蝶 不行么。。。
 	if self:sidieEffect(source) then 
+		local sidies = self:touhouSidieTarget(card,source)
+		if #sidies ~= 0 and not table.contains(sidies, friend:objectName()) then return false end
 		if sgs.ai_role[source:objectName()]  ~= "netural" then
 			local sidieTargets=sgs.SPlayerList()
 			for _,p in sgs.qlist(self.room:getOtherPlayers(friend)) do
