@@ -1498,7 +1498,8 @@ function SmartAI:objectiveLevel(player)
 	local loyal_num = sgs.current_mode_players["loyalist"]
 	local renegade_num = sgs.current_mode_players["renegade"]
 	local target_role = sgs.evaluatePlayerRole(player)
-
+    local self_role = sgs.evaluatePlayerRole(self.player)
+	
 	if self.role == "renegade" then
 		if player:isLord() and player:getHp() <= 0 and player:hasFlag("Global_Dying") then return -2 end
 		--if target_role == "rebel" and player:getHp() <= 1 and not hasBuquEffect(player) and not player:hasSkills("kongcheng|tianming") and player:isKongcheng()
@@ -1578,7 +1579,7 @@ function SmartAI:objectiveLevel(player)
 		local diff_threshold = diff 
 		if self:isWeak() then diff_threshold = diff_threshold +1.5 end
 		diff_threshold = diff_threshold + 1 + loyal_num - rebel_num
-		if process == "neutral" or (sgs.turncount <= 1 and sgs.isLordHealthy()) then
+		if process == "neutral" or (sgs.turncount <= 1 and sgs.isLordHealthy() and self_role == "neutral") then
 			if sgs.turncount <= 1 and sgs.isLordHealthy()  then
 				if self:getOverflow() <= 0 then return 0 end
 				--尼玛 这里是第一轮内比反还反的原因么。。。第一轮两个忠被打残 只要主健康 妈的天塌下来都不管。。。
