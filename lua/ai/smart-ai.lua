@@ -7067,19 +7067,26 @@ end
 
 --东方杀相关
 --原创 完全针对东方杀的【伤害计算】
-function SmartAI:touhouDamage(original_damage,from,to)
-	local damage=original_damage
+function SmartAI:touhouDamage(original_damage,from,to,step)
+	local damage = original_damage
 	if to:hasSkill("huanmeng") then
 		damage.damage=0
 		return damage
 	end
-	--分别对应伤害各个时机
-	damage=self:touhouConfirmDamage(damage,from,to)
+	step = step or 1
 	
+	if step <= 1 then
+	--分别对应伤害各个时机
+		damage=self:touhouConfirmDamage(damage,from,to)
+	end
 	-- Predamage,    
     --DamageForseen,
-	damage=self:touhouDamageCaused(damage,from,to)
-	damage=self:touhouDamageInflicted(damage,from,to)
+	if step <=2 then
+		damage=self:touhouDamageCaused(damage,from,to)
+	end
+	if step <=3 then
+		damage=self:touhouDamageInflicted(damage,from,to)
+	end
 	return damage
 end
 
@@ -7596,16 +7603,20 @@ function SmartAI:touhouIsSameWithLordKingdom(player)
 end
 
 --主要用于要求出杀闪等respone时
-function SmartAI:touhouNeedAvoidAttack(damage,from,to,ignoreDamageEffect)
+function SmartAI:touhouNeedAvoidAttack(damage,from,to,ignoreDamageEffect, damageStep)
 	if to:hasSkill("xuying") and to:getHandcardNum() > 0 and damage.card and damage.card:isKindOf("Slash") then return true end
 	ignoreDamageEffect = ignoreDamageEffect or false 
+	damageStep = damageStep or 1
+	local effect = false
 	if not ignoreDamageEffect then 
-		local effect=self:touhouDamageEffect(damage,from,to)
+		effect = self:touhouDamageEffect(damage,from,to)
 		if from and effect and self:isFriend(from,to) then 
 			return false
 		end
 	end
-	local real_damage=self:touhouDamage(damage,from,to)
+	
+	local real_damage = self:touhouDamage(damage,from,to, damageStep)
+	
 	if real_damage.damage<1 then
 		if not from  or not effect then 	
 			return false 

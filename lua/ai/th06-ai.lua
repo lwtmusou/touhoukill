@@ -504,7 +504,11 @@ end
 sgs.ai_skill_invoke.dongjie = function(self, data)
         local damage =self.player:getTag("dongjie_damage"):toDamage()
         local to =data:toPlayer()
-		if damage.damage > 1 and self:isEnemy(to) then return false end 
+		local final_damage = self:touhouDamage(damage, self.player, to, 2)
+		local needAvoidAttack = self:touhouNeedAvoidAttack(damage,self.player,to,true, 2)
+		if self:isEnemy(to) and needAvoidAttack then
+			if final_damage.damage > 1  or final_damage.damage >= to:getHp()  then return false end
+		end
         return self:isFriend(to) ~= to:faceUp()
 end
 sgs.ai_choicemade_filter.skillInvoke.dongjie = function(self, player, promptlist)
