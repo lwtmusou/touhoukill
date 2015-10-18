@@ -691,6 +691,8 @@ function SmartAI:zhizeValue(player)
 			if card:getSuit()==sgs.Card_Heart then
 				value=value+10
 			end
+		else
+			value=value+5
 		end
 	end
 	return value
