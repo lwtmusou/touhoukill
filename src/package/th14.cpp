@@ -179,7 +179,7 @@ void leitingCard::onEffect(const CardEffectStruct &effect) const
         if (effect.to->isCardLimited(slash, Card::MethodUse))
             return;
         QList<ServerPlayer *> listt;
-        foreach (ServerPlayer *p, room->getAlivePlayers()) {
+        foreach (ServerPlayer *p, room->getOtherPlayers(effect.to)) {
             if (effect.to->inMyAttackRange(p) && effect.to->canSlash(p, slash, true))
                 listt << p;
         }

@@ -140,7 +140,7 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 	--¡¾Õ½²Ù¶Ô²ß¡¿
 	local shrx=self.room:findPlayerBySkillName("zhancao")
 	if shrx and self:isEnemy(shrx) then
-		if self:isFriend(shrx,target) and shrx:inMyAttackRange(target) then
+		if self:isFriend(shrx,target) and (shrx:inMyAttackRange(target) or shrx:objectName() == target:objectName()) then
 			return false 
 		end
 	end

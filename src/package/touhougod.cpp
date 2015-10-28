@@ -1054,9 +1054,10 @@ public:
                 int  x = player->getMaxHp() - player->getLingHp();
                 x = qMin(x, 2);
                 ServerPlayer *s = room->askForPlayerChosen(player, room->getAlivePlayers(), "renguidraw", "@rengui-draw:" + QString::number(x), true, true);
-                if (s != NULL)
+                if (s){
                     room->notifySkillInvoked(player, objectName());
-                s->drawCards(x);
+                    s->drawCards(x);
+				}
             }
             if (player->getRenHp() < player->getMaxHp()) {
                 int y = player->getMaxHp() - player->getRenHp();
@@ -1068,7 +1069,7 @@ public:
                 }
                 if (!all.isEmpty()) {
                     ServerPlayer *s = room->askForPlayerChosen(player, all, "renguidiscard", "@rengui-discard:" + QString::number(y), true, true);
-                    if (s != NULL) {
+                    if (s) {
                         room->notifySkillInvoked(player, objectName());
                         DummyCard *dummy = new DummyCard;
                         dummy->deleteLater();

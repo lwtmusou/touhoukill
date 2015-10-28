@@ -1043,7 +1043,7 @@ public:
             if (use.card->isKindOf("Slash")) {
                 foreach (ServerPlayer *to, use.to) {
                     if (!player->isAlive()) break;
-                    if (player->inMyAttackRange(to) && player->hasSkill("zhancao")) {
+                    if ((player->inMyAttackRange(to) || player == to) && player->hasSkill("zhancao")) {
                         player->tag["zhancao_carduse"] = data;
                         player->tag["zhancao_target"] = QVariant::fromValue(to);
                         QString prompt = "target:" + use.from->objectName() + ":" + to->objectName();

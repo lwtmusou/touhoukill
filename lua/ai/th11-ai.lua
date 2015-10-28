@@ -840,7 +840,7 @@ end
 function SmartAI:hasDiaopingEffect(from,target)
 	local kisume  = self.room:findPlayerBySkillName("diaoping")
 	if kisume and not kisume:isKongcheng() 
-	and kisume:inMyAttackRange(target) and not self:isEnemy(kisume, target) 
+	and (kisume:inMyAttackRange(target)  or kisume:objectName() == target:objectName()) and not self:isEnemy(kisume, target) 
 	and from:getHandcardNum()>=2 and from:faceUp() then
 		return true ,kisume 
 	end

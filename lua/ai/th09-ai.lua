@@ -851,3 +851,41 @@ sgs.ai_skill_playerchosen.kuaizhao = function(self, targets)
 end
 sgs.ai_playerchosen_intention.kuaizhao = 80
 
+
+sgs.ai_skill_playerchosen.nengwudraw = function(self, targets)
+	local target =self:touhouFindPlayerToDraw(true, 1, targets)
+	if target then return target end
+	return nil
+end
+sgs.ai_skill_playerchosen.nengwudiscard = function(self, targets)
+    targets=sgs.QList2Table(targets)
+	self:sort(targets,"handcard")
+	for _,p in pairs(targets)do
+		if self:isEnemy(p) and not self:touhouHandCardsFix(p) then
+			return p
+		end
+	end
+	return nil
+end
+sgs.ai_playerchosen_intention.nengwudraw = -40
+sgs.ai_playerchosen_intention.nengwudiscard = 40
+
+
+sgs.ai_skill_cardask["@xiwang"] = function(self, data)
+	local target = self.player:getTag("xiwang_target"):toPlayer()
+	if not target or not self:isFriend(target) then return "." end
+	
+	local cards = self.player:getCards("h")
+	cards = sgs.QList2Table(cards)
+	if #cards==0 then return "." end
+	self:sortByUseValue(cards)
+	return "$" .. cards[1]:getId()
+end
+
+sgs.ai_choicemade_filter.cardResponded["@xiwang"] = function(self, player, promptlist)
+	if promptlist[#promptlist] ~= "_nil_" then
+		local target =player:getTag("xiwang_target"):toPlayer()
+		if not target then return end	
+		sgs.updateIntention(player, target, -80)
+	end
+end

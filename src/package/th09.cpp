@@ -952,7 +952,128 @@ public:
 };
 
 
+class Nengwu : public TriggerSkill
+{
+public:
+    Nengwu() : TriggerSkill("nengwu")
+    {
+        events << HpRecover << Damaged << CardsMoveOneTime;
+    }
 
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+    {
+		bool draw = true;
+		if (triggerEvent == Damaged)
+		    draw = false;
+		else if (triggerEvent == CardsMoveOneTime)  {
+		    if (room->getTag("FirstRound").toBool())
+                return false;
+			CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+			if (move.from && move.from == player && move.from_places.contains(Player::PlaceHand)) {
+			    draw = false;
+			}
+			else if (move.to && move.to == player && move.to_place == Player::PlaceHand) {
+			    draw = true;
+			}
+			else {
+			    return false;
+			}
+		}
+		
+		QList<ServerPlayer *> targets;
+		
+        foreach (ServerPlayer *p, room->getOtherPlayers(player)){
+            if (player->inMyAttackRange(p) && draw){
+                targets << p;
+			}
+			else if (player->inMyAttackRange(p) && !draw && player->canDiscard(p, "h")) {
+			    targets << p;
+			}
+        }
+		if (targets.isEmpty())
+            return false;
+			
+		
+		ServerPlayer *target;
+        QString skillname =  "nengwudiscard";
+        QString prompt = "@nengwu-discard";	
+		if (draw){
+		    skillname = "nengwudraw";
+			prompt = "@nengwu-draw";	    
+        } 
+
+		
+		target = room->askForPlayerChosen(player, targets, skillname, prompt, true, true);
+		if (target){
+		    room->notifySkillInvoked(player, objectName());
+			if (draw)
+			    target->drawCards(1);
+			else
+			    room->throwCard(room->askForCardChosen(player, target, "h", objectName()), target, player);
+		}
+        return false;
+    }
+};
+
+
+class Xiwang : public TriggerSkill
+{
+public:
+    Xiwang() : TriggerSkill("xiwang$")
+    {
+        events << CardUsed << CardResponded;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const
+    {
+        return (target != NULL);
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+    {
+        ServerPlayer  *current = room->getCurrent();
+        if (!current  || current->getKingdom() != "zhan" || current->isDead())
+            return false;
+        if (!player || player == current)
+            return false;
+        if (current->isKongcheng())    
+		    return false;
+
+        if (triggerEvent == CardUsed) {
+            if (data.value<CardUseStruct>().card->getSuit() != Card::Heart)
+                return false;
+        } else if (triggerEvent == CardResponded) {
+            if (data.value<CardResponseStruct>().m_isProvision || data.value<CardResponseStruct>().m_card->getSuit() != Card::Heart)
+                return false;
+        }
+        
+        
+        QList<ServerPlayer *> lords;
+        foreach (ServerPlayer *p, room->getOtherPlayers(current)){
+            if (p->hasLordSkill(objectName()))
+                lords << p;
+        }
+        if (lords.isEmpty())
+            return false;
+        room->sortByActionOrder(lords);
+        
+        foreach (ServerPlayer *lord, lords) {
+            if (current->isKongcheng())
+			    break;
+			current->tag["xiwang_target"] = QVariant::fromValue(lord);// for ai
+			const Card *card = room->askForCard(current, ".|.|.|hand", "@xiwang:" + lord->objectName(), data, Card::MethodNone);
+            if (card){
+                room->notifySkillInvoked(lord, objectName());
+                QList<ServerPlayer *> logto;
+                logto << lord;
+                room->touhouLogmessage("#InvokeOthersSkill", current, objectName(), logto);
+                room->obtainCard(lord, card->getEffectiveId(), room->getCardPlace(card->getEffectiveId()) != Player::PlaceHand);
+            }              
+        }
+        return false;
+    }
+};
 
 
 th09Package::th09Package()
@@ -1000,8 +1121,10 @@ th09Package::th09Package()
     zhan009->addSkill(new duanjiao);
     related_skills.insertMulti("kuaizhao", "#kuaizhao");
 
-    General *zhan010 = new General(this, "zhan010", "zhan", 4, false);
-
+    General *zhan010 = new General(this, "zhan010$", "zhan", 4, false);
+	zhan010->addSkill(new Nengwu);
+    zhan010->addSkill(new Xiwang);
+    
     addMetaObject<tianrenCard>();
 }
 

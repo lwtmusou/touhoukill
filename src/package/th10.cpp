@@ -259,7 +259,8 @@ public:
             ServerPlayer *suwako = room->findPlayerBySkillName(objectName());
             if (suwako == NULL || suwako->isKongcheng())
                 return false;
-            if (damage.from == suwako || damage.from->isKongcheng() || !suwako->inMyAttackRange(damage.to))
+            if (damage.from == suwako || damage.from->isKongcheng() || 
+			(!suwako->inMyAttackRange(damage.to) && suwako != damage.to )  )
                 return false;
 
             suwako->tag["bushu_damage"] = data;

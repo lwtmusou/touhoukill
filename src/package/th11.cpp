@@ -29,9 +29,9 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *source = room->findPlayerBySkillName(objectName());
-        if (source == NULL || damage.from == NULL || damage.from == source || damage.card == NULL || damage.from->isKongcheng()
+        if ( !source || !damage.from  || damage.from == source || damage.card == NULL || damage.from->isKongcheng()
             || damage.to == damage.from || damage.to->isDead()
-            || !source->inMyAttackRange(damage.to))
+            || (!source->inMyAttackRange(damage.to) && damage.to != source) )
             return false;
         QString prompt = "show:" + damage.from->objectName() + ":" + damage.to->objectName() + ":" + damage.card->objectName();
         source->tag["xiangqi_from"] = QVariant::fromValue(damage.from);
@@ -965,7 +965,7 @@ public:
                 return false;
             bool find = false;
             foreach (ServerPlayer *p, use.to) {
-                if (skillowner->inMyAttackRange(p))
+                if (skillowner->inMyAttackRange(p) || skillowner == p)
                     find = true;
             }
             if (!find)

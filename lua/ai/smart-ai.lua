@@ -6167,7 +6167,7 @@ function SmartAI:hasTrickEffective(card, to, from)
 	to = to or self.player
 	if self.room:isProhibited(from, to, card) then return false end
 	--if to:hasSkill("zhengyi")  and not card:isKindOf("DelayedTrick") and card:isBlack() then return false end
-	if to:hasSkill("yunshang") and not from:inMyAttackRange(to) then return false end
+	if to:hasSkill("yunshang") and from:objectName() ~= to:objectName()  and not from:inMyAttackRange(to) then return false end
 	--[[if to:hasSkill("yicun") and card:isKindOf("Duel") then
 		if self:yicunEffective(card, to, from) then
 			return false 
@@ -7249,7 +7249,7 @@ function SmartAI:touhouEffectNullify(card,from,to)
 		--	return true
 		--end
 		if card:isKindOf("TrickCard") then
-			if to:hasSkill("yunshang") and not from:inMyAttackRange(to) then
+			if to:hasSkill("yunshang") and  from:objectName() ~= to:objectName() and not from:inMyAttackRange(to) then
 				return true
 			end
 		end
@@ -7770,9 +7770,13 @@ end
 
 --暂时仿照原FindPlayerToDraw
 --其实我更想把这个值量化
-function SmartAI:touhouFindPlayerToDraw(include_self, drawnum)
+function SmartAI:touhouFindPlayerToDraw(include_self, drawnum, players)
 	drawnum = drawnum or 1
-	local players = sgs.QList2Table(include_self and self.room:getAllPlayers() or self.room:getOtherPlayers(self.player))
+	if not players or players:isEmpty() then
+		players = sgs.QList2Table(include_self and self.room:getAllPlayers() or self.room:getOtherPlayers(self.player))
+	else
+	    players = sgs.QList2Table(players)
+	end
 	local friends = {}
 	for _, player in ipairs(players) do
 		if self:isFriend(player)  then
