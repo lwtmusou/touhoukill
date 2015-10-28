@@ -964,8 +964,9 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
 		bool draw = true;
-		if (triggerEvent == Damaged)
+		if (triggerEvent == Damaged){
 		    draw = false;
+		}
 		else if (triggerEvent == CardsMoveOneTime)  {
 		    if (room->getTag("FirstRound").toBool())
                 return false;
@@ -980,6 +981,11 @@ public:
 			    return false;
 			}
 		}
+		if (player->getPhase() == Player::Draw && draw)
+		    return false;
+		if (player->getPhase() == Player::Play && !draw)
+		    return false;
+		
 		
 		QList<ServerPlayer *> targets;
 		
