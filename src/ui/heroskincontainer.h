@@ -83,7 +83,7 @@ private slots:
 
 signals:
     void local_skin_changed(const QString &generalName);
-	void skin_changed(const QString &generalName, int skinIndex);
+    void skin_changed(const QString &generalName, int skinIndex);
 };
 
 #endif // HEROSKINCONTAINER_H

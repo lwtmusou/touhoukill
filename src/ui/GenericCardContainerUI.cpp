@@ -1270,7 +1270,7 @@ void PlayerCardContainer::showHeroSkinListHelper(const General *general,
 
         connect(heroSkinContainer, SIGNAL(local_skin_changed(const QString &)),
             avatarIcon, SLOT(startChangeHeroSkinAnimation(const QString &)));
-			
+            
         connect(heroSkinContainer, SIGNAL(skin_changed(const QString &, int)),
             RoomSceneInstance, SLOT(doSkinChange(const QString &, int)));
         

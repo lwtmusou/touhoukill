@@ -260,7 +260,7 @@ void HeroSkinContainer::skinSelected(int skinIndex)
         m_vScrollBar->setValue(0);
     }
     
-	emit local_skin_changed(m_generalName);//for self clinet roomscene
+    emit local_skin_changed(m_generalName);//for self clinet roomscene
     emit skin_changed(m_generalName, skinIndex); //for server notify
 }
 

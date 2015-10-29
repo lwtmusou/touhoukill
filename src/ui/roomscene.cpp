@@ -613,6 +613,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
             showPindianBox(from_name, from_id, to_name, to_id, reason);
         else
             setEmotion(from_name, success ? "success" : "no-success");
+		break;
     }
     case S_GAME_EVENT_SKIN_CHANGED: {
         QString player_name = arg[1].asCString(); 
@@ -621,11 +622,11 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         
         ClientPlayer *player = ClientInstance->getPlayer(player_name);
         
-        PlayerCardContainer *Changedcontainer = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
+        //PlayerCardContainer *Changedcontainer = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
 
         QList<PlayerCardContainer *> playerCardContainers;
         foreach (Photo *photo, photos) {
-			playerCardContainers.append(photo);
+            playerCardContainers.append(photo);
         }
         playerCardContainers.append(dashboard);
         
