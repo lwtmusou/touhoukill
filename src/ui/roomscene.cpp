@@ -621,11 +621,11 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         
         ClientPlayer *player = ClientInstance->getPlayer(player_name);
         
-        //PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
+        PlayerCardContainer *Changedcontainer = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
 
         QList<PlayerCardContainer *> playerCardContainers;
         foreach (Photo *photo, photos) {
-            playerCardContainers.append(photo);
+			playerCardContainers.append(photo);
         }
         playerCardContainers.append(dashboard);
         
@@ -633,9 +633,8 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
             //const ClientPlayer *player = playerCardContainer->getPlayer();
             //const QString &heroSkinGeneralName = heroSkinContainer->getGeneralName();
 
-             if (general_name == playerCardContainer->getPlayer()->getGeneralName()) {
-                if (Self == player || player->getGeneralName() == general_name){
-                
+             if (general_name == playerCardContainer->getPlayer()->getGeneralName()) { // check container which changed skin 
+                if ( player->getGeneralName() == general_name && Self != player){ // check this roomscene instance of the players who need notify 
                     Config.beginGroup("HeroSkin");
                     (0 == skinIndex) ? Config.remove(general_name)
                     : Config.setValue(general_name, skinIndex);
@@ -649,13 +648,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
                     playerCardContainer->getAvartarItem()->startChangeHeroSkinAnimation(general_name);
                 }
             } 
-        }
-        
-         
-        
-        
-        
-        
+        }     
     }
     default:
         break;
@@ -4792,18 +4785,18 @@ void RoomScene::addHeroSkinContainer(ClientPlayer *player,
         const QString &heroSkinGeneralName = heroSkinContainer->getGeneralName();
 
         if (heroSkinGeneralName == player->getGeneralName()) {
-            //connect(heroSkinContainer, SIGNAL(skin_changed(const QString &)),
-            //    playerCardContainer->getAvartarItem(),
-            //    SLOT(startChangeHeroSkinAnimation(const QString &)));
+            connect(heroSkinContainer, SIGNAL(local_skin_changed(const QString &)),
+                playerCardContainer->getAvartarItem(),
+                SLOT(startChangeHeroSkinAnimation(const QString &)));
                 
             connect(heroSkinContainer, SIGNAL(skin_changed(const QString &, int)),
                 this, SLOT(doSkinChange(const QString &, int)));
         }
 
         if (heroSkinGeneralName == player->getGeneral2Name()) {
-            //connect(heroSkinContainer, SIGNAL(skin_changed(const QString &)),
-            //    playerCardContainer->getSmallAvartarItem(),
-            //    SLOT(startChangeHeroSkinAnimation(const QString &)));
+            connect(heroSkinContainer, SIGNAL(local_skin_changed(const QString &)),
+                playerCardContainer->getSmallAvartarItem(),
+                SLOT(startChangeHeroSkinAnimation(const QString &)));
             connect(heroSkinContainer, SIGNAL(skin_changed(const QString &, int)),
                 this, SLOT(doSkinChange(const QString &, int)));
         }
