@@ -1268,9 +1268,11 @@ void PlayerCardContainer::showHeroSkinListHelper(const General *general,
     if (NULL == heroSkinContainer) {
         heroSkinContainer = new HeroSkinContainer(generalName, general->getKingdom());
 
-        connect(heroSkinContainer, SIGNAL(skin_changed(const QString &)),
-            avatarIcon, SLOT(startChangeHeroSkinAnimation(const QString &)));
-
+        //connect(heroSkinContainer, SIGNAL(skin_changed(const QString &)),
+        //    avatarIcon, SLOT(startChangeHeroSkinAnimation(const QString &)));
+        connect(heroSkinContainer, SIGNAL(skin_changed(const QString &, int)),
+            RoomSceneInstance, SLOT(doSkinChange(const QString &, int)));
+        
         RoomSceneInstance->addHeroSkinContainer(m_player, heroSkinContainer);
         RoomSceneInstance->addItem(heroSkinContainer);
         QRectF photoRect = _m_avatarIcon->sceneBoundingRect();

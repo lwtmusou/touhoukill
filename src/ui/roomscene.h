@@ -227,6 +227,9 @@ public:
     void doDiscardButton();
     void highlightSkillButton(QString skill_name, bool highlight);
     bool isHighlightStatus(Client::Status status);
+    
+    void doSkinChange(const QString &generalName, int skinIndex);
+    
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);

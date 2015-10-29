@@ -614,6 +614,49 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         else
             setEmotion(from_name, success ? "success" : "no-success");
     }
+    case S_GAME_EVENT_SKIN_CHANGED: {
+        QString player_name = arg[1].asCString(); 
+        QString general_name = arg[2].asCString(); 
+        int skinIndex = arg[3].asInt(); 
+        
+        ClientPlayer *player = ClientInstance->getPlayer(player_name);
+        
+        //PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
+
+        QList<PlayerCardContainer *> playerCardContainers;
+        foreach (Photo *photo, photos) {
+            playerCardContainers.append(photo);
+        }
+        playerCardContainers.append(dashboard);
+        
+        foreach (PlayerCardContainer *playerCardContainer, playerCardContainers) {
+            //const ClientPlayer *player = playerCardContainer->getPlayer();
+            //const QString &heroSkinGeneralName = heroSkinContainer->getGeneralName();
+
+             if (general_name == playerCardContainer->getPlayer()->getGeneralName()) {
+                if (Self == player || player->getGeneralName() == general_name){
+                
+                    Config.beginGroup("HeroSkin");
+                    (0 == skinIndex) ? Config.remove(general_name)
+                    : Config.setValue(general_name, skinIndex);
+                    Config.endGroup(); 
+
+                    foreach (HeroSkinContainer *heroSkinContainer, getHeroSkinContainers()) {
+                        if (heroSkinContainer->getGeneralName() ==  general_name){
+                            heroSkinContainer->swapWithSkinItemUsed(skinIndex); 
+                        }
+                    } 
+                    playerCardContainer->getAvartarItem()->startChangeHeroSkinAnimation(general_name);
+                }
+            } 
+        }
+        
+         
+        
+        
+        
+        
+    }
     default:
         break;
     }
@@ -4749,15 +4792,20 @@ void RoomScene::addHeroSkinContainer(ClientPlayer *player,
         const QString &heroSkinGeneralName = heroSkinContainer->getGeneralName();
 
         if (heroSkinGeneralName == player->getGeneralName()) {
-            connect(heroSkinContainer, SIGNAL(skin_changed(const QString &)),
-                playerCardContainer->getAvartarItem(),
-                SLOT(startChangeHeroSkinAnimation(const QString &)));
+            //connect(heroSkinContainer, SIGNAL(skin_changed(const QString &)),
+            //    playerCardContainer->getAvartarItem(),
+            //    SLOT(startChangeHeroSkinAnimation(const QString &)));
+                
+            connect(heroSkinContainer, SIGNAL(skin_changed(const QString &, int)),
+                this, SLOT(doSkinChange(const QString &, int)));
         }
 
         if (heroSkinGeneralName == player->getGeneral2Name()) {
-            connect(heroSkinContainer, SIGNAL(skin_changed(const QString &)),
-                playerCardContainer->getSmallAvartarItem(),
-                SLOT(startChangeHeroSkinAnimation(const QString &)));
+            //connect(heroSkinContainer, SIGNAL(skin_changed(const QString &)),
+            //    playerCardContainer->getSmallAvartarItem(),
+            //    SLOT(startChangeHeroSkinAnimation(const QString &)));
+            connect(heroSkinContainer, SIGNAL(skin_changed(const QString &, int)),
+                this, SLOT(doSkinChange(const QString &, int)));
         }
     }
 }
@@ -4766,6 +4814,13 @@ QSet<HeroSkinContainer *> RoomScene::getHeroSkinContainers()
     return  m_heroSkinContainers;
 
 }
+
+void RoomScene::doSkinChange(const QString &generalName, int skinIndex) 
+{   
+    
+    ClientInstance->changeSkin(generalName, skinIndex); 
+} 
+
 
 void RoomScene::showBubbleChatBox(const QString &who, const QString &line)
 {
@@ -4800,7 +4855,7 @@ void RoomScene::highlightSkillButton(QString skill_name, bool highlight)
     if (skill_name == NULL || skill_name == "")
         return;
     foreach (QSanSkillButton *button, m_skillButtons) {
-	    QString  button_name = button->getSkill()->objectName();
+        QString  button_name = button->getSkill()->objectName();
         if (button_name == skill_name || skill_name.startsWith(button_name)) {
             if (button->getSkill()->getFrequency() != Skill::Wake
                 ) {

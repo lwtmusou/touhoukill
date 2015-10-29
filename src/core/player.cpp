@@ -249,9 +249,9 @@ int Player::getAttackRange(bool include_weapon) const
 bool Player::inMyAttackRange(const Player *other) const
 {
     if (this == other)
-	    return false;
-		
-	return distanceTo(other) <= getAttackRange();
+        return false;
+        
+    return distanceTo(other) <= getAttackRange();
 }
 
 void Player::setFixedDistance(const Player *player, int distance)

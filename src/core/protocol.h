@@ -130,7 +130,8 @@ namespace QSanProtocol {
         S_COMMAND_ANIMATE,
         S_COMMAND_LUCK_CARD,
         S_COMMAND_VIEW_GENERALS,
-        S_COMMAND_SET_DASHBOARD_SHADOW
+        S_COMMAND_SET_DASHBOARD_SHADOW,
+        S_COMMAND_SKIN_CHANGE
     };
 
     enum GameEventType
@@ -151,7 +152,8 @@ namespace QSanProtocol {
         S_GAME_EVENT_PLAYER_REFORM,
         S_GAME_EVENT_SKILL_INVOKED,
         S_GAME_EVENT_PAUSE,
-        S_GAME_EVENT_REVEAL_PINDIAN
+        S_GAME_EVENT_REVEAL_PINDIAN,
+        S_GAME_EVENT_SKIN_CHANGED
     };
 
     enum AnimateType

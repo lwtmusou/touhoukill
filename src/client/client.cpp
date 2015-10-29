@@ -232,12 +232,23 @@ void Client::handleGameEvent(const Json::Value &arg)
     emit event_received(arg);
 }
 
+void Client::notifyToServer(CommandType command, const Json::Value &arg) 
+{ 
+    if (socket) { 
+        QSanGeneralPacket packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_ROOM, command); 
+        packet.setMessageBody(arg); 
+        socket->send(toQString(packet.toString()));
+    } 
+} 
+
+
+
 void Client::requestToServer(CommandType command, const Json::Value &arg)
 {
     if (socket) {
         QSanGeneralPacket packet(S_SRC_CLIENT | S_TYPE_REQUEST | S_DEST_ROOM, command);
         packet.setMessageBody(arg);
-        socket->send(toQString(packet.toString()));
+        socket->send(toQString(packet.toString()));    
     }
 }
 
@@ -2006,3 +2017,15 @@ void Client::clearLordInfo()
     lord_kingdom = "";
     lord_name = "";
 }
+
+void Client::changeSkin(QString name, int index)  
+{   
+    
+    Json::Value skinInfo(Json::arrayValue);
+    skinInfo[0] = toJsonString(name);
+    skinInfo[1] = index;
+    //notifyToServer(S_COMMAND_SKIN_CHANGE, skinInfo);
+
+    requestToServer(S_COMMAND_SKIN_CHANGE, skinInfo); 
+}  
+

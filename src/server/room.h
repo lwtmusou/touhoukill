@@ -385,6 +385,8 @@ public:
     void broadcastInvoke(const QSanProtocol::QSanPacket *packet, ServerPlayer *except = NULL);
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
     void networkDelayTestCommand(ServerPlayer *player, const QString &);
+    
+    
     inline RoomState *getRoomState()
     {
         return &_m_roomState;
@@ -576,7 +578,7 @@ private:
     //process client requests
     bool processRequestCheat(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet);
     bool processRequestSurrender(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet);
-
+   
     bool makeSurrender(ServerPlayer *player);
     bool makeCheat(ServerPlayer *player);
     void makeDamage(const QString &source, const QString &target, QSanProtocol::CheatCategory nature, int point);
@@ -584,6 +586,8 @@ private:
     void makeReviving(const QString &name);
     void doScript(const QString &script);
 
+    bool skinChangeCommand(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet);  
+    
     //helper functions and structs
     struct _NullificationAiHelper
     {

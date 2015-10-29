@@ -260,7 +260,7 @@ void HeroSkinContainer::skinSelected(int skinIndex)
         m_vScrollBar->setValue(0);
     }
 
-    emit skin_changed(m_generalName);
+    emit skin_changed(m_generalName, skinIndex);
 }
 
 void HeroSkinContainer::swapWithSkinItemUsed(int skinIndex)

@@ -61,6 +61,7 @@ public:
     void disconnectFromHost();
     void replyToServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
     void requestToServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
+    void notifyToServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
     void request(const QString &message);
     void onPlayerResponseCard(const Card *card, const QList<const Player *> &targets = QList<const Player *>());
     void setStatus(Status status);
@@ -233,6 +234,7 @@ public:
     void arrange(const QStringList &order);
 
     void onPlayerReplyGongxin(int card_id = -1);
+    void changeSkin(QString name, int index);
 
 protected:
     // operation countdown

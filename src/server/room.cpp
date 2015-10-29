@@ -75,7 +75,9 @@ void Room::initCallbacks()
     // client request handlers
     m_callbacks[S_COMMAND_SURRENDER] = &Room::processRequestSurrender;
     m_callbacks[S_COMMAND_CHEAT] = &Room::processRequestCheat;
+    m_callbacks[S_COMMAND_SKIN_CHANGE] = &Room::skinChangeCommand; 
 
+    
     // Client notifications
     callbacks["toggleReadyCommand"] = &Room::toggleReadyCommand;
     callbacks["addRobotCommand"] = &Room::addRobotCommand;
@@ -87,6 +89,8 @@ void Room::initCallbacks()
 
     //Client request
     callbacks["networkDelayTestCommand"] = &Room::networkDelayTestCommand;
+    
+    
 }
 
 ServerPlayer *Room::getCurrent() const
@@ -6516,3 +6520,22 @@ void Room::touhouLogmessage(const QString logtype, ServerPlayer *logfrom, const 
 
     sendLog(alog);
 }
+
+
+bool Room::skinChangeCommand(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet)  
+{   
+    Json::Value arg = packet->getMessageBody();
+    //if (!arg.isArray() || !arg[0].isInt()) return false;
+    QString generalName = arg[0].asCString();
+    
+    Json::Value val(Json::arrayValue);
+    
+    val[0] = (int)QSanProtocol::S_GAME_EVENT_SKIN_CHANGED;
+    val[1] = toJsonString(player->objectName());  
+    val[2] = toJsonString(generalName);
+    val[3] = arg[1].asInt();
+
+    
+    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val); 
+    return true;    
+}  

@@ -41,7 +41,9 @@ public:
 
     static bool hasSkin(const QString &generalName);
     static int getNextSkinIndex(const QString &generalName, int skinIndex);
-
+    void swapWithSkinItemUsed(int skinIndex);
+    
+    
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *);
     virtual void wheelEvent(QGraphicsSceneWheelEvent *event);
@@ -51,7 +53,7 @@ private:
     void initSkins();
     void createSkinItem(int skinIndex, QGraphicsItem *parent, bool used = false);
     void fillSkins();
-    void swapWithSkinItemUsed(int skinIndex);
+    //void swapWithSkinItemUsed(int skinIndex);
 
     static QStringList getHeroSkinFiles(const QString &generalName);
     static const SanShadowTextFont &getAvatarNameFont();
@@ -80,7 +82,7 @@ private slots:
     void scrollBarValueChanged(int newValue);
 
 signals:
-    void skin_changed(const QString &generalName);
+    void skin_changed(const QString &generalName, int skinIndex);
 };
 
 #endif // HEROSKINCONTAINER_H
