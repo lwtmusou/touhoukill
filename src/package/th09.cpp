@@ -1047,7 +1047,9 @@ public:
 		    return false;
 
         if (triggerEvent == CardUsed) {
-            if (data.value<CardUseStruct>().card->getSuit() != Card::Heart)
+            if (data.value<CardUseStruct>().card->getHandlingMethod() != Card::MethodUse)//caution the case using a skillcard
+			    return false;
+			if (data.value<CardUseStruct>().card->getSuit() != Card::Heart)
                 return false;
         } else if (triggerEvent == CardResponded) {
             if (data.value<CardResponseStruct>().m_isProvision || data.value<CardResponseStruct>().m_card->getSuit() != Card::Heart)
@@ -1077,6 +1079,7 @@ public:
                 room->obtainCard(lord, card->getEffectiveId(), room->getCardPlace(card->getEffectiveId()) != Player::PlaceHand);
             }              
         }
+
         return false;
     }
 };
