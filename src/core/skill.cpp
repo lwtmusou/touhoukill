@@ -566,7 +566,8 @@ ArmorSkill::ArmorSkill(const QString &name)
 
 bool ArmorSkill::triggerable(const ServerPlayer *target) const
 {
-    if (target == NULL || target->getArmor() == NULL)
+    //if (target == NULL || target->getArmor() == NULL)
+    if (target == NULL)
         return false;
     return target->hasArmorEffect(objectName());
 }

@@ -112,7 +112,7 @@ public:
                 if (target != NULL) {
                     QList<int> disable;
                     foreach (const Card *equip, target->getEquips()) {
-                        if (equip->isKindOf("Weapon") && player->getMark("@tianyi_Weapon") == 0)
+                        if (equip->isKindOf("Weapon"))
                             disable << equip->getId();
                     }
                     int card_id = room->askForCardChosen(player, target, "je", objectName(), false, Card::MethodDiscard, disable);

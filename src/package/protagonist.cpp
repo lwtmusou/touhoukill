@@ -1366,10 +1366,7 @@ protagonistPackage::protagonistPackage()
     zhu008->addSkill(new mokai);
     zhu008->addSkill(new guangji);
     zhu008->addSkill(new xinghui);
-    //zhu008->addSkill(new tianyi_targetmod);
-    //zhu008->addSkill(new tianyi_horse);
-    //zhu008->addSkill(new tianyi_attackrange);
-    //zhu008->addSkill(new tianyi_collateral);
+
 
 
 
@@ -1387,7 +1384,7 @@ protagonistPackage::protagonistPackage()
 
 
     skills << new wuyuvs << new saiqianvs;
-    // << new touhou_tianyi;
+
 }
 
 ADD_PACKAGE(protagonist)

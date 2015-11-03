@@ -868,7 +868,7 @@ public:
         QString pattern = data.toStringList().first();
         if (pattern == "jink") {
             ServerPlayer *current = room->getCurrent();
-            if (!current && !current->isAlive() || (current->getWeapon() != NULL && current->getMark("@tianyi_Weapon") == 0))
+            if (!current && !current->isAlive() || (current->getWeapon() != NULL))
                 return false;
             Jink *jink = new Jink(Card::NoSuit, 0);
             jink->deleteLater();

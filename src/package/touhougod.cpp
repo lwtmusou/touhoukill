@@ -1057,7 +1057,7 @@ public:
                 if (s){
                     room->notifySkillInvoked(player, objectName());
                     s->drawCards(x);
-				}
+                }
             }
             if (player->getRenHp() < player->getMaxHp()) {
                 int y = player->getMaxHp() - player->getRenHp();
@@ -1676,7 +1676,7 @@ public:
     {
         if (player->getPhase() == Player::Finish) {
             ServerPlayer *merin = room->findPlayerBySkillName(objectName());
-			
+            
             if (merin && merin->getPile("rainbow").length() > 3) {
                 
                 if (room->askForSkillInvoke(merin, objectName(), "discard")) {
@@ -2645,6 +2645,176 @@ public:
     }
 };
 
+
+class Shenbao : public AttackRangeSkill
+{
+public:
+    Shenbao() : AttackRangeSkill("shenbao")
+    {
+
+    }
+
+    virtual int getExtra(const Player *target, bool) const
+    {
+        if (target->hasSkill(objectName())){
+            int self_weapon_range = 1;
+            int extra = 0;
+            if (target->getWeapon()){
+                WrappedCard *weapon = target->getWeapon();
+                const Weapon *card = qobject_cast<const Weapon *>(weapon->getRealCard());
+                self_weapon_range = card->getRange();
+            }
+            foreach (const Player *p, target->getAliveSiblings()) {
+                if (p->getWeapon()){
+                    WrappedCard *weapon = p->getWeapon();
+                    const Weapon *card = qobject_cast<const Weapon *>(weapon->getRealCard());
+                    int other_weapon_range = card->getRange();
+                    int new_extra = other_weapon_range - self_weapon_range;
+                    if (new_extra > extra)
+                        extra = new_extra;                    
+                }
+            }            
+            return extra;
+        }
+        return 0;
+    }
+};
+
+
+class ShenbaoDistance : public DistanceSkill
+{
+public:
+    ShenbaoDistance() : DistanceSkill("#shenbao_distance")
+    {
+    }
+
+    virtual int getCorrect(const Player *from, const Player *to) const
+    {
+        int correct = 0;
+        if (from->hasSkill("shenbao")){
+            foreach (const Player *p, from->getAliveSiblings()) {
+                if (p->getOffensiveHorse()){
+                    correct = correct - 1;                
+                }
+            }        
+        }
+            
+
+        if (to->hasSkill("shenbao")){
+            foreach (const Player *p, to->getAliveSiblings()) {
+                if (p->getDefensiveHorse()){
+                    correct = correct + 1;                
+                }
+            }    
+        }
+
+        return correct;
+    }
+};
+
+
+
+
+
+class ShenbaoSpear: public ViewAsSkill {
+public:
+    ShenbaoSpear(): ViewAsSkill("shenbao_spear") {
+        attached_lord_skill = true;
+    }
+
+    virtual bool shouldBeVisible(const Player *Self) const{ 
+        return Self;
+        //return Self->hasWeapon("Spear") && !Self->hasWeapon("Spear", true);
+        // need update dashboard when real weapon moved
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const {
+        if (player->hasWeapon("Spear") && !player->hasWeapon("Spear" , true)){
+            const ViewAsSkill *spear_skill = Sanguosha->getViewAsSkill("Spear");
+            return spear_skill->isEnabledAtPlay(player);
+        } 
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const {
+        if (player->hasWeapon("Spear") && !player->hasWeapon("Spear" , true)){
+            
+            const ViewAsSkill *spear_skill = Sanguosha->getViewAsSkill("Spear");
+            return spear_skill->isEnabledAtResponse(player, pattern);
+        } 
+        return false;
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
+        if (Self->hasWeapon("Spear") && !Self->hasWeapon("Spear" , true)){
+            const ViewAsSkill *spear_skill = Sanguosha->getViewAsSkill("Spear");
+            return spear_skill->viewFilter(selected, to_select);
+        } 
+        return false;
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+        if (Self->hasWeapon("Spear") && !Self->hasWeapon("Spear" , true)){
+            const ViewAsSkill *spear_skill = Sanguosha->getViewAsSkill("Spear");
+            return spear_skill->viewAs(cards);
+        } 
+        return NULL;        
+    }
+};
+
+
+
+
+class ShenbaoHandler : public TriggerSkill
+{
+public:
+    ShenbaoHandler() : TriggerSkill("#shenbao")
+    {
+        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const
+    {
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+    {
+        if (triggerEvent == GameStart || triggerEvent == Debut
+            || (triggerEvent == EventAcquireSkill && data.toString() == "shenbao")) {
+            QList<ServerPlayer *> kaguyas;
+            foreach (ServerPlayer *p, room->getAlivePlayers()) {
+                if (p->hasSkill("shenbao", false, true))
+                    kaguyas << p;
+            }
+            if (kaguyas.isEmpty()) return false;
+            foreach (ServerPlayer *p, kaguyas) {
+                if (!p->hasSkill("shenbao_spear"))
+                    room->attachSkillToPlayer(p, "shenbao_spear");
+            }
+        } else if (triggerEvent == Death || (triggerEvent == EventLoseSkill && data.toString() == "shenbao")) {
+            if (triggerEvent == Death) {
+                DeathStruct death = data.value<DeathStruct>();
+                if (!death.who->hasSkill("shenbao", false, true))//deal the case that death in round of changshi?
+                    return false;
+            }
+            
+            
+            QList<ServerPlayer *> losers;
+            foreach (ServerPlayer *p, room->getAlivePlayers()) {
+                if (!p->hasSkill("shenbao", false, true))
+                    losers << p;
+            }
+            if (losers.isEmpty()) return false;
+            foreach (ServerPlayer *p, losers) {
+                if (p->hasSkill("shenbao_spear"))
+                    room->detachSkillFromPlayer(p, "shenbao_spear", true);
+            }
+        }
+        return false;
+    }
+}; 
+
 class yindu : public TriggerSkill
 {
 public:
@@ -2872,9 +3042,12 @@ touhougodPackage::touhougodPackage()
     shen019->addRelateSkill("wendao");
 
     General *shen020 = new General(this, "shen020", "touhougod", 4, false);
-    //shen020->addSkill(new Skill("shenbao"));
-    //shen020->addSkill(new Skill("nanti"));
-
+    shen020->addSkill(new Shenbao);
+    shen020->addSkill(new ShenbaoDistance);
+    shen020->addSkill(new ShenbaoHandler);
+    related_skills.insertMulti("shenbao", "#shenbao_distance");
+    related_skills.insertMulti("shenbao", "shenbao_spear");
+    
     General *shen021 = new General(this, "shen021", "touhougod", 4, false);
     shen021->addSkill(new yindu);
     shen021->addSkill(new huanming);
@@ -2890,7 +3063,7 @@ touhougodPackage::touhougodPackage()
     addMetaObject<chaowoCard>();
     addMetaObject<wendaoCard>();
 
-    skills << new ziwo << new benwo << new chaowo << new wendao;
+    skills << new ziwo << new benwo << new chaowo << new wendao << new ShenbaoSpear;
 }
 
 ADD_PACKAGE(touhougod)

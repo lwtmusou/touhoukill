@@ -151,8 +151,6 @@ public:
             && damage.to->getMark("Equips_of_Others_Nullified_to_You") == 0
             && damage.to->isKongcheng() && damage.by_user && !damage.chain && !damage.transfer) {
 
-            if (damage.from->getMark("@tianyi_Weapon") > 0)
-                return false;
             room->setEmotion(player, "weapon/guding_blade");
 
             LogMessage log;

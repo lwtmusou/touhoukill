@@ -42,7 +42,7 @@ bool Slash::IsAvailable(const Player *player, const Card *slash, bool considerSp
             }
         }
         bool has_weapon = (player->hasWeapon("Crossbow") || player->hasWeapon("VSCrossbow")) && ids.contains(player->getWeapon()->getEffectiveId());
-        if ((!has_weapon && player->hasWeapon("Crossbow") && player->getMark("@tianyi_Weapon") == 0) || player->canSlashWithoutCrossbow(THIS_SLASH))
+        if (!has_weapon && player->hasWeapon("Crossbow")  || player->canSlashWithoutCrossbow(THIS_SLASH))
             return true;
         int used = player->getSlashCount();
         int valid = 1 + Sanguosha->correctCardTarget(TargetModSkill::Residue, player, newslash);
@@ -548,8 +548,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from != player)
             return false;
-        if (use.from->getMark("@tianyi_Weapon") > 0)
-            return false;
+            
         ServerPlayer *lord = room->getLord();
         QString lordKingdom = "";
         if (lord)
@@ -564,8 +563,11 @@ public:
                 && use.card->isKindOf("Slash"))
                 && (use.from->getKingdom() == lordKingdom || to->getKingdom() == lordKingdom));
             if (can) {
-			    use.from->tag["DoubleSwordTarget"] = QVariant::fromValue(to);
+                use.from->tag["DoubleSwordTarget"] = QVariant::fromValue(to);
                 if (use.from->askForSkillInvoke(objectName())) {
+                    if (player->hasWeapon(objectName()) && !player->hasWeapon(objectName(), true)) //for client box log
+                        room->touhouLogmessage("#InvokeSkill", player, objectName());
+                    
                     room->setEmotion(use.from, "weapon/double_sword");
 
                     bool draw_card = false;
@@ -579,7 +581,7 @@ public:
                     if (draw_card)
                         use.from->drawCards(1);
                 }
-				use.from->tag.remove("DoubleSwordTarget");
+                use.from->tag.remove("DoubleSwordTarget");
             }
         }
 
@@ -605,8 +607,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (WeaponSkill::triggerable(use.from) && use.from == player && use.card->isKindOf("Slash")) {
-            if (use.from->getMark("@tianyi_Weapon") > 0)
-                return false;
+
             bool do_anim = false;
             foreach (ServerPlayer *p, use.to.toSet()) {
                 if (p->getMark("Equips_of_Others_Nullified_to_You") == 0) {
@@ -642,15 +643,18 @@ public:
             return false;
         if (!effect.from->canSlash(effect.to, NULL, false))
             return false;
-        if (effect.from->getMark("@tianyi_Weapon") > 0)
-            return false;
-        int weapon_id = player->getWeapon()->getId();
-        room->setCardFlag(weapon_id, "using");
+        
+        int weapon_id = -1;
+        if (player->getWeapon()){
+            weapon_id = player->getWeapon()->getId();
+            room->setCardFlag(weapon_id, "using");
+        }
+        
         effect.from->setFlags("BladeUse");
         if (!room->askForUseSlashTo(effect.from, effect.to, QString("blade-slash:%1").arg(effect.to->objectName()), false, true))
             effect.from->setFlags("-BladeUse");
-
-        room->setCardFlag(weapon_id, "-using");
+        if (weapon_id != -1)
+            room->setCardFlag(weapon_id, "-using");
 
         return false;
     }
@@ -673,14 +677,12 @@ public:
     virtual bool isEnabledAtPlay(const Player *player) const
     {
         return  Slash::IsAvailable(player)
-            && player->getMark("Equips_Nullified_to_Yourself") == 0 && player->getMark("@tianyi_Weapon") == 0;
-        //player->getHandcardNum() >= 2 &&
+            && player->getMark("Equips_Nullified_to_Yourself") == 0 ;
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        return  pattern == "slash" && player->getMark("Equips_Nullified_to_Yourself") == 0 && player->getMark("@tianyi_Weapon") == 0;
-        //player->getHandcardNum() >= 2 &&
+        return  pattern == "slash" && player->getMark("Equips_Nullified_to_Yourself") == 0;
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
@@ -717,7 +719,10 @@ public:
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
     {
-        return selected.length() < 2 && to_select != Self->getWeapon() && !Self->isJilei(to_select);
+
+        if (Self->hasWeapon(objectName(),true) && to_select == Self->getWeapon()) //check if cannot throw selfweapon
+            return false;
+        return selected.length() < 2  && !Self->isJilei(to_select);
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const
@@ -748,8 +753,6 @@ public:
             return false;
         if (!effect.to->isAlive() || effect.to->getMark("Equips_of_Others_Nullified_to_You") > 0)
             return false;
-        if (player->getMark("@tianyi_Weapon") > 0)
-            return false;
         const Card *card = NULL;
         if (player->getCardCount(true) >= 3) // Need 2 more cards except from the weapon itself
             card = room->askForCard(player, "@Axe", "@Axe:" + effect.to->objectName(), data, objectName());
@@ -778,8 +781,6 @@ public:
 
     virtual int getExtraTargetNum(const Player *from, const Card *card) const
     {
-        if (from->getMark("@tianyi_Weapon") > 0)
-            return 0;
         bool isLastHandCard = false;
         if (from->isLastHandCard(card))
             isLastHandCard = true;
@@ -813,21 +814,22 @@ public:
         QStringList horses;
         if (damage.card && damage.card->isKindOf("Slash") && damage.by_user && !damage.chain && !damage.transfer
             && damage.to->getMark("Equips_of_Others_Nullified_to_You") == 0) {
-            if (damage.to->getDefensiveHorse() && damage.from->canDiscard(damage.to, damage.to->getDefensiveHorse()->getEffectiveId()) && (damage.to->getMark("@tianyi_DefensiveHorse") == 0)) {
+            if (damage.to->getDefensiveHorse() && damage.from->canDiscard(damage.to, damage.to->getDefensiveHorse()->getEffectiveId()) ) {
                 horses << "dhorse";
             }
-            if (damage.to->getOffensiveHorse() && damage.from->canDiscard(damage.to, damage.to->getOffensiveHorse()->getEffectiveId()) && (damage.to->getMark("@tianyi_OffensiveHorse") == 0)) {
+            if (damage.to->getOffensiveHorse() && damage.from->canDiscard(damage.to, damage.to->getOffensiveHorse()->getEffectiveId())) {
                 horses << "ohorse";
             }
-            if (player->getMark("@tianyi_Weapon") > 0)
-                return false;
+
             if (horses.isEmpty())
                 return false;
 
             if (player == NULL) return false;
             if (!player->askForSkillInvoke(objectName(), data))
                 return false;
-
+            
+            if (player->hasWeapon(objectName()) && !player->hasWeapon(objectName(), true)) //for client box log
+                room->touhouLogmessage("#InvokeSkill", player, objectName());
             room->setEmotion(player, "weapon/kylin_bow");
 
             QString horse_type = room->askForChoice(player, objectName(), horses.join("+"));
@@ -871,8 +873,14 @@ public:
             }
 
             if (room->askForSkillInvoke(player, "EightDiagram", data)) {
-                int armor_id = player->getArmor()->getId();
-                room->setCardFlag(armor_id, "using");
+                int armor_id = -1;
+                if (player->getArmor()){
+                    armor_id = player->getArmor()->getId();
+                    room->setCardFlag(armor_id, "using");
+                }else if (player->hasArmorEffect(objectName())){  // for client log box
+                    room->touhouLogmessage("#InvokeSkill", player, objectName());
+                }
+                
                 room->setEmotion(player, "armor/eight_diagram");
                 JudgeStruct judge;
                 judge.pattern = ".|red";
@@ -881,7 +889,8 @@ public:
                 judge.who = player;
 
                 room->judge(judge);
-                room->setCardFlag(armor_id, "-using");
+                if (armor_id != -1)
+                    room->setCardFlag(armor_id, "-using");
 
                 if (judge.isGood()) {
                     Jink *jink = new Jink(Card::NoSuit, 0);
@@ -1440,11 +1449,14 @@ public:
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.card && damage.by_user && damage.card->isKindOf("Slash") && player->getMark("@tianyi_Weapon") == 0
+        if (damage.card && damage.by_user && damage.card->isKindOf("Slash") 
             && damage.to->getMark("Equips_of_Others_Nullified_to_You") == 0
             && !damage.to->isNude()
             && !damage.chain && !damage.transfer && player != damage.to
             && player->askForSkillInvoke("IceSword", data)) {
+            
+            if (player->hasWeapon(objectName()) && !player->hasWeapon(objectName(), true)) //for client box log
+                room->touhouLogmessage("#InvokeSkill", player, objectName());
             room->setEmotion(player, "weapon/ice_sword");
             if (damage.from->canDiscard(damage.to, "he")) {
                 int card_id = room->askForCardChosen(player, damage.to, "he", "IceSword", false, Card::MethodDiscard);
@@ -1563,7 +1575,7 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return  !player->hasUsed("WoodenOxCard") && player->getMark("@tianyi_Treasure") == 0;
+        return  !player->hasUsed("WoodenOxCard") ;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const
@@ -1596,7 +1608,7 @@ public:
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (!move.from || move.from != player)
                 return false;
-            if (player->hasTreasure("wooden_ox") && player->getMark("@tianyi_Treasure") == 0) {
+            if (player->hasTreasure("wooden_ox")) {
                 int count = 0;
                 for (int i = 0; i < move.card_ids.size(); i++) {
                     if (move.from_pile_names[i] == "wooden_ox") count++;
@@ -1629,17 +1641,6 @@ public:
                     }
                     return false;
                 }
-            }
-        } else if (triggerEvent == PreMarkChange) {
-            MarkChangeStruct change = data.value<MarkChangeStruct>();
-            if (change.name != "@tianyi_Treasure")
-                return false;
-            if (player->getPile("wooden_ox").isEmpty())
-                return false;
-            int mark = player->getMark("@tianyi_Treasure");
-
-            if (mark == 0 && mark + change.num > 0) {
-                player->clearOnePrivatePile("wooden_ox");
             }
         }
         return false;

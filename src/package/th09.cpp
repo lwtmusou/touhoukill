@@ -963,61 +963,61 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
-		bool draw = true;
-		if (triggerEvent == Damaged){
-		    draw = false;
-		}
-		else if (triggerEvent == CardsMoveOneTime)  {
-		    if (room->getTag("FirstRound").toBool())
+        bool draw = true;
+        if (triggerEvent == Damaged){
+            draw = false;
+        }
+        else if (triggerEvent == CardsMoveOneTime)  {
+            if (room->getTag("FirstRound").toBool())
                 return false;
-			CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-			if (move.from && move.from == player && move.from_places.contains(Player::PlaceHand)) {
-			    draw = false;
-			}
-			else if (move.to && move.to == player && move.to_place == Player::PlaceHand) {
-			    draw = true;
-			}
-			else {
-			    return false;
-			}
-		}
-		if (player->getPhase() == Player::Draw && draw)
-		    return false;
-		if (player->getPhase() == Player::Play && !draw)
-		    return false;
-		
-		
-		QList<ServerPlayer *> targets;
-		
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.from && move.from == player && move.from_places.contains(Player::PlaceHand)) {
+                draw = false;
+            }
+            else if (move.to && move.to == player && move.to_place == Player::PlaceHand) {
+                draw = true;
+            }
+            else {
+                return false;
+            }
+        }
+        if (player->getPhase() == Player::Draw && draw)
+            return false;
+        if (player->getPhase() == Player::Play && !draw)
+            return false;
+        
+        
+        QList<ServerPlayer *> targets;
+        
         foreach (ServerPlayer *p, room->getOtherPlayers(player)){
             if (player->inMyAttackRange(p) && draw){
                 targets << p;
-			}
-			else if (player->inMyAttackRange(p) && !draw && player->canDiscard(p, "h")) {
-			    targets << p;
-			}
+            }
+            else if (player->inMyAttackRange(p) && !draw && player->canDiscard(p, "h")) {
+                targets << p;
+            }
         }
-		if (targets.isEmpty())
+        if (targets.isEmpty())
             return false;
-			
-		
-		ServerPlayer *target;
+            
+        
+        ServerPlayer *target;
         QString skillname =  "nengwudiscard";
-        QString prompt = "@nengwu-discard";	
-		if (draw){
-		    skillname = "nengwudraw";
-			prompt = "@nengwu-draw";	    
+        QString prompt = "@nengwu-discard";    
+        if (draw){
+            skillname = "nengwudraw";
+            prompt = "@nengwu-draw";        
         } 
 
-		
-		target = room->askForPlayerChosen(player, targets, skillname, prompt, true, true);
-		if (target){
-		    room->notifySkillInvoked(player, objectName());
-			if (draw)
-			    target->drawCards(1);
-			else
-			    room->throwCard(room->askForCardChosen(player, target, "h", objectName()), target, player);
-		}
+        
+        target = room->askForPlayerChosen(player, targets, skillname, prompt, true, true);
+        if (target){
+            room->notifySkillInvoked(player, objectName());
+            if (draw)
+                target->drawCards(1);
+            else
+                room->throwCard(room->askForCardChosen(player, target, "h", objectName()), target, player);
+        }
         return false;
     }
 };
@@ -1044,12 +1044,12 @@ public:
         if (!player || player == current)
             return false;
         if (current->isKongcheng())    
-		    return false;
+            return false;
 
         if (triggerEvent == CardUsed) {
             if (data.value<CardUseStruct>().card->getHandlingMethod() != Card::MethodUse)//caution the case using a skillcard
-			    return false;
-			if (data.value<CardUseStruct>().card->getSuit() != Card::Heart)
+                return false;
+            if (data.value<CardUseStruct>().card->getSuit() != Card::Heart)
                 return false;
         } else if (triggerEvent == CardResponded) {
             if (data.value<CardResponseStruct>().m_isProvision || data.value<CardResponseStruct>().m_card->getSuit() != Card::Heart)
@@ -1068,9 +1068,9 @@ public:
         
         foreach (ServerPlayer *lord, lords) {
             if (current->isKongcheng())
-			    break;
-			current->tag["xiwang_target"] = QVariant::fromValue(lord);// for ai
-			const Card *card = room->askForCard(current, ".|.|.|hand", "@xiwang:" + lord->objectName(), data, Card::MethodNone);
+                break;
+            current->tag["xiwang_target"] = QVariant::fromValue(lord);// for ai
+            const Card *card = room->askForCard(current, ".|.|.|hand", "@xiwang:" + lord->objectName(), data, Card::MethodNone);
             if (card){
                 room->notifySkillInvoked(lord, objectName());
                 QList<ServerPlayer *> logto;
@@ -1131,7 +1131,7 @@ th09Package::th09Package()
     related_skills.insertMulti("kuaizhao", "#kuaizhao");
 
     General *zhan010 = new General(this, "zhan010$", "zhan", 4, false);
-	zhan010->addSkill(new Nengwu);
+    zhan010->addSkill(new Nengwu);
     zhan010->addSkill(new Xiwang);
     
     addMetaObject<tianrenCard>();

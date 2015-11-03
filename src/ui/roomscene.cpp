@@ -577,8 +577,8 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
                 bllmwuyu << "bllmcaiyu" << "bllmmingyu" << "bllmseyu" << "bllmshuiyu" << "bllmshiyu";
                 if (!bllmwuyu.contains(skill_name))
                     return;
-            } else
-                return;
+            } //else if (!player->hasWeapon(skill_name) && !player->hasArmorEffect(skill_name))
+            return;
         }
 
 
@@ -613,7 +613,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
             showPindianBox(from_name, from_id, to_name, to_id, reason);
         else
             setEmotion(from_name, success ? "success" : "no-success");
-		break;
+        break;
     }
     case S_GAME_EVENT_SKIN_CHANGED: {
         QString player_name = arg[1].asCString(); 

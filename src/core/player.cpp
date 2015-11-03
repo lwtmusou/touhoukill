@@ -727,22 +727,51 @@ const EquipCard *Player::getEquip(int index) const
     return NULL;
 }
 
-bool Player::hasWeapon(const QString &weapon_name) const
-{
-    if (!weapon || getMark("Equips_Nullified_to_Yourself") > 0 || getMark("@tianyi_Weapon") > 0) return false;
+bool Player::hasWeapon(const QString &weapon_name, bool selfOnly) const
+{   
+    if (getMark("Equips_Nullified_to_Yourself") > 0) return false;
+
+    if (hasSkill("shenbao") && !selfOnly){
+        foreach (const Player *p, getAliveSiblings()) {
+            if (p->getWeapon()) {
+                WrappedCard *wp = p->weapon;
+                if (wp->objectName() == weapon_name || wp->isKindOf(weapon_name.toStdString().c_str()))
+                    return true;
+                const Card *real_related_weapon = Sanguosha->getEngineCard(wp->getEffectiveId());
+                if  (real_related_weapon->objectName() == weapon_name || real_related_weapon->isKindOf(weapon_name.toStdString().c_str()))
+                    return true;
+            }
+        }
+    }
+    
+    if (!weapon)
+        return false;
     if (weapon->objectName() == weapon_name || weapon->isKindOf(weapon_name.toStdString().c_str())) return true;
     const Card *real_weapon = Sanguosha->getEngineCard(weapon->getEffectiveId());
     return real_weapon->objectName() == weapon_name || real_weapon->isKindOf(weapon_name.toStdString().c_str());
 }
 
-bool Player::hasArmorEffect(const QString &armor_name) const
+bool Player::hasArmorEffect(const QString &armor_name, bool selfOnly) const
 {
     if (!tag["Qinggang"].toStringList().isEmpty() || getMark("Armor_Nullified") > 0
-        || getMark("Equips_Nullified_to_Yourself") > 0 || getMark("@tianyi_Armor") > 0)
+        || getMark("Equips_Nullified_to_Yourself") > 0)
         return false;
     if (armor_name == "bazhen")
         return armor == NULL && alive && hasSkill("bazhen");
     else {
+        if (hasSkill("shenbao") && !selfOnly){
+            foreach (const Player *p, getAliveSiblings()) {
+                if (p->getArmor()) {
+                    WrappedCard *ar = p->armor;
+                    if (ar->objectName() == armor_name || ar->isKindOf(armor_name.toStdString().c_str()))
+                        return true;
+                    const Card *real_related_armor = Sanguosha->getEngineCard(ar->getEffectiveId());
+                    if  (real_related_armor->objectName() == armor_name || real_related_armor->isKindOf(armor_name.toStdString().c_str()))
+                        return true;
+                }
+            }
+        }
+        
         if (!armor) return false;
         if (armor->objectName() == armor_name || armor->isKindOf(armor_name.toStdString().c_str())) return true;
         const Card *real_armor = Sanguosha->getEngineCard(armor->getEffectiveId());
@@ -751,9 +780,10 @@ bool Player::hasArmorEffect(const QString &armor_name) const
     return false;
 }
 
+ // @todo: fit skill shenbao.
 bool Player::hasTreasure(const QString &treasure_name) const
 {
-    if (!treasure || getMark("Equips_Nullified_to_Yourself") > 0 || getMark("@tianyi_Treasure") > 0) return false;
+    if (!treasure || getMark("Equips_Nullified_to_Yourself") > 0) return false;
     if (treasure->objectName() == treasure_name || treasure->isKindOf(treasure_name.toStdString().c_str())) return true;
     const Card *real_treasure = Sanguosha->getEngineCard(treasure->getEffectiveId());
     return real_treasure->objectName() == treasure_name || real_treasure->isKindOf(treasure_name.toStdString().c_str());
@@ -854,34 +884,19 @@ bool Player::canDiscard(const Player *to, const QString &flags, QString reason) 
     if (flags.contains(equip_flag)) {
         QSet<QString> Equips;
         if (to->getWeapon()) {
-            if (to->getMark("@tianyi_Weapon") == 0)
-                Equips << "weapon";
-            else
-                Equips << "tianyi";
+            Equips << "weapon";
         }
         if (to->getArmor()) {
-            if (to->getMark("@tianyi_Armor") == 0)
-                Equips << "armor";
-            else
-                Equips << "tianyi";
+            Equips << "armor";
         }
         if (to->getDefensiveHorse()) {
-            if (to->getMark("@tianyi_DefensiveHorse") == 0)
-                Equips << "dh";
-            else
-                Equips << "tianyi";
+            Equips << "dh";
         }
         if (to->getOffensiveHorse()) {
-            if (to->getMark("@tianyi_OffensiveHorse") == 0)
-                Equips << "oh";
-            else
-                Equips << "tianyi";
+            Equips << "oh";
         }
         if (to->getTreasure()) {
-            if (to->getMark("@tianyi_Treasure") == 0)
-                Equips << "treasure";
-            else
-                Equips << "tianyi";
+            Equips << "treasure";
         }
 
         if (reason == "sidou") {
@@ -904,8 +919,7 @@ bool Player::canDiscard(const Player *to, const QString &flags, QString reason) 
 bool Player::canDiscard(const Player *to, int card_id, QString reason) const
 {
     if (reason == "sidou") {
-        if (to->getWeapon() && card_id == to->getWeapon()->getEffectiveId()
-            && to->getMark("@tianyi_Weapon") == 0)
+        if (to->getWeapon() && card_id == to->getWeapon()->getEffectiveId())
             return false;
     }
 

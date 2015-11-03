@@ -176,8 +176,8 @@ public:
     QList<const Card *> getEquips() const;
     const EquipCard *getEquip(int index) const;
 
-    bool hasWeapon(const QString &weapon_name) const;
-    bool hasArmorEffect(const QString &armor_name) const;
+    bool hasWeapon(const QString &weapon_name, bool selfOnly = false) const;
+    bool hasArmorEffect(const QString &armor_name, bool selfOnly = false) const;
     bool hasTreasure(const QString &treasure_name) const;
 
     bool isKongcheng() const;

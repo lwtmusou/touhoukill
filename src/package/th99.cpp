@@ -1296,7 +1296,7 @@ void yushouCard::onUse(Room *room, const CardUseStruct &card_use) const
     logto << to1 << to2;
     room->touhouLogmessage("#ChoosePlayerWithSkill", from, "yushou", logto, "");
     room->notifySkillInvoked(card_use.from, "yushou");
-	QList<int> disable;
+    QList<int> disable;
     
     
     foreach (const Card *e, to1->getEquips()){

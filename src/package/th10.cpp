@@ -260,7 +260,7 @@ public:
             if (suwako == NULL || suwako->isKongcheng())
                 return false;
             if (damage.from == suwako || damage.from->isKongcheng() || 
-			(!suwako->inMyAttackRange(damage.to) && suwako != damage.to )  )
+            (!suwako->inMyAttackRange(damage.to) && suwako != damage.to )  )
                 return false;
 
             suwako->tag["bushu_damage"] = data;
