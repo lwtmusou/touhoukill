@@ -3046,7 +3046,7 @@ touhougodPackage::touhougodPackage()
     shen020->addSkill(new ShenbaoDistance);
     shen020->addSkill(new ShenbaoHandler);
     related_skills.insertMulti("shenbao", "#shenbao_distance");
-    related_skills.insertMulti("shenbao", "shenbao_spear");
+    related_skills.insertMulti("shenbao", "#shenbao");
     
     General *shen021 = new General(this, "shen021", "touhougod", 4, false);
     shen021->addSkill(new yindu);
