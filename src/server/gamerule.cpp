@@ -255,8 +255,11 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
             if (card_use.card->hasPreAction())
                 card_use.card->doPreAction(room, card_use);
 
-            QList<ServerPlayer *> targets = card_use.to;
+            
             if (card_use.from && !card_use.to.isEmpty()) {
+			    thread->trigger(TargetSpecifying, room, card_use.from, data);
+				CardUseStruct card_use = data.value<CardUseStruct>();
+				QList<ServerPlayer *> targets = card_use.to;
                 foreach (ServerPlayer *to, card_use.to) {
                     if (targets.contains(to)) {
                         thread->trigger(TargetConfirming, room, to, data);
@@ -277,12 +280,14 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                     card_use.from->tag["Jink_" + card_use.card->toString()] = QVariant::fromValue(jink_list);
                 }
                 if (card_use.from && !card_use.to.isEmpty()) {
+					thread->trigger(TargetSpecified, room, card_use.from, data);
                     foreach(ServerPlayer *p, room->getAllPlayers())
                         thread->trigger(TargetConfirmed, room, p, data);
                 }
                 card_use.card->use(room, card_use.from, card_use.to);
                 if (!jink_list_backup.isEmpty())
                     card_use.from->tag["Jink_" + card_use.card->toString()] = QVariant::fromValue(jink_list_backup);
+				//insert CardUseNullifiedList, no need to nullify card effect in sepecific skill?
             }
             catch (TriggerEvent triggerEvent) {
                 if (triggerEvent == TurnBroken || triggerEvent == StageChange)

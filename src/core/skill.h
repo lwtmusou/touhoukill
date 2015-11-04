@@ -22,6 +22,7 @@ public:
         Frequent,
         NotFrequent,
         Compulsory,
+		NotCompulsory,
         Limited,
         Wake,
         Eternal
@@ -132,6 +133,8 @@ public:
     FilterSkill(const QString &name);
 };
 
+typedef QMap<ServerPlayer *, QStringList> TriggerList;
+
 class TriggerSkill : public Skill
 {
     Q_OBJECT
@@ -142,8 +145,16 @@ public:
     QList<TriggerEvent> getTriggerEvents() const;
 
     virtual int getPriority(TriggerEvent triggerEvent) const;
+	
     virtual bool triggerable(const ServerPlayer *target) const;
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const = 0;
+	virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const;
+	
+	virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
+	
+	
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const; //const = 0
 
     inline double getDynamicPriority() const
     {

@@ -715,7 +715,9 @@ enum TriggerEvent {
 
     PreCardUsed, // for AI to filter events only.
     CardUsed,
+    TargetSpecifying,
     TargetConfirming,
+	TargetSpecified,
     TargetConfirmed,
     CardEffect, // for AI to filter events only
     CardEffected,
@@ -1006,7 +1008,7 @@ extern Engine *Sanguosha;
 
 class Skill: public QObject {
 public:
-    enum Frequency { Frequent, NotFrequent, Compulsory, Limited, Wake, Eternal};
+    enum Frequency { Frequent, NotFrequent, Compulsory, NotCompulsory,Limited, Wake, Eternal};
     enum Location { Left, Right };
 
     explicit Skill(const char *name, Frequency frequent = NotFrequent);
@@ -1041,9 +1043,22 @@ public:
 
     virtual int getPriority(TriggerEvent triggerEvent) const;
     virtual bool triggerable(const ServerPlayer *target) const;
-    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const = 0;
+	//virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const;
+	
+	virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
+    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
 
     bool isGlobal() const;
+};
+
+
+%extend TriggerSkill {
+
+    TriggerList TriggerSkillTriggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        return $self->TriggerSkill::triggerable(triggerEvent, room, player, data);
+    }
 };
 
 class QThread: public QObject {

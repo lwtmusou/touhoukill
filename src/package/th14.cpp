@@ -893,73 +893,6 @@ public:
     }
 };
 
-class aige : public TriggerSkill
-{
-public:
-    aige() : TriggerSkill("aige")
-    {
-        events << CardsMoveOneTime;
-
-    }
-
-    virtual bool triggerable(const ServerPlayer *player) const
-    {
-        return (player != NULL);
-    }
-
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
-    {
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        ServerPlayer *source = room->findPlayerBySkillName(objectName());
-        if (source == NULL || move.from == NULL || move.from == source || player != source)
-            return false;
-        ServerPlayer *target = NULL;
-        if (move.from_places.contains(Player::PlaceDelayedTrick)) {
-            foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
-                if (move.from->objectName() == p->objectName()) {
-                    target = p;
-                    break;
-                }
-            }
-        }
-        if (target != NULL && source->canDiscard(target, "h")) {
-            source->tag["aige_target"] = QVariant::fromValue(target);
-            if (source->askForSkillInvoke(objectName(), QVariant::fromValue(target))) {
-                int id = room->askForCardChosen(source, target, "h", objectName());
-                room->throwCard(id, target, player);
-            }
-        }
-
-        return false;
-    }
-};
-
-class jingtao : public TriggerSkill
-{
-public:
-    jingtao() : TriggerSkill("jingtao")
-    {
-        events << TargetConfirmed;
-    }
-
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
-    {
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from == player && use.card != NULL && use.card->isKindOf("Slash")) {
-            foreach (ServerPlayer *p, use.to) {
-                if (player->canDiscard(p, "e")) {
-                    player->tag["jingtao_target"] = QVariant::fromValue(p);
-                    if (player->askForSkillInvoke(objectName(), "discard:" + p->objectName())) {
-                        int id = room->askForCardChosen(player, p, "e", objectName(), false, Card::MethodDiscard);
-                        room->throwCard(id, p, player);
-                    }
-                    player->tag.remove("jingtao_target");
-                }
-            }
-        }
-        return false;
-    }
-};
 
 th14Package::th14Package()
     : Package("th14")
@@ -1002,8 +935,7 @@ th14Package::th14Package()
     hzc008->addSkill(new shizhuCount);
     related_skills.insertMulti("shizhu", "#shizhu");
     hzc008->addSkill(new liange);
-    //hzc008->addSkill(new aige);
-    //hzc008->addSkill(new jingtao);
+
 
     addMetaObject<leitingCard>();
     addMetaObject<yuanfeiCard>();

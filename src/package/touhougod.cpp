@@ -1106,7 +1106,7 @@ class ningshi : public TriggerSkill
 public:
     ningshi() : TriggerSkill("ningshi")
     {
-        events << TargetConfirmed;
+        events << TargetSpecified;
         frequency = Compulsory;
     }
 

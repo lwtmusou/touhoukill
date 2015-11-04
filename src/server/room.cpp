@@ -1987,6 +1987,13 @@ bool Room::canPause(ServerPlayer *player) const
     return true;
 }
 
+/* void Room::tryPause() {
+    if (!canPause(getOwner())) return;
+    QMutexLocker locker(&m_mutex);
+    while (game_paused)
+        m_waitCond.wait(locker.mutex());
+} */
+
 bool Room::isPaused() const
 {
     if (!canPause(getOwner())) return false;

@@ -141,22 +141,109 @@ public:
     GudingBladeSkill() : WeaponSkill("GudingBlade")
     {
         events << DamageCaused;
+		frequency = Compulsory;
     }
-
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
-        DamageStruct damage = data.value<DamageStruct>();
-
+		if (!WeaponSkill::triggerable(player)) return QStringList();
+		DamageStruct damage = data.value<DamageStruct>();
         if (damage.card && damage.card->isKindOf("Slash")
             && damage.to->getMark("Equips_of_Others_Nullified_to_You") == 0
-            && damage.to->isKongcheng() && damage.by_user && !damage.chain && !damage.transfer) {
+            && damage.to->isKongcheng() && damage.by_user && !damage.chain && !damage.transfer)
+			return QStringList(objectName());
+		
+		return QStringList();
+	}
+	
+	virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
+		DamageStruct damage = data.value<DamageStruct>();
+		room->setEmotion(player, "weapon/guding_blade");
+ 
+        LogMessage log;
+        log.type = "#GudingBladeEffect";
+        log.from = player;
+        log.to << damage.to;
+        log.arg = QString::number(damage.damage);
+        log.arg2 = QString::number(++damage.damage);
+        room->sendLog(log);
 
-            room->setEmotion(player, "weapon/guding_blade");
+        data = QVariant::fromValue(damage);
+		return false;
+	}
 
+};
+
+GudingBlade::GudingBlade(Suit suit, int number)
+    : Weapon(suit, number, 2)
+{
+    setObjectName("GudingBlade");
+}
+
+
+
+class VineSkill : public ArmorSkill
+{
+public:
+    VineSkill() : ArmorSkill("Vine")
+    {
+        events << DamageInflicted << SlashEffected << CardEffected;
+		frequency = Compulsory;
+    }
+
+	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    {
+        if (!ArmorSkill::triggerable(player)) return QStringList();
+        if (triggerEvent == SlashEffected) {
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            if (effect.nature == DamageStruct::Normal)
+                return QStringList(objectName());
+        } else if (triggerEvent == CardEffected) {
+            CardEffectStruct effect = data.value<CardEffectStruct>();
+            if (effect.card->isKindOf("SavageAssault") || effect.card->isKindOf("ArcheryAttack"))
+                return QStringList(objectName());
+        } else if (triggerEvent == DamageInflicted) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.nature == DamageStruct::Fire)
+                return QStringList(objectName());
+        }
+        return QStringList();
+    }
+	
+	
+	virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
+        if (triggerEvent == SlashEffected) {
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+
+            room->setEmotion(player, "armor/vine");
             LogMessage log;
-            log.type = "#GudingBladeEffect";
             log.from = player;
-            log.to << damage.to;
+            log.type = "#ArmorNullify";
+            log.arg = objectName();
+            log.arg2 = effect.slash->objectName();
+            room->sendLog(log);
+
+            effect.to->setFlags("Global_NonSkillNullify");
+            return true;
+        } else if (triggerEvent == CardEffected) {
+            CardEffectStruct effect = data.value<CardEffectStruct>();
+            room->setEmotion(player, "armor/vine");
+            LogMessage log;
+            log.from = player;
+            log.type = "#ArmorNullify";
+            log.arg = objectName();
+            log.arg2 = effect.card->objectName();
+            room->sendLog(log);
+
+            effect.to->setFlags("Global_NonSkillNullify");
+            return true;
+        } else if (triggerEvent == DamageInflicted) {
+            DamageStruct damage = data.value<DamageStruct>();
+            room->setEmotion(player, "armor/vineburn");
+            LogMessage log;
+            log.type = "#VineDamage";
+            log.from = player;
             log.arg = QString::number(damage.damage);
             log.arg2 = QString::number(++damage.damage);
             room->sendLog(log);
@@ -166,69 +253,8 @@ public:
 
         return false;
     }
-};
+	
 
-GudingBlade::GudingBlade(Suit suit, int number)
-    : Weapon(suit, number, 2)
-{
-    setObjectName("GudingBlade");
-}
-
-class VineSkill : public ArmorSkill
-{
-public:
-    VineSkill() : ArmorSkill("Vine")
-    {
-        events << DamageInflicted << SlashEffected << CardEffected;
-    }
-
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
-    {
-        if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.nature == DamageStruct::Normal) {
-                room->setEmotion(player, "armor/vine");
-                LogMessage log;
-                log.from = player;
-                log.type = "#ArmorNullify";
-                log.arg = objectName();
-                log.arg2 = effect.slash->objectName();
-                room->sendLog(log);
-
-                effect.to->setFlags("Global_NonSkillNullify");
-                return true;
-            }
-        } else if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (effect.card->isKindOf("SavageAssault") || effect.card->isKindOf("ArcheryAttack")) {
-                room->setEmotion(player, "armor/vine");
-                LogMessage log;
-                log.from = player;
-                log.type = "#ArmorNullify";
-                log.arg = objectName();
-                log.arg2 = effect.card->objectName();
-                room->sendLog(log);
-
-                effect.to->setFlags("Global_NonSkillNullify");
-                return true;
-            }
-        } else if (triggerEvent == DamageInflicted) {
-            DamageStruct damage = data.value<DamageStruct>();
-            if (damage.nature == DamageStruct::Fire) {
-                room->setEmotion(player, "armor/vineburn");
-                LogMessage log;
-                log.type = "#VineDamage";
-                log.from = player;
-                log.arg = QString::number(damage.damage);
-                log.arg2 = QString::number(++damage.damage);
-                room->sendLog(log);
-
-                data = QVariant::fromValue(damage);
-            }
-        }
-
-        return false;
-    }
 };
 
 Vine::Vine(Suit suit, int number)
@@ -243,44 +269,61 @@ public:
     SilverLionSkill() : ArmorSkill("SilverLion")
     {
         events << DamageInflicted << CardsMoveOneTime;
+		frequency = Compulsory;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const
+	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
-        return target != NULL && target->isAlive();
-    }
-
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
-    {
-        if (triggerEvent == DamageInflicted && ArmorSkill::triggerable(player)) {
+        if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.damage > 1) {
-                room->setEmotion(player, "armor/silver_lion");
-                LogMessage log;
-                log.type = "#SilverLion";
-                log.from = player;
-                log.arg = QString::number(damage.damage);
-                log.arg2 = objectName();
-                room->sendLog(log);
-
-                damage.damage = 1;
-                data = QVariant::fromValue(damage);
-            }
+            if (ArmorSkill::triggerable(player) && damage.damage > 1)
+                return QStringList(objectName());
         } else if (player->hasFlag("SilverLionRecover")) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.from != player || !move.from_places.contains(Player::PlaceEquip))
-                return false;
+                return QStringList();
+            for (int i = 0; i < move.card_ids.size(); i++) {
+                if (move.from_places[i] != Player::PlaceEquip) continue;
+                const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
+                if (card->objectName() == objectName()) {
+                    if (!player->isWounded()) {
+                        player->setFlags("-SilverLionRecover");
+                        return QStringList();
+                    }
+                    return QStringList(objectName());
+                }
+            }
+        }
+        return QStringList();
+    }
+	
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
+        if (triggerEvent == DamageInflicted) {
+            DamageStruct damage = data.value<DamageStruct>();
+            room->setEmotion(player, "armor/silver_lion");
+            LogMessage log;
+            log.type = "#SilverLion";
+            log.from = player;
+            log.arg = QString::number(damage.damage);
+            log.arg2 = objectName();
+            room->sendLog(log);
+
+            damage.damage = 1;
+            data = QVariant::fromValue(damage);
+        } else {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             for (int i = 0; i < move.card_ids.size(); i++) {
                 if (move.from_places[i] != Player::PlaceEquip) continue;
                 const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
                 if (card->objectName() == objectName()) {
                     player->setFlags("-SilverLionRecover");
-                    if (player->isWounded()) {
-                        room->setEmotion(player, "armor/silver_lion");
-                        RecoverStruct recover;
-                        recover.card = card;
-                        room->recover(player, recover);
-                    }
+
+                    room->setEmotion(player, "armor/silver_lion");
+                    RecoverStruct recover;
+                    recover.card = card;
+                    room->recover(player, recover);
+
                     return false;
                 }
             }
@@ -288,6 +331,8 @@ public:
         }
         return false;
     }
+
+	
 };
 
 SilverLion::SilverLion(Suit suit, int number)
@@ -298,9 +343,12 @@ SilverLion::SilverLion(Suit suit, int number)
 
 void SilverLion::onUninstall(ServerPlayer *player) const
 {
-    if (player->isAlive() && player->hasArmorEffect(objectName()))
+    if (player->isAlive() && player->hasArmorEffect(objectName())) //shenbao?
         player->setFlags("SilverLionRecover");
 }
+
+
+
 
 FireAttack::FireAttack(Card::Suit suit, int number)
     : SingleTargetTrick(suit, number)

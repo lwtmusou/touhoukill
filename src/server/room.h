@@ -49,7 +49,9 @@ public:
     bool isFull() const;
     bool isFinished() const;
     bool canPause(ServerPlayer *p) const;
+	//void tryPause();
     bool isPaused() const;
+	
     int getLack() const;
     QString getMode() const;
     const Scenario *getScenario() const;

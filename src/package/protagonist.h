@@ -5,23 +5,13 @@
 #include "card.h"
 
 
-/*class lingqiCard: public SkillCard {
-    Q_OBJECT
 
-    public:
-    Q_INVOKABLE lingqiCard();
-
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    };*/
-
-
-class mofaCard : public SkillCard
+class MofaCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE mofaCard();
+    Q_INVOKABLE MofaCard();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };

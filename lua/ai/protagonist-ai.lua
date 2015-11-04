@@ -214,22 +214,22 @@ function mofa_skill.getTurnUseCard(self)
 
 	if #scards_without_key>0 then 
 		self:sortByCardNeed(scards_without_key)
-		return sgs.Card_Parse("@mofaCard="..scards_without_key[1]:getEffectiveId())
+		return sgs.Card_Parse("@MofaCard="..scards_without_key[1]:getEffectiveId())
 	elseif #others_without_key>0 then
 		self:sortByCardNeed(others_without_key)
-		return sgs.Card_Parse("@mofaCard="..others_without_key[1]:getEffectiveId())
+		return sgs.Card_Parse("@MofaCard="..others_without_key[1]:getEffectiveId())
 	elseif #scards>0 and (#key_ids>1 or (#key_ids>0 and temp_slash)) then
 			self:sortByUseValue(scards)
-			return sgs.Card_Parse("@mofaCard="..scards[1]:getEffectiveId())
+			return sgs.Card_Parse("@MofaCard="..scards[1]:getEffectiveId())
 	end
 	return false
 end
-sgs.ai_skill_use_func.mofaCard = function(card, use, self)
+sgs.ai_skill_use_func.MofaCard = function(card, use, self)
 	use.card=card
 end
 
-sgs.ai_use_value.mofaCard = 4
-sgs.ai_use_priority.mofaCard = 4
+sgs.ai_use_value.MofaCard = 4
+sgs.ai_use_priority.MofaCard = 4
 sgs.ai_cardneed.mofa = function(to, card, self)
 	return card:getSuit()==sgs.Card_Spade
 end

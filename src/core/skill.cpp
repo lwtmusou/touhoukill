@@ -279,10 +279,40 @@ int TriggerSkill::getPriority(TriggerEvent) const
     return (frequency == Wake) ? 3 : 2;
 }
 
+TriggerList TriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+{
+    TriggerList skill_lists;
+    if (objectName() == "game_rule") return skill_lists;
+    ServerPlayer *ask_who = player;
+    QStringList skill_list = triggerable(triggerEvent, room, player, data, ask_who);
+    if (!skill_list.isEmpty())
+        skill_lists.insert(ask_who, skill_list);
+    return skill_lists;
+}
+
 bool TriggerSkill::triggerable(const ServerPlayer *target) const
 {
     //zun triggerable?
     return target != NULL && target->isAlive() && target->hasSkill(objectName());
+}
+
+QStringList TriggerSkill::triggerable(TriggerEvent , Room *room, ServerPlayer *target, QVariant &, ServerPlayer* &) const{
+    //if (triggerable(target, room))
+	if (triggerable(target))
+        return QStringList(objectName());
+    return QStringList();
+}
+
+bool TriggerSkill::cost(TriggerEvent , Room *, ServerPlayer *, QVariant &, ServerPlayer *) const{
+    return true;
+}
+
+bool TriggerSkill::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+    return trigger(triggerEvent, room, player, data);
+}
+
+bool TriggerSkill::trigger(TriggerEvent, Room *, ServerPlayer *, QVariant &) const{
+    return false;
 }
 
 ScenarioRule::ScenarioRule(Scenario *scenario)

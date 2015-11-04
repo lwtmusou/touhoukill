@@ -943,7 +943,7 @@ class diaoping : public TriggerSkill
 public:
     diaoping() : TriggerSkill("diaoping")
     {
-        events << TargetConfirmed << SlashEffected;
+        events << TargetSpecified << SlashEffected;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const
@@ -953,7 +953,7 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
-        if (triggerEvent == TargetConfirmed) {
+        if (triggerEvent == TargetSpecified) {
             CardUseStruct use = data.value<CardUseStruct>();
             ServerPlayer *skillowner = room->findPlayerBySkillName(objectName());
             if (skillowner == NULL)

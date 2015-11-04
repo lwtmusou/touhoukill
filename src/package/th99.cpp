@@ -1234,7 +1234,7 @@ class zhujiu : public TriggerSkill
 public:
     zhujiu() : TriggerSkill("zhujiu")
     {
-        events << TargetConfirmed << SlashEffected; //TargetConfirming
+        events << TargetConfirmed << SlashEffected; 
     }
 
 

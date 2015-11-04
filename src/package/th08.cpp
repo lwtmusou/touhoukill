@@ -797,30 +797,7 @@ public:
         return NULL;
     }
 };
-/*
-class gesheng : public TriggerSkill {
-public:
-gesheng() : TriggerSkill("gesheng") {
-events << EventPhaseChanging << PreCardUsed;// << TargetConfirmed;
-view_as_skill = new geshengvs;
-}
 
-
-virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-if (triggerEvent == PreCardUsed){
-CardUseStruct use = data.value<CardUseStruct>();
-if (use.card->getSkillName() == "gesheng")
-room->setPlayerFlag(use.from, "gesheng");
-}
-else if (triggerEvent == EventPhaseChanging){
-PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-if (change.from == Player::Play)
-room->setPlayerFlag(player, "-gesheng");
-}
-return false;
-}
-};
-*/
 class gesheng : public TriggerSkill
 {
 public:

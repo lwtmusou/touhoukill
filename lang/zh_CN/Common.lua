@@ -184,7 +184,11 @@ CommonTranslationTable = {
 	["$CancelTarget"] = "%from 使用【%arg】的目标 %to 被取消",
 	["$CancelTargetNoUser"] = "【%arg】的目标 %to 被取消",
 	["#UseLuckCard"] = "%from 使用了 <font color=\"yellow\"><b>手气卡</b></font>",
-
+    
+	["TriggerOrder"] = "选择触发顺序",
+	["trigger_none"] = "不发动",
+	
+	
 	["cw"] = "顺时针",
 	["ccw"] = "逆时针",
 	["@3v3-action"] = "请选择行动角色",
