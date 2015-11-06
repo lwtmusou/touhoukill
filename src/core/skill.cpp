@@ -279,6 +279,11 @@ int TriggerSkill::getPriority(TriggerEvent) const
     return (frequency == Wake) ? 3 : 2;
 }
 
+void TriggerSkill::record(TriggerEvent, Room *, ServerPlayer *, QVariant &) const
+{
+
+}
+
 TriggerList TriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
 {
     TriggerList skill_lists;

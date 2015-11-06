@@ -147,6 +147,8 @@ public:
     virtual int getPriority(TriggerEvent triggerEvent) const;
 	
     virtual bool triggerable(const ServerPlayer *target) const;
+	virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+	
 	virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
 	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const;
 	

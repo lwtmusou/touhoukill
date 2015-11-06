@@ -56,6 +56,7 @@ void Settings::init()
         AppFont = value("AppFont", QApplication::font("QMainWindow")).value<QFont>();
         UIFont = value("UIFont", QApplication::font("QTextEdit")).value<QFont>();
         TextEditColor = QColor(value("TextEditColor", "white").toString());
+		ToolTipBackgroundColor = value("ToolTipBackgroundColor", "#000000").toString();
     }
 
     CountDownSeconds = value("CountDownSeconds", 3).toInt();

@@ -16,13 +16,13 @@ function sgs.ai_cardsview_valuable.skltkexuepeach(self, class_name, player)
 				end
 				if others_hp >= need_hp then return nil end
 			end
-			return "@skltkexueCard=." 
+			return "@SkltKexueCard=." 
 		end
 		return nil
 	end
 end
-sgs.ai_card_intention.skltkexueCard = sgs.ai_card_intention.Peach
-sgs.ai_use_priority.skltkexueCard = sgs.ai_use_priority.Peach + 0.1
+sgs.ai_card_intention.SkltKexueCard = sgs.ai_card_intention.Peach
+sgs.ai_use_priority.SkltKexueCard = sgs.ai_use_priority.Peach + 0.1
 function SmartAI:canKexue(player)
     if not player:hasSkill("skltkexue") then
 		return false
@@ -124,24 +124,40 @@ sgs.ai_skillProperty.mingyun = function(self)
 	return "wizard_harm"
 end
 
-sgs.ai_skill_playerchosen.xueyi = function(self, targets)
-	target_table =sgs.QList2Table(targets)
-	if #target_table==0 then return false end
-	for _,target in pairs(target_table) do	
-		if  self:isFriend(target) then
-			return target
+-- sgs.ai_skill_playerchosen.xueyi = function(self, targets)
+	-- target_table =sgs.QList2Table(targets)
+	-- if #target_table==0 then return false end
+	-- for _,target in pairs(target_table) do	
+		-- if  self:isFriend(target) then
+			-- return target
+		-- end
+	-- end
+	-- return nil
+-- end
+-- sgs.ai_playerchosen_intention.xueyi = -80
+-- sgs.ai_no_playerchosen_intention.xueyi =function(self, from)
+	-- local lord = self.room:getLord()
+	-- if lord then
+		-- sgs.updateIntention(from, lord, 10)
+	-- end
+-- end
+
+
+
+sgs.ai_skill_invoke.xueyi = function(self, data)
+        local to =data:toPlayer()
+		return self:isFriend(to)
+end
+sgs.ai_choicemade_filter.skillInvoke.xueyi = function(self, player, promptlist)
+	local to=player:getTag("xueyi-target"):toPlayer()
+	if to then 
+		if promptlist[#promptlist] == "yes" then
+		    sgs.updateIntention(player, to, -60)
+	    else
+		    sgs.updateIntention(player, to, 60)
 		end
 	end
-	return nil
 end
-sgs.ai_playerchosen_intention.xueyi = -80
-sgs.ai_no_playerchosen_intention.xueyi =function(self, from)
-	local lord = self.room:getLord()
-	if lord then
-		sgs.updateIntention(from, lord, 10)
-	end
-end
-
 
 function SmartAI:pohuaiBenefit(player)
 	local value=0
@@ -237,10 +253,10 @@ local suoding_skill = {}
 suoding_skill.name = "suoding"
 table.insert(sgs.ai_skills, suoding_skill)
 function suoding_skill.getTurnUseCard(self)
-        if self.player:hasUsed("suodingCard") then return nil end
-		return sgs.Card_Parse("@suodingCard=.")
+        if self.player:hasUsed("SuodingCard") then return nil end
+		return sgs.Card_Parse("@SuodingCard=.")
 end
-sgs.ai_skill_use_func.suodingCard = function(card, use, self)
+sgs.ai_skill_use_func.SuodingCard = function(card, use, self)
         self:sort(self.enemies, "handcard")
 		over=math.min(self:getOverflow(),3)
 		enemy_check=false;
@@ -277,9 +293,9 @@ sgs.ai_skill_use_func.suodingCard = function(card, use, self)
 		if  use.to  and enemy_check and use.to:length() >= 1 then return end
 end
 
-sgs.ai_use_value.suodingCard = 8
-sgs.ai_use_priority.suodingCard =7
-sgs.ai_card_intention.suodingCard = 20
+sgs.ai_use_value.SuodingCard = 8
+sgs.ai_use_priority.SuodingCard =7
+sgs.ai_card_intention.SuodingCard = 20
 
 
 sgs.ai_skill_invoke.huisu = function(self)
@@ -725,10 +741,10 @@ table.insert(sgs.ai_skills, banyue_skill)
 function banyue_skill.getTurnUseCard(self)
         if self.player:getHp() <= 2 and not self.player:hasSkill("juxian") then return nil end
 		if self.player:getHp() == 2 and self.player:hasSkill("juxian") then return nil end
-		if self.player:hasUsed("banyueCard") then return nil end
-		return sgs.Card_Parse("@banyueCard=.")
+		if self.player:hasUsed("BanyueCard") then return nil end
+		return sgs.Card_Parse("@BanyueCard=.")
 end
-sgs.ai_skill_use_func.banyueCard = function(card, use, self)
+sgs.ai_skill_use_func.BanyueCard = function(card, use, self)
         if #self.friends < 2 then return end
 		self:sort(self.friends)
         for _, p in ipairs(self.friends) do
@@ -740,9 +756,9 @@ sgs.ai_skill_use_func.banyueCard = function(card, use, self)
         end
 end
 
-sgs.ai_use_value.banyueCard = 3
-sgs.ai_use_priority.banyueCard =6
-sgs.ai_card_intention.banyueCard = function(self, card, from, tos)
+sgs.ai_use_value.BanyueCard = 3
+sgs.ai_use_priority.BanyueCard =6
+sgs.ai_card_intention.BanyueCard = function(self, card, from, tos)
 	sgs.updateIntentions(from, tos, -40)
 	if #tos <3 then
 		local lord = self.room:getLord()

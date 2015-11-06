@@ -146,31 +146,57 @@ sgs.ai_benefitBySlashed.huiwu = function(self, card,source,target)
 end
 
 
-sgs.ai_skill_playerchosen.huazhong = function(self, targets)
-	if not self:invokeTouhouJudge() then return nil end
-	target_table =sgs.QList2Table(targets)
-	if #target_table==0 then return false end
-	for _,target in pairs(target_table) do	
-		if  self:isFriend(target) then
-			return target
+-- sgs.ai_skill_playerchosen.huazhong = function(self, targets)
+	-- if not self:invokeTouhouJudge() then return nil end
+	-- target_table =sgs.QList2Table(targets)
+	-- if #target_table==0 then return false end
+	-- for _,target in pairs(target_table) do	
+		-- if  self:isFriend(target) then
+			-- return target
+		-- end
+	-- end
+	-- return nil
+-- end
+-- sgs.ai_playerchosen_intention.huazhong = -80
+-- sgs.ai_no_playerchosen_intention.huazhong = function(self, from)
+	-- local lord = self.room:getLord()
+	-- if not lord then return end
+	-- local wizard_harm = false
+	-- for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
+		-- if self:hasSkills(sgs.wizard_harm_skill , aplayer) then
+			-- wizard_harm = true
+		-- end
+	-- end
+	-- if not wizard_harm then 
+		-- sgs.updateIntention(from, lord, 10)
+	-- end
+-- end
+
+sgs.ai_skill_invoke.huazhong = function(self, data)
+    if not self:invokeTouhouJudge() then return false end
+    local to =data:toPlayer()
+	return self:isFriend(to)
+end
+sgs.ai_choicemade_filter.skillInvoke.huazhong = function(self, player, promptlist)
+	local to=player:getTag("huazhong-target"):toPlayer()
+	if to then 
+		if promptlist[#promptlist] == "yes" then
+		    sgs.updateIntention(player, to, -60)
+	    else
+		    local wizard_harm = false
+			for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
+				if self:hasSkills(sgs.wizard_harm_skill , aplayer) then
+					wizard_harm = true
+				end
+			end
+			if not wizard_harm then 
+				sgs.updateIntention(from, lord, 10)
+			end
 		end
 	end
-	return nil
 end
-sgs.ai_playerchosen_intention.huazhong = -80
-sgs.ai_no_playerchosen_intention.huazhong = function(self, from)
-	local lord = self.room:getLord()
-	if not lord then return end
-	local wizard_harm = false
-	for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
-		if self:hasSkills(sgs.wizard_harm_skill , aplayer) then
-			wizard_harm = true
-		end
-	end
-	if not wizard_harm then 
-		sgs.updateIntention(from, lord, 10)
-	end
-end
+
+
 
 
 sgs.ai_skill_invoke.mingtu = true
@@ -545,7 +571,7 @@ table.insert(sgs.ai_global_flags, "tianrenslashsource")
 table.insert(sgs.ai_global_flags, "tianrenjinksource")
 local tianren_slash_filter = function(self, player, carduse)
 	if not carduse then self.room:writeToConsole(debug.traceback()) end
-	if carduse.card:isKindOf("tianrenCard") then
+	if carduse.card:isKindOf("TianrenCard") then
 		sgs.tianrenslashsource = player
 	else
 		sgs.tianrenslashsource = nil
@@ -632,7 +658,7 @@ sgs.ai_choicemade_filter.skillInvoke.tianren = function(self, player, promptlist
 		end
 	end
 end
-sgs.ai_skill_use_func.tianrenCard = function(card, use, self)
+sgs.ai_skill_use_func.TianrenCard = function(card, use, self)
 	self:sort(self.enemies, "defenseSlash")
 
 	if not sgs.tianrentarget then table.insert(sgs.ai_global_flags, "tianrentarget") end
@@ -701,7 +727,7 @@ function sgs.ai_cardsview_valuable.tianren(self, class_name, player, need_lord)
 			self.player:setFlags("stack_overflow_jijiang")
 			local isfriend = self:isFriend(current, player)
 			self.player:setFlags("-stack_overflow_jijiang")
-			if isfriend then return "@tianrenCard=." end
+			if isfriend then return "@TianrenCard=." end
 		end
 
 		local cards = player:getHandcards()
@@ -718,7 +744,7 @@ function sgs.ai_cardsview_valuable.tianren(self, class_name, player, need_lord)
 			self.player:setFlags("-stack_overflow_jijiang")
 			if has_friend then break end
 		end
-		if has_friend then return "@tianrenCard=." end
+		if has_friend then return "@TianrenCard=." end
 	end
 end
 sgs.ai_choicemade_filter.cardResponded["@tianren-jink"] = function(self, player, promptlist)

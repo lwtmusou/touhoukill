@@ -89,31 +89,56 @@ sgs.sidie_keep_value = {
 }
 
 
-sgs.ai_skill_playerchosen.wangxiang = function(self, targets)
-	if not self:invokeTouhouJudge() then return nil end
-	target_table =sgs.QList2Table(targets)
-	if #target_table==0 then return false end
-	for _,target in pairs(target_table) do	
-		if  self:isFriend(target) then
-			return target
+-- sgs.ai_skill_playerchosen.wangxiang = function(self, targets)
+	-- if not self:invokeTouhouJudge() then return nil end
+	-- target_table =sgs.QList2Table(targets)
+	-- if #target_table==0 then return false end
+	-- for _,target in pairs(target_table) do	
+		-- if  self:isFriend(target) then
+			-- return target
+		-- end
+	-- end
+	-- return nil
+-- end
+-- sgs.ai_playerchosen_intention.wangxiang = -80
+-- sgs.ai_no_playerchosen_intention.wangxiang = function(self, from)
+	-- local lord = self.room:getLord()
+	-- if not lord then return end
+	-- local wizard_harm = false
+	-- for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
+		-- if self:hasSkills(sgs.wizard_harm_skill , aplayer) then
+			-- wizard_harm = true
+		-- end
+	-- end
+	-- if not wizard_harm then 
+		-- sgs.updateIntention(from, lord, 10)
+	-- end
+-- end
+
+sgs.ai_skill_invoke.wangxiang = function(self, data)
+    if not self:invokeTouhouJudge() then return false end
+    local to =data:toPlayer()
+	return self:isFriend(to)
+end
+sgs.ai_choicemade_filter.skillInvoke.wangxiang = function(self, player, promptlist)
+	local to=player:getTag("wangxiang-target"):toPlayer()
+	if to then 
+		if promptlist[#promptlist] == "yes" then
+		    sgs.updateIntention(player, to, -60)
+	    else
+		    local wizard_harm = false
+			for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
+				if self:hasSkills(sgs.wizard_harm_skill , aplayer) then
+					wizard_harm = true
+				end
+			end
+			if not wizard_harm then 
+				sgs.updateIntention(from, lord, 10)
+			end
 		end
 	end
-	return nil
 end
-sgs.ai_playerchosen_intention.wangxiang = -80
-sgs.ai_no_playerchosen_intention.wangxiang = function(self, from)
-	local lord = self.room:getLord()
-	if not lord then return end
-	local wizard_harm = false
-	for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
-		if self:hasSkills(sgs.wizard_harm_skill , aplayer) then
-			wizard_harm = true
-		end
-	end
-	if not wizard_harm then 
-		sgs.updateIntention(from, lord, 10)
-	end
-end
+
 
 
 sgs.ai_skill_invoke.jingjie = true
@@ -771,7 +796,7 @@ local mocao_skill = {}
 mocao_skill.name = "mocao"
 table.insert(sgs.ai_skills, mocao_skill)
 mocao_skill.getTurnUseCard = function(self)
-	if self.player:hasUsed("mocaoCard") then return nil end
+	if self.player:hasUsed("MocaoCard") then return nil end
 	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if  p:getCards("e"):length()>0 then
 			t=true
@@ -779,11 +804,11 @@ mocao_skill.getTurnUseCard = function(self)
 		end
 	end
 	if t then
-		return sgs.Card_Parse("@mocaoCard=.")
+		return sgs.Card_Parse("@MocaoCard=.")
 	end
 	return nil
 end
-sgs.ai_skill_use_func.mocaoCard = function(card, use, self)
+sgs.ai_skill_use_func.MocaoCard = function(card, use, self)
 	local targets={}
 	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if  p:getCards("e"):length()>0 then
@@ -802,9 +827,9 @@ sgs.ai_skill_use_func.mocaoCard = function(card, use, self)
 		end
     end
 end
-sgs.ai_use_value.mocaoCard = 9
-sgs.ai_use_priority.mocaoCard = 6
-sgs.ai_card_intention.mocaoCard = function(self, card, from, tos)
+sgs.ai_use_value.MocaoCard = 9
+sgs.ai_use_priority.MocaoCard = 6
+sgs.ai_card_intention.MocaoCard = function(self, card, from, tos)
 	if tos[1]:getLostHp()>=2  then
 		sgs.updateIntention(from, tos[1], -30)
 	else

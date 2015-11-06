@@ -18,107 +18,107 @@ public:
 
 
 
-class wuyuCard : public SkillCard
+class WuyuCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE wuyuCard();
+    Q_INVOKABLE WuyuCard();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
 };
 
-class saiqianCard : public SkillCard
+class SaiqianCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE saiqianCard();
+    Q_INVOKABLE SaiqianCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class jiezouCard : public SkillCard
+class JiezouCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE jiezouCard();
+    Q_INVOKABLE JiezouCard();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
 };
 
-class shoucangCard : public SkillCard
+class ShoucangCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE shoucangCard();
+    Q_INVOKABLE ShoucangCard();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class baoyiCard : public SkillCard
+class BaoyiCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE baoyiCard();
+    Q_INVOKABLE BaoyiCard();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class bllmseyuCard : public SkillCard
+class BllmSeyuCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE bllmseyuCard();
+    Q_INVOKABLE BllmSeyuCard();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const;
     virtual const Card *validate(CardUseStruct &cardUse) const;
 };
 
-class bllmshiyudummy : public SkillCard
+class BllmShiyuDummy : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE bllmshiyudummy();
+    Q_INVOKABLE BllmShiyuDummy();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const;
 };
 
-class bllmshiyuCard : public SkillCard
+class BllmShiyuCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE bllmshiyuCard();
+    Q_INVOKABLE BllmShiyuCard();
 
     virtual const Card *validate(CardUseStruct &cardUse) const;
     virtual const Card *validateInResponse(ServerPlayer *user) const;
 };
 
-class bllmwuyuCard : public SkillCard
+class BllmWuyuCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE bllmwuyuCard();
+    Q_INVOKABLE BllmWuyuCard();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class protagonistPackage : public Package
+class ProtagonistPackage : public Package
 {
     Q_OBJECT
 
 public:
-    protagonistPackage();
+    ProtagonistPackage();
 };
 
 #endif

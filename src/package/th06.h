@@ -5,22 +5,22 @@
 #include "card.h"
 
 
-class skltkexueCard : public SkillCard
+class SkltKexueCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE skltkexueCard();
+    Q_INVOKABLE SkltKexueCard();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class suodingCard : public SkillCard
+class SuodingCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE suodingCard();
+    Q_INVOKABLE SuodingCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets,
         const Player *to_select, const Player *Self) const;
@@ -33,23 +33,23 @@ public:
 
 
 
-class banyueCard : public SkillCard
+class BanyueCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE banyueCard();
+    Q_INVOKABLE BanyueCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class th06Package : public Package
+class TH06Package : public Package
 {
     Q_OBJECT
 
 public:
-    th06Package();
+    TH06Package();
 };
 
 #endif

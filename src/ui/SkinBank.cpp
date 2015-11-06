@@ -68,6 +68,9 @@ const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_IMAGE = "generalCircleImage-
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_MASK = "generalCircleMask-%1";
 
 const char *QSanRoomSkin::S_HERO_SKIN_KEY_GENERAL_ICON = "heroSkinContainerGeneralIcon-%1";
+const char *QSanRoomSkin::S_SKIN_KEY_HEAD_ICON = "headIcon";
+const char *QSanRoomSkin::S_SKIN_KEY_DEPUTY_ICON = "deputyIcon";
+
 
 // Animations
 const char *QSanRoomSkin::S_SKIN_KEY_ANIMATIONS = "preloads";
@@ -845,7 +848,18 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
     tryParse(config["photoRoomPadding"], _m_roomLayout.m_photoRoomPadding);
     tryParse(config["roleBoxHeight"], _m_roomLayout.m_roleBoxHeight);
     tryParse(config["scenePadding"], _m_roomLayout.m_scenePadding);
-
+    
+	//for graphic boxs, especially for new trigger order box
+	tryParse(config["graphicsBoxBgColor"], _m_commonLayout.graphicsBoxBackgroundColor);
+    tryParse(config["graphicsBoxBorderColor"], _m_commonLayout.graphicsBoxBorderColor);
+    _m_commonLayout.graphicsBoxTitleFont.tryParse(config["graphicsBoxTitleFont"]);
+	
+	_m_commonLayout.optionButtonText.tryParse(config["optionButtonText"]);
+	
+	tryParse(config["generalButtonPositionIconRegion"], _m_commonLayout.generalButtonPositionIconRegion);
+    tryParse(config["generalButtonNameRegion"], _m_commonLayout.generalButtonNameRegion);
+	
+	
     for (int i = 0; i < 2; i++) {
         Json::Value playerConfig;
         PlayerCardContainerLayout *layout;

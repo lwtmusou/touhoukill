@@ -7,24 +7,24 @@
 
 
 
-class tianrenCard : public SkillCard
+class TianrenCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE tianrenCard();
+    Q_INVOKABLE TianrenCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual const Card *validate(CardUseStruct &cardUse) const;
 };
 
 
-class th09Package : public Package
+class TH09Package : public Package
 {
     Q_OBJECT
 
 public:
-    th09Package();
+    TH09Package();
 };
 
 #endif

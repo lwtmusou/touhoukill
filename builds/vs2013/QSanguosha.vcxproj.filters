@@ -882,6 +882,24 @@
     <ClCompile Include="..\..\src\ui\TablePile.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\ui\choosetriggerorderbox.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_choosetriggerorderbox.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_choosetriggerorderbox.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\graphicsbox.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_graphicsbox.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_graphicsbox.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -1155,6 +1173,12 @@
       <Filter>ui</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\ui\skinitem.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\choosetriggerorderbox.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\graphicsbox.h">
       <Filter>ui</Filter>
     </CustomBuild>
   </ItemGroup>

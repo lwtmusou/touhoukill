@@ -1644,7 +1644,7 @@ public:
     
     virtual QDialog *getDialog() const
     {
-        return qijiDialog::getInstance("huaxiang", true, false);
+        return QijiDialog::getInstance("huaxiang", true, false);
     }
     
     

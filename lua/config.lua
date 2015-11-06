@@ -44,12 +44,12 @@ config = {
 		"touhoucard",
 		
 		--武将包
-		"protagonist",
-		"th06",
-		"th07",
-		"th08",
-		"th09",
-		"th10",
+		"Protagonist",
+		"TH06",
+		"TH07",
+		"TH08",
+		"TH09",
+		"TH10",
 		"th11",
 		"th12",
 		"th13",
@@ -60,6 +60,7 @@ config = {
 		"touhougod",
 		"Standard", --此包内带pattern的定义 不能屏蔽。。。
 		"Test",	
+		
 	},
 
 	surprising_generals = {

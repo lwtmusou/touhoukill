@@ -36,7 +36,9 @@ public:
         AskForShowOrPindian = 0x0C,
         AskForGeneralTaken = 0x0D,
         AskForArrangement = 0x0E,
-
+		
+        AskForTriggerOrder = 0x010010,//@todo
+		
         RespondingUse = 0x11,
         RespondingForDiscard = 0x21,
         RespondingNonTrigger = 0x31,
@@ -159,6 +161,7 @@ public:
     void askForAssign(const Json::Value &); // Assign roles at the beginning of game
     void askForSurrender(const Json::Value &);
     void askForLuckCard(const Json::Value &);
+	void askForTriggerOrder(const Json::Value &);
     void handleGameEvent(const Json::Value &);
     //3v3 & 1v1
     void askForOrder(const Json::Value &);
@@ -228,6 +231,7 @@ public:
     void onPlayerChooseCard(int card_id = -2);
     void onPlayerChooseAG(int card_id);
     void onPlayerChoosePlayer(const Player *player);
+	void onPlayerChooseTriggerOrder(const QString &choice);
     void trust();
     void addRobot();
     void fillRobots();
@@ -299,6 +303,7 @@ signals:
     void roles_got(const QString &scheme, const QStringList &roles);
     void directions_got();
     void orders_got(QSanProtocol::Game3v3ChooseOrderCommand reason);
+	void triggers_got(const QString &reason, const QStringList &options, const bool optional);
 
     void seats_arranged(const QList<const ClientPlayer *> &seats);
     void hp_changed(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);

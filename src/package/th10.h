@@ -12,51 +12,34 @@
 #include <QDialog>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-//#include <QCommandLinkButton>
-
-/*class shendeDummyCard : public SkillCard {
-    Q_OBJECT
-
-    public:
-    Q_INVOKABLE shendeDummyCard();
-
-    };
-
-    class shendeFakeMoveCard : public SkillCard {
-    Q_OBJECT
-
-    public:
-    Q_INVOKABLE shendeFakeMoveCard();
-
-    virtual const Card *validate(CardUseStruct &card_use) const;
-    };*/
 
 
-class gongfengCard : public SkillCard
+
+class GongfengCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE gongfengCard();
+    Q_INVOKABLE GongfengCard();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
 };
 
 
-class qijiDialog : public QDialog
+class QijiDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    static qijiDialog *getInstance(const QString &object, bool left = true, bool right = true);
+    static QijiDialog *getInstance(const QString &object, bool left = true, bool right = true);
 
     public slots:
     void popup();
     void selectCard(QAbstractButton *button);
 
 private:
-    explicit qijiDialog(const QString &object, bool left = true, bool right = true);
+    explicit QijiDialog(const QString &object, bool left = true, bool right = true);
 
     QGroupBox *createLeft();
     QGroupBox *createRight();
@@ -70,12 +53,12 @@ signals:
     void onButtonClick();
 };
 
-class qijiCard : public SkillCard
+class QijiCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE qijiCard();
+    Q_INVOKABLE QijiCard();
 
     virtual bool targetFixed() const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
@@ -90,75 +73,68 @@ public:
 
 
 
-class fengshenCard : public SkillCard
+class FengshenCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE fengshenCard();
+    Q_INVOKABLE FengshenCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class xinshangCard : public SkillCard
+class XinshangCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE xinshangCard();
+    Q_INVOKABLE XinshangCard();
 
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-/*class zaihuoCard : public SkillCard {
-    Q_OBJECT
 
-    public:
-    Q_INVOKABLE zaihuoCard();
 
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-    };*/
-
-class tianyanCard : public SkillCard
+class TianyanCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE tianyanCard();
+    Q_INVOKABLE TianyanCard();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class fengrangCard : public SkillCard
+class FengrangCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE fengrangCard();
+    Q_INVOKABLE FengrangCard();
 
     virtual const Card *validate(CardUseStruct &card_use) const;
 };
 
 
 
-class jiliaoCard : public SkillCard
+class JiliaoCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE jiliaoCard();
+    Q_INVOKABLE JiliaoCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class dfgzmsiyuCard : public SkillCard
+class DfgzmSiyuCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE dfgzmsiyuCard();
+    Q_INVOKABLE DfgzmSiyuCard();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
@@ -174,12 +150,12 @@ public:
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
-class th10Package : public Package
+class TH10Package : public Package
 {
     Q_OBJECT
 
 public:
-    th10Package();
+    TH10Package();
 };
 
 #endif

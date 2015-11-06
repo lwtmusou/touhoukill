@@ -287,6 +287,18 @@ public:
 
         // avatar size
         QSize m_tinyAvatarSize;
+		
+		//Graphics Box
+        QColor graphicsBoxBackgroundColor;
+        QColor graphicsBoxBorderColor;
+        QSanSimpleTextFont graphicsBoxTitleFont;
+		
+		//General Button
+        QRect generalButtonPositionIconRegion;
+        QRect generalButtonNameRegion;
+		
+		//Option Button
+        QSanShadowTextFont optionButtonText;
     };
 
     enum GeneralIconSize
@@ -391,7 +403,10 @@ public:
     static const char *S_SKIN_KEY_PROGRESS_BAR_IMAGE;
     static const char *S_SKIN_KEY_GENERAL_CIRCLE_IMAGE;
     static const char *S_SKIN_KEY_GENERAL_CIRCLE_MASK;
-
+    static const char *S_SKIN_KEY_HEAD_ICON;
+    static const char *S_SKIN_KEY_DEPUTY_ICON;
+	
+	
     // Animations
     static const char *S_SKIN_KEY_ANIMATIONS;
 

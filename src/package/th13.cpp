@@ -516,7 +516,7 @@ public:
 
     virtual QDialog *getDialog() const
     {
-        return qijiDialog::getInstance("xihua");
+        return QijiDialog::getInstance("xihua");
     }
 
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const

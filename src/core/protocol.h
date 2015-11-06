@@ -131,7 +131,8 @@ namespace QSanProtocol {
         S_COMMAND_LUCK_CARD,
         S_COMMAND_VIEW_GENERALS,
         S_COMMAND_SET_DASHBOARD_SHADOW,
-        S_COMMAND_SKIN_CHANGE
+        S_COMMAND_SKIN_CHANGE,
+		S_COMMAND_TRIGGER_ORDER
     };
 
     enum GameEventType

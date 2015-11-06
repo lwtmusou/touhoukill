@@ -108,6 +108,7 @@ return {
     ["bllmmingyu"] = "名欲" ,
     ["bllmshiyu"] = "食欲" ,
     ["bllmshuiyu"] = "睡欲" ,
+	["#bllmshuiyu"] = "睡欲" ,
     ["@bllm-discard"] = "你可以弃置一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，发动“%src”。" ,
     ["bllmwuyu:useyu"]= "你可以弃一枚“欲”标记，发动“%src”。" ,
     ["bllmwuyu:dismiss"] = "取消" ,

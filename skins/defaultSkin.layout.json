@@ -17,6 +17,17 @@
     "chooseGeneralBoxSparseIconSize": [171, 240],
     "chooseGeneralBoxDenseIconSize": [130, 130],
     "tinyAvatarSize": [40, 40],
+	
+	"graphicsBoxBgColor": [0, 0, 0, 220],
+    "graphicsBoxBorderColor": [166, 150, 122],
+    //"graphicsBoxTitleFont": ["wqy-microhei", 16, 2, [228, 213, 160]],
+	"graphicsBoxTitleFont": ["SimSun", 16, 2, [228, 213, 160]],
+	
+	"optionButtonText": ["SimSun", [18, 18, 0], 0, [255, 255, 255, 255], 1, 10, [0, 0], [50, 50, 50, 200]],
+	"generalButtonPositionIconRegion": [-1, 2, 29, 24],
+    "generalButtonNameRegion": [26, 0, 60, 23],
+	
+	
     // When hp exceeds 5, we use text (e.g. 5/8) instead of drawing more than 5 magatamas. The color
     // and font are specified below.
     // All the font in skin file takes the following format:

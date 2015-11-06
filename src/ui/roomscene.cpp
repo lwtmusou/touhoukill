@@ -6,6 +6,7 @@
 #include "distanceviewdialog.h"
 #include "playercarddialog.h"
 #include "choosegeneraldialog.h"
+#include "choosetriggerorderbox.h"
 #include "window.h"
 #include "button.h"
 #include "cardcontainer.h"
@@ -175,6 +176,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(assign_asked()), this, SLOT(startAssign()));
     connect(ClientInstance, SIGNAL(start_in_xs()), this, SLOT(startInXs()));
 
+	connect(ClientInstance, &Client::triggers_got, this, &RoomScene::chooseTriggerOrder);
+	
     guanxing_box = new GuanxingBox;
     guanxing_box->hide();
     addItem(guanxing_box);
@@ -188,6 +191,14 @@ RoomScene::RoomScene(QMainWindow *main_window)
     addItem(time_label_wedgit);
     time_label_wedgit->setZValue(10000);
 
+	m_chooseTriggerOrderBox = new ChooseTriggerOrderBox;
+    m_chooseTriggerOrderBox->hide();
+    addItem(m_chooseTriggerOrderBox);
+    m_chooseTriggerOrderBox->setZValue(30000.0);
+    m_chooseTriggerOrderBox->moveBy(-120, 0);
+	
+	
+	
     card_container = new CardContainer();
     card_container->hide();
     addItem(card_container);
@@ -577,8 +588,8 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
                 bllmwuyu << "bllmcaiyu" << "bllmmingyu" << "bllmseyu" << "bllmshuiyu" << "bllmshiyu";
                 if (!bllmwuyu.contains(skill_name))
                     return;
-            } //else if (!player->hasWeapon(skill_name) && !player->hasArmorEffect(skill_name))
-            return;
+            } else// if (!player->hasWeapon(skill_name) && !player->hasArmorEffect(skill_name))
+				return;
         }
 
 
@@ -1080,9 +1091,11 @@ void RoomScene::updateTable()
     m_tablePile->setPos(m_tableCenterPos);
     m_tablePile->setSize(qMax((int)tableRect.width() - _m_roomLayout->m_discardPilePadding * 2,
         _m_roomLayout->m_discardPileMinWidth), _m_commonLayout->m_cardNormalHeight);
+		
     m_tablePile->adjustCards();
     card_container->setPos(m_tableCenterPos);
     guanxing_box->setPos(m_tableCenterPos);
+	m_chooseTriggerOrderBox->setPos(m_tableCenterPos - QPointF(m_chooseTriggerOrderBox->boundingRect().width() / 2, m_chooseTriggerOrderBox->boundingRect().height() / 2));
     prompt_box->setPos(m_tableCenterPos);
     pausing_text->setPos(m_tableCenterPos - pausing_text->boundingRect().center());
     pausing_item->setRect(sceneRect());
@@ -1890,6 +1903,15 @@ void RoomScene::chooseDirection()
     m_choiceDialog = dialog;
 }
 
+void RoomScene::chooseTriggerOrder(const QString &reason, const QStringList &options, const bool optional)
+{
+    QApplication::alert(main_window);
+    if (!main_window->isActiveWindow())
+        Sanguosha->playSystemAudioEffect("pop-up");
+
+    m_chooseTriggerOrderBox->chooseOption(reason, options, optional);
+}
+
 void RoomScene::toggleDiscards()
 {
     CardOverview *overview = new CardOverview;
@@ -2578,7 +2600,10 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             guanxing_box->clear();
             if (!card_container->retained())
                 card_container->clear();
+        }else if (oldStatus == Client::AskForTriggerOrder){
+            m_chooseTriggerOrderBox->clear();
         }
+		
         prompt_box->disappear();
         ClientInstance->getPromptDoc()->clear();
 
@@ -2780,6 +2805,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         break;
     }
     case Client::AskForGeneralTaken:
+	case Client::AskForTriggerOrder:
     case Client::AskForArrangement: {
         ok_button->setEnabled(false);
         cancel_button->setEnabled(false);

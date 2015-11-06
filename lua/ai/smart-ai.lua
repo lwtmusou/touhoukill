@@ -753,7 +753,7 @@ function SmartAI:getDynamicUsePriority(card)
 	local dynamic_value
 
 	-- direct control
-	if card:isKindOf("AmazingGrace") or card:isKindOf("fengrangCard") then
+	if card:isKindOf("AmazingGrace") or card:isKindOf("FengrangCard") then
 		local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
 		if zhugeliang and self:isEnemy(zhugeliang) and zhugeliang:isKongcheng() then
 			return math.max(sgs.ai_use_priority.Slash, sgs.ai_use_priority.Duel) + 0.1
@@ -798,7 +798,7 @@ function SmartAI:getDynamicUsePriority(card)
 		if self:hasSkills(sgs.lose_equip_skill) then value = value + 12 end
 	end
 
-	if card:isKindOf("AmazingGrace") or card:isKindOf("fengrangCard") then
+	if card:isKindOf("AmazingGrace") or card:isKindOf("FengrangCard") then
 		dynamic_value = 10
 		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 			dynamic_value = dynamic_value - 1

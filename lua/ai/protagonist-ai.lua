@@ -257,7 +257,7 @@ wuyuvs_skill.getTurnUseCard = function(self)
 	if not card then return nil end
 	
 	local card_id = card:getEffectiveId()
-	local card_str ="@wuyuCard="..card_id
+	local card_str ="@WuyuCard="..card_id
 	local skillcard = sgs.Card_Parse(card_str)
 	
 	assert(skillcard)
@@ -265,7 +265,7 @@ wuyuvs_skill.getTurnUseCard = function(self)
 	return skillcard
 end
 
-sgs.ai_skill_use_func.wuyuCard = function(card, use, self)
+sgs.ai_skill_use_func.WuyuCard = function(card, use, self)
 
 	local targets = {}
 	for _,friend in ipairs(self.friends_noself) do
@@ -286,7 +286,7 @@ sgs.ai_skill_use_func.wuyuCard = function(card, use, self)
 
 end
 
-sgs.ai_card_intention.wuyuCard = -40
+sgs.ai_card_intention.WuyuCard = -40
 sgs.ai_skillProperty.wuyu = function(self)
 	return "noKingdom"
 end
@@ -331,12 +331,12 @@ function saiqianvs_skill.getTurnUseCard(self)
 			end
 	   end
 		if #saiqian_cards>0 then
-			local card_str= "@saiqianCard=" .. table.concat(saiqian_cards, "+")
+			local card_str= "@SaiqianCard=" .. table.concat(saiqian_cards, "+")
 			return sgs.Card_Parse(card_str)		
 		end
 		return nil
 end
-sgs.ai_skill_use_func.saiqianCard = function(card, use, self)
+sgs.ai_skill_use_func.SaiqianCard = function(card, use, self)
     local targets = {}
 	for _,friend in ipairs(self.friends_noself) do
 		if friend:hasSkill("saiqian") then
@@ -354,7 +354,7 @@ sgs.ai_skill_use_func.saiqianCard = function(card, use, self)
 		end
 	end
 end
-sgs.ai_card_intention.saiqianCard = -60
+sgs.ai_card_intention.SaiqianCard = -60
 
 sgs.ai_skill_choice.saiqian= function(self, choices, data)	
 	local source=self.player:getTag("saiqian_source"):toPlayer()
@@ -434,11 +434,11 @@ jiezou_skill.getTurnUseCard = function(self)
 		end
 	end
 	if can_use then
-		return sgs.Card_Parse("@jiezouCard=.")
+		return sgs.Card_Parse("@JiezouCard=.")
 	end
 	return nil
 end
-sgs.ai_skill_use_func.jiezouCard = function(card, use, self)        
+sgs.ai_skill_use_func.JiezouCard = function(card, use, self)        
 		local friends={}
 		local enemies_spade={}
 		local enemies ={}
@@ -517,9 +517,9 @@ end
 
 
 sgs.ai_choicemade_filter.cardChosen.jiezou = sgs.ai_choicemade_filter.cardChosen.snatch 
-sgs.ai_use_value.jiezouCard = 8
-sgs.ai_use_priority.jiezouCard =6 
-sgs.dynamic_value.control_card.jiezouCard = true
+sgs.ai_use_value.JiezouCard = 8
+sgs.ai_use_priority.JiezouCard =6 
+sgs.dynamic_value.control_card.JiezouCard = true
 sgs.ai_cardneed.jiezou = function(to, card, self)
 	return card:getSuit()==sgs.Card_Spade
 end
@@ -555,7 +555,7 @@ sgs.ai_skill_use["@@shoucang"] = function(self, prompt)
 		end
 	end
 	if #show>0 then
-		return "@shoucangCard=" ..table.concat(show, "+").."->."
+		return "@ShoucangCard=" ..table.concat(show, "+").."->."
 	end
 	return "."
 end	
@@ -599,20 +599,20 @@ sgs.ai_skill_use["@@baoyi"] = function(self, prompt)
 		end
 	end
 	if has_spade then
-		return "@baoyiCard=" .. table.concat(delay_ids, "+")
+		return "@BaoyiCard=" .. table.concat(delay_ids, "+")
 	end
 	local target = sgs.ai_skill_playerchosen.zero_card_as_slash(self, self.room:getOtherPlayers(self.player))
 	if not  target then 
-		return "@baoyiCard="..table.concat(delay_ids, "+")
+		return "@BaoyiCard="..table.concat(delay_ids, "+")
 	end
 	local equips={}
 	for _,c in sgs.qlist(self.player:getCards("he")) do
 		if c:isKindOf("EquipCard") then 
 			if c:getSuit()== sgs.Card_Spade then
 				if delay_num>0 then
-					return "@baoyiCard="..c:getEffectiveId().."+"..table.concat(delay_ids, "+")
+					return "@BaoyiCard="..c:getEffectiveId().."+"..table.concat(delay_ids, "+")
 				else
-					return "@baoyiCard="..c:getEffectiveId()
+					return "@BaoyiCard="..c:getEffectiveId()
 				end
 			end
 			table.insert(equips,c)
@@ -621,10 +621,10 @@ sgs.ai_skill_use["@@baoyi"] = function(self, prompt)
 	if delay_num==0 then 
 		if #equips>0  then
 			self:sortByKeepValue(equips)
-			return "@baoyiCard="..equips[1]:getEffectiveId()
+			return "@BaoyiCard="..equips[1]:getEffectiveId()
 		end
 	else
-		return "@baoyiCard="..table.concat(delay_ids, "+")
+		return "@BaoyiCard="..table.concat(delay_ids, "+")
 	end
 	return "."
 end
@@ -930,7 +930,7 @@ function sgs.ai_cardsview_valuable.bllmwuyu(self, class_name, player)
 				return nil
 			end
 		end
-		return "@bllmshiyuCard=." 
+		return "@BllmShiyuCard=." 
 	end
 end
  
@@ -962,16 +962,16 @@ function bllmwuyu_skill.getTurnUseCard(self)
 	if not can_shiyu then
 		if slash_num>= 2 and not sgs.Slash_IsAvailable(self.player) then
 			self.player:setTag("wuyu_choose",sgs.QVariant(1))
-			return sgs.Card_Parse("@bllmwuyuCard=.")
+			return sgs.Card_Parse("@BllmWuyuCard=.")
 		end
 	else
 		self.player:setTag("wuyu_choose",sgs.QVariant(2))
-		return sgs.Card_Parse("@bllmwuyuCard=.")
+		return sgs.Card_Parse("@BllmWuyuCard=.")
 	end
 	self.player:setTag("wuyu_choose",sgs.QVariant(3))
 	return nil
 end
-sgs.ai_skill_use_func.bllmwuyuCard = function(card, use, self)
+sgs.ai_skill_use_func.BllmWuyuCard = function(card, use, self)
 	use.card=card
 end
 
@@ -998,7 +998,7 @@ end
 sgs.bllmwuyu_suit_value = {
 	heart = 4.9
 }
-sgs.ai_use_priority.bllmwuyuCard =sgs.ai_use_priority.Slash +0.2
+sgs.ai_use_priority.BllmWuyuCard =sgs.ai_use_priority.Slash +0.2
 
 
 sgs.ai_skill_invoke.qiangyu = true

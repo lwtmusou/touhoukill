@@ -63,9 +63,9 @@ function gongfengvs_skill.getTurnUseCard(self)
         if #handcards  ==0 then return nil end
 		self:sortByUseValue(handcards)
 
-        return sgs.Card_Parse("@gongfengCard=" .. handcards[1]:getEffectiveId())
+        return sgs.Card_Parse("@GongfengCard=" .. handcards[1]:getEffectiveId())
 end
-sgs.ai_skill_use_func.gongfengCard = function(card, use, self)
+sgs.ai_skill_use_func.GongfengCard = function(card, use, self)
     local targets = {}
 	for _,friend in ipairs(self.friends_noself) do
 		if friend:hasSkill("gongfeng") then
@@ -82,7 +82,7 @@ sgs.ai_skill_use_func.gongfengCard = function(card, use, self)
 		end
 	end
 end
-sgs.ai_card_intention.gongfengCard = -40
+sgs.ai_card_intention.GongfengCard = -40
 
 
 function findBushuCard(self,from)
@@ -298,7 +298,7 @@ local fengshen_skill = {}
 fengshen_skill.name = "fengshen"
 table.insert(sgs.ai_skills, fengshen_skill)
 function fengshen_skill.getTurnUseCard(self)
-    if self.player:hasUsed("fengshenCard") then return nil end
+    if self.player:hasUsed("FengshenCard") then return nil end
 	if self.player:isKongcheng() then return nil end
 	local rcards = {}
 	for _,c in sgs.qlist(self.player:getHandcards()) do
@@ -308,9 +308,9 @@ function fengshen_skill.getTurnUseCard(self)
 	end
 	if #rcards==0 then return nil end
 	self:sortByKeepValue(rcards)
-	return sgs.Card_Parse("@fengshenCard=" .. rcards[1]:getEffectiveId())
+	return sgs.Card_Parse("@FengshenCard=" .. rcards[1]:getEffectiveId())
 end
-sgs.ai_skill_use_func.fengshenCard = function(card, use, self)
+sgs.ai_skill_use_func.FengshenCard = function(card, use, self)
         self:sort(self.enemies,"handcard")
         local targetsInAttackRange={}
 		local targetsIn1={}
@@ -378,10 +378,10 @@ sgs.fengshen_suit_value = {
 	heart=4,
 	diamond = 4
 }
-sgs.ai_card_intention.fengshenCard = 50
+sgs.ai_card_intention.FengshenCard = 50
 --use_priority can not be a function ???? 
-sgs.ai_use_priority.fengshenCard = sgs.ai_use_priority.Slash+0.2
-sgs.dynamic_value.damage_card.fengshenCard = true
+sgs.ai_use_priority.FengshenCard = sgs.ai_use_priority.Slash+0.2
+sgs.dynamic_value.damage_card.FengshenCard = true
 
 sgs.ai_skill_cardask["@fengshen-discard"] = function(self, data, pattern, target)
 	local fakeDamage=sgs.DamageStruct()
@@ -428,10 +428,10 @@ local xinshang_skill = {}
 xinshang_skill.name = "xinshang"
 table.insert(sgs.ai_skills, xinshang_skill)
 function xinshang_skill.getTurnUseCard(self)
-    if self.player:hasUsed("xinshangCard") then return nil end
-	return sgs.Card_Parse("@xinshangCard=.")
+    if self.player:hasUsed("XinshangCard") then return nil end
+	return sgs.Card_Parse("@XinshangCard=.")
 end
-sgs.ai_skill_use_func.xinshangCard = function(card, use, self)
+sgs.ai_skill_use_func.XinshangCard = function(card, use, self)
         self:sort(self.enemies,"handcard")
         targets={}
 		for _, p in ipairs(self.enemies) do
@@ -463,9 +463,9 @@ sgs.ai_skill_cardask["@xinshang-spadecard"] = function(self,data)
 		self:sortByKeepValue(cards)
         return "$" .. cards[1]:getId()
 end
-sgs.ai_use_value.xinshangCard = sgs.ai_use_value.Dismantlement + 1
-sgs.ai_use_priority.xinshangCard = sgs.ai_use_priority.Dismantlement + 1
-sgs.ai_card_intention.xinshangCard = 50
+sgs.ai_use_value.XinshangCard = sgs.ai_use_value.Dismantlement + 1
+sgs.ai_use_priority.XinshangCard = sgs.ai_use_priority.Dismantlement + 1
+sgs.ai_card_intention.XinshangCard = 50
  
 
 sgs.ai_damageInflicted.micai =function(self, damage)
@@ -702,14 +702,14 @@ local tianyan_skill = {}
 tianyan_skill.name = "tianyan"
 table.insert(sgs.ai_skills, tianyan_skill)
 function tianyan_skill.getTurnUseCard(self)
-    if self.player:hasUsed("tianyanCard") then return nil end
-	return sgs.Card_Parse("@tianyanCard=.")
+    if self.player:hasUsed("TianyanCard") then return nil end
+	return sgs.Card_Parse("@TianyanCard=.")
 end
-sgs.ai_skill_use_func.tianyanCard = function(card, use, self)
+sgs.ai_skill_use_func.TianyanCard = function(card, use, self)
 	use.card=card
 end
-sgs.ai_use_value.tianyanCard = 8
-sgs.ai_use_priority.tianyanCard = 7
+sgs.ai_use_value.TianyanCard = 8
+sgs.ai_use_priority.TianyanCard = 7
 
 
 
@@ -717,20 +717,20 @@ local fengrang_skill = {}
 fengrang_skill.name = "fengrang"
 table.insert(sgs.ai_skills, fengrang_skill)
 function fengrang_skill.getTurnUseCard(self)
-	if self.player:hasUsed("fengrangCard") then return nil end
+	if self.player:hasUsed("FengrangCard") then return nil end
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 	local card=sgs.cloneCard("amazing_grace", sgs.Card_NoSuit, 0)
 	card:setSkillName("fengrang")
 	self:useTrickCard(card, dummy_use)
 	if not dummy_use.card then return nil end
-	return sgs.Card_Parse("@fengrangCard=.")
+	return sgs.Card_Parse("@FengrangCard=.")
 end
-sgs.ai_skill_use_func.fengrangCard = function(card, use, self)
+sgs.ai_skill_use_func.FengrangCard = function(card, use, self)
 	use.card=card
 end
-sgs.ai_use_priority.fengrangCard = sgs.ai_use_priority.AmazingGrace
-sgs.ai_use_value.fengrangCard = 3
-sgs.dynamic_value.benefit.fengrangCard = true
+sgs.ai_use_priority.FengrangCard = sgs.ai_use_priority.AmazingGrace
+sgs.ai_use_value.FengrangCard = 3
+sgs.dynamic_value.benefit.FengrangCard = true
 
 
  
@@ -767,10 +767,10 @@ local jiliao_skill = {}
 jiliao_skill.name = "jiliao"
 table.insert(sgs.ai_skills, jiliao_skill)
 function jiliao_skill.getTurnUseCard(self)
-	if self.player:hasUsed("jiliaoCard") then return nil end
-	return sgs.Card_Parse("@jiliaoCard=.")
+	if self.player:hasUsed("JiliaoCard") then return nil end
+	return sgs.Card_Parse("@JiliaoCard=.")
 end
-sgs.ai_skill_use_func.jiliaoCard = function(card, use, self)
+sgs.ai_skill_use_func.JiliaoCard = function(card, use, self)
 	self:sort(self.enemies,"handcard",true)
     local targets={}
 	local tmp_targets={}
@@ -829,9 +829,9 @@ sgs.ai_skill_invoke.jiliao = function(self,data)
 	end
 	return false
 end
-sgs.ai_use_value.jiliaoCard = sgs.ai_use_value.Dismantlement + 1
-sgs.ai_use_priority.jiliaoCard = sgs.ai_use_priority.Dismantlement + 1
-sgs.ai_card_intention.jiliaoCard = function(self, card, from, tos)
+sgs.ai_use_value.JiliaoCard = sgs.ai_use_value.Dismantlement + 1
+sgs.ai_use_priority.JiliaoCard = sgs.ai_use_priority.Dismantlement + 1
+sgs.ai_card_intention.JiliaoCard = function(self, card, from, tos)
 	local effect  = jiliaoParse(self, tos[1])
 	if not effect then
 		sgs.updateIntentions(from, tos, 20)
@@ -928,7 +928,7 @@ local dfgzmsiyu_skill = {}
 dfgzmsiyu_skill.name = "dfgzmsiyu"
 table.insert(sgs.ai_skills, dfgzmsiyu_skill)
 function dfgzmsiyu_skill.getTurnUseCard(self)
-	if self.player:hasUsed("dfgzmsiyuCard") then return nil end
+	if self.player:hasUsed("DfgzmSiyuCard") then return nil end
 	local cards=self.player:getCards("h")
 	
 	local can_qishu=true
@@ -958,18 +958,18 @@ function dfgzmsiyu_skill.getTurnUseCard(self)
 			qishu_card=cards:first()
 		end
 	end
-	sgs.ai_use_priority.dfgzmsiyuCard = (qishu_card and can_qishu) and 8 or 0
+	sgs.ai_use_priority.DfgzmSiyuCard = (qishu_card and can_qishu) and 8 or 0
 	if not qishu_card then
 		cards = sgs.QList2Table(cards)
 		self:sortByKeepValue(cards)
 		qishu_card=cards[1]
 	end
 	if (qishu_card) then 
-		return sgs.Card_Parse("@dfgzmsiyuCard=" .. qishu_card:getEffectiveId())
+		return sgs.Card_Parse("@DfgzmSiyuCard=" .. qishu_card:getEffectiveId())
 	end
 	return nil
 end
-sgs.ai_skill_use_func.dfgzmsiyuCard = function(card, use, self)
+sgs.ai_skill_use_func.DfgzmSiyuCard = function(card, use, self)
 	local target
 	self:sort(self.enemies,"handcard")
 	for var=#self.enemies, 1, -1 do

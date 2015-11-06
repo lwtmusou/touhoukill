@@ -5,36 +5,36 @@
 #include "card.h"
 
 
-class zhaoliaoCard : public SkillCard
+class ZhaoliaoCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE zhaoliaoCard();
+    Q_INVOKABLE ZhaoliaoCard();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 
 
-class mocaoCard : public SkillCard
+class MocaoCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE mocaoCard();
+    Q_INVOKABLE MocaoCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 
-class th07Package : public Package
+class TH07Package : public Package
 {
     Q_OBJECT
 
 public:
-    th07Package();
+    TH07Package();
 };
 
 #endif

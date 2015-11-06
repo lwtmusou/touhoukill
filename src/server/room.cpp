@@ -1793,6 +1793,88 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
     return result;
 }
 
+QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, SPlayerDataMap &skills, bool optional, const QVariant &data)
+{
+	
+	
+	while (isPaused()) {
+	}
+
+    Q_ASSERT(!skills.isEmpty());
+
+    QString answer;
+    QStringList all_pairs;
+    foreach (const ServerPlayer *p, skills.keys()) {
+        foreach (const QString &str, skills.value(p)) {
+            if (str.contains("!") && !str.contains("&"))
+                all_pairs << QString("%1:%2*%3").arg(p->objectName()).arg(str.split("!").first()).arg(str.split("*").last());
+            else
+                all_pairs << QString("%1:%2").arg(p->objectName()).arg(str);
+        }
+    }
+
+    if (!optional && skills.values().length() == 1 && skills.values().first().length() == 1) {
+        answer = skills.values().first().first();
+    } else {
+        notifyMoveFocus(player, S_COMMAND_TRIGGER_ORDER);
+
+        AI *ai = player->getAI();
+
+        if (ai) {
+            //Temporary method to keep compatible with existing AI system
+            QStringList all_skills;
+            foreach (const QStringList &list, skills)
+                all_skills << list;
+
+            if (optional)
+                all_skills << "cancel";
+
+            const QString reply = ai->askForChoice(reason, all_skills.join("+"), data);
+            if (reply == "cancel") {
+                answer = reply;
+            } else {
+                QString owner;
+                foreach (const QStringList &list, skills) {
+                    if (list.contains(reply))
+                        owner = skills.key(list)->objectName();
+                }
+
+                if (!owner.isEmpty())
+                    answer = QString("%1:%2").arg(owner).arg(reply);
+            }
+
+            thread->delay();
+        } else {
+			Json::Value args; //JsonArray args;
+            //example: "["turn_start", ["sgs1:tiandu", "sgs1:tuntian", "sgs2:slobsb"], true]"
+            
+            args[0] = toJsonString(reason); //args << reason;
+            args[1] = toJsonArray(all_pairs);//args << JsonUtils::toJsonArray(all_pairs);
+            args[2] = optional;  //args << optional;
+
+			
+	
+			bool success = doRequest(player, S_COMMAND_TRIGGER_ORDER, args, true);
+            Json::Value clientReply = player->getClientReply();
+			if (!success || !clientReply.isString()) 
+            //bool success = doRequest(player, S_COMMAND_TRIGGER_ORDER, args, true);
+            //const QVariant &clientReply = player->getClientReply();
+            //if (!success || !JsonUtils::isString(clientReply))
+                answer = "cancel";
+            else
+                //answer = clientReply.toString();
+				answer = toQString(clientReply);
+        }
+
+        if (answer != "cancel" && !all_pairs.contains(answer))
+            answer = all_pairs[0];
+    }
+
+    return answer;
+}
+
+
+
 void Room::addPlayerHistory(ServerPlayer *player, const QString &key, int times)
 {
     if (player) {
@@ -2073,7 +2155,7 @@ ServerPlayer *Room::findPlayer(const QString &general_name, bool include_dead) c
     }
 
     foreach (ServerPlayer *player, list) {
-        if (player->getGeneralName() == general_name)
+        if (player->getGeneralName() == general_name || player->objectName() == general_name )
             return player;
     }
 
@@ -6545,4 +6627,7 @@ bool Room::skinChangeCommand(ServerPlayer *player, const QSanProtocol::QSanGener
     
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val); 
     return true;    
-}  
+}
+
+
+
