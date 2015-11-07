@@ -403,10 +403,6 @@ public:
         events << EventPhaseEnd << CardsMoveOneTime << EventPhaseChanging;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const
-    {
-        return (target != NULL);
-    }
 
 	virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *mokou, QVariant &data) const
     {

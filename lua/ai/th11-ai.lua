@@ -179,7 +179,7 @@ local maihuo_skill = {}
 maihuo_skill.name = "maihuo"
 table.insert(sgs.ai_skills, maihuo_skill)
 function maihuo_skill.getTurnUseCard(self)
-    if self.player:hasUsed("maihuoCard") then return nil end
+    if self.player:hasUsed("MaihuoCard") then return nil end
     local handcards = sgs.QList2Table(self.player:getHandcards())
     if #handcards==0 then return nil end
 	self:sortByUseValue(handcards)
@@ -190,12 +190,12 @@ function maihuo_skill.getTurnUseCard(self)
 		end
 	end
 	if #reds>0 then
-		return sgs.Card_Parse("@maihuoCard=" .. reds[1]:getEffectiveId())
+		return sgs.Card_Parse("@MaihuoCard=" .. reds[1]:getEffectiveId())
 	else
-		return sgs.Card_Parse("@maihuoCard=" .. handcards[1]:getEffectiveId())
+		return sgs.Card_Parse("@MaihuoCard=" .. handcards[1]:getEffectiveId())
 	end
 end
-sgs.ai_skill_use_func.maihuoCard = function(card, use, self)
+sgs.ai_skill_use_func.MaihuoCard = function(card, use, self)
 --sgs.ai_skill_use_func["#maihuo"] = function(card, use, self)
         --[[self:sort(self.friends_noself,"handcard")
 		if #self.friends_noself >0 then
@@ -225,9 +225,9 @@ sgs.maihuo_suit_value = {
 	heart=3.9,
 	diamond = 3.9
 }
-sgs.ai_use_value.maihuoCard = 7
-sgs.ai_use_priority.maihuoCard = 7
-sgs.ai_card_intention.maihuoCard = -70
+sgs.ai_use_value.MaihuoCard = 7
+sgs.ai_use_priority.MaihuoCard = 7
+sgs.ai_card_intention.MaihuoCard = -70
 
 function SmartAI:getDamageSource(attacker)
 	if not attacker or attacker:hasSkill("wunian")  then
@@ -262,9 +262,9 @@ sgs.ai_skill_use["@@yaoban"] = function(self, prompt)
 	cards = sgs.QList2Table(cards)
 	self:sortByKeepValue(cards)
 	--return "#yaoban:" ..cards[1]:getEffectiveId().. ":->" .. targets[1]:objectName()
-	return "@yaobanCard=" ..cards[1]:getEffectiveId().. "->" .. targets[1]:objectName()
+	return "@YaobanCard=" ..cards[1]:getEffectiveId().. "->" .. targets[1]:objectName()
 end
-sgs.ai_card_intention.yaobanCard = 60
+sgs.ai_card_intention.YaobanCard = 60
 sgs.ai_slash_prohibit.yaoban = function(self, from, to, card)
 	local fakeDamage=sgs.DamageStruct()
 	fakeDamage.card=nil
@@ -708,7 +708,7 @@ end
 	end
 	if target then
 		self:sortByKeepValue(cards,true)
-		 return "@chuanranCard="..cards[1]:getEffectiveId().."->"..target:objectName()
+		 return "@ChuanranCard="..cards[1]:getEffectiveId().."->"..target:objectName()
 	end
 	return "." 
 end
@@ -762,7 +762,7 @@ sgs.ai_skill_use["@@chuanran"] = function(self, prompt)
 	end
 	if target then
 		self:sortByKeepValue(cards,true)
-		 return "@chuanranCard="..cards[1]:getEffectiveId().."->"..target:objectName()
+		 return "@ChuanranCard="..cards[1]:getEffectiveId().."->"..target:objectName()
 	end
 	return "." 
 end
@@ -774,7 +774,7 @@ sgs.chuanran_suit_value = {
 sgs.ai_cardneed.chuanran = function(to, card, self)
 	return  card:isBlack()
 end
-sgs.ai_card_intention.chuanranCard=40
+sgs.ai_card_intention.ChuanranCard=40
 
 
 sgs.ai_skill_playerchosen.rebing = function(self, targets)

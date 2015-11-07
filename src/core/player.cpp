@@ -466,7 +466,7 @@ bool Player::isCurrent() const
 
 
 bool Player::hasSkill(const QString &skill_name, bool include_lose, bool include_invalidity) const
-{
+{	
     bool skill_invalid = false;//  invalid but maybe not lost this skill
     if (!include_lose) {
         if (!hasEquipSkill(skill_name)) {

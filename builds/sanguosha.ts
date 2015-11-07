@@ -3734,6 +3734,16 @@
         <source>Discarded pile</source>
         <translation>弃牌堆</translation>
     </message>
+	<message>
+        <location filename="../src/ui/roomscene.cpp" line="1899"/>
+        <source>use upon %1</source>
+        <translation>对%1</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/roomscene.cpp" line="1901"/>
+        <source>use upon %1(%2)</source>
+        <translation>对%1(%2)</translation>
+    </message>
     <message>
         <location filename="../src/ui/roomscene.cpp" line="2290"/>
         <source>The OK button should be disabled when client is in executing dialog</source>
@@ -5002,6 +5012,19 @@ P = 你自己, R = 你所在的房间</translation>
         <location filename="../src/ui/startscene.cpp" line="123"/>
         <source>Operation timeout is %1 seconds</source>
         <translation>操作时间是 %1 秒</translation>
+    </message>
+</context>
+<context>
+    <name>TriggerOptionButton</name>
+    <message>
+        <location filename="../src/ui/ChooseTriggerOrderBox.cpp" line="192"/>
+        <source>%1 (use upon %2)</source>
+        <translation>%1 (对%2)</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/ChooseTriggerOrderBox.cpp" line="197"/>
+        <source>*</source>
+        <translation>×</translation>
     </message>
 </context>
 <context>

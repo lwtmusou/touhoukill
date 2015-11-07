@@ -3,7 +3,7 @@ local pudu_skill = {}
 pudu_skill.name = "pudu"
 table.insert(sgs.ai_skills, pudu_skill)
 pudu_skill.getTurnUseCard = function(self)
-	if self.player:hasUsed("puduCard") then return nil end
+	if self.player:hasUsed("PuduCard") then return nil end
 	local can=false
 	if self.player:getHp()>3 then 
 		can=true
@@ -20,11 +20,11 @@ pudu_skill.getTurnUseCard = function(self)
 		end
 	end
 	if can then
-		return sgs.Card_Parse("@puduCard=.")
+		return sgs.Card_Parse("@PuduCard=.")
 	end
 	return nil
 end
-sgs.ai_skill_use_func.puduCard=function(card,use,self)
+sgs.ai_skill_use_func.PuduCard=function(card,use,self)
 	self:sort(self.friends_noself, "defense")
     for _, p in ipairs(self.friends_noself) do
         if p:isWounded()  and  p:getHp()+1 <= getBestHp(p)  then
@@ -36,8 +36,8 @@ sgs.ai_skill_use_func.puduCard=function(card,use,self)
 		end
     end
 end
-sgs.ai_card_intention.puduCard = -100
-sgs.ai_use_priority.puduCard = sgs.ai_use_priority.Analeptic + 0.2
+sgs.ai_card_intention.PuduCard = -100
+sgs.ai_use_priority.PuduCard = sgs.ai_use_priority.Analeptic + 0.2
 
 sgs.ai_skill_invoke.jiushu = true
 
@@ -128,10 +128,10 @@ local weizhi_skill = {}
 weizhi_skill.name = "weizhi"
 table.insert(sgs.ai_skills, weizhi_skill)
 function weizhi_skill.getTurnUseCard(self)
-    if not self.player:hasUsed("weizhiCard") then
-		return sgs.Card_Parse("@weizhiCard=.")
+    if not self.player:hasUsed("WeizhiCard") then
+		return sgs.Card_Parse("@WeizhiCard=.")
 	end
-	--[[if self.player:hasUsed("weizhiCard") then return nil end
+	--[[if self.player:hasUsed("WeizhiCard") then return nil end
     local handcards = sgs.QList2Table(self.player:getHandcards())
     if #handcards==0 then return nil end
 	self:sortByUseValue(handcards)
@@ -146,12 +146,12 @@ function weizhi_skill.getTurnUseCard(self)
 		table.insert(use_cards,changes[1]:getId())
 		table.insert(use_cards,changes[2]:getId())
 		--return sgs.Card_Parse("#weizhi:" .. table.concat(use_cards, "+") .. ":")
-		return sgs.Card_Parse("@weizhiCard=" .. table.concat(use_cards, "+") )
+		return sgs.Card_Parse("@WeizhiCard=" .. table.concat(use_cards, "+") )
 	end
 	return nil]]
 end
 
-sgs.ai_skill_use_func.weizhiCard = function(card, use, self)
+sgs.ai_skill_use_func.WeizhiCard = function(card, use, self)
 	local unpreferedCards = {}
 	
 	local cards = {}
@@ -266,18 +266,18 @@ sgs.ai_skill_use_func.weizhiCard = function(card, use, self)
 		--if self.room:getMode() == "02_1v1" and sgs.GetConfig("1v1/Rule", "Classical") ~= "Classical" then
 		--	local use_cards_kof = { use_cards[1] }
 		--	if #use_cards > 1 then table.insert(use_cards_kof, use_cards[2]) end
-		--	use.card = sgs.Card_Parse("@weizhiCard=" .. table.concat(use_cards_kof, "+"))
+		--	use.card = sgs.Card_Parse("@WeizhiCard=" .. table.concat(use_cards_kof, "+"))
 		--	return
 		--else
-			use.card = sgs.Card_Parse("@weizhiCard=" .. table.concat(use_cards, "+"))
+			use.card = sgs.Card_Parse("@WeizhiCard=" .. table.concat(use_cards, "+"))
 			return
 		--end
 	end
 end
 
-sgs.ai_use_value.weizhiCard =  9
-sgs.ai_use_priority.weizhiCard = 6
-sgs.dynamic_value.benefit.weizhiCard = true
+sgs.ai_use_value.WeizhiCard =  9
+sgs.ai_use_priority.WeizhiCard = 6
+sgs.dynamic_value.benefit.WeizhiCard = true
 sgs.ai_cardneed.weizhi = function(to, card, self)
 	if not self:willSkipPlayPhase(to) then
 		return  not card:isKindOf("TrickCard")
@@ -535,10 +535,10 @@ local nihuo_skill = {}
 nihuo_skill.name = "nihuo"
 table.insert(sgs.ai_skills, nihuo_skill)
 nihuo_skill.getTurnUseCard = function(self)
-	if self.player:hasUsed("nihuoCard") then return nil end
-	return sgs.Card_Parse("@nihuoCard=.")
+	if self.player:hasUsed("NihuoCard") then return nil end
+	return sgs.Card_Parse("@NihuoCard=.")
 end
-sgs.ai_skill_use_func.nihuoCard=function(card,use,self)
+sgs.ai_skill_use_func.NihuoCard=function(card,use,self)
 	if #self.enemies == 0 then return end
 	local n1 = self:getCardsNum("Slash")
 	if n1 == 0 then return end
@@ -605,8 +605,8 @@ sgs.ai_skill_use_func.nihuoCard=function(card,use,self)
 		if use.to:length() >= 1 then return end
 	end
 end
-sgs.ai_use_priority.nihuoCard = sgs.ai_use_priority.Duel - 0.2
-sgs.ai_card_intention.nihuoCard = 70
+sgs.ai_use_priority.NihuoCard = sgs.ai_use_priority.Duel - 0.2
+sgs.ai_card_intention.NihuoCard = 70
 sgs.ai_cardneed.nihuo = function(to, card, self)
 	return  card:isKindOf("Slash")
 end
@@ -821,15 +821,15 @@ local nuhuo_skill = {}
 nuhuo_skill.name = "nuhuo"
 table.insert(sgs.ai_skills, nuhuo_skill)
 nuhuo_skill.getTurnUseCard = function(self)
-	if self.player:hasUsed("nuhuoCard") then return nil end
+	if self.player:hasUsed("NuhuoCard") then return nil end
 	local slash = sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
 	
     slash:deleteLater()
     if self.player:isCardLimited(slash,sgs.Card_MethodUse) then return nil end 	
 	
-	return sgs.Card_Parse("@nuhuoCard=.")
+	return sgs.Card_Parse("@NuhuoCard=.")
 end
-sgs.ai_skill_use_func.nuhuoCard=function(card,use,self)
+sgs.ai_skill_use_func.NuhuoCard=function(card,use,self)
 	local slash = sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
 	--可以用dummyuse更加简洁？？
 	local targets={}--enemy

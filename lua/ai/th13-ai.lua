@@ -7,7 +7,7 @@ local qingting_skill = {}
 qingting_skill.name = "qingting"
 table.insert(sgs.ai_skills, qingting_skill)
 qingting_skill.getTurnUseCard = function(self)
-	if self.player:hasUsed("qingtingCard") then return nil end
+	if self.player:hasUsed("QingtingCard") then return nil end
 	t=false
 	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if not p:isKongcheng() then
@@ -15,11 +15,11 @@ qingting_skill.getTurnUseCard = function(self)
 		end
 	end
 	if t then
-	return sgs.Card_Parse("@qingtingCard=.")
+	return sgs.Card_Parse("@QingtingCard=.")
 	end
 	return nil
 end
-sgs.ai_skill_use_func.qingtingCard=function(card,use,self)
+sgs.ai_skill_use_func.QingtingCard=function(card,use,self)
 	use.card = card
 end
 sgs.ai_skill_discard.qingting = function(self)
@@ -97,8 +97,8 @@ sgs.ai_skill_discard.qingting = function(self)
 	table.insert(to_discard, tmpCard:getEffectiveId())
 	return to_discard
 end
-sgs.ai_use_value.qingtingCard = 7
-sgs.ai_use_priority.qingtingCard = 7
+sgs.ai_use_value.QingtingCard = 7
+sgs.ai_use_priority.QingtingCard = 7
 
 
 
@@ -163,7 +163,7 @@ xihua_skill.getTurnUseCard = function(self)
 	if not current or current:isDead() or current:getPhase() == sgs.Player_NotActive then return end
 
 	local cards = sgs.QList2Table(self.player:getHandcards())
-	local xihuaCards = {}
+	local XihuaCards = {}
 	
 	local guhuo = "slash|jink|peach|ex_nihilo|snatch|dismantlement|amazing_grace|archery_attack|savage_assault"
 	local ban = table.concat(sgs.Sanguosha:getBanPackages(), "|")
@@ -173,28 +173,28 @@ xihua_skill.getTurnUseCard = function(self)
 		local forbidden = guhuos[i]
 		local forbid = sgs.cloneCard(forbidden)
 		if not self.player:isLocked(forbid) and self:canUseXihuaCard(forbid, true) then
-			table.insert(xihuaCards,forbid)
+			table.insert(XihuaCards,forbid)
 		end
 	end
 
-	self:sortByUseValue(xihuaCards, false)
-	for _,xihuaCard in pairs (xihuaCards) do
-		if measure_xihua(self,xihuaCard) then
+	self:sortByUseValue(XihuaCards, false)
+	for _,XihuaCard in pairs (XihuaCards) do
+		if measure_xihua(self,XihuaCard) then
 			local dummyuse = { isDummy = true }
-			if xihuaCard:isKindOf("BasicCard") then
-				self:useBasicCard(xihuaCard, dummyuse) 
+			if XihuaCard:isKindOf("BasicCard") then
+				self:useBasicCard(XihuaCard, dummyuse) 
 			else
-				self:useTrickCard(xihuaCard, dummyuse) 
+				self:useTrickCard(XihuaCard, dummyuse) 
 			end
 			if dummyuse.card then
-				fakeCard = sgs.Card_Parse("@xihuaCard=.:" .. xihuaCard:objectName())
+				fakeCard = sgs.Card_Parse("@XihuaCard=.:" .. XihuaCard:objectName())
 				return fakeCard
 			end
 		end
 	end
 	return nil
 end
-sgs.ai_skill_use_func.xihuaCard=function(card,use,self)
+sgs.ai_skill_use_func.XihuaCard=function(card,use,self)
 	local userstring=card:toString()
 	userstring=(userstring:split(":"))[3]
 	local xihuacard=sgs.cloneCard(userstring)
@@ -208,7 +208,7 @@ sgs.ai_skill_use_func.xihuaCard=function(card,use,self)
 	use.card=card
 end
 
---sgs.ai_use_priority.xihuaCard = 10 
+--sgs.ai_use_priority.XihuaCard = 10 
 function sgs.ai_cardsview_valuable.xihua(self, class_name, player)
 	if self.player:isKongcheng() then
 		return nil
@@ -230,7 +230,7 @@ function sgs.ai_cardsview_valuable.xihua(self, class_name, player)
 			return nil
 		end
 		if measure_xihua(self,viewcard) then
-			return "@xihuaCard=.:".. classname2objectname[class_name]
+			return "@XihuaCard=.:".. classname2objectname[class_name]
 		end
 	end
 end
@@ -306,7 +306,7 @@ function sgs.ai_cardsview_valuable.shijie(self, class_name, player)
 		if not dying or not self:isFriend(dying, player) or player:isKongcheng() then return nil end
 		local cards = sgs.QList2Table(player:getCards("h"))
 		self:sortByKeepValue(cards) 
-		return "@shijieCard="..cards[1]:getId() 
+		return "@ShijieCard="..cards[1]:getId() 
 	end
 end
 sgs.ai_skill_playerchosen.shijie = function(self, targets)
@@ -389,12 +389,12 @@ local leishi_skill = {}
 leishi_skill.name = "leishi"
 table.insert(sgs.ai_skills, leishi_skill)
 leishi_skill.getTurnUseCard = function(self)
-	if self.player:hasUsed("leishiCard") then return nil end
+	if self.player:hasUsed("LeishiCard") then return nil end
 	local slash = sgs.cloneCard("thunder_slash")
 	if self.player:isCardLimited(slash, sgs.Card_MethodUse) then return nil end
-	return sgs.Card_Parse("@leishiCard=.")
+	return sgs.Card_Parse("@LeishiCard=.")
 end
-sgs.ai_skill_use_func.leishiCard = function(card, use, self)
+sgs.ai_skill_use_func.LeishiCard = function(card, use, self)
         self:sort(self.enemies,"handcard")
         local slash = sgs.cloneCard("thunder_slash", sgs.Card_NoSuit, 0)		
 		local targets={}
@@ -430,7 +430,7 @@ sgs.ai_skill_use_func.leishiCard = function(card, use, self)
 			end
         end
 end
-sgs.dynamic_value.damage_card.leishiCard = true
+sgs.dynamic_value.damage_card.LeishiCard = true
 
 
 
@@ -470,13 +470,13 @@ local xiefa_skill = {}
 xiefa_skill.name = "xiefa"
 table.insert(sgs.ai_skills, xiefa_skill)
 function xiefa_skill.getTurnUseCard(self)
-    if self.player:hasUsed("xiefaCard") then return nil end
+    if self.player:hasUsed("XiefaCard") then return nil end
     local handcards = sgs.QList2Table(self.player:getHandcards())
     if #handcards==0 then return nil end
 	self:sortByUseValue(handcards)
-	return sgs.Card_Parse("@xiefaCard=" .. handcards[1]:getEffectiveId())
+	return sgs.Card_Parse("@XiefaCard=" .. handcards[1]:getEffectiveId())
 end
-sgs.ai_skill_use_func.xiefaCard = function(card, use, self)
+sgs.ai_skill_use_func.XiefaCard = function(card, use, self)
         
 		local nojink_targets={}
 		local good_targets={}
@@ -700,7 +700,7 @@ sgs.ai_skill_use["@@huisheng"] = function(self, prompt)
 	if victim then
 		table.insert(targets,victim:objectName())
 	end
-	return "@huishengCard=.->" .. table.concat(targets, "+")
+	return "@HuishengCard=.->" .. table.concat(targets, "+")
 end
 
 
@@ -898,16 +898,16 @@ buming_skill.getTurnUseCard = function(self)
 	cards =sgs.QList2Table(self.player:getCards("he"))
 	if #cards==0 then return nil end
 	self:sortByKeepValue(cards)
-	if self.player:hasUsed("bumingCard") then return nil end
+	if self.player:hasUsed("BumingCard") then return nil end
 	target=findBumingTarget(self,cards[1])
 	if not target then return nil end
 	_data=sgs.QVariant()
 	_data:setValue(target)
 	self.player:setTag("buming_target",_data)
-	return sgs.Card_Parse("@bumingCard=" .. cards[1]:getId())
+	return sgs.Card_Parse("@BumingCard=" .. cards[1]:getId())
 	
 end
-sgs.ai_skill_use_func.bumingCard=function(card,use,self)	
+sgs.ai_skill_use_func.BumingCard=function(card,use,self)	
 	use.card = card	
 	p= self.player:getTag("buming_target"):toPlayer()
 	if use.to then
@@ -937,7 +937,7 @@ sgs.ai_skill_choice.buming=function(self)--因为有cardlimit  需要检测实�
 	return "slash_buming"
 end
 
-sgs.ai_card_intention.bumingCard = 70
+sgs.ai_card_intention.BumingCard = 70
 
 
 sgs.ai_skill_playerchosen.zhengti = function(self, targets)

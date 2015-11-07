@@ -109,12 +109,12 @@ function hongwu_skill.getTurnUseCard(self)
 			n2=n2+1
 		end
 	end
-	return sgs.Card_Parse("@hongwuCard=" .. table.concat(use_cards, "+") )
+	return sgs.Card_Parse("@HongwuCard=" .. table.concat(use_cards, "+") )
 end
-sgs.ai_skill_use_func.hongwuCard=function(card,use,self)
+sgs.ai_skill_use_func.HongwuCard=function(card,use,self)
 	use.card = card
 end
-sgs.ai_use_priority.hongwuCard = 7.6
+sgs.ai_use_priority.HongwuCard = 7.6
 sgs.ai_cardneed.hongwu = function(to, card, self)
 	return card:isRed()
 end
@@ -134,9 +134,9 @@ function shenqiang_skill.getTurnUseCard(self)
 		end
 	end
 	if #reds==0 then return nil end
-	return sgs.Card_Parse("@shenqiangCard=" .. reds[1]:getId())
+	return sgs.Card_Parse("@ShenqiangCard=" .. reds[1]:getId())
 end
-sgs.ai_skill_use_func.shenqiangCard = function(card, use, self)
+sgs.ai_skill_use_func.ShenqiangCard = function(card, use, self)
         if #self.enemies==0 then return false end
 		self:sort(self.enemies,"hp")
 		local enemies = sgs.reverse(self.enemies)
@@ -163,7 +163,7 @@ end
 sgs.ai_cardneed.shenqiang = function(to, card, self)
 	return card:getSuit()==sgs.Card_Heart or card:isKindOf("Weapon")
 end
-sgs.ai_use_priority.shenqiangCard = 7.6
+sgs.ai_use_priority.ShenqiangCard = 7.6
 
 sgs.ai_damageInflicted.yewang=function(self,damage)
 	if damage.to:getMark("@ye") then
@@ -322,10 +322,10 @@ local huimie_skill = {}
 huimie_skill.name = "huimie"
 table.insert(sgs.ai_skills, huimie_skill)
 function huimie_skill.getTurnUseCard(self)
-	if self.player:hasUsed("huimieCard") then return nil end
-	return sgs.Card_Parse("@huimieCard=.")
+	if self.player:hasUsed("HuimieCard") then return nil end
+	return sgs.Card_Parse("@HuimieCard=.")
 end
-sgs.ai_skill_use_func.huimieCard = function(card, use, self)
+sgs.ai_skill_use_func.HuimieCard = function(card, use, self)
 
         self:sort(self.enemies,"hp",true)
         targets={}
@@ -508,7 +508,7 @@ local shenshou_skill = {}
 shenshou_skill.name = "shenshou"
 table.insert(sgs.ai_skills, shenshou_skill)
 function shenshou_skill.getTurnUseCard(self)
-	if self.player:hasUsed("shenshouCard") then return nil end
+	if self.player:hasUsed("ShenshouCard") then return nil end
 	local handcards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByUseValue(handcards)
 	local cards={}
@@ -523,18 +523,18 @@ function shenshou_skill.getTurnUseCard(self)
 		end
 	end
 	if #cards>0 then
-		sgs.ai_use_priority.shenshouCard = 9.2
-		return sgs.Card_Parse("@shenshouCard=" .. cards[1]:getEffectiveId() )
+		sgs.ai_use_priority.ShenshouCard = 9.2
+		return sgs.Card_Parse("@ShenshouCard=" .. cards[1]:getEffectiveId() )
 	end
 	if #handcards>0 then
 		if #handcards == 1 then
-			sgs.ai_use_priority.shenshouCard = 9.2
+			sgs.ai_use_priority.ShenshouCard = 9.2
 		end
-		return sgs.Card_Parse("@shenshouCard=" .. handcards[1]:getEffectiveId())
+		return sgs.Card_Parse("@ShenshouCard=" .. handcards[1]:getEffectiveId())
 	end
 	return nil 
 end
-sgs.ai_skill_use_func.shenshouCard = function(card, use, self)
+sgs.ai_skill_use_func.ShenshouCard = function(card, use, self)
         self:sort(self.friends_noself,"handcard")
 		if #self.friends_noself >0 then
 			use.card = card
@@ -562,8 +562,8 @@ sgs.shenshou_suit_value = {
 	spade = 5
 }
 sgs.ai_playerchosen_intention.shenshou = 40
-sgs.ai_use_value.shenshouCard = 9.2
-sgs.ai_use_priority.shenshouCard = 0.2
+sgs.ai_use_value.ShenshouCard = 9.2
+sgs.ai_use_priority.ShenshouCard = 0.2
 sgs.ai_cardneed.shenshou = function(to, card, self)
 	if not self:willSkipPlayPhase(to) then
 		return  card:isKindOf("Slash") or card:getSuit()==sgs.Card_Spade 
@@ -1034,10 +1034,10 @@ ziwo_skill.getTurnUseCard = function(self)
 	use_cards={}
 	table.insert(use_cards,cards[1]:getId())
 	table.insert(use_cards,cards[2]:getId())
-	return sgs.Card_Parse("@ziwoCard=" .. table.concat(use_cards, "+") )
+	return sgs.Card_Parse("@ZiwoCard=" .. table.concat(use_cards, "+") )
 
 end
-sgs.ai_skill_use_func.ziwoCard=function(card,use,self)
+sgs.ai_skill_use_func.ZiwoCard=function(card,use,self)
 	use.card = card
 end
 
@@ -1104,11 +1104,11 @@ sgs.ai_skill_use["@@chaowo"] = function(self, prompt)
 		local cards = self.player:getHandcards()
 		cards = sgs.QList2Table(cards)
 		self:sortByKeepValue(cards)
-		return "@chaowoCard=" ..cards[1]:getEffectiveId().. "->" .. target:objectName()
+		return "@ChaowoCard=" ..cards[1]:getEffectiveId().. "->" .. target:objectName()
 	end
 	return "."
 end
-sgs.ai_card_intention.chaowoCard = -60
+sgs.ai_card_intention.ChaowoCard = -60
 
 
 
@@ -1269,7 +1269,7 @@ sgs.ai_skill_use["@@wendao"] = function(self, prompt)
 		end
 	end
 	if #targets >=1 then
-		return "@wendaoCard=.->" .. table.concat(targets, "+")
+		return "@WendaoCard=.->" .. table.concat(targets, "+")
 	end
 	return "."	 
 end

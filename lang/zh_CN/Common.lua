@@ -186,6 +186,7 @@ CommonTranslationTable = {
 	["#UseLuckCard"] = "%from 使用了 <font color=\"yellow\"><b>手气卡</b></font>",
     
 	["TriggerOrder"] = "选择触发顺序",
+	["GameRule:TriggerOrder"] = "请选择先发动的技能",
 	["trigger_none"] = "不发动",
 	
 	

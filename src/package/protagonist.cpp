@@ -862,7 +862,7 @@ public:
     }
 };
 
-//@todo: cost
+
 class Chunxi : public TriggerSkill
 {
 public:
@@ -871,6 +871,15 @@ public:
         events << CardsMoveOneTime;
     }
 
+	static QList<ServerPlayer *> chunxi_targets(ServerPlayer *player){
+		QList<ServerPlayer *> targets;
+        foreach (ServerPlayer *p, player->getRoom()->getOtherPlayers(player)) {
+            if (!p->isKongcheng())
+                targets << p;
+        }
+		return targets;
+	}
+	
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
 		if (!TriggerSkill::triggerable(player)) return QStringList();
@@ -891,59 +900,23 @@ public:
 		CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
 		foreach (int id, move.card_ids) {
             if (Sanguosha->getCard(id)->getSuit() == Card::Heart) {
-				room->showCard(player, id);
+				QList<ServerPlayer *> targets = chunxi_targets(player);
+				if (targets.isEmpty())
+					break;
+				
+				ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@@chunxi", true, true);
+				if (target){
+					room->showCard(player, id);
+					int id1 = room->askForCardChosen(player, target, "h", objectName());
+					room->obtainCard(player, id1, false);
+				}
 				return true;
 			}
 		}
-		return false;
-	}
-	
-	virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer*) const
-    {
-		QList<ServerPlayer *> targets;
-        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (!p->isKongcheng())
-                targets << p;
-        }
 		
-        if (targets.isEmpty())
-            return false;
-        ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@@chunxi", true, true);
-        if (target){
-		    int id = room->askForCardChosen(player, target, "h", objectName());
-            room->obtainCard(player, id, false);
-		}
+        
 		return false;
 	}
-	
-/*     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
-    {
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (move.to != NULL && move.to == player && move.to_place == Player::PlaceHand) {
-            if (room->getTag("FirstRound").toBool())
-                return false;
-
-            foreach (int id, move.card_ids) {
-                if (Sanguosha->getCard(id)->getSuit() == Card::Heart) {
-                    QList<ServerPlayer *> targets;
-                    foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-                        if (!p->isKongcheng())
-                            targets << p;
-                    }
-                    if (targets.isEmpty())
-                        return false;
-                    ServerPlayer *s = room->askForPlayerChosen(player, targets, objectName(), "@@chunxi", true, true);
-                    if (s == NULL)
-                        break;
-                    room->showCard(player, id);
-                    room->getThread()->delay();
-                    int id = room->askForCardChosen(player, s, "h", objectName());
-                    room->obtainCard(player, id, false);
-                }
-            }
-        }
-        return false;
-    } */
 };
 
 

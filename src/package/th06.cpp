@@ -166,7 +166,7 @@ public:
 };
 
 
-//@todo:ai
+
 class Xueyi : public TriggerSkill
 {
 public:

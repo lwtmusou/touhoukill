@@ -2291,7 +2291,7 @@ function SmartAI:filterEvent(event, player, data)
 		local card = struct.card
 		--this mark will lock ai_role for woyu target
 		if struct.to and from and from:objectName() == player:objectName() 
-			and card:isKindOf("woyuCard") then
+			and card:isKindOf("WoyuCard") then
 			self.room:setPlayerMark(struct.to:first(), "woyuRole",1)
 			self:updatePlayers()
 		end

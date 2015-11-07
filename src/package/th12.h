@@ -6,57 +6,57 @@
 
 
 
-class puduCard : public SkillCard
+class PuduCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE puduCard();
+    Q_INVOKABLE PuduCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 
-class weizhiCard : public SkillCard
+class WeizhiCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE weizhiCard();
+    Q_INVOKABLE WeizhiCard();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 
-class nihuoCard : public SkillCard
+class NihuoCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE nihuoCard();
+    Q_INVOKABLE NihuoCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class nuhuoCard : public SkillCard
+class NuhuoCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE nuhuoCard();
+    Q_INVOKABLE NuhuoCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class th12Package : public Package
+class TH12Package : public Package
 {
     Q_OBJECT
 
 public:
-    th12Package();
+    TH12Package();
 };
 
 #endif

@@ -6,22 +6,22 @@
 
 
 
-class hunpoCard : public SkillCard
+class HunpoCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE hunpoCard();
+    Q_INVOKABLE HunpoCard();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class thndjPackage : public Package
+class THNDJPackage : public Package
 {
     Q_OBJECT
 
 public:
-    thndjPackage();
+    THNDJPackage();
 };
 
 #endif

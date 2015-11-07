@@ -196,6 +196,11 @@ QString TriggerOptionButton::displayedTextOf(const QString &str)
         text = tr("%1 (use upon %2)").arg(Sanguosha->translate(realSkill))
             .arg(Sanguosha->translate(targetName));
     }
+	if (skillName.contains("'")) {// "sgs1'songwei"
+        QString targetObj = skillName.split("'").first(); // "sgs1'
+		QString realSkill = skillName.split("'").last(); // "songwei'
+		text = tr("%1").arg(Sanguosha->translate(realSkill));
+	}
     if (time > 1)
         //text += " " + tr("*") + time;
         text += QString(" %1 %2").arg(tr("*")).arg(time);
