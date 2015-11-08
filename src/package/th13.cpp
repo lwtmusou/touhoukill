@@ -852,7 +852,6 @@ public:
     }
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
 	{   
-        if (!TriggerSkill::triggerable(player)) return QStringList();
 		if (triggerEvent == SlashMissed) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (effect.slash->getSkillName() == objectName() && player == effect.from) 
