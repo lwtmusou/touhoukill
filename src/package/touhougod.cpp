@@ -934,6 +934,7 @@ public:
 		skillowner->loseAllMarks("@clock");
         room->touhouLogmessage("#touhouExtraTurn", skillowner, NULL);
         skillowner->gainAnExtraTurn();
+		room->getThread()->trigger(TurnStart, room, player, data);//need trigger 
 		return false;
 	}
     /* virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
