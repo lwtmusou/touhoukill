@@ -1615,7 +1615,7 @@ public:
 	{
 		if (!TriggerSkill::triggerable(player)) return QStringList();
 		if (triggerEvent == PostHpReduced){
-			if (player->getHp() < 1 || !player->isCurrent()) //player->getPhase() != Player::NotActive ||
+			if (player->getHp() < 1 && !player->isCurrent()) //player->getPhase() != Player::NotActive ||
 				return QStringList(objectName());
 		}else if (triggerEvent == EventPhaseEnd && player->getPhase() == Player::Play){
 			if (player->getMark("siyuinvoke") > 0)
