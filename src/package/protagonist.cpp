@@ -13,7 +13,7 @@ class Lingqi : public TriggerSkill
 public:
     Lingqi() : TriggerSkill("lingqi")
     {
-        events << TargetConfirming << SlashEffected << CardEffected;
+        events << TargetConfirming;// << SlashEffected << CardEffected;
 
     }
 
@@ -24,7 +24,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Slash") || use.card->isNDTrick())
 				return QStringList(objectName());
-        } else if (triggerEvent == SlashEffected){
+        } /* else if (triggerEvent == SlashEffected){
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
 			if (effect.slash != NULL && effect.slash->hasFlag("lingqi" + player->objectName()))
 				return QStringList(objectName());
@@ -32,7 +32,7 @@ public:
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if (effect.card != NULL && effect.card->isNDTrick() && effect.card->hasFlag("lingqi" + player->objectName())) 
 				return QStringList(objectName());
-		}
+		} */
         return QStringList();
     }
 	
@@ -44,9 +44,7 @@ public:
             QString  prompt = "target:" + use.from->objectName() + ":" + use.card->objectName();
             if (player->askForSkillInvoke(objectName(), prompt))
                 return true;
-		} else
-			return true;
-
+		} 
         return false;
     }
 
@@ -60,9 +58,12 @@ public:
 			judge.pattern = ".|heart";
 			room->judge(judge);
 			CardUseStruct use = data.value<CardUseStruct>();
-			if (judge.isGood())
-				room->setCardFlag(use.card, "lingqi" + player->objectName());
-		}else if (triggerEvent == SlashEffected) {
+			if (judge.isGood()){
+				use.nullified_list << player->objectName();
+				data = QVariant::fromValue(use);
+			}
+			//	room->setCardFlag(use.card, "lingqi" + player->objectName());
+		}/* else if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             room->touhouLogmessage("#LingqiAvoid", effect.to, effect.slash->objectName(), QList<ServerPlayer *>(), objectName());
             room->setEmotion(effect.to, "skill_nullify");
@@ -72,7 +73,7 @@ public:
             room->touhouLogmessage("#LingqiAvoid", effect.to, effect.card->objectName(), QList<ServerPlayer *>(), objectName());
             room->setEmotion(effect.to, "skill_nullify");
             return true;
-        }
+        } */
 		
         return false;
     }
@@ -1343,7 +1344,7 @@ class Guangji : public TriggerSkill
 public:
     Guangji() : TriggerSkill("guangji")
     {
-        events << TargetConfirming << SlashEffected;
+        events << TargetConfirming;
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
@@ -1356,10 +1357,6 @@ public:
                 if (!pile.isEmpty())
 					return QStringList(objectName());
 			}
-        } else if (triggerEvent == SlashEffected){
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-			if (effect.slash != NULL && effect.slash->hasFlag(objectName() + effect.to->objectName()))
-				return QStringList(objectName());
         }
         return QStringList();
     }
@@ -1388,14 +1385,10 @@ public:
             CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
             room->clearAG(player);
             room->throwCard(Sanguosha->getCard(id), reason, NULL);
-            room->setCardFlag(use.card, objectName() + player->objectName());
+            use.nullified_list << player->objectName();
+		    data = QVariant::fromValue(use);
         }  
-        else if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            room->touhouLogmessage("#LingqiAvoid", effect.to, effect.slash->objectName(), QList<ServerPlayer *>(), objectName());
-            room->setEmotion(effect.to, "skill_nullify");
-            return true;
-        }
+        
         return false;
     }
 };

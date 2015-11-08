@@ -164,9 +164,6 @@ function setInitialTables()
 									"|nosleiji|leiji|caizhaoji_hujia|tieji|luoshen|ganglie|neoganglie|vsganglie|kofkuanggu"..
 							"|lingqi|pohuai|huisu"		
 	sgs.no_intention_damage="nuhuo|pohuai|zhuonong"
-	sgs.cardEffect_nullify_all={"shishi","weiya","diaoping","luanying"}
-	sgs.cardEffect_nullify_specific={"lingqi","guangji","huiwu","weizhuang","zhengyi","zhancao","yunshang","doujiu","nizhuan","yicun","junwei"}
-	--需要保证无效的flag的命名标准统一
 	sgs.attackRange_skill = "bushu|xiangqi|fanji"
 	
 	sgs.Friend_All = 0
@@ -7302,26 +7299,12 @@ function SmartAI:touhouEffectNullify(card,from,to)
 end
 
 --判定一张卡牌是否已经对目标无效
-function SmartAI:touhouCardEffectNullify(card,target)
-	for _,skill in pairs (sgs.cardEffect_nullify_specific) do
-		local flag1=skill..target:objectName()
-		if  card:hasFlag(flag1) then 
-			return true 
+function SmartAI:touhouCardUseEffectNullify(use,target)
+	for _, name in ipairs(use.nullified_list) do
+		if name == target:objectName() or name == "_ALL_TARGETS" then
+			return true
 		end
 	end
-	for _,skill in pairs (sgs.cardEffect_nullify_all) do
-		--尼玛 下划线居然识别不出。。。
-		local flag2=skill.. "SkillNullify"
-		if card:hasFlag(flag2) then 
-			return true 
-		end
-	end
-	--直接拿flags拿不到。。。我擦
-	--for _,f in sgs.qlist(card:getFlags()) do
-		--if f:endsWith("SkillNullify") then
-		--	
-		--end
-	--end
 	--野性 天仪这种不在card这里设flag的 需要枚举？？ 还是另立函数？
 	return false
 end

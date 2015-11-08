@@ -231,7 +231,7 @@ public:
     Weizhuang() : TriggerSkill("weizhuang")
     {
         frequency = Compulsory;
-        events << TargetConfirming << CardEffected;
+        events << TargetConfirming;
     }
 
 	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
@@ -242,11 +242,6 @@ public:
             if (use.card->isNDTrick() && use.to.contains(player) && use.from != player)
 				return QStringList(objectName());
         } 
-        else if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (effect.card->isNDTrick() && effect.card->hasFlag("weizhuang" + effect.to->objectName())) 
-				return QStringList(objectName());
-		}
         return QStringList();
     }
 	
@@ -261,14 +256,10 @@ public:
             QString prompt = "@weizhuang-discard:" + player->objectName() + ":" + use.card->objectName();
             const Card *card = room->askForCard(use.from, ".Basic", prompt, data, Card::MethodDiscard);
             if (card == NULL) {
-                room->setCardFlag(use.card, "weizhuang" + player->objectName());
+				use.nullified_list << player->objectName();
+                data = QVariant::fromValue(use);
             }
-		}else if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            room->touhouLogmessage("#LingqiAvoid", effect.to, effect.card->objectName(), QList<ServerPlayer *>(), objectName());
-            room->setEmotion(effect.to, "skill_nullify");
-            return true;
-        }
+		}
 		
         return false;
     }
@@ -282,23 +273,13 @@ class Zhengyi : public TriggerSkill
 public:
     Zhengyi() : TriggerSkill("zhengyi")
     {
-        events << TargetConfirming << CardEffected << SlashEffected;
+        events << TargetConfirming;
     }
 
 	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
         if (!TriggerSkill::triggerable(player)) return QStringList();
-		if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (effect.card->isNDTrick() && effect.card->hasFlag("zhengyi" + effect.to->objectName())) {
-                return QStringList(objectName());
-            }
-        } else if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.slash->hasFlag("zhengyi" + effect.to->objectName())) {
-                return QStringList(objectName());
-            }
-        } else if (triggerEvent == TargetConfirming) {
+		 if (triggerEvent == TargetConfirming) {
 			CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isBlack() && (use.card->isNDTrick() || use.card->isKindOf("Slash"))
                 && use.to.contains(player) && !player->isKongcheng())
@@ -318,25 +299,14 @@ public:
 			else
 				return false;
 		}
-		return true;
+		return false;
 	}
 	virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
 	{
         if (triggerEvent == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
-            room->setCardFlag(use.card, "zhengyi" + player->objectName());
-        } else if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            room->touhouLogmessage("#LingqiAvoid", effect.to, effect.card->objectName(), QList<ServerPlayer *>(), "zhengyi");
-            room->notifySkillInvoked(effect.to, "zhengyi");
-            room->setEmotion(effect.to, "skill_nullify");
-            return true;   
-        } else if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            room->touhouLogmessage("#LingqiAvoid", effect.to, effect.slash->objectName(), QList<ServerPlayer *>(), "zhengyi");
-            room->notifySkillInvoked(effect.to, "zhengyi");
-            room->setEmotion(effect.to, "skill_nullify");
-            return true;
+            use.nullified_list << player->objectName();
+		    data = QVariant::fromValue(use);
         }
         return false;
     }
@@ -551,7 +521,7 @@ public:
     Yunshang() : TriggerSkill("yunshang")
     {
         frequency = Compulsory;
-        events << TargetConfirming << CardEffected;
+        events << TargetConfirming;
     }
 
 	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
@@ -561,11 +531,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isNDTrick() && use.to.contains(player) && use.from != player && !use.from->inMyAttackRange(player))
 				return QStringList(objectName());
-		} else if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (effect.card->isNDTrick() && effect.card->hasFlag("yunshang" + effect.to->objectName())) 
-				return QStringList(objectName());
-        }
+		}
 		return QStringList();
 	}
 	
@@ -574,13 +540,9 @@ public:
 	{
         if (triggerEvent == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
-            room->setCardFlag(use.card, "yunshang" + player->objectName());
+            use.nullified_list << player->objectName();
+		    data = QVariant::fromValue(use);
             room->notifySkillInvoked(player, objectName());
-        } else if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            room->touhouLogmessage("#LingqiAvoid", effect.to, effect.card->objectName(), QList<ServerPlayer *>(), objectName());
-            room->setEmotion(effect.to, "skill_nullify");
-            return true;
         }
         return false;
     }

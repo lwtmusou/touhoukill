@@ -81,6 +81,7 @@ public:
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
+		if (!player) return QStringList();
 		if (triggerEvent == GameStart || (triggerEvent == EventAcquireSkill && data.toString() == "zhouye")) {
             if (player->getMark("zhouye_limit") == 0 && player->hasSkill("zhouye")) {
                 room->setPlayerMark(player, "zhouye_limit", 1);
@@ -294,7 +295,8 @@ public:
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
-        if (triggerEvent == GameStart || (triggerEvent == EventAcquireSkill && data.toString() == "aoyi")) {
+        if (!player) return QStringList();
+		if (triggerEvent == GameStart || (triggerEvent == EventAcquireSkill && data.toString() == "aoyi")) {
             if (player->getMark("aoyi_limit") == 0 && player->hasSkill("aoyi")) {
                 room->setPlayerMark(player, "aoyi_limit", 1);
                 room->setPlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick", false);
@@ -573,6 +575,7 @@ public:
 	
 	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
+		if (!player) return QStringList();
 		if (!TriggerSkill::triggerable(player)) return QStringList();
 		if (triggerEvent == GameStart && player->isLord()) {
             room->setPlayerProperty(player, "maxhp", 0);
@@ -1042,7 +1045,8 @@ public:
 	
 	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
-        if (!TriggerSkill::triggerable(player)) return QStringList();
+        if (!player) return QStringList();
+		if (!TriggerSkill::triggerable(player)) return QStringList();
 		if (triggerEvent == GameStart) {
             room->setPlayerMark(player, "lingtili", player->getMaxHp());
             room->setPlayerMark(player, "rentili", player->getMaxHp());
@@ -1956,7 +1960,8 @@ public:
 
 	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
-        if (!TriggerSkill::triggerable(player)) return QStringList();
+        if (!player) return QStringList();
+		if (!TriggerSkill::triggerable(player)) return QStringList();
 		if (triggerEvent == GameStart || triggerEvent == DrawPileSwaped)
 			return QStringList(objectName());
 		else if (triggerEvent == DrawNCards){
@@ -2771,7 +2776,7 @@ public:
     Junwei() : TriggerSkill("junwei")
     {
         frequency = Compulsory;
-        events << TargetConfirming << SlashEffected;
+        events << TargetConfirming;
     }
 	
 	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
@@ -2782,12 +2787,7 @@ public:
             if (use.card->isKindOf("Slash") && use.to.contains(player)
                 && use.from && use.from != player && use.from->getKingdom() != player->getKingdom()) 
 				return QStringList(objectName());	
-		} else if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.slash->hasFlag("junwei" + effect.to->objectName())) {
-                return QStringList(objectName());
-            }
-        }
+		} 
 		return QStringList();
 	}
 
@@ -2802,14 +2802,9 @@ public:
             QString prompt = "@junwei-discard:" + player->objectName() + ":" + use.card->objectName();
             const Card *card = room->askForCard(use.from, ".|black|.|hand,equipped", prompt, data, Card::MethodDiscard);
             if (card == NULL) {
-                room->setCardFlag(use.card, "junwei" + player->objectName());
+			    use.nullified_list << player->objectName();
+                data = QVariant::fromValue(use);
             }
-        } else if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            room->touhouLogmessage("#LingqiAvoid", effect.to, effect.slash->objectName(), QList<ServerPlayer *>(), objectName());
-
-            room->setEmotion(effect.to, "skill_nullify");
-            return true;
         }
         return false;
     }
@@ -3068,7 +3063,8 @@ public:
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
-        if (triggerEvent == GameStart || triggerEvent == Debut
+        if (!player) return QStringList();
+		if (triggerEvent == GameStart || triggerEvent == Debut
             || (triggerEvent == EventAcquireSkill && data.toString() == "shenbao")) {
             QList<ServerPlayer *> kaguyas;
             foreach (ServerPlayer *p, room->getAlivePlayers()) {

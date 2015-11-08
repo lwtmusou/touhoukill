@@ -63,7 +63,7 @@ class Huiwu : public TriggerSkill
 public:
     Huiwu() : TriggerSkill("huiwu")
     {
-        events << TargetConfirming << CardEffected << SlashEffected;
+        events << TargetConfirming;
     }
 
 	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
@@ -78,18 +78,7 @@ public:
                     return QStringList();
 				return QStringList(objectName());
 			}
-		} else if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (effect.card != NULL && effect.card->isNDTrick()
-                && effect.card->hasFlag("huiwu" + effect.to->objectName())) {
-                return QStringList(objectName());
-            }
-        } else if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.slash->hasFlag("huiwu" + effect.to->objectName())) {
-                return QStringList(objectName());
-            }
-        }
+		}
 		return QStringList();
 	}
 	
@@ -116,7 +105,7 @@ public:
 			use.from->tag.remove("huiwu");
 			return false;
 		}
-		return true;
+		return  false;
 	}
 	
 	
@@ -125,22 +114,11 @@ public:
         if (triggerEvent == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
 
-            room->setCardFlag(use.card, "huiwu" + player->objectName());
+            use.nullified_list << player->objectName();
+		    data = QVariant::fromValue(use);
             player->drawCards(1);
             use.from->tag.remove("huiwu");
             
-        } else if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            
-            room->touhouLogmessage("#LingqiAvoid", effect.to, effect.card->objectName(), QList<ServerPlayer *>(), objectName());
-            room->setEmotion(effect.to, "skill_nullify");
-            return true;
-        } else if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            
-            room->touhouLogmessage("#LingqiAvoid", effect.to, effect.slash->objectName(), QList<ServerPlayer *>(), objectName());
-            room->setEmotion(effect.to, "skill_nullify");
-            return true;
         }
         return false;
     }
@@ -292,7 +270,7 @@ public:
     Weiya() : TriggerSkill("weiya")
     {
         frequency = Compulsory;
-        events << CardUsed << SlashEffected << CardEffected << CardResponded;
+        events << CardUsed  << CardResponded; //<< SlashEffected << CardEffected
     }
 	
 	
@@ -317,7 +295,7 @@ public:
                 || data.value<CardResponseStruct>().m_isProvision)
                 return QStringList();
 			return QStringList(objectName());
-		}else if (triggerEvent == SlashEffected) {
+		}/* else if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (effect.slash->hasFlag("weiyaSkillNullify")) //effect.slash!=NULL &&
                 return QStringList(objectName());
@@ -325,7 +303,7 @@ public:
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if (effect.card->hasFlag("weiyaSkillNullify")) //effect.card!=NULL &&
                return QStringList(objectName());
-        } 
+        }  */
 		return QStringList();
 	}
 
@@ -344,7 +322,7 @@ public:
                 room->touhouLogmessage("#weiya", player, objectName(), QList<ServerPlayer *>(), use.card->objectName());
                 room->setPlayerFlag(player, "nullifiationNul");
             } else if (use.card->isKindOf("BasicCard")) {
-                player->setFlags("weiya_ask");
+                //player->setFlags("weiya_ask");
                 weiya_pattern = use.card->objectName();
                 if (use.card->isKindOf("Slash"))
                     weiya_pattern = "slash";
@@ -353,13 +331,15 @@ public:
                 if (room->askForCard(player, weiya_pattern, "@weiya:" + use.card->objectName(), data, Card::MethodDiscard))
                     return false;
                 room->touhouLogmessage("#weiya", player, objectName(), QList<ServerPlayer *>(), use.card->objectName());
-                room->setCardFlag(use.card, "weiyaSkillNullify");
+                //room->setCardFlag(use.card, "weiyaSkillNullify");
+				use.nullified_list << "_ALL_TARGETS";
+			    data = QVariant::fromValue(use);
             }
-        } else if (triggerEvent == SlashEffected) {
+        }/*  else if (triggerEvent == SlashEffected) {
                 return true;
         } else if (triggerEvent == CardEffected) {
-                return true;
-        } else if (triggerEvent == CardResponded) {
+                return true; 
+        } */else if (triggerEvent == CardResponded) {
             CardStar card_star = data.value<CardResponseStruct>().m_card;
             weiya_pattern = card_star->objectName();
             if (card_star->isKindOf("Slash"))
@@ -620,7 +600,7 @@ class Doujiu : public TriggerSkill
 public:
     Doujiu() : TriggerSkill("doujiu")
     {
-        events << CardUsed << CardEffected;
+        events << CardUsed;
     }
 
 	virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
@@ -640,11 +620,7 @@ public:
 				if (target != suika)
 					skill_list.insert(suika, QStringList(objectName()));
 			}
-		}else if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (effect.card->hasFlag("doujiu" + effect.to->objectName()))
-                skill_list.insert(player, QStringList(objectName()));
-        }
+		}
         return skill_list;
     }
 	
@@ -655,7 +631,7 @@ public:
             source->tag["doujiu_target"] = _data;
             return room->askForSkillInvoke(source, objectName(), _data);
 		}
-		return true;
+		return false;
 	}
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer *source) const
@@ -671,13 +647,11 @@ public:
                     recover.recover = 1;
                     room->recover(source, recover);
 				}
-                room->setCardFlag(use.card, "doujiu" + target->objectName());
-                data = QVariant::fromValue(use);
+                use.nullified_list << target->objectName();
+				data = QVariant::fromValue(use);
                 room->setPlayerFlag(target, "Global_PlayPhaseTerminated");
 			}
-        } else if (triggerEvent == CardEffected) {
-                return true;
-        }
+        } 
         return false;
     }
 };

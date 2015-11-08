@@ -82,13 +82,14 @@ QString DamageStruct::getReason() const
     return QString();
 }
 
+
 CardEffectStruct::CardEffectStruct()
-    : card(NULL), from(NULL), to(NULL)
+    : card(NULL), from(NULL), to(NULL), multiple(false), nullified(false)
 {
 }
 
 SlashEffectStruct::SlashEffectStruct()
-    : jink_num(1), slash(NULL), jink(NULL), from(NULL), to(NULL), drank(0), nature(DamageStruct::Normal)
+    : jink_num(1), slash(NULL), jink(NULL), from(NULL), to(NULL), drank(0), nature(DamageStruct::Normal), nullified(false)
 {
 }
 
@@ -160,7 +161,7 @@ PhaseChangeStruct::PhaseChangeStruct()
 }
 
 CardUseStruct::CardUseStruct()
-    : card(NULL), from(NULL), m_isOwnerUse(true), m_addHistory(true)
+    : card(NULL), from(NULL), m_isOwnerUse(true), m_addHistory(true), nullified_list(QStringList())
 {
 }
 

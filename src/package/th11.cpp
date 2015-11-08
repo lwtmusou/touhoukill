@@ -992,9 +992,8 @@ class Diaoping : public TriggerSkill
 public:
     Diaoping() : TriggerSkill("diaoping")
     {
-        events << TargetSpecified << SlashEffected;
+        events << TargetSpecified;
     }
-
 
 	virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {   
@@ -1012,10 +1011,6 @@ public:
 					}
 				}
 			}
-		}else if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.slash->hasFlag("diaopingSkillNullify"))
-				skill_list.insert(player, QStringList(objectName()));
 		}
         return skill_list;
     }
@@ -1037,31 +1032,16 @@ public:
                     if (skillowner->pindian(use.from, "diaoping", NULL)) {
                         use.from->turnOver();
                         good_result = true;
-                        room->setCardFlag(use.card, "diaopingSkillNullify");
+						use.nullified_list << "_ALL_TARGETS";
+						data = QVariant::fromValue(use);
                         break;
                     }
                 }
             }
         } 
-		return true;
+		return false;
 	}
 	
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *) const
-	{
-        if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            
-            LogMessage log;
-            log.type = "#LingqiAvoid";
-            log.from = effect.to;
-            log.arg = effect.slash->objectName();
-            log.arg2 = objectName();
-            room->sendLog(log);
-            room->setEmotion(effect.to, "skill_nullify");
-            return true;
-        }
-        return false;
-    }
 };
 
 

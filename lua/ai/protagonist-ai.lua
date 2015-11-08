@@ -1092,7 +1092,7 @@ end
 
 sgs.ai_skill_invoke.guangji =function(self,data)
    local use = self.player:getTag("guangji_use"):toCardUse()
-   if self:touhouCardEffectNullify(use.card,self.player) then return false end --此杀已经无效
+   if self:touhouCardUseEffectNullify(use,self.player) then return false end --此杀已经无效
    --check whether player need providing jink
  
 	local pattern = nil

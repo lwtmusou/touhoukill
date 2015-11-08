@@ -626,14 +626,14 @@ class Luanying : public TriggerSkill
 public:
     Luanying() : TriggerSkill("luanying")
     {
-        events << CardUsed << SlashEffected << CardEffected << CardResponded;
+        events << CardUsed  << CardResponded; //<< SlashEffected << CardEffected
     }
 
 
 	virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
 		TriggerList skill_list;
-		if (triggerEvent == SlashEffected) {
+		/* if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (effect.slash != NULL && effect.slash->hasFlag("luanyingSkillNullify"))
                 skill_list.insert(player, QStringList(objectName()));
@@ -641,7 +641,7 @@ public:
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if (effect.card != NULL && effect.card->hasFlag("luanyingSkillNullify"))
                 skill_list.insert(player, QStringList(objectName()));
-        } else if (triggerEvent == CardUsed || triggerEvent == CardResponded) {
+        } else  */if (triggerEvent == CardUsed || triggerEvent == CardResponded) {
 			if (player == NULL || player->isDead())
                 return TriggerList();
 			bool isRed = true;
@@ -681,7 +681,7 @@ public:
 			}
 			return false;
 		}
-		return true;
+		return false;
 	}
 	
 	virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *merry) const
@@ -726,19 +726,22 @@ public:
             if (card_id > -1) {
                 room->obtainCard(player, card_id, true);
                 room->touhouLogmessage("#weiya", player, objectName(), QList<ServerPlayer *>(), cardName);
-                if (triggerEvent == CardUsed)
-                    room->setCardFlag(data.value<CardUseStruct>().card, "luanyingSkillNullify");                    
-				if (triggerEvent == CardResponded)
+                if (triggerEvent == CardUsed){
+					CardUseStruct use = data.value<CardUseStruct>();
+					use.nullified_list << "_ALL_TARGETS";
+					data = QVariant::fromValue(use);                    
+					//room->setCardFlag(data.value<CardUseStruct>().card, "luanyingSkillNullify");    
+				}else if (triggerEvent == CardResponded)
 					room->setPlayerFlag(player, "respNul");
             }
             
-        } else if (triggerEvent == SlashEffected) {
+        } /* else if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
                 return true;
         } else if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
                 return true;
-        }
+        } */
         return false;
     }
 };
@@ -1252,7 +1255,7 @@ public:
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
         if (triggerEvent == GameStart || (triggerEvent == EventAcquireSkill && data.toString() == "ganying")) {
-            if (player->hasSkill(objectName())) {
+            if (player && player->hasSkill(objectName())) {
                 //reset distance record.
                 room->setPlayerMark(player, "ganying_owner", 1);
                 foreach (ServerPlayer *p, room->getOtherPlayers(player)) {

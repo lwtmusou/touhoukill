@@ -295,6 +295,8 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
     BasicCard::onUse(room, use);
 }
 
+
+
 void Slash::onEffect(const CardEffectStruct &card_effect) const
 {
     Room *room = card_effect.from->getRoom();
@@ -311,7 +313,8 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const
 
     effect.to = card_effect.to;
     effect.drank = this->drank;
-
+    effect.nullified = card_effect.nullified;
+	
     QVariantList jink_list = effect.from->tag["Jink_" + toString()].toList();
     effect.jink_num = jink_list.takeFirst().toInt();
     if (jink_list.isEmpty())

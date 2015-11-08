@@ -1498,8 +1498,24 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         }
     }
     //trigger event
-    if (card) {
-        QVariant decisionData = QVariant::fromValue(QString("cardResponded:%1:%2:_%3_").arg(pattern).arg(prompt).arg(card->toString()));
+   
+	if (card) {
+		bool isHandcard = true;
+        QList<int> ids;
+        if (!card->isVirtualCard()) ids << card->getEffectiveId();
+        else ids = card->getSubcards();
+        if (!ids.isEmpty()) {
+            foreach (int id, ids) {
+                if (getCardOwner(id) != player || getCardPlace(id) != Player::PlaceHand) {
+                    isHandcard = false;
+                    break;
+                }
+            }
+        } else {
+            isHandcard = false;
+        }
+		
+		QVariant decisionData = QVariant::fromValue(QString("cardResponded:%1:%2:_%3_").arg(pattern).arg(prompt).arg(card->toString()));
         thread->trigger(ChoiceMade, this, player, decisionData);
 
         if (method == Card::MethodUse) {
@@ -1526,6 +1542,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 && player->hasSkill(card->getSkillName()))
                 notifySkillInvoked(player, card->getSkillName());
             CardResponseStruct resp(card, to, method == Card::MethodUse, isRetrial, isProvision);
+			resp.m_isHandcard = isHandcard;
             QVariant data = QVariant::fromValue(resp);
             thread->trigger(CardResponded, this, player, data);
             if (method == Card::MethodUse) {
@@ -3354,8 +3371,24 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
 {
     CardUseStruct card_use = use;
     card_use.m_addHistory = false;
+	card_use.m_isHandcard = true;
     const Card *card = card_use.card;
 
+	QList<int> ids;
+    if (!card->isVirtualCard()) ids << card->getEffectiveId();
+    else ids = card->getSubcards();
+    if (!ids.isEmpty()) {
+        foreach (int id, ids) {
+            if (getCardOwner(id) != use.from || getCardPlace(id) != Player::PlaceHand) {
+                card_use.m_isHandcard = false;
+                break;
+            }
+        }
+    } else {
+        card_use.m_isHandcard = false;
+    }
+	
+	
     if (card_use.from->isCardLimited(card, card->getHandlingMethod())
         && (!card->canRecast() || card_use.from->isCardLimited(card, Card::MethodRecast)))
         return true;
@@ -3617,13 +3650,13 @@ void Room::recover(ServerPlayer *player, const RecoverStruct &recover, bool set_
     thread->trigger(HpRecover, this, player, data);
 }
 
-bool Room::cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to)
+bool Room::cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to, bool multiple)
 {
     CardEffectStruct effect;
     effect.card = card;
     effect.from = from;
     effect.to = to;
-
+	effect.multiple = multiple;
     return cardEffect(effect);
 }
 
@@ -3640,7 +3673,7 @@ bool Room::cardEffect(const CardEffectStruct &effect)
             cancel = true;
         } else {
             if (!effect.to->hasFlag("Global_NonSkillNullify"))
-                ;//setEmotion(effect.to, "skill_nullify");
+                setEmotion(effect.to, "skill_nullify");
             else
                 effect.to->setFlags("-Global_NonSkillNullify");
         }
@@ -6188,7 +6221,10 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge, cons
     if (card == NULL) return;
 
     bool triggerResponded = getCardOwner(card->getEffectiveId()) == player;
-
+    bool isHandcard = (triggerResponded && getCardPlace(card->getEffectiveId()) == Player::PlaceHand);
+	
+	
+	
     const Card *oldJudge = judge->card;
     judge->card = Sanguosha->getCard(card->getEffectiveId());
     ServerPlayer *rebyre = judge->retrial_by_response;//old judge provider
@@ -6250,6 +6286,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge, cons
     if (triggerResponded) {
         CardResponseStruct resp(card, judge->who, false, true, false);
         QVariant data = QVariant::fromValue(resp);
+		resp.m_isHandcard = isHandcard;
         thread->trigger(CardResponded, this, player, data);
     }
 }

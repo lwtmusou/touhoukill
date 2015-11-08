@@ -481,6 +481,8 @@ struct CardEffectStruct {
 
     ServerPlayer *from;
     ServerPlayer *to;
+	bool multiple;
+	bool nullified;
 };
 
 struct SlashEffectStruct {
@@ -497,6 +499,8 @@ struct SlashEffectStruct {
     int drank;
 
     DamageStruct::Nature nature;
+	bool multiple;
+	bool nullified;
 };
 
 struct CardUseStruct {
@@ -519,6 +523,8 @@ struct CardUseStruct {
     QList<ServerPlayer *> to;
     bool m_isOwnerUse;
     bool m_addHistory;
+	bool m_isHandcard;
+	QStringList nullified_list;
 };
 
 struct CardsMoveStruct {
@@ -633,6 +639,7 @@ struct CardResponseStruct {
     bool m_isUse;
     bool m_isRetrial;
     bool m_isProvision;
+	bool m_isHandcard;
 };
 
 struct MarkChangeStruct{
@@ -1158,7 +1165,7 @@ public:
     bool changeMaxHpForAwakenSkill(ServerPlayer *player, int magnitude = -1);
     void applyDamage(ServerPlayer *victim, const DamageStruct &damage);
     void recover(ServerPlayer *player, const RecoverStruct &recover, bool set_emotion = false);
-    bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to);
+    bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to , bool multiple = false);
     bool cardEffect(const CardEffectStruct &effect);
     bool isJinkEffected(ServerPlayer *user, const Card *jink);
     void judge(JudgeStruct &judge_struct);

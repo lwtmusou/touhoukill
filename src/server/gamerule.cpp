@@ -284,6 +284,8 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                     foreach(ServerPlayer *p, room->getAllPlayers())
                         thread->trigger(TargetConfirmed, room, p, data);
                 }
+				card_use = data.value<CardUseStruct>();
+                room->setTag("CardUseNullifiedList", QVariant::fromValue(card_use.nullified_list));
                 card_use.card->use(room, card_use.from, card_use.to);
                 if (!jink_list_backup.isEmpty())
                     card_use.from->tag["Jink_" + card_use.card->toString()] = QVariant::fromValue(jink_list_backup);
@@ -463,7 +465,15 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
     case CardEffected: {
         if (data.canConvert<CardEffectStruct>()) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (effect.card->getTypeId() == Card::TypeTrick && room->isCanceled(effect)) {
+            if (!effect.card->isKindOf("Slash") && effect.nullified) {
+                LogMessage log;
+                log.type = "#CardNullified";
+                log.from = effect.to;
+                log.arg = effect.card->objectName();
+                room->sendLog(log);
+                room->setEmotion(effect.to, "skill_nullify");
+                return true;
+            } else if (effect.card->getTypeId() == Card::TypeTrick && room->isCanceled(effect)) {
                 effect.to->setFlags("Global_NonSkillNullify");
                 return true;
             }
@@ -475,8 +485,18 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
     }
     case SlashEffected: {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-
-        QVariant data = QVariant::fromValue(effect);
+		if (effect.nullified) {
+            LogMessage log;
+            log.type = "#CardNullified";
+            log.from = effect.to;
+            log.arg = effect.slash->objectName();
+            room->sendLog(log);
+            room->setEmotion(effect.to, "skill_nullify");
+            return true;
+        }
+		
+		
+        QVariant data = QVariant::fromValue(effect);//??
         if (effect.jink_num > 0)
             room->getThread()->trigger(SlashProceed, room, effect.from, data);
         else

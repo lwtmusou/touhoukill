@@ -64,7 +64,7 @@ public:
     Yicun() : TriggerSkill("yicun")
     {
         frequency = Compulsory;
-        events << TargetConfirming << SlashEffected; 
+        events << TargetConfirming; 
     }
 
 	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
@@ -75,12 +75,7 @@ public:
             if (use.card->isKindOf("Slash") 
                 && use.to.contains(player) && use.from->getHandcardNum() >= player->getHandcardNum()) 
 				return QStringList(objectName());
-		}else if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.slash != NULL && effect.slash->hasFlag(objectName() + player->objectName())) {
-                return QStringList(objectName());
-            }
-        }
+		}
 		return QStringList();
     }
 	
@@ -91,13 +86,8 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             room->notifySkillInvoked(player, objectName());
             room->touhouLogmessage("#TriggerSkill", player, objectName());
-            room->setCardFlag(use.card, objectName() + player->objectName());
-        }
-        else if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            room->touhouLogmessage("#LingqiAvoid", effect.to, effect.slash->objectName(), QList<ServerPlayer *>(), objectName());
-            room->setEmotion(effect.to, "skill_nullify");
-            return true;
+            use.nullified_list << player->objectName();
+		    data = QVariant::fromValue(use);
         }
         return false;
     }
@@ -262,7 +252,7 @@ class Nizhuan : public TriggerSkill
 public:
     Nizhuan() : TriggerSkill("nizhuan")
     {
-        events << TargetConfirmed << SlashEffected;
+        events << TargetConfirmed;
     }
 
 	virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
@@ -287,12 +277,6 @@ public:
 				}
 			}		
 		}
-		else if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.slash != NULL && effect.slash->hasFlag("nizhuan" + effect.to->objectName())) {
-                skill_list.insert(player, QStringList(objectName()));
-            }
-        }
 		return skill_list;
     }
 
@@ -304,7 +288,7 @@ public:
             player->tag["nizhuan_carduse"] = data;
             return room->askForSkillInvoke(player, objectName(), prompt);
 		}
-		return true;
+		return false;
 	}
 	
 	
@@ -313,19 +297,15 @@ public:
         if (triggerEvent == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
 			
-			room->setCardFlag(use.card, "nizhuan" + target->objectName());
+			use.nullified_list << target->objectName();
+		    data = QVariant::fromValue(use);
 			
             Slash *slash = new Slash(Card::NoSuit, 0);
             slash->setSkillName("_" + objectName());
             int id = room->askForCardChosen(player, target, "h", objectName(), false, Card::MethodDiscard);
             room->throwCard(id, target, player);
             room->useCard(CardUseStruct(slash, target, use.from), false);        
-        } else if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            room->touhouLogmessage("#LingqiAvoid", effect.to, effect.slash->objectName(), QList<ServerPlayer *>(), objectName());
-            room->setEmotion(effect.to, "skill_nullify");
-            return true;
-        }
+        } 
         return false;
     }
 };

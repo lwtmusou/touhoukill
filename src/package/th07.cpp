@@ -923,7 +923,7 @@ public:
 	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const
     {   
 		if (triggerEvent == GameStart || (triggerEvent == EventAcquireSkill && data.toString() == "yexing")) {
-            if (player->hasSkill("yexing") && player->getMark("yexing_limit") == 0) {
+            if (player && player->hasSkill("yexing") && player->getMark("yexing_limit") == 0) {
                 room->setPlayerMark(player, "yexing_limit", 1);
                 room->setPlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick", false);
             }
@@ -1045,8 +1045,9 @@ public:
                 room->setPlayerProperty(player, "yaoshu_card", QVariant());
                 return QStringList();
             }
-            if (use.card->isVirtualCard() && use.card->getSubcards().length() == 0)
-                return QStringList();
+			
+			if (!use.m_isHandcard)
+				return QStringList();
             //for turnbroken
             if (player->hasFlag("Global_ProcessBroken"))
                 return QStringList();
@@ -1188,7 +1189,7 @@ class Zhancao : public TriggerSkill
 public:
     Zhancao() : TriggerSkill("zhancao")
     {
-        events << TargetConfirmed << SlashEffected;
+        events << TargetConfirmed;
     }
 
 	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
@@ -1204,13 +1205,7 @@ public:
 				
 				}
 			}
-		}else if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.slash && effect.slash->hasFlag("zhancao" + effect.to->objectName())) {
-                return QStringList(objectName());
-            }
-
-        }
+		}
         return QStringList();
     }
 
@@ -1227,7 +1222,8 @@ public:
                     player->tag["zhancao_target"] = QVariant::fromValue(to);
                     QString prompt = "target:" + use.from->objectName() + ":" + to->objectName();
                     if (room->askForSkillInvoke(player, objectName(), prompt)) {
-                        room->setCardFlag(use.card, "zhancao" + to->objectName());
+                        use.nullified_list << to->objectName();
+						data = QVariant::fromValue(use);
                         if (room->askForCard(player, ".Equip", "@zhancao-discard", data, objectName()) == NULL)
                             room->loseHp(player);
                         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), to->objectName());
@@ -1236,12 +1232,6 @@ public:
                 }
             }
             
-        }
-        else if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            room->touhouLogmessage("#LingqiAvoid", effect.to, effect.slash->objectName(), QList<ServerPlayer *>(), objectName());
-            room->setEmotion(effect.to, "skill_nullify");
-            return true;
         }
         return false;
     }
@@ -1787,7 +1777,7 @@ TH07Package::TH07Package()
     General *yym008 = new General(this, "yym008", "yym", 4, false);
     yym008->addSkill(new Jiyi);
     yym008->addSkill(new Chunmian);
-
+	
     General *yym009 = new General(this, "yym009", "yym", 3, false);
     yym009->addSkill(new Baochun);
     yym009->addSkill(new Chunyi);

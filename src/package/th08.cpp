@@ -594,23 +594,13 @@ class Shishi : public TriggerSkill
 public:
     Shishi() : TriggerSkill("shishi")
     {
-        events << CardUsed << SlashEffected << CardEffected;
+        events << CardUsed;
     }
 
 	virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {  
 	    TriggerList skill_list;
-		if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.slash->hasFlag("shishiSkillNullify")) {
-                skill_list.insert(effect.to, QStringList(objectName()));
-            }
-        } else if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (effect.card->hasFlag("shishiSkillNullify")) {
-                skill_list.insert(effect.to, QStringList(objectName()));
-            }
-        }else if (triggerEvent == CardUsed) {
+		if (triggerEvent == CardUsed) {
 			
 			CardUseStruct use = data.value<CardUseStruct>();
 			if (use.card->isKindOf("Slash") || use.card->isNDTrick()) {
@@ -634,7 +624,7 @@ public:
 			src->tag["shishi_use"] = data;
 			return room->askForSkillInvoke(src, objectName(), prompt);
 		}
-		return true;
+		return false;
 	}
 	
 	virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *src) const
@@ -652,21 +642,11 @@ public:
             if (use.card->isKindOf("Nullification")) {
                 room->touhouLogmessage("#weiya", use.from, objectName(), QList<ServerPlayer *>(), use.card->objectName());
                 room->setPlayerFlag(use.from, "nullifiationNul");
-            } else
-                room->setCardFlag(use.card, "shishiSkillNullify");
+            } else{
+				use.nullified_list << "_ALL_TARGETS";
+			    data = QVariant::fromValue(use);
+			}
             
-        } else if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            
-            room->touhouLogmessage("#LingqiAvoid", effect.to, effect.slash->objectName(), QList<ServerPlayer *>(), objectName());
-            room->setEmotion(effect.to, "skill_nullify");
-            return true;
-            
-        } else if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            room->touhouLogmessage("#LingqiAvoid", effect.to, effect.card->objectName(), QList<ServerPlayer *>(), objectName());
-            room->setEmotion(effect.to, "skill_nullify");
-            return true;
         }
         return false;
     }

@@ -443,7 +443,7 @@ end
 --function SmartAI:hasTrickEffective(card, to, from) ??
 sgs.ai_skill_cardask["@zhengyi"] = function(self, data)
 	local use =data:toCardUse() 
-	if self:touhouCardEffectNullify(use.card,self.player) then 
+	if self:touhouCardUseEffectNullify(use,self.player) then 
 		return "."
 	end
 	if use.card:isNDTrick() and not self:hasTrickEffective(use.card, self.player, use.from)then 

@@ -115,6 +115,7 @@ CommonTranslationTable = {
 	["#ChooseKingdom"] = "%from 选择了 %arg 势力",
 	["#NullificationDetails"] = "【<font color=\"yellow\"><b>无懈可击</b></font>】的目标是 %from 对 %to 的锦囊 【%arg】",
 	["#SkillAvoid"] = "%from 的“%arg”被触发，不能被选择为此 【%arg2】 的目标",
+	["#CardNullified"] = "【%arg】对 %from 无效",
 	["#Transfigure"] = "%from 变身为 %arg",
 	["#TransfigureDual"] = "%from 的 %arg2 变身为 %arg",
 	["#AcquireSkill"] = "%from 获得了技能“%arg”",
