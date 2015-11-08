@@ -191,7 +191,8 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
 
     if (m_maxHp <= 5) {
         int i;
-        for (i = 0; i < m_hp; i++) {
+		//down-up
+        /* for (i = 0; i < m_hp; i++) {
             QRect rect(xStep * i, yStep * i, m_imageArea.width(), m_imageArea.height());
             rect.translate(m_imageArea.topLeft());
             painter->drawPixmap(rect, _icons[imageIndex]);
@@ -200,7 +201,20 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
             QRect rect(xStep * i, yStep * i, m_imageArea.width(), m_imageArea.height());
             rect.translate(m_imageArea.topLeft());
             painter->drawPixmap(rect, _icons[0]);
+        } */
+		//up-down
+		int lostHp = qMin(m_maxHp - m_hp, m_maxHp);
+        for (i = 0; i < lostHp; ++i) {
+            QRect rect(xStep * i, yStep * i, m_imageArea.width(), m_imageArea.height());
+            rect.translate(m_imageArea.topLeft());
+            painter->drawPixmap(rect, _icons[0]);
         }
+        for (; i < m_maxHp; ++i) {
+            QRect rect(xStep * i, yStep * i, m_imageArea.width(), m_imageArea.height());
+            rect.translate(m_imageArea.topLeft());
+            painter->drawPixmap(rect, _icons[imageIndex]);
+        }
+		
     } else {
         painter->drawPixmap(m_imageArea, _icons[imageIndex]);
         QRect rect(xStep, yStep, m_imageArea.width(), m_imageArea.height());
