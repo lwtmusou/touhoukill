@@ -1199,45 +1199,90 @@ public:
 	virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {	
 		if (!player->hasSkill(objectName())) return;
+		if (player->hasFlag("jinian_used"))
+            return;
 		if (triggerEvent == BeforeCardsMove) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.from && move.from_places.contains(Player::PlaceHand) && move.from == player) {
-                if (player->hasFlag("jinian_used"))
-                    return;
+                
                 if (move.to_place != Player::PlaceJudge && move.to_place != Player::PlaceTable
-                    && move.to_place != Player::DiscardPile)
+                    && move.to_place != Player::DiscardPile)  //just for temp?
                     return;
-                //special fakemove??
+
                 QVariantList record_ids = player->tag["jinian"].toList();
-                QVariantList tmp_ids = player->tag["jinian"].toList();
                 QList<int> h_ids;
                 foreach (int id, move.card_ids) {
                     if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand)
                         h_ids << id;
                 }
-
-                //is the last cards
+                
+                //if is last_hand_cards,record its.
                 if (move.from->getHandcardNum() <= h_ids.length()) {
                     foreach (int id, h_ids) {
                         //check ocurrence
-                        bool ocurrence = false;
-                        foreach (QVariant card_data, record_ids) {
-                            int card_id = card_data.toInt();
-                            if (card_id == id) {
-                                ocurrence = true;
-                                break;
-                            }
-                        }
-                        if (!ocurrence) {
-                            tmp_ids << id;
-                        }
-
+                        if (!record_ids.contains(id))
+						    record_ids << id;
                     }
-                    //record ids before move
-                    player->tag["jinian"] = tmp_ids;
+                    player->tag["jinian"] = record_ids;
                 }
             }
         }
+		else if (triggerEvent == CardsMoveOneTime) { //如果去了非判定，非table ，非弃牌堆， 删除之。
+			QVariantList ids = player->tag["jinian"].toList();
+			CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+			if (move.to_place != Player::PlaceJudge && move.to_place != Player::PlaceTable
+                    && move.to_place != Player::DiscardPile)
+					/* (place == Player::PlaceHand || place == Player::PlaceEquip || place == Player::PlaceDelayedTrick
+                        || place == Player::PlaceSpecial || place == Player::DrawPile) */
+			{
+				QVariantList new_ids;
+				foreach (QVariant card_data, ids) {
+					int card_id = card_data.toInt();
+					if (!move.card_ids.contains(card_id))
+						new_ids << card_id;
+				}
+				player->tag["jinian"] = new_ids;
+			}		
+			
+			else if (move.to_place == Player::DiscardPile){
+				QVariantList get_ids;
+				QVariantList backup_ids;
+			    foreach (QVariant card_data, ids) {
+					int card_id = card_data.toInt();
+					if (move.card_ids.contains(card_id) &&
+						room->getCardPlace(card_id) == Player::DiscardPile) { 
+						get_ids << card_id;
+					}
+					else
+						backup_ids << card_id;
+				}
+				
+				//need check from
+				bool delete_get_ids = false;
+				if (move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE || move.reason.m_reason == CardMoveReason::S_REASON_OVERRIDE
+					|| move.reason.m_reason == CardMoveReason::S_REASON_USE || move.reason.m_reason == CardMoveReason::S_REASON_RESPONSE) {
+	
+					if (!move.from)
+						delete_get_ids = true;
+					ServerPlayer *provider = move.reason.m_provider.value<ServerPlayer *>();
+					if (provider) {
+						if (player != provider)
+							delete_get_ids = true;
+					} else if (move.from != player)
+						delete_get_ids = true;
+				} else {
+					if (!move.from || move.from != player)
+					delete_get_ids = true;
+				}
+				
+				if (delete_get_ids){
+					QVariantList new_get_ids;
+					get_ids = new_get_ids;
+				}
+				player->tag["jinian"] = backup_ids;
+				player->tag["jinianGet"] = get_ids;
+			}
+		}
 	}
 	
 	
@@ -1249,58 +1294,11 @@ public:
                 return QStringList();
             if (player->isDead())
                 return QStringList();
-			QVariantList ids = player->tag["jinian"].toList();
-            QList<int> get_ids;
-            QList<int> delete_ids;
-            foreach (QVariant card_data, ids) {
-                int card_id = card_data.toInt();
-                if (move.card_ids.contains(card_id)) {
-                    Player::Place place = room->getCardPlace(card_id);
-                    if (place == Player::DiscardPile) {
-                        get_ids << card_id;
-                    } else if (place == Player::PlaceHand || place == Player::PlaceEquip || place == Player::PlaceDelayedTrick
-                        || place == Player::PlaceSpecial || place == Player::DrawPile) {
-                        delete_ids << card_id;
-                    }
-                }
-            }
-			if (delete_ids.length() > 0) {
-                foreach(int id, delete_ids)
-                    ids.removeOne(id);
-                player->tag["jinian"] = ids;
-            }
-            if (get_ids.length() == 0)
-				return QStringList();
-			//need check from
-            bool delete_get_ids = false;
-            if (move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE || move.reason.m_reason == CardMoveReason::S_REASON_OVERRIDE
-                || move.reason.m_reason == CardMoveReason::S_REASON_USE || move.reason.m_reason == CardMoveReason::S_REASON_RESPONSE) {
-
-                if (!move.from)
-                    delete_get_ids = true;
-                ServerPlayer *provider = move.reason.m_provider.value<ServerPlayer *>();
-                if (provider) {
-                    if (player != provider)
-                        delete_get_ids = true;
-                } else if (move.from != player)
-                    delete_get_ids = true;
-            } else {
-                if (!move.from || move.from != player)
-                    delete_get_ids = true;
-            }
-            if (delete_get_ids) {
-                foreach(int id, get_ids)
-                    ids.removeOne(id);
-                player->tag["jinian"] = ids;
-				return QStringList();
-            }
 
 			//record tmp: get it or not
-			QVariantList record = player->tag["tmpJinian"].toList();
-			foreach(int id, get_ids)
-				record << id;
-			player->tag["tmpJinian"] = record;
-			return QStringList(objectName());
+			QVariantList record = player->tag["jinianGet"].toList();
+			if (!record.isEmpty())
+				return QStringList(objectName());
 		}
 		return QStringList();
 	}
@@ -1310,15 +1308,7 @@ public:
 		if (room->askForSkillInvoke(player, objectName(), data))
 			return true;
 		else{
-			QVariantList delete_ids = player->tag["tmpJinian"].toList();
-			QVariantList ids = player->tag["jinian"].toList();
-			foreach (QVariant card_data, delete_ids) {
-				int card_id = card_data.toInt();
-				if (ids.contains(card_id))
-					ids.removeOne(card_data);
-			}   
-            player->tag["jinian"] = ids;
-			player->tag.remove("tmpJinian");
+			player->tag.remove("jinianGet");
         }
 		return false;
 	}
@@ -1330,7 +1320,7 @@ public:
         if (current && current->isAlive() && current->getPhase() != Player::NotActive)
             player->setFlags("jinian_used");
 		QList<int> get_ids;
-		QVariantList delete_ids = player->tag["tmpJinian"].toList();
+		QVariantList delete_ids = player->tag["jinianGet"].toList();
 		foreach (QVariant card_data, delete_ids) {
 			int card_id = card_data.toInt();
 			get_ids << card_id;	
@@ -1343,7 +1333,7 @@ public:
         room->moveCardsAtomic(mo, true);
         
 		player->tag.remove("jinian");
-		player->tag.remove("tmpJinian");
+		player->tag.remove("jinianGet");
         return false;
     }
 };
@@ -1360,7 +1350,7 @@ public:
         if (triggerEvent == EventPhaseChanging) {
             foreach (ServerPlayer *p, room->getAlivePlayers()) {
                 p->tag.remove("jinian");
-				p->tag.remove("tmpJinian");
+				p->tag.remove("jinianGet");
                 if (p->hasFlag("jinian_used"))
                     p->setFlags("-jinian_used");
             }
