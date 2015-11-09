@@ -91,7 +91,9 @@ public:
     const Card *pendingCard() const;
 
     void expandPileCards(const QString &pile_name);
+	void expandPileCard();
     void retractPileCards(const QString &pile_name);
+	void retractPileCard();
     inline const QStringList &getPileExpanded() const
     {
         return _m_pile_expanded;
@@ -236,7 +238,8 @@ protected:
     const ViewAsSkill *view_as_skill;
     const FilterSkill *filter;
     QStringList _m_pile_expanded;
-
+    QList<int> _m_id_expanded;
+	
     // for equip skill/selections
     PixmapAnimation *_m_equipBorders[5];
     QSanSkillButton *_m_equipSkillBtns[5];
