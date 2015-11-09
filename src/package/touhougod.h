@@ -64,7 +64,7 @@ public:
 
 
 
-class ChaorenPreventRecast : public SkillCard
+/* class ChaorenPreventRecast : public SkillCard
 {
     Q_OBJECT
 
@@ -75,7 +75,7 @@ public:
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     virtual const Card *validate(CardUseStruct &card_use) const;
 
-};
+}; */
 
 class ZiwoCard : public SkillCard
 {

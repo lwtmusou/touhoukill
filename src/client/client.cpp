@@ -83,6 +83,8 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_SYNCHRONIZE_DISCARD_PILE] = &Client::synchronizeDiscardPile;
     m_callbacks[S_COMMAND_CARD_FLAG] = &Client::setCardFlag;
 
+	
+	
     // interactive methods
     m_interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
     m_interactions[S_COMMAND_CHOOSE_PLAYER] = &Client::askForPlayerChosen;

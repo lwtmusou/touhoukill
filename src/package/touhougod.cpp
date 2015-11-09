@@ -2120,7 +2120,7 @@ public:
 
 
 
-ChaorenPreventRecast::ChaorenPreventRecast()
+/* ChaorenPreventRecast::ChaorenPreventRecast()
 {
     mute = true;
     will_throw = false;
@@ -2153,8 +2153,8 @@ const Card *ChaorenPreventRecast::validate(CardUseStruct &card_use) const
     return card;
 }
 
-
-class ChaorenVS : public ZeroCardViewAsSkill
+ */
+/* class ChaorenVS : public ZeroCardViewAsSkill
 {
 public:
     ChaorenVS() : ZeroCardViewAsSkill("chaoren")
@@ -2213,8 +2213,8 @@ public:
         return NULL;
     }
 };
-
-class Chaoren : public TriggerSkill
+ */
+/* class Chaoren : public TriggerSkill
 {
 public:
     Chaoren() : TriggerSkill("chaoren")
@@ -2232,7 +2232,6 @@ public:
                 return QStringList();
             if (player == use.from && player->hasSkill("chaoren") &&
                 use.card->getId() == player->property("chaoren").toInt()) {
-                //if (player==use.from && use.card->getSkillName()==objectName()){
                 room->touhouLogmessage("#InvokeSkill", player, objectName());
                 room->notifySkillInvoked(player, objectName());
             }
@@ -2244,7 +2243,6 @@ public:
                 return QStringList();
             if (player == data.value<CardResponseStruct>().m_who && player->hasSkill("chaoren")
                 && card_star->getId() == player->property("chaoren").toInt()) {
-                //if (player== data.value<CardResponseStruct>().m_who && card_star->getSkillName()==objectName()) {
                 room->touhouLogmessage("#InvokeSkill", player, objectName());
                 room->notifySkillInvoked(player, objectName());
             }
@@ -2303,6 +2301,138 @@ public:
         return QStringList();
     }
 };
+
+ */
+
+ 
+class Chaoren : public TriggerSkill
+{
+public:
+    Chaoren() : TriggerSkill("chaoren")
+    {
+        events    << CardsMoveOneTime << TargetConfirming << EventPhaseChanging << DrawPileSwaped 
+		<< EventAcquireSkill << EventLoseSkill << MarkChanged << AfterGuanXing << Reconnect;
+    }
+
+
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    {
+		if (room->getTag("FirstRound").toBool())
+            return QStringList();
+
+		ServerPlayer *sbl = room->findPlayerBySkillName(objectName());
+		bool retract = false;
+		bool expand = false;
+		if (triggerEvent == EventLoseSkill && data.toString() == "chaoren"){
+		     sbl = player;
+			 retract = true;
+	    }
+		if (triggerEvent == MarkChanged){ 
+			
+			MarkChangeStruct change = data.value<MarkChangeStruct>();
+			if  (change.name != "@changshi"  && change.name != "@pingyi")
+				return QStringList();
+			if (change.name == "@changshi" && player->getMark(change.name) >0){
+				sbl = player;
+				retract = true;
+			}
+			if(change.name == "@pingyi" && player->getMark("pingyichaoren") >0){
+				sbl = player;
+				retract = true;
+			}
+		}
+        if (triggerEvent == Reconnect)
+		    expand = true;
+		
+		//if (triggerEvent == EventAcquireSkill && data.toString() == "chaoren")
+		
+        if (sbl == NULL || sbl->isDead())
+            return QStringList();
+        QList<int> drawpile = room->getDrawPile();
+		
+        int old_firstcard = sbl->property("chaoren").toInt();
+		if (old_firstcard == NULL|| old_firstcard <0)
+			old_firstcard = -1;
+		//if (!sbl->getPile("chaoren").isEmpty())
+		//	old_firstcard = sbl->getPile("chaoren").first();
+		int new_firstcard = -1;
+        if (!drawpile.isEmpty())
+            new_firstcard = drawpile.first();
+        //deal the amazinggrace
+        //update firstcard
+        if (triggerEvent == TargetConfirming) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (!use.card->isKindOf("AmazingGrace"))
+                return QStringList();
+        }
+
+		int changed = false;
+		if (old_firstcard > -1 && new_firstcard > -1)
+		{
+			if (new_firstcard != old_firstcard)
+				changed = true;
+		}
+		else if (new_firstcard > -1)
+		{
+			changed = true;
+		} 
+		else if (old_firstcard > -1)
+		{
+			changed = true;
+		} 
+		
+		
+		if (!changed){
+			if (retract){
+				room->setPlayerProperty(sbl, "chaoren", -1);
+				Json::Value args;
+				args[0] = QSanProtocol::S_GAME_EVENT_RETRACT_PILE_CARDS;
+				room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_EVENT, args);
+			}
+			else if (expand){
+				room->setPlayerProperty(sbl, "chaoren", new_firstcard);
+				Json::Value args;
+				args[0] = QSanProtocol::S_GAME_EVENT_EXPAND_PILE_CARDS;
+				room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_EVENT, args); 
+			}
+			return QStringList();
+		}
+		//允Eetract 后expand
+		if (changed){
+			//sbl->clearOnePrivatePile("chaoren");
+			
+			/* if (old_firstcard > -1){
+				Json::Value args;
+				args[0] = QSanProtocol::S_GAME_EVENT_RETRACT_PILE_CARDS;
+				room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_EVENT, args);
+			} */
+			if  (new_firstcard > -1)
+				room->setPlayerProperty(sbl, "chaoren", new_firstcard);
+			else
+				room->setPlayerProperty(sbl, "chaoren", -1);
+			//for displaying the change on dashboard immidately, even  the status is not Playing or Response.
+			Json::Value args;
+            args[0] = QSanProtocol::S_GAME_EVENT_EXPAND_PILE_CARDS;
+			room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_EVENT, args); 	
+			
+		}
+		if (changed && new_firstcard > -1){
+			// for client log 
+			QList<int> watchlist;
+			watchlist << new_firstcard;
+			LogMessage l;
+			l.type = "$chaorendrawpile";
+			l.card_str = IntList2StringList(watchlist).join("+");
+
+            room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_SKILL, l.toJsonValue());
+
+		}
+        return QStringList();
+    }
+};
+
+
+
 
 class Biaoxiang : public TriggerSkill
 {
@@ -3350,7 +3480,7 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<HuimieCard>();
     addMetaObject<ShenshouCard>();
     addMetaObject<HuaxiangCard>();
-    addMetaObject<ChaorenPreventRecast>();
+    //addMetaObject<ChaorenPreventRecast>();
     addMetaObject<ZiwoCard>();
     addMetaObject<ChaowoCard>();
     addMetaObject<WendaoCard>();

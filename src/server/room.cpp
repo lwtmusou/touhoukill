@@ -1442,11 +1442,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 arg[3] = toJsonString("");
             else
                 arg[3] = toJsonString(skill_name);
-            if ((method != Card::MethodUse && method != Card::MethodResponse))
-                setPlayerFlag(player, "Global_carddiscardFailed");
             bool success = doRequest(player, S_COMMAND_RESPONSE_CARD, arg, true);
             Json::Value clientReply = player->getClientReply();
-            setPlayerFlag(player, "-Global_carddiscardFailed");
             if (success && !clientReply.isNull())
                 card = Card::Parse(toQString(clientReply[0]));
 
@@ -1738,11 +1735,9 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, 
     else {
         if (player->getHandcardNum() == 1)
             card = player->getHandcards().first();
-        else {//for wooden ox
-            setPlayerFlag(player, "Global_cardshowFailed");
+        else {
             bool success = doRequest(player, S_COMMAND_SHOW_CARD, toJsonString(requestor->getGeneralName()), true);
             Json::Value clientReply = player->getClientReply();
-            setPlayerFlag(player, "-Global_cardshowFailed");
             if (success && clientReply[0].isString())
                 card = Card::Parse(toQString(clientReply[0]));
             if (card == NULL)
@@ -3867,7 +3862,9 @@ void Room::reconnect(ServerPlayer *player, ClientSocket *socket)
 
         }
     }
-
+	
+	thread->trigger(Reconnect, this, player, QVariant());
+		
 }
 
 void Room::marshal(ServerPlayer *player)
@@ -5426,7 +5423,6 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
         ask_str[4] = toJsonString(prompt);
         ask_str[5] = toJsonString(reason);
         bool success = doRequest(player, S_COMMAND_DISCARD_CARD, ask_str, true);
-
         //@todo: also check if the player does have that card!!!
         Json::Value clientReply = player->getClientReply();
 
@@ -5626,6 +5622,7 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
         m_drawPile->append(i.next());
 
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
+	thread->trigger(AfterGuanXing, this, zhuge, QVariant());
 }
 
 int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids, QString skill_name)

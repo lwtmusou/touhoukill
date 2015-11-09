@@ -470,10 +470,12 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         container->updateAvatarTooltip();
         if (ClientInstance->getStatus() == Client::Playing && skill_name == "shanji")
             dashboard->expandPileCards("piao");
-        if (ClientInstance->getStatus() == Client::Playing && skill_name == "feitou")
-            dashboard->expandPileCards("feitou");
-        if (ClientInstance->getStatus() == Client::Playing && skill_name == "shende")
-            dashboard->expandPileCards("shende");
+		if (skill_name == "chaoren")
+            dashboard->expandPileCards("chaoren");
+        //if (ClientInstance->getStatus() == Client::Playing && skill_name == "feitou")
+        //    dashboard->expandPileCards("feitou");
+        //if (ClientInstance->getStatus() == Client::Playing && skill_name == "shende")
+        //    dashboard->expandPileCards("shende");
         break;
     }
     case S_GAME_EVENT_ADD_SKILL: {
@@ -498,10 +500,12 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         container->updateAvatarTooltip();
         if (skill_name == "shanji")
             dashboard->retractPileCards("piao");
-        if (skill_name == "feitou")
-            dashboard->retractPileCards("feitou");
-        if (skill_name == "shende")
-            dashboard->retractPileCards("shende");
+		if (skill_name == "chaoren")
+            dashboard->retractPileCards("chaoren");	
+        //if (skill_name == "feitou")
+        //    dashboard->retractPileCards("feitou");
+        //if (skill_name == "shende")
+        //    dashboard->retractPileCards("shende");
         break;
     }
     case S_GAME_EVENT_PREPARE_SKILL:
@@ -660,8 +664,21 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
                     playerCardContainer->getAvartarItem()->startChangeHeroSkinAnimation(general_name);
                 }
             } 
-        }     
+        }
+		break;		
     }
+	case S_GAME_EVENT_EXPAND_PILE_CARDS: {
+		//QString pile_name = arg[1].asCString(); 
+		//int id = arg[1].asInt(); 
+		dashboard->expandPileCard();
+		break;
+	}
+	case S_GAME_EVENT_RETRACT_PILE_CARDS: {
+		//QString pile_name = arg[1].asCString(); 
+		//int id = arg[1].asInt(); 
+		dashboard->retractPileCard();
+		break;
+	}
     default:
         break;
     }
@@ -2386,8 +2403,9 @@ void RoomScene::useSelectedCard()
     else {
         dashboard->retractPileCards("wooden_ox");
         dashboard->retractPileCards("piao");
-        dashboard->retractPileCards("feitou");
-        dashboard->retractPileCards("shende");
+        dashboard->retractPileCards("chaoren");
+        //dashboard->retractPileCards("feitou");
+        //dashboard->retractPileCards("shende");
     }
 }
 

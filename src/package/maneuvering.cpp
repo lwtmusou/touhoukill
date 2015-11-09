@@ -412,7 +412,7 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
         sub = subcards;
     else
         sub << getEffectiveId();
-    foreach (int id, sub) {
+    /* foreach (int id, sub) {
         if (Self->getPile("piao").contains(id)) {
             rec = false;
             break;
@@ -421,7 +421,20 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
             rec = false;
             break;
         }
+    } */
+	foreach (int id, sub) {
+        if (Self->getHandPile().contains(id)) {
+            rec = false;
+            break;
+        }
+		else { // for  skill chaoren
+			if (id == Self->property("chaoren").toInt()){
+				rec = false;
+				break; 
+			}
+		}
     }
+	
 
     if (rec && Self->isCardLimited(this, Card::MethodUse))
         return targets.length() == 0;

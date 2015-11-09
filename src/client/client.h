@@ -134,6 +134,7 @@ public:
     void setCardFlag(const Json::Value &pattern_str);
     void updateCard(const Json::Value &arg);
 
+	
     void fillAG(const Json::Value &cards_str);
     void takeAG(const Json::Value &take_str);
     void clearAG(const Json::Value &);

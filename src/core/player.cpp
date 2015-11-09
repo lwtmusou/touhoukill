@@ -1039,7 +1039,7 @@ int Player::getCardCount(bool include_equip, bool include_judging) const
 
 QList<int> Player::getPile(const QString &pile_name) const
 {
-    return piles[pile_name];
+	return piles[pile_name];
 }
 
 QStringList Player::getPileNames() const
@@ -1071,6 +1071,25 @@ void Player::setPileOpen(const QString &pile_name, const QString &player)
     if (pile_open[pile_name].contains(player)) return;
     pile_open[pile_name].append(player);
 }
+
+QList<int> Player::getHandPile() const
+{
+    QList<int> result;
+    foreach (const QString &pile, getPileNames()) {
+        if (pile.startsWith("&") || pile == "wooden_ox" || pile == "piao" ||pile == "chaoren" ) {
+            foreach (int id, getPile(pile)) {
+                result.append(id);
+            }
+        }
+    }
+	/* if (this->hasSkill("chaoren")){
+		int first = this->property("chaoren").toInt() ;
+		if (first && first > -1)
+			result.append(first);
+	} */
+    return result;
+}
+
 
 void Player::addHistory(const QString &name, int times)
 {

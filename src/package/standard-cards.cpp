@@ -790,8 +790,12 @@ public:
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
-    {
-        return selected.length() < 2 && !to_select->isEquipped();
+    {   
+		QList<int> preventIds;
+		int id = Self->property("chaoren").toInt();
+        if (id && id > -1)
+			preventIds << id;
+		return selected.length() < 2 && !to_select->isEquipped() && !preventIds.contains(to_select->getEffectiveId());
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const
