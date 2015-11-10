@@ -26,7 +26,7 @@ public:
         foreach (ServerPlayer *satori, satoris) {
             if (damage.from && damage.from != satori && damage.card  && !damage.from->isKongcheng()
             && damage.to != damage.from && damage.to->isAlive()
-            && (satori->inMyAttackRange(damage.to) && damage.to == satori) )
+            && (satori->inMyAttackRange(damage.to) || damage.to == satori) )
                 skill_list.insert(satori, QStringList(objectName()));
         }
         return skill_list;

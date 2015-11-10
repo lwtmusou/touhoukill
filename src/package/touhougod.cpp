@@ -934,15 +934,7 @@ public:
         skillowner->loseAllMarks("@clock");
         room->touhouLogmessage("#touhouExtraTurn", skillowner, NULL);
         skillowner->gainAnExtraTurn();
-        room->getThread()->trigger(TurnStart, room, player, data);//need trigger 
-        return false;
-    }
-    /* virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
-    {
-        //since limit skill,this character can play one more extraturn in a turnstart event,
-        //do not use trigger turn start
-        ServerPlayer *skillowner = room->findPlayerBySkillName(objectName());
-        while (true) {
+        while (true) {// for limit skill combo in same turn start of the same current player
             ServerPlayer *current = room->getCurrent();
             if (current && current == player &&current->isAlive()
                 && skillowner &&  skillowner->isAlive()
@@ -958,9 +950,10 @@ public:
             } else
                 break;
         }
-        //room->getThread()->trigger(TurnStart, room, player, data);
+        //room->getThread()->trigger(TurnStart, room, player, data); 
+		//do not trigger tun start, since it will give the current player more than one turn.  
         return false;
-    } */
+    }
 };
 
 class Huanzai : public TriggerSkill

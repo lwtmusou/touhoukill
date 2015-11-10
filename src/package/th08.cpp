@@ -400,13 +400,20 @@ class Lizhan : public TriggerSkill
 public:
     Lizhan() : TriggerSkill("lizhan")
     {
-        events << EventPhaseEnd << CardsMoveOneTime << EventPhaseChanging;
+        events << EventPhaseEnd << CardsMoveOneTime;// << EventPhaseChanging;
     }
 
 
     virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *mokou, QVariant &data) const
     {
-        if (!mokou || !mokou->isAlive() || !mokou->hasSkill("lizhan") || triggerEvent != CardsMoveOneTime) return;
+        //need this for turn broken? or @pingyi or multiple moukou?
+		/* if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.from == Player::Discard)
+                player->tag.remove("lizhan");
+        } */
+		
+		if (!mokou || !mokou->isAlive() || !mokou->hasSkill("lizhan") || triggerEvent != CardsMoveOneTime) return;
         ServerPlayer *current = room->getCurrent();
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
 
@@ -432,27 +439,22 @@ public:
     
     virtual TriggerList triggerable(TriggerEvent e, Room *room, ServerPlayer *player, QVariant &data) const
     {
-        if (e == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.from == Player::Discard)
-                player->tag.remove("lizhan");
-        }
+        if (!player || e != EventPhaseEnd || player->getPhase() != Player::Discard) return TriggerList();
         TriggerList skill_list;
-        if (player == NULL || e != EventPhaseEnd || player->getPhase() != Player::Discard) return skill_list;
+        
         QList<ServerPlayer *> mokous = room->findPlayersBySkillName(objectName());
         foreach (ServerPlayer *mokou, mokous) {
-            QVariantList ids = mokou->tag["lizhan"].toList();
-            if (ids.length() == 0)
-                return TriggerList();
-                
-            QList<int> all;
+            if (mokou->isCurrent()) continue;
+			QVariantList ids = mokou->tag["lizhan"].toList();   
+            QList<int> get_ids;
             foreach (QVariant card_data, ids) {
                 if (room->getCardPlace(card_data.toInt()) == Player::DiscardPile)
-                    all << card_data.toInt();
+                    get_ids << card_data.toInt();
             }
-            if (all.length() == 0)
-                return TriggerList();
-            
+            if (get_ids.length() == 0){
+                mokou->tag.remove("lizhan");
+				continue;
+			}
             skill_list.insert(mokou, QStringList(objectName()));
         }
 
@@ -465,8 +467,10 @@ public:
         source->tag["lizhan_target"] = QVariant::fromValue(current);
         QString prompt = "target:" + current->objectName();
         
-        return room->askForSkillInvoke(source, objectName(), prompt);
-        
+        if  (room->askForSkillInvoke(source, objectName(), prompt))
+			return true;
+		source->tag.remove("lizhan");
+		return false;
     }
     
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *source) const
@@ -475,7 +479,8 @@ public:
         
         QString prompt1 = "@lizhan_slash:" + current->objectName();
         QVariantList ids = source->tag["lizhan"].toList();
-            
+        source->tag.remove("lizhan");    
+		
         QList<int> all;
         foreach (QVariant card_data, ids) {
             if (room->getCardPlace(card_data.toInt()) == Player::DiscardPile)
