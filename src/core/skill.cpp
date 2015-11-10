@@ -303,7 +303,7 @@ bool TriggerSkill::triggerable(const ServerPlayer *target) const
 
 QStringList TriggerSkill::triggerable(TriggerEvent , Room *room, ServerPlayer *target, QVariant &, ServerPlayer* &) const{
     //if (triggerable(target, room))
-	if (triggerable(target))
+    if (triggerable(target))
         return QStringList(objectName());
     return QStringList();
 }

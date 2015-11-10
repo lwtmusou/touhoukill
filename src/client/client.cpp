@@ -83,8 +83,8 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_SYNCHRONIZE_DISCARD_PILE] = &Client::synchronizeDiscardPile;
     m_callbacks[S_COMMAND_CARD_FLAG] = &Client::setCardFlag;
 
-	
-	
+    
+    
     // interactive methods
     m_interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
     m_interactions[S_COMMAND_CHOOSE_PLAYER] = &Client::askForPlayerChosen;
@@ -111,7 +111,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_interactions[S_COMMAND_CHOOSE_ROLE_3V3] = &Client::askForRole3v3;
     m_interactions[S_COMMAND_SURRENDER] = &Client::askForSurrender;
     m_interactions[S_COMMAND_LUCK_CARD] = &Client::askForLuckCard;
-	m_interactions[S_COMMAND_TRIGGER_ORDER] = &Client::askForTriggerOrder;
+    m_interactions[S_COMMAND_TRIGGER_ORDER] = &Client::askForTriggerOrder;
 
     m_callbacks[S_COMMAND_FILL_AMAZING_GRACE] = &Client::fillAG;
     m_callbacks[S_COMMAND_TAKE_AMAZING_GRACE] = &Client::takeAG;
@@ -1450,16 +1450,16 @@ void Client::askForDirection(const Json::Value &)
 //void Client::askForTriggerOrder(const QVariant &ask_str)
 void Client::askForTriggerOrder(const Json::Value &val)
 {
-	if (val.size() != 3
+    if (val.size() != 3
         || !val[0].isString() || !val[1].isArray()
         || !val[2].isBool()) return;
-	
-	
-	QString reason = val[0].asCString();
-	QStringList choices;
+    
+    
+    QString reason = val[0].asCString();
+    QStringList choices;
     tryParse(val[1], choices);
-	
-	bool optional = val[2].asBool();
+    
+    bool optional = val[2].asBool();
 
     emit triggers_got(reason, choices, optional);
     setStatus(AskForTriggerOrder);

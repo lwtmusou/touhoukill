@@ -176,8 +176,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(assign_asked()), this, SLOT(startAssign()));
     connect(ClientInstance, SIGNAL(start_in_xs()), this, SLOT(startInXs()));
 
-	connect(ClientInstance, &Client::triggers_got, this, &RoomScene::chooseTriggerOrder);
-	
+    connect(ClientInstance, &Client::triggers_got, this, &RoomScene::chooseTriggerOrder);
+    
     guanxing_box = new GuanxingBox;
     guanxing_box->hide();
     addItem(guanxing_box);
@@ -191,14 +191,14 @@ RoomScene::RoomScene(QMainWindow *main_window)
     addItem(time_label_wedgit);
     time_label_wedgit->setZValue(10000);
 
-	m_chooseTriggerOrderBox = new ChooseTriggerOrderBox;
+    m_chooseTriggerOrderBox = new ChooseTriggerOrderBox;
     m_chooseTriggerOrderBox->hide();
     addItem(m_chooseTriggerOrderBox);
     m_chooseTriggerOrderBox->setZValue(30000.0);
     m_chooseTriggerOrderBox->moveBy(-120, 0);
-	
-	
-	
+    
+    
+    
     card_container = new CardContainer();
     card_container->hide();
     addItem(card_container);
@@ -470,7 +470,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         container->updateAvatarTooltip();
         if (ClientInstance->getStatus() == Client::Playing && skill_name == "shanji")
             dashboard->expandPileCards("piao");
-		if (skill_name == "chaoren")
+        if (skill_name == "chaoren")
             dashboard->expandPileCards("chaoren");
         //if (ClientInstance->getStatus() == Client::Playing && skill_name == "feitou")
         //    dashboard->expandPileCards("feitou");
@@ -500,8 +500,8 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         container->updateAvatarTooltip();
         if (skill_name == "shanji")
             dashboard->retractPileCards("piao");
-		if (skill_name == "chaoren")
-            dashboard->retractPileCards("chaoren");	
+        if (skill_name == "chaoren")
+            dashboard->retractPileCards("chaoren");    
         //if (skill_name == "feitou")
         //    dashboard->retractPileCards("feitou");
         //if (skill_name == "shende")
@@ -593,7 +593,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
                 if (!bllmwuyu.contains(skill_name))
                     return;
             } else// if (!player->hasWeapon(skill_name) && !player->hasArmorEffect(skill_name))
-				return;
+                return;
         }
 
 
@@ -665,20 +665,20 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
                 }
             } 
         }
-		break;		
+        break;        
     }
-	case S_GAME_EVENT_EXPAND_PILE_CARDS: {
-		//QString pile_name = arg[1].asCString(); 
-		//int id = arg[1].asInt(); 
-		dashboard->expandPileCard();
-		break;
-	}
-	case S_GAME_EVENT_RETRACT_PILE_CARDS: {
-		//QString pile_name = arg[1].asCString(); 
-		//int id = arg[1].asInt(); 
-		dashboard->retractPileCard();
-		break;
-	}
+    case S_GAME_EVENT_EXPAND_PILE_CARDS: {
+        //QString pile_name = arg[1].asCString(); 
+        //int id = arg[1].asInt(); 
+        dashboard->expandPileCard();
+        break;
+    }
+    case S_GAME_EVENT_RETRACT_PILE_CARDS: {
+        //QString pile_name = arg[1].asCString(); 
+        //int id = arg[1].asInt(); 
+        dashboard->retractPileCard();
+        break;
+    }
     default:
         break;
     }
@@ -1108,11 +1108,11 @@ void RoomScene::updateTable()
     m_tablePile->setPos(m_tableCenterPos);
     m_tablePile->setSize(qMax((int)tableRect.width() - _m_roomLayout->m_discardPilePadding * 2,
         _m_roomLayout->m_discardPileMinWidth), _m_commonLayout->m_cardNormalHeight);
-		
+        
     m_tablePile->adjustCards();
     card_container->setPos(m_tableCenterPos);
     guanxing_box->setPos(m_tableCenterPos);
-	m_chooseTriggerOrderBox->setPos(m_tableCenterPos - QPointF(m_chooseTriggerOrderBox->boundingRect().width() / 2, m_chooseTriggerOrderBox->boundingRect().height() / 2));
+    m_chooseTriggerOrderBox->setPos(m_tableCenterPos - QPointF(m_chooseTriggerOrderBox->boundingRect().width() / 2, m_chooseTriggerOrderBox->boundingRect().height() / 2));
     prompt_box->setPos(m_tableCenterPos);
     pausing_text->setPos(m_tableCenterPos - pausing_text->boundingRect().center());
     pausing_item->setRect(sceneRect());
@@ -2621,7 +2621,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         }else if (oldStatus == Client::AskForTriggerOrder){
             m_chooseTriggerOrderBox->clear();
         }
-		
+        
         prompt_box->disappear();
         ClientInstance->getPromptDoc()->clear();
 
@@ -2823,7 +2823,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         break;
     }
     case Client::AskForGeneralTaken:
-	case Client::AskForTriggerOrder:
+    case Client::AskForTriggerOrder:
     case Client::AskForArrangement: {
         ok_button->setEnabled(false);
         cancel_button->setEnabled(false);

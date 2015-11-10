@@ -202,7 +202,7 @@ public:
     void chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand reason);
     void chooseRole(const QString &scheme, const QStringList &roles);
     void chooseDirection();
-	void chooseTriggerOrder(const QString &reason, const QStringList &options, const bool optional);
+    void chooseTriggerOrder(const QString &reason, const QStringList &options, const bool optional);
 
     void bringToFront(QGraphicsItem *item);
     void arrangeSeats(const QList<const ClientPlayer *> &seats);
@@ -294,7 +294,7 @@ private:
     QList<const Player *> selected_targets;
 
     GuanxingBox *guanxing_box;
-	ChooseTriggerOrderBox *m_chooseTriggerOrderBox;
+    ChooseTriggerOrderBox *m_chooseTriggerOrderBox;
     QList<CardItem *> gongxin_items;
 
     ClientLogBox *log_box;
@@ -407,9 +407,9 @@ private:
     void onSkillActivated();
     void onSkillDeactivated();
     void doTimeout();
-	
+    
 
-	
+    
     void startInXs();
     void hideAvatars();
     void changeHp(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);

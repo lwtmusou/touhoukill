@@ -208,7 +208,7 @@ public:
     bool pileOpen(const QString &pile_name, const QString &player) const;
     void setPileOpen(const QString &pile_name, const QString &player);
     QList<int> getHandPile() const;
-	
+    
     void addHistory(const QString &name, int times = 1);
     void clearHistory();
     bool hasUsed(const QString &card_class) const;

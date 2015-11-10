@@ -314,7 +314,7 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const
     effect.to = card_effect.to;
     effect.drank = this->drank;
     effect.nullified = card_effect.nullified;
-	
+    
     QVariantList jink_list = effect.from->tag["Jink_" + toString()].toList();
     effect.jink_num = jink_list.takeFirst().toInt();
     if (jink_list.isEmpty())
@@ -541,22 +541,22 @@ public:
         events << TargetSpecified;
     }
 
-	static bool diff(ServerPlayer *player, ServerPlayer *target)
+    static bool diff(ServerPlayer *player, ServerPlayer *target)
     {
-		ServerPlayer *lord = player->getRoom()->getLord();
+        ServerPlayer *lord = player->getRoom()->getLord();
         QString lordKingdom = "";
         if (lord)
             lordKingdom = lord->getKingdom();
-		bool can = false;
-		if (lordKingdom == "")
+        bool can = false;
+        if (lordKingdom == "")
             can = ((player->isMale() && target->isFemale()) || (player->isFemale() && target->isMale()));
         else
              can = (player->getKingdom() != target->getKingdom()
                 && (player->getKingdom() == lordKingdom || target->getKingdom() == lordKingdom));
-	    return can;
-	}
-	
-	virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+        return can;
+    }
+    
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (!WeaponSkill::triggerable(player))
@@ -573,27 +573,27 @@ public:
         }
         return QStringList();
     }
-	
-	virtual bool cost(TriggerEvent, Room *room, ServerPlayer *skill_target, QVariant &data, ServerPlayer *ask_who) const
+    
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *skill_target, QVariant &data, ServerPlayer *ask_who) const
     {
         //ask_who->askForSkillInvoke(this, QVariant::fromValue(skill_target)
-		if (ask_who){
-			ask_who->tag["DoubleSwordTarget"] = QVariant::fromValue(skill_target);
-			if (ask_who->askForSkillInvoke(objectName())){
-				if (ask_who->hasWeapon(objectName()) && !ask_who->hasWeapon(objectName(), true)) //for client box log
+        if (ask_who){
+            ask_who->tag["DoubleSwordTarget"] = QVariant::fromValue(skill_target);
+            if (ask_who->askForSkillInvoke(objectName())){
+                if (ask_who->hasWeapon(objectName()) && !ask_who->hasWeapon(objectName(), true)) //for client box log
                     room->touhouLogmessage("#InvokeSkill", ask_who, objectName());
-				room->setEmotion(ask_who, "weapon/double_sword");
-				
-				return true;
-			}
-			ask_who->tag.remove("DoubleSwordTarget");	
-		}
+                room->setEmotion(ask_who, "weapon/double_sword");
+                
+                return true;
+            }
+            ask_who->tag.remove("DoubleSwordTarget");    
+        }
         return false;
     }
 
-	virtual bool effect(TriggerEvent, Room *room, ServerPlayer *skill_target, QVariant &data, ServerPlayer *ask_who) const
-    {	
-		bool draw_card = false;
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *skill_target, QVariant &data, ServerPlayer *ask_who) const
+    {    
+        bool draw_card = false;
 
         if (!skill_target->canDiscard(skill_target, "h"))
             draw_card = true;
@@ -605,11 +605,11 @@ public:
         }
         if (draw_card)
             ask_who->drawCards(1);
-		ask_who->tag.remove("DoubleSwordTarget");
-		
+        ask_who->tag.remove("DoubleSwordTarget");
+        
         return false;
-	}
-	
+    }
+    
 /*     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
@@ -668,10 +668,10 @@ public:
     QinggangSwordSkill() : WeaponSkill("QinggangSword")
     {
         events << TargetSpecified;
-		frequency = Compulsory;
+        frequency = Compulsory;
     }
 
-	virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (!WeaponSkill::triggerable(player))
@@ -686,22 +686,22 @@ public:
         }
         return QStringList();
     }
-	
-	virtual bool cost(TriggerEvent, Room *room, ServerPlayer *target, QVariant &, ServerPlayer *ask_who) const
+    
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *target, QVariant &, ServerPlayer *ask_who) const
     {
         if ((target->getArmor() && target->hasArmorEffect(target->getArmor()->objectName())) || target->hasArmorEffect("bazhen"))
             room->setEmotion(ask_who, "weapon/qinggang_sword");
         return true;
     }
-	
-	virtual bool effect(TriggerEvent, Room *, ServerPlayer *target, QVariant &data, ServerPlayer *) const
+    
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *target, QVariant &data, ServerPlayer *) const
     {
-		CardUseStruct use = data.value<CardUseStruct>();
-		if (target->getMark("Equips_of_Others_Nullified_to_You") == 0) 
-			target->addQinggangTag(use.card);
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (target->getMark("Equips_of_Others_Nullified_to_You") == 0) 
+            target->addQinggangTag(use.card);
         return false;
     }
-	
+    
 /*     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
@@ -735,33 +735,33 @@ public:
         events << SlashMissed;
     }
 
-	virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
-		if (!WeaponSkill::triggerable(player)) return QStringList();
-		SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        if (!WeaponSkill::triggerable(player)) return QStringList();
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if (!effect.to->isAlive() || effect.to->getMark("Equips_of_Others_Nullified_to_You") > 0)
             return QStringList();
         if (!effect.from->canSlash(effect.to, NULL, false))
             return QStringList();
-		return QStringList(objectName());
-	}
-	
-	virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+        return QStringList(objectName());
+    }
+    
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
-		SlashEffectStruct effect = data.value<SlashEffectStruct>();
-		int weapon_id = -1;
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        int weapon_id = -1;
         if (player->getWeapon()){
             weapon_id = player->getWeapon()->getId();
             room->setCardFlag(weapon_id, "using");
         }
-		effect.from->setFlags("BladeUse");
+        effect.from->setFlags("BladeUse");
         if (!room->askForUseSlashTo(effect.from, effect.to, QString("blade-slash:%1").arg(effect.to->objectName()), false, true))
             effect.from->setFlags("-BladeUse");
         if (weapon_id != -1)
             room->setCardFlag(weapon_id, "-using");
 
         return false;
-	}
+    }
 };
 
 Blade::Blade(Suit suit, int number)
@@ -791,11 +791,11 @@ public:
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
     {   
-		QList<int> preventIds;
-		int id = Self->property("chaoren").toInt();
+        QList<int> preventIds;
+        int id = Self->property("chaoren").toInt();
         if (id && id > -1)
-			preventIds << id;
-		return selected.length() < 2 && !to_select->isEquipped() && !preventIds.contains(to_select->getEffectiveId());
+            preventIds << id;
+        return selected.length() < 2 && !to_select->isEquipped() && !preventIds.contains(to_select->getEffectiveId());
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const
@@ -854,31 +854,31 @@ public:
         view_as_skill = new AxeViewAsSkill;
     }
 
-	virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
-		if (!WeaponSkill::triggerable(player)) return QStringList();
+        if (!WeaponSkill::triggerable(player)) return QStringList();
         if (player->hasFlag("hitAfterMissed"))
             return QStringList();
-		SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if (!effect.to->isAlive() || effect.to->getMark("Equips_of_Others_Nullified_to_You") > 0)
             return QStringList();
-		int cardLimit = 2;
-		if (player->hasWeapon(objectName(), true))
-			cardLimit = 3;
+        int cardLimit = 2;
+        if (player->hasWeapon(objectName(), true))
+            cardLimit = 3;
         if (player->getCardCount(true) >= cardLimit)
-			return QStringList(objectName());
-		return QStringList();
-	}
-	
-	virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
-    {	
-		SlashEffectStruct effect = data.value<SlashEffectStruct>();
-		const Card *card = room->askForCard(player, "@Axe", "@Axe:" + effect.to->objectName(), data, objectName());
-		if (card)
-			return true;
-		return false;
-	}
-	
+            return QStringList(objectName());
+        return QStringList();
+    }
+    
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {    
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        const Card *card = room->askForCard(player, "@Axe", "@Axe:" + effect.to->objectName(), data, objectName());
+        if (card)
+            return true;
+        return false;
+    }
+    
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
@@ -900,7 +900,7 @@ class HalberdSkill : public TargetModSkill
 public:
     HalberdSkill() : TargetModSkill("Halberd")
     {
-		frequency = NotCompulsory;
+        frequency = NotCompulsory;
     }
 
     virtual int getExtraTargetNum(const Player *from, const Card *card) const
@@ -931,59 +931,59 @@ public:
         events << DamageCaused;
     }
     
-	virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
-		if (!WeaponSkill::triggerable(player)) return QStringList();
-		DamageStruct damage = data.value<DamageStruct>();
+        if (!WeaponSkill::triggerable(player)) return QStringList();
+        DamageStruct damage = data.value<DamageStruct>();
         QStringList horses;
-		
-		if (damage.card && damage.card->isKindOf("Slash") && damage.by_user && !damage.chain && !damage.transfer
+        
+        if (damage.card && damage.card->isKindOf("Slash") && damage.by_user && !damage.chain && !damage.transfer
             && damage.to->getMark("Equips_of_Others_Nullified_to_You") == 0) {
-			if (damage.to->getDefensiveHorse() && damage.from->canDiscard(damage.to, damage.to->getDefensiveHorse()->getEffectiveId()) ) {
+            if (damage.to->getDefensiveHorse() && damage.from->canDiscard(damage.to, damage.to->getDefensiveHorse()->getEffectiveId()) ) {
                 horses << "dhorse";
             }
             if (damage.to->getOffensiveHorse() && damage.from->canDiscard(damage.to, damage.to->getOffensiveHorse()->getEffectiveId())) {
                 horses << "ohorse";
             }
-			if (horses.isEmpty())
+            if (horses.isEmpty())
                 return QStringList();
 
             if (player == NULL) return QStringList();
-			return QStringList(objectName());
-		}
-		return QStringList();
-	}
-	
-	
-	virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer*) const
-	{
-		return player->askForSkillInvoke("KylinBow", data);
-	}
-	
-	virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer*) const
-	{
-		QStringList horses;
-		DamageStruct damage = data.value<DamageStruct>();
-		if (damage.to->getDefensiveHorse() && damage.from->canDiscard(damage.to, damage.to->getDefensiveHorse()->getEffectiveId()) ) {
+            return QStringList(objectName());
+        }
+        return QStringList();
+    }
+    
+    
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer*) const
+    {
+        return player->askForSkillInvoke("KylinBow", data);
+    }
+    
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer*) const
+    {
+        QStringList horses;
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.to->getDefensiveHorse() && damage.from->canDiscard(damage.to, damage.to->getDefensiveHorse()->getEffectiveId()) ) {
             horses << "dhorse";
         }
         if (damage.to->getOffensiveHorse() && damage.from->canDiscard(damage.to, damage.to->getOffensiveHorse()->getEffectiveId())) {
             horses << "ohorse";
         }
-		
-		if (player->hasWeapon(objectName()) && !player->hasWeapon(objectName(), true)) //for client box log
+        
+        if (player->hasWeapon(objectName()) && !player->hasWeapon(objectName(), true)) //for client box log
             room->touhouLogmessage("#InvokeSkill", player, objectName());
         room->setEmotion(player, "weapon/kylin_bow");
-		
-		QString horse_type = room->askForChoice(player, objectName(), horses.join("+"));
+        
+        QString horse_type = room->askForChoice(player, objectName(), horses.join("+"));
         if (horse_type == "dhorse")
             room->throwCard(damage.to->getDefensiveHorse(), damage.to, damage.from);
         else if (horse_type == "ohorse")
             room->throwCard(damage.to->getOffensiveHorse(), damage.to, damage.from);
-		
-		return false;
-	}
-	
+        
+        return false;
+    }
+    
 
 };
 
@@ -1001,12 +1001,12 @@ public:
         events << CardAsked;
     }
 
-	virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
         if (!ArmorSkill::triggerable(player)) return QStringList();
         QString asked = data.toStringList().first();
-		if (asked != "jink") return QStringList();
-		//since skill yuanfei,we need check
+        if (asked != "jink") return QStringList();
+        //since skill yuanfei,we need check
         Card *jink = Sanguosha->cloneCard("jink");
         if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
             if (player->isCardLimited(jink, Card::MethodResponse))
@@ -1018,15 +1018,15 @@ public:
         return QStringList(objectName());
         //return QStringList();
     }
-	
-	virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
         if (room->askForSkillInvoke(player, "EightDiagram", data)) 
-			return true;
+            return true;
         return false;
     }
-	
-	virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const
+    
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const
     {
         int armor_id = -1;
         if (player->getArmor()){
@@ -1036,13 +1036,13 @@ public:
             room->touhouLogmessage("#InvokeSkill", player, objectName());
         }
         
-		room->setEmotion(player, "armor/eight_diagram");
+        room->setEmotion(player, "armor/eight_diagram");
         JudgeStruct judge;
         judge.pattern = ".|red";
         judge.good = true;
         judge.reason = objectName();
         judge.who = player;
-		
+        
         room->judge(judge);
         if (armor_id != -1)
             room->setCardFlag(armor_id, "-using");
@@ -1056,7 +1056,7 @@ public:
         return false;
     }
 
-	
+    
     int getEffectIndex(const ServerPlayer *, const Card *) const
     {
         return -2;
@@ -1599,32 +1599,32 @@ public:
         events << DamageCaused;
     }
 
-	virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
         if (!WeaponSkill::triggerable(player)) return QStringList();
         DamageStruct damage = data.value<DamageStruct>();
-		if (damage.card && damage.by_user && damage.card->isKindOf("Slash") 
+        if (damage.card && damage.by_user && damage.card->isKindOf("Slash") 
             && damage.to->getMark("Equips_of_Others_Nullified_to_You") == 0
             && player->canDiscard(damage.to, "he")//&& !damage.to->isNude()
             && !damage.chain && !damage.transfer && player != damage.to)
-			return QStringList(objectName());
+            return QStringList(objectName());
 
         return QStringList();
     }
-	
-	virtual bool cost(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer *) const
-	{
-		return player->askForSkillInvoke("IceSword", data);
-	}
-	
-	virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
-	{
-		DamageStruct damage = data.value<DamageStruct>();
-		if (player->hasWeapon(objectName()) && !player->hasWeapon(objectName(), true)) //for client box log
+    
+    virtual bool cost(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
+        return player->askForSkillInvoke("IceSword", data);
+    }
+    
+    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (player->hasWeapon(objectName()) && !player->hasWeapon(objectName(), true)) //for client box log
             room->touhouLogmessage("#InvokeSkill", player, objectName());
         room->setEmotion(player, "weapon/ice_sword");
         
-		if (damage.from->canDiscard(damage.to, "he")) {
+        if (damage.from->canDiscard(damage.to, "he")) {
             int card_id = room->askForCardChosen(player, damage.to, "he", "IceSword", false, Card::MethodDiscard);
             room->throwCard(Sanguosha->getCard(card_id), damage.to, damage.from);
 
@@ -1634,10 +1634,10 @@ public:
             }
         }
         return true;
-	
-	}
-	
-	
+    
+    }
+    
+    
 };
 
 IceSword::IceSword(Suit suit, int number)
@@ -1652,10 +1652,10 @@ public:
     RenwangShieldSkill() : ArmorSkill("RenwangShield")
     {
         events << SlashEffected;
-		frequency = Compulsory;
+        frequency = Compulsory;
     }
 
-	virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
         if (!ArmorSkill::triggerable(player)) return QStringList();
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
@@ -1663,11 +1663,11 @@ public:
 
         return QStringList();
     }
-	
-	virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
-		SlashEffectStruct effect = data.value<SlashEffectStruct>();
-		LogMessage log;
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        LogMessage log;
         log.type = "#ArmorNullify";
         log.from = player;
         log.arg = objectName();
@@ -1677,8 +1677,8 @@ public:
         room->setEmotion(player, "armor/renwang_shield");
         effect.to->setFlags("Global_NonSkillNullify");
         return true;
-	}
-	
+    }
+    
 };
 
 RenwangShield::RenwangShield(Suit suit, int number)

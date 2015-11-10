@@ -705,7 +705,7 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
 
         room->cardEffect(effect);
     }
-	
+    
 
     if (room->getCardPlace(getEffectiveId()) == Player::PlaceTable) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());

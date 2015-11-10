@@ -51,9 +51,9 @@ public:
     bool isFull() const;
     bool isFinished() const;
     bool canPause(ServerPlayer *p) const;
-	//void tryPause();
+    //void tryPause();
     bool isPaused() const;
-	
+    
     int getLack() const;
     QString getMode() const;
     const Scenario *getScenario() const;
@@ -378,7 +378,7 @@ public:
     QString askForGeneral(ServerPlayer *player, const QString &generals, QString default_choice = QString());
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
     QString askForTriggerOrder(ServerPlayer *player, const QString &reason, SPlayerDataMap &skills, bool optional = true, const QVariant &data = QVariant());
-	void addPlayerHistory(ServerPlayer *player, const QString &key, int times = 1);
+    void addPlayerHistory(ServerPlayer *player, const QString &key, int times = 1);
 
     void toggleReadyCommand(ServerPlayer *player, const QString &);
     void speakCommand(ServerPlayer *player, const QString &arg);

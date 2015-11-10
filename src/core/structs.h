@@ -47,8 +47,8 @@ struct CardEffectStruct
 
     ServerPlayer *from;
     ServerPlayer *to;
-	
-	bool multiple; // helper to judge whether the card has multiple targets
+    
+    bool multiple; // helper to judge whether the card has multiple targets
     // does not make sense if the card inherits SkillCard
     bool nullified;
 };
@@ -68,8 +68,8 @@ struct SlashEffectStruct
     int drank;
 
     DamageStruct::Nature nature;
-	bool multiple;
-	bool nullified;
+    bool multiple;
+    bool nullified;
 };
 
 struct CardUseStruct
@@ -94,8 +94,8 @@ struct CardUseStruct
     QList<ServerPlayer *> to;
     bool m_isOwnerUse;
     bool m_addHistory;
-	bool m_isHandcard;
-	QStringList nullified_list;
+    bool m_isHandcard;
+    QStringList nullified_list;
 };
 
 class CardMoveReason
@@ -461,7 +461,7 @@ struct CardResponseStruct
     bool m_isUse;
     bool m_isRetrial;
     bool m_isProvision;
-	bool m_isHandcard;
+    bool m_isHandcard;
 };
 
 struct JsonValueForLUA
@@ -582,9 +582,9 @@ enum TriggerEvent
 
     PreCardUsed, // for AI to filter events only.
     CardUsed,
-	TargetSpecifying,
+    TargetSpecifying,
     TargetConfirming,
-	TargetSpecified,
+    TargetSpecified,
     TargetConfirmed,
     CardEffect, // for AI to filter events only
     CardEffected,
@@ -610,8 +610,8 @@ enum TriggerEvent
     DrawPileSwaped,//like qiannian
     DrawCardsFromDrawPile, // for qiangyu
     AfterGuanXing,
-	Reconnect,
-	
+    Reconnect,
+    
     NumOfEvents
 };
 

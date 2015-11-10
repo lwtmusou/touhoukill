@@ -466,7 +466,7 @@ bool Player::isCurrent() const
 
 
 bool Player::hasSkill(const QString &skill_name, bool include_lose, bool include_invalidity) const
-{	
+{    
     bool skill_invalid = false;//  invalid but maybe not lost this skill
     if (!include_lose) {
         if (!hasEquipSkill(skill_name)) {
@@ -521,7 +521,7 @@ bool Player::hasInnateSkill(const QString &skill_name) const
 
 bool Player::hasLordSkill(const QString &skill_name, bool include_lose, bool include_invalidity) const
 {
-	if (!isLord() && hasSkill("weidi")) {
+    if (!isLord() && hasSkill("weidi")) {
         foreach (const Player *player, getAliveSiblings()) {
             if (player->isLord()) {
                 if (player->hasLordSkill(skill_name, true))
@@ -1039,7 +1039,7 @@ int Player::getCardCount(bool include_equip, bool include_judging) const
 
 QList<int> Player::getPile(const QString &pile_name) const
 {
-	return piles[pile_name];
+    return piles[pile_name];
 }
 
 QStringList Player::getPileNames() const
@@ -1082,11 +1082,11 @@ QList<int> Player::getHandPile() const
             }
         }
     }
-	/* if (this->hasSkill("chaoren")){
-		int first = this->property("chaoren").toInt() ;
-		if (first && first > -1)
-			result.append(first);
-	} */
+    /* if (this->hasSkill("chaoren")){
+        int first = this->property("chaoren").toInt() ;
+        if (first && first > -1)
+            result.append(first);
+    } */
     return result;
 }
 

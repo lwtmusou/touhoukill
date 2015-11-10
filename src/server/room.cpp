@@ -1496,8 +1496,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     }
     //trigger event
    
-	if (card) {
-		bool isHandcard = true;
+    if (card) {
+        bool isHandcard = true;
         QList<int> ids;
         if (!card->isVirtualCard()) ids << card->getEffectiveId();
         else ids = card->getSubcards();
@@ -1511,8 +1511,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         } else {
             isHandcard = false;
         }
-		
-		QVariant decisionData = QVariant::fromValue(QString("cardResponded:%1:%2:_%3_").arg(pattern).arg(prompt).arg(card->toString()));
+        
+        QVariant decisionData = QVariant::fromValue(QString("cardResponded:%1:%2:_%3_").arg(pattern).arg(prompt).arg(card->toString()));
         thread->trigger(ChoiceMade, this, player, decisionData);
 
         if (method == Card::MethodUse) {
@@ -1539,7 +1539,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 && player->hasSkill(card->getSkillName()))
                 notifySkillInvoked(player, card->getSkillName());
             CardResponseStruct resp(card, to, method == Card::MethodUse, isRetrial, isProvision);
-			resp.m_isHandcard = isHandcard;
+            resp.m_isHandcard = isHandcard;
             QVariant data = QVariant::fromValue(resp);
             thread->trigger(CardResponded, this, player, data);
             if (method == Card::MethodUse) {
@@ -1807,10 +1807,10 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
 
 QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, SPlayerDataMap &skills, bool optional, const QVariant &data)
 {
-	
-	
-	while (isPaused()) {
-	}
+    
+    
+    while (isPaused()) {
+    }
 
     Q_ASSERT(!skills.isEmpty());
 
@@ -1857,25 +1857,25 @@ QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, SP
 
             thread->delay();
         } else {
-			Json::Value args; //JsonArray args;
+            Json::Value args; //JsonArray args;
             //example: "["turn_start", ["sgs1:tiandu", "sgs1:tuntian", "sgs2:slobsb"], true]"
             
             args[0] = toJsonString(reason); //args << reason;
             args[1] = toJsonArray(all_pairs);//args << JsonUtils::toJsonArray(all_pairs);
             args[2] = optional;  //args << optional;
 
-			
-	
-			bool success = doRequest(player, S_COMMAND_TRIGGER_ORDER, args, true);
+            
+    
+            bool success = doRequest(player, S_COMMAND_TRIGGER_ORDER, args, true);
             Json::Value clientReply = player->getClientReply();
-			if (!success || !clientReply.isString()) 
+            if (!success || !clientReply.isString()) 
             //bool success = doRequest(player, S_COMMAND_TRIGGER_ORDER, args, true);
             //const QVariant &clientReply = player->getClientReply();
             //if (!success || !JsonUtils::isString(clientReply))
                 answer = "cancel";
             else
                 //answer = clientReply.toString();
-				answer = toQString(clientReply);
+                answer = toQString(clientReply);
         }
 
         if (answer != "cancel" && !all_pairs.contains(answer))
@@ -3366,10 +3366,10 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
 {
     CardUseStruct card_use = use;
     card_use.m_addHistory = false;
-	card_use.m_isHandcard = true;
+    card_use.m_isHandcard = true;
     const Card *card = card_use.card;
 
-	QList<int> ids;
+    QList<int> ids;
     if (!card->isVirtualCard()) ids << card->getEffectiveId();
     else ids = card->getSubcards();
     if (!ids.isEmpty()) {
@@ -3382,8 +3382,8 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
     } else {
         card_use.m_isHandcard = false;
     }
-	
-	
+    
+    
     if (card_use.from->isCardLimited(card, card->getHandlingMethod())
         && (!card->canRecast() || card_use.from->isCardLimited(card, Card::MethodRecast)))
         return true;
@@ -3651,7 +3651,7 @@ bool Room::cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to, bo
     effect.card = card;
     effect.from = from;
     effect.to = to;
-	effect.multiple = multiple;
+    effect.multiple = multiple;
     return cardEffect(effect);
 }
 
@@ -3862,9 +3862,9 @@ void Room::reconnect(ServerPlayer *player, ClientSocket *socket)
 
         }
     }
-	
-	thread->trigger(Reconnect, this, player, QVariant());
-		
+    
+    thread->trigger(Reconnect, this, player, QVariant());
+        
 }
 
 void Room::marshal(ServerPlayer *player)
@@ -5622,7 +5622,7 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
         m_drawPile->append(i.next());
 
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
-	thread->trigger(AfterGuanXing, this, zhuge, QVariant());
+    thread->trigger(AfterGuanXing, this, zhuge, QVariant());
 }
 
 int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids, QString skill_name)
@@ -6219,9 +6219,9 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge, cons
 
     bool triggerResponded = getCardOwner(card->getEffectiveId()) == player;
     bool isHandcard = (triggerResponded && getCardPlace(card->getEffectiveId()) == Player::PlaceHand);
-	
-	
-	
+    
+    
+    
     const Card *oldJudge = judge->card;
     judge->card = Sanguosha->getCard(card->getEffectiveId());
     ServerPlayer *rebyre = judge->retrial_by_response;//old judge provider
@@ -6283,7 +6283,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge, cons
     if (triggerResponded) {
         CardResponseStruct resp(card, judge->who, false, true, false);
         QVariant data = QVariant::fromValue(resp);
-		resp.m_isHandcard = isHandcard;
+        resp.m_isHandcard = isHandcard;
         thread->trigger(CardResponded, this, player, data);
     }
 }

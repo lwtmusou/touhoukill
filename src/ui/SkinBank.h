@@ -287,17 +287,17 @@ public:
 
         // avatar size
         QSize m_tinyAvatarSize;
-		
-		//Graphics Box
+        
+        //Graphics Box
         QColor graphicsBoxBackgroundColor;
         QColor graphicsBoxBorderColor;
         QSanSimpleTextFont graphicsBoxTitleFont;
-		
-		//General Button
+        
+        //General Button
         QRect generalButtonPositionIconRegion;
         QRect generalButtonNameRegion;
-		
-		//Option Button
+        
+        //Option Button
         QSanShadowTextFont optionButtonText;
     };
 
@@ -405,8 +405,8 @@ public:
     static const char *S_SKIN_KEY_GENERAL_CIRCLE_MASK;
     static const char *S_SKIN_KEY_HEAD_ICON;
     static const char *S_SKIN_KEY_DEPUTY_ICON;
-	
-	
+    
+    
     // Animations
     static const char *S_SKIN_KEY_ANIMATIONS;
 

@@ -113,7 +113,7 @@ QString TriggerOptionButton::getGeneralNameBySkill() const
 QFont TriggerOptionButton::defaultFont()
 {
     //QFont font = StyleHelper::getFontByFileName("wqy-microhei.ttc");
-	QFont font = Config.SmallFont;
+    QFont font = Config.SmallFont;
     font.setPixelSize(Config.TinyFont.pixelSize());
     return font;
 }
@@ -130,7 +130,7 @@ void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsIte
 
     const QString generalName = getGeneralNameBySkill();
 
-	QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY);
+    QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY);
 
     //QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY, getSkinId(playerName, generalName));
     pixmap = pixmap.scaledToHeight(optionButtonHeight, Qt::SmoothTransformation);
@@ -192,15 +192,15 @@ QString TriggerOptionButton::displayedTextOf(const QString &str)
         QString realSkill = skillName.split("->").first(); // "tieqi"
         QString targetObj = skillName.split("->").last().split("&").first(); // "sgs4"
         //QString targetName = ClientInstance->getPlayer(targetObj)->getFootnoteName();
-		QString targetName = ClientInstance->getPlayer(targetObj)->getGeneralName();
+        QString targetName = ClientInstance->getPlayer(targetObj)->getGeneralName();
         text = tr("%1 (use upon %2)").arg(Sanguosha->translate(realSkill))
             .arg(Sanguosha->translate(targetName));
     }
-	if (skillName.contains("'")) {// "sgs1'songwei"
+    if (skillName.contains("'")) {// "sgs1'songwei"
         QString targetObj = skillName.split("'").first(); // "sgs1'
-		QString realSkill = skillName.split("'").last(); // "songwei'
-		text = tr("%1").arg(Sanguosha->translate(realSkill));
-	}
+        QString realSkill = skillName.split("'").last(); // "songwei'
+        text = tr("%1").arg(Sanguosha->translate(realSkill));
+    }
     if (time > 1)
         //text += " " + tr("*") + time;
         text += QString(" %1 %2").arg(tr("*")).arg(time);
@@ -256,9 +256,9 @@ void GeneralButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, Q
     painter->setRenderHint(QPainter::HighQualityAntialiasing);
     QPixmap generalImage = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE);
 
-	//QPixmap generalImage = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE, getSkinId(Self, generalName));
+    //QPixmap generalImage = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE, getSkinId(Self, generalName));
     
-	generalImage = generalImage.scaled(generalButtonSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    generalImage = generalImage.scaled(generalButtonSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     painter->setBrush(generalImage);
     painter->drawRoundedRect(boundingRect(), 5, 5, Qt::RelativeSize);
 

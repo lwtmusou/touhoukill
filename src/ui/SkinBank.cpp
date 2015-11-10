@@ -831,17 +831,17 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
     for (int i = 0; i < 6; i++)
         _m_commonLayout.m_hpFont[i].tryParse(config["magatamaFont"][i]);
 
-	//for graphic boxs, especially for new trigger order box
-	tryParse(config["graphicsBoxBgColor"], _m_commonLayout.graphicsBoxBackgroundColor);
+    //for graphic boxs, especially for new trigger order box
+    tryParse(config["graphicsBoxBgColor"], _m_commonLayout.graphicsBoxBackgroundColor);
     tryParse(config["graphicsBoxBorderColor"], _m_commonLayout.graphicsBoxBorderColor);
     _m_commonLayout.graphicsBoxTitleFont.tryParse(config["graphicsBoxTitleFont"]);
-	
-	_m_commonLayout.optionButtonText.tryParse(config["optionButtonText"]);
-	
-	tryParse(config["generalButtonPositionIconRegion"], _m_commonLayout.generalButtonPositionIconRegion);
-    tryParse(config["generalButtonNameRegion"], _m_commonLayout.generalButtonNameRegion);	
-		
-		
+    
+    _m_commonLayout.optionButtonText.tryParse(config["optionButtonText"]);
+    
+    tryParse(config["generalButtonPositionIconRegion"], _m_commonLayout.generalButtonPositionIconRegion);
+    tryParse(config["generalButtonNameRegion"], _m_commonLayout.generalButtonNameRegion);    
+        
+        
     config = layoutConfig[S_SKIN_KEY_ROOM];
     tryParse(config["chatBoxHeightPercentage"], _m_roomLayout.m_chatBoxHeightPercentage);
     tryParse(config["chatTextBoxHeight"], _m_roomLayout.m_chatTextBoxHeight);
@@ -860,9 +860,9 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
     tryParse(config["roleBoxHeight"], _m_roomLayout.m_roleBoxHeight);
     tryParse(config["scenePadding"], _m_roomLayout.m_scenePadding);
     
-	
-	
-	
+    
+    
+    
     for (int i = 0; i < 2; i++) {
         Json::Value playerConfig;
         PlayerCardContainerLayout *layout;

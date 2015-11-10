@@ -586,7 +586,7 @@ void Dashboard::selectAll()
             retractPileCards(pile);
     }
     retractPileCard();
-	
+    
     if (view_as_skill) {
         unselectAll();
         foreach (CardItem *card_item, m_handCards) {
@@ -958,10 +958,10 @@ void Dashboard::enableCards()
             expandPileCards(pile);
         if (Self->hasSkill("shanji") && pile == "piao")
             expandPileCards("piao");
-		if (Self->hasSkill("chaoren") && pile == "chaoren")
+        if (Self->hasSkill("chaoren") && pile == "chaoren")
             expandPileCards("chaoren");
     }
-	expandPileCard();
+    expandPileCard();
 
     foreach (CardItem *card_item, m_handCards) {
         card_item->setEnabled(card_item->getCard()->isAvailable(Self));
@@ -999,27 +999,27 @@ void Dashboard::startPending(const ViewAsSkill *skill)
     foreach (const QString &pileName, _m_pile_expanded) {
         if (!(pileName.startsWith("&") || pileName == "wooden_ox" || pileName == "piao" || pileName == "chaoren"))
             retractPileCards(pileName);
-		
+        
     }
-	retractPileCard();
-		
+    retractPileCard();
+        
     if (expand) {
         foreach (const QString &pile, Self->getPileNames()) {
             if (pile.startsWith("&") || pile == "wooden_ox")
                 expandPileCards(pile);
             if (Self->hasSkill("shanji") && pile == "piao")
                 expandPileCards("piao");
-			if (Self->hasSkill("chaoren") && pile == "chaoren")
-				expandPileCards("chaoren");
+            if (Self->hasSkill("chaoren") && pile == "chaoren")
+                expandPileCards("chaoren");
 
         }
-		expandPileCard();
+        expandPileCard();
     } else {
         foreach (const QString &pile, Self->getPileNames()) {
             if (pile.startsWith("&") || pile == "wooden_ox" || pile == "piao" || pile == "chaoren")
                 retractPileCards(pile);
         }
-		retractPileCard();
+        retractPileCard();
         if (skill && !skill->getExpandPile().isEmpty()) {
             foreach(const QString &pile_name, skill->getExpandPile().split(","))
                 expandPileCards(pile_name);
@@ -1055,7 +1055,7 @@ void Dashboard::stopPending()
         if (pile.startsWith("&") || pile == "wooden_ox" || pile == "piao" || pile == "chaoren")
             retractPileCards(pile);
     }
-	retractPileCard();
+    retractPileCard();
     emit card_selected(NULL);
 
     foreach (CardItem *item, m_handCards) {
@@ -1082,7 +1082,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
 {
     if (_m_pile_expanded.contains(pile_name)) return;
     _m_pile_expanded << pile_name;
-	
+    
     QString new_name = pile_name;
     QList<int> pile;
     if (new_name.startsWith("%")) {
@@ -1117,31 +1117,31 @@ void Dashboard::expandPileCards(const QString &pile_name)
 void Dashboard::expandPileCard()
 {
     //delete first;
-	retractPileCard();
-	
-	// then expand
-	
-	int id = Self->property("chaoren").toInt();
-	if (id && id >-1) {
-		_m_id_expanded << id; 
-	
-		QList<CardItem *> card_items;
-		CardItem *card_item = _createCard(id);
-		card_items << card_item;
-		card_item->setPos(mapFromScene(card_item->scenePos()));
-		card_item->setParentItem(this);
+    retractPileCard();
+    
+    // then expand
+    
+    int id = Self->property("chaoren").toInt();
+    if (id && id >-1) {
+        _m_id_expanded << id; 
+    
+        QList<CardItem *> card_items;
+        CardItem *card_item = _createCard(id);
+        card_items << card_item;
+        card_item->setPos(mapFromScene(card_item->scenePos()));
+        card_item->setParentItem(this);
 
     
 
-		_addHandCard(card_item, true, Sanguosha->translate("chaoren"));
+        _addHandCard(card_item, true, Sanguosha->translate("chaoren"));
 
 
-		adjustCards();
-		_playMoveCardsAnimation(card_items, false);
-		card_item->setAcceptedMouseButtons(Qt::LeftButton);
-		update();
-	
-	}
+        adjustCards();
+        _playMoveCardsAnimation(card_items, false);
+        card_item->setAcceptedMouseButtons(Qt::LeftButton);
+        update();
+    
+    }
 }
 
 
@@ -1150,8 +1150,8 @@ void Dashboard::retractPileCards(const QString &pile_name)
 {
     if (!_m_pile_expanded.contains(pile_name)) return;
     _m_pile_expanded.removeOne(pile_name);
-	
-	QString new_name = pile_name;
+    
+    QString new_name = pile_name;
     QList<int> pile;
     if (new_name.startsWith("%")) {
         new_name = new_name.mid(1);
@@ -1160,7 +1160,7 @@ void Dashboard::retractPileCards(const QString &pile_name)
     } else {
         pile = Self->getPile(new_name);
     }
-	
+    
     if (pile.isEmpty()) return;
     CardItem *card_item;
 
@@ -1182,9 +1182,9 @@ void Dashboard::retractPileCards(const QString &pile_name)
 
 void Dashboard::retractPileCard()
 {
-	CardItem *card_item;
+    CardItem *card_item;
     foreach (int card_id, _m_id_expanded) {
-		card_item = CardItem::FindItem(m_handCards, card_id);
+        card_item = CardItem::FindItem(m_handCards, card_id);
         if (card_item == selected) selected = NULL;
         Q_ASSERT(card_item);
         if (card_item) {
@@ -1196,8 +1196,8 @@ void Dashboard::retractPileCard()
     }
     adjustCards();
     update();
-	_m_id_expanded = QList<int> ();
-	
+    _m_id_expanded = QList<int> ();
+    
 }
 
 void Dashboard::onCardItemClicked()

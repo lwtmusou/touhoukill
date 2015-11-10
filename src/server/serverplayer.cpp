@@ -135,11 +135,11 @@ void ServerPlayer::clearOnePrivatePile(QString pile_name)
     QList<int> &pile = piles[pile_name];
 
     
-	DummyCard *dummy = new DummyCard(pile);
-	CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, this->objectName());
-	room->throwCard(dummy, reason, NULL);
-	dummy->deleteLater();
-	
+    DummyCard *dummy = new DummyCard(pile);
+    CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, this->objectName());
+    room->throwCard(dummy, reason, NULL);
+    dummy->deleteLater();
+    
     piles.remove(pile_name);
 }
 
@@ -510,19 +510,19 @@ bool ServerPlayer::hasNullification() const
         if (Sanguosha->getCard(id)->objectName() == "nullification")
             return true;
     }
-	if (hasSkill("shanji")) {
+    if (hasSkill("shanji")) {
         foreach (int i, getPile("piao")) {
             if (Sanguosha->getCard(i)->isKindOf("Nullification"))
                 return true;
         }
     }
-	if (hasSkill("chaoren")) {
+    if (hasSkill("chaoren")) {
         int id = property("chaoren").toInt();
         if (id && id > -1 &&Sanguosha->getCard(id)->isKindOf("Nullification"))
             return true;
     }
-	
-	
+    
+    
     foreach (const Skill *skill, getVisibleSkillList(true)) {
 
         if (hasSkill(skill->objectName())) {
@@ -1340,7 +1340,7 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
         setPileOpen(pile_name, p->objectName());
     piles[pile_name].append(card_ids);
 
-		
+        
     CardsMoveStruct move;
     move.card_ids = card_ids;
     move.to = this;

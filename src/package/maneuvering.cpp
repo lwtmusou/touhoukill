@@ -141,24 +141,24 @@ public:
     GudingBladeSkill() : WeaponSkill("GudingBlade")
     {
         events << DamageCaused;
-		frequency = Compulsory;
+        frequency = Compulsory;
     }
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
-		if (!WeaponSkill::triggerable(player)) return QStringList();
-		DamageStruct damage = data.value<DamageStruct>();
+        if (!WeaponSkill::triggerable(player)) return QStringList();
+        DamageStruct damage = data.value<DamageStruct>();
         if (damage.card && damage.card->isKindOf("Slash")
             && damage.to->getMark("Equips_of_Others_Nullified_to_You") == 0
             && damage.to->isKongcheng() && damage.by_user && !damage.chain && !damage.transfer)
-			return QStringList(objectName());
-		
-		return QStringList();
-	}
-	
-	virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+            return QStringList(objectName());
+        
+        return QStringList();
+    }
+    
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
-		DamageStruct damage = data.value<DamageStruct>();
-		room->setEmotion(player, "weapon/guding_blade");
+        DamageStruct damage = data.value<DamageStruct>();
+        room->setEmotion(player, "weapon/guding_blade");
  
         LogMessage log;
         log.type = "#GudingBladeEffect";
@@ -169,8 +169,8 @@ public:
         room->sendLog(log);
 
         data = QVariant::fromValue(damage);
-		return false;
-	}
+        return false;
+    }
 
 };
 
@@ -188,10 +188,10 @@ public:
     VineSkill() : ArmorSkill("Vine")
     {
         events << DamageInflicted << SlashEffected << CardEffected;
-		frequency = Compulsory;
+        frequency = Compulsory;
     }
 
-	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
         if (!ArmorSkill::triggerable(player)) return QStringList();
         if (triggerEvent == SlashEffected) {
@@ -209,9 +209,9 @@ public:
         }
         return QStringList();
     }
-	
-	
-	virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    
+    
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
         if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
@@ -253,7 +253,7 @@ public:
 
         return false;
     }
-	
+    
 
 };
 
@@ -269,10 +269,10 @@ public:
     SilverLionSkill() : ArmorSkill("SilverLion")
     {
         events << DamageInflicted << CardsMoveOneTime;
-		frequency = Compulsory;
+        frequency = Compulsory;
     }
 
-	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
         if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
@@ -296,7 +296,7 @@ public:
         }
         return QStringList();
     }
-	
+    
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
         if (triggerEvent == DamageInflicted) {
@@ -332,7 +332,7 @@ public:
         return false;
     }
 
-	
+    
 };
 
 SilverLion::SilverLion(Suit suit, int number)
@@ -422,19 +422,19 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
             break;
         }
     } */
-	foreach (int id, sub) {
+    foreach (int id, sub) {
         if (Self->getHandPile().contains(id)) {
             rec = false;
             break;
         }
-		else { // for  skill chaoren
-			if (id == Self->property("chaoren").toInt()){
-				rec = false;
-				break; 
-			}
-		}
+        else { // for  skill chaoren
+            if (id == Self->property("chaoren").toInt()){
+                rec = false;
+                break; 
+            }
+        }
     }
-	
+    
 
     if (rec && Self->isCardLimited(this, Card::MethodUse))
         return targets.length() == 0;
