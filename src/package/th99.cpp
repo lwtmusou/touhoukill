@@ -1561,7 +1561,7 @@ public:
         
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (use.from->canSlash(p, use.card, false) || !use.to.contains(p))
+            if (use.from->canSlash(p, use.card, false) && !use.to.contains(p))
                 targets << p;
         }
         QString prompt = "@bihuo-playerchosen:" + use.from->objectName();
