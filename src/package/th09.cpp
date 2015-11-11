@@ -56,6 +56,10 @@ public:
         return false;
     }
    
+   virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
+        return true;
+    }
 };
 
 class Huiwu : public TriggerSkill

@@ -5015,6 +5015,14 @@ P = 你自己, R = 你所在的房间</translation>
     </message>
 </context>
 <context>
+    <name>ChooseTriggerOrderBox</name>
+    <message>
+        <location filename="../src/ui/ChooseTriggerOrderBox.cpp" line="306"/>
+        <source>cancel</source>
+        <translation>取消</translation>
+    </message>
+</context>
+<context>
     <name>TriggerOptionButton</name>
     <message>
         <location filename="../src/ui/ChooseTriggerOrderBox.cpp" line="192"/>

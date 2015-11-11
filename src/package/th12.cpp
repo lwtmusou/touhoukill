@@ -628,7 +628,9 @@ public:
                 //check provider
                 if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
                 || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE) {
-                    ServerPlayer *provider = move.reason.m_provider.value<ServerPlayer *>();
+                    ServerPlayer *provider; 
+ 					if (move.reason.m_provider != NULL)
+						provider = move.reason.m_provider.value<ServerPlayer *>();
                     if (provider && provider == player)
                         return QStringList();
                 }

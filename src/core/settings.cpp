@@ -136,13 +136,13 @@ void Settings::init()
     BGMVolume = value("BGMVolume", 1.0f).toFloat();
     EffectVolume = value("EffectVolume", 1.0f).toFloat();
 
-    QStringList backimages;
-    backimages << "1" << "2" << "3" << "4" << "5" << "6" << "7" << "8";
 
-    qShuffle(backimages);
-    QString backimage = backimages.at(0);
 
-    BackgroundImage = value("BackgroundImage", "backdrop/new-version" + backimage + ".jpg").toString();
+	int length = 8;
+    int index = qrand() % length +1;
+	QString bgFilename = QString("%1%2%3").arg("backdrop/new-version").arg(index).arg(".jpg");
+
+	BackgroundImage = value("BackgroundImage", bgFilename).toString();
     TableBgImage = value("TableBgImage", "backdrop/default.jpg").toString();
     UseLordBackdrop = value("UseLordBackdrop", true).toBool();
 

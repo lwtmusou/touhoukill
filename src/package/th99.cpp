@@ -600,7 +600,7 @@ public:
     {
         return (player != NULL &&  player->hasSkill(objectName())
             && player->getMark("mengxian") == 0 
-            && player->getPhase() == Player::Start) && player->getPile("jingjie").length() > 3;
+            && player->getPhase() == Player::Start) && player->getPile("jingjie").length() >= 3;
     }
     
     

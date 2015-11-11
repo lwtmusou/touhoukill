@@ -820,7 +820,9 @@ public:
             //if it exist, we need not check the move reason again?
             const Card *card = move.reason.m_extraData.value<const Card *>();
             const Card *realcard = Sanguosha->getEngineCard(move.card_ids.first());
-            ServerPlayer *provider = move.reason.m_provider.value<ServerPlayer *>();
+            ServerPlayer *provider; 
+ 			if (move.reason.m_provider != NULL)
+ 				provider = move.reason.m_provider.value<ServerPlayer *>();
             if (card && card->getSkillName() == objectName()
                     && room->getCardPlace(move.card_ids.first()) == Player::DiscardPile
                     && (player == move.from || (provider && provider == player))
@@ -1166,10 +1168,6 @@ public:
         return QStringList();
     }
     
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
-    {
-        return false;
-    }
     
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
@@ -1618,8 +1616,10 @@ public:
             if (player->getHp() < 1 && !player->isCurrent()) //player->getPhase() != Player::NotActive ||
                 return QStringList(objectName());
         }else if (triggerEvent == EventPhaseEnd && player->getPhase() == Player::Play){
-            if (player->getMark("siyuinvoke") > 0)
-                return QStringList();
+            if (player->getMark("siyuinvoke") > 0  && player->getHp() < 1){
+				player->removeMark("siyuinvoke");
+                return QStringList(objectName());
+			}
         }
         return QStringList();
     }
@@ -1664,24 +1664,12 @@ public:
             throw TurnBroken;
             return true;
         
-        }else if (triggerEvent == EventPhaseEnd && player->getPhase() == Player::Play){
-            player->removeMark("siyuinvoke");
-            if (player->getHp() < 1) {
-                room->notifySkillInvoked(player, "hpymsiyu");
-                room->enterDying(player, NULL);
-            }
+        }
+		else if (triggerEvent == EventPhaseEnd && player->getPhase() == Player::Play){
+            room->notifySkillInvoked(player, "hpymsiyu");
+            room->enterDying(player, NULL);
         }
         return false;
-        
-
-
-        
-
-
-
-
-        
-
     }
 };
 

@@ -576,15 +576,15 @@ public:
     {
         JudgeStruct judge;
         if (triggerEvent == Damaged)
-            judge.pattern = ".|heart|2~9";
-        else
             judge.pattern = ".|red|2~9";
+        else
+            judge.pattern = ".|heart|2~9";
             
         judge.good = true;
         if (triggerEvent == Damaged)
-            judge.reason = "huisu2";
-        else
             judge.reason = "huisu1";
+        else
+            judge.reason = "huisu2";
             
         judge.who = player;
         room->judge(judge);

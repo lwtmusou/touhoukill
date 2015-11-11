@@ -8172,6 +8172,16 @@ sgs.ai_skill_choice["3v3_direction"] = function(self, choices, data)
 	if self:isFriend(self.player:getNextAlive()) == aggressive then return "cw" else return "ccw" end
 end
 
+ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
+	local skillnames = choices:split("+")
+	for _, skillname in ipairs(skillnames) do
+		if (skillname ~= "cancel") then
+			return skillname
+		end
+	end
+	return skillnames[1]
+ end
+
 --开始添加ai文件
 dofile "lua/ai/debug-ai.lua"
 dofile "lua/ai/imagine-ai.lua"
