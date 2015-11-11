@@ -998,10 +998,27 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
     try {
         QList<const TriggerSkill *> triggered;
         QList<const TriggerSkill *> &skills = skill_table[triggerEvent];
-        
+        foreach (const TriggerSkill *skill, skills) {
+            double priority = skill->getPriority(triggerEvent);
+             int len = room->getPlayers().length();
+            foreach (ServerPlayer *p, room->getAllPlayers(true)) {
+                if (p->hasSkill(skill->objectName())) { //|| p->hasEquipSkill(skill->objectName())
+                    priority += (double)len / 100;
+                    break;
+                }
+                len--;
+            } 
+            TriggerSkill *mutable_skill = const_cast<TriggerSkill *>(skill);
+            mutable_skill->setDynamicPriority(priority);
+        }
 
-        qStableSort(skills.begin(), skills.end(), [triggerEvent](const TriggerSkill *a, const TriggerSkill *b) {return a->getDynamicPriority() > b->getDynamicPriority(); });
-        
+        //qStableSort(skills.begin(), skills.end(), [triggerEvent](const TriggerSkill *a, const TriggerSkill *b) {return a->getDynamicPriority() > b->getDynamicPriority(); });
+        qStableSort(skills.begin(), skills.end(), CompareByPriority);
+		/* foreach (const TriggerSkill *skill, skills){
+			if (target)
+				target->gainMark("@"+skill->objectName());
+		} */
+		
         do {
             trigger_who.clear();
             foreach (const TriggerSkill *skill, skills) {
@@ -1388,14 +1405,14 @@ void RoomThread::addTriggerSkill(const TriggerSkill *skill)
         table << skill;
         foreach (const TriggerSkill *askill, table) {
             double priority = askill->getPriority(triggerEvent);
-            /* int len = room->getPlayers().length();
+            int len = room->getPlayers().length();
             foreach (ServerPlayer *p, room->getAllPlayers(true)) {
                 if (p->hasSkill(askill->objectName())) {
                     priority += (double)len / 100;
                     break;
                 }
                 len--;
-            } */
+            } 
             TriggerSkill *mutable_skill = const_cast<TriggerSkill *>(askill);
             mutable_skill->setDynamicPriority(priority);
         }

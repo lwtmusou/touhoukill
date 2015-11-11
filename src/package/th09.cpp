@@ -237,6 +237,8 @@ public:
         frequency = Compulsory;
         events << DamageCaused;
     }
+	
+
     
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {    
