@@ -1205,11 +1205,11 @@ public:
         ServerPlayer *luna = room->findPlayerBySkillName(objectName());
         if (!luna || !luna->isCurrent())//luna->getPhase() == Player::NotActive
             return QStringList();
-        if (damage.to == NULL || damage.to->isDead() || damage.to == luna)
-           return QStringList(objectName());
-        if (damage.to->getMark("@jijing") == 0) 
+		if (damage.to->getMark("@jijing") > 0) 
             return QStringList();
-        return QStringList();
+        if (!damage.to  || damage.to->isDead() || damage.to == luna)
+           return QStringList();
+        return QStringList(objectName());
     }
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
