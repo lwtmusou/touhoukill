@@ -341,27 +341,27 @@ public:
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
         //if (!TriggerSkill::triggerable(player)) return QStringList();
-        bool need_judge = false;
+        bool invoke = false;
         ServerPlayer *src = room->findPlayerBySkillName("bumie");
         if (src == NULL)
             return QStringList();
         if (triggerEvent == HpChanged) {
             if (player == src && player->getHp() == 1 && player->isKongcheng())
-                need_judge = true;
+                invoke = true;
         } else if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (player == src && player->getHp() == 1 && move.from && move.from == player
                 && move.from_places.contains(Player::PlaceHand) && move.is_last_handcard)
-                need_judge = true;
+                invoke = true;
         } else if (triggerEvent == EventPhaseChanging) {
             if (src->getHp() == 1 && src->isKongcheng())
-                need_judge = true;
+                invoke = true;
         } else if (triggerEvent == EventAcquireSkill && data.toString() == "bumie") {
             if (src->getHp() == 1 && src->isKongcheng())
-                need_judge = true;
+                invoke = true;
         }
 
-        if (need_judge) 
+        if (invoke) 
             return QStringList(objectName());
         return QStringList();
     }
@@ -371,19 +371,27 @@ public:
         
         ServerPlayer *src = room->findPlayerBySkillName("bumie");
         
-        JudgeStruct judge;
+        /* JudgeStruct judge;
         judge.who = src;
         judge.reason = "bumie";
         judge.pattern = ".|diamond";
-        judge.good = true;
+        judge.good = true; */
         //judge.negative = true;
 
         room->touhouLogmessage("#TriggerSkill", src, "bumie");
         room->notifySkillInvoked(src, "bumie");
 
-        room->judge(judge);
-        src->obtainCard(judge.card);
-        if (!judge.isGood()) {
+        //room->judge(judge);
+        //src->obtainCard(judge.card);
+		CardsMoveStruct move;
+        move.to = src;
+        move.to_place = Player::PlaceHand;
+		int id = room->drawCard(false);
+        move.card_ids << id;
+        room->moveCardsAtomic(move, false);
+		room->showCard(src, id);
+        //if (!judge.isGood()) {
+		if (Sanguosha->getCard(id)->getSuit() != Card::Diamond ){
             room->loseMaxHp(src);
             if (src->isWounded()) {
                 RecoverStruct recover;

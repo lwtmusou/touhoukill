@@ -818,7 +818,10 @@ public:
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
         if (!TriggerSkill::triggerable(player)) return QStringList();
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
+        DamageStruct damage = data.value<DamageStruct>();
+		if (damage.from && player->canDiscard(damage.from, "he"))
+			return QStringList(objectName());
+		foreach (ServerPlayer *p, room->getAllPlayers()) {
                 if (player->canDiscard(p, "ej"))
                     return QStringList(objectName());
         }
