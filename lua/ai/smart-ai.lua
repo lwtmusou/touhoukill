@@ -1584,7 +1584,8 @@ function SmartAI:objectiveLevel(player)
 				local rebelish = (sgs.current_mode_players["loyalist"] + 1 < sgs.current_mode_players["rebel"])
 				if player:isLord() then return rebelish and -1 or 0 end
 				if target_role == "loyalist" then return rebelish and 0 or 3.5
-				elseif target_role == "rebel" then return rebelish and 3.5 or 0
+				elseif target_role == "rebel" then return 0 
+				--elseif target_role == "rebel" then return rebelish and 3.5 or 0  --主公收反也狂喂四个桃子  然后瞬间主忠劣势。。。尼玛
 				else return 0
 				end
 			end
@@ -7762,7 +7763,7 @@ function SmartAI:touhouFindPlayerToDraw(include_self, drawnum, players)
 	end
 	local friends = {}
 	for _, player in ipairs(players) do
-		if self:isFriend(player)  then
+		if self:isFriend(player) and not self:cautionRenegade(self.player, player)  then--
 			if  (player:hasSkill("micai") and player:isKongcheng() and drawnum <= 2) then
 				continue
 			end
@@ -7816,34 +7817,64 @@ function SmartAI:touhouIsDamageCard(card)
 	return false
 end
 
-function SmartAI:cautionRenegade()
-	if sgs.current_mode_players["renegade"] == 0 or self.player:getRole() == "renegade" then
+function SmartAI:cautionRenegade(player, friend)
+	if sgs.current_mode_players["renegade"] == 0  then --or self.player:getRole() == "renegade"
 		return false
 	end
+	--if sgs.ai_role[player:objectName()] == "renegade" then
+		-- return false
+	--end
+	
+	local hasFakeFriend = false
 	local role = self.player:getRole()
 	local friends =  self:getFriends()
 	if role == "loyalist" or self.player:isLord()  then
-		if #friends < sgs.current_mode_players["loyalist"]+ sgs.current_mode_players["renegade"]+sgs.current_mode_players["lord"] then
-			return false
+		if #friends >= sgs.current_mode_players["loyalist"]+ sgs.current_mode_players["renegade"]+sgs.current_mode_players["lord"] then
+			hasFakeFriend = true
 		end
 	elseif role == "rebel" then
-		if #friends <= sgs.current_mode_players["rebel"] then
-			return false
+		if #friends >= sgs.current_mode_players["rebel"] then
+			hasFakeFriend = true
 		end
 	end
+	if not hasFakeFriend then
+		return false
+	end
+
+    local need_caution = false	
 	process = sgs.gameProcess(self.room)
 	if role == "loyalist" or self.player:isLord()  then
 		if process:match("loyal") or process == "neutral" then
-			return true
+			need_caution =  true
 		end
-		--return sgs.current_mode_players["loyalist"] ==1  
-		--and sgs.current_mode_players["loyalist"]+ sgs.current_mode_players["renegade"] >= sgs.current_mode_players["rebel"]
 	elseif role == "rebel"   then
 		if process:match("rebel") or process == "neutral" then
-			return true
+			need_caution =  true
 		end
 	end
-	return false
+	if not need_caution then return false end
+	
+	
+	local sort_func = {
+		loyalist = function(a, b)
+			return sgs.role_evaluation[a:objectName()]["loyalist"] < sgs.role_evaluation[b:objectName()]["loyalist"]
+	    end,
+		rebel = function(a, b)
+			return sgs.role_evaluation[a:objectName()]["rebel"] < sgs.role_evaluation[b:objectName()]["rebel"]
+	    end,
+		renegade = function(a, b)
+			return sgs.role_evaluation[a:objectName()]["renegade"] < sgs.role_evaluation[b:objectName()]["renegade"]
+	    end
+    }
+
+	local friends_noself = self:getFriendsNoself(player)
+	if  #friends_noself == 0 then return false end
+	if role == "loyalist" or self.player:isLord()  then
+		table.sort(friends_noself, sort_func["loyalist"])
+	elseif role == "rebel"   then
+		table.sort(friends_noself, sort_func["renegade"])
+	end
+	return  friends_noself[1]:objectName() == friend:objectName()  
 end
 
 function SmartAI:trickProhibit(card, enemy, from)
