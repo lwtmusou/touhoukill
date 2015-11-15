@@ -1431,8 +1431,9 @@ function sgs.gameProcess(room, arg)  --尼玛 不看具体技能和牌的数量�
 			if aplayer:hasSkill("ganying") and lord:hasSkill("fengsu") then rebel_value = rebel_value + 2 end
 			if aplayer:hasSkill("baochun") and aplayer:getMaxHp() >3 then rebel_value = rebel_value + aplayer:getMaxHp() - 3 end
 			if rebel_num > 1 and aplayer:hasSkill("hpymsiyu+juhe") then rebel_value = rebel_value + 1 end
-			if aplayer:hasSkill("wuchang")  then rebel_value = rebel_value + 2 end
+			if aplayer:hasSkill("wuchang")  then rebel_value = rebel_value + 10 end
 			if  aplayer:hasSkill("shizhu") then rebel_value = rebel_value + 1 end
+			if  aplayer:hasSkills("bolan+qiyao") then rebel_value = rebel_value + 10 end
 		elseif role == "loyalist" or role == "lord" then
 			local loyal_hp
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then loyal_hp = 4
@@ -1584,8 +1585,7 @@ function SmartAI:objectiveLevel(player)
 				local rebelish = (sgs.current_mode_players["loyalist"] + 1 < sgs.current_mode_players["rebel"])
 				if player:isLord() then return rebelish and -1 or 0 end
 				if target_role == "loyalist" then return rebelish and 0 or 3.5
-				elseif target_role == "rebel" then return 0 
-				--elseif target_role == "rebel" then return rebelish and 3.5 or 0  --主公收反也狂喂四个桃子  然后瞬间主忠劣势。。。尼玛
+				elseif target_role == "rebel" then return rebelish and 3.5 or 0
 				else return 0
 				end
 			end
@@ -7833,7 +7833,7 @@ function SmartAI:cautionRenegade(player, friend)
 			hasFakeFriend = true
 		end
 	elseif role == "rebel" then
-		if #friends >= sgs.current_mode_players["rebel"] then
+		if #friends > sgs.current_mode_players["rebel"] then
 			hasFakeFriend = true
 		end
 	end

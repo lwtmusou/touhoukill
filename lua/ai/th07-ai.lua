@@ -133,7 +133,7 @@ sgs.ai_choicemade_filter.skillInvoke.wangxiang = function(self, player, promptli
 				end
 			end
 			if not wizard_harm then 
-				sgs.updateIntention(from, lord, 10)
+				sgs.updateIntention(player, to, 10)
 			end
 		end
 	end

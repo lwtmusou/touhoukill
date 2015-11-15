@@ -255,36 +255,34 @@ public:
         events << TargetConfirmed;
     }
 
-    virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {    
-        TriggerList skill_list;
+        if (!TriggerSkill::triggerable(player)) return QStringList();
         if (triggerEvent == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Slash") && use.to.length() == 1) {
-                ServerPlayer *target = use.to.first();
+			    ServerPlayer* target = use.to.first();
                 if (use.from == NULL || use.from->isDead() || use.from->getLostHp() >= target->getLostHp())
-                    return TriggerList();
+                    return QStringList();
                 
                 Slash *slash = new Slash(Card::NoSuit, 0);
                 slash->setSkillName("_" + objectName());
                 if (target->isCardLimited(slash, Card::MethodUse) || !target->canSlash(use.from, slash, false))
-                    return TriggerList();
+                    return QStringList();
                 
-                QList<ServerPlayer *> seijas = room->findPlayersBySkillName(objectName());
-                foreach (ServerPlayer *seija, seijas) {
-                    if (seija->canDiscard(target, "h"))
-                        skill_list.insert(seija, QStringList(objectName()));
-                }
+
+                    if (player->canDiscard(target, "h"))
+                        return QStringList(objectName());
             }        
         }
-        return skill_list;
+        return QStringList();
     }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer *player) const
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
         if (triggerEvent == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            QString prompt = "target:" + use.from->objectName() + ":" + target->objectName();
+            QString prompt = "target:" + use.from->objectName() + ":" + use.to.first()->objectName();
             player->tag["nizhuan_carduse"] = data;
             return room->askForSkillInvoke(player, objectName(), prompt);
         }
@@ -292,11 +290,11 @@ public:
     }
     
     
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer *player) const
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
         if (triggerEvent == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            
+            ServerPlayer* target = use.to.first();
             use.nullified_list << target->objectName();
             data = QVariant::fromValue(use);
             
