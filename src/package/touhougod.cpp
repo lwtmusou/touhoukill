@@ -19,13 +19,26 @@ public:
         events << DamageInflicted << PreHpRecover;
     }
 
-     virtual TriggerList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const
+     virtual TriggerList triggerable(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const
     {  
         TriggerList skill_list;
         QList<ServerPlayer *> yukaris = room->findPlayersBySkillName(objectName());
         foreach (ServerPlayer *yukari, yukaris) {
-            if (yukari->canDiscard(yukari, "he") )
+            if (yukari->canDiscard(yukari, "h")) //yukari->canDiscard(yukari, "he")
                 skill_list.insert(yukari, QStringList(objectName()));
+			else{ //in order to reduce frequency of client request
+				foreach (const Card *c, yukari->getCards("e")) {
+					if (yukari->canDiscard(yukari, c->getEffectiveId()) && event == DamageInflicted &&  c->getSuit() == Card::Heart){
+						skill_list.insert(yukari, QStringList(objectName()));
+						break;
+					}
+					else if (yukari->canDiscard(yukari, c->getEffectiveId()) && event == PreHpRecover &&  c->getSuit() == Card::Spade){
+						skill_list.insert(yukari, QStringList(objectName()));
+						break;
+					}
+				}
+			}
+			
         }
         return skill_list;
     }
