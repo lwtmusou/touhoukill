@@ -1425,6 +1425,7 @@ function sgs.gameProcess(room, arg)  --尼玛 不看具体技能和牌的数量�
 			if lord and aplayer:inMyAttackRange(lord) then
 				rebel_value = rebel_value + 0.4
 			end
+			if aplayer:getMark("@pingyi") > 0 then rebel_value = rebel_value - 3  end
 			if aplayer:getMark("@duanchang") > 0 and aplayer:getMaxHp() <= 3 then rebel_value = rebel_value - 1 end
             if aplayer:hasSkill("xisan") then  rebel_value = rebel_value + 2 end
 			if aplayer:hasSkills("luanying+jingjie") or aplayer:hasSkills("mengxian+jingjie") then rebel_value = rebel_value + 2 end
@@ -1450,6 +1451,7 @@ function sgs.gameProcess(room, arg)  --尼玛 不看具体技能和牌的数量�
 				loyal_value = loyal_value + 0.3
 			end
 			if aplayer:getMark("@duanchang")==1 and aplayer:getMaxHp() <=3 then loyal_value = loyal_value - 1 end
+			if aplayer:getMark("@pingyi") > 0 then loyal_value = loyal_value - 3  end
 		end
 	end
 	local diff = loyal_value - rebel_value + (loyal_num + 1 - rebel_num) * 2

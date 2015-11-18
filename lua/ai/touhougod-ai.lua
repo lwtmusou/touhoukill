@@ -326,14 +326,38 @@ function huimie_skill.getTurnUseCard(self)
 	return sgs.Card_Parse("@HuimieCard=.")
 end
 sgs.ai_skill_use_func.HuimieCard = function(card, use, self)
-
         self:sort(self.enemies,"hp",true)
-        targets={}
+        local targets={}
 		for _, p in ipairs(self.enemies) do
-            if not p:isChained()  then    
+            if not p:isChained()  then
+				local fakeDamage=sgs.DamageStruct()
+				fakeDamage.card=nil
+				fakeDamage.nature= sgs.DamageStruct_Fire
+				fakeDamage.damage=1
+				fakeDamage.from=self.player
+				fakeDamage.to=p
+				local isEffective = self:touhouNeedAvoidAttack(fakeDamage, self.player, p)
+				if not isEffective then continue end
 				table.insert(targets,p)
 			end
         end
+		if #targets == 0 then
+			for _, p in ipairs(self.enemies) do
+				if p:isChained()  then
+					local fakeDamage=sgs.DamageStruct()
+					fakeDamage.card=nil
+					fakeDamage.nature= sgs.DamageStruct_Fire
+					fakeDamage.damage=1
+					fakeDamage.from=self.player
+					fakeDamage.to=p
+					local isEffective = self:touhouNeedAvoidAttack(fakeDamage, self.player, p)
+					if not isEffective then continue end
+					table.insert(targets,p)
+				end
+			end
+		end
+		
+		
 		if #targets >0 then
 			use.card = card
             if use.to then

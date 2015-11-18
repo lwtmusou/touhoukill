@@ -461,7 +461,7 @@ sgs.ai_skill_cardask["@zhengyi"] = function(self, data)
 			end
 		end
 		if #cards==0 then return "." end
-		self:sortByUseValue(cards)
+		self:sortByUseValue(cards, true)
 		return "$" .. cards[1]:getId()
 	end
 	return "."
