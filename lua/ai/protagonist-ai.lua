@@ -359,6 +359,7 @@ sgs.ai_card_intention.SaiqianCard = -60
 sgs.ai_skill_choice.saiqian= function(self, choices, data)	
 	local source=self.player:getTag("saiqian_source"):toPlayer()
 	if not source or not source:isWounded() or not self:isFriend(source) then return "cancel_saiqian" end
+	if  source:getHp()+1 > getBestHp(source) then return "cancel_saiqian" end
 	if choices:match("discard_saiqian") then
 		for _,c in sgs.qlist(self.player:getHandcards())do
 			if c:getSuit()==sgs.Card_Heart  then

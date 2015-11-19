@@ -1204,8 +1204,10 @@ sgs.ai_card_intention.general = function(from, to, level)
 
 	local loyalist_value = sgs.role_evaluation[from:objectName()]["loyalist"]
 	local renegade_value = sgs.role_evaluation[from:objectName()]["renegade"]
-	
-	
+	local renegadeLevel = 1
+	if sgs.isLordInDanger() then
+		renegadeLevel = 2
+	end
 	if sgs.evaluatePlayerRole(to) == "loyalist" then
 		
 		if sgs.current_mode_players["rebel"] == 0 and to:isLord() and level > 0  then
@@ -1224,16 +1226,16 @@ sgs.ai_card_intention.general = function(from, to, level)
 				and sgs.current_mode_players["loyalist"] > 0 and level > 0 and sgs.explicit_renegade == false then
 				-- 进入主忠内, 但是没人跳过内，这个时候忠臣之间的相互攻击，不更新内奸值
 		elseif (sgs.ai_role[from:objectName()] == "loyalist" and level > 0) or (sgs.ai_role[from:objectName()] == "rebel" and level < 0) then
-			sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + math.abs(level)
+			sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + math.abs(level)*renegadeLevel
 		elseif sgs.ai_role[from:objectName()] ~= "rebel" and sgs.ai_role[from:objectName()] ~= "neutral" and level > 0 and to:isLord() then
-			sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + math.abs(level)
+			sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + math.abs(level)*renegadeLevel
 		end
 	end
 
 	if sgs.evaluatePlayerRole(to) == "rebel" then
 		sgs.role_evaluation[from:objectName()]["loyalist"] = sgs.role_evaluation[from:objectName()]["loyalist"] + level
 		if (sgs.ai_role[from:objectName()] == "rebel" and level > 0) or (sgs.ai_role[from:objectName()] == "loyalist" and level < 0) then
-			sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + math.abs(level)
+			sgs.role_evaluation[from:objectName()]["renegade"] = sgs.role_evaluation[from:objectName()]["renegade"] + math.abs(level)*renegadeLevel
 		end
 	end
 	
@@ -1430,7 +1432,7 @@ function sgs.gameProcess(room, arg)  --尼玛 不看具体技能和牌的数量�
             if aplayer:hasSkill("xisan") then  rebel_value = rebel_value + 2 end
 			if aplayer:hasSkills("luanying+jingjie") or aplayer:hasSkills("mengxian+jingjie") then rebel_value = rebel_value + 2 end
 			if aplayer:hasSkill("ganying") and lord:hasSkill("fengsu") then rebel_value = rebel_value + 2 end
-			if aplayer:hasSkill("baochun") and aplayer:getMaxHp() >3 then rebel_value = rebel_value + aplayer:getMaxHp() - 3 end
+			if aplayer:hasSkill("baochun") then rebel_value = rebel_value + aplayer:getMaxHp() end
 			if rebel_num > 1 and aplayer:hasSkill("hpymsiyu+juhe") then rebel_value = rebel_value + 1 end
 			if aplayer:hasSkill("wuchang")  then rebel_value = rebel_value + 10 end
 			if  aplayer:hasSkill("shizhu") then rebel_value = rebel_value + 1 end
@@ -1625,6 +1627,7 @@ function SmartAI:objectiveLevel(player)
 			end
 		else
 			if player:isLord() or target_role == "renegade" then return 0 end
+
 			if diff >= diff_threshold then
 				return target_role == "rebel" and -2 or 5
 			else
@@ -4274,7 +4277,22 @@ function SmartAI:willUsePeachTo(dying)
 			end
 		end
 	end
-    --if self.role == "renegade"  内奸的桃子不是一个判断一个friend之流的就可以随便救人啊 哪怕 反贼确实劣势 反贼被判为friend
+	
+    if self.role == "renegade" then  --一个反都没有死，内奸凭什么救反。 哪怕 反贼确实“劣势”， 反贼被判为friend  关键是救完自己又不收人头
+		local no_rebel_die = true
+		if sgs.ai_role[dying:objectName()] == "rebel" then
+			for _,p in sgs.qlist(self.room:getAllPlayers(true)) do
+				if p:isDead() and p:getRole() == rebel then
+					no_rebel_die =false
+				end
+			end
+			if no_rebel_die then
+			--sgs.current_mode_players["rebel"] + sgs.current_mode_players["renegade"] - 1 >= sgs.current_mode_players["loyalist"] + 1 then
+				return "."
+			end
+		end
+	end
+	
 	
 	if self:isFriend(dying) then
 		if self:needDeath(dying) then return "." end
