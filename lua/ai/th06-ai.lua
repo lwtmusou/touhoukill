@@ -312,6 +312,10 @@ sgs.ai_skillProperty.huisu = function(self)
 end
 
 sgs.ai_skill_invoke.bolan = function(self)
+	local current = self.room:getCurrent()
+	if current and current:hasSkill("souji") and not self:isFriend(current) then
+		return self.player:getPile("yao_mark"):length() + self.player:getHandcardNum() <= self.player:getMaxHp()
+	end
 	if self.player:getPile("yao_mark"):length()>0 then
 		return true
 	else

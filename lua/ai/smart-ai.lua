@@ -1372,6 +1372,7 @@ function sgs.isLordInDanger()
 	local lord = global_room:getLord()
 	local lord_hp
 	if not lord then return false end
+	
 	if lord:hasSkill("benghuai") and lord:getHp() > 4 then lord_hp = 4
 	elseif lord:hasSkill("huanmeng") then
 		lord_hp = lord:getHandcardNum()/2
@@ -1380,6 +1381,9 @@ function sgs.isLordInDanger()
 	elseif lord:hasSkill("bumie") then
 		lord_hp =  lord:getMaxHp()
 	else lord_hp = lord:getHp() end
+	if lord:hasSkill("jinguo") then 
+		lord_hp = math.max(lord_hp, lord_hp - lord:getMark("@kinki")/2)
+	end
 	if lord:hasSkill("juxian") and lord:faceUp() then
 		lord_hp = lord_hp+1
 	end

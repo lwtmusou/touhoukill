@@ -115,6 +115,8 @@ function sgs.getDefenseSlash(player, self)
 
 	if sgs.card_lack[player:objectName()]["Jink"] == 1 and knownJink == 0 then defense = 0 end
 
+	
+	
 	defense = defense + knownJink * 1.2
 
 	local hasEightDiagram = false
@@ -166,6 +168,9 @@ function sgs.getDefenseSlash(player, self)
 	if player:hasSkill("aocai") and player:getPhase() == sgs.Player_NotActive then defense = defense + 0.5 end
 	if player:hasSkill("wanrong") and not hasManjuanEffect(player) then defense = defense + 0.5 end
 
+	
+	
+	
 	local hujiaJink = 0
 	if player:hasLordSkill("hujia") then
 		local lieges = global_room:getLieges("wei", player)
@@ -178,7 +183,7 @@ function sgs.getDefenseSlash(player, self)
 		defense = defense + hujiaJink
 	end
 	
-	local tianrenJink = 0
+	local tianrenJink = 0 --类似护驾
 	if player:hasLordSkill("tianren") and player:getPhase()==sgs.Player_NotActive  then
 		local lieges = global_room:getLieges("zhan", player)
 		for _, liege in sgs.qlist(lieges) do
@@ -192,6 +197,8 @@ function sgs.getDefenseSlash(player, self)
 	
 	if player:getMark("@tied") > 0 and not attacker:hasSkill("jueqing") then defense = defense + 1 end
 
+	
+	
 	if attacker:canSlashWithoutCrossbow() and attacker:getPhase() == sgs.Player_Play then
 		local hcard = player:getHandcardNum()
 		if attacker:hasSkill("liegong") and (hcard >= attacker:getHp() or hcard <= attacker:getAttackRange()) then defense = 0 end
@@ -266,18 +273,20 @@ function sgs.getDefenseSlash(player, self)
 	end
 
 	--if player:hasSkill("tianxiang") then defense = defense + player:getHandcardNum() * 0.5 end
-
-	if player:getHandcardNum() == 0 and player:getPile("wooden_ox"):isEmpty() 
-	and hujiaJink == 0  and tianrenJink==0
-	and not player:hasSkill("kongcheng") then
+    --这一步本身还是略有问题 0牌4血的人扣下来防御值比1血只有1张明杀的人防御值还高
+	--压根不懂集火理论  只要没牌就能扣减了大把防御值。。。 2血忠或者空城忠 帮1血主挡刀不要不要的
+	 --if player:getHandcardNum() == 0 and player:getPile("wooden_ox"):isEmpty() 
+	 if sgs.card_lack[player:objectName()]["Jink"] == 1 and knownJink == 0
+	 and hujiaJink == 0  and tianrenJink==0
+	 and not player:hasSkill("kongcheng") then
 		if player:getHp() <= 1 then defense = defense - 2.5 end
 		if player:getHp() == 2 then defense = defense - 1.5 end
-		if not hasEightDiagram then defense = defense - 2 end
+		if not hasEightDiagram then defense = defense - 1 end
 		if attacker:hasWeapon("GudingBlade") and player:getHandcardNum() == 0
-		  and not (player:hasArmorEffect("SilverLion") and not IgnoreArmor(attacker, player)) then
-			defense = defense - 2
+		   and not (player:hasArmorEffect("SilverLion") and not IgnoreArmor(attacker, player)) then
+			 defense = defense - 2
 		end
-	end
+	 end
 
 	local has_fire_slash
 	local cards = sgs.QList2Table(attacker:getHandcards())
@@ -299,6 +308,7 @@ function sgs.getDefenseSlash(player, self)
 		if sgs.isLordInDanger() then defense = defense - 0.7 end
 	end
 
+	
 	if (sgs.ai_chaofeng[player:getGeneralName()] or 0) >=3 then
 		defense = defense - math.max(6, (sgs.ai_chaofeng[player:getGeneralName()] or 0)) * 0.035
 	end
@@ -323,6 +333,8 @@ function sgs.getDefenseSlash(player, self)
 		if player:hasSkill("xiliang") and knownJink == 0 then defense = defense - 2 end
 		--if player:hasSkill("shouye") then defense = defense - 2 end
 	end
+	
+   	
 	return defense
 end
 
