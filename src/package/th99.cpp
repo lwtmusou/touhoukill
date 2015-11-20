@@ -513,76 +513,59 @@ public:
 };
 
 
-
-class ShituDetect : public TriggerSkill
-{
-public:
-    ShituDetect() : TriggerSkill("#shituDetect")
-    {
-        events << DamageDone << Death;
-    }
-    
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
-    
-        ServerPlayer *source = room->findPlayerBySkillName("shitu");
-        if (source == NULL)
-            return QStringList();
-        if (room->getCurrent() == source) {
-            if (source->getMark("touhou-extra") > 0)
-                return QStringList();
-            room->setPlayerFlag(source, "shituDamage");
-        }
-        return QStringList();
-    }
-};
-
 class Shitu : public TriggerSkill
 {
 public:
     Shitu() : TriggerSkill("shitu")
     {
-        events << EventPhaseChanging << EventPhaseStart;
+        events << EventPhaseChanging << EventPhaseStart << DamageDone << Death;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
-        if (!TriggerSkill::triggerable(player)) return QStringList();
-        if (triggerEvent == EventPhaseChanging) {
+	virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+    {
+		if (triggerEvent == DamageDone || triggerEvent == Death )
+			room->setTag("shituDamageOrDeath", true);
+		if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
-                if (player->hasFlag("shituDamage")) {
-                    room->setPlayerFlag(player, "-shituDamage");
-                    return QStringList();
-                }
-
-                if (player->getMark("touhou-extra") > 0) {
+				if (room->getTag("shituDamageOrDeath").toBool())
+				{
+					room->setTag("shituDamageOrDeath", false);
+					return;
+				}
+				if (!player || !player->hasSkill(objectName()))
+					return;
+				if (player->getMark("touhou-extra") > 0) {
                     player->removeMark("touhou-extra");
-                    return QStringList();
+                    return;
                 }
                 if (room->canInsertExtraTurn())
                     player->tag["ShituInvoke"] = QVariant::fromValue(true);
-            }
-        } else if (triggerEvent == EventPhaseStart &&  player->getPhase() == Player::NotActive) {
-            if (player->tag["ShituInvoke"].toBool())
+			}
+		}
+	}
+	
+	
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
+        if (!TriggerSkill::triggerable(player)) return QStringList();
+		if (triggerEvent == EventPhaseStart &&  player->getPhase() == Player::NotActive) {
+            if (player->tag["ShituInvoke"].toBool()){
+				player->tag["ShituInvoke"] = QVariant::fromValue(false);
                 return QStringList(objectName());
+			}
         }
         return QStringList();
     }
     
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
-        if (triggerEvent == EventPhaseStart &&  player->getPhase() == Player::NotActive) {
-            bool shitu = player->tag["ShituInvoke"].toBool();
-            player->tag["ShituInvoke"] = QVariant::fromValue(false);
-            if (shitu) {
-                ServerPlayer *target = room->askForPlayerChosen(player, room->getAlivePlayers(), objectName(), "@shitu-playerchoose", true, true);
 
-                if (target != NULL) {
-                    room->notifySkillInvoked(player, objectName());
-                    room->setPlayerMark(target, "shitu", 1);
-                    target->gainAnExtraTurn();
-                    room->setPlayerMark(target, "shitu", 0);
-                }
-            }
+        ServerPlayer *target = room->askForPlayerChosen(player, room->getAlivePlayers(), objectName(), "@shitu-playerchoose", true, true);
+        if (target != NULL) {
+            room->notifySkillInvoked(player, objectName());
+            room->setPlayerMark(target, "shitu", 1);
+            target->gainAnExtraTurn();
+            room->setPlayerMark(target, "shitu", 0);
         }
         return false;
     }
@@ -1060,10 +1043,10 @@ void ZhesheCard::onEffect(const CardEffectStruct &effect) const
 }
 
 
-class zheshevs : public OneCardViewAsSkill
+class ZhesheVS : public OneCardViewAsSkill
 {
 public:
-    zheshevs() :OneCardViewAsSkill("zheshe")
+    ZhesheVS() :OneCardViewAsSkill("zheshe")
     {
         filter_pattern = ".|.|.|hand!";//"^EquipCard!" ;
         response_pattern = "@@zheshe";
@@ -1088,7 +1071,7 @@ public:
     Zheshe() : TriggerSkill("zheshe")
     {
         events << DamageInflicted;
-        view_as_skill = new zheshevs;
+        view_as_skill = new ZhesheVS;
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
@@ -1651,8 +1634,6 @@ TH99Package::TH99Package()
 
     General *wai004 = new General(this, "wai004", "wai", 4, false);
     wai004->addSkill(new Shitu);
-    wai004->addSkill(new ShituDetect);
-    related_skills.insertMulti("shitu", "#shituDetect");
 
     General *wai005 = new General(this, "wai005", "wai", 4, false);
     wai005->addSkill("jingjie");
