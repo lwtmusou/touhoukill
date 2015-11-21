@@ -301,15 +301,7 @@ public:
                 || data.value<CardResponseStruct>().m_isProvision)
                 return QStringList();
             return QStringList(objectName());
-        }/* else if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.slash->hasFlag("weiyaSkillNullify")) //effect.slash!=NULL &&
-                return QStringList(objectName());
-        } else if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (effect.card->hasFlag("weiyaSkillNullify")) //effect.card!=NULL &&
-               return QStringList(objectName());
-        }  */
+        }
         return QStringList();
     }
 

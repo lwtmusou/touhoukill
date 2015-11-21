@@ -946,8 +946,10 @@ public:
             }
 
             QList<ServerPlayer *> srcs = room->findPlayersBySkillName(objectName());
-            foreach (ServerPlayer *p, srcs)
-                skill_list.insert(p, QStringList(objectName()));
+            foreach (ServerPlayer *p, srcs){
+			    if (p != player)
+                    skill_list.insert(p, QStringList(objectName()));
+			}
             return skill_list;
         }else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();

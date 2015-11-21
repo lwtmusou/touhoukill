@@ -328,33 +328,13 @@ public:
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.from && move.from == toramaru && move.to_place == Player::DiscardPile) {
                 QVariantList ids;
-                //QList<int> ids;
-                //need check RETRIAL provider
-                if (move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE) {
-                    QVariantList record_ids = toramaru->tag["baotaRETRIAL"].toList();
-                    
-                    foreach (QVariant record_id, record_ids) {
-                        int r_id = record_id.toInt();
-                        if (move.card_ids.contains(r_id) && room->getCardPlace(r_id) == Player::DiscardPile)
-                            ids << r_id;
-                    }
-                    toramaru->tag.remove("baotaRETRIAL");
-                } else {
-                    foreach (int id, move.card_ids) {
-                        if (room->getCardPlace(id) == Player::DiscardPile
-                            && move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial)
-                            ids << id;
-                    }
+                foreach (int id, move.card_ids) {
+                    if (room->getCardPlace(id) == Player::DiscardPile
+                        && (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial &&
+					    move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
+                        ids << id;
                 }
                 toramaru->tag["baota"] = ids;
-                
-            } else if (move.from && move.from == toramaru && move.to_place == Player::PlaceJudge) {
-                if (move.reason.m_reason == CardMoveReason::S_REASON_RETRIAL) {
-                    QVariantList record_ids = toramaru->tag["baotaRETRIAL"].toList();
-                    foreach(int id, move.card_ids)
-                        record_ids << id;
-                    toramaru->tag["baotaRETRIAL"] = record_ids;
-                }
             }
         }
     }
@@ -564,76 +544,25 @@ public:
         if (!nazurin->isCurrent()) return;
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         //record room Tag("UseOrResponseFromPile")   player Tag["soujiRETRIAL"]
-        if (triggerEvent == BeforeCardsMove) {
+        if (triggerEvent == BeforeCardsMove) { //record origin_from_places?
             if (move.to_place != Player::PlaceTable)
                 return;
-
             if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
                 || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE) {
                 QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
-                QVariantList tmp_ids = room->getTag("UseOrResponseFromPile").toList();
-                QList<int> pile_ids;
                 foreach (int id, move.card_ids) {
                     if (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceHand && move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceEquip)
-                        pile_ids << id;
+                    {
+						if (!record_ids.contains(id))
+							record_ids << id;
+					}
                 }
-                foreach (int id, pile_ids) {
-                    //check ocurrence
-                    bool ocurrence = false;
-                    foreach (QVariant card_data, record_ids) {
-                        int card_id = card_data.toInt();
-                        if (card_id == id) {
-                            ocurrence = true;
-                            break;
-                        }
-                    }
-                    if (!ocurrence)
-                        tmp_ids << id;
-                }
-                //room->setTag("UseOrResponseFromPile", IntList2VariantList(tmp_ids));
-                room->setTag("UseOrResponseFromPile", tmp_ids);
+                room->setTag("UseOrResponseFromPile", record_ids);
             }
-        } else if (triggerEvent == CardsMoveOneTime) {
-            QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
-
-            QVariantList tmp_ids = room->getTag("UseOrResponseFromPile").toList();
-            foreach (int id, move.card_ids) {
-                if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceTable) {
-                    foreach (QVariant card_data, record_ids) {
-                        int card_id = card_data.toInt();
-                        if (card_id == id)
-                            tmp_ids.removeOne(id);
-                    }
-                }
-            }
-            room->setTag("UseOrResponseFromPile", tmp_ids);
-            if (move.reason.m_reason == CardMoveReason::S_REASON_RETRIAL && move.from && move.from != nazurin) {
-                QVariantList r_ids = nazurin->tag["soujiRETRIAL"].toList();
-                foreach(int id, move.card_ids)
-                    r_ids << id;
-                nazurin->tag["soujiRETRIAL"] = r_ids;
-            }
-
-        }
-    }
-    
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
-    {
-        if (!TriggerSkill::triggerable(player)) return QStringList();
-        if (triggerEvent == CardsMoveOneTime) { // record?
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-
-            if (player->isCurrent() && move.from  && move.from != player
+        } 
+		else if (triggerEvent == CardsMoveOneTime) {
+            if (nazurin->isCurrent() && move.from  && move.from != nazurin
                 && move.to_place == Player::DiscardPile) {
-                //check provider
-                if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
-                || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE) {
-                    ServerPlayer *provider; 
- 					if (move.reason.m_provider != NULL)
-						provider = move.reason.m_provider.value<ServerPlayer *>();
-                    if (provider && provider == player)
-                        return QStringList();
-                }
                 QVariantList obtain_ids;
                 foreach (int id, move.card_ids) {
                     if (room->getCardPlace(id) != Player::DiscardPile)
@@ -642,36 +571,40 @@ public:
                     switch (move.from_places.at(move.card_ids.indexOf(id))) {
                     case Player::PlaceHand: obtain_ids << id; break;
                     case Player::PlaceEquip: obtain_ids << id; break;
+					case Player::PlaceJudge: obtain_ids << id; break;
                     case Player::PlaceTable: {
                         QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
-                        bool ocurrence = false;
-                        foreach (QVariant card_data, record_ids) {
-                            int card_id = card_data.toInt();
-                            if (card_id == id) {
-                                ocurrence = true;
-                                break;
-                            }
-                        }
-                        if (!ocurrence)
+                        if (!record_ids.contains(id))
                             obtain_ids << id;
-
-                        break;
-                    }
-                    case Player::PlaceJudge: {
-                        QVariantList record_ids = player->tag["soujiRETRIAL"].toList();
-                        foreach (QVariant record_id, record_ids) {
-                            int r_id = record_id.toInt();
-                            if (id == r_id)
-                                obtain_ids << r_id;
-                            player->tag.remove("soujiRETRIAL");
-                        }
                         break;
                     }
                     default:
                         break;
                     }
                 }
-                player->tag["souji"] = obtain_ids;
+                nazurin->tag["souji"] = obtain_ids;
+            }
+//******************************************************************************************			
+		    // delete record: UseOrResponseFromPile
+            QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
+            foreach (int id, move.card_ids) {
+                if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceTable) {
+                    if (record_ids.contains(id))
+						record_ids.removeOne(id);
+                }
+            }
+            room->setTag("UseOrResponseFromPile", record_ids);
+        }
+    }
+    
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    {
+        if (!TriggerSkill::triggerable(player)) return QStringList();
+        if (triggerEvent == CardsMoveOneTime) { // record?
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (player->isCurrent() && move.from  && move.from != player
+                && move.to_place == Player::DiscardPile) {
+				QVariantList obtain_ids = player->tag["souji"].toList();
                 if (obtain_ids.length() > 0)
                     return QStringList(objectName());
             }
@@ -681,13 +614,18 @@ public:
     
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
-        return room->askForSkillInvoke(player, objectName(), data);
+        if (room->askForSkillInvoke(player, objectName(), data))
+			return true;
+		player->tag.remove("souji");
+		return false;
     }
     
     
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
         QVariantList ids = player->tag["souji"].toList();
+		player->tag.remove("souji");
+		
         QList<int> obtain_ids;
         foreach (QVariant record_id, ids) 
             obtain_ids << record_id.toInt();

@@ -812,21 +812,14 @@ public:
     {   
         if (!TriggerSkill::triggerable(player)) return QStringList();
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (move.card_ids.length() == 1 && move.to_place == Player::DiscardPile
+        if (move.from && player == move.from && move.card_ids.length() == 1 && move.to_place == Player::DiscardPile
                 && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
                 || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE
                 )){
-            // only use or response will add the extradata
-            //if it exist, we need not check the move reason again?
             const Card *card = move.reason.m_extraData.value<const Card *>();
-            const Card *realcard = Sanguosha->getEngineCard(move.card_ids.first());
-            ServerPlayer *provider; 
- 			if (move.reason.m_provider != NULL)
- 				provider = move.reason.m_provider.value<ServerPlayer *>();
             if (card && card->getSkillName() == objectName()
                     && room->getCardPlace(move.card_ids.first()) == Player::DiscardPile
-                    && (player == move.from || (provider && provider == player))
-                    )
+                    )  
                 return QStringList(objectName());
         }
         return QStringList();

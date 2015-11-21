@@ -675,9 +675,12 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
                 break;
             }
         }
-        reason.m_provider = QVariant::fromValue(provider);
-
-        CardsMoveStruct move(used_cards, card_use.from, NULL, Player::PlaceUnknown, Player::PlaceTable, reason);
+        //reason.m_provider = QVariant::fromValue(provider);
+        ServerPlayer *from = card_use.from;
+		if (provider != NULL)
+			from = provider;
+			
+        CardsMoveStruct move(used_cards, from, NULL, Player::PlaceUnknown, Player::PlaceTable, reason);
         moves.append(move);
         room->moveCardsAtomic(moves, true);
     } else if (card_use.card->willThrow()) {
@@ -719,9 +722,11 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
                 break;
             }
         }
-        reason.m_provider = QVariant::fromValue(provider);
-
-        room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+        //reason.m_provider = QVariant::fromValue(provider);
+        ServerPlayer *from = source;
+		if (provider != NULL)
+			from = provider;
+        room->moveCardTo(this, from, NULL, Player::DiscardPile, reason, true);
     }
 }
 

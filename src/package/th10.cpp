@@ -1199,7 +1199,7 @@ public:
      virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {    
         if (!player || !player->hasSkill(objectName()) || player->hasFlag("jinian_used")) return;
-           if (triggerEvent == BeforeCardsMove) {
+        if (triggerEvent == BeforeCardsMove) {
 			CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
 			if (move.to_place != Player::PlaceJudge && move.to_place != Player::PlaceTable
                     && move.to_place != Player::DiscardPile)  //just for temp?
@@ -1253,29 +1253,9 @@ public:
                     else
                         backup_ids << card_id;
                 }
-                //need check from
-                bool delete_get_ids = false;
-                if (move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE || move.reason.m_reason == CardMoveReason::S_REASON_OVERRIDE
-                    || move.reason.m_reason == CardMoveReason::S_REASON_USE || move.reason.m_reason == CardMoveReason::S_REASON_RESPONSE) {
-    
-                    if (!move.from)
-                        delete_get_ids = true;	
-                    ServerPlayer *provider; 
-					if (move.reason.m_provider != NULL){
-						provider = move.reason.m_provider.value<ServerPlayer *>();
-					}
-                    if (provider) {
-                        if (player != provider){
-                            delete_get_ids = true;
-						}
-                    } else if (move.from != player)
-                        delete_get_ids = true;
-					
-                } else {
-                    if (!move.from || move.from != player)
-                    delete_get_ids = true;
-                }
-                if (delete_get_ids){
+                //need check from and delete get_ids
+                if (!move.from || move.from != player){
+                    
                     QVariantList new_get_ids;
                     get_ids = new_get_ids;
                 }

@@ -607,7 +607,8 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
         log.card_str = QString::number(judge->card->getEffectiveId());
         room->sendLog(log);
 
-        room->moveCardTo(judge->card, NULL, judge->who, Player::PlaceJudge,
+		//room->moveCardTo(judge->card, NULL, judge->who, Player::PlaceJudge,
+        room->moveCardTo(judge->card, NULL, NULL, Player::PlaceJudge,
             CardMoveReason(CardMoveReason::S_REASON_JUDGE,
             judge->who->objectName(),
             QString(), QString(), judge->reason), true);
@@ -640,10 +641,13 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
         if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge) {
             CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), judge->reason);
             if (judge->retrial_by_response) {
-                reason.m_provider = QVariant::fromValue(judge->retrial_by_response);
+				reason.m_provider = QVariant::fromValue(judge->retrial_by_response);
                 reason.m_extraData = QVariant::fromValue(judge->card);
+				room->moveCardTo(judge->card, judge->retrial_by_response, NULL, Player::DiscardPile, reason, true);
             }
-            room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);
+			else
+                room->moveCardTo(judge->card, NULL, NULL, Player::DiscardPile, reason, true);
+			//room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);
         }
 
         break;

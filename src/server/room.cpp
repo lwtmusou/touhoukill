@@ -1519,9 +1519,11 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, player->objectName(), QString(), card->getSkillName(), QString());
 
             reason.m_extraData = QVariant::fromValue(card);
-            if (theProvider)
-                reason.m_provider = QVariant::fromValue(theProvider);
-            moveCardTo(card, player, NULL, Player::PlaceTable, reason, true);
+            if (theProvider != NULL)
+                //reason.m_provider = QVariant::fromValue(theProvider);
+				moveCardTo(card, theProvider, NULL, Player::PlaceTable, reason, true);
+			else
+                moveCardTo(card, player, NULL, Player::PlaceTable, reason, true);
         } else if (method == Card::MethodDiscard) {
             CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName());
             moveCardTo(card, player, NULL, Player::DiscardPile, reason, pattern != "." && pattern != "..");
@@ -1529,9 +1531,11 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             CardMoveReason reason(CardMoveReason::S_REASON_RESPONSE, player->objectName());
             reason.m_skillName = card->getSkillName();
             reason.m_extraData = QVariant::fromValue(card);
-            if (theProvider)
-                reason.m_provider = QVariant::fromValue(theProvider);
-            moveCardTo(card, player, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason);
+            if (theProvider != NULL)
+                //reason.m_provider = QVariant::fromValue(theProvider);
+				moveCardTo(card, theProvider, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason);
+			else
+                moveCardTo(card, player, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason);
         }
 
         if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial) {
@@ -1547,9 +1551,11 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                     CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, player->objectName(),
                         QString(), card->getSkillName(), QString());
                     reason.m_extraData = QVariant::fromValue(card);
-                    if (theProvider)
-                        reason.m_provider = QVariant::fromValue(theProvider);
-                    moveCardTo(card, player, NULL, Player::DiscardPile, reason, true);
+                    if (theProvider !=NULL)
+                        //reason.m_provider = QVariant::fromValue(theProvider);
+						moveCardTo(card, theProvider, NULL, Player::DiscardPile, reason, true);
+                    else
+					    moveCardTo(card, player, NULL, Player::DiscardPile, reason, true);
                 }
                 CardUseStruct card_use;
                 card_use.card = card;
@@ -6228,7 +6234,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge, cons
     judge->retrial_by_response = player;
 
     CardsMoveStruct move1(QList<int>(),
-        judge->who,
+        NULL,//judge->who,
         Player::PlaceJudge,
         CardMoveReason(CardMoveReason::S_REASON_RETRIAL,
         player->objectName(),
@@ -6256,7 +6262,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge, cons
 
 
     CardsMoveStruct move2(QList<int>(),
-        judge->who,
+        rebyre ? rebyre : NULL,//judge->who,
         exchange ? player : NULL,
         Player::PlaceUnknown,
         exchange ? Player::PlaceHand : Player::DiscardPile,
