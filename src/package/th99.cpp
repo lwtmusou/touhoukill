@@ -616,15 +616,7 @@ public:
     virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
         TriggerList skill_list;
-        /* if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.slash != NULL && effect.slash->hasFlag("luanyingSkillNullify"))
-                skill_list.insert(player, QStringList(objectName()));
-        } else if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (effect.card != NULL && effect.card->hasFlag("luanyingSkillNullify"))
-                skill_list.insert(player, QStringList(objectName()));
-        } else  */if (triggerEvent == CardUsed || triggerEvent == CardResponded) {
+        if (triggerEvent == CardUsed || triggerEvent == CardResponded) {
             if (player == NULL || player->isDead())
                 return TriggerList();
             bool isRed = true;
@@ -642,7 +634,8 @@ public:
             }
             QList<ServerPlayer *> merrys = room->findPlayersBySkillName(objectName());
             foreach (ServerPlayer *merry, merrys) {
-                foreach (int id, merry->getPile("jingjie")) {
+                if (merry == player) continue;
+				foreach (int id, merry->getPile("jingjie")) {
                     if (Sanguosha->getCard(id)->isRed() == isRed)
                         skill_list.insert(merry, QStringList(objectName()));
                 }
