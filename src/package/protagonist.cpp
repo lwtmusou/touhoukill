@@ -910,12 +910,9 @@ public:
                     room->showCard(player, id);
                     int id1 = room->askForCardChosen(player, target, "h", objectName());
                     room->obtainCard(player, id1, false);
-                }
-                return true;
+                }    
             }
         }
-        
-        
         return false;
     }
 };

@@ -3570,6 +3570,7 @@ end
 
 function SmartAI:askForUseCard(pattern, prompt, method)
 	local use_func = sgs.ai_skill_use[pattern]
+
 	if use_func then
 		return use_func(self, prompt, method) or "."
 	else
@@ -5708,8 +5709,12 @@ function SmartAI:useSkillCard(card,use)
 	else
 		name = card:getClassName()
 	end
+	
+	
 	if not use.isDummy
-		and not self.player:hasSkill(card:getSkillName()) and not self.player:hasLordSkill(card:getSkillName()) then return end
+		and not self.player:hasSkill(card:getSkillName()) and not self.player:hasLordSkill(card:getSkillName()) then 
+		return 
+	end
 	if sgs.ai_skill_use_func[name] then
 		sgs.ai_skill_use_func[name](card, use, self)
 		if use.to then
@@ -5722,6 +5727,8 @@ function SmartAI:useSkillCard(card,use)
 		end
 		return
 	end
+
+
 	if self["useCard"..name] then
 		self["useCard"..name](self, card, use)
 	end

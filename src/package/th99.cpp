@@ -193,9 +193,138 @@ public:
     }
 };
 
-
-
 XiufuCard::XiufuCard()
+{
+    will_throw = false;
+    handling_method = Card::MethodNone;
+    m_skillName = "xiufu";
+    //target_fixed = true;
+}
+bool XiufuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    return  targets.isEmpty();
+}
+void XiufuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
+    int equipid = subcards.first(); 
+    const EquipCard *equip = qobject_cast<const EquipCard *>(Sanguosha->getCard(equipid)->getRealCard());
+    ServerPlayer *target = targets.first();
+	
+    int equipped_id = -1;
+    if (target->getEquip(equip->location()) != NULL)
+        equipped_id = target->getEquip(equip->location())->getEffectiveId();
+    QList<CardsMoveStruct> exchangeMove;
+    if (equipped_id != -1) {
+        CardsMoveStruct move2(equipped_id, NULL, Player::DiscardPile,
+            CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, target->objectName()));
+        exchangeMove.push_back(move2);
+    }
+    CardsMoveStruct move1(equipid, target, Player::PlaceEquip,
+        CardMoveReason(CardMoveReason::S_REASON_TRANSFER, source->objectName()));
+    // this move has no client log?
+    exchangeMove.push_back(move1);
+
+    room->moveCardsAtomic(exchangeMove, true);
+}
+
+XiufuFakeMoveCard::XiufuFakeMoveCard()
+{
+    target_fixed = true;
+	mute = true;
+	m_skillName = "xiufu";//important for ai
+}
+
+const Card *XiufuFakeMoveCard::validate(CardUseStruct &card_use) const
+{
+	ServerPlayer *source = card_use.from;
+	Room *room = card_use.from->getRoom();
+
+	QList<int> able;
+    QList<int> discardpile = room->getDiscardPile();
+    foreach (int id, discardpile) {
+        Card *tmp_card = Sanguosha->getCard(id);
+        if (tmp_card->isKindOf("EquipCard"))
+            able << id;
+    }
+    if (able.isEmpty()){
+        room->setPlayerFlag(source, "Global_xiufuFailed");
+		return NULL;
+	}
+	//move in pile 
+     CardsMoveStruct move(able, NULL, source, Player::PlaceTable, Player::PlaceSpecial,
+        CardMoveReason(CardMoveReason::S_REASON_PUT, source->objectName(), "xiufu", QString()));
+		move.to_pile_name = "#xiufu";
+        QList<CardsMoveStruct> moves;
+        moves.append(move);
+        QList<ServerPlayer *> _source;
+        _source << source;
+        room->notifyMoveCards(true, moves, false, _source);
+        room->notifyMoveCards(false, moves, false, _source); 
+
+	const Card *card = room->askForUseCard(source, "@@xiufu", "@xiufu",-1, Card::MethodNone);
+	if (!card)
+		room->setPlayerFlag(source, "Global_xiufuFailed");
+	
+		
+    CardsMoveStruct move1(able, source, NULL, Player::PlaceSpecial, Player::PlaceTable,
+                CardMoveReason(CardMoveReason::S_REASON_PUT, source->objectName(), "xiufu", QString()));
+        move.to_pile_name = "#xiufu";
+        QList<CardsMoveStruct> moves1;
+        moves1.append(move1);
+        QList<ServerPlayer *> _source1;
+        _source1 << source;
+        room->notifyMoveCards(true, moves1, false, _source1);
+        room->notifyMoveCards(false, moves1, false, _source1);
+    return NULL;
+}
+
+
+//version 1
+class Xiufu : public ViewAsSkill
+{
+public:
+    Xiufu() : ViewAsSkill("xiufu")
+    {
+		expand_pile = "#xiufu";
+		response_pattern = "@@xiufu";
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return  !player->hasUsed("XiufuCard") && !player->hasFlag("Global_xiufuFailed");
+    }
+
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    {
+        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+        if (pattern == "@@xiufu"){
+			QList<int> ids = Self->getPile("#xiufu");
+            return ids.contains(to_select->getEffectiveId());
+		}
+        return false;
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+        if (pattern == "@@xiufu"){
+            if (cards.length() == 1) { 
+                XiufuCard *card = new XiufuCard;
+				card->addSubcards(cards);
+                return card;
+			}
+		}
+        else{
+            return new XiufuFakeMoveCard;
+        }
+		return NULL;
+    }
+};
+
+
+ //version 2
+/* XiufuCard::XiufuCard()
 {
     will_throw = false;
     handling_method = Card::MethodNone;
@@ -309,7 +438,7 @@ public:
         return QStringList();
     }
 };
-
+ */
 class Fandu : public TriggerSkill
 {
 public:
@@ -1618,8 +1747,8 @@ TH99Package::TH99Package()
 
     General *wai002 = new General(this, "wai002", "wai", 4, true);
     wai002->addSkill(new Xiufu);
-    wai002->addSkill(new XiufuCheck);
-    related_skills.insertMulti("xiufu", "#xiufu");
+    //wai002->addSkill(new XiufuCheck);
+    //related_skills.insertMulti("xiufu", "#xiufu");
 
     General *wai003 = new General(this, "wai003", "wai", 3, false);
     wai003->addSkill(new Fandu);
@@ -1671,6 +1800,7 @@ TH99Package::TH99Package()
     addMetaObject<QiuwenCard>();
     addMetaObject<DangjiaCard>();
     addMetaObject<XiufuCard>();
+	addMetaObject<XiufuFakeMoveCard>();
     addMetaObject<LianxiCard>();
     addMetaObject<ZhesheCard>();
     addMetaObject<ZhuonongCard>();

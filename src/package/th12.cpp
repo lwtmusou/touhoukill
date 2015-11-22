@@ -543,7 +543,7 @@ public:
         if (!nazurin->hasSkill(objectName())) return;
         if (!nazurin->isCurrent()) return;
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        //record room Tag("UseOrResponseFromPile")   player Tag["soujiRETRIAL"]
+        //record room Tag("UseOrResponseFromPile") 
         if (triggerEvent == BeforeCardsMove) { //record origin_from_places?
             if (move.to_place != Player::PlaceTable)
                 return;
@@ -588,10 +588,8 @@ public:
 		    // delete record: UseOrResponseFromPile
             QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
             foreach (int id, move.card_ids) {
-                if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceTable) {
-                    if (record_ids.contains(id))
-						record_ids.removeOne(id);
-                }
+                if (record_ids.contains(id))
+					record_ids.removeOne(id);
             }
             room->setTag("UseOrResponseFromPile", record_ids);
         }
