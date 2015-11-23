@@ -250,7 +250,7 @@ const Card *XiufuFakeMoveCard::validate(CardUseStruct &card_use) const
         room->setPlayerFlag(source, "Global_xiufuFailed");
 		return NULL;
 	}
-	//move in pile 
+	//move in pile  pile没有清空 导致重复加入pile？
      CardsMoveStruct move(able, NULL, source, Player::PlaceTable, Player::PlaceSpecial,
         CardMoveReason(CardMoveReason::S_REASON_PUT, source->objectName(), "xiufu", QString()));
 		move.to_pile_name = "#xiufu";
@@ -268,7 +268,7 @@ const Card *XiufuFakeMoveCard::validate(CardUseStruct &card_use) const
 		
     CardsMoveStruct move1(able, source, NULL, Player::PlaceSpecial, Player::PlaceTable,
                 CardMoveReason(CardMoveReason::S_REASON_PUT, source->objectName(), "xiufu", QString()));
-        move.to_pile_name = "#xiufu";
+        move.from_pile_name = "#xiufu";
         QList<CardsMoveStruct> moves1;
         moves1.append(move1);
         QList<ServerPlayer *> _source1;

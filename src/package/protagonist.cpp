@@ -888,9 +888,12 @@ public:
         if (move.to && move.to == player && move.to_place == Player::PlaceHand) {
             if (room->getTag("FirstRound").toBool())
                 return QStringList();
-            foreach (int id, move.card_ids) {
-                if (Sanguosha->getCard(id)->getSuit() == Card::Heart) 
-                    return QStringList(objectName());
+            foreach (int id, move.card_ids) { //operate conflict with skill taohuan
+                if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
+				    ServerPlayer *owner = room->getCardOwner(id);
+					if (owner && owner == player)
+						return QStringList(objectName());
+				}    
             }
         }
         return QStringList();
@@ -900,8 +903,11 @@ public:
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         foreach (int id, move.card_ids) {
-            if (Sanguosha->getCard(id)->getSuit() == Card::Heart) {
-                QList<ServerPlayer *> targets = chunxi_targets(player);
+            if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand ) {
+                ServerPlayer *owner = room->getCardOwner(id);
+			    if (!owner || owner != player)
+					continue;
+				QList<ServerPlayer *> targets = chunxi_targets(player);
                 if (targets.isEmpty())
                     break;
                 
