@@ -1134,7 +1134,7 @@ public:
                         if (use.card->isNDTrick() && use.from->hasSkill("aoyi")) {//for a bug in filtersviewkill, then ai has this skill
                             if (use.from->getAI())
                                 card = Sanguosha->cloneCard("ice_slash");
-                            }
+                        }
                         if (source->isCardLimited(card, Card::MethodUse))
                             continue;
                         if (!source->isProhibited(use.from, card))
@@ -1152,8 +1152,14 @@ public:
     {
         room->setTag("huisheng_use", data);
         CardUseStruct use = data.value<CardUseStruct>();
-        QString prompt = "@huisheng-use:" + use.from->objectName() + ":" + use.card->objectName();
-        room->setPlayerProperty(source, "huisheng_card", use.card->objectName());
+		Card *card = Sanguosha->cloneCard(use.card->objectName());
+        if (use.card->isNDTrick() && use.from->hasSkill("aoyi")) {//for a bug in filtersviewkill, then ai has this skill
+            if (use.from->getAI())
+                card = Sanguosha->cloneCard("ice_slash");
+        } 
+		
+        QString prompt = "@huisheng-use:" + use.from->objectName() + ":" + card->objectName();
+        room->setPlayerProperty(source, "huisheng_card", card->objectName());
         room->setPlayerProperty(source, "huisheng_target", use.from->objectName());
         room->askForUseCard(source, "@@huisheng", prompt);
         room->setPlayerProperty(source, "huisheng_target", QVariant());
