@@ -333,18 +333,19 @@ public:
         } else if (triggerEvent == CardUsed) {
             if (!TriggerSkill::triggerable(player)) return QStringList();
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("IceSlash"))
+            if (use.card->isKindOf("IceSlash")){
                 return QStringList(objectName());
+			}
         }
         
         return QStringList();    
         
     }
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
         if (triggerEvent == CardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
+			CardUseStruct use = data.value<CardUseStruct>();
             QStringList choices;
             choices << "aoyi1";
             QList<ServerPlayer *> all;
@@ -1492,6 +1493,292 @@ public:
         return card;
     }
 };
+
+
+class Huanxiang : public TriggerSkill
+{
+public:
+    Huanxiang() : TriggerSkill("huanxiang")
+    {
+        events <<  EventPhaseStart;
+		frequency = Compulsory;
+    }
+	
+	static bool hasSameNumberRoles(Room *room)
+    {
+		//step1: loyalists vs. rebels
+		int loyal_num = 0;
+		int loyal_shown_num = 0;
+		int rebel_num = 0;
+		int rebel_shown_num = 0;
+		
+		foreach(ServerPlayer *p, room->getAlivePlayers()){
+		    QString role = (p->isLord()) ? "loyalist" : p->getRole();
+			if (role == "loyalist"){
+				loyal_num++;
+				if (p->hasShownRole())
+					loyal_shown_num++;
+			}
+			else if (role == "rebel"){
+				rebel_num++;
+				if (p->hasShownRole())
+					rebel_shown_num++;
+			}
+		}
+		if (loyal_num > 0 && rebel_num > 0 && loyal_shown_num == rebel_shown_num)
+			return true;
+	
+		//step2: compare renegades
+		bool find_shown_renegde = false;
+		bool find_hide_renegde = false;
+		int renegde_num = 0;
+		QStringList roles;
+		foreach(ServerPlayer *p1, room->getAlivePlayers()){
+		    if (p1->getRole() == "renegade"){
+				renegde_num++;
+				if (p1->hasShownRole())
+					find_shown_renegde = true;
+				else
+					find_hide_renegde = true;
+					
+				foreach(ServerPlayer *p2, room->getOtherPlayers(p1)){
+					if (p2->getRole() == "renegade"){
+						if (p1->hasShownRole() == p2->hasShownRole())
+							return true;
+					}
+				}
+			}
+		}
+		
+        //step3: renegades vs. loyal or rebel
+		if (find_shown_renegde && (loyal_shown_num == 1 || rebel_shown_num ==1 )){
+			return true;
+		}
+		else if (find_hide_renegde && (loyal_shown_num == 0 || rebel_shown_num == 0 )){
+			return true;
+		}
+		
+		
+		return false; 		
+	}
+	
+	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    {
+        if (!TriggerSkill::triggerable(player)) return QStringList();
+		if (player->getPhase() == Player::Finish){
+			return QStringList(objectName());
+		}
+		return QStringList();
+	}
+	
+	 virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *source) const
+    {
+	    room->notifySkillInvoked(player, objectName());
+		room->touhouLogmessage("#TriggerSkill", player, objectName());
+		if  (!hasSameNumberRoles(room))
+			room->askForDiscard(player, objectName(), 1, 1, false, true, "huanxiang_discard");
+		else
+			player->drawCards(1);
+		return false;
+	}
+	
+};
+
+
+FengyinCard::FengyinCard()
+{
+    will_throw = true;
+}
+bool FengyinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    return(targets.isEmpty() && to_select->hasShownRole());//
+}
+void FengyinCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
+
+    ServerPlayer *target = targets.first();
+	QString role = target->getRole();
+	room->broadcastProperty(target, "role", "unknown");
+	target->setRole(role);
+	room->notifyProperty(target, target, "role", role);
+	room->setPlayerProperty(target, "role_shown", false); //important! to notify client 
+	room->setPlayerMark(target, "@role_shown", 0);  //just for UI to notice player
+    room->touhouLogmessage("#FengyinHide", target, role, room->getAllPlayers());
+	target->turnOver();
+}
+
+class Fengyin : public OneCardViewAsSkill
+{
+public:
+    Fengyin() : OneCardViewAsSkill("fengyin")
+    {
+        filter_pattern = ".|heart|.|.!";
+    }
+
+	virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->hasUsed("FengyinCard");
+    }
+	
+	
+    virtual const Card *viewAs(const Card *originalCard) const
+    {
+        if (originalCard != NULL) {
+            FengyinCard *card = new FengyinCard;
+            card->addSubcard(originalCard);
+            return card;
+        } else
+            return NULL;
+    }
+};
+
+
+ class Yibian : public TriggerSkill
+{
+public:
+    Yibian() : TriggerSkill("yibian")
+    {
+        events << EventPhaseStart;
+		//view_as_skill = new YibianVS;
+    }
+
+	static bool sameRole(ServerPlayer *player1, ServerPlayer *player2)
+    {
+		QString role1 = (player1->isLord()) ? "loyalist" : player1->getRole();
+		QString role2 = (player2->isLord()) ? "loyalist" : player2->getRole();
+		if (role1 == role2 && role1 == "renegade")
+			return false;
+		return role1 == role2;
+	}
+	
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    {
+        //if (!TriggerSkill::triggerable(player)) return QStringList();
+        if (player->getPhase() == Player::Start){
+			if (!player->hasShownRole())
+				return QStringList(objectName());
+			else if (!player->isNude()) {
+				foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+					if (p->hasShownRole() && sameRole(player, p)){
+						return QStringList(objectName());
+					}
+				}
+			}
+		}
+        return QStringList();
+    }
+    
+     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
+        if (!player->hasShownRole()){
+		    QString prompt = "yibian_notice";
+			return room->askForSkillInvoke(player, objectName(), prompt); 
+		}
+		else{
+			return true;
+		}
+        return false;
+    }
+	
+	
+	virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+	{
+		if (!player->hasShownRole()){
+			room->setPlayerMark(player, "@role_shown", 1); //just for UI to notice player
+			QString role = player->getRole();
+			room->touhouLogmessage("#YibianShow", player, role, room->getAllPlayers());
+			//room->broadcastProperty(player, "role");
+			room->setPlayerProperty(player, "role",player->getRole());
+			room->setPlayerProperty(player, "role_shown", true); //important! to notify client 
+		
+			QList<ServerPlayer *> targets;
+			foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+				if (p->hasShownRole() && !sameRole(player, p))
+					targets << p;
+			}
+			if (targets.length() > 0){
+				ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@yibian", false, true);
+				target->drawCards(1);
+			}
+		}
+		else
+		{
+			QList<ServerPlayer *> targets;
+			QList<int> ids;
+			//room->askForUseCard(player, "@@yibian", "@yibian");
+			foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+				if (p->hasShownRole() && sameRole(player, p)){
+					targets << p;
+				}
+			}
+			foreach (const Card *c, player->getCards("he")) {
+				ids << c->getEffectiveId();
+			}
+			QString prompt = "yibian_give"; 
+			room->askForYiji(player, ids, objectName(), false, false, true, 1, targets, CardMoveReason(),  prompt); 
+			/* bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &skill_name,
+    bool is_preview, bool visible, bool optional, int max_num,
+    QList<ServerPlayer *> players, CardMoveReason reason, const QString &prompt,
+    bool notify_skill) */
+		}
+		
+		return false;
+	}
+	
+};
+
+
+class RoleShownHandler : public TriggerSkill
+{
+public:
+    RoleShownHandler() : TriggerSkill("#roleShownHandler")
+    {
+        events << GameStart << EventAcquireSkill; // << EventLoseSkill << EventPhaseChanging << Death << Debut;
+    }
+	
+	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    {
+        if (!player) return QStringList();
+		if (triggerEvent == GameStart) {
+			foreach(ServerPlayer *p, room->getAlivePlayers()){
+				if (p->isLord()){//p->hasShownRole()
+					room->setPlayerMark(p, "@role_shown", 1); 
+					room->setPlayerProperty(p, "role_shown", true); 
+				}
+				else{
+					room->setPlayerMark(p, "@role_shown", 0); 
+					room->setPlayerProperty(p, "role_shown", false); 
+				}
+			}	
+		}
+        if (!TriggerSkill::triggerable(player)) return QStringList();
+		if (triggerEvent == EventAcquireSkill){
+			QString skillName = data.toString();
+			if (skillName == "fengyin" || skillName == "yibian" || skillName == "huanxiang"){
+				foreach(ServerPlayer *p, room->getAlivePlayers()){
+					if (p->hasShownRole()){
+						room->setPlayerMark(p, "@role_shown", 1); 
+						room->setPlayerProperty(p, "role_shown", true); 
+					}
+					else{
+						room->setPlayerMark(p, "@role_shown", 0); 
+						room->setPlayerProperty(p, "role_shown", false); 
+					}
+				}	
+			}
+		}
+        
+		return QStringList();
+	}
+};
+
+
+
+
+
+
+
+
 
 class Quanjie : public TriggerSkill
 {
@@ -3383,6 +3670,7 @@ TouhouGodPackage::TouhouGodPackage()
     shen003->addSkill(new AoyiTargetMod);
     related_skills.insertMulti("aoyi", "#aoyi_handle");
     related_skills.insertMulti("aoyi", "#aoyi_mod");
+	related_skills.insertMulti("aoyi", "#aoyi");
 
     General *shen004 = new General(this, "shen004", "touhougod", 4, false);
     shen004->addSkill(new Shikong);
@@ -3422,6 +3710,13 @@ TouhouGodPackage::TouhouGodPackage()
     shen010->addSkill(new Shenshou);
 
     General *shen011 = new General(this, "shen011", "touhougod", 4, false);
+	shen011->addSkill(new Huanxiang);
+	shen011->addSkill(new Fengyin);
+	shen011->addSkill(new Yibian);
+	shen011->addSkill(new RoleShownHandler);
+	related_skills.insertMulti("huanxiang", "#roleShownHandler");
+	related_skills.insertMulti("fengyin", "#roleShownHandler");
+	related_skills.insertMulti("Yibian", "#roleShownHandler");
 
     General *shen012 = new General(this, "shen012", "touhougod", 4, false);
     shen012->addSkill(new Quanjie);
@@ -3485,6 +3780,7 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<ShenqiangCard>();
     addMetaObject<HuimieCard>();
     addMetaObject<ShenshouCard>();
+	addMetaObject<FengyinCard>();
     addMetaObject<HuaxiangCard>();
     //addMetaObject<ChaorenPreventRecast>();
     addMetaObject<ZiwoCard>();

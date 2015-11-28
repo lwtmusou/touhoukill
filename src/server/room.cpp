@@ -2405,8 +2405,10 @@ void Room::prepareForStart()
                     QString role = roles.at(i);
 
                     player->setRole(role);
-                    if (role == "lord" && !ServerInfo.EnableHegemony)
+                    if (role == "lord" && !ServerInfo.EnableHegemony){
                         broadcastProperty(player, "role", "lord");
+						//setPlayerProperty(player, "role_shown", true);
+					}
                     else {
                         if (mode == "04_1v3")
                             broadcastProperty(player, "role", role);
@@ -3047,8 +3049,10 @@ void Room::assignRoles()
         QString role = roles.at(i);
 
         player->setRole(role);
-        if (role == "lord" && !ServerInfo.EnableHegemony)
+        if (role == "lord" && !ServerInfo.EnableHegemony){
             broadcastProperty(player, "role", "lord");
+			//setPlayerProperty(player, "role_shown", true);
+		}
         else
             notifyProperty(player, player, "role");
     }
@@ -5806,7 +5810,21 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
         Q_ASSERT(optional);
         return NULL;
     } else if (targets.length() == 1 && !optional) {
-        QVariant data = QString("%1:%2:%3").arg("playerChosen").arg(skillName).arg(targets.first()->objectName());
+        //need client log?
+		/* if (notify_skill) {
+            notifySkillInvoked(player, skillName);
+            QVariant decisionData = QVariant::fromValue("skillInvoke:" + skillName + ":yes");
+            thread->trigger(ChoiceMade, this, player, decisionData);
+
+            doAnimate(S_ANIMATE_INDICATE, player->objectName(), choice->objectName());
+            LogMessage log;
+            log.type = "#ChoosePlayerWithSkill";
+            log.from = player;
+            log.to << targets.first();
+            log.arg = skillName;
+            sendLog(log);
+        } */
+		QVariant data = QString("%1:%2:%3").arg("playerChosen").arg(skillName).arg(targets.first()->objectName());
         thread->trigger(ChoiceMade, this, player, data);
         return targets.first();
     }
@@ -5852,6 +5870,7 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
             log.arg = skillName;
             sendLog(log);
         }
+		
         QVariant data = QString("%1:%2:%3").arg("playerChosen").arg(skillName).arg(choice->objectName());
         thread->trigger(ChoiceMade, this, player, data);
     } else //for ai

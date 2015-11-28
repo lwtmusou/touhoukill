@@ -97,15 +97,18 @@ void RoleComboBox::toggle()
 
 void RoleComboBox::fix(const QString &role)
 {
-    if (_m_fixedRole.isNull()) {
-        disconnect(m_currentRole, SIGNAL(clicked()), this, SLOT(expand()));
-        connect(m_currentRole, SIGNAL(clicked()), this, SLOT(toggle()));
-    }
-    m_currentRole->setRole(role);
-    _m_fixedRole = role;
-    // delete all
-    foreach(RoleComboBoxItem *item, items)
-        delete item;
-    items.clear();
+
+	    if (_m_fixedRole.isNull()) {
+			disconnect(m_currentRole, SIGNAL(clicked()), this, SLOT(expand()));
+			connect(m_currentRole, SIGNAL(clicked()), this, SLOT(toggle()));
+		}
+	
+		m_currentRole->setRole(role);
+		if (role != "unknown")
+			_m_fixedRole = role;
+		// delete all
+		foreach(RoleComboBoxItem *item, items)
+			delete item;
+		items.clear();
 }
 
