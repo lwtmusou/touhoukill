@@ -461,7 +461,7 @@ sgs.ai_view_as.zhanzhen = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	if card_place ~= sgs.Player_PlaceSpecial then
+	if card_place ~= sgs.Player_PlaceSpecial and not card:hasFlag("using") then
 		if pattern=="jink" then
 			return ("jink:zhanzhen[%s:%s]=%d"):format(suit, number, card_id)
 		elseif pattern=="slash" then

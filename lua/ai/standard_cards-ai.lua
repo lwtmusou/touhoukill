@@ -908,6 +908,19 @@ function SmartAI:useCardSlash(card, use)
 	end
 end
 
+function countRangeFix(slash, from)
+	local range_fix = 0
+	if (slash:isVirtualCard()) then
+		if (from:getWeapon() and slash:getSubcards():contains(from:getWeapon():getId())) then
+				range_fix = range_fix +  sgs.weapon_range[from:getWeapon():getClassName()] - from:getAttackRange(false)
+		end
+		if (from:getOffensiveHorse() and slash:getSubcards():contains(from:getOffensiveHorse():getId())) then
+				range_fix = range_fix + 1;
+		end
+	end
+	return range_fix
+end
+
 --被动用？
 sgs.ai_skill_use.slash = function(self, prompt)
 	local parsedPrompt = prompt:split(":")
@@ -928,7 +941,10 @@ sgs.ai_skill_use.slash = function(self, prompt)
 		local no_distance = sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, slash) > 50 or self.player:hasFlag("slashNoDistanceLimit")
 		local targets = {}
 		local use = { to = sgs.SPlayerList() }
-		if self.player:canSlash(target, slash, not no_distance) then use.to:append(target) else return "." end
+		
+		local range_fix = countRangeFix(slash, self.player)
+		
+		if self.player:canSlash(target, slash, not no_distance, range_fix) then use.to:append(target) else return "." end
 
 		if parsedPrompt[1] ~= "@niluan-slash" and target:hasSkill("xiansi") and target:getPile("counter"):length() > 1
 			and not (self:needKongcheng() and self.player:isLastHandCard(slash, true)) then
@@ -945,17 +961,13 @@ sgs.ai_skill_use.slash = function(self, prompt)
 	self:sort(self.enemies, "defenseSlash")
 	for _, slash in ipairs(slashes) do
 		--敕令出杀
-		--if #parsedPrompt>=1 and parsedPrompt[1] == "@chiling-slash"  then
-		--	if slash:getId()~=self.player:getMark("chiling-slash") then
-		--		continue
-		--	end
-		--end
+		local range_fix = countRangeFix(slash, self.player)
 		local no_distance = sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, slash) > 50 or self.player:hasFlag("slashNoDistanceLimit")
 		for _, friend in ipairs(self.friends_noself) do
 			local slash_prohibit = false
 			slash_prohibit = self:slashProhibit(card, friend)
 			if not self:hasHeavySlashDamage(self.player, card, friend)
-				and self.player:canSlash(friend, slash, not no_distance) and not self:slashProhibit(slash, friend)
+				and self.player:canSlash(friend, slash, not no_distance, range_fix) and not self:slashProhibit(slash, friend)
 				and self:slashIsEffective(slash, friend)
 				and (self:findLeijiTarget(friend, 50, self.player)
 					or (friend:isLord() and self.player:hasSkill("guagu") and friend:getLostHp() >= 1 and getCardsNum("Jink", friend, self.player) == 0)
@@ -971,15 +983,10 @@ sgs.ai_skill_use.slash = function(self, prompt)
 	end
 	if not useslash  then
 		for _, slash in ipairs(slashes) do
-			--敕令出杀
-			--if #parsedPrompt>=1 and parsedPrompt[1] == "@chiling-slash" then
-			--	if slash:getId()~=self.player:getMark("chiling-slash") then
-			--		continue
-			--	end
-			--end
+			local range_fix = countRangeFix(slash, self.player)
 			local no_distance = sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, slash) > 50 or self.player:hasFlag("slashNoDistanceLimit")
 			for _, enemy in ipairs(self.enemies) do
-				if self.player:canSlash(enemy, slash, not no_distance) and not self:slashProhibit(slash, enemy)
+				if self.player:canSlash(enemy, slash, not no_distance, range_fix) and not self:slashProhibit(slash, enemy)
 					and self:slashIsEffective(slash, enemy) and sgs.isGoodTarget(enemy, self.enemies, self)
 					and not (self.player:hasFlag("slashTargetFix") and not enemy:hasFlag("SlashAssignee")) then
 
@@ -3285,6 +3292,20 @@ sgs.ai_skill_cardask["collateral-slash"] = function(self, data, pattern, target2
 	-- self.player = killer
 	-- target = user
 	-- target2 = victim
+	
+	--step1: check canSlash
+	
+	
+    local slashes = {}
+	for _, slash in ipairs(self:getCards("Slash")) do
+		local range_fix = countRangeFix(slash, self.player)
+		local no_distance = sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, slash) > 50 or self.player:hasFlag("slashNoDistanceLimit")
+		if self.player:canSlash(target2, slash, not no_distance, range_fix) then
+		    table.insert(slashes, slash)
+		end
+	end
+	if #slashes == 0 then  return "." end
+	
 	local current = self.room:getCurrent()
 	if self:isFriend(current) and (current:hasFlag("needCrossbow") or
 			(getCardsNum("Slash", current, self.player) >= 2 and self.player:getWeapon():isKindOf("Crossbow"))) then
@@ -3293,44 +3314,44 @@ sgs.ai_skill_cardask["collateral-slash"] = function(self, data, pattern, target2
 	end
 
 	if self:isFriend(target2) and self:needLeiji(target2, self.player) then
-		for _, slash in ipairs(self:getCards("Slash")) do
-			if self:slashIsEffective(slash, target2) then
+		for _, slash in ipairs(slashes) do
+			if  self:slashIsEffective(slash, target2) then
 				return slash:toString()
 			end
 		end
 	end
 
 	if target2 and (self:getDamagedEffects(target2, self.player, true) or self:needToLoseHp(target2, self.player, true)) then
-		for _, slash in ipairs(self:getCards("Slash")) do
-			if self:slashIsEffective(slash, target2) and self:isFriend(target2) then
+		for _, slash in ipairs(slashes) do
+			if  self:slashIsEffective(slash, target2) and self:isFriend(target2) then
 				return slash:toString()
 			end
 			if not self:slashIsEffective(slash, target2, self.player, true) and self:isEnemy(target2) then
 				return slash:toString()
 			end
 		end
-		for _, slash in ipairs(self:getCards("Slash")) do
-			if not self:getDamagedEffects(target2, self.player, true) and self:isEnemy(target2) then
+		for _, slash in ipairs(slashes) do
+			if  not self:getDamagedEffects(target2, self.player, true) and self:isEnemy(target2) then
 				return slash:toString()
 			end
 		end
 	end
 
 	if target2 and not self:hasSkills(sgs.lose_equip_skill) and self:isEnemy(target2) then
-		for _, slash in ipairs(self:getCards("Slash")) do
-			if self:slashIsEffective(slash, target2) then
+		for _, slash in ipairs(slashes) do
+			if  self:slashIsEffective(slash, target2) then
 				return slash:toString()
 			end
 		end
 	end
 	if target2 and not self:hasSkills(sgs.lose_equip_skill) and self:isFriend(target2) then
-		for _, slash in ipairs(self:getCards("Slash")) do
-			if not self:slashIsEffective(slash, target2) then
+		for _, slash in ipairs(slashes) do
+			if  not self:slashIsEffective(slash, target2) then
 				return slash:toString()
 			end
 		end
-		for _, slash in ipairs(self:getCards("Slash")) do
-			if (target2:getHp() > 3 or not self:canHit(target2, self.player, self:hasHeavySlashDamage(self.player, slash, target2)))
+		for _, slash in ipairs(slashes) do
+			if  (target2:getHp() > 3 or not self:canHit(target2, self.player, self:hasHeavySlashDamage(self.player, slash, target2)))
 				and not target2:getRole() == "lord" and self.player:getHandcardNum() > 1 then
 					return slash:toString()
 			end
