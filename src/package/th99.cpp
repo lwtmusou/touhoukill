@@ -1439,18 +1439,21 @@ public:
                 if (distance_change_one_time && p->hasSkill("ganying")) {
                     p->tag["ganyingInvoke"] = true;
                     p->tag["ganyingTargets"] = targets;
+					
                 }
             }
         }
     }
     
     
-    virtual TriggerList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const
+    virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
-        TriggerList skill_list;
+		
+		TriggerList skill_list;
         foreach (ServerPlayer *p, room->getAlivePlayers()) {
-            if (p->hasSkill("ganying") && player->tag["ganyingInvoke"].toBool())
+            if (p->hasSkill("ganying") && p->tag["ganyingInvoke"].toBool()){
                 skill_list.insert(p, QStringList(objectName()));
+			}
         }
         return skill_list;
     }
