@@ -128,7 +128,7 @@ function sgs.getDefenseSlash(player, self)
 		defense = defense + 2.2
 	end
 	if self and self:canKexue(player) then
-		defense = defense + 3.2
+		defense = defense + 100
 	end
 	if self and self:canJie(player) then
 		defense = defense + 1.2

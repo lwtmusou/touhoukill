@@ -634,7 +634,6 @@ sgs.ai_cardneed.yaoshu = function(to, card, self)
 end
 
 sgs.ai_skill_invoke.jiyi = true
---sgs.ai_skill_askforyiji.jiyi = sgs.ai_skill_askforyiji.yiji
 sgs.ai_skill_askforyiji.jiyi = function(self, card_ids)
 	local available_friends = {}
 	if #self.friends_noself==0 then return nil, -1 end
@@ -675,8 +674,7 @@ sgs.ai_skill_askforyiji.jiyi = function(self, card_ids)
 	end
 	return nil, -1
 end
-sgs.ai_Yiji_intention.jiyi=-30
-
+sgs.ai_Rende_intention.jiyi= -30
 
 sgs.ai_skill_playerchosen.baochun = function(self, targets)
 	local target =self:touhouFindPlayerToDraw(true, self.player:getLostHp())

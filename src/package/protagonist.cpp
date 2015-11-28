@@ -13,7 +13,7 @@ class Lingqi : public TriggerSkill
 public:
     Lingqi() : TriggerSkill("lingqi")
     {
-        events << TargetConfirming;// << SlashEffected << CardEffected;
+        events << TargetConfirming;
 
     }
 
@@ -24,15 +24,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Slash") || use.card->isNDTrick())
                 return QStringList(objectName());
-        } /* else if (triggerEvent == SlashEffected){
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.slash != NULL && effect.slash->hasFlag("lingqi" + player->objectName()))
-                return QStringList(objectName());
-        }else if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (effect.card != NULL && effect.card->isNDTrick() && effect.card->hasFlag("lingqi" + player->objectName())) 
-                return QStringList(objectName());
-        } */
+        } 
         return QStringList();
     }
     
@@ -62,18 +54,7 @@ public:
                 use.nullified_list << player->objectName();
                 data = QVariant::fromValue(use);
             }
-            //    room->setCardFlag(use.card, "lingqi" + player->objectName());
-        }/* else if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            room->touhouLogmessage("#LingqiAvoid", effect.to, effect.slash->objectName(), QList<ServerPlayer *>(), objectName());
-            room->setEmotion(effect.to, "skill_nullify");
-            return true;
-        }else if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            room->touhouLogmessage("#LingqiAvoid", effect.to, effect.card->objectName(), QList<ServerPlayer *>(), objectName());
-            room->setEmotion(effect.to, "skill_nullify");
-            return true;
-        } */
+        }
         
         return false;
     }

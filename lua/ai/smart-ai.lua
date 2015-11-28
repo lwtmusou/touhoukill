@@ -11,7 +11,7 @@ math.randomseed(os.time())
 SmartAI = (require "middleclass").class("SmartAI")
 
 --version = "QSanguosha AI 20140901 (V1.414213562 Alpha)"
-version = "TouhouKill AI 20150405"
+version = "TouhouKill AI 20151128"
 
 -- checkout https://github.com/haveatry823/QSanguoshaAI for details
 
@@ -27,6 +27,7 @@ sgs.ais = {}
 sgs.ai_card_intention = 	{}
 sgs.ai_playerchosen_intention = {}
 sgs.ai_Yiji_intention = {}
+sgs.ai_Rende_intention = {}
 sgs.role_evaluation = 		{}
 sgs.ai_role = 				{}
 sgs.ai_keep_value = 		{}
@@ -73,6 +74,7 @@ sgs.ai_choicemade_filter = 	{
 	playerChosen =			{},
 	cardChosen =			{},
 	Yiji = 					{},
+	Rende = 			    {},
 	viewCards = 			{},
 	pindian = 				{}
 }
@@ -2013,6 +2015,12 @@ function sgs.evaluateAlivePlayersRole()
 		if p:getMark("woyuRole")>0 then
 			sgs.ai_role[p:objectName()] = p:getRole()
 		end
+		
+		if p:hasShownRole() then --not server player
+			 local role = p:getRole()
+			 if p:isLord() then role = "loyalist" end
+			sgs.ai_role[p:objectName()] = role
+		 end
 	end
 	sgs.modifiedRoleEvaluation()
 end
@@ -2160,6 +2168,43 @@ sgs.ai_choicemade_filter.Yiji.general = function(self, from, promptlist)
 			end
 		elseif not (self:needKongcheng(to, true) and #cards == 1) and not (to:hasSkill("manjuan") and to:getPhase() == sgs.Player_NotActive) then
 			sgs.updateIntention(from, to, -10)
+		end
+	end
+end
+
+sgs.ai_choicemade_filter.Rende.general = function(self, from, promptlist)
+	local from = findPlayerByObjectName(self.room, promptlist[3])
+	local to_names = promptlist[4]:split("+")
+	local tos = {}
+	for _, name in ipairs(to_names) do
+		local to = findPlayerByObjectName(self.room, name)
+		if to then
+			table.insert(tos, to)
+		end
+	end
+	local reason = promptlist[2]
+	
+	--data传过来的信息无法区分哪个人获得了几张id
+	-- local cards = {}
+	-- local card_ids = promptlist[5]:split("+")
+	-- for _, id in ipairs(card_ids) do
+		-- local card = sgs.Sanguosha:getCard(tonumber(id))
+		-- table.insert(cards, card)
+	-- end
+	
+	if from and #tos >0 then
+		local callback = sgs.ai_Rende_intention[reason]
+	    for _,to in pairs(tos) do
+			if callback then
+				if type(callback) == "number" and not (self:needKongcheng(to, true) ) then --and #cards == 1
+					sgs.updateIntention(from, to, sgs.ai_Rende_intention[reason])
+				end
+				-- elseif type(callback) == "function" then
+					-- callback(self, from, to, cards)
+				-- end
+			elseif not (self:needKongcheng(to, true) ) then  --and #cards == 1
+				sgs.updateIntention(from, to, -10)
+			end
 		end
 	end
 end

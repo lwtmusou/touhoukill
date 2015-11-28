@@ -1085,6 +1085,7 @@ public:
         player->drawCards(2);
         QList<int> hc = player->handCards();
         room->askForRende(player, hc, objectName(), false, true, qMin(2, player->getHandcardNum()));
+		//room->askForYiji(player, hc, objectName(), false, false, true, qMin(2, player->getHandcardNum()));
         
         return false;
     }
