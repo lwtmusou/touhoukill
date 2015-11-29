@@ -3615,7 +3615,6 @@ end
 
 function SmartAI:askForUseCard(pattern, prompt, method)
 	local use_func = sgs.ai_skill_use[pattern]
-
 	if use_func then
 		return use_func(self, prompt, method) or "."
 	else
@@ -5132,9 +5131,11 @@ function isCard(class_name, card, player)
 		if getSkillViewCard(card, class_name, player, place) then return true end
 		if player:hasSkill("wushen") and card:getSuit() == sgs.Card_Heart and class_name == "Slash" then return true end
 		if player:hasSkill("jinjiu") and card:isKindOf("Analeptic") and class_name == "Slash" then return true end
+		if player:hasSkill("aoyi") and card:isNDTrick() and class_name == "IceSlash" then return true end
 	else
 		if player:hasSkill("wushen") and card:getSuit() == sgs.Card_Heart and class_name ~= "Slash" then return false end
 		if player:hasSkill("jinjiu") and class_name == "Analeptic" then return false end
+		if player:hasSkill("aoyi") and card:isNDTrick() and class_name ~= "IceSlash" then return false end
 		if not prohibitUseDirectly(card, player) then return true end
 	end
 	return false

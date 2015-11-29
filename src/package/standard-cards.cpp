@@ -234,6 +234,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
             const Weapon *weapon = qobject_cast<const Weapon *>(use.from->getWeapon()->getRealCard());
             rangefix += weapon->getRange() - use.from->getAttackRange(false);
         }
+		
         if (use.from->getOffensiveHorse() && use.card->getSubcards().contains(use.from->getOffensiveHorse()->getId()))
             rangefix += 1;
 

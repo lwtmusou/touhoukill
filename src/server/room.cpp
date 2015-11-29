@@ -4085,7 +4085,7 @@ void Room::drawCards(QList<ServerPlayer *> players, QList<int> n_list, const QSt
     moveCardsAtomic(moves, false);
 }
 
-void Room::throwCard(const Card *card, ServerPlayer *who, ServerPlayer *thrower)
+void Room::throwCard(const Card *card, ServerPlayer *who, ServerPlayer *thrower, bool notifyLog)
 {
     CardMoveReason reason;
     if (thrower == NULL) {
@@ -4097,10 +4097,10 @@ void Room::throwCard(const Card *card, ServerPlayer *who, ServerPlayer *thrower)
         reason.m_playerId = thrower->objectName();
     }
     reason.m_skillName = card->getSkillName();
-    throwCard(card, reason, who, thrower);
+    throwCard(card, reason, who, thrower, notifyLog);
 }
 
-void Room::throwCard(const Card *card, const CardMoveReason &reason, ServerPlayer *who, ServerPlayer *thrower)
+void Room::throwCard(const Card *card, const CardMoveReason &reason, ServerPlayer *who, ServerPlayer *thrower, bool notifyLog)
 {
     if (card == NULL)
         return;
@@ -4110,22 +4110,27 @@ void Room::throwCard(const Card *card, const CardMoveReason &reason, ServerPlaye
         to_discard.append(card->getSubcards());
     else
         to_discard << card->getEffectiveId();
-
-    LogMessage log;
-    if (who) {
-        if (thrower == NULL) {
-            log.type = "$DiscardCard";
-            log.from = who;
-        } else {
-            log.type = "$DiscardCardByOther";
-            log.from = thrower;
-            log.to << who;
-        }
-    } else {
-        log.type = "$EnterDiscardPile";
-    }
-    log.card_str = IntList2StringList(to_discard).join("+");
-    sendLog(log);
+		
+    if (notifyLog){
+		LogMessage log;
+		if (who) {
+			if (thrower == NULL) {
+				log.type = "$DiscardCard";
+				log.from = who;
+			} else {
+				log.type = "$DiscardCardByOther";
+				log.from = thrower;
+				log.to << who;
+			}
+		}
+		else{
+			log.type = "$EnterDiscardPile";
+		}
+		
+		log.card_str = IntList2StringList(to_discard).join("+");
+		sendLog(log);
+	}
+    
 
     QList<CardsMoveStruct> moves;
     if (who) {
@@ -4139,9 +4144,9 @@ void Room::throwCard(const Card *card, const CardMoveReason &reason, ServerPlaye
     }
 }
 
-void Room::throwCard(int card_id, ServerPlayer *who, ServerPlayer *thrower)
+void Room::throwCard(int card_id, ServerPlayer *who, ServerPlayer *thrower, bool notifyLog)
 {
-    throwCard(Sanguosha->getCard(card_id), who, thrower);
+    throwCard(Sanguosha->getCard(card_id), who, thrower, notifyLog);
 }
 
 RoomThread *Room::getThread() const

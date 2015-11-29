@@ -223,8 +223,14 @@ void XiufuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
         CardMoveReason(CardMoveReason::S_REASON_TRANSFER, source->objectName()));
     // this move has no client log?
     exchangeMove.push_back(move1);
-
+    
+	
+	source->clearOnePrivatePile("#xiufu");
+	source->setFlags("-xiufu_InTempMoving"); 
+	
     room->moveCardsAtomic(exchangeMove, true);
+	
+	
 }
 
 XiufuFakeMoveCard::XiufuFakeMoveCard()
@@ -250,8 +256,20 @@ const Card *XiufuFakeMoveCard::validate(CardUseStruct &card_use) const
         room->setPlayerFlag(source, "Global_xiufuFailed");
 		return NULL;
 	}
-	//move in pile  pile没有清空 导致重复加入pile？
-     CardsMoveStruct move(able, NULL, source, Player::PlaceTable, Player::PlaceSpecial,
+	
+	//solution1:
+	source->setFlags("xiufu_InTempMoving");
+	source->addToPile("#xiufu", able, false);
+	
+	const Card *card = room->askForUseCard(source, "@@xiufu", "@xiufu",-1, Card::MethodNone);
+	if (!card){
+		source->clearOnePrivatePile("#xiufu");
+		source->setFlags("-xiufu_InTempMoving"); 
+		room->setPlayerFlag(source, "Global_xiufuFailed");
+	}
+	
+	//solution2: can not slove UI problem : cannot clear carditem displayed at the last time
+    /*  CardsMoveStruct move(able, NULL, source, Player::PlaceTable, Player::PlaceSpecial,
         CardMoveReason(CardMoveReason::S_REASON_PUT, source->objectName(), "xiufu", QString()));
 		move.to_pile_name = "#xiufu";
         QList<CardsMoveStruct> moves;
@@ -260,7 +278,7 @@ const Card *XiufuFakeMoveCard::validate(CardUseStruct &card_use) const
         _source << source;
         room->notifyMoveCards(true, moves, false, _source);
         room->notifyMoveCards(false, moves, false, _source); 
-
+    
 	const Card *card = room->askForUseCard(source, "@@xiufu", "@xiufu",-1, Card::MethodNone);
 	if (!card)
 		room->setPlayerFlag(source, "Global_xiufuFailed");
@@ -274,7 +292,9 @@ const Card *XiufuFakeMoveCard::validate(CardUseStruct &card_use) const
         QList<ServerPlayer *> _source1;
         _source1 << source;
         room->notifyMoveCards(true, moves1, false, _source1);
-        room->notifyMoveCards(false, moves1, false, _source1);
+        room->notifyMoveCards(false, moves1, false, _source1); */
+	
+	
     return NULL;
 }
 
@@ -323,123 +343,7 @@ public:
 };
 
 
- //version 2
-/* XiufuCard::XiufuCard()
-{
-    will_throw = false;
-    handling_method = Card::MethodNone;
-    m_skillName = "xiufu";
-    mute = true;
-    target_fixed = true;
-}
-void XiufuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
-{
-
-    QList<int> able;
-    QList<int> discardpile = room->getDiscardPile();
-    foreach (int id, discardpile) {
-        Card *tmp_card = Sanguosha->getCard(id);
-        if (tmp_card->isKindOf("EquipCard"))
-            able << id;
-    }
-    if (able.isEmpty())
-        return;
-    room->fillAG(able, source);
-    int equipid = room->askForAG(source, able, false, "xiufu");
-    const EquipCard *equip = qobject_cast<const EquipCard *>(Sanguosha->getCard(equipid)->getRealCard());
-    ServerPlayer *target = room->askForPlayerChosen(source, room->getAlivePlayers(), "xiufu", "@xiufu-select:" + equip->objectName(), false, true);
-    room->clearAG(source);
-
-    int equipped_id = -1;
-    if (target->getEquip(equip->location()) != NULL)
-        equipped_id = target->getEquip(equip->location())->getEffectiveId();
-    QList<CardsMoveStruct> exchangeMove;
-    if (equipped_id != -1) {
-        CardsMoveStruct move2(equipped_id, NULL, Player::DiscardPile,
-            CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, target->objectName()));
-        exchangeMove.push_back(move2);
-    }
-    CardsMoveStruct move1(equipid, target, Player::PlaceEquip,
-        CardMoveReason(CardMoveReason::S_REASON_TRANSFER, source->objectName()));
-
-    exchangeMove.push_back(move1);
-
-    room->moveCardsAtomic(exchangeMove, true);
-
-}
-
-
-class Xiufu : public ZeroCardViewAsSkill
-{
-public:
-    Xiufu() :ZeroCardViewAsSkill("xiufu")
-    {
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const
-    {
-        return !player->hasUsed("XiufuCard") && player->getMark("can_xiufu") > 0;
-    }
-
-    virtual const Card *viewAs() const
-    {
-        return new XiufuCard;
-    }
-};
-//check discardpile
-class XiufuCheck : public TriggerSkill
-{
-public:
-    XiufuCheck() : TriggerSkill("#xiufu")
-    {
-        events << CardsMoveOneTime << EventAcquireSkill;
-    }
-
-    
-    static bool findEquip(Room *room)
-    {
-        QList<int> discardpile = room->getDiscardPile();
-        foreach (int id, discardpile) {
-            Card *tmp_card = Sanguosha->getCard(id);
-            if (tmp_card->isKindOf("EquipCard"))
-                return true;
-        }
-        return false;
-    }
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
-        if (!TriggerSkill::triggerable(player)) return QStringList();
-        QList<ServerPlayer *> srcs = room->getAlivePlayers();
-        if (triggerEvent == CardsMoveOneTime && player != NULL && player->isAlive()) {
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (player->getMark("can_xiufu") > 0) {
-                if (move.from_places.contains(Player::DrawPile) || move.from_places.contains(Player::DiscardPile)) {
-                    if (!findEquip(room)) {
-                        foreach(ServerPlayer *p, srcs)
-                            room->setPlayerMark(p, "can_xiufu", 0);
-                    }
-                }
-            } else {
-                if (player->getMark("can_xiufu") == 0 && move.to_place == Player::DiscardPile) {
-                    if (findEquip(room)) {
-                        foreach(ServerPlayer *p, srcs)
-                            room->setPlayerMark(p, "can_xiufu", 1);
-                    }
-                }
-            }
-        } else if ((triggerEvent == EventAcquireSkill && data.toString() == "xiufu")) {
-            if (findEquip(room)) {
-                foreach(ServerPlayer *p, srcs)
-                    room->setPlayerMark(p, "can_xiufu", 1);
-            } else {
-                foreach(ServerPlayer *p, srcs)
-                    room->setPlayerMark(p, "can_xiufu", 0);
-            }
-        }
-        return QStringList();
-    }
-};
- */
-class Fandu : public TriggerSkill
+ class Fandu : public TriggerSkill
 {
 public:
     Fandu() : TriggerSkill("fandu")
@@ -1402,15 +1306,18 @@ public:
     }
 
     virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *mokou, QVariant &data) const
-    {
+    {   //maybe with some problems in scenario mode, since it triggers 'GameStart' at first, 
+	    //then move setted equiqment(+1 horse) to player's aera.
         if (triggerEvent == EventAcquireSkill || triggerEvent == EventLoseSkill) {
             if (data.toString() == "ganying")
                 return ;
         }
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.from != NULL && move.from->hasFlag("rengui_InTempMoving"))
-                return;
+            if (room->getTag("FirstRound").toBool())
+				return;
+			//if (move.from != NULL && move.from->hasFlag("rengui_InTempMoving"))
+            //    return;
         }
         if (triggerEvent == MarkChanged) {
             MarkChangeStruct change = data.value<MarkChangeStruct>();
@@ -1752,6 +1659,8 @@ TH99Package::TH99Package()
     wai002->addSkill(new Xiufu);
     //wai002->addSkill(new XiufuCheck);
     //related_skills.insertMulti("xiufu", "#xiufu");
+	wai002->addSkill(new FakeMoveSkill("xiufu"));
+    related_skills.insertMulti("xiufu", "#xiufu-fake-move");
 
     General *wai003 = new General(this, "wai003", "wai", 3, false);
     wai003->addSkill(new Fandu);

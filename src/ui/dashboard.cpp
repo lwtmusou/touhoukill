@@ -1082,7 +1082,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
 {
     if (_m_pile_expanded.contains(pile_name)) return;
     _m_pile_expanded << pile_name;
-    
+	
     QString new_name = pile_name;
     QList<int> pile;
     if (new_name.startsWith("%")) {
@@ -1148,9 +1148,12 @@ void Dashboard::expandPileCard()
 
 void Dashboard::retractPileCards(const QString &pile_name)
 {
-    if (!_m_pile_expanded.contains(pile_name)) return;
+
+	if (!_m_pile_expanded.contains(pile_name)) return;
     _m_pile_expanded.removeOne(pile_name);
     
+	
+	
     QString new_name = pile_name;
     QList<int> pile;
     if (new_name.startsWith("%")) {
