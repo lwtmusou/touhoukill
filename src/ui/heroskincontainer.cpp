@@ -123,8 +123,17 @@ QStringList HeroSkinContainer::getHeroSkinFiles(const QString &generalName)
 {
     if (!m_generalToSkinFiles.contains(generalName)) {
         QDir dir(HEROSKIN_PIXMAP_PATH);
-        dir.setNameFilters(QStringList(QString("%1_*.png").arg(generalName)));
-        QStringList heroSkinFiles = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+		
+		dir.setNameFilters(QStringList(QString("%1_*.png").arg(generalName)));
+        QStringList tmpFiles = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+		
+		QStringList heroSkinFiles;
+		//filter files
+		foreach (const QString &file, tmpFiles) {
+			if (file.count("_")  == generalName.count("_") + 1 )
+				heroSkinFiles << file;
+		}
+		
         if (!heroSkinFiles.isEmpty()) {
             qSort(heroSkinFiles.begin(), heroSkinFiles.end(), caseInsensitiveLessThan);
             m_generalToSkinFiles[generalName] = heroSkinFiles;
