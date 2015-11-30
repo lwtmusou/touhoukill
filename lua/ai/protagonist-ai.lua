@@ -155,7 +155,6 @@ end
 
 sgs.ai_choicemade_filter.cardResponded["@boli-retrial"] = function(self, player, promptlist)
 	if promptlist[#promptlist] ~= "_nil_" then
-	    player:gainMark("@nihi")
 		sgs.updateIntention(player, sgs.bolisource, -80)
 		sgs.bolisource = nil
 	elseif sgs.bolisource then
