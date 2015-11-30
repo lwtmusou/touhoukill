@@ -1420,39 +1420,39 @@ ProtagonistPackage::ProtagonistPackage()
     : Package("protagonist")
 {
 
-    General *zhu001 = new General(this, "zhu001$", "zhu", 4, false);
-    zhu001->addSkill(new Lingqi);
-    zhu001->addSkill(new Qixiang);
-    zhu001->addSkill(new Boli);
+    General *reimu = new General(this, "reimu$", "zhu", 4, false);
+    reimu->addSkill(new Lingqi);
+    reimu->addSkill(new Qixiang);
+    reimu->addSkill(new Boli);
 
-    General *zhu002 = new General(this, "zhu002$", "zhu", 4, false);
-    zhu002->addSkill(new Mofa);
-    zhu002->addSkill(new Wuyu);
+    General *marisa = new General(this, "marisa$", "zhu", 4, false);
+    marisa->addSkill(new Mofa);
+    marisa->addSkill(new Wuyu);
 
-    General *zhu003 = new General(this, "zhu003", "zhu", 4, false);
-    zhu003->addSkill(new Saiqian);
+    General *reimu_sp = new General(this, "reimu_sp", "zhu", 4, false);
+    reimu_sp->addSkill(new Saiqian);
 
-    General *zhu004 = new General(this, "zhu004", "zhu", 3, false);
-    zhu004->addSkill(new Jiezou);
-    zhu004->addSkill(new Shoucang);
-    zhu004->addSkill(new ShoucangMax);
+    General *marisa_sp = new General(this, "marisa_sp", "zhu", 3, false);
+    marisa_sp->addSkill(new Jiezou);
+    marisa_sp->addSkill(new Shoucang);
+    marisa_sp->addSkill(new ShoucangMax);
     related_skills.insertMulti("shoucang", "#shoucang");
 
-    General *zhu005 = new General(this, "zhu005", "zhu", 4, false);
-    zhu005->addSkill(new Baoyi);
+    General *marisa_sp2 = new General(this, "marisa_sp2", "zhu", 4, false);
+    marisa_sp2->addSkill(new Baoyi);
 
-    General *zhu006 = new General(this, "zhu006", "zhu", 4, false);
-    zhu006->addSkill(new Zhize);
-    zhu006->addSkill(new Chunxi);
+    General *reimu_yym = new General(this, "reimu_yym", "zhu", 4, false);
+    reimu_yym->addSkill(new Zhize);
+    reimu_yym->addSkill(new Chunxi);
 
-    General *zhu007 = new General(this, "zhu007", "zhu", 4, false);
-    zhu007->addSkill(new BllmWuyu);
-    zhu007->addSkill(new BllmCaiyu);
-    zhu007->addSkill(new BllmSeyu);
-    zhu007->addSkill(new BllmSeyuClear);
-    zhu007->addSkill(new BllmMingyu);
-    zhu007->addSkill(new BllmShuiyu);
-    zhu007->addSkill(new BllmShuiyuMax);
+    General *reimu_slm = new General(this, "reimu_slm", "zhu", 4, false);
+    reimu_slm->addSkill(new BllmWuyu);
+    reimu_slm->addSkill(new BllmCaiyu);
+    reimu_slm->addSkill(new BllmSeyu);
+    reimu_slm->addSkill(new BllmSeyuClear);
+    reimu_slm->addSkill(new BllmMingyu);
+    reimu_slm->addSkill(new BllmShuiyu);
+    reimu_slm->addSkill(new BllmShuiyuMax);
     related_skills.insertMulti("bllmwuyu", "#bllmcaiyu");
     related_skills.insertMulti("bllmwuyu", "#bllmseyu");
     related_skills.insertMulti("bllmwuyu", "#bllmseyu_clear");
@@ -1461,11 +1461,11 @@ ProtagonistPackage::ProtagonistPackage()
     related_skills.insertMulti("bllmwuyu", "#bllmshuiyu2");
 
 
-    General *zhu008 = new General(this, "zhu008", "zhu", 3, false);
-    zhu008->addSkill(new Qiangyu);
-    zhu008->addSkill(new Mokai);
-    zhu008->addSkill(new Guangji);
-    zhu008->addSkill(new Xinghui);
+    General *marisa_slm = new General(this, "marisa_slm", "zhu", 3, false);
+    marisa_slm->addSkill(new Qiangyu);
+    marisa_slm->addSkill(new Mokai);
+    marisa_slm->addSkill(new Guangji);
+    marisa_slm->addSkill(new Xinghui);
 
 
     addMetaObject<MofaCard>();

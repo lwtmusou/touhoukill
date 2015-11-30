@@ -511,31 +511,31 @@ public:
 THXWMPackage::THXWMPackage()
     : Package("thxwm")
 {
-    General *xwm001 = new General(this, "xwm001$", "dld", 3, false);
-    xwm001->addSkill(new Kongpiao);
-    xwm001->addSkill(new Shouhui);
-    xwm001->addSkill(new Woyu);
+    General *satori_xwm = new General(this, "satori_xwm$", "dld", 3, false);
+    satori_xwm->addSkill(new Kongpiao);
+    satori_xwm->addSkill(new Shouhui);
+    satori_xwm->addSkill(new Woyu);
 
 
-    General *xwm002 = new General(this, "xwm002", "yym", 4, false);
-    xwm002->addSkill(new Beisha);
+    General *yuyuko_xwm = new General(this, "yuyuko_xwm", "yym", 4, false);
+    yuyuko_xwm->addSkill(new Beisha);
 
-    General *xwm003 = new General(this, "xwm003", "zhu", 4, false);
-    xwm003->addSkill(new Xisan);
+    General *marisa_xwm = new General(this, "marisa_xwm", "zhu", 4, false);
+    marisa_xwm->addSkill(new Xisan);
 
-    General *xwm004 = new General(this, "xwm004", "zhan", 3, false);
-    xwm004->addSkill(new Jubao);
-    xwm004->addSkill(new Haidi);
+    General *aya_xwm = new General(this, "aya_xwm", "zhan", 3, false);
+    aya_xwm->addSkill(new Jubao);
+    aya_xwm->addSkill(new Haidi);
 
-    General *xwm005 = new General(this, "xwm005$", "yyc", 3, false);
-    xwm005->addSkill(new Shanji);
-    xwm005->addSkill(new Yazhi);
-    xwm005->addSkill(new Tianxiang);
+    General *mokou_xwm = new General(this, "mokou_xwm$", "yyc", 3, false);
+    mokou_xwm->addSkill(new Shanji);
+    mokou_xwm->addSkill(new Yazhi);
+    mokou_xwm->addSkill(new Tianxiang);
 
 
-    General *xwm006 = new General(this, "xwm006", "hmx", 3, false);
-    xwm006->addSkill(new Qingcang);
-    xwm006->addSkill(new Changqing);
+    General *remilia_xwm = new General(this, "remilia_xwm", "hmx", 3, false);
+    remilia_xwm->addSkill(new Qingcang);
+    remilia_xwm->addSkill(new Changqing);
 
     addMetaObject<ShouhuiCard>();
     addMetaObject<YazhiCard>();

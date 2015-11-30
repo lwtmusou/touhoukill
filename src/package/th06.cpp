@@ -1264,47 +1264,47 @@ public:
 TH06Package::TH06Package()
     : Package("th06")
 {
-    General *hmx001 = new General(this, "hmx001$", "hmx", 3, false);
-    hmx001->addSkill(new SkltKexue);
-    hmx001->addSkill(new Mingyun);
-    hmx001->addSkill(new Xueyi);
+    General *remilia = new General(this, "remilia$", "hmx", 3, false);
+    remilia->addSkill(new SkltKexue);
+    remilia->addSkill(new Mingyun);
+    remilia->addSkill(new Xueyi);
 
-    General *hmx002 = new General(this, "hmx002", "hmx", 3, false);
-    hmx002->addSkill(new Pohuai);
-    hmx002->addSkill(new Yuxue);
-    hmx002->addSkill(new YuxueTargetMod);
-    hmx002->addSkill(new Shengyan);
+    General *flandre = new General(this, "flandre", "hmx", 3, false);
+    flandre->addSkill(new Pohuai);
+    flandre->addSkill(new Yuxue);
+    flandre->addSkill(new YuxueTargetMod);
+    flandre->addSkill(new Shengyan);
     related_skills.insertMulti("yuxue", "#yuxue-dis");
 
-    General *hmx003 = new General(this, "hmx003", "hmx", 4, false);
-    hmx003->addSkill(new Suoding);
-    hmx003->addSkill(new Huisu);
+    General *sakuya = new General(this, "sakuya", "hmx", 4, false);
+    sakuya->addSkill(new Suoding);
+    sakuya->addSkill(new Huisu);
 
-    General *hmx004 = new General(this, "hmx004", "hmx", 3, false);
-    hmx004->addSkill(new Bolan);
-    hmx004->addSkill(new Qiyao);
+    General *patchouli = new General(this, "patchouli", "hmx", 3, false);
+    patchouli->addSkill(new Bolan);
+    patchouli->addSkill(new Qiyao);
 
-    General *hmx005 = new General(this, "hmx005", "hmx", 4, false);
-    hmx005->addSkill(new Neijin);
-    hmx005->addSkill(new Taiji);
+    General *meirin = new General(this, "meirin", "hmx", 4, false);
+    meirin->addSkill(new Neijin);
+    meirin->addSkill(new Taiji);
 
-    General *hmx006 = new General(this, "hmx006", "hmx", 3, false);
-    hmx006->addSkill(new Dongjie);
-    hmx006->addSkill(new Bingpo);
-    hmx006->addSkill(new Bendan);
+    General *cirno  = new General(this, "cirno", "hmx", 3, false);
+    cirno->addSkill(new Dongjie);
+    cirno->addSkill(new Bingpo);
+    cirno->addSkill(new Bendan);
 
 
-    General *hmx007 = new General(this, "hmx007", "hmx", 3, false);
-    hmx007->addSkill(new Zhenye);
-    hmx007->addSkill(new Anyu);
+    General *rumia  = new General(this, "rumia", "hmx", 3, false);
+    rumia->addSkill(new Zhenye);
+    rumia->addSkill(new Anyu);
 
-    General *hmx008 = new General(this, "hmx008", "hmx", 3, false);
-    hmx008->addSkill(new Qiyue);
-    hmx008->addSkill(new Moxue);
+    General *koakuma  = new General(this, "koakuma", "hmx", 3, false);
+    koakuma->addSkill(new Qiyue);
+    koakuma->addSkill(new Moxue);
 
-    General *hmx009 = new General(this, "hmx009", "hmx", 3, false);
-    hmx009->addSkill(new Juxian);
-    hmx009->addSkill(new Banyue);
+    General *daiyousei = new General(this, "daiyousei", "hmx", 3, false);
+    daiyousei->addSkill(new Juxian);
+    daiyousei->addSkill(new Banyue);
 
 
     addMetaObject<SkltKexueCard>();

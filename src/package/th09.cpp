@@ -1238,51 +1238,51 @@ public:
 TH09Package::TH09Package()
     : Package("th09")
 {
-    General *zhan001 = new General(this, "zhan001$", "zhan", 3, false);
-    zhan001->addSkill(new Shenpan);
-    zhan001->addSkill(new Huiwu);
-    zhan001->addSkill(new Huazhong);
+    General *shikieiki = new General(this, "shikieiki$", "zhan", 3, false);
+    shikieiki->addSkill(new Shenpan);
+    shikieiki->addSkill(new Huiwu);
+    shikieiki->addSkill(new Huazhong);
 
-    General *zhan002 = new General(this, "zhan002", "zhan", 4, false);
-    zhan002->addSkill(new Silian);
-    zhan002->addSkill(new Mingtu);
+    General *komachi = new General(this, "komachi", "zhan", 4, false);
+    komachi->addSkill(new Silian);
+    komachi->addSkill(new Mingtu);
 
-    General *zhan003 = new General(this, "zhan003", "zhan", 4, false);
-    zhan003->addSkill(new Weiya);
+    General *yuka = new General(this, "yuka", "zhan", 4, false);
+    yuka->addSkill(new Weiya);
 
-    General *zhan004 = new General(this, "zhan004", "zhan", 3, false);
-    zhan004->addSkill(new Judu);
-    zhan004->addSkill(new Henyi);
-    zhan004->addSkill(new HenyiCount);
+    General *medicine = new General(this, "medicine", "zhan", 3, false);
+    medicine->addSkill(new Judu);
+    medicine->addSkill(new Henyi);
+    medicine->addSkill(new HenyiCount);
     related_skills.insertMulti("henyi", "#henyi-count");
 
-    General *zhan005 = new General(this, "zhan005", "zhan", 4, false);
-    zhan005->addSkill(new Toupai);
+    General *aya_sp = new General(this, "aya_sp", "zhan", 4, false);
+    aya_sp->addSkill(new Toupai);
 
-    General *zhan006 = new General(this, "zhan006$", "zhan", 3, false);
-    zhan006->addSkill(new Zuiyue);
-    zhan006->addSkill(new Doujiu);
-    zhan006->addSkill(new Yanhui);
+    General *suika = new General(this, "suika$", "zhan", 3, false);
+    suika->addSkill(new Zuiyue);
+    suika->addSkill(new Doujiu);
+    suika->addSkill(new Yanhui);
 
-    General *zhan007 = new General(this, "zhan007$", "zhan", 4, false);
-    zhan007->addSkill(new Feixiang);
-    zhan007->addSkill(new Dizhen);
-    zhan007->addSkill(new Tianren);
+    General *tenshi= new General(this, "tenshi$", "zhan", 4, false);
+    tenshi->addSkill(new Feixiang);
+    tenshi->addSkill(new Dizhen);
+    tenshi->addSkill(new Tianren);
 
 
-    General *zhan008 = new General(this, "zhan008", "zhan", 4, false);
-    zhan008->addSkill(new Jingdian);
-    zhan008->addSkill(new Leiyun);
+    General *iku = new General(this, "iku", "zhan", 4, false);
+    iku->addSkill(new Jingdian);
+    iku->addSkill(new Leiyun);
 
-    General *zhan009 = new General(this, "zhan009", "zhan", 4, false);
-    zhan009->addSkill(new Kuaizhao);
-    zhan009->addSkill(new KuaizhaoEffect);
-    zhan009->addSkill(new Duanjiao);
+    General *hatate = new General(this, "hatate", "zhan", 4, false);
+    hatate->addSkill(new Kuaizhao);
+    hatate->addSkill(new KuaizhaoEffect);
+    hatate->addSkill(new Duanjiao);
     related_skills.insertMulti("kuaizhao", "#kuaizhao");
 
-    General *zhan010 = new General(this, "zhan010$", "zhan", 4, false);
-    zhan010->addSkill(new Nengwu);
-    zhan010->addSkill(new Xiwang);
+    General *kokoro = new General(this, "kokoro$", "zhan", 4, false);
+    kokoro->addSkill(new Nengwu);
+    kokoro->addSkill(new Xiwang);
     
     addMetaObject<TianrenCard>();
 }

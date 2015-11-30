@@ -1063,52 +1063,52 @@ public:
 TH11Package::TH11Package()
     : Package("th11")
 {
-    General *dld001 = new General(this, "dld001$", "dld", 3, false);
-    dld001->addSkill(new Xiangqi);
+    General *satori = new General(this, "satori$", "dld", 3, false);
+    satori->addSkill(new Xiangqi);
     //Room::askForCardChosen
-    dld001->addSkill(new Skill("duxin", Skill::Compulsory));
-    dld001->addSkill(new Huzhu);
+    satori->addSkill(new Skill("duxin", Skill::Compulsory));
+    satori->addSkill(new Huzhu);
 
-    General *dld002 = new General(this, "dld002", "dld", 3, false);
-    dld002->addSkill(new Maihuo);
-    dld002->addSkill(new Wunian);
-    dld002->addSkill(new WunianEffect);
+    General *koishi = new General(this, "koishi", "dld", 3, false);
+    koishi->addSkill(new Maihuo);
+    koishi->addSkill(new Wunian);
+    koishi->addSkill(new WunianEffect);
     related_skills.insertMulti("wunian", "#wuniantr");
 
-    General *dld003 = new General(this, "dld003", "dld", 4, false);
-    dld003->addSkill(new Yaoban);
-    dld003->addSkill(new Here);
+    General *utsuho = new General(this, "utsuho", "dld", 4, false);
+    utsuho->addSkill(new Yaoban);
+    utsuho->addSkill(new Here);
 
 
-    General *dld004 = new General(this, "dld004", "dld", 4, false);
-    dld004->addSkill(new Yuanling);
-    dld004->addSkill(new Songzang);
+    General *rin = new General(this, "rin", "dld", 4, false);
+    rin->addSkill(new Yuanling);
+    rin->addSkill(new Songzang);
 
-    General *dld005 = new General(this, "dld005", "dld", 3, false);
-    dld005->addSkill(new Cuiji);
-    dld005->addSkill(new Baigui);
-    dld005->addSkill(new Jiuchong);
+    General *suika_sp = new General(this, "suika_sp", "dld", 3, false);
+    suika_sp->addSkill(new Cuiji);
+    suika_sp->addSkill(new Baigui);
+    suika_sp->addSkill(new Jiuchong);
 
-    General *dld006 = new General(this, "dld006", "dld", 4, false);
-    dld006->addSkill(new Guaili);
-    dld006->addSkill(new Jiuhao);
-    dld006->addSkill(new JiuhaoTargetMod);;
+    General *yugi = new General(this, "yugi", "dld", 4, false);
+    yugi->addSkill(new Guaili);
+    yugi->addSkill(new Jiuhao);
+    yugi->addSkill(new JiuhaoTargetMod);;
     related_skills.insertMulti("jiuhao", "#jiuhaoTargetMod");
 
 
-    General *dld007 = new General(this, "dld007", "dld", 3, false);
-    dld007->addSkill(new Jidu);
-    dld007->addSkill(new JiduProhibit);
-    dld007->addSkill(new Gelong);
+    General *parsee = new General(this, "parsee", "dld", 3, false);
+    parsee->addSkill(new Jidu);
+    parsee->addSkill(new JiduProhibit);
+    parsee->addSkill(new Gelong);
     related_skills.insertMulti("jidu", "#jiduprevent");
 
-    General *dld008 = new General(this, "dld008", "dld", 4, false);
-    dld008->addSkill(new Chuanran);
-    dld008->addSkill(new Rebing);
+    General *yamame = new General(this, "yamame", "dld", 4, false);
+    yamame->addSkill(new Chuanran);
+    yamame->addSkill(new Rebing);
 
-    General *dld009 = new General(this, "dld009", "dld", 3, false);
-    dld009->addSkill(new Diaoping);
-    dld009->addSkill(new Tongju);
+    General *kisume = new General(this, "kisume", "dld", 3, false);
+    kisume->addSkill(new Diaoping);
+    kisume->addSkill(new Tongju);
 
     addMetaObject<MaihuoCard>();
     addMetaObject<YaobanCard>();

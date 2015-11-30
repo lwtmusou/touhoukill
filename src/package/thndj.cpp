@@ -461,27 +461,27 @@ public:
 THNDJPackage::THNDJPackage()
     : Package("thndj")
 {
-    General *ndj001 = new General(this, "ndj001$", "zhu", 4, false);
-    ndj001->addSkill(new Rexue);
-    ndj001->addSkill(new Sidou);
-    ndj001->addSkill(new TymhWuyu);
+    General *mokou_ndj = new General(this, "mokou_ndj$", "zhu", 4, false);
+    mokou_ndj->addSkill(new Rexue);
+    mokou_ndj->addSkill(new Sidou);
+    mokou_ndj->addSkill(new TymhWuyu);
     related_skills.insertMulti("rexue", "#rexue_count");
 
-    General *ndj002 = new General(this, "ndj002", "zhu", 3, false);
-    ndj002->addSkill(new Huanyue);
-    ndj002->addSkill(new Sizhai);
+    General *kaguya_ndj = new General(this, "kaguya_ndj", "zhu", 3, false);
+    kaguya_ndj->addSkill(new Huanyue);
+    kaguya_ndj->addSkill(new Sizhai);
 
 
-    General *ndj004 = new General(this, "ndj004", "yym", 3, false);
-    ndj004->addSkill(new Hunpo);
-    ndj004->addSkill(new Fanji);
+    General *youmu_ndj = new General(this, "youmu_ndj", "yym", 3, false);
+    youmu_ndj->addSkill(new Hunpo);
+    youmu_ndj->addSkill(new Fanji);
 
-    //General *ndj010 = new General(this, "ndj010", "wai", 1, false);
+    //General *merry_ndj = new General(this, "merry_ndj", "wai", 1, false);
 
-    General *ndj011 = new General(this, "ndj011", "wai", 4, false);
-    ndj011->addSkill(new Liangzi);
-    ndj011->addSkill(new Kexue);
-    ndj011->addSkill(new KexueEffect);
+    General *renko_ndj = new General(this, "renko_ndj", "wai", 4, false);
+    renko_ndj->addSkill(new Liangzi);
+    renko_ndj->addSkill(new Kexue);
+    renko_ndj->addSkill(new KexueEffect);
     related_skills.insertMulti("kexue", "#kexue-effect");
 
     addMetaObject<HunpoCard>();

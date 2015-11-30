@@ -3653,128 +3653,128 @@ public:
 TouhouGodPackage::TouhouGodPackage()
     : Package("touhougod")
 {
-    General *shen001 = new General(this, "shen001", "touhougod", 4, false);
-    shen001->addSkill(new Jiexian);
+    General *yukari_god = new General(this, "yukari_god", "touhougod", 4, false);
+    yukari_god->addSkill(new Jiexian);
 
-    General *shen002 = new General(this, "shen002", "touhougod", 3, false);
-    shen002->addSkill(new Zhouye);
-    shen002->addSkill(new ZhouyeChange);
-    shen002->addSkill(new Hongwu);
-    shen002->addSkill(new Shenqiang);
-    shen002->addSkill(new Yewang);
+    General *remilia_god = new General(this, "remilia_god", "touhougod", 3, false);
+    remilia_god->addSkill(new Zhouye);
+    remilia_god->addSkill(new ZhouyeChange);
+    remilia_god->addSkill(new Hongwu);
+    remilia_god->addSkill(new Shenqiang);
+    remilia_god->addSkill(new Yewang);
     related_skills.insertMulti("zhouye", "#zhouye_change");
 
-    General *shen003 = new General(this, "shen003", "touhougod", 4, false);
-    shen003->addSkill(new Aoyi);
-    shen003->addSkill(new AoyiEffect);
-    shen003->addSkill(new AoyiTargetMod);
+    General *cirno_god = new General(this, "cirno_god", "touhougod", 4, false);
+    cirno_god->addSkill(new Aoyi);
+    cirno_god->addSkill(new AoyiEffect);
+    cirno_god->addSkill(new AoyiTargetMod);
     related_skills.insertMulti("aoyi", "#aoyi_handle");
     related_skills.insertMulti("aoyi", "#aoyi_mod");
 	related_skills.insertMulti("aoyi", "#aoyi");
 
-    General *shen004 = new General(this, "shen004", "touhougod", 4, false);
-    shen004->addSkill(new Shikong);
-    shen004->addSkill(new Ronghui);
-    shen004->addSkill(new Jubian);
-    shen004->addSkill(new Hengxing);
+    General *utsuho_god = new General(this, "utsuho_god", "touhougod", 4, false);
+    utsuho_god->addSkill(new Shikong);
+    utsuho_god->addSkill(new Ronghui);
+    utsuho_god->addSkill(new Jubian);
+    utsuho_god->addSkill(new Hengxing);
 
-    General *shen005 = new General(this, "shen005", "touhougod", 0, false);
-    shen005->addSkill(new Huanmeng);
-    shen005->addSkill(new Cuixiang);
-    shen005->addSkill(new Xuying);
-
-
-    General *shen006 = new General(this, "shen006", "touhougod", 3, false);
-    shen006->addSkill(new Kuangyan);
-    shen006->addSkill(new Huimie);
-    shen006->addSkill(new Jinguo);
-
-    General *shen007 = new General(this, "shen007", "touhougod", 3, false);
-    shen007->addSkill(new Shicao);
-    shen007->addSkill(new Shiting);
-    shen007->addSkill(new Huanzai);
-    shen007->addSkill(new Shanghun);
+    General *suika_god = new General(this, "suika_god", "touhougod", 0, false);
+    suika_god->addSkill(new Huanmeng);
+    suika_god->addSkill(new Cuixiang);
+    suika_god->addSkill(new Xuying);
 
 
-    General *shen008 = new General(this, "shen008", "touhougod", 3, false);
-    shen008->addSkill(new Banling);
-    shen008->addSkill(new Rengui);
-    shen008->addSkill(new FakeMoveSkill("rengui"));
+    General *flandre_god = new General(this, "flandre_god", "touhougod", 3, false);
+    flandre_god->addSkill(new Kuangyan);
+    flandre_god->addSkill(new Huimie);
+    flandre_god->addSkill(new Jinguo);
+
+    General *sakuya_god = new General(this, "sakuya_god", "touhougod", 3, false);
+    sakuya_god->addSkill(new Shicao);
+    sakuya_god->addSkill(new Shiting);
+    sakuya_god->addSkill(new Huanzai);
+    sakuya_god->addSkill(new Shanghun);
+
+
+    General *youmu_god = new General(this, "youmu_god", "touhougod", 3, false);
+    youmu_god->addSkill(new Banling);
+    youmu_god->addSkill(new Rengui);
+    youmu_god->addSkill(new FakeMoveSkill("rengui"));
     related_skills.insertMulti("rengui", "#rengui-fake-move");
 
-    General *shen009 = new General(this, "shen009", "touhougod", 4, false);
-    shen009->addSkill(new Ningshi);
-    shen009->addSkill(new Gaoao);
+    General *reisen_god = new General(this, "reisen_god", "touhougod", 4, false);
+    reisen_god->addSkill(new Ningshi);
+    reisen_god->addSkill(new Gaoao);
 
-    General *shen010 = new General(this, "shen010", "touhougod", 4, false);
-    shen010->addSkill(new Shenshou);
+    General *sanae_god = new General(this, "sanae_god", "touhougod", 4, false);
+    sanae_god->addSkill(new Shenshou);
 
-    General *shen011 = new General(this, "shen011", "touhougod", 4, false);
-	shen011->addSkill(new Huanxiang);
-	shen011->addSkill(new Fengyin);
-	shen011->addSkill(new Yibian);
-	shen011->addSkill(new RoleShownHandler);
+    General *reimu_god = new General(this, "reimu_god", "touhougod", 4, false);
+	reimu_god->addSkill(new Huanxiang);
+	reimu_god->addSkill(new Fengyin);
+	reimu_god->addSkill(new Yibian);
+	reimu_god->addSkill(new RoleShownHandler);
 	related_skills.insertMulti("huanxiang", "#roleShownHandler");
 	related_skills.insertMulti("fengyin", "#roleShownHandler");
 	related_skills.insertMulti("Yibian", "#roleShownHandler");
 
-    General *shen012 = new General(this, "shen012", "touhougod", 4, false);
-    shen012->addSkill(new Quanjie);
-    shen012->addSkill(new Duanzui);
-    shen012->addSkill(new DuanzuiShenpan);
+    General *shikieiki_god = new General(this, "shikieiki_god", "touhougod", 4, false);
+    shikieiki_god->addSkill(new Quanjie);
+    shikieiki_god->addSkill(new Duanzui);
+    shikieiki_god->addSkill(new DuanzuiShenpan);
     related_skills.insertMulti("duanzui", "#duanzui-shenpan");
 
 
-    General *shen013 = new General(this, "shen013", "touhougod", 4, false);
-    shen013->addSkill(new Huaxiang);
-    shen013->addSkill(new Caiyu);
-    shen013->addSkill(new Xuanlan);
+    General *meirin_god = new General(this, "meirin_god", "touhougod", 4, false);
+    meirin_god->addSkill(new Huaxiang);
+    meirin_god->addSkill(new Caiyu);
+    meirin_god->addSkill(new Xuanlan);
 
 
-    General *shen014 = new General(this, "shen014", "touhougod", 4, false);
-    shen014->addSkill(new Qiannian);
-    shen014->addSkill(new QiannianMax);
+    General *eirin_god = new General(this, "eirin_god", "touhougod", 4, false);
+    eirin_god->addSkill(new Qiannian);
+    eirin_god->addSkill(new QiannianMax);
     related_skills.insertMulti("qiannian", "#qiannian_max");
 
 
-    General *shen015 = new General(this, "shen015", "touhougod", 4, false);
-    shen015->addSkill(new Qinlue);
-    shen015->addSkill(new QinlueEffect);
+    General *kanako_god = new General(this, "kanako_god", "touhougod", 4, false);
+    kanako_god->addSkill(new Qinlue);
+    kanako_god->addSkill(new QinlueEffect);
     related_skills.insertMulti("qinlue", "#qinlue_effect");
 
-    General *shen016 = new General(this, "shen016", "touhougod", 4, false);
-    shen016->addSkill(new Chaoren);
+    General *byakuren_god = new General(this, "byakuren_god", "touhougod", 4, false);
+    byakuren_god->addSkill(new Chaoren);
 
-    General *shen017 = new General(this, "shen017", "touhougod", 3, false);
-    shen017->addSkill(new Biaoxiang);
-    shen017->addSkill(new Shifang);
-    shen017->addSkill(new Yizhi);
-    shen017->addRelateSkill("ziwo");
-    shen017->addRelateSkill("benwo");
-    shen017->addRelateSkill("chaowo");
+    General *koishi_god = new General(this, "koishi_god", "touhougod", 3, false);
+    koishi_god->addSkill(new Biaoxiang);
+    koishi_god->addSkill(new Shifang);
+    koishi_god->addSkill(new Yizhi);
+    koishi_god->addRelateSkill("ziwo");
+    koishi_god->addRelateSkill("benwo");
+    koishi_god->addRelateSkill("chaowo");
 
-    General *shen018 = new General(this, "shen018", "touhougod", 5, false);
-    shen018->addSkill(new Shenhua);
-    shen018->addSkill(new Zuosui);
-    shen018->addSkill(new Worao);
+    General *suwako_god = new General(this, "suwako_god", "touhougod", 5, false);
+    suwako_god->addSkill(new Shenhua);
+    suwako_god->addSkill(new Zuosui);
+    suwako_god->addSkill(new Worao);
 
-    General *shen019 = new General(this, "shen019", "touhougod", 4, false);
-    shen019->addSkill(new Hongfo);
-    shen019->addSkill(new Junwei);
-    shen019->addSkill(new Gaizong);
-    shen019->addRelateSkill("wendao");
+    General *miko_god = new General(this, "miko_god", "touhougod", 4, false);
+    miko_god->addSkill(new Hongfo);
+    miko_god->addSkill(new Junwei);
+    miko_god->addSkill(new Gaizong);
+    miko_god->addRelateSkill("wendao");
 
-    General *shen020 = new General(this, "shen020", "touhougod", 4, false);
-    shen020->addSkill(new Shenbao);
-    shen020->addSkill(new ShenbaoDistance);
-    shen020->addSkill(new ShenbaoHandler);
+    General *kaguya_god = new General(this, "kaguya_god", "touhougod", 4, false);
+    kaguya_god->addSkill(new Shenbao);
+    kaguya_god->addSkill(new ShenbaoDistance);
+    kaguya_god->addSkill(new ShenbaoHandler);
     related_skills.insertMulti("shenbao", "#shenbao_distance");
     related_skills.insertMulti("shenbao", "#shenbao");
     
-    General *shen021 = new General(this, "shen021", "touhougod", 4, false);
-    shen021->addSkill(new Yindu);
-    shen021->addSkill(new Huanming);
-    shen021->addSkill(new Chuanwu);
+    General *komachi_god = new General(this, "komachi_god", "touhougod", 4, false);
+    komachi_god->addSkill(new Yindu);
+    komachi_god->addSkill(new Huanming);
+    komachi_god->addSkill(new Chuanwu);
 
     addMetaObject<HongwuCard>();
     addMetaObject<ShenqiangCard>();

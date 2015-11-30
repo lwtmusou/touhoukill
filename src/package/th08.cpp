@@ -1530,53 +1530,53 @@ public:
 TH08Package::TH08Package()
     : Package("th08")
 {
-    General *yyc001 = new General(this, "yyc001$", "yyc", 4, false);
-    yyc001->addSkill(new Yongheng);
-    yyc001->addSkill(new Zhuqu);
+    General *kaguya = new General(this, "kaguya$", "yyc", 4, false);
+    kaguya->addSkill(new Yongheng);
+    kaguya->addSkill(new Zhuqu);
 
 
-    General *yyc002 = new General(this, "yyc002", "yyc", 4, false);
-    yyc002->addSkill(new Ruizhi);
-    yyc002->addSkill(new Miyao);
+    General *eirin = new General(this, "eirin", "yyc", 4, false);
+    eirin->addSkill(new Ruizhi);
+    eirin->addSkill(new Miyao);
 
-    General *yyc003 = new General(this, "yyc003", "yyc", 4, false);
-    yyc003->addSkill(new Bumie);
-    yyc003->addSkill(new BumieMaxhp);
-    yyc003->addSkill(new Lizhan);
+    General *mokou = new General(this, "mokou", "yyc", 4, false);
+    mokou->addSkill(new Bumie);
+    mokou->addSkill(new BumieMaxhp);
+    mokou->addSkill(new Lizhan);
     related_skills.insertMulti("bumie", "#bumie");
 
 
-    General *yyc004 = new General(this, "yyc004", "yyc", 4, false);
-    yyc004->addSkill(new Kuangzao);
-    yyc004->addSkill(new Huanshi);
+    General *reisen = new General(this, "reisen", "yyc", 4, false);
+    reisen->addSkill(new Kuangzao);
+    reisen->addSkill(new Huanshi);
 
-    General *yyc005 = new General(this, "yyc005", "yyc", 3, false);
-    yyc005->addSkill(new Shishi);
-    yyc005->addSkill(new Shouye);
+    General *keine = new General(this, "keine", "yyc", 3, false);
+    keine->addSkill(new Shishi);
+    keine->addSkill(new Shouye);
 
-    General *yyc006 = new General(this, "yyc006", "yyc", 3, false);
-    yyc006->addSkill(new Buxian);
-    yyc006->addSkill(new BuxianEffect);
-    yyc006->addSkill(new Xingyun);
+    General *tewi = new General(this, "tewi", "yyc", 3, false);
+    tewi->addSkill(new Buxian);
+    tewi->addSkill(new BuxianEffect);
+    tewi->addSkill(new Xingyun);
     related_skills.insertMulti("buxian", "#buxian");
 
-    General *yyc007 = new General(this, "yyc007", "yyc", 3, false);
-    yyc007->addSkill(new Gesheng);
-    yyc007->addSkill(new Yemang);
+    General *mystia = new General(this, "mystia", "yyc", 3, false);
+    mystia->addSkill(new Gesheng);
+    mystia->addSkill(new Yemang);
 
-    General *yyc008 = new General(this, "yyc008", "yyc", 3, false);
-    yyc008->addSkill(new Yinghuo);
-    yyc008->addSkill(new Chongqun);
+    General *wriggle = new General(this, "wriggle", "yyc", 3, false);
+    wriggle->addSkill(new Yinghuo);
+    wriggle->addSkill(new Chongqun);
 
-    General *yyc009 = new General(this, "yyc009", "yyc", 3, false);
-    yyc009->addSkill(new ChuangshiVS);//for using dialog while responsing, viewas Skill should be the main skill.
-    yyc009->addSkill(new Chuangshi);
-    yyc009->addSkill(new Wangyue);
+    General *shirasawa = new General(this, "shirasawa", "yyc", 3, false);
+    shirasawa->addSkill(new ChuangshiVS);//for using dialog while responsing, viewas Skill should be the main skill.
+    shirasawa->addSkill(new Chuangshi);
+    shirasawa->addSkill(new Wangyue);
     related_skills.insertMulti("chuangshi", "#chuangshi");
 
-    General *yyc010 = new General(this, "yyc010", "yyc", 4, false);
-    yyc010->addSkill(new Huwei);
-    yyc010->addSkill(new Jinxi);
+    General *mokou_sp = new General(this, "mokou_sp", "yyc", 4, false);
+    mokou_sp->addSkill(new Huwei);
+    mokou_sp->addSkill(new Jinxi);
 
 
     addMetaObject<MiyaoCard>();

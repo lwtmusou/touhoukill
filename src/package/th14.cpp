@@ -991,42 +991,42 @@ public:
 TH14Package::TH14Package()
     : Package("th14")
 {
-    General *hzc001 = new General(this, "hzc001$", "hzc", 3, false);
-    hzc001->addSkill(new Baochui);
-    hzc001->addSkill(new Yicun);
-    hzc001->addSkill(new Moyi);
+    General *shinmyoumaru = new General(this, "shinmyoumaru$", "hzc", 3, false);
+    shinmyoumaru->addSkill(new Baochui);
+    shinmyoumaru->addSkill(new Yicun);
+    shinmyoumaru->addSkill(new Moyi);
 
-    General *hzc002 = new General(this, "hzc002", "hzc", 4, false);
-    hzc002->addSkill(new Leiting);
+    General *raiko = new General(this, "raiko", "hzc", 4, false);
+    raiko->addSkill(new Leiting);
 
 
 
-    General *hzc003 = new General(this, "hzc003", "hzc", 3, false);
-    hzc003->addSkill(new Nizhuan);
-    hzc003->addSkill(new Guizha);
+    General *seija = new General(this, "seija", "hzc", 3, false);
+    seija->addSkill(new Nizhuan);
+    seija->addSkill(new Guizha);
 
-    General *hzc004 = new General(this, "hzc004", "hzc", 3, false);
-    hzc004->addSkill(new Canxiang);
-    hzc004->addSkill(new Juwang);
+    General *yatsuhashi = new General(this, "yatsuhashi", "hzc", 3, false);
+    yatsuhashi->addSkill(new Canxiang);
+    yatsuhashi->addSkill(new Juwang);
 
-    General *hzc005 = new General(this, "hzc005", "hzc", 3, false);
-    hzc005->addSkill(new Yuyin);
-    hzc005->addSkill(new Wuchang);
+    General *benben = new General(this, "benben", "hzc", 3, false);
+    benben->addSkill(new Yuyin);
+    benben->addSkill(new Wuchang);
 
-    General *hzc006 = new General(this, "hzc006", "hzc", 4, false);
-    hzc006->addSkill(new Langying);
-    hzc006->addSkill(new Yuanfei);
-    hzc006->addSkill(new YuanfeiClear);
+    General *kagerou = new General(this, "kagerou", "hzc", 4, false);
+    kagerou->addSkill(new Langying);
+    kagerou->addSkill(new Yuanfei);
+    kagerou->addSkill(new YuanfeiClear);
     related_skills.insertMulti("yuanfei", "#yuanfei_clear");
 
-    General *hzc007 = new General(this, "hzc007", "hzc", 4, false);
-    hzc007->addSkill(new Feitou);
-    hzc007->addSkill(new FeitouTargetMod);
+    General *sekibanki = new General(this, "sekibanki", "hzc", 4, false);
+    sekibanki->addSkill(new Feitou);
+    sekibanki->addSkill(new FeitouTargetMod);
     related_skills.insertMulti("feitou", "#feitoumod");
 
-    General *hzc008 = new General(this, "hzc008", "hzc", 3, false);
-    hzc008->addSkill(new Shizhu);
-    hzc008->addSkill(new Liange);
+    General *wakasagihime = new General(this, "wakasagihime", "hzc", 3, false);
+    wakasagihime->addSkill(new Shizhu);
+    wakasagihime->addSkill(new Liange);
 
 
     addMetaObject<LeitingCard>();

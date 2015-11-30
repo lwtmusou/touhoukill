@@ -1783,64 +1783,64 @@ TH10Package::TH10Package()
     : Package("th10")
 {
 
-    General *fsl001 = new General(this, "fsl001$", "fsl", 4, false);
-    fsl001->addSkill(new Shende);
-    fsl001->addSkill(new Qiankun);
-    fsl001->addSkill(new Gongfeng);
+    General *kanako = new General(this, "kanako$", "fsl", 4, false);
+    kanako->addSkill(new Shende);
+    kanako->addSkill(new Qiankun);
+    kanako->addSkill(new Gongfeng);
 
-    General *fsl002 = new General(this, "fsl002", "fsl", 3, false);
-    fsl002->addSkill(new Bushu);
-    fsl002->addSkill("qiankun");
-    fsl002->addSkill(new Chuancheng);
+    General *suwako = new General(this, "suwako", "fsl", 3, false);
+    suwako->addSkill(new Bushu);
+    suwako->addSkill("qiankun");
+    suwako->addSkill(new Chuancheng);
 
-    General *fsl003 = new General(this, "fsl003", "fsl", 3, false);
-    fsl003->addSkill(new Zhunbei);
-    fsl003->addSkill(new ZhunbeiEffect);
-    fsl003->addSkill(new Qiji);
-    fsl003->addSkill(new QijiClear);
+    General *sanae = new General(this, "sanae", "fsl", 3, false);
+    sanae->addSkill(new Zhunbei);
+    sanae->addSkill(new ZhunbeiEffect);
+    sanae->addSkill(new Qiji);
+    sanae->addSkill(new QijiClear);
     related_skills.insertMulti("zhunbei", "#zhunbei_effect");
     related_skills.insertMulti("qiji", "#qiji_clear");
 
 
-    General *fsl004 = new General(this, "fsl004", "fsl", 3, false);
-    fsl004->addSkill(new Fengshen);
-    fsl004->addSkill(new Fengsu);
-    fsl004->addSkill(new FengsuEffect);
+    General *aya = new General(this, "aya", "fsl", 3, false);
+    aya->addSkill(new Fengshen);
+    aya->addSkill(new Fengsu);
+    aya->addSkill(new FengsuEffect);
     related_skills.insertMulti("fengsu", "#fengsu-effect");
 
-    General *fsl005 = new General(this, "fsl005", "fsl", 3, false);
-    fsl005->addSkill(new Xinshang);
-    fsl005->addSkill(new XinshangTargetMod);
-    fsl005->addSkill(new Micai);
+    General *nitori = new General(this, "nitori", "fsl", 3, false);
+    nitori->addSkill(new Xinshang);
+    nitori->addSkill(new XinshangTargetMod);
+    nitori->addSkill(new Micai);
     related_skills.insertMulti("xinshang", "#xinshang_effect");
 
-    General *fsl006 = new General(this, "fsl006", "fsl", 3, false);
-    fsl006->addSkill(new Jie);
-    fsl006->addSkill(new Liuxing);
+    General *hina = new General(this, "hina", "fsl", 3, false);
+    hina->addSkill(new Jie);
+    hina->addSkill(new Liuxing);
 
-    General *fsl007 = new General(this, "fsl007", "fsl", 3, false);
-    fsl007->addSkill(new Changshi);
-    fsl007->addSkill(new Jinian);
-    fsl007->addSkill(new JinianClear);
+    General *sanae_sp = new General(this, "sanae_sp", "fsl", 3, false);
+    sanae_sp->addSkill(new Changshi);
+    sanae_sp->addSkill(new Jinian);
+    sanae_sp->addSkill(new JinianClear);
     related_skills.insertMulti("jinian", "#jinian_clear");
 
 
-    General *fsl008 = new General(this, "fsl008", "fsl", 4, false);
-    fsl008->addSkill(new Tianyan);
+    General *momizi = new General(this, "momizi", "fsl", 4, false);
+    momizi->addSkill(new Tianyan);
 
-    General *fsl009 = new General(this, "fsl009", "fsl", 4, false);
-    fsl009->addSkill(new Fengrang);
-    fsl009->addSkill(new Shouhuo);
+    General *minoriko = new General(this, "minoriko", "fsl", 4, false);
+    minoriko->addSkill(new Fengrang);
+    minoriko->addSkill(new Shouhuo);
 
 
-    General *fsl010 = new General(this, "fsl010", "fsl", 4, false);
-    fsl010->addSkill(new Jiliao);
-    fsl010->addSkill(new Zhongyan);
+    General *shizuha = new General(this, "shizuha", "fsl", 4, false);
+    shizuha->addSkill(new Jiliao);
+    shizuha->addSkill(new Zhongyan);
 
-    General *fsl011 = new General(this, "fsl011", "fsl", 4, false);
-    fsl011->addSkill(new DfgzmSiyu);
-    fsl011->addSkill(new Qishu);
-    fsl011->addSkill(new QishuTargetMod);
+    General *sanae_slm = new General(this, "sanae_slm", "fsl", 4, false);
+    sanae_slm->addSkill(new DfgzmSiyu);
+    sanae_slm->addSkill(new Qishu);
+    sanae_slm->addSkill(new QishuTargetMod);
     related_skills.insertMulti("qishu", "#qishu-mod");
 
 

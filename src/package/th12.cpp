@@ -918,39 +918,39 @@ public:
 TH12Package::TH12Package()
     : Package("th12")
 {
-    General *xlc001 = new General(this, "xlc001$", "xlc", 4, false);
-    xlc001->addSkill(new Pudu);
-    xlc001->addSkill(new Jiushu);
-    xlc001->addSkill(new Fahua);
+    General *byakuren = new General(this, "byakuren$", "xlc", 4, false);
+    byakuren->addSkill(new Pudu);
+    byakuren->addSkill(new Jiushu);
+    byakuren->addSkill(new Fahua);
 
-    General *xlc002 = new General(this, "xlc002", "xlc", 3, false);
-    xlc002->addSkill(new Weizhi);
-    xlc002->addSkill(new Weizhuang);
+    General *nue = new General(this, "nue", "xlc", 3, false);
+    nue->addSkill(new Weizhi);
+    nue->addSkill(new Weizhuang);
 
-    General *xlc003 = new General(this, "xlc003", "xlc", 4, false);
-    xlc003->addSkill(new Zhengyi);
-    xlc003->addSkill(new Baota);
+    General *toramaru = new General(this, "toramaru", "xlc", 4, false);
+    toramaru->addSkill(new Zhengyi);
+    toramaru->addSkill(new Baota);
 
-    General *xlc004 = new General(this, "xlc004", "xlc", 4, false);
-    xlc004->addSkill(new Shuinan);
-    xlc004->addSkill(new Nihuo);
+    General *murasa = new General(this, "murasa", "xlc", 4, false);
+    murasa->addSkill(new Shuinan);
+    murasa->addSkill(new Nihuo);
 
-    General *xlc005 = new General(this, "xlc005", "xlc", 4, false);
-    xlc005->addSkill(new Lizhi);
-    xlc005->addSkill(new Yunshang);
+    General *ichirin = new General(this, "ichirin", "xlc", 4, false);
+    ichirin->addSkill(new Lizhi);
+    ichirin->addSkill(new Yunshang);
 
-    General *xlc006 = new General(this, "xlc006", "xlc", 3, false);
-    xlc006->addSkill(new Souji);
-    xlc006->addSkill(new Tansuo);
+    General *nazrin = new General(this, "nazrin", "xlc", 3, false);
+    nazrin->addSkill(new Souji);
+    nazrin->addSkill(new Tansuo);
 
-    General *xlc007 = new General(this, "xlc007", "xlc", 3, false);
-    xlc007->addSkill(new Yiwang);
-    xlc007->addSkill(new Jingxia);
+    General *kogasa = new General(this, "kogasa", "xlc", 3, false);
+    kogasa->addSkill(new Yiwang);
+    kogasa->addSkill(new Jingxia);
 
 
-    General *xlc008 = new General(this, "xlc008", "xlc", 4, true);
-    xlc008->addSkill(new Bianhuan);
-    xlc008->addSkill(new Nuhuo);
+    General *unzan = new General(this, "unzan", "xlc", 4, true);
+    unzan->addSkill(new Bianhuan);
+    unzan->addSkill(new Nuhuo);
 
     addMetaObject<PuduCard>();
     addMetaObject<WeizhiCard>();

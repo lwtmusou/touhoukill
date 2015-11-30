@@ -1650,63 +1650,61 @@ public:
 TH99Package::TH99Package()
     : Package("th99")
 {
-    General *wai001 = new General(this, "wai001$", "wai", 3, false);
-    wai001->addSkill(new Qiuwen);
-    wai001->addSkill(new Zaozu);
-    wai001->addSkill(new Dangjia);
+    General *akyuu = new General(this, "akyuu$", "wai", 3, false);
+    akyuu->addSkill(new Qiuwen);
+    akyuu->addSkill(new Zaozu);
+    akyuu->addSkill(new Dangjia);
 
-    General *wai002 = new General(this, "wai002", "wai", 4, true);
-    wai002->addSkill(new Xiufu);
-    //wai002->addSkill(new XiufuCheck);
-    //related_skills.insertMulti("xiufu", "#xiufu");
-	wai002->addSkill(new FakeMoveSkill("xiufu"));
+    General *rinnosuke = new General(this, "rinnosuke", "wai", 4, true);
+    rinnosuke->addSkill(new Xiufu);
+	rinnosuke->addSkill(new FakeMoveSkill("xiufu"));
     related_skills.insertMulti("xiufu", "#xiufu-fake-move");
 
-    General *wai003 = new General(this, "wai003", "wai", 3, false);
-    wai003->addSkill(new Fandu);
-    wai003->addSkill(new Taohuan);
+    General *tokiko = new General(this, "tokiko", "wai", 3, false);
+    tokiko->addSkill(new Fandu);
+    tokiko->addSkill(new Taohuan);
 
-    General *wai004 = new General(this, "wai004", "wai", 4, false);
-    wai004->addSkill(new Shitu);
+    General *renko = new General(this, "renko", "wai", 4, false);
+    renko->addSkill(new Shitu);
 
-    General *wai005 = new General(this, "wai005", "wai", 4, false);
-    wai005->addSkill("jingjie");
-    wai005->addSkill(new Mengxian);
-    wai005->addRelateSkill("luanying");
+    General *merry = new General(this, "merry", "wai", 4, false);
+    merry->addSkill("jingjie");
+    merry->addSkill(new Mengxian);
+    merry->addRelateSkill("luanying");
 
-    General *wai006 = new General(this, "wai006", "wai", 3, false);
-    wai006->addSkill(new Lianxi);
-    wai006->addSkill(new Yueshi);
+    General *toyohime = new General(this, "toyohime", "wai", 3, false);
+    toyohime->addSkill(new Lianxi);
+    toyohime->addSkill(new Yueshi);
 
-    General *wai007 = new General(this, "wai007", "wai", 4, false);
-    wai007->addSkill(new Pingyi);
-    wai007->addSkill(new PingyiHandler);
+    General *yorihime = new General(this, "yorihime", "wai", 4, false);
+    yorihime->addSkill(new Pingyi);
+    yorihime->addSkill(new PingyiHandler);
     related_skills.insertMulti("pingyi", "#pingyi_handle");
 
 
-    General *wai008 = new General(this, "wai008", "wai", 4, false);
-    wai008->addSkill(new Zheshe);
-    wai008->addSkill(new ZhesheEffect);
-    wai008->addSkill(new Tanchi);
+    General *sunny = new General(this, "sunny", "wai", 4, false);
+    sunny->addSkill(new Zheshe);
+    sunny->addSkill(new ZhesheEffect);
+    sunny->addSkill(new Tanchi);
     related_skills.insertMulti("zheshe", "#zheshedraw");
 
-    General *wai009 = new General(this, "wai009", "wai", 4, false);
-    wai009->addSkill(new Zhuonong);
-    wai009->addSkill(new Jijing);
-    wai009->addSkill(new JijingClear);
+    General *lunar = new General(this, "lunar", "wai", 4, false);
+    lunar->addSkill(new Zhuonong);
+    lunar->addSkill(new Jijing);
+    lunar->addSkill(new JijingClear);
     related_skills.insertMulti("jijing", "#jijing");
 
-    General *wai010 = new General(this, "wai010", "wai", 4, false);
-    wai010->addSkill(new Ganying);
+    General *star = new General(this, "star", "wai", 4, false);
+    star->addSkill(new Ganying);
 
-    General *wai011 = new General(this, "wai011", "wai", 4, false);
-    wai011->addSkill(new Zhujiu);
-    wai011->addSkill(new Yushou);
+    General *kasen = new General(this, "kasen", "wai", 4, false);
+    kasen->addSkill(new Zhujiu);
+    kasen->addSkill(new Yushou);
     
-    General *wai012 = new General(this, "wai012", "wai", 3, false);
-    wai012->addSkill(new Pandu);
-    wai012->addSkill(new Bihuo);
-    wai012->addSkill(new BihuoReturn);
+    General *kosuzu = new General(this, "kosuzu", "wai", 3, false);
+    kosuzu->addSkill(new Pandu);
+    kosuzu->addSkill(new Bihuo);
+    kosuzu->addSkill(new BihuoReturn);
     related_skills.insertMulti("bihuo", "#bihuo");
 
     addMetaObject<QiuwenCard>();

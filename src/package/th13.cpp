@@ -1664,55 +1664,55 @@ public:
 TH13Package::TH13Package()
     : Package("th13")
 {
-    General *slm001 = new General(this, "slm001$", "slm", 4, false);
-    slm001->addSkill(new Shengge);
-    slm001->addSkill(new Qingting);
-    slm001->addSkill(new Chiling);
+    General *miko = new General(this, "miko$", "slm", 4, false);
+    miko->addSkill(new Shengge);
+    miko->addSkill(new Qingting);
+    miko->addSkill(new Chiling);
 
-    General *slm002 = new General(this, "slm002", "slm", 3, false);
-    slm002->addSkill(new Xihua);
-    slm002->addSkill(new XihuaClear);
+    General *mamizou = new General(this, "mamizou", "slm", 3, false);
+    mamizou->addSkill(new Xihua);
+    mamizou->addSkill(new XihuaClear);
     related_skills.insertMulti("xihua", "#xihua_clear");
 
-    General *slm003 = new General(this, "slm003", "slm", 3, false);
-    slm003->addSkill(new Shijie);
-    slm003->addSkill(new Fengshui);
+    General *futo = new General(this, "futo", "slm", 3, false);
+    futo->addSkill(new Shijie);
+    futo->addSkill(new Fengshui);
 
-    General *slm004 = new General(this, "slm004", "slm", 4, false);
-    slm004->addSkill(new Leishi);
-    slm004->addSkill(new Fenyuan);
-
-
-    General *slm005 = new General(this, "slm005", "slm", 3, false);
-    slm005->addSkill(new Xiefa);
-    slm005->addSkill(new Chuanbi);
+    General *toziko = new General(this, "toziko", "slm", 4, false);
+    toziko->addSkill(new Leishi);
+    toziko->addSkill(new Fenyuan);
 
 
-    General *slm006 = new General(this, "slm006", "slm", 4, false);
-    slm006->addSkill(new Duzhua);
-    slm006->addSkill(new DuzhuaTargetMod);;
-    slm006->addSkill(new Taotie);
+    General *seiga = new General(this, "seiga", "slm", 3, false);
+    seiga->addSkill(new Xiefa);
+    seiga->addSkill(new Chuanbi);
+
+
+    General *yoshika = new General(this, "yoshika", "slm", 4, false);
+    yoshika->addSkill(new Duzhua);
+    yoshika->addSkill(new DuzhuaTargetMod);;
+    yoshika->addSkill(new Taotie);
     related_skills.insertMulti("duzhua", "#duzhuaTargetMod");
 
-    General *slm007 = new General(this, "slm007", "slm", 3, false);
-    slm007->addSkill(new Huisheng);
-    slm007->addSkill(new HuishengTargetMod);
-    slm007->addSkill(new Songjing);
+    General *kyouko = new General(this, "kyouko", "slm", 3, false);
+    kyouko->addSkill(new Huisheng);
+    kyouko->addSkill(new HuishengTargetMod);
+    kyouko->addSkill(new Songjing);
     related_skills.insertMulti("huisheng_effect", "#huisheng_effect");
 
-    General *slm008 = new General(this, "slm008", "slm", 3, false);
-    slm008->addSkill(new Chuixue);
-    slm008->addSkill(new Wushou);
+    General *yuyuko_slm = new General(this, "yuyuko_slm", "slm", 3, false);
+    yuyuko_slm->addSkill(new Chuixue);
+    yuyuko_slm->addSkill(new Wushou);
 
-    General *slm009 = new General(this, "slm009", "slm", 3, false);
-    slm009->addSkill(new Buming);
-    slm009->addSkill(new Zhengti);
-    slm009->addSkill(new ZhengtiUIhandler);
+    General *nue_slm = new General(this, "nue_slm", "slm", 3, false);
+    nue_slm->addSkill(new Buming);
+    nue_slm->addSkill(new Zhengti);
+    nue_slm->addSkill(new ZhengtiUIhandler);
     related_skills.insertMulti("zhengti", "#zhengti");
 
-    General *slm010 = new General(this, "slm010", "slm", 3, false);
-    slm010->addSkill(new Qingyu);
-    slm010->addSkill(new Guoke);
+    General *kogasa_slm = new General(this, "kogasa_slm", "slm", 3, false);
+    kogasa_slm->addSkill(new Qingyu);
+    kogasa_slm->addSkill(new Guoke);
 
     addMetaObject<QingtingCard>();
     addMetaObject<XihuaCard>();

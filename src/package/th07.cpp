@@ -1719,67 +1719,67 @@ public:
 TH07Package::TH07Package()
     : Package("th07")
 {
-    General *yym001 = new General(this, "yym001$", "yym", 4, false);
-    yym001->addSkill(new Sidie);
-    yym001->addSkill(new Wangxiang);
+    General *yuyuko = new General(this, "yuyuko$", "yym", 4, false);
+    yuyuko->addSkill(new Sidie);
+    yuyuko->addSkill(new Wangxiang);
     related_skills.insertMulti("sidie", "#sidie_clear");
 
-    General *yym002 = new General(this, "yym002", "yym", 3, false);
-    yym002->addSkill(new Jingjie);
-    yym002->addSkill(new Sisheng);
-    yym002->addSkill(new Jingdong);
+    General *yukari = new General(this, "yukari", "yym", 3, false);
+    yukari->addSkill(new Jingjie);
+    yukari->addSkill(new Sisheng);
+    yukari->addSkill(new Jingdong);
 
-    General *yym003 = new General(this, "yym003", "yym", 3, false);
-    yym003->addSkill(new Zhaoliao);
-    yym003->addSkill(new Jiaoxia);
+    General *ran = new General(this, "ran", "yym", 3, false);
+    ran->addSkill(new Zhaoliao);
+    ran->addSkill(new Jiaoxia);
 
-    General *yym004 = new General(this, "yym004", "yym", 4, false);
-    yym004->addSkill(new Shuangren);
-    yym004->addSkill(new Youming);
-
-
-
-    General *yym005 = new General(this, "yym005", "yym", 3, false);
-    yym005->addSkill(new Xiezou);
-    yym005->addSkill(new Hesheng);
-
-    General *yym006 = new General(this, "yym006", "yym", 4, false);
-    yym006->addSkill(new Renou);
-    yym006->addSkill(new Zhanzhen);
+    General *youmu = new General(this, "youmu", "yym", 4, false);
+    youmu->addSkill(new Shuangren);
+    youmu->addSkill(new Youming);
 
 
-    General *yym007 = new General(this, "yym007", "yym", 3, false);
-    yym007->addSkill(new Shishen);
-    yym007->addSkill(new Yexing);
-    yym007->addSkill(new YexingEffect);
-    yym007->addSkill(new Yaoshu);
+
+    General *prismriver = new General(this, "prismriver", "yym", 3, false);
+    prismriver->addSkill(new Xiezou);
+    prismriver->addSkill(new Hesheng);
+
+    General *alice = new General(this, "alice", "yym", 4, false);
+    alice->addSkill(new Renou);
+    alice->addSkill(new Zhanzhen);
+
+
+    General *chen = new General(this, "chen", "yym", 3, false);
+    chen->addSkill(new Shishen);
+    chen->addSkill(new Yexing);
+    chen->addSkill(new YexingEffect);
+    chen->addSkill(new Yaoshu);
     related_skills.insertMulti("yexing", "#yexing");
 
 
-    General *yym008 = new General(this, "yym008", "yym", 4, false);
-    yym008->addSkill(new Jiyi);
-    yym008->addSkill(new Chunmian);
+    General *letty = new General(this, "letty", "yym", 4, false);
+    letty->addSkill(new Jiyi);
+    letty->addSkill(new Chunmian);
     
-    General *yym009 = new General(this, "yym009", "yym", 3, false);
-    yym009->addSkill(new Baochun);
-    yym009->addSkill(new Chunyi);
+    General *lilywhite = new General(this, "lilywhite", "yym", 3, false);
+    lilywhite->addSkill(new Baochun);
+    lilywhite->addSkill(new Chunyi);
 
-    General *yym010 = new General(this, "yym010", "yym", 3, false);
-    yym010->addSkill(new Zhancao);
-    yym010->addSkill(new Mocao);
+    General *shanghai = new General(this, "shanghai", "yym", 3, false);
+    shanghai->addSkill(new Zhancao);
+    shanghai->addSkill(new Mocao);
 
-    General *yym011 = new General(this, "yym011", "yym", 4, false);
-    yym011->addSkill(new Shenyin);
-    yym011->addSkill(new Xijian);
+    General *yukari_sp = new General(this, "yukari_sp", "yym", 4, false);
+    yukari_sp->addSkill(new Shenyin);
+    yukari_sp->addSkill(new Xijian);
 
-    General *yym012 = new General(this, "yym012", "yym", 3, false);
-    yym012->addSkill(new Youqu);
-    yym012->addSkill(new Wangwu);
+    General *yuyuko_sp = new General(this, "yuyuko_sp", "yym", 3, false);
+    yuyuko_sp->addSkill(new Youqu);
+    yuyuko_sp->addSkill(new Wangwu);
 
-    General *yym013 = new General(this, "yym013", "yym", 2, false);
-    yym013->addSkill(new HpymSiyu);
-    yym013->addSkill(new Juhe);
-    yym013->addSkill(new JuheEffect);
+    General *youmu_slm = new General(this, "youmu_slm", "yym", 2, false);
+    youmu_slm->addSkill(new HpymSiyu);
+    youmu_slm->addSkill(new Juhe);
+    youmu_slm->addSkill(new JuheEffect);
     related_skills.insertMulti("hpymsiyu", "#hpymsiyu");
     related_skills.insertMulti("juhe", "#juhe");
 
