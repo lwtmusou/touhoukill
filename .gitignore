@@ -40,6 +40,7 @@ platforms/
 /src/package/blackhistory.*
 /extensions
 /audio/bgm/*
+bgms/*
 *~
 *.kdev4
 .cproject
@@ -73,3 +74,4 @@ libEGL.dll
 libGLESv2.dll
 msvc[pr]1[023]0.dll
 OGLdpf.log
+*.bat
