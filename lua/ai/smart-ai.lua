@@ -2011,16 +2011,12 @@ function sgs.evaluateAlivePlayersRole()
 			sgs.ai_role[p:objectName()] = "renegade"
 			sgs.explicit_renegade = true
 		end
-		--woyu target isRolePredictable
-		if p:getMark("woyuRole")>0 then
-			sgs.ai_role[p:objectName()] = p:getRole()
-		end
-		
-		if p:hasShownRole() then --not server player
-			 local role = p:getRole()
-			 if p:isLord() then role = "loyalist" end
+		--woyu target isRolePredictable 
+		if p:getMark("woyuRole")>0 then -- if p:hasShownRole() then --not server player
+			local role = p:getRole()
+			if p:isLord() then role = "loyalist" end
 			sgs.ai_role[p:objectName()] = role
-		 end
+		end
 	end
 	sgs.modifiedRoleEvaluation()
 end

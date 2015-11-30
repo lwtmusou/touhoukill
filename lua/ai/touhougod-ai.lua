@@ -596,73 +596,7 @@ sgs.ai_cardneed.shenshou = function(to, card, self)
 end
 
 
--- local jiejie_skill = {}
--- jiejie_skill.name = "jiejie"
--- table.insert(sgs.ai_skills, jiejie_skill)
--- jiejie_skill.getTurnUseCard = function(self)
-	-- if self.player:hasUsed("#jiejie") then return nil end
-	-- local handcards = sgs.QList2Table(self.player:getHandcards())
-    -- self:sortByUseValue(handcards)
-	
-	-- return sgs.Card_Parse("#jiejie:" .. handcards[1]:getEffectiveId() .. ":")
--- end
--- sgs.ai_skill_use_func["#jiejie"] = function(card, use, self)
-        -- targets={}
-		-- self:sort(self.enemies, "threat")
-		-- for _, p in ipairs(self.enemies) do
-			-- table.insert(targets,p)
-			-- break
-        -- end
-		-- self:sort(self.friends, "hp")
-		-- for _, p in ipairs(self.friends) do
-			-- table.insert(targets,p)
-			-- break
-        -- end
-		-- if #targets >1 then
-			-- use.card = card
-            -- if use.to then
-				-- use.to:append(targets[1])
-				-- if use.to:length() >= 1 then return end
-			-- end
-        -- end
--- end
 
--- sgs.ai_skill_cardask["@fengyin-discard"] = function(self, data)
-	-- targets={}
-	-- for _,p in sgs.qlist(self.room:getAlivePlayers())do
-		-- if p:getMark("@in_jiejie")>0 and self:isEnemy(p) then
-			-- table.insert(targets,p)
-		-- end
-	-- end
-	-- if #targets==0 then return "." end
-	
-	-- cards =self.player:getCards("he") 
-	-- cards=sgs.QList2Table(cards)
-	-- ecards={}
-	-- for _,card in pairs(cards) do
-		-- if card:getSuit()==sgs.Card_Heart then
-			-- table.insert(ecards,card)
-		-- end
-	-- end
-	
-	-- if #ecards==0 then return "." end
-	-- self:sortByCardNeed(ecards)
-	-- local _data = sgs.QVariant()
-    -- _data:setValue(targets[1])
-	-- self.player:setTag("fengyin_target",_data)
-	-- return "$" .. ecards[1]:getId()
--- end
--- sgs.ai_skill_playerchosen.reimu_fengyin = function(self, targets)
-	-- local target=self.player:getTag("fengyin_target"):toPlayer()
-	-- self.player:removeTag("fengyin_target")
-	-- if target then
-	-- return target
-	-- end
-	-- return nil
--- end
--- sgs.reimu_fengyin_suit_value = {
-	-- heart = 5
--- }
 
 sgs.ai_cardneed.fengyin = function(to, card, self)
 	return  card:getSuit() == sgs.Card_Heart
@@ -746,6 +680,14 @@ sgs.ai_skill_askforyiji.yibian = function(self, card_ids)
 	 return nil, -1
 end
 sgs.ai_Yiji_intention.yibian = -30
+sgs.ai_choicemade_filter.skillInvoke.yibian = function(self, player, promptlist)
+	if promptlist[#promptlist] == "yes" then
+		self.room:setPlayerMark(player, "woyuRole",1)
+		self:updatePlayers()
+	end
+end
+
+
 
 sgs.ai_skill_invoke.quanjie = function(self,data)
 	local target=data:toPlayer()

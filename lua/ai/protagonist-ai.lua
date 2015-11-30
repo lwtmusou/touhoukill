@@ -117,12 +117,28 @@ sgs.ai_choicemade_filter.skillInvoke.qixiang = function(self, player, promptlist
 	end
 end
 
+table.insert(sgs.ai_global_flags, "bolisource")
 sgs.ai_skill_invoke.boli = function(self,data) 
 	local judge=self.player:getTag("boli_judge"):toJudge()
-	return self:needRetrial(judge)
+	--防止没有队友时ai还无聊地发动技能
+	local onlyEnemy = true
+	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if not self:isEnemy(p) then
+			onlyEnemy = false
+			break
+		end
+	end
+	return not onlyEnemy and self:needRetrial(judge)
+end
+sgs.ai_choicemade_filter.skillInvoke.boli = function(self, player, promptlist)
+	if promptlist[#promptlist] == "yes" then
+			sgs.bolisource = player
+	end
 end
 sgs.ai_skill_cardask["@boli-retrial"] = function(self, data)
         local lord = getLord(self.player)
+		if not sgs.bolisource  then sgs.bolisource = lord end
+		if not sgs.bolisource then return "." end
 		if not self:isFriend(lord) then return "." end
 		local cards = sgs.QList2Table(self.player:getCards("h"))
 		local cards1={}
@@ -136,6 +152,24 @@ sgs.ai_skill_cardask["@boli-retrial"] = function(self, data)
 		if #cards1==0 then return "." end
         return "$" .. self:getRetrialCardId(cards1, judge) or judge.card:getEffectiveId()  --tostring()
 end
+
+sgs.ai_choicemade_filter.cardResponded["@boli-retrial"] = function(self, player, promptlist)
+	if promptlist[#promptlist] ~= "_nil_" then
+	    player:gainMark("@nihi")
+		sgs.updateIntention(player, sgs.bolisource, -80)
+		sgs.bolisource = nil
+	elseif sgs.bolisource then
+		local lieges = player:getRoom():getOtherPlayers(sgs.bolisource)
+		if lieges and not lieges:isEmpty() then
+			if player:objectName() == lieges:last():objectName() then
+				sgs.bolisource = nil
+			end
+		end
+	end
+end
+
+
+
 sgs.ai_skillProperty.boli = function(self)
 	return "noKingdom"
 end
