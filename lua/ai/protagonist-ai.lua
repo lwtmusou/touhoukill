@@ -865,7 +865,8 @@ function bllmwuyu_discard(player)
     local all_hearts={}
 	for _,c in pairs(cards) do
 		if c:getSuit()==sgs.Card_Heart 
-		and not (c:isKindOf("Peach") or c:isKindOf("Slash") or c:isKindOf("DefensiveHorse"))then
+		and not (c:isKindOf("Peach") or c:isKindOf("Slash") or c:isKindOf("DefensiveHorse"))
+		and not c:hasFlag("AIGlobal_SearchForAnaleptic") then
 			table.insert(all_hearts,c:getId())
 		end
 	end
@@ -879,6 +880,9 @@ function needSkipJudgePhase(self,player)
 	end
 	return false
 end
+
+
+
 sgs.ai_skill_cardask["@bllm-discard"] = function(self, data)
     local prompt=self.player:getTag("wuyu_prompt"):toString() 
 	local all_hearts=bllmwuyu_discard(self.player)
@@ -898,21 +902,32 @@ sgs.ai_skill_cardask["@bllm-discard"] = function(self, data)
 		end
 	elseif prompt=="bllmseyu" then
 		return "$" .. all_hearts[1]	
-	elseif prompt=="bllmshiyu" then
+	elseif prompt=="bllmshiyu" then  -- 杀的ai 于 searchForAnaleptic 后 会调用 这时必须返回真值，否则ai会有卡死
 		local mustuse=false
-		--who= self.room:getCurrentDyingPlayer()
 		if self.player:hasFlag("Global_Dying") then
 			mustuse=true
-		elseif sgs.Slash_IsAvailable(self.player) and getCardsNum("Slash", self.player, self.player) > 0 then
+		elseif sgs.Slash_IsAvailable(self.player) then --and getCardsNum("Slash", self.player, self.player) > 0 
 			mustuse=true
 		end	
 		if not mustuse then return "." end
-		
 		return "$" .. all_hearts[1]	
 	end
 	return "."
 end
-
+sgs.ai_skill_cardask["@bllmshiyu-basics"] = function(self, data)
+	local cards = self.player:getHandcards()
+	cards=self:touhouAppendExpandPileToList(self.player,cards)
+	local anals ={}
+	for _,c in sgs.qlist(cards) do
+		if not c:hasFlag("AIGlobal_SearchForAnaleptic") then
+			table.insert(anals, c)
+		end
+	end
+	
+	if #anals==0 then return "." end
+	self:sortByKeepValue(anals)
+	return "$" .. anals[1]:getId()
+end
 sgs.ai_skill_invoke.bllmwuyu = function(self,data)
 	local prompt=self.player:getTag("wuyu_prompt"):toString() 
 	
@@ -927,12 +942,12 @@ sgs.ai_skill_invoke.bllmwuyu = function(self,data)
 			end
 		end
 		return false
-	elseif prompt=="bllmshiyu" then
+	elseif prompt=="bllmshiyu" then -- 杀的ai 于 searchForAnaleptic 后 会调用 这时必须返回真值，否则ai会有卡死
 		local who=self.room:getCurrentDyingPlayer()
 		if who and who:objectName()==self.player:objectName() then
 			return true
 		else
-			return sgs.Slash_IsAvailable(self.player) and getCardsNum("Slash", self.player, self.player) > 0
+			return sgs.Slash_IsAvailable(self.player) --and getCardsNum("Slash", self.player, self.player) > 0
 		end
 	elseif prompt=="bllmseyu" then
 		return  getCardsNum("Slash", self.player, self.player) > 0  and not sgs.Slash_IsAvailable(self.player)
@@ -945,22 +960,29 @@ function sgs.ai_cardsview_valuable.bllmwuyu(self, class_name, player)
 		if player:getMark("@yu")==0 then
 			local hearts_e={}
 			local hearts_h={}
-			local no_hearts={}
+			local others = {}
 			for _,c in sgs.qlist(player:getCards("e")) do
-				if c:getSuit()==sgs.Card_Heart then
+				if c:getSuit()==sgs.Card_Heart and not c:hasFlag("AIGlobal_SearchForAnaleptic") then
 					table.insert(hearts_e,c)
 				end
 			end
 			for _,c in sgs.qlist(player:getCards("h")) do
-				if c:getSuit()==sgs.Card_Heart then
+				if c:getSuit()==sgs.Card_Heart and not c:hasFlag("AIGlobal_SearchForAnaleptic") then
 					table.insert(hearts_h,c)
-				else
-					table.insert(no_hearts,c)
+				elseif not c:hasFlag("AIGlobal_SearchForAnaleptic") then
+					table.insert(others,c)
 				end
 			end
+			for _,id in sgs.qlist(player:getHandPile()) do
+				local c = sgs.Sanguosha:getCard(id)
+				if not c:hasFlag("AIGlobal_SearchForAnaleptic") then
+					table.insert(others,c)
+				end
+			end
+			
 			if #hearts_e+#hearts_h==0 then
 				return nil
-			elseif #hearts_e+#hearts_h==1 and #no_hearts==0 then
+			elseif #hearts_e+#hearts_h==1 and #others==0 then
 				return nil
 			end
 		end
@@ -972,60 +994,26 @@ local bllmwuyu_skill = {}
 bllmwuyu_skill.name = "bllmwuyu"
 table.insert(sgs.ai_skills, bllmwuyu_skill)
 function bllmwuyu_skill.getTurnUseCard(self)
+--此处只发动色欲
+--主动食欲吃酒的ai 由slash主动触发 此处不发动
 	local hearts=bllmwuyu_discard(self.player)
 	if #hearts==0 and self.player:getMark("@yu")==0 then return nil end
-	local can_shiyu=true
+	if sgs.Slash_IsAvailable(self.player) then return nil end
+	
 	local slash_num=getCardsNum("Slash", self.player, self.player)
 
-	if  slash_num< 2 then return nil end
-	if not sgs.Analeptic_IsAvailable(self.player) then 
-		can_shiyu=false
-	end
-
-	if can_shiyu then 
-		local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
-		local card=sgs.cloneCard("Slash", sgs.Card_NoSuit, 0)
-		self:useBasicCard(card, dummy_use)
-		if  dummy_use.card and not dummy_use.to:isEmpty()  then
-			if not self:shouldUseAnaleptic(dummy_use.to:first(), dummy_use.card) then
-				can_shiyu=false
-			end
-		end
-	end
-
-	if not can_shiyu then
-		if slash_num>= 2 and not sgs.Slash_IsAvailable(self.player) then
-			self.player:setTag("wuyu_choose",sgs.QVariant(1))
-			return sgs.Card_Parse("@BllmWuyuCard=.")
-		end
-	else
-		self.player:setTag("wuyu_choose",sgs.QVariant(2))
-		return sgs.Card_Parse("@BllmWuyuCard=.")
-	end
-	self.player:setTag("wuyu_choose",sgs.QVariant(3))
-	return nil
+    
+	if  slash_num <= 0 then return nil end
+	return sgs.Card_Parse("@BllmWuyuCard=.")
 end
 sgs.ai_skill_use_func.BllmWuyuCard = function(card, use, self)
 	use.card=card
 end
 
 sgs.ai_skill_choice.bllmwuyu= function(self, choices, data)
-	local id =self.player:getTag("wuyu_choose"):toInt()
-	if id==1 then
-		return "bllmseyu"
-	elseif id ==2 then
-		return "bllmshiyu"
-	end
-	return "dismiss"	
+	return "bllmseyu"
 end
-sgs.ai_skill_cardask["@bllmshiyu-basics"] = function(self, data)
-	local cards = self.player:getHandcards()
-	cards=self:touhouAppendExpandPileToList(self.player,cards)
-	cards = sgs.QList2Table(cards)
-	if #cards==0 then return "." end
-	self:sortByKeepValue(cards)
-	return "$" .. cards[1]:getId()
-end
+
 sgs.ai_cardneed.bllmwuyu = function(to, card, self)
  return card:getSuit()==sgs.Card_Heart	
 end

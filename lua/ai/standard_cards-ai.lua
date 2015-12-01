@@ -838,14 +838,22 @@ function SmartAI:useCardSlash(card, use)
 				use.to:append(target)
 			end
 			if not use.isDummy then
-				local analeptic = self:searchForAnaleptic(use, target, use.card)
+			    --almostly for Skill "bllmwuyu"
+				for _, id in sgs.qlist(use.card:getSubcards()) do
+					sgs.Sanguosha:getCard(id):setFlags("AIGlobal_SearchForAnaleptic")
+				end
 				
-				if analeptic and self:shouldUseAnaleptic(target, use.card) and analeptic:getEffectiveId() ~= card:getEffectiveId() 
-				and not  (analeptic:getSkillName() == "bllmshiyu" and card:getSubcards():length() > 1) then 
+				
+				local analeptic = self:searchForAnaleptic(use, target, use.card)
+				if analeptic and self:shouldUseAnaleptic(target, use.card) and analeptic:getEffectiveId() ~= card:getEffectiveId() then 
 					use.card = analeptic
 					if use.to then use.to = sgs.SPlayerList() end
 					return
 				end
+				for _, id in sgs.qlist(use.card:getSubcards()) do
+					self.room:setCardFlag(sgs.Sanguosha:getCard(id), "-AIGlobal_SearchForAnaleptic")
+				end
+				
 				
 				if self.player:hasSkill("jilve") and self.player:getMark("@bear") > 0 and not self.player:hasFlag("JilveWansha") and target:getHp() == 1 and not self.room:getCurrent():hasSkill("wansha")
 					and (target:isKongcheng() or getCardsNum("Jink", target, self.player) < 1 or sgs.card_lack[target:objectName()]["Jink"] == 1) then

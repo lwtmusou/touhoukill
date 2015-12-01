@@ -2547,7 +2547,15 @@ function SmartAI:filterEvent(event, player, data)
 				end
 			end
 		end
-
+		
+        if card:isKindOf("Analeptic") then
+			local cards = struct.from:getHandcards()
+			cards=self:touhouAppendExpandPileToList(struct.from,cards)
+			for _,c in sgs.qlist(cards) do
+				self.room:setCardFlag(c, "-AIGlobal_SearchForAnaleptic")
+			end
+		end
+		
 		if card:isKindOf("AOE") and sgs.ai_AOE_data then
 			sgs.ai_AOE_data = nil
 		end
