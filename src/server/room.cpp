@@ -39,7 +39,7 @@ Room::Room(QObject *parent, const QString &mode)
     m_drawPile(&pile1), m_discardPile(&pile2),
     game_started(false), game_finished(false), game_paused(false), L(NULL), thread(NULL),
     thread_3v3(NULL), thread_xmode(NULL), thread_1v1(NULL), _m_semRaceRequest(0), _m_semRoomMutex(1),
-    _m_raceStarted(false), provided(NULL), has_provided(false),
+    _m_raceStarted(false), provided(NULL), has_provided(false), provider(NULL),
     m_surrenderRequestReceived(false), _virtual(false), _m_roomState(false)
 {
     static int s_global_room_id = 0;
@@ -6194,7 +6194,7 @@ void Room::provide(const Card *card, ServerPlayer *who)
 {
     Q_ASSERT(provided == NULL);
     Q_ASSERT(!has_provided);
-    Q_ASSERT(!provider);
+    Q_ASSERT(provider == NULL);
 
     provided = card;
     has_provided = true;

@@ -966,26 +966,14 @@ QStringList Engine::getRandomLords() const
     if (lord_num == 0 && extra == 0)
         extra = 1;
     for (i = 0; addcount < extra; i++) {
-
-        if (godmax == 0) {
-            if (getGeneral(nonlord_list.at(i))->getKingdom() != "god"&& getGeneral(nonlord_list.at(i))->getKingdom() != "touhougod") {
-                lords << nonlord_list.at(i);
-                addcount++;
-            }
-        } else if (godmax > 0) {
-            if (getGeneral(nonlord_list.at(i))->getKingdom() != "god"&& getGeneral(nonlord_list.at(i))->getKingdom() != "touhougod") {
-                lords << nonlord_list.at(i);
-                addcount++;
-            } else {
-                if (godCount < godmax) {
-                    lords << nonlord_list.at(i);
-                    godCount++;
-                    addcount++;
-                }
-            }
-        } else {
+        if (getGeneral(nonlord_list.at(i))->getKingdom() != "touhougod") {
             lords << nonlord_list.at(i);
             addcount++;
+        }
+         else if (godmax > 0 && godCount < godmax) {
+			lords << nonlord_list.at(i);
+            godCount++;
+            addcount++;    
         }
 
         if (i == nonlord_list.length() - 1) break;
@@ -1045,7 +1033,7 @@ void Engine::banRandomGods() const
     QStringList gods;
 
     foreach (const QString &general, all_generals) {
-        if (getGeneral(general)->getKingdom() == "god" || getGeneral(general)->getKingdom() == "touhougod") {
+        if (getGeneral(general)->getKingdom() == "touhougod") {
             gods << general;
             count++;
         }
@@ -1089,41 +1077,28 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
     qShuffle(all_generals);
 
 
-    int i;
     int addcount = 0;
-    QStringList general_list;
+    QStringList general_list = QStringList();
     int godmax = Config.value("GodLimit", 5).toInt();
     int godCount = 0;
-    for (i = 0; addcount < count; i++) {
+    for (int i = 0; addcount < count; i++) {
+        if (getGeneral(all_generals.at(i))->getKingdom() != "touhougod") {
 
-        if (godmax == 0) {
-            if (getGeneral(all_generals.at(i))->getKingdom() != "god"&& getGeneral(all_generals.at(i))->getKingdom() != "touhougod") {
-                general_list << all_generals.at(i);
-                addcount++;
-            }
-        } else if (godmax > 0) {
-            if (getGeneral(all_generals.at(i))->getKingdom() != "god"&& getGeneral(all_generals.at(i))->getKingdom() != "touhougod") {
-                general_list << all_generals.at(i);
-                addcount++;
-            } else {
-                if (godCount < godmax) {
-                    general_list << all_generals.at(i);
-                    godCount++;
-                    addcount++;
-                }
-            }
-        } else {
             general_list << all_generals.at(i);
             addcount++;
-        }
-
-        if (i == all_generals.length() - 1) break;
-    }
-
+        } else if (godmax > 0 &&  godCount < godmax){
+			
+            general_list << all_generals.at(i);
+            godCount++;
+            addcount++;
+        } 
+        if (i == all_generals.count() - 1) 
+			break;
+    } 
 
 
     //QStringList general_list = all_generals.mid(0, count);
-    Q_ASSERT(general_list.count() == count);
+    //Q_ASSERT(general_list.count() == count);
 
     return general_list;
 }
