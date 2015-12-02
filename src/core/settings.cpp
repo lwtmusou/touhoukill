@@ -115,7 +115,7 @@ void Settings::init()
     UserAvatar = value("UserAvatar", "zhangliao").toString();
     HistoryIPs = value("HistoryIPs").toStringList();
     DetectorPort = value("DetectorPort", 9526u).toUInt();
-    MaxCards = value("MaxCards", 15).toInt();
+    MaxCards = value("MaxCards", 12).toInt();
 
     EnableHotKey = value("EnableHotKey", true).toBool();
     NeverNullifyMyTrick = value("NeverNullifyMyTrick", true).toBool();
