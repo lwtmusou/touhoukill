@@ -1144,7 +1144,7 @@ public:
                     arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
                     arg[1] = QSanProtocol::Utils::toJsonString(p->objectName());
                     arg[2] = QSanProtocol::Utils::toJsonString(p->getGeneral()->objectName());
-                    arg[3] = QSanProtocol::Utils::toJsonString("clear");//QString()
+                    arg[3] = QSanProtocol::Utils::toJsonString(QString());//"clear"
                     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
                 }
                 room->setPlayerMark(p, "changshi", 1); // real mark for   Player::hasSkill()

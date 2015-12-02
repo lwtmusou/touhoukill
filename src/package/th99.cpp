@@ -904,7 +904,8 @@ public:
             arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
             arg[1] = QSanProtocol::Utils::toJsonString(player->objectName());
             arg[2] = QSanProtocol::Utils::toJsonString(player->getGeneral()->objectName());
-            arg[3] = QSanProtocol::Utils::toJsonString("clear");
+			//arg[3] = QSanProtocol::Utils::toJsonString("clear");
+            arg[3] = QSanProtocol::Utils::toJsonString(QString());
             room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 
             if (back->isAlive()) {

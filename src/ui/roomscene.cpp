@@ -419,10 +419,10 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         QString huashenGeneral = arg[2].asCString();
         QString huashenSkill = arg[3].asCString();
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        if (huashenSkill == "clear")
-            container->stopHuaShen();
-        else
-            container->startHuaShen(huashenGeneral, huashenSkill);
+        //if (huashenSkill == "clear")
+        //    container->stopHuaShen();
+        //else
+        container->startHuaShen(huashenGeneral, huashenSkill);
         break;
     }
     case S_GAME_EVENT_PLAY_EFFECT: {
@@ -904,7 +904,7 @@ void RoomScene::adjustItems()
     _m_infoPlane.setWidth(displayRegion.width() * _m_roomLayout->m_infoPlaneWidthPercentage);
     _m_infoPlane.moveRight(displayRegion.right());
     _m_infoPlane.setTop(displayRegion.top() + _m_roomLayout->m_roleBoxHeight);
-    _m_infoPlane.setBottom(dashboard->y() - _m_roomLayout->m_chatTextBoxHeight - 70);
+    _m_infoPlane.setBottom(dashboard->y() - _m_roomLayout->m_chatTextBoxHeight - 35);
     m_rolesBoxBackground = m_rolesBoxBackground.scaled(_m_infoPlane.width(), _m_roomLayout->m_roleBoxHeight);
     m_rolesBox->setPixmap(m_rolesBoxBackground);
     m_rolesBox->setPos(_m_infoPlane.left(), displayRegion.top());
@@ -928,9 +928,12 @@ void RoomScene::adjustItems()
         enemy_box->setPos(padding * 2, padding * 2);
 
     padding -= _m_roomLayout->m_photoRoomPadding;
-    m_tablew = displayRegion.width();// - infoPlane.width();
-    m_tableh = displayRegion.height();// - dashboard->boundingRect().height();
-
+    m_tablew = displayRegion.width();
+    m_tableh = displayRegion.height();
+	//m_tablew = displayRegion.width()- _m_infoPlane.width();
+    //m_tableh = displayRegion.height() - dashboard->boundingRect().height();
+	
+	
     QString image_path;
 
     QString lord_kingdom = ClientInstance->lord_kingdom;
@@ -3050,8 +3053,11 @@ void RoomScene::changeTableBg(const QString &tableBgImage_path)
     QRectF displayRegion = sceneRect();
 
     QPixmap tableBg = QPixmap(tableBgImage_path)
-        .scaled(displayRegion.width(), displayRegion.height() + 5,
-        Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        .scaled(displayRegion.width(), displayRegion.height(),
+        Qt::IgnoreAspectRatio, Qt::SmoothTransformation); 
+	//QPixmap tableBg = QPixmap(tableBgImage_path)
+   //     .scaled(displayRegion.width()- _m_infoPlane.width(), displayRegion.height() - dashboard->boundingRect().height(),
+    //    Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     m_tableh -= _m_roomLayout->m_photoDashboardPadding;
     m_tableBg->setPos(0, 0);
     m_tableBg->setPixmap(tableBg);
@@ -3577,6 +3583,13 @@ void RoomScene::killPlayer(const QString &who)
 {
     const General *general = NULL;
     m_roomMutex.lock();
+	
+	ClientPlayer *player = ClientInstance->getPlayer(who);
+    if (player) {
+        PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
+        container->stopHuaShen();
+    }
+	
     if (who == Self->objectName()) {
         dashboard->killPlayer();
         dashboard->update();
@@ -3593,11 +3606,7 @@ void RoomScene::killPlayer(const QString &who)
         if (ServerInfo.GameMode == "02_1v1") enemy_box->killPlayer(general->objectName());
     }
 
-    ClientPlayer *player = ClientInstance->getPlayer(who);
-    if (player) {
-        PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->stopHuaShen();
-    }
+
 
     if (Config.EnableEffects && Config.EnableLastWord && !Self->hasFlag("marshalling") && !player->hasSkill("huaming"))
         general->lastWord();
