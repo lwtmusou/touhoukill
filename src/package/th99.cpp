@@ -466,7 +466,7 @@ public:
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         //case 1:discard
         int count1 = 0;
-        ServerPlayer *thrower;
+        ServerPlayer *thrower = NULL;
         if (move.from != NULL && move.to_place == Player::DiscardPile && move.from == player
             && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
 
@@ -490,7 +490,7 @@ public:
         //case 2:obtain
         //need check  move.to??
         int count2 = 0;
-        ServerPlayer *obtainer;
+        ServerPlayer *obtainer = NULL;
         if (move.from != NULL && move.from == player) {
             if ((move.origin_to && move.origin_to != move.from && move.origin_to_place == Player::PlaceHand)
                 || (move.to && move.to != move.from && move.to_place == Player::PlaceHand)) {
