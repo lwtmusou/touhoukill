@@ -243,7 +243,7 @@ return{
 	["illustrator:kasen"] = "ニッカ p号:17069244",
 	["illustrator:kasen_1"] = "ダバディ p号:21568756",
 	["illustrator:kasen_2"] = "かがよ p号:35900624",
-	["illustrator:kasen_3"] = "閏月戈 p号:50270037",
+	--["illustrator:kasen_3"] = "閏月戈 p号:50270037",
 	
 	["zhujiu"] = "祝酒", 
     [":zhujiu"] = "当其他角色成为【桃】或【酒】的目标后，你可以将一张牌交给该角色，然后摸一张牌。",

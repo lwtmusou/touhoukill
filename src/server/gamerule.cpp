@@ -352,7 +352,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
             }
             if (dying.who->isAlive())
                 peach = room->askForSinglePeach(player, dying.who);
-
+            
             if (player->hasFlag("wansha") && player->getMark("Global_PreventPeach") > 0) {
                 player->setFlags("-wansha");
                 room->removePlayerMark(player, "Global_PreventPeach");

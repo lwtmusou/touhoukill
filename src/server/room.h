@@ -569,7 +569,9 @@ private:
     Json::Value m_fillAGarg;
     Json::Value m_takeAGargs;
 
-
+    volatile bool playerPropertySet;
+	
+	
     static QString generatePlayerName();
     void prepareForStart();
     void assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign);
@@ -608,11 +610,13 @@ private slots:
     void processClientPacket(const QString &packet);
     void assignRoles();
     void startGame();
-
+	void slotSetProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
+	
 signals:
     void room_message(const QString &msg);
     void game_start();
     void game_over(const QString &winner);
+	void signalSetProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
 };
 
 typedef Room *RoomStar;

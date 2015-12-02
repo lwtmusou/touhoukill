@@ -460,18 +460,18 @@ public:
 
 
 
-class ShuangrenTargetMod : public TargetModSkill
+class Shuangren : public TargetModSkill
 {
 public:
-	ShuangrenTargetMod() : TargetModSkill("#shuangren")
+	Shuangren() : TargetModSkill("shuangren")
     {
-        frequency = NotCompulsory;
+        frequency = NotFrequent;
 		pattern = "Slash";
     }
 
     virtual int getExtraTargetNum(const Player *player, const Card *card) const
     {
-        if (player->hasSkill("shuangren"))
+        if (player->hasSkill(objectName()))
             return 1;
         else
             return 0;
@@ -1737,10 +1737,8 @@ TH07Package::TH07Package()
     ran->addSkill(new Jiaoxia);
 
     General *youmu = new General(this, "youmu", "yym", 4, false);
-    youmu->addSkill(new Skill("shuangren"));
-    youmu->addSkill(new ShuangrenTargetMod);
+    youmu->addSkill(new Shuangren);
     youmu->addSkill(new Youming);
-	related_skills.insertMulti("shuangren", "#shuangren");
 
 
     General *prismriver = new General(this, "prismriver", "yym", 3, false);
