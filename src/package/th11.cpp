@@ -617,12 +617,13 @@ public:
         view_as_skill = new JiuhaoVS;
     }
     
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+	 virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
-        if (!TriggerSkill::triggerable(player)) return QStringList();
+		//if (!TriggerSkill::triggerable(player)) return QStringList();
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("Peach") || use.card->isKindOf("Analeptic")) {
+            if ( player->getPhase() == Player::Play
+			&&(use.card->isKindOf("Peach") || use.card->isKindOf("Analeptic"))) {
                 room->setPlayerFlag(player, "jiuhao");
             }
             if (use.card->getSkillName() == "jiuhao")
@@ -630,10 +631,15 @@ public:
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.from == Player::Play) {
-                player->setFlags("-jiuhao");
-                player->setFlags("-jiuhaoused");
+                room->setPlayerFlag(player, "-jiuhao");
+				room->setPlayerFlag(player, "-jiuhaoused");
             }
         }
+	}
+	
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    {
+        //only for record
         return QStringList();
     }
 };
