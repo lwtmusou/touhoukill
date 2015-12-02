@@ -9,6 +9,8 @@ return{
     ["!shinmyoumaru"] = "少名针妙丸",
 	--["designer:shinmyoumaru"] = "星野梦美 | 程序:三国有单",
 	["cv:shinmyoumaru"] = "暂无", 
+	["illustrator:shinmyoumaru"] = "BoboMaster p号:38023798",
+	["illustrator:shinmyoumaru_1"] = "東天紅 p号:39094589",
 	
     ["baochui"] = "宝槌",
     [":baochui"] = "一名角色的准备阶段开始时，若该角色的手牌数小于三，你可以弃置一张牌，令该角色将手牌摸至三张。此回合的弃牌阶段开始时，若该角色的手牌数小于三，该角色失去1点体力。",
@@ -27,6 +29,8 @@ return{
     ["!raiko"] = "堀川雷鼓",
 	--["designer:raiko"] = "星野梦美 | 程序:三国有单",
 	["cv:raiko"] = "暂无", 
+	["illustrator:raiko"] = "伊吹のつ p号:41891311",
+	["illustrator:raiko_1"] = "泉水茜 p号:39316689",
 	
     ["leiting"] = "雷霆",
     [":leiting"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以指定一名其他角色，然后你摸两张牌，弃置一张手牌。若以此法弃置了<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，该角色须摸一张牌，然后受到1点无来源的雷电伤害。若以此法弃置了<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，视为该角色对其攻击范围内的由该角色指定的一名角色使用一张雷【杀】。",
@@ -40,6 +44,9 @@ return{
     ["!seija"] = "鬼人正邪",
 	--["designer:seija"] = "星野梦美 | 程序:三国有单", 
 	["cv:seija"] = "暂无", 
+	["illustrator:seija"] = "藤宮ふみや p号:37885158",
+	["illustrator:seija_1"] = "ふらぺち p号:53327346",
+	["illustrator:seija_2"] = "ゾウノセ p号:51838778",
 	
     ["nizhuan"] = "逆转",
     [":nizhuan"] ="当一名角色成为【杀】的目标后，若此【杀】只指定了该角色为目标且该角色已损失的体力值大于此【杀】的使用者，你可以弃置该角色的一张手牌，令此【杀】无效，并视为该角色对此【杀】的使用者使用一张【杀】。",
@@ -55,6 +62,8 @@ return{
     ["!yatsuhashi"] = "九十九八桥",
 	--["designer:yatsuhashi"] = "星野梦美 | 程序:三国有单", 
 	["cv:yatsuhashi"] = "暂无",
+	["illustrator:yatsuhashi"] = "neko p号:38047797",
+	["illustrator:yatsuhashi_1"] = "ウミガラス p号:41847626",
 	
     ["canxiang"] = "残响",
     [":canxiang"] ="每当你造成伤害后，你可以获得一名体力值大于你的角色的一张牌。",
@@ -71,6 +80,8 @@ return{
     ["!benben"] = "九十九弁弁",
 	--["designer:benben"] = "星野梦美 | 程序:三国有单", 
 	["cv:benben"] = "暂无", 
+	["illustrator:benben"] = "neko p号:38047797",
+	["illustrator:benben_1"] = "会帆 p号:41942420",
 	
     ["yuyin"] = "余音",
     [":yuyin"] = "每当你受到伤害后，你可以获得一名体力值大于你的角色的一张牌。",
@@ -87,6 +98,8 @@ return{
     ["!kagerou"] = "今泉影狼",
 	--["designer:kagerou"] = "星野梦美 | 程序:三国有单", 
 	["cv:kagerou"] = "暂无",
+	["illustrator:kagerou"] = "myaaco p号:38562704",
+	["illustrator:kagerou_1"] = "kirero p号:40434726",
 	
     ["langying"] = "狼影",
     [":langying"] ="每当你需要使用或打出一张【闪】时，你可以将你装备区里的所有牌（至少一张）返回手牌，视为你使用或打出了一张【闪】。",
@@ -98,10 +111,12 @@ return{
 --****************************
     --hzc007  势力：辉 4血
     ["sekibanki"] = "赤蛮奇",
-    ["#sekibanki"] = "辘轳首的怪奇",
+    ["#sekibanki"] = "辘轳首的怪奇", 
     ["!sekibanki"] = "赤蛮奇",
 	--["designer:sekibanki"] = "星野梦美 | 程序:三国有单", 
 	["cv:sekibanki"] = "暂无", 
+	["illustrator:sekibanki"] = "キメラ キライ p号:35991964",
+	["illustrator:sekibanki_1"] = "シエロ p号:37343098",
 	
     ["feitou"] = "飞头",
     ["#feitou_slash"]= "飞头",
@@ -118,6 +133,11 @@ return{
     ["!wakasagihime"] = "若鹭姬",
 	--["designer:wakasagihime"] = "星野梦美 | 程序:三国有单", 
 	["cv:wakasagihime"] = "暂无", 
+	["illustrator:wakasagihime"] = "villyane p号:38169403",
+	["illustrator:wakasagihime_1"] = "s-syogo p号:38957820",
+	["illustrator:wakasagihime_2"] = "藤宮ふみや p号:37256433",
+	["illustrator:wakasagihime_3"] = "Cloudy.R p号:42096555",
+	["illustrator:wakasagihime_4"] = "粗茶 p号:45890537",
 	
      ["shizhu"] = "拾珠",
     [":shizhu"] ="其他角色的结束阶段开始时，你可以选择一张于此回合置入弃牌堆的【桃】并展示所有手牌，若其中没有【桃】，你获得你选择的牌。",

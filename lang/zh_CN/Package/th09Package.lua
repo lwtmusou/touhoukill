@@ -231,6 +231,10 @@ return
     ["kokoro"] = "秦心",
     ["#kokoro"] = "表情丰富的扑克脸",
     ["!kokoro"] = "秦心",
+	["illustrator:kokoro"] = "黄昏边境",
+	["illustrator:kokoro_1"] = "薄稀 p号:36237520",
+	["illustrator:kokoro_2"] = "藤宮ふみや (p号:38589315)",
+	["illustrator:kokoro_3"] = "ゾウノセ (p号:39419401)",
 	["cv:kokoro"] = "暂无",
 	
 	["nengwu"] = "能舞",

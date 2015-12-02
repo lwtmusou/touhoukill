@@ -240,6 +240,10 @@ return{
     ["#kasen"] = "独臂有角的仙人",
     ["!kasen"] = "茨木華扇",
 	["cv:kasen"] = "暂无",
+	["illustrator:kasen"] = "ニッカ p号:17069244",
+	["illustrator:kasen_1"] = "ダバディ p号:21568756",
+	["illustrator:kasen_2"] = "かがよ p号:35900624",
+	["illustrator:kasen_3"] = "閏月戈 p号:50270037",
 	
 	["zhujiu"] = "祝酒", 
     [":zhujiu"] = "当其他角色成为【桃】或【酒】的目标后，你可以将一张牌交给该角色，然后摸一张牌。",
@@ -254,6 +258,8 @@ return{
     ["#kosuzu"] = "识文解意的爱书人", 
     ["!kosuzu"] = "本居小铃",
 	["cv:kosuzu"] = "暂无",
+	["illustrator:kosuzu"] = "にしまる	p号:40527071",
+	["illustrator:kosuzu_1"] = "音無空太 p号:50873812",
 	
     ["pandu"] = "判读",
     [":pandu"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以展示一名其他角色的一张手牌：若此牌为【杀】，该角色须对你使用此牌；若此牌不为基本牌，你须获得此牌。",

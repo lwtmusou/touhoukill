@@ -459,6 +459,8 @@ return{
     ["!suwako_god"] = "神泄矢诹访子",
 	["cv:suwako_god"] = "暂无",
 	["illustrator:suwako_god"] = "ルリア (p号:13338753)",
+	["illustrator:suwako_god_1"] = "伊吹のつ (p号:51609431)",
+	["illustrator:suwako_god_2"] = "もしよ (p号:45182321)",
 	
     ["zuosui"] = "作祟",
     [":zuosui"] = "每当你对其他角色造成伤害时，你可以防止此伤害并获得一枚“信仰”标记，令该角色选择一个不大于4的正整数X，然后你选择一项：令该角色摸X张牌，然后该角色失去X点体力；或令该角色将牌弃至X张。",
@@ -481,6 +483,8 @@ return{
     ["!miko_god"] = "神丰聪耳神子",
 	["cv:miko_god"] = "暂无",
 	["illustrator:miko_god"] = "Mik-cis (p号:35385868)",
+	["illustrator:miko_god_1"] = "まくわうに (p号:42026225)",
+	["illustrator:miko_god_2"] = "りひと (p号:53472162)",
 	
     ["hongfo"]= "弘佛",
     [":hongfo"]= "摸牌阶段摸牌后，你可以指定势力与你相同的所有角色，这些角色依次摸一张牌。然后若有不少于一名角色的势力与你不同，你须令其中的一名角色将其势力改变为你的势力。",
@@ -507,6 +511,8 @@ return{
 	--["designer:kaguya_god"] = "星野梦美 | 程序:三国有单", 
 	["illustrator:kaguya_god"] = "しまちょ (p号:1051695)",
 	--个人id:12647
+	["illustrator:kaguya_god_1"] = "yae狼ト(p号:26921148)",
+	["illustrator:kaguya_god_2"] = "乃絵のえる (p号:51840626)",
 	["cv:kaguya_god"] = "暂无",
 	
 	["shenbao"] = "神宝",
@@ -523,6 +529,9 @@ return{
 	--["designer:komachi_god"] = "星野梦美 | 程序:三国有单", 
 	["illustrator:komachi_god"] = "藤原 (p号:无, 个人id:27517)",
 	["cv:komachi_god"] = "暂无",
+	["illustrator:komachi_god_1"] = "蟻 (p号:51593223)",
+	["illustrator:komachi_god_2"] = "ゾウノセ (p号:51860449)",
+	
 	
     ["yindu"] = "引渡",
     [":yindu"] = "当其他角色死亡时，你可以摸三张牌。若如此做，不执行奖惩。",
