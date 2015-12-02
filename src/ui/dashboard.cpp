@@ -89,7 +89,7 @@ QGraphicsItem *Dashboard::getMouseClickReceiver()
 }
 
 void Dashboard::_createLeft()
-{
+{   
     QRect rect = QRect(0, 0, G_DASHBOARD_LAYOUT.m_leftWidth, G_DASHBOARD_LAYOUT.m_normalHeight);
     _paintPixmap(_m_leftFrame, rect, _getPixmap(QSanRoomSkin::S_SKIN_KEY_LEFTFRAME), this);
     _m_leftFrame->setZValue(-1000); // nobody should be under me.
@@ -104,7 +104,8 @@ int Dashboard::getButtonWidgetWidth() const
 
 void Dashboard::_createMiddle()
 {
-    // this is just a random rect. see constructor for more details
+    
+	// this is just a random rect. see constructor for more details
     QRect rect = QRect(0, 0, 1, G_DASHBOARD_LAYOUT.m_normalHeight);
     _paintPixmap(_m_middleFrame, rect, _getPixmap(QSanRoomSkin::S_SKIN_KEY_MIDDLEFRAME), this);
     _m_middleFrame->setZValue(-1000); // nobody should be under me.
@@ -149,10 +150,10 @@ int Dashboard::width()
 
 
 void Dashboard::_createRight()
-{
-    QRect rect = QRect(_m_width - G_DASHBOARD_LAYOUT.m_rightWidth, -70,
-        G_DASHBOARD_LAYOUT.m_rightWidth,
-        G_DASHBOARD_LAYOUT.m_normalHeight + 70);
+{   //40 equals diff bettween middlefarme and rightframe 
+    QRect rect = QRect(_m_width - G_DASHBOARD_LAYOUT.m_rightWidth, -40,
+       G_DASHBOARD_LAYOUT.m_rightWidth,
+        G_DASHBOARD_LAYOUT.m_normalHeight + 40);
     _paintPixmap(_m_rightFrame, rect, QPixmap(1, 1), _m_groupMain);
     _paintPixmap(_m_rightFrameBg, QRect(0, 0, rect.width(), rect.height()),
         _getPixmap(QSanRoomSkin::S_SKIN_KEY_RIGHTFRAME), _m_rightFrame);
@@ -160,9 +161,9 @@ void Dashboard::_createRight()
 
     _m_skillDock = new QSanInvokeSkillDock(_m_rightFrame);
     QRect avatar = G_DASHBOARD_LAYOUT.m_avatarArea;
-    _m_skillDock->setPos(avatar.left() + 15, avatar.bottom() +
-        G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height() - 25);
-    _m_skillDock->setWidth(avatar.width() - 30);
+	_m_skillDock->setPos(avatar.left()+25, avatar.bottom() +
+        G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height()-25);
+	_m_skillDock->setWidth(avatar.width()-50);
 }
 
 

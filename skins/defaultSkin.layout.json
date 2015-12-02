@@ -59,6 +59,7 @@
     "logBoxHeightPercentage": 0.6,
     "chatBoxHeightPercentage": 0.4,
     "infoPlaneWidthPercentage": 0.2,
+	//"infoPlaneWidthPercentage": 0.18,
     "photoRoomPadding": 10,
     "photoDashboardPadding": 40,
     "photoHDistance": 32,
@@ -153,16 +154,16 @@
 },
 "dashboard":
 {
-    "leftWidth": 164,
-   "rightWidth": 175,
+    "leftWidth": 164, 
+   "rightWidth": 200,
 	"reverseSelectionWidth": 10,
-	"normalHeight": 140,
+	"normalHeight": 200,
     "floatingAreaHeight": 50,
 	
-    "handCardNumIconArea": [-119, 181, 30, 18],
+    "handCardNumIconArea": [-130, 50, 30, 18],
     "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255], 1, 30, [0, 0], [20, 20, 20, 200]],
 	//ensure that these areas belong to left frame
-    "equipAreas": [[5, 26, 149, 22], [5, 49, 149, 22], [5, 72, 149, 22], [5, 95, 149, 22],[5, 118, 149, 22]],
+    "equipAreas": [[5, 38, 149, 32], [5, 70, 149, 32], [5, 102, 149, 32], [5, 134, 149, 32],[5, 166, 149, 32]],
     "equipBorderPos": [-6, -6],
     "equipSelectedOffset": [10, 0],
     "equipImageArea": [0, 0, 149, 25],
@@ -173,31 +174,28 @@
 	"equipTianyiArea": [0, 5, 21, 17],// for skill mokai
     "equipFont": ["SimLi", 9, 60, [0, 0, 0, 255], 3, 8, [0, 0], [240, 240, 240, 200]],
     "equipPointFont": ["arial", [14, 14, 3], 20, [0, 0, 0, 255], 1, 0, [0, 0], [240, 240, 240, 200]], 
-    "delayedTrickFirstRegion": [0, 0, 28, 28],//80 210, -23,28, 28
+    "delayedTrickFirstRegion": [0, 0, 28, 28],
     "delayedTrickStep": [28, 0],
     // the width of the region to disperse cards when the cards are to be moved to the special pile. 
     "disperseWidth": 250,
-    "markTextArea": [0, 0, 50, 50],
-    "roleComboBoxPos": [-28, 72],
-	//Í·ÏñÇø
-	"changePrimaryHeroSkinBtnPos": [25, 30],
+	"markTextArea": [0, 0, 50, 50],
+    "roleComboBoxPos": [-28, 47],
+	"changePrimaryHeroSkinBtnPos": [25, 40],
     "borderWidth": 6,
     "avatarImageType": 1,
     "secondaryAvatarImageType": 4,
     "primaryAvatarImageType": 6,
     "circleImageType": 1,
-	"avatarArea": [0,  0, 175, 210],
-	//"avatarArea": [-104,  -100, 163, 190],
+	//"avatarArea": [0,  0, 175, 210],
+	"avatarArea": [0,  0, 200, 240],
 	
     "secondaryAvatarArea": [81, 10, 70, 70],
     "circleArea": [8, 10, 134, 134],
-	"avatarNameArea": [-77, -38, 100, 100],
-    "focusFrameArea": [0, 0, 175, 210],
+	"avatarNameArea": [-67, -30, 100, 100],
+    "focusFrameArea": [0, 0, 200, 240],
 	
     "smallAvatarNameArea": [84, 36, 18, 36],
-     //"avatarNameFont": ["@simli", [12, 12, 1], 60, [255, 255, 255, 255], 5, 8, [0, 0], [50, 50, 50, 150]],
-    // "avatarNameFont": ["@SimLi", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
-     "avatarNameFont": ["SimLi", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
+    "avatarNameFont": ["SimLi", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
     
 	 // "avatarNameFont": ["@simli", [12, 12, 1], 60, [255, 255, 255, 255], 5, 8, [0, 0], [50, 50, 50, 150]],
     // "smallAvatarNameFont": ["@simli", [12, 12, 1], 40, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
@@ -213,47 +211,45 @@
     // otherwise, the corner of child specified by "childAnchor" will first be aligned to that of parent specified by "parentAnchor",
     // and offset if applied after the alignment is done. When the 4th parameter [sizeX, sizeY] is specified, fixed size of the area
     // is used; otherwise, it means area's size is variable with the content of that area, the program will adjust the size automatically
-    "markTextArea": ["bottomRight", "bottomRight",  [-10, -10]],
-    "phaseArea": ["bottomRight", "bottomRight", [-100, 0], [209, 20]],
+    "markTextArea": ["bottomCenter", "bottomCenter",  [200, -10]],
+    "phaseArea": ["bottomLeft", "bottomLeft", [-50, 0], [209, 20]],
     
-	"kingdomIconArea": [-104, 2, 28, 28],
-	"dashboardKingdomMaskArea": [-108, -5, 140, 40],
+	"kingdomIconArea": [-94, 10, 28, 28],
+	"dashboardKingdomMaskArea": [-100, -2, 160, 50],
 	
-    "screenNameArea": [0, 0, 157, 25],
-	 //"screenNameArea": [-200, -197, 157, 25],
+    //"screenNameArea": [0, 0, 157, 25],
+	"screenNameArea": [20, 0, 157, 25],
     "screenNameFont": ["SimSun", 12, 0, [255, 255, 255, 255], 2, 10, [0, 0], [0, 0, 0, 224]],
     "magatamasHorizontal": false,
     "magatamaSize": [23, 30],
-    "magatamaImageArea": [0, 3, 22, 26],
-	"magatamaImageSubArea": [0, 3, 22, 26], //for skill banling
+    "magatamaImageArea": [0, 6, 22, 26],
+	"magatamaImageSubArea": [0, 6, 22, 26], //for skill banling
     "magatamasBgVisible": true,
-    "magatamasAnchor": ["rightBottom", [175, 240]], //right
-	"magatamasSubAnchor": ["leftBottom", [-2, 240]], //rightTop
+	"magatamasAnchor": ["rightBottom", [195, 260]], //right
+	"magatamasSubAnchor": ["leftBottom", [0, 260]], //rightTop
     "cardMoveArea": [-50, 65, 200, 130], 
     "progressBarArea": ["bottomCenter", "bottomCenter", [-8, 0], [300, 18]],
     "progressBarHorizontal": true,
     //"privatePileStartPos": [10, 30],
-	"privatePileStartPos": [45, 5],
+	"privatePileStartPos": [70, 5],
     "privatePileStep": [0, 16],
     "privatePileButtonSize": [60, 16],
-    "actionedIconRegion": [80, 37, 52, 21],
-    "saveMeIconRegion": [5, 15, 122, 50],
-    "votesIconRegion": [50, 52, 50, 50],
-    "chainedIconRegion": [0, 90, 174, 19],
+    "actionedIconRegion": [80, 77, 52, 21],
+    "saveMeIconRegion": [55, 15, 122, 50],
+    "votesIconRegion": [70, 52, 50, 50],
+    "chainedIconRegion": [0, 90, 194, 19],
     "deathIconRegion": ["center", "center", [0, 0], [157, 102]],
     "drankMaskColor": [250, 0, 0, 115],
     "duanchangMaskColor": [255, 255, 255, 128],
 	//"extraSkillArea": [32, 116, 56, 20],
     //"extraSkillFont": ["SimLi", [16, 16, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
     //"extraSkillTextArea": [32, 113, 56, 20],
-    //°´Å¥
-	"buttonSetSize": [96, 148],
-    "confirmButtonArea": [5, 3, 61, 75],
-    "cancelButtonArea": [5, 74, 61, 75],
-    "discardButtonArea": [60, 35, 33, 81],
-    "trustButtonArea": [60, 115, 35, 34],
-    "trustEffectColor": [38, 26, 66]
-	
+	"buttonSetSize": [100, 195],
+    "confirmButtonArea": [6, 10, 75, 90],
+    "cancelButtonArea": [1, 112, 75, 90],
+    "discardButtonArea": [67, 60, 77, 95],
+    "trustButtonArea": [62, 162, 70, 70],
+    "trustEffectColor": [38, 26, 66]	
 },
 "skillButton":
 {

@@ -337,10 +337,7 @@ void QSanInvokeSkillDock::update()
 {
     if (!_m_buttons.isEmpty()) {
         QList<QSanInvokeSkillButton *> regular_buttons, lordskill_buttons, all_buttons;
-        int banling_fix = 0;
         foreach (QSanInvokeSkillButton *btn, _m_buttons) {
-            if (btn->getSkill()->objectName() == "banling")
-                banling_fix = 5;
             if (!btn->getSkill()->shouldBeVisible(Self)) {
                 btn->setVisible(false);
                 continue;
@@ -397,11 +394,11 @@ void QSanInvokeSkillDock::update()
         for (int i = 0; i < rows; i++) {
             int rowTop = (RoomSceneInstance->m_skillButtonSank) ? (-rowH - 2 * (rows - i - 1)) :
                 ((-rows + i) * rowH);
-            int btnWidth = (_m_width - 10) / btnNum[i];
+            int btnWidth = (_m_width -20) / btnNum[i];
             for (int j = 0; j < btnNum[i]; j++) {
                 QSanInvokeSkillButton *button = regular_buttons[m++];//all_buttons[m++];
                 button->setButtonWidth((QSanInvokeSkillButton::SkillButtonWidth)(btnNum[i] - 1));
-                button->setPos(btnWidth * j + banling_fix, rowTop);
+                button->setPos(btnWidth * j, rowTop);
             }
 
         }
@@ -423,8 +420,9 @@ void QSanInvokeSkillDock::update()
                 if (btntype == 0)
                     btntype = 1;
                 button->setButtonWidth((QSanInvokeSkillButton::SkillButtonWidth)(btntype));
-                button->setPos(0 - btnWidth * (j + 1) - 15, rowTop - G_DASHBOARD_LAYOUT.m_normalHeight);
-                //-G_DASHBOARD_LAYOUT.m_rightWidth
+                //button->setPos(0 - btnWidth * (j + 1) - 15, rowTop - G_DASHBOARD_LAYOUT.m_normalHeight);
+				button->setPos(0 - btnWidth * (j + 1) - G_DASHBOARD_LAYOUT.m_rightWidth + 45, rowTop - G_DASHBOARD_LAYOUT.m_normalHeight);
+                //
             }
 
         }
