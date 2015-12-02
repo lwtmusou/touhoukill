@@ -58,6 +58,9 @@ Room::Room(QObject *parent, const QString &mode)
     //for reconnect
     m_fillAGarg = Json::Value::null;
     m_takeAGargs = Json::Value(Json::arrayValue);
+	
+	connect(this,SIGNAL(signalSetProperty(ServerPlayer*,const char*,QVariant)),this,
+            SLOT(slotSetProperty(ServerPlayer*,const char*,QVariant)),Qt::QueuedConnection);
 }
 
 void Room::initCallbacks()
@@ -215,19 +218,57 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
     arg[1] = toJsonString(player->objectName());
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 
+	
     DyingStruct dying;
     dying.who = player;
     dying.damage = reason;
     QVariant dying_data = QVariant::fromValue(dying);
 
-    thread->trigger(EnterDying, this, player, dying_data);
-    foreach (ServerPlayer *p, getAllPlayers()) {
+    bool enterdying = thread->trigger(EnterDying, this, player, dying_data);
+    /* foreach (ServerPlayer *p, getAllPlayers()) {
         if (thread->trigger(Dying, this, p, dying_data) || player->getHp() > 0 || player->isDead())
             break;
-    }
+    } */
+	
     //insert banling
 
-    if (player->isAlive()) {
+	if (!(player->isDead() || player->getHp() > 0 || enterdying)) {
+        foreach(ServerPlayer *p, getAllPlayers()) {
+            if (thread->trigger(Dying, this, p, dying_data) || player->getHp() > 0 || player->isDead())
+                break;
+        }
+		if (player->isAlive()) {
+            if (player->getHp() > 0) {
+                setPlayerFlag(player, "-Global_Dying");
+            } else {
+                LogMessage log;
+                log.type = "#AskForPeaches";
+                log.from = player;
+                log.to = getAllPlayers();
+                log.arg = QString::number(1 - player->getHp());
+                sendLog(log);
+
+                foreach(ServerPlayer *saver, getAllPlayers()) {
+                    if (player->getHp() > 0 || player->isDead())
+                        break;
+                    QString cd = saver->property("currentdying").toString();
+                    setPlayerProperty(saver, "currentdying", player->objectName());
+                    thread->trigger(AskForPeaches, this, saver, dying_data);
+                    setPlayerProperty(saver, "currentdying", cd);
+                }
+                thread->trigger(AskForPeachesDone, this, player, dying_data);
+
+                setPlayerFlag(player, "-Global_Dying");
+            }
+        }
+		
+	}
+	else {
+        setPlayerFlag(player, "-Global_Dying");
+    }
+	
+	
+/*     if (player->isAlive()) {
         if (player->getHp() > 0) {
             setPlayerFlag(player, "-Global_Dying");
         } else {
@@ -252,7 +293,7 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
 
             setPlayerFlag(player, "-Global_Dying");
         }
-    }
+    } */
     currentdying = getTag("CurrentDying").toStringList();
     currentdying.removeOne(player->objectName());
     setTag("CurrentDying", QVariant::fromValue(currentdying));
@@ -1924,9 +1965,25 @@ void Room::setPlayerFlag(ServerPlayer *player, const QString &flag)
 
 void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value)
 {
-    player->setProperty(property_name, value);
+#ifdef QT_DEBUG
+    if(currentThread()!=player->thread())
+    {
+		playerPropertySet = false;
+        emit signalSetProperty(player,property_name,value);
+		while (!playerPropertySet) {}
+    }
+    else
+    {
+        player->setProperty(property_name, value);
+    }
+#else
+	player->setProperty(property_name, value);
+#endif // QT_DEBUG
+    //player->setProperty(property_name, value);
+
     broadcastProperty(player, property_name);
 
+	//QVariant data = getTag("HpChangedData");
     if (strcmp(property_name, "hp") == 0)
         thread->trigger(HpChanged, this, player);
 
@@ -1935,6 +1992,12 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
 
     if (strcmp(property_name, "chained") == 0)
         thread->trigger(ChainStateChanged, this, player);
+}
+
+void Room::slotSetProperty(ServerPlayer *player, const char *property_name, const QVariant &value)
+{
+    player->setProperty(property_name, value);
+	playerPropertySet = true;
 }
 
 void Room::setPlayerMark(ServerPlayer *player, const QString &mark, int value)
