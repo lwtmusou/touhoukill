@@ -2087,7 +2087,7 @@ sgs.ai_choicemade_filter.Nullification.general = function(self, player, promptli
 			self.room:writeToConsole(debug.traceback())
 			return
 		end
-		if not player->hasFlag("nullifiationNul") then
+		if not player:hasFlag("nullifiationNul") then
 			sgs.nullification_level = sgs.nullification_level + 1
 		end
 		
@@ -2099,7 +2099,7 @@ sgs.ai_choicemade_filter.Nullification.general = function(self, player, promptli
 	else
 		sgs.nullification_source = findPlayerByObjectName(global_room, target_objectName)
 		sgs.nullification_level = 1
-		if player->hasFlag("nullifiationNul") then
+		if player:hasFlag("nullifiationNul") then
 			sgs.nullification_level = 0
 		end
 		
