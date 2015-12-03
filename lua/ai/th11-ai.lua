@@ -124,7 +124,38 @@ sgs.ai_skill_cardchosen.xiangqi = function(self, who, flags)
 	local j = math.random(1, #cards)
 	return cards[j]
 end
-
+sgs.ai_slash_prohibit.xiangqi = function(self, from, to, card)
+	if self:isFriend(from,to) then  return false end
+	
+	local can_kill = false
+	local fakeDamage=sgs.DamageStruct()
+	fakeDamage.card=card
+	fakeDamage.nature= self:touhouDamageNature(card,from,to)
+	fakeDamage.damage=1
+	fakeDamage.from=slash
+	fakeDamage.to=to
+	local final_damage=self:touhouDamage(fakeDamage,from, to)
+	if final_damage.damage >= to:getHp() then
+		can_kill = true
+	end
+	
+	if not can_kill then
+		local peach_num = 0
+		for _,c in sgs.qlist(from:getCards("h")) do
+			if c:isKindOf("Peach") or c:isKindOf("Analeptic") then
+				peach_num = peach_num + 1
+			end
+		end
+	    if peach_num >0 then
+			if to:hasSkill("duxin") then 
+				return true
+			else
+				return peach_num >= ( from:getHandcardNum() /2)
+			end
+		end
+	end
+    return false
+end
 
 
 sgs.ai_skill_invoke.huzhu = function(self,data)

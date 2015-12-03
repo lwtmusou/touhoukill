@@ -2800,6 +2800,8 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 		end
 	end
 
+	
+	--this part check "Lightning"
 	players = self:exclude(players, card)
 	if not isYinling and not using_2013 then
 		for _, player in ipairs(players) do
@@ -2807,8 +2809,8 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 			if not player:getJudgingArea():isEmpty() and self:hasTrickEffective(card, player)
 				and ((player:containsTrick("lightning") and  judgeMode== 2) 
 				or (#self.enemies == 0 and not (player:containsTrick("lightning") and  judgeMode== 1))) then  --确认的敌人为0你就拆了 坑爹  忠内残局 因为有敌人反倒不拆了 擦你妹
-				
-				tricks = player:getCards("j")
+				if player:hasSkill("baoyi") then continue end
+				local tricks = player:getCards("j")
 				for _, trick in sgs.qlist(tricks) do
 					if trick:isKindOf("Lightning") and (not isDiscard or self.player:canDiscard(player, trick:getId())) then
 						if addTarget(player, trick:getEffectiveId()) then return end
@@ -2868,10 +2870,12 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 		end
 	end
 
+	--this part check   friend who has DelayedTrick
 	self:sort(self.friends_noself, "defense")
 	local friends = self:exclude(self.friends_noself, card)
 	if not isYinling and not using_2013 then
 		for _, friend in ipairs(friends) do
+			if friend:hasSkill("baoyi") then continue end
 			if (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")) and not friend:containsTrick("YanxiaoCard")
 				and self:hasTrickEffective(card, friend) then
 				local cardchosen
