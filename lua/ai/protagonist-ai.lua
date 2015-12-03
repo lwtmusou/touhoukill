@@ -870,6 +870,7 @@ function bllmwuyu_discard(player)
 			table.insert(all_hearts,c:getId())
 		end
 	end
+
 	return all_hearts
 end
 function needSkipJudgePhase(self,player)
@@ -887,7 +888,7 @@ sgs.ai_skill_cardask["@bllm-discard"] = function(self, data)
     local prompt=self.player:getTag("wuyu_prompt"):toString() 
 	local all_hearts=bllmwuyu_discard(self.player)
 	if #all_hearts==0 then return "." end
-	
+	self:sortByKeepValue(all_hearts)
 	
 	if prompt=="bllmcaiyu" then
         return "$" .. all_hearts[1]
@@ -903,13 +904,13 @@ sgs.ai_skill_cardask["@bllm-discard"] = function(self, data)
 	elseif prompt=="bllmseyu" then
 		return "$" .. all_hearts[1]	
 	elseif prompt=="bllmshiyu" then  -- 杀的ai 于 searchForAnaleptic 后 会调用 这时必须返回真值，否则ai会有卡死
-		local mustuse=false
-		if self.player:hasFlag("Global_Dying") then
-			mustuse=true
-		elseif sgs.Slash_IsAvailable(self.player) then --and getCardsNum("Slash", self.player, self.player) > 0 
-			mustuse=true
-		end	
-		if not mustuse then return "." end
+		--local mustuse=false
+		--if self.player:hasFlag("Global_Dying") then
+		--	mustuse=true
+		--elseif sgs.Slash_IsAvailable(self.player) then --and getCardsNum("Slash", self.player, self.player) > 0 
+		--	mustuse=true
+		--end	
+		--if not mustuse then return "." end
 		return "$" .. all_hearts[1]	
 	end
 	return "."
@@ -923,7 +924,6 @@ sgs.ai_skill_cardask["@bllmshiyu-basics"] = function(self, data)
 			table.insert(anals, c)
 		end
 	end
-	
 	if #anals==0 then return "." end
 	self:sortByKeepValue(anals)
 	return "$" .. anals[1]:getId()
@@ -947,11 +947,14 @@ sgs.ai_skill_invoke.bllmwuyu = function(self,data)
 		if who and who:objectName()==self.player:objectName() then
 			return true
 		else
-			return sgs.Slash_IsAvailable(self.player) --and getCardsNum("Slash", self.player, self.player) > 0
+			return true
+			--return sgs.Slash_IsAvailable(self.player) --and getCardsNum("Slash", self.player, self.player) > 0
 		end
 	elseif prompt=="bllmseyu" then
-		return  getCardsNum("Slash", self.player, self.player) > 0  and not sgs.Slash_IsAvailable(self.player)
+		--return  getCardsNum("Slash", self.player, self.player) > 0  and not sgs.Slash_IsAvailable(self.player)
+		return true
 	end
+	return false
 end
 
 function sgs.ai_cardsview_valuable.bllmwuyu(self, class_name, player)
@@ -999,11 +1002,12 @@ function bllmwuyu_skill.getTurnUseCard(self)
 	local hearts=bllmwuyu_discard(self.player)
 	if #hearts==0 and self.player:getMark("@yu")==0 then return nil end
 	if sgs.Slash_IsAvailable(self.player) then return nil end
-	
+	local atLeast = 0
+	if self.player:getMark("@yu")==0 then atLeast = atLeast + 1 end
+	--其实还应该详细排查hearts内含有杀和不含杀的情况。
 	local slash_num=getCardsNum("Slash", self.player, self.player)
 
-    
-	if  slash_num <= 0 then return nil end
+	if  slash_num <= atLeast then return nil end
 	return sgs.Card_Parse("@BllmWuyuCard=.")
 end
 sgs.ai_skill_use_func.BllmWuyuCard = function(card, use, self)

@@ -1658,9 +1658,8 @@ const Card *Room::askForUseCard(ServerPlayer *player, const QString &pattern, co
             ask_str[4] = toJsonString("");
         else
             ask_str[4] = toJsonString(skill_name);
+			
         bool success = doRequest(player, S_COMMAND_RESPONSE_CARD, ask_str, true);
-
-
 
         if (success) {
             Json::Value clientReply = player->getClientReply();
@@ -1671,19 +1670,18 @@ const Card *Room::askForUseCard(ServerPlayer *player, const QString &pattern, co
     }
     card_use.m_reason = CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
 
-
     if (isCardUsed && card_use.isValid(pattern)) {
         QVariant decisionData = QVariant::fromValue(card_use);
         thread->trigger(ChoiceMade, this, player, decisionData);
         if (!useCard(card_use, addHistory))
             return askForUseCard(player, pattern, prompt, notice_index, method, addHistory);
-
+		
         return card_use.card;
     } else {
         QVariant decisionData = QVariant::fromValue("cardUsed:" + pattern + ":" + prompt + ":nil");
         thread->trigger(ChoiceMade, this, player, decisionData);
     }
-
+	
     return NULL;
 }
 
@@ -3455,11 +3453,12 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
     } else {
         card_use.m_isHandcard = false;
     }
-    
+
     
     if (card_use.from->isCardLimited(card, card->getHandlingMethod())
         && (!card->canRecast() || card_use.from->isCardLimited(card, Card::MethodRecast)))
         return true;
+
 
     QString key;
     if (card->inherits("LuaSkillCard"))
@@ -3484,6 +3483,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
             slash_not_record = true;
     }
 
+
     card = card_use.card->validate(card_use);
     if (card == NULL)
         return false;
@@ -3496,9 +3496,11 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
         addPlayerHistory(NULL, "pushPile");
     }
 
+	
+
     try {
         if (card_use.card->getRealCard() == card) {
-            if (card->isKindOf("DelayedTrick") && card->isVirtualCard() && card->subcardsLength() == 1) {
+			if (card->isKindOf("DelayedTrick") && card->isVirtualCard() && card->subcardsLength() == 1) {
                 Card *trick = Sanguosha->cloneCard(card);
                 Q_ASSERT(trick != NULL);
                 WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getSubcards().first());
@@ -3511,7 +3513,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
             if (card_use.card->isKindOf("Slash") && add_history && slash_count > 0)
                 card_use.from->setFlags("Global_MoreSlashInOneTurn");
             if (!card_use.card->isVirtualCard()) {
-                WrappedCard *wrapped = Sanguosha->getWrappedCard(card_use.card->getEffectiveId());
+				WrappedCard *wrapped = Sanguosha->getWrappedCard(card_use.card->getEffectiveId());
                 if (wrapped->isModified())
                     broadcastUpdateCard(getPlayers(), card_use.card->getEffectiveId(), wrapped);
                 else

@@ -1146,9 +1146,8 @@ public:
             ChuangshiCard *card = new ChuangshiCard;
             card->setUserString(c->objectName());
             return card;
-        } else {
-            return NULL;
-        }
+        } 
+		return NULL;
     }
 
     virtual QDialog *getDialog() const
@@ -1174,8 +1173,8 @@ public:
 
         ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), "chuangshi", "@chuangshi_target", true, true);
         if (target != NULL) {
-            target->gainMark("chuangshi_user");//need use gainMark to notify the client player.
-
+			room->setPlayerMark(target, "chuangshi_user", 1);
+            //target->gainMark("chuangshi_user");//need use gainMark to notify the client player.
             room->setPlayerProperty(player, "chuangshi_user", target->objectName());
             const Card *card = room->askForUseCard(player, "@@chuangshi", "@chuangshi_prompt:" + target->objectName());
             return card != NULL;
@@ -1270,15 +1269,16 @@ bool ChuangshiCard::targetsFeasible(const QList<const Player *> &targets, const 
 
 void ChuangshiCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
-    ServerPlayer *from = card_use.from;
-    ServerPlayer *to1 = card_use.to.at(0);
-    ServerPlayer *to2 = card_use.to.at(1);
-    QList<ServerPlayer *>logto;
-    logto << to1 << to2;
-
+    
     Card *card = Sanguosha->cloneCard(user_string);
     if (card->isKindOf("Collateral")) {
-        ServerPlayer *chuangshi_user = Chuangshi::getChuangshiUser1(from);
+        ServerPlayer *from = card_use.from; //ensure that the length of use.to should be 2. 
+		ServerPlayer *to1 = card_use.to.at(0);
+		ServerPlayer *to2 = card_use.to.at(1);
+		QList<ServerPlayer *>logto;
+		logto << to1 << to2;	
+		
+		ServerPlayer *chuangshi_user = Chuangshi::getChuangshiUser1(from);
         room->setPlayerMark(chuangshi_user, "chuangshi_user", 0);
         from->addMark("chuangshi", 1);
         room->touhouLogmessage("#ChoosePlayerWithSkill", from, "chuangshi", logto, "");
@@ -1294,7 +1294,8 @@ void ChuangshiCard::onUse(Room *room, const CardUseStruct &card_use) const
 }
 void ChuangshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
-    //const Card *card = Self->tag.value("chuangshi").value<const Card *>();
+
+	//const Card *card = Self->tag.value("chuangshi").value<const Card *>();
     Card *card = Sanguosha->cloneCard(user_string);
     if (card->isKindOf("Collateral"))
         return;
