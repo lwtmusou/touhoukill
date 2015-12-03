@@ -549,7 +549,7 @@ sgs.ai_skill_choice.shishen=function(self)
 	end
 	if self.player:getPhase() == sgs.Player_Play  and self.player:getMark("@shi")==0    then
 		for _,card in sgs.qlist(self.player:getCards("h")) do
-			if card:isNDTrick() and not card:isKindOf("Nullification") then
+			if card:isNDTrick() and not card:isKindOf("Nullification")  then
 				local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 				self:useTrickCard(card, dummy_use)
 				if  dummy_use.card then

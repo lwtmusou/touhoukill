@@ -4483,6 +4483,7 @@ function SmartAI:getTurnUse()
 	cards=self:touhouAppendExpandPileToList(self.player,cards)
 	cards = sgs.QList2Table(cards)
 
+
 	local turnUse = {}
 	local slash = sgs.cloneCard("slash")
 	local slashAvail = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_Residue, self.player, slash)
@@ -4501,7 +4502,6 @@ function SmartAI:getTurnUse()
 		slashAvail = slashAvail + 3
 		self.slashAvail = slashAvail
 	end
-
 	for _, card in ipairs(cards) do
 		local dummy_use = { isDummy = true }
 
@@ -5745,7 +5745,8 @@ end
 function SmartAI:fillSkillCards(cards)
 	local i = 1
 	while i <= #cards do
-		if prohibitUseDirectly(cards[i], self.player) then
+		if prohibitUseDirectly(cards[i], self.player) and not cards[i]:canRecast() then
+		--存在虽然不能使用，但是可以重铸的情况
 			table.remove(cards, i)
 		else
 			i = i + 1
