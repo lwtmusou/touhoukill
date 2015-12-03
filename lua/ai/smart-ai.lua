@@ -2087,7 +2087,10 @@ sgs.ai_choicemade_filter.Nullification.general = function(self, player, promptli
 			self.room:writeToConsole(debug.traceback())
 			return
 		end
-		sgs.nullification_level = sgs.nullification_level + 1
+		if not player->hasFlag("nullifiationNul") then
+			sgs.nullification_level = sgs.nullification_level + 1
+		end
+		
 		if sgs.nullification_level % 2 == 0 then
 			sgs.updateIntention(player, sgs.nullification_source, sgs.nullification_intention)
 		elseif sgs.nullification_level % 2 == 1 then
@@ -2096,6 +2099,10 @@ sgs.ai_choicemade_filter.Nullification.general = function(self, player, promptli
 	else
 		sgs.nullification_source = findPlayerByObjectName(global_room, target_objectName)
 		sgs.nullification_level = 1
+		if player->hasFlag("nullifiationNul") then
+			sgs.nullification_level = 0
+		end
+		
 		sgs.nullification_intention = getTrickIntention(trick_class, sgs.nullification_source)
 		--开场无邪主公顺手跳明反
 		if  trick_class == "Snatch" then
