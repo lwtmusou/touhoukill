@@ -152,5 +152,27 @@ config = {
 	},
 
 	convert_pairs = {
+
+	},
+	
+	bgm_convert_pairs = {
+		"kosuzu->akyuu",
+		"tokiko->rinnosuke",
+		"yatsuhashi->benben",
+		"aya_xwm->aya",
+		"eirin_god->eirin",
+		"unzan->ichirin",
+		"kaguya_god->kaguya",
+		"mokou_sp->mokou",
+		"nue_slm->nue",
+		"remilia_xwm->remilia_god",
+		"sanae_slm|sanae_sp->sanae",
+		"satori_xwm->satori",
+		"shikieiki_god->shikieiki",
+		"moukou_xwm->shirasawa",
+		"yorihime->toyohime",
+		"youmu_ndj|youmu_slm->youmu",
+		"yukari_sp->yukari",
+		"yuyuko_sp->yuyuko"
 	}
 }

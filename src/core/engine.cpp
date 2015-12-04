@@ -93,7 +93,9 @@ Engine::Engine()
     TouhouKingdoms << "zhu" << "hmx" << "yym" << "yyc"
         << "zhan" << "fsl" << "dld" << "xlc" << "slm" << "hzc"
         << "wai" << "touhougod";
-
+    LordBGMConvertList = GetConfigFromLuaState(lua, "bgm_convert_pairs").toStringList();
+	
+	
     _loadMiniScenarios();
     _loadModScenarios();
     m_customScene = new CustomScenario();

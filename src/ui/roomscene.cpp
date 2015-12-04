@@ -3936,8 +3936,25 @@ void RoomScene::onGameStart()
         && Sanguosha->TouhouKingdoms.contains(lord_kingdom)) {
         bool changeBGM = Config.value("UseLordBGM", true).toBool();
         bool changeBackdrop = Config.value("UseLordBackdrop", true).toBool();
-        if (changeBGM)
+        if (changeBGM){
             bgmusic_path = "audio/bgm/" + lord_name + ".ogg";
+			if ((bgmusic_path == "") || !QFile::exists(bgmusic_path)){
+				foreach(QString cv_pair, Sanguosha->LordBGMConvertList){
+					bool shouldBreak = false;
+					QStringList pairs = cv_pair.split("->");
+					QStringList cv_from = pairs.at(0).split("|");
+					foreach (QString from, cv_from){
+						if (from == lord_name){
+							bgmusic_path = "audio/bgm/" + pairs.at(1) + ".ogg";
+							shouldBreak = true;
+							break;
+						}
+					}
+					if (shouldBreak)
+						break;
+				}
+			}
+		}
         if (changeBackdrop)
             image_path = "backdrop/" + lord_name + ".jpg";
     }
