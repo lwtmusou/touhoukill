@@ -2603,16 +2603,34 @@ class Chaoren : public TriggerSkill
 public:
     Chaoren() : TriggerSkill("chaoren")
     {
-        events    << CardsMoveOneTime << TargetConfirming << EventPhaseChanging << DrawPileSwaped 
+        events    << CardsMoveOneTime   << TargetConfirming << EventPhaseChanging << DrawPileSwaped 
         << EventAcquireSkill << EventLoseSkill << MarkChanged << AfterGuanXing << Reconnect;
     }
 
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
-        if (room->getTag("FirstRound").toBool())
+        //part1: ignore some cases         
+	   //for global event, check player has this skill
+		if (triggerEvent == CardsMoveOneTime || triggerEvent == DrawPileSwaped){
+		    if (!player->hasSkill(objectName()))
+				return QStringList();
+		}
+		//deal the amazinggrace
+        if (triggerEvent == TargetConfirming) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (!use.card->isKindOf("AmazingGrace"))
+                return QStringList();
+        }
+		
+		
+		if (room->getTag("FirstRound").toBool())
             return QStringList();
 
+		if ((triggerEvent == EventAcquireSkill || triggerEvent == EventLoseSkill )&& data.toString() != "chaoren")	
+			return QStringList();
+			
+		// part 2: 
         ServerPlayer *sbl = room->findPlayerBySkillName(objectName());
         bool retract = false;
         bool expand = false;
@@ -2620,7 +2638,9 @@ public:
              sbl = player;
              retract = true;
         }
-        if (triggerEvent == MarkChanged){ 
+        
+		//EventPhaseChanging : for skill invalid, such as changshi
+		if (triggerEvent == MarkChanged){ 
             
             MarkChangeStruct change = data.value<MarkChangeStruct>();
             if  (change.name != "@changshi"  && change.name != "@pingyi")
@@ -2637,10 +2657,13 @@ public:
         if (triggerEvent == Reconnect)
             expand = true;
         
-        //if (triggerEvent == EventAcquireSkill && data.toString() == "chaoren")
+        
         
         if (sbl == NULL || sbl->isDead())
             return QStringList();
+			
+		
+		
         QList<int> drawpile = room->getDrawPile();
         
         int old_firstcard = sbl->property("chaoren").toInt();
@@ -2651,30 +2674,10 @@ public:
         int new_firstcard = -1;
         if (!drawpile.isEmpty())
             new_firstcard = drawpile.first();
-        //deal the amazinggrace
-        //update firstcard
-        if (triggerEvent == TargetConfirming) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (!use.card->isKindOf("AmazingGrace"))
-                return QStringList();
-        }
+        
+        
 
-        int changed = false;
-        if (old_firstcard > -1 && new_firstcard > -1)
-        {
-            if (new_firstcard != old_firstcard)
-                changed = true;
-        }
-        else if (new_firstcard > -1)
-        {
-            changed = true;
-        } 
-        else if (old_firstcard > -1)
-        {
-            changed = true;
-        } 
-        
-        
+        int changed = (new_firstcard != old_firstcard); 
         if (!changed){
             if (retract){
                 room->setPlayerProperty(sbl, "chaoren", -1);
@@ -2690,7 +2693,7 @@ public:
             }
             return QStringList();
         }
-        //允Eetract 后expand
+        //retract at first, then expand
         if (changed){
             //sbl->clearOnePrivatePile("chaoren");
             
@@ -2699,27 +2702,27 @@ public:
                 args[0] = QSanProtocol::S_GAME_EVENT_RETRACT_PILE_CARDS;
                 room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_EVENT, args);
             } */
-            if  (new_firstcard > -1)
-                room->setPlayerProperty(sbl, "chaoren", new_firstcard);
-            else
-                room->setPlayerProperty(sbl, "chaoren", -1);
+
+            room->setPlayerProperty(sbl, "chaoren", new_firstcard);
             //for displaying the change on dashboard immidately, even  the status is not Playing or Response.
             Json::Value args;
             args[0] = QSanProtocol::S_GAME_EVENT_EXPAND_PILE_CARDS;
-            room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_EVENT, args);     
+            room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_EVENT, args); 
+			
+			
+			// for client log 
+			if (new_firstcard > -1){
+				QList<int> watchlist;
+				watchlist << new_firstcard;
+				LogMessage l;
+				l.type = "$chaorendrawpile";
+				l.card_str = IntList2StringList(watchlist).join("+");
+
+				room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_SKILL, l.toJsonValue());
+			}
             
         }
-        if (changed && new_firstcard > -1){
-            // for client log 
-            QList<int> watchlist;
-            watchlist << new_firstcard;
-            LogMessage l;
-            l.type = "$chaorendrawpile";
-            l.card_str = IntList2StringList(watchlist).join("+");
-
-            room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_SKILL, l.toJsonValue());
-
-        }
+        
         return QStringList();
     }
 };

@@ -150,7 +150,8 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
             }
         }
     }
-    if (((use.card->isVirtualCard() && use.card->subcardsLength() == 0) || (getSkillName().contains("guhuo") && use.card != this))
+    if (((use.card->isVirtualCard() && use.card->subcardsLength() == 0) || (getSkillName().contains("guhuo") && use.card != this) 
+	|| use.card->hasFlag("pandu"))
         && !player->hasFlag("slashDisableExtraTarget")) {
         QList<ServerPlayer *> targets_ts;
         while (true) {

@@ -1526,8 +1526,10 @@ void PanduCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     room->showCard(target, card_id);
     Card *showcard = Sanguosha->getCard(card_id);
     if (showcard->isKindOf("Slash")) {
-        if (!target->isCardLimited(showcard, Card::MethodUse))
+        if (!target->isCardLimited(showcard, Card::MethodUse)){
+			room->setCardFlag(showcard, "pandu");
             room->useCard(CardUseStruct(showcard, target, source), false);
+		}
     } else if (!showcard->isKindOf("BasicCard"))
         room->obtainCard(source, showcard, true);
 
