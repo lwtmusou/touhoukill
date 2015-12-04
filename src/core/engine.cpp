@@ -1112,7 +1112,8 @@ QList<int> Engine::getRandomCards() const
     if (Config.GameMode == "06_3v3") {
         using_2012_3v3 = (Config.value("3v3/OfficialRule", "2013").toString() == "2012");
         using_2013_3v3 = (Config.value("3v3/OfficialRule", "2013").toString() == "2013");
-        exclude_disaters = !Config.value("3v3/UsingExtension", false).toBool() || Config.value("3v3/ExcludeDisasters", true).toBool();
+        //exclude_disaters = !Config.value("3v3/UsingExtension", false).toBool() || Config.value("3v3/ExcludeDisasters", true).toBool();
+		exclude_disaters = Config.value("3v3/ExcludeDisasters", true).toBool();
     }
 
     if (Config.GameMode == "04_1v3")
@@ -1130,18 +1131,19 @@ QList<int> Engine::getRandomCards() const
         else if (card->getPackage() == "New3v3_2013Card" && using_2013_3v3)
             list << card->getId();
 
-        if (Config.GameMode == "02_1v1" && !Config.value("1v1/UsingCardExtension", false).toBool()) {
+        /* if (Config.GameMode == "02_1v1" && !Config.value("1v1/UsingCardExtension", false).toBool()) {
             if (card->getPackage() == "New1v1Card")
                 list << card->getId();
             continue;
-        }
+        } */
 
-        if (Config.GameMode == "06_3v3" && !Config.value("3v3/UsingExtension", false).toBool()
+        /* if (Config.GameMode == "06_3v3" && !Config.value("3v3/UsingExtension", false).toBool()
             && card->getPackage() != "standard_cards" && card->getPackage() != "standard_ex_cards")
-            continue;
+            continue; */
         if (!getBanPackages().contains(card->getPackage()))
             list << card->getId();
     }
+	// remove two crossbows and one nullification?
     if (using_2012_3v3 || using_2013_3v3)
         list.removeOne(98);
     if (using_2013_3v3) {

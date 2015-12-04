@@ -133,6 +133,16 @@ function sgs.getDefenseSlash(player, self)
 	if player:hasSkill("juxian") and player:faceUp() then
 		defense = defense + 10
 	end
+	
+	if player:hasSkills("qiyao+bolan") then
+		if player:getHp() <= 1 and not player:isKongcheng() 
+		and player:getPile("yao_mark"):length() + player:getHandcardNum() > 3 then
+			defense = defense + 5 * player:getHandcardNum()
+		--else
+		--	defense = defense -3
+		end
+	end
+	
 	if self and self:canJie(player) then
 		defense = defense + 1.2
 	end

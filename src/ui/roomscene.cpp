@@ -3204,10 +3204,12 @@ void RoomScene::onGameOver()
     fillTable(winner_table, winner_list);
     fillTable(loser_table, loser_list);
 
+	ClientInstance->clearLordInfo();
+	
     addRestartButton(dialog);
     m_roomMutex.unlock();
     dialog->exec();
-    ClientInstance->clearLordInfo();
+    
 }
 
 void RoomScene::addRestartButton(QDialog *dialog)

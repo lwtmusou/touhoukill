@@ -128,9 +128,6 @@ config = {
 	},
 
 	roles_ban = { 
-		"zhan010",
-		"shen011",  
-		"shen020"
 	},
 
 	kof_ban = {
@@ -152,7 +149,6 @@ config = {
 	},
 
 	convert_pairs = {
-
 	},
 	
 	bgm_convert_pairs = {
