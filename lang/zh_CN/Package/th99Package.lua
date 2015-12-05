@@ -167,7 +167,7 @@ return{
     ["pingyi:cancel"] = "不“凭依”任何技能", 
     ["#pingyiLoseSkill"] = "<font color=\"#00FF00\"><b>%from</b></font> 的技能 “%arg” 因 凭依而失效",
     ["#pingyiReturnSkill"] = "<font color=\"#00FF00\"><b>%from</b></font> 的技能 “%arg” 重新生效",
-	["#pingyi_handle"] ="凭依(归还技能)"
+	["#pingyi_handle"] ="凭依(归还技能)",
     
 --****************************
     --wai008  势力：外 4血
