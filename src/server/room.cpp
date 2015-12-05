@@ -1991,6 +1991,12 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
     if (strcmp(property_name, "chained") == 0)
         thread->trigger(ChainStateChanged, this, player);
 		
+	if (strcmp(property_name, "role_shown") == 0){
+		setPlayerMark(player, "AI_RoleShown", value.toBool() ? 1 : 0);
+		roleStatusCommand(player);
+		if (value.toBool())
+			setPlayerMark(player, "AI_RolePredicted",  1);		
+	}
 }
 
 void Room::slotSetProperty(ServerPlayer *player, const char *property_name, const QVariant &value)

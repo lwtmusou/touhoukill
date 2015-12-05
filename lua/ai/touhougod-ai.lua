@@ -597,8 +597,147 @@ end
 
 
 
+function SmartAI:isRealFriend(player)
+    if self.player:getRole() == "renegade" then
+		return false
+	end
+	
+	if not player:hasShownRole() then 
+		return false
+	end
+	
+	local role1 = self.player:getRole()
+	local role2 = player:getRole()
+	if (role1 == role2) then
+		return true
+    elseif (role1 == "loyalist" and role2 == "lord") or (role1 == "lord" and role2 == "loyalist")  then
+		return true
+	end
+	return false
+end 
+
+function SmartAI:gameBalance()
+	local rene_num = 0
+	local rebel_num = 0
+	local loyal_num = 0
+	local banlance_table={}
+	
+
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if p:hasShownRole() then
+			local role = p:getRole() 
+			if (role == "loyalist" or  role2 == "lord") then
+			  
+				loyal_num = loyal_num + 1
+			elseif role == "rebel" then
+				rebel_num = rebel_num + 1
+			else
+				rene_num = rene_num + 1
+			end
+		end
+	end
+	local diffLN = loyal_num - rene_num
+	local diffLR = loyal_num - rebel_num
+	local diffRN = rebel_num - rene_num
+
+    local canBalance = {}
+   
+	if loyal_num == rene_num and rebel_num == rene_num then
+		table.insert(canBalance, "rebel")
+		table.insert(canBalance, "renegade")
+		table.insert(canBalance, "loyalist")
+	else
+		if  math.abs(diffLN) == 1 then
+			if diffLN > 0 then
+				table.insert(canBalance, "loyalist")
+			else
+				table.insert(canBalance, "renegade")
+			end
+		end
+		if  math.abs(diffLR) == 1 then
+			if diffLR > 0 then
+				table.insert(canBalance, "loyalist")
+			else
+				table.insert(canBalance, "rebel")
+			end
+		end
+		if  math.abs(diffRN) == 1 then
+			if diffRN > 0 then
+				table.insert(canBalance, "rebel")
+			else
+				table.insert(canBalance, "renegade")
+			end
+		end
+	end
+	
+	return canBalance
+	-- local array1={name="renegade", value=rene_num}
+	-- table.insert(banlance_table,array1)
+	-- local array2 ={name="rebel", value=rebel_num}
+	-- table.insert(banlance_table,array2)
+	-- local array3 ={name="loyalist", value=loyal_num}
+	-- table.insert(banlance_table,array3)
+	
+end
+
+local fengyin_skill = {}
+fengyin_skill.name = "fengyin"
+table.insert(sgs.ai_skills, fengyin_skill)
+function fengyin_skill.getTurnUseCard(self)
+	if self.player:hasUsed("FengyinCard") then return nil end
+	local cards={}
+	for _,card in sgs.qlist(self.player:getHandcards()) do
+		if card:getSuit() == sgs.Card_Heart then
+			table.insert(cards,card)
+		end
+	end
+	self:sortByUseValue(cards, true)
+	if #cards>0 then
+		return sgs.Card_Parse("@FengyinCard=" .. cards[1]:getEffectiveId() )
+	end
+	return nil 
+end
+sgs.ai_skill_use_func.FengyinCard = function(card, use, self)
+    local roles = {"rebel", "renegade", "loyalist"}
+	if self:hasSkill("huanxiang") then
+		roles = self:gameBalance()
+	end
+	
+	local avails ={}
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if p:hasShownRole() then
+			if table.contains(roles, p:getRole()) or (p:isLord() and table.contains(roles, "loyalist")) then
+				if self:isEnemy(p)  and p:faceUp() then
+					table.insert(avails, p)
+				end
+				if  self:isFriend(p)  and not p:faceUp() then
+					table.insert(avails, p)
+				end
+			end
+		end
+	end
+	
+    self:sort(avails,"handcard")
+	if #avails >0 then
+		use.card = card
+        if use.to then
+			use.to:append(avails[1])
+			if use.to:length() >= 1 then return end
+		end
+    end
+end
+sgs.ai_card_intention.FengyinCard = function(self, card, from, tos)
+	local to = tos[1]
+	if to:faceUp() then
+		sgs.updateIntention(from, to, 100)
+	else
+		sgs.updateIntention(from, to, -30)
+	end
+end
+
 
 sgs.ai_cardneed.fengyin = function(to, card, self)
+	--应该判断若到了残局，不是那么需要红桃
 	return  card:getSuit() == sgs.Card_Heart
 end
 
@@ -621,11 +760,11 @@ end
 
  sgs.ai_skill_playerchosen.yibian = function(self, targets)
 	for _,p in sgs.qlist(targets) do
-	 if p:getRole() == "renegade" or (not self:isEnemy(p))  then
+	if p:getRole() == "renegade" or (not self:isEnemy(p))  then
 			 return p
 		end
 	end	
-	 return targets:first()
+	return targets:first()
  end
 
 sgs.ai_skill_askforyiji.yibian = function(self, card_ids)
@@ -635,15 +774,9 @@ sgs.ai_skill_askforyiji.yibian = function(self, card_ids)
 	
 	 for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		 if not p:hasShownRole() then continue end
-		 local role1 = self.player:getRole()
-		 local role2 = p:getRole()
-		if (role1 == role2) then
-			 table.insert(available_friends, p)
-		elseif (role1 == "loyalist" and role2 == "lord") then
-			 table.insert(available_friends, p)
-		 elseif (role1 == "lord" and role2 == "loyalist") then
-			 table.insert(available_friends, p)
-		 end
+		if self:isRealFriend(p) then
+			table.insert(available_friends, p)
+		end
 	 end
 	
 	 if #available_friends == 0 then return nil, -1 end
@@ -680,12 +813,11 @@ sgs.ai_skill_askforyiji.yibian = function(self, card_ids)
 	 return nil, -1
 end
 sgs.ai_Yiji_intention.yibian = -30
-sgs.ai_choicemade_filter.skillInvoke.yibian = function(self, player, promptlist)
-	if promptlist[#promptlist] == "yes" then
-		self.room:setPlayerMark(player, "woyuRole",1)
-		self:updatePlayers()
-	end
-end
+-- sgs.ai_choicemade_filter.skillInvoke.yibian = function(self, player, promptlist)
+	-- if promptlist[#promptlist] == "yes" then
+		-- self:updatePlayers()
+	-- end
+-- end
 
 
 

@@ -2012,7 +2012,7 @@ function sgs.evaluateAlivePlayersRole()
 			sgs.explicit_renegade = true
 		end
 		--woyu target isRolePredictable 
-		if p:getMark("woyuRole")>0 then -- if p:hasShownRole() then --not server player
+		if p:getMark("AI_RolePredicted")>0 then -- if p:hasShownRole() then --not server player
 			local role = p:getRole()
 			if p:isLord() then role = "loyalist" end
 			sgs.ai_role[p:objectName()] = role
@@ -2345,11 +2345,11 @@ function SmartAI:filterEvent(event, player, data)
 		local from  = struct.from
 		local card = struct.card
 		--this mark will lock ai_role for woyu target
-		if struct.to and from and from:objectName() == player:objectName() 
-			and card:isKindOf("WoyuCard") then
-			self.room:setPlayerMark(struct.to:first(), "woyuRole",1)
-			self:updatePlayers()
-		end
+		-- if struct.to and from and from:objectName() == player:objectName() 
+			-- and card:isKindOf("WoyuCard") then
+			-- self.room:setPlayerMark(struct.to:first(), "woyuRole",1)
+			-- self:updatePlayers()
+		-- end
 		if from and from:objectName() == player:objectName() then
 			if card:isKindOf("SingleTargetTrick") then sgs.TrickUsefrom = from end
 			local to = sgs.QList2Table(struct.to)

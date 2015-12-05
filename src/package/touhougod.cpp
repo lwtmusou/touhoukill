@@ -1605,8 +1605,7 @@ void FengyinCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
 	//room->notifyProperty(target, target, "role", role);
 	room->broadcastProperty(target, "role");
 	room->setPlayerProperty(target, "role_shown", false); //important! to notify client
-	room->roleStatusCommand(target);	
-	//room->setPlayerMark(target, "@role_shown", 0);  //just for UI to notice player
+
     room->touhouLogmessage("#FengyinHide", target, role, room->getAllPlayers());
 	target->turnOver();
 }
@@ -1693,8 +1692,6 @@ public:
 			room->broadcastProperty(player, "role");
 			//room->setPlayerProperty(player, "role",player->getRole());
 			room->setPlayerProperty(player, "role_shown", true); //important! to notify client 
-		    room->roleStatusCommand(player);//to change UI 
-			
 			
 			QList<ServerPlayer *> targets;
 			foreach(ServerPlayer *p, room->getOtherPlayers(player)){
@@ -1740,31 +1737,15 @@ public:
     {
         if (!player) return QStringList();
 		if (triggerEvent == GameStart) {
-			foreach(ServerPlayer *p, room->getAlivePlayers()){
-				if (p->isLord()){
-					room->setPlayerProperty(p, "role_shown", true);
-					room->roleStatusCommand(p);					
-				}
-				else{
-					room->setPlayerProperty(p, "role_shown", false);
-					room->roleStatusCommand(p);					
-				}
-			}	
+			foreach(ServerPlayer *p, room->getAlivePlayers())
+				room->setPlayerProperty(p, "role_shown",  p->isLord() ? true : false );	
 		}
         if (!TriggerSkill::triggerable(player)) return QStringList();
 		if (triggerEvent == EventAcquireSkill){
 			QString skillName = data.toString();
 			if (skillName == "fengyin" || skillName == "yibian" || skillName == "huanxiang"){
-				foreach(ServerPlayer *p, room->getAlivePlayers()){
-					if (p->hasShownRole()){
-						room->setPlayerProperty(p, "role_shown", true);
-						room->roleStatusCommand(p);						
-					}
-					else{
-						room->setPlayerProperty(p, "role_shown", false);
-						room->roleStatusCommand(p);
-					}
-				}	
+				foreach(ServerPlayer *p, room->getAlivePlayers())
+					room->setPlayerProperty(p, "role_shown", p->hasShownRole() ? true : false);				
 			}
 		}
         
