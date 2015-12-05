@@ -998,6 +998,7 @@ void PlayerCardContainer::_adjustComponentZValues(bool killed)
         _layUnder(judge);
     _layUnder(_m_markItem);
     _layUnder(_m_progressBarItem);
+	_layUnder(_m_roleShownIcon);
     _layUnder(_m_roleComboBox);
     // _layUnder(_m_chainIcon);
     _layUnder(_m_hpBox);
@@ -1014,7 +1015,7 @@ void PlayerCardContainer::_adjustComponentZValues(bool killed)
     _layUnder(_m_kingdomColorMaskIcon);
     _layUnder(_m_dashboardKingdomColorMaskIcon);
     _layUnder(_m_chainIcon);
-	_layUnder(_m_roleShownIcon);
+	
 
     _layUnder(_m_screenNameItem);
     for (int i = 0; i < 5; i++)
