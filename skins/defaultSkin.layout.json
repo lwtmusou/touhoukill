@@ -96,6 +96,7 @@
     "delayedTrickFirstRegion": [-13, 16, 28, 28],
     "delayedTrickStep": [0, 19],
     "roleComboBoxPos": [140, 1],
+	"roleShownArea": [140, 14, 36, 120],
 	"changePrimaryHeroSkinBtnPos": [25, 35],
 
 	
@@ -180,6 +181,7 @@
     "disperseWidth": 250,
 	"markTextArea": [0, 0, 50, 50],
     "roleComboBoxPos": [-28, 47],
+	"roleShownArea": [-28, 14, 36, 120],
 	"changePrimaryHeroSkinBtnPos": [25, 40],
     "borderWidth": 6,
     "avatarImageType": 1,

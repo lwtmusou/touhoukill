@@ -522,6 +522,7 @@ void PlayerCardContainer::refresh(bool killed)
         _m_chainIcon->setVisible(false);
         _m_actionIcon->setVisible(false);
         _m_saveMeIcon->setVisible(false);
+		_m_roleShownIcon->setVisible(false);
     } else if (m_player) {
         if (_m_faceTurnedIcon) _m_faceTurnedIcon->setVisible(!m_player->faceUp());
         if (_m_chainIcon) _m_chainIcon->setVisible(m_player->isChained());
@@ -560,6 +561,8 @@ void PlayerCardContainer::repaintAll()
     _paintPixmap(_m_saveMeIcon, _m_layout->m_saveMeIconRegion, QSanRoomSkin::S_SKIN_KEY_SAVE_ME_ICON,
         _getAvatarParent());
     _paintPixmap(_m_actionIcon, _m_layout->m_actionedIconRegion, QSanRoomSkin::S_SKIN_KEY_ACTIONED_ICON,
+        _getAvatarParent());
+	_paintPixmap(_m_roleShownIcon, _m_layout->m_roleShownArea, QSanRoomSkin::S_SKIN_KEY_ROLE_SHOWN,
         _getAvatarParent());
     if (NULL != m_changePrimaryHeroSKinBtn) {
         m_changePrimaryHeroSKinBtn->setPos(_m_layout->m_changePrimaryHeroSkinBtnPos);
@@ -910,6 +913,7 @@ PlayerCardContainer::PlayerCardContainer()
     _m_phaseIcon = NULL;
     _m_markItem = NULL;
     _m_roleComboBox = NULL;
+	_m_roleShownIcon = NULL;
     m_player = NULL;
     _m_selectedFrame = NULL;
 
@@ -1010,6 +1014,7 @@ void PlayerCardContainer::_adjustComponentZValues(bool killed)
     _layUnder(_m_kingdomColorMaskIcon);
     _layUnder(_m_dashboardKingdomColorMaskIcon);
     _layUnder(_m_chainIcon);
+	_layUnder(_m_roleShownIcon);
 
     _layUnder(_m_screenNameItem);
     for (int i = 0; i < 5; i++)
@@ -1500,4 +1505,8 @@ void PlayerCardContainer::hideSkillName()
     _m_skillNameItem->hide();
 }
 
-
+void PlayerCardContainer::setRoleShown(bool shown)
+{
+	_m_roleShownIcon->setVisible(shown);
+	refresh();
+}

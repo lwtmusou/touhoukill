@@ -679,6 +679,30 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         dashboard->retractPileCard();
         break;
     }
+	case S_GAME_ROLE_STATUS_CHANGED: {
+        QString player_name = arg[1].asCString(); 
+        bool shown = arg[2].asBool(); 
+		
+		ClientPlayer *player = ClientInstance->getPlayer(player_name);
+		QList<PlayerCardContainer *> playerCardContainers;
+        foreach (Photo *photo, photos) {
+            playerCardContainers.append(photo);
+        }
+        playerCardContainers.append(dashboard);
+        foreach (PlayerCardContainer *playerCardContainer, playerCardContainers) {
+            //const ClientPlayer *player = playerCardContainer->getPlayer();
+            //const QString &heroSkinGeneralName = heroSkinContainer->getGeneralName();
+           
+            if (player->getGeneralName() == playerCardContainer->getPlayer()->getGeneralName()) {
+                //bool isRoleBoxInDashboard = false;
+
+				//if (Self == player)
+				playerCardContainer->setRoleShown(shown);
+				break;
+            } 
+        }
+        break;
+    }
     default:
         break;
     }

@@ -416,6 +416,7 @@ void Player::setRole(const QString &role)
     }
 }
 
+
 QString Player::getRole() const
 {
     return role;

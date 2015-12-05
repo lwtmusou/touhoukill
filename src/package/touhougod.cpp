@@ -1600,11 +1600,13 @@ void FengyinCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
 
     ServerPlayer *target = targets.first();
 	QString role = target->getRole();
-	room->broadcastProperty(target, "role", "unknown");
-	target->setRole(role);
-	room->notifyProperty(target, target, "role", role);
-	room->setPlayerProperty(target, "role_shown", false); //important! to notify client 
-	room->setPlayerMark(target, "@role_shown", 0);  //just for UI to notice player
+	//room->broadcastProperty(target, "role", "unknown");
+	//target->setRole(role);
+	//room->notifyProperty(target, target, "role", role);
+	room->broadcastProperty(target, "role");
+	room->setPlayerProperty(target, "role_shown", false); //important! to notify client
+	room->roleStatusCommand(target);	
+	//room->setPlayerMark(target, "@role_shown", 0);  //just for UI to notice player
     room->touhouLogmessage("#FengyinHide", target, role, room->getAllPlayers());
 	target->turnOver();
 }
@@ -1686,13 +1688,14 @@ public:
 	virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
 	{
 		if (!player->hasShownRole()){
-			room->setPlayerMark(player, "@role_shown", 1); //just for UI to notice player
 			QString role = player->getRole();
 			room->touhouLogmessage("#YibianShow", player, role, room->getAllPlayers());
-			//room->broadcastProperty(player, "role");
-			room->setPlayerProperty(player, "role",player->getRole());
+			room->broadcastProperty(player, "role");
+			//room->setPlayerProperty(player, "role",player->getRole());
 			room->setPlayerProperty(player, "role_shown", true); //important! to notify client 
-		
+		    room->roleStatusCommand(player);//to change UI 
+			
+			
 			QList<ServerPlayer *> targets;
 			foreach(ServerPlayer *p, room->getOtherPlayers(player)){
 				if (p->hasShownRole() && !sameRole(player, p))
@@ -1707,7 +1710,6 @@ public:
 		{
 			QList<ServerPlayer *> targets;
 			QList<int> ids;
-			//room->askForUseCard(player, "@@yibian", "@yibian");
 			foreach(ServerPlayer *p, room->getOtherPlayers(player)){
 				if (p->hasShownRole() && sameRole(player, p)){
 					targets << p;
@@ -1718,10 +1720,6 @@ public:
 			}
 			QString prompt = "yibian_give"; 
 			room->askForYiji(player, ids, objectName(), false, false, true, 1, targets, CardMoveReason(),  prompt); 
-			/* bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &skill_name,
-    bool is_preview, bool visible, bool optional, int max_num,
-    QList<ServerPlayer *> players, CardMoveReason reason, const QString &prompt,
-    bool notify_skill) */
 		}
 		
 		return false;
@@ -1743,13 +1741,13 @@ public:
         if (!player) return QStringList();
 		if (triggerEvent == GameStart) {
 			foreach(ServerPlayer *p, room->getAlivePlayers()){
-				if (p->isLord()){//p->hasShownRole()
-					room->setPlayerMark(p, "@role_shown", 1); 
-					room->setPlayerProperty(p, "role_shown", true); 
+				if (p->isLord()){
+					room->setPlayerProperty(p, "role_shown", true);
+					room->roleStatusCommand(p);					
 				}
 				else{
-					room->setPlayerMark(p, "@role_shown", 0); 
-					room->setPlayerProperty(p, "role_shown", false); 
+					room->setPlayerProperty(p, "role_shown", false);
+					room->roleStatusCommand(p);					
 				}
 			}	
 		}
@@ -1759,12 +1757,12 @@ public:
 			if (skillName == "fengyin" || skillName == "yibian" || skillName == "huanxiang"){
 				foreach(ServerPlayer *p, room->getAlivePlayers()){
 					if (p->hasShownRole()){
-						room->setPlayerMark(p, "@role_shown", 1); 
-						room->setPlayerProperty(p, "role_shown", true); 
+						room->setPlayerProperty(p, "role_shown", true);
+						room->roleStatusCommand(p);						
 					}
 					else{
-						room->setPlayerMark(p, "@role_shown", 0); 
-						room->setPlayerProperty(p, "role_shown", false); 
+						room->setPlayerProperty(p, "role_shown", false);
+						room->roleStatusCommand(p);
 					}
 				}	
 			}

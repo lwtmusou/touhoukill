@@ -184,5 +184,6 @@
 
 
 "headIcon": "image/system/head.png",
-"deputyIcon": "image/system/deputy.png"
+"deputyIcon": "image/system/deputy.png",
+"roleShownIcon": "image/system/role_shown_icon.png"
 }

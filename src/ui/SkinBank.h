@@ -162,7 +162,8 @@ public:
 
         AnchoredRect m_markTextArea;
         QPoint m_roleComboBoxPos;
-
+        QRect m_roleShownArea;
+		
         QPoint m_changePrimaryHeroSkinBtnPos;
         //QPoint m_changeSecondaryHeroSkinBtnPos;
 
@@ -405,7 +406,7 @@ public:
     static const char *S_SKIN_KEY_GENERAL_CIRCLE_MASK;
     static const char *S_SKIN_KEY_HEAD_ICON;
     static const char *S_SKIN_KEY_DEPUTY_ICON;
-    
+    static const char *S_SKIN_KEY_ROLE_SHOWN;
     
     // Animations
     static const char *S_SKIN_KEY_ANIMATIONS;

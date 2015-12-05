@@ -90,14 +90,20 @@ void WoyuCard::onUse(Room *room, const CardUseStruct &card_use) const
     room->doLightbox("$woyuAnimate", 4000);
     SkillCard::onUse(room, card_use);
 }
-
+bool WoyuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    return(targets.isEmpty() && !to_select->hasShownRole() && to_select != Self);
+}
 void WoyuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     room->removePlayerMark(source, "@woyu");
     ServerPlayer *target = targets.first();
     QString role = target->getRole();
     room->touhouLogmessage("#WoyuAnnounce", source, role, room->getAllPlayers(), target->getGeneralName());
-    room->broadcastProperty(target, "role");
+	room->broadcastProperty(target, "role");
+	room->setPlayerProperty(target, "role_shown", true); //important! to notify client
+	room->roleStatusCommand(target);
+	
     if (role == "rebel")
         source->drawCards(3);
     else if (role == "loyalist")

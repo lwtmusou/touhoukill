@@ -1990,6 +1990,7 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
 
     if (strcmp(property_name, "chained") == 0)
         thread->trigger(ChainStateChanged, this, player);
+		
 }
 
 void Room::slotSetProperty(ServerPlayer *player, const char *property_name, const QVariant &value)
@@ -4096,6 +4097,8 @@ bool Room::broadcastProperty(ServerPlayer *player, const char *property_name, co
 
     if (strcmp(property_name, "role") == 0)
         player->setShownRole(true);
+	
+	
 
     Json::Value arg(Json::arrayValue);
     arg[0] = toJsonString(player->objectName());
@@ -6758,5 +6761,15 @@ bool Room::skinChangeCommand(ServerPlayer *player, const QSanProtocol::QSanGener
     return true;    
 }
 
+bool Room::roleStatusCommand(ServerPlayer *player)  
+{   
+    Json::Value val(Json::arrayValue);
+    
+    val[0] = (int)QSanProtocol::S_GAME_ROLE_STATUS_CHANGED;
+    val[1] = toJsonString(player->objectName());  
+    val[2] = player->hasShownRole();
 
+    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val); 
+    return true;    
+}
 

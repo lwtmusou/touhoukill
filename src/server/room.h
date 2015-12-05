@@ -390,7 +390,7 @@ public:
     void broadcastInvoke(const QSanProtocol::QSanPacket *packet, ServerPlayer *except = NULL);
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
     void networkDelayTestCommand(ServerPlayer *player, const QString &);
-    
+    bool roleStatusCommand(ServerPlayer *player); 
     
     inline RoomState *getRoomState()
     {
@@ -594,7 +594,9 @@ private:
     void doScript(const QString &script);
 
     bool skinChangeCommand(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet);  
-    
+     
+	
+	
     //helper functions and structs
     struct _NullificationAiHelper
     {

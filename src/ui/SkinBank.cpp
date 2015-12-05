@@ -70,7 +70,7 @@ const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_MASK = "generalCircleMask-%1
 const char *QSanRoomSkin::S_HERO_SKIN_KEY_GENERAL_ICON = "heroSkinContainerGeneralIcon-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_HEAD_ICON = "headIcon";
 const char *QSanRoomSkin::S_SKIN_KEY_DEPUTY_ICON = "deputyIcon";
-
+const char *QSanRoomSkin::S_SKIN_KEY_ROLE_SHOWN = "roleShownIcon";
 
 // Animations
 const char *QSanRoomSkin::S_SKIN_KEY_ANIMATIONS = "preloads";
@@ -896,6 +896,8 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
         layout->m_markTextArea.tryParse(playerConfig["markTextArea"]);
         tryParse(playerConfig["roleComboBoxPos"], layout->m_roleComboBoxPos);
 
+		tryParse(playerConfig["roleShownArea"], layout->m_roleShownArea);
+		
         tryParse(playerConfig["changePrimaryHeroSkinBtnPos"],
             layout->m_changePrimaryHeroSkinBtnPos);
         //tryParse(playerConfig["changeSecondaryHeroSkinBtnPos"],
