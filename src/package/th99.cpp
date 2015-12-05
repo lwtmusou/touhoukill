@@ -863,7 +863,8 @@ public:
     }
 };
 
-
+//since a dirty hack  in function RoomThread::trigger()
+//do not change the skill objectName "pingyi"
 class Pingyi : public TriggerSkill
 {
 public:
@@ -871,10 +872,10 @@ public:
     {
         events << Damaged;
     }
-    virtual int getPriority(TriggerEvent) const
+/*     virtual int getPriority(TriggerEvent) const
     {
         return -1;
-    }
+    } */
     static void skill_comeback(Room *room, ServerPlayer *player)
     {
         ServerPlayer * back;
@@ -1011,10 +1012,10 @@ public:
         events << EventLoseSkill << Death;
     }
 
-    virtual int getPriority(TriggerEvent) const
+/*     virtual int getPriority(TriggerEvent) const
     { //caution other skills at Death event ,like chuancheng
         return -1;
-    }
+    } */
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
