@@ -444,108 +444,6 @@ public:
 };
 
 
-class Cuiji : public DrawCardsSkill
-{
-public:
-    Cuiji() : DrawCardsSkill("cuiji")
-    {
-
-    }
-
-    static bool do_cuiji(ServerPlayer *player)
-    {
-        Room *room = player->getRoom();
-        QString choice = room->askForChoice(player, "cuiji", "red+black+cancel");
-        if (choice == "cancel")
-            return false;
-        bool isred = (choice == "red");
-        room->touhouLogmessage("#cuiji_choice", player, "cuiji", QList<ServerPlayer *>(), choice);
-        room->notifySkillInvoked(player, "cuiji");
-        int acquired = 0;
-        while (acquired < 1) {
-            int id = room->drawCard();
-            CardsMoveStruct move(id, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, player->objectName()));
-            move.reason.m_skillName = "cuiji";
-            room->moveCardsAtomic(move, true);
-            room->getThread()->delay();
-            Card *card = Sanguosha->getCard(id);
-            if (card->isRed() == isred) {
-                acquired = acquired + 1;
-                CardsMoveStruct move2(id, player, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_GOTBACK, player->objectName()));
-                room->moveCardsAtomic(move2, false);
-            } else {
-                CardsMoveStruct move3(id, NULL, Player::DiscardPile, CardMoveReason(CardMoveReason::S_REASON_NATURAL_ENTER, ""));
-                room->moveCardsAtomic(move3, true);
-            }
-        }
-        return true;
-
-    }
-
-    virtual int getDrawNum(ServerPlayer *player, int n) const
-    {
-        if (do_cuiji(player)) {
-            n = n - 1;
-            if (do_cuiji(player))
-                n = n - 1;
-        }
-        return n;
-    }
-};
-
-class Baigui : public OneCardViewAsSkill
-{
-public:
-    Baigui() : OneCardViewAsSkill("baigui")
-    {
-        filter_pattern = ".|spade|.|hand";
-        response_or_use = true;
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const
-    {
-        if (originalCard != NULL) {
-            SavageAssault *sa = new SavageAssault(Card::SuitToBeDecided, -1);
-            sa->addSubcard(originalCard);
-            sa->setSkillName(objectName());
-            return sa;
-        } else
-            return NULL;
-    }
-};
-
-class Jiuchong : public OneCardViewAsSkill
-{
-public:
-    Jiuchong() : OneCardViewAsSkill("jiuchong")
-    {
-        filter_pattern = ".|heart|.|hand";
-        response_or_use = true;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const
-    {
-        return Analeptic::IsAvailable(player);
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
-    {
-        return pattern.contains("analeptic") && Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_RESPONSE;
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const
-    {
-        if (originalCard != NULL) {
-            Analeptic *ana = new Analeptic(originalCard->getSuit(), originalCard->getNumber());
-            ana->addSubcard(originalCard);
-            ana->setSkillName(objectName());
-            return ana;
-        } else
-            return NULL;
-    }
-};
-
-
 class Guaili : public TriggerSkill
 {
 public:
@@ -1066,6 +964,110 @@ public:
 
 
 
+class Cuiji : public DrawCardsSkill
+{
+public:
+    Cuiji() : DrawCardsSkill("cuiji")
+    {
+
+    }
+
+    static bool do_cuiji(ServerPlayer *player)
+    {
+        Room *room = player->getRoom();
+        QString choice = room->askForChoice(player, "cuiji", "red+black+cancel");
+        if (choice == "cancel")
+            return false;
+        bool isred = (choice == "red");
+        room->touhouLogmessage("#cuiji_choice", player, "cuiji", QList<ServerPlayer *>(), choice);
+        room->notifySkillInvoked(player, "cuiji");
+        int acquired = 0;
+        while (acquired < 1) {
+            int id = room->drawCard();
+            CardsMoveStruct move(id, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, player->objectName()));
+            move.reason.m_skillName = "cuiji";
+            room->moveCardsAtomic(move, true);
+            room->getThread()->delay();
+            Card *card = Sanguosha->getCard(id);
+            if (card->isRed() == isred) {
+                acquired = acquired + 1;
+                CardsMoveStruct move2(id, player, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_GOTBACK, player->objectName()));
+                room->moveCardsAtomic(move2, false);
+            } else {
+                CardsMoveStruct move3(id, NULL, Player::DiscardPile, CardMoveReason(CardMoveReason::S_REASON_NATURAL_ENTER, ""));
+                room->moveCardsAtomic(move3, true);
+            }
+        }
+        return true;
+
+    }
+
+    virtual int getDrawNum(ServerPlayer *player, int n) const
+    {
+        if (do_cuiji(player)) {
+            n = n - 1;
+            if (do_cuiji(player))
+                n = n - 1;
+        }
+        return n;
+    }
+};
+
+class Baigui : public OneCardViewAsSkill
+{
+public:
+    Baigui() : OneCardViewAsSkill("baigui")
+    {
+        filter_pattern = ".|spade|.|hand";
+        response_or_use = true;
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const
+    {
+        if (originalCard != NULL) {
+            SavageAssault *sa = new SavageAssault(Card::SuitToBeDecided, -1);
+            sa->addSubcard(originalCard);
+            sa->setSkillName(objectName());
+            return sa;
+        } else
+            return NULL;
+    }
+};
+
+class Jiuchong : public OneCardViewAsSkill
+{
+public:
+    Jiuchong() : OneCardViewAsSkill("jiuchong")
+    {
+        filter_pattern = ".|heart|.|hand";
+        response_or_use = true;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return Analeptic::IsAvailable(player);
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
+    {
+        return pattern.contains("analeptic") && Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_RESPONSE;
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const
+    {
+        if (originalCard != NULL) {
+            Analeptic *ana = new Analeptic(originalCard->getSuit(), originalCard->getNumber());
+            ana->addSubcard(originalCard);
+            ana->setSkillName(objectName());
+            return ana;
+        } else
+            return NULL;
+    }
+};
+
+
+
+
 TH11Package::TH11Package()
     : Package("th11")
 {
@@ -1090,10 +1092,6 @@ TH11Package::TH11Package()
     rin->addSkill(new Yuanling);
     rin->addSkill(new Songzang);
 
-    General *suika_sp = new General(this, "suika_sp", "dld", 3, false);
-    suika_sp->addSkill(new Cuiji);
-    suika_sp->addSkill(new Baigui);
-    suika_sp->addSkill(new Jiuchong);
 
     General *yugi = new General(this, "yugi", "dld", 4, false);
     yugi->addSkill(new Guaili);
@@ -1115,6 +1113,11 @@ TH11Package::TH11Package()
     General *kisume = new General(this, "kisume", "dld", 3, false);
     kisume->addSkill(new Diaoping);
     kisume->addSkill(new Tongju);
+	
+	General *suika_sp = new General(this, "suika_sp", "dld", 3, false);
+    suika_sp->addSkill(new Cuiji);
+    suika_sp->addSkill(new Baigui);
+    suika_sp->addSkill(new Jiuchong);
 
     addMetaObject<MaihuoCard>();
     addMetaObject<YaobanCard>();

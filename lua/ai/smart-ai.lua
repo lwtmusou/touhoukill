@@ -8297,7 +8297,7 @@ end
  sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 	local skillnames = choices:split("+")
 	for _, skillname in ipairs(skillnames) do
-		if (skillname ~= "cancel") then
+		if (skillname ~= "cancel") and  (skillname ~= "pingyi") then--先触发凭依以外的卖血技能后再考虑凭依
 			return skillname
 		end
 	end

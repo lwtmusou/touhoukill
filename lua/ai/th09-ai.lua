@@ -1,4 +1,84 @@
---SmartAI:damageIsEffective(to, nature, from)
+
+sgs.ai_skill_invoke.zuiyue =function(self,data)
+	local yugi=self.room:findPlayerBySkillName("haoyin")
+	if not yugi or not self:isEnemy(yugi) then
+		return true
+	end
+	if self:getCardsNum("Slash") > 0 and sgs.Slash_IsAvailable(self.player)  then
+		return true
+	end
+	local use=data:toCardUse()
+	if  use.card:isKindOf("ExNihilo") then
+		return true
+	end
+	return false
+end
+sgs.ai_cardneed.zuiyue = function(to, card, self)
+	return card:isKindOf("Slash")  or card:isKindOf("TrickCard") 
+end
+
+
+function SmartAI:cautionDoujiu(player,card)
+	player = player or self.player
+	if player:getPhase() ~=sgs.Player_Play then
+		return false 
+	end
+	local  zhan006 = self.room:findPlayerBySkillName("doujiu")
+	if not zhan006 
+	or not self:isEnemy(zhan006)  
+	or zhan006:isKongcheng() then
+		
+		return false 
+	end
+	local enemy_card=self:getMaxCard(zhan006)
+	local f_card=self:getMaxCard()
+	local enemy_number=0
+	local f_number=0
+	if enemy_card then
+		enemy_number=enemy_card:getNumber()
+	end
+	if f_card then
+		f_number=f_card:getNumber()
+	end
+	if f_number<7 then
+		if self:getOverflow(player)>0 then
+			return self:touhouIsPriorUseOtherCard(player,card)
+		else
+			return true
+		end
+	else
+		return enemy_number >f_number
+	end
+	return false
+end
+sgs.ai_skill_invoke.doujiu =function(self,data)
+	local target= data:toPlayer()
+	if self:isEnemy(target) then	
+		if not self.player:isKongcheng() then
+			self.doujiu_card=  self:getMaxCard():getEffectiveId()
+		end
+		return true
+	end
+	return false
+end
+sgs.ai_choicemade_filter.skillInvoke.doujiu = function(self, player, promptlist)
+	local target =player:getTag("doujiu_target"):toPlayer()
+	if target then
+		if promptlist[#promptlist] == "yes" then
+			sgs.updateIntention(player, target, 50)
+		end	
+	end
+end
+function sgs.ai_skill_pindian.doujiu(minusecard, self, requestor, maxcard)
+	return self:getMaxCard()
+end
+sgs.ai_cardneed.doujiu = function(to, card, self)
+	return card:getNumber() > 10
+end
+
+
+
+
 sgs.ai_skill_playerchosen.shenpan = function(self, targets)
 	--需要check damage prohibit
 	local target_table = self:getEnemies(self.player)
@@ -78,7 +158,7 @@ sgs.ai_playerchosen_intention.shenpan =function(self, from, to)
 	end
 	sgs.updateIntention(from, to, intention)
 end
---function SmartAI:getAoeValueTo(card, to, from)
+
 function huiwu_judge(self,target,card)
 	if card:isKindOf("AmazingGrace") then
 		return 3
@@ -146,32 +226,6 @@ sgs.ai_benefitBySlashed.huiwu = function(self, card,source,target)
 end
 
 
--- sgs.ai_skill_playerchosen.huazhong = function(self, targets)
-	-- if not self:invokeTouhouJudge() then return nil end
-	-- target_table =sgs.QList2Table(targets)
-	-- if #target_table==0 then return false end
-	-- for _,target in pairs(target_table) do	
-		-- if  self:isFriend(target) then
-			-- return target
-		-- end
-	-- end
-	-- return nil
--- end
--- sgs.ai_playerchosen_intention.huazhong = -80
--- sgs.ai_no_playerchosen_intention.huazhong = function(self, from)
-	-- local lord = self.room:getLord()
-	-- if not lord then return end
-	-- local wizard_harm = false
-	-- for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
-		-- if self:hasSkills(sgs.wizard_harm_skill , aplayer) then
-			-- wizard_harm = true
-		-- end
-	-- end
-	-- if not wizard_harm then 
-		-- sgs.updateIntention(from, lord, 10)
-	-- end
--- end
-
 sgs.ai_skill_invoke.huazhong = function(self, data)
     if not self:invokeTouhouJudge() then return false end
     local to =data:toPlayer()
@@ -198,11 +252,8 @@ end
 
 
 
-
 sgs.ai_skill_invoke.mingtu = true
 
-
---function SmartAI:hasHeavySlashDamage
 sgs.ai_damageCaused.silian = function(self, damage)
 	if damage.card and not damage.chain and not damage.transfer then	
 		if  damage.card:isKindOf("Slash") and  damage.to:getHp()==1 then
@@ -218,10 +269,7 @@ sgs.ai_cardneed.silian = function(to, card, self)
 	end
 end
 
---1 cardask[slash-jink] 
---2sgs.ai_skill_cardask.aoe  
---3function SmartAI:willUsePeachTo(dying)  
---4SmartAI:askForNullification 
+
 function SmartAI:hasWeiya(player)
 	player=player or self.player
 	local current=self.room:getCurrent()
@@ -253,8 +301,7 @@ sgs.ai_skillProperty.judu = function(self)
 	return "cause_judge"
 end
 
---function SmartAI:getAoeValueTo(card, to, from)
---function SmartAI:getAoeValue(card, player)
+
 sgs.ai_skill_invoke.henyi =function(self,data)     
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
     local card = sgs.cloneCard("archery_attack", sgs.Card_NoSuit, 0)
@@ -332,164 +379,6 @@ end
 sgs.ai_playerchosen_intention.toupai = 60
 
 
-sgs.ai_skill_invoke.zuiyue =function(self,data)
-	local yugi=self.room:findPlayerBySkillName("haoyin")
-	if not yugi or not self:isEnemy(yugi) then
-		return true
-	end
-	if self:getCardsNum("Slash") > 0 and sgs.Slash_IsAvailable(self.player)  then
-		return true
-	end
-	local use=data:toCardUse()
-	if  use.card:isKindOf("ExNihilo") then
-		return true
-	end
-	return false
-end
-sgs.ai_cardneed.zuiyue = function(to, card, self)
-	return card:isKindOf("Slash")  or card:isKindOf("TrickCard") 
-end
-
---SmartAI:useCardPeach
---SmartAI:useCardAnaleptic
-
-function SmartAI:cautionDoujiu(player,card)
-	player = player or self.player
-	if player:getPhase() ~=sgs.Player_Play then
-		return false 
-	end
-	local  zhan006 = self.room:findPlayerBySkillName("doujiu")
-	if not zhan006 
-	or not self:isEnemy(zhan006)  
-	or zhan006:isKongcheng() then
-		
-		return false 
-	end
-	local enemy_card=self:getMaxCard(zhan006)
-	local f_card=self:getMaxCard()
-	local enemy_number=0
-	local f_number=0
-	if enemy_card then
-		enemy_number=enemy_card:getNumber()
-	end
-	if f_card then
-		f_number=f_card:getNumber()
-	end
-	if f_number<7 then
-		if self:getOverflow(player)>0 then
-			return self:touhouIsPriorUseOtherCard(player,card)
-		else
-			return true
-		end
-	else
-		return enemy_number >f_number
-	end
-	return false
-end
-sgs.ai_skill_invoke.doujiu =function(self,data)
-	local target= data:toPlayer()
-	if self:isEnemy(target) then	
-		if not self.player:isKongcheng() then
-			self.doujiu_card=  self:getMaxCard():getEffectiveId()
-		end
-		return true
-	end
-	return false
-end
-sgs.ai_choicemade_filter.skillInvoke.doujiu = function(self, player, promptlist)
-	local target =player:getTag("doujiu_target"):toPlayer()
-	if target then
-		if promptlist[#promptlist] == "yes" then
-			sgs.updateIntention(player, target, 50)
-		end	
-	end
-end
-function sgs.ai_skill_pindian.doujiu(minusecard, self, requestor, maxcard)
-	return self:getMaxCard()
-end
-sgs.ai_cardneed.doujiu = function(to, card, self)
-	return card:getNumber() > 10
-end
-
---宴会的ai 关联于UseCardPeach 和 willUsePeachTo
-
---[[local yanhuivs_skill = {}
-yanhuivs_skill.name = "yanhuivs"
-table.insert(sgs.ai_skills, yanhuivs_skill)
-function yanhuivs_skill.getTurnUseCard(self)
-	if self.player:getKingdom() ~="zhan" then return nil end
-	local cards = self.player:getHandcards()
-	cards=self:touhouAppendExpandPileToList(self.player,cards)
-	local ecards={}
-	for _,c in sgs.qlist(cards) do
-		if c:isKindOf("Peach") then
-			table.insert(ecards,c)
-		end
-	end
-	if #ecards==0 then return nil end	
-	self:sortByKeepValue(ecards)
-	return sgs.Card_Parse("@yanhuiCard="..ecards[1]:getEffectiveId())
-	
-end
-sgs.ai_skill_use_func.yanhuiCard = function(card, use, self)
-	local target
-	
-	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-        if p:hasLordSkill("yanhui") and p:isAlive() and p:isWounded() then
-            if self:isFriend(p) then
-				target=p
-				break
-			end
-        end
-    end
-	if not target then return  end
-	if self.player:isWounded() and target:getHp()>self.player:getHp() then
-		return 
-	end	
-	if target then
-			use.card = card
-			if use.to then
-				use.to:append(target)
-				if use.to:length() >= 1 then return end
-			end
-    end
-end
-sgs.ai_use_value.yanhuiCard = 7
-sgs.ai_use_priority.yanhuiCard = sgs.ai_use_priority.Peach +0.1
-
-function sgs.ai_cardsview_valuable.yanhuivs(self, class_name, player)
-	local acard
-	if class_name == "Peach" then
-		local dying = player:getRoom():getCurrentDyingPlayer()
-		if not dying or not dying:hasLordSkill("yanhui") or self.player:getKingdom() ~="zhan"
-			or dying:objectName() == player:objectName() then 
-			return nil 
-		end
-		
-		if self:isFriend(dying, player) then 
-			local cards=player:getCards("h")
-			for _,c in sgs.qlist(cards) do
-				if c:isKindOf("Analeptic") then
-					acard=c
-					break
-				end
-			end
-		end
-	end
-	if acard then
-		local suit =acard:getSuitString()
-		local number = acard:getNumberString()
-		local card_id = acard:getEffectiveId()	
-		return (acard:objectName()..":yanhui[%s:%s]=%d"):format(suit, number, card_id) 
-	else
-		return nil
-	end
-end
-]]
-
---sgs.ai_skill_invoke.EightDiagram 
---sgs.ai_armor_value.EightDiagram 
---SmartAI:canRetrial
 sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 	local judge=self.player:getTag("feixiang_judge"):toJudge()
 	local card_id =self.player:getTag("feixiang_id"):toInt()
@@ -769,20 +658,6 @@ sgs.ai_skill_cardask["@tianren-jink"] = function(self)
 	if self:needBear() then return "." end
 	return self:getCardId("Jink") or "."
 end
-
---function sgs.ai_slash_prohibit.tianren(self, from, to)
---[[sgs.ai_skill_playerchosen.tianren = function(self, targets)
-	target_table =sgs.QList2Table(targets)
-	if #target_table==0 then return false end
-	for _,target in pairs(target_table) do	
-		if  self:isFriend(target) then
-			return target
-		end
-	end
-	return nil
-end
-sgs.ai_playerchosen_intention.tianren = -80
-]]
 
 
 

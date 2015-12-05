@@ -465,118 +465,6 @@ sgs.ai_cardneed.songzang = function(to, card, self)
 	return  card:getSuit()==sgs.Card_Spade
 end
 
-sgs.ai_skill_choice.cuiji=function(self)
-	if self:isWeak(self.player) then
-		return "red"
-	else
-		return "black"
-	end
-	
-end
-
-local baigui_skill = {}
-baigui_skill.name = "baigui"
-table.insert(sgs.ai_skills, baigui_skill)
-baigui_skill.getTurnUseCard = function(self, inclusive)
-        local cards = self.player:getCards("h")
-		
-		cards=self:touhouAppendExpandPileToList(self.player,cards)
-        cards = sgs.QList2Table(cards)
-        self:sortByUseValue(cards, true)
-        
-		local can_use=false
-		local weak_targets1=0
-		local weak_targets2=0
-        targets1=self:getEnemies(self.player)
-		targets2=self:getFriends(self.player)
-		if #targets1 >= #targets2+1 then
-			can_use=true
-		end
-		for _,target in pairs(targets1) do
-			if self:isWeak(target) then
-				weak_targets1=weak_targets1+1
-			end
-		end
-		for _,target in pairs(targets2) do
-			if self:isWeak(target) then
-				weak_targets2=weak_targets2+1
-			end
-		end
-		if weak_targets1>weak_targets2 then
-			can_use=true
-		end
-		
-		if not can_use then return false end
-		local spade_card
-		for _, card in ipairs(cards) do
-                if  card:getSuit()==sgs.Card_Spade and  not isCard("Peach", card, self.player) and not isCard("ExNihilo", card, self.player) then
-                        spade_card = card
-                        break
-                end
-        end
-        if spade_card then
-                local suit = spade_card:getSuitString()
-                local number = spade_card:getNumberString()
-                local card_id = spade_card:getEffectiveId()
-                local trick_str = ("savage_assault:baigui[%s:%s]=%d"):format(suit, number, card_id)
-                local trick = sgs.Card_Parse(trick_str)
-                
-                assert(trick)
-                return trick
-        end
-end
-sgs.baigui_suit_value = {
-	spade = 3.9
-}
-sgs.ai_use_value.baigui = sgs.ai_use_value.SavageAssault 
-sgs.ai_use_priority.baigui = sgs.ai_use_priority.SavageAssault 
-sgs.ai_cardneed.baigui = function(to, card, self)
-	return  card:getSuit()==sgs.Card_Spade
-end
-
-sgs.ai_view_as.jiuchong = function(card, player, card_place)
-	local suit = card:getSuitString()
-	local number = card:getNumberString()
-	local card_id = card:getEffectiveId()
-	if card:getSuit()==sgs.Card_Heart and card_place == sgs.Player_PlaceHand then 
-		return ("analeptic:jiuchong[%s:%s]=%d"):format(suit, number, card_id)
-	end
-end
-
-local jiuchong_skill = {}
-jiuchong_skill.name = "jiuchong"
-table.insert(sgs.ai_skills, jiuchong_skill)
-jiuchong_skill.getTurnUseCard = function(self, inclusive)
-        local cards = self.player:getCards("h")
-		cards=self:touhouAppendExpandPileToList(self.player,cards)
-        cards = sgs.QList2Table(cards)
-        self:sortByUseValue(cards, true)
-        
-        local heart_card
-        for _, card in ipairs(cards) do
-                if  card:getSuit()==sgs.Card_Heart and  not isCard("Peach", card, self.player) and not isCard("ExNihilo", card, self.player)
-                       and (self:getUseValue(card) < sgs.ai_use_value.Analeptic or inclusive or sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_Residue, self.player, sgs.cloneCard("slash")) > 0) then
-                        heart_card = card
-                        break
-                end
-        end
-        if heart_card then
-                local suit = heart_card:getSuitString()
-                local number = heart_card:getNumberString()
-                local card_id = heart_card:getEffectiveId()
-                local analeptic_str = ("analeptic:jiuchong[%s:%s]=%d"):format(suit, number, card_id)
-                local analeptic = sgs.Card_Parse(analeptic_str)
-                
-                assert(analeptic)
-                return analeptic
-        end
-end
-sgs.jiuchong_suit_value = {
-	heart = 3.9
-}
-sgs.ai_cardneed.jiuchong = function(to, card, self)
-	return  card:getSuit()==sgs.Card_Heart
-end
 
 function SmartAI:canGuaili(slash)
 	if not self.player:hasSkill("guaili") then return false end
@@ -690,61 +578,6 @@ sgs.ai_skill_choice.gelong= function(self)
 end
 
 
---sgs.ai_skill_invoke.chuanran =true
---[[sgs.ai_skill_use["@@chuanran"] = function(self, prompt)
-	local id=self.player:getTag("chuanran_id"):toInt()
-	local cards={}
-	for _,c in sgs.qlist(self.player:getCards("he")) do
-		if c:isBlack() then
-			table.insert(cards,c)
-		end
-	end
-	
-	if #cards==0 then return "." end
-	
-	local card=sgs.Sanguosha:getCard(id)
-	local real_delay=true
-	if not card:isKindOf("DelayedTrick") then
-		card= sgs.cloneCard("supply_shortage")
-		card:addSubcard(id)
-		real_delay=false
-	end
-	local current=self.room:getCurrent()
-	others=self.room:getOtherPlayers(current)
-	self.room:sortByActionOrder(others)
-	local target
-	for _,p in sgs.qlist(others) do
-		if self:isEnemy(p) and not p:containsTrick(card:objectName()) and not self:touhouDelayTrickBadTarget(card, p,self.player)then
-			if self:playerGetRound(p) > self:playerGetRound(self.player) then--山女先行动
-				if card:isKindOf("Indulgence") then
-					break
-				elseif card:isKindOf("SupplyShortage") then
-					if not real_delay then
-						target=p
-						break
-					else
-						if  self.player:distanceTo(p) ==1 and not self.player:isProhibited(p, card) then
-							break
-						else
-							target=p
-							break
-						end
-					end
-				end
-			else
-				target=p
-				break
-			end
-		end
-	end
-	if target then
-		self:sortByKeepValue(cards,true)
-		 return "@ChuanranCard="..cards[1]:getEffectiveId().."->"..target:objectName()
-	end
-	return "." 
-end
-]]
-
 sgs.ai_skill_use["@@chuanran"] = function(self, prompt)
 	local id=self.player:getTag("chuanran_id"):toInt()
 	local cards={}
@@ -821,7 +654,6 @@ end
 sgs.ai_playerchosen_intention.rebing = 30
 
 
- 
 sgs.ai_skill_invoke.diaoping  =function(self,data)
 	if self.player:isKongcheng() then return false end
 	local use=self.player:getTag("diaoping_slash"):toCardUse()
@@ -878,4 +710,117 @@ function SmartAI:hasDiaopingEffect(from,target)
 	return false, nil
 end
 
+
+sgs.ai_skill_choice.cuiji=function(self)
+	if self:isWeak(self.player) then
+		return "red"
+	else
+		return "black"
+	end
+	
+end
+
+local baigui_skill = {}
+baigui_skill.name = "baigui"
+table.insert(sgs.ai_skills, baigui_skill)
+baigui_skill.getTurnUseCard = function(self, inclusive)
+        local cards = self.player:getCards("h")
+		
+		cards=self:touhouAppendExpandPileToList(self.player,cards)
+        cards = sgs.QList2Table(cards)
+        self:sortByUseValue(cards, true)
+        
+		local can_use=false
+		local weak_targets1=0
+		local weak_targets2=0
+        targets1=self:getEnemies(self.player)
+		targets2=self:getFriends(self.player)
+		if #targets1 >= #targets2+1 then
+			can_use=true
+		end
+		for _,target in pairs(targets1) do
+			if self:isWeak(target) then
+				weak_targets1=weak_targets1+1
+			end
+		end
+		for _,target in pairs(targets2) do
+			if self:isWeak(target) then
+				weak_targets2=weak_targets2+1
+			end
+		end
+		if weak_targets1>weak_targets2 then
+			can_use=true
+		end
+		
+		if not can_use then return false end
+		local spade_card
+		for _, card in ipairs(cards) do
+                if  card:getSuit()==sgs.Card_Spade and  not isCard("Peach", card, self.player) and not isCard("ExNihilo", card, self.player) then
+                        spade_card = card
+                        break
+                end
+        end
+        if spade_card then
+                local suit = spade_card:getSuitString()
+                local number = spade_card:getNumberString()
+                local card_id = spade_card:getEffectiveId()
+                local trick_str = ("savage_assault:baigui[%s:%s]=%d"):format(suit, number, card_id)
+                local trick = sgs.Card_Parse(trick_str)
+                
+                assert(trick)
+                return trick
+        end
+end
+sgs.baigui_suit_value = {
+	spade = 3.9
+}
+sgs.ai_use_value.baigui = sgs.ai_use_value.SavageAssault 
+sgs.ai_use_priority.baigui = sgs.ai_use_priority.SavageAssault 
+sgs.ai_cardneed.baigui = function(to, card, self)
+	return  card:getSuit()==sgs.Card_Spade
+end
+
+sgs.ai_view_as.jiuchong = function(card, player, card_place)
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if card:getSuit()==sgs.Card_Heart and card_place == sgs.Player_PlaceHand then 
+		return ("analeptic:jiuchong[%s:%s]=%d"):format(suit, number, card_id)
+	end
+end
+
+local jiuchong_skill = {}
+jiuchong_skill.name = "jiuchong"
+table.insert(sgs.ai_skills, jiuchong_skill)
+jiuchong_skill.getTurnUseCard = function(self, inclusive)
+        local cards = self.player:getCards("h")
+		cards=self:touhouAppendExpandPileToList(self.player,cards)
+        cards = sgs.QList2Table(cards)
+        self:sortByUseValue(cards, true)
+        
+        local heart_card
+        for _, card in ipairs(cards) do
+                if  card:getSuit()==sgs.Card_Heart and  not isCard("Peach", card, self.player) and not isCard("ExNihilo", card, self.player)
+                       and (self:getUseValue(card) < sgs.ai_use_value.Analeptic or inclusive or sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_Residue, self.player, sgs.cloneCard("slash")) > 0) then
+                        heart_card = card
+                        break
+                end
+        end
+        if heart_card then
+                local suit = heart_card:getSuitString()
+                local number = heart_card:getNumberString()
+                local card_id = heart_card:getEffectiveId()
+                local analeptic_str = ("analeptic:jiuchong[%s:%s]=%d"):format(suit, number, card_id)
+                local analeptic = sgs.Card_Parse(analeptic_str)
+                
+                assert(analeptic)
+                return analeptic
+        end
+end
+sgs.jiuchong_suit_value = {
+	heart = 3.9
+}
+sgs.ai_cardneed.jiuchong = function(to, card, self)
+	return  card:getSuit()==sgs.Card_Heart
+end
 

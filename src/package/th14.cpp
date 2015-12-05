@@ -373,91 +373,6 @@ public:
     }
 };
 
-class Canxiang : public TriggerSkill
-{
-public:
-    Canxiang() : TriggerSkill("canxiang")
-    {
-        events << Damage;
-    }
-
-     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
-    {   
-        if (!TriggerSkill::triggerable(player)) return QStringList();
-        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (p->getHp() > player->getHp() && !p->isNude())
-                return QStringList(objectName());
-        }
-        return QStringList();
-    }
-    
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
-    {
-        QList<ServerPlayer *> listt;
-        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (p->getHp() > player->getHp() && !p->isNude())
-                listt << p;
-        }
-        ServerPlayer *target = room->askForPlayerChosen(player, listt, objectName(), "@" + objectName(), true, true);
-
-        if (target) {
-            int id = room->askForCardChosen(player, target, "he", objectName());
-            room->obtainCard(player, id, room->getCardPlace(id) != Player::PlaceHand);
-        }
-        return false;
-    }
-};
-
-class Juwang : public TriggerSkill
-{
-public:
-    Juwang() : TriggerSkill("juwang")
-    {
-        events << CardAsked;
-    }
-
-     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
-    {   
-        if (!TriggerSkill::triggerable(player)) return QStringList();
-        QString pattern = data.toStringList().first();
-        if (pattern == "jink") {
-            Jink *jink = new Jink(Card::NoSuit, 0);
-            jink->deleteLater();
-            //need check
-            if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
-                if (player->isCardLimited(jink, Card::MethodResponse))
-                    return QStringList();
-            } else if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-                if (player->isCardLimited(jink, Card::MethodUse))
-                    return QStringList();
-            }
-
-            ServerPlayer *current = room->getCurrent();
-            if (!current || !current->isAlive())
-                return QStringList();
-            return QStringList(objectName());
-        }
-        return QStringList();
-    }
-    
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
-    {    
-        ServerPlayer *current = room->getCurrent();
-        return player->askForSkillInvoke(objectName(), "throw:" + current->objectName());
-    }
-    
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
-    {
-        ServerPlayer *current = room->getCurrent(); 
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), current->objectName());
-        const Card *card = room->askForCard(current, ".|red|.|hand", "@juwang:" + player->objectName(), data, Card::MethodDiscard, NULL, false, objectName());
-        if (card == NULL)
-            room->damage(DamageStruct(objectName(), player, current, 1));
-
-        return false;
-    }
-};
-
 
 class Yuyin : public TriggerSkill
 {
@@ -566,6 +481,94 @@ public:
         return false;
     }
 };
+
+
+class Canxiang : public TriggerSkill
+{
+public:
+    Canxiang() : TriggerSkill("canxiang")
+    {
+        events << Damage;
+    }
+
+     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    {   
+        if (!TriggerSkill::triggerable(player)) return QStringList();
+        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
+            if (p->getHp() > player->getHp() && !p->isNude())
+                return QStringList(objectName());
+        }
+        return QStringList();
+    }
+    
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
+        QList<ServerPlayer *> listt;
+        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
+            if (p->getHp() > player->getHp() && !p->isNude())
+                listt << p;
+        }
+        ServerPlayer *target = room->askForPlayerChosen(player, listt, objectName(), "@" + objectName(), true, true);
+
+        if (target) {
+            int id = room->askForCardChosen(player, target, "he", objectName());
+            room->obtainCard(player, id, room->getCardPlace(id) != Player::PlaceHand);
+        }
+        return false;
+    }
+};
+
+class Juwang : public TriggerSkill
+{
+public:
+    Juwang() : TriggerSkill("juwang")
+    {
+        events << CardAsked;
+    }
+
+     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    {   
+        if (!TriggerSkill::triggerable(player)) return QStringList();
+        QString pattern = data.toStringList().first();
+        if (pattern == "jink") {
+            Jink *jink = new Jink(Card::NoSuit, 0);
+            jink->deleteLater();
+            //need check
+            if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+                if (player->isCardLimited(jink, Card::MethodResponse))
+                    return QStringList();
+            } else if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+                if (player->isCardLimited(jink, Card::MethodUse))
+                    return QStringList();
+            }
+
+            ServerPlayer *current = room->getCurrent();
+            if (!current || !current->isAlive())
+                return QStringList();
+            return QStringList(objectName());
+        }
+        return QStringList();
+    }
+    
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {    
+        ServerPlayer *current = room->getCurrent();
+        return player->askForSkillInvoke(objectName(), "throw:" + current->objectName());
+    }
+    
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
+        ServerPlayer *current = room->getCurrent(); 
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), current->objectName());
+        const Card *card = room->askForCard(current, ".|red|.|hand", "@juwang:" + player->objectName(), data, Card::MethodDiscard, NULL, false, objectName());
+        if (card == NULL)
+            room->damage(DamageStruct(objectName(), player, current, 1));
+
+        return false;
+    }
+};
+
+
 
 class Langying : public TriggerSkill
 {
@@ -1005,13 +1008,15 @@ TH14Package::TH14Package()
     seija->addSkill(new Nizhuan);
     seija->addSkill(new Guizha);
 
+	General *benben = new General(this, "benben", "hzc", 3, false);
+    benben->addSkill(new Yuyin);
+    benben->addSkill(new Wuchang);
+	
     General *yatsuhashi = new General(this, "yatsuhashi", "hzc", 3, false);
     yatsuhashi->addSkill(new Canxiang);
     yatsuhashi->addSkill(new Juwang);
 
-    General *benben = new General(this, "benben", "hzc", 3, false);
-    benben->addSkill(new Yuyin);
-    benben->addSkill(new Wuchang);
+
 
     General *kagerou = new General(this, "kagerou", "hzc", 4, false);
     kagerou->addSkill(new Langying);

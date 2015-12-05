@@ -10,6 +10,133 @@
 #include "maneuvering.h"
 
 
+class Zuiyue : public TriggerSkill
+{
+public:
+    Zuiyue() : TriggerSkill("zuiyue")
+    {
+        events << CardUsed;
+    }
+
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    {   
+        if (!TriggerSkill::triggerable(player)) return QStringList();
+        if (player->getPhase() != Player::Play)
+            return QStringList();
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->isKindOf("TrickCard") && Analeptic::IsAvailable(player))    
+            return QStringList(objectName());
+        return QStringList();
+    }
+    
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
+        return room->askForSkillInvoke(player, objectName(), data);
+    }
+    
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
+        
+        CardUseStruct ana_use;
+        ana_use.from = player;
+        Analeptic *card = new Analeptic(Card::NoSuit, 0);
+        card->setSkillName(objectName());
+        ana_use.card = card;
+        room->useCard(ana_use);
+        return false;
+    }
+};
+
+class Doujiu : public TriggerSkill
+{
+public:
+    Doujiu() : TriggerSkill("doujiu")
+    {
+        events << CardUsed;
+    }
+
+    virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+    {   
+        TriggerList skill_list;
+        if (triggerEvent == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (!use.card->isKindOf("Peach") && !use.card->isKindOf("Analeptic"))
+                return TriggerList();
+            if (!use.to.contains(player) || player->getPhase() != Player::Play)
+                return TriggerList();
+            ServerPlayer *target = player;
+            if (target->isKongcheng() || target->getHp() < 1 || !target->isAlive())
+                return TriggerList();
+            QList<ServerPlayer *> suikas = room->findPlayersBySkillName(objectName());
+            foreach (ServerPlayer *suika, suikas) {
+                if (target != suika)
+                    skill_list.insert(suika, QStringList(objectName()));
+            }
+        }
+        return skill_list;
+    }
+    
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer *source) const
+    {
+        if (triggerEvent == CardUsed) {
+            QVariant _data = QVariant::fromValue(target);
+            source->tag["doujiu_target"] = _data;
+            return room->askForSkillInvoke(source, objectName(), _data);
+        }
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer *source) const
+    {
+        if (triggerEvent == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), target->objectName());
+            source->drawCards(1);
+            if (!source->isKongcheng() && source->pindian(target, objectName())) {
+                if (source->isWounded()) {
+                    RecoverStruct recover;
+                    recover.recover = 1;
+                    room->recover(source, recover);
+                }
+                use.nullified_list << target->objectName();
+                data = QVariant::fromValue(use);
+                room->setPlayerFlag(target, "Global_PlayPhaseTerminated");
+            }
+        } 
+        return false;
+    }
+};
+
+
+//rewrite Peach::targetFilter
+class Yanhui : public TriggerSkill
+{
+public:
+    Yanhui() : TriggerSkill("yanhui$")
+    {
+        events << PreCardUsed; 
+    }
+
+    virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+    {
+        if (triggerEvent == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            foreach (ServerPlayer *p, use.to) {
+                if (p->hasLordSkill("yanhui") && p != use.from) {
+                    if ((use.card->isKindOf("Analeptic") && p->hasFlag("Global_Dying"))
+                        || (use.card->isKindOf("Peach") && use.m_reason == CardUseStruct::CARD_USE_REASON_PLAY)) {
+                        QList<ServerPlayer *> logto;
+                        logto << p;
+                        room->touhouLogmessage("#InvokeOthersSkill", use.from, objectName(), logto);
+                        room->notifySkillInvoked(p, objectName());
+                    }
+                }
+            }
+        }
+        return  TriggerList();
+    }
+};
 
 
 class Shenpan : public TriggerSkill
@@ -552,135 +679,6 @@ public:
             return true;
         }
         return false;
-    }
-};
-
-
-class Zuiyue : public TriggerSkill
-{
-public:
-    Zuiyue() : TriggerSkill("zuiyue")
-    {
-        events << CardUsed;
-    }
-
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
-    {   
-        if (!TriggerSkill::triggerable(player)) return QStringList();
-        if (player->getPhase() != Player::Play)
-            return QStringList();
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->isKindOf("TrickCard") && Analeptic::IsAvailable(player))    
-            return QStringList(objectName());
-        return QStringList();
-    }
-    
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
-    {
-        return room->askForSkillInvoke(player, objectName(), data);
-    }
-    
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
-    {
-        
-        CardUseStruct ana_use;
-        ana_use.from = player;
-        Analeptic *card = new Analeptic(Card::NoSuit, 0);
-        card->setSkillName(objectName());
-        ana_use.card = card;
-        room->useCard(ana_use);
-        return false;
-    }
-};
-
-class Doujiu : public TriggerSkill
-{
-public:
-    Doujiu() : TriggerSkill("doujiu")
-    {
-        events << CardUsed;
-    }
-
-    virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
-    {   
-        TriggerList skill_list;
-        if (triggerEvent == CardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (!use.card->isKindOf("Peach") && !use.card->isKindOf("Analeptic"))
-                return TriggerList();
-            if (!use.to.contains(player) || player->getPhase() != Player::Play)
-                return TriggerList();
-            ServerPlayer *target = player;
-            if (target->isKongcheng() || target->getHp() < 1 || !target->isAlive())
-                return TriggerList();
-            QList<ServerPlayer *> suikas = room->findPlayersBySkillName(objectName());
-            foreach (ServerPlayer *suika, suikas) {
-                if (target != suika)
-                    skill_list.insert(suika, QStringList(objectName()));
-            }
-        }
-        return skill_list;
-    }
-    
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer *source) const
-    {
-        if (triggerEvent == CardUsed) {
-            QVariant _data = QVariant::fromValue(target);
-            source->tag["doujiu_target"] = _data;
-            return room->askForSkillInvoke(source, objectName(), _data);
-        }
-        return false;
-    }
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer *source) const
-    {
-        if (triggerEvent == CardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), target->objectName());
-            source->drawCards(1);
-            if (!source->isKongcheng() && source->pindian(target, objectName())) {
-                if (source->isWounded()) {
-                    RecoverStruct recover;
-                    recover.recover = 1;
-                    room->recover(source, recover);
-                }
-                use.nullified_list << target->objectName();
-                data = QVariant::fromValue(use);
-                room->setPlayerFlag(target, "Global_PlayPhaseTerminated");
-            }
-        } 
-        return false;
-    }
-};
-
-
-//rewrite Peach::targetFilter
-class Yanhui : public TriggerSkill
-{
-public:
-    Yanhui() : TriggerSkill("yanhui$")
-    {
-        events << PreCardUsed; 
-    }
-
-    virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
-    {
-        if (triggerEvent == PreCardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            foreach (ServerPlayer *p, use.to) {
-                if (p->hasLordSkill("yanhui") && p != use.from) {
-                    if ((use.card->isKindOf("Analeptic") && p->hasFlag("Global_Dying"))
-                        || (use.card->isKindOf("Peach") && use.m_reason == CardUseStruct::CARD_USE_REASON_PLAY)) {
-                        QList<ServerPlayer *> logto;
-                        logto << p;
-                        room->touhouLogmessage("#InvokeOthersSkill", use.from, objectName(), logto);
-                        room->notifySkillInvoked(p, objectName());
-                    }
-                }
-            }
-        }
-        return  TriggerList();
     }
 };
 
@@ -1238,7 +1236,12 @@ public:
 TH09Package::TH09Package()
     : Package("th09")
 {
-    General *shikieiki = new General(this, "shikieiki$", "zhan", 3, false);
+    General *suika = new General(this, "suika$", "zhan", 3, false);
+    suika->addSkill(new Zuiyue);
+    suika->addSkill(new Doujiu);
+    suika->addSkill(new Yanhui);
+	
+	General *shikieiki = new General(this, "shikieiki$", "zhan", 3, false);
     shikieiki->addSkill(new Shenpan);
     shikieiki->addSkill(new Huiwu);
     shikieiki->addSkill(new Huazhong);
@@ -1259,10 +1262,7 @@ TH09Package::TH09Package()
     General *aya_sp = new General(this, "aya_sp", "zhan", 4, false);
     aya_sp->addSkill(new Toupai);
 
-    General *suika = new General(this, "suika$", "zhan", 3, false);
-    suika->addSkill(new Zuiyue);
-    suika->addSkill(new Doujiu);
-    suika->addSkill(new Yanhui);
+
 
     General *tenshi= new General(this, "tenshi$", "zhan", 4, false);
     tenshi->addSkill(new Feixiang);
