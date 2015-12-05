@@ -1028,22 +1028,29 @@ public:
 
         } else if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
-            if (death.who == player && player->getMark("pingyi_steal") > 0)
-                Pingyi::skill_comeback(room, player);
+            //while yorihime(pingyi owner) die
+			if (death.who == player && player->getMark("pingyi_steal") > 0)
+                return QStringList(objectName());
+			//while others (pingyi victim) die	
             if (death.who == player && player->getMark("@pingyi") > 0) {
-
                 foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
                     if (p->getMark("pingyi_steal") > 0) {
                         QString pingyi_record = p->objectName() + "pingyi" + player->objectName();
                         QString back_skillname = room->getTag(pingyi_record).toString();
                         if (back_skillname != NULL && back_skillname != "")
-                            Pingyi::skill_comeback(room, p);
+							Pingyi::skill_comeback(room, p);
                     }
                 }
             }
         }
         return QStringList();
     }
+	
+	virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
+		Pingyi::skill_comeback(room, player);
+		return false;
+	}
 };
 
 

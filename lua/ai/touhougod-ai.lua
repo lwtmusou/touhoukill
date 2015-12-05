@@ -686,7 +686,7 @@ table.insert(sgs.ai_skills, fengyin_skill)
 function fengyin_skill.getTurnUseCard(self)
 	if self.player:hasUsed("FengyinCard") then return nil end
 	local cards={}
-	for _,card in sgs.qlist(self.player:getHandcards()) do
+	for _,card in sgs.qlist(self.player:getCards("he")) do
 		if card:getSuit() == sgs.Card_Heart then
 			table.insert(cards,card)
 		end
