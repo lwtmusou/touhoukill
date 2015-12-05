@@ -473,9 +473,13 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                 room->sendLog(log);
                 room->setEmotion(effect.to, "skill_nullify");
                 return true;
-            } else if (effect.card->getTypeId() == Card::TypeTrick && room->isCanceled(effect)) {
-                effect.to->setFlags("Global_NonSkillNullify");
-                return true;
+            } else if (effect.card->getTypeId() == Card::TypeTrick) {
+                if (room->isCanceled(effect)) {
+                    effect.to->setFlags("Global_NonSkillNullify");
+                    return true;
+                } else {
+                    room->getThread()->trigger(TrickEffect, room, effect.to, data);
+                }
             }
             if (effect.to->isAlive() || effect.card->isKindOf("Slash"))
                 effect.card->onEffect(effect);

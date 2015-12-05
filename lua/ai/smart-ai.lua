@@ -7395,6 +7395,8 @@ function SmartAI:touhouCardUseEffectNullify(use,target)
 			return true
 		end
 	end
+	--仅考虑了use系列时机下，没有考虑effect类
+	--effect.to->setFlags("Global_NonSkillNullify")
 	--野性 天仪这种不在card这里设flag的 需要枚举？？ 还是另立函数？
 	return false
 end

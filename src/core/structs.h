@@ -591,7 +591,8 @@ enum TriggerEvent
     PostCardEffected,
     CardFinished,
     TrickCardCanceling,
-
+    TrickEffect,
+	
     PreMarkChange,
     MarkChanged,
 

@@ -725,6 +725,8 @@ public:
             if (effect.to->getHandcardNum() > 0) 
                 return QStringList(objectName());
         }if (triggerEvent == SlashMissed && effect.to->hasSkill(objectName())) {
+			if (effect.from && effect.from->hasFlag("hitAfterMissed"))
+				return QStringList();
             return QStringList(objectName());
         }
         
