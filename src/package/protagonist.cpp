@@ -1034,26 +1034,27 @@ public:
     }
 };
 
-
-class BllmCaiyu : public DrawCardsSkill
+class BllmCaiyu : public PhaseChangeSkill
 {
 public:
-    BllmCaiyu() : DrawCardsSkill("#bllmcaiyu")
+    BllmCaiyu() :PhaseChangeSkill("#bllmcaiyu")
     {
     }
 
-    virtual bool triggerable(const ServerPlayer *player) const {
-        return TriggerSkill::triggerable(player);
-    }
     
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer*) const{
+    virtual bool triggerable(const ServerPlayer *player) const {
+        return TriggerSkill::triggerable(player)
+            && player->getPhase() == Player::Draw;
+    }
+
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const {
         return  BllmWuyu::BllmWuyuCost(room, player, "bllmcaiyu");
     }
-    
-    virtual int getDrawNum(ServerPlayer *player, int n) const
+
+    virtual bool onPhaseChange(ServerPlayer *player) const
     {
-        return n + 1;
-        //return n;
+        player->drawCards(1);
+        return false;
     }
 };
 

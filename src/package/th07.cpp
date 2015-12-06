@@ -682,85 +682,6 @@ public:
 
 
 
-class Renou : public TriggerSkill
-{
-public:
-    Renou() : TriggerSkill("renou")
-    {
-        events << EventPhaseStart;
-    }
-    
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const
-    {   
-        if (!TriggerSkill::triggerable(player)) return QStringList();
-        if (player->getPhase() == Player::Start)
-            return QStringList(objectName());
-        return QStringList();
-    }
-    
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
-    {
-        return room->askForSkillInvoke(player, objectName(), data);
-    }
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
-    {
-        
-        QList<int> list = room->getNCards(5);
-        QList<int> able;
-        QList<int> disabled;
-        foreach (int id, list) {
-            Card *tmp_card = Sanguosha->getCard(id);
-            if (tmp_card->isKindOf("EquipCard")) {
-                    able << id;
-            } else {
-                foreach (const Card *c, player->getCards("e")) {
-                    if (c->getSuit() == tmp_card->getSuit()) {
-                        disabled << id;
-                        break;
-                    }
-                }
-                if (!disabled.contains(id))
-                    able << id;
-            }
-        }
-        room->fillAG(list, NULL, disabled);
-        QStringList cardinfo;
-        //for log
-        foreach (int id, list) {
-            cardinfo << Sanguosha->getCard(id)->toString();
-        }
-        LogMessage mes;
-        mes.type = "$TurnOver";
-        mes.from = player;
-        mes.card_str = cardinfo.join("+");
-        room->sendLog(mes);
-
-        int obtainId = -1;
-        if (able.length() > 0) {
-            obtainId = room->askForAG(player, able, true, objectName());
-            if (obtainId != -1)
-                room->obtainCard(player, obtainId, true);
-        }
-
-        room->getThread()->delay(1000);
-
-        //throw other cards
-        DummyCard *dummy = new DummyCard;
-        foreach (int id, list) {
-            if (id != obtainId)
-                dummy->addSubcard(id);
-        }
-        if (dummy->getSubcards().length() > 0) {
-            CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), objectName(), "");
-            room->throwCard(dummy, reason, NULL);
-        }
-        room->clearAG();
-        
-        return false;
-    }
-};
-
 
 class ZhanzhenVS : public OneCardViewAsSkill
 {
@@ -843,6 +764,85 @@ public:
             mo.to_place = Player::PlaceHand;
             room->moveCardsAtomic(mo, true);
         }
+        return false;
+    }
+};
+
+class Renou : public TriggerSkill
+{
+public:
+    Renou() : TriggerSkill("renou")
+    {
+        events << EventPhaseStart;
+    }
+    
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const
+    {   
+        if (!TriggerSkill::triggerable(player)) return QStringList();
+        if (player->getPhase() == Player::Start)
+            return QStringList(objectName());
+        return QStringList();
+    }
+    
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
+        return room->askForSkillInvoke(player, objectName(), data);
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
+        
+        QList<int> list = room->getNCards(5);
+        QList<int> able;
+        QList<int> disabled;
+        foreach (int id, list) {
+            Card *tmp_card = Sanguosha->getCard(id);
+            if (tmp_card->isKindOf("EquipCard")) {
+                    able << id;
+            } else {
+                foreach (const Card *c, player->getCards("e")) {
+                    if (c->getSuit() == tmp_card->getSuit()) {
+                        disabled << id;
+                        break;
+                    }
+                }
+                if (!disabled.contains(id))
+                    able << id;
+            }
+        }
+        room->fillAG(list, NULL, disabled);
+        QStringList cardinfo;
+        //for log
+        foreach (int id, list) {
+            cardinfo << Sanguosha->getCard(id)->toString();
+        }
+        LogMessage mes;
+        mes.type = "$TurnOver";
+        mes.from = player;
+        mes.card_str = cardinfo.join("+");
+        room->sendLog(mes);
+
+        int obtainId = -1;
+        if (able.length() > 0) {
+            obtainId = room->askForAG(player, able, true, objectName());
+            if (obtainId != -1)
+                room->obtainCard(player, obtainId, true);
+        }
+
+        room->getThread()->delay(1000);
+
+        //throw other cards
+        DummyCard *dummy = new DummyCard;
+        foreach (int id, list) {
+            if (id != obtainId)
+                dummy->addSubcard(id);
+        }
+        if (dummy->getSubcards().length() > 0) {
+            CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), objectName(), "");
+            room->throwCard(dummy, reason, NULL);
+        }
+        room->clearAG();
+        
         return false;
     }
 };
@@ -1746,8 +1746,9 @@ TH07Package::TH07Package()
     prismriver->addSkill(new Hesheng);
 
     General *alice = new General(this, "alice", "yym", 4, false);
+	alice->addSkill(new Zhanzhen);
     alice->addSkill(new Renou);
-    alice->addSkill(new Zhanzhen);
+    
 
 
     General *chen = new General(this, "chen", "yym", 3, false);

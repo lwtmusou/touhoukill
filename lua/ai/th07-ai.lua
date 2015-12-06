@@ -89,32 +89,6 @@ sgs.sidie_keep_value = {
 }
 
 
--- sgs.ai_skill_playerchosen.wangxiang = function(self, targets)
-	-- if not self:invokeTouhouJudge() then return nil end
-	-- target_table =sgs.QList2Table(targets)
-	-- if #target_table==0 then return false end
-	-- for _,target in pairs(target_table) do	
-		-- if  self:isFriend(target) then
-			-- return target
-		-- end
-	-- end
-	-- return nil
--- end
--- sgs.ai_playerchosen_intention.wangxiang = -80
--- sgs.ai_no_playerchosen_intention.wangxiang = function(self, from)
-	-- local lord = self.room:getLord()
-	-- if not lord then return end
-	-- local wizard_harm = false
-	-- for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
-		-- if self:hasSkills(sgs.wizard_harm_skill , aplayer) then
-			-- wizard_harm = true
-		-- end
-	-- end
-	-- if not wizard_harm then 
-		-- sgs.updateIntention(from, lord, 10)
-	-- end
--- end
-
 sgs.ai_skill_invoke.wangxiang = function(self, data)
     if not self:invokeTouhouJudge() then return false end
     local to =data:toPlayer()
@@ -338,25 +312,6 @@ function sgs.ai_cardneed.youming(to, card, self)
 	return isCard("Slash", card, to) and getKnownCard(to, self.player, "Slash", true) < 2
 end
 
---[[sgs.ai_cardneed.jianshu = function(to, card, self)
-	if not to:getOffensiveHorse() and getCardsNum("OffensiveHorse", to, self.player) < 1 then
-		return  card:isKindOf("OffensiveHorse")
-	end
-end
-
-
-sgs.ai_skill_invoke.bailou =function(self,data)
-	local target=data:toPlayer()
-	if self:isEnemy(target) then
-		return true
-	end
-end
-sgs.ai_cardneed.bailou = function(to, card, self)
-	if not self:willSkipPlayPhase(to) then
-		return card:isKindOf("Slash") and card:isRed()
-	end
-end
-]]
 
 sgs.ai_skill_use["@@xiezou"] = function(self, prompt)
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
@@ -449,9 +404,6 @@ end
 
 
 
-sgs.ai_skill_invoke.renou = true
---具体如何选人偶牌 尚没有策略。。。
-
 sgs.ai_view_as.zhanzhen = function(card, player, card_place)
 	if (sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_UNKNOWN) then
 		return false
@@ -533,6 +485,9 @@ sgs.ai_no_playerchosen_intention.zhanzhen = function(self, from)
 		sgs.updateIntention(from, lord, 10)
 	end
 end
+
+sgs.ai_skill_invoke.renou = true
+--具体如何选人偶牌 尚没有策略。。。
 
 
 sgs.ai_skill_choice.shishen=function(self)
