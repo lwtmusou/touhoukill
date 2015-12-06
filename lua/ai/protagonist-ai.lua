@@ -270,7 +270,7 @@ end
 
 
 local wuyuvs_skill = {}
-wuyuvs_skill.name = "wuyuvs"
+wuyuvs_skill.name = "wuyu_attach"
 table.insert(sgs.ai_skills, wuyuvs_skill)
 wuyuvs_skill.getTurnUseCard = function(self)
 
@@ -335,7 +335,7 @@ function SmartAI:hasSkillsForSaiqian(player)
 	return false
 end
 local saiqianvs_skill = {}
-saiqianvs_skill.name = "saiqianvs"
+saiqianvs_skill.name = "saiqian_attach"
 table.insert(sgs.ai_skills, saiqianvs_skill)
 function saiqianvs_skill.getTurnUseCard(self)
 		if self.player:isKongcheng() then return nil end

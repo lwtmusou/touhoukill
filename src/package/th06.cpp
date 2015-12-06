@@ -12,7 +12,7 @@ SkltKexueCard::SkltKexueCard()
     will_throw = false;
     target_fixed = true;
     handling_method = Card::MethodNone;
-    m_skillName = "skltkexuepeach";
+    m_skillName = "skltkexue_attach";
 }
 void SkltKexueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
 {
@@ -33,7 +33,7 @@ void SkltKexueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> 
 class SkltKexueVS : public ZeroCardViewAsSkill
 {
 public:
-    SkltKexueVS() : ZeroCardViewAsSkill("skltkexuepeach")
+    SkltKexueVS() : ZeroCardViewAsSkill("skltkexue_attach")
     {
         attached_lord_skill = true;
     }
@@ -87,8 +87,8 @@ public:
             else
                 players = room->getOtherPlayers(lords.first());
             foreach (ServerPlayer *p, players) {
-                if (!p->hasSkill("skltkexuepeach"))
-                    room->attachSkillToPlayer(p, "skltkexuepeach");
+                if (!p->hasSkill("skltkexue_attach"))
+                    room->attachSkillToPlayer(p, "skltkexue_attach");
             }
         } else if (triggerEvent == Death || (triggerEvent == EventLoseSkill && data.toString() == "skltkexue")) {
             if (triggerEvent == Death) {
@@ -109,8 +109,8 @@ public:
             else
                 players << lords.first();
             foreach (ServerPlayer *p, players) {
-                if (p->hasSkill("skltkexuepeach"))
-                    room->detachSkillFromPlayer(p, "skltkexuepeach", true);
+                if (p->hasSkill("skltkexue_attach"))
+                    room->detachSkillFromPlayer(p, "skltkexue_attach", true);
             }
         }
         return QStringList();

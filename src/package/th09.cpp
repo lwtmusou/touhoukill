@@ -775,9 +775,6 @@ public:
 
 TianrenCard::TianrenCard()
 {
-    mute = true;
-    //handling_method = Card::MethodNone;
-    //m_skillName = "skltkexuepeach";
 }
 bool TianrenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {

@@ -61,8 +61,8 @@ return {
     ["#TouhouBuff"]="%from 的 %arg 效果被触发。",   
     ["wuyu"] = "雾雨",
     [":wuyu"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"green\"><b>其他角色的出牌阶段限一次，</b></font>该角色可以将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌交给你。",
-    [":wuyuvs"]="出牌阶段，你可以将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌交给拥有主公技“雾雨”的角色。每阶段限一次。",
-    ["wuyuvs"]="雾雨送牌",
+    [":wuyu_attach"]="出牌阶段，你可以将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌交给拥有主公技“雾雨”的角色。每阶段限一次。",
+    ["wuyu_attach"]="雾雨送牌",
 
 --************************************************	
     --zhu003  势力：主 4血    
@@ -80,8 +80,8 @@ return {
 	
     ["saiqian"] = "赛钱",
     [":saiqian"] = "<font color=\"green\"><b>其他角色的出牌阶段限一次，</b></font>该角色可以将一至三张手牌交给你，然后你可以选择一至两项：弃置一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌，或失去1点体力。你每选择一项，该角色回复1点体力。",
-    ["saiqianvs"] ="赛钱送牌", 
-    [":saiqianvs"] ="你可以将一至三张手牌交给拥有“赛钱”的角色。",
+    ["saiqian_attach"] ="赛钱送牌", 
+    [":saiqian_attach"] ="你可以将一至三张手牌交给拥有“赛钱”的角色。",
     ["losehp_saiqian"]="失去1点体力，该角色回复1点体力",
     ["discard_saiqian"]="弃置一张红桃手牌，该角色回复1点体力",
     ["cancel_saiqian"]="什么都不做",

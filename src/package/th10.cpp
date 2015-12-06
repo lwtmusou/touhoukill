@@ -121,7 +121,7 @@ GongfengCard::GongfengCard()
 {
     will_throw = false;
     handling_method = Card::MethodNone;
-    m_skillName = "gongfengvs";
+    m_skillName = "gongfeng_attach";
     mute = true;
 }
 void GongfengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
@@ -152,7 +152,7 @@ bool GongfengCard::targetFilter(const QList<const Player *> &targets, const Play
 class GongfengVS : public OneCardViewAsSkill
 {
 public:
-    GongfengVS() :OneCardViewAsSkill("gongfengvs")
+    GongfengVS() :OneCardViewAsSkill("gongfeng_attach")
     {
         attached_lord_skill = true;
         filter_pattern = "Slash";
@@ -202,8 +202,8 @@ public:
             else
                 players = room->getOtherPlayers(lords.first());
             foreach (ServerPlayer *p, players) {
-                if (!p->hasSkill("gongfengvs"))
-                    room->attachSkillToPlayer(p, "gongfengvs");
+                if (!p->hasSkill("gongfeng_attach"))
+                    room->attachSkillToPlayer(p, "gongfeng_attach");
             }
         } else if (triggerEvent == EventLoseSkill && data.toString() == "gongfeng") {
             QList<ServerPlayer *> lords;
@@ -219,8 +219,8 @@ public:
             else
                 players << lords.first();
             foreach (ServerPlayer *p, players) {
-                if (p->hasSkill("gongfengvs"))
-                    room->detachSkillFromPlayer(p, "gongfengvs", true);
+                if (p->hasSkill("gongfeng_attach"))
+                    room->detachSkillFromPlayer(p, "gongfeng_attach", true);
             }
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();

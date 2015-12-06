@@ -53,7 +53,7 @@ sgs.shende_keep_value = {
 
 
 local gongfengvs_skill = {}
-gongfengvs_skill.name = "gongfengvs"
+gongfengvs_skill.name = "gongfeng_attach"
 table.insert(sgs.ai_skills, gongfengvs_skill)
 function gongfengvs_skill.getTurnUseCard(self)
 		if self.player:isKongcheng() then return nil end

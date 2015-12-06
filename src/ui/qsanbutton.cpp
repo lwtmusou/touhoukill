@@ -302,6 +302,38 @@ void QSanInvokeSkillButton::_repaint()
 void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     painter->drawPixmap(0, 0, _m_bgPixmap[(int)_m_state]);
+	if (_m_skillType == S_SKILL_ATTACHEDLORD) {
+        int nline = _m_skill->objectName().indexOf("-");
+        if (nline == -1)
+            nline = _m_skill->objectName().indexOf("_");
+        QString engskillname = _m_skill->objectName().left(nline);
+        QString generalName = "";
+
+        foreach (const Player* p, Self->getSiblings()) {
+            const General* general = p->getGeneral();
+            if (general->hasSkill(engskillname)) {
+                generalName = general->objectName();
+                break;
+            } /* else {
+                consider pingyi?
+
+            } */
+			//do not consider general2
+            /* if (p->getGeneral2()) {
+            } */
+        }
+        if (generalName == "")
+            return;
+        QString path = G_ROOM_SKIN.getButtonPixmapPath(G_ROOM_SKIN.S_SKIN_KEY_BUTTON_SKILL, getSkillTypeString(_m_skillType), _m_state);
+        int n = path.lastIndexOf("/");
+        path = path.left(n + 1) + generalName + ".png";
+        QPixmap pixmap = G_ROOM_SKIN.getPixmapFromFileName(path);
+        if (pixmap.isNull())
+            return;
+        int h = pixmap.height() - _m_bgPixmap[(int)_m_state].height();
+        painter->drawPixmap(0, -h, pixmap.width(), pixmap.height(), pixmap);
+    }
+	
 }
 
 QSanSkillButton *QSanInvokeSkillDock::addSkillButtonByName(const QString &skillName)

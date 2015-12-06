@@ -251,7 +251,7 @@ WuyuCard::WuyuCard()
 {
     will_throw = false;
     handling_method = Card::MethodNone;
-    m_skillName = "wuyuvs";
+    m_skillName = "wuyu_attach";
 
 }
 
@@ -284,7 +284,7 @@ bool WuyuCard::targetFilter(const QList<const Player *> &targets, const Player *
 class WuyuVS : public OneCardViewAsSkill
 {
 public:
-    WuyuVS() :OneCardViewAsSkill("wuyuvs")
+    WuyuVS() :OneCardViewAsSkill("wuyu_attach")
     {
         attached_lord_skill = true;
         filter_pattern = ".|spade|.|hand";
@@ -331,8 +331,8 @@ public:
             else
                 players = room->getOtherPlayers(lords.first());
             foreach (ServerPlayer *p, players) {
-                if (!p->hasSkill("wuyuvs"))
-                    room->attachSkillToPlayer(p, "wuyuvs");
+                if (!p->hasSkill("wuyu_attach"))
+                    room->attachSkillToPlayer(p, "wuyu_attach");
             }
         }else if (triggerEvent == EventLoseSkill && data.toString() == "wuyu") {
             QList<ServerPlayer *> lords;
@@ -348,8 +348,8 @@ public:
             else
                 players << lords.first();
             foreach (ServerPlayer *p, players) {
-                if (p->hasSkill("wuyuvs"))
-                    room->detachSkillFromPlayer(p, "wuyuvs", true);
+                if (p->hasSkill("wuyu_attach"))
+                    room->detachSkillFromPlayer(p, "wuyu_attach", true);
             }
         }else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
@@ -378,7 +378,7 @@ SaiqianCard::SaiqianCard()
 
     will_throw = false;
     handling_method = Card::MethodNone;
-    m_skillName = "saiqianvs";
+    m_skillName = "saiqian_attach";
 }
 bool SaiqianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
@@ -432,7 +432,7 @@ void SaiqianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
 class SaiqianVS : public ViewAsSkill
 {
 public:
-    SaiqianVS() : ViewAsSkill("saiqianvs")
+    SaiqianVS() : ViewAsSkill("saiqian_attach")
     {
         attached_lord_skill = true;
     }
@@ -482,8 +482,8 @@ public:
             else
                 players = room->getOtherPlayers(lords.first());
             foreach (ServerPlayer *p, players) {
-                if (!p->hasSkill("saiqianvs"))
-                    room->attachSkillToPlayer(p, "saiqianvs");
+                if (!p->hasSkill("saiqian_attach"))
+                    room->attachSkillToPlayer(p, "saiqian_attach");
             }
         }else if (triggerEvent == Death || (triggerEvent == EventLoseSkill && data.toString() == "saiqian")) {
             if (triggerEvent == Death) {
@@ -504,8 +504,8 @@ public:
             else
                 players << lords.first();
             foreach (ServerPlayer *p, players) {
-                if (p->hasSkill("saiqianvs"))
-                    room->detachSkillFromPlayer(p, "saiqianvs", true);
+                if (p->hasSkill("saiqian_attach"))
+                    room->detachSkillFromPlayer(p, "saiqian_attach", true);
             }
         }else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();

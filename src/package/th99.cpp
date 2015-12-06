@@ -77,7 +77,7 @@ DangjiaCard::DangjiaCard()
 {
     will_throw = false;
     handling_method = Card::MethodNone;
-    m_skillName = "dangjiavs";
+    m_skillName = "dangjia_attach";
     mute = true;
 }
 bool DangjiaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -112,7 +112,7 @@ void DangjiaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
 class DangjiaVS : public ZeroCardViewAsSkill
 {
 public:
-    DangjiaVS() :ZeroCardViewAsSkill("dangjiavs")
+    DangjiaVS() :ZeroCardViewAsSkill("dangjia_attach")
     {
         attached_lord_skill = true;
     }
@@ -157,8 +157,8 @@ public:
             else
                 players = room->getOtherPlayers(lords.first());
             foreach (ServerPlayer *p, players) {
-                if (!p->hasSkill("dangjiavs"))
-                    room->attachSkillToPlayer(p, "dangjiavs");
+                if (!p->hasSkill("dangjia_attach"))
+                    room->attachSkillToPlayer(p, "dangjia_attach");
             }
         } else if (triggerEvent == EventLoseSkill && data.toString() == "dangjia") {
             QList<ServerPlayer *> lords;
@@ -174,8 +174,8 @@ public:
             else
                 players << lords.first();
             foreach (ServerPlayer *p, players) {
-                if (p->hasSkill("dangjiavs"))
-                    room->detachSkillFromPlayer(p, "dangjiavs", true);
+                if (p->hasSkill("dangjia_attach"))
+                    room->detachSkillFromPlayer(p, "dangjia_attach", true);
             }
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
