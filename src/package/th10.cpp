@@ -688,7 +688,7 @@ public:
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
         if (player->getHandcardNum() != 1 || pattern.startsWith(".") || pattern.startsWith("@")) return false;
-        if (player->getMark("@qiji") > 0) return false;
+        if (player->getMark("qiji") > 0) return false;
         if (pattern == "peach" && player->hasFlag("Global_PreventPeach")) return false;
         for (int i = 0; i < pattern.length(); i++) {
             QChar ch = pattern[i];
@@ -718,7 +718,7 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        if (player->getMark("@qiji") > 0) return false;
+        if (player->getMark("qiji") > 0) return false;
         return player->getHandcardNum() == 1;
     }
 
@@ -758,7 +758,7 @@ public:
 
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const
     {
-        if (player->getMark("@qiji") > 0) return false;
+        if (player->getMark("qiji") > 0) return false;
         if (player->isCardLimited(Sanguosha->cloneCard("nullification"), Card::MethodResponse, true))
             return false;
         return player->getHandcardNum() == 1;
@@ -778,8 +778,8 @@ public:
     
         if (triggerEvent == EventPhaseChanging) {
             foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                if (p->getMark("@qiji") > 0)
-                    room->setPlayerMark(p, "@qiji", 0);
+                if (p->getMark("qiji") > 0)
+                    room->setPlayerMark(p, "qiji", 0);
             }
         } else {
             ServerPlayer *current = room->getCurrent();
@@ -788,13 +788,13 @@ public:
             if (triggerEvent == PreCardUsed) {
                 CardUseStruct use = data.value<CardUseStruct>();
                 if (use.card->getSkillName() == "qiji") {
-                    use.from->gainMark("@qiji");
+					room->setPlayerMark(use.from, "qiji", 1);
                 }
             }
             if (triggerEvent == CardResponded) {
                 CardStar card_star = data.value<CardResponseStruct>().m_card;
                 if (card_star->getSkillName() == "qiji")
-                    player->gainMark("@qiji");
+                    room->setPlayerMark(player, "qiji", 1);
             }
         }
 

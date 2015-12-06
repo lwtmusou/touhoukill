@@ -195,7 +195,7 @@ local qiji_skill = {}
 qiji_skill.name = "qiji"
 table.insert(sgs.ai_skills, qiji_skill)
 qiji_skill.getTurnUseCard = function(self)
-	if self.player:getHandcardNum()~=1 or self.player:getMark("@qiji")>0 then
+	if self.player:getHandcardNum()~=1 or self.player:getMark("qiji")>0 then
 		return nil
 	end
 	local card = self.player:getHandcards():first()
@@ -265,7 +265,7 @@ qiji_skill.getTurnUseCard = function(self)
 end
 
 function sgs.ai_cardsview_valuable.qiji(self, class_name, player)
-	if player:getHandcardNum()~=1 or player:getMark("@qiji")>0 then
+	if player:getHandcardNum()~=1 or player:getMark("qiji")>0 then
 		return nil
 	end
 	local acard
