@@ -1099,7 +1099,7 @@ public:
     
         if (!player->hasSkill(objectName()))
             return QStringList();
-        if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Start)
+        if (triggerEvent == EventPhaseStart && player->getPhase() == Player::RoundStart)
             return QStringList(objectName());
         else if (triggerEvent == Death || triggerEvent == EventPhaseChanging) {
             if (triggerEvent == Death) {
@@ -1129,7 +1129,7 @@ public:
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *suwako) const
     {
-        if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Start) {
+        if (triggerEvent == EventPhaseStart && player->getPhase() == Player::RoundStart) {
             foreach(ServerPlayer *p, room->getOtherPlayers(player))
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
 
