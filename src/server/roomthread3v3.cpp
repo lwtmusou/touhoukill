@@ -86,15 +86,15 @@ void RoomThread3v3::run()
         }
     }
 
-	//note: for touhoukill, we always use
-	/*if (Config.value("3v3/UsingExtension", false).toBool()) {
+    //note: for touhoukill, we always use
+    /*if (Config.value("3v3/UsingExtension", false).toBool()) {
         general_names = Config.value("3v3/ExtensionGenerals").toStringList();
         if (general_names.isEmpty())
             general_names = getGeneralsWithoutExtension();
     } else
         general_names = getGeneralsWithoutExtension(); */
-		
-	general_names = Config.value("3v3/ExtensionGenerals").toStringList();
+        
+    general_names = Config.value("3v3/ExtensionGenerals").toStringList();
 
     qShuffle(general_names);
     general_names = general_names.mid(0, 16);

@@ -137,17 +137,17 @@ void ServerPlayer::clearOnePrivatePile(QString pile_name)
     
     DummyCard *dummy = new DummyCard(pile);
     CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, this->objectName());
-	bool notifyLog = true;
-	QString new_name = pile_name;
-	if (new_name.startsWith("#")){
-		foreach (QString flag, this->getFlagList()) {
+    bool notifyLog = true;
+    QString new_name = pile_name;
+    if (new_name.startsWith("#")){
+        foreach (QString flag, this->getFlagList()) {
             //if (flag.endsWith("_InTempMoving"))
-			if (flag ==  new_name.mid(1) + "_InTempMoving"){
+            if (flag ==  new_name.mid(1) + "_InTempMoving"){
                notifyLog = false; 
-			   break;
-			}
+               break;
+            }
         }
-	}
+    }
     room->throwCard(dummy, reason, NULL, NULL, notifyLog);
     dummy->deleteLater();
     

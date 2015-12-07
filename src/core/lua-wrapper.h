@@ -5,7 +5,7 @@
 #include "standard.h"
 
 typedef int LuaFunction;
-
+    
 class LuaTriggerSkill : public TriggerSkill
 {
     Q_OBJECT

@@ -677,9 +677,9 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
         }
         //reason.m_provider = QVariant::fromValue(provider);
         ServerPlayer *from = card_use.from;
-		if (provider != NULL)
-			from = provider;
-			
+        if (provider != NULL)
+            from = provider;
+            
         CardsMoveStruct move(used_cards, from, NULL, Player::PlaceUnknown, Player::PlaceTable, reason);
         moves.append(move);
         room->moveCardsAtomic(moves, true);
@@ -724,8 +724,8 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
         }
         //reason.m_provider = QVariant::fromValue(provider);
         ServerPlayer *from = source;
-		if (provider != NULL)
-			from = provider;
+        if (provider != NULL)
+            from = provider;
         room->moveCardTo(this, from, NULL, Player::DiscardPile, reason, true);
     }
 }

@@ -515,13 +515,13 @@ public:
         view_as_skill = new JiuhaoVS;
     }
     
-	 virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+     virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
-		//if (!TriggerSkill::triggerable(player)) return QStringList();
+        //if (!TriggerSkill::triggerable(player)) return QStringList();
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if ( player->getPhase() == Player::Play
-			&&(use.card->isKindOf("Peach") || use.card->isKindOf("Analeptic"))) {
+            &&(use.card->isKindOf("Peach") || use.card->isKindOf("Analeptic"))) {
                 room->setPlayerFlag(player, "jiuhao");
             }
             if (use.card->getSkillName() == "jiuhao")
@@ -530,11 +530,11 @@ public:
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.from == Player::Play) {
                 room->setPlayerFlag(player, "-jiuhao");
-				room->setPlayerFlag(player, "-jiuhaoused");
+                room->setPlayerFlag(player, "-jiuhaoused");
             }
         }
-	}
-	
+    }
+    
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
         //only for record
@@ -1113,8 +1113,8 @@ TH11Package::TH11Package()
     General *kisume = new General(this, "kisume", "dld", 3, false);
     kisume->addSkill(new Diaoping);
     kisume->addSkill(new Tongju);
-	
-	General *suika_sp = new General(this, "suika_sp", "dld", 3, false);
+    
+    General *suika_sp = new General(this, "suika_sp", "dld", 3, false);
     suika_sp->addSkill(new Cuiji);
     suika_sp->addSkill(new Baigui);
     suika_sp->addSkill(new Jiuchong);

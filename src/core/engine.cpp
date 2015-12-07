@@ -94,8 +94,8 @@ Engine::Engine()
         << "zhan" << "fsl" << "dld" << "xlc" << "slm" << "hzc"
         << "wai" << "touhougod";
     LordBGMConvertList = GetConfigFromLuaState(lua, "bgm_convert_pairs").toStringList();
-	
-	
+    
+    
     _loadMiniScenarios();
     _loadModScenarios();
     m_customScene = new CustomScenario();
@@ -973,7 +973,7 @@ QStringList Engine::getRandomLords() const
             addcount++;
         }
          else if (godmax > 0 && godCount < godmax) {
-			lords << nonlord_list.at(i);
+            lords << nonlord_list.at(i);
             godCount++;
             addcount++;    
         }
@@ -1089,13 +1089,13 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
             general_list << all_generals.at(i);
             addcount++;
         } else if (godmax > 0 &&  godCount < godmax){
-			
+            
             general_list << all_generals.at(i);
             godCount++;
             addcount++;
         } 
         if (i == all_generals.count() - 1) 
-			break;
+            break;
     } 
 
 
@@ -1113,7 +1113,7 @@ QList<int> Engine::getRandomCards() const
         using_2012_3v3 = (Config.value("3v3/OfficialRule", "2013").toString() == "2012");
         using_2013_3v3 = (Config.value("3v3/OfficialRule", "2013").toString() == "2013");
         //exclude_disaters = !Config.value("3v3/UsingExtension", false).toBool() || Config.value("3v3/ExcludeDisasters", true).toBool();
-		exclude_disaters = Config.value("3v3/ExcludeDisasters", true).toBool();
+        exclude_disaters = Config.value("3v3/ExcludeDisasters", true).toBool();
     }
 
     if (Config.GameMode == "04_1v3")
@@ -1143,7 +1143,7 @@ QList<int> Engine::getRandomCards() const
         if (!getBanPackages().contains(card->getPackage()))
             list << card->getId();
     }
-	// remove two crossbows and one nullification?
+    // remove two crossbows and one nullification?
     if (using_2012_3v3 || using_2013_3v3)
         list.removeOne(98);
     if (using_2013_3v3) {

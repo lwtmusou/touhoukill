@@ -679,12 +679,12 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         dashboard->retractPileCard();
         break;
     }
-	case S_GAME_ROLE_STATUS_CHANGED: {
+    case S_GAME_ROLE_STATUS_CHANGED: {
         QString player_name = arg[1].asCString(); 
         bool shown = arg[2].asBool(); 
-		
-		ClientPlayer *player = ClientInstance->getPlayer(player_name);
-		QList<PlayerCardContainer *> playerCardContainers;
+        
+        ClientPlayer *player = ClientInstance->getPlayer(player_name);
+        QList<PlayerCardContainer *> playerCardContainers;
         foreach (Photo *photo, photos) {
             playerCardContainers.append(photo);
         }
@@ -696,9 +696,9 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
             if (player->getGeneralName() == playerCardContainer->getPlayer()->getGeneralName()) {
                 //bool isRoleBoxInDashboard = false;
 
-				//if (Self == player)
-				playerCardContainer->setRoleShown(shown);
-				break;
+                //if (Self == player)
+                playerCardContainer->setRoleShown(shown);
+                break;
             } 
         }
         break;
@@ -954,10 +954,10 @@ void RoomScene::adjustItems()
     padding -= _m_roomLayout->m_photoRoomPadding;
     m_tablew = displayRegion.width();
     m_tableh = displayRegion.height();
-	//m_tablew = displayRegion.width()- _m_infoPlane.width();
+    //m_tablew = displayRegion.width()- _m_infoPlane.width();
     //m_tableh = displayRegion.height() - dashboard->boundingRect().height();
-	
-	
+    
+    
     QString image_path;
 
     QString lord_kingdom = ClientInstance->lord_kingdom;
@@ -3079,7 +3079,7 @@ void RoomScene::changeTableBg(const QString &tableBgImage_path)
     QPixmap tableBg = QPixmap(tableBgImage_path)
         .scaled(displayRegion.width(), displayRegion.height(),
         Qt::IgnoreAspectRatio, Qt::SmoothTransformation); 
-	//QPixmap tableBg = QPixmap(tableBgImage_path)
+    //QPixmap tableBg = QPixmap(tableBgImage_path)
    //     .scaled(displayRegion.width()- _m_infoPlane.width(), displayRegion.height() - dashboard->boundingRect().height(),
     //    Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     m_tableh -= _m_roomLayout->m_photoDashboardPadding;
@@ -3228,8 +3228,8 @@ void RoomScene::onGameOver()
     fillTable(winner_table, winner_list);
     fillTable(loser_table, loser_list);
 
-	ClientInstance->clearLordInfo();
-	
+    ClientInstance->clearLordInfo();
+    
     addRestartButton(dialog);
     m_roomMutex.unlock();
     dialog->exec();
@@ -3609,13 +3609,13 @@ void RoomScene::killPlayer(const QString &who)
 {
     const General *general = NULL;
     m_roomMutex.lock();
-	
-	ClientPlayer *player = ClientInstance->getPlayer(who);
+    
+    ClientPlayer *player = ClientInstance->getPlayer(who);
     if (player) {
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
         container->stopHuaShen();
     }
-	
+    
     if (who == Self->objectName()) {
         dashboard->killPlayer();
         dashboard->update();
@@ -3964,23 +3964,23 @@ void RoomScene::onGameStart()
         bool changeBackdrop = Config.value("UseLordBackdrop", true).toBool();
         if (changeBGM){
             bgmusic_path = "audio/bgm/" + lord_name + ".ogg";
-			if ((bgmusic_path == "") || !QFile::exists(bgmusic_path)){
-				foreach(QString cv_pair, Sanguosha->LordBGMConvertList){
-					bool shouldBreak = false;
-					QStringList pairs = cv_pair.split("->");
-					QStringList cv_from = pairs.at(0).split("|");
-					foreach (QString from, cv_from){
-						if (from == lord_name){
-							bgmusic_path = "audio/bgm/" + pairs.at(1) + ".ogg";
-							shouldBreak = true;
-							break;
-						}
-					}
-					if (shouldBreak)
-						break;
-				}
-			}
-		}
+            if ((bgmusic_path == "") || !QFile::exists(bgmusic_path)){
+                foreach(QString cv_pair, Sanguosha->LordBGMConvertList){
+                    bool shouldBreak = false;
+                    QStringList pairs = cv_pair.split("->");
+                    QStringList cv_from = pairs.at(0).split("|");
+                    foreach (QString from, cv_from){
+                        if (from == lord_name){
+                            bgmusic_path = "audio/bgm/" + pairs.at(1) + ".ogg";
+                            shouldBreak = true;
+                            break;
+                        }
+                    }
+                    if (shouldBreak)
+                        break;
+                }
+            }
+        }
         if (changeBackdrop)
             image_path = "backdrop/" + lord_name + ".jpg";
     }

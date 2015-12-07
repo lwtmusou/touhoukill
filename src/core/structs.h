@@ -592,7 +592,7 @@ enum TriggerEvent
     CardFinished,
     TrickCardCanceling,
     TrickEffect,
-	
+    
     PreMarkChange,
     MarkChanged,
 

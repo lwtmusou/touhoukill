@@ -383,15 +383,15 @@ public:
 
         //room->judge(judge);
         //src->obtainCard(judge.card);
-		CardsMoveStruct move;
+        CardsMoveStruct move;
         move.to = src;
         move.to_place = Player::PlaceHand;
-		int id = room->drawCard(false);
+        int id = room->drawCard(false);
         move.card_ids << id;
         room->moveCardsAtomic(move, false);
-		room->showCard(src, id);
+        room->showCard(src, id);
         //if (!judge.isGood()) {
-		if (Sanguosha->getCard(id)->getSuit() != Card::Diamond ){
+        if (Sanguosha->getCard(id)->getSuit() != Card::Diamond ){
             room->loseMaxHp(src);
             if (src->isWounded()) {
                 RecoverStruct recover;
@@ -415,13 +415,13 @@ public:
     virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *mokou, QVariant &data) const
     {
         //need this for turn broken? or @pingyi or multiple moukou?
-		/* if (e == EventPhaseChanging) {
+        /* if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.from == Player::Discard)
                 player->tag.remove("lizhan");
         } */
-		
-		if (!mokou || !mokou->isAlive() || !mokou->hasSkill("lizhan") || triggerEvent != CardsMoveOneTime) return;
+        
+        if (!mokou || !mokou->isAlive() || !mokou->hasSkill("lizhan") || triggerEvent != CardsMoveOneTime) return;
         ServerPlayer *current = room->getCurrent();
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
 
@@ -453,7 +453,7 @@ public:
         QList<ServerPlayer *> mokous = room->findPlayersBySkillName(objectName());
         foreach (ServerPlayer *mokou, mokous) {
             if (mokou->isCurrent()) continue;
-			QVariantList ids = mokou->tag["lizhan"].toList();   
+            QVariantList ids = mokou->tag["lizhan"].toList();   
             QList<int> get_ids;
             foreach (QVariant card_data, ids) {
                 if (room->getCardPlace(card_data.toInt()) == Player::DiscardPile)
@@ -461,8 +461,8 @@ public:
             }
             if (get_ids.length() == 0){
                 mokou->tag.remove("lizhan");
-				continue;
-			}
+                continue;
+            }
             skill_list.insert(mokou, QStringList(objectName()));
         }
 
@@ -476,9 +476,9 @@ public:
         QString prompt = "target:" + current->objectName();
         
         if  (room->askForSkillInvoke(source, objectName(), prompt))
-			return true;
-		source->tag.remove("lizhan");
-		return false;
+            return true;
+        source->tag.remove("lizhan");
+        return false;
     }
     
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *source) const
@@ -488,7 +488,7 @@ public:
         QString prompt1 = "@lizhan_slash:" + current->objectName();
         QVariantList ids = source->tag["lizhan"].toList();
         source->tag.remove("lizhan");    
-		
+        
         QList<int> all;
         foreach (QVariant card_data, ids) {
             if (room->getCardPlace(card_data.toInt()) == Player::DiscardPile)
@@ -947,9 +947,9 @@ public:
 
             QList<ServerPlayer *> srcs = room->findPlayersBySkillName(objectName());
             foreach (ServerPlayer *p, srcs){
-			    if (p != player)
+                if (p != player)
                     skill_list.insert(p, QStringList(objectName()));
-			}
+            }
             return skill_list;
         }else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -1147,7 +1147,7 @@ public:
             card->setUserString(c->objectName());
             return card;
         } 
-		return NULL;
+        return NULL;
     }
 
     virtual QDialog *getDialog() const
@@ -1173,7 +1173,7 @@ public:
 
         ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), "chuangshi", "@chuangshi_target", true, true);
         if (target != NULL) {
-			room->setPlayerMark(target, "chuangshi_user", 1);
+            room->setPlayerMark(target, "chuangshi_user", 1);
             //target->gainMark("chuangshi_user");//need use gainMark to notify the client player.
             room->setPlayerProperty(player, "chuangshi_user", target->objectName());
             const Card *card = room->askForUseCard(player, "@@chuangshi", "@chuangshi_prompt:" + target->objectName());
@@ -1273,12 +1273,12 @@ void ChuangshiCard::onUse(Room *room, const CardUseStruct &card_use) const
     Card *card = Sanguosha->cloneCard(user_string);
     if (card->isKindOf("Collateral")) {
         ServerPlayer *from = card_use.from; //ensure that the length of use.to should be 2. 
-		ServerPlayer *to1 = card_use.to.at(0);
-		ServerPlayer *to2 = card_use.to.at(1);
-		QList<ServerPlayer *>logto;
-		logto << to1 << to2;	
-		
-		ServerPlayer *chuangshi_user = Chuangshi::getChuangshiUser1(from);
+        ServerPlayer *to1 = card_use.to.at(0);
+        ServerPlayer *to2 = card_use.to.at(1);
+        QList<ServerPlayer *>logto;
+        logto << to1 << to2;    
+        
+        ServerPlayer *chuangshi_user = Chuangshi::getChuangshiUser1(from);
         room->setPlayerMark(chuangshi_user, "chuangshi_user", 0);
         from->addMark("chuangshi", 1);
         room->touhouLogmessage("#ChoosePlayerWithSkill", from, "chuangshi", logto, "");
@@ -1295,7 +1295,7 @@ void ChuangshiCard::onUse(Room *room, const CardUseStruct &card_use) const
 void ChuangshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
 
-	//const Card *card = Self->tag.value("chuangshi").value<const Card *>();
+    //const Card *card = Self->tag.value("chuangshi").value<const Card *>();
     Card *card = Sanguosha->cloneCard(user_string);
     if (card->isKindOf("Collateral"))
         return;

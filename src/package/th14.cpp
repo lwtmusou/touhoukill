@@ -261,7 +261,7 @@ public:
         if (triggerEvent == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Slash") && use.to.length() == 1) {
-			    ServerPlayer* target = use.to.first();
+                ServerPlayer* target = use.to.first();
                 if (use.from == NULL || use.from->isDead() || use.from->getLostHp() >= target->getLostHp())
                     return QStringList();
                 
@@ -1008,10 +1008,10 @@ TH14Package::TH14Package()
     seija->addSkill(new Nizhuan);
     seija->addSkill(new Guizha);
 
-	General *benben = new General(this, "benben", "hzc", 3, false);
+    General *benben = new General(this, "benben", "hzc", 3, false);
     benben->addSkill(new Yuyin);
     benben->addSkill(new Wuchang);
-	
+    
     General *yatsuhashi = new General(this, "yatsuhashi", "hzc", 3, false);
     yatsuhashi->addSkill(new Canxiang);
     yatsuhashi->addSkill(new Juwang);

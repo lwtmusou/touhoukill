@@ -105,7 +105,7 @@ int Dashboard::getButtonWidgetWidth() const
 void Dashboard::_createMiddle()
 {
     
-	// this is just a random rect. see constructor for more details
+    // this is just a random rect. see constructor for more details
     QRect rect = QRect(0, 0, 1, G_DASHBOARD_LAYOUT.m_normalHeight);
     _paintPixmap(_m_middleFrame, rect, _getPixmap(QSanRoomSkin::S_SKIN_KEY_MIDDLEFRAME), this);
     _m_middleFrame->setZValue(-1000); // nobody should be under me.
@@ -161,9 +161,9 @@ void Dashboard::_createRight()
 
     _m_skillDock = new QSanInvokeSkillDock(_m_rightFrame);
     QRect avatar = G_DASHBOARD_LAYOUT.m_avatarArea;
-	_m_skillDock->setPos(avatar.left()+25, avatar.bottom() +
+    _m_skillDock->setPos(avatar.left()+25, avatar.bottom() +
         G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height()-25);
-	_m_skillDock->setWidth(avatar.width()-50);
+    _m_skillDock->setWidth(avatar.width()-50);
 }
 
 
@@ -1083,7 +1083,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
 {
     if (_m_pile_expanded.contains(pile_name)) return;
     _m_pile_expanded << pile_name;
-	
+    
     QString new_name = pile_name;
     QList<int> pile;
     if (new_name.startsWith("%")) {
@@ -1150,11 +1150,11 @@ void Dashboard::expandPileCard()
 void Dashboard::retractPileCards(const QString &pile_name)
 {
 
-	if (!_m_pile_expanded.contains(pile_name)) return;
+    if (!_m_pile_expanded.contains(pile_name)) return;
     _m_pile_expanded.removeOne(pile_name);
     
-	
-	
+    
+    
     QString new_name = pile_name;
     QList<int> pile;
     if (new_name.startsWith("%")) {

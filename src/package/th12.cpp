@@ -331,7 +331,7 @@ public:
                 foreach (int id, move.card_ids) {
                     if (room->getCardPlace(id) == Player::DiscardPile
                         && (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial &&
-					    move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
+                        move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
                         ids << id;
                 }
                 toramaru->tag["baota"] = ids;
@@ -553,14 +553,14 @@ public:
                 foreach (int id, move.card_ids) {
                     if (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceHand && move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceEquip)
                     {
-						if (!record_ids.contains(id))
-							record_ids << id;
-					}
+                        if (!record_ids.contains(id))
+                            record_ids << id;
+                    }
                 }
                 room->setTag("UseOrResponseFromPile", record_ids);
             }
         } 
-		else if (triggerEvent == CardsMoveOneTime) {
+        else if (triggerEvent == CardsMoveOneTime) {
             if (nazurin->isCurrent() && move.from  && move.from != nazurin
                 && move.to_place == Player::DiscardPile) {
                 QVariantList obtain_ids;
@@ -571,7 +571,7 @@ public:
                     switch (move.from_places.at(move.card_ids.indexOf(id))) {
                     case Player::PlaceHand: obtain_ids << id; break;
                     case Player::PlaceEquip: obtain_ids << id; break;
-					case Player::PlaceJudge: obtain_ids << id; break;
+                    case Player::PlaceJudge: obtain_ids << id; break;
                     case Player::PlaceTable: {
                         QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
                         if (!record_ids.contains(id))
@@ -584,12 +584,12 @@ public:
                 }
                 nazurin->tag["souji"] = obtain_ids;
             }
-//******************************************************************************************			
-		    // delete record: UseOrResponseFromPile
+//******************************************************************************************            
+            // delete record: UseOrResponseFromPile
             QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
             foreach (int id, move.card_ids) {
                 if (record_ids.contains(id))
-					record_ids.removeOne(id);
+                    record_ids.removeOne(id);
             }
             room->setTag("UseOrResponseFromPile", record_ids);
         }
@@ -602,7 +602,7 @@ public:
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (player->isCurrent() && move.from  && move.from != player
                 && move.to_place == Player::DiscardPile) {
-				QVariantList obtain_ids = player->tag["souji"].toList();
+                QVariantList obtain_ids = player->tag["souji"].toList();
                 if (obtain_ids.length() > 0)
                     return QStringList(objectName());
             }
@@ -613,17 +613,17 @@ public:
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
         if (room->askForSkillInvoke(player, objectName(), data))
-			return true;
-		player->tag.remove("souji");
-		return false;
+            return true;
+        player->tag.remove("souji");
+        return false;
     }
     
     
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
         QVariantList ids = player->tag["souji"].toList();
-		player->tag.remove("souji");
-		
+        player->tag.remove("souji");
+        
         QList<int> obtain_ids;
         foreach (QVariant record_id, ids) 
             obtain_ids << record_id.toInt();
@@ -755,9 +755,9 @@ public:
     {
         if (!TriggerSkill::triggerable(player)) return QStringList();
         DamageStruct damage = data.value<DamageStruct>();
-		if (damage.from && player->canDiscard(damage.from, "he"))
-			return QStringList(objectName());
-		foreach (ServerPlayer *p, room->getAllPlayers()) {
+        if (damage.from && player->canDiscard(damage.from, "he"))
+            return QStringList(objectName());
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
                 if (player->canDiscard(p, "ej"))
                     return QStringList(objectName());
         }

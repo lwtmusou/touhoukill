@@ -871,10 +871,10 @@ public:
                 return QStringList();
             foreach (int id, move.card_ids) { //operate conflict with skill taohuan
                 if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
-				    ServerPlayer *owner = room->getCardOwner(id);
-					if (owner && owner == player)
-						return QStringList(objectName());
-				}    
+                    ServerPlayer *owner = room->getCardOwner(id);
+                    if (owner && owner == player)
+                        return QStringList(objectName());
+                }    
             }
         }
         return QStringList();
@@ -886,9 +886,9 @@ public:
         foreach (int id, move.card_ids) {
             if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand ) {
                 ServerPlayer *owner = room->getCardOwner(id);
-			    if (!owner || owner != player)
-					continue;
-				QList<ServerPlayer *> targets = chunxi_targets(player);
+                if (!owner || owner != player)
+                    continue;
+                QList<ServerPlayer *> targets = chunxi_targets(player);
                 if (targets.isEmpty())
                     break;
                 

@@ -163,7 +163,7 @@ public:
         AnchoredRect m_markTextArea;
         QPoint m_roleComboBoxPos;
         QRect m_roleShownArea;
-		
+        
         QPoint m_changePrimaryHeroSkinBtnPos;
         //QPoint m_changeSecondaryHeroSkinBtnPos;
 

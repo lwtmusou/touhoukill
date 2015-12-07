@@ -19,7 +19,7 @@ QString RoleComboBoxItem::getRole() const
 void RoleComboBoxItem::setRole(const QString &role)
 {
     m_role = role;
-	int number = m_number;
+    int number = m_number;
     if (m_number != 0 && role != "unknown")
         load(QString("image/system/roles/%1-%2.png").arg(m_role).arg(m_number), m_size, false);
     else
@@ -90,28 +90,28 @@ void RoleComboBox::toggle()
     Q_ASSERT(!_m_fixedRole.isNull());
     if (!isEnabled()) return;
     QString displayed = m_currentRole->getRole();
-	 
+     
     if (displayed == "unknown")
-		m_currentRole->setRole(_m_fixedRole);
-	else
-		m_currentRole->setRole("unknown");
-	
+        m_currentRole->setRole(_m_fixedRole);
+    else
+        m_currentRole->setRole("unknown");
+    
 }
 
 void RoleComboBox::fix(const QString &role)
 {
 
-	    if (_m_fixedRole.isNull()) {
-			disconnect(m_currentRole, SIGNAL(clicked()), this, SLOT(expand()));
-			connect(m_currentRole, SIGNAL(clicked()), this, SLOT(toggle()));
-		}
-	
-		m_currentRole->setRole(role);
-		if (role != "unknown")
-			_m_fixedRole = role;
-		// delete all
-		foreach(RoleComboBoxItem *item, items)
-			delete item;
-		items.clear();
+        if (_m_fixedRole.isNull()) {
+            disconnect(m_currentRole, SIGNAL(clicked()), this, SLOT(expand()));
+            connect(m_currentRole, SIGNAL(clicked()), this, SLOT(toggle()));
+        }
+    
+        m_currentRole->setRole(role);
+        if (role != "unknown")
+            _m_fixedRole = role;
+        // delete all
+        foreach(RoleComboBoxItem *item, items)
+            delete item;
+        items.clear();
 }
 

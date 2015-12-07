@@ -68,15 +68,15 @@ TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QString 
     playerName(player), width(width)
 {
     QString realSkill = skillStr;
-	if (realSkill.contains("*")) {
+    if (realSkill.contains("*")) {
         realSkill = skillStr.split("*").first();
     }
-	
+    
     if (realSkill.contains("'")) // "sgs1'songwei"
         realSkill = realSkill.split("'").last();
     else if (realSkill.contains("->")) // "tieqi->sgs4&1"
         realSkill = realSkill.split("->").first();
-	
+    
     const Skill *skill = Sanguosha->getSkill(realSkill);
     if (skill)
         setToolTip(skill->getDescription());

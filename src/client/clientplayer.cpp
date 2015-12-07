@@ -215,7 +215,7 @@ void ClientPlayer::setMark(const QString &mark, int value)
 #undef _EXCLUDE_MARK
                 QString mark_text = QString("<img src='image/mark/%1.png' />").arg(itor.key());
             if (itor.value() != 1)
-				mark_text.append(QString("<font size='18'>%1</font>").arg(itor.value()));
+                mark_text.append(QString("<font size='18'>%1</font>").arg(itor.value()));
                 //mark_text.append(QString("%1").arg(itor.value()));
             if (this != Self)
                 mark_text.append("<br>");

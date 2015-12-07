@@ -100,9 +100,9 @@ void WoyuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targ
     ServerPlayer *target = targets.first();
     QString role = target->getRole();
     room->touhouLogmessage("#WoyuAnnounce", source, role, room->getAllPlayers(), target->getGeneralName());
-	room->broadcastProperty(target, "role");
-	room->setPlayerProperty(target, "role_shown", true); //important! to notify client
-	
+    room->broadcastProperty(target, "role");
+    room->setPlayerProperty(target, "role_shown", true); //important! to notify client
+    
     if (role == "rebel")
         source->drawCards(3);
     else if (role == "loyalist")

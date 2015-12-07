@@ -244,15 +244,15 @@ void PlayerCardContainer::updateAvatar()
                 G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON, kingdom), this->_getAvatarParent());
             _paintPixmap(_m_kingdomColorMaskIcon, _m_layout->m_kingdomMaskArea,
                 G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK, kingdom), this->_getAvatarParent()); 
-				
-			
-			
-			//@todo
-			//we want this mask to start at zero piont of logbox width, 
-			//and keep the height to equal with the diff between middleFrame and rightFrame 
-			_paintPixmap(_m_dashboardKingdomColorMaskIcon, _m_layout->m_dashboardKingdomMaskArea,
+                
+            
+            
+            //@todo
+            //we want this mask to start at zero piont of logbox width, 
+            //and keep the height to equal with the diff between middleFrame and rightFrame 
+            _paintPixmap(_m_dashboardKingdomColorMaskIcon, _m_layout->m_dashboardKingdomMaskArea,
                 G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_DASHBOARD_KINGDOM_COLOR_MASK, kingdom), this->_getAvatarParent());
-				
+                
             _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea,
                 _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, kingdom), this->_getAvatarParent());
             QString name = Sanguosha->translate("&" + general->objectName());
@@ -381,10 +381,10 @@ static bool CompareByNumber(const Card *card1, const Card *card2)
 void PlayerCardContainer::updatePile(const QString &pile_name)
 {
     ClientPlayer *player = (ClientPlayer *)sender();
-	if (!player)
+    if (!player)
         player = m_player;
     if (!player) return;
-	
+    
     QString treasure_name;
     if (player->getTreasure()) treasure_name = player->getTreasure()->objectName();
 
@@ -405,7 +405,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
             if (treasure_name == pile_name)
                 button->setProperty("treasure", "true");
             else
-				button->setProperty("private_pile", "true");
+                button->setProperty("private_pile", "true");
             QGraphicsProxyWidget *button_widget = new QGraphicsProxyWidget(_getPileParent());
             button_widget->setObjectName(pile_name);
             button_widget->setWidget(button);
@@ -416,7 +416,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
         }
 
         //button->setText(QString("%1(%2)").arg(Sanguosha->translate(pile_name)).arg(pile.length()));
-		QString text = Sanguosha->translate(pile_name);
+        QString text = Sanguosha->translate(pile_name);
         if (pile.length() > 0)
             text.append(QString("(%1)").arg(pile.length()));
         button->setText(text);
@@ -424,7 +424,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
         if (treasure_name == pile_name)
             menu->setProperty("treasure", "true");
         else
-			menu->setProperty("private_pile", "true");
+            menu->setProperty("private_pile", "true");
 
         //Sort the cards in pile by number can let players know what is in this pile more clear.
         //If someone has "buqu", we can got which card he need or which he hate easier.
@@ -522,7 +522,7 @@ void PlayerCardContainer::refresh(bool killed)
         _m_chainIcon->setVisible(false);
         _m_actionIcon->setVisible(false);
         _m_saveMeIcon->setVisible(false);
-		_m_roleShownIcon->setVisible(false);
+        _m_roleShownIcon->setVisible(false);
     } else if (m_player) {
         if (_m_faceTurnedIcon) _m_faceTurnedIcon->setVisible(!m_player->faceUp());
         if (_m_chainIcon) _m_chainIcon->setVisible(m_player->isChained());
@@ -562,7 +562,7 @@ void PlayerCardContainer::repaintAll()
         _getAvatarParent());
     _paintPixmap(_m_actionIcon, _m_layout->m_actionedIconRegion, QSanRoomSkin::S_SKIN_KEY_ACTIONED_ICON,
         _getAvatarParent());
-	_paintPixmap(_m_roleShownIcon, _m_layout->m_roleShownArea, QSanRoomSkin::S_SKIN_KEY_ROLE_SHOWN,
+    _paintPixmap(_m_roleShownIcon, _m_layout->m_roleShownArea, QSanRoomSkin::S_SKIN_KEY_ROLE_SHOWN,
         _getAvatarParent());
     if (NULL != m_changePrimaryHeroSKinBtn) {
         m_changePrimaryHeroSKinBtn->setPos(_m_layout->m_changePrimaryHeroSkinBtnPos);
@@ -861,13 +861,13 @@ void PlayerCardContainer::startHuaShen(QString generalName, QString skillName)
     _m_huashenAnimation->start();
     _paintPixmap(_m_extraSkillBg, _m_layout->m_extraSkillArea, QSanRoomSkin::S_SKIN_KEY_EXTRA_SKILL_BG, _getAvatarParent());
     if (!skillName.isEmpty()) 
-		_m_extraSkillBg->show();
+        _m_extraSkillBg->show();
     _m_layout->m_extraSkillFont.paintText(_m_extraSkillText, _m_layout->m_extraSkillTextArea, Qt::AlignCenter,
         Sanguosha->translate(skillName).left(2));
     if (!skillName.isEmpty()) {
-		_m_extraSkillText->show();
-		_m_extraSkillBg->setToolTip(Sanguosha->getSkill(skillName)->getDescription());
-	}
+        _m_extraSkillText->show();
+        _m_extraSkillBg->setToolTip(Sanguosha->getSkill(skillName)->getDescription());
+    }
     _adjustComponentZValues();
 }
 
@@ -913,7 +913,7 @@ PlayerCardContainer::PlayerCardContainer()
     _m_phaseIcon = NULL;
     _m_markItem = NULL;
     _m_roleComboBox = NULL;
-	_m_roleShownIcon = NULL;
+    _m_roleShownIcon = NULL;
     m_player = NULL;
     _m_selectedFrame = NULL;
 
@@ -998,7 +998,7 @@ void PlayerCardContainer::_adjustComponentZValues(bool killed)
         _layUnder(judge);
     _layUnder(_m_markItem);
     _layUnder(_m_progressBarItem);
-	_layUnder(_m_roleShownIcon);
+    _layUnder(_m_roleShownIcon);
     _layUnder(_m_roleComboBox);
     // _layUnder(_m_chainIcon);
     _layUnder(_m_hpBox);
@@ -1015,7 +1015,7 @@ void PlayerCardContainer::_adjustComponentZValues(bool killed)
     _layUnder(_m_kingdomColorMaskIcon);
     _layUnder(_m_dashboardKingdomColorMaskIcon);
     _layUnder(_m_chainIcon);
-	
+    
 
     _layUnder(_m_screenNameItem);
     for (int i = 0; i < 5; i++)
@@ -1508,6 +1508,6 @@ void PlayerCardContainer::hideSkillName()
 
 void PlayerCardContainer::setRoleShown(bool shown)
 {
-	_m_roleShownIcon->setVisible(shown);
-	refresh();
+    _m_roleShownIcon->setVisible(shown);
+    refresh();
 }

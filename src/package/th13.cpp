@@ -1152,12 +1152,12 @@ public:
     {
         room->setTag("huisheng_use", data);
         CardUseStruct use = data.value<CardUseStruct>();
-		Card *card = Sanguosha->cloneCard(use.card->objectName());
+        Card *card = Sanguosha->cloneCard(use.card->objectName());
         if (use.card->isNDTrick() && use.from->hasSkill("aoyi")) {//for a bug in filtersviewkill, then ai has this skill
             if (use.from->getAI())
                 card = Sanguosha->cloneCard("ice_slash");
         } 
-		
+        
         QString prompt = "@huisheng-use:" + use.from->objectName() + ":" + card->objectName();
         room->setPlayerProperty(source, "huisheng_card", card->objectName());
         room->setPlayerProperty(source, "huisheng_target", use.from->objectName());

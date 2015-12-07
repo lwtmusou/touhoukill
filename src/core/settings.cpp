@@ -138,11 +138,11 @@ void Settings::init()
 
 
 
-	int length = 8;
+    int length = 8;
     int index = qrand() % length +1;
-	QString bgFilename = QString("%1%2%3").arg("backdrop/new-version").arg(index).arg(".jpg");
+    QString bgFilename = QString("%1%2%3").arg("backdrop/new-version").arg(index).arg(".jpg");
 
-	BackgroundImage = value("BackgroundImage", bgFilename).toString();
+    BackgroundImage = value("BackgroundImage", bgFilename).toString();
     TableBgImage = value("TableBgImage", "backdrop/default.jpg").toString();
     UseLordBackdrop = value("UseLordBackdrop", true).toBool();
 

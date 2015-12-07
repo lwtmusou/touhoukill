@@ -896,8 +896,8 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
         layout->m_markTextArea.tryParse(playerConfig["markTextArea"]);
         tryParse(playerConfig["roleComboBoxPos"], layout->m_roleComboBoxPos);
 
-		tryParse(playerConfig["roleShownArea"], layout->m_roleShownArea);
-		
+        tryParse(playerConfig["roleShownArea"], layout->m_roleShownArea);
+        
         tryParse(playerConfig["changePrimaryHeroSkinBtnPos"],
             layout->m_changePrimaryHeroSkinBtnPos);
         //tryParse(playerConfig["changeSecondaryHeroSkinBtnPos"],

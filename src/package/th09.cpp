@@ -364,7 +364,7 @@ public:
         frequency = Compulsory;
         events << DamageCaused;
     }
-	
+    
 
     
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
@@ -1237,8 +1237,8 @@ TH09Package::TH09Package()
     suika->addSkill(new Zuiyue);
     suika->addSkill(new Doujiu);
     suika->addSkill(new Yanhui);
-	
-	General *shikieiki = new General(this, "shikieiki$", "zhan", 3, false);
+    
+    General *shikieiki = new General(this, "shikieiki$", "zhan", 3, false);
     shikieiki->addSkill(new Shenpan);
     shikieiki->addSkill(new Huiwu);
     shikieiki->addSkill(new Huazhong);

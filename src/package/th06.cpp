@@ -244,9 +244,9 @@ public:
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
         if (!TriggerSkill::triggerable(player)) return QStringList();
-		if (player->getPhase() == Player::Start)
-			return QStringList(objectName());
-		return QStringList();	
+        if (player->getPhase() == Player::Start)
+            return QStringList(objectName());
+        return QStringList();    
     }
     
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const

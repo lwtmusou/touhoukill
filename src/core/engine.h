@@ -127,8 +127,8 @@ public:
 
     QStringList SurprisingGenerals;
     QStringList TouhouKingdoms;
-	QStringList LordBGMConvertList;
-	
+    QStringList LordBGMConvertList;
+    
 private:
     void _loadMiniScenarios();
     void _loadModScenarios();

@@ -118,7 +118,7 @@ void QSanButton::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
 
     if (_m_state == S_STATE_HOVER)//when askforSkillInvoke 
-		return;
+        return;
     Q_ASSERT(_m_state != S_STATE_HOVER);
 
     _m_mouseEntered = true;
@@ -302,7 +302,7 @@ void QSanInvokeSkillButton::_repaint()
 void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     painter->drawPixmap(0, 0, _m_bgPixmap[(int)_m_state]);
-	if (_m_skillType == S_SKILL_ATTACHEDLORD) {
+    if (_m_skillType == S_SKILL_ATTACHEDLORD) {
         int nline = _m_skill->objectName().indexOf("-");
         if (nline == -1)
             nline = _m_skill->objectName().indexOf("_");
@@ -318,7 +318,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
                 consider pingyi?
 
             } */
-			//do not consider general2
+            //do not consider general2
             /* if (p->getGeneral2()) {
             } */
         }
@@ -333,7 +333,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
         int h = pixmap.height() - _m_bgPixmap[(int)_m_state].height();
         painter->drawPixmap(0, -h, pixmap.width(), pixmap.height(), pixmap);
     }
-	
+    
 }
 
 QSanSkillButton *QSanInvokeSkillDock::addSkillButtonByName(const QString &skillName)
@@ -454,7 +454,7 @@ void QSanInvokeSkillDock::update()
                     btntype = 1;
                 button->setButtonWidth((QSanInvokeSkillButton::SkillButtonWidth)(btntype));
                 //button->setPos(0 - btnWidth * (j + 1) - 15, rowTop - G_DASHBOARD_LAYOUT.m_normalHeight);
-				button->setPos(0 - btnWidth * (j + 1) - G_DASHBOARD_LAYOUT.m_rightWidth + 45, rowTop - G_DASHBOARD_LAYOUT.m_normalHeight);
+                button->setPos(0 - btnWidth * (j + 1) - G_DASHBOARD_LAYOUT.m_rightWidth + 45, rowTop - G_DASHBOARD_LAYOUT.m_normalHeight);
                 //
             }
 

@@ -463,10 +463,10 @@ public:
 class Shuangren : public TargetModSkill
 {
 public:
-	Shuangren() : TargetModSkill("shuangren")
+    Shuangren() : TargetModSkill("shuangren")
     {
         frequency = NotFrequent;
-		pattern = "Slash";
+        pattern = "Slash";
     }
 
     virtual int getExtraTargetNum(const Player *player, const Card *card) const
@@ -1088,7 +1088,7 @@ public:
         player->drawCards(2);
         QList<int> hc = player->handCards();
         room->askForRende(player, hc, objectName(), false, true, qMin(2, player->getHandcardNum()));
-		//room->askForYiji(player, hc, objectName(), false, false, true, qMin(2, player->getHandcardNum()));
+        //room->askForYiji(player, hc, objectName(), false, false, true, qMin(2, player->getHandcardNum()));
         
         return false;
     }
@@ -1614,9 +1614,9 @@ public:
                 return QStringList(objectName());
         }else if (triggerEvent == EventPhaseEnd && player->getPhase() == Player::Play){
             if (player->getMark("siyuinvoke") > 0  && player->getHp() < 1){
-				player->removeMark("siyuinvoke");
+                player->removeMark("siyuinvoke");
                 return QStringList(objectName());
-			}
+            }
         }
         return QStringList();
     }
@@ -1662,7 +1662,7 @@ public:
             return true;
         
         }
-		else if (triggerEvent == EventPhaseEnd && player->getPhase() == Player::Play){
+        else if (triggerEvent == EventPhaseEnd && player->getPhase() == Player::Play){
             room->notifySkillInvoked(player, "hpymsiyu");
             room->enterDying(player, NULL);
         }
@@ -1746,7 +1746,7 @@ TH07Package::TH07Package()
     prismriver->addSkill(new Hesheng);
 
     General *alice = new General(this, "alice", "yym", 4, false);
-	alice->addSkill(new Zhanzhen);
+    alice->addSkill(new Zhanzhen);
     alice->addSkill(new Renou);
     
 

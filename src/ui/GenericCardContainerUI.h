@@ -109,8 +109,8 @@ public:
     virtual void stopHuaShen();
     virtual void updateAvatarTooltip();
     virtual void setRoleShown(bool shown = false);
-	
-	
+    
+    
     static void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect,
         const QPixmap &pixmap, QGraphicsItem *parent);
 
@@ -253,7 +253,7 @@ protected:
     MagatamasBoxItem *_m_hpBox;
     MagatamasBoxItem *_m_sub_hpBox;
     RoleComboBox *_m_roleComboBox;
-	QGraphicsPixmapItem *_m_roleShownIcon;
+    QGraphicsPixmapItem *_m_roleShownIcon;
     QSanCommandProgressBar *_m_progressBar;
     QGraphicsProxyWidget *_m_progressBarItem;
 
