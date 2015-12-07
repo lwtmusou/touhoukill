@@ -181,7 +181,7 @@
     "disperseWidth": 250,
 	"markTextArea": [0, 0, 50, 50],
     "roleComboBoxPos": [-28, 47],
-	"roleShownArea": [-28, 14, 36, 120],
+	"roleShownArea": [-40, 30, 56, 60],
 	"changePrimaryHeroSkinBtnPos": [25, 40],
     "borderWidth": 6,
     "avatarImageType": 1,

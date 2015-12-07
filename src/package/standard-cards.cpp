@@ -576,7 +576,7 @@ public:
         return QStringList();
     }
     
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *skill_target, QVariant &data, ServerPlayer *ask_who) const
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *skill_target, QVariant &, ServerPlayer *ask_who) const
     {
         //ask_who->askForSkillInvoke(this, QVariant::fromValue(skill_target)
         if (ask_who){
