@@ -19,7 +19,6 @@ QString RoleComboBoxItem::getRole() const
 void RoleComboBoxItem::setRole(const QString &role)
 {
     m_role = role;
-    int number = m_number;
     if (m_number != 0 && role != "unknown")
         load(QString("image/system/roles/%1-%2.png").arg(m_role).arg(m_number), m_size, false);
     else

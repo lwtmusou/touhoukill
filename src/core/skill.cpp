@@ -301,7 +301,7 @@ bool TriggerSkill::triggerable(const ServerPlayer *target) const
     return target != NULL && target->isAlive() && target->hasSkill(objectName());
 }
 
-QStringList TriggerSkill::triggerable(TriggerEvent , Room *room, ServerPlayer *target, QVariant &, ServerPlayer* &) const{
+QStringList TriggerSkill::triggerable(TriggerEvent , Room *, ServerPlayer *target, QVariant &, ServerPlayer* &) const{
     //if (triggerable(target, room))
     if (triggerable(target))
         return QStringList(objectName());
