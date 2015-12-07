@@ -1089,26 +1089,7 @@ sgs.ai_skill_cardask["@mokai"] = function(self, data)
 	return "$" .. cards[1]:getId()
 end
 
---[[sgs.ai_skill_cardchosen.mokai = function(self, who, flags)
-	local equips = {}
-	for _,equip in sgs.qlist(self.player:getEquips()) do
-		if (equip:isKindOf("Weapon") and self.player:getMark("@tianyi_Weapon") ==0) then
-			table.insert(equips,equip)
-		elseif (equip:isKindOf("Armor")and  self.player:getMark("@tianyi_Armor") ==0) then
-			table.insert(equips,equip)
-		elseif (equip:isKindOf("DefensiveHorse") and  self.player:getMark("@tianyi_DefensiveHorse") ==0) then
-			table.insert(equips,equip)
-		elseif (equip:isKindOf("OffensiveHorse") and self.player:getMark("@tianyi_OffensiveHorse") ==0) then
-			table.insert(equips,equip)
-		elseif (equip:isKindOf("Treasure") and  self.player:getMark("@tianyi_Treasure") ==0) then
-			table.insert(equips,equip)
-		end
-	end
-	self:sortByKeepValue(equips)
-	return equips[1]
 
-end
-]]
 sgs.ai_cardneed.mokai = function(to, card, self)
 	if not self:willSkipPlayPhase(to) then
 		return card:isKindOf("TrickCard") or card:isKindOf("EquipCard")
