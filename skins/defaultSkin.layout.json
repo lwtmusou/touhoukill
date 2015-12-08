@@ -96,7 +96,7 @@
     "delayedTrickFirstRegion": [-13, 16, 28, 28],
     "delayedTrickStep": [0, 19],
     "roleComboBoxPos": [140, 1],
-	"roleShownArea": [140, 14, 36, 120],
+	"roleShownArea": [125, -10, 56, 60],
 	"changePrimaryHeroSkinBtnPos": [25, 35],
 
 	
