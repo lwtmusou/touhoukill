@@ -308,7 +308,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
             nline = _m_skill->objectName().indexOf("_");
         QString engskillname = _m_skill->objectName().left(nline);
         QString generalName = "";
-
+			
         foreach (const Player* p, Self->getSiblings()) {
             const General* general = p->getGeneral();
             if (general->hasSkill(engskillname)) {
@@ -322,8 +322,14 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
             /* if (p->getGeneral2()) {
             } */
         }
-        if (generalName == "")
+        if (generalName == ""){
+			const General* general = Self->getGeneral();
+            if (general->hasSkill(engskillname))
+				generalName = general->objectName();
+		}
+		if (generalName == "")
             return;
+		
         QString path = G_ROOM_SKIN.getButtonPixmapPath(G_ROOM_SKIN.S_SKIN_KEY_BUTTON_SKILL, getSkillTypeString(_m_skillType), _m_state);
         int n = path.lastIndexOf("/");
         path = path.left(n + 1) + generalName + ".png";
