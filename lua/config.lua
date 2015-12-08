@@ -13,14 +13,8 @@ config = {
 
 	kingdoms = { 
 	"zhu", "hmx","yym","yyc","zhan","fsl","dld","xlc","slm","hzc","wai","touhougod" ,
-	"wei", "shu", "wu", "qun", "god" 
 	},
 	kingdom_colors = {
-		wei = "#547998",
-		shu = "#D0796C",
-		wu = "#4DB873",
-		qun = "#8A807A",
-		god = "#96943D",
 		zhu ="#6b21b6",--"#CC00FF",
 		hmx = "#cb0b0b",--"red",
 		yym = "#2121b9",--"#547998",
