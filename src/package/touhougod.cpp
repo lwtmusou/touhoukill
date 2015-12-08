@@ -3002,34 +3002,6 @@ public:
 };
 
 
-class Shenhua : public TriggerSkill
-{
-public:
-    Shenhua() : TriggerSkill("shenhua")
-    {
-        events << EventPhaseStart;
-        frequency = Compulsory;
-    }
-
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
-    {
-        if (!TriggerSkill::triggerable(player)) return QStringList();
-        if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Finish)
-            return QStringList(objectName());
-        return QStringList();
-    }
-    
-     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
-    {
-        room->notifySkillInvoked(player, objectName());
-        room->touhouLogmessage("#TriggerSkill", player, objectName());
-        if (player->getMark("@xinyang") == 0)
-            room->loseMaxHp(player, 1);
-        else
-            player->loseMark("@xinyang", player->getMark("@xinyang"));
-        return false;
-    }
-};
 
 class Zuosui : public TriggerSkill
 {
@@ -3129,6 +3101,37 @@ public:
         return false;
     }
 };
+
+
+class Shenhua : public TriggerSkill
+{
+public:
+    Shenhua() : TriggerSkill("shenhua")
+    {
+        events << EventPhaseStart;
+        frequency = Compulsory;
+    }
+
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    {
+        if (!TriggerSkill::triggerable(player)) return QStringList();
+        if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Finish)
+            return QStringList(objectName());
+        return QStringList();
+    }
+    
+     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
+        room->notifySkillInvoked(player, objectName());
+        room->touhouLogmessage("#TriggerSkill", player, objectName());
+        if (player->getMark("@xinyang") == 0)
+            room->loseMaxHp(player, 1);
+        else
+            player->loseMark("@xinyang", player->getMark("@xinyang"));
+        return false;
+    }
+};
+
 
 class Hongfo : public TriggerSkill
 {
@@ -3732,9 +3735,9 @@ TouhouGodPackage::TouhouGodPackage()
     koishi_god->addRelateSkill("chaowo");
 
     General *suwako_god = new General(this, "suwako_god", "touhougod", 5, false);
-    suwako_god->addSkill(new Shenhua);
     suwako_god->addSkill(new Zuosui);
     suwako_god->addSkill(new Worao);
+	suwako_god->addSkill(new Shenhua);
 
     General *miko_god = new General(this, "miko_god", "touhougod", 4, false);
     miko_god->addSkill(new Hongfo);

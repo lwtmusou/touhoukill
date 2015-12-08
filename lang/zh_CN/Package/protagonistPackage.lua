@@ -55,7 +55,7 @@ return {
 	["cv:marisa"] = "暂无",
 	
     ["mofa"] = "魔法",
-    [":mofa"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张手牌，若如此做，你使用的牌造成的伤害+1，直到回合结束。若以此法弃置了<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，你摸一张牌。",
+    [":mofa"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张手牌，若如此做，你于此回合内使用的牌造成的伤害+1。若以此法弃置了<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，你摸一张牌。",
 	["#mofa_notice"]="由于 %arg 的效果，此回合内 %from 使用的牌造成的伤害+1。",
     ["#mofa_damage"]="%from 对 %to 的伤害由 %arg2 点增加到 %arg 点。",
     ["#TouhouBuff"]="%from 的 %arg 效果被触发。",   
@@ -108,7 +108,7 @@ return {
     ["jiezou_skip"]="出牌阶段",
     ["#jiezou_skip"]="由于 %arg2 的效果，%from 被强制结束了 %arg。",
     ["shoucang"] = "收藏",
-    [":shoucang"] = "弃牌阶段开始时，你可以展示X张花色各不相同的手牌，若如此做，你的手牌上限+X，直到回合结束。",
+    [":shoucang"] = "弃牌阶段开始时，你可以展示X张花色各不相同的手牌，若如此做，你的手牌上限于此回合内+X。",
     ["#shoucang_max"]="本回合，%from的手牌上限+%arg2",
     ["@shoucang"] = "弃牌阶段，你可以发动“收藏”，展示任意数量的花色各不相同的手牌。",
     ["~shoucang"]="选择展示的手牌→点击“确定”。",

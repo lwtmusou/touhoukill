@@ -529,6 +529,9 @@ public:
      virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {   
         if (!TriggerSkill::triggerable(player)) return QStringList();
+		ServerPlayer *current = room->getCurrent();
+        if (!current || !current->isAlive() || current == player)
+            return QStringList();
         QString pattern = data.toStringList().first();
         if (pattern == "jink") {
             Jink *jink = new Jink(Card::NoSuit, 0);
@@ -541,10 +544,6 @@ public:
                 if (player->isCardLimited(jink, Card::MethodUse))
                     return QStringList();
             }
-
-            ServerPlayer *current = room->getCurrent();
-            if (!current || !current->isAlive())
-                return QStringList();
             return QStringList(objectName());
         }
         return QStringList();

@@ -112,7 +112,7 @@
 	["cv:aya"] = "暂无", 
 	
     ["fengshen"] = "风神",
-    [":fengshen"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张红色手牌，令你攻击范围内的一名角色或距离为1的任意数量的角色各选择一项：弃置一张【杀】，或受到你对其造成的1点伤害。",
+    [":fengshen"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张红色手牌，令你攻击范围内的一名角色或距离为1的任意数量的角色各选择一项：弃置一张【杀】，或受到你造成的1点伤害。",
     ["@fengshen-discard"] = "请弃置一张【杀】，否则受到 <font color=\"#00FF00\"><b>%src </b></font> 对你造成的1点伤害",
     ["fengsu"] = "风速",
     [":fengsu"] = "<font color=\"blue\"><b>锁定技，</b></font>你与其他角色的距离-X；其他角色与你的距离+X（X为你已损失的体力值）。",
@@ -136,7 +136,7 @@
 	["cv:nitori"] = "暂无",
 	
     ["xinshang"] = "心伤",
-    [":xinshang"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可令一名其他角色摸一张牌，然后该角色选择一项：将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌交给你，且令你使用牌时无距离和使用次数限制，直到回合结束；或令你依次弃置其两张牌。",
+    [":xinshang"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可令一名其他角色摸一张牌，然后该角色选择一项：将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌交给你，并令你于此回合内使用牌时无距离和使用次数限制；或令你依次弃置其两张牌。",
     ["@xinshang-spadecard"] = "请交给 <font color=\"#00FF00\"><b>%src </b></font> 一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌，否则将被 <font color=\"#00FF00\"><b>%src </b></font> 弃置两张牌。",
     ["micai"] = "迷彩",
     [":micai"] = "<font color=\"blue\"><b>锁定技，</b></font>当你受到伤害时，若此伤害多于X点（X为你的手牌数），将此伤害改为X点。",
