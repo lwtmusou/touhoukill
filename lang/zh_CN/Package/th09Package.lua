@@ -42,16 +42,15 @@ return
 	 --["designer:shikieiki"] = "星野梦美 | 程序:fsu0413", 
 	["illustrator:shikieiki"] = "風花風花 (p号:37523603)",
 	--个人id:1316750
-	["illustrator:shikieiki_1"] = " (p号:)",
-	--个人id:
+	["illustrator:shikieiki_1"] = "ideolo  (p号:41261013)",
+	--个人id:61513 
 	["illustrator:shikieiki_2"] = "DomotoLain (p号:27397315)",
 	--个人id:38674（国人 貌似可以）
 	["illustrator:shikieiki_3"] = "飛鳥士郎 (p号:8978341)",
 	--个人id:319018 （貌似可以）
 	["illustrator:shikieiki_4"] = "カズ (p号:4734540)",
 	--个人id:137496
-	["illustrator:shikieiki_5"] = "ideolo  (p号:41261013)",
-	--个人id:61513 
+
 	["cv:shikieiki"] = "暂无",
 	
     ["shenpan"] = "审判" ,

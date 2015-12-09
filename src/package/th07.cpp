@@ -19,10 +19,22 @@ public:
         events << DamageCaused << EventPhaseChanging;
     }
 
+	virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &) const
+	{
+		if (triggerEvent == EventPhaseChanging){
+            foreach (ServerPlayer *p, room->getAlivePlayers()) {
+                if (p->hasFlag("sidie_used"))
+                    room->setPlayerFlag(player, "-sidie_used");
+            }
+        }
+	}
+	
+	
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const
-    {
+    {	
+		if (!TriggerSkill::triggerable(player)) return QStringList();
         if (triggerEvent == DamageCaused){
-            if (!TriggerSkill::triggerable(player)) return QStringList();
+            
             if (player->getPhase() != Player::Play)
                 return QStringList();
             DamageStruct damage = data.value<DamageStruct>();
@@ -41,11 +53,6 @@ public:
                 if (damage.to->canSlash(p, slash, false))
                     return QStringList(objectName());
                 }
-            }
-        }else if (triggerEvent == EventPhaseChanging){
-            foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                if (p->hasFlag("sidie_used"))
-                    room->setPlayerFlag(player, "-sidie_used");
             }
         }
         return QStringList();
@@ -94,8 +101,6 @@ public:
         return false;
     }
 };
-
-
 
 class Wangxiang : public TriggerSkill
 {
@@ -1656,49 +1661,47 @@ public:
 };
 
 
-class Juhe : public DrawCardsSkill
+class Juhe : public TriggerSkill
 {
 public:
-    Juhe() : DrawCardsSkill("juhe")
+    Juhe() : TriggerSkill("juhe")
     {
-        frequency = Frequent;
+        events << DrawNCards << AfterDrawNCards;
+		frequency = Frequent;
     }
 
-    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const
-    {
-        return room->askForSkillInvoke(player, objectName());
-    }
-    
-    virtual int getDrawNum(ServerPlayer *player, int n) const
-    {
-        Room *room = player->getRoom();
-        room->setPlayerFlag(player, "juheUsed");
-        return n + 3;  
-    }
-};
-
-class JuheEffect : public TriggerSkill
-{
-public:
-    JuheEffect() : TriggerSkill("#juhe")
-    {
-        events << AfterDrawNCards;
-    }
-
-    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &, ServerPlayer* &) const
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer* &) const
     {
         if (!TriggerSkill::triggerable(player)) return QStringList();
-        if (player->hasFlag("juheUsed") && player->getHp() > 0)
-            return QStringList(objectName());
+        if (triggerEvent == DrawNCards)
+			return QStringList(objectName());
+		else if (triggerEvent ==AfterDrawNCards){
+			if (player->hasFlag("juheUsed") && player->getHp() > 0)
+				return QStringList(objectName());
+		}
         return QStringList();
     }
     
-    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const
     {
-        player->setFlags("-juheUsed");
-        room->askForDiscard(player, "juhe", player->getHp(), player->getHp(), false, false, "juhe_discard:" + QString::number(player->getHp()));
-        return false;
+        if (triggerEvent == DrawNCards)
+			return room->askForSkillInvoke(player, objectName());
+		return true;
+		
     }
+	
+	virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
+		if (triggerEvent == DrawNCards){
+			data = QVariant::fromValue(data.toInt() + 3);
+            room->setPlayerFlag(player, "juheUsed");
+		}
+		else if (triggerEvent ==AfterDrawNCards){
+			player->setFlags("-juheUsed");
+			room->askForDiscard(player, "juhe", player->getHp(), player->getHp(), false, false, "juhe_discard:" + QString::number(player->getHp()));
+		}
+		return false;
+	}
 };
 
 
@@ -1710,7 +1713,6 @@ TH07Package::TH07Package()
     General *yuyuko = new General(this, "yuyuko$", "yym", 4, false);
     yuyuko->addSkill(new Sidie);
     yuyuko->addSkill(new Wangxiang);
-    related_skills.insertMulti("sidie", "#sidie_clear");
 
     General *yukari = new General(this, "yukari", "yym", 3, false);
     yukari->addSkill(new Jingjie);
@@ -1767,9 +1769,6 @@ TH07Package::TH07Package()
     General *youmu_slm = new General(this, "youmu_slm", "yym", 2, false);
     youmu_slm->addSkill(new HpymSiyu);
     youmu_slm->addSkill(new Juhe);
-    youmu_slm->addSkill(new JuheEffect);
-    related_skills.insertMulti("hpymsiyu", "#hpymsiyu");
-    related_skills.insertMulti("juhe", "#juhe");
 
     addMetaObject<ZhaoliaoCard>();
     addMetaObject<MocaoCard>();

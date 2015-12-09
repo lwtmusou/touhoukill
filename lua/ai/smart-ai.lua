@@ -5602,8 +5602,8 @@ function SmartAI:getCardsNum(class_name, flag, selfonly)
 			n = n + player:getPile("wine"):length() - 1
 		elseif card_str:getSkillName() == "renxin" then
 			n = n + 1
-		elseif card_str:getSkillName() == "bllmwuyu" then
-			n = n + 1
+		--elseif card_str:getSkillName() == "bllmwuyu" then
+		--	n = n + 1
 		end
 	end
 

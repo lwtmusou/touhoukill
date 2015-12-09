@@ -156,6 +156,7 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 	end
 	
 	if target:hasSkill("zhenlie") then return false end
+	if target:hasSkill("zheshe") and target:canDiscard(target, "h") then return false end
 	if target:hasSkill("xiangle") then
 		local basicnum = 0
 		for _, acard in sgs.qlist(self.player:getHandcards()) do
