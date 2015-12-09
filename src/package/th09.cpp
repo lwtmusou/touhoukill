@@ -4,9 +4,8 @@
 #include "skill.h"
 #include "engine.h"
 #include "standard.h"
-//#include "clientplayer.h"
 #include "client.h"
-//#include "ai.h"
+#include "th10.h"
 #include "maneuvering.h"
 
 
@@ -1230,6 +1229,223 @@ public:
 };
 
 
+
+NianliCard::NianliCard()
+{
+    will_throw = false;
+    handling_method = Card::MethodNone;
+}
+
+bool NianliCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    const Card *card = Self->tag.value("nianli").value<const Card *>();
+    Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::SuitToBeDecided, 0);
+    new_card->setSkillName("nianli");
+    if (new_card->targetFixed())
+        return false;
+    return new_card && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
+}
+
+bool NianliCard::targetFixed() const
+{
+    const Card *card = Self->tag.value("nianli").value<const Card *>();
+    Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::SuitToBeDecided, 0);
+    new_card->setSkillName("nianli");
+    //return false;
+	return new_card && new_card->targetFixed();
+}
+
+bool NianliCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+    const Card *card = Self->tag.value("nianli").value<const Card *>();
+    Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::SuitToBeDecided, 0);
+    new_card->setSkillName("nianli");
+    return new_card && new_card->targetsFeasible(targets, Self);
+}
+
+const Card *NianliCard::validate(CardUseStruct &card_use) const
+{
+	QString to_use = user_string;
+    QList<int> ids = card_use.from->getRoom()->getNCards(2);
+
+    Card *use_card = Sanguosha->cloneCard(to_use, Card::SuitToBeDecided, 0);
+    use_card->setSkillName("nianli");
+    use_card->addSubcards(ids);
+    use_card->deleteLater();
+    return use_card;
+}
+
+
+class NianliVS : public ZeroCardViewAsSkill
+{
+public:
+    NianliVS() : ZeroCardViewAsSkill("nianli")
+    {
+    }
+
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->hasUsed("NianliCard");
+    }
+
+    virtual const Card *viewAs() const
+    {
+        CardStar c = Self->tag.value("nianli").value<CardStar>();
+        //we need get the real subcard.
+        if (c) {
+            NianliCard *card = new NianliCard;
+            card->setUserString(c->objectName());
+            return card;
+        } else
+            return NULL;
+    }
+
+
+};
+
+class Nianli : public TriggerSkill
+{
+public:
+    Nianli() : TriggerSkill("nianli")
+    {
+        events  << TargetSpecified;
+		view_as_skill = new NianliVS;
+    }
+
+	virtual QDialog *getDialog() const
+    {
+        return QijiDialog::getInstance("nianli");
+    }
+	
+    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const
+    {
+        if (!TriggerSkill::triggerable(player)) return QStringList();
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->getSkillName() == objectName())
+			return QStringList(objectName());
+		
+        return QStringList();
+    }
+    
+    
+    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
+		bool nullified = false;
+		CardUseStruct use = data.value<CardUseStruct>();
+		
+		
+		QString pattern = "";
+		if (use.card->isRed())
+			pattern = ".|red|.|hand";
+		else if (use.card->isBlack())
+			pattern = ".|black|.|hand";
+		else
+			nullified = true;
+			
+		if (!nullified){
+			QString prompt = "@nianli-discard" ;
+            const Card *card = room->askForCard(use.from, pattern, prompt, data, Card::MethodDiscard);
+			if (!card)
+				nullified = true;
+		}
+        if (nullified){
+			foreach (ServerPlayer *to, use.to) 
+				use.nullified_list << to->objectName();
+            data = QVariant::fromValue(use);
+        }	
+        return false;
+    }
+    
+};
+
+
+class NianliTargetMod : public TargetModSkill
+{
+public:
+    NianliTargetMod() : TargetModSkill("#nianlimod")
+    {
+        pattern = "Slash,Snatch";
+    }
+
+    virtual int getDistanceLimit(const Player *from, const Card *card) const
+    {
+        if (from->hasSkill("nianli") && card->getSkillName() == "nianli")
+            return 1000;
+        else
+            return 0;
+    }
+
+    virtual int getResidueNum(const Player *from, const Card *card) const
+    {
+        if (from->hasSkill("nianli") && card->getSkillName() == "nianli")
+            return 1000;
+        else
+            return 0;
+    }
+
+};
+
+
+
+class Shenmi : public TriggerSkill
+{
+public:
+    Shenmi() : TriggerSkill("shenmi")
+    {
+        frequency = Frequent;
+        events  << AfterDrawNCards;
+    }
+
+    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const
+    {
+        if (!TriggerSkill::triggerable(player)) return QStringList();
+        if (player->getHandcardNum() > player->getMaxCards())
+			return QStringList(objectName());      
+        return QStringList();
+    }
+    
+    virtual bool cost(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
+        return player->askForSkillInvoke(objectName(), data);
+    }
+    
+    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const
+    {
+		room->askForGuanxing(player, room->getNCards(3), Room::GuanxingUpOnly, objectName());	
+        return false;
+    }
+    
+};
+
+class Jieshe : public MaxCardsSkill
+{
+public:
+    Jieshe() : MaxCardsSkill("jieshe$")
+    {
+    }
+
+    virtual int getExtra(const Player *target) const
+    {
+        if (target->hasLordSkill(objectName())) {
+            int extra = 0;
+            QList<const Player *> players = target->getAliveSiblings();
+            foreach (const Player *player, players) {
+                if (player->getKingdom() == "zhan")
+                    extra += 1;
+            }
+			if (target->getPhase() == Player::Discard)
+				return extra;
+			else
+				return -extra;
+        } else
+            return 0;
+    }
+};
+
+
+
+
 TH09Package::TH09Package()
     : Package("th09")
 {
@@ -1281,7 +1497,15 @@ TH09Package::TH09Package()
     kokoro->addSkill(new Nengwu);
     kokoro->addSkill(new Xiwang);
     
+	General *sumireko = new General(this, "sumireko$", "zhan", 4, false);
+	sumireko->addSkill(new Nianli);
+	sumireko->addSkill(new NianliTargetMod);
+	sumireko->addSkill(new Shenmi);
+	sumireko->addSkill(new Jieshe);
+	related_skills.insertMulti("nianli", "#nianlimod");
+	
     addMetaObject<TianrenCard>();
+	addMetaObject<NianliCard>();
 }
 
 ADD_PACKAGE(TH09)
