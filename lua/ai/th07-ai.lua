@@ -641,7 +641,7 @@ sgs.ai_playerchosen_intention.baochun = -80
 
 sgs.ai_need_damaged.baochun = function(self, attacker, player)
 	local x= player:getLostHp()+1 
-	if x>=3 and player:getHp()>1 then
+	if x>=2 and player:getHp()>1 then
 		return true
 	end
 	return false
