@@ -3581,6 +3581,14 @@ sgs.ai_card_intention.Indulgence = function(self, card, from, tos)
 	end
 end
 sgs.ai_keep_value.Indulgence = 3.5
+sgs.ai_judge_model.indulgence = function(self, who)
+	local judge = sgs.JudgeStruct()
+    judge.who = who
+	judge.pattern = ".|heart"
+    judge.good = true
+    judge.reason = "indulgence"
+	return judge
+end
 
 sgs.dynamic_value.control_usecard.Indulgence = true
 
@@ -3614,7 +3622,7 @@ function SmartAI:willUseLightning(card)
 		end
 		for _, aplayer in ipairs(self.enemies) do
 			if aplayer:hasSkill("guanxing") or (aplayer:hasSkill("gongxin") and hashy)
-			or aplayer:hasSkill("xinzhan") or aplayer:hasSkill("tianyan")  then
+			or aplayer:hasSkill("xinzhan") or aplayer:hasSkill("tianyan") or aplayer:hasSkill("shenmi")  then
 				if self:isFriend(aplayer:getNextAlive()) then return true end
 			end
 		end
@@ -3666,7 +3674,14 @@ end
 
 sgs.ai_use_priority.Lightning = 0
 sgs.dynamic_value.lucky_chance.Lightning = true
-
+sgs.ai_judge_model.lightning = function(self, who)
+	local judge = sgs.JudgeStruct()
+    judge.who = who
+	judge.pattern = ".|spade|2~9"
+    judge.good = false
+    judge.reason = "lightning"
+	return judge
+end
 sgs.ai_keep_value.Lightning = -1
 
 --东方杀相关

@@ -790,3 +790,91 @@ sgs.ai_choicemade_filter.cardResponded["@xiwang"] = function(self, player, promp
 		sgs.updateIntention(player, target, -80)
 	end
 end
+
+
+function SmartAI:nianliColor(cards)
+	local black = 0
+	local red = 0
+	for _,c in pairs (cards) do
+		if c:isBlack() then
+			black = black +1
+		else
+			red = red + 1
+		end
+	end
+	if black > red then
+		return sgs.Card_Black
+	else
+		return sgs.Card_Red
+	end
+end
+
+local nianli_skill = {}
+nianli_skill.name = "nianli"
+table.insert(sgs.ai_skills, nianli_skill)
+nianli_skill.getTurnUseCard = function(self)
+	if self.player:hasUsed("NianliCard") then return nil end
+	if self.player:getPhase() ~= sgs.Player_Play then return nil end
+	-- local cards = self.player:getCards("h")
+
+	-- local validCards = {}
+	-- for _,c in sgs.qlist(cards) do
+		-- local can = true
+		-- for _,id in sgs.qlist(self.player:getPile("rainbow")) do
+			-- if c:getSuit() == sgs.Sanguosha:getCard(id):getSuit() then
+				-- can = false
+				-- break
+			-- end
+		-- end
+		-- if can then
+			-- table.insert( validCards, c)
+		-- end
+	-- end
+	
+	-- if #validCards == 0 then return nil end
+	-- self:sortByKeepValue(validCards)
+	
+	local nianliCards = {}
+	local nianli = "slash|snatch"
+	local nianlis = nianli:split("|")
+	for i = 1, #nianlis do
+		local forbidden = nianlis[i]
+		local forbid = sgs.cloneCard(forbidden)
+		if not self.player:isLocked(forbid)  then --and self:canUseXihuaCard(forbid, true)
+			table.insert(nianliCards,forbid)
+		end
+	end
+
+	self:sortByUseValue(nianliCards, false)
+	for _,nianliCard in pairs (nianliCards) do
+		local dummyuse = { isDummy = true }
+		if nianliCard:isKindOf("BasicCard") then
+			self:useBasicCard(nianliCard, dummyuse) 
+		else
+			self:useTrickCard(nianliCard, dummyuse)
+		end
+		if dummyuse.card then
+			fakeCard = sgs.Card_Parse("@NianliCard=.:" .. nianliCard:objectName())
+			return fakeCard
+		end
+	end
+	return nil
+end
+
+sgs.ai_skill_use_func.NianliCard=function(card,use,self)
+	local userstring=card:toString()
+	userstring=(userstring:split(":"))[3]
+	local nianlicard=sgs.cloneCard(userstring)
+	nianlicard:setSkillName("nianli")
+	if nianlicard:getTypeId() == sgs.Card_TypeBasic then self:useBasicCard(nianlicard, use) 
+	else 
+		assert(nianlicard) 
+		self:useTrickCard(nianlicard, use) 
+	end
+	if not use.card then return end
+	use.card=card
+end
+
+
+
+sgs.ai_use_priority.NianliCard = 9

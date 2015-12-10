@@ -710,7 +710,53 @@ sgs.ai_skill_use_func.TianyanCard = function(card, use, self)
 end
 sgs.ai_use_value.TianyanCard = 8
 sgs.ai_use_priority.TianyanCard = 7
+sgs.ai_skill_discard.tianyan = function(self,discard_num, min_num)
+	local next_player = self.player:getNextAlive()
+	local judgeReasons = self:touhouGetJudges(next_player)
+	local cards = self.player:getHandcards()
+	cards = sgs.QList2Table(cards)
+	self:sortByKeepValue(cards)
+	
+	local to_discard, tmp  = {}, {} --tmp for_judge
+	for _,reason in pairs (judgeReasons) do
+		local fakeJudge = self:touhouBulidJudge(reason, next_player)
+		if fakeJudge ~= nil then
+			fakeJudge.card = cards[1]
+			local judge_id = self:getRetrialCardId(cards, fakeJudge)
+			if judge_id == - 1 then
+				table.insert(tmp, fakeJudge.card:getEffectiveId())
+				table.remove(cards, 1)
+			else
+				local newCard = sgs.Sanguosha:getCard(judge_id)
+				table.insert(tmp, judge_id)
+				table.removeOne(cards, newCard)
+			end
+		else
+			table.insert(tmp, -1)
+		end
+		if #tmp >= discard_num then
+			break
+		end
+	end
+	
+	for index, id in pairs (tmp) do
+		if (id < 0) then
+			table.insert(to_discard, cards[1]:getEffectiveId())
+			table.remove(cards, 1)
+		else
+			table.insert(to_discard, id)
+		end
+	end
+	
+	if #to_discard < discard_num then
+		for index, card in pairs (cards) do
+			table.insert(to_discard, card:getEffectiveId())
+			if (#to_discard >= discard_num) then break end
+		end
+	end
 
+	return to_discard
+end
 
 
 local fengrang_skill = {}

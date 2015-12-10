@@ -415,6 +415,15 @@ sgs.ai_card_intention.SupplyShortage = function(self, card, from, tos)
 	
 end
 sgs.dynamic_value.control_usecard.SupplyShortage = true
+sgs.ai_judge_model.supply_shortage = function(self, who)
+	local judge = sgs.JudgeStruct()
+    judge.who = who
+	judge.pattern = ".|club"
+    judge.good = true
+    judge.reason = "supply_shortage"
+	return judge
+end
+
 
 function SmartAI:getChainedFriends(player)
 	player = player or self.player

@@ -326,62 +326,131 @@ local function GuanXing(self, cards)
 end
 
 local function XinZhan(self, cards)
-	local up, bottom = {}, {}
+	local up, tmpup, bottom = {}, {}, {} --type: ids, ids, cards
 	local judged_list = {}
 	local hasJudge = false
 	local next_player = self.player:getNextAlive()
 	local judge = next_player:getCards("j")
 	judge = sgs.QList2Table(judge)
 	judge = sgs.reverse(judge)
-    --check 天眼
+	
+
 	bottom = getIdToCard(self, cards)
-	for judge_count, need_judge in ipairs(judge) do
-		local index = 1
-		local lightning_flag = false
-		local judge_str = sgs.ai_judgestring[need_judge:objectName()] or sgs.ai_judgestring[need_judge:getSuitString()]
-
-		for _, for_judge in ipairs(bottom) do
-			if judge_str == "spade" and not lightning_flag then
-				has_lightning = need_judge
-				if for_judge:getNumber() >= 2 and for_judge:getNumber() <= 9 then lightning_flag = true end
-			end
-			if self:isFriend(next_player) then
-				if judge_str == for_judge:getSuitString() then
-					if not lightning_flag then
-						table.insert(up, for_judge)
-						table.remove(bottom, index)
-						judged_list[judge_count] = 1
-						has_judged = true
-						break
-					end
-				end
-			else
-				if judge_str ~= for_judge:getSuitString() or
-					(judge_str == for_judge:getSuitString() and judge_str == "spade" and lightning_flag) then
-					table.insert(up, for_judge)
-					table.remove(bottom, index)
-					judged_list[judge_count] = 1
-					has_judged = true
-				end
-			end
-			index = index + 1
-		end
-		if not judged_list[judge_count] then judged_list[judge_count] = 0 end
+	if self:isFriend(next_player) then
+		self:sortByUseValue(bottom)
+	else
+		self:sortByUseValue(bottom, true)
 	end
-
-	if has_judged then
-		for index=1, #judged_list do
-			if judged_list[index] == 0 then
-				table.insert(up, index, table.remove(bottom))
+	
+	local considerNianli = false
+	if self.player:hasSkills("shenmi+nianli") and self.player:getPhase() == sgs.Player_Draw 
+	    and not self:willSkipPlayPhase(self.player) then
+		considerNianli = true
+	end
+	
+	local nianlis = {}
+	if considerNianli then
+		local color = self:nianliColor(bottom)
+		for index, card in pairs (bottom) do
+			if card:getColor() == color then
+				table.insert(nianlis, card:getEffectiveId())
+				table.removeOne(bottom, card)
 			end
+			if #nianlis >= 2 then break end
 		end
 	end
-
-	while #bottom ~= 0 do
-		table.insert(up, table.remove(bottom))
+	self.player:gainMark("@woca")
+	
+	
+	local judgeReasons = self:touhouGetJudges(next_player)
+	local bottom_count = #bottom
+	for _,reason in pairs (judgeReasons) do
+		local fakeJudge = self:touhouBulidJudge(reason, next_player)
+		if fakeJudge ~= nil then
+			fakeJudge.card = bottom[1]
+			local judge_id = self:getRetrialCardId(bottom, fakeJudge, false)
+			if judge_id == - 1 then
+				table.insert(tmpup, fakeJudge.card:getEffectiveId())
+				table.remove(bottom, 1)
+			else 
+				local newCard = sgs.Sanguosha:getCard(judge_id)
+				table.insert(tmpup, judge_id)
+				table.removeOne(bottom, newCard)
+			end
+		elseif #bottom >0 then
+			table.insert(tmpup, -1)
+		end
+		if #tmpup >= bottom_count then
+			break
+		end
 	end
+	
+	for index, id in pairs (tmpup) do
+		if (id < 0) then
+			table.insert(up, bottom[1]:getEffectiveId())
+			table.remove(bottom, 1)
+		else
+			table.insert(up, id)
+		end
+	end
+	
+	for index, card in pairs (bottom) do
+		table.insert(up, card:getEffectiveId())
+	end
+	
+	
+	for index, id in pairs (nianlis) do
+		table.insert(up, 1, id)
+	end
+	
+	-- bottom = getIdToCard(self, cards)
+	-- for judge_count, need_judge in ipairs(judge) do
+		-- local index = 1
+		-- local lightning_flag = false
+		-- local judge_str = sgs.ai_judgestring[need_judge:objectName()] or sgs.ai_judgestring[need_judge:getSuitString()]
 
-	up = getBackToId(self, up)
+		-- for _, for_judge in ipairs(bottom) do
+			-- if judge_str == "spade" and not lightning_flag then
+				-- has_lightning = need_judge
+				-- if for_judge:getNumber() >= 2 and for_judge:getNumber() <= 9 then lightning_flag = true end
+			-- end
+			-- if self:isFriend(next_player) then
+				-- if judge_str == for_judge:getSuitString() then
+					-- if not lightning_flag then
+						-- table.insert(up, for_judge)
+						-- table.remove(bottom, index)
+						-- judged_list[judge_count] = 1
+						-- has_judged = true
+						-- break
+					-- end
+				-- end
+			-- else
+				-- if judge_str ~= for_judge:getSuitString() or
+					-- (judge_str == for_judge:getSuitString() and judge_str == "spade" and lightning_flag) then
+					-- table.insert(up, for_judge)
+					-- table.remove(bottom, index)
+					-- judged_list[judge_count] = 1
+					-- has_judged = true
+				-- end
+			-- end
+			-- index = index + 1
+		-- end
+		-- if not judged_list[judge_count] then judged_list[judge_count] = 0 end
+	-- end
+
+	-- if has_judged then
+		-- for index=1, #judged_list do
+			-- if judged_list[index] == 0 then
+				-- table.insert(up, index, table.remove(bottom))
+			-- end
+		-- end
+	-- end
+
+	-- while #bottom ~= 0 do
+		-- table.insert(up, table.remove(bottom))
+	-- end
+
+	-- up = getBackToId(self, up)
 	return up, {}
 end
 

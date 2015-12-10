@@ -346,26 +346,6 @@ sgs.ai_skill_cardchosen.shijie = function(self, who, flags)
 	return who:getCards("e"):first()
 end
 
---[[sgs.ai_skill_cardask["@fengshui-retrial"] = function(self, data)
-	if self.player:isKongcheng() then return "." end
-	judge=data:toJudge()
-	if self:needRetrial(judge) then
-		local handcards = sgs.QList2Table(self.player:getHandcards())
-		self:sortByUseValue(handcards)
-		return "$" .. handcards[1]:getId()
-	end
-	return "."
-end
-sgs.ai_skill_askforag.fengshui = function(self, card_ids)
-        local cards ={}
-		for _,id in sgs.list(card_ids) do
-			local card = sgs.Sanguosha:getCard(id)
-			table.insert(cards,card)
-		end
-        local judge = self.player:getTag("fengshui_judge"):toJudge()
-        return  self:getRetrialCardId(cards, judge) --返回-1会有问题？
-end
-]]
 sgs.ai_skill_invoke.fengshui = function(self,data)
 	return true
 end

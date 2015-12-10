@@ -108,6 +108,8 @@ sgs.ai_DamagedBenefit ={}
 sgs.siling_lack =				{}
 sgs.attackRange_skill = {}
 sgs.ai_skillProperty = {}
+sgs.ai_judge_model ={}
+
 
 sgs.fake_loyalist =     false
 sgs.fake_rebel = false
@@ -7795,6 +7797,37 @@ function skillPropertyCompare(skillProperty1,skillProperty2)
 end
 
 
+function SmartAI:touhouBulidJudge(reason, who)
+	local player = who or self.player
+	local callback = sgs.ai_judge_model[reason]
+	if callback and type(callback) == "function" then
+		return callback(self,  who)
+	end
+	return nil
+end
+
+function SmartAI:touhouGetJudges(player)
+	local judgeReasons = {}
+	player = player or self.player:getNextAlive()
+	for _, askill in sgs.qlist(player:getVisibleSkillList()) do
+		local s_name = askill:objectName()
+		if not player:hasSkill(s_name) then--需要check技能无效
+				continue
+		end
+		local filter = sgs.ai_judge_model[s_name]
+		if filter and type(filter) == "function"  then
+			table.insert(judgeReasons, s_name)
+		end
+	end
+	
+	
+	local judge = player:getCards("j")
+	for _,needjudge in sgs.qlist(judge) do
+		table.insert(judgeReasons, needjudge:objectName())
+	end
+	return judgeReasons
+end
+
 --将木牛 票等id 加入 手牌的list中
 function SmartAI:touhouAppendExpandPileToList(player,cards)
 	--if player:getMark("@tianyi_Treasure") ==0 then
@@ -7996,6 +8029,14 @@ function SmartAI:touhouNeedBear(card,from,tos)
 	end
 	return false
 end
+
+
+
+
+
+
+
+
 
 -----*****由此开始为原三国杀武将包中的smart-ai
 --不要对其伤害 god-ai
@@ -8310,11 +8351,12 @@ dofile "lua/ai/imagine-ai.lua"
 dofile "lua/ai/standard_cards-ai.lua"
 dofile "lua/ai/maneuvering-ai.lua"
 dofile "lua/ai/classical-ai.lua"
---dofile "lua/ai/standard-ai.lua"
+--dofile "lua/ai/standard-ai.lua" (dofile "lua/ai/guanxing-ai.lua" in this)
 dofile "lua/ai/chat-ai.lua"
 --dofile "lua/ai/basara-ai.lua"
 --dofile "lua/ai/hegemony-ai.lua"
 --dofile "lua/ai/hulaoguan-ai.lua"
+dofile "lua/ai/guanxing-ai.lua"
 
 local loaded = "standard|standard_cards|maneuvering|sp"
 

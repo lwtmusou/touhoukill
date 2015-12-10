@@ -123,24 +123,6 @@ sgs.ai_skillProperty.mingyun = function(self)
 	return "wizard_harm"
 end
 
--- sgs.ai_skill_playerchosen.xueyi = function(self, targets)
-	-- target_table =sgs.QList2Table(targets)
-	-- if #target_table==0 then return false end
-	-- for _,target in pairs(target_table) do	
-		-- if  self:isFriend(target) then
-			-- return target
-		-- end
-	-- end
-	-- return nil
--- end
--- sgs.ai_playerchosen_intention.xueyi = -80
--- sgs.ai_no_playerchosen_intention.xueyi =function(self, from)
-	-- local lord = self.room:getLord()
-	-- if lord then
-		-- sgs.updateIntention(from, lord, 10)
-	-- end
--- end
-
 
 
 sgs.ai_skill_invoke.xueyi = function(self, data)
@@ -199,7 +181,14 @@ end
 sgs.ai_skillProperty.pohuai = function(self)
 	return "cause_judge"
 end
-
+sgs.ai_judge_model.pohuai = function(self, who)
+	local judge = sgs.JudgeStruct()
+    judge.who = who
+    judge.pattern = "Slash"
+    judge.good = true
+    judge.reason = "pohuai"
+	return judge
+end
 
 sgs.yuxue_keep_value = {
 	Peach 			= 5.5,
