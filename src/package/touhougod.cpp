@@ -2609,7 +2609,7 @@ public:
         ServerPlayer *sbl = room->findPlayerBySkillName(objectName());
         bool retract = false;
         bool expand = false;
-        if (triggerEvent == EventLoseSkill && data.toString() == "chaoren"){
+        if (triggerEvent == EventLoseSkill && data.toString() == "chaoren" && !player->hasSkill("chaoren") && player->hasSkill("chaoren", true)){
              sbl = player;
              retract = true;
         }
@@ -2620,7 +2620,7 @@ public:
             MarkChangeStruct change = data.value<MarkChangeStruct>();
             if  (change.name != "@changshi"  && change.name != "@pingyi")
                 return QStringList();
-            if (change.name == "@changshi" && player->getMark(change.name) >0){
+            if (change.name == "@changshi" && player->getMark(change.name) >0 && !player->hasSkill("chaoren") && player->hasSkill("chaoren", false, true)){
                 sbl = player;
                 retract = true;
             }
