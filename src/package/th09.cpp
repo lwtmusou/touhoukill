@@ -1321,9 +1321,8 @@ public:
     
     virtual bool effect(TriggerEvent , Room *room, ServerPlayer *, QVariant &data, ServerPlayer *) const
     {
-		bool nullified = false;
+		bool loseHp = false;
 		CardUseStruct use = data.value<CardUseStruct>();
-		
 		
 		QString pattern = "";
 		if (use.card->isRed())
@@ -1331,18 +1330,31 @@ public:
 		else if (use.card->isBlack())
 			pattern = ".|black|.|hand";
 		else
-			nullified = true;
+			loseHp = true;
 			
-		if (!nullified){
+		if (!loseHp){
 			QString prompt = "@nianli-discard" ;
-            const Card *card = room->askForCard(use.from, pattern, prompt, data, Card::MethodDiscard);
-			if (!card)
-				nullified = true;
+            //const Card *card = room->askForCard(use.from, pattern, prompt, data, Card::MethodDiscard);
+			const Card *card = room->askForCard(use.from, pattern, prompt, data, Card::MethodNone);
+			//const Card *card = room->askForExchange(use.from, objectName(), 1, false, prompt, true);
+			/*  const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data, const QString &skill_name);
+    const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data = QVariant(),
+        Card::HandlingMethod method = Card::MethodDiscard, ServerPlayer *to = NULL, bool isRetrial = false,
+        const QString &skill_name = QString(), bool isProvision = false); */
+			
+			if (card){		
+				CardsMoveStruct move;
+				move.card_ids = card->getSubcards();
+				move.from = use.from;
+				move.to_place = Player::DrawPile;
+				room->moveCardsAtomic(move, true);
+			
+			}
+			else
+				loseHp = true;
 		}
-        if (nullified){
-			foreach (ServerPlayer *to, use.to) 
-				use.nullified_list << to->objectName();
-            data = QVariant::fromValue(use);
+        if (loseHp){
+			room->loseHp(use.from, 1);
         }	
         return false;
     }
@@ -1356,14 +1368,6 @@ public:
     NianliTargetMod() : TargetModSkill("#nianlimod")
     {
         pattern = "Slash,Snatch";
-    }
-
-    virtual int getDistanceLimit(const Player *from, const Card *card) const
-    {
-        if (from->hasSkill("nianli") && card->getSkillName() == "nianli")
-            return 1000;
-        else
-            return 0;
     }
 
     virtual int getResidueNum(const Player *from, const Card *card) const
@@ -1408,32 +1412,31 @@ public:
     
 };
 
-class Jieshe : public MaxCardsSkill
+
+class Liqun : public DistanceSkill
 {
 public:
-    Jieshe() : MaxCardsSkill("jieshe$")
+    Liqun() : DistanceSkill("liqun$")
     {
     }
 
-    virtual int getExtra(const Player *target) const
+    virtual int getCorrect(const Player *from, const Player *to) const
     {
-        if (target->hasLordSkill(objectName())) {
-            int extra = 0;
-            QList<const Player *> players = target->getAliveSiblings();
-            foreach (const Player *player, players) {
-                if (player->getKingdom() == "zhan")
-                    extra += 1;
-            }
-			if (target->getPhase() == Player::Discard)
-				return extra;
-			else
-				return -extra;
-        } else
-            return 0;
+        int correct = 0;
+        if (to->hasLordSkill(objectName())){
+            if (from !=to){
+				QList<const Player *> players = from->getAliveSiblings();
+					foreach (const Player *player, players) {
+					if (player->getKingdom() == "zhan" && player != to && from->inMyAttackRange(player)){
+						correct = 1;
+						break;
+					} 
+				}
+			}
+		}
+        return correct;
     }
 };
-
-
 
 
 TH09Package::TH09Package()
@@ -1489,7 +1492,7 @@ TH09Package::TH09Package()
 	sumireko->addSkill(new Nianli);
 	sumireko->addSkill(new NianliTargetMod);
 	sumireko->addSkill(new Shenmi);
-	sumireko->addSkill(new Jieshe);
+	sumireko->addSkill(new Liqun);
 	related_skills.insertMulti("nianli", "#nianlimod");
 	
     addMetaObject<TianrenCard>();

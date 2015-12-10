@@ -612,6 +612,7 @@ enum TriggerEvent
     DrawCardsFromDrawPile, // for qiangyu
     AfterGuanXing,
     Reconnect,
+	KingdomChanged,
     
     NumOfEvents
 };

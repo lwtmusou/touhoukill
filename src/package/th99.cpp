@@ -1296,7 +1296,7 @@ public:
     GanyingHandler() : TriggerSkill("#ganying_handle")
     {
         events << EventAcquireSkill << EventLoseSkill << HpChanged << Death << CardsMoveOneTime
-            << MarkChanged;
+            << MarkChanged << KingdomChanged;
         //<< EventPhaseChanging
     }
 
@@ -1317,12 +1317,9 @@ public:
             if (data.toString() == "ganying")
                 return ;
         }
-        if (triggerEvent == CardsMoveOneTime) {
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        if (triggerEvent == CardsMoveOneTime || triggerEvent == KingdomChanged) {
             if (room->getTag("FirstRound").toBool())
                 return;
-            //if (move.from != NULL && move.from->hasFlag("rengui_InTempMoving"))
-            //    return;
         }
         if (triggerEvent == MarkChanged) {
             MarkChangeStruct change = data.value<MarkChangeStruct>();

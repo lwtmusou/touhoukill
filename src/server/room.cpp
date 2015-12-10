@@ -1997,6 +1997,9 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
         if (value.toBool())
             setPlayerMark(player, "AI_RolePredicted",  1);        
     }
+	
+	if (strcmp(property_name, "kingdom") == 0)
+        thread->trigger(KingdomChanged, this, player);
 }
 
 void Room::slotSetProperty(ServerPlayer *player, const char *property_name, const QVariant &value)
@@ -5635,7 +5638,7 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
     //    bottom_cards = cards;
     //}
     if (ai) {
-        ai->askForGuanxing(cards, top_cards, bottom_cards, (int)guanxing_type);
+		ai->askForGuanxing(cards, top_cards, bottom_cards, (int)guanxing_type);
     } else if (guanxing_type == GuanxingUpOnly && cards.length() == 1) {
         top_cards = cards;
     } else if (guanxing_type == GuanxingDownOnly && cards.length() == 1) {
