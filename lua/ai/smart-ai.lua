@@ -7822,7 +7822,9 @@ function SmartAI:touhouGetJudges(player)
 	
 	
 	local judge = player:getCards("j")
-	for _,needjudge in sgs.qlist(judge) do
+	judge = sgs.QList2Table(judge)
+	judge = sgs.reverse(judge)
+	for _,needjudge in pairs(judge) do
 		table.insert(judgeReasons, needjudge:objectName())
 	end
 	return judgeReasons

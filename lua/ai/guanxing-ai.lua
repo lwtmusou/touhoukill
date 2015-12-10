@@ -359,7 +359,6 @@ local function XinZhan(self, cards)
 			if #nianlis >= 2 then break end
 		end
 	end
-	self.player:gainMark("@woca")
 	
 	
 	local judgeReasons = self:touhouGetJudges(next_player)
