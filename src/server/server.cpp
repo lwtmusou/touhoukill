@@ -155,7 +155,7 @@ QWidget *ServerDialog::createPackageTab()
     return widget;
 }
 
-void ServerDialog::setMaxHpSchemeBox()
+/* void ServerDialog::setMaxHpSchemeBox()
 {
     if (!second_general_checkbox->isChecked()) {
         prevent_awaken_below3_checkbox->setVisible(false);
@@ -182,7 +182,7 @@ void ServerDialog::setMaxHpSchemeBox()
         scheme0_subtraction_spinbox->setVisible(false);
     }
 }
-
+ */
 QWidget *ServerDialog::createAdvancedTab()
 {
     QVBoxLayout *layout = new QVBoxLayout;
@@ -250,8 +250,8 @@ QWidget *ServerDialog::createAdvancedTab()
     disable_chat_checkbox = new QCheckBox(tr("Disable chat"));
     disable_chat_checkbox->setChecked(Config.DisableChat);
 
-    second_general_checkbox = new QCheckBox(tr("Enable second general"));
-    second_general_checkbox->setChecked(Config.Enable2ndGeneral);
+    //second_general_checkbox = new QCheckBox(tr("Enable second general"));
+    //second_general_checkbox->setChecked(Config.Enable2ndGeneral);
 
     scene_checkbox = new QCheckBox(tr("Enable Scene"));
     scene_checkbox->setChecked(Config.EnableScene);    //changjing
@@ -259,26 +259,27 @@ QWidget *ServerDialog::createAdvancedTab()
     //same_checkbox = new QCheckBox(tr("Enable Same"));
     //same_checkbox->setChecked(Config.EnableSame);
 
-    max_hp_label = new QLabel(tr("Max HP scheme"));
-    max_hp_scheme_ComboBox = new QComboBox;
+    //max_hp_label = new QLabel(tr("Max HP scheme"));
+    /* max_hp_scheme_ComboBox = new QComboBox;
     max_hp_scheme_ComboBox->addItem(tr("Sum - X"));
     max_hp_scheme_ComboBox->addItem(tr("Minimum"));
     max_hp_scheme_ComboBox->addItem(tr("Maximum"));
     max_hp_scheme_ComboBox->addItem(tr("Average"));
-    max_hp_scheme_ComboBox->setCurrentIndex(Config.MaxHpScheme);
+    max_hp_scheme_ComboBox->setCurrentIndex(Config.MaxHpScheme); */
 
     prevent_awaken_below3_checkbox = new QCheckBox(tr("Prevent maxhp being less than 3 for awaken skills"));
     prevent_awaken_below3_checkbox->setChecked(Config.PreventAwakenBelow3);
-    prevent_awaken_below3_checkbox->setEnabled(max_hp_scheme_ComboBox->currentIndex() != 0);
+    //prevent_awaken_below3_checkbox->setEnabled(max_hp_scheme_ComboBox->currentIndex() != 0);
+	prevent_awaken_below3_checkbox->setEnabled(false);
 
-    scheme0_subtraction_label = new QLabel(tr("Subtraction for scheme 0"));
-    scheme0_subtraction_label->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
-    scheme0_subtraction_spinbox = new QSpinBox;
+    //scheme0_subtraction_label = new QLabel(tr("Subtraction for scheme 0"));
+    //scheme0_subtraction_label->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
+    /* scheme0_subtraction_spinbox = new QSpinBox;
     scheme0_subtraction_spinbox->setRange(-5, 12);
     scheme0_subtraction_spinbox->setValue(Config.Scheme0Subtraction);
-    scheme0_subtraction_spinbox->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
+    scheme0_subtraction_spinbox->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0); */
 
-    connect(max_hp_scheme_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setMaxHpSchemeBox()));
+    //connect(max_hp_scheme_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setMaxHpSchemeBox()));
 
     /*basara_checkbox = new QCheckBox(tr("Enable Basara"));
     basara_checkbox->setChecked(Config.EnableBasara);
@@ -329,9 +330,9 @@ QWidget *ServerDialog::createAdvancedTab()
     layout->addLayout(HLay(godlimit_label, godlimit_spinbox));
     layout->addLayout(HLay(lord_maxchoice_label, lord_maxchoice_spinbox));
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for non-lord")), nonlord_maxchoice_spinbox));
-    layout->addWidget(second_general_checkbox);
-    layout->addLayout(HLay(max_hp_label, max_hp_scheme_ComboBox));
-    layout->addLayout(HLay(scheme0_subtraction_label, scheme0_subtraction_spinbox));
+    //layout->addWidget(second_general_checkbox);
+    //layout->addLayout(HLay(max_hp_label, max_hp_scheme_ComboBox));
+    //layout->addLayout(HLay(scheme0_subtraction_label, scheme0_subtraction_spinbox));
     layout->addWidget(prevent_awaken_below3_checkbox);
     //layout->addLayout(HLay(basara_checkbox, hegemony_checkbox));
     //layout->addLayout(HLay(hegemony_maxchoice_label, hegemony_maxchoice_spinbox));
@@ -346,21 +347,21 @@ QWidget *ServerDialog::createAdvancedTab()
     QWidget *widget = new QWidget;
     widget->setLayout(layout);
 
-    max_hp_label->setVisible(Config.Enable2ndGeneral);
-    connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_label, SLOT(setVisible(bool)));
-    max_hp_scheme_ComboBox->setVisible(Config.Enable2ndGeneral);
-    connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_scheme_ComboBox, SLOT(setVisible(bool)));
+    //max_hp_label->setVisible(Config.Enable2ndGeneral);
+    //connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_label, SLOT(setVisible(bool)));
+    //max_hp_scheme_ComboBox->setVisible(Config.Enable2ndGeneral);
+    //connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_scheme_ComboBox, SLOT(setVisible(bool)));
 
     if (Config.Enable2ndGeneral) {
-        prevent_awaken_below3_checkbox->setVisible(max_hp_scheme_ComboBox->currentIndex() != 0);
-        scheme0_subtraction_label->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
-        scheme0_subtraction_spinbox->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
+        //prevent_awaken_below3_checkbox->setVisible(max_hp_scheme_ComboBox->currentIndex() != 0);
+        //scheme0_subtraction_label->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
+        //scheme0_subtraction_spinbox->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
     } else {
         prevent_awaken_below3_checkbox->setVisible(false);
-        scheme0_subtraction_label->setVisible(false);
-        scheme0_subtraction_spinbox->setVisible(false);
+        //scheme0_subtraction_label->setVisible(false);
+        //scheme0_subtraction_spinbox->setVisible(false);
     }
-    connect(second_general_checkbox, SIGNAL(toggled(bool)), this, SLOT(setMaxHpSchemeBox()));
+    //connect(second_general_checkbox, SIGNAL(toggled(bool)), this, SLOT(setMaxHpSchemeBox()));
 
     /*hegemony_maxchoice_label->setVisible(Config.EnableHegemony);
     connect(hegemony_checkbox, SIGNAL(toggled(bool)), hegemony_maxchoice_label, SLOT(setVisible(bool)));
@@ -474,10 +475,10 @@ void ServerDialog::updateButtonEnablility(QAbstractButton *button)
 
     if (button->objectName().contains("mini")) {
         mini_scene_button->setEnabled(true);
-        second_general_checkbox->setChecked(false);
-        second_general_checkbox->setEnabled(false);
+        //second_general_checkbox->setChecked(false);
+        //second_general_checkbox->setEnabled(false);
     } else {
-        second_general_checkbox->setEnabled(true);
+        //second_general_checkbox->setEnabled(true);
         mini_scene_button->setEnabled(false);
     }
 }
@@ -1092,14 +1093,14 @@ bool ServerDialog::config()
     Config.FreeAssignSelf = Config.EnableCheat && free_assign_self_checkbox->isChecked() && free_assign_checkbox->isEnabled();
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
     Config.DisableChat = disable_chat_checkbox->isChecked();
-    Config.Enable2ndGeneral = second_general_checkbox->isChecked();
+    //Config.Enable2ndGeneral = second_general_checkbox->isChecked();
     Config.EnableScene = scene_checkbox->isChecked();        //changjing
     //Config.EnableSame = same_checkbox->isChecked();
     //Config.EnableBasara = basara_checkbox->isChecked() && basara_checkbox->isEnabled();
     //Config.EnableHegemony = hegemony_checkbox->isChecked() && hegemony_checkbox->isEnabled();
-    Config.MaxHpScheme = max_hp_scheme_ComboBox->currentIndex();
+    //Config.MaxHpScheme = max_hp_scheme_ComboBox->currentIndex();
     if (Config.MaxHpScheme == 0) {
-        Config.Scheme0Subtraction = scheme0_subtraction_spinbox->value();
+        //Config.Scheme0Subtraction = scheme0_subtraction_spinbox->value();
         Config.PreventAwakenBelow3 = false;
     } else {
         Config.Scheme0Subtraction = 3;

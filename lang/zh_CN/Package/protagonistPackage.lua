@@ -11,15 +11,10 @@ return {
     ["!reimu"] = "博丽灵梦",
 	--["designer:reimu"] = "星野梦美 | 程序:三国有单", 
 	["illustrator:reimu"] = "tearfish  (p号:5228650)",
-	--个人id:84644
 	["illustrator:reimu_1"] = "蒼空キズナ  (p号:4510083)",
-	--个人id:161747
 	["illustrator:reimu_2"] = "ファルまろ  (p号:34912115)",
-	--个人id:1218472
 	["illustrator:reimu_3"] = "みや  (p号:22911671)",
-	--个人id:41977
 	["illustrator:reimu_4"] = "pico  (p号:20132493)",
-	--个人id:347929
 	["cv:reimu"] = "暂无",
 	
     ["lingqi"] = "灵气",

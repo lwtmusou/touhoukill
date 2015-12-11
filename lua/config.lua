@@ -3,12 +3,6 @@
 
 config = {
 	developers = {
-		"Yanguam" ,
-		"Fsu0413" ,
-		"Fu Nima" ,
-		"0147certainly" ,
-		"忧郁の月兔" ,
-		"lwtmusou",
 	} ,
 
 	kingdoms = { 

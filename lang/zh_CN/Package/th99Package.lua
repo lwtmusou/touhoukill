@@ -258,7 +258,7 @@ return{
     ["#kosuzu"] = "识文解意的爱书人", 
     ["!kosuzu"] = "本居小铃",
 	["cv:kosuzu"] = "暂无",
-	["illustrator:kosuzu"] = "藤ちょこ	p号:40527071",
+	["illustrator:kosuzu"] = "藤ちょこ	p号:",
 	["illustrator:kosuzu_1"] = "音無空太 p号:50873812",
 	["illustrator:kosuzu_2"] = "にしまる	p号:40527071",
 	

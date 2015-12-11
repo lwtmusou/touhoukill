@@ -28,7 +28,7 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
     setLayout(layout);
 
     QStringList developers = GetConfigFromLuaState(Sanguosha->getLuaState(), "developers").toStringList();
-    developers.prepend(tr("QSanguosha-Rara"));
+    developers.prepend(tr("TouhouKill"));
 
     foreach (QString name, developers) {
         QListWidgetItem *item = new QListWidgetItem(name, list);

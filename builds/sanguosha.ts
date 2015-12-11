@@ -859,7 +859,7 @@
     <message>
         <location filename="../src/dialog/configdialog.ui" line="153"/>
         <source>Enable lord background music</source>
-        <translation type="unfinished"></translation>
+        <translation>背景音乐（主公）</translation>
     </message>
     <message>
         <location filename="../src/dialog/configdialog.ui" line="210"/>
@@ -884,7 +884,7 @@
     <message>
         <location filename="../src/dialog/configdialog.ui" line="345"/>
         <source>Use Lord Backdrop</source>
-        <translation type="unfinished"></translation>
+        <translation>背景变化（主公）</translation>
     </message>
     <message>
         <location filename="../src/dialog/configdialog.ui" line="363"/>
@@ -960,7 +960,7 @@
     <message>
         <location filename="../src/dialog/configdialog.ui" line="601"/>
         <source>Enable double-click</source>
-        <translation type="unfinished"></translation>
+        <translation>双击牌或头像使用牌</translation>
     </message>
     <message>
         <location filename="../src/dialog/configdialog.ui" line="617"/>
@@ -1023,7 +1023,7 @@
     <message>
         <location filename="../src/dialog/configdialog.cpp" line="49"/>
         <source> second</source>
-        <translation type="unfinished"></translation>
+        <translation>秒</translation>
     </message>
     <message>
         <location filename="../src/dialog/configdialog.cpp" line="82"/>
@@ -1920,7 +1920,7 @@
         <location filename="../src/dialog/generaloverview.cpp" line="630"/>
         <location filename="../src/dialog/generaloverview.cpp" line="638"/>
         <source>Official</source>
-        <translation>官方</translation>
+        <translation>东方杀黑幕组</translation>
     </message>
     <message>
         <location filename="../src/dialog/generaloverview.cpp" line="268"/>
@@ -2558,7 +2558,7 @@
     <message>
         <location filename="../src/dialog/mainwindow.cpp" line="442"/>
         <source>This is the open source clone of the popular &lt;b&gt;Sanguosha&lt;/b&gt; game,totally written in C++ Qt GUI framework &lt;br /&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>这是游卡&lt;b&gt;三国杀&lt;/b&gt;的开源克隆，使用 C++ Qt GUI 框架 &lt;br/&gt;</translation>
     </message>
     <message>
         <location filename="../src/dialog/mainwindow.cpp" line="460"/>
@@ -3574,8 +3574,8 @@
     </message>
     <message>
         <location filename="../src/ui/roomscene.cpp" line="278"/>
-        <source>QSanguosha</source>
-        <translation>新太阳神三国杀</translation>
+        <source>TouhouKill</source>
+        <translation>东方杀</translation>
     </message>
     <message>
         <location filename="../src/ui/roomscene.cpp" line="358"/>
@@ -4287,12 +4287,12 @@ P = 你自己, R = 你所在的房间</translation>
     <message>
         <location filename="../src/server/server.cpp" line="427"/>
         <source>Prohibit Blind Attack</source>
-        <translation type="unfinished"></translation>
+        <translation>禁止ai采取盲狙行为</translation>
     </message>
     <message>
         <location filename="../src/server/server.cpp" line="428"/>
         <source>&lt;font color=#FFFF33&gt;ai will not blindly attack,if this is checked&lt;/font&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;font color=#FFFF33&gt;勾选后，ai将不会进行盲狙&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../src/server/server.cpp" line="434"/>

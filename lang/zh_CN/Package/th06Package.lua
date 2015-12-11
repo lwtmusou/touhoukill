@@ -130,7 +130,7 @@ return{ ["th06"] = "红魔乡",
     ["#meirin"] = "华人小姑娘",
     ["!meirin"] = "红美铃",  
 		 --["designer:meirin"] = "星野梦美 | 程序:果然萝卜斩", 
-	["illustrator:meirin"] = "未知",
+	["illustrator:meirin"] = "yudofu  p号:3804946",
 	["illustrator:meirin_1"] = "NEKO (p号:35872256)",
 	--个人id:2600911 （国人）
 	["illustrator:meirin_2"] = "ke-ta (p号:18637750)",

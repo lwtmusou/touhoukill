@@ -156,7 +156,7 @@ private:
     QButtonGroup *mode_group;
 
 private slots:
-    void setMaxHpSchemeBox();
+    //void setMaxHpSchemeBox();
 
     void onOkButtonClicked();
     void onDetectButtonClicked();
