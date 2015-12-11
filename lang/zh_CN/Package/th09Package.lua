@@ -254,6 +254,8 @@ return
     ["#sumireko"] = "秘封俱乐部的初代会长",
     ["!sumireko"] = "宇佐见堇子",
 	["illustrator:sumireko"] = "りひと (p号:53754910)",
+	["illustrator:sumireko_1"] = "チマQ (p号:50538452)",
+	["illustrator:sumireko_2"] = "うらないし (p号:50310740)",
 	
 	["nianli"] = "念力",
 	[":nianli"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将牌堆顶的两张牌当【杀】或【顺手牵羊】使用，此牌不计入每阶段的使用次数限制。当你使用此牌指定目标后，你选择一项：展示一张与此牌颜色相同的手牌并将其置于牌堆顶，或失去1点体力。",
