@@ -314,7 +314,7 @@ return{
     ["#shikieiki_god"] = "幻想乡的裁判长" ,
     ["!shikieiki_god"] = "神四季映姬" ,
 	--["designer:shikieiki_god"] = "星野梦美 | 程序:fsu0413", 
-	["illustrator:shikieiki_god"] = "未知",
+	["illustrator:shikieiki_god"] = "卜部ミチル  p号：20858470",
 	["illustrator:shikieiki_god_1"] = "七原冬雪 (p号:32122356 )",
 	--个人id:286217
 	["illustrator:shikieiki_god_2"] = "memai (p号: 2537720)",
