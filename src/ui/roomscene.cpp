@@ -645,13 +645,24 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         }
         playerCardContainers.append(dashboard);
         
+		
+		bool noSkin = false;
         foreach (PlayerCardContainer *playerCardContainer, playerCardContainers) {
             //const ClientPlayer *player = playerCardContainer->getPlayer();
             //const QString &heroSkinGeneralName = heroSkinContainer->getGeneralName();
-
+            if (noSkin)
+				break;
              if (general_name == playerCardContainer->getPlayer()->getGeneralName()) { // check container which changed skin 
                 if ( player->getGeneralName() == general_name && Self != player){ // check this roomscene instance of the players who need notify 
-                    Config.beginGroup("HeroSkin");
+                    QString generalIconPath;
+					QRect clipRegion;
+					G_ROOM_SKIN.getHeroSkinContainerGeneralIconPathAndClipRegion(general_name,
+					skinIndex, generalIconPath, clipRegion);
+					if (!QFile::exists(generalIconPath)){
+						noSkin = true;
+						continue;
+					}
+					Config.beginGroup("HeroSkin");
                     (0 == skinIndex) ? Config.remove(general_name)
                     : Config.setValue(general_name, skinIndex);
                     Config.endGroup(); 
