@@ -1694,7 +1694,7 @@ public:
         if (find_shown_renegde && (loyal_shown_num == 1 || rebel_shown_num ==1 )){
             return true;
         }
-        else if (find_hide_renegde && (loyal_shown_num == 0 || rebel_shown_num == 0 )){
+        else if (find_hide_renegde && ((loyal_shown_num == 0 && loyal_num > 0) || (rebel_shown_num == 0  && rebel_num > 0))){
             return true;
         }
         
