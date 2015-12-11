@@ -137,7 +137,7 @@ return{
 	--["designer:wakasagihime"] = "星野梦美 | 程序:三国有单", 
 	["cv:wakasagihime"] = "暂无", 
 	
-	["illustrator:wakasagihime_5"] = "neme p号:39196423",
+	["illustrator:wakasagihime"] = "neme p号:39196423",
 	["illustrator:wakasagihime_1"] = "s-syogo p号:38957820",
 	["illustrator:wakasagihime_2"] = "藤宮ふみや p号:37256433",
 	["illustrator:wakasagihime_3"] = "Cloudy.R p号:42096555",

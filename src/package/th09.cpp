@@ -1331,17 +1331,12 @@ public:
 			pattern = ".|black|.|hand";
 		else
 			loseHp = true;
-			
+		
 		if (!loseHp){
-			QString prompt = "@nianli-discard" ;
-            //const Card *card = room->askForCard(use.from, pattern, prompt, data, Card::MethodDiscard);
+			QString prompt = "@nianli-discard:" ;
+			prompt = prompt + use.card->getSuitString();
+			prompt = prompt + ":" + use.card->objectName();
 			const Card *card = room->askForCard(use.from, pattern, prompt, data, Card::MethodNone);
-			//const Card *card = room->askForExchange(use.from, objectName(), 1, false, prompt, true);
-			/*  const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data, const QString &skill_name);
-    const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data = QVariant(),
-        Card::HandlingMethod method = Card::MethodDiscard, ServerPlayer *to = NULL, bool isRetrial = false,
-        const QString &skill_name = QString(), bool isProvision = false); */
-			
 			if (card){		
 				CardsMoveStruct move;
 				move.card_ids = card->getSubcards();
