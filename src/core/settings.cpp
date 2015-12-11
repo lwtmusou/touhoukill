@@ -60,17 +60,11 @@ void Settings::init()
     }
 
     CountDownSeconds = value("CountDownSeconds", 3).toInt();
-    GameMode = value("GameMode", "02p").toString();
+    GameMode = value("GameMode", "08p").toString();
 
     QStringList banpackagelist = value("BanPackages").toStringList();
     if (banpackagelist.isEmpty()) {
-        banpackagelist << "nostalgia" << "nostal_standard" << "yitian" << "wisdom" << "nostal_wind"
-            /*<< "disaster"*/ << "god" << "YJCM" /*<< "yitian_cards"*/ << "test"
-            << "sp" << "sp_cards" << "BGM" << "YJCM2012" << "Special3v3"
-            << "New3v3Card" /*<< "joy" << "joy_equip"*/ << "hegemony_card"
-            << "hegemony" << "ling" << "BGMDIY" << "New3v3_2013Card"
-            << "nostal_yjcm" << "nostal_yjcm2012" << "YJCM2013" << "New1v1Card" << "assassins"
-            << "hegemony_sp" << "Special1v1" << "Special1v1OL" << "Special3v3_2013";
+        banpackagelist << "touhoucard";
     }
     setValue("BanPackages", banpackagelist);
 

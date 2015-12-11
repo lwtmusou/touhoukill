@@ -2875,7 +2875,7 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign)
 
     const int max_choice = (Config.EnableHegemony && Config.Enable2ndGeneral) ?
         Config.value("HegemonyMaxChoice", 7).toInt() :
-        Config.value("MaxChoice", 5).toInt();
+        Config.value("MaxChoice", 6).toInt();
     const int total = Sanguosha->getGeneralCount();
     const int max_available = (total - existed.size()) / to_assign.length();
     const int choice_count = qMin(max_choice, max_available);
@@ -2928,8 +2928,8 @@ void Room::chooseGenerals()
     QStringList ban_list = Config.value("Banlist/Roles").toStringList();
     //Sanguosha->banRandomGods(); //why this function add the rest gods into banlist....
     // for lord.
-    int lord_num = Config.value("LordMaxChoice", -1).toInt();
-    int nonlord_num = Config.value("NonLordMaxChoice", 2).toInt();
+    int lord_num = Config.value("LordMaxChoice", 6).toInt();
+    int nonlord_num = Config.value("NonLordMaxChoice", 6).toInt();
     if (lord_num == 0 && nonlord_num == 0)
         nonlord_num = 1;
     int nonlord_prob = (lord_num == -1) ? 5 : 55 - qMin(lord_num, 10);
@@ -2937,7 +2937,7 @@ void Room::chooseGenerals()
         QStringList lord_list;
         ServerPlayer *the_lord = getLord();
         if (Config.EnableSame)
-            lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 5).toInt());
+            lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 6).toInt());
         else if (the_lord->getState() == "robot")
             if (((qrand() % 100 < nonlord_prob || lord_num == 0) && nonlord_num > 0)
                 || Sanguosha->getLords().length() == 0)

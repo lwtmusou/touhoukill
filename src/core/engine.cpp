@@ -930,7 +930,7 @@ QStringList Engine::getRandomLords() const
         lords << alord;
     }
 
-    int lord_num = Config.value("LordMaxChoice", -1).toInt();
+    int lord_num = Config.value("LordMaxChoice", 6).toInt();
     if (lord_num != -1 && lord_num < lords.length()) {
         int to_remove = lords.length() - lord_num;
         for (int i = 0; i < to_remove; i++) {
@@ -960,9 +960,9 @@ QStringList Engine::getRandomLords() const
 
     int i;
     int addcount = 0;
-    int extra = Config.value("NonLordMaxChoice", 2).toInt();
+    int extra = Config.value("NonLordMaxChoice", 6).toInt();
 
-    int godmax = Config.value("GodLimit", 5).toInt();
+    int godmax = Config.value("GodLimit", 1).toInt();
     int godCount = 0;
 
     if (lord_num == 0 && extra == 0)
@@ -1027,7 +1027,7 @@ void Engine::banRandomGods() const
     qShuffle(all_generals);
 
     int count = 0;
-    int max = Config.value("GodLimit", 5).toInt();
+    int max = Config.value("GodLimit", 1).toInt();
 
     if (max == -1)
         return;
@@ -1081,7 +1081,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
     int addcount = 0;
     QStringList general_list = QStringList();
-    int godmax = Config.value("GodLimit", 5).toInt();
+    int godmax = Config.value("GodLimit", 1).toInt();
     int godCount = 0;
     for (int i = 0; addcount < count; i++) {
         if (getGeneral(all_generals.at(i))->getKingdom() != "touhougod") {
