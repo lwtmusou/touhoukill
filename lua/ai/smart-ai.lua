@@ -10,10 +10,10 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = (require "middleclass").class("SmartAI")
 
---version = "QSanguosha AI 20140901 (V1.414213562 Alpha)"
-version = "TouhouKill AI 20151128"
+--original_version = "QSanguosha AI 20140901 (V1.414213562 Alpha)"
+version = "TouhouKill AI 20151211"
 
--- checkout https://github.com/haveatry823/QSanguoshaAI for details
+
 
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
@@ -1354,7 +1354,7 @@ function sgs.isLordHealthy()
 	if not lord then return true end
 	if lord:hasSkill("benghuai") and lord:getHp() > 4 then lord_hp = 4
 	elseif lord:hasSkill("huanmeng") then
-		lord_hp = lord:getHandcardNum()/2
+		lord_hp = (lord:getHandcardNum() + 1) /2
 	elseif lord:hasSkill("banling") then
 		lord_hp = lord:getMark("lingtili")+ lord:getMark("rentili")-1
 	elseif lord:hasSkill("bumie") then
@@ -1379,7 +1379,7 @@ function sgs.isLordInDanger()
 	
 	if lord:hasSkill("benghuai") and lord:getHp() > 4 then lord_hp = 4
 	elseif lord:hasSkill("huanmeng") then
-		lord_hp = lord:getHandcardNum()/2
+		lord_hp = (lord:getHandcardNum() + 1 )/2
 	elseif lord:hasSkill("banling") then
 		lord_hp = lord:getMark("lingtili")+ lord:getMark("rentili")-1
 	elseif lord:hasSkill("bumie") then
@@ -1423,6 +1423,7 @@ function sgs.gameProcess(room, arg)  --尼玛 不看具体技能和牌的数量�
 			local rebel_hp
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then rebel_hp = 4
 			else rebel_hp = aplayer:getHp() end
+			if  aplayer:hasSkill("huanmeng") then rebel_hp = (aplayer:getHandcardNum() +1) / 2 end
 			if aplayer:getMaxHp() == 3 then rebel_value = rebel_value + 0.5 end
 			--只评估防御能力？不看进攻能力！！！！！？？？？？各种爆将教做人 和奶妈教做人
 			rebel_value = rebel_value + rebel_hp + math.max(sgs.getDefense(aplayer, true) - rebel_hp * 2, 0) * 0.7
@@ -1449,6 +1450,7 @@ function sgs.gameProcess(room, arg)  --尼玛 不看具体技能和牌的数量�
 			local loyal_hp
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then loyal_hp = 4
 			else loyal_hp = aplayer:getHp() end
+			if  aplayer:hasSkill("huanmeng") then loyal_hp = (aplayer:getHandcardNum()+1)  / 2 end
 			if aplayer:getMaxHp() == 3 then loyal_value = loyal_value + 0.5 end
 			loyal_value = loyal_value + (loyal_hp + math.max(sgs.getDefense(aplayer, true) - loyal_hp * 2, 0) * 0.7)
 			if aplayer:getArmor() or (not aplayer:getArmor() and aplayer:hasSkills("bazhen|yizhong")) then
