@@ -100,7 +100,7 @@ return{ ["th06"] = "红魔乡",
     ["&patchouli"] = "帕秋莉",
     ["!patchouli"] = "帕秋莉",
 	--["designer:patchouli"] = "星野梦美 | 程序:三国有单", 
-	["illustrator:patchouli"] = "未知",
+	["illustrator:patchouli"] = "萩原  (p号:无) 个人id:37062",
 	["illustrator:patchouli_1"] = "ryosios (p号:41382219)",
 	--个人id:1508165 （作者表态可用）
 	["illustrator:patchouli_2"] = "パンチ (p号:5182740)",
