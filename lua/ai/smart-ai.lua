@@ -11,7 +11,7 @@ math.randomseed(os.time())
 SmartAI = (require "middleclass").class("SmartAI")
 
 --original_version = "QSanguosha AI 20140901 (V1.414213562 Alpha)"
-version = "TouhouKill AI 20151211"
+version = "TouhouSatsu AI 20151211"
 
 
 

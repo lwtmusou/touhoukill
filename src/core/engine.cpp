@@ -655,7 +655,7 @@ QString Engine::getVersionName() const
 
 QString Engine::getMODName() const
 {
-    return "TouhouKill";
+    return "TouhouSatsu";
 }
 
 QStringList Engine::getExtensions() const

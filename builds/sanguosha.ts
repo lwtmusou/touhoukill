@@ -3574,7 +3574,7 @@
     </message>
     <message>
         <location filename="../src/ui/roomscene.cpp" line="278"/>
-        <source>TouhouKill</source>
+        <source>TouhouSatsu</source>
         <translation>东方杀</translation>
     </message>
     <message>

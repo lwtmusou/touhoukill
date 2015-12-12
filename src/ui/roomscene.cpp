@@ -286,7 +286,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     log_box_widget->setZValue(-1.0);
     connect(ClientInstance, SIGNAL(log_received(QStringList)), log_box, SLOT(appendLog(QStringList)));
 
-    prompt_box = new Window(tr("TouhouKill"), QSize(480, 200));
+    prompt_box = new Window(tr("TouhouSatsu"), QSize(480, 200));
     prompt_box->setOpacity(0);
     prompt_box->setFlag(QGraphicsItem::ItemIsMovable);
     prompt_box->shift();
