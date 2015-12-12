@@ -650,7 +650,7 @@ QString Engine::getVersion() const
 
 QString Engine::getVersionName() const
 {
-    return "V0.7";
+    return "V0.70";
 }
 
 QString Engine::getMODName() const
