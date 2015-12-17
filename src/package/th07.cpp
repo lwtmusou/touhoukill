@@ -19,20 +19,20 @@ public:
         events << DamageCaused << EventPhaseChanging;
     }
 
-	virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &) const
-	{
-		if (triggerEvent == EventPhaseChanging){
+    virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &) const
+    {
+        if (triggerEvent == EventPhaseChanging){
             foreach (ServerPlayer *p, room->getAlivePlayers()) {
                 if (p->hasFlag("sidie_used"))
                     room->setPlayerFlag(player, "-sidie_used");
             }
         }
-	}
-	
-	
+    }
+    
+    
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const
-    {	
-		if (!TriggerSkill::triggerable(player)) return QStringList();
+    {    
+        if (!TriggerSkill::triggerable(player)) return QStringList();
         if (triggerEvent == DamageCaused){
             
             if (player->getPhase() != Player::Play)
@@ -1482,7 +1482,7 @@ public:
         if (use.card->isKindOf("Slash") || use.card->isNDTrick()) {
             if (!use.card->isRed() && !use.card->isBlack())
                 return QStringList();
-			if (!use.from || use.from == player)
+            if (!use.from || use.from == player)
                 return QStringList();
             if (use.to.contains(player)) {
                 QList<int> list = player->getPile("siling");
@@ -1669,41 +1669,41 @@ public:
     Juhe() : TriggerSkill("juhe")
     {
         events << DrawNCards << AfterDrawNCards;
-		frequency = Frequent;
+        frequency = Frequent;
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer* &) const
     {
         if (!TriggerSkill::triggerable(player)) return QStringList();
         if (triggerEvent == DrawNCards)
-			return QStringList(objectName());
-		else if (triggerEvent ==AfterDrawNCards){
-			if (player->hasFlag("juheUsed") && player->getHp() > 0)
-				return QStringList(objectName());
-		}
+            return QStringList(objectName());
+        else if (triggerEvent ==AfterDrawNCards){
+            if (player->hasFlag("juheUsed") && player->getHp() > 0)
+                return QStringList(objectName());
+        }
         return QStringList();
     }
     
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const
     {
         if (triggerEvent == DrawNCards)
-			return room->askForSkillInvoke(player, objectName());
-		return true;
-		
+            return room->askForSkillInvoke(player, objectName());
+        return true;
+        
     }
-	
-	virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
-		if (triggerEvent == DrawNCards){
-			data = QVariant::fromValue(data.toInt() + 3);
+        if (triggerEvent == DrawNCards){
+            data = QVariant::fromValue(data.toInt() + 3);
             room->setPlayerFlag(player, "juheUsed");
-		}
-		else if (triggerEvent ==AfterDrawNCards){
-			player->setFlags("-juheUsed");
-			room->askForDiscard(player, "juhe", player->getHp(), player->getHp(), false, false, "juhe_discard:" + QString::number(player->getHp()));
-		}
-		return false;
-	}
+        }
+        else if (triggerEvent ==AfterDrawNCards){
+            player->setFlags("-juheUsed");
+            room->askForDiscard(player, "juhe", player->getHp(), player->getHp(), false, false, "juhe_discard:" + QString::number(player->getHp()));
+        }
+        return false;
+    }
 };
 
 

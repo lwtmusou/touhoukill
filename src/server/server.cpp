@@ -270,7 +270,7 @@ QWidget *ServerDialog::createAdvancedTab()
     prevent_awaken_below3_checkbox = new QCheckBox(tr("Prevent maxhp being less than 3 for awaken skills"));
     prevent_awaken_below3_checkbox->setChecked(Config.PreventAwakenBelow3);
     //prevent_awaken_below3_checkbox->setEnabled(max_hp_scheme_ComboBox->currentIndex() != 0);
-	prevent_awaken_below3_checkbox->setEnabled(false);
+    prevent_awaken_below3_checkbox->setEnabled(false);
 
     //scheme0_subtraction_label = new QLabel(tr("Subtraction for scheme 0"));
     //scheme0_subtraction_label->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);

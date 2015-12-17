@@ -323,7 +323,7 @@ bool XihuaCard::targetFilter(const QList<const Player *> &targets, const Player 
 
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
         if (!user_string.isEmpty()) {
-			Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
             card->setSkillName("xihua");
             return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
         }
@@ -334,7 +334,7 @@ bool XihuaCard::targetFilter(const QList<const Player *> &targets, const Player 
 
     const Card *card = Self->tag.value("xihua").value<const Card *>();
 
-	Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+    Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
     new_card->setSkillName("xihua");
     if (new_card->targetFixed())
         return false;
@@ -345,7 +345,7 @@ bool XihuaCard::targetFixed() const
 {
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
         if (!user_string.isEmpty()) {
-			Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
             card->setSkillName("xihua");
             return card && card->targetFixed();
         }
@@ -355,7 +355,7 @@ bool XihuaCard::targetFixed() const
     }
 
     const Card *card = Self->tag.value("xihua").value<const Card *>();
-	Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+    Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
     new_card->setSkillName("xihua");
     //return false defaultly
     //we need a confirming chance to pull back, since  this is a zero cards viewas Skill.
@@ -366,7 +366,7 @@ bool XihuaCard::targetsFeasible(const QList<const Player *> &targets, const Play
 {
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
         if (!user_string.isEmpty()) {
-			Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
             card->setSkillName("xihua");
             return card && card->targetsFeasible(targets, Self);
         }
@@ -376,7 +376,7 @@ bool XihuaCard::targetsFeasible(const QList<const Player *> &targets, const Play
     }
 
     const Card *card = Self->tag.value("xihua").value<const Card *>();
-	Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+    Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
     new_card->setSkillName("xihua");
     if (card->isKindOf("IronChain") && targets.length() == 0)
         return false;

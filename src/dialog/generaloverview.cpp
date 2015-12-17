@@ -272,7 +272,7 @@ GeneralOverview::GeneralOverview(QWidget *parent)
     if (ServerInfo.DuringGame && ServerInfo.EnableCheat) {
         ui->changeGeneralButton->show();
         //ui->changeGeneral2Button->show();
-		ui->changeGeneral2Button->hide();
+        ui->changeGeneral2Button->hide();
         connect(ui->changeGeneralButton, SIGNAL(clicked()), this, SLOT(askTransfiguration()));
         //connect(ui->changeGeneral2Button, SIGNAL(clicked()), this, SLOT(askTransfiguration()));
     } else {
@@ -361,11 +361,11 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
             //package_item->setBackgroundColor(QColor(0x66, 0xCC, 0xFF));
             package_item->setToolTip(tr("<font color=#FFFF33>This is an Lua extension</font>"));
         }
-		//add color for touhou kingdoms and packages.
-		QColor kingdomColor = Sanguosha->getKingdomColor(general->getKingdom());
-		package_item->setBackgroundColor(kingdomColor);
-		kingdom_item->setBackgroundColor(kingdomColor);
-		
+        //add color for touhou kingdoms and packages.
+        QColor kingdomColor = Sanguosha->getKingdomColor(general->getKingdom());
+        package_item->setBackgroundColor(kingdomColor);
+        kingdom_item->setBackgroundColor(kingdomColor);
+
         
         
 
@@ -604,8 +604,8 @@ void GeneralOverview::playAudioEffect()
 
 void GeneralOverview::askTransfiguration()
 {
-    QPushButton *button = qobject_cast<QPushButton *>(sender());
-	//bool isSecondaryHero = (button && button->objectName() == ui->changeGeneral2Button->objectName());
+    //QPushButton *button = qobject_cast<QPushButton *>(sender());
+    //bool isSecondaryHero = (button && button->objectName() == ui->changeGeneral2Button->objectName());
     if (ServerInfo.EnableCheat && Self) {
         //if (isSecondaryHero)
         //    ui->changeGeneral2Button->setEnabled(false);
@@ -614,7 +614,7 @@ void GeneralOverview::askTransfiguration()
         int row = ui->tableWidget->currentRow();
         QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
         //ClientInstance->requestCheatChangeGeneral(general_name, isSecondaryHero);
-		ClientInstance->requestCheatChangeGeneral(general_name, false);
+        ClientInstance->requestCheatChangeGeneral(general_name, false);
     }
 }
 

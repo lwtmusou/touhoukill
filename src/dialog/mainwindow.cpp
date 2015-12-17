@@ -162,7 +162,7 @@ void MainWindow::gotoScene(QGraphicsScene *scene)
     view->setScene(scene);
     /* @todo: Need a better way to replace the magic number '4' */
     //QResizeEvent e(QSize(view->size().width() - 4, view->size().height() - 4), view->size());
-	QResizeEvent e(QSize(view->size().width(), view->size().height()), view->size());
+    QResizeEvent e(QSize(view->size().width(), view->size().height()), view->size());
     view->resizeEvent(&e);
     changeBackground();
 }

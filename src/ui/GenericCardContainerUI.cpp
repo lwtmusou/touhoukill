@@ -496,11 +496,11 @@ void PlayerCardContainer::updateMarks()
     QRect newRect = _m_layout->m_markTextArea.getTranslatedRect(parentRect, markSize);
     if (_m_layout == &G_PHOTO_LAYOUT){
         //_m_markItem->setPos(newRect.topLeft());
-		if (getFloatingArea().left() < newRect.left()-20)
-			_m_markItem->setPos(newRect.left()-20, newRect.top());
-		else
-			_m_markItem->setPos(newRect.topLeft());
-	}
+        if (getFloatingArea().left() < newRect.left()-20)
+            _m_markItem->setPos(newRect.left()-20, newRect.top());
+        else
+            _m_markItem->setPos(newRect.topLeft());
+    }
     else
         _m_markItem->setPos(newRect.left(), newRect.top() + newRect.height() / 2);
     //for tianyi
@@ -520,7 +520,7 @@ void PlayerCardContainer::_updateEquips()
     }
 }
 
-void PlayerCardContainer::refresh(bool killed)
+void PlayerCardContainer::refresh(bool)
 {
     if (!m_player || !m_player->getGeneral() || !m_player->isAlive()) {
         _m_faceTurnedIcon->setVisible(false);

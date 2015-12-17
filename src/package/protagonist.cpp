@@ -1095,7 +1095,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const
-	{
+    {
         if (player->getMark("bllmseyu") > 0)
             room->setPlayerMark(player, "bllmseyu", 0);
         return QStringList();

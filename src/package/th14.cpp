@@ -528,7 +528,7 @@ public:
      virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {   
         if (!TriggerSkill::triggerable(player)) return QStringList();
-		ServerPlayer *current = room->getCurrent();
+        ServerPlayer *current = room->getCurrent();
         if (!current || !current->isAlive() || current == player)
             return QStringList();
         QString pattern = data.toStringList().first();

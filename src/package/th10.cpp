@@ -436,7 +436,7 @@ void QijiDialog::popup()
         if (user == NULL)
             user = Self;
         
-		
+
         bool enabled = !user->isCardLimited(card, Card::MethodUse, true) && card->isAvailable(user);
         if (object_name == "huaxiang" && user->getMaxHp() > 2 && card->isKindOf("Peach"))
             enabled = false;
@@ -447,8 +447,8 @@ void QijiDialog::popup()
             response_use_salsh << "Slash" << "ThunderSlash" << "FireSlash";
         }
 
-		if (object_name == "nianli" && card->isKindOf("Slash"))
-			enabled = true;
+        if (object_name == "nianli" && card->isKindOf("Slash"))
+            enabled = true;
         if (!response_use_salsh.isEmpty() && !response_use_salsh.contains(card->getClassName())) {
             button->setEnabled(false);
         } else
@@ -470,7 +470,7 @@ void QijiDialog::selectCard(QAbstractButton *button)
     //    if (objectName() == "guhuo")
     //        Self->tag["GuhuoSlash"] = button->objectName();
     // }
-	
+
     emit onButtonClick();
     accept();
 }
@@ -488,12 +488,12 @@ QGroupBox *QijiDialog::createLeft()
         ban_list << "Analeptic";
     
     if (object_name =="nianli"){
-		foreach (const Card *card, cards){
-			if (card->getClassName() != "Slash")
-				ban_list << card->getClassName();
-		}
-	}
-		
+        foreach (const Card *card, cards){
+            if (card->getClassName() != "Slash")
+                ban_list << card->getClassName();
+        }
+    }
+
     
     foreach (const Card *card, cards) {
         if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName())
@@ -525,19 +525,19 @@ QGroupBox *QijiDialog::createRight()
     if (object_name == "chuangshi")
         ban_list << "GodSalvation" << "ArcheryAttack" << "SavageAssault";
     //    ban_list << "Drowning" << "BurningCamps" << "LureTiger";
-	
-	
-	
+
+
+
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-	
-	if (object_name =="nianli"){
-		foreach (const Card *card, cards){
-			if (card->getClassName() != "Snatch")
-				ban_list << card->getClassName();
-		}
-	}
-	
-	
+
+    if (object_name =="nianli"){
+        foreach (const Card *card, cards){
+            if (card->getClassName() != "Snatch")
+                ban_list << card->getClassName();
+        }
+    }
+
+
     foreach (const Card *card, cards) {
         if (card->isNDTrick() && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName())
             && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
@@ -789,20 +789,20 @@ public:
     Qiji() : TriggerSkill("qiji")
     {
         events << EventPhaseChanging << PreCardUsed << CardResponded;
-		view_as_skill = new QijiVS;
+        view_as_skill = new QijiVS;
     }
 
-	virtual QDialog *getDialog() const
+    virtual QDialog *getDialog() const
     {
         return QijiDialog::getInstance("qiji");
     }
-	
+
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
     
         if (triggerEvent == EventPhaseChanging) {
             foreach (ServerPlayer *p, room->getAlivePlayers()) {
                 if (p->getMark("qiji")>0)
-					room->setPlayerMark(p, "qiji", 0);
+                    room->setPlayerMark(p, "qiji", 0);
             }
         } else {
             ServerPlayer *current = room->getCurrent();
@@ -1183,7 +1183,7 @@ public:
 
             QStringList marks;
             marks  << "@clock" << "@kinki" << "@qiannian" << "@shi" << "@ye" << "@yu" << "@zhengti"
-			<< "@xinyang";
+            << "@xinyang";
             foreach (ServerPlayer *p, room->getAlivePlayers()) {
                 //throw cards in special place
                 QList<int>  idlist;

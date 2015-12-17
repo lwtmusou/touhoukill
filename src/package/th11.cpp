@@ -906,8 +906,8 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (!use.card->isKindOf("Slash"))
                 return skill_list;
-			if (!use.from || use.from->isDead())
-				return skill_list;
+            if (!use.from || use.from->isDead())
+                return skill_list;
             QList<ServerPlayer *> kisumes = room->findPlayersBySkillName(objectName());
             foreach (ServerPlayer *kisume, kisumes) {
                 foreach (ServerPlayer *p, use.to) {

@@ -895,7 +895,7 @@ public:
     {
         filter_pattern = ".|.|.|hand";
         response_or_use = true;
-		response_pattern = "@@gesheng";
+        response_pattern = "@@gesheng";
     }
 
 
@@ -1150,11 +1150,11 @@ public:
         view_as_skill = new ChuangshiVS;
     }
 
-	virtual QDialog *getDialog() const
+    virtual QDialog *getDialog() const
     {
         return QijiDialog::getInstance("chuangshi");
     }
-	
+    
     static bool use_chuangshi(Room *room, ServerPlayer *player)
     {
 

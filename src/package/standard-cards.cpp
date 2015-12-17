@@ -741,29 +741,29 @@ public:
     {
         if (!WeaponSkill::triggerable(player)) return QStringList();
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-		if (!effect.to->isAlive() || effect.to->getMark("Equips_of_Others_Nullified_to_You") > 0)
-			return QStringList();
-		if (effect.from->hasFlag("hitAfterMissed"))
-			return QStringList();
-		if (!effect.from->canSlash(effect.to, NULL, false))
-			return QStringList();
-		return QStringList(objectName());
+        if (!effect.to->isAlive() || effect.to->getMark("Equips_of_Others_Nullified_to_You") > 0)
+            return QStringList();
+        if (effect.from->hasFlag("hitAfterMissed"))
+            return QStringList();
+        if (!effect.from->canSlash(effect.to, NULL, false))
+            return QStringList();
+        return QStringList(objectName());
     }
     
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-		int weapon_id = -1;
-		if (player->getWeapon()){
-			weapon_id = player->getWeapon()->getId();
-			room->setCardFlag(weapon_id, "using");
-		}
-		effect.from->setFlags("BladeUse");
-		if (!room->askForUseSlashTo(effect.from, effect.to, QString("blade-slash:%1").arg(effect.to->objectName()), false, true))
-			effect.from->setFlags("-BladeUse");
-			
-		if (weapon_id != -1)
-			room->setCardFlag(weapon_id, "-using");
+        int weapon_id = -1;
+        if (player->getWeapon()){
+            weapon_id = player->getWeapon()->getId();
+            room->setCardFlag(weapon_id, "using");
+        }
+        effect.from->setFlags("BladeUse");
+        if (!room->askForUseSlashTo(effect.from, effect.to, QString("blade-slash:%1").arg(effect.to->objectName()), false, true))
+            effect.from->setFlags("-BladeUse");
+
+        if (weapon_id != -1)
+            room->setCardFlag(weapon_id, "-using");
         return false;
     }
 };
