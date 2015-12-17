@@ -674,14 +674,14 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
         QList<const TriggerSkill *> &skills = skill_table[triggerEvent]; 
         foreach (const TriggerSkill *skill, skills) {
             double priority = skill->getPriority(triggerEvent);
-             int len = room->getPlayers().length();
+            /*  int len = room->getPlayers().length();
             foreach (ServerPlayer *p, room->getAllPlayers(true)) {
                 if (p->hasSkill(skill->objectName())) { //|| p->hasEquipSkill(skill->objectName())
                     priority += (double)len / 100;
                     break;
                 }
                 len--;
-            } 
+            }  */
             TriggerSkill *mutable_skill = const_cast<TriggerSkill *>(skill);
             mutable_skill->setDynamicPriority(priority);
         }
@@ -692,20 +692,8 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
 
         do {
             trigger_who.clear();
-            bool pingyiUsed = false;
-            if (triggerEvent == Damaged && target !=NULL && target->hasSkill("pingyi")){
-                foreach (const TriggerSkill *skill, triggered) {
-                    if (skill->objectName() == "pingyi"){
-                        pingyiUsed = true;
-                        break;
-                    }
-                }
-            }
-            else
-                pingyiUsed = true;
-            
             foreach (const TriggerSkill *skill, skills) {
-                bool doNotAddTriggered = false;
+                //bool doNotAddTriggered = false;
                 if (!triggered.contains(skill)) {
                     if (skill->objectName() == "game_rule" || (room->getScenario()
                         && room->getScenario()->objectName() == skill->objectName())) {
@@ -748,29 +736,18 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                                         }
                                     }
                                 }
-                                else if (!pingyiUsed && p->hasSkill("pingyi") &&
-                                (!skill->isLordSkill() && skill->getFrequency() != Skill::Limited
-                                    && skill->getFrequency() != Skill::Wake && !skill->isAttachedLordSkill()
-                                    && skill->getFrequency() != Skill::Eternal)){
-                                    DamageStruct damage = data.value<DamageStruct>();
-                                    if (damage.from  && damage.from->hasSkill(skill->objectName(), false, true))
-                                        doNotAddTriggered = true;
-                                } 
                             }
                         } else if (skill->getDynamicPriority() != will_trigger.last()->getDynamicPriority())
                             break;
                         
-                        if (!doNotAddTriggered)
-                            triggered.prepend(skill);
+                        triggered.prepend(skill);
                     }
                 }
-                if (!doNotAddTriggered)
-                    triggerable_tested << skill;
+                triggerable_tested << skill;
             }
 
             if (!will_trigger.isEmpty()) {
                 will_trigger.clear();
-                //foreach (ServerPlayer *p, room->getPlayers()) {
                 foreach (ServerPlayer *p, room->getAllPlayers(true)) {
                     if (!trigger_who.contains(p)) continue;
                     QStringList already_triggered;
@@ -929,23 +906,6 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
 
                         p->tag.remove("JustShownSkill");
 
-                        
-                        //should priority of new "triggered" skill for pingyi
-                        /* if (name == "pingyi"){
-                            foreach (const TriggerSkill *skill, triggered) {
-                                double priority = skill->getPriority(triggerEvent);
-                                int len = room->getPlayers().length();
-                                foreach (ServerPlayer *p, room->getAllPlayers(true)) {
-                                    if (p->hasSkill(skill->objectName())) {
-                                        priority += (double)len / 100;
-                                            break;
-                                    }
-                                    len--;
-                                } 
-                                TriggerSkill *mutable_skill = const_cast<TriggerSkill *>(skill);
-                                mutable_skill->setDynamicPriority(priority);    
-                            }
-                        } */
 
                         trigger_who.clear();
                         foreach (const TriggerSkill *skill, triggered) {

@@ -276,7 +276,7 @@ QList<TriggerEvent> TriggerSkill::getTriggerEvents() const
 
 int TriggerSkill::getPriority(TriggerEvent) const
 {
-    return (frequency == Wake) ? 3 : 2;
+    return 3 ;
 }
 
 void TriggerSkill::record(TriggerEvent, Room *, ServerPlayer *, QVariant &) const
