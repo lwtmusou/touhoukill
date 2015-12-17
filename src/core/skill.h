@@ -373,6 +373,7 @@ class WeaponSkill : public TriggerSkill
 public:
     WeaponSkill(const QString &name);
 
+    virtual int getPriority(TriggerEvent triggerEvent) const;
     virtual bool triggerable(const ServerPlayer *target) const;
 };
 
@@ -383,6 +384,7 @@ class ArmorSkill : public TriggerSkill
 public:
     ArmorSkill(const QString &name);
 
+    virtual int getPriority(TriggerEvent triggerEvent) const;
     virtual bool triggerable(const ServerPlayer *target) const;
 };
 

@@ -328,7 +328,7 @@ ScenarioRule::ScenarioRule(Scenario *scenario)
 
 int ScenarioRule::getPriority(TriggerEvent) const
 {
-    return 0;
+    return 1;
 }
 
 bool ScenarioRule::triggerable(const ServerPlayer *) const
@@ -587,6 +587,10 @@ WeaponSkill::WeaponSkill(const QString &name)
 {
 }
 
+int WeaponSkill::getPriority(TriggerEvent) const{
+    return 2;
+}
+
 bool WeaponSkill::triggerable(const ServerPlayer *target) const
 {
     if (target == NULL) return false;
@@ -599,9 +603,12 @@ ArmorSkill::ArmorSkill(const QString &name)
 {
 }
 
+int ArmorSkill::getPriority(TriggerEvent) const{
+    return 2;
+}
+
 bool ArmorSkill::triggerable(const ServerPlayer *target) const
 {
-    //if (target == NULL || target->getArmor() == NULL)
     if (target == NULL)
         return false;
     return target->hasArmorEffect(objectName());
