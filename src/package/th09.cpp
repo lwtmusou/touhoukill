@@ -650,7 +650,10 @@ public:
         ServerPlayer *target = room->askForPlayerChosen(player, players, objectName(), "@toupai-select", true, true);
         if (target) {
             for (int i = 0; i < 3; i++) {
-                QList<int>  ids;
+                if (target->isKongcheng())
+					break;
+					
+				QList<int>  ids;
                 foreach (const Card *c, target->getCards("h")) {
                     if (c->isRed())
                         ids << c->getEffectiveId();

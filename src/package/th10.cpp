@@ -1182,8 +1182,8 @@ public:
             }
 
             QStringList marks;
-            marks << "@an" << "@bian" << "@clock" << "@kinki" << "@qiannian" << "@shi" << "@ye" << "@yu" << "@zhengti"
-                << "@huanyue" << "@kuangqi" << "@in_jiejie";
+            marks  << "@clock" << "@kinki" << "@qiannian" << "@shi" << "@ye" << "@yu" << "@zhengti"
+			<< "@xinyang";
             foreach (ServerPlayer *p, room->getAlivePlayers()) {
                 //throw cards in special place
                 QList<int>  idlist;

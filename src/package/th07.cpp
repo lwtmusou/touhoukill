@@ -1482,6 +1482,8 @@ public:
         if (use.card->isKindOf("Slash") || use.card->isNDTrick()) {
             if (!use.card->isRed() && !use.card->isBlack())
                 return QStringList();
+			if (!use.from || use.from == player)
+                return QStringList();
             if (use.to.contains(player)) {
                 QList<int> list = player->getPile("siling");
                 if (!list.isEmpty() && use.from->isAlive()) 

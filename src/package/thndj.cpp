@@ -251,8 +251,7 @@ public:
                     
                     QList<ServerPlayer *> kaguyas = room->findPlayersBySkillName(objectName());
                     foreach (ServerPlayer *kaguya, kaguyas) {
-                        if (kaguya != current) 
-                            skill_list.insert(kaguya, QStringList(objectName()));
+                        skill_list.insert(kaguya, QStringList(objectName()));
                     }
                 }
             }
