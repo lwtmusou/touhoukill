@@ -4,6 +4,7 @@
 #include <Qt>
 #include <QSize>
 #include <QColor>
+#include <QHash>
 
 class QString;
 class QPainter;

@@ -117,7 +117,9 @@ SOURCES += \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
-    src/main.cpp
+    src/main.cpp \
+    src/ui/choosetriggerorderbox.cpp \
+    src/ui/graphicsbox.cpp
 
 HEADERS += \
     src/jsoncpp/src/json_tool.h \
@@ -232,7 +234,9 @@ HEADERS += \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \
-    src/util/socket.h
+    src/util/socket.h \
+    src/ui/choosetriggerorderbox.h \
+    src/ui/graphicsbox.h
 
 
 FORMS += \
