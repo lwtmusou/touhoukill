@@ -3949,8 +3949,9 @@ void Room::reconnect(ServerPlayer *player, ClientSocket *socket)
 
         }
     }
-    
-    thread->trigger(Reconnect, this, player, QVariant());
+
+    QVariant empty_d;
+    thread->trigger(Reconnect, this, player, empty_d);
         
 }
 
@@ -5716,7 +5717,8 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
         m_drawPile->append(i.next());
 
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
-    thread->trigger(AfterGuanXing, this, zhuge, QVariant());
+    QVariant empty_d;
+    thread->trigger(AfterGuanXing, this, zhuge, empty_d);
 }
 
 int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids, QString skill_name)
