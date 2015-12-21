@@ -426,8 +426,7 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
         if (Self->getHandPile().contains(id)) {
             rec = false;
             break;
-        }
-        else { // for  skill chaoren
+        } else { // for  skill chaoren
             if (id == Self->property("chaoren").toInt()){
                 rec = false;
                 break; 

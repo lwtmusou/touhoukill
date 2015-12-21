@@ -528,8 +528,9 @@ bool ServerPlayer::hasNullification() const
         }
     }
     if (hasSkill("chaoren")) {
-        int id = property("chaoren").toInt();
-        if (id && id > -1 &&Sanguosha->getCard(id)->isKindOf("Nullification"))
+        bool ok = false;
+        int id = property("chaoren").toInt(&ok);
+        if (ok && id > -1 && Sanguosha->getCard(id)->isKindOf("Nullification"))
             return true;
     }
     

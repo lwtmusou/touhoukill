@@ -1121,9 +1121,9 @@ void Dashboard::expandPileCard()
     retractPileCard();
     
     // then expand
-    
-    int id = Self->property("chaoren").toInt();
-    if (id && id >-1) {
+    bool ok = false;
+    int id = Self->property("chaoren").toInt(&ok);
+    if (ok && id >-1) {
         _m_id_expanded << id; 
     
         QList<CardItem *> card_items;

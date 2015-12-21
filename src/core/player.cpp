@@ -1077,7 +1077,7 @@ QList<int> Player::getHandPile() const
 {
     QList<int> result;
     foreach (const QString &pile, getPileNames()) {
-        if (pile.startsWith("&") || pile == "wooden_ox" || pile == "piao" ||pile == "chaoren" ) {
+        if (pile.startsWith("&") || pile == "wooden_ox" || pile == "piao" || pile == "chaoren" ) {
             foreach (int id, getPile(pile)) {
                 result.append(id);
             }

@@ -2639,10 +2639,11 @@ public:
             
         
         
-        QList<int> drawpile = room->getDrawPile();
-        
-        int old_firstcard = sbl->property("chaoren").toInt();
-        if (old_firstcard == NULL|| old_firstcard <0)
+        const QList<int> &drawpile = room->getDrawPile();
+
+        bool ok = false;
+        int old_firstcard = sbl->property("chaoren").toInt(&ok);
+        if (!ok)
             old_firstcard = -1;
         //if (!sbl->getPile("chaoren").isEmpty())
         //    old_firstcard = sbl->getPile("chaoren").first();
@@ -2652,15 +2653,14 @@ public:
         
         
 
-        int changed = (new_firstcard != old_firstcard); 
-        if (!changed){
-            if (retract){
+        bool changed = (new_firstcard != old_firstcard); 
+        if (!changed) {
+            if (retract) {
                 room->setPlayerProperty(sbl, "chaoren", -1);
                 Json::Value args;
                 args[0] = QSanProtocol::S_GAME_EVENT_RETRACT_PILE_CARDS;
                 room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_EVENT, args);
-            }
-            else if (expand){
+            } else if (expand) {
                 room->setPlayerProperty(sbl, "chaoren", new_firstcard);
                 Json::Value args;
                 args[0] = QSanProtocol::S_GAME_EVENT_EXPAND_PILE_CARDS;
