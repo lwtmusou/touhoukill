@@ -362,7 +362,7 @@ public:
                 player->drawCards(player->getLostHp());
             } else {
 
-                ServerPlayer *s = room->askForPlayerChosen(player, all, "aoyi", "aoyi_chosenplayer", true, true);
+                ServerPlayer *s = room->askForPlayerChosen(player, all, "aoyi", "aoyi_chosenplayer", false, true);
                 int to_throw = room->askForCardChosen(player, s, "ej", "aoyi", false, Card::MethodDiscard);
                 room->throwCard(to_throw, s, player);
             }
