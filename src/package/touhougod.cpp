@@ -2585,7 +2585,7 @@ public:
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
-        //part1: ignore some cases         
+        //part1: some cases that we do not need to notify       
        //for global event, check player has this skill
         if (triggerEvent == CardsMoveOneTime || triggerEvent == DrawPileSwaped){
             if (!player->hasSkill(objectName()))
@@ -2605,7 +2605,7 @@ public:
         if ((triggerEvent == EventAcquireSkill || triggerEvent == EventLoseSkill )&& data.toString() != "chaoren")    
             return QStringList();
             
-        // part 2: 
+        // part 2: find sbl and determine "retract" "expand" 
         ServerPlayer *sbl = room->findPlayerBySkillName(objectName());
         bool retract = false;
         bool expand = false;
@@ -2638,15 +2638,14 @@ public:
             return QStringList();
             
         
-        
+        // part 3: determine "changed" "old_firstcard" "new_firstcard"
         const QList<int> &drawpile = room->getDrawPile();
 
         bool ok = false;
         int old_firstcard = sbl->property("chaoren").toInt(&ok);
         if (!ok)
             old_firstcard = -1;
-        //if (!sbl->getPile("chaoren").isEmpty())
-        //    old_firstcard = sbl->getPile("chaoren").first();
+
         int new_firstcard = -1;
         if (!drawpile.isEmpty())
             new_firstcard = drawpile.first();
@@ -2654,6 +2653,10 @@ public:
         
 
         bool changed = (new_firstcard != old_firstcard); 
+        
+        
+        // part 4: notify 
+        //even firstcard has not changed, we also need to retract or expand the dashboard (such as loseskill, reconnet ) 
         if (!changed) {
             if (retract) {
                 room->setPlayerProperty(sbl, "chaoren", -1);
@@ -2670,14 +2673,6 @@ public:
         }
         //retract at first, then expand
         if (changed){
-            //sbl->clearOnePrivatePile("chaoren");
-            
-            /* if (old_firstcard > -1){
-                Json::Value args;
-                args[0] = QSanProtocol::S_GAME_EVENT_RETRACT_PILE_CARDS;
-                room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_EVENT, args);
-            } */
-
             room->setPlayerProperty(sbl, "chaoren", new_firstcard);
             //for displaying the change on dashboard immidately, even  the status is not Playing or Response.
             Json::Value args;
