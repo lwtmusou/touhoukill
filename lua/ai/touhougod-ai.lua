@@ -1459,12 +1459,14 @@ local shenbao_spear_skill = {}
 shenbao_spear_skill.name = "shenbao_spear"
 table.insert(sgs.ai_skills, shenbao_spear_skill)
 shenbao_spear_skill.getTurnUseCard = function(self, inclusive)
+    if not self.player：hasWeapon("Spear") then return nil end
     local weapon = self.player:getWeapon()
     if weapon and weapon:isKindOf("Spear") then return nil end
 	return turnUse_spear(self, inclusive, "Spear")
 end
 
 function sgs.ai_cardsview.shenbao_spear(self, class_name, player)
+    if not self.player：hasWeapon("Spear") then return nil end
     local weapon = self.player:getWeapon()
     if weapon and weapon:isKindOf("Spear") then return nil end
 	if class_name == "Slash" then

@@ -3731,7 +3731,7 @@ TouhouGodPackage::TouhouGodPackage()
     General *suwako_god = new General(this, "suwako_god", "touhougod", 5, false);
     suwako_god->addSkill(new Zuosui);
     suwako_god->addSkill(new Worao);
-	suwako_god->addSkill(new Shenhua);
+    suwako_god->addSkill(new Shenhua);
 
     General *miko_god = new General(this, "miko_god", "touhougod", 4, false);
     miko_god->addSkill(new Hongfo);
