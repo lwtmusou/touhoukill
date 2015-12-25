@@ -1440,7 +1440,7 @@ public:
             room->touhouLogmessage("#TriggerSkill", player, objectName());
 
             CardsMoveStruct move(sl, player, player, Player::PlaceSpecial, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()));
-            room->moveCardsAtomic(move, true);
+            room->moveCardsAtomic(move, false);
 
             room->touhouLogmessage("#silinggain", player, objectName(), QList<ServerPlayer *>(), QString::number(sl.length()));
             room->damage(DamageStruct("siling", player, player));
