@@ -1105,16 +1105,22 @@ public:
         view_as_skill = new ZhesheVS;
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+    
+    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
+        if (!TriggerSkill::triggerable(player)) return QStringList();
         DamageStruct damage = data.value<DamageStruct>();
-        if (player == damage.from)
-            return false;
-        //if (damage.transfer)
-        //return false;
+        if (player->isKongcheng() || player == damage.from)
+            return QStringList();
+        return QStringList(objectName());
+            
+    }
+    
+    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
         player->tag["zhesheDamage"] = data;
         const Card *card = room->askForUseCard(player, "@@zheshe", "@zheshe", -1, Card::MethodDiscard);
-        if (card != NULL)
+        if (card)
             return true;
         return false;
     }
