@@ -2621,11 +2621,14 @@ public:
             MarkChangeStruct change = data.value<MarkChangeStruct>();
             if  (change.name != "@changshi"  && change.name != "@pingyi")
                 return QStringList();
-            if (change.name == "@changshi" && player->getMark(change.name) >0 && !player->hasSkill("chaoren") && player->hasSkill("chaoren", false, true)){
+            bool pingyiInvalid  = player->getMark("pingyichaoren") > 0;
+            bool changshiInvalid = !player->hasSkill("chaoren") && player->hasSkill("chaoren", false, true) && !pingyiInvalid;
+            // player->getMark(change.name) >0
+            if (change.name == "@changshi"  && changshiInvalid){
                 sbl = player;
                 retract = true;
             }
-            if(change.name == "@pingyi" && player->getMark("pingyichaoren") >0){
+            if(change.name == "@pingyi" && pingyiInvalid){
                 sbl = player;
                 retract = true;
             }
@@ -2672,9 +2675,12 @@ public:
             }
             return QStringList();
         }
-        //retract at first, then expand
+        //if changed, then expand
         if (changed){
-            room->setPlayerProperty(sbl, "chaoren", new_firstcard);
+            if (sbl->hasSkill(objectName()))
+                room->setPlayerProperty(sbl, "chaoren", new_firstcard);
+            else
+                room->setPlayerProperty(sbl, "chaoren", -1);
             //for displaying the change on dashboard immidately, even  the status is not Playing or Response.
             Json::Value args;
             args[0] = QSanProtocol::S_GAME_EVENT_EXPAND_PILE_CARDS;
