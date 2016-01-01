@@ -1803,6 +1803,7 @@ public:
     Duanzui() : TriggerSkill("duanzui")
     {
         events << EventPhaseStart << Death << TurnStart;
+        frequency = Frequent;
     }
     virtual bool triggerable(const ServerPlayer *target) const
     {
