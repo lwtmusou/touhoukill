@@ -2688,7 +2688,7 @@ public:
             
             
             // for client log 
-            if (new_firstcard > -1){
+            if (sbl->hasSkill(objectName()) && new_firstcard > -1){
                 QList<int> watchlist;
                 watchlist << new_firstcard;
                 LogMessage l;
