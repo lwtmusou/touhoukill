@@ -109,8 +109,8 @@ public:
     virtual void stopHuaShen();
     virtual void updateAvatarTooltip();
     virtual void setRoleShown(bool shown = false);
-    
-    
+
+
     static void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect,
         const QPixmap &pixmap, QGraphicsItem *parent);
 
@@ -180,7 +180,7 @@ protected:
     void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QString &key);
     void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QString &key, QGraphicsItem *parent);
     void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QPixmap &pixmap);
-    //±ä³Épublic
+    //public
     //void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QPixmap &pixmap, QGraphicsItem *parent);
     void _clearPixmap(QGraphicsPixmapItem *item);
     QPixmap _getPixmap(const QString &key);

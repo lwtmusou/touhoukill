@@ -183,9 +183,9 @@ void Photo::tremble()
     QTimer::singleShot(1000, this, SLOT(hideSkillName()));
     }*/
 
-//void Photo::hideSkillName() {
-//    _m_skillNameItem->hide();
-//}
+    //void Photo::hideSkillName() {
+    //    _m_skillNameItem->hide();
+    //}
 
 void Photo::hideEmotion()
 {

@@ -214,7 +214,7 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
             rect.translate(m_imageArea.topLeft());
             painter->drawPixmap(rect, _icons[imageIndex]);
         }
-        
+
     } else {
         painter->drawPixmap(m_imageArea, _icons[imageIndex]);
         QRect rect(xStep, yStep, m_imageArea.width(), m_imageArea.height());

@@ -134,23 +134,23 @@ void ServerPlayer::clearOnePrivatePile(QString pile_name)
         return;
     QList<int> &pile = piles[pile_name];
 
-    
+
     DummyCard *dummy = new DummyCard(pile);
     CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, this->objectName());
     bool notifyLog = true;
     QString new_name = pile_name;
-    if (new_name.startsWith("#")){
+    if (new_name.startsWith("#")) {
         foreach (QString flag, this->getFlagList()) {
             //if (flag.endsWith("_InTempMoving"))
-            if (flag ==  new_name.mid(1) + "_InTempMoving"){
-               notifyLog = false; 
-               break;
+            if (flag == new_name.mid(1) + "_InTempMoving") {
+                notifyLog = false;
+                break;
             }
         }
     }
     room->throwCard(dummy, reason, NULL, NULL, notifyLog);
     dummy->deleteLater();
-    
+
     piles.remove(pile_name);
 }
 
@@ -367,7 +367,7 @@ void ServerPlayer::invoke(const char *method, const QString &arg)
         room->clearAG(this);
         return;
         }*/
-    // ================================================
+        // ================================================
 
     unicast(QString("%1 %2").arg(method).arg(arg));
 }
@@ -381,74 +381,82 @@ QString ServerPlayer::reportHeader() const
 void ServerPlayer::removeCard(const Card *card, Place place)
 {
     switch (place) {
-    case PlaceHand: {
-        handcards.removeOne(card);
-        break;
-    }
-    case PlaceEquip: {
-        const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
-        if (equip == NULL)
-            equip = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card->getEffectiveId()));
-        Q_ASSERT(equip != NULL);
-        equip->onUninstall(this);
-
-        WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getEffectiveId());
-        removeEquip(wrapped);
-
-        bool show_log = true;
-        foreach(QString flag, flags)
-            if (flag.endsWith("_InTempMoving")) {
-                show_log = false;
-                break;
-            }
-        if (show_log) {
-            LogMessage log;
-            log.type = "$Uninstall";
-            log.card_str = wrapped->toString();
-            log.from = this;
-            room->sendLog(log);
+        case PlaceHand:
+        {
+            handcards.removeOne(card);
+            break;
         }
-        break;
-    }
-    case PlaceDelayedTrick: {
-        removeDelayedTrick(card);
-        break;
-    }
-    case PlaceSpecial: {
-        int card_id = card->getEffectiveId();
-        QString pile_name = getPileName(card_id);
+        case PlaceEquip:
+        {
+            const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
+            if (equip == NULL)
+                equip = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card->getEffectiveId()));
+            Q_ASSERT(equip != NULL);
+            equip->onUninstall(this);
 
-        //@todo: sanity check required
-        if (!pile_name.isEmpty())
-            piles[pile_name].removeOne(card_id);
+            WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getEffectiveId());
+            removeEquip(wrapped);
 
-        break;
-    }
-    default:
-        break;
+            bool show_log = true;
+            foreach (QString flag, flags) {
+                if (flag.endsWith("_InTempMoving")) {
+                    show_log = false;
+                    break;
+                }
+            }
+            if (show_log) {
+                LogMessage log;
+                log.type = "$Uninstall";
+                log.card_str = wrapped->toString();
+                log.from = this;
+                room->sendLog(log);
+            }
+            break;
+        }
+        case PlaceDelayedTrick:
+        {
+            removeDelayedTrick(card);
+            break;
+        }
+        case PlaceSpecial:
+        {
+            int card_id = card->getEffectiveId();
+            QString pile_name = getPileName(card_id);
+
+            //@todo: sanity check required
+            if (!pile_name.isEmpty())
+                piles[pile_name].removeOne(card_id);
+
+            break;
+        }
+        default:
+            break;
     }
 }
 
 void ServerPlayer::addCard(const Card *card, Place place)
 {
     switch (place) {
-    case PlaceHand: {
-        handcards << card;
-        break;
-    }
-    case PlaceEquip: {
-        WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getEffectiveId());
-        const EquipCard *equip = qobject_cast<const EquipCard *>(wrapped->getRealCard());
-        setEquip(wrapped);
-        equip->onInstall(this);
-        break;
-    }
-    case PlaceDelayedTrick: {
-        addDelayedTrick(card);
-        break;
-    }
-    default:
-        break;
+        case PlaceHand:
+        {
+            handcards << card;
+            break;
+        }
+        case PlaceEquip:
+        {
+            WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getEffectiveId());
+            const EquipCard *equip = qobject_cast<const EquipCard *>(wrapped->getRealCard());
+            setEquip(wrapped);
+            equip->onInstall(this);
+            break;
+        }
+        case PlaceDelayedTrick:
+        {
+            addDelayedTrick(card);
+            break;
+        }
+        default:
+            break;
     }
 }
 
@@ -533,8 +541,8 @@ bool ServerPlayer::hasNullification() const
         if (ok && id > -1 && Sanguosha->getCard(id)->isKindOf("Nullification"))
             return true;
     }
-    
-    
+
+
     foreach (const Skill *skill, getVisibleSkillList(true)) {
 
         if (hasSkill(skill->objectName())) {
@@ -1065,11 +1073,11 @@ int ServerPlayer::getGeneralMaxHp() const
         if (Config.GameMode.contains("_mini_") || Config.GameMode == "custom_scenario") plan = 1;
 
         switch (plan) {
-        case 3: max_hp = (first + second) / 2; break;
-        case 2: max_hp = qMax(first, second); break;
-        case 1: max_hp = qMin(first, second); break;
-        default:
-            max_hp = first + second - Config.Scheme0Subtraction; break;
+            case 3: max_hp = (first + second) / 2; break;
+            case 2: max_hp = qMax(first, second); break;
+            case 1: max_hp = qMin(first, second); break;
+            default:
+                max_hp = first + second - Config.Scheme0Subtraction; break;
         }
 
         max_hp = qMax(max_hp, 1);
@@ -1352,7 +1360,7 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
         setPileOpen(pile_name, p->objectName());
     piles[pile_name].append(card_ids);
 
-        
+
     CardsMoveStruct move;
     move.card_ids = card_ids;
     move.to = this;

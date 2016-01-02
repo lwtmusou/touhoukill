@@ -243,16 +243,16 @@ void PlayerCardContainer::updateAvatar()
             _paintPixmap(_m_kingdomIcon, _m_layout->m_kingdomIconArea,
                 G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON, kingdom), this->_getAvatarParent());
             _paintPixmap(_m_kingdomColorMaskIcon, _m_layout->m_kingdomMaskArea,
-                G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK, kingdom), this->_getAvatarParent()); 
-                
-            
-            
+                G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK, kingdom), this->_getAvatarParent());
+
+
+
             //@todo
             //we want this mask to start at zero piont of logbox width, 
             //and keep the height to equal with the diff between middleFrame and rightFrame 
             _paintPixmap(_m_dashboardKingdomColorMaskIcon, _m_layout->m_dashboardKingdomMaskArea,
                 G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_DASHBOARD_KINGDOM_COLOR_MASK, kingdom), this->_getAvatarParent());
-                
+
             _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea,
                 _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, kingdom), this->_getAvatarParent());
             QString name = Sanguosha->translate("&" + general->objectName());
@@ -384,7 +384,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
     if (!player)
         player = m_player;
     if (!player) return;
-    
+
     QString treasure_name;
     if (player->getTreasure()) treasure_name = player->getTreasure()->objectName();
 
@@ -494,14 +494,13 @@ void PlayerCardContainer::updateMarks()
     QRect parentRect = _getMarkParent()->boundingRect().toRect();
     QSize markSize = _m_markItem->boundingRect().size().toSize();
     QRect newRect = _m_layout->m_markTextArea.getTranslatedRect(parentRect, markSize);
-    if (_m_layout == &G_PHOTO_LAYOUT){
+    if (_m_layout == &G_PHOTO_LAYOUT) {
         //_m_markItem->setPos(newRect.topLeft());
-        if (getFloatingArea().left() < newRect.left()-20)
-            _m_markItem->setPos(newRect.left()-20, newRect.top());
+        if (getFloatingArea().left() < newRect.left() - 20)
+            _m_markItem->setPos(newRect.left() - 20, newRect.top());
         else
             _m_markItem->setPos(newRect.topLeft());
-    }
-    else
+    } else
         _m_markItem->setPos(newRect.left(), newRect.top() + newRect.height() / 2);
     //for tianyi
     _updateEquips();
@@ -842,8 +841,8 @@ QList<CardItem *> PlayerCardContainer::removeEquips(const QList<int> &cardIds)
 
 void PlayerCardContainer::startHuaShen(QString generalName, QString skillName)
 {
-    if (m_player == NULL)  
-        return; 
+    if (m_player == NULL)
+        return;
 
     _m_huashenGeneralName = generalName;
     _m_huashenSkillName = skillName;
@@ -865,7 +864,7 @@ void PlayerCardContainer::startHuaShen(QString generalName, QString skillName)
     _m_huashenAnimation = G_ROOM_SKIN.createHuaShenAnimation(pixmap, animRect.topLeft(), _getAvatarParent(), _m_huashenItem);
     _m_huashenAnimation->start();
     _paintPixmap(_m_extraSkillBg, _m_layout->m_extraSkillArea, QSanRoomSkin::S_SKIN_KEY_EXTRA_SKILL_BG, _getAvatarParent());
-    if (!skillName.isEmpty()) 
+    if (!skillName.isEmpty())
         _m_extraSkillBg->show();
     _m_layout->m_extraSkillFont.paintText(_m_extraSkillText, _m_layout->m_extraSkillTextArea, Qt::AlignCenter,
         Sanguosha->translate(skillName).left(2));
@@ -1020,7 +1019,7 @@ void PlayerCardContainer::_adjustComponentZValues(bool killed)
     _layUnder(_m_kingdomColorMaskIcon);
     _layUnder(_m_dashboardKingdomColorMaskIcon);
     _layUnder(_m_chainIcon);
-    
+
 
     _layUnder(_m_screenNameItem);
     for (int i = 0; i < 5; i++)
@@ -1298,10 +1297,10 @@ void PlayerCardContainer::showHeroSkinListHelper(const General *general,
 
         connect(heroSkinContainer, SIGNAL(local_skin_changed(const QString &)),
             avatarIcon, SLOT(startChangeHeroSkinAnimation(const QString &)));
-            
+
         connect(heroSkinContainer, SIGNAL(skin_changed(const QString &, int)),
             RoomSceneInstance, SLOT(doSkinChange(const QString &, int)));
-        
+
         RoomSceneInstance->addHeroSkinContainer(m_player, heroSkinContainer);
         RoomSceneInstance->addItem(heroSkinContainer);
         QRectF photoRect = _m_avatarIcon->sceneBoundingRect();

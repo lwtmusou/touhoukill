@@ -89,7 +89,7 @@ QGraphicsItem *Dashboard::getMouseClickReceiver()
 }
 
 void Dashboard::_createLeft()
-{   
+{
     QRect rect = QRect(0, 0, G_DASHBOARD_LAYOUT.m_leftWidth, G_DASHBOARD_LAYOUT.m_normalHeight);
     _paintPixmap(_m_leftFrame, rect, _getPixmap(QSanRoomSkin::S_SKIN_KEY_LEFTFRAME), this);
     _m_leftFrame->setZValue(-1000); // nobody should be under me.
@@ -104,7 +104,7 @@ int Dashboard::getButtonWidgetWidth() const
 
 void Dashboard::_createMiddle()
 {
-    
+
     // this is just a random rect. see constructor for more details
     QRect rect = QRect(0, 0, 1, G_DASHBOARD_LAYOUT.m_normalHeight);
     _paintPixmap(_m_middleFrame, rect, _getPixmap(QSanRoomSkin::S_SKIN_KEY_MIDDLEFRAME), this);
@@ -152,7 +152,7 @@ int Dashboard::width()
 void Dashboard::_createRight()
 {   //40 equals diff bettween middlefarme and rightframe 
     QRect rect = QRect(_m_width - G_DASHBOARD_LAYOUT.m_rightWidth, -40,
-       G_DASHBOARD_LAYOUT.m_rightWidth,
+        G_DASHBOARD_LAYOUT.m_rightWidth,
         G_DASHBOARD_LAYOUT.m_normalHeight + 40);
     _paintPixmap(_m_rightFrame, rect, QPixmap(1, 1), _m_groupMain);
     _paintPixmap(_m_rightFrameBg, QRect(0, 0, rect.width(), rect.height()),
@@ -161,9 +161,9 @@ void Dashboard::_createRight()
 
     _m_skillDock = new QSanInvokeSkillDock(_m_rightFrame);
     QRect avatar = G_DASHBOARD_LAYOUT.m_avatarArea;
-    _m_skillDock->setPos(avatar.left()+25, avatar.bottom() +
-        G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height()-25);
-    _m_skillDock->setWidth(avatar.width()-50);
+    _m_skillDock->setPos(avatar.left() + 25, avatar.bottom() +
+        G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height() - 25);
+    _m_skillDock->setWidth(avatar.width() - 50);
 }
 
 
@@ -587,7 +587,7 @@ void Dashboard::selectAll()
             retractPileCards(pile);
     }
     retractPileCard();
-    
+
     if (view_as_skill) {
         unselectAll();
         foreach (CardItem *card_item, m_handCards) {
@@ -900,10 +900,10 @@ void Dashboard::beginSorting()
         type = (SortType)(action->data().toInt());
 
     switch (type) {
-    case ByType: qSort(m_handCards.begin(), m_handCards.end(), CompareByType); break;
-    case BySuit: qSort(m_handCards.begin(), m_handCards.end(), CompareBySuit); break;
-    case ByNumber: qSort(m_handCards.begin(), m_handCards.end(), CompareByNumber); break;
-    default: Q_ASSERT(false);
+        case ByType: qSort(m_handCards.begin(), m_handCards.end(), CompareByType); break;
+        case BySuit: qSort(m_handCards.begin(), m_handCards.end(), CompareBySuit); break;
+        case ByNumber: qSort(m_handCards.begin(), m_handCards.end(), CompareByNumber); break;
+        default: Q_ASSERT(false);
     }
 
     adjustCards();
@@ -1000,10 +1000,10 @@ void Dashboard::startPending(const ViewAsSkill *skill)
     foreach (const QString &pileName, _m_pile_expanded) {
         if (!(pileName.startsWith("&") || pileName == "wooden_ox" || pileName == "piao" || pileName == "chaoren"))
             retractPileCards(pileName);
-        
+
     }
     retractPileCard();
-        
+
     if (expand) {
         foreach (const QString &pile, Self->getPileNames()) {
             if (pile.startsWith("&") || pile == "wooden_ox")
@@ -1083,7 +1083,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
 {
     if (_m_pile_expanded.contains(pile_name)) return;
     _m_pile_expanded << pile_name;
-    
+
     QString new_name = pile_name;
     QList<int> pile;
     if (new_name.startsWith("%")) {
@@ -1119,20 +1119,20 @@ void Dashboard::expandPileCard()
 {
     //delete first;
     retractPileCard();
-    
+
     // then expand
     bool ok = false;
     int id = Self->property("chaoren").toInt(&ok);
-    if (ok && id >-1) {
-        _m_id_expanded << id; 
-    
+    if (ok && id > -1) {
+        _m_id_expanded << id;
+
         QList<CardItem *> card_items;
         CardItem *card_item = _createCard(id);
         card_items << card_item;
         card_item->setPos(mapFromScene(card_item->scenePos()));
         card_item->setParentItem(this);
 
-    
+
 
         _addHandCard(card_item, true, Sanguosha->translate("chaoren"));
 
@@ -1141,7 +1141,7 @@ void Dashboard::expandPileCard()
         _playMoveCardsAnimation(card_items, false);
         card_item->setAcceptedMouseButtons(Qt::LeftButton);
         update();
-    
+
     }
 }
 
@@ -1152,9 +1152,9 @@ void Dashboard::retractPileCards(const QString &pile_name)
 
     if (!_m_pile_expanded.contains(pile_name)) return;
     _m_pile_expanded.removeOne(pile_name);
-    
-    
-    
+
+
+
     QString new_name = pile_name;
     QList<int> pile;
     if (new_name.startsWith("%")) {
@@ -1164,7 +1164,7 @@ void Dashboard::retractPileCards(const QString &pile_name)
     } else {
         pile = Self->getPile(new_name);
     }
-    
+
     if (pile.isEmpty()) return;
     CardItem *card_item;
 
@@ -1200,8 +1200,8 @@ void Dashboard::retractPileCard()
     }
     adjustCards();
     update();
-    _m_id_expanded = QList<int> ();
-    
+    _m_id_expanded = QList<int>();
+
 }
 
 void Dashboard::onCardItemClicked()

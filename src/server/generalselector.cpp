@@ -105,7 +105,7 @@ QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &ca
 
     int rnd = qrand() % 100;
     int total = choice_list.length();
-    int prob[6] = { 70, 85, 92, 95, 97, 99 };
+    int prob[6] = {70, 85, 92, 95, 97, 99};
     for (int i = 0; i < 6; i++) {
         if (rnd <= prob[i] || total <= i + 1) {
             max_general = choice_list.at(i).split(":").at(0);

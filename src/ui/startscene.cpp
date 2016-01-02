@@ -18,7 +18,7 @@ StartScene::StartScene()
     QFont website_font(Config.SmallFont);
     website_font.setStyle(QFont::StyleItalic);
     //QGraphicsSimpleTextItem *website_text = addSimpleText("http://qsanguosha.org", website_font);
-    QGraphicsSimpleTextItem *website_text = addSimpleText("东方杀QQ群：384318315", website_font);
+    QGraphicsSimpleTextItem *website_text = addSimpleText(QStringLiteral("东方杀QQ群：384318315"), website_font);
     website_text->setBrush(Qt::white);
     website_text->setPos(Config.Rect.width() / 2 - website_text->boundingRect().width(),
         Config.Rect.height() / 2 - website_text->boundingRect().height());
@@ -129,10 +129,10 @@ void StartScene::printServerInfo()
     if (Config.Enable2ndGeneral) {
         QString scheme_str;
         switch (Config.MaxHpScheme) {
-        case 0: scheme_str = QString(tr("Sum - %1")).arg(Config.Scheme0Subtraction); break;
-        case 1: scheme_str = tr("Minimum"); break;
-        case 2: scheme_str = tr("Maximum"); break;
-        case 3: scheme_str = tr("Average"); break;
+            case 0: scheme_str = QString(tr("Sum - %1")).arg(Config.Scheme0Subtraction); break;
+            case 1: scheme_str = tr("Minimum"); break;
+            case 2: scheme_str = tr("Maximum"); break;
+            case 3: scheme_str = tr("Average"); break;
         }
         server_log->append(tr("Secondary general is enabled, max hp scheme is %1").arg(scheme_str));
     } else

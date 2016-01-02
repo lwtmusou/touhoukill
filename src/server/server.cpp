@@ -120,28 +120,30 @@ QWidget *ServerDialog::createPackageTab()
         extension_group->addButton(checkbox);
 
         switch (package->getType()) {
-        case Package::GeneralPack: {
-            if (extension == "standard")
-                continue;
-            row = i / 5;
-            column = i % 5;
-            i++;
+            case Package::GeneralPack:
+            {
+                if (extension == "standard")
+                    continue;
+                row = i / 5;
+                column = i % 5;
+                i++;
 
-            layout1->addWidget(checkbox, row, column + 1);
-            break;
-        }
-        case Package::CardPack: {
-            if (extension == "touhoucard")
-                continue;
-            row = j / 5;
-            column = j % 5;
-            j++;
+                layout1->addWidget(checkbox, row, column + 1);
+                break;
+            }
+            case Package::CardPack:
+            {
+                if (extension == "touhoucard")
+                    continue;
+                row = j / 5;
+                column = j % 5;
+                j++;
 
-            layout2->addWidget(checkbox, row, column + 1);
-            break;
-        }
-        default:
-            break;
+                layout2->addWidget(checkbox, row, column + 1);
+                break;
+            }
+            default:
+                break;
         }
     }
 
@@ -978,17 +980,18 @@ void Select3v3GeneralDialog::fillTabWidget()
     QList<const Package *> packages = Sanguosha->findChildren<const Package *>();
     foreach (const Package *package, packages) {
         switch (package->getType()) {
-        case Package::GeneralPack:
-        case Package::MixedPack: {
-            QListWidget *list = new QListWidget;
-            list->setViewMode(QListView::IconMode);
-            list->setDragDropMode(QListView::NoDragDrop);
-            fillListWidget(list, package);
+            case Package::GeneralPack:
+            case Package::MixedPack:
+            {
+                QListWidget *list = new QListWidget;
+                list->setViewMode(QListView::IconMode);
+                list->setDragDropMode(QListView::NoDragDrop);
+                fillListWidget(list, package);
 
-            tab_widget->addTab(list, Sanguosha->translate(package->objectName()));
-        }
-        default:
-            break;
+                tab_widget->addTab(list, Sanguosha->translate(package->objectName()));
+            }
+            default:
+                break;
         }
     }
 }

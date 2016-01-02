@@ -27,10 +27,10 @@ void RoomThreadXMode::run()
 
     foreach (ServerPlayer *player, room->m_players) {
         switch (player->getRoleEnum()) {
-        case Player::Lord: warm_leader = player; break;
-        case Player::Renegade: cool_leader = player; break;
-        default:
-            break;
+            case Player::Lord: warm_leader = player; break;
+            case Player::Renegade: cool_leader = player; break;
+            default:
+                break;
         }
     }
 

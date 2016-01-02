@@ -53,26 +53,26 @@ static void qt_graphicsItem_highlightSelected(
 
     qreal itemPenWidth;
     switch (item->type()) {
-    case QGraphicsEllipseItem::Type:
-        itemPenWidth = static_cast<QGraphicsEllipseItem *>(item)->pen().widthF();
-        break;
-    case QGraphicsPathItem::Type:
-        itemPenWidth = static_cast<QGraphicsPathItem *>(item)->pen().widthF();
-        break;
-    case QGraphicsPolygonItem::Type:
-        itemPenWidth = static_cast<QGraphicsPolygonItem *>(item)->pen().widthF();
-        break;
-    case QGraphicsRectItem::Type:
-        itemPenWidth = static_cast<QGraphicsRectItem *>(item)->pen().widthF();
-        break;
-    case QGraphicsSimpleTextItem::Type:
-        itemPenWidth = static_cast<QGraphicsSimpleTextItem *>(item)->pen().widthF();
-        break;
-    case QGraphicsLineItem::Type:
-        itemPenWidth = static_cast<QGraphicsLineItem *>(item)->pen().widthF();
-        break;
-    default:
-        itemPenWidth = 1.0;
+        case QGraphicsEllipseItem::Type:
+            itemPenWidth = static_cast<QGraphicsEllipseItem *>(item)->pen().widthF();
+            break;
+        case QGraphicsPathItem::Type:
+            itemPenWidth = static_cast<QGraphicsPathItem *>(item)->pen().widthF();
+            break;
+        case QGraphicsPolygonItem::Type:
+            itemPenWidth = static_cast<QGraphicsPolygonItem *>(item)->pen().widthF();
+            break;
+        case QGraphicsRectItem::Type:
+            itemPenWidth = static_cast<QGraphicsRectItem *>(item)->pen().widthF();
+            break;
+        case QGraphicsSimpleTextItem::Type:
+            itemPenWidth = static_cast<QGraphicsSimpleTextItem *>(item)->pen().widthF();
+            break;
+        case QGraphicsLineItem::Type:
+            itemPenWidth = static_cast<QGraphicsLineItem *>(item)->pen().widthF();
+            break;
+        default:
+            itemPenWidth = 1.0;
     }
     const qreal pad = itemPenWidth / 2;
 

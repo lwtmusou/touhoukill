@@ -10,7 +10,8 @@ class QString;
 class QPainter;
 class QRect;
 class QGraphicsPixmapItem;
-namespace Json {
+namespace Json
+{
     class Value;
 }
 

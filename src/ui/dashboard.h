@@ -23,7 +23,7 @@
 class Dashboard : public PlayerCardContainer
 {
     Q_OBJECT
-        Q_ENUMS(SortType)
+    Q_ENUMS(SortType)
 
 public:
     enum SortType

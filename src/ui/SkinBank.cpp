@@ -792,8 +792,8 @@ const QSanRoomSkin::CommonLayout &QSanRoomSkin::getCommonLayout() const
 
 QSanRoomSkin::QSanShadowTextFont
 QSanRoomSkin::DashboardLayout::getSkillTextFont(QSanButton::ButtonState state,
-QSanInvokeSkillButton::SkillType type,
-QSanInvokeSkillButton::SkillButtonWidth width) const
+    QSanInvokeSkillButton::SkillType type,
+    QSanInvokeSkillButton::SkillButtonWidth width) const
 {
     int i = QSanButton::S_NUM_BUTTON_STATES * (int)type + (int)state;
     QSanShadowTextFont font = m_skillTextFonts[width];
@@ -835,13 +835,13 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
     tryParse(config["graphicsBoxBgColor"], _m_commonLayout.graphicsBoxBackgroundColor);
     tryParse(config["graphicsBoxBorderColor"], _m_commonLayout.graphicsBoxBorderColor);
     _m_commonLayout.graphicsBoxTitleFont.tryParse(config["graphicsBoxTitleFont"]);
-    
+
     _m_commonLayout.optionButtonText.tryParse(config["optionButtonText"]);
-    
+
     tryParse(config["generalButtonPositionIconRegion"], _m_commonLayout.generalButtonPositionIconRegion);
-    tryParse(config["generalButtonNameRegion"], _m_commonLayout.generalButtonNameRegion);    
-        
-        
+    tryParse(config["generalButtonNameRegion"], _m_commonLayout.generalButtonNameRegion);
+
+
     config = layoutConfig[S_SKIN_KEY_ROOM];
     tryParse(config["chatBoxHeightPercentage"], _m_roomLayout.m_chatBoxHeightPercentage);
     tryParse(config["chatTextBoxHeight"], _m_roomLayout.m_chatTextBoxHeight);
@@ -859,10 +859,10 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
     tryParse(config["photoRoomPadding"], _m_roomLayout.m_photoRoomPadding);
     tryParse(config["roleBoxHeight"], _m_roomLayout.m_roleBoxHeight);
     tryParse(config["scenePadding"], _m_roomLayout.m_scenePadding);
-    
-    
-    
-    
+
+
+
+
     for (int i = 0; i < 2; i++) {
         Json::Value playerConfig;
         PlayerCardContainerLayout *layout;
@@ -897,7 +897,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
         tryParse(playerConfig["roleComboBoxPos"], layout->m_roleComboBoxPos);
 
         tryParse(playerConfig["roleShownArea"], layout->m_roleShownArea);
-        
+
         tryParse(playerConfig["changePrimaryHeroSkinBtnPos"],
             layout->m_changePrimaryHeroSkinBtnPos);
         //tryParse(playerConfig["changeSecondaryHeroSkinBtnPos"],
@@ -1005,15 +1005,15 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
     for (int i = 0; i < QSanInvokeSkillButton::S_NUM_SKILL_TYPES; i++) {
         QString key;
         switch ((QSanInvokeSkillButton::SkillType)i) {
-        case QSanInvokeSkillButton::S_SKILL_AWAKEN: key = "awakenFontColor"; break;
-        case QSanInvokeSkillButton::S_SKILL_COMPULSORY: key = "compulsoryFontColor"; break;
-        case QSanInvokeSkillButton::S_SKILL_FREQUENT: key = "frequentFontColor"; break;
-        case QSanInvokeSkillButton::S_SKILL_ONEOFF_SPELL: key = "oneoffFontColor"; break;
-        case QSanInvokeSkillButton::S_SKILL_PROACTIVE: key = "proactiveFontColor"; break;
-        case QSanInvokeSkillButton::S_SKILL_ATTACHEDLORD: key = "attachedlordFontColor"; break;
-        default:
-            Q_ASSERT(false);
-            break;
+            case QSanInvokeSkillButton::S_SKILL_AWAKEN: key = "awakenFontColor"; break;
+            case QSanInvokeSkillButton::S_SKILL_COMPULSORY: key = "compulsoryFontColor"; break;
+            case QSanInvokeSkillButton::S_SKILL_FREQUENT: key = "frequentFontColor"; break;
+            case QSanInvokeSkillButton::S_SKILL_ONEOFF_SPELL: key = "oneoffFontColor"; break;
+            case QSanInvokeSkillButton::S_SKILL_PROACTIVE: key = "proactiveFontColor"; break;
+            case QSanInvokeSkillButton::S_SKILL_ATTACHEDLORD: key = "attachedlordFontColor"; break;
+            default:
+                Q_ASSERT(false);
+                break;
         }
         for (int j = 0; j < 4; j++) {
             int index = i * 4 + j;
@@ -1132,28 +1132,28 @@ void QSanRoomSkin::getHeroSkinContainerGeneralIconPathAndClipRegion(const QStrin
 
             if (!path.isEmpty()) {
                 switch (i) {
-                case 0:
-                    generalIconPath = path;
-                    break;
+                    case 0:
+                        generalIconPath = path;
+                        break;
 
-                case 1:
-                    if (skinIndex > 0) {
-                        generalIconPath = path.arg(skinIndex);
-                    }
-                    break;
+                    case 1:
+                        if (skinIndex > 0) {
+                            generalIconPath = path.arg(skinIndex);
+                        }
+                        break;
 
-                case 2:
-                    generalIconPath = path.arg(generalName);
-                    break;
+                    case 2:
+                        generalIconPath = path.arg(generalName);
+                        break;
 
-                case 3:
-                    if (skinIndex > 0) {
-                        generalIconPath = path.arg(generalName).arg(skinIndex);
-                    }
-                    break;
+                    case 3:
+                        if (skinIndex > 0) {
+                            generalIconPath = path.arg(generalName).arg(skinIndex);
+                        }
+                        break;
 
-                default:
-                    break;
+                    default:
+                        break;
                 }
             }
         }

@@ -229,7 +229,7 @@ public:
     void doDiscardButton();
     void highlightSkillButton(QString skill_name, bool highlight);
     bool isHighlightStatus(Client::Status status);
-    
+
     void doSkinChange(const QString &generalName, int skinIndex);
     inline QPointF tableCenterPos()
     {
@@ -398,7 +398,7 @@ private:
     QRectF m_tableRect;
     QSet<HeroSkinContainer *> m_heroSkinContainers;
 
-    private slots:
+private slots:
     void fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids = QList<int>());
     void updateSkillButtons();
     void acquireSkill(const ClientPlayer *player, const QString &skill_name);
@@ -407,9 +407,9 @@ private:
     void onSkillActivated();
     void onSkillDeactivated();
     void doTimeout();
-    
 
-    
+
+
     void startInXs();
     void hideAvatars();
     void changeHp(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);

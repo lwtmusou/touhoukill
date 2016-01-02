@@ -25,7 +25,7 @@
 #include "client.h"
 #include "clientplayer.h"
 #include "timedprogressbar.h"
-//#include "stylehelper.h"
+    //#include "stylehelper.h"
 
 #include <QGraphicsSceneMouseEvent>
 #include <QPropertyAnimation>
@@ -71,12 +71,12 @@ TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QString 
     if (realSkill.contains("*")) {
         realSkill = skillStr.split("*").first();
     }
-    
+
     if (realSkill.contains("'")) // "sgs1'songwei"
         realSkill = realSkill.split("'").last();
     else if (realSkill.contains("->")) // "tieqi->sgs4&1"
         realSkill = realSkill.split("->").first();
-    
+
     const Skill *skill = Sanguosha->getSkill(realSkill);
     if (skill)
         setToolTip(skill->getDescription());
@@ -97,7 +97,7 @@ QString TriggerOptionButton::getGeneralNameBySkill() const
         foreach (const Skill *skill, player->getVisibleSkillList()) {
             if (!skill->inherits("BattleArraySkill")) continue;
             //if (player->inHeadSkills(skill))
-                generalName = player->getGeneralName();
+            generalName = player->getGeneralName();
             //else
             //    generalName = player->getGeneral2Name();
         }
@@ -108,7 +108,7 @@ QString TriggerOptionButton::getGeneralNameBySkill() const
         else if (realSkillName.contains("->")) // "tieqi->sgs4&1"
             realSkillName = realSkillName.split("->").first();
         //if (player->inHeadSkills(Sanguosha->getMainSkill(realSkillName)))
-            generalName = player->getGeneralName();
+        generalName = player->getGeneralName();
         //else
         //    generalName = player->getGeneral2Name();
     }
@@ -262,7 +262,7 @@ void GeneralButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, Q
     QPixmap generalImage = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE);
 
     //QPixmap generalImage = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE, getSkinId(Self, generalName));
-    
+
     generalImage = generalImage.scaled(generalButtonSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     painter->setBrush(generalImage);
     painter->drawRoundedRect(boundingRect(), 5, 5, Qt::RelativeSize);

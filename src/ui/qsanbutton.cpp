@@ -308,7 +308,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
             nline = _m_skill->objectName().indexOf("_");
         QString engskillname = _m_skill->objectName().left(nline);
         QString generalName = "";
-            
+
         foreach (const Player* p, Self->getSiblings()) {
             const General* general = p->getGeneral();
             if (general->hasSkill(engskillname)) {
@@ -322,14 +322,14 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
             /* if (p->getGeneral2()) {
             } */
         }
-        if (generalName == ""){
+        if (generalName == "") {
             const General* general = Self->getGeneral();
             if (general->hasSkill(engskillname))
                 generalName = general->objectName();
         }
         if (generalName == "")
             return;
-        
+
         QString path = G_ROOM_SKIN.getButtonPixmapPath(G_ROOM_SKIN.S_SKIN_KEY_BUTTON_SKILL, getSkillTypeString(_m_skillType), _m_state);
         int n = path.lastIndexOf("/");
         path = path.left(n + 1) + generalName + ".png";
@@ -339,7 +339,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
         int h = pixmap.height() - _m_bgPixmap[(int)_m_state].height();
         painter->drawPixmap(0, -h, pixmap.width(), pixmap.height(), pixmap);
     }
-    
+
 }
 
 QSanSkillButton *QSanInvokeSkillDock::addSkillButtonByName(const QString &skillName)
@@ -433,7 +433,7 @@ void QSanInvokeSkillDock::update()
         for (int i = 0; i < rows; i++) {
             int rowTop = (RoomSceneInstance->m_skillButtonSank) ? (-rowH - 2 * (rows - i - 1)) :
                 ((-rows + i) * rowH);
-            int btnWidth = (_m_width -20) / btnNum[i];
+            int btnWidth = (_m_width - 20) / btnNum[i];
             for (int j = 0; j < btnNum[i]; j++) {
                 QSanInvokeSkillButton *button = regular_buttons[m++];//all_buttons[m++];
                 button->setButtonWidth((QSanInvokeSkillButton::SkillButtonWidth)(btnNum[i] - 1));

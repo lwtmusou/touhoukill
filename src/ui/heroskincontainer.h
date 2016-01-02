@@ -42,8 +42,8 @@ public:
     static bool hasSkin(const QString &generalName);
     static int getNextSkinIndex(const QString &generalName, int skinIndex);
     void swapWithSkinItemUsed(int skinIndex);
-    
-    
+
+
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *);
     virtual void wheelEvent(QGraphicsSceneWheelEvent *event);

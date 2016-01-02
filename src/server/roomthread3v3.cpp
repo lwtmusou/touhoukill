@@ -79,10 +79,10 @@ void RoomThread3v3::run()
 
     foreach (ServerPlayer *player, room->m_players) {
         switch (player->getRoleEnum()) {
-        case Player::Lord: warm_leader = player; break;
-        case Player::Renegade: cool_leader = player; break;
-        default:
-            break;
+            case Player::Lord: warm_leader = player; break;
+            case Player::Renegade: cool_leader = player; break;
+            default:
+                break;
         }
     }
 
@@ -93,7 +93,7 @@ void RoomThread3v3::run()
             general_names = getGeneralsWithoutExtension();
     } else
         general_names = getGeneralsWithoutExtension(); */
-        
+
     general_names = Config.value("3v3/ExtensionGenerals").toStringList();
 
     qShuffle(general_names);
