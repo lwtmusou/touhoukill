@@ -1377,4 +1377,5 @@ void Room::doScript(const QString &script)
 
 %include "card.i"
 %include "luaskills.i"
+%include "general_select.i"
 %include "ai.i"
