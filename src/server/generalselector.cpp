@@ -34,3 +34,9 @@ GeneralSelector::GeneralSelector()
     } else
         initialize();
 }
+
+
+GeneralSelector::~GeneralSelector()
+{
+    lua_close(L);
+}
