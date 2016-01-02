@@ -101,6 +101,7 @@ private:
     QList<bool> set_options;
 
     QMap<QString, int> kingdom_index;
+
 private slots:
     void updateRole(int index);
     void updateNumber(int num);

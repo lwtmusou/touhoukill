@@ -160,11 +160,11 @@ bool ViewAsSkill::isAvailable(const Player *invoker,
         && !invoker->hasFlag(objectName())) // For Shuangxiong
         return false;
     switch (reason) {
-    case CardUseStruct::CARD_USE_REASON_PLAY: return isEnabledAtPlay(invoker);
-    case CardUseStruct::CARD_USE_REASON_RESPONSE:
-    case CardUseStruct::CARD_USE_REASON_RESPONSE_USE: return isEnabledAtResponse(invoker, pattern);
-    default:
-        return false;
+        case CardUseStruct::CARD_USE_REASON_PLAY: return isEnabledAtPlay(invoker);
+        case CardUseStruct::CARD_USE_REASON_RESPONSE:
+        case CardUseStruct::CARD_USE_REASON_RESPONSE_USE: return isEnabledAtResponse(invoker, pattern);
+        default:
+            return false;
     }
 }
 
@@ -276,7 +276,7 @@ QList<TriggerEvent> TriggerSkill::getTriggerEvents() const
 
 int TriggerSkill::getPriority(TriggerEvent) const
 {
-    return 3 ;
+    return 3;
 }
 
 void TriggerSkill::record(TriggerEvent, Room *, ServerPlayer *, QVariant &) const
@@ -301,22 +301,26 @@ bool TriggerSkill::triggerable(const ServerPlayer *target) const
     return target != NULL && target->isAlive() && target->hasSkill(objectName());
 }
 
-QStringList TriggerSkill::triggerable(TriggerEvent , Room *, ServerPlayer *target, QVariant &, ServerPlayer* &) const{
+QStringList TriggerSkill::triggerable(TriggerEvent, Room *, ServerPlayer *target, QVariant &, ServerPlayer* &) const
+{
     //if (triggerable(target, room))
     if (triggerable(target))
         return QStringList(objectName());
     return QStringList();
 }
 
-bool TriggerSkill::cost(TriggerEvent , Room *, ServerPlayer *, QVariant &, ServerPlayer *) const{
+bool TriggerSkill::cost(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *) const
+{
     return true;
 }
 
-bool TriggerSkill::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+bool TriggerSkill::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+{
     return trigger(triggerEvent, room, player, data);
 }
 
-bool TriggerSkill::trigger(TriggerEvent, Room *, ServerPlayer *, QVariant &) const{
+bool TriggerSkill::trigger(TriggerEvent, Room *, ServerPlayer *, QVariant &) const
+{
     return false;
 }
 
@@ -587,7 +591,8 @@ WeaponSkill::WeaponSkill(const QString &name)
 {
 }
 
-int WeaponSkill::getPriority(TriggerEvent) const{
+int WeaponSkill::getPriority(TriggerEvent) const
+{
     return 2;
 }
 
@@ -603,7 +608,8 @@ ArmorSkill::ArmorSkill(const QString &name)
 {
 }
 
-int ArmorSkill::getPriority(TriggerEvent) const{
+int ArmorSkill::getPriority(TriggerEvent) const
+{
     return 2;
 }
 

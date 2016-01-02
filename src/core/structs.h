@@ -47,7 +47,7 @@ struct CardEffectStruct
 
     ServerPlayer *from;
     ServerPlayer *to;
-    
+
     bool multiple; // helper to judge whether the card has multiple targets
     // does not make sense if the card inherits SkillCard
     bool nullified;
@@ -592,14 +592,14 @@ enum TriggerEvent
     CardFinished,
     TrickCardCanceling,
     TrickEffect,
-    
+
     PreMarkChange,
     MarkChanged,
 
     ChoiceMade,
 
 
-    
+
     StageChange, // For hulao pass only
     FetchDrawPileCard, // For miniscenarios only
     ActionedReset, // For 3v3 only
@@ -613,7 +613,7 @@ enum TriggerEvent
     AfterGuanXing,
     Reconnect,
     KingdomChanged,
-    
+
     NumOfEvents
 };
 

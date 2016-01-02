@@ -4,7 +4,8 @@
 #include <QDialog>
 #include <QLineEdit>
 
-namespace Ui {
+namespace Ui
+{
     class ConfigDialog;
 }
 

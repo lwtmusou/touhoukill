@@ -11,7 +11,7 @@ DiscardSkill::DiscardSkill()
 {
     card->setParent(this);
 }
-    
+
 void DiscardSkill::setNum(int num)
 {
     this->num = num;

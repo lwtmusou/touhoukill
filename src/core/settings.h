@@ -27,7 +27,7 @@ public:
     QFont UIFont;
     QColor TextEditColor;
     QColor ToolTipBackgroundColor;
-    
+
     // server side
     QString ServerName;
     int CountDownSeconds;

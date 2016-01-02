@@ -54,7 +54,8 @@ private slots:
     void unselectAllPackages();
 };
 
-namespace Ui {
+namespace Ui
+{
     class GeneralOverview;
 }
 

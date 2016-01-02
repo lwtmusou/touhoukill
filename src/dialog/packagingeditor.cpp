@@ -60,7 +60,7 @@ void MetaInfoWidget::saveToSettings(QSettings &settings)
 {
     QList<const QLineEdit *> edits = findChildren<const QLineEdit *>();
 
-    foreach (const QLineEdit *edit, edits) {
+    foreach(const QLineEdit *edit, edits) {
         settings.setValue(edit->objectName(), edit->text());
     }
 
@@ -71,7 +71,7 @@ void MetaInfoWidget::showSettings(const QSettings *settings)
 {
     QList<QLineEdit *> edits = findChildren<QLineEdit *>();
 
-    foreach (QLineEdit *edit, edits) {
+    foreach(QLineEdit *edit, edits) {
         edit->setText(settings->value(edit->objectName()).toString());
     }
 

@@ -1,4 +1,4 @@
-#include "touhougod.h"
+ï»¿#include "touhougod.h"
 
 #include "general.h"
 #include "settings.h"
@@ -2529,7 +2529,7 @@ public:
         if (!drawpile.isEmpty())
             firstcard = drawpile.first();
         //deal the amazinggrace
-        //update firstcard¡£¡£¡£
+        //update firstcardã€‚ã€‚ã€‚
         if (triggerEvent == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (!use.card->isKindOf("AmazingGrace"))

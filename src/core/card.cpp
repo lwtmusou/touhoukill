@@ -33,13 +33,13 @@ QString Card::getSuitString() const
 QString Card::Suit2String(Suit suit)
 {
     switch (suit) {
-    case Spade: return "spade";
-    case Heart: return "heart";
-    case Club: return "club";
-    case Diamond: return "diamond";
-    case NoSuitBlack: return "no_suit_black";
-    case NoSuitRed: return "no_suit_red";
-    default: return "no_suit";
+        case Spade: return "spade";
+        case Heart: return "heart";
+        case Club: return "club";
+        case Diamond: return "diamond";
+        case NoSuitBlack: return "no_suit_black";
+        case NoSuitRed: return "no_suit_red";
+        default: return "no_suit";
     }
 }
 
@@ -147,16 +147,16 @@ bool Card::sameColorWith(const Card *other) const
 Card::Color Card::getColor() const
 {
     switch (getSuit()) {
-    case Spade:
-    case Club:
-    case NoSuitBlack:
-        return Black;
-    case Heart:
-    case Diamond:
-    case NoSuitRed:
-        return Red;
-    default:
-        return Colorless;
+        case Spade:
+        case Club:
+        case NoSuitBlack:
+            return Black;
+        case Heart:
+        case Diamond:
+        case NoSuitRed:
+            return Red;
+        default:
+            return Colorless;
     }
 }
 
@@ -176,7 +176,7 @@ bool Card::match(const QString &pattern) const
 
 bool Card::CompareByNumber(const Card *a, const Card *b)
 {
-    static Suit new_suits[] = { Spade, Heart, Club, Diamond, NoSuitBlack, NoSuitRed, NoSuit };
+    static Suit new_suits[] = {Spade, Heart, Club, Diamond, NoSuitBlack, NoSuitRed, NoSuit};
     Suit suit1 = new_suits[a->getSuit()];
     Suit suit2 = new_suits[b->getSuit()];
 
@@ -188,7 +188,7 @@ bool Card::CompareByNumber(const Card *a, const Card *b)
 
 bool Card::CompareBySuit(const Card *a, const Card *b)
 {
-    static Suit new_suits[] = { Spade, Heart, Club, Diamond, NoSuitBlack, NoSuitRed, NoSuit };
+    static Suit new_suits[] = {Spade, Heart, Club, Diamond, NoSuitBlack, NoSuitRed, NoSuit};
     Suit suit1 = new_suits[a->getSuit()];
     Suit suit2 = new_suits[b->getSuit()];
 
@@ -209,51 +209,54 @@ bool Card::CompareByType(const Card *a, const Card *b)
         if (basic.isEmpty())
             basic << "slash" << "ice_slash" << "thunder_slash" << "fire_slash" << "jink" << "peach" << "analeptic";
         switch (a->getTypeId()) {
-        case TypeBasic: {
-            foreach (QString object_name, basic) {
-                if (a->objectName() == object_name) {
+            case TypeBasic:
+            {
+                foreach (QString object_name, basic) {
+                    if (a->objectName() == object_name) {
+                        if (b->objectName() == object_name)
+                            return CompareBySuit(a, b);
+                        else
+                            return true;
+                    }
                     if (b->objectName() == object_name)
-                        return CompareBySuit(a, b);
-                    else
-                        return true;
+                        return false;
                 }
-                if (b->objectName() == object_name)
-                    return false;
-            }
-            return CompareBySuit(a, b);
-            break;
-        }
-        case TypeTrick: {
-            if (a->objectName() == b->objectName())
                 return CompareBySuit(a, b);
-            else
-                return a->objectName() < b->objectName();
-            break;
-        }
-        case TypeEquip: {
-            const EquipCard *eq_a = qobject_cast<const EquipCard *>(a->getRealCard());
-            const EquipCard *eq_b = qobject_cast<const EquipCard *>(b->getRealCard());
-            if (eq_a->location() == eq_b->location()) {
-                if (eq_a->isKindOf("Weapon")) {
-                    const Weapon *wep_a = qobject_cast<const Weapon *>(a->getRealCard());
-                    const Weapon *wep_b = qobject_cast<const Weapon *>(b->getRealCard());
-                    if (wep_a->getRange() == wep_b->getRange())
-                        return CompareBySuit(a, b);
-                    else
-                        return wep_a->getRange() < wep_b->getRange();
-                } else {
-                    if (a->objectName() == b->objectName())
-                        return CompareBySuit(a, b);
-                    else
-                        return a->objectName() < b->objectName();
-                }
-            } else {
-                return eq_a->location() < eq_b->location();
+                break;
             }
-            break;
-        }
-        default:
-            return CompareBySuit(a, b);
+            case TypeTrick:
+            {
+                if (a->objectName() == b->objectName())
+                    return CompareBySuit(a, b);
+                else
+                    return a->objectName() < b->objectName();
+                break;
+            }
+            case TypeEquip:
+            {
+                const EquipCard *eq_a = qobject_cast<const EquipCard *>(a->getRealCard());
+                const EquipCard *eq_b = qobject_cast<const EquipCard *>(b->getRealCard());
+                if (eq_a->location() == eq_b->location()) {
+                    if (eq_a->isKindOf("Weapon")) {
+                        const Weapon *wep_a = qobject_cast<const Weapon *>(a->getRealCard());
+                        const Weapon *wep_b = qobject_cast<const Weapon *>(b->getRealCard());
+                        if (wep_a->getRange() == wep_b->getRange())
+                            return CompareBySuit(a, b);
+                        else
+                            return wep_a->getRange() < wep_b->getRange();
+                    } else {
+                        if (a->objectName() == b->objectName())
+                            return CompareBySuit(a, b);
+                        else
+                            return a->objectName() < b->objectName();
+                    }
+                } else {
+                    return eq_a->location() < eq_b->location();
+                }
+                break;
+            }
+            default:
+                return CompareBySuit(a, b);
         }
     }
 }
@@ -287,27 +290,31 @@ QString Card::getLogName() const
     QString number_string;
 
     switch (getSuit()) {
-    case Spade:
-    case Heart:
-    case Club:
-    case Diamond: {
-        suit_char = QString("<img src='image/system/log/%1.png' height = 12/>").arg(getSuitString());
-        break;
-    }
-    case NoSuitRed: {
-        suit_char = tr("NoSuitRed");
-        break;
-    }
-    case NoSuitBlack: {
-        suit_char = tr("NoSuitBlack");
-        break;
-    }
-    case NoSuit: {
-        suit_char = tr("NoSuit");
-        break;
-    }
-    default:
-        break;
+        case Spade:
+        case Heart:
+        case Club:
+        case Diamond:
+        {
+            suit_char = QString("<img src='image/system/log/%1.png' height = 12/>").arg(getSuitString());
+            break;
+        }
+        case NoSuitRed:
+        {
+            suit_char = tr("NoSuitRed");
+            break;
+        }
+        case NoSuitBlack:
+        {
+            suit_char = tr("NoSuitBlack");
+            break;
+        }
+        case NoSuit:
+        {
+            suit_char = tr("NoSuit");
+            break;
+        }
+        default:
+            break;
     }
 
     if (m_number > 0 && m_number <= 13)
@@ -679,7 +686,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
         ServerPlayer *from = card_use.from;
         if (provider != NULL)
             from = provider;
-            
+
         CardsMoveStruct move(used_cards, from, NULL, Player::PlaceUnknown, Player::PlaceTable, reason);
         moves.append(move);
         room->moveCardsAtomic(moves, true);
@@ -708,7 +715,7 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
 
         room->cardEffect(effect);
     }
-    
+
 
     if (room->getCardPlace(getEffectiveId()) == Player::PlaceTable) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());

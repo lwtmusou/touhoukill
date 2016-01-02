@@ -10,8 +10,10 @@
 #include <qrect.h>
 #include <qcolor.h>
 
-namespace QSanProtocol {
-    namespace Utils {
+namespace QSanProtocol
+{
+    namespace Utils
+    {
         inline QString toQString(const Json::Value &value)
         {
             Q_ASSERT(value.isString());

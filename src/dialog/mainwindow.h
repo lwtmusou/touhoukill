@@ -11,7 +11,8 @@
 #include <QCheckBox>
 #include <QSpinBox>
 
-namespace Ui {
+namespace Ui
+{
     class MainWindow;
 }
 

@@ -5,8 +5,10 @@
 #include <list>
 #include <json/json.h>
 
-namespace QSanProtocol {
-    namespace Utils {
+namespace QSanProtocol
+{
+    namespace Utils
+    {
         bool isStringArray(const Json::Value &jsonObject, unsigned int startIndex, unsigned int endIndex);
         bool isIntArray(const Json::Value &jsonObject, unsigned int startIndex, unsigned int endIndex);
     }

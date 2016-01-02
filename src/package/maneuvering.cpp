@@ -143,7 +143,7 @@ public:
         events << DamageCaused;
         frequency = Compulsory;
     }
-    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
         if (!WeaponSkill::triggerable(player)) return QStringList();
         DamageStruct damage = data.value<DamageStruct>();
@@ -151,15 +151,15 @@ public:
             && damage.to->getMark("Equips_of_Others_Nullified_to_You") == 0
             && damage.to->isKongcheng() && damage.by_user && !damage.chain && !damage.transfer)
             return QStringList(objectName());
-        
+
         return QStringList();
     }
-    
-    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
         DamageStruct damage = data.value<DamageStruct>();
         room->setEmotion(player, "weapon/guding_blade");
- 
+
         LogMessage log;
         log.type = "#GudingBladeEffect";
         log.from = player;
@@ -209,8 +209,8 @@ public:
         }
         return QStringList();
     }
-    
-    
+
+
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
         if (triggerEvent == SlashEffected) {
@@ -253,7 +253,7 @@ public:
 
         return false;
     }
-    
+
 
 };
 
@@ -296,7 +296,7 @@ public:
         }
         return QStringList();
     }
-    
+
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
         if (triggerEvent == DamageInflicted) {
@@ -332,7 +332,7 @@ public:
         return false;
     }
 
-    
+
 };
 
 SilverLion::SilverLion(Suit suit, int number)
@@ -427,13 +427,13 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
             rec = false;
             break;
         } else { // for  skill chaoren
-            if (id == Self->property("chaoren").toInt()){
+            if (id == Self->property("chaoren").toInt()) {
                 rec = false;
-                break; 
+                break;
             }
         }
     }
-    
+
 
     if (rec && Self->isCardLimited(this, Card::MethodUse))
         return targets.length() == 0;

@@ -8,7 +8,8 @@
 
 class UdpDetector;
 
-namespace Ui {
+namespace Ui
+{
     class ConnectionDialog;
 }
 

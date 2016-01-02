@@ -366,9 +366,6 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         package_item->setBackgroundColor(kingdomColor);
         kingdom_item->setBackgroundColor(kingdomColor);
 
-        
-        
-
         ui->tableWidget->setItem(i, 0, nickname_item);
         ui->tableWidget->setItem(i, 1, name_item);
         ui->tableWidget->setItem(i, 2, kingdom_item);

@@ -7,7 +7,7 @@
 #include <QMessageBox>
 
 using namespace QSanProtocol;
-    
+
 RecAnalysis::RecAnalysis(QString dir) : m_recordPlayers(0), m_currentPlayer(NULL)
 {
     initialize(dir);

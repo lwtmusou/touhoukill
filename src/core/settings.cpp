@@ -133,7 +133,7 @@ void Settings::init()
 
 
     int length = 8;
-    int index = qrand() % length +1;
+    int index = qrand() % length + 1;
     QString bgFilename = QString("%1%2%3").arg("backdrop/hall/gensoukyou_").arg(index).arg(".jpg");
 
     BackgroundImage = value("BackgroundImage", bgFilename).toString();

@@ -94,8 +94,8 @@ Engine::Engine()
         << "zhan" << "fsl" << "dld" << "xlc" << "slm" << "hzc"
         << "wai" << "touhougod";
     LordBGMConvertList = GetConfigFromLuaState(lua, "bgm_convert_pairs").toStringList();
-    
-    
+
+
     _loadMiniScenarios();
     _loadModScenarios();
     m_customScene = new CustomScenario();
@@ -284,7 +284,7 @@ void Engine::addPackage(Package *package)
         addSkills(general->findChildren<const Skill *>());
         foreach (QString skill_name, general->getExtraSkillSet()) {
             if (skill_name.startsWith("#")) continue;
-            foreach(const Skill *related, getRelatedSkills(skill_name))
+            foreach (const Skill *related, getRelatedSkills(skill_name))
                 general->addSkill(related->objectName());
         }
         if (sp_convert_pairs.keys().contains(general->objectName())) {
@@ -866,10 +866,10 @@ QStringList Engine::getRoleList(const QString &mode) const
     for (int i = 0; roles[i] != '\0'; i++) {
         QString role;
         switch (roles[i].toLatin1()) {
-        case 'Z': role = "lord"; break;
-        case 'C': role = "loyalist"; break;
-        case 'N': role = "renegade"; break;
-        case 'F': role = "rebel"; break;
+            case 'Z': role = "lord"; break;
+            case 'C': role = "loyalist"; break;
+            case 'N': role = "renegade"; break;
+            case 'F': role = "rebel"; break;
         }
         role_list << role;
     }
@@ -971,11 +971,10 @@ QStringList Engine::getRandomLords() const
         if (getGeneral(nonlord_list.at(i))->getKingdom() != "touhougod") {
             lords << nonlord_list.at(i);
             addcount++;
-        }
-         else if (godmax > 0 && godCount < godmax) {
+        } else if (godmax > 0 && godCount < godmax) {
             lords << nonlord_list.at(i);
             godCount++;
-            addcount++;    
+            addcount++;
         }
 
         if (i == nonlord_list.length() - 1) break;
@@ -1085,18 +1084,16 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
     int godCount = 0;
     for (int i = 0; addcount < count; i++) {
         if (getGeneral(all_generals.at(i))->getKingdom() != "touhougod") {
-
             general_list << all_generals.at(i);
             addcount++;
-        } else if (godmax > 0 &&  godCount < godmax){
-            
+        } else if (godmax > 0 && godCount < godmax) {
             general_list << all_generals.at(i);
             godCount++;
             addcount++;
-        } 
-        if (i == all_generals.count() - 1) 
+        }
+        if (i == all_generals.count() - 1)
             break;
-    } 
+    }
 
 
     //QStringList general_list = all_generals.mid(0, count);

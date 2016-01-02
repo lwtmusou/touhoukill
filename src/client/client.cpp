@@ -83,8 +83,8 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_SYNCHRONIZE_DISCARD_PILE] = &Client::synchronizeDiscardPile;
     m_callbacks[S_COMMAND_CARD_FLAG] = &Client::setCardFlag;
 
-    
-    
+
+
     // interactive methods
     m_interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
     m_interactions[S_COMMAND_CHOOSE_PLAYER] = &Client::askForPlayerChosen;
@@ -235,14 +235,14 @@ void Client::handleGameEvent(const Json::Value &arg)
     emit event_received(arg);
 }
 
-void Client::notifyToServer(CommandType command, const Json::Value &arg) 
-{ 
-    if (socket) { 
-        QSanGeneralPacket packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_ROOM, command); 
-        packet.setMessageBody(arg); 
+void Client::notifyToServer(CommandType command, const Json::Value &arg)
+{
+    if (socket) {
+        QSanGeneralPacket packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_ROOM, command);
+        packet.setMessageBody(arg);
         socket->send(toQString(packet.toString()));
-    } 
-} 
+    }
+}
 
 
 
@@ -251,7 +251,7 @@ void Client::requestToServer(CommandType command, const Json::Value &arg)
     if (socket) {
         QSanGeneralPacket packet(S_SRC_CLIENT | S_TYPE_REQUEST | S_DEST_ROOM, command);
         packet.setMessageBody(arg);
-        socket->send(toQString(packet.toString()));    
+        socket->send(toQString(packet.toString()));
     }
 }
 
@@ -890,10 +890,10 @@ void Client::askForCardOrUseCard(const Json::Value &cardUsage)
     if (cardUsage[2].isInt()) {
         Card::HandlingMethod method = (Card::HandlingMethod)(cardUsage[2].asInt());
         switch (method) {
-        case Card::MethodDiscard: status = RespondingForDiscard; break;
-        case Card::MethodUse: status = RespondingUse; break;
-        case Card::MethodResponse: status = Responding; break;
-        default: status = RespondingNonTrigger; break;
+            case Card::MethodDiscard: status = RespondingForDiscard; break;
+            case Card::MethodUse: status = RespondingUse; break;
+            case Card::MethodResponse: status = Responding; break;
+            default: status = RespondingNonTrigger; break;
         }
     }
     setStatus(status);
@@ -1453,12 +1453,12 @@ void Client::askForTriggerOrder(const Json::Value &val)
     if (val.size() != 3
         || !val[0].isString() || !val[1].isArray()
         || !val[2].isBool()) return;
-    
-    
+
+
     QString reason = val[0].asCString();
     QStringList choices;
     tryParse(val[1], choices);
-    
+
     bool optional = val[2].asBool();
 
     emit triggers_got(reason, choices, optional);
@@ -2046,14 +2046,14 @@ void Client::clearLordInfo()
     lord_name = "";
 }
 
-void Client::changeSkin(QString name, int index)  
-{   
-    
+void Client::changeSkin(QString name, int index)
+{
+
     Json::Value skinInfo(Json::arrayValue);
     skinInfo[0] = toJsonString(name);
     skinInfo[1] = index;
     //notifyToServer(S_COMMAND_SKIN_CHANGE, skinInfo);
 
-    requestToServer(S_COMMAND_SKIN_CHANGE, skinInfo); 
-}  
+    requestToServer(S_COMMAND_SKIN_CHANGE, skinInfo);
+}
 

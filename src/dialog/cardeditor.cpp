@@ -188,16 +188,17 @@ public:
 
         int delta_y = 0;
         switch (event->key()) {
-        case Qt::Key_Up: delta_y = -1; break;
-        case Qt::Key_Down: delta_y = 1; break;
-        case Qt::Key_Delete:{
-            if (DeleteAction)
-                DeleteAction->trigger();
-            return;
-        }
+            case Qt::Key_Up: delta_y = -1; break;
+            case Qt::Key_Down: delta_y = 1; break;
+            case Qt::Key_Delete:
+            {
+                if (DeleteAction)
+                    DeleteAction->trigger();
+                return;
+            }
 
-        default:
-            break;
+            default:
+                break;
         }
 
         if (delta_y == 0) {
@@ -802,7 +803,7 @@ void CardScene::setMenu(QMenu *menu)
 }
 
 CardEditor::CardEditor(QWidget *parent) :
-QMainWindow(parent)
+    QMainWindow(parent)
 {
     setWindowTitle(tr("Card editor"));
 

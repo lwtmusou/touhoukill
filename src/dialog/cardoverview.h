@@ -7,7 +7,8 @@
 #include <QTableWidgetItem>
 
 class MainWindow;
-namespace Ui {
+namespace Ui
+{
     class CardOverview;
 }
 

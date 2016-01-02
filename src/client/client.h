@@ -36,9 +36,9 @@ public:
         AskForShowOrPindian = 0x0C,
         AskForGeneralTaken = 0x0D,
         AskForArrangement = 0x0E,
-        
+
         AskForTriggerOrder = 0x010010,//@todo
-        
+
         RespondingUse = 0x11,
         RespondingForDiscard = 0x21,
         RespondingNonTrigger = 0x31,
@@ -134,7 +134,7 @@ public:
     void setCardFlag(const Json::Value &pattern_str);
     void updateCard(const Json::Value &arg);
 
-    
+
     void fillAG(const Json::Value &cards_str);
     void takeAG(const Json::Value &take_str);
     void clearAG(const Json::Value &);
