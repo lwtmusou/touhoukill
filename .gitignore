@@ -72,8 +72,10 @@ ai.html
 icu*.dll
 libEGL.dll
 libGLESv2.dll
-msvc[pr]1[023]0.dll
+msvc[pr]1[0124]0.dll
 OGLdpf.log
 *.bat
 opengl32sw.dll
-vccorlib120.dll
+vccorlib1[24]0.dll
+concrt140.dll
+vcruntime140.dll
