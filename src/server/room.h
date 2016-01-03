@@ -8,6 +8,7 @@ class RoomThread3v3;
 class RoomThreadXMode;
 class RoomThread1v1;
 class TrickCard;
+class GeneralSelector;
 
 struct lua_State;
 struct LogMessage;
@@ -42,6 +43,7 @@ public:
     typedef bool (Room::*ResponseVerifyFunction)(ServerPlayer *, const Json::Value &, void *);
 
     explicit Room(QObject *parent, const QString &mode);
+    ~Room();
     ServerPlayer *addSocket(ClientSocket *socket);
 
     inline int getId() const
@@ -407,6 +409,8 @@ public:
     void updateCardsOnLose(const CardsMoveStruct &move);
     void updateCardsOnGet(const CardsMoveStruct &move);
 
+    GeneralSelector *generalSelector() const { return m_generalSelector; }
+
 protected:
     virtual void run();
     int _m_Id;
@@ -570,6 +574,8 @@ private:
     Json::Value m_takeAGargs;
 
     volatile bool playerPropertySet;
+
+    GeneralSelector *m_generalSelector;
     
     
     static QString generatePlayerName();

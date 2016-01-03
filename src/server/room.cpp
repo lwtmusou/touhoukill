@@ -27,6 +27,8 @@
 #include <QFile>
 #include <QTextStream>
 
+#include <lua.hpp>
+
 #ifdef QSAN_UI_LIBRARY_AVAILABLE
 #pragma message WARN("UI elements detected in server side!!!")
 #endif
@@ -61,6 +63,13 @@ Room::Room(QObject *parent, const QString &mode)
 
     connect(this, SIGNAL(signalSetProperty(ServerPlayer*, const char*, QVariant)), this,
         SLOT(slotSetProperty(ServerPlayer*, const char*, QVariant)), Qt::QueuedConnection);
+
+    m_generalSelector = new GeneralSelector(this);
+}
+
+Room::~Room()
+{
+    lua_close(L); // it cause a huge memory leak if we don't do this when quit
 }
 
 void Room::initCallbacks()
@@ -3227,8 +3236,7 @@ QString Room::_chooseDefaultGeneral(ServerPlayer *player) const
         Q_ASSERT(false);
         return QString();
     } else {
-        GeneralSelector *selector = GeneralSelector::getInstance();
-        QString choice = selector->selectFirst(player, player->getSelected());
+        QString choice = m_generalSelector->selectFirst(player, player->getSelected());
         return choice;
     }
 }

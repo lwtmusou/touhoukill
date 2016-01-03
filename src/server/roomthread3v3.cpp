@@ -132,7 +132,7 @@ void RoomThread3v3::askForTakeGeneral(ServerPlayer *player)
 
     QString name;
     if (general_names.length() == 1 || player->getState() != "online")
-        name = GeneralSelector::getInstance()->select3v3(player, general_names);
+        name = room->generalSelector()->select3v3(player, general_names);
 
     if (name.isNull()) {
         bool success = room->doRequest(player, S_COMMAND_ASK_GENERAL, Json::Value::null, true);
@@ -141,7 +141,7 @@ void RoomThread3v3::askForTakeGeneral(ServerPlayer *player)
             name = toQString(clientReply.asCString());
             takeGeneral(player, name);
         } else {
-            name = GeneralSelector::getInstance()->select3v3(player, general_names);
+            name = room->generalSelector()->select3v3(player, general_names);
             takeGeneral(player, name);
         }
     } else {
@@ -174,7 +174,7 @@ void RoomThread3v3::startArrange(QList<ServerPlayer *> &players)
     QList<ServerPlayer *> online = players;
     foreach (ServerPlayer *player, players) {
         if (!player->isOnline()) {
-            GeneralSelector *selector = GeneralSelector::getInstance();
+            GeneralSelector *selector = room->generalSelector();
             arrange(player, selector->arrange3v3(player));
             online.removeOne(player);
         }
@@ -193,7 +193,7 @@ void RoomThread3v3::startArrange(QList<ServerPlayer *> &players)
             tryParse(clientReply, arranged);
             arrange(player, arranged);
         } else {
-            GeneralSelector *selector = GeneralSelector::getInstance();
+            GeneralSelector *selector = room->generalSelector();
             arrange(player, selector->arrange3v3(player));
         }
     }

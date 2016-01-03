@@ -18,7 +18,6 @@ void GeneralSelector::initialize()
     GETFUNCFROMLUASTATE(select1v1);
     GETFUNCFROMLUASTATE(arrange3v3);
     GETFUNCFROMLUASTATE(arrange1v1);
-    GETFUNCFROMLUASTATE(get1v1ArrangeValue);
 
 #undef GETFUNCFROMLUASTATE
 
@@ -189,22 +188,5 @@ QStringList GeneralSelector::arrange1v1(ServerPlayer *player)
     return QStringList();
 }
 
-int GeneralSelector::get1v1ArrangeValue(const QString &name)
-{
-    pushLuaFunction(L, get1v1ArrangeValueFunc);
-
-    lua_pushstring(L, name.toUtf8());
-
-    int error = lua_pcall(L, 1, 1, 0);
-    if (error)
-        Error(L);
-    else {
-        int i = lua_tointeger(L, -1);
-        lua_pop(L, 1);
-        return i;
-    }
-
-    return 0;
-}
 
 %}

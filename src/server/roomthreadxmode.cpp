@@ -2,7 +2,6 @@
 #include "room.h"
 #include "engine.h"
 #include "settings.h"
-#include "generalselector.h"
 #include "jsonutils.h"
 
 #include <QDateTime>

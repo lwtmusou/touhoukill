@@ -3,29 +3,15 @@
 #include <QApplication>
 #include <QMessageBox>
 #include "lua.hpp"
-#include "util.h"
+#include "room.h"
 
 static GeneralSelector *Selector;
 
 
-
-GeneralSelector *GeneralSelector::getInstance()
+GeneralSelector::GeneralSelector(Room *room)
+    : QObject(room)
 {
-    if (Selector == NULL) {
-        Selector = new GeneralSelector;
-        //@todo: this setParent is illegitimate in QT and is equivalent to calling
-        // setParent(NULL). So taking it off at the moment until we figure out
-        // a way to do it.
-        //Selector->setParent(Sanguosha);
-        connect(qApp, &QApplication::aboutToQuit, Selector, &GeneralSelector::deleteLater);
-    }
-
-    return Selector;
-}
-
-GeneralSelector::GeneralSelector()
-{
-    L = CreateLuaState();
+    L = room->getLuaState();
     int error = luaL_dofile(L, "lua/general_select.lua");
     if (error) {
         QString error_msg = lua_tostring(L, -1);
@@ -35,8 +21,3 @@ GeneralSelector::GeneralSelector()
         initialize();
 }
 
-
-GeneralSelector::~GeneralSelector()
-{
-    lua_close(L);
-}

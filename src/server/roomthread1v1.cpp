@@ -128,7 +128,7 @@ void RoomThread1v1::askForTakeGeneral(ServerPlayer *player)
     if (general_names.length() == 1)
         name = general_names.first();
     else if (player->getState() != "online")
-        name = GeneralSelector::getInstance()->select1v1(general_names);
+        name = room->generalSelector()->select1v1(general_names);
 
     if (name.isNull()) {
         bool success = room->doRequest(player, S_COMMAND_ASK_GENERAL, Json::Value::null, true);
@@ -137,7 +137,7 @@ void RoomThread1v1::askForTakeGeneral(ServerPlayer *player)
             name = toQString(clientReply.asCString());
             takeGeneral(player, name);
         } else {
-            GeneralSelector *selector = GeneralSelector::getInstance();
+            GeneralSelector *selector = room->generalSelector();
             name = selector->select1v1(general_names);
             takeGeneral(player, name);
         }
@@ -187,7 +187,7 @@ void RoomThread1v1::startArrange(QList<ServerPlayer *> players)
     QList<ServerPlayer *> online = players;
     foreach (ServerPlayer *player, players) {
         if (!player->isOnline()) {
-            GeneralSelector *selector = GeneralSelector::getInstance();
+            GeneralSelector *selector = room->generalSelector();
             arrange(player, selector->arrange1v1(player));
             online.removeOne(player);
         }
@@ -206,7 +206,7 @@ void RoomThread1v1::startArrange(QList<ServerPlayer *> players)
             tryParse(clientReply, arranged);
             arrange(player, arranged);
         } else {
-            GeneralSelector *selector = GeneralSelector::getInstance();
+            GeneralSelector *selector = room->generalSelector();
             arrange(player, selector->arrange1v1(player));
         }
     }
@@ -219,7 +219,7 @@ void RoomThread1v1::askForFirstGeneral(QList<ServerPlayer *> players)
     QList<ServerPlayer *> online = players;
     foreach (ServerPlayer *player, players) {
         if (!player->isOnline()) {
-            GeneralSelector *selector = GeneralSelector::getInstance();
+            GeneralSelector *selector = room->generalSelector();
             QStringList arranged = player->getSelected();
             QStringList selected = selector->arrange1v1(player);
             selected.append(arranged);
@@ -244,7 +244,7 @@ void RoomThread1v1::askForFirstGeneral(QList<ServerPlayer *> players)
             arranged.prepend(first_gen);
             arrange(player, arranged);
         } else {
-            GeneralSelector *selector = GeneralSelector::getInstance();
+            GeneralSelector *selector = room->generalSelector();
             QStringList arranged = player->getSelected();
             QStringList selected = selector->arrange1v1(player);
             selected.append(arranged);
