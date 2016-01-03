@@ -3,7 +3,6 @@
 # -------------------------------------------------
 TARGET = QSanguosha
 QT += network widgets
-!winrt: QT += declarative
 TEMPLATE = app
 CONFIG += audio
 
@@ -38,7 +37,6 @@ SOURCES += \
     src/core/util.cpp \
     src/core/WrappedCard.cpp \
     src/dialog/AboutUs.cpp \
-    src/dialog/cardeditor.cpp \
     src/dialog/cardoverview.cpp \
     src/dialog/choosegeneraldialog.cpp \
     src/dialog/configdialog.cpp \
@@ -47,7 +45,6 @@ SOURCES += \
     src/dialog/distanceviewdialog.cpp \
     src/dialog/generaloverview.cpp \
     src/dialog/mainwindow.cpp \
-    src/dialog/packagingeditor.cpp \
     src/dialog/playercarddialog.cpp \
     src/dialog/roleassigndialog.cpp \
     src/dialog/scenario-overview.cpp \
@@ -155,7 +152,6 @@ HEADERS += \
     src/core/util.h \
     src/core/WrappedCard.h \
     src/dialog/AboutUs.h \
-    src/dialog/cardeditor.h \
     src/dialog/cardoverview.h \
     src/dialog/choosegeneraldialog.h \
     src/dialog/configdialog.h \
@@ -164,7 +160,6 @@ HEADERS += \
     src/dialog/distanceviewdialog.h \
     src/dialog/generaloverview.h \
     src/dialog/mainwindow.h \
-    src/dialog/packagingeditor.h \
     src/dialog/playercarddialog.h \
     src/dialog/roleassigndialog.h \
     src/dialog/scenario-overview.h \

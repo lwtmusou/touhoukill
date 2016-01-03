@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuGame">
@@ -89,17 +89,9 @@
     <addaction name="actionRevive_wand"/>
     <addaction name="actionExecute_script_at_server_side"/>
    </widget>
-   <widget class="QMenu" name="menuDIY">
-    <property name="title">
-     <string>DIY</string>
-    </property>
-    <addaction name="actionCard_editor"/>
-    <addaction name="actionPackaging"/>
-   </widget>
    <addaction name="menuGame"/>
    <addaction name="menuView"/>
    <addaction name="menuOptions"/>
-   <addaction name="menuDIY"/>
    <addaction name="menuCheat"/>
    <addaction name="menuHelp"/>
   </widget>

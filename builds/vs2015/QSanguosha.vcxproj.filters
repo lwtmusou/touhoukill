@@ -104,9 +104,6 @@
     <ClCompile Include="..\..\src\core\skill.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\dialog\cardeditor.cpp">
-      <Filter>dialog</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\dialog\cardoverview.cpp">
       <Filter>dialog</Filter>
     </ClCompile>
@@ -114,9 +111,6 @@
       <Filter>dialog</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\dialog\playercarddialog.cpp">
-      <Filter>dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\dialog\packagingeditor.cpp">
       <Filter>dialog</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\dialog\mainwindow.cpp">
@@ -353,9 +347,6 @@
     <ClCompile Include="Release\moc_photo.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Release\moc_packagingeditor.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="Release\moc_package.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
@@ -434,9 +425,6 @@
     <ClCompile Include="Release\moc_carditem.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Release\moc_cardeditor.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="Release\moc_cardcontainer.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
@@ -465,9 +453,6 @@
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="Debug\moc_cardcontainer.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_cardeditor.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="Debug\moc_carditem.cpp">
@@ -546,9 +531,6 @@
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="Debug\moc_package.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_packagingeditor.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="Debug\moc_photo.cpp">
@@ -962,9 +944,6 @@
     <CustomBuild Include="..\..\src\core\skill.h">
       <Filter>core</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\cardeditor.h">
-      <Filter>dialog</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\dialog\cardoverview.h">
       <Filter>dialog</Filter>
     </CustomBuild>
@@ -984,9 +963,6 @@
       <Filter>dialog</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\dialog\mainwindow.h">
-      <Filter>dialog</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\packagingeditor.h">
       <Filter>dialog</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\dialog\playercarddialog.h">
