@@ -5,6 +5,7 @@ TARGET = QSanguosha
 QT += network widgets
 TEMPLATE = app
 CONFIG += audio
+win32: QT += winextras
 
 
 CONFIG += lua
