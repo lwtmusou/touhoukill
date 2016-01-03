@@ -2917,6 +2917,8 @@ public:
         room->doLightbox("$yizhiAnimate", 4000);
         room->touhouLogmessage("#YizhiWake", player, objectName());
         room->notifySkillInvoked(player, objectName());
+        room->addPlayerMark(player, objectName());
+
         int x = 1 - player->getHp();
         RecoverStruct recov;
         recov.recover = x;
@@ -2928,7 +2930,6 @@ public:
         x = player->getMaxHp();
         if (room->changeMaxHpForAwakenSkill(player, 3 - x)) {
             Shifang::koishi_removeskill(room, player);
-            room->addPlayerMark(player, objectName());
             room->handleAcquireDetachSkills(player, "chaowo");
         }
 
