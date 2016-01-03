@@ -32,8 +32,3 @@ arrange1v1 = function(player) -- stringlist
 	player:speak("arrange1v1")
 	return {}
 end
-
-get1v1ArrangeValue = function(name) -- int
-	player:speak("get1v1ArrangeValue")
-	return 0
-end
