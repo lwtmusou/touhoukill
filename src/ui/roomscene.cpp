@@ -4425,7 +4425,7 @@ void RoomScene::surrender()
 
     QMessageBox::StandardButton button;
     button = QMessageBox::question(main_window, tr("Surrender"), tr("Are you sure to surrender ?"));
-    if (button == QMessageBox::Yes)
+    if (button == QMessageBox::Ok || button == QMessageBox::Yes)
         ClientInstance->requestSurrender();
 }
 
