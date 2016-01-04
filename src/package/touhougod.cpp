@@ -1341,7 +1341,7 @@ public:
 
         //need special process when processing takeAG and askforrende
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (move.to != NULL && move.to == player) {
+        if (move.to != NULL && move.to == player && move.to_place != Player::PlaceSpecial) {
             room->touhouLogmessage("#TriggerSkill", player, objectName());
             room->notifySkillInvoked(player, objectName());
             //Card *dummy = Sanguosha->cloneCard("Slash");
