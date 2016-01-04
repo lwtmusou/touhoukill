@@ -44,11 +44,10 @@ public:
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *source) const
     {
-        const Card *card;
+        const Card *card = NULL;
         if (triggerEvent == DamageInflicted) {
             source->tag["jiexian_target"] = QVariant::fromValue(player);
             card = room->askForCard(source, "..H", "@jiexiandamage:" + player->objectName(), data, objectName());
-
         } else if (triggerEvent == PreHpRecover) {
             source->tag["jiexian_target"] = QVariant::fromValue(player);
             card = room->askForCard(source, "..S", "@jiexianrecover:" + player->objectName(), QVariant::fromValue(player), objectName());
