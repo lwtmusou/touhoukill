@@ -200,7 +200,6 @@ CommonTranslationTable = {
 	["#TrickDirection"] = "%from 选择了 %arg 作为结算顺序",
 	["custom"] = "自定义模式",
 	["UnknowNick"] = "",
-	["DefaultIllustrator"] = "KayaK",
 
 	["@waked"] = "觉醒",
 
