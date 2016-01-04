@@ -428,7 +428,23 @@ QString GeneralOverview::getIllustratorInfo(const QString &general_name)
         if (!illustrator_text.startsWith("illustrator:"))
             return illustrator_text;
         else
-            return Sanguosha->translate("DefaultIllustrator");
+            return tr("Unknown");
+    }
+}
+
+QString GeneralOverview::getOriginInfo(const QString &general_name)
+{
+    int skin_index = Config.value(QString("HeroSkin/%1").arg(general_name), 0).toInt();
+    QString suffix = (skin_index > 0) ? QString("_%1").arg(skin_index) : QString();
+    QString illustrator_text = Sanguosha->translate(QString("origin:%1%2").arg(general_name).arg(suffix));
+    if (!illustrator_text.startsWith("origin:"))
+        return illustrator_text;
+    else {
+        illustrator_text = Sanguosha->translate("origin:" + general_name);
+        if (!illustrator_text.startsWith("origin:"))
+            return illustrator_text;
+        else
+            return tr("Unknown");
     }
 }
 
@@ -571,7 +587,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     if (!designer_text.startsWith("designer:"))
         ui->designerLineEdit->setText(designer_text);
     else
-        ui->designerLineEdit->setText(tr("Official"));
+        ui->designerLineEdit->setText(tr("TouhouSatsu Design Team"));
 
     QString cv_text = Sanguosha->translate("cv:" + general->objectName());
     if (cv_text.startsWith("cv:"))
@@ -579,9 +595,10 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     if (!cv_text.startsWith("cv:"))
         ui->cvLineEdit->setText(cv_text);
     else
-        ui->cvLineEdit->setText(tr("Official"));
+        ui->cvLineEdit->setText(tr("Temporily None"));
 
     ui->illustratorLineEdit->setText(getIllustratorInfo(general->objectName()));
+    ui->originLineEdit->setText(getOriginInfo(general->objectName()));
 
     button_layout->addStretch();
     ui->skillTextEdit->append(general->getSkillDescription(true, false));

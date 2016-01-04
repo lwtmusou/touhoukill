@@ -83,6 +83,7 @@ private:
     void addCopyAction(QCommandLinkButton *button);
     bool hasSkin(const QString &general_name);
     QString getIllustratorInfo(const QString &general_name);
+    QString getOriginInfo(const QString &general_name);
 
 public slots:
     void startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,
