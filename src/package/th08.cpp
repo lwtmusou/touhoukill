@@ -117,7 +117,7 @@ public:
             return QStringList();
 
         QStringList skill_list;
-        if (player->isAlive() && player->getKingdom() == "yym") {
+        if (player->isAlive() && player->getKingdom() == "yyc") {
             foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
                 if (p->hasLordSkill(objectName()) && p->isWounded())
                     skill_list << p->objectName() + "'" + objectName();
