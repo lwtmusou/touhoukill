@@ -5,12 +5,11 @@
 #include "lua.hpp"
 #include "settings.h"
 #include "generalselector.h"
-#include "jsonutils.h"
 
 #include <QDateTime>
 
 using namespace QSanProtocol;
-using namespace QSanProtocol::Utils;
+using namespace JsonUtils;
 
 RoomThread3v3::RoomThread3v3(Room *room)
     :room(room)
@@ -135,8 +134,8 @@ void RoomThread3v3::askForTakeGeneral(ServerPlayer *player)
         name = room->generalSelector()->select3v3(player, general_names);
 
     if (name.isNull()) {
-        bool success = room->doRequest(player, S_COMMAND_ASK_GENERAL, Json::Value::null, true);
-        Json::Value clientReply = player->getClientReply();
+        bool success = room->doRequest(player, S_COMMAND_ASK_GENERAL, QVariant(), true);
+        QVariant clientReply = player->getClientReply();
         if (success && clientReply.isString()) {
             name = toQString(clientReply.asCString());
             takeGeneral(player, name);
@@ -182,12 +181,12 @@ void RoomThread3v3::startArrange(QList<ServerPlayer *> &players)
     if (online.isEmpty()) return;
 
     foreach(ServerPlayer *player, online)
-        player->m_commandArgs = Json::Value::null;
+        player->m_commandArgs = QVariant();
 
     room->doBroadcastRequest(online, S_COMMAND_ARRANGE_GENERAL);
 
     foreach (ServerPlayer *player, online) {
-        Json::Value clientReply = player->getClientReply();
+        QVariant clientReply = player->getClientReply();
         if (player->m_isClientResponseReady && clientReply.isArray() && clientReply.size() == 3) {
             QStringList arranged;
             tryParse(clientReply, arranged);

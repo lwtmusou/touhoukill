@@ -165,7 +165,7 @@ public:
                     new_use.from = use.from;
                     new_use.to << p;
                     new_use.card = use.card;
-                    p->tag["collateralVictim"] = QVariant::fromValue((PlayerStar)newVictim);
+                    p->tag["collateralVictim"] = QVariant::fromValue((ServerPlayer *)newVictim);
                     data = QVariant::fromValue(new_use);
                     logto.removeOne(p);
                     logto << newVictim;

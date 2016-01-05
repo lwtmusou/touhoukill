@@ -5,18 +5,16 @@
 #include "scenerule.h"
 #include "scenario.h"
 #include "ai.h"
-#include "jsonutils.h"
 #include "settings.h"
 #include "standard.h"
 
 #include <QTime>
-#include <json/json.h>
 
 #ifdef QSAN_UI_LIBRARY_AVAILABLE
 #pragma message WARN("UI elements detected in server side!!!")
 #endif
 
-using namespace QSanProtocol::Utils;
+using namespace JsonUtils;
 
 LogMessage::LogMessage()
     : from(NULL)
@@ -36,7 +34,7 @@ QString LogMessage::toString() const
         .arg(card_str).arg(arg).arg(arg2);
 }
 
-Json::Value LogMessage::toJsonValue() const
+QVariant LogMessage::toJsonValue() const
 {
     QStringList tos;
     foreach(ServerPlayer *player, to)
@@ -44,7 +42,7 @@ Json::Value LogMessage::toJsonValue() const
 
     QStringList log;
     log << type << (from ? from->objectName() : "") << tos.join("+") << card_str << arg << arg2;
-    Json::Value json_log = QSanProtocol::Utils::toJsonArray(log);
+    QVariant json_log = JsonUtils::toJsonArray(log);
     return json_log;
 }
 
@@ -231,13 +229,13 @@ bool CardUseStruct::isValid(const QString &pattern) const
     }*/
 }
 
-bool CardUseStruct::tryParse(const Json::Value &usage, Room *room)
+bool CardUseStruct::tryParse(const QVariant &usage, Room *room)
 {
     if (usage.size() < 2 || !usage[0].isString() || !usage[1].isArray())
         return false;
 
     card = Card::Parse(toQString(usage[0]));
-    const Json::Value &targets = usage[1];
+    const QVariant &targets = usage[1];
 
     for (unsigned int i = 0; i < targets.size(); i++) {
         if (!targets[i].isString()) return false;

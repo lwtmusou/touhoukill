@@ -10,7 +10,6 @@ class Slash;
 #include "player.h"
 
 #include <QVariant>
-#include <json/json.h>
 
 struct DamageStruct
 {
@@ -87,7 +86,7 @@ struct CardUseStruct
     CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer *target, bool isOwnerUse = true);
     bool isValid(const QString &pattern) const;
     void parse(const QString &str, Room *room);
-    bool tryParse(const Json::Value &, Room *room);
+    bool tryParse(const QVariant &usage, Room *room);
 
     const Card *card;
     ServerPlayer *from;
@@ -140,8 +139,8 @@ public:
         m_eventName = eventName;
     }
 
-    bool tryParse(const Json::Value &);
-    Json::Value toJsonValue() const;
+    bool tryParse(const QVariant &);
+    QVariant toVariant() const;
 
     inline bool operator == (const CardMoveReason &other) const
     {
@@ -312,8 +311,8 @@ struct CardsMoveStruct
     Player *origin_from, *origin_to;
     QString origin_from_pile_name, origin_to_pile_name; //for case of the movement transitted
 
-    bool tryParse(const Json::Value &);
-    Json::Value toJsonValue() const;
+    bool tryParse(const QVariant &arg);
+    QVariant toVariant() const;
     inline bool isRelevant(const Player *player)
     {
         return player != NULL && (from == player || (to == player && to_place != Player::PlaceSpecial));
@@ -464,41 +463,6 @@ struct CardResponseStruct
     bool m_isHandcard;
 };
 
-struct JsonValueForLUA
-{
-    JsonValueForLUA(bool isarray = true);
-
-    bool getBoolAt(int n) const;
-    int getNumberAt(int n) const;
-    QString getStringAt(int n) const;
-    JsonValueForLUA getArrayAt(int n) const;
-
-    void setBoolAt(int n, bool v);
-    void setNumberAt(int n, int v);
-    void setStringAt(int n, const QString &v);
-    void setArrayAt(int n, const JsonValueForLUA &v);
-
-    inline operator Json::Value()
-    {
-        return m_realvalue;
-    }
-    inline operator Json::Value() const
-    {
-        return m_realvalue;
-    }
-
-    inline Json::Value &operator [](int x)
-    {
-        return m_realvalue[x];
-    }
-    inline const Json::Value &operator [](int x) const
-    {
-        return m_realvalue[x];
-    }
-
-private:
-    Json::Value m_realvalue;
-};
 
 struct MarkChangeStruct
 {
@@ -617,27 +581,21 @@ enum TriggerEvent
     NumOfEvents
 };
 
-typedef const Card *CardStar;
-typedef ServerPlayer *PlayerStar;
-typedef JudgeStruct *JudgeStar;
-typedef PindianStruct *PindianStar;
-
 Q_DECLARE_METATYPE(DamageStruct)
 Q_DECLARE_METATYPE(CardEffectStruct)
 Q_DECLARE_METATYPE(SlashEffectStruct)
 Q_DECLARE_METATYPE(CardUseStruct)
 Q_DECLARE_METATYPE(CardsMoveStruct)
 Q_DECLARE_METATYPE(CardsMoveOneTimeStruct)
-Q_DECLARE_METATYPE(CardStar)
-Q_DECLARE_METATYPE(PlayerStar)
 Q_DECLARE_METATYPE(DyingStruct)
 Q_DECLARE_METATYPE(DeathStruct)
 Q_DECLARE_METATYPE(RecoverStruct)
-Q_DECLARE_METATYPE(JudgeStar)
-Q_DECLARE_METATYPE(PindianStar)
 Q_DECLARE_METATYPE(PhaseChangeStruct)
 Q_DECLARE_METATYPE(CardResponseStruct)
-Q_DECLARE_METATYPE(JsonValueForLUA)
 Q_DECLARE_METATYPE(MarkChangeStruct)
+Q_DECLARE_METATYPE(const Card *)
+Q_DECLARE_METATYPE(ServerPlayer *)
+Q_DECLARE_METATYPE(JudgeStruct *)
+Q_DECLARE_METATYPE(PindianStruct *)
 #endif
 

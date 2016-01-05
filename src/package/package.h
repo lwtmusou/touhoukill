@@ -10,6 +10,8 @@ class Player;
 #include <QStringList>
 #include <QMap>
 
+#include "json.h"
+
 class CardPattern
 {
 public:

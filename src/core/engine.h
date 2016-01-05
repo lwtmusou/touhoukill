@@ -74,6 +74,7 @@ public:
     void addScenario(Scenario *scenario);
     const Scenario *getScenario(const QString &name) const;
     void addPackage(const QString &name);
+    QList<const Package *> getPackages() const;
 
     const General *getGeneral(const QString &name) const;
     int getGeneralCount(bool include_banned = false) const;

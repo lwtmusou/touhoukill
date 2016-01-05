@@ -1,6 +1,5 @@
 #include "sanshadowtextfont.h"
 #include "sanuiutils.h"
-#include "jsonutils.h"
 
 #include <QPixmap>
 #include <QPainter>
@@ -29,7 +28,7 @@ SanShadowTextFont::SanShadowTextFont(const QString &fontName, const QSize &fontS
 {
 }
 
-bool SanShadowTextFont::tryParse(const Json::Value &arg)
+bool SanShadowTextFont::tryParse(const QVariant &arg)
 {
     if (!arg.isArray() || arg.size() < 4) {
         return false;
@@ -42,7 +41,7 @@ bool SanShadowTextFont::tryParse(const Json::Value &arg)
     if (arg.size() >= 8) {
         m_shadowRadius = arg[4].asInt();
         m_shadowDecadeFactor = arg[5].asDouble();
-        QSanProtocol::Utils::tryParse(arg[6], m_shadowOffset);
+        JsonUtils::tryParse(arg[6], m_shadowOffset);
         m_shadowColor = QColor(arg[7][0].asInt(), arg[7][1].asInt(), arg[7][2].asInt(), arg[7][3].asInt());
     } else {
         m_shadowRadius = -1;

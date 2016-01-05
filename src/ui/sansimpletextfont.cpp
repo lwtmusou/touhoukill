@@ -1,6 +1,5 @@
 #include "sansimpletextfont.h"
 #include "sanfreetypefont.h"
-#include "jsonutils.h"
 
 #include <QHash>
 #include <QRect>
@@ -8,7 +7,7 @@
 #include <QPainter>
 #include <QGraphicsPixmapItem>
 
-using namespace QSanProtocol::Utils;
+using namespace JsonUtils;
 
 QHash<QString, const int *> SanSimpleTextFont::m_fontBank;
 
@@ -36,7 +35,7 @@ SanSimpleTextFont::SanSimpleTextFont(const QString &fontName, const QSize &fontS
     m_weight = weight;
 }
 
-bool SanSimpleTextFont::tryParse(const Json::Value &arg)
+bool SanSimpleTextFont::tryParse(const QVariant &arg)
 {
     if (!arg.isArray() || arg.size() < 4) {
         return false;

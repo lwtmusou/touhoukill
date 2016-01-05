@@ -7,7 +7,6 @@
 #include "engine.h"
 #include "standard.h"
 #include "client.h"
-#include "jsonutils.h"
 #include "maneuvering.h"
 
 class Shengge : public TriggerSkill
@@ -502,7 +501,7 @@ public:
             return card;
         }
 
-        CardStar c = Self->tag.value("xihua").value<CardStar>();
+        const Card * c = Self->tag.value("xihua").value<const Card *>();
         //we need get the real subcard.
         if (c) {
             XihuaCard *card = new XihuaCard;
@@ -627,7 +626,7 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct * judge = data.value<JudgeStruct *>();
         QList<int> list = room->getNCards(2);
         if (judge->reason == "shijie")
             player->setFlags("shijie_judge");
@@ -1002,7 +1001,7 @@ public:
     {
         TriggerList skill_list;
         QList<ServerPlayer *> srcs = room->findPlayersBySkillName(objectName());
-        CardStar card_star = data.value<CardResponseStruct>().m_card;
+        const Card * card_star = data.value<CardResponseStruct>().m_card;
         foreach (ServerPlayer *src, srcs) {
             if (card_star->isKindOf("Jink") && player != src  &&
                 data.value<CardResponseStruct>().m_isUse &&  src->isWounded())
@@ -1463,11 +1462,11 @@ public:
                     foreach (ServerPlayer *owner, owners) {
                         if (owner->hasSkill("pingyi"))
                             continue;
-                        Json::Value arg(Json::arrayValue);
+                        QVariant arg(Json::arrayValue);
                         arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                        arg[1] = QSanProtocol::Utils::toJsonString(owner->objectName());
-                        arg[2] = QSanProtocol::Utils::toJsonString(owner->getGeneral()->objectName());
-                        arg[3] = QSanProtocol::Utils::toJsonString(QString());//"clear"
+                        arg[1] = JsonUtils::toJsonString(owner->objectName());
+                        arg[2] = JsonUtils::toJsonString(owner->getGeneral()->objectName());
+                        arg[3] = JsonUtils::toJsonString(QString());//"clear"
                         room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
                     }
                 }
@@ -1493,11 +1492,11 @@ public:
                 if (owner->hasSkill("pingyi"))
                     continue;
 
-                Json::Value arg(Json::arrayValue);
+                QVariant arg(Json::arrayValue);
                 arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                arg[1] = QSanProtocol::Utils::toJsonString(owner->objectName());
-                arg[2] = QSanProtocol::Utils::toJsonString(damage.from->getGeneral()->objectName());
-                arg[3] = QSanProtocol::Utils::toJsonString("zhengti");
+                arg[1] = JsonUtils::toJsonString(owner->objectName());
+                arg[2] = JsonUtils::toJsonString(damage.from->getGeneral()->objectName());
+                arg[3] = JsonUtils::toJsonString("zhengti");
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
             }
         }
@@ -1534,11 +1533,11 @@ public:
                 if (find && p->hasSkill("zhengti"))
                     continue;
 
-                Json::Value arg(Json::arrayValue);
+                QVariant arg(Json::arrayValue);
                 arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                arg[1] = QSanProtocol::Utils::toJsonString(p->objectName());
-                arg[2] = QSanProtocol::Utils::toJsonString(p->getGeneral()->objectName());
-                arg[3] = QSanProtocol::Utils::toJsonString(QString());//"clear"
+                arg[1] = JsonUtils::toJsonString(p->objectName());
+                arg[2] = JsonUtils::toJsonString(p->getGeneral()->objectName());
+                arg[3] = JsonUtils::toJsonString(QString());//"clear"
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
             }
 
@@ -1553,11 +1552,11 @@ public:
 
                 if (p->hasSkill("zhengti")) {
 
-                    Json::Value arg(Json::arrayValue);
+                    QVariant arg(Json::arrayValue);
                     arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                    arg[1] = QSanProtocol::Utils::toJsonString(p->objectName());
-                    arg[2] = QSanProtocol::Utils::toJsonString(zhengti->getGeneral()->objectName());
-                    arg[3] = QSanProtocol::Utils::toJsonString("zhengti");
+                    arg[1] = JsonUtils::toJsonString(p->objectName());
+                    arg[2] = JsonUtils::toJsonString(zhengti->getGeneral()->objectName());
+                    arg[3] = JsonUtils::toJsonString("zhengti");
                     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
                 }
             }

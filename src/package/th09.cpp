@@ -272,7 +272,7 @@ public:
                 }
             }
         } else if (event == FinishJudge) {
-            JudgeStar judge = data.value<JudgeStar>();
+            JudgeStruct * judge = data.value<JudgeStruct *>();
             if (judge->reason == objectName() && judge->isGood()) {
                 ServerPlayer *lord = judge->who->tag["huazhong"].value<ServerPlayer *>();
                 if (lord != NULL)
@@ -419,7 +419,7 @@ public:
                 return QStringList(objectName());
             }
         } else if (triggerEvent == CardResponded) {
-            CardStar card_star = data.value<CardResponseStruct>().m_card;
+            const Card * card_star = data.value<CardResponseStruct>().m_card;
             if (player == current || !card_star->isKindOf("BasicCard")
                 || data.value<CardResponseStruct>().m_isRetrial
                 || data.value<CardResponseStruct>().m_isProvision)
@@ -462,7 +462,7 @@ public:
         } else if (triggerEvent == CardEffected) {
                 return true;
         } */else if (triggerEvent == CardResponded) {
-            CardStar card_star = data.value<CardResponseStruct>().m_card;
+            const Card * card_star = data.value<CardResponseStruct>().m_card;
             weiya_pattern = card_star->objectName();
             if (card_star->isKindOf("Slash"))
                 weiya_pattern = "slash";
@@ -697,7 +697,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct * judge = data.value<JudgeStruct *>();
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getAlivePlayers()) {
             if (!p->isKongcheng())
@@ -729,7 +729,7 @@ public:
 
     virtual TriggerList triggerable(TriggerEvent, Room *room, ServerPlayer *, QVariant &data) const
     {
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct * judge = data.value<JudgeStruct *>();
         if (!judge->who || !judge->who->isAlive())
             return TriggerList();
 
@@ -746,7 +746,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *source) const
     {
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct * judge = data.value<JudgeStruct *>();
         source->tag["dizhen_judge"] = data;
         QString prompt = "target:" + judge->who->objectName() + ":" + judge->reason;
         return room->askForSkillInvoke(source, objectName(), prompt);
@@ -904,7 +904,7 @@ public:
     {
         QString pattern = data.toStringList().first();
         QList<ServerPlayer *> lieges = room->getLieges("zhan", player);
-        QVariant tohelp = QVariant::fromValue((PlayerStar)player);
+        QVariant tohelp = QVariant::fromValue((ServerPlayer *)player);
         foreach (ServerPlayer *liege, lieges) {
             const Card *resp = room->askForCard(liege, pattern, "@tianren-" + pattern + ":" + player->objectName(),
                 tohelp, Card::MethodResponse, player, false, QString(), true);
@@ -1276,7 +1276,7 @@ public:
 
     virtual const Card *viewAs() const
     {
-        CardStar c = Self->tag.value("nianli").value<CardStar>();
+        const Card * c = Self->tag.value("nianli").value<const Card *>();
         //we need get the real subcard.
         if (c) {
             NianliCard *card = new NianliCard;

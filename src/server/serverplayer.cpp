@@ -7,10 +7,9 @@
 #include "recorder.h"
 #include "banpair.h"
 #include "lua-wrapper.h"
-#include "jsonutils.h"
 
 using namespace QSanProtocol;
-using namespace QSanProtocol::Utils;
+using namespace JsonUtils;
 
 const int ServerPlayer::S_NUM_SEMAPHORES = 6;
 
@@ -354,7 +353,7 @@ void ServerPlayer::sendMessage(const QString &message)
     }
 }
 
-void ServerPlayer::invoke(const QSanPacket *packet)
+void ServerPlayer::invoke(const AbstractPacket *packet)
 {
     unicast(QString(packet->toString().c_str()));
 }
@@ -660,12 +659,12 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     room->sendLog(log2);
 
     RoomThread *thread = room->getThread();
-    PindianStar pindian_star = &pindian_struct;
+    PindianStruct * pindian_star = &pindian_struct;
     QVariant data = QVariant::fromValue(pindian_star);
     Q_ASSERT(thread != NULL);
     thread->trigger(PindianVerifying, room, this, data);
 
-    PindianStar new_star = data.value<PindianStar>();
+    PindianStruct * new_star = data.value<PindianStruct *>();
     pindian_struct.from_number = new_star->from_number;
     pindian_struct.to_number = new_star->to_number;
     pindian_struct.success = (new_star->from_number > new_star->to_number);
@@ -677,7 +676,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     log.card_str.clear();
     room->sendLog(log);
 
-    Json::Value arg(Json::arrayValue);
+    QVariant arg(Json::arrayValue);
     arg[0] = (int)S_GAME_EVENT_REVEAL_PINDIAN;
     arg[1] = toJsonString(objectName());
     arg[2] = pindian_struct.from_card->getEffectiveId();
@@ -974,7 +973,7 @@ void ServerPlayer::loseAllMarks(const QString &mark_name)
 void ServerPlayer::addSkill(const QString &skill_name)
 {
     Player::addSkill(skill_name);
-    Json::Value args;
+    QVariant args;
     args[0] = QSanProtocol::S_GAME_EVENT_ADD_SKILL;
     args[1] = toJsonString(objectName());
     args[2] = toJsonString(skill_name);
@@ -984,7 +983,7 @@ void ServerPlayer::addSkill(const QString &skill_name)
 void ServerPlayer::loseSkill(const QString &skill_name)
 {
     Player::loseSkill(skill_name);
-    Json::Value args;
+    QVariant args;
     args[0] = QSanProtocol::S_GAME_EVENT_LOSE_SKILL;
     args[1] = toJsonString(objectName());
     args[2] = toJsonString(skill_name);
@@ -996,7 +995,7 @@ void ServerPlayer::setGender(General::Gender gender)
     if (gender == getGender())
         return;
     Player::setGender(gender);
-    Json::Value args;
+    QVariant args;
     args[0] = QSanProtocol::S_GAME_EVENT_CHANGE_GENDER;
     args[1] = toJsonString(objectName());
     args[2] = (int)gender;
@@ -1229,7 +1228,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         if (mark_name.startsWith("@")) {
             int value = getMark(mark_name);
             if (value > 0) {
-                Json::Value arg(Json::arrayValue);
+                QVariant arg(Json::arrayValue);
                 arg[0] = toJsonString(objectName());
                 arg[1] = toJsonString(mark_name);
                 arg[2] = value;
@@ -1241,7 +1240,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
 
     /*foreach(const QString skill_name, skills) {
         if (Sanguosha->getSkill(skill_name)->isVisible()) {
-        Json::Value args1;
+        QVariant args1;
         args1[0] = S_GAME_EVENT_ACQUIRE_SKILL;
         args1[1] = toJsonString(objectName());
         args1[2] = toJsonString(skill_name);
@@ -1250,7 +1249,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
 
         foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)) {
         if (!related_skill->isVisible()) {
-        Json::Value args2;
+        QVariant args2;
         args2[0] = S_GAME_EVENT_ACQUIRE_SKILL;
         args2[1] = toJsonString(objectName());
         args2[2] = toJsonString(skill_name);
@@ -1266,7 +1265,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
             continue;
         }
         QString skill_name = skill->objectName();
-        Json::Value args1;
+        QVariant args1;
         args1[0] = S_GAME_EVENT_ACQUIRE_SKILL;
         args1[1] = toJsonString(objectName());
         args1[2] = toJsonString(skill_name);
@@ -1280,7 +1279,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         int value = history.value(item);
         if (value > 0) {
 
-            Json::Value arg(Json::arrayValue);
+            QVariant arg(Json::arrayValue);
             arg[0] = toJsonString(item);
             arg[1] = value;
 
@@ -1297,11 +1296,11 @@ void ServerPlayer::marshal(ServerPlayer *player) const
                 QString pingyi_record = this->objectName() + "pingyi" + p->objectName();
                 QString skillname = room->getTag(pingyi_record).toString();
                 if (skillname != NULL && skillname != "") {
-                    Json::Value huanshen_arg(Json::arrayValue);
+                    QVariant huanshen_arg(Json::arrayValue);
                     huanshen_arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                    huanshen_arg[1] = QSanProtocol::Utils::toJsonString(this->objectName());
-                    huanshen_arg[2] = QSanProtocol::Utils::toJsonString(p->getGeneral()->objectName());
-                    huanshen_arg[3] = QSanProtocol::Utils::toJsonString(skillname);
+                    huanshen_arg[1] = JsonUtils::toJsonString(this->objectName());
+                    huanshen_arg[2] = JsonUtils::toJsonString(p->getGeneral()->objectName());
+                    huanshen_arg[3] = JsonUtils::toJsonString(skillname);
                     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, huanshen_arg);
                     break;
                 }
@@ -1310,11 +1309,11 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     } else if (hasSkill("zhengti", false, true)) {
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (p->getMark("@zhengti") > 0) {
-                Json::Value zhengti_arg(Json::arrayValue);
+                QVariant zhengti_arg(Json::arrayValue);
                 zhengti_arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                zhengti_arg[1] = QSanProtocol::Utils::toJsonString(this->objectName());
-                zhengti_arg[2] = QSanProtocol::Utils::toJsonString(p->getGeneral()->objectName());
-                zhengti_arg[3] = QSanProtocol::Utils::toJsonString("zhengti");
+                zhengti_arg[1] = JsonUtils::toJsonString(this->objectName());
+                zhengti_arg[2] = JsonUtils::toJsonString(p->getGeneral()->objectName());
+                zhengti_arg[3] = JsonUtils::toJsonString("zhengti");
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, zhengti_arg);
                 break;
             }

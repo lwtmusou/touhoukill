@@ -18,7 +18,6 @@
 //#include "wind.h"  guhuodialog  lua_wrapper
 #include "record-analysis.h"
 //#include "mountainpackage.h" huashendialog
-#include "jsonutils.h"
 
 #include "bubblechatbox.h"
 
@@ -162,7 +161,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(skill_acquired(const ClientPlayer *, QString)), this, SLOT(acquireSkill(const ClientPlayer *, QString)));
     connect(ClientInstance, SIGNAL(animated(int, QStringList)), this, SLOT(doAnimation(int, QStringList)));
     connect(ClientInstance, SIGNAL(role_state_changed(QString)), this, SLOT(updateRoles(QString)));
-    connect(ClientInstance, SIGNAL(event_received(const Json::Value)), this, SLOT(handleGameEvent(const Json::Value)));
+    connect(ClientInstance, SIGNAL(event_received(const QVariant)), this, SLOT(handleGameEvent(const QVariant)));
 
     connect(ClientInstance, SIGNAL(game_started()), this, SLOT(onGameStart()));
     connect(ClientInstance, SIGNAL(game_over()), this, SLOT(onGameOver()));
@@ -394,7 +393,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     pindian_to_card = NULL;
 }
 
-void RoomScene::handleGameEvent(const Json::Value &arg)
+void RoomScene::handleGameEvent(const QVariant &arg)
 {
     GameEventType eventType = (GameEventType)arg[0].asInt();
     switch (eventType) {

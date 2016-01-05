@@ -222,7 +222,7 @@ public:
     void doScript();
     void viewGenerals(const QString &reason, const QStringList &names);
 
-    void handleGameEvent(const Json::Value &arg);
+    void handleGameEvent(const QVariant &arg);
 
     void doOkButton();
     void doCancelButton();

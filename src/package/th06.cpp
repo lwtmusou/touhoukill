@@ -128,7 +128,7 @@ public:
 
     virtual TriggerList triggerable(TriggerEvent, Room *room, ServerPlayer *, QVariant &data) const
     {
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct * judge = data.value<JudgeStruct *>();
         if (!judge->who || !judge->who->isAlive())
             return TriggerList();
 
@@ -141,7 +141,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *ask_who) const
     {
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct * judge = data.value<JudgeStruct *>();
         ask_who->tag["mingyun_judge"] = data;
         QString prompt = "judge:" + judge->who->objectName() + ":" + judge->reason;
         if (ask_who->askForSkillInvoke(objectName(), prompt)) {

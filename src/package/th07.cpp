@@ -120,7 +120,7 @@ public:
                 }
             }
         } else if (event == FinishJudge) {
-            JudgeStar judge = data.value<JudgeStar>();
+            JudgeStruct * judge = data.value<JudgeStruct *>();
             if (judge->reason == objectName() && judge->isGood()) {
                 ServerPlayer *uuz = judge->who->tag["uuz_wangxiang"].value<ServerPlayer *>();
                 if (uuz)
@@ -593,7 +593,7 @@ public:
         if (!TriggerSkill::triggerable(player)) return QStringList();
         if (triggerEvent == PreCardUsed || triggerEvent == CardResponded) {
             if (player->getPhase() == Player::Play) {
-                CardStar card = NULL;
+                const Card * card = NULL;
                 if (triggerEvent == PreCardUsed)
                     card = data.value<CardUseStruct>().card;
                 else {

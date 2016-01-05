@@ -1,5 +1,4 @@
 #include "SkinBank.h"
-#include "jsonutils.h"
 #include "protocol.h"
 #include "uiUtils.h"
 #include "engine.h"
@@ -16,7 +15,7 @@
 #include <QFile>
 
 using namespace std;
-using namespace QSanProtocol::Utils;
+using namespace JsonUtils;
 
 const char *IQSanComponentSkin::S_SKIN_KEY_DEFAULT = "default";
 const char *IQSanComponentSkin::S_SKIN_KEY_DEFAULT_SECOND = "default2";
@@ -84,7 +83,7 @@ IQSanComponentSkin::QSanSimpleTextFont::QSanSimpleTextFont()
     memset(this, 0, sizeof(*this));
 }
 
-bool IQSanComponentSkin::QSanSimpleTextFont::tryParse(Json::Value arg)
+bool IQSanComponentSkin::QSanSimpleTextFont::tryParse(QVariant arg)
 {
     if (!arg.isArray() || arg.size() < 4) return false;
     m_vertical = false;
@@ -113,14 +112,14 @@ bool IQSanComponentSkin::QSanSimpleTextFont::tryParse(Json::Value arg)
     return true;
 }
 
-bool IQSanComponentSkin::QSanShadowTextFont::tryParse(Json::Value arg)
+bool IQSanComponentSkin::QSanShadowTextFont::tryParse(QVariant arg)
 {
     if (!arg.isArray() || arg.size() < 4) return false;
     if (!QSanSimpleTextFont::tryParse(arg)) return false;
     if (arg.size() >= 8) {
         m_shadowRadius = arg[4].asInt();
         m_shadowDecadeFactor = arg[5].asDouble();
-        QSanProtocol::Utils::tryParse(arg[6], m_shadowOffset);
+        JsonUtils::tryParse(arg[6], m_shadowOffset);
         m_shadowColor = QColor(arg[7][0].asInt(), arg[7][1].asInt(), arg[7][2].asInt(), arg[7][3].asInt());
     } else {
         m_shadowRadius = -1;
@@ -130,7 +129,7 @@ bool IQSanComponentSkin::QSanShadowTextFont::tryParse(Json::Value arg)
 
 bool IQSanComponentSkin::isImageKeyDefined(const QString &key) const
 {
-    Json::Value val = _m_imageConfig[key.toLatin1().constData()];
+    QVariant val = _m_imageConfig[key.toLatin1().constData()];
     return val.isArray() || val.isString();
 }
 
@@ -263,7 +262,7 @@ QPixmap QSanRoomSkin::getCardFramePixmap(const QString &frameType) const
 
 QPixmap QSanRoomSkin::getProgressBarPixmap(int percentile) const
 {
-    Json::Value allMaps = _m_imageConfig[S_SKIN_KEY_PROGRESS_BAR_IMAGE];
+    QVariant allMaps = _m_imageConfig[S_SKIN_KEY_PROGRESS_BAR_IMAGE];
     if (!allMaps.isArray()) return QPixmap();
     for (unsigned int i = 0; i < allMaps.size(); i++) {
         if (!allMaps[i][0].isInt()) continue;
@@ -421,7 +420,7 @@ QRect IQSanComponentSkin::AnchoredRect::getTranslatedRect(QRect parentRect) cons
     return getTranslatedRect(parentRect, m_fixedSize);
 }
 
-bool IQSanComponentSkin::AnchoredRect::tryParse(Json::Value value)
+bool IQSanComponentSkin::AnchoredRect::tryParse(QVariant value)
 {
     // must be in one of the following format:
     // [offsetX, offestY, sizeX, sizeY]
@@ -432,17 +431,17 @@ bool IQSanComponentSkin::AnchoredRect::tryParse(Json::Value value)
     m_anchorChild = m_anchorParent = Qt::AlignLeft | Qt::AlignTop;
     if (isIntArray(value, 0, 3)) {
         QRect rect;
-        bool success = QSanProtocol::Utils::tryParse(value, rect);
+        bool success = JsonUtils::tryParse(value, rect);
         if (!success) return false;
         m_useFixedSize = true;
         m_fixedSize = rect.size();
         m_offset = rect.topLeft();
     } else if (isStringArray(value, 0, 0) && value.size() >= 3 && isIntArray(value[2], 0, 1)) {
-        if (QSanProtocol::Utils::tryParse(value[0], m_anchorChild)
-            && QSanProtocol::Utils::tryParse(value[1], m_anchorParent)
-            && QSanProtocol::Utils::tryParse(value[2], m_offset)) {
+        if (JsonUtils::tryParse(value[0], m_anchorChild)
+            && JsonUtils::tryParse(value[1], m_anchorParent)
+            && JsonUtils::tryParse(value[2], m_offset)) {
             if (value.size() >= 4 && isIntArray(value[3], 0, 1)
-                && QSanProtocol::Utils::tryParse(value[3], m_fixedSize))
+                && JsonUtils::tryParse(value[3], m_fixedSize))
                 m_useFixedSize = true;
             return true;
         }
@@ -480,14 +479,14 @@ bool QSanPixmapCache::contains(const QString &key)
     return _m_pixmapBank.contains(key);
 }
 
-bool IQSanComponentSkin::_loadImageConfig(const Json::Value &config)
+bool IQSanComponentSkin::_loadImageConfig(const QVariant &config)
 {
     if (!config.isObject())
         return false;
     if (_m_imageConfig.isNull())
         _m_imageConfig = config;
     else {
-        Json::Value::Members keys = config.getMemberNames();
+        QVariant::Members keys = config.getMemberNames();
         for (unsigned int i = 0; i < keys.size(); i++) {
             const char *key = keys[i].c_str();
             _m_imageConfig[key] = config[key];
@@ -515,7 +514,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
     if (!layoutConfigName.isNull()) {
         Json::Reader reader;
         ifstream layoutFile(layoutConfigName.toLatin1());
-        Json::Value layoutConfig;
+        QVariant layoutConfig;
         if (layoutFile.bad() || !reader.parse(layoutFile, layoutConfig) || !layoutConfig.isObject()) {
             errorMsg = QString("Error when reading layout config file \"%1\": \n%2")
                 .arg(layoutConfigName).arg(reader.getFormattedErrorMessages().c_str());
@@ -529,7 +528,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
     if (!imageConfigName.isNull()) {
         Json::Reader reader;
         ifstream imageFile(imageConfigName.toLatin1());
-        Json::Value imageConfig;
+        QVariant imageConfig;
         if (imageFile.bad()
             || !reader.parse(imageFile, imageConfig)
             || !imageConfig.isObject()) {
@@ -575,7 +574,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
 
 QStringList IQSanComponentSkin::getAudioFileNames(const QString &key) const
 {
-    Json::Value result = _m_audioConfig[key.toLatin1().constData()];
+    QVariant result = _m_audioConfig[key.toLatin1().constData()];
     if (result.isNull())
         return QStringList();
     else if (result.isString())
@@ -592,7 +591,7 @@ QStringList IQSanComponentSkin::getAnimationFileNames() const
 {
     QStringList animations;
 
-    Json::Value result = _m_animationConfig[QSanRoomSkin::S_SKIN_KEY_ANIMATIONS];
+    QVariant result = _m_animationConfig[QSanRoomSkin::S_SKIN_KEY_ANIMATIONS];
     tryParse(result, animations);
     return animations;
 }
@@ -605,11 +604,11 @@ QString IQSanComponentSkin::getRandomAudioFileName(const QString &key) const
     return audios[r];
 }
 
-QString IQSanComponentSkin::_readConfig(const Json::Value &dict, const QString &key,
+QString IQSanComponentSkin::_readConfig(const QVariant &dict, const QString &key,
     const QString &defaultValue) const
 {
     if (!dict.isObject()) return defaultValue;
-    Json::Value val = dict[key.toLatin1().constData()];
+    QVariant val = dict[key.toLatin1().constData()];
     if (!val.isString()) {
         qWarning("Unable to read configuration: %s", key.toLatin1().constData());
         return defaultValue;
@@ -623,7 +622,7 @@ QString IQSanComponentSkin::_readImageConfig(const QString &key, QRect &rect,
     clipping = false;
     scaled = false;
     if (!_m_imageConfig.isObject()) return defaultValue;
-    Json::Value val = _m_imageConfig[key.toLatin1().constData()];
+    QVariant val = _m_imageConfig[key.toLatin1().constData()];
     QString result;
     if (val.isString())
         result = val.asCString();
@@ -735,7 +734,7 @@ QPixmap IQSanComponentSkin::getPixmapFromFileName(const QString &fileName) const
     return QSanPixmapCache::getPixmap(fileName, fileName);
 }
 
-bool QSanRoomSkin::_loadAnimationConfig(const Json::Value &)
+bool QSanRoomSkin::_loadAnimationConfig(const QVariant &)
 {
     return true;
 }
@@ -752,13 +751,13 @@ QAbstractAnimation *QSanRoomSkin::createHuaShenAnimation(QPixmap &huashenAvatar,
 
     QPropertyAnimation *animation = new QPropertyAnimation(widget, "opacity");
     animation->setLoopCount(200); //2000
-    Json::Value huashenConfig = _m_animationConfig["huashen"];
+    QVariant huashenConfig = _m_animationConfig["huashen"];
     int duration;
     if (tryParse(huashenConfig[0], duration) && huashenConfig[1].isArray()) {
         animation->setDuration(duration);
-        Json::Value keyValues = huashenConfig[1];
+        QVariant keyValues = huashenConfig[1];
         for (unsigned int i = 0; i < keyValues.size(); i++) {
-            Json::Value keyValue = keyValues[i];
+            QVariant keyValue = keyValues[i];
             if (!keyValue.isArray() || keyValue.size() != 2) continue;
             double step;
             double val;
@@ -802,9 +801,9 @@ QSanRoomSkin::DashboardLayout::getSkillTextFont(QSanButton::ButtonState state,
     return font;
 }
 
-bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
+bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layoutConfig)
 {
-    Json::Value config = layoutConfig[S_SKIN_KEY_COMMON];
+    QVariant config = layoutConfig[S_SKIN_KEY_COMMON];
     tryParse(config["cardNormalHeight"], _m_commonLayout.m_cardNormalHeight);
     tryParse(config["cardNormalWidth"], _m_commonLayout.m_cardNormalWidth);
     tryParse(config["hpExtraSpaceHolder"], _m_commonLayout.m_hpExtraSpaceHolder);
@@ -864,7 +863,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
 
 
     for (int i = 0; i < 2; i++) {
-        Json::Value playerConfig;
+        QVariant playerConfig;
         PlayerCardContainerLayout *layout;
         if (i == 0) {
             layout = &_m_photoLayout;
@@ -1027,7 +1026,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig)
     return true;
 }
 
-bool QSanSkinScheme::load(Json::Value configs)
+bool QSanSkinScheme::load(QVariant configs)
 {
     if (!configs.isObject()) return false;
     QString layoutFile, imageFile, audioFile, animFile;
@@ -1124,7 +1123,7 @@ void QSanRoomSkin::getHeroSkinContainerGeneralIconPathAndClipRegion(const QStrin
 
         if (i < key_count) {
             QString path;
-            Json::Value val = _m_imageConfig[skin_key];
+            QVariant val = _m_imageConfig[skin_key];
             if (val.isArray() && val.size() >= 2
                 && val[0].isString() && tryParse(val[1], clipRegion)) {
                 path = val[0].asCString();

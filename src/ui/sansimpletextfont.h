@@ -59,7 +59,7 @@ public:
         m_weight = weight;
     }
 
-    bool tryParse(const Json::Value &arg);
+    bool tryParse(const QVariant &arg);
 
     void paintText(QPainter *const painter,
         const QRect &pos, const Qt::Alignment &align,

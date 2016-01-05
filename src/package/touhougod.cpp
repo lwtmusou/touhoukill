@@ -7,7 +7,6 @@
 #include "standard.h"
 //#include "generaloverview.h" //for zun?
 #include "client.h"
-#include "jsonutils.h"
 #include "maneuvering.h" // for iceslash
 #include "th10.h" //for huaxiang
 
@@ -2501,7 +2500,7 @@ const Card *ChaorenPreventRecast::validate(CardUseStruct &card_use) const
               return QStringList();
           }
           if (triggerEvent == CardResponded) {
-              CardStar card_star = data.value<CardResponseStruct>().m_card;
+              const Card * card_star = data.value<CardResponseStruct>().m_card;
               if (card_star->isVirtualCard() && card_star->subcardsLength() != 1)
                   return QStringList();
               if (player == data.value<CardResponseStruct>().m_who && player->hasSkill("chaoren")
@@ -2552,11 +2551,11 @@ const Card *ChaorenPreventRecast::validate(CardUseStruct &card_use) const
 
 
               if (!sbl->hasFlag("agusing")) {
-                  Json::Value gongxinArgs(Json::arrayValue);
+                  QVariant gongxinArgs(Json::arrayValue);
 
-                  gongxinArgs[0] = QSanProtocol::Utils::toJsonString(QString());
+                  gongxinArgs[0] = JsonUtils::toJsonString(QString());
                   gongxinArgs[1] = false;
-                  gongxinArgs[2] = QSanProtocol::Utils::toJsonArray(watchlist);
+                  gongxinArgs[2] = JsonUtils::toJsonArray(watchlist);
 
                   room->doNotify(sbl, QSanProtocol::S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
               }
@@ -2658,12 +2657,12 @@ public:
         if (!changed) {
             if (retract) {
                 room->setPlayerProperty(sbl, "chaoren", -1);
-                Json::Value args;
+                QVariant args;
                 args[0] = QSanProtocol::S_GAME_EVENT_RETRACT_PILE_CARDS;
                 room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_EVENT, args);
             } else if (expand) {
                 room->setPlayerProperty(sbl, "chaoren", new_firstcard);
-                Json::Value args;
+                QVariant args;
                 args[0] = QSanProtocol::S_GAME_EVENT_EXPAND_PILE_CARDS;
                 room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_EVENT, args);
             }
@@ -2676,7 +2675,7 @@ public:
             else
                 room->setPlayerProperty(sbl, "chaoren", -1);
             //for displaying the change on dashboard immidately, even  the status is not Playing or Response.
-            Json::Value args;
+            QVariant args;
             args[0] = QSanProtocol::S_GAME_EVENT_EXPAND_PILE_CARDS;
             room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_EVENT, args);
 

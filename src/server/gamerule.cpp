@@ -5,7 +5,6 @@
 #include "maneuvering.h"
 #include "engine.h"
 #include "settings.h"
-#include "jsonutils.h"
 
 #include <QTime>
 
@@ -250,7 +249,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                 CardUseStruct card_use = data.value<CardUseStruct>();
                 if (card_use.from->hasFlag("Global_ForbidSurrender")) {
                     card_use.from->setFlags("-Global_ForbidSurrender");
-                    room->doNotify(card_use.from, QSanProtocol::S_COMMAND_ENABLE_SURRENDER, Json::Value(true));
+                    room->doNotify(card_use.from, QSanProtocol::S_COMMAND_ENABLE_SURRENDER, QVariant(true));
                 }
 
 
@@ -322,7 +321,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
 
             if (use.card->isKindOf("AOE") || use.card->isKindOf("GlobalEffect")) {
                 foreach(ServerPlayer *p, room->getAlivePlayers())
-                    room->doNotify(p, QSanProtocol::S_COMMAND_NULLIFICATION_ASKED, QSanProtocol::Utils::toJsonString("."));
+                    room->doNotify(p, QSanProtocol::S_COMMAND_NULLIFICATION_ASKED, JsonUtils::toJsonString("."));
             }
             if (use.card->isKindOf("Slash"))
                 use.from->tag.remove("Jink_" + use.card->toString());
@@ -632,7 +631,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
         {
             int card_id = room->drawCard();
 
-            JudgeStar judge = data.value<JudgeStar>();
+            JudgeStruct * judge = data.value<JudgeStruct *>();
             judge->card = Sanguosha->getCard(card_id);
 
             LogMessage log;
@@ -651,7 +650,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
         }
         case FinishRetrial:
         {
-            JudgeStar judge = data.value<JudgeStar>();
+            JudgeStruct * judge = data.value<JudgeStruct *>();
 
             LogMessage log;
             log.type = "$JudgeResult";
@@ -672,7 +671,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
         }
         case FinishJudge:
         {
-            JudgeStar judge = data.value<JudgeStar>();
+            JudgeStruct * judge = data.value<JudgeStruct *>();
 
             if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge) {
                 CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), judge->reason);
@@ -751,7 +750,7 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const
 
     QList<ServerPlayer *> notified = classical ? room->getOtherPlayers(player, true) : room->getPlayers();
     room->doBroadcastNotify(notified, QSanProtocol::S_COMMAND_REVEAL_GENERAL,
-        QSanProtocol::Utils::toJsonArray(player->objectName(), new_general));
+        JsonUtils::toJsonArray(player->objectName(), new_general));
 
     if (!player->faceUp())
         player->turnOver();
@@ -784,7 +783,7 @@ void GameRule::changeGeneralXMode(ServerPlayer *player) const
     Config.AIDelay = Config.OriginAIDelay;
 
     Room *room = player->getRoom();
-    PlayerStar leader = player->tag["XModeLeader"].value<PlayerStar>();
+    ServerPlayer * leader = player->tag["XModeLeader"].value<ServerPlayer *>();
     Q_ASSERT(leader);
     QStringList backup = leader->tag["XModeBackup"].toStringList();
     QString general = room->askForGeneral(leader, backup);
@@ -896,7 +895,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const
         }
     } else if (room->getMode() == "06_XMode") {
         QString role = victim->getRole();
-        PlayerStar leader = victim->tag["XModeLeader"].value<PlayerStar>();
+        ServerPlayer * leader = victim->tag["XModeLeader"].value<ServerPlayer *>();
         if (leader->tag["XModeBackup"].toStringList().isEmpty()) {
             if (role.startsWith('r'))
                 winner = "lord+loyalist";
@@ -1129,9 +1128,9 @@ bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer 
         case TurnStart:
         {
             if (player->isDead()) {
-                Json::Value arg(Json::arrayValue);
+                QVariant arg(Json::arrayValue);
                 arg[0] = (int)QSanProtocol::S_GAME_EVENT_PLAYER_REFORM;
-                arg[1] = QSanProtocol::Utils::toJsonString(player->objectName());
+                arg[1] = JsonUtils::toJsonString(player->objectName());
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 
                 QString choice = player->isWounded() ? "recover" : "draw";

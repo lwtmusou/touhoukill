@@ -72,7 +72,7 @@ public:
 
     virtual TriggerList triggerable(TriggerEvent, Room *room, ServerPlayer *, QVariant &data) const
     {
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct * judge = data.value<JudgeStruct *>();
         if (!judge->who || !judge->who->isAlive())
             return TriggerList();
 
@@ -87,7 +87,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *ask_who) const
     {
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct * judge = data.value<JudgeStruct *>();
         ask_who->tag["qixiang_judge"] = data;
         QString prompt = "target:" + judge->who->objectName() + ":" + judge->reason;
         return room->askForSkillInvoke(ask_who, objectName(), prompt);
@@ -95,7 +95,7 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *ask_who) const
     {
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct * judge = data.value<JudgeStruct *>();
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, ask_who->objectName(), judge->who->objectName());
         judge->who->drawCards(1);
         return false;
@@ -115,7 +115,7 @@ public:
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const
     {
         if (!TriggerSkill::triggerable(player) || !player->hasLordSkill(objectName())) return QStringList();
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct * judge = data.value<JudgeStruct *>();
         if (judge->card->getSuit() != Card::Heart)
             return QStringList(objectName());
         //everyone is kongcheng?
@@ -124,7 +124,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct * judge = data.value<JudgeStruct *>();
         player->tag["boli_judge"] = data;
         QString prompt = "judge:" + judge->who->objectName() + ":" + judge->reason;
         return room->askForSkillInvoke(player, "boli", prompt);

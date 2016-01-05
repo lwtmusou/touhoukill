@@ -6,7 +6,6 @@
 #include "standard.h"
 
 #include "client.h"
-#include "jsonutils.h"
 #include "maneuvering.h" //for skill lianxi
 
 
@@ -660,7 +659,7 @@ public:
                     return TriggerList();
                 isRed = use.card->isRed();
             } else if (triggerEvent == CardResponded) {
-                CardStar card_star = data.value<CardResponseStruct>().m_card;
+                const Card * card_star = data.value<CardResponseStruct>().m_card;
                 if (!card_star->isKindOf("BasicCard") || data.value<CardResponseStruct>().m_isRetrial
                     || data.value<CardResponseStruct>().m_isProvision || card_star->getSuit() == Card::NoSuit)
                     return TriggerList();
@@ -706,7 +705,7 @@ public:
                 isRed = use.card->isRed();
                 cardName = use.card->objectName();
             } else if (triggerEvent == CardResponded) {
-                CardStar card_star = data.value<CardResponseStruct>().m_card;
+                const Card * card_star = data.value<CardResponseStruct>().m_card;
                 if (!card_star->isKindOf("BasicCard") || data.value<CardResponseStruct>().m_isRetrial
                     || data.value<CardResponseStruct>().m_isProvision || card_star->getSuit() == Card::NoSuit)
                     return false;
@@ -817,7 +816,7 @@ public:
     {
         if (!TriggerSkill::triggerable(player)) return QStringList();
         if (triggerEvent == CardResponded) {
-            CardStar card_star = data.value<CardResponseStruct>().m_card;
+            const Card * card_star = data.value<CardResponseStruct>().m_card;
             if (card_star->isKindOf("Slash"))
                 return QStringList(objectName());
         } else if (triggerEvent == CardUsed) {
@@ -902,18 +901,18 @@ public:
             }
             room->handleAcquireDetachSkills(player, "-" + back_skillname);
 
-            Json::Value arg(Json::arrayValue);
+            QVariant arg(Json::arrayValue);
             arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-            arg[1] = QSanProtocol::Utils::toJsonString(player->objectName());
-            arg[2] = QSanProtocol::Utils::toJsonString(player->getGeneral()->objectName());
-            //arg[3] = QSanProtocol::Utils::toJsonString("clear");
-            arg[3] = QSanProtocol::Utils::toJsonString(QString());
+            arg[1] = JsonUtils::toJsonString(player->objectName());
+            arg[2] = JsonUtils::toJsonString(player->getGeneral()->objectName());
+            //arg[3] = JsonUtils::toJsonString("clear");
+            arg[3] = JsonUtils::toJsonString(QString());
             room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 
             if (back->isAlive()) {
                 //room->handleAcquireDetachSkills(back, back_skillname);
                 room->setPlayerMark(back, "pingyi" + back_skillname, 0);
-                Json::Value args;
+                QVariant args;
                 args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
                 back->loseMark("@pingyi", 1);
@@ -987,18 +986,18 @@ public:
             room->setPlayerMark(damage.from, "pingyi" + skill_name, 1); // skill nullify mark, like Qingcheng
             room->handleAcquireDetachSkills(player, skill_name);
 
-            Json::Value args;
+            QVariant args;
             args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
             room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
             damage.from->gainMark("@pingyi"); // marks could be greater than 1,since it can be stealed any times.
             room->touhouLogmessage("#pingyiLoseSkill", damage.from, skill_name);
 
-            Json::Value arg(Json::arrayValue);
+            QVariant arg(Json::arrayValue);
             arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-            arg[1] = QSanProtocol::Utils::toJsonString(player->objectName());
-            arg[2] = QSanProtocol::Utils::toJsonString(damage.from->getGeneral()->objectName());
-            arg[3] = QSanProtocol::Utils::toJsonString(skill_name);
+            arg[1] = JsonUtils::toJsonString(player->objectName());
+            arg[2] = JsonUtils::toJsonString(damage.from->getGeneral()->objectName());
+            arg[3] = JsonUtils::toJsonString(skill_name);
             room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
         }
 

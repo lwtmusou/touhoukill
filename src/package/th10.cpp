@@ -7,8 +7,6 @@
 #include "standard.h"
 #include "client.h"
 
-#include "jsonutils.h"
-
 #include <QCommandLinkButton>
 
 
@@ -70,7 +68,7 @@ public:
         if (!TriggerSkill::triggerable(player)) return QStringList();
         bool can = false;
         if (triggerEvent == CardResponded) {
-            CardStar card_star = data.value<CardResponseStruct>().m_card;
+            const Card * card_star = data.value<CardResponseStruct>().m_card;
             if (card_star->isKindOf("Slash"))
                 can = true;
         } else if (triggerEvent == CardUsed) {
@@ -257,7 +255,7 @@ public:
     virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const
     {
         if (triggerEvent == Pindian) {
-            PindianStar pindian = data.value<PindianStar>();
+            PindianStruct * pindian = data.value<PindianStruct *>();
             if (pindian->reason == "bushu" && pindian->from_number <= pindian->to_number
                 && pindian->from->isAlive())
                 pindian->from->obtainCard(pindian->to_card);
@@ -823,7 +821,7 @@ public:
                 }
             }
             if (triggerEvent == CardResponded) {
-                CardStar card_star = data.value<CardResponseStruct>().m_card;
+                const Card * card_star = data.value<CardResponseStruct>().m_card;
                 if (card_star->getSkillName() == "qiji")
                     room->setPlayerMark(player, "qiji", 1);
             }
@@ -1151,7 +1149,7 @@ public:
             foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
                 room->setPlayerMark(p, "changshi", 0);
                 room->filterCards(p, p->getCards("he"), true);
-                Json::Value args;
+                QVariant args;
                 args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
@@ -1175,16 +1173,16 @@ public:
             //remove card limit,if the source skill can not clear it correctly.
             foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
                 if (p->hasSkill("zhengti")) {
-                    Json::Value arg(Json::arrayValue);
+                    QVariant arg(Json::arrayValue);
                     arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                    arg[1] = QSanProtocol::Utils::toJsonString(p->objectName());
-                    arg[2] = QSanProtocol::Utils::toJsonString(p->getGeneral()->objectName());
-                    arg[3] = QSanProtocol::Utils::toJsonString(QString());//"clear"
+                    arg[1] = JsonUtils::toJsonString(p->objectName());
+                    arg[2] = JsonUtils::toJsonString(p->getGeneral()->objectName());
+                    arg[3] = JsonUtils::toJsonString(QString());//"clear"
                     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
                 }
                 room->setPlayerMark(p, "changshi", 1); // real mark for   Player::hasSkill()
                 room->filterCards(p, p->getCards("he"), true);
-                Json::Value args;
+                QVariant args;
                 args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
@@ -1656,7 +1654,7 @@ void ExtraCollateralCard::onUse(Room *, const CardUseStruct &card_use) const
     ServerPlayer *killer = card_use.to.first();
     ServerPlayer *victim = card_use.to.last();
     killer->setFlags("ExtraCollateralTarget");
-    killer->tag["collateralVictim"] = QVariant::fromValue((PlayerStar)victim);
+    killer->tag["collateralVictim"] = QVariant::fromValue((ServerPlayer *)victim);
 }
 
 
@@ -1773,7 +1771,7 @@ public:
                         room->sendLog(log);
                         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), extra->objectName());
 
-                        ServerPlayer *victim = extra->tag["collateralVictim"].value<PlayerStar>();
+                        ServerPlayer *victim = extra->tag["collateralVictim"].value<ServerPlayer *>();
                         if (victim) {
                             LogMessage log;
                             log.type = "#CollateralSlash";

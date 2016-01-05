@@ -517,7 +517,7 @@ struct CardUseStruct {
     CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer *target, bool isOwnerUse = true);
     bool isValid(const char *pattern) const;
     void parse(const char *str, Room *room);
-    bool tryParse(const Json::Value &, Room *room);
+    bool tryParse(const QVariant &, Room *room);
 
     const Card *card;
     ServerPlayer *from;
@@ -608,8 +608,6 @@ struct JudgeStruct {
 
 };
 
-typedef JudgeStruct *JudgeStar;
-
 struct PindianStruct {
     PindianStruct();
 
@@ -622,8 +620,6 @@ struct PindianStruct {
     QString reason;
     bool success;
 };
-
-typedef PindianStruct *PindianStar;
 
 struct PhaseChangeStruct {
     PhaseChangeStruct();
@@ -1084,20 +1080,6 @@ struct LogMessage {
     QString arg2;
 };
 
-struct JsonValueForLUA{
-    JsonValueForLUA(bool isarray = true);
-
-    bool getBoolAt(int n) const;
-    int getNumberAt(int n) const;
-    QString getStringAt(int n) const;
-    JsonValueForLUA getArrayAt(int n) const;
-
-    void setBoolAt(int n, bool v);
-    void setNumberAt(int n, int v);
-    void setStringAt(int n, const char *v);
-    void setArrayAt(int n, const JsonValueForLUA &v);
-};
-
 class RoomThread: public QThread {
 public:
     explicit RoomThread(Room *room);
@@ -1170,7 +1152,7 @@ public:
     bool cardEffect(const CardEffectStruct &effect);
     bool isJinkEffected(ServerPlayer *user, const Card *jink);
     void judge(JudgeStruct &judge_struct);
-    void sendJudgeResult(const JudgeStar judge);
+    void sendJudgeResult(const JudgeStruct * judge);
     QList<int> getNCards(int n, bool update_pile_number = true, bool bottom = false);
     ServerPlayer *getLord() const;
     void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides,const char *skillName ="");
@@ -1184,23 +1166,19 @@ public:
     void sendLog(const LogMessage &log);
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
-    void retrial(const Card *card, ServerPlayer *player, JudgeStar judge, const char *skill_name, bool exchange = false);
+    void retrial(const Card *card, ServerPlayer *player, JudgeStruct * judge, const char *skill_name, bool exchange = false);
 
-    bool doRequest(ServerPlayer *player, QSanProtocol::CommandType command, const Json::Value &arg, time_t timeOut, bool wait);
-    bool doRequest(ServerPlayer *player, QSanProtocol::CommandType command, const Json::Value &arg, bool wait);
+    bool doRequest(ServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg, time_t timeOut, bool wait);
+    bool doRequest(ServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg, bool wait);
 
     bool doBroadcastRequest(QList<ServerPlayer *> &players, QSanProtocol::CommandType command, time_t timeOut);
     bool doBroadcastRequest(QList<ServerPlayer *> &players, QSanProtocol::CommandType command);
-    bool doNotify(ServerPlayer *player, QSanProtocol::CommandType command, const Json::Value &arg);
-    bool doBroadcastNotify(QSanProtocol::CommandType command, const Json::Value &arg);
-    bool doBroadcastNotify(const QList<ServerPlayer *> &players, QSanProtocol::CommandType command, const Json::Value &arg);
-
-    bool doNotify(ServerPlayer *player, int command, const JsonValueForLUA &arg);
-    bool doBroadcastNotify(int command, const JsonValueForLUA &arg);
-    bool doBroadcastNotify(const QList<ServerPlayer *> &players, int command, const JsonValueForLUA &arg);
+    bool doNotify(ServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg);
+    bool doBroadcastNotify(QSanProtocol::CommandType command, const QVariant &arg);
+    bool doBroadcastNotify(const QList<ServerPlayer *> &players, QSanProtocol::CommandType command, const QVariant &arg);
 
     // Verification functions
-    bool verifyNullificationResponse(ServerPlayer *, const Json::Value &, void *);
+    bool verifyNullificationResponse(ServerPlayer *, const QVariant &, void *);
 
     bool notifyMoveFocus(ServerPlayer *player);
     bool notifyMoveFocus(ServerPlayer *player, QSanProtocol::CommandType command);

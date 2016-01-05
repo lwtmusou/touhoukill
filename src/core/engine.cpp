@@ -8,7 +8,6 @@
 #include "banpair.h"
 #include "audio.h"
 #include "protocol.h"
-#include "jsonutils.h"
 #include "structs.h"
 #include "lua-wrapper.h"
 #include "RoomState.h"
@@ -314,6 +313,11 @@ QStringList Engine::getBanPackages() const
         return Config.BanPackages;
     else
         return ban_package.toList();
+}
+
+QList<const Package *> Engine::getPackages() const
+{
+    return findChildren<const Package *>();
 }
 
 QString Engine::translate(const QString &to_translate) const
@@ -1193,7 +1197,7 @@ const Skill *Engine::getSkill(const EquipCard *equip) const
     if (equip == NULL)
         skill = NULL;
     else
-        skill = Sanguosha->getSkill(equip->objectName());
+        skill = /*Sanguosha->*/getSkill(equip->objectName());
 
     return skill;
 }

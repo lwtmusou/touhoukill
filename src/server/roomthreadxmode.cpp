@@ -2,12 +2,11 @@
 #include "room.h"
 #include "engine.h"
 #include "settings.h"
-#include "jsonutils.h"
 
 #include <QDateTime>
 
 using namespace QSanProtocol;
-using namespace QSanProtocol::Utils;
+using namespace JsonUtils;
 
 RoomThreadXMode::RoomThreadXMode(Room *room)
     : room(room)
@@ -66,10 +65,10 @@ void RoomThreadXMode::run()
     QStringList warm_backup, cool_backup;
     foreach (ServerPlayer *player, room->m_players) {
         if (player->getRole().startsWith("r")) {
-            player->tag["XModeLeader"] = QVariant::fromValue((PlayerStar)cool_leader);
+            player->tag["XModeLeader"] = QVariant::fromValue((ServerPlayer *)cool_leader);
             cool_backup.append(player->tag["XModeBackup"].toStringList());
         } else {
-            player->tag["XModeLeader"] = QVariant::fromValue((PlayerStar)warm_leader);
+            player->tag["XModeLeader"] = QVariant::fromValue((ServerPlayer *)warm_leader);
             warm_backup.append(player->tag["XModeBackup"].toStringList());
         }
         player->tag.remove("XModeBackup");
@@ -108,7 +107,7 @@ void RoomThreadXMode::startArrange(QList<ServerPlayer *> &players, QList<QString
 
     for (int i = 0; i < online.length(); i++) {
         ServerPlayer *player = online.at(i);
-        Json::Value clientReply = player->getClientReply();
+        QVariant clientReply = player->getClientReply();
         if (player->m_isClientResponseReady && clientReply.isArray() && clientReply.size() == 3) {
             QStringList arranged;
             tryParse(clientReply, arranged);

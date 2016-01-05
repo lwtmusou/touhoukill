@@ -233,7 +233,7 @@ public:
                 if (use.card->isKindOf("BasicCard") || use.card->isKindOf("TrickCard"))
                     player->setFlags("sizhai");
             } else if (triggerEvent == CardResponded) {
-                CardStar card_star = data.value<CardResponseStruct>().m_card;
+                const Card * card_star = data.value<CardResponseStruct>().m_card;
                 if (card_star->isKindOf("BasicCard") || card_star->isKindOf("TrickCard"))
                     player->setFlags("sizhai");
             }
@@ -387,7 +387,7 @@ public:
             if (use.card->isKindOf("BasicCard"))
                 return QStringList(objectName());
         } else if (triggerEvent == CardResponded) {
-            CardStar card_star = data.value<CardResponseStruct>().m_card;
+            const Card * card_star = data.value<CardResponseStruct>().m_card;
             if (card_star->isKindOf("BasicCard"))
                 return QStringList(objectName());
         }

@@ -112,7 +112,7 @@ public:
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct * judge = data.value<JudgeStruct *>();
         if (judge->card->getSuit() != Card::Diamond)
             return QStringList();
 
@@ -771,7 +771,7 @@ public:
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *, QVariant &data, ServerPlayer* &) const
     {
-        PindianStar pindian = data.value<PindianStar>();
+        PindianStruct * pindian = data.value<PindianStruct *>();
         if (pindian->reason != "buxian")
             return QStringList();
         return QStringList(objectName());
@@ -779,7 +779,7 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *) const
     {
-        PindianStar pindian = data.value<PindianStar>();
+        PindianStruct * pindian = data.value<PindianStruct *>();
         ServerPlayer *bigger = NULL;
         if (pindian->from_number > pindian->to_number)
             bigger = pindian->from;
@@ -1074,7 +1074,7 @@ public:
         if (!TriggerSkill::triggerable(player)) return QStringList();
         bool can = false;
         if (triggerEvent == CardResponded) {
-            CardStar card_star = data.value<CardResponseStruct>().m_card;
+            const Card * card_star = data.value<CardResponseStruct>().m_card;
             if (card_star->isKindOf("BasicCard"))
                 can = true;
         } else if (triggerEvent == CardUsed) {
@@ -1123,7 +1123,7 @@ public:
     virtual const Card *viewAs() const
     {
 
-        CardStar c = Self->tag.value("chuangshi").value<CardStar>();
+        const Card * c = Self->tag.value("chuangshi").value<const Card *>();
         //we need get the real subcard.
         if (c) {
             ChuangshiCard *card = new ChuangshiCard;
@@ -1414,7 +1414,7 @@ public:
             if (use.card->isKindOf("Slash"))
                 return QStringList(objectName());
         } else if (triggerEvent == CardResponded) {
-            CardStar card_star = data.value<CardResponseStruct>().m_card;
+            const Card * card_star = data.value<CardResponseStruct>().m_card;
             if (card_star->isKindOf("Slash"))
                 return QStringList(objectName());
         } else if (triggerEvent == CardsMoveOneTime) {

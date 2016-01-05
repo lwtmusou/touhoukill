@@ -3,12 +3,11 @@
 #include "engine.h"
 #include "settings.h"
 #include "generalselector.h"
-#include "jsonutils.h"
 
 #include <QDateTime>
 
 using namespace QSanProtocol;
-using namespace QSanProtocol::Utils;
+using namespace JsonUtils;
 
 RoomThread1v1::RoomThread1v1(Room *room)
     : room(room)
@@ -131,8 +130,8 @@ void RoomThread1v1::askForTakeGeneral(ServerPlayer *player)
         name = room->generalSelector()->select1v1(general_names);
 
     if (name.isNull()) {
-        bool success = room->doRequest(player, S_COMMAND_ASK_GENERAL, Json::Value::null, true);
-        Json::Value clientReply = player->getClientReply();
+        bool success = room->doRequest(player, S_COMMAND_ASK_GENERAL, QVariant(), true);
+        QVariant clientReply = player->getClientReply();
         if (success && clientReply.isString()) {
             name = toQString(clientReply.asCString());
             takeGeneral(player, name);
@@ -159,7 +158,7 @@ void RoomThread1v1::takeGeneral(ServerPlayer *player, const QString &name)
         int index = unknown_rx.capturedTexts().at(1).toInt();
         general_name = unknown_list.at(index);
 
-        Json::Value arg(Json::arrayValue);
+        QVariant arg(Json::arrayValue);
         arg[0] = index;
         arg[1] = toJsonString(general_name);
         room->doNotify(player, S_COMMAND_RECOVER_GENERAL, arg);
@@ -195,12 +194,12 @@ void RoomThread1v1::startArrange(QList<ServerPlayer *> players)
     if (online.isEmpty()) return;
 
     foreach(ServerPlayer *player, online)
-        player->m_commandArgs = Json::Value::null;
+        player->m_commandArgs = QVariant();
 
     room->doBroadcastRequest(online, S_COMMAND_ARRANGE_GENERAL);
 
     foreach (ServerPlayer *player, online) {
-        Json::Value clientReply = player->getClientReply();
+        QVariant clientReply = player->getClientReply();
         if (player->m_isClientResponseReady && clientReply.isArray() && clientReply.size() == 3) {
             QStringList arranged;
             tryParse(clientReply, arranged);
@@ -236,7 +235,7 @@ void RoomThread1v1::askForFirstGeneral(QList<ServerPlayer *> players)
     room->doBroadcastRequest(online, S_COMMAND_CHOOSE_GENERAL);
 
     foreach (ServerPlayer *player, online) {
-        Json::Value clientReply = player->getClientReply();
+        QVariant clientReply = player->getClientReply();
         if (player->m_isClientResponseReady && clientReply.isString() && player->getSelected().contains(clientReply.asCString())) {
             QStringList arranged = player->getSelected();
             QString first_gen = clientReply.asCString();
