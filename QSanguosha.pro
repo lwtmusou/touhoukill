@@ -11,12 +11,6 @@ win32: QT += winextras
 CONFIG += lua
 
 SOURCES += \
-    src/jsoncpp/src/json_writer.cpp \
-    src/jsoncpp/src/json_valueiterator.inl \
-    src/jsoncpp/src/json_value.cpp \
-    src/jsoncpp/src/json_reader.cpp \
-    src/jsoncpp/src/json_internalmap.inl \
-    src/jsoncpp/src/json_internalarray.inl \
     swig/sanguosha_wrap.cxx \
     src/client/aux-skills.cpp \
     src/client/client.cpp \
@@ -120,17 +114,6 @@ SOURCES += \
     src/ui/graphicsbox.cpp
 
 HEADERS += \
-    src/jsoncpp/src/json_tool.h \
-    src/jsoncpp/src/json_batchallocator.h \
-    src/jsoncpp/include/json/writer.h \
-    src/jsoncpp/include/json/value.h \
-    src/jsoncpp/include/json/reader.h \
-    src/jsoncpp/include/json/json.h \
-    src/jsoncpp/include/json/forwards.h \
-    src/jsoncpp/include/json/features.h \
-    src/jsoncpp/include/json/config.h \
-    src/jsoncpp/include/json/autolink.h \
-    src/jsoncpp/include/json/assertions.h \
     src/client/aux-skills.h \
     src/client/client.h \
     src/client/clientplayer.h \
