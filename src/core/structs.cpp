@@ -261,7 +261,7 @@ bool CardUseStruct::isValid(const QString &pattern) const
 bool CardUseStruct::tryParse(const QVariant &usage, Room *room)
 {
     JsonArray arr = usage.value<JsonArray>();
-    if (arr.length < 2 || !JsonUtils::isString(arr.first()) || !JsonUtils::isString(arr.value(1)))
+    if (arr.length() < 2 || !JsonUtils::isString(arr.first()) || !JsonUtils::isString(arr.value(1)))
         return false;
 
     card = Card::Parse(arr.first().toString());

@@ -321,7 +321,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
 
             if (use.card->isKindOf("AOE") || use.card->isKindOf("GlobalEffect")) {
                 foreach(ServerPlayer *p, room->getAlivePlayers())
-                    room->doNotify(p, QSanProtocol::S_COMMAND_NULLIFICATION_ASKED, ".");
+                    room->doNotify(p, QSanProtocol::S_COMMAND_NULLIFICATION_ASKED, QVariant("."));
             }
             if (use.card->isKindOf("Slash"))
                 use.from->tag.remove("Jink_" + use.card->toString());

@@ -163,7 +163,7 @@ public:
     {
         m_clientResponseString = val;
     }
-    inline QVariant getClientReply()
+    inline const QVariant &getClientReply()
     {
         return _m_clientResponse;
     }

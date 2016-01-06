@@ -8,6 +8,8 @@ class QVariant;
 #include <QStringList>
 #include <QVariant>
 
+#include "compiler-specific.h"
+
 template<typename T>
 void qShuffle(QList<T> &list)
 {

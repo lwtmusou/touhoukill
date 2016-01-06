@@ -6,14 +6,13 @@
 #include <QColor>
 #include <QHash>
 
+#include "json.h"
+
 class QString;
 class QPainter;
 class QRect;
 class QGraphicsPixmapItem;
-namespace Json
-{
-    class Value;
-}
+
 
 class SanSimpleTextFont
 {

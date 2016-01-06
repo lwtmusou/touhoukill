@@ -1,6 +1,8 @@
 #ifndef SANUIUTILS_H
 #define SANUIUTILS_H
 
+#include "json.h"
+
 class QPixmap;
 class QImage;
 class QColor;

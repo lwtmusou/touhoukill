@@ -38,8 +38,7 @@ public:
     friend class RoomThreadXMode;
     friend class RoomThread1v1;
 
-    typedef void (Room::*Callback)(ServerPlayer *, const QString &);
-    typedef bool (Room::*CallBack)(ServerPlayer *, const QSanProtocol::Packet *);
+    typedef void (Room::*Callback)(ServerPlayer *, const QVariant &);
     typedef bool (Room::*ResponseVerifyFunction)(ServerPlayer *, const QVariant &, void *);
 
     explicit Room(QObject *parent, const QString &mode);
@@ -184,9 +183,9 @@ public:
     bool doBroadcastNotify(QSanProtocol::CommandType command, const QVariant &arg);
     bool doBroadcastNotify(const QList<ServerPlayer *> &players, QSanProtocol::CommandType command, const QVariant &arg);
    
-    bool doNotify(ServerPlayer *player, int command, const QString &arg);
-    bool doBroadcastNotify(int command, const QString &arg);
-    bool doBroadcastNotify(const QList<ServerPlayer *> &players, int command, const QString &arg);
+    bool doNotify(ServerPlayer *player, int command, const char *arg);
+    bool doBroadcastNotify(int command, const char *arg);
+    bool doBroadcastNotify(const QList<ServerPlayer *> &players, int command, const char *arg);
 
     // Ask a server player to wait for the client response. Call is blocking until client replies or server times out,
     // whichever is earlier.
@@ -378,16 +377,16 @@ public:
     QString askForTriggerOrder(ServerPlayer *player, const QString &reason, SPlayerDataMap &skills, bool optional = true, const QVariant &data = QVariant());
     void addPlayerHistory(ServerPlayer *player, const QString &key, int times = 1);
 
-    void toggleReadyCommand(ServerPlayer *player, const QString &);
-    void speakCommand(ServerPlayer *player, const QString &arg);
-    void trustCommand(ServerPlayer *player, const QString &arg);
-    void pauseCommand(ServerPlayer *player, const QString &arg);
+    void toggleReadyCommand(ServerPlayer *player, const QVariant &);
+    void speakCommand(ServerPlayer *player, const QVariant &arg);
+    void trustCommand(ServerPlayer *player, const QVariant &arg);
+    void pauseCommand(ServerPlayer *player, const QVariant &arg);
     void processResponse(ServerPlayer *player, const QSanProtocol::Packet *arg);
-    void addRobotCommand(ServerPlayer *player, const QString &arg);
-    void fillRobotsCommand(ServerPlayer *player, const QString &arg);
+    void addRobotCommand(ServerPlayer *player, const QVariant &arg);
+    void fillRobotsCommand(ServerPlayer *player, const QVariant &arg);
     void broadcastInvoke(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except = NULL);
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
-    void networkDelayTestCommand(ServerPlayer *player, const QString &);
+    void networkDelayTestCommand(ServerPlayer *player, const QVariant &);
     bool roleStatusCommand(ServerPlayer *player); 
     
     inline RoomState *getRoomState()
@@ -537,9 +536,7 @@ private:
     QSemaphore _m_semRaceRequest; // When race starts, server waits on his semaphore for the first replier
     QSemaphore _m_semRoomMutex; // Provide per-room  (rather than per-player) level protection of any shared variables
 
-
-    QHash<QString, Callback> callbacks; // Legacy protocol callbacks
-    QHash<QSanProtocol::CommandType, CallBack> m_callbacks; // Stores the callbacks for client request. Do not use this
+    QHash<QSanProtocol::CommandType, Callback> m_callbacks; // Stores the callbacks for client request. Do not use this
     // this map for anything else but S_CLIENT_REQUEST!!!!!
     QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair;
     // Stores the expected client response for each server request, any unmatched client response will be discarded.
@@ -585,8 +582,8 @@ private:
     QString askForRole(ServerPlayer *player, const QStringList &roles, const QString &scheme);
 
     //process client requests
-    bool processRequestCheat(ServerPlayer *player, const QSanProtocol::Packet *packet);
-    bool processRequestSurrender(ServerPlayer *player, const QSanProtocol::Packet *packet);
+    void processRequestCheat(ServerPlayer *player, const QVariant &packet);
+    void processRequestSurrender(ServerPlayer *player, const QVariant &packet);
    
     bool makeSurrender(ServerPlayer *player);
     bool makeCheat(ServerPlayer *player);
@@ -595,7 +592,7 @@ private:
     void makeReviving(const QString &name);
     void doScript(const QString &script);
 
-    bool skinChangeCommand(ServerPlayer *player, const QSanProtocol::Packet *packet);  
+    void skinChangeCommand(ServerPlayer *player, const QVariant &packet);
      
     
     
