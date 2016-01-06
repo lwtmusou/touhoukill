@@ -2121,6 +2121,6 @@ void Client::changeSkin(QString name, int index)
     skinInfo << name << index;
 
     //notifyToServer(S_COMMAND_SKIN_CHANGE, skinInfo);
-    requestServer(S_COMMAND_SKIN_CHANGE, skinInfo);
+    notifyServer(S_COMMAND_SKIN_CHANGE, skinInfo);
 }
 
