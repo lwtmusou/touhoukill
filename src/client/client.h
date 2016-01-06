@@ -62,9 +62,8 @@ public:
 
     void disconnectFromHost();
     void replyToServer(QSanProtocol::CommandType command, const QVariant &arg = QVariant());
-    void requestToServer(QSanProtocol::CommandType command, const QVariant &arg = QVariant());
-    void notifyToServer(QSanProtocol::CommandType command, const QVariant &arg = QVariant());
-    void request(const QString &message);
+    void requestServer(QSanProtocol::CommandType command, const QVariant &arg = QVariant());
+    void notifyServer(QSanProtocol::CommandType command, const QVariant &arg = QVariant());
     void onPlayerResponseCard(const Card *card, const QList<const Player *> &targets = QList<const Player *>());
     void setStatus(Status status);
     Status getStatus() const;
@@ -88,16 +87,15 @@ public:
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
 
-    typedef void (Client::*Callback) (const QString &);
-    typedef void (Client::*CallBack) (const QVariant &);
+    typedef void (Client::*Callback) (const QVariant &);
 
-    void checkVersion(const QString &server_version);
-    void setup(const QString &setup_str);
-    void networkDelayTest(const QString &);
-    void addPlayer(const QString &player_info);
-    void removePlayer(const QString &player_name);
-    void startInXs(const QString &);
-    void arrangeSeats(const QString &seats);
+    void checkVersion(const QVariant &server_version);
+    void setup(const QVariant &setup_str);
+    void networkDelayTest(const QVariant &);
+    void addPlayer(const QVariant &player_info);
+    void removePlayer(const QVariant &player_name);
+    void startInXs(const QVariant &);
+    void arrangeSeats(const QVariant &seats);
     void activate(const QVariant &playerId);
     void startGame(const QVariant &);
     void hpChange(const QVariant &change_str);
@@ -112,11 +110,11 @@ public:
     void killPlayer(const QVariant &player_arg);
     void revivePlayer(const QVariant &player_arg);
     void setDashboardShadow(const QVariant &player_arg);
-    void warn(const QString &);
+    void warn(const QVariant &);
     void setMark(const QVariant &mark_str);
     void showCard(const QVariant &show_str);
     void log(const QVariant &log_str);
-    void speak(const QString &speak_data);
+    void speak(const QVariant &speak_data);
     void addHistory(const QVariant &history);
     void moveFocus(const QVariant &focus);
     void setEmotion(const QVariant &set_str);
@@ -218,14 +216,14 @@ public:
     int discard_num;
     int min_num;
     QString skill_name;
-    QString highlight_skill_name;//for highlighting skill button when client is asked to use skill
+    QString highlight_skill_name; //for highlighting skill button when client is asked to use skill
     QString lord_kingdom; //for playing touhou bgm
     QString lord_name;
 
     QList<const Card *> discarded_list;
     QStringList players_to_choose;
 
-    public slots:
+public slots:
     void signup();
     void onPlayerChooseGeneral(const QString &_name);
     void onPlayerMakeChoice();
@@ -236,7 +234,6 @@ public:
     void trust();
     void addRobot();
     void fillRobots();
-    void arrange(const QStringList &order);
 
     void onPlayerReplyGongxin(int card_id = -1);
     void changeSkin(QString name, int index);
@@ -254,9 +251,8 @@ protected:
 private:
     ClientSocket *socket;
     bool m_isGameOver;
-    QHash<QString, Callback> callbacks;
-    QHash<QSanProtocol::CommandType, CallBack> m_interactions;
-    QHash<QSanProtocol::CommandType, CallBack> m_callbacks;
+    QHash<QSanProtocol::CommandType, Callback> m_interactions;
+    QHash<QSanProtocol::CommandType, Callback> m_callbacks;
     QList<const ClientPlayer *> players;
     QStringList ban_packages;
     Recorder *recorder;
@@ -280,7 +276,6 @@ private slots:
     void processServerPacket(const QString &cmd);
     void processServerPacket(const char *cmd);
     bool processServerRequest(const QSanProtocol::Packet &packet);
-    void processObsoleteServerPacket(const QString &cmd);
     void notifyRoleChange(const QString &new_role);
     void onPlayerChooseSuit();
     void onPlayerChooseKingdom();

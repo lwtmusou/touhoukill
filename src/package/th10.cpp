@@ -1149,8 +1149,8 @@ public:
             foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
                 room->setPlayerMark(p, "changshi", 0);
                 room->filterCards(p, p->getCards("he"), true);
-                QVariant args;
-                args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+                JsonArray args;
+                args << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
             }
@@ -1172,18 +1172,21 @@ public:
 
             //remove card limit,if the source skill can not clear it correctly.
             foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
+                // coupling zhengti???  only for the UI???????????????????????????????????????????????????????????
+#if 0
                 if (p->hasSkill("zhengti")) {
-                    QVariant arg(Json::arrayValue);
-                    arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                    arg[1] = JsonUtils::toJsonString(p->objectName());
-                    arg[2] = JsonUtils::toJsonString(p->getGeneral()->objectName());
-                    arg[3] = JsonUtils::toJsonString(QString());//"clear"
-                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+                    JsonArray args;
+                    args << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+                    args << p->objectName();
+                    args << p->getGeneral()->objectName();
+                    args << QString(); //"clear"
+                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
                 }
+#endif
                 room->setPlayerMark(p, "changshi", 1); // real mark for   Player::hasSkill()
                 room->filterCards(p, p->getCards("he"), true);
-                QVariant args;
-                args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+                JsonArray args;
+                args << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
             }

@@ -101,9 +101,9 @@ void Dashboard::showProgressBar(QSanProtocol::Countdown countdown)
         QWinTaskbarProgress *prog = taskbarButton->progress();
         prog->reset();
         prog->resume();
-        prog->setMaximum(countdown.m_max);
+        prog->setMaximum(countdown.max);
         prog->setMinimum(0);
-        prog->setValue(countdown.m_max - countdown.m_current);
+        prog->setValue(countdown.max - countdown.current);
         prog->show();
     }
 #endif

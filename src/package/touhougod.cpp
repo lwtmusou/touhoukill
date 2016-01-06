@@ -1,4 +1,5 @@
-﻿#include "touhougod.h"
+﻿#include "compiler-specific.h"
+#include "touhougod.h"
 
 #include "general.h"
 #include "settings.h"
@@ -2654,16 +2655,20 @@ public:
 
         // part 4: notify 
         //even firstcard has not changed, we also need to retract or expand the dashboard (such as loseskill, reconnet ) 
+        // @todo_Fs: remove this part, coupling it to Client::updateProperty (if property is "chaoren")
+
+#pragma message WARN("todo_Fs: remove this part of Chaoren, for it shouldn't be coupled here")
+
         if (!changed) {
             if (retract) {
                 room->setPlayerProperty(sbl, "chaoren", -1);
-                QVariant args;
-                args[0] = QSanProtocol::S_GAME_EVENT_RETRACT_PILE_CARDS;
+                JsonArray args;
+                args << QSanProtocol::S_GAME_EVENT_RETRACT_PILE_CARDS;
                 room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_EVENT, args);
             } else if (expand) {
                 room->setPlayerProperty(sbl, "chaoren", new_firstcard);
-                QVariant args;
-                args[0] = QSanProtocol::S_GAME_EVENT_EXPAND_PILE_CARDS;
+                JsonArray args;
+                args << QSanProtocol::S_GAME_EVENT_EXPAND_PILE_CARDS;
                 room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_EVENT, args);
             }
             return QStringList();
@@ -2675,8 +2680,8 @@ public:
             else
                 room->setPlayerProperty(sbl, "chaoren", -1);
             //for displaying the change on dashboard immidately, even  the status is not Playing or Response.
-            QVariant args;
-            args[0] = QSanProtocol::S_GAME_EVENT_EXPAND_PILE_CARDS;
+            JsonArray args;
+            args << QSanProtocol::S_GAME_EVENT_EXPAND_PILE_CARDS;
             room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
 

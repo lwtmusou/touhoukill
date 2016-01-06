@@ -321,7 +321,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
 
             if (use.card->isKindOf("AOE") || use.card->isKindOf("GlobalEffect")) {
                 foreach(ServerPlayer *p, room->getAlivePlayers())
-                    room->doNotify(p, QSanProtocol::S_COMMAND_NULLIFICATION_ASKED, JsonUtils::toJsonString("."));
+                    room->doNotify(p, QSanProtocol::S_COMMAND_NULLIFICATION_ASKED, ".");
             }
             if (use.card->isKindOf("Slash"))
                 use.from->tag.remove("Jink_" + use.card->toString());
@@ -749,8 +749,7 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const
         room->setPlayerProperty(player, "kingdom", player->getGeneral()->getKingdom());
 
     QList<ServerPlayer *> notified = classical ? room->getOtherPlayers(player, true) : room->getPlayers();
-    room->doBroadcastNotify(notified, QSanProtocol::S_COMMAND_REVEAL_GENERAL,
-        JsonUtils::toJsonArray(player->objectName(), new_general));
+    room->doBroadcastNotify(notified, QSanProtocol::S_COMMAND_REVEAL_GENERAL, JsonArray() << player->objectName() << new_general);
 
     if (!player->faceUp())
         player->turnOver();
@@ -1128,9 +1127,9 @@ bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer 
         case TurnStart:
         {
             if (player->isDead()) {
-                QVariant arg(Json::arrayValue);
-                arg[0] = (int)QSanProtocol::S_GAME_EVENT_PLAYER_REFORM;
-                arg[1] = JsonUtils::toJsonString(player->objectName());
+                JsonArray arg;
+                arg << (int)QSanProtocol::S_GAME_EVENT_PLAYER_REFORM;
+                arg << player->objectName();
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 
                 QString choice = player->isWounded() ? "recover" : "draw";

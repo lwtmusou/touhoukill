@@ -1454,7 +1454,12 @@ public:
             if (targets.length() > 0) {
                 ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@zhengti-choose", false, true);
                 target->loseMark("@zhengti", 1);
+
                 //for huashen UI
+                // Fs: I don't know what the huashen UI is for......only for Zhengti? Is it necessary???
+                // 
+#if 0
+
                 if (target->getMark("@zhengti") == 0) {
 
                     room->setTag("zhengti_target", QVariant());
@@ -1462,15 +1467,15 @@ public:
                     foreach (ServerPlayer *owner, owners) {
                         if (owner->hasSkill("pingyi"))
                             continue;
-                        QVariant arg(Json::arrayValue);
-                        arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                        arg[1] = JsonUtils::toJsonString(owner->objectName());
-                        arg[2] = JsonUtils::toJsonString(owner->getGeneral()->objectName());
-                        arg[3] = JsonUtils::toJsonString(QString());//"clear"
-                        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+                        JsonArray args;
+                        args << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+                        args << owner->objectName();
+                        args << owner->getGeneral()->objectName();
+                        args << QString(); //"clear"
+                        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
                     }
                 }
-
+#endif
                 damage.to = target;
                 damage.transfer = true;
                 room->damage(damage);
@@ -1486,24 +1491,26 @@ public:
 
             damage.from->gainMark("@zhengti", 1);
             room->setTag("zhengti_target", QVariant::fromValue(damage.from));
+#if 0
             //for huashen UI
             QList<ServerPlayer *> owners = room->findPlayersBySkillName(objectName());
             foreach (ServerPlayer *owner, owners) {
                 if (owner->hasSkill("pingyi"))
                     continue;
 
-                QVariant arg(Json::arrayValue);
-                arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                arg[1] = JsonUtils::toJsonString(owner->objectName());
-                arg[2] = JsonUtils::toJsonString(damage.from->getGeneral()->objectName());
-                arg[3] = JsonUtils::toJsonString("zhengti");
-                room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+                JsonArray args;
+                args << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+                args << owner->objectName();
+                args << owner->getGeneral()->objectName();
+                args << "zhengti";
+                room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
             }
+#endif
         }
         return false;
     }
 };
-
+#if 0
 class ZhengtiUIhandler : public TriggerSkill
 {
 public:
@@ -1533,12 +1540,12 @@ public:
                 if (find && p->hasSkill("zhengti"))
                     continue;
 
-                QVariant arg(Json::arrayValue);
-                arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                arg[1] = JsonUtils::toJsonString(p->objectName());
-                arg[2] = JsonUtils::toJsonString(p->getGeneral()->objectName());
-                arg[3] = JsonUtils::toJsonString(QString());//"clear"
-                room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+                JsonArray args;
+                args << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+                args << p->objectName();
+                args << p->getGeneral()->objectName();
+                args << QString(); //"clear"
+                room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
             }
 
         } else if (triggerEvent == EventAcquireSkill && data.toString() == "zhengti") {
@@ -1551,13 +1558,12 @@ public:
 
 
                 if (p->hasSkill("zhengti")) {
-
-                    QVariant arg(Json::arrayValue);
-                    arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                    arg[1] = JsonUtils::toJsonString(p->objectName());
-                    arg[2] = JsonUtils::toJsonString(zhengti->getGeneral()->objectName());
-                    arg[3] = JsonUtils::toJsonString("zhengti");
-                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+                    JsonArray args;
+                    args << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+                    args << p->objectName();
+                    args << p->getGeneral()->objectName();
+                    args << "zhengti";
+                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
                 }
             }
 
@@ -1565,7 +1571,7 @@ public:
         return QStringList();
     }
 };
-
+#endif
 
 class Qingyu : public MasochismSkill
 {
@@ -1696,8 +1702,10 @@ TH13Package::TH13Package()
     General *nue_slm = new General(this, "nue_slm", "slm", 3, false);
     nue_slm->addSkill(new Buming);
     nue_slm->addSkill(new Zhengti);
+#if 0
     nue_slm->addSkill(new ZhengtiUIhandler);
     related_skills.insertMulti("zhengti", "#zhengti");
+#endif
 
     General *kogasa_slm = new General(this, "kogasa_slm", "slm", 3, false);
     kogasa_slm->addSkill(new Qingyu);

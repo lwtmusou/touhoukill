@@ -140,6 +140,7 @@ namespace QSanProtocol {
         S_COMMAND_PAUSE,
         S_COMMAND_TOGGLE_READY,
         S_COMMAND_ADD_ROBOT,
+        S_COMMAND_FILL_ROBOTS,
         S_COMMAND_SIGNUP,
         S_COMMAND_UPDATE_SKILL
     };
