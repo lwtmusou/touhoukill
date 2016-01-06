@@ -1340,7 +1340,7 @@ public:
 
         //need special process when processing takeAG and askforrende
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (move.to != NULL && move.to == player) {
+        if (move.to != NULL && move.to == player && move.to_place != Player::PlaceSpecial) {
             room->touhouLogmessage("#TriggerSkill", player, objectName());
             room->notifySkillInvoked(player, objectName());
             //Card *dummy = Sanguosha->cloneCard("Slash");
@@ -2920,6 +2920,8 @@ public:
         room->doLightbox("$yizhiAnimate", 4000);
         room->touhouLogmessage("#YizhiWake", player, objectName());
         room->notifySkillInvoked(player, objectName());
+        room->addPlayerMark(player, objectName());
+
         int x = 1 - player->getHp();
         RecoverStruct recov;
         recov.recover = x;
@@ -2931,7 +2933,6 @@ public:
         x = player->getMaxHp();
         if (room->changeMaxHpForAwakenSkill(player, 3 - x)) {
             Shifang::koishi_removeskill(room, player);
-            room->addPlayerMark(player, objectName());
             room->handleAcquireDetachSkills(player, "chaowo");
         }
 
