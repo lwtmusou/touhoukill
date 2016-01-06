@@ -1306,7 +1306,9 @@ void ServerPlayer::marshal(ServerPlayer *player) const
                 }
             }
         }
-    } else if (hasSkill("zhengti", false, true)) {
+    }
+#if 0
+    else if (hasSkill("zhengti", false, true)) {
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (p->getMark("@zhengti") > 0) {
                 QVariant zhengti_arg(Json::arrayValue);
@@ -1319,6 +1321,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
             }
         }
     }
+#endif
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool open)
