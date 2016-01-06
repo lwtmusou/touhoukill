@@ -136,8 +136,8 @@ void RoomThread3v3::askForTakeGeneral(ServerPlayer *player)
     if (name.isNull()) {
         bool success = room->doRequest(player, S_COMMAND_ASK_GENERAL, QVariant(), true);
         QVariant clientReply = player->getClientReply();
-        if (success && clientReply.isString()) {
-            name = toQString(clientReply.asCString());
+        if (success && isString(clientReply)) {
+            name = clientReply.toString();
             takeGeneral(player, name);
         } else {
             name = room->generalSelector()->select3v3(player, general_names);
@@ -163,7 +163,7 @@ void RoomThread3v3::takeGeneral(ServerPlayer *player, const QString &name)
     room->sendLog(log);
 
     QString rule = Config.value("3v3/OfficialRule", "2013").toString();
-    room->doBroadcastNotify(S_COMMAND_TAKE_GENERAL, toJsonArray(group, name, rule));
+    room->doBroadcastNotify(S_COMMAND_TAKE_GENERAL, JsonArray() << group << name << rule);
 }
 
 void RoomThread3v3::startArrange(QList<ServerPlayer *> &players)
@@ -187,7 +187,8 @@ void RoomThread3v3::startArrange(QList<ServerPlayer *> &players)
 
     foreach (ServerPlayer *player, online) {
         QVariant clientReply = player->getClientReply();
-        if (player->m_isClientResponseReady && clientReply.isArray() && clientReply.size() == 3) {
+        JsonArray arr = clientReply.value<JsonArray>();
+        if (player->m_isClientResponseReady && arr.size() == 3) {
             QStringList arranged;
             tryParse(clientReply, arranged);
             arrange(player, arranged);

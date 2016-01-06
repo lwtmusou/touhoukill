@@ -108,7 +108,8 @@ void RoomThreadXMode::startArrange(QList<ServerPlayer *> &players, QList<QString
     for (int i = 0; i < online.length(); i++) {
         ServerPlayer *player = online.at(i);
         QVariant clientReply = player->getClientReply();
-        if (player->m_isClientResponseReady && clientReply.isArray() && clientReply.size() == 3) {
+        JsonArray arr = clientReply.value<JsonArray>();
+        if (player->m_isClientResponseReady && arr.size() == 3) {
             QStringList arranged;
             tryParse(clientReply, arranged);
             arrange(player, arranged);

@@ -17,7 +17,7 @@ ServerPlayer::ServerPlayer(Room *room)
     : Player(room), m_isClientResponseReady(false), m_isWaitingReply(false),
     socket(NULL), room(room),
     ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL),
-    _m_phases_index(0), next(NULL), _m_clientResponse(Json::nullValue)
+    _m_phases_index(0), next(NULL)
 {
     semas = new QSemaphore *[S_NUM_SEMAPHORES];
     for (int i = 0; i < S_NUM_SEMAPHORES; i++)
@@ -355,7 +355,7 @@ void ServerPlayer::sendMessage(const QString &message)
 
 void ServerPlayer::invoke(const AbstractPacket *packet)
 {
-    unicast(QString(packet->toString().c_str()));
+    unicast(packet->toString());
 }
 
 void ServerPlayer::invoke(const char *method, const QString &arg)
@@ -676,14 +676,14 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     log.card_str.clear();
     room->sendLog(log);
 
-    QVariant arg(Json::arrayValue);
-    arg[0] = (int)S_GAME_EVENT_REVEAL_PINDIAN;
-    arg[1] = toJsonString(objectName());
-    arg[2] = pindian_struct.from_card->getEffectiveId();
-    arg[3] = toJsonString(target->objectName());
-    arg[4] = pindian_struct.to_card->getEffectiveId();
-    arg[5] = pindian_struct.success;
-    arg[6] = toJsonString(reason);
+    JsonArray arg;
+    arg << (int)S_GAME_EVENT_REVEAL_PINDIAN;
+    arg << objectName();
+    arg << pindian_struct.from_card->getEffectiveId();
+    arg << target->objectName();
+    arg << pindian_struct.to_card->getEffectiveId();
+    arg << pindian_struct.success;
+    arg << reason;
     room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
 
     pindian_star = &pindian_struct;
@@ -973,20 +973,20 @@ void ServerPlayer::loseAllMarks(const QString &mark_name)
 void ServerPlayer::addSkill(const QString &skill_name)
 {
     Player::addSkill(skill_name);
-    QVariant args;
-    args[0] = QSanProtocol::S_GAME_EVENT_ADD_SKILL;
-    args[1] = toJsonString(objectName());
-    args[2] = toJsonString(skill_name);
+    JsonArray args;
+    args << QSanProtocol::S_GAME_EVENT_ADD_SKILL;
+    args << objectName();
+    args << skill_name;
     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 }
 
 void ServerPlayer::loseSkill(const QString &skill_name)
 {
     Player::loseSkill(skill_name);
-    QVariant args;
-    args[0] = QSanProtocol::S_GAME_EVENT_LOSE_SKILL;
-    args[1] = toJsonString(objectName());
-    args[2] = toJsonString(skill_name);
+    JsonArray args;
+    args << QSanProtocol::S_GAME_EVENT_LOSE_SKILL;
+    args << objectName();
+    args << skill_name;
     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 }
 
@@ -995,10 +995,10 @@ void ServerPlayer::setGender(General::Gender gender)
     if (gender == getGender())
         return;
     Player::setGender(gender);
-    QVariant args;
-    args[0] = QSanProtocol::S_GAME_EVENT_CHANGE_GENDER;
-    args[1] = toJsonString(objectName());
-    args[2] = (int)gender;
+    JsonArray args;
+    args << QSanProtocol::S_GAME_EVENT_CHANGE_GENDER;
+    args << objectName();
+    args << (int)gender;
     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 }
 
@@ -1135,7 +1135,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     } else {
         room->notifyProperty(player, this, "alive");
         room->notifyProperty(player, this, "role");
-        room->doNotify(player, S_COMMAND_KILL_PLAYER, toJsonString(objectName()));
+        room->doNotify(player, S_COMMAND_KILL_PLAYER, QVariant(objectName()));
     }
 
     if (!faceUp())
@@ -1228,10 +1228,10 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         if (mark_name.startsWith("@")) {
             int value = getMark(mark_name);
             if (value > 0) {
-                QVariant arg(Json::arrayValue);
-                arg[0] = toJsonString(objectName());
-                arg[1] = toJsonString(mark_name);
-                arg[2] = value;
+                JsonArray arg;
+                arg << objectName();
+                arg << mark_name;
+                arg << value;
                 room->doNotify(player, S_COMMAND_SET_MARK, arg);
             }
         }
@@ -1265,10 +1265,10 @@ void ServerPlayer::marshal(ServerPlayer *player) const
             continue;
         }
         QString skill_name = skill->objectName();
-        QVariant args1;
-        args1[0] = S_GAME_EVENT_ACQUIRE_SKILL;
-        args1[1] = toJsonString(objectName());
-        args1[2] = toJsonString(skill_name);
+        JsonArray args1;
+        args1 << S_GAME_EVENT_ACQUIRE_SKILL;
+        args1 << objectName();
+        args1 << skill_name;
         room->doNotify(player, S_COMMAND_LOG_EVENT, args1);
     }
 
@@ -1279,9 +1279,9 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         int value = history.value(item);
         if (value > 0) {
 
-            QVariant arg(Json::arrayValue);
-            arg[0] = toJsonString(item);
-            arg[1] = value;
+            JsonArray arg;
+            arg << item;
+            arg << value;
 
             room->doNotify(player, S_COMMAND_ADD_HISTORY, arg);
         }
@@ -1296,11 +1296,11 @@ void ServerPlayer::marshal(ServerPlayer *player) const
                 QString pingyi_record = this->objectName() + "pingyi" + p->objectName();
                 QString skillname = room->getTag(pingyi_record).toString();
                 if (skillname != NULL && skillname != "") {
-                    QVariant huanshen_arg(Json::arrayValue);
-                    huanshen_arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                    huanshen_arg[1] = JsonUtils::toJsonString(this->objectName());
-                    huanshen_arg[2] = JsonUtils::toJsonString(p->getGeneral()->objectName());
-                    huanshen_arg[3] = JsonUtils::toJsonString(skillname);
+                    JsonArray huanshen_arg;
+                    huanshen_arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+                    huanshen_arg << objectName();
+                    huanshen_arg << p->getGeneral()->objectName();
+                    huanshen_arg << skillname;
                     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, huanshen_arg);
                     break;
                 }
