@@ -523,17 +523,32 @@ local jiuhao_skill = {}
 jiuhao_skill.name = "jiuhao"
 table.insert(sgs.ai_skills, jiuhao_skill)
 jiuhao_skill.getTurnUseCard = function(self, inclusive)
-	if not self.player:hasFlag("jiuhao") or self.player:hasFlag("jiuhaoused") then return false end
-	--local tmpSlash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
-	local tmpSlash = sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
-	tmpSlash:setSkillName("jiuhao")
-    assert(tmpSlash)
-    return tmpSlash
+	if not self.player:hasFlag("jiuhao") or self.player:hasFlag("jiuhaoused") then return nil end
+    return sgs.Card_Parse("@JiuhaoCard=.")
+end
+sgs.ai_skill_use_func.JiuhaoCard=function(card,use,self)
+    local card = sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
+	card:setSkillName("jiuhao")
+    card:setFlags("jiuhao")
+	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+	self:useBasicCard(card, dummy_use)
+
+	if not dummy_use.card then return end
+
+    
+    if dummy_use.to and not dummy_use.to:isEmpty() then 
+        slash_targets = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, card)
+        for _, p in sgs.qlist(dummy_use.to) do
+			use.card = card
+			if use.to then use.to:append(p) end
+            if not use.to or self.slash_targets <= use.to:length() then return end
+		end
+    end
 end
 sgs.ai_cardneed.jiuhao = function(to, card, self)
 	return  card:isKindOf("Analeptic") or card:isKindOf("Peach")
 end
-
+sgs.ai_use_priority.JiuhaoCard = sgs.ai_use_priority.Slash
 
 local jidu_skill = {}
 jidu_skill.name = "jidu"

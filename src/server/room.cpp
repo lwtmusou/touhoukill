@@ -3368,8 +3368,6 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
             slash_not_record = true;
         else if (card->isKindOf("IceSlash") && card_use.from->hasSkill("aoyi"))
             slash_not_record = true;
-        else if (card->getSkillName() == "jiuhao")
-            slash_not_record = true;
         else if (card->getSkillName() == "nianli")
             slash_not_record = true;
     }

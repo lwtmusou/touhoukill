@@ -1,0 +1,7 @@
+1 Lua 控制AI选将框架做成
+2 加入VS2015编译的工程文件
+3 删除CardEditor和PackagingEditor，由于其为东方杀无关所以删除（减小程序体积）
+4 主屏幕东方杀字样乱码处理
+5 （Windows 7+ Only）出牌有时间限制的情况下在任务栏上显示时间进度条（需要额外DLL，增大了程序体积，）
+6 GeneralOverview改动，将出处和插画作者分开
+7 替换Json为Qt5自带，删除附加Json库（减少程序体积）
