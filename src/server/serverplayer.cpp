@@ -269,7 +269,8 @@ void ServerPlayer::unicast(const QString &message)
 void ServerPlayer::startNetworkDelayTest()
 {
     test_time = QDateTime::currentDateTime();
-    invoke("networkDelayTest");
+    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_NETWORK_DELAY_TEST);
+    invoke(&packet);
 }
 
 qint64 ServerPlayer::endNetworkDelayTest()
@@ -1108,16 +1109,16 @@ void ServerPlayer::introduceTo(ServerPlayer *player)
     QString screen_name = screenName();
     QString avatar = property("avatar").toString();
 
-    QString introduce_str = QString("%1:%2:%3")
-        .arg(objectName())
-        .arg(QString(screen_name.toUtf8().toBase64()))
-        .arg(avatar);
+    JsonArray introduce_str;
+    introduce_str << objectName() << screen_name.toUtf8().toBase64() << avatar;
 
-    if (player) {
-        player->invoke("addPlayer", introduce_str);
-        room->notifyProperty(player, this, "state");
-    } else
-        room->broadcastInvoke("addPlayer", introduce_str, this);
+    if (player)
+        room->doNotify(player, S_COMMAND_ADD_PLAYER, introduce_str);
+    else {
+        QList<ServerPlayer *> players = room->getPlayers();
+        players.removeOne(this);
+        room->doBroadcastNotify(players, S_COMMAND_ADD_PLAYER, introduce_str);
+    }
 }
 
 void ServerPlayer::marshal(ServerPlayer *player) const

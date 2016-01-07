@@ -9,6 +9,7 @@
 #include "customassigndialog.h"
 #include "miniscenarios.h"
 #include "SkinBank.h"
+#include "protocol.h"
 
 #include <QMessageBox>
 #include <QFormLayout>
@@ -22,6 +23,8 @@
 #include <QApplication>
 #include <QHostInfo>
 #include <QAction>
+
+using namespace QSanProtocol;
 
 static QLayout *HLay(QWidget *left, QWidget *right)
 {
@@ -1233,9 +1236,13 @@ Server::Server(QObject *parent)
 void Server::broadcast(const QString &msg)
 {
     QString to_sent = msg.toUtf8().toBase64();
-    to_sent = ".:" + to_sent;
+    JsonArray arg;
+    arg << "." << to_sent;
+
+    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
+    packet.setMessageBody(arg);
     foreach(Room *room, rooms)
-        room->broadcastInvoke("speak", to_sent);
+        room->broadcastInvoke(&packet);
 }
 
 bool Server::listen()
@@ -1251,6 +1258,10 @@ void Server::daemonize()
 Room *Server::createNewRoom()
 {
     Room *new_room = new Room(this, Config.GameMode);
+    if (!new_room->getLuaState()) {
+        delete new_room;
+        return NULL;
+    }
     current = new_room;
     rooms.insert(current);
 
@@ -1273,8 +1284,13 @@ void Server::processNewConnection(ClientSocket *socket)
     }
 
     connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
-    socket->send("checkVersion " + Sanguosha->getVersion());
-    socket->send("setup " + Sanguosha->getSetupString());
+    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_CHECK_VERSION);
+    packet.setMessageBody((Sanguosha->getVersion()));
+    socket->send((packet.toString()));
+    Packet packet2(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SETUP);
+    QString s = Sanguosha->getSetupString();
+    packet2.setMessageBody(s);
+    socket->send((packet2.toString()));
     emit server_message(tr("%1 connected").arg(socket->peerName()));
 
     connect(socket, SIGNAL(message_got(const char *)), this, SLOT(processRequest(const char *)));
@@ -1291,20 +1307,23 @@ void Server::processRequest(const char *request)
     ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
     socket->disconnect(this, SLOT(processRequest(const char *)));
 
-    QRegExp rx("(signupr?) (.+):(.+)(:.+)?\n");
-    if (!rx.exactMatch(request)) {
+
+    Packet signup;
+    if (!signup.parse(request) || signup.getCommandType() != S_COMMAND_SIGNUP) {
         emit server_message(tr("Invalid signup string: %1").arg(request));
-        socket->send("warn INVALID_FORMAT");
+        QSanProtocol::Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_WARN);
+        packet.setMessageBody("INVALID_FORMAT");
+        socket->send(packet.toString());
         socket->disconnectFromHost();
         return;
     }
 
-    QStringList texts = rx.capturedTexts();
-    QString command = texts.at(1);
-    QString screen_name = ConvertFromBase64(texts.at(2));
-    QString avatar = texts.at(3);
+    const JsonArray &body = signup.getMessageBody().value<JsonArray>();
+    bool reconnection_enabled = body[0].toBool();
+    QString screen_name = QString::fromUtf8(QByteArray::fromBase64(body[1].toString().toLatin1()));
+    QString avatar = body[2].toString();
 
-    if (command == "signupr") {
+    if (reconnection_enabled) {
         foreach (QString objname, name2objname.values(screen_name)) {
             ServerPlayer *player = players.value(objname);
             if (player && player->getState() == "offline" && !player->getRoom()->isFinished()) {

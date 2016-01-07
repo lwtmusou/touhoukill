@@ -2449,7 +2449,7 @@ void Room::reportDisconnection()
                 speakCommand(player, leaveStr.toUtf8().toBase64());
             }
 
-            broadcastInvoke("removePlayer", player->objectName());
+            doBroadcastNotify(S_COMMAND_REMOVE_PLAYER, player->objectName());
         }
     } else {
         // fourth case
@@ -2917,11 +2917,11 @@ void Room::run()
 
     if (using_countdown) {
         for (int i = Config.CountDownSeconds; i >= 0; i--) {
-            broadcastInvoke("startInXs", QString::number(i));
+            doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, i);
             sleep(1);
         }
     } else
-        broadcastInvoke("startInXs", "0");
+        doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, QVariant(0));
 
     if (scenario && !scenario->generalSelection())
         startGame();
@@ -3014,7 +3014,7 @@ void Room::swapSeat(ServerPlayer *a, ServerPlayer *b)
     QStringList player_circle;
     foreach(ServerPlayer *player, m_players)
         player_circle << player->objectName();
-    broadcastInvoke("arrangeSeats", player_circle.join("+"));
+    doBroadcastNotify(S_COMMAND_ARRANGE_SEATS, JsonUtils::toJsonArray(player_circle));
 
     m_alivePlayers.clear();
     for (int i = 0; i < m_players.length(); i++) {
@@ -3055,7 +3055,7 @@ void Room::adjustSeats()
     foreach(ServerPlayer *player, m_players)
         player_circle << player->objectName();
 
-    broadcastInvoke("arrangeSeats", player_circle.join("+"));
+    doBroadcastNotify(S_COMMAND_ARRANGE_SEATS, JsonUtils::toJsonArray(player_circle));
 }
 
 int Room::getCardFromPile(const QString &card_pattern)
@@ -3160,7 +3160,9 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
             _NO_BROADCAST_SPEAKING;
             QString split("----------");
             split = split.toUtf8().toBase64();
-            player->invoke("speak", QString("%1:%2").arg(player->objectName()).arg(split));
+            JsonArray body;
+            body << player->objectName() << split;
+            doNotify(player, S_COMMAND_SPEAK, body);
             foreach (ServerPlayer *p, m_alivePlayers) {
                 if (!p->isKongcheng()) {
                     QStringList handcards;
@@ -3169,10 +3171,12 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
                         .arg(Sanguosha->getEngineCard(card->getId())->getLogName());
                     QString hand = handcards.join(", ");
                     hand = hand.toUtf8().toBase64();
-                    player->invoke("speak", QString("%1:%2").arg(p->objectName()).arg(hand));
+                    JsonArray body;
+                    body << p->objectName() << hand;
+                    doNotify(player, S_COMMAND_SPEAK, body);
                 }
             }
-            player->invoke("speak", QString("%1:%2").arg(player->objectName()).arg(split));
+            doNotify(player, S_COMMAND_SPEAK, body);
         } else if (sentence.startsWith(".ShowHandCards=")) {
             _NO_BROADCAST_SPEAKING;
             QString name = sentence.mid(15);
@@ -3185,7 +3189,9 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
                             .arg(Sanguosha->getEngineCard(card->getId())->getLogName());
                         QString hand = handcards.join(", ");
                         hand = hand.toUtf8().toBase64();
-                        player->invoke("speak", QString("%1:%2").arg(p->objectName()).arg(hand));
+                        JsonArray body;
+                        body << p->objectName() << hand;
+                        doNotify(player, S_COMMAND_SPEAK, body);
                     }
                     break;
                 }
@@ -3204,7 +3210,9 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
                                 pile_cards << QString("<b>%1</b>").arg(Sanguosha->getEngineCard(id)->getLogName());
                             QString pile = pile_cards.join(", ");
                             pile = pile.toUtf8().toBase64();
-                            player->invoke("speak", QString("%1:%2").arg(p->objectName()).arg(pile));
+                            JsonArray body;
+                            body << p->objectName() << pile;
+                            doNotify(player, S_COMMAND_SPEAK, body);
                         }
                         break;
                     }
@@ -3221,7 +3229,9 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
                     huashen_name << QString("<b>%1</b>").arg(Sanguosha->translate(name.toString()));
                 QString huashen = huashen_name.join(", ");
                 huashen = huashen.toUtf8().toBase64();
-                player->invoke("speak", QString("%1:%2").arg(zuoci->objectName()).arg(huashen));
+                JsonArray body;
+                body << zuoci->objectName() << huashen;
+                doNotify(player, S_COMMAND_SPEAK, body);
             }
         } else if (sentence.startsWith(".SetAIDelay=")) {
             _NO_BROADCAST_SPEAKING;

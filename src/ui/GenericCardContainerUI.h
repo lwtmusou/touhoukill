@@ -183,8 +183,8 @@ protected:
     //public
     //void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QPixmap &pixmap, QGraphicsItem *parent);
     void _clearPixmap(QGraphicsPixmapItem *item);
-    QPixmap _getPixmap(const QString &key);
-    QPixmap _getPixmap(const QString &key, const QString &arg);
+    QPixmap _getPixmap(const QString &key, bool cache = false);
+    QPixmap _getPixmap(const QString &key, const QString &arg, bool cache = false);
     QPixmap _getEquipPixmap(const EquipCard *equip);
     virtual void _adjustComponentZValues(bool killed = false);
     void _updateFloatingArea();

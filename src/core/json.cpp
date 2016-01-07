@@ -184,6 +184,8 @@ bool JsonUtils::tryParse(const QVariant &arg, Qt::Alignment &align)
 
 bool JsonUtils::tryParse(const QVariant &arg, QRect &result)
 {
+    if (!arg.canConvert<JsonArray>())
+        return false;
     JsonArray args = arg.value<JsonArray>();
     if (args.size() != 4) return false;
 
@@ -197,6 +199,8 @@ bool JsonUtils::tryParse(const QVariant &arg, QRect &result)
 
 bool JsonUtils::tryParse(const QVariant &arg, QSize &result)
 {
+    if (!arg.canConvert<JsonArray>())
+        return false;
     JsonArray args = arg.value<JsonArray>();
     if (args.size() != 2) return false;
     result.setWidth(args[0].toInt());
@@ -206,6 +210,8 @@ bool JsonUtils::tryParse(const QVariant &arg, QSize &result)
 
 bool JsonUtils::tryParse(const QVariant &arg, QPoint &result)
 {
+    if (!arg.canConvert<JsonArray>())
+        return false;
     JsonArray args = arg.value<JsonArray>();
     if (args.size() != 2) return false;
     result.setX(args[0].toInt());
@@ -215,6 +221,8 @@ bool JsonUtils::tryParse(const QVariant &arg, QPoint &result)
 
 bool JsonUtils::tryParse(const QVariant &arg, QColor &color)
 {
+    if (!arg.canConvert<JsonArray>())
+        return false;
     JsonArray args = arg.value<JsonArray>();
     if (args.size() < 3) return false;
 

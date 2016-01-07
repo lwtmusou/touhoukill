@@ -5,6 +5,7 @@
 
 #include "card.h"
 #include "qsanbutton.h"
+#include "json.h"
 
 #include <QString>
 #include <QPixmap>
@@ -14,19 +15,6 @@
 #include <QPainter>
 #include <QGraphicsPixmapItem>
 #include <QAbstractAnimation>
-
-class QSanPixmapCache
-{
-public:
-    // Load pixmap from a file and map it to the given key.
-    static const QPixmap &getPixmap(const QString &key, const QString &fileName);
-    // Load pixmap from a existing key.
-    static const QPixmap &getPixmap(const QString &key);
-    static bool contains(const QString &key);
-
-private:
-    static QHash<QString, QPixmap> _m_pixmapBank;
-};
 
 class IQSanComponentSkin
 { // interface class
@@ -41,7 +29,7 @@ public:
         QColor m_color;
         bool m_vertical;
         QSanSimpleTextFont();
-        bool tryParse(QVariant arg);
+        bool tryParse(const QVariant &arg);
         void paintText(QPainter *painter, QRect pos, Qt::Alignment align, const QString &text) const;
         // this function's prototype is confusing. It will CLEAR ALL contents on the
         // QGraphicsPixmapItem passed in and then start drawing.
@@ -58,7 +46,7 @@ public:
         double m_shadowDecadeFactor;
         QPoint m_shadowOffset;
         QColor m_shadowColor;
-        bool tryParse(QVariant arg);
+        bool tryParse(const QVariant &arg);
         void paintText(QPainter *painter, QRect pos, Qt::Alignment align, const QString &text) const;
         // this function's prototype is confusing. It will CLEAR ALL contents on the
         // QGraphicsPixmapItem passed in and then start drawing.
@@ -70,7 +58,7 @@ public:
     public:
         QRect getTranslatedRect(QRect parentRect) const;
         QRect getTranslatedRect(QRect parentRect, QSize childSize) const;
-        bool tryParse(QVariant value);
+        bool tryParse(const QVariant &value);
 
     protected:
         Qt::Alignment m_anchorChild;
@@ -84,9 +72,9 @@ public:
     static const char *S_SKIN_KEY_DEFAULT_SECOND;
     bool load(const QString &layoutConfigFileName, const QString &imageConfigFileName,
         const QString &audioConfigFileName, const QString &animationConfigFileName);
-    QPixmap getPixmap(const QString &key, const QString &arg = QString()) const;
+    QPixmap getPixmap(const QString &key, const QString &arg = QString(), bool cache = false) const;
     QPixmap getPixmapFileName(const QString &key) const;
-    QPixmap getPixmapFromFileName(const QString &fileName) const;
+    QPixmap getPixmapFromFileName(const QString &fileName, bool cache = false) const;
     QStringList getAudioFileNames(const QString &key) const;
     QString getRandomAudioFileName(const QString &key) const;
     bool isImageKeyDefined(const QString &key) const;
@@ -99,18 +87,12 @@ protected:
     QString _readConfig(const QVariant &dictionary, const QString &key,
         const QString &defaultValue = QString()) const;
     QString _readImageConfig(const QString &key, QRect &clipRegion, bool &clipping,
-        QSize &newScale, bool scaled,
+        QSize &newScale, bool &scaled,
         const QString &defaultValue = QString()) const;
 
-    QVariant _m_imageConfig;
-    QVariant _m_audioConfig;
-    QVariant _m_animationConfig;
-    // image key -> image file name
-    static QHash<QString, QString> S_IMAGE_KEY2FILE;
-    static QHash<QString, QPixmap> S_IMAGE_KEY2PIXMAP;
-    // image group key -> image keys
-    static QHash<QString, QList<QString> > S_IMAGE_GROUP_KEYS;
-    static QHash<QString, int> S_HERO_SKIN_INDEX;
+    JsonObject _m_imageConfig;
+    JsonObject _m_audioConfig;
+    JsonObject _m_animationConfig;
 };
 
 class QSanRoomSkin : public IQSanComponentSkin
@@ -324,7 +306,7 @@ public:
     QPixmap getSkillButtonPixmap(QSanButton::ButtonState state,
         QSanInvokeSkillButton::SkillType type,
         QSanInvokeSkillButton::SkillButtonWidth width) const;
-    QPixmap getCardMainPixmap(const QString &cardName) const;
+    QPixmap getCardMainPixmap(const QString &cardName, bool cache = false) const;
     QPixmap getCardSuitPixmap(Card::Suit suit) const;
     QPixmap getCardTianyiPixmap() const;
     QPixmap getCardNumberPixmap(int point, bool isBlack) const;
@@ -426,8 +408,8 @@ class QSanSkinScheme
     // Why do we need another layer above room skin? Because we may add lobby, login interface
     // in the future; and we may need to assemble a set of different skins into a scheme.
 public:
-    bool load(QVariant configs);
-    const QSanRoomSkin& getRoomSkin() const;
+    bool load(const QVariant &configs);
+    const QSanRoomSkin &getRoomSkin() const;
 
 protected:
     QSanRoomSkin _m_roomSkin;
@@ -437,6 +419,7 @@ class QSanSkinFactory
 {
 public:
     static QSanSkinFactory &getInstance();
+    static void destroyInstance();
     const QString &getCurrentSkinName() const;
     const QSanSkinScheme &getCurrentSkinScheme();
     bool switchSkin(QString skinName);
@@ -448,7 +431,7 @@ protected:
     QSanSkinFactory(const char *fileName);
     static QSanSkinFactory* _sm_singleton;
     QSanSkinScheme _sm_currentSkin;
-    QVariant _m_skinList;
+    JsonObject _m_skinList;
     QString _m_skinName;
 };
 
