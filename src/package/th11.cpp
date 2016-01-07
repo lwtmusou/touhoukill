@@ -485,6 +485,33 @@ public:
     }
 };
 
+
+JiuhaoCard::JiuhaoCard()
+{
+    will_throw = false;
+}
+bool JiuhaoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{ 
+    Slash *card = new Slash(Card::NoSuit, 0);
+    card->deleteLater();
+    card->setFlags("jiuhao");
+    return card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
+}
+bool JiuhaoCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+    Slash *card = new Slash(Card::NoSuit, 0);
+    card->deleteLater();
+    card->setFlags("jiuhao");
+    return card->targetsFeasible(targets, Self);
+}
+const Card *JiuhaoCard::validate(CardUseStruct &use) const
+{
+    Slash *card = new Slash(Card::NoSuit, 0);
+    use.from->getRoom()->setCardFlag(card, "jiuhao");
+    card->setSkillName("jiuhao");
+    return card;
+}
+
 class JiuhaoVS : public ZeroCardViewAsSkill
 {
 public:
@@ -500,8 +527,7 @@ public:
 
     virtual const Card *viewAs() const
     {
-        Slash *slash = new Slash(Card::NoSuit, 0);
-        slash->setSkillName("jiuhao");
+        JiuhaoCard *slash = new JiuhaoCard;
         return slash;
     }
 };
@@ -517,15 +543,19 @@ public:
 
     virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
-        //if (!TriggerSkill::triggerable(player)) return QStringList();
+        
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
+            //since pingyi, we need to record "peach used" for everyone.
             if (player->getPhase() == Player::Play
                 && (use.card->isKindOf("Peach") || use.card->isKindOf("Analeptic"))) {
                 room->setPlayerFlag(player, "jiuhao");
             }
-            if (use.card->getSkillName() == "jiuhao")
+            if (!player || !player->hasSkill(objectName())) return;
+            if (use.card->hasFlag(objectName())){
                 room->setPlayerFlag(player, "jiuhaoused");
+                room->addPlayerHistory(player, use.card->getClassName(), -1);
+            }
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.from == Player::Play) {
@@ -542,24 +572,6 @@ public:
     }
 };
 
-class JiuhaoTargetMod : public TargetModSkill
-{
-public:
-    JiuhaoTargetMod() : TargetModSkill("#jiuhaoTargetMod")
-    {
-        frequency = NotFrequent;
-        pattern = "Slash";
-    }
-
-    virtual int getResidueNum(const Player *from, const Card *card) const
-    {
-        if (from->hasSkill("jiuhao") && card->getSkillName() == "jiuhao")
-            return 1;
-        else
-            return 0;
-    }
-
-};
 
 class JiduVS : public OneCardViewAsSkill
 {
@@ -1098,7 +1110,6 @@ TH11Package::TH11Package()
     General *yugi = new General(this, "yugi", "dld", 4, false);
     yugi->addSkill(new Guaili);
     yugi->addSkill(new Jiuhao);
-    yugi->addSkill(new JiuhaoTargetMod);;
     related_skills.insertMulti("jiuhao", "#jiuhaoTargetMod");
 
 
@@ -1123,6 +1134,7 @@ TH11Package::TH11Package()
 
     addMetaObject<MaihuoCard>();
     addMetaObject<YaobanCard>();
+    addMetaObject<JiuhaoCard>();
     addMetaObject<ChuanranCard>();
 }
 

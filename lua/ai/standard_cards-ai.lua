@@ -555,7 +555,7 @@ function SmartAI:slashIsAvailable(player, slash) -- @todo: param of slashIsAvail
 	slash = slash or self:getCard("Slash", player)
 	if not slash or not slash:isKindOf("Slash") then slash = sgs.cloneCard("slash") end
 	assert(slash)
-	return slash:isAvailable(player)
+	return slash:isAvailable(player) or slash:hasFlag("jiuhao")
 end
 
 

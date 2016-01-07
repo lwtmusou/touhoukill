@@ -594,7 +594,6 @@ QAbstractButton *QijiDialog::createButton(const Card *card)
 
 QijiCard::QijiCard()
 {
-    mute = true;
     will_throw = false;
 }
 
