@@ -724,20 +724,17 @@ public:
 
 
 
-class QiyaoVS : public OneCardViewAsSkill
+class Qiyao : public OneCardViewAsSkill
 {
 public:
-    QiyaoVS() : OneCardViewAsSkill("qiyao")
+    Qiyao() : OneCardViewAsSkill("qiyao")
     {
         response_or_use = true;
     }
 
     virtual bool viewFilter(const Card *to_select) const
     {
-        if (Self->getPile("yao_mark").isEmpty())
-            return to_select->isNDTrick() && !to_select->isEquipped();
-        else
-            return !to_select->isEquipped();
+        return to_select->isNDTrick() && !to_select->isEquipped();
     }
 
     virtual bool isEnabledAtPlay(const Player *) const
@@ -764,41 +761,7 @@ public:
             return NULL;
     }
 };
-class Qiyao : public TriggerSkill
-{
-public:
-    Qiyao() : TriggerSkill("qiyao")
-    {
-        events << PreCardUsed;
-        view_as_skill = new QiyaoVS;
-    }
 
-    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const
-    {
-        if (!TriggerSkill::triggerable(player)) return QStringList();
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->getSkillName() == objectName()) {
-            if (!Sanguosha->getEngineCard(use.card->getEffectiveId())->isNDTrick()) {
-                QList<int> pile = player->getPile("yao_mark");
-                if (pile.length() > 0)
-                    return QStringList(objectName());
-
-            }
-        }
-        return QStringList();
-    }
-
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const
-    {
-        QList<int> pile = player->getPile("yao_mark");
-        room->fillAG(pile, player);
-        int id = room->askForAG(player, pile, false, objectName());
-        CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
-        room->throwCard(Sanguosha->getCard(id), reason, NULL);
-        room->clearAG(player);
-        return false;
-    }
-};
 
 class Neijin : public TriggerSkill
 {

@@ -329,7 +329,6 @@ function sgs.ai_cardsview_valuable.qiyao(self, class_name, player)
 		
 		local hand_trick={}
 		local real_peach={}
-		local others={}
 		local cards = self.player:getHandcards()
 		cards=self:touhouAppendExpandPileToList(self.player,cards)
 	
@@ -338,8 +337,6 @@ function sgs.ai_cardsview_valuable.qiyao(self, class_name, player)
 				table.insert(real_peach,c)
 			elseif c:isNDTrick()then
 				table.insert(hand_trick,c)
-			else
-				table.insert(others,c)
 			end
 		end
 		
@@ -347,14 +344,10 @@ function sgs.ai_cardsview_valuable.qiyao(self, class_name, player)
 			return nil
 		end
 	
-		local ids=self.player:getPile("yao_mark")
 		local card
 		if #hand_trick>0 then
 			self:sortByKeepValue(hand_trick)
 			card=hand_trick[1]
-		elseif #others>0 and ids:length()>0 then
-			self:sortByKeepValue(others)
-			card=others[1]
 		end
 		if card then
 			local suit = card:getSuitString()
