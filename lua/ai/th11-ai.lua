@@ -533,7 +533,7 @@ sgs.ai_skill_use_func.JiuhaoCard=function(card,use,self)
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 	self:useBasicCard(card, dummy_use)
 
-	if not dummy_use.card then return false end
+	if not dummy_use.card then return end
 
     
     if dummy_use.to and not dummy_use.to:isEmpty() then 
