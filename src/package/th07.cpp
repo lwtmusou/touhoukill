@@ -943,7 +943,7 @@ public:
             }
         }
         //if (!TriggerSkill::triggerable(player)) return QStringList();
-        if (!player->hasSkill("yexing")) return QStringList();//@todo: need adjust skill pingyi and function Player::hasSkill()
+        if (!player || !player->hasSkill("yexing")) return QStringList();//@todo: need adjust skill pingyi and function Player::hasSkill()
         if (triggerEvent == PreMarkChange) {
             MarkChangeStruct change = data.value<MarkChangeStruct>();
             if (change.name != "@shi")
