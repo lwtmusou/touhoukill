@@ -80,3 +80,4 @@ vccorlib1[24]0.dll
 concrt140.dll
 vcruntime140.dll
 *.opendb
+*.orig
