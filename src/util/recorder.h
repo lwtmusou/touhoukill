@@ -16,8 +16,11 @@ class Recorder : public QObject
     Q_OBJECT
 
 public:
-    explicit Recorder(QObject *parent);
+    explicit Recorder(QObject *parent = NULL);
+
     static QImage TXT2PNG(QByteArray data);
+    static QByteArray PNG2TXT(const QString filename);
+
     bool save(const QString &filename) const;
     void recordLine(const QString &line);
     QList<QByteArray> getRecords() const;
@@ -36,9 +39,7 @@ class Replayer : public QThread
 
 public:
     explicit Replayer(QObject *parent, const QString &filename);
-    static QByteArray PNG2TXT(const QString filename);
 
-    QString &commandProceed(QString &cmd);
     int getDuration() const;
     qreal getSpeed();
 

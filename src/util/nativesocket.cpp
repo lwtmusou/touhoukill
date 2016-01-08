@@ -94,7 +94,7 @@ void NativeClientSocket::getMessage()
         buffer_t msg;
         socket->readLine(msg, sizeof(msg));
 #ifndef QT_NO_DEBUG
-        printf("recv: %s", msg);
+        printf("RX: %s", msg);
 #endif
         emit message_got(msg);
     }
@@ -108,9 +108,10 @@ void NativeClientSocket::disconnectFromHost()
 void NativeClientSocket::send(const QString &message)
 {
     socket->write(message.toLatin1());
-    socket->write("\n");
+    if (!message.endsWith("\n"))
+        socket->write("\n");
 #ifndef QT_NO_DEBUG
-    printf(": %s\n", message.toLatin1().constData());
+    printf("TX: %s\n", message.toLatin1().constData());
 #endif
     socket->flush();
 }

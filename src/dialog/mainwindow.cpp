@@ -728,7 +728,7 @@ void MainWindow::on_actionReplay_file_convert_triggered()
             tosave.append(".txt");
 
             // png to txt
-            QByteArray data = Replayer::PNG2TXT(filename);
+            QByteArray data = Recorder::PNG2TXT(filename);
 
             QFile tosave_file(tosave);
             if (tosave_file.open(QIODevice::WriteOnly))
