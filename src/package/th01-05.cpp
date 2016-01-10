@@ -6,8 +6,8 @@ TH0105Package::TH0105Package()
 {
     General *shinki = new General(this, "shinki", "pc98", 4, false);
     Q_UNUSED(shinki);
-    General *luize = new General(this, "luize", "pc98", 4, false);
-    Q_UNUSED(luize);
+    General *alice_old = new General(this, "alice_old", "pc98", 4, false);
+    Q_UNUSED(alice_old);
     General *yumemi = new General(this, "yumemi", "pc98", 4, false);
     Q_UNUSED(yumemi);
     General *chiyuri = new General(this, "chiyuri", "pc98", 4, false);
