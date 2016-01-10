@@ -1,7 +1,7 @@
 _                                       sanae_god                                 0.9
 reimu                                  remilia                                  1.2
 reimu                                  sakuya                                  0.2
-reimu                                  yukari                                  0.4                      
+reimu                                  yukari                                  0.4
 reimu                                  medicine                                  0.3
 reimu                                  iku                                  0.7
 reimu                                  suika_sp                                  0.3
@@ -33,7 +33,7 @@ yuyuko                                  chen                                  -0
 yuyuko                                  reisen                                   1.1
 yuyuko                                  mokou_sp                                  1.1
 yuyuko                                  komachi                                  0.7
-yuyuko                                  tenshi                                  0.1 
+yuyuko                                  tenshi                                  0.1
 yuyuko                                  kanako                                  1.0
 yuyuko                                  aya                                  -0.5
 yuyuko                                  utsuho                                  0.5
@@ -80,8 +80,8 @@ shikieiki                                 iku                                  0
 shikieiki                                 suika_sp                                   0.6
 shikieiki                                  reimu_sp                                  -0.8
 shikieiki                                  remilia                                  0.2
-shikieiki                                  yukari                                  0.4 
-shikieiki                                   ran                                   0.7                     
+shikieiki                                  yukari                                  0.4
+shikieiki                                   ran                                   0.7
 shikieiki                                  lilywhite                                  0.9
 shikieiki                                  koishi                                  0.3
 shikieiki                                  rinnosuke                                  0.3
