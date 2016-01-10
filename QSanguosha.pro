@@ -20,7 +20,7 @@ SOURCES += \
     src/core/card.cpp \
     src/core/engine.cpp \
     src/core/general.cpp \
-    src/core/jsonutils.cpp \
+    src/core/json.cpp \
     src/core/lua-wrapper.cpp \
     src/core/player.cpp \
     src/core/protocol.cpp \
@@ -49,6 +49,7 @@ SOURCES += \
     src/package/protagonist.cpp \
     src/package/standard-cards.cpp \
     src/package/standard.cpp \
+    src/package/th01-05.cpp \
     src/package/th06.cpp \
     src/package/th07.cpp \
     src/package/th08.cpp \
@@ -124,7 +125,7 @@ HEADERS += \
     src/core/compiler-specific.h \
     src/core/engine.h \
     src/core/general.h \
-    src/core/jsonutils.h \
+    src/core/json.h \
     src/core/lua-wrapper.h \
     src/core/player.h \
     src/core/protocol.h \
@@ -153,6 +154,7 @@ HEADERS += \
     src/package/protagonist.h \
     src/package/standard-equips.h \
     src/package/standard.h \
+    src/package/th01-05.h \
     src/package/th06.h \
     src/package/th07.h \
     src/package/th08.h \

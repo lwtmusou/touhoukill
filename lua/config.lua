@@ -6,9 +6,10 @@ config = {
 	} ,
 
 	kingdoms = { 
-	"zhu", "hmx","yym","yyc","zhan","fsl","dld","xlc","slm","hzc","wai","touhougod" ,
+	"pc98", "zhu", "hmx","yym","yyc","zhan","fsl","dld","xlc","slm","hzc","wai","touhougod" ,
 	},
 	kingdom_colors = {
+		pc98 = "#0000ff";
 		zhu ="#853dcc",
 		hmx = "#cc1414",
 		yym = "#3d3dcc",
@@ -33,6 +34,7 @@ config = {
 		
 		--武将包
 		"Protagonist",
+		"TH0105",
 		"TH06",
 		"TH07",
 		"TH08",
