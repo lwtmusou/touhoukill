@@ -59,6 +59,7 @@ SOURCES += \
     src/package/th12.cpp \
     src/package/th13.cpp \
     src/package/th14.cpp \
+    src/package/th15.cpp \
     src/package/th99.cpp \
     src/package/thndj.cpp \
     src/package/thxwm.cpp \
@@ -164,6 +165,7 @@ HEADERS += \
     src/package/th12.h \
     src/package/th13.h \
     src/package/th14.h \
+    src/package/th15.h \
     src/package/th99.h \
     src/package/thndj.h \
     src/package/thxwm.h \

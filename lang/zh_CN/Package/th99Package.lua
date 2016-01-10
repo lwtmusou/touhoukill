@@ -252,4 +252,8 @@ return{
 	["@bihuo-playerchosen"] = "<font color=\"#00FF00\"><b>%src </b></font> 对你使用了【杀】，你可以发动“避祸”，请指定一名其他角色。",
 	["bihuo_exchange"]= "由于“避祸”的效果，请选择 %src 张手牌交给 <font color=\"#00FF00\"><b>%dest </b></font>。",
 
+
+--****************************
+	--wai013  势力：外
+	["reisen2"] = "铃仙2号" ,
  }

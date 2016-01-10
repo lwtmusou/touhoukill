@@ -6,7 +6,7 @@ config = {
 	} ,
 
 	kingdoms = { 
-	"pc98", "zhu", "hmx","yym","yyc","zhan","fsl","dld","xlc","slm","hzc","wai","touhougod" ,
+	"pc98", "zhu", "hmx","yym","yyc","zhan","fsl","dld","xlc","slm","hzc", "gzz","wai","touhougod" ,
 	},
 	kingdom_colors = {
 		pc98 = "#0000ff";
@@ -20,6 +20,7 @@ config = {
 		xlc = "#3dcccc",
 		slm ="#66cc99",
 		hzc ="#aacc66",
+		gzz = "#202020" ,
 		wai = "#cc7014",
 		touhougod = "#96943D",
 	},
@@ -44,6 +45,7 @@ config = {
 		"TH12",
 		"TH13",
 		"TH14",
+		"TH15",
 		"TH99",
 		"THXWM",
 		"THNDJ",

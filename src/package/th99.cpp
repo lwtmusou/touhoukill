@@ -1716,6 +1716,9 @@ TH99Package::TH99Package()
     kosuzu->addSkill(new BihuoReturn);
     related_skills.insertMulti("bihuo", "#bihuo");
 
+    General *reisen2 = new General(this, "reisen2", "wai", 4, false, true, true);
+    Q_UNUSED(reisen2);
+
     addMetaObject<QiuwenCard>();
     addMetaObject<DangjiaCard>();
     addMetaObject<XiufuCard>();
