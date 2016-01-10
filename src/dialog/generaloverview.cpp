@@ -365,7 +365,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         QColor kingdomColor = Sanguosha->getKingdomColor(general->getKingdom());
         package_item->setBackgroundColor(kingdomColor);
         kingdom_item->setBackgroundColor(kingdomColor);
-        if ((11 * kingdomColor.blue() + 30 * kingdomColor.red() + 59 * kingdomColor.green()) / 100 < 0x7f) {
+        if ((11 * kingdomColor.blue() + 30 * kingdomColor.red() + 59 * kingdomColor.green()) / 100 <= 0x7f) {
             QBrush b = package_item->foreground();
             b.setColor(Qt::white);
             package_item->setForeground(b);
