@@ -232,7 +232,6 @@ QString TrustAI::askForKingdom()
     QString role;
     ServerPlayer *lord = room->getLord();
     QStringList kingdoms = Sanguosha->getKingdoms();
-    kingdoms.removeOne("god");
     kingdoms.removeOne("zhu");
     kingdoms.removeOne("touhougod");
     QString selfKingdom = self->getGeneral()->getKingdom();
@@ -283,7 +282,7 @@ bool TrustAI::askForSkillInvoke(const QString &, const QVariant &)
     return false;
 }
 
-QString TrustAI::askForChoice(const QString &skill_name, const QString &choice, const QVariant &)
+QString TrustAI::askForChoice(const QString &, const QString &choice, const QVariant &)
 {
     QStringList choices = choice.split("+");
     return choices.at(qrand() % choices.length());
@@ -345,7 +344,7 @@ static bool CompareByNumber(const Card *c1, const Card *c2)
     return c1->getNumber() < c2->getNumber();
 }
 
-const Card *TrustAI::askForPindian(ServerPlayer *requestor, const QString &reason)
+const Card *TrustAI::askForPindian(ServerPlayer *requestor, const QString &)
 {
     QList<const Card *> cards = self->getHandcards();
     qSort(cards.begin(), cards.end(), CompareByNumber);

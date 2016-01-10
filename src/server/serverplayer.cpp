@@ -113,7 +113,6 @@ void ServerPlayer::throwAllHandCardsAndEquips()
 
 void ServerPlayer::throwAllMarks(bool visible_only)
 {
-    // throw all marks
     foreach (QString mark_name, marks.keys()) {
         if (!mark_name.startsWith("@"))
             continue;
@@ -361,14 +360,6 @@ void ServerPlayer::invoke(const AbstractPacket *packet)
 
 void ServerPlayer::invoke(const char *method, const QString &arg)
 {
-    // @@Compatibility
-    // ================================================
-    /*if (strcmp(method, "clearAG") == 0) {
-        room->clearAG(this);
-        return;
-        }*/
-        // ================================================
-
     unicast(QString("%1 %2").arg(method).arg(arg));
 }
 
@@ -575,61 +566,16 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
 
     const Card *card2;
 
-    //for tigerfly qiangbian
-
-    if (hasSkill("qiangbian")) {
-        room->notifySkillInvoked(this, "qiangbian");
-        room->broadcastSkillInvoke("qiangbian");
-        card2 = Sanguosha->getCard(room->askForCardChosen(this, target, "h", "qiangbian", false, Card::MethodPindian));
-
-        LogMessage l2;
-        l2.type = "#qiangbianpd";
-        l2.from = this;
-        l2.to << target;
-        foreach(ServerPlayer *p, room->getOtherPlayers(target))
-            room->doNotify(p, S_COMMAND_LOG_SKILL, l2.toJsonValue());
-
-        LogMessage l;
-        l.type = "$qiangbianpd";
-        l.card_str = QString::number(card2->getId());
-        l.from = this;
-        l.to << target;
-        room->doNotify(target, S_COMMAND_LOG_SKILL, l.toJsonValue());
-
-        if (card1 == NULL)
-            card1 = room->askForPindian(this, this, target, reason);
-    } else if (target->hasSkill("qiangbian")) {
-        room->notifySkillInvoked(target, "qiangbian");
-        room->broadcastSkillInvoke("qiangbian");
-        card1 = Sanguosha->getCard(room->askForCardChosen(target, this, "h", "qiangbian", false, Card::MethodPindian));
-
-        LogMessage l2;
-        l2.type = "#qiangbianpd";
-        l2.from = target;
-        l2.to << this;
-        foreach(ServerPlayer *p, room->getOtherPlayers(this))
-            room->doNotify(p, S_COMMAND_LOG_SKILL, l2.toJsonValue());
-
-        LogMessage l;
-        l.type = "$qiangbianpd";
-        l.card_str = QString::number(card1->getId());
-        l.from = target;
-        l.to << this;
-        room->doNotify(this, S_COMMAND_LOG_SKILL, l.toJsonValue());
-
-        card2 = room->askForPindian(this, this, target, reason);
+    if (card1 == NULL) {
+        QList<const Card *> cards = room->askForPindianRace(this, target, reason);
+        card1 = cards.first();
+        card2 = cards.last();
     } else {
-        if (card1 == NULL) {
-            QList<const Card *> cards = room->askForPindianRace(this, target, reason);
-            card1 = cards.first();
-            card2 = cards.last();
-        } else {
-            if (card1->isVirtualCard()) {
-                int card_id = card1->getEffectiveId();
-                card1 = Sanguosha->getCard(card_id);
-            }
-            card2 = room->askForPindian(target, this, target, reason);
+        if (card1->isVirtualCard()) {
+            int card_id = card1->getEffectiveId();
+            card1 = Sanguosha->getCard(card_id);
         }
+        card2 = room->askForPindian(target, this, target, reason);
     }
 
     if (card1 == NULL || card2 == NULL) return false;
@@ -766,9 +712,8 @@ bool ServerPlayer::changePhase(Player::Phase from, Player::Phase to)
 
 void ServerPlayer::play(QList<Player::Phase> set_phases)
 {
-    //ServerPlayer *current = room->getCurrent();
     if (!set_phases.isEmpty()) {
-        if (!set_phases.contains(NotActive))//&& this->getMark("touhou-extra")==0
+        if (!set_phases.contains(NotActive)) //&& this->getMark("touhou-extra")==0
             set_phases << NotActive;
     } else if (this->getMark("shitu") > 0) {
         set_phases << Draw << NotActive;
@@ -822,29 +767,6 @@ void ServerPlayer::play(QList<Player::Phase> set_phases)
             thread->trigger(EventPhaseEnd, room, this);
         else
             break;
-
-        if (getPhase() == RoundStart && tag["dangliang"].toString().length() != 0) {
-            int to_swap1 = -1, to_swap2 = -1;
-            for (int i = 0; i < phases.length(); i++) {
-                if (phases[i] == Draw)
-                    to_swap1 = i;
-                else if (phases[i] == Play && tag["dangliang"].toString() == "d2p")
-                    to_swap2 = i;
-                else if (phases[i] == Finish && tag["dangliang"].toString() == "d2f")
-                    to_swap2 = i;
-            }
-            tag["dangliang"] = QString();
-            if (to_swap1 == -1 || to_swap2 == -1)
-                continue;
-
-            Player::Phase phasetemp = phases[to_swap1];
-            phases[to_swap1] = phases[to_swap2];
-            phases[to_swap2] = phasetemp;
-
-            PhaseStruct phasechangetemp = _m_phases_state[to_swap1];
-            _m_phases_state[to_swap1] = _m_phases_state[to_swap2];
-            _m_phases_state[to_swap2] = phasechangetemp;
-        }
     }
 }
 
@@ -1087,8 +1009,6 @@ int ServerPlayer::getGeneralMaxHp() const
 
     if (room->hasWelfare(this))
         max_hp++;
-    //if (this->hasSkill("huanmeng"))
-    //    max_hp=0;
 
     return max_hp;
 }
@@ -1240,27 +1160,6 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         }
     }
 
-
-    /*foreach(const QString skill_name, skills) {
-        if (Sanguosha->getSkill(skill_name)->isVisible()) {
-        QVariant args1;
-        args1[0] = S_GAME_EVENT_ACQUIRE_SKILL;
-        args1[1] = toJsonString(objectName());
-        args1[2] = toJsonString(skill_name);
-        room->doNotify(player, S_COMMAND_LOG_EVENT, args1);
-        }
-
-        foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)) {
-        if (!related_skill->isVisible()) {
-        QVariant args2;
-        args2[0] = S_GAME_EVENT_ACQUIRE_SKILL;
-        args2[1] = toJsonString(objectName());
-        args2[2] = toJsonString(skill_name);
-        room->doNotify(player, S_COMMAND_LOG_EVENT, args2);
-        }
-        }
-        }*/
-
     foreach (const Skill *skill, getVisibleSkillList(true)) {
         //lord skill
         if (this == player && skill->isLordSkill() && !hasLordSkill(skill->objectName())
@@ -1310,21 +1209,6 @@ void ServerPlayer::marshal(ServerPlayer *player) const
             }
         }
     }
-#if 0
-    else if (hasSkill("zhengti", false, true)) {
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (p->getMark("@zhengti") > 0) {
-                QVariant zhengti_arg(Json::arrayValue);
-                zhengti_arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                zhengti_arg[1] = JsonUtils::toJsonString(this->objectName());
-                zhengti_arg[2] = JsonUtils::toJsonString(p->getGeneral()->objectName());
-                zhengti_arg[3] = JsonUtils::toJsonString("zhengti");
-                room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, zhengti_arg);
-                break;
-            }
-        }
-    }
-#endif
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool open)

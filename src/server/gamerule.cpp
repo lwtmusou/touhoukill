@@ -64,7 +64,6 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const
                     break;
                 const Card *trick = tricks.takeLast();
 
-
                 bool on_effect = room->cardEffect(trick, NULL, player);
 
                 if (!on_effect)
@@ -109,13 +108,6 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const
             discard_num = player->getHandcardNum() - player->getMaxCards();
             if (discard_num > 0)
                 room->askForDiscard(player, "gamerule", discard_num, discard_num);
-            //do {
-            //discard_num = player->getHandcardNum() - player->getMaxCards();
-            //if (discard_num > 0) {
-            //    if (!room->askForDiscard(player, "gamerule", discard_num, 1))
-            //        break;
-            //}
-            // } while (discard_num > 0);
             break;
         }
         case Player::Finish:
@@ -360,21 +352,8 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
             while (dying.who->getHp() <= 0) {
                 peach = NULL;
 
-                // coupling Wansha here to deal with complicated rule problems
-                ServerPlayer *current = room->getCurrent();
-                if (current && current->isAlive() && current->getPhase() != Player::NotActive && current->hasSkill("wansha")) {
-                    if (player != current && player != dying.who) {
-                        player->setFlags("wansha");
-                        room->addPlayerMark(player, "Global_PreventPeach");
-                    }
-                }
                 if (dying.who->isAlive())
                     peach = room->askForSinglePeach(player, dying.who);
-
-                if (player->hasFlag("wansha") && player->getMark("Global_PreventPeach") > 0) {
-                    player->setFlags("-wansha");
-                    room->removePlayerMark(player, "Global_PreventPeach");
-                }
 
                 if (peach == NULL)
                     break;
@@ -524,7 +503,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
             }
 
 
-            QVariant data = QVariant::fromValue(effect);//??
+            QVariant data = QVariant::fromValue(effect);
             if (effect.jink_num > 0)
                 room->getThread()->trigger(SlashProceed, room, effect.from, data);
             else
@@ -566,9 +545,6 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
 
             if (effect.drank > 0) effect.to->setMark("SlashIsDrank", effect.drank);
             room->damage(DamageStruct(effect.slash, effect.from, effect.to, 1, effect.nature));
-
-            //room->broadcastSkillInvoke("hujia");
-            //room->reconnect(effect.to, effect.from->getSocket());
 
             break;
         }
@@ -733,7 +709,7 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const
     room->revivePlayer(player);
     room->changeHero(player, new_general, true, true);
     Q_ASSERT(player->getGeneral() != NULL);
-    if (player->getGeneral()->getKingdom() == "god" || player->getGeneral()->getKingdom() == "zhu" || player->getGeneral()->getKingdom() == "touhougod") {
+    if (player->getGeneral()->getKingdom() == "zhu" || player->getGeneral()->getKingdom() == "touhougod") {
         QString new_kingdom = room->askForKingdom(player);
         room->setPlayerProperty(player, "kingdom", new_kingdom);
 
@@ -757,7 +733,7 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const
     if (player->isChained())
         room->setPlayerProperty(player, "chained", false);
 
-    room->setTag("FirstRound", true); //For Manjuan
+    room->setTag("FirstRound", true);
     int draw_num = classical ? 4 : player->getMaxHp();
 
     QVariant data = draw_num;
@@ -794,7 +770,7 @@ void GameRule::changeGeneralXMode(ServerPlayer *player) const
     room->revivePlayer(player);
     room->changeHero(player, general, true, true);
     Q_ASSERT(player->getGeneral() != NULL);
-    if (player->getGeneral()->getKingdom() == "god" || player->getGeneral()->getKingdom() == "zhu" || player->getGeneral()->getKingdom() == "touhougod") {
+    if ( player->getGeneral()->getKingdom() == "zhu" || player->getGeneral()->getKingdom() == "touhougod") {
         QString new_kingdom = room->askForKingdom(player);
         room->setPlayerProperty(player, "kingdom", new_kingdom);
 
@@ -815,7 +791,7 @@ void GameRule::changeGeneralXMode(ServerPlayer *player) const
     if (player->isChained())
         room->setPlayerProperty(player, "chained", false);
 
-    room->setTag("FirstRound", true); //For Manjuan
+    room->setTag("FirstRound", true);
     QVariant data(4);
     room->getThread()->trigger(DrawInitialCards, room, player, data);
     int num = data.toInt();
@@ -845,38 +821,10 @@ void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const
         else
             killer->drawCards(3);
     } else {
-        ServerPlayer *hmkiller = room->getTag("huamingkiller").value<ServerPlayer *>();
-        ServerPlayer *shanfu = room->getTag("shanfu").value<ServerPlayer *>();
-        if (hmkiller == killer && shanfu == victim) {
-            if (killer == victim) return;
-            if (shanfu->askForSkillInvoke("huaming", QVariant::fromValue(killer))) {
-                QString role = room->askForChoice(shanfu, "huaming", "loyalist+renegade+rebel", QVariant::fromValue(killer));
-                LogMessage log;
-                log.type = "#huaming";
-                log.from = shanfu;
-                log.to.append(killer);
-                log.arg = "huaming";
-                log.arg2 = role;
-                room->sendLog(log);
-                if (role == "loyalist") {
-                    if (killer->isLord())
-                        killer->throwAllHandCardsAndEquips();
-                    room->broadcastSkillInvoke("huaming", 1);
-                } else if (role == "renegade")
-                    room->broadcastSkillInvoke("huaming", 2);
-                else if (role == "rebel") {
-                    killer->drawCards(3);
-                    room->broadcastSkillInvoke("huaming", 3);
-                }
-                room->removeTag("huamingkiller");
-                room->removeTag("shanfu");
-                room->getThread()->delay(2000);
-            }
-        } else
-            if (victim->getRole() == "rebel" && killer != victim)
-                killer->drawCards(3);
-            else if (victim->getRole() == "loyalist" && killer->getRole() == "lord")
-                killer->throwAllHandCardsAndEquips();
+        if (victim->getRole() == "rebel" && killer != victim)
+            killer->drawCards(3);
+        else if (victim->getRole() == "loyalist" && killer->getRole() == "lord")
+            killer->throwAllHandCardsAndEquips();
     }
 }
 
@@ -951,8 +899,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const
             }
         }
     } else {
-        if (victim->getMark("tianxiang") > 0)   //lord skill tianxiang need change gameover judge
-        {
+        if (victim->getMark("tianxiang") > 0) {   //lord skill tianxiang need change gameover judge
             QStringList alive_roles = room->aliveRoles(victim);
             switch (victim->getRoleEnum()) {
                 case Player::Lord:
@@ -1000,8 +947,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const
                 default:
                     break;
             }
-        } else //normal case (without the effect of lord skill tianxiang)
-        {
+        } else { //normal case (without the effect of lord skill tianxiang)
             QStringList alive_roles = room->aliveRoles(victim);
             switch (victim->getRoleEnum()) {
                 case Player::Lord:
