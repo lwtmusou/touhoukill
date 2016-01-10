@@ -17,6 +17,7 @@ struct LogMessage;
 #include "roomthread.h"
 #include "protocol.h"
 #include "RoomState.h"
+#include <QWaitCondition>
 #include <qmutex.h>
 #include <QStack>
 
@@ -52,8 +53,7 @@ public:
     bool isFull() const;
     bool isFinished() const;
     bool canPause(ServerPlayer *p) const;
-    //void tryPause();
-    bool isPaused() const;
+    void tryPause();
     
     int getLack() const;
     QString getMode() const;
@@ -565,6 +565,9 @@ private:
 
     QVariant m_fillAGarg;
     QVariant m_takeAGargs;
+
+    QWaitCondition m_waitCond;
+    mutable QMutex m_mutex;
 
     volatile bool playerPropertySet;
 

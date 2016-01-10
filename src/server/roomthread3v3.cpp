@@ -126,8 +126,7 @@ void RoomThread3v3::run()
 
 void RoomThread3v3::askForTakeGeneral(ServerPlayer *player)
 {
-    while (room->isPaused()) {
-    }
+    room->tryPause();
 
     QString name;
     if (general_names.length() == 1 || player->getState() != "online")
@@ -168,8 +167,7 @@ void RoomThread3v3::takeGeneral(ServerPlayer *player, const QString &name)
 
 void RoomThread3v3::startArrange(QList<ServerPlayer *> &players)
 {
-    while (room->isPaused()) {
-    }
+    room->tryPause();
     QList<ServerPlayer *> online = players;
     foreach (ServerPlayer *player, players) {
         if (!player->isOnline()) {

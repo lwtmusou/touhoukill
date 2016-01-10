@@ -79,8 +79,7 @@ void RoomThreadXMode::run()
 
 void RoomThreadXMode::startArrange(QList<ServerPlayer *> &players, QList<QStringList> &to_arrange)
 {
-    while (room->isPaused()) {
-    }
+    room->tryPause();
     QList<ServerPlayer *> online;
     QList<int> online_index;
     for (int i = 0; i < players.length(); i++) {

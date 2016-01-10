@@ -971,8 +971,7 @@ bool Room::notifyMoveFocus(const QList<ServerPlayer *> &players, CommandType com
 
 bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data)
 {
-    while (isPaused()) {
-    }
+    tryPause();
     notifyMoveFocus(player, S_COMMAND_INVOKE_SKILL);
 
     bool invoked = false;
@@ -1017,8 +1016,7 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
 
 QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices, const QVariant &data)
 {
-    while (isPaused()) {
-    }
+    tryPause();
     notifyMoveFocus(player, S_COMMAND_MULTIPLE_CHOICE);
 
     QStringList validChoices = choices.split("+");
@@ -1109,8 +1107,7 @@ bool Room::askForNullification(const Card *trick, ServerPlayer *from, ServerPlay
 bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPlayer *to,
     bool positive, _NullificationAiHelper aiHelper)
 {
-    while (isPaused()) {
-    }
+    tryPause();
 
     _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
     QString trick_name = trick->objectName();
@@ -1218,8 +1215,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
 int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason,
     bool handcard_visible, Card::HandlingMethod method, const QList<int> &disabled_ids)
 {
-    while (isPaused()) {
-    }
+    tryPause();
     notifyMoveFocus(player, S_COMMAND_CHOOSE_CARD);
     //flags
     static QChar handcard_flag('h');
@@ -1332,8 +1328,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     // ===================================================
 
     Q_ASSERT(pattern != "slash" || method != Card::MethodUse); // use askForUseSlashTo instead
-    while (isPaused()) {
-    }
+
+    tryPause();
     notifyMoveFocus(player, S_COMMAND_RESPONSE_CARD);
 
     _m_roomState.setCurrentCardUsePattern(pattern);
@@ -1535,8 +1531,8 @@ const Card *Room::askForUseCard(ServerPlayer *player, const QString &pattern, co
     Card::HandlingMethod method, bool addHistory, const QString &skill_name)
 {
     Q_ASSERT(method != Card::MethodResponse);
-    while (isPaused()) {
-    }
+
+    tryPause();
     notifyMoveFocus(player, S_COMMAND_RESPONSE_CARD);
 
     _m_roomState.setCurrentCardUsePattern(pattern);
@@ -1633,8 +1629,8 @@ const Card *Room::askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, 
 
 int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const QString &reason)
 {
-    while (isPaused()) {
-    }
+
+    tryPause();
     notifyMoveFocus(player, S_COMMAND_AMAZING_GRACE);
     Q_ASSERT(card_ids.length() > 0);
 
@@ -1669,8 +1665,8 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
 const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const QString &reason)
 {
     Q_ASSERT(!player->isKongcheng());
-    while (isPaused()) {
-    }
+
+    tryPause();
     notifyMoveFocus(player, S_COMMAND_SHOW_CARD);
     const Card *card = NULL;
 
@@ -1697,8 +1693,8 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, 
 
 const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
 {
-    while (isPaused()) {
-    }
+
+    tryPause();
     notifyMoveFocus(player, S_COMMAND_ASK_PEACH);
     _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
 
@@ -1750,10 +1746,7 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
 
 QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, SPlayerDataMap &skills, bool optional, const QVariant &data)
 {
-
-
-    while (isPaused()) {
-    }
+    tryPause();
 
     Q_ASSERT(!skills.isEmpty());
 
@@ -2047,17 +2040,11 @@ bool Room::canPause(ServerPlayer *player) const
     return true;
 }
 
-/* void Room::tryPause() {
+void Room::tryPause() {
     if (!canPause(getOwner())) return;
     QMutexLocker locker(&m_mutex);
     while (game_paused)
         m_waitCond.wait(locker.mutex());
-} */
-
-bool Room::isPaused() const
-{
-    if (!canPause(getOwner())) return false;
-    return game_paused;
 }
 
 int Room::getLack() const
@@ -2259,8 +2246,8 @@ void Room::setFixedDistance(Player *from, const Player *to, int distance)
 
 void Room::reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPlayer *> &list)
 {
-    while (isPaused()) {
-    }
+
+    tryPause();
     notifyMoveFocus(player, S_COMMAND_CHOOSE_DIRECTION);
 
     bool isClockwise = false;
@@ -2503,9 +2490,9 @@ void Room::trustCommand(ServerPlayer *player, const QVariant &)
 
 void Room::pauseCommand(ServerPlayer *player, const QVariant &arg)
 {
-#pragma message WARN("todo_Fs: fix Room::pauseCommand")
     if (!canPause(player)) return;
     bool pause = (arg == "true");
+    QMutexLocker locker(&m_mutex);
     if (game_paused != pause) {
         JsonArray arg;
         arg << (int)S_GAME_EVENT_PAUSE;
@@ -2513,6 +2500,8 @@ void Room::pauseCommand(ServerPlayer *player, const QVariant &arg)
         doNotify(player, S_COMMAND_LOG_EVENT, arg);
 
         game_paused = pause;
+        if (!game_paused)
+            m_waitCond.wakeAll();
     }
 }
 
@@ -5062,8 +5051,7 @@ void Room::setEmotion(ServerPlayer *target, const QString &emotion)
 
 void Room::activate(ServerPlayer *player, CardUseStruct &card_use)
 {
-    while (isPaused()) {
-    }
+    tryPause();
 
     if (player->hasFlag("Global_PlayPhaseTerminated")) {
         setPlayerFlag(player, "-Global_PlayPhaseTerminated");
@@ -5124,8 +5112,7 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use)
 
 void Room::askForLuckCard()
 {
-    while (isPaused()) {
-    }
+    tryPause();
 
     QList<ServerPlayer *> players;
     foreach (ServerPlayer *player, m_players) {
@@ -5241,8 +5228,7 @@ void Room::askForLuckCard()
 
 Card::Suit Room::askForSuit(ServerPlayer *player, const QString &reason)
 {
-    while (isPaused()) {
-    }
+    tryPause();
     notifyMoveFocus(player, S_COMMAND_CHOOSE_SUIT);
 
     AI *ai = player->getAI();
@@ -5271,8 +5257,7 @@ Card::Suit Room::askForSuit(ServerPlayer *player, const QString &reason)
 
 QString Room::askForKingdom(ServerPlayer *player)
 {
-    while (isPaused()) {
-    }
+    tryPause();
     notifyMoveFocus(player, S_COMMAND_CHOOSE_KINGDOM);
 
     QString kingdomChoice = "";
@@ -5316,8 +5301,7 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
 {
     if (!player->isAlive())
         return false;
-    while (isPaused()) {
-    }
+    tryPause();
     notifyMoveFocus(player, S_COMMAND_DISCARD_CARD);
 
     if (!optional) {
@@ -5435,8 +5419,7 @@ const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, in
 {
     if (!player->isAlive())
         return NULL;
-    while (isPaused()) {
-    }
+    tryPause();
     notifyMoveFocus(player, S_COMMAND_EXCHANGE_CARD);
 
     AI *ai = player->getAI();
@@ -5510,8 +5493,7 @@ ServerPlayer *Room::getLord() const
 void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type, QString skillName)
 {
     QList<int> top_cards, bottom_cards;
-    while (isPaused()) {
-    }
+    tryPause();
     notifyMoveFocus(zhuge, S_COMMAND_SKILL_GUANXING);
 
     AI *ai = zhuge->getAI();
@@ -5604,8 +5586,7 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
 int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids, QString skill_name)
 {
     Q_ASSERT(!target->isKongcheng());
-    while (isPaused()) {
-    }
+    tryPause();
     notifyMoveFocus(shenlvmeng, S_COMMAND_SKILL_GONGXIN);
 
     LogMessage log;
@@ -5668,8 +5649,7 @@ const Card *Room::askForPindian(ServerPlayer *player, ServerPlayer *from, Server
     if (!from->isAlive() || !to->isAlive())
         return NULL;
     Q_ASSERT(!player->isKongcheng());
-    while (isPaused()) {
-    }
+    tryPause();
     notifyMoveFocus(player, S_COMMAND_PINDIAN);
 
     if (player->getHandcardNum() == 1)
@@ -5703,8 +5683,7 @@ QList<const Card *> Room::askForPindianRace(ServerPlayer *from, ServerPlayer *to
     if (!from->isAlive() || !to->isAlive())
         return QList<const Card *>() << NULL << NULL;
     Q_ASSERT(!from->isKongcheng() && !to->isKongcheng());
-    while (isPaused()) {
-    }
+    tryPause();
     Countdown countdown;
     countdown.max = ServerInfo.getCommandTimeout(S_COMMAND_PINDIAN, S_CLIENT_INSTANCE);
     countdown.type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
@@ -5787,8 +5766,7 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
         return targets.first();
     }
 
-    while (isPaused()) {
-    }
+    tryPause();
     notifyMoveFocus(player, S_COMMAND_CHOOSE_PLAYER);
     AI *ai = player->getAI();
     ServerPlayer *choice = NULL;
@@ -5855,8 +5833,7 @@ void Room::_setupChooseGeneralRequestArgs(ServerPlayer *player)
 
 QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice)
 {
-    while (isPaused()) {
-    }
+    tryPause();
     notifyMoveFocus(player, S_COMMAND_CHOOSE_GENERAL);
 
     if (generals.length() == 1)
@@ -6127,8 +6104,7 @@ void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer
 {
     if (getCardOwner(card_id) != player) return;
 
-    while (isPaused()) {
-    }
+    tryPause();
     notifyMoveFocus(player);
     JsonArray show_arg;
     show_arg << player->objectName();
@@ -6159,8 +6135,7 @@ void Room::showAllCards(ServerPlayer *player, ServerPlayer *to)
 {
     if (player->isKongcheng())
         return;
-    while (isPaused()) {
-    }
+    tryPause();
 
     JsonArray gongxinArgs;
     gongxinArgs << player->objectName();
@@ -6299,8 +6274,7 @@ int Room::askForRende(ServerPlayer *liubei, QList<int> &cards, const QString &sk
         reason.m_playerId = liubei->objectName();
         reason.m_reason = CardMoveReason::S_REASON_GIVE;
     }
-    while (isPaused()) {
-    }
+    tryPause();
     notifyMoveFocus(liubei, S_COMMAND_SKILL_YIJI);
 
     QMap<int, ServerPlayer *> give_map;
@@ -6459,8 +6433,7 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &sk
         else
             reason.m_reason = CardMoveReason::S_REASON_GIVE;
     }
-    while (isPaused()) {
-    }
+    tryPause();
     notifyMoveFocus(guojia, S_COMMAND_SKILL_YIJI);
 
     ServerPlayer *target = NULL;
@@ -6549,8 +6522,7 @@ QString Room::generatePlayerName()
 
 QString Room::askForOrder(ServerPlayer *player, const QString &default_choice)
 {
-    while (isPaused()) {
-    }
+    tryPause();
     notifyMoveFocus(player, S_COMMAND_CHOOSE_ORDER);
 
     if (player->getAI())
@@ -6566,8 +6538,7 @@ QString Room::askForOrder(ServerPlayer *player, const QString &default_choice)
 
 QString Room::askForRole(ServerPlayer *player, const QStringList &roles, const QString &scheme)
 {
-    while (isPaused()) {
-    }
+    tryPause();
     notifyMoveFocus(player, S_COMMAND_CHOOSE_ROLE_3V3);
 
     QStringList squeezed = roles.toSet().toList();

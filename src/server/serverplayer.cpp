@@ -565,6 +565,8 @@ bool ServerPlayer::hasNullification() const
 
 bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Card *card1)
 {
+    room->tryPause();
+
     LogMessage log;
     log.type = "#Pindian";
     log.from = this;

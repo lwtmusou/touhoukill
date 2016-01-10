@@ -471,8 +471,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                 if (!triggered.contains(skill)) {
                     if (skill->objectName() == "game_rule" || (room->getScenario()
                         && room->getScenario()->objectName() == skill->objectName())) {
-                        while (room->isPaused()) {
-                        }
+                        room->tryPause();
                         if (will_trigger.isEmpty()
                             || skill->getDynamicPriority() == will_trigger.last()->getDynamicPriority()) {
                             will_trigger.append(skill);
@@ -482,8 +481,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                             break;
                         triggered.prepend(skill);
                     } else {
-                        while (room->isPaused()) {
-                        }
+                        room->tryPause();
                         if (will_trigger.isEmpty()
                             || skill->getDynamicPriority() == will_trigger.last()->getDynamicPriority()) {
                             skill->record(triggerEvent, room, target, data); //to record something for next.
@@ -685,12 +683,10 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                     foreach (const TriggerSkill *skill, triggered) {
                         if (skill->objectName() == "game_rule" || (room->getScenario()
                             && room->getScenario()->objectName() == skill->objectName())) {
-                            while (room->isPaused()) {
-                            }
+                            room->tryPause();
                             continue; // dont assign them to some person.
                         } else {
-                            while (room->isPaused()) {
-                            }
+                            room->tryPause();
                             if (skill->getDynamicPriority() == triggered.first()->getDynamicPriority()) {
                                 TriggerList triggerSkillList = skill->triggerable(triggerEvent, room, target, data);
                                 foreach (ServerPlayer *player, room->getAllPlayers(true)) {
@@ -819,9 +815,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
 
         throw throwed_event;
     }
-    //(1) room->tryPause();  equals   (2)while (room->isPaused()) {}
-    while (room->isPaused()) {
-    }
+    room->tryPause();
     return broken;
 }
 
