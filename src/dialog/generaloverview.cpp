@@ -365,6 +365,14 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         QColor kingdomColor = Sanguosha->getKingdomColor(general->getKingdom());
         package_item->setBackgroundColor(kingdomColor);
         kingdom_item->setBackgroundColor(kingdomColor);
+        if ((11 * kingdomColor.blue() + 30 * kingdomColor.red() + 59 * kingdomColor.green()) / 100 < 0x7f) {
+            QBrush b = package_item->foreground();
+            b.setColor(Qt::white);
+            package_item->setForeground(b);
+            QBrush b2 = kingdom_item->foreground();
+            b2.setColor(Qt::white);
+            kingdom_item->setForeground(b2);
+        }
 
         ui->tableWidget->setItem(i, 0, nickname_item);
         ui->tableWidget->setItem(i, 1, name_item);
