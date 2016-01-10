@@ -1280,5 +1280,8 @@
     <None Include="..\sanguosha.ts">
       <Filter>Translation Files</Filter>
     </None>
+    <None Include="..\..\swig\general_select.i">
+      <Filter>Swig Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

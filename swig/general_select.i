@@ -61,7 +61,7 @@ QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &ca
         return s;
     }
 
-    return QString();
+    return candidates.first();
 }
 
 QString GeneralSelector::selectSecond(ServerPlayer *player, const QStringList &candidates)
@@ -87,7 +87,7 @@ QString GeneralSelector::selectSecond(ServerPlayer *player, const QStringList &c
         return s;
     }
 
-    return QString();
+    return candidates.first();
 }
 
 QString GeneralSelector::select3v3(ServerPlayer *player, const QStringList &candidates)
@@ -113,7 +113,7 @@ QString GeneralSelector::select3v3(ServerPlayer *player, const QStringList &cand
         return s;
     }
 
-    return QString();
+    return candidates.first();
 }
 
 QString GeneralSelector::select1v1(const QStringList &candidates)
@@ -137,7 +137,7 @@ QString GeneralSelector::select1v1(const QStringList &candidates)
         return s;
     }
 
-    return QString();
+    return candidates.first();
 }
 
 QStringList GeneralSelector::arrange3v3(ServerPlayer *player)
@@ -161,7 +161,7 @@ QStringList GeneralSelector::arrange3v3(ServerPlayer *player)
         return l;
     }
 
-    return QStringList();
+    return player->getSelected();
 }
 
 QStringList GeneralSelector::arrange1v1(ServerPlayer *player)
@@ -185,7 +185,7 @@ QStringList GeneralSelector::arrange1v1(ServerPlayer *player)
         return l;
     }
 
-    return QStringList();
+    return player->getSelected();
 }
 
 

@@ -110,6 +110,13 @@ function table:indexOf(value, from)
 	return -1
 end
 
+function table:shuffle()
+	for i = 1, #self, 1 do
+		local r = math.random(0, #self - i + 1) + i
+		self[i], self[r] = self[r], self[i]
+	end
+end
+
 function string:matchOne(option)
 	return self:match("^" .. option .. "%p") or self:match("%p" .. option .. "%p") or self:match("%p" .. option .. "$")
 end
