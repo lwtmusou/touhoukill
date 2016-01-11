@@ -1231,11 +1231,12 @@ void Client::askForDiscard(const QVariant &reqvar)
 void Client::askForExchange(const QVariant &exchange)
 {
     JsonArray args = exchange.value<JsonArray>();
-    if (args.size() != 6 || !JsonUtils::isNumber(args[0]) || !JsonUtils::isBool(args[2])
-        || !JsonUtils::isString(args[3]) || !JsonUtils::isBool(args[4]) || !JsonUtils::isString(args[5]))
+    if (args.size() != 5 || !JsonUtils::isNumber(args[0]) || !JsonUtils::isBool(args[1])
+        || !JsonUtils::isString(args[2]) || !JsonUtils::isBool(args[3]) || !JsonUtils::isString(args[4]))
         return;
 
     discard_num = args[0].toInt();
+    min_num = discard_num;
     m_canDiscardEquip = args[1].toBool();
     QString prompt = args[2].toString();
     m_isDiscardActionRefusable = args[3].toBool();
