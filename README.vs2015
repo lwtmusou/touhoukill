@@ -1,0 +1,22 @@
+To build QSanguosha with VS2015
+Tips: "~" stands for the folder where the repo is in.
+
+1. Install the Qt5Package addin for VS2015
+  Open VS2015, select Tools->Extensions and Updates, search for "Qt5Package" and install it.
+
+2. Download and then install following packages: 
+(1) QT libraries for Windows (Visual Studio 2015, 5.6) http://download.qt.io/official_releases/qt/
+
+3. Download the swigwin (swig for Windows, 3.0.8 to ensure the support for Lua 5.2) http://sourceforge.net/projects/swig/files/swigwin/
+Create a ~/tools/swig folder under your source directory. Unzip swigwin and copy all unzipped files to tools/swig. To make sure you copied them to the right directory hierarchy, check if this file exists: ~/tools/swig/swig.exe
+
+4. Open Qsanguosha.sln right under ~/builds/vs2015, change the configuration to Release Win32.
+
+5. Check version of qt and specify the installed qt at QT Opitions from QT menu in VS2015.
+
+5.1 [optional] Right click project "QSanguosha" in your Solution Explorer, select "Properties", go to "Debugging" tab, set "Working Directory" to "$(ProjectDir)..\..\" (do not enter the quote marks). Then select "OK".
+
+5.2 [optional] Right click "sanguosha.ts" in the folder "Translaton Files" in project "QSanguosha", select "lrelease".
+You will get sanguosha.qm at ~/builds.
+
+6 You are now able to build the whole solution.
