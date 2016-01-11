@@ -429,7 +429,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), use.from->objectName());
-        int id = room->askForCardChosen(player, use.from, "h", objectName());
+        int id = room->askForCardChosen(player, use.from, "h", objectName(), false, Card::MethodDiscard);
         room->throwCard(id, use.from, player);
         return false;
     }

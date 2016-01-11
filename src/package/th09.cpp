@@ -1146,7 +1146,7 @@ public:
             if (draw)
                 target->drawCards(1);
             else
-                room->throwCard(room->askForCardChosen(player, target, "h", objectName()), target, player);
+                room->throwCard(room->askForCardChosen(player, target, "h", objectName(), false, Card::MethodDiscard), target, player);
         }
         return false;
     }
