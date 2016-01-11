@@ -670,8 +670,10 @@ public:
             foreach (ServerPlayer *merry, merrys) {
                 if (merry == player) continue;
                 foreach (int id, merry->getPile("jingjie")) {
-                    if (Sanguosha->getCard(id)->isRed() == isRed)
+                    if (Sanguosha->getCard(id)->isRed() == isRed){
                         skill_list.insert(merry, QStringList(objectName()));
+                        break;
+                    }
                 }
             }
         }
@@ -685,73 +687,57 @@ public:
             room->setTag("luanying_target", QVariant::fromValue(player));
             if (triggerEvent == CardUsed)
                 merry->tag["luanying_use"] = data;
-            if (room->askForSkillInvoke(merry, objectName(), data)) {
+
+            if (room->askForSkillInvoke(merry, objectName(), data)) {           
+                bool isRed = true;
+                QString cardName;
+                if (triggerEvent == CardUsed) {
+                    CardUseStruct use = data.value<CardUseStruct>();
+                    isRed = use.card->isRed();
+                    cardName = use.card->objectName();
+                } else if (triggerEvent == CardResponded) {
+                    CardStar card_star = data.value<CardResponseStruct>().m_card;
+                    isRed = card_star->isRed();
+                    cardName = card_star->objectName();
+                }
+                
+                QList<int> jingjies = merry->getPile("jingjie");
+                QList<int> able;
+                QList<int> disabled;
+                foreach (int id, jingjies) {
+                    if (Sanguosha->getCard(id)->isRed() == isRed)
+                        able << id;
+                    else    
+                        disabled << id;
+                }
+                
+                room->fillAG(jingjies, merry, disabled);
+                int card_id = -1;
+                card_id = room->askForAG(merry, able, true, "luanying");
+                room->clearAG(merry);
                 room->removeTag("luanying_target");
-                return true;
+                
+                if (card_id > -1) {
+                    room->obtainCard(player, card_id, true);
+                    room->touhouLogmessage("#weiya", player, objectName(), QList<ServerPlayer *>(), cardName);
+                }
+                
+                return card_id > -1;
             }
             return false;
         }
         return false;
     }
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *merry) const
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
-        if (triggerEvent == CardUsed || triggerEvent == CardResponded) {
-            bool isRed = true;
-            QString cardName;
-            if (triggerEvent == CardUsed) {
-                CardUseStruct use = data.value<CardUseStruct>();
-                if (!use.card->isKindOf("BasicCard") || use.card->getSuit() == Card::NoSuit)
-                    return false;
-                isRed = use.card->isRed();
-                cardName = use.card->objectName();
-            } else if (triggerEvent == CardResponded) {
-                CardStar card_star = data.value<CardResponseStruct>().m_card;
-                if (!card_star->isKindOf("BasicCard") || data.value<CardResponseStruct>().m_isRetrial
-                    || data.value<CardResponseStruct>().m_isProvision || card_star->getSuit() == Card::NoSuit)
-                    return false;
-                isRed = card_star->isRed();
-                cardName = card_star->objectName();
-            }
+        if (triggerEvent == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            use.nullified_list << "_ALL_TARGETS";
+            data = QVariant::fromValue(use);
+        } else if (triggerEvent == CardResponded)
+            room->setPlayerFlag(player, "respNul");
 
-
-            QList<int> jingjies = merry->getPile("jingjie");
-            QList<int> able;
-            QList<int> disabled;
-            foreach (int id, jingjies) {
-                if (Sanguosha->getCard(id)->isRed() == isRed)
-                    able << id;
-                else
-                    disabled << id;
-            }
-            if (able.isEmpty())
-                return false;
-
-
-
-            room->fillAG(jingjies, merry, disabled);
-            int card_id = -1;
-            card_id = room->askForAG(merry, able, true, "luanying");
-            room->clearAG(merry);
-            if (card_id > -1) {
-                room->obtainCard(player, card_id, true);
-                room->touhouLogmessage("#weiya", player, objectName(), QList<ServerPlayer *>(), cardName);
-                if (triggerEvent == CardUsed) {
-                    CardUseStruct use = data.value<CardUseStruct>();
-                    use.nullified_list << "_ALL_TARGETS";
-                    data = QVariant::fromValue(use);
-                    //room->setCardFlag(data.value<CardUseStruct>().card, "luanyingSkillNullify");    
-                } else if (triggerEvent == CardResponded)
-                    room->setPlayerFlag(player, "respNul");
-            }
-
-        } /* else if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-                return true;
-        } else if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-                return true;
-        } */
         return false;
     }
 };
