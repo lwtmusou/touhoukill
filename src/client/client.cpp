@@ -311,6 +311,8 @@ void Client::processServerPacket(const char *cmd)
         } else if (packet.getPacketType() == S_TYPE_REQUEST) {
             if (!replayer)
                 processServerRequest(packet);
+            else if (packet.getCommandType() == QSanProtocol::S_COMMAND_CHOOSE_GENERAL)
+                processShowGeneral(packet);
         }
     }
 }
@@ -334,6 +336,15 @@ bool Client::processServerRequest(const Packet &packet)
     if (!callback) return false;
     (this->*callback)(msg);
     return true;
+}
+
+void Client::processShowGeneral(const Packet &packet)
+{
+    QVariant arg = packet.getMessageBody();
+    QStringList names;
+    if (!JsonUtils::tryParse(arg, names)) return;
+
+    emit generals_viewed("View Generals", names);
 }
 
 void Client::addPlayer(const QVariant &player_info)
