@@ -3288,7 +3288,7 @@ void WendaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
 {
     room->sortByActionOrder(targets);
     foreach (ServerPlayer *p, targets) {
-        int card_id = room->askForCardChosen(source, p, "h", objectName());
+        int card_id = room->askForCardChosen(source, p, "h", objectName(), false, Card::MethodDiscard);
         room->throwCard(card_id, p, source);
         if (Sanguosha->getCard(card_id)->isRed()) {
             RecoverStruct recover;
