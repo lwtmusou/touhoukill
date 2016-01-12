@@ -190,54 +190,17 @@ public:
     {
         events << EventPhaseChanging;
     }
-    static QString xihua_pattern_trans(QString pattern)
+    
+    static void xihua_record(Room *room, ServerPlayer *player, QString pattern)
     {
-        QString pattern1 = "";
         if (pattern.contains("slash"))
-            pattern1 = "Slash";
-        else if (pattern == "jink")
-            pattern1 = "Jink";
-        else if (pattern == "peach")
-            pattern1 = "Peach";
-        else if (pattern == "analeptic")
-            pattern1 = "Analeptic";
-        else if (pattern == "amazing_grace")
-            pattern1 = "AmazingGrace";
-        else if (pattern == "god_salvation")
-            pattern1 = "GodSalvation";
-        else if (pattern == "savage_assault")
-            pattern1 = "SavageAssault";
-        else if (pattern == "archery_attack")
-            pattern1 = "ArcheryAttack";
-        else if (pattern == "duel")
-            pattern1 = "Duel";
-        else if (pattern == "ex_nihilo")
-            pattern1 = "ExNihilo";
-        else if (pattern == "snatch")
-            pattern1 = "Snatch";
-        else if (pattern == "dismantlement")
-            pattern1 = "Dismantlement";
-        else if (pattern == "collateral")
-            pattern1 = "Collateral";
-        else if (pattern == "iron_chain")
-            pattern1 = "IronChain";
-        else if (pattern == "fire_attack")
-            pattern1 = "FireAttack";
-        else if (pattern == "nullification")
-            pattern1 = "Nullification";
-        return pattern1;
-    }
-    static void xihua_limit(Room *room, ServerPlayer *player, QString pattern)
-    {
-        QString upper_pattern = xihua_pattern_trans(pattern);
-        QString markName = "xihua_limit_" + upper_pattern;
+            pattern = "slash";
+        QString markName = "xihua_record_" + pattern;
         room->setPlayerMark(player, markName, 1);
-        room->setPlayerCardLimitation(player, "use,response", upper_pattern, false);
     }
     static bool xihua_choice_limit(const Player *player, QString pattern, Card::HandlingMethod method)
     {
-        QString upper_pattern = xihua_pattern_trans(pattern);
-        QString markName = "xihua_limit_" + upper_pattern;
+        QString markName = "xihua_record_" + pattern;
         if (method == NULL)
             method = Card::MethodUse;
         if (player->getMark(markName) > 0 ||
@@ -265,12 +228,9 @@ public:
 
             foreach (ServerPlayer *p, room->getAlivePlayers()) {
                 foreach (QString pattern, patterns) {
-                    QString upper_pattern = xihua_pattern_trans(pattern);
-                    QString markName = "xihua_limit_" + upper_pattern;
-                    if (p->getMark(markName) > 0) {
+                    QString markName = "xihua_record_" + pattern;
+                    if (p->getMark(markName) > 0)
                         room->setPlayerMark(p, markName, 0);
-                        room->removePlayerCardLimitation(p, "use,response", upper_pattern + "$0");
-                    }
                 }
             }
         }
@@ -289,7 +249,12 @@ bool XihuaCard::do_xihua(ServerPlayer *tanuki) const
 {
     Room *room = tanuki->getRoom();
     Card *xihuacard = Sanguosha->cloneCard(tanuki->tag["xihua_choice"].toString());
-
+    //record xihua cardname which has used
+    ServerPlayer *current = room->getCurrent();
+    if (current && current->isAlive() && current->getPhase() != Player::NotActive)
+        XihuaClear::xihua_record(room, tanuki, xihuacard->objectName());
+    
+    
     ServerPlayer *target = room->askForPlayerChosen(tanuki, room->getOtherPlayers(tanuki), "xihua", "@xihua_chosen:" + xihuacard->objectName(), false, true);
     int to_show = room->askForCardChosen(target, tanuki, "h", "xihua");
     room->showCard(tanuki, to_show);
@@ -308,13 +273,8 @@ bool XihuaCard::do_xihua(ServerPlayer *tanuki) const
     tanuki->tag["xihua_id"] = QVariant::fromValue(to_show);
     if (!success) {
         room->throwCard(to_show, tanuki);
-        ServerPlayer *current = room->getCurrent();
-        if (current && current->isAlive() && current->getPhase() != Player::NotActive)
-            XihuaClear::xihua_limit(room, tanuki, xihuacard->objectName());
         room->touhouLogmessage("#Xihua_failed", tanuki, "xihua", QList<ServerPlayer *>(), xihuacard->objectName());
     }
-
-
     return success;
 }
 
@@ -773,7 +733,7 @@ bool XiefaCard::targetFilter(const QList<const Player *> &targets, const Player 
         if (to_select->hasSkill("zhouye") && to_select->getMark("@ye") == 0)
             return false;
 
-        if (to_select->hasSkill("xihua") && to_select->getMark("xihua_limit_Slash") > 0)
+        if (to_select->hasSkill("xihua") && to_select->getMark("xihua_record_Slash") > 0)
             return false;
         return true;
     } else if (targets.length() == 1) {
@@ -1659,7 +1619,7 @@ TH13Package::TH13Package()
     miko->addSkill(new Qingting);
     miko->addSkill(new Chiling);
 
-    General *mamizou = new General(this, "mamizou", "slm", 3, false);
+    General *mamizou = new General(this, "mamizou", "slm", 4, false);
     mamizou->addSkill(new Xihua);
     mamizou->addSkill(new XihuaClear);
     related_skills.insertMulti("xihua", "#xihua_clear");

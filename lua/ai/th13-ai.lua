@@ -116,7 +116,16 @@ end
 
 
 measure_xihua = function(self,card)
-	local success=0
+	local pattern = card:objectName()
+    if card:isKindOf("Slash") then
+        pattern = "slash"
+    end
+    local xihuaUsed = "xihua_record_" .. pattern
+    if self.player:getMark(xihuaUsed) > 0 then
+        return false
+    end
+    
+    local success=0
 	for _,c in sgs.qlist(self.player:getCards("h")) do
 		if card:objectName()==c:objectName() then
 			return false
@@ -154,6 +163,7 @@ sgs.ai_skill_playerchosen.xihua = function(self, targets)--选择展示人
 	end
 	return targets:first()
 end
+
 local xihua_skill = {}
 xihua_skill.name = "xihua"
 table.insert(sgs.ai_skills, xihua_skill)
@@ -284,7 +294,7 @@ end
 
 
 sgs.ai_skill_choice.xihua_skill_saveself = function(self, choices)
-	if self.player:getMark("xihua_limit_Peach")>0 then
+	if self.player:getMark("xihua_record_Peach")>0 then
 		return "analeptic"
 	else
 		return "peach"
