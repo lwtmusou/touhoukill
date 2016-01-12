@@ -6,9 +6,7 @@
 #include "engine.h"
 #include "standard.h"
 #include "client.h"
-
 #include <QCommandLinkButton>
-
 
 
 class ShendeVS : public ViewAsSkill
@@ -446,6 +444,14 @@ void QijiDialog::popup()
         if (object_name == "huaxiang" && user->getMaxHp() > 2 && card->isKindOf("Peach"))
             enabled = false;
 
+        if (object_name == "xihua" && enabled){
+            QString xihuaUsed = "xihua_record_" + card->objectName();
+            if (card->isKindOf("Slash"))
+                xihuaUsed = "xihua_record_slash";
+            if (user->getMark(xihuaUsed) > 0)
+                enabled = false;
+        }
+        
         QStringList response_use_salsh;
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY
             &&  Sanguosha->currentRoomState()->getCurrentCardUsePattern().contains("slash")) {
