@@ -4,19 +4,6 @@
 #include "package.h"
 #include "card.h"
 
-
-class ZhaoliaoCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE ZhaoliaoCard();
-
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-};
-
-
-
 class MocaoCard : public SkillCard
 {
     Q_OBJECT

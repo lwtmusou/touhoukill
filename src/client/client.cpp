@@ -1231,20 +1231,23 @@ void Client::askForDiscard(const QVariant &reqvar)
 void Client::askForExchange(const QVariant &exchange)
 {
     JsonArray args = exchange.value<JsonArray>();
-    if (args.size() != 5 || !JsonUtils::isNumber(args[0]) || !JsonUtils::isBool(args[1])
-        || !JsonUtils::isString(args[2]) || !JsonUtils::isBool(args[3]) || !JsonUtils::isString(args[4]))
+    if (args.size() != 6 || !JsonUtils::isNumber(args[0]) || !JsonUtils::isNumber(args[1]) || !JsonUtils::isBool(args[2])
+        || !JsonUtils::isString(args[3]) || !JsonUtils::isBool(args[4]) || !JsonUtils::isString(args[5]))
         return;
 
     discard_num = args[0].toInt();
-    min_num = discard_num;
-    m_canDiscardEquip = args[1].toBool();
-    QString prompt = args[2].toString();
-    m_isDiscardActionRefusable = args[3].toBool();
+    min_num = args[1].toInt();
+    m_canDiscardEquip = args[2].toBool();
+    QString prompt = args[3].toString();
+    m_isDiscardActionRefusable = args[4].toBool();
 
-    highlight_skill_name = args[4].toString();
+    highlight_skill_name = args[5].toString();
 
     if (prompt.isEmpty()) {
-        prompt = tr("Please give %1 cards to exchange").arg(discard_num);
+        if (discard_num == min_num)
+            prompt = tr("Please give %1 cards to exchange").arg(discard_num);
+        else
+            prompt = tr("Please give at most %1 cards to exchange.<br />You can give %2 cards at least").arg(discard_num).arg(min_num);
         prompt_doc->setHtml(prompt);
     } else {
         QStringList texts = prompt.split(":");

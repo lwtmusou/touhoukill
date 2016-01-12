@@ -369,7 +369,7 @@ public:
             data = QVariant::fromValue(data.toInt() + 6);
         } else if ((triggerEvent == AfterDrawInitialCards)) {
             room->broadcastSkillInvoke("shanji");
-            const Card *exchange_card = room->askForExchange(player, "shanji", 6);
+            const Card *exchange_card = room->askForExchange(player, "shanji", 6, 6);
             player->addToPile("piao", exchange_card->getSubcards(), false);
         }
         return false;
@@ -465,7 +465,7 @@ public:
             data = QVariant::fromValue(data.toInt() + 4);
             room->setPlayerFlag(player, "qingcangUsed");
         } else if (triggerEvent == AfterDrawNCards) {
-            const Card *card = room->askForExchange(player, objectName(), 1, false, "@qingcang-card");
+            const Card *card = room->askForExchange(player, objectName(), 1, 1, false, "@qingcang-card");
 
             Card *supplyshortage = Sanguosha->cloneCard("supply_shortage", card->getSuit(), card->getNumber());
             WrappedCard *vs_card = Sanguosha->getWrappedCard(card->getSubcards().first());

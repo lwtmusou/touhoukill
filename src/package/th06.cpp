@@ -429,7 +429,7 @@ void SuodingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
     room->sortByActionOrder(newtargets);
     foreach (ServerPlayer *sp, newtargets) {
         if (source == sp) {
-            const Card *cards = room->askForExchange(source, "suoding", map[sp], false, "suoding_exchange:" + QString::number(map[sp]));
+            const Card *cards = room->askForExchange(source, "suoding", map.value(sp), map.value(sp), false, "suoding_exchange:" + QString::number(map[sp]));
             foreach(int id, cards->getSubcards())
                 sp->addToPile("suoding_cards", id, false);
         } else {
@@ -738,7 +738,7 @@ public:
         if (num == 0)
             return false;
 
-        const Card *giveCards = room->askForExchange(meirin, objectName(), num, false, "neijin_exchange:" + player->objectName() + ":" + QString::number(num));
+        const Card *giveCards = room->askForExchange(meirin, objectName(), num, num, false, "neijin_exchange:" + player->objectName() + ":" + QString::number(num));
         room->obtainCard(player, giveCards, false);
         return false;
     }

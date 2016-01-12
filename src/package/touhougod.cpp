@@ -672,7 +672,7 @@ public:
                 if (p->getHandcardNum() == 1)
                     id = p->getCards("h").first()->getEffectiveId();
                 else {
-                    const Card *cards = room->askForExchange(p, objectName(), 1, false, "cuixiang-exchange:" + player->objectName() + ":" + objectName());
+                    const Card *cards = room->askForExchange(p, objectName(), 1, 1, false, "cuixiang-exchange:" + player->objectName() + ":" + objectName());
                     id = cards->getSubcards().first();
 
                 }
@@ -3095,7 +3095,7 @@ public:
         player->gainMark("@xinyang");
         player->drawCards(2);
         if (!player->isKongcheng()) {
-            const Card *card = room->askForExchange(player, objectName(), 1, false, "woraoGive:" + use.from->objectName());
+            const Card *card = room->askForExchange(player, objectName(), 1, 1, false, "woraoGive:" + use.from->objectName());
             use.from->obtainCard(card, false);
         }
         return false;

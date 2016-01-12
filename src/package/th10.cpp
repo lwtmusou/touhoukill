@@ -90,7 +90,7 @@ public:
     {
         player->drawCards(1);
         if (!player->isKongcheng()) {
-            const Card *cards = room->askForExchange(player, objectName(), 1, false, "shende-exchange");
+            const Card *cards = room->askForExchange(player, objectName(), 1, 1, false, "shende-exchange");
             player->addToPile("shende", cards->getSubcards().first());
         }
         return false;
@@ -1390,7 +1390,7 @@ void TianyanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &)
     int x = qMin(room->alivePlayerCount(), 4);
 
     source->drawCards(x);
-    const Card *cards = room->askForExchange(source, "tianyan", x, false, "tianyan_exchange:" + QString::number(x));
+    const Card *cards = room->askForExchange(source, "tianyan", x, x, false, "tianyan_exchange:" + QString::number(x));
     CardsMoveStruct move;
     move.card_ids = cards->getSubcards();
     move.from = source;

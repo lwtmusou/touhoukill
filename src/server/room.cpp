@@ -4823,6 +4823,8 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use)
 
         card_use.from = player;
         ai->activate(card_use);
+        if (!card_use.card->isVirtualCard())
+            card_use.card = card_use.card->getRealCard();
 
         qint64 diff = Config.AIDelay - timer.elapsed();
         if (diff > 0) thread->delay(diff);
@@ -5163,8 +5165,7 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
     return true;
 }
 
-const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, int discard_num, bool include_equip,
-    const QString &prompt, bool optional)
+const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, int discard_num, int min_num, bool include_equip, const QString &prompt, bool optional)
 {
     if (!player->isAlive())
         return NULL;
@@ -5177,7 +5178,7 @@ const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, in
         // share the same callback interface
         player->setFlags("Global_AIDiscardExchanging");
         try {
-            to_exchange = ai->askForDiscard(reason, discard_num, discard_num, optional, include_equip);
+            to_exchange = ai->askForDiscard(reason, discard_num, min_num, optional, include_equip);
             player->setFlags("-Global_AIDiscardExchanging");
         }
         catch (TriggerEvent triggerEvent) {
@@ -5188,6 +5189,7 @@ const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, in
     } else {
         JsonArray exchange_str;
         exchange_str << discard_num;
+        exchange_str << min_num;
         exchange_str << include_equip;
         exchange_str << prompt;
         exchange_str << optional;
@@ -5196,7 +5198,7 @@ const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, in
         bool success = doRequest(player, S_COMMAND_EXCHANGE_CARD, exchange_str, true);
         //@todo: also check if the player does have that card!!!
         JsonArray clientReply = player->getClientReply().value<JsonArray>();
-        if (!success || (int)clientReply.size() > discard_num || !JsonUtils::tryParse(clientReply, to_exchange)) {
+        if (!success || clientReply.size() > discard_num || clientReply.size() < min_num || !JsonUtils::tryParse(clientReply, to_exchange)) {
             if (optional) return NULL;
             to_exchange = player->forceToDiscard(discard_num, include_equip, false);
         }

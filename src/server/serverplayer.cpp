@@ -1288,7 +1288,7 @@ void ServerPlayer::exchangeFreelyFromPrivatePile(const QString &skill_name, cons
 
     int n = will_to_handcard.length();
     if (n == 0) return;
-    const Card *exchange_card = room->askForExchange(this, skill_name, n, include_equip);
+    const Card *exchange_card = room->askForExchange(this, skill_name, n, n, include_equip);
     will_to_pile = exchange_card->getSubcards();
     delete exchange_card;
 

@@ -55,7 +55,7 @@ void QingtingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
         const Card *card;
         if (source->getMark("shengge") == 0) {
             p->tag["qingting_give"] = QVariant::fromValue(source);
-            card = room->askForExchange(p, "qingting", 1, false, "qingtingGive:" + source->objectName());
+            card = room->askForExchange(p, "qingting", 1, 1, false, "qingtingGive:" + source->objectName());
             p->tag.remove("qingting_give");
         } else
             card = Sanguosha->getCard(room->askForCardChosen(source, p, "h", "qingting"));
@@ -72,7 +72,7 @@ void QingtingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
             continue;
 
         source->tag["qingting_return"] = QVariant::fromValue(p);
-        const Card *card = room->askForExchange(source, "qingting", 1, false, "qingtingReturn:" + p->objectName());
+        const Card *card = room->askForExchange(source, "qingting", 1, 1, false, "qingtingReturn:" + p->objectName());
         source->tag.remove("qingting_return");
         p->obtainCard(card, false);
     }
@@ -1103,13 +1103,10 @@ public:
         room->setTag("huisheng_use", data);
         CardUseStruct use = data.value<CardUseStruct>();
         Card *card = Sanguosha->cloneCard(use.card->objectName());
-        if (use.card->isNDTrick() && use.from->hasSkill("aoyi")) {//for a bug in filtersviewkill, then ai has this skill
-            if (use.from->getAI())
-                card = Sanguosha->cloneCard("ice_slash");
-        }
 
         QString prompt = "@huisheng-use:" + use.from->objectName() + ":" + card->objectName();
         room->setPlayerProperty(source, "huisheng_card", card->objectName());
+        delete card;
         room->setPlayerProperty(source, "huisheng_target", use.from->objectName());
         room->askForUseCard(source, "@@huisheng", prompt);
         room->setPlayerProperty(source, "huisheng_target", QVariant());

@@ -1628,7 +1628,7 @@ public:
                         p->tag.remove("bihuo_num_" + s->objectName());
                         if (!p->isKongcheng()) {
                             int count = qMin(p->getHandcardNum(), num);
-                            const Card *cards = room->askForExchange(p, "bihuo", count, false, "bihuo_exchange:" + QString::number(count) + ":" + s->objectName());
+                            const Card *cards = room->askForExchange(p, "bihuo", count, count, false, "bihuo_exchange:" + QString::number(count) + ":" + s->objectName());
                             room->obtainCard(s, cards, false);
                         }
                     }
