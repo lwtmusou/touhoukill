@@ -652,6 +652,7 @@ sgs.ai_skill_invoke.zhancao = function(self,data)
 	local use=self.player:getTag("zhancao_carduse"):toCardUse()
 	local target =self.player:getTag("zhancao_target"):toPlayer()
 	if not self:isFriend(target) then return false end
+    if self:slashIsEffective(use.card, target, use.from) then return false end
 	if self:touhouCardUseEffectNullify(use,target) then return false end
 	--if self:isFriend(use.from) and use.from:hasSkills("shenyin|lizhi") then return false end
 	if self:isFriend(use.from) then
