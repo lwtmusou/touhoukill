@@ -1456,13 +1456,10 @@ TH09Package::TH09Package()
     General *aya_sp = new General(this, "aya_sp", "zhan", 4, false);
     aya_sp->addSkill(new Toupai);
 
-
-
     General *tenshi = new General(this, "tenshi$", "zhan", 4, false);
     tenshi->addSkill(new Feixiang);
     tenshi->addSkill(new Dizhen);
     tenshi->addSkill(new Tianren);
-
 
     General *iku = new General(this, "iku", "zhan", 4, false);
     iku->addSkill(new Jingdian);
@@ -1484,6 +1481,9 @@ TH09Package::TH09Package()
     sumireko->addSkill(new Shenmi);
     sumireko->addSkill(new Liqun);
     related_skills.insertMulti("nianli", "#nianlimod");
+
+    General *cirno = new General(this, "cirno_sp", "zhan", 4, false);
+    Q_UNUSED(cirno);
 
     addMetaObject<TianrenCard>();
     addMetaObject<NianliCard>();

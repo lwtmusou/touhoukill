@@ -198,5 +198,14 @@ return {
 	["guangji:invoke"] = "<font color=\"#00FF00\"><b>%src </b></font>使用【杀】指定了你为目标，你可以发动“光击”。" ,
 	["xinghui"] = "星辉",
 	[":xinghui"] = "当一张“天仪”从你的人物牌上离开时，你可以摸一张牌。",
-
+	
+	--zhu009
+	["reimu_old"] = "旧作sp灵梦" ,
+	["#reimu_old"] = "巫女小姐" ,
+	["&reimu_old"] = "旧作灵梦" ,
+	
+	--zhu010
+	["marisa_old"] = "旧作sp魔理沙" ,
+	["#marisa_old"] = "魔法使小姐" ,
+	["&marisa_old"] = "旧作魔理沙" ,
  }

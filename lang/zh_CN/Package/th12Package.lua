@@ -184,4 +184,9 @@ return{
 	[":nuhuo"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可令一名其他角色指定你攻击范围内的一名角色，并对你造成1点伤害，然后你视为对被指定的角色使用一张【杀】。",
 	["@nuhuo"] = "“怒火”：选择 <font color=\"#00FF00\"><b>%src </b></font> 攻击范围内一名角色，视为 <font color=\"#00FF00\"><b>%src </b></font> 对其使用一张【杀】。",
 	["#nuhuoChoose"] = "%from 选择了 “%arg” 的目标 %to。",
- }
+
+	--xlc009
+	["myouren"] = "命莲" ,
+	["#myouren"] = "-" ,
+
+}

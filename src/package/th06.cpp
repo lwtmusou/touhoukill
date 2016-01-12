@@ -1270,6 +1270,8 @@ TH06Package::TH06Package()
     daiyousei->addSkill(new Juxian);
     daiyousei->addSkill(new Banyue);
 
+    General *sakuya_sp = new General(this, "sakuya_sp", "hmx", 3, false);
+    Q_UNUSED(sakuya_sp);
 
     addMetaObject<SkltKexueCard>();
     addMetaObject<SuodingCard>();

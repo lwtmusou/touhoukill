@@ -1751,6 +1751,15 @@ TH07Package::TH07Package()
     youmu_slm->addSkill(new HpymSiyu);
     youmu_slm->addSkill(new Juhe);
 
+    General *youki = new General(this, "youki", "yym", 4, false);
+    Q_UNUSED(youki);
+
+    General *ran_sp = new General(this, "ran_sp", "yym", 4, false);
+    Q_UNUSED(ran_sp);
+
+    General *leira = new General(this, "leira", "yym", 4, false);
+    Q_UNUSED(leira);
+
     addMetaObject<ZhaoliaoCard>();
     addMetaObject<MocaoCard>();
 }

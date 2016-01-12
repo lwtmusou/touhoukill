@@ -946,10 +946,12 @@ TH12Package::TH12Package()
     kogasa->addSkill(new Yiwang);
     kogasa->addSkill(new Jingxia);
 
-
     General *unzan = new General(this, "unzan", "xlc", 4, true);
     unzan->addSkill(new Bianhuan);
     unzan->addSkill(new Nuhuo);
+
+    General *myouren = new General(this, "myouren", "xlc", 4, false);
+    Q_UNUSED(myouren);
 
     addMetaObject<PuduCard>();
     addMetaObject<WeizhiCard>();

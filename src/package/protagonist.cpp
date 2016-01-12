@@ -1474,6 +1474,11 @@ ProtagonistPackage::ProtagonistPackage()
     marisa_slm->addSkill(new Guangji);
     marisa_slm->addSkill(new Xinghui);
 
+    General *reimu_old = new General(this, "reimu_old", "zhu", 4, false);
+    Q_UNUSED(reimu_old);
+    General *marisa_old = new General(this, "marisa_old", "zhu", 4, false);
+    Q_UNUSED(marisa_old);
+
 
     addMetaObject<MofaCard>();
     addMetaObject<WuyuCard>();
