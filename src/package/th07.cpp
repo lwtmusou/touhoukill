@@ -407,7 +407,7 @@ public:
                 int id = card->getSubcards().first();
                 exnihilo->addSubcard(id);
                 exnihilo->setSkillName("_zhaoliao");
-                room->useCard(CardUseStruct(exnihilo, player, QList<ServerPlayer *>()), true);
+                room->useCard(CardUseStruct(exnihilo, player), true);
             }
         }
         return false;

@@ -206,7 +206,8 @@ CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer 
 {
     this->card = card;
     this->from = from;
-    this->to << target;
+    if (target != NULL)
+        this->to << target;
     this->m_isOwnerUse = isOwnerUse;
     this->m_addHistory = true;
 }
