@@ -455,6 +455,18 @@ QList<int> Room::getNCards(int n, bool update_pile_number, bool bottom)
     return card_ids;
 }
 
+void Room::returnToTopDrawPile(const QList<int> &cards)
+{
+    QListIterator<int> i(cards);
+    i.toBack();
+    while (i.hasPrevious()) {
+        int id = i.previous();
+        setCardMapping(id, NULL, Player::DrawPile);
+        m_drawPile->prepend(id);
+    }
+    doBroadcastNotify(S_COMMAND_UPDATE_PILE, QVariant(m_drawPile->length()));
+}
+
 QStringList Room::aliveRoles(ServerPlayer *except) const
 {
     QStringList roles;
@@ -3409,6 +3421,7 @@ void Room::loseHp(ServerPlayer *victim, int lose)
     doBroadcastNotify(S_COMMAND_CHANGE_HP, arg);
 
     thread->trigger(PostHpReduced, this, victim, data);
+    thread->trigger(PostHpLost, this, victim, data);
 }
 
 void Room::loseMaxHp(ServerPlayer *victim, int lose)
@@ -6311,11 +6324,8 @@ void Room::touhouLogmessage(const QString logtype, ServerPlayer *logfrom, const 
 
     alog.type = logtype;
     alog.from = logfrom;
-    //if (logto)
     alog.to = logto;
-    //if (logarg)
     alog.arg = logarg;
-    //if (logarg2)
     alog.arg2 = logarg2;
 
     sendLog(alog);

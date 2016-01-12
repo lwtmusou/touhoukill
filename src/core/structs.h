@@ -492,6 +492,7 @@ enum TriggerEvent
     PreHpRecover,
     HpRecover,
     PreHpLost,
+    PostHpLost,
     HpChanged,
     MaxHpChanged,
     PostHpReduced,
