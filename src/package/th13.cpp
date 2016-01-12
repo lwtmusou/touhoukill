@@ -733,7 +733,7 @@ bool XiefaCard::targetFilter(const QList<const Player *> &targets, const Player 
         if (to_select->hasSkill("zhouye") && to_select->getMark("@ye") == 0)
             return false;
 
-        if (to_select->hasSkill("xihua") && to_select->getMark("xihua_record_Slash") > 0)
+        if (to_select->hasSkill("xihua") && to_select->getMark("xihua_record_slash") > 0)
             return false;
         return true;
     } else if (targets.length() == 1) {

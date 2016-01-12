@@ -294,7 +294,7 @@ end
 
 
 sgs.ai_skill_choice.xihua_skill_saveself = function(self, choices)
-	if self.player:getMark("xihua_record_Peach")>0 then
+	if self.player:getMark("xihua_record_peach")>0 then
 		return "analeptic"
 	else
 		return "peach"
