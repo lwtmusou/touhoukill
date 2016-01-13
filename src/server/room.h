@@ -620,8 +620,5 @@ signals:
     void signalSetProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
 };
 
-typedef Room *RoomStar;
-Q_DECLARE_METATYPE(RoomStar)
-
 #endif
 

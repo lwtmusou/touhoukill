@@ -673,8 +673,8 @@ public:
                     id = p->getCards("h").first()->getEffectiveId();
                 else {
                     const Card *cards = room->askForExchange(p, objectName(), 1, 1, false, "cuixiang-exchange:" + player->objectName() + ":" + objectName());
+                    DELETE_OVER_SCOPE(const Card, cards)
                     id = cards->getSubcards().first();
-
                 }
                 room->throwCard(id, p, p);
                 //we need id to check cardplace,
@@ -1894,6 +1894,7 @@ bool HuaxiangCard::targetFilter(const QList<const Player *> &targets, const Play
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
         if (!user_string.isEmpty()) {
             Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+            DELETE_OVER_SCOPE(Card, card)
             return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
         }
         return false;
@@ -1903,6 +1904,7 @@ bool HuaxiangCard::targetFilter(const QList<const Player *> &targets, const Play
 
     const Card *card = Self->tag.value("huaxiang").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("huaxiang");
     return new_card && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
 }
@@ -1912,6 +1914,7 @@ bool HuaxiangCard::targetFixed() const
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
         if (!user_string.isEmpty()) {
             Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+            DELETE_OVER_SCOPE(Card, card)
             return card && card->targetFixed();
         }
         return false;
@@ -1921,6 +1924,7 @@ bool HuaxiangCard::targetFixed() const
 
     const Card *card = Self->tag.value("huaxiang").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("huaxiang");
     return new_card && new_card->targetFixed();
 }
@@ -1930,6 +1934,7 @@ bool HuaxiangCard::targetsFeasible(const QList<const Player *> &targets, const P
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
         if (!user_string.isEmpty()) {
             Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+            DELETE_OVER_SCOPE(Card, card)
             return card && card->targetsFeasible(targets, Self);
         }
         return false;
@@ -1939,6 +1944,7 @@ bool HuaxiangCard::targetsFeasible(const QList<const Player *> &targets, const P
 
     const Card *card = Self->tag.value("huaxiang").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("huaxiang");
     return new_card && new_card->targetsFeasible(targets, Self);
 }
@@ -1963,9 +1969,11 @@ const Card *HuaxiangCard::validateInResponse(ServerPlayer *user) const
     if (user_string == "peach+analeptic") {
         QStringList use_list;
         Card *peach = Sanguosha->cloneCard("peach");
+        DELETE_OVER_SCOPE(Card, peach)
         if (!user->isCardLimited(peach, Card::MethodResponse, true) && user->getMaxHp() <= 2)
             use_list << "peach";
         Card *ana = Sanguosha->cloneCard("analeptic");
+        DELETE_OVER_SCOPE(Card, ana)
         if (!Config.BanPackages.contains("maneuvering") && !user->isCardLimited(ana, Card::MethodResponse, true))
             use_list << "analeptic";
         to_use = room->askForChoice(user, "huaxiang_skill_saveself", use_list.join("+"));
@@ -1999,7 +2007,7 @@ public:
             return true;
         if (player->getMaxHp() <= 2) {
             Card *card = Sanguosha->cloneCard("peach", Card::NoSuit, 0);
-            card->deleteLater();
+            DELETE_OVER_SCOPE(Card, card)
             return card->isAvailable(player);
         }
         return false;
@@ -2034,21 +2042,24 @@ public:
 
         if (pattern == "slash" || pattern == "jink") {
             Card *card = Sanguosha->cloneCard(pattern);
+            DELETE_OVER_SCOPE(Card, card)
             return !player->isCardLimited(card, Card::MethodResponse, true);
         }
-
-
 
         if (pattern.contains("peach") && pattern.contains("analeptic")) {
             Card *peach = Sanguosha->cloneCard("peach");
             Card *ana = Sanguosha->cloneCard("analeptic");
+            DELETE_OVER_SCOPE(Card, peach)
+            DELETE_OVER_SCOPE(Card, ana)
             return !player->isCardLimited(peach, Card::MethodResponse, true) ||
                 !player->isCardLimited(ana, Card::MethodResponse, true);
         } else if (pattern == "peach") {
             Card *peach = Sanguosha->cloneCard("peach");
+            DELETE_OVER_SCOPE(Card, peach)
             return !player->isCardLimited(peach, Card::MethodResponse, true);
         } else if (pattern == "analeptic") {
             Card *ana = Sanguosha->cloneCard("analeptic");
+            DELETE_OVER_SCOPE(Card, ana)
             return !player->isCardLimited(ana, Card::MethodResponse, true);
         }
 
@@ -2113,7 +2124,9 @@ public:
     {
         if (player->getPile("rainbow").length() > 3) return false;
         if (player->isKongcheng()) return false;
-        if (player->isCardLimited(Sanguosha->cloneCard("nullification"), Card::MethodResponse, true))
+        Nullification *nul = new Nullification(Card::NoSuit, 0);
+        DELETE_OVER_SCOPE(Nullification, nul)
+        if (player->isCardLimited(nul, Card::MethodResponse, true))
             return false;
         return player->getMaxHp() <= 1;
     }
@@ -2574,7 +2587,7 @@ public:
     Chaoren() : TriggerSkill("chaoren")
     {
         events << CardsMoveOneTime << TargetConfirming << EventPhaseChanging << DrawPileSwaped
-            << EventAcquireSkill << EventLoseSkill << MarkChanged << AfterGuanXing << Reconnect;
+            << EventAcquireSkill << EventLoseSkill << MarkChanged << AfterGuanXing;
     }
 
 
@@ -2627,14 +2640,9 @@ public:
                 retract = true;
             }
         }
-        if (triggerEvent == Reconnect)
-            expand = true;
-
-
 
         if (sbl == NULL || sbl->isDead())
             return QStringList();
-
 
         // part 3: determine "changed" "old_firstcard" "new_firstcard"
         const QList<int> &drawpile = room->getDrawPile();
@@ -3096,6 +3104,7 @@ public:
         player->drawCards(2);
         if (!player->isKongcheng()) {
             const Card *card = room->askForExchange(player, objectName(), 1, 1, false, "woraoGive:" + use.from->objectName());
+            DELETE_OVER_SCOPE(const Card, card)
             use.from->obtainCard(card, false);
         }
         return false;

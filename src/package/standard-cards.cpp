@@ -1011,6 +1011,7 @@ public:
         if (asked != "jink") return QStringList();
         //since skill yuanfei,we need check
         Card *jink = Sanguosha->cloneCard("jink");
+        DELETE_OVER_SCOPE(Card, jink)
         if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
             if (player->isCardLimited(jink, Card::MethodResponse))
                 return QStringList();

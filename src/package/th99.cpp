@@ -1629,6 +1629,7 @@ public:
                         if (!p->isKongcheng()) {
                             int count = qMin(p->getHandcardNum(), num);
                             const Card *cards = room->askForExchange(p, "bihuo", count, count, false, "bihuo_exchange:" + QString::number(count) + ":" + s->objectName());
+                            DELETE_OVER_SCOPE(const Card, cards)
                             room->obtainCard(s, cards, false);
                         }
                     }

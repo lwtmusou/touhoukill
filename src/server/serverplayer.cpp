@@ -177,8 +177,8 @@ void ServerPlayer::throwAllCards()
         card->addSubcard(equip);
     if (card->subcardsLength() != 0)
         room->throwCard(card, this);
-    card->deleteLater();
-
+    delete card;
+    
     QList<const Card *> tricks = getJudgingArea();
     foreach (const Card *trick, tricks) {
         CardMoveReason reason(CardMoveReason::S_REASON_THROW, this->objectName());
@@ -1191,7 +1191,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
 
     if (hasShownRole())
         room->notifyProperty(player, this, "role");
-    //for huashen  like skill pingyi or zhengti
+    //for huashen  like skill pingyi
     if (getMark("pingyi_steal") > 0) {
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (this != p && p->getMark("pingyi") > 0) {

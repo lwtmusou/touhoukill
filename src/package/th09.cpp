@@ -875,6 +875,7 @@ public:
         if ((!can) || prompt.startsWith("@tianren"))
             return QStringList();
         Card *dummy = Sanguosha->cloneCard(pattern);
+        DELETE_OVER_SCOPE(Card, dummy)
         if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
             if (player->isCardLimited(dummy, Card::MethodResponse))
                 return QStringList();
@@ -1225,6 +1226,7 @@ bool NianliCard::targetFilter(const QList<const Player *> &targets, const Player
 {
     const Card *card = Self->tag.value("nianli").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::SuitToBeDecided, 0);
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("nianli");
     if (new_card->targetFixed())
         return false;
@@ -1235,6 +1237,7 @@ bool NianliCard::targetFixed() const
 {
     const Card *card = Self->tag.value("nianli").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::SuitToBeDecided, 0);
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("nianli");
     //return false;
     return new_card && new_card->targetFixed();
@@ -1244,6 +1247,7 @@ bool NianliCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 {
     const Card *card = Self->tag.value("nianli").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::SuitToBeDecided, 0);
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("nianli");
     return new_card && new_card->targetsFeasible(targets, Self);
 }

@@ -272,17 +272,17 @@ public:
         if (victim) {
             int id = room->askForCardChosen(player, victim, "h", objectName(), false, Card::MethodDiscard);
             room->throwCard(id, victim, player);
-            Card *dummy = Sanguosha->cloneCard("Slash");
+            DummyCard dummy;
             int count = 0;
             foreach (const Card *c, victim->getEquips()) {
 
                 if (player->canDiscard(victim, c->getEffectiveId()) && c->isRed() == Sanguosha->getCard(id)->isRed()) {
-                    dummy->addSubcard(c);
+                    dummy.addSubcard(c);
                     count = count + 1;
                 }
             }
             if (count > 0)
-                room->throwCard(dummy, victim, player);
+                room->throwCard(&dummy, victim, player);
         }
     }
 };
@@ -370,6 +370,7 @@ public:
         } else if ((triggerEvent == AfterDrawInitialCards)) {
             room->broadcastSkillInvoke("shanji");
             const Card *exchange_card = room->askForExchange(player, "shanji", 6, 6);
+            DELETE_OVER_SCOPE(const Card, exchange_card)
             player->addToPile("piao", exchange_card->getSubcards(), false);
         }
         return false;
@@ -466,6 +467,7 @@ public:
             room->setPlayerFlag(player, "qingcangUsed");
         } else if (triggerEvent == AfterDrawNCards) {
             const Card *card = room->askForExchange(player, objectName(), 1, 1, false, "@qingcang-card");
+            DELETE_OVER_SCOPE(const Card, card)
 
             Card *supplyshortage = Sanguosha->cloneCard("supply_shortage", card->getSuit(), card->getNumber());
             WrappedCard *vs_card = Sanguosha->getWrappedCard(card->getSubcards().first());

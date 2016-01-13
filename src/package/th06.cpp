@@ -5,6 +5,7 @@
 #include "engine.h"
 #include "standard.h"
 #include "client.h"
+#include "util.h"
 
 
 SkltKexueCard::SkltKexueCard()
@@ -430,6 +431,7 @@ void SuodingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
     foreach (ServerPlayer *sp, newtargets) {
         if (source == sp) {
             const Card *cards = room->askForExchange(source, "suoding", map.value(sp), map.value(sp), false, "suoding_exchange:" + QString::number(map[sp]));
+            DELETE_OVER_SCOPE(const Card, cards)
             foreach(int id, cards->getSubcards())
                 sp->addToPile("suoding_cards", id, false);
         } else {
@@ -739,6 +741,7 @@ public:
             return false;
 
         const Card *giveCards = room->askForExchange(meirin, objectName(), num, num, false, "neijin_exchange:" + player->objectName() + ":" + QString::number(num));
+        DELETE_OVER_SCOPE(const Card, giveCards)
         room->obtainCard(player, giveCards, false);
         return false;
     }

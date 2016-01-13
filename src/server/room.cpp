@@ -2235,10 +2235,13 @@ int Room::drawCard(bool bottom)
     thread->trigger(FetchDrawPileCard, this, NULL);
     if (m_drawPile->isEmpty())
         swapPile();
+    int id = -1;
     if (!bottom)
-        return m_drawPile->takeFirst();
+        id = m_drawPile->takeFirst();
     else
-        return m_drawPile->takeLast();
+        id = m_drawPile->takeLast();
+
+    return id;
 }
 
 void Room::prepareForStart()
@@ -3753,22 +3756,6 @@ void Room::reconnect(ServerPlayer *player, ClientSocket *socket)
     marshal(player);
 
     broadcastProperty(player, "state");
-
-
-    //show double Hp bar for banling when reconnecting
-    foreach (ServerPlayer *p, getAlivePlayers()) {
-        if (p->hasSkill("banling")) {
-            int x = player->getMark("lingtili") - player->getMark("minus_lingtili");
-            int y = player->getMark("rentili") - player->getMark("minus_rentili");
-            int z = qMin(x, y);
-            setPlayerProperty(p, "hp", z);
-
-        }
-    }
-
-    QVariant empty_d;
-    thread->trigger(Reconnect, this, player, empty_d);
-
 }
 
 void Room::marshal(ServerPlayer *player)
@@ -5777,11 +5764,10 @@ void Room::takeAG(ServerPlayer *player, int card_id, bool move_cards, QList<Serv
 
 
         if (moveOneTime.card_ids.length() > 0 && moveOneTime.to == NULL) {
-            Card *dummy = Sanguosha->cloneCard("Slash");
-            dummy->addSubcard(Sanguosha->getCard(card_id));
+            DummyCard dummy;
+            dummy.addSubcard(Sanguosha->getCard(card_id));
             CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), "gaoao", "");
-            throwCard(dummy, reason, NULL);
-            delete dummy;
+            throwCard(&dummy, reason, NULL);
             return;
         }
 

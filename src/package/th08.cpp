@@ -229,6 +229,7 @@ void MiyaoCard::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     if (effect.to->canDiscard(effect.to, "h")) {
         const Card *cards = room->askForExchange(effect.to, "miyao", 1, 1, false, "miyao_cardchosen");
+        DELETE_OVER_SCOPE(const Card, cards)
         room->throwCard(cards, effect.to);
     }
     if (effect.to->isWounded()) {
@@ -1227,6 +1228,7 @@ bool ChuangshiCard::targetFilter(const QList<const Player *> &targets, const Pla
     const Player *user = Chuangshi::getChuangshiUser(Self);
     const Card *card = Self->tag.value("chuangshi").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName());
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("chuangshi");
 
     if (new_card->targetFixed())
@@ -1243,6 +1245,7 @@ bool ChuangshiCard::targetsFeasible(const QList<const Player *> &targets, const 
     const Player *user = Chuangshi::getChuangshiUser(Self);
     const Card *card = Self->tag.value("chuangshi").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName());
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("chuangshi");
     if (card->isKindOf("IronChain") && targets.length() == 0)
         return false;
@@ -1253,6 +1256,7 @@ void ChuangshiCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
 
     Card *card = Sanguosha->cloneCard(user_string);
+    DELETE_OVER_SCOPE(Card, card)
     if (card->isKindOf("Collateral")) {
         ServerPlayer *from = card_use.from; //ensure that the length of use.to should be 2. 
         ServerPlayer *to1 = card_use.to.at(0);
@@ -1274,15 +1278,11 @@ void ChuangshiCard::onUse(Room *room, const CardUseStruct &card_use) const
     } else
         SkillCard::onUse(room, card_use);
 }
+
 void ChuangshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
-
-    //const Card *card = Self->tag.value("chuangshi").value<const Card *>();
-    Card *card = Sanguosha->cloneCard(user_string);
-    if (card->isKindOf("Collateral"))
-        return;
     ServerPlayer *user = Chuangshi::getChuangshiUser1(source);
-    Card * use_card = Sanguosha->cloneCard(card->objectName());
+    Card * use_card = Sanguosha->cloneCard(user_string);
 
     room->setPlayerMark(user, "chuangshi_user", 0);
     source->addMark("chuangshi", 1);

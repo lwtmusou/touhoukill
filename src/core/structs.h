@@ -576,7 +576,6 @@ enum TriggerEvent
     DrawPileSwaped,//like qiannian
     DrawCardsFromDrawPile, // for qiangyu
     AfterGuanXing,
-    Reconnect,
     KingdomChanged,
 
     NumOfEvents

@@ -212,6 +212,7 @@ public:
         player->drawCards(1);
         if (!player->isKongcheng()) {
             const Card *cards = room->askForExchange(player, objectName(), 1, 1, false, "jingjie_exchange");
+            DELETE_OVER_SCOPE(const Card, cards)
             int id = cards->getSubcards().first();
             player->addToPile("jingjie", id);
         }
@@ -312,7 +313,7 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *s) const
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *s) const
     {
         player->skip(Player::Discard);
         s->tag.remove("jingdong_target");
@@ -619,8 +620,7 @@ public:
                 Card *card = Sanguosha->cloneCard(cardname);
                 if (card == NULL)
                     return QStringList();
-                QScopedPointer<Card> card_scopedPointer(card);
-                Q_UNUSED(card_scopedPointer);
+                DELETE_OVER_SCOPE(Card, card)
                 if (card->isKindOf("Slash") || card->isKindOf("Peach") || card->isNDTrick()) {
                     if (player->isCardLimited(card, Card::MethodUse))
                         return QStringList();
@@ -879,7 +879,7 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const
+    virtual bool cost(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const
     {
         if (player->getMark("@shi") > 0) {
             if (triggerEvent == Damaged)
@@ -896,7 +896,7 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const
     {
         if (player->getMark("@shi") > 0)
             player->loseMark("@shi");
@@ -1060,8 +1060,9 @@ public:
                 return QStringList();
 
             const Card *c = Sanguosha->cloneCard(use.card->objectName());
-            QScopedPointer<const Card> c_scoped(c);
-            Q_UNUSED(c_scoped);
+            if (c == NULL)
+                return QStringList();
+            DELETE_OVER_SCOPE(const Card, c)
             if (player->isCardLimited(c, Card::MethodUse))
                 return QStringList();
 
