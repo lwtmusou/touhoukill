@@ -10,7 +10,7 @@
 
 
 
-
+#pragma message WARN("todo_Fs: develop a new method to deal with skill nuillify, the Pingyi mark is not always reliable")
 class Yongheng : public TriggerSkill
 {
 public:
@@ -164,9 +164,8 @@ public:
         events << PostCardEffected << CardEffected;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
-        if (!TriggerSkill::triggerable(player)) return QStringList();
         if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if (effect.card->isNDTrick()) {
@@ -175,7 +174,13 @@ public:
                 //we can not find the real name in cardused,if this card is transformed
                 player->setFlags("ruizhi_effect");
             }
-        } else if (triggerEvent == PostCardEffected) {
+        }
+    }
+
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    {
+        if (!TriggerSkill::triggerable(player)) return QStringList();
+        if (triggerEvent == PostCardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if (effect.card->isNDTrick() && effect.to == player
                 && player->isWounded() && player->hasFlag("ruizhi_effect")) {
@@ -227,11 +232,9 @@ bool MiyaoCard::targetFilter(const QList<const Player *> &targets, const Player 
 void MiyaoCard::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
-    if (effect.to->canDiscard(effect.to, "h")) {
-        const Card *cards = room->askForExchange(effect.to, "miyao", 1, 1, false, "miyao_cardchosen");
-        DELETE_OVER_SCOPE(const Card, cards)
-        room->throwCard(cards, effect.to);
-    }
+    if (effect.to->canDiscard(effect.to, "h")) 
+        room->askForDiscard(effect.to, "miyao", 1, 1, false, false, "miyao_cardchosen");
+
     if (effect.to->isWounded()) {
         RecoverStruct recover;
         recover.recover = 1;
@@ -264,13 +267,16 @@ class Bumie : public TriggerSkill
 public:
     Bumie() : TriggerSkill("bumie")
     {
-        events << DamageInflicted << PreHpLost;
+        events << DamageDone << PreHpLost;
         frequency = Compulsory;
     }
 
-    virtual int getPriority(TriggerEvent) const
+    virtual int getPriority(TriggerEvent triggerEvent) const
     {
-        return -100;
+        if (triggerEvent == PreHpLost)
+            return -100;
+
+        return TriggerSkill::getPriority(triggerEvent);
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
@@ -278,7 +284,7 @@ public:
         if (!TriggerSkill::triggerable(player)) return QStringList();
         int will_losehp;
         int original_damage;
-        if (triggerEvent == DamageInflicted)
+        if (triggerEvent == DamageDone)
             will_losehp = data.value<DamageStruct>().damage;
         else
             will_losehp = data.toInt();
@@ -298,7 +304,7 @@ public:
     {
         int will_losehp;
         int original_damage;
-        if (triggerEvent == DamageInflicted)
+        if (triggerEvent == DamageDone)
             will_losehp = data.value<DamageStruct>().damage;
         else
             will_losehp = data.toInt();
@@ -315,7 +321,7 @@ public:
         if (will_losehp <= 0)
             return true;
 
-        if (triggerEvent == DamageInflicted) {
+        if (triggerEvent == DamageDone) {
             DamageStruct damage = data.value<DamageStruct>();
             damage.damage = will_losehp;
             data = QVariant::fromValue(damage);
@@ -335,7 +341,7 @@ public:
     }
 
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask) const
     {
         //if (!TriggerSkill::triggerable(player)) return QStringList();
         bool invoke = false;
@@ -358,28 +364,18 @@ public:
                 invoke = true;
         }
 
-        if (invoke)
+        if (invoke) {
+            ask = src;
             return QStringList(objectName());
+        }
         return QStringList();
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer *) const
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer *src) const
     {
-
-        ServerPlayer *src = room->findPlayerBySkillName("bumie");
-
-        /* JudgeStruct judge;
-        judge.who = src;
-        judge.reason = "bumie";
-        judge.pattern = ".|diamond";
-        judge.good = true; */
-        //judge.negative = true;
-
         room->touhouLogmessage("#TriggerSkill", src, "bumie");
         room->notifySkillInvoked(src, "bumie");
 
-        //room->judge(judge);
-        //src->obtainCard(judge.card);
         CardsMoveStruct move;
         move.to = src;
         move.to_place = Player::PlaceHand;
@@ -684,12 +680,11 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const
     {
-
         QList<int> pile = player->getPile("lishi");
         ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "@" + objectName(), true, true);
-        DummyCard *dummy = new DummyCard(pile);
+        DummyCard dummy(pile);
         if (target)
-            room->obtainCard(target, dummy);
+            room->obtainCard(target, &dummy);
         return false;
     }
 };
@@ -901,7 +896,7 @@ public:
     {
         if (originalCard) {
             //Indulgence *indl = new Indulgence(originalCard->getSuit(), originalCard->getNumber());
-            GeshengCard *indl = new GeshengCard();
+            GeshengCard *indl = new GeshengCard;
             indl->addSubcard(originalCard);
             indl->setSkillName(objectName());
             return indl;

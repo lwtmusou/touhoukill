@@ -1551,7 +1551,7 @@ public:
     }
 };
 
-
+#pragma message WARN("todo_Fs: rewrite this")
 class HpymSiyu : public TriggerSkill
 {
 public:

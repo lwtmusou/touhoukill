@@ -35,7 +35,6 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const
     {
-
         CardUseStruct ana_use;
         ana_use.from = player;
         Analeptic *card = new Analeptic(Card::NoSuit, 0);
@@ -661,7 +660,6 @@ public:
 
                 if (id == -1)
                     return true;
-                (CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
                 CardMoveReason reason(CardMoveReason::S_REASON_DISMANTLE, player->objectName(), "", "toupai", "");
                 room->throwCard(Sanguosha->getCard(id), reason, target, player);
                 if (Sanguosha->getCard(id)->isKindOf("BasicCard"))
