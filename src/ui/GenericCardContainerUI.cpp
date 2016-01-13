@@ -210,24 +210,14 @@ void PlayerCardContainer::updateAvatar()
             _m_layout->m_screenNameArea,
             Qt::AlignCenter,
             m_player->screenName());
+    }else {
+        _m_layout->m_screenNameFont.paintText(_m_screenNameItem,
+            _m_layout->m_screenNameArea,
+            Qt::AlignCenter,
+            QString());
     }
 
-    /*if (m_player) {
-        general = m_player->getAvatarGeneral();
-        if (Self != m_player) {
-        _m_layout->m_screenNameFont.paintText(_m_screenNameItem,
-        _m_layout->m_screenNameArea,
-        Qt::AlignCenter,
-        m_player->screenName());
-        }
-        else {
-        if (_m_screenNameItem && _m_screenNameItem->isVisible())
-        _m_screenNameItem->hide();
-        }
-        }*/
-
-
-
+    
     if (general != NULL) {
         _m_avatarArea->setToolTip(m_player->getSkillDescription());
         QString name = general->objectName();
