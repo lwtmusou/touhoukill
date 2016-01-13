@@ -1041,7 +1041,7 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const
     {
-        if (player->getGeneralName() == "hmx008") // koakuma??? @lwtmusou
+        if (player->getGeneralName() == "koakuma")
             room->doLightbox("$moxueAnimate", 4000);
         room->touhouLogmessage("#TriggerSkill", player, "moxue");
         room->notifySkillInvoked(player, objectName());
