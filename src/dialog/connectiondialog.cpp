@@ -174,8 +174,11 @@ void UdpDetectorDialog::stopDetection()
     detector = NULL;
 }
 
-void UdpDetectorDialog::addServerAddress(const QString &server_name, const QString &address)
+void UdpDetectorDialog::addServerAddress(const QString &server_name, const QString &address_)
 {
+    QString address = address_;
+    if (address.startsWith("::ffff:"))
+        address.remove(0, 7);
     QString label = QString("%1 [%2]").arg(server_name).arg(address);
     QListWidgetItem *item = new QListWidgetItem(label);
     item->setData(Qt::UserRole, address);
