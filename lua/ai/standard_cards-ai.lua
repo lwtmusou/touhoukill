@@ -1286,8 +1286,7 @@ sgs.ai_choicemade_filter.cardResponded["slash-jink"] = function(self, player, pr
 				break
 			end
 		end
-		if uuz and uuz:isLord() 
-		and uuz:hasSkill("sidie") and uuz:getPhase()==sgs.Player_Play and not uuz:hasFlag("sidie_used") then 
+		if uuz and uuz:isLord() and self:sidieEffect(uuz) then 
 			if not player:hasSkill("xuying") then
 				sgs.updateIntention(player, uuz, 50)
 			end
@@ -2000,8 +1999,7 @@ sgs.ai_skill_invoke.EightDiagram = function(self, data)
 		end
 	end
 	if slash_source and self:isFriend(slash_source)
-	and slash_source:getPhase() == sgs.Player_Play 
-	and slash_source:hasSkill("sidie") and not slash_source:hasFlag("sidie_used")  then
+    and self:sidieEffect(slash_source) then
 		return false
 	end
 	

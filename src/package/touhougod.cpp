@@ -3424,6 +3424,7 @@ public:
     ShenbaoSpear() : ViewAsSkill("shenbao_spear")
     {
         attached_lord_skill = true;
+        response_or_use = true;
     }
 
     virtual bool shouldBeVisible(const Player *Self) const

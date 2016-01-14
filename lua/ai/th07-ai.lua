@@ -73,7 +73,7 @@ function getSidieVictim(self, targets,sidie)
 end
 
 function SmartAI:sidieEffect(from)
-	if from:hasSkill("sidie") and from:getPhase() ==sgs.Player_Play and not from:hasFlag("sidie_used") then 
+	if from:hasSkill("sidie") and not from:hasFlag("sidie_used") then 
 		return true
 	end
 	return false
