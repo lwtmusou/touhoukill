@@ -34,8 +34,6 @@ public:
     {
         if (!TriggerSkill::triggerable(player)) return QStringList();
         if (triggerEvent == DamageCaused) {
-            if (player->getPhase() != Player::Play)
-                return QStringList();
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.chain || damage.transfer || !damage.by_user)
                 return QStringList();
@@ -70,7 +68,9 @@ public:
 
         if (target) {
             player->tag["sidie-victim"] = QVariant::fromValue(target);
-            room->setPlayerFlag(player, "sidie_used");
+            ServerPlayer *current = room->getCurrent();
+            if (current && current->isAlive())
+                room->setPlayerFlag(player, "sidie_used");
             QList<ServerPlayer *> logto;
             logto << damage.to;
             room->touhouLogmessage("#Dongjie", player, "sidie", logto);
