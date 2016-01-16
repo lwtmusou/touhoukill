@@ -4810,7 +4810,7 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use)
 
         card_use.from = player;
         ai->activate(card_use);
-        if (!card_use.card->isVirtualCard())
+        if (card_use.card && !card_use.card->isVirtualCard())
             card_use.card = card_use.card->getRealCard();
 
         qint64 diff = Config.AIDelay - timer.elapsed();
