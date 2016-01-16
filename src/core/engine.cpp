@@ -602,7 +602,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
         const LuaArmor *lcard = luaArmors.value(class_name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
-    }/* else if (luaTreasure_className2objectName.keys().contains(name)) {
+    } else if (luaTreasure_className2objectName.keys().contains(name)) {
         const LuaTreasure *lcard = luaTreasures.value(name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
@@ -611,7 +611,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
         const LuaTreasure *lcard = luaTreasures.value(class_name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
-        }*/
+        }
     else {
         const QMetaObject *meta = metaobjects.value(name, NULL);
         if (meta == NULL)

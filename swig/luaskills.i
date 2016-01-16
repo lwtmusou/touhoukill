@@ -298,6 +298,23 @@ public:
     LuaFunction on_uninstall;
 };
 
+class LuaTreasure : public Treasure
+{
+public:
+    LuaTreasure(Card::Suit suit, int number, const char *obj_name, const char *class_name);
+    LuaTreasure *clone(Card::Suit suit = Card::SuitToBeDecided, int number = -1) const;
+
+    virtual void onInstall(ServerPlayer *player) const;
+    virtual void onUninstall(ServerPlayer *player) const;
+
+    virtual QString getClassName() const;
+    virtual bool isKindOf(const char *cardType) const;
+
+    // the lua callbacks
+    LuaFunction on_install;
+    LuaFunction on_uninstall;
+};
+
 %{
 
 #include "lua-wrapper.h"
@@ -1512,6 +1529,58 @@ void LuaArmor::onUninstall(ServerPlayer *player) const
 {
     if (on_uninstall == 0)
         return Armor::onUninstall(player);
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    // the callback
+    lua_rawgeti(L, LUA_REGISTRYINDEX, on_uninstall);
+
+    pushSelf(L);
+
+    SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
+
+    int error = lua_pcall(L, 2, 0, 0);
+    if (error) {
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        Room *room = player->getRoom();
+        room->output(error_msg);
+    }
+}
+
+void LuaTreasure::pushSelf(lua_State *L) const
+{
+    LuaTreasure *self = const_cast<LuaTreasure *>(this);
+    SWIG_NewPointerObj(L, self, SWIGTYPE_p_LuaTreasure, 0);
+}
+
+void LuaTreasure::onInstall(ServerPlayer *player) const
+{
+    if (on_install == 0)
+        return Treasure::onInstall(player);
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    // the callback
+    lua_rawgeti(L, LUA_REGISTRYINDEX, on_install);
+
+    pushSelf(L);
+
+    SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
+
+    int error = lua_pcall(L, 2, 0, 0);
+    if (error) {
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        Room *room = player->getRoom();
+        room->output(error_msg);
+    }
+}
+
+void LuaTreasure::onUninstall(ServerPlayer *player) const
+{
+    if (on_uninstall == 0)
+        return Treasure::onUninstall(player);
 
     lua_State *L = Sanguosha->getLuaState();
 

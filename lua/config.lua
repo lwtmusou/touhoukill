@@ -45,7 +45,7 @@ config = {
 		"TH12",
 		"TH13",
 		"TH14",
-		"TH15",
+		--"TH15", --0.8不对应
 		"TH99",
 		"THXWM",
 		"THNDJ",
