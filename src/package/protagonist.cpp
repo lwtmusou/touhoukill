@@ -925,7 +925,7 @@ void BllmWuyuCard::use(Room *room, ServerPlayer *bllm, QList<ServerPlayer *> &) 
     else if (choice == "bllmshiyu")
         room->useCard(CardUseStruct(new BllmShiyuCard, bllm, QList<ServerPlayer *>()));
     else if (choice == "bllmseyu")
-        room->useCard(CardUseStruct(new BllmSeyuCard, bllm, NULL));
+        room->useCard(CardUseStruct(new BllmSeyuCard, bllm, QList<ServerPlayer *>()));
 }
 
 
