@@ -795,20 +795,20 @@ public:
     {
         if (!TriggerSkill::triggerable(player)) return QStringList();
         if (triggerEvent == EventPhaseStart) {
-            if (player->getPhase() == Player::Finish && !player->isNude())
+            if (player->getPhase() == Player::Finish)
                 return QStringList(objectName());
         }
         return QStringList();
     }
 
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    {
+        return player->askForSkillInvoke(objectName(), data);
+    }
+    
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
-        const Card *cards = room->askForCard(player, ".|.|.|hand,equipped", "addfeitou", data, Card::MethodNone, false);
-        if (cards) {
-            room->notifySkillInvoked(player, objectName());
-            room->touhouLogmessage("#InvokeSkill", player, objectName());
-            player->addToPile("feitou", cards->getSubcards().first());
-        }
+        player->addToPile("feitou", room->getNCards(1));
         return false;
     }
 };
