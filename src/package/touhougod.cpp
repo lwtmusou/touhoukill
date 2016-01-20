@@ -2152,12 +2152,15 @@ public:
     {
 
         QList<int>  idlist = merin->getPile("rainbow");
-        CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, merin->objectName(), NULL, objectName(), "");
-        CardsMoveStruct move(idlist, merin, Player::DiscardPile,
-            reason);
+        
+        CardsMoveStruct move;
+        move.card_ids = idlist;
+        move.to_place = Player::PlaceHand;
+        move.to = merin;
         room->moveCardsAtomic(move, true);
-
-        merin->drawCards(2);
+        int x = qMin(merin->getHandcardNum(), 2); 
+        if (x > 0)
+            room->askForDiscard(merin, objectName(), x, x, false, false, "caiyu_discard:" + QString::number(x));
 
         if (room->askForSkillInvoke(merin, objectName(), "loseMaxHp")) {
             room->loseMaxHp(merin, 1);

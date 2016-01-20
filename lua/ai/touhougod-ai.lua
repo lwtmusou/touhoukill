@@ -1117,6 +1117,37 @@ sgs.ai_skill_invoke.caiyu = function(self,data)
 	return false
 end
 
+function caiyuValue(self, card)
+    local hands = self.player:getCards("h")  
+    local num = 0
+    for _,c in sgs.qlist(hands) do
+        if c:getSuit() == card:getSuit() then
+            num = num + 1
+        end
+    end
+    local value = 1/num 
+    return self:getKeepValue(card)* value
+end
+sgs.ai_skill_discard.caiyu = function(self,discard_num)
+    local hands = self.player:getCards("h")  
+    local card_table={}
+    for _,c in sgs.qlist(hands) do
+        local array={card = c, value= caiyuValue(self, c)}
+		table.insert(card_table,array)
+    end
+    local compare_func = function(a, b)
+        return a.value > b.value 
+	end
+    table.sort(card_table, compare_func)
+	
+	local to_discard = {}
+	for var=1, discard_num ,1 do
+		table.insert(to_discard, card_table[var].card:getId())
+	end
+	return to_discard
+end
+
+
 sgs.ai_skill_invoke.xuanlan = true
 
 sgs.ai_choicemade_filter.cardResponded["@qinlue-discard"] = function(self, player, promptlist)
