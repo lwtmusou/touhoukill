@@ -164,7 +164,7 @@ public:
         events << PostCardEffected << CardEffected;
     }
 
-    virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+    virtual void record(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data) const
     {
         if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
