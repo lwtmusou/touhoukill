@@ -654,7 +654,8 @@ public:
                 use.nullified_list << "_ALL_TARGETS";
                 data = QVariant::fromValue(use);
             }
-
+            if (src->canDiscard(src, "h"))
+                room->askForDiscard(src, objectName(), 1, 1, false, false, "shishi_discard");
         }
         return false;
     }
