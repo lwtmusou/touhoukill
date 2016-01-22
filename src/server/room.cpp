@@ -995,6 +995,14 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
     return invoked;
 }
 
+bool Room::askForSkillInvoke(ServerPlayer *player, const Skill *skill, const QVariant &data /* = QVariant() */)
+{
+    if (skill == NULL)
+        return false;
+
+    return askForSkillInvoke(player, skill->objectName(), data);
+}
+
 QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices, const QVariant &data)
 {
     tryPause();

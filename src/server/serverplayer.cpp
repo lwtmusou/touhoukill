@@ -196,6 +196,11 @@ bool ServerPlayer::askForSkillInvoke(const QString &skill_name, const QVariant &
     return room->askForSkillInvoke(this, skill_name, data);
 }
 
+bool ServerPlayer::askForSkillInvoke(const Skill *skill, const QVariant &data)
+{
+    return room->askForSkillInvoke(this, skill, data);
+}
+
 QList<int> ServerPlayer::forceToDiscard(int discard_num, bool include_equip, bool is_discard)
 {
     QList<int> to_discard;

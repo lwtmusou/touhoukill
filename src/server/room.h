@@ -337,6 +337,7 @@ public:
     Card::Suit askForSuit(ServerPlayer *player, const QString &reason);
     QString askForKingdom(ServerPlayer *player);
     bool askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data = QVariant());
+    bool askForSkillInvoke(ServerPlayer *player, const Skill *skill, const QVariant &data = QVariant());
     QString askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices, const QVariant &data = QVariant());
     bool askForDiscard(ServerPlayer *target, const QString &reason, int discard_num, int min_num,
         bool optional = false, bool include_equip = false, const QString &prompt = QString());
