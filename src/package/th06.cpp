@@ -177,13 +177,19 @@ public:
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const
     {
-        QStringList skill_list;
-        if (player->getKingdom() != "hmx")//target != NULL && target->isAlive()
-            return skill_list;
+        QList<ServerPlayer *> Remilias;
+        foreach (ServerPlayer *rem, room->getOtherPlayers(player)) {
+            if (rem->hasLordSkill(objectName()))
+                Remilias << rem;
+        }
 
-        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (p->hasLordSkill("xueyi"))
-                skill_list << p->objectName() + "'" + objectName();
+        if (Remilias.isEmpty())
+            return QStringList();
+
+        QStringList skill_list;
+        if (player != NULL && player->isAlive() && player->getKingdom() == "hmx") {
+            foreach (ServerPlayer *rem, Remilias)
+                skill_list << rem->objectName() + "'" + objectName();
         }
         return skill_list;
     }
