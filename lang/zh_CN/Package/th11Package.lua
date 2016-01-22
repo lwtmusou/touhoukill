@@ -5,8 +5,6 @@ return{
     --dld001  势力：地 3血
     ["satori"] = "古明地觉",
     ["#satori"] = "连怨灵也恐惧的少女",
-    ["!satori"] = "古明地觉",
-	 --["designer:satori"] = "星野梦美 | 程序:三国有单", 
 	["illustrator:satori"] = "かめ (p号:2776523)",
 	--个人id:87447
 	["illustrator:satori_1"] = "ななしな (p号:26084258)",
@@ -34,8 +32,6 @@ return{
     --dld002  势力：地 3血
     ["koishi"] = "古明地恋",
     ["#koishi"] = "紧闭着的恋之瞳",
-    ["!koishi"] = "古明地恋",
-	--["designer:koishi"] = "星野梦美 | 程序:幻兰幽梦", 
 	["illustrator:koishi"] = "深崎暮人　(p号:)",
 	--个人id:
 	["illustrator:koishi_1"] = "bon　(p号:21914911)",
@@ -62,8 +58,6 @@ return{
     --dld003  势力：地 4血
     ["utsuho"] = "灵乌路空",
     ["#utsuho"] = "炽热焦躁的神之火" ,
-    ["!utsuho"] = "灵乌路空",
-	 --["designer:utsuho"] = "星野梦美 | 程序:fsu0413,三国有单", 
 	["illustrator:utsuho"] = "皆村 (p号:9086872)",
 	--个人id:6098
 	["illustrator:utsuho_1"] = "asagi (p号:37458482)",
@@ -86,8 +80,6 @@ return{
     --dld004  势力：地 4血
     ["rin"] = "火焰猫燐",
     ["#rin"] = "地狱的车祸",
-    ["!rin"] = "火焰猫燐",
-	--["designer:rin"] = "星野梦美 | 程序:幻兰幽梦", 
 	["illustrator:rin"] = "まるかた (p号:5227566)",
 	--个人id:6359
 	["illustrator:rin_1"] = "リリア (p号:12490103)",
@@ -113,8 +105,6 @@ return{
     --dld005  势力：地 4血
     ["yugi"] = "星熊勇仪",
     ["#yugi"] = "人所谈论的怪力乱神",
-    ["!yugi"] = "星熊勇仪",
-	--["designer:yugi"] = "星野梦美 | 程序:幻兰幽梦", 
 	["illustrator:yugi"] = "Ж (p号:3206198)",
 	--个人id:7541
 	["illustrator:yugi_1"] = "珠洲城くるみ (p号:1188598)",
@@ -139,8 +129,6 @@ return{
     --dld006  势力：地 3血
     ["parsee"]="水桥帕露西",
     ["#parsee"]="地壳下的嫉妒心",
-    ["!parsee"]="水桥帕露西", 
-  --["designer:parsee"] = "星野梦美 | 程序:幻兰幽梦", 
 	["illustrator:parsee"] = "岩本ゼロゴ (p号:无，个人id:3080)",
 	--个人id:3080
 	["illustrator:parsee_1"] = "みきぷらす (p号:14442359)",
@@ -162,8 +150,6 @@ return{
     --dld007  势力：地 4血
     ["yamame"] = "黑谷山女",
     ["#yamame"] = "黑暗洞窟中明亮的网",
-    ["!yamame"] = "黑谷山女",
-	 --["designer:yamame"] = "星野梦美 | 程序:幻兰幽梦", 
 	["illustrator:yamame"] = "ともかつ治臣 (p号:11886525)",
 	--个人id:230418
 	["illustrator:yamame_1"] = "銀児 (p号:35228783)",
@@ -184,9 +170,7 @@ return{
 --*********************************************
     --dld008  势力：地 3血
     ["kisume"] = "琪斯美", 
-    ["#kisume"] = "可怕的水井妖怪",
-    ["!kisume"] = "琪斯美",
-	 --["designer:kisume"] = "星野梦美 | 程序:三国有单", 
+    ["#kisume"] = "可怕的水井妖怪", 
 	["illustrator:kisume"] = "まるかた (p号:8537445)",
 	--个人id:6359
 	["illustrator:kisume_1"] = "くろぬこネーロ (p号:33450740)",
@@ -206,8 +190,6 @@ return{
     ["suika_sp"] = "地灵殿sp萃香" ,
     ["&suika_sp"] = "地灵殿萃香" ,
     ["#suika_sp"] = "小型的百鬼夜行" ,
-    ["!suika_sp"] = "地灵殿sp萃香" ,
-	 --["designer:suika_sp"] = "星野梦美 | 程序:fsu0413", 
 	["illustrator:suika_sp"] = "黄泉洞 (p号:20578676)",
 	--个人id:1067088(国人)
 	["illustrator:suika_sp_1"] = "えれっと (p号:13980436)",

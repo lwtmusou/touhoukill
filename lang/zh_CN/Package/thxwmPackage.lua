@@ -5,8 +5,6 @@ return{
     ["satori_xwm"] = "线外萌sp觉",
     ["&satori_xwm"] = "线外萌觉",
     ["#satori_xwm"] = "第一届线外萌萌王",
-    ["!satori_xwm"] = "线外萌sp觉",  
- --["designer:satori_xwm"] = "星野梦美 | 程序:hmqgg", 
 	["illustrator:satori_xwm"] = "ぎん太郎 (p号:16388840)",
 	--个人id:95886
 	["illustrator:satori_xwm_1"] = "皆村 (p号:28695491)",
@@ -31,8 +29,6 @@ return{
     ["yuyuko_xwm"] = "线外萌sp幽幽子",
     ["&yuyuko_xwm"] = "线外萌幽幽子",
     ["#yuyuko_xwm"] = "第一届线外萌准萌",
-    ["!yuyuko_xwm"] = "线外萌sp幽幽子",
-	 --["designer:yuyuko_xwm"] = "星野梦美 | 程序:幻兰幽梦", 
 	["illustrator:yuyuko_xwm"] = "藤原 (p号:17184292)",
 	--个人id:27517
 	["illustrator:yuyuko_xwm_1"] = "はいばね (p号:22145913)",
@@ -50,8 +46,6 @@ return{
     ["marisa_xwm"] = "线外萌sp魔理沙",
     ["&marisa_xwm"] = "线外萌魔理沙",
     ["#marisa_xwm"] = "第一届线外萌四强",
-    ["!marisa_xwm"] = "线外萌sp魔理沙",
-	--["designer:marisa_xwm"] = "星野梦美 | 程序:大蛇", 
 	["illustrator:marisa_xwm"] = "甘党 (p号:8937985)",
 	--个人id:298982
 	["illustrator:marisa_xwm_1"] = "かがよ (p号:32950706)",
@@ -69,8 +63,6 @@ return{
     ["aya_xwm"] = "线外萌sp文",
     ["&aya_xwm"] = "线外萌文",
     ["#aya_xwm"] = "第一届线外萌四强",
-    ["!aya_xwm"] = "线外萌sp文",
-	--["designer:aya_xwm"] = "星野梦美 | 程序:幻兰幽梦", 
 	["illustrator:aya_xwm"] = "AUER (p号:12802720)",
 	--个人id:178301 （国人）
 	["illustrator:aya_xwm_1"] = "RiE (p号:27409141)",
@@ -88,8 +80,6 @@ return{
     ["mokou_xwm"] = "线外萌sp妹红",
     ["&mokou_xwm"] = "线外萌妹红",
     ["#mokou_xwm"] = "第二届线外萌萌王",
-    ["!mokou_xwm"] = "线外萌sp妹红",
-	--["designer:mokou_xwm"] = "星野梦美 | 程序:三国有单", 
 	["illustrator:mokou_xwm"] = "Lowlight.K (p号: 10738620)",
 	--个人id:904187（国人？）
 	["illustrator:mokou_xwm_1"] = "saku ( p号:2318512 )",
@@ -112,8 +102,6 @@ return{
     ["remilia_xwm"] = "线外萌sp蕾米莉亚",
     ["&remilia_xwm"] = "线外萌蕾米",
     ["#remilia_xwm"] = "第二届线外萌准萌",
-    ["!remilia_xwm"] = "线外萌sp蕾米莉亚",
-	 --["designer:remilia_xwm"] = "星野梦美 | 程序:幻兰幽梦", 
 	["illustrator:remilia_xwm"] = "とりのあくあ (p号:21693827)",
 	--个人id:1960050
 	["illustrator:remilia_xwm_1"] = "甘党 (p号:29099056)",

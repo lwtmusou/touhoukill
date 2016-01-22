@@ -2,11 +2,9 @@
 return{ ["th06"] = "红魔乡",
     ["hmx"] = "红",
     --hmx001  势力：红 3血  
-    ["remilia"] = "蕾米莉亚·斯卡雷特",
-    ["&remilia"] = "蕾米莉亚",
+    ["remilia"] = "蕾米莉亚",
     ["#remilia"] = "红之恶魔",
-    ["!remilia"] = "蕾米莉亚",
-	--["designer:remilia"] = "星野梦美 | 程序:fsu0413", 
+    ["!remilia"] = "蕾米莉亚·斯卡雷特",
 	["illustrator:remilia"] = "ke-ta  (p号:18583207)",
 	--个人id:3104565
 	["illustrator:remilia_1"] = "ザネリ  (p号:20900706)",
@@ -36,11 +34,9 @@ return{ ["th06"] = "红魔乡",
    
 --************************************************	
     --hmx002  势力：红 3血  
-    ["flandre"] = "芙兰朵露·斯卡雷特",
-    ["&flandre"] = "芙兰朵露",
+    ["flandre"] = "芙兰朵露",
     ["#flandre"] = "恶魔之妹",
-    ["!flandre"] = "芙兰朵露",
-		--["designer:flandre"] = "星野梦美 | 程序:幻兰幽梦", 
+    ["!flandre"] = "芙兰朵露·斯卡雷特",
 	["illustrator:flandre"] = "大嘘 (p号:无，个人id:457541)",
 	--个人id:457541
 	["illustrator:flandre_1"] = "ideolo (p号:32092803)",
@@ -67,8 +63,6 @@ return{ ["th06"] = "红魔乡",
     --hmx003  势力：红 4血  
     ["sakuya"] = "十六夜咲夜",
     ["#sakuya"] = "完美潇洒的从者",
-    ["!sakuya"] = "十六夜咲夜",
-		--["designer:sakuya"] = "星野梦美 | 程序:三国有单", 
 	["illustrator:sakuya"] = "JQ3C273! (p号:9734150)",
 	--个人id:431033 (国人)
 	["illustrator:sakuya_1"] = "かなりあ (p号:2862235)",
@@ -95,11 +89,9 @@ return{ ["th06"] = "红魔乡",
 
 --************************************************	    
     --hmx004  势力：红 3血  
-    ["patchouli"] = "帕秋莉·诺蕾姬",
+    ["patchouli"] = "帕秋莉",
     ["#patchouli"] = "不动的大图书馆",
-    ["&patchouli"] = "帕秋莉",
-    ["!patchouli"] = "帕秋莉",
-	--["designer:patchouli"] = "星野梦美 | 程序:三国有单", 
+    ["!patchouli"] = "帕秋莉·诺蕾姬",
 	["illustrator:patchouli"] = "萩原  (p号:无) 个人id:37062",
 	["illustrator:patchouli_1"] = "ryosios (p号:41382219)",
 	--个人id:1508165 （作者表态可用）
@@ -127,8 +119,6 @@ return{ ["th06"] = "红魔乡",
     --hmx005  势力：红 4血  
     ["meirin"] = "红美铃",
     ["#meirin"] = "华人小姑娘",
-    ["!meirin"] = "红美铃",  
-		 --["designer:meirin"] = "星野梦美 | 程序:果然萝卜斩", 
 	["illustrator:meirin"] = "yudofu  p号:3804946",
 	["illustrator:meirin_1"] = "NEKO (p号:35872256)",
 	--个人id:2600911 （国人）
@@ -151,8 +141,6 @@ return{ ["th06"] = "红魔乡",
     --hmx006  势力：红 3血  
     ["cirno"] = "琪露诺",
     ["#cirno"] = "湖上的冰精",
-    ["!cirno"] = "琪露诺",   
-		--["designer:cirno"] = "星野梦美 | 程序:幻兰幽梦", 
 	["illustrator:cirno"] = "ちんちくりん (p号:7616113)",
 	--个人id:3401
 	["illustrator:cirno_1"] = "6U (p号:10269990)",
@@ -179,8 +167,6 @@ return{ ["th06"] = "红魔乡",
     --hmx007  势力：红 3血  
     ["rumia"] = "露米娅",
     ["#rumia"] = "宵暗的妖怪",
-    ["!rumia"] = "露米娅",  
-	 --["designer:rumia"] = "星野梦美 | 程序:三国有单", 
 	["illustrator:rumia"] = "ポップル　(p号:6034882)",
 	--个人id:888775 （貌似本人从p站退了）
 	["illustrator:rumia_1"] = "蘇我サクラ　(p号:42134846)",
@@ -205,8 +191,6 @@ return{ ["th06"] = "红魔乡",
     --hmx008  势力：红 3血 
     ["koakuma"] = "小恶魔",
     ["#koakuma"] = "图书馆中的使魔",
-    ["!koakuma"] = "小恶魔",   
-	--["designer:koakuma"] = "星野梦美 | 程序:幻兰幽梦", 
 	["illustrator:koakuma"] = "cercis (p号:无)",
 	--个人id:无
 	["illustrator:koakuma_1"] = "ぎん太郎　(p号:8593014)",
@@ -232,8 +216,6 @@ return{ ["th06"] = "红魔乡",
     --hmx009  势力：红 3血 
     ["daiyousei"]="大妖精",
     ["#daiyousei"]="雾之湖畔的妖精",
-    ["!daiyousei"]="大妖精",   
-	--["designer:daiyousei"] = "星野梦美 | 程序:叫什么啊你妹", 
 	["illustrator:daiyousei"] = "住吉眞白　(p号:19870726)",
 	--个人id:2388526
 	["illustrator:daiyousei_1"] = "伊吹のつ　(p号:34272295)",

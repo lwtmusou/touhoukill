@@ -6,8 +6,6 @@ return{
     --hzc001  势力：辉 3血
     ["shinmyoumaru"] = "少名针妙丸",
     ["#shinmyoumaru"] = "小人的末裔",
-    ["!shinmyoumaru"] = "少名针妙丸",
-	--["designer:shinmyoumaru"] = "星野梦美 | 程序:三国有单",
 	["cv:shinmyoumaru"] = "暂无", 
 	["illustrator:shinmyoumaru"] = "ミイル p号:38962368",
 	["illustrator:shinmyoumaru_1"] = "東天紅 p号:39094589",
@@ -28,8 +26,6 @@ return{
     --hzc002  势力：辉 4血
     ["raiko"] = "堀川雷鼓",
     ["#raiko"] = "梦幻的打击乐手",
-    ["!raiko"] = "堀川雷鼓",
-	--["designer:raiko"] = "星野梦美 | 程序:三国有单",
 	["cv:raiko"] = "暂无", 
 	["illustrator:raiko"] = "伊吹のつ p号:41891311",
 	["illustrator:raiko_1"] = "泉水茜 p号:39316689",
@@ -43,8 +39,6 @@ return{
  --hzc003  势力：辉 3血
     ["seija"] = "鬼人正邪",
     ["#seija"] = "逆袭的天邪鬼",
-    ["!seija"] = "鬼人正邪",
-	--["designer:seija"] = "星野梦美 | 程序:三国有单", 
 	["cv:seija"] = "暂无", 
 	["illustrator:seija"] = "藤宮ふみや p号:37885158",
 	["illustrator:seija_1"] = "ふらぺち p号:53327346",
@@ -61,8 +55,6 @@ return{
     --hzc004  势力：辉 3血
     ["benben"] = "九十九弁弁", 
     ["#benben"] = "古旧琵琶的付丧神",
-    ["!benben"] = "九十九弁弁",
-	--["designer:benben"] = "星野梦美 | 程序:三国有单", 
 	["cv:benben"] = "暂无", 
 	["illustrator:benben"] = "neko p号:38047797",
 	["illustrator:benben_1"] = "会帆 p号:41942420",
@@ -79,8 +71,6 @@ return{
     --hzc005  势力：辉 3血
     ["yatsuhashi"] = "九十九八桥",
     ["#yatsuhashi"] = "古旧的琴的付丧神",
-    ["!yatsuhashi"] = "九十九八桥",
-	--["designer:yatsuhashi"] = "星野梦美 | 程序:三国有单", 
 	["cv:yatsuhashi"] = "暂无",
 	["illustrator:yatsuhashi"] = "neko p号:38047797",
 	["illustrator:yatsuhashi_1"] = "ウミガラス p号:41847626",
@@ -97,8 +87,6 @@ return{
   --hzc006  势力：辉 4血
     ["kagerou"] = "今泉影狼",
     ["#kagerou"] = "竹林的人狼",
-    ["!kagerou"] = "今泉影狼",
-	--["designer:kagerou"] = "星野梦美 | 程序:三国有单", 
 	["cv:kagerou"] = "暂无",
 	["illustrator:kagerou"] = "myaaco p号:38562704",
 	["illustrator:kagerou_1"] = "kirero p号:40434726",
@@ -114,8 +102,6 @@ return{
     --hzc007  势力：辉 4血
     ["sekibanki"] = "赤蛮奇",
     ["#sekibanki"] = "辘轳首的怪奇", 
-    ["!sekibanki"] = "赤蛮奇",
-	--["designer:sekibanki"] = "星野梦美 | 程序:三国有单", 
 	["cv:sekibanki"] = "暂无", 
 	["illustrator:sekibanki"] = "kito p号:36127927",
 	["illustrator:sekibanki_1"] = "シエロ p号:37343098",
@@ -129,8 +115,6 @@ return{
     --hzc008  势力：辉 3血
     ["wakasagihime"] = "若鹭姬",
     ["#wakasagihime"] = "栖息于淡水的人鱼",
-    ["!wakasagihime"] = "若鹭姬",
-	--["designer:wakasagihime"] = "星野梦美 | 程序:三国有单", 
 	["cv:wakasagihime"] = "暂无", 
 	
 	["illustrator:wakasagihime"] = "neme p号:39196423",

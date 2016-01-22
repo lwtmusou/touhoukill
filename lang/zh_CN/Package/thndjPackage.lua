@@ -5,8 +5,6 @@ return{
     ["mokou_ndj"] = "年代记sp妹红" ,
     ["&mokou_ndj"] = "年代记妹红" ,
     ["#mokou_ndj"] = "炎杀姬" ,
-    ["!mokou_ndj"] = "年代记sp妹红" ,
-	--["designer:mokou_ndj"] = "星野梦美 | 程序:三国有单", 
 	["illustrator:mokou_ndj"] = "年代记",
 	["cv:mokou_ndj"] = "暂无",
 	
@@ -23,8 +21,6 @@ return{
     ["kaguya_ndj"] = "年代记sp辉夜" ,
     ["&kaguya_ndj"] = "年代记辉夜" ,
     ["#kaguya_ndj"] = "贤月公主" ,
-    ["!kaguya_ndj"] = "年代记sp辉夜" ,
-	--["designer:kaguya_ndj"] = "星野梦美 | 程序:三国有单", 
 	["illustrator:kaguya_ndj"] = "年代记",
 	["cv:kaguya_ndj"] = "暂无",
 	
@@ -41,8 +37,6 @@ return{
     ["youmu_ndj"] = "年代记sp妖梦" ,
     ["&youmu_ndj"] = "年代记妖梦" ,
     ["#youmu_ndj"] = "修行的庭师" ,
-    ["!youmu_ndj"] = "年代记sp妖梦" ,
-	--["designer:youmu_ndj"] = "星野梦美 | 程序:三国有单", 
 	["illustrator:youmu_ndj"] = "年代记",
 	["cv:youmu_ndj"] = "暂无",
 	
@@ -56,8 +50,6 @@ return{
     ["merry_ndj"] = "年代记sp玛艾露贝莉" ,
     ["&merry_ndj"] = "年代记梅莉" ,
     ["#merry_ndj"] = "境界探访者" ,
-    ["!merry_ndj"] = "年代记SP梅莉" ,     
-    --["designer:merry_ndj"] = "星野梦美 | 程序:三国有单", 
 	["illustrator:merry_ndj"] = "年代记",
 	["cv:merry_ndj"] = "暂无",
         
@@ -66,8 +58,6 @@ return{
     ["renko_ndj"] = "年代记sp莲子" ,
     ["&renko_ndj"] = "年代记莲子",
     ["#renko_ndj"] = "科学少女" ,
-    ["!renko_ndj"] = "年代记sp莲子" ,
-	 --["designer:renko_ndj"] = "星野梦美 | 程序:三国有单", 
 	["illustrator:renko_ndj"] = "年代记",
 	["cv:renko_ndj"] = "暂无",    
 	

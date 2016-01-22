@@ -310,7 +310,10 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         QString general_name = general->objectName();
         QString name, kingdom, gender, max_hp, package;
 
-        name = Sanguosha->translate(general_name);
+        //we show full name here, since long name cannot be  displayed clearly on carditem
+        name = Sanguosha->translate("!" + general->objectName());
+        if (name.startsWith("!"))
+            name = Sanguosha->translate(general->objectName());
         kingdom = Sanguosha->translate(general->getKingdom());
         gender = general->isMale() ? tr("Male") : (general->isFemale() ? tr("Female") : tr("NoGender"));
         max_hp = QString::number(general->getMaxHp());

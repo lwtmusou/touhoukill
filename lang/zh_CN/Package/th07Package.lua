@@ -6,8 +6,6 @@ return
     --yym001  势力：妖 4血 
     ["yuyuko"] = "西行寺幽幽子",
     ["#yuyuko"] = "华胥的亡灵",
-   ["!yuyuko"] = "西行寺幽幽子",
-    --["designer:yuyuko"] = "星野梦美 | 程序:三国有单", 
 	["illustrator:yuyuko"] = "uni8　(p号:无)",
 	--个人id:无
 	["illustrator:yuyuko_1"] = "伊神　(p号: 37042965)",
@@ -33,8 +31,6 @@ return
     --yym002  势力：妖 3血 
     ["yukari"]="八云紫",
     ["#yukari"]="潜藏于境界中的妖怪",
-    ["!yukari"]="八云紫", 
---["designer:yukari"] = "星野梦美 | 程序:叫什么啊你妹", 
 	["illustrator:yukari"] = "shinia (p号:35803665)",
 	--个人id:44778 (台湾)
 	["illustrator:yukari_1"] = "An2A    (p号:无，个人id:173876)",
@@ -62,8 +58,6 @@ return
     --yym003  势力：妖 3血 
     ["ran"]="八云蓝",
     ["#ran"]="境界妖怪的式神",
-    ["!ran"]="八云蓝",  
---["designer:ran"] = "星野梦美 | 程序:幻兰幽梦", 
 	["illustrator:ran"] = "風見鴉　(p号:15783828)",
 	--个人id: 7435 (作者表态可以用)
 	["illustrator:ran_1"] = "akeboshi kagayo　(p号:)",
@@ -90,8 +84,6 @@ return
     --yym004  势力：妖 4血 
     ["youmu"] = "魂魄妖梦",
     ["#youmu"] = "半分虚幻的庭师",
-    ["!youmu"] = "魂魄妖梦",
-		--["designer:youmu"] = "星野梦美 | 程序:幻兰幽梦", 
 	["illustrator:youmu"] = "ideolo (p号:17185841)",
 	--个人id:61513 （国人）
 	["illustrator:youmu_1"] = "リリア (p号:20186464)",
@@ -118,8 +110,6 @@ return
     ["prismriver"]="普莉兹姆利巴三姐妹",
     ["&prismriver"]="骚灵乐团",
     ["#prismriver"]="骚灵乐团",
-    ["!prismriver"]="骚灵乐团",
-		--["designer:prismriver"] = "星野梦美 | 程序:三国有单", 
 	["illustrator:prismriver"] = "桜井天智 (p号:6753458)",
 	--个人id:1218861
 	["illustrator:prismriver_1"] = "ke-ta (p号:29533619)",
@@ -142,11 +132,9 @@ return
     
 --***********************************
     --yym006  势力：妖 4血 
-    ["alice"]="爱丽丝•玛格特罗依德",
-    ["&alice"]="爱丽丝",
+    ["alice"]="爱丽丝",
     ["#alice"]="七色的人偶使",
-    ["!alice"]="爱丽丝",
-	--["designer:alice"] = "星野梦美 | 程序:三国有单", 
+    ["!alice"]="爱丽丝•玛格特罗依德",
 	["illustrator:alice"] = "An2A (p号:无，个人id:173876)",
 	--个人id:173876
 	["illustrator:alice_1"] = "葉庭 (p号:9122362)",
@@ -170,9 +158,8 @@ return
 	
 --***********************************
     --yym007  势力：妖 3血 
-    ["chen"] = "橙",["#chen"] = "凶兆的黑猫",
-    ["!chen"] = "橙",
-	--["designer:chen"] = "星野梦美 | 程序:三国有单", 
+    ["chen"] = "橙",
+    ["#chen"] = "凶兆的黑猫",
 	["illustrator:chen"] = "An2A (p号:无，个人id:173876)",
 	--个人id:173876
 	["illustrator:chen_1"] = "池田ピロウ (p号:14101312)",
@@ -198,11 +185,9 @@ return
 
 --***********************************
     --yym008  势力：妖 4血 
-    ["letty"]="蕾迪·霍瓦特罗克",
-    ["&letty"]="蕾迪",
+    ["letty"]="蕾迪",
     ["#letty"]="冬季的遗忘之物",
-    ["!letty"]="蕾迪",
-	--["designer:letty"] = "星野梦美 | 程序:叫什么啊你妹", 
+    ["!letty"]="蕾迪·霍瓦特罗克",
 	["illustrator:letty"] = "JQ3C273!　(p号:3590936)",
 	--个人id:431033(国人)
 	["illustrator:letty_1"] = "伍長　(p号:7388774)",
@@ -223,8 +208,6 @@ return
     --yym009  势力：妖 3血
     ["lilywhite"] = "莉莉怀特",
     ["#lilywhite"] = "带来春天的妖精",
-    ["!lilywhite"] = "莉莉怀特",
-	 --["designer:lilywhite"] = "星野梦美 | 程序:幻兰幽梦", 
 	["illustrator:lilywhite"] = "c7肘 (p号:无，个人id:217707)",
 	--个人id:217707 (国人,表态可以)
 	["illustrator:lilywhite_1"] = "Cloudy.R (p号:33026830)",
@@ -243,8 +226,6 @@ return
     --yym010  势力：妖 3血
     ["shanghai"] = "上海人形" ,
     ["#shanghai"] = "人偶使的手足" ,
-    ["!shanghai"] = "上海人形" ,
---["designer:shanghai"] = "星野梦美 | 程序:fsu0413", 
 	["illustrator:shanghai"] = "もちき (p号:3338979)",
 	--个人id:3338979
 	["illustrator:shanghai_1"] = "もちき (p号:26892845)",
@@ -262,10 +243,9 @@ return
     
 --***********************************
     --yym011  势力：妖 4血
-    ["yukari_sp"] = "千年紫",
+    ["yukari_sp"] = "SP千年紫",
+    ["&yukari_sp"] = "千年紫",
     ["#yukari_sp"] = "千年前的妖怪",
-    ["!yukari_sp"] = "SP千年紫",
-	 --["designer:yukari_sp"] = "星野梦美 | 程序:三国有单", 
 	["illustrator:yukari_sp"] = "ファルまろ (p号:41579000)",
 	--个人id:1218472
 	["illustrator:yukari_sp_1"] = "千嗣   (p号:19674598)",
@@ -283,9 +263,9 @@ return
     
 --***********************************
     --yym012  势力：妖 3血
-    ["yuyuko_sp"]="千年幽幽子",
+    ["yuyuko_sp"]="SP千年幽幽子", 
+    ["&yuyuko_sp"]="千年幽幽子",
     ["#yuyuko_sp"]="千年前的舞姬",
-    ["!yuyuko_sp"]="SP千年幽幽子", 
 --["designer:yuyuko_sp"] = "星野梦美 | 程序:fsu0413", 
 	["illustrator:yuyuko_sp"] = "めっこ (p号:10128798)",
 	--个人id:814762
@@ -311,8 +291,6 @@ return
     ["youmu_slm"] = "神灵庙sp妖梦",
     ["&youmu_slm"] = "神灵庙妖梦",
     ["#youmu_slm"] = "死欲的半灵",
-    ["!youmu_slm"] = "神灵庙sp妖梦",
-	--["designer:youmu_slm"] = "星野梦美 | 程序:fsu0413", 
 	["illustrator:youmu_slm"] = "alcd (p号:14362406)",
 	--个人id：2334059
 	["illustrator:youmu_slm_1"] = "竜徹 (p号:5976425)",

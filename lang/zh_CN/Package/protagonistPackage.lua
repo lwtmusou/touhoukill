@@ -5,10 +5,16 @@ return {
     ["zhu"] = "主",
     --["lord_declaration"]="主公登场", 
 
+    --命名范例
+    --["reimu"] 人物名 可能是略称
+    --["#reimu"] 称号
+    --["&reimu"] 人物头像的显示名
+    --["!reimu"] 人物全名
+    
+    
     --zhu001 势力：主 4血
     ["reimu"] = "博丽灵梦", 
     ["#reimu"] = "乐园的美妙巫女",
-    ["!reimu"] = "博丽灵梦",
 	--["designer:reimu"] = "星野梦美 | 程序:三国有单", 
 	["illustrator:reimu"] = "tearfish  (p号:5228650)",
 	["illustrator:reimu_1"] = "蒼空キズナ  (p号:4510083)",
@@ -35,8 +41,6 @@ return {
     --zhu002 势力：主 4血
     ["marisa"] = "雾雨魔理沙",
     ["#marisa"] = "普通的魔法使",
-    ["!marisa"] = "雾雨魔理沙",
-	--["designer:marisa"] = "星野梦美 | 程序:幻兰幽梦", 
 	["illustrator:marisa"] = "An2A    (p号:无，个人id:173876)",
 	--个人id:173876  p站没有原图
 	["illustrator:marisa_1"] = "えふぇ  (p号:34689497)",
@@ -61,10 +65,9 @@ return {
 
 --************************************************	
     --zhu003  势力：主 4血    
-    ["reimu_sp"] = "无节操灵梦", 
+    ["reimu_sp"] = "SP无节操灵梦", 
     ["#reimu_sp"] = "十万巫女",
-    ["!reimu_sp"] = "SP无节操灵梦",
-	--["designer:reimu_sp"] = "星野梦美 | 程序:三国有单", 
+    ["&reimu_sp"] = "无节操灵梦",
 	["illustrator:reimu_sp"] = "しがらき  (p号:19597658)",
 	--个人id:1004274
 	["illustrator:reimu_sp_1"] = "あめろ  (p号:31824198)",
@@ -85,10 +88,9 @@ return {
 
 --************************************************	
     --zhu004  势力：主 3血
-    ["marisa_sp"] = "大盗魔理沙",
+    ["marisa_sp"] = "SP大盗魔理沙",
+    ["&marisa_sp"] = "大盗魔理沙",
     ["#marisa_sp"] = "大盗",
-    ["!marisa_sp"] = "SP大盗魔理沙",
-	--["designer:marisa_sp"] = "星野梦美 | 程序:三国有单", 
 	["illustrator:marisa_sp"] = "seeker　　(p号:13164043)",
 	--个人id:694807 （国人）
 	["illustrator:marisa_sp_1"] = "NEKO　　(p号:42655610)",
@@ -110,10 +112,9 @@ return {
 
 --************************************************	
  --zhu005  势力：主 4血
-    ["marisa_sp2"] = "超魔理沙",
+    ["marisa_sp2"] = "SP超魔理沙",
+    ["&marisa_sp2"] = "超魔理沙",
     ["#marisa_sp2"] = "超·恋之魔女",
-    ["!marisa_sp2"] = "超魔理沙",
-	--["designer:marisa_sp2"] = "星野梦美 | 程序:三国有单", 
 	["illustrator:marisa_sp2"] = "AUER  (p号:1150651)",
 	--个人id:178301 （国人）
 	["illustrator:marisa_sp2_1"] = "御月ユウヤ　　(p号:13678531)",
@@ -134,8 +135,6 @@ return {
     ["reimu_yym"]="妖妖梦sp灵梦",
     ["&reimu_yym"]="妖妖梦灵梦",
     ["#reimu_yym"]="春巫女",
-    ["!reimu_yym"]="妖妖梦sp灵梦",
-	  --["designer:reimu_yym"] = "星野梦美 | 程序:叫什么啊你妹", 
 	["illustrator:reimu_yym"] = "みゃけ  (p号:9705615)",
 	--个人id:60103
 	["illustrator:reimu_yym_1"] = "萩原  (p号:16215731)",
@@ -156,8 +155,6 @@ return {
     ["reimu_slm"] = "神灵庙sp灵梦" ,
     ["#reimu_slm"] = "五欲的巫女" ,
     ["&reimu_slm"] = "神灵庙灵梦" ,
-    ["!reimu_slm"] = "神灵庙sp灵梦" ,
-	  --["designer:reimu_slm"] = "星野梦美 | 程序:fsu0413", 
 	["illustrator:reimu_slm"] = "きんたろ　　(p号:18697741)",
 	--个人id:10009
 	["illustrator:reimu_slm_1"] = "ぬぬっこ  (p号:24429823)",
@@ -186,8 +183,6 @@ return {
     ["marisa_slm"] = "神灵庙sp魔理沙",
     ["&marisa_slm"] = "神灵庙魔理沙",
     ["#marisa_slm"] = "强欲的魔法使",
-    ["!marisa_slm"] = "神灵庙sp魔理沙",
-	--["designer:marisa_slm"] = "星野梦美 | 程序:三国有单", 
 	["illustrator:marisa_slm"] = "まるかた (p号:8831829)",
 	--个人id:6359
 	["illustrator:marisa_slm_1"] = "まるかた (p号:3168979)",
