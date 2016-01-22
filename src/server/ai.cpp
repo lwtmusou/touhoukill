@@ -172,7 +172,7 @@ QList<ServerPlayer *> AI::getFriends() const
     return friends;
 }
 
-void AI::filterEvent(TriggerEvent, ServerPlayer *, const QVariant &)
+void AI::filterEvent(TriggerEvent, const QVariant &)
 {
     // dummy
 }

@@ -3,6 +3,7 @@
 #include "json.h"
 #include "exppattern.h"
 #include "room.h"
+#include "skill.h"
 
 bool CardsMoveStruct::tryParse(const QVariant &arg)
 {
@@ -299,4 +300,68 @@ MarkChangeStruct::MarkChangeStruct()
     :num(1)
 {
 
+}
+
+bool SkillInvokeDetail::operator<(const SkillInvokeDetail &arg2) const // the operator < for sorting the invoke order.
+{
+    //  we sort firstly according to the priority, then the seat of invoker, at last weather it is a skill of an equip.
+    if (!isValid() || !arg2.isValid())
+        return false;
+
+    if (skill->getPriority() > arg2.skill->getPriority())
+        return true;
+    else if (skill->getPriority() < arg2.skill->getPriority())
+        return false;
+
+    if (invoker != arg2.invoker) {
+        Room *room = owner->getRoom();
+        if (room == NULL)
+            return false;
+        return room->getFront(invoker, arg2.invoker);
+    }
+
+    return skill->inherits("EquipSkill");
+}
+
+bool SkillInvokeDetail::operator==(const SkillInvokeDetail &arg2) const // the operator ==. it only judge the skill name, the skill invoker, and the skill owner. it don't judge the skill target because it is chosen by the skill invoker
+{
+    return skill == arg2.skill && owner == arg2.owner && invoker == arg2.invoker;
+}
+
+bool SkillInvokeDetail::sameTimingWith(const SkillInvokeDetail &arg2) const // used to judge 2 skills has the same timing. only 2 structs with the same priority and the same invoker and the same "whether or not it is a skill of equip"
+{
+    if (!isValid() || !arg2.isValid())
+        return false;
+
+    return skill->getPriority() == arg2.skill->getPriority() && invoker == arg2.invoker && skill->inherits("EquipSkill") == arg2.skill->inherits("EquipSkill");
+}
+
+SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill /*= NULL*/, ServerPlayer *owner /*= NULL*/, ServerPlayer *invoker /*= NULL*/, QList<ServerPlayer *> targets /*= QList<ServerPlayer *>()*/, int times /*= 1*/)
+    : skill(skill), owner(owner), invoker(invoker), targets(targets), times(times), triggeredTimes(0)
+{
+}
+
+SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, int times /*= 1*/)
+    : skill(skill), owner(owner), invoker(invoker), times(times), triggeredTimes(0)
+{
+    if (target != NULL)
+        targets << target;
+}
+
+bool SkillInvokeDetail::isValid() const // validity check
+{
+    return skill != NULL && owner != NULL && invoker != NULL;
+}
+
+QVariant SkillInvokeDetail::toVariant() const
+{
+    if (!isValid())
+        return QVariant();
+
+    JsonObject ob;
+    ob["skill"] = skill->objectName();
+    ob["owner"] = owner->objectName();
+    ob["invoker"] = invoker->objectName();
+    ob["timesleft"] = times - triggeredTimes;
+    return ob;
 }

@@ -35,7 +35,7 @@ public:
     virtual const Card *askForSinglePeach(ServerPlayer *dying) = 0;
     virtual ServerPlayer *askForYiji(const QList<int> &cards, const char *reason, int &card_id) = 0;
     virtual void askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int> &bottom, int guanxing_type) = 0;
-    virtual void filterEvent(TriggerEvent triggerEvent, ServerPlayer *player, const QVariant &data);
+    virtual void filterEvent(TriggerEvent triggerEvent, const QVariant &data);
 };
 
 class TrustAI: public AI {
@@ -85,7 +85,7 @@ public:
     virtual ServerPlayer *askForYiji(const QList<int> &cards, const char *reason, int &card_id);
     virtual void askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int> &bottom, int guanxing_type);
 
-    virtual void filterEvent(TriggerEvent triggerEvent, ServerPlayer *player, const QVariant &data);
+    virtual void filterEvent(TriggerEvent triggerEvent, const QVariant &data);
 
     LuaFunction callback;
 };
@@ -437,7 +437,7 @@ ServerPlayer *LuaAI::askForYiji(const QList<int> &cards, const QString &reason, 
     return NULL;
 }
 
-void LuaAI::filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant &data)
+void LuaAI::filterEvent(TriggerEvent event, const QVariant &data)
 {
     if (callback == 0)
         return;
@@ -446,7 +446,7 @@ void LuaAI::filterEvent(TriggerEvent event, ServerPlayer *player, const QVariant
 
     pushCallback(L, __FUNCTION__);
     lua_pushinteger(L, event);
-    SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
+    SWIG_NewPointerObj(L, 0, SWIGTYPE_p_ServerPlayer, 0);
     SWIG_NewPointerObj(L, &data, SWIGTYPE_p_QVariant, 0);
 
     int error = lua_pcall(L, 4, 0, 0);

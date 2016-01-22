@@ -26,8 +26,8 @@ struct LogMessage
 class EventTriplet
 {
 public:
-    inline EventTriplet(TriggerEvent triggerEvent, Room *room, ServerPlayer *target)
-        : _m_event(triggerEvent), _m_room(room), _m_target(target)
+    inline EventTriplet(TriggerEvent triggerEvent, Room *room)
+        : _m_event(triggerEvent), _m_room(room)
     {
     }
     QString toString() const;
@@ -35,7 +35,6 @@ public:
 private:
     TriggerEvent _m_event;
     Room *_m_room;
-    ServerPlayer *_m_target;
 };
 
 class RoomThread : public QThread
@@ -45,8 +44,13 @@ class RoomThread : public QThread
 public:
     explicit RoomThread(Room *room);
     void constructTriggerTable();
-    bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data);
-    bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *target);
+    bool trigger(TriggerEvent triggerEvent, Room *room);
+
+    
+    void getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QSharedPointer<SkillInvokeDetail> > &detailsList, const QSet<QSharedPointer<SkillInvokeDetail> > &triggered, const QVariant &data);
+
+    bool trigger(TriggerEvent triggerEvent, Room *room, QVariant &data); // player is deleted. a lot of things is able to put in data. make a struct for every triggerevent isn't absolutely unreasonable.
+
 
     void addPlayerSkills(ServerPlayer *player, bool invoke_game_start = false);
 
@@ -75,6 +79,7 @@ private:
     QSet<QString> skillSet;
 
     QList<EventTriplet> event_stack;
+    GameRule *game_rule;
 };
 
 #endif

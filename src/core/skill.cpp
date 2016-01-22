@@ -246,7 +246,7 @@ FilterSkill::FilterSkill(const QString &name)
 }
 
 TriggerSkill::TriggerSkill(const QString &name)
-    : Skill(name), view_as_skill(NULL), global(false), dynamic_priority(0.0)
+    : Skill(name), view_as_skill(NULL), global(false)
 {
 }
 
@@ -260,52 +260,27 @@ QList<TriggerEvent> TriggerSkill::getTriggerEvents() const
     return events;
 }
 
-int TriggerSkill::getPriority(TriggerEvent) const
+int TriggerSkill::getPriority() const
 {
-    return 3;
+    return 2;
 }
 
-void TriggerSkill::record(TriggerEvent, Room *, ServerPlayer *, QVariant &) const
+void TriggerSkill::record(TriggerEvent, Room *, QVariant &) const
 {
 
 }
 
-TriggerList TriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+QList<SkillInvokeDetail> TriggerSkill::triggerable(TriggerEvent triggerEvent, const Room * room, const QVariant & data) const
 {
-    TriggerList skill_lists;
-    if (objectName() == "game_rule") return skill_lists;
-    ServerPlayer *ask_who = player;
-    QStringList skill_list = triggerable(triggerEvent, room, player, data, ask_who);
-    if (!skill_list.isEmpty())
-        skill_lists.insert(ask_who, skill_list);
-    return skill_lists;
+    return QList<SkillInvokeDetail>();
 }
 
-bool TriggerSkill::triggerable(const ServerPlayer *target) const
+bool TriggerSkill::cost(TriggerEvent triggerEvent, QSharedPointer<SkillInvokeDetail> invoke, QVariant & data) const
 {
-    //zun triggerable?
-    return target != NULL && target->isAlive() && target->hasSkill(objectName());
+    return false;
 }
 
-QStringList TriggerSkill::triggerable(TriggerEvent, Room *, ServerPlayer *target, QVariant &, ServerPlayer* &) const
-{
-    //if (triggerable(target, room))
-    if (triggerable(target))
-        return QStringList(objectName());
-    return QStringList();
-}
-
-bool TriggerSkill::cost(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *) const
-{
-    return true;
-}
-
-bool TriggerSkill::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
-{
-    return trigger(triggerEvent, room, player, data);
-}
-
-bool TriggerSkill::trigger(TriggerEvent, Room *, ServerPlayer *, QVariant &) const
+bool TriggerSkill::effect(TriggerEvent triggerEvent, QSharedPointer<SkillInvokeDetail> invoke, QVariant & data) const
 {
     return false;
 }
@@ -316,7 +291,7 @@ ScenarioRule::ScenarioRule(Scenario *scenario)
     setParent(scenario);
 }
 
-int ScenarioRule::getPriority(TriggerEvent) const
+int ScenarioRule::getPriority() const
 {
     return 1;
 }
@@ -526,7 +501,7 @@ FakeMoveSkill::FakeMoveSkill(const QString &name)
     events << BeforeCardsMove << CardsMoveOneTime;
 }
 
-int FakeMoveSkill::getPriority(TriggerEvent) const
+int FakeMoveSkill::getPriority() const
 {
     return 10;
 }
@@ -572,14 +547,15 @@ void DetachEffectSkill::onSkillDetached(Room *, ServerPlayer *) const
 {
 }
 
-WeaponSkill::WeaponSkill(const QString &name)
+EquipSkill::EquipSkill(const QString &name)
     : TriggerSkill(name)
 {
+
 }
 
-int WeaponSkill::getPriority(TriggerEvent) const
+WeaponSkill::WeaponSkill(const QString &name)
+    : EquipSkill(name)
 {
-    return 2;
 }
 
 bool WeaponSkill::triggerable(const ServerPlayer *target) const
@@ -590,13 +566,8 @@ bool WeaponSkill::triggerable(const ServerPlayer *target) const
 }
 
 ArmorSkill::ArmorSkill(const QString &name)
-    : TriggerSkill(name)
+    : EquipSkill(name)
 {
-}
-
-int ArmorSkill::getPriority(TriggerEvent) const
-{
-    return 2;
 }
 
 bool ArmorSkill::triggerable(const ServerPlayer *target) const
@@ -608,13 +579,8 @@ bool ArmorSkill::triggerable(const ServerPlayer *target) const
 
 
 TreasureSkill::TreasureSkill(const QString &name)
-    : TriggerSkill(name)
+    : EquipSkill(name)
 {
-}
-
-int TreasureSkill::getPriority(TriggerEvent) const
-{
-    return 2;
 }
 
 bool TreasureSkill::triggerable(const ServerPlayer *target) const
@@ -634,4 +600,3 @@ void MarkAssignSkill::onGameStart(ServerPlayer *player) const
 {
     player->getRoom()->setPlayerMark(player, mark_name, player->getMark(mark_name) + n);
 }
-

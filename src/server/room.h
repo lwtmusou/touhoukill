@@ -21,8 +21,6 @@ struct LogMessage;
 #include <qmutex.h>
 #include <QStack>
 
-typedef QMap<const ServerPlayer *, QStringList> SPlayerDataMap;
-
 class Room : public QThread
 {
     Q_OBJECT
@@ -373,7 +371,7 @@ public:
     QString askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice = QString());
     QString askForGeneral(ServerPlayer *player, const QString &generals, QString default_choice = QString());
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
-    QString askForTriggerOrder(ServerPlayer *player, const QString &reason, SPlayerDataMap &skills, bool optional = true, const QVariant &data = QVariant());
+    QSharedPointer<SkillInvokeDetail> askForTriggerOrder(ServerPlayer *player, const QList<QSharedPointer<SkillInvokeDetail> > &sameTiming, bool cancelable, const QVariant &data);
     void addPlayerHistory(ServerPlayer *player, const QString &key, int times = 1);
 
     void toggleReadyCommand(ServerPlayer *player, const QVariant &);

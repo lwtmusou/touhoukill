@@ -1697,76 +1697,63 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
     return result;
 }
 
-QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, SPlayerDataMap &skills, bool optional, const QVariant &data)
+QSharedPointer<SkillInvokeDetail> Room::askForTriggerOrder(ServerPlayer *player, const QList<QSharedPointer<SkillInvokeDetail> > &sameTiming, bool cancelable, const QVariant &data)
 {
     tryPause();
 
-    Q_ASSERT(!skills.isEmpty());
+    Q_ASSERT(!sameTiming.isEmpty());
 
-    QString answer;
-    QStringList all_pairs;
-    foreach (const ServerPlayer *p, skills.keys()) {
-        foreach (const QString &str, skills.value(p)) {
-            if (str.contains("!") && !str.contains("&"))
-                all_pairs << QString("%1:%2*%3").arg(p->objectName()).arg(str.split("!").first()).arg(str.split("*").last());
-            else
-                all_pairs << QString("%1:%2").arg(p->objectName()).arg(str);
-        }
-    }
+    QSharedPointer<SkillInvokeDetail> answer;
 
-    if (!optional && skills.values().length() == 1 && skills.values().first().length() == 1) {
-        answer = skills.values().first().first();
-    } else {
+    if (sameTiming.length() == 1)
+        answer = sameTiming.first();
+    else {
         notifyMoveFocus(player, S_COMMAND_TRIGGER_ORDER);
 
         AI *ai = player->getAI();
 
+        QString reply;
+
         if (ai) {
             //Temporary method to keep compatible with existing AI system
-            QStringList all_skills;
-            foreach(const QStringList &list, skills)
-                all_skills << list;
-
-            if (optional)
-                all_skills << "cancel";
-
-            const QString reply = ai->askForChoice(reason, all_skills.join("+"), data);
-            if (reply == "cancel") {
-                answer = reply;
-            } else {
-                QString owner;
-                foreach (const QStringList &list, skills) {
-                    if (list.contains(reply))
-                        owner = skills.key(list)->objectName();
-                }
-
-                if (!owner.isEmpty())
-                    answer = QString("%1:%2").arg(owner).arg(reply);
+            QStringList skills;
+            foreach (const QSharedPointer<SkillInvokeDetail> &ptr, sameTiming) {
+                QString skill = ptr->skill->objectName();
+                skill.append("@").append(ptr->owner->objectName());
+                skills << skill;
             }
+            if (cancelable)
+                skills << "cancel";
 
+            reply = ai->askForChoice("askForTriggerOrder", skills.join("+"), data);
             thread->delay();
+
         } else {
-            JsonArray args;
-            //example: "["turn_start", ["sgs1:tiandu", "sgs1:tuntian", "sgs2:slobsb"], true]"
+            JsonArray arr;
+            foreach (const QSharedPointer<SkillInvokeDetail> &ptr, sameTiming)
+                arr << ptr->toVariant();
+            JsonArray arr2;
+            arr2 << QVariant(arr) << cancelable;
 
-            args << reason;
-            args << JsonUtils::toJsonArray(all_pairs);
-            args << optional;
-
-
-
-            bool success = doRequest(player, S_COMMAND_TRIGGER_ORDER, args, true);
+            bool success = doRequest(player, S_COMMAND_TRIGGER_ORDER, arr2, true);
             const QVariant &clientReply = player->getClientReply();
-            if (!success || !JsonUtils::isString(clientReply))
-                answer = "cancel";
-            else
-                answer = clientReply.toString();
+            if (success && JsonUtils::isString(clientReply))
+                reply = clientReply.toString();
         }
 
-        if (answer != "cancel" && !all_pairs.contains(answer))
-            answer = all_pairs[0];
-    }
+        if (reply != "cancel") {
+            QStringList replyList = reply.split("@");
+            foreach (const QSharedPointer<SkillInvokeDetail> &ptr, sameTiming) {
+                if (ptr->skill->objectName() == replyList.first() && ptr->invoker->objectName() == replyList.last()) {
+                    answer = ptr;
+                    break;
+                }
+            }
+        }
+        if (answer.isNull() && !cancelable)
+            answer = sameTiming.value(qrand() % sameTiming.length());
 
+    }
     return answer;
 }
 

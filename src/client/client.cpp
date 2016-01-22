@@ -1488,18 +1488,16 @@ void Client::askForDirection(const QVariant &)
 void Client::askForTriggerOrder(const QVariant &ask_str)
 {
     JsonArray ask = ask_str.value<JsonArray>();
-    if (ask.size() != 3
-        || !JsonUtils::isString(ask[0]) || !ask[1].canConvert<JsonArray>()
-        || !JsonUtils::isBool(ask[2])) return;
-
-    QString reason = ask[0].toString();
-
+    if (ask.size() != 2
+        || !ask[0].canConvert<JsonArray>()
+        || !JsonUtils::isBool(ask[1])) return;
+#pragma message WARN("todo_Fs: fix this")
     QStringList choices;
-    JsonUtils::tryParse(ask[1], choices);
+    JsonUtils::tryParse(ask[0], choices);
 
-    bool optional = ask[2].toBool();
+    bool optional = ask[1].toBool();
 
-    emit triggers_got(reason, choices, optional);
+    emit triggers_got("askForTriggerOrder", choices, optional);
     setStatus(AskForTriggerOrder);
 }
 

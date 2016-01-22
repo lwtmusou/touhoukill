@@ -7,6 +7,7 @@ class ServerPlayer;
 class QDialog;
 
 #include "room.h"
+#include "structs.h"
 
 #include <QObject>
 
@@ -133,28 +134,12 @@ public:
     const ViewAsSkill *getViewAsSkill() const;
     QList<TriggerEvent> getTriggerEvents() const;
 
-    virtual int getPriority(TriggerEvent triggerEvent) const;
+    virtual int getPriority() const;
+    virtual void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const;
 
-    virtual bool triggerable(const ServerPlayer *target) const;
-    virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
-
-    virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const;
-
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
-
-
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const; //const = 0
-
-    inline double getDynamicPriority() const
-    {
-        return dynamic_priority;
-    }
-    inline void setDynamicPriority(double value)
-    {
-        dynamic_priority = value;
-    }
+    virtual QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const;
+    virtual bool cost(TriggerEvent triggerEvent, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
+    virtual bool effect(TriggerEvent triggerEvent, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
 
     inline bool isGlobal() const
     {
@@ -165,9 +150,6 @@ protected:
     const ViewAsSkill *view_as_skill;
     QList<TriggerEvent> events;
     bool global;
-
-private:
-    mutable double dynamic_priority;
 };
 
 class Scenario;
@@ -179,7 +161,7 @@ class ScenarioRule : public TriggerSkill
 public:
     ScenarioRule(Scenario *scenario);
 
-    virtual int getPriority(TriggerEvent triggerEvent) const;
+    virtual int getPriority() const;
     virtual bool triggerable(const ServerPlayer *target) const;
 };
 
@@ -332,7 +314,7 @@ class FakeMoveSkill : public TriggerSkill
 public:
     FakeMoveSkill(const QString &skillname);
 
-    virtual int getPriority(TriggerEvent triggerEvent) const;
+    virtual int getPriority() const;
     virtual bool triggerable(const ServerPlayer *target) const;
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
 
@@ -355,41 +337,43 @@ private:
     QString name, pile_name;
 };
 
-class WeaponSkill : public TriggerSkill
+class EquipSkill : public TriggerSkill
+{
+    Q_OBJECT
+
+public:
+    EquipSkill(const QString &name);
+};
+
+class WeaponSkill : public EquipSkill
 {
     Q_OBJECT
 
 public:
     WeaponSkill(const QString &name);
 
-    virtual int getPriority(TriggerEvent triggerEvent) const;
     virtual bool triggerable(const ServerPlayer *target) const;
 };
 
-class ArmorSkill : public TriggerSkill
+class ArmorSkill : public EquipSkill
 {
     Q_OBJECT
 
 public:
     ArmorSkill(const QString &name);
 
-    virtual int getPriority(TriggerEvent triggerEvent) const;
     virtual bool triggerable(const ServerPlayer *target) const;
 };
 
-
-class TreasureSkill : public TriggerSkill
+class TreasureSkill : public EquipSkill
 {
     Q_OBJECT
 
 public:
     TreasureSkill(const QString &name);
 
-    virtual int getPriority(TriggerEvent triggerEvent) const;
     virtual bool triggerable(const ServerPlayer *target) const;
 };
-
-
 
 class MarkAssignSkill : public GameStartSkill
 {

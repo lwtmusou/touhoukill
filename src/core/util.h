@@ -7,6 +7,7 @@ class QVariant;
 #include <QList>
 #include <QStringList>
 #include <QVariant>
+#include <QSharedPointer>
 
 #include "compiler-specific.h"
 
