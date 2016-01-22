@@ -341,6 +341,7 @@ struct RecoverStruct
 
     int recover;
     ServerPlayer *who;
+    ServerPlayer *to;
     const Card *card;
     QString reason;
 };
@@ -410,56 +411,18 @@ struct PhaseStruct
 
 struct CardResponseStruct
 {
-    inline CardResponseStruct()
+    inline CardResponseStruct(const Card *card = NULL, ServerPlayer *who = NULL, bool isuse = false, bool isRetrial = false, bool isProvision = false, ServerPlayer *from = NULL)
+        : m_card(card), m_who(who), m_isUse(isuse), m_isRetrial(isRetrial), m_isProvision(isProvision), m_from(from)
     {
-        m_card = NULL;
-        m_who = NULL;
-        m_isUse = false;
-        m_isRetrial = false;
-        m_isProvision = false;
-    }
-
-    inline CardResponseStruct(const Card *card)
-    {
-        m_card = card;
-        m_who = NULL;
-        m_isUse = false;
-        m_isRetrial = false;
-        m_isProvision = false;
-    }
-
-    inline CardResponseStruct(const Card *card, ServerPlayer *who)
-    {
-        m_card = card;
-        m_who = who;
-        m_isUse = false;
-        m_isRetrial = false;
-        m_isProvision = false;
-    }
-
-    inline CardResponseStruct(const Card *card, bool isUse)
-    {
-        m_card = card;
-        m_who = NULL;
-        m_isUse = isUse;
-        m_isRetrial = false;
-        m_isProvision = false;
-    }
-
-    inline CardResponseStruct(const Card *card, ServerPlayer *who, bool isUse, bool isRetrial, bool isProvision)
-    {
-        m_card = card;
-        m_who = who;
-        m_isUse = isUse;
-        m_isRetrial = isRetrial;
-        m_isProvision = isProvision;
+        m_isHandcard = false;
     }
 
     const Card *m_card;
-    ServerPlayer *m_who;
+    ServerPlayer *m_from;
     bool m_isUse;
     bool m_isRetrial;
     bool m_isProvision;
+    ServerPlayer *m_who;
     bool m_isHandcard;
 };
 
@@ -493,6 +456,12 @@ struct SkillInvokeDetail
     bool isValid() const; // validity check
 
     QVariant toVariant() const;
+};
+
+struct ChoiceMadeStruct
+{
+    ServerPlayer *player;
+    QStringList args;
 };
 
 enum TriggerEvent
@@ -616,6 +585,7 @@ Q_DECLARE_METATYPE(RecoverStruct)
 Q_DECLARE_METATYPE(PhaseChangeStruct)
 Q_DECLARE_METATYPE(CardResponseStruct)
 Q_DECLARE_METATYPE(MarkChangeStruct)
+Q_DECLARE_METATYPE(ChoiceMadeStruct)
 Q_DECLARE_METATYPE(const Card *)
 Q_DECLARE_METATYPE(ServerPlayer *)
 Q_DECLARE_METATYPE(JudgeStruct *)

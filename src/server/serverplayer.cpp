@@ -616,7 +616,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     PindianStruct * pindian_star = &pindian_struct;
     QVariant data = QVariant::fromValue(pindian_star);
     Q_ASSERT(thread != NULL);
-    thread->trigger(PindianVerifying, room, this, data);
+    thread->trigger(PindianVerifying, room, data);
 
     PindianStruct * new_star = data.value<PindianStruct *>();
     pindian_struct.from_number = new_star->from_number;
@@ -642,7 +642,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
 
     pindian_star = &pindian_struct;
     data = QVariant::fromValue(pindian_star);
-    thread->trigger(Pindian, room, this, data);
+    thread->trigger(Pindian, room, data);
 
     if (room->getCardPlace(pindian_struct.from_card->getEffectiveId()) == Player::PlaceTable) {
         CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, pindian_struct.from->objectName(), pindian_struct.to->objectName(),
@@ -678,7 +678,7 @@ void ServerPlayer::turnOver()
     room->sendLog(log);
 
     Q_ASSERT(room->getThread() != NULL);
-    room->getThread()->trigger(TurnedOver, room, this);
+    room->getThread()->trigger(TurnedOver, room, QVariant::fromValue(this));
 }
 
 bool ServerPlayer::changePhase(Player::Phase from, Player::Phase to)
