@@ -5,8 +5,6 @@ return{
 	--wai001  势力：外 3血
 	["akyuu"] = "稗田阿求",
 	["#akyuu"] = "幻想乡的记忆" ,
-	["!akyuu"] = "稗田阿求",
-	--["designer:akyuu"] = "星野梦美 | 程序:幻兰幽梦，三国有单",
 	["illustrator:akyuu"] = "Dinyc",
 	["origin:akyuu"] = "p号：13086025，个人ID：1146229", --(国人？)
 	["illustrator:akyuu_1"] = "bon",
@@ -32,8 +30,6 @@ return{
 	--wai002  势力：外 4血
 	["rinnosuke"] = "森近霖之助",
 	["#rinnosuke"] = "古道具店主" ,
-	["!rinnosuke"] = "森近霖之助",
- --["designer:rinnosuke"] = "星野梦美 | 程序:fsu0413",
 	["illustrator:rinnosuke"] = "会帆",
 	["origin:rinnosuke"] = "p号：9279786，个人ID：146732", --（作者明确表态可用）
 	["illustrator:rinnosuke_1"] = "会帆",
@@ -53,8 +49,6 @@ return{
 	--wai003  势力：外 3血
 	["tokiko"] = "朱鹭子",
 	["#tokiko"] = "无名的读书妖怪",
-	["!tokiko"] = "朱鹭子",
-	 --["designer:tokiko"] = "星野梦美 | 程序:三国有单",
 	["illustrator:tokiko"] = "会帆",
 	["origin:tokiko"] = "p号：4910103，个人ID：146732", --（作者明确表态可用）
 	["illustrator:tokiko_1"] = "会帆",
@@ -72,9 +66,7 @@ return{
 --****************************
 	--wai004  势力：外 4血
 	["renko"] = "宇佐见莲子",
-	["#renko"] = "窥知时空之目",
-	["!renko"] = "宇佐见莲子",
-	  --["designer:renko"] = "星野梦美 | 程序:幻兰幽梦",
+    ["#renko"] = "窥知时空之目", 
 	["illustrator:renko"] = "ideolo",
 	["origin:renko"] = "个人ID：61513",
 	["illustrator:renko_1"] = "orga",
@@ -90,11 +82,9 @@ return{
 
 --****************************
 	--wai005  势力：外 4血
-	["merry"] = "玛艾露贝莉·赫恩",
-	["&merry"] = "玛艾露贝莉",
+    ["merry"] = "玛艾露贝莉",
 	["#merry"] = "看穿境界之目",
-	["!merry"] = "玛艾露贝莉",
-	--["designer:merry"] = "星野梦美 | 程序:三国有单",
+    ["!merry"] = "玛艾露贝莉·赫恩",
 	["illustrator:merry"] = "shigureru",
 	["origin:merry"] = "p号：47417381，个人ID：145972",
 	["illustrator:merry_1"] = "asagi",
@@ -115,8 +105,6 @@ return{
 	--wai006  势力：外 3血
 	["toyohime"] = "绵月丰姬",
 	["#toyohime"] = "连系海与山的月之公主",
-	["!toyohime"] = "绵月丰姬",
-	--["designer:toyohime"] = "星野梦美 | 程序:三国有单",
 	["illustrator:toyohime"] = "シネカ",
 	["origin:toyohime"] = "p号：13173842，个人ID：1154113",
 	["illustrator:toyohime_1"] = "砂雲",
@@ -138,8 +126,6 @@ return{
 	--wai007  势力：外 4血
 	["yorihime"] = "绵月依姬",
 	["#yorihime"] = "受神灵凭依的月之公主",
-	["!yorihime"] = "绵月依姬",
-	   --["designer:yorihime"] = "星野梦美 | 程序:三国有单",
 	["illustrator:yorihime"] = "PFALZ",
 	["origin:yorihime"] = "p号：3470615，个人ID：6539",
 	["illustrator:yorihime_1"] = "PFALZ",
@@ -160,8 +146,6 @@ return{
 	["sunny"] = "桑尼·米尔克",
 	["&sunny"] = "桑尼",
 	["#sunny"] = "闪耀的日之光",
-	["!sunny"] = "桑尼.米尔克",
-	 --["designer:sunny"] = "星野梦美 | 程序:幻兰幽梦",
 	["illustrator:sunny"] = "Sui.",
 	["origin:sunny"] = "p号：19453374，个人ID：304123",
 	["illustrator:sunny_1"] = "NAbyssor",
@@ -180,8 +164,6 @@ return{
 	["lunar"] = "露娜·琪尔德",
 	["&lunar"] = "露娜",
 	["#lunar"] = "寂静的月之光",
-	["!lunar"] = "露娜·琪尔德",
---["designer:lunar"] = "星野梦美 | 程序:幻兰幽梦，三国有单",
 	["illustrator:lunar"] = "yucke",
 	["origin:lunar"] = "p号：16951942，个人ID：183590",
 	["illustrator:lunar_1"] = "NEKO",
@@ -202,8 +184,6 @@ return{
 	["star"] = "斯塔·莎菲雅",
 	["&star"] = "斯塔",
 	["#star"] = "照射的星之光",
-	["!star"] = "斯塔.莎菲雅",
---["designer:star"] = "星野梦美 | 程序:三国有单",
 	["illustrator:star"] = "綾瀬 みどり",
 	["illustrator:star_1"] = "和茶",
 	["origin:star_1"] = "p号：38503262，个人ID：3312169",--（国人）
@@ -219,7 +199,6 @@ return{
 	--wai011  势力：外 4血
 	["kasen"] = "茨木華扇",
 	["#kasen"] = "独臂有角的仙人",
-	["!kasen"] = "茨木華扇",
 		["illustrator:kasen"] = "ニッカ",
 	["origin:kasen"] = "p号：17069244",
 	["illustrator:kasen_1"] = "ダバディ",
@@ -237,8 +216,7 @@ return{
 --****************************
 	--wai012  势力：外 3血
 	["kosuzu"] = "本居小铃",
-	["#kosuzu"] = "识文解意的爱书人",
-	["!kosuzu"] = "本居小铃",
+    ["#kosuzu"] = "识文解意的爱书人",
 		["illustrator:kosuzu"] = "藤ちょこ",
 	["illustrator:kosuzu_1"] = "音無空太",
 	["origin:kosuzu_1"] = "p号：50873812",

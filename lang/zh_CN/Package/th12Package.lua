@@ -5,9 +5,7 @@ return{
 
 	--xlc001  势力：星 4血
 	["byakuren"] = "圣白莲",
-	["#byakuren"] = "被封印的大魔法师",
-	["!byakuren"] = "圣白莲",
-	   --["designer:byakuren"] = "星野梦美 | 程序:幻兰幽梦,三国有单",
+    ["#byakuren"] = "被封印的大魔法师", 
 	["illustrator:byakuren"] = "赤りんご",
 	["origin:byakuren"] = "p号：7501522，个人ID：164813", --(貌似可以用的样子。。但其个人网站乱码 确认不能。。。)
 	["illustrator:byakuren_1"] = "ひそな",
@@ -35,8 +33,6 @@ return{
 	--xlc002  势力：星 3血
 	["nue"]= "封兽鵺",
 	["#nue"]= "未确认幻想飞行少女",
-	["!nue"]= "封兽鵺",
-	 --["designer:nue"] = "星野梦美 | 程序:叫什么啊你妹",
 	["illustrator:nue"] = "赤シオ",
 	["origin:nue"] = "p号：5991986，个人ID：341747",
 	["illustrator:nue_1"] = "赤シオ",
@@ -55,8 +51,6 @@ return{
 	--xlc003  势力：星 4血
 	["toramaru"] = "寅丸星",
 	["#toramaru"] = "毘沙门天的弟子",
-	["!toramaru"] = "寅丸星",
---["designer:toramaru"] = "星野梦美 | 程序:三国有单",
 	["illustrator:toramaru"] = "飛鳥士郎",
 	["origin:toramaru"] = "p号：10201691，个人ID：319018", --（貌似可以）
 	["illustrator:toramaru_1"] = "サエモン",
@@ -79,8 +73,6 @@ return{
 	--xlc004  势力：星 4血
 	["murasa"] = "村纱水蜜",
 	["#murasa"] = "水难事故的念缚灵",
-	["!murasa"] = "村纱水蜜",
-  --["designer:murasa"] = "星野梦美 | 程序:三国有单",
 	["illustrator:murasa"] = "UGUME",
 	["origin:murasa"] = "p号：35810788，个人ID：1457830",
 	["illustrator:murasa_1"] = "もちぬ",
@@ -100,8 +92,6 @@ return{
 	--xlc005  势力：星 4血
 	["ichirin"] = "云居一轮",
 	["#ichirin"] = "守护与被守护的大轮",
-	["!ichirin"] = "云居一轮",
-	   --["designer:ichirin"] = "星野梦美 | 程序:幻兰幽梦",
 	["illustrator:ichirin"] = "ideolo",
 	["origin:ichirin"] = "个人ID：61513",
 	["illustrator:ichirin_1"] = "neme",
@@ -119,8 +109,6 @@ return{
 	--xlc006  势力：星 3血
 	["nazrin"] = "纳兹琳",
 	["#nazrin"] = "探宝的小小大将",
-	["!nazrin"] = "纳兹琳",
---["designer:nazrin"] = "星野梦美 | 程序:幻兰幽梦",
 	["illustrator:nazrin"] = "cuteg",
 	["origin:nazrin"] = "p号：9304047，个人ID：103130",
 	["illustrator:nazrin_1"] = "茨乃",
@@ -140,8 +128,6 @@ return{
 	--xlc007  势力：星 3血
 	["kogasa"] = "多多良小伞" ,
 	["#kogasa"] = "愉快的遗忘之伞" ,
-	["!kogasa"] = "多多良小伞" ,
-	--["designer:kogasa"] = "星野梦美 | 程序:fsu0413",
 	["illustrator:kogasa"] = "砂雲",
 	["origin:kogasa"] = "p号：8865403，个人ID：295604",
 	["illustrator:kogasa_1"] = "はら",
@@ -170,8 +156,6 @@ return{
 	--xlc008  势力：星 4血
 	["unzan"] = "云山",
 	["#unzan"] = "脱离时代的顽固老爹",
-	["!unzan"] = "云山",
-	 --["designer:unzan"] = "星野梦美 | 程序:三国有单",
 	["illustrator:unzan"] = "閏月戈",
 	["origin:unzan"] = "p号：7537237，个人ID：204061",
 	["illustrator:unzan_1"] = "キツネ",

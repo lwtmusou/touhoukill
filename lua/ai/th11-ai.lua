@@ -672,19 +672,53 @@ sgs.ai_playerchosen_intention.rebing = 30
 sgs.ai_skill_invoke.diaoping  =function(self,data)
 	if self.player:isKongcheng() then return false end
 	local use=self.player:getTag("diaoping_slash"):toCardUse()
-	if use.from then
-		if self:isFriend(use.from) then return false end
-		for _,p in sgs.qlist(use.to) do
-			if self:isFriend(p) then
-				if self:isWeak(p) then
-					return true
-				else
-					if self.player:getHandcardNum()>=2 then 
-						return true
-					end
-				end
-			end
-		end
+
+	if not use.from or self:isFriend(use.from) then return false end
+    local hasFriend = false
+    local hasWeakFriend = false
+    local hasSelf = false
+	for _,p in sgs.qlist(use.to) do
+		if self:isFriend(p) and not (hasFriend and  hasWeakFriend) then
+            if self:slashIsEffective(use.card, p, use.from) and not self:touhouCardUseEffectNullify(use, p) then
+                local fakeDamage=sgs.DamageStruct()
+                fakeDamage.card=use.card
+                fakeDamage.nature= self:touhouDamageNature(use.card, use.from, p)
+                fakeDamage.damage=1
+                fakeDamage.from=use.from
+                fakeDamage.to= p
+                if self:touhouNeedAvoidAttack(fakeDamage,use.from,p) then  
+                    hasFriend = true
+                    if p:objectName() == self.player:objectName() then
+                        hasSelf = true
+                    elseif self:isWeak(p) then
+                        hasWeakFriend = true
+                    end
+                end
+            end
+        end
+	end
+    
+    if  self.player:getHandcardNum()>=2 then 
+		return hasFriend
+    else
+        local lastCard = self.player:getCards("h"):first()
+        if hasWeakFriend and not hasSelf then
+            return not lastCard:isKindOf("Peach")
+        elseif hasWeakFriend and hasSelf then
+            local maxCard = self:getMaxCard(use.from)
+            local maxPoint
+            if maxCard then
+                maxPoint = maxCard:getNumber()
+            else
+                maxPoint = 0
+            end
+            if lastCard:isKindOf("Peach") then
+                maxPoint = maxPoint + use.from:getHandcardNum()/4
+            end
+            return lastCard:getNumber() > maxPoint
+        elseif not hasWeakFriend and hasSelf then
+            return not (lastCard:isKindOf("Peach") and lastCard:isKindOf("Analeptic") and lastCard:isKindOf("Jink"))
+        end
 	end
 	return false
 end

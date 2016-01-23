@@ -5,8 +5,6 @@
 	--fsl001  势力：风 4血
 	["kanako"] = "八坂神奈子",
 	["#kanako"] = "山坡与湖水的化身",
-	["!kanako"] = "八坂神奈子",
-	--["designer:kanako"] = "星野梦美 | 程序:fsu0413",
 	["illustrator:kanako"] = "sayori",
 	["origin:kanako"] = "p号：2272079，个人ID：104409",--(国人)
 	["illustrator:kanako_1"] = "だいん",
@@ -34,8 +32,6 @@
 	--fsl002  势力：风 3血
 	["suwako"] = "泄矢诹访子",
 	["#suwako"] = "土著神的顶点",
-	["!suwako"] = "泄矢诹访子",
-	--["designer:suwako"] = "星野梦美 | 程序:幻兰幽梦",
 	["illustrator:suwako"] = "茶葉",
 	["origin:suwako"] = "p号：3882007，个人ID：13233",
 	["illustrator:suwako_1"] = "miya9",
@@ -59,8 +55,6 @@
 	--fsl003  势力：风 3血
 	["sanae"] = "东风谷早苗",
 	["#sanae"] = "被祭拜的风之人",
-	["!sanae"] = "东风谷早苗",
-	  --["designer:sanae"] = "星野梦美 | 程序:三国有单",
 	["illustrator:sanae"] = "茨乃",
 	["origin:sanae"] = "p号：3204312，个人ID：67388",
 	["illustrator:sanae_1"] = "郁",
@@ -91,8 +85,6 @@
 	--fsl004  势力：风 3血
 	["aya"] = "射命丸文",
 	["#aya"] = "最接近里的天狗",
-	["!aya"] = "射命丸文",
-	 --["designer:aya"] = "星野梦美 | 程序:幻兰幽梦",
 	["illustrator:aya"] = "sayori",
 	["origin:aya"] = "p号：9560039，个人ID：104409",--(国人)
 	["illustrator:aya_1"] = "リリア",
@@ -113,8 +105,6 @@
 	--fsl005  势力：风 3血
 	["nitori"] = "河城荷取",
 	["#nitori"] = "超妖怪弹头",
-	["!nitori"] = "河城荷取",
-		--["designer:nitori"] = "星野梦美 | 程序:幻兰幽梦",
 	["illustrator:nitori"] = "ne-on",
 	["origin:nitori"] = "p号：6607613，个人ID：456107",
 	["illustrator:nitori_1"] = "しがらき",
@@ -136,8 +126,6 @@
 	--fsl006  势力：风 3血
 	["hina"] = "键山雏",
 	["#hina"] = "秘神流人偶",
-	["!hina"] = "键山雏",
-  --["designer:hina"] = "星野梦美 | 程序:三国有单",
 	["illustrator:hina"] = "Lowlight.K",
 	["origin:hina"] = "p号：6091680，个人ID：904187",--（国人？）
 	["illustrator:hina_1"] = "nyanya",
@@ -160,10 +148,9 @@
 
 --************************************************
 	--fsl007  势力：风 3血
-	["sanae_sp"] = "高中生早苗",
+    ["sanae_sp"] = "SP高中生早苗",
+    ["&sanae_sp"] = "高中生早苗",
 	["#sanae_sp"] = "现代的女高中生",
-	["!sanae_sp"] = "SP高中生早苗",
-	--["designer:sanae_sp"] = "星野梦美 | 程序:三国有单",
 	["illustrator:sanae_sp"] = "宮瀬まひろ",
 	["origin:sanae_sp"] = "p号：28915592，个人ID：544479",
 	["illustrator:sanae_sp_1"] = "宮瀬まひろ",
@@ -181,8 +168,6 @@
 	--fsl008  势力：风 4血
 	["momizi"] = "犬走椛",
 	["#momizi"] = "山上的千里眼",
-	["!momizi"] = "犬走椛",
-	--["designer:momizi"] = "星野梦美 | 程序:三国有单",
 	["illustrator:momizi"] = "啓々",
 	["origin:momizi"] = "p号：4742307，个人ID：30974",-- (非社团作品可以)
 	["illustrator:momizi_1"] = "みや",
@@ -207,8 +192,6 @@
 	--fsl009  势力：风 4血
 	["minoriko"] = "秋穰子",
 	["#minoriko"] = "丰收与成熟的象征",
-	["!minoriko"] = "秋穰子",
-	  --["designer:minoriko"] = "星野梦美 | 程序:果然萝卜斩",
 	["illustrator:minoriko"] = "ツヤダシシュウジ",
 	["origin:minoriko"] = "个人ID：2022150",
 	["illustrator:minoriko_1"] = "Sui.",
@@ -226,8 +209,6 @@
 	--fsl010  势力：风 4血
 	["shizuha"] = "秋静叶",
 	["#shizuha"] = "寂寞与终焉的象征",
-	["!shizuha"] = "秋静叶",
-	  --["designer:shizuha"] = "星野梦美 | 程序:三国有单",
 	["illustrator:shizuha"] = "ポップル",
 	["origin:shizuha"] = "p号：7048869，个人ID：888775", --已退p站
 	["illustrator:shizuha_1"] = "c7肘",
@@ -250,8 +231,6 @@
 	["sanae_slm"] = "神灵庙sp早苗",
 	["&sanae_slm"] = "神灵庙早苗",
 	["#sanae_slm"] = "私欲的巫女",
-	["!sanae_slm"] = "神灵庙sp早苗",
-	 --["designer:sanae_slm"] = "星野梦美 | 程序:三国有单",
 	["illustrator:sanae_slm"] = "小強",
 	["origin:sanae_slm"] = "p号：19757581，个人ID：1754781",--(国人)
 	["illustrator:sanae_slm_1"] = "An2A",

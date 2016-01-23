@@ -7,8 +7,6 @@ return
 	--yyc001  势力：永 4血
 	["kaguya"] = "蓬莱山辉夜",
 	["#kaguya"] = "永远与须臾的罪人",
-	["!kaguya"] = "蓬莱山辉夜",
-	  --["designer:kaguya"] = "星野梦美 | 程序:幻兰幽梦",
 	["illustrator:kaguya"] = "c7肘",
 	["origin:kaguya"] = "p号：16237731，个人ID：217707",--(国人,表态可以)
 	["illustrator:kaguya_1"] = "鈴蘭",
@@ -31,8 +29,6 @@ return
 	--yyc002  势力：永 4血
 	["eirin"] = "八意永琳",
 	["#eirin"] = "月之头脑",
-	["!eirin"] = "八意永琳",
-	 --["designer:eirin"] = "星野梦美 | 程序:幻兰幽梦",
 	["illustrator:eirin"] = "岩本ゼロゴ",
 	["origin:eirin"] = "个人ID：3080",
 	["illustrator:eirin_1"] = "ふうりん",
@@ -54,8 +50,6 @@ return
 	--yyc003  势力：永 4血
 	["mokou"] = "藤原妹红",
 	["#mokou"] = "蓬莱人之形",
-	["!mokou"] = "藤原妹红",
-	   --["designer:mokou"] = "星野梦美 | 程序:三国有单",
 	["illustrator:mokou"] = "時雨",
 	["origin:mokou"] = "p号：16853756，个人ID：4271",
 	["illustrator:mokou_1"] = "irua",
@@ -75,11 +69,9 @@ return
 
 --*********************************************
 	--yyc004  势力：永 4血
-	["reisen"]= "铃仙·优昙华院·稻叶",
-	["&reisen"]= "铃仙",
+    ["reisen"]="铃仙",
 	["#reisen"]= "狂气的月兔",
-	["!reisen"]= "铃仙",
-		--["designer:reisen"] = "星野梦美 | 程序:叫什么啊你妹",
+    ["!reisen"]="铃仙·优昙华院·因幡",
 	["illustrator:reisen"] = "深崎暮人",
 	["illustrator:reisen_1"] = "ひのほし",
 	["origin:reisen_1"] = "p号：14154499，个人ID：565796",
@@ -100,8 +92,6 @@ return
 	--yyc005  势力：永 3血
 	["keine"] = "上白泽慧音",
 	["#keine"] = "知识与历史的半兽",
-	["!keine"] = "上白泽慧音",
-	  --["designer:keine"] = "星野梦美 | 程序:三国有单",
 	["illustrator:keine"] = "てぺんぐ",
 	["origin:keine"] = "p号：9986126，个人ID：303910", --（貌似已退p站）
 	["illustrator:keine_1"] = "Arkas",
@@ -123,8 +113,6 @@ return
 	--yyc006  势力：永 3血
 	["tewi"] = "因幡帝",
 	["#tewi"] = "幸运的白兔",
-	["!tewi"] = "因幡帝",
-		 --["designer:tewi"] = "星野梦美 | 程序:叫什么啊你妹",
 	["illustrator:tewi"] = "カトウハルアキ",
 	["illustrator:tewi_1"] = "すばち",
 	["origin:tewi_1"] = "p号：26687425，个人ID：22027",
@@ -142,11 +130,9 @@ return
 
 --*********************************************
 	--yyc007  势力：永 3血
-	["mystia"] = "米斯蒂娅·萝蕾拉",
-	["&mystia"]= "米斯蒂娅",
+    ["mystia"]="米斯蒂娅",
 	["#mystia"] = "夜雀妖怪",
-	["!mystia"] = "米斯蒂娅",
-	--["designer:mystia"] = "星野梦美 | 程序:幻兰幽梦",
+    ["!mystia"] = "米斯蒂娅·萝蕾拉",
 	["illustrator:mystia"] = "とらこ",
 	["origin:mystia"] = "p号：25455215，个人ID：36615",
 	["illustrator:mystia_1"] = "ヨシノリョウ",
@@ -162,11 +148,9 @@ return
 
 --*********************************************
 	--yyc008  势力：永 3血
-	["wriggle"] = "莉格露•奈特巴格",
-	["&wriggle"] = "莉格露",
+    ["wriggle"] = "莉格露",
 	["#wriggle"] = "在黑暗中蠢动的光虫",
-	["!wriggle"] = "莉格露",
-	--["designer:wriggle"] = "星野梦美 | 程序:三国有单",
+    ["!wriggle"] = "莉格露•奈特巴格",
 	["illustrator:wriggle"] = "底虫",
 	["origin:wriggle"] = "p号：2739572",
 	["illustrator:wriggle_1"] = "もりのほん",
@@ -187,8 +171,6 @@ return
 	--yyc009  势力：永 3血
 	["shirasawa"] = "白泽",
 	["#shirasawa"] = "治世之兆",
-	["!shirasawa"] = "白泽",
-	 --["designer:shirasawa"] = "星野梦美 | 程序:三国有单",
 	["illustrator:shirasawa"] = "六羽田トモエ",
 	["illustrator:shirasawa_1"] = "ria:ごった煮",
 	["origin:shirasawa_1"] = "p号：18128870，个人ID：18691",
@@ -210,10 +192,9 @@ return
 
 --*********************************************
 	--yyc010  势力：永 4血
-	["mokou_sp"] = "自警队妹红",
+    ["mokou_sp"] = "SP自警队妹红",
+    ["&mokou_sp"] = "自警队妹红",
 	["#mokou_sp"] = "红之自警队",
-	["!mokou_sp"] = "SP自警队妹红",
-	 --["designer:mokou_sp"] = "星野梦美 | 程序:三国有单",
 	["illustrator:mokou_sp"] = "しろし",
 	["origin:mokou_sp"] = "p号：24380429，个人ID：76048",
 	["illustrator:mokou_sp_1"] = "ふゆきおじさん",
