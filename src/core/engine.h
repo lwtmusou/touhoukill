@@ -123,7 +123,6 @@ public:
     QString getCurrentCardUsePattern();
     CardUseStruct::CardUseReason getCurrentCardUseReason();
 
-    QString findConvertFrom(const QString &general_name) const;
     bool isGeneralHidden(const QString &general_name) const;
 
     QStringList SurprisingGenerals;
@@ -172,8 +171,6 @@ private:
     QHash<QString, const LuaArmor *> luaArmors;
     QHash<QString, QString> luaTreasure_className2objectName;
     QHash<QString, const LuaTreasure *> luaTreasures;
-
-    QMultiMap<QString, QString> sp_convert_pairs;
 };
 
 static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key)

@@ -467,7 +467,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) 
             QSharedPointer<SkillInvokeDetail> invoke = sameTiming.first();
 
             // treat the invoker is NULL, if the triggered skill is some kind of gamerule
-            if (sameTiming.length() >= 2 && invoke->invoker != NULL) {
+            if (sameTiming.length() >= 2 && invoke->invoker != NULL && invoke->skill->getPriority() < 5) { // if the priority is bigger than 5, that means it could be some kind of notify-client skill or fakemove skill, then no need to select the trigger order at this time
                 // select the triggerorder of same timing
                 // if there is a compulsory skill or compulsory effect, it shouldn't be able to cancel
                 bool has_compulsory = false;
@@ -480,7 +480,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) 
                 // since the invoker of the sametiming list is the same, we can use sameTiming.first()->invoker to judge the invoker of this time
                 QSharedPointer<SkillInvokeDetail> detailSelected = room->askForTriggerOrder(sameTiming.first()->invoker, sameTiming, !has_compulsory, data);
                 if (detailSelected.isNull() || !detailSelected->isValid()) {
-                    // if cancel is pushed when it is cancelable, we set the triggered time of all the sametiming to 65535, and add all the skills to triggeredList, continue the next loop»·
+                    // if cancel is pushed when it is cancelable, we set the triggered time of all the sametiming to 65535, and add all the skills to triggeredList, continue the next loop
                     foreach (const QSharedPointer<SkillInvokeDetail> &ptr, sameTiming) {
                         ptr->triggeredTimes = 65535;
                         triggered.insert(ptr);
@@ -499,7 +499,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) 
             // if effect returned true, exit the whole loop.
 
             if (invoke->skill->cost(triggerEvent, invoke, data)) {
-                // the show general of hegemony mode can be inserted hereÀï
+                // the show general of hegemony mode can be inserted here
                 if (invoke->skill->effect(triggerEvent, invoke, data)) {
                     interrupt = true;
                     break;

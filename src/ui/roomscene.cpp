@@ -595,7 +595,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
             QString player_name = arg[1].toString();
             QString skill_name = arg[2].toString();
             const Skill *skill = Sanguosha->getSkill(skill_name);
-            if (skill && (skill->isAttachedLordSkill() || skill->inherits("SPConvertSkill"))) return;
+            if (skill && skill->isAttachedLordSkill()) return;
 
             ClientPlayer *player = ClientInstance->getPlayer(player_name);
             if (!player) return;
@@ -2320,7 +2320,6 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
 
 void RoomScene::addSkillButton(const Skill *skill, bool)
 {
-    if (skill->inherits("SPConvertSkill")) return;
     // check duplication
     QSanSkillButton *btn = dashboard->addSkillButton(skill->objectName());
 
@@ -3833,7 +3832,7 @@ void RoomScene::attachSkill(const QString &skill_name, bool from_left)
 void RoomScene::detachSkill(const QString &skill_name)
 {
     QSanSkillButton *btn = dashboard->removeSkillButton(skill_name);
-    if (btn == NULL) return;    //be care LordSkill and SPConvertSkill
+    if (btn == NULL) return;    //be care LordSkill
     m_skillButtons.removeAll(btn);
     btn->deleteLater();
 }
@@ -4159,8 +4158,6 @@ void RoomScene::showSkillInvocation(const QString &who, const QString &skill_nam
 {
     const ClientPlayer *player = ClientInstance->findChild<const ClientPlayer *>(who);
     if (!player->hasSkill(skill_name) && !player->hasEquipSkill(skill_name)) return;
-    const Skill *skill = Sanguosha->getSkill(skill_name);
-    if (skill && skill->inherits("SPConvertSkill")) return;
     QString type = "#InvokeSkill";
     QString from_general = player->objectName();
     QString arg = skill_name;

@@ -919,7 +919,6 @@ public:
 
     Package(const char *name, Type pack_type = GeneralPack);
     void insertRelatedSkills(const char *main_skill, const char *related_skill);
-    void insertConvertPairs(const char *from, const char *to);
 };
 
 class Engine: public QObject {
@@ -1005,7 +1004,6 @@ public:
     QString getCurrentCardUsePattern();
     CardUseStruct::CardUseReason getCurrentCardUseReason();
 
-    QString findConvertFrom(const char *general_name) const;
     bool isGeneralHidden(const char *general_name) const;
 };
 
@@ -1041,26 +1039,15 @@ public:
     TriggerSkill(const char *name);
     const ViewAsSkill *getViewAsSkill() const;
     QList<TriggerEvent> getTriggerEvents() const;
-
-    virtual int getPriority(TriggerEvent triggerEvent) const;
-    virtual bool triggerable(const ServerPlayer *target) const;
-	//virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
-	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const;
-	
-	virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
-    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
+    
+    virtual int getPriority() const;
 
     bool isGlobal() const;
 };
 
-
-%extend TriggerSkill {
-
-    TriggerList TriggerSkillTriggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        return $self->TriggerSkill::triggerable(triggerEvent, room, player, data);
-    }
-};
+%{
+#pragma message WARN("now we don't support TriggerSkill::triggerable/TriggerSkill::cost/TriggerSkill::effect functions to call in LUA interface")
+%}
 
 class QThread: public QObject {
 };

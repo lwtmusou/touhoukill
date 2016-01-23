@@ -76,14 +76,6 @@ Engine::Engine()
     lua = CreateLuaState();
     DoLuaScript(lua, "lua/config.lua");
 
-    QStringList stringlist_sp_convert = GetConfigFromLuaState(lua, "convert_pairs").toStringList();
-    foreach (QString cv_pair, stringlist_sp_convert) {
-        QStringList pairs = cv_pair.split("->");
-        QStringList cv_to = pairs.at(1).split("|");
-        foreach(QString to, cv_to)
-            sp_convert_pairs.insertMulti(pairs.at(0), to);
-    }
-
     QStringList package_names = GetConfigFromLuaState(lua, "package_names").toStringList();
     foreach(QString name, package_names)
         addPackage(name);
@@ -229,7 +221,6 @@ void Engine::addPackage(Package *package)
         return;
 
     package->setParent(this);
-    sp_convert_pairs.unite(package->getConvertPairs());
     patterns.unite(package->getPatterns());
     related_skills.unite(package->getRelatedSkills());
 
@@ -285,12 +276,6 @@ void Engine::addPackage(Package *package)
             if (skill_name.startsWith("#")) continue;
             foreach (const Skill *related, getRelatedSkills(skill_name))
                 general->addSkill(related->objectName());
-        }
-        if (sp_convert_pairs.keys().contains(general->objectName())) {
-            QStringList to_list(sp_convert_pairs.values(general->objectName()));
-            const Skill *skill = new SPConvertSkill(general->objectName(), to_list.join("+"));
-            addSkills(QList<const Skill *>() << skill);
-            general->addSkill(skill->objectName());
         }
         generals.insert(general->objectName(), general);
         if (isGeneralHidden(general->objectName())) continue;
@@ -487,15 +472,6 @@ QString Engine::getCurrentCardUsePattern()
 CardUseStruct::CardUseReason Engine::getCurrentCardUseReason()
 {
     return currentRoomState()->getCurrentCardUseReason();
-}
-
-QString Engine::findConvertFrom(const QString &general_name) const
-{
-    foreach (QString general, sp_convert_pairs.keys()) {
-        if (sp_convert_pairs.values(general).contains(general_name))
-            return general;
-    }
-    return QString();
 }
 
 bool Engine::isGeneralHidden(const QString &general_name) const
