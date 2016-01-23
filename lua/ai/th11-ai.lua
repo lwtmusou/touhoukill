@@ -717,7 +717,7 @@ sgs.ai_skill_invoke.diaoping  =function(self,data)
             end
             return lastCard:getNumber() > maxPoint
         elseif not hasWeakFriend and hasSelf then
-            return not (lastCard:isKindOf("Peach") and lastCard:isKindOf("Analeptic") and lastCard:isKindOf("Jink"))
+            return not (lastCard:isKindOf("Peach") or lastCard:isKindOf("Analeptic") or lastCard:isKindOf("Jink"))
         end
 	end
 	return false
