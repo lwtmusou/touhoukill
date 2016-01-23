@@ -518,7 +518,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                 break;
             if (effect.jink_num == 1) {
                 const Card *jink = room->askForCard(effect.to, "jink", "slash-jink:" + slasher, data, Card::MethodUse, effect.from);
-                room->slashResult(effect, room->isJinkEffected(effect.to, jink) ? jink : NULL);
+                room->slashResult(effect, room->isJinkEffected(effect, jink) ? jink : NULL);
             } else {
                 DummyCard *jink = new DummyCard;
                 const Card *asked_jink = NULL;
@@ -526,7 +526,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                     QString prompt = QString("@multi-jink%1:%2::%3").arg(i == effect.jink_num ? "-start" : QString())
                         .arg(slasher).arg(i);
                     asked_jink = room->askForCard(effect.to, "jink", prompt, data, Card::MethodUse, effect.from);
-                    if (!room->isJinkEffected(effect.to, asked_jink)) {
+                    if (!room->isJinkEffected(effect, asked_jink)) {
                         delete jink;
                         room->slashResult(effect, NULL);
                         return false;

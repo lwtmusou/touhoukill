@@ -103,7 +103,7 @@ public:
     void recover(ServerPlayer *player, const RecoverStruct &recover, bool set_emotion = false);
     bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to, bool multiple = false);
     bool cardEffect(const CardEffectStruct &effect);
-    bool isJinkEffected(ServerPlayer *user, const Card *jink);
+    bool isJinkEffected(SlashEffectStruct effect, const Card * jink);
     void judge(JudgeStruct &judge_struct);
     void sendJudgeResult(const JudgeStruct * judge);
     QList<int> getNCards(int n, bool update_pile_number = true, bool bottom = false);

@@ -88,6 +88,8 @@ struct CardUseStruct
     void parse(const QString &str, Room *room);
     bool tryParse(const QVariant &usage, Room *room);
 
+    QString toString() const;
+
     const Card *card;
     ServerPlayer *from;
     QList<ServerPlayer *> to;
@@ -108,10 +110,8 @@ public:
     QString m_skillName; // skill that triggers movement of the cards, such as "longdang", "dimeng"
     QString m_eventName; // additional arg such as "lebusishu" on top of "S_REASON_JUDGE"
     QVariant m_extraData; // additional data and will not be parsed to clients
-    QVariant m_provider; // additional data recording who provide this card for otherone to use or response,
+    QVariant m_provider; // additional data recording who provide this card for otherone to use or response, e.g. guanyu provide a slash for "jijiang"
 
-
-    //etc. guanyu provide a slash for "jijiang"
     inline CardMoveReason()
     {
         m_reason = S_REASON_UNKNOWN;
@@ -325,6 +325,7 @@ struct DyingStruct
 
     ServerPlayer *who; // who is ask for help
     DamageStruct *damage; // if it is NULL that means the dying is caused by losing hp
+    ServerPlayer *nowAskingForPeaches; // who is asking for peaches
 };
 
 struct DeathStruct
@@ -393,8 +394,19 @@ private:
 struct PhaseChangeStruct
 {
     PhaseChangeStruct();
+
     Player::Phase from;
     Player::Phase to;
+    ServerPlayer *player;
+};
+
+struct PhaseSkippingStruct
+{
+    PhaseSkippingStruct();
+    
+    Player::Phase phase;
+    ServerPlayer *player;
+    bool isCost;
 };
 
 struct PhaseStruct
@@ -426,15 +438,32 @@ struct CardResponseStruct
     bool m_isHandcard;
 };
 
-
 struct MarkChangeStruct
 {
     MarkChangeStruct();
 
     int num;
     QString name;
+    ServerPlayer *player;
 };
 
+struct SkillAcquireDetachStruct
+{
+    SkillAcquireDetachStruct();
+
+    const Skill *skill;
+    ServerPlayer *player;
+    bool isAcquire;
+};
+
+struct CardAskedStruct
+{
+    CardAskedStruct();
+
+    QString pattern;
+    QString prompt;
+    ServerPlayer *player;
+};
 
 struct SkillInvokeDetail
 {
@@ -456,11 +485,60 @@ struct SkillInvokeDetail
     bool isValid() const; // validity check
 
     QVariant toVariant() const;
+    QStringList toList() const;
+};
+
+struct HpLostStruct
+{
+    HpLostStruct();
+
+    ServerPlayer *player;
+    int num;
+};
+
+struct JinkEffectStruct
+{
+    JinkEffectStruct();
+
+    SlashEffectStruct slashEffect;
+    const Card *jink;
 };
 
 struct ChoiceMadeStruct
 {
+    ChoiceMadeStruct();
+
+    enum ChoiceType
+    {
+        NoChoice,
+
+        SkillInvoke,
+        SkillChoice,
+        Nullification,
+        CardChosen,
+        CardResponded,
+        CardUsed,
+        AGChosen,
+        CardShow,
+        Peach,
+        TriggerOrder,
+        ReverseFor3v3,
+        Activate,
+        Suit,
+        Kingdom,
+        CardDiscard,
+        CardExchange,
+        ViewCards,
+        PlayerChosen,
+        Rende,
+        Yiji,
+        Pindian,
+
+        NumOfChoices
+    };
+
     ServerPlayer *player;
+    ChoiceType type;
     QStringList args;
 };
 
@@ -586,6 +664,11 @@ Q_DECLARE_METATYPE(PhaseChangeStruct)
 Q_DECLARE_METATYPE(CardResponseStruct)
 Q_DECLARE_METATYPE(MarkChangeStruct)
 Q_DECLARE_METATYPE(ChoiceMadeStruct)
+Q_DECLARE_METATYPE(SkillAcquireDetachStruct)
+Q_DECLARE_METATYPE(CardAskedStruct)
+Q_DECLARE_METATYPE(HpLostStruct)
+Q_DECLARE_METATYPE(JinkEffectStruct)
+Q_DECLARE_METATYPE(PhaseSkippingStruct)
 Q_DECLARE_METATYPE(const Card *)
 Q_DECLARE_METATYPE(ServerPlayer *)
 Q_DECLARE_METATYPE(JudgeStruct *)

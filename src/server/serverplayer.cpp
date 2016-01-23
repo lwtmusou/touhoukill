@@ -655,13 +655,12 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
         room->moveCardTo(pindian_struct.to_card, pindian_struct.to, NULL, Player::DiscardPile, reason2, true);
     }
 
-    QVariant decisionData = QVariant::fromValue(QString("pindian:%1:%2:%3:%4:%5")
-        .arg(reason)
-        .arg(this->objectName())
-        .arg(pindian_struct.from_card->getEffectiveId())
-        .arg(target->objectName())
-        .arg(pindian_struct.to_card->getEffectiveId()));
-    thread->trigger(ChoiceMade, room, this, decisionData);
+    ChoiceMadeStruct s;
+    s.player = this;
+    s.type = ChoiceMadeStruct::Pindian;
+    s.args << reason << objectName() << QString::number(pindian_struct.from_card->getEffectiveId()) << target->objectName() << QString::number(pindian_struct.to_card->getEffectiveId());
+    QVariant decisionData = QVariant::fromValue(s);
+    thread->trigger(ChoiceMade, room, decisionData);
 
     return pindian_struct.success;
 }
@@ -689,11 +688,12 @@ bool ServerPlayer::changePhase(Player::Phase from, Player::Phase to)
     setPhase(PhaseNone);
 
     PhaseChangeStruct phase_change;
+    phase_change.player = this;
     phase_change.from = from;
     phase_change.to = to;
     QVariant data = QVariant::fromValue(phase_change);
 
-    bool skip = thread->trigger(EventPhaseChanging, room, this, data);
+    bool skip = thread->trigger(EventPhaseChanging, room, data);
     if (skip && to != NotActive) {
         setPhase(from);
         return true;
@@ -705,12 +705,14 @@ bool ServerPlayer::changePhase(Player::Phase from, Player::Phase to)
     if (!phases.isEmpty())
         phases.removeFirst();
 
-    if (!thread->trigger(EventPhaseStart, room, this)) {
+    QVariant thisVariant = QVariant::fromValue(this);
+
+    if (!thread->trigger(EventPhaseStart, room, thisVariant)) {
         if (getPhase() != NotActive)
-            thread->trigger(EventPhaseProceeding, room, this);
+            thread->trigger(EventPhaseProceeding, room, thisVariant);
     }
     if (getPhase() != NotActive)
-        thread->trigger(EventPhaseEnd, room, this);
+        thread->trigger(EventPhaseEnd, room, thisVariant);
 
     return false;
 }
@@ -743,6 +745,7 @@ void ServerPlayer::play(QList<Player::Phase> set_phases)
 
         _m_phases_index = i;
         PhaseChangeStruct phase_change;
+        phase_change.player = this;
         phase_change.from = getPhase();
         phase_change.to = phases[i];
 
@@ -750,7 +753,7 @@ void ServerPlayer::play(QList<Player::Phase> set_phases)
         setPhase(PhaseNone);
         QVariant data = QVariant::fromValue(phase_change);
 
-        bool skip = thread->trigger(EventPhaseChanging, room, this, data);
+        bool skip = thread->trigger(EventPhaseChanging, room, data);
         phase_change = data.value<PhaseChangeStruct>();
         _m_phases_state[i].phase = phases[i] = phase_change.to;
 
@@ -758,18 +761,24 @@ void ServerPlayer::play(QList<Player::Phase> set_phases)
         room->broadcastProperty(this, "phase");
 
         if (phases[i] != NotActive && (skip || _m_phases_state[i].skipped != 0)) {
-            QVariant isCost = QVariant::fromValue(_m_phases_state[i].skipped < 0);
-            bool cancel_skip = thread->trigger(EventPhaseSkipping, room, this, isCost);
+            PhaseSkippingStruct s;
+            s.isCost = _m_phases_state[i].skipped < 0;
+            s.phase = phases[i];
+            s.player = this;
+            QVariant d = QVariant::fromValue(s);
+            bool cancel_skip = thread->trigger(EventPhaseSkipping, room, d);
             if (!cancel_skip)
                 continue;
         }
 
-        if (!thread->trigger(EventPhaseStart, room, this)) {
+        QVariant thisVariant = QVariant::fromValue(this);
+
+        if (!thread->trigger(EventPhaseStart, room, thisVariant)) {
             if (getPhase() != NotActive)
-                thread->trigger(EventPhaseProceeding, room, this);
+                thread->trigger(EventPhaseProceeding, room, thisVariant);
         }
         if (getPhase() != NotActive)
-            thread->trigger(EventPhaseEnd, room, this);
+            thread->trigger(EventPhaseEnd, room, thisVariant);
         else
             break;
     }
@@ -831,9 +840,10 @@ void ServerPlayer::gainMark(const QString &mark, int n)
     MarkChangeStruct change;
     change.name = mark;
     change.num = n;
+    change.player = this;
     QVariant n_data = QVariant::fromValue(change);
     if (mark.startsWith("@")) {
-        if (room->getThread()->trigger(PreMarkChange, room, this, n_data)) return;
+        if (room->getThread()->trigger(PreMarkChange, room, n_data)) return;
         n = n_data.value<MarkChangeStruct>().num;
     }
     if (n == 0) return;
@@ -854,7 +864,7 @@ void ServerPlayer::gainMark(const QString &mark, int n)
     room->setPlayerMark(this, mark, value);
 
     if (mark.startsWith("@"))
-        room->getThread()->trigger(MarkChanged, room, this, n_data);
+        room->getThread()->trigger(MarkChanged, room, n_data);
 }
 
 void ServerPlayer::loseMark(const QString &mark, int n)
@@ -863,11 +873,12 @@ void ServerPlayer::loseMark(const QString &mark, int n)
     MarkChangeStruct change;
     change.name = mark;
     change.num = -n;
+    change.player = this;
 
     QVariant n_data = QVariant::fromValue(change);
 
     if (mark.startsWith("@")) {
-        if (room->getThread()->trigger(PreMarkChange, room, this, n_data)) return;
+        if (room->getThread()->trigger(PreMarkChange, room, n_data)) return;
         n = -(n_data.value<MarkChangeStruct>().num);
     }
 
@@ -892,7 +903,7 @@ void ServerPlayer::loseMark(const QString &mark, int n)
     room->setPlayerMark(this, mark, value);
 
     if (mark.startsWith("@"))
-        room->getThread()->trigger(MarkChanged, room, this, n_data);
+        room->getThread()->trigger(MarkChanged, room, n_data);
 }
 
 void ServerPlayer::loseAllMarks(const QString &mark_name)

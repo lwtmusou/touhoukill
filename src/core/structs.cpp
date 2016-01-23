@@ -123,7 +123,7 @@ SlashEffectStruct::SlashEffectStruct()
 }
 
 DyingStruct::DyingStruct()
-    : who(NULL), damage(NULL)
+    : who(NULL), damage(NULL), nowAskingForPeaches(NULL)
 {
 }
 
@@ -185,7 +185,7 @@ bool JudgeStruct::isGood(const Card *card) const
 }
 
 PhaseChangeStruct::PhaseChangeStruct()
-    : from(Player::NotActive), to(Player::NotActive)
+    : from(Player::NotActive), to(Player::NotActive), player(NULL)
 {
 }
 
@@ -296,8 +296,28 @@ void CardUseStruct::parse(const QString &str, Room *room)
     }
 }
 
+QString CardUseStruct::toString() const
+{
+    if (card == NULL)
+        return QString();
+
+    QStringList l;
+    l << card->toString();
+
+    if (to.isEmpty())
+        l << ".";
+    else {
+        QStringList tos;
+        foreach (ServerPlayer *p, to)
+            tos << p->objectName();
+
+        l << tos.join("+");
+    }
+    return l.join("->");
+}
+
 MarkChangeStruct::MarkChangeStruct()
-    :num(1)
+    : num(1), player(NULL)
 {
 
 }
@@ -364,4 +384,45 @@ QVariant SkillInvokeDetail::toVariant() const
     ob["invoker"] = invoker->objectName();
     ob["timesleft"] = times - triggeredTimes;
     return ob;
+}
+
+QStringList SkillInvokeDetail::toList() const
+{
+    QStringList l;
+    if (!isValid())
+        l << QString() << QString() << QString() << "0";
+    else
+        l << skill->objectName() << owner->objectName() << invoker->objectName() << QString::number(times - triggeredTimes);
+
+    return l;
+}
+
+SkillAcquireDetachStruct::SkillAcquireDetachStruct()
+    : skill(NULL), player(NULL), isAcquire(false)
+{
+}
+
+ChoiceMadeStruct::ChoiceMadeStruct()
+    : player(NULL)
+{
+}
+
+CardAskedStruct::CardAskedStruct()
+    : player(NULL)
+{
+}
+
+HpLostStruct::HpLostStruct()
+    : player(NULL), num(0)
+{
+}
+
+JinkEffectStruct::JinkEffectStruct()
+    : jink(NULL)
+{
+}
+
+PhaseSkippingStruct::PhaseSkippingStruct()
+    : phase(Player::NotActive), player(NULL), isCost(false)
+{
 }
