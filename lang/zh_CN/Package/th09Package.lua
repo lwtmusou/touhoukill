@@ -8,8 +8,6 @@ return
 	--zhan001  势力：战 3血
 	["suika"] = "伊吹萃香",
 	["#suika"] = "不羁奔放的古豪",
-	["!suika"] = "伊吹萃香",
-	 --["designer:suika"] = "星野梦美 | 程序:幻兰幽梦",
 	["illustrator:suika"] = "阿桜",
 	["origin:suika"] = "p号：24157010，个人ID：39753",--(貌似ok)
 	["illustrator:suika_1"] = "ryosios",
@@ -32,11 +30,9 @@ return
 
 	--**********************************************
 	--zhan002  势力：战 3血
-	["shikieiki"] = "四季映姬·亚玛萨那度" ,
-	["&shikieiki"] = "四季映姬" ,
+    ["shikieiki"] = "四季映姬" ,
 	["#shikieiki"] = "乐园的最高裁判长" ,
-	["!shikieiki"] = "四季映姬" ,
-	 --["designer:shikieiki"] = "星野梦美 | 程序:fsu0413",
+    ["!shikieiki"] = "四季映姬·亚玛萨那度" ,
 	["illustrator:shikieiki"] = "風花風花",
 	["origin:shikieiki"] = "p号：37523603，个人ID：1316750",
 	["illustrator:shikieiki_1"] = "ideolo",
@@ -62,8 +58,6 @@ return
 	--zhan003  势力：战 4血
 	["komachi"] = "小野塚小町",
 	["#komachi"] = "三途河的领路人",
-	["!komachi"] = "小野塚小町",
-		 --["designer:komachi"] = "星野梦美 | 程序:三国有单",
 	["illustrator:komachi"] = "赤りんご",
 	["origin:komachi"] = "p号：1377034，个人ID：164813",-- (貌似可以用的样子。。但其个人网站乱码 确认不能。。。)
 	["illustrator:komachi_1"] = "七々しう",
@@ -82,8 +76,6 @@ return
 	--zhan004  势力：战 4血
 	["yuka"] = "风见幽香",
 	["#yuka"] = "四季的鲜花之主",
-	["!yuka"] = "风见幽香",
-	 --["designer:yuka"] = "星野梦美 | 程序:三国有单",
 	["illustrator:yuka"] = "Reina",
 	["origin:yuka"] = "p号：7593428，个人ID：309664",-- (香港)
 	["illustrator:yuka_1"] = "Cloudy.R",
@@ -102,11 +94,9 @@ return
 
 --**********************************************
 	--zhan005  势力：战 3血
-	["medicine"]= "梅蒂馨·梅兰克莉",
-	["&medicine"]= "梅蒂馨",
+    ["medicine"]="梅蒂馨",
 	["#medicine"]= "小小的甜蜜毒药",
-	["!medicine"]= "梅蒂馨",
-	 --["designer:medicine"] = "星野梦美 | 程序:幻兰幽梦",
+    ["!medicine"]="梅蒂馨·梅兰克莉",
 	["illustrator:medicine"] = "フカヒレ",
 	["origin:medicine"] = "p号：9174315，个人ID：58338",
 	["illustrator:medicine_1"] = "DQN",
@@ -124,10 +114,9 @@ return
 
 --**********************************************
 	--zhan006  势力：战 4血
-	["aya_sp"]= "记者文",
+    ["aya_sp"]="SP记者文",
+    ["&aya_sp"]="记者文",
 	["#aya_sp"]= "捏造新闻记者",
-	["!aya_sp"]= "SP记者文",
-	  --["designer:aya_sp"] = "星野梦美 | 程序:fsu0413",
 	["illustrator:aya_sp"] = "An2A",
 	["origin:aya_sp"] = "个人ID：173876",
 	["illustrator:aya_sp_1"] = "えふぇ",
@@ -143,8 +132,6 @@ return
 	--zhan007  势力：战 4血
 	["tenshi"] = "比那名居天子",
 	["#tenshi"] = "非想非非想天的少女",
-	["!tenshi"] = "比那名居天子",
-	 --["designer:tenshi"] = "星野梦美 | 程序:幻兰幽梦",
 	["illustrator:tenshi"] = "ななしな",
 	["origin:tenshi"] = "p号：23718711，个人ID：274594",--(貌似可)
 	["illustrator:tenshi_1"] = "君と子音",
@@ -170,8 +157,6 @@ return
 	--zhan008  势力：战 4血
 	["iku"] = "永江衣玖",
 	["#iku"] = "美丽的绯之衣",
-	["!iku"] = "永江衣玖",
-	 --["designer:iku"] = "星野梦美 | 程序:幻兰幽梦",
 	["illustrator:iku"] = "しろさ",
 	["origin:iku"] = "p号：3805501，个人ID：374262",
 	["illustrator:iku_1"] = "しろさ",
@@ -190,8 +175,6 @@ return
 	--zhan009  势力：战 4血
 	["hatate"] = "姬海棠果",
 	["#hatate"] = "当代的念写记者",
-	["!hatate"] = "姬海棠果",
-	 --["designer:hatate"] = "星野梦美 | 程序:幻兰幽梦",
 	["illustrator:hatate"] = "朱シオ",
 	["origin:hatate"] = "p号：18358973，个人ID：341747",
 	["illustrator:hatate_1"] = "nyanya",

@@ -82,20 +82,11 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
             icon_size = G_COMMON_LAYOUT.m_chooseGeneralBoxSparseIconSize;
         }
     }
-    QStringList thouhouKingdoms;
-    thouhouKingdoms << "zhu" << "hmx" << "yym" << "yyc" << "zhan" << "fsl" << "dld" << "xlc" << "slm" << "hzc" << "wai" << "touhougod";
+
     foreach (const General *general, generals) {
         QString caption;
-        bool isTouhou = false;
-        foreach (QString kingdom, thouhouKingdoms) {
-            if (general->getKingdom() == kingdom)
-                isTouhou = true;
-        }
-        if (isTouhou) {
-            caption = Sanguosha->translate("!" + general->objectName());
-        } else {
-            caption = Sanguosha->translate(general->objectName());
-        }
+        caption = Sanguosha->translate(general->objectName());
+        
         OptionButton *button = new OptionButton(QString(), caption);
         if (no_icon) {
             button->setIcon(QIcon("image/system/no-general-icon.png"));

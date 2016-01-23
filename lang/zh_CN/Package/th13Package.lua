@@ -5,9 +5,7 @@ return{
 
 	--slm001  势力：灵 4血
 	["miko"] = "丰聪耳神子",
-	["#miko"] = "圣德道士",
-	["!miko"] = "丰聪耳神子",
-	--["designer:miko"] = "星野梦美 | 程序:果然萝卜斩",
+    ["#miko"] = "圣德道士", 
 	["illustrator:miko"] = "NAbyssor",
 	["origin:miko"] = "p号：21176402，个人ID：467511",--(国人)
 	["illustrator:miko_1"] = "カズ",
@@ -35,8 +33,6 @@ return{
     --slm002  势力：灵 4血    
 	["mamizou"] = "二岩猯藏",
 	["#mamizou"] = "狸猫怪十变化",
-	["!mamizou"] = "二岩猯藏",
-	   --["designer:mamizou"] = "星野梦美 | 程序:三国有单",
 	["illustrator:mamizou"] = "ideolo",
 	["origin:mamizou"] = "p号：27366760，个人ID：61513", --（国人）
 	["illustrator:mamizou_1"] = "ふーえん",
@@ -62,8 +58,6 @@ return{
 	--slm003  势力：灵 3血
 	["futo"] = "物部布都",
 	["#futo"] = "古代日本的尸解仙",
-	["!futo"] = "物部布都",
-		--["designer:futo"] = "星野梦美 | 程序:三国有单",
 	["illustrator:futo"] = "とりのあくあ",
 	["origin:futo"] = "p号：22092678，个人ID：1960050",
 	["illustrator:futo_1"] = "Mik-cis",
@@ -86,8 +80,6 @@ return{
 	--slm004  势力：灵 4血
 	["toziko"] = "苏我屠自古",
 	["#toziko"] = "神明后裔的亡灵",
-	["!toziko"] = "苏我屠自古",
-	--["designer:toziko"] = "星野梦美 | 程序:幻兰幽梦",
 	["illustrator:toziko"] = "まぐろいど",
 	["origin:toziko"] = "p号：22946343，个人ID：2096991",--（貌似可以？）
 	["illustrator:toziko_1"] = "遠坂あさぎ",
@@ -104,8 +96,6 @@ return{
 	--slm005  势力：灵 3血
 	["seiga"]= "霍青娥",
 	["#seiga"]= "穿壁之邪仙人",
-	["!seiga"]= "霍青娥",
-	--["designer:seiga"] = "星野梦美 | 程序:叫什么啊你妹",
 	["illustrator:seiga"] = "桐葉",
 	["origin:seiga"] = "p号：24756353，个人ID：260108",
 	["illustrator:seiga_1"] = "ぬぬっこ",
@@ -125,8 +115,6 @@ return{
 	--slm006  势力：灵 4血
 	["yoshika"]= "宫古芳香",
 	["#yoshika"]= "忠诚的尸体",
-	["!yoshika"]= "宫古芳香",
---["designer:yoshika"] = "星野梦美 | 程序:幻兰幽梦",
 	["illustrator:yoshika"] = "ハシコ",
 	["origin:yoshika"] = "p号：18277982，个人ID：74348",
 	["illustrator:yoshika_1"] = "KS",
@@ -144,8 +132,6 @@ return{
 	--slm007  势力：灵 3血
 	["kyouko"] = "幽谷响子",
 	["#kyouko"] = "念经的山灵",
-	["!kyouko"] = "幽谷响子",
-	  --["designer:kyouko"] = "星野梦美 | 程序:三国有单",
 	["illustrator:kyouko"] = "砂雲",
 	["origin:kyouko"] = "p号：19958781，个人ID：295604",
 	["illustrator:kyouko_1"] = "潜男",
@@ -165,8 +151,6 @@ return{
 	["yuyuko_slm"] = "神灵庙sp幽幽子" ,
 	["&yuyuko_slm"] = "神灵庙幽幽子" ,
 	["#yuyuko_slm"] = "不再彷徨的亡灵" ,
-	["!yuyuko_slm"] = "神灵庙sp幽幽子" ,
---["designer:yuyuko_slm"] = "星野梦美 | 程序:fsu0413",
 	["illustrator:yuyuko_slm"] = "meola",
 	["origin:yuyuko_slm"] = "p号：11911124，个人ID：31990", --（许可范围奇怪。。。）
 	["illustrator:yuyuko_slm_1"] = "みや",
@@ -186,8 +170,6 @@ return{
 	["nue_slm"] = "神灵庙sp鵺",
 	["&nue_slm"] = "神灵庙鵺",
 	["#nue_slm"] = "古代妖怪之一",
-	["!nue_slm"] = "神灵庙sp鵺",
-	 --["designer:nue_slm"] = "星野梦美 | 程序:三国有单",
 	["illustrator:nue_slm"] = "赤シオ",
 	["origin:nue_slm"] = "p号：6203096，个人ID：341747",
 	["illustrator:nue_slm_1"] = "赤シオ",
@@ -213,8 +195,6 @@ return{
 	["kogasa_slm"] = "神灵庙sp小伞" ,
 	["&kogasa_slm"] = "神灵庙小伞" ,
 	["#kogasa_slm"] = "为难的遗忘之物" ,
-	["!kogasa_slm"] = "神灵庙sp小伞" ,
-	--["designer:kogasa_slm"] = "星野梦美 | 程序:fsu0413",
 	["illustrator:kogasa_slm"] = "にろ",
 	["origin:kogasa_slm"] = "p号：26300308，个人ID：194231",
 	["illustrator:kogasa_slm_1"] = "竜",

@@ -21,8 +21,6 @@ return{
 	["yukari_god"] = "神 八云紫",
 	["&yukari_god"] = "神八云紫",
 	["#yukari_god"] = "幻想之界",
-	["!yukari_god"] = "神八云紫",
-	["illustrator:yukari_god"] = "NEKO",
 	["origin:yukari_god"] = "p号:28123130，个人ID：306422" ,
 	["illustrator:yukari_god_1"] = "Hong",
 	["origin:yukari_god_1"] = "p号:18527886，个人ID：2600911" ,
@@ -38,10 +36,10 @@ return{
 
 --*************************************
 	--shen002  势力：神 3血
-	["remilia_god"] = "神 蕾米莉亚·斯卡蕾特",
+    ["remilia_god"] = "神 蕾米莉亚",
 	["&remilia_god"] = "神蕾米莉亚",
 	["#remilia_god"] = "永远的红之幼月",
-	["!remilia_god"] = "神蕾米莉亚",
+    ["!remilia_god"] = "神 蕾米莉亚·斯卡蕾特",
 	["illustrator:remilia_god"] = "とりのあくあ",
 	["origin:remilia_god"] = "p号:21061795，个人ID：1960050" ,
 	["illustrator:remilia_god_1"] = "ジョンディー",
@@ -65,7 +63,6 @@ return{
 	["cirno_god"] = "神 琪露诺",
 	["&cirno_god"] = "神琪露诺",
 	["#cirno_god"] = "最强",
-	["!cirno_god"] = "神琪露诺",
 	["illustrator:cirno_god"] = "牛木義隆",
 	["origin:cirno_god"] = "个人ID：4544" ,
 	["illustrator:cirno_god_1"] = "mmn.",
@@ -87,7 +84,6 @@ return{
 	["utsuho_god"] = "神 灵乌路空",
 	["&utsuho_god"] = "神灵乌路空",
 	["#utsuho_god"] = "地底的太阳",
-	["!utsuho_god"] = "神灵乌路空",
 	["illustrator:utsuho_god"] = "唯",
 	["origin:utsuho_god"] = "p号:8170252，个人ID：230943" ,
 	["illustrator:utsuho_god_1"] = "朱シオ",
@@ -109,8 +105,6 @@ return{
 	["suika_god"] = "神 伊吹萃香",
 	["&suika_god"] = "神伊吹萃香",
 	["#suika_god"] = "虚幻的萃聚之梦",
-	["!suika_god"] = "神伊吹萃香",
-	   --["designer:suika_god"] = "星野梦美 | 程序:三国有单",
 	["illustrator:suika_god"] = "華々つぼみ",
 	["origin:suika_god"] = "p号：4204240，个人ID：225672",
 	["illustrator:suika_god_1"] = "Aの子",
@@ -128,11 +122,10 @@ return{
 
 --*************************************
 	--shen006  势力：神 3血
-	["flandre_god"]= "神 芙兰朵露·斯卡雷特",
+    ["flandre_god"]= "神 芙兰朵露",
 	["&flandre_god"]= "神芙兰朵露",
 	["#flandre_god"]= "绯色月下",
-	["!flandre_god"]= "神芙兰朵露",
-	  --["designer:flandre_god"] = "星野梦美 | 程序:三国有单",
+    ["!flandre_god"]="神 芙兰朵露·斯卡雷特",
 
 	["illustrator:flandre_god"] = "大嘘",
 	["origin:flandre_god"] = "个人ID：457541",
@@ -155,8 +148,6 @@ return{
 	["sakuya_god"] = "神 十六夜咲夜",
 	["&sakuya_god"] = "神十六夜咲夜",
 	["#sakuya_god"] = "铭刻的月之钟",
-	["!sakuya_god"] = "神十六夜咲夜",
-	--["designer:sakuya_god"] = "星野梦美 | 程序:三国有单",
 	["illustrator:sakuya_god"] = "雪降り",
 	["origin:sakuya_god"] = "p号：2074909，个人ID：126233", --（国人？）
 	["illustrator:sakuya_god_1"] = "Riv",
@@ -184,8 +175,6 @@ return{
 	["youmu_god"] = "神 魂魄妖梦",
 	["&youmu_god"] = "神魂魄妖梦",
 	["#youmu_god"] = "半生半死、半悟半惘",
-	["!youmu_god"] = "神魂魄妖梦",
-	--["designer:youmu_god"] = "星野梦美 | 程序:三国有单",
 	["illustrator:youmu_god"] = "伊関",
 	["origin:youmu_god"] = "p号：4047009，个人ID：4655",
 	["illustrator:youmu_god_1"] = "ゆのまち。",
@@ -219,11 +208,10 @@ return{
 
 --*************************************
 	--shen009  势力：神 4血
-	["reisen_god"] = "神 铃仙·优昙华院·稻叶",
+    ["reisen_god"] = "神 铃仙", 
 	["&reisen_god"] = "神铃仙",
 	["#reisen_god"] = "狂气的赤眼",
-	["!reisen_god"] = "神铃仙",
---["designer:reisen_god"] = "星野梦美 | 程序:三国有单",
+    ["!reisen_god"] = "神 铃仙·优昙华院·因幡",
 	["illustrator:reisen_god"] = "べし",
 	["origin:reisen_god"] = "p号：6495485，个人ID：4518",
 	["illustrator:reisen_god_1"] = "ATOMix",
@@ -241,8 +229,6 @@ return{
 	["sanae_god"] = "神 东风谷早苗",
 	["&sanae_god"] = "神东风谷早苗",
 	["#sanae_god"] = "现代人的现人神",
-	["!sanae_god"] = "神东风谷早苗",
-  --["designer:sanae_god"] = "星野梦美 | 程序:三国有单",
 	["illustrator:sanae_god"] = "粗茶",
 	["origin:sanae_god"] = "p号：20068975，个人ID：10210", --（可以？）
 	["illustrator:sanae_god_1"] = "9時",
@@ -263,8 +249,6 @@ return{
 	["reimu_god"] = "神 博丽灵梦",
 	["&reimu_god"] = "神博丽灵梦",
 	["#reimu_god"] = "幻想乡秩序的守护者",
-	["!reimu_god"] = "神博丽灵梦",
-	--["designer:reimu_god"] = "星野梦美 | 程序:三国有单",
 	["illustrator:reimu_god"] = "赤りんご",
 	["origin:reimu_god"] = "p号：15423619，个人ID：164813",  --(貌似可以用的样子。。但其个人网站乱码 确认不能。。。)
 	["illustrator:reimu_god_1"] = "秋月リア",
@@ -286,11 +270,10 @@ return{
 
 --*************************************
 	--shen012  势力：神 4血
-	["shikieiki_god"] = "神 四季映姬·亚玛萨那度" ,
+    ["shikieiki_god"] = "神 四季映姬" ,
 	["&shikieiki_god"] = "神四季映姬" ,
 	["#shikieiki_god"] = "幻想乡的裁判长" ,
-	["!shikieiki_god"] = "神四季映姬" ,
-	--["designer:shikieiki_god"] = "星野梦美 | 程序:fsu0413",
+    ["!shikieiki_god"] = "神 四季映姬·亚玛萨那度" ,
 	["illustrator:shikieiki_god"] = "卜部ミチル",
 	["origin:shikieiki_god"] = "p号：20858470",
 	["illustrator:shikieiki_god_1"] = "七原冬雪",
@@ -309,8 +292,6 @@ return{
 	["meirin_god"] = "神 红美铃",
 	["&meirin_god"] = "神红美铃",
 	["#meirin_god"] = "龙神的化身",
-	["!meirin_god"] = "神红美铃",
-	--["designer:meirin_god"] = "星野梦美 | 程序:幻兰幽梦",
 	["illustrator:meirin_god"] = "shihou",
 	["origin:meirin_god"] = "p号：16008904，个人ID：591727",
 	["illustrator:meirin_god_1"] = "竹森真太郎",
@@ -334,9 +315,7 @@ return{
 	--shen014  势力：神 4血
 	["eirin_god"] = "神 八意永琳",
 	["&eirin_god"] = "神八意永琳",
-	["#eirin_god"] = "月都大贤者",
-	["!eirin_god"] = "神八意永琳",
-	--["designer:eirin_god"] = "星野梦美 | 程序:三国有单",
+    ["#eirin_god"] = "月都大贤者", 
 	["illustrator:eirin_god"] = "NEKO",
 	["origin:eirin_god"] = "p号：30537439，个人ID：2600911", --（国人）
 	["illustrator:eirin_god_1"] = "zhu fun",
@@ -352,8 +331,6 @@ return{
 	["kanako_god"] = "神 八坂神奈子" ,
 	["&kanako_god"] = "神八坂神奈子",
 	["#kanako_god"] = "大和神" ,
-	["!kanako_god"] = "神八坂神奈子",
- --["designer:kanako_god"] = "星野梦美 | 程序:三国有单",
 	["illustrator:kanako_god"] = "NEKO",
 	["origin:kanako_god"] = "p号：28471296，个人ID：2600911", --（国人）
 	["illustrator:kanako_god_1"] = "嘎哦",
@@ -370,8 +347,6 @@ return{
 	["byakuren_god"] = "神 圣白莲" ,
 	["&byakuren_god"] = "神圣白莲" ,
 	["#byakuren_god"] = "灭除八苦的尼公" ,
-	["!byakuren_god"] = "神圣白莲" ,
-	 --["designer:byakuren_god"] = "星野梦美 | 程序:fsu0413",
 	["illustrator:byakuren_god"] = "NEKO",
 	["origin:byakuren_god"] = "p号：31716552，个人ID：2600911", --（国人）
 	["illustrator:byakuren_god_1"] = "青インク",
@@ -387,8 +362,6 @@ return{
 	["koishi_god"] = "神 古明地恋",
 	["&koishi_god"] = "神古明地恋",
 	["#koishi_god"] = "哈特曼的妖怪少女",
-	["!koishi_god"] = "神古明地恋",
-	--["designer:koishi_god"] = "星野梦美 | 程序:三国有单",
 	["illustrator:koishi_god"] = "茶葉",
 	["origin:koishi_god"] = "p号：15934556，个人ID：13233",
 	["illustrator:koishi_god_1"] = "Vima",
@@ -423,7 +396,6 @@ return{
 	["suwako_god"] = "神 泄矢诹访子",
 	["#suwako_god"] = "名存实亡的神明",
 	["&suwako_god"] = "神泄矢诹访子",
-	["!suwako_god"] = "神泄矢诹访子",
 		["illustrator:suwako_god"] = "ルリア",
 	["origin:suwako_god"] = "p号：13338753",
 	["illustrator:suwako_god_1"] = "伊吹のつ",
@@ -449,7 +421,6 @@ return{
 	 ["miko_god"] = "神 丰聪耳神子",
 	["&miko_god"] = "神丰聪耳神子",
 	["#miko_god"] = "日出之国的天子",
-	["!miko_god"] = "神丰聪耳神子",
 		["illustrator:miko_god"] = "Mik-cis",
 	["origin:miko_god"] = "p号：35385868",
 	["illustrator:miko_god_1"] = "まくわうに",
@@ -478,8 +449,6 @@ return{
 	["kaguya_god"] = "神 蓬莱山辉夜",
 	["&kaguya_god"] = "神蓬莱山辉夜",
 	["#kaguya_god"] = "永远的公主殿下",
-	["!kaguya_god"] = "神蓬莱山辉夜",
-	--["designer:kaguya_god"] = "星野梦美 | 程序:三国有单",
 	["illustrator:kaguya_god"] = "しまちょ",
 	["origin:kaguya_god"] = "p号：1051695，个人ID：12647",
 	["illustrator:kaguya_god_1"] = "yae狼ト",
@@ -497,8 +466,6 @@ return{
 	["komachi_god"] = "神 小野塚小町",
 	["&komachi_god"] = "神小野塚小町",
 	["#komachi_god"] = "江户时代气质的死神",
-	["!komachi_god"] = "神小野塚小町",
-	--["designer:komachi_god"] = "星野梦美 | 程序:三国有单",
 	["illustrator:komachi_god"] = "にしもん",
 	["origin:komachi_god"] = "p号：29989054，个人ID：202286",
 	["illustrator:komachi_god_1"] = "蟻",
