@@ -69,52 +69,33 @@ public:
         events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut;
     }
 
-
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-        if (!player) return QStringList();
-        if (triggerEvent == GameStart || triggerEvent == Debut
-            || (triggerEvent == EventAcquireSkill && data.toString() == "skltkexue")) {
-            QList<ServerPlayer *> lords;
-            foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                if (p->hasSkill(objectName(), false, true))
-                    lords << p;
-            }
-            if (lords.isEmpty()) return QStringList();
+        static QString attachName = "skltkexue_attach";
+        QList<ServerPlayer *> sklts;
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
+            if (p->hasSkill(this, false, true))
+                sklts << p;
+        }
 
-            QList<ServerPlayer *> players;
-            if (lords.length() > 1)
-                players = room->getAlivePlayers();
-            else
-                players = room->getOtherPlayers(lords.first());
-            foreach (ServerPlayer *p, players) {
-                if (!p->hasSkill("skltkexue_attach"))
-                    room->attachSkillToPlayer(p, "skltkexue_attach");
+        if (sklts.length() > 1) {
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
+                if (!p->hasSkill(attachName, true, true))
+                    room->attachSkillToPlayer(p, attachName);
             }
-        } else if (triggerEvent == Death || (triggerEvent == EventLoseSkill && data.toString() == "skltkexue")) {
-            if (triggerEvent == Death) {
-                DeathStruct death = data.value<DeathStruct>();
-                if (!death.who->hasSkill(objectName(), false, true))//deal the case that death in round of changshi?
-                    return QStringList();
+        } else if (sklts.length() == 1) {
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
+                if (p->hasSkill(this, false, true) && p->hasSkill(attachName, true, true))
+                    room->detachSkillFromPlayer(p, attachName, true);
+                else if (!p->hasSkill(this, false, true) && !p->hasSkill(attachName, true, true))
+                    room->attachSkillToPlayer(p, attachName);
             }
-            QList<ServerPlayer *> lords;
-            foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                if (p->hasSkill(objectName(), false, true))
-                    lords << p;
-            }
-            if (lords.length() > 2) return QStringList();
-
-            QList<ServerPlayer *> players;
-            if (lords.isEmpty())
-                players = room->getAlivePlayers();
-            else
-                players << lords.first();
-            foreach (ServerPlayer *p, players) {
-                if (p->hasSkill("skltkexue_attach"))
-                    room->detachSkillFromPlayer(p, "skltkexue_attach", true);
+        } else { // the case that sklts is empty
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
+                if (p->hasSkill(attachName, true, true))
+                    room->detachSkillFromPlayer(p, attachName, true);
             }
         }
-        return QStringList();
     }
 };
 
@@ -126,42 +107,42 @@ public:
         events << StartJudge;
     }
 
-
-    virtual TriggerList triggerable(TriggerEvent, Room *room, ServerPlayer *, QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
-        JudgeStruct * judge = data.value<JudgeStruct *>();
+        JudgeStruct *judge = data.value<JudgeStruct *>();
         if (!judge->who || !judge->who->isAlive())
-            return TriggerList();
+            return QList<SkillInvokeDetail>();
 
-        TriggerList skill_list;
-        QList<ServerPlayer *> remilias = room->findPlayersBySkillName(objectName());
-        foreach(ServerPlayer *remilia, remilias)
-            skill_list.insert(remilia, QStringList(objectName()));
-        return skill_list;
+        QList<SkillInvokeDetail> r;
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
+            if (p->hasSkill(this))
+                r << SkillInvokeDetail(this, p, p);
+        }
+
+        return r;
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *ask_who) const
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        JudgeStruct * judge = data.value<JudgeStruct *>();
-        ask_who->tag["mingyun_judge"] = data;
+        invoke->invoker->tag["mingyun_judge"] = data;
+        JudgeStruct *judge = data.value<JudgeStruct *>();
         QString prompt = "judge:" + judge->who->objectName() + ":" + judge->reason;
-        if (ask_who->askForSkillInvoke(objectName(), prompt)) {
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, ask_who->objectName(), judge->who->objectName());
+        if (invoke->invoker->askForSkillInvoke(this, prompt)) {
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), judge->who->objectName());
             return true;
         }
         return false;
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         QList<int> list = room->getNCards(2);
-        room->fillAG(list, ask_who);
-        int obtain_id = room->askForAG(ask_who, list, false, objectName());
-        room->clearAG(ask_who);
-
-        room->obtainCard(ask_who, obtain_id, false);
-        list.removeOne(obtain_id);
         room->returnToTopDrawPile(list);
+
+        room->fillAG(list, invoke->invoker);
+        int obtain_id = room->askForAG(invoke->invoker, list, false, objectName());
+        room->clearAG(invoke->invoker);
+        room->obtainCard(invoke->invoker, obtain_id, false);
         return false;
     }
 };
@@ -176,47 +157,42 @@ public:
         events << HpRecover;
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
-        QList<ServerPlayer *> Remilias;
-        foreach (ServerPlayer *rem, room->getOtherPlayers(player)) {
+        RecoverStruct r = data.value<RecoverStruct>();
+        if (r.to->getKingdom() != "hmx")
+            return QList<SkillInvokeDetail>();
+
+        QList<SkillInvokeDetail> details;
+        foreach (ServerPlayer *rem, room->getOtherPlayers(r.to)) {
             if (rem->hasLordSkill(objectName()))
-                Remilias << rem;
+                details << SkillInvokeDetail(this, rem, r.to);
         }
-
-        if (Remilias.isEmpty())
-            return QStringList();
-
-        QStringList skill_list;
-        if (player != NULL && player->isAlive() && player->getKingdom() == "hmx") {
-            foreach (ServerPlayer *rem, Remilias)
-                skill_list << rem->objectName() + "'" + objectName();
-        }
-        return skill_list;
+        return details;
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *skill_target, QVariant &, ServerPlayer *skill_invoker) const
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        //ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@@xueyi", true, true);
-        skill_invoker->tag["xueyi-target"] = QVariant::fromValue(skill_target);
-        if (skill_invoker->askForSkillInvoke(objectName(), QVariant::fromValue(skill_target))) {
+        invoke->invoker->tag["xueyi-target"] = QVariant::fromValue(invoke->owner);
+        if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->invoker))) {
             room->broadcastSkillInvoke(objectName());
-            room->notifySkillInvoked(skill_target, objectName());
+            room->notifySkillInvoked(invoke->owner, objectName());
             LogMessage log;
             log.type = "#InvokeOthersSkill";
-            log.from = skill_invoker;
-            log.to << skill_target;
+            log.from = invoke->invoker;
+            log.to << invoke->owner;
             log.arg = objectName();
             room->sendLog(log);
 
             return true;
         }
+
         return false;
     }
 
-    virtual bool effect(TriggerEvent, Room *, ServerPlayer *skill_target, QVariant &, ServerPlayer *) const
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        skill_target->drawCards(1, objectName());
+        invoke->owner->drawCards(1, objectName());
         return false;
     }
 };
