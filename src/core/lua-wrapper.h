@@ -1,6 +1,8 @@
 #ifndef _LUA_WRAPPER_H
 #define _LUA_WRAPPER_H
 
+#include "util.h"
+#pragma message WARN("todo_Fs: the new Lua interface of triggerskill")
 #include "skill.h"
 #include "standard.h"
 

@@ -420,8 +420,6 @@ void RoomThread::run()
     }
 }
 
-//Eternal
-
 const QList<EventTriplet> *RoomThread::getEventStack() const
 {
     return &event_stack;
@@ -498,9 +496,9 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) 
             // if cost returned false, we don't process with the skill's left trigger times(use the trick of set the triggered times to 65535) .
             // if effect returned true, exit the whole loop.
 
-            if (invoke->skill->cost(triggerEvent, invoke, data)) {
+            if (invoke->skill->cost(triggerEvent, room, invoke, data)) {
                 // the show general of hegemony mode can be inserted here
-                if (invoke->skill->effect(triggerEvent, invoke, data)) {
+                if (invoke->skill->effect(triggerEvent, room, invoke, data)) {
                     interrupt = true;
                     break;
                 }

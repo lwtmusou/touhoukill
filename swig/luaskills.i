@@ -175,14 +175,6 @@ public:
     LuaFunction fixed_func;
 };
 
-class GameStartSkill: public TriggerSkill {
-public:
-    GameStartSkill(const char *name);
-
-    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
-    virtual void onGameStart(ServerPlayer *player) const = 0;
-};
-
 class LuaSkillCard: public SkillCard {
 public:
     LuaSkillCard(const char *name, const char *skillName);
@@ -315,6 +307,17 @@ public:
     LuaFunction on_uninstall;
 };
 
+
+class EquipSkill : public TriggerSkill
+{
+public:
+    static bool equipAvailable(const ServerPlayer *p, EquipCard::Location location, const QString &equip_name);
+    static bool equipAvailable(const ServerPlayer *p, const EquipCard *card);
+
+private:
+    EquipSkill() = delete;
+};
+
 %{
 
 #include "lua-wrapper.h"
@@ -332,7 +335,7 @@ static void Error(lua_State *L)
 bool LuaTriggerSkill::triggerable(const ServerPlayer *target) const
 {
     if (can_trigger == 0)
-        return TriggerSkill::triggerable(target);
+        return false;
 
     //Room *room = target->getRoom();
     lua_State *L = Sanguosha->getLuaState();

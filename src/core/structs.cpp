@@ -370,7 +370,7 @@ SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *ow
 
 bool SkillInvokeDetail::isValid() const // validity check
 {
-    return skill != NULL && owner != NULL && invoker != NULL;
+    return skill != NULL/* && owner != NULL && invoker != NULL*/;
 }
 
 QVariant SkillInvokeDetail::toVariant() const
