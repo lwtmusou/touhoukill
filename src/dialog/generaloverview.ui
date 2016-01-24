@@ -31,6 +31,12 @@
   <layout class="QHBoxLayout" name="horizontalLayout_2">
    <item>
     <widget class="QTableWidget" name="tableWidget">
+     <property name="minimumSize">
+      <size>
+       <width>460</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="editTriggers">
       <set>QAbstractItemView::NoEditTriggers</set>
      </property>
@@ -266,7 +272,7 @@
              <x>0</x>
              <y>0</y>
              <width>241</width>
-             <height>445</height>
+             <height>447</height>
             </rect>
            </property>
           </widget>
