@@ -426,3 +426,8 @@ PhaseSkippingStruct::PhaseSkippingStruct()
     : phase(Player::NotActive), player(NULL), isCost(false)
 {
 }
+
+DrawNCardsStruct::DrawNCardsStruct()
+    : player(NULL), n(0), isInitial(false)
+{
+}

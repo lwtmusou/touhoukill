@@ -532,9 +532,10 @@ public:
                 player->setPhase(Player::Play);
                 room->broadcastProperty(player, "phase");
                 RoomThread *thread = room->getThread();
-                if (!thread->trigger(EventPhaseStart, room, player))
-                    thread->trigger(EventPhaseProceeding, room, player);
-                thread->trigger(EventPhaseEnd, room, player);
+                QVariant playerVariant = QVariant::fromValue(player);
+                if (!thread->trigger(EventPhaseStart, room, playerVariant))
+                    thread->trigger(EventPhaseProceeding, room, playerVariant);
+                thread->trigger(EventPhaseEnd, room, playerVariant);
 
                 player->setPhase(phase);
                 room->broadcastProperty(player, "phase");
@@ -547,9 +548,10 @@ public:
                 player->setPhase(Player::Draw);
                 room->broadcastProperty(player, "phase");
                 RoomThread *thread = room->getThread();
-                if (!thread->trigger(EventPhaseStart, room, player))
-                    thread->trigger(EventPhaseProceeding, room, player);
-                thread->trigger(EventPhaseEnd, room, player);
+                QVariant playerVariant = QVariant::fromValue(player);
+                if (!thread->trigger(EventPhaseStart, room, playerVariant))
+                    thread->trigger(EventPhaseProceeding, room, playerVariant);
+                thread->trigger(EventPhaseEnd, room, playerVariant);
 
                 player->setPhase(phase);
                 room->broadcastProperty(player, "phase");

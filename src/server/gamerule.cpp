@@ -73,21 +73,25 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const
         }
         case Player::Draw:
         {
-            QVariant qnum;
             int num = 2;
             if (player->hasFlag("Global_FirstRound")) {
                 room->setPlayerFlag(player, "-Global_FirstRound");
                 if (room->getMode() == "02_1v1") num--;
             }
-
-            qnum.setValue(num);
+            DrawNCardsStruct s;
+            s.player = player;
+            s.isInitial = false;
+            s.n = num;
+            QVariant qnum = QVariant::fromValue(s);
             Q_ASSERT(room->getThread() != NULL);
-            room->getThread()->trigger(DrawNCards, room, player, qnum);
-            num = qnum.toInt();
+            room->getThread()->trigger(DrawNCards, room, qnum);
+            s = qnum.value<DrawNCardsStruct>();
+            num = s.n;
             if (num > 0)
                 player->drawCards(num);
-            qnum.setValue(num);
-            room->getThread()->trigger(AfterDrawNCards, room, player, qnum);
+            s.n = num;
+            qnum = QVariant::fromValue(s);
+            room->getThread()->trigger(AfterDrawNCards, room, qnum);
             break;
         }
         case Player::Play:
@@ -152,21 +156,26 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
             }
             room->setTag("FirstRound", true);
             bool kof_mode = room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical";
-            QList<int> n_list;
+            QList<DrawNCardsStruct> s_list;
             foreach (ServerPlayer *p, room->getPlayers()) {
                 int n = kof_mode ? p->getMaxHp() : 4;
-                QVariant data = n;
-                room->getThread()->trigger(DrawInitialCards, room, p, data);
-                n_list << data.toInt();
+                DrawNCardsStruct s;
+                s.player = p;
+                s.isInitial = true;
+                s.n = n;
+                QVariant data = QVariant::fromValue(s);
+                room->getThread()->trigger(DrawInitialCards, room, data);
+                s_list << data.value<DrawNCardsStruct>();
             }
+            QList<int> n_list;
+            foreach (DrawNCardsStruct s, s_list)
+                n_list << s.n;
             room->drawCards(room->getPlayers(), n_list, QString());
             if (Config.LuckCardLimitation > 0)
                 room->askForLuckCard();
-            int i = 0;
-            foreach (ServerPlayer *p, room->getPlayers()) {
-                QVariant _nlistati = n_list.at(i);
-                room->getThread()->trigger(AfterDrawInitialCards, room, p, _nlistati);
-                i++;
+            foreach (DrawNCardsStruct s, s_list) {
+                QVariant _slistati = QVariant::fromValue(s);
+                room->getThread()->trigger(AfterDrawInitialCards, room, _slistati);
             }
         }
         return false;
@@ -263,16 +272,10 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
 
 
                 if (card_use.from && !card_use.to.isEmpty()) {
-                    thread->trigger(TargetSpecifying, room, card_use.from, data);
+                    thread->trigger(TargetSpecifying, room, data);
                     CardUseStruct card_use = data.value<CardUseStruct>();
-                    QList<ServerPlayer *> targets = card_use.to;
-                    foreach (ServerPlayer *to, card_use.to) {
-                        if (targets.contains(to)) {
-                            thread->trigger(TargetConfirming, room, to, data);
-                            CardUseStruct new_use = data.value<CardUseStruct>();
-                            targets = new_use.to;
-                        }
-                    }
+                    thread->trigger(TargetConfirming, room, data);
+                    CardUseStruct new_use = data.value<CardUseStruct>();
                 }
                 card_use = data.value<CardUseStruct>();
 
@@ -286,9 +289,8 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                         card_use.from->tag["Jink_" + card_use.card->toString()] = QVariant::fromValue(jink_list);
                     }
                     if (card_use.from && !card_use.to.isEmpty()) {
-                        thread->trigger(TargetSpecified, room, card_use.from, data);
-                        foreach(ServerPlayer *p, room->getAllPlayers())
-                            thread->trigger(TargetConfirmed, room, p, data);
+                        thread->trigger(TargetSpecified, room, data);
+                        thread->trigger(TargetConfirmed, room, data);
                     }
                     card_use = data.value<CardUseStruct>();
                     room->setTag("CardUseNullifiedList", QVariant::fromValue(card_use.nullified_list));
@@ -407,7 +409,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                 room->setTag("is_chained", n);
                 room->setTag("ChainStarter", QVariant::fromValue(player->objectName()));
             }
-            room->getThread()->trigger(PostHpReduced, room, player, data);
+            room->getThread()->trigger(PostHpReduced, room, data);
 
             break;
         }
@@ -457,7 +459,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                     if (p->hasFlag("Global_DebutFlag")) {
                         p->setFlags("-Global_DebutFlag");
                         if (room->getMode() == "02_1v1")
-                            room->getThread()->trigger(Debut, room, p);
+                            room->getThread()->trigger(Debut, room, QVariant::fromValue(p));
                     }
                 }
             }
@@ -480,7 +482,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                         effect.to->setFlags("Global_NonSkillNullify");
                         return true;
                     } else {
-                        room->getThread()->trigger(TrickEffect, room, effect.to, data);
+                        room->getThread()->trigger(TrickEffect, room, data);
                     }
                 }
                 if (effect.to->isAlive() || effect.card->isKindOf("Slash"))
@@ -505,7 +507,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
 
             QVariant data = QVariant::fromValue(effect);
             if (effect.jink_num > 0)
-                room->getThread()->trigger(SlashProceed, room, effect.from, data);
+                room->getThread()->trigger(SlashProceed, room, data);
             else
                 room->slashResult(effect, NULL);
             break;
@@ -590,7 +592,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
 
                 changeGeneral1v1(player);
                 if (death.damage == NULL)
-                    room->getThread()->trigger(Debut, room, player);
+                    room->getThread()->trigger(Debut, room, QVariant::fromValue(player));
                 else
                     player->setFlags("Global_DebutFlag");
                 return false;
@@ -736,9 +738,15 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const
     room->setTag("FirstRound", true);
     int draw_num = classical ? 4 : player->getMaxHp();
 
-    QVariant data = draw_num;
-    room->getThread()->trigger(DrawInitialCards, room, player, data);
-    draw_num = data.toInt();
+    DrawNCardsStruct s;
+    s.player = player;
+    s.isInitial = true;
+    s.n = draw_num;
+
+    QVariant data = QVariant::fromValue(s);
+    room->getThread()->trigger(DrawInitialCards, room, data);
+    s = data.value<DrawNCardsStruct>();
+    draw_num = s.n;
 
     try {
         player->drawCards(draw_num);
@@ -749,8 +757,7 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const
             room->setTag("FirstRound", false);
         throw triggerEvent;
     }
-    QVariant _drawnum = draw_num;
-    room->getThread()->trigger(AfterDrawInitialCards, room, player, _drawnum);
+    room->getThread()->trigger(AfterDrawInitialCards, room, data);
 }
 
 void GameRule::changeGeneralXMode(ServerPlayer *player) const
@@ -792,9 +799,14 @@ void GameRule::changeGeneralXMode(ServerPlayer *player) const
         room->setPlayerProperty(player, "chained", false);
 
     room->setTag("FirstRound", true);
-    QVariant data(4);
-    room->getThread()->trigger(DrawInitialCards, room, player, data);
-    int num = data.toInt();
+    DrawNCardsStruct s;
+    s.player = player;
+    s.isInitial = true;
+    s.n = 4;
+    QVariant data = QVariant::fromValue(s);
+    room->getThread()->trigger(DrawInitialCards, room, data);
+    s = data.value<DrawNCardsStruct>();
+    int num = s.n;
     try {
         player->drawCards(num);
         room->setTag("FirstRound", false);
@@ -804,8 +816,7 @@ void GameRule::changeGeneralXMode(ServerPlayer *player) const
             room->setTag("FirstRound", false);
         throw triggerEvent;
     }
-    QVariant _num = num;
-    room->getThread()->trigger(AfterDrawInitialCards, room, player, _num);
+    room->getThread()->trigger(AfterDrawInitialCards, room, data);
 }
 
 void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const
@@ -1173,7 +1184,8 @@ void BasaraMode::playerShowed(ServerPlayer *player) const
 
         generalShowed(player, general_name);
         Q_ASSERT(room->getThread() != NULL);
-        if (Config.EnableHegemony) room->getThread()->trigger(GameOverJudge, room, player);
+        if (Config.EnableHegemony)
+            room->getThread()->trigger(GameOverJudge, room);
         playerShowed(player);
     }
 }

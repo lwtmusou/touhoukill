@@ -504,6 +504,15 @@ struct JinkEffectStruct
     const Card *jink;
 };
 
+struct DrawNCardsStruct
+{
+    DrawNCardsStruct();
+
+    ServerPlayer *player;
+    int n;
+    bool isInitial;
+};
+
 struct ChoiceMadeStruct
 {
     ChoiceMadeStruct();
@@ -669,6 +678,7 @@ Q_DECLARE_METATYPE(CardAskedStruct)
 Q_DECLARE_METATYPE(HpLostStruct)
 Q_DECLARE_METATYPE(JinkEffectStruct)
 Q_DECLARE_METATYPE(PhaseSkippingStruct)
+Q_DECLARE_METATYPE(DrawNCardsStruct)
 Q_DECLARE_METATYPE(const Card *)
 Q_DECLARE_METATYPE(ServerPlayer *)
 Q_DECLARE_METATYPE(JudgeStruct *)

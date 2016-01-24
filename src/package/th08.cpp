@@ -588,7 +588,6 @@ public:
             use.to << target;
             room->sortByActionOrder(use.to);
             data = QVariant::fromValue(use);
-            room->getThread()->trigger(TargetConfirming, room, target, data);
         }
         return false;
     }

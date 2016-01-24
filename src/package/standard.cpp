@@ -70,9 +70,9 @@ void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const
 
     QVariant data = QVariant::fromValue(use);
     RoomThread *thread = room->getThread();
-    thread->trigger(PreCardUsed, room, player, data);
-    thread->trigger(CardUsed, room, player, data);
-    thread->trigger(CardFinished, room, player, data);
+    thread->trigger(PreCardUsed, room, data);
+    thread->trigger(CardUsed, room, data);
+    thread->trigger(CardFinished, room, data);
 }
 
 void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
@@ -246,13 +246,13 @@ void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const
 
     QVariant data = QVariant::fromValue(use);
     RoomThread *thread = room->getThread();
-    thread->trigger(PreCardUsed, room, use.from, data);
+    thread->trigger(PreCardUsed, room,data);
 
     CardMoveReason reason(CardMoveReason::S_REASON_USE, use.from->objectName(), use.to.first()->objectName(), this->getSkillName(), QString());
     room->moveCardTo(this, use.from, use.to.first(), Player::PlaceDelayedTrick, reason, true);
 
-    thread->trigger(CardUsed, room, use.from, data);
-    thread->trigger(CardFinished, room, use.from, data);
+    thread->trigger(CardUsed, room, data);
+    thread->trigger(CardFinished, room, data);
 }
 
 void DelayedTrick::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
@@ -345,15 +345,14 @@ void DelayedTrick::onNullified(ServerPlayer *target) const
             use.to << player;
             use.card = this;
             QVariant data = QVariant::fromValue(use);
-            thread->trigger(TargetConfirming, room, player, data);
+            thread->trigger(TargetConfirming, room, data);
             CardUseStruct new_use = data.value<CardUseStruct>();
             if (new_use.to.isEmpty()) {
                 p = player;
                 break;
             }
 
-            foreach(ServerPlayer *p, room->getAllPlayers())
-                thread->trigger(TargetConfirmed, room, p, data);
+            thread->trigger(TargetConfirmed, room, data);
             break;
         }
         if (p)

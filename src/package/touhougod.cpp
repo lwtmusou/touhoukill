@@ -1044,8 +1044,9 @@ public:
         events << GameStart << PreHpLost << DamageInflicted << PreHpRecover;
         frequency = Eternal;
     }
+
     virtual int getPriority(TriggerEvent) const
-    { //important?
+    {
         return -1;
     }
 
@@ -1109,7 +1110,8 @@ public:
             log.type = "#GetHp";
             room->sendLog(log);
 
-            room->getThread()->trigger(PostHpReduced, room, player, data);
+            room->getThread()->trigger(PostHpReduced, room, data);
+            room->getThread()->trigger(PostHpLost, room, data);
             return true;
         } else if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
@@ -1146,20 +1148,20 @@ public:
             room->setPlayerMark(player, "minus_rentili", minus_y);
 
             QVariant qdata = QVariant::fromValue(damage);
-            room->getThread()->trigger(PreDamageDone, room, damage.to, qdata);
+            room->getThread()->trigger(PreDamageDone, room, qdata);
 
-            room->getThread()->trigger(DamageDone, room, damage.to, qdata);
+            room->getThread()->trigger(DamageDone, room, qdata);
 
 
             room->notifySkillInvoked(player, objectName());
             int z = qMin(x - minus_x, y - minus_y);
             room->setPlayerProperty(damage.to, "hp", z);
 
-            room->getThread()->trigger(Damage, room, damage.from, qdata);
+            room->getThread()->trigger(Damage, room, qdata);
 
-            room->getThread()->trigger(Damaged, room, damage.to, qdata);
+            room->getThread()->trigger(Damaged, room, qdata);
 
-            room->getThread()->trigger(DamageComplete, room, damage.to, qdata);
+            room->getThread()->trigger(DamageComplete, room, qdata);
 
             return true;
         } else if (triggerEvent == PreHpRecover) {
@@ -1337,29 +1339,19 @@ public:
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
-
-        //need special process when processing takeAG and askforrende
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.to != NULL && move.to == player && move.to_place != Player::PlaceSpecial) {
             room->touhouLogmessage("#TriggerSkill", player, objectName());
             room->notifySkillInvoked(player, objectName());
-            //Card *dummy = Sanguosha->cloneCard("Slash");
-            //foreach (int id, move.card_ids)
-            //    dummy->addSubcard(Sanguosha->getCard(id));
+            DummyCard dummy(move.card_ids);
             CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), objectName(), "");
-            //room->throwCard(dummy,reason,NULL);
+            room->throwCard(&dummy, reason, NULL);
 
-            move.to = NULL;
-            move.origin_to = NULL;
-            move.origin_to_place = Player::DiscardPile;
-            move.reason = reason;
-            move.to_place = Player::DiscardPile;
-
+            move.card_ids.clear();
+            move.from_places.clear();
+            move.from_pile_names.clear();;
 
             data = QVariant::fromValue(move);
-            foreach(ServerPlayer *p, room->getAllPlayers())
-                room->getThread()->trigger(BeforeCardsMove, room, p, data);
-            //return true;
         }
         return false;
     }
@@ -2321,10 +2313,11 @@ public:
                     room->broadcastProperty(source, "phase");
                     room->broadcastProperty(current, "phase");
                     RoomThread *thread = room->getThread();
-                    if (!thread->trigger(EventPhaseStart, room, source))
-                        thread->trigger(EventPhaseProceeding, room, source);
+                    QVariant s = QVariant::fromValue(source);
+                    if (!thread->trigger(EventPhaseStart, room, s))
+                        thread->trigger(EventPhaseProceeding, room, s);
 
-                    thread->trigger(EventPhaseEnd, room, source);
+                    thread->trigger(EventPhaseEnd, room, s);
                     //room->setCurrent(current);
 
                     source->changePhase(Player::Play, Player::NotActive);

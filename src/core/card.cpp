@@ -665,7 +665,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
     Q_ASSERT(thread != NULL);
-    thread->trigger(PreCardUsed, room, player, data);
+    thread->trigger(PreCardUsed, room, data);
     card_use = data.value<CardUseStruct>();
 
     if (card_use.card->getTypeId() != TypeSkill) {
@@ -695,8 +695,8 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
         room->moveCardTo(this, player, NULL, Player::DiscardPile, reason, true);
     }
 
-    thread->trigger(CardUsed, room, player, data);
-    thread->trigger(CardFinished, room, player, data);
+    thread->trigger(CardUsed, room, data);
+    thread->trigger(CardFinished, room, data);
 }
 
 

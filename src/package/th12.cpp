@@ -171,7 +171,6 @@ public:
                     logto << newVictim;
                     room->touhouLogmessage("#CollateralSlash", use.from, use.card->objectName(), logto);
                 }
-                room->getThread()->trigger(TargetConfirming, room, p, data);
                 break;
             }
         }

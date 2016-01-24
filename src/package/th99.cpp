@@ -1600,8 +1600,6 @@ public:
             logto1 << target;
             room->touhouLogmessage("$CancelTarget", use.from, use.card->objectName(), logto);
             room->touhouLogmessage("#huzhu_change", use.from, use.card->objectName(), logto1);
-
-            room->getThread()->trigger(TargetConfirming, room, target, data);
         }
 
         return false;

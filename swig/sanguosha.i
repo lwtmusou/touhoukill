@@ -1068,8 +1068,8 @@ class RoomThread: public QThread {
 public:
     explicit RoomThread(Room *room);
     void constructTriggerTable();
-    bool trigger(TriggerEvent event, Room *room, ServerPlayer *target, QVariant &data);
-    bool trigger(TriggerEvent event, Room *room, ServerPlayer *target);
+    bool trigger(TriggerEvent triggerEvent, Room *room);
+    bool trigger(TriggerEvent triggerEvent, Room *room, QVariant &data); // player is deleted. a lot of things is able to put in data. make a struct for every triggerevent isn't absolutely unreasonable.
 
     void addPlayerSkills(ServerPlayer *player, bool invoke_game_start = false);
 

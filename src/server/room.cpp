@@ -5848,7 +5848,6 @@ void Room::takeAG(ServerPlayer *player, int card_id, bool move_cards, QList<Serv
 
 
             if (move.card_ids.length() > 0) {
-                //do remember processing skill gaoao...
                 if (move.to != NULL && move.to == player) {
                     player->addCard(Sanguosha->getCard(card_id), Player::PlaceHand);
                     setCardMapping(card_id, player, Player::PlaceHand);
@@ -5864,15 +5863,6 @@ void Room::takeAG(ServerPlayer *player, int card_id, bool move_cards, QList<Serv
         }
 
         doBroadcastNotify(to_notify, S_COMMAND_TAKE_AMAZING_GRACE, arg);
-
-
-        if (moveOneTime.card_ids.length() > 0 && moveOneTime.to == NULL) {
-            DummyCard dummy;
-            dummy.addSubcard(Sanguosha->getCard(card_id));
-            CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), "gaoao", "");
-            throwCard(&dummy, reason, NULL);
-            return;
-        }
 
         if (move_cards && moveOneTime.card_ids.length() > 0) {
             QVariant data = QVariant::fromValue(moveOneTime);
