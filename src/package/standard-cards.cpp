@@ -109,28 +109,11 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
         QString skill_name = getSkillName();
         if (!skill_name.isEmpty()) {
             const Skill *skill = Sanguosha->getSkill(skill_name);
-            if (skill && !skill->inherits("FilterSkill") && !skill->objectName().contains("guhuo"))
+            if (skill && !skill->inherits("FilterSkill"))
                 has_changed = true;
         }
         if (!has_changed || subcardsLength() == 0) {
             QVariant data = QVariant::fromValue(use);
-            if (player->hasSkill("lihuo")) {
-                FireSlash *fire_slash = new FireSlash(getSuit(), getNumber());
-                if (!isVirtualCard() || subcardsLength() > 0)
-                    fire_slash->addSubcard(this);
-                fire_slash->setSkillName("lihuo");
-                bool can_use = true;
-                foreach (ServerPlayer *p, use.to) {
-                    if (!player->canSlash(p, fire_slash, false)) {
-                        can_use = false;
-                        break;
-                    }
-                }
-                if (can_use && room->askForSkillInvoke(player, "lihuo", data))
-                    use.card = fire_slash;
-                else
-                    delete fire_slash;
-            }
             if (use.card->objectName() == "slash" && player->hasWeapon("Fan")) {
                 FireSlash *fire_slash = new FireSlash(getSuit(), getNumber());
                 if (!isVirtualCard() || subcardsLength() > 0)
@@ -150,8 +133,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
             }
         }
     }
-    if (((use.card->isVirtualCard() && use.card->subcardsLength() == 0) || (getSkillName().contains("guhuo") && use.card != this) || use.card->hasFlag("pandu"))
-        && !player->hasFlag("slashDisableExtraTarget")) {
+    if (((use.card->isVirtualCard() && use.card->subcardsLength() == 0) || use.card->hasFlag("pandu")) && !player->hasFlag("slashDisableExtraTarget")) {
         QList<ServerPlayer *> targets_ts;
         while (true) {
             QList<const Player *> targets_const;
@@ -179,46 +161,15 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
     if (player->hasFlag("slashDisableExtraTarget"))
         room->setPlayerFlag(player, "-slashDisableExtraTarget");
 
-    if (player->getPhase() == Player::Play && player->hasFlag("Global_MoreSlashInOneTurn")) {
-        QString name;
-        if (player->hasSkill("paoxiao"))
-            name = "paoxiao";
-        else if (player->hasSkill("huxiao") && player->getMark("huxiao") > 0)
-            name = "huxiao";
-        else if (player->hasSkill("zhuixi") && player->getMark("zhuixi_extra") > 0)
-            name = "zhuixi";
-        else if (player->hasFlag("XianzhenSuccess")) {
-            QStringList l = player->property("extra_slash_specific_assignee").toString().split("+");
-            foreach (ServerPlayer *p, use.to) {
-                if (l.contains(p->objectName())) {
-                    name = "xianzhen";
-                    break;
-                }
-            }
-        }
-        if (!name.isEmpty()) {
-            player->setFlags("-Global_MoreSlashInOneTurn");
-            int index = qrand() % 2 + 1;
-            if (name == "paoxiao" && !player->hasInnateSkill("paoxiao") && player->hasSkill("baobian"))
-                index += 2;
-            else if (name == "xianzhen")
-                index = 2;
-            else if (name == "zhuixi")
-                index = 4;
-            room->broadcastSkillInvoke(name, index);
-            room->notifySkillInvoked(player, name);
+    foreach (const QString &flag, player->getFlagList()) {
+        if (flag.startsWith("SlashRecorder_")) {
+            room->setPlayerFlag(player, "-" + flag);
+            QString cardFlag = flag.mid(14);
+            room->setCardFlag(use.card, cardFlag);
         }
     }
-    if (use.to.size() > 1 && player->hasSkill("shenji")) {
-        room->broadcastSkillInvoke("shenji");
-        room->notifySkillInvoked(player, "shenji");
-    } else if (use.to.size() > 1 && player->hasSkill("lihuo") && use.card->isKindOf("FireSlash") && use.card->getSkillName() != "lihuo") {
-        room->broadcastSkillInvoke("lihuo", 1);
-        room->notifySkillInvoked(player, "lihuo");
-    } else if (use.to.size() > 1 && player->hasSkill("duanbing")) {
-        room->broadcastSkillInvoke("duanbing");
-        room->notifySkillInvoked(player, "duanbing");
-    } else if (use.to.size() > 1 && player->hasSkill("xuedian")) {
+
+    if (use.to.size() > 1 && player->hasSkill("xuedian")) {
         room->broadcastSkillInvoke("xuedian", 1);
         room->notifySkillInvoked(player, "xuedian");
     } else if (use.to.size() > 1 && player->hasSkill("shikong") && player->getPhase() == Player::Play) {
@@ -238,15 +189,6 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
         if (use.from->getOffensiveHorse() && use.card->getSubcards().contains(use.from->getOffensiveHorse()->getId()))
             rangefix += 1;
 
-    }
-
-    foreach (ServerPlayer *p, use.to) {
-        if (p->hasSkill("tongji") && p->getHandcardNum() > p->getHp()
-            && use.from->distanceTo(p, rangefix) <= use.from->getAttackRange()) {
-            room->broadcastSkillInvoke("tongji");
-            room->notifySkillInvoked(p, "tongji");
-            break;
-        }
     }
 
     if (use.from->hasFlag("BladeUse")) {
@@ -274,14 +216,11 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
     else if (use.card->isVirtualCard() && use.card->getSkillName() == "fan")
         room->setEmotion(player, "weapon/fan");
 
-    if (player->getPhase() == Player::Play
-        && player->hasFlag("Global_MoreSlashInOneTurn")
-        && player->hasWeapon("Crossbow")
-        && !player->hasSkill("paoxiao")
-        && !(player->hasSkill("huxiao") && player->getMark("huxiao") > 0)) {
+    if (player->getPhase() == Player::Play && player->hasFlag("Global_MoreSlashInOneTurn") && player->hasWeapon("Crossbow")) {
         player->setFlags("-Global_MoreSlashInOneTurn");
         room->setEmotion(player, "weapon/crossbow");
     }
+
     if (use.card->isKindOf("ThunderSlash"))
         room->setEmotion(player, "thunder_slash");
     else if (use.card->isKindOf("FireSlash"))
@@ -418,22 +357,8 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
 
     }
     if (!Self->canSlash(to_select, this, distance_limit, rangefix, targets)) return false;
-    if (targets.length() >= slash_targets) {
-        if (Self->hasSkill("duanbing") && targets.length() == slash_targets) {
-            QList<const Player *> duanbing_targets;
-            bool no_other_assignee = true;
-            foreach (const Player *p, targets) {
-                if (Self->distanceTo(p, rangefix) == 1)
-                    duanbing_targets << p;
-                else if (no_other_assignee && Slash::IsSpecificAssignee(p, Self, this))
-                    no_other_assignee = false;
-            }
-            if (no_other_assignee && duanbing_targets.length() == 1 && Slash::IsSpecificAssignee(duanbing_targets.first(), Self, this))
-                return Self->distanceTo(to_select, rangefix) == 1;
-            return !duanbing_targets.isEmpty() || Self->distanceTo(to_select, rangefix) == 1;
-        } else
-            return false;
-    }
+    if (targets.length() >= slash_targets)
+        return false;
     return true;
 }
 
@@ -456,7 +381,6 @@ bool Jink::isAvailable(const Player *) const
 Peach::Peach(Suit suit, int number) : BasicCard(suit, number)
 {
     setObjectName("peach");
-    //target_fixed = true;
 }
 
 QString Peach::getSubtype() const
@@ -484,8 +408,6 @@ void Peach::onEffect(const CardEffectStruct &effect) const
     recover.who = effect.from;
     room->recover(effect.to, recover);
 }
-;
-
 
 bool Peach::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
@@ -501,7 +423,7 @@ bool Peach::targetFilter(const QList<const Player *> &targets, const Player *to_
             }
         }
 
-        //if (this->getSkillName() == "chuangshi") chuangshi is  RESPONSE_USE,askfor peach is also response use ..... 
+        //if (this->getSkillName() == "chuangshi") chuangshi is  RESPONSE_USE,askfor peach is also response use .....
         if (globalDying && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
             return to_select->hasFlag("Global_Dying") && to_select->objectName() == Self->property("currentdying").toString();
         } else {
@@ -524,8 +446,8 @@ bool Peach::isAvailable(const Player *player) const
         }
 
     }
+
     return false;
-    //return player->isWounded() && !player->isProhibited(player, this) && BasicCard::isAvailable(player);
 }
 
 Crossbow::Crossbow(Suit suit, int number)

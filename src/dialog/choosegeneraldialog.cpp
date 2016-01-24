@@ -105,22 +105,6 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         }
     }
 
-    if (!view_only && ServerInfo.EnableHegemony && ServerInfo.Enable2ndGeneral && generals.length() > 2) {
-        int index = 0;
-        foreach (const General *general, generals) {
-            int party = 0;
-            foreach(const General *other, generals)
-                if (other->getKingdom() == general->getKingdom())
-                    party++;
-            if (party < 2)
-                buttons.at(index)->setEnabled(false);
-            if (Self->getGeneral())
-                if (Self->getGeneral()->getKingdom() != general->getKingdom()
-                    || Self->getGeneralName() == general->objectName())
-                    buttons.at(index)->setEnabled(false);
-            index++;
-        }
-    }
 
     QLayout *layout = NULL;
     const int columns = tooManyGenerals ? G_COMMON_LAYOUT.m_chooseGeneralBoxSwitchIconEachRowForTooManyGenerals :
@@ -128,7 +112,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     if (generals.length() <= columns) {
         layout = new QHBoxLayout;
 
-        if (lord_name.size() && !ServerInfo.EnableHegemony && !no_icon) {
+        if (lord_name.size() && !no_icon) {
             const General *lord = Sanguosha->getGeneral(lord_name);
 
             QLabel *label = new QLabel;
@@ -144,7 +128,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         QHBoxLayout *hlayout = new QHBoxLayout;
         QVBoxLayout *lord_layout = new QVBoxLayout;
 
-        if (lord_name.size() && !ServerInfo.EnableHegemony && !no_icon) {
+        if (lord_name.size() && !no_icon) {
             const General *lord = Sanguosha->getGeneral(lord_name);
 
             QLabel *label = new QLabel;
@@ -183,7 +167,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     QVBoxLayout *dialog_layout = new QVBoxLayout;
     dialog_layout->addLayout(layout);
 
-    if (!view_only && !ServerInfo.EnableHegemony) {
+    if (!view_only) {
         // role prompt
         QLabel *role_label = new QLabel(tr("Your role is %1").arg(Sanguosha->translate(Self->getRole())));
         if (lord_name.size()) role_label->setText(tr("The lord has chosen %1. Your seat is %2. %3")

@@ -275,9 +275,16 @@ QList<SkillInvokeDetail> TriggerSkill::triggerable(TriggerEvent, const Room *, c
     return QList<SkillInvokeDetail>();
 }
 
-bool TriggerSkill::cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &) const
+bool TriggerSkill::cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
 {
-    return true;
+    if (invoke->isCompulsory)
+        return true;
+    else {
+        if (invoke->invoker != NULL)
+            return invoke->invoker->askForSkillInvoke(this, data);
+    }
+
+    return false;
 }
 
 bool TriggerSkill::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &) const

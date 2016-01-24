@@ -3,17 +3,15 @@
 
 #include "skill.h"
 
-static QVariant _dummy_variant;
-
 class GameRule : public TriggerSkill
 {
     Q_OBJECT
 
 public:
     GameRule(QObject *parent);
-    virtual bool triggerable(const ServerPlayer *target) const;
-    virtual int getPriority(TriggerEvent) const;
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data = _dummy_variant) const;
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const;
+    virtual int getPriority() const;
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
 
 private:
     void onPhaseProceed(ServerPlayer *player) const;
@@ -29,7 +27,7 @@ class HulaoPassMode : public GameRule
 
 public:
     HulaoPassMode(QObject *parent);
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data = _dummy_variant) const;
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
 };
 
 #endif
