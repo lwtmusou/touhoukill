@@ -312,21 +312,18 @@ void Room::revivePlayer(ServerPlayer *player)
     updateStateItem();
 }
 
-static bool CompareByRole(ServerPlayer *player1, ServerPlayer *player2)
-{
-    int role1 = player1->getRoleEnum();
-    int role2 = player2->getRoleEnum();
-
-    if (role1 != role2)
-        return role1 < role2;
-    else
-        return player1->isAlive();
-}
-
 void Room::updateStateItem()
 {
     QList<ServerPlayer *> players = this->m_players;
-    qSort(players.begin(), players.end(), CompareByRole);
+    std::sort(players.begin(), players.end(), [](ServerPlayer *player1, ServerPlayer *player2) -> bool {
+        int role1 = player1->getRoleEnum();
+        int role2 = player2->getRoleEnum();
+
+        if (role1 != role2)
+            return role1 < role2;
+        else
+            return player1->isAlive();
+    });
     QString roles;
     foreach (ServerPlayer *p, players) {
         QChar c = "ZCFN"[p->getRoleEnum()];
@@ -4157,34 +4154,6 @@ void Room::_fillMoveInfo(CardsMoveStruct &moves, int card_index) const
     }
 }
 
-static bool CompareByActionOrder_OneTime(CardsMoveOneTimeStruct move1, CardsMoveOneTimeStruct move2)
-{
-    ServerPlayer *a = (ServerPlayer *)move1.from;
-    if (a == NULL) a = (ServerPlayer *)move1.to;
-    ServerPlayer *b = (ServerPlayer *)move2.from;
-    if (b == NULL) b = (ServerPlayer *)move2.to;
-
-    if (a == NULL || b == NULL)
-        return a != NULL;
-
-    Room *room = a->getRoom();
-    return room->getFront(a, b) == a;
-}
-
-static bool CompareByActionOrder(CardsMoveStruct move1, CardsMoveStruct move2)
-{
-    ServerPlayer *a = (ServerPlayer *)move1.from;
-    if (a == NULL) a = (ServerPlayer *)move1.to;
-    ServerPlayer *b = (ServerPlayer *)move2.from;
-    if (b == NULL) b = (ServerPlayer *)move2.to;
-
-    if (a == NULL || b == NULL)
-        return a != NULL;
-
-    Room *room = a->getRoom();
-    return room->getFront(a, b) == a;
-}
-
 QList<CardsMoveOneTimeStruct> Room::_mergeMoves(QList<CardsMoveStruct> cards_moves)
 {
     QMap<_MoveMergeClassifier, QList<CardsMoveStruct> > moveMap;
@@ -4222,8 +4191,20 @@ QList<CardsMoveOneTimeStruct> Room::_mergeMoves(QList<CardsMoveStruct> cards_mov
         result.append(moveOneTime);
     }
 
-    if (result.size() > 1)
-        qSort(result.begin(), result.end(), CompareByActionOrder_OneTime);
+    if (result.size() > 1) {
+        std::sort(result.begin(), result.end(), [](CardsMoveOneTimeStruct move1, CardsMoveOneTimeStruct move2) -> bool {
+            ServerPlayer *a = (ServerPlayer *)move1.from;
+            if (a == NULL) a = (ServerPlayer *)move1.to;
+            ServerPlayer *b = (ServerPlayer *)move2.from;
+            if (b == NULL) b = (ServerPlayer *)move2.to;
+
+            if (a == NULL || b == NULL)
+                return a != NULL;
+
+            Room *room = a->getRoom();
+            return room->getFront(a, b) == a;
+        });
+    }
 
     return result;
 }
@@ -4288,8 +4269,20 @@ QList<CardsMoveStruct> Room::_separateMoves(QList<CardsMoveOneTimeStruct> moveOn
         card_moves.append(card_move);
         i++;
     }
-    if (card_moves.size() > 1)
-        qSort(card_moves.begin(), card_moves.end(), CompareByActionOrder);
+    if (card_moves.size() > 1) {
+        std::sort(card_moves.begin(), card_moves.end(), [](CardsMoveStruct move1, CardsMoveStruct move2) -> bool {
+            ServerPlayer *a = (ServerPlayer *)move1.from;
+            if (a == NULL) a = (ServerPlayer *)move1.to;
+            ServerPlayer *b = (ServerPlayer *)move2.from;
+            if (b == NULL) b = (ServerPlayer *)move2.to;
+
+            if (a == NULL || b == NULL)
+                return a != NULL;
+
+            Room *room = a->getRoom();
+            return room->getFront(a, b) == a;
+        });
+    }
     return card_moves;
 }
 
@@ -6378,7 +6371,7 @@ void Room::networkDelayTestCommand(ServerPlayer *player, const QVariant &)
 void Room::sortByActionOrder(QList<ServerPlayer *> &players)
 {
     if (players.length() > 1)
-        qSort(players.begin(), players.end(), ServerPlayer::CompareByActionOrder);
+        std::sort(players.begin(), players.end(), ServerPlayer::CompareByActionOrder);
 }
 
 void Room::defaultHeroSkin()

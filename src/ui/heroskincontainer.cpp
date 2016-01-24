@@ -135,7 +135,7 @@ QStringList HeroSkinContainer::getHeroSkinFiles(const QString &generalName)
         }
 
         if (!heroSkinFiles.isEmpty()) {
-            qSort(heroSkinFiles.begin(), heroSkinFiles.end(), caseInsensitiveLessThan);
+            std::sort(heroSkinFiles.begin(), heroSkinFiles.end(), caseInsensitiveLessThan);
             m_generalToSkinFiles[generalName] = heroSkinFiles;
         }
     }

@@ -10,6 +10,7 @@ class QVariant;
 #include <QSharedPointer>
 
 #include "compiler-specific.h"
+#include <algorithm>
 
 template<typename T>
 void qShuffle(QList<T> &list)

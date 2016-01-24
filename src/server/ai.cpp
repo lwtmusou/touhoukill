@@ -339,15 +339,10 @@ const Card *TrustAI::askForCardShow(ServerPlayer *, const QString &)
     return self->getRandomHandCard();
 }
 
-static bool CompareByNumber(const Card *c1, const Card *c2)
-{
-    return c1->getNumber() < c2->getNumber();
-}
-
 const Card *TrustAI::askForPindian(ServerPlayer *requestor, const QString &)
 {
     QList<const Card *> cards = self->getHandcards();
-    qSort(cards.begin(), cards.end(), CompareByNumber);
+    std::sort(cards.begin(), cards.end(), Card::CompareByNumber);
 
     if (requestor != self && isFriend(requestor))
         return cards.first();
