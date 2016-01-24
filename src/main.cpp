@@ -12,8 +12,16 @@
 #include "server.h"
 #include "audio.h"
 
-#if defined(WIN32) && defined(VS2010)
+#ifdef USE_BREAKPAD
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4091)
+#endif
 #include "breakpad/client/windows/handler/exception_handler.h"
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
 
 using namespace google_breakpad;
 

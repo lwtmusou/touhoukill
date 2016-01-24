@@ -3,20 +3,14 @@
 # -------------------------------------------------
 TARGET = QSanguosha
 QT += network widgets
-!winrt: QT += declarative
 TEMPLATE = app
 CONFIG += audio
+win32: QT += winextras
 
 
 CONFIG += lua
 
 SOURCES += \
-    src/jsoncpp/src/json_writer.cpp \
-    src/jsoncpp/src/json_valueiterator.inl \
-    src/jsoncpp/src/json_value.cpp \
-    src/jsoncpp/src/json_reader.cpp \
-    src/jsoncpp/src/json_internalmap.inl \
-    src/jsoncpp/src/json_internalarray.inl \
     swig/sanguosha_wrap.cxx \
     src/client/aux-skills.cpp \
     src/client/client.cpp \
@@ -26,7 +20,7 @@ SOURCES += \
     src/core/card.cpp \
     src/core/engine.cpp \
     src/core/general.cpp \
-    src/core/jsonutils.cpp \
+    src/core/json.cpp \
     src/core/lua-wrapper.cpp \
     src/core/player.cpp \
     src/core/protocol.cpp \
@@ -38,7 +32,6 @@ SOURCES += \
     src/core/util.cpp \
     src/core/WrappedCard.cpp \
     src/dialog/AboutUs.cpp \
-    src/dialog/cardeditor.cpp \
     src/dialog/cardoverview.cpp \
     src/dialog/choosegeneraldialog.cpp \
     src/dialog/configdialog.cpp \
@@ -47,7 +40,6 @@ SOURCES += \
     src/dialog/distanceviewdialog.cpp \
     src/dialog/generaloverview.cpp \
     src/dialog/mainwindow.cpp \
-    src/dialog/packagingeditor.cpp \
     src/dialog/playercarddialog.cpp \
     src/dialog/roleassigndialog.cpp \
     src/dialog/scenario-overview.cpp \
@@ -57,6 +49,7 @@ SOURCES += \
     src/package/protagonist.cpp \
     src/package/standard-cards.cpp \
     src/package/standard.cpp \
+    src/package/th01-05.cpp \
     src/package/th06.cpp \
     src/package/th07.cpp \
     src/package/th08.cpp \
@@ -66,6 +59,7 @@ SOURCES += \
     src/package/th12.cpp \
     src/package/th13.cpp \
     src/package/th14.cpp \
+    src/package/th15.cpp \
     src/package/th99.cpp \
     src/package/thndj.cpp \
     src/package/thxwm.cpp \
@@ -122,17 +116,6 @@ SOURCES += \
     src/ui/graphicsbox.cpp
 
 HEADERS += \
-    src/jsoncpp/src/json_tool.h \
-    src/jsoncpp/src/json_batchallocator.h \
-    src/jsoncpp/include/json/writer.h \
-    src/jsoncpp/include/json/value.h \
-    src/jsoncpp/include/json/reader.h \
-    src/jsoncpp/include/json/json.h \
-    src/jsoncpp/include/json/forwards.h \
-    src/jsoncpp/include/json/features.h \
-    src/jsoncpp/include/json/config.h \
-    src/jsoncpp/include/json/autolink.h \
-    src/jsoncpp/include/json/assertions.h \
     src/client/aux-skills.h \
     src/client/client.h \
     src/client/clientplayer.h \
@@ -143,7 +126,7 @@ HEADERS += \
     src/core/compiler-specific.h \
     src/core/engine.h \
     src/core/general.h \
-    src/core/jsonutils.h \
+    src/core/json.h \
     src/core/lua-wrapper.h \
     src/core/player.h \
     src/core/protocol.h \
@@ -155,7 +138,6 @@ HEADERS += \
     src/core/util.h \
     src/core/WrappedCard.h \
     src/dialog/AboutUs.h \
-    src/dialog/cardeditor.h \
     src/dialog/cardoverview.h \
     src/dialog/choosegeneraldialog.h \
     src/dialog/configdialog.h \
@@ -164,7 +146,6 @@ HEADERS += \
     src/dialog/distanceviewdialog.h \
     src/dialog/generaloverview.h \
     src/dialog/mainwindow.h \
-    src/dialog/packagingeditor.h \
     src/dialog/playercarddialog.h \
     src/dialog/roleassigndialog.h \
     src/dialog/scenario-overview.h \
@@ -174,6 +155,7 @@ HEADERS += \
     src/package/protagonist.h \
     src/package/standard-equips.h \
     src/package/standard.h \
+    src/package/th01-05.h \
     src/package/th06.h \
     src/package/th07.h \
     src/package/th08.h \
@@ -183,6 +165,7 @@ HEADERS += \
     src/package/th12.h \
     src/package/th13.h \
     src/package/th14.h \
+    src/package/th15.h \
     src/package/th99.h \
     src/package/thndj.h \
     src/package/thxwm.h \

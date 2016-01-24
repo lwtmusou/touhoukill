@@ -1,133 +1,433 @@
 #include "structs.h"
-#include "jsonutils.h"
 #include "protocol.h"
+#include "json.h"
+#include "exppattern.h"
+#include "room.h"
+#include "skill.h"
 
-using namespace QSanProtocol::Utils;
-
-bool CardsMoveStruct::tryParse(const Json::Value &arg)
+bool CardsMoveStruct::tryParse(const QVariant &arg)
 {
-    if (!arg.isArray() || arg.size() != 8) return false;
-    if ((!arg[0].isInt() && !arg[0].isArray()) ||
-        !isIntArray(arg, 1, 2) || !isStringArray(arg, 3, 6)) return false;
-    if (arg[0].isInt()) {
-        int size = arg[0].asInt();
+    JsonArray args = arg.value<JsonArray>();
+    if (args.size() != 8) return false;
+
+    if ((!JsonUtils::isNumber(args[0]) && !args[0].canConvert<JsonArray>()) ||
+        !JsonUtils::isNumberArray(args, 1, 2) || !JsonUtils::isStringArray(args, 3, 6)) return false;
+
+    if (JsonUtils::isNumber(args[0])) {
+        int size = args[0].toInt();
         for (int i = 0; i < size; i++)
             card_ids.append(Card::S_UNKNOWN_CARD_ID);
-    } else if (!QSanProtocol::Utils::tryParse(arg[0], card_ids))
+    } else if (!JsonUtils::tryParse(args[0], card_ids)) {
         return false;
-    from_place = (Player::Place)arg[1].asInt();
-    to_place = (Player::Place)arg[2].asInt();
-    from_player_name = toQString(arg[3]);
-    to_player_name = toQString(arg[4]);
-    from_pile_name = toQString(arg[5]);
-    to_pile_name = toQString(arg[6]);
-    reason.tryParse(arg[7]);
+    }
+
+    from_place = (Player::Place)args[1].toInt();
+    to_place = (Player::Place)args[2].toInt();
+    from_player_name = args[3].toString();
+    to_player_name = args[4].toString();
+    from_pile_name = args[5].toString();
+    to_pile_name = args[6].toString();
+    reason.tryParse(args[7]);
     return true;
 }
 
-Json::Value CardsMoveStruct::toJsonValue() const
+QVariant CardsMoveStruct::toVariant() const
 {
-    Json::Value arg(Json::arrayValue);
-    if (open) arg[0] = toJsonArray(card_ids);
-    else arg[0] = card_ids.size();
-    arg[1] = (int)from_place;
-    arg[2] = (int)to_place;
-    arg[3] = toJsonString(from_player_name);
-    arg[4] = toJsonString(to_player_name);
-    arg[5] = toJsonString(from_pile_name);
-    arg[6] = toJsonString(to_pile_name);
-    arg[7] = reason.toJsonValue();
+    JsonArray arg;
+    if (open) {
+        arg << JsonUtils::toJsonArray(card_ids);
+    } else {
+        arg << card_ids.size();
+    }
+
+    arg << (int)from_place;
+    arg << (int)to_place;
+    arg << from_player_name;
+    arg << to_player_name;
+    arg << from_pile_name;
+    arg << to_pile_name;
+    arg << reason.toVariant();
     return arg;
 }
 
-bool CardMoveReason::tryParse(const Json::Value &arg)
+bool CardMoveReason::tryParse(const QVariant &arg)
 {
-    m_reason = arg[0].asInt();
-    m_playerId = arg[1].asCString();
-    m_skillName = arg[2].asCString();
-    m_eventName = arg[3].asCString();
-    m_targetId = arg[4].asCString();
-    return true; // @todo: fix this
+    JsonArray args = arg.value<JsonArray>();
+    if (args.size() != 5 || !args[0].canConvert<int>() || !JsonUtils::isStringArray(args, 1, 4))
+        return false;
+
+    m_reason = args[0].toInt();
+    m_playerId = args[1].toString();
+    m_skillName = args[2].toString();
+    m_eventName = args[3].toString();
+    m_targetId = args[4].toString();
+
+    return true;
 }
 
-Json::Value CardMoveReason::toJsonValue() const
+QVariant CardMoveReason::toVariant() const
 {
-    Json::Value result;
-    result[0] = m_reason;
-    result[1] = toJsonString(m_playerId);
-    result[2] = toJsonString(m_skillName);
-    result[3] = toJsonString(m_eventName);
-    result[4] = toJsonString(m_targetId);
+    JsonArray result;
+    result << m_reason;
+    result << m_playerId;
+    result << m_skillName;
+    result << m_eventName;
+    result << m_targetId;
     return result;
 }
 
-JsonValueForLUA::JsonValueForLUA(bool isarray) : m_realvalue(isarray ? Json::Value(Json::arrayValue) : Json::Value())
+DamageStruct::DamageStruct()
+    : from(NULL), to(NULL), card(NULL), damage(1), nature(Normal), chain(false), transfer(false), by_user(true), reason(QString())
+{
+}
+
+DamageStruct::DamageStruct(const Card *card, ServerPlayer *from, ServerPlayer *to, int damage, DamageStruct::Nature nature)
+    : chain(false), transfer(false), by_user(true), reason(QString())
+{
+    this->card = card;
+    this->from = from;
+    this->to = to;
+    this->damage = damage;
+    this->nature = nature;
+}
+
+DamageStruct::DamageStruct(const QString &reason, ServerPlayer *from, ServerPlayer *to, int damage, DamageStruct::Nature nature)
+    : card(NULL), chain(false), transfer(false), by_user(true)
+{
+    this->from = from;
+    this->to = to;
+    this->damage = damage;
+    this->nature = nature;
+    this->reason = reason;
+}
+
+QString DamageStruct::getReason() const
+{
+    if (reason != QString())
+        return reason;
+    else if (card)
+        return card->objectName();
+    return QString();
+}
+
+
+CardEffectStruct::CardEffectStruct()
+    : card(NULL), from(NULL), to(NULL), multiple(false), nullified(false)
+{
+}
+
+SlashEffectStruct::SlashEffectStruct()
+    : jink_num(1), slash(NULL), jink(NULL), from(NULL), to(NULL), drank(0), nature(DamageStruct::Normal),
+    multiple(false), nullified(false)
+{
+}
+
+DyingStruct::DyingStruct()
+    : who(NULL), damage(NULL), nowAskingForPeaches(NULL)
+{
+}
+
+DeathStruct::DeathStruct()
+    : who(NULL), damage(NULL)
+{
+}
+
+RecoverStruct::RecoverStruct()
+    : recover(1), who(NULL), card(NULL)
+{
+}
+
+PindianStruct::PindianStruct()
+    : from(NULL), to(NULL), from_card(NULL), to_card(NULL), success(false)
+{
+}
+
+bool PindianStruct::isSuccess() const
+{
+    return success;
+}
+
+JudgeStruct::JudgeStruct()
+    : who(NULL), card(NULL), pattern("."), good(true), time_consuming(false),
+    negative(false), play_animation(true), retrial_by_response(NULL), _m_result(TRIAL_RESULT_UNKNOWN)
+{
+}
+
+bool JudgeStruct::isEffected() const
+{
+    return negative ? isBad() : isGood();
+}
+
+void JudgeStruct::updateResult()
+{
+    bool effected = (good == ExpPattern(pattern).match(who, card));
+    if (effected)
+        _m_result = TRIAL_RESULT_GOOD;
+    else
+        _m_result = TRIAL_RESULT_BAD;
+}
+
+bool JudgeStruct::isGood() const
+{
+    Q_ASSERT(_m_result != TRIAL_RESULT_UNKNOWN);
+    return _m_result == TRIAL_RESULT_GOOD;
+}
+
+bool JudgeStruct::isBad() const
+{
+    return !isGood();
+}
+
+bool JudgeStruct::isGood(const Card *card) const
+{
+    Q_ASSERT(card);
+    return (good == ExpPattern(pattern).match(who, card));
+}
+
+PhaseChangeStruct::PhaseChangeStruct()
+    : from(Player::NotActive), to(Player::NotActive), player(NULL)
+{
+}
+
+CardUseStruct::CardUseStruct()
+    : card(NULL), from(NULL), m_isOwnerUse(true), m_addHistory(true), nullified_list(QStringList())
+{
+}
+
+CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, QList<ServerPlayer *> to, bool isOwnerUse)
+{
+    this->card = card;
+    this->from = from;
+    this->to = to;
+    this->m_isOwnerUse = isOwnerUse;
+    this->m_addHistory = true;
+}
+
+CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer *target, bool isOwnerUse)
+{
+    this->card = card;
+    this->from = from;
+    if (target != NULL)
+        this->to << target;
+    this->m_isOwnerUse = isOwnerUse;
+    this->m_addHistory = true;
+}
+
+bool CardUseStruct::isValid(const QString &pattern) const
+{
+    Q_UNUSED(pattern)
+        return card != NULL;
+    /*if (card == NULL) return false;
+    if (!card->getSkillName().isEmpty()) {
+    bool validSkill = false;
+    QString skillName = card->getSkillName();
+    QSet<const Skill *> skills = from->getVisibleSkills();
+    for (int i = 0; i < 4; i++) {
+    const EquipCard *equip = from->getEquip(i);
+    if (equip == NULL) continue;
+    const Skill *skill = Sanguosha->getSkill(equip);
+    if (skill)
+    skills.insert(skill);
+    }
+    foreach (const Skill *skill, skills) {
+    if (skill->objectName() != skillName) continue;
+    const ViewAsSkill *vsSkill = ViewAsSkill::parseViewAsSkill(skill);
+    if (vsSkill) {
+    if (!vsSkill->isAvailable(from, m_reason, pattern))
+    return false;
+    else {
+    validSkill = true;
+    break;
+    }
+    } else if (skill->getFrequency() == Skill::Wake) {
+    bool valid = (from->getMark(skill->objectName()) > 0);
+    if (!valid)
+    return false;
+    else
+    validSkill = true;
+    } else
+    return false;
+    }
+    if (!validSkill) return false;
+    }
+    if (card->targetFixed())
+    return true;
+    else {
+    QList<const Player *> targets;
+    foreach (const ServerPlayer *player, to)
+    targets.push_back(player);
+    return card->targetsFeasible(targets, from);
+    }*/
+}
+
+bool CardUseStruct::tryParse(const QVariant &usage, Room *room)
+{
+    JsonArray arr = usage.value<JsonArray>();
+    if (arr.length() < 2 || !JsonUtils::isString(arr.first()) || !arr.value(1).canConvert<JsonArray>())
+        return false;
+
+    card = Card::Parse(arr.first().toString());
+    JsonArray targets = arr.value(1).value<JsonArray>();
+
+    for (int i = 0; i < targets.size(); i++) {
+        if (!JsonUtils::isString(targets.value(i))) return false;
+        this->to << room->findChild<ServerPlayer *>(targets.value(i).toString());
+    }
+    return true;
+}
+
+void CardUseStruct::parse(const QString &str, Room *room)
+{
+    QStringList words = str.split("->", QString::KeepEmptyParts);
+    Q_ASSERT(words.length() == 1 || words.length() == 2);
+
+    QString card_str = words.at(0);
+    QString target_str = ".";
+
+    if (words.length() == 2 && !words.at(1).isEmpty())
+        target_str = words.at(1);
+
+    card = Card::Parse(card_str);
+
+    if (target_str != ".") {
+        QStringList target_names = target_str.split("+");
+        foreach (QString target_name, target_names)
+            to << room->findChild<ServerPlayer *>(target_name);
+    }
+}
+
+QString CardUseStruct::toString() const
+{
+    if (card == NULL)
+        return QString();
+
+    QStringList l;
+    l << card->toString();
+
+    if (to.isEmpty())
+        l << ".";
+    else {
+        QStringList tos;
+        foreach (ServerPlayer *p, to)
+            tos << p->objectName();
+
+        l << tos.join("+");
+    }
+    return l.join("->");
+}
+
+MarkChangeStruct::MarkChangeStruct()
+    : num(1), player(NULL)
 {
 
 }
 
-bool JsonValueForLUA::getBoolAt(int n) const
+bool SkillInvokeDetail::operator<(const SkillInvokeDetail &arg2) const // the operator < for sorting the invoke order.
 {
-    if (n < 0)
-        return m_realvalue.asBool();
-    else
-        return m_realvalue[n].asBool();
+    //  we sort firstly according to the priority, then the seat of invoker, at last weather it is a skill of an equip.
+    if (!isValid() || !arg2.isValid())
+        return false;
+
+    if (skill->getPriority() > arg2.skill->getPriority())
+        return true;
+    else if (skill->getPriority() < arg2.skill->getPriority())
+        return false;
+
+    if (invoker != arg2.invoker) {
+        Room *room = owner->getRoom();
+        if (room == NULL)
+            return false;
+        return room->getFront(invoker, arg2.invoker);
+    }
+
+    return skill->inherits("EquipSkill");
 }
 
-int JsonValueForLUA::getNumberAt(int n) const
+bool SkillInvokeDetail::operator==(const SkillInvokeDetail &arg2) const // the operator ==. it only judge the skill name, the skill invoker, and the skill owner. it don't judge the skill target because it is chosen by the skill invoker
 {
-    if (n < 0)
-        return m_realvalue.asInt();
-    else
-        return m_realvalue[n].asInt();
+    return skill == arg2.skill && owner == arg2.owner && invoker == arg2.invoker;
 }
 
-QString JsonValueForLUA::getStringAt(int n) const
+bool SkillInvokeDetail::sameTimingWith(const SkillInvokeDetail &arg2) const // used to judge 2 skills has the same timing. only 2 structs with the same priority and the same invoker and the same "whether or not it is a skill of equip"
 {
-    if (n < 0)
-        return m_realvalue.asCString();
-    else
-        return m_realvalue[n].asCString();
+    if (!isValid() || !arg2.isValid())
+        return false;
+
+    return skill->getPriority() == arg2.skill->getPriority() && invoker == arg2.invoker && skill->inherits("EquipSkill") == arg2.skill->inherits("EquipSkill");
 }
 
-JsonValueForLUA JsonValueForLUA::getArrayAt(int n) const
+SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill /*= NULL*/, ServerPlayer *owner /*= NULL*/, ServerPlayer *invoker /*= NULL*/, QList<ServerPlayer *> targets /*= QList<ServerPlayer *>()*/, int times /*= 1*/, bool isCompulsory /*= false*/)
+    : skill(skill), owner(owner), invoker(invoker), targets(targets), times(times), triggeredTimes(0), isCompulsory(isCompulsory)
 {
-    JsonValueForLUA temp;
-    if (n < 0)
-        temp.m_realvalue = m_realvalue;
-    else
-        temp.m_realvalue = m_realvalue[n];
-    return temp;
 }
 
-void JsonValueForLUA::setBoolAt(int n, bool v)
+SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, int times /*= 1*/, bool isCompulsory /*= false*/)
+    : skill(skill), owner(owner), invoker(invoker), times(times), triggeredTimes(0), isCompulsory(isCompulsory)
 {
-    if (n < 0)
-        m_realvalue = v;
-    else
-        m_realvalue[n] = v;
+    if (target != NULL)
+        targets << target;
 }
 
-void JsonValueForLUA::setNumberAt(int n, int v)
+bool SkillInvokeDetail::isValid() const // validity check
 {
-    if (n < 0)
-        m_realvalue = v;
-    else
-        m_realvalue[n] = v;
+    return skill != NULL/* && owner != NULL && invoker != NULL*/;
 }
 
-void JsonValueForLUA::setStringAt(int n, const QString &v)
+QVariant SkillInvokeDetail::toVariant() const
 {
-    if (n < 0)
-        m_realvalue = toJsonString(v);
-    else
-        m_realvalue[n] = toJsonString(v);
+    if (!isValid())
+        return QVariant();
+
+    JsonObject ob;
+    ob["skill"] = skill->objectName();
+    ob["owner"] = owner->objectName();
+    ob["invoker"] = invoker->objectName();
+    ob["timesleft"] = times - triggeredTimes;
+    return ob;
 }
 
-void JsonValueForLUA::setArrayAt(int n, const JsonValueForLUA &v)
+QStringList SkillInvokeDetail::toList() const
 {
-    if (n < 0)
-        m_realvalue = (Json::Value)v;
+    QStringList l;
+    if (!isValid())
+        l << QString() << QString() << QString() << "0";
     else
-        m_realvalue[n] = (Json::Value)v;
+        l << skill->objectName() << owner->objectName() << invoker->objectName() << QString::number(times - triggeredTimes);
+
+    return l;
+}
+
+SkillAcquireDetachStruct::SkillAcquireDetachStruct()
+    : skill(NULL), player(NULL), isAcquire(false)
+{
+}
+
+ChoiceMadeStruct::ChoiceMadeStruct()
+    : player(NULL)
+{
+}
+
+CardAskedStruct::CardAskedStruct()
+    : player(NULL)
+{
+}
+
+HpLostStruct::HpLostStruct()
+    : player(NULL), num(0)
+{
+}
+
+JinkEffectStruct::JinkEffectStruct()
+    : jink(NULL)
+{
+}
+
+PhaseSkippingStruct::PhaseSkippingStruct()
+    : phase(Player::NotActive), player(NULL), isCost(false)
+{
+}
+
+DrawNCardsStruct::DrawNCardsStruct()
+    : player(NULL), n(0), isInitial(false)
+{
 }

@@ -5,12 +5,11 @@
 #include "lua.hpp"
 #include "settings.h"
 #include "generalselector.h"
-#include "jsonutils.h"
 
 #include <QDateTime>
 
 using namespace QSanProtocol;
-using namespace QSanProtocol::Utils;
+using namespace JsonUtils;
 
 RoomThread3v3::RoomThread3v3(Room *room)
     :room(room)
@@ -127,21 +126,20 @@ void RoomThread3v3::run()
 
 void RoomThread3v3::askForTakeGeneral(ServerPlayer *player)
 {
-    while (room->isPaused()) {
-    }
+    room->tryPause();
 
     QString name;
     if (general_names.length() == 1 || player->getState() != "online")
-        name = GeneralSelector::getInstance()->select3v3(player, general_names);
+        name = room->generalSelector()->select3v3(player, general_names);
 
     if (name.isNull()) {
-        bool success = room->doRequest(player, S_COMMAND_ASK_GENERAL, Json::Value::null, true);
-        Json::Value clientReply = player->getClientReply();
-        if (success && clientReply.isString()) {
-            name = toQString(clientReply.asCString());
+        bool success = room->doRequest(player, S_COMMAND_ASK_GENERAL, QVariant(), true);
+        QVariant clientReply = player->getClientReply();
+        if (success && isString(clientReply)) {
+            name = clientReply.toString();
             takeGeneral(player, name);
         } else {
-            name = GeneralSelector::getInstance()->select3v3(player, general_names);
+            name = room->generalSelector()->select3v3(player, general_names);
             takeGeneral(player, name);
         }
     } else {
@@ -164,17 +162,16 @@ void RoomThread3v3::takeGeneral(ServerPlayer *player, const QString &name)
     room->sendLog(log);
 
     QString rule = Config.value("3v3/OfficialRule", "2013").toString();
-    room->doBroadcastNotify(S_COMMAND_TAKE_GENERAL, toJsonArray(group, name, rule));
+    room->doBroadcastNotify(S_COMMAND_TAKE_GENERAL, JsonArray() << group << name << rule);
 }
 
 void RoomThread3v3::startArrange(QList<ServerPlayer *> &players)
 {
-    while (room->isPaused()) {
-    }
+    room->tryPause();
     QList<ServerPlayer *> online = players;
     foreach (ServerPlayer *player, players) {
         if (!player->isOnline()) {
-            GeneralSelector *selector = GeneralSelector::getInstance();
+            GeneralSelector *selector = room->generalSelector();
             arrange(player, selector->arrange3v3(player));
             online.removeOne(player);
         }
@@ -182,18 +179,19 @@ void RoomThread3v3::startArrange(QList<ServerPlayer *> &players)
     if (online.isEmpty()) return;
 
     foreach(ServerPlayer *player, online)
-        player->m_commandArgs = Json::Value::null;
+        player->m_commandArgs = QVariant();
 
     room->doBroadcastRequest(online, S_COMMAND_ARRANGE_GENERAL);
 
     foreach (ServerPlayer *player, online) {
-        Json::Value clientReply = player->getClientReply();
-        if (player->m_isClientResponseReady && clientReply.isArray() && clientReply.size() == 3) {
+        QVariant clientReply = player->getClientReply();
+        JsonArray arr = clientReply.value<JsonArray>();
+        if (player->m_isClientResponseReady && arr.size() == 3) {
             QStringList arranged;
             tryParse(clientReply, arranged);
             arrange(player, arranged);
         } else {
-            GeneralSelector *selector = GeneralSelector::getInstance();
+            GeneralSelector *selector = room->generalSelector();
             arrange(player, selector->arrange3v3(player));
         }
     }

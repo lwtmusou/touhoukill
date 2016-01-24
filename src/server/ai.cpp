@@ -172,7 +172,7 @@ QList<ServerPlayer *> AI::getFriends() const
     return friends;
 }
 
-void AI::filterEvent(TriggerEvent, ServerPlayer *, const QVariant &)
+void AI::filterEvent(TriggerEvent, const QVariant &)
 {
     // dummy
 }
@@ -232,22 +232,9 @@ QString TrustAI::askForKingdom()
     QString role;
     ServerPlayer *lord = room->getLord();
     QStringList kingdoms = Sanguosha->getKingdoms();
-    kingdoms.removeOne("god");
     kingdoms.removeOne("zhu");
     kingdoms.removeOne("touhougod");
-    QStringList sanguokingdoms;
-    sanguokingdoms << "wei" << "shu" << "wu" << "qun";
     QString selfKingdom = self->getGeneral()->getKingdom();
-    if (selfKingdom == "god") {
-        foreach (QString king, kingdoms) {
-            if (!sanguokingdoms.contains(king))
-                kingdoms.removeOne(king);
-        }
-    }
-    if (selfKingdom == "zhu" || selfKingdom == "touhougod") {
-        foreach(QString king, sanguokingdoms)
-            kingdoms.removeOne(king);
-    }
     if (!lord) return kingdoms.at(qrand() % kingdoms.length());
 
     switch (self->getRoleEnum()) {
@@ -257,16 +244,12 @@ QString TrustAI::askForKingdom()
             role = lord->getKingdom();
         else if (lord->getGeneral2() && lord->getGeneral2()->isLord())
             role = lord->getGeneral2()->getKingdom();
-        else {
-            if (lord->hasSkill("yongsi")) kingdoms.removeOne(lord->getKingdom());
+        else
             role = kingdoms.at(qrand() % kingdoms.length());
-        }
         break;
     }
     case Player::Rebel: {
-        if ((lord->hasLordSkill("xueyi") && self->getRoleEnum() == Player::Rebel) || lord->hasLordSkill("shichou"))
-            role = "wei";
-        else if (self->hasSkill("hongfo")) {
+        if (self->hasSkill("hongfo")) {
             kingdoms.removeOne(lord->getKingdom());
             role = kingdoms.at(qrand() % kingdoms.length());
         } else if (lord->getGeneral()->isLord())
@@ -281,7 +264,6 @@ QString TrustAI::askForKingdom()
         else if (lord->getGeneral2() && lord->getGeneral2()->isLord())
             role = lord->getGeneral2()->getKingdom();
         else {
-            if (lord->hasSkill("yongsi")) kingdoms.removeOne(lord->getKingdom());
             role = kingdoms.at(qrand() % kingdoms.length());
         }
         break;
@@ -291,12 +273,8 @@ QString TrustAI::askForKingdom()
     }
     if (kingdoms.contains(role))
         return role;
-    else {
-        if (kingdoms.contains("wei"))
-            return "wei";
-        else
-            return "wai";
-    }
+    else
+        return "wai";
 }
 
 bool TrustAI::askForSkillInvoke(const QString &, const QVariant &)
@@ -304,15 +282,8 @@ bool TrustAI::askForSkillInvoke(const QString &, const QVariant &)
     return false;
 }
 
-QString TrustAI::askForChoice(const QString &skill_name, const QString &choice, const QVariant &)
+QString TrustAI::askForChoice(const QString &, const QString &choice, const QVariant &)
 {
-    const Skill *skill = Sanguosha->getSkill(skill_name);
-    if (skill) {
-        QString default_choice = skill->getDefaultChoice(self);
-        if (choice.contains(default_choice))
-            return default_choice;
-    }
-
     QStringList choices = choice.split("+");
     return choices.at(qrand() % choices.length());
 }
@@ -368,19 +339,10 @@ const Card *TrustAI::askForCardShow(ServerPlayer *, const QString &)
     return self->getRandomHandCard();
 }
 
-static bool CompareByNumber(const Card *c1, const Card *c2)
-{
-    return c1->getNumber() < c2->getNumber();
-}
-
-const Card *TrustAI::askForPindian(ServerPlayer *requestor, const QString &reason)
+const Card *TrustAI::askForPindian(ServerPlayer *requestor, const QString &)
 {
     QList<const Card *> cards = self->getHandcards();
-    qSort(cards.begin(), cards.end(), CompareByNumber);
-
-    // zhiba special case
-    if (reason == "zhiba_pindian" && self->hasLordSkill("sunce_zhiba"))
-        return cards.last();
+    std::sort(cards.begin(), cards.end(), Card::CompareByNumber);
 
     if (requestor != self && isFriend(requestor))
         return cards.first();

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Sanguosha</string>
+   <string>TouhouSatsu</string>
   </property>
   <widget class="QWidget" name="centralWidget"/>
   <widget class="QMenuBar" name="menuBar">
@@ -89,17 +89,9 @@
     <addaction name="actionRevive_wand"/>
     <addaction name="actionExecute_script_at_server_side"/>
    </widget>
-   <widget class="QMenu" name="menuDIY">
-    <property name="title">
-     <string>DIY</string>
-    </property>
-    <addaction name="actionCard_editor"/>
-    <addaction name="actionPackaging"/>
-   </widget>
    <addaction name="menuGame"/>
    <addaction name="menuView"/>
    <addaction name="menuOptions"/>
-   <addaction name="menuDIY"/>
    <addaction name="menuCheat"/>
    <addaction name="menuHelp"/>
   </widget>

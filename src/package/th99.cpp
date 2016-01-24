@@ -6,7 +6,6 @@
 #include "standard.h"
 
 #include "client.h"
-#include "jsonutils.h"
 #include "maneuvering.h" //for skill lianxi
 
 
@@ -660,7 +659,7 @@ public:
                     return TriggerList();
                 isRed = use.card->isRed();
             } else if (triggerEvent == CardResponded) {
-                CardStar card_star = data.value<CardResponseStruct>().m_card;
+                const Card * card_star = data.value<CardResponseStruct>().m_card;
                 if (!card_star->isKindOf("BasicCard") || data.value<CardResponseStruct>().m_isRetrial
                     || data.value<CardResponseStruct>().m_isProvision || card_star->getSuit() == Card::NoSuit)
                     return TriggerList();
@@ -688,7 +687,7 @@ public:
             if (triggerEvent == CardUsed)
                 merry->tag["luanying_use"] = data;
 
-            if (room->askForSkillInvoke(merry, objectName(), data)) {           
+            if (room->askForSkillInvoke(merry, objectName(), data)) {
                 bool isRed = true;
                 QString cardName;
                 if (triggerEvent == CardUsed) {
@@ -696,7 +695,7 @@ public:
                     isRed = use.card->isRed();
                     cardName = use.card->objectName();
                 } else if (triggerEvent == CardResponded) {
-                    CardStar card_star = data.value<CardResponseStruct>().m_card;
+                    const Card * card_star = data.value<CardResponseStruct>().m_card;
                     isRed = card_star->isRed();
                     cardName = card_star->objectName();
                 }
@@ -803,7 +802,7 @@ public:
     {
         if (!TriggerSkill::triggerable(player)) return QStringList();
         if (triggerEvent == CardResponded) {
-            CardStar card_star = data.value<CardResponseStruct>().m_card;
+            const Card * card_star = data.value<CardResponseStruct>().m_card;
             if (card_star->isKindOf("Slash"))
                 return QStringList(objectName());
         } else if (triggerEvent == CardUsed) {
@@ -888,19 +887,18 @@ public:
             }
             room->handleAcquireDetachSkills(player, "-" + back_skillname);
 
-            Json::Value arg(Json::arrayValue);
-            arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-            arg[1] = QSanProtocol::Utils::toJsonString(player->objectName());
-            arg[2] = QSanProtocol::Utils::toJsonString(player->getGeneral()->objectName());
-            //arg[3] = QSanProtocol::Utils::toJsonString("clear");
-            arg[3] = QSanProtocol::Utils::toJsonString(QString());
+            JsonArray arg;
+            arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+            arg << player->objectName();
+            arg << player->getGeneral()->objectName();
+            arg << QString();
             room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 
             if (back->isAlive()) {
                 //room->handleAcquireDetachSkills(back, back_skillname);
                 room->setPlayerMark(back, "pingyi" + back_skillname, 0);
-                Json::Value args;
-                args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+                JsonArray args;
+                args << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
                 back->loseMark("@pingyi", 1);
                 if (back->hasSkill(back_skillname))
@@ -973,18 +971,18 @@ public:
             room->setPlayerMark(damage.from, "pingyi" + skill_name, 1); // skill nullify mark, like Qingcheng
             room->handleAcquireDetachSkills(player, skill_name);
 
-            Json::Value args;
-            args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+            JsonArray args;
+            args << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
             room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
             damage.from->gainMark("@pingyi"); // marks could be greater than 1,since it can be stealed any times.
             room->touhouLogmessage("#pingyiLoseSkill", damage.from, skill_name);
 
-            Json::Value arg(Json::arrayValue);
-            arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-            arg[1] = QSanProtocol::Utils::toJsonString(player->objectName());
-            arg[2] = QSanProtocol::Utils::toJsonString(damage.from->getGeneral()->objectName());
-            arg[3] = QSanProtocol::Utils::toJsonString(skill_name);
+            JsonArray arg;
+            arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+            arg << player->objectName();
+            arg << damage.from->getGeneral()->objectName();
+            arg << skill_name;
             room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
         }
 
@@ -1602,8 +1600,6 @@ public:
             logto1 << target;
             room->touhouLogmessage("$CancelTarget", use.from, use.card->objectName(), logto);
             room->touhouLogmessage("#huzhu_change", use.from, use.card->objectName(), logto1);
-
-            room->getThread()->trigger(TargetConfirming, room, target, data);
         }
 
         return false;
@@ -1630,7 +1626,8 @@ public:
                         p->tag.remove("bihuo_num_" + s->objectName());
                         if (!p->isKongcheng()) {
                             int count = qMin(p->getHandcardNum(), num);
-                            const Card *cards = room->askForExchange(p, "bihuo", count, false, "bihuo_exchange:" + QString::number(count) + ":" + s->objectName());
+                            const Card *cards = room->askForExchange(p, "bihuo", count, count, false, "bihuo_exchange:" + QString::number(count) + ":" + s->objectName());
+                            DELETE_OVER_SCOPE(const Card, cards)
                             room->obtainCard(s, cards, false);
                         }
                     }
@@ -1703,6 +1700,12 @@ TH99Package::TH99Package()
     kosuzu->addSkill(new Bihuo);
     kosuzu->addSkill(new BihuoReturn);
     related_skills.insertMulti("bihuo", "#bihuo");
+
+    General *mamizou = new General(this, "mamizou_sp", "wai", 4, false);
+    Q_UNUSED(mamizou);
+
+    General *reisen2 = new General(this, "reisen2", "wai", 4, false);
+    Q_UNUSED(reisen2);
 
     addMetaObject<QiuwenCard>();
     addMetaObject<DangjiaCard>();

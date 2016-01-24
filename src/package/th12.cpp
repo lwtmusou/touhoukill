@@ -165,13 +165,12 @@ public:
                     new_use.from = use.from;
                     new_use.to << p;
                     new_use.card = use.card;
-                    p->tag["collateralVictim"] = QVariant::fromValue((PlayerStar)newVictim);
+                    p->tag["collateralVictim"] = QVariant::fromValue((ServerPlayer *)newVictim);
                     data = QVariant::fromValue(new_use);
                     logto.removeOne(p);
                     logto << newVictim;
                     room->touhouLogmessage("#CollateralSlash", use.from, use.card->objectName(), logto);
                 }
-                room->getThread()->trigger(TargetConfirming, room, p, data);
                 break;
             }
         }
@@ -946,10 +945,12 @@ TH12Package::TH12Package()
     kogasa->addSkill(new Yiwang);
     kogasa->addSkill(new Jingxia);
 
-
     General *unzan = new General(this, "unzan", "xlc", 4, true);
     unzan->addSkill(new Bianhuan);
     unzan->addSkill(new Nuhuo);
+
+    General *myouren = new General(this, "myouren", "xlc", 4, false);
+    Q_UNUSED(myouren);
 
     addMetaObject<PuduCard>();
     addMetaObject<WeizhiCard>();

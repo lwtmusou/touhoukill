@@ -324,7 +324,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
         }
         if (generalName == "") {
             const General* general = Self->getGeneral();
-            if (general->hasSkill(engskillname))
+            if (general && general->hasSkill(engskillname))
                 generalName = general->objectName();
         }
         if (generalName == "")

@@ -1011,6 +1011,7 @@ public:
         if (asked != "jink") return QStringList();
         //since skill yuanfei,we need check
         Card *jink = Sanguosha->cloneCard("jink");
+        DELETE_OVER_SCOPE(Card, jink)
         if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
             if (player->isCardLimited(jink, Card::MethodResponse))
                 return QStringList();
@@ -1280,7 +1281,7 @@ void Collateral::onUse(Room *room, const CardUseStruct &card_use) const
 
     CardUseStruct new_use = card_use;
     new_use.to.removeAt(1);
-    killer->tag["collateralVictim"] = QVariant::fromValue((PlayerStar)victim);
+    killer->tag["collateralVictim"] = QVariant::fromValue((ServerPlayer *)victim);
 
     SingleTargetTrick::onUse(room, new_use);
 }
@@ -1298,7 +1299,7 @@ void Collateral::onEffect(const CardEffectStruct &effect) const
     ServerPlayer *source = effect.from;
     Room *room = source->getRoom();
     ServerPlayer *killer = effect.to;
-    ServerPlayer *victim = effect.to->tag["collateralVictim"].value<PlayerStar>();
+    ServerPlayer *victim = effect.to->tag["collateralVictim"].value<ServerPlayer *>();
     effect.to->tag.remove("collateralVictim");
     if (!victim) return;
     WrappedCard *weapon = killer->getWeapon();

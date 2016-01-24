@@ -6,9 +6,10 @@ config = {
 	} ,
 
 	kingdoms = { 
-	"zhu", "hmx","yym","yyc","zhan","fsl","dld","xlc","slm","hzc","wai","touhougod" ,
+	"pc98", "zhu", "hmx","yym","yyc","zhan","fsl","dld","xlc","slm","hzc", "gzz","wai","touhougod" ,
 	},
 	kingdom_colors = {
+		pc98 = "#0000ff";
 		zhu ="#853dcc",
 		hmx = "#cc1414",
 		yym = "#3d3dcc",
@@ -19,6 +20,7 @@ config = {
 		xlc = "#3dcccc",
 		slm ="#66cc99",
 		hzc ="#aacc66",
+		gzz = "#202020" ,
 		wai = "#cc7014",
 		touhougod = "#96943D",
 	},
@@ -33,6 +35,7 @@ config = {
 		
 		--武将包
 		"Protagonist",
+		"TH0105",
 		"TH06",
 		"TH07",
 		"TH08",
@@ -42,6 +45,7 @@ config = {
 		"TH12",
 		"TH13",
 		"TH14",
+		--"TH15", --0.8不对应
 		"TH99",
 		"THXWM",
 		"THNDJ",

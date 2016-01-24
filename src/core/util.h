@@ -7,6 +7,10 @@ class QVariant;
 #include <QList>
 #include <QStringList>
 #include <QVariant>
+#include <QSharedPointer>
+
+#include "compiler-specific.h"
+#include <algorithm>
 
 template<typename T>
 void qShuffle(QList<T> &list)
@@ -30,6 +34,11 @@ QVariantList IntList2VariantList(const QList<int> &intlist);
 QList<int> VariantList2IntList(const QVariantList &variantlist);
 
 bool isNormalGameMode(const QString &mode);
+
+// cannot use do...while false here......
+#define DELETE_OVER_SCOPE(type, var) \
+    QScopedPointer<type> __ ## var ## _scoped(var); \
+    Q_UNUSED(__ ## var ## _scoped);
 
 #endif
 

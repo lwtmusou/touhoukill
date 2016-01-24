@@ -6,7 +6,6 @@
 #include "engine.h"
 #include "standard.h"
 #include "client.h"
-#include "jsonutils.h"
 #include <QCommandLinkButton>
 
 
@@ -67,7 +66,7 @@ public:
         if (!TriggerSkill::triggerable(player)) return QStringList();
         bool can = false;
         if (triggerEvent == CardResponded) {
-            CardStar card_star = data.value<CardResponseStruct>().m_card;
+            const Card * card_star = data.value<CardResponseStruct>().m_card;
             if (card_star->isKindOf("Slash"))
                 can = true;
         } else if (triggerEvent == CardUsed) {
@@ -91,7 +90,8 @@ public:
     {
         player->drawCards(1);
         if (!player->isKongcheng()) {
-            const Card *cards = room->askForExchange(player, objectName(), 1, false, "shende-exchange");
+            const Card *cards = room->askForExchange(player, objectName(), 1, 1, false, "shende-exchange");
+            DELETE_OVER_SCOPE(const Card, cards)
             player->addToPile("shende", cards->getSubcards().first());
         }
         return false;
@@ -254,7 +254,7 @@ public:
     virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const
     {
         if (triggerEvent == Pindian) {
-            PindianStar pindian = data.value<PindianStar>();
+            PindianStruct * pindian = data.value<PindianStruct *>();
             if (pindian->reason == "bushu" && pindian->from_number <= pindian->to_number
                 && pindian->from->isAlive())
                 pindian->from->obtainCard(pindian->to_card);
@@ -608,6 +608,7 @@ bool QijiCard::targetFilter(const QList<const Player *> &targets, const Player *
         if (!user_string.isEmpty()) {
             const Card *oc = Sanguosha->getCard(subcards.first());
             Card *card = Sanguosha->cloneCard(user_string.split("+").first(), oc->getSuit(), oc->getNumber());
+            DELETE_OVER_SCOPE(Card, card)
             card->addSubcard(oc);
             return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
         }
@@ -619,6 +620,7 @@ bool QijiCard::targetFilter(const QList<const Player *> &targets, const Player *
     const Card *card = Self->tag.value("qiji").value<const Card *>();
     const Card *oc = Sanguosha->getCard(subcards.first());
     Card *new_card = Sanguosha->cloneCard(card->objectName(), oc->getSuit(), oc->getNumber());
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->addSubcard(oc);
     new_card->setSkillName("qiji");
     return new_card && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
@@ -630,6 +632,7 @@ bool QijiCard::targetFixed() const
         if (!user_string.isEmpty()) {
             const Card *oc = Sanguosha->getCard(subcards.first());
             Card *card = Sanguosha->cloneCard(user_string.split("+").first(), oc->getSuit(), oc->getNumber());
+            DELETE_OVER_SCOPE(Card, card)
             card->addSubcard(oc);
             return card && card->targetFixed();
         }
@@ -641,6 +644,7 @@ bool QijiCard::targetFixed() const
     const Card *card = Self->tag.value("qiji").value<const Card *>();
     const Card *oc = Sanguosha->getCard(subcards.first());
     Card *new_card = Sanguosha->cloneCard(card->objectName(), oc->getSuit(), oc->getNumber());
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->addSubcard(oc);
     new_card->setSkillName("qiji");
     return new_card && new_card->targetFixed();
@@ -652,6 +656,7 @@ bool QijiCard::targetsFeasible(const QList<const Player *> &targets, const Playe
         if (!user_string.isEmpty()) {
             const Card *oc = Sanguosha->getCard(subcards.first());
             Card *card = Sanguosha->cloneCard(user_string.split("+").first(), oc->getSuit(), oc->getNumber());
+            DELETE_OVER_SCOPE(Card, card)
             card->addSubcard(oc);
             return card && card->targetsFeasible(targets, Self);
         }
@@ -663,6 +668,7 @@ bool QijiCard::targetsFeasible(const QList<const Player *> &targets, const Playe
     const Card *card = Self->tag.value("qiji").value<const Card *>();
     const Card *oc = Sanguosha->getCard(subcards.first());
     Card *new_card = Sanguosha->cloneCard(card->objectName(), oc->getSuit(), oc->getNumber());
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->addSubcard(oc);
     new_card->setSkillName("qiji");
     if (card->isKindOf("IronChain") && targets.length() == 0)
@@ -690,9 +696,11 @@ const Card *QijiCard::validateInResponse(ServerPlayer *user) const
     if (user_string == "peach+analeptic") {
         QStringList use_list;
         Card *peach = Sanguosha->cloneCard("peach");
+        DELETE_OVER_SCOPE(Card, peach)
         if (!user->isCardLimited(peach, Card::MethodResponse, true))
             use_list << "peach";
         Card *ana = Sanguosha->cloneCard("analeptic");
+        DELETE_OVER_SCOPE(Card, ana)
         if (!Config.BanPackages.contains("maneuvering") && !user->isCardLimited(ana, Card::MethodResponse, true))
             use_list << "analeptic";
         to_use = room->askForChoice(user, "qiji_skill_saveself", use_list.join("+"));
@@ -729,19 +737,24 @@ public:
 
         if (pattern == "slash" || pattern == "jink") {
             Card *card = Sanguosha->cloneCard(pattern);
+            DELETE_OVER_SCOPE(Card, card)
             return !player->isCardLimited(card, Card::MethodResponse, true);
         }
 
         if (pattern.contains("peach") && pattern.contains("analeptic")) {
             Card *peach = Sanguosha->cloneCard("peach");
+            DELETE_OVER_SCOPE(Card, peach)
             Card *ana = Sanguosha->cloneCard("analeptic");
+            DELETE_OVER_SCOPE(Card, ana)
             return !player->isCardLimited(peach, Card::MethodResponse, true) ||
                 !player->isCardLimited(ana, Card::MethodResponse, true);
         } else if (pattern == "peach") {
             Card *peach = Sanguosha->cloneCard("peach");
+            DELETE_OVER_SCOPE(Card, peach)
             return !player->isCardLimited(peach, Card::MethodResponse, true);
         } else if (pattern == "analeptic") {
             Card *ana = Sanguosha->cloneCard("analeptic");
+            DELETE_OVER_SCOPE(Card, ana)
             return !player->isCardLimited(ana, Card::MethodResponse, true);
         }
 
@@ -788,7 +801,9 @@ public:
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const
     {
         if (player->getMark("qiji") > 0) return false;
-        if (player->isCardLimited(Sanguosha->cloneCard("nullification"), Card::MethodResponse, true))
+        Nullification *nul = new Nullification(Card::NoSuit, 0);
+        DELETE_OVER_SCOPE(Nullification, nul)
+        if (player->isCardLimited(nul, Card::MethodUse, true))
             return false;
         return player->getHandcardNum() == 1;
     }
@@ -827,7 +842,7 @@ public:
                 }
             }
             if (triggerEvent == CardResponded) {
-                CardStar card_star = data.value<CardResponseStruct>().m_card;
+                const Card * card_star = data.value<CardResponseStruct>().m_card;
                 if (card_star->getSkillName() == "qiji")
                     room->setPlayerMark(player, "qiji", 1);
             }
@@ -1155,8 +1170,8 @@ public:
             foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
                 room->setPlayerMark(p, "changshi", 0);
                 room->filterCards(p, p->getCards("he"), true);
-                Json::Value args;
-                args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+                JsonArray args;
+                args << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
             }
@@ -1178,18 +1193,21 @@ public:
 
             //remove card limit,if the source skill can not clear it correctly.
             foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
+                // coupling zhengti???  only for the UI???????????????????????????????????????????????????????????
+#if 0
                 if (p->hasSkill("zhengti")) {
-                    Json::Value arg(Json::arrayValue);
-                    arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                    arg[1] = QSanProtocol::Utils::toJsonString(p->objectName());
-                    arg[2] = QSanProtocol::Utils::toJsonString(p->getGeneral()->objectName());
-                    arg[3] = QSanProtocol::Utils::toJsonString(QString());//"clear"
-                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+                    JsonArray args;
+                    args << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+                    args << p->objectName();
+                    args << p->getGeneral()->objectName();
+                    args << QString(); //"clear"
+                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
                 }
+#endif
                 room->setPlayerMark(p, "changshi", 1); // real mark for   Player::hasSkill()
                 room->filterCards(p, p->getCards("he"), true);
-                Json::Value args;
-                args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+                JsonArray args;
+                args << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
             }
@@ -1388,7 +1406,8 @@ void TianyanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &)
     int x = qMin(room->alivePlayerCount(), 4);
 
     source->drawCards(x);
-    const Card *cards = room->askForExchange(source, "tianyan", x, false, "tianyan_exchange:" + QString::number(x));
+    const Card *cards = room->askForExchange(source, "tianyan", x, x, false, "tianyan_exchange:" + QString::number(x));
+    DELETE_OVER_SCOPE(const Card, cards)
     CardsMoveStruct move;
     move.card_ids = cards->getSubcards();
     move.from = source;
@@ -1660,7 +1679,7 @@ void ExtraCollateralCard::onUse(Room *, const CardUseStruct &card_use) const
     ServerPlayer *killer = card_use.to.first();
     ServerPlayer *victim = card_use.to.last();
     killer->setFlags("ExtraCollateralTarget");
-    killer->tag["collateralVictim"] = QVariant::fromValue((PlayerStar)victim);
+    killer->tag["collateralVictim"] = QVariant::fromValue((ServerPlayer *)victim);
 }
 
 
@@ -1777,7 +1796,7 @@ public:
                         room->sendLog(log);
                         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), extra->objectName());
 
-                        ServerPlayer *victim = extra->tag["collateralVictim"].value<PlayerStar>();
+                        ServerPlayer *victim = extra->tag["collateralVictim"].value<ServerPlayer *>();
                         if (victim) {
                             LogMessage log;
                             log.type = "#CollateralSlash";

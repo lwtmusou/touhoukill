@@ -28,7 +28,7 @@ void MiniSceneRule::assign(QStringList &generals, QStringList &roles) const
 bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &) const
 {
     if (triggerEvent == EventPhaseStart) {
-        if (player == room->getTag("Starter").value<PlayerStar>()) {
+        if (player == room->getTag("Starter").value<ServerPlayer *>()) {
             if (player->getPhase() == Player::Start) {
                 room->setTag("Round", room->getTag("Round").toInt() + 1);
 

@@ -35,7 +35,6 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const
     {
-
         CardUseStruct ana_use;
         ana_use.from = player;
         Analeptic *card = new Analeptic(Card::NoSuit, 0);
@@ -272,7 +271,7 @@ public:
                 }
             }
         } else if (event == FinishJudge) {
-            JudgeStar judge = data.value<JudgeStar>();
+            JudgeStruct * judge = data.value<JudgeStruct *>();
             if (judge->reason == objectName() && judge->isGood()) {
                 ServerPlayer *lord = judge->who->tag["huazhong"].value<ServerPlayer *>();
                 if (lord != NULL)
@@ -419,7 +418,7 @@ public:
                 return QStringList(objectName());
             }
         } else if (triggerEvent == CardResponded) {
-            CardStar card_star = data.value<CardResponseStruct>().m_card;
+            const Card * card_star = data.value<CardResponseStruct>().m_card;
             if (player == current || !card_star->isKindOf("BasicCard")
                 || data.value<CardResponseStruct>().m_isRetrial
                 || data.value<CardResponseStruct>().m_isProvision)
@@ -462,7 +461,7 @@ public:
         } else if (triggerEvent == CardEffected) {
                 return true;
         } */else if (triggerEvent == CardResponded) {
-            CardStar card_star = data.value<CardResponseStruct>().m_card;
+            const Card * card_star = data.value<CardResponseStruct>().m_card;
             weiya_pattern = card_star->objectName();
             if (card_star->isKindOf("Slash"))
                 weiya_pattern = "slash";
@@ -661,7 +660,6 @@ public:
 
                 if (id == -1)
                     return true;
-                (CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
                 CardMoveReason reason(CardMoveReason::S_REASON_DISMANTLE, player->objectName(), "", "toupai", "");
                 room->throwCard(Sanguosha->getCard(id), reason, target, player);
                 if (Sanguosha->getCard(id)->isKindOf("BasicCard"))
@@ -697,7 +695,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct * judge = data.value<JudgeStruct *>();
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getAlivePlayers()) {
             if (!p->isKongcheng())
@@ -729,7 +727,7 @@ public:
 
     virtual TriggerList triggerable(TriggerEvent, Room *room, ServerPlayer *, QVariant &data) const
     {
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct * judge = data.value<JudgeStruct *>();
         if (!judge->who || !judge->who->isAlive())
             return TriggerList();
 
@@ -746,7 +744,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *source) const
     {
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct * judge = data.value<JudgeStruct *>();
         source->tag["dizhen_judge"] = data;
         QString prompt = "target:" + judge->who->objectName() + ":" + judge->reason;
         return room->askForSkillInvoke(source, objectName(), prompt);
@@ -875,6 +873,7 @@ public:
         if ((!can) || prompt.startsWith("@tianren"))
             return QStringList();
         Card *dummy = Sanguosha->cloneCard(pattern);
+        DELETE_OVER_SCOPE(Card, dummy)
         if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
             if (player->isCardLimited(dummy, Card::MethodResponse))
                 return QStringList();
@@ -904,7 +903,7 @@ public:
     {
         QString pattern = data.toStringList().first();
         QList<ServerPlayer *> lieges = room->getLieges("zhan", player);
-        QVariant tohelp = QVariant::fromValue((PlayerStar)player);
+        QVariant tohelp = QVariant::fromValue((ServerPlayer *)player);
         foreach (ServerPlayer *liege, lieges) {
             const Card *resp = room->askForCard(liege, pattern, "@tianren-" + pattern + ":" + player->objectName(),
                 tohelp, Card::MethodResponse, player, false, QString(), true);
@@ -1225,6 +1224,7 @@ bool NianliCard::targetFilter(const QList<const Player *> &targets, const Player
 {
     const Card *card = Self->tag.value("nianli").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::SuitToBeDecided, 0);
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("nianli");
     if (new_card->targetFixed())
         return false;
@@ -1235,6 +1235,7 @@ bool NianliCard::targetFixed() const
 {
     const Card *card = Self->tag.value("nianli").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::SuitToBeDecided, 0);
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("nianli");
     //return false;
     return new_card && new_card->targetFixed();
@@ -1244,6 +1245,7 @@ bool NianliCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 {
     const Card *card = Self->tag.value("nianli").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::SuitToBeDecided, 0);
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("nianli");
     return new_card && new_card->targetsFeasible(targets, Self);
 }
@@ -1276,7 +1278,7 @@ public:
 
     virtual const Card *viewAs() const
     {
-        CardStar c = Self->tag.value("nianli").value<CardStar>();
+        const Card * c = Self->tag.value("nianli").value<const Card *>();
         //we need get the real subcard.
         if (c) {
             NianliCard *card = new NianliCard;
@@ -1456,13 +1458,10 @@ TH09Package::TH09Package()
     General *aya_sp = new General(this, "aya_sp", "zhan", 4, false);
     aya_sp->addSkill(new Toupai);
 
-
-
     General *tenshi = new General(this, "tenshi$", "zhan", 4, false);
     tenshi->addSkill(new Feixiang);
     tenshi->addSkill(new Dizhen);
     tenshi->addSkill(new Tianren);
-
 
     General *iku = new General(this, "iku", "zhan", 4, false);
     iku->addSkill(new Jingdian);
@@ -1484,6 +1483,9 @@ TH09Package::TH09Package()
     sumireko->addSkill(new Shenmi);
     sumireko->addSkill(new Liqun);
     related_skills.insertMulti("nianli", "#nianlimod");
+
+    General *cirno = new General(this, "cirno_sp", "zhan", 4, false);
+    Q_UNUSED(cirno);
 
     addMetaObject<TianrenCard>();
     addMetaObject<NianliCard>();

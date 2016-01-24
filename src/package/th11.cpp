@@ -123,8 +123,6 @@ public:
                 logto << p;
                 logto.removeOne(player);
                 room->touhouLogmessage("#huzhu_change", use.from, use.card->objectName(), logto);
-
-                room->getThread()->trigger(TargetConfirming, room, p, data);
                 break;
             }
         }

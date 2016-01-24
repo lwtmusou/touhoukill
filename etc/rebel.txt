@@ -123,8 +123,8 @@ kanako                                  yuka                                   0
 kanako                                  sanae_sp                                   1.2
 kanako                                  shizuha                                   0.4
 aya                                  star                                   1.1
-satori                                  parsee                                   0.7 
-satori                                  youmu_ndj                                   0.7 
+satori                                  parsee                                   0.7
+satori                                  youmu_ndj                                   0.7
 byakuren                                  mokou                                  0.5
 miko                                  kaguya                                   0.6
 miko                                  tokiko                                   0.2

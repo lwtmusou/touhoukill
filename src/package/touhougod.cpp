@@ -1,13 +1,13 @@
-﻿#include "touhougod.h"
+﻿#include "compiler-specific.h"
+#include "touhougod.h"
 
 #include "general.h"
 #include "settings.h"
 #include "skill.h"
 #include "engine.h"
 #include "standard.h"
-#include "generaloverview.h" //for zun?
+//#include "generaloverview.h" //for zun?
 #include "client.h"
-#include "jsonutils.h"
 #include "maneuvering.h" // for iceslash
 #include "th10.h" //for huaxiang
 
@@ -44,11 +44,10 @@ public:
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *source) const
     {
-        const Card *card;
+        const Card *card = NULL;
         if (triggerEvent == DamageInflicted) {
             source->tag["jiexian_target"] = QVariant::fromValue(player);
             card = room->askForCard(source, "..H", "@jiexiandamage:" + player->objectName(), data, objectName());
-
         } else if (triggerEvent == PreHpRecover) {
             source->tag["jiexian_target"] = QVariant::fromValue(player);
             card = room->askForCard(source, "..S", "@jiexianrecover:" + player->objectName(), QVariant::fromValue(player), objectName());
@@ -673,9 +672,9 @@ public:
                 if (p->getHandcardNum() == 1)
                     id = p->getCards("h").first()->getEffectiveId();
                 else {
-                    const Card *cards = room->askForExchange(p, objectName(), 1, false, "cuixiang-exchange:" + player->objectName() + ":" + objectName());
+                    const Card *cards = room->askForExchange(p, objectName(), 1, 1, false, "cuixiang-exchange:" + player->objectName() + ":" + objectName());
+                    DELETE_OVER_SCOPE(const Card, cards)
                     id = cards->getSubcards().first();
-
                 }
                 room->throwCard(id, p, p);
                 //we need id to check cardplace,
@@ -1045,8 +1044,9 @@ public:
         events << GameStart << PreHpLost << DamageInflicted << PreHpRecover;
         frequency = Eternal;
     }
+
     virtual int getPriority(TriggerEvent) const
-    { //important?
+    {
         return -1;
     }
 
@@ -1110,7 +1110,8 @@ public:
             log.type = "#GetHp";
             room->sendLog(log);
 
-            room->getThread()->trigger(PostHpReduced, room, player, data);
+            room->getThread()->trigger(PostHpReduced, room, data);
+            room->getThread()->trigger(PostHpLost, room, data);
             return true;
         } else if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
@@ -1147,20 +1148,20 @@ public:
             room->setPlayerMark(player, "minus_rentili", minus_y);
 
             QVariant qdata = QVariant::fromValue(damage);
-            room->getThread()->trigger(PreDamageDone, room, damage.to, qdata);
+            room->getThread()->trigger(PreDamageDone, room, qdata);
 
-            room->getThread()->trigger(DamageDone, room, damage.to, qdata);
+            room->getThread()->trigger(DamageDone, room, qdata);
 
 
             room->notifySkillInvoked(player, objectName());
             int z = qMin(x - minus_x, y - minus_y);
             room->setPlayerProperty(damage.to, "hp", z);
 
-            room->getThread()->trigger(Damage, room, damage.from, qdata);
+            room->getThread()->trigger(Damage, room, qdata);
 
-            room->getThread()->trigger(Damaged, room, damage.to, qdata);
+            room->getThread()->trigger(Damaged, room, qdata);
 
-            room->getThread()->trigger(DamageComplete, room, damage.to, qdata);
+            room->getThread()->trigger(DamageComplete, room, qdata);
 
             return true;
         } else if (triggerEvent == PreHpRecover) {
@@ -1338,29 +1339,19 @@ public:
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
-
-        //need special process when processing takeAG and askforrende
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.to != NULL && move.to == player && move.to_place != Player::PlaceSpecial) {
             room->touhouLogmessage("#TriggerSkill", player, objectName());
             room->notifySkillInvoked(player, objectName());
-            //Card *dummy = Sanguosha->cloneCard("Slash");
-            //foreach (int id, move.card_ids)
-            //    dummy->addSubcard(Sanguosha->getCard(id));
+            DummyCard dummy(move.card_ids);
             CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), objectName(), "");
-            //room->throwCard(dummy,reason,NULL);
+            room->throwCard(&dummy, reason, NULL);
 
-            move.to = NULL;
-            move.origin_to = NULL;
-            move.origin_to_place = Player::DiscardPile;
-            move.reason = reason;
-            move.to_place = Player::DiscardPile;
-
+            move.card_ids.clear();
+            move.from_places.clear();
+            move.from_pile_names.clear();;
 
             data = QVariant::fromValue(move);
-            foreach(ServerPlayer *p, room->getAllPlayers())
-                room->getThread()->trigger(BeforeCardsMove, room, p, data);
-            //return true;
         }
         return false;
     }
@@ -1895,6 +1886,7 @@ bool HuaxiangCard::targetFilter(const QList<const Player *> &targets, const Play
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
         if (!user_string.isEmpty()) {
             Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+            DELETE_OVER_SCOPE(Card, card)
             return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
         }
         return false;
@@ -1904,6 +1896,7 @@ bool HuaxiangCard::targetFilter(const QList<const Player *> &targets, const Play
 
     const Card *card = Self->tag.value("huaxiang").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("huaxiang");
     return new_card && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
 }
@@ -1913,6 +1906,7 @@ bool HuaxiangCard::targetFixed() const
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
         if (!user_string.isEmpty()) {
             Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+            DELETE_OVER_SCOPE(Card, card)
             return card && card->targetFixed();
         }
         return false;
@@ -1922,6 +1916,7 @@ bool HuaxiangCard::targetFixed() const
 
     const Card *card = Self->tag.value("huaxiang").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("huaxiang");
     return new_card && new_card->targetFixed();
 }
@@ -1931,6 +1926,7 @@ bool HuaxiangCard::targetsFeasible(const QList<const Player *> &targets, const P
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
         if (!user_string.isEmpty()) {
             Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+            DELETE_OVER_SCOPE(Card, card)
             return card && card->targetsFeasible(targets, Self);
         }
         return false;
@@ -1940,6 +1936,7 @@ bool HuaxiangCard::targetsFeasible(const QList<const Player *> &targets, const P
 
     const Card *card = Self->tag.value("huaxiang").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("huaxiang");
     return new_card && new_card->targetsFeasible(targets, Self);
 }
@@ -1964,9 +1961,11 @@ const Card *HuaxiangCard::validateInResponse(ServerPlayer *user) const
     if (user_string == "peach+analeptic") {
         QStringList use_list;
         Card *peach = Sanguosha->cloneCard("peach");
+        DELETE_OVER_SCOPE(Card, peach)
         if (!user->isCardLimited(peach, Card::MethodResponse, true) && user->getMaxHp() <= 2)
             use_list << "peach";
         Card *ana = Sanguosha->cloneCard("analeptic");
+        DELETE_OVER_SCOPE(Card, ana)
         if (!Config.BanPackages.contains("maneuvering") && !user->isCardLimited(ana, Card::MethodResponse, true))
             use_list << "analeptic";
         to_use = room->askForChoice(user, "huaxiang_skill_saveself", use_list.join("+"));
@@ -2000,7 +1999,7 @@ public:
             return true;
         if (player->getMaxHp() <= 2) {
             Card *card = Sanguosha->cloneCard("peach", Card::NoSuit, 0);
-            card->deleteLater();
+            DELETE_OVER_SCOPE(Card, card)
             return card->isAvailable(player);
         }
         return false;
@@ -2035,21 +2034,24 @@ public:
 
         if (pattern == "slash" || pattern == "jink") {
             Card *card = Sanguosha->cloneCard(pattern);
+            DELETE_OVER_SCOPE(Card, card)
             return !player->isCardLimited(card, Card::MethodResponse, true);
         }
-
-
 
         if (pattern.contains("peach") && pattern.contains("analeptic")) {
             Card *peach = Sanguosha->cloneCard("peach");
             Card *ana = Sanguosha->cloneCard("analeptic");
+            DELETE_OVER_SCOPE(Card, peach)
+            DELETE_OVER_SCOPE(Card, ana)
             return !player->isCardLimited(peach, Card::MethodResponse, true) ||
                 !player->isCardLimited(ana, Card::MethodResponse, true);
         } else if (pattern == "peach") {
             Card *peach = Sanguosha->cloneCard("peach");
+            DELETE_OVER_SCOPE(Card, peach)
             return !player->isCardLimited(peach, Card::MethodResponse, true);
         } else if (pattern == "analeptic") {
             Card *ana = Sanguosha->cloneCard("analeptic");
+            DELETE_OVER_SCOPE(Card, ana)
             return !player->isCardLimited(ana, Card::MethodResponse, true);
         }
 
@@ -2114,7 +2116,9 @@ public:
     {
         if (player->getPile("rainbow").length() > 3) return false;
         if (player->isKongcheng()) return false;
-        if (player->isCardLimited(Sanguosha->cloneCard("nullification"), Card::MethodResponse, true))
+        Nullification *nul = new Nullification(Card::NoSuit, 0);
+        DELETE_OVER_SCOPE(Nullification, nul)
+        if (player->isCardLimited(nul, Card::MethodResponse, true))
             return false;
         return player->getMaxHp() <= 1;
     }
@@ -2309,10 +2313,11 @@ public:
                     room->broadcastProperty(source, "phase");
                     room->broadcastProperty(current, "phase");
                     RoomThread *thread = room->getThread();
-                    if (!thread->trigger(EventPhaseStart, room, source))
-                        thread->trigger(EventPhaseProceeding, room, source);
+                    QVariant s = QVariant::fromValue(source);
+                    if (!thread->trigger(EventPhaseStart, room, s))
+                        thread->trigger(EventPhaseProceeding, room, s);
 
-                    thread->trigger(EventPhaseEnd, room, source);
+                    thread->trigger(EventPhaseEnd, room, s);
                     //room->setCurrent(current);
 
                     source->changePhase(Player::Play, Player::NotActive);
@@ -2505,7 +2510,7 @@ const Card *ChaorenPreventRecast::validate(CardUseStruct &card_use) const
               return QStringList();
           }
           if (triggerEvent == CardResponded) {
-              CardStar card_star = data.value<CardResponseStruct>().m_card;
+              const Card * card_star = data.value<CardResponseStruct>().m_card;
               if (card_star->isVirtualCard() && card_star->subcardsLength() != 1)
                   return QStringList();
               if (player == data.value<CardResponseStruct>().m_who && player->hasSkill("chaoren")
@@ -2556,11 +2561,11 @@ const Card *ChaorenPreventRecast::validate(CardUseStruct &card_use) const
 
 
               if (!sbl->hasFlag("agusing")) {
-                  Json::Value gongxinArgs(Json::arrayValue);
+                  QVariant gongxinArgs(Json::arrayValue);
 
-                  gongxinArgs[0] = QSanProtocol::Utils::toJsonString(QString());
+                  gongxinArgs[0] = JsonUtils::toJsonString(QString());
                   gongxinArgs[1] = false;
-                  gongxinArgs[2] = QSanProtocol::Utils::toJsonArray(watchlist);
+                  gongxinArgs[2] = JsonUtils::toJsonArray(watchlist);
 
                   room->doNotify(sbl, QSanProtocol::S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
               }
@@ -2578,7 +2583,7 @@ public:
     Chaoren() : TriggerSkill("chaoren")
     {
         events << CardsMoveOneTime << TargetConfirming << EventPhaseChanging << DrawPileSwaped
-            << EventAcquireSkill << EventLoseSkill << MarkChanged << AfterGuanXing << Reconnect;
+            << EventAcquireSkill << EventLoseSkill << MarkChanged << AfterGuanXing;
     }
 
 
@@ -2631,14 +2636,9 @@ public:
                 retract = true;
             }
         }
-        if (triggerEvent == Reconnect)
-            expand = true;
-
-
 
         if (sbl == NULL || sbl->isDead())
             return QStringList();
-
 
         // part 3: determine "changed" "old_firstcard" "new_firstcard"
         const QList<int> &drawpile = room->getDrawPile();
@@ -2659,16 +2659,20 @@ public:
 
         // part 4: notify 
         //even firstcard has not changed, we also need to retract or expand the dashboard (such as loseskill, reconnet ) 
+        // @todo_Fs: remove this part, coupling it to Client::updateProperty (if property is "chaoren")
+
+#pragma message WARN("todo_Fs: remove this part of Chaoren, for it shouldn't be coupled here")
+
         if (!changed) {
             if (retract) {
                 room->setPlayerProperty(sbl, "chaoren", -1);
-                Json::Value args;
-                args[0] = QSanProtocol::S_GAME_EVENT_RETRACT_PILE_CARDS;
+                JsonArray args;
+                args << QSanProtocol::S_GAME_EVENT_RETRACT_PILE_CARDS;
                 room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_EVENT, args);
             } else if (expand) {
                 room->setPlayerProperty(sbl, "chaoren", new_firstcard);
-                Json::Value args;
-                args[0] = QSanProtocol::S_GAME_EVENT_EXPAND_PILE_CARDS;
+                JsonArray args;
+                args << QSanProtocol::S_GAME_EVENT_EXPAND_PILE_CARDS;
                 room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_EVENT, args);
             }
             return QStringList();
@@ -2680,8 +2684,8 @@ public:
             else
                 room->setPlayerProperty(sbl, "chaoren", -1);
             //for displaying the change on dashboard immidately, even  the status is not Playing or Response.
-            Json::Value args;
-            args[0] = QSanProtocol::S_GAME_EVENT_EXPAND_PILE_CARDS;
+            JsonArray args;
+            args << QSanProtocol::S_GAME_EVENT_EXPAND_PILE_CARDS;
             room->doNotify(sbl, QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
 
@@ -3095,7 +3099,8 @@ public:
         player->gainMark("@xinyang");
         player->drawCards(2);
         if (!player->isKongcheng()) {
-            const Card *card = room->askForExchange(player, objectName(), 1, false, "woraoGive:" + use.from->objectName());
+            const Card *card = room->askForExchange(player, objectName(), 1, 1, false, "woraoGive:" + use.from->objectName());
+            DELETE_OVER_SCOPE(const Card, card)
             use.from->obtainCard(card, false);
         }
         return false;

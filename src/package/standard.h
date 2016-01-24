@@ -4,7 +4,7 @@
 #include "package.h"
 #include "card.h"
 #include "roomthread.h"
-#include "skill.h"
+// don't include "skill.h" here for skill.h included this file for equipcard
 
 class StandardPackage : public Package
 {

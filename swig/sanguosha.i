@@ -513,11 +513,11 @@ struct CardUseStruct {
     } m_reason;
 
     CardUseStruct();
-    CardUseStruct(const Card *card, ServerPlayer *from, QList<ServerPlayer *> to, bool isOwnerUse = true);
+    CardUseStruct(const Card *card, ServerPlayer *from, QList<ServerPlayer *> to = QList<ServerPlayer *>(), bool isOwnerUse = true);
     CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer *target, bool isOwnerUse = true);
     bool isValid(const char *pattern) const;
     void parse(const char *str, Room *room);
-    bool tryParse(const Json::Value &, Room *room);
+    bool tryParse(const QVariant &, Room *room);
 
     const Card *card;
     ServerPlayer *from;
@@ -608,8 +608,6 @@ struct JudgeStruct {
 
 };
 
-typedef JudgeStruct *JudgeStar;
-
 struct PindianStruct {
     PindianStruct();
 
@@ -622,8 +620,6 @@ struct PindianStruct {
     QString reason;
     bool success;
 };
-
-typedef PindianStruct *PindianStar;
 
 struct PhaseChangeStruct {
     PhaseChangeStruct();
@@ -669,6 +665,7 @@ enum TriggerEvent {
     PreHpRecover,
     HpRecover,
     PreHpLost,
+    PostHpLost,
     HpChanged,
     MaxHpChanged,
     PostHpReduced,
@@ -922,7 +919,6 @@ public:
 
     Package(const char *name, Type pack_type = GeneralPack);
     void insertRelatedSkills(const char *main_skill, const char *related_skill);
-    void insertConvertPairs(const char *from, const char *to);
 };
 
 class Engine: public QObject {
@@ -1008,7 +1004,6 @@ public:
     QString getCurrentCardUsePattern();
     CardUseStruct::CardUseReason getCurrentCardUseReason();
 
-    QString findConvertFrom(const char *general_name) const;
     bool isGeneralHidden(const char *general_name) const;
 };
 
@@ -1017,7 +1012,6 @@ extern Engine *Sanguosha;
 class Skill: public QObject {
 public:
     enum Frequency { Frequent, NotFrequent, Compulsory, NotCompulsory,Limited, Wake, Eternal};
-    enum Location { Left, Right };
 
     explicit Skill(const char *name, Frequency frequent = NotFrequent);
     bool isLordSkill() const;
@@ -1025,11 +1019,8 @@ public:
     QString getDescription(bool yellow = true) const;
     bool isVisible() const;
 
-    virtual QString getDefaultChoice(ServerPlayer *player) const;
     virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const;
     virtual QDialog *getDialog() const;
-
-    virtual Location getLocation() const;
 
     void initMediaSource();
     void playAudioEffect(int index = -1) const;
@@ -1048,26 +1039,15 @@ public:
     TriggerSkill(const char *name);
     const ViewAsSkill *getViewAsSkill() const;
     QList<TriggerEvent> getTriggerEvents() const;
-
-    virtual int getPriority(TriggerEvent triggerEvent) const;
-    virtual bool triggerable(const ServerPlayer *target) const;
-	//virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
-	virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const;
-	
-	virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
-    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
+    
+    virtual int getPriority() const;
 
     bool isGlobal() const;
 };
 
-
-%extend TriggerSkill {
-
-    TriggerList TriggerSkillTriggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        return $self->TriggerSkill::triggerable(triggerEvent, room, player, data);
-    }
-};
+%{
+#pragma message WARN("now we don't support TriggerSkill::triggerable/TriggerSkill::cost/TriggerSkill::effect functions to call in LUA interface")
+%}
 
 class QThread: public QObject {
 };
@@ -1084,26 +1064,12 @@ struct LogMessage {
     QString arg2;
 };
 
-struct JsonValueForLUA{
-    JsonValueForLUA(bool isarray = true);
-
-    bool getBoolAt(int n) const;
-    int getNumberAt(int n) const;
-    QString getStringAt(int n) const;
-    JsonValueForLUA getArrayAt(int n) const;
-
-    void setBoolAt(int n, bool v);
-    void setNumberAt(int n, int v);
-    void setStringAt(int n, const char *v);
-    void setArrayAt(int n, const JsonValueForLUA &v);
-};
-
 class RoomThread: public QThread {
 public:
     explicit RoomThread(Room *room);
     void constructTriggerTable();
-    bool trigger(TriggerEvent event, Room *room, ServerPlayer *target, QVariant &data);
-    bool trigger(TriggerEvent event, Room *room, ServerPlayer *target);
+    bool trigger(TriggerEvent triggerEvent, Room *room);
+    bool trigger(TriggerEvent triggerEvent, Room *room, QVariant &data); // player is deleted. a lot of things is able to put in data. make a struct for every triggerevent isn't absolutely unreasonable.
 
     void addPlayerSkills(ServerPlayer *player, bool invoke_game_start = false);
 
@@ -1121,7 +1087,6 @@ public:
     bool isFull() const;
     bool isFinished() const;
     bool canPause(ServerPlayer *p) const;
-    bool isPaused() const;
     int getLack() const;
     QString getMode() const;
     const Scenario *getScenario() const;
@@ -1168,9 +1133,9 @@ public:
     void recover(ServerPlayer *player, const RecoverStruct &recover, bool set_emotion = false);
     bool cardEffect(const Card *card, ServerPlayer *from, ServerPlayer *to , bool multiple = false);
     bool cardEffect(const CardEffectStruct &effect);
-    bool isJinkEffected(ServerPlayer *user, const Card *jink);
+    bool isJinkEffected(SlashEffectStruct effect, const Card *jink);
     void judge(JudgeStruct &judge_struct);
-    void sendJudgeResult(const JudgeStar judge);
+    void sendJudgeResult(const JudgeStruct * judge);
     QList<int> getNCards(int n, bool update_pile_number = true, bool bottom = false);
     ServerPlayer *getLord() const;
     void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides,const char *skillName ="");
@@ -1184,23 +1149,19 @@ public:
     void sendLog(const LogMessage &log);
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
-    void retrial(const Card *card, ServerPlayer *player, JudgeStar judge, const char *skill_name, bool exchange = false);
+    void retrial(const Card *card, ServerPlayer *player, JudgeStruct * judge, const char *skill_name, bool exchange = false);
 
-    bool doRequest(ServerPlayer *player, QSanProtocol::CommandType command, const Json::Value &arg, time_t timeOut, bool wait);
-    bool doRequest(ServerPlayer *player, QSanProtocol::CommandType command, const Json::Value &arg, bool wait);
+    bool doRequest(ServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg, time_t timeOut, bool wait);
+    bool doRequest(ServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg, bool wait);
 
     bool doBroadcastRequest(QList<ServerPlayer *> &players, QSanProtocol::CommandType command, time_t timeOut);
     bool doBroadcastRequest(QList<ServerPlayer *> &players, QSanProtocol::CommandType command);
-    bool doNotify(ServerPlayer *player, QSanProtocol::CommandType command, const Json::Value &arg);
-    bool doBroadcastNotify(QSanProtocol::CommandType command, const Json::Value &arg);
-    bool doBroadcastNotify(const QList<ServerPlayer *> &players, QSanProtocol::CommandType command, const Json::Value &arg);
-
-    bool doNotify(ServerPlayer *player, int command, const JsonValueForLUA &arg);
-    bool doBroadcastNotify(int command, const JsonValueForLUA &arg);
-    bool doBroadcastNotify(const QList<ServerPlayer *> &players, int command, const JsonValueForLUA &arg);
+    bool doNotify(ServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg);
+    bool doBroadcastNotify(QSanProtocol::CommandType command, const QVariant &arg);
+    bool doBroadcastNotify(const QList<ServerPlayer *> &players, QSanProtocol::CommandType command, const QVariant &arg);
 
     // Verification functions
-    bool verifyNullificationResponse(ServerPlayer *, const Json::Value &, void *);
+    bool verifyNullificationResponse(ServerPlayer *, const QVariant &, void *);
 
     bool notifyMoveFocus(ServerPlayer *player);
     bool notifyMoveFocus(ServerPlayer *player, QSanProtocol::CommandType command);
@@ -1283,8 +1244,6 @@ public:
     void moveCardsAtomic(QList<CardsMoveStruct> cards_move, bool forceMoveVisible);
     void moveCardsAtomic(CardsMoveStruct cards_move, bool forceMoveVisible);
     void moveCardsToEndOfDrawpile(QList<int> card_ids, bool forceVisible = false);
-    void moveCards(CardsMoveStruct cards_move, bool forceMoveVisible, bool ignoreChanges = true);
-    void moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanges = true);
 
     // interactive methods
     void activate(ServerPlayer *player, CardUseStruct &card_use);
@@ -1295,7 +1254,7 @@ public:
     QString askForChoice(ServerPlayer *player, const char *skill_name, const char *choices, const QVariant &data = QVariant());
     bool askForDiscard(ServerPlayer *target, const char *reason, int discard_num, int min_num,
                        bool optional = false, bool include_equip = false, const char *prompt = NULL);
-    const Card *askForExchange(ServerPlayer *player, const char *reason, int discard_num, bool include_equip = false,
+    const Card *askForExchange(ServerPlayer *player, const char *reason, int discard_num, int min_num, bool include_equip = false,
                                const char *prompt = NULL, bool optional = false);
     bool askForNullification(const Card *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     bool isCanceled(const CardEffectStruct &effect);
@@ -1377,4 +1336,5 @@ void Room::doScript(const QString &script)
 
 %include "card.i"
 %include "luaskills.i"
+%include "general_select.i"
 %include "ai.i"

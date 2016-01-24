@@ -41,8 +41,11 @@ public:
     virtual void show();
     virtual void hide();
 
+    bool hasTimer() const { return m_hasTimer; }
+
 signals:
     void timedOut();
+    void timerStep(time_t val, time_t max);
 
 protected:
     virtual void timerEvent(QTimerEvent *);

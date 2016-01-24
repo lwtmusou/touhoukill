@@ -147,9 +147,12 @@ public:
     virtual void addSkill(const QString &skill_name);
     virtual void loseSkill(const QString &skill_name);
     bool hasSkill(const QString &skill_name, bool include_lose = false, bool include_invalidity = false) const;
+    bool hasSkill(const Skill *skill, bool include_lose = false, bool include_invalidity = false) const;
     bool hasSkills(const QString &skill_name, bool include_lose = false, bool include_invalidity = false) const;
     bool hasInnateSkill(const QString &skill_name) const;
+    bool hasInnateSkill(const Skill *skill) const;
     bool hasLordSkill(const QString &skill_name, bool include_lose = false, bool include_invalidity = false) const;
+    bool hasLordSkill(const Skill *skill, bool include_lose = false, bool include_invalidity = false) const;
     virtual QString getGameMode() const = 0;
 
     void setEquip(WrappedCard *equip);

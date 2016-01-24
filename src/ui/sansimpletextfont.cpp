@@ -1,6 +1,5 @@
 #include "sansimpletextfont.h"
 #include "sanfreetypefont.h"
-#include "jsonutils.h"
 
 #include <QHash>
 #include <QRect>
@@ -8,13 +7,14 @@
 #include <QPainter>
 #include <QGraphicsPixmapItem>
 
-using namespace QSanProtocol::Utils;
+using namespace JsonUtils;
 
 QHash<QString, const int *> SanSimpleTextFont::m_fontBank;
 
-SanSimpleTextFont::SanSimpleTextFont() : m_fontFace(NULL),
-m_fontSize(QSize(12, 12)), m_color(Qt::white),
-m_spacing(0), m_weight(0), m_vertical(false)
+SanSimpleTextFont::SanSimpleTextFont()
+    : m_fontFace(NULL),
+    m_fontSize(QSize(12, 12)), m_color(Qt::white),
+    m_spacing(0), m_weight(0), m_vertical(false)
 {
 }
 
@@ -36,28 +36,30 @@ SanSimpleTextFont::SanSimpleTextFont(const QString &fontName, const QSize &fontS
     m_weight = weight;
 }
 
-bool SanSimpleTextFont::tryParse(const Json::Value &arg)
+bool SanSimpleTextFont::tryParse(const QVariant &argvar)
 {
-    if (!arg.isArray() || arg.size() < 4) {
+    JsonArray arg = argvar.value<JsonArray>();
+    if (arg.length() < 4)
         return false;
-    }
 
     m_vertical = false;
-    _initFontFace(toQString(arg[0]));
+    _initFontFace(arg[0].toString());
 
-    if (arg[1].isInt()) {
-        m_fontSize.setWidth(arg[1].asInt());
-        m_fontSize.setHeight(arg[1].asInt());
+    if (arg[1].toInt()) {
+        m_fontSize.setWidth(arg[1].toInt());
+        m_fontSize.setHeight(arg[1].toInt());
         m_spacing = 0;
     } else {
-        m_fontSize.setWidth(arg[1][0].asInt());
-        m_fontSize.setHeight(arg[1][1].asInt());
-        m_spacing = arg[1][2].asInt();
+        JsonArray arg1 = arg[1].value<JsonArray>();
+        m_fontSize.setWidth(arg1[0].toInt());
+        m_fontSize.setHeight(arg1[1].toInt());
+        m_spacing = arg1[2].toInt();
     }
 
-    m_weight = arg[2].asInt();
+    m_weight = arg[2].toInt();
 
-    m_color = QColor(arg[3][0].asInt(), arg[3][1].asInt(), arg[3][2].asInt(), arg[3][3].asInt());
+    JsonArray arg3 = arg[3].value<JsonArray>();
+    m_color = QColor(arg3[0].toInt(), arg3[1].toInt(), arg3[2].toInt(), arg3[3].toInt());
 
     return true;
 }

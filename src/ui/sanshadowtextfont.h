@@ -54,7 +54,7 @@ public:
         m_shadowOffset = shadowOffset;
     }
 
-    bool tryParse(const Json::Value &arg);
+    bool tryParse(const QVariant &arg);
 
     void paintText(QPainter *const painter, const QRect &pos, const Qt::Alignment &align,
         const QString &text) const;

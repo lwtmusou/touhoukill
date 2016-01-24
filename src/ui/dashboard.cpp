@@ -18,6 +18,11 @@
 #include <QParallelAnimationGroup>
 #include <QTimer>
 
+#ifdef Q_OS_WIN
+#include <QWinTaskbarButton>
+#include <QWinTaskbarProgress>
+#endif
+
 using namespace QSanProtocol;
 
 Dashboard::Dashboard(QGraphicsItem *widget) //QGraphicsPixmapItem *widget
@@ -57,6 +62,15 @@ Dashboard::Dashboard(QGraphicsItem *widget) //QGraphicsPixmapItem *widget
 
     _m_sort_menu = new QMenu(RoomSceneInstance->mainWindow());
     //_m_carditem_context_menu = NULL;
+
+#ifdef Q_OS_WIN
+    taskbarButton = new QWinTaskbarButton(this);
+    taskbarButton->setWindow(RoomSceneInstance->mainWindow()->windowHandle());
+    QWinTaskbarProgress *prog = taskbarButton->progress();
+    prog->setVisible(false);
+    prog->setMinimum(0);
+    prog->reset();
+#endif
 }
 
 bool Dashboard::isAvatarUnderMouse()
@@ -81,7 +95,47 @@ void Dashboard::showProgressBar(QSanProtocol::Countdown countdown)
     _m_progressBar->setCountdown(countdown);
     connect(_m_progressBar, SIGNAL(timedOut()), this, SIGNAL(progressBarTimedOut()));
     _m_progressBar->show();
+#ifdef Q_OS_WIN
+    if (_m_progressBar->hasTimer()) {
+        connect(_m_progressBar, &QSanCommandProgressBar::timerStep, this, &Dashboard::updateTimedProgressBar, Qt::UniqueConnection);
+        QWinTaskbarProgress *prog = taskbarButton->progress();
+        prog->reset();
+        prog->resume();
+        prog->setMaximum(countdown.max);
+        prog->setMinimum(0);
+        prog->setValue(countdown.max - countdown.current);
+        prog->show();
+    }
+#endif
 }
+
+void Dashboard::hideProgressBar()
+{
+    PlayerCardContainer::hideProgressBar();
+#ifdef Q_OS_WIN
+    QWinTaskbarProgress *prog = taskbarButton->progress();
+    prog->hide();
+    prog->reset();
+    prog->resume();
+#endif
+}
+
+#ifdef Q_OS_WIN
+void Dashboard::updateTimedProgressBar(time_t val, time_t max)
+{
+    QWinTaskbarProgress *prog = taskbarButton->progress();
+    prog->setMaximum(max);
+    prog->setValue(max - val);
+
+    if (val > max * 0.8)
+        prog->stop();
+    else if (val > max * 0.5)
+        prog->pause();
+    else
+        prog->resume();
+
+}
+#endif
 
 QGraphicsItem *Dashboard::getMouseClickReceiver()
 {
@@ -900,9 +954,9 @@ void Dashboard::beginSorting()
         type = (SortType)(action->data().toInt());
 
     switch (type) {
-        case ByType: qSort(m_handCards.begin(), m_handCards.end(), CompareByType); break;
-        case BySuit: qSort(m_handCards.begin(), m_handCards.end(), CompareBySuit); break;
-        case ByNumber: qSort(m_handCards.begin(), m_handCards.end(), CompareByNumber); break;
+        case ByType: std::sort(m_handCards.begin(), m_handCards.end(), CompareByType); break;
+        case BySuit: std::sort(m_handCards.begin(), m_handCards.end(), CompareBySuit); break;
+        case ByNumber: std::sort(m_handCards.begin(), m_handCards.end(), CompareByNumber); break;
         default: Q_ASSERT(false);
     }
 

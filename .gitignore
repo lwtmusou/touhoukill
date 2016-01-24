@@ -79,3 +79,6 @@ opengl32sw.dll
 vccorlib1[24]0.dll
 concrt140.dll
 vcruntime140.dll
+*.opendb
+*.orig
+lib/oggvorbis.lib

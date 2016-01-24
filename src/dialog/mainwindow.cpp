@@ -75,6 +75,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     scene = NULL;
 
+    setWindowTitle(tr("TouhouSatsu") + "    " + Sanguosha->getVersionName());
+
     connection_dialog = new ConnectionDialog(this);
     connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(exec()));
     connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startConnection()));
@@ -171,7 +173,7 @@ void MainWindow::on_actionExit_triggered()
 {
     QMessageBox::StandardButton result;
     result = QMessageBox::question(this,
-        tr("Sanguosha"),
+        tr("TouhouSatsu"),
         tr("Are you sure to exit?"),
         QMessageBox::Ok | QMessageBox::Cancel);
     if (result == QMessageBox::Ok) {
@@ -726,7 +728,7 @@ void MainWindow::on_actionReplay_file_convert_triggered()
             tosave.append(".txt");
 
             // png to txt
-            QByteArray data = Replayer::PNG2TXT(filename);
+            QByteArray data = Recorder::PNG2TXT(filename);
 
             QFile tosave_file(tosave);
             if (tosave_file.open(QIODevice::WriteOnly))

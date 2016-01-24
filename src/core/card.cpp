@@ -85,7 +85,7 @@ int Card::getNumber() const
             foreach (int id, subcards) {
                 num += Sanguosha->getCard(id)->getNumber();
             }
-            return num;
+            return qMin(num, 13);
         }
     } else
         return m_number;
@@ -525,7 +525,7 @@ const Card *Card::Parse(const QString &str)
             suit = dummy->getSuit();
         else
             suit = suit_map.value(suit_string, Card::NoSuit);
-        dummy->deleteLater();
+        delete dummy;
 
         int number = 0;
         if (number_string == "A")
@@ -644,7 +644,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
     room->sendLog(log);
 
     if (card_use.card->isKindOf("Collateral")) { // put it here for I don't wanna repeat these codes in Card::onUse
-        ServerPlayer *victim = card_use.to.first()->tag["collateralVictim"].value<PlayerStar>();
+        ServerPlayer *victim = card_use.to.first()->tag["collateralVictim"].value<ServerPlayer *>();
         if (victim) {
             LogMessage log;
             log.type = "#CollateralSlash";
@@ -665,7 +665,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
     Q_ASSERT(thread != NULL);
-    thread->trigger(PreCardUsed, room, player, data);
+    thread->trigger(PreCardUsed, room, data);
     card_use = data.value<CardUseStruct>();
 
     if (card_use.card->getTypeId() != TypeSkill) {
@@ -695,8 +695,8 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
         room->moveCardTo(this, player, NULL, Player::DiscardPile, reason, true);
     }
 
-    thread->trigger(CardUsed, room, player, data);
-    thread->trigger(CardFinished, room, player, data);
+    thread->trigger(CardUsed, room, data);
+    thread->trigger(CardFinished, room, data);
 }
 
 
@@ -916,9 +916,8 @@ QString DummyCard::getSubtype() const
     return "dummy_card";
 }
 
-QString DummyCard::toString(bool hidden) const
+QString DummyCard::toString(bool) const
 {
-    Q_UNUSED(hidden)
     return "$" + subcardString();
 }
 

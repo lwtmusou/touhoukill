@@ -7,7 +7,6 @@
 #include "engine.h"
 #include "standard.h"
 #include "client.h"
-#include "jsonutils.h"
 #include "maneuvering.h"
 
 class Shengge : public TriggerSkill
@@ -56,10 +55,11 @@ void QingtingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
         const Card *card;
         if (source->getMark("shengge") == 0) {
             p->tag["qingting_give"] = QVariant::fromValue(source);
-            card = room->askForExchange(p, "qingting", 1, false, "qingtingGive:" + source->objectName());
+            card = room->askForExchange(p, "qingting", 1, 1, false, "qingtingGive:" + source->objectName());
             p->tag.remove("qingting_give");
         } else
-            card = Sanguosha->getCard(room->askForCardChosen(source, p, "h", "qingting"));
+            card = new DummyCard(QList<int>() << room->askForCardChosen(source, p, "h", "qingting"));
+        DELETE_OVER_SCOPE(const Card, card)
 
         source->obtainCard(card, false);
         room->setPlayerMark(p, "@qingting", 1);
@@ -73,7 +73,8 @@ void QingtingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
             continue;
 
         source->tag["qingting_return"] = QVariant::fromValue(p);
-        const Card *card = room->askForExchange(source, "qingting", 1, false, "qingtingReturn:" + p->objectName());
+        const Card *card = room->askForExchange(source, "qingting", 1, 1, false, "qingtingReturn:" + p->objectName());
+        DELETE_OVER_SCOPE(const Card, card)
         source->tag.remove("qingting_return");
         p->obtainCard(card, false);
     }
@@ -201,10 +202,11 @@ public:
     static bool xihua_choice_limit(const Player *player, QString pattern, Card::HandlingMethod method)
     {
         QString markName = "xihua_record_" + pattern;
+        Card *c = Sanguosha->cloneCard(pattern);
+        DELETE_OVER_SCOPE(Card, c)
         if (method == NULL)
             method = Card::MethodUse;
-        if (player->getMark(markName) > 0 ||
-            player->isCardLimited(Sanguosha->cloneCard(pattern), method, true))
+        if (player->getMark(markName) > 0 || player->isCardLimited(c, method, true))
             return true;
         else
             return false;
@@ -249,6 +251,7 @@ bool XihuaCard::do_xihua(ServerPlayer *tanuki) const
 {
     Room *room = tanuki->getRoom();
     Card *xihuacard = Sanguosha->cloneCard(tanuki->tag["xihua_choice"].toString());
+    DELETE_OVER_SCOPE(Card, xihuacard)
     //record xihua cardname which has used
     ServerPlayer *current = room->getCurrent();
     if (current && current->isAlive() && current->getPhase() != Player::NotActive)
@@ -284,6 +287,7 @@ bool XihuaCard::targetFilter(const QList<const Player *> &targets, const Player 
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
         if (!user_string.isEmpty()) {
             Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+            DELETE_OVER_SCOPE(Card, card)
             card->setSkillName("xihua");
             return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
         }
@@ -295,6 +299,7 @@ bool XihuaCard::targetFilter(const QList<const Player *> &targets, const Player 
     const Card *card = Self->tag.value("xihua").value<const Card *>();
 
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("xihua");
     if (new_card->targetFixed())
         return false;
@@ -306,6 +311,7 @@ bool XihuaCard::targetFixed() const
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
         if (!user_string.isEmpty()) {
             Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+            DELETE_OVER_SCOPE(Card, card)
             card->setSkillName("xihua");
             return card && card->targetFixed();
         }
@@ -316,6 +322,7 @@ bool XihuaCard::targetFixed() const
 
     const Card *card = Self->tag.value("xihua").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("xihua");
     //return false defaultly
     //we need a confirming chance to pull back, since  this is a zero cards viewas Skill.
@@ -337,6 +344,7 @@ bool XihuaCard::targetsFeasible(const QList<const Player *> &targets, const Play
 
     const Card *card = Self->tag.value("xihua").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("xihua");
     if (card->isKindOf("IronChain") && targets.length() == 0)
         return false;
@@ -462,7 +470,7 @@ public:
             return card;
         }
 
-        CardStar c = Self->tag.value("xihua").value<CardStar>();
+        const Card * c = Self->tag.value("xihua").value<const Card *>();
         //we need get the real subcard.
         if (c) {
             XihuaCard *card = new XihuaCard;
@@ -587,7 +595,7 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
     {
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct * judge = data.value<JudgeStruct *>();
         QList<int> list = room->getNCards(2);
         if (judge->reason == "shijie")
             player->setFlags("shijie_judge");
@@ -723,13 +731,6 @@ bool XiefaCard::targetFilter(const QList<const Player *> &targets, const Player 
     if (targets.length() == 0) {
         if (to_select == Self)
             return false;
-        //Card *slash = Sanguosha->cloneCard("slash");
-        //slash->deleteLater();
-        //pingyi yuanfei then use yuanfei. now pingyi xiefa and use xiefa in this round
-        //can select yuanfei target...
-        //if (to_select->isCardLimited(slash,Card::MethodUse))
-        //    return false;
-        //isCardLimited() did not worked...
         if (to_select->hasSkill("zhouye") && to_select->getMark("@ye") == 0)
             return false;
 
@@ -962,7 +963,7 @@ public:
     {
         TriggerList skill_list;
         QList<ServerPlayer *> srcs = room->findPlayersBySkillName(objectName());
-        CardStar card_star = data.value<CardResponseStruct>().m_card;
+        const Card * card_star = data.value<CardResponseStruct>().m_card;
         foreach (ServerPlayer *src, srcs) {
             if (card_star->isKindOf("Jink") && player != src  &&
                 data.value<CardResponseStruct>().m_isUse &&  src->isWounded())
@@ -1003,6 +1004,7 @@ bool HuishengCard::targetFilter(const QList<const Player *> &targets, const Play
     QString cardname = Self->property("huisheng_card").toString();
     QString str = Self->property("huisheng_target").toString();
     Card *new_card = Sanguosha->cloneCard(cardname);
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("huisheng");
     if (new_card->isKindOf("Peach"))
         return to_select->objectName() == str && new_card->isAvailable(to_select);
@@ -1017,6 +1019,7 @@ bool HuishengCard::targetsFeasible(const QList<const Player *> &targets, const P
 {
     QString cardname = Self->property("huisheng_card").toString();
     Card *new_card = Sanguosha->cloneCard(cardname);
+    DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("huisheng");
     //if ((new_card->isKindOf("IronChain")|| new_card->isKindOf("Peach"))&& targets.length()!=1)
     //    return false;
@@ -1082,10 +1085,7 @@ public:
                 foreach (ServerPlayer *source, sources) {
                     if (use.from != source  && use.to.contains(source)) {
                         Card *card = Sanguosha->cloneCard(use.card->objectName());
-                        if (use.card->isNDTrick() && use.from->hasSkill("aoyi")) {//for a bug in filtersviewkill, then ai has this skill
-                            if (use.from->getAI())
-                                card = Sanguosha->cloneCard("ice_slash");
-                        }
+                        DELETE_OVER_SCOPE(Card, card)
                         if (source->isCardLimited(card, Card::MethodUse))
                             continue;
                         if (!source->isProhibited(use.from, card))
@@ -1104,13 +1104,10 @@ public:
         room->setTag("huisheng_use", data);
         CardUseStruct use = data.value<CardUseStruct>();
         Card *card = Sanguosha->cloneCard(use.card->objectName());
-        if (use.card->isNDTrick() && use.from->hasSkill("aoyi")) {//for a bug in filtersviewkill, then ai has this skill
-            if (use.from->getAI())
-                card = Sanguosha->cloneCard("ice_slash");
-        }
 
         QString prompt = "@huisheng-use:" + use.from->objectName() + ":" + card->objectName();
         room->setPlayerProperty(source, "huisheng_card", card->objectName());
+        delete card;
         room->setPlayerProperty(source, "huisheng_target", use.from->objectName());
         room->askForUseCard(source, "@@huisheng", prompt);
         room->setPlayerProperty(source, "huisheng_target", QVariant());
@@ -1415,7 +1412,12 @@ public:
             if (targets.length() > 0) {
                 ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@zhengti-choose", false, true);
                 target->loseMark("@zhengti", 1);
+
                 //for huashen UI
+                // Fs: I don't know what the huashen UI is for......only for Zhengti? Is it necessary???
+                // 
+#if 0
+
                 if (target->getMark("@zhengti") == 0) {
 
                     room->setTag("zhengti_target", QVariant());
@@ -1423,15 +1425,15 @@ public:
                     foreach (ServerPlayer *owner, owners) {
                         if (owner->hasSkill("pingyi"))
                             continue;
-                        Json::Value arg(Json::arrayValue);
-                        arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                        arg[1] = QSanProtocol::Utils::toJsonString(owner->objectName());
-                        arg[2] = QSanProtocol::Utils::toJsonString(owner->getGeneral()->objectName());
-                        arg[3] = QSanProtocol::Utils::toJsonString(QString());//"clear"
-                        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+                        JsonArray args;
+                        args << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+                        args << owner->objectName();
+                        args << owner->getGeneral()->objectName();
+                        args << QString(); //"clear"
+                        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
                     }
                 }
-
+#endif
                 damage.to = target;
                 damage.transfer = true;
                 room->damage(damage);
@@ -1447,24 +1449,26 @@ public:
 
             damage.from->gainMark("@zhengti", 1);
             room->setTag("zhengti_target", QVariant::fromValue(damage.from));
+#if 0
             //for huashen UI
             QList<ServerPlayer *> owners = room->findPlayersBySkillName(objectName());
             foreach (ServerPlayer *owner, owners) {
                 if (owner->hasSkill("pingyi"))
                     continue;
 
-                Json::Value arg(Json::arrayValue);
-                arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                arg[1] = QSanProtocol::Utils::toJsonString(owner->objectName());
-                arg[2] = QSanProtocol::Utils::toJsonString(damage.from->getGeneral()->objectName());
-                arg[3] = QSanProtocol::Utils::toJsonString("zhengti");
-                room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+                JsonArray args;
+                args << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+                args << owner->objectName();
+                args << owner->getGeneral()->objectName();
+                args << "zhengti";
+                room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
             }
+#endif
         }
         return false;
     }
 };
-
+#if 0
 class ZhengtiUIhandler : public TriggerSkill
 {
 public:
@@ -1494,12 +1498,12 @@ public:
                 if (find && p->hasSkill("zhengti"))
                     continue;
 
-                Json::Value arg(Json::arrayValue);
-                arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                arg[1] = QSanProtocol::Utils::toJsonString(p->objectName());
-                arg[2] = QSanProtocol::Utils::toJsonString(p->getGeneral()->objectName());
-                arg[3] = QSanProtocol::Utils::toJsonString(QString());//"clear"
-                room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+                JsonArray args;
+                args << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+                args << p->objectName();
+                args << p->getGeneral()->objectName();
+                args << QString(); //"clear"
+                room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
             }
 
         } else if (triggerEvent == EventAcquireSkill && data.toString() == "zhengti") {
@@ -1512,13 +1516,12 @@ public:
 
 
                 if (p->hasSkill("zhengti")) {
-
-                    Json::Value arg(Json::arrayValue);
-                    arg[0] = (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                    arg[1] = QSanProtocol::Utils::toJsonString(p->objectName());
-                    arg[2] = QSanProtocol::Utils::toJsonString(zhengti->getGeneral()->objectName());
-                    arg[3] = QSanProtocol::Utils::toJsonString("zhengti");
-                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+                    JsonArray args;
+                    args << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+                    args << p->objectName();
+                    args << p->getGeneral()->objectName();
+                    args << "zhengti";
+                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
                 }
             }
 
@@ -1526,7 +1529,7 @@ public:
         return QStringList();
     }
 };
-
+#endif
 
 class Qingyu : public MasochismSkill
 {
@@ -1657,8 +1660,10 @@ TH13Package::TH13Package()
     General *nue_slm = new General(this, "nue_slm", "slm", 3, false);
     nue_slm->addSkill(new Buming);
     nue_slm->addSkill(new Zhengti);
+#if 0
     nue_slm->addSkill(new ZhengtiUIhandler);
     related_skills.insertMulti("zhengti", "#zhengti");
+#endif
 
     General *kogasa_slm = new General(this, "kogasa_slm", "slm", 3, false);
     kogasa_slm->addSkill(new Qingyu);

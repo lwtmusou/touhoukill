@@ -23,7 +23,7 @@ class LuaBasicCard;
 class LuaTrickCard;
 class LuaWeapon;
 class LuaArmor;
-//class LuaTreasure;
+class LuaTreasure;
 
 struct lua_State;
 
@@ -74,6 +74,7 @@ public:
     void addScenario(Scenario *scenario);
     const Scenario *getScenario(const QString &name) const;
     void addPackage(const QString &name);
+    QList<const Package *> getPackages() const;
 
     const General *getGeneral(const QString &name) const;
     int getGeneralCount(bool include_banned = false) const;
@@ -122,7 +123,6 @@ public:
     QString getCurrentCardUsePattern();
     CardUseStruct::CardUseReason getCurrentCardUseReason();
 
-    QString findConvertFrom(const QString &general_name) const;
     bool isGeneralHidden(const QString &general_name) const;
 
     QStringList SurprisingGenerals;
@@ -169,10 +169,8 @@ private:
     QHash<QString, const LuaWeapon*> luaWeapons;
     QHash<QString, QString> luaArmor_className2objectName;
     QHash<QString, const LuaArmor *> luaArmors;
-    //QHash<QString, QString> luaTreasure_className2objectName;
-    //QHash<QString, const LuaTreasure *> luaTreasures;
-
-    QMultiMap<QString, QString> sp_convert_pairs;
+    QHash<QString, QString> luaTreasure_className2objectName;
+    QHash<QString, const LuaTreasure *> luaTreasures;
 };
 
 static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key)

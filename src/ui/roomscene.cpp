@@ -18,7 +18,6 @@
 //#include "wind.h"  guhuodialog  lua_wrapper
 #include "record-analysis.h"
 //#include "mountainpackage.h" huashendialog
-#include "jsonutils.h"
 
 #include "bubblechatbox.h"
 
@@ -162,7 +161,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(skill_acquired(const ClientPlayer *, QString)), this, SLOT(acquireSkill(const ClientPlayer *, QString)));
     connect(ClientInstance, SIGNAL(animated(int, QStringList)), this, SLOT(doAnimation(int, QStringList)));
     connect(ClientInstance, SIGNAL(role_state_changed(QString)), this, SLOT(updateRoles(QString)));
-    connect(ClientInstance, SIGNAL(event_received(const Json::Value)), this, SLOT(handleGameEvent(const Json::Value)));
+    connect(ClientInstance, SIGNAL(event_received(const QVariant)), this, SLOT(handleGameEvent(const QVariant)));
 
     connect(ClientInstance, SIGNAL(game_started()), this, SLOT(onGameStart()));
     connect(ClientInstance, SIGNAL(game_over()), this, SLOT(onGameOver()));
@@ -394,13 +393,17 @@ RoomScene::RoomScene(QMainWindow *main_window)
     pindian_to_card = NULL;
 }
 
-void RoomScene::handleGameEvent(const Json::Value &arg)
+void RoomScene::handleGameEvent(const QVariant &args)
 {
-    GameEventType eventType = (GameEventType)arg[0].asInt();
+    JsonArray arg = args.value<JsonArray>();
+    if (arg.isEmpty())
+        return;
+
+    GameEventType eventType = (GameEventType)arg[0].toInt();
     switch (eventType) {
         case S_GAME_EVENT_PLAYER_DYING:
         {
-            ClientPlayer *player = ClientInstance->getPlayer(arg[1].asCString());
+            ClientPlayer *player = ClientInstance->getPlayer(arg[1].toString());
             PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
             container->setSaveMeIcon(true);
             Photo *photo = qobject_cast<Photo *>(container);
@@ -409,7 +412,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         }
         case S_GAME_EVENT_PLAYER_QUITDYING:
         {
-            ClientPlayer *player = ClientInstance->getPlayer(arg[1].asCString());
+            ClientPlayer *player = ClientInstance->getPlayer(arg[1].toString());
             PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
             container->setSaveMeIcon(false);
             Photo *photo = qobject_cast<Photo *>(container);
@@ -418,40 +421,37 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         }
         case S_GAME_EVENT_HUASHEN:
         {
-            ClientPlayer *player = ClientInstance->getPlayer(arg[1].asCString());
-            QString huashenGeneral = arg[2].asCString();
-            QString huashenSkill = arg[3].asCString();
+            ClientPlayer *player = ClientInstance->getPlayer(arg[1].toString());
+            QString huashenGeneral = arg[2].toString();
+            QString huashenSkill = arg[3].toString();
             PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-            //if (huashenSkill == "clear")
-            //    container->stopHuaShen();
-            //else
             container->startHuaShen(huashenGeneral, huashenSkill);
             break;
         }
         case S_GAME_EVENT_PLAY_EFFECT:
         {
-            QString skillName = arg[1].asCString();
+            QString skillName = arg[1].toString();
             QString category;
-            if (arg[2].isBool()) {
-                bool isMale = arg[2].asBool();
+            if (JsonUtils::isBool(arg[2])) {
+                bool isMale = arg[2].toBool();
                 category = isMale ? "male" : "female";
-            } else if (arg[2].isString())
-                category = arg[2].asCString();
-            int type = arg[3].asInt();
+            } else if (JsonUtils::isString(arg[2]))
+                category = arg[2].toString();
+            int type = arg[3].toInt();
             Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(skillName, category, type));
             break;
         }
         case S_GAME_EVENT_JUDGE_RESULT:
         {
-            int cardId = arg[1].asInt();
-            bool takeEffect = arg[2].asBool();
+            int cardId = arg[1].toInt();
+            bool takeEffect = arg[2].toBool();
             m_tablePile->showJudgeResult(cardId, takeEffect);
             break;
         }
         case S_GAME_EVENT_DETACH_SKILL:
         {
-            QString player_name = arg[1].asCString();
-            QString skill_name = arg[2].asCString();
+            QString player_name = arg[1].toString();
+            QString skill_name = arg[2].toString();
 
             ClientPlayer *player = ClientInstance->getPlayer(player_name);
             player->detachSkill(skill_name);
@@ -459,15 +459,15 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
 
             // stop huashen animation
             PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-            if (!player->hasSkill("huashen") && !player->hasSkill("zhengti") && !player->hasSkill("pingyi"))
+            if (!player->hasSkill("huashen") && /*!player->hasSkill("zhengti") &&*/ !player->hasSkill("pingyi"))
                 container->stopHuaShen();
             container->updateAvatarTooltip();
             break;
         }
         case S_GAME_EVENT_ACQUIRE_SKILL:
         {
-            QString player_name = arg[1].asCString();
-            QString skill_name = arg[2].asCString();
+            QString player_name = arg[1].toString();
+            QString skill_name = arg[2].toString();
 
             ClientPlayer *player = ClientInstance->getPlayer(player_name);
             player->acquireSkill(skill_name);
@@ -487,8 +487,8 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         }
         case S_GAME_EVENT_ADD_SKILL:
         {
-            QString player_name = arg[1].asCString();
-            QString skill_name = arg[2].asCString();
+            QString player_name = arg[1].toString();
+            QString skill_name = arg[2].toString();
 
             ClientPlayer *player = ClientInstance->getPlayer(player_name);
             player->addSkill(skill_name);
@@ -499,8 +499,8 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         }
         case S_GAME_EVENT_LOSE_SKILL:
         {
-            QString player_name = arg[1].asCString();
-            QString skill_name = arg[2].asCString();
+            QString player_name = arg[1].toString();
+            QString skill_name = arg[2].toString();
 
             ClientPlayer *player = ClientInstance->getPlayer(player_name);
             player->loseSkill(skill_name);
@@ -529,8 +529,8 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         }
         case S_GAME_EVENT_CHANGE_GENDER:
         {
-            QString player_name = arg[1].asCString();
-            General::Gender gender = (General::Gender)arg[2].asInt();
+            QString player_name = arg[1].toString();
+            General::Gender gender = (General::Gender)arg[2].toInt();
 
             ClientPlayer *player = ClientInstance->getPlayer(player_name);
             player->setGender(gender);
@@ -541,10 +541,10 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         }
         case S_GAME_EVENT_CHANGE_HERO:
         {
-            QString playerName = arg[1].asCString();
-            QString newHeroName = arg[2].asCString();
-            bool isSecondaryHero = arg[3].asBool();
-            bool sendLog = arg[4].asBool();
+            QString playerName = arg[1].toString();
+            QString newHeroName = arg[2].toString();
+            bool isSecondaryHero = arg[3].toBool();
+            bool sendLog = arg[4].toBool();
             ClientPlayer *player = ClientInstance->getPlayer(playerName);
             if (Sanguosha->getGeneral(newHeroName) && sendLog) {
                 QString type = "#Transfigure";
@@ -585,17 +585,17 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         }
         case S_GAME_EVENT_PLAYER_REFORM:
         {
-            ClientPlayer *player = ClientInstance->getPlayer(arg[1].asCString());
+            ClientPlayer *player = ClientInstance->getPlayer(arg[1].toString());
             PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
             container->updateReformState();
             break;
         }
         case S_GAME_EVENT_SKILL_INVOKED:
         {
-            QString player_name = arg[1].asCString();
-            QString skill_name = arg[2].asCString();
+            QString player_name = arg[1].toString();
+            QString skill_name = arg[2].toString();
             const Skill *skill = Sanguosha->getSkill(skill_name);
-            if (skill && (skill->isAttachedLordSkill() || skill->inherits("SPConvertSkill"))) return;
+            if (skill && skill->isAttachedLordSkill()) return;
 
             ClientPlayer *player = ClientInstance->getPlayer(player_name);
             if (!player) return;
@@ -619,7 +619,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         }
         case S_GAME_EVENT_PAUSE:
         {
-            bool paused = arg[1].asBool();
+            bool paused = arg[1].toBool();
             if (pausing_item->isVisible() != paused) {
                 if (paused) {
                     QBrush pausing_brush(QColor(qrand() % 256, qrand() % 256, qrand() % 256));
@@ -634,11 +634,11 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         }
         case S_GAME_EVENT_REVEAL_PINDIAN:
         {
-            QString from_name = arg[1].asCString(), to_name = arg[3].asCString();
-            int from_id = arg[2].asInt(), to_id = arg[4].asInt();
-            bool success = arg[5].asBool();
+            QString from_name = arg[1].toString(), to_name = arg[3].toString();
+            int from_id = arg[2].toInt(), to_id = arg[4].toInt();
+            bool success = arg[5].toBool();
             pindian_success = success;
-            QString reason = arg[6].asCString();
+            QString reason = arg[6].toString();
 
             if (Config.value("EnablePindianBox", true).toBool())
                 showPindianBox(from_name, from_id, to_name, to_id, reason);
@@ -648,9 +648,9 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         }
         case S_GAME_EVENT_SKIN_CHANGED:
         {
-            QString player_name = arg[1].asCString();
-            QString general_name = arg[2].asCString();
-            int skinIndex = arg[3].asInt();
+            QString player_name = arg[1].toString();
+            QString general_name = arg[2].toString();
+            int skinIndex = arg[3].toInt();
 
             ClientPlayer *player = ClientInstance->getPlayer(player_name);
 
@@ -711,8 +711,8 @@ void RoomScene::handleGameEvent(const Json::Value &arg)
         }
         case S_GAME_ROLE_STATUS_CHANGED:
         {
-            QString player_name = arg[1].asCString();
-            bool shown = arg[2].asBool();
+            QString player_name = arg[1].toString();
+            bool shown = arg[2].toBool();
 
             ClientPlayer *player = ClientInstance->getPlayer(player_name);
             QList<PlayerCardContainer *> playerCardContainers;
@@ -1548,8 +1548,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
                     break;
             }
             bool paused = pausing_text->isVisible();
-            QString message = QString("pause %1").arg((paused ? "false" : "true"));
-            ClientInstance->request(message);
+            ClientInstance->notifyServer(S_COMMAND_PAUSE, !paused);
             break;
         }
         case Qt::Key_F7:
@@ -2321,7 +2320,6 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
 
 void RoomScene::addSkillButton(const Skill *skill, bool)
 {
-    if (skill->inherits("SPConvertSkill")) return;
     // check duplication
     QSanSkillButton *btn = dashboard->addSkillButton(skill->objectName());
 
@@ -3834,7 +3832,7 @@ void RoomScene::attachSkill(const QString &skill_name, bool from_left)
 void RoomScene::detachSkill(const QString &skill_name)
 {
     QSanSkillButton *btn = dashboard->removeSkillButton(skill_name);
-    if (btn == NULL) return;    //be care LordSkill and SPConvertSkill
+    if (btn == NULL) return;    //be care LordSkill
     m_skillButtons.removeAll(btn);
     btn->deleteLater();
 }
@@ -4160,8 +4158,6 @@ void RoomScene::showSkillInvocation(const QString &who, const QString &skill_nam
 {
     const ClientPlayer *player = ClientInstance->findChild<const ClientPlayer *>(who);
     if (!player->hasSkill(skill_name) && !player->hasEquipSkill(skill_name)) return;
-    const Skill *skill = Sanguosha->getSkill(skill_name);
-    if (skill && skill->inherits("SPConvertSkill")) return;
     QString type = "#InvokeSkill";
     QString from_general = player->objectName();
     QString arg = skill_name;
@@ -4425,7 +4421,7 @@ void RoomScene::surrender()
 
     QMessageBox::StandardButton button;
     button = QMessageBox::question(main_window, tr("Surrender"), tr("Are you sure to surrender ?"));
-    if (button == QMessageBox::Yes)
+    if (button == QMessageBox::Ok || button == QMessageBox::Yes)
         ClientInstance->requestSurrender();
 }
 
@@ -4612,7 +4608,7 @@ void RoomScene::selectGeneral()
 {
     CardItem *item = qobject_cast<CardItem *>(sender());
     if (item) {
-        ClientInstance->replyToServer(S_COMMAND_ASK_GENERAL, Utils::toJsonString(item->objectName()));
+        ClientInstance->replyToServer(S_COMMAND_ASK_GENERAL, item->objectName());
         foreach (CardItem *item, general_items) {
             item->setFlag(QGraphicsItem::ItemIsFocusable, false);
             item->disconnect(this);
@@ -4797,7 +4793,7 @@ void RoomScene::finishArrange()
     }
     arrange_rects.clear();
 
-    ClientInstance->replyToServer(S_COMMAND_ARRANGE_GENERAL, Utils::toJsonArray(names));
+    ClientInstance->replyToServer(S_COMMAND_ARRANGE_GENERAL, JsonUtils::toJsonArray(names));
     ClientInstance->setStatus(Client::NotActive);
 }
 

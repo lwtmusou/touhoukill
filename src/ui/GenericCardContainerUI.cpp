@@ -58,7 +58,7 @@ void GenericCardContainer::_disperseCards(QList<CardItem *> &cards, QRectF fillR
 {
     int numCards = cards.size();
     if (numCards == 0) return;
-    if (!keepOrder) qSort(cards.begin(), cards.end(), GenericCardContainer::_horizontalPosLessThan);
+    if (!keepOrder) std::sort(cards.begin(), cards.end(), GenericCardContainer::_horizontalPosLessThan);
     double maxWidth = fillRegion.width();
     int cardWidth = G_COMMON_LAYOUT.m_cardNormalWidth;
     double step = qMin((double)cardWidth, (maxWidth - cardWidth) / (numCards - 1));
@@ -132,28 +132,27 @@ void PlayerCardContainer::_paintPixmap(QGraphicsPixmapItem *&item, const QRect &
     _paintPixmap(item, rect, pixmap, _m_groupMain);
 }
 
-QPixmap PlayerCardContainer::_getPixmap(const QString &key, const QString &sArg)
+QPixmap PlayerCardContainer::_getPixmap(const QString &key, const QString &sArg, bool cache)
 {
     Q_ASSERT(key.contains("%1"));
     if (key.contains("%2")) {
         QString rKey = key.arg(getResourceKeyName()).arg(sArg);
 
         if (G_ROOM_SKIN.isImageKeyDefined(rKey))
-            return G_ROOM_SKIN.getPixmap(rKey); // first try "%1key%2 = ...", %1 = "photo", %2 = sArg
+            return G_ROOM_SKIN.getPixmap(rKey, QString(), cache); // first try "%1key%2 = ...", %1 = "photo", %2 = sArg
 
         rKey = key.arg(getResourceKeyName());
-        return G_ROOM_SKIN.getPixmap(rKey, sArg); // then try "%1key = ..."
+        return G_ROOM_SKIN.getPixmap(rKey, sArg, cache); // then try "%1key = ..."
     } else {
-        return G_ROOM_SKIN.getPixmap(key, sArg); // finally, try "key = ..."
+        return G_ROOM_SKIN.getPixmap(key, sArg, cache); // finally, try "key = ..."
     }
 }
 
-QPixmap PlayerCardContainer::_getPixmap(const QString &key)
+QPixmap PlayerCardContainer::_getPixmap(const QString &key, bool cache)
 {
     if (key.contains("%1") && G_ROOM_SKIN.isImageKeyDefined(key.arg(getResourceKeyName())))
-        return G_ROOM_SKIN.getPixmap(key.arg(getResourceKeyName()));
-    else return G_ROOM_SKIN.getPixmap(key);
-
+        return G_ROOM_SKIN.getPixmap(key.arg(getResourceKeyName()), QString(), cache);
+    else return G_ROOM_SKIN.getPixmap(key, QString(), cache);
 }
 
 void PlayerCardContainer::_paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect,
@@ -253,7 +252,7 @@ void PlayerCardContainer::updateAvatar()
                 Qt::AlignLeft | Qt::AlignJustify, name);
         } else {
             _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea,
-                _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, QSanRoomSkin::S_SKIN_KEY_DEFAULT_SECOND),
+                _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, QString(QSanRoomSkin::S_SKIN_KEY_DEFAULT_SECOND)),
                 _getAvatarParent());
         }
     } else {
@@ -264,7 +263,7 @@ void PlayerCardContainer::updateAvatar()
         _clearPixmap(_m_dashboardKingdomColorMaskIcon);
         _clearPixmap(_m_kingdomIcon);
         _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea,
-            _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, QSanRoomSkin::S_SKIN_KEY_DEFAULT_SECOND),
+            _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, QString(QSanRoomSkin::S_SKIN_KEY_DEFAULT_SECOND)),
             _getAvatarParent());
         _m_avatarArea->setToolTip(QString());
     }
@@ -274,7 +273,7 @@ void PlayerCardContainer::updateAvatar()
 
 QPixmap PlayerCardContainer::paintByMask(QPixmap &source)
 {
-    QPixmap tmp = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_MASK, QString::number(_m_layout->m_circleImageSize));
+    QPixmap tmp = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_MASK, QString::number(_m_layout->m_circleImageSize), true);
     if (tmp.height() <= 1 && tmp.width() <= 1) return source;
     QPainter p(&tmp);
     p.setCompositionMode(QPainter::CompositionMode_SourceIn);
@@ -331,7 +330,7 @@ void PlayerCardContainer::updatePhase()
         int index = static_cast<int>(m_player->getPhase());
         QRect phaseArea = _m_layout->m_phaseArea.getTranslatedRect(_getPhaseParent()->boundingRect().toRect());
         _paintPixmap(_m_phaseIcon, phaseArea,
-            _getPixmap(QSanRoomSkin::S_SKIN_KEY_PHASE, QString::number(index)),
+            _getPixmap(QSanRoomSkin::S_SKIN_KEY_PHASE, QString::number(index), true),
             _getPhaseParent());
         _m_phaseIcon->show();
     } else {
@@ -361,11 +360,6 @@ void PlayerCardContainer::updateHp()
 
     if (m_player->getHp() > 0 || m_player->getMaxHp() == 0)
         _m_saveMeIcon->setVisible(false);
-}
-
-static bool CompareByNumber(const Card *card1, const Card *card2)
-{
-    return card1->getNumber() < card2->getNumber();
 }
 
 void PlayerCardContainer::updatePile(const QString &pile_name)
@@ -423,7 +417,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
             const Card *card = Sanguosha->getCard(card_id);
             if (card != NULL) cards << card;
         }
-        qSort(cards.begin(), cards.end(), CompareByNumber);
+        std::sort(cards.begin(), cards.end(), Card::CompareByNumber);
 
         foreach(const Card *card, cards)
             menu->addAction(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()), card->getFullName());
@@ -949,7 +943,7 @@ void PlayerCardContainer::hideAvatars()
 void PlayerCardContainer::_layUnder(QGraphicsItem *item)
 {
     _lastZ--;
-    Q_ASSERT((unsigned long)item != 0xcdcdcdcd);
+    // Q_ASSERT((unsigned long)item != 0xcdcdcdcd);
     if (item)
         item->setZValue(_lastZ--);
     else
@@ -1229,7 +1223,7 @@ QVariant PlayerCardContainer::itemChange(GraphicsItemChange change, const QVaria
             _m_selectedFrame->hide();
         } else {
             _paintPixmap(_m_selectedFrame, _m_layout->m_focusFrameArea,
-                _getPixmap(QSanRoomSkin::S_SKIN_KEY_SELECTED_FRAME),
+                _getPixmap(QSanRoomSkin::S_SKIN_KEY_SELECTED_FRAME, true),
                 _getFocusFrameParent());
             _m_selectedFrame->show();
         }

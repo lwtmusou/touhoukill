@@ -19,6 +19,10 @@
 #include <QMutex>
 #include <QPropertyAnimation>
 
+#ifdef Q_OS_WIN
+class QWinTaskbarButton;
+#endif
+
 
 class Dashboard : public PlayerCardContainer
 {
@@ -49,6 +53,7 @@ public:
     void showControlButtons();
 
     virtual void showProgressBar(QSanProtocol::Countdown countdown);
+    virtual void hideProgressBar();
 
     QRectF getAvatarAreaSceneBoundingRect() const
     {
@@ -130,6 +135,10 @@ public slots:
     void skillButtonDeactivated();
     void selectAll();
     void controlNullificationButton(bool show);
+
+#ifdef Q_OS_WIN
+    void updateTimedProgressBar(time_t val, time_t max);
+#endif
 
 protected:
     void _createExtraButtons();
@@ -258,6 +267,11 @@ protected:
 
     QList<CardItem *> _m_cardItemsAnimationFinished;
     QMutex m_mutexCardItemsAnimationFinished;
+
+#ifdef Q_OS_WIN
+    QWinTaskbarButton *taskbarButton;
+#endif
+
 
 protected slots:
     virtual void _onEquipSelectChanged();

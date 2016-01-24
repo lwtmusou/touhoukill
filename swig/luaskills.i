@@ -175,14 +175,6 @@ public:
     LuaFunction fixed_func;
 };
 
-class GameStartSkill: public TriggerSkill {
-public:
-    GameStartSkill(const char *name);
-
-    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
-    virtual void onGameStart(ServerPlayer *player) const = 0;
-};
-
 class LuaSkillCard: public SkillCard {
 public:
     LuaSkillCard(const char *name, const char *skillName);
@@ -298,6 +290,34 @@ public:
     LuaFunction on_uninstall;
 };
 
+class LuaTreasure : public Treasure
+{
+public:
+    LuaTreasure(Card::Suit suit, int number, const char *obj_name, const char *class_name);
+    LuaTreasure *clone(Card::Suit suit = Card::SuitToBeDecided, int number = -1) const;
+
+    virtual void onInstall(ServerPlayer *player) const;
+    virtual void onUninstall(ServerPlayer *player) const;
+
+    virtual QString getClassName() const;
+    virtual bool isKindOf(const char *cardType) const;
+
+    // the lua callbacks
+    LuaFunction on_install;
+    LuaFunction on_uninstall;
+};
+
+
+class EquipSkill : public TriggerSkill
+{
+public:
+    static bool equipAvailable(const ServerPlayer *p, EquipCard::Location location, const QString &equip_name);
+    static bool equipAvailable(const ServerPlayer *p, const EquipCard *card);
+
+private:
+    EquipSkill() = delete;
+};
+
 %{
 
 #include "lua-wrapper.h"
@@ -315,7 +335,7 @@ static void Error(lua_State *L)
 bool LuaTriggerSkill::triggerable(const ServerPlayer *target) const
 {
     if (can_trigger == 0)
-        return TriggerSkill::triggerable(target);
+        return false;
 
     //Room *room = target->getRoom();
     lua_State *L = Sanguosha->getLuaState();
@@ -1512,6 +1532,58 @@ void LuaArmor::onUninstall(ServerPlayer *player) const
 {
     if (on_uninstall == 0)
         return Armor::onUninstall(player);
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    // the callback
+    lua_rawgeti(L, LUA_REGISTRYINDEX, on_uninstall);
+
+    pushSelf(L);
+
+    SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
+
+    int error = lua_pcall(L, 2, 0, 0);
+    if (error) {
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        Room *room = player->getRoom();
+        room->output(error_msg);
+    }
+}
+
+void LuaTreasure::pushSelf(lua_State *L) const
+{
+    LuaTreasure *self = const_cast<LuaTreasure *>(this);
+    SWIG_NewPointerObj(L, self, SWIGTYPE_p_LuaTreasure, 0);
+}
+
+void LuaTreasure::onInstall(ServerPlayer *player) const
+{
+    if (on_install == 0)
+        return Treasure::onInstall(player);
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    // the callback
+    lua_rawgeti(L, LUA_REGISTRYINDEX, on_install);
+
+    pushSelf(L);
+
+    SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
+
+    int error = lua_pcall(L, 2, 0, 0);
+    if (error) {
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        Room *room = player->getRoom();
+        room->output(error_msg);
+    }
+}
+
+void LuaTreasure::onUninstall(ServerPlayer *player) const
+{
+    if (on_uninstall == 0)
+        return Treasure::onUninstall(player);
 
     lua_State *L = Sanguosha->getLuaState();
 

@@ -10,7 +10,6 @@ class Slash;
 #include "player.h"
 
 #include <QVariant>
-#include <json/json.h>
 
 struct DamageStruct
 {
@@ -83,11 +82,13 @@ struct CardUseStruct
     } m_reason;
 
     CardUseStruct();
-    CardUseStruct(const Card *card, ServerPlayer *from, QList<ServerPlayer *> to, bool isOwnerUse = true);
+    CardUseStruct(const Card *card, ServerPlayer *from, QList<ServerPlayer *> to = QList<ServerPlayer *>(), bool isOwnerUse = true);
     CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer *target, bool isOwnerUse = true);
     bool isValid(const QString &pattern) const;
     void parse(const QString &str, Room *room);
-    bool tryParse(const Json::Value &, Room *room);
+    bool tryParse(const QVariant &usage, Room *room);
+
+    QString toString() const;
 
     const Card *card;
     ServerPlayer *from;
@@ -109,10 +110,8 @@ public:
     QString m_skillName; // skill that triggers movement of the cards, such as "longdang", "dimeng"
     QString m_eventName; // additional arg such as "lebusishu" on top of "S_REASON_JUDGE"
     QVariant m_extraData; // additional data and will not be parsed to clients
-    QVariant m_provider; // additional data recording who provide this card for otherone to use or response,
+    QVariant m_provider; // additional data recording who provide this card for otherone to use or response, e.g. guanyu provide a slash for "jijiang"
 
-
-    //etc. guanyu provide a slash for "jijiang"
     inline CardMoveReason()
     {
         m_reason = S_REASON_UNKNOWN;
@@ -140,8 +139,8 @@ public:
         m_eventName = eventName;
     }
 
-    bool tryParse(const Json::Value &);
-    Json::Value toJsonValue() const;
+    bool tryParse(const QVariant &);
+    QVariant toVariant() const;
 
     inline bool operator == (const CardMoveReason &other) const
     {
@@ -312,8 +311,8 @@ struct CardsMoveStruct
     Player *origin_from, *origin_to;
     QString origin_from_pile_name, origin_to_pile_name; //for case of the movement transitted
 
-    bool tryParse(const Json::Value &);
-    Json::Value toJsonValue() const;
+    bool tryParse(const QVariant &arg);
+    QVariant toVariant() const;
     inline bool isRelevant(const Player *player)
     {
         return player != NULL && (from == player || (to == player && to_place != Player::PlaceSpecial));
@@ -326,6 +325,7 @@ struct DyingStruct
 
     ServerPlayer *who; // who is ask for help
     DamageStruct *damage; // if it is NULL that means the dying is caused by losing hp
+    ServerPlayer *nowAskingForPeaches; // who is asking for peaches
 };
 
 struct DeathStruct
@@ -342,6 +342,7 @@ struct RecoverStruct
 
     int recover;
     ServerPlayer *who;
+    ServerPlayer *to;
     const Card *card;
     QString reason;
 };
@@ -393,8 +394,19 @@ private:
 struct PhaseChangeStruct
 {
     PhaseChangeStruct();
+
     Player::Phase from;
     Player::Phase to;
+    ServerPlayer *player;
+};
+
+struct PhaseSkippingStruct
+{
+    PhaseSkippingStruct();
+    
+    Player::Phase phase;
+    ServerPlayer *player;
+    bool isCost;
 };
 
 struct PhaseStruct
@@ -411,93 +423,19 @@ struct PhaseStruct
 
 struct CardResponseStruct
 {
-    inline CardResponseStruct()
+    inline CardResponseStruct(const Card *card = NULL, ServerPlayer *who = NULL, bool isuse = false, bool isRetrial = false, bool isProvision = false, ServerPlayer *from = NULL)
+        : m_card(card), m_who(who), m_isUse(isuse), m_isRetrial(isRetrial), m_isProvision(isProvision), m_from(from)
     {
-        m_card = NULL;
-        m_who = NULL;
-        m_isUse = false;
-        m_isRetrial = false;
-        m_isProvision = false;
-    }
-
-    inline CardResponseStruct(const Card *card)
-    {
-        m_card = card;
-        m_who = NULL;
-        m_isUse = false;
-        m_isRetrial = false;
-        m_isProvision = false;
-    }
-
-    inline CardResponseStruct(const Card *card, ServerPlayer *who)
-    {
-        m_card = card;
-        m_who = who;
-        m_isUse = false;
-        m_isRetrial = false;
-        m_isProvision = false;
-    }
-
-    inline CardResponseStruct(const Card *card, bool isUse)
-    {
-        m_card = card;
-        m_who = NULL;
-        m_isUse = isUse;
-        m_isRetrial = false;
-        m_isProvision = false;
-    }
-
-    inline CardResponseStruct(const Card *card, ServerPlayer *who, bool isUse, bool isRetrial, bool isProvision)
-    {
-        m_card = card;
-        m_who = who;
-        m_isUse = isUse;
-        m_isRetrial = isRetrial;
-        m_isProvision = isProvision;
+        m_isHandcard = false;
     }
 
     const Card *m_card;
-    ServerPlayer *m_who;
+    ServerPlayer *m_from;
     bool m_isUse;
     bool m_isRetrial;
     bool m_isProvision;
+    ServerPlayer *m_who;
     bool m_isHandcard;
-};
-
-struct JsonValueForLUA
-{
-    JsonValueForLUA(bool isarray = true);
-
-    bool getBoolAt(int n) const;
-    int getNumberAt(int n) const;
-    QString getStringAt(int n) const;
-    JsonValueForLUA getArrayAt(int n) const;
-
-    void setBoolAt(int n, bool v);
-    void setNumberAt(int n, int v);
-    void setStringAt(int n, const QString &v);
-    void setArrayAt(int n, const JsonValueForLUA &v);
-
-    inline operator Json::Value()
-    {
-        return m_realvalue;
-    }
-    inline operator Json::Value() const
-    {
-        return m_realvalue;
-    }
-
-    inline Json::Value &operator [](int x)
-    {
-        return m_realvalue[x];
-    }
-    inline const Json::Value &operator [](int x) const
-    {
-        return m_realvalue[x];
-    }
-
-private:
-    Json::Value m_realvalue;
 };
 
 struct MarkChangeStruct
@@ -506,6 +444,112 @@ struct MarkChangeStruct
 
     int num;
     QString name;
+    ServerPlayer *player;
+};
+
+struct SkillAcquireDetachStruct
+{
+    SkillAcquireDetachStruct();
+
+    const Skill *skill;
+    ServerPlayer *player;
+    bool isAcquire;
+};
+
+struct CardAskedStruct
+{
+    CardAskedStruct();
+
+    QString pattern;
+    QString prompt;
+    ServerPlayer *player;
+};
+
+struct SkillInvokeDetail
+{
+    explicit SkillInvokeDetail(const TriggerSkill *skill = NULL, ServerPlayer *owner = NULL, ServerPlayer *invoker = NULL, QList<ServerPlayer *> targets = QList<ServerPlayer *>(), int times = 1, bool isCompulsory = false);
+    SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, int times = 1, bool isCompulsory = false);
+
+    const TriggerSkill *skill; // the skill
+    ServerPlayer *owner; // skill owner. 2 structs with the same skill and skill owner are treated as of a same skill.
+    ServerPlayer *invoker; // skill invoker. When invoking skill, we sort firstly according to the priority, then the seat of invoker, at last weather it is a skill of an equip.
+    QList<ServerPlayer *> targets; // skill targets.
+    int times; // the times of invoking skill
+    int triggeredTimes; // the times invoked
+    bool isCompulsory; // judge the skill is compulsory or not. It is set in the skill's triggerable
+
+    QVariantMap tag; // used to add a tag to the struct. useful for skills like Tieqi and Liegong to save a QVariantList for assisting to assign targets
+
+    bool operator <(const SkillInvokeDetail &arg2) const; // the operator < for sorting the invoke order.
+    bool operator ==(const SkillInvokeDetail &arg2) const; // the operator ==. it only judge the skill name, the skill invoker, and the skill owner. it don't judge the skill target because it is chosen by the skill invoker
+    bool sameTimingWith(const SkillInvokeDetail &arg2) const; // used to judge 2 skills has the same timing. only 2 structs with the same priority and the same invoker and the same "whether or not it is a skill of equip"
+    bool isValid() const; // validity check
+
+    QVariant toVariant() const;
+    QStringList toList() const;
+};
+
+struct HpLostStruct
+{
+    HpLostStruct();
+
+    ServerPlayer *player;
+    int num;
+};
+
+struct JinkEffectStruct
+{
+    JinkEffectStruct();
+
+    SlashEffectStruct slashEffect;
+    const Card *jink;
+};
+
+struct DrawNCardsStruct
+{
+    DrawNCardsStruct();
+
+    ServerPlayer *player;
+    int n;
+    bool isInitial;
+};
+
+struct ChoiceMadeStruct
+{
+    ChoiceMadeStruct();
+
+    enum ChoiceType
+    {
+        NoChoice,
+
+        SkillInvoke,
+        SkillChoice,
+        Nullification,
+        CardChosen,
+        CardResponded,
+        CardUsed,
+        AGChosen,
+        CardShow,
+        Peach,
+        TriggerOrder,
+        ReverseFor3v3,
+        Activate,
+        Suit,
+        Kingdom,
+        CardDiscard,
+        CardExchange,
+        ViewCards,
+        PlayerChosen,
+        Rende,
+        Yiji,
+        Pindian,
+
+        NumOfChoices
+    };
+
+    ServerPlayer *player;
+    ChoiceType type;
+    QStringList args;
 };
 
 enum TriggerEvent
@@ -528,6 +572,7 @@ enum TriggerEvent
     PreHpRecover,
     HpRecover,
     PreHpLost,
+    PostHpLost,
     HpChanged,
     MaxHpChanged,
     PostHpReduced,
@@ -611,16 +656,10 @@ enum TriggerEvent
     DrawPileSwaped,//like qiannian
     DrawCardsFromDrawPile, // for qiangyu
     AfterGuanXing,
-    Reconnect,
     KingdomChanged,
 
     NumOfEvents
 };
-
-typedef const Card *CardStar;
-typedef ServerPlayer *PlayerStar;
-typedef JudgeStruct *JudgeStar;
-typedef PindianStruct *PindianStar;
 
 Q_DECLARE_METATYPE(DamageStruct)
 Q_DECLARE_METATYPE(CardEffectStruct)
@@ -628,16 +667,22 @@ Q_DECLARE_METATYPE(SlashEffectStruct)
 Q_DECLARE_METATYPE(CardUseStruct)
 Q_DECLARE_METATYPE(CardsMoveStruct)
 Q_DECLARE_METATYPE(CardsMoveOneTimeStruct)
-Q_DECLARE_METATYPE(CardStar)
-Q_DECLARE_METATYPE(PlayerStar)
 Q_DECLARE_METATYPE(DyingStruct)
 Q_DECLARE_METATYPE(DeathStruct)
 Q_DECLARE_METATYPE(RecoverStruct)
-Q_DECLARE_METATYPE(JudgeStar)
-Q_DECLARE_METATYPE(PindianStar)
 Q_DECLARE_METATYPE(PhaseChangeStruct)
 Q_DECLARE_METATYPE(CardResponseStruct)
-Q_DECLARE_METATYPE(JsonValueForLUA)
 Q_DECLARE_METATYPE(MarkChangeStruct)
+Q_DECLARE_METATYPE(ChoiceMadeStruct)
+Q_DECLARE_METATYPE(SkillAcquireDetachStruct)
+Q_DECLARE_METATYPE(CardAskedStruct)
+Q_DECLARE_METATYPE(HpLostStruct)
+Q_DECLARE_METATYPE(JinkEffectStruct)
+Q_DECLARE_METATYPE(PhaseSkippingStruct)
+Q_DECLARE_METATYPE(DrawNCardsStruct)
+Q_DECLARE_METATYPE(const Card *)
+Q_DECLARE_METATYPE(ServerPlayer *)
+Q_DECLARE_METATYPE(JudgeStruct *)
+Q_DECLARE_METATYPE(PindianStruct *)
 #endif
 

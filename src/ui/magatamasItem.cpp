@@ -35,7 +35,7 @@ void MagatamasBoxItem::_updateLayout()
     }
 
     for (int i = 0; i < 6; i++) {
-        _icons[i] = G_ROOM_SKIN.getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS).arg(QString::number(i)))
+        _icons[i] = G_ROOM_SKIN.getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS).arg(QString::number(i)), QString(), true)
             .scaled(m_iconSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     }
 
