@@ -356,13 +356,13 @@ bool SkillInvokeDetail::sameTimingWith(const SkillInvokeDetail &arg2) const // u
     return skill->getPriority() == arg2.skill->getPriority() && invoker == arg2.invoker && skill->inherits("EquipSkill") == arg2.skill->inherits("EquipSkill");
 }
 
-SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill /*= NULL*/, ServerPlayer *owner /*= NULL*/, ServerPlayer *invoker /*= NULL*/, QList<ServerPlayer *> targets /*= QList<ServerPlayer *>()*/, int times /*= 1*/)
-    : skill(skill), owner(owner), invoker(invoker), targets(targets), times(times), triggeredTimes(0)
+SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill /*= NULL*/, ServerPlayer *owner /*= NULL*/, ServerPlayer *invoker /*= NULL*/, QList<ServerPlayer *> targets /*= QList<ServerPlayer *>()*/, int times /*= 1*/, bool isCompulsory /*= false*/)
+    : skill(skill), owner(owner), invoker(invoker), targets(targets), times(times), triggeredTimes(0), isCompulsory(isCompulsory)
 {
 }
 
-SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, int times /*= 1*/)
-    : skill(skill), owner(owner), invoker(invoker), times(times), triggeredTimes(0)
+SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, int times /*= 1*/, bool isCompulsory /*= false*/)
+    : skill(skill), owner(owner), invoker(invoker), times(times), triggeredTimes(0), isCompulsory(isCompulsory)
 {
     if (target != NULL)
         targets << target;

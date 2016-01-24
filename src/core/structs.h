@@ -467,8 +467,8 @@ struct CardAskedStruct
 
 struct SkillInvokeDetail
 {
-    explicit SkillInvokeDetail(const TriggerSkill *skill = NULL, ServerPlayer *owner = NULL, ServerPlayer *invoker = NULL, QList<ServerPlayer *> targets = QList<ServerPlayer *>(), int times = 1);
-    SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, int times = 1);
+    explicit SkillInvokeDetail(const TriggerSkill *skill = NULL, ServerPlayer *owner = NULL, ServerPlayer *invoker = NULL, QList<ServerPlayer *> targets = QList<ServerPlayer *>(), int times = 1, bool isCompulsory = false);
+    SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, int times = 1, bool isCompulsory = false);
 
     const TriggerSkill *skill; // the skill
     ServerPlayer *owner; // skill owner. 2 structs with the same skill and skill owner are treated as of a same skill.
@@ -476,6 +476,7 @@ struct SkillInvokeDetail
     QList<ServerPlayer *> targets; // skill targets.
     int times; // the times of invoking skill
     int triggeredTimes; // the times invoked
+    bool isCompulsory; // judge the skill is compulsory or not. It is set in the skill's triggerable
 
     QVariantMap tag; // used to add a tag to the struct. useful for skills like Tieqi and Liegong to save a QVariantList for assisting to assign targets
 

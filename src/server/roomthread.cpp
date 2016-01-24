@@ -472,7 +472,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) 
                 // if there is a compulsory skill or compulsory effect, it shouldn't be able to cancel
                 bool has_compulsory = false;
                 foreach (const QSharedPointer<SkillInvokeDetail> &detail, sameTiming) {
-                    if (detail->skill->getFrequency() == Skill::Compulsory) { // according to the difference of the different Sha game, there could be wake skill or not-compulsory skill
+                    if (detail->isCompulsory) { // judge the compulsory effect/skill in the detail struct
                         has_compulsory = true;
                         break;
                     }
@@ -546,9 +546,10 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
             // but there could be some status to be updated, so we can't call removeOne directly after the judgement of contains. we should update the new status to the old item. so we should pick up the new contents.
             foreach (const SkillInvokeDetail &t, triggerable) {
                 if (t == *ptr) { // this is the overrided operator =. as the operator = judge the skill, the skill owner, the skill invoker (i.e, it is judging the same skill), the other variables may be different
-                    // temperily we decided only to update the times and tag. we overwrite the new times to the old ones. 
+                    // temperily we decided only to update the times, tag and "whether it is compulsory". we overwrite the new times and compulsory property to the old ones. 
                     // as for tag, if we only copy the (key, value) pair to the old ones, it is possible that some useful messages be overwritten. so we add a new procedure of copying the old data.
                     ptr->times = t.times;
+                    ptr->isCompulsory = t.isCompulsory;
                     foreach (const QString &key, t.tag.keys()) {
                         std::function<void(const QString &)> copyKeyToOld = [&ptr, copyKeyToOld](const QString &key) {
                             QString old_key = key + "_old";
