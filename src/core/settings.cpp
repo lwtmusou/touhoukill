@@ -77,10 +77,7 @@ void Settings::init()
     DisableChat = value("DisableChat", false).toBool();
     FreeAssignSelf = EnableCheat && value("FreeAssignSelf", false).toBool();
     Enable2ndGeneral = value("Enable2ndGeneral", false).toBool();
-    EnableScene = value("EnableScene", false).toBool();
     EnableSame = value("EnableSame", false).toBool();
-    EnableBasara = value("EnableBasara", false).toBool();
-    EnableHegemony = value("EnableHegemony", false).toBool();
     MaxHpScheme = value("MaxHpScheme", 0).toInt();
     Scheme0Subtraction = value("Scheme0Subtraction", 3).toInt();
     PreventAwakenBelow3 = value("PreventAwakenBelow3", false).toBool();

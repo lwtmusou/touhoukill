@@ -3582,10 +3582,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
     static QStringList labels;
     if (labels.isEmpty()) {
         labels << tr("General") << tr("Name") << tr("Alive");
-        if (ServerInfo.EnableHegemony)
-            labels << tr("Nationality");
-        else
-            labels << tr("Role");
+        labels << tr("Role");
 
         labels << tr("TurnCount");
         labels << tr("Recover") << tr("Damage") << tr("Damaged") << tr("Kill") << tr("Designation");
@@ -3615,35 +3612,30 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
 
         item = new QTableWidgetItem;
 
-        if (ServerInfo.EnableHegemony) {
-            QIcon icon(QString("image/kingdom/icon/%1.png").arg(player->getKingdom()));
-            item->setIcon(icon);
-            item->setText(Sanguosha->translate(player->getKingdom()));
-        } else {
-            QIcon icon(QString("image/system/roles/%1.png").arg(player->getRole()));
-            item->setIcon(icon);
-            QString role = player->getRole();
-            if (ServerInfo.GameMode.startsWith("06_")) {
-                if (role == "lord" || role == "renegade")
-                    role = "leader";
-                else
-                    role = "guard";
-            } else if (ServerInfo.GameMode == "04_1v3") {
-                int seat = player->getSeat();
-                switch (seat) {
-                    case 1: role = "lvbu"; break;
-                    case 2: role = "vanguard"; break;
-                    case 3: role = "mainstay"; break;
-                    case 4: role = "general"; break;
-                }
-            } else if (ServerInfo.GameMode == "02_1v1") {
-                if (role == "lord")
-                    role = "defensive";
-                else
-                    role = "offensive";
+        QIcon icon(QString("image/system/roles/%1.png").arg(player->getRole()));
+        item->setIcon(icon);
+        QString role = player->getRole();
+        if (ServerInfo.GameMode.startsWith("06_")) {
+            if (role == "lord" || role == "renegade")
+                role = "leader";
+            else
+                role = "guard";
+        } else if (ServerInfo.GameMode == "04_1v3") {
+            int seat = player->getSeat();
+            switch (seat) {
+                case 1: role = "lvbu"; break;
+                case 2: role = "vanguard"; break;
+                case 3: role = "mainstay"; break;
+                case 4: role = "general"; break;
             }
-            item->setText(Sanguosha->translate(role));
+        } else if (ServerInfo.GameMode == "02_1v1") {
+            if (role == "lord")
+                role = "defensive";
+            else
+                role = "offensive";
         }
+        item->setText(Sanguosha->translate(role));
+
         if (!player->isAlive())
             item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
         table->setItem(i, 3, item);
@@ -4865,7 +4857,6 @@ void RoomScene::updateRoles(const QString &roles)
         removeItem(item);
 
     role_items.clear();
-    if (ServerInfo.EnableHegemony) return;
 
     static QMap<QChar, QPixmap> map;
     if (map.isEmpty()) {

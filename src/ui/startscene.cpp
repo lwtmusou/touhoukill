@@ -138,18 +138,9 @@ void StartScene::printServerInfo()
     } else
         server_log->append(tr("Seconardary general is disabled"));
 
-    server_log->append(Config.EnableScene ?
-        tr("Scene Mode is enabled") :
-        tr("Scene Mode is disabled"));
     server_log->append(Config.EnableSame ?
         tr("Same Mode is enabled") :
         tr("Same Mode is disabled"));
-    server_log->append(Config.EnableBasara ?
-        tr("Basara Mode is enabled") :
-        tr("Basara Mode is disabled"));
-    server_log->append(Config.EnableHegemony ?
-        tr("Hegemony Mode is enabled") :
-        tr("Hegemony Mode is disabled"));
 
     if (Config.EnableAI) {
         server_log->append(tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));

@@ -40,28 +40,6 @@ AI::Relation AI::GetRelation3v3(const ServerPlayer *a, const ServerPlayer *b)
         return Enemy;
 }
 
-AI::Relation AI::GetRelationHegemony(const ServerPlayer *a, const ServerPlayer *b)
-{
-    Q_ASSERT(a->getRoom() != NULL);
-    const bool aShown = a->getRoom()->getTag(a->objectName()).toStringList().isEmpty();
-    Q_ASSERT(b->getRoom() != NULL);
-    const bool bShown = b->getRoom()->getTag(b->objectName()).toStringList().isEmpty();
-
-    const QString aName = aShown ? a->getGeneralName() :
-        a->getRoom()->getTag(a->objectName()).toStringList().first();
-    const QString bName = bShown ? b->getGeneralName() :
-        b->getRoom()->getTag(b->objectName()).toStringList().first();
-
-    Q_ASSERT(Sanguosha->getGeneral(aName) != NULL);
-    const QString aKingdom = Sanguosha->getGeneral(aName)->getKingdom();
-    Q_ASSERT(Sanguosha->getGeneral(bName) != NULL);
-    const QString bKingdom = Sanguosha->getGeneral(bName)->getKingdom();
-
-    qDebug() << aKingdom << bKingdom << aShown << bShown;
-
-    return aKingdom == bKingdom ? Friend : Enemy;
-}
-
 AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b)
 {
     if (a == b) return Friend;
@@ -136,8 +114,6 @@ AI::Relation AI::relationTo(const ServerPlayer *other) const
 
     if (room->getMode() == "06_3v3" || room->getMode() == "06_XMode")
         return GetRelation3v3(self, other);
-    else if (Config.EnableHegemony)
-        return GetRelationHegemony(self, other);
 
     return GetRelation(self, other);
 }

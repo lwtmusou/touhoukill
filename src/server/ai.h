@@ -29,7 +29,6 @@ public:
         Friend, Enemy, Neutrality
     };
     static Relation GetRelation3v3(const ServerPlayer *a, const ServerPlayer *b);
-    static Relation GetRelationHegemony(const ServerPlayer *a, const ServerPlayer *b);
     static Relation GetRelation(const ServerPlayer *a, const ServerPlayer *b);
     Relation relationTo(const ServerPlayer *other) const;
     bool isFriend(const ServerPlayer *other) const;

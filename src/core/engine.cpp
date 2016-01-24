@@ -318,8 +318,6 @@ int Engine::getRoleIndex() const
 {
     if (ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode") {
         return 4;
-    } else if (ServerInfo.EnableHegemony) {
-        return 5;
     } else
         return 1;
 }
@@ -407,12 +405,6 @@ int Engine::getGeneralCount(bool include_banned) const
             && Config.value("Banlist/XMode").toStringList().contains(general->objectName()))
             total--;
         else if (ServerInfo.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
-            total--;
-        else if (ServerInfo.EnableBasara
-            && Config.value("Banlist/Basara").toStringList().contains(general->objectName()))
-            total--;
-        else if (ServerInfo.EnableHegemony
-            && Config.value("Banlist/Hegemony").toStringList().contains(general->objectName()))
             total--;
     }
 
@@ -703,14 +695,8 @@ QString Engine::getSetupString() const
         flags.append("F");
     if (Config.Enable2ndGeneral)
         flags.append("S");
-    if (Config.EnableScene)
-        flags.append("N");
     if (Config.EnableSame)
         flags.append("T");
-    if (Config.EnableBasara)
-        flags.append("B");
-    if (Config.EnableHegemony)
-        flags.append("H");
     if (Config.EnableAI)
         flags.append("A");
     if (Config.DisableChat)
@@ -819,10 +805,6 @@ QString Engine::getRoles(const QString &mode) const
         QString rolechar = table[n];
         if (mode.endsWith("z"))
             rolechar.replace("N", "C");
-        else if (Config.EnableHegemony) {
-            rolechar.replace("F", "N");
-            rolechar.replace("C", "N");
-        }
 
         return rolechar;
     } else if (mode.startsWith("@")) {
@@ -891,8 +873,6 @@ QStringList Engine::getLords(bool contain_banned) const
 QStringList Engine::getRandomLords() const
 {
     QStringList banlist_ban;
-    if (Config.EnableBasara)
-        banlist_ban = Config.value("Banlist/Basara").toStringList();
 
     if (Config.GameMode == "zombie_mode")
         banlist_ban.append(Config.value("Banlist/Zombie").toStringList());
@@ -1037,11 +1017,6 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
     QSet<QString> general_set = all_generals.toSet();
 
     Q_ASSERT(all_generals.count() >= count);
-
-    if (Config.EnableBasara)
-        general_set = general_set.subtract(Config.value("Banlist/Basara", "").toStringList().toSet());
-    if (Config.EnableHegemony)
-        general_set = general_set.subtract(Config.value("Banlist/Hegemony", "").toStringList().toSet());
 
     if (isNormalGameMode(ServerInfo.GameMode)
         || ServerInfo.GameMode.contains("_mini_")

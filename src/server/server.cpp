@@ -160,34 +160,6 @@ QWidget *ServerDialog::createPackageTab()
     return widget;
 }
 
-/* void ServerDialog::setMaxHpSchemeBox()
-{
-    if (!second_general_checkbox->isChecked()) {
-        prevent_awaken_below3_checkbox->setVisible(false);
-
-        scheme0_subtraction_label->setVisible(false);
-        scheme0_subtraction_spinbox->setVisible(false);
-
-        return;
-    }
-    int index = max_hp_scheme_ComboBox->currentIndex();
-    if (index == 0) {
-        prevent_awaken_below3_checkbox->setVisible(false);
-
-        scheme0_subtraction_label->setVisible(true);
-        scheme0_subtraction_spinbox->setVisible(true);
-        scheme0_subtraction_spinbox->setValue(Config.value("Scheme0Subtraction", 3).toInt());
-        scheme0_subtraction_spinbox->setEnabled(true);
-    } else {
-        prevent_awaken_below3_checkbox->setVisible(true);
-        prevent_awaken_below3_checkbox->setChecked(Config.value("PreventAwakenBelow3", false).toBool());
-        prevent_awaken_below3_checkbox->setEnabled(true);
-
-        scheme0_subtraction_label->setVisible(false);
-        scheme0_subtraction_spinbox->setVisible(false);
-    }
-}
- */
 QWidget *ServerDialog::createAdvancedTab()
 {
     QVBoxLayout *layout = new QVBoxLayout;
@@ -258,9 +230,6 @@ QWidget *ServerDialog::createAdvancedTab()
     //second_general_checkbox = new QCheckBox(tr("Enable second general"));
     //second_general_checkbox->setChecked(Config.Enable2ndGeneral);
 
-    scene_checkbox = new QCheckBox(tr("Enable Scene"));
-    scene_checkbox->setChecked(Config.EnableScene);    //changjing
-
     //same_checkbox = new QCheckBox(tr("Enable Same"));
     //same_checkbox->setChecked(Config.EnableSame);
 
@@ -286,27 +255,6 @@ QWidget *ServerDialog::createAdvancedTab()
 
     //connect(max_hp_scheme_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setMaxHpSchemeBox()));
 
-    /*basara_checkbox = new QCheckBox(tr("Enable Basara"));
-    basara_checkbox->setChecked(Config.EnableBasara);
-    updateButtonEnablility(mode_group->checkedButton());
-    connect(mode_group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(updateButtonEnablility(QAbstractButton *)));
-
-    hegemony_checkbox = new QCheckBox(tr("Enable Hegemony"));
-    hegemony_checkbox->setChecked(Config.EnableBasara && Config.EnableHegemony);
-    hegemony_checkbox->setEnabled(basara_checkbox->isChecked());
-    connect(basara_checkbox, SIGNAL(toggled(bool)), hegemony_checkbox, SLOT(setChecked(bool)));
-    connect(basara_checkbox, SIGNAL(toggled(bool)), hegemony_checkbox, SLOT(setEnabled(bool)));
-
-    hegemony_maxchoice_label = new QLabel(tr("Upperlimit for hegemony"));
-    hegemony_maxchoice_spinbox = new QSpinBox;
-    hegemony_maxchoice_spinbox->setRange(5, 10);
-    hegemony_maxchoice_spinbox->setValue(Config.value("HegemonyMaxChoice", 7).toInt());
-
-    hegemony_maxshown_label = new QLabel(tr("Max shown num for hegemony"));
-    hegemony_maxshown_spinbox = new QSpinBox;
-    hegemony_maxshown_spinbox->setRange(1, 11);
-    hegemony_maxshown_spinbox->setValue(Config.value("HegemonyMaxShown", 2).toInt());
-    */
     //enable_surprising_generals_checkbox = new QCheckBox(tr("Enable surprising generals"));
     //enable_surprising_generals_checkbox->setChecked(Config.EnableSurprisingGenerals);
 
@@ -1100,7 +1048,6 @@ bool ServerDialog::config()
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
     Config.DisableChat = disable_chat_checkbox->isChecked();
     //Config.Enable2ndGeneral = second_general_checkbox->isChecked();
-    Config.EnableScene = scene_checkbox->isChecked();        //changjing
     //Config.EnableSame = same_checkbox->isChecked();
     //Config.EnableBasara = basara_checkbox->isChecked() && basara_checkbox->isEnabled();
     //Config.EnableHegemony = hegemony_checkbox->isChecked() && hegemony_checkbox->isEnabled();
@@ -1159,13 +1106,8 @@ bool ServerDialog::config()
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);
     Config.setValue("DisableChat", Config.DisableChat);
     Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
-    Config.setValue("EnableScene", Config.EnableScene);   //changjing
     //Config.setValue("EnableSame", Config.EnableSame);
-    //Config.setValue("EnableBasara", Config.EnableBasara);
-    //Config.setValue("EnableHegemony", Config.EnableHegemony);
     //Config.setValue("EnableSurprisingGenerals", Config.EnableSurprisingGenerals);
-    //Config.setValue("HegemonyMaxChoice", hegemony_maxchoice_spinbox->value());
-    //Config.setValue("HegemonyMaxShown", hegemony_maxshown_spinbox->value());
     Config.setValue("MaxHpScheme", Config.MaxHpScheme);
     Config.setValue("Scheme0Subtraction", Config.Scheme0Subtraction);
     Config.setValue("PreventAwakenBelow3", Config.PreventAwakenBelow3);
