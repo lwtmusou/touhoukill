@@ -34,7 +34,7 @@ int GameRule::getPriority() const
     return 0;
 }
 
-QList<SkillInvokeDetail> GameRule::triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+QList<SkillInvokeDetail> GameRule::triggerable(TriggerEvent, const Room *, const QVariant &) const
 {
     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, NULL, NULL, NULL, 1, true);
 }
