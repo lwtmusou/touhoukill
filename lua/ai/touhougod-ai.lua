@@ -500,6 +500,11 @@ sgs.ai_trick_prohibit.gaoao = function(self, from, to, card)
 	return to:getPhase() == sgs.Player_NotActive
 end
 
+sgs.ai_skill_property.gaoao = { effect = {{"AntiDrawEffect"}},
+	trigger = 		{{"NotActive"}},
+	target = 		{{"SkillOwner"}},
+}
+
 
 --sgs.ai_card_intention.Slash
 sgs.ai_skill_choice.shenshou=function(self, choices)

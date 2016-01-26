@@ -64,8 +64,12 @@ trigegr也是同理。 于是trigger的一致性问题上，莲子没通过， �
 那么 ai可以认为神兔子局里，恋恋的出现是偏反的倾向。
 
 
+存储形式？
+sgs.skillIntroduction的一个表
+sgs.skillIntroduction.skillname  为具体技能
+sgs.skillIntroduction.skillname.effect
 
-
+然后另外需要 函数和表 来分析节点关系。
 
 
 
