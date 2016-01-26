@@ -272,12 +272,12 @@ weightSkillProperty =  function(player, lord, general)
     local lordGeneral = sgs.Sanguosha:getGeneral(lord:getGeneralName())
     
     for _, skill in sgs.qlist(general:getVisibleSkillList()) do
-        local s_name = "maihuo" --skill:objectName()
+        local s_name = skill:objectName()
         local pro = sgs.ai_skill_property[s_name]
 		if not pro or  type(pro) ~= "table" then continue end
         
         for _, l_skill in sgs.qlist(lordGeneral:getVisibleSkillList()) do
-            local ls_name = "gaoao" --l_skill:objectName()
+            local ls_name = l_skill:objectName()
             local l_pro = sgs.ai_skill_property[ls_name]
             if not l_pro or type(l_pro) ~= "table" then continue end
 
