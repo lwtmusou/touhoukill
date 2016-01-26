@@ -109,7 +109,7 @@ sgs.siling_lack =				{}
 sgs.attackRange_skill = {}
 sgs.ai_skillProperty = {}
 sgs.ai_judge_model ={}
-
+sgs.ai_skill_property = {  } --技能属性
 
 sgs.fake_loyalist =     false
 sgs.fake_rebel = false

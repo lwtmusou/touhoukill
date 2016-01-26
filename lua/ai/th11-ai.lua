@@ -260,6 +260,13 @@ sgs.ai_use_value.MaihuoCard = 7
 sgs.ai_use_priority.MaihuoCard = 7
 sgs.ai_card_intention.MaihuoCard = -70
 
+sgs.ai_skill_property.maihuo = { effect = {{"DrawEffect"},{"DrawEffect"}}, 
+--effect1 means that target draw, effect2 means that maihuo skillonwer draw
+	trigger = 		{{"NotActive"}, {"Unkown"}},
+	target = 		{{"OtherAlivePlayers"}, {"SkillOwner"}},
+}
+
+
 function SmartAI:getDamageSource(attacker)
 	if not attacker or attacker:hasSkill("wunian")  then
 		return false
