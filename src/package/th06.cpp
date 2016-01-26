@@ -1007,7 +1007,7 @@ public:
         room->doLightbox("$moxueAnimate", 4000);
         room->touhouLogmessage("#TriggerSkill", invoke->invoker, "moxue");
         room->notifySkillInvoked(invoke->invoker, objectName());
-        invoke->invoker->drawCards(qMin(invoke->invoker->getHandcardNum(), 1));
+        invoke->invoker->drawCards(qMax(invoke->invoker->getHandcardNum(), 1));
     }
 };
 
