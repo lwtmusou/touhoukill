@@ -2483,8 +2483,10 @@ void RoomScene::useSelectedCard()
         dashboard->retractPileCards("wooden_ox");
         dashboard->retractPileCards("piao");
         dashboard->retractPileCards("chaoren");
-        //dashboard->retractPileCards("feitou");
-        //dashboard->retractPileCards("shende");
+        foreach (const QString &pile, Self->getPileNames()) {
+            if (pile.startsWith("&"))
+                dashboard->retractPileCards(pile)
+        }
     }
 }
 

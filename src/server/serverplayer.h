@@ -115,7 +115,6 @@ public:
     void addToPile(const QString &pile_name, int card_id, bool open = true);
     void addToPile(const QString &pile_name, QList<int> card_ids, bool open = true);
     void addToPile(const QString &pile_name, QList<int> card_ids, bool open, CardMoveReason reason);
-    void exchangeFreelyFromPrivatePile(const QString &skill_name, const QString &pile_name, int upperlimit = 1000, bool include_equip = false);
     void gainAnExtraTurn();
 
     void copyFrom(ServerPlayer *sp);

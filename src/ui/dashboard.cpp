@@ -1047,10 +1047,7 @@ void Dashboard::startPending(const ViewAsSkill *skill)
     }
     if (Self->hasFlag("Global_expandpileFailed"))
         expand = true;
-    //else if (Self->hasFlag("Global_cardshowFailed") || Self->hasFlag("Global_carddiscardFailed")) //we need prohibit expanding pile when show card
-    //    expand = false;
 
-    //retractAllSkillPileCards();
     foreach (const QString &pileName, _m_pile_expanded) {
         if (!(pileName.startsWith("&") || pileName == "wooden_ox" || pileName == "piao" || pileName == "chaoren"))
             retractPileCards(pileName);
