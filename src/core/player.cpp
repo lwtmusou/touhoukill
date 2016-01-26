@@ -277,55 +277,6 @@ int Player::distanceTo(const Player *other, int distance_fix) const
             return fixed_distance.value(other);
     }
 
-    //jiejie
-    /*
-    if (getMark("@in_jiejie") > 0 || other->getMark("@in_jiejie") > 0)
-    return 900;
-    if (getPile("jiejie_left").length() > 0 &&
-    other->getPile("jiejie_right").length() > 0)
-    return 900;
-    if (other->getPile("jiejie_left").length() > 0 &&
-    getPile("jiejie_right").length() > 0)
-    return 900;
-    QStringList left_jiejies;
-    QStringList right_jiejies;
-    QList<const Player *> targets = getAliveSiblings();
-    bool find_jiejie = false;
-    bool clockwise = false;
-    bool anticlockwise = false;
-    int dis_clockwise = 1;
-    int dis_anticlockwise = 1;
-    int large = seat > other->seat ? seat : other->seat;
-    int small = seat > other->seat ? other->seat : seat;
-    const Player *smaller = seat > other->seat ? other : this;
-    const Player *larger = seat > other->seat ? this : other;
-    if (smaller->getPile("jiejie_right").length() > 0 || larger->getPile("jiejie_left").length() > 0)
-    clockwise = true;
-    if (smaller->getPile("jiejie_left").length() > 0 || larger->getPile("jiejie_right").length() > 0)
-    anticlockwise = true;
-    foreach (const Player *to, targets) {
-    if (to != other) {
-    if (to->getPile("jiejie_left").length() == 0 && to->getPile("jiejie_right").length() == 0) {
-    if (to->getSeat() > small && to->getSeat() < large)
-    dis_clockwise = dis_clockwise + 1;
-    else
-    dis_anticlockwise = dis_anticlockwise + 1;
-    } else {
-    if (to->getSeat() > small && to->getSeat() < large) {
-    clockwise = true;
-    break;
-    } else {
-    anticlockwise = true;
-    break;
-    }
-    }
-    }
-    }
-    if (clockwise && anticlockwise)
-    return 900;
-    */
-    //jiejie
-
 
     int right = qAbs(seat - other->seat);
     int left = aliveCount() - right;
@@ -622,8 +573,6 @@ void Player::setPhaseString(const QString &phase_str)
 void Player::setEquip(WrappedCard *equip)
 {
     const EquipCard *card = qobject_cast<const EquipCard *>(equip->getRealCard());
-    //if (card == NULL) // for jianshu and zhengyi
-    //    return;
     Q_ASSERT(card != NULL);
     switch (card->location()) {
         case EquipCard::WeaponLocation: weapon = equip; break;
@@ -908,12 +857,6 @@ bool Player::canDiscard(const Player *to, const QString &flags, QString reason) 
             if (Equips.contains("weapon"))
                 Equips.remove("weapon");
         }
-        if (to->hasSkill("qicai") && this != to) {
-            foreach (QString str, Equips) {
-                if (str != "dh" && str != "oh")
-                    Equips.remove(str);
-            }
-        }
         if (!Equips.isEmpty())
             return true;
 
@@ -925,12 +868,6 @@ bool Player::canDiscard(const Player *to, int card_id, QString reason) const
 {
     if (reason == "sidou") {
         if (to->getWeapon() && card_id == to->getWeapon()->getEffectiveId())
-            return false;
-    }
-
-    if (to->hasSkill("qicai") && this != to) {
-        if ((to->getWeapon() && card_id == to->getWeapon()->getEffectiveId())
-            || (to->getArmor() && card_id == to->getArmor()->getEffectiveId()))
             return false;
     }
 
@@ -1081,16 +1018,12 @@ QList<int> Player::getHandPile() const
 {
     QList<int> result;
     foreach (const QString &pile, getPileNames()) {
-        if (pile.startsWith("&") || pile == "wooden_ox" || pile == "piao" || pile == "chaoren") {
+#pragma message WARN("todo_Fs: chaoren is not handpile. the cards on chaoren can't be used in an ViewAsSkill")
+        if (pile.startsWith("&") || (pile == "wooden_ox" && hasTreasure("wooden_ox")) || (pile == "piao" && hasSkill("shanji")) || (pile == "chaoren" && hasSkill("chaoren"))) {
             foreach (int id, getPile(pile))
                 result.append(id);
         }
     }
-    /* if (this->hasSkill("chaoren")){
-        int first = this->property("chaoren").toInt() ;
-        if (first && first > -1)
-            result.append(first);
-    } */
     return result;
 }
 

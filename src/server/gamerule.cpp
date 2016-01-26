@@ -270,14 +270,23 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 if (card_use.card->hasPreAction())
                     card_use.card->doPreAction(room, card_use);
 
-
-                if (card_use.from && !card_use.to.isEmpty()) {
+                if (card_use.from) {
                     thread->trigger(TargetSpecifying, room, data);
-                    CardUseStruct card_use = data.value<CardUseStruct>();
-                    thread->trigger(TargetConfirming, room, data);
-                    CardUseStruct new_use = data.value<CardUseStruct>();
+                    card_use = data.value<CardUseStruct>();
                 }
-                card_use = data.value<CardUseStruct>();
+
+                if (!card_use.to.isEmpty()) {
+                    thread->trigger(TargetConfirming, room, data);
+                    card_use = data.value<CardUseStruct>();
+                }
+
+                if (card_use.card && !(card_use.card->isVirtualCard() && card_use.card->getSubcards().isEmpty()) && !card_use.card->targetFixed() && card_use.to.isEmpty()) {
+                    if (room->getCardPlace(card_use.card->getEffectiveId()) == Player::PlaceTable) {
+                        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
+                        room->throwCard(card_use.card, reason, NULL);
+                        break;
+                    }
+                }
 
                 try {
                     QVariantList jink_list_backup;
@@ -297,7 +306,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     card_use.card->use(room, card_use.from, card_use.to);
                     if (!jink_list_backup.isEmpty())
                         card_use.from->tag["Jink_" + card_use.card->toString()] = QVariant::fromValue(jink_list_backup);
-                    //insert CardUseNullifiedList, no need to nullify card effect in sepecific skill?
                 }
                 catch (TriggerEvent triggerEvent) {
                     if (triggerEvent == TurnBroken || triggerEvent == StageChange)

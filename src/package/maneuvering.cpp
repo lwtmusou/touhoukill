@@ -412,16 +412,7 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
         sub = subcards;
     else
         sub << getEffectiveId();
-    /* foreach (int id, sub) {
-        if (Self->getPile("piao").contains(id)) {
-            rec = false;
-            break;
-        }
-        if (Self->getPile("wooden_ox").contains(id)) {
-            rec = false;
-            break;
-        }
-    } */
+
     foreach (int id, sub) {
         if (Self->getHandPile().contains(id)) {
             rec = false;

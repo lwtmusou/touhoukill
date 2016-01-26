@@ -1359,7 +1359,7 @@ public:
         QList<ServerPlayer *> plist;
         foreach (ServerPlayer *liege, room->getAlivePlayers()) {
             foreach (QString pile, liege->getPileNames()) {
-                if (pile != "suoding_cards" && pile != "jiejie_right" &&  pile != "jiejie_left" && pile != "wooden_ox") {
+                if (pile != "suoding_cards" && pile != "wooden_ox") {
                     if (liege->getPile(pile).length() > 0) {
                         foreach(ServerPlayer *yukari, yukaris)
                             skill_list.insert(yukari, QStringList(objectName()));
@@ -1380,7 +1380,7 @@ public:
             int num = 0;
 
             foreach (QString pile, liege->getPileNames()) {
-                if (pile != "suoding_cards" && pile != "jiejie_right" &&  pile != "jiejie_left" && pile != "wooden_ox")
+                if (pile != "suoding_cards" && pile != "wooden_ox")
                     num = num + liege->getPile(pile).length();
             }
             if (num > 0)
@@ -1393,7 +1393,7 @@ public:
             if (player_haspile) {
                 QList<int> idlist;
                 foreach (QString pile, player_haspile->getPileNames()) {
-                    if (pile != "suoding_cards" && pile != "jiejie_right" && pile != "jiejie_left" && pile != "wooden_ox") {
+                    if (pile != "suoding_cards" && pile != "wooden_ox") {
                         foreach (int id, player_haspile->getPile(pile))
                             idlist << id;
                     }

@@ -521,7 +521,6 @@ public:
             draw_card = true;
         else {
             QString prompt = "double-sword-card:" + ask_who->objectName();
-            //if (!room->askForDiscard(skill_target, objectName(), 1, 1, true, false, prompt))
             const Card *card = room->askForCard(skill_target, ".", prompt, data);
             if (!card) draw_card = true;
         }
@@ -531,51 +530,7 @@ public:
 
         return false;
     }
-
-    /*     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
-        {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from != player)
-                return false;
-
-            ServerPlayer *lord = room->getLord();
-            QString lordKingdom = "";
-            if (lord)
-                lordKingdom = lord->getKingdom();
-            foreach (ServerPlayer *to, use.to) {
-                bool can = false;
-                if (lordKingdom == "")
-                    can = (((use.from->isMale() && to->isFemale()) || (use.from->isFemale() && to->isMale()))
-                    && use.card->isKindOf("Slash"));
-                else
-                    can = ((use.from->getKingdom() != to->getKingdom()
-                    && use.card->isKindOf("Slash"))
-                    && (use.from->getKingdom() == lordKingdom || to->getKingdom() == lordKingdom));
-                if (can) {
-                    use.from->tag["DoubleSwordTarget"] = QVariant::fromValue(to);
-                    if (use.from->askForSkillInvoke(objectName())) {
-                        if (player->hasWeapon(objectName()) && !player->hasWeapon(objectName(), true)) //for client box log
-                            room->touhouLogmessage("#InvokeSkill", player, objectName());
-
-                        room->setEmotion(use.from, "weapon/double_sword");
-
-                        bool draw_card = false;
-                        if (!to->canDiscard(to, "h"))
-                            draw_card = true;
-                        else {
-                            QString prompt = "double-sword-card:" + use.from->objectName();
-                            const Card *card = room->askForCard(to, ".", prompt, data);
-                            if (!card) draw_card = true;
-                        }
-                        if (draw_card)
-                            use.from->drawCards(1);
-                    }
-                    use.from->tag.remove("DoubleSwordTarget");
-                }
-            }
-
-            return false;
-        } */
+   
 };
 
 DoubleSword::DoubleSword(Suit suit, int number)
@@ -623,24 +578,6 @@ public:
             target->addQinggangTag(use.card);
         return false;
     }
-
-    /*     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
-        {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (WeaponSkill::triggerable(use.from) && use.from == player && use.card->isKindOf("Slash")) {
-
-                bool do_anim = false;
-                foreach (ServerPlayer *p, use.to.toSet()) {
-                    if (p->getMark("Equips_of_Others_Nullified_to_You") == 0) {
-                        do_anim = (p->getArmor() && p->hasArmorEffect(p->getArmor()->objectName())) || p->hasArmorEffect("bazhen");
-                        p->addQinggangTag(use.card);
-                    }
-                }
-                if (do_anim)
-                    room->setEmotion(use.from, "weapon/qinggang_sword");
-            }
-            return false;
-        } */
 };
 
 QinggangSword::QinggangSword(Suit suit, int number)
