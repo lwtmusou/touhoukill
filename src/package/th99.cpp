@@ -554,6 +554,9 @@ public:
         events << EventPhaseChanging << EventPhaseStart << DamageDone << Death;
     }
 
+/*
+    Fs: delete the original code due to the change of extraturn
+
     virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
         if (triggerEvent == DamageDone || triggerEvent == Death)
@@ -601,7 +604,7 @@ public:
             room->setPlayerMark(target, "shitu", 0);
         }
         return false;
-    }
+    }*/
 };
 
 class Mengxian : public TriggerSkill

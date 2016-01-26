@@ -290,7 +290,6 @@ public:
 
     void sortByActionOrder(QList<ServerPlayer *> &players);
     void defaultHeroSkin();
-    bool canInsertExtraTurn();
     void touhouLogmessage(const QString logtype, ServerPlayer *logfrom, const QString logarg = NULL, const QList<ServerPlayer *> &logto = QList<ServerPlayer *>(), const QString logarg2 = NULL);
 
 

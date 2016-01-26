@@ -64,6 +64,9 @@ public:
     const QList<EventTriplet> *getEventStack() const;
     inline GameRule *gameRule() const { return game_rule; }
 
+    void setNextExtraTurn(ServerPlayer *p);
+    inline bool hasExtraTurn() const { return nextExtraTurn != NULL; }
+
 protected:
     virtual void run();
 
@@ -80,6 +83,9 @@ private:
 
     QList<EventTriplet> event_stack;
     GameRule *game_rule;
+
+    ServerPlayer *nextExtraTurn;
+    ServerPlayer *extraTurnReturn;
 };
 
 #endif

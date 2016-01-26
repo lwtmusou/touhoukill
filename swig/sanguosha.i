@@ -1293,7 +1293,6 @@ public:
     void resetCard(int cardId);
 
     void updateStateItem();
-    bool canInsertExtraTurn();
 };
 
 %extend Room {

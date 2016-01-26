@@ -6298,16 +6298,6 @@ void Room::defaultHeroSkin()
     }
 }
 
-
-bool Room::canInsertExtraTurn()
-{
-    foreach (ServerPlayer *player, getAlivePlayers()) {
-        if (player->getMark("touhou-extra") > 0 || player->getMark("siyuinvoke") > 0)
-            return false;
-    }
-    return true;
-}
-
 void Room::touhouLogmessage(const QString logtype, ServerPlayer *logfrom, const QString logarg, const QList<ServerPlayer *>  &logto, const QString logarg2)
 {
     LogMessage alog;

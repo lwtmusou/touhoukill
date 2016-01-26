@@ -919,7 +919,8 @@ public:
     {
         events << TurnStart;
     }
-
+/*
+    Fs: delete the original code due to the change of extraturn
     virtual TriggerList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const
     {
         TriggerList skill_list;
@@ -965,7 +966,7 @@ public:
         //room->getThread()->trigger(TurnStart, room, player, data); 
         //do not trigger tun start, since it will give the current player more than one turn.  
         return false;
-    }
+    }*/
 };
 
 class Huanzai : public TriggerSkill
@@ -1792,6 +1793,12 @@ public:
         events << EventPhaseStart << Death << TurnStart;
         frequency = Frequent;
     }
+
+
+
+/*
+    Fs: delete the original code due to the change of extraturn
+
     virtual bool triggerable(const ServerPlayer *target) const
     {
         return target != NULL;
@@ -1849,8 +1856,9 @@ public:
         }
 
         return false;
-    }
+    }*/
 };
+
 class DuanzuiShenpan : public TriggerSkill
 {
 public:

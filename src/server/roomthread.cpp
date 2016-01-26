@@ -55,7 +55,7 @@ QString EventTriplet::toString() const
 }
 
 RoomThread::RoomThread(Room *room)
-    : room(room)
+    : room(room), nextExtraTurn(NULL), extraTurnReturn(NULL)
 {
 }
 
@@ -154,8 +154,8 @@ void RoomThread::_handleTurnBroken3v3(QList<ServerPlayer *> &first, QList<Server
         ServerPlayer *player = room->getCurrent();
         trigger(TurnBroken, room, QVariant::fromValue(player));
         if (player->getPhase() != Player::NotActive) {
-            QVariant _;
-            game_rule->trigger(EventPhaseEnd, room, player, _);
+            QVariant data = QVariant::fromValue(player);
+            game_rule->effect(EventPhaseEnd, room, QSharedPointer<SkillInvokeDetail>(), data);
             player->changePhase(player->getPhase(), Player::NotActive);
         }
         if (!player->hasFlag("actioned"))
@@ -259,7 +259,8 @@ void RoomThread::actionHulaoPass(ServerPlayer *shenlvbu, QList<ServerPlayer *> l
                         room->setPlayerFlag(player, "-actioned");
 
                     if (player->getPhase() != Player::NotActive) {
-                        game_rule->trigger(EventPhaseEnd, room, player);
+                        QVariant data = QVariant::fromValue(player);
+                        game_rule->effect(EventPhaseEnd, room, QSharedPointer<SkillInvokeDetail>(), data);
                         player->changePhase(player->getPhase(), Player::NotActive);
                     }
                 }
@@ -282,8 +283,8 @@ void RoomThread::_handleTurnBrokenHulaoPass(ServerPlayer *shenlvbu, QList<Server
         trigger(TurnBroken, room, QVariant::fromValue(player));
         ServerPlayer *next = findHulaoPassNext(shenlvbu, league, stage);
         if (player->getPhase() != Player::NotActive) {
-            QVariant _;
-            game_rule->trigger(EventPhaseEnd, room, player, _);
+            QVariant data = QVariant::fromValue(player);
+            game_rule->effect(EventPhaseEnd, room, QSharedPointer<SkillInvokeDetail>(), data);
             player->changePhase(player->getPhase(), Player::NotActive);
             if (player != shenlvbu && stage == 1)
                 room->setPlayerFlag(player, "actioned");
@@ -303,10 +304,30 @@ void RoomThread::_handleTurnBrokenHulaoPass(ServerPlayer *shenlvbu, QList<Server
 void RoomThread::actionNormal(GameRule *game_rule)
 {
     try {
-        forever{
-            trigger(TurnStart, room, QVariant::fromValue(room->getCurrent()));
-            if (room->isFinished()) break;
-            room->setCurrent(room->getCurrent()->getNextAlive());
+        forever {
+            ServerPlayer *current = room->getCurrent();
+            QVariant data = QVariant::fromValue(current);
+            trigger(TurnStart, room, data);
+            if (room->isFinished())
+                break;
+
+            while (nextExtraTurn != NULL) {
+                extraTurnReturn = current;
+                room->setCurrent(nextExtraTurn);
+                QVariant data = QVariant::fromValue(nextExtraTurn);
+                nextExtraTurn = NULL;
+                room->setTag("touhou-extra", true);
+                trigger(TurnStart, room, data);
+
+                if (room->isFinished())
+                    break;
+                room->setTag("touhou-extra", false);
+
+                current = extraTurnReturn;
+                extraTurnReturn = NULL;
+            }
+
+            room->setCurrent(current->getNextAlive());
         }
     }
     catch (TriggerEvent triggerEvent) {
@@ -321,14 +342,39 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule)
 {
     try {
         ServerPlayer *player = room->getCurrent();
-        trigger(TurnBroken, room, QVariant::fromValue(player));
-        ServerPlayer *next = player->getNextAlive();
+        QVariant data = QVariant::fromValue(player);
+        trigger(TurnBroken, room, data);
+
         if (player->getPhase() != Player::NotActive) {
-            QVariant _;
-            game_rule->trigger(EventPhaseEnd, room, player, _);
+            game_rule->effect(EventPhaseEnd, room, QSharedPointer<SkillInvokeDetail>(), data);
             player->changePhase(player->getPhase(), Player::NotActive);
         }
 
+        if (room->getTag("touhou-extra").toBool()) {
+            room->setTag("touhou-extra", false);
+            if (extraTurnReturn != NULL) {
+                player = extraTurnReturn;
+                extraTurnReturn = NULL;
+            }
+        }
+
+        while (nextExtraTurn != NULL) {
+            extraTurnReturn = player;
+            room->setCurrent(nextExtraTurn);
+            QVariant data = QVariant::fromValue(nextExtraTurn);
+            nextExtraTurn = NULL;
+            room->setTag("touhou-extra", true);
+            trigger(TurnStart, room, data);
+
+            if (room->isFinished())
+                return;
+            room->setTag("touhou-extra", false);
+
+            player = extraTurnReturn;
+            extraTurnReturn = NULL;
+        }
+
+        ServerPlayer *next = player->getNextAlive();
         room->setCurrent(next);
         actionNormal(game_rule);
     }

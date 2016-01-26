@@ -7,6 +7,7 @@
 #include "recorder.h"
 #include "banpair.h"
 #include "lua-wrapper.h"
+#include "gamerule.h"
 
 using namespace QSanProtocol;
 using namespace JsonUtils;
@@ -1266,28 +1267,28 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
     room->moveCardsAtomic(move, open);
 }
 
-#include "gamerule.h"
-void ServerPlayer::gainAnExtraTurn()
 #pragma message WARN("todo_Fs: rewrite this, put the effect in roomthread")
+void ServerPlayer::gainAnExtraTurn()
 {
-    ServerPlayer *current = room->getCurrent();
-    try {
-        room->setCurrent(this);
-        room->setPlayerMark(this, "touhou-extra", 1);
-        room->getThread()->trigger(TurnStart, room, QVariant::fromValue(this));
-        room->setPlayerMark(this, "touhou-extra", 0);
-        room->setCurrent(current);
-    }
-    catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken) {
-            if (getPhase() != Player::NotActive) {
-                room->getThread()->gameRule()->trigger(EventPhaseEnd, room, this);
-                changePhase(getPhase(), Player::NotActive);
-            }
-            room->setCurrent(current);
-        }
-        throw triggerEvent;
-    }
+    room->getThread()->setNextExtraTurn(this);
+//     ServerPlayer *current = room->getCurrent();
+//     try {
+//         room->setCurrent(this);
+//         room->setPlayerMark(this, "touhou-extra", 1);
+//         room->getThread()->trigger(TurnStart, room, QVariant::fromValue(this));
+//         room->setPlayerMark(this, "touhou-extra", 0);
+//         room->setCurrent(current);
+//     }
+//     catch (TriggerEvent triggerEvent) {
+//         if (triggerEvent == TurnBroken) {
+//             if (getPhase() != Player::NotActive) {
+//                 room->getThread()->gameRule()->trigger(EventPhaseEnd, room, this);
+//                 changePhase(getPhase(), Player::NotActive);
+//             }
+//             room->setCurrent(current);
+//         }
+//         throw triggerEvent;
+//     }
 }
 
 

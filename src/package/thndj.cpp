@@ -16,6 +16,8 @@ public:
         events << EventPhaseChanging << EventPhaseStart << Death;
         frequency = Compulsory;
     }
+/*
+    Fs: delete the original code due to the change of extraturn
 
     virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
@@ -74,7 +76,7 @@ public:
         player->gainAnExtraTurn();
 
         return false;
-    }
+    }*/
 };
 
 

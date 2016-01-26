@@ -1553,7 +1553,6 @@ public:
     }
 };
 
-#pragma message WARN("todo_Fs: rewrite this")
 class HpymSiyu : public TriggerSkill
 {
 public:
@@ -1562,6 +1561,8 @@ public:
         events << PostHpReduced << EventPhaseEnd;
         frequency = Compulsory;
     }
+/*
+    Fs: delete the original code due to the change of extraturn
 
     static void touhou_siyu_clear(ServerPlayer *player)
     {
@@ -1668,6 +1669,7 @@ public:
         }
         return false;
     }
+    */
 };
 
 
