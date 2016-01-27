@@ -314,13 +314,16 @@ void RoomThread::actionNormal(GameRule *game_rule)
             while (nextExtraTurn != NULL) {
                 extraTurnReturn = current;
                 room->setCurrent(nextExtraTurn);
+                ServerPlayer *nextExtraTurnCopy = nextExtraTurn;
                 QVariant data = QVariant::fromValue(nextExtraTurn);
                 nextExtraTurn = NULL;
                 room->setTag("touhou-extra", true);
+                nextExtraTurnCopy->tag["touhou-extra"] = true;
                 trigger(TurnStart, room, data);
 
                 if (room->isFinished())
                     break;
+                nextExtraTurnCopy->tag["touhou-extra"] = false;
                 room->setTag("touhou-extra", false);
 
                 current = extraTurnReturn;
@@ -361,13 +364,16 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule)
         while (nextExtraTurn != NULL) {
             extraTurnReturn = player;
             room->setCurrent(nextExtraTurn);
+            ServerPlayer *nextExtraTurnCopy = nextExtraTurn;
             QVariant data = QVariant::fromValue(nextExtraTurn);
             nextExtraTurn = NULL;
             room->setTag("touhou-extra", true);
+            nextExtraTurnCopy->tag["touhou-extra"] = true;
             trigger(TurnStart, room, data);
 
             if (room->isFinished())
-                return;
+                break;
+            nextExtraTurnCopy->tag["touhou-extra"] = false;
             room->setTag("touhou-extra", false);
 
             player = extraTurnReturn;
