@@ -256,7 +256,7 @@ void CardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
     QPointF totalMove = newPos - _m_lastMousePressScenePos;
     if (totalMove.x() * totalMove.x() + totalMove.y() * totalMove.y() >= _S_CLICK_JITTER_TOLERANCE) {
         QPointF down_pos = mouseEvent->buttonDownPos(Qt::LeftButton);
-        setPos(newPos - this->transform().map(down_pos));
+        setPos(newPos - transform().map(down_pos));
     }
 }
 

@@ -69,8 +69,8 @@ void PixmapAnimation::stop()
 
 void PixmapAnimation::preStart()
 {
-    this->show();
-    this->startTimer(S_DEFAULT_INTERVAL);
+    show();
+    startTimer(S_DEFAULT_INTERVAL);
 }
 
 PixmapAnimation *PixmapAnimation::GetPixmapAnimation(QGraphicsItem *parent, const QString &emotion)

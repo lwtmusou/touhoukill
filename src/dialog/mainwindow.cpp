@@ -52,7 +52,7 @@ public:
             if (newSceneRect != room_scene->sceneRect())
                 fitInView(room_scene->sceneRect(), Qt::KeepAspectRatio);
             else
-                this->resetTransform();
+                resetTransform();
             main_window->setBackgroundBrush(false);
             return;
         } else if (scene()->inherits("StartScene")) {
@@ -204,7 +204,7 @@ void MainWindow::on_actionStart_Server_triggered()
     if (start_scene) {
         start_scene->switchToServer(server);
         if (Config.value("EnableMinimizeDialog", false).toBool())
-            this->on_actionMinimize_to_system_tray_triggered();
+            on_actionMinimize_to_system_tray_triggered();
     }
 }
 

@@ -47,7 +47,7 @@ bool QSanSelectableItem::_load(const QString &filename, QSize size, bool useNewS
             resetTransform();
             setTransform(QTransform::fromTranslate(-_m_width / 2, -_m_height / 2), true);
         } else
-            this->prepareGeometryChange();
+            prepareGeometryChange();
     }
     return success;
 }

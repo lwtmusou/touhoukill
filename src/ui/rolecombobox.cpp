@@ -8,7 +8,7 @@ RoleComboBoxItem::RoleComboBoxItem(const QString &role, int number, QSize size)
     : m_role(role), m_number(number), m_size(size)
 {
     setRole(role);
-    this->setFlag(QGraphicsItem::ItemIgnoresParentOpacity);
+    setFlag(QGraphicsItem::ItemIgnoresParentOpacity);
 }
 
 QString RoleComboBoxItem::getRole() const

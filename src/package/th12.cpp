@@ -4,13 +4,8 @@
 #include "skill.h"
 #include "engine.h"
 #include "standard.h"
-//#include "clientplayer.h"
 #include "client.h"
-//#include "ai.h"
 #include "maneuvering.h"
-
-
-
 
 PuduCard::PuduCard()
 {

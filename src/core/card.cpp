@@ -60,7 +60,7 @@ int Card::getId() const
 
 void Card::setId(int id)
 {
-    this->m_id = id;
+    m_id = id;
 }
 
 int Card::getEffectiveId() const
@@ -93,7 +93,7 @@ int Card::getNumber() const
 
 void Card::setNumber(int number)
 {
-    this->m_number = number;
+    m_number = number;
 }
 
 QString Card::getNumberString() const
@@ -136,7 +136,7 @@ Card::Suit Card::getSuit() const
 
 void Card::setSuit(Suit suit)
 {
-    this->m_suit = suit;
+    m_suit = suit;
 }
 
 bool Card::sameColorWith(const Card *other) const
@@ -343,7 +343,7 @@ QString Card::getSkillName(bool removePrefix) const
 
 void Card::setSkillName(const QString &name)
 {
-    this->m_skillName = name;
+    m_skillName = name;
 }
 
 QString Card::getDescription(bool yellow) const
@@ -718,11 +718,11 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
 
 
     if (room->getCardPlace(getEffectiveId()) == Player::PlaceTable) {
-        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
+        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), getSkillName(), QString());
         if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
         reason.m_extraData = QVariant::fromValue(this);
         ServerPlayer *provider = NULL;
-        foreach (QString flag, this->getFlags()) {
+        foreach (QString flag, getFlags()) {
             if (flag.startsWith("CardProvider_")) {
                 QStringList patterns = flag.split("_");
                 provider = room->findPlayerByObjectName(patterns.at(1));

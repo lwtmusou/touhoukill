@@ -24,9 +24,9 @@ void MyPixmapItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
     QString msg = "";
     int result = mouseCanClick(event->pos().x(), event->pos().y());
     if (result == -1) return;
-    if (this->itemName == "faceboard")
+    if (itemName == "faceboard")
         msg = "<#" + QString::number(result + 1) + "#>";
-    else if (this->itemName == "easytextboard")
+    else if (itemName == "easytextboard")
         msg = easytext.at(result);
     emit my_pixmap_item_msg(msg);
 }
@@ -41,16 +41,16 @@ void MyPixmapItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 
 void MyPixmapItem::setSize(int x, int y)
 {
-    this->sizex = x;
-    this->sizey = y;
+    sizex = x;
+    sizey = y;
 }
 
 int MyPixmapItem::mouseCanClick(int x, int y)
 {
     int result = -1;
-    if (this->itemName == "faceboard")
+    if (itemName == "faceboard")
         result = mouseOnIcon(x, y);
-    else if (this->itemName == "easytextboard")
+    else if (itemName == "easytextboard")
         result = mouseOnText(x, y);
     return result;
 }

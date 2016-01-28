@@ -50,13 +50,13 @@ Window::Window(const QString &title, const QSizeF &size, const QString &path)
     scaleTransform = new QGraphicsScale(this);
     scaleTransform->setXScale(1.05);
     scaleTransform->setYScale(0.95);
-    scaleTransform->setOrigin(QVector3D(this->boundingRect().width() / 2, this->boundingRect().height() / 2, 0));
+    scaleTransform->setOrigin(QVector3D(boundingRect().width() / 2, boundingRect().height() / 2, 0));
 
     QList<QGraphicsTransform *> transforms;
     transforms << scaleTransform;
     setTransformations(transforms);
 
-    this->setOpacity(0.0);
+    setOpacity(0.0);
 
     titleItem = new QGraphicsTextItem(this);
     setTitle(title);

@@ -1665,13 +1665,13 @@ void GeneralAssignDialog::chooseGeneral()
     QAbstractButton *button = group->checkedButton();
     if (button)
         emit general_chosen(button->objectName());
-    this->reject();
+    reject();
 }
 
 void GeneralAssignDialog::clearGeneral()
 {
     emit general_cleared();
-    this->reject();
+    reject();
 }
 
 //------------------------------

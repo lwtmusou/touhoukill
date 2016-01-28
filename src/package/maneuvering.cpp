@@ -143,6 +143,7 @@ public:
         events << DamageCaused;
         frequency = Compulsory;
     }
+
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
         if (!WeaponSkill::triggerable(player)) return QStringList();
@@ -452,7 +453,7 @@ void IronChain::onUse(Room *room, const CardUseStruct &card_use) const
         room->sendLog(log);
 
         CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->objectName());
-        reason.m_skillName = this->getSkillName();
+        reason.m_skillName = getSkillName();
         room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason);
         card_use.from->broadcastSkillInvoke("@recast");
 

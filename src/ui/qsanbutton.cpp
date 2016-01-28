@@ -97,10 +97,10 @@ void QSanButton::setEnabled(bool enabled)
 void QSanButton::setState(QSanButton::ButtonState state, bool ignore_change)
 {
     if (ignore_change) {
-        this->_m_state = state;
+        _m_state = state;
         update();
-    } else if (this->_m_state != state) {
-        this->_m_state = state;
+    } else if (_m_state != state) {
+        _m_state = state;
         update();
     }
 }

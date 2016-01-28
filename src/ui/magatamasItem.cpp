@@ -26,7 +26,7 @@ void MagatamasBoxItem::setOrientation(Qt::Orientation orientation)
 void MagatamasBoxItem::_updateLayout()
 {
     int xStep, yStep;
-    if (this->m_orientation == Qt::Horizontal) {
+    if (m_orientation == Qt::Horizontal) {
         xStep = m_iconSize.width();
         yStep = 0;
     } else {
@@ -41,7 +41,7 @@ void MagatamasBoxItem::_updateLayout()
 
     for (int i = 1; i < 6; i++) {
         QSize bgSize;
-        if (this->m_orientation == Qt::Horizontal) {
+        if (m_orientation == Qt::Horizontal) {
             bgSize.setWidth((xStep + 1) * i);
             bgSize.setHeight(m_iconSize.height());
         } else {
@@ -122,7 +122,7 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp)
     int width = m_imageArea.width();
     int height = m_imageArea.height();
     int xStep, yStep;
-    if (this->m_orientation == Qt::Horizontal) {
+    if (m_orientation == Qt::Horizontal) {
         xStep = width;
         yStep = 0;
     } else {
@@ -170,7 +170,7 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     if (m_hp == m_maxHp) imageIndex = 5;
 
     int xStep, yStep;
-    if (this->m_orientation == Qt::Horizontal) {
+    if (m_orientation == Qt::Horizontal) {
         xStep = m_iconSize.width();
         yStep = 0;
     } else {
@@ -179,13 +179,13 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     }
 
     if (m_showBackground) {
-        if (this->m_orientation == Qt::Vertical) {
+        if (m_orientation == Qt::Vertical) {
             painter->save();
             painter->translate(m_iconSize.width(), 0);
             painter->rotate(90);
         }
         painter->drawPixmap(0, 0, _bgImages[qMin(m_maxHp, 5)]);
-        if (this->m_orientation == Qt::Vertical)
+        if (m_orientation == Qt::Vertical)
             painter->restore();
     }
 
@@ -219,7 +219,7 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
         painter->drawPixmap(m_imageArea, _icons[imageIndex]);
         QRect rect(xStep, yStep, m_imageArea.width(), m_imageArea.height());
         rect.translate(m_imageArea.topLeft());
-        if (this->m_orientation == Qt::Horizontal)
+        if (m_orientation == Qt::Horizontal)
             rect.translate(xStep * 0.5, yStep * 0.5);
         G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(painter, rect, Qt::AlignCenter, QString::number(m_hp));
         rect.translate(xStep, yStep);

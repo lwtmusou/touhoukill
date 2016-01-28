@@ -4315,7 +4315,7 @@ void RoomScene::doHuashen(const QString &, const QStringList &args)
     foreach (QString arg, hargs) {
         if (owner) huashen_list << arg;
         CardItem *item = new CardItem(arg);
-        item->setPos(this->m_tableCenterPos);
+        item->setPos(m_tableCenterPos);
         addItem(item);
         generals.append(item);
     }

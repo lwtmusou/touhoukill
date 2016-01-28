@@ -243,9 +243,9 @@ struct CardsMoveStruct
         this->from = from;
         this->to = to;
         this->reason = reason;
-        this->is_last_handcard = false;
-        if (from) this->from_player_name = from->objectName();
-        if (to) this->to_player_name = to->objectName();
+        is_last_handcard = false;
+        if (from) from_player_name = from->objectName();
+        if (to) to_player_name = to->objectName();
     }
 
     inline CardsMoveStruct(const QList<int> &ids, Player *to, Player::Place to_place, CardMoveReason reason)
@@ -256,8 +256,8 @@ struct CardsMoveStruct
         this->from = NULL;
         this->to = to;
         this->reason = reason;
-        this->is_last_handcard = false;
-        if (to) this->to_player_name = to->objectName();
+        is_last_handcard = false;
+        if (to) to_player_name = to->objectName();
     }
 
     inline CardsMoveStruct(int id, Player *from, Player *to, Player::Place from_place,
@@ -269,9 +269,9 @@ struct CardsMoveStruct
         this->from = from;
         this->to = to;
         this->reason = reason;
-        this->is_last_handcard = false;
-        if (from) this->from_player_name = from->objectName();
-        if (to) this->to_player_name = to->objectName();
+        is_last_handcard = false;
+        if (from) from_player_name = from->objectName();
+        if (to) to_player_name = to->objectName();
     }
 
     inline CardsMoveStruct(int id, Player *to, Player::Place to_place, CardMoveReason reason)
@@ -282,8 +282,8 @@ struct CardsMoveStruct
         this->from = NULL;
         this->to = to;
         this->reason = reason;
-        this->is_last_handcard = false;
-        if (to) this->to_player_name = to->objectName();
+        is_last_handcard = false;
+        if (to) to_player_name = to->objectName();
     }
 
     inline bool operator == (const CardsMoveStruct &other) const

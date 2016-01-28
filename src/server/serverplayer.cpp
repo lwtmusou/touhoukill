@@ -135,11 +135,11 @@ void ServerPlayer::clearOnePrivatePile(QString pile_name)
 
 
     DummyCard *dummy = new DummyCard(pile);
-    CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, this->objectName());
+    CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, objectName());
     bool notifyLog = true;
     QString new_name = pile_name;
     if (new_name.startsWith("#")) {
-        foreach (QString flag, this->getFlagList()) {
+        foreach (QString flag, getFlagList()) {
             //if (flag.endsWith("_InTempMoving"))
             if (flag == new_name.mid(1) + "_InTempMoving") {
                 notifyLog = false;
@@ -182,7 +182,7 @@ void ServerPlayer::throwAllCards()
     
     QList<const Card *> tricks = getJudgingArea();
     foreach (const Card *trick, tricks) {
-        CardMoveReason reason(CardMoveReason::S_REASON_THROW, this->objectName());
+        CardMoveReason reason(CardMoveReason::S_REASON_THROW, objectName());
         room->throwCard(trick, reason, NULL);
     }
 }
@@ -241,7 +241,7 @@ void ServerPlayer::setSocket(ClientSocket *socket)
         connect(this, SIGNAL(message_ready(QString)), this, SLOT(sendMessage(QString)));
     } else {
         if (this->socket) {
-            this->disconnect(this->socket);
+            disconnect(this->socket);
             this->socket->disconnect(this);
             this->socket->disconnectFromHost();
             this->socket->deleteLater();
@@ -715,7 +715,7 @@ void ServerPlayer::play(QList<Player::Phase> set_phases)
     if (!set_phases.isEmpty()) {
         if (!set_phases.contains(NotActive))
             set_phases << NotActive;
-    } else if (this->getMark("shitu") > 0) {
+    } else if (getMark("shitu") > 0) {
         set_phases << RoundStart << Draw << NotActive;
     } else {
         set_phases << RoundStart << Start << Judge << Draw << Play
@@ -1204,7 +1204,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     if (getMark("pingyi_steal") > 0) {
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (this != p && p->getMark("pingyi") > 0) {
-                QString pingyi_record = this->objectName() + "pingyi" + p->objectName();
+                QString pingyi_record = objectName() + "pingyi" + p->objectName();
                 QString skillname = room->getTag(pingyi_record).toString();
                 if (skillname != NULL && skillname != "") {
                     JsonArray huanshen_arg;

@@ -314,7 +314,7 @@ void Room::revivePlayer(ServerPlayer *player)
 
 void Room::updateStateItem()
 {
-    QList<ServerPlayer *> players = this->m_players;
+    QList<ServerPlayer *> players = m_players;
     std::sort(players.begin(), players.end(), [](ServerPlayer *player1, ServerPlayer *player2) -> bool {
         int role1 = player1->getRoleEnum();
         int role2 = player2->getRoleEnum();
@@ -5667,10 +5667,10 @@ void Room::makeDamage(const QString &source, const QString &target, QSanProtocol
         loseMaxHp(targetPlayer, point);
         return;
     } else if (nature == S_CHEAT_HP_RECOVER) {
-        RecoverStruct recover;
-        recover.who = sourcePlayer;
-        recover.recover = point;
-        this->recover(targetPlayer, recover);
+        RecoverStruct r;
+        r.who = sourcePlayer;
+        r.recover = point;
+        recover(targetPlayer, r);
         return;
     } else if (nature == S_CHEAT_MAX_HP_RESET) {
         setPlayerProperty(targetPlayer, "maxhp", point);
@@ -5685,7 +5685,7 @@ void Room::makeDamage(const QString &source, const QString &target, QSanProtocol
     }
 
     if (targetPlayer == NULL) return;
-    this->damage(DamageStruct("cheat", sourcePlayer, targetPlayer, point, nature_map[nature]));
+    damage(DamageStruct("cheat", sourcePlayer, targetPlayer, point, nature_map[nature]));
 }
 
 void Room::makeKilling(const QString &killerName, const QString &victimName)

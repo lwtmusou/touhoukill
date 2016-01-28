@@ -242,7 +242,7 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const
     Room *room = card_effect.from->getRoom();
     if (card_effect.from->getMark("drank") > 0) {
         room->setCardFlag(this, "drank");
-        this->drank = card_effect.from->getMark("drank");
+        drank = card_effect.from->getMark("drank");
         room->setPlayerMark(card_effect.from, "drank", 0);
     }
 
@@ -252,7 +252,7 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const
     effect.slash = this;
 
     effect.to = card_effect.to;
-    effect.drank = this->drank;
+    effect.drank = drank;
     effect.nullified = card_effect.nullified;
 
     QVariantList jink_list = effect.from->tag["Jink_" + toString()].toList();
@@ -341,7 +341,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     }
 
     if (Self->hasSkill("shuangren") && distance_limit && targets.length() >= 1) {
-        if (this->isVirtualCard() && this->subcardsLength() == 0 && !Self->hasFlag("slashDisableExtraTarget"))
+        if (isVirtualCard() && subcardsLength() == 0 && !Self->hasFlag("slashDisableExtraTarget"))
             distance_limit = false;
         else {
             bool has_shuangren_target = false;
@@ -423,7 +423,6 @@ bool Peach::targetFilter(const QList<const Player *> &targets, const Player *to_
             }
         }
 
-        //if (this->getSkillName() == "chuangshi") chuangshi is  RESPONSE_USE,askfor peach is also response use .....
         if (globalDying && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
             return to_select->hasFlag("Global_Dying") && to_select->objectName() == Self->property("currentdying").toString();
         } else {
@@ -971,7 +970,7 @@ void AmazingGrace::doPreAction(Room *room, const CardUseStruct &) const
 void AmazingGrace::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     //shemi count
-    if (this->getSkillName() == "shemi")
+    if (getSkillName() == "shemi")
         room->addPlayerHistory(source, "ShemiAG");
 
     try {

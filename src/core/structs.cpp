@@ -208,7 +208,7 @@ CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer 
     this->card = card;
     this->from = from;
     if (target != NULL)
-        this->to << target;
+        to << target;
     this->m_isOwnerUse = isOwnerUse;
     this->m_addHistory = true;
 }
@@ -271,7 +271,7 @@ bool CardUseStruct::tryParse(const QVariant &usage, Room *room)
 
     for (int i = 0; i < targets.size(); i++) {
         if (!JsonUtils::isString(targets.value(i))) return false;
-        this->to << room->findChild<ServerPlayer *>(targets.value(i).toString());
+        to << room->findChild<ServerPlayer *>(targets.value(i).toString());
     }
     return true;
 }

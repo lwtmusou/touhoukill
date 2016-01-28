@@ -98,7 +98,7 @@ void EffectAnimation::deleteEffect(QAnimatedEffect *effect)
 
 EmphasizeEffect::EmphasizeEffect(bool stay)
 {
-    this->setObjectName("emphasizer");
+    setObjectName("emphasizer");
     index = 0;
     this->stay = stay;
     QPropertyAnimation *anim = new QPropertyAnimation(this, "index");
@@ -110,7 +110,7 @@ EmphasizeEffect::EmphasizeEffect(bool stay)
 
 void EmphasizeEffect::draw(QPainter *painter)
 {
-    QSizeF s = this->sourceBoundingRect().size();
+    QSizeF s = sourceBoundingRect().size();
     qreal scale = (-qAbs(index - 50) + 50) / 1000.0;
     scale = 0.1 - scale;
 
@@ -154,7 +154,7 @@ void QAnimatedEffect::setStay(bool stay)
 SentbackEffect::SentbackEffect(bool stay)
 {
     grayed = 0;
-    this->setObjectName("backsender");
+    setObjectName("backsender");
     index = 0;
     this->stay = stay;
 
@@ -209,7 +209,7 @@ void SentbackEffect::draw(QPainter *painter)
 
 FadeEffect::FadeEffect(bool stay)
 {
-    this->setObjectName("fader");
+    setObjectName("fader");
     index = 0;
     this->stay = stay;
 

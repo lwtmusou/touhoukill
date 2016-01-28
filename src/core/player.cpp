@@ -50,8 +50,8 @@ void Player::setShownRole(bool shown)
 
 void Player::setHp(int hp)
 {
-    if (this->hasSkill("banling")) {
-        this->hp = this->getHp(); //set for banling
+    if (hasSkill("banling")) {
+        this->hp = getHp(); //set for banling
         emit hp_changed();
     } else if (this->hp != hp) {
         this->hp = hp;
@@ -61,11 +61,11 @@ void Player::setHp(int hp)
 
 int Player::getHp() const
 {
-    if (this->hasSkill("huanmeng")) {
+    if (hasSkill("huanmeng")) {
         return 0;
-    } if (this->hasSkill("banling")) {
-        int x = this->getMark("lingtili") - this->getMark("minus_lingtili");
-        int y = this->getMark("rentili") - this->getMark("minus_rentili");
+    } if (hasSkill("banling")) {
+        int x = getMark("lingtili") - getMark("minus_lingtili");
+        int y = getMark("rentili") - getMark("minus_rentili");
         if (y > x) {
             return x;
         } else {
@@ -77,8 +77,8 @@ int Player::getHp() const
 
 int Player::getLingHp() const
 {
-    if (this->hasSkill("banling")) {
-        int x = this->getMark("lingtili") - this->getMark("minus_lingtili");
+    if (hasSkill("banling")) {
+        int x = getMark("lingtili") - getMark("minus_lingtili");
         return x;
     }
     return hp;
@@ -86,8 +86,8 @@ int Player::getLingHp() const
 
 int Player::getRenHp() const
 {
-    if (this->hasSkill("banling")) {
-        int y = this->getMark("rentili") - this->getMark("minus_rentili");
+    if (hasSkill("banling")) {
+        int y = getMark("rentili") - getMark("minus_rentili");
         return y;
     }
     return hp;
@@ -95,7 +95,7 @@ int Player::getRenHp() const
 
 int Player::getMaxHp() const
 {
-    if (this->hasSkill("huanmeng")) {
+    if (hasSkill("huanmeng")) {
         return 0;
     }
     return max_hp;
@@ -298,8 +298,8 @@ int Player::distanceTo(const Player *other, int distance_fix) const
 
 void Player::setGeneral(const General *new_general)
 {
-    if (this->general != new_general) {
-        this->general = new_general;
+    if (general != new_general) {
+        general = new_general;
 
         if (new_general && kingdom.isEmpty())
             setKingdom(new_general->getKingdom());
@@ -1211,8 +1211,6 @@ bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool i
 {
     if (method == Card::MethodNone)
         return false;
-    //if (this->hasFlag("yuanfei"))
-    //    return true;
     if (card->getTypeId() == Card::TypeSkill && method == card->getHandlingMethod()) {
         foreach (int card_id, card->getSubcards()) {
             const Card *c = Sanguosha->getCard(card_id);
@@ -1240,17 +1238,17 @@ bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool i
 
 void Player::addQinggangTag(const Card *card)
 {
-    QStringList qinggang = this->tag["Qinggang"].toStringList();
+    QStringList qinggang = tag["Qinggang"].toStringList();
     qinggang.append(card->toString());
-    this->tag["Qinggang"] = QVariant::fromValue(qinggang);
+    tag["Qinggang"] = QVariant::fromValue(qinggang);
 }
 
 void Player::removeQinggangTag(const Card *card)
 {
-    QStringList qinggang = this->tag["Qinggang"].toStringList();
+    QStringList qinggang = tag["Qinggang"].toStringList();
     if (!qinggang.isEmpty()) {
         qinggang.removeOne(card->toString());
-        this->tag["Qinggang"] = qinggang;
+        tag["Qinggang"] = qinggang;
     }
 }
 

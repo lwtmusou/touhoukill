@@ -78,7 +78,7 @@ void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const
 void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     if (targets.isEmpty()) {
-        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
+        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), getSkillName(), QString());
         room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
     }
     int equipped_id = Card::S_UNKNOWN_CARD_ID;
@@ -111,10 +111,13 @@ void EquipCard::onInstall(ServerPlayer *player) const
     const Skill *skill = Sanguosha->getSkill(this);
     if (skill) {
         if (skill->inherits("ViewAsSkill")) {
-            room->attachSkillToPlayer(player, this->objectName());
+            room->attachSkillToPlayer(player, objectName());
         } else if (skill->inherits("TriggerSkill")) {
             const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
             room->getThread()->addTriggerSkill(trigger_skill);
+
+            if (trigger_skill->getViewAsSkill())
+                room->attachSkillToPlayer(player, skill->objectName());
         }
     }
 }
@@ -122,8 +125,10 @@ void EquipCard::onInstall(ServerPlayer *player) const
 void EquipCard::onUninstall(ServerPlayer *player) const
 {
     Room *room = player->getRoom();
-    if (Sanguosha->getSkill(this) && Sanguosha->getSkill(this)->inherits("ViewAsSkill"))
-        room->detachSkillFromPlayer(player, this->objectName(), true);
+    const Skill *skill = Sanguosha->getSkill(this);
+
+    if (skill && (skill->inherits("ViewAsSkill") || (skill->inherits("TriggerSkill") && qobject_cast<TriggerSkill *>(skill)->getViewAsSkill())))
+        room->detachSkillFromPlayer(player, objectName(), true);
 }
 
 QString GlobalEffect::getSubtype() const
@@ -234,7 +239,7 @@ DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
 void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const
 {
     CardUseStruct use = card_use;
-    WrappedCard *wrapped = Sanguosha->getWrappedCard(this->getEffectiveId());
+    WrappedCard *wrapped = Sanguosha->getWrappedCard(getEffectiveId());
     use.card = wrapped;
 
     LogMessage log;
@@ -248,7 +253,7 @@ void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const
     RoomThread *thread = room->getThread();
     thread->trigger(PreCardUsed, room,data);
 
-    CardMoveReason reason(CardMoveReason::S_REASON_USE, use.from->objectName(), use.to.first()->objectName(), this->getSkillName(), QString());
+    CardMoveReason reason(CardMoveReason::S_REASON_USE, use.from->objectName(), use.to.first()->objectName(), getSkillName(), QString());
     room->moveCardTo(this, use.from, use.to.first(), Player::PlaceDelayedTrick, reason, true);
 
     thread->trigger(CardUsed, room, data);
@@ -264,7 +269,7 @@ void DelayedTrick::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
             onNullified(source);
             if (room->getCardOwner(getEffectiveId()) != source) return;
         }
-        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
+        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), getSkillName(), QString());
         room->moveCardTo(this, room->getCardOwner(getEffectiveId()), NULL, Player::DiscardPile, reason, true);
     }
 }
@@ -335,7 +340,7 @@ void DelayedTrick::onNullified(ServerPlayer *target) const
                 continue;
             }
 
-            CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), this->getSkillName(), QString());
+            CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), getSkillName(), QString());
             room->moveCardTo(this, target, player, Player::PlaceDelayedTrick, reason, true);
 
             if (target == player) break;

@@ -167,7 +167,7 @@ void Dashboard::_createMiddle()
 
     trusting_item = new QGraphicsRectItem(this);
     trusting_text = new QGraphicsSimpleTextItem(tr("Trusting ..."), this);
-    trusting_text->setPos(this->boundingRect().width() / 2, 50);
+    trusting_text->setPos(boundingRect().width() / 2, 50);
 
     QBrush trusting_brush(G_DASHBOARD_LAYOUT.m_trustEffectColor);
     trusting_item->setBrush(trusting_brush);
@@ -198,7 +198,7 @@ void Dashboard::_adjustComponentZValues(bool killed)
 
 int Dashboard::width()
 {
-    return this->_m_width;
+    return _m_width;
 }
 
 
@@ -225,9 +225,9 @@ void Dashboard::_updateFrames()
 {
     // Here is where we adjust all frames to actual width
     QRect rect = QRect(G_DASHBOARD_LAYOUT.m_leftWidth, 0,
-        this->width() - G_DASHBOARD_LAYOUT.m_rightWidth - G_DASHBOARD_LAYOUT.m_leftWidth, G_DASHBOARD_LAYOUT.m_normalHeight);
+        width() - G_DASHBOARD_LAYOUT.m_rightWidth - G_DASHBOARD_LAYOUT.m_leftWidth, G_DASHBOARD_LAYOUT.m_normalHeight);
     _paintPixmap(_m_middleFrame, rect, _getPixmap(QSanRoomSkin::S_SKIN_KEY_MIDDLEFRAME), this);
-    QRect rect2 = QRect(0, 0, this->width(), G_DASHBOARD_LAYOUT.m_normalHeight);
+    QRect rect2 = QRect(0, 0, width(), G_DASHBOARD_LAYOUT.m_normalHeight);
     trusting_item->setRect(rect2);
     trusting_item->setPos(0, 0);
     trusting_text->setPos((rect2.width() - Config.BigFont.pixelSize() * 4.5) / 2,
@@ -265,7 +265,7 @@ void Dashboard::killPlayer()
 void Dashboard::revivePlayer()
 {
     _m_votesGot = 0;
-    this->setGraphicsEffect(NULL);
+    setGraphicsEffect(NULL);
     Q_ASSERT(_m_deathIcon);
     _m_deathIcon->hide();
     refresh();
@@ -276,7 +276,7 @@ void Dashboard::setDeathColor()
     QGraphicsColorizeEffect *effect = new QGraphicsColorizeEffect();
     effect->setColor(_m_layout->m_deathEffectColor);
     effect->setStrength(1.0);
-    this->setGraphicsEffect(effect);
+    setGraphicsEffect(effect);
     refresh(true);
 }
 
@@ -484,7 +484,7 @@ void Dashboard::setWidth(int width)
 {
     prepareGeometryChange();
     adjustCards(true);
-    this->_m_width = width;
+    _m_width = width;
     _updateFrames();
     _updateDeathIcon();
 }
@@ -787,7 +787,7 @@ void Dashboard::_adjustCards()
     QSanRoomSkin::DashboardLayout *layout = (QSanRoomSkin::DashboardLayout *)_m_layout;
     int leftWidth = layout->m_leftWidth;
     int cardHeight = G_COMMON_LAYOUT.m_cardNormalHeight;
-    int middleWidth = _m_width - layout->m_leftWidth - layout->m_rightWidth - this->getButtonWidgetWidth();
+    int middleWidth = _m_width - layout->m_leftWidth - layout->m_rightWidth - getButtonWidgetWidth();
     QRect rowRect = QRect(leftWidth, layout->m_normalHeight - cardHeight - 3, middleWidth, cardHeight);
     for (int i = 0; i < maxCards; i++)
         row.push_back(m_handCards[i]);

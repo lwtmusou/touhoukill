@@ -84,9 +84,9 @@ void Button::init()
 
     QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect;
     effect->setBlurRadius(5);
-    effect->setOffset(this->boundingRect().height() / 7.0);
+    effect->setOffset(boundingRect().height() / 7.0);
     effect->setColor(QColor(0, 0, 0, 200));
-    this->setGraphicsEffect(effect);
+    setGraphicsEffect(effect);
 
     glow = 0;
     timer_id = 0;

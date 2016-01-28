@@ -739,7 +739,7 @@ QAbstractAnimation *QSanRoomSkin::createHuaShenAnimation(QPixmap &huashenAvatar,
 
 const QSanRoomSkin::RoomLayout &QSanRoomSkin::getRoomLayout() const
 {
-    return this->_m_roomLayout;
+    return _m_roomLayout;
 }
 
 const QSanRoomSkin::PhotoLayout &QSanRoomSkin::getPhotoLayout() const
@@ -1050,7 +1050,7 @@ void QSanSkinFactory::destroyInstance()
 
 const QSanSkinScheme &QSanSkinFactory::getCurrentSkinScheme()
 {
-    return this->_sm_currentSkin;
+    return _sm_currentSkin;
 }
 
 bool QSanSkinFactory::switchSkin(QString skinName)

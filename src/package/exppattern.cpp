@@ -8,8 +8,8 @@ ExpPattern::ExpPattern(const QString &exp)
 
 bool ExpPattern::match(const Player *player, const Card *card) const
 {
-    foreach(QString one_exp, this->exp.split('#'))
-        if (this->matchOne(player, card, one_exp)) return true;
+    foreach(QString one_exp, exp.split('#'))
+        if (matchOne(player, card, one_exp)) return true;
 
     return false;
 }

@@ -44,25 +44,25 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer 
             }
         }
 
-        if (player->getPhase() == Player::RoundStart && this->players.first()["beforeNext"] != QString()) {
+        if (player->getPhase() == Player::RoundStart && players.first()["beforeNext"] != QString()) {
             if (player->tag["playerHasPlayed"].toBool())
-                room->gameOver(this->players.first()["beforeNext"]);
+                room->gameOver(players.first()["beforeNext"]);
             else player->tag["playerHasPlayed"] = true;
         }
 
         if (player->getPhase() != Player::NotActive) return false;
-        if (player->getState() == "robot" || this->players.first()["singleTurn"] == QString())
+        if (player->getState() == "robot" || players.first()["singleTurn"] == QString())
             return false;
-        room->gameOver(this->players.first()["singleTurn"]);
+        room->gameOver(players.first()["singleTurn"]);
         return true;
     } else if (triggerEvent == FetchDrawPileCard) {
-        if (this->players.first()["endedByPile"] != QString()) {
+        if (players.first()["endedByPile"] != QString()) {
             const QList<int> &drawPile = room->getDrawPile();
             foreach (int id, m_fixedDrawCards) {
                 if (drawPile.contains(id))
                     return false;
             }
-            room->gameOver(this->players.first()["endedByPile"]);
+            room->gameOver(players.first()["endedByPile"]);
             return true;
         }
         return false;
@@ -342,7 +342,7 @@ void MiniScene::setupCustom(QString name) const
     name.prepend("etc/customScenes/");
     name.append(".txt");
 
-    MiniSceneRule *arule = qobject_cast<MiniSceneRule *>(this->getRule());
+    MiniSceneRule *arule = qobject_cast<MiniSceneRule *>(getRule());
     arule->loadSetting(name);
 }
 
