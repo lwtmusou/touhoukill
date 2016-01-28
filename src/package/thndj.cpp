@@ -30,10 +30,10 @@ public:
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.player->hasSkill(this) 
-                && change.to == Player::NotActive
-                && change.player->getHp() == 1
-                && !change.player->tag.value("touhou-extra", false).toBool()
-                && !room->getTag("rexueDeathInThisRound").toBool()
+                    && change.to == Player::NotActive
+                    && change.player->getHp() == 1
+                    && !change.player->tag.value("touhou-extra", false).toBool()
+                    && !room->getTag("rexueDeathInThisRound").toBool()
             )
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, 1, true);
         }
@@ -357,7 +357,8 @@ public:
 
         // 2.one who in your attack range is hit by another player(but not you)
         foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (p->inMyAttackRange(damage.to)
+            if (p->hasSkill(this)
+                    && p->inMyAttackRange(damage.to)
                     && p != damage.from
                     && p != damage.to
                     && damage.from != damage.to
