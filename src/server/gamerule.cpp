@@ -594,7 +594,12 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             if (room->getTag("SkipNormalDeathProcess").toBool())
                 return false;
 
-            ServerPlayer *killer = death.damage ? death.damage->from : NULL;
+            ServerPlayer *killer = NULL;
+            if (death.useViewAsKiller)
+                killer = death.viewAsKiller;
+            else if (death.damage)
+                killer = death.damage->from;
+
             if (killer && !skipRewardAndPunish)
                 rewardAndPunish(killer, death.who);
 

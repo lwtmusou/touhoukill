@@ -128,7 +128,7 @@ DyingStruct::DyingStruct()
 }
 
 DeathStruct::DeathStruct()
-    : who(NULL), damage(NULL)
+    : who(NULL), damage(NULL), viewAsKiller(NULL), useViewAsKiller(false)
 {
 }
 

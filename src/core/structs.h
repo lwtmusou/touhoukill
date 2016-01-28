@@ -334,6 +334,9 @@ struct DeathStruct
 
     ServerPlayer *who; // who is dead
     DamageStruct *damage; // if it is NULL that means the dying is caused by losing hp
+
+    ServerPlayer *viewAsKiller;
+    bool useViewAsKiller;
 };
 
 struct RecoverStruct

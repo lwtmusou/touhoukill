@@ -2485,7 +2485,7 @@ void RoomScene::useSelectedCard()
         dashboard->retractPileCards("chaoren");
         foreach (const QString &pile, Self->getPileNames()) {
             if (pile.startsWith("&"))
-                dashboard->retractPileCards(pile)
+                dashboard->retractPileCards(pile);
         }
     }
 }
