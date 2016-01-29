@@ -1008,6 +1008,7 @@ public:
         room->touhouLogmessage("#TriggerSkill", invoke->invoker, "moxue");
         room->notifySkillInvoked(invoke->invoker, objectName());
         invoke->invoker->drawCards(qMax(invoke->invoker->getHandcardNum(), 1));
+        return false;
     }
 };
 
