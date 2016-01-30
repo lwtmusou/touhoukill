@@ -48,7 +48,6 @@ public:
 
     
     void getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QSharedPointer<SkillInvokeDetail> > &detailsList, const QList<QSharedPointer<SkillInvokeDetail> > &triggered, const QVariant &data);
-    void judgeTriggered(QList<QSharedPointer<SkillInvokeDetail> > &detailsList, const QList<QSharedPointer<SkillInvokeDetail> > &triggered);
     bool trigger(TriggerEvent triggerEvent, Room *room, QVariant &data); // player is deleted. a lot of things is able to put in data. make a struct for every triggerevent isn't absolutely unreasonable.
 
 

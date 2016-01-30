@@ -641,11 +641,13 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
     // do a stable sort to details use the operator < of SkillInvokeDetail in which judge the priority, the seat of invoker, and whether it is a skill of an equip.
     std::stable_sort(details.begin(), details.end(), [](const QSharedPointer<SkillInvokeDetail> &a1, const QSharedPointer<SkillInvokeDetail> &a2) { return *a1 < *a2; });
 
-    // mark the skills which missed the trigger timing as it has triggered all the times
+    // mark the skills which missed the trigger timing as it has triggered
     QSharedPointer<SkillInvokeDetail> over_trigger;
     QListIterator<QSharedPointer<SkillInvokeDetail> > it(details);
     it.toBack();
-    while (it.hasPrevious()) { // search the last skill which triggered times isn't 0 from back to front. if found, save it to over_trigger. if over_trigger is valid, then mark the skills which missed the trigger timing as it has triggered 65535 times (we assume that a skill can't trigger that much times)
+    while (it.hasPrevious()) {
+        // search the last skill which triggered times isn't 0 from back to front. if found, save it to over_trigger. 
+        // if over_trigger is valid, then mark the skills which missed the trigger timing as it has triggered.
         const QSharedPointer<SkillInvokeDetail> &detail = it.previous();
         if (over_trigger.isNull() || !over_trigger->isValid()) {
             if (detail->triggered)
@@ -705,7 +707,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) 
                 // since the invoker of the sametiming list is the same, we can use sameTiming.first()->invoker to judge the invoker of this time
                 QSharedPointer<SkillInvokeDetail> detailSelected = room->askForTriggerOrder(sameTiming.first()->invoker, sameTiming, !has_compulsory, data);
                 if (detailSelected.isNull() || !detailSelected->isValid()) {
-                    // if cancel is pushed when it is cancelable, we set the triggered time of all the sametiming to 65535, and add all the skills to triggeredList, continue the next loop
+                    // if cancel is pushed when it is cancelable, we set all the sametiming as triggered, and add all the skills to triggeredList, continue the next loop
                     foreach (const QSharedPointer<SkillInvokeDetail> &ptr, sameTiming) {
                         ptr->triggered = true;
                         triggered << ptr;
@@ -720,7 +722,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) 
             invoke->triggered = true;
             triggered << invoke;
 
-            // if cost returned false, we don't process with the skill's left trigger times(use the trick of set the triggered times to 65535) .
+            // if cost returned false, we don't process with the skill's left trigger times(use the trick of set it as triggered)
             // if effect returned true, exit the whole loop.
 
             if (invoke->skill->cost(triggerEvent, room, invoke, data)) {
