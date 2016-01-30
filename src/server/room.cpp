@@ -559,10 +559,7 @@ void Room::slashResult(const SlashEffectStruct &effect, const Card *jink)
         if (effect.slash)
             effect.to->removeQinggangTag(effect.slash);
         thread->trigger(SlashMissed, this, data);
-        if (effect.from && effect.from->hasFlag("hitAfterMissed"))
-            setPlayerFlag(effect.from, "-hitAfterMissed");
     }
-
 }
 
 void Room::attachSkillToPlayer(ServerPlayer *player, const QString &skill_name, bool is_other_attach)

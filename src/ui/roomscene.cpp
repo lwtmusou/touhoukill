@@ -600,21 +600,27 @@ void RoomScene::handleGameEvent(const QVariant &args)
             ClientPlayer *player = ClientInstance->getPlayer(player_name);
             if (!player) return;
 
-            if (!player->hasSkill(skill_name)) {
-                if (player->hasSkill("bllmwuyu")) { //for bllmwuyu
-                    QStringList bllmwuyu;
+            bool display = player->hasSkill(skill_name);
+            if (!display) {
+                // for wuyu
+                static QStringList bllmwuyu;
+                if (bllmwuyu.isEmpty())
                     bllmwuyu << "bllmcaiyu" << "bllmmingyu" << "bllmseyu" << "bllmshuiyu" << "bllmshiyu";
-                    if (!bllmwuyu.contains(skill_name))
-                        return;
-                } else// if (!player->hasWeapon(skill_name) && !player->hasArmorEffect(skill_name))
-                    return;
+                if (bllmwuyu.contains(skill_name))
+                    display = true;
             }
 
+            if (!display) {
+                // for shenbao
+                if (player->hasSkill("shenbao") && (player->hasWeapon(skill_name) || player->hasArmorEffect(skill_name)))
+                    display = true;
+            }
 
-            PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-            if (container)
-                container->showSkillName(skill_name, player == Self);
-
+            if (display) {
+                PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
+                if (container)
+                    container->showSkillName(skill_name, player == Self);
+            }
             break;
         }
         case S_GAME_EVENT_PAUSE:

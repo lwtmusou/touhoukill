@@ -454,7 +454,6 @@ public:
     {
         if (!TriggerSkill::triggerable(player)) return QStringList();
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if (player->hasFlag("hitAfterMissed"))
             return QStringList();
         if (!effect.to->isAlive())
             return QStringList();
@@ -477,9 +476,8 @@ public:
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         player->drawCards(1);
-        room->setPlayerFlag(player, "hitAfterMissed");
         room->slashResult(effect, NULL);
-        return false;
+        return true;
     }
 };
 

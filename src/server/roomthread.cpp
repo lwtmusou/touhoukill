@@ -726,6 +726,9 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) 
             // if effect returned true, exit the whole loop.
 
             if (invoke->skill->cost(triggerEvent, room, invoke, data)) {
+                // if we don't insert the target in the cost and there is a preferred target, we set the preferred target as the only target of the skill
+                if (invoke->preferredTarget != NULL && invoke->targets.isEmpty())
+                    invoke->targets << invoke->preferredTarget;
                 // the show general of hegemony mode can be inserted here
                 if (invoke->skill->effect(triggerEvent, room, invoke, data)) {
                     interrupt = true;

@@ -691,7 +691,9 @@ bool Player::hasWeapon(const QString &weapon_name, bool selfOnly) const
 
     if (hasSkill("shenbao") && !selfOnly) {
         foreach (const Player *p, getAliveSiblings()) {
-            if (p->getWeapon()) {
+            if (p->weapon) {
+                if (weapon_name == "shenbao")
+                    return true;
                 WrappedCard *wp = p->weapon;
                 if (wp->objectName() == weapon_name || wp->isKindOf(weapon_name.toStdString().c_str()))
                     return true;
@@ -717,7 +719,9 @@ bool Player::hasArmorEffect(const QString &armor_name, bool selfOnly) const
 
     if (hasSkill("shenbao") && !selfOnly) {
         foreach (const Player *p, getAliveSiblings()) {
-            if (p->getArmor()) {
+            if (p->armor) {
+                if (armor_name == "shenbao")
+                    return true;
                 WrappedCard *ar = p->armor;
                 if (ar->objectName() == armor_name || ar->isKindOf(armor_name.toStdString().c_str()))
                     return true;
@@ -1058,6 +1062,16 @@ int Player::usedTimes(const QString &card_class) const
 
 bool Player::hasEquipSkill(const QString &skill_name) const
 {
+    if (skill_name == "shenbao") // prevent infinite recursion for skill "shenbao"
+        return false;
+
+    if (hasSkill("shenbao")) {
+        foreach (const Player *p, getAliveSiblings()) {
+            if (p->hasEquipSkill(skill_name))
+                return true;
+        }
+    }
+
     if (weapon) {
         const Weapon *weaponc = qobject_cast<const Weapon *>(weapon->getRealCard());
         if (Sanguosha->getSkill(weaponc) && Sanguosha->getSkill(weaponc)->objectName() == skill_name)
