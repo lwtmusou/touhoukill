@@ -4,6 +4,7 @@
 #include "exppattern.h"
 #include "room.h"
 #include "skill.h"
+#include <functional>
 
 bool CardsMoveStruct::tryParse(const QVariant &arg)
 {
@@ -322,9 +323,9 @@ MarkChangeStruct::MarkChangeStruct()
 
 }
 
-bool SkillInvokeDetail::operator<(const SkillInvokeDetail &arg2) const // the operator < for sorting the invoke order.
+bool SkillInvokeDetail::operator <(const SkillInvokeDetail &arg2) const // the operator < for sorting the invoke order.
 {
-    //  we sort firstly according to the priority, then the seat of invoker, at last weather it is a skill of an equip.
+    //  we sort firstly according to the priority, then the seat of invoker, at last whether it is a skill of an equip.
     if (!isValid() || !arg2.isValid())
         return false;
 
@@ -333,19 +334,35 @@ bool SkillInvokeDetail::operator<(const SkillInvokeDetail &arg2) const // the op
     else if (skill->getPriority() < arg2.skill->getPriority())
         return false;
 
+    std::function<Room *(ServerPlayer *)> getRoom = [this](ServerPlayer *p) -> Room * {
+        if (p != NULL)
+            return p->getRoom();
+        else {
+            // let's treat it as a gamerule, the gamerule is created inside roomthread
+            RoomThread *thread = qobject_cast<RoomThread *>(skill->thread());
+            if (thread == NULL)
+                return NULL;
+            
+            return thread->getRoom();
+        }
+
+        return NULL;
+    };
+
     if (invoker != arg2.invoker) {
-        Room *room = owner->getRoom();
+        Room *room = getRoom(owner);
         if (room == NULL)
             return false;
+
         return room->getFront(invoker, arg2.invoker);
     }
 
-    return skill->inherits("EquipSkill");
+    return skill->inherits("EquipSkill") && !arg2.skill->inherits("EquipSkill");
 }
 
-bool SkillInvokeDetail::operator==(const SkillInvokeDetail &arg2) const // the operator ==. it only judge the skill name, the skill invoker, and the skill owner. it don't judge the skill target because it is chosen by the skill invoker
+bool SkillInvokeDetail::sameSkill(const SkillInvokeDetail &arg2) const // the operator ==. it only judge the skill name, the skill invoker, the skill owner and the preferred target. it don't judge the real skill target because it is chosen by the skill invoker
 {
-    return skill == arg2.skill && owner == arg2.owner && invoker == arg2.invoker;
+    return skill == arg2.skill && owner == arg2.owner && invoker == arg2.invoker /*&& preferredTarget == arg2.preferredTarget*/;
 }
 
 bool SkillInvokeDetail::sameTimingWith(const SkillInvokeDetail &arg2) const // used to judge 2 skills has the same timing. only 2 structs with the same priority and the same invoker and the same "whether or not it is a skill of equip"
@@ -356,13 +373,13 @@ bool SkillInvokeDetail::sameTimingWith(const SkillInvokeDetail &arg2) const // u
     return skill->getPriority() == arg2.skill->getPriority() && invoker == arg2.invoker && skill->inherits("EquipSkill") == arg2.skill->inherits("EquipSkill");
 }
 
-SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill /*= NULL*/, ServerPlayer *owner /*= NULL*/, ServerPlayer *invoker /*= NULL*/, QList<ServerPlayer *> targets /*= QList<ServerPlayer *>()*/, int times /*= 1*/, bool isCompulsory /*= false*/)
-    : skill(skill), owner(owner), invoker(invoker), targets(targets), times(times), triggeredTimes(0), isCompulsory(isCompulsory)
+SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill /*= NULL*/, ServerPlayer *owner /*= NULL*/, ServerPlayer *invoker /*= NULL*/, QList<ServerPlayer *> targets /*= QList<ServerPlayer *>()*/, bool isCompulsory /*= false*/, ServerPlayer *preferredTarget /*= NULL*/)
+    : skill(skill), owner(owner), invoker(invoker), targets(targets), isCompulsory(isCompulsory), triggered(false), preferredTarget(preferredTarget)
 {
 }
 
-SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, int times /*= 1*/, bool isCompulsory /*= false*/)
-    : skill(skill), owner(owner), invoker(invoker), times(times), triggeredTimes(0), isCompulsory(isCompulsory)
+SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, bool isCompulsory /*= false*/, ServerPlayer *preferredTarget /*= NULL*/)
+    : skill(skill), owner(owner), invoker(invoker), isCompulsory(isCompulsory), triggered(false), preferredTarget(preferredTarget)
 {
     if (target != NULL)
         targets << target;
@@ -373,16 +390,51 @@ bool SkillInvokeDetail::isValid() const // validity check
     return skill != NULL/* && owner != NULL && invoker != NULL*/;
 }
 
+bool SkillInvokeDetail::preferredTargetLess(const SkillInvokeDetail & arg2) const
+{
+    std::function<Room *(ServerPlayer *)> getRoom = [this](ServerPlayer *p) -> Room * {
+        if (p != NULL)
+            return p->getRoom();
+        else {
+            // let's treat it as a gamerule, the gamerule is created inside roomthread
+            RoomThread *thread = qobject_cast<RoomThread *>(skill->thread());
+            if (thread == NULL)
+                return NULL;
+
+            return thread->getRoom();
+        }
+
+        return NULL;
+    };
+
+    if (skill == arg2.skill && owner == arg2.owner && invoker == arg2.invoker) {
+        // we compare preferred target to ensure the target selected is in the order of seat only in the case that 2 skills are the same
+        if (preferredTarget != NULL && arg2.preferredTarget != NULL) {
+            Room *room = getRoom(owner);
+            if (room == NULL)
+                return false;
+
+            return ServerPlayer::CompareByActionOrder(preferredTarget, arg2.preferredTarget);
+        }
+    }
+
+    return false;
+}
+
 QVariant SkillInvokeDetail::toVariant() const
 {
     if (!isValid())
         return QVariant();
 
     JsonObject ob;
-    ob["skill"] = skill->objectName();
-    ob["owner"] = owner->objectName();
-    ob["invoker"] = invoker->objectName();
-    ob["timesleft"] = times - triggeredTimes;
+    if (skill)
+        ob["skill"] = skill->objectName();
+    if (owner)
+        ob["owner"] = owner->objectName();
+    if (invoker)
+        ob["invoker"] = invoker->objectName();
+    if (preferredTarget)
+        ob["prefferedtarget"] = preferredTarget->objectName();
     return ob;
 }
 
@@ -390,9 +442,20 @@ QStringList SkillInvokeDetail::toList() const
 {
     QStringList l;
     if (!isValid())
-        l << QString() << QString() << QString() << "0";
-    else
-        l << skill->objectName() << owner->objectName() << invoker->objectName() << QString::number(times - triggeredTimes);
+        l << QString() << QString() << QString() << QString();
+    else {
+        std::function<void(const QObject *)> insert = [&l](const QObject *item) {
+            if (item)
+                l << item->objectName();
+            else
+                l << QString();
+        };
+
+        insert(skill);
+        insert(owner);
+        insert(invoker);
+        insert(preferredTarget);
+    }
 
     return l;
 }

@@ -35,7 +35,7 @@ public:
                     && !change.player->tag.value("touhou-extra", false).toBool()
                     && !room->getTag("rexueDeathInThisRound").toBool()
             )
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, 1, true);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
         }
 
         return QList<SkillInvokeDetail>();
@@ -166,7 +166,7 @@ public:
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (p->hasLordSkill(this) && p != death.who)
-                d << SkillInvokeDetail(this, p, death.who, NULL, 1, true);
+                d << SkillInvokeDetail(this, p, death.who, NULL, true);
         }
 
         return d;
@@ -204,7 +204,7 @@ public:
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *p, room->getOtherPlayers(damage.to)) {
             if (p->hasSkill(this) && damage.to->canDiscard(p, "h"))
-                d << SkillInvokeDetail(this, p, p, damage.to);
+                d << SkillInvokeDetail(this, p, p, NULL, false, damage.to);
         }
         return d;
     }
@@ -350,7 +350,7 @@ public:
 
         // 1.you are hit by others
         if (damage.to->hasSkill(this) && damage.from != damage.to && damage.from != NULL) {
-            SkillInvokeDetail s(this, damage.to, damage.to, damage.from);
+            SkillInvokeDetail s(this, damage.to, damage.to, NULL, false, damage.from);
             s.tag["lostmaxhp"] = false;
             d << s;
         }
@@ -365,7 +365,7 @@ public:
                     && damage.from != NULL
                     && p->getMaxHp() > 1
             ) {
-                SkillInvokeDetail s(this, p, p, damage.from);
+                SkillInvokeDetail s(this, p, p, NULL, false, damage.from);
                 s.tag["lostmaxhp"] = true;
                 d << s;
             }
@@ -423,7 +423,7 @@ public:
         }
 
         if (player != NULL && player->hasSkill(this) && card != NULL && card->getTypeId() == Card::TypeBasic)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, 1, true);
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
 
         return QList<SkillInvokeDetail>();
     }

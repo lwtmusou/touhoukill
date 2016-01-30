@@ -303,7 +303,7 @@ int ScenarioRule::getPriority() const
     return 1;
 }
 
-QList<SkillInvokeDetail> ScenarioRule::triggerable(TriggerEvent triggerEvent, const Room * room, const QVariant & data) const
+QList<SkillInvokeDetail> ScenarioRule::triggerable(TriggerEvent, const Room *, const QVariant &) const
 {
     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this);
 }

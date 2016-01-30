@@ -212,7 +212,7 @@ public:
         if (fldl->isDead() || fldl->getPhase() != Player::Start)
             return QList<SkillInvokeDetail>();
 
-        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, fldl, fldl, NULL, 1, true);
+        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, fldl, fldl, NULL, true);
     }
 
     // compulsory effect, cost omitted
@@ -285,7 +285,7 @@ public:
             if (damage.from == damage.to)
                 return QList<SkillInvokeDetail>();
             if (damage.card && damage.card->isKindOf("Slash") && damage.card->hasFlag("yuxueSlash"))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, 1, true);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
         }
 
         return QList<SkillInvokeDetail>();
@@ -349,8 +349,13 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.from && damage.from->isAlive() && damage.from->hasSkill(this))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, damage.damage);
+        if (damage.from && damage.from->isAlive() && damage.from->hasSkill(this)) {
+            QList<SkillInvokeDetail> d;
+            for (int i = 0; i < damage.damage; ++i)
+                d << SkillInvokeDetail(this, damage.from, damage.from);
+
+            return d;
+        }
 
         return QList<SkillInvokeDetail>();
     }
@@ -477,7 +482,7 @@ public:
 
         foreach (ServerPlayer *liege, room->getAllPlayers()) {
             if (!liege->getPile("suoding_cards").isEmpty())
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, sixteen, sixteen, NULL, 1, true);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, sixteen, sixteen, NULL, true);
         }
         return QList<SkillInvokeDetail>();
     }
@@ -595,7 +600,7 @@ public:
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, room->getAllPlayers()) {
                 if (!p->getPile("yao_mark").isEmpty())
-                    d << SkillInvokeDetail(this, p, p, NULL, 1, true);
+                    d << SkillInvokeDetail(this, p, p, NULL, true);
             }
 
             return d;
@@ -695,7 +700,7 @@ public:
         if (player->getPhase() == Player::Play && player->isAlive()) {
             foreach(ServerPlayer *meirin, room->getAllPlayers()) {
                 if (meirin != player && meirin->hasSkill(this) && meirin->getHandcardNum() < meirin->getMaxHp() && !meirin->isChained())
-                    d << SkillInvokeDetail(this, meirin, meirin, player);
+                    d << SkillInvokeDetail(this, meirin, meirin, NULL, false, player);
             }
         }
         return d;
@@ -783,7 +788,7 @@ public:
         if (damage.from == NULL || damage.from == damage.to)
             return QList<SkillInvokeDetail>();
         if (damage.card && damage.card->isKindOf("Slash") && damage.from->hasSkill(this))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, damage.to);
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
 
         return QList<SkillInvokeDetail>();
     }
@@ -825,7 +830,7 @@ public:
         if (!player->hasSkill(this))
             return QList<SkillInvokeDetail>();
         if (damage.nature != DamageStruct::Fire && (damage.damage > 1 || player->getHp() <= 1))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, 1, true);
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
         return QList<SkillInvokeDetail>();
     }
 
@@ -919,7 +924,7 @@ public:
 
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *nokia, use.to)
-            d << SkillInvokeDetail(this, nokia, nokia, NULL, 1, true);
+            d << SkillInvokeDetail(this, nokia, nokia, NULL, true);
 
         return d;
     }
@@ -955,7 +960,7 @@ public:
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (p->hasSkill(this))
-                d << SkillInvokeDetail(this, p, p, current);
+                d << SkillInvokeDetail(this, p, p, NULL, false, current);
         }
         return d;
     }
@@ -997,7 +1002,7 @@ public:
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->hasSkill(this) && player->getMaxHp() == 1)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, 1, true);
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
 
         return QList<SkillInvokeDetail>();
     }

@@ -480,6 +480,184 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room)
     return trigger(triggerEvent, room, data);
 }
 
+void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QSharedPointer<SkillInvokeDetail> > &detailsList, const QList<QSharedPointer<SkillInvokeDetail> > &triggered, const QVariant &data)
+{
+    // used to get all the skills which can be triggered now, and sort them.
+    // everytime this function is called, it will get all the skiils and judge the triggerable one by one
+    QList<const TriggerSkill *> skillList = skill_table[triggerEvent];
+    QList<QSharedPointer<SkillInvokeDetail> > details; // We create a new list everytime this function is called
+    foreach (const TriggerSkill *skill, skillList) {
+        // judge every skill
+        QList<SkillInvokeDetail> triggerable = skill->triggerable(triggerEvent, room, data);
+
+        QMutableListIterator<SkillInvokeDetail> it_triggerable(triggerable);
+        while (it_triggerable.hasNext()) {
+            const SkillInvokeDetail &t = it_triggerable.next();
+            if (!t.isValid() || skill != t.skill)
+                it_triggerable.remove();  // remove the invalid item and not-self skill from the list
+        }
+
+        if (triggerable.isEmpty()) // i.e. there is no valid item returned from the skill's triggerable
+            continue;
+
+        QList<QSharedPointer<SkillInvokeDetail> > r; // we create a list for every skill
+        foreach (const SkillInvokeDetail &t, triggerable) {
+            // we copy construct a new SkillInvokeDetail in the heap area (because the return value from triggerable is in the stack). use a shared pointer to point to it, and add it to the new list.
+            // because the shared pointer will destroy the item it point to when all the instances of the pointer is destroyed, so there is no memory leak.
+            QSharedPointer<SkillInvokeDetail> ptr(new SkillInvokeDetail(t));
+            r << ptr;
+        }
+        // because there is only one skill(that is the loop variant "skill") judging in a certain time of loop, all the return value is related to this skill
+        if (r.length() == 1) {
+            // if the skill has only one instance of the invokedetail, we copy the tag to the old instance(overwrite the old ones), and use the old instance, delete the new one
+            foreach (const QSharedPointer<SkillInvokeDetail> &detail, (detailsList + triggered).toSet()) {
+                if (detail->sameSkill(*r.first())) {
+                    foreach (const QString &key, r.first()->tag.keys())
+                        detail->tag[key] = r.first()->tag.value(key);
+                    r.clear();
+                    r << detail;
+                    break;
+                }
+            }
+        } else {
+            bool isPreferredTargetSkill = false;
+            QList<QSharedPointer<SkillInvokeDetail> > s;
+            // judge whether this skill in this event is a preferred-target skill, make a invoke list as s
+            foreach (const QSharedPointer<SkillInvokeDetail> &detail, (detailsList + triggered).toSet()) {
+                if (detail->skill = r.first()->skill) {
+                    s << detail;
+                    if (detail->preferredTarget != NULL)
+                        isPreferredTargetSkill = true;
+                }
+            }
+            if (!isPreferredTargetSkill) {
+                std::sort(s.begin(), s.end(), [](const QSharedPointer<SkillInvokeDetail> &a1, const QSharedPointer<SkillInvokeDetail> &a2) { return a1->triggered && !a2->triggered; });
+                // because these are of one single skill, so we can pick the invoke list using a trick like this
+                s.append(r);
+                r = s.mid(0, r.length());
+            } else {
+                // do a stable sort to r and s since we should judge the trigger order
+                static std::function<bool(const QSharedPointer<SkillInvokeDetail> &, const QSharedPointer<SkillInvokeDetail> &)> preferredTargetLess =
+                    [](const QSharedPointer<SkillInvokeDetail> &a1, const QSharedPointer<SkillInvokeDetail> &a2) {
+                        return a1->preferredTargetLess(*a2);
+                    };
+
+                std::stable_sort(r.begin(), r.end(), preferredTargetLess);
+                std::stable_sort(s.begin(), s.end(), preferredTargetLess);
+
+                {
+                    QListIterator<QSharedPointer<SkillInvokeDetail> > r_it(r);
+                    QMutableListIterator<QSharedPointer<SkillInvokeDetail> > s_it(s);
+                    while (r_it.hasNext() && s_it.hasNext()) {
+                        QSharedPointer<SkillInvokeDetail> r_now = r_it.next();
+                        QSharedPointer<SkillInvokeDetail> s_now = s_it.next();
+
+                        if (r_now->preferredTarget == s_now->preferredTarget)
+                            continue;
+
+                        // e.g. let r =  a b c d e f   h     k
+                        //      let s =  a b   d e f g h i j
+                        // it pos:      *
+
+                        // the position of Qt's Java style iterator is between 2 items, we can use next() to get the next item and use previous() to get the previous item, and move the iterator according to the direction.
+
+                        if (ServerPlayer::CompareByActionOrder(r_now->preferredTarget, s_now->preferredTarget)) {
+                            // 1.the case that ServerPlayer::compareByActionOrder(r_now, s_now) == true, i.e. seat(r_now) < seat(s_now)
+                            // because the r is triggerable list, s is the invoke list, so we should move s_it to the front of the just passed item add the r_now into s
+
+                            // the list is now like this: r = a b c d e f   h
+                            //                            s = a b   d e f g h i j
+                            // it pos:                             r s
+
+                            s_it.previous();
+                            s_it.insert(r_now);
+
+                            // so the list becomes like:  r = a b c d e f   h
+                            //                            s = a b c d e f g h i j
+                            // it pos:                             *
+                        } else {
+                            // 2. the case that ServerPlayer::compareByActionOrder(r_now, s_now) == true, i.e. seat(r_now) > seat(s_now)
+                            // because the r is triggerable list, s is the invoke list, so we should remove the s_now and move r_it to the position just before the deleted item
+
+                            // the list is now like this: r = a b c d e f   h
+                            //                            s = a b c d e f g h i j
+                            // it pos:                                     s r
+
+                            s_it.remove();
+                            r_it.previous();
+                            // so the list becomes like:  r = a b c d e f   h
+                            //                            s = a b c d e f   h i j
+                            // it pos:                                   r s
+                        }
+                    }
+
+                    // the whole loop will be over when one of r_it or s_it has no next item, but there are situations that another one has more items. Let's deal with this situation.
+                    // let's take some other examples.
+
+                    // e.g. let r = a b c d e
+                    //      let s = a b c
+                    // it pos:           *
+
+                    // now s_it has no next item, but r_it has some next items.
+                    // since r is the trigger list, we should add the more items to s.
+
+                    while (r_it.hasNext())
+                        s_it.insert(r_it.next());
+
+                    // another example.
+
+                    // e.g. let r = a b c
+                    //          s = a b c d e
+                    // it pos:           *
+
+                    // now s_it has more items.
+                    // since r is the triggerable list, we should remove the more items from s.
+                    while (s_it.hasNext())
+                        s_it.remove();
+                }
+
+                // let the r become the invoke list.
+                r = s;
+
+                // we should mark the ones who passed the trigger order as triggered.
+                QListIterator<QSharedPointer<SkillInvokeDetail> > r_it(r);
+                r_it.toBack();
+                bool over_trigger = true;
+                while (r_it.hasPrevious()) {
+                    const QSharedPointer<SkillInvokeDetail> p = r_it.previous();
+                    if (p->triggered)
+                        over_trigger = true;
+                    else if (over_trigger)
+                        p->triggered = true;
+                }
+
+            }
+
+        }
+
+        details << r;
+    }
+
+    // do a stable sort to details use the operator < of SkillInvokeDetail in which judge the priority, the seat of invoker, and whether it is a skill of an equip.
+    std::stable_sort(details.begin(), details.end(), [](const QSharedPointer<SkillInvokeDetail> &a1, const QSharedPointer<SkillInvokeDetail> &a2) { return *a1 < *a2; });
+
+    // mark the skills which missed the trigger timing as it has triggered all the times
+    QSharedPointer<SkillInvokeDetail> over_trigger;
+    QListIterator<QSharedPointer<SkillInvokeDetail> > it(details);
+    it.toBack();
+    while (it.hasPrevious()) { // search the last skill which triggered times isn't 0 from back to front. if found, save it to over_trigger. if over_trigger is valid, then mark the skills which missed the trigger timing as it has triggered 65535 times (we assume that a skill can't trigger that much times)
+        const QSharedPointer<SkillInvokeDetail> &detail = it.previous();
+        if (over_trigger.isNull() || !over_trigger->isValid()) {
+            if (detail->triggered)
+                over_trigger = detail;
+            else if (*detail < *over_trigger)
+                detail->triggered = true;
+        }
+    }
+
+    detailsList = details;
+}
+
 bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) // player is deleted. a lot of things is able to put in data. make a struct for every triggerevent isn't absolutely unreasonable.
 {
     EventTriplet triplet(triggerEvent, room);
@@ -490,7 +668,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) 
         skill->record(triggerEvent, room, data);
 
     QList<QSharedPointer<SkillInvokeDetail> > details;
-    QSet<QSharedPointer<SkillInvokeDetail> > triggered;
+    QList<QSharedPointer<SkillInvokeDetail> > triggered;
     bool interrupt = false;
     try {
         forever {
@@ -499,7 +677,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) 
             QList<QSharedPointer<SkillInvokeDetail> > sameTiming;
             // search for the first skills which can trigger
             foreach (const QSharedPointer<SkillInvokeDetail> &ptr, details) {
-                if (ptr->triggeredTimes >= ptr->times)
+                if (ptr->triggered)
                     continue;
                 if (sameTiming.isEmpty())
                     sameTiming << ptr;
@@ -529,8 +707,8 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) 
                 if (detailSelected.isNull() || !detailSelected->isValid()) {
                     // if cancel is pushed when it is cancelable, we set the triggered time of all the sametiming to 65535, and add all the skills to triggeredList, continue the next loop
                     foreach (const QSharedPointer<SkillInvokeDetail> &ptr, sameTiming) {
-                        ptr->triggeredTimes = 65535;
-                        triggered.insert(ptr);
+                        ptr->triggered = true;
+                        triggered << ptr;
                     }
                     continue;
                 } else
@@ -539,8 +717,8 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) 
 
             // if not cancelled, then we add the selected skill to triggeredList, and add the triggered times of the skill. then we process with the skill's cost and effect.
 
-            ++invoke->triggeredTimes;
-            triggered.insert(invoke);
+            invoke->triggered = true;
+            triggered << invoke;
 
             // if cost returned false, we don't process with the skill's left trigger times(use the trick of set the triggered times to 65535) .
             // if effect returned true, exit the whole loop.
@@ -552,10 +730,10 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) 
                     break;
                 }
             } else
-                invoke->triggeredTimes = 65535;
+                invoke->triggered = true;
         }
 
-        foreach(AI *ai, room->ais)
+        foreach (AI *ai, room->ais)
             ai->filterEvent(triggerEvent, data);
 
         event_stack.pop_back();
@@ -569,90 +747,6 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) 
         throw;
     }
     return interrupt;
-}
-
-void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QSharedPointer<SkillInvokeDetail> > &detailsList, const QSet<QSharedPointer<SkillInvokeDetail> > &triggered, const QVariant &data)
-{
-    // used to get all the skills which can be triggered now, and sort them.
-    // everytime this function is called, it will get all the skiils and judge the triggerable one by one
-    QList<const TriggerSkill *> skillList = skill_table[triggerEvent];
-    QList<QSharedPointer<SkillInvokeDetail> > details; // We create a new list everytime this function is called
-    foreach (const TriggerSkill *skill, skillList) {
-        // judge every skill
-        QList<SkillInvokeDetail> triggerable = skill->triggerable(triggerEvent, room, data);
-        foreach (const SkillInvokeDetail &t, triggerable) {
-            if (!t.isValid()) // remove the invalid item from the list
-                triggerable.removeOne(t);
-        }
-        if (triggerable.isEmpty()) // i.e. there is no valid item returned from the skill's triggerable
-            continue;
-
-        QList<QSharedPointer<SkillInvokeDetail> > r; // we create a list for every skill
-        foreach (const QSharedPointer<SkillInvokeDetail> &ptr, (detailsList + triggered.toList()).toSet()) {
-            // If there is the same skill in detailsList or in triggeredList(i.e. the skill, the invoker, the owner is all the same), we use the old item and add it to the new list in order to preserve the old messages from tag, etc.
-            // but there could be some status to be updated, so we can't call removeOne directly after the judgement of contains. we should update the new status to the old item. so we should pick up the new contents.
-            foreach (const SkillInvokeDetail &t, triggerable) {
-                if (t == *ptr) { // this is the overrided operator =. as the operator = judge the skill, the skill owner, the skill invoker (i.e, it is judging the same skill), the other variables may be different
-                    // temperily we decided only to update the times, tag and "whether it is compulsory". we overwrite the new times and compulsory property to the old ones. 
-                    // as for tag, if we only copy the (key, value) pair to the old ones, it is possible that some useful messages be overwritten. so we add a new procedure of copying the old data.
-                    ptr->times = t.times;
-                    ptr->isCompulsory = t.isCompulsory;
-                    foreach (const QString &key, t.tag.keys()) {
-                        std::function<void(const QString &)> copyKeyToOld = [&ptr, copyKeyToOld](const QString &key) {
-                            QString old_key = key + "_old";
-                            if (ptr->tag.contains(old_key)) {
-                                copyKeyToOld(old_key);
-                                ptr->tag[old_key] = ptr->tag.value(key);
-                            }
-                        };
-                        if (ptr->tag.contains(key))
-                            copyKeyToOld(key);
-                        ptr->tag[key] = t.tag.value(key);
-                    }
-
-                    triggerable.removeOne(t);
-                    r << ptr;
-                    break;
-                }
-            }
-        }
-        foreach (const SkillInvokeDetail &t, triggerable) {
-            // if there is no related skill in detailsList and triggeredList, we copy construct a new SkillInvokeDetail in the heap area (because the return value from triggerable is in the stack). use a shared pointer to point to it, and add it to the new list.
-            // because the shared pointer will destroy the item it point to when all the instances of the pointer is destroyed, so there is no memory leak. this method also guaranteed all the details has only one instances in the listÀý
-            // it is needed that there is only one instance of every certain skill. so we add a procedure of remove duplicate here
-            bool duplicateFlag = false;
-            foreach (const QSharedPointer<SkillInvokeDetail> &d, (details + r).toSet()) {
-                if (*d == t) {
-                    duplicateFlag = true; // the skill judge is duplicated (Bazhen, Linglong, since a certain player can have only one EightDiagram)
-                    break;
-                }
-            }
-            if (duplicateFlag)
-                continue;
-
-            QSharedPointer<SkillInvokeDetail> ptr(new SkillInvokeDetail(t));
-            r << ptr;
-        }
-        details << r;
-    }
-
-    // do a stable sort to details use the operator < of SkillInvokeDetail in which judge the priority, the seat of invoker, and whether it is a skill of an equip.
-    std::stable_sort(details.begin(), details.end(), [](const QSharedPointer<SkillInvokeDetail> &a1, const QSharedPointer<SkillInvokeDetail> &a2) { return *a1 < *a2; });
-
-    // mark the skills which missed the trigger timing as it has triggered all the times
-    QSharedPointer<SkillInvokeDetail> over_trigger;
-    QListIterator<QSharedPointer<SkillInvokeDetail> > it(details);
-    it.toBack();
-    while (it.hasPrevious()) { // search the last skill which triggered times isn't 0 from back to front. if found, save it to over_trigger. if over_trigger is valid, then mark the skills which missed the trigger timing as it has triggered 65535 times (we assume that a skill can't trigger tiat much times)
-        const QSharedPointer<SkillInvokeDetail> &detail = it.previous();
-        if (over_trigger.isNull() || !over_trigger->isValid()) {
-            if (detail->triggeredTimes > 0)
-                over_trigger = detail;
-        } else if (*detail < *over_trigger)
-            detail->triggeredTimes = 65535;
-    }
-
-    detailsList = details;
 }
 
 void RoomThread::addTriggerSkill(const TriggerSkill *skill)

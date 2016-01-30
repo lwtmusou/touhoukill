@@ -127,7 +127,7 @@ void EquipCard::onUninstall(ServerPlayer *player) const
     Room *room = player->getRoom();
     const Skill *skill = Sanguosha->getSkill(this);
 
-    if (skill && (skill->inherits("ViewAsSkill") || (skill->inherits("TriggerSkill") && qobject_cast<TriggerSkill *>(skill)->getViewAsSkill())))
+    if (skill && (skill->inherits("ViewAsSkill") || (skill->inherits("TriggerSkill") && qobject_cast<const TriggerSkill *>(skill)->getViewAsSkill())))
         room->detachSkillFromPlayer(player, objectName(), true);
 }
 
