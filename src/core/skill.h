@@ -313,8 +313,8 @@ class EquipSkill : public TriggerSkill
 public:
     EquipSkill(const QString &name);
 
-    static bool equipAvailable(const ServerPlayer *p, EquipCard::Location location, const QString &equip_name);
-    static bool equipAvailable(const ServerPlayer *p, const EquipCard *card);
+    static bool equipAvailable(const Player *p, EquipCard::Location location, const QString &equip_name, const Player *to = NULL);
+    static bool equipAvailable(const Player *p, const EquipCard *card, const Player *to = NULL);
 };
 
 class WeaponSkill : public EquipSkill

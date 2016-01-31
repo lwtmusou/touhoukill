@@ -483,12 +483,15 @@ EquipSkill::EquipSkill(const QString &name)
 
 }
 
-bool EquipSkill::equipAvailable(const ServerPlayer *p, EquipCard::Location location, const QString &equipName)
+bool EquipSkill::equipAvailable(const Player *p, EquipCard::Location location, const QString &equipName, const Player *to /*= NULL*/)
 {
     if (p == NULL)
         return false;
 
     if (p->getMark("Equips_Nullified_to_Yourself") > 0)
+        return false;
+
+    if (to != NULL && to->getMark("Equips_of_Others_Nullified_to_You") > 0)
         return false;
 
     switch (location) {
@@ -511,12 +514,12 @@ bool EquipSkill::equipAvailable(const ServerPlayer *p, EquipCard::Location locat
     return true;
 }
 
-bool EquipSkill::equipAvailable(const ServerPlayer *p, const EquipCard *card)
+bool EquipSkill::equipAvailable(const Player *p, const EquipCard *card, const Player *to /*= NULL*/)
 {
     if (card == NULL)
         return false;
 
-    return equipAvailable(p, card->location(), card->objectName());
+    return equipAvailable(p, card->location(), card->objectName(), to);
 }
 
 WeaponSkill::WeaponSkill(const QString &name)

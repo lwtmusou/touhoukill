@@ -3394,6 +3394,7 @@ public:
 
     virtual int getCorrect(const Player *from, const Player *to) const
     {
+#pragma message WARN("todo_lwtmusou: should check the mark Equips_Nullified_to_Yourself")
         int correct = 0;
         if (from->hasSkill("shenbao")) {
             foreach (const Player *p, from->getAliveSiblings()) {
