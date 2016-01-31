@@ -648,7 +648,7 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
+        return Slash::IsAvailable(player) && EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const

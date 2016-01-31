@@ -76,14 +76,6 @@ void Analeptic::onUse(Room *room, const CardUseStruct &card_use) const
     BasicCard::onUse(room, use);
 }
 
-/*
-void Analeptic::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-BasicCard::use(room, source, targets);
-if (targets.isEmpty())
-room->cardEffect(this, source, source);
-}
-*/
-
 void Analeptic::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
@@ -111,18 +103,18 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return Slash::IsAvailable(player) && player->getMark("Equips_Nullified_to_Yourself") == 0;
+        return Slash::IsAvailable(player) && EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
         return Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
-            && pattern == "slash" && player->getMark("Equips_Nullified_to_Yourself") == 0;
+            && pattern == "slash" && EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
     }
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
-        Card *acard = new FireSlash(originalCard->getSuit(), originalCard->getNumber());
+        FireSlash *acard = new FireSlash(originalCard->getSuit(), originalCard->getNumber());
         acard->addSubcard(originalCard->getId());
         acard->setSkillName(objectName());
         return acard;
