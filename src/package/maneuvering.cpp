@@ -136,26 +136,26 @@ public:
         frequency = Compulsory;
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
-        if (!WeaponSkill::triggerable(player)) return QStringList();
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.card && damage.card->isKindOf("Slash")
-            && damage.to->getMark("Equips_of_Others_Nullified_to_You") == 0
-            && damage.to->isKongcheng() && damage.by_user && !damage.chain && !damage.transfer)
-            return QStringList(objectName());
+        if (!equipAvailable(damage.from, EquipCard::WeaponLocation, objectName(), damage.to))
+            return QList<SkillInvokeDetail>();
 
-        return QStringList();
+        if (damage.card && damage.card->isKindOf("Slash") && damage.to->isKongcheng() && damage.by_user && !damage.chain && !damage.transfer)
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true, damage.to);
+
+        return QList<SkillInvokeDetail>();
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        room->setEmotion(player, "weapon/guding_blade");
+        room->setEmotion(invoke->invoker, "weapon/guding_blade");
 
         LogMessage log;
         log.type = "#GudingBladeEffect";
-        log.from = player;
+        log.from = invoke->invoker;
         log.to << damage.to;
         log.arg = QString::number(damage.damage);
         log.arg2 = QString::number(++damage.damage);
@@ -164,7 +164,6 @@ public:
         data = QVariant::fromValue(damage);
         return false;
     }
-
 };
 
 GudingBlade::GudingBlade(Suit suit, int number)
@@ -184,34 +183,33 @@ public:
         frequency = Compulsory;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
-        if (!ArmorSkill::triggerable(player)) return QStringList();
         if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.nature == DamageStruct::Normal)
-                return QStringList(objectName());
-        } else if (triggerEvent == CardEffected) {
+            if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.nature == DamageStruct::Normal)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
+        } else if (triggerEvent == CardEffect) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (effect.card->isKindOf("SavageAssault") || effect.card->isKindOf("ArcheryAttack"))
-                return QStringList(objectName());
+            if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.card != NULL && (effect.card->isKindOf("SavageAssault") || effect.card->isKindOf("ArcheryAttack")))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
         } else if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.nature == DamageStruct::Fire)
-                return QStringList(objectName());
+            if (equipAvailable(damage.to, EquipCard::ArmorLocation, objectName()) && damage.nature == DamageStruct::Fire)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
         }
-        return QStringList();
+
+        return QList<SkillInvokeDetail>();
     }
 
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
-            room->setEmotion(player, "armor/vine");
+            room->setEmotion(invoke->invoker, "armor/vine");
             LogMessage log;
-            log.from = player;
+            log.from = invoke->invoker;
             log.type = "#ArmorNullify";
             log.arg = objectName();
             log.arg2 = effect.slash->objectName();
@@ -221,9 +219,9 @@ public:
             return true;
         } else if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            room->setEmotion(player, "armor/vine");
+            room->setEmotion(invoke->invoker, "armor/vine");
             LogMessage log;
-            log.from = player;
+            log.from = invoke->invoker;
             log.type = "#ArmorNullify";
             log.arg = objectName();
             log.arg2 = effect.card->objectName();
@@ -233,10 +231,10 @@ public:
             return true;
         } else if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
-            room->setEmotion(player, "armor/vineburn");
+            room->setEmotion(invoke->invoker, "armor/vineburn");
             LogMessage log;
             log.type = "#VineDamage";
-            log.from = player;
+            log.from = invoke->invoker;
             log.arg = QString::number(damage.damage);
             log.arg2 = QString::number(++damage.damage);
             room->sendLog(log);
@@ -246,8 +244,6 @@ public:
 
         return false;
     }
-
-
 };
 
 Vine::Vine(Suit suit, int number)
@@ -265,39 +261,43 @@ public:
         frequency = Compulsory;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
         if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (ArmorSkill::triggerable(player) && damage.damage > 1)
-                return QStringList(objectName());
-        } else if (player->hasFlag("SilverLionRecover")) {
+            if (equipAvailable(damage.to, EquipCard::ArmorLocation, objectName()) && damage.damage > 1)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
+        } else {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.from != player || !move.from_places.contains(Player::PlaceEquip))
-                return QStringList();
+
+            if (!move.from_places.contains(Player::PlaceEquip))
+                return QList<SkillInvokeDetail>();
             for (int i = 0; i < move.card_ids.size(); i++) {
                 if (move.from_places[i] != Player::PlaceEquip) continue;
                 const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
                 if (card->objectName() == objectName()) {
-                    if (!player->isWounded()) {
-                        player->setFlags("-SilverLionRecover");
-                        return QStringList();
+                    if (!move.from->isWounded()) {
+                        move.from->setFlags("-SilverLionRecover");
+                        return QList<SkillInvokeDetail>();
                     }
-                    return QStringList(objectName());
+                    ServerPlayer *invoker = qobject_cast<ServerPlayer *>(move.from);
+                    if (invoker == NULL)
+                        return QList<SkillInvokeDetail>();
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, invoker, invoker, NULL, true);
                 }
             }
         }
-        return QStringList();
+        return QList<SkillInvokeDetail>();
     }
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
-            room->setEmotion(player, "armor/silver_lion");
+            room->setEmotion(invoke->invoker, "armor/silver_lion");
             LogMessage log;
             log.type = "#SilverLion";
-            log.from = player;
+            log.from = invoke->invoker;
             log.arg = QString::number(damage.damage);
             log.arg2 = objectName();
             room->sendLog(log);
@@ -305,27 +305,23 @@ public:
             damage.damage = 1;
             data = QVariant::fromValue(damage);
         } else {
+            invoke->invoker->setFlags("-SilverLionRecover");
+            room->setEmotion(invoke->invoker, "armor/silver_lion");
+            RecoverStruct recover;
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             for (int i = 0; i < move.card_ids.size(); i++) {
                 if (move.from_places[i] != Player::PlaceEquip) continue;
                 const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
                 if (card->objectName() == objectName()) {
-                    player->setFlags("-SilverLionRecover");
-
-                    room->setEmotion(player, "armor/silver_lion");
-                    RecoverStruct recover;
                     recover.card = card;
-                    room->recover(player, recover);
-
-                    return false;
+                    break;
                 }
             }
-
+            room->recover(invoke->invoker, recover);
         }
+
         return false;
     }
-
-
 };
 
 SilverLion::SilverLion(Suit suit, int number)
@@ -336,12 +332,9 @@ SilverLion::SilverLion(Suit suit, int number)
 
 void SilverLion::onUninstall(ServerPlayer *player) const
 {
-    if (player->isAlive() && player->hasArmorEffect(objectName())) //shenbao?
+    if (player->isAlive() && EquipSkill::equipAvailable(player, this)) //shenbao?
         player->setFlags("SilverLionRecover");
 }
-
-
-
 
 FireAttack::FireAttack(Card::Suit suit, int number)
     : SingleTargetTrick(suit, number)
