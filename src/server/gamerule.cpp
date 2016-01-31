@@ -137,45 +137,47 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
     switch (triggerEvent) {
         case GameStart:
         {
-            foreach (ServerPlayer *player, room->getPlayers()) {
-                Q_ASSERT(player->getGeneral() != NULL);
-                if ((player->getGeneral()->getKingdom() == "zhu" || player->getGeneral()->getKingdom() == "touhougod") && player->getGeneralName() != "anjiang") {
-                    QString new_kingdom = room->askForKingdom(player);
-                    room->setPlayerProperty(player, "kingdom", new_kingdom);
+            if (data.isNull()) {
+                foreach (ServerPlayer *player, room->getPlayers()) {
+                    Q_ASSERT(player->getGeneral() != NULL);
+                    if ((player->getGeneral()->getKingdom() == "zhu" || player->getGeneral()->getKingdom() == "touhougod") && player->getGeneralName() != "anjiang") {
+                        QString new_kingdom = room->askForKingdom(player);
+                        room->setPlayerProperty(player, "kingdom", new_kingdom);
 
-                    LogMessage log;
-                    log.type = "#ChooseKingdom";
-                    log.from = player;
-                    log.arg = new_kingdom;
-                    room->sendLog(log);
+                        LogMessage log;
+                        log.type = "#ChooseKingdom";
+                        log.from = player;
+                        log.arg = new_kingdom;
+                        room->sendLog(log);
+                    }
+                    foreach (const Skill *skill, player->getVisibleSkillList()) {
+                        if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
+                            room->addPlayerMark(player, skill->getLimitMark());
+                    }
                 }
-                foreach (const Skill *skill, player->getVisibleSkillList()) {
-                    if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
-                        room->addPlayerMark(player, skill->getLimitMark());
+                room->setTag("FirstRound", true);
+                bool kof_mode = room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical";
+                QList<DrawNCardsStruct> s_list;
+                foreach (ServerPlayer *p, room->getPlayers()) {
+                    int n = kof_mode ? p->getMaxHp() : 4;
+                    DrawNCardsStruct s;
+                    s.player = p;
+                    s.isInitial = true;
+                    s.n = n;
+                    QVariant data = QVariant::fromValue(s);
+                    room->getThread()->trigger(DrawInitialCards, room, data);
+                    s_list << data.value<DrawNCardsStruct>();
                 }
-            }
-            room->setTag("FirstRound", true);
-            bool kof_mode = room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical";
-            QList<DrawNCardsStruct> s_list;
-            foreach (ServerPlayer *p, room->getPlayers()) {
-                int n = kof_mode ? p->getMaxHp() : 4;
-                DrawNCardsStruct s;
-                s.player = p;
-                s.isInitial = true;
-                s.n = n;
-                QVariant data = QVariant::fromValue(s);
-                room->getThread()->trigger(DrawInitialCards, room, data);
-                s_list << data.value<DrawNCardsStruct>();
-            }
-            QList<int> n_list;
-            foreach (DrawNCardsStruct s, s_list)
-                n_list << s.n;
-            room->drawCards(room->getPlayers(), n_list, QString());
-            if (Config.LuckCardLimitation > 0)
-                room->askForLuckCard();
-            foreach (DrawNCardsStruct s, s_list) {
-                QVariant _slistati = QVariant::fromValue(s);
-                room->getThread()->trigger(AfterDrawInitialCards, room, _slistati);
+                QList<int> n_list;
+                foreach (DrawNCardsStruct s, s_list)
+                    n_list << s.n;
+                room->drawCards(room->getPlayers(), n_list, QString());
+                if (Config.LuckCardLimitation > 0)
+                    room->askForLuckCard();
+                foreach (DrawNCardsStruct s, s_list) {
+                    QVariant _slistati = QVariant::fromValue(s);
+                    room->getThread()->trigger(AfterDrawInitialCards, room, _slistati);
+                }
             }
             break;
         }
@@ -967,11 +969,6 @@ HulaoPassMode::HulaoPassMode(QObject *parent)
 
 bool HulaoPassMode::effect(TriggerEvent triggerEvent, Room * room, QSharedPointer<SkillInvokeDetail> invoke, QVariant & data) const
 {
-    return false;
-}
-
-bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
-{
     switch (triggerEvent) {
         case StageChange:
         {
@@ -993,7 +990,7 @@ bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer 
             QList<const Card *> tricks = lord->getJudgingArea();
             if (!tricks.isEmpty()) {
                 DummyCard *dummy = new DummyCard;
-                foreach(const Card *trick, tricks)
+                foreach (const Card *trick, tricks)
                     dummy->addSubcard(trick);
                 CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
                 room->throwCard(dummy, reason, NULL);
@@ -1008,44 +1005,64 @@ bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer 
         case GameStart:
         {
             // Handle global events
-            if (player == NULL) {
-                ServerPlayer *lord = room->getLord();
-                lord->drawCards(8);
-                foreach (ServerPlayer *player, room->getPlayers()) {
-                    if (!player->isLord())
-                        player->drawCards(player->getSeat() + 1);
+            if (data.isNull()) {
+                QList<DrawNCardsStruct> s_list;
+                foreach (ServerPlayer *p, room->getPlayers()) {
+                    int n = p->isLord() ? 8 : p->getSeat() + 1;
+                    DrawNCardsStruct s;
+                    s.player = p;
+                    s.isInitial = true;
+                    s.n = n;
+                    QVariant data = QVariant::fromValue(s);
+                    room->getThread()->trigger(DrawInitialCards, room, data);
+                    s_list << data.value<DrawNCardsStruct>();
                 }
+                QList<int> n_list;
+                foreach (DrawNCardsStruct s, s_list)
+                    n_list << s.n;
+                room->drawCards(room->getPlayers(), n_list, QString());
+                if (Config.LuckCardLimitation > 0)
+                    room->askForLuckCard();
+                foreach (DrawNCardsStruct s, s_list) {
+                    QVariant _slistati = QVariant::fromValue(s);
+                    room->getThread()->trigger(AfterDrawInitialCards, room, _slistati);
+                }
+
                 return false;
+                break;
             }
-            break;
         }
         case HpChanged:
         {
+            ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->isLord() && player->getHp() <= 4 && player->getMark("secondMode") == 0)
                 throw StageChange;
             return false;
         }
         case GameOverJudge:
         {
-            if (player->isLord())
+            DeathStruct death = data.value<DeathStruct>();
+            if (death.who->isLord())
                 room->gameOver("rebel");
             else
-                if (room->aliveRoles(player).length() == 1)
+                if (room->aliveRoles(death.who).length() == 1)
                     room->gameOver("lord");
 
             return false;
         }
         case BuryVictim:
         {
-            if (player->hasFlag("actioned")) room->setPlayerFlag(player, "-actioned");
+            DeathStruct death = data.value<DeathStruct>();
+            if (death.who->hasFlag("actioned"))
+                room->setPlayerFlag(death.who, "-actioned");
 
             LogMessage log;
             log.type = "#Reforming";
-            log.from = player;
+            log.from = death.who;
             room->sendLog(log);
 
-            player->bury();
-            room->setPlayerProperty(player, "hp", 0);
+            death.who->bury();
+            room->setPlayerProperty(death.who, "hp", 0);
 
             foreach (ServerPlayer *p, room->getOtherPlayers(room->getLord())) {
                 if (p->isAlive() && p->askForSkillInvoke("draw_1v3"))
@@ -1056,6 +1073,7 @@ bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer 
         }
         case TurnStart:
         {
+            ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->isDead()) {
                 JsonArray arg;
                 arg << (int)QSanProtocol::S_GAME_EVENT_PLAYER_REFORM;
@@ -1108,5 +1126,5 @@ bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer 
             break;
     }
 
-    return GameRule::trigger(triggerEvent, room, player, data);
+    return GameRule::effect(triggerEvent, room, invoke, data);
 }
