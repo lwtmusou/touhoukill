@@ -24,9 +24,10 @@ public:
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
-        foreach(ServerPlayer *reimu, use.to)
-            d << SkillInvokeDetail(this, reimu, reimu);
-
+        foreach(ServerPlayer *reimu, use.to) {
+            if (reimu->hasSkill(this))
+                d << SkillInvokeDetail(this, reimu, reimu);
+        }
         return d;
     }
 
@@ -608,7 +609,7 @@ public:
     {
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *marisa = data.value<ServerPlayer *>();
-            if (marisa && marisa->isAlive() && marisa->getPhase() == Player::Discard && !marisa->isKongcheng())
+            if (marisa  && marisa->hasSkill(this) && marisa->isAlive() && marisa->getPhase() == Player::Discard && !marisa->isKongcheng())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, marisa, marisa);
         }
         return QList<SkillInvokeDetail>();
@@ -710,7 +711,7 @@ public:
         if (!marisa || marisa->isDead() || marisa->getPhase() != Player::Start) 
             return QList<SkillInvokeDetail>();
         if (triggerEvent == EventPhaseStart) {
-            if (!marisa->isAllNude())
+            if (!marisa->isAllNude() && marisa->hasSkill(this))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, marisa, marisa);
         } else if (triggerEvent == EventPhaseEnd) {
             if (marisa->hasFlag("baoyi"))
@@ -779,7 +780,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *reimu = data.value<ServerPlayer *>();
-        if (reimu->getPhase() == Player::Draw)
+        if (reimu->getPhase() == Player::Draw && reimu->hasSkill(this))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, reimu, reimu, NULL, true); 
         return QList<SkillInvokeDetail>();
     }
@@ -858,7 +859,8 @@ public:
         ServerPlayer *reimu = NULL;
         if (move.to)
             reimu = room->findPlayerByObjectName(move.to->objectName());
-        if (move.to && reimu && move.to == reimu && move.to_place == Player::PlaceHand) {
+        if (move.to && reimu  && reimu->hasSkill(this)
+            && move.to == reimu && move.to_place == Player::PlaceHand) {
             reimu->tag.remove("chunxi_ids");
             QList<SkillInvokeDetail> d;
             QVariantList v;
@@ -1031,7 +1033,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *reimu = data.value<ServerPlayer *>();
-        if (reimu && reimu->isAlive() && reimu->getPhase() == Player::Start) {
+        if (reimu && reimu->hasSkill(this) && reimu->isAlive() && reimu->getPhase() == Player::Start) {
             int z = (reimu->getLostHp() + 1) - reimu->getMark("@yu");
             if (z > 0)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, reimu, reimu);
@@ -1064,7 +1066,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *reimu = data.value<ServerPlayer *>();
-        if (reimu && reimu->isAlive() && reimu->getPhase() == Player::Draw) {
+        if (reimu && reimu->hasSkill("bllmwuyu") && reimu->isAlive() && reimu->getPhase() == Player::Draw) {
             if (reimu->getMark("@yu") > 0 || reimu->canDiscard(reimu, "h"))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, reimu, reimu);
         }
@@ -1145,7 +1147,7 @@ public:
     {
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         ServerPlayer *reimu = change.player;
-        if (reimu && change.to == Player::Judge  && !reimu->isSkipped(change.to)) {
+        if (reimu && reimu->hasSkill("bllmwuyu") && change.to == Player::Judge  && !reimu->isSkipped(change.to)) {
             if (reimu->getMark("@yu") > 0 || reimu->canDiscard(reimu, "h"))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, reimu, reimu);
         }
@@ -1235,7 +1237,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *reimu = data.value<ServerPlayer *>();
-        if (reimu && reimu->isAlive() && reimu->getPhase() == Player::Discard) {
+        if (reimu && reimu->hasSkill("bllmwuyu") && reimu->isAlive() && reimu->getPhase() == Player::Discard) {
             if (reimu->getMark("@yu") > 0 || reimu->canDiscard(reimu, "h"))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, reimu, reimu);
         }
@@ -1375,7 +1377,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->isKindOf("TrickCard"))
+        if (use.card->isKindOf("TrickCard") && use.from->hasSkill(this))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
         return QList<SkillInvokeDetail>();
     }
@@ -1432,7 +1434,7 @@ public:
 
         QList<SkillInvokeDetail> d;
         foreach(ServerPlayer *marisa, use.to)         
-            if (!marisa->getPile("tianyi").isEmpty())
+            if (!marisa->getPile("tianyi").isEmpty() && marisa->hasSkill(this))
                 d << SkillInvokeDetail(this, marisa, marisa);
         return d;
     }
@@ -1479,7 +1481,8 @@ public:
         ServerPlayer *marisa = NULL;
         if (move.from)
             marisa = room->findPlayerByObjectName(move.from->objectName());
-        if (move.from && marisa && move.from == marisa && marisa->hasSkill(this) &&  move.from_places.contains(Player::PlaceSpecial)) {
+        if (move.from && marisa && marisa->hasSkill(this)
+            && move.from == marisa && marisa->hasSkill(this) &&  move.from_places.contains(Player::PlaceSpecial)) {
             QList<SkillInvokeDetail> d; 
             for (int i = 0; i < move.card_ids.size(); i++) {
                 if (move.from_pile_names.value(i) == "tianyi")
