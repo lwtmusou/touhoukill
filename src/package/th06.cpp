@@ -209,7 +209,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *fldl = data.value<ServerPlayer *>();
-        if (fldl->isDead() || fldl->getPhase() != Player::Start)
+        if (!fldl->hasSkill(this) || fldl->isDead() || fldl->getPhase() != Player::Start)
             return QList<SkillInvokeDetail>();
 
         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, fldl, fldl, NULL, true);
@@ -531,7 +531,7 @@ public:
             sixteen = hplost.player;
         }
 
-        if (sixteen->isDead())
+        if (!sixteen->hasSkill(this) || sixteen->isDead())
             return QList<SkillInvokeDetail>();
 
         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, sixteen, sixteen);
@@ -923,8 +923,10 @@ public:
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
-        foreach (ServerPlayer *nokia, use.to)
-            d << SkillInvokeDetail(this, nokia, nokia, NULL, true);
+        foreach (ServerPlayer *nokia, use.to) {
+            if (nokia->hasSkill(this))
+                d << SkillInvokeDetail(this, nokia, nokia, NULL, true);
+        }
 
         return d;
     }

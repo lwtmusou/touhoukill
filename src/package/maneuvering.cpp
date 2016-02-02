@@ -472,8 +472,6 @@ bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Pl
 {
     if (!targets.isEmpty() || to_select->containsTrick(objectName()) || to_select == Self)
         return false;
-    if (hasFlag("fahua"))
-        return true;
     int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
     int rangefix = 0;
     if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))

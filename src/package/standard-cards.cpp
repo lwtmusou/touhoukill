@@ -1286,16 +1286,10 @@ bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *to
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     if (targets.length() >= total_num || to_select->isAllNude() || to_select == Self)
         return false;
-    if (hasFlag("fahua"))
-        return true;
     int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
     int rangefix = 0;
     if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
         rangefix += 1;
-
-    if (getSkillName() == "jixi")
-        rangefix += 1;
-
     if (Self->distanceTo(to_select, rangefix) > distance_limit)
         return false;
 

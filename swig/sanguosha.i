@@ -743,7 +743,6 @@ enum TriggerEvent {
 
     //new events for touhoukill, 
     DrawPileSwaped,//like qiannian
-    DrawCardsFromDrawPile, // for qiangyu
 
     NumOfEvents
 };

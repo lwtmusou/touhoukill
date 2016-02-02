@@ -3917,15 +3917,6 @@ void Room::drawCards(QList<ServerPlayer *> players, QList<int> n_list, const QSt
         int n = n_list.at(qMin(index, len - 1));
         if (n <= 0) continue;
 
-        bool initalDraw = getTag("FirstRound").toBool();
-        if (!initalDraw) {
-            QVariant qnum;
-            qnum.setValue(n);
-#pragma message WARN("todo_Fs: remove this event")
-            thread->trigger(DrawCardsFromDrawPile, this, qnum);
-            n = qnum.toInt();
-        }
-
         QList<int> card_ids;
         card_ids = getNCards(n, false);
 
@@ -3934,6 +3925,8 @@ void Room::drawCards(QList<ServerPlayer *> players, QList<int> n_list, const QSt
         move.from = NULL;
         move.to = player;
         move.to_place = Player::PlaceHand;
+        move.reason = CardMoveReason(CardMoveReason::S_REASON_DRAW, player->objectName());
+        move.reason.m_extraData = "drawFromDrawpile";
         moves.append(move);
     }
     moveCardsAtomic(moves, false);
