@@ -177,7 +177,7 @@ public:
 class FahuaDistance : public TargetModSkill
 {
 public:
-    FahuaDistance() : TargetModSkill("#fahua-dist")
+    FahuaDistance() : TargetModSkill("fahua-dist")
     {
         pattern = "TrickCard";
     }
@@ -966,6 +966,8 @@ TH12Package::TH12Package()
     addMetaObject<WeizhiCard>();
     addMetaObject<NihuoCard>();
     addMetaObject<NuhuoCard>();
+
+    skills << new FahuaDistance;
 }
 
 ADD_PACKAGE(TH12)
