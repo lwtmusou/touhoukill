@@ -171,8 +171,10 @@ class MasochismSkill : public TriggerSkill
 public:
     MasochismSkill(const QString &name);
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
-    virtual void onDamaged(const DamageStruct &damage) const = 0;
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const;
+    virtual QList<SkillInvokeDetail> triggerable(const Room *room, const DamageStruct &damage) const;
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
+    virtual void onDamaged(Room *room, QSharedPointer<SkillInvokeDetail> invoke, const DamageStruct &damage) const = 0;
 };
 
 class PhaseChangeSkill : public TriggerSkill
@@ -182,7 +184,7 @@ class PhaseChangeSkill : public TriggerSkill
 public:
     PhaseChangeSkill(const QString &name);
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
     virtual bool onPhaseChange(ServerPlayer *target) const = 0;
 };
 
@@ -193,7 +195,7 @@ class DrawCardsSkill : public TriggerSkill
 public:
     DrawCardsSkill(const QString &name, bool = false);
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
     virtual int getDrawNum(const DrawNCardsStruct &draw) const = 0;
 
 protected:
@@ -207,7 +209,7 @@ class GameStartSkill : public TriggerSkill
 public:
     GameStartSkill(const QString &name);
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
     virtual void onGameStart() const = 0;
 };
 
@@ -298,9 +300,9 @@ class FakeMoveSkill : public TriggerSkill
 public:
     FakeMoveSkill(const QString &skillname);
 
-    virtual int getPriority() const;
-    virtual QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const;
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
+    int getPriority() const;
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const;
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
 
 private:
     QString name;

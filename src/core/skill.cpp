@@ -305,7 +305,7 @@ int ScenarioRule::getPriority() const
 
 QList<SkillInvokeDetail> ScenarioRule::triggerable(TriggerEvent, const Room *, const QVariant &) const
 {
-    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this);
+    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, NULL, NULL, NULL, true);
 }
 
 MasochismSkill::MasochismSkill(const QString &name)
@@ -314,10 +314,21 @@ MasochismSkill::MasochismSkill(const QString &name)
     events << Damaged;
 }
 
-bool MasochismSkill::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
+QList<SkillInvokeDetail> MasochismSkill::triggerable(TriggerEvent, const Room *room, const QVariant &data) const
 {
     DamageStruct damage = data.value<DamageStruct>();
-    onDamaged(damage);
+    return triggerable(room, damage);
+}
+
+QList<SkillInvokeDetail> MasochismSkill::triggerable(const Room *, const DamageStruct &) const
+{
+    return QList<SkillInvokeDetail>();
+}
+
+bool MasochismSkill::effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+{
+    DamageStruct damage = data.value<DamageStruct>();
+    onDamaged(room, invoke, damage);
 
     return false;
 }
@@ -446,6 +457,7 @@ FakeMoveSkill::FakeMoveSkill(const QString &name)
     : TriggerSkill(QString("#%1-fake-move").arg(name)), name(name)
 {
     events << BeforeCardsMove << CardsMoveOneTime;
+    frequency = Compulsory;
 }
 
 int FakeMoveSkill::getPriority() const
@@ -471,7 +483,7 @@ QList<SkillInvokeDetail> FakeMoveSkill::triggerable(TriggerEvent, const Room *ro
     QString flag = QString("%1_InTempMoving").arg(name);
     foreach (ServerPlayer *p, room->getAllPlayers()) {
         if (p->hasFlag(flag))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, owner, p);
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, owner, p, NULL, true);
     }
 
     return QList<SkillInvokeDetail>();
