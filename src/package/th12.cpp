@@ -54,7 +54,7 @@ public:
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->hasSkill(this) && player->isAlive() && player->getPhase() == Player::Finish && player->isWounded())
-            return QList<SkillInvokeDetail>{SkillInvokeDetail(this, player, player)}; // c++11 std::initializer_list
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
 
         return QList<SkillInvokeDetail>();
     }
@@ -417,29 +417,34 @@ public:
         events << TargetConfirming;
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
-        if (!TriggerSkill::triggerable(player)) return QStringList();
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from  && player != use.from  &&  use.to.contains(player) && use.card->isNDTrick()) {
-            if (player->canDiscard(use.from, "h"))
-                return QStringList(objectName());
+        if (!(use.from != NULL && use.card->isNDTrick()))
+            return QList<SkillInvokeDetail>();
+
+        QList<SkillInvokeDetail> d;
+        foreach (ServerPlayer *p, use.to) {
+            if (p->hasSkill(this) && use.from != p && p->canDiscard(use.from, "h"))
+                d << SkillInvokeDetail(this, p, p, NULL, false, use.from);
         }
-        return QStringList();
+
+        return d;
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        player->tag["shuinan_use"] = data;
-        return room->askForSkillInvoke(player, objectName(), QVariant::fromValue(use.from));
+        invoke->invoker->tag["shuinan_use"] = data;
+        return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(use.from));
     }
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), use.from->objectName());
-        int id = room->askForCardChosen(player, use.from, "h", objectName(), false, Card::MethodDiscard);
-        room->throwCard(id, use.from, player);
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), use.from->objectName());
+        int id = room->askForCardChosen(invoke->invoker, use.from, "h", objectName(), false, Card::MethodDiscard);
+        room->throwCard(id, use.from, invoke->invoker);
         return false;
     }
 };
@@ -490,16 +495,18 @@ public:
         events << DamageCaused;
     }
 
-    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        player->tag["lizhi_damage"] = data;
-        return player->askForSkillInvoke(objectName(), QVariant::fromValue(damage.to));
+        if (damage.from->hasSkill(this))
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from);
+
+        return QList<SkillInvokeDetail>();
     }
 
-    virtual bool effect(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        player->drawCards(2);
+        invoke->invoker->drawCards(2, objectName());
         return true;
     }
 };
@@ -513,26 +520,27 @@ public:
         events << TargetConfirming;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
-        if (!TriggerSkill::triggerable(player)) return QStringList();
-        if (triggerEvent == TargetConfirming) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isNDTrick() && use.to.contains(player) && use.from != player && !use.from->inMyAttackRange(player))
-                return QStringList(objectName());
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (!(use.from != NULL && use.card->isNDTrick()))
+            return QList<SkillInvokeDetail>();
+
+        QList<SkillInvokeDetail> d;
+        foreach (ServerPlayer *p, use.to) {
+            if (p->hasSkill(this) && !use.from->inMyAttackRange(p) && use.from != p)
+                d << SkillInvokeDetail(this, p, p, NULL, true);
         }
-        return QStringList();
+        return d;
     }
 
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        if (triggerEvent == TargetConfirming) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            use.nullified_list << player->objectName();
-            data = QVariant::fromValue(use);
-            room->notifySkillInvoked(player, objectName());
-        }
+        CardUseStruct use = data.value<CardUseStruct>();
+        use.nullified_list << invoke->invoker->objectName();
+        data = QVariant::fromValue(use);
+        room->notifySkillInvoked(invoke->invoker, objectName());
+
         return false;
     }
 };
@@ -546,6 +554,9 @@ public:
         events << CardsMoveOneTime << BeforeCardsMove;
         frequency = Frequent;
     }
+
+#pragma message WARN("todo_lwtmusou: these codes doesn't make sense to Fs, so......")
+/*
 
     virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *nazurin, QVariant &data) const
     {
@@ -592,7 +603,7 @@ public:
                 }
                 nazurin->tag["souji"] = obtain_ids;
             }
-            //******************************************************************************************            
+            // ******************************************************************************************            
                         // delete record: UseOrResponseFromPile
             QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
             foreach (int id, move.card_ids) {
@@ -642,7 +653,7 @@ public:
         mo.to_place = Player::PlaceHand;
         room->moveCardsAtomic(mo, true);
         return false;
-    }
+    }*/
 };
 
 
