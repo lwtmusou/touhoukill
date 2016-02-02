@@ -1274,7 +1274,7 @@ public:
 class QiangyuVS : public ViewAsSkill
 {
 public:
-    QiangyuVS() : ViewAsSkill("qianyu")
+    QiangyuVS() : ViewAsSkill("qiangyu")
     {
         response_pattern = "@@qiangyu!";
     }
