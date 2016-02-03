@@ -1051,12 +1051,12 @@ public:
     }
 };
 
-DvxinCard::DvxinCard()
+ShuxinCard::ShuxinCard()
 {
 
 }
 
-bool DvxinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+bool ShuxinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
 {
     if (!targets.isEmpty())
         return false;
@@ -1067,7 +1067,7 @@ bool DvxinCard::targetFilter(const QList<const Player *> &targets, const Player 
     return true;
 }
 
-void DvxinCard::onEffect(const CardEffectStruct &effect) const
+void ShuxinCard::onEffect(const CardEffectStruct &effect) const
 {
     QList<int> card_ids = effect.to->handCards();
     QList<int> selected;
@@ -1100,7 +1100,7 @@ void DvxinCard::onEffect(const CardEffectStruct &effect) const
         }
 
         room->fillAG(card_ids + disabled + selected, effect.from, disabled + selected);
-        int id = room->askForAG(effect.from, card_ids, true, "dvxin");
+        int id = room->askForAG(effect.from, card_ids, true, "shuxin");
         if (id == -1)
             break;
         room->clearAG(effect.from);
@@ -1123,22 +1123,22 @@ void DvxinCard::onEffect(const CardEffectStruct &effect) const
         room->recover(effect.to, RecoverStruct());
 }
 
-class Dvxin : public ZeroCardViewAsSkill
+class Shuxin : public ZeroCardViewAsSkill
 {
 public:
-    Dvxin() : ZeroCardViewAsSkill("dvxin")
+    Shuxin() : ZeroCardViewAsSkill("shuxin")
     {
 
     }
 
     const Card *viewAs() const
     {
-        return new DvxinCard;
+        return new ShuxinCard;
     }
 
     bool isEnabledAtPlay(const Player *player) const
     {
-        return !player->hasUsed("DvxinCard");
+        return !player->hasUsed("ShuxinCard");
     }
 };
 
@@ -1181,13 +1181,13 @@ TH12Package::TH12Package()
 
     General *myouren = new General(this, "myouren", "xlc", 4, false);
     myouren->addSkill(new Shanshi);
-    myouren->addSkill(new Dvxin);
+    myouren->addSkill(new Shuxin);
 
     addMetaObject<PuduCard>();
     addMetaObject<WeizhiCard>();
     addMetaObject<NihuoCard>();
     addMetaObject<NuhuoCard>();
-    addMetaObject<DvxinCard>();
+    addMetaObject<ShuxinCard>();
 
     skills << new FahuaDistance;
 }
