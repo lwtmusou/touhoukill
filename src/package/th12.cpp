@@ -293,8 +293,20 @@ public:
         if (use.card->isBlack() && (use.card->isNDTrick() || use.card->isKindOf("Slash"))) {
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, use.to) {
-                if (p->hasSkill(this) && !p->isKongcheng())
-                    d << SkillInvokeDetail(this, p, p);
+                if (p->hasSkill(this)) {
+                    bool invoke = p->isKongcheng();
+                    if (!invoke) {
+                        foreach (const Card *card, p->getEquips()) {
+                            if (card->isRed()) {
+                                invoke = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (invoke)
+                        d << SkillInvokeDetail(this, p, p);
+                }
             }
             return d;
         }
@@ -332,12 +344,11 @@ public:
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->hasSkill(this) && player->getPhase() == Player::Finish)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-        }
-        else if (triggerEvent == CardsMoveOneTime) {
+        } else if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
             if (player != NULL && player->hasSkill(this) && move.to_place == Player::DiscardPile) {
-                foreach(int id, move.card_ids) {
+                foreach (int id, move.card_ids) {
                     if (room->getCardPlace(id) == Player::DiscardPile
                         && (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial &&
                             move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
@@ -354,7 +365,7 @@ public:
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             QList<int> ids;
-            foreach(int id, move.card_ids) {
+            foreach (int id, move.card_ids) {
                 if (room->getCardPlace(id) == Player::DiscardPile
                     && (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial &&
                     move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
@@ -363,14 +374,13 @@ public:
             room->fillAG(ids, player);
             int card_id = room->askForAG(player, ids, true, objectName());
             room->clearAG(player);
-            if (card_id > -1) {
-                player->tag["baota_id"] = QVariant::fromValue(card_id);
-            }
+            if (card_id > -1)
+                invoke->tag["baota_id"] = QVariant::fromValue(card_id);
             return card_id > -1;
         } else if (triggerEvent == EventPhaseStart) {
             ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "@baota", true, true);
             if (target) {
-                player->tag["baota_target"] = QVariant::fromValue(target);
+                invoke->targets << target;
                 return true;
             }
         }
@@ -380,8 +390,10 @@ public:
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         if (triggerEvent == CardsMoveOneTime) {
-            int card_id = invoke->invoker->tag["baota_id"].toInt();
-            invoke->invoker->tag.remove("baota_id");
+            int card_id = invoke->tag.value("baota_id", -1).toInt();
+            if (card_id == -1)
+                return false;
+
             LogMessage mes;
             mes.type = "$baota";
             mes.from = invoke->invoker;
@@ -393,8 +405,7 @@ public:
             buttom_ids << card_id;
             room->moveCardsToEndOfDrawpile(buttom_ids, true);
         } else if (triggerEvent == EventPhaseStart) {
-            ServerPlayer *target = invoke->invoker->tag["baota_target"].value<ServerPlayer *>();
-            invoke->invoker->tag.remove("baota_target");
+            ServerPlayer *target = invoke->targets.first();
             CardsMoveStruct move;
             move.to = target;
             move.to_place = Player::PlaceHand;

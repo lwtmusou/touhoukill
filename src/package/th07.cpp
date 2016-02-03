@@ -1607,6 +1607,7 @@ public:
 
 
 #pragma message WARN("todo_lwtmusou: rewrite siyu, notice that skill records (flag, tag, marks, ect.) should be updated while siyu TurnBroken")
+// Fs: should check in every skill, better write the most records clear into the eventphasechanging(to = notactive) event
 class HpymSiyu : public TriggerSkill
 {
 public:
