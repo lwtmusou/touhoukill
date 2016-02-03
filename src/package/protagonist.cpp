@@ -627,6 +627,7 @@ public:
         marisa->tag.remove("shoucang");
         if (num > 0)
             room->setPlayerMark(marisa, "shoucang", num);
+        return false;
     }
 };
 class ShoucangMax : public MaxCardsSkill
@@ -843,10 +844,8 @@ public:
     void record(TriggerEvent, Room *room, QVariant &data)
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        ServerPlayer *reimu = NULL;
-        if (move.to)
-            reimu = room->findPlayerByObjectName(move.to->objectName());
-        if (move.to && reimu && move.to == reimu && move.to_place == Player::PlaceHand)
+        ServerPlayer *reimu = qobject_cast<ServerPlayer *>(move.to);
+        if (reimu != NULL && move.to_place == Player::PlaceHand)
             reimu->tag.remove("chunxi_currentIndex");
     }
 
@@ -856,11 +855,8 @@ public:
             return QList<SkillInvokeDetail>();
 
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        ServerPlayer *reimu = NULL;
-        if (move.to)
-            reimu = room->findPlayerByObjectName(move.to->objectName());
-        if (move.to && reimu  && reimu->hasSkill(this)
-            && move.to == reimu && move.to_place == Player::PlaceHand) {
+        ServerPlayer *reimu = qobject_cast<ServerPlayer *>(move.to);
+        if (reimu != NULL && reimu->hasSkill(this) && move.to_place == Player::PlaceHand) {
             reimu->tag.remove("chunxi_ids");
             QList<SkillInvokeDetail> d;
             QVariantList v;
@@ -1478,11 +1474,8 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        ServerPlayer *marisa = NULL;
-        if (move.from)
-            marisa = room->findPlayerByObjectName(move.from->objectName());
-        if (move.from && marisa && marisa->hasSkill(this)
-            && move.from == marisa && marisa->hasSkill(this) &&  move.from_places.contains(Player::PlaceSpecial)) {
+        ServerPlayer *marisa = qobject_cast<ServerPlayer *>(move.from);
+        if (marisa != NULL && marisa->hasSkill(this) &&  move.from_places.contains(Player::PlaceSpecial)) {
             QList<SkillInvokeDetail> d; 
             for (int i = 0; i < move.card_ids.size(); i++) {
                 if (move.from_pile_names.value(i) == "tianyi")

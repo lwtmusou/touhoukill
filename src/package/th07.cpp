@@ -750,11 +750,8 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        ServerPlayer *player = NULL;
-        if (move.from)
-            player = room->findPlayerByObjectName(move.from->objectName());
-        if (move.from && player && player->hasSkill(this)
-            && player == move.from && move.card_ids.length() == 1 && move.to_place == Player::DiscardPile
+        ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
+        if (player != NULL && player->hasSkill(this) && move.card_ids.length() == 1 && move.to_place == Player::DiscardPile
             && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
             || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE)) {
             const Card *card = move.reason.m_extraData.value<const Card *>();
