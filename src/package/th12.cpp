@@ -1043,10 +1043,11 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        invoke->invoker->drawCards(1, objectName());
-        invoke->targets.first()->drawCards(1, objectName());
+        QList<ServerPlayer *> l = QList<ServerPlayer *>() << invoke->invoker << invoke->targets.first();
+        room->sortByActionOrder(l);
+        room->drawCards(l, 1, objectName());
         return false;
     }
 };
