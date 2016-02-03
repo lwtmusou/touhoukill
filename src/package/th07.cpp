@@ -64,7 +64,7 @@ public:
         }
         yuyuko->tag["sidie_target"] = QVariant::fromValue(damage.to);
         ServerPlayer *target = room->askForPlayerChosen(yuyuko, listt, objectName(), "@sidie:" + damage.to->objectName(), true, true);
-
+        yuyuko->tag.remove("sidie_target");
         if (target) {
             invoke->targets << target;
             ServerPlayer *current = room->getCurrent();
@@ -74,9 +74,6 @@ public:
             logto << damage.to;
             room->touhouLogmessage("#Dongjie", yuyuko, "sidie", logto);
             return true;
-        } else {
-            yuyuko->tag.remove("sidie_target");
-            return false;
         }
         return false;
     }
@@ -88,7 +85,6 @@ public:
         Slash *slash = new Slash(Card::NoSuit, 0);
         slash->deleteLater();
         ServerPlayer *target = invoke->targets.first();
-        yuyuko->tag.remove("sidie_target");
 
         if (target) {
             yuyuko->drawCards(2);
@@ -1461,7 +1457,7 @@ public:
                     }
                     if (pile_name != NULL && player_haspile->pileOpen(pile_name, yukari->objectName()))
                         can_open = true;
-                    invoke->invoker->tag["xijian_visible"] = QVariant::fromValue(can_open);
+                    yukari->tag["xijian_visible"] = QVariant::fromValue(can_open);
                     return true;
                 }
             }
@@ -1473,10 +1469,10 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         ServerPlayer *player = invoke->targets.first();
-        int card_id = player->tag["xijian_id"].toInt();
-        bool visible = player->tag["xijian_visible"].toBool();
-        player->tag.remove("xijian_id");
-        player->tag.remove("xijian_visible");
+        int card_id = invoke->invoker->tag["xijian_id"].toInt();
+        bool visible = invoke->invoker->tag["xijian_visible"].toBool();
+        invoke->invoker->tag.remove("xijian_id");
+        invoke->invoker->tag.remove("xijian_visible");
         //need reason to slove the disambugation of the move of piao is
         //xijian a "piao" or using a "piao"
         CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, player->objectName(), objectName(), QString());
