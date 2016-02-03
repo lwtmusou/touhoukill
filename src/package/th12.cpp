@@ -326,87 +326,84 @@ public:
         events << CardsMoveOneTime << EventPhaseStart;
     }
 
-
-#pragma message WARN("todo_lwtmusou: these codes doesn't make sense to Fs, so......")
-
-/*
-    virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *toramaru, QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
-        if (!toramaru->hasSkill(objectName())) return;
-        if (triggerEvent == CardsMoveOneTime) {
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->hasSkill(this) && player->getPhase() == Player::Finish)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+        }
+        else if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.from && move.from == toramaru && move.to_place == Player::DiscardPile) {
-                QVariantList ids;
-                foreach (int id, move.card_ids) {
+            ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
+            if (player != NULL && player->hasSkill(this) && move.to_place == Player::DiscardPile) {
+                foreach(int id, move.card_ids) {
                     if (room->getCardPlace(id) == Player::DiscardPile
                         && (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial &&
-                        move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
-                        ids << id;
+                            move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
                 }
-                toramaru->tag["baota"] = ids;
             }
         }
+        return QList<SkillInvokeDetail>();
     }
 
-
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        if (!TriggerSkill::triggerable(player)) return QStringList();
-        if (triggerEvent == EventPhaseStart) {
-            if (player->getPhase() == Player::Finish)
-                return QStringList(objectName());
-        } else if (triggerEvent == CardsMoveOneTime) {
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.from && move.from == player && move.to_place == Player::DiscardPile) {
-                QVariantList ids = player->tag["baota"].toList();
-                if (!ids.isEmpty())
-                    return QStringList(objectName());
-            }
-        }
-        return QStringList();
-    }
-
-
-
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
-    {
+        ServerPlayer *player = invoke->invoker;
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            QVariantList r_ids = player->tag["baota"].toList();
             QList<int> ids;
-            foreach(QVariant record_id, r_ids)
-                ids << record_id.toInt();
-
+            foreach(int id, move.card_ids) {
+                if (room->getCardPlace(id) == Player::DiscardPile
+                    && (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial &&
+                    move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
+                    ids << id;
+            }
             room->fillAG(ids, player);
             int card_id = room->askForAG(player, ids, true, objectName());
             room->clearAG(player);
             if (card_id > -1) {
-                LogMessage mes;
-                mes.type = "$baota";
-                mes.from = player;
-                mes.arg = objectName();
-                mes.card_str = Sanguosha->getCard(card_id)->toString();
-                room->sendLog(mes);
-
-                QList<int> buttom_ids;
-                buttom_ids << card_id;
-                room->moveCardsToEndOfDrawpile(buttom_ids, true);
+                player->tag["baota_id"] = QVariant::fromValue(card_id);
             }
-
-
+            return card_id > -1;
         } else if (triggerEvent == EventPhaseStart) {
             ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "@baota", true, true);
             if (target) {
-                CardsMoveStruct move;
-                move.to = target;
-                move.to_place = Player::PlaceHand;
-                move.card_ids << room->drawCard(true);
-                room->moveCardsAtomic(move, false);
+                player->tag["baota_target"] = QVariant::fromValue(target);
+                return true;
             }
         }
         return false;
-    }*/
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        if (triggerEvent == CardsMoveOneTime) {
+            int card_id = invoke->invoker->tag["baota_id"].toInt();
+            invoke->invoker->tag.remove("baota_id");
+            LogMessage mes;
+            mes.type = "$baota";
+            mes.from = invoke->invoker;
+            mes.arg = objectName();
+            mes.card_str = Sanguosha->getCard(card_id)->toString();
+            room->sendLog(mes);
+
+            QList<int> buttom_ids;
+            buttom_ids << card_id;
+            room->moveCardsToEndOfDrawpile(buttom_ids, true);
+        } else if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *target = invoke->invoker->tag["baota_target"].value<ServerPlayer *>();
+            invoke->invoker->tag.remove("baota_target");
+            CardsMoveStruct move;
+            move.to = target;
+            move.to_place = Player::PlaceHand;
+            move.card_ids << room->drawCard(true);
+            room->moveCardsAtomic(move, false);
+        }
+        return false;
+    }
+
 };
 
 class Shuinan : public TriggerSkill
@@ -555,7 +552,12 @@ public:
         frequency = Frequent;
     }
 
-#pragma message WARN("todo_lwtmusou: these codes doesn't make sense to Fs, so......")
+#pragma message WARN("todo_lwtmusou:while rewrite, need consider how to determine move.from like these cases")
+//case1.1 while provideCard went to discar pile , like skill Tianren
+    //if the provider is self,it should not trigger skill
+//case2 while retrial card went to discard pile, we consdier the move.from as the responser, not judge.who!!!   
+    //if responser(move.from) is self, it could not trigger skill.
+//case 3 if the card which went to discardpile was from private pile, like woodenOx,it should not trigger skill.
 /*
 
     virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *nazurin, QVariant &data) const
