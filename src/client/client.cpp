@@ -1491,13 +1491,10 @@ void Client::askForTriggerOrder(const QVariant &ask_str)
     if (ask.size() != 2
         || !ask[0].canConvert<JsonArray>()
         || !JsonUtils::isBool(ask[1])) return;
-#pragma message WARN("todo_Fs: fix this")
-    QStringList choices;
-    JsonUtils::tryParse(ask[0], choices);
-
+    QVariantList l = ask[0].toList();
     bool optional = ask[1].toBool();
 
-    emit triggers_got("askForTriggerOrder", choices, optional);
+    emit triggers_got(l, optional);
     setStatus(AskForTriggerOrder);
 }
 

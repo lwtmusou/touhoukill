@@ -1754,10 +1754,8 @@ QSharedPointer<SkillInvokeDetail> Room::askForTriggerOrder(ServerPlayer *player,
             }
             if (cancelable)
                 skills << "cancel";
-
+#pragma message WARN("todo_Fs: use a new method to deal with askfortriggerorder")
             reply = ai->askForChoice("askForTriggerOrder", skills.join("+"), data);
-            thread->delay();
-
         } else {
             JsonArray arr;
             foreach (const QSharedPointer<SkillInvokeDetail> &ptr, sameTiming)
@@ -1772,9 +1770,15 @@ QSharedPointer<SkillInvokeDetail> Room::askForTriggerOrder(ServerPlayer *player,
         }
 
         if (reply != "cancel") {
-            QStringList replyList = reply.split("@");
+            QStringList replyList = reply.split(":");
             foreach (const QSharedPointer<SkillInvokeDetail> &ptr, sameTiming) {
-                if (ptr->skill->objectName() == replyList.first() && ptr->invoker->objectName() == replyList.last()) {
+                if (ptr->skill->objectName() == replyList.first() && ptr->owner->objectName() == replyList.value(1) && ptr->invoker->objectName() == replyList.value(2)) {
+                    if (ptr->preferredTarget) {
+                        if (replyList.length() < 4)
+                            continue;
+                        if (ptr->preferredTarget->objectName() != replyList.value(3))
+                            continue;
+                    }
                     answer = ptr;
                     break;
                 }
@@ -1788,7 +1792,8 @@ QSharedPointer<SkillInvokeDetail> Room::askForTriggerOrder(ServerPlayer *player,
     ChoiceMadeStruct s;
     s.player = player;
     s.type = ChoiceMadeStruct::TriggerOrder;
-    s.args = answer->toList();
+    if (!answer.isNull())
+        s.args = answer->toList();
     QVariant d = QVariant::fromValue(s);
     thread->trigger(ChoiceMade, this, d);
     return answer;

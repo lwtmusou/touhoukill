@@ -29,6 +29,28 @@ class Button;
 class QGraphicsProxyWidget;
 class QSanCommandProgressBar;
 
+class Skill;
+class ClientPlayer;
+
+struct SkillInvokeDetailForClient
+{
+    const Skill *skill;
+    ClientPlayer *owner;
+    ClientPlayer *invoker; // it should be Self
+    ClientPlayer *preferredTarget;
+    int preferredTargetSeat;
+
+    SkillInvokeDetailForClient();
+
+    bool operator ==(const SkillInvokeDetailForClient &arg2) const;
+    bool operator ==(const QVariantMap &arg2) const;
+    bool tryParse(const QVariantMap &map);
+    bool tryParse(const QString &str);
+    QString toString() const;
+};
+
+bool operator ==(const QVariantMap &arg1, const SkillInvokeDetailForClient &arg2);
+
 class TriggerOptionButton : public QGraphicsObject
 {
     Q_OBJECT
@@ -41,6 +63,9 @@ signals:
     void clicked();
     void hovered(bool entering);
 
+public slots:
+    void needDisabled(bool disabled);
+
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
     virtual QRectF boundingRect() const;
@@ -49,16 +74,19 @@ protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
-    static QString displayedTextOf(const QString &str);
+    static QString displayedTextOf(const SkillInvokeDetailForClient &detail, int times);
 
 private:
-    TriggerOptionButton(QGraphicsObject *parent, const QString &player, const QString &skillStr, const int width);
+    TriggerOptionButton(QGraphicsObject *parent, const QVariantMap &skillDetail, int width);
+    TriggerOptionButton(QGraphicsObject *parent, const SkillInvokeDetailForClient &skillDetail, int width);
 
-    QString getGeneralNameBySkill() const;
+    bool isPreferentialSkillOf(const TriggerOptionButton *other) const;
 
-    QString m_skillStr;
-    QString m_text;
-    QString playerName;
+    void construct();
+
+    SkillInvokeDetailForClient detail;
+    int times;
+
     int width;
 };
 
@@ -70,7 +98,7 @@ public:
     ChooseTriggerOrderBox();
 
     virtual QRectF boundingRect() const;
-    void chooseOption(const QString &reason, const QStringList &options, const bool optional);
+    void chooseOption(const QVariantList &options, bool optional);
     void clear();
 
 public slots:
@@ -84,7 +112,7 @@ private:
     static const int interval;
     static const int m_leftBlankWidth;
 
-    QStringList options;
+    QVariantList options;
     bool optional;
     int m_minimumWidth;
 

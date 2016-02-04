@@ -39,41 +39,112 @@ const int ChooseTriggerOrderBox::bottom_blank_width = 25;
 const int ChooseTriggerOrderBox::interval = 15;
 const int ChooseTriggerOrderBox::m_leftBlankWidth = 37;
 
-TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QString &player, const QString &skillStr, const int width)
-    : QGraphicsObject(parent),
-    m_skillStr(skillStr), m_text(displayedTextOf(skillStr)),
-    playerName(player), width(width)
+SkillInvokeDetailForClient::SkillInvokeDetailForClient()
+    : skill(NULL), owner(NULL), invoker(NULL), preferredTarget(NULL), preferredTargetSeat(-1)
 {
-    QString realSkill = skillStr;
-    if (realSkill.contains("*")) {
-        realSkill = skillStr.split("*").first();
+}
+
+bool SkillInvokeDetailForClient::operator ==(const SkillInvokeDetailForClient &arg2) const
+{
+    return skill == arg2.skill && owner == arg2.owner && invoker == arg2.invoker && preferredTarget == arg2.preferredTarget && preferredTargetSeat == arg2.preferredTargetSeat;
+}
+
+bool SkillInvokeDetailForClient::operator ==(const QVariantMap &arg2) const
+{
+    SkillInvokeDetailForClient arg2str;
+    arg2str.tryParse(arg2);
+    return (*this) == arg2str;
+}
+
+bool operator ==(const QVariantMap &arg1, const SkillInvokeDetailForClient &arg2)
+{
+    SkillInvokeDetailForClient arg1str;
+    arg1str.tryParse(arg1);
+    return arg1str == arg2;
+}
+
+bool SkillInvokeDetailForClient::tryParse(const QVariantMap &map)
+{
+    *this = SkillInvokeDetailForClient();
+
+    if (map.contains("skill"))
+        skill = Sanguosha->getSkill(map.value("skill").toString());
+    if (skill == NULL)
+        return false;
+
+    if (map.contains("invoker"))
+        invoker = ClientInstance->getPlayer(map.value("invoker").toString());
+    if (invoker == NULL)
+        return false;
+
+    if (map.contains("owner"))
+        owner = ClientInstance->getPlayer(map.value("owner").toString());
+    if (owner == NULL)
+        owner = invoker;
+
+    if (map.contains("preferredtarget"))
+        preferredTarget = ClientInstance->getPlayer(map.value("preferredtarget").toString());
+
+    if (map.contains("preferredtargetseat"))
+        preferredTargetSeat = map.value("preferredtargetseat").toInt();
+
+    return true;
+}
+
+bool SkillInvokeDetailForClient::tryParse(const QString &str)
+{
+    QStringList l = str.split(":");
+    skill = Sanguosha->getSkill(l.first());
+    if (skill == NULL)
+        return false;
+    invoker = ClientInstance->getPlayer(l.value(2));
+    if (invoker == NULL)
+        return false;
+    owner = ClientInstance->getPlayer(l.value(1));
+    if (owner == NULL)
+        owner = invoker;
+
+    if (l.length() > 3) {
+        preferredTarget = ClientInstance->getPlayer(l.value(3));
+        preferredTargetSeat = l.value(4).toInt();
     }
 
-    if (realSkill.contains("'")) // "sgs1'songwei"
-        realSkill = realSkill.split("'").last();
+    return true;
+}
 
-    const Skill *skill = Sanguosha->getSkill(realSkill);
-    if (skill)
-        setToolTip(skill->getDescription());
+QString SkillInvokeDetailForClient::toString() const
+{
+    QStringList l;
+    l << skill->objectName();
+    l << owner->objectName();
+    l << invoker->objectName();
+    if (preferredTarget) {
+        l << preferredTarget->objectName();
+        l << QString::number(preferredTargetSeat);
+    }
+    return l.join(":");
+}
+
+TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QVariantMap &skillDetail, int width)
+    : QGraphicsObject(parent), width(width), times(1)
+{
+    detail.tryParse(skillDetail);
+    construct();
+}
+
+TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const SkillInvokeDetailForClient &skillDetail, int width)
+    : QGraphicsObject(parent), detail(skillDetail), width(width), times(1)
+{
+    construct();
+}
+
+void TriggerOptionButton::construct()
+{
+    setToolTip(detail.skill->getDescription());
 
     setAcceptedMouseButtons(Qt::LeftButton);
     setAcceptHoverEvents(true);
     setOpacity(initialOpacity);
-}
-
-QString TriggerOptionButton::getGeneralNameBySkill() const
-{
-    QString generalName;
-    const ClientPlayer *player = ClientInstance->getPlayer(playerName);
-    QString skillName = m_skillStr;
-    if (m_skillStr.contains("*"))
-        skillName = m_skillStr.split("*").first();
-    QString realSkillName = skillName;
-    if (realSkillName.contains("'")) // "sgs1'songwei"
-        realSkillName = realSkillName.split("'").last();
-
-    generalName = player->getGeneralName();
-    return generalName;
 }
 
 QFont TriggerOptionButton::defaultFont()
@@ -93,7 +164,7 @@ void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsIte
     painter->drawRoundedRect(rect, 5, 5);
     painter->restore();
 
-    const QString generalName = getGeneralNameBySkill();
+    QString generalName = detail.owner->objectName();
 
     QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY);
 
@@ -102,12 +173,9 @@ void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsIte
     painter->setBrush(pixmap);
     painter->drawRoundedRect(pixmapRect, 5, 5);
 
-    QRect textArea(optionButtonHeight, 0, width - optionButtonHeight,
-        optionButtonHeight);
+    QRect textArea(optionButtonHeight, 0, width - optionButtonHeight, optionButtonHeight);
 
-    G_COMMON_LAYOUT.optionButtonText.paintText(painter, textArea,
-        Qt::AlignCenter,
-        m_text);
+    G_COMMON_LAYOUT.optionButtonText.paintText(painter, textArea, Qt::AlignCenter, displayedTextOf(detail, times));
 }
 
 QRectF TriggerOptionButton::boundingRect() const
@@ -143,31 +211,41 @@ void TriggerOptionButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
     emit hovered(false);
 }
 
-QString TriggerOptionButton::displayedTextOf(const QString &str)
+QString TriggerOptionButton::displayedTextOf(const SkillInvokeDetailForClient &detail, int times)
 {
-    int time = 1;
-    QString skillName = str;
-    if (str.contains("*")) {
-        time = str.split("*").last().toInt();
-        skillName = str.split("*").first();
-    }
+    QString skillName = detail.skill->objectName();
     QString text = Sanguosha->translate(skillName);
-    if (skillName.contains("->")) { // "tieqi->sgs4&1"
-        QString realSkill = skillName.split("->").first(); // "tieqi"
-        QString targetObj = skillName.split("->").last().split("&").first(); // "sgs4"
-        QString targetName = ClientInstance->getPlayer(targetObj)->getGeneralName();
-        text = tr("%1 (use upon %2)").arg(Sanguosha->translate(realSkill))
-            .arg(Sanguosha->translate(targetName));
+    if (detail.preferredTarget) {
+        QString targetName = detail.preferredTarget->getGeneralName();
+        text = tr("%1 (use upon %2)").arg(text).arg(Sanguosha->translate(targetName));
     }
-    if (skillName.contains("'")) {// "sgs1'songwei"
-        QString targetObj = skillName.split("'").first(); // "sgs1'
-        QString realSkill = skillName.split("'").last(); // "songwei'
-        text = tr("%1").arg(Sanguosha->translate(realSkill));
-    }
-    if (time > 1)
-        text += QString(" %1 %2").arg(tr("*")).arg(time);
+    if (detail.owner != detail.invoker)
+        text = tr("%1 (of %2's)").arg(text).arg(Sanguosha->translate(detail.owner->objectName()));
+    
+    if (times > 1)
+        text += QString(" * %1").arg(times);
 
     return text;
+}
+
+bool TriggerOptionButton::isPreferentialSkillOf(const TriggerOptionButton *other) const
+{
+    return detail.skill == other->detail.skill && detail.preferredTargetSeat < other->detail.preferredTargetSeat;
+}
+
+void TriggerOptionButton::needDisabled(bool disabled)
+{
+    if (disabled) {
+        QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity");
+        animation->setEndValue(0.2);
+        animation->setDuration(100);
+        animation->start(QAbstractAnimation::DeleteWhenStopped);
+    } else {
+        QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity");
+        animation->setEndValue(initialOpacity);
+        animation->setDuration(100);
+        animation->start(QAbstractAnimation::DeleteWhenStopped);
+    }
 }
 
 ChooseTriggerOrderBox::ChooseTriggerOrderBox()
@@ -179,14 +257,16 @@ ChooseTriggerOrderBox::ChooseTriggerOrderBox()
     cancel->setObjectName("cancel");
     connect(cancel, &Button::clicked, this, &ChooseTriggerOrderBox::reply);
 }
+
 void ChooseTriggerOrderBox::storeMinimumWidth()
 {
     int width = 0;
     static QFontMetrics fontMetrics(TriggerOptionButton::defaultFont());
-    foreach (const QString &option, options) {
-        const QString skill = option.split(":").last();
+    foreach (const QVariant &option, options) {
+        SkillInvokeDetailForClient skillDetail;
+        skillDetail.tryParse(option.toMap());
 
-        const int w = fontMetrics.width(TriggerOptionButton::displayedTextOf(skill));
+        const int w = fontMetrics.width(TriggerOptionButton::displayedTextOf(skillDetail, 2));
         if (w > width)
             width = w;
     }
@@ -211,24 +291,40 @@ QRectF ChooseTriggerOrderBox::boundingRect() const
     return QRectF(0, 0, width, height);
 }
 
-void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringList &options, const bool optional)
+void ChooseTriggerOrderBox::chooseOption(const QVariantList &options, bool optional)
 {
     this->options = options;
     this->optional = optional;
-    title = Sanguosha->translate(reason);
+    title = tr("Please Select Trigger Order");
 
     storeMinimumWidth();
 
     prepareGeometryChange();
 
-    int width = 0;
+    foreach (const QVariant &option, options) {
+        QVariantMap map = option.toMap();
+        SkillInvokeDetailForClient detail;
+        detail.tryParse(map);
 
-    width = m_minimumWidth;
+        bool duplicate = false;
+        foreach (TriggerOptionButton *otherButton, optionButtons) {
+            if (otherButton->detail == detail) {
+                ++otherButton->times;
+                duplicate = true;
+                break;
+            }
+        }
+        if (duplicate)
+            continue;
 
-    foreach (const QString &option, options) {
-        QStringList pair = option.split(":");
-        TriggerOptionButton *button = new TriggerOptionButton(this, pair.first(), pair.last(), width);
-        button->setObjectName(option);
+        TriggerOptionButton *button = new TriggerOptionButton(this, detail, m_minimumWidth);
+        button->setObjectName(detail.toString());
+        foreach (TriggerOptionButton *otherButton, optionButtons) {
+            if (otherButton->isPreferentialSkillOf(button))
+                connect(button, &TriggerOptionButton::hovered, otherButton, &TriggerOptionButton::needDisabled);
+            if (button->isPreferentialSkillOf(otherButton))
+                connect(otherButton, &TriggerOptionButton::hovered, button, &TriggerOptionButton::needDisabled);
+        }
         optionButtons << button;
     }
 
@@ -295,8 +391,12 @@ void ChooseTriggerOrderBox::reply()
     if (choice.isEmpty()) {
         if (optional)
             choice = "cancel";
-        else
-            choice = options.first();
+        else {
+            QVariantMap m = options.first().toMap();
+            SkillInvokeDetailForClient detail;
+            detail.tryParse(m);
+            choice = detail.toString();
+        }
     }
     ClientInstance->onPlayerChooseTriggerOrder(choice);
 }

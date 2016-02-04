@@ -1994,13 +1994,13 @@ void RoomScene::chooseDirection()
     m_choiceDialog = dialog;
 }
 
-void RoomScene::chooseTriggerOrder(const QString &reason, const QStringList &options, const bool optional)
+void RoomScene::chooseTriggerOrder(const QVariantList &options, bool optional)
 {
     QApplication::alert(main_window);
     if (!main_window->isActiveWindow())
         Sanguosha->playSystemAudioEffect("pop-up");
 
-    m_chooseTriggerOrderBox->chooseOption(reason, options, optional);
+    m_chooseTriggerOrderBox->chooseOption(options, optional);
 }
 
 void RoomScene::toggleDiscards()

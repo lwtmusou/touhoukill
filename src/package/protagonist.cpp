@@ -841,7 +841,7 @@ public:
         return targets;
     }
 
-    void record(TriggerEvent, Room *room, QVariant &data)
+    void record(TriggerEvent, Room *, QVariant &data)
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *reimu = qobject_cast<ServerPlayer *>(move.to);
@@ -1471,7 +1471,7 @@ public:
         frequency = Frequent;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *marisa = qobject_cast<ServerPlayer *>(move.from);

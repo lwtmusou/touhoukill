@@ -433,8 +433,21 @@ QVariant SkillInvokeDetail::toVariant() const
         ob["owner"] = owner->objectName();
     if (invoker)
         ob["invoker"] = invoker->objectName();
-    if (preferredTarget)
-        ob["prefferedtarget"] = preferredTarget->objectName();
+    if (preferredTarget) {
+        ob["preferredtarget"] = preferredTarget->objectName();
+        Room *room = preferredTarget->getRoom();
+        ServerPlayer *current = room->getCurrent();
+        if (current == NULL)
+            current = room->getLord();
+        if (current == NULL)
+            current = preferredTarget;
+
+        int seat = preferredTarget->getSeat() - current->getSeat(); // send the seat info to the client so that we can compare the trigger order of tieqi-like skill in the client side
+        if (seat < 0)
+            seat += room->getPlayers().length();
+
+        ob["preferredtargetseat"] = seat;
+    }
     return ob;
 }
 

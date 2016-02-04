@@ -300,7 +300,7 @@ signals:
     void roles_got(const QString &scheme, const QStringList &roles);
     void directions_got();
     void orders_got(QSanProtocol::Game3v3ChooseOrderCommand reason);
-    void triggers_got(const QString &reason, const QStringList &options, const bool optional);
+    void triggers_got(const QVariantList &options, bool optional);
 
     void seats_arranged(const QList<const ClientPlayer *> &seats);
     void hp_changed(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);
