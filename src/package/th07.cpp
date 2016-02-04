@@ -1724,7 +1724,130 @@ public:
     }
 };
 
+class Shizhao : public TriggerSkill
+{
+public:
+    Shizhao() : TriggerSkill("shizhao")
+    {
+        events << EventPhaseStart;
+        frequency = Frequent;
+    }
 
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        ServerPlayer *p = data.value<ServerPlayer *>();
+        if (p->isAlive() && p->isWounded() && p->getPhase() == Player::Start) {
+            QList<SkillInvokeDetail> d;
+            foreach (ServerPlayer *ran, room->getAllPlayers()) {
+                if (ran->hasSkill(this))
+                    d << SkillInvokeDetail(this, ran, ran);
+            }
+            return d;
+        }
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *p = data.value<ServerPlayer *>();
+        QList<int> card_ids = room->getNCards(p->getLostHp());
+        room->returnToTopDrawPile(card_ids);
+
+        room->fillAG(card_ids, invoke->invoker);
+        int to_throw = room->askForAG(invoke->invoker, card_ids, true, objectName());
+        room->clearAG(invoke->invoker);
+        if (to_throw == -1)
+            return false;
+
+        CardMoveReason reason(CardMoveReason::S_REASON_PUT, invoke->invoker->objectName(), objectName(), QString());
+        room->throwCard(Sanguosha->getCard(to_throw), reason, NULL);
+
+        return false;
+    }
+};
+
+// the skill's 2 "subskill"s are of the same timing, and have different effect, so we must split them
+
+class Jixiong : public TriggerSkill
+{
+public:
+    Jixiong() : TriggerSkill("jixiong")
+    {
+        events << CardsMoveOneTime;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        if (move.to_place != Player::DiscardPile)
+            return QList<SkillInvokeDetail>();
+        QList<SkillInvokeDetail> d;
+        foreach (int id, move.card_ids) {
+            const Card *card = Sanguosha->getCard(id);
+            if (card != NULL && card->getSuit() == Card::Heart && card->getNumber() >= 11 && card->getNumber() <= 13) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasSkill(this))
+                        d << SkillInvokeDetail(this, p, p);
+                }
+            }
+        }
+        return d;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        room->recover(invoke->invoker, RecoverStruct());
+        return false;
+    }
+};
+
+class Jixiong2 : public TriggerSkill
+{
+public:
+    Jixiong2() : TriggerSkill("#jixiong2")
+    {
+        events << CardsMoveOneTime;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        if (move.to_place != Player::DiscardPile)
+            return QList<SkillInvokeDetail>();
+
+        ServerPlayer *dying = room->getCurrentDyingPlayer();
+        if (dying != NULL && dying->isAlive())
+            return QList<SkillInvokeDetail>();
+
+        ServerPlayer *current = room->getCurrent();
+        if (current == NULL || current->isDead() || !current->isCurrent())
+            return QList<SkillInvokeDetail>();
+
+        QList<SkillInvokeDetail> d;
+        foreach (int id, move.card_ids) {
+            const Card *card = Sanguosha->getCard(id);
+            if (card != NULL && card->getSuit() == Card::Spade && card->getNumber() >= 11 && card->getNumber() <= 13) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasSkill(this))
+                        d << SkillInvokeDetail(this, p, p, NULL, false, current);
+                }
+            }
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        return invoke->invoker->askForSkillInvoke("jixiong", QVariant::fromValue(invoke->preferredTarget));
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        room->damage(DamageStruct("jixiong", invoke->invoker, invoke->targets.first()));
+        return false;
+    }
+};
 
 
 TH07Package::TH07Package()
@@ -1746,7 +1869,6 @@ TH07Package::TH07Package()
     General *youmu = new General(this, "youmu", "yym", 4, false);
     youmu->addSkill(new Shuangren);
     youmu->addSkill(new Youming);
-
 
     General *prismriver = new General(this, "prismriver", "yym", 3, false);
     prismriver->addSkill(new Xiezou);
@@ -1787,11 +1909,14 @@ TH07Package::TH07Package()
     youmu_slm->addSkill(new HpymSiyu);
     youmu_slm->addSkill(new Juhe);
 
+    General *ran_sp = new General(this, "ran_sp", "yym", 4, false);
+    ran_sp->addSkill(new Shizhao);
+    ran_sp->addSkill(new Jixiong);
+    ran_sp->addSkill(new Jixiong2);
+    related_skills.insertMulti("jixiong", "#jixiong2");
+
     General *youki = new General(this, "youki", "yym", 4, false);
     Q_UNUSED(youki);
-
-    General *ran_sp = new General(this, "ran_sp", "yym", 4, false);
-    Q_UNUSED(ran_sp);
 
     General *leira = new General(this, "leira", "yym", 4, false);
     Q_UNUSED(leira);

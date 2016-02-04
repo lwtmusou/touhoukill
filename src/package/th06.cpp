@@ -493,7 +493,7 @@ public:
     {
         room->notifySkillInvoked(invoke->invoker, objectName());
         QList<CardsMoveStruct> moves;
-        
+
         foreach (ServerPlayer *liege, room->getAllPlayers()) {
             if (!liege->getPile("suoding_cards").isEmpty()) {
                 CardsMoveStruct move;
@@ -822,7 +822,7 @@ public:
         events << DamageInflicted;
         frequency = Compulsory;
     }
-    
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
