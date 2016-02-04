@@ -60,6 +60,7 @@ public:
         events << CardUsed << CardResponded;
         view_as_skill = new ShendeVS;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -95,7 +96,7 @@ public:
             player->addToPile("shende", cards->getSubcards().first());
         }
         return false;
-    }
+    }*/
 };
 
 class Qiankun : public MaxCardsSkill
@@ -183,6 +184,7 @@ public:
     {
         events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -235,7 +237,7 @@ public:
             }
         }
         return QStringList();
-    }
+    }*/
 
 
 };
@@ -250,6 +252,7 @@ public:
     {
         events << Pindian << Damaged;
     }
+/*
 
     virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const
     {
@@ -297,7 +300,7 @@ public:
             room->recover(damage.to, recov);
         }
         return false;
-    }
+    }*/
 };
 
 
@@ -308,6 +311,7 @@ public:
     {
         events << Death;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -333,7 +337,7 @@ public:
             }
         }
         return false;
-    }
+    }*/
 };
 
 
@@ -344,6 +348,13 @@ public:
     {
 
     }
+
+    bool onPhaseChange(ServerPlayer *) const
+    {
+        return false;
+    }
+
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer* &) const
     {
@@ -362,7 +373,7 @@ public:
     {
         player->setFlags("zhunbei");
         return true;
-    }
+    }*/
 };
 
 class ZhunbeiEffect : public TriggerSkill
@@ -372,6 +383,7 @@ public:
     {
         events << EventPhaseChanging;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -385,7 +397,7 @@ public:
             }
         }
         return QStringList();
-    }
+    }*/
 };
 
 
@@ -822,6 +834,7 @@ public:
     {
         return QijiDialog::getInstance("qiji");
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -849,7 +862,7 @@ public:
         }
 
         return QStringList();
-    }
+    }*/
 };
 
 
@@ -930,13 +943,14 @@ public:
     {
         events << HpChanged;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const
     {
         if (!TriggerSkill::triggerable(player)) return QStringList();
         room->notifySkillInvoked(player, "fengsu");
         return QStringList();
-    }
+    }*/
 };
 
 XinshangCard::XinshangCard()
@@ -1014,6 +1028,7 @@ public:
         events << DamageInflicted;
         frequency = Compulsory;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -1040,7 +1055,7 @@ public:
             data = QVariant::fromValue(damage);
         }
         return false;
-    }
+    }*/
 };
 
 
@@ -1051,6 +1066,7 @@ public:
     {
         events << DamageInflicted;
     }
+/*
 
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer* &) const
@@ -1094,7 +1110,7 @@ public:
         damage.transfer = true;
         room->damage(damage);
         return true;
-    }
+    }*/
 };
 
 class Liuxing : public TriggerSkill
@@ -1105,6 +1121,7 @@ public:
         events << EventPhaseStart;
     }
 
+/*
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const
     {
         if (player->getPhase() == Player::Finish) {
@@ -1136,7 +1153,7 @@ public:
         }
 
         return false;
-    }
+    }*/
 };
 
 
@@ -1148,6 +1165,7 @@ public:
         events << EventPhaseStart << Death << EventPhaseChanging;//<< EventLoseSkill
         frequency = Eternal;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -1193,17 +1211,6 @@ public:
 
             //remove card limit,if the source skill can not clear it correctly.
             foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-                // coupling zhengti???  only for the UI???????????????????????????????????????????????????????????
-#if 0
-                if (p->hasSkill("zhengti")) {
-                    JsonArray args;
-                    args << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                    args << p->objectName();
-                    args << p->getGeneral()->objectName();
-                    args << QString(); //"clear"
-                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
-                }
-#endif
                 room->setPlayerMark(p, "changshi", 1); // real mark for   Player::hasSkill()
                 room->filterCards(p, p->getCards("he"), true);
                 JsonArray args;
@@ -1241,7 +1248,7 @@ public:
         }
 
         return false;
-    }
+    }*/
 };
 
 class Jinian : public TriggerSkill
@@ -1251,6 +1258,7 @@ public:
     {
         events << CardsMoveOneTime << BeforeCardsMove;
     }
+/*
 
     virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
@@ -1371,7 +1379,7 @@ public:
         player->tag.remove("jinian");
         player->tag.remove("jinianGet");
         return false;
-    }
+    }*/
 };
 
 class JinianClear : public TriggerSkill
@@ -1380,7 +1388,7 @@ public:
     JinianClear() : TriggerSkill("#jinian_clear")
     {
         events << EventPhaseChanging;
-    }
+    }/*
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer* &) const
     {
         if (triggerEvent == EventPhaseChanging) {
@@ -1392,7 +1400,7 @@ public:
             }
         }
         return QStringList();
-    }
+    }*/
 };
 
 
@@ -1480,6 +1488,7 @@ public:
         events << TrickCardCanceling;
         frequency = Compulsory;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *, QVariant &data, ServerPlayer* &) const
     {
@@ -1495,7 +1504,7 @@ public:
         CardEffectStruct effect = data.value<CardEffectStruct>();
         room->notifySkillInvoked(effect.to, objectName());
         return true;
-    }
+    }*/
 };
 
 
@@ -1552,6 +1561,7 @@ public:
         frequency = Limited;
         limit_mark = "@zhongyan";
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -1585,7 +1595,7 @@ public:
         room->loseHp(damage.from, qMax(1, x));
         return true;
 
-    }
+    }*/
 };
 
 DfgzmSiyuCard::DfgzmSiyuCard()
@@ -1633,6 +1643,7 @@ public:
         events << EventPhaseChanging;
         view_as_skill = new DfgzmsiyuVS;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -1652,7 +1663,7 @@ public:
             }
         }
         return QStringList();
-    }
+    }*/
 };
 
 //for Collateral
@@ -1754,6 +1765,7 @@ public:
             return players.length() > 2;
         return true;
     }
+/*
 
 
 
@@ -1827,7 +1839,7 @@ public:
             }
         }
         return QStringList();
-    }
+    }*/
 
 };
 

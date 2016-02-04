@@ -17,6 +17,7 @@ public:
     {
         events << Damaged;
     }
+/*
 
     virtual TriggerList triggerable(TriggerEvent, Room *room, ServerPlayer *, QVariant &data) const
     {
@@ -63,7 +64,7 @@ public:
             room->obtainCard(damage.to, showcard);
 
         return false;
-    }
+    }*/
 };
 
 
@@ -75,6 +76,7 @@ public:
     {
         events << TargetConfirming;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -127,7 +129,7 @@ public:
             }
         }
         return false;
-    }
+    }*/
 };
 
 
@@ -212,6 +214,7 @@ public:
     {
         events << Predamage;
     }
+/*
 
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
@@ -224,7 +227,7 @@ public:
         room->notifySkillInvoked(player, objectName());
         data = QVariant::fromValue(damage);
         return false;
-    }
+    }*/
 };
 
 
@@ -271,6 +274,7 @@ public:
         view_as_skill = new YaobanVS;
         events << Damaged;
     }
+/*
 
     virtual TriggerList triggerable(TriggerEvent, Room *room, ServerPlayer *, QVariant &data) const
     {
@@ -299,7 +303,7 @@ public:
         room->setPlayerProperty(ldlk, "yaoban", QVariant());
         ldlk->tag.remove("yaoban_damage");
         return false;
-    }
+    }*/
 };
 
 
@@ -311,6 +315,7 @@ public:
         events << TargetConfirming << TargetSpecifying;
         frequency = Compulsory;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -348,7 +353,7 @@ public:
         use.card = new_slash;
         data = QVariant::fromValue(use);
         return false;
-    }
+    }*/
 };
 
 
@@ -360,6 +365,7 @@ public:
     {
         events << Damaged;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -389,7 +395,7 @@ public:
         slash->setSkillName("_" + objectName());
         room->useCard(CardUseStruct(slash, player, damage.from), false);
         return false;
-    }
+    }*/
 };
 
 
@@ -400,6 +406,7 @@ public:
     {
         events << AskForPeaches;
     }
+/*
 
     virtual int getPriority(TriggerEvent) const
     {
@@ -438,7 +445,7 @@ public:
         room->killPlayer(victim, &damage);
         room->setPlayerFlag(victim, "-Global_Dying");
         return true; //avoid triggering askforpeach
-    }
+    }*/
 };
 
 
@@ -449,6 +456,7 @@ public:
     {
         events << SlashMissed;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -478,7 +486,7 @@ public:
         player->drawCards(1);
         room->slashResult(effect, NULL);
         return true;
-    }
+    }*/
 };
 
 
@@ -536,6 +544,7 @@ public:
         events << PreCardUsed << EventPhaseChanging;
         view_as_skill = new JiuhaoVS;
     }
+/*
 
     virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
     {
@@ -565,7 +574,7 @@ public:
     {
         //only for record
         return QStringList();
-    }
+    }*/
 };
 
 
@@ -599,6 +608,12 @@ public:
         view_as_skill = new JiduVS;
     }
 
+    void onDamaged(Room *, QSharedPointer<SkillInvokeDetail>, const DamageStruct &) const
+    {
+
+    }
+/*
+
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
         if (!TriggerSkill::triggerable(player)) return QStringList();
@@ -617,7 +632,7 @@ public:
     virtual void onDamaged(ServerPlayer *player, const DamageStruct &) const
     {
         player->drawCards(1);
-    }
+    }*/
 };
 
 
@@ -643,6 +658,7 @@ public:
         events << TargetConfirming;
         frequency = Compulsory;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -702,7 +718,7 @@ public:
         }
 
         return false;
-    }
+    }*/
 };
 
 ChuanranCard::ChuanranCard()
@@ -768,6 +784,7 @@ public:
         events << CardsMoveOneTime << BeforeCardsMove << EventPhaseChanging;
         view_as_skill = new ChuanranVS;
     }
+/*
 
 
     virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *yamame, QVariant &data) const
@@ -858,7 +875,7 @@ public:
             }
         }
         return false;
-    }
+    }*/
 };
 
 class Rebing : public MasochismSkill
@@ -867,6 +884,13 @@ public:
     Rebing() : MasochismSkill("rebing")
     {
     }
+
+    void onDamaged(Room *, QSharedPointer<SkillInvokeDetail>, const DamageStruct &) const
+    {
+
+    }
+
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -894,7 +918,7 @@ public:
             int id = room->askForCardChosen(player, target, "h", objectName());
             room->obtainCard(player, id, false);
         }
-    }
+    }*/
 };
 
 
@@ -906,6 +930,7 @@ public:
     {
         events << TargetSpecified;
     }
+/*
 
     virtual TriggerList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const
     {
@@ -954,7 +979,7 @@ public:
             }
         }
         return false;
-    }
+    }*/
 
 };
 
@@ -1012,6 +1037,13 @@ public:
 
     }
 
+    int getDrawNum(const DrawNCardsStruct &draw) const
+    {
+        return draw.n;
+    }
+
+/*
+
     virtual int getDrawNum(ServerPlayer *player, int n) const
     {
         if (do_cuiji(player)) {
@@ -1020,7 +1052,7 @@ public:
                 n = n - 1;
         }
         return n;
-    }
+    }*/
 };
 
 class Baigui : public OneCardViewAsSkill

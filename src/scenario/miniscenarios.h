@@ -17,7 +17,7 @@ public:
     void assign(QStringList &generals, QStringList &roles) const;
     QStringList existedGenerals() const;
 
-    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
+    bool effect(TriggerEvent event, Room *room, QSharedPointer<SkillInvokeDetail> detail, QVariant &data) const;
 
     void addNPC(QString feature);
     void setOptions(QStringList option);

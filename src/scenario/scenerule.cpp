@@ -7,13 +7,16 @@ SceneRule::SceneRule(QObject *parent) : GameRule(parent)
     events << GameStart;
 }
 
-int SceneRule::getPriority(TriggerEvent) const
+int SceneRule::getPriority() const
 {
     return -2;
 }
 
-bool SceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const
+bool SceneRule::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &) const
 {
+    return false;
+    
+    /*
     QStringList extensions = Sanguosha->getExtensions();
     QSet<QString> ban_packages = Config.BanPackages.toSet();
 
@@ -30,5 +33,5 @@ bool SceneRule::trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *pla
         }
     }
 
-    return GameRule::trigger(triggerEvent, room, player, data);
+    return GameRule::effect(triggerEvent, room, QSharedPointer<SkillInvokeDetail>(), data);*/
 }

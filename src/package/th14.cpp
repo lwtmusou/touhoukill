@@ -14,6 +14,7 @@ public:
     {
         events << EventPhaseStart;;
     }
+/*
 
     virtual TriggerList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const
     {
@@ -54,7 +55,7 @@ public:
             room->loseHp(player, 1);
         }
         return false;
-    }
+    }*/
 };
 
 class Yicun : public TriggerSkill
@@ -65,6 +66,7 @@ public:
         frequency = Compulsory;
         events << TargetConfirming;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -89,7 +91,7 @@ public:
             data = QVariant::fromValue(use);
         }
         return false;
-    }
+    }*/
 };
 
 
@@ -100,6 +102,7 @@ public:
     {
         events << EventPhaseEnd << CardsMoveOneTime << EventPhaseChanging;
     }
+/*
 
 
     virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const
@@ -191,7 +194,7 @@ public:
         all.removeOne(moyiId);
         room->obtainCard(target, moyiId, true);
         return false;
-    }
+    }*/
 };
 
 LeitingCard::LeitingCard()
@@ -253,6 +256,7 @@ public:
     {
         events << TargetConfirmed;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -304,7 +308,7 @@ public:
             room->useCard(CardUseStruct(slash, target, use.from), false);
         }
         return false;
-    }
+    }*/
 };
 
 class Guizha : public TriggerSkill
@@ -315,6 +319,7 @@ public:
         events << AskForPeaches;
         frequency = Compulsory;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const
     {
@@ -369,7 +374,7 @@ public:
         }
 
         return false;
-    }
+    }*/
 };
 
 
@@ -380,6 +385,7 @@ public:
     {
         events << Damaged;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const
     {
@@ -406,7 +412,7 @@ public:
             room->obtainCard(player, id, room->getCardPlace(id) != Player::PlaceHand);
         }
         return false;
-    }
+    }*/
 };
 
 class Wuchang : public TriggerSkill
@@ -416,6 +422,7 @@ public:
     {
         events << EventPhaseEnd << CardsMoveOneTime << EventPhaseChanging;
     }
+/*
 
     virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const
     {
@@ -478,7 +485,7 @@ public:
 
         room->askForDiscard(current, objectName(), 1, 1, false, false, "wuchang_discard");
         return false;
-    }
+    }*/
 };
 
 
@@ -489,6 +496,7 @@ public:
     {
         events << Damage;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const
     {
@@ -514,7 +522,7 @@ public:
             room->obtainCard(player, id, room->getCardPlace(id) != Player::PlaceHand);
         }
         return false;
-    }
+    }*/
 };
 
 class Juwang : public TriggerSkill
@@ -524,6 +532,7 @@ public:
     {
         events << CardAsked;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -563,7 +572,7 @@ public:
             room->damage(DamageStruct(objectName(), player, current, 1));
 
         return false;
-    }
+    }*/
 };
 
 
@@ -575,6 +584,7 @@ public:
     {
         events << CardAsked;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -622,7 +632,7 @@ public:
         card->setSkillName("_langying");
         room->provide(card);
         return false;
-    }
+    }*/
 };
 
 
@@ -640,18 +650,11 @@ void YuanfeiCard::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
     ServerPlayer *target = effect.to;
-    //room:setPlayerCardLimitation(target, "use,response", pattern, false)
-    //".|%1|.|hand$0" color
-    //room:setPlayerCardLimitation(player, "use", "Slash", true)
-    //room->removePlayerCardLimitation(player, "use,response,discard", jilei_type + "|.|.|hand$1");
-    //room:setPlayerCardLimitation(target, "use,response", ".", true)
     room->setPlayerCardLimitation(target, "use,response", "BasicCard|.|.|.", true);
     room->setPlayerCardLimitation(target, "use,response", "EquipCard|.|.|.", true);
     room->setPlayerCardLimitation(target, "use,response", "TrickCard|.|.|.", true);
-    //room:setPlayerCardLimitation(target, "use,response", ".|.|.|hand$1", true)
     room->setPlayerFlag(target, "yuanfei");
     room->touhouLogmessage("#yuanfei", target, "yuanfei");
-    //room:removePlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick$0")
 }
 
 YuanfeiNearCard::YuanfeiNearCard()
@@ -726,6 +729,7 @@ public:
     {
         events << EventPhaseChanging;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer* &) const
     {
@@ -738,14 +742,12 @@ public:
                         room->removePlayerCardLimitation(p, "use,response", "BasicCard|.|.|.$1");
                         room->removePlayerCardLimitation(p, "use,response", "EquipCard|.|.|.$1");
                         room->removePlayerCardLimitation(p, "use,response", "TrickCard|.|.|.$1");
-                        //room:removePlayerCardLimitation(p, "use,response", ".|.|.|hand$1")
-                        //room:removePlayerCardLimitation(p, "use,response", ".$1")
                     }
                 }
             }
         }
         return QStringList();
-    }
+    }*/
 };
 
 
@@ -767,7 +769,6 @@ public:
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
         return pattern.contains("slash") && player->getPile("feitou").length() > 0;
-        //&& Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const
@@ -790,6 +791,7 @@ public:
         events << EventPhaseStart;
         view_as_skill = new FeitouVS;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer* &) const
     {
@@ -810,7 +812,7 @@ public:
     {
         player->addToPile("feitou", room->getNCards(1));
         return false;
-    }
+    }*/
 };
 
 class FeitouTargetMod : public TargetModSkill
@@ -850,6 +852,7 @@ public:
         events << EventPhaseStart << EventPhaseChanging << CardsMoveOneTime;
     }
 
+/*
 
     virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const
     {
@@ -939,7 +942,7 @@ public:
 
 
         return false;
-    }
+    }*/
 };
 
 

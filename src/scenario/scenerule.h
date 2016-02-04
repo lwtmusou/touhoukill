@@ -8,8 +8,8 @@ class SceneRule : public GameRule
 {
 public:
     SceneRule(QObject *parent);
-    virtual int getPriority(TriggerEvent triggerEvent) const;
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
+    int getPriority() const;
+    bool effect(TriggerEvent event, Room* room, QSharedPointer<SkillInvokeDetail> detail, QVariant &data) const;
 };
 
 #endif // SCENERULE_H

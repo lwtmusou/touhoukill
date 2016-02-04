@@ -16,6 +16,7 @@ public:
         frequency = Compulsory;
     }
 
+/*
     virtual TriggerList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const
     {
         TriggerList skill_list;
@@ -36,7 +37,7 @@ public:
         room->notifySkillInvoked(player, objectName());
         satori->drawCards(1);
         return false;
-    }
+    }*/
 };
 
 ShouhuiCard::ShouhuiCard()
@@ -138,6 +139,12 @@ public:
     {
     }
 
+    bool onPhaseChange(ServerPlayer *) const
+    {
+        return false;
+    }
+
+/*
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const
     {
         if (!TriggerSkill::triggerable(player)) return QStringList();
@@ -194,7 +201,7 @@ public:
             room->loseHp(target);
 
         return false;
-    }
+    }*/
 };
 
 
@@ -206,6 +213,7 @@ public:
         events << EventPhaseStart;
 
     }
+/*
 
     virtual TriggerList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const
     {
@@ -237,7 +245,7 @@ public:
             marisa->drawCards(2 - newhd_n);
         }
         return false;
-    }
+    }*/
 };
 
 class Jubao : public MasochismSkill
@@ -247,6 +255,12 @@ public:
     {
 
     }
+
+    void onDamaged(Room *, QSharedPointer<SkillInvokeDetail>, const DamageStruct &) const
+    {
+
+    }
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const
     {
@@ -284,7 +298,7 @@ public:
             if (count > 0)
                 room->throwCard(&dummy, victim, player);
         }
-    }
+    }*/
 };
 
 
@@ -297,6 +311,7 @@ public:
         frequency = Frequent;
     }
 
+/*
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
         if (!TriggerSkill::triggerable(player)) return QStringList();
@@ -318,7 +333,7 @@ public:
         recover.who = player;
         player->getRoom()->recover(player, recover);
         return false;
-    }
+    }*/
 };
 
 
@@ -331,6 +346,7 @@ public:
         events << DrawInitialCards << AfterDrawInitialCards << CardsMoveOneTime;//<<PreCardUsed
     }
 
+/*
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
         if (!TriggerSkill::triggerable(player)) return QStringList();
@@ -374,7 +390,7 @@ public:
             player->addToPile("piao", exchange_card->getSubcards(), false);
         }
         return false;
-    }
+    }*/
 };
 
 YazhiCard::YazhiCard()
@@ -419,6 +435,7 @@ public:
         frequency = Compulsory;
     }
 
+/*
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const
     {
         if (!player) return QStringList();
@@ -428,7 +445,7 @@ public:
                 room->setPlayerMark(p, "tianxiang", 1);
         }
         return QStringList();
-    }
+    }*/
 };
 
 
@@ -440,6 +457,7 @@ public:
         events << DrawNCards << AfterDrawNCards;
 
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer* &) const
     {
@@ -481,7 +499,7 @@ public:
             room->moveCardsAtomic(move, true);
         }
         return false;
-    }
+    }*/
 };
 
 
@@ -493,6 +511,7 @@ public:
         events << Dying;
         frequency = Compulsory;
     }
+/*
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const
     {
@@ -511,7 +530,7 @@ public:
         room->touhouLogmessage("#TriggerSkill", player, objectName());
         room->recover(player, RecoverStruct());
         return false;
-    }
+    }*/
 };
 
 
