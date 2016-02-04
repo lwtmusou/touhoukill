@@ -1349,9 +1349,11 @@ public:
             invoke->invoker->setFlags("qiangyu");
         } else {
             invoke->invoker->setFlags("-qiangyu");
-            if (!room->askForCard(invoke->invoker, "@@qiangyu!", "qiangyu-discard", data, Card::MethodDiscard, NULL, false, objectName())) {
+            const Card *card = room->askForCard(invoke->invoker, "@@qiangyu!", "qiangyu-discard", data, Card::MethodDiscard, NULL, false, objectName());
+            if (!card) {
                 // force discard!!!
-                DummyCard dc;
+                DummyCard *dc = new DummyCard;
+                dc->deleteLater();
                 QList<const Card *> hc = invoke->invoker->getHandcards();
                 foreach (const Card *c, hc) {
                     if (invoke->invoker->isJilei(c))
@@ -1366,12 +1368,39 @@ public:
                         int x = qrand() % hc.length();
                         const Card *c = hc.value(x);
                         hc.removeAt(x);
-                        dc.addSubcard(c);
+                        dc->addSubcard(c);
                     }
                 } else
-                    dc.addSubcards(hc);
+                    dc->addSubcards(hc);
 
-                room->throwCard(&dc, invoke->invoker);
+                room->throwCard(dc, invoke->invoker);
+                card = dc;
+            }
+            if ((card->subcardsLength() == 0 || (card->subcardsLength() == 1 && Sanguosha->getCard(card->getSubcards().first())->getSuit() != Card::Spade)) && !invoke->invoker->isKongcheng()) {
+                // jilei show all cards
+                JsonArray gongxinArgs;
+                gongxinArgs << invoke->invoker->objectName();
+                gongxinArgs << false;
+                gongxinArgs << JsonUtils::toJsonArray(invoke->invoker->handCards());
+
+                foreach (int cardId, invoke->invoker->handCards()) {
+                    WrappedCard *card = Sanguosha->getWrappedCard(cardId);
+                    if (card->isModified())
+                        room->broadcastUpdateCard(room->getOtherPlayers(invoke->invoker), cardId, card);
+                    else
+                        room->broadcastResetCard(room->getOtherPlayers(invoke->invoker), cardId);
+                }
+
+                LogMessage log;
+                log.type = "$JileiShowAllCards";
+                log.from = invoke->invoker;
+
+                foreach(int card_id, invoke->invoker->handCards())
+                    Sanguosha->getCard(card_id)->setFlags("visible");
+                log.card_str = IntList2StringList(invoke->invoker->handCards()).join("+");
+                room->sendLog(log);
+
+                room->doBroadcastNotify(QSanProtocol::S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
             }
         }
         return false;
