@@ -1277,7 +1277,7 @@ public:
 
     bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
     {
-        if (to_select->isEquipped())
+        if (to_select->isEquipped() && Self->isJilei(to_select))
             return false;
         if (selected.length() == 2)
             return false;
@@ -1288,7 +1288,16 @@ public:
     const Card *viewAs(const QList<const Card *> &cards) const
     {
         bool ok = cards.length() == 2;
-        if (cards.length() == 1 && (cards.first()->getSuit() == Card::Spade || Self->getHandcardNum() == 1))
+        if (cards.length() == 1 && cards.first()->getSuit() == Card::Spade)
+            ok = true;
+
+        QList<const Card *> hc = Self->getHandcards();
+        foreach (const Card *card, hc) {
+            if (cards.contains(card) || Self->isJilei(card))
+                hc.removeOne(card);
+        }
+
+        if (hc.isEmpty())
             ok = true;
 
         if (ok) {
@@ -1343,17 +1352,25 @@ public:
             if (!room->askForCard(invoke->invoker, "@@qiangyu!", "qiangyu-discard", data, Card::MethodDiscard, NULL, false, objectName())) {
                 // force discard!!!
                 DummyCard dc;
-                if (invoke->invoker->getHandcardNum() <= 2)
-                    dc.addSubcards(invoke->invoker->handCards());
-                else {
-                    QList<int> handcards = invoke->invoker->handCards();
-                    for (int i = 0; i < 2; ++i) {
-                        int x = qrand() % handcards.length();
-                        int id = handcards.value(x);
-                        handcards.removeAt(x);
-                        dc.addSubcard(id);
-                    }
+                QList<const Card *> hc = invoke->invoker->getHandcards();
+                foreach (const Card *c, hc) {
+                    if (invoke->invoker->isJilei(c))
+                        hc.removeOne(c);
                 }
+
+                if (hc.length() == 0)
+                    return false;
+
+                if (hc.length() > 2) {
+                    for (int i = 0; i < 2; ++i) {
+                        int x = qrand() % hc.length();
+                        const Card *c = hc.value(x);
+                        hc.removeAt(x);
+                        dc.addSubcard(c);
+                    }
+                } else
+                    dc.addSubcards(hc);
+
                 room->throwCard(&dc, invoke->invoker);
             }
         }
