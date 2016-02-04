@@ -1007,20 +1007,20 @@ public:
             return QList<SkillInvokeDetail>();
         // one lose a card
         if ((move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip)) && (move.to != move.from || (move.to_place != Player::PlaceHand && move.to_place != Player::PlaceEquip))) {
-            if (move.from->hasSkill(this) && move.from->getPhase() == Player::NotActive) {
+            if (move.from->hasSkill(this) && !move.from->isCurrent()) {
                 // you lose a card in other's round
                 ServerPlayer *current = room->getCurrent();
-                if (current == NULL || current->getPhase() == Player::NotActive || current->isDead())
+                if (current == NULL || !current->isCurrent() || current->isDead())
                     return QList<SkillInvokeDetail>();
 
                 ServerPlayer *myo = qobject_cast<ServerPlayer *>(move.from);
                 if (myo == NULL || myo == current || myo->getMark("shanshi_invoke") > 0)
                     return QList<SkillInvokeDetail>();
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, myo, myo, NULL, false, current);
-            } else if (move.from->getPhase() != Player::NotActive) {
+            } else if (move.from->isCurrent()) {
                 // others lose a card in your round
                 ServerPlayer *myo = room->getCurrent();
-                if (myo == NULL || myo->getPhase() == Player::NotActive || myo->isDead() || myo->getMark("shanshi_invoke") > 0)
+                if (myo == NULL || !myo->isCurrent() || myo->isDead() || myo->getMark("shanshi_invoke") > 0)
                     return QList<SkillInvokeDetail>();
 
                 ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);

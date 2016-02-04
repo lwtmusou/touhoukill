@@ -1606,8 +1606,9 @@ public:
 };
 
 
-#pragma message WARN("todo_lwtmusou: rewrite siyu, notice that skill records (flag, tag, marks, ect.) should be updated while siyu TurnBroken")
+// #pragma message WARN("todo_lwtmusou: rewrite siyu, notice that skill records (flag, tag, marks, etc.) should be updated while siyu TurnBroken")
 // Fs: should check in every skill, better write the most records clear into the eventphasechanging(to = notactive) event
+// Fs: it's no need to check at here now, the extra turn is inserted after the whole round finished
 class HpymSiyu : public TriggerSkill
 {
 public:
@@ -1616,117 +1617,65 @@ public:
         events << PostHpReduced << EventPhaseEnd;
         frequency = Compulsory;
     }
-/*
-    Fs: delete the original code due to the change of extraturn
 
-    static void touhou_siyu_clear(ServerPlayer *player)
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
-        Room *room = player->getRoom();
-        room->clearAG();
+        if (triggerEvent == PostHpReduced) {
+            ServerPlayer *youmu = NULL;
+            if (data.canConvert<DamageStruct>())
+                youmu = data.value<DamageStruct>().to;
+            else
+                youmu = data.value<HpLostStruct>().player;
 
-        QVariantList ag_list = room->getTag("AmazingGrace").toList();
-        room->removeTag("AmazingGrace");
-        if (!ag_list.isEmpty()) {
-            DummyCard *dummy = new DummyCard(VariantList2IntList(ag_list));
-            CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString(), "amazing_grace", QString());
-            room->throwCard(dummy, reason, NULL);
-            delete dummy;
+            if (youmu != NULL && youmu->isAlive() && youmu->hasSkill(this) && youmu->getHp() < 1 && !youmu->isCurrent())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, youmu, youmu, NULL, true);
+        } else {
+            ServerPlayer *youmu = data.value<ServerPlayer *>();
+            if (youmu->getMark("siyuinvoke") > 0 && youmu->getPhase() == Player::Play && youmu->getHp() < 1)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, youmu, youmu, NULL, true);
         }
 
-        foreach (int id, Sanguosha->getRandomCards()) {
-            if (room->getCardPlace(id) == Player::PlaceTable)
-                room->moveCardTo(Sanguosha->getCard(id), NULL, Player::DiscardPile, true);
-            if (Sanguosha->getCard(id)->hasFlag("using"))
-                room->setCardFlag(Sanguosha->getCard(id), "-using");
-        }
-
-        //check "qinlue"  "quanjie"
-        //if current->hasFlag("qinlue")
-        //need check cardfinish "yaoshu"  "huisheng"    ?
-        ServerPlayer *current = room->getCurrent();
-        if (current->getMark("quanjie") > 0) {
-            room->setPlayerMark(current, "quanjie", 0);
-            room->removePlayerCardLimitation(current, "use", "Slash$1");
-        }
-        //if (current->hasSkill("yaoshu") )
-        //    room->setPlayerProperty(current, "yaoshu_card", QVariant());
-
-        foreach (ServerPlayer *p, room->getAlivePlayers()) {
-            p->clearFlags();
-            if (p->getMark("@duanzui-extra") > 0)
-                p->loseMark("@duanzui-extra");
-
-
-            QStringList marks;
-            marks << "chuangshi" << "xinshang_effect" << "shituDamage" << "shituDeath" << "shitu" << "zheshetransfer";
-            marks << "touhou-extra" << "@qianxi_red" << "@qianxi_black" << "sizhai" << "@qingting";
-            foreach(QString a, marks)
-                room->setPlayerMark(p, a, 0);
-        }
+        return QList<SkillInvokeDetail>();
     }
 
-
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer* &) const
+    bool cost(TriggerEvent triggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        if (!TriggerSkill::triggerable(player)) return QStringList();
-        if (triggerEvent == PostHpReduced) {
-            if (player->getHp() < 1 && !player->isCurrent()) //player->getPhase() != Player::NotActive ||
-                return QStringList(objectName());
-        } else if (triggerEvent == EventPhaseEnd && player->getPhase() == Player::Play) {
-            if (player->getMark("siyuinvoke") > 0 && player->getHp() < 1) {
-                player->removeMark("siyuinvoke");
-                return QStringList(objectName());
-            }
-        }
-        return QStringList();
+        if (triggerEvent == EventPhaseEnd)
+            invoke->invoker->removeMark("siyuinvoke");
+
+        return true;
     }
 
-
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-
         if (triggerEvent == PostHpReduced) {
-            if (!player->faceUp())
-                player->turnOver();
-
-            QList<const Card *> tricks = player->getJudgingArea();
+            if (!invoke->invoker->faceUp())
+                invoke->invoker->turnOver();
+            
+            QList<const Card *> tricks = invoke->invoker->getJudgingArea();
             foreach (const Card *trick, tricks) {
-                CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName());
+                CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, invoke->invoker->objectName());
                 room->throwCard(trick, reason, NULL);
             }
 
-            player->addMark("siyuinvoke");
-            room->touhouLogmessage("#TriggerSkill", player, objectName());
-            room->notifySkillInvoked(player, objectName());
+            invoke->invoker->addMark("siyuinvoke");
+            room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+            room->notifySkillInvoked(invoke->invoker, objectName());
 
-            room->touhouLogmessage("#touhouExtraTurn", player, objectName());
-            //for skill qinlue
-            foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                if (p->hasFlag("qinlue"))
-                    p->changePhase(p->getPhase(), Player::NotActive);
-            }
-            ServerPlayer *current = room->getCurrent();
-            if (current)
-                current->changePhase(current->getPhase(), Player::NotActive);
+            room->touhouLogmessage("#touhouExtraTurn", invoke->invoker, objectName());
 
-            touhou_siyu_clear(player);
-
-            //remain bugs: yaoshu, the second trick card??
-            player->gainAnExtraTurn();
-
+            invoke->invoker->gainAnExtraTurn();
             throw TurnBroken;
-            return true;
 
-        } else if (triggerEvent == EventPhaseEnd && player->getPhase() == Player::Play) {
-            room->notifySkillInvoked(player, "hpymsiyu");
-            room->enterDying(player, NULL);
+            return true; // prevent enterdying
+        } else if (triggerEvent == EventPhaseEnd) {
+            room->notifySkillInvoked(invoke->invoker, "hpymsiyu");
+            room->enterDying(invoke->invoker, NULL);
         }
+
         return false;
     }
-    */
 };
-
 
 class Juhe : public TriggerSkill
 {
@@ -1739,7 +1688,6 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
-
         DrawNCardsStruct draw = data.value<DrawNCardsStruct>();
 
         QList<SkillInvokeDetail> d;

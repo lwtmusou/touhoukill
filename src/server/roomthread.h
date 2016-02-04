@@ -64,7 +64,7 @@ public:
     const QList<EventTriplet> *getEventStack() const;
     inline GameRule *gameRule() const { return game_rule; }
 
-    void setNextExtraTurn(ServerPlayer *p);
+    void setNextExtraTurn(ServerPlayer *p) { nextExtraTurn = p; }
     inline bool hasExtraTurn() const { return nextExtraTurn != NULL; }
 
     inline Room *getRoom() const { return room; }

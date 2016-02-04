@@ -603,6 +603,8 @@ public:
 
         if (effect.to->isAlive() && effect.from->canSlash(effect.to, NULL, false))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.from, effect.from); // since blade is no target, the skill can't be nullified by skills like zuixiang(star sp pangtong)
+
+        return QList<SkillInvokeDetail>();
     }
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
@@ -825,6 +827,8 @@ public:
             room->throwCard(damage.to->getDefensiveHorse(), damage.to, damage.from);
         else if (horse_type == "ohorse")
             room->throwCard(damage.to->getOffensiveHorse(), damage.to, damage.from);
+
+        return false;
     }
 };
 
