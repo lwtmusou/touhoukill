@@ -350,8 +350,8 @@ public:
             if (player != NULL && player->hasSkill(this) && move.to_place == Player::DiscardPile) {
                 foreach (int id, move.card_ids) {
                     if (room->getCardPlace(id) == Player::DiscardPile
-                        && (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial &&
-                            move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
+                        && (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial
+                        && move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
                 }
             }
@@ -367,8 +367,8 @@ public:
             QList<int> ids;
             foreach (int id, move.card_ids) {
                 if (room->getCardPlace(id) == Player::DiscardPile
-                    && (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial &&
-                    move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
+                    && (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial
+                    && move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
                     ids << id;
             }
             room->fillAG(ids, player);

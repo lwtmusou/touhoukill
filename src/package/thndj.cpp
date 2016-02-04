@@ -29,12 +29,12 @@ public:
     {
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.player->hasSkill(this) 
-                    && change.to == Player::NotActive
-                    && change.player->getHp() == 1
-                    && !change.player->tag.value("touhou-extra", false).toBool()
-                    && !room->getTag("rexueDeathInThisRound").toBool()
-            )
+            if (change.player->hasSkill(this)
+                && change.to == Player::NotActive
+                && change.player->getHp() == 1
+                && !change.player->tag.value("touhou-extra", false).toBool()
+                && !room->getTag("rexueDeathInThisRound").toBool()
+                )
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
         }
 
@@ -51,7 +51,7 @@ public:
             LogMessage log;
             log.type = "#ForbidExtraTurn";
             log.from = invoke->invoker;
-            
+
             room->sendLog(log);
         }
         return false;
@@ -358,13 +358,13 @@ public:
         // 2.one who in your attack range is hit by another player(but not you)
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (p->hasSkill(this)
-                    && p->inMyAttackRange(damage.to)
-                    && p != damage.from
-                    && p != damage.to
-                    && damage.from != damage.to
-                    && damage.from != NULL
-                    && p->getMaxHp() > 1
-            ) {
+                && p->inMyAttackRange(damage.to)
+                && p != damage.from
+                && p != damage.to
+                && damage.from != damage.to
+                && damage.from != NULL
+                && p->getMaxHp() > 1
+                ) {
                 SkillInvokeDetail s(this, p, p, NULL, false, damage.from);
                 s.tag["lostmaxhp"] = true;
                 d << s;

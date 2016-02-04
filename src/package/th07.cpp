@@ -1651,7 +1651,7 @@ public:
         if (triggerEvent == PostHpReduced) {
             if (!invoke->invoker->faceUp())
                 invoke->invoker->turnOver();
-            
+
             QList<const Card *> tricks = invoke->invoker->getJudgingArea();
             foreach (const Card *trick, tricks) {
                 CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, invoke->invoker->objectName());
