@@ -942,7 +942,7 @@ public:
         events << GameStart << PreMarkChange << CardEffected << SlashEffected << EventAcquireSkill << EventLoseSkill << MarkChanged;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data)
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         if (triggerEvent == CardEffected || triggerEvent == SlashEffected)
             return;

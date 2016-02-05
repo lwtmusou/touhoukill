@@ -261,7 +261,7 @@ public:
         events << Damaged << ConfirmDamage << PreCardUsed;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data)
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();

@@ -210,7 +210,7 @@ public:
         view_as_skill = new MofaVS;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data)
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
@@ -841,7 +841,7 @@ public:
         return targets;
     }
 
-    void record(TriggerEvent, Room *, QVariant &data)
+    void record(TriggerEvent, Room *, QVariant &data) const
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *reimu = qobject_cast<ServerPlayer *>(move.to);
@@ -1123,7 +1123,7 @@ public:
         events << EventPhaseChanging;
     }
 
-    void record(TriggerEvent, Room *room, QVariant &data)
+    void record(TriggerEvent, Room *room, QVariant &data) const
     {
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.player && change.player->getMark("bllmseyu") > 0)
