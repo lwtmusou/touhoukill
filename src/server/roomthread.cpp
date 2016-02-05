@@ -652,9 +652,8 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
         if (over_trigger.isNull() || !over_trigger->isValid()) {
             if (detail->triggered)
                 over_trigger = detail;
-            else if (*detail < *over_trigger)
-                detail->triggered = true;
-        }
+        } else if (*detail < *over_trigger)
+            detail->triggered = true;
     }
 
     detailsList = details;

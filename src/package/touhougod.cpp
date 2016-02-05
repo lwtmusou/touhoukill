@@ -2061,7 +2061,7 @@ public:
         }
         if (!valid) return false;
 
-        if (pattern == "peach" && player->hasFlag("Global_PreventPeach")) return false;
+        if (pattern == "peach" && player->getMark("Global_PreventPeach") > 0) return false;
         for (int i = 0; i < pattern.length(); i++) {
             QChar ch = pattern[i];
             if (ch.isUpper() || ch.isDigit()) return false;
