@@ -715,8 +715,6 @@ void ServerPlayer::play(QList<Player::Phase> set_phases)
     if (!set_phases.isEmpty()) {
         if (!set_phases.contains(NotActive))
             set_phases << NotActive;
-    } else if (getMark("shitu") > 0) {
-        set_phases << RoundStart << Draw << NotActive;
     } else {
         set_phases << RoundStart << Start << Judge << Draw << Play
             << Discard << Finish << NotActive;

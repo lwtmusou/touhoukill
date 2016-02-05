@@ -1609,6 +1609,7 @@ public:
 // #pragma message WARN("todo_lwtmusou: rewrite siyu, notice that skill records (flag, tag, marks, etc.) should be updated while siyu TurnBroken")
 // Fs: should check in every skill, better write the most records clear into the eventphasechanging(to = notactive) event
 // Fs: it's no need to check at here now, the extra turn is inserted after the whole round finished
+// Fs: seems like the only skill that need clean up in this skill is shitu in th99.....
 class HpymSiyu : public TriggerSkill
 {
 public:
@@ -1665,9 +1666,16 @@ public:
             room->touhouLogmessage("#touhouExtraTurn", invoke->invoker, objectName());
 
             invoke->invoker->gainAnExtraTurn();
+            // shitu cleanup
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
+                if (p->getMark("shituPhase") > 0)
+                    p->setMark("shituPhase", 0);
+            }
+            // end
             throw TurnBroken;
 
-            return true; // prevent enterdying
+            Q_UNREACHABLE();
+            //return true; // prevent enterdying
         } else if (triggerEvent == EventPhaseEnd) {
             room->notifySkillInvoked(invoke->invoker, "hpymsiyu");
             room->enterDying(invoke->invoker, NULL);

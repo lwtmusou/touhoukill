@@ -196,11 +196,23 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             room->sendLog(log);
             room->addPlayerMark(player, "Global_TurnCount");
 
+            bool isShitu = false;
+            if (player->getMark("shituPhase") > 0) { // for th99 shitu
+                player->setMark("shituPhase", 0);
+                isShitu = true;
+            }
+
             if (!player->faceUp()) {
                 room->setPlayerFlag(player, "-Global_FirstRound");
                 player->turnOver();
-            } else if (player->isAlive())
-                player->play();
+            } else if (player->isAlive()) {
+                if (isShitu) {
+                    QList<Player::Phase> set_phases;
+                    set_phases << Player::RoundStart << Player::Draw << Player::NotActive;
+                    player->play(set_phases);
+                } else
+                    player->play();
+            }
 
             break;
         }
