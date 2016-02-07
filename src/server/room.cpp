@@ -1289,8 +1289,6 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     const QVariant &data, Card::HandlingMethod method, ServerPlayer *to,
     bool isRetrial, const QString &skill_name, bool isProvision)
 {
-    bool skill_nullify = false;
-
     Q_ASSERT(pattern != "slash" || method != Card::MethodUse); // use askForUseSlashTo instead
 
     tryPause();
@@ -1412,6 +1410,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     }
     //trigger event
 
+    bool skill_nullify = false;
     if (card) {
         bool isHandcard = true;
         QList<int> ids;
@@ -1466,6 +1465,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             resp.m_isHandcard = isHandcard;
             QVariant data = QVariant::fromValue(resp);
             thread->trigger(CardResponded, this, data);
+            resp = data.value<CardResponseStruct>();
             if (method == Card::MethodUse) {
                 if (getCardPlace(card->getEffectiveId()) == Player::PlaceTable) {
                     CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, player->objectName(),
@@ -1483,20 +1483,14 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 if (to) card_use.to << to;
                 QVariant data2 = QVariant::fromValue(card_use);
                 thread->trigger(CardFinished, this, data2);
-            }
-            if (player->hasFlag("respNul")) {
-                setPlayerFlag(player, "-respNul");
-                skill_nullify = true;
-            }
+            } else if (resp.m_isNullified)
+                return NULL;
         }
         result = card;
     } else {
         setPlayerFlag(player, "continuing");
         result = askForCard(player, pattern, prompt, data, method, to, isRetrial);
     }
-
-    if (skill_nullify)
-        return NULL;
     return result;
 }
 

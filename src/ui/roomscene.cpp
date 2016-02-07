@@ -567,7 +567,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
             if (oldHero) {
                 foreach(const Skill *skill, oldHero->getVisibleSkills())
                     detachSkill(skill->objectName());
-                if (oldHero->hasSkill("huashen")) {
+                if (oldHero->hasSkill("pingyi")) {
                     PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
                     container->stopHuaShen();
                 }
@@ -3714,7 +3714,7 @@ void RoomScene::killPlayer(const QString &who)
 
 
 
-    if (Config.EnableEffects && Config.EnableLastWord && !Self->hasFlag("marshalling") && !player->hasSkill("huaming"))
+    if (Config.EnableEffects && Config.EnableLastWord && !Self->hasFlag("marshalling"))
         general->lastWord();
     m_roomMutex.unlock();
 }

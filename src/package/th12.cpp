@@ -1176,11 +1176,11 @@ TH12Package::TH12Package()
     kogasa->addSkill(new Yiwang);
     kogasa->addSkill(new Jingxia);
 
-    General *unzan = new General(this, "unzan", "xlc", 4, true);
+    General *unzan = new General(this, "unzan", "xlc");
     unzan->addSkill(new Bianhuan);
     unzan->addSkill(new Nuhuo);
 
-    General *myouren = new General(this, "myouren", "xlc", 4, false);
+    General *myouren = new General(this, "myouren", "xlc");
     myouren->addSkill(new Shanshi);
     myouren->addSkill(new Shuxin);
 

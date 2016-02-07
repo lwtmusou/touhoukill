@@ -427,7 +427,7 @@ struct PhaseStruct
 struct CardResponseStruct
 {
     inline CardResponseStruct(const Card *card = NULL, ServerPlayer *who = NULL, bool isuse = false, bool isRetrial = false, bool isProvision = false, ServerPlayer *from = NULL)
-        : m_card(card), m_who(who), m_isUse(isuse), m_isRetrial(isRetrial), m_isProvision(isProvision), m_from(from)
+        : m_card(card), m_who(who), m_isUse(isuse), m_isRetrial(isRetrial), m_isProvision(isProvision), m_from(from), m_isNullified(false)
     {
         m_isHandcard = false;
     }
@@ -439,6 +439,8 @@ struct CardResponseStruct
     bool m_isProvision;
     ServerPlayer *m_who;
     bool m_isHandcard;
+
+    bool m_isNullified;
 };
 
 struct MarkChangeStruct

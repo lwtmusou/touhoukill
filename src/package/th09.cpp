@@ -479,7 +479,9 @@ public:
             if (room->askForCard(player, weiya_pattern, "@weiya:" + card_star->objectName(), data, Card::MethodDiscard))
                 return false;
             room->touhouLogmessage("#weiya", player, objectName(), QList<ServerPlayer *>(), card_star->objectName());
-            room->setPlayerFlag(player, "respNul");
+            CardResponseStruct s = data.value<CardResponseStruct>();
+            s.m_isNullified = true;
+            data = QVariant::fromValue(s);
         }
         return false;
     }*/
