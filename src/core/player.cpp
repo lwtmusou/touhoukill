@@ -416,48 +416,38 @@ bool Player::isCurrent() const
     return true;
 }
 
-bool Player::hasSkill(const QString &skill_name, bool include_lose, bool include_invalidity) const
+bool Player::hasSkill(const QString &skill_name, bool include_lose) const
 {
-    bool skill_invalid = false;//  invalid but maybe not lost this skill
     if (!include_lose) {
         if (!hasEquipSkill(skill_name)) {
             if (Sanguosha->getSkill(skill_name) && Sanguosha->getSkill(skill_name)->getFrequency() == Skill::Eternal)
                 return (skills.contains(skill_name) || acquired_skills.contains(skill_name));
             if (getMark("pingyi" + skill_name) > 0)
-                skill_invalid = true;
+                return false;
             const Skill *skill = Sanguosha->getSkill(skill_name);
             if (!skill || !skill->isAttachedLordSkill()) {
                 if (getMark("changshi") > 0)
-                    skill_invalid = true;
-            }
-
-            if (skill_invalid) {
-                if (include_invalidity)
-                    return skills.contains(skill_name)
-                    || acquired_skills.contains(skill_name);
-                else
-                    return false;
+                    return false;;
             }
         }
     }
-    return skills.contains(skill_name)
-        || acquired_skills.contains(skill_name);
+    return skills.contains(skill_name)|| acquired_skills.contains(skill_name);
 }
 
-bool Player::hasSkill(const Skill *skill, bool include_lose /* = false */, bool include_invalidity /* = false */) const
+bool Player::hasSkill(const Skill *skill, bool include_lose /* = false */) const
 {
     if (skill == NULL)
         return false;
 
-    return hasSkill(skill->objectName(), include_lose, include_invalidity);
+    return hasSkill(skill->objectName(), include_lose);
 }
 
-bool Player::hasSkills(const QString &skill_name, bool include_lose, bool include_invalidity) const
+bool Player::hasSkills(const QString &skill_name, bool include_lose) const
 {
     foreach (QString skill, skill_name.split("|")) {
         bool checkpoint = true;
         foreach (QString sk, skill.split("+")) {
-            if (!hasSkill(sk, include_lose, include_invalidity)) {
+            if (!hasSkill(sk, include_lose)) {
                 checkpoint = false;
                 break;
             }
@@ -486,9 +476,9 @@ bool Player::hasInnateSkill(const Skill *skill) const
     return hasInnateSkill(skill->objectName());
 }
 
-bool Player::hasLordSkill(const QString &skill_name, bool include_lose, bool include_invalidity) const
+bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const
 {
-    if (!hasSkill(skill_name, include_lose, include_invalidity))
+    if (!hasSkill(skill_name, include_lose))
         return false;
 
     if (acquired_skills.contains(skill_name))
@@ -504,12 +494,12 @@ bool Player::hasLordSkill(const QString &skill_name, bool include_lose, bool inc
     return false;
 }
 
-bool Player::hasLordSkill(const Skill *skill, bool include_lose /* = false */, bool include_invalidity /* = false */) const
+bool Player::hasLordSkill(const Skill *skill, bool include_lose /* = false */) const
 {
     if (skill == NULL)
         return false;
 
-    return hasLordSkill(skill->objectName(), include_lose, include_invalidity);
+    return hasLordSkill(skill->objectName(), include_lose);
 }
 
 void Player::acquireSkill(const QString &skill_name)
@@ -1148,7 +1138,7 @@ QString Player::getSkillDescription(bool yellow) const
             continue;
         //remove lord skill Description
         if (skill->isLordSkill()) {
-            if (!hasLordSkill(skill->objectName()) && !hasSkill("nosguixin", false, true))
+            if (!hasLordSkill(skill->objectName()))
                 continue;
         }
 

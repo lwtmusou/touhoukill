@@ -321,25 +321,25 @@ public:
             static QString attachName = "wuyu_attach";
             QList<ServerPlayer *> lords;
             foreach(ServerPlayer *p, room->getAllPlayers()) {
-                if (p->hasLordSkill(this, false, true))
+                if (p->hasLordSkill(this, true))
                     lords << p;
             }
 
             if (lords.length() > 1) {
                 foreach(ServerPlayer *p, room->getAllPlayers()) {
-                    if (!p->hasSkill(attachName, true, true))
+                    if (!p->hasSkill(attachName, true))
                         room->attachSkillToPlayer(p, attachName);
                 }
             } else if (lords.length() == 1) {
                 foreach(ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->hasLordSkill(this, false, true) && p->hasSkill(attachName, true, true))
+                    if (p->hasLordSkill(this, true) && p->hasSkill(attachName, true))
                         room->detachSkillFromPlayer(p, attachName, true);
-                    else if (!p->hasLordSkill(this, false, true) && !p->hasSkill(attachName, true, true))
+                    else if (!p->hasLordSkill(this, true) && !p->hasSkill(attachName, true))
                         room->attachSkillToPlayer(p, attachName);
                 }
             } else {
                 foreach(ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->hasSkill(attachName, true, true))
+                    if (p->hasSkill(attachName, true))
                         room->detachSkillFromPlayer(p, attachName, true);
                 }
             }
@@ -458,25 +458,25 @@ public:
             QList<ServerPlayer *> reimus;
             static QString attachName = "saiqian_attach";
             foreach(ServerPlayer *p, room->getAllPlayers()) {
-                if (p->hasSkill(this, false, true))
+                if (p->hasSkill(this, true))
                     reimus << p;
             }
 
             if (reimus.length() > 1) {
                 foreach(ServerPlayer *p, room->getAllPlayers()) {
-                    if (!p->hasSkill(attachName, true, true))
+                    if (!p->hasSkill(attachName, true))
                         room->attachSkillToPlayer(p, attachName);
                 }
             } else if (reimus.length() == 1) {
                 foreach(ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->hasSkill(this, false, true) && p->hasSkill(attachName, true, true))
+                    if (p->hasSkill(this, true) && p->hasSkill(attachName, true))
                         room->detachSkillFromPlayer(p, attachName, true);
-                    else if (!p->hasSkill(this, false, true) && !p->hasSkill(attachName, true, true))
+                    else if (!p->hasSkill(this, true) && !p->hasSkill(attachName, true))
                         room->attachSkillToPlayer(p, attachName);
                 }
             } else {
                 foreach(ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->hasSkill(attachName, true, true))
+                    if (p->hasSkill(attachName, true))
                         room->detachSkillFromPlayer(p, attachName, true);
                 }
             }

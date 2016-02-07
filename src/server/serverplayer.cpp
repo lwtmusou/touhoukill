@@ -1169,8 +1169,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
 
     foreach (const Skill *skill, getVisibleSkillList(true)) {
         //lord skill
-        if (this == player && skill->isLordSkill() && !hasLordSkill(skill->objectName())
-            && !hasSkill("nosguixin", false, true)) {
+        if (this == player && skill->isLordSkill() && !hasLordSkill(skill->objectName())) {
             continue;
         }
         QString skill_name = skill->objectName();

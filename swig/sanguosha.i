@@ -151,10 +151,10 @@ public:
     void detachAllSkills();
     virtual void addSkill(const char *skill_name);
     virtual void loseSkill(const char *skill_name);
-    bool hasSkill(const char *skill_name, bool include_lose = false, bool include_invalidity=false) const;
-    bool hasSkills(const char *skill_name, bool include_lose = false,bool include_invalidity=false) const;
+    bool hasSkill(const char *skill_name, bool include_lose = false) const;
+    bool hasSkills(const char *skill_name, bool include_lose = false) const;
     bool hasInnateSkill(const char *skill_name) const;
-    bool hasLordSkill(const char *skill_name, bool include_lose = false,bool include_invalidity=false) const;
+    bool hasLordSkill(const char *skill_name, bool include_lose = false) const;
     virtual QString getGameMode() const = 0;
 
     void setEquip(WrappedCard *equip);

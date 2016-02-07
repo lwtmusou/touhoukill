@@ -145,25 +145,25 @@ public:
             static QString attachName = "dangjia_attach";
             QList<ServerPlayer *> aqs;
             foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if (p->hasLordSkill(this, false, true))
+                if (p->hasLordSkill(this, true))
                     aqs << p;
             }
 
             if (aqs.length() > 1) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (!p->hasLordSkill(attachName, true, true))
+                    if (!p->hasLordSkill(attachName, true))
                         room->attachSkillToPlayer(p, attachName);
                 }
             } else if (aqs.length() == 1) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->hasLordSkill(this, false, true) && p->hasLordSkill(attachName, true, true))
+                    if (p->hasLordSkill(this, true) && p->hasLordSkill(attachName, true))
                         room->detachSkillFromPlayer(p, attachName, true);
-                    else if (!p->hasLordSkill(this, false, true) && !p->hasLordSkill(attachName, true, true))
+                    else if (!p->hasLordSkill(this, true) && !p->hasLordSkill(attachName, true))
                         room->attachSkillToPlayer(p, attachName);
                 }
             } else { // the case that aqs is empty
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->hasLordSkill(attachName, true, true))
+                    if (p->hasLordSkill(attachName, true))
                         room->detachSkillFromPlayer(p, attachName, true);
                 }
             }

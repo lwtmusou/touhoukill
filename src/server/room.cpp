@@ -1410,7 +1410,6 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     }
     //trigger event
 
-    bool skill_nullify = false;
     if (card) {
         bool isHandcard = true;
         QList<int> ids;
