@@ -360,7 +360,7 @@ bool SkillInvokeDetail::operator <(const SkillInvokeDetail &arg2) const // the o
     return skill->inherits("EquipSkill") && !arg2.skill->inherits("EquipSkill");
 }
 
-bool SkillInvokeDetail::sameSkill(const SkillInvokeDetail &arg2) const // the operator ==. it only judge the skill name, the skill invoker, the skill owner and the preferred target. it don't judge the real skill target because it is chosen by the skill invoker
+bool SkillInvokeDetail::sameSkill(const SkillInvokeDetail &arg2) const // it only judge the skill name, the skill invoker, the skill owner and the preferred target. it don't judge the real skill target because it is chosen by the skill invoker
 {
     return skill == arg2.skill && owner == arg2.owner && invoker == arg2.invoker /*&& preferredTarget == arg2.preferredTarget*/;
 }

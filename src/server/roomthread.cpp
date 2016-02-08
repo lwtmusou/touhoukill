@@ -493,8 +493,8 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
         QMutableListIterator<SkillInvokeDetail> it_triggerable(triggerable);
         while (it_triggerable.hasNext()) {
             const SkillInvokeDetail &t = it_triggerable.next();
-            if (!t.isValid() || skill != t.skill)
-                it_triggerable.remove();  // remove the invalid item and not-self skill from the list
+            if (!t.isValid())
+                it_triggerable.remove();  // remove the invalid item from the list
         }
 
         if (triggerable.isEmpty()) // i.e. there is no valid item returned from the skill's triggerable
@@ -507,7 +507,6 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
             QSharedPointer<SkillInvokeDetail> ptr(new SkillInvokeDetail(t));
             r << ptr;
         }
-        // because there is only one skill(that is the loop variant "skill") judging in a certain time of loop, all the return value is related to this skill
         if (r.length() == 1) {
             // if the skill has only one instance of the invokedetail, we copy the tag to the old instance(overwrite the old ones), and use the old instance, delete the new one
             foreach (const QSharedPointer<SkillInvokeDetail> &detail, (detailsList + triggered).toSet()) {
@@ -761,11 +760,15 @@ void RoomThread::addTriggerSkill(const TriggerSkill *skill)
     skillSet << skill->objectName();
 
     QList<TriggerEvent> events = skill->getTriggerEvents();
-    foreach (TriggerEvent triggerEvent, events) {
-        QList<const TriggerSkill *> &table = skill_table[triggerEvent];
-        table << skill;
+    if (events.length() == 1 && events.first() == NumOfEvents) {
+        for (int i = NonTrigger + 1; i < NumOfEvents; ++i)
+            skill_table[static_cast<TriggerEvent>(i)] << skill;
+    } else {
+        foreach (TriggerEvent triggerEvent, events) {
+            QList<const TriggerSkill *> &table = skill_table[triggerEvent];
+            table << skill;
+        }
     }
-
     if (skill->isVisible()) {
         foreach (const Skill *skill, Sanguosha->getRelatedSkills(skill->objectName())) {
             const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
