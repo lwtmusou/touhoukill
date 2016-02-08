@@ -1091,7 +1091,7 @@ public:
             room->damage(damage);
             return true;
         } else if (triggerEvent == DamageComplete)
-            invoke->targets.first()->drawCards(1, objectName());
+            invoke->targets.first()->drawCards(invoke->targets.first()->getLostHp(), objectName());
 
         return false;
     }
