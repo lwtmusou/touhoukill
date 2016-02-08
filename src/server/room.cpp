@@ -2963,6 +2963,24 @@ void Room::swapSeat(ServerPlayer *a, ServerPlayer *b)
     }
 }
 
+void Room::setPlayerSkillInvalidity(ServerPlayer *player, const Skill *skill, bool invalidity)
+{
+    QString skill_name = "_ALL_SKILLS";
+    if (skill != NULL)
+        skill_name = skill->objectName();
+
+    setPlayerSkillInvalidity(player, skill_name, invalidity);
+}
+
+void Room::setPlayerSkillInvalidity(ServerPlayer *player, const QString &skill_name, bool invalidity)
+{
+    player->setSkillInvalidity(skill_name, invalidity);
+
+    JsonArray arr;
+    arr << player->objectName() << skill_name << invalidity;
+    doBroadcastNotify(QSanProtocol::S_COMMAND_SET_SKILL_INVALIDITY, arr);
+}
+
 void Room::adjustSeats()
 {
     QList<ServerPlayer *> players;

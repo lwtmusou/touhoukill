@@ -142,7 +142,8 @@ namespace QSanProtocol {
         S_COMMAND_ADD_ROBOT,
         S_COMMAND_FILL_ROBOTS,
         S_COMMAND_SIGNUP,
-        S_COMMAND_UPDATE_SKILL
+        S_COMMAND_UPDATE_SKILL ,
+        S_COMMAND_SET_SKILL_INVALIDITY
     };
 
     enum GameEventType

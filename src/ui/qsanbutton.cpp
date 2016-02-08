@@ -234,8 +234,7 @@ void QSanSkillButton::setSkill(const Skill *skill)
 
     Skill::Frequency freq = skill->getFrequency();
     if (freq == Skill::Frequent
-        || (freq == Skill::NotFrequent && skill->inherits("TriggerSkill") && !skill->inherits("WeaponSkill")
-        && !skill->inherits("ArmorSkill") && _m_viewAsSkill == NULL)) {
+        || (freq == Skill::NotFrequent && skill->inherits("TriggerSkill") && !skill->inherits("EquipSkill") && _m_viewAsSkill == NULL)) {
         setStyle(QSanButton::S_STYLE_TOGGLE);
         setState(freq == Skill::Frequent ? QSanButton::S_STATE_DOWN : QSanButton::S_STATE_UP);
         _setSkillType(QSanInvokeSkillButton::S_SKILL_FREQUENT);
@@ -251,7 +250,6 @@ void QSanSkillButton::setSkill(const Skill *skill)
             _setSkillType(QSanInvokeSkillButton::S_SKILL_ONEOFF_SPELL);
         else
             _setSkillType(QSanInvokeSkillButton::S_SKILL_PROACTIVE);
-
 
         setStyle(QSanButton::S_STYLE_TOGGLE);
 
@@ -309,7 +307,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
         QString engskillname = _m_skill->objectName().left(nline);
         QString generalName = "";
 
-        foreach (const Player* p, Self->getSiblings()) {
+        foreach (const Player *p, Self->getSiblings()) {
             const General* general = p->getGeneral();
             if (general->hasSkill(engskillname)) {
                 generalName = general->objectName();
@@ -321,19 +319,23 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
             if (general && general->hasSkill(engskillname))
                 generalName = general->objectName();
         }
-        if (generalName == "")
-            return;
-
-        QString path = G_ROOM_SKIN.getButtonPixmapPath(G_ROOM_SKIN.S_SKIN_KEY_BUTTON_SKILL, getSkillTypeString(_m_skillType), _m_state);
-        int n = path.lastIndexOf("/");
-        path = path.left(n + 1) + generalName + ".png";
-        QPixmap pixmap = G_ROOM_SKIN.getPixmapFromFileName(path);
-        if (pixmap.isNull())
-            return;
-        int h = pixmap.height() - _m_bgPixmap[(int)_m_state].height();
-        painter->drawPixmap(0, -h, pixmap.width(), pixmap.height(), pixmap);
+        if (generalName != "") {
+            QString path = G_ROOM_SKIN.getButtonPixmapPath(G_ROOM_SKIN.S_SKIN_KEY_BUTTON_SKILL, getSkillTypeString(_m_skillType), _m_state);
+            int n = path.lastIndexOf("/");
+            path = path.left(n + 1) + generalName + ".png";
+            QPixmap pixmap = G_ROOM_SKIN.getPixmapFromFileName(path);
+            if (!pixmap.isNull()) {
+                int h = pixmap.height() - _m_bgPixmap[(int)_m_state].height();
+                painter->drawPixmap(0, -h, pixmap.width(), pixmap.height(), pixmap);
+            }
+        }
     }
 
+    if (Self->isSkillInvalid(_m_skill->objectName())) {
+        QPixmap pixmap = G_ROOM_SKIN.getPixmap(G_ROOM_SKIN.S_SKIL_KEY_SKILL_INVALID, QString(), true);
+        pixmap = pixmap.scaled(_m_size);
+        painter->drawPixmap(0, 0, pixmap);
+    }
 }
 
 QSanSkillButton *QSanInvokeSkillDock::addSkillButtonByName(const QString &skillName)

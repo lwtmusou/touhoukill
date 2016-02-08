@@ -255,6 +255,10 @@ public:
 
     void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
     void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true);
+
+    void setPlayerSkillInvalidity(ServerPlayer *player, const Skill *skill, bool invalidity);
+    void setPlayerSkillInvalidity(ServerPlayer *player, const QString &skill_name, bool invalidity);
+
     void adjustSeats();
     void swapPile();
     QList<int> getDiscardPile();

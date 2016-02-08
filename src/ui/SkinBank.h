@@ -388,6 +388,7 @@ public:
     static const char *S_SKIN_KEY_HEAD_ICON;
     static const char *S_SKIN_KEY_DEPUTY_ICON;
     static const char *S_SKIN_KEY_ROLE_SHOWN;
+    static const char *S_SKIL_KEY_SKILL_INVALID;
 
     // Animations
     static const char *S_SKIN_KEY_ANIMATIONS;

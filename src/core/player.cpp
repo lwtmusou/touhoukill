@@ -416,20 +416,7 @@ bool Player::isCurrent() const
 
 bool Player::hasSkill(const QString &skill_name, bool include_lose) const
 {
-    if (!include_lose) {
-        if (!hasEquipSkill(skill_name)) {
-            if (Sanguosha->getSkill(skill_name) && Sanguosha->getSkill(skill_name)->getFrequency() == Skill::Eternal)
-                return (skills.contains(skill_name) || acquired_skills.contains(skill_name));
-            if (getMark("pingyi" + skill_name) > 0)
-                return false;
-            const Skill *skill = Sanguosha->getSkill(skill_name);
-            if (!skill || !skill->isAttachedLordSkill()) {
-                if (getMark("changshi") > 0)
-                    return false;;
-            }
-        }
-    }
-    return skills.contains(skill_name)|| acquired_skills.contains(skill_name);
+    return hasSkill(Sanguosha->getSkill(skill_name), include_lose);
 }
 
 bool Player::hasSkill(const Skill *skill, bool include_lose /* = false */) const
@@ -437,7 +424,14 @@ bool Player::hasSkill(const Skill *skill, bool include_lose /* = false */) const
     if (skill == NULL)
         return false;
 
-    return hasSkill(skill->objectName(), include_lose);
+    QString skill_name = skill->objectName();
+
+    if (!include_lose && !hasEquipSkill(skill_name) && skill->getFrequency() != Skill::Eternal) {
+        if (isSkillInvalid(skill_name))
+            return false;
+    }
+
+    return skills.contains(skill_name) || acquired_skills.contains(skill_name);
 }
 
 bool Player::hasSkills(const QString &skill_name, bool include_lose) const
@@ -498,6 +492,38 @@ bool Player::hasLordSkill(const Skill *skill, bool include_lose /* = false */) c
         return false;
 
     return hasLordSkill(skill->objectName(), include_lose);
+}
+
+void Player::setSkillInvalidity(const Skill *skill, bool invalidity)
+{
+    if (skill == NULL)
+        setSkillInvalidity("_ALL_SKILLS", invalidity);
+
+    setSkillInvalidity(skill->objectName(), invalidity);
+}
+
+void Player::setSkillInvalidity(const QString &skill_name, bool invalidity)
+{
+    if (invalidity && !skill_invalid.contains(skill_name))
+        skill_invalid << skill_name;
+    else if (!invalidity && skill_invalid.contains(skill_name))
+        skill_invalid.removeAll(skill_name);
+}
+
+bool Player::isSkillInvalid(const Skill *skill) const
+{
+    if (skill == NULL)
+        return isSkillInvalid("_ALL_SKILLS");
+
+    return isSkillInvalid(skill->objectName());
+}
+
+bool Player::isSkillInvalid(const QString &skill_name) const
+{
+    if (skill_invalid.contains("_ALL_SKILLS"))
+        return true;
+
+    return skill_invalid.contains(skill_name);
 }
 
 void Player::acquireSkill(const QString &skill_name)

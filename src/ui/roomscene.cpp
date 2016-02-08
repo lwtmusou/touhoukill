@@ -176,6 +176,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(start_in_xs()), this, SLOT(startInXs()));
 
     connect(ClientInstance, &Client::triggers_got, this, &RoomScene::chooseTriggerOrder);
+    connect(ClientInstance, &Client::skill_invalidity_changed, this, &RoomScene::skillInvalidityChange);
 
     guanxing_box = new GuanxingBox;
     guanxing_box->hide();
@@ -249,10 +250,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     chat_box->setReadOnly(true);
     chat_box->setTextColor(Config.TextEditColor);
     connect(ClientInstance, SIGNAL(line_spoken(const QString)), this, SLOT(appendChatBox(QString)));
-    //connect(ClientInstance, SIGNAL(line_spoken(const QString &)), this, SLOT(append(const QString &)));
-    //connect(ClientInstance, SIGNAL(line_spoken(const QString &)), chat_box, SLOT(append(const QString &)));
-    connect(ClientInstance, SIGNAL(player_spoken(const QString &, const QString &)),
-        this, SLOT(showBubbleChatBox(const QString &, const QString &)));
+    connect(ClientInstance, SIGNAL(player_spoken(const QString &, const QString &)), this, SLOT(showBubbleChatBox(const QString &, const QString &)));
 
     // chat edit
     chat_edit = new QLineEdit;
@@ -4646,6 +4644,14 @@ void RoomScene::trust()
     if (Self->getState() != "trust")
         doCancelButton();
     ClientInstance->trust();
+}
+
+void RoomScene::skillInvalidityChange(ClientPlayer *player)
+{
+    if (player != Self)
+        return;
+
+    dashboard->updateSkillButton();
 }
 
 void RoomScene::startArrange(const QString &to_arrange)

@@ -156,6 +156,12 @@ public:
     bool hasInnateSkill(const char *skill_name) const;
     bool hasLordSkill(const char *skill_name, bool include_lose = false) const;
     virtual QString getGameMode() const = 0;
+    
+    void setSkillInvalidity(const Skill *skill, bool invalidity);
+    void setSkillInvalidity(const char *skill_name, bool invalidity);
+
+    bool isSkillInvalid(const Skill *skill) const;
+    bool isSkillInvalid(const char *skill_name) const;
 
     void setEquip(WrappedCard *equip);
     void removeEquip(WrappedCard *equip);
@@ -1292,6 +1298,9 @@ public:
     void resetCard(int cardId);
 
     void updateStateItem();
+
+    void setPlayerSkillInvalidity(ServerPlayer *player, const Skill *skill, bool invalidity);
+    void setPlayerSkillInvalidity(ServerPlayer *player, const char *skill_name, bool invalidity);
 };
 
 %extend Room {

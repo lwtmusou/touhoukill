@@ -469,6 +469,7 @@ private slots:
 
     void skillStateChange(const QString &skill_name);
     void trust();
+    void skillInvalidityChange(ClientPlayer *player);
 
 signals:
     void restart();

@@ -131,6 +131,7 @@ public:
     void setAvailableCards(const QVariant &pile);
     void setCardFlag(const QVariant &pattern_str);
     void updateCard(const QVariant &arg);
+    void setPlayerSkillInvalidity(const QVariant &arg);
 
 
     void fillAG(const QVariant &cards_str);
@@ -323,6 +324,7 @@ signals:
     void text_spoken(const QString &text);
     void line_spoken(const QString &line);
     void player_spoken(const QString &who, const QString &line);
+    void skill_invalidity_changed(ClientPlayer *player);
 
     void card_used();
 

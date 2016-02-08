@@ -153,6 +153,13 @@ public:
     bool hasInnateSkill(const Skill *skill) const;
     bool hasLordSkill(const QString &skill_name, bool include_lose = false) const;
     bool hasLordSkill(const Skill *skill, bool include_lose = false) const;
+
+    void setSkillInvalidity(const Skill *skill, bool invalidity);
+    void setSkillInvalidity(const QString &skill_name, bool invalidity);
+
+    bool isSkillInvalid(const Skill *skill) const;
+    bool isSkillInvalid(const QString &skill_name) const;
+
     virtual QString getGameMode() const = 0;
 
     void setEquip(WrappedCard *equip);
@@ -264,6 +271,7 @@ protected:
     QStringList skills;
     QSet<QString> flags;
     QHash<QString, int> history;
+    QStringList skill_invalid;
 
 private:
     QString screen_name;

@@ -81,6 +81,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_UPDATE_PILE] = &Client::setPileNumber;
     m_callbacks[S_COMMAND_SYNCHRONIZE_DISCARD_PILE] = &Client::synchronizeDiscardPile;
     m_callbacks[S_COMMAND_CARD_FLAG] = &Client::setCardFlag;
+    m_callbacks[S_COMMAND_SET_SKILL_INVALIDITY] = &Client::setPlayerSkillInvalidity;
 
 
 
@@ -200,6 +201,23 @@ void Client::updateCard(const QVariant &val)
         WrappedCard *wrapped = Sanguosha->getWrappedCard(cardId);
         Q_ASSERT(wrapped != NULL);
         wrapped->copyEverythingFrom(card);
+    }
+}
+
+void Client::setPlayerSkillInvalidity(const QVariant &arg)
+{
+    JsonArray a = arg.value<JsonArray>();
+    if (a.length() == 3) {
+        QString playerName = a.first().toString();
+        ClientPlayer *player = getPlayer(playerName);
+        if (player == NULL)
+            return;
+
+        QString skill_name = a.value(1).toString();
+        bool invalid = a.value(2).toBool();
+
+        player->setSkillInvalidity(skill_name, invalid);
+        emit skill_invalidity_changed(player);
     }
 }
 
@@ -587,10 +605,8 @@ void Client::arrangeSeats(const QVariant &seats_arr)
     QStringList player_names;
     if (seats_arr.canConvert<JsonArray>()) {
         JsonArray seats = seats_arr.value<JsonArray>();
-        foreach(const QVariant &seat, seats)
-        {
+        foreach (const QVariant &seat, seats)
             player_names << seat.toString();
-        }
     }
     players.clear();
 
