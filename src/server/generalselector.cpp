@@ -5,9 +5,6 @@
 #include "lua.hpp"
 #include "room.h"
 
-static GeneralSelector *Selector;
-
-
 GeneralSelector::GeneralSelector(Room *room)
     : QObject(room)
 {

@@ -438,7 +438,7 @@ void QijiDialog::popup()
 
     foreach (QAbstractButton *button, group->buttons()) {
         const Card *card = map[button->objectName()];
-        const Player *user;
+        const Player *user = NULL;
         if (object_name == "chuangshi") { //check the card is Available for chuangshi target.
             foreach(const Player *p, Self->getAliveSiblings())
             {

@@ -487,8 +487,10 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasFlag("Global_DebutFlag")) {
                         p->setFlags("-Global_DebutFlag");
-                        if (room->getMode() == "02_1v1")
-                            room->getThread()->trigger(Debut, room, QVariant::fromValue(p));
+                        if (room->getMode() == "02_1v1") {
+                            QVariant v = QVariant::fromValue(p);
+                            room->getThread()->trigger(Debut, room, v);
+                        }
                     }
                 }
             }
@@ -630,9 +632,10 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 }
 
                 changeGeneral1v1(death.who);
-                if (death.damage == NULL)
-                    room->getThread()->trigger(Debut, room, QVariant::fromValue(death.who));
-                else
+                if (death.damage == NULL) {
+                    QVariant v = QVariant::fromValue(death.who);
+                    room->getThread()->trigger(Debut, room, v);
+                } else
                     death.who->setFlags("Global_DebutFlag");
                 return false;
             } else if (room->getMode() == "06_XMode") {

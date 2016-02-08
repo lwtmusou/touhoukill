@@ -27,8 +27,8 @@
     #define F_DECLSPEC __declspec
     #define F_DLLEXPORT ( dllexport )
 #elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(_WIN64)
-    #define F_CDECL _cdecl
-    #define F_STDCALL _stdcall
+    #define F_CDECL __cdecl
+    #define F_STDCALL __stdcall
     #define F_DECLSPEC __declspec
     #define F_DLLEXPORT ( dllexport )
 #elif defined(__MACH__) || defined(__ANDROID__) || defined(__linux__) || defined(__QNX__)

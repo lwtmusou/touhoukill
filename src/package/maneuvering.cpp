@@ -455,7 +455,8 @@ void IronChain::onEffect(const CardEffectStruct &effect) const
 
     room->broadcastProperty(effect.to, "chained");
     room->setEmotion(effect.to, "chain");
-    room->getThread()->trigger(ChainStateChanged, room, QVariant::fromValue(effect.to));
+    QVariant v = QVariant::fromValue(effect.to);
+    room->getThread()->trigger(ChainStateChanged, room, v);
 }
 
 SupplyShortage::SupplyShortage(Card::Suit suit, int number)

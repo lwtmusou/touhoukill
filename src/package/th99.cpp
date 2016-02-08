@@ -475,7 +475,7 @@ public:
                 foreach (int id, move.card_ids) {
                     const Card *c = Sanguosha->getCard(id);
                     Player::Place from_place = move.from_places.value(i++);
-                    if (c != NULL && (c->isKindOf("EquipCard") || c->isKindOf("TrickCard") && (from_place == Player::PlaceHand || from_place == Player::PlaceEquip)))
+                    if (c != NULL && (c->isKindOf("EquipCard") || c->isKindOf("TrickCard")) && (from_place == Player::PlaceHand || from_place == Player::PlaceEquip))
                         d << SkillInvokeDetail(this, from, from, NULL, false, thrower);
                 }
                 return d;
@@ -630,18 +630,15 @@ public:
     {
         ServerPlayer *user = NULL;
         const Card *card = NULL;
-        bool isUse = false;
         if (triggerEvent == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
             user = use.from;
-            isUse = true;
         } else if (triggerEvent == CardResponded) {
             CardResponseStruct resp = data.value<CardResponseStruct>();
             if (!resp.m_isProvision && !resp.m_isRetrial) {
                 card = resp.m_card;
                 user = resp.m_from;
-                isUse = resp.m_isUse;
             }
         }
 
@@ -673,18 +670,15 @@ public:
     {
         ServerPlayer *user = NULL;
         const Card *card = NULL;
-        bool isUse = false;
         if (triggerEvent == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             card = use.card;
             user = use.from;
-            isUse = true;
         } else if (triggerEvent == CardResponded) {
             CardResponseStruct resp = data.value<CardResponseStruct>();
             if (!resp.m_isProvision && !resp.m_isRetrial) {
                 card = resp.m_card;
                 user = resp.m_from;
-                isUse = resp.m_isUse;
             }
         }
 
@@ -717,7 +711,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent triggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
     {
         if (triggerEvent == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();

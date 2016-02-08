@@ -908,7 +908,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         ServerPlayer *reimu = invoke->invoker;
-        ServerPlayer *target = reimu->tag.value("chunxi_currentPlayer", NULL).value<ServerPlayer *>();
+        ServerPlayer *target = reimu->tag.value("chunxi_currentPlayer").value<ServerPlayer *>();
         bool ok = false;
         int id = reimu->tag.value("chunxi_currentId", -1).toInt(&ok);
         if (target != NULL && ok && id > -1) {

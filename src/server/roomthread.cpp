@@ -71,8 +71,10 @@ void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start)
     }
 
     //We should make someone trigger a whole GameStart event instead of trigger a skill only.
-    if (invoke_verify)
-        trigger(GameStart, room, QVariant::fromValue(player));
+    if (invoke_verify) {
+        QVariant v = QVariant::fromValue(player);
+        trigger(GameStart, room, v);
+    }
 }
 
 void RoomThread::constructTriggerTable()
@@ -94,7 +96,8 @@ ServerPlayer *RoomThread::find3v3Next(QList<ServerPlayer *> &first, QList<Server
     if (all_actioned) {
         foreach (ServerPlayer *player, room->m_alivePlayers) {
             room->setPlayerFlag(player, "-actioned");
-            trigger(ActionedReset, room, QVariant::fromValue(player));
+            QVariant v = QVariant::fromValue(player);
+            trigger(ActionedReset, room, v);
         }
 
         qSwap(first, second);
@@ -135,7 +138,8 @@ void RoomThread::run3v3(QList<ServerPlayer *> &first, QList<ServerPlayer *> &sec
     try {
         forever {
             room->setCurrent(current);
-            trigger(TurnStart, room, QVariant::fromValue(current));
+            QVariant v = QVariant::fromValue(current);
+            trigger(TurnStart, room, v);
             room->setPlayerFlag(current, "actioned");
             current = find3v3Next(first, second);
         }
@@ -152,7 +156,8 @@ void RoomThread::_handleTurnBroken3v3(QList<ServerPlayer *> &first, QList<Server
 {
     try {
         ServerPlayer *player = room->getCurrent();
-        trigger(TurnBroken, room, QVariant::fromValue(player));
+        QVariant v = QVariant::fromValue(player);
+        trigger(TurnBroken, room, v);
         if (player->getPhase() != Player::NotActive) {
             QVariant data = QVariant::fromValue(player);
             game_rule->effect(EventPhaseEnd, room, QSharedPointer<SkillInvokeDetail>(), data);
@@ -203,7 +208,8 @@ void RoomThread::actionHulaoPass(ServerPlayer *shenlvbu, QList<ServerPlayer *> l
         if (stage == 1) {
             forever{
                 ServerPlayer *current = room->getCurrent();
-                trigger(TurnStart, room, QVariant::fromValue(current));
+                QVariant v = QVariant::fromValue(current);
+                trigger(TurnStart, room, v);
 
                 ServerPlayer *next = findHulaoPassNext(shenlvbu, league, 1);
                 if (current != shenlvbu) {
@@ -223,8 +229,10 @@ void RoomThread::actionHulaoPass(ServerPlayer *shenlvbu, QList<ServerPlayer *> l
                                 room->setPlayerFlag(player, "-actioned");
                         }
                         foreach (ServerPlayer *player, league) {
-                            if (player->isDead())
-                                trigger(TurnStart, room, QVariant::fromValue(player));
+                            if (player->isDead()) {
+                                QVariant v = QVariant::fromValue(player);
+                                trigger(TurnStart, room, v);
+                            }
                         }
                     }
                 }
@@ -241,8 +249,10 @@ void RoomThread::actionHulaoPass(ServerPlayer *shenlvbu, QList<ServerPlayer *> l
 
                 if (current == shenlvbu) {
                     foreach (ServerPlayer *player, league) {
-                        if (player->isDead())
-                            trigger(TurnStart, room, QVariant::fromValue(player));
+                        if (player->isDead()) {
+                            QVariant v = QVariant::fromValue(player);
+                            trigger(TurnStart, room, v);
+                        }
                     }
                 }
                 room->setCurrent(next);
@@ -252,7 +262,8 @@ void RoomThread::actionHulaoPass(ServerPlayer *shenlvbu, QList<ServerPlayer *> l
     catch (TriggerEvent triggerEvent) {
         if (triggerEvent == StageChange) {
             stage = 2;
-            trigger(triggerEvent, room, QVariant::fromValue(shenlvbu));
+            QVariant v = QVariant::fromValue(shenlvbu);
+            trigger(triggerEvent, room, v);
             foreach (ServerPlayer *player, room->getPlayers()) {
                 if (player != shenlvbu) {
                     if (player->hasFlag("actioned"))
@@ -280,7 +291,8 @@ void RoomThread::_handleTurnBrokenHulaoPass(ServerPlayer *shenlvbu, QList<Server
 {
     try {
         ServerPlayer *player = room->getCurrent();
-        trigger(TurnBroken, room, QVariant::fromValue(player));
+        QVariant v = QVariant::fromValue(player);
+        trigger(TurnBroken, room, v);
         ServerPlayer *next = findHulaoPassNext(shenlvbu, league, stage);
         if (player->getPhase() != Player::NotActive) {
             QVariant data = QVariant::fromValue(player);
@@ -451,8 +463,10 @@ void RoomThread::run()
                 if (first->getRole() != "renegade")
                     first = room->getPlayers().at(1);
                 ServerPlayer *second = first->getNext();
-                trigger(Debut, room, QVariant::fromValue(first));
-                trigger(Debut, room, QVariant::fromValue(second));
+                QVariant v1 = QVariant::fromValue(first);
+                trigger(Debut, room, v1);
+                QVariant v2 = QVariant::fromValue(second);
+                trigger(Debut, room, v2);
                 room->setCurrent(first);
             }
 
@@ -523,7 +537,7 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
             QList<QSharedPointer<SkillInvokeDetail> > s;
             // judge whether this skill in this event is a preferred-target skill, make a invoke list as s
             foreach (const QSharedPointer<SkillInvokeDetail> &detail, (detailsList + triggered).toSet()) {
-                if (detail->skill = r.first()->skill) {
+                if (detail->skill == r.first()->skill) {
                     s << detail;
                     if (detail->preferredTarget != NULL)
                         isPreferredTargetSkill = true;

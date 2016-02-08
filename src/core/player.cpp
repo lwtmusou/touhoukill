@@ -7,11 +7,9 @@
 
 Player::Player(QObject *parent)
     : QObject(parent), owner(false), general(NULL), general2(NULL),
-    m_gender(General::Sexless), hp(-1), max_hp(-1), state("online"), seat(0), alive(true),
-    phase(NotActive),
-    weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL), treasure(NULL),
-    face_up(true), chained(false),
-    role_shown(false), pile_open(QMap<QString, QStringList>())
+    m_gender(General::Sexless), hp(-1), max_hp(-1), role_shown(false), state("online"), seat(0), alive(true),
+    phase(NotActive), weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL), treasure(NULL),
+    face_up(true), chained(false)
 {
 }
 

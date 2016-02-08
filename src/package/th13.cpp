@@ -204,7 +204,7 @@ public:
         QString markName = "xihua_record_" + pattern;
         Card *c = Sanguosha->cloneCard(pattern);
         DELETE_OVER_SCOPE(Card, c)
-        if (method == NULL)
+        if (method == Card::MethodNone)
             method = Card::MethodUse;
         if (player->getMark(markName) > 0 || player->isCardLimited(c, method, true))
             return true;

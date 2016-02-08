@@ -947,7 +947,7 @@ public:
         if (triggerEvent == CardEffected || triggerEvent == SlashEffected)
             return;
 
-        ServerPlayer *player;
+        ServerPlayer *player = NULL;
         //@todo: need adjust skill pingyi and function Player::hasSkill()
         if (triggerEvent == PreMarkChange) {
             MarkChangeStruct change = data.value<MarkChangeStruct>();
@@ -971,9 +971,8 @@ public:
             player = data.value<ServerPlayer *>();
         } else if (triggerEvent == EventAcquireSkill || triggerEvent == EventLoseSkill) {
             player = data.value<SkillAcquireDetachStruct>().player;
-        }
+        } else if (triggerEvent == MarkChanged) {
 #pragma message WARN("todo_lwtmusou: to find a new method to record carduse limit while skill has been invailded, like skill changshi")
-        else if (triggerEvent == MarkChanged) {
             player = data.value<MarkChangeStruct>().player;
         }
 
@@ -1003,7 +1002,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
     {
         if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
@@ -1378,7 +1377,7 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {  //check target 
-        ServerPlayer  *target;
+        ServerPlayer  *target = NULL;
         if (triggerEvent == EventPhaseStart && room->getCurrent() && room->getCurrent()->getPhase() == Player::Finish)
             target = room->getCurrent();
         else if (triggerEvent == Damaged) {

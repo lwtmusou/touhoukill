@@ -357,7 +357,7 @@ DrawCardsSkill::DrawCardsSkill(const QString &name, bool is_initial)
         events << DrawNCards;
 }
 
-bool DrawCardsSkill::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+bool DrawCardsSkill::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
 {
     DrawNCardsStruct s = data.value<DrawNCardsStruct>();
     s.n = getDrawNum(s);

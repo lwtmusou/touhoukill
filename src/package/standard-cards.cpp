@@ -46,7 +46,7 @@ bool Slash::IsAvailable(const Player *player, const Card *slash, bool considerSp
             }
         }
         bool has_weapon = (player->hasWeapon("Crossbow", true) || player->hasWeapon("VSCrossbow", true)) && ids.contains(player->getWeapon()->getEffectiveId());
-        if (!has_weapon && player->hasWeapon("Crossbow") || player->canSlashWithoutCrossbow(THIS_SLASH))
+        if ((!has_weapon && player->hasWeapon("Crossbow")) || player->canSlashWithoutCrossbow(THIS_SLASH))
             return true;
         int used = player->getSlashCount();
         int valid = 1 + Sanguosha->correctCardTarget(TargetModSkill::Residue, player, newslash);
@@ -1489,7 +1489,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         LogMessage log;

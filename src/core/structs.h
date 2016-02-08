@@ -427,19 +427,17 @@ struct PhaseStruct
 struct CardResponseStruct
 {
     inline CardResponseStruct(const Card *card = NULL, ServerPlayer *who = NULL, bool isuse = false, bool isRetrial = false, bool isProvision = false, ServerPlayer *from = NULL)
-        : m_card(card), m_who(who), m_isUse(isuse), m_isRetrial(isRetrial), m_isProvision(isProvision), m_from(from), m_isNullified(false)
+        : m_card(card), m_who(who), m_isUse(isuse), m_isRetrial(isRetrial), m_isProvision(isProvision), m_isHandcard(false), m_from(from), m_isNullified(false)
     {
-        m_isHandcard = false;
     }
 
     const Card *m_card;
-    ServerPlayer *m_from;
+    ServerPlayer *m_who;
     bool m_isUse;
     bool m_isRetrial;
     bool m_isProvision;
-    ServerPlayer *m_who;
     bool m_isHandcard;
-
+    ServerPlayer *m_from;
     bool m_isNullified;
 };
 

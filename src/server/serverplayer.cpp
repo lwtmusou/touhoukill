@@ -670,7 +670,8 @@ void ServerPlayer::turnOver()
     room->sendLog(log);
 
     Q_ASSERT(room->getThread() != NULL);
-    room->getThread()->trigger(TurnedOver, room, QVariant::fromValue(this));
+    QVariant v = QVariant::fromValue(this);
+    room->getThread()->trigger(TurnedOver, room, v);
 }
 
 bool ServerPlayer::changePhase(Player::Phase from, Player::Phase to)

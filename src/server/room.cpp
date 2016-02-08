@@ -1839,14 +1839,21 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
     broadcastProperty(player, property_name);
 
     //QVariant data = getTag("HpChangedData");
-    if (strcmp(property_name, "hp") == 0)
-        thread->trigger(HpChanged, this, QVariant::fromValue(player));
+    if (strcmp(property_name, "hp") == 0) {
+        QVariant v = QVariant::fromValue(player);
+        thread->trigger(HpChanged, this, v);
+    }
 
-    if (strcmp(property_name, "maxhp") == 0)
-        thread->trigger(MaxHpChanged, this, QVariant::fromValue(player));
+    if (strcmp(property_name, "maxhp") == 0) {
+        QVariant v = QVariant::fromValue(player);
+        thread->trigger(MaxHpChanged, this, v);
 
-    if (strcmp(property_name, "chained") == 0)
-        thread->trigger(ChainStateChanged, this, QVariant::fromValue(player));
+    }
+
+    if (strcmp(property_name, "chained") == 0) {
+        QVariant v = QVariant::fromValue(player);
+        thread->trigger(ChainStateChanged, this, v);
+    }
 
     if (strcmp(property_name, "role_shown") == 0) {
         setPlayerMark(player, "AI_RoleShown", value.toBool() ? 1 : 0);
@@ -1855,8 +1862,10 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
             setPlayerMark(player, "AI_RolePredicted", 1);
     }
 
-    if (strcmp(property_name, "kingdom") == 0)
-        thread->trigger(KingdomChanged, this, QVariant::fromValue(player));
+    if (strcmp(property_name, "kingdom") == 0) {
+        QVariant v = QVariant::fromValue(player);
+        thread->trigger(KingdomChanged, this, v);
+    }
 }
 
 void Room::slotSetProperty(ServerPlayer *player, const char *property_name, const QVariant &value)
@@ -2196,8 +2205,10 @@ void Room::changeHero(ServerPlayer *player, const QString &new_general, bool ful
             thread->trigger(EventAcquireSkill, this, _skillobjectName);
         }
     }
-    if (invokeStart && game_start)
-       thread->trigger(GameStart, this, QVariant::fromValue(player));
+    if (invokeStart && game_start) {
+        QVariant v = QVariant::fromValue(player);
+        thread->trigger(GameStart, this, v);
+    }
 
     resetAI(player);
 }
@@ -3430,7 +3441,8 @@ void Room::loseMaxHp(ServerPlayer *victim, int lose)
     if (victim->getMaxHp() == 0)
         killPlayer(victim);
     else {
-        thread->trigger(MaxHpChanged, this, QVariant::fromValue(victim));
+        QVariant v = QVariant::fromValue(victim);
+        thread->trigger(MaxHpChanged, this, v);
         if (hp_1 > hp_2) {
             HpLostStruct l;
             l.num = hp_1 - hp_2;
@@ -5294,7 +5306,8 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
         m_drawPile->append(i.next());
 
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, QVariant(m_drawPile->length()));
-    thread->trigger(AfterGuanXing, this, QVariant::fromValue(zhuge));
+    QVariant v = QVariant::fromValue(zhuge);
+    thread->trigger(AfterGuanXing, this, v);
 }
 
 int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids, QString skill_name)

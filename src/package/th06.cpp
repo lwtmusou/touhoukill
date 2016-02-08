@@ -217,7 +217,7 @@ public:
 
     // compulsory effect, cost omitted
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
     {
         ServerPlayer *fldl = data.value<ServerPlayer *>();
         room->touhouLogmessage("#TriggerSkill", fldl, objectName());
@@ -306,7 +306,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
         damage.damage = damage.damage + 1;

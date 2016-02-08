@@ -8,7 +8,7 @@ void GeneralSelector::initialize()
 #define GETFUNCFROMLUASTATE(funcname) do { \
         lua_getglobal(L, #funcname); \
         funcname ## Func = luaL_ref(L, LUA_REGISTRYINDEX); \
-        Q_ASSERT(funcname ## Func != NULL); \
+        Q_ASSERT(funcname ## Func != 0); \
     } while(false)
 
     GETFUNCFROMLUASTATE(initialize);
