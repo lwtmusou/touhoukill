@@ -185,10 +185,10 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(guanxing(QList<int>, bool)), guanxing_box, SLOT(doGuanxing(QList<int>, bool)));
     guanxing_box->moveBy(-120, 0);
 
-    time_label_wedgit = new TimeLabel;
-    time_label_wedgit->setObjectName("time_label");
-    addItem(time_label_wedgit);
-    time_label_wedgit->setZValue(10000);
+    time_label_widget = new TimeLabel;
+    time_label_widget->setObjectName("time_label");
+    addItem(time_label_widget);
+    time_label_widget->setZValue(10000);
 
     m_chooseTriggerOrderBox = new ChooseTriggerOrderBox;
     m_chooseTriggerOrderBox->hide();
@@ -3142,7 +3142,7 @@ void RoomScene::startInXs()
     if (add_robot) add_robot->hide();
     if (fill_robots) fill_robots->hide();
     if (return_to_main_menu) return_to_main_menu->hide();
-    time_label_wedgit->startCounting();
+    time_label_widget->startCounting();
 }
 
 void RoomScene::changeTableBg()
@@ -3263,7 +3263,7 @@ void RoomScene::onGameOver()
 
     m_roomMutex.lock();
     freeze();
-    time_label_wedgit->initializeLabel();
+    time_label_widget->initializeLabel();
     bool victory = Self->property("win").toBool();
 #ifdef AUDIO_SUPPORT
     QString win_effect;

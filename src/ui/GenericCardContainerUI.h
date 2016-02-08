@@ -146,7 +146,7 @@ public slots:
     void updateVotes(bool need_select = true, bool display_1 = false);
     void updateReformState();
     void showDistance();
-    virtual void refresh(bool killed = false);
+    virtual void refresh();
     void hideSkillName();
 protected:
     // overrider parent functions

@@ -503,7 +503,7 @@ void PlayerCardContainer::_updateEquips()
     }
 }
 
-void PlayerCardContainer::refresh(bool)
+void PlayerCardContainer::refresh()
 {
     if (!m_player || !m_player->getGeneral() || !m_player->isAlive()) {
         _m_faceTurnedIcon->setVisible(false);
@@ -589,17 +589,16 @@ void PlayerCardContainer::setPlayer(ClientPlayer *player)
 {
     m_player = player;
     if (player) {
-        connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
-        connect(player, SIGNAL(general2_changed()), this, SLOT(updateSmallAvatar()));
-        connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
-        connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
-        connect(player, SIGNAL(phase_changed()), this, SLOT(updatePhase()));
-        connect(player, SIGNAL(drank_changed()), this, SLOT(updateDrankState()));
-        connect(player, SIGNAL(action_taken()), this, SLOT(refresh()));
-        connect(player, SIGNAL(duanchang_invoked()), this, SLOT(updateDuanchang()));
-        connect(player, SIGNAL(pile_changed(QString)), this, SLOT(updatePile(QString)));
-        connect(player, SIGNAL(role_changed(QString)), _m_roleComboBox, SLOT(fix(QString)));
-        connect(player, SIGNAL(hp_changed()), this, SLOT(updateHp()));
+        connect(player, &ClientPlayer::general_changed, this, &PlayerCardContainer::updateAvatar);
+        connect(player, &ClientPlayer::general2_changed, this, &PlayerCardContainer::updateSmallAvatar);
+        connect(player, &ClientPlayer::kingdom_changed, this, &PlayerCardContainer::updateAvatar);
+        connect(player, &ClientPlayer::state_changed, this, &PlayerCardContainer::refresh);
+        connect(player, &ClientPlayer::phase_changed, this, &PlayerCardContainer::updatePhase);
+        connect(player, &ClientPlayer::drank_changed, this, &PlayerCardContainer::updateDrankState);
+        connect(player, &ClientPlayer::action_taken, this, &PlayerCardContainer::refresh);
+        connect(player, &ClientPlayer::pile_changed, this, &PlayerCardContainer::updatePile);
+        connect(player, &ClientPlayer::role_changed, _m_roleComboBox, &RoleComboBox::fix);
+        connect(player, &ClientPlayer::hp_changed, this, &PlayerCardContainer::updateHp);
 
         QTextDocument *textDoc = m_player->getMarkDoc();
         Q_ASSERT(_m_markItem);
@@ -1131,7 +1130,7 @@ void PlayerCardContainer::killPlayer()
     effect->setColor(_m_layout->m_deathEffectColor);
     effect->setStrength(1.0);
     _m_groupMain->setGraphicsEffect(effect);
-    refresh(true);
+    refresh();
     if (ServerInfo.GameMode == "04_1v3" && !m_player->isLord()) {
         _m_deathIcon->hide();
         _m_votesGot = 6;

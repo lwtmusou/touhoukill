@@ -277,7 +277,7 @@ void Dashboard::setDeathColor()
     effect->setColor(_m_layout->m_deathEffectColor);
     effect->setStrength(1.0);
     setGraphicsEffect(effect);
-    refresh(true);
+    refresh();
 }
 
 bool Dashboard::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo)

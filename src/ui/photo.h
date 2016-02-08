@@ -48,7 +48,7 @@ public slots:
     void hideEmotion();
     //void hideSkillName();
     virtual void updateDuanchang();
-    virtual void refresh(bool killed = false);
+    virtual void refresh();
 
 protected:
     inline virtual QGraphicsItem *_getEquipParent()

@@ -312,7 +312,7 @@ private:
     int m_tablew;
     int m_tableh;
 
-    TimeLabel *time_label_wedgit;
+    TimeLabel *time_label_widget;
 
     QMap<QString, BubbleChatBox *> m_bubbleChatBoxs;
 

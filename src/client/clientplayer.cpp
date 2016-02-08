@@ -252,8 +252,5 @@ void ClientPlayer::setMark(const QString &mark, int value)
     _SET_MARK(defensive_distance_test);
 #undef _SET_MARK
     mark_doc->setHtml(text);
-
-    if (mark == "@duanchang")
-        emit duanchang_invoked();
 }
 
