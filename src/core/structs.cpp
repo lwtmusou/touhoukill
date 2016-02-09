@@ -507,3 +507,8 @@ DrawNCardsStruct::DrawNCardsStruct()
     : player(NULL), n(0), isInitial(false)
 {
 }
+
+SkillInvalidStruct::SkillInvalidStruct()
+    : player(NULL), skill(NULL), invalid(false)
+{
+}

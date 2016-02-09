@@ -518,6 +518,15 @@ struct DrawNCardsStruct
     bool isInitial;
 };
 
+struct SkillInvalidStruct
+{
+    SkillInvalidStruct();
+
+    ServerPlayer *player;
+    const Skill *skill;
+    bool invalid;
+};
+
 struct ChoiceMadeStruct
 {
     ChoiceMadeStruct();
@@ -583,6 +592,7 @@ enum TriggerEvent
 
     EventLoseSkill,
     EventAcquireSkill,
+    EventSkillInvalidityChange,
 
     StartJudge,
     AskForRetrial,
@@ -683,6 +693,7 @@ Q_DECLARE_METATYPE(HpLostStruct)
 Q_DECLARE_METATYPE(JinkEffectStruct)
 Q_DECLARE_METATYPE(PhaseSkippingStruct)
 Q_DECLARE_METATYPE(DrawNCardsStruct)
+Q_DECLARE_METATYPE(QList<SkillInvalidStruct>)
 Q_DECLARE_METATYPE(const Card *)
 Q_DECLARE_METATYPE(ServerPlayer *)
 Q_DECLARE_METATYPE(JudgeStruct *)

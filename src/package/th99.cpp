@@ -13,10 +13,12 @@ QiuwenCard::QiuwenCard()
     mute = true;
     target_fixed = true;
 }
+
 void QiuwenCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
 {
     room->drawCards(source, 3);
 }
+
 class Qiuwen : public ZeroCardViewAsSkill
 {
 public:
@@ -34,6 +36,7 @@ public:
         return new QiuwenCard;
     }
 };
+
 class Zaozu : public TriggerSkill
 {
 public:
@@ -76,14 +79,15 @@ DangjiaCard::DangjiaCard()
     will_throw = false;
     handling_method = Card::MethodNone;
     m_skillName = "dangjia_attach";
-    mute = true;
 }
+
 bool DangjiaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     return targets.isEmpty() && to_select->hasLordSkill("dangjia")
         && to_select != Self && !to_select->hasFlag("dangjiaInvoked")
         && !to_select->isKongcheng() && to_select->isWounded();
 }
+
 void DangjiaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     ServerPlayer *akyu = targets.first();
@@ -107,6 +111,7 @@ void DangjiaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
             room->setPlayerFlag(source, "Forbiddangjia");
     }
 }
+
 class DangjiaVS : public ZeroCardViewAsSkill
 {
 public:
@@ -130,6 +135,7 @@ public:
         return new DangjiaCard;
     }
 };
+
 class Dangjia : public TriggerSkill
 {
 public:
@@ -742,6 +748,7 @@ public:
         return ic;
     }
 };
+
 class Lianxi : public TriggerSkill
 {
 public:
@@ -811,146 +818,121 @@ public:
 };
 
 #pragma message WARN("todo_Fs: develop a better method to deal with skill nullify, the skill Pingyi will be rewritten later")
+// this skill is like this:
+// cost: You discard one card.
+// target: a skill of damage.from.
+// effect:
+// if you own a skill that is acquired by this method, you should lose this skill, and make the original skill become valid.
+// and you make the selected skill become invalid, and you acquire this skill.
 
-class Pingyi : public TriggerSkill
+// if you or the original skill owner die, or the original skill owner lose the skill, you you should lose this skill, and make the original skill become valid.
+
+class Pingyi : public MasochismSkill
 {
 public:
-    Pingyi() : TriggerSkill("pingyi")
+    Pingyi() : MasochismSkill("pingyi")
     {
-        events << Damaged;
-    }
-    /*     virtual int getPriority(TriggerEvent) const
-        {
-            return -1;
-        } */
-    static void skill_comeback(Room *room, ServerPlayer *player)
-    {
-        ServerPlayer * back;
-        QString back_skillname;
-        foreach (ServerPlayer *p, room->getOtherPlayers(player, true)) {
-            if (p->getMark("@pingyi") > 0) {
-                QString pingyi_record = player->objectName() + "pingyi" + p->objectName();
-                back_skillname = room->getTag(pingyi_record).toString();
-                if (back_skillname != NULL && back_skillname != "") {
-                    back = p;
-                    room->setTag(pingyi_record, QVariant());
-                    break;
-                }
-            }
-        }
-
-        if (back != NULL) {
-
-            room->setPlayerMark(player, "pingyi_steal", 0);
-            if (back->isAlive()) {
-                //room->setPlayerMark(back, "pingyi", back->getMark("pingyi") - 1);
-                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), back->objectName());
-            }
-            room->handleAcquireDetachSkills(player, "-" + back_skillname);
-
-            JsonArray arg;
-            arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-            arg << player->objectName();
-            arg << player->getGeneral()->objectName();
-            arg << QString();
-            room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
-
-            if (back->isAlive()) {
-                //room->handleAcquireDetachSkills(back, back_skillname);
-                room->setPlayerMark(back, "pingyi" + back_skillname, 0);
-                JsonArray args;
-                args << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
-                room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
-                back->loseMark("@pingyi", 1);
-                if (back->hasSkill(back_skillname))
-                    room->touhouLogmessage("#pingyiReturnSkill", back, back_skillname);
-            }
-        }
-
-    }
-/*
-
-    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
-    {
-        if (!TriggerSkill::triggerable(player)) return QStringList();
-        DamageStruct damage = data.value<DamageStruct>();
-        if (damage.from && damage.from->isAlive() && damage.from != player) {
-            if (player->isNude())
-                return QStringList();
-
-            foreach (const Skill *skill, damage.from->getVisibleSkillList()) {
-                if (skill->isLordSkill() || skill->getFrequency() == Skill::Limited
-                    || skill->getFrequency() == Skill::Wake || skill->isAttachedLordSkill()
-                    || skill->getFrequency() == Skill::Eternal)
-                    continue;
-                else {
-                    //need check skill both sides
-                    if (!player->hasSkill(skill->objectName(), false, true) && damage.from->hasSkill(skill->objectName()))
-                        return QStringList(objectName());
-                }
-            }
-        }
-        return QStringList();
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    QList<SkillInvokeDetail> triggerable(const Room *, const DamageStruct &damage) const
     {
-        DamageStruct damage = data.value<DamageStruct>();
-        QStringList skill_names;
-        skill_names << "cancel";
+        ServerPlayer *yori = damage.to;
+        if (yori->isDead() || !yori->hasSkill(this) || yori->isNude())
+            return QList<SkillInvokeDetail>();
 
         foreach (const Skill *skill, damage.from->getVisibleSkillList()) {
-            if (skill->isLordSkill() || skill->getFrequency() == Skill::Limited
-                || skill->getFrequency() == Skill::Wake || skill->isAttachedLordSkill()
-                || skill->getFrequency() == Skill::Eternal)
+            if (skill->isLordSkill() || skill->isAttachedLordSkill() || skill->getFrequency() == Skill::Limited || skill->getFrequency() == Skill::Wake || skill->getFrequency() == Skill::Eternal)
                 continue;
-            else {
-                //need check skill both sides
-                if (!player->hasSkill(skill->objectName(), false, true) && damage.from->hasSkill(skill->objectName()))
-                    skill_names << skill->objectName();
-            }
+
+            if (!yori->hasSkill(skill, true) && damage.from->hasSkill(skill))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, false, damage.from);
         }
 
-        player->tag["pingyi_target"] = QVariant::fromValue(damage.from);
+        return QList<SkillInvokeDetail>();
+    }
 
-        QString skill_name = room->askForChoice(player, "pingyi", skill_names.join("+"));
-        if (skill_name == "cancel")
-            return false;
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *yori = invoke->invoker;
 
-        const Card *card = room->askForCard(player, ".|.|.|.!", "@pingyi-discard:" + damage.from->objectName() + ":" + skill_name, data, Card::MethodDiscard, NULL, true, objectName());
-        if (card != NULL) {
+        QStringList skill_names;
+        
+        foreach (const Skill *skill, invoke->preferredTarget->getVisibleSkillList()) {
+            if (skill->isLordSkill() || skill->isAttachedLordSkill() || skill->getFrequency() == Skill::Limited || skill->getFrequency() == Skill::Wake || skill->getFrequency() == Skill::Eternal)
+                continue;
 
-            if (player->getMark("pingyi_steal") > 0)
-                skill_comeback(room, player);
-            //record pingyi     relation and content.
-            QString pingyi_record = player->objectName() + "pingyi" + damage.from->objectName();
-            room->setTag(pingyi_record, skill_name);
+            if (!yori->hasSkill(skill, true) && invoke->preferredTarget->hasSkill(skill))
+                skill_names << skill->objectName();
+        }
 
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.from->objectName());
+        yori->tag["pingyi_target"] = QVariant::fromValue(invoke->preferredTarget);
 
-
-            room->setPlayerMark(player, "pingyi_steal", 1);
-            room->setPlayerMark(damage.from, "pingyi" + skill_name, 1); // skill nullify mark, like Qingcheng
-            room->handleAcquireDetachSkills(player, skill_name);
-
-            JsonArray args;
-            args << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
-            room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
-
-            damage.from->gainMark("@pingyi"); // marks could be greater than 1,since it can be stealed any times.
-            room->touhouLogmessage("#pingyiLoseSkill", damage.from, skill_name);
-
-            JsonArray arg;
-            arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-            arg << player->objectName();
-            arg << damage.from->getGeneral()->objectName();
-            arg << skill_name;
-            room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+        if (room->askForCard(yori, ".", "@pingyi-discard:" + invoke->preferredTarget->objectName(), data, Card::MethodDiscard, NULL, false, objectName())) {
+            QString skill_name = room->askForChoice(yori, objectName(), skill_names.join("+"));
+            invoke->tag["selected_skill"] = skill_name;
+            return true;
         }
 
         return false;
-    }*/
+    }
+
+    void onDamaged(Room *room, QSharedPointer<SkillInvokeDetail> invoke, const DamageStruct &) const
+    {
+        QString skill_name = invoke->tag.value("selected_skill", QString()).toString();
+        if (skill_name.isEmpty())
+            return;
+
+        const Skill *skill = Sanguosha->getSkill(skill_name);
+        skillProcess(room, invoke->invoker, invoke->targets.first(), skill);
+    }
+
+    static void skillProcess(Room *room, ServerPlayer *yori, ServerPlayer *skill_owner = NULL, const Skill *skill = NULL)
+    {
+        JsonArray arg;
+        arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+        arg << yori->objectName();
+        if (skill_owner == NULL || skill == NULL) {
+            arg << QString() << QString();
+        } else {
+            arg << skill_owner->getGeneral()->objectName();
+            arg << skill->objectName();
+        }
+        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+
+        if (yori->tag.contains("pingyi_skill") && yori->tag.contains("pingyi_originalOwner")) {
+            QString originalSkillName = yori->tag.value("pingyi_skill", QString()).toString();
+            ServerPlayer *originalSkillOwner = yori->tag.value("pingyi_originalOwner").value<ServerPlayer *>();
+            yori->tag.remove("pingyi_skill");
+            yori->tag.remove("pingyi_originalOwner");
+
+            // 1. yorihime lost the acquired skill
+            if (!originalSkillName.isEmpty())
+                room->handleAcquireDetachSkills(yori, "-" + originalSkillName, true);
+
+            // 2. let the original skill become valid
+            if (originalSkillOwner != NULL) {
+                skill_owner->tag.remove("pingyi_from");
+                skill_owner->tag.remove("pingyi_invalidSkill");
+                room->setPlayerSkillInvalidity(originalSkillOwner, originalSkillName, false);
+            }
+        }
+
+        if (skill != NULL && skill_owner != NULL) {
+            yori->tag["pingyi_skill"] = skill->objectName();
+            yori->tag["pingyi_originalOwner"] = QVariant::fromValue(skill_owner);
+            skill_owner->tag["pingyi_from"] = QVariant::fromValue(yori);
+            skill_owner->tag["pingyi_invalidSkill"] = skill->objectName();
+
+            // 3.let the skill become invalid
+            room->setPlayerSkillInvalidity(skill_owner, skill, true);
+
+            // 4. acquire the skill
+            room->handleAcquireDetachSkills(yori, skill->objectName(), true);
+        }
+    }
 };
+
+
 class PingyiHandler : public TriggerSkill
 {
 public:
@@ -959,48 +941,38 @@ public:
         events << EventLoseSkill << Death;
     }
 
-    /*     virtual int getPriority(TriggerEvent) const
-        { //caution other skills at Death event ,like chuancheng
-            return -1;
-        } */
-/*
-
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
-        if (player->getMark("@pingyi") == 0 && player->getMark("pingyi_steal") == 0)
-            return QStringList();
+        if (triggerEvent == EventLoseSkill) {
+            SkillAcquireDetachStruct ad = data.value<SkillAcquireDetachStruct>();
+            if (ad.isAcquire)
+                return QList<SkillInvokeDetail>();
 
-        if (triggerEvent == EventLoseSkill && data.toString() == "pingyi") {
-            if (player->getMark("pingyi_steal") > 0 && !player->hasSkill("pingyi"))
-                Pingyi::skill_comeback(room, player);
-
-        } else if (triggerEvent == Death) {
-            DeathStruct death = data.value<DeathStruct>();
-            //while yorihime(pingyi owner) die
-            if (death.who == player && player->getMark("pingyi_steal") > 0)
-                return QStringList(objectName());
-            //while others (pingyi victim) die    
-            if (death.who == player && player->getMark("@pingyi") > 0) {
-                foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-                    if (p->getMark("pingyi_steal") > 0) {
-                        QString pingyi_record = p->objectName() + "pingyi" + player->objectName();
-                        QString back_skillname = room->getTag(pingyi_record).toString();
-                        if (back_skillname != NULL && back_skillname != "")
-                            Pingyi::skill_comeback(room, p);
-                    }
+            if (ad.skill->objectName() == "pingyi")
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, ad.player, ad.player, NULL, true);
+            else {
+                if (ad.player->tag.contains("pingyi_invalidSkill") && ad.player->tag.value("pingyi_invalidSkill").toString() == ad.skill->objectName()) {
+                    ServerPlayer *yori = ad.player->tag.value("pingyi_from").value<ServerPlayer *>();
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, true);
                 }
             }
+        } else {
+            DeathStruct death = data.value<DeathStruct>();
+            if (death.who->tag.contains("pingyi_invalidSkill")) {
+                ServerPlayer *yori = death.who->tag.value("pingyi_from").value<ServerPlayer *>();
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, true);
+            }
         }
-        return QStringList();
+
+        return QList<SkillInvokeDetail>();
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        Pingyi::skill_comeback(room, player);
+        Pingyi::skillProcess(room, invoke->invoker);
         return false;
-    }*/
+    }
 };
-
 
 ZhesheCard::ZhesheCard()
 {

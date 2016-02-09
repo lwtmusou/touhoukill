@@ -2963,22 +2963,40 @@ void Room::swapSeat(ServerPlayer *a, ServerPlayer *b)
     }
 }
 
-void Room::setPlayerSkillInvalidity(ServerPlayer *player, const Skill *skill, bool invalidity)
+void Room::setPlayerSkillInvalidity(ServerPlayer *player, const Skill *skill, bool invalidity, bool trigger_event)
 {
     QString skill_name = "_ALL_SKILLS";
     if (skill != NULL)
         skill_name = skill->objectName();
 
-    setPlayerSkillInvalidity(player, skill_name, invalidity);
+    setPlayerSkillInvalidity(player, skill_name, invalidity, trigger_event);
 }
 
-void Room::setPlayerSkillInvalidity(ServerPlayer *player, const QString &skill_name, bool invalidity)
+void Room::setPlayerSkillInvalidity(ServerPlayer *player, const QString &skill_name, bool invalidity, bool trigger_event)
 {
     player->setSkillInvalidity(skill_name, invalidity);
 
     JsonArray arr;
     arr << player->objectName() << skill_name << invalidity;
     doBroadcastNotify(QSanProtocol::S_COMMAND_SET_SKILL_INVALIDITY, arr);
+
+    foreach (ServerPlayer *p, getAllPlayers())
+        filterCards(p, p->getCards("he"), true);
+
+    JsonArray args;
+    args << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+
+    if (trigger_event) {
+        QList<SkillInvalidStruct> invalid_list;
+        SkillInvalidStruct invalid;
+        invalid.invalid = invalidity;
+        invalid.player = player;
+        invalid.skill = Sanguosha->getSkill(skill_name);
+        invalid_list << invalid;
+        QVariant v = QVariant::fromValue(invalid_list);
+        thread->trigger(EventSkillInvalidityChange, this, v);
+    }
 }
 
 void Room::adjustSeats()

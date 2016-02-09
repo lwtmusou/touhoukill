@@ -423,7 +423,11 @@ void RoomScene::handleGameEvent(const QVariant &args)
             QString huashenGeneral = arg[2].toString();
             QString huashenSkill = arg[3].toString();
             PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-            container->startHuaShen(huashenGeneral, huashenSkill);
+            if (huashenSkill.isEmpty() || huashenGeneral.isEmpty())
+                container->stopHuaShen();
+            else
+                container->startHuaShen(huashenGeneral, huashenSkill);
+
             break;
         }
         case S_GAME_EVENT_PLAY_EFFECT:

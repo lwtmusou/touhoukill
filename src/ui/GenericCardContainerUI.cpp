@@ -829,19 +829,12 @@ void PlayerCardContainer::startHuaShen(QString generalName, QString skillName)
 
     _m_huashenGeneralName = generalName;
     _m_huashenSkillName = skillName;
-    //Q_ASSERT(m_player->hasSkill("huashen"));
 
-    bool second_zuoci = m_player && m_player->getGeneralName() != "zuoci" && m_player->getGeneral2Name() == "zuoci";
-    int avatarSize = second_zuoci ? _m_layout->m_smallAvatarSize :
-        (m_player->getGeneral2() ? _m_layout->m_primaryAvatarSize :
-        _m_layout->m_avatarSize);
-    QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(generalName, (QSanRoomSkin::GeneralIconSize)avatarSize);
+    QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(generalName, (QSanRoomSkin::GeneralIconSize)_m_layout->m_avatarSize);
 
-    QRect animRect = second_zuoci ? _m_layout->m_smallAvatarArea : _m_layout->m_avatarArea;
+    QRect animRect = _m_layout->m_avatarArea;
     if (pixmap.size() != animRect.size())
         pixmap = pixmap.scaled(animRect.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    if (second_zuoci)
-        pixmap = paintByMask(pixmap);
 
     stopHuaShen();
     _m_huashenAnimation = G_ROOM_SKIN.createHuaShenAnimation(pixmap, animRect.topLeft(), _getAvatarParent(), _m_huashenItem);
