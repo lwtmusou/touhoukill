@@ -604,7 +604,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *merry = data.value<ServerPlayer *>();
-        if (merry->hasSkill(this) && merry->getPhase() == Player::Start && merry->isAlive() && merry->getPile("jingjie").length() >= 3 && !merry->getMark("mengxian") == 0)
+        if (merry->hasSkill(this) && merry->getPhase() == Player::Start && merry->isAlive() && merry->getPile("jingjie").length() >= 3 && merry->getMark("mengxian") == 0)
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, merry, merry, NULL, true);
 
         return QList<SkillInvokeDetail>();
@@ -797,7 +797,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *toyo = data.value<ServerPlayer *>();
-        if (toyo->hasSkill(this) && toyo->getPhase() == Player::Start && toyo->isAlive() && toyo->isChained() && !toyo->getMark("yueshi") == 0)
+        if (toyo->hasSkill(this) && toyo->getPhase() == Player::Start && toyo->isAlive() && toyo->isChained() && toyo->getMark("yueshi") == 0)
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, toyo, toyo, NULL, true);
 
         return QList<SkillInvokeDetail>();
