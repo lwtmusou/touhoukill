@@ -70,7 +70,6 @@ const char *QSanRoomSkin::S_HERO_SKIN_KEY_GENERAL_ICON = "heroSkinContainerGener
 const char *QSanRoomSkin::S_SKIN_KEY_HEAD_ICON = "headIcon";
 const char *QSanRoomSkin::S_SKIN_KEY_DEPUTY_ICON = "deputyIcon";
 const char *QSanRoomSkin::S_SKIN_KEY_ROLE_SHOWN = "roleShownIcon";
-const char *QSanRoomSkin::S_SKIL_KEY_SKILL_INVALID = "skillInvalid";
 
 // Animations
 const char *QSanRoomSkin::S_SKIN_KEY_ANIMATIONS = "preloads";

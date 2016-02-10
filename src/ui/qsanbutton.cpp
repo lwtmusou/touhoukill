@@ -332,9 +332,12 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
     }
 
     if (Self->isSkillInvalid(_m_skill->objectName())) {
-        QPixmap pixmap = G_ROOM_SKIN.getPixmap(G_ROOM_SKIN.S_SKIL_KEY_SKILL_INVALID, QString(), true);
-        pixmap = pixmap.scaled(_m_size);
-        painter->drawPixmap(0, 0, pixmap);
+        painter->setRenderHints(QPainter::HighQualityAntialiasing);
+        QPen pen(Qt::red);
+        pen.setWidth(3);
+        painter->setPen(pen);
+        painter->drawLine(25, 6, _m_size.width() - 6, 20);
+        painter->drawLine(25, 20, _m_size.width() - 6, 6);
     }
 }
 
