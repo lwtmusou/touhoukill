@@ -183,7 +183,6 @@ return {
 		["qiangyu"] = "强欲",
 	[":qiangyu"] = "当你从牌堆顶摸牌时，你可以多摸两张牌，然后选择一项：弃置两张手牌，或弃置一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌。",
 	["qiangyu_spadecard"]= "请弃置一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌，否则弃置两张手牌",
-	["$qiangyuAnimate"]= "image=image/animate/qiangyu.png",
 	["mokai"] = "魔开",
 	[":mokai"] = "当你使用一张锦囊牌时，你可以将一张装备牌置于你的人物牌上，称为“天仪”。然后若你的人物牌上有大于X张“天仪”（X为你当前的体力值），你可以将一张“天仪”置入弃牌堆。",
 	["tianyi"]= "天仪",

@@ -18,7 +18,7 @@ return{
 	["origin:miko_4"] = "p号：23917375，个人ID：312852",
 		["shengge"] = "圣格",
 	[":shengge"] = "<font color=\"purple\"><b>觉醒技，</b></font>准备阶段开始时，若你没有手牌，你失去1点体力上限，摸三张牌，改变技能“倾听”。",
-	["$shenggeAnimate"]= "image=image/animate/shengge.png",
+	["$shenggeAnimate"]= "skill=miko:shengge",
 	["#ShenggeWake"] = "%from 没有手牌，触发“%arg”觉醒",
 	["qingting"] = "倾听",
 	[":qingting"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可令有手牌的所有其他角色（至少一名）依次交给你一张手牌（技能“圣格”发动后，改为你依次获得这些角色的一张手牌），然后你依次将一张手牌交给这些角色。",

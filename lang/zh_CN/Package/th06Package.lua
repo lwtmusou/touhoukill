@@ -53,7 +53,6 @@ return{ ["th06"] = "红魔乡",
 	["#yuxue_damage"]= "%from的“%arg”效果被触发,%from对%to的伤害+1",
 	["shengyan"] = "盛宴",
 	[":shengyan"] = "每当你造成1点伤害后，你可以摸一张牌。",
-	["$shengyanAnimate"]= "image=image/animate/shengyan.png",
 
 --************************************************
 	--hmx003  势力：红 4血
@@ -145,7 +144,6 @@ return{ ["th06"] = "红魔乡",
 	["origin:cirno_4"] = "p号：20779267，个人ID：36168",
 		["dongjie"] = "冻结",
 	[":dongjie"] = "当你使用【杀】对目标角色造成伤害时，你可以防止此伤害并摸一张牌，然后该角色翻面并摸一张牌。",
-	["$dongjieAnimate"]= "image=image/animate/dongjie.png",
 	["#Dongjie"] = "%from 发动了“%arg”，防止了对 %to 的伤害",
 	["bingpo"] = "冰魄",
 	[":bingpo"] = "<font color=\"blue\"><b>锁定技，</b></font>当你受到火焰伤害以外的伤害时，若此伤害多于1点或你的体力值不大于1，防止此伤害。",
@@ -195,7 +193,7 @@ return{ ["th06"] = "红魔乡",
 	["qiyue:target"] = "你可以发动“契约”，令<font color=\"#00FF00\"><b>%src </b></font>跳过此回合的判定阶段和摸牌阶段。",
 	["moxue"] = "魔血",
 	[":moxue"] = "<font color=\"blue\"><b>锁定技，</b></font>当你的体力上限扣减至1时，你摸X张牌（X为你的手牌数且最少为1）。",
-	["$moxueAnimate"]= "image=image/animate/moxue.png",
+	["$moxueAnimate"]= "skill=koakuma:moxue",
 
 --************************************************
 	--hmx009  势力：红 3血

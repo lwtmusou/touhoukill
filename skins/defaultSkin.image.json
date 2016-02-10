@@ -186,5 +186,7 @@
 "headIcon": "image/system/head.png",
 "deputyIcon": "image/system/deputy.png",
 "roleShownIcon": "image/system/role_shown_icon.png",
-"skillInvalid": "image/system/button/skill/invalid.png"
+"skillInvalid": "image/system/button/skill/invalid.png",
+
+"lightbox-default": "image/animate/%1.png"
 }

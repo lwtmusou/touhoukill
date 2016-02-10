@@ -74,6 +74,7 @@ const char *QSanRoomSkin::S_SKIL_KEY_SKILL_INVALID = "skillInvalid";
 
 // Animations
 const char *QSanRoomSkin::S_SKIN_KEY_ANIMATIONS = "preloads";
+const char *QSanRoomSkin::S_SKIN_KEY_LIGHTBOX = "lightbox-%1";
 
 QSanSkinFactory *QSanSkinFactory::_sm_singleton = NULL;
 QHash<QString, int *> IQSanComponentSkin::QSanSimpleTextFont::_m_fontBank;

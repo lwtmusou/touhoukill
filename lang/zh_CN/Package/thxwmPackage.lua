@@ -20,7 +20,7 @@ return{
 	["@Woyu"] = "我域",
 	[":woyu"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"red\"><b>限定技，</b></font>出牌阶段，你可令一名身份牌暗置的角色将其身份牌明置：若为忠臣，你弃置所有牌；若为反贼，你摸三张牌。",
 	["#WoyuAnnounce"] = "%from 发动了 <font color=\"red\"><b>我域</b></font>，展示了 %arg2 的身份牌，为 %arg 。",
-	["$woyuAnimate"]= "image=image/animate/woyu.png",
+	["$woyuAnimate"]= "skill=satori_xwm:woyu",
 
 --*********************************
 	--xwm002  势力：妖 4血

@@ -96,7 +96,7 @@ return{
 		["mengxian"] = "梦现",
 	[":mengxian"] = "<font color=\"purple\"><b>觉醒技，</b></font>准备阶段开始时，若你的人物牌上有不少于三张“境界”，你失去1点体力上限，然后回复1点体力，获得技能“乱影”（当其他角色使用或打出一张基本牌时（代替判定牌时除外），你可以将一张与此牌颜色相同的“境界”加入该角色的手牌，并令此牌无效）。",
 	["#MengxianWake"] = "%from 的人物牌上的“境界”为 %arg2 张，触发“%arg”觉醒。",
-	["$mengxianAnimate"]= "image=image/animate/mengxian.png",
+	["$mengxianAnimate"]= "skill=merry:mengxian",
 
 	["luanying"] = "乱影",
 	[":luanying"] = "当其他角色使用或打出一张基本牌时（代替判定牌时除外），你可以将一张与此牌颜色相同的“境界”加入该角色的手牌，并令此牌无效。",
@@ -120,7 +120,7 @@ return{
 	["yueshi"] = "月使",
 	[":yueshi"] = "<font color=\"purple\"><b>觉醒技，</b></font>准备阶段开始时，若你处于连环状态，你增加1点体力上限，获得技能“睿智”（在一张非延时类锦囊牌对你结算后，若你已受伤，你可以判定，若结果为红色，你回复1点体力）。",
 	["#YueshiWake"] = "%from 的人物牌横置，触发“%arg”觉醒。",
-	["$yueshiAnimate"]= "image=image/animate/yueshi.png",
+	["$yueshiAnimate"]= "skill=toyohime:yueshi",
 
 --****************************
 	--wai007  势力：外 4血

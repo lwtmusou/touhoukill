@@ -207,5 +207,5 @@ return
 	["jinxi"] = "今昔",
 	["@jinxi"]= "浴火重生",
 	[":jinxi"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，若你已受伤，你可以回复体力至上限，然后将手牌摸至四张。",
-	["$jinxiAnimate"]= "image=image/animate/jinxi.png",
+	["$jinxiAnimate"]= "skill=mokou_sp:jinxi",
  }

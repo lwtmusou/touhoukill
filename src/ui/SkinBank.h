@@ -392,6 +392,7 @@ public:
 
     // Animations
     static const char *S_SKIN_KEY_ANIMATIONS;
+    static const char *S_SKIN_KEY_LIGHTBOX;
 
     static const char *S_HERO_SKIN_KEY_GENERAL_ICON;
 

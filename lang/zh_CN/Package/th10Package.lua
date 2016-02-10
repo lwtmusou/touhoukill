@@ -224,7 +224,7 @@ return{
 	["@zhongyan"] = "终焉",
 	[":zhongyan"] = "<font color=\"red\"><b>限定技，</b></font>当你受到其他角色对你造成的伤害时，你可以防止此伤害，并令该角色失去X点体力（X为该角色已损失的体力值且最少为1）。",
 	["zhongyan:target"] = "<font color=\"#00FF00\"><b>%src </b></font> 将对你造成伤害，你可以发动限定技“终焉”，防止此伤害，并令其失去 %dest 点体力。" ,
-	["$zhongyanAnimate"]= "image=image/animate/zhongyan.png",
+	["$zhongyanAnimate"]= "skill=shizuha:zhongyan",
 
 --************************************************
 	--fsl011  势力：风 4血
