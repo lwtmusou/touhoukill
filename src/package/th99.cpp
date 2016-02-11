@@ -817,7 +817,6 @@ public:
     }
 };
 
-#pragma message WARN("todo_Fs: develop a better method to deal with skill nullify, the skill Pingyi will be rewritten later")
 // this skill is like this:
 // cost: You discard one card.
 // target: a skill of damage.from.
@@ -837,7 +836,7 @@ public:
     QList<SkillInvokeDetail> triggerable(const Room *, const DamageStruct &damage) const
     {
         ServerPlayer *yori = damage.to;
-        if (yori->isDead() || !yori->hasSkill(this) || yori->isNude())
+        if (yori->isDead() || !yori->hasSkill(this) || yori->isNude() || yori == damage.from)
             return QList<SkillInvokeDetail>();
 
         foreach (const Skill *skill, damage.from->getVisibleSkillList()) {
@@ -901,20 +900,15 @@ public:
 
         if (yori->tag.contains("pingyi_skill") && yori->tag.contains("pingyi_originalOwner")) {
             QString originalSkillName = yori->tag.value("pingyi_skill", QString()).toString();
-            ServerPlayer *originalSkillOwner = yori->tag.value("pingyi_originalOwner").value<ServerPlayer *>();
-            yori->tag.remove("pingyi_skill");
-            yori->tag.remove("pingyi_originalOwner");
 
             // 1. yorihime lost the acquired skill
             if (!originalSkillName.isEmpty())
                 room->handleAcquireDetachSkills(yori, "-" + originalSkillName, true);
 
-            // 2. let the original skill become valid
-            if (originalSkillOwner != NULL) {
-                skill_owner->tag.remove("pingyi_from");
-                skill_owner->tag.remove("pingyi_invalidSkill");
-                room->setPlayerSkillInvalidity(originalSkillOwner, originalSkillName, false);
-            }
+            yori->tag.remove("pingyi_skill");
+            yori->tag.remove("pingyi_originalOwner");
+            skill_owner->tag.remove("pingyi_from");
+            skill_owner->tag.remove("pingyi_invalidSkill");
         }
 
         if (skill != NULL && skill_owner != NULL) {
@@ -923,15 +917,14 @@ public:
             skill_owner->tag["pingyi_from"] = QVariant::fromValue(yori);
             skill_owner->tag["pingyi_invalidSkill"] = skill->objectName();
 
-            // 3.let the skill become invalid
+            // 2.let the skill become invalid
             room->setPlayerSkillInvalidity(skill_owner, skill, true);
 
-            // 4. acquire the skill
+            // 3. acquire the skill
             room->handleAcquireDetachSkills(yori, skill->objectName(), true);
         }
     }
 };
-
 
 class PingyiHandler : public TriggerSkill
 {
@@ -943,26 +936,25 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
+        ServerPlayer *who = NULL;
         if (triggerEvent == EventLoseSkill) {
             SkillAcquireDetachStruct ad = data.value<SkillAcquireDetachStruct>();
             if (ad.isAcquire)
                 return QList<SkillInvokeDetail>();
 
-            if (ad.skill->objectName() == "pingyi")
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, ad.player, ad.player, NULL, true);
-            else {
-                if (ad.player->tag.contains("pingyi_invalidSkill") && ad.player->tag.value("pingyi_invalidSkill").toString() == ad.skill->objectName()) {
-                    ServerPlayer *yori = ad.player->tag.value("pingyi_from").value<ServerPlayer *>();
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, true);
-                }
-            }
+            if (ad.player->tag.contains("pingyi_invalidSkill") && ad.player->tag.value("pingyi_invalidSkill").toString() == ad.skill->objectName())
+                who = ad.player;
         } else {
             DeathStruct death = data.value<DeathStruct>();
-            if (death.who->tag.contains("pingyi_invalidSkill")) {
-                ServerPlayer *yori = death.who->tag.value("pingyi_from").value<ServerPlayer *>();
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, true);
-            }
+            if (death.who->tag.contains("pingyi_invalidSkill"))
+                who = death.who;
         }
+        if (who != NULL) {
+            ServerPlayer *yori = who->tag.value("pingyi_from").value<ServerPlayer *>();
+            if (yori != NULL)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, true);
+        }
+
 
         return QList<SkillInvokeDetail>();
     }
@@ -970,6 +962,46 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         Pingyi::skillProcess(room, invoke->invoker);
+        return false;
+    }
+};
+
+class PingyiHandler2 : public TriggerSkill
+{
+public:
+    PingyiHandler2() : TriggerSkill("#pingyi_handle2")
+    {
+        events << EventLoseSkill << Death;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        ServerPlayer *yori = NULL;
+        if (triggerEvent == EventLoseSkill) {
+            SkillAcquireDetachStruct ad = data.value<SkillAcquireDetachStruct>();
+            if (ad.isAcquire)
+                return QList<SkillInvokeDetail>();
+
+            if (ad.player->tag.contains("pingyi_skill") && ad.player->tag.value("pingyi_skill").toString() == ad.skill->objectName())
+                yori = ad.player;
+        } else {
+            DeathStruct death = data.value<DeathStruct>();
+            if (death.who->tag.contains("pingyi_skill"))
+                yori = death.who;
+        }
+
+        if (yori != NULL)
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, true);
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        ServerPlayer *orig = invoke->invoker->tag.value("pingyi_originalOwner").value<ServerPlayer *>();
+        QString skill_name = invoke->invoker->tag.value("pingyi_skill").toString();
+        room->setPlayerSkillInvalidity(orig, skill_name, false);
+
         return false;
     }
 };
