@@ -116,7 +116,8 @@ SOURCES += \
     src/main.cpp \
     src/ui/choosetriggerorderbox.cpp \
     src/ui/graphicsbox.cpp \
-    src/ui/lightboxanimation.cpp
+    src/ui/lightboxanimation.cpp \
+    src/package/hegemony-cards.cpp
 
 HEADERS += \
     src/client/aux-skills.h \
@@ -222,8 +223,9 @@ HEADERS += \
     src/util/recorder.h \
     src/util/socket.h \
     src/ui/choosetriggerorderbox.h \
-    src/ui/graphicsbox.h\
-    src/ui/lightboxanimation.h
+    src/ui/graphicsbox.h \
+    src/ui/lightboxanimation.h \
+    src/package/hegemony-cards.h
 
 
 FORMS += \
@@ -231,8 +233,8 @@ FORMS += \
     src/dialog/configdialog.ui \
     src/dialog/connectiondialog.ui \
     src/dialog/generaloverview.ui \
-    src/dialog/mainwindow.ui 
-    
+    src/dialog/mainwindow.ui
+
 INCLUDEPATH += include
 INCLUDEPATH += src/client
 INCLUDEPATH += src/core
