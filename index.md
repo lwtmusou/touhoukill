@@ -48,6 +48,8 @@ QQ：384318315
 
 有需要的朋友可以自行下载编译，编译方法详见README.vs2013文件。若对代码有疑问，请联系我们。
 
+  [touhoukill]: https://github.com/lwtmusou/touhoukill
+
 平衡性
 ---------------
 技能强度较高。
@@ -90,5 +92,4 @@ QQ：384318315
 
 - 当你使用【杀】指定其他角色为目标后，若该角色的势力与你不同，且你或该角色的势力与主公相同，你可令该角色选择一项：弃置一张手牌，或令你摸一张牌。
 
-  [touhoukill]: https://github.com/lwtmusou/touhoukill
 
