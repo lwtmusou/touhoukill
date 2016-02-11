@@ -1,0 +1,12 @@
+主角
+--------------
+[博丽灵梦](zhu/reimu.md)
+[雾雨魔理沙](zhu/marisa.md)
+[无节操灵梦](zhu/reimu_sp.md)
+[大盗魔理沙](zhu/marisa_sp.md)
+[超魔理沙](zhu/marisa_sp2.md)
+[妖妖梦SP灵梦](zhu/reimu_yym.md)
+[神灵庙SP灵梦](zhu/reimu_slm.md)
+[神灵庙SP魔理沙](zhu/marisa_slm.md)
+旧作SP灵梦（未设计）
+旧作SP魔理沙（未设计）
