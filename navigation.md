@@ -1,5 +1,3 @@
-# MDwiki examples
-
 东方杀
 ===========
 
