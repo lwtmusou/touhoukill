@@ -822,6 +822,47 @@ public:
     }
 };
 
+ChunxiCard::ChunxiCard()
+{
+    will_throw = false;
+    target_fixed = true;
+    handling_method = Card::MethodUse;
+    m_skillName = "chunxi";
+}
+
+void ChunxiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+{
+    foreach(int id, subcards)
+        room->showCard(source, id);
+    source->tag["chunxi"] = QVariant::fromValue(subcards.length());
+}
+
+class ChunxiVS : public ViewAsSkill
+{
+public:
+    ChunxiVS() : ViewAsSkill("chunxi")
+    {
+        response_pattern = "@@chunxi";
+    }
+
+
+    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
+    {
+        return to_select->hasFlag("chunxi");
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        if (cards.length() > 0) {
+            ChunxiCard *card = new ChunxiCard;
+            card->addSubcards(cards);
+            return card;
+        }
+        else
+            return NULL;
+
+    }
+};
 
 class Chunxi : public TriggerSkill
 {
@@ -829,6 +870,7 @@ public:
     Chunxi() : TriggerSkill("chunxi")
     {
         events << CardsMoveOneTime;
+        view_as_skill = new ChunxiVS;
     }
 
     static QList<ServerPlayer *> chunxi_targets(ServerPlayer *player)
@@ -841,14 +883,6 @@ public:
         return targets;
     }
 
-    void record(TriggerEvent, Room *, QVariant &data) const
-    {
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        ServerPlayer *reimu = qobject_cast<ServerPlayer *>(move.to);
-        if (reimu != NULL && move.to_place == Player::PlaceHand)
-            reimu->tag.remove("chunxi_currentIndex");
-    }
-
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         if (room->getTag("FirstRound").toBool())
@@ -857,68 +891,56 @@ public:
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *reimu = qobject_cast<ServerPlayer *>(move.to);
         if (reimu != NULL && reimu->hasSkill(this) && move.to_place == Player::PlaceHand) {
-            reimu->tag.remove("chunxi_ids");
-            QList<SkillInvokeDetail> d;
-            QVariantList v;
             foreach (int id, move.card_ids) {
                 if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
                     ServerPlayer *owner = room->getCardOwner(id);
-                    if (owner && owner == reimu) {
-                        d << SkillInvokeDetail(this, reimu, reimu);
-                        v << id;
-                    }
+                    if (owner && owner == reimu) 
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, reimu, reimu);
                 }
             }
-            reimu->tag["chunxi_ids"] = v;
-            return d;
         }
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         ServerPlayer *reimu = invoke->invoker;
-        QList<ServerPlayer *> targets = chunxi_targets(reimu);
-        if (targets.isEmpty())
-            return false;
-        QVariantList chunxi_ids = reimu->tag.value("chunxi_ids").toList();
-        if (chunxi_ids.isEmpty())
-            return false;
-
-        bool ok = false;
-        int index = reimu->tag.value("chunxi_currentIndex", 0).toInt(&ok);
-        int id = -1;
-        if (ok)
-            id = chunxi_ids.value(index++).toInt(&ok);
-
-        if (ok && id > -1) {
-            reimu->tag["chunxi_currentIndex"] = index;
-            reimu->tag["chunxi_currentId"] = id;
-            ServerPlayer *target = room->askForPlayerChosen(reimu, targets, objectName(), "@@chunxi", true, true);
-            if (target == NULL)
-                return false;
-
-            reimu->tag["chunxi_currentPlayer"] = QVariant::fromValue(target);
-            return true;
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        foreach(int id, move.card_ids) {
+            if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
+                ServerPlayer *owner = room->getCardOwner(id);
+                if (owner && owner == reimu)
+                    room->setCardFlag(id, "chunxi");
+            }
         }
+        const Card *c =  room->askForUseCard(reimu, "@@chunxi", "@chunxi");
+        foreach(int id, move.card_ids)
+            room->setCardFlag(id, "-chunxi");
 
-        return false;
+        return c !=  NULL;
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        ServerPlayer *reimu = invoke->invoker;
-        ServerPlayer *target = reimu->tag.value("chunxi_currentPlayer").value<ServerPlayer *>();
-        bool ok = false;
-        int id = reimu->tag.value("chunxi_currentId", -1).toInt(&ok);
-        if (target != NULL && ok && id > -1) {
-            room->showCard(reimu, id);
-            int obtainId = room->askForCardChosen(reimu, target, "h", objectName());
-            room->obtainCard(reimu, obtainId, false);
+        int count = invoke->invoker->tag["chunxi"].toInt();
+        invoke->invoker->tag.remove("chunxi");
+
+        for (int i = 0; i < count; ++i) {
+            QList<ServerPlayer *> targets = chunxi_targets(invoke->invoker);
+            if (targets.isEmpty())
+                return false;
+            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@@chunxi", true, true);
+            if (target == NULL)
+                return false;
+            int obtainId = room->askForCardChosen(invoke->invoker, target, "h", objectName());
+            room->obtainCard(invoke->invoker, obtainId, false);
         }
         return false;
     }
 };
+
+
+
 
 #pragma message WARN("todo_lwtmusou: find a new method for WuyuCost which could help player and AI to operate this skill more esaily")
 BllmWuyuCard::BllmWuyuCard()
@@ -1606,11 +1628,11 @@ ProtagonistPackage::ProtagonistPackage()
     addMetaObject<JiezouCard>();
     addMetaObject<ShoucangCard>();
     addMetaObject<BaoyiCard>();
+    addMetaObject<ChunxiCard>();
     addMetaObject<BllmSeyuCard>();
     addMetaObject<BllmShiyuDummy>();
     addMetaObject<BllmShiyuCard>();
     addMetaObject<BllmWuyuCard>();
-
 
     skills << new WuyuVS << new SaiqianVS;
 
