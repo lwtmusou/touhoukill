@@ -4,7 +4,12 @@
 #include "package.h"
 #include "card.h"
 
-
+#include <QGroupBox>
+#include <QAbstractButton>
+#include <QButtonGroup>
+#include <QDialog>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 
 
 class TianrenCard : public SkillCard
@@ -18,6 +23,30 @@ public:
     virtual const Card *validate(CardUseStruct &cardUse) const;
 };
 
+
+class NianliDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    static NianliDialog *getInstance(const QString &object);
+
+    public slots:
+    void popup();
+    void selectCard(QAbstractButton *button);
+
+private:
+    explicit NianliDialog(const QString &object);
+
+    QVBoxLayout *layout;
+    QButtonGroup *group;
+    QHash<QString, const Card *> map;
+
+    QString object_name;
+
+signals:
+    void onButtonClick();
+};
 
 class NianliCard : public SkillCard
 {
