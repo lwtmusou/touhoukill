@@ -807,22 +807,57 @@ public:
     }
 };
 
+XingyunCard::XingyunCard()
+{
+    will_throw = false;
+    target_fixed = true;
+    handling_method = Card::MethodUse;
+    m_skillName = "xingyun";
+}
+
+void XingyunCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+{
+    foreach(int id, subcards)
+        room->showCard(source, id);
+    source->tag["xingyun"] = QVariant::fromValue(subcards.length());
+}
+
+class XingyunVS : public ViewAsSkill
+{
+public:
+    XingyunVS() : ViewAsSkill("xingyun")
+    {
+        response_pattern = "@@xingyun";
+    }
+
+
+    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
+    {
+        return to_select->hasFlag("xingyun");
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        if (cards.length() > 0) {
+            XingyunCard *card = new XingyunCard;
+            card->addSubcards(cards);
+            return card;
+        }
+        else
+            return NULL;
+
+    }
+};
+
+
 class Xingyun : public TriggerSkill
 {
 public:
     Xingyun() : TriggerSkill("xingyun")
     {
         events << CardsMoveOneTime;
+        view_as_skill = new XingyunVS;
     }
-
-    void record(TriggerEvent, Room *, QVariant &data) const
-    {
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        ServerPlayer *tewi = qobject_cast<ServerPlayer *>(move.to);
-        if (tewi != NULL && move.to_place == Player::PlaceHand)
-            tewi->tag.remove("xingyun_currentIndex");
-    }
-
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
@@ -832,20 +867,13 @@ public:
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *tewi = qobject_cast<ServerPlayer *>(move.to);
         if (tewi != NULL && tewi->hasSkill(this) && move.to_place == Player::PlaceHand) {
-            tewi->tag.remove("xingyun_ids");
-            QList<SkillInvokeDetail> d;
-            QVariantList v;
             foreach(int id, move.card_ids) {
                 if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
                     ServerPlayer *owner = room->getCardOwner(id);
-                    if (owner && owner == tewi) {
-                        d << SkillInvokeDetail(this, tewi, tewi);
-                        v << id;
-                    }
+                    if (owner && owner == tewi)
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, tewi, tewi);
                 }
             }
-            tewi->tag["xingyun_ids"] = v;
-            return d;
         }
         return QList<SkillInvokeDetail>();
     }
@@ -853,40 +881,39 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         ServerPlayer *tewi = invoke->invoker;
-        QVariantList ids = tewi->tag.value("xingyun_ids").toList();
-        if (ids.isEmpty())
-            return false;
-
-        bool ok = false;
-        int index = tewi->tag.value("xingyun_currentIndex", 0).toInt(&ok);
-        int id = -1;
-        if (ok)
-            id = ids.value(index++).toInt(&ok);
-
-        if (ok && id > -1) {
-            tewi->tag["xingyun_currentIndex"] = index;
-            if (tewi->askForSkillInvoke(objectName(), data)) {
-                room->showCard(tewi, id);
-                return true;
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        foreach(int id, move.card_ids) {
+            if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
+                ServerPlayer *owner = room->getCardOwner(id);
+                if (owner && owner == tewi)
+                    room->setCardFlag(id, "xingyun");
             }
         }
+        const Card *c = room->askForUseCard(tewi, "@@xingyun", "@xingyun");
+        foreach(int id, move.card_ids)
+            room->setCardFlag(id, "-xingyun");
 
-        return false;
+        return c != NULL;
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         ServerPlayer *player = invoke->invoker;
-        QString choice = "letdraw";
-        if (player->isWounded())
-            choice = room->askForChoice(player, objectName(), "letdraw+recover", data);
-        if (choice == "letdraw") {
-            ServerPlayer *target = room->askForPlayerChosen(player, room->getAlivePlayers(), objectName(), "@xingyun-select");
-            target->drawCards(1);
-        } else if (choice == "recover") {
-            RecoverStruct recover;
-            recover.who = player;
-            room->recover(player, recover);
+        int count = player->tag["xingyun"].toInt();
+        player->tag.remove("xingyun");
+        
+        for (int i = 0; i < count; ++i) {
+             QString choice = "letdraw";
+            if (player->isWounded())
+                choice = room->askForChoice(player, objectName(), "letdraw+recover", data);
+            if (choice == "letdraw") {
+                ServerPlayer *target = room->askForPlayerChosen(player, room->getAlivePlayers(), objectName(), "@xingyun-select");
+                target->drawCards(1);
+            } else if (choice == "recover") {
+                RecoverStruct recover;
+                recover.who = player;
+                room->recover(player, recover);
+            }
         }
         return false;
     }
@@ -1616,6 +1643,7 @@ TH08Package::TH08Package()
     addMetaObject<MiyaoCard>();
     addMetaObject<KuangzaoCard>();
     addMetaObject<BuxianCard>();
+    addMetaObject<XingyunCard>();
     addMetaObject<GeshengCard>();
     addMetaObject<ChuangshiCard>();
     addMetaObject<HuweiCard>();
