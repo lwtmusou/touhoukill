@@ -3,10 +3,10 @@
 ----------------------
 <table border="0">
 <tr><td>
-<div style="float:left; width:20%;">
-<img src="../../images/hmx/sakuya.jpg" width="100%" />
+<div id="thsleft">
+![thspic](../../images/hmx/sakuya.jpg)
 </div>
-<div style="float:right; width:79%;">
+<div id="thsright">
 势力：红
 体力：4
 编号：06003
@@ -22,5 +22,4 @@
 
 咲夜和蕾米的配合十分强力。
 严格来说，一设的咲夜是不能让时间倒流的，但设计时稍微模糊了一下。
-
 </tr></td></table>

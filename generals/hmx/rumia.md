@@ -1,11 +1,12 @@
 
 宵暗的妖怪——露米娅
 ----------------------
-<table border=0>
+<table border="0">
 <tr><td>
-![](../../images/hmx/rumia.jpg)
-</td>
-<td>
+<div id="thsleft">
+![thspic](../../images/hmx/rumia.jpg)
+</div>
+<div id="thsright">
 势力：红
 体力：3
 编号：06007
@@ -13,6 +14,8 @@
 
 【真夜】：结束阶段开始时，你可以翻面，然后令一名其他角色翻面。
 【暗域】：锁定技，当你成为黑色【杀】或黑色非延时类锦囊牌的目标时，你选择一项：摸一张牌，或翻面。
-</td></tr></table>
-
+</div>
+</td></tr>
+<tr><td>
 ⑨的小伙伴之一，⑩是控场型。
+</tr></td></table>

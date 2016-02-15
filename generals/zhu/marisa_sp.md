@@ -1,11 +1,12 @@
 
 大盗——雾雨魔理沙
 -------------------
-<table border=0>
+<table border="0">
 <tr><td>
-![](../../images/zhu/marisa_sp.jpg)
-</td>
-<td>
+<div id="thsleft">
+![thspic](../../images/zhu/marisa_sp.jpg)
+</div>
+<div id="thsright">
 势力：主
 体力：3
 编号：01004
@@ -13,6 +14,8 @@
 
 【借走】：出牌阶段，你可以获得其他角色区域里的一张牌，然后选择一项：弃置一张黑桃牌，或失去1点体力并结束此阶段。
 【收藏】：弃牌阶段开始时，你可以展示X张花色各不相同的手牌，若如此做，你的手牌上限于此回合内+X。
-</td></tr></table>
-
+</div>
+</td></tr>
+<tr><td>
 同样基于二次设定的SP卡。
+</tr></td></table>
