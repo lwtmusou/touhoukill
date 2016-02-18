@@ -606,14 +606,14 @@ public:
                     case Player::PlaceHand: obtain_ids << id; break;
                     case Player::PlaceEquip: obtain_ids << id; break;
                     case Player::PlaceJudge:
-                    {
+                    {//case of retrial, need check rebyre
                         ServerPlayer *rebyre = move.reason.m_extraData.value<ServerPlayer *>();
                         if (!rebyre || rebyre != nazurin)
                             obtain_ids << id;
                         break;
                     }
                     case Player::PlaceTable:
-                    {//case of retrial, need check rebyre
+                    {//case of UseOrResponseFromPile, remove these ids.
                         QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
                         if (!record_ids.contains(id))
                             obtain_ids << id;
