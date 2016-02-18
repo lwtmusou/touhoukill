@@ -590,7 +590,6 @@ public:
             deleteRecord = true;
             ServerPlayer *nazurin = room->getCurrent();
             ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
-            const Card *card = move.reason.m_extraData.value<const Card *>();
             //find the real fromer of some cases, such as retrial or provide
             if (move.reason.m_extraData.value<ServerPlayer *>() != NULL)
                 from = move.reason.m_extraData.value<ServerPlayer *>();
@@ -606,8 +605,15 @@ public:
                     switch (move.from_places.at(move.card_ids.indexOf(id))) {
                     case Player::PlaceHand: obtain_ids << id; break;
                     case Player::PlaceEquip: obtain_ids << id; break;
-                    case Player::PlaceTable:
+                    case Player::PlaceJudge:
                     {
+                        ServerPlayer *rebyre = move.reason.m_extraData.value<ServerPlayer *>();
+                        if (!rebyre || rebyre != nazurin)
+                            obtain_ids << id;
+                        break;
+                    }
+                    case Player::PlaceTable:
+                    {//case of retrial, need check rebyre
                         QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
                         if (!record_ids.contains(id))
                             obtain_ids << id;
@@ -653,7 +659,7 @@ public:
         return doEffect;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         QVariantList ids = invoke->invoker->tag["souji"].toList();
         invoke->invoker->tag.remove("souji");
