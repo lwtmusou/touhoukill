@@ -10,13 +10,12 @@
 
 
 
-#pragma message WARN("todo_Fs: develop a new method to deal with skill nuillify, the Pingyi mark is not always reliable")
 class Yongheng : public TriggerSkill
 {
 public:
     Yongheng() : TriggerSkill("yongheng")
     {
-        events << EventPhaseChanging << CardsMoveOneTime << EventAcquireSkill; //<< MarkChanged;
+        events << EventPhaseChanging << CardsMoveOneTime << EventAcquireSkill << EventSkillInvalidityChange;
         frequency = Compulsory;
     }
 
@@ -65,6 +64,17 @@ public:
             SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
             if (a.player->getPhase() == Player::NotActive && a.player->hasSkill(this) && a.player->getHandcardNum() != 4)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, a.player, a.player, NULL, true);
+        } else if (triggerEvent == EventSkillInvalidityChange) {
+            QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct>>();
+            QList<ServerPlayer *> targets;
+            QList<SkillInvokeDetail> d;
+            foreach(SkillInvalidStruct v, invalids) {
+                if (v.player->hasSkill(this) && v.player->getHandcardNum() != 4 && !targets.contains(v.player)) {
+                    targets << v.player;
+                    d << SkillInvokeDetail(this, v.player, v.player, NULL, true);
+                }
+            }
+            return d;
         }
         return QList<SkillInvokeDetail>();
     }
