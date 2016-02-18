@@ -1938,9 +1938,9 @@ public:
         return !player->isKongcheng() && card->isAvailable(player) && !player->hasFlag("Global_huayinFailed");
     }
 
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
     {
-        return !to_select->isEquipped() && selected.length() < 3;
+        return !to_select->isEquipped();
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
@@ -1954,6 +1954,8 @@ public:
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const
     {
+        if (cards.length() < Self->getHandcardNum())
+            return NULL;
         if (cards.length() > 0) {
             HuayinCard *card = new HuayinCard;
             card->addSubcards(cards);
