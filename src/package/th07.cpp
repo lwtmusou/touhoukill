@@ -171,6 +171,9 @@ public:
     }
 };
 
+
+
+
 class Jingjie : public TriggerSkill
 {
 public:
@@ -216,7 +219,6 @@ public:
     }
 
 };
-
 
 class Sisheng : public TriggerSkill
 {
@@ -322,6 +324,9 @@ public:
         return false;
     }
 };
+
+
+
 
 class ZhaoliaoVS : public OneCardViewAsSkill
 {
@@ -430,7 +435,6 @@ public:
         return false;
     }
 };
-
 
 class Jiaoxia : public TriggerSkill
 {
@@ -597,7 +601,6 @@ public:
     }
 };
 
-
 class Xiezou : public TriggerSkill
 {
 public:
@@ -661,7 +664,6 @@ public:
         return false;
     }
 };
-
 
 class Hesheng : public TriggerSkill
 {
@@ -1023,7 +1025,6 @@ public:
     }
 };
 
-
 class YaoshuVS : public ZeroCardViewAsSkill
 {
 public:
@@ -1092,6 +1093,8 @@ public:
         return false;
     }
 };
+
+
 
 class Jiyi : public TriggerSkill
 {
@@ -1191,7 +1194,6 @@ public:
     }
 };
 
-
 class Chunyi : public TriggerSkill
 {
 public:
@@ -1221,6 +1223,8 @@ public:
         return false;
     }
 };
+
+
 
 
 class Zhancao : public TriggerSkill
@@ -1277,8 +1281,6 @@ public:
     }
 };
 
-
-
 MocaoCard::MocaoCard()
 {
 }
@@ -1289,6 +1291,7 @@ bool MocaoCard::targetFilter(const QList<const Player *> &targets, const Player 
         return false;
     return !to_select->getEquips().isEmpty();
 }
+
 void MocaoCard::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
@@ -1298,7 +1301,6 @@ void MocaoCard::onEffect(const CardEffectStruct &effect) const
     if (effect.to->isWounded())
         effect.to->drawCards(effect.to->getLostHp());
 }
-
 
 class Mocao : public ZeroCardViewAsSkill
 {
@@ -1317,6 +1319,7 @@ public:
         return new MocaoCard;
     }
 };
+
 
 
 
@@ -1604,6 +1607,8 @@ public:
 };
 
 
+
+
 // #pragma message WARN("todo_lwtmusou: rewrite siyu, notice that skill records (flag, tag, marks, etc.) should be updated while siyu TurnBroken")
 // Fs: should check in every skill, better write the most records clear into the eventphasechanging(to = notactive) event
 // Fs: it's no need to check at here now, the extra turn is inserted after the whole round finished
@@ -1729,6 +1734,9 @@ public:
         return false;
     }
 };
+
+
+
 
 class Shizhao : public TriggerSkill
 {
@@ -1856,6 +1864,189 @@ public:
 };
 
 
+
+
+
+HuayinCard::HuayinCard()
+{
+    will_throw = false;
+}
+
+bool HuayinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    Peach *card = new Peach(Card::NoSuit, 0);
+    card->deleteLater();
+    return card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
+}
+
+bool HuayinCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+    Peach *card = new Peach(Card::NoSuit, 0);
+    card->deleteLater();
+    return card->targetsFeasible(targets, Self);
+}
+
+const Card *HuayinCard::validate(CardUseStruct &use) const
+{
+    Peach *card = new Peach(Card::SuitToBeDecided, 0);
+    foreach(int id, subcards){
+        use.from->getRoom()->showCard(use.from, id);
+        if (Sanguosha->getCard(id)->isKindOf("BasicCard"))
+            card->addSubcard(id);
+    }
+    if (!card->getSubcards().isEmpty()) {
+        card->setSkillName("huayin");
+        return card;
+    }
+    else {
+        use.from->setFlags("Global_huayinFailed");
+        return NULL;
+    }  
+}
+
+const Card *HuayinCard::validateInResponse(ServerPlayer *user) const
+{
+    Peach *card = new Peach(Card::SuitToBeDecided, 0);
+    foreach(int id, subcards) {
+        user->getRoom()->showCard(user, id);
+        if (Sanguosha->getCard(id)->isKindOf("BasicCard"))
+            card->addSubcard(id);
+    }
+    if (!card->getSubcards().isEmpty()) {
+        card->setSkillName("huayin");
+        return card;
+    }
+    else {
+        user->setFlags("Global_huayinFailed");
+        return NULL;
+    }
+}
+
+class HuayinVS : public ViewAsSkill
+{
+public:
+    HuayinVS() : ViewAsSkill("huayin")
+    {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        Peach *card = new Peach(Card::NoSuit, 0);
+        card->deleteLater();
+        return !player->isKongcheng() && card->isAvailable(player) && !player->hasFlag("Global_huayinFailed");
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    {
+        return !to_select->isEquipped() && selected.length() < 3;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        return  pattern.contains("peach")
+            && !player->isKongcheng()
+            && player->getMark("Global_PreventPeach") == 0
+            && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
+            && !player->hasFlag("Global_huayinFailed");
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        if (cards.length() > 0) {
+            HuayinCard *card = new HuayinCard;
+            card->addSubcards(cards);
+            return card;
+        }
+        else
+            return NULL;
+    }
+};
+
+class Huayin : public TriggerSkill
+{
+public:
+    Huayin() : TriggerSkill("huayin")
+    {
+        events << CardsMoveOneTime << CardFinished;
+        view_as_skill = new HuayinVS;
+    }
+
+    void record(TriggerEvent e, Room *, QVariant &data) const
+    {
+        if (e != CardsMoveOneTime) return;
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        if (move.from_places.contains(Player::PlaceHand)) {
+            ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
+            if (from != NULL && from->hasFlag("Global_huayinFailed"))
+                from->setFlags("-Global_huayinFailed");
+        }
+        if (move.to_place == Player::PlaceHand) {
+            ServerPlayer *to = qobject_cast<ServerPlayer *>(move.to);
+            if (to != NULL && to->hasFlag("Global_huayinFailed"))
+                to->setFlags("-Global_huayinFailed");
+        }
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
+    {
+        if (e == CardFinished) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->getSkillName() == objectName() && use.card->isKindOf("Peach") && !use.from->isKongcheng()) {
+                ExNihilo *exnihilo = new ExNihilo(Card::SuitToBeDecided, -1);
+                exnihilo->deleteLater();
+                if (!use.from->isCardLimited(exnihilo, Card::MethodUse, true))
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        ExNihilo *exnihilo = new ExNihilo(Card::SuitToBeDecided, -1);
+        exnihilo->addSubcards(invoke->invoker->getCards("h"));
+        exnihilo->setSkillName("_huayin");
+        CardUseStruct use;
+        use.from = invoke->invoker;
+        use.to << invoke->invoker;
+        use.card = exnihilo;
+        room->useCard(use);
+        return false;
+    }
+};
+
+class Huanling : public TriggerSkill
+{
+public:
+    Huanling() : TriggerSkill("huanling")
+    {
+        events << CardUsed;
+        frequency = Frequent;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (!use.card->isRed() && !use.card->isBlack()) {
+            QList<SkillInvokeDetail> d;
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if (p->hasSkill(this) && p->getHandcardNum() < 3)
+                    d << SkillInvokeDetail(this, p, p);
+            }
+            return d;
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        invoke->invoker->drawCards(1);
+        return false;
+    }
+};
+
+
 TH07Package::TH07Package()
     : Package("th07")
 {
@@ -1925,9 +2116,11 @@ TH07Package::TH07Package()
     Q_UNUSED(youki);
 
     General *leira = new General(this, "leira", "yym", 4, false);
-    Q_UNUSED(leira);
+    leira->addSkill(new Huayin);
+    leira->addSkill(new Huanling);
 
     addMetaObject<MocaoCard>();
+    addMetaObject<HuayinCard>();
 
     skills << new ZhaoliaoVS;
 }
