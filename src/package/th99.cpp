@@ -1655,6 +1655,111 @@ public:
 
 
 
+class Sixiang : public TriggerSkill
+{
+public:
+    Sixiang() : TriggerSkill("sixiang")
+    {
+        events << EventPhaseStart;
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        QList<SkillInvokeDetail> d;
+        ServerPlayer *current = data.value<ServerPlayer *>();
+        if (current->getPhase() == Player::Start) {
+            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                if (!p->isChained())
+                    d << SkillInvokeDetail(this, p, p, NULL, true);
+            }
+        }
+        return d;
+    }
+
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        room->broadcastProperty(invoke->invoker, "chained");
+        room->setEmotion(invoke->invoker, "chain");
+        QVariant _data = QVariant::fromValue(invoke->invoker);
+        room->getThread()->trigger(ChainStateChanged, room, _data);
+        return false;
+    }
+};
+
+class Daoyao : public TriggerSkill
+{
+public:
+    Daoyao() : TriggerSkill("daoyao")
+    {
+        events << HpRecover;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &) const
+    {
+        QList<SkillInvokeDetail> d;
+        ServerPlayer *current = room->getCurrent();
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            if (current && current->canDiscard(current, "h"))
+                d << SkillInvokeDetail(this, p, p);
+            else {
+                foreach(ServerPlayer *t, room->getOtherPlayers(p)) {
+                    if (t->isChained()) {
+                        d << SkillInvokeDetail(this, p, p);
+                        break;
+                    }
+                }
+            }       
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        QStringList choices;
+        ServerPlayer *current = room->getCurrent();
+        if (current && current->canDiscard(current, "h"))
+            choices << "discard";
+
+        foreach(ServerPlayer *t, room->getOtherPlayers(invoke->invoker)) {
+            if (t->isChained()) {
+                choices << "draw";
+                break;
+            }
+        }
+        choices.prepend("cancel");
+
+        QString choice = room->askForChoice(invoke->invoker, objectName(), choices.join("+"), data);
+        if (choice == "cancel")
+            return false;
+
+        invoke->tag["daoyao"] = choice;
+        return true;
+    }
+
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        QString choice = invoke->tag.value("daoyao").toString();
+        if (choice == "discard") {
+            ServerPlayer *current = room->getCurrent();
+            room->askForDiscard(current, objectName(), 1, 1, false, true, "daoyao_discard:" + invoke->invoker->objectName());
+        }
+        else if (choice == "draw") {
+            QList<ServerPlayer *> targets;
+            foreach(ServerPlayer *t, room->getOtherPlayers(invoke->invoker)) {
+                if (t->isChained())
+                    targets << t;
+            }
+            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@daoyao", false, true);
+            target->drawCards(1); 
+        }
+        return false;
+    }
+};
+
+
 TH99Package::TH99Package()
     : Package("th99")
 {
@@ -1711,11 +1816,14 @@ TH99Package::TH99Package()
     kosuzu->addSkill(new BihuoReturn);
     related_skills.insertMulti("bihuo", "#bihuo");
 
+    General *reisen2 = new General(this, "reisen2", "wai", 4, false);
+    reisen2->addSkill(new Sixiang);
+    reisen2->addSkill(new Daoyao);
+
     General *mamizou = new General(this, "mamizou_sp", "wai", 4, false);
     Q_UNUSED(mamizou);
 
-    General *reisen2 = new General(this, "reisen2", "wai", 4, false);
-    Q_UNUSED(reisen2);
+
 
     addMetaObject<QiuwenCard>();
     addMetaObject<DangjiaCard>();
