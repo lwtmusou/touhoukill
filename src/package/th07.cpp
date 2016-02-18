@@ -1897,8 +1897,7 @@ const Card *HuayinCard::validate(CardUseStruct &use) const
     if (!card->getSubcards().isEmpty()) {
         card->setSkillName("huayin");
         return card;
-    }
-    else {
+    } else {
         delete card;
         use.from->setFlags("Global_huayinFailed");
         return NULL;
@@ -1916,8 +1915,7 @@ const Card *HuayinCard::validateInResponse(ServerPlayer *user) const
     if (!card->getSubcards().isEmpty()) {
         card->setSkillName("huayin");
         return card;
-    }
-    else {
+    } else {
         delete card;
         user->setFlags("Global_huayinFailed");
         return NULL;
@@ -1956,13 +1954,11 @@ public:
     {
         if (cards.length() < Self->getHandcardNum())
             return NULL;
-        if (cards.length() > 0) {
-            HuayinCard *card = new HuayinCard;
-            card->addSubcards(cards);
-            return card;
-        }
-        else
-            return NULL;
+
+        HuayinCard *card = new HuayinCard;
+        card->addSubcards(cards);
+        return card;
+
     }
 };
 

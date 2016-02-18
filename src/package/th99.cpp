@@ -1745,8 +1745,7 @@ public:
         if (choice == "discard") {
             ServerPlayer *current = room->getCurrent();
             room->askForDiscard(current, objectName(), 1, 1, false, true, "daoyao_discard:" + invoke->invoker->objectName());
-        }
-        else if (choice == "draw") {
+        } else if (choice == "draw") {
             QList<ServerPlayer *> targets;
             foreach(ServerPlayer *t, room->getOtherPlayers(invoke->invoker)) {
                 if (t->isChained())
