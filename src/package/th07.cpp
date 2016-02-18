@@ -1899,6 +1899,7 @@ const Card *HuayinCard::validate(CardUseStruct &use) const
         return card;
     }
     else {
+        delete card;
         use.from->setFlags("Global_huayinFailed");
         return NULL;
     }  
@@ -1917,6 +1918,7 @@ const Card *HuayinCard::validateInResponse(ServerPlayer *user) const
         return card;
     }
     else {
+        delete card;
         user->setFlags("Global_huayinFailed");
         return NULL;
     }
