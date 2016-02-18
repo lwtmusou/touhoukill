@@ -5968,7 +5968,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStruct * judge, 
     judge->retrial_by_response = player;
 
     CardsMoveStruct move1(QList<int>(),
-        NULL,//judge->who,
+        judge->who,
         Player::PlaceJudge,
         CardMoveReason(CardMoveReason::S_REASON_RETRIAL,
         player->objectName(),
@@ -5976,27 +5976,22 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStruct * judge, 
         QString()));
 
     move1.card_ids.append(card->getEffectiveId());
-    int reasonType;
-    if (exchange) {
-        reasonType = CardMoveReason::S_REASON_OVERRIDE;
-
-    } else {
-        reasonType = CardMoveReason::S_REASON_JUDGEDONE;
-    }
+    int reasonType = exchange ? CardMoveReason::S_REASON_OVERRIDE : CardMoveReason::S_REASON_JUDGEDONE;
 
     CardMoveReason reason(reasonType,
         player->objectName(),
         exchange ? skill_name : QString(),
         QString());
     if (rebyre) {
-        reason.m_provider = QVariant::fromValue(rebyre);
-        reason.m_extraData = QVariant::fromValue(oldJudge);
+        //reason.m_provider = QVariant::fromValue(rebyre);
+        //reason.m_extraData = QVariant::fromValue(oldJudge);
+        reason.m_extraData = QVariant::fromValue(rebyre);
     }
 
 
 
     CardsMoveStruct move2(QList<int>(),
-        rebyre ? rebyre : NULL,//judge->who,
+        judge->who,
         exchange ? player : NULL,
         Player::PlaceUnknown,
         exchange ? Player::PlaceHand : Player::DiscardPile,

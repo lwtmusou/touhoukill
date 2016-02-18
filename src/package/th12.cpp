@@ -559,27 +559,22 @@ class Souji : public TriggerSkill
 public:
     Souji() : TriggerSkill("souji")
     {
-        events << CardsMoveOneTime << BeforeCardsMove;
+        events << CardsMoveOneTime;
         frequency = Frequent;
     }
 
-#pragma message WARN("todo_lwtmusou:while rewrite, need consider how to determine move.from like these cases")
 //case1.1 while provideCard went to discar pile , like skill Tianren
     //if the provider is self,it should not trigger skill
 //case2 while retrial card went to discard pile, we consdier the move.from as the responser, not judge.who!!!   
     //if responser(move.from) is self, it could not trigger skill.
-//case 3 if the card which went to discardpile was from private pile, like woodenOx,it should not trigger skill.
-/*
+//case 3 if the card went to DiscardPile from PlaceTable,shoud chcek whether it was from private pile, like woodenOx. This case should not trigger skill.
 
-    virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *nazurin, QVariant &data) const
+    void record(TriggerEvent, Room *room, QVariant &data) const
     {
-        if (!nazurin->hasSkill(objectName())) return;
-        if (!nazurin->isCurrent()) return;
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        //record room Tag("UseOrResponseFromPile") 
-        if (triggerEvent == BeforeCardsMove) { //record origin_from_places?
-            if (move.to_place != Player::PlaceTable)
-                return;
+        bool deleteRecord = false;
+        if (move.to_place == Player::PlaceTable) {
+            //record room Tag("UseOrResponseFromPile")  for case 3
             if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
                 || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE) {
                 QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
@@ -591,33 +586,44 @@ public:
                 }
                 room->setTag("UseOrResponseFromPile", record_ids);
             }
-        } else if (triggerEvent == CardsMoveOneTime) {
-            if (nazurin->isCurrent() && move.from  && move.from != nazurin
-                && move.to_place == Player::DiscardPile) {
+        } else if (move.to_place == Player::DiscardPile) {
+            deleteRecord = true;
+            ServerPlayer *nazurin = room->getCurrent();
+            ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
+            const Card *card = move.reason.m_extraData.value<const Card *>();
+            //find the real fromer of some cases, such as retrial or provide
+            if (move.reason.m_extraData.value<ServerPlayer *>() != NULL)
+                from = move.reason.m_extraData.value<ServerPlayer *>();
+            if (move.reason.m_provider.value<ServerPlayer *>() != NULL)
+                from = move.reason.m_provider.value<ServerPlayer *>();
+
+            if (nazurin && from != NULL && nazurin != from && nazurin->hasSkill(objectName()) && nazurin->isCurrent() && nazurin->isAlive()) {
                 QVariantList obtain_ids;
-                foreach (int id, move.card_ids) {
+                foreach(int id, move.card_ids) {
                     if (room->getCardPlace(id) != Player::DiscardPile)
                         continue;
 
                     switch (move.from_places.at(move.card_ids.indexOf(id))) {
-                        case Player::PlaceHand: obtain_ids << id; break;
-                        case Player::PlaceEquip: obtain_ids << id; break;
-                        case Player::PlaceJudge: obtain_ids << id; break;
-                        case Player::PlaceTable:
-                        {
-                            QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
-                            if (!record_ids.contains(id))
-                                obtain_ids << id;
-                            break;
-                        }
-                        default:
-                            break;
+                    case Player::PlaceHand: obtain_ids << id; break;
+                    case Player::PlaceEquip: obtain_ids << id; break;
+                    case Player::PlaceTable:
+                    {
+                        QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
+                        if (!record_ids.contains(id))
+                            obtain_ids << id;
+                        break;
+                    }
+                    default:
+                        break;
                     }
                 }
                 nazurin->tag["souji"] = obtain_ids;
             }
-            // ******************************************************************************************            
-                        // delete record: UseOrResponseFromPile
+        } else 
+            deleteRecord = true;
+
+        // delete record: UseOrResponseFromPile
+        if (deleteRecord) {
             QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
             foreach (int id, move.card_ids) {
                 if (record_ids.contains(id))
@@ -627,34 +633,30 @@ public:
         }
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
-        if (!TriggerSkill::triggerable(player)) return QStringList();
-        if (triggerEvent == CardsMoveOneTime) { // record?
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (player->isCurrent() && move.from  && move.from != player
-                && move.to_place == Player::DiscardPile) {
-                QVariantList obtain_ids = player->tag["souji"].toList();
-                if (obtain_ids.length() > 0)
-                    return QStringList(objectName());
-            }
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *nazurin = room->getCurrent();
+        if (nazurin && nazurin->hasSkill(objectName()) && move.to_place == Player::DiscardPile) {
+            QVariantList obtain_ids = nazurin->tag["souji"].toList();
+            if (obtain_ids.length() > 0)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, nazurin, nazurin);
         }
-        return QStringList();
+        return QList<SkillInvokeDetail>();
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        if (room->askForSkillInvoke(player, objectName(), data))
-            return true;
-        player->tag.remove("souji");
-        return false;
+        bool doEffect = invoke->invoker->askForSkillInvoke(objectName(), data);
+        if (!doEffect)
+            invoke->invoker->tag.remove("souji");
+        return doEffect;
     }
 
-
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        QVariantList ids = player->tag["souji"].toList();
-        player->tag.remove("souji");
+        QVariantList ids = invoke->invoker->tag["souji"].toList();
+        invoke->invoker->tag.remove("souji");
 
         QList<int> obtain_ids;
         foreach (QVariant record_id, ids)
@@ -662,14 +664,12 @@ public:
 
         CardsMoveStruct mo;
         mo.card_ids = obtain_ids;
-        mo.to = player;
+        mo.to = invoke->invoker;
         mo.to_place = Player::PlaceHand;
         room->moveCardsAtomic(mo, true);
         return false;
-    }*/
+    }
 };
-
-
 
 class Tansuo : public TriggerSkill
 {

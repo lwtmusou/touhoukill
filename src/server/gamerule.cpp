@@ -695,8 +695,9 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge) {
                 CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), judge->reason);
                 if (judge->retrial_by_response) {
-                    reason.m_provider = QVariant::fromValue(judge->retrial_by_response);
-                    reason.m_extraData = QVariant::fromValue(judge->card);
+                    //reason.m_provider = QVariant::fromValue(judge->retrial_by_response);
+                    //reason.m_extraData = QVariant::fromValue(judge->card);
+                    reason.m_extraData = QVariant::fromValue(judge->retrial_by_response);
                 }
                 room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);
             }
