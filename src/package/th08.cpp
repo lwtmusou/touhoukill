@@ -323,7 +323,7 @@ class BumieMaxhp : public TriggerSkill
 public:
     BumieMaxhp() : TriggerSkill("#bumie")
     {
-        events << HpChanged << CardsMoveOneTime << EventPhaseChanging << EventAcquireSkill;
+        events << HpChanged << CardsMoveOneTime << EventPhaseChanging << EventAcquireSkill << EventSkillInvalidityChange;
         frequency = Compulsory;
     }
 
@@ -331,6 +331,19 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
+        if (triggerEvent == EventSkillInvalidityChange) {
+            QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct>>();
+            QList<ServerPlayer *> targets;
+            QList<SkillInvokeDetail> d;
+            foreach(SkillInvalidStruct v, invalids) {
+                if (v.player->hasSkill(this) && v.player->getHp() == 1 && v.player->isKongcheng()) {
+                    targets << v.player;
+                    d << SkillInvokeDetail(this, v.player, v.player, NULL, true);
+                }
+            }
+            return d;
+        }
+        
         ServerPlayer *mokou = NULL;
         if (triggerEvent == HpChanged)
             mokou = data.value<ServerPlayer *>();
