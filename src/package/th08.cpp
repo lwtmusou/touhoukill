@@ -41,7 +41,7 @@ public:
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
             } else if (change.to == Player::NotActive && change.player->hasSkill(objectName()) && change.player->getHandcardNum() != 4) {
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
-            } //need deal with skill nuillify
+            }
         } else if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             QList<ServerPlayer *> kaguyas;

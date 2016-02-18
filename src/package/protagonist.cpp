@@ -1565,6 +1565,131 @@ public:
 
 
 
+YinyangCard::YinyangCard()
+{
+}
+
+bool YinyangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    if (!targets.isEmpty() || to_select == Self)
+        return false;
+    return !to_select->isKongcheng();
+}
+
+void YinyangCard::onEffect(const CardEffectStruct &effect) const
+{
+    Room *room = effect.to->getRoom();
+    const Card *card1 = NULL;
+    const Card *card2 = NULL;
+    if (effect.to->canDiscard(effect.to, "h"))
+        //room->askForDiscard(effect.to, "yinyang", 1, 1, false, false, "yinyang_cardchosen");
+        card1 = room->askForCard(effect.to, ".|.|.|hand!", "yinyang_cardchosen");
+    if (effect.from->canDiscard(effect.from, "h"))
+        card2 = room->askForCard(effect.from, ".|.|.|hand!", "yinyang_cardchosen");
+
+    if (card1 && card2) {
+        if (card1->isRed() == card2->isRed()) {
+            effect.from->drawCards(2);
+            room->loseHp(effect.from);
+        } else {
+            effect.to->drawCards(1);
+            room->recover(effect.to, RecoverStruct());
+        }
+    }
+}
+
+class Yinyang : public ZeroCardViewAsSkill
+{
+public:
+    Yinyang() : ZeroCardViewAsSkill("yinyang")
+    {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->hasUsed("YinyangCard");
+    }
+
+    virtual const Card *viewAs() const
+    {
+        return new YinyangCard;
+    }
+};
+
+class Lingji : public TriggerSkill
+{
+public:
+    Lingji() : TriggerSkill("lingji")
+    {
+        events << CardsMoveOneTime << CardUsed << CardResponded << EventPhaseStart << EventPhaseChanging;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *, QVariant &data) const
+    {
+        if (triggerEvent == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            ServerPlayer *reimu = qobject_cast<ServerPlayer *>(move.from);
+            if (!reimu) return;
+            bool heart = false;
+            if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD){
+                foreach(int id, move.card_ids) {
+                    if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand
+                         || move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceEquip) {
+                        if (Sanguosha->getCard(id)->getSuit() == Card::Heart) {
+                            heart = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (heart)
+                reimu->tag["lingji"] = QVariant::fromValue(true);
+        } else if (triggerEvent == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->getSuit() == Card::Heart)
+                use.from->tag["lingji"] = QVariant::fromValue(true);
+        } else if (triggerEvent == CardResponded) {
+            CardResponseStruct resp = data.value<CardResponseStruct>().m_card;
+            if (resp.m_card->getSuit() == Card::Heart)
+                resp.m_from->tag["lingji"] = QVariant::fromValue(true);
+        } else if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive)
+                change.player->tag["lingji"] = QVariant::fromValue(false);
+        }
+
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->hasSkill(this) && player->getPhase() == Player::Finish && player->tag["lingji"].toBool()) {
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), "@lingji", false, true);
+        if (target) {
+            invoke->targets << target;
+            return true;
+        }
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        room->damage(DamageStruct(objectName(), invoke->invoker, invoke->targets.first()));
+        return false;
+    }
+};
+
+
+
 ProtagonistPackage::ProtagonistPackage()
     : Package("protagonist")
 {
@@ -1617,7 +1742,9 @@ ProtagonistPackage::ProtagonistPackage()
     marisa_slm->addSkill(new Xinghui);
 
     General *reimu_old = new General(this, "reimu_old", "zhu", 4, false);
-    Q_UNUSED(reimu_old);
+    reimu_old->addSkill(new Yinyang);
+    reimu_old->addSkill(new Lingji);
+
     General *marisa_old = new General(this, "marisa_old", "zhu", 4, false);
     Q_UNUSED(marisa_old);
 
@@ -1633,6 +1760,7 @@ ProtagonistPackage::ProtagonistPackage()
     addMetaObject<BllmShiyuDummy>();
     addMetaObject<BllmShiyuCard>();
     addMetaObject<BllmWuyuCard>();
+    addMetaObject<YinyangCard>();
 
     skills << new WuyuVS << new SaiqianVS;
 
