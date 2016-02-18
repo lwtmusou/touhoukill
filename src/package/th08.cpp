@@ -323,7 +323,7 @@ class BumieMaxhp : public TriggerSkill
 public:
     BumieMaxhp() : TriggerSkill("#bumie")
     {
-        events << HpChanged << CardsMoveOneTime << EventPhaseChanging << EventAcquireSkill << EventSkillInvalidityChange;
+        events << HpChanged << CardsMoveOneTime << EventAcquireSkill << EventSkillInvalidityChange;
         frequency = Compulsory;
     }
 
@@ -349,8 +349,6 @@ public:
             mokou = data.value<ServerPlayer *>();
         else if (triggerEvent == CardsMoveOneTime)
             mokou = qobject_cast<ServerPlayer *>(data.value<CardsMoveOneTimeStruct>().from);
-        else if (triggerEvent == EventPhaseChanging)
-            mokou = data.value<PhaseChangeStruct>().player;
         else if (triggerEvent == EventAcquireSkill)
             mokou = data.value<SkillAcquireDetachStruct>().player;
 
