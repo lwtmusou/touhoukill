@@ -996,7 +996,8 @@ public:
 };
 
 
-#pragma message WARN("todo_lwtmusou: rewrite it after re-defining subHp at player.cpp")
+
+
 class Banling : public TriggerSkill
 {
 public:
@@ -1143,78 +1144,53 @@ public:
     {
     }
 
-    bool onPhaseChange(ServerPlayer *) const
-    {
-        return false;
-    }
-/*
 
-    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer* &) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
-        if (!TriggerSkill::triggerable(player)) return QStringList();
+        ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->getPhase() == Player::Start && player->hasSkill("banling")) {
             if (player->getLingHp() < player->getMaxHp())
-                return QStringList(objectName());
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
             if (player->getRenHp() < player->getMaxHp())
-                return QStringList(objectName());
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         }
-        return QStringList();
+        return QList<SkillInvokeDetail>();
     }
 
 
     virtual bool onPhaseChange(ServerPlayer *player) const
     {
         Room *room = player->getRoom();
-        if (player->getPhase() == Player::Start && player->hasSkill("banling")) {
-            if (player->getLingHp() < player->getMaxHp()) {
-                int  x = player->getMaxHp() - player->getLingHp();
-                x = qMin(x, 2);
-                ServerPlayer *s = room->askForPlayerChosen(player, room->getAlivePlayers(), "renguidraw", "@rengui-draw:" + QString::number(x), true, true);
-                if (s) {
-                    room->notifySkillInvoked(player, objectName());
-                    s->drawCards(x);
-                }
-            }
-            if (player->getRenHp() < player->getMaxHp()) {
-                int y = player->getMaxHp() - player->getRenHp();
-                y = qMin(y, 2);
-                QList<ServerPlayer *> all;
-                foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                    if (player->canDiscard(p, "he"))
-                        all << p;
-                }
-                if (!all.isEmpty()) {
-                    ServerPlayer *s = room->askForPlayerChosen(player, all, "renguidiscard", "@rengui-discard:" + QString::number(y), true, true);
-                    if (s) {
-                        room->notifySkillInvoked(player, objectName());
-                        DummyCard *dummy = new DummyCard;
-                        dummy->deleteLater();
-                        QList<int> card_ids;
-                        QList<Player::Place> original_places;
-                        s->setFlags("rengui_InTempMoving");
-                        for (int i = 0; i < y; i++) {
-                            if (!player->canDiscard(s, "he"))
-                                break;
-                            int id = room->askForCardChosen(player, s, "he", objectName(), false, Card::MethodDiscard);
-                            card_ids << id;
-                            original_places << room->getCardPlace(id);
-                            dummy->addSubcard(id);
-                            s->addToPile("#rengui", id, false);
-                        }
-                        for (int i = 0; i < dummy->subcardsLength(); i++) {
-                            Card *c = Sanguosha->getCard(card_ids.at(i));
-                            room->moveCardTo(c, s, original_places.at(i), false);
-                        }
-                        s->setFlags("-rengui_InTempMoving");
-                        if (dummy->subcardsLength() > 0)
-                            room->throwCard(dummy, s, player);
-
-                    }
-                }
+        //effect 1
+        if (player->getLingHp() < player->getMaxHp()) {
+            int  x = qMin(player->getMaxHp() - player->getLingHp(), 2);
+            ServerPlayer *s = room->askForPlayerChosen(player, room->getAlivePlayers(), "renguidraw", "@rengui-draw:" + QString::number(x), true, true);
+            if (s) {
+                room->notifySkillInvoked(player, objectName());
+                s->drawCards(x);
             }
         }
+        //effect 2
+        if (player->getRenHp() < player->getMaxHp()) {
+            int y = qMin(player->getMaxHp() - player->getRenHp(), 2);
+            QList<ServerPlayer *> all;
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                if (player->canDiscard(p, "he"))
+                    all << p;
+            }
+            if (all.isEmpty())
+                return false;
+            ServerPlayer *s = room->askForPlayerChosen(player, all, "renguidiscard", "@rengui-discard:" + QString::number(y), true, true);
+            for (int i = 0; i < y; ++i) {
+                if (!player->canDiscard(s, "he"))
+                    break;
+                int id = room->askForCardChosen(player, s, "he", objectName(), false, Card::MethodDiscard);
+                room->throwCard(id, s, player);
+            }
+        }
+        
         return false;
-    }*/
+    }
 };
 
 
@@ -3338,8 +3314,8 @@ public:
         int victim_newHp = qMin(player->getHp(), damage.to->getMaxHp());
         room->setPlayerProperty(player, "hp", source_newHp);
         if (damage.to->hasSkill("banling")) {
-            room->setPlayerMark(damage.to, "lingtili", victim_newHp);
-            room->setPlayerMark(damage.to, "rentili", victim_newHp);
+            room->setPlayerProperty(damage.to, "renhp", victim_newHp);
+            room->setPlayerProperty(damage.to, "linghp", victim_newHp);
             room->setPlayerProperty(damage.to, "hp", victim_newHp);
         } else
             room->setPlayerProperty(damage.to, "hp", victim_newHp);
@@ -3431,8 +3407,6 @@ TouhouGodPackage::TouhouGodPackage()
     General *youmu_god = new General(this, "youmu_god", "touhougod", 3, false);
     youmu_god->addSkill(new Banling);
     youmu_god->addSkill(new Rengui);
-    youmu_god->addSkill(new FakeMoveSkill("rengui"));
-    related_skills.insertMulti("rengui", "#rengui-fake-move");
 
     General *reisen_god = new General(this, "reisen_god", "touhougod", 4, false);
     reisen_god->addSkill(new Ningshi);
