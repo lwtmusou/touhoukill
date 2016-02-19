@@ -698,7 +698,7 @@ public:
 };
 
 
-#pragma message WARN("todo_lwtmusou: no need to maintain this skill,since it will be redesigned")
+
 ChuanranCard::ChuanranCard()
 {
     will_throw = true;
@@ -760,99 +760,119 @@ class Chuanran : public TriggerSkill
 public:
     Chuanran() : TriggerSkill("chuanran")
     {
-        events << CardsMoveOneTime << BeforeCardsMove << EventPhaseChanging;
+        events << CardsMoveOneTime << EventPhaseChanging;
         view_as_skill = new ChuanranVS;
     }
-/*
-    virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *yamame, QVariant &data) const
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-        //need check null current?
-        ServerPlayer *current = room->getCurrent();
-        if (!yamame->hasSkill(objectName()) || !current || current->getPhase() != Player::Judge)
-            return;
-        if (triggerEvent == BeforeCardsMove) {
+        if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (!move.from || move.from != current)
+            ServerPlayer *current = room->getCurrent();
+            if (!move.from || !current || current->getPhase() != Player::Judge || move.from != current)
                 return;
-            if ((move.from_places.contains(Player::PlaceDelayedTrick) || move.origin_from_places.contains(Player::PlaceDelayedTrick))
-                ) {
-                QVariantList ids1 = yamame->tag["chuanran"].toList();
+            if ((move.from_places.contains(Player::PlaceDelayedTrick) && move.to_place == Player::PlaceTable)) {
+                QVariantList record_ids = room->getTag("chuanranTemp").toList();
                 foreach (int id, move.card_ids) {
-                    if (room->getCardPlace(id) == Player::PlaceDelayedTrick && !ids1.contains(id)) {
-                        ids1 << id;
+                    if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceDelayedTrick && !record_ids.contains(id)) {
+                        record_ids << id;
                     }
                 }
-                yamame->tag["chuanran"] = ids1;
+                room->setTag("chuanranTemp", record_ids);
+            } else if (move.to_place == Player::DiscardPile) {
+                QVariantList record_ids = room->getTag("chuanranTemp").toList();
+                QVariantList ids = room->getTag("chuanran").toList();
+                foreach(int id, move.card_ids) {
+                    if (room->getCardPlace(id) == Player::DiscardPile) {
+                        if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceDelayedTrick && !ids.contains(id))
+                            ids << id;
+                        else if (record_ids.contains(id) && !ids.contains(id))
+                            ids << id;
+                    }
+                }
+                foreach(int id, move.card_ids)
+                    record_ids.removeOne(id);
+                room->setTag("chuanranTemp", record_ids);
+                room->setTag("chuanran", ids);
+            } else {
+                QVariantList record_ids = room->getTag("chuanranTemp").toList();
+                foreach(int id, move.card_ids)
+                    record_ids.removeOne(id);
+                room->setTag("chuanranTemp", record_ids);
             }
-        }
-    }
-
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
-    {
-        ServerPlayer *current = room->getCurrent();
-        if (!player->hasSkill(objectName()) || !current || current->getPhase() != Player::Judge)
-            return QStringList();
-        if (triggerEvent == EventPhaseChanging) {
+        } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.from == Player::Judge) {
-                player->tag.remove("chuanran");
-            }
-        } else if (triggerEvent == CardsMoveOneTime) {
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            QVariantList chuanran_ids = player->tag["chuanran"].toList();
-            foreach (QVariant card_data, chuanran_ids) {
-                int id = card_data.toInt();
-                if (room->getCardPlace(id) == Player::DiscardPile && move.card_ids.contains(id)) {
-                    return QStringList(objectName());
-                }
+                room->removeTag("chuanranTemp");
+                room->removeTag("chuanran");
             }
         }
-        return QStringList();
     }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *source, QVariant &data, ServerPlayer *) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (triggerEvent == CardsMoveOneTime) {
-            QVariantList chuanran_ids = source->tag["chuanran"].toList();
-            QList<int> all;
-            foreach (QVariant card_data, chuanran_ids) {
-                int id = card_data.toInt();
-                if (room->getCardPlace(id) == Player::DiscardPile && move.card_ids.contains(id)) {
-                    all << id;
-                    chuanran_ids.removeOne(card_data);
-                }
-            }
-            source->tag["chuanran"] = chuanran_ids;
-            foreach (int id, all) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            ServerPlayer *current = room->getCurrent();
+            if (!current || current->getPhase() != Player::Judge)
+                return QList<SkillInvokeDetail>();
 
-                QList<ServerPlayer *>others;
-                QStringList chuanranTargets;
-                QString trickname;
-                if (Sanguosha->getCard(id)->isKindOf("DelayedTrick"))
-                    trickname = Sanguosha->getCard(id)->objectName();
-                else
-                    trickname = "supply_shortage";
-                foreach (ServerPlayer *p, room->getOtherPlayers(room->getCurrent())) {
-
-                    if (!p->containsTrick(trickname)) {
-                        others << p;
-                        chuanranTargets << p->objectName();
+            QList<SkillInvokeDetail> d;
+            if (move.to_place == Player::DiscardPile) {
+                QVariantList ids = room->getTag("chuanran").toList();
+                foreach(int id, move.card_ids) {
+                    if (room->getCardPlace(id) == Player::DiscardPile && ids.contains(id)) {
+                        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                            if (current != current)
+                                d << SkillInvokeDetail(this, p, p);
+                        }
+                        break;
                     }
                 }
-                if (!chuanranTargets.isEmpty()) {
-                    room->setPlayerProperty(source, "chuanran", chuanranTargets.join("+"));
-                    source->tag["chuanran_cardname"] == QVariant::fromValue(trickname);
-                    source->tag["chuanran_id"] = QVariant::fromValue(id);
-                    room->askForUseCard(source, "@@chuanran", "@chuanran:" + trickname);
-                    room->setPlayerProperty(source, "chuanran", QVariant());
+            }
+            return d;
+        }
+        return QList<SkillInvokeDetail>();
+    }
 
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        QVariantList chuanran_ids = room->getTag("chuanran").toList();
+        QList<int> all;
+        foreach(int id, move.card_ids) {
+            if (room->getCardPlace(id) == Player::DiscardPile && chuanran_ids.contains(id)) {
+                all << id;
+                chuanran_ids.removeOne(id);
+            }
+        }
+        room->setTag("chuanran", chuanran_ids);
+
+
+        foreach(int id, all) {
+            QList<ServerPlayer *>others;
+            QStringList chuanranTargets;
+            QString trickname;
+            if (Sanguosha->getCard(id)->isKindOf("DelayedTrick"))
+                trickname = Sanguosha->getCard(id)->objectName();
+            else
+                trickname = "supply_shortage";
+            foreach(ServerPlayer *p, room->getOtherPlayers(room->getCurrent())) {
+                if (!p->containsTrick(trickname)) {
+                    others << p;
+                    chuanranTargets << p->objectName();
                 }
-
+            }
+            if (!chuanranTargets.isEmpty()) {
+                room->setPlayerProperty(invoke->invoker, "chuanran", chuanranTargets.join("+"));
+                invoke->invoker->tag["chuanran_cardname"] == QVariant::fromValue(trickname);
+                invoke->invoker->tag["chuanran_id"] = QVariant::fromValue(id);
+                room->askForUseCard(invoke->invoker, "@@chuanran", "@chuanran:" + trickname);
+                room->setPlayerProperty(invoke->invoker, "chuanran", QVariant());
             }
         }
         return false;
-    }*/
+    }
 };
 
 class Rebing : public MasochismSkill

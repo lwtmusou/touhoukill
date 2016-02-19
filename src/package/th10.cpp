@@ -1191,124 +1191,120 @@ public:
     }
 };
 
-#pragma message WARN("todo_lwtmusou: rewrite this skll after adjusting code for move event ")
+#pragma message WARN("todo_lwtmusou: develop a method to change move.is_last_handcard,which move to discardpile")
 class Jinian : public TriggerSkill
 {
 public:
     Jinian() : TriggerSkill("jinian")
     {
-        events << CardsMoveOneTime << BeforeCardsMove;
+        events << CardsMoveOneTime;
     }
-/*
 
-    virtual void record(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+    void record(TriggerEvent, Room *room, QVariant &data) const
     {
-        if (!player || !player->hasSkill(objectName()) || player->hasFlag("jinian_used")) return;
-        if (triggerEvent == BeforeCardsMove) {
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.to_place != Player::PlaceJudge && move.to_place != Player::PlaceTable
-                && move.to_place != Player::DiscardPile)  //just for temp?
-                return;
-            if (move.from && move.from_places.contains(Player::PlaceHand) && move.from == player) {
-
-                QVariantList record_ids = player->tag["jinian"].toList();
-                QList<int> h_ids;
-                foreach (int id, move.card_ids) {
-                    if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand)
-                        h_ids << id;
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *sanae = qobject_cast<ServerPlayer *>(move.from);
+        if (sanae == NULL || !sanae->hasSkill(this) || !move.from_places.contains(Player::PlaceHand) 
+            || sanae->hasFlag("jinian_used"))
+            return;// no need to update record.
+        
+        if (move.to_place == Player::PlaceTable && move.is_last_handcard) {
+            //1 temp ids: record lasthand ids for using or responsing
+            if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
+                || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE) {
+                QVariantList record_ids = sanae->tag["jinianTemp"].toList();
+                foreach(int id, move.card_ids) {
+                    if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand
+                        && !record_ids.contains(id))
+                        record_ids << id;
                 }
-
-                //if is last_hand_cards,record its.
-                if (move.from->getHandcardNum() <= h_ids.length()) {
-                    foreach (int id, h_ids) {
-                        //check ocurrence
-                        if (!record_ids.contains(id))
-                            record_ids << id;
-                    }
-                    player->tag["jinian"] = record_ids;
+                sanae->tag["jinianTemp"] = record_ids;
+            }
+        } else if (move.to_place == Player::PlaceJudge && move.is_last_handcard) {
+            //2 temp ids: record lasthand ids for retrial
+            QVariantList record_ids = sanae->tag["jinianTemp"].toList();
+            foreach(int id, move.card_ids) {
+                if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand
+                    && !record_ids.contains(id))
+                    record_ids << id;
+            }
+            sanae->tag["jinianTemp"] = record_ids;
+        } else if (move.to_place == Player::DiscardPile) { 
+            QVariantList ids = sanae->tag["jinian"].toList();
+            QVariantList record_ids = sanae->tag["jinianTemp"].toList();
+            if (move.is_last_handcard) {
+                //3.1 directly went to discardpile
+                foreach(int id, move.card_ids) {
+                    if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand
+                        && !ids.contains(id) && room->getCardPlace(id) == Player::DiscardPile)
+                        ids << id;
+                }
+            } else {
+                //3.2 check whether went to discard pile through palceTable or placeJudge 
+                foreach(int id, move.card_ids) {
+                    if (!ids.contains(id) && record_ids.contains(id) && room->getCardPlace(id) == Player::DiscardPile)
+                            ids << id;
                 }
             }
-        } else if (triggerEvent == CardsMoveOneTime) {
+            foreach(int id, move.card_ids)
+                record_ids.removeOne(id);
+            sanae->tag["jinian"] = ids;
+            sanae->tag["jinianTemp"] = record_ids;
+        } else {
+            //4 delete temp ids
+            QVariantList record_ids = sanae->tag["jinianTemp"].toList();
+            foreach(int id, move.card_ids)
+                record_ids.removeOne(id);
+            sanae->tag["jinianTemp"] = record_ids;
+        }
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
+        if (player != NULL && player->hasSkill(this) && move.to_place == Player::DiscardPile
+            && !player->hasFlag("jinian_used") && player->isAlive()) {
             QVariantList ids = player->tag["jinian"].toList();
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.to_place != Player::PlaceJudge && move.to_place != Player::PlaceTable
-                && move.to_place != Player::DiscardPile) {
-                // (place == Player::PlaceHand || place == Player::PlaceEquip || place == Player::PlaceDelayedTrick
-                //    || place == Player::PlaceSpecial || place == Player::DrawPile) 
-                QVariantList new_ids;
-                foreach (QVariant card_data, ids) {
-                    int card_id = card_data.toInt();
-                    if (!move.card_ids.contains(card_id))
-                        new_ids << card_id;
-                }
-                player->tag["jinian"] = new_ids;
-            }
-
-            else if (move.to_place == Player::DiscardPile) {
-                QVariantList get_ids;
-                QVariantList backup_ids;
-                foreach (QVariant card_data, ids) {
-                    int card_id = card_data.toInt();
-                    if (move.card_ids.contains(card_id) &&
-                        room->getCardPlace(card_id) == Player::DiscardPile) {
-                        get_ids << card_id;
-                    } else
-                        backup_ids << card_id;
-                }
-                //need check from and delete get_ids
-                if (!move.from || move.from != player) {
-
-                    QVariantList new_get_ids;
-                    get_ids = new_get_ids;
-                }
-                player->tag["jinian"] = backup_ids;
-                player->tag["jinianGet"] = get_ids;
+            foreach(int id, move.card_ids) {
+                if (ids.contains(id))
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
             }
         }
+        return QList<SkillInvokeDetail>();
     }
 
-
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        if (!TriggerSkill::triggerable(player))return QStringList();
-        //if (!player->hasSkill(objectName())) 
-        if (triggerEvent == CardsMoveOneTime) {
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (player->hasFlag("jinian_used"))
-                return QStringList();
-            if (player->isDead())
-                return QStringList();
-
-            //record tmp: get it or not
-            QVariantList record = player->tag["jinianGet"].toList();
-
-            if (!record.isEmpty())
-                return QStringList(objectName());
-        }
-        return QStringList();
-    }
-
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
-    {
-        if (room->askForSkillInvoke(player, objectName(), data))
+        if (invoke->invoker->askForSkillInvoke(objectName(), data))
             return true;
         else {
-            player->tag.remove("jinianGet");
+            QVariantList ids = invoke->invoker->tag["jinian"].toList();
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            foreach(int id, move.card_ids) {
+                if (ids.contains(id))
+                    ids.removeOne(id);
+            }
+            invoke->invoker->tag["jinian"] = ids;
         }
         return false;
     }
 
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         ServerPlayer *current = room->getCurrent();
+        ServerPlayer *player = invoke->invoker;
         if (current && current->isAlive() && current->getPhase() != Player::NotActive)
             player->setFlags("jinian_used");
         QList<int> get_ids;
-        QVariantList delete_ids = player->tag["jinianGet"].toList();
-        foreach (QVariant card_data, delete_ids) {
-            int card_id = card_data.toInt();
-            get_ids << card_id;
+        QVariantList ids = player->tag["jinian"].toList();
+        player->tag.remove("jinian");
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        foreach(int id, move.card_ids) {
+            if (ids.contains(id))
+                get_ids << id;
         }
 
         CardsMoveStruct mo;
@@ -1317,10 +1313,8 @@ public:
         mo.to_place = Player::PlaceHand;
         room->moveCardsAtomic(mo, true);
 
-        player->tag.remove("jinian");
-        player->tag.remove("jinianGet");
         return false;
-    }*/
+    }
 };
 
 class JinianClear : public TriggerSkill
@@ -1329,26 +1323,25 @@ public:
     JinianClear() : TriggerSkill("#jinian_clear")
     {
         events << EventPhaseChanging;
-    }/*
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer* &) const
+    }
+
+    void record(TriggerEvent, Room *room, QVariant &) const
     {
-        if (triggerEvent == EventPhaseChanging) {
-            foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                p->tag.remove("jinian");
-                p->tag.remove("jinianGet");
-                if (p->hasFlag("jinian_used"))
-                    p->setFlags("-jinian_used");
-            }
+        foreach(ServerPlayer *p, room->getAllPlayers()) {
+            p->tag.remove("jinian");
+            p->tag.remove("jinianTemp");
+            if (p->hasFlag("jinian_used"))
+                p->setFlags("-jinian_used");
         }
-        return QStringList();
-    }*/
+    }
 };
+
+
 
 
 TianyanCard::TianyanCard()
 {
     target_fixed = true;
-    mute = true;
 }
 
 void TianyanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
@@ -1391,7 +1384,6 @@ FengrangCard::FengrangCard()
     target_fixed = true;
     handling_method = Card::MethodUse;
     m_skillName = "fengrang";
-    mute = true;
 }
 
 const Card *FengrangCard::validate(CardUseStruct &) const
@@ -1537,6 +1529,8 @@ public:
         return true;
     }
 };
+
+
 
 DfgzmSiyuCard::DfgzmSiyuCard()
 {
@@ -1692,7 +1686,6 @@ public:
     }
 };
 
-#pragma message WARN("todo_lwtmusou: check this skll after adjusting code for move event ")
 class Qishu : public TriggerSkill
 {
 public:
