@@ -222,8 +222,6 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
 
     bool enterdying = thread->trigger(EnterDying, this, dying_data);
 
-    //insert banling
-
     if (!(player->isDead() || player->getHp() > 0 || enterdying)) {
         thread->trigger(Dying, this, dying_data); 
 
@@ -1679,14 +1677,13 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
     if (ai)
         card = ai->askForSinglePeach(dying);
     else {
-
         int peaches = 1 - dying->getHp();
         if (dying->hasSkill("banling")) {
-            peaches = dying->getMark("minus_rentili") + dying->getMark("minus_lingtili");
-            if (dying->getMark("rentili") == 0)
-                peaches = peaches + 1;
-            if (dying->getMark("lingtili") == 0)
-                peaches = peaches + 1;
+            peaches = 0;
+            if (dying->getRenHp() <= 0)
+                peaches = peaches + 1 - dying->getRenHp();
+            if (dying->getLingHp() <= 0)
+                peaches = peaches + 1 - dying->getLingHp();
         }
         JsonArray arg;
         arg << dying->objectName();
@@ -3550,13 +3547,11 @@ void Room::recover(ServerPlayer *player, const RecoverStruct &recover, bool set_
 
     recover_struct = data.value<RecoverStruct>();
     int recover_num = recover_struct.recover;
-    //insert banling  after preHprecover
-    if (player->hasSkill("banling")) {
-        int x = player->getMark("lingtili") - player->getMark("minus_lingtili");
-        int y = player->getMark("rentili") - player->getMark("minus_rentili");
-        int z = qMin(x, y);
-        setPlayerProperty(player, "hp", z);
-    } else {
+
+    if (player->hasSkill("banling"))
+        //renhp and linghp has already updated.
+        setPlayerProperty(player, "hp", player->getHp());
+    else {
         int new_hp = qMin(player->getHp() + recover_num, player->getMaxHp());
         setPlayerProperty(player, "hp", new_hp);
     }

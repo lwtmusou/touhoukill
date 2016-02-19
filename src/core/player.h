@@ -21,6 +21,8 @@ class Player : public QObject
 
     Q_PROPERTY(QString screenname READ screenName WRITE setScreenName)
     Q_PROPERTY(int hp READ getHp WRITE setHp)
+    Q_PROPERTY(int renhp READ getRenHp WRITE setRenHp)
+    Q_PROPERTY(int linghp READ getLingHp WRITE setLingHp)
     Q_PROPERTY(int maxhp READ getMaxHp WRITE setMaxHp)
     Q_PROPERTY(QString kingdom READ getKingdom WRITE setKingdom)
     Q_PROPERTY(bool wounded READ isWounded STORED false)
@@ -69,9 +71,11 @@ public:
 
     // property setters/getters
     int getHp() const;
-    int getLingHp() const;//for banling  lingttili
-    int getRenHp() const;//for banling  rentili
+    int getRenHp() const;//for banling
+    int getLingHp() const;
     void setHp(int hp);
+    void setRenHp(int renhp);
+    void setLingHp(int linghp);
     int getMaxHp() const;
     void setMaxHp(int max_hp);
     int getLostHp() const;
@@ -279,6 +283,7 @@ private:
     const General *general, *general2;
     General::Gender m_gender;
     int hp, max_hp;
+    int renhp, linghp;//for banling
     QString kingdom;
     QString role;
     bool role_shown;

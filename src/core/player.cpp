@@ -7,7 +7,7 @@
 
 Player::Player(QObject *parent)
     : QObject(parent), owner(false), general(NULL), general2(NULL),
-    m_gender(General::Sexless), hp(-1), max_hp(-1), role_shown(false), state("online"), seat(0), alive(true),
+    m_gender(General::Sexless), hp(-1), max_hp(-1), renhp(-1), linghp(-1), role_shown(false), state("online"), seat(0), alive(true),
     phase(NotActive), weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL), treasure(NULL),
     face_up(true), chained(false)
 {
@@ -48,10 +48,7 @@ void Player::setShownRole(bool shown)
 
 void Player::setHp(int hp)
 {
-    if (hasSkill("banling")) {
-        this->hp = getHp(); //set for banling
-        emit hp_changed();
-    } else if (this->hp != hp) {
+    if (this->hp != hp) {
         this->hp = hp;
         emit hp_changed();
     }
@@ -59,37 +56,40 @@ void Player::setHp(int hp)
 
 int Player::getHp() const
 {
-    if (hasSkill("huanmeng")) {
+    if (hasSkill("huanmeng")) 
         return 0;
-    } if (hasSkill("banling")) {
-        int x = getMark("lingtili") - getMark("minus_lingtili");
-        int y = getMark("rentili") - getMark("minus_rentili");
-        if (y > x) {
-            return x;
-        } else {
-            return y;
-        }
-    }
+    if (hasSkill("banling"))
+        return qMin(linghp, renhp);
     return hp;
 }
 
-int Player::getLingHp() const
+void Player::setRenHp(int renhp)
 {
-    if (hasSkill("banling")) {
-        int x = getMark("lingtili") - getMark("minus_lingtili");
-        return x;
+    if (this->renhp != renhp) {
+        this->renhp = renhp;
+        emit hp_changed();
     }
-    return hp;
+}
+
+void Player::setLingHp(int linghp)
+{
+    if (this->linghp != linghp) {
+        this->linghp = linghp;
+        emit hp_changed();
+    }
 }
 
 int Player::getRenHp() const
 {
-    if (hasSkill("banling")) {
-        int y = getMark("rentili") - getMark("minus_rentili");
-        return y;
-    }
-    return hp;
+    return renhp;
 }
+
+int Player::getLingHp() const
+{
+    return linghp;
+}
+
+
 
 int Player::getMaxHp() const
 {
@@ -111,7 +111,7 @@ void Player::setMaxHp(int max_hp)
 
 int Player::getLostHp() const
 {
-    return max_hp - qMax(hp, 0);
+    return max_hp - qMax(getHp(), 0);
 }
 
 bool Player::isWounded() const
@@ -119,7 +119,7 @@ bool Player::isWounded() const
     if (hp < 0)
         return true;
     else
-        return hp < max_hp;
+        return getHp() < max_hp;
 }
 
 General::Gender Player::getGender() const
@@ -802,7 +802,7 @@ int Player::getMaxCards(const QString &except) const
 {
     int origin = Sanguosha->correctMaxCards(this, true, except);
     if (origin == 0)
-        origin = qMax(hp, 0);
+        origin = qMax(getHp(), 0);
     int rule = 0, total = 0, extra = 0;
     if (Config.MaxHpScheme == 3 && general2) {
         total = general->getMaxHp() + general2->getMaxHp();

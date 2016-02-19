@@ -1005,62 +1005,61 @@ public:
         events << GameStart << PreHpLost << DamageInflicted << PreHpRecover;
         frequency = Eternal;
     }
-/*
 
     virtual int getPriority(TriggerEvent) const
     {
         return -1;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-        if (!player) return QStringList();
-        if (!TriggerSkill::triggerable(player)) return QStringList();
         if (triggerEvent == GameStart) {
-            room->setPlayerMark(player, "lingtili", player->getMaxHp());
-            room->setPlayerMark(player, "rentili", player->getMaxHp());
-            room->setPlayerProperty(player, "hp", player->getMaxHp());
-        } else
-            return QStringList(objectName());
-        return QStringList();
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player && player->hasSkill(this)) {
+                room->setPlayerProperty(player, "renhp", player->getMaxHp());
+                room->setPlayerProperty(player, "linghp", player->getMaxHp());
+            }
+        }
     }
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
         if (triggerEvent == PreHpLost) {
-            int x = player->getMark("lingtili");
-            int y = player->getMark("rentili");
-            int minus_x = player->getMark("minus_lingtili");
-            int minus_y = player->getMark("minus_rentili");
+            HpLostStruct hplost = data.value<HpLostStruct>();
+            if (hplost.player->hasSkill(this))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, hplost.player, hplost.player, NULL, true);
+        } else if (triggerEvent == DamageInflicted) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.to->hasSkill(this)) 
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
+        } else if (triggerEvent == PreHpRecover) {
+            RecoverStruct recov = data.value<RecoverStruct>();
+            if (recov.to->hasSkill(this))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, recov.to, recov.to, NULL, true);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *player = invoke->invoker;
+        if (triggerEvent == PreHpLost) {
             player->tag["banling_minus"] = data;
             for (int i = 0; i < data.toInt(); i++) {
-
-                QStringList choices;
-
-                choices << "lingtili";
-                choices << "rentili";
-                QString choice = room->askForChoice(player, "banling_minus", choices.join("+"));
+                QString choice = room->askForChoice(player, "banling_minus", "lingtili+rentili");
                 if (choice == "lingtili") {
-                    if (x > 0)
-                        x = x - 1;
-                    else
-                        minus_x = minus_x + 1;
                     room->touhouLogmessage("#lingtilidamage", player, "banling", QList<ServerPlayer *>(), QString::number(1));
+                    room->setPlayerProperty(player, "linghp", player->getLingHp() - 1);
+                    
                 } else if (choice == "rentili") {
-                    if (y > 0)
-                        y = y - 1;
-                    else
-                        minus_y = minus_y + 1;
                     room->touhouLogmessage("#rentilidamage", player, "banling", QList<ServerPlayer *>(), QString::number(1));
+                    room->setPlayerProperty(player, "renhp", player->getRenHp() - 1);
                 }
             }
-            room->setPlayerMark(player, "lingtili", x);
-            room->setPlayerMark(player, "rentili", y);
-            room->setPlayerMark(player, "minus_lingtili", minus_x);
-            room->setPlayerMark(player, "minus_rentili", minus_y);
+            
             room->notifySkillInvoked(player, objectName());
-            room->setPlayerProperty(player, "hp", qMin(x - minus_x, y - minus_y));
-
+            room->setPlayerProperty(player, "hp", player->getHp());
 
             LogMessage log;
             log.type = "#LoseHp";
@@ -1077,37 +1076,19 @@ public:
             return true;
         } else if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
-            int x = player->getMark("lingtili");
-            int y = player->getMark("rentili");
-            int minus_x = player->getMark("minus_lingtili");
-            int minus_y = player->getMark("minus_rentili");
             player->tag["banling_minus"] = QVariant::fromValue(damage.damage);
             for (int i = 0; i < damage.damage; i++) {
-
-                QStringList choices;
-
-                choices << "lingtili";
-                choices << "rentili";
-                QString choice = room->askForChoice(player, "banling_minus", choices.join("+"));
+                QString choice = room->askForChoice(player, "banling_minus", "lingtili+rentili");
                 if (choice == "lingtili") {
-                    if (x > 0)
-                        x = x - 1;
-                    else
-                        minus_x = minus_x + 1;
                     room->touhouLogmessage("#lingtilidamage", player, "banling", QList<ServerPlayer *>(), QString::number(1));
+                    room->setPlayerProperty(player, "linghp", player->getLingHp() - 1);
                 }
                 if (choice == "rentili") {
-                    if (y > 0)
-                        y = y - 1;
-                    else
-                        minus_y = minus_y + 1;
                     room->touhouLogmessage("#rentilidamage", player, "banling", QList<ServerPlayer *>(), QString::number(1));
+                    room->setPlayerProperty(player, "renhp", player->getRenHp() - 1);
                 }
             }
-            room->setPlayerMark(player, "lingtili", x);
-            room->setPlayerMark(player, "rentili", y);
-            room->setPlayerMark(player, "minus_lingtili", minus_x);
-            room->setPlayerMark(player, "minus_rentili", minus_y);
+
 
             QVariant qdata = QVariant::fromValue(damage);
             room->getThread()->trigger(PreDamageDone, room, qdata);
@@ -1116,8 +1097,7 @@ public:
 
 
             room->notifySkillInvoked(player, objectName());
-            int z = qMin(x - minus_x, y - minus_y);
-            room->setPlayerProperty(damage.to, "hp", z);
+            room->setPlayerProperty(damage.to, "hp", player->getHp());
 
             room->getThread()->trigger(Damage, room, qdata);
 
@@ -1129,37 +1109,23 @@ public:
         } else if (triggerEvent == PreHpRecover) {
             RecoverStruct recov = data.value<RecoverStruct>();
             for (int i = 0; i < recov.recover; i++) {
-                int x = player->getMark("lingtili");
-                int y = player->getMark("rentili");
-                int minus_x = player->getMark("minus_lingtili");
-                int minus_y = player->getMark("minus_rentili");
                 QString choice = "rentili";
 
-                if (x < player->getMaxHp() && y < player->getMaxHp())
+                if (player->getLingHp() < player->getMaxHp() && player->getRenHp() < player->getMaxHp())
                     choice = room->askForChoice(player, "banling_plus", "lingtili+rentili");
                 else {
-                    if (x == player->getMaxHp())
+                    if (player->getLingHp() == player->getMaxHp())
                         choice = "rentili";
                     else
                         choice = "lingtili";
                 }
                 if (choice == "rentili") {
-                    if (minus_y == 0)
-                        room->setPlayerMark(player, "rentili", y + 1);
-                    else {
-                        minus_y = minus_y - 1;
-                        room->setPlayerMark(player, "minus_rentili", minus_y);
-                    }
+                    room->setPlayerProperty(player, "renhp", player->getRenHp() + 1);
                     room->touhouLogmessage("#rentilirecover", player, "banling", QList<ServerPlayer *>(), QString::number(1));
                     continue;
                 }
                 if (choice == "lingtili") {
-                    if (minus_x == 0)
-                        room->setPlayerMark(player, "lingtili", x + 1);
-                    else {
-                        minus_x = minus_x - 1;
-                        room->setPlayerMark(player, "minus_lingtili", minus_x);
-                    }
+                    room->setPlayerProperty(player, "linghp", player->getLingHp() + 1);
                     room->touhouLogmessage("#lingtilirecover", player, "banling", QList<ServerPlayer *>(), QString::number(1));
                     continue;
                 }
@@ -1167,7 +1133,7 @@ public:
             room->notifySkillInvoked(player, objectName());
         }
         return false;
-    }*/
+    }
 };
 
 class Rengui : public PhaseChangeSkill
@@ -3374,8 +3340,6 @@ public:
         if (damage.to->hasSkill("banling")) {
             room->setPlayerMark(damage.to, "lingtili", victim_newHp);
             room->setPlayerMark(damage.to, "rentili", victim_newHp);
-            //room->setPlayerMark(player, "minus_lingtili", minus_x);
-            //room->setPlayerMark(player, "minus_rentili", minus_y);
             room->setPlayerProperty(damage.to, "hp", victim_newHp);
         } else
             room->setPlayerProperty(damage.to, "hp", victim_newHp);

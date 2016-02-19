@@ -80,7 +80,11 @@ public:
 
     // property setters/getters
     int getHp() const;
+	int getRenHp() const;
+	int getLingHp() const;
     void setHp(int hp);
+	void setRenHp(int renhp);
+	void setLingHp(int linghp);
     int getMaxHp() const;
     void setMaxHp(int max_hp);
     int getLostHp() const;
