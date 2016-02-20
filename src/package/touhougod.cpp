@@ -1225,7 +1225,6 @@ public:
     }
 };
 
-#pragma message WARN("todo_lwtmusou: rewrite it after adjusting move event")
 class Gaoao : public TriggerSkill
 {
 public:
@@ -1234,39 +1233,42 @@ public:
         events << BeforeCardsMove;
         frequency = Compulsory;
     }
-/*
+    //priority?
 
-    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
-        if (!TriggerSkill::triggerable(player)) return QStringList();
-        if (player->isCurrent())
-            return QStringList();
         if (room->getTag("FirstRound").toBool())
-            return QStringList();
+            return QList<SkillInvokeDetail>();
+
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (move.to != NULL && move.to == player)
-            return QStringList(objectName());
-        return QStringList();
+        ServerPlayer *player = qobject_cast<ServerPlayer *>(move.to);
+        if (player != NULL && player->hasSkill(this) && !player->isCurrent()
+            && (move.to_place == Player::PlaceHand || move.to_place == Player::PlaceEquip || move.to_place == Player::PlaceDelayedTrick))
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+        
+        return QList<SkillInvokeDetail>();
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (move.to != NULL && move.to == player && move.to_place != Player::PlaceSpecial) {
-            room->touhouLogmessage("#TriggerSkill", player, objectName());
-            room->notifySkillInvoked(player, objectName());
-            DummyCard dummy(move.card_ids);
-            CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), objectName(), "");
-            room->throwCard(&dummy, reason, NULL);
+        ServerPlayer *player = invoke->invoker;
+        room->touhouLogmessage("#TriggerSkill", player, objectName());
+        room->notifySkillInvoked(player, objectName());
+        DummyCard dummy(move.card_ids);
 
-            move.card_ids.clear();
-            move.from_places.clear();
-            move.from_pile_names.clear();;
+        move.card_ids.clear();
+        move.from_places.clear();
+        move.from_pile_names.clear();
 
-            data = QVariant::fromValue(move);
-        }
+        data = QVariant::fromValue(move);
+        
+        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), objectName(), "");
+        room->throwCard(&dummy, reason, NULL);
+
+        
         return false;
-    }*/
+    }
 };
 
 
@@ -2196,6 +2198,7 @@ public:
 
 
 
+
 #pragma message WARN("todo_lwtmusou: rewrite it after re-defining extra phase in other player's turn")
 class Qinlue : public TriggerSkill
 {
@@ -2203,65 +2206,76 @@ public:
     Qinlue() : TriggerSkill("qinlue")
     {
         events << EventPhaseChanging;
-    }/*
-    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer* &) const
-    {
-        ServerPlayer *source = room->findPlayerBySkillName(objectName());
-        if (!source) return QStringList();
-        ServerPlayer *current = room->getCurrent();
-        if (!current || current->getMark("touhou-extra") > 0)  return QStringList();
-        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if (change.to == Player::Play && current != source && !current->isSkipped(Player::Play))
-            return QStringList(objectName());
-        return QStringList();
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
-        ServerPlayer *source = room->findPlayerBySkillName(objectName());
-        ServerPlayer *current = room->getCurrent();
+       
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if (change.to == Player::Play && current != source && !current->isSkipped(Player::Play)) {
-            QString  prompt = "@qinlue-discard:" + current->objectName();
-            const Card *card = room->askForCard(source, "Slash,EquipCard", prompt, QVariant::fromValue(current), Card::MethodDiscard, current, false, "qinlue");
-            if (card != NULL) {
-                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), current->objectName());
+        ServerPlayer *current =  change.player;
+        if (!current || !current->isCurrent() || change.to != Player::Play || current->isSkipped(Player::Play))
+            return QList<SkillInvokeDetail>();
 
-                QString  prompt = "@qinlue-discard1:" + source->objectName();
-                const Card *card1 = room->askForCard(current, "Jink", prompt, QVariant::fromValue(source), Card::MethodDiscard);
-                if (!card1) {
-                    current->skip(Player::Play);
+        QVariant extraTag = room->getTag("touhou-extra");
+        bool nowExtraTurn = extraTag.canConvert(QVariant::Bool) && extraTag.toBool();
 
-                    source->tag["qinlue_current"] = QVariant::fromValue(current);
-                    //room->setPlayerMark(source, "touhou-extra", 1);
-                    source->setFlags("qinlue");
-                    source->setPhase(Player::Play);
-                    //current->setPhase(Player::NotActive);
-                    current->setPhase(Player::PhaseNone);
-                    //room->setCurrent(source);
-                    room->broadcastProperty(source, "phase");
-                    room->broadcastProperty(current, "phase");
-                    RoomThread *thread = room->getThread();
-                    QVariant s = QVariant::fromValue(source);
-                    if (!thread->trigger(EventPhaseStart, room, s))
-                        thread->trigger(EventPhaseProceeding, room, s);
+        if (nowExtraTurn)
+            return QList<SkillInvokeDetail>();
 
-                    thread->trigger(EventPhaseEnd, room, s);
-                    //room->setCurrent(current);
-
-                    source->changePhase(Player::Play, Player::NotActive);
-
-                    //room->setPlayerMark(source, "touhou-extra", 0);
-                    current->setPhase(Player::PhaseNone);
-
-                    source->setFlags("-qinlue");
-                    room->broadcastProperty(source, "phase");
-                }
-            }
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *source, room->findPlayersBySkillName(objectName())) {
+            if (current != source && source->canDiscard(source, "he"))
+                d << SkillInvokeDetail(this, source, source);
         }
+        return d;
+    }
 
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *source = invoke->invoker;
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        ServerPlayer *current = change.player;
+
+        QString  prompt = "@qinlue-discard:" + current->objectName();
+        const Card *card = room->askForCard(source, "Slash,EquipCard", prompt, QVariant::fromValue(current), Card::MethodDiscard, current, false, "qinlue");
+        return card != NULL;
+    }
+       
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *source = invoke->invoker;
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        ServerPlayer *current = change.player;
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), current->objectName());
+
+        QString  prompt = "@qinlue-discard1:" + source->objectName();
+        const Card *card1 = room->askForCard(current, "Jink", prompt, QVariant::fromValue(source), Card::MethodDiscard);
+        if (!card1) {
+            current->skip(Player::Play);
+
+            source->tag["qinlue_current"] = QVariant::fromValue(current);
+            source->setFlags("qinlue");
+            source->setPhase(Player::Play);
+            current->setPhase(Player::PhaseNone);
+            room->broadcastProperty(source, "phase");
+            room->broadcastProperty(current, "phase");
+            RoomThread *thread = room->getThread();
+            QVariant s = QVariant::fromValue(source);
+            if (!thread->trigger(EventPhaseStart, room, s))
+                thread->trigger(EventPhaseProceeding, room, s);
+
+            thread->trigger(EventPhaseEnd, room, s);
+
+            source->changePhase(Player::Play, Player::NotActive);
+
+            current->setPhase(Player::PhaseNone);
+
+            source->setFlags("-qinlue");
+            room->broadcastProperty(source, "phase");
+        }
         return false;
-    }*/
+    }
+    
 };
 
 class QinlueEffect : public TriggerSkill
@@ -2271,53 +2285,63 @@ public:
     {
         events << EventPhaseChanging << EventPhaseStart;
     }
-/*
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
-        if (!player->hasFlag("qinlue"))
-            return QStringList();
-
-
         if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->hasFlag("qinlue") && player->getPhase() == Player::Play) {
-
                 ServerPlayer *target = player->tag["qinlue_current"].value<ServerPlayer *>();
-                if (target != NULL && target->isAlive()) {
-                    QList<int> ids;
-                    foreach(const Card *c, player->getHandcards())
-                        ids << (c->getId());
-                    player->addToPile("qinlue", ids, false);
-                    DummyCard *dummy = new DummyCard;
-                    dummy->deleteLater();
-                    dummy->addSubcards(target->getHandcards());
-                    room->obtainCard(player, dummy, false);
-                }
+                if (target != NULL && target->isAlive())
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true, target);
             }
         } else if (triggerEvent == EventPhaseChanging) {
+            ServerPlayer *player = data.value<PhaseChangeStruct>().player;
             if (player->hasFlag("qinlue")) {
                 ServerPlayer *target = player->tag["qinlue_current"].value<ServerPlayer *>();
-                if (target != NULL && target->isAlive()) {
-                    DummyCard *dummy = new DummyCard;
-                    dummy->deleteLater();
-                    dummy->addSubcards(player->getHandcards());
-                    room->obtainCard(target, dummy, false);
-                }
-                if (!player->getPile("qinlue").isEmpty()) {
-                    DummyCard *dummy1 = new DummyCard;
-                    dummy1->deleteLater();
-                    foreach(int c, player->getPile("qinlue"))
-                        dummy1->addSubcard(c);
-                    room->obtainCard(player, dummy1, false);
-                }
-                //if (target != NULL)  //for siyu broken
-                //    room->setCurrent(target);
-
+                if (target != NULL && target->isAlive() || !player->getPile("qinlue").isEmpty()) 
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true, target);
             }
         }
 
-        return QStringList();
-    }*/
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            ServerPlayer *target = player->tag["qinlue_current"].value<ServerPlayer *>();
+
+            QList<int> ids;
+            foreach(const Card *c, player->getHandcards())
+                ids << (c->getId());
+            player->addToPile("qinlue", ids, false);
+            DummyCard *dummy = new DummyCard;
+            dummy->deleteLater();
+            dummy->addSubcards(target->getHandcards());
+            room->obtainCard(player, dummy, false);
+        } else if (triggerEvent == EventPhaseChanging) {
+            ServerPlayer *player = data.value<PhaseChangeStruct>().player;
+            ServerPlayer *target = player->tag["qinlue_current"].value<ServerPlayer *>();
+            player->tag.remove("qinlue_current");
+            if (target != NULL && target->isAlive()) {
+                DummyCard *dummy = new DummyCard;
+                dummy->deleteLater();
+                dummy->addSubcards(player->getHandcards());
+                room->obtainCard(target, dummy, false);
+            }
+            if (!player->getPile("qinlue").isEmpty()) {
+                DummyCard *dummy1 = new DummyCard;
+                dummy1->deleteLater();
+                foreach(int c, player->getPile("qinlue"))
+                    dummy1->addSubcard(c);
+                room->obtainCard(player, dummy1, false);
+            }
+        }
+        return false;
+    }
+
 };
 
 
