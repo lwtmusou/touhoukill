@@ -404,11 +404,11 @@ public:
         if (e != CardsMoveOneTime) return;
 
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (!move.from || !move.from->isCurrent() || move.from->getPhase() != Player::Discard)
+        if (!move.from || move.from->getPhase() != Player::Discard)
             return;
         if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
             foreach(ServerPlayer *mokou, room->findPlayersBySkillName(objectName())) {
-                if (!mokou->isCurrent()) {
+                if (mokou != move.from) {
                     QVariantList LizhanToGet = mokou->tag["lizhan"].toList();
                     foreach(int card_id, move.card_ids) {
                         if (!LizhanToGet.contains(card_id) && Sanguosha->getCard(card_id)->isKindOf("Slash"))

@@ -67,9 +67,7 @@ public:
         yuyuko->tag.remove("sidie_target");
         if (target) {
             invoke->targets << target;
-            ServerPlayer *current = room->getCurrent();
-            if (current && current->isAlive())
-                room->setPlayerFlag(yuyuko, "sidie_used");
+            room->setPlayerFlag(yuyuko, "sidie_used");
             QList<ServerPlayer *> logto;
             logto << damage.to;
             room->touhouLogmessage("#Dongjie", yuyuko, "sidie", logto);
@@ -183,13 +181,14 @@ public:
         events << Damaged << AfterDrawNCards;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
         QList<SkillInvokeDetail> d;
         ServerPlayer *yukari = NULL;
         int num = 1;
         if (triggerEvent == AfterDrawNCards) {
-            yukari = room->getCurrent();
+            DrawNCardsStruct dc = data.value<DrawNCardsStruct>();
+            yukari = dc.player;
         } else if (triggerEvent == Damaged) {
             num = data.value<DamageStruct>().damage;
             yukari = data.value<DamageStruct>().to;
@@ -1380,9 +1379,10 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {  //check target 
         ServerPlayer  *target = NULL;
-        if (triggerEvent == EventPhaseStart && room->getCurrent() && room->getCurrent()->getPhase() == Player::Finish)
-            target = room->getCurrent();
-        else if (triggerEvent == Damaged) {
+        if (triggerEvent == EventPhaseStart) {
+            if (data.value<ServerPlayer *>() && data.value<ServerPlayer *>()->getPhase() == Player::Finish)
+                target = data.value<ServerPlayer *>();
+        } else if (triggerEvent == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.to->isAlive())
                 target = damage.to;
@@ -1703,7 +1703,7 @@ public:
 
         QList<SkillInvokeDetail> d;
         if (triggerEvent == DrawNCards) {
-            if (!draw.player->hasSkill(this))
+            if (draw.player->hasSkill(this))
                 d << SkillInvokeDetail(this, draw.player, draw.player);
         } else if (triggerEvent == AfterDrawNCards) {
             if (draw.player->hasFlag("juheUsed") && draw.player->getHp() > 0)

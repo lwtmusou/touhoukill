@@ -1190,7 +1190,7 @@ public:
             return QList<SkillInvokeDetail>();
 
         ServerPlayer *p = room->getCurrent();
-        if (!p->isCurrent())
+        if (!p || !p->isCurrent() || p->isDead())
             return QList<SkillInvokeDetail>();
 
         if (p->hasSkill(this) && damage.to->getMark("@jijing") == 0 && damage.to != p)

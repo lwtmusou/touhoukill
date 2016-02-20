@@ -21,6 +21,7 @@ return{
 	["yukari_god"] = "神 八云紫",
 	["&yukari_god"] = "神八云紫",
 	["#yukari_god"] = "幻想之界",
+	["illustrator:yukari_god"] = "NEKO",
 	["origin:yukari_god"] = "p号:28123130，个人ID：306422" ,
 	["illustrator:yukari_god_1"] = "Hong",
 	["origin:yukari_god_1"] = "p号:18527886，个人ID：2600911" ,

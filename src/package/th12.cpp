@@ -643,7 +643,7 @@ public:
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *nazurin = room->getCurrent();
-        if (nazurin && nazurin->hasSkill(objectName()) && move.to_place == Player::DiscardPile) {
+        if (nazurin && nazurin->isAlive() && nazurin->hasSkill(objectName()) && move.to_place == Player::DiscardPile) {
             QVariantList obtain_ids = nazurin->tag["souji"].toList();
             if (obtain_ids.length() > 0)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, nazurin, nazurin);

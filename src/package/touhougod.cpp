@@ -831,7 +831,7 @@ public:
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->hasSkill(this) && player->getPhase() == Player::Play)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, false);
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
         return QList<SkillInvokeDetail>();
     }
 

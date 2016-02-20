@@ -658,7 +658,6 @@ const Card *QijiCard::validate(CardUseStruct &use) const
 
     const Card *card = Sanguosha->getCard(subcards.first());
     Card *use_card = Sanguosha->cloneCard(to_use, card->getSuit(), card->getNumber());
-    //use_card->setSkillName("qiji");
     use_card->addSubcard(subcards.first());
     use_card->deleteLater();
     use.from->getRoom()->setPlayerMark(use.from, "qiji", 1);
@@ -686,7 +685,6 @@ const Card *QijiCard::validateInResponse(ServerPlayer *user) const
 
     const Card *card = Sanguosha->getCard(subcards.first());
     Card *use_card = Sanguosha->cloneCard(to_use, card->getSuit(), card->getNumber());
-    //use_card->setSkillName("qiji");
     use_card->addSubcard(subcards.first());
     use_card->deleteLater();
     user->getRoom()->setPlayerMark(user, "qiji", 1);
@@ -1294,10 +1292,8 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        ServerPlayer *current = room->getCurrent();
         ServerPlayer *player = invoke->invoker;
-        if (current && current->isAlive() && current->getPhase() != Player::NotActive)
-            player->setFlags("jinian_used");
+        player->setFlags("jinian_used");
         QList<int> get_ids;
         QVariantList ids = player->tag["jinian"].toList();
         player->tag.remove("jinian");
