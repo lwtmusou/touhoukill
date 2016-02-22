@@ -493,92 +493,48 @@ public:
     }
 };
 
-class Youming : public TriggerSkill
+class Zhanwang : public TriggerSkill
 {
 public:
-    Youming() :TriggerSkill("youming")
+    Zhanwang() : TriggerSkill("zhanwang")
     {
-        events << EventPhaseChanging;
+        events << DamageCaused;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
-        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        ServerPlayer *player = change.player;
-        if (player->hasSkill(this)) {
-            if ((change.to == Player::Draw && !player->isSkipped(Player::Draw)) ||
-                (change.to == Player::Play && !player->isSkipped(Player::Play)))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-        }
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.chain || damage.transfer || !damage.by_user || !damage.from || damage.from == damage.to || !damage.from->hasSkill(this))
+            return QList<SkillInvokeDetail>();
+        if (damage.card && damage.card->isKindOf("Slash") && !damage.to->getEquips().isEmpty())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL,false, damage.to);
         return QList<SkillInvokeDetail>();
     }
 
     bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        ServerPlayer *player = invoke->invoker;
-        switch (change.to) {
-            case Player::Draw:
-            {
-                return player->askForSkillInvoke(objectName(), "draw2play");
-                break;
-            }
-            case Player::Play:
-            {
-                return player->askForSkillInvoke(objectName(), "play2draw");
-                break;
-            }
-            default:
-                return false;
-        }
-        return false;
+        invoke->invoker->tag["zhanwang"] = data;
+        QString prompt = "target:" + invoke->preferredTarget->objectName();
+        return  invoke->invoker->askForSkillInvoke(objectName(), QVariant::fromValue(invoke->preferredTarget));
+            
     }
 
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        ServerPlayer *player = invoke->invoker;
-        switch (change.to) {
-            case Player::Draw:
-            {
-                player->skip(Player::Draw);
-                Player::Phase phase = player->getPhase();
-                player->setPhase(Player::Play);
-                room->broadcastProperty(player, "phase");
-                RoomThread *thread = room->getThread();
-                QVariant playerVariant = QVariant::fromValue(player);
-                if (!thread->trigger(EventPhaseStart, room, playerVariant))
-                    thread->trigger(EventPhaseProceeding, room, playerVariant);
-                thread->trigger(EventPhaseEnd, room, playerVariant);
-
-                player->setPhase(phase);
-                room->broadcastProperty(player, "phase");
-                break;
-            }
-            case Player::Play:
-            {
-                player->skip(Player::Play);
-                Player::Phase phase = player->getPhase();
-                player->setPhase(Player::Draw);
-                room->broadcastProperty(player, "phase");
-                RoomThread *thread = room->getThread();
-                QVariant playerVariant = QVariant::fromValue(player);
-                if (!thread->trigger(EventPhaseStart, room, playerVariant))
-                    thread->trigger(EventPhaseProceeding, room, playerVariant);
-                thread->trigger(EventPhaseEnd, room, playerVariant);
-
-                player->setPhase(phase);
-                room->broadcastProperty(player, "phase");
-                break;
-            }
-            default:
-                return false;
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
+        room->broadcastSkillInvoke(objectName());
+        QString prompt = "@zhanwang-discard:" + invoke->invoker->objectName();
+        const Card *card = room->askForCard(invoke->targets.first(), ".|.|.|equipped", prompt, data, Card::MethodDiscard);
+        if (card == NULL) {
+            DamageStruct damage = data.value<DamageStruct>();
+            damage.damage = damage.damage + 1;
+            data = QVariant::fromValue(damage);
         }
-
         return false;
     }
 };
+
 
 
 
@@ -2065,7 +2021,7 @@ TH07Package::TH07Package()
 
     General *youmu = new General(this, "youmu", "yym", 4, false);
     youmu->addSkill(new Shuangren);
-    youmu->addSkill(new Youming);
+    youmu->addSkill(new Zhanwang);
 
     General *prismriver = new General(this, "prismriver", "yym", 3, false);
     prismriver->addSkill(new Xiezou);
