@@ -201,6 +201,12 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 player->setMark("shituPhase", 0);
                 isShitu = true;
             }
+            bool isQinlue = false;
+            if (player->getMark("qinluePhase") > 0) { // for touhougod qinlue
+                player->setMark("qinluePhase", 0);
+                isQinlue = true;
+            }
+
 
             if (!player->faceUp()) {
                 room->setPlayerFlag(player, "-Global_FirstRound");
@@ -209,6 +215,11 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 if (isShitu) {
                     QList<Player::Phase> set_phases;
                     set_phases << Player::RoundStart << Player::Draw << Player::NotActive;
+                    player->play(set_phases);
+                }
+                else if (isQinlue) {
+                    QList<Player::Phase> set_phases;
+                    set_phases << Player::RoundStart << Player::Play << Player::NotActive;
                     player->play(set_phases);
                 } else
                     player->play();
