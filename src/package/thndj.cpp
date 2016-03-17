@@ -599,6 +599,8 @@ public:
         const Card *card = room->askForCard(invoke->owner, ".|.|.|hand!", prompt, data, Card::MethodNone);
         if (card != NULL)
             invoke->invoker->obtainCard(card, false);
+
+        return false;
     }
 
 };
