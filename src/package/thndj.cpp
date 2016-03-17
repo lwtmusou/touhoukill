@@ -58,7 +58,6 @@ public:
     }
 };
 
-
 class Sidou : public TriggerSkill
 {
 public:
@@ -290,6 +289,8 @@ public:
     }
 };
 
+
+
 class Yuanhu : public TriggerSkill
 {
 public:
@@ -402,18 +403,22 @@ public:
     }
 };
 
+
+
 HunpoCard::HunpoCard()
 {
     will_throw = true;
     target_fixed = true;
     mute = true;
 }
+
 void HunpoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
 {
     room->setPlayerProperty(source, "maxhp", source->getMaxHp() + 1);
     room->touhouLogmessage("#GainMaxHp", source, QString::number(1));
     room->touhouLogmessage("#GetHp", source, QString::number(source->getHp()), QList<ServerPlayer *>(), QString::number(source->getMaxHp()));
 }
+
 class Hunpo : public OneCardViewAsSkill
 {
 public:
@@ -444,7 +449,6 @@ public:
             return NULL;
     }
 };
-
 
 class Fanji : public TriggerSkill
 {
@@ -507,6 +511,98 @@ public:
         return false;
     }
 };
+
+
+
+#pragma message WARN("todo_lwtmusou:how about siyu?")
+class Zaiwu : public TriggerSkill
+{
+public:
+    Zaiwu() : TriggerSkill("zaiwu")
+    {
+        events << DrawNCards;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        DrawNCardsStruct qnum = data.value<DrawNCardsStruct>();
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            if (p == qnum.player)
+                continue;
+            if (p->getHp() == 1 && qnum.n > 0)
+                d << SkillInvokeDetail(this, qnum.player, qnum.player, NULL, false, qnum.player);
+            if (p->getHp() > qnum.player->getHp())
+                d << SkillInvokeDetail(this, qnum.player, qnum.player, NULL, false, qnum.player);
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        QString prompt = (invoke->invoker->getHp() == 1) ? "minus:" : "plus:";
+        prompt = prompt + invoke->preferredTarget->objectName();
+        return invoke->invoker->askForSkillInvoke(this, prompt);
+    }
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        bool minus = invoke->invoker->getHp() == 1;
+        DrawNCardsStruct draw = data.value<DrawNCardsStruct>();
+        if (minus)
+            draw.n = draw.n - 1;
+        else
+            draw.n = draw.n + 1;
+            
+        data = QVariant::fromValue(draw);
+        return false;
+    }
+};
+
+class Mengwei : public TriggerSkill
+{
+public:
+    Mengwei() : TriggerSkill("mengwei")
+    {
+        events << EventPhaseChanging;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        ServerPlayer *player = change.player;
+        if (change.to != Player::Play || player->isSkipped(Player::Play))
+            return QList<SkillInvokeDetail>();
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+            if (p->hasSkill(this) && p->isWounded() && !p->isKongcheng())
+                d << SkillInvokeDetail(this, p, player);
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        if (invoke->invoker->askForSkillInvoke(objectName(), QVariant::fromValue(invoke->owner))) {
+            invoke->invoker->skip(Player::Play);
+            return true;
+        }
+
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        RecoverStruct recover;
+        room->recover(invoke->owner, recover);
+        QString prompt = "mengwei_give:" + invoke->invoker->objectName();
+        const Card *card = room->askForCard(invoke->owner, ".|.|.|hand!", prompt, data, Card::MethodNone);
+        if (card != NULL)
+            invoke->invoker->obtainCard(card, false);
+    }
+
+};
+
 
 
 
@@ -620,7 +716,9 @@ THNDJPackage::THNDJPackage()
     youmu_ndj->addSkill(new Hunpo);
     youmu_ndj->addSkill(new Fanji);
 
-    //General *merry_ndj = new General(this, "merry_ndj", "wai", 1, false);
+    General *merry_ndj = new General(this, "merry_ndj", "wai", 1, false);
+    merry_ndj->addSkill(new Zaiwu);
+    merry_ndj->addSkill(new Mengwei);
 
     General *renko_ndj = new General(this, "renko_ndj", "wai", 4, false);
     renko_ndj->addSkill(new Liangzi);

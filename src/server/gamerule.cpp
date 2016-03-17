@@ -216,8 +216,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     QList<Player::Phase> set_phases;
                     set_phases << Player::RoundStart << Player::Draw << Player::NotActive;
                     player->play(set_phases);
-                }
-                else if (isQinlue) {
+                } else if (isQinlue) {
                     QList<Player::Phase> set_phases;
                     set_phases << Player::RoundStart << Player::Play << Player::NotActive;
                     player->play(set_phases);
