@@ -242,16 +242,7 @@ sgs.ai_choicemade_filter.cardResponded["@zhaoliao"] = function(self, player, pro
 		sgs.updateIntention(player, target, -80)
 	end
 end
---[[sgs.ai_choicemade_filter.skillChoice.zhaoliao = function(self, player, promptlist)
-	local choice = promptlist[#promptlist]
-	local target =player:getTag("zhaoliao_target"):toPlayer()
-	if not target then return end	
-	if choice== "zhaoliao1" then  
-		sgs.updateIntention(player, target, -40)
-	else
-		sgs.updateIntention(player, target, -80)
-	end
-end]]
+
 
 
 
