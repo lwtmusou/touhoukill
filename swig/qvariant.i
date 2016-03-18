@@ -119,6 +119,10 @@ public:
         return $self->value<CardsMoveOneTimeStruct>();
     }
 
+	ChoiceMadeStruct toChoiceMade() const{
+        return $self->value<ChoiceMadeStruct>();
+    }
+
     void setValue(CardResponseStruct *resp) {
         $self->setValue(QVariant::fromValue(*resp));
     }

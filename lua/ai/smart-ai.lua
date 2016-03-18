@@ -2276,11 +2276,11 @@ function SmartAI:filterEvent(event, player, data)
 	-- choiceMade 我表示弃疗。。。
 	if event == sgs.ChoiceMade and self == sgs.recorder then
 		local s = data:toChoiceMade()
-		local strs = s.args:toStringList()
+		local promptlist = s.args
 		
-		if (s.type = sgs.ChoiceMadeStruct_Activate or s.type = sgs.ChoiceMadeStruct_CardUsed) then
+		if (s.type == sgs.ChoiceMadeStruct_Activate or s.type == sgs.ChoiceMadeStruct_CardUsed) then
 			local carduse =sgs.CardUseStruct()
-			local str = strs[#strs]
+			local str = promptlist[#promptlist]
 			
 			carduse:parse(str, self.room)
 			if carduse.card ~= nil then
@@ -2294,52 +2294,50 @@ function SmartAI:filterEvent(event, player, data)
 				end
 			end
 		else
-			--promptlist = data:toString():split(":")
-			--promptlist[1]
 			local tableName = "nil"
-			if s.type = sgs.ChoiceMadeStruct_CardResponded then
+			if s.type == sgs.ChoiceMadeStruct_CardResponded then
 				tableName = "cardResponded"
-			elseif s.type = sgs.ChoiceMadeStruct_SkillInvoke then
+			elseif s.type == sgs.ChoiceMadeStruct_SkillInvoke then
 				tableName = "skillInvoke"
-			elseif s.type = sgs.ChoiceMadeStruct_SkillChoice then
+			elseif s.type == sgs.ChoiceMadeStruct_SkillChoice then
 				tableName = "skillChoice"
-			elseif s.type = sgs.ChoiceMadeStruct_Nullification then
+			elseif s.type == sgs.ChoiceMadeStruct_Nullification then
 				tableName = "Nullification"
-			elseif s.type = sgs.ChoiceMadeStruct_CardChosen then	
+			elseif s.type == sgs.ChoiceMadeStruct_CardChosen then	
 				tableName = "cardChosen"
-			elseif s.type = sgs.ChoiceMadeStruct_AGChosen then	
+			elseif s.type == sgs.ChoiceMadeStruct_AGChosen then	
 				tableName = "AGChosen"
-			elseif s.type = sgs.ChoiceMadeStruct_CardShow then	
+			elseif s.type == sgs.ChoiceMadeStruct_CardShow then	
 				tableName = "cardShow"
-			elseif s.type = sgs.ChoiceMadeStruct_Peach then	
+			elseif s.type == sgs.ChoiceMadeStruct_Peach then	
 				tableName = "peach"
-			elseif s.type = sgs.ChoiceMadeStruct_CardDiscard then	
+			elseif s.type == sgs.ChoiceMadeStruct_CardDiscard then	
 				tableName = "cardDiscard"
-			elseif s.type = sgs.ChoiceMadeStruct_ViewCards then	
+			elseif s.type == sgs.ChoiceMadeStruct_ViewCards then	
 				tableName =	"viewCards"
-			elseif s.type = sgs.ChoiceMadeStruct_PlayerChosen then	
+			elseif s.type == sgs.ChoiceMadeStruct_PlayerChosen then	
 				tableName = "playerChosen"
-			elseif s.type = sgs.ChoiceMadeStruct_Yiji then	
+			elseif s.type == sgs.ChoiceMadeStruct_Yiji then	
 				tableName = "Yiji"
-			elseif s.type = sgs.ChoiceMadeStruct_Rende then	
+			elseif s.type == sgs.ChoiceMadeStruct_Rende then	
 				tableName = "Rende"
-			elseif s.type = sgs.ChoiceMadeStruct_Pindian then	
+			elseif s.type == sgs.ChoiceMadeStruct_Pindian then	
 				tableName = "pindian"
 			end
 			
 			local callbacktable = sgs.ai_choicemade_filter[tableName]
 			if callbacktable and type(callbacktable) == "table" then
 				local index = 1
-				if s.type = sgs.ChoiceMadeStruct_CardResponded then
+				if s.type == sgs.ChoiceMadeStruct_CardResponded then
 					--预估lack
-					if strs[#strs] == "_nil_" then
-						if strs[1]:match("jink") then sgs.card_lack[player:objectName()]["Jink"] = 1
-						elseif strs[1]:match("slash") then sgs.card_lack[player:objectName()]["Slash"] = 1
-						elseif strs[1]:match("peach") then sgs.card_lack[player:objectName()]["Peach"] = 1 end
+					if promptlist[#promptlist] == "_nil_" then
+						if promptlist[1]:match("jink") then sgs.card_lack[player:objectName()]["Jink"] = 1
+						elseif promptlist[1]:match("slash") then sgs.card_lack[player:objectName()]["Slash"] = 1
+						elseif promptlist[1]:match("peach") then sgs.card_lack[player:objectName()]["Peach"] = 1 end
 					end
 
-					if strs[2] == "@guicai-card" or strs[2] == "@guidao-card" or strs[2] == "@huanshi-card" then
-						if strs[#strs] == "_nil_" then
+					if promptlist[2] == "@guicai-card" or promptlist[2] == "@guidao-card" or promptlist[2] == "@huanshi-card" then
+						if promptlist[#promptlist] == "_nil_" then
 							sgs.RetrialPlayer = nil
 						else
 							sgs.RetrialPlayer = s.player
@@ -2347,10 +2345,10 @@ function SmartAI:filterEvent(event, player, data)
 					end
 					index = 2
 				end
-				local callback = callbacktable[strs[index]] or callbacktable.general
+				local callback = callbacktable[promptlist[index]] or callbacktable.general
 
 				if type(callback) == "function" then
-					callback(self, s.player, strs)
+					callback(self, s.player, promptlist)
 				end
 			end
 			--[[if data:toString() == "skillInvoke:fenxin:yes" then
@@ -2366,7 +2364,7 @@ function SmartAI:filterEvent(event, player, data)
 			end]]
 		end
 		
-		if  s.type = sgs.ChoiceMadeStruct_Kingdom then
+		if  s.type == sgs.ChoiceMadeStruct_Kingdom then
 			local lord = self.room:getLord()
 			if lord and lord:getGeneral():isLord() then
 				local hasKingdomLordSkill = false
@@ -2381,7 +2379,7 @@ function SmartAI:filterEvent(event, player, data)
 					end
 				end
 				if hasKingdomLordSkill then
-					local kingdomChoice  = strs[#strs]
+					local kingdomChoice  = promptlist[#promptlist]
 					if kingdomChoice ~= lord:getKingdom() then
 						sgs.updateIntention(player, lord, 50)
 					end
