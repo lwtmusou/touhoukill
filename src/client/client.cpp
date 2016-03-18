@@ -1413,31 +1413,12 @@ void Client::askForSuit(const QVariant &arg)
 void Client::askForKingdom(const QVariant &arg)
 {
     QStringList kingdoms = Sanguosha->getKingdoms();
-    kingdoms.removeOne("god"); // god kingdom does not really exist
-    QStringList touhou_kingdoms = Sanguosha->TouhouKingdoms;
 
     if (kingdoms.contains("zhu"))
         kingdoms.removeOne("zhu");
     if (kingdoms.contains("touhougod"))
         kingdoms.removeOne("touhougod");
-    touhou_kingdoms.removeOne("zhu");
-    touhou_kingdoms.removeOne("touhougod");
-    // these kingdoms does not really exist
-    JsonArray arr = arg.value<JsonArray>();
-    if (arr.length() == 1 && JsonUtils::isString(arr.first())) {
-        QString kingdom = arr.first().toString();
-        if (kingdom == "god") {
-            foreach (QString k, kingdoms) {
-                if (touhou_kingdoms.contains(k))
-                    kingdoms.removeOne(k);
-            }
-        } else if (kingdom == "zhu" || kingdom == "touhougod") {
-            foreach (QString k, kingdoms) {
-                if (!touhou_kingdoms.contains(k))
-                    kingdoms.removeOne(k);
-            }
-        }
-    }
+
     emit kingdoms_got(kingdoms);
     setStatus(ExecDialog);
 }
