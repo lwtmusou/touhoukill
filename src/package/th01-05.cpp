@@ -177,7 +177,7 @@ TH0105Package::TH0105Package()
     Q_UNUSED(chiyuri);
     General *rikako = new General(this, "rikako", "pc98", 4, false);
     Q_UNUSED(rikako);
-    General *kana = new General(this, "kana", "pc98", 4, false);
+    General *kana = new General(this, "kana", "pc98", 3, false);
     kana->addSkill(new Qianyi);
     kana->addSkill(new Mengxiao);
 

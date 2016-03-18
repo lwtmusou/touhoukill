@@ -710,9 +710,9 @@ THNDJPackage::THNDJPackage()
     kaguya_ndj->addSkill(new Huanyue);
     kaguya_ndj->addSkill(new Sizhai);
 
-    General *yukari = new General(this, "yukari_ndj", "yym", 3, false);
-    yukari->addSkill(new Yuanhu);
-    yukari->addSkill(new Shouxie);
+    General *yukari_ndj = new General(this, "yukari_ndj", "yym", 3, false);
+    yukari_ndj->addSkill(new Yuanhu);
+    yukari_ndj->addSkill(new Shouxie);
 
     General *youmu_ndj = new General(this, "youmu_ndj", "yym", 3, false);
     youmu_ndj->addSkill(new Hunpo);
