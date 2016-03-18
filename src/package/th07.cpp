@@ -2064,7 +2064,7 @@ TH07Package::TH07Package()
     youmu_slm->addSkill(new HpymSiyu);
     youmu_slm->addSkill(new Juhe);
 
-    General *ran_sp = new General(this, "ran_sp", "yym", 3, false);
+    General *ran_sp = new General(this, "ran_sp", "yym", 4, false);
     ran_sp->addSkill(new Shizhao);
     ran_sp->addSkill(new Jixiong);
     ran_sp->addSkill(new Jixiong2);

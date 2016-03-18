@@ -531,9 +531,9 @@ public:
             if (p == qnum.player)
                 continue;
             if (p->getHp() == 1 && qnum.n > 0)
-                d << SkillInvokeDetail(this, qnum.player, qnum.player, NULL, false, qnum.player);
+                d << SkillInvokeDetail(this, p, p, NULL, false, qnum.player);
             if (p->getHp() > qnum.player->getHp())
-                d << SkillInvokeDetail(this, qnum.player, qnum.player, NULL, false, qnum.player);
+                d << SkillInvokeDetail(this, p, p, NULL, false, qnum.player);
         }
         return d;
     }
@@ -718,7 +718,7 @@ THNDJPackage::THNDJPackage()
     youmu_ndj->addSkill(new Hunpo);
     youmu_ndj->addSkill(new Fanji);
 
-    General *merry_ndj = new General(this, "merry_ndj", "wai", 1, false);
+    General *merry_ndj = new General(this, "merry_ndj", "wai", 3, false);
     merry_ndj->addSkill(new Zaiwu);
     merry_ndj->addSkill(new Mengwei);
 
