@@ -514,7 +514,7 @@ public:
 
 
 
-#pragma message WARN("todo_lwtmusou:how about siyu?")
+
 class Zaiwu : public TriggerSkill
 {
 public:
@@ -530,9 +530,9 @@ public:
         foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
             if (p == qnum.player)
                 continue;
-            if (p->getHp() == 1 && qnum.n > 0)
-                d << SkillInvokeDetail(this, p, p, NULL, false, qnum.player);
             if (p->getHp() > qnum.player->getHp())
+                d << SkillInvokeDetail(this, p, p, NULL, false, qnum.player);
+            else if (p->getHp() == 1 && qnum.n > 0)
                 d << SkillInvokeDetail(this, p, p, NULL, false, qnum.player);
         }
         return d;
@@ -540,16 +540,16 @@ public:
 
     bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        QString prompt = (invoke->invoker->getHp() == 1) ? "minus:" : "plus:";
+        QString prompt =  (invoke->invoker->getHp()  > invoke->preferredTarget->getHp()) ? "plus:" : "minus:";
         prompt = prompt + invoke->preferredTarget->objectName();
         return invoke->invoker->askForSkillInvoke(this, prompt);
     }
 
     bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        bool minus = invoke->invoker->getHp() == 1;
+        bool plus = invoke->invoker->getHp()  > invoke->targets.first()->getHp();
         DrawNCardsStruct draw = data.value<DrawNCardsStruct>();
-        if (minus)
+        if (!plus)
             draw.n = draw.n - 1;
         else
             draw.n = draw.n + 1;
