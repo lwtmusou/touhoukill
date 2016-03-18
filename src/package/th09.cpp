@@ -1004,7 +1004,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         DrawNCardsStruct dc = data.value<DrawNCardsStruct>();
-        if (dc.n <= 0)
+        if (dc.n <= 0 || !dc.player->hasSkill(this))
             return QList<SkillInvokeDetail>();
 
         foreach (ServerPlayer *p, room->getOtherPlayers(dc.player)) {
