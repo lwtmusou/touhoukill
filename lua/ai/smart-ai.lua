@@ -2674,7 +2674,8 @@ function SmartAI:filterEvent(event, player, data)
 		if move.to   then to   = findPlayerByObjectName(self.room, move.to:objectName(), true) end
 		local reason = move.reason
 		local from_places = sgs.QList2Table(move.from_places)
-		local lord = getLord(from)
+		local lord
+		if from then lord = getLord(from) end
 
 		if self.room:findPlayerBySkillName("fenji") then
 			sgs.ai_fenji_target = nil
@@ -2883,9 +2884,8 @@ function SmartAI:filterEvent(event, player, data)
 	elseif event == sgs.GameStart then
 		sgs.debugmode = io.open("lua/ai/debug")
 		if sgs.debugmode then sgs.debugmode:close() end
-		--self.room:acquireSkill(self.room:getOwner(),"shenwei")
-		--self.room:acquireSkill(self.room:getOwner(),"qianxun")
-		if player:isLord() then
+
+		if player and player:isLord() then
 			if sgs.debugmode then logmsg("ai.html","<meta charset='utf-8'/>") end
 		end
 		
