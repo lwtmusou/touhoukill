@@ -36,8 +36,8 @@ return{
 	["illustrator:yukari_ndj"] = "年代记" ,
 	["yuanhu"] = "援护" ,
 	[":yuanhu"] = "其他角色的摸牌阶段，该角色可以少摸一张牌，令你摸一张牌，若如此做，你可以将至多两张手牌交给该角色" ,
-	["yuanhu:invoke"] = "您想发动 %src 的“援护”吗？" ,
-	["@yuanhu-exchange"] = "你可以交给 %src 至多两张手牌。" ,
+	["yuanhu:invoke"] = "您想发动 <font color=\"#FF8000\"><b>%src </b></font> 的“援护”吗？" ,
+	["@yuanhu-exchange"] = "你可以交给 <font color=\"#FF8000\"><b>%src </b></font> 至多两张手牌。" ,
 	["shouxie"] = "守楔" ,
 	[":shouxie"] = "锁定技，若你的手牌数不大于七，你跳过弃牌阶段。结束阶段开始时，你将手牌补至手牌上限的张数。" ,
 	

@@ -5214,7 +5214,7 @@ const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, in
     ChoiceMadeStruct s;
     s.player = player;
     s.type = ChoiceMadeStruct::CardExchange;
-    s.args << card->toString();
+    s.args << reason << card->toString();
     QVariant data = QVariant::fromValue(s);
     thread->trigger(ChoiceMade, this, data);
     return card;

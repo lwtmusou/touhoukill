@@ -318,12 +318,13 @@ public:
                 if (drawer.isEmpty())
                     return QList<SkillInvokeDetail>();
 
+
                 QList<SkillInvokeDetail> d;
                 foreach (const QString &s, drawer.toSet()) {
                     ServerPlayer *p = room->findPlayerByObjectName(s);
                     if (p == NULL)
                         continue;
-
+  
                     d << SkillInvokeDetail(this, p, dc.player, NULL, true);
                 }
                 return d;
@@ -337,14 +338,20 @@ public:
     {
         if (triggerEvent == DrawNCards) {
             QString prompt = "invoke:" + invoke->owner->objectName();
+            invoke->invoker->tag["yuanhu"] = QVariant::fromValue(invoke->owner);
             if (invoke->invoker->askForSkillInvoke(this, prompt)) {
                 DrawNCardsStruct dc = data.value<DrawNCardsStruct>();
                 --dc.n;
                 data = QVariant::fromValue(dc);
                 return true;
             }
-        } else
+        }
+        else {
+            QStringList drawer = invoke->invoker->tag.value("yuanhu_drawers", QStringList()).toStringList();
+            drawer.removeOne(invoke->owner->objectName());
+            invoke->invoker->tag["yuanhu_drawers"] = QVariant::fromValue(drawer);
             return true;
+        }  
 
         return false;
     }
@@ -355,8 +362,10 @@ public:
             invoke->invoker->setFlags("yuanhu_draw");
             QStringList drawer = invoke->invoker->tag.value("yuanhu_drawers", QStringList()).toStringList();
             drawer << invoke->owner->objectName();
+            invoke->invoker->tag["yuanhu_drawers"] = QVariant::fromValue(drawer);
         } else {
             invoke->owner->drawCards(1, objectName());
+            invoke->owner->tag["yuanhu_target"] = QVariant::fromValue(invoke->invoker);
             const Card *c = room->askForExchange(invoke->owner, objectName(), 2, 1, false, "@yuanhu-exchange:" + invoke->invoker->objectName(), true);
             if (c != NULL) {
                 CardMoveReason reason(CardMoveReason::S_REASON_GIVE, invoke->owner->objectName(), objectName(), QString());

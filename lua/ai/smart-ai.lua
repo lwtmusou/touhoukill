@@ -76,7 +76,8 @@ sgs.ai_choicemade_filter = 	{
 	Yiji = 					{},
 	Rende = 			    {},
 	viewCards = 			{},
-	pindian = 				{}
+	pindian = 				{},
+	cardExchange =          {}
 }
 
 sgs.card_lack =				{}
@@ -2323,6 +2324,8 @@ function SmartAI:filterEvent(event, player, data)
 				tableName = "Rende"
 			elseif s.type == sgs.ChoiceMadeStruct_Pindian then	
 				tableName = "pindian"
+			elseif s.type == sgs.ChoiceMadeStruct_CardExchange then
+				tableName = "cardExchange"
 			end
 			
 			local callbacktable = sgs.ai_choicemade_filter[tableName]
