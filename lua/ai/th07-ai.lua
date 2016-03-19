@@ -1122,3 +1122,32 @@ function SmartAI:touhouBreakDamage(damage,to)
 	end
 	return false
 end
+
+sgs.ai_skill_invoke.shizhao = true
+sgs.ai_skill_askforag.shizhao = function(self, card_ids)
+	local cards = {}
+	for _,id in pairs (card_ids) do
+		table.insert(cards, sgs.Sanguosha:getCard(id))
+	end
+	local current = self.room:getCurrent()
+	local inverse = not self:isFriend(current) 
+	self:sortByUseValue(cards, inverse)
+	
+	local value = self:getUseValue(cards[1])
+	if (self:isFriend(current) and value < 6 ) then
+		return cards[1]:getId()
+	elseif (not self:isFriend(current) and value >= 6) then
+		return cards[1]:getId()
+	end
+	return -1
+end
+
+sgs.ai_skill_invoke.jixiong = function(self,data)
+	local player = data:toPlayer()
+	if player then
+		return self:isEnemy(player)
+	end
+	return true
+end
+--sgs.ai_choicemade_filter.skillInvoke.jixiong = function(self, player, promptlist)
+
