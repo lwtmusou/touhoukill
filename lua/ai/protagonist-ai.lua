@@ -389,7 +389,7 @@ sgs.ai_skill_use_func.SaiqianCard = function(card, use, self)
 end
 sgs.ai_card_intention.SaiqianCard = -60
 
-sgs.ai_skill_choice.saiqian= function(self, choices, data)	
+sgs.ai_skill_choice.saiqian= function(self, choices, data)
 	local source=self.player:getTag("saiqian_source"):toPlayer()
 	if not source or not source:isWounded() or not self:isFriend(source) then return "cancel_saiqian" end
 	if  source:getHp()+1 > getBestHp(source) then return "cancel_saiqian" end
@@ -1180,7 +1180,7 @@ sgs.ai_skill_cardask["@yinyang_discard"] = function(self, data)
 	self:sortByCardNeed(cards)
 	return "$" .. cards[1]:getId()
 end
-sgs.ai_use_priority.YinyangCard = 10
+
 
 sgs.ai_skill_playerchosen.lingji = function(self, targets)
 	local target_table =sgs.QList2Table(targets)
