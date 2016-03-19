@@ -2334,9 +2334,9 @@ function SmartAI:filterEvent(event, player, data)
 				if s.type == sgs.ChoiceMadeStruct_CardResponded then
 					--预估lack
 					if promptlist[#promptlist] == "_nil_" then
-						if promptlist[1]:match("jink") then sgs.card_lack[player:objectName()]["Jink"] = 1
-						elseif promptlist[1]:match("slash") then sgs.card_lack[player:objectName()]["Slash"] = 1
-						elseif promptlist[1]:match("peach") then sgs.card_lack[player:objectName()]["Peach"] = 1 end
+						if promptlist[1]:match("jink") then sgs.card_lack[s.player:objectName()]["Jink"] = 1
+						elseif promptlist[1]:match("slash") then sgs.card_lack[s.player:objectName()]["Slash"] = 1
+						elseif promptlist[1]:match("peach") then sgs.card_lack[s.player:objectName()]["Peach"] = 1 end
 					end
 
 					if promptlist[2] == "@guicai-card" or promptlist[2] == "@guidao-card" or promptlist[2] == "@huanshi-card" then

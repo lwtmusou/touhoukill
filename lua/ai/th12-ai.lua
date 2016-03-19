@@ -1014,6 +1014,11 @@ sgs.ai_skill_askforag.shuxin = function(self, card_ids)
 			break
 		end
 	end
+	if preId > -1 then
+		self.player:gainMark("@nima")
+	else
+		self.player:gainMark("@woquaa")
+	end
 	local canShanshi = self.player:hasSkill("shanshi") and self.player:getMark("shanshi_invoke") == 0
 	
 	local getBlack = function(pre_id, id_table, checksuit, samesuit)
@@ -1021,6 +1026,9 @@ sgs.ai_skill_askforag.shuxin = function(self, card_ids)
 		for _,id in pairs (id_table) do
 			local c = sgs.Sanguosha:getCard(id)
 			local insert = pre_id < 0
+			if (not checksuit) then
+				insert = true
+			end
 			if (checkuit and samesuit and c:getSuit() == sgs.Sanguosha:getCard(pre_id):getSuit())  or 
 				( checksuit and not samesuit and c:getSuit() ~= sgs.Sanguosha:getCard(pre_id):getSuit()) then
 				insert = true
@@ -1059,11 +1067,11 @@ sgs.ai_skill_askforag.shuxin = function(self, card_ids)
 		if preId == -1 or not target:isWounded() then
 			local blacks, spades, clubs = getBlack(preId, card_ids, false, false)
 			if #spades == 0  and #clubs == 0 then return -1 end
-			self:sortByUseValue(blacks)
+			self:sortByUseValue(blacks, true)
 			return blacks[1]:getId()
 		else
 			local blacks, spades, clubs = getBlack(preId, card_ids, true, true)
-			self:sortByUseValue(blacks)
+			self:sortByUseValue(blacks, true)
 			return blacks[1]:getId()
 		end
 	end
