@@ -551,6 +551,7 @@ public:
     {
         QString prompt =  (invoke->invoker->getHp()  > invoke->preferredTarget->getHp()) ? "plus:" : "minus:";
         prompt = prompt + invoke->preferredTarget->objectName();
+        invoke->invoker->tag["zaiwu"] = QVariant::fromValue(invoke->preferredTarget);
         return invoke->invoker->askForSkillInvoke(this, prompt);
     }
 
@@ -592,6 +593,7 @@ public:
 
     bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
+        invoke->invoker->tag["mengwei"] = QVariant::fromValue(invoke->owner);
         if (invoke->invoker->askForSkillInvoke(objectName(), QVariant::fromValue(invoke->owner))) {
             invoke->invoker->skip(Player::Play);
             return true;
