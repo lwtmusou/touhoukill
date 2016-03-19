@@ -1014,11 +1014,6 @@ sgs.ai_skill_askforag.shuxin = function(self, card_ids)
 			break
 		end
 	end
-	if preId > -1 then
-		self.player:gainMark("@nima")
-	else
-		self.player:gainMark("@woquaa")
-	end
 	local canShanshi = self.player:hasSkill("shanshi") and self.player:getMark("shanshi_invoke") == 0
 	
 	local getBlack = function(pre_id, id_table, checksuit, samesuit)

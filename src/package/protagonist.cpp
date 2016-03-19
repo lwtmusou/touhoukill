@@ -1583,9 +1583,16 @@ void YinyangCard::onEffect(const CardEffectStruct &effect) const
     const Card *card2 = NULL;
     if (effect.to->canDiscard(effect.to, "h"))
         //room->askForDiscard(effect.to, "yinyang", 1, 1, false, false, "yinyang_cardchosen");
-        card1 = room->askForCard(effect.to, ".|.|.|hand!", "yinyang_cardchosen");
+        card1 = room->askForCard(effect.to, ".|.|.|hand!", "@yinyang_discard");
+    if (card1) {
+        effect.from->tag["yinyang_card"] = QVariant::fromValue(card1);
+        effect.from->tag["yinyang_target"] = QVariant::fromValue(effect.to);
+    }
+        
     if (effect.from->canDiscard(effect.from, "h"))
-        card2 = room->askForCard(effect.from, ".|.|.|hand!", "yinyang_cardchosen");
+        card2 = room->askForCard(effect.from, ".|.|.|hand!", "@yinyang_discard");
+    effect.from->tag.remove("yinyang_card");
+    effect.from->tag.remove("yinyang_target");
 
     if (card1 && card2) {
         if (card1->isRed() == card2->isRed()) {
@@ -1673,7 +1680,7 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), "@lingji", false, true);
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), objectName(), "@lingji", false, true);
         if (target) {
             invoke->targets << target;
             return true;
@@ -1683,6 +1690,7 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
         room->damage(DamageStruct(objectName(), invoke->invoker, invoke->targets.first()));
         return false;
     }

@@ -1118,24 +1118,87 @@ end
 sgs.ai_skill_invoke.xinghui = true
 
 
---[[sgs.ai_slash_prohibit.mokai = function(self, from, to, card)
-	local suit=card:getSuit()
-	if to:getMark("@tianyi_Weapon")>0 and to:getEquip(0):getSuit()==suit then
-		return self:isEnemy(to)
-	end
-	if to:getMark("@tianyi_Armor")>0 and to:getEquip(1):getSuit()==suit then
-		return self:isEnemy(to)
-	end
-	if to:getMark("@tianyi_DefensiveHorse")>0 and to:getEquip(2):getSuit()==suit then
-		return self:isEnemy(to)
-	end
-	if to:getMark("@tianyi_OffensiveHorse")>0 and to:getEquip(3):getSuit()==suit then
-		return self:isEnemy(to)
-	end
-	if to:getMark("@tianyi_Treasure")>0 and to:getEquip(4):getSuit()==suit then
-		return self:isEnemy(to)
-	end
-	return false
+local yinyang_skill = {}
+yinyang_skill.name = "yinyang"
+table.insert(sgs.ai_skills, yinyang_skill)
+yinyang_skill.getTurnUseCard = function(self)
+	if self.player:hasUsed("YinyangCard") then return nil end
+	return sgs.Card_Parse("@YinyangCard=.")
 end
-]]
+sgs.ai_skill_use_func.YinyangCard=function(card,use,self)
+	--local heart = getKnownCard(self.player, self.player, "heart", viewas, "h", false)
+	
+	local red = getKnownCard(self.player, self.player, "red", viewas, "h", false)
+	local black = getKnownCard(self.player, self.player, "black", viewas, "h", false)
+	if red > 0 and black > 0 then
+		local targets = {}
+		for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+			if not p:isKongcheng() then
+				if self:isFriend(p) and p:isWounded() then
+					table.insert(targets, p)
+				elseif self:isEnemy(p) and not self:isWeak(self.player) then
+					table.insert(targets, p)
+				end
+			end
+		end
+		self:sort(targets,"hp")
+		if #targets >0 then 
+			use.card = card
+			if use.to then
+				use.to:append(targets[1])
+				if use.to:length() >= 1 then return end
+			end
+		end
+	end
+end
+sgs.ai_skill_cardask["@yinyang_discard"] = function(self, data)
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	if self.player:getPhase() == sgs.Player_Play then
+		local target = self.player:getTag("yinyang_target"):toPlayer()
+		local card = self.player:getTag("yinyang_card"):toCard()
+		 
+		local same = target and not self:isFriend(target)
+		if card then
+			local tmp = {}
+			local hearts = {}
+			for _,c in pairs (cards) do
+				if same == c:sameColorWith(card) then
+					table.insert(tmp, c)
+					if c:getSuit() == sgs.Card_Heart and self.player:hasSkill("lingji") then
+						table.insert(hearts, c)
+					end
+				end
+			end
+			
+			self:sortByCardNeed(hearts)
+			if #hearts > 0 then return "$" .. hearts[1]:getId() end
+			self:sortByCardNeed(tmp)
+			if #tmp > 0 then  return "$" .. tmp[1]:getId() end
+		end
+	end
 
+	self:sortByCardNeed(cards)
+	return "$" .. cards[1]:getId()
+end
+sgs.ai_use_priority.YinyangCard = 10
+
+sgs.ai_skill_playerchosen.lingji = function(self, targets)
+	local target_table =sgs.QList2Table(targets)
+	self:sort(target_table, "hp")
+	for _,p in pairs (target_table) do
+		if self:isEnemy(p) then
+			local fakeDamage=sgs.DamageStruct()
+			fakeDamage.card=nil
+			fakeDamage.nature= sgs.DamageStruct_Normal
+			fakeDamage.damage=1
+			fakeDamage.from=self.player
+			fakeDamage.to=p
+			local willDamage = self:touhouNeedAvoidAttack(fakeDamage, self.player, p)
+			if willDamage then
+				return p
+			end
+		end
+	end
+	return nil
+end
+sgs.ai_playerchosen_intention.lingji = 60
