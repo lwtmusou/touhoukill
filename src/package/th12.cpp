@@ -1023,10 +1023,11 @@ public:
                 if (myo == NULL || myo == current || myo->getMark("shanshi_invoke") > 0)
                     return QList<SkillInvokeDetail>();
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, myo, myo, NULL, false, current);
-            } else if (move.from->isCurrent()) {
+            }
+            else {
                 // others lose a card in your round
                 ServerPlayer *myo = room->getCurrent();
-                if (myo == NULL || !myo->isCurrent() || myo->isDead() || myo->getMark("shanshi_invoke") > 0)
+                if (myo == NULL || !myo->hasSkill(this) || !myo->isCurrent() || myo->isDead() || myo->getMark("shanshi_invoke") > 0)
                     return QList<SkillInvokeDetail>();
 
                 ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
@@ -1041,6 +1042,7 @@ public:
 
     bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
+        invoke->invoker->tag["shanshi"] = QVariant::fromValue(invoke->preferredTarget);
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
             invoke->invoker->setMark("shanshi_invoke", 1);
             return true;
@@ -1106,11 +1108,13 @@ void ShuxinCard::onEffect(const CardEffectStruct &effect) const
             room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
         }
 
+        effect.from->tag["shuxin_target"] = QVariant::fromValue(effect.to);
         room->fillAG(card_ids + disabled + selected, effect.from, disabled + selected);
         int id = room->askForAG(effect.from, card_ids, true, "shuxin");
+        room->clearAG(effect.from);
         if (id == -1)
             break;
-        room->clearAG(effect.from);
+        
         card_ids.removeOne(id);
         selected << id;
     }

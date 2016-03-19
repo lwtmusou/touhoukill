@@ -914,3 +914,159 @@ sgs.ai_playerchosen_intention.nuhuo =function(self, from, to)
 	end
 end
 
+sgs.ai_skill_invoke.shanshi = function(self, data)
+	local target = data:toPlayer()
+	return target and self:isFriend(target)
+end
+sgs.ai_choicemade_filter.skillInvoke.shanshi = function(self, player, promptlist)
+	local target = player:getTag("shanshi"):toPlayer()
+	if target  and promptlist[#promptlist] == "yes" then
+		sgs.updateIntention(player,  target, -30)
+	end
+end
+
+
+local shuxin_skill = {}
+shuxin_skill.name = "shuxin"
+table.insert(sgs.ai_skills, shuxin_skill)
+shuxin_skill.getTurnUseCard = function(self)
+	if self.player:hasUsed("ShuxinCard") then return nil end	
+	return sgs.Card_Parse("@ShuxinCard=.")
+end
+
+function SmartAI:shuxinValue(target)
+	local value = 0
+	if not self:isFriend(target) and not self:isEnemy(target) then return 0 end
+	if self:touhouHandCardsFix(target) and self:isEnemy(target) then
+		return 0
+	end
+	if self:touhouHandCardsFix(target) and self:isFriend(target) then
+		value = value + 10
+	end
+	
+	
+	local canShanshi = self.player:hasSkill("shanshi") and self.player:getMark("shanshi_invoke") == 0
+	local spade = getKnownCard(target, self.player, "spade", viewas, "h", false)
+	local club = getKnownCard(target, self.player, "club", viewas, "h", false)
+	if  (spade > 0 or club > 0) then
+		if (self:isEnemy(target)) then
+			value = value + 30
+			if (spade > 0 and club > 0 and not target:isWounded()) then
+				value = value + 20
+			end
+		elseif (self:isFriend(target)) then
+			if canShanshi  and target:objectName() ~= self.player:objectName() then
+				value = value + 10
+			end
+			if spade > 0 and club > 0 and target:isWounded() then
+				value = value + 30
+			end
+		end
+	else
+		if (self:isEnemy(target)) then
+			value = value + target:getCards("h"):length()
+		elseif (self:isFriend(target) and target:isWounded()) then
+			if canShanshi and target:objectName() ~= self.player:objectName() then
+				value = value + 10
+			end
+		end
+	end
+	return value
+end
+sgs.ai_skill_use_func.ShuxinCard=function(card,use,self)
+	local targets_table = {}
+	for _,p in sgs.qlist(self.room:getAllPlayers()) do
+		if not p:isKongcheng() then 
+			local array={player= p, value=self:shuxinValue(p)}
+			table.insert(targets_table,array)
+		end
+	end
+	local compare_func = function(a, b)
+		return a.value > b.value 
+	end
+	table.sort(targets_table, compare_func)
+	
+	if targets_table[1].value > 0 then
+		use.card = card
+		if use.to then
+			use.to:append(targets_table[1].player)
+			if use.to:length() >= 1 then return end
+		end
+	end
+end
+sgs.ai_use_priority.ShuxinCard = sgs.ai_use_priority.Dismantlement + 0.2
+--情况太tm复杂
+sgs.ai_card_intention.ShuxinCard = function(self, card, from, tos)
+	local canShanshi = from:hasSkill("shanshi") and from:getMark("shanshi_invoke") == 0
+	if not tos[1]:isWounded() and not canShanshi and not self:touhouHandCardsFix(tos[1]) then
+		sgs.updateIntention(from, tos[1], 50)
+	end
+end
+sgs.ai_skill_askforag.shuxin = function(self, card_ids)
+	
+	local preId = -1
+	local target = self.player:getTag("shuxin_target"):toPlayer()
+	if not target then return -1 end
+	
+	for _,c in sgs.qlist(target:getHandcards()) do
+		if c:isBlack() and not table.contains(card_ids, c:getId()) then
+			preId = c:getId()
+			break
+		end
+	end
+	local canShanshi = self.player:hasSkill("shanshi") and self.player:getMark("shanshi_invoke") == 0
+	
+	local getBlack = function(pre_id, id_table, checksuit, samesuit)
+		local tmp, spade, club =  {}, {}, {}
+		for _,id in pairs (id_table) do
+			local c = sgs.Sanguosha:getCard(id)
+			local insert = pre_id < 0
+			if (checkuit and samesuit and c:getSuit() == sgs.Sanguosha:getCard(pre_id):getSuit())  or 
+				( checksuit and not samesuit and c:getSuit() ~= sgs.Sanguosha:getCard(pre_id):getSuit()) then
+				insert = true
+			end
+			if  insert then
+				table.insert(tmp, c)
+				if c:getSuit() == sgs.Card_Spade then
+					table.insert(spade, c)
+				end
+				if c:getSuit() == sgs.Card_Club then
+					table.insert(club, c)
+				end
+			end
+		end
+		return tmp, spade, club
+	end 
+
+	if self:isFriend(target) and target:isWounded() then
+		local blacks, spades, clubs = getBlack(preId, card_ids, true, false)
+		if #spades == 0  and #clubs == 0 then return -1 end
+		if preId == -1 then
+			if #spades > 0 and #clubs > 0 then
+				self:sortByUseValue(spades)
+				return spades[1]:getId()
+			elseif canShanshi then
+				self:sortByUseValue(blacks)
+				return blacks[1]:getId()
+			end
+		else
+			self:sortByUseValue(blacks)
+			return blacks[1]:getId()
+		end
+	end
+	
+	if self:isEnemy(target) then
+		if preId == -1 or not target:isWounded() then
+			local blacks, spades, clubs = getBlack(preId, card_ids, false, false)
+			if #spades == 0  and #clubs == 0 then return -1 end
+			self:sortByUseValue(blacks)
+			return blacks[1]:getId()
+		else
+			local blacks, spades, clubs = getBlack(preId, card_ids, true, true)
+			self:sortByUseValue(blacks)
+			return blacks[1]:getId()
+		end
+	end
+	
+	return -1
+end

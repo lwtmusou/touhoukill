@@ -5336,13 +5336,14 @@ function getKnownNum(player)
 	return known
 end
 
-function getKnownCard(player, from, class_name, viewas, flags)
+function getKnownCard(player, from, class_name, viewas, flags, pile)
 	if not player or (flags and type(flags) ~= "string") then global_room:writeToConsole(debug.traceback()) return 0 end
 	flags = flags or "h"
 	player = findPlayerByObjectName(global_room, player:objectName())
 	from = from or global_room:getCurrent()
+	pile = pile or true
 	local cards = player:getCards(flags)
-	if flags:match("h") then
+	if flags:match("h") and pile then
 		cards=sgs.touhouAppendExpandPileToList(player,cards)
 	end
 	local known = 0
