@@ -995,11 +995,8 @@ public:
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive) {
-                foreach (ServerPlayer *p, room->getAllPlayers())
-                    p->setMark("shanshi_invoke", 0);
-            }
+            foreach (ServerPlayer *p, room->getAllPlayers())
+                p->setMark("shanshi_invoke", 0);
         }
     }
 

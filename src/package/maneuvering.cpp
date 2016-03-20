@@ -281,7 +281,7 @@ public:
                         return QList<SkillInvokeDetail>();
                     }
                     ServerPlayer *invoker = qobject_cast<ServerPlayer *>(move.from);
-                    if (invoker == NULL)
+                    if (invoker == NULL || invoker->isDead())
                         return QList<SkillInvokeDetail>();
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, invoker, invoker, NULL, true);
                 }
