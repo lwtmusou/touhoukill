@@ -1151,3 +1151,69 @@ sgs.ai_skill_invoke.jixiong = function(self,data)
 end
 --sgs.ai_choicemade_filter.skillInvoke.jixiong = function(self, player, promptlist)
 
+
+
+function SmartAI:canHuayin(player)
+	for _,c in sgs.qlist(player:getCards("h")) do
+		if not c:isKindOf("BasicCard") then
+			return true
+		end
+	end
+	return false
+end
+local huayin_skill = {}
+huayin_skill.name = "huayin"
+table.insert(sgs.ai_skills, huayin_skill)
+huayin_skill.getTurnUseCard = function(self)
+	if self.player:getMark("Global_PreventPeach")>0  or self.player:hasFlag("Global_huayinFailed") then return nil end
+	if self:canHuayin(self.player) then
+		local ids = {}
+		for _, c in sgs.qlist(self.player:getHandcards()) do
+				table.insert(ids, c:getId())
+		end
+		return sgs.Card_Parse("@HuayinCard=" .. table.concat(ids, "+"))
+	end
+end
+
+function sgs.ai_cardsview_valuable.huayin(self, class_name, player)
+	if class_name == "Peach" then
+		if (sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE) then
+			return nil
+		end
+		if self.player:getMark("Global_PreventPeach")>0  or player:hasFlag("Global_huayinFailed") then return nil end
+		local dying = player:getRoom():getCurrentDyingPlayer()
+		if self:canHuayin(player) and dying and self:isFriend(dying, player)  then
+			local ids = {}
+			for _, c in sgs.qlist(player:getHandcards()) do
+				table.insert(ids, c:getId())
+			end
+			return "@HuayinCard=" .. table.concat(ids, "+")
+		end
+		--if not dying or dying:objectName() == player:objectName() then return nil end
+		return nil
+	end
+end
+sgs.ai_skill_invoke.huanling = true
+sgs.ai_skill_use_func.HuayinCard=function(card,use,self)
+	if (sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_PLAY) then
+		local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+		local card=sgs.cloneCard("peach", sgs.Card_NoSuit, 0)
+		card:setSkillName("huayin")
+		if self.player:isWounded() and not self.player:isCardLimited(card, sgs.Card_MethodUse, true) then
+			use.card = card
+		end
+		--响应【宴会】没达成
+		--self:useBasicCard(card, dummy_use)
+		--if dummy_use.to:isEmpty() then
+		--	dummy_use.to:append(self.player)
+		--end
+		
+		--[[if use.to then
+			use.to:append(dummy_use.to:first())
+			if use.to:length() >= 1 then return end
+		end]]
+	else
+		use.card=card
+	end
+end
+sgs.ai_use_priority.HuayinCard = sgs.ai_use_priority.ExNihilo -0.3
