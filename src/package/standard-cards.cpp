@@ -849,6 +849,9 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardAskedStruct ask = data.value<CardAskedStruct>();
+        if (ask.pattern != "jink")
+            return QList<SkillInvokeDetail>();
+
         ServerPlayer *player = ask.player;
         if (!equipAvailable(player, EquipCard::ArmorLocation, objectName()))
             return QList<SkillInvokeDetail>();
