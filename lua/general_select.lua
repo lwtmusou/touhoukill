@@ -137,89 +137,89 @@ initialize = function()
 end
 
 --version 1: read table from etc folder
--- selectFirst = function(player, candidates) -- string
-	-- local values = {}
-	-- local role = player:getRole()
-	-- local lord = player:getRoom():getLord()
+selectFirst = function(player, candidates) -- string
+	local values = {}
+	local role = player:getRole()
+	local lord = player:getRoom():getLord()
 	
-	-- local seat_place
-	-- if player:getSeat() - 1 <= 2 then
-		-- seat_place = "1"
-	-- elseif player:getRoom():alivePlayerCount() - player:getSeat() <= 2 then
-		-- seat_place = "3"
-	-- else
-		-- seat_place = "2"
-	-- end
+	local seat_place
+	if player:getSeat() - 1 <= 2 then
+		seat_place = "1"
+	elseif player:getRoom():alivePlayerCount() - player:getSeat() <= 2 then
+		seat_place = "3"
+	else
+		seat_place = "2"
+	end
 	
-	-- for _, candidate in ipairs(candidates) do
-		-- local value = 5.0
-		-- local general = sgs.Sanguosha:getGeneral(candidate)
-		-- if role == "loyalist" and (general:getKingdom() == lord:getKingdom() or general:getKingdom() == "zhu" or general:getKingdom() == "touhougod") then
-			-- value = value * 1.04
-		-- end
-		-- local key = "_:" .. candidate .. ":" .. role
-		-- value = value * math.pow(1.1, first_general_table[key] or 0.0)
-		-- local key2 = lord:getGeneralName() .. ":" .. candidate .. ":" .. role
-		-- value = value * math.pow(1.1, first_general_table[key2] or 0.0)
+	for _, candidate in ipairs(candidates) do
+		local value = 5.0
+		local general = sgs.Sanguosha:getGeneral(candidate)
+		if role == "loyalist" and (general:getKingdom() == lord:getKingdom() or general:getKingdom() == "zhu" or general:getKingdom() == "touhougod") then
+			value = value * 1.04
+		end
+		local key = "_:" .. candidate .. ":" .. role
+		value = value * math.pow(1.1, first_general_table[key] or 0.0)
+		local key2 = lord:getGeneralName() .. ":" .. candidate .. ":" .. role
+		value = value * math.pow(1.1, first_general_table[key2] or 0.0)
 		
-		-- -- considering seat
-		-- local seat_key = "_:" .. candidate .. ":" .. role
-		-- local seat_str = general_seat_table[seat_key] or "_"
-		-- if (seat_str ~= "_") then
-			-- local seat_strs = string.split(seat_str, ":")
-			-- if (table.contains(seat_strs, seat_place .. "0")) then
-				-- value = value * 1.2
-			-- elseif (table.contains(seat_strs, seat_place .. "1")) then
-				-- value = value * 0.8
-			-- end
-		-- end
-		-- local seat_key2 = lord:getGeneralName() .. ":" .. candidate .. ":" .. role
-		-- local seat_str2 = general_seat_table[seat_key2] or "_"
-		-- if (seat_str2 ~= "_") then
-			-- local seat_strs2 = string.split(seat_str2, ":")
-			-- if (table.contains(seat_strs2, seat_place .. "0")) then
-				-- value = value * 1.2
-			-- elseif (table.contains(seat_strs2, seat_place .. "1")) then
-				-- value = value * 0.8
-			-- end
-		-- end
+		--considering seat
+		local seat_key = "_:" .. candidate .. ":" .. role
+		local seat_str = general_seat_table[seat_key] or "_"
+		if (seat_str ~= "_") then
+			local seat_strs = string.split(seat_str, ":")
+			if (table.contains(seat_strs, seat_place .. "0")) then
+				value = value * 1.2
+			elseif (table.contains(seat_strs, seat_place .. "1")) then
+				value = value * 0.8
+			end
+		end
+		local seat_key2 = lord:getGeneralName() .. ":" .. candidate .. ":" .. role
+		local seat_str2 = general_seat_table[seat_key2] or "_"
+		if (seat_str2 ~= "_") then
+			local seat_strs2 = string.split(seat_str2, ":")
+			if (table.contains(seat_strs2, seat_place .. "0")) then
+				value = value * 1.2
+			elseif (table.contains(seat_strs2, seat_place .. "1")) then
+				value = value * 0.8
+			end
+		end
 		
-		-- values[candidate] = value
-	-- end
+		values[candidate] = value
+	end
 	
-	-- local _candidates = {}
-	-- for _, c in ipairs(candidates) do
-		-- table.insert(_candidates, c)
-	-- end
-	-- local choice_list = {}
-	-- while (#_candidates > 0 and #choice_list < 6) do
-		-- local maxx = -1
-		-- local choice
-		-- for _, candidate in ipairs(_candidates) do
-			-- local value = values[candidate] and values[candidate] or 5.0
-			-- if (value > maxx) then
-				-- maxx = value
-				-- choice = candidate
-			-- end
-			-- table.insert(choice_list, choice)
-			-- table.removeOne(_candidates, choice)
-		-- end
-	-- end
-	-- local max_general
-	-- math.randomseed(os.clock())
-	-- local rnd = math.random(0, 99)
-	-- local total = #choice_list
-	-- local prob = {70, 85, 92, 95, 97, 99}
-	-- for i = 1, 6, 1 do
-		-- if (rnd <= prob[i] or total <= i) then
-			-- max_general = string.split(choice_list[i], ":")[1]
-			-- break
-		-- end
-	-- end
+	local _candidates = {}
+	for _, c in ipairs(candidates) do
+		table.insert(_candidates, c)
+	end
+	local choice_list = {}
+	while (#_candidates > 0 and #choice_list < 6) do
+		local maxx = -1
+		local choice
+		for _, candidate in ipairs(_candidates) do
+			local value = values[candidate] and values[candidate] or 5.0
+			if (value > maxx) then
+				maxx = value
+				choice = candidate
+			end
+			table.insert(choice_list, choice)
+			table.removeOne(_candidates, choice)
+		end
+	end
+	local max_general
+	math.randomseed(os.clock())
+	local rnd = math.random(0, 99)
+	local total = #choice_list
+	local prob = {70, 85, 92, 95, 97, 99}
+	for i = 1, 6, 1 do
+		if (rnd <= prob[i] or total <= i) then
+			max_general = string.split(choice_list[i], ":")[1]
+			break
+		end
+	end
 	
-	-- assert(max_general)
-	-- return max_general
--- end
+	assert(max_general)
+	return max_general
+end
 
 --todo: lwtmusou  to bulid a table
 --return weight of relation
@@ -305,7 +305,7 @@ weightSkillProperty =  function(player, lord, general)
     return value
 end
 --version 2: test version parsing skill property
-selectFirst = function(player, candidates) -- string
+--[[selectFirst = function(player, candidates) -- string
 	local values = {}
 	local role = player:getRole()
 	local lord = player:getRoom():getLord()
@@ -357,7 +357,7 @@ selectFirst = function(player, candidates) -- string
 	assert(max_general)
 	return max_general
 end
-
+]]
 
 
 selectSecond = function(player, candidates) -- string
