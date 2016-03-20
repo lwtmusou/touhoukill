@@ -709,6 +709,8 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         ServerPlayer *meirin = invoke->invoker;
+        invoke->invoker->setChained(true);
+
         room->broadcastProperty(meirin, "chained");
         room->setEmotion(meirin, "chain");
         QVariant _data = QVariant::fromValue(meirin);

@@ -1680,10 +1680,15 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
+        invoke->invoker->setChained(true);
+
         room->broadcastProperty(invoke->invoker, "chained");
         room->setEmotion(invoke->invoker, "chain");
         QVariant _data = QVariant::fromValue(invoke->invoker);
         room->getThread()->trigger(ChainStateChanged, room, _data);
+
+        RecoverStruct recover;
+        room->recover(invoke->invoker, recover);
         return false;
     }
 };
