@@ -370,7 +370,7 @@ end
 --function SmartAI:isWeak
 sgs.ai_skill_discard.jinguo = sgs.ai_skill_discard.gamerule
 
-shicao_find_adjacent = function(room,target) 
+--[[shicao_find_adjacent = function(room,target) 
 	local lefter
 	for _,p in sgs.qlist(room:getOtherPlayers(target)) do
 		if target:isAdjacentTo(p) then
@@ -383,7 +383,7 @@ shicao_find_adjacent = function(room,target)
 		end
 	end
 	return lefter
-end
+end]]
 function shijian_attack(self)
 	for _,p in pairs (self.enemies) do
 		if self:isWeak(p) and self:canAttack(p) then
@@ -395,9 +395,10 @@ end
 
 sgs.ai_skill_invoke.shiting = function(self,data)
 	local current = self.room:getCurrent() 
-	if current:hasSkill("changshi") then return true end
-	local lefter=shicao_find_adjacent(self.room,self.player)
-	if current:objectName()==lefter:objectName() then
+	local nexter =  current:getNextAlive()
+	--shicao_find_adjacent(self.room,self.player)
+	if nexter:hasSkill("changshi") then return true end
+	if self.player:objectName()== nexter:objectName() then
 		return true
 	end
 	if self:isWeak(self.player) then return true end
@@ -1234,7 +1235,7 @@ function sgs.ai_cardsview_valuable.chaoren(self, class_name, player)
 end
 
 
- 
+
 sgs.ai_needToWake.yizhi=function(self,player)
 	return "Dying","Unknown"
 end
