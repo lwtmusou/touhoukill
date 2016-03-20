@@ -95,7 +95,7 @@ public:
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *kana = qobject_cast<ServerPlayer *>(move.from);
-        if (kana != NULL && kana->hasSkill(this) && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
+        if (kana != NULL && kana->hasSkill(this) && kana->isAlive() && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
             foreach(ServerPlayer *p, room->getAllPlayers()) {
                 foreach(const Card *c, p->getCards("ej")) {
                     foreach(int card_id, move.card_ids) {

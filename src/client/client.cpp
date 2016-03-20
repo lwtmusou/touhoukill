@@ -1410,7 +1410,7 @@ void Client::askForSuit(const QVariant &arg)
     setStatus(ExecDialog);
 }
 
-void Client::askForKingdom(const QVariant &arg)
+void Client::askForKingdom(const QVariant &)
 {
     QStringList kingdoms = Sanguosha->getKingdoms();
 

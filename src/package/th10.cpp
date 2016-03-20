@@ -1105,7 +1105,7 @@ public:
 };
 
 
-#pragma message WARN("todo_fsu: check this skill whether it needs record, since changshi return a skill which has already invalided by Skill pingyi")
+#pragma message WARN("todo_fs: check this skill whether it needs record, since changshi return a skill which has already invalided by Skill pingyi")
 class Changshi : public TriggerSkill
 {
 public:
