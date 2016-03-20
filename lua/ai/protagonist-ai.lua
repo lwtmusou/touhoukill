@@ -816,7 +816,20 @@ sgs.ai_skill_cardchosen.zhize = function(self, who, flags)
 end
 
 
-
+sgs.ai_skill_use["@@chunxi"] = function(self, prompt)
+	local move = self.player:getTag("chunxi_move"):toMoveOneTime()
+	local ids = {}
+	for _, id in sgs.qlist(move.card_ids) do
+		if sgs.Sanguosha:getCard(id):getSuit() == sgs.Card_Heart 
+		  and room:getCardPlace(id) == sgs.Player_PlaceHand then
+			table.insert(ids, id)
+		end
+	end
+	if #ids > 0 then
+		return "@ChunxiCard=" .. table.concat(ids, "+")
+	end
+	return "."
+end
 sgs.ai_skill_playerchosen.chunxi = function(self, targets)
 	local preheart=false
 	local pre_zhize

@@ -910,6 +910,7 @@ public:
                     room->setCardFlag(id, "xingyun");
             }
         }
+        invoke->invoker->tag["xingyun_move"] = data;
         const Card *c = room->askForUseCard(tewi, "@@xingyun", "@xingyun");
         foreach(int id, move.card_ids)
             room->setCardFlag(id, "-xingyun");

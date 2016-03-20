@@ -419,53 +419,24 @@ end
 
 
 sgs.ai_skill_choice.banling_plus=function(self, choices)
-	local x=self.player:getMark("lingtili")
-	local y=self.player:getMark("rentili")
-	if x>y then
+	local x=self.player:getLingHp()
+	local y=self.player:getRenHp()
+	if x > y then
 		return "rentili"
 	end
 	return "lingtili"
 end
 
 sgs.ai_skill_choice.banling_minus=function(self, choices)
-	local lose=self.player:getTag("banling_minus"):toInt()
-	local tmp=self.player:getTag("banling_minus_choice"):toString()
-	if tmp=="rentili" then
-			tmp= "lingtili"
-	elseif tmp=="lingtili" then
-			tmp= "rentili"
-	else 
-		local x=self.player:getMark("lingtili")
-		local y=self.player:getMark("rentili")
-		if x<y then
-			tmp= "rentili"
-		else
-			tmp= "lingtili"
-		end
+	local x=self.player:getLingHp()
+	local y=self.player:getRenHp()
+	if x > y then
+		return = "lingtili"
 	end
-	
-	if tmp=="rentili" then
-		self.room:setPlayerMark(self.player,"banling_minus_rentili",self.player:getMark("banling_minus_rentili")+1)
-	else
-		self.room:setPlayerMark(self.player,"banling_minus_lingtili",self.player:getMark("banling_minus_lingtili")+1)
-	end
-	
-	if self.player:getMark("banling_minus_rentili")+self.player:getMark("banling_minus_lingtili")>=lose then
-		self.player:removeTag("banling_minus_choice")
-		self.room:setPlayerMark(self.player,"banling_minus_rentili",0)
-		self.room:setPlayerMark(self.player,"banling_minus_lingtili",0)
-	else
-		local tag = sgs.QVariant(tmp)		
-		self.player:setTag("banling_minus_choice",tag)
-	end
-	return tmp
+	return "rentili"
 end
 
 --function getBestHp(player)
---[[sgs.ai_skill_use["@@rengui"] = function(self, prompt)
-	self:sort(self.friends,"handcard") 
-	return "#rengui:.:->" .. self.friends[1]:objectName()
-end]]
 sgs.ai_skill_playerchosen.renguidiscard = function(self, targets)
 	target_table = sgs.QList2Table(targets)
 	if #target_table==0 then return nil end
@@ -481,7 +452,6 @@ sgs.ai_skill_playerchosen.renguidraw = function(self, targets)
 	self:sort(self.friends,"handcard")
 	return self.friends[1]
 end
---sgs.ai_card_intention.rengui = -50
 sgs.ai_playerchosen_intention.renguidraw = -60
 sgs.ai_playerchosen_intention.renguidiscard = 60
 

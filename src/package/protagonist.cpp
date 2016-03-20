@@ -913,6 +913,7 @@ public:
                     room->setCardFlag(id, "chunxi");
             }
         }
+        invoke->invoker->tag["chunxi_move"] = data;
         const Card *c =  room->askForUseCard(reimu, "@@chunxi", "@chunxi");
         foreach(int id, move.card_ids)
             room->setCardFlag(id, "-chunxi");
