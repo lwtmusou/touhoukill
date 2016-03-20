@@ -655,6 +655,44 @@ struct MarkChangeStruct{
     QString name;
 };
 
+struct ChoiceMadeStruct
+{
+    ChoiceMadeStruct();
+
+    enum ChoiceType
+    {
+        NoChoice,
+
+        SkillInvoke,
+        SkillChoice,
+        Nullification,
+        CardChosen,
+        CardResponded,
+        CardUsed,
+        AGChosen,
+        CardShow,
+        Peach,
+        TriggerOrder,
+        ReverseFor3v3,
+        Activate,
+        Suit,
+        Kingdom,
+        CardDiscard,
+        CardExchange,
+        ViewCards,
+        PlayerChosen,
+        Rende,
+        Yiji,
+        Pindian,
+
+        NumOfChoices
+    };
+
+    ServerPlayer *player;
+    ChoiceType type;
+    QStringList args;
+};
+
 enum TriggerEvent {
     NonTrigger,
 

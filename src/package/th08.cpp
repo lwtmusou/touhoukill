@@ -1457,7 +1457,6 @@ public:
 
 HuweiCard::HuweiCard()
 {
-    mute = true;
     target_fixed = true;
 }
 

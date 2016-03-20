@@ -36,8 +36,8 @@ return{
 	["illustrator:yukari_ndj"] = "年代记" ,
 	["yuanhu"] = "援护" ,
 	[":yuanhu"] = "其他角色的摸牌阶段，该角色可以少摸一张牌，令你摸一张牌，若如此做，你可以将至多两张手牌交给该角色" ,
-	["yuanhu:invoke"] = "您想发动 %src 的“援护”吗？" ,
-	["@yuanhu-exchange"] = "你可以交给 %src 至多两张手牌。" ,
+	["yuanhu:invoke"] = "您想发动 <font color=\"#FF8000\"><b>%src </b></font> 的“援护”吗？" ,
+	["@yuanhu-exchange"] = "你可以交给 <font color=\"#FF8000\"><b>%src </b></font> 至多两张手牌。" ,
 	["shouxie"] = "守楔" ,
 	[":shouxie"] = "锁定技，若你的手牌数不大于七，你跳过弃牌阶段。结束阶段开始时，你将手牌补至手牌上限的张数。" ,
 	
@@ -54,17 +54,27 @@ return{
 	["fanji:target"] = "<font color=\"#FF8000\"><b>%src </b></font> 对 <font color=\"#00FF00\"><b>%dest </b></font> 造成了伤害，你可以对 <font color=\"#FF8000\"><b>%src </b></font> 发动“反击”。",
 
 --**********************************
+	--ndj010  势力：外 3血
 	["merry_ndj"] = "年代记sp玛艾露贝莉" ,
 	["&merry_ndj"] = "年代记梅莉" ,
 	["#merry_ndj"] = "境界探访者" ,
 	["illustrator:merry_ndj"] = "年代记",
-	--**********************************
+	["zaiwu"]= "载物",
+	[":zaiwu"]= "其他角色的摸牌阶段：若你的体力值大于该角色，你可令该角色多摸一张牌；若你的体力值为1且不大于该角色，你可令该角色少摸一张牌。",
+	["zaiwu:minus"]= "你可以发动“载物”，令<font color=\"#FF8000\"><b>%src </b></font> 少摸一张牌",
+	["zaiwu:plus"]= "你可以发动“载物”， 令<font color=\"#FF8000\"><b>%src </b></font> 多摸一张牌",
+	["mengwei"] = "梦违",
+	[":mengwei"] = "若你已受伤且有手牌，其他角色可以跳过其出牌阶段，令你回复1点体力，若如此做，你将一张牌交给该角色。",
+	["mengwei_give"]= "<font color=\"#FF8000\"><b>%src </b></font> 发动了你的 “梦违”， 请交给其一张手牌",
+	
+	
+--**********************************
 	--ndj011  势力：外 3血
 	["renko_ndj"] = "年代记sp莲子" ,
 	["&renko_ndj"] = "年代记莲子",
 	["#renko_ndj"] = "科学少女" ,
 	["illustrator:renko_ndj"] = "年代记",
-	    ["liangzi"]= "量子",
+	["liangzi"]= "量子",
 	[":liangzi"]= "<font color=\"blue\"><b>锁定技，</b></font>当你使用或打出一张基本牌后，你选择一项：横置，或重置。",
 	["kexue"] = "科学",
 	[":kexue"] = "若你处于连环状态，你于出牌阶段空闲时间点使用【杀】时无距离限制，且可以额外指定任意数量的其他角色为目标。",

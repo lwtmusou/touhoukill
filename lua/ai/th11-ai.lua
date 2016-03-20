@@ -240,7 +240,7 @@ sgs.ai_skill_use_func.MaihuoCard = function(card, use, self)
 				if use.to:length() >= 1 then return end
 			end
         end]]
-		local target =self:touhouFindPlayerToDraw(false, 2)
+		local target = self:touhouFindPlayerToDraw(false, 2)
 		if not target and #self.friends_noself>0 then
 			target= self.friends_noself[1] 
 		end

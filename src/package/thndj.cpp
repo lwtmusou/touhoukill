@@ -58,7 +58,6 @@ public:
     }
 };
 
-
 class Sidou : public TriggerSkill
 {
 public:
@@ -290,6 +289,8 @@ public:
     }
 };
 
+
+
 class Yuanhu : public TriggerSkill
 {
 public:
@@ -317,12 +318,13 @@ public:
                 if (drawer.isEmpty())
                     return QList<SkillInvokeDetail>();
 
+
                 QList<SkillInvokeDetail> d;
                 foreach (const QString &s, drawer.toSet()) {
                     ServerPlayer *p = room->findPlayerByObjectName(s);
                     if (p == NULL)
                         continue;
-
+  
                     d << SkillInvokeDetail(this, p, dc.player, NULL, true);
                 }
                 return d;
@@ -336,14 +338,20 @@ public:
     {
         if (triggerEvent == DrawNCards) {
             QString prompt = "invoke:" + invoke->owner->objectName();
+            invoke->invoker->tag["yuanhu"] = QVariant::fromValue(invoke->owner);
             if (invoke->invoker->askForSkillInvoke(this, prompt)) {
                 DrawNCardsStruct dc = data.value<DrawNCardsStruct>();
                 --dc.n;
                 data = QVariant::fromValue(dc);
                 return true;
             }
-        } else
+        }
+        else {
+            QStringList drawer = invoke->invoker->tag.value("yuanhu_drawers", QStringList()).toStringList();
+            drawer.removeOne(invoke->owner->objectName());
+            invoke->invoker->tag["yuanhu_drawers"] = QVariant::fromValue(drawer);
             return true;
+        }  
 
         return false;
     }
@@ -354,8 +362,10 @@ public:
             invoke->invoker->setFlags("yuanhu_draw");
             QStringList drawer = invoke->invoker->tag.value("yuanhu_drawers", QStringList()).toStringList();
             drawer << invoke->owner->objectName();
+            invoke->invoker->tag["yuanhu_drawers"] = QVariant::fromValue(drawer);
         } else {
             invoke->owner->drawCards(1, objectName());
+            invoke->owner->tag["yuanhu_target"] = QVariant::fromValue(invoke->invoker);
             const Card *c = room->askForExchange(invoke->owner, objectName(), 2, 1, false, "@yuanhu-exchange:" + invoke->invoker->objectName(), true);
             if (c != NULL) {
                 CardMoveReason reason(CardMoveReason::S_REASON_GIVE, invoke->owner->objectName(), objectName(), QString());
@@ -402,18 +412,22 @@ public:
     }
 };
 
+
+
 HunpoCard::HunpoCard()
 {
     will_throw = true;
     target_fixed = true;
     mute = true;
 }
+
 void HunpoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
 {
     room->setPlayerProperty(source, "maxhp", source->getMaxHp() + 1);
     room->touhouLogmessage("#GainMaxHp", source, QString::number(1));
     room->touhouLogmessage("#GetHp", source, QString::number(source->getHp()), QList<ServerPlayer *>(), QString::number(source->getMaxHp()));
 }
+
 class Hunpo : public OneCardViewAsSkill
 {
 public:
@@ -444,7 +458,6 @@ public:
             return NULL;
     }
 };
-
 
 class Fanji : public TriggerSkill
 {
@@ -507,6 +520,102 @@ public:
         return false;
     }
 };
+
+
+
+
+class Zaiwu : public TriggerSkill
+{
+public:
+    Zaiwu() : TriggerSkill("zaiwu")
+    {
+        events << DrawNCards;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        DrawNCardsStruct qnum = data.value<DrawNCardsStruct>();
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            if (p == qnum.player)
+                continue;
+            if (p->getHp() > qnum.player->getHp())
+                d << SkillInvokeDetail(this, p, p, NULL, false, qnum.player);
+            else if (p->getHp() == 1 && qnum.n > 0)
+                d << SkillInvokeDetail(this, p, p, NULL, false, qnum.player);
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        QString prompt =  (invoke->invoker->getHp()  > invoke->preferredTarget->getHp()) ? "plus:" : "minus:";
+        prompt = prompt + invoke->preferredTarget->objectName();
+        invoke->invoker->tag["zaiwu"] = QVariant::fromValue(invoke->preferredTarget);
+        return invoke->invoker->askForSkillInvoke(this, prompt);
+    }
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        bool plus = invoke->invoker->getHp()  > invoke->targets.first()->getHp();
+        DrawNCardsStruct draw = data.value<DrawNCardsStruct>();
+        if (!plus)
+            draw.n = draw.n - 1;
+        else
+            draw.n = draw.n + 1;
+            
+        data = QVariant::fromValue(draw);
+        return false;
+    }
+};
+
+class Mengwei : public TriggerSkill
+{
+public:
+    Mengwei() : TriggerSkill("mengwei")
+    {
+        events << EventPhaseChanging;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        ServerPlayer *player = change.player;
+        if (change.to != Player::Play || player->isSkipped(Player::Play))
+            return QList<SkillInvokeDetail>();
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+            if (p->hasSkill(this) && p->isWounded() && !p->isKongcheng())
+                d << SkillInvokeDetail(this, p, player);
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        invoke->invoker->tag["mengwei"] = QVariant::fromValue(invoke->owner);
+        if (invoke->invoker->askForSkillInvoke(objectName(), QVariant::fromValue(invoke->owner))) {
+            invoke->invoker->skip(Player::Play);
+            return true;
+        }
+
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        RecoverStruct recover;
+        room->recover(invoke->owner, recover);
+        QString prompt = "mengwei_give:" + invoke->invoker->objectName();
+        const Card *card = room->askForCard(invoke->owner, ".|.|.|hand!", prompt, data, Card::MethodNone);
+        if (card != NULL)
+            invoke->invoker->obtainCard(card, false);
+
+        return false;
+    }
+
+};
+
 
 
 
@@ -612,15 +721,17 @@ THNDJPackage::THNDJPackage()
     kaguya_ndj->addSkill(new Huanyue);
     kaguya_ndj->addSkill(new Sizhai);
 
-    General *yukari = new General(this, "yukari_ndj", "yym", 3, false);
-    yukari->addSkill(new Yuanhu);
-    yukari->addSkill(new Shouxie);
+    General *yukari_ndj = new General(this, "yukari_ndj", "yym", 3, false);
+    yukari_ndj->addSkill(new Yuanhu);
+    yukari_ndj->addSkill(new Shouxie);
 
     General *youmu_ndj = new General(this, "youmu_ndj", "yym", 3, false);
     youmu_ndj->addSkill(new Hunpo);
     youmu_ndj->addSkill(new Fanji);
 
-    //General *merry_ndj = new General(this, "merry_ndj", "wai", 1, false);
+    General *merry_ndj = new General(this, "merry_ndj", "wai", 3, false);
+    merry_ndj->addSkill(new Zaiwu);
+    merry_ndj->addSkill(new Mengwei);
 
     General *renko_ndj = new General(this, "renko_ndj", "wai", 4, false);
     renko_ndj->addSkill(new Liangzi);
