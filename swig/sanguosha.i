@@ -593,6 +593,7 @@ struct RecoverStruct {
 
     int recover;
     ServerPlayer *who;
+    ServerPlayer *to;
     const Card *card;
     QString reason;
 };
@@ -647,6 +648,8 @@ struct CardResponseStruct {
     bool m_isRetrial;
     bool m_isProvision;
 	bool m_isHandcard;
+    ServerPlayer *m_from;
+    bool m_isNullified;
 };
 
 struct MarkChangeStruct{
@@ -654,6 +657,7 @@ struct MarkChangeStruct{
 
     int num;
     QString name;
+    ServerPlayer *player;
 };
 
 struct ChoiceMadeStruct
