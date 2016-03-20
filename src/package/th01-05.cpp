@@ -12,19 +12,19 @@ public:
     }
 
     static Player::Phase qianyiPhase(QString choice) {
-        if (choice == "startphase")
+        if (choice == "start")
             return Player::Start;
-        else if (choice == "judgephase")
+        else if (choice == "judge")
             return Player::Judge;
-        else if (choice == "drawphase")
+        else if (choice == "draw")
             return Player::Draw;
-        else if (choice == "playphase")
+        else if (choice == "play")
             return Player::Play;
-        else if (choice == "discardphase")
+        else if (choice == "discard")
             return Player::Discard;
-        else if (choice == "finishphase")
+        else if (choice == "finish")
             return Player::Finish;
-        return Player::NotActive;
+        return Player::Finish;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
@@ -75,7 +75,7 @@ public:
     {
         RecoverStruct recover;
         room->recover(invoke->invoker, recover);
-        QString choice = room->askForChoice(invoke->invoker, objectName(), "startphase+judgephase+drawphase+playphase+discardphase+finishpahse", data);
+        QString choice = room->askForChoice(invoke->invoker, objectName(), "start+judge+draw+play+discard+finish", data);
         Player::Phase phase = qianyiPhase(choice);
         if (!invoke->targets.first()->isSkipped(phase))
             invoke->targets.first()->skip(phase);
@@ -124,7 +124,7 @@ public:
                 }
             }
         }
-        
+        invoke->invoker->tag["mengxiao"] = data;
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@" + objectName(), true, true);
         if (target)
             invoke->targets << target;
