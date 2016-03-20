@@ -1480,7 +1480,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()))
+        if (!equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()))
             return QList<SkillInvokeDetail>();
 
         if (effect.slash->isBlack())
