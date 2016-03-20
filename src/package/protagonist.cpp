@@ -1570,11 +1570,9 @@ YinyangCard::YinyangCard()
 {
 }
 
-bool YinyangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+bool YinyangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
 {
-    if (!targets.isEmpty() || to_select == Self)
-        return false;
-    return !to_select->isKongcheng();
+    return !to_select->isKongcheng() && targets.isEmpty();
 }
 
 void YinyangCard::onEffect(const CardEffectStruct &effect) const
@@ -1637,7 +1635,7 @@ public:
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *reimu = qobject_cast<ServerPlayer *>(move.from);
-            if (!reimu) return;
+            if (!reimu || !reimu->isCurrent()) return;
             bool heart = false;
             if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD){
                 foreach(int id, move.card_ids) {
@@ -1654,10 +1652,12 @@ public:
                 reimu->tag["lingji"] = QVariant::fromValue(true);
         } else if (triggerEvent == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
+            if (!use.from->isCurrent()) return;
             if (use.card->getSuit() == Card::Heart)
                 use.from->tag["lingji"] = QVariant::fromValue(true);
         } else if (triggerEvent == CardResponded) {
             CardResponseStruct resp = data.value<CardResponseStruct>().m_card;
+            if (!resp.m_from->isCurrent()) return;
             if (resp.m_card->getSuit() == Card::Heart)
                 resp.m_from->tag["lingji"] = QVariant::fromValue(true);
         } else if (triggerEvent == EventPhaseChanging) {
