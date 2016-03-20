@@ -220,7 +220,7 @@ sgs.ai_choicemade_filter.skillInvoke.jingdong = function(self, player, promptlis
 	end
 end
 
-sgs.ai_skill_cardask["@zhaoliao"] = function(self, data)
+--[[sgs.ai_skill_cardask["@zhaoliao"] = function(self, data)
 	local a=data:toDamage().to
 	if not self:isFriend(a) then return "." end
 	local ecards=self.player:getCards("e")
@@ -231,10 +231,6 @@ sgs.ai_skill_cardask["@zhaoliao"] = function(self, data)
 	self:sortByUseValue(cards)
 	return "$" .. cards[1]:getId()
 end
-sgs.ai_skill_choice.zhaoliao=function(self)
-	if self.player:isKongcheng() then return "zhaoliao1" end
-	return "zhaoliao2"
-end
 sgs.ai_choicemade_filter.cardResponded["@zhaoliao"] = function(self, player, promptlist)
 	if promptlist[#promptlist] ~= "_nil_" then
 		local target =player:getTag("zhaoliao_target"):toPlayer()
@@ -242,8 +238,36 @@ sgs.ai_choicemade_filter.cardResponded["@zhaoliao"] = function(self, player, pro
 		sgs.updateIntention(player, target, -80)
 	end
 end
-
-
+]]
+sgs.ai_skill_discard.zhaoliao = function(self,discard_num, min_num)
+	local target = self.player:getTag("zhaoliao_target"):toPlayer()
+	local to_discard = {}
+	if not self:isFriend(a) then return to_discard end
+	
+	local ecards=self.player:getCards("e")
+	if ecards:length()>0 then  
+		table.insert(to_discard, ecards:first():getId())
+	else
+		local cards = self.player:getCards("h")
+		cards = sgs.QList2Table(cards)
+		if #cards > 0 then
+			self:sortByUseValue(cards)
+			table.insert(to_discard, cards[1]:getId())
+		end
+	end
+	return to_discard
+end
+sgs.ai_choicemade_filter.cardExchange.zhaoliao = function(self, player, promptlist)
+	local target = player:getTag("zhaoliao_target"):toPlayer()
+	if target and promptlist[#promptlist] ~= "_nil_" then
+		sgs.updateIntention(player, target, -80)	
+	end
+end
+sgs.ai_skill_choice.zhaoliao=function(self)
+	if self.player:isKongcheng() then return "zhaoliao1" end
+	return "zhaoliao2"
+end
+--sgs.ai_skill_use["@@zhaoliao"] = function(self, prompt)
 
 
 sgs.ai_skill_invoke.jiaoxia = function(self)
