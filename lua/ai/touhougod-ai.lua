@@ -431,7 +431,7 @@ sgs.ai_skill_choice.banling_minus=function(self, choices)
 	local x=self.player:getLingHp()
 	local y=self.player:getRenHp()
 	if x > y then
-		return = "lingtili"
+		return  "lingtili"
 	end
 	return "rentili"
 end

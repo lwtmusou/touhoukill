@@ -377,7 +377,7 @@ sgs.ai_skill_playerchosen.toupai = function(self, targets)
 	return nil
 end
 sgs.ai_playerchosen_intention.toupai = 60
-
+--sgs.ai_skill_askforag.toupai = function(self, card_ids)
 
 sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 	local judge=self.player:getTag("feixiang_judge"):toJudge()
