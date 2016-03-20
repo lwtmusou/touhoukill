@@ -268,41 +268,20 @@ sgs.ai_need_bear.jiaoxia = function(self, card,from,tos)
 	return false
 end
 
-sgs.ai_skill_invoke.youming = function(self, data)
-	local handcard = self.player:getHandcardNum()
-	local max_card = self.player:getMaxCards()
-	local target = 0
-	local slashnum = 0
 
-	for _, slash in ipairs(self:getCards("Slash")) do
-		for _,enemy in ipairs(self.enemies) do
-			if self.player:canSlash(enemy, slash) and self:slashIsEffective(slash, enemy) and self:slashIsEffective(slash, enemy)
-			  and not self:slashProhibit(slash, enemy) and sgs.isGoodTarget(enemy, self.enemies, self) then
-				slashnum = slashnum + 1
-				target = target + 1
-				break
-			end
-		end
+sgs.ai_skill_invoke.zhanwang = function(self)
+	local damage = self.player:getTag("zhanwang"):toDamage()
+	if self:isEnemy(damage.to) then
+		return not damage.to:hasSkills(sgs.lose_equip_skill)
 	end
-
-	local prompt = data:toString()
-	if prompt == "draw2play" then
-		if self:needBear() then return false end
-		if slashnum > 1 and target > 0 then return true end
-		if self.player:isSkipped(sgs.Player_Play) and #(self:getTurnUse()) > 0 then return true end
-		return false
-	elseif prompt == "play2draw" then
-		if self:needBear() then return true end
-		if slashnum > 0 and target > 0 then return false end
-		if #(self:getTurnUse()) == 0 then return true end
-		return false
+	return false
+end
+sgs.ai_choicemade_filter.skillInvoke.zhanwang = function(self, player, promptlist)
+	local damage = player:getTag("zhanwang"):toDamage()
+	if damage.to and promptlist[#promptlist] == "yes" then
+		sgs.updateIntention(player, to, 60)
 	end
 end
-
-function sgs.ai_cardneed.youming(to, card, self)
-	return isCard("Slash", card, to) and getKnownCard(to, self.player, "Slash", true) < 2
-end
-
 
 sgs.ai_skill_use["@@xiezou"] = function(self, prompt)
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
@@ -1193,7 +1172,7 @@ function sgs.ai_cardsview_valuable.huayin(self, class_name, player)
 		return nil
 	end
 end
-sgs.ai_skill_invoke.huanling = true
+
 sgs.ai_skill_use_func.HuayinCard=function(card,use,self)
 	if (sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_PLAY) then
 		local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
@@ -1216,4 +1195,6 @@ sgs.ai_skill_use_func.HuayinCard=function(card,use,self)
 		use.card=card
 	end
 end
-sgs.ai_use_priority.HuayinCard = sgs.ai_use_priority.ExNihilo -0.3
+sgs.ai_use_priority.HuayinCard = sgs.ai_use_priority.ExNihilo - 0.3
+
+sgs.ai_skill_invoke.huanling = true
