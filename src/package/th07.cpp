@@ -1851,7 +1851,7 @@ const Card *HuayinCard::validate(CardUseStruct &use) const
     Peach *card = new Peach(Card::SuitToBeDecided, 0);
     foreach(int id, subcards){
         use.from->getRoom()->showCard(use.from, id);
-        if (Sanguosha->getCard(id)->isKindOf("BasicCard"))
+        if (!Sanguosha->getCard(id)->isKindOf("BasicCard"))
             card->addSubcard(id);
     }
     if (!card->getSubcards().isEmpty()) {
@@ -1869,7 +1869,7 @@ const Card *HuayinCard::validateInResponse(ServerPlayer *user) const
     Peach *card = new Peach(Card::SuitToBeDecided, 0);
     foreach(int id, subcards) {
         user->getRoom()->showCard(user, id);
-        if (Sanguosha->getCard(id)->isKindOf("BasicCard"))
+        if (!Sanguosha->getCard(id)->isKindOf("BasicCard"))
             card->addSubcard(id);
     }
     if (!card->getSubcards().isEmpty()) {
