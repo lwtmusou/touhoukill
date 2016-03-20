@@ -1129,6 +1129,8 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardAskedStruct s = data.value<CardAskedStruct>();
+        if (s.player == NULL || s.player->isDead() || !s.player->hasSkill(this))
+            return QList<SkillInvokeDetail>();
         if (s.pattern == "jink") {
             Jink *jink = new Jink(Card::NoSuit, 0);
             jink->deleteLater();
