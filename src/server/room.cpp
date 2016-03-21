@@ -3280,6 +3280,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
     CardUseStruct card_use = use;
     card_use.m_addHistory = false;
     card_use.m_isHandcard = true;
+    card_use.m_isLastHandcard = true;
     const Card *card = card_use.card;
 
     QList<int> ids;
@@ -3295,6 +3296,15 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
     } else {
         card_use.m_isHandcard = false;
     }
+
+    if (!ids.isEmpty()) {
+        foreach(const Card* c, use.from->getHandcards())
+            if (!ids.contains(c->getEffectiveId())) {
+                card_use.m_isLastHandcard = false;
+                break;
+            }
+    } else
+        card_use.m_isLastHandcard = false;
 
 
     if (card_use.from->isCardLimited(card, card->getHandlingMethod())

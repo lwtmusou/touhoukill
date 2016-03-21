@@ -708,6 +708,172 @@ public:
     }
 };
 
+
+
+class Xiubu : public TriggerSkill
+{
+public:
+    Xiubu() : TriggerSkill("xiubu")
+    {
+        events << CardResponded << CardUsed << EventPhaseChanging << EventPhaseEnd;
+    }
+
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        //clear histroy
+        if (triggerEvent == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.m_isLastHandcard && use.m_addHistory && use.from->getMark("xiubu") > 0)
+                room->addPlayerHistory(use.from, use.card->getClassName(), -1);
+                use.m_addHistory = false;
+                data = QVariant::fromValue(use);
+                
+        }
+        
+        //record times of using card
+        if (triggerEvent == CardUsed || triggerEvent == CardResponded) {
+            ServerPlayer *player = NULL;
+            const Card * card = NULL;
+            if (triggerEvent == CardUsed) {
+                player = data.value<CardUseStruct>().from;
+                card = data.value<CardUseStruct>().card;
+            }
+            else {
+                CardResponseStruct response = data.value<CardResponseStruct>();
+                player = response.m_from;
+                if (response.m_isUse)
+                    card = response.m_card;
+            }
+            if (player && player->getPhase() == Player::Play
+                && card && card->getHandlingMethod() == Card::MethodUse) {
+                if (player->hasFlag("xiubu_first"))
+                    player->setFlags("xiubu_second");
+                else
+                    player->setFlags("xiubu_first");
+            }
+        }
+        else if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.from == Player::Play) {
+                change.player->setFlags("-xiubu_first");
+                change.player->setFlags("-xiubu_second");
+                room->setPlayerMark(change.player, "xiubu", 0);
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+
+        if (triggerEvent == CardUsed || triggerEvent == CardResponded) {
+            ServerPlayer *player = NULL;
+            const Card * card = NULL;
+            if (triggerEvent == CardUsed) {
+                player = data.value<CardUseStruct>().from;
+                card = data.value<CardUseStruct>().card;
+            }
+            else {
+                CardResponseStruct response = data.value<CardResponseStruct>();
+                player = response.m_from;
+                if (response.m_isUse)
+                    card = response.m_card;
+            }
+            if (player && player->getPhase() == Player::Play
+                && card && card->getHandlingMethod() == Card::MethodUse) {
+                if (player->hasFlag("xiubu_first") && !player->hasFlag("xiubu_second")) {
+                    QList<SkillInvokeDetail> d;
+                    foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                        if ((p->inMyAttackRange(player) || p == player) && p->canDiscard(player, "h"))
+                            d << SkillInvokeDetail(this, p, p, NULL, false, player);
+                    }
+
+                    return d;
+                }
+            }
+        } else if (triggerEvent == EventPhaseEnd) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->getPhase() == Player::Play && player->getMark("xiubu") > 0 && player->hasFlag("xiubu_second"))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseEnd)
+            return true;
+        else {
+            if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->preferredTarget->objectName());
+                int id = room->askForCardChosen(invoke->invoker, invoke->preferredTarget, "h", objectName());
+                invoke->invoker->tag["xiubu_id"] = QVariant::fromValue(id);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseEnd)
+            invoke->invoker->drawCards(2);
+        else {
+            int id = invoke->invoker->tag["xiubu_id"].toInt();
+            invoke->invoker->tag.remove("xiubu_id");
+
+            room->throwCard(id, invoke->targets.first(), invoke->invoker);
+            room->setPlayerMark(invoke->targets.first(), "xiubu", 1);
+        }
+        
+        return false;
+    }
+
+};
+
+class XiubuTargetMod : public TargetModSkill
+{
+public:
+    XiubuTargetMod() : TargetModSkill("#xiubu-mod")
+    {
+        pattern = "BasicCard,TrickCard";
+    }
+    static bool isLastHandCard(const Player *player, const Card *card)
+    {
+        QList<int> subcards = card->getSubcards();
+        if (subcards.length() == 0 || player->isKongcheng())
+            return false;
+        QList<int> wood_ox = player->getPile("wooden_ox");
+        int wood_num = 0;
+        foreach(int id, subcards) {
+            if (wood_ox.contains(id))
+                wood_num++;
+        }
+        if (subcards.length() - wood_num == player->getHandcardNum())
+            return true;
+        else
+            return false;
+    }
+
+    virtual int getDistanceLimit(const Player *from, const Card *card) const
+    {
+        if (from->getMark("xiubu") > 0 && isLastHandCard(from, card))
+            return 1000;
+        else
+            return 0;
+    }
+
+    virtual int getResidueNum(const Player *from, const Card *card) const
+    {
+        if (from->getMark("xiubu") > 0 && isLastHandCard(from, card))
+            return 1000;
+        else
+            return 0;
+    }
+
+};
+
+
 THNDJPackage::THNDJPackage()
     : Package("thndj")
 {
@@ -738,6 +904,11 @@ THNDJPackage::THNDJPackage()
     renko_ndj->addSkill(new Kexue);
     renko_ndj->addSkill(new KexueEffect);
     related_skills.insertMulti("kexue", "#kexue-effect");
+
+    General *sanae_ndj = new General(this, "sanae_ndj", "fsl", 4, false);
+    sanae_ndj->addSkill(new Xiubu);
+    sanae_ndj->addSkill(new XiubuTargetMod);
+    related_skills.insertMulti("xiubu", "#xiubu-mod");
 
     addMetaObject<HunpoCard>();
 }

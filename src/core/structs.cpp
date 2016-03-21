@@ -202,6 +202,8 @@ CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, QList<ServerP
     this->to = to;
     this->m_isOwnerUse = isOwnerUse;
     this->m_addHistory = true;
+    this->m_isHandcard = false;
+    this->m_isLastHandcard = false;
 }
 
 CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer *target, bool isOwnerUse)
@@ -212,6 +214,8 @@ CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer 
         to << target;
     this->m_isOwnerUse = isOwnerUse;
     this->m_addHistory = true;
+    this->m_isHandcard = false;
+    this->m_isLastHandcard = false;
 }
 
 bool CardUseStruct::isValid(const QString &pattern) const

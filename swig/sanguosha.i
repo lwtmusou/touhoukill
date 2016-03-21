@@ -534,6 +534,7 @@ struct CardUseStruct {
     bool m_isOwnerUse;
     bool m_addHistory;
 	bool m_isHandcard;
+	bool m_isLastHandcard;
 	QStringList nullified_list;
 };
 
