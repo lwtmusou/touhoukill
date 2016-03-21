@@ -1139,7 +1139,7 @@ public:
                 d << SkillInvokeDetail(this, player, player);
         } else if (triggerEvent == HpRecover) {
             RecoverStruct r = data.value<RecoverStruct>();
-            if (r.to->hasSkill(this) && r.to->getPhase() != Player::Play
+            if (r.to->hasSkill(this) && r.to->getPhase() != Player::Draw
                 && !nengwuTargets(r.to, true).isEmpty())
                 d << SkillInvokeDetail(this, r.to, r.to);
         } else if (triggerEvent == CardsMoveOneTime) {
