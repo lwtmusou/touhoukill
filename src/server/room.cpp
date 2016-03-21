@@ -3298,11 +3298,12 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
     }
 
     if (!ids.isEmpty()) {
-        foreach(const Card* c, use.from->getHandcards())
+        foreach(const Card* c, use.from->getHandcards()) {
             if (!ids.contains(c->getEffectiveId())) {
                 card_use.m_isLastHandcard = false;
                 break;
             }
+        }
     } else
         card_use.m_isLastHandcard = false;
 

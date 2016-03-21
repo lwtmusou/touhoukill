@@ -724,13 +724,13 @@ public:
         //clear histroy
         if (triggerEvent == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.m_isLastHandcard && use.m_addHistory && use.from->getMark("xiubu") > 0)
+            if (use.m_isLastHandcard && use.m_addHistory && use.from->getMark("xiubu") > 0) {
                 room->addPlayerHistory(use.from, use.card->getClassName(), -1);
                 use.m_addHistory = false;
                 data = QVariant::fromValue(use);
-                
+            }
         }
-        
+    
         //record times of using card
         if (triggerEvent == CardUsed || triggerEvent == CardResponded) {
             ServerPlayer *player = NULL;
@@ -738,8 +738,7 @@ public:
             if (triggerEvent == CardUsed) {
                 player = data.value<CardUseStruct>().from;
                 card = data.value<CardUseStruct>().card;
-            }
-            else {
+            } else {
                 CardResponseStruct response = data.value<CardResponseStruct>();
                 player = response.m_from;
                 if (response.m_isUse)
@@ -752,8 +751,7 @@ public:
                 else
                     player->setFlags("xiubu_first");
             }
-        }
-        else if (triggerEvent == EventPhaseChanging) {
+        } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.from == Player::Play) {
                 change.player->setFlags("-xiubu_first");
@@ -772,8 +770,7 @@ public:
             if (triggerEvent == CardUsed) {
                 player = data.value<CardUseStruct>().from;
                 card = data.value<CardUseStruct>().card;
-            }
-            else {
+            } else {
                 CardResponseStruct response = data.value<CardResponseStruct>();
                 player = response.m_from;
                 if (response.m_isUse)
