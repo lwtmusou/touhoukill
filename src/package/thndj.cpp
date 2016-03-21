@@ -394,7 +394,7 @@ public:
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
         } else if (triggerEvent == EventPhaseStart) {
             ServerPlayer *p = data.value<ServerPlayer *>();
-            if (p->getPhase() == Player::Finish && p->getHandcardNum() < p->getMaxCards())
+            if (p->getPhase() == Player::Finish && p->hasSkill(this) && p->getHandcardNum() < p->getMaxCards())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, p, p, NULL, true);
         }
 
