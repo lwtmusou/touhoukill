@@ -83,3 +83,4 @@ vcruntime140.dll
 *.orig
 lib/oggvorbis.lib
 /imageformats
+d3dcompiler_47.dll
