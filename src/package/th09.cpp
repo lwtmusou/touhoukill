@@ -10,34 +10,48 @@
 #include <QCommandLinkButton>
 
 
+class ZuiyueVS : public ZeroCardViewAsSkill
+{
+public:
+    ZuiyueVS() : ZeroCardViewAsSkill("zuiyue")
+    {
+
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return player->hasFlag("zuiyue") && Analeptic::IsAvailable(player);
+    }
+
+    virtual const Card *viewAs() const
+    {
+        Analeptic *ana = new Analeptic(Card::NoSuit, 0);
+        ana->setSkillName(objectName());
+        return ana;
+    }
+};
+
 class Zuiyue : public TriggerSkill
 {
 public:
     Zuiyue() : TriggerSkill("zuiyue")
     {
-        events << CardUsed;
+        events << PreCardUsed << EventPhaseChanging;
+        view_as_skill = new ZuiyueVS;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->isKindOf("TrickCard") && use.from && use.from->hasSkill(this)
-            && use.from->getPhase() == Player::Play && Analeptic::IsAvailable(use.from))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
-        return QList<SkillInvokeDetail>();
-    }
-
-    //default cost
-    //askforusecard+viewAsSkill? fuck pingyi!!!!
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        CardUseStruct ana_use;
-        ana_use.from = invoke->invoker;
-        Analeptic *card = new Analeptic(Card::NoSuit, 0);
-        card->setSkillName(objectName());
-        ana_use.card = card;
-        room->useCard(ana_use);
-        return false;
+        if (triggerEvent == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isKindOf("TrickCard") && use.from && use.from->hasSkill(this)
+                && use.from->getPhase() == Player::Play)
+                room->setPlayerFlag(use.from, "zuiyue");
+        } else if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.from == Player::Play)
+                room->setPlayerFlag(change.player, "-zuiyue");
+        }
     }
 };
 
