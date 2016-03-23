@@ -818,6 +818,30 @@ void ServerPlayer::insertPhase(Player::Phase phase)
     _m_phases_state.insert(_m_phases_index, _phase);
 }
 
+void ServerPlayer::exchangePhases(Player::Phase phase1, Player::Phase phase2)
+{
+    PhaseStruct _phase1;
+    PhaseStruct _phase2;
+
+    int index1 = phases.indexOf(phase1);
+    int index2 = phases.indexOf(phase2);
+    // make sure that "_m_phases_state" has already contain informations from "phases" 
+    if (index1 > -1 && index2 > -1) {
+        _phase1 = _m_phases_state[index1];
+        _phase2 = _m_phases_state[index2];
+
+        phases.removeAt(index1);
+        phases.insert(index1, phase2);
+        _m_phases_state.removeAt(index1);
+        _m_phases_state.insert(index1, _phase2);
+        
+        phases.removeAt(index2);
+        phases.insert(index2, phase1);
+        _m_phases_state.removeAt(index2);
+        _m_phases_state.insert(index2, _phase1);
+    }
+}
+
 bool ServerPlayer::isSkipped(Player::Phase phase)
 {
     for (int i = _m_phases_index; i < _m_phases_state.size(); i++) {

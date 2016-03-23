@@ -62,6 +62,7 @@ public:
     QList<Player::Phase> &getPhases();
     void skip(Player::Phase phase, bool isCost = false, bool sendLog = true);
     void insertPhase(Player::Phase phase);
+    void exchangePhases(Player::Phase phase, Player::Phase phase1);
     bool isSkipped(Player::Phase phase);
 
     void gainMark(const QString &mark, int n = 1);

@@ -278,11 +278,19 @@ int Player::distanceTo(const Player *other, int distance_fix) const
 
     int right = qAbs(seat - other->seat);
     int left = aliveCount() - right;
+    //check skill kongjian
+    if (this->hasLordSkill("kongjian")) {
+        int bigger = qMax(seat, other->seat);
+        int smaller = qMin(seat, other->seat);
+        foreach(const Player *p, other->getAliveSiblings()) {
+            if (p->getKingdom() == "pc98"  && p->getSeat() > smaller && p->getSeat() < bigger)
+                right--;
+            else if (p->getKingdom() == "pc98" && (p->getSeat() < smaller || p->getSeat() > bigger))
+                left--;
+        }
+    }
     int distance = qMin(left, right);
-    //if (clockwise)
-    //    distance = dis_anticlockwise;
-    //if (anticlockwise)
-    //    distance = dis_clockwise;
+
     distance += Sanguosha->correctDistance(this, other);
     distance += distance_fix;
     if (distance_limit > 0)
