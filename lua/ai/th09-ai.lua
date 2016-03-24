@@ -770,7 +770,12 @@ sgs.ai_skill_playerchosen.nengwudiscard = function(self, targets)
 end
 sgs.ai_playerchosen_intention.nengwudraw = -40
 sgs.ai_playerchosen_intention.nengwudiscard = 40
-
+sgs.ai_cardneed.nengwu = function(to, card, self)
+	if not self:willSkipPlayPhase(to) then
+		return  (not to:getWeapon() and  getCardsNum("Weapon",to,self.player)<1 and card:isKindOf("Weapon"))
+		or (not to:getOffensiveHorse() and  getCardsNum("OffensiveHorse",to,self.player)<1 and card:isKindOf("OffensiveHorse"))
+	end
+end
 
 sgs.ai_skill_cardask["@xiwang"] = function(self, data)
 	local target = self.player:getTag("xiwang_target"):toPlayer()

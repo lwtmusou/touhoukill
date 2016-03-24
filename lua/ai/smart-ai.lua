@@ -169,7 +169,7 @@ function setInitialTables()
 									"|nosleiji|leiji|caizhaoji_hujia|tieji|luoshen|ganglie|neoganglie|vsganglie|kofkuanggu"..
 							"|lingqi|pohuai|huisu"		
 	sgs.no_intention_damage="nuhuo|pohuai|zhuonong"
-	sgs.attackRange_skill = "bushu|xiangqi|fanji"
+	sgs.attackRange_skill = "nengwu|bushu|xiangqi|fanji|xiubu"
 	
 	sgs.Friend_All = 0
 	sgs.Friend_Draw = 1
