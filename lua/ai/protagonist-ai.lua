@@ -1041,6 +1041,27 @@ sgs.ai_use_priority.BllmWuyuCard =sgs.ai_use_priority.Slash +0.2
 
 
 sgs.ai_skill_invoke.qiangyu = true
+sgs.ai_skill_cardask["qiangyu-discard"] = function(self, data)
+	local blacks = {}
+	for _,c in sgs.qlist(self.player:getHandcards()) do
+		if c:getSuit() == sgs.Card_Spade then
+			table.insert(blacks, c)
+		end
+	end
+	if #blacks > 0 then
+		self:sortByUseValue(blacks)
+		return "$" .. blacks[1]:getId()
+	end
+	
+	local cards = sgs.QList2Table(attacker:getHandcards())
+	self:sortByUseValue(cards)
+	local ids = {}
+	for _, c in ipairs (cards) do
+		table.insert(ids, c:getId())
+		if #ids >= 2 then break end
+	end
+	return "$" .. table.concat(ids, "+")
+end
 --[[sgs.ai_skill_cardask["qiangyu_spadecard"] = function(self, data)
 	--主动下天仪增加爆发
 	if self.player:getMark("@tianyi_Weapon")>0 then
@@ -1073,7 +1094,9 @@ sgs.ai_skill_invoke.qiangyu = true
 	end
 	return "."
 end]]
-sgs.ai_skill_discard.qiangyu = sgs.ai_skill_discard.gamerule
+--sgs.ai_skill_discard.qiangyu = sgs.ai_skill_discard.gamerule
+
+
 sgs.ai_cardneed.qiangyu = function(to, card, self)
 	if not self:willSkipPlayPhase(to) then
 		return  card:getSuit()==sgs.Card_Spade
