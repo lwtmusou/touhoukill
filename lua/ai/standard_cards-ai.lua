@@ -1636,7 +1636,7 @@ function sgs.ai_weapon_value.QinggangSword(self, enemy)
 end
 
 sgs.ai_skill_invoke.IceSword = function(self, data)
-	local damage = data:toDamage()
+	local damage = self.player:getTag("IceSword"):toDamage()
 	local target = damage.to
 	if self:isFriend(target) then
 		if self:getDamagedEffects(target, self.players, true) or self:needToLoseHp(target, self.player, true) then return false
