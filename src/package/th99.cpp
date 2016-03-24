@@ -836,7 +836,7 @@ public:
     QList<SkillInvokeDetail> triggerable(const Room *, const DamageStruct &damage) const
     {
         ServerPlayer *yori = damage.to;
-        if (yori->isDead() || !yori->hasSkill(this) || yori->isNude() || yori == damage.from)
+        if (yori->isDead() || !yori->hasSkill(this) ||  damage.from == NULL || yori->isNude() || yori == damage.from)
             return QList<SkillInvokeDetail>();
 
         foreach (const Skill *skill, damage.from->getVisibleSkillList()) {
