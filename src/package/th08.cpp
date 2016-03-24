@@ -59,6 +59,7 @@ public:
                 QList<SkillInvokeDetail> d;
                 foreach(ServerPlayer *p, kaguyas)
                     d << SkillInvokeDetail(this, p, p, NULL, true);
+                return d;
             }
         } else if (triggerEvent == EventAcquireSkill) {
             SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();

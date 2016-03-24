@@ -53,7 +53,7 @@ return {
 	["shiqu_draw"] = "额外的摸牌阶段",
 	["shiqu_play"] = "额外的出牌阶段",
 	["shiqu_discard"] = "额外的弃牌阶段",
-	["@shiqu-discard"] = "你可以发动“时驱”，弃一张牌， 进行 一个<font color=\"#FF8000\"><b>%src </b></font>",
+	["@shiqu-discard"] = "你可以发动“时驱”，弃一张牌， 令当前回合人 <font color=\"#00FF00\"><b>%dest </b></font> 进行 一个<font color=\"#FF8000\"><b>%src </b></font>",
 	["#shiqu"] = "%from发动 “%arg” 将进行一个 %arg2",
 	--pc98008 朝仓理香子
 	["rikako"] = "朝仓理香子" ,

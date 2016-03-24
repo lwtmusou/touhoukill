@@ -316,7 +316,7 @@ public:
             choice = choices.first();
             
         if (choice != "cancel") {
-            QString prompt = "@shiqu-discard:" + choice;
+            QString prompt = "@shiqu-discard:" + choice + ":" + invoke->preferredTarget->objectName();
             const Card *card = room->askForCard(invoke->invoker, ".|.|.|hand,equipped", prompt, data, objectName());
             if (card)
                 invoke->invoker->tag["shiqu"] = QVariant::fromValue(choice);
