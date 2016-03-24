@@ -910,14 +910,14 @@ public:
                 room->showAllCards(source);
                 room->getThread()->delay(1000);
                 room->clearAG();
-                bool no_peach = true;
+                bool hand_peach = false;
                 foreach(const Card *card, source->getHandcards()) {
                     if (card->isKindOf("Peach")) {
-                        no_peach = false;
+                        hand_peach = true;
                         break;
                     }
                 }
-                if (!no_peach) {
+                if (!hand_peach) {
                     source->tag["shizhu_id"] = QVariant::fromValue(id);
                     return true;
                 }

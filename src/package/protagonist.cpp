@@ -1367,7 +1367,7 @@ public:
     {
         if (triggerEvent == BeforeCardsMove) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            //notice that we need keep these three list with same length
+            //notice that we need keep these three lists with same length
             move.card_ids << room->getNCards(2);
             move.from_places << Player::DrawPile << Player::DrawPile;
             move.from_pile_names << QString() << QString();

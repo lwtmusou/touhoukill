@@ -268,10 +268,10 @@ public:
         frequency = Compulsory;
     }
 
-    int getPriority() const
-    {
-        return -100;
-    }
+    //int getPriority() const
+    //{
+    //    return -100;
+    //}
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
@@ -288,8 +288,9 @@ public:
         }
 
         if (mokou->hasSkill(this)) {
-            if (mokou->getHp() - changehp < 1)
+            if (mokou->getHp() - changehp < 1){
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, mokou, mokou, NULL, true);
+            }
         }
         return QList<SkillInvokeDetail>();
     }
