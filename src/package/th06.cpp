@@ -962,7 +962,7 @@ public:
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
+        foreach (ServerPlayer *p, room->getOtherPlayers(current)) {
             if (p->hasSkill(this))
                 d << SkillInvokeDetail(this, p, p, NULL, false, current);
         }
@@ -971,7 +971,7 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        QString prompt = "target:" + invoke->targets.first()->objectName();
+        QString prompt = "target:" + invoke->preferredTarget->objectName();
         if (invoke->invoker->askForSkillInvoke(this, prompt)) {
             invoke->invoker->drawCards(1, objectName());
             QString choice = room->askForChoice(invoke->invoker, objectName(), "hp+maxhp", data);
