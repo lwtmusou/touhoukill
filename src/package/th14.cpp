@@ -866,7 +866,6 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
-        QList<SkillInvokeDetail> d;
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->getPhase() != Player::Finish)
@@ -880,13 +879,17 @@ public:
                     break;
                 }
             }
+            if (!hasPeach)
+                return QList<SkillInvokeDetail>();
 
+            QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *src, room->findPlayersBySkillName(objectName())) {
                 if (!src->isCurrent())
                     d << SkillInvokeDetail(this, src, src);
             }
+            return d;
         }
-        return d;
+        return QList<SkillInvokeDetail>();
     }
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
