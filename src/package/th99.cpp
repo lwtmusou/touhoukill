@@ -1536,6 +1536,9 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
+        if (!use.card->isKindOf("Slash"))
+            return QList<SkillInvokeDetail>();
+
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *p, use.to) {
             if (!p->hasSkill(this) || p->isKongcheng())
