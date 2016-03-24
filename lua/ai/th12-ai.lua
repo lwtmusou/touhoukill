@@ -101,10 +101,10 @@ sgs.ai_skill_invoke.fahua_change = function(self,data)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.fahua_change = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.fahua_change = function(self, player, args)
 	local target=self.room:getTag("fahua_target"):toPlayer()
 	if target then
-		if promptlist[#promptlist] == "yes" then
+		if args[#args] == "yes" then
 			sgs.updateIntention(player, target, -60)
 		end
 	end
@@ -521,10 +521,10 @@ sgs.ai_skill_invoke.shuinan = function(self,data)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.shuinan = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.shuinan = function(self, player, args)
 	local use = player:getTag("shuinan_use"):toCardUse()
 	if use and use.from then
-		if promptlist[#promptlist] == "yes" then
+		if args[#args] == "yes" then
 			sgs.updateIntention(player, use.from, 40)
 		end
 	end
@@ -627,15 +627,15 @@ sgs.ai_skill_invoke.lizhi = function(self,data)
 	if self:getDamagedEffects(target, self.player, isSlash) or self:needToLoseHp(target, self.player, isSlash, true)  then return true end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.lizhi = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.lizhi = function(self, player, args)
 	local d = self.player:getTag("lizhi_damage"):toDamage()
 	if d and d.to then
-		if promptlist[#promptlist] == "yes" then
+		if args[#args] == "yes" then
 			if self:isEnemy(player, d.to) then
 			else
 				sgs.updateIntention(player, d.to, -20)
 			end
-		elseif promptlist[#promptlist] == "no" then
+		elseif args[#args] == "no" then
 			sgs.updateIntention(player, d.to, 60)
 		end
 	end
@@ -918,9 +918,9 @@ sgs.ai_skill_invoke.shanshi = function(self, data)
 	local target = data:toPlayer()
 	return target and self:isFriend(target)
 end
-sgs.ai_choicemade_filter.skillInvoke.shanshi = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.shanshi = function(self, player, args)
 	local target = player:getTag("shanshi"):toPlayer()
-	if target  and promptlist[#promptlist] == "yes" then
+	if target  and args[#args] == "yes" then
 		sgs.updateIntention(player,  target, -30)
 	end
 end

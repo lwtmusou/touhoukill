@@ -512,15 +512,15 @@ sgs.ai_skill_invoke.dongjie = function(self, data)
 		end
         return self:isFriend(to) ~= to:faceUp()
 end
-sgs.ai_choicemade_filter.skillInvoke.dongjie = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.dongjie = function(self, player, args)
 	local to=player:getTag("dongjie_damage"):toDamage().to
 	if to then 
 		if to:faceUp() then
-			if promptlist[#promptlist] == "yes" then
+			if args[#args] == "yes" then
 				sgs.updateIntention(player, to, 60)
 			end
 		else
-			if promptlist[#promptlist] == "yes" then
+			if args[#args] == "yes" then
 				sgs.updateIntention(player, to, -60)
 			else
 				sgs.updateIntention(player, to, 60)
@@ -683,9 +683,9 @@ sgs.ai_skill_choice.qiyue=function(self)
 		return "hp_moxue"
 	end
 end
-sgs.ai_choicemade_filter.skillInvoke.qiyue = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.qiyue = function(self, player, args)
 	local to=self.room:getCurrent()
-	if promptlist[#promptlist] == "yes" then
+	if args[#args] == "yes" then
 		if self:willSkipPlayPhase(to) and self:getOverflow(to,to:getMaxCards())>1 then
 			sgs.updateIntention(player, to, -20)
 		else

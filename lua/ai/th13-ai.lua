@@ -1008,8 +1008,8 @@ sgs.ai_skill_cardask["@qingyu-discard"] = function(self, data)
 	end
 	return "."
 end
-sgs.ai_choicemade_filter.cardResponded["@qingyu-discard"] = function(self, player, promptlist)
-	if promptlist[#promptlist] ~= "_nil_" then
+sgs.ai_choicemade_filter.cardResponded["@qingyu-discard"] = function(self, player, args)
+	if args[#args] ~= "_nil_" then
 		local target =player:getTag("qingyu_source"):toPlayer()
 		if not target then return end	
 		sgs.updateIntention(player, target, 20)

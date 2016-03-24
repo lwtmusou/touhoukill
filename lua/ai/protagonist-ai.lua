@@ -100,12 +100,12 @@ sgs.ai_skill_invoke.qixiang =function(self,data)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.qixiang = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.qixiang = function(self, player, args)
 	local target=player:getTag("qixiang_judge"):toJudge().who
 	if target then
-		if promptlist[#promptlist] == "yes" then
+		if args[#args] == "yes" then
 			sgs.updateIntention(player, target, -50)
-		elseif promptlist[#promptlist] == "no" and sgs.ai_role[target:objectName()] ~= "netural" then
+		elseif args[#args] == "no" and sgs.ai_role[target:objectName()] ~= "netural" then
 			if target:isLord() then
 				sgs.updateIntention(player, target, 10)
 			elseif sgs.ai_role[target:objectName()] == "loyalist" and not self:cautionRenegade(player,target) then
@@ -130,8 +130,8 @@ sgs.ai_skill_invoke.boli = function(self,data)
 	end
 	return not onlyEnemy and self:needRetrial(judge)
 end
-sgs.ai_choicemade_filter.skillInvoke.boli = function(self, player, promptlist)
-	if promptlist[#promptlist] == "yes" then
+sgs.ai_choicemade_filter.skillInvoke.boli = function(self, player, args)
+	if args[#args] == "yes" then
 			sgs.bolisource = player
 	end
 end
@@ -153,8 +153,8 @@ sgs.ai_skill_cardask["@boli-retrial"] = function(self, data)
         return "$" .. self:getRetrialCardId(cards1, judge) or judge.card:getEffectiveId()  --tostring()
 end
 
-sgs.ai_choicemade_filter.cardResponded["@boli-retrial"] = function(self, player, promptlist)
-	if promptlist[#promptlist] ~= "_nil_" then
+sgs.ai_choicemade_filter.cardResponded["@boli-retrial"] = function(self, player, args)
+	if args[#args] ~= "_nil_" then
 		sgs.updateIntention(player, sgs.bolisource, -80)
 		sgs.bolisource = nil
 	elseif sgs.bolisource then
@@ -405,8 +405,8 @@ sgs.ai_skill_choice.saiqian= function(self, choices, data)
 	end
 	return "cancel_saiqian"
 end
-sgs.ai_choicemade_filter.skillChoice.saiqian = function(self, player, promptlist)
-	local choice = promptlist[#promptlist]
+sgs.ai_choicemade_filter.skillChoice.saiqian = function(self, player, args)
+	local choice = args[#args]
 	local target =player:getTag("saiqian_source"):toPlayer()
 	
 	if not target or not target:isWounded() then return end
@@ -426,8 +426,8 @@ sgs.ai_skill_cardask["@saiqian-discard"] = function(self,data)
 		end
 		return "."
 end
-sgs.ai_choicemade_filter.cardResponded["@saiqian-discard"] = function(self, player, promptlist)
-	if promptlist[#promptlist] ~= "_nil_" then
+sgs.ai_choicemade_filter.cardResponded["@saiqian-discard"] = function(self, player, args)
+	if args[#args] ~= "_nil_" then
 		local target =player:getTag("saiqian_source"):toPlayer()
 		if not target or not target:isWounded() then return end	
 		sgs.updateIntention(player, target, -80)

@@ -1276,16 +1276,10 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 	end
 	return getJink() --or "."
 end
-sgs.ai_choicemade_filter.cardResponded["slash-jink"] = function(self, player, promptlist)
+sgs.ai_choicemade_filter.cardResponded["slash-jink"] = function(self, player, args)
 	--目前只有闪死蝶杀有仇恨
-	if promptlist[#promptlist] ~= "_nil_" then
-		local uuz
-		for _,p in sgs.qlist(self.room:getOtherPlayers(player)) do
-			if p:objectName()== promptlist[3] then
-				uuz=p
-				break
-			end
-		end
+	if args[#args] ~= "_nil_" then
+		local uuz = findPlayerByObjectName(self.room, (args[2]:split(":"))[2])
 		if uuz and uuz:isLord() and self:sidieEffect(uuz) then 
 			if not player:hasSkill("xuying") then
 				sgs.updateIntention(player, uuz, 50)
@@ -1630,11 +1624,9 @@ sgs.ai_skill_cardask["double-sword-card"] = function(self, data, pattern, target
 end
 
 
-sgs.ai_choicemade_filter.cardResponded["double-sword-card"] = function(self, player, promptlist)
-	--QString prompt = "double-sword-card:" + use.from->objectName();
-	--"cardResponded:%1:%2:_%3_").arg(pattern).arg(prompt)
-	local user = findPlayerByObjectName(self.room, promptlist[3])
-	if user and promptlist[#promptlist] ~= "_nil_" then	
+sgs.ai_choicemade_filter.cardResponded["double-sword-card"] = function(self, player, args)
+	local user = findPlayerByObjectName(self.room, (args[2]:split(":"))[2])
+	if user and args[#args] ~= "_nil_" then	
 		sgs.updateIntention(player, user, 80)
 	end
 end
@@ -2231,20 +2223,20 @@ end
 sgs.ai_skill_cardask["savage-assault-slash"] = function(self, data, pattern, target)
 	return sgs.ai_skill_cardask.aoe(self, data, pattern, target, "savage_assault")
 end
-sgs.ai_choicemade_filter.cardResponded["savage-assault-slash"] = function(self, player, promptlist)
-	local target = findPlayerByObjectName(self.room, promptlist[3])
-	if target and target:hasSkill("lizhi") and promptlist[#promptlist] ~= "_nil_" then
-		sgs.updateIntention(player, target, 80)
+sgs.ai_choicemade_filter.cardResponded["savage-assault-slash"] = function(self, player, args)
+	local user = findPlayerByObjectName(self.room, (args[2]:split(":"))[2])
+	if user and user:hasSkill("lizhi") and args[#args] ~= "_nil_" then
+		sgs.updateIntention(player, user, 80)
 	end
 end
 
 sgs.ai_skill_cardask["archery-attack-jink"] = function(self, data, pattern, target)
 	return sgs.ai_skill_cardask.aoe(self, data, pattern, target, "archery_attack")
 end
-sgs.ai_choicemade_filter.cardResponded["archery-attack-jink"] = function(self, player, promptlist)
-	local target = findPlayerByObjectName(self.room, promptlist[3])
-	if target and target:hasSkill("lizhi") and promptlist[#promptlist] ~= "_nil_" then
-		sgs.updateIntention(player, target, 80)
+sgs.ai_choicemade_filter.cardResponded["archery-attack-jink"] = function(self, player, args)
+	local user = findPlayerByObjectName(self.room, (args[2]:split(":"))[2])
+	if user and user:hasSkill("lizhi") and args[#args] ~= "_nil_" then
+		sgs.updateIntention(player, user, 80)
 	end
 end
 
@@ -3096,11 +3088,11 @@ sgs.ai_keep_value.Dismantlement = 3.44
 
 sgs.dynamic_value.control_card.Dismantlement = true
 
-sgs.ai_choicemade_filter.cardChosen.snatch = function(self, player, promptlist)
-	local from = findPlayerByObjectName(self.room, promptlist[3])
-	local to = findPlayerByObjectName(self.room, promptlist[4])
+sgs.ai_choicemade_filter.cardChosen.snatch = function(self, player, args)
+	local from = findPlayerByObjectName(self.room, args[3])
+	local to = findPlayerByObjectName(self.room, args[4])
 	if from and to then
-		local id = tonumber(promptlist[2])
+		local id = tonumber(args[2])
 		local place = self.room:getCardPlace(id)
 		local card = sgs.Sanguosha:getCard(id)
 		local intention = 70

@@ -87,8 +87,8 @@ sgs.ai_skill_choice.qianyi = function(self, choices, data)
 	end
 	return "finish"
 end
-sgs.ai_choicemade_filter.skillChoice.qianyi = function(self, player, promptlist)
-	local choice = promptlist[#promptlist]
+sgs.ai_choicemade_filter.skillChoice.qianyi = function(self, player, args)
+	local choice = args[#args]
 	local current = self.room:getCurrent()
 	if not current then return end
 	if  choice == "play" or choice == "draw" then 

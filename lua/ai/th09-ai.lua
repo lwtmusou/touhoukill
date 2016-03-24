@@ -61,10 +61,10 @@ sgs.ai_skill_invoke.doujiu =function(self,data)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.doujiu = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.doujiu = function(self, player, args)
 	local target =player:getTag("doujiu_target"):toPlayer()
 	if target then
-		if promptlist[#promptlist] == "yes" then
+		if args[#args] == "yes" then
 			sgs.updateIntention(player, target, 50)
 		end	
 	end
@@ -201,19 +201,19 @@ sgs.ai_skill_invoke.huiwu =function(self,data)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.huiwu = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.huiwu = function(self, player, args)
 	local card=self.room:getTag("huiwu_use"):toCardUse().card
 	local to=player:getTag("huiwu"):toPlayer()
 	res=huiwu_judge(self,to,card)
 	if res==1 then
-		if promptlist[#promptlist] == "yes" then
+		if args[#args] == "yes" then
 			sgs.updateIntention(player, to, -20)
 		else
 			sgs.updateIntention(player, to, 20)
 		end
 	end
 	if res==2 then
-		if promptlist[#promptlist] == "yes" then
+		if args[#args] == "yes" then
 			sgs.updateIntention(player, to, 20)
 		else
 			sgs.updateIntention(player, to, -20)
@@ -231,10 +231,10 @@ sgs.ai_skill_invoke.huazhong = function(self, data)
     local to =data:toPlayer()
 	return self:isFriend(to)
 end
-sgs.ai_choicemade_filter.skillInvoke.huazhong = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.huazhong = function(self, player, args)
 	local to=player:getTag("huazhong-target"):toPlayer()
 	if to then 
-		if promptlist[#promptlist] == "yes" then
+		if args[#args] == "yes" then
 		    sgs.updateIntention(player, to, -60)
 	    else
 		    local wizard_harm = false
@@ -291,9 +291,9 @@ sgs.ai_skill_invoke.judu =function(self,data)
 		return true
 	end
 end
-sgs.ai_choicemade_filter.skillInvoke.judu = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.judu = function(self, player, args)
 	local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
-	if promptlist[#promptlist] == "yes" then
+	if args[#args] == "yes" then
 	sgs.updateIntention(damage.from, damage.to, 70)
 	end
 end
@@ -538,8 +538,8 @@ sgs.ai_skill_invoke.tianren = function(self,data)
 	
 	return false
 end 
-sgs.ai_choicemade_filter.skillInvoke.tianren = function(self, player, promptlist)
-	if promptlist[#promptlist] == "yes" then
+sgs.ai_choicemade_filter.skillInvoke.tianren = function(self, player, args)
+	if args[#args] == "yes" then
 		if (self.room:getTag("tianren_slash"):toBool()) then
 			sgs.tianrenslashsource = player
 		else
@@ -572,8 +572,8 @@ sgs.ai_skill_use_func.TianrenCard = function(card, use, self)
 		end
 	end
 end
-sgs.ai_choicemade_filter.cardResponded["@tianren-slash"] = function(self, player, promptlist)
-	if promptlist[#promptlist] ~= "_nil_" then
+sgs.ai_choicemade_filter.cardResponded["@tianren-slash"] = function(self, player, args)
+	if args[#args] ~= "_nil_" then
 		sgs.updateIntention(player, sgs.tianrenslashsource, -40)
 		sgs.tianrenslashsource = nil
 		sgs.tianrentarget = nil
@@ -636,8 +636,8 @@ function sgs.ai_cardsview_valuable.tianren(self, class_name, player, need_lord)
 		if has_friend then return "@TianrenCard=." end
 	end
 end
-sgs.ai_choicemade_filter.cardResponded["@tianren-jink"] = function(self, player, promptlist)
-	if promptlist[#promptlist] ~= "_nil_" then
+sgs.ai_choicemade_filter.cardResponded["@tianren-jink"] = function(self, player, args)
+	if args[#args] ~= "_nil_" then
 		sgs.updateIntention(player, sgs.tianrenjinksource, -80)
 		sgs.tianrenjinksource = nil
 	elseif sgs.tianrenjinksource then
@@ -783,8 +783,8 @@ sgs.ai_skill_cardask["@xiwang"] = function(self, data)
 	return "$" .. cards[1]:getId()
 end
 
-sgs.ai_choicemade_filter.cardResponded["@xiwang"] = function(self, player, promptlist)
-	if promptlist[#promptlist] ~= "_nil_" then
+sgs.ai_choicemade_filter.cardResponded["@xiwang"] = function(self, player, args)
+	if args[#args] ~= "_nil_" then
 		local target =player:getTag("xiwang_target"):toPlayer()
 		if not target then return end	
 		sgs.updateIntention(player, target, -80)

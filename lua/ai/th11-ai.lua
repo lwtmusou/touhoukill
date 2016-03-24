@@ -196,12 +196,10 @@ sgs.ai_skill_invoke.huzhu_change = function(self,data)
 	end
 	if #jinks >1 then return true end
 end
-sgs.ai_choicemade_filter.skillInvoke.huzhu_change = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.huzhu_change = function(self, player, args)
 	local target=self.room:getTag("huzhu_target"):toPlayer()
-	if target then
-		if promptlist[#promptlist] == "yes" then
+	if target and args[#args] == "yes" then
 			sgs.updateIntention(player, target, -60)
-		end
 	end
 end
 

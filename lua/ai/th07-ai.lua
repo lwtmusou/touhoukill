@@ -220,25 +220,7 @@ sgs.ai_choicemade_filter.skillInvoke.jingdong = function(self, player, promptlis
 	end
 end
 
---[[sgs.ai_skill_cardask["@zhaoliao"] = function(self, data)
-	local a=data:toDamage().to
-	if not self:isFriend(a) then return "." end
-	local ecards=self.player:getCards("e")
-	if ecards:length()>0 then return "$" .. ecards:first():getId() end
-	local cards = self.player:getCards("h")
-	cards = sgs.QList2Table(cards)
-	if #cards==0 then return "." end
-	self:sortByUseValue(cards)
-	return "$" .. cards[1]:getId()
-end
-sgs.ai_choicemade_filter.cardResponded["@zhaoliao"] = function(self, player, promptlist)
-	if promptlist[#promptlist] ~= "_nil_" then
-		local target =player:getTag("zhaoliao_target"):toPlayer()
-		if not target then return end	
-		sgs.updateIntention(player, target, -80)
-	end
-end
-]]
+
 sgs.ai_skill_discard.zhaoliao = function(self,discard_num, min_num)
 	local target = self.player:getTag("zhaoliao_target"):toPlayer()
 	local to_discard = {}
@@ -257,9 +239,9 @@ sgs.ai_skill_discard.zhaoliao = function(self,discard_num, min_num)
 	end
 	return to_discard
 end
-sgs.ai_choicemade_filter.cardExchange.zhaoliao = function(self, player, promptlist)
+sgs.ai_choicemade_filter.cardExchange.zhaoliao = function(self, player, args)
 	local target = player:getTag("zhaoliao_target"):toPlayer()
-	if target and promptlist[#promptlist] ~= "_nil_" then
+	if target and args[#args] ~= "_nil_" then
 		sgs.updateIntention(player, target, -80)	
 	end
 end
@@ -300,9 +282,9 @@ sgs.ai_skill_invoke.zhanwang = function(self)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.zhanwang = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.zhanwang = function(self, player, args)
 	local damage = player:getTag("zhanwang"):toDamage()
-	if damage.to and promptlist[#promptlist] == "yes" then
+	if damage.to and args[#args] == "yes" then
 		sgs.updateIntention(player, to, 60)
 	end
 end
@@ -705,10 +687,10 @@ sgs.ai_skill_cardask["@zhancao-discard"] = function(self, data)
 	self:sortByCardNeed(ecards)
 	return "$" .. ecards[1]:getId()
 end	
-sgs.ai_choicemade_filter.skillInvoke.zhancao = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.zhancao = function(self, player, args)
 	local target =player:getTag("zhancao_target"):toPlayer()
 	if target then
-		if promptlist[#promptlist] == "yes" then
+		if args[#args] == "yes" then
 			sgs.updateIntention(player, target, -50)
 		end	
 	end
@@ -917,7 +899,7 @@ sgs.ai_skill_choice.youqu=function(self)
 	end
 	return "siling1"
 end
-sgs.ai_choicemade_filter.skillChoice.youqu = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillChoice.youqu = function(self, player, args)
 	sgs.siling_lack[player:objectName()]["Red"] = 0
 	sgs.siling_lack[player:objectName()]["Black"] = 0
 end
@@ -945,7 +927,7 @@ sgs.ai_skill_askforag.wangwu = function(self, card_ids)
         end
     end
 end
-sgs.ai_choicemade_filter.skillInvoke.wangwu = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.wangwu = function(self, player, args)
 	local use = player:getTag("wangwu_use"):toCardUse()
 	
 	if use.card and (use.card:isRed() or  use.card:isBlack()) then
@@ -957,7 +939,7 @@ sgs.ai_choicemade_filter.skillInvoke.wangwu = function(self, player, promptlist)
 			str = "Black"
 		end
 		if use.from and self:isEnemy(use.from,player) then
-			if promptlist[#promptlist] == "yes" then
+			if args[#args] == "yes" then
 				local findSame =false
 				for _,id in sgs.qlist(player:getPile("siling")) do
 					if sgs.Sanguosha:getCard(id):sameColorWith(use.card) then
@@ -1152,7 +1134,7 @@ sgs.ai_skill_invoke.jixiong = function(self,data)
 	end
 	return true
 end
---sgs.ai_choicemade_filter.skillInvoke.jixiong = function(self, player, promptlist)
+--sgs.ai_choicemade_filter.skillInvoke.jixiong = function(self, player, args)
 
 
 

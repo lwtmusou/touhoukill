@@ -135,13 +135,13 @@ function sgs.ai_skill_pindian.bushu(minusecard, self, requestor, maxcard)
 	end
 	return self:getMaxCard()
 end
-sgs.ai_choicemade_filter.skillInvoke.bushu = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.bushu = function(self, player, args)
 	local damage = player:getTag("bushu_damage"):toDamage()
 	local to =damage.to
 	local from =damage.from
 
 	if from and to and from:objectName()~= to:objectName() then
-		if promptlist[#promptlist] == "yes" then
+		if args[#args] == "yes" then
 				sgs.updateIntention(player, to, -50)
 				--sgs.updateIntention(player, from, 10)
 		elseif sgs.evaluatePlayerRole(to) ~= "neutral" then
@@ -628,11 +628,11 @@ sgs.ai_skill_invoke.jie = function(self,data)
 	end
  	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.jie = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.jie = function(self, player, args)
 	local damage = player:getTag("jie_damage"):toDamage()
 	local to=damage.to
 	if  to  then
-		if promptlist[#promptlist] == "yes" then
+		if args[#args] == "yes" then
 			sgs.updateIntention(player, to, -50)
 		end	
 	end
@@ -678,10 +678,10 @@ sgs.ai_skill_choice.liuxing = function(self, choices, data)
 	end
 	return "recover"
 end
-sgs.ai_choicemade_filter.skillChoice.liuxing = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillChoice.liuxing = function(self, player, args)
 	local hina  = player:getTag("liuxing_source"):toPlayer()
 	if hina then
-		if promptlist[#promptlist] == "losehp" then
+		if args[#args] == "losehp" then
 			sgs.updateIntention(player, hina, 50)
 		end	
 	end
@@ -905,11 +905,11 @@ sgs.ai_skill_invoke.zhongyan = function(self,data)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.zhongyan = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.zhongyan = function(self, player, args)
 	local from=self.room:getTag("zhongyan_damage"):toDamage().from
 	
 	if from then
-		if promptlist[#promptlist] == "yes" and from:getLostHp()>0 then
+		if args[#args] == "yes" and from:getLostHp()>0 then
 			sgs.updateIntention(player, from, 60)
 		end
 	end

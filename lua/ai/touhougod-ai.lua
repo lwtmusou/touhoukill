@@ -60,15 +60,15 @@ sgs.jiexian_suit_value = {
 sgs.ai_cardneed.jiexian = function(to, card, self)
 	return card:getSuit()==sgs.Card_Heart or card:getSuit()==sgs.Card_Spade
 end
-sgs.ai_choicemade_filter.cardResponded["@jiexiandamage"] = function(self, player, promptlist)
-	if promptlist[#promptlist] ~= "_nil_" then
+sgs.ai_choicemade_filter.cardResponded["@jiexiandamage"] = function(self, player, args)
+	if args[#args] ~= "_nil_" then
 		local target =player:getTag("jiexian_target"):toPlayer()
 		if not target then return end	
 		sgs.updateIntention(player, target, -80)
 	end
 end
-sgs.ai_choicemade_filter.cardResponded["@jiexianrecover"] = function(self, player, promptlist)
-	if promptlist[#promptlist] ~= "_nil_" then
+sgs.ai_choicemade_filter.cardResponded["@jiexianrecover"] = function(self, player, args)
+	if args[#args] ~= "_nil_" then
 		local target =player:getTag("jiexian_target"):toPlayer()
 		if not target then return end	
 		sgs.updateIntention(player, target, 80)
@@ -789,8 +789,8 @@ sgs.ai_skill_askforyiji.yibian = function(self, card_ids)
 	 return nil, -1
 end
 sgs.ai_Yiji_intention.yibian = -30
--- sgs.ai_choicemade_filter.skillInvoke.yibian = function(self, player, promptlist)
-	-- if promptlist[#promptlist] == "yes" then
+-- sgs.ai_choicemade_filter.skillInvoke.yibian = function(self, player, args)
+	-- if args[#args] == "yes" then
 		-- self:updatePlayers()
 	-- end
 -- end
@@ -1126,8 +1126,8 @@ end
 
 sgs.ai_skill_invoke.xuanlan = true
 
-sgs.ai_choicemade_filter.cardResponded["@qinlue-discard"] = function(self, player, promptlist)
-	if promptlist[#promptlist] ~= "_nil_" then
+sgs.ai_choicemade_filter.cardResponded["@qinlue-discard"] = function(self, player, args)
+	if args[#args] ~= "_nil_" then
 		local current=self.room:getCurrent()
 		sgs.updateIntention(player, current, 80)
 	end
@@ -1353,7 +1353,7 @@ sgs.ai_skill_choice.zuosui= function(self, choices, data)
 		return "1"
 	end
 end
---[[sgs.ai_choicemade_filter.skillInvoke.zuosui = function(self, player, promptlist)
+--[[sgs.ai_choicemade_filter.skillInvoke.zuosui = function(self, player, args)
 	local damage = player:getTag("zuosui_damage"):toDamage()
 	local to=damage.to
 	local from= player
@@ -1553,10 +1553,10 @@ sgs.ai_skill_invoke.huanming = function(self,data)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.huanming = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.huanming = function(self, player, args)
 	local damage = player:getTag("huanming_damage"):toDamage()
 	local to=damage.to
-	if  to  and promptlist[#promptlist] == "yes" then
+	if  to  and args[#args] == "yes" then
 		if player:getHp()> to:getHp() then
 		    sgs.updateIntention(player, to, -50)
 		elseif player:getHp() < to:getHp() then
