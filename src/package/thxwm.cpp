@@ -377,7 +377,9 @@ public:
         if (triggerEvent == DrawInitialCards) {
             room->touhouLogmessage("#TriggerSkill", player, objectName());
             room->notifySkillInvoked(player, objectName());
-            data = QVariant::fromValue(data.toInt() + 6);
+            DrawNCardsStruct s = data.value<DrawNCardsStruct>();
+            s.n = s.n + 6;
+            data = QVariant::fromValue(s);
         } else if ((triggerEvent == AfterDrawInitialCards)) {
             room->broadcastSkillInvoke("shanji");
             const Card *exchange_card = room->askForExchange(player, "shanji", 6, 6);
