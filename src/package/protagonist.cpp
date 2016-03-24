@@ -1656,7 +1656,7 @@ public:
             if (use.card->getSuit() == Card::Heart)
                 use.from->tag["lingji"] = QVariant::fromValue(true);
         } else if (triggerEvent == CardResponded) {
-            CardResponseStruct resp = data.value<CardResponseStruct>().m_card;
+            CardResponseStruct resp = data.value<CardResponseStruct>();
             if (!resp.m_from->isCurrent()) return;
             if (resp.m_card->getSuit() == Card::Heart)
                 resp.m_from->tag["lingji"] = QVariant::fromValue(true);
@@ -1681,7 +1681,7 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), objectName(), "@lingji", false, true);
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), objectName(), "@lingji", true, true);
         if (target) {
             invoke->targets << target;
             return true;
