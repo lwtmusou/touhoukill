@@ -102,6 +102,7 @@ DamageStruct::DamageStruct(const QString &reason, ServerPlayer *from, ServerPlay
     this->reason = reason;
 }
 
+
 QString DamageStruct::getReason() const
 {
     if (reason != QString())
@@ -320,6 +321,7 @@ QString CardUseStruct::toString() const
     }
     return l.join("->");
 }
+
 
 MarkChangeStruct::MarkChangeStruct()
     : num(1), player(NULL)

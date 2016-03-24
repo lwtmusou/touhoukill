@@ -473,7 +473,7 @@ public:
         QList<SkillInvokeDetail> d;
 
         // 1.you are hit by others
-        if (damage.to->hasSkill(this) && damage.from != damage.to && damage.from != NULL) {
+        if (damage.to->hasSkill(this) && damage.to->isAlive() && damage.from != damage.to && damage.from != NULL) {
             SkillInvokeDetail s(this, damage.to, damage.to, NULL, false, damage.from);
             s.tag["lostmaxhp"] = false;
             d << s;

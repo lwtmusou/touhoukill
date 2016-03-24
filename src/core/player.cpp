@@ -415,11 +415,7 @@ bool Player::isLord() const
 
 bool Player::isCurrent() const
 {
-    if (getPhase() == Player::NotActive)
-        return false;
-    else if (hasFlag("qinlue") && getPhase() == Player::Play)
-        return false;
-    return true;
+    return phase != Player::NotActive;
 }
 
 bool Player::hasSkill(const QString &skill_name, bool include_lose) const

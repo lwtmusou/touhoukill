@@ -981,7 +981,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.to->hasSkill(this) && damage.to->getMark("@shanghun") > 0 && damage.to->getMark("@clock") == 0)
+        if (damage.to->hasSkill(this) && damage.to->isAlive() && damage.to->getMark("@shanghun") > 0 && damage.to->getMark("@clock") == 0)
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
         return QList<SkillInvokeDetail>();
     }

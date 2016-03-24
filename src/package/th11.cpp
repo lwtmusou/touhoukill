@@ -383,7 +383,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.from && damage.from->isAlive()
+        if (damage.from && damage.from->isAlive() && damage.to->isAlive()
             && damage.from != damage.to && damage.to->hasSkill(this)) {
             FireSlash *slash = new FireSlash(Card::NoSuit, 0);
             slash->deleteLater();
@@ -884,7 +884,7 @@ public:
 
     QList<SkillInvokeDetail> triggerable(const Room *room, const DamageStruct &damage) const
     {
-        if (damage.to->hasSkill(this)) {
+        if (damage.to->hasSkill(this) && damage.to->isAlive()) {
             foreach (ServerPlayer *p, room->getOtherPlayers(damage.to)) {
                 if (!p->isKongcheng() && p->getCards("j").length() > 0)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);

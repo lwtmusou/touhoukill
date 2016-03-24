@@ -195,10 +195,9 @@ public:
         }
 
         QStringList trigger_list;
-        if (yukari && yukari->hasSkill(this)) {
-            for (int i = 1; i <= num; i++) {
+        if (yukari && yukari->isAlive() && yukari->hasSkill(this)) {
+            for (int i = 1; i <= num; i++)
                 d << SkillInvokeDetail(this, yukari, yukari);
-            }
         }
         return d;
     }
@@ -838,7 +837,7 @@ public:
             return QList<SkillInvokeDetail>();
 
         if ((triggerEvent == EventPhaseStart &&  player->getPhase() == Player::Start) || triggerEvent == Damaged) {
-            if (player->getMark("@shi") > 0)
+            if (player->getMark("@shi") > 0 && player->isAlive())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         } else if (triggerEvent == EventPhaseStart &&  player->getPhase() == Player::Play) {
             if (player->getMark("@shi") == 0)
@@ -1123,7 +1122,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.to->hasSkill(this))
+        if (damage.to->hasSkill(this) && damage.to->isAlive())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
         return QList<SkillInvokeDetail>();
     }
@@ -1343,7 +1342,7 @@ public:
             if (damage.to->isAlive())
                 target = damage.to;
         }
-        if (!target)
+        if (!target || target->isDead())
             return QList<SkillInvokeDetail>();
 
 

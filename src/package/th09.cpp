@@ -1148,7 +1148,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (triggerEvent == Damaged) {
             ServerPlayer *player = data.value<DamageStruct>().to;
-            if (player->hasSkill(this) && player->getPhase() != Player::Play
+            if (player->hasSkill(this) && player->isAlive() && player->getPhase() != Player::Play
                 && !nengwuTargets(player, false).isEmpty())
                 d << SkillInvokeDetail(this, player, player);
         } else if (triggerEvent == HpRecover) {

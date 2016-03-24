@@ -252,7 +252,7 @@ public:
 
     QList<SkillInvokeDetail> triggerable(const Room *room, const DamageStruct &damage) const
     {
-        if (!damage.to->hasSkill(this))
+        if (!damage.to->hasSkill(this) || damage.to->isDead())
             return QList<SkillInvokeDetail>();
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (damage.to->canDiscard(p, "h"))

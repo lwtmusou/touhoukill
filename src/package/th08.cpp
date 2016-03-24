@@ -662,7 +662,7 @@ public:
                 return  QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         } else if  (triggerEvent == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.to->hasSkill(this) && damage.to->getPile("lishi").length() > 0)
+            if (damage.to->hasSkill(this) && damage.to->isAlive() && damage.to->getPile("lishi").length() > 0)
                 return  QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
         }
         return  QList<SkillInvokeDetail>();
@@ -782,7 +782,7 @@ public:
                 return  QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         } else if (triggerEvent == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.to->hasSkill(this) && !damage.to->isKongcheng() && hasBuxianTarget(damage.to))
+            if (damage.to->hasSkill(this) && damage.to->isAlive() && !damage.to->isKongcheng() && hasBuxianTarget(damage.to))
                 return  QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
         }
         
@@ -1434,7 +1434,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.from && damage.from->isAlive()
+        if (damage.from && damage.from->isAlive() && damage.to->isAlive()
             && damage.to->hasSkill(this) && damage.from->getHandcardNum() > damage.to->getHp()) {
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.from);
         }
