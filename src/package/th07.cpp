@@ -1987,7 +1987,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (!use.card->isRed() && !use.card->isBlack()) {
+        if (!use.card->isRed() && !use.card->isBlack() && !use.card->isKindOf("SkillCard")) {
             QList<SkillInvokeDetail> d;
             foreach(ServerPlayer *p, room->getAllPlayers()) {
                 if (p->hasSkill(this) && p->getHandcardNum() < 3)
