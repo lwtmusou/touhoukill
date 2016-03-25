@@ -1709,7 +1709,7 @@ public:
         QList<SkillInvokeDetail> d;
         ServerPlayer *current = room->getCurrent();
         foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            if (current && current->canDiscard(current, "h"))
+            if (current && current->canDiscard(current, "he"))
                 d << SkillInvokeDetail(this, p, p);
             else {
                 foreach(ServerPlayer *t, room->getOtherPlayers(p)) {
@@ -1727,7 +1727,7 @@ public:
     {
         QStringList choices;
         ServerPlayer *current = room->getCurrent();
-        if (current && current->canDiscard(current, "h"))
+        if (current && current->canDiscard(current, "he"))
             choices << "discard";
 
         foreach(ServerPlayer *t, room->getOtherPlayers(invoke->invoker)) {

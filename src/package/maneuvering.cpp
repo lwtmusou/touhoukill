@@ -189,7 +189,7 @@ public:
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.nature == DamageStruct::Normal)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
-        } else if (triggerEvent == CardEffect) {
+        } else if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.card != NULL && (effect.card->isKindOf("SavageAssault") || effect.card->isKindOf("ArcheryAttack")))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
