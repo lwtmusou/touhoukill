@@ -360,7 +360,7 @@ bool SkillInvokeDetail::operator <(const SkillInvokeDetail &arg2) const // the o
         if (room == NULL)
             return false;
 
-        return room->getFront(invoker, arg2.invoker);
+        return room->getFront(invoker, arg2.invoker) == invoker;
     }
 
     return skill->inherits("EquipSkill") && !arg2.skill->inherits("EquipSkill");
