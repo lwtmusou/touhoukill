@@ -615,7 +615,7 @@ end
 --SmartAI:getAoeValue(card, player)
 --sgs.ai_skill_cardask.aoe
 sgs.ai_skill_invoke.lizhi = function(self,data)
-	local d = self.player:getTag("lizhi_damage"):toDamage()
+	local d = self.player:getTag("lizhi"):toDamage()
 	local target=data:toPlayer()
 	if not self:isEnemy(target) then
 		return true
@@ -1023,11 +1023,13 @@ sgs.ai_skill_askforag.shuxin = function(self, card_ids)
 			local insert = pre_id < 0
 			if (not checksuit) then
 				insert = true
-			end
-			if (checkuit and samesuit and c:getSuit() == sgs.Sanguosha:getCard(pre_id):getSuit())  or 
-				( checksuit and not samesuit and c:getSuit() ~= sgs.Sanguosha:getCard(pre_id):getSuit()) then
+			else
+				if (samesuit and c:getSuit() == sgs.Sanguosha:getCard(pre_id):getSuit())  or 
+				(not samesuit and c:getSuit() ~= sgs.Sanguosha:getCard(pre_id):getSuit()) then
 				insert = true
+				end
 			end
+			
 			if  insert then
 				table.insert(tmp, c)
 				if c:getSuit() == sgs.Card_Spade then

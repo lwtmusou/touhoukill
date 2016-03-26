@@ -8401,7 +8401,7 @@ sgs.ai_skill_choice["3v3_direction"] = function(self, choices, data)
 	if self:isFriend(self.player:getNextAlive()) == aggressive then return "cw" else return "ccw" end
 end
 
- sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
+ sgs.ai_skill_choice["askForTriggerOrder"] = function(self, choices, data)
 	local skillnames = choices:split("+")
 	for _, skillname in ipairs(skillnames) do
 		if (skillname ~= "cancel") and  (skillname ~= "pingyi") then--先触发凭依以外的卖血技能后再考虑凭依

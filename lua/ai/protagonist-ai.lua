@@ -821,7 +821,7 @@ sgs.ai_skill_use["@@chunxi"] = function(self, prompt)
 	local ids = {}
 	for _, id in sgs.qlist(move.card_ids) do
 		if sgs.Sanguosha:getCard(id):getSuit() == sgs.Card_Heart 
-		  and room:getCardPlace(id) == sgs.Player_PlaceHand then
+		  and self.room:getCardPlace(id) == sgs.Player_PlaceHand then
 			table.insert(ids, id)
 		end
 	end
@@ -1238,3 +1238,10 @@ sgs.ai_skill_playerchosen.lingji = function(self, targets)
 	return nil
 end
 sgs.ai_playerchosen_intention.lingji = 60
+sgs.ai_cardneed.lingji = function(to, card, self)
+	return card:getSuit()==sgs.Card_Heart
+end
+sgs.lingji_suit_value = {
+	heart = 4.8
+}
+

@@ -2071,7 +2071,7 @@ TH07Package::TH07Package()
     ran_sp->addSkill(new Jixiong2);
     related_skills.insertMulti("jixiong", "#jixiong2");
 
-    General *youki = new General(this, "youki", "yym", 4, false);
+    General *youki = new General(this, "youki", "yym", 4);
     Q_UNUSED(youki);
 
     General *leira = new General(this, "leira", "yym", 3, false);

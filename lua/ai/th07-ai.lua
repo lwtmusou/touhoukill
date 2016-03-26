@@ -224,7 +224,7 @@ end
 sgs.ai_skill_discard.zhaoliao = function(self,discard_num, min_num)
 	local target = self.player:getTag("zhaoliao_target"):toPlayer()
 	local to_discard = {}
-	if not self:isFriend(a) then return to_discard end
+	if not self:isFriend(target) then return to_discard end
 	
 	local ecards=self.player:getCards("e")
 	if ecards:length()>0 then  
@@ -285,7 +285,7 @@ end
 sgs.ai_choicemade_filter.skillInvoke.zhanwang = function(self, player, args)
 	local damage = player:getTag("zhanwang"):toDamage()
 	if damage.to and args[#args] == "yes" then
-		sgs.updateIntention(player, to, 60)
+		sgs.updateIntention(player, damage.to, 60)
 	end
 end
 

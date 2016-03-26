@@ -288,9 +288,8 @@ public:
         }
 
         if (mokou->hasSkill(this)) {
-            if (mokou->getHp() - changehp < 1){
+            if (mokou->getHp() - changehp < 1)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, mokou, mokou, NULL, true);
-            }
         }
         return QList<SkillInvokeDetail>();
     }
