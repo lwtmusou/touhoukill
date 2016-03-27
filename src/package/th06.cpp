@@ -795,12 +795,6 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        invoke->invoker->tag["dongjie_damage"] = data;
-        return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->targets.first()));
-    }
-
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();

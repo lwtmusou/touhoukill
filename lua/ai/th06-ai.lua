@@ -503,8 +503,8 @@ end
 
 
 sgs.ai_skill_invoke.dongjie = function(self, data)
-        local damage =self.player:getTag("dongjie_damage"):toDamage()
-        local to =data:toPlayer()
+        local damage =self.player:getTag("dongjie"):toDamage()
+        local to = damage.to
 		local final_damage = self:touhouDamage(damage, self.player, to, 2)
 		local needAvoidAttack = self:touhouNeedAvoidAttack(damage,self.player,to,true, 2)
 		if self:isEnemy(to) and needAvoidAttack then
