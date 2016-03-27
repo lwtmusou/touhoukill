@@ -1262,7 +1262,7 @@ public:
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-        if (player != NULL && player->hasSkill(this) && move.to_place == Player::DiscardPile
+        if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile
             && !player->hasFlag("jinian_used") && player->isAlive()) {
             QVariantList ids = player->tag["jinian"].toList();
             foreach(int id, move.card_ids) {

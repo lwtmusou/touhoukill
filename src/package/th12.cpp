@@ -347,7 +347,7 @@ public:
         } else if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-            if (player != NULL && player->hasSkill(this) && move.to_place == Player::DiscardPile) {
+            if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile) {
                 foreach (int id, move.card_ids) {
                     if (room->getCardPlace(id) == Player::DiscardPile
                         && (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial
@@ -737,7 +737,7 @@ public:
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *ko = qobject_cast<ServerPlayer *>(move.from);
-        if (ko != NULL && ko->hasSkill(this) && move.from_places.contains(Player::PlaceEquip)) {
+        if (ko != NULL && ko->isAlive() && ko->hasSkill(this) && move.from_places.contains(Player::PlaceEquip)) {
             bool wound = false;
             foreach (ServerPlayer *p, room->getAllPlayers()) {
                 if (p->isWounded()) {

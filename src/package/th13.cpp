@@ -120,7 +120,7 @@ public:
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *miko = qobject_cast<ServerPlayer *>(move.from);
-        if (miko != NULL && miko->hasLordSkill(objectName()) && move.from_places.contains(Player::PlaceHand)
+        if (miko != NULL && miko->isAlive() && miko->hasLordSkill(objectName()) && move.from_places.contains(Player::PlaceHand)
             && (move.to_place == Player::PlaceHand && move.to && move.to != miko
             && move.to->getKingdom() == "slm")) 
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, miko, miko);
@@ -1509,7 +1509,7 @@ public:
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *kogasa = qobject_cast<ServerPlayer *>(move.from);
-        if (kogasa != NULL && kogasa->hasSkill(this) && move.from_places.contains(Player::PlaceDelayedTrick))
+        if (kogasa != NULL && kogasa->isAlive() && kogasa->hasSkill(this) && move.from_places.contains(Player::PlaceDelayedTrick))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, kogasa, kogasa);
         return QList<SkillInvokeDetail>();
     }

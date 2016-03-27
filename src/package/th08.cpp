@@ -47,10 +47,10 @@ public:
             QList<ServerPlayer *> kaguyas;
             ServerPlayer *kaguya1 = qobject_cast<ServerPlayer *>(move.from);
             ServerPlayer *kaguya2 = qobject_cast<ServerPlayer *>(move.to);
-            if (kaguya1 != NULL && kaguya1->hasSkill(this) && move.from_places.contains(Player::PlaceHand) 
+            if (kaguya1 != NULL && kaguya1->isAlive() && kaguya1->hasSkill(this) && move.from_places.contains(Player::PlaceHand) 
             && kaguya1->getHandcardNum() != 4 && kaguya1->getPhase() == Player::NotActive)
                 kaguyas << kaguya1;
-            if (kaguya2 != NULL && kaguya2->hasSkill(this) && move.to_place == Player::PlaceHand
+            if (kaguya2 != NULL && kaguya2->isAlive() && kaguya2->hasSkill(this) && move.to_place == Player::PlaceHand
                 && kaguya2->getHandcardNum() != 4 && kaguya2->getPhase() == Player::NotActive)
                 kaguyas << kaguya2;
             if (kaguyas.length() > 1)
@@ -353,7 +353,7 @@ public:
         else if (triggerEvent == EventAcquireSkill)
             mokou = data.value<SkillAcquireDetachStruct>().player;
 
-        if (mokou != NULL && mokou->hasSkill(this) && mokou->getHp() == 1 && mokou->isKongcheng())
+        if (mokou != NULL && mokou->isAlive() && mokou->hasSkill(this) && mokou->getHp() == 1 && mokou->isKongcheng())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, mokou, mokou, NULL, true);
         return QList<SkillInvokeDetail>();
     }
@@ -1532,7 +1532,7 @@ public:
         } else if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-            if (player != NULL && player->hasSkill(this) && player->getPhase() != Player::Play
+            if (player != NULL && player->isAlive() && player->hasSkill(this) && player->getPhase() != Player::Play
                 && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
                 foreach(int id, move.card_ids) {
                     if (Sanguosha->getCard(id)->isKindOf("Slash"))

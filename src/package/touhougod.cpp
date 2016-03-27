@@ -2626,7 +2626,7 @@ public:
          if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-            if (player != NULL && player->hasSkill(this) && player->hasFlag("shifangInvoked") && player->getMark("shifang") == 0) {
+            if (player != NULL && player->isAlive() && player->hasSkill(this) && player->hasFlag("shifangInvoked") && player->getMark("shifang") == 0) {
                 foreach(int id, move.card_ids) {
                     if (Sanguosha->getCard(id)->hasFlag("shifang")) {
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);

@@ -19,7 +19,7 @@ public:
     {
         QList<SkillInvokeDetail> d;
         ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->getPhase() == Player::Start && player->getHandcardNum() < 3) {
+        if (player->getPhase() == Player::Start && player->getHandcardNum() < 3 && player->isAlive()) {
             foreach (ServerPlayer *src, room->findPlayersBySkillName(objectName())) {
                 if (src->canDiscard(src, "he"))
                     d << SkillInvokeDetail(this, src, src, NULL, false, player);
@@ -313,7 +313,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DyingStruct dying = data.value<DyingStruct>();
-        if (dying.who->hasSkill(this) && !dying.nowAskingForPeaches->isKongcheng())
+        if (dying.who->hasSkill(this) && !dying.nowAskingForPeaches->isKongcheng() && dying.nowAskingForPeaches != dying.who)
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dying.who,dying.who, NULL, true, dying.nowAskingForPeaches);
         return QList<SkillInvokeDetail>();
     }

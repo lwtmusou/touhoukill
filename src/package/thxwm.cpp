@@ -313,7 +313,7 @@ public:
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-        if (player != NULL && player->hasSkill(this) && move.from_places.contains(Player::PlaceHand)
+        if (player != NULL && player->isAlive() && player->hasSkill(this) && move.from_places.contains(Player::PlaceHand)
             && player->isWounded() && move.is_last_handcard)
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         return QList<SkillInvokeDetail>();

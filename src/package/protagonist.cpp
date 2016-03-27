@@ -1548,7 +1548,7 @@ public:
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *marisa = qobject_cast<ServerPlayer *>(move.from);
-        if (marisa != NULL && marisa->hasSkill(this) &&  move.from_places.contains(Player::PlaceSpecial)) {
+        if (marisa != NULL && marisa->isAlive() && marisa->hasSkill(this) &&  move.from_places.contains(Player::PlaceSpecial)) {
             QList<SkillInvokeDetail> d; 
             for (int i = 0; i < move.card_ids.size(); i++) {
                 if (move.from_pile_names.value(i) == "tianyi")

@@ -1162,10 +1162,10 @@ public:
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *playerFrom = qobject_cast<ServerPlayer *>(move.from);
             ServerPlayer *playerTo = qobject_cast<ServerPlayer *>(move.to);
-            if (playerFrom != NULL && playerFrom->hasSkill(this) && move.from_places.contains(Player::PlaceHand)
+            if (playerFrom != NULL && playerFrom->isAlive() && playerFrom->hasSkill(this) && move.from_places.contains(Player::PlaceHand)
                 && playerFrom->getPhase() != Player::Play && !nengwuTargets(playerFrom, false).isEmpty()) {
                 d << SkillInvokeDetail(this, playerFrom, playerFrom);
-            } else if (playerTo != NULL && playerTo->hasSkill(this) && move.to_place == Player::PlaceHand
+            } else if (playerTo != NULL && playerTo->isAlive() && playerTo->hasSkill(this) && move.to_place == Player::PlaceHand
                 && playerTo->getPhase() != Player::Draw && !nengwuTargets(playerTo, true).isEmpty()) {
                 d << SkillInvokeDetail(this, playerTo, playerTo);
             }
