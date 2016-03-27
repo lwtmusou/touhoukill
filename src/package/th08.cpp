@@ -157,39 +157,22 @@ class Ruizhi : public TriggerSkill
 public:
     Ruizhi() : TriggerSkill("ruizhi")
     {
-        events << PostCardEffected << CardEffected;
+        events << PostCardEffected;
     }
 
-
-    void record(TriggerEvent triggerEvent, Room *, QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
-        if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (effect.card->isNDTrick() && effect.to->hasSkill(this)) {
-                effect.to->tag["ruizhi_effect"] = data;//for record and ai need damage
-                //when triggerEvent  postcardeffected,the effect card information which is transformed willbe cleared.
-                //we can not find the real name in cardused,if this card is transformed
-                effect.to->setFlags("ruizhi_effect");
-            }
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        if (effect.to->hasSkill(this) && effect.to->isWounded() && effect.card->isNDTrick()) {
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to);
         }
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
-    {
-        if (triggerEvent == PostCardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (effect.to->hasSkill(this) && effect.to->isWounded() && effect.to->hasFlag("ruizhi_effect")) {
-                // this flag means card was used as trick card while event CardEffected, 
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to);
-            }
-        }
+        
         return QList<SkillInvokeDetail>();
     }
 
     bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardEffectStruct effect = data.value<CardEffectStruct>();
-        invoke->invoker->setFlags("-ruizhi_effect");
         QString prompt = "invoke:" + effect.card->objectName();
         return invoke->invoker->askForSkillInvoke(objectName(), prompt);
     }
