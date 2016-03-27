@@ -964,7 +964,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.nature == DamageStruct::Thunder && damage.to->hasSkill(this)) {
             for (int i = 0; i < damage.damage; i++)
-                d << SkillInvokeDetail(this, damage.to, damage.to);
+                d << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
         }
         return d;
     }
