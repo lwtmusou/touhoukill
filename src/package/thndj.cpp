@@ -78,7 +78,7 @@ public:
                 QList<const Card *> cards = p->getCards("e");
                 QList<int> ids;
                 foreach (const Card *card, cards) {
-                    if (p->getWeapon()->getId() == card->getId())
+                    if (p->getWeapon() && p->getWeapon()->getId() == card->getId())
                         continue;
 
                     ids << card->getId();
@@ -107,7 +107,7 @@ public:
             QList<const Card *> cards = p->getCards("e");
             QList<int> ids;
             foreach (const Card *card, cards) {
-                if (p->getWeapon()->getId() == card->getId())
+                if (p->getWeapon() && p->getWeapon()->getId() == card->getId())
                     continue;
 
                 ids << card->getId();
