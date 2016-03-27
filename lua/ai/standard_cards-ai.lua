@@ -1956,13 +1956,15 @@ function sgs.ai_slash_weaponfilter.Fan(self, to)
 end
 
 sgs.ai_skill_invoke.KylinBow = function(self, data)
-	local damage = data:toDamage()
+	local damage = self.player:getTag("KylinBow"):toDamage()  --data:toDamage()
 	if damage.from and damage.from:hasSkill("kuangfu") and damage.to:getCards("e"):length() == 1 then return false end
 	if self:hasSkills(sgs.lose_equip_skill, damage.to) then
 		return self:isFriend(damage.to)
 	end
 	return self:isEnemy(damage.to)
 end
+
+--sgs.ai_skill_choice.KylinBow= function(self, choices, data)
 
 function sgs.ai_slash_weaponfilter.KylinBow(self, to)
 	return to:getDefensiveHorse() or to:getOffensiveHorse()
@@ -1975,24 +1977,15 @@ end
 --东方杀相关
 --【命运】【绯想】【死蝶】
 sgs.ai_skill_invoke.EightDiagram = function(self, data)
-	--万件怎么办？？插入怨灵杀一类的怎么办？
-	local slash_source
-	local strs=data:toStringList()
-	if strs and #strs==2 then 
-		local str1=(strs[2]:split(":"))[1]
-		local str2=(strs[2]:split(":"))[2]
-		if str1=="slash-jink" then
-			for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-				if p:objectName() == str2 then
-					slash_source=p
-					break
-				end
-			end
+	
+	local s = data:toCardAsked()
+	if (s.prompt:split(":"))[1] == "slash-jink" then
+		local slash_source = findPlayerByObjectName(self.room, (s.prompt:split(":"))[2])
+		--幽幽子死蝶
+		if slash_source and self:isFriend(slash_source)
+		and self:sidieEffect(slash_source) then
+			return false
 		end
-	end
-	if slash_source and self:isFriend(slash_source)
-    and self:sidieEffect(slash_source) then
-		return false
 	end
 	
 	

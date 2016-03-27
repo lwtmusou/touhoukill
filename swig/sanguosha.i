@@ -699,6 +699,16 @@ struct ChoiceMadeStruct
     QStringList args;
 };
 
+struct CardAskedStruct
+{
+    CardAskedStruct();
+
+    QString pattern;
+    QString prompt;
+    ServerPlayer *player;
+};
+
+
 enum TriggerEvent {
     NonTrigger,
 
