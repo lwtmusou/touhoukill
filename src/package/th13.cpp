@@ -1071,11 +1071,10 @@ public:
             if (use.card->isKindOf("Jink") || use.from->hasFlag("Global_ProcessBroken") || !use.from->isAlive())
                 return QList<SkillInvokeDetail>();
 
-            
-            if (use.from  && use.to.length() == 1
+            if (use.from  && use.to.length() == 1 
                 && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
                 ServerPlayer *source = use.to.first();
-                if (use.from != source  && source->hasSkill(this)) {
+                if (use.from != source  && source->hasSkill(this) && source->isAlive() && use.from->isAlive()) {
                         Card *card = Sanguosha->cloneCard(use.card->objectName());
                         DELETE_OVER_SCOPE(Card, card)
                             if (!source->isCardLimited(card, Card::MethodUse) && !source->isProhibited(use.from, card))
