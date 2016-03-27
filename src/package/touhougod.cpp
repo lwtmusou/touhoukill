@@ -2161,10 +2161,13 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
         QList<SkillInvokeDetail> d;
-        if (triggerEvent == GameStart || triggerEvent == DrawPileSwaped) {
+        if (triggerEvent == GameStart) {
+            ServerPlayer *erin = data.value<ServerPlayer *>();
+            if (erin && erin->hasSkill(this))
+                d << SkillInvokeDetail(this, erin, erin, NULL, true);
+        } else if (triggerEvent == DrawPileSwaped) {
             foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName()))
                 d << SkillInvokeDetail(this, p, p, NULL, true);
-        
         } else if (triggerEvent == DrawNCards) {
             DrawNCardsStruct dc = data.value<DrawNCardsStruct>();
             if (dc.player->getMark("@qiannian") > 0 && dc.player->hasSkill(this))
