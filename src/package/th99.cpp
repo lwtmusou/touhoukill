@@ -1594,6 +1594,8 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         use.to << invoke->targets;
         use.to.removeOne(invoke->invoker);
+        data = QVariant::fromValue(use);
+
         QList<ServerPlayer *> logto;
         logto << invoke->invoker;
         QList<ServerPlayer *> logto1;

@@ -54,3 +54,26 @@ alpha版发布后
 23 fix 触发技的trigger顺序。。。。
 24 fix 【捣药】触发条件
 25 fix  【无念】 崩溃
+26 fix 【静电】 会被询问
+27 fix 麒麟弓 寒冰剑 雌雄剑 八卦ai
+28 fix 【冻结】崩溃
+29 fix 【千年】 游戏开始时多次触发
+30 fix 【诡诈】 对自己触发
+31 fix 【能舞】【宝槌】【星辉】等 死亡后仍可触发
+32 fix【回声】
+33 fix【死斗】 崩溃
+34 fix【绯想】询问
+35 fix【避祸】 没有正确转移杀
+
+待解决的已知问题
+1 常识（回合开始时） 凭依（凭依人死亡or自己死亡？） 遇到过 服务器 崩溃
+2 ai的 在使用拆顺的时候报错  可能和getarmor相关？ 可能和candiscard相关？   lua/ai/standard_cards-ai.lua:2987: attempt to index a nil value
+3 泛读2点触发triggerorder
+ trigger order本身也还一团糟糕
+4 超魔理沙ai。。。。
+5 居然有一滴血。。。。神萃香
+    神萃香能吃桃子，，，，
+6 ai无限酒豪。。。。
+7 选择外势力后，当家按钮呢？
+  kingdomchange后没有UI没有被知更新
+8 丰姬不能重铸，。。。。。
