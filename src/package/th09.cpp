@@ -703,10 +703,12 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &) const
     {
         QList<SkillInvokeDetail> d;
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (!p->isKongcheng()) {
-                foreach(ServerPlayer *tenshi, room->findPlayersBySkillName(objectName()))
+        foreach(ServerPlayer *tenshi, room->findPlayersBySkillName(objectName())) {
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if (!p->isKongcheng()) {
                     d << SkillInvokeDetail(this, tenshi, tenshi);
+                    continue;
+                }
             }
         }
         return d;
