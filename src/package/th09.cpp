@@ -424,7 +424,7 @@ public:
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current, NULL, true);
             }
         } else if (triggerEvent == CardResponded) {
-            CardResponseStruct resp = data.value<CardResponseStruct>().m_card;
+            CardResponseStruct resp = data.value<CardResponseStruct>();
             if (resp.m_from == current || !resp.m_card->isKindOf("BasicCard")
                 || resp.m_isRetrial || resp.m_isProvision)
                 return QList<SkillInvokeDetail>();
