@@ -1070,8 +1070,7 @@ public:
         } else if (triggerEvent == CardFinished) {
             if (use.card->isKindOf("Jink") || use.from->hasFlag("Global_ProcessBroken") || !use.from->isAlive())
                 return QList<SkillInvokeDetail>();
-
-            if (use.from  && use.to.length() == 1 
+            if (use.from  && use.to.length() == 1
                 && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
                 ServerPlayer *source = use.to.first();
                 if (use.from != source  && source->hasSkill(this) && source->isAlive() && use.from->isAlive()) {

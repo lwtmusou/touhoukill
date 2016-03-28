@@ -445,7 +445,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *who = data.value<DyingStruct>().who;
-        if (who->hasSkill(this) && who->getEquips().length() > 0)
+        if (who->hasSkill(this) && who->getEquips().length() == 0)
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, who, who);
         return QList<SkillInvokeDetail>();
     }

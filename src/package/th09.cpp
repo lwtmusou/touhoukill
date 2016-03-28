@@ -707,7 +707,7 @@ public:
             foreach(ServerPlayer *p, room->getAllPlayers()) {
                 if (!p->isKongcheng()) {
                     d << SkillInvokeDetail(this, tenshi, tenshi);
-                    continue;
+                    break;
                 }
             }
         }
