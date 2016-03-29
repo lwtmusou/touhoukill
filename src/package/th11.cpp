@@ -512,7 +512,7 @@ const Card *JiuhaoCard::validate(CardUseStruct &use) const
     Slash *card = new Slash(Card::NoSuit, 0);
     use.from->getRoom()->setCardFlag(card, "jiuhao");
     card->setSkillName("jiuhao");
-    use.from->setFlags("jiuhaoused");
+    use.from->getRoom()->setPlayerFlag(use.from, "jiuhaoused");
     return card;
 }
 
