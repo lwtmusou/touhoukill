@@ -1745,17 +1745,16 @@ public:
         if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
-                QVariant damageOrDeathTag = room->getTag("shituDamageOrDeath");
-                bool death = damageOrDeathTag.canConvert(QVariant::Bool) && damageOrDeathTag.toBool();
+                QVariant deathTag = room->getTag("duanzui");
+                bool death = deathTag.canConvert(QVariant::Bool) && deathTag.toBool();
                 bool extraTurnExist = room->getThread()->hasExtraTurn();
-                if (!death) {
+                if (death) {
                     if (!extraTurnExist) {
                         foreach(ServerPlayer *ymsnd, room->findPlayersBySkillName(objectName())) {
                             if (!ymsnd->isCurrent())
                                 d << SkillInvokeDetail(this, ymsnd, ymsnd);
                         }
-                    }
-                    else {
+                    } else {
                         foreach(ServerPlayer *ymsnd, room->findPlayersBySkillName(objectName())) {
                             if (!ymsnd->isCurrent() && !ymsnd->faceUp())
                                 d << SkillInvokeDetail(this, ymsnd, ymsnd);
@@ -2316,7 +2315,7 @@ public:
             ServerPlayer *player = change.player;
             if (player->getMark("qinlue") > 0 && change.to == Player::NotActive) {
                 ServerPlayer *target = player->tag["qinlue_current"].value<ServerPlayer *>();
-                if ((target != NULL && target->isAlive() &&  !player->isKongcheng()) || !player->getPile("zhanbei").isEmpty()) 
+                if ((target != NULL && target->isAlive() && !player->isKongcheng()) || !player->getPile("zhanbei").isEmpty())
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true, target);
             }
         }
@@ -2342,6 +2341,7 @@ public:
                 room->obtainCard(player, dummy1, false);
             }
         } else if (triggerEvent == EventPhaseChanging) {
+            
             ServerPlayer *player = invoke->invoker;
             room->setPlayerMark(player, "qinlue", 0);
             ServerPlayer *target = player->tag["qinlue_current"].value<ServerPlayer *>();
@@ -2355,8 +2355,7 @@ public:
             if (!player->getPile("zhanbei").isEmpty()) {
                 DummyCard *dummy1 = new DummyCard;
                 dummy1->deleteLater();
-                foreach(int c, player->getPile("qinlue"))
-                    dummy1->addSubcard(c);
+                dummy1->addSubcards(player->getPile("zhanbei"));
                 room->obtainCard(player, dummy1, false);
             }
         }
