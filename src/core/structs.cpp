@@ -363,7 +363,7 @@ bool SkillInvokeDetail::operator <(const SkillInvokeDetail &arg2) const // the o
         return room->getFront(invoker, arg2.invoker) == invoker;
     }
 
-    return skill->inherits("EquipSkill") && !arg2.skill->inherits("EquipSkill");
+    return !skill->inherits("EquipSkill") && arg2.skill->inherits("EquipSkill");
 }
 
 bool SkillInvokeDetail::sameSkill(const SkillInvokeDetail &arg2) const // it only judge the skill name, the skill invoker, the skill owner and the preferred target. it don't judge the real skill target because it is chosen by the skill invoker
