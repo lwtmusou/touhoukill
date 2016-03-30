@@ -261,6 +261,9 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const
 
     QVariantList jink_list = effect.from->tag["Jink_" + toString()].toList();
     effect.jink_num = jink_list.takeFirst().toInt();
+    if (effect.slash->hasFlag("Blade_No_Jink"))
+        effect.jink_num = 0;
+
     if (jink_list.isEmpty())
         effect.from->tag.remove("Jink_" + toString());
     else
@@ -593,6 +596,46 @@ class BladeSkill : public WeaponSkill
 public:
     BladeSkill() : WeaponSkill("Blade")
     {
+        events << TargetSpecified;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (!use.card->isKindOf("Slash"))
+            return QList<SkillInvokeDetail>();
+        if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
+            return QList<SkillInvokeDetail>();
+
+        if (use.from->isAlive())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        JudgeStruct judge;
+        judge.pattern = ".|red";
+        judge.good = true;
+        judge.reason = objectName();
+        judge.who = invoke->invoker;
+
+        room->judge(judge);
+        if (judge.isGood()) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            room->setCardFlag(use.card, "Blade_No_Jink");
+        }
+
+        return false;
+    }
+};
+//original version blade
+/*
+class BladeSkill : public WeaponSkill
+{
+public:
+    BladeSkill() : WeaponSkill("Blade")
+    {
         events << SlashMissed;
     }
 
@@ -634,7 +677,7 @@ public:
         return false;
     }
 };
-
+*/
 Blade::Blade(Suit suit, int number)
     : Weapon(suit, number, 3)
 {
