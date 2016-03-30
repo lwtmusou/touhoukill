@@ -1823,6 +1823,132 @@ public:
 
 
 
+class Shoushu : public TriggerSkill
+{
+public:
+    Shoushu() : TriggerSkill("shoushu")
+    {
+        events << CardsMoveOneTime;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
+        if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile
+            && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
+                || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE)) {
+            const Card *card = move.reason.m_extraData.value<const Card *>();
+            if (card && card->isKindOf("BasicCard") && room->getCardPlace(move.card_ids.first()) == Player::DiscardPile)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *player = invoke->invoker;
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        const Card *card = move.reason.m_extraData.value<const Card *>();
+        ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(),
+            "@shoushu:" + card->objectName(), true, true);
+        if (target) {
+            player->tag["shoushu_select"] = QVariant::fromValue(target);
+            return true;
+        }
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *player = invoke->invoker;
+        ServerPlayer *target = player->tag.value("shoushu_select").value<ServerPlayer *>();
+        player->tag.remove("shoushu_select");
+        if (target) {
+            CardsMoveStruct mo;
+            mo.card_ids = move.card_ids;
+            mo.to = target;
+            mo.to_place = Player::PlaceHand;
+            room->moveCardsAtomic(mo, true);
+        }
+        return false;
+    }
+};
+
+YujianCard::YujianCard()
+{
+    will_throw = false;
+    handling_method = Card::MethodNone;
+}
+
+bool YujianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    return targets.length() < 2 && !to_select->isKongcheng() && to_select != Self;
+}
+
+void YujianCard::use(Room *room, ServerPlayer *player, QList<ServerPlayer *> &targets) const
+{
+    player->pindian(targets.first(), "yujian");
+}
+
+class YujianVS : public ZeroCardViewAsSkill
+{
+public:
+    YujianVS() : ZeroCardViewAsSkill("yujian")
+    {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->hasUsed("YujianCard") && !player->isKongcheng();
+    }
+
+    virtual const Card *viewAs() const
+    {
+        return new YujianCard;
+    }
+};
+
+
+class Yujian : public TriggerSkill
+{
+public:
+    Yujian() : TriggerSkill("yujian")
+    {
+        events << Pindian;
+        view_as_skill = new YujianVS;
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        PindianStruct * pindian = data.value<PindianStruct *>();
+        if (pindian->reason == "yujian" && pindian->success && pindian->from->isAlive() && pindian->to->isAlive()) {
+            Slash *slash = new Slash(Card::SuitToBeDecided, 0);
+            slash->deleteLater();
+            slash->addSubcard(pindian->from_card);
+            slash->addSubcard(pindian->to_card);
+            if (pindian->from->canSlash(pindian->to, slash, false))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, pindian->from, pindian->from, NULL, true, pindian->to);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        PindianStruct * pindian = data.value<PindianStruct *>();
+        Slash *slash = new Slash(Card::SuitToBeDecided, 0);
+        slash->addSubcard(pindian->from_card);
+        slash->addSubcard(pindian->to_card);
+        slash->setSkillName("yujian");
+        room->useCard(CardUseStruct(slash, pindian->from, pindian->to));
+        return false;
+    }
+};
+
+
+
 
 HuayinCard::HuayinCard()
 {
@@ -2006,6 +2132,8 @@ public:
 };
 
 
+
+
 TH07Package::TH07Package()
     : Package("th07")
 {
@@ -2072,13 +2200,15 @@ TH07Package::TH07Package()
     related_skills.insertMulti("jixiong", "#jixiong2");
 
     General *youki = new General(this, "youki", "yym", 4);
-    Q_UNUSED(youki);
+    youki->addSkill(new Shoushu);
+    youki->addSkill(new Yujian);
 
     General *leira = new General(this, "leira", "yym", 3, false);
     leira->addSkill(new Huayin);
     leira->addSkill(new Huanling);
 
     addMetaObject<MocaoCard>();
+    addMetaObject<YujianCard>();
     addMetaObject<HuayinCard>();
 
     skills << new ZhaoliaoVS;

@@ -278,15 +278,13 @@ public:
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, suwako->objectName(), damage.from->objectName());
             invoke->invoker->tag["suwako_bushu"] = QVariant::fromValue(damage.to);
             suwako->pindian(damage.from, objectName(), NULL);
-        }
-        else
-        {
+        } else {
             PindianStruct * pindian = data.value<PindianStruct *>();
             if (pindian->success) {
                 RecoverStruct recov;
                 recov.who = suwako;
                 room->recover(invoke->targets.first(), recov);
-            }else
+            } else
                 suwako->obtainCard(pindian->to_card);
         }
         return false;
