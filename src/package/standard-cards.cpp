@@ -261,8 +261,6 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const
 
     QVariantList jink_list = effect.from->tag["Jink_" + toString()].toList();
     effect.jink_num = jink_list.takeFirst().toInt();
-    if (effect.slash->hasFlag("Blade_No_Jink"))
-        effect.jink_num = 0;
 
     if (jink_list.isEmpty())
         effect.from->tag.remove("Jink_" + toString());
@@ -623,7 +621,10 @@ public:
         room->judge(judge);
         if (judge.isGood()) {
             CardUseStruct use = data.value<CardUseStruct>();
-            room->setCardFlag(use.card, "Blade_No_Jink");
+            QVariantList jink = use.from->tag["Jink_" + use.card->toString()].toList();
+            for (int i = 0; i < jink.length(); ++i)
+                jink[i] = 0;
+            use.from->tag["Jink_" + use.card->toString()] = jink;
         }
 
         return false;
