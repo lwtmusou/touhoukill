@@ -124,7 +124,7 @@ return
 	["~buxian"]= "选择一张手牌→选择两名其他角色→点击确定。或者取消发动。",
 	["xingyun"] = "幸运",
 	[":xingyun"] = "当你获得牌后，你可以展示其中任意张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，每以此法展示一张牌，你选择一项：回复1点体力，或令一名角色摸一张牌。",
-	["@xingyun"] = "你可以发动“布陷”展示获得的任意张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌。",
+	["@xingyun"] = "你可以发动“幸运”展示获得的任意张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌。",
     ["xingyun:letdraw"] = "令一名角色摸一张牌" ,
 	["xingyun:recover"] = "你回复1点体力" ,
 	["@xingyun-select"]= "指定一名角色，该角色摸一张牌。",
