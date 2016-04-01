@@ -1046,17 +1046,7 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        ServerPlayer *target = invoke->targets.first();
-        room->showAllCards(target);
-        room->getThread()->delay(1000);
-        room->clearAG();
-        
-        int num = 0;
-        foreach(const Card *c, target->getCards("h")) {
-            if (c->isKindOf("BasicCard"))
-                    num++;
-        }
-        room->setPlayerMark(invoke->invoker, "kuaizhaoUsed", num);
+        invoke->invoker->tag["kuaizhao_target"] = QVariant::fromValue(invoke->targets.first());
 
         DrawNCardsStruct s = data.value<DrawNCardsStruct>();
         s.n = s.n - 1;
@@ -1076,15 +1066,27 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DrawNCardsStruct dc = data.value<DrawNCardsStruct>();
-        if (dc.player->getMark("kuaizhaoUsed") > 0)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dc.player, dc.player, NULL, true);
+        ServerPlayer *target = dc.player->tag["kuaizhao_target"].value<ServerPlayer *>();
+        if (target)
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dc.player, dc.player, NULL, true, target);
         return QList<SkillInvokeDetail>();
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        room->drawCards(invoke->invoker, qMin(2, invoke->invoker->getMark("kuaizhaoUsed")));
-        room->setPlayerMark(invoke->invoker, "kuaizhaoUsed", 0);
+        invoke->invoker->tag.remove("kuaizhao_target");
+
+        ServerPlayer *target = invoke->targets.first();
+        room->showAllCards(target);
+        room->getThread()->delay(1000);
+        room->clearAG();
+
+        int num = 0;
+        foreach(const Card *c, target->getCards("h")) {
+            if (c->isKindOf("BasicCard"))
+                num++;
+        }
+        room->drawCards(invoke->invoker, qMin(2, num));
         return false;
     }
 };
