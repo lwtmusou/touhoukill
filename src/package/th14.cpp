@@ -545,11 +545,8 @@ public:
         if (s.pattern == "jink") {
             Jink *jink = new Jink(Card::NoSuit, 0);
             jink->deleteLater();
-            //need check
-            if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE && s.player->isCardLimited(jink, Card::MethodResponse))
+            if (s.player->isCardLimited(jink, s.method))
                 return QList<SkillInvokeDetail>();
-            else if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE && s.player->isCardLimited(jink, Card::MethodUse))
-                    return QList<SkillInvokeDetail>();
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, s.player, s.player, NULL, false, current);
         }
         return QList<SkillInvokeDetail>();
@@ -586,14 +583,9 @@ public:
         if (s.pattern == "jink" && s.player->hasSkill(this) && s.player->getEquips().length() > 0) {
             Jink *jink = new Jink(Card::NoSuit, 0);
             jink->deleteLater();
-            //need check
-            if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
-                if (s.player->isCardLimited(jink, Card::MethodResponse))
-                    return QList<SkillInvokeDetail>();
-            } else if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-                if (s.player->isCardLimited(jink, Card::MethodUse))
-                    return QList<SkillInvokeDetail>();
-            }
+            if (s.player->isCardLimited(jink, s.method))
+                return QList<SkillInvokeDetail>();
+            
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, s.player, s.player);
         }
         return QList<SkillInvokeDetail>();

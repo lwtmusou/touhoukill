@@ -865,10 +865,8 @@ public:
 
             Jink *jink = new Jink(Card::NoSuit, 0);
             jink->deleteLater();
-            if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE && s.player->isCardLimited(jink, Card::MethodResponse))
-                    return QList<SkillInvokeDetail>();
-            else if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE && s.player->isCardLimited(jink, Card::MethodUse))
-                    return QList<SkillInvokeDetail>();
+            if (s.player->isCardLimited(jink, s.method))
+                return QList<SkillInvokeDetail>();
 
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, s.player, s.player);
         }

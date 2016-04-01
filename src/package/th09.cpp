@@ -908,10 +908,7 @@ public:
 
         Card *dummy = Sanguosha->cloneCard(pattern);
         DELETE_OVER_SCOPE(Card, dummy)
-        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
-            if (player->isCardLimited(dummy, Card::MethodResponse))
-                return QList<SkillInvokeDetail>();
-        } else if (player->isCardLimited(dummy, Card::MethodUse))
+        if (player->isCardLimited(dummy, s.method))
             return QList<SkillInvokeDetail>();
 
         if (!room->getLieges("zhan", player).isEmpty())

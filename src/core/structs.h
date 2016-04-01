@@ -467,6 +467,7 @@ struct CardAskedStruct
     QString pattern;
     QString prompt;
     ServerPlayer *player;
+    Card::HandlingMethod method;
 };
 
 struct SkillInvokeDetail
