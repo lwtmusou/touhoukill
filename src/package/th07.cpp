@@ -2106,14 +2106,23 @@ class Huanling : public TriggerSkill
 public:
     Huanling() : TriggerSkill("huanling")
     {
-        events << CardUsed;
+        events << CardUsed << CardResponded;
         frequency = Frequent;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (!use.card->isRed() && !use.card->isBlack() && !use.card->isKindOf("SkillCard")) {
+        bool invoke = false;
+        if (triggerEvent == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (!use.card->isRed() && !use.card->isBlack() && !use.card->isKindOf("SkillCard"))
+                invoke = true;
+        } else if (triggerEvent == CardResponded) {
+            CardResponseStruct response = data.value<CardResponseStruct>();
+            if (!response.m_card->isRed() && !response.m_card->isBlack() && !response.m_card->isKindOf("SkillCard") && response.m_isUse)
+                invoke = true;
+        }
+        if (invoke) {
             QList<SkillInvokeDetail> d;
             foreach(ServerPlayer *p, room->getAllPlayers()) {
                 if (p->hasSkill(this) && p->getHandcardNum() < 3)
