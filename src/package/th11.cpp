@@ -927,7 +927,6 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
-        
         CardUseStruct use = data.value<CardUseStruct>();
         if (!use.card->isKindOf("Slash") || !use.from || use.from->isDead())
             return QList<SkillInvokeDetail>();
@@ -940,7 +939,7 @@ public:
                 }
             }
         }
-        return QList<SkillInvokeDetail>();
+        return d;
     }
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
