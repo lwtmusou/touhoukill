@@ -654,12 +654,12 @@ BaoyiCard::BaoyiCard()
     handling_method = Card::MethodDiscard;
 }
 
-void BaoyiCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) const
+void BaoyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
 {
     foreach (int id, subcards) {
         Card *c = Sanguosha->getCard(id);
         if (c->getSuit() == Card::Spade) {
-            source->setFlags("baoyi");
+            room->setPlayerFlag( source, "baoyi");
             break;
         }
     }
@@ -724,7 +724,7 @@ public:
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         if (triggerEvent == EventPhaseStart) {
-            room->askForUseCard(invoke->invoker, "@@baoyi", "@baoyi");
+            return room->askForUseCard(invoke->invoker, "@@baoyi", "@baoyi");
         } else if (triggerEvent == EventPhaseEnd) {
             invoke->invoker->setFlags("-baoyi");
             return true;
@@ -738,8 +738,7 @@ public:
         if (triggerEvent == EventPhaseStart) {
             int num = marisa->tag["baoyi"].toInt();
             marisa->tag.remove("baoyi");
-            if (num <= 0)
-                return false;
+                
             while (num--) {
                 QList<ServerPlayer *> listt;
                 foreach(ServerPlayer *p, room->getOtherPlayers(marisa)) {
@@ -748,7 +747,7 @@ public:
                 }
                 if (listt.isEmpty())
                     break;
-                ServerPlayer * target = room->askForPlayerChosen(marisa, listt, "baoyi", "@@baoyi_chosen:" + QString::number(num), true, true);
+                ServerPlayer * target = room->askForPlayerChosen(marisa, listt, "baoyi", "@@baoyi_chosen:" + QString::number(num + 1), true, true);
                 if (target == NULL)
                     break;
                 CardUseStruct carduse;
