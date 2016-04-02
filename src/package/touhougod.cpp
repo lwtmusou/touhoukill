@@ -575,7 +575,7 @@ public:
     {
         if (triggerEvent == GameStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player && player->hasSkill(this) && player->getMaxHp() > 0) {
+            if (player && player->hasSkill(this)) {
                 room->setPlayerProperty(player, "maxhp", 0);
                 room->setPlayerProperty(player, "hp", 0);    
             }
