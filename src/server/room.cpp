@@ -1481,7 +1481,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 if (to) card_use.to << to;
                 QVariant data2 = QVariant::fromValue(card_use);
                 thread->trigger(CardFinished, this, data2);
-            } else if (resp.m_isNullified)
+            }
+            if (resp.m_isNullified)
                 return NULL;
         }
         result = card;
