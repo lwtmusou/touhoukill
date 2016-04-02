@@ -589,7 +589,7 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
                             //                            s = a b c d e f g h i j
                             // it pos:                             *
                         } else {
-                            // 2. the case that ServerPlayer::compareByActionOrder(r_now, s_now) == true, i.e. seat(r_now) > seat(s_now)
+                            // 2. the case that ServerPlayer::compareByActionOrder(r_now, s_now) == false, i.e. seat(r_now) > seat(s_now)
                             // because the r is triggerable list, s is the invoke list, so we should remove the s_now and move r_it to the position just before the deleted item
 
                             // the list is now like this: r = a b c d e f   h
@@ -625,8 +625,10 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
 
                     // now s_it has more items.
                     // since r is the triggerable list, we should remove the more items from s.
-                    while (s_it.hasNext())
+                    while (s_it.hasNext()) {
+                        s_it.next();
                         s_it.remove();
+                    }
                 }
 
                 // let the r become the invoke list.
