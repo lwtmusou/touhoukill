@@ -331,7 +331,7 @@ class ZhaoliaoVS : public OneCardViewAsSkill
 public:
     ZhaoliaoVS() : OneCardViewAsSkill("zhaoliaoVS")
     {
-        response_pattern = "@@zhaoliao!";
+        response_pattern = "@@zhaoliaoVS!";
         response_or_use = true;
     }
 
@@ -418,7 +418,7 @@ public:
             delete exnihilo;
             ran->drawCards(1);
         } else {
-            if (!room->askForUseCard(player, "@@zhaoliao!", "zhaoliaouse")) {
+            if (!room->askForUseCard(player, "@@zhaoliaoVS!", "zhaoliaouse")) {
                 QList<int> handcards = player->handCards();
                 handcards << player->getPile("wooden_ox");
                 if (player->hasSkill("shanji"))
