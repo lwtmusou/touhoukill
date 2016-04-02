@@ -1871,6 +1871,9 @@ public:
             mo.to = target;
             mo.to_place = Player::PlaceHand;
             room->moveCardsAtomic(mo, true);
+
+            if (target->canDiscard(target, "h"))
+                room->askForDiscard(target, objectName(), 1, 1, false, false, "shoushu_discard");
         }
         return false;
     }
