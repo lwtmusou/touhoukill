@@ -589,9 +589,12 @@ void PlayerCardContainer::setPlayer(ClientPlayer *player)
 {
     m_player = player;
     if (player) {
-        connect(player, &ClientPlayer::general_changed, this, &PlayerCardContainer::updateAvatar);
+        //notice that:  child class "Dashboard" has void with the same name "updateAvatar".
+        //connect(player, &ClientPlayer::general_changed, this, &PlayerCardContainer::updateAvatar);
+        connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
         connect(player, &ClientPlayer::general2_changed, this, &PlayerCardContainer::updateSmallAvatar);
-        connect(player, &ClientPlayer::kingdom_changed, this, &PlayerCardContainer::updateAvatar);
+        //connect(player, &ClientPlayer::kingdom_changed, this, &PlayerCardContainer::updateAvatar);
+        connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
         connect(player, &ClientPlayer::state_changed, this, &PlayerCardContainer::refresh);
         connect(player, &ClientPlayer::phase_changed, this, &PlayerCardContainer::updatePhase);
         connect(player, &ClientPlayer::drank_changed, this, &PlayerCardContainer::updateDrankState);

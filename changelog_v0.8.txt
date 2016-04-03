@@ -84,17 +84,18 @@ alpha版0401补丁发布后
 4 fix 神萃香能对自己使用桃
 5 fix 【爆衣】
 6 fix 【照料】
+7  kingdom change后 dashboard没有被及时通知更新 比如【当家】的附加按钮
 
 待解决的已知问题
 1 常识（回合开始时） 凭依（凭依人死亡or自己死亡？） 遇到过 服务器 崩溃
 2 ai的 在使用拆顺的时候报错  可能和getarmor相关？ 可能和candiscard相关？   lua/ai/standard_cards-ai.lua:2987: attempt to index a nil value
 3 泛读2点触发triggerorder
  trigger order本身也还一团糟糕
-6 选择外势力后，当家按钮呢？
-  kingdomchange后没有UI没有被知更新
+   缺少图片显示  颂威类的文字提示也有错
 7 丰姬不能重铸，。。。。。
 8 录像中 选将框 不能自动消失 需要手动点
 12 搜集的捡牌有问题。。。八卦的原判定牌（非改判）也被捡走了
 13 偷拍全黑的话  fillag有问题。。。 根本没法看人家的牌。。。
 15 ai酒豪仍旧无限
 17 使用装备牌时，【修补】可能弃掉此装备牌。
+18 返回主菜单按钮
