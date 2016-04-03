@@ -637,7 +637,7 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
                 // we should mark the ones who passed the trigger order as triggered.
                 QListIterator<QSharedPointer<SkillInvokeDetail> > r_it(r);
                 r_it.toBack();
-                bool over_trigger = true;
+                bool over_trigger = false;
                 while (r_it.hasPrevious()) {
                     const QSharedPointer<SkillInvokeDetail> p = r_it.previous();
                     if (p->triggered)
