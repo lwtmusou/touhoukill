@@ -2870,7 +2870,7 @@ public:
                     d << SkillInvokeDetail(this, p, p, NULL, false, use.from);
             }
         }
-        return QList<SkillInvokeDetail>();
+        return d;
     }
 
     bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
