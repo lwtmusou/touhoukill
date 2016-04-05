@@ -512,7 +512,7 @@ const Card *JiuhaoCard::validate(CardUseStruct &use) const
     Slash *card = new Slash(Card::NoSuit, 0);
     use.from->getRoom()->setCardFlag(card, "jiuhao");
     card->setSkillName("jiuhao");
-    use.from->getRoom()->setPlayerFlag(use.from, "jiuhaoused");
+    //use.from->getRoom()->setPlayerFlag(use.from, "jiuhaoused");
     return card;
 }
 
@@ -553,8 +553,10 @@ public:
             if (use.from->getPhase() == Player::Play
                 && (use.card->isKindOf("Peach") || use.card->isKindOf("Analeptic")))
                 room->setPlayerFlag(use.from, "jiuhao");
-            if (use.card->hasFlag(objectName()))
+            if (use.card->hasFlag(objectName())) {
                 room->addPlayerHistory(use.from, use.card->getClassName(), -1);
+                room->setPlayerFlag(use.from, "jiuhaoused");
+            }
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.from == Player::Play) {
