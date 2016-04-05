@@ -1650,7 +1650,7 @@ public:
         int n = invoke->tag.value("n", 0).toInt();
         if (n <= 0)
             return false;
-
+        n = qMin(n, invoke->invoker->getHandcardNum());
         const Card *c = room->askForExchange(invoke->invoker, objectName(), n, n, false, "@bihuo-return");
         CardMoveReason r(CardMoveReason::S_REASON_GIVE, invoke->owner->objectName(), objectName(), QString());
         room->obtainCard(invoke->owner, c, r, false);
