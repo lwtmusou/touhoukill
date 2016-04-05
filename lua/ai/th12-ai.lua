@@ -616,11 +616,11 @@ end
 --sgs.ai_skill_cardask.aoe
 sgs.ai_skill_invoke.lizhi = function(self,data)
 	local d = self.player:getTag("lizhi"):toDamage()
-	local target=data:toPlayer()
+	local target = d.to
 	if not self:isEnemy(target) then
 		return true
 	end
-	local canDamage = self:touhouNeedAvoidAttack(d,self.player,target,true)
+	local canDamage = self:touhouNeedAvoidAttack(d, self.player, target, true)
 	if not canDamage then return true end
 	local isSlash = false
 	if d.card and d.card:isKindOf("Slash") then  isSlash = true end
