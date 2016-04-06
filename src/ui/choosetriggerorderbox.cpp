@@ -164,7 +164,11 @@ void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsIte
     painter->drawRoundedRect(rect, 5, 5);
     painter->restore();
 
-    QString generalName = detail.owner->objectName();
+    QString generalName;
+    if (detail.preferredTarget != NULL)
+        generalName = detail.preferredTarget->getGeneralName();
+    else
+        generalName = detail.owner->getGeneralName();
 
     QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY);
 
@@ -220,7 +224,7 @@ QString TriggerOptionButton::displayedTextOf(const SkillInvokeDetailForClient &d
         text = tr("%1 (use upon %2)").arg(text).arg(Sanguosha->translate(targetName));
     }
     if (detail.owner != detail.invoker)
-        text = tr("%1 (of %2's)").arg(text).arg(Sanguosha->translate(detail.owner->objectName()));
+        text = tr("%1 (of %2's)").arg(text).arg(Sanguosha->translate(detail.owner->getGeneralName()));
     
     if (times > 1)
         text += QString(" * %1").arg(times);
