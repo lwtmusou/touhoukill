@@ -1401,7 +1401,7 @@ void Client::askForGeneral(const QVariant &arg)
 void Client::askForSuit(const QVariant &arg)
 {
     JsonArray arr = arg.value<JsonArray>();
-    if (arr.length() != 1)
+    if (arr.length() != 2)
         return;
     highlight_skill_name = arr.first().toString();
     QStringList suits;
