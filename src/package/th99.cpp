@@ -733,6 +733,36 @@ public:
     }
 };
 
+
+LianxiCard::LianxiCard()
+{
+    will_throw = false;
+    m_skillName = "lianxi";
+    can_recast = true;
+}
+bool LianxiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    IronChain *card = new IronChain(Card::NoSuit, 0);
+    card->setSkillName("lianxi");
+    card->deleteLater();
+    int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, card);
+    return targets.length() < total_num && !Self->isProhibited(to_select, card) && !Self->isCardLimited(card, Card::MethodUse);
+}
+bool LianxiCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const
+{
+    IronChain *card = new IronChain(Card::NoSuit, 0);
+    card->setSkillName("lianxi");
+    card->deleteLater();
+    int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, card);
+    return targets.length() <= total_num;
+}
+const Card *LianxiCard::validate(CardUseStruct &use) const
+{
+    IronChain *card = new IronChain(Card::NoSuit, 0);
+    card->setSkillName("lianxi");
+    return card;
+}
+
 class LianxiVS : public ZeroCardViewAsSkill
 {
 public:
@@ -743,9 +773,7 @@ public:
 
     virtual const Card *viewAs() const
     {
-        IronChain *ic = new IronChain(Card::NoSuit, 0);
-        ic->setSkillName("_lianxi");
-        return ic;
+        return new LianxiCard;
     }
 };
 
@@ -1839,6 +1867,7 @@ TH99Package::TH99Package()
     addMetaObject<DangjiaCard>();
     addMetaObject<XiufuCard>();
     addMetaObject<XiufuMoveCard>();
+    addMetaObject<LianxiCard>();
     addMetaObject<ZhesheCard>();
     addMetaObject<ZhuonongCard>();
     addMetaObject<YushouCard>();

@@ -392,7 +392,7 @@ bool IronChain::targetFilter(const QList<const Player *> &targets, const Player 
 
 bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    bool rec = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    bool rec =  (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) && can_recast;
     QList<int> sub;
     if (isVirtualCard())
         sub = subcards;
@@ -421,7 +421,7 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
         return targets.length() != 0;
 
     int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    if (!rec || getSkillName().contains("guhuo") || getSkillName() == "qice")
+    if (!rec)
         return targets.length() > 0 && targets.length() <= total_num;
     else
         return targets.length() <= total_num;
