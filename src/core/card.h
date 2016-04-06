@@ -29,6 +29,7 @@ class Card : public QObject
     Q_PROPERTY(bool mute READ isMute CONSTANT)
     Q_PROPERTY(bool equipped READ isEquipped)
     Q_PROPERTY(Color color READ getColor)
+    Q_PROPERTY(bool can_recast READ canRecast WRITE setCanRecast)
 
     Q_ENUMS(Suit)
     Q_ENUMS(CardType)
@@ -87,6 +88,7 @@ public:
     virtual bool isMute() const;
     virtual bool willThrow() const;
     virtual bool canRecast() const;
+    void setCanRecast(bool can);
     virtual bool hasPreAction() const;
     virtual Card::HandlingMethod getHandlingMethod() const;
 

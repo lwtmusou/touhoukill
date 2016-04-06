@@ -853,6 +853,7 @@ public:
     virtual bool isMute() const;
     virtual bool willThrow() const;
     virtual bool canRecast() const;
+    void setCanRecast(bool can);
     virtual bool hasPreAction() const;
     virtual Card::HandlingMethod getHandlingMethod() const;
 
