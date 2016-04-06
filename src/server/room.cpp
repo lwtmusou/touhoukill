@@ -1737,11 +1737,26 @@ QSharedPointer<SkillInvokeDetail> Room::askForTriggerOrder(ServerPlayer *player,
         QString reply;
 
         if (ai) {
-            //Temporary method to keep compatible with existing AI system
+            //AI system also need  the same reply with human. 
             QStringList skills;
+            QString currentSkillName = sameTiming.first()->skill->objectName();
+            int preferIndex = 0;
             foreach (const QSharedPointer<SkillInvokeDetail> &ptr, sameTiming) {
+                
                 QString skill = ptr->skill->objectName();
-                skill.append("@").append(ptr->owner->objectName());
+                skill.append(":").append(ptr->owner->objectName()).append(":").append(ptr->invoker->objectName());
+                if (ptr->preferredTarget) {
+
+                    skill.append(":").append(ptr->preferredTarget->objectName());
+                    if (currentSkillName == ptr->skill->objectName()) {
+                        preferIndex++;
+                        skill.append(":").append(QString::number(preferIndex));
+                    } else {
+                        currentSkillName = ptr->skill->objectName();
+                        preferIndex = 1;
+                        skill.append(":").append(QString::number(preferIndex));
+                    }
+                }
                 skills << skill;
             }
             if (cancelable)

@@ -8402,13 +8402,17 @@ sgs.ai_skill_choice["3v3_direction"] = function(self, choices, data)
 end
 
  sgs.ai_skill_choice["askForTriggerOrder"] = function(self, choices, data)
-	local skillnames = choices:split("+")
-	for _, skillname in ipairs(skillnames) do
-		if (skillname ~= "cancel") and  (skillname ~= "pingyi") then--先触发凭依以外的卖血技能后再考虑凭依
-			return skillname
+	local invokes = choices:split("+")
+	--skillname ： owner ： invoker ： preferedTarget  ： index
+	-- 次数类 比如盛宴 @shengyan:sgs1:sgs1
+	--铁骑类 比如雌雄剑 @DoubleSword:sgs1:sgs1:sgs2:1  和  @DoubleSword:sgs1:sgs1:sgs3:2  
+	--颂威类 比如血裔 @huazhong:sgs1:sgs2  和  @huazhong:sgs1:sgs3
+	for _, invoke in ipairs(invokes) do
+		if (invoke ~= "cancel") and  (not invoke:match("pingyi:")) then--先触发凭依以外的卖血技能后再考虑凭依
+			return invoke
 		end
 	end
-	return skillnames[1]
+	return invokes[1]
  end
 
 --开始添加ai文件
