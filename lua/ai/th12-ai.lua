@@ -628,7 +628,7 @@ sgs.ai_skill_invoke.lizhi = function(self,data)
 	return false
 end
 sgs.ai_choicemade_filter.skillInvoke.lizhi = function(self, player, args)
-	local d = self.player:getTag("lizhi_damage"):toDamage()
+	local d = self.player:getTag("lizhi"):toDamage()
 	if d and d.to then
 		if args[#args] == "yes" then
 			if self:isEnemy(player, d.to) then

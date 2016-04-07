@@ -280,11 +280,11 @@ bool TriggerSkill::cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> 
         return true;
     else {
         if (invoke->invoker != NULL) {
+            //for ai
+            invoke->invoker->tag[this->objectName()] = data;
             QVariant notify_data = data;
-            if (invoke->preferredTarget != NULL) {
+            if (invoke->preferredTarget != NULL)
                 notify_data = QVariant::fromValue(invoke->preferredTarget);
-                invoke->invoker->tag[this->objectName()] = data;
-            }
             return invoke->invoker->askForSkillInvoke(this, notify_data);
         }
     }
