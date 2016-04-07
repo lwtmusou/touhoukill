@@ -96,6 +96,7 @@ alpha版0401补丁发布后
 16 fix chooseTriggerOrderBox的文字和图片
 17 确保ai triggerorder时返回信息和人类操作时一致。 
 18 技能调整后的青龙刀ai
+19 fix 灵气ai 面对属性杀不发动
 
 待解决的已知问题
 1 常识（回合开始时） 凭依（凭依人死亡or自己死亡？） 遇到过 服务器 崩溃

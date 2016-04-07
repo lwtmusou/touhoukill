@@ -12,7 +12,6 @@ function SmartAI:lingqiParse(self,target,use)
 		local pattern = nil
 		if card:isKindOf("Slash") then
 			local _data=sgs.QVariant()
-		
 			local fakeEffect =sgs.SlashEffectStruct()
 			fakeEffect.slash = card
 			fakeEffect.from = from
