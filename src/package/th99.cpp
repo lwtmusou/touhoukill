@@ -1303,7 +1303,7 @@ public:
         QList<ServerPlayer *> targets;
         foreach (const QString &c, distance_changed) {
             ServerPlayer *p = room->findPlayerByObjectName(c);
-            if (p != NULL)
+            if (p != NULL && invoke->invoker->canDiscard(p, "h"))
                 targets << p;
         }
 
