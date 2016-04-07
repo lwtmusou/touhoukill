@@ -176,7 +176,8 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 	local hcard = target:getHandcardNum()
 	if self.player:hasSkill("liegong") and self.player:getPhase() == sgs.Player_Play and (hcard >= self.player:getHp() or hcard <= self.player:getAttackRange()) then return true end
 	if self.player:hasSkill("kofliegong") and self.player:getPhase() == sgs.Player_Play and hcard >= self.player:getHp() then return true end
-	if self.player:hasSkill("tieji") then return true end
+	--if self.player:hasSkill("tieji") then return true end
+	if self.player:hasWeapon("Blade") and self:invokeTouhouJudge() then return true end
 	--ÓÂÒÇÖ÷¶¯³Ô¾Æ
 	if  self:canGuaili(slash) then 
 		return true 
@@ -188,8 +189,7 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 		end
 	end
 	
-	if self.player:hasWeapon("axe") and self.player:getCards("he"):length() > 4 then return true end
-	--if target:hasFlag("dahe") then return true end
+	if self.player:hasWeapon("Axe") and self.player:getCards("he"):length() > 4 then return true end
 
 	if ((self.player:hasSkill("roulin") and target:isFemale()) or (self.player:isFemale() and target:hasSkill("roulin"))) or self.player:hasSkill("wushuang") then
 		if getKnownCard(target, player, "Jink", true, "he") >= 2 then return false end

@@ -1259,18 +1259,18 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 			if target:hasWeapon("Axe") then
 				if target:hasSkills(sgs.lose_equip_skill) and target:getEquips():length() > 1 and target:getCards("he"):length() > 2 then return "." end
 				if target:getHandcardNum() - target:getHp() > 2 and not self:isWeak() and not self:getOverflow() then return "." end
-			elseif target:hasWeapon("Blade") then
-				if slash:isKindOf("NatureSlash") and self.player:hasArmorEffect("Vine")
-					or self.player:hasArmorEffect("RenwangShield")
-					or self:hasEightDiagramEffect()
-					or self:hasHeavySlashDamage(target, slash)
-					or (self.player:getHp() == 1 and #self.friends_noself == 0) then
-				elseif (self:getCardsNum("Jink") <= getCardsNum("Slash", target, self.player) or self.player:hasSkill("qingnang")) and self.player:getHp() > 1
-						or self.player:hasSkill("jijiu") and getKnownCard(self.player, self.player, "red") > 0
-						or self:canUseJieyuanDecrease(target)
-					then
-					return "."
-				end
+			--elseif target:hasWeapon("Blade") then
+			--	if slash:isKindOf("NatureSlash") and self.player:hasArmorEffect("Vine")
+			--		or self.player:hasArmorEffect("RenwangShield")
+			--		or self:hasEightDiagramEffect()
+			--		or self:hasHeavySlashDamage(target, slash)
+			--		or (self.player:getHp() == 1 and #self.friends_noself == 0) then
+			--	elseif (self:getCardsNum("Jink") <= getCardsNum("Slash", target, self.player) or self.player:hasSkill("qingnang")) and self.player:getHp() > 1
+			--			or self.player:hasSkill("jijiu") and getKnownCard(self.player, self.player, "red") > 0
+			--			or self:canUseJieyuanDecrease(target)
+			--		then
+			--		return "."
+			--	end
 			end
 		end
 	end
@@ -1302,7 +1302,7 @@ function SmartAI:canHit(to, from, conservative)
 	if self:canLiegong(to, from) then return true end
 	if not self:isFriend(to, from) then
 		if from:hasWeapon("Axe") and from:getCards("he"):length() > 2 then return true end
-		if from:hasWeapon("Blade") and getCardsNum("Jink", to, from) <= getCardsNum("Slash", from, from) then return true end
+		--if from:hasWeapon("Blade") and getCardsNum("Jink", to, from) <= getCardsNum("Slash", from, from) then return true end
 		if from:hasSkill("mengjin") and not (from:hasSkill("nosqianxi") and not from:hasSkill("jueqing") and from:distanceTo(to) == 1)
 			and not self:hasHeavySlashDamage(from, nil, to) and not self:needLeiji(to, from) then
 				if self:doNotDiscard(to, "he", true) then
@@ -1823,7 +1823,10 @@ function sgs.ai_weapon_value.Axe(self, enemy, player)
 	if enemy and enemy:getHp() < 3 then return 3 - enemy:getHp() end
 end
 
-sgs.ai_skill_cardask["blade-slash"] = function(self, data, pattern, target)
+sgs.ai_skill_invoke.Blade = function(self)
+	return self:invokeTouhouJudge()
+end
+--[[sgs.ai_skill_cardask["blade-slash"] = function(self, data, pattern, target)
 	if target and self:isFriend(target) and not self:findLeijiTarget(target, 50, self.player) then
 		return "."
 	end
@@ -1833,10 +1836,12 @@ sgs.ai_skill_cardask["blade-slash"] = function(self, data, pattern, target)
 		end
 	end
 	return "."
-end
+end]]
 
 function sgs.ai_weapon_value.Blade(self, enemy)
-	if not enemy then return math.min(self:getCardsNum("Slash"), 3) end
+	local invoke, value = self:invokeTouhouJudge()
+	return 3 + math.abs(value)
+	--if not enemy then return math.min(self:getCardsNum("Slash"), 3) end
 end
 
 function cardsView_spear(self, player, skill_name)
@@ -3964,7 +3969,8 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 					end
 				end
 			end
-			if (self.player:hasWeapon("Blade") or self:getCardsNum("Blade") > 0) and getCardsNum("Jink", enemy) <= hit_num then return analeptic end
+			if (self.player:hasWeapon("Blade") or self:getCardsNum("Blade") > 0) and self:invokeTouhouJudge() then return analeptic end
+			--if (self.player:hasWeapon("Blade") or self:getCardsNum("Blade") > 0) and getCardsNum("Jink", enemy) <= hit_num then return analeptic end
 			if self:hasCrossbowEffect(self.player) and hit_num >= 2 then return analeptic end
 		end
 	end

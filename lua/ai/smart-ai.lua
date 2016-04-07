@@ -165,7 +165,7 @@ function setInitialTables()
 						"|baoyi|zhanzhen|zhancao|chuanran|weizhi|buming|pingyi|shouhui|hunpo|luanwu|qinlue"
 	sgs.need_equip_skill = 		"shensu|mingce|jujian|beige|yuanhu|huyuan|gongqi|nosgongqi|yanzheng|qingcheng|neoluoyi|longhun|shuijian"..
 							"|baoyi|mokai|zhanzhen|zhancao|chuanran|weizhi|buming|pingyi|shouhui|hunpo|luanwu|qinlue|zhancao|wunian|yiwang"
-	sgs.judge_reason =		"bazhen|EightDiagram|wuhun|supply_shortage|tuntian|nosqianxi|nosmiji|indulgence|lightning|baonue"..
+	sgs.judge_reason =		"bazhen|EightDiagram|Blade|wuhun|supply_shortage|tuntian|nosqianxi|nosmiji|indulgence|lightning|baonue"..
 									"|nosleiji|leiji|caizhaoji_hujia|tieji|luoshen|ganglie|neoganglie|vsganglie|kofkuanggu"..
 							"|lingqi|pohuai|huisu"		
 	sgs.no_intention_damage="nuhuo|pohuai|zhuonong"
