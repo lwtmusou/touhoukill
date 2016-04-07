@@ -271,6 +271,7 @@ public:
                     if (p->hasSkill(this))
                         d << SkillInvokeDetail(this, p, p);
                 }
+                return d;
             }
         }
         return QList<SkillInvokeDetail>();
