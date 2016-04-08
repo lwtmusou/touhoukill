@@ -1,3 +1,88 @@
+sgs.ai_skill_choice.ciyuan = function(self, choices, data)
+	local choice_table = choices:split("+")
+	if choices:match("cancel") then
+		if not self.player:getCards("j"):isEmpty() then
+			self.room:setPlayerMark(self.player, "ciyuan_ai", 5) --"finish"
+			return "judge"
+		end
+		if self.player:hasSkill("shigui") then
+			local useCount = 0
+			for _,c in sgs.qlist(self.player:getCards("h")) do
+				if c:isKindOf("EquipCard") then
+					useCount = useCount + 1
+					continue 
+				end
+				local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+				if c:isKindOf("TrickCard") then
+					self:useTrickCard(c, dummy_use)
+				else
+					self:useBasicCard(c, dummy_use)
+				end
+				if not dummy_use.to:isEmpty() then
+					useCount = useCount + 1
+				end
+			end
+			local draw = 4 - (self.player:getHandcardNum() - useCount)
+			if draw >= 3 and self.player:getLostHp() < 3 then
+				self.room:setPlayerFlag(self.player, "shigui_Not_Need_Bear")
+				self.room:setPlayerMark(self.player, "ciyuan_ai", 5) --"finish"
+				return "draw"
+			end
+			local remain = self.player:getHandcardNum() - useCount
+			if self.player:isWounded() and remain <= 4 and self.player:getHandcardNum() >=2 then
+				remain = math.max(remain, 2)
+				self.room:setPlayerMark(self.player, "ciyuan_ai", remain - 1)
+				return "play"
+			end
+		end
+	else
+		local index = self.player:getMark("ciyuan_ai")
+		if index > 0 then
+			return choice_table[index]
+		end
+	end
+	
+	if choices:match("cancel") then
+		return "cancel"
+	else
+		return choice_table[1]
+	end
+end
+
+sgs.ai_skill_invoke.shigui = function(self,data)
+	local phase = self.player:getPhase()
+	local pahseCount = self.player:getMark("shigui")
+	local diff = math.abs(pahseCount - self.player:getHandcardNum())
+	if phase == sgs.Player_Draw then
+		if  diff > 2 then
+			return true
+		elseif pahseCount - self.player:getHandcardNum() == 2 then
+			return not self:isWeak(self.player) 
+		end
+	end
+	if phase == sgs.Player_Play then
+		if not self.player:isWounded() then return false end
+		if  diff <= self:getOverflow(self.player) or pahseCount <= 4 then
+			return true
+		elseif self:isWeak(self.player) and diff <= 2 then
+			return true
+		end
+	end
+	return false
+end
+
+sgs.ai_need_bear.shigui = function(self, card,from,tos) 
+	from = from or self.player
+	local pahseCount = from:getMark("shigui")
+	if from:isWounded() then
+		if not from:hasFlag("shigui_Not_Need_Bear") 
+			and from:getHandcardNum() > pahseCount and from:getHandcardNum() == pahseCount + 1 then
+			return true
+		end
+	end
+	return false
+end
+
 sgs.ai_skill_use["@@zhence"] = function(self, prompt)
 	local change = self.player:getTag("zhence"):toPhaseChange()
 	if change.to == sgs.Player_Draw or (change.to == sgs.Player_Play and self:getOverflow(self.player) < 2) then
