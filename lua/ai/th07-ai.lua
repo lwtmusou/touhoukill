@@ -1136,7 +1136,43 @@ sgs.ai_skill_invoke.jixiong = function(self,data)
 end
 --sgs.ai_choicemade_filter.skillInvoke.jixiong = function(self, player, args)
 
+local yujian_skill = {}
+yujian_skill.name = "yujian"
+table.insert(sgs.ai_skills, yujian_skill)
+yujian_skill.getTurnUseCard = function(self)
+	if self.player:isKongcheng() or self.player:hasUsed("YujianCard") then return nil end
+	return sgs.Card_Parse("@YujianCard=.")
+end
+sgs.ai_skill_use_func.YujianCard = function(card, use, self)
+	local target
+	self:sort(self.enemies, "defenseSlash")
+	for _,p in ipairs (self.enemies) do
+		if not p:isKongcheng() then
+			target = p
+		end
+	end
+	if target then
+		use.card = card
+        if use.to then
+            use.to:append(target)
+            if use.to:length() >= 1 then return end
+		end
+	end
+end
+sgs.ai_use_priority.YujianCard = sgs.ai_use_priority.Slash + 0.5
+sgs.ai_card_intention.YujianCard = 30
 
+sgs.ai_skill_playerchosen.shoushu = function(self, targets)
+	local target = self:touhouFindPlayerToDraw(false, 1)
+	if not target and #self.friends_noself>0 then
+		target= self.friends_noself[1] 
+	end
+	if target then 
+		return target
+	end
+	return nil
+end
+sgs.ai_playerchosen_intention.shoushu = -70
 
 function SmartAI:canHuayin(player)
 	for _,c in sgs.qlist(player:getCards("h")) do
