@@ -46,8 +46,8 @@ public:
             phases.removeOne("cancel");
             phases.removeOne(choice);
             QString choice1 = room->askForChoice(invoke->invoker, objectName(), phases.join("+"));
-            invoke->invoker->tag["shigui"] = QVariant::fromValue(choice);
-            invoke->invoker->tag["shigui1"] = QVariant::fromValue(choice1);
+            invoke->invoker->tag["ciyuan"] = QVariant::fromValue(choice);
+            invoke->invoker->tag["ciyuan1"] = QVariant::fromValue(choice1);
         }
 
         return choice != "cancel";
@@ -57,9 +57,9 @@ public:
     { 
         
         
-        QString choice = invoke->invoker->tag["shigui"].toString();
+        QString choice = invoke->invoker->tag["ciyuan"].toString();
         Player::Phase phase = ciyuanPhase(choice);
-        QString choice1 = invoke->invoker->tag["shigui1"].toString();
+        QString choice1 = invoke->invoker->tag["ciyuan1"].toString();
         Player::Phase phase1 = ciyuanPhase(choice1);
 
         room->notifySkillInvoked(invoke->owner, objectName());
@@ -317,9 +317,8 @@ public:
             
         if (choice != "cancel") {
             QString prompt = "@shiqu-discard:" + choice + ":" + invoke->preferredTarget->objectName();
+            invoke->invoker->tag["shiqu"] = QVariant::fromValue(choice);
             const Card *card = room->askForCard(invoke->invoker, ".|.|.|hand,equipped", prompt, data, objectName());
-            if (card)
-                invoke->invoker->tag["shiqu"] = QVariant::fromValue(choice);
             return card != NULL;
         }
         return false;
@@ -347,7 +346,7 @@ public:
         LogMessage log;
         log.type = "#shiqu";
         log.from = invoke->invoker;
-        //log.to << invoke->owner;
+        log.to << invoke->targets.first();
         log.arg = objectName();
         log.arg2 = choice;
         room->sendLog(log);

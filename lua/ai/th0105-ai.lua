@@ -1,3 +1,50 @@
+sgs.ai_skill_use["@@zhence"] = function(self, prompt)
+	local change = self.player:getTag("zhence"):toPhaseChange()
+	if change.to == sgs.Player_Draw or (change.to == sgs.Player_Play and self:getOverflow(self.player) < 2) then
+		local card = sgs.cloneCard("fire_attack", sgs.Card_NoSuit, 0)
+		card:setSkillName("zhence")
+		local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+		self:useTrickCard(card, dummy_use)
+		if not dummy_use.card then return "." end
+		if not dummy_use.to:isEmpty() then
+			local target_objectname = {}
+			for _, p in sgs.qlist(dummy_use.to) do
+				table.insert(target_objectname, p:objectName())
+			end
+			return dummy_use.card:toString() .. "->" .. table.concat(target_objectname, "+")
+		end
+	end
+	return "."
+end
+
+sgs.ai_skill_choice.shiqu = function(self, choices, data)
+	local current = self.room:getCurrent()
+	if self:isEnemy(current) and choices:match("shiqu_discard") and self:getOverflow(self.player) >= 2 then
+		return "shiqu_discard"
+	end
+	if self:isFriend(current) then
+		if choices:match("shiqu_draw") then
+			return "shiqu_draw"
+		end
+		if choices:match("shiqu_play") and current:getHandcardNum() > 3 then
+			return "shiqu_play"
+		end
+	end
+	return "cancel"
+end
+sgs.ai_choicemade_filter.cardResponded["@shiqu-discard"] = function(self, player, args)
+	local choice = player:getTag("shiqu"):toString()
+	local current = self.room:getCurrent()
+	if args[#args] ~= "_nil_" then
+		if choice == "shiqu_discard" then
+			sgs.updateIntention(player, current, 80)
+		elseif choice == "shiqu_play" or choice == "shiqu_draw" then
+			sgs.updateIntention(player, current, -80)
+		end
+	end
+end
+
+
 function SmartAI:qianyiPhase(target)
 	--willSkipPlayPhase 没考虑跳判定
 	if self:isEnemy(target) then
