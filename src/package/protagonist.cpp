@@ -931,7 +931,11 @@ public:
             QList<ServerPlayer *> targets = chunxi_targets(invoke->invoker);
             if (targets.isEmpty())
                 return false;
-            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@@chunxi", true, true);
+            QStringList prompt_list;
+            prompt_list << "chunxi-target" << QString::number(i+1)
+                << QString::number(count);
+            QString prompt = prompt_list.join(":");
+            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), prompt, true, true);
             if (target == NULL)
                 return false;
             int obtainId = room->askForCardChosen(invoke->invoker, target, "h", objectName());
