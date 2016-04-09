@@ -124,8 +124,10 @@ public:
         foreach(ServerPlayer *reimu, room->getAllPlayers()) {
             if (reimu->hasLordSkill(objectName())){
                 foreach(ServerPlayer *p, room->getOtherPlayers(reimu)) {
-                    if (!p->isKongcheng())
+                    if (!p->isKongcheng()) {
                         details << SkillInvokeDetail(this, reimu, reimu);
+                        break;
+                    }
                 }
             }  
         }

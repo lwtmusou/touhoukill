@@ -101,6 +101,11 @@ alpha版0401补丁发布后
 21 fix 感应崩溃
 22 妖忌 冈崎梦美 千百合ai
 
+**************************************************************
+alpha版0408补丁发布后
+1 fix 博丽
+
+
 待解决的已知问题
 1 常识（回合开始时） 凭依（凭依人死亡or自己死亡？） 遇到过 服务器 崩溃
 2 ai的 在使用拆顺的时候报错  可能和getarmor相关？ 可能和candiscard相关？   lua/ai/standard_cards-ai.lua:2987: attempt to index a nil value
