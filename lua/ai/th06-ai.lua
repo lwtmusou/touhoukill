@@ -628,14 +628,6 @@ sgs.ai_slash_prohibit.anyu = function(self, from, to, card)
 
 	if self:isFriend(from, to) then return false end
 	return not self:isWeak(to) and not to:faceUp() 
-
-	--local turnFriend =false
-	--for _,p in pairs (self.friends) do
-	--	if not p:faceUp() then
-	--		turnFriend = true
-	--	end
-	--end
-	--return not self:isWeak(to) and turnFriend
 end
 
 
