@@ -1851,7 +1851,8 @@ public:
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         const Card *card = move.reason.m_extraData.value<const Card *>();
         ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(),
-            "@shoushu:" + card->objectName(), true, true);
+            "@shoushu:" + card->toString(), true, true);
+        
         if (target) {
             player->tag["shoushu_select"] = QVariant::fromValue(target);
             return true;
