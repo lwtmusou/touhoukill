@@ -657,7 +657,16 @@ end
 sgs.ai_skill_invoke.qiyue = function(self,data)
 	local current=self.room:getCurrent()
 	if self:isEnemy(current) then
-		if self.player:getMaxHp()==1 then return false end
+		if self.player:getMaxHp()== 1 then 
+			if current:hasSkill("weiya") then
+				return false 
+			end
+			local recover =  getCardsNum("Analeptic", self.player, self.player)
+			for _,p in ipairs(self.friends) do
+				recover = recover + getCardsNum("Peach", p, self.player)
+			end
+			return recover > 0
+		end
 		if self.player:getMaxHp()<3 or self.player:getHp()<3 then return true end 
 		if #self.enemies<3 then return false end
 		enemyseat= current:getSeat()
@@ -678,9 +687,9 @@ sgs.ai_skill_invoke.qiyue = function(self,data)
 end
 sgs.ai_skill_choice.qiyue=function(self)
 	if self.player:getMaxHp()>self.player:getHp() then
-		return "maxhp_moxue"
+		return "maxhp"
 	else
-		return "hp_moxue"
+		return "hp"
 	end
 end
 sgs.ai_choicemade_filter.skillInvoke.qiyue = function(self, player, args)
