@@ -522,6 +522,245 @@ public:
 
 
 
+class Youyue : public TriggerSkill
+{
+public:
+    Youyue() : TriggerSkill("youyue")
+    {
+        events << TargetConfirming;
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.from && use.from->hasSkill(this) && use.from->isAlive() && (use.card->isNDTrick() || use.card->isKindOf("Slash"))) {
+            QList<SkillInvokeDetail> d;
+            foreach(ServerPlayer *to, use.to) {
+                if (to->canDiscard(to, "h"))
+                    d << SkillInvokeDetail(this, use.from, use.from, NULL, true, to);
+            }
+            return d;
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        
+        QList<ServerPlayer *> logto;
+        logto << invoke->targets.first();
+        room->touhouLogmessage("#youyue", invoke->invoker, objectName(), logto, use.card->objectName());
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
+
+        QStringList prompt_list;
+        prompt_list << "youyue-discard" << use.card->objectName()
+            << invoke->invoker->objectName();
+        QString prompt = prompt_list.join(":");
+        const Card *card = room->askForCard(invoke->targets.first(), ".!", prompt, data, Card::MethodDiscard);
+        if (!card) {
+            // force discard!!!
+            DummyCard *dc = new DummyCard;
+            dc->deleteLater();
+            QList<const Card *> hc = invoke->targets.first()->getHandcards();
+            foreach(const Card *c, hc) {
+                if (invoke->targets.first()->isJilei(c))
+                    hc.removeOne(c);
+            }
+
+            if (hc.length() == 0)
+                return false;
+
+
+            int x = qrand() % hc.length();
+            const Card *c = hc.value(x);
+            dc->addSubcard(c);
+
+            room->throwCard(dc, invoke->targets.first());
+            card = dc;
+        }
+
+        QString suit = card->getSuitString();
+        suit = suit.toUpper();
+        QString pattern = "." + suit[0];
+        QStringList prompt_list1;
+        prompt_list1 << "youyue-show" << use.card->objectName()
+            << invoke->targets.first()->objectName() << card->getSuitString();
+        QString prompt1 = prompt_list1.join(":");
+        const Card *card1 = room->askForCard(invoke->invoker, pattern, prompt1, data, Card::MethodNone);
+        if (card1)
+            room->showCard(invoke->invoker, card1->getEffectiveId());
+        else {
+            
+            use.nullified_list << invoke->targets.first()->objectName();
+            data = QVariant::fromValue(use);
+        }
+
+        return false;
+    }
+
+};
+
+
+
+class Yeyan : public TriggerSkill
+{
+public:
+    Yeyan() : TriggerSkill("yeyan")
+    {
+        events << EventPhaseEnd;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        ServerPlayer *yuka = data.value<ServerPlayer *>();
+        if (!yuka->hasSkill(this) || yuka->isDead() || yuka->getPhase() != Player::Play)
+            return QList<SkillInvokeDetail>();
+
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
+            if (p->isKongcheng())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yuka, yuka);
+        }
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        int n = 0;
+        foreach(ServerPlayer *p, room->getAllPlayers()) {
+            if (p->isKongcheng())
+                n++;
+        }
+        invoke->invoker->drawCards(n);
+        return false;
+    }
+
+};
+
+MenghuanCard::MenghuanCard()
+{
+    will_throw = false;
+    handling_method = Card::MethodNone;
+    m_skillName = "menghuan_attach";
+}
+
+void MenghuanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
+    ServerPlayer *lord = targets.first();
+    if (lord->hasLordSkill("menghuan")) {
+        room->setPlayerFlag(lord, "menghuanInvoked");
+
+        room->notifySkillInvoked(lord, "menghuan");
+        CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), lord->objectName(), "menghuan", QString());
+        room->obtainCard(lord, this, reason);
+        QList<ServerPlayer *> lords;
+        QList<ServerPlayer *> players = room->getOtherPlayers(source);
+        foreach(ServerPlayer *p, players) {
+            if (p->hasLordSkill("menghuan") && !p->hasFlag("menghuanInvoked"))
+                lords << p;
+        }
+        if (lords.isEmpty())
+            room->setPlayerFlag(source, "Forbidmenghuan");
+    }
+}
+
+bool MenghuanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    return targets.isEmpty() && to_select->hasLordSkill("menghuan")
+        && to_select != Self && !to_select->hasFlag("menghuanInvoked");
+}
+
+class MenghuanVS : public OneCardViewAsSkill
+{
+public:
+    MenghuanVS() :OneCardViewAsSkill("menghuan_attach")
+    {
+        attached_lord_skill = true;
+        filter_pattern = "TrickCard";
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return  !player->hasFlag("Forbidmenghuan") && shouldBeVisible(player);
+    }
+
+    virtual bool shouldBeVisible(const Player *Self) const
+    {
+        return Self && Self->getKingdom() == "pc98";
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const
+    {
+        MenghuanCard *card = new MenghuanCard;
+        card->addSubcard(originalCard);
+
+        return card;
+    }
+};
+
+class Menghuan : public TriggerSkill
+{
+public:
+    Menghuan() : TriggerSkill("menghuan$")
+    {
+        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent != EventPhaseChanging) { //the case operating attach skill
+            static QString attachName = "menghuan_attach";
+            QList<ServerPlayer *> lords;
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if (p->hasLordSkill(this, true))
+                    lords << p;
+            }
+
+            if (lords.length() > 1) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (!p->hasSkill(attachName, true))
+                        room->attachSkillToPlayer(p, attachName);
+                }
+            }
+            else if (lords.length() == 1) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasLordSkill(this, true) && p->hasSkill(attachName, true))
+                        room->detachSkillFromPlayer(p, attachName, true);
+                    else if (!p->hasLordSkill(this, true) && !p->hasSkill(attachName, true))
+                        room->attachSkillToPlayer(p, attachName);
+                }
+            }
+            else {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasSkill(attachName, true))
+                        room->detachSkillFromPlayer(p, attachName, true);
+                }
+            }
+        }
+        else if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
+            if (phase_change.from == Player::Play) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasFlag("menghuanInvoked"))
+                        room->setPlayerFlag(p, "-menghuanInvoked");
+                    if (p->hasFlag("Forbidmenghuan"))
+                        room->setPlayerFlag(p, "-Forbidmenghuan");
+                }
+            }
+        }
+    }
+
+};
+
+
+
+
+
+
+
 TH0105Package::TH0105Package()
     : Package("th0105")
 {
@@ -543,8 +782,11 @@ TH0105Package::TH0105Package()
     kana->addSkill(new Qianyi);
     kana->addSkill(new Mengxiao);
 
-    General *yuka = new General(this, "yuka_old$", "pc98", 4, false);
-    Q_UNUSED(yuka)
+    General *yuka_old = new General(this, "yuka_old$", "pc98", 4, false);
+    yuka_old->addSkill(new Youyue);
+    yuka_old->addSkill(new Yeyan);
+    yuka_old->addSkill(new Menghuan);
+
     General *gengetsumugetsu = new General(this, "gengetsumugetsu", "pc98", 4, false);
     Q_UNUSED(gengetsumugetsu);
     General *elly = new General(this, "elly", "pc98", 4, false);
@@ -554,6 +796,10 @@ TH0105Package::TH0105Package()
     Q_UNUSED(shinki);
     General *alice = new General(this, "alice_old", "pc98", 4, false);
     Q_UNUSED(alice);
+
+    addMetaObject<MenghuanCard>();
+
+    skills << new MenghuanVS;
 }
 
 ADD_PACKAGE(TH0105)

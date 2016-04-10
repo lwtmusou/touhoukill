@@ -109,9 +109,10 @@ alpha版0408补丁发布后
 4 优化 【契约】 ai
 5 铃仙2号 对策ai
 6 fix 凭依
+7 新人物 旧幽香
+
 
 待解决的已知问题
-1 常识（回合开始时） 凭依（凭依人死亡or自己死亡？） 遇到过 服务器 崩溃
 2 ai的 在使用拆顺的时候报错  可能和getarmor相关？ 可能和candiscard相关？   lua/ai/standard_cards-ai.lua:2987: attempt to index a nil value
 3 trigger order本身也还一团糟糕
 trigger 各种问题？ 花冢和地震同时可以选择时，先地震，然后花冢无效？？
