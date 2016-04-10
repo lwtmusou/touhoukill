@@ -928,6 +928,8 @@ public:
 
         if (yori->tag.contains("pingyi_skill") && yori->tag.contains("pingyi_originalOwner")) {
             QString originalSkillName = yori->tag.value("pingyi_skill", QString()).toString();
+            const Skill *originalSkill = Sanguosha->getSkill(originalSkillName);
+            ServerPlayer *originalOwner = yori->tag["pingyi_originalOwner"].value<ServerPlayer *>();
 
             // 1. yorihime lost the acquired skill
             if (!originalSkillName.isEmpty())
@@ -935,13 +937,15 @@ public:
 
             yori->tag.remove("pingyi_skill");
             yori->tag.remove("pingyi_originalOwner");
-            skill_owner->tag.remove("pingyi_from");
-            skill_owner->tag.remove("pingyi_invalidSkill");
+            originalOwner->tag.remove("pingyi_from");
+            originalOwner->tag.remove("pingyi_invalidSkill");
+            room->setPlayerSkillInvalidity(originalOwner, originalSkill, false);
         }
 
         if (skill != NULL && skill_owner != NULL) {
             yori->tag["pingyi_skill"] = skill->objectName();
             yori->tag["pingyi_originalOwner"] = QVariant::fromValue(skill_owner);
+#pragma message WARN("todo_fs: pingyi_from and pingyi_invalidSkill could large than 1")
             skill_owner->tag["pingyi_from"] = QVariant::fromValue(yori);
             skill_owner->tag["pingyi_invalidSkill"] = skill->objectName();
 
