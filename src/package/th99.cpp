@@ -1832,7 +1832,9 @@ TH99Package::TH99Package()
     General *yorihime = new General(this, "yorihime", "wai", 4, false);
     yorihime->addSkill(new Pingyi);
     yorihime->addSkill(new PingyiHandler);
+    yorihime->addSkill(new PingyiHandler2);
     related_skills.insertMulti("pingyi", "#pingyi_handle");
+    related_skills.insertMulti("pingyi", "#pingyi_handle2");
 
 
     General *sunny = new General(this, "sunny", "wai", 4, false);
