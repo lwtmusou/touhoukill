@@ -959,21 +959,18 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
-        QList<SkillInvokeDetail> d;
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.nature == DamageStruct::Thunder && damage.to->hasSkill(this)) {
-            for (int i = 0; i < damage.damage; i++)
-                d << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
-        }
-        return d;
+        if (damage.nature == DamageStruct::Thunder && damage.to->hasSkill(this))          
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
+        return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        //DamageStruct damage = data.value<DamageStruct>();
-        //room->touhouLogmessage("#jingdian", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(damage.damage));
+        DamageStruct damage = data.value<DamageStruct>();
+        room->touhouLogmessage("#jingdian", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(damage.damage));
         room->notifySkillInvoked(invoke->invoker, objectName());
-        room->drawCards(invoke->invoker, 3, objectName());
+        room->drawCards(invoke->invoker, 3 * damage.damage, objectName());
         return true;
     }
 };

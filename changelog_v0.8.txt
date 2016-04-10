@@ -113,6 +113,7 @@ alpha版0408补丁发布后
 
 
 待解决的已知问题
+1 常识 可以恢复 凭依 的 技能无效
 2 ai的 在使用拆顺的时候报错  可能和getarmor相关？ 可能和candiscard相关？   lua/ai/standard_cards-ai.lua:2987: attempt to index a nil value
 3 trigger order本身也还一团糟糕
 trigger 各种问题？ 花冢和地震同时可以选择时，先地震，然后花冢无效？？
@@ -125,3 +126,4 @@ trigger 各种问题？ 花冢和地震同时可以选择时，先地震，然�
 21 纪念
 22 新人物 和 旧技能调整后的ai 铃仙2号的铁索对策
 23 感应有未触发的情况
+24 静电按点数结算的问题

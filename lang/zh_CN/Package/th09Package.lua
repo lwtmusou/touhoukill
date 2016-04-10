@@ -166,7 +166,7 @@ return
 	["illustrator:iku_3"] = "爽希",
 	["origin:iku_3"] = "p号：38916055，个人ID：2318975",
 		["jingdian"] = "静电",
-	[":jingdian"] = "<font color=\"blue\"><b>锁定技，</b></font>每当你受到1点雷电伤害时，防止此伤害，你摸三张牌。",
+	[":jingdian"] = "<font color=\"blue\"><b>锁定技，</b></font>每当你受到雷电伤害时，防止此伤害，你摸3x张牌（x为此次伤害的点数）。",
 	["#jingdian"] = "%from 的技能 “%arg” 被触发，%from 防止了 %arg2 点雷电伤害。",
 	["leiyun"] = "雷云",
 	[":leiyun"] = "你可以将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>或<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌当【闪电】使用。",
