@@ -1811,7 +1811,13 @@ sgs.ai_skill_cardask["@Axe"] = function(self, data, pattern, target)
 		end
 	end
 end
-
+sgs.ai_choicemade_filter.cardResponded["@Axe"] = function(self, player, args)
+	if args[#args] ~= "_nil_" then
+		local target = player:getTag("axe_target"):toPlayer()
+		if not target then return end	
+		sgs.updateIntention(player, target, 80)
+	end
+end
 
 function sgs.ai_slash_weaponfilter.Axe(self, to, player)
 	return self:getOverflow(player) > 0
