@@ -282,6 +282,18 @@ sgs.ai_skill_invoke.zhanwang = function(self)
 	end
 	return false
 end
+sgs.ai_skill_cardask["@zhanwang-discard"] = function(self, data)
+	local damage =data:toDamage()
+	damage.damage = damage.damage + 1
+	--local diascard = self.player:hasSkills(sgs.lose_equip_skill)
+	local effective = self:touhouNeedAvoidAttack(damage, damage.from, damage.to)
+	if not effective then return "." end
+	local ecards = self.player:getCards("e")
+	ecards = sgs.QList2Table(ecards)
+	self:sortByKeepValue(ecards, true)
+	
+    return "$" .. ecards[1]:getId()
+end
 sgs.ai_choicemade_filter.skillInvoke.zhanwang = function(self, player, args)
 	local damage = player:getTag("zhanwang"):toDamage()
 	if damage.to and args[#args] == "yes" then

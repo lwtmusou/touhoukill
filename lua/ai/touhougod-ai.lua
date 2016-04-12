@@ -437,6 +437,7 @@ sgs.ai_skill_choice.banling_minus=function(self, choices)
 end
 
 --function getBestHp(player)
+sgs.ai_skill_invoke.rengui = true
 sgs.ai_skill_playerchosen.renguidiscard = function(self, targets)
 	target_table = sgs.QList2Table(targets)
 	if #target_table==0 then return nil end
