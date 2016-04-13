@@ -114,11 +114,13 @@ alpha版0408补丁发布后
 9 fix AI 应对 源码删除了defaultchoice
 10 贯石斧仇恨值，  残局主借内的刀杀自己，内强砸贯石，这个居然没算仇恨
 11 妖梦相关：人鬼ai 斩妄ai
+12 fix 血裔ai
 
 待解决的已知问题
 1 常识 可以恢复 凭依 的 技能无效
 2 ai的 在使用拆顺的时候报错  可能和getarmor相关？ 可能和candiscard相关？   lua/ai/standard_cards-ai.lua:2987: attempt to index a nil value
 3 trigger order本身也还一团糟糕
+青冈的选择
 trigger 各种问题？ 花冢和地震同时可以选择时，先地震，然后花冢无效？？
 8 录像中 选将框 不能自动消失 需要手动点
 12 搜集的捡牌有问题。。。八卦的原判定牌（非改判）也被捡走了

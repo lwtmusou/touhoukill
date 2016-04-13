@@ -126,11 +126,11 @@ end
 
 
 sgs.ai_skill_invoke.xueyi = function(self, data)
-        local to =data:toPlayer()
-		return self:isFriend(to)
+    local to =data:toPlayer()
+	return self:isFriend(to)
 end
 sgs.ai_choicemade_filter.skillInvoke.xueyi = function(self, player, promptlist)
-	local to=player:getTag("xueyi-target"):toPlayer()
+	local to = player:getTag("xueyi-target"):toPlayer()
 	if to then 
 		if promptlist[#promptlist] == "yes" then
 		    sgs.updateIntention(player, to, -60)
