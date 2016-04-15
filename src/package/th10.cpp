@@ -1200,11 +1200,11 @@ public:
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *sanae = qobject_cast<ServerPlayer *>(move.from);
-        if (sanae == NULL || !sanae->hasSkill(this) || !move.from_places.contains(Player::PlaceHand) 
-            || sanae->hasFlag("jinian_used"))
+        if (sanae == NULL || !sanae->hasSkill(this) || sanae->hasFlag("jinian_used"))
             return;// no need to update record.
-        
-        if (move.to_place == Player::PlaceTable && move.is_last_handcard) {
+
+        //record some temp ids, went to discardpile undirectly (through other places). 
+        if (move.to_place == Player::PlaceTable && move.from_places.contains(Player::PlaceHand)  && move.is_last_handcard) {
             //1 temp ids: record lasthand ids for using or responsing
             if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
                 || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE) {
@@ -1215,8 +1215,9 @@ public:
                         record_ids << id;
                 }
                 sanae->tag["jinianTemp"] = record_ids;
+                return;
             }
-        } else if (move.to_place == Player::PlaceJudge && move.is_last_handcard) {
+        } else if (move.to_place == Player::PlaceJudge && move.from_places.contains(Player::PlaceHand) && move.is_last_handcard) {
             //2 temp ids: record lasthand ids for retrial
             QVariantList record_ids = sanae->tag["jinianTemp"].toList();
             foreach(int id, move.card_ids) {
@@ -1225,7 +1226,11 @@ public:
                     record_ids << id;
             }
             sanae->tag["jinianTemp"] = record_ids;
-        } else if (move.to_place == Player::DiscardPile) { 
+            return;
+        }
+        
+        //obtain jinian id while arriving discardpile.
+        if (move.to_place == Player::DiscardPile) {
             QVariantList ids = sanae->tag["jinian"].toList();
             QVariantList record_ids = sanae->tag["jinianTemp"].toList();
             if (move.is_last_handcard) {
@@ -1239,7 +1244,7 @@ public:
                 //3.2 check whether went to discard pile through palceTable or placeJudge 
                 foreach(int id, move.card_ids) {
                     if (!ids.contains(id) && record_ids.contains(id) && room->getCardPlace(id) == Player::DiscardPile)
-                            ids << id;
+                        ids << id;
                 }
             }
             foreach(int id, move.card_ids)
