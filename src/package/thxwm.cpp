@@ -138,10 +138,10 @@ public:
 
 
 
-class Beisha : public PhaseChangeSkill
+class Beisha : public TriggerSkill
 {
 public:
-    Beisha() :PhaseChangeSkill("beisha")
+    Beisha() :TriggerSkill("beisha")
     {
     }
 
@@ -162,39 +162,38 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    virtual bool onPhaseChange(ServerPlayer *player) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        Room *room = player->getRoom();
-        QList<ServerPlayer *> slashlist;
-        QList<ServerPlayer *> losehplist;
         QList<ServerPlayer *> listt;
-        int num = player->getHandcardNum();
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (p->getHandcardNum() <= num && player->canSlash(p, NULL, false)) {
-                slashlist << p;
+        int num = invoke->invoker->getHandcardNum();
+        foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+            if (p->getHandcardNum() <= num && invoke->invoker->canSlash(p, NULL, false))
                 listt << p;
-            }
-            if (p->getHandcardNum() <= (num / 2)) {
-                losehplist << p;
-                if (!listt.contains(p))
-                    listt << p;
-            }
+            else if (p->getHandcardNum() <= (num / 2))
+                listt << p;
         }
 
-        ServerPlayer *target = room->askForPlayerChosen(player, listt, objectName(), "@beisha", true, true);
-        if (target == NULL)
-            return false;
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, listt, objectName(), "@beisha", true, true);
+        if (target != NULL)
+        invoke->targets << target;
+        return target != NULL;
+    }
 
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        ServerPlayer *target = invoke->targets.first();
+        int num = invoke->invoker->getHandcardNum();
         QStringList choices;
-        if (slashlist.contains(target))
+        if (target->getHandcardNum() <= num && invoke->invoker->canSlash(target, NULL, false))
             choices << "useslash";
-        if (losehplist.contains(target))
+        if (target->getHandcardNum() <= (num / 2))
             choices << "losehp";
-        QString choice = room->askForChoice(player, objectName(), choices.join("+"));
+
+        QString choice = room->askForChoice(invoke->invoker, objectName(), choices.join("+"));
         if (choice == "useslash") {
             Slash *slash = new Slash(Card::NoSuit, 0);
             slash->setSkillName("_" + objectName());
-            room->useCard(CardUseStruct(slash, player, target));
+            room->useCard(CardUseStruct(slash, invoke->invoker, target));
         } else
             room->loseHp(target);
 
