@@ -571,24 +571,38 @@ public:
 
     void record(TriggerEvent, Room *room, QVariant &data) const
     {
+        ServerPlayer *nazurin = room->getCurrent();
+        if (nazurin == NULL || !nazurin->hasSkill(objectName()) || nazurin->isDead())
+            return;
+
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        bool deleteRecord = false;
         if (move.to_place == Player::PlaceTable) {
-            //record room Tag("UseOrResponseFromPile")  for case 3
+            //record "soujiExcept"  for case 3
             if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
                 || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE) {
-                QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
+                QVariantList record_ids = nazurin->tag["soujiExcept"].toList();
                 foreach (int id, move.card_ids) {
                     if (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceHand && move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceEquip) {
                         if (!record_ids.contains(id))
                             record_ids << id;
                     }
                 }
-                room->setTag("UseOrResponseFromPile", record_ids);
+                nazurin->tag["soujiExcept"] = record_ids;
+                return;
             }
-        } else if (move.to_place == Player::DiscardPile) {
-            deleteRecord = true;
-            ServerPlayer *nazurin = room->getCurrent();
+        } else if (move.to_place == Player::PlaceJudge) {
+            QVariantList record_ids = nazurin->tag["soujiExcept"].toList();
+            foreach(int id, move.card_ids) {
+                if (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceHand && move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceEquip) {
+                    if (!record_ids.contains(id))
+                        record_ids << id;
+                }
+            }
+            nazurin->tag["soujiExcept"] = record_ids;
+            return;
+        }
+
+        if (move.to_place == Player::DiscardPile) {
             ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
             //find the real fromer of some cases, such as retrial or provide
             if (move.reason.m_extraData.value<ServerPlayer *>() != NULL)
@@ -596,7 +610,7 @@ public:
             if (move.reason.m_provider.value<ServerPlayer *>() != NULL)
                 from = move.reason.m_provider.value<ServerPlayer *>();
 
-            if (nazurin && from != NULL && nazurin != from && nazurin->hasSkill(objectName()) && nazurin->isCurrent() && nazurin->isAlive()) {
+            if (from != NULL && nazurin != from) {
                 QVariantList obtain_ids;
                 foreach(int id, move.card_ids) {
                     if (room->getCardPlace(id) != Player::DiscardPile)
@@ -608,13 +622,16 @@ public:
                     case Player::PlaceJudge:
                     {//case of retrial, need check rebyre
                         ServerPlayer *rebyre = move.reason.m_extraData.value<ServerPlayer *>();
-                        if (!rebyre || rebyre != nazurin)
-                            obtain_ids << id;
+                        if (rebyre && rebyre != nazurin) {
+                            QVariantList record_ids = nazurin->tag["soujiExcept"].toList();
+                            if (!record_ids.contains(id))
+                                obtain_ids << id;
+                        }
                         break;
                     }
                     case Player::PlaceTable:
-                    {//case of UseOrResponseFromPile, remove these ids.
-                        QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
+                    {
+                        QVariantList record_ids = nazurin->tag["soujiExcept"].toList();
                         if (!record_ids.contains(id))
                             obtain_ids << id;
                         break;
@@ -625,18 +642,16 @@ public:
                 }
                 nazurin->tag["souji"] = obtain_ids;
             }
-        } else 
-            deleteRecord = true;
-
-        // delete record: UseOrResponseFromPile
-        if (deleteRecord) {
-            QVariantList record_ids = room->getTag("UseOrResponseFromPile").toList();
-            foreach (int id, move.card_ids) {
-                if (record_ids.contains(id))
-                    record_ids.removeOne(id);
-            }
-            room->setTag("UseOrResponseFromPile", record_ids);
         }
+
+        // delete record: soujiExcept
+        QVariantList record_ids = nazurin->tag["soujiExcept"].toList();
+        foreach(int id, move.card_ids) {
+            if (record_ids.contains(id))
+                record_ids.removeOne(id);
+        }
+        nazurin->tag["soujiExcept"] = record_ids;
+        
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
