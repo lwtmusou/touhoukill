@@ -291,7 +291,7 @@ public:
             if (judge->reason == objectName() && judge->isGood()) {
                 ServerPlayer *lord = judge->who->tag["huazhong"].value<ServerPlayer *>();
                 if (lord != NULL)
-                    d << SkillInvokeDetail(this, lord, judge->who, NULL, true);
+                    d << SkillInvokeDetail(this, lord, lord, NULL, true);
             }
         }
         return d;

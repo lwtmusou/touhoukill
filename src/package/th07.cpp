@@ -119,7 +119,7 @@ public:
             if (judge->reason == objectName() && judge->isGood()) {
                 ServerPlayer *uuz = judge->who->tag["uuz_wangxiang"].value<ServerPlayer *>();
                 if (uuz)
-                    details << SkillInvokeDetail(this, uuz, judge->who, NULL, true);
+                    details << SkillInvokeDetail(this, uuz, uuz, NULL, true);
             }
         }
         return details;
@@ -143,10 +143,8 @@ public:
                 room->sendLog(log);
                 return true;
             }
-        } else {
-            invoke->invoker->tag.remove("uuz_wangxiang");
+        } else
             return true;
-        }
         return false;
     }
 
@@ -161,6 +159,8 @@ public:
             judge.reason = objectName();
             judge.good = true;
             room->judge(judge);
+
+            invoke->invoker->tag.remove("uuz_wangxiang");
         } else {
             JudgeStruct * judge = data.value<JudgeStruct *>();
             invoke->owner->obtainCard(judge->card);
