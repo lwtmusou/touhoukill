@@ -1300,10 +1300,10 @@ public:
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         invoke->invoker->drawCards(1, objectName());
-        QStringList distance_changed = invoke->invoker->tag.value("distance_changed_" + QString::number(triggerEvent), QStringList()).toStringList();
+        //tag is  always empty, why?
+        /*QStringList distance_changed = invoke->invoker->tag.value("distance_changed_" + QString::number(triggerEvent), QStringList()).toStringList();
         if (distance_changed.isEmpty())
             return false;
-
         QList<ServerPlayer *> targets;
         foreach (const QString &c, distance_changed) {
             ServerPlayer *p = room->findPlayerByObjectName(c);
@@ -1311,10 +1311,20 @@ public:
                 targets << p;
         }
 
-        if (targets.isEmpty())
+        foreach(ServerPlayer *q, room->getOtherPlayers(invoke->invoker)) {
+            QStringList to_distance_changed = q->tag.value("distance_changed_" + QString::number(triggerEvent), QStringList()).toStringList();
+            foreach(const QString &c, to_distance_changed) {
+                if (invoke->invoker == room->findPlayerByObjectName(c) && !targets.contains(q) && invoke->invoker->canDiscard(q, "h")) {
+                    targets << q;
+                    break;
+                }
+            }
+        }*/
+        if (invoke->targets.isEmpty())
             return false;
+        
 
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, "ganying", "@ganying", true);
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, invoke->targets, "ganying", "@ganying", true);
         if (target == NULL)
             return false;
 
@@ -1347,6 +1357,7 @@ public:
             return;
         }
 
+
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             p->tag.remove("distance_changed_" + QString::number(triggerEvent));
             QVariantMap distance_map;
@@ -1378,10 +1389,34 @@ public:
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (!p->hasSkill("ganying"))
                 continue;
-
-            QStringList distance_changed = p->tag.value("distance_changed_" + QString::number(triggerEvent), QStringList()).toStringList();
-            if (!distance_changed.isEmpty())
-                d << SkillInvokeDetail(ganying_instance, p, p);
+            bool invoke = false;
+            QList<ServerPlayer *> targets;
+            //case1: distance changed (self to other)
+            QStringList from_distance_changed = p->tag.value("distance_changed_" + QString::number(triggerEvent), QStringList()).toStringList();
+            if (!from_distance_changed.isEmpty()) {
+                invoke = true;
+                foreach(const QString &c, from_distance_changed) {
+                    ServerPlayer *target = room->findPlayerByObjectName(c);
+                    if (target != NULL && p->canDiscard(target, "h") && !targets.contains(target))
+                        targets << target;
+                }
+            }
+            //case2:distance changed(other to self)
+            foreach(ServerPlayer *q, room->getOtherPlayers(p)) {
+                QStringList to_distance_changed = q->tag.value("distance_changed_" + QString::number(triggerEvent), QStringList()).toStringList();
+                foreach(const QString &c, to_distance_changed) {
+                    ServerPlayer *to = room->findPlayerByObjectName(c);
+                    if (to != NULL && p == to)
+                        invoke = true;
+                    if (to != NULL && p == to && p->canDiscard(q, "h") && !targets.contains(q)) {
+                        targets << q;
+                        break;
+                    }
+                }
+            }
+            
+            if (invoke)
+                d << SkillInvokeDetail(ganying_instance, p, p, targets);
         }
         return d;
     }
