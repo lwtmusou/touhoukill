@@ -259,7 +259,14 @@ public:
         ServerPlayer *yukari = invoke->invoker;
         ServerPlayer *who = data.value<DyingStruct>().who;
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, yukari->objectName(), who->objectName());
-        int id2 = room->askForCardChosen(yukari, who, "he", objectName(), false, Card::MethodDiscard);
+        int id2;
+        if (yukari == who) {
+            const Card *card = room->askForExchange(yukari, objectName(), 1, 1, true, "@sisheng");
+            DELETE_OVER_SCOPE(const Card, card)
+            id2 = card->getSubcards().first();
+        } else
+            id2 = room->askForCardChosen(yukari, who, "he", objectName(), false, Card::MethodDiscard);
+        
         if (yukari->canDiscard(who, id2))
             room->throwCard(id2, who, yukari);
 
