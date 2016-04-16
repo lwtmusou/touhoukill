@@ -7,7 +7,7 @@
 
 Player::Player(QObject *parent)
     : QObject(parent), owner(false), general(NULL), general2(NULL),
-    m_gender(General::Sexless), hp(-1), max_hp(-1), renhp(-1), linghp(-1), role_shown(false), state("online"), seat(0), alive(true),
+    m_gender(General::Sexless), hp(-1), max_hp(-1), renhp(-1), linghp(-1), chaoren(-1), role_shown(false), state("online"), seat(0), alive(true),
     phase(NotActive), weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL), treasure(NULL),
     face_up(true), chained(false)
 {
@@ -89,6 +89,18 @@ int Player::getLingHp() const
     return linghp;
 }
 
+int Player::getChaoren() const
+{
+    return chaoren;
+}
+
+void Player::setChaoren(int chaoren)
+{
+    if (this->chaoren != chaoren) {
+        this->chaoren = chaoren;
+        emit chaoren_changed();
+    }
+}
 
 
 int Player::getMaxHp() const

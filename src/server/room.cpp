@@ -3003,11 +3003,13 @@ void Room::setPlayerSkillInvalidity(ServerPlayer *player, const QString &skill_n
 
     if (trigger_event) {
         QList<SkillInvalidStruct> invalid_list;
+        //how to deal skill_name == "_ALL_SKILLS"??
         SkillInvalidStruct invalid;
         invalid.invalid = invalidity;
         invalid.player = player;
         invalid.skill = Sanguosha->getSkill(skill_name);
         invalid_list << invalid;
+        
         QVariant v = QVariant::fromValue(invalid_list);
         thread->trigger(EventSkillInvalidityChange, this, v);
     }

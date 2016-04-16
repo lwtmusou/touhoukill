@@ -480,12 +480,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
             container->updateAvatarTooltip();
             if (ClientInstance->getStatus() == Client::Playing && skill_name == "shanji")
                 dashboard->expandPileCards("piao");
-            if (skill_name == "chaoren")
-                dashboard->expandPileCards("chaoren");
-            //if (ClientInstance->getStatus() == Client::Playing && skill_name == "feitou")
-            //    dashboard->expandPileCards("feitou");
-            //if (ClientInstance->getStatus() == Client::Playing && skill_name == "shende")
-            //    dashboard->expandPileCards("shende");
+            dashboard->expandSpecialCard();//for chaoren
             break;
         }
         case S_GAME_EVENT_ADD_SKILL:
@@ -512,12 +507,8 @@ void RoomScene::handleGameEvent(const QVariant &args)
             container->updateAvatarTooltip();
             if (skill_name == "shanji")
                 dashboard->retractPileCards("piao");
-            if (skill_name == "chaoren")
-                dashboard->retractPileCards("chaoren");
-            //if (skill_name == "feitou")
-            //    dashboard->retractPileCards("feitou");
-            //if (skill_name == "shende")
-            //    dashboard->retractPileCards("shende");
+
+            dashboard->expandSpecialCard();//for chaoren
             break;
         }
         case S_GAME_EVENT_PREPARE_SKILL:
@@ -528,6 +519,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
             dashboard->updateAvatarTooltip();
             if (eventType == S_GAME_EVENT_PREPARE_SKILL)
                 updateSkillButtons();
+            dashboard->expandSpecialCard();//for chaoren
             break;
         }
         case S_GAME_EVENT_CHANGE_GENDER:
@@ -708,14 +700,14 @@ void RoomScene::handleGameEvent(const QVariant &args)
         {
             //QString pile_name = arg[1].asCString(); 
             //int id = arg[1].asInt(); 
-            dashboard->expandPileCard();
+            dashboard->expandSpecialCard();
             break;
         }
         case S_GAME_EVENT_RETRACT_PILE_CARDS:
         {
             //QString pile_name = arg[1].asCString(); 
             //int id = arg[1].asInt(); 
-            dashboard->retractPileCard();
+            dashboard->retractSpecialCard();
             break;
         }
         case S_GAME_ROLE_STATUS_CHANGED:

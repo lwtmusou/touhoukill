@@ -926,7 +926,7 @@ public:
         } else if (triggerEvent == EventSkillInvalidityChange) {
             QList<SkillInvalidStruct>invalids = data.value<QList<SkillInvalidStruct>>();
             foreach(SkillInvalidStruct v, invalids) {
-                if (v.skill->objectName() == "yexing") {
+                if (!v.skill || v.skill->objectName() == "yexing") {
                     if (!v.invalid && v.player->getMark("@shi") == 0)
                         room->setPlayerCardLimitation(v.player, "use", "TrickCard+^DelayedTrick", false);
                     else if (v.invalid)

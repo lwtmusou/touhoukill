@@ -79,12 +79,14 @@ public:
     QString screenName() const;
 
     // property setters/getters
+    int getChaoren() const;//for chaoren
+    void setChaoren(int chaoren);
     int getHp() const;
-	int getRenHp() const;
-	int getLingHp() const;
+    int getRenHp() const;
+    int getLingHp() const;
     void setHp(int hp);
-	void setRenHp(int renhp);
-	void setLingHp(int linghp);
+    void setRenHp(int renhp);
+    void setLingHp(int linghp);
     int getMaxHp() const;
     void setMaxHp(int max_hp);
     int getLostHp() const;

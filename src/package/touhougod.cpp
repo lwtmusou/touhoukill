@@ -108,7 +108,7 @@ public:
         } else if (triggerEvent == EventSkillInvalidityChange) {
             QList<SkillInvalidStruct>invalids = data.value<QList<SkillInvalidStruct>>();
             foreach(SkillInvalidStruct v, invalids) {
-                if (v.skill->objectName() == "zhouye") {
+                if (!v.skill || v.skill->objectName() == "zhouye") {
                     if (!v.invalid && v.player->getMark("@ye") == 0)
                         room->setPlayerCardLimitation(v.player, "use", "Slash", false);
                     else if (v.invalid)
@@ -307,7 +307,7 @@ public:
         } else if (triggerEvent == EventSkillInvalidityChange) {
             QList<SkillInvalidStruct>invalids = data.value<QList<SkillInvalidStruct>>();
             foreach(SkillInvalidStruct v, invalids) {
-                if (v.skill->objectName() == "aoyi") {
+                if (!v.skill || v.skill->objectName() == "aoyi") {
                     if (!v.invalid)
                         room->setPlayerCardLimitation(v.player, "use", "TrickCard+^DelayedTrick", false);
                     else if (v.invalid)
@@ -2365,19 +2365,81 @@ public:
 };
 
 
-
 class Chaoren : public TriggerSkill
 {
 public:
     Chaoren() : TriggerSkill("chaoren")
     {
+        events << NumOfEvents;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        
+        if (room->getTag("FirstRound").toBool())
+            return;
+        if (triggerEvent == FetchDrawPileCard)
+            return;
+        //need trigger after drawing intiial cards? 
+        const QList<int> &drawpile = room->getDrawPile();
+        int new_firstcard = -1;
+        if (!drawpile.isEmpty())
+            new_firstcard = drawpile.first();
+
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
+            bool ok = false;
+            int old_firstcard = p->property("chaoren").toInt(&ok);
+            if (!ok)
+                old_firstcard = -1;
+            room->setPlayerProperty(p, "chaoren", new_firstcard);
+
+
+            
+            if (!p->hasSkill(objectName()))
+                continue;
+            // for client log
+            bool notifyLog = (new_firstcard != old_firstcard);
+            if (triggerEvent == EventAcquireSkill) {
+                SkillAcquireDetachStruct s = data.value<SkillAcquireDetachStruct>();
+                if (s.skill->objectName() == objectName() && s.player == p)
+                    notifyLog = true;
+            }
+            if (triggerEvent == EventSkillInvalidityChange) {
+                QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct>>();
+                foreach(SkillInvalidStruct v, invalids) {
+                    if ((!v.skill || v.skill->objectName() == objectName()) && v.player == p && !v.invalid) {
+                        notifyLog = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (new_firstcard > -1 && notifyLog) {
+                QList<int> watchlist;
+                watchlist << new_firstcard;
+                LogMessage l;
+                l.type = "$chaorendrawpile";
+                l.card_str = IntList2StringList(watchlist).join("+");
+
+                room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, l.toJsonValue());
+            }
+        }
+    }
+};
+
+
+class Chaoren1 : public TriggerSkill
+{
+public:
+    Chaoren1() : TriggerSkill("chaoren1")
+    {
         events << CardsMoveOneTime << TargetConfirming << EventPhaseChanging << DrawPileSwaped
             << EventAcquireSkill << EventLoseSkill << MarkChanged << AfterGuanXing;
     }
 
-/*
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
+
+    /*virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
         //part1: some cases that we do not need to notify       
        //for global event, check player has this skill
@@ -2445,12 +2507,12 @@ public:
 
 
         bool changed = (new_firstcard != old_firstcard);
-
+        */
 
         // part 4: notify 
         //even firstcard has not changed, we also need to retract or expand the dashboard (such as loseskill, reconnet ) 
         // @todo_Fs: remove this part, coupling it to Client::updateProperty (if property is "chaoren")
-        */
+        
 #pragma message WARN("todo_Fs: remove this part of Chaoren, for it shouldn't be coupled here")
     /*
         if (!changed) {
