@@ -167,8 +167,6 @@ namespace QSanProtocol {
         S_GAME_EVENT_REVEAL_PINDIAN,
         //for touhoukill UI
         S_GAME_EVENT_SKIN_CHANGED,
-        S_GAME_EVENT_EXPAND_PILE_CARDS,
-        S_GAME_EVENT_RETRACT_PILE_CARDS,
         S_GAME_ROLE_STATUS_CHANGED
     };
 

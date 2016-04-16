@@ -696,20 +696,6 @@ void RoomScene::handleGameEvent(const QVariant &args)
             }
             break;
         }
-        case S_GAME_EVENT_EXPAND_PILE_CARDS:
-        {
-            //QString pile_name = arg[1].asCString(); 
-            //int id = arg[1].asInt(); 
-            dashboard->expandSpecialCard();
-            break;
-        }
-        case S_GAME_EVENT_RETRACT_PILE_CARDS:
-        {
-            //QString pile_name = arg[1].asCString(); 
-            //int id = arg[1].asInt(); 
-            dashboard->retractSpecialCard();
-            break;
-        }
         case S_GAME_ROLE_STATUS_CHANGED:
         {
             QString player_name = arg[1].toString();
