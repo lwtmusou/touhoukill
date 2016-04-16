@@ -1093,7 +1093,7 @@ public:
             QString prompt = "@huisheng-use:" + use.from->objectName() + ":" + card->objectName();
             room->setPlayerProperty(invoke->invoker, "huisheng_card", card->objectName());
             delete card;
-            //room->setPlayerProperty(invoke->invoker, "huisheng_target", use.from->objectName());
+            room->setPlayerProperty(invoke->invoker, "huisheng_target", use.from->objectName());
             invoke->invoker->tag["huisheng_target"] = QVariant::fromValue(use.from);
             room->askForUseCard(invoke->invoker, "@@huisheng", prompt);
             room->setPlayerProperty(invoke->invoker, "huisheng_target", QVariant());

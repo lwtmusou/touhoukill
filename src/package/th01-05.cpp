@@ -537,7 +537,7 @@ public:
         if (use.from && use.from->hasSkill(this) && use.from->isAlive() && (use.card->isNDTrick() || use.card->isKindOf("Slash"))) {
             QList<SkillInvokeDetail> d;
             foreach(ServerPlayer *to, use.to) {
-                if (to->canDiscard(to, "h"))
+                if (to->canDiscard(to, "h") && use.from != to)
                     d << SkillInvokeDetail(this, use.from, use.from, NULL, true, to);
             }
             return d;

@@ -1202,7 +1202,7 @@ huayin_skill.getTurnUseCard = function(self)
 	if self:canHuayin(self.player) then
 		local ids = {}
 		for _, c in sgs.qlist(self.player:getHandcards()) do
-				table.insert(ids, c:getId())
+			table.insert(ids, c:getId())
 		end
 		return sgs.Card_Parse("@HuayinCard=" .. table.concat(ids, "+"))
 	end
