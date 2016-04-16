@@ -603,14 +603,15 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         RecoverStruct recover;
         room->recover(invoke->owner, recover);
         QString prompt = "mengwei_give:" + invoke->invoker->objectName();
-        const Card *card = room->askForCard(invoke->owner, ".|.|.|hand!", prompt, data, Card::MethodNone);
-        if (card != NULL)
-            invoke->invoker->obtainCard(card, false);
+        const Card *card = room->askForExchange(invoke->owner, objectName(), 1, 1, false, prompt);
+        DELETE_OVER_SCOPE(const Card, card)
+
+        invoke->invoker->obtainCard(card, false);
 
         return false;
     }
