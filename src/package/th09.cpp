@@ -289,8 +289,8 @@ public:
         } else if (event == FinishJudge) {
             JudgeStruct * judge = data.value<JudgeStruct *>();
             if (judge->reason == objectName() && judge->isGood()) {
-                ServerPlayer *lord = judge->who->tag["huazhong"].value<ServerPlayer *>();
-                if (lord != NULL)
+                ServerPlayer *lord = judge->relative_player;
+                if (lord != NULL && lord->isAlive())
                     d << SkillInvokeDetail(this, lord, lord, NULL, true);
             }
         }
@@ -311,8 +311,6 @@ public:
     bool effect(TriggerEvent event, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (event == Damage) {
-            invoke->invoker->tag["huazhong"] = QVariant::fromValue(invoke->owner);
-
             room->broadcastSkillInvoke(objectName());
             room->notifySkillInvoked(invoke->owner, objectName());
             LogMessage log;
@@ -327,7 +325,7 @@ public:
             judge.who = invoke->invoker;
             judge.reason = objectName();
             judge.good = true;
-
+            judge.relative_player = invoke->owner;
             room->judge(judge);
 
             invoke->invoker->tag.remove("huazhong");

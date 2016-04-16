@@ -110,15 +110,15 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.to->isAlive() && damage.to->getKingdom() == "yym") {
                 foreach (ServerPlayer *p, room->getOtherPlayers(damage.to)) {
-                    if (p->hasLordSkill("wangxiang"))
+                    if (p->hasLordSkill(objectName()))
                         details << SkillInvokeDetail(this, p, damage.to);
                 }
             }
         } else if (event == FinishJudge) {
             JudgeStruct * judge = data.value<JudgeStruct *>();
             if (judge->reason == objectName() && judge->isGood()) {
-                ServerPlayer *uuz = judge->who->tag["uuz_wangxiang"].value<ServerPlayer *>();
-                if (uuz)
+                ServerPlayer *uuz = judge->relative_player;
+                if (uuz && uuz->isAlive())
                     details << SkillInvokeDetail(this, uuz, uuz, NULL, true);
             }
         }
@@ -151,13 +151,12 @@ public:
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (triggerEvent == Damaged) {
-            invoke->invoker->tag["uuz_wangxiang"] = QVariant::fromValue(invoke->owner);
-
             JudgeStruct judge;
             judge.pattern = ".|black";
             judge.who = invoke->invoker;
             judge.reason = objectName();
             judge.good = true;
+            judge.relative_player = invoke->owner;
             room->judge(judge);
 
             invoke->invoker->tag.remove("uuz_wangxiang");

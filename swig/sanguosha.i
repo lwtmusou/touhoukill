@@ -617,7 +617,7 @@ struct JudgeStruct {
     QString reason;
     bool time_consuming;
     ServerPlayer *retrial_by_response; // record whether the current judge card is provided by a response retrial
-
+    ServerPlayer *relative_player; // record relative player like skill owner of "huazhong", for processing the case like "huazhong -> dizhen -> huazhong"
 };
 
 struct PindianStruct {
