@@ -124,7 +124,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         invoke->invoker->tag["zhuqu-target"] = QVariant::fromValue(invoke->owner);
-        if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->invoker))) {
+        if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->owner))) {
             room->broadcastSkillInvoke(objectName());
             room->notifySkillInvoked(invoke->owner, objectName());
             LogMessage log;
