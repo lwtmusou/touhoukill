@@ -650,6 +650,9 @@ public:
         player->tag.remove("toupai-target");
         QList<int> throwIds;
         int drawNum =  0;
+        room->showAllCards(target, player);
+        room->getThread()->delay(1000);
+        room->clearAG(player);
 
         for (int i = 0; i < 3; i++) {
             QList<int>  ids;
@@ -663,6 +666,7 @@ public:
                 else
                     disable << id;
             }
+            
             if (able.isEmpty())
                 break;
 
