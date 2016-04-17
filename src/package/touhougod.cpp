@@ -2214,7 +2214,8 @@ public:
         if (change.to == Player::NotActive && !room->getThread()->hasExtraTurn()) {
             QList<SkillInvokeDetail> d;
             foreach(ServerPlayer *p, room->getOtherPlayers(change.player)) {
-                if (p->getMark("qinlue") > 0)
+                ServerPlayer *t = p->tag["qinlue_current"].value<ServerPlayer *>();
+                if (t && t == change.player)
                     d << SkillInvokeDetail(this, p, p, NULL, true, change.player);
             }
             return d;
@@ -2262,6 +2263,8 @@ public:
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to == Player::NotActive) {
             invoke->invoker->setMark("qinluePhase", 1);
+            if (!invoke->invoker->faceUp())
+                invoke->invoker->tag.remove("qinlue_current");
             invoke->invoker->gainAnExtraTurn();
         } else if (change.to == Player::Play) {
             ServerPlayer *source = invoke->invoker;
@@ -2274,7 +2277,6 @@ public:
             if (!card) {
                 current->skip(Player::Play);
                 source->tag["qinlue_current"] = QVariant::fromValue(current);
-                room->setPlayerMark(source, "qinlue", 1);
             }
         }
         
@@ -2291,21 +2293,11 @@ public:
         events << EventPhaseChanging << EventPhaseStart << TurnStart;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
-    {
-        if (triggerEvent == TurnStart) {
-            ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player->getMark("qinlue") > 0 && player->tag.value("touhou-extra", false).toBool() && !player->faceUp())
-                room->setPlayerMark(player, "qinlue", 0);
-        }
-    }
-
-
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player->getMark("qinlue") > 0 && player->getPhase() == Player::RoundStart) {
+            if (player->getPhase() == Player::RoundStart) {
                 ServerPlayer *target = player->tag["qinlue_current"].value<ServerPlayer *>();
                 if ((target != NULL && target->isAlive() && !target->isKongcheng()) || !player->isKongcheng())
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true, target);
@@ -2313,7 +2305,7 @@ public:
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             ServerPlayer *player = change.player;
-            if (player->getMark("qinlue") > 0 && change.to == Player::NotActive) {
+            if (change.to == Player::NotActive) {
                 ServerPlayer *target = player->tag["qinlue_current"].value<ServerPlayer *>();
                 if ((target != NULL && target->isAlive() && !player->isKongcheng()) || !player->getPile("zhanbei").isEmpty())
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true, target);
@@ -2343,7 +2335,6 @@ public:
         } else if (triggerEvent == EventPhaseChanging) {
             
             ServerPlayer *player = invoke->invoker;
-            room->setPlayerMark(player, "qinlue", 0);
             ServerPlayer *target = player->tag["qinlue_current"].value<ServerPlayer *>();
             player->tag.remove("qinlue_current");
             if (target != NULL && target->isAlive()) {
