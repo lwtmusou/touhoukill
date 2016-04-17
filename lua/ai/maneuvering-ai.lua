@@ -570,6 +570,7 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 end
 
 --铁索能不能有其他目标时，不要锁卖血流啊
+--静电对策需要详细写
 function SmartAI:useCardIronChain(card, use)
 	
 	local needTarget = (card:getSkillName() == "guhuo" or card:getSkillName() == "nosguhuo" or card:getSkillName() == "qice")
@@ -586,7 +587,6 @@ function SmartAI:useCardIronChain(card, use)
 			end
 		end
 		if self:needBear() then return end
-		if self:getOverflow() <= 0 and self.player:hasSkill("manjuan") then return end
 		if self.player:hasSkill("wumou") and self.player:getMark("@wrath") < 7 then return end
 	end
 	
@@ -615,7 +615,8 @@ function SmartAI:useCardIronChain(card, use)
 		self:sort(self.enemies, "defense")
 		for _, enemy in ipairs(self.enemies) do
 			if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName()))
-				and not enemy:isChained() and not self.room:isProhibited(self.player, enemy, card) and not enemy:hasSkill("danlao")
+				and not enemy:isChained() and not self.room:isProhibited(self.player, enemy, card) 
+				and not enemy:hasSkill("danlao") and not enemy:hasSkill("jingdian")
 				and self:hasTrickEffective(card, enemy) and not (self:objectiveLevel(enemy) <= 3)
 				and not self:getDamagedEffects(enemy) and not self:needToLoseHp(enemy) and sgs.isGoodTarget(enemy, self.enemies, self) then
 				if self:needWakeYueshi(enemy) then
