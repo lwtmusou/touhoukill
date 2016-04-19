@@ -287,7 +287,7 @@ QPixmap QSanRoomSkin::getProgressBarPixmap(int percentile) const
     return QPixmap(1, 1);
 }
 
-QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName, bool cache) const
+QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName, bool cache, bool heroSkin) const
 {
     if (cardName == "unknown") return getPixmap("handCardBack", QString(), true);
     QString name = cardName;
@@ -295,7 +295,7 @@ QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName, bool cache) con
         name = name.mid(3);
     else if (ServerInfo.GameMode == "02_1v1" && name.startsWith("kof_"))
         name = name.mid(4);
-    return getPixmap(S_SKIN_KEY_HAND_CARD_MAIN_PHOTO, name, cache);
+    return getPixmap(S_SKIN_KEY_HAND_CARD_MAIN_PHOTO, name, cache, heroSkin);
 }
 
 QPixmap QSanRoomSkin::getCardSuitPixmap(Card::Suit suit) const
@@ -319,17 +319,17 @@ QPixmap QSanRoomSkin::getCardJudgeIconPixmap(const QString &judgeName) const
     return getPixmap(S_SKIN_KEY_JUDGE_CARD_ICON, judgeName, true);
 }
 
-QPixmap QSanRoomSkin::getCardAvatarPixmap(const QString &generalName) const
+QPixmap QSanRoomSkin::getCardAvatarPixmap(const QString &generalName, bool heroSkin) const
 {
     QString name = generalName;
     if (ServerInfo.GameMode == "06_3v3" && name.startsWith("vs_"))
         name = name.mid(3);
     else if (ServerInfo.GameMode == "02_1v1" && name.startsWith("kof_"))
         name = name.mid(4);
-    return getGeneralPixmap(name, S_GENERAL_ICON_SIZE_TINY);
+    return getGeneralPixmap(name, S_GENERAL_ICON_SIZE_TINY, heroSkin);
 }
 
-QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSize size) const
+QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSize size, bool heroSkin) const
 {
     QString name = generalName;
     if (ServerInfo.GameMode == "06_3v3" && name.startsWith("vs_"))
@@ -337,14 +337,14 @@ QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSi
     else if (ServerInfo.GameMode == "02_1v1" && name.startsWith("kof_"))
         name = name.mid(4);
     if (size == S_GENERAL_ICON_SIZE_CARD)
-        return getCardMainPixmap(name);
+        return getCardMainPixmap(name, false, heroSkin);
     else {
         QString key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(size).arg(name);
         if (isImageKeyDefined(key))
-            return getPixmap(key);
+            return getPixmap(key, QString(), false, heroSkin);
         else {
             key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(size);
-            return getPixmap(key, name);
+            return getPixmap(key, name, false, heroSkin);
         }
     }
 }
@@ -615,7 +615,7 @@ QString IQSanComponentSkin::_readImageConfig(const QString &key, QRect &rect,
     return result;
 }
 
-QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, bool cache) const
+QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, bool cache, bool heroSkin) const
 {
     // the order of attempts are:
     // 1. if no arg, then just use key to find fileName.
@@ -647,7 +647,7 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, bo
 
     // Hero skin?
     QString general_name = fileName.split("/").last().split(".").first();
-    if (Sanguosha->getGeneral(general_name)) {
+    if (Sanguosha->getGeneral(general_name) && heroSkin) {
         int skin_index = Config.value(QString("HeroSkin/%1").arg(general_name), 0).toInt();
         if (skin_index > 0) {
             fileName.replace("image/", "image/heroskin/");

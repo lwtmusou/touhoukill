@@ -72,7 +72,7 @@ public:
     static const char *S_SKIN_KEY_DEFAULT_SECOND;
     bool load(const QString &layoutConfigFileName, const QString &imageConfigFileName,
         const QString &audioConfigFileName, const QString &animationConfigFileName);
-    QPixmap getPixmap(const QString &key, const QString &arg = QString(), bool cache = false) const;
+    QPixmap getPixmap(const QString &key, const QString &arg = QString(), bool cache = false, bool heroSkin = true) const;
     QPixmap getPixmapFileName(const QString &key) const;
     QPixmap getPixmapFromFileName(const QString &fileName, bool cache = false) const;
     QStringList getAudioFileNames(const QString &key) const;
@@ -306,14 +306,14 @@ public:
     QPixmap getSkillButtonPixmap(QSanButton::ButtonState state,
         QSanInvokeSkillButton::SkillType type,
         QSanInvokeSkillButton::SkillButtonWidth width) const;
-    QPixmap getCardMainPixmap(const QString &cardName, bool cache = false) const;
+    QPixmap getCardMainPixmap(const QString &cardName, bool cache = false, bool heroSkin = true) const;
     QPixmap getCardSuitPixmap(Card::Suit suit) const;
     QPixmap getCardTianyiPixmap() const;
     QPixmap getCardNumberPixmap(int point, bool isBlack) const;
     QPixmap getCardJudgeIconPixmap(const QString &judgeName) const;
     QPixmap getCardFramePixmap(const QString &frameType) const;
-    QPixmap getCardAvatarPixmap(const QString &generalName) const;
-    QPixmap getGeneralPixmap(const QString &generalName, GeneralIconSize size) const;
+    QPixmap getCardAvatarPixmap(const QString &generalName, bool heroSkin = true) const;
+    QPixmap getGeneralPixmap(const QString &generalName, GeneralIconSize size, bool heroSkin = true) const;
     QString getPlayerAudioEffectPath(const QString &eventName, bool isMale, int index = -1) const;
     QString getPlayerAudioEffectPath(const QString &eventName, const QString &category, int index = -1) const;
     QPixmap getProgressBarPixmap(int percentile) const;

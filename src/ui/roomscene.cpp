@@ -652,6 +652,9 @@ void RoomScene::handleGameEvent(const QVariant &args)
             QString player_name = arg[1].toString();
             QString general_name = arg[2].toString();
             int skinIndex = arg[3].toInt();
+            int old_skin_index =  Config.value(QString("HeroSkin/%1").arg(general_name), 0).toInt();
+            if (skinIndex == old_skin_index)
+                break;
 
             ClientPlayer *player = ClientInstance->getPlayer(player_name);
 

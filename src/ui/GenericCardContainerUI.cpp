@@ -189,10 +189,6 @@ void PlayerCardContainer::showProgressBar(Countdown countdown)
     _m_progressBar->show();
 }
 
-/*QPixmap PlayerCardContainer::_getAvatarIcon(QString heroName) {
-    int avatarSize = m_player->getGeneral2() ? _m_layout->m_primaryAvatarSize : _m_layout->m_avatarSize;
-    return G_ROOM_SKIN.getGeneralPixmap(heroName, (QSanRoomSkin::GeneralIconSize)avatarSize);
-    }*/
 
 void PlayerCardContainer::updateAvatar()
 {

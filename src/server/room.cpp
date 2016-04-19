@@ -478,7 +478,7 @@ void Room::gameOver(const QString &winner)
 
     game_finished = true;
 
-    defaultHeroSkin();
+    //defaultHeroSkin();
     emit game_over(winner);
 
     if (mode.contains("_mini_")) {
@@ -2849,7 +2849,7 @@ void Room::run()
         player->releaseLock(ServerPlayer::SEMA_MUTEX);
     }
 
-    defaultHeroSkin();
+    //defaultHeroSkin();
 
     prepareForStart();
 
@@ -6373,6 +6373,7 @@ void Room::skinChangeCommand(ServerPlayer *player, const QVariant &packet)
 {
     JsonArray arg = packet.value<JsonArray>();
     QString generalName = arg[0].toString();
+
 
     JsonArray val;
 
