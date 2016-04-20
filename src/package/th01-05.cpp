@@ -527,7 +527,7 @@ class Youyue : public TriggerSkill
 public:
     Youyue() : TriggerSkill("youyue")
     {
-        events << TargetConfirming;
+        events << TargetSpecified;
         frequency = Compulsory;
     }
 
@@ -535,12 +535,14 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from && use.from->hasSkill(this) && use.from->isAlive() && (use.card->isNDTrick() || use.card->isKindOf("Slash"))) {
-            QList<SkillInvokeDetail> d;
+
+            QList<ServerPlayer *> targets;
             foreach(ServerPlayer *to, use.to) {
-                if (to->canDiscard(to, "h") && use.from != to)
-                    d << SkillInvokeDetail(this, use.from, use.from, NULL, true, to);
+                if (to->isAlive() && to->canDiscard(to, "h") && use.from != to)
+                    targets << to;
             }
-            return d;
+            if (!targets.isEmpty())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, targets, true);
         }
         return QList<SkillInvokeDetail>();
     }
@@ -550,53 +552,52 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         
         QList<ServerPlayer *> logto;
-        logto << invoke->targets.first();
+        logto << invoke->targets;
         room->touhouLogmessage("#youyue", invoke->invoker, objectName(), logto, use.card->objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
+        foreach(ServerPlayer *to, invoke->targets) {
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), to->objectName());
+            QStringList prompt_list;
+            prompt_list << "youyue-discard" << use.card->objectName()
+                << invoke->invoker->objectName();
+            QString prompt = prompt_list.join(":");
+            const Card *card = room->askForCard(to, ".!", prompt, data, Card::MethodDiscard);
+            if (!card) {
+                // force discard!!!
+                DummyCard *dc = new DummyCard;
+                dc->deleteLater();
+                QList<const Card *> hc = to->getHandcards();
+                foreach(const Card *c, hc) {
+                    if (to->isJilei(c))
+                        hc.removeOne(c);
+                }
 
-        QStringList prompt_list;
-        prompt_list << "youyue-discard" << use.card->objectName()
-            << invoke->invoker->objectName();
-        QString prompt = prompt_list.join(":");
-        const Card *card = room->askForCard(invoke->targets.first(), ".!", prompt, data, Card::MethodDiscard);
-        if (!card) {
-            // force discard!!!
-            DummyCard *dc = new DummyCard;
-            dc->deleteLater();
-            QList<const Card *> hc = invoke->targets.first()->getHandcards();
-            foreach(const Card *c, hc) {
-                if (invoke->targets.first()->isJilei(c))
-                    hc.removeOne(c);
+                if (hc.length() == 0)
+                    return false;
+
+
+                int x = qrand() % hc.length();
+                const Card *c = hc.value(x);
+                dc->addSubcard(c);
+
+                room->throwCard(dc, to);
+                card = dc;
             }
 
-            if (hc.length() == 0)
-                return false;
-
-
-            int x = qrand() % hc.length();
-            const Card *c = hc.value(x);
-            dc->addSubcard(c);
-
-            room->throwCard(dc, invoke->targets.first());
-            card = dc;
+            QString suit = card->getSuitString();
+            suit = suit.toUpper();
+            QString pattern = "." + suit[0];
+            QStringList prompt_list1;
+            prompt_list1 << "youyue-show" << use.card->objectName()
+                << to->objectName() << card->getSuitString();
+            QString prompt1 = prompt_list1.join(":");
+            const Card *card1 = room->askForCard(invoke->invoker, pattern, prompt1, data, Card::MethodNone);
+            if (card1)
+                room->showCard(invoke->invoker, card1->getEffectiveId());
+            else
+                use.nullified_list << to->objectName();
         }
-
-        QString suit = card->getSuitString();
-        suit = suit.toUpper();
-        QString pattern = "." + suit[0];
-        QStringList prompt_list1;
-        prompt_list1 << "youyue-show" << use.card->objectName()
-            << invoke->targets.first()->objectName() << card->getSuitString();
-        QString prompt1 = prompt_list1.join(":");
-        const Card *card1 = room->askForCard(invoke->invoker, pattern, prompt1, data, Card::MethodNone);
-        if (card1)
-            room->showCard(invoke->invoker, card1->getEffectiveId());
-        else {
-            
-            use.nullified_list << invoke->targets.first()->objectName();
-            data = QVariant::fromValue(use);
-        }
+        data = QVariant::fromValue(use);
 
         return false;
     }

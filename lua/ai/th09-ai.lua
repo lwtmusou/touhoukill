@@ -193,7 +193,7 @@ sgs.ai_skill_invoke.huiwu =function(self,data)
 	local card=self.room:getTag("huiwu_use"):toCardUse().card
 	if not target then  return false end
 	local res=huiwu_judge(self,target,card)
-	if res==1 then
+	if res==1 then--杀等危害性牌
 		return self:isFriend(target)
 	end
 	if res==2  then
