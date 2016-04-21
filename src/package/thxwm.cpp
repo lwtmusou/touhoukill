@@ -274,7 +274,7 @@ public:
             int id = room->askForCardChosen(damage.to, victim, "h", objectName(), false, Card::MethodDiscard);
             room->throwCard(id, victim, damage.to);
             invoke->targets << victim;
-            damage.to->tag["xijian_id"] = QVariant::fromValue(id);
+            damage.to->tag["jubao_id"] = QVariant::fromValue(id);
             return true;
         }
         return false;
