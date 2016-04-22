@@ -1644,3 +1644,51 @@ sgs.ai_choicemade_filter.skillInvoke.huanming = function(self, player, args)
 		end	
 	end
 end
+
+
+local badSkills={"mokai","guangji","xinghui","bendan","moxue","sisheng","jingdong","shishen","chunmian",
+"wangwu","shouye","zhouye","hongwu","shenqiang","yewang","jinguo","rengui","gaoao","caiyu","shenhua"}
+local key_skills={"feixiang","mingyun","yongheng","qiuwen","xiangqi","jiushu","hpymsiyu"} 
+sgs.ai_skill_choice.tongling = function(self, choices)
+	local choice_table = choices:split("+")
+	table.removeOne(choice_table, "cancel")
+	for index, achoice in ipairs(choice_table) do
+		if table.contains(key_skills,achoice)  then return achoice end
+	end
+	for index, achoice in ipairs(choice_table) do
+		if not table.contains(badSkills,achoice)  then return achoice end
+	end
+	return "cancel"
+end
+
+local rumo_skill = {}
+rumo_skill.name = "rumo"
+table.insert(sgs.ai_skills, rumo_skill)
+function rumo_skill.getTurnUseCard(self)
+    if self.player:getMark("@rumo")==0 then return nil end
+	local num = math.max(self.player:getHp(), 1)
+	if num > 1 then
+		return sgs.Card_Parse("@RumoCard=.")
+	end
+	return nil
+end
+sgs.ai_skill_use_func.RumoCard=function(card,use,self)
+	local num = math.max(self.player:getHp(), 1)
+	local targets={}
+	table.insert(targets, self.player)
+	for _,p in ipairs (self.enemies) do
+		if not p:isChained() and #targets < num then
+			table.insert(targets, p)
+		end
+	end
+	
+	if #targets > 1 then
+		use.card = card
+        if use.to then
+			for _,t in ipairs(targets) do
+				use.to:append(t)
+			end
+			if use.to:length() >= 1 then return end
+		end
+    end
+end
