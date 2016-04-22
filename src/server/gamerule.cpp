@@ -654,7 +654,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     death.who->setFlags("Global_DebutFlag");
                 return false;
             }
-
             break;
         }
         case StartJudge:

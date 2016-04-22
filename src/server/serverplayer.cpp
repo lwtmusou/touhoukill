@@ -730,7 +730,7 @@ void ServerPlayer::play(QList<Player::Phase> set_phases)
     }
 
     for (int i = 0; i < _m_phases_state.size(); i++) {
-        if (isDead()) {
+        if (isDead() || hasFlag("Global_TurnTerminated")) {
             changePhase(getPhase(), NotActive);
             break;
         }

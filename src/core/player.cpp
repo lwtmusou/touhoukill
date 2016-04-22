@@ -571,6 +571,12 @@ void Player::detachSkill(const QString &skill_name)
 
 void Player::detachAllSkills()
 {
+    /*QStringList list = acquired_skills.toList();
+    foreach(QString skill_name, list) {
+        const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
+        if (skill && skill->getFrequency() != Skill::Eternal)
+            acquired_skills.remove(skill_name);
+    }*/
     acquired_skills.clear();
 }
 

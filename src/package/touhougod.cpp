@@ -795,6 +795,8 @@ void HuimieCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
         Sanguosha->playSystemAudioEffect("chained");
         room->broadcastProperty(target, "chained");
         room->setEmotion(target, "chain");
+        QVariant _data = QVariant::fromValue(target);
+        room->getThread()->trigger(ChainStateChanged, room, _data);
     }
     room->damage(DamageStruct("huimie", source, target, 1, DamageStruct::Fire));
 
@@ -3312,7 +3314,190 @@ public:
 
 
 
+class Huanhun : public TriggerSkill
+{
+public:
+    Huanhun() : TriggerSkill("huanhun")
+    {
+        events << BuryVictim;
+        frequency = Eternal;
+    }
 
+    virtual int getPriority() const
+    {
+        return -1;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        DeathStruct death = data.value<DeathStruct>();
+        QList<SkillInvokeDetail> d;
+        foreach (ServerPlayer *p, room->getOtherPlayers(death.who, true)) {
+            if (p->isDead() && p->hasSkill(this))
+                d << SkillInvokeDetail(this, p, p, NULL, true);
+        }
+        return d;
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        room->revivePlayer(invoke->invoker);
+        
+        return false;
+    }
+};
+
+
+
+class Tongling : public TriggerSkill
+{
+public:
+    Tongling() : TriggerSkill("tongling")
+    {
+        events << EventPhaseStart;
+        frequency = Limited;
+        limit_mark = "@tongling";
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        ServerPlayer *player = data.value<ServerPlayer *>();
+        if (player->hasSkill(this) && player->getPhase() == Player::RoundStart && player->getMark("@tongling") > 0) {
+            foreach(ServerPlayer *p, room->getAllPlayers(true)) {
+                if (p->isDead()) {
+                    const General *general = p->getGeneral();
+                    foreach(const Skill *skill, general->getVisibleSkillList()) {
+                        if (skill->isLordSkill()
+                            || skill->getFrequency() == Skill::Eternal
+                            || skill->getFrequency() == Skill::Wake)
+                            continue;
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+                    }
+                }
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        QStringList skill_names;
+        skill_names << "cancel";
+        foreach(ServerPlayer *p, room->getAllPlayers(true)) {
+            if (p->isDead()) {
+                const General *general = p->getGeneral();
+                foreach(const Skill *skill, general->getVisibleSkillList()) {
+                    if (skill->isLordSkill()
+                        || skill->getFrequency() == Skill::Eternal
+                        || skill->getFrequency() == Skill::Wake)
+                        continue;
+                    if (!skill_names.contains(skill->objectName()))
+                        skill_names << skill->objectName();
+                }
+            }
+        }
+        QString choice = room->askForChoice(invoke->invoker, objectName(), skill_names.join("+"));
+        invoke->invoker->tag["TonglingSkill"] = choice;
+        
+        return choice != "cancel";
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        QString skill_name = invoke->invoker->tag.value("TonglingSkill", QString()).toString();
+        room->removePlayerMark(invoke->invoker, "@tongling");
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
+        
+        ServerPlayer *skill_owner;
+        foreach(ServerPlayer *p, room->getAllPlayers(true)) {
+            if (p->isDead()) {
+                const General *general = p->getGeneral();
+                foreach(const Skill *skill, general->getVisibleSkillList()) {
+                    if (skill->isLordSkill()
+                        || skill->getFrequency() == Skill::Eternal
+                        || skill->getFrequency() == Skill::Wake)
+                        continue;
+                    if (skill->objectName() == skill_name) {
+                        skill_owner = p;
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        JsonArray arg;
+        arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+        arg << invoke->invoker->objectName();
+        arg << skill_owner->getGeneral()->objectName();
+        arg << skill_name;
+        
+        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+        room->handleAcquireDetachSkills(invoke->invoker, skill_name, true);
+        return false;
+    }
+
+};
+
+RumoCard::RumoCard()
+{
+}
+
+bool RumoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    if (targets.isEmpty())
+        return to_select == Self;
+    int num = qMax(Self->getHp(), 1);
+    return !targets.contains(to_select) && targets.length() < num;
+}
+
+bool RumoCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+    int num = qMax(Self->getHp(), 1);
+    return targets.length() >0 && targets.length() <= num;
+}
+
+void RumoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
+    room->removePlayerMark(source, "@rumo");
+    int num = qMax(source->getHp(), 1);
+    room->sortByActionOrder(targets);
+    foreach(ServerPlayer *target, targets) {
+        if (!target->isChained()) {
+            target->setChained(!target->isChained());
+            Sanguosha->playSystemAudioEffect("chained");
+            room->broadcastProperty(target, "chained");
+            room->setEmotion(target, "chain");
+            QVariant _data = QVariant::fromValue(target);
+            room->getThread()->trigger(ChainStateChanged, room, _data);
+        }
+    }
+    source->drawCards(num);
+}
+
+class Rumo : public ZeroCardViewAsSkill
+{
+public:
+    Rumo() : ZeroCardViewAsSkill("rumo")
+    {
+        frequency = Limited;
+        limit_mark = "@rumo";
+    }
+
+    virtual const Card *viewAs() const
+    {
+        return new RumoCard;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return player->getMark("@rumo") >= 1;
+    }
+};
 
 
 
@@ -3435,6 +3620,12 @@ TouhouGodPackage::TouhouGodPackage()
     komachi_god->addSkill(new Huanming);
     komachi_god->addSkill(new Chuanwu);
 
+
+    General *seiga_god = new General(this, "seiga_god", "touhougod", 3, false);
+    seiga_god->addSkill(new Huanhun);
+    seiga_god->addSkill(new Tongling);
+    seiga_god->addSkill(new Rumo);
+
     addMetaObject<HongwuCard>();
     addMetaObject<ShenqiangCard>();
     addMetaObject<HuimieCard>();
@@ -3444,6 +3635,7 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<ZiwoCard>();
     addMetaObject<ChaowoCard>();
     addMetaObject<WendaoCard>();
+    addMetaObject<RumoCard>();
 
     skills << new Ziwo << new Benwo << new Chaowo << new Wendao << new ShenbaoSpear;
 }
