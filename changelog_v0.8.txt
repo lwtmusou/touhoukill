@@ -141,11 +141,12 @@ alpha版0415补丁
 14 fix 举报
 15 劝诫弃牌ai 改良
 16 fix 铁骑类锁定技的trigger order
+17 fix 小剧本的初期设置问题
+18 半灵+换命 解除耦合
 
 待解决的已知问题
 1 常识 可以恢复 凭依 的 技能无效
 2 ai的 在使用拆顺的时候报错  可能和getarmor相关？ 可能和candiscard相关？   lua/ai/standard_cards-ai.lua:2987: attempt to index a nil value
-
 8 录像中 选将框 不能自动消失 需要手动点
 17 使用装备牌时，【修补】可能弃掉此装备牌。
 18 返回主菜单按钮
@@ -160,4 +161,4 @@ alpha版0415补丁
 31 【次元】的专属操作
 32 UI以及skin  
 33 闪无效和无邪无效的定义 询问次数
-35 小剧本的设置
+

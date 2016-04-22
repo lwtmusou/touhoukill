@@ -1007,7 +1007,7 @@ public:
         frequency = Eternal;
     }
 
-    virtual int getPriority(TriggerEvent) const
+    virtual int getPriority() const
     {
         return -1;
     }
@@ -1060,7 +1060,6 @@ public:
             }
             
             room->notifySkillInvoked(player, objectName());
-            room->setPlayerProperty(player, "hp", player->getHp());
 
             LogMessage log;
             log.type = "#LoseHp";
@@ -1096,9 +1095,7 @@ public:
 
             room->getThread()->trigger(DamageDone, room, qdata);
 
-
             room->notifySkillInvoked(player, objectName());
-            room->setPlayerProperty(damage.to, "hp", player->getHp());
 
             room->getThread()->trigger(Damage, room, qdata);
 
@@ -3277,12 +3274,7 @@ public:
         int source_newHp = qMin(damage.to->getHp(), player->getMaxHp());
         int victim_newHp = qMin(player->getHp(), damage.to->getMaxHp());
         room->setPlayerProperty(player, "hp", source_newHp);
-        if (damage.to->hasSkill("banling")) {
-            room->setPlayerProperty(damage.to, "renhp", victim_newHp);
-            room->setPlayerProperty(damage.to, "linghp", victim_newHp);
-            room->setPlayerProperty(damage.to, "hp", victim_newHp);
-        } else
-            room->setPlayerProperty(damage.to, "hp", victim_newHp);
+        room->setPlayerProperty(damage.to, "hp", victim_newHp);
 
         room->touhouLogmessage("#GetHp", player, QString::number(player->getHp()), QList<ServerPlayer *>(), QString::number(player->getMaxHp()));
         room->touhouLogmessage("#GetHp", damage.to, QString::number(damage.to->getHp()), QList<ServerPlayer *>(), QString::number(damage.to->getMaxHp()));

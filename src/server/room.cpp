@@ -3551,7 +3551,8 @@ void Room::applyDamage(ServerPlayer *victim, const DamageStruct &damage)
 {
     int new_hp = victim->getHp() - damage.damage;
 
-    setPlayerProperty(victim, "hp", new_hp);
+    if (!victim->hasSkill("banling"))
+        setPlayerProperty(victim, "hp", new_hp);
     QString change_str = QString("%1:%2").arg(victim->objectName()).arg(-damage.damage);
     switch (damage.nature) {
         case DamageStruct::Fire: change_str.append("F"); break;
@@ -3578,10 +3579,7 @@ void Room::recover(ServerPlayer *player, const RecoverStruct &recover, bool set_
     recover_struct = data.value<RecoverStruct>();
     int recover_num = recover_struct.recover;
 
-    if (player->hasSkill("banling"))
-        //renhp and linghp has already updated.
-        setPlayerProperty(player, "hp", player->getHp());
-    else {
+    if (!player->hasSkill("banling")) {
         int new_hp = qMin(player->getHp() + recover_num, player->getMaxHp());
         setPlayerProperty(player, "hp", new_hp);
     }

@@ -48,18 +48,31 @@ void Player::setShownRole(bool shown)
 
 void Player::setHp(int hp)
 {
+    bool changed;
     if (this->hp != hp) {
         this->hp = hp;
-        emit hp_changed();
+        changed = true;
     }
+    if (hasSkill("banling")) {
+        if (this->renhp != hp) {
+            this->renhp = hp;
+            changed = true;
+        }
+        if (this->linghp != hp) {
+            this->linghp = hp;
+            changed = true;
+        }
+    }
+    if (changed)
+        emit hp_changed();
 }
 
 int Player::getHp() const
 {
     if (hasSkill("huanmeng")) 
         return 0;
-    if (hasSkill("banling"))
-        return qMin(linghp, renhp);
+    //if (hasSkill("banling"))
+    //    return qMin(linghp, renhp);
     return hp;
 }
 
@@ -67,6 +80,8 @@ void Player::setRenHp(int renhp)
 {
     if (this->renhp != renhp) {
         this->renhp = renhp;
+        if (qMin(this->linghp, this->renhp) != this->hp)
+            this->hp = qMin(this->linghp, this->renhp);
         emit hp_changed();
     }
 }
@@ -75,6 +90,8 @@ void Player::setLingHp(int linghp)
 {
     if (this->linghp != linghp) {
         this->linghp = linghp;
+        if (qMin(this->linghp, this->renhp) != this->hp)
+            this->hp = qMin(this->linghp, this->renhp);
         emit hp_changed();
     }
 }
