@@ -811,6 +811,22 @@ sgs.ai_skill_invoke.quanjie = function(self,data)
 	end
 	return false
 end
+sgs.ai_skill_cardask["@quanjie-discard"] = function(self, data)
+	local num = getCardsNum("Slash", self.player, self.player)
+	if num < 2 then return "." end
+	local slashs = {}
+	for _,c in sgs.qlist(self.player:getCards("h")) do
+		if c:isKindOf("Slash") then
+			table.insert(slashs, c)
+		end
+	end
+	if #slashs > 0 then
+		self:sortByKeepValue(slashs)
+		return "$" .. slashs[1]:getId()
+	end
+	return "." 
+end
+
 
 sgs.ai_skill_invoke.duanzui = true 
 

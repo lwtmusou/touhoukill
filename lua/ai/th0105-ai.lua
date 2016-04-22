@@ -260,7 +260,6 @@ sgs.ai_skill_playerchosen.mengxiao = function(self, targets)
 end
 
 sgs.ai_skill_cardchosen.mengxiao = function(self, who, flags)
-	self.player:gainMark("@nima")
 	local cards = {}
 	local flag = flags
 	if self:isFriend(who) then
