@@ -247,20 +247,20 @@ class Bumie : public TriggerSkill
 public:
     Bumie() : TriggerSkill("bumie")
     {
-        events << DamageDone << PreHpLost;
+        events << DamageInflicted << PreHpLost;
         frequency = Compulsory;
     }
 
-    //int getPriority() const
-    //{
-    //    return -100;
-    //}
+    virtual int getPriority() const
+    {
+        return -100;
+    }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *mokou = NULL;
         int changehp = 0;
-        if (triggerEvent == DamageDone) {
+        if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
             changehp = damage.damage;
             mokou = damage.to;
@@ -285,11 +285,11 @@ public:
          
         room->touhouLogmessage("#bumie01", mokou, "bumie", QList<ServerPlayer *>(), QString::number(changehp));
         room->notifySkillInvoked(mokou, objectName());
-
         if (changehp <= 0)
             return true;
 
-        if (triggerEvent == DamageDone) {
+
+        if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
             damage.damage = changehp;
             data = QVariant::fromValue(damage);
@@ -298,6 +298,7 @@ public:
             hplost.num = changehp;
             data = QVariant::fromValue(hplost);
         }
+        
         return false;
     }
 };
