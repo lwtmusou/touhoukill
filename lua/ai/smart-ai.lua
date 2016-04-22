@@ -2384,7 +2384,7 @@ function SmartAI:filterEvent(event, player, data)
 				if hasKingdomLordSkill then
 					local kingdomChoice  = s.args[#s.args]
 					if kingdomChoice ~= lord:getKingdom() then
-						sgs.updateIntention(player, lord, 50)
+						sgs.updateIntention(s.player, lord, 50)
 					end
 				end
 			end
