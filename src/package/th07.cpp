@@ -1750,13 +1750,17 @@ public:
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.to_place != Player::DiscardPile)
             return QList<SkillInvokeDetail>();
+        ServerPlayer *current = room->getCurrent();
+        if (current == NULL || current->isDead() || current->getPhase() == Player::Discard || !current->isWounded())
+            return QList<SkillInvokeDetail>();
+
         QList<SkillInvokeDetail> d;
         foreach (int id, move.card_ids) {
             const Card *card = Sanguosha->getCard(id);
             if (card != NULL && card->getSuit() == Card::Heart && card->getNumber() >= 11 && card->getNumber() <= 13) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasSkill(this))
-                        d << SkillInvokeDetail(this, p, p);
+                        d << SkillInvokeDetail(this, p, p, NULL, false, current);
                 }
             }
         }
@@ -1765,7 +1769,7 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        room->recover(invoke->invoker, RecoverStruct());
+        room->recover(invoke->targets.first(), RecoverStruct());
         return false;
     }
 };
@@ -1789,7 +1793,7 @@ public:
             return QList<SkillInvokeDetail>();
 
         ServerPlayer *current = room->getCurrent();
-        if (current == NULL || current->isDead() || !current->isCurrent())
+        if (current == NULL || current->isDead() || !current->isCurrent() || current->getPhase() == Player::Discard)
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
@@ -1797,7 +1801,7 @@ public:
             const Card *card = Sanguosha->getCard(id);
             if (card != NULL && card->getSuit() == Card::Spade && card->getNumber() >= 11 && card->getNumber() <= 13) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->hasSkill(this))
+                    if (p->hasSkill("jixiong"))
                         d << SkillInvokeDetail(this, p, p, NULL, false, current);
                 }
             }
@@ -1807,7 +1811,7 @@ public:
 
     bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        return invoke->invoker->askForSkillInvoke("jixiong", QVariant::fromValue(invoke->preferredTarget));
+        return invoke->invoker->askForSkillInvoke("jixiong2", QVariant::fromValue(invoke->preferredTarget));
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const

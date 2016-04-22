@@ -1142,11 +1142,27 @@ end
 sgs.ai_skill_invoke.jixiong = function(self,data)
 	local player = data:toPlayer()
 	if player then
+		return self:isFriend(player)
+	end
+	return false
+end
+sgs.ai_skill_invoke.jixiong2 = function(self,data)
+	local player = data:toPlayer()
+	if player then
 		return self:isEnemy(player)
 	end
-	return true
+	return false
 end
---sgs.ai_choicemade_filter.skillInvoke.jixiong = function(self, player, args)
+sgs.ai_choicemade_filter.skillInvoke.jixiong = function(self, player, args)
+	local target = self.room:getCurrent()
+	if current then
+		if args[#args] == "yes" then
+			sgs.updateIntention(player, current, -50)
+		elseif sgs.evaluatePlayerRole(current) ~= "neutral" then
+			sgs.updateIntention(player, current, 20)
+		end
+	end
+end
 
 local yujian_skill = {}
 yujian_skill.name = "yujian"
