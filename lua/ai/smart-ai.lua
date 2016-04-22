@@ -1485,7 +1485,6 @@ end
 
 function SmartAI:objectiveLevel(player)
 	if player:objectName() == self.player:objectName() then return -2 end
-
 	local players = self.room:getOtherPlayers(self.player)
 	players = sgs.QList2Table(players)
 
@@ -1498,7 +1497,7 @@ function SmartAI:objectiveLevel(player)
 			if self.lua_ai:getEnemies():isEmpty() then return 4 else return 0 end
 		else return 0 end
 	end
-	
+
 	local blindAttack = false
     if not sgs.GetConfig("AIProhibitBlindAttack", false) then
 		blindAttack = true

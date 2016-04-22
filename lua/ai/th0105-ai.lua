@@ -280,3 +280,102 @@ sgs.ai_skill_cardchosen.mengxiao = function(self, who, flags)
 	end
 end
 sgs.ai_choicemade_filter.cardChosen.sidou = sgs.ai_choicemade_filter.cardChosen.snatch
+
+
+function youyue_judge(self,target,card)
+	if card:isKindOf("AmazingGrace") then
+		return 2
+	end
+	if card:isKindOf("GodSalvation") then 
+		if target:isWounded() then
+			return 2
+		end
+	end
+	if card:isKindOf("IronChain") then 
+		if target:isChained() then
+			return 2
+		else
+			return 1
+		end
+	end
+	if   card:isKindOf("Dismantlement") or card:isKindOf("Snatch") then
+		if self:isFriend(target) and target:getCards("j"):length()>0 then
+			return 2
+		end
+		if self:isEnemy(target) and target:getCards("j"):length()>0  and target:isNude() then
+			return 2
+		end
+		return 1
+	end
+	return 1
+end
+sgs.ai_skill_cardask["youyue-show"] = function(self, data)
+	local target = self.player:getTag("youyue_target"):toPlayer()
+	local use = data:toCardUse()
+	local showcard = self.player:getTag("youyue_card"):toCard()
+	local res = youyue_judge(self, target, use.card)
+
+	if (res == 1 and self:isEnemy(target))  or (res== 2 and self:isFriend(target)) then
+		local cards = {}
+		for _,c in sgs.qlist(self.player:getCards("h")) do
+			if c:getSuit() == showcard:getSuit() then
+				table.insert(cards, c)
+			end
+		end
+		if #cards > 0 then
+			self:sortByKeepValue(cards)
+			return "$" .. cards[1]:getId()
+		end
+	end
+	return "."
+end
+
+sgs.ai_skill_invoke.yeyan = true 
+
+local menghuanvs_skill = {}
+menghuanvs_skill.name = "menghuan_attach"
+table.insert(sgs.ai_skills, menghuanvs_skill)
+menghuanvs_skill.getTurnUseCard = function(self)
+	if self.player:hasFlag("Forbidmenghuan") then return nil end
+
+	local cards = self.player:getCards("h")
+	cards = sgs.QList2Table(cards)
+	local card
+	self:sortByUseValue(cards,true)
+	for _,acard in ipairs(cards)  do
+		if acard:isKindOf("TrickCard") then
+			card = acard
+			break
+		end
+	end
+	if not card then return nil end
+	
+	local card_id = card:getEffectiveId()
+	local card_str ="@MenghuanCard="..card_id
+	local skillcard = sgs.Card_Parse(card_str)
+	
+	assert(skillcard)
+	
+	return skillcard
+end
+
+sgs.ai_skill_use_func.MenghuanCard = function(card, use, self)
+	local targets = {}
+	for _,friend in ipairs(self.friends_noself) do
+		if friend:hasLordSkill("menghuan") then
+			if not friend:hasFlag("menghuanInvoked") then
+				table.insert(targets, friend)
+			end
+		end
+	end
+
+	if #targets > 0 then 
+		use.card = card
+		if use.to then
+			use.to:append(targets[1])
+			if use.to:length()>=1 then return end
+		end
+	end
+end
+
+sgs.ai_card_intention.MenghuanCard = -40

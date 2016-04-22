@@ -564,8 +564,6 @@ public:
             const Card *card = room->askForCard(to, ".!", prompt, data, Card::MethodDiscard);
             if (!card) {
                 // force discard!!!
-                DummyCard *dc = new DummyCard;
-                dc->deleteLater();
                 QList<const Card *> hc = to->getHandcards();
                 foreach(const Card *c, hc) {
                     if (to->isJilei(c))
@@ -578,10 +576,8 @@ public:
 
                 int x = qrand() % hc.length();
                 const Card *c = hc.value(x);
-                dc->addSubcard(c);
-
-                room->throwCard(dc, to);
-                card = dc;
+                card = c;
+                room->throwCard(c, to);
             }
 
             QString suit = card->getSuitString();
@@ -591,6 +587,8 @@ public:
             prompt_list1 << "youyue-show" << use.card->objectName()
                 << to->objectName() << card->getSuitString();
             QString prompt1 = prompt_list1.join(":");
+            invoke->invoker->tag["youyue_target"] = QVariant::fromValue(to);
+            invoke->invoker->tag["youyue_card"] = QVariant::fromValue(card);
             const Card *card1 = room->askForCard(invoke->invoker, pattern, prompt1, data, Card::MethodNone);
             if (card1)
                 room->showCard(invoke->invoker, card1->getEffectiveId());
@@ -755,8 +753,6 @@ public:
     }
 
 };
-
-
 
 
 
