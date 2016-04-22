@@ -25,12 +25,13 @@ void MiniSceneRule::assign(QStringList &generals, QStringList &roles) const
     }
 }
 
-bool MiniSceneRule::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &) const
+
+bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
 {
-    return false;
+
     
-    /*
     if (triggerEvent == EventPhaseStart) {
+        ServerPlayer *player = data.value<ServerPlayer *>();
         if (player == room->getTag("Starter").value<ServerPlayer *>()) {
             if (player->getPhase() == Player::Start) {
                 room->setTag("Round", room->getTag("Round").toInt() + 1);
@@ -58,7 +59,7 @@ bool MiniSceneRule::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetai
             return false;
         room->gameOver(players.first()["singleTurn"]);
         return true;
-    } else if (triggerEvent == FetchDrawPileCard) {
+    }  else if (triggerEvent == FetchDrawPileCard) {
         if (players.first()["endedByPile"] != QString()) {
             const QList<int> &drawPile = room->getDrawPile();
             foreach (int id, m_fixedDrawCards) {
@@ -266,7 +267,7 @@ bool MiniSceneRule::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetai
         room->updateStateItem();
         return true;
     } else
-        return false;*/
+        return false;
 }
 
 void MiniSceneRule::addNPC(QString feature)
