@@ -697,8 +697,22 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) 
                     continue;
                 if (sameTiming.isEmpty())
                     sameTiming << ptr;
-                else if (ptr->sameTimingWith(*sameTiming.first()))
-                    sameTiming << ptr;
+                else if (ptr->sameTimingWith(*sameTiming.first())) {
+                    if (!ptr->isCompulsory)
+                        sameTiming << ptr;
+                    else {
+                        //For Compulsory Skill at the  same timing, just add the first one into sameTiming.  etc. like QinggangSword
+                        bool sameTimingCompulsory = false;
+                        foreach(const QSharedPointer<SkillInvokeDetail> &detail, sameTiming) {
+                            if (detail->skill == ptr->skill) {
+                                sameTimingCompulsory = true;
+                                break;
+                            }
+                        }
+                        if (!sameTimingCompulsory)
+                            sameTiming << ptr;
+                    }
+                }    
             }
 
             // if not found, it means that all the skills is triggered done, we can exit the loop now.
