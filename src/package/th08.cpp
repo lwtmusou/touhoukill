@@ -1147,7 +1147,7 @@ public:
         jink->setSkillName("_yinghuo");
         room->provide(jink);
 
-        return false;
+        return true;
     }
 };
 

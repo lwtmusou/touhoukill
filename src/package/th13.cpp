@@ -878,7 +878,7 @@ public:
         Jink *jink = new Jink(Card::NoSuit, 0);
         jink->setSkillName("_chuanbi");
         room->provide(jink);
-        return false;
+        return true;
     }
 };
 

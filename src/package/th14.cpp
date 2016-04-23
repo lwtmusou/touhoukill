@@ -619,7 +619,7 @@ public:
         Jink *card = new Jink(Card::NoSuit, 0);
         card->setSkillName("_langying");
         room->provide(card);
-        return false;
+        return true;
     }
 };
 
