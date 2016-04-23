@@ -208,7 +208,6 @@ public:
         return available_cards;
     }
     void clearHighlightSkillName();
-    void clearLordInfo();
     // public fields
     bool m_isDiscardActionRefusable;
     bool m_canDiscardEquip;
@@ -218,7 +217,6 @@ public:
     int min_num;
     QString skill_name;
     QString highlight_skill_name; //for highlighting skill button when client is asked to use skill
-    QString lord_kingdom; //for playing touhou bgm
     QString lord_name;
 
     QList<const Card *> discarded_list;

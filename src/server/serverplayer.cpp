@@ -169,6 +169,9 @@ void ServerPlayer::bury()
     clearPrivatePiles();
 
     room->clearPlayerCardLimitation(this, false);
+
+    this->tag.remove("Huashen_skill");
+    this->tag.remove("Huashen_target");
 }
 
 void ServerPlayer::throwAllCards()
@@ -1203,7 +1206,16 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         args1 << objectName();
         args1 << skill_name;
         room->doNotify(player, S_COMMAND_LOG_EVENT, args1);
+
+        JsonArray arr;
+        arr << objectName() << skill_name << isSkillInvalid(skill_name);
+        room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_SKILL_INVALIDITY, arr);
     }
+
+    //since "banling", we should notify hp after notifying skill 
+    if (this->hasSkill("banling"))
+        room->notifyProperty(player, this, "renhp");
+        room->notifyProperty(player, this, "linghp");
 
     foreach(QString flag, flags)
         room->notifyProperty(player, this, "flags", flag);
@@ -1223,22 +1235,16 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     if (hasShownRole())
         room->notifyProperty(player, this, "role");
     //for huashen  like skill pingyi
-    if (getMark("pingyi_steal") > 0) {
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (this != p && p->getMark("pingyi") > 0) {
-                QString pingyi_record = objectName() + "pingyi" + p->objectName();
-                QString skillname = room->getTag(pingyi_record).toString();
-                if (skillname != NULL && skillname != "") {
-                    JsonArray huanshen_arg;
-                    huanshen_arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-                    huanshen_arg << objectName();
-                    huanshen_arg << p->getGeneral()->objectName();
-                    huanshen_arg << skillname;
-                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, huanshen_arg);
-                    break;
-                }
-            }
-        }
+
+    QString huashen_skill = this->tag.value("Huashen_skill", QString()).toString();
+    ServerPlayer *huashen_target = this->tag["Huashen_target"].value<ServerPlayer *>();
+    if (huashen_skill != NULL && huashen_target != NULL) {
+        JsonArray huanshen_arg;
+        huanshen_arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+        huanshen_arg << objectName();
+        huanshen_arg << huashen_target->getGeneral()->objectName();
+        huanshen_arg << huashen_skill;
+        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, huanshen_arg);
     }
 }
 

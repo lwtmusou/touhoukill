@@ -653,9 +653,10 @@ void Client::startGame(const QVariant &arg)
 {
     Sanguosha->registerRoom(this);
     _m_roomState.reset();
+
     JsonArray arr = arg.value<JsonArray>();
     lord_name = arr[0].toString();
-    lord_kingdom = arr[1].toString();
+
     QList<ClientPlayer *> players = findChildren<ClientPlayer *>();
     alive_count = players.count();
 
@@ -2116,11 +2117,6 @@ void Client::clearHighlightSkillName()
     highlight_skill_name = "";
 }
 
-void Client::clearLordInfo()
-{
-    lord_kingdom = "";
-    lord_name = "";
-}
 
 void Client::changeSkin(QString name, int index)
 {

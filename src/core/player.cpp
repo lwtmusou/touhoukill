@@ -1200,10 +1200,8 @@ QString Player::getSkillDescription(bool yellow) const
         if (skill->isAttachedLordSkill() || !hasSkill(skill->objectName()))
             continue;
         //remove lord skill Description
-        if (skill->isLordSkill()) {
-            if (!hasLordSkill(skill->objectName()))
-                continue;
-        }
+        if (skill->isLordSkill() && !hasLordSkill(skill->objectName()))
+            continue;
 
 
         QString skill_name = Sanguosha->translate(skill->objectName());

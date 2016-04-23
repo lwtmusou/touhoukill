@@ -937,6 +937,8 @@ public:
 
             yori->tag.remove("pingyi_skill");
             yori->tag.remove("pingyi_originalOwner");
+            yori->tag.remove("Huashen_skill");
+            yori->tag.remove("Huashen_target");
             originalOwner->tag.remove("pingyi_from");
             originalOwner->tag.remove("pingyi_invalidSkill");
             room->setPlayerSkillInvalidity(originalOwner, originalSkill, false);
@@ -953,6 +955,8 @@ public:
             room->setPlayerSkillInvalidity(skill_owner, skill, true);
 
             // 3. acquire the skill
+            yori->tag["Huashen_skill"] = skill->objectName();
+            yori->tag["Huashen_target"] = QVariant::fromValue(skill_owner);
             room->handleAcquireDetachSkills(yori, skill->objectName(), true);
         }
     }

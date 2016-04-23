@@ -659,7 +659,7 @@ enum TriggerEvent
     MarkChanged,
 
     ChoiceMade,
-
+    Reconnect,
 
 
     StageChange, // For hulao pass only

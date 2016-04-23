@@ -3429,6 +3429,8 @@ public:
             }
         }
 
+        invoke->invoker->tag["Huashen_skill"] = skill_name;
+        invoke->invoker->tag["Huashen_target"] = QVariant::fromValue(skill_owner);
 
         JsonArray arg;
         arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;

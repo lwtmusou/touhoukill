@@ -3820,6 +3820,13 @@ void Room::reconnect(ServerPlayer *player, ClientSocket *socket)
     marshal(player);
 
     broadcastProperty(player, "state");
+
+
+    //JsonArray args;
+    //args << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+    //doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+    QVariant empty_d;
+    thread->trigger(Reconnect, this, empty_d);
 }
 
 void Room::marshal(ServerPlayer *player)
@@ -3847,13 +3854,11 @@ void Room::marshal(ServerPlayer *player)
             notifyProperty(player, p, "general2");
     }
 
-    ServerPlayer *lord = getLord();
-    JsonArray lord_info;
-
-    lord_info << (lord ? lord->getGeneralName() : QVariant());
-    lord_info << (lord ? lord->getKingdom() : QVariant());
-
     if (game_started) {
+        ServerPlayer *lord = getLord();
+        JsonArray lord_info;
+
+        lord_info << (lord ? lord->getGeneralName() : QVariant());
         doNotify(player, S_COMMAND_GAME_START, lord_info);
 
         QList<int> drawPile = Sanguosha->getRandomCards();
@@ -3921,12 +3926,8 @@ void Room::startGame()
     doBroadcastNotify(S_COMMAND_AVAILABLE_CARDS, JsonUtils::toJsonArray(drawPile));
 
     ServerPlayer *lord = getLord();
-
     JsonArray lord_info;
-
     lord_info << (lord ? lord->getGeneralName() : QVariant());
-    lord_info << (lord ? lord->getKingdom() : QVariant());
-
     doBroadcastNotify(S_COMMAND_GAME_START, lord_info);
 
     game_started = true;

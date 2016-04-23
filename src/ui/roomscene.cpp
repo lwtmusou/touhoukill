@@ -63,7 +63,7 @@ void RoomScene::resetPiles()
 #include "qsanbutton.h"
 
 RoomScene::RoomScene(QMainWindow *main_window)
-    : main_window(main_window), game_started(false)
+    : main_window(main_window), game_started(false), image_path(QString()), bgm_path(QString())
 {
     m_choiceDialog = NULL;
     RoomSceneInstance = this;
@@ -975,30 +975,12 @@ void RoomScene::adjustItems()
     padding -= _m_roomLayout->m_photoRoomPadding;
     m_tablew = displayRegion.width();
     m_tableh = displayRegion.height();
-    //m_tablew = displayRegion.width()- _m_infoPlane.width();
-    //m_tableh = displayRegion.height() - dashboard->boundingRect().height();
-
-
-    QString image_path;
-
-    QString lord_kingdom = ClientInstance->lord_kingdom;
-    QString lord_name = ClientInstance->lord_name;
-    if (lord_kingdom != NULL && lord_name != NULL
-        && Sanguosha->TouhouKingdoms.contains(lord_kingdom)) {
-        image_path = "backdrop/" + lord_name + ".jpg";
-    }
 
     if ((image_path == NULL) || !QFile::exists(image_path)) {
         image_path = Config.TableBgImage;
     }
+    changeTableBg(image_path);
 
-    QPixmap tableBg = QPixmap(image_path)
-        .scaled(m_tablew, m_tableh, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    m_tableh -= _m_roomLayout->m_photoDashboardPadding;
-    //m_tableBg->setPos(padding, padding);
-    m_tableBg->setPos(0, 0);
-    m_tableBg->setPixmap(tableBg);
-    updateTable();
     updateRolesBox();
     setChatBoxVisible(chat_box_widget->isVisible());
     QMapIterator<QString, BubbleChatBox *> iter(m_bubbleChatBoxs);
@@ -3148,9 +3130,7 @@ void RoomScene::changeTableBg(const QString &tableBgImage_path)
     QPixmap tableBg = QPixmap(tableBgImage_path)
         .scaled(displayRegion.width(), displayRegion.height(),
         Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    //QPixmap tableBg = QPixmap(tableBgImage_path)
-   //     .scaled(displayRegion.width()- _m_infoPlane.width(), displayRegion.height() - dashboard->boundingRect().height(),
-    //    Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
     m_tableh -= _m_roomLayout->m_photoDashboardPadding;
     m_tableBg->setPos(0, 0);
     m_tableBg->setPixmap(tableBg);
@@ -3297,7 +3277,6 @@ void RoomScene::onGameOver()
     fillTable(winner_table, winner_list);
     fillTable(loser_table, loser_list);
 
-    //ClientInstance->clearLordInfo();
 
     addRestartButton(dialog);
     m_roomMutex.unlock();
@@ -4015,24 +3994,24 @@ void RoomScene::onGameStart()
     connect(Self, SIGNAL(skill_state_changed(QString)), this, SLOT(skillStateChange(QString)));
     trust_button->setEnabled(true);
 #ifdef AUDIO_SUPPORT
-    QString bgmusic_path = Config.value("BackgroundMusic", "audio/title/main.ogg").toString();
-    QString image_path = "";
-    QString lord_kingdom = ClientInstance->lord_kingdom;
+
+    //intialize default path
+    bgm_path = Config.value("BackgroundMusic", "audio/title/main.ogg").toString();
+    image_path = Config.TableBgImage;
     QString lord_name = ClientInstance->lord_name;
-    if (lord_kingdom != NULL && lord_name != NULL
-        && Sanguosha->TouhouKingdoms.contains(lord_kingdom)) {
+    if (lord_name != NULL) {
         bool changeBGM = Config.value("UseLordBGM", true).toBool();
         bool changeBackdrop = Config.value("UseLordBackdrop", true).toBool();
         if (changeBGM) {
-            bgmusic_path = "audio/bgm/" + lord_name + ".ogg";
-            if ((bgmusic_path == "") || !QFile::exists(bgmusic_path)) {
+            bgm_path = "audio/bgm/" + lord_name + ".ogg";
+            if ((bgm_path == NULL) || !QFile::exists(bgm_path)) {
                 foreach (QString cv_pair, Sanguosha->LordBGMConvertList) {
                     bool shouldBreak = false;
                     QStringList pairs = cv_pair.split("->");
                     QStringList cv_from = pairs.at(0).split("|");
                     foreach (QString from, cv_from) {
                         if (from == lord_name) {
-                            bgmusic_path = "audio/bgm/" + pairs.at(1) + ".ogg";
+                            bgm_path = "audio/bgm/" + pairs.at(1) + ".ogg";
                             shouldBreak = true;
                             break;
                         }
@@ -4045,14 +4024,13 @@ void RoomScene::onGameStart()
         if (changeBackdrop)
             image_path = "backdrop/" + lord_name + ".jpg";
     }
-
-    if ((image_path != "") && QFile::exists(image_path)) {
-
+    
+    if ((image_path != NULL) && QFile::exists(image_path))
         changeTableBg(image_path);
-    }
+    
     if (Config.EnableBgMusic) {
         // start playing background music
-        Audio::playBGM(bgmusic_path);
+        Audio::playBGM(bgm_path);
 
         Audio::setBGMVolume(Config.BGMVolume);
     }

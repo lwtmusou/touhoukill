@@ -789,7 +789,7 @@ enum TriggerEvent {
     CardUsed,
     TargetSpecifying,
     TargetConfirming,
-	TargetSpecified,
+    TargetSpecified,
     TargetConfirmed,
     CardEffect, // for AI to filter events only
     CardEffected,
@@ -801,6 +801,7 @@ enum TriggerEvent {
     MarkChanged ,
 
     ChoiceMade,
+    Reconnect,
 
     StageChange, // For hulao pass only
     FetchDrawPileCard, // For miniscenarios only
