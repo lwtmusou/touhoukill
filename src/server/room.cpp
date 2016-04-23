@@ -296,6 +296,9 @@ void Room::revivePlayer(ServerPlayer *player)
     setEmotion(player, "revive");
     setPlayerProperty(player, "hp", player->getMaxHp());
 
+    touhouLogmessage("#Revive", player);
+
+
     foreach(const Skill *skill, player->getVisibleSkillList()) {
         if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
             addPlayerMark(player, skill->getLimitMark());
@@ -1458,7 +1461,6 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
             reason.m_extraData = QVariant::fromValue(card);
             if (theProvider != NULL)
-                //reason.m_provider = QVariant::fromValue(theProvider);
                 moveCardTo(card, theProvider, NULL, Player::PlaceTable, reason, true);
             else
                 moveCardTo(card, player, NULL, Player::PlaceTable, reason, true);
@@ -1470,7 +1472,6 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             reason.m_skillName = card->getSkillName();
             reason.m_extraData = QVariant::fromValue(card);
             if (theProvider != NULL)
-                //reason.m_provider = QVariant::fromValue(theProvider);
                 moveCardTo(card, theProvider, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason);
             else
                 moveCardTo(card, player, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason);
@@ -1491,7 +1492,6 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                         QString(), card->getSkillName(), QString());
                     reason.m_extraData = QVariant::fromValue(card);
                     if (theProvider != NULL)
-                        //reason.m_provider = QVariant::fromValue(theProvider);
                         moveCardTo(card, theProvider, NULL, Player::DiscardPile, reason, true);
                     else
                         moveCardTo(card, player, NULL, Player::DiscardPile, reason, true);
@@ -4466,7 +4466,6 @@ QList<CardsMoveStruct> Room::_breakDownCardMoves(QList<CardsMoveStruct> &cards_m
     for (int i = 0; i < cards_moves.size(); i++) {
         CardsMoveStruct &move = cards_moves[i];
         if (move.card_ids.size() == 0) continue;
-
         QMap<_MoveSourceClassifier, QList<int> > moveMap;
         // reassemble move sources
         for (int j = 0; j < move.card_ids.size(); j++) {
@@ -6026,11 +6025,8 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStruct * judge, 
         player->objectName(),
         exchange ? skill_name : QString(),
         QString());
-    if (rebyre) {
-        //reason.m_provider = QVariant::fromValue(rebyre);
-        //reason.m_extraData = QVariant::fromValue(oldJudge);
+    if (rebyre)
         reason.m_extraData = QVariant::fromValue(rebyre);
-    }
 
 
 

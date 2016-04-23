@@ -674,21 +674,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
             reason.m_targetId = card_use.to.first()->objectName();
 
         reason.m_extraData = QVariant::fromValue(card_use.card);
-        ServerPlayer *provider = NULL;
-        foreach (QString flag, card_use.card->getFlags()) {
-            if (flag.startsWith("CardProvider_")) {
-                QStringList patterns = flag.split("_");
-                provider = room->findPlayerByObjectName(patterns.at(1));
-                break;
-            }
-        }
-        //reason.m_provider = QVariant::fromValue(provider);
-        ServerPlayer *from = card_use.from;
-        if (provider != NULL)
-            from = provider;
 
-        //CardsMoveStruct move(used_cards, from, NULL, Player::PlaceUnknown, Player::PlaceTable, reason);
-        //moves.append(move);
         foreach(int id, used_cards) {
             CardsMoveStruct move(id, NULL, Player::PlaceTable, reason);
             moves.append(move);

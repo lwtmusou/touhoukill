@@ -161,6 +161,7 @@ config = {
 		"yorihime->toyohime",
 		"youmu_ndj|youmu_slm->youmu",
 		"yukari_sp->yukari",
-		"yuyuko_sp->yuyuko"
+		"yuyuko_sp->yuyuko",
+		"seiga_god->seiga"
 	}
 }

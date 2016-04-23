@@ -1202,8 +1202,6 @@ public:
         ServerPlayer *sanae = qobject_cast<ServerPlayer *>(move.from);
         if (move.reason.m_extraData.value<ServerPlayer *>() != NULL)
             sanae = move.reason.m_extraData.value<ServerPlayer *>();
-        if (move.reason.m_provider.value<ServerPlayer *>() != NULL)
-            sanae = move.reason.m_provider.value<ServerPlayer *>();
         if (sanae == NULL || !sanae->hasSkill(this) || sanae->hasFlag("jinian_used"))
             return;// no need to update record.
         //record some temp ids, went to discardpile undirectly (through other places). 
@@ -1271,8 +1269,7 @@ public:
         ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
         if (move.reason.m_extraData.value<ServerPlayer *>() != NULL)
             player = move.reason.m_extraData.value<ServerPlayer *>();
-        if (move.reason.m_provider.value<ServerPlayer *>() != NULL)
-            player = move.reason.m_provider.value<ServerPlayer *>();
+
         if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile
             && !player->hasFlag("jinian_used") && player->isAlive()) {
             QVariantList ids = player->tag["jinian"].toList();

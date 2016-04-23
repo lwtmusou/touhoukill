@@ -186,7 +186,7 @@ CommonTranslationTable = {
 	["$CancelTargetNoUser"] = "【%arg】的目标 %to 被取消",
 	["#UseLuckCard"] = "%from 使用了 <font color=\"yellow\"><b>手气卡</b></font>",
 	["#ForbidExtraTurn"] = "由于场上存在其他额外回合效果， %from 的额外回合效果被防止" ,
-    
+    ["#Revive"] = "%from 复活，重新加入游戏。",
 	["TriggerOrder"] = "选择触发顺序",
 	["GameRule:TriggerOrder"] = "请选择先发动的技能",
 	["trigger_none"] = "不发动",

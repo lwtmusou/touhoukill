@@ -607,8 +607,7 @@ public:
             //find the real fromer of some cases, such as retrial or provide
             if (move.reason.m_extraData.value<ServerPlayer *>() != NULL)
                 from = move.reason.m_extraData.value<ServerPlayer *>();
-            if (move.reason.m_provider.value<ServerPlayer *>() != NULL)
-                from = move.reason.m_provider.value<ServerPlayer *>();
+
 
             if (from != NULL && nazurin != from) {
                 QVariantList obtain_ids;

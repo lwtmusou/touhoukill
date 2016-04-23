@@ -71,6 +71,11 @@ void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const
     QVariant data = QVariant::fromValue(use);
     RoomThread *thread = room->getThread();
     thread->trigger(PreCardUsed, room, data);
+
+    CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), card_use.card->getSkillName(), QString());
+    CardsMoveStruct move(card_use.card->getEffectiveId(), NULL, Player::PlaceTable, reason);
+    room->moveCardsAtomic(move, true);
+
     thread->trigger(CardUsed, room, data);
     thread->trigger(CardFinished, room, data);
 }
