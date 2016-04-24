@@ -6,7 +6,8 @@ config = {
 	} ,
 
 	kingdoms = { 
-	 "zhu", "pc98", "hmx","yym","yyc","zhan","fsl","dld","xlc","slm","hzc", "gzz","wai","touhougod" ,
+	 "zhu", "pc98", "hmx","yym","yyc","zhan","fsl","dld","xlc","slm","hzc","wai","touhougod" ,
+	 --"gzz"
 	},
 	kingdom_colors = {
 		pc98 = "#0000ff";

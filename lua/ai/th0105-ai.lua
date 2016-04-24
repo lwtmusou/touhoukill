@@ -337,7 +337,8 @@ menghuanvs_skill.name = "menghuan_attach"
 table.insert(sgs.ai_skills, menghuanvs_skill)
 menghuanvs_skill.getTurnUseCard = function(self)
 	if self.player:hasFlag("Forbidmenghuan") then return nil end
-
+	if self.player:getKingdom() ~="pc98" then return nil end
+	
 	local cards = self.player:getCards("h")
 	cards = sgs.QList2Table(cards)
 	local card

@@ -2094,6 +2094,8 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
+        
+        room->getThread()->delay(1000);
         ExNihilo *exnihilo = new ExNihilo(Card::SuitToBeDecided, -1);
         exnihilo->addSubcards(invoke->invoker->getCards("h"));
         exnihilo->setSkillName("_huayin");
