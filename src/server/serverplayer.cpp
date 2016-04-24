@@ -1217,9 +1217,10 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg_tooltip);
 
     //since "banling", we should notify hp after notifying skill 
-    if (this->hasSkill("banling"))
+    if (this->hasSkill("banling")) {
         room->notifyProperty(player, this, "renhp");
         room->notifyProperty(player, this, "linghp");
+    }
 
     foreach(QString flag, flags)
         room->notifyProperty(player, this, "flags", flag);
@@ -1250,6 +1251,10 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         huanshen_arg << huashen_skill;
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, huanshen_arg);
     }
+
+    // for chaoren
+    if (player == this && hasSkill("chaoren"))
+        room->notifyProperty(player, this, "chaoren");
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool open)

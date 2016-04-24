@@ -2377,16 +2377,24 @@ public:
             new_firstcard = drawpile.first();
 
         foreach (ServerPlayer *p, room->getAllPlayers()) {
+            int new_firstcardProperty = new_firstcard;
             bool ok = false;
             int old_firstcard = p->property("chaoren").toInt(&ok);
             if (!ok)
                 old_firstcard = -1;
-            room->setPlayerProperty(p, "chaoren", new_firstcard);
 
+            if (!p->hasSkill(objectName()))
+                new_firstcardProperty = -1;
 
-            
+            bool notifyProperty = old_firstcard != new_firstcardProperty;
+            if (notifyProperty) {
+                p->setProperty("chaoren", new_firstcardProperty);
+                room->notifyProperty(p, p, "chaoren");
+            }
+
             if (!p->hasSkill(objectName()))
                 continue;
+
             // for client log
             bool notifyLog = (new_firstcard != old_firstcard);
             if (triggerEvent == EventAcquireSkill) {

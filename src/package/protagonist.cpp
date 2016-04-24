@@ -1376,6 +1376,9 @@ public:
             move.card_ids << room->getNCards(2);
             move.from_places << Player::DrawPile << Player::DrawPile;
             move.from_pile_names << QString() << QString();
+            move.origin_from_places << move.origin_from_places.first() << move.origin_from_places.first();
+            move.origin_from_pile_names << move.origin_from_pile_names.first() << move.origin_from_pile_names.first();
+            move.open << move.open.first() << move.open.first();
 
             data = QVariant::fromValue(move);
             invoke->invoker->setFlags("qiangyu");
