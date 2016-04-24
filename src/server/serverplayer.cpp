@@ -1186,11 +1186,11 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         if (mark_name.startsWith("@")) {
             int value = getMark(mark_name);
             if (value > 0) {
-                JsonArray arg;
-                arg << objectName();
-                arg << mark_name;
-                arg << value;
-                room->doNotify(player, S_COMMAND_SET_MARK, arg);
+                JsonArray arg_mark;
+                arg_mark << objectName();
+                arg_mark << mark_name;
+                arg_mark << value;
+                room->doNotify(player, S_COMMAND_SET_MARK, arg_mark);
             }
         }
     }
@@ -1201,16 +1201,20 @@ void ServerPlayer::marshal(ServerPlayer *player) const
             continue;
         }
         QString skill_name = skill->objectName();
-        JsonArray args1;
-        args1 << S_GAME_EVENT_ACQUIRE_SKILL;
-        args1 << objectName();
-        args1 << skill_name;
-        room->doNotify(player, S_COMMAND_LOG_EVENT, args1);
+        JsonArray arg_acquire;
+        arg_acquire << S_GAME_EVENT_ACQUIRE_SKILL;
+        arg_acquire << objectName();
+        arg_acquire << skill_name;
+        room->doNotify(player, S_COMMAND_LOG_EVENT, arg_acquire);
 
-        JsonArray arr;
-        arr << objectName() << skill_name << isSkillInvalid(skill_name);
-        room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_SKILL_INVALIDITY, arr);
+        JsonArray arg_invailid;
+        arg_invailid << objectName() << skill_name << isSkillInvalid(skill_name);
+        room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_SKILL_INVALIDITY, arg_invailid);
     }
+    //for AvatarTooltip
+    JsonArray arg_tooltip;
+    arg_tooltip << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg_tooltip);
 
     //since "banling", we should notify hp after notifying skill 
     if (this->hasSkill("banling"))

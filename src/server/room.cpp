@@ -294,6 +294,8 @@ void Room::revivePlayer(ServerPlayer *player)
     player->throwAllMarks(false);
     broadcastProperty(player, "alive");
     setEmotion(player, "revive");
+
+    setPlayerProperty(player, "maxhp", player->getGeneral()->getMaxHp());
     setPlayerProperty(player, "hp", player->getMaxHp());
 
     touhouLogmessage("#Revive", player);
@@ -305,6 +307,14 @@ void Room::revivePlayer(ServerPlayer *player)
     }
     int intialNum = 4;
     player->drawCards(intialNum);
+    if (player->isChained()) {
+       player->setChained(false);
+       broadcastProperty(player, "chained");
+    }
+    if (!player->faceUp()) {
+        player->setFaceUp(true);
+        broadcastProperty(player, "faceup");
+    }
     setPlayerProperty(player, "role_shown", player->isLord() ? true : false);
     
     JsonArray args;
