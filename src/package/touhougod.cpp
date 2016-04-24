@@ -2298,7 +2298,8 @@ public:
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->getPhase() == Player::RoundStart) {
                 ServerPlayer *target = player->tag["qinlue_current"].value<ServerPlayer *>();
-                if ((target != NULL && target->isAlive() && !target->isKongcheng()) || !player->isKongcheng())
+                if (target != NULL && 
+                    (target->isAlive() && !target->isKongcheng() || !player->isKongcheng()))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true, target);
             }
         } else if (triggerEvent == EventPhaseChanging) {
@@ -2308,6 +2309,8 @@ public:
                 ServerPlayer *target = player->tag["qinlue_current"].value<ServerPlayer *>();
                 if ((target != NULL && target->isAlive() && !player->isKongcheng()) || !player->getPile("zhanbei").isEmpty())
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true, target);
+                else if (target != NULL && target->isDead() && player->getPile("zhanbei").isEmpty())
+                    player->tag.remove("qinlue_current");
             }
         }
         return QList<SkillInvokeDetail>();
