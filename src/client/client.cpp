@@ -819,9 +819,10 @@ QString Client::getSkillNameToInvoke() const
 
 void Client::onPlayerInvokeSkill(bool invoke)
 {
-    if (skill_name == "surrender")
+    if (skill_name == "surrender") {
         replyToServer(S_COMMAND_SURRENDER, invoke);
-    else
+        skill_name.clear();
+    } else
         replyToServer(S_COMMAND_INVOKE_SKILL, invoke);
     setStatus(NotActive);
 }

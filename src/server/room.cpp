@@ -40,7 +40,7 @@ Room::Room(QObject *parent, const QString &mode)
     game_started(false), game_finished(false), game_paused(false), L(NULL), thread(NULL),
     thread_3v3(NULL), thread_xmode(NULL), thread_1v1(NULL), _m_semRaceRequest(0), _m_semRoomMutex(1),
     _m_raceStarted(false), provided(NULL), has_provided(false), provider(NULL),
-    m_surrenderRequestReceived(false), _virtual(false), _m_roomState(false)
+    m_surrenderRequestReceived(false), _virtual(false), _m_roomState(false), fill_robot(false)
 {
     static int s_global_room_id = 0;
     _m_Id = s_global_room_id++;
@@ -2674,6 +2674,11 @@ void Room::addRobotCommand(ServerPlayer *player, const QVariant &)
     if (player && !player->isOwner()) return;
     if (isFull()) return;
 
+    if (Config.LimitRobot && !fill_robot) {
+        speakCommand(NULL, QString(tr("This server is limited to add robot. YOU CAN ONLY ADD ROBOT USING \"Fill Robots\".").toUtf8().toBase64()));
+        return;
+    }
+
     QStringList names = GetConfigFromLuaState(Sanguosha->getLuaState(), "robot_names").toStringList();
     qShuffle(names);
 
@@ -2694,7 +2699,7 @@ void Room::addRobotCommand(ServerPlayer *player, const QVariant &)
     m_players << robot;
 
     const QString robot_name = names.isEmpty() ? tr("Computer %1").arg(QChar('A' + n)) : names.first();
-    const QString robot_avatar = "anjiang";//Sanguosha->getRandomGeneralName();
+    const QString robot_avatar = Sanguosha->getRandomGeneralName();
     signup(robot, robot_name, robot_avatar, true);
 
     QString greeting = tr("Hello, I'm a robot").toUtf8().toBase64();
@@ -2705,10 +2710,14 @@ void Room::addRobotCommand(ServerPlayer *player, const QVariant &)
 
 void Room::fillRobotsCommand(ServerPlayer *player, const QVariant &)
 {
-    int left = player_count - m_players.length();
-    for (int i = 0; i < left; i++) {
-        addRobotCommand(player, QVariant());
+    if (Config.LimitRobot && (m_players.length() <= player_count / 2 || player_count <= 4)) {
+        speakCommand(NULL, QString(tr("This server is limited to add robot. Please ensure that the number of players is more than 4 and there is more than a half human players.").toUtf8().toBase64()));
+        return;
     }
+    fill_robot = true;
+    int left = player_count - m_players.length();
+    for (int i = 0; i < left; i++)
+        addRobotCommand(player, QVariant());
 }
 
 ServerPlayer *Room::getOwner() const
@@ -3250,7 +3259,11 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
     }
     if (broadcast) {
         JsonArray body;
-        body << player->objectName() << arg;
+        if (player != NULL)
+            body << player->objectName();
+        else
+            body << ".";
+        body << arg;
         doBroadcastNotify(S_COMMAND_SPEAK, body);
 #if 0
         if (game_started && Config.EnableSurprisingGenerals) {

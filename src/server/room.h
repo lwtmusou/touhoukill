@@ -527,6 +527,7 @@ private:
     bool game_paused;
     lua_State *L;
     QList<AI *> ais;
+    bool fill_robot;
 
     RoomThread *thread;
     RoomThread3v3 *thread_3v3;

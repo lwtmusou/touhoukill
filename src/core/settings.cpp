@@ -91,6 +91,7 @@ void Settings::init()
     LuckCardLimitation = value("LuckCardLimitation", 0).toInt();
     ServerPort = value("ServerPort", 9527u).toUInt();
     DisableLua = value("DisableLua", false).toBool();
+    LimitRobot = value("LimitRobot", false).toBool();
 
 #ifdef Q_OS_WIN32
     UserName = value("UserName", qgetenv("USERNAME")).toString();

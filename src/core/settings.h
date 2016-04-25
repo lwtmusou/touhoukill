@@ -57,6 +57,7 @@ public:
     int LuckCardLimitation;
     ushort ServerPort;
     bool DisableLua;
+    bool LimitRobot;
 
     QStringList ExtraHiddenGenerals;
     QStringList RemovedHiddenGenerals;
