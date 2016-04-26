@@ -63,8 +63,10 @@
     "magatamasHorizontal": false,
     "magatamaSize": [18, 17],
     "magatamaImageArea": [2, 2, 14, 17],
+	"magatamaImageSubArea": [2, 2, 14, 17], //for skill banling
     "magatamasBgVisible": true,
     "magatamasAnchor": ["bottomRight", [130, 165]],
+	"magatamasSubAnchor": ["topRight", [130, 20]],
     "cardMoveArea": [-25, 35, 200, 130],
     "phaseArea": [5, 147, 140, 12],
     "onlineStatusArea": [93, 20, 30, 25],

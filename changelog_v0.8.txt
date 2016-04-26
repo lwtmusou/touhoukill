@@ -173,6 +173,8 @@ alpha版0425联机版
 alpha版
 1 加入新触发技框架对应的LUA接口
 2.尝试修复主菜单按钮
+3 broadcastRaceRequest的原子指针问题（小问题，留了4年的todo）
+4 compact版，2血妖梦体力错位
 
 待解决的已知问题
 1 常识 可以恢复 凭依 的 技能无效
@@ -193,7 +195,5 @@ alpha版
 38 有人反应缺少 api-ms-win-crt-runtime-l1-1-0.dll 和 应用程序错误0xc000007b
 C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Remote Debugger\x64
 https://go.microsoft.com/fwlink/?LinkId=615459
-39 compact版，2血妖梦体力错位
-40 broadcastRaceRequest的原子指针问题（小问题，留了4年的todo）
 服务器暂时禁掉以下白板：
 神绮 旧爱丽丝  梦月幻月 艾丽  朝仓理香子  魅魔  旧魔理沙  sp琪露诺 sp大狸子  sp咲夜
