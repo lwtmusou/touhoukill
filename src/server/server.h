@@ -75,7 +75,6 @@ class ServerDialog : public QDialog
 
 public:
     ServerDialog(QWidget *parent);
-    void ensureEnableAI();
     bool config();
 
 private:
@@ -157,7 +156,6 @@ private:
     QButtonGroup *mode_group;
 
 private slots:
-    //void setMaxHpSchemeBox();
 
     void onOkButtonClicked();
     void onDetectButtonClicked();

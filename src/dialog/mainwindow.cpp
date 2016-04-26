@@ -227,14 +227,13 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
 
     client->disconnectFromHost();
 
-    static QString link = "http://github.com/YanGuam/QSanguoshaForDadao";
     QString text = tr("Server version is %1, client version is %2 <br/>").arg(server_version).arg(client_version);
     if (server_version > client_version)
         text.append(tr("Your client version is older than the server's, please update it <br/>"));
     else
         text.append(tr("The server version is older than your client version, please ask the server to update<br/>"));
 
-    text.append(tr("Download link : <a href='%1'>%1</a> <br/>").arg(link));
+    text.append(tr("please check the Qun file of QQ Qun 384318415 for update packages."));
     QMessageBox::warning(this, tr("Warning"), text);
 }
 
@@ -385,6 +384,7 @@ void MainWindow::gotoStartScene()
             Self = NULL;
         }
         delete ClientInstance;
+        ClientInstance = NULL;
     }
 }
 
@@ -553,12 +553,12 @@ void MainWindow::on_actionMinimize_to_system_tray_triggered()
         menu->addMenu(ui->menuHelp);
 
         systray->setContextMenu(menu);
-
-        systray->show();
-        systray->showMessage(windowTitle(), tr("Game is minimized"));
-
-        hide();
     }
+
+    systray->show();
+    systray->showMessage(windowTitle(), tr("Game is minimized"));
+
+    hide();
 }
 
 void MainWindow::on_actionRole_assign_table_triggered()
@@ -681,7 +681,6 @@ void MainWindow::on_actionAcknowledgement_triggered()
 void MainWindow::on_actionPC_Console_Start_triggered()
 {
     ServerDialog *dialog = new ServerDialog(this);
-    dialog->ensureEnableAI();
     if (!dialog->config())
         return;
 

@@ -238,19 +238,20 @@ int ServerPlayer::getHandcardNum() const
 
 void ServerPlayer::setSocket(ClientSocket *socket)
 {
+
+    if (this->socket) {
+        disconnect(this->socket);
+        this->socket->disconnect(this);
+        this->socket->disconnectFromHost();
+        this->socket->deleteLater();
+    }
+
+    disconnect(this, SLOT(sendMessage(QString)));
+
     if (socket) {
         connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
         connect(socket, SIGNAL(message_got(const char *)), this, SLOT(getMessage(const char *)));
         connect(this, SIGNAL(message_ready(QString)), this, SLOT(sendMessage(QString)));
-    } else {
-        if (this->socket) {
-            disconnect(this->socket);
-            this->socket->disconnect(this);
-            this->socket->disconnectFromHost();
-            this->socket->deleteLater();
-        }
-
-        disconnect(this, SLOT(sendMessage(QString)));
     }
 
     this->socket = socket;

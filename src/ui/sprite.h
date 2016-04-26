@@ -56,7 +56,7 @@ class EffectAnimation : public QObject
     Q_OBJECT
 
 public:
-    EffectAnimation();
+    EffectAnimation(QObject *parent = NULL);
 
     void fade(QGraphicsItem *map);
     void emphasize(QGraphicsItem *map, bool stay = true);

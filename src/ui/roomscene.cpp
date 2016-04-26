@@ -200,7 +200,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
 
 
-    card_container = new CardContainer();
+    card_container = new CardContainer;
     card_container->hide();
     addItem(card_container);
     card_container->setZValue(9.0);
@@ -361,7 +361,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     connect(return_to_main_menu, SIGNAL(clicked()), this, SIGNAL(return_to_start()));
     control_panel->show();
-    animations = new EffectAnimation();
+    animations = new EffectAnimation(this);
 
     pausing_item = new QGraphicsRectItem;
     pausing_text = new QGraphicsSimpleTextItem(tr("Paused ..."));
@@ -390,6 +390,11 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     pindian_from_card = NULL;
     pindian_to_card = NULL;
+}
+
+RoomScene::~RoomScene()
+{
+    RoomSceneInstance = NULL;
 }
 
 void RoomScene::handleGameEvent(const QVariant &args)

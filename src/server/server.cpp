@@ -412,11 +412,6 @@ QWidget *ServerDialog::createMiscTab()
     return widget;
 }
 
-void ServerDialog::ensureEnableAI()
-{
-    ai_enable_checkbox->setChecked(true);
-}
-
 void ServerDialog::updateButtonEnablility(QAbstractButton *button)
 {
     if (!button) return;
@@ -1254,7 +1249,6 @@ void Server::processRequest(const char *request)
 {
     ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
     socket->disconnect(this, SLOT(processRequest(const char *)));
-
 
     Packet signup;
     if (!signup.parse(request) || signup.getCommandType() != S_COMMAND_SIGNUP) {

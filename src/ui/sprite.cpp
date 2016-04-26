@@ -7,8 +7,8 @@
 #include <QtCore/qmath.h>
 #include <QPainter>
 
-EffectAnimation::EffectAnimation()
-    : QObject()
+EffectAnimation::EffectAnimation(QObject *parent)
+    : QObject(parent)
 {
     effects.clear();
     registered.clear();
