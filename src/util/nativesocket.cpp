@@ -90,14 +90,15 @@ void NativeClientSocket::connectToHost()
 
 void NativeClientSocket::getMessage()
 {
+    QList<QByteArray> bufferList;
     while (socket->canReadLine()) {
         buffer_t msg;
         socket->readLine(msg, sizeof(msg));
-#ifndef QT_NO_DEBUG
-        printf("RX: %s", msg);
-#endif
-        emit message_got(msg);
+        qDebug() << "RX: " << msg;
+        bufferList << QByteArray(msg);
     }
+    foreach (const QByteArray &arr, bufferList)
+        emit message_got(arr.constData());
 }
 
 void NativeClientSocket::disconnectFromHost()
