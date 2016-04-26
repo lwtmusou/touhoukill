@@ -169,6 +169,10 @@ alpha版0425联机版
 3 加入限制AI的功能，游戏模式人数不大于4或者人类玩家人数不大于游戏模式人数一半时禁止添加AI，添加AI时只能使用“添加所有电脑”，禁止单独添加AI
 
 
+**************************************************************
+alpha版
+1 加入新触发技框架对应的LUA接口
+2.尝试修复主菜单按钮
 
 待解决的已知问题
 1 常识 可以恢复 凭依 的 技能无效
@@ -186,10 +190,10 @@ alpha版0425联机版
 32 UI以及skin  
 33 闪无效和无邪无效的定义 询问次数
 34 小剧本身份判断有问题？？限于多开？
-35 返回主菜单按钮
-38 有人反应缺少 api-ms-win-crt-runtime-l1-1-0.dll
+38 有人反应缺少 api-ms-win-crt-runtime-l1-1-0.dll 和 应用程序错误0xc000007b
 C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Remote Debugger\x64
 https://go.microsoft.com/fwlink/?LinkId=615459
-
+39 compact版，2血妖梦体力错位
+40 broadcastRaceRequest的原子指针问题（小问题，留了4年的todo）
 服务器暂时禁掉以下白板：
 神绮 旧爱丽丝  梦月幻月 艾丽  朝仓理香子  魅魔  旧魔理沙  sp琪露诺 sp大狸子  sp咲夜
