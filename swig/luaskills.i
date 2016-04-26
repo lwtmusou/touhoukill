@@ -4,13 +4,20 @@ public:
     void addEvent(TriggerEvent event);
     void setViewAsSkill(ViewAsSkill *view_as_skill);
     void setGlobal(bool global);
-    void insertPriorityTable(TriggerEvent triggerEvent, int priority);
 
-    virtual bool triggerable(const ServerPlayer *target) const;
-    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual inline int getPriority() const { return priority; }
 
-    LuaFunction on_trigger;
+    virtual void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const;
+
+    virtual QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const;
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
+
+    LuaFunction on_record;
     LuaFunction can_trigger;
+    LuaFunction on_cost;
+    LuaFunction on_effect;
+
     int priority;
 };
 
@@ -332,26 +339,82 @@ static void Error(lua_State *L)
     QMessageBox::warning(NULL, "Lua script error!", error_string);
 }
 
-bool LuaTriggerSkill::triggerable(const ServerPlayer *target) const
+void LuaTriggerSkill::record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
 {
+    if (on_record == 0)
+        return;
+
+    lua_State *L = room->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, on_record);
+    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaTriggerSkill, 0);
+    lua_pushinteger(L, triggerEvent);
+    SWIG_NewPointerObj(L, room, SWIGTYPE_p_Room, 0);
+    SWIG_NewPointerObj(L, &data, SWIGTYPE_p_QVariant, 0);
+
+    int error = lua_pcall(L, 4, 0, 0);
+    if (error) {
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        room->output(error_msg);
+    }
+}
+
+// the return value of this function in Lua is table of SkillInvokeDetail
+
+QList<SkillInvokeDetail> LuaTriggerSkill::triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+{
+    QList<SkillInvokeDetail> r;
     if (can_trigger == 0)
-        return false;
+        return r;
 
-    //Room *room = target->getRoom();
-    lua_State *L = Sanguosha->getLuaState();
-
-    // the callback function
+    lua_State *L = room->getLuaState();
     lua_rawgeti(L, LUA_REGISTRYINDEX, can_trigger);
     SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaTriggerSkill, 0);
-    SWIG_NewPointerObj(L, target, SWIGTYPE_p_ServerPlayer, 0);
-
-    int error = lua_pcall(L, 2, 1, 0);
+    lua_pushinteger(L, triggerEvent);
+    SWIG_NewPointerObj(L, room, SWIGTYPE_p_Room, 0);
+    SWIG_NewPointerObj(L, &data, SWIGTYPE_p_QVariant, 0);
+    int error = lua_pcall(L, 4, 1, 0);
     if (error) {
-        //const char *error_msg = lua_tostring(L, -1);
-        //lua_pop(L, 1);
-        //room->output(error_msg);
-        Error(L);
-        return false;
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        const_cast<Room *>(room)->output(error_msg);
+    } else {
+        lua_pushnil(L);
+        while (lua_next(L, -2)) {
+            void *SkillInvokeDetailPtr = NULL;
+            int result = SWIG_ConvertPtr(L, -1, &SkillInvokeDetailPtr, SWIGTYPE_p_SkillInvokeDetail, 0);
+            lua_pop(L, 1);
+            if (SWIG_IsOK(result)) {
+                SkillInvokeDetail *detail = static_cast<SkillInvokeDetail *>(SkillInvokeDetailPtr);
+                r << *detail;
+            }
+        }
+        lua_pop(L, 1);
+        return r;
+    }
+
+    return r;
+}
+
+bool LuaTriggerSkill::cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+{
+    if (on_cost == 0)
+        return TriggerSkill::cost(triggerEvent, room, invoke, data);
+
+    lua_State *L = room->getLuaState();
+    lua_rawgeti(L, LUA_REGISTRYINDEX, on_cost);
+    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaTriggerSkill, 0);
+    lua_pushinteger(L, triggerEvent);
+    SWIG_NewPointerObj(L, room, SWIGTYPE_p_Room, 0);
+    SWIG_NewPointerObj(L, invoke.data(), SWIGTYPE_p_SkillInvokeDetail, 0);
+    SWIG_NewPointerObj(L, &data, SWIGTYPE_p_QVariant, 0);
+    int error = lua_pcall(L, 5, 1, 0);
+    if (error) {
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        room->output(error_msg);
+        return TriggerSkill::cost(triggerEvent, room, invoke, data);
     } else {
         bool result = lua_toboolean(L, -1);
         lua_pop(L, 1);
@@ -359,36 +422,24 @@ bool LuaTriggerSkill::triggerable(const ServerPlayer *target) const
     }
 }
 
-bool LuaTriggerSkill::trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const
+bool LuaTriggerSkill::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
 {
-    if (on_trigger == 0)
-        return false;
+    if (on_effect == 0)
+        return TriggerSkill::effect(triggerEvent, room, invoke, data);
 
     lua_State *L = room->getLuaState();
-
-    int e = static_cast<int>(event);
-
-    // the callback
-    lua_rawgeti(L, LUA_REGISTRYINDEX, on_trigger);
-
-    LuaTriggerSkill *self = const_cast<LuaTriggerSkill *>(this);
-    SWIG_NewPointerObj(L, self, SWIGTYPE_p_LuaTriggerSkill, 0);
-
-    // the first argument: event
-    lua_pushinteger(L, e);
-
-    // the second argument: player
-    SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
-
-    // the last event: data
+    lua_rawgeti(L, LUA_REGISTRYINDEX, on_effect);
+    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaTriggerSkill, 0);
+    lua_pushinteger(L, triggerEvent);
+    SWIG_NewPointerObj(L, room, SWIGTYPE_p_Room, 0);
+    SWIG_NewPointerObj(L, invoke.data(), SWIGTYPE_p_SkillInvokeDetail, 0);
     SWIG_NewPointerObj(L, &data, SWIGTYPE_p_QVariant, 0);
-
-    int error = lua_pcall(L, 4, 1, 0);
+    int error = lua_pcall(L, 5, 1, 0);
     if (error) {
         const char *error_msg = lua_tostring(L, -1);
         lua_pop(L, 1);
         room->output(error_msg);
-        return false;
+        return TriggerSkill::effect(triggerEvent, room, invoke, data);
     } else {
         bool result = lua_toboolean(L, -1);
         lua_pop(L, 1);

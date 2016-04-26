@@ -2,7 +2,6 @@
 #define _LUA_WRAPPER_H
 
 #include "util.h"
-#pragma message WARN("todo_Fs: the new Lua interface of triggerskill")
 #include "skill.h"
 #include "standard.h"
 
@@ -26,21 +25,21 @@ public:
     {
         this->global = global;
     }
-    inline void insertPriorityTable(TriggerEvent triggerEvent, int priority)
-    {
-        priority_table[triggerEvent] = priority;
-    }
 
-    virtual int getPriority(TriggerEvent triggerEvent) const;
-    virtual bool triggerable(const ServerPlayer *target) const;
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual inline int getPriority() const { return priority; }
 
-    LuaFunction on_trigger;
+    virtual void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const;
+
+    virtual QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const;
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
+
+    LuaFunction on_record;
     LuaFunction can_trigger;
-    int priority;
+    LuaFunction on_cost;
+    LuaFunction on_effect;
 
-protected:
-    QMap<TriggerEvent, int> priority_table;
+    int priority;
 };
 
 class LuaProhibitSkill : public ProhibitSkill

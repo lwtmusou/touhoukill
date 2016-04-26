@@ -3,9 +3,12 @@
 -- trigger skills
 function sgs.CreateTriggerSkill(spec)
 	assert(type(spec.name) == "string")
-	assert(type(spec.on_trigger) == "function")
 	if spec.frequency then assert(type(spec.frequency) == "number") end
 	if spec.limit_mark then assert(type(spec.limit_mark) == "string") end
+	if spec.on_record then assert(type(spec.on_record) == "function") end
+	if spec.can_trigger then assert(type(spec.can_trigger) == "function") end
+	if spec.on_cost then assert(type(spec.on_cost) == "function") end
+	if spec.on_effect then assert(type(spec.on_effect) == "function") end
 
 	local frequency = spec.frequency or sgs.Skill_NotFrequent
 	local limit_mark = spec.limit_mark or ""
@@ -21,10 +24,18 @@ function sgs.CreateTriggerSkill(spec)
 
 	if type(spec.global) == "boolean" then skill:setGlobal(spec.global) end
 
-	skill.on_trigger = spec.on_trigger
-
+	if spec.on_record then
+		skill.on_record = spec.on_record
+	end
+	-- the return value of this function is of value QList<SkillInvokeDetail>, since QList is hard to export, we use table here, but the internal type is SkillInvokeDetail
 	if spec.can_trigger then
 		skill.can_trigger = spec.can_trigger
+	end
+	if spec.on_cost then
+		skill.on_cost = spec.on_cost
+	end
+	if spec.on_effect then
+		skill.on_effect = spec.on_effect
 	end
 	if spec.view_as_skill then
 		skill:setViewAsSkill(spec.view_as_skill)
