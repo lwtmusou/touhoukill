@@ -785,7 +785,7 @@ ServerPlayer *Room::doBroadcastRaceRequest(QList<ServerPlayer *> &players, QSanP
 {
     _m_semRoomMutex.acquire();
     _m_raceStarted = true;
-    _m_raceWinner = NULL;
+    _m_raceWinner.store(NULL);
     while (_m_semRaceRequest.tryAcquire(1)) {
     } //drain lock
     _m_semRoomMutex.release();
@@ -822,20 +822,20 @@ ServerPlayer *Room::getRaceResult(QList<ServerPlayer *> &players, QSanProtocol::
             _m_semRoomMutex.tryAcquire(1);
         // So that processResponse cannot update raceWinner when we are reading it.
 
-        if (_m_raceWinner == NULL) {
+        ServerPlayer *winner = _m_raceWinner.loadAcquire();
+        if (winner == NULL) {
+            _m_raceWinner.storeRelease(winner);
             _m_semRoomMutex.release();
             continue;
         }
 
-        if (validateFunc == NULL
-            || (_m_raceWinner->m_isClientResponseReady
-            && (this->*validateFunc)(_m_raceWinner, _m_raceWinner->getClientReply(), funcArg))) {
+        if (validateFunc == NULL || (winner->m_isClientResponseReady && (this->*validateFunc)(winner, winner->getClientReply(), funcArg))) {
             validResult = true;
             break;
         } else {
             // Don't give this player any more chance for this race
-            _m_raceWinner->m_isWaitingReply = false;
-            _m_raceWinner = NULL;
+            winner->m_isWaitingReply = false;
+            _m_raceWinner.storeRelease(NULL);
             _m_semRoomMutex.release();
         }
     }
@@ -850,7 +850,7 @@ ServerPlayer *Room::getRaceResult(QList<ServerPlayer *> &players, QSanProtocol::
         player->releaseLock(ServerPlayer::SEMA_MUTEX);
     }
     _m_semRoomMutex.release();
-    return _m_raceWinner;
+    return _m_raceWinner.fetchAndStoreRelease(NULL);
 }
 
 bool Room::doNotify(ServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg)
@@ -3321,10 +3321,7 @@ void Room::processResponse(ServerPlayer *player, const Packet *packet)
             // because getRaceResult will then be able to acquire the lock, reading a non-null
             // raceWinner and proceed with partial data. The current implementation is based on
             // the assumption that the following line is ATOMIC!!!
-            // @todo: Find a Qt atomic semantic or use _asm to ensure the following line is atomic
-            // on a multi-core machine. This is the core to the whole synchornization mechanism for
-            // broadcastRaceRequest.
-            _m_raceWinner = player;
+            _m_raceWinner.store(player);
             // the _m_semRoomMutex.release() signal is in getRaceResult();
             _m_semRaceRequest.release();
         } else {

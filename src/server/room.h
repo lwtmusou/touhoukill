@@ -20,6 +20,7 @@ struct LogMessage;
 #include <QWaitCondition>
 #include <qmutex.h>
 #include <QStack>
+#include <QAtomicPointer>
 
 class Room : public QThread
 {
@@ -546,7 +547,7 @@ private:
 
     //helper variables for race request function
     bool _m_raceStarted;
-    ServerPlayer *_m_raceWinner;
+    QAtomicPointer<ServerPlayer> _m_raceWinner;
 
     QMap<int, Player::Place> place_map;
     QMap<int, ServerPlayer *> owner_map;
