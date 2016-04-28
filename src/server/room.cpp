@@ -3841,12 +3841,9 @@ void Room::reconnect(ServerPlayer *player, ClientSocket *socket)
 
     broadcastProperty(player, "state");
 
-
     //JsonArray args;
     //args << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
     //doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
-    QVariant empty_d;
-    thread->trigger(Reconnect, this, empty_d);
 }
 
 void Room::marshal(ServerPlayer *player)

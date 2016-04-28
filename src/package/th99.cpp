@@ -756,7 +756,7 @@ bool LianxiCard::targetsFeasible(const QList<const Player *> &targets, const Pla
     int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, card);
     return targets.length() <= total_num;
 }
-const Card *LianxiCard::validate(CardUseStruct &use) const
+const Card *LianxiCard::validate(CardUseStruct &) const
 {
     IronChain *card = new IronChain(Card::NoSuit, 0);
     card->setSkillName("lianxi");
@@ -1301,7 +1301,7 @@ public:
         ganying_instance = this;
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent , Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         invoke->invoker->drawCards(1, objectName());
         //tag is  always empty, why?

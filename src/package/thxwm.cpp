@@ -143,6 +143,7 @@ class Beisha : public TriggerSkill
 public:
     Beisha() :TriggerSkill("beisha")
     {
+        events << EventPhaseStart;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const

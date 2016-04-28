@@ -1134,11 +1134,12 @@ bool ServerDialog::config()
     //Config.setValue("OfficialRule", official_3v3_ComboBox->itemData(official_3v3_ComboBox->currentIndex()).toString());
     Config.endGroup();
 
-    Config.beginGroup("1v1");
-    Config.setValue("Rule", official_1v1_ComboBox->itemData(official_1v1_ComboBox->currentIndex()).toString());
-    //Config.setValue("UsingExtension", kof_using_extension_checkbox->isChecked());
-    //Config.setValue("UsingCardExtension", kof_card_extension_checkbox->isChecked());
-    Config.endGroup();
+#pragma message WARN("todo_lwtmusou: open this after modifying Room::revivePlayer")
+//     Config.beginGroup("1v1");
+//     Config.setValue("Rule", official_1v1_ComboBox->itemData(official_1v1_ComboBox->currentIndex()).toString());
+//     //Config.setValue("UsingExtension", kof_using_extension_checkbox->isChecked());
+//     //Config.setValue("UsingCardExtension", kof_card_extension_checkbox->isChecked());
+//     Config.endGroup();
 
     //Config.beginGroup("XMode");
     //Config.setValue("RoleChooseX", role_choose_xmode_ComboBox->itemData(role_choose_xmode_ComboBox->currentIndex()).toString());

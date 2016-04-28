@@ -394,7 +394,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
 RoomScene::~RoomScene()
 {
-    RoomSceneInstance = NULL;
+    if (RoomSceneInstance ==  this)
+        RoomSceneInstance = NULL;
 }
 
 void RoomScene::handleGameEvent(const QVariant &args)
@@ -3292,31 +3293,29 @@ void RoomScene::onGameOver()
 void RoomScene::addRestartButton(QDialog *dialog)
 {
     dialog->resize(main_window->width() / 2, dialog->height());
-    bool goto_next = false;
-    if (ServerInfo.GameMode.contains("_mini_") && Self->property("win").toBool())
-        goto_next = (_m_currentStage < Sanguosha->getMiniSceneCounts());
 
-    QPushButton *restart_button;
-    restart_button = new QPushButton(goto_next ? tr("Next Stage") : tr("Restart Game"));
-    QPushButton *return_button = new QPushButton(tr("Return to main menu"));
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
-    hlayout->addWidget(restart_button);
 
-    QPushButton *save_button = new QPushButton(tr("Save record"));
-    hlayout->addWidget(save_button);
+    if (ClientInstance->findChild<Replayer *>() == NULL) {
+        bool goto_next = false;
+        if (ServerInfo.GameMode.contains("_mini_") && Self->property("win").toBool())
+            goto_next = (_m_currentStage < Sanguosha->getMiniSceneCounts());
+        QPushButton *restart_button = new QPushButton(goto_next ? tr("Next Stage") : tr("Restart Game"));
+        connect(restart_button, SIGNAL(clicked()), dialog, SLOT(accept()));
+        connect(restart_button, SIGNAL(clicked()), this, SIGNAL(restart()));
+        hlayout->addWidget(restart_button);
+        QPushButton *save_button = new QPushButton(tr("Save record"));
+        connect(save_button, SIGNAL(clicked()), this, SLOT(saveReplayRecord()));
+        hlayout->addWidget(save_button);
+    }
+    QPushButton *return_button = new QPushButton(tr("Return to main menu"));
+    connect(return_button, SIGNAL(clicked()), dialog, SLOT(accept()));
+    connect(return_button, SIGNAL(clicked()), this, SIGNAL(return_to_start()));
     hlayout->addWidget(return_button);
 
     QVBoxLayout *layout = qobject_cast<QVBoxLayout *>(dialog->layout());
     if (layout) layout->addLayout(hlayout);
-
-    connect(restart_button, SIGNAL(clicked()), dialog, SLOT(accept()));
-    connect(return_button, SIGNAL(clicked()), dialog, SLOT(accept()));
-
-    connect(save_button, SIGNAL(clicked()), this, SLOT(saveReplayRecord()));
-    //connect(dialog, SIGNAL(accepted()), this, SIGNAL(restart()));
-    connect(restart_button, SIGNAL(clicked()), this, SIGNAL(restart()));
-    connect(return_button, SIGNAL(clicked()), this, SIGNAL(return_to_start()));
 }
 
 void RoomScene::saveReplayRecord()

@@ -1892,7 +1892,7 @@ bool YujianCard::targetFilter(const QList<const Player *> &targets, const Player
     return targets.length() < 2 && !to_select->isKongcheng() && to_select != Self;
 }
 
-void YujianCard::use(Room *room, ServerPlayer *player, QList<ServerPlayer *> &targets) const
+void YujianCard::use(Room *, ServerPlayer *player, QList<ServerPlayer *> &targets) const
 {
     player->pindian(targets.first(), "yujian");
 }
