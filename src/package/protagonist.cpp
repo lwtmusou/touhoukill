@@ -1582,9 +1582,9 @@ YinyangCard::YinyangCard()
 {
 }
 
-bool YinyangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+bool YinyangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    return !to_select->isKongcheng() && targets.isEmpty();
+    return !to_select->isKongcheng() && targets.isEmpty() && to_select != Self;
 }
 
 void YinyangCard::onEffect(const CardEffectStruct &effect) const
@@ -1593,7 +1593,6 @@ void YinyangCard::onEffect(const CardEffectStruct &effect) const
     const Card *card1 = NULL;
     const Card *card2 = NULL;
     if (effect.to->canDiscard(effect.to, "h"))
-        //room->askForDiscard(effect.to, "yinyang", 1, 1, false, false, "yinyang_cardchosen");
         card1 = room->askForCard(effect.to, ".|.|.|hand!", "@yinyang_discard");
     if (card1) {
         effect.from->tag["yinyang_card"] = QVariant::fromValue(card1);
