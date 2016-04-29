@@ -126,7 +126,6 @@ public:
     bool isGeneralHidden(const QString &general_name) const;
 
     QStringList SurprisingGenerals;
-    QStringList TouhouKingdoms;
     QStringList LordBGMConvertList;
 
 private:

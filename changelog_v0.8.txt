@@ -177,6 +177,8 @@ alpha版
 4 compact版，2血妖梦体力错位
 5 屏蔽录像播放时游戏结束窗口的“保存录像”和“重新开始”按钮
 6 删除错误的Reconnect时机（而且已经没有技能在用了。。。），4100
+7 fix 入魔的目标选择错误
+8 调整 reviveplayer函数 解决1v1模式和神霍青娥的冲突
 
 待解决的已知问题
 1 常识 可以恢复 凭依 的 技能无效
@@ -197,7 +199,7 @@ alpha版
 38 有人反应缺少 api-ms-win-crt-runtime-l1-1-0.dll 和 应用程序错误0xc000007b
 C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Remote Debugger\x64
 https://go.microsoft.com/fwlink/?LinkId=615459
-39 屏蔽1v1模式（由于神霍青娥）
 40 加入Lua武将后Room的析构函数崩溃
+41 【念力】崩溃
 服务器暂时禁掉以下白板：
 神绮 旧爱丽丝  梦月幻月 艾丽  朝仓理香子  魅魔  旧魔理沙  sp琪露诺 sp大狸子  sp咲夜
