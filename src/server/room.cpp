@@ -290,36 +290,47 @@ ServerPlayer *Room::getCurrentDyingPlayer() const
 
 void Room::revivePlayer(ServerPlayer *player)
 {
+    QString mode = Config.GameMode;
+    bool initialize = true;
+    if (mode.endsWith("1v1"))
+        initialize = false;
+
     player->setAlive(true);
     player->throwAllMarks(false);
     broadcastProperty(player, "alive");
-    setEmotion(player, "revive");
-
-    setPlayerProperty(player, "maxhp", player->getGeneral()->getMaxHp());
-    setPlayerProperty(player, "hp", player->getMaxHp());
-
-    touhouLogmessage("#Revive", player);
-
-
-    foreach(const Skill *skill, player->getVisibleSkillList()) {
-        if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
-            addPlayerMark(player, skill->getLimitMark());
-    }
-    int intialNum = 4;
-    player->drawCards(intialNum);
-    if (player->isChained()) {
-       player->setChained(false);
-       broadcastProperty(player, "chained");
-    }
-    if (!player->faceUp()) {
-        player->setFaceUp(true);
-        broadcastProperty(player, "faceup");
-    }
-    setPlayerProperty(player, "role_shown", player->isLord() ? true : false);
     
-    JsonArray args;
-    args << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
-    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+    
+    if (initialize) {
+        setPlayerProperty(player, "maxhp", player->getGeneral()->getMaxHp());
+        setPlayerProperty(player, "hp", player->getMaxHp());
+        setEmotion(player, "revive");
+        touhouLogmessage("#Revive", player);
+
+        foreach(const Skill *skill, player->getVisibleSkillList()) {
+            if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
+                addPlayerMark(player, skill->getLimitMark());
+        }
+
+        player->drawCards(4);
+        if (player->isChained()) {
+            player->setChained(false);
+            broadcastProperty(player, "chained");
+        }
+        if (!player->faceUp()) {
+            player->setFaceUp(true);
+            broadcastProperty(player, "faceup");
+        }
+        setPlayerProperty(player, "role_shown", player->isLord() ? true : false);
+
+        JsonArray args;
+        args << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+        doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+
+        if (player->getPhase() == Player::Play)
+            setPlayerFlag(player, "Global_PlayPhaseTerminated");
+        if (player->isCurrent())
+            setPlayerFlag(player, "Global_TurnTerminated");
+    }
 
     m_alivePlayers.clear();
     foreach (ServerPlayer *player, m_players) {
@@ -338,10 +349,6 @@ void Room::revivePlayer(ServerPlayer *player)
     QVariant v = QVariant::fromValue(player);
     thread->trigger(Revive, this, v);
 
-    if (player->getPhase() == Player::Play)
-        setPlayerFlag(player, "Global_PlayPhaseTerminated");
-    if (player->isCurrent())
-        setPlayerFlag(player, "Global_TurnTerminated");
 }
 
 void Room::updateStateItem()

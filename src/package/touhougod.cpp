@@ -3462,16 +3462,16 @@ RumoCard::RumoCard()
 
 bool RumoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    if (targets.isEmpty())
-        return to_select == Self;
     int num = qMax(Self->getHp(), 1);
+    if (!targets.contains(Self))
+        return to_select == Self && targets.length() < num;
     return !targets.contains(to_select) && targets.length() < num;
 }
 
 bool RumoCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
     int num = qMax(Self->getHp(), 1);
-    return targets.length() >0 && targets.length() <= num;
+    return targets.length() >0 && targets.length() <= num && targets.contains(Self);
 }
 
 void RumoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
