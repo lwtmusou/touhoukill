@@ -3378,79 +3378,116 @@ public:
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->hasSkill(this) && player->getPhase() == Player::RoundStart && player->getMark("@tongling") > 0) {
             foreach(ServerPlayer *p, room->getAllPlayers(true)) {
-                if (p->isDead()) {
-                    const General *general = p->getGeneral();
-                    foreach(const Skill *skill, general->getVisibleSkillList()) {
-                        if (skill->isLordSkill()
-                            || skill->getFrequency() == Skill::Eternal
-                            || skill->getFrequency() == Skill::Wake)
-                            continue;
+                if (p->isDead() && p->getGeneral() != NULL && p->getGeneralName() != "sujiang" && p->getGeneralName() != "sujiangf")
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-                    }
-                }
             }
         }
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        QStringList skill_names;
-        skill_names << "cancel";
+        /*QList<ServerPlayer *> listt;
         foreach(ServerPlayer *p, room->getAllPlayers(true)) {
             if (p->isDead()) {
-                const General *general = p->getGeneral();
-                foreach(const Skill *skill, general->getVisibleSkillList()) {
-                    if (skill->isLordSkill()
-                        || skill->getFrequency() == Skill::Eternal
-                        || skill->getFrequency() == Skill::Wake)
-                        continue;
-                    if (!skill_names.contains(skill->objectName()))
-                        skill_names << skill->objectName();
+                if (p->getGeneral() != NULL && p->getGeneralName() != "sujiang" && p->getGeneralName() != "sujiangf") {
+                    listt << p;
                 }
             }
         }
-        QString choice = room->askForChoice(invoke->invoker, objectName(), skill_names.join("+"));
-        invoke->invoker->tag["TonglingSkill"] = choice;
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, listt, objectName(), "@tongling", true, true);
+        if (target)
+            invoke->targets << target;
+
+        return target != NULL;*/
+
+        if (!invoke->invoker->isOnline()) {
+            QStringList skill_names;
+            QList<ServerPlayer *> targets;
+            
+            foreach(ServerPlayer *p, room->getAllPlayers(true)) {
+                if (p->isDead() && p->getGeneral() != NULL && p->getGeneralName() != "sujiang" && p->getGeneralName() != "sujiangf") {
+                    foreach(const Skill *skill, p->getGeneral()->getVisibleSkillList()) {
+                        if (skill->isLordSkill()
+                            || skill->getFrequency() == Skill::Eternal
+                            || skill->getFrequency() == Skill::Wake)
+                            continue;
+                        if (!skill_names.contains(skill->objectName())) {
+                            skill_names << skill->objectName();
+                            targets << p;
+                        }
+                    }
+                }
+            }
+            skill_names << "cancel";
+            QString skill_name = room->askForChoice(invoke->invoker, objectName(), skill_names.join("+"));
+            if (skill_name != "cancel") {
+                invoke->targets << targets.at(skill_names.indexOf(skill_name));
+                room->notifySkillInvoked(invoke->invoker, objectName());
+                room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
+            }
+            return skill_name != "cancel";
+            
+        } else {
+            if (invoke->invoker->askForSkillInvoke(this, data)) {
+                QStringList general_list;
+                foreach(ServerPlayer *p, room->getAllPlayers(true)) {
+                    if (p->isDead() && p->getGeneral() != NULL && p->getGeneralName() != "sujiang" && p->getGeneralName() != "sujiangf")
+                            general_list << p->getGeneralName();
+                }
+
+                QString general = room->askForGeneral(invoke->invoker, general_list);
+                //forbid cheat
+                if (!general_list.contains(general))
+                    general = general_list.at(qrand() % general_list.length());
+                foreach(ServerPlayer *p, room->getAllPlayers(true)) {
+                    if (p->isDead() && p->getGeneralName() == general) {
+                        invoke->targets << p;
+                        break;
+                    }
+                }
+                return true;
+            }
         
-        return choice != "cancel";
+        }
+        
+        
+        return false;
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        QString skill_name = invoke->invoker->tag.value("TonglingSkill", QString()).toString();
         room->removePlayerMark(invoke->invoker, "@tongling");
-        room->notifySkillInvoked(invoke->invoker, objectName());
-        room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
+        const General *general = invoke->targets.first()->getGeneral();
+        QString new_general = invoke->targets.first()->isMale() ? "sujiang" : "sujiangf";
+        room->changeHero(invoke->targets.first(), new_general, false, false, false, false);
+
+        QStringList skill_names;
         
-        ServerPlayer *skill_owner;
-        foreach(ServerPlayer *p, room->getAllPlayers(true)) {
-            if (p->isDead()) {
-                const General *general = p->getGeneral();
-                foreach(const Skill *skill, general->getVisibleSkillList()) {
-                    if (skill->isLordSkill()
-                        || skill->getFrequency() == Skill::Eternal
-                        || skill->getFrequency() == Skill::Wake)
-                        continue;
-                    if (skill->objectName() == skill_name) {
-                        skill_owner = p;
-                        break;
-                    }
-                }
-            }
+        foreach(const Skill *skill, general->getVisibleSkillList()) {
+            if (skill->isLordSkill()
+                || skill->getFrequency() == Skill::Eternal
+                || skill->getFrequency() == Skill::Wake)
+                continue;
+            if (!skill_names.contains(skill->objectName()))
+                skill_names << skill->objectName();
         }
-
-        invoke->invoker->tag["Huashen_skill"] = skill_name;
-        invoke->invoker->tag["Huashen_target"] = QVariant::fromValue(skill_owner);
-
-        JsonArray arg;
-        arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-        arg << invoke->invoker->objectName();
-        arg << skill_owner->getGeneral()->objectName();
-        arg << skill_name;
+        if (skill_names.isEmpty())
+            skill_names << "cancel";
+        QString skill_name = room->askForChoice(invoke->invoker, objectName(), skill_names.join("+"));
         
-        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
-        room->handleAcquireDetachSkills(invoke->invoker, skill_name, true);
+        if (skill_name != "cancel") {
+            invoke->invoker->tag["Huashen_target"] = general->objectName();
+            invoke->invoker->tag["Huashen_skill"] = skill_name;
+
+            JsonArray arg;
+            arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+            arg << invoke->invoker->objectName();
+            arg << general->objectName();
+            arg << skill_name;
+            room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+            room->handleAcquireDetachSkills(invoke->invoker, skill_name, true);
+        }
         return false;
     }
 

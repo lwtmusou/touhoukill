@@ -1243,12 +1243,12 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     //for huashen  like skill pingyi
 
     QString huashen_skill = this->tag.value("Huashen_skill", QString()).toString();
-    ServerPlayer *huashen_target = this->tag["Huashen_target"].value<ServerPlayer *>();
+    QString huashen_target = this->tag.value("Huashen_target", QString()).toString();
     if (huashen_skill != NULL && huashen_target != NULL) {
         JsonArray huanshen_arg;
         huanshen_arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
         huanshen_arg << objectName();
-        huanshen_arg << huashen_target->getGeneral()->objectName();
+        huanshen_arg << huashen_target;
         huanshen_arg << huashen_skill;
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, huanshen_arg);
     }

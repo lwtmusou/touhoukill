@@ -956,7 +956,7 @@ public:
 
             // 3. acquire the skill
             yori->tag["Huashen_skill"] = skill->objectName();
-            yori->tag["Huashen_target"] = QVariant::fromValue(skill_owner);
+            yori->tag["Huashen_target"] = skill_owner->getGeneralName();
             room->handleAcquireDetachSkills(yori, skill->objectName(), true);
         }
     }
