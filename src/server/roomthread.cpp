@@ -657,7 +657,8 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
     std::stable_sort(details.begin(), details.end(), [](const QSharedPointer<SkillInvokeDetail> &a1, const QSharedPointer<SkillInvokeDetail> &a2) { return *a1 < *a2; });
 
     // mark the skills which missed the trigger timing as it has triggered
-    QSharedPointer<SkillInvokeDetail> over_trigger;
+    QSharedPointer<SkillInvokeDetail> over_trigger = (triggered.isEmpty() ? QSharedPointer<SkillInvokeDetail>() : triggered.last());
+
     QListIterator<QSharedPointer<SkillInvokeDetail> > it(details);
     it.toBack();
     while (it.hasPrevious()) {
@@ -665,7 +666,7 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
         // if over_trigger is valid, then mark the skills which missed the trigger timing as it has triggered.
         const QSharedPointer<SkillInvokeDetail> &detail = it.previous();
         if (over_trigger.isNull() || !over_trigger->isValid()) {
-            if (detail->triggered)
+            if (detail->triggered && !(*detail < *over_trigger))
                 over_trigger = detail;
         } else if (*detail < *over_trigger)
             detail->triggered = true;
