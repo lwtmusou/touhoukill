@@ -2223,11 +2223,11 @@ public:
             if (!current || !current->isCurrent() || current->isSkipped(Player::Play))
                 return QList<SkillInvokeDetail>();
 
-            QVariant extraTag = room->getTag("touhou-extra");
-            bool nowExtraTurn = extraTag.canConvert(QVariant::Bool) && extraTag.toBool();
+            //QVariant extraTag = room->getTag("touhou-extra");
+            //bool nowExtraTurn = extraTag.canConvert(QVariant::Bool) && extraTag.toBool();
 
-            if (nowExtraTurn)
-                return QList<SkillInvokeDetail>();
+            //if (nowExtraTurn)
+            //    return QList<SkillInvokeDetail>();
 
             QList<SkillInvokeDetail> d;
             foreach(ServerPlayer *source, room->findPlayersBySkillName(objectName())) {

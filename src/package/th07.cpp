@@ -1570,7 +1570,7 @@ class HpymSiyu : public TriggerSkill
 public:
     HpymSiyu() : TriggerSkill("hpymsiyu")
     {
-        events << PostHpReduced << EventPhaseEnd;
+        events << PostHpReduced << EventPhaseChanging;
         frequency = Compulsory;
     }
 
@@ -1586,9 +1586,9 @@ public:
             if (youmu != NULL && youmu->isAlive() && youmu->hasSkill(this) && youmu->getHp() < 1 && !youmu->isCurrent())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, youmu, youmu, NULL, true);
         } else {
-            ServerPlayer *youmu = data.value<ServerPlayer *>();
-            if (youmu->getMark("siyuinvoke") > 0 && youmu->getPhase() == Player::Play && youmu->getHp() < 1)
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, youmu, youmu, NULL, true);
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.player->getMark("siyuinvoke") > 0 && change.to == Player::NotActive && change.player->getHp() < 1)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
         }
 
         return QList<SkillInvokeDetail>();
@@ -1596,7 +1596,7 @@ public:
 
     bool cost(TriggerEvent triggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        if (triggerEvent == EventPhaseEnd)
+        if (triggerEvent == EventPhaseChanging)
             invoke->invoker->removeMark("siyuinvoke");
 
         return true;
@@ -1633,7 +1633,7 @@ public:
 
             Q_UNREACHABLE();
             //return true; // prevent enterdying
-        } else if (triggerEvent == EventPhaseEnd) {
+        } else if (triggerEvent == EventPhaseChanging) {
             room->notifySkillInvoked(invoke->invoker, "hpymsiyu");
             room->enterDying(invoke->invoker, NULL);
         }
