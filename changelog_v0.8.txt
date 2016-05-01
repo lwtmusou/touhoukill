@@ -203,6 +203,9 @@ alpha版
 C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\Remote Debugger\x64
 https://go.microsoft.com/fwlink/?LinkId=615459
 40 加入Lua武将后Room的析构函数崩溃
-41 【念力】崩溃
+41 【念力】偶发性崩溃。。。 不确认原因 应该是dialog本身。
+42 断线重连后，出现ag窗口。（自身武将并没和ag窗口相关的技能）  某些ag窗口没有关掉？
+43 笨蛋的拼点log还是显示为原来的点数。
+ 
 服务器暂时禁掉以下白板：
 神绮 旧爱丽丝  梦月幻月 艾丽  朝仓理香子  魅魔  旧魔理沙  sp琪露诺 sp大狸子  sp咲夜
