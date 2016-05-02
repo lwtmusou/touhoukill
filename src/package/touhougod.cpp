@@ -3681,11 +3681,8 @@ TouhouGodPackage::TouhouGodPackage()
     General *aya = new General(this, "aya_god", "touhougod", 4, false);
     Q_UNUSED(aya);
 
-    General *uuz13 = new General(this, "yuyuko_1v3", "touhougod", 8, false, true);
+    General *uuz13 = new General(this, "yuyuko_1v3", "touhougod", 1, false, true);
     Q_UNUSED(uuz13);
-
-    General *uuz132 = new General(this, "yuyuko_1v32", "touhougod", 4, false, true);
-    Q_UNUSED(uuz132);
 
     addMetaObject<HongwuCard>();
     addMetaObject<ShenqiangCard>();

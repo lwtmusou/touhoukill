@@ -496,28 +496,22 @@ return{
 	[":rumo"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可令包括你在内的至多X名角色横置，然后你摸X张牌（X为你的体力值且最少为1）。",
  
 	["satori_god"] = "神 古明地觉",
-	["&satori_god"] = "古明地觉" ,
+	["&satori_god"] = "神古明地觉" ,
 	["#satori_god"] = "小五",
 	
 	["yuyuko_god"] = "神 西行寺幽幽子" ,
-	["&yuyuko_god"] = "西行寺幽幽子" ,
+	["&yuyuko_god"] = "神西行寺幽幽子" ,
 	["#yuyuko_god"] = "uuz",
 	
 	["shinmyoumaru_god"] = "神 少名针妙丸" ,
-	["&shinmyoumaru_god"] = "少名针妙丸" ,
+	["&shinmyoumaru_god"] = "神少名针妙丸" ,
 	["#shinmyoumaru_god"] = "小人" ,
 	
 	["aya_god"] = "神 射命丸文" ,
-	["&aya_god"] = "射命丸文" ,
+	["&aya_god"] = "神射命丸文" ,
 	["#aya_god"] = "狗腿" ,
 	
 	["yuyuko_1v3"] = "西行寺幽幽子",
-	["!yuyuko_1v3"] = "西行寺幽幽子-第一阶段",
+	["!yuyuko_1v3"] = "神 西行寺幽幽子-1v3",
 	["#yuyuko_1v3"] = "天衣无缝的亡灵" ,
-	
-	["yuyuko_1v32"] = "西行寺幽幽子" ,
-	["!yuyuko_1v32"] = "西行寺幽幽子-第二阶段" ,
-	["#yuyuko_1v32"] = "雪的亡灵" ,
-	
-	
  }
