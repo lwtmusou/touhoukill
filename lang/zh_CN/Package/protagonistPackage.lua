@@ -68,7 +68,7 @@ return {
 	--zhu003  势力：主 4血
     ["reimu_sp"] = "SP无节操灵梦", 
 	["#reimu_sp"] = "十万巫女",
-    ["&reimu_sp"] = "博丽灵梦",
+    ["&reimu_sp"] = "无节操灵梦",
 	["illustrator:reimu_sp"] = "しがらき",
 	["origin:reimu_sp"] = "p号：19597658，个人ID：1004274",
 	["illustrator:reimu_sp_1"] = "あめろ",
@@ -88,7 +88,7 @@ return {
 --************************************************
 	--zhu004  势力：主 3血
     ["marisa_sp"] = "SP大盗魔理沙",
-    ["&marisa_sp"] = "雾雨魔理沙",
+    ["&marisa_sp"] = "大盗魔理沙",
 	["#marisa_sp"] = "大盗",
 	["illustrator:marisa_sp"] = "seeker",
 	["origin:marisa_sp"] = "p号：13164043，个人ID：694807", --（国人）
@@ -110,7 +110,7 @@ return {
 --************************************************
  --zhu005  势力：主 4血
     ["marisa_sp2"] = "SP超魔理沙",
-    ["&marisa_sp2"] = "雾雨魔理沙",
+    ["&marisa_sp2"] = "超魔理沙",
 	["#marisa_sp2"] = "超·恋之魔女",
 	["illustrator:marisa_sp2"] = "AUER",
 	["origin:marisa_sp2"] = "p号：1150651，个人ID：178301", --（国人）
@@ -128,7 +128,7 @@ return {
 --************************************************
   --zhu006  势力：主 4血
 	["reimu_yym"]= "妖妖梦sp灵梦",
-	["&reimu_yym"]= "博丽灵梦",
+	["&reimu_yym"]= "妖妖梦灵梦",
 	["#reimu_yym"]= "春巫女",
 	["illustrator:reimu_yym"] = "みゃけ",
 	["origin:reimu_yym"] = "p号：9705615，个人ID：60103",
@@ -148,7 +148,7 @@ return {
 	--zhu007  势力：主 4血
 	["reimu_slm"] = "神灵庙sp灵梦" ,
 	["#reimu_slm"] = "五欲的巫女" ,
-	["&reimu_slm"] = "博丽灵梦" ,
+	["&reimu_slm"] = "神灵庙灵梦" ,
 	["illustrator:reimu_slm"] = "藤原",
 	["origin:reimu_slm"] = "p号：51160511，个人ID：27517",
 	["illustrator:reimu_slm_1"] = "ぬぬっこ",
@@ -175,7 +175,7 @@ return {
 --************************************************
 	--zhu008  势力：主 3血
 	["marisa_slm"] = "神灵庙sp魔理沙",
-	["&marisa_slm"] = "雾雨魔理沙",
+	["&marisa_slm"] = "神灵庙魔理沙",
 	["#marisa_slm"] = "强欲的魔法使",
 	["illustrator:marisa_slm"] = "まるかた",
 	["origin:marisa_slm"] = "p号：8831829，个人ID：6359",
@@ -198,9 +198,9 @@ return {
 	[":xinghui"] = "当一张“天仪”从你的人物牌上离开时，你可以摸一张牌。",
 	
 	--zhu009
-	["reimu_old"] = "旧作灵梦" ,
+	["reimu_old"] = "旧作sp灵梦" ,
 	["#reimu_old"] = "维护梦与传统的巫女" ,
-	["&reimu_old"] = "博丽灵梦" ,
+	["&reimu_old"] = "旧作灵梦" ,
 	["illustrator:reimu_old"] = "november",
 	["yinyang"] = "阴阳" ,
 	[":yinyang"] = "出牌阶段限一次，你可令一名其他角色弃置一张手牌，然后你弃置一张手牌。若以此法弃置了两张颜色不同的牌，该角色摸一张牌然后回复1点体力。若以此法弃置了两张颜色相同的牌，你摸两张牌然后失去1点体力。" ,
@@ -211,9 +211,9 @@ return {
 	
 	
 	--zhu010
-	["marisa_old"] = "旧作魔理沙" ,
+	["marisa_old"] = "旧作sp魔理沙" ,
 	["#marisa_old"] = "源于魔法与红梦的存在" ,
-	["&marisa_old"] = "雾雨魔理沙" ,
+	["&marisa_old"] = "旧作魔理沙" ,
 	["shicong"] = "师从" ,
 	[":shicong"] = "出牌阶段限一次，你可以令一名其他角色展示一张手牌。若为锦囊牌，你可以将任意一张手牌当此牌使用，直到你以此法使用了一张非黑桃牌；若为非锦囊牌，你可以将此牌置于牌堆顶。" ,
 	["lianse"] = "恋色" ,

@@ -149,7 +149,7 @@ return{
 --*********************************************
 	--slm008  势力：灵 3血
 	["yuyuko_slm"] = "神灵庙sp幽幽子" ,
-	["&yuyuko_slm"] = "西行寺幽幽子" ,
+	["&yuyuko_slm"] = "神灵庙幽幽子" ,
 	["#yuyuko_slm"] = "不再彷徨的亡灵" ,
 	["illustrator:yuyuko_slm"] = "meola",
 	["origin:yuyuko_slm"] = "p号：11911124，个人ID：31990", --（许可范围奇怪。。。）
@@ -168,7 +168,7 @@ return{
 --*********************************************
 	--slm009  势力：灵 3血
 	["nue_slm"] = "神灵庙sp鵺",
-	["&nue_slm"] = "封兽鵺",
+	["&nue_slm"] = "神灵庙鵺",
 	["#nue_slm"] = "古代妖怪之一",
 	["illustrator:nue_slm"] = "赤シオ",
 	["origin:nue_slm"] = "p号：6203096，个人ID：341747",
@@ -193,7 +193,7 @@ return{
 --*********************************************
 	--slm010  势力：灵 3血
 	["kogasa_slm"] = "神灵庙sp小伞" ,
-	["&kogasa_slm"] = "多多良小伞" ,
+	["&kogasa_slm"] = "神灵庙小伞" ,
 	["#kogasa_slm"] = "为难的遗忘之物" ,
 	["illustrator:kogasa_slm"] = "にろ",
 	["origin:kogasa_slm"] = "p号：26300308，个人ID：194231",

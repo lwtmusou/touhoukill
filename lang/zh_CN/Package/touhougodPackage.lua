@@ -19,7 +19,7 @@ return{
 --*************************************
 	--shen001  势力：神 4血
 	["yukari_god"] = "神 八云紫",
-	["&yukari_god"] = "八云紫",
+	["&yukari_god"] = "神八云紫",
 	["#yukari_god"] = "幻想之界",
 	["illustrator:yukari_god"] = "NEKO",
 	["origin:yukari_god"] = "p号:28123130，个人ID：306422" ,
@@ -38,7 +38,7 @@ return{
 --*************************************
 	--shen002  势力：神 3血
     ["remilia_god"] = "神 蕾米莉亚",
-	["&remilia_god"] = "蕾米莉亚",
+	["&remilia_god"] = "神蕾米莉亚",
 	["#remilia_god"] = "永远的红之幼月",
     ["!remilia_god"] = "神 蕾米莉亚·斯卡蕾特",
 	["illustrator:remilia_god"] = "とりのあくあ",
@@ -62,7 +62,7 @@ return{
 --*************************************
 	--shen003  势力：神 4血
 	["cirno_god"] = "神 琪露诺",
-	["&cirno_god"] = "琪露诺",
+	["&cirno_god"] = "神琪露诺",
 	["#cirno_god"] = "最强",
 	["illustrator:cirno_god"] = "牛木義隆",
 	["origin:cirno_god"] = "个人ID：4544" ,
@@ -83,7 +83,7 @@ return{
 --*************************************
 	--shen004  势力：神 4血
 	["utsuho_god"] = "神 灵乌路空",
-	["&utsuho_god"] = "灵乌路空",
+	["&utsuho_god"] = "神灵乌路空",
 	["#utsuho_god"] = "地底的太阳",
 	["illustrator:utsuho_god"] = "唯",
 	["origin:utsuho_god"] = "p号:8170252，个人ID：230943" ,
@@ -104,7 +104,7 @@ return{
 --*************************************
 	--shen005  势力：神 0血
 	["suika_god"] = "神 伊吹萃香",
-	["&suika_god"] = "伊吹萃香",
+	["&suika_god"] = "神伊吹萃香",
 	["#suika_god"] = "虚幻的萃聚之梦",
 	["illustrator:suika_god"] = "華々つぼみ",
 	["origin:suika_god"] = "p号：4204240，个人ID：225672",
@@ -124,7 +124,7 @@ return{
 --*************************************
 	--shen006  势力：神 3血
     ["flandre_god"]= "神 芙兰朵露",
-	["&flandre_god"]= "芙兰朵露",
+	["&flandre_god"]= "神芙兰朵露",
 	["#flandre_god"]= "绯色月下",
     ["!flandre_god"]="神 芙兰朵露·斯卡雷特",
 
@@ -147,7 +147,7 @@ return{
 --*************************************
 	--shen007  势力：神 3血
 	["sakuya_god"] = "神 十六夜咲夜",
-	["&sakuya_god"] = "十六夜咲夜",
+	["&sakuya_god"] = "神十六夜咲夜",
 	["#sakuya_god"] = "铭刻的月之钟",
 	["illustrator:sakuya_god"] = "雪降り",
 	["origin:sakuya_god"] = "p号：2074909，个人ID：126233", --（国人？）
@@ -174,7 +174,7 @@ return{
 --*************************************
 	--shen008  势力：神 3血+3血
 	["youmu_god"] = "神 魂魄妖梦",
-	["&youmu_god"] = "魂魄妖梦",
+	["&youmu_god"] = "神魂魄妖梦",
 	["#youmu_god"] = "半生半死、半悟半惘",
 	["illustrator:youmu_god"] = "伊関",
 	["origin:youmu_god"] = "p号：4047009，个人ID：4655",
@@ -210,7 +210,7 @@ return{
 --*************************************
 	--shen009  势力：神 4血
     ["reisen_god"] = "神 铃仙", 
-	["&reisen_god"] = "铃仙",
+	["&reisen_god"] = "神铃仙",
 	["#reisen_god"] = "狂气的赤眼",
     ["!reisen_god"] = "神 铃仙·优昙华院·因幡",
 	["illustrator:reisen_god"] = "べし",
@@ -228,7 +228,7 @@ return{
 --*************************************
 	--shen010  势力：神 4血
 	["sanae_god"] = "神 东风谷早苗",
-	["&sanae_god"] = "东风谷早苗",
+	["&sanae_god"] = "神东风谷早苗",
 	["#sanae_god"] = "现代人的现人神",
 	["illustrator:sanae_god"] = "粗茶",
 	["origin:sanae_god"] = "p号：20068975，个人ID：10210", --（可以？）
@@ -248,7 +248,7 @@ return{
 --*************************************
 	--shen011  势力：神 4血
 	["reimu_god"] = "神 博丽灵梦",
-	["&reimu_god"] = "博丽灵梦",
+	["&reimu_god"] = "神博丽灵梦",
 	["#reimu_god"] = "幻想乡秩序的守护者",
 	["illustrator:reimu_god"] = "赤りんご",
 	["origin:reimu_god"] = "p号：15423619，个人ID：164813",  --(貌似可以用的样子。。但其个人网站乱码 确认不能。。。)
@@ -272,7 +272,7 @@ return{
 --*************************************
 	--shen012  势力：神 4血
     ["shikieiki_god"] = "神 四季映姬" ,
-	["&shikieiki_god"] = "四季映姬" ,
+	["&shikieiki_god"] = "神四季映姬" ,
 	["#shikieiki_god"] = "幻想乡的裁判长" ,
     ["!shikieiki_god"] = "神 四季映姬·亚玛萨那度" ,
 	["illustrator:shikieiki_god"] = "卜部ミチル",
@@ -291,7 +291,7 @@ return{
 --*************************************
 	--shen013  势力：神 3血
 	["meirin_god"] = "神 红美铃",
-	["&meirin_god"] = "红美铃",
+	["&meirin_god"] = "神红美铃",
 	["#meirin_god"] = "龙神的化身",
 	["illustrator:meirin_god"] = "shihou",
 	["origin:meirin_god"] = "p号：16008904，个人ID：591727",
@@ -315,7 +315,7 @@ return{
 --*************************************
 	--shen014  势力：神 4血
 	["eirin_god"] = "神 八意永琳",
-	["&eirin_god"] = "八意永琳",
+	["&eirin_god"] = "神八意永琳",
     ["#eirin_god"] = "月都大贤者", 
 	["illustrator:eirin_god"] = "NEKO",
 	["origin:eirin_god"] = "p号：30537439，个人ID：2600911", --（国人）
@@ -330,7 +330,7 @@ return{
 --*************************************
 	--shen015  势力：神 4血
 	["kanako_god"] = "神 八坂神奈子" ,
-	["&kanako_god"] = "八坂神奈子",
+	["&kanako_god"] = "神八坂神奈子",
 	["#kanako_god"] = "大和神" ,
 	["illustrator:kanako_god"] = "NEKO",
 	["origin:kanako_god"] = "p号：28471296，个人ID：2600911", --（国人）
@@ -347,7 +347,7 @@ return{
 --*************************************
 	--shen016  势力：神 4血
 	["byakuren_god"] = "神 圣白莲" ,
-	["&byakuren_god"] = "圣白莲" ,
+	["&byakuren_god"] = "神圣白莲" ,
 	["#byakuren_god"] = "灭除八苦的尼公" ,
 	["illustrator:byakuren_god"] = "NEKO",
 	["origin:byakuren_god"] = "p号：31716552，个人ID：2600911", --（国人）
@@ -362,7 +362,7 @@ return{
 --*************************************
 	--shen017  势力：神 3血
 	["koishi_god"] = "神 古明地恋",
-	["&koishi_god"] = "古明地恋",
+	["&koishi_god"] = "神古明地恋",
 	["#koishi_god"] = "哈特曼的妖怪少女",
 	["illustrator:koishi_god"] = "茶葉",
 	["origin:koishi_god"] = "p号：15934556，个人ID：13233",
@@ -397,7 +397,7 @@ return{
 	--shen018  势力：神 5血
 	["suwako_god"] = "神 泄矢诹访子",
 	["#suwako_god"] = "名存实亡的神明",
-	["&suwako_god"] = "泄矢诹访子",
+	["&suwako_god"] = "神泄矢诹访子",
 		["illustrator:suwako_god"] = "ルリア",
 	["origin:suwako_god"] = "p号：13338753",
 	["illustrator:suwako_god_1"] = "伊吹のつ",
@@ -421,7 +421,7 @@ return{
 --*************************************
 	--shen019  势力：神 4血
 	 ["miko_god"] = "神 丰聪耳神子",
-	["&miko_god"] = "丰聪耳神子",
+	["&miko_god"] = "神丰聪耳神子",
 	["#miko_god"] = "日出之国的天子",
 		["illustrator:miko_god"] = "Mik-cis",
 	["origin:miko_god"] = "p号：35385868",
@@ -449,7 +449,7 @@ return{
 --*************************************
    --shen020  势力：神 4血
 	["kaguya_god"] = "神 蓬莱山辉夜",
-	["&kaguya_god"] = "蓬莱山辉夜",
+	["&kaguya_god"] = "神蓬莱山辉夜",
 	["#kaguya_god"] = "永远的公主殿下",
 	["illustrator:kaguya_god"] = "しまちょ",
 	["origin:kaguya_god"] = "p号：1051695，个人ID：12647",
@@ -466,7 +466,7 @@ return{
 --*************************************
 	--shen021  势力：神 4血
 	["komachi_god"] = "神 小野塚小町",
-	["&komachi_god"] = "小野塚小町",
+	["&komachi_god"] = "神小野塚小町",
 	["#komachi_god"] = "江户时代气质的死神",
 	["illustrator:komachi_god"] = "にしもん",
 	["origin:komachi_god"] = "p号：29989054，个人ID：202286",
@@ -486,7 +486,7 @@ return{
 	
 	--shen??  势力：神 3血
 	["seiga_god"] = "神 霍青娥",
-	["&seiga_god"] = "霍青娥",
+	["&seiga_god"] = "神霍青娥",
 	["#seiga_god"] = "古老的邪仙",
 	["huanhun"] = "还魂",
 	[":huanhun"] = "<font color=\"#808080\"><b>永久技，</b></font>当其他角色死亡后，若你已死亡，你以游戏开始时的状态重新加入游戏。",
