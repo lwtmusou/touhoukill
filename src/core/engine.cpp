@@ -953,7 +953,7 @@ QStringList Engine::getLimitedGeneralNames() const
 
         foreach (const General *general, hulao_generals) {
             if (isGeneralHidden(general->objectName()) || general->isTotallyHidden()
-                || general->objectName() == "shenlvbu1" || general->objectName() == "shenlvbu2")
+                || general->objectName() == "yuyuko_1v3" || general->objectName() == "yuyuko_1v32")
                 continue;
             general_names << general->objectName();
         }

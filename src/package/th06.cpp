@@ -422,7 +422,7 @@ void SuodingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
         if (source == sp) {
             const Card *cards = room->askForExchange(source, "suoding", map.value(sp), map.value(sp), false, "suoding_exchange:" + QString::number(map[sp]));
             DELETE_OVER_SCOPE(const Card, cards)
-            foreach(int id, cards->getSubcards())
+            foreach (int id, cards->getSubcards())
                 sp->addToPile("suoding_cards", id, false);
         } else {
             for (int i = 0; i < map[sp]; i++) {

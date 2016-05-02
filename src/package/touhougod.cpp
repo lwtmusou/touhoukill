@@ -3582,7 +3582,6 @@ TouhouGodPackage::TouhouGodPackage()
     suika_god->addSkill(new Cuixiang);
     suika_god->addSkill(new Xuying);
 
-
     General *flandre_god = new General(this, "flandre_god", "touhougod", 3, false);
     flandre_god->addSkill(new Kuangyan);
     flandre_god->addSkill(new Huimie);
@@ -3593,7 +3592,6 @@ TouhouGodPackage::TouhouGodPackage()
     sakuya_god->addSkill(new Shiting);
     sakuya_god->addSkill(new Huanzai);
     sakuya_god->addSkill(new Shanghun);
-
 
     General *youmu_god = new General(this, "youmu_god", "touhougod", 3, false);
     youmu_god->addSkill(new Banling);
@@ -3624,12 +3622,10 @@ TouhouGodPackage::TouhouGodPackage()
     meirin_god->addSkill(new Caiyu);
     meirin_god->addSkill(new Xuanlan);
 
-
     General *eirin_god = new General(this, "eirin_god", "touhougod", 4, false);
     eirin_god->addSkill(new Qiannian);
     eirin_god->addSkill(new QiannianMax);
     related_skills.insertMulti("qiannian", "#qiannian_max");
-
 
     General *kanako_god = new General(this, "kanako_god", "touhougod", 4, false);
     kanako_god->addSkill(new Qinlue);
@@ -3670,11 +3666,28 @@ TouhouGodPackage::TouhouGodPackage()
     komachi_god->addSkill(new Huanming);
     komachi_god->addSkill(new Chuanwu);
 
-
     General *seiga_god = new General(this, "seiga_god", "touhougod", 3, false);
     seiga_god->addSkill(new Huanhun);
     seiga_god->addSkill(new Tongling);
     seiga_god->addSkill(new Rumo);
+
+    General *satori = new General(this, "satori_god", "touhougod", 4, false);
+    Q_UNUSED(satori);
+
+    General *uuz = new General(this, "yuyuko_god", "touhougod", 4, false);
+    Q_UNUSED(uuz);
+
+    General *zmw = new General(this, "shinmyoumaru_god", "touhougod", 4, false);
+    Q_UNUSED(zmw);
+
+    General *aya = new General(this, "aya_god", "touhougod", 4, false);
+    Q_UNUSED(aya);
+
+    General *uuz13 = new General(this, "yuyuko_1v3", "touhougod", 8, false, true);
+    Q_UNUSED(uuz13);
+
+    General *uuz132 = new General(this, "yuyuko_1v32", "touhougod", 4, false, true);
+    Q_UNUSED(uuz132);
 
     addMetaObject<HongwuCard>();
     addMetaObject<ShenqiangCard>();

@@ -997,15 +997,15 @@ bool HulaoPassMode::effect(TriggerEvent triggerEvent, Room * room, QSharedPointe
         {
             ServerPlayer *lord = room->getLord();
             room->setPlayerMark(lord, "secondMode", 1);
-            room->changeHero(lord, "shenlvbu2", true, true, false, false);
+            room->changeHero(lord, "yuyuko_1v32", true, true, false, false);
 
             LogMessage log;
             log.type = "$AppendSeparator";
             room->sendLog(log);
 
             log.type = "#HulaoTransfigure";
-            log.arg = "#shenlvbu1";
-            log.arg2 = "#shenlvbu2";
+            log.arg = "#yuyuko_1v3";
+            log.arg2 = "#yuyuko_1v32";
             room->sendLog(log);
 
             room->doLightbox("$StageChange", 5000);
