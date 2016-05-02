@@ -660,7 +660,7 @@ enum TriggerEvent
 
     ChoiceMade,
 
-    StageChange, // For hulao pass only
+    // StageChange, // For hulao pass only
     FetchDrawPileCard, // For miniscenarios only
     ActionedReset, // For 3v3 only
     Debut, // For 1v1 only

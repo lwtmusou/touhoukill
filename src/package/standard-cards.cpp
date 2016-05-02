@@ -630,55 +630,7 @@ public:
         return false;
     }
 };
-//original version blade
-/*
-class BladeSkill : public WeaponSkill
-{
-public:
-    BladeSkill() : WeaponSkill("Blade")
-    {
-        events << SlashMissed;
-    }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
-    {
-        SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if (!equipAvailable(effect.from, EquipCard::WeaponLocation, objectName()))
-            return QList<SkillInvokeDetail>();
-
-        if (effect.to->isAlive() && effect.from->canSlash(effect.to, NULL, false))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.from, effect.from); // since blade is no target, the skill can't be nullified by skills like zuixiang(star sp pangtong)
-
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        int weapon_id = -1;
-        if (invoke->invoker->getWeapon()) {
-            weapon_id = invoke->invoker->getWeapon()->getId();
-            room->setCardFlag(weapon_id, "using");
-        }
-        effect.from->setFlags("BladeUse");
-        try {
-            room->askForUseSlashTo(effect.from, effect.to, QString("blade-slash:%1").arg(effect.to->objectName()), false, true);
-            effect.from->setFlags("-BladeUse");
-            if (weapon_id != -1)
-                room->setCardFlag(weapon_id, "-using");
-        }
-        catch (TriggerEvent triggerEvent) {
-            if (triggerEvent == TurnBroken || triggerEvent == StageChange) {
-                effect.from->setFlags("-BladeUse");
-                if (weapon_id != -1)
-                    room->setCardFlag(weapon_id, "-using");
-            }
-            throw;
-        }
-        return false;
-    }
-};
-*/
 Blade::Blade(Suit suit, int number)
     : Weapon(suit, number, 3)
 {
@@ -1003,7 +955,7 @@ void AmazingGrace::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
         clearRestCards(room);
     }
     catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken || triggerEvent == StageChange)
+        if (triggerEvent == TurnBroken)
             clearRestCards(room);
         throw triggerEvent;
     }

@@ -178,76 +178,49 @@ void RoomThread::_handleTurnBroken3v3(QList<ServerPlayer *> &first, QList<Server
     }
 }
 
-ServerPlayer *RoomThread::findHulaoPassNext(ServerPlayer *shenlvbu, QList<ServerPlayer *> league, int stage)
+ServerPlayer *RoomThread::findHulaoPassNext(ServerPlayer *uuz, QList<ServerPlayer *> league)
 {
     ServerPlayer *current = room->getCurrent();
-    if (stage == 1) {
-        if (current == shenlvbu) {
-            foreach (ServerPlayer *p, league) {
-                if (p->isAlive() && !p->hasFlag("actioned"))
-                    return p;
-            }
-            foreach (ServerPlayer *p, league) {
-                if (p->isAlive())
-                    return p;
-            }
-            Q_ASSERT(false);
-            return league.first();
-        } else {
-            return shenlvbu;
+    if (current == uuz) {
+        foreach (ServerPlayer *p, league) {
+            if (p->isAlive() && !p->hasFlag("actioned"))
+                return p;
         }
-    } else {
-        Q_ASSERT(stage == 2);
-        return current->getNextAlive();
-    }
+        foreach (ServerPlayer *p, league) {
+            if (p->isAlive())
+                return p;
+        }
+        Q_ASSERT(false);
+        return league.first();
+    } else
+        return uuz;
 }
 
-void RoomThread::actionHulaoPass(ServerPlayer *shenlvbu, QList<ServerPlayer *> league, GameRule *game_rule, int stage)
+void RoomThread::actionHulaoPass(ServerPlayer *uuz, QList<ServerPlayer *> league, GameRule *game_rule)
 {
     try {
-        if (stage == 1) {
-            forever{
-                ServerPlayer *current = room->getCurrent();
-                QVariant v = QVariant::fromValue(current);
-                trigger(TurnStart, room, v);
+        forever{
+            ServerPlayer *current = room->getCurrent();
+            QVariant v = QVariant::fromValue(current);
+            trigger(TurnStart, room, v);
 
-                ServerPlayer *next = findHulaoPassNext(shenlvbu, league, 1);
-                if (current != shenlvbu) {
-                    if (current->isAlive() && !current->hasFlag("actioned"))
-                        room->setPlayerFlag(current, "actioned");
-                } else {
-                    bool all_actioned = true;
-                    foreach (ServerPlayer *player, league) {
-                        if (player->isAlive() && !player->hasFlag("actioned")) {
-                            all_actioned = false;
-                            break;
-                        }
-                    }
-                    if (all_actioned) {
-                        foreach (ServerPlayer *player, league) {
-                            if (player->hasFlag("actioned"))
-                                room->setPlayerFlag(player, "-actioned");
-                        }
-                        foreach (ServerPlayer *player, league) {
-                            if (player->isDead()) {
-                                QVariant v = QVariant::fromValue(player);
-                                trigger(TurnStart, room, v);
-                            }
-                        }
+            ServerPlayer *next = findHulaoPassNext(uuz, league);
+            if (current != uuz) {
+                if (current->isAlive() && !current->hasFlag("actioned"))
+                    room->setPlayerFlag(current, "actioned");
+            } else {
+                bool all_actioned = true;
+                foreach (ServerPlayer *player, league) {
+                    if (player->isAlive() && !player->hasFlag("actioned")) {
+                        all_actioned = false;
+                        break;
                     }
                 }
-
-                room->setCurrent(next);
-            }
-        } else {
-            Q_ASSERT(stage == 2);
-            forever{
-                ServerPlayer *current = room->getCurrent();
-                trigger(TurnStart, room);
-
-                ServerPlayer *next = findHulaoPassNext(shenlvbu, league, 2);
-
-                if (current == shenlvbu) {
+                if (all_actioned) {
+                    foreach (ServerPlayer *player, league) {
+                        if (player->hasFlag("actioned"))
+                            room->setPlayerFlag(player, "-actioned");
+                    }
                     foreach (ServerPlayer *player, league) {
                         if (player->isDead()) {
                             QVariant v = QVariant::fromValue(player);
@@ -255,59 +228,39 @@ void RoomThread::actionHulaoPass(ServerPlayer *shenlvbu, QList<ServerPlayer *> l
                         }
                     }
                 }
-                room->setCurrent(next);
             }
+
+            room->setCurrent(next);
         }
     }
     catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == StageChange) {
-            stage = 2;
-            QVariant v = QVariant::fromValue(shenlvbu);
-            trigger(triggerEvent, room, v);
-            foreach (ServerPlayer *player, room->getPlayers()) {
-                if (player != shenlvbu) {
-                    if (player->hasFlag("actioned"))
-                        room->setPlayerFlag(player, "-actioned");
-
-                    if (player->getPhase() != Player::NotActive) {
-                        QVariant data = QVariant::fromValue(player);
-                        game_rule->effect(EventPhaseEnd, room, QSharedPointer<SkillInvokeDetail>(), data);
-                        player->changePhase(player->getPhase(), Player::NotActive);
-                    }
-                }
-            }
-
-            room->setCurrent(shenlvbu);
-            actionHulaoPass(shenlvbu, league, game_rule, 2);
-        } else if (triggerEvent == TurnBroken) {
-            _handleTurnBrokenHulaoPass(shenlvbu, league, game_rule, stage);
-        } else {
+        if (triggerEvent == TurnBroken)
+            _handleTurnBrokenHulaoPass(uuz, league, game_rule);
+        else
             throw triggerEvent;
-        }
     }
 }
 
-void RoomThread::_handleTurnBrokenHulaoPass(ServerPlayer *shenlvbu, QList<ServerPlayer *> league, GameRule *game_rule, int stage)
+void RoomThread::_handleTurnBrokenHulaoPass(ServerPlayer *uuz, QList<ServerPlayer *> league, GameRule *game_rule)
 {
     try {
         ServerPlayer *player = room->getCurrent();
         QVariant v = QVariant::fromValue(player);
         trigger(TurnBroken, room, v);
-        ServerPlayer *next = findHulaoPassNext(shenlvbu, league, stage);
+        ServerPlayer *next = findHulaoPassNext(uuz, league);
         if (player->getPhase() != Player::NotActive) {
             QVariant data = QVariant::fromValue(player);
             game_rule->effect(EventPhaseEnd, room, QSharedPointer<SkillInvokeDetail>(), data);
             player->changePhase(player->getPhase(), Player::NotActive);
-            if (player != shenlvbu && stage == 1)
+            if (player != uuz)
                 room->setPlayerFlag(player, "actioned");
         }
-
         room->setCurrent(next);
-        actionHulaoPass(shenlvbu, league, game_rule, stage);
+        actionHulaoPass(uuz, league, game_rule);
     }
     catch (TriggerEvent triggerEvent) {
         if (triggerEvent == TurnBroken)
-            _handleTurnBrokenHulaoPass(shenlvbu, league, game_rule, stage);
+            _handleTurnBrokenHulaoPass(uuz, league, game_rule);
         else
             throw triggerEvent;
     }
@@ -451,12 +404,12 @@ void RoomThread::run()
         if (room->getMode() == "06_3v3") {
             run3v3(first, second, game_rule, first.first());
         } else if (room->getMode() == "04_1v3") {
-            ServerPlayer *shenlvbu = room->getLord();
+            ServerPlayer *uuz = room->getLord();
             QList<ServerPlayer *> league = room->getPlayers();
-            league.removeOne(shenlvbu);
+            league.removeOne(uuz);
 
             room->setCurrent(league.first());
-            actionHulaoPass(shenlvbu, league, game_rule, 1);
+            actionHulaoPass(uuz, league, game_rule);
         } else {
             if (room->getMode() == "02_1v1") {
                 ServerPlayer *first = room->getPlayers().first();

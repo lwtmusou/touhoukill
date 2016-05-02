@@ -3447,7 +3447,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
         }
     }
     catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == StageChange || triggerEvent == TurnBroken) {
+        if (triggerEvent == TurnBroken) {
             if (getCardPlace(card_use.card->getEffectiveId()) == Player::PlaceTable) {
                 CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, card_use.from->objectName(), QString(), card_use.card->getSkillName(), QString());
                 if (card_use.to.size() == 1) reason.m_targetId = card_use.to.first()->objectName();
@@ -3779,7 +3779,7 @@ void Room::damage(const DamageStruct &data)
         }
     }
     catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == StageChange || triggerEvent == TurnBroken) {
+        if (triggerEvent == TurnBroken) {
             removeTag("is_chained");
             removeTag("CurrentDamageStruct");
             m_damageStack.clear();
@@ -5259,7 +5259,7 @@ const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, in
             player->setFlags("-Global_AIDiscardExchanging");
         }
         catch (TriggerEvent triggerEvent) {
-            if (triggerEvent == TurnBroken || triggerEvent == StageChange)
+            if (triggerEvent == TurnBroken)
                 player->setFlags("-Global_AIDiscardExchanging");
             throw triggerEvent;
         }

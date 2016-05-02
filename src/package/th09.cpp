@@ -827,7 +827,7 @@ const Card *TianrenCard::validate(CardUseStruct &cardUse) const
                 QVariant(), Card::MethodResponse, lord, false, QString(), true);
         }
         catch (TriggerEvent triggerEvent) {
-            if (triggerEvent == TurnBroken || triggerEvent == StageChange) {
+            if (triggerEvent == TurnBroken) {
                 foreach(ServerPlayer *target, targets)
                     target->setFlags("-tianrenTarget");
             }

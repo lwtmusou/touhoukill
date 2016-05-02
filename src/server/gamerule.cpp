@@ -332,7 +332,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                         card_use.from->tag["Jink_" + card_use.card->toString()] = QVariant::fromValue(jink_list_backup);
                 }
                 catch (TriggerEvent triggerEvent) {
-                    if (triggerEvent == TurnBroken || triggerEvent == StageChange)
+                    if (triggerEvent == TurnBroken)
                         card_use.from->tag.remove("Jink_" + card_use.card->toString());
                     throw triggerEvent;
                 }
@@ -796,7 +796,7 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const
         room->setTag("FirstRound", false);
     }
     catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken || triggerEvent == StageChange)
+        if (triggerEvent == TurnBroken)
             room->setTag("FirstRound", false);
         throw triggerEvent;
     }
@@ -855,7 +855,7 @@ void GameRule::changeGeneralXMode(ServerPlayer *player) const
         room->setTag("FirstRound", false);
     }
     catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken || triggerEvent == StageChange)
+        if (triggerEvent == TurnBroken)
             room->setTag("FirstRound", false);
         throw triggerEvent;
     }
@@ -987,44 +987,11 @@ HulaoPassMode::HulaoPassMode(QObject *parent)
     : GameRule(parent)
 {
     setObjectName("hulaopass_mode");
-    events << HpChanged << StageChange;
 }
 
-bool HulaoPassMode::effect(TriggerEvent triggerEvent, Room * room, QSharedPointer<SkillInvokeDetail> invoke, QVariant & data) const
+bool HulaoPassMode::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
 {
     switch (triggerEvent) {
-        case StageChange:
-        {
-            ServerPlayer *lord = room->getLord();
-            room->setPlayerMark(lord, "secondMode", 1);
-            room->changeHero(lord, "yuyuko_1v32", true, true, false, false);
-
-            LogMessage log;
-            log.type = "$AppendSeparator";
-            room->sendLog(log);
-
-            log.type = "#HulaoTransfigure";
-            log.arg = "#yuyuko_1v3";
-            log.arg2 = "#yuyuko_1v32";
-            room->sendLog(log);
-
-            room->doLightbox("$StageChange", 5000);
-
-            QList<const Card *> tricks = lord->getJudgingArea();
-            if (!tricks.isEmpty()) {
-                DummyCard *dummy = new DummyCard;
-                foreach (const Card *trick, tricks)
-                    dummy->addSubcard(trick);
-                CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
-                room->throwCard(dummy, reason, NULL);
-                delete dummy;
-            }
-            if (!lord->faceUp())
-                lord->turnOver();
-            if (lord->isChained())
-                room->setPlayerProperty(lord, "chained", false);
-            break;
-        }
         case GameStart:
         {
             // Handle global events
@@ -1054,13 +1021,6 @@ bool HulaoPassMode::effect(TriggerEvent triggerEvent, Room * room, QSharedPointe
                 return false;
                 break;
             }
-        }
-        case HpChanged:
-        {
-            ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player->isLord() && player->getHp() <= 4 && player->getMark("secondMode") == 0)
-                throw StageChange;
-            return false;
         }
         case GameOverJudge:
         {
