@@ -47,9 +47,11 @@ return {
 	["shiqu_discard"] = "额外的弃牌阶段",
 	["@shiqu-discard"] = "你可以发动“时驱”，弃一张牌， 令当前回合人 <font color=\"#00FF00\"><b>%dest </b></font> 进行 一个<font color=\"#FF8000\"><b>%src </b></font>",
 	["#shiqu"] = "%from 发动 “%arg” 令 %to 进行一个 %arg2",
+	
 	--pc98008 朝仓理香子
 	["rikako"] = "朝仓理香子" ,
 	["#rikako"] = "寻找梦想的科学" ,
+	
 	--pc98009 卡纳  势力：旧 3血
 	["kana"] = "卡娜" ,
 	["!kana"] = "卡娜•安娜贝拉尔" ,
@@ -68,8 +70,8 @@ return {
 	["@mengxiao"] = "你因弃置牌可以发动“梦消” 获得一名角色判定区或装备区中的同花色牌",
 	
 	--pc98003 幽香
-	["yuka_old"]= "旧作sp幽香",
-	["&yuka_old"]= "旧作幽香",
+	["!yuka_old"]= "旧作幽香",
+	["yuka_old"]= "幽香",
 	["#yuka_old"] = "妖怪小姐" ,
 	["youyue"] = "幽月",
 	[":youyue"] = "<font color=\"blue\"><b>锁定技，</b></font>当你使用【杀】或非延时类锦囊牌指定目标后，除你以外的目标角色依次弃置一张手牌并令你选择一项：展示一张与之花色相同手牌，或此牌对其无效。",
@@ -85,7 +87,9 @@ return {
 	
 	--pc98004 幻月/梦月
 	["gengetsumugetsu"] = "幻月 & 梦月" ,
+	["&gengetsumugetsu"] = "幻月梦月" ,
 	["#gengetsumugetsu"] = "女仆 & 恶魔" ,
+	
 	--pc98005 艾丽
 	["elly"] = "艾丽" ,
 	["#elly"] = "馆的门卫" ,
@@ -95,6 +99,7 @@ return {
 	["shinki"] = "神绮" ,
 	["#shinki"] = "魔界之神" ,
 	--pc98002 萝莉丝
-	["alice_old"] = "爱丽丝" ,
+	["alice_old"] = "爱丽丝",
+	["!alice_old"] = "旧作爱丽丝" ,
 	["#alice_old"] = "死之少女" ,
 }

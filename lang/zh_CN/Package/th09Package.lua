@@ -115,7 +115,7 @@ return
 --**********************************************
 	--zhan006  势力：战 4血
     ["aya_sp"]="SP记者文",
-    ["&aya_sp"]="记者文",
+    ["&aya_sp"]="射命丸文",
 	["#aya_sp"]= "捏造新闻记者",
 	["illustrator:aya_sp"] = "An2A",
 	["origin:aya_sp"] = "个人ID：173876",
@@ -195,7 +195,6 @@ return
 	 --zhan010  势力：战 4血
 	["kokoro"] = "秦心",
 	["#kokoro"] = "表情丰富的扑克脸",
-	["!kokoro"] = "秦心",
 	["illustrator:kokoro"] = "ゾウノセ",
 	["origin:kokoro"] = "p号：38863400",
 	["illustrator:kokoro_1"] = "薄稀",
@@ -218,7 +217,6 @@ return
 	 --zhan011  势力：战 4血
 	["sumireko"] = "宇佐见堇子",
 	["#sumireko"] = "秘封俱乐部的初代会长",
-	["!sumireko"] = "宇佐见堇子",
 	["illustrator:sumireko"] = "りひと",
 	["origin:sumireko"] = "p号：53754910",
 	["illustrator:sumireko_1"] = "チマQ",
@@ -237,6 +235,7 @@ return
 	-- zhan012
 	["cirno_sp"] = "sp琪露诺" ,
 	["#cirno_sp"] = "冰之妖精" ,
+	["&cirno_sp"] = "琪露诺",
 
 }
 

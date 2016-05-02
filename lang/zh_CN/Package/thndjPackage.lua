@@ -3,7 +3,7 @@ return{
 
 	--ndj001  势力：主 4血
 	["mokou_ndj"] = "年代记sp妹红" ,
-	["&mokou_ndj"] = "年代记妹红" ,
+	["&mokou_ndj"] = "藤原妹红" ,
 	["#mokou_ndj"] = "炎杀姬" ,
 	["illustrator:mokou_ndj"] = "年代记",
 	    ["rexue"]= "热血",
@@ -17,7 +17,7 @@ return{
 --**********************************
 	--ndj002  势力：主 3血
 	["kaguya_ndj"] = "年代记sp辉夜" ,
-	["&kaguya_ndj"] = "年代记辉夜" ,
+	["&kaguya_ndj"] = "蓬莱山辉夜" ,
 	["#kaguya_ndj"] = "贤月公主" ,
 	["illustrator:kaguya_ndj"] = "年代记",
 	    ["huanyue"]= "幻月",
@@ -31,7 +31,7 @@ return{
 	--**********************************
 	--ndj003 势力：妖 3血
 	["yukari_ndj"] = "年代记SP紫" ,
-	["&yukari_ndj"] = "年代记紫" ,
+	["&yukari_ndj"] = "八云紫" ,
 	["#yukari_ndj"] = "境界中驻足的妖怪贤者" ,
 	["illustrator:yukari_ndj"] = "年代记" ,
 	["yuanhu"] = "援护" ,
@@ -44,7 +44,7 @@ return{
 --**********************************
 	--ndj004  势力：妖 3血
 	["youmu_ndj"] = "年代记sp妖梦" ,
-	["&youmu_ndj"] = "年代记妖梦" ,
+	["&youmu_ndj"] = "魂魄妖梦" ,
 	["#youmu_ndj"] = "修行的庭师" ,
 	["illustrator:youmu_ndj"] = "年代记",
 	    ["hunpo"]= "魂魄",
@@ -56,7 +56,7 @@ return{
 --**********************************
 	--ndj010  势力：外 3血
 	["merry_ndj"] = "年代记sp玛艾露贝莉" ,
-	["&merry_ndj"] = "年代记梅莉" ,
+	["&merry_ndj"] = "玛艾露贝莉" ,
 	["#merry_ndj"] = "境界探访者" ,
 	["illustrator:merry_ndj"] = "年代记",
 	["zaiwu"]= "载物",
@@ -71,7 +71,7 @@ return{
 --**********************************
 	--ndj011  势力：外 3血
 	["renko_ndj"] = "年代记sp莲子" ,
-	["&renko_ndj"] = "年代记莲子",
+	["&renko_ndj"] = "宇佐见莲子",
 	["#renko_ndj"] = "科学少女" ,
 	["illustrator:renko_ndj"] = "年代记",
 	["liangzi"]= "量子",
@@ -83,7 +83,7 @@ return{
 --**********************************
 	--ndj013  势力：外 4血
 	["sanae_ndj"] = "年代记sp早苗" ,
-	["&sanae_ndj"] = "年代记早苗",
+	["&sanae_ndj"] = "东风谷早苗",
 	["#sanae_ndj"] = "风月战姬" ,
 	["illustrator:sanae_ndj"] = "年代记",
 	["xiubu"]= "修补",

@@ -3,7 +3,7 @@ return{
 
 	--xwm001  势力：地 3血
 	["satori_xwm"] = "线外萌sp觉",
-	["&satori_xwm"] = "线外萌觉",
+	["&satori_xwm"] = "古明地觉",
 	["#satori_xwm"] = "第一届线外萌萌王",
 	["illustrator:satori_xwm"] = "ぎん太郎",
 	["origin:satori_xwm"] = "p号：16388840，个人ID：95886",
@@ -25,7 +25,7 @@ return{
 --*********************************
 	--xwm002  势力：妖 4血
 	["yuyuko_xwm"] = "线外萌sp幽幽子",
-	["&yuyuko_xwm"] = "线外萌幽幽子",
+	["&yuyuko_xwm"] = "西行寺幽幽子",
 	["#yuyuko_xwm"] = "第一届线外萌准萌",
 	["illustrator:yuyuko_xwm"] = "藤原",
 	["origin:yuyuko_xwm"] = "p号：17184292，个人ID：27517",
@@ -40,7 +40,7 @@ return{
 --*********************************
 	--xwm003  势力：主 4血
 	["marisa_xwm"] = "线外萌sp魔理沙",
-	["&marisa_xwm"] = "线外萌魔理沙",
+	["&marisa_xwm"] = "雾雨魔理沙",
 	["#marisa_xwm"] = "第一届线外萌四强",
 	["illustrator:marisa_xwm"] = "甘党",
 	["origin:marisa_xwm"] = "p号：8937985，个人ID：298982",
@@ -55,7 +55,7 @@ return{
 --*********************************
 	--xwm004  势力：战 3血
 	["aya_xwm"] = "线外萌sp文",
-	["&aya_xwm"] = "线外萌文",
+	["&aya_xwm"] = "射命丸文",
 	["#aya_xwm"] = "第一届线外萌四强",
 	["illustrator:aya_xwm"] = "AUER",
 	["origin:aya_xwm"] = "p号：12802720，个人ID：178301", --（国人）
@@ -70,7 +70,7 @@ return{
 --*********************************
 	--xwm005  势力：永 3血
 	["mokou_xwm"] = "线外萌sp妹红",
-	["&mokou_xwm"] = "线外萌妹红",
+	["&mokou_xwm"] = "藤原妹红",
 	["#mokou_xwm"] = "第二届线外萌萌王",
 	["illustrator:mokou_xwm"] = "Lowlight.K",
 	["origin:mokou_xwm"] = "p号：10738620，个人ID：904187",--（国人？）
@@ -90,7 +90,7 @@ return{
 --*********************************
 	--xwm006  势力：红 3血
 	["remilia_xwm"] = "线外萌sp蕾米莉亚",
-	["&remilia_xwm"] = "线外萌蕾米",
+	["&remilia_xwm"] = "蕾米莉亚",
 	["#remilia_xwm"] = "第二届线外萌准萌",
 	["illustrator:remilia_xwm"] = "とりのあくあ",
 	["origin:remilia_xwm"] = "p号：21693827，个人ID：1960050",
