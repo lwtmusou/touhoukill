@@ -792,7 +792,6 @@ void HuimieCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     source->gainMark("@kinki");
     if (!target->isChained()) {
         target->setChained(!target->isChained());
-        Sanguosha->playSystemAudioEffect("chained");
         room->broadcastProperty(target, "chained");
         room->setEmotion(target, "chain");
         QVariant _data = QVariant::fromValue(target);
@@ -3519,7 +3518,6 @@ void RumoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targ
     foreach(ServerPlayer *target, targets) {
         if (!target->isChained()) {
             target->setChained(!target->isChained());
-            Sanguosha->playSystemAudioEffect("chained");
             room->broadcastProperty(target, "chained");
             room->setEmotion(target, "chain");
             QVariant _data = QVariant::fromValue(target);
