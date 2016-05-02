@@ -291,8 +291,6 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-#pragma message WARN("todo_Fs: develop a new method which requests an askForUseCard (because the cost and effect are seprated)")
-
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();

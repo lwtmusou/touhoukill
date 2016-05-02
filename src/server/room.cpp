@@ -40,7 +40,7 @@ Room::Room(QObject *parent, const QString &mode)
     game_started(false), game_finished(false), game_paused(false), L(NULL), thread(NULL),
     thread_3v3(NULL), thread_xmode(NULL), thread_1v1(NULL), _m_semRaceRequest(0), _m_semRoomMutex(1),
     _m_raceStarted(false), provided(NULL), has_provided(false), provider(NULL),
-    m_surrenderRequestReceived(false), _virtual(false), _m_roomState(false), fill_robot(false)
+    m_surrenderRequestReceived(false), _virtual(false), _m_roomState(false), fill_robot(false), m_fillAGWho(NULL)
 {
     static int s_global_room_id = 0;
     _m_Id = s_global_room_id++;
@@ -3897,7 +3897,7 @@ void Room::marshal(ServerPlayer *player)
         doNotify(player, S_COMMAND_UPDATE_PILE, QVariant(m_drawPile->length()));
 
         //disconnect wugu
-        if (!m_fillAGarg.isNull()) {
+        if (!m_fillAGarg.isNull() && (m_fillAGWho == NULL || m_fillAGWho == player)) {
             doNotify(player, S_COMMAND_FILL_AMAZING_GRACE, m_fillAGarg);
             foreach (const QVariant &takeAGarg, m_takeAGargs.value<JsonArray>())
                 doNotify(player, S_COMMAND_TAKE_AMAZING_GRACE, takeAGarg);
@@ -5823,6 +5823,7 @@ void Room::fillAG(const QList<int> &card_ids, ServerPlayer *who, const QList<int
     arg << JsonUtils::toJsonArray(disabled_ids);
 
     m_fillAGarg = arg;
+    m_fillAGWho = who;
 
     if (who)
         doNotify(who, S_COMMAND_FILL_AMAZING_GRACE, arg);
@@ -5896,6 +5897,7 @@ void Room::takeAG(ServerPlayer *player, int card_id, bool move_cards, QList<Serv
 void Room::clearAG(ServerPlayer *player)
 {
     m_fillAGarg = QVariant();
+    m_fillAGWho = NULL;
     m_takeAGargs = QVariant();
     if (player)
         doNotify(player, S_COMMAND_CLEAR_AMAZING_GRACE, QVariant());

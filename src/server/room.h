@@ -565,6 +565,7 @@ private:
     RoomState _m_roomState;
 
     QVariant m_fillAGarg;
+    ServerPlayer *m_fillAGWho;
     QVariant m_takeAGargs;
 
     QWaitCondition m_waitCond;
