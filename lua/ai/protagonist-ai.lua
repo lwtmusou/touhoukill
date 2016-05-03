@@ -1,12 +1,12 @@
 
---SmartAI:needRetrial(judge) 
+--SmartAI:needRetrial(judge)
 function SmartAI:lingqiParse(self,target,use)
 	use = use or self.player:getTag("lingqicarduse"):toCardUse()
 	--if not use or not use.card  or not use.from then return 3 end
 	if not use or not use.card   then return 3 end
 	local card=use.card
 	local from=use.from
-	
+
 	if self.player:objectName() == target:objectName() then
 		--simulate standard-ai with a fakeEffect
 		local pattern = nil
@@ -22,7 +22,7 @@ function SmartAI:lingqiParse(self,target,use)
 			end
 		elseif card:isKindOf("AOE") then
 			local _data=sgs.QVariant()
-		
+
 			local fakeEffect =sgs.CardEffectStruct()
 			fakeEffect.card = card
 			fakeEffect.from = from
@@ -44,7 +44,7 @@ function SmartAI:lingqiParse(self,target,use)
 			end
 		end
 	end
-	if sgs.dynamic_value.damage_card[card:getClassName()] then	
+	if sgs.dynamic_value.damage_card[card:getClassName()] then
 		return 2
 	end
 	if card:isKindOf("ExNihilo") then
@@ -60,7 +60,7 @@ function SmartAI:lingqiParse(self,target,use)
 			return 2
 		end
 	end
-	
+
 	if card:isKindOf("Snatch") or card:isKindOf("Dismantlement") then
 		local cards=target:getCards("j")
 		local throw_delay=false
@@ -81,7 +81,7 @@ end
 
 sgs.ai_skill_invoke.lingqi =function(self,data)
 	if not self:invokeTouhouJudge() then return false end
-	
+
 	local parse=self:lingqiParse(self,self.player)
 	if parse==2 then
 		return true
@@ -112,12 +112,12 @@ sgs.ai_choicemade_filter.skillInvoke.qixiang = function(self, player, args)
 			elseif sgs.ai_role[target:objectName()] == "rebel" then
 				sgs.updateIntention(player, target, 10)
 			end
-		end	
+		end
 	end
 end
 
 table.insert(sgs.ai_global_flags, "bolisource")
-sgs.ai_skill_invoke.boli = function(self,data) 
+sgs.ai_skill_invoke.boli = function(self,data)
 	local judge=self.player:getTag("boli_judge"):toJudge()
 	--防止没有队友时ai还无聊地发动技能
 	local onlyEnemy = true
@@ -135,7 +135,7 @@ sgs.ai_choicemade_filter.skillInvoke.boli = function(self, player, args)
 	end
 end
 sgs.ai_skill_cardask["@boli-retrial"] = function(self, data)
-        local lord = getLord(self.player)
+		local lord = getLord(self.player)
 		if not sgs.bolisource  then sgs.bolisource = lord end
 		if not sgs.bolisource then return "." end
 		if not self:isFriend(lord) then return "." end
@@ -146,10 +146,10 @@ sgs.ai_skill_cardask["@boli-retrial"] = function(self, data)
 				table.insert(cards1,card)
 			end
 		end
-        local judge = data:toJudge()
+		local judge = data:toJudge()
 
 		if #cards1==0 then return "." end
-        return "$" .. self:getRetrialCardId(cards1, judge) or judge.card:getEffectiveId()  --tostring()
+		return "$" .. self:getRetrialCardId(cards1, judge) or judge.card:getEffectiveId()  --tostring()
 end
 
 sgs.ai_choicemade_filter.cardResponded["@boli-retrial"] = function(self, player, args)
@@ -181,7 +181,7 @@ function mofa_skill.getTurnUseCard(self)
 	if self.player:hasFlag("mofa_invoked") then return nil end
 	if self.player:isKongcheng() then return nil end
 	if #self.enemies==0 then return false end
-	
+
 
 	local cards = self.player:getCards("h")
 	local key_names={"Duel","SavageAssault","ArcheryAttack"}
@@ -198,7 +198,7 @@ function mofa_skill.getTurnUseCard(self)
 			end
 		end
 	end
-	
+
 
 	local temp_slash
 	for _,p in pairs (self.enemies) do
@@ -216,19 +216,19 @@ function mofa_skill.getTurnUseCard(self)
 		end
 	end
 
-	if #key_ids==0 and not temp_slash  then 
+	if #key_ids==0 and not temp_slash  then
 		return nil
 	end
-	
-	
-	
+
+
+
 
 	local scards={}
 	local scards_without_key={}
 	local others_without_key={}
 	local keycard_func = function(card)
-		return   table.contains(key_ids,card:getId()) 
-			or (temp_slash and card:getId() == temp_slash:getId()) 
+		return   table.contains(key_ids,card:getId())
+			or (temp_slash and card:getId() == temp_slash:getId())
 	end
 	for _,card in sgs.qlist(cards) do
 		if  card:getSuit()==sgs.Card_Spade and not keycard_func(card) then
@@ -241,10 +241,10 @@ function mofa_skill.getTurnUseCard(self)
 				table.insert(others_without_key,card)
 		end
 	end
-	
-	
 
-	if #scards_without_key>0 then 
+
+
+	if #scards_without_key>0 then
 		self:sortByCardNeed(scards_without_key)
 		return sgs.Card_Parse("@MofaCard="..scards_without_key[1]:getEffectiveId())
 	elseif #others_without_key>0 then
@@ -287,13 +287,13 @@ wuyuvs_skill.getTurnUseCard = function(self)
 		end
 	end
 	if not card then return nil end
-	
+
 	local card_id = card:getEffectiveId()
 	local card_str ="@WuyuCard="..card_id
 	local skillcard = sgs.Card_Parse(card_str)
-	
+
 	assert(skillcard)
-	
+
 	return skillcard
 end
 
@@ -308,7 +308,7 @@ sgs.ai_skill_use_func.WuyuCard = function(card, use, self)
 		end
 	end
 
-	if #targets > 0 then 
+	if #targets > 0 then
 		use.card = card
 		if use.to then
 			use.to:append(targets[1])
@@ -338,11 +338,11 @@ saiqianvs_skill.name = "saiqian_attach"
 table.insert(sgs.ai_skills, saiqianvs_skill)
 function saiqianvs_skill.getTurnUseCard(self)
 		if self.player:isKongcheng() then return nil end
-        if self.player:hasFlag("ForbidSaiqian") then return nil end
-        local handcards = sgs.QList2Table(self.player:getHandcards())
+		if self.player:hasFlag("ForbidSaiqian") then return nil end
+		local handcards = sgs.QList2Table(self.player:getHandcards())
 		local saiqian_cards={}
 		self:sortByUseValue(handcards)
-		if self.player:isWounded()then			
+		if self.player:isWounded()then
 			for _,c in pairs(handcards)do
 				if c:getSuit()==sgs.Card_Heart then
 					table.insert(saiqian_cards,c:getId())
@@ -350,13 +350,13 @@ function saiqianvs_skill.getTurnUseCard(self)
 				end
 			end
 		end
-       if self:getOverflow() >0 or self:hasSkillsForSaiqian(self.player)  then
+	   if self:getOverflow() >0 or self:hasSkillsForSaiqian(self.player)  then
 			local overflow=math.min(3,self:getOverflow())
 			if self:hasSkillsForSaiqian() then
 				overflow= math.min(3,self.player:getHandcardNum())
 			end
 			for var=1, overflow, 1 do
-				if #saiqian_cards<overflow   
+				if #saiqian_cards<overflow
 					and not table.contains(saiqian_cards,handcards[var]:getId()) then
 					table.insert(saiqian_cards,handcards[var]:getId())
 				end
@@ -364,12 +364,12 @@ function saiqianvs_skill.getTurnUseCard(self)
 	   end
 		if #saiqian_cards>0 then
 			local card_str= "@SaiqianCard=" .. table.concat(saiqian_cards, "+")
-			return sgs.Card_Parse(card_str)		
+			return sgs.Card_Parse(card_str)
 		end
 		return nil
 end
 sgs.ai_skill_use_func.SaiqianCard = function(card, use, self)
-    local targets = {}
+	local targets = {}
 	for _,friend in ipairs(self.friends_noself) do
 		if friend:hasSkill("saiqian") then
 			if not friend:hasFlag("saiqianInvoked") then
@@ -377,7 +377,7 @@ sgs.ai_skill_use_func.SaiqianCard = function(card, use, self)
 			end
 		end
 	end
-	
+
 	if #targets > 0 then
 		use.card = card
 		if use.to then
@@ -407,16 +407,16 @@ end
 sgs.ai_choicemade_filter.skillChoice.saiqian = function(self, player, args)
 	local choice = args[#args]
 	local target =player:getTag("saiqian_source"):toPlayer()
-	
+
 	if not target or not target:isWounded() then return end
-	if  choice == "losehp_saiqian" then 
-		sgs.updateIntention(player, target, -80) 
+	if  choice == "losehp_saiqian" then
+		sgs.updateIntention(player, target, -80)
 	end
 end
 
 sgs.ai_skill_cardask["@saiqian-discard"] = function(self,data)
-        local cards = sgs.QList2Table(self.player:getCards("h"))
-        if #cards==0 then return "." end
+		local cards = sgs.QList2Table(self.player:getCards("h"))
+		if #cards==0 then return "." end
 		self:sortByCardNeed(cards)
 		for _,card in pairs (cards) do
 			if card:getSuit()==sgs.Card_Heart then
@@ -428,7 +428,7 @@ end
 sgs.ai_choicemade_filter.cardResponded["@saiqian-discard"] = function(self, player, args)
 	if args[#args] ~= "_nil_" then
 		local target =player:getTag("saiqian_source"):toPlayer()
-		if not target or not target:isWounded() then return end	
+		if not target or not target:isWounded() then return end
 		sgs.updateIntention(player, target, -80)
 	end
 end
@@ -471,13 +471,13 @@ jiezou_skill.getTurnUseCard = function(self)
 	end
 	return nil
 end
-sgs.ai_skill_use_func.JiezouCard = function(card, use, self)        
+sgs.ai_skill_use_func.JiezouCard = function(card, use, self)
 		local friends={}
 		local enemies_spade={}
 		local enemies ={}
-		
+
 		for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-            if p:isAllNude() then continue end
+			if p:isAllNude() then continue end
 			if self:isFriend(p) then
 				local jcards=p:getCards("j")
 				for _,card in sgs.qlist(jcards) do
@@ -493,28 +493,28 @@ sgs.ai_skill_use_func.JiezouCard = function(card, use, self)
 					table.insert(enemies,p)
 				end
 			end
-        end
-        if #friends>0 then
+		end
+		if #friends>0 then
 			use.card = card
-            if use.to then
-                self:sort(friends,"value")
+			if use.to then
+				self:sort(friends,"value")
 				use.to:append(friends[1])
 				if use.to:length() >= 1 then return end
-            end
+			end
 		elseif #enemies_spade>0 then
 			use.card = card
-            if use.to then
-                self:sort(enemies_spade,"value")
+			if use.to then
+				self:sort(enemies_spade,"value")
 				use.to:append(enemies_spade[1])
 				if use.to:length() >= 1 then return end
-            end
+			end
 		elseif #enemies>0 and jiezouSpade(self,self.player) then
 			use.card = card
-            if use.to then
-                self:sort(enemies,"value")
+			if use.to then
+				self:sort(enemies,"value")
 				use.to:append(enemies[1])
 				if use.to:length() >= 1 then return end
-            end
+			end
 		end
 end
 sgs.ai_skill_cardchosen.jiezou = function(self, who, flags)
@@ -532,13 +532,13 @@ sgs.ai_skill_cardchosen.jiezou = function(self, who, flags)
 				return card
 			end
 		end
-		local id = self:askForCardChosen(who, "he", "snatch", sgs.Card_MethodNone) 
+		local id = self:askForCardChosen(who, "he", "snatch", sgs.Card_MethodNone)
 		return sgs.Sanguosha:getCard(id)
 	end
 end
 sgs.ai_skill_cardask["@jiezou_spadecard"] = function(self, data)
 		local cards = sgs.QList2Table(self.player:getCards("he"))
-        if #cards==0 then return "." end
+		if #cards==0 then return "." end
 		self:sortByKeepValue(cards)
 		for _,card in pairs (cards) do
 			if card:getSuit()==sgs.Card_Spade then
@@ -549,9 +549,9 @@ sgs.ai_skill_cardask["@jiezou_spadecard"] = function(self, data)
 end
 
 
-sgs.ai_choicemade_filter.cardChosen.jiezou = sgs.ai_choicemade_filter.cardChosen.snatch 
+sgs.ai_choicemade_filter.cardChosen.jiezou = sgs.ai_choicemade_filter.cardChosen.snatch
 sgs.ai_use_value.JiezouCard = 8
-sgs.ai_use_priority.JiezouCard =6 
+sgs.ai_use_priority.JiezouCard =6
 sgs.dynamic_value.control_card.JiezouCard = true
 sgs.ai_cardneed.jiezou = function(to, card, self)
 	return card:getSuit()==sgs.Card_Spade
@@ -562,7 +562,7 @@ sgs.jiezou_suit_value = {
 
 
 function keycard_shoucang(card)
-	if card:isKindOf("Peach") or card:isKindOf("SavageAssault")  
+	if card:isKindOf("Peach") or card:isKindOf("SavageAssault")
 	or card:isKindOf("ArcheryAttack") or card:isKindOf("ExNihilo") then
 		return true
 	end
@@ -573,13 +573,13 @@ sgs.ai_skill_use["@@shoucang"] = function(self, prompt)
 		return "."
 	end
 	local needNum=math.min(4,self:getOverflow())
-	local cards = sgs.QList2Table(self.player:getHandcards())				
+	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByKeepValue(cards)
 	local suits = {}
 	local show={}
 	for _,c in pairs(cards)do
 		local suit = c:getSuitString()
-        if not suits[suit] then 
+		if not suits[suit] then
 			suits[suit] = 1
 			table.insert(show, tostring(c:getId()))
 		end
@@ -591,12 +591,12 @@ sgs.ai_skill_use["@@shoucang"] = function(self, prompt)
 		return "@ShoucangCard=" ..table.concat(show, "+").."->."
 	end
 	return "."
-end	
+end
 
 
 
 
-sgs.ai_need_bear.baoyi = function(self, card,from,tos) 
+sgs.ai_need_bear.baoyi = function(self, card,from,tos)
 	from = from or self.player
 	local Overflow = self:getOverflow(from) >1
 	if not card:isKindOf("EquipCard") then return false end
@@ -621,7 +621,7 @@ end
 sgs.ai_skill_use["@@baoyi"] = function(self, prompt)
 	local target_table = self:getEnemies(self.player)
 	if #target_table==0 then return "." end
-	
+
 	local delay_num= self.player:getCards("j"):length()
 	local delay_ids=self.player:getJudgingAreaID()
 	delay_ids = sgs.QList2Table(delay_ids)
@@ -635,12 +635,12 @@ sgs.ai_skill_use["@@baoyi"] = function(self, prompt)
 		return "@BaoyiCard=" .. table.concat(delay_ids, "+")
 	end
 	local target = sgs.ai_skill_playerchosen.zero_card_as_slash(self, self.room:getOtherPlayers(self.player))
-	if not  target then 
+	if not  target then
 		return "@BaoyiCard="..table.concat(delay_ids, "+")
 	end
 	local equips={}
 	for _,c in sgs.qlist(self.player:getCards("he")) do
-		if c:isKindOf("EquipCard") then 
+		if c:isKindOf("EquipCard") then
 			if c:getSuit()== sgs.Card_Spade then
 				if delay_num>0 then
 					return "@BaoyiCard="..c:getEffectiveId().."+"..table.concat(delay_ids, "+")
@@ -651,7 +651,7 @@ sgs.ai_skill_use["@@baoyi"] = function(self, prompt)
 			table.insert(equips,c)
 		end
 	end
-	if delay_num==0 then 
+	if delay_num==0 then
 		if #equips>0  then
 			self:sortByKeepValue(equips)
 			return "@BaoyiCard="..equips[1]:getEffectiveId()
@@ -672,7 +672,7 @@ sgs.ai_skill_playerchosen.baoyi = function(self, targets)
 	self:sort(target_table, "hp")
 	local baoyi_target
 	local slash= sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
-	for _,target in pairs(target_table) do 
+	for _,target in pairs(target_table) do
 		if  self:isEnemy(target) and self:slashIsEffective(slash, target, self.player)  then
 			if not baoyi_target  then
 				baoyi_target=target
@@ -684,7 +684,7 @@ sgs.ai_skill_playerchosen.baoyi = function(self, targets)
 			end
 		end
 	end
-	
+
 	if baoyi_target then
 		return baoyi_target
 	end
@@ -731,14 +731,14 @@ function SmartAI:zhizeValue(player)
 	return value
 end
 sgs.ai_skill_playerchosen.zhize = function(self, targets)
-	
+
 	local pre_zhize=self.player:getTag("pre_zhize"):toPlayer()
 	local target_table = sgs.QList2Table(targets)
 	local zhize_target
 	local targets={}
 	local badtargets={}
 	local ftargets={}
-	for _,target in pairs(target_table) do 
+	for _,target in pairs(target_table) do
 		if  self:isEnemy(target)  then
 			if target:hasSkills("yongheng|kongpiao") then
 				table.insert(badtargets,target)
@@ -752,17 +752,17 @@ sgs.ai_skill_playerchosen.zhize = function(self, targets)
 		end
 	end
 	if #targets==0 then
-		for _,target in pairs(target_table) do 
+		for _,target in pairs(target_table) do
 			if  not self:isFriend(target)  then
 				table.insert(targets,target)
 			end
 		end
 	end
-	
+
 	local compare_func = function(a, b)
 		return self:zhizeValue(a) > self:zhizeValue(b)
 	end
-	
+
 	local tt
 	if #targets>0  then
 		table.sort(targets, compare_func)
@@ -775,7 +775,7 @@ sgs.ai_skill_playerchosen.zhize = function(self, targets)
 		tt=target_table[1]
 	end
 	local _data = sgs.QVariant()
-     _data:setValue(tt)
+	 _data:setValue(tt)
 	self.player:setTag("pre_zhize",_data)
 	return tt
 end
@@ -819,7 +819,7 @@ sgs.ai_skill_use["@@chunxi"] = function(self, prompt)
 	local move = self.player:getTag("chunxi_move"):toMoveOneTime()
 	local ids = {}
 	for _, id in sgs.qlist(move.card_ids) do
-		if sgs.Sanguosha:getCard(id):getSuit() == sgs.Card_Heart 
+		if sgs.Sanguosha:getCard(id):getSuit() == sgs.Card_Heart
 		  and self.room:getCardPlace(id) == sgs.Player_PlaceHand then
 			table.insert(ids, id)
 		end
@@ -840,15 +840,15 @@ sgs.ai_skill_playerchosen.chunxi = function(self, targets)
 			pre_zhize=self.player:getTag("pre_zhize"):toPlayer()
 		end
 	end
-	if pre_zhize then 
+	if pre_zhize then
 		self.player:setTag("pre_heart",sgs.QVariant(false))
-		return pre_zhize 
+		return pre_zhize
 	end
 	local target_table = self:getEnemies(self.player)
 	if #target_table == 0 then return false end
 	local chunxi_target
 	self:sort(target_table, "value")
-	for _,target in pairs(target_table) do	
+	for _,target in pairs(target_table) do
 		if not chunxi_target and (not target:isKongcheng()) then
 			chunxi_target=target
 		else
@@ -864,7 +864,7 @@ sgs.ai_skill_playerchosen.chunxi = function(self, targets)
 end
 sgs.ai_playerchosen_intention.chunxi = 30
 sgs.ai_cardneed.chunxi = function(to, card, self)
- return card:getSuit()==sgs.Card_Heart	
+ return card:getSuit()==sgs.Card_Heart
 end
 sgs.chunxi_suit_value = {
 	heart = 4.0
@@ -874,9 +874,9 @@ sgs.chunxi_suit_value = {
 
 function bllmwuyu_discard(player)
 	local cards = sgs.QList2Table(player:getCards("he"))
-    local all_hearts={}
+	local all_hearts={}
 	for _,c in pairs(cards) do
-		if c:getSuit()==sgs.Card_Heart 
+		if c:getSuit()==sgs.Card_Heart
 		and not (c:isKindOf("Peach") or c:isKindOf("Slash") or c:isKindOf("DefensiveHorse"))
 		and not c:hasFlag("AIGlobal_SearchForAnaleptic") then
 			table.insert(all_hearts,c:getId())
@@ -889,7 +889,7 @@ function needSkipJudgePhase(self,player)
 	if (player:containsTrick("supply_shortage") or player:containsTrick("indulgence")) then
 		return true
 	elseif player:containsTrick("lightning") then
-		return not self:invokeTouhouJudge() 
+		return not self:invokeTouhouJudge()
 	end
 	return false
 end
@@ -897,13 +897,13 @@ end
 
 
 sgs.ai_skill_cardask["@bllm-discard"] = function(self, data)
-    local prompt=self.player:getTag("wuyu_prompt"):toString() 
+	local prompt=self.player:getTag("wuyu_prompt"):toString()
 	local all_hearts=bllmwuyu_discard(self.player)
 	if #all_hearts==0 then return "." end
 	self:sortByKeepValue(all_hearts)
-	
+
 	if prompt=="bllmcaiyu" then
-        return "$" .. all_hearts[1]
+		return "$" .. all_hearts[1]
 	elseif prompt=="bllmmingyu" then
 		if not needSkipJudgePhase(self,self.player) then return "." end
 		return "$" .. all_hearts[1]
@@ -911,19 +911,19 @@ sgs.ai_skill_cardask["@bllm-discard"] = function(self, data)
 		if self:getOverflow() >0 and self.player:getMaxCards()<4 then
 			local num=self.player:getHandcardNum()-self.player:getMaxCards()
 			if num<2 then return "." end
-			return "$" .. all_hearts[1]	
+			return "$" .. all_hearts[1]
 		end
 	elseif prompt=="bllmseyu" then
-		return "$" .. all_hearts[1]	
+		return "$" .. all_hearts[1]
 	elseif prompt=="bllmshiyu" then  -- 杀的ai 于 searchForAnaleptic 后 会调用 这时必须返回真值，否则ai会有卡死
 		--local mustuse=false
 		--if self.player:hasFlag("Global_Dying") then
-		--	mustuse=true
-		--elseif sgs.Slash_IsAvailable(self.player) then --and getCardsNum("Slash", self.player, self.player) > 0 
-		--	mustuse=true
-		--end	
+		--  mustuse=true
+		--elseif sgs.Slash_IsAvailable(self.player) then --and getCardsNum("Slash", self.player, self.player) > 0
+		--  mustuse=true
+		--end
 		--if not mustuse then return "." end
-		return "$" .. all_hearts[1]	
+		return "$" .. all_hearts[1]
 	end
 	return "."
 end
@@ -941,12 +941,12 @@ sgs.ai_skill_cardask["@bllmshiyu-basics"] = function(self, data)
 	return "$" .. anals[1]:getId()
 end
 sgs.ai_skill_invoke.bllmwuyu = function(self,data)
-	local prompt=self.player:getTag("wuyu_prompt"):toString() 
-	
-	if prompt=="bllmcaiyu" or prompt=="bllmwuyu" then 
+	local prompt=self.player:getTag("wuyu_prompt"):toString()
+
+	if prompt=="bllmcaiyu" or prompt=="bllmwuyu" then
 		return true
 	elseif prompt=="bllmmingyu" then
-		return  needSkipJudgePhase(self,self.player) 
+		return  needSkipJudgePhase(self,self.player)
 	elseif prompt=="bllmshuiyu" then
 		if self:getOverflow() >0 then
 			if  self.player:getMark("@yu")>1 or self:isWeak(self.player) then
@@ -994,17 +994,17 @@ function sgs.ai_cardsview_valuable.bllmwuyu(self, class_name, player)
 					table.insert(others,c)
 				end
 			end
-			
+
 			if #hearts_e+#hearts_h==0 then
 				return nil
 			elseif #hearts_e+#hearts_h==1 and #others==0 then
 				return nil
 			end
 		end
-		return "@BllmShiyuCard=." 
+		return "@BllmShiyuCard=."
 	end
 end
- 
+
 local bllmwuyu_skill = {}
 bllmwuyu_skill.name = "bllmwuyu"
 table.insert(sgs.ai_skills, bllmwuyu_skill)
@@ -1031,7 +1031,7 @@ sgs.ai_skill_choice.bllmwuyu= function(self, choices, data)
 end
 
 sgs.ai_cardneed.bllmwuyu = function(to, card, self)
- return card:getSuit()==sgs.Card_Heart	
+ return card:getSuit()==sgs.Card_Heart
 end
 sgs.bllmwuyu_suit_value = {
 	heart = 4.9
@@ -1051,7 +1051,7 @@ sgs.ai_skill_cardask["qiangyu-discard"] = function(self, data)
 		self:sortByUseValue(blacks)
 		return "$" .. blacks[1]:getId()
 	end
-	
+
 	local cards = sgs.QList2Table(attacker:getHandcards())
 	self:sortByUseValue(cards)
 	local ids = {}
@@ -1083,7 +1083,7 @@ end
 			return "$" ..self.player:getEquip(3):getId()
 		end
 	end
-	
+
 	--手牌里的情况
 	--暂时没考虑太多。。。强欲弃牌策略要怎么写呢？
 	for _, card in sgs.qlist(self.player:getHandcards()) do
@@ -1113,7 +1113,7 @@ sgs.ai_skill_cardask["@mokai"] = function(self, data)
 		end
 	end
 	if #cards == 0 then
-		return "." 
+		return "."
 	end
 	if self.player:getPhase() == sgs.Player_NotActive then
 		self:sortByCardNeed(cards)
@@ -1139,10 +1139,10 @@ sgs.ai_skill_cardask["@guangji-invoke"] =function(self,data)
    local use = self.player:getTag("guangji_use"):toCardUse()
    if self:touhouCardUseEffectNullify(use,self.player) then return "." end --此杀已经无效
    --check whether player need providing jink
- 
+
 	local pattern = nil
 	local _data=sgs.QVariant()
-		
+
 	local fakeEffect =sgs.SlashEffectStruct()
 	fakeEffect.slash = use.card
 	fakeEffect.from = use.from
@@ -1166,7 +1166,7 @@ yinyang_skill.getTurnUseCard = function(self)
 end
 sgs.ai_skill_use_func.YinyangCard=function(card,use,self)
 	--local heart = getKnownCard(self.player, self.player, "heart", viewas, "h", false)
-	
+
 	local red = getKnownCard(self.player, self.player, "red", viewas, "h", false)
 	local black = getKnownCard(self.player, self.player, "black", viewas, "h", false)
 	if red > 0 and black > 0 then
@@ -1181,7 +1181,7 @@ sgs.ai_skill_use_func.YinyangCard=function(card,use,self)
 			end
 		end
 		self:sort(targets,"hp")
-		if #targets >0 then 
+		if #targets >0 then
 			use.card = card
 			if use.to then
 				use.to:append(targets[1])
@@ -1195,7 +1195,7 @@ sgs.ai_skill_cardask["@yinyang_discard"] = function(self, data)
 	if self.player:getPhase() == sgs.Player_Play then
 		local target = self.player:getTag("yinyang_target"):toPlayer()
 		local card = self.player:getTag("yinyang_card"):toCard()
-		 
+
 		local same = target and not self:isFriend(target)
 		if card then
 			local tmp = {}
@@ -1208,7 +1208,7 @@ sgs.ai_skill_cardask["@yinyang_discard"] = function(self, data)
 					end
 				end
 			end
-			
+
 			self:sortByCardNeed(hearts)
 			if #hearts > 0 then return "$" .. hearts[1]:getId() end
 			self:sortByCardNeed(tmp)

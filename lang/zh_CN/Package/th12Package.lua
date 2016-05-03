@@ -5,7 +5,7 @@ return{
 
 	--xlc001  势力：星 4血
 	["byakuren"] = "圣白莲",
-    ["#byakuren"] = "被封印的大魔法师", 
+	["#byakuren"] = "被封印的大魔法师",
 	["illustrator:byakuren"] = "赤りんご",
 	["origin:byakuren"] = "p号：7501522，个人ID：164813", --(貌似可以用的样子。。但其个人网站乱码 确认不能。。。)
 	["illustrator:byakuren_1"] = "ひそな",
@@ -18,7 +18,7 @@ return{
 	["origin:byakuren_4"] = "p号：28915858，个人ID：544479",
 	["illustrator:byakuren_5"] = "えふぇ",
 	["origin:byakuren_5"] = "p号：35775774，个人ID：292644",
-		["pudu"] = "普渡",
+	["pudu"] = "普渡",
 	[":pudu"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可令一名已受伤的其他角色回复1点体力，然后你失去1点体力。",
 	["jiushu"] = "救赎",
 	[":jiushu"] = "结束阶段开始时，你可以摸X张牌（X为你已损失的体力值）。",
@@ -27,7 +27,7 @@ return{
 	["fahua_change"]= "法华",
 	["fahua_change:tricktarget"]= "你可以响应 <font color=\"#00FF00\"><b>%dest </b></font> 的主公技“法华”，代替 <font color=\"#00FF00\"><b>%dest </b></font> 成为 <font color=\"#FF8000\"><b>%src </b></font> 使用的【%arg】的目标。",
 	["#fahua_change"]= "%to 代替其成为 %from 使用的 %arg 的目标。",
-	 ["@fahuaCollateral"] = "<font color=\"#00FF00\"><b>%src </b></font>响应法华成为新目标，你须重新指定<font color=\"#00FF00\"><b>%src </b></font>使用【杀】的对象。" ,
+	["@fahuaCollateral"] = "<font color=\"#00FF00\"><b>%src </b></font>响应法华成为新目标，你须重新指定<font color=\"#00FF00\"><b>%src </b></font>使用【杀】的对象。" ,
 
 --*******************************************
 	--xlc002  势力：星 3血
@@ -41,7 +41,7 @@ return{
 	["origin:nue_2"] = "p号：22149628，个人ID：462335",
 	["illustrator:nue_3"] = " Suzume Miku",
 	["origin:nue_3"] = "p号：32592124，个人ID：18484",
-		["weizhi"]= "未知",
+	["weizhi"]= "未知",
 	[":weizhi"]= "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置任意数量的非锦囊牌（至少一张），然后摸X张牌（X为你以此法弃置的牌的数量+1）。",
 	["weizhuang"]= "伪装",
 	[":weizhuang"]= "<font color=\"blue\"><b>锁定技，</b></font>当你成为其他角色使用的非延时类锦囊牌的目标时，该角色选择一项：弃置一张基本牌，或令此牌对你无效。",
@@ -61,7 +61,7 @@ return{
 	["origin:toramaru_3"] = "p号：15554954，个人ID：915945",
 	["illustrator:toramaru_4"] = "hacko.",
 	["origin:toramaru_4"] = "p号：45146370，个人ID：1289866",
-		["zhengyi"] = "正义",
+	["zhengyi"] = "正义",
 	[":zhengyi"] = "当你成为黑色【杀】或黑色非延时类锦囊牌的目标时，你可以弃置一张红色牌，令此牌对你无效。",
 	["@zhengyi"]= "你可以发动“正义”弃置一张红色牌，令【%src】对你无效。",
 	["baota"] = "宝塔",
@@ -83,7 +83,7 @@ return{
 	["origin:murasa_3"] = "p号：5976375，个人ID：61513", --（国人）
 	["illustrator:murasa_4"] = "ミカゲ",
 	["origin:murasa_4"] = "p号：36091436，个人ID：4193258",
-		["shuinan"] = "水难",
+	["shuinan"] = "水难",
 	[":shuinan"] = "当你成为其他角色使用的非延时类锦囊牌的目标时，你可以弃置该角色的一张手牌。",
 	["nihuo"] = "溺惑",
 	[":nihuo"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可令一名其他角色视为对你使用一张【决斗】。",
@@ -100,7 +100,7 @@ return{
 	["origin:ichirin_2"] = "p号：36255243，个人ID：16135",
 	["illustrator:ichirin_3"] = "栗",
 	["origin:ichirin_3"] = "p号：26458873，个人ID：36168",
-		["lizhi"] = "理智",
+	["lizhi"] = "理智",
 	[":lizhi"] = "当你造成伤害时，你可以防止此伤害，并摸两张牌。",
 	["yunshang"] = "云上",
 	[":yunshang"] = "<font color=\"blue\"><b>锁定技，</b></font>当你成为其他角色使用的非延时类锦囊牌的目标时，若你不在其攻击范围内，此牌对你无效。",
@@ -119,7 +119,7 @@ return{
 	["origin:nazrin_3"] = "p号：7255376，个人ID：888775", --已退p站
 	["illustrator:nazrin_4"] = "ふみちゃん",
 	["origin:nazrin_4"] = "p号：41126318，个人ID：4556900",
-		["souji"] = "搜集",
+	["souji"] = "搜集",
 	[":souji"] = "当其他角色失去的牌于你的回合内置入弃牌堆后，你可以获得之。",
 	["tansuo"] = "探索",
 	[":tansuo"] = "弃牌阶段结束时，若你于此阶段内弃置了不少于X张手牌（X为你的体力值），你可以获得牌堆底的两张牌。",
@@ -138,7 +138,7 @@ return{
 	["origin:kogasa_3"] = "p号：37661828，个人ID：5626224",
 	["illustrator:kogasa_4"] = "ideolo",
 	["origin:kogasa_4"] = "p号：12166495，个人ID：61513", --（国人）
-		["yiwang"] = "遗忘" ,
+	["yiwang"] = "遗忘" ,
 	[":yiwang"] = "当你失去装备区里的一张牌后，你可以选择一项：回复1点体力；或令一名已受伤的其他角色回复1点体力，然后你摸一张牌。" ,
 	["@yiwang-recover"] = "请指定回复体力的角色。" ,
 	["jingxia"] = "惊吓" ,
@@ -162,7 +162,7 @@ return{
 	["origin:unzan_1"] = "p号：18388250，个人ID：126905",--（表态可用）
 	["illustrator:unzan_2"] = "こぞう",
 	["origin:unzan_2"] = "p号：43389455，个人ID：5626224",
-		["bianhuan"] = "变幻",
+	["bianhuan"] = "变幻",
 	[":bianhuan"] = "当你受到伤害时，你可以失去1点体力上限，并防止此伤害。",
 	["nuhuo"] = "怒火",
 	[":nuhuo"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可令一名其他角色指定你攻击范围内的一名角色，并对你造成1点伤害，然后你视为对被指定的角色使用一张【杀】。",

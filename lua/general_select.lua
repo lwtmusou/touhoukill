@@ -100,7 +100,7 @@ local selectHighest = function(tabl, candidates, default_value)
 			max_general = candidate
 		end
 	end
-	
+
 	assert(max_general)
 	return max_general
 end
@@ -124,7 +124,7 @@ local selectHighest = function(tabl, candidates, default_value)
 			max_general = candidate
 		end
 	end
-	
+
 	assert(max_general)
 	return max_general
 end
@@ -141,7 +141,7 @@ selectFirst = function(player, candidates) -- string
 	local values = {}
 	local role = player:getRole()
 	local lord = player:getRoom():getLord()
-	
+
 	local seat_place
 	if player:getSeat() - 1 <= 2 then
 		seat_place = "1"
@@ -150,7 +150,7 @@ selectFirst = function(player, candidates) -- string
 	else
 		seat_place = "2"
 	end
-	
+
 	for _, candidate in ipairs(candidates) do
 		local value = 5.0
 		local general = sgs.Sanguosha:getGeneral(candidate)
@@ -161,7 +161,7 @@ selectFirst = function(player, candidates) -- string
 		value = value * math.pow(1.1, first_general_table[key] or 0.0)
 		local key2 = lord:getGeneralName() .. ":" .. candidate .. ":" .. role
 		value = value * math.pow(1.1, first_general_table[key2] or 0.0)
-		
+
 		--considering seat
 		local seat_key = "_:" .. candidate .. ":" .. role
 		local seat_str = general_seat_table[seat_key] or "_"
@@ -183,10 +183,10 @@ selectFirst = function(player, candidates) -- string
 				value = value * 0.8
 			end
 		end
-		
+
 		values[candidate] = value
 	end
-	
+
 	local _candidates = {}
 	for _, c in ipairs(candidates) do
 		table.insert(_candidates, c)
@@ -216,7 +216,7 @@ selectFirst = function(player, candidates) -- string
 			break
 		end
 	end
-	
+
 	assert(max_general)
 	return max_general
 end
@@ -224,106 +224,106 @@ end
 --todo: lwtmusou  to bulid a table
 --return weight of relation
 weightRelation =  function(relation, role)
-    if relation == "anti" then
-        if role == "loyalist" then
-            return 0.8
-        elseif  role == "rebel" then
-            return 1.1
-        end
-    end
-    return 1.0
+	if relation == "anti" then
+		if role == "loyalist" then
+			return 0.8
+		elseif  role == "rebel" then
+			return 1.1
+		end
+	end
+	return 1.0
 end
 --todo: lwtmusou  to bulid a new method
 --decide relation between nodes of skill property
 relationOfSkillProperty =  function(node1, node2, player1, player2, propertyType)
-    for _, str1 in pairs(node1) do
-        for _, str2 in pairs(node2) do
-            if propertyType == "effect" then
-                if str1 == "Anti" .. str2 or str2 == "Anti" .. str1 then
-                    return "anti"
-                end
-            end
-            if propertyType == "trigger" then --like"NotActive"  "Current"
-                if str1 ==  str2  then
-                    return "related"  
-                end
-            end
-            if propertyType == "target" then -- "SkillOwner"  "AlivePlayers"  "OtherAlivePlayers"
-                if str1 ==  str2 and str1 == "SkillOwner" then
-                    if player1:objectName() == player2:objectName() then
-                        return "related"
-                    end
-                elseif str1 == "AlivePlayers" or str2 == "AlivePlayers" then
-                    return "related"
-                elseif str1 == "OtherAlivePlayers" or str2 == "OtherAlivePlayers" then
-                    if player1:objectName() ~= player2:objectName() then
-                        return "related"
-                    end
-                end
-            end
-        end
-    end
-    return "unrelated"
+	for _, str1 in pairs(node1) do
+		for _, str2 in pairs(node2) do
+			if propertyType == "effect" then
+				if str1 == "Anti" .. str2 or str2 == "Anti" .. str1 then
+					return "anti"
+				end
+			end
+			if propertyType == "trigger" then --like"NotActive"  "Current"
+				if str1 ==  str2  then
+					return "related"
+				end
+			end
+			if propertyType == "target" then -- "SkillOwner"  "AlivePlayers"  "OtherAlivePlayers"
+				if str1 ==  str2 and str1 == "SkillOwner" then
+					if player1:objectName() == player2:objectName() then
+						return "related"
+					end
+				elseif str1 == "AlivePlayers" or str2 == "AlivePlayers" then
+					return "related"
+				elseif str1 == "OtherAlivePlayers" or str2 == "OtherAlivePlayers" then
+					if player1:objectName() ~= player2:objectName() then
+						return "related"
+					end
+				end
+			end
+		end
+	end
+	return "unrelated"
 end
 
 weightSkillProperty =  function(player, lord, general)
-    local value = 1.0
-    --notice that skillsList in player or lord is empty at now
-    local lordGeneral = sgs.Sanguosha:getGeneral(lord:getGeneralName())
-    
-    for _, skill in sgs.qlist(general:getVisibleSkillList()) do
-        local s_name = skill:objectName()
-        local pro = sgs.ai_skill_property[s_name]
-		if not pro or  type(pro) ~= "table" then continue end
-        
-        for _, l_skill in sgs.qlist(lordGeneral:getVisibleSkillList()) do
-            local ls_name = l_skill:objectName()
-            local l_pro = sgs.ai_skill_property[ls_name]
-            if not l_pro or type(l_pro) ~= "table" then continue end
+	local value = 1.0
+	--notice that skillsList in player or lord is empty at now
+	local lordGeneral = sgs.Sanguosha:getGeneral(lord:getGeneralName())
 
-            for i, effect1 in pairs(pro["effect"]) do
-                for k, effect2 in pairs(l_pro["effect"]) do
-                    local relation  =  relationOfSkillProperty(effect1, effect2, player, lord, "effect") 
-                    local weight =  weightRelation(relation, player:getRole())
-                    if weight ~= 1.0 then-- if find specail relationship, check whether two effect nodes in same condition(target, trigger) 
-                        local target1 = pro["target"][i] or pro["target"][1]
-                        local target2 = l_pro["target"][k] or l_pro["target"][1]
-                        local relation1  =  relationOfSkillProperty(target1, target2, player, lord, "target")
-                        if relation1   ~= "related" then continue end
-      
-                        local trigger1 = pro["trigger"][i] or pro["trigger"][1]
-                        local trigger2 = l_pro["trigger"][k] or l_pro["trigger"][1]
-                        local relation2  =  relationOfSkillProperty(trigger1, trigger2, player, lord, "trigger")
-                        if relation2   ~= "related" then continue end
-  
-                        value = value *  weight
-                    end
-                end
-            end                
-        end
+	for _, skill in sgs.qlist(general:getVisibleSkillList()) do
+		local s_name = skill:objectName()
+		local pro = sgs.ai_skill_property[s_name]
+		if not pro or  type(pro) ~= "table" then continue end
+
+		for _, l_skill in sgs.qlist(lordGeneral:getVisibleSkillList()) do
+			local ls_name = l_skill:objectName()
+			local l_pro = sgs.ai_skill_property[ls_name]
+			if not l_pro or type(l_pro) ~= "table" then continue end
+
+			for i, effect1 in pairs(pro["effect"]) do
+				for k, effect2 in pairs(l_pro["effect"]) do
+					local relation  =  relationOfSkillProperty(effect1, effect2, player, lord, "effect")
+					local weight =  weightRelation(relation, player:getRole())
+					if weight ~= 1.0 then-- if find specail relationship, check whether two effect nodes in same condition(target, trigger)
+						local target1 = pro["target"][i] or pro["target"][1]
+						local target2 = l_pro["target"][k] or l_pro["target"][1]
+						local relation1  =  relationOfSkillProperty(target1, target2, player, lord, "target")
+						if relation1   ~= "related" then continue end
+
+						local trigger1 = pro["trigger"][i] or pro["trigger"][1]
+						local trigger2 = l_pro["trigger"][k] or l_pro["trigger"][1]
+						local relation2  =  relationOfSkillProperty(trigger1, trigger2, player, lord, "trigger")
+						if relation2   ~= "related" then continue end
+
+						value = value *  weight
+					end
+				end
+			end
+		end
 	end
-    return value
+	return value
 end
 --version 2: test version parsing skill property
 --[[selectFirst = function(player, candidates) -- string
 	local values = {}
 	local role = player:getRole()
 	local lord = player:getRoom():getLord()
-    
-	
+
+
 	for _, candidate in ipairs(candidates) do
 		local value = 5.0
 		local general = sgs.Sanguosha:getGeneral(candidate)
 		if role == "loyalist" and (general:getKingdom() == lord:getKingdom() or general:getKingdom() == "zhu" or general:getKingdom() == "touhougod") then
 			value = value * 1.04
 		end
-        
-        value = value *  weightSkillProperty(player, lord, general)
+
+		value = value *  weightSkillProperty(player, lord, general)
 
 		values[candidate] = value
 	end
-	
-    
+
+
 	local _candidates = {}
 	for _, c in ipairs(candidates) do
 		table.insert(_candidates, c)
@@ -353,7 +353,7 @@ end
 			break
 		end
 	end
-	
+
 	assert(max_general)
 	return max_general
 end
@@ -371,13 +371,13 @@ selectSecond = function(player, candidates) -- string
 			key = candidate .. "+" .. first
 			value = second_general_table[key] or 3
 		end
-		
+
 		if value > maxx then
 			maxx = value
 			max_general = candidate
 		end
 	end
-	
+
 	assert(max_general)
 	return max_general
 end

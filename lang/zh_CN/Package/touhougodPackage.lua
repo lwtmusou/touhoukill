@@ -2,19 +2,19 @@ return{
 	["touhougod"]= "神",
 	["#ChooseKingdom"]= "%from 选择了 %arg 势力",
 
-  ["zun"] = "ZUN",["#zun"] = "创幻神主",
-  ["!zun"] = "ZUN",
-  --["designer:zun"] = "星野梦美 | 程序:三国有单",
+	["zun"] = "ZUN",["#zun"] = "创幻神主",
+	["!zun"] = "ZUN",
+	--["designer:zun"] = "星野梦美 | 程序:三国有单",
 	["illustrator:zun"] = "未知",
 	["chuanghuan"] = "创幻",
-		[":chuanghuan"] = "<font color=\"blue\"><b>(粗略完成，有待大修改。)</b></font><font color=\"#808080\"><b>永久技，</b></font>所有玩家均展示人物牌后，你随机获得人物牌堆里的四张人物牌，称为“幻想牌”。准备阶段开始时，你随机获得两张“幻想牌”。你可以在恰当的时机，将一张“幻想牌”置入人物牌堆，获得该“幻想牌”的一个技能（永久技、限定技、觉醒技、主公技除外），并在下列时机时失去该技能：1获得该技能的回合结束时 2 此技能发动或被触发，并执行相应效果后（回合内）。",
-	   ["@huanxiangs"]= "幻想牌",
-	   ["shenzhu"] = "神主",
-		[":shenzhu"] = "<font color=\"#808080\"><b>永久技，</b></font>你的体力上限为玩家数的一半（向上取整）。",
-		["chuanghuan_browse"]= "查看幻想牌",
-		["chuanghuan_select"]= "获得技能",
-		["#chuanghuangain"]= "%from获得了“%arg”",
-		["#chuanghuan1"]= "%from发动了“%arg”",
+	[":chuanghuan"] = "<font color=\"blue\"><b>(粗略完成，有待大修改。)</b></font><font color=\"#808080\"><b>永久技，</b></font>所有玩家均展示人物牌后，你随机获得人物牌堆里的四张人物牌，称为“幻想牌”。准备阶段开始时，你随机获得两张“幻想牌”。你可以在恰当的时机，将一张“幻想牌”置入人物牌堆，获得该“幻想牌”的一个技能（永久技、限定技、觉醒技、主公技除外），并在下列时机时失去该技能：1获得该技能的回合结束时 2 此技能发动或被触发，并执行相应效果后（回合内）。",
+	["@huanxiangs"]= "幻想牌",
+	["shenzhu"] = "神主",
+	[":shenzhu"] = "<font color=\"#808080\"><b>永久技，</b></font>你的体力上限为玩家数的一半（向上取整）。",
+	["chuanghuan_browse"]= "查看幻想牌",
+	["chuanghuan_select"]= "获得技能",
+	["#chuanghuangain"]= "%from获得了“%arg”",
+	["#chuanghuan1"]= "%from发动了“%arg”",
 
 --*************************************
 	--shen001  势力：神 4血
@@ -37,10 +37,10 @@ return{
 
 --*************************************
 	--shen002  势力：神 3血
-    ["remilia_god"] = "神 蕾米莉亚",
+	["remilia_god"] = "神 蕾米莉亚",
 	["&remilia_god"] = "神蕾米莉亚",
 	["#remilia_god"] = "永远的红之幼月",
-    ["!remilia_god"] = "神 蕾米莉亚·斯卡蕾特",
+	["!remilia_god"] = "神 蕾米莉亚·斯卡蕾特",
 	["illustrator:remilia_god"] = "とりのあくあ",
 	["origin:remilia_god"] = "p号:21061795，个人ID：1960050" ,
 	["illustrator:remilia_god_1"] = "ジョンディー",
@@ -112,7 +112,7 @@ return{
 	["origin:suika_god_1"] = "p号：13669192，个人ID：778201",
 	["illustrator:suika_god_2"] = "チョモラン ティア",
 	["origin:suika_god_2"] = "p号：32178545，个人ID：76370",
-		["huanmeng"] = "幻梦",
+	["huanmeng"] = "幻梦",
 	[":huanmeng"] = "<font color=\"#808080\"><b>永久技，</b></font>你没有体力和体力上限。你跳过摸牌阶段和弃牌阶段。你的回合开始时，若你没有手牌，你死亡。",
 	["cuixiang"] = "萃想",
 	[":cuixiang"] = "<font color=\"blue\"><b>锁定技，</b></font>准备阶段开始时，所有其他角色须依次弃置一张手牌（若没有手牌，将牌堆顶的一张牌置入弃牌堆），然后你获得零至两张以此法置入弃牌堆的牌。",
@@ -123,10 +123,10 @@ return{
 
 --*************************************
 	--shen006  势力：神 3血
-    ["flandre_god"]= "神 芙兰朵露",
+	["flandre_god"]= "神 芙兰朵露",
 	["&flandre_god"]= "神芙兰朵露",
 	["#flandre_god"]= "绯色月下",
-    ["!flandre_god"]="神 芙兰朵露·斯卡雷特",
+	["!flandre_god"]="神 芙兰朵露·斯卡雷特",
 
 	["illustrator:flandre_god"] = "大嘘",
 	["origin:flandre_god"] = "个人ID：457541",
@@ -134,7 +134,7 @@ return{
 	["origin:flandre_god_1"] = "p号：10349300，个人ID：94883",  --(第一条禁止 第三条 允许 好矛盾。。。)
 	["illustrator:flandre_god_2"] = "6U",
 	["origin:flandre_god_2"] = "p号：18638832，个人ID：94883",
-		["kuangyan"]= "狂宴",
+	["kuangyan"]= "狂宴",
 	[":kuangyan"]= "当你于其他角色的回合内进入濒死状态时，你可以获得一枚“禁忌”标记并回复体力至1，然后对当前回合的角色造成1点伤害。",
 	["kuangyan:recover"]= "你可以发动“狂宴”，获得一枚“禁忌”标记并回复体力至1，然后对当前回合的角色 <font color=\"#00FF00\"><b> %src </b></font> 造成1点伤害。",
 	["huimie"]= "毁灭",
@@ -155,7 +155,7 @@ return{
 	["origin:sakuya_god_1"] = "p号：17018428，个人ID：64821",
 	["illustrator:sakuya_god_2"] = "Tro",
 	["origin:sakuya_god_2"] = "p号：16104268，个人ID：52449",
-		["shicao"] = "时操",
+	["shicao"] = "时操",
 	[":shicao"] = "<font color=\"blue\"><b>锁定技，</b></font>准备阶段开始时，若此回合不是额外回合，你获得一枚“时”标记。",
 	["@clock"]= "时",
 	["shiting"] = "时停",
@@ -182,7 +182,7 @@ return{
 	["origin:youmu_god_1"] = "p号：34846796，个人ID：825635",
 	["illustrator:youmu_god_2"] = "しがらき",
 	["origin:youmu_god_2"] = "p号：30393575，个人ID：1004274",
-		["banling"] = "半灵",
+	["banling"] = "半灵",
 	[":banling"] = "<font color=\"#808080\"><b>永久技，</b></font>你拥有两种体力：人体力和灵体力。你的基础手牌上限与两种体力中较少的那种相同。每当你的体力或体力上限发生1点改变时，你选择两种体力中的一种进行结算。当任一种体力值扣减至0时，你进入濒死状态。",
 	["#lingtilidamage"] = "%from 的 %arg 被触发， %from 选择了扣减 %arg2 点 “灵”体力。",
 	["#rentilidamage"] = "%from 的 %arg 被触发， %from 选择了扣减 %arg2 点 “人”体力。",
@@ -209,17 +209,17 @@ return{
 
 --*************************************
 	--shen009  势力：神 4血
-    ["reisen_god"] = "神 铃仙", 
+	["reisen_god"] = "神 铃仙",
 	["&reisen_god"] = "神铃仙",
 	["#reisen_god"] = "狂气的赤眼",
-    ["!reisen_god"] = "神 铃仙·优昙华院·因幡",
+	["!reisen_god"] = "神 铃仙·优昙华院·因幡",
 	["illustrator:reisen_god"] = "べし",
 	["origin:reisen_god"] = "p号：6495485，个人ID：4518",
 	["illustrator:reisen_god_1"] = "ATOMix",
 	["origin:reisen_god_1"] = "p号：20807866，个人ID：1557409",
 	["illustrator:reisen_god_2"] = "赤りんご",
 	["origin:reisen_god_2"] = "p号：1438991，个人ID：164813",
-		["ningshi"] = "凝视",
+	["ningshi"] = "凝视",
 	[":ningshi"] = "<font color=\"blue\"><b>锁定技，</b></font>当你于出牌阶段内使用【杀】或锦囊牌指定其他角色为目标后，若此牌只指定了一名角色为目标，该角色须失去1点体力。",
 	["@ningshi"] = "请弃置 %src 张牌，否则将失去 %src 点体力",
 	["gaoao"] = "高傲",
@@ -236,7 +236,7 @@ return{
 	["origin:sanae_god_1"] = "p号：7765131，个人ID：98455",
 	["illustrator:sanae_god_2"] = "Riv",
 	["origin:sanae_god_2"] = "p号：8271655，个人ID：64821",
-		["shenshou"] = "神授",
+	["shenshou"] = "神授",
 	[":shenshou"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可展示一张手牌并将其交给一名其他角色。若此牌为你最后的手牌，此牌视为【杀】，花色视为<font size=\"5\", color=\"#808080\"><b>♠</b></font>，点数视为5。<br /> 1. 若此牌为【杀】，你可令该角色视为对其攻击范围内的由你指定的一名角色使用一张【杀】。<br />2. 若此牌为<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，你可令该角色获得其攻击范围内的由你指定的一名角色的一张手牌。 <br />3. 若此牌的点数为5-9，你可以摸一张牌。",
 	["shenshou_slash"]= "视为该角色对另一名角色使用一张【杀】",
 	["@shenshou-slash"]= "请指定一名角色，视为 <font color=\"yellow\"><b>%src </b></font> 对其使用一张【杀】。",
@@ -256,7 +256,7 @@ return{
 	["origin:reimu_god_1"] = "p号：5490342，个人ID：12081",
 	["illustrator:reimu_god_2"] = "えふぇ",
 	["origin:reimu_god_2"] = "p号：34544357，个人ID：292644",
-		["yibian"] = "异变",
+	["yibian"] = "异变",
 	[":yibian"] = "一名角色的准备阶段开始时，若其身份牌暗置，该角色可以明置其身份牌，然后令一名与其阵营不同的角色摸一张牌；若其身份牌明置，该角色可以将一张牌交给一名与其阵营相同的其他角色。",
 	["#YibianShow"] = "%from 发动了 <font color=\"red\"><b>异变</b></font>，明置了身份牌，为 %arg 。",
 	["@yibian"] = "选择一名身份牌明置且与你阵营不同的角色，令其摸一张牌。",
@@ -271,17 +271,17 @@ return{
 
 --*************************************
 	--shen012  势力：神 4血
-    ["shikieiki_god"] = "神 四季映姬" ,
+	["shikieiki_god"] = "神 四季映姬" ,
 	["&shikieiki_god"] = "神四季映姬" ,
 	["#shikieiki_god"] = "幻想乡的裁判长" ,
-    ["!shikieiki_god"] = "神 四季映姬·亚玛萨那度" ,
+	["!shikieiki_god"] = "神 四季映姬·亚玛萨那度" ,
 	["illustrator:shikieiki_god"] = "卜部ミチル",
 	["origin:shikieiki_god"] = "p号：20858470",
 	["illustrator:shikieiki_god_1"] = "七原冬雪",
 	["origin:shikieiki_god_1"] = "p号：32122356，个人ID：286217",
 	["illustrator:shikieiki_god_2"] = "memai",
 	["origin:shikieiki_god_2"] = "p号：2537720",
-		["quanjie"] = "劝诫" ,
+	["quanjie"] = "劝诫" ,
 	[":quanjie"] = "其他角色的出牌阶段开始时，你可令其选择一项：摸一张牌，其于此回合内不能使用【杀】；或弃置一张【杀】。" ,
 	["@quanjie-discard"] = "请弃置一张【杀】，否则你摸一张牌并不能使用【杀】直到回合结束。" ,
 	["@duanzui-extra"]= "断罪",
@@ -299,7 +299,7 @@ return{
 	["origin:meirin_god_1"] = "p号：14127493，个人ID：293912",
 	["illustrator:meirin_god_2"] = "もねてぃ",
 	["origin:meirin_god_2"] = "p号：43112047，个人ID：3066815",
-		["huaxiang"] = "华想",
+	["huaxiang"] = "华想",
 	[":huaxiang"] = "当你需要使用或打出一张基本牌或【无懈可击】时，你可以声明之（若你的体力上限大于3，不能声明【闪】；若你的体力上限大于2，不能声明【桃】；若你的体力上限大于1，不能声明【无懈可击】），并将一张与你人物牌上的任何一张牌花色均不同的手牌置于你的人物牌上，称为“虹”，你视为使用或打出了一张你声明的牌。",
 	["huaxiang_skill_slash"]= "华想";
 	["huaxiang_skill_saveself"]= "华想";
@@ -307,7 +307,7 @@ return{
 	["caiyu"] = "彩雨",
 	[":caiyu"] = "一名角色的结束阶段开始时，若你的人物牌上有不少于四张“虹”，你可以将所有“虹”加入手牌，弃置两张手牌，然后你可以失去1点体力上限。",
 	["caiyu:discard"] ="你可以其发动“彩雨”，收回所有“虹”，然后将弃置两张手牌。",
-    ["caiyu_discard"]="“彩雨”：收回“虹”后，请弃置%src张手牌。",
+	["caiyu_discard"]="“彩雨”：收回“虹”后，请弃置%src张手牌。",
 	["caiyu:loseMaxHp"] = "你是否执行“彩雨”效果，扣减1点体力上限。",
 	["xuanlan"] = "绚烂",
 	[":xuanlan"] = "若你未受伤，你可以跳过弃牌阶段。",
@@ -316,14 +316,14 @@ return{
 	--shen014  势力：神 4血
 	["eirin_god"] = "神 八意永琳",
 	["&eirin_god"] = "神八意永琳",
-    ["#eirin_god"] = "月都大贤者", 
+	["#eirin_god"] = "月都大贤者",
 	["illustrator:eirin_god"] = "NEKO",
 	["origin:eirin_god"] = "p号：30537439，个人ID：2600911", --（国人）
 	["illustrator:eirin_god_1"] = "zhu fun",
 	["origin:eirin_god_1"] = "p号：38148654，个人ID：942466",
 	["illustrator:eirin_god_2"] = "にしもん",
 	["origin:eirin_god_2"] = "p号：45011715，个人ID：202286",
-		["qiannian"] = "千年",
+	["qiannian"] = "千年",
 	[":qiannian"] = "<font color=\"blue\"><b>锁定技，</b></font>游戏开始时或洗牌后，你获得一枚“岁月”标记。摸牌阶段，你多摸X张牌（X为“岁月”标记的数量）。你的手牌上限增加X的2倍。",
 	["@qiannian"]= "岁月",
 
@@ -355,7 +355,7 @@ return{
 	["origin:byakuren_god_1"] = "p号：13228444，个人ID：1372893",
 	["illustrator:byakuren_god_2"] = "覚醒",
 	["origin:byakuren_god_2"] = "p号：36099374，个人ID：838019",
-		["chaoren"] = "超人" ,
+	["chaoren"] = "超人" ,
 	[":chaoren"] = "牌堆顶的牌对你可见。你可以使用或打出此牌。",
 	["$chaorendrawpile"] = "牌堆顶的牌为： %card" ,
 
@@ -370,7 +370,7 @@ return{
 	["origin:koishi_god_1"] = "p号：45292462，个人ID：546819",
 	["illustrator:koishi_god_2"] = "月本葵",
 	["origin:koishi_god_2"] = "p号：45610081，个人ID：246176",
-		["biaoxiang"] = "表象",
+	["biaoxiang"] = "表象",
 	[":biaoxiang"] = "<font color=\"purple\"><b>觉醒技，</b></font>准备阶段开始时，若你的手牌数小于二，你将体力牌翻面，并获得技能“自我”（出牌阶段，你可以弃置两张手牌，回复1点体力）。",
 	["#BiaoxiangWake"]= "%from 的手牌数小于 <font color=\"yellow\"><b>2</b></font>，触发“%arg”觉醒。",
 	["$biaoxiangAnimate"]= "skill=koishi_god:biaoxiang",
@@ -398,7 +398,7 @@ return{
 	["suwako_god"] = "神 泄矢诹访子",
 	["#suwako_god"] = "名存实亡的神明",
 	["&suwako_god"] = "神泄矢诹访子",
-		["illustrator:suwako_god"] = "ルリア",
+	["illustrator:suwako_god"] = "ルリア",
 	["origin:suwako_god"] = "p号：13338753",
 	["illustrator:suwako_god_1"] = "伊吹のつ",
 	["origin:suwako_god_1"] = "p号：51609431",
@@ -420,10 +420,10 @@ return{
 
 --*************************************
 	--shen019  势力：神 4血
-	 ["miko_god"] = "神 丰聪耳神子",
+	["miko_god"] = "神 丰聪耳神子",
 	["&miko_god"] = "神丰聪耳神子",
 	["#miko_god"] = "日出之国的天子",
-		["illustrator:miko_god"] = "Mik-cis",
+	["illustrator:miko_god"] = "Mik-cis",
 	["origin:miko_god"] = "p号：35385868",
 	["illustrator:miko_god_1"] = "まくわうに",
 	["origin:miko_god_1"] = "p号：42026225",
@@ -457,7 +457,7 @@ return{
 	["origin:kaguya_god_1"] = "p号：26921148",
 	["illustrator:kaguya_god_2"] = "乃絵のえる",
 	["origin:kaguya_god_2"] = "p号：51840626",
-		["shenbao"] = "神宝",
+	["shenbao"] = "神宝",
 	[":shenbao"] = "<font color=\"blue\"><b>锁定技，</b></font>视为你装备着场上的所有装备牌（武器的攻击范围取最长，不同的装备效果均叠加，你不能发动不在你装备区里的【木牛流马】的特效）。",
 	["#shenbao_distance"] = "神宝",
 	["shenbao_spear"] = "丈八蛇矛",
@@ -474,7 +474,7 @@ return{
 	["origin:komachi_god_1"] = "p号：51593223",
 	["illustrator:komachi_god_2"] = "藤原",
 	["origin:komachi_god_2"] = "个人ID：27517",
-			["yindu"] = "引渡",
+	["yindu"] = "引渡",
 	[":yindu"] = "当其他角色死亡时，你可以摸三张牌。若如此做，不执行奖惩。",
 	["yindu:invoke"] = "你是否发动“引渡”，摸 3 张牌，若如此做，<font color=\"#00FF00\"><b>%src </b></font>的死亡将不会执行奖惩",
 	["huanming"] = "换命",
@@ -483,7 +483,7 @@ return{
 	["chuanwu"] = "川雾",
 	[":chuanwu"] = "<font color=\"blue\"><b>锁定技，</b></font>你与其他角色的距离最多为X（X为该角色的体力值且最少为1）。",
 
-	
+
 	--shen??  势力：神 3血
 	["seiga_god"] = "神 霍青娥",
 	["&seiga_god"] = "神霍青娥",
@@ -494,24 +494,24 @@ return{
 	[":tongling"] = "<font color=\"red\"><b>限定技，</b></font>回合开始时，你可以获得一名死亡角色的人物牌并获得上面的一个技能（永久技，觉醒技，主公技除外）。 ",
 	["rumo"] = "入魔",
 	[":rumo"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可令包括你在内的至多X名角色横置，然后你摸X张牌（X为你的体力值且最少为1）。",
- 
+
 	["satori_god"] = "神 古明地觉",
 	["&satori_god"] = "神古明地觉" ,
 	["#satori_god"] = "小五",
-	
+
 	["yuyuko_god"] = "神 西行寺幽幽子" ,
 	["&yuyuko_god"] = "神西行寺幽幽子" ,
 	["#yuyuko_god"] = "uuz",
-	
+
 	["shinmyoumaru_god"] = "神 少名针妙丸" ,
 	["&shinmyoumaru_god"] = "神少名针妙丸" ,
 	["#shinmyoumaru_god"] = "小人" ,
-	
+
 	["aya_god"] = "神 射命丸文" ,
 	["&aya_god"] = "神射命丸文" ,
 	["#aya_god"] = "狗腿" ,
-	
+
 	["yuyuko_1v3"] = "西行寺幽幽子",
 	["!yuyuko_1v3"] = "神 西行寺幽幽子-1v3",
 	["#yuyuko_1v3"] = "天衣无缝的亡灵" ,
- }
+}

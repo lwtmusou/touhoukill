@@ -8,7 +8,7 @@ dofile "lua/sgs_ex.lua"
 function load_translation(file)
 	local t = dofile(file)
 	if type(t) ~= "table" then
-	    error(("file %s is should return a table!"):format(file))
+		error(("file %s is should return a table!"):format(file))
 	end
 
 	sgs.LoadTranslationTable(t)

@@ -16,7 +16,6 @@ return
 	["origin:suika_2"] = "p号：28972709，个人ID：126905",--（表态可用）
 	["illustrator:suika_3"] = "Tro",
 	["origin:suika_3"] = "p号：11675411，个人ID：52449",
-	--["illustrator:suika_4"] = " (p号:)",
 	["illustrator:suika_5"] = "伊吹のつ",
 	["origin:suika_5"] = "p号：43405095，个人ID：7013",
 	["zuiyue"] = "醉月",
@@ -30,9 +29,9 @@ return
 
 	--**********************************************
 	--zhan002  势力：战 3血
-    ["shikieiki"] = "四季映姬" ,
+	["shikieiki"] = "四季映姬" ,
 	["#shikieiki"] = "乐园的最高裁判长" ,
-    ["!shikieiki"] = "四季映姬·亚玛萨那度" ,
+	["!shikieiki"] = "四季映姬·亚玛萨那度" ,
 	["illustrator:shikieiki"] = "風花風花",
 	["origin:shikieiki"] = "p号：37523603，个人ID：1316750",
 	["illustrator:shikieiki_1"] = "ideolo",
@@ -44,7 +43,7 @@ return
 	["illustrator:shikieiki_4"] = "カズ",
 	["origin:shikieiki_4"] = "p号：4734540，个人ID：137496",
 
-		["shenpan"] = "审判" ,
+	["shenpan"] = "审判" ,
 	[":shenpan"] = "摸牌阶段开始时，你可以放弃摸牌，对一名其他角色造成1点雷电伤害。此阶段结束时，若该角色的手牌数大于其体力值，你摸一张牌。" ,
 	["@shenpan-select"] = "你可以对一名其他角色发动“审判”。" ,
 	["huiwu"] = "悔悟" ,
@@ -66,7 +65,7 @@ return
 	["origin:komachi_2"] = "p号：23773957，个人ID：964140",-- (国人)
 	["illustrator:komachi_3"] = "pico",
 	["origin:komachi_3"] = "p号：14285106，个人ID：347929",
-		["silian"] = "死镰",
+	["silian"] = "死镰",
 	[":silian"] = "<font color=\"blue\"><b>锁定技，</b></font>当你使用【杀】对目标角色造成伤害时，若其体力值为1，此伤害+2。",
 	["#silian"] = "%from 的技能“死镰”被触发, %from 使用的【杀】对 %to 造成的伤害+2。",
 	["mingtu"]= "冥途",
@@ -86,7 +85,7 @@ return
 	["origin:yuka_3"] = "个人ID：173876",
 	["illustrator:yuka_4"] = "赤シオ",
 	["origin:yuka_4"] = "p号：27321553，个人ID：341747",
-		["weiya"] = "威压",
+	["weiya"] = "威压",
 	[":weiya"] = "<font color=\"blue\"><b>锁定技，</b></font>当其他角色于你的回合内使用或打出一张基本牌或【无懈可击】时（代替判定牌时除外），该角色选择一项：令此牌无效，或弃置一张与此牌名称相同的牌。",
 	["@weiya"]= "由于“威压”的效果，你需要弃置一张【%src】，否则之前的【%src】无效。",
 	["#weiya"]= "由于“%arg”的效果，%from的【%arg2】无效。",
@@ -94,9 +93,9 @@ return
 
 --**********************************************
 	--zhan005  势力：战 3血
-    ["medicine"]="梅蒂馨",
+	["medicine"]="梅蒂馨",
 	["#medicine"]= "小小的甜蜜毒药",
-    ["!medicine"]="梅蒂馨·梅兰克莉",
+	["!medicine"]="梅蒂馨·梅兰克莉",
 	["illustrator:medicine"] = "フカヒレ",
 	["origin:medicine"] = "p号：9174315，个人ID：58338",
 	["illustrator:medicine_1"] = "DQN",
@@ -107,15 +106,15 @@ return
 	["origin:medicine_3"] = "p号：4357443，个人ID：73846",
 	["illustrator:medicine_4"] = "甘党",
 	["origin:medicine_4"] = "p号：15735289，个人ID：298982",
-		["judu"]= "剧毒",
+	["judu"]= "剧毒",
 	[":judu"]= "当你对其他角色造成伤害后，你可以判定，若结果为黑色2-9，该角色失去1点体力。",
 	["henyi"]= "恨意",
 	[":henyi"]= "一名角色的出牌阶段结束时，若你于此回合内受到过伤害，你可视为使用一张【万箭齐发】。当此【万箭齐发】对当前回合的角色造成伤害时，你回复1点体力。",
 
 --**********************************************
 	--zhan006  势力：战 4血
-    ["aya_sp"]="SP记者文",
-    ["&aya_sp"]="记者文",
+	["aya_sp"]="SP记者文",
+	["&aya_sp"]="记者文",
 	["#aya_sp"]= "捏造新闻记者",
 	["illustrator:aya_sp"] = "An2A",
 	["origin:aya_sp"] = "个人ID：173876",
@@ -123,7 +122,7 @@ return
 	["origin:aya_sp_1"] = "p号：18047920，个人ID：292644", --（作者说明非合同绘 非商业可用）
 	["illustrator:aya_sp_2"] = "ゆらみ 琥珀",
 	["origin:aya_sp_2"] = "p号：37017005，个人ID：321156",
-		["toupai"]= "偷拍",
+	["toupai"]= "偷拍",
 	[":toupai"]= "摸牌阶段开始时，你可以放弃摸牌，改为观看一名有手牌的其他角色的手牌，你可以弃置其中的一至三张红色牌。每以此法弃置一张基本牌，你摸一张牌。",
 	["@toupai-select"]= "你可以放弃摸牌，指定一名其他角色，观看其所有手牌，你可以弃置其中的一至三张红色牌。每以此法弃置一张基本牌，你摸一张牌。",
 
@@ -142,7 +141,7 @@ return
 	["origin:tenshi_3"] = "p号：9218445，个人ID：341747",
 	["illustrator:tenshi_4"] = " 亜音",
 	["origin:tenshi_4"] = "p号：45069411，个人ID：759647",--（国人？）
-		["feixiang"] = "绯想",
+	["feixiang"] = "绯想",
 	[":feixiang"] = "当判定牌生效前，你可以展示一名角色的一张手牌并令该角色打出此牌代替判定牌。",
 	["@feixiang-playerchosen"] = "<font color=\"#00FF00\"><b>%src </b></font> 将要进行 “%dest” 的判定，你可以发动“绯想”，指定一名角色并展示其一张手牌。",
 	["dizhen"] = "地震",
@@ -165,7 +164,7 @@ return
 	["origin:iku_2"] = "p号：39033688，个人ID：91059",
 	["illustrator:iku_3"] = "爽希",
 	["origin:iku_3"] = "p号：38916055，个人ID：2318975",
-		["jingdian"] = "静电",
+	["jingdian"] = "静电",
 	[":jingdian"] = "<font color=\"blue\"><b>锁定技，</b></font>每当你受到雷电伤害时，防止此伤害，你摸3x张牌（x为此次伤害的点数）。",
 	["#jingdian"] = "%from 的技能 “%arg” 被触发，%from 防止了 %arg2 点雷电伤害。",
 	["leiyun"] = "雷云",
@@ -185,7 +184,7 @@ return
 	["origin:hatate_3"] = "p号：21411887，个人ID：1225738",
 	["illustrator:hatate_4"] = "c7肘",
 	["origin:hatate_4"] = "p号：29166434，个人ID：217707",
-		["kuaizhao"] = "快照",
+	["kuaizhao"] = "快照",
 	[":kuaizhao"] = "摸牌阶段，你可以少摸一张牌，令你攻击范围内的一名有手牌的角色展示其所有手牌，你摸X张牌（X为其中基本牌的数量且最多为2）。",
 	["@kuaizhao-select_one"] = "指定一名其他角色，展示其所有手牌。",
 	["duanjiao"] = "短焦",
@@ -203,7 +202,7 @@ return
 	["origin:kokoro_2"] = "p号：38589315",
 	["illustrator:kokoro_3"] = "ゾウノセ",
 	["origin:kokoro_3"] = "p号：39419401",
-		["nengwu"] = "能舞",
+	["nengwu"] = "能舞",
 	[":nengwu"] = "当你于摸牌阶段外回复体力后或获得一次牌后，你可令你攻击范围内的一名角色摸一张牌。当你于出牌阶段外受到伤害后或失去一次手牌后，你可以弃置你攻击范围内一名角色的一张手牌。",
 	["nengwudraw"] = "能舞(摸牌)",
 	["nengwudiscard"] = "能舞(弃牌)",

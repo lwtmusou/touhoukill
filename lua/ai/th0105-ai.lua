@@ -10,7 +10,7 @@ sgs.ai_skill_choice.ciyuan = function(self, choices, data)
 			for _,c in sgs.qlist(self.player:getCards("h")) do
 				if c:isKindOf("EquipCard") then
 					useCount = useCount + 1
-					continue 
+					continue
 				end
 				local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 				if c:isKindOf("TrickCard") then
@@ -41,7 +41,7 @@ sgs.ai_skill_choice.ciyuan = function(self, choices, data)
 			return choice_table[index]
 		end
 	end
-	
+
 	if choices:match("cancel") then
 		return "cancel"
 	else
@@ -57,7 +57,7 @@ sgs.ai_skill_invoke.shigui = function(self,data)
 		if  diff > 2 then
 			return true
 		elseif pahseCount - self.player:getHandcardNum() == 2 then
-			return not self:isWeak(self.player) 
+			return not self:isWeak(self.player)
 		end
 	end
 	if phase == sgs.Player_Play then
@@ -71,11 +71,11 @@ sgs.ai_skill_invoke.shigui = function(self,data)
 	return false
 end
 
-sgs.ai_need_bear.shigui = function(self, card,from,tos) 
+sgs.ai_need_bear.shigui = function(self, card,from,tos)
 	from = from or self.player
 	local pahseCount = from:getMark("shigui")
 	if from:isWounded() then
-		if not from:hasFlag("shigui_Not_Need_Bear") 
+		if not from:hasFlag("shigui_Not_Need_Bear")
 			and from:getHandcardNum() > pahseCount and from:getHandcardNum() == pahseCount + 1 then
 			return true
 		end
@@ -133,7 +133,7 @@ end
 function SmartAI:qianyiPhase(target)
 	--willSkipPlayPhase 没考虑跳判定
 	if self:isEnemy(target) then
-		if self:getOverflow(target) >= -1  then 
+		if self:getOverflow(target) >= -1  then
 			return sgs.Player_Play
 		end
 		return sgs.Player_Draw
@@ -155,11 +155,11 @@ function SmartAI:qianyiValue(card, target, phase)
 	if card:isKindOf("Weapon") then
 		value1 = self:evaluateWeapon(card, self.player)
 		value2 = self:evaluateWeapon(card, target)
-		value3 = equipped and self:evaluateWeapon(equipped, target) or 0 
+		value3 = equipped and self:evaluateWeapon(equipped, target) or 0
 	elseif card:isKindOf("Armor") then
 		value1 = self:evaluateArmor(card, self.player)
 		value2 = self:evaluateArmor(card, target)
-		value3 = equipped and self:evaluateArmor(equipped, target) or 0 
+		value3 = equipped and self:evaluateArmor(equipped, target) or 0
 	else
 		value1 = 3
 		value2 = 3
@@ -198,10 +198,10 @@ sgs.ai_skill_cardask["@qianyi"] = function(self, data)
 		table.insert(cards,array)
 	end
 	local compare_func = function(a, b)
-		return a.value > b.value 
+		return a.value > b.value
 	end
 	table.sort(cards, compare_func)
-	
+
 	if cards[1].value > 0 then
 		return "$" .. cards[1].card:getId()
 	end
@@ -223,7 +223,7 @@ sgs.ai_choicemade_filter.skillChoice.qianyi = function(self, player, args)
 	local choice = args[#args]
 	local current = self.room:getCurrent()
 	if not current then return end
-	if  choice == "play" or choice == "draw" then 
+	if  choice == "play" or choice == "draw" then
 		sgs.updateIntention(player, current, 80)
 	elseif choice == "discard" then
 		sgs.updateIntention(player, current, -80)
@@ -242,7 +242,7 @@ sgs.ai_skill_playerchosen.mengxiao = function(self, targets)
 						return p
 					end
 				end
-			end			
+			end
 		end
 	end
 	for _,p in sgs.qlist(targets) do
@@ -253,7 +253,7 @@ sgs.ai_skill_playerchosen.mengxiao = function(self, targets)
 						return p
 					end
 				end
-			end			
+			end
 		end
 	end
 	return nil
@@ -286,12 +286,12 @@ function youyue_judge(self,target,card)
 	if card:isKindOf("AmazingGrace") then
 		return 2
 	end
-	if card:isKindOf("GodSalvation") then 
+	if card:isKindOf("GodSalvation") then
 		if target:isWounded() then
 			return 2
 		end
 	end
-	if card:isKindOf("IronChain") then 
+	if card:isKindOf("IronChain") then
 		if target:isChained() then
 			return 2
 		else
@@ -330,7 +330,7 @@ sgs.ai_skill_cardask["youyue-show"] = function(self, data)
 	return "."
 end
 
-sgs.ai_skill_invoke.yeyan = true 
+sgs.ai_skill_invoke.yeyan = true
 
 local menghuanvs_skill = {}
 menghuanvs_skill.name = "menghuan_attach"
@@ -338,7 +338,7 @@ table.insert(sgs.ai_skills, menghuanvs_skill)
 menghuanvs_skill.getTurnUseCard = function(self)
 	if self.player:hasFlag("Forbidmenghuan") then return nil end
 	if self.player:getKingdom() ~="pc98" then return nil end
-	
+
 	local cards = self.player:getCards("h")
 	cards = sgs.QList2Table(cards)
 	local card
@@ -350,13 +350,13 @@ menghuanvs_skill.getTurnUseCard = function(self)
 		end
 	end
 	if not card then return nil end
-	
+
 	local card_id = card:getEffectiveId()
 	local card_str ="@MenghuanCard="..card_id
 	local skillcard = sgs.Card_Parse(card_str)
-	
+
 	assert(skillcard)
-	
+
 	return skillcard
 end
 
@@ -370,7 +370,7 @@ sgs.ai_skill_use_func.MenghuanCard = function(card, use, self)
 		end
 	end
 
-	if #targets > 0 then 
+	if #targets > 0 then
 		use.card = card
 		if use.to then
 			use.to:append(targets[1])

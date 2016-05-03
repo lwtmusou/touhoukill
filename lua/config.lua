@@ -5,7 +5,7 @@ config = {
 	developers = {
 	} ,
 
-	kingdoms = { 
+	kingdoms = {
 	 "zhu", "pc98", "hmx","yym","yyc","zhan","fsl","dld","xlc","slm","hzc","wai","touhougod" ,
 	 --"gzz"
 	},
@@ -33,7 +33,7 @@ config = {
 		"Maneuvering",
 
 		"touhoucard",
-		
+
 		--武将包
 		"Protagonist",
 		"TH0105",
@@ -52,8 +52,8 @@ config = {
 		"THNDJ",
 		"TouhouGod",
 		"Standard", --此包内带pattern的定义 不能屏蔽。。。
-		"Test",	
-		
+		"Test",
+
 	},
 
 	surprising_generals = {
@@ -118,9 +118,12 @@ config = {
 		"毛玉" ,
 		"油库里" ,
 		"罪袋" ,
+		"三锅油弹",
+		"陈艳天明" ,
+		"鱻",
 	},
 
-	roles_ban = { 
+	roles_ban = {
 	},
 
 	kof_ban = {
@@ -143,7 +146,7 @@ config = {
 
 	convert_pairs = {
 	},
-	
+
 	bgm_convert_pairs = {
 		"kosuzu->akyuu",
 		"tokiko->rinnosuke",

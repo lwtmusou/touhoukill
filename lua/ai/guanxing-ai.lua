@@ -144,7 +144,7 @@ local function GuanXing(self, cards)
 	local judge = self.player:getCards("j")
 	judge = sgs.QList2Table(judge)
 	judge = sgs.reverse(judge)
-    --需要加入正在改判的judge reason
+	--需要加入正在改判的judge reason
 	for judge_count, need_judge in ipairs(judge) do
 		local index = 1
 		local lightning_flag = false
@@ -313,7 +313,7 @@ local function GuanXing(self, cards)
 	end
 
 	up, bottom = getOwnCards(self, up, bottom, next_judge)
-	
+
 	if self.player:hasSkill("fengshui") then
 		if #up>0 then
 			self.player:setTag("fengshui_id",sgs.QVariant(up[1]:getId()))
@@ -321,7 +321,7 @@ local function GuanXing(self, cards)
 	end
 	up = getBackToId(self, up)
 	bottom = getBackToId(self, bottom)
-	
+
 	return up, bottom
 end
 
@@ -333,7 +333,7 @@ local function XinZhan(self, cards)
 	local judge = next_player:getCards("j")
 	judge = sgs.QList2Table(judge)
 	judge = sgs.reverse(judge)
-	
+
 
 	bottom = getIdToCard(self, cards)
 	if self:isFriend(next_player) then
@@ -341,13 +341,13 @@ local function XinZhan(self, cards)
 	else
 		self:sortByUseValue(bottom, true)
 	end
-	
+
 	local considerNianli = false
-	if self.player:hasSkills("shenmi+nianli") and self.player:getPhase() == sgs.Player_Draw 
-	    and not self:willSkipPlayPhase(self.player) then
+	if self.player:hasSkills("shenmi+nianli") and self.player:getPhase() == sgs.Player_Draw
+		and not self:willSkipPlayPhase(self.player) then
 		considerNianli = true
 	end
-	
+
 	local nianlis = {}
 	if considerNianli then
 		local color = self:nianliColor(bottom)
@@ -359,8 +359,8 @@ local function XinZhan(self, cards)
 			if #nianlis >= 2 then break end
 		end
 	end
-	
-	
+
+
 	local judgeReasons = self:touhouGetJudges(next_player)
 	local bottom_count = #bottom
 	for _,reason in pairs (judgeReasons) do
@@ -371,7 +371,7 @@ local function XinZhan(self, cards)
 			if judge_id == - 1 then
 				table.insert(tmpup, fakeJudge.card:getEffectiveId())
 				table.remove(bottom, 1)
-			else 
+			else
 				local newCard = sgs.Sanguosha:getCard(judge_id)
 				table.insert(tmpup, judge_id)
 				table.removeOne(bottom, newCard)
@@ -383,7 +383,7 @@ local function XinZhan(self, cards)
 			break
 		end
 	end
-	
+
 	for index, id in pairs (tmpup) do
 		if (id < 0) then
 			table.insert(up, bottom[1]:getEffectiveId())
@@ -392,16 +392,16 @@ local function XinZhan(self, cards)
 			table.insert(up, id)
 		end
 	end
-	
+
 	for index, card in pairs (bottom) do
 		table.insert(up, card:getEffectiveId())
 	end
-	
-	
+
+
 	for index, id in pairs (nianlis) do
 		table.insert(up, 1, id)
 	end
-	
+
 	-- bottom = getIdToCard(self, cards)
 	-- for judge_count, need_judge in ipairs(judge) do
 		-- local index = 1

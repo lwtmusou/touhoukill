@@ -3,11 +3,11 @@ return {
 	["pc98"] = "旧" ,
 
 
-	
+
 	--pc98010 魅魔
 	["mima"] = "魅魔" ,
 	["#mima"] = "恶灵小姐" ,
-	
+
 	--pc98006 冈崎梦美  势力：旧 4血
 	["yumemi"] = "冈崎梦美" ,
 	["#yumemi"] = "梦幻传说" ,
@@ -30,7 +30,7 @@ return {
 
 	["kongjian"] = "空间",
 	[":kongjian"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"blue\"><b>锁定技，</b></font>你计算与其他角色的距离时，无视该角色以外的旧势力角色。",
-	
+
 	--pc98007 北白河千百合 势力：旧 4血
 	["chiyuri"] = "北白河千百合" ,
 	["#chiyuri"] = "超越时空的梦幻居民" ,
@@ -47,11 +47,11 @@ return {
 	["shiqu_discard"] = "额外的弃牌阶段",
 	["@shiqu-discard"] = "你可以发动“时驱”，弃一张牌， 令当前回合人 <font color=\"#00FF00\"><b>%dest </b></font> 进行 一个<font color=\"#FF8000\"><b>%src </b></font>",
 	["#shiqu"] = "%from 发动 “%arg” 令 %to 进行一个 %arg2",
-	
+
 	--pc98008 朝仓理香子
 	["rikako"] = "朝仓理香子" ,
 	["#rikako"] = "寻找梦想的科学" ,
-	
+
 	--pc98009 卡纳  势力：旧 3血
 	["kana"] = "卡娜" ,
 	["!kana"] = "卡娜•安娜贝拉尔" ,
@@ -68,7 +68,7 @@ return {
 	["mengxiao"] = "梦消",
 	[":mengxiao"] = "当你因弃置而失去牌后，你可以获得场上的一张与这些牌中的任意一张牌花色相同的牌。",
 	["@mengxiao"] = "你因弃置牌可以发动“梦消” 获得一名角色判定区或装备区中的同花色牌",
-	
+
 	--pc98003 幽香
 	["!yuka_old"]= "旧作幽香",
 	["yuka_old"]= "幽香",
@@ -82,19 +82,19 @@ return {
 	[":yeyan"] = "出牌阶段结束时，你可以摸X张牌（X为没有手牌的角色数）。",
 	["menghuan"] = "梦幻",
 	[":menghuan"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"green\"><b>其他旧势力角色的出牌阶段限一次，</b></font>其可以交给你一张锦囊牌。",
-    ["menghuan_attach"]= "梦幻",
+	["menghuan_attach"]= "梦幻",
 	[":menghuan_attach"]= "若你属于旧势力，你可于出牌阶段将一张锦囊牌交给拥有主公技“梦幻”的角色。每阶段限一次。",
-	
+
 	--pc98004 幻月/梦月
 	["gengetsumugetsu"] = "幻月 & 梦月" ,
 	["&gengetsumugetsu"] = "幻月梦月" ,
 	["#gengetsumugetsu"] = "女仆 & 恶魔" ,
-	
+
 	--pc98005 艾丽
 	["elly"] = "艾丽" ,
 	["#elly"] = "馆的门卫" ,
-	
-	
+
+
 	--pc98001 神绮
 	["shinki"] = "神绮" ,
 	["#shinki"] = "魔界之神" ,
