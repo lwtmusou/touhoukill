@@ -1319,14 +1319,14 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
 }
 
 const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt,
-    const QVariant &data, const QString &skill_name)
+    const QVariant &data, const QString &skill_name, int notice_index)
 {
-    return askForCard(player, pattern, prompt, data, Card::MethodDiscard, NULL, false, skill_name, false);
+    return askForCard(player, pattern, prompt, data, Card::MethodDiscard, NULL, false, skill_name, false, notice_index);
 }
 
 const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt,
     const QVariant &data, Card::HandlingMethod method, ServerPlayer *to,
-    bool isRetrial, const QString &skill_name, bool isProvision)
+    bool isRetrial, const QString &skill_name, bool isProvision, int notice_index)
 {
     Q_ASSERT(pattern != "slash" || method != Card::MethodUse); // use askForUseSlashTo instead
 
@@ -1390,6 +1390,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             arg << pattern;
             arg << prompt;
             arg << int(method);
+            arg << notice_index;
             arg << QString(skill_name);
 
             bool success = doRequest(player, S_COMMAND_RESPONSE_CARD, arg, true);

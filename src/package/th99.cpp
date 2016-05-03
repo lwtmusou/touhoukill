@@ -624,12 +624,40 @@ public:
     }
 };
 
+class LuanyingVS : public OneCardViewAsSkill
+{
+public:
+    LuanyingVS() : OneCardViewAsSkill("luanying")
+    {
+        response_pattern = "@@luanying";
+        expand_pile = "jingjie";
+    }
+
+    bool viewFilter(const Card *to_select) const
+    {
+        if (!Self->getPile("jingjie").contains(to_select->getId()))
+            return false;
+
+        QString property = Self->property("luanying").toString();
+        if (property == "black")
+            return to_select->isBlack();
+        else
+            return to_select->isRed();
+    }
+
+    const Card *viewAs(const Card *originalCard) const
+    {
+        return originalCard;
+    }
+};
+
 class Luanying : public TriggerSkill
 {
 public:
     Luanying() : TriggerSkill("luanying")
     {
         events << CardUsed << CardResponded;
+        view_as_skill = new LuanyingVS;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
@@ -691,27 +719,22 @@ public:
         if (user == NULL || card == NULL)
             return false;
 
-        if (invoke->invoker->askForSkillInvoke(this, data)) {
-            QList<int> jingjie = invoke->invoker->getPile("jingjie");
-            QList<int> availables, disables;
-            foreach (int id, jingjie) {
-                if (Sanguosha->getCard(id)->getColor() == card->getColor())
-                    availables << id;
-                else
-                    disables << id;
-            }
+        if (card->isRed()) {
+            invoke->invoker->setProperty("luanying", "red");
+            room->notifyProperty(invoke->invoker, invoke->invoker, "luanying");
+        } else {
+            invoke->invoker->setProperty("luanying", "black");
+            room->notifyProperty(invoke->invoker, invoke->invoker, "luanying");
+        }
 
-            room->fillAG(jingjie, invoke->invoker, disables);
-            int selected = room->askForAG(invoke->invoker, availables, false, objectName());
-            room->clearAG(invoke->invoker);
+        QString prompt = "@luanying-invoke:" + user->objectName() + ":" + card->objectName();
+        const Card *c = room->askForCard(invoke->invoker, "@@luanying", prompt, data, Card::MethodNone, NULL, false, "luanying");
 
+        if (c != NULL) {
+            room->obtainCard(user, c, true);
+            room->touhouLogmessage("#weiya", user, objectName(), QList<ServerPlayer *>(), card->objectName());
 
-            if (selected > -1) {
-                room->obtainCard(user, selected, true);
-                room->touhouLogmessage("#weiya", user, objectName(), QList<ServerPlayer *>(), card->objectName());
-
-                return true;
-            }
+            return true;
         }
 
         return false;

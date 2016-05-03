@@ -875,13 +875,8 @@ void Client::askForCardOrUseCard(const QVariant &cardUsage)
     _m_roomState.setCurrentCardUsePattern(card_pattern);
     QString textsString = usage[1].toString();
     QStringList texts = textsString.split(":");
-    int index = -1; 
-    int skillnameindex = 3;
-    if (usage.size() >= 4 && JsonUtils::isNumber(usage[3]) && usage[3].toInt() > 0) {
-        index = usage[3].toInt();
-        skillnameindex = 4;
-    }
-    highlight_skill_name = usage.value(skillnameindex).toString();
+    int index = usage[3].toInt();
+    highlight_skill_name = usage.value(4).toString();
 
     if (texts.isEmpty())
         return;

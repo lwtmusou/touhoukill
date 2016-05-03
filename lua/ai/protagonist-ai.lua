@@ -1105,7 +1105,6 @@ sgs.qiangyu_suit_value = {
 	spade = 4.9
 }
 
-sgs.ai_skill_invoke.mokai = true
 sgs.ai_skill_cardask["@mokai"] = function(self, data)
 	local cards = {}
 	for _,c in sgs.qlist(self.player:getCards("he")) do
@@ -1124,17 +1123,21 @@ sgs.ai_skill_cardask["@mokai"] = function(self, data)
 	return "$" .. cards[1]:getId()
 end
 
-
 sgs.ai_cardneed.mokai = function(to, card, self)
 	if not self:willSkipPlayPhase(to) then
 		return card:isKindOf("TrickCard") or card:isKindOf("EquipCard")
 	end
 end
 
+sgs.ai_skill_cardask["@mokai-dis"] = function(self)
+	local pile = self.player:getPile("tianyi")
+	return "$" .. pile:at(math.random(0, pile:length()))
+end
 
-sgs.ai_skill_invoke.guangji =function(self,data)
+
+sgs.ai_skill_cardask["@guangji-invoke"] =function(self,data)
    local use = self.player:getTag("guangji_use"):toCardUse()
-   if self:touhouCardUseEffectNullify(use,self.player) then return false end --此杀已经无效
+   if self:touhouCardUseEffectNullify(use,self.player) then return "." end --此杀已经无效
    --check whether player need providing jink
  
 	local pattern = nil
@@ -1146,9 +1149,10 @@ sgs.ai_skill_invoke.guangji =function(self,data)
 	fakeEffect.to = self.player
 	_data:setValue(fakeEffect)
 	if sgs.ai_skill_cardask["slash-jink"] (self, _data, pattern, use.from) ~= "." then
-		return true
+		local pile = self.player:getPile("tianyi")
+		return "$" .. pile:at(math.random(0, pile:length()))
 	end
-	return false
+	return "."
 end
 sgs.ai_skill_invoke.xinghui = true
 

@@ -129,25 +129,29 @@ end
 
 
 --sgs.ai_choicemade_filter.cardChosen.sisheng = -50
-sgs.ai_skill_invoke.sisheng = function(self)
-	local who= self.room:getCurrentDyingPlayer()
+
+sgs.ai_skill_cardask["@sisheng-invoke"] = function(self)
+	local who = self.room:getCurrentDyingPlayer()
+	
+	local getReturn = function()
+		return "$" .. self.player:getPile("jingjie").at(0)
+	end
 	
 	if self:isFriend(who) then 
 		if getCardsNum("Peach", who, self.player) >= 1 or getCardsNum("Analeptic", who, self.player) >= 1 then
 			if self:hasWeiya(who)  then
-				return true
+				return getReturn()
 			elseif who:getHandcardNum()>=3 then 
-				return true
+				return getReturn()
 			end
-			return false
+			return "."
 		end
-		return true 
+		return getReturn() 
 	end
-	return false 
+	return "." 
 end
-sgs.ai_skill_askforag.sisheng = function(self, card_ids)
-	return card_ids[1]
-end
+
+
 sgs.ai_choicemade_filter.skillInvoke.sisheng = function(self, player, promptlist)
 	local who= player:getRoom():getCurrentDyingPlayer()
 		if promptlist[#promptlist] == "yes" then
@@ -158,6 +162,7 @@ sgs.ai_choicemade_filter.skillInvoke.sisheng = function(self, player, promptlist
 		--	end
 		end
 end
+
 sgs.ai_skill_cardchosen.sisheng = function(self, who, flags)
 	if flags == "he" then
 		local who= self.player:getRoom():getCurrentDyingPlayer()
@@ -175,48 +180,48 @@ sgs.ai_skill_cardchosen.sisheng = function(self, who, flags)
 	end
 end
 
-sgs.ai_skill_invoke.jingdong = function(self)
-	local target=self.player:getTag("jingdong_target"):toPlayer()
-	if  target:hasSkill("huanmeng") or  target:hasSkill("zaozu") or target:hasSkill("yongheng")then
-		return false 
+sgs.ai_skill_cardask["@jingdong-target"] = function(self, data)
+	local target = data:toPlayer()
+	if target:hasSkill("huanmeng") or target:hasSkill("zaozu") or target:hasSkill("yongheng") then
+		return "." 
 	end
-	num=target:getHandcardNum()-target:getMaxCards()
-	if num==0 then return false end
-	cards=self.player:getPile("jingjie")
-	if cards:isEmpty() then return false end
+	num = target:getHandcardNum() - target:getMaxCards()
+	if num == 0 then return "." end
+	cards = self.player:getPile("jingjie")
+	if cards:isEmpty() then return "." end
 	if not self:isFriend(target) then
-		return false
+		return "."
 	else
-		if self:isWeak(target) and num>0 then
-			return true
+		local getReturn = function()
+			return "$" .. self.player:getPile("jingjie").at(0)
 		end
-		if num>1   then
-			if self:cautionChangshi() or cards:length()>3 then
-				return true
+		if self:isWeak(target) and num > 0 then
+			return getReturn()
+		end
+		if num > 1 then
+			if self:cautionChangshi() or cards:length() > 3 then
+				return getReturn()
 			else
-				if num>3 then
-					return true
+				if num > 3 then
+					return getReturn()
 				end
 			end
 		end
 	end
-	return false
+	return "."
 end
-sgs.ai_skill_askforag.jingdong = function(self, card_ids)
-	return card_ids[1]
-end
+
 sgs.ai_choicemade_filter.skillInvoke.jingdong = function(self, player, promptlist)
-	
 	local to=self.room:getCurrent()
-	if not (to:hasSkill("huanmeng") or  to:hasSkill("zaozu") or to:hasSkill("yongheng"))then
-	num=to:getHandcardNum()-to:getMaxCards()
-	if promptlist[#promptlist] == "yes" then
-			sgs.updateIntention(player, to, -60)
-	else
-		if num>=3 then
-			sgs.updateIntention(player, to, 30)
+	if not (to:hasSkill("huanmeng") or to:hasSkill("zaozu") or to:hasSkill("yongheng"))then
+		num = to:getHandcardNum() - to:getMaxCards()
+		if promptlist[#promptlist] == "yes" then
+				sgs.updateIntention(player, to, -60)
+		else
+			if num >= 3 then
+				sgs.updateIntention(player, to, 30)
+			end
 		end
-	end
 	end
 end
 
@@ -916,28 +921,23 @@ sgs.ai_choicemade_filter.skillChoice.youqu = function(self, player, args)
 	sgs.siling_lack[player:objectName()]["Black"] = 0
 end
 
-sgs.ai_skill_invoke.wangwu = function(self,data)
-	local target=self.player:getTag("wangwu_use"):toCardUse().from
-	if not target then return false end
+sgs.ai_skill_cardask.wangwu = function(self,data)
+	local target = data:toCardUse().from
+	if not target then return "." end
 	if self:isEnemy(target) then
-		return true
+		local card = data:toCardUse().card
+		local cards = {}
+		for _, id in sgs.qlist(self.player:getPile("siling")) do
+			local silingcard = sgs.Sanguosha:getCard(id)
+			if (silingcard:sameColorWith(card)) then
+				table.insert(cards, silingcard)
+			end
+		end
+		if #cards == 0 then return "." end
+		self:sortByCardNeed(cards)
+		return "$" .. cards[1]:getId()
 	end
-	return false
-end
-sgs.ai_skill_askforag.wangwu = function(self, card_ids)
-	local wangwu_card=self.player:getTag("wangwu_card"):toCard()
-	local cards={}
-	for _,card_id in pairs(card_ids) do
-		local card=sgs.Sanguosha:getCard(card_id)
-		table.insert(cards,card)
-	end
-	self:sortByCardNeed(cards)
-	
-	for _,card in pairs(cards) do
-        if card:sameColorWith(wangwu_card) then
-            return cards[1]:getId()
-        end
-    end
+	return "."
 end
 sgs.ai_choicemade_filter.skillInvoke.wangwu = function(self, player, args)
 	local use = player:getTag("wangwu_use"):toCardUse()

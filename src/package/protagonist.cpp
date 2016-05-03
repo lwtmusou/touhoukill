@@ -1372,7 +1372,7 @@ public:
     {
         if (triggerEvent == BeforeCardsMove) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            //notice that we need keep these three lists with same length
+            //notice that we need keep these lists with same length
             move.card_ids << room->getNCards(2);
             move.from_places << Player::DrawPile << Player::DrawPile;
             move.from_pile_names << QString() << QString();
@@ -1442,6 +1442,22 @@ public:
     }
 };
 
+class SlmMolishaDiscardTianyi : public OneCardViewAsSkill
+{
+public:
+    SlmMolishaDiscardTianyi(const QString &name)
+        : OneCardViewAsSkill(name)
+    {
+        expand_pile = "tianyi";
+        response_pattern = "@@" + name;
+        filter_pattern = ".|.|.|tianyi";
+    }
+
+    const Card *viewAs(const Card *originalCard) const
+    {
+        return originalCard;
+    }
+};
 
 class Mokai : public TriggerSkill
 {
@@ -1449,6 +1465,7 @@ public:
     Mokai() : TriggerSkill("mokai")
     {
         events << CardUsed;
+        view_as_skill = new SlmMolishaDiscardTianyi("mokai");
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -1462,7 +1479,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         ServerPlayer *marisa = invoke->invoker;
-        const Card *pilecard = room->askForCard(marisa, ".Equip", "@mokai", data, Card::MethodNone, NULL, false, objectName(), false);
+        const Card *pilecard = room->askForCard(marisa, ".Equip", "@mokai", data, Card::MethodNone, NULL, false, objectName());
         if (pilecard) {
             int id = pilecard->getSubcards().first();
             marisa->tag["tianyi"] = id;
@@ -1480,14 +1497,11 @@ public:
             return false;
 
         marisa->addToPile("tianyi", id);
-        QList<int> pile = marisa->getPile("tianyi");
-        if (pile.length() > marisa->getHp()) {
-            if (marisa->askForSkillInvoke(objectName(), data)) {
-                room->fillAG(pile, marisa);
-                int id = room->askForAG(marisa, pile, false, objectName());
+        if (marisa->getPile("tianyi").length() > marisa->getHp()) {
+            const Card *c = room->askForCard(marisa, "@@mokai", "@mokai-dis", data, Card::MethodNone, NULL, false, "mokai");
+            if (c != NULL) {
                 CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
-                room->clearAG(marisa);
-                room->throwCard(Sanguosha->getCard(id), reason, NULL);
+                room->throwCard(c, reason, NULL);
             }
         }
         return false;
@@ -1501,6 +1515,7 @@ public:
     Guangji() : TriggerSkill("guangji")
     {
         events << TargetConfirming;
+        view_as_skill = new SlmMolishaDiscardTianyi("guangji");
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -1516,12 +1531,18 @@ public:
         return d;
     }
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        QString prompt = "invoke:" + use.from->objectName();
-        invoke->invoker->tag["guangji_use"] = data;
-        return invoke->invoker->askForSkillInvoke(objectName(), prompt);
+        QString prompt = "@guangji-invoke:" + use.from->objectName();
+        const Card *c = room->askForCard(invoke->invoker, "@@guangji", prompt, data, Card::MethodNone, NULL, false, "guangji");
+        if (c) {
+            room->notifySkillInvoked(invoke->invoker, "guangji");
+            invoke->tag["guangji"] = QVariant::fromValue(c);
+            return true;
+        }
+
+        return false;
     }
 
 
@@ -1529,12 +1550,10 @@ public:
     {
         ServerPlayer *marisa = invoke->invoker;
         CardUseStruct use = data.value<CardUseStruct>();
-        QList<int> pile = marisa->getPile("tianyi");
-        room->fillAG(pile, marisa);
-        int id = room->askForAG(marisa, pile, false, objectName());
         CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
-        room->clearAG(marisa);
-        room->throwCard(Sanguosha->getCard(id), reason, NULL);
+        const Card *c = invoke->tag.value("guangji").value<const Card *>();
+        Q_ASSERT(c != NULL);
+        room->throwCard(c, reason, NULL);
         use.nullified_list << marisa->objectName();
         data = QVariant::fromValue(use);
 
