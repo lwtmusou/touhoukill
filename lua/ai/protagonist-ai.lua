@@ -1052,7 +1052,7 @@ sgs.ai_skill_cardask["qiangyu-discard"] = function(self, data)
 		return "$" .. blacks[1]:getId()
 	end
 
-	local cards = sgs.QList2Table(attacker:getHandcards())
+	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByUseValue(cards)
 	local ids = {}
 	for _, c in ipairs (cards) do
@@ -1136,7 +1136,7 @@ end
 
 
 sgs.ai_skill_cardask["@guangji-invoke"] =function(self,data)
-   local use = self.player:getTag("guangji_use"):toCardUse()
+   local use = data:toCardUse()
    if self:touhouCardUseEffectNullify(use,self.player) then return "." end --此杀已经无效
    --check whether player need providing jink
 
