@@ -3,7 +3,7 @@
 {
     "cardNormalWidth": 93,
     "cardNormalHeight": 130,
-    "cardMainArea": [0, 0, 93, 130], 
+    "cardMainArea": [0, 0, 93, 130],
     "cardFrameArea": [-5,-5,98, 135],
     "cardSuitArea": [3, 19, 21, 17],
     "cardNumberArea": [0, 2, 27, 28],
@@ -13,26 +13,26 @@
     "chooseGeneralBoxSwitchIconSizeThreshold": 12,
     "chooseGeneralBoxSwitchIconEachRow": 6,
     "chooseGeneralBoxSwitchIconEachRowForTooManyGenerals": 7,
-    "chooseGeneralBoxNoIconThreshold": 21, 
+    "chooseGeneralBoxNoIconThreshold": 21,
     "chooseGeneralBoxSparseIconSize": [171, 240],
     "chooseGeneralBoxDenseIconSize": [130, 130],
     "tinyAvatarSize": [40, 40],
-	
-	"graphicsBoxBgColor": [0, 0, 0, 220],
+
+    "graphicsBoxBgColor": [0, 0, 0, 220],
     "graphicsBoxBorderColor": [166, 150, 122],
     //"graphicsBoxTitleFont": ["wqy-microhei", 16, 2, [228, 213, 160]],
-	"graphicsBoxTitleFont": ["SimSun", 16, 2, [228, 213, 160]],
-	
+    "graphicsBoxTitleFont": ["SimSun", 16, 2, [228, 213, 160]],
 
-	"optionButtonText": ["SimSun", [18, 18, 0], 0, [255, 255, 255, 255], 1, 10, [0, 0], [50, 50, 50, 200]],
-	"generalButtonPositionIconRegion": [-1, 2, 29, 24],
+
+    "optionButtonText": ["SimSun", [18, 18, 0], 0, [255, 255, 255, 255], 1, 10, [0, 0], [50, 50, 50, 200]],
+    "generalButtonPositionIconRegion": [-1, 2, 29, 24],
     "generalButtonNameRegion": [26, 0, 60, 23],
-	
-	
+
+
     // When hp exceeds 5, we use text (e.g. 5/8) instead of drawing more than 5 magatamas. The color
     // and font are specified below.
     // All the font in skin file takes the following format:
-    // simple font: ["fontName", fontSize, fontWeight(bold), foreColor(rgba)] 
+    // simple font: ["fontName", fontSize, fontWeight(bold), foreColor(rgba)]
     // shawdow font: ["fontName", fontSize, fontWeight(bold), foreColor(rgba), shadowRadius,
     //                shadowDecadeFactor, shadowOffset, shadowDeepestColor]
     // the shadow radius is the width of shadow on each end; the shadow decade factor specifies how
@@ -48,7 +48,7 @@
         ["Arial", [15, 15, -2], 80, [66, 174, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]]
     ],
     // I realized that some MOD might need a wider background area than the foreground magatamas in order
-    // to draw certain effect. The following factor specifies the number of invisible magatama to be appended. 
+    // to draw certain effect. The following factor specifies the number of invisible magatama to be appended.
     "hpExtraSpaceHolder": 1
 },
 "room":
@@ -59,7 +59,7 @@
     "logBoxHeightPercentage": 0.6,
     "chatBoxHeightPercentage": 0.4,
     "infoPlaneWidthPercentage": 0.2,
-	//"infoPlaneWidthPercentage": 0.18,
+    //"infoPlaneWidthPercentage": 0.18,
     "photoRoomPadding": 10,
     "photoDashboardPadding": 40,
     "photoHDistance": 32,
@@ -72,42 +72,42 @@
 },
 "photo":
 {
-	"normalWidth": 175,//163
+    "normalWidth": 175,//163
     "normalHeight": 210,//192,
-	
-	"mainFrameArea": [0, 0, 175, 210],
-	
-	"canvasArea": [0, 0, 175, 210],
-	
+
+    "mainFrameArea": [0, 0, 175, 210],
+
+    "canvasArea": [0, 0, 175, 210],
+
     "handCardNumIconArea": [-8, 125, 30, 18],
     "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255], 1, 30, [0, 0], [20, 20, 20, 200]],
     "equipAreas": [[1, 137, 162, 21], [1, 151, 162, 21], [1, 165, 162, 21], [1, 179, 162, 21], [1, 193, 162, 21]],
-    
-    
-	"equipImageArea": [0, 1, 150, 19],
+
+
+    "equipImageArea": [0, 1, 150, 19],
     //"equipTextArea": [35, -5, 85, 21], // need adjustment
     "equipSuitArea": [117, 2, 21, 17],
-	//"equipSuitArea": [117, 2, 20, 13],
+    //"equipSuitArea": [117, 2, 20, 13],
     //"equipDistanceArea": [14, -5, 30, 21], // need adjustment
     "equipPointArea": [106, -4, 25, 25],
-	"equipTianyiArea": [20, 2, 21, 17],// for skill mokai
+    "equipTianyiArea": [20, 2, 21, 17],// for skill mokai
     //"equipFont": ["FZLiBian-S02", [14, 14, 0], 50, [0, 0, 0, 255], 3, 50, [0, 0], [255, 255, 190, 255]],
-    "equipPointFont": ["arial", [13, 13, 3], 20, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]], 
+    "equipPointFont": ["arial", [13, 13, 3], 20, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],
     "delayedTrickFirstRegion": [-13, 16, 28, 28],
     "delayedTrickStep": [0, 19],
     "roleComboBoxPos": [140, 1],
-	"roleShownArea": [135, -5, 38, 38],
-	"changePrimaryHeroSkinBtnPos": [25, 35],
+    "roleShownArea": [135, -5, 38, 38],
+    "changePrimaryHeroSkinBtnPos": [25, 35],
 
-	
+
     "borderWidth": 15,
     "avatarImageType": 1,
     "secondaryAvatarImageType": 4,
     "primaryAvatarImageType": 6,
     "circleImageType": 0,
-	
-	"avatarArea": [0, 0, 175, 210],//163, 190
-	
+
+    "avatarArea": [0, 0, 175, 210],//163, 190
+
     "secondaryAvatarArea": [78, 1, 77, 179],
     "circleArea": [1, 1, 155, 179],
     "avatarNameArea": [3, 23, 100, 100],
@@ -116,19 +116,19 @@
     "smallAvatarNameFont": ["@SimLi", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
     "kingdomIconArea": [2, -1, 28, 28],
     "kingdomMaskArea": [-2, 14, 36, 120],
-	
-	
+
+
     "screenNameArea": [0, 0, 157, 15],
     "screenNameFont": ["SimSun", 12, 0, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
     "magatamasHorizontal": false,
     "magatamaSize": [22, 20],
     "magatamaImageArea": [2, 2, 18, 19],
-	"magatamaImageSubArea": [3, 2, 18, 19], //for skill banling
+    "magatamaImageSubArea": [3, 2, 18, 19], //for skill banling
     "magatamasBgVisible": true,
     //"magatamasAnchor": ["bottomRight", [156, 194]],
-	"magatamasAnchor": ["bottomRight", [174, 225]],
-	"magatamasSubAnchor": ["topRight", [174, 35]],
-	
+    "magatamasAnchor": ["bottomRight", [174, 225]],
+    "magatamasSubAnchor": ["topRight", [174, 35]],
+
     "cardMoveArea": [-15, 35, 200, 130],
     "phaseArea": [25, 207, 140, 12],
     "onlineStatusArea": [127, 24, 30, 25],
@@ -155,15 +155,15 @@
 },
 "dashboard":
 {
-    "leftWidth": 164, 
+    "leftWidth": 164,
    "rightWidth": 200,
-	"reverseSelectionWidth": 10,
-	"normalHeight": 200,
+    "reverseSelectionWidth": 10,
+    "normalHeight": 200,
     "floatingAreaHeight": 50,
-	
+
     "handCardNumIconArea": [-130, 50, 30, 18],
     "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255], 1, 30, [0, 0], [20, 20, 20, 200]],
-	//ensure that these areas belong to left frame
+    //ensure that these areas belong to left frame
     "equipAreas": [[5, 38, 149, 32], [5, 70, 149, 32], [5, 102, 149, 32], [5, 134, 149, 32],[5, 166, 149, 32]],
     "equipBorderPos": [-6, -6],
     "equipSelectedOffset": [10, 0],
@@ -172,40 +172,40 @@
     "equipSuitArea": [128, 5, 21, 17],
     "equipDistanceArea": [0, 0, 0, 0],
     "equipPointArea": [117, -5, 30, 30],
-	"equipTianyiArea": [0, 5, 21, 17],// for skill mokai
+    "equipTianyiArea": [0, 5, 21, 17],// for skill mokai
     "equipFont": ["SimLi", 9, 60, [0, 0, 0, 255], 3, 8, [0, 0], [240, 240, 240, 200]],
-    "equipPointFont": ["arial", [14, 14, 3], 20, [0, 0, 0, 255], 1, 0, [0, 0], [240, 240, 240, 200]], 
+    "equipPointFont": ["arial", [14, 14, 3], 20, [0, 0, 0, 255], 1, 0, [0, 0], [240, 240, 240, 200]],
     "delayedTrickFirstRegion": [0, 0, 28, 28],
     "delayedTrickStep": [28, 0],
-    // the width of the region to disperse cards when the cards are to be moved to the special pile. 
+    // the width of the region to disperse cards when the cards are to be moved to the special pile.
     "disperseWidth": 250,
-	"markTextArea": [0, 0, 50, 50],
+    "markTextArea": [0, 0, 50, 50],
     "roleComboBoxPos": [-28, 47],
-	"roleShownArea": [-35, 41, 38, 38],
-	"changePrimaryHeroSkinBtnPos": [25, 40],
+    "roleShownArea": [-35, 41, 38, 38],
+    "changePrimaryHeroSkinBtnPos": [25, 40],
     "borderWidth": 6,
     "avatarImageType": 1,
     "secondaryAvatarImageType": 4,
     "primaryAvatarImageType": 6,
     "circleImageType": 1,
-	//"avatarArea": [0,  0, 175, 210],
-	"avatarArea": [0,  0, 200, 240],
-	
+    //"avatarArea": [0,  0, 175, 210],
+    "avatarArea": [0,  0, 200, 240],
+
     "secondaryAvatarArea": [81, 10, 70, 70],
     "circleArea": [8, 10, 134, 134],
-	"avatarNameArea": [-67, -30, 100, 100],
+    "avatarNameArea": [-67, -30, 100, 100],
     "focusFrameArea": [0, 0, 200, 240],
-	
+
     "smallAvatarNameArea": [84, 36, 18, 36],
     "avatarNameFont": ["SimLi", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
-    
-	 // "avatarNameFont": ["@simli", [12, 12, 1], 60, [255, 255, 255, 255], 5, 8, [0, 0], [50, 50, 50, 150]],
+
+     // "avatarNameFont": ["@simli", [12, 12, 1], 60, [255, 255, 255, 255], 5, 8, [0, 0], [50, 50, 50, 150]],
     // "smallAvatarNameFont": ["@simli", [12, 12, 1], 40, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
-    
-	"skillNameArea": [55, 30, 300, 50],
+
+    "skillNameArea": [55, 30, 300, 50],
     "skillNameFont": ["SimLi", 30, 0, [255, 255, 255, 255], 2, 20, [0, 0], [255, 20, 255, 128]],
-    
-	// must be in one of the following format:
+
+    // must be in one of the following format:
     // [offsetX, offestY, sizeX, sizeY]
     // [childAnchor, parentAnchor, [offsetX, offsetY]]
     // [childAnchor, parentAnchor, [offsetX, offsetY], [sizeX, sizeY]]
@@ -214,27 +214,27 @@
     // and offset if applied after the alignment is done. When the 4th parameter [sizeX, sizeY] is specified, fixed size of the area
     // is used; otherwise, it means area's size is variable with the content of that area, the program will adjust the size automatically
     "markTextArea": ["bottomRight", "bottomRight",  [-160, -10]],
-	//"markTextArea": ["bottomCenter", "bottomCenter",  [50, -10]],
+    //"markTextArea": ["bottomCenter", "bottomCenter",  [50, -10]],
     "phaseArea": ["bottomLeft", "bottomLeft", [-50, 0], [209, 20]],
-    
-	"kingdomIconArea": [-94, 10, 28, 28],
-	"dashboardKingdomMaskArea": [-100, -2, 160, 50],
-	
+
+    "kingdomIconArea": [-94, 10, 28, 28],
+    "dashboardKingdomMaskArea": [-100, -2, 160, 50],
+
     //"screenNameArea": [0, 0, 157, 25],
-	"screenNameArea": [20, 0, 157, 25],
+    "screenNameArea": [20, 0, 157, 25],
     "screenNameFont": ["SimSun", 12, 0, [255, 255, 255, 255], 2, 10, [0, 0], [0, 0, 0, 224]],
     "magatamasHorizontal": false,
     "magatamaSize": [23, 30],
     "magatamaImageArea": [0, 6, 22, 26],
-	"magatamaImageSubArea": [0, 6, 22, 26], //for skill banling
+    "magatamaImageSubArea": [0, 6, 22, 26], //for skill banling
     "magatamasBgVisible": true,
-	"magatamasAnchor": ["rightBottom", [195, 260]], //right
-	"magatamasSubAnchor": ["rightTop", [195, 0]], //rightTop
-    "cardMoveArea": [-50, 65, 200, 130], 
+    "magatamasAnchor": ["rightBottom", [195, 260]], //right
+    "magatamasSubAnchor": ["rightTop", [195, 0]], //rightTop
+    "cardMoveArea": [-50, 65, 200, 130],
     "progressBarArea": ["bottomCenter", "bottomCenter", [-8, 0], [300, 18]],
     "progressBarHorizontal": true,
     //"privatePileStartPos": [10, 30],
-	"privatePileStartPos": [70, 5],
+    "privatePileStartPos": [70, 5],
     "privatePileStep": [0, 16],
     "privatePileButtonSize": [60, 16],
     "actionedIconRegion": [50, 77, 52, 21],
@@ -244,21 +244,21 @@
     "deathIconRegion": ["center", "center", [0, 0], [157, 102]],
     "drankMaskColor": [250, 0, 0, 115],
     "duanchangMaskColor": [255, 255, 255, 128],
-	//"extraSkillArea": [32, 116, 56, 20],
+    //"extraSkillArea": [32, 116, 56, 20],
     //"extraSkillFont": ["SimLi", [16, 16, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
     //"extraSkillTextArea": [32, 113, 56, 20],
-	"buttonSetSize": [100, 195],
+    "buttonSetSize": [100, 195],
     "confirmButtonArea": [6, 10, 75, 90],
     "cancelButtonArea": [1, 112, 75, 90],
     "discardButtonArea": [67, 60, 77, 95],
     "trustButtonArea": [62, 162, 70, 70],
-    "trustEffectColor": [38, 26, 66]	
+    "trustEffectColor": [38, 26, 66]
 },
 "skillButton":
 {
 "height": 26,
-"width": [136, 67, 45], 
-//"width": 0, 
+"width": [136, 67, 45],
+//"width": 0,
 "textArea": [[19, 2, 112, 20], [20, 2, 44, 20], [9, 2, 40, 20]],
 "textAreaDown": [[20, 3, 112, 20], [21, 3, 44, 20], [10, 3, 40, 20]],
 "textFont": [["simkai", [13, 13, 2], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // wide

@@ -115,7 +115,7 @@ public:
                         room->removePlayerCardLimitation(v.player, "use", "Slash$0");
                 }
             }
-            
+
         } else if (triggerEvent == PreMarkChange) {
             MarkChangeStruct change = data.value<MarkChangeStruct>();
             if (change.name != "@ye")
@@ -135,7 +135,7 @@ public:
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->getPhase() == Player::Start && player->hasSkill("zhouye"))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
-        } 
+        }
         return QList<SkillInvokeDetail>();
     }
 
@@ -157,7 +157,7 @@ public:
         if (card->isBlack())
             player->gainMark("@ye", 1);
         room->throwCard(cd_id, player);
-        
+
         return false;
     }
 };
@@ -316,7 +316,7 @@ public:
             }
 
         }
-    
+
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
@@ -353,7 +353,7 @@ public:
             int to_throw = room->askForCardChosen(player, s, "ej", "aoyi", false, Card::MethodDiscard);
             room->throwCard(to_throw, s, player);
         }
-        
+
         return false;
     }
 };
@@ -577,7 +577,7 @@ public:
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player && player->hasSkill(this)) {
                 room->setPlayerProperty(player, "maxhp", 0);
-                room->setPlayerProperty(player, "hp", 0);    
+                room->setPlayerProperty(player, "hp", 0);
             }
         }
     }
@@ -1033,7 +1033,7 @@ public:
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, hplost.player, hplost.player, NULL, true);
         } else if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.to->hasSkill(this)) 
+            if (damage.to->hasSkill(this))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
         } else if (triggerEvent == PreHpRecover) {
             RecoverStruct recov = data.value<RecoverStruct>();
@@ -1053,13 +1053,13 @@ public:
                 if (choice == "lingtili") {
                     room->touhouLogmessage("#lingtilidamage", player, "banling", QList<ServerPlayer *>(), QString::number(1));
                     room->setPlayerProperty(player, "linghp", player->getLingHp() - 1);
-                    
+
                 } else if (choice == "rentili") {
                     room->touhouLogmessage("#rentilidamage", player, "banling", QList<ServerPlayer *>(), QString::number(1));
                     room->setPlayerProperty(player, "renhp", player->getRenHp() - 1);
                 }
             }
-            
+
             room->notifySkillInvoked(player, objectName());
 
             LogMessage log;
@@ -1186,7 +1186,7 @@ public:
                 room->throwCard(id, s, player);
             }
         }
-        
+
         return false;
     }
 };
@@ -1242,7 +1242,7 @@ public:
         if (player != NULL && player->hasSkill(this) && !player->isCurrent()
             && (move.to_place == Player::PlaceHand || move.to_place == Player::PlaceEquip || move.to_place == Player::PlaceDelayedTrick))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
-        
+
         return QList<SkillInvokeDetail>();
     }
 
@@ -1259,11 +1259,11 @@ public:
         move.from_pile_names.clear();
 
         data = QVariant::fromValue(move);
-        
+
         CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), objectName(), "");
         room->throwCard(&dummy, reason, NULL);
 
-        
+
         return false;
     }
 };
@@ -1452,7 +1452,7 @@ public:
             QString role = player->getRole();
             room->touhouLogmessage("#YibianShow", invoke->invoker, role, room->getAllPlayers());
             room->broadcastProperty(invoke->invoker, "role");
-            room->setPlayerProperty(invoke->invoker, "role_shown", true); //important! to notify client 
+            room->setPlayerProperty(invoke->invoker, "role_shown", true); //important! to notify client
 
             QList<ServerPlayer *> targets;
             foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
@@ -1626,7 +1626,7 @@ public:
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-        
+
         if (triggerEvent == GameStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player && player->hasSkills("yibian|fengyin|fnegyin|huanxiang")) {
@@ -1663,7 +1663,7 @@ public:
                     if (p->getMark("quanjie") > 0) {
                         room->setPlayerMark(p, objectName(), 0);
                     }
-                }   
+                }
             }
         }
     }
@@ -1757,7 +1757,7 @@ public:
                             if (!ymsnd->isCurrent() && !ymsnd->faceUp())
                                 d << SkillInvokeDetail(this, ymsnd, ymsnd);
                         }
-                    
+
                     }
                 }
             }
@@ -1783,7 +1783,7 @@ public:
             room->handleAcquireDetachSkills(invoke->invoker, "shenpan");
             return false;
         }
-        
+
         ServerPlayer * current = room->getCurrent();
         ServerPlayer *ymsnd = invoke->invoker;
         if (!ymsnd->faceUp())
@@ -1797,8 +1797,8 @@ public:
         logto << current->getNext();
         room->touhouLogmessage("#touhouExtraTurn", ymsnd, NULL, logto);
         ymsnd->gainAnExtraTurn();
-        
-        
+
+
         return false;
     }
 };
@@ -2084,13 +2084,13 @@ public:
     {
         ServerPlayer *merin = invoke->invoker;
         QList<int>  idlist = merin->getPile("rainbow");
-        
+
         CardsMoveStruct move;
         move.card_ids = idlist;
         move.to_place = Player::PlaceHand;
         move.to = merin;
         room->moveCardsAtomic(move, true);
-        int x = qMin(merin->getHandcardNum(), 2); 
+        int x = qMin(merin->getHandcardNum(), 2);
         if (x > 0)
             room->askForDiscard(merin, objectName(), x, x, false, false, "caiyu_discard:" + QString::number(x));
 
@@ -2235,7 +2235,7 @@ public:
             }
             return d;
         }
-        
+
         return QList<SkillInvokeDetail>();
     }
 
@@ -2277,7 +2277,7 @@ public:
                 source->tag["qinlue_current"] = QVariant::fromValue(current);
             }
         }
-        
+
         return false;
     }
 
@@ -2297,7 +2297,7 @@ public:
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->getPhase() == Player::RoundStart) {
                 ServerPlayer *target = player->tag["qinlue_current"].value<ServerPlayer *>();
-                if (target != NULL && 
+                if (target != NULL &&
                     (target->isAlive() && !target->isKongcheng() || !player->isKongcheng()))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true, target);
             }
@@ -2334,7 +2334,7 @@ public:
                 room->obtainCard(player, dummy1, false);
             }
         } else if (triggerEvent == EventPhaseChanging) {
-            
+
             ServerPlayer *player = invoke->invoker;
             ServerPlayer *target = player->tag["qinlue_current"].value<ServerPlayer *>();
             player->tag.remove("qinlue_current");
@@ -2367,12 +2367,12 @@ public:
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-        
+
         if (room->getTag("FirstRound").toBool())
             return;
         if (triggerEvent == FetchDrawPileCard)
             return;
-        //need trigger after drawing intiial cards? 
+        //need trigger after drawing intiial cards?
         const QList<int> &drawpile = room->getDrawPile();
         int new_firstcard = -1;
         if (!drawpile.isEmpty())
@@ -2413,7 +2413,7 @@ public:
                     }
                 }
             }
-            
+
             if (new_firstcard > -1 && notifyLog) {
                 QList<int> watchlist;
                 watchlist << new_firstcard;
@@ -2961,7 +2961,7 @@ public:
             }
             if (num <= 2)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
-        }  
+        }
         return QList<SkillInvokeDetail>();
     }
 
@@ -3354,7 +3354,7 @@ public:
         room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
         room->revivePlayer(invoke->invoker);
-        
+
         return false;
     }
 };
@@ -3403,7 +3403,7 @@ public:
         if (!invoke->invoker->isOnline()) {
             QStringList skill_names;
             QList<ServerPlayer *> targets;
-            
+
             foreach(ServerPlayer *p, room->getAllPlayers(true)) {
                 if (p->isDead() && p->getGeneral() != NULL && p->getGeneralName() != "sujiang" && p->getGeneralName() != "sujiangf") {
                     foreach(const Skill *skill, p->getGeneral()->getVisibleSkillList()) {
@@ -3426,7 +3426,7 @@ public:
                 room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
             }
             return skill_name != "cancel";
-            
+
         } else {
             if (invoke->invoker->askForSkillInvoke(this, data)) {
                 QStringList general_list;
@@ -3447,10 +3447,10 @@ public:
                 }
                 return true;
             }
-        
+
         }
-        
-        
+
+
         return false;
     }
 
@@ -3462,7 +3462,7 @@ public:
         room->changeHero(invoke->targets.first(), new_general, false, false, false, false);
 
         QStringList skill_names;
-        
+
         foreach(const Skill *skill, general->getVisibleSkillList()) {
             if (skill->isLordSkill()
                 || skill->getFrequency() == Skill::Eternal
@@ -3474,7 +3474,7 @@ public:
         if (skill_names.isEmpty())
             skill_names << "cancel";
         QString skill_name = room->askForChoice(invoke->invoker, objectName(), skill_names.join("+"));
-        
+
         if (skill_name != "cancel") {
             invoke->invoker->tag["Huashen_target"] = general->objectName();
             invoke->invoker->tag["Huashen_skill"] = skill_name;

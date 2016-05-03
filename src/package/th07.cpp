@@ -280,7 +280,7 @@ public:
             id2 = card->getSubcards().first();
         } else
             id2 = room->askForCardChosen(yukari, who, "he", objectName(), false, Card::MethodDiscard);
-        
+
         if (yukari->canDiscard(who, id2))
             room->throwCard(id2, who, yukari);
 
@@ -1338,7 +1338,7 @@ public:
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
-    {  //check target 
+    {  //check target
         ServerPlayer  *target = NULL;
         if (triggerEvent == EventPhaseStart) {
             if (data.value<ServerPlayer *>() && data.value<ServerPlayer *>()->getPhase() == Player::Finish)
@@ -1601,7 +1601,7 @@ public:
 // #pragma message WARN("todo_lwtmusou: rewrite siyu, notice that skill records (flag, tag, marks, etc.) should be updated while siyu TurnBroken")
 // Fs: should check in every skill, better write the most records clear into the eventphasechanging(to = notactive) event
 // Fs: it's no need to check at here now, the extra turn is inserted after the whole round finished
-// Fs: seems like the only skill that need clean up in this skill is 'shitu' in th99 and 'qinlue' in touhougod.....  
+// Fs: seems like the only skill that need clean up in this skill is 'shitu' in th99 and 'qinlue' in touhougod.....
 class HpymSiyu : public TriggerSkill
 {
 public:
@@ -1900,7 +1900,7 @@ public:
         const Card *card = move.reason.m_extraData.value<const Card *>();
         ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(),
             "@shoushu:" + card->toString(), true, true);
-        
+
         if (target) {
             player->tag["shoushu_select"] = QVariant::fromValue(target);
             return true;
@@ -2038,7 +2038,7 @@ const Card *HuayinCard::validate(CardUseStruct &use) const
         delete card;
         use.from->setFlags("Global_huayinFailed");
         return NULL;
-    }  
+    }
 }
 
 const Card *HuayinCard::validateInResponse(ServerPlayer *user) const

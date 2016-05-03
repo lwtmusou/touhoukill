@@ -182,7 +182,7 @@ void ServerPlayer::throwAllCards()
     if (card->subcardsLength() != 0)
         room->throwCard(card, this);
     delete card;
-    
+
     QList<const Card *> tricks = getJudgingArea();
     foreach (const Card *trick, tricks) {
         CardMoveReason reason(CardMoveReason::S_REASON_THROW, objectName());
@@ -829,7 +829,7 @@ void ServerPlayer::exchangePhases(Player::Phase phase1, Player::Phase phase2)
 
     int index1 = phases.indexOf(phase1);
     int index2 = phases.indexOf(phase2);
-    // make sure that "_m_phases_state" has already contain informations from "phases" 
+    // make sure that "_m_phases_state" has already contain informations from "phases"
     if (index1 > -1 && index2 > -1) {
         _phase1 = _m_phases_state[index1];
         _phase2 = _m_phases_state[index2];
@@ -838,7 +838,7 @@ void ServerPlayer::exchangePhases(Player::Phase phase1, Player::Phase phase2)
         phases.insert(index1, phase2);
         _m_phases_state.removeAt(index1);
         _m_phases_state.insert(index1, _phase2);
-        
+
         phases.removeAt(index2);
         phases.insert(index2, phase1);
         _m_phases_state.removeAt(index2);
@@ -1217,7 +1217,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     arg_tooltip << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg_tooltip);
 
-    //since "banling", we should notify hp after notifying skill 
+    //since "banling", we should notify hp after notifying skill
     if (this->hasSkill("banling")) {
         room->notifyProperty(player, this, "renhp");
         room->notifyProperty(player, this, "linghp");

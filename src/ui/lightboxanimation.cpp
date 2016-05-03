@@ -72,7 +72,7 @@ LightboxAnimation::LightboxAnimation(const QString &general_name, const QString 
     generalPixmap->setScale(0.3);
     generalPixmap->setPos(-generalPixmap->boundingRect().width(), rect.height() / 2.5 - generalPixmap->boundingRect().height() / 2);
     generalPixmap->setZValue(0);
-        
+
     flick = new RectObject(rect, Qt::white, this);
     flick->setPos(0, 0);
     flick->hide();
@@ -87,7 +87,7 @@ LightboxAnimation::LightboxAnimation(const QString &general_name, const QString 
     skillName->setOpacity(0);
     skillName->setZValue(1);
     skillName->setPos(rect.width() / 2, rect.height() / 2);
-    
+
     show();
 
     QPropertyAnimation *step1_1 = new QPropertyAnimation(background, "opacity");
@@ -95,7 +95,7 @@ LightboxAnimation::LightboxAnimation(const QString &general_name, const QString 
     step1_1->setEndValue(0.7);
     step1_1->setDuration(880);
     step1_1->setEasingCurve(QEasingCurve::OutQuad);
-    
+
     QPropertyAnimation *step1_2 = new QPropertyAnimation(generalPixmap, "x");
     step1_2->setStartValue(-generalPixmap->boundingRect().width());
     step1_2->setEndValue(boundingRect().width() / 2.3 - generalPixmap->boundingRect().width() / 2);
@@ -108,13 +108,13 @@ LightboxAnimation::LightboxAnimation(const QString &general_name, const QString 
 
     QPauseAnimation *step2 = new QPauseAnimation(20);
     connect(step2, &QPauseAnimation::finished, flick, &RectObject::hide);
-    
+
     QPauseAnimation *step3 = new QPauseAnimation(80);
     connect(step3, &QPauseAnimation::finished, flick, &RectObject::show);
 
     QPauseAnimation *step4 = new QPauseAnimation(20);
     connect(step4, &QPauseAnimation::finished, flick, &RectObject::hide);
-    
+
     QPropertyAnimation *step5 = new QPropertyAnimation(generalPixmap, "scale");
     QEasingCurve ec = QEasingCurve::OutBack;
     ec.setOvershoot(6.252);
@@ -137,7 +137,7 @@ LightboxAnimation::LightboxAnimation(const QString &general_name, const QString 
     step6->addAnimation(step6_2);
 
     QPauseAnimation *step7 = new QPauseAnimation(1700);
-    
+
     QSequentialAnimationGroup *animation = new QSequentialAnimationGroup;
     animation->addAnimation(step1);
     animation->addAnimation(step2);

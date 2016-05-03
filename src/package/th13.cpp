@@ -122,7 +122,7 @@ public:
         ServerPlayer *miko = qobject_cast<ServerPlayer *>(move.from);
         if (miko != NULL && miko->isAlive() && miko->hasLordSkill(objectName()) && move.from_places.contains(Player::PlaceHand)
             && (move.to_place == Player::PlaceHand && move.to && move.to != miko
-            && move.to->getKingdom() == "slm")) 
+            && move.to->getKingdom() == "slm"))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, miko, miko);
         return QList<SkillInvokeDetail>();
     }
@@ -177,7 +177,7 @@ public:
     {
         events << EventPhaseChanging;
     }
-    
+
     static void xihua_record(Room *room, ServerPlayer *player, QString pattern)
     {
         if (pattern.contains("slash"))
@@ -240,8 +240,8 @@ bool XihuaCard::do_xihua(ServerPlayer *tanuki) const
     ServerPlayer *current = room->getCurrent();
     if (current && current->isAlive() && current->isCurrent())
         XihuaClear::xihua_record(room, tanuki, xihuacard->objectName());
-    
-    
+
+
     ServerPlayer *target = room->askForPlayerChosen(tanuki, room->getOtherPlayers(tanuki), "xihua", "@xihua_chosen:" + xihuacard->objectName(), false, true);
     int to_show = room->askForCardChosen(target, tanuki, "h", "xihua");
     room->showCard(tanuki, to_show);
@@ -1099,7 +1099,7 @@ public:
             room->setPlayerProperty(invoke->invoker, "huisheng_target", QVariant());
             return false;
         }
-        
+
         return true;
     }
 

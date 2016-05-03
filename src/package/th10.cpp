@@ -240,12 +240,12 @@ public:
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, pindian->from, pindian->from, NULL, true, target);
             else if (!pindian->success && pindian->from->isAlive())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, pindian->from, pindian->from, NULL, true);
-            
+
         } else if (triggerEvent == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
             if (!damage.from || damage.to->isDead() || !damage.from->isAlive())
                 return QList<SkillInvokeDetail>();
-            
+
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *suwako, room->findPlayersBySkillName(objectName())) {
                 if (damage.from != suwako && !damage.from->isKongcheng() &&
@@ -316,7 +316,7 @@ public:
         }
         return false;
     }
-    
+
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         ServerPlayer *target = invoke->targets.first();
@@ -448,7 +448,7 @@ void QijiDialog::popup()
             if (user->getMark(xihuaUsed) > 0)
                 enabled = false;
         }
-        
+
         QStringList response_use_salsh;
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY
             &&  Sanguosha->currentRoomState()->getCurrentCardUsePattern().contains("slash")) {
@@ -1204,7 +1204,7 @@ public:
             sanae = move.reason.m_extraData.value<ServerPlayer *>();
         if (sanae == NULL || !sanae->hasSkill(this) || sanae->hasFlag("jinian_used"))
             return;// no need to update record.
-        //record some temp ids, went to discardpile undirectly (through other places). 
+        //record some temp ids, went to discardpile undirectly (through other places).
         if (move.to_place == Player::PlaceTable && move.from_places.contains(Player::PlaceHand)  && move.is_last_handcard) {
             //1 temp ids: record lasthand ids for using or responsing
             if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
@@ -1229,7 +1229,7 @@ public:
             sanae->tag["jinianTemp"] = record_ids;
             return;
         }
-        
+
         //obtain jinian id while arriving discardpile.
         if (move.to_place == Player::DiscardPile) {
             QVariantList ids = sanae->tag["jinian"].toList();
@@ -1242,7 +1242,7 @@ public:
                         ids << id;
                 }
             } else {
-                //3.2 check whether went to discard pile through palceTable or placeJudge 
+                //3.2 check whether went to discard pile through palceTable or placeJudge
                 foreach(int id, move.card_ids) {
                     if (!ids.contains(id) && record_ids.contains(id) && room->getCardPlace(id) == Player::DiscardPile)
                         ids << id;
@@ -1254,7 +1254,7 @@ public:
             sanae->tag["jinianTemp"] = record_ids;
             return;
         }
-            
+
         //4 delete temp ids
         QVariantList record_ids = sanae->tag["jinianTemp"].toList();
         foreach(int id, move.card_ids)
@@ -1712,7 +1712,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         //for log
-        if (use.card->isKindOf("Collateral")) 
+        if (use.card->isKindOf("Collateral"))
             return;
         else if (use.to.length() > 1 && QishuTargetMod::isLastHandCard(use.from, use.card)) {
             if (use.card->isKindOf("Slash") || use.card->isNDTrick()) {

@@ -325,7 +325,7 @@ public:
                     ServerPlayer *p = room->findPlayerByObjectName(s);
                     if (p == NULL)
                         continue;
-  
+
                     d << SkillInvokeDetail(this, p, dc.player, NULL, true);
                 }
                 return d;
@@ -352,7 +352,7 @@ public:
             drawer.removeOne(invoke->owner->objectName());
             invoke->invoker->tag["yuanhu_drawers"] = QVariant::fromValue(drawer);
             return true;
-        }  
+        }
 
         return false;
     }
@@ -564,7 +564,7 @@ public:
             draw.n = draw.n - 1;
         else
             draw.n = draw.n + 1;
-            
+
         data = QVariant::fromValue(draw);
         return false;
     }
@@ -732,7 +732,7 @@ public:
                 data = QVariant::fromValue(use);
             }
         }
-    
+
         //record times of using card
         if (triggerEvent == CardUsed || triggerEvent == CardResponded) {
             ServerPlayer *player = NULL;
@@ -824,7 +824,7 @@ public:
             room->throwCard(id, invoke->targets.first(), invoke->invoker);
             room->setPlayerMark(invoke->targets.first(), "xiubu", 1);
         }
-        
+
         return false;
     }
 

@@ -47,7 +47,7 @@ public:
             QList<ServerPlayer *> kaguyas;
             ServerPlayer *kaguya1 = qobject_cast<ServerPlayer *>(move.from);
             ServerPlayer *kaguya2 = qobject_cast<ServerPlayer *>(move.to);
-            if (kaguya1 != NULL && kaguya1->isAlive() && kaguya1->hasSkill(this) && move.from_places.contains(Player::PlaceHand) 
+            if (kaguya1 != NULL && kaguya1->isAlive() && kaguya1->hasSkill(this) && move.from_places.contains(Player::PlaceHand)
             && kaguya1->getHandcardNum() != 4 && kaguya1->getPhase() == Player::NotActive)
                 kaguyas << kaguya1;
             if (kaguya2 != NULL && kaguya2->isAlive() && kaguya2->hasSkill(this) && move.to_place == Player::PlaceHand
@@ -166,7 +166,7 @@ public:
         if (effect.to->hasSkill(this) && effect.to->isWounded() && effect.to->isAlive() && effect.card->isNDTrick()) {
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to);
         }
-        
+
         return QList<SkillInvokeDetail>();
     }
 
@@ -209,7 +209,7 @@ bool MiyaoCard::targetFilter(const QList<const Player *> &targets, const Player 
 void MiyaoCard::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
-    if (effect.to->canDiscard(effect.to, "h")) 
+    if (effect.to->canDiscard(effect.to, "h"))
         room->askForDiscard(effect.to, "miyao", 1, 1, false, false, "miyao_cardchosen");
 
     if (effect.to->isWounded()) {
@@ -282,7 +282,7 @@ public:
     {
         ServerPlayer *mokou = invoke->invoker;
         int changehp = mokou->getHp() - 1;
-         
+
         room->touhouLogmessage("#bumie01", mokou, "bumie", QList<ServerPlayer *>(), QString::number(changehp));
         room->notifySkillInvoked(mokou, objectName());
         if (changehp <= 0)
@@ -298,7 +298,7 @@ public:
             hplost.num = changehp;
             data = QVariant::fromValue(hplost);
         }
-        
+
         return false;
     }
 };
@@ -328,7 +328,7 @@ public:
             }
             return d;
         }
-        
+
         ServerPlayer *mokou = NULL;
         if (triggerEvent == HpChanged)
             mokou = data.value<ServerPlayer *>();
@@ -382,9 +382,9 @@ public:
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.from == Player::Discard) {
                 foreach(ServerPlayer *mokou, room->getAllPlayers())
-                    mokou->tag.remove("lizhan"); 
+                    mokou->tag.remove("lizhan");
             }
-        } 
+        }
 
         if (e != CardsMoveOneTime) return;
 
@@ -539,7 +539,7 @@ public:
                         break;
                     }
                 }
-            }       
+            }
         }
         return d;
     }
@@ -625,7 +625,7 @@ public:
         }
         if (src->canDiscard(src, "h"))
             room->askForDiscard(src, objectName(), 1, 1, false, false, "shishi_discard");
-        
+
         return false;
     }
 };
@@ -662,9 +662,9 @@ public:
         }
         return false;
     }
-    
+
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {   
+    {
         QList<int> pile = invoke->invoker->getPile("lishi");
         DummyCard dummy(pile);
         room->obtainCard(invoke->targets.first(), &dummy);
@@ -712,7 +712,7 @@ void BuxianCard::onUse(Room *room, const CardUseStruct &card_use) const
 }
 
 void BuxianCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
-{   
+{
     room->moveCardTo(Sanguosha->getCard(subcards.first()), NULL, Player::DrawPile);
     targets.first()->pindian(targets.last(), "buxian");
 }
@@ -769,7 +769,7 @@ public:
             if (damage.to->hasSkill(this) && damage.to->isAlive() && !damage.to->isKongcheng() && hasBuxianTarget(damage.to))
                 return  QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
         }
-        
+
         return  QList<SkillInvokeDetail>();
     }
 
@@ -908,7 +908,7 @@ public:
         ServerPlayer *player = invoke->invoker;
         int count = player->tag["xingyun"].toInt();
         player->tag.remove("xingyun");
-        
+
         for (int i = 0; i < count; ++i) {
              QString choice = "letdraw";
             if (player->isWounded())
@@ -1130,7 +1130,7 @@ public:
         const Card *card = room->askForCard(invoke->invoker, "Jink", "@yinghuo", data, Card::MethodNone, NULL, false, objectName());
         if (card){
             invoke->invoker->tag["yinghuo_id"] = QVariant::fromValue(card->getEffectiveId());
-            return true;        
+            return true;
         }
         return false;
     }
@@ -1362,7 +1362,7 @@ void ChuangshiCard::onUse(Room *room, const CardUseStruct &card_use) const
     Card *card = Sanguosha->cloneCard(user_string);
     DELETE_OVER_SCOPE(Card, card)
     if (card->isKindOf("Collateral")) {
-        ServerPlayer *from = card_use.from; //ensure that the length of use.to should be 2. 
+        ServerPlayer *from = card_use.from; //ensure that the length of use.to should be 2.
         ServerPlayer *to1 = card_use.to.at(0);
         ServerPlayer *to2 = card_use.to.at(1);
         QList<ServerPlayer *>logto;
@@ -1496,7 +1496,7 @@ public:
                 Slash *tmpslash = new Slash(Card::NoSuit, 0);
                 tmpslash->deleteLater();
                 if (!s.player->isCardLimited(tmpslash, s.method))
-                    d << SkillInvokeDetail(this, s.player, s.player);                
+                    d << SkillInvokeDetail(this, s.player, s.player);
             }
         } else if (triggerEvent == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();

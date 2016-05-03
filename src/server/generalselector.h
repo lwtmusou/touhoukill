@@ -26,7 +26,7 @@ private:
     void initialize();
     void callLuaInitialize();
     lua_State *L;
-    
+
     LuaFunction initializeFunc;
     LuaFunction selectFirstFunc;
     LuaFunction selectSecondFunc;

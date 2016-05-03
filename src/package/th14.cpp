@@ -99,7 +99,7 @@ public:
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-       
+
         if (triggerEvent == CardsMoveOneTime) {
             ServerPlayer *current = room->getCurrent();
             if (!current || current->getKingdom() != "hzc" || current->getPhase() != Player::Discard)
@@ -262,7 +262,7 @@ public:
             if (use.from == NULL || use.from->isDead() || use.from->getLostHp() >= target->getLostHp())
                 return d;
 
-           
+
             foreach(ServerPlayer *src, room->findPlayersBySkillName(objectName())) {
                 if (src->canDiscard(target, "h")) {
                     Slash *slash = new Slash(Card::NoSuit, 0);
@@ -319,7 +319,7 @@ public:
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {   
+    {
         bool hasPeach = false;
         ServerPlayer *player = invoke->targets.first();
         ServerPlayer *victim = invoke->invoker;
@@ -327,7 +327,7 @@ public:
         dummy_peach->deleteLater();
         if (player->isCardLimited(dummy_peach, Card::MethodUse))
             return false;
-        
+
         foreach (const Card *card, player->getHandcards()) {
             if (card->isKindOf("Peach")) {
                 hasPeach = true;
@@ -453,7 +453,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
         QList<SkillInvokeDetail> d;
-        if (triggerEvent == EventPhaseEnd) { 
+        if (triggerEvent == EventPhaseEnd) {
             ServerPlayer *current = data.value<ServerPlayer *>();
             if (!current || current->getPhase() != Player::Discard || !room->getTag("wuchang").toBool())
                 return d;
@@ -541,7 +541,7 @@ public:
         CardAskedStruct s = data.value<CardAskedStruct>();
         if (!current || !current->isAlive() || current == s.player || !s.player->hasSkill(this))
             return QList<SkillInvokeDetail>();
-        
+
         if (s.pattern == "jink") {
             Jink *jink = new Jink(Card::NoSuit, 0);
             jink->deleteLater();
@@ -585,7 +585,7 @@ public:
             jink->deleteLater();
             if (s.player->isCardLimited(jink, s.method))
                 return QList<SkillInvokeDetail>();
-            
+
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, s.player, s.player);
         }
         return QList<SkillInvokeDetail>();
@@ -607,7 +607,7 @@ public:
             move.to = player;
 
             room->moveCardsAtomic(move, true);
-        
+
             return true;
         }
         return false;
@@ -785,7 +785,7 @@ public:
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         return QList<SkillInvokeDetail>();
     }
-    
+
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         invoke->invoker->addToPile("feitou", room->getNCards(1));
@@ -862,7 +862,7 @@ public:
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->getPhase() != Player::Finish)
                 return QList<SkillInvokeDetail>();
-            
+
             bool hasPeach = false;
             QVariantList shizhu_ids = room->getTag("shizhuPeach").toList();
             foreach (QVariant card_data, shizhu_ids) {
@@ -924,7 +924,7 @@ public:
         int id = source->tag["shizhu_id"].toInt();
         source->tag.remove("shizhu_id");
         source->obtainCard(Sanguosha->getCard(id), true);
-        
+
         return false;
     }
 };

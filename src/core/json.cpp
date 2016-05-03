@@ -133,7 +133,7 @@ bool JsonUtils::tryParse(const QVariant &var, QStringList &list)
     JsonArray array = var.value<JsonArray>();
 
     foreach (const QVariant &var, array) {
-        if (!var.canConvert<QString>()) 
+        if (!var.canConvert<QString>())
             return false;
     }
 

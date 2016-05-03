@@ -348,7 +348,7 @@ bool SkillInvokeDetail::operator <(const SkillInvokeDetail &arg2) const // the o
             RoomThread *thread = qobject_cast<RoomThread *>(skill->thread());
             if (thread == NULL)
                 return NULL;
-            
+
             return thread->getRoom();
         }
 

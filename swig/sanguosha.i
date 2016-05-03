@@ -162,7 +162,7 @@ public:
     bool hasInnateSkill(const char *skill_name) const;
     bool hasLordSkill(const char *skill_name, bool include_lose = false) const;
     virtual QString getGameMode() const = 0;
-    
+
     void setSkillInvalidity(const Skill *skill, bool invalidity);
     void setSkillInvalidity(const char *skill_name, bool invalidity);
 
@@ -225,7 +225,7 @@ public:
     bool pileOpen(const char *pile_name, const char *player) const;
     void setPileOpen(const char *pile_name, const char *player);
     QList<int> getHandPile() const;
-	
+
     void addHistory(const char *name, int times = 1);
     void clearHistory();
     bool hasUsed(const char *card_class) const;
@@ -493,8 +493,8 @@ struct CardEffectStruct {
 
     ServerPlayer *from;
     ServerPlayer *to;
-	bool multiple;
-	bool nullified;
+    bool multiple;
+    bool nullified;
 };
 
 struct SlashEffectStruct {
@@ -511,8 +511,8 @@ struct SlashEffectStruct {
     int drank;
 
     DamageStruct::Nature nature;
-	bool multiple;
-	bool nullified;
+    bool multiple;
+    bool nullified;
 };
 
 struct CardUseStruct {
@@ -653,7 +653,7 @@ struct PhaseChangeStruct
 struct PhaseSkippingStruct
 {
     PhaseSkippingStruct();
-    
+
     Player::Phase phase;
     ServerPlayer *player;
     bool isCost;
@@ -719,30 +719,30 @@ struct SkillInvokeDetail
 };
 
 %extend SkillInvokeDetail {
-	QVariant getTag(const char *key)
-	{
-		return $self->tag.value(QString(key));
-	}
+    QVariant getTag(const char *key)
+    {
+        return $self->tag.value(QString(key));
+    }
 
-	void setTag(const char *key, QVariant *value)
-	{
-		$self->tag[QString(key)] = *value;
-	}
+    void setTag(const char *key, QVariant *value)
+    {
+        $self->tag[QString(key)] = *value;
+    }
 
-	void removeTag(const char *key)
-	{
-		$self->tag.remove(QString(key));
-	}
+    void removeTag(const char *key)
+    {
+        $self->tag.remove(QString(key));
+    }
 
-	bool lessThan(SkillInvokeDetail *arg2)
-	{
-		return *$self < *arg2;
-	}
+    bool lessThan(SkillInvokeDetail *arg2)
+    {
+        return *$self < *arg2;
+    }
 
-	void addTarget(ServerPlayer *target)
-	{
-		$self->targets << target;
-	}
+    void addTarget(ServerPlayer *target)
+    {
+        $self->targets << target;
+    }
 };
 
 struct HpLostStruct
@@ -916,7 +916,7 @@ enum TriggerEvent
 
     TurnBroken, // For the skill 'DanShou'. Do not use it to trigger events
 
-    //new events for touhoukill, 
+    //new events for touhoukill,
     DrawPileSwaped,//like qiannian
     AfterGuanXing,
     KingdomChanged,
@@ -1215,7 +1215,7 @@ public:
     TriggerSkill(const char *name);
     const ViewAsSkill *getViewAsSkill() const;
     QList<TriggerEvent> getTriggerEvents() const;
-    
+
     virtual int getPriority() const;
 
     bool isGlobal() const;

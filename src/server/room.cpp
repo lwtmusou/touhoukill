@@ -223,7 +223,7 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
     bool enterdying = thread->trigger(EnterDying, this, dying_data);
 
     if (!(player->isDead() || player->getHp() > 0 || enterdying)) {
-        thread->trigger(Dying, this, dying_data); 
+        thread->trigger(Dying, this, dying_data);
 
         if (player->isAlive()) {
             if (player->getHp() > 0) {
@@ -244,7 +244,7 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
                         break;
                     QString cd = saver->property("currentdying").toString();
                     setPlayerProperty(saver, "currentdying", player->objectName());
-                    
+
                     thread->trigger(AskForPeaches, this, dying_data);
                     setPlayerProperty(saver, "currentdying", cd);
                 }
@@ -298,8 +298,8 @@ void Room::revivePlayer(ServerPlayer *player)
     player->setAlive(true);
     player->throwAllMarks(false);
     broadcastProperty(player, "alive");
-    
-    
+
+
     if (initialize) {
         setPlayerProperty(player, "maxhp", player->getGeneral()->getMaxHp());
         setPlayerProperty(player, "hp", player->getMaxHp());
@@ -561,7 +561,7 @@ void Room::gameOver(const QString &winner)
         Config.setValue("Enable2ndGeneral", enable);
         removeTag("NextGameSecondGeneral");
     }
-    
+
     JsonArray arg;
     arg << winner << JsonUtils::toJsonArray(all_roles);
     doBroadcastNotify(S_COMMAND_GAME_OVER, arg);
@@ -1696,7 +1696,7 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, 
                 card = player->getRandomHandCard();
         }
     }
-    
+
     ChoiceMadeStruct s;
     s.player = player;
     s.type = ChoiceMadeStruct::CardShow;
@@ -1776,12 +1776,12 @@ QSharedPointer<SkillInvokeDetail> Room::askForTriggerOrder(ServerPlayer *player,
         QString reply;
 
         if (ai) {
-            //AI system also need  the same reply with human. 
+            //AI system also need  the same reply with human.
             QStringList skills;
             QString currentSkillName = sameTiming.first()->skill->objectName();
             int preferIndex = 0;
             foreach (const QSharedPointer<SkillInvokeDetail> &ptr, sameTiming) {
-                
+
                 QString skill = ptr->skill->objectName();
                 skill.append(":").append(ptr->owner->objectName()).append(":").append(ptr->invoker->objectName());
                 if (ptr->preferredTarget) {
@@ -3057,7 +3057,7 @@ void Room::setPlayerSkillInvalidity(ServerPlayer *player, const QString &skill_n
         invalid.player = player;
         invalid.skill = Sanguosha->getSkill(skill_name);
         invalid_list << invalid;
-        
+
         QVariant v = QVariant::fromValue(invalid_list);
         thread->trigger(EventSkillInvalidityChange, this, v);
     }

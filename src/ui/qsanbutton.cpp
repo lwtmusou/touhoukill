@@ -117,7 +117,7 @@ void QSanButton::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     if (_m_mouseEntered || !insideButton(point)) return; // fake event;
 
 
-    if (_m_state == S_STATE_HOVER)//when askforSkillInvoke 
+    if (_m_state == S_STATE_HOVER)//when askforSkillInvoke
         return;
     Q_ASSERT(_m_state != S_STATE_HOVER);
 

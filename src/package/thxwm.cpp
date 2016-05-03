@@ -297,7 +297,7 @@ public:
         if (count > 0)
             room->throwCard(&dummy, victim, invoke->invoker);
     }
-        
+
 };
 
 class Haidi : public TriggerSkill

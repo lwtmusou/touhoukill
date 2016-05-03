@@ -53,7 +53,7 @@ public:
     bool isFinished() const;
     bool canPause(ServerPlayer *p) const;
     void tryPause();
-    
+
     int getLack() const;
     QString getMode() const;
     const Scenario *getScenario() const;
@@ -182,7 +182,7 @@ public:
     // will be rejected.
     bool doBroadcastNotify(QSanProtocol::CommandType command, const QVariant &arg);
     bool doBroadcastNotify(const QList<ServerPlayer *> &players, QSanProtocol::CommandType command, const QVariant &arg);
-   
+
     bool doNotify(ServerPlayer *player, int command, const char *arg);
     bool doBroadcastNotify(int command, const char *arg);
     bool doBroadcastNotify(const QList<ServerPlayer *> &players, int command, const char *arg);
@@ -388,8 +388,8 @@ public:
     void broadcastInvoke(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except = NULL);
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
     void networkDelayTestCommand(ServerPlayer *player, const QVariant &);
-    bool roleStatusCommand(ServerPlayer *player); 
-    
+    bool roleStatusCommand(ServerPlayer *player);
+
     inline RoomState *getRoomState()
     {
         return &_m_roomState;
@@ -574,8 +574,8 @@ private:
     volatile bool playerPropertySet;
 
     GeneralSelector *m_generalSelector;
-    
-    
+
+
     static QString generatePlayerName();
     void prepareForStart();
     void assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign);
@@ -589,7 +589,7 @@ private:
     //process client requests
     void processRequestCheat(ServerPlayer *player, const QVariant &packet);
     void processRequestSurrender(ServerPlayer *player, const QVariant &packet);
-   
+
     bool makeSurrender(ServerPlayer *player);
     bool makeCheat(ServerPlayer *player);
     void makeDamage(const QString &source, const QString &target, QSanProtocol::CheatCategory nature, int point);
@@ -598,9 +598,9 @@ private:
     void doScript(const QString &script);
 
     void skinChangeCommand(ServerPlayer *player, const QVariant &packet);
-     
-    
-    
+
+
+
     //helper functions and structs
     struct _NullificationAiHelper
     {
@@ -617,7 +617,7 @@ private slots:
     void assignRoles();
     void startGame();
     void slotSetProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
-    
+
 signals:
     void room_message(const QString &msg);
     void game_start();

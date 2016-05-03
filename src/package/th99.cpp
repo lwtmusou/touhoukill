@@ -600,7 +600,7 @@ public:
         events << EventPhaseStart;
         frequency = Wake;
     }
-    
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *merry = data.value<ServerPlayer *>();
@@ -844,7 +844,7 @@ public:
         events << EventPhaseStart;
         frequency = Wake;
     }
-    
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *toyo = data.value<ServerPlayer *>();
@@ -906,7 +906,7 @@ public:
         ServerPlayer *yori = invoke->invoker;
 
         QStringList skill_names;
-        
+
         foreach (const Skill *skill, invoke->preferredTarget->getVisibleSkillList()) {
             if (skill->isLordSkill() || skill->isAttachedLordSkill() || skill->getFrequency() == Skill::Limited || skill->getFrequency() == Skill::Wake || skill->getFrequency() == Skill::Eternal)
                 continue;
@@ -1241,7 +1241,7 @@ public:
         events << Damaged;
         frequency = Compulsory;
     }
-    
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
@@ -1257,7 +1257,7 @@ public:
 
         return QList<SkillInvokeDetail>();
     }
-    
+
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         room->notifySkillInvoked(invoke->invoker, objectName());
@@ -1275,7 +1275,7 @@ public:
     {
         events << EventPhaseChanging;
     }
-    
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -1297,7 +1297,7 @@ public:
         }
         return true;
     }
-    
+
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         foreach (ServerPlayer *p, invoke->targets) {
@@ -1349,7 +1349,7 @@ public:
         }*/
         if (invoke->targets.isEmpty())
             return false;
-        
+
 
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, invoke->targets, "ganying", "@ganying", true);
         if (target == NULL)
@@ -1441,7 +1441,7 @@ public:
                     }
                 }
             }
-            
+
             if (invoke)
                 d << SkillInvokeDetail(ganying_instance, p, p, targets);
         }
@@ -1676,7 +1676,7 @@ public:
             CardMoveReason r(CardMoveReason::S_REASON_GIVE, invoke->owner->objectName(), objectName(), QString());
             room->obtainCard(target, c, r, false);
             delete c;
-            
+
             invoke->targets << target;
             return true;
         }
@@ -1709,7 +1709,7 @@ public:
     {
         events << EventPhaseChanging;
     }
-    
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -1737,7 +1737,7 @@ public:
 
         return QList<SkillInvokeDetail>();
     }
-    
+
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
@@ -1815,7 +1815,7 @@ public:
                         break;
                     }
                 }
-            }       
+            }
         }
         return d;
     }
@@ -1857,7 +1857,7 @@ public:
                     targets << t;
             }
             ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@daoyao", false, true);
-            target->drawCards(1); 
+            target->drawCards(1);
         }
         return false;
     }

@@ -117,7 +117,7 @@ public:
     {
         events << PreCardUsed;
     }
-    
+
     //just for broadcasting skillInvoked
     void record(TriggerEvent, Room *room, QVariant &data) const
     {
@@ -571,7 +571,7 @@ public:
                 && damage.from && damage.from->hasSkill(this)) {
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
             }
-        }  
+        }
         return QList<SkillInvokeDetail>();
     }
 
@@ -666,7 +666,7 @@ public:
                 else
                     disable << id;
             }
-            
+
             if (able.isEmpty())
                 break;
 
@@ -735,7 +735,7 @@ public:
             invoke->targets << target;
             invoke->invoker->tag["feixiang_id"] = QVariant::fromValue(card_id);
             return true;
-            
+
         }
         return false;
     }
@@ -962,7 +962,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.nature == DamageStruct::Thunder && damage.to->hasSkill(this))          
+        if (damage.nature == DamageStruct::Thunder && damage.to->hasSkill(this))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
         return QList<SkillInvokeDetail>();
     }
@@ -1272,10 +1272,10 @@ public:
             QList<ServerPlayer *> logto;
             logto << lord;
             room->touhouLogmessage("#InvokeOthersSkill", current, objectName(), logto);
-                    
+
             current->tag["xiwang_id"] = QVariant::fromValue(card->getEffectiveId());
             return true;
-                    
+
         }
         return false;
     }
@@ -1352,7 +1352,7 @@ void NianliDialog::popup()
             map.insert(card_name, c);
         }
     }
-    
+
     Self->tag.remove(object_name);
     exec();
 }

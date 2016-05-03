@@ -213,7 +213,7 @@ void PlayerCardContainer::updateAvatar()
             QString());
     }
 
-    
+
     if (general != NULL) {
         _m_avatarArea->setToolTip(m_player->getSkillDescription());
         QString name = general->objectName();
@@ -233,8 +233,8 @@ void PlayerCardContainer::updateAvatar()
 
 
             //@todo
-            //we want this mask to start at zero piont of logbox width, 
-            //and keep the height to equal with the diff between middleFrame and rightFrame 
+            //we want this mask to start at zero piont of logbox width,
+            //and keep the height to equal with the diff between middleFrame and rightFrame
             _paintPixmap(_m_dashboardKingdomColorMaskIcon, _m_layout->m_dashboardKingdomMaskArea,
                 G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_DASHBOARD_KINGDOM_COLOR_MASK, kingdom), _getAvatarParent());
 

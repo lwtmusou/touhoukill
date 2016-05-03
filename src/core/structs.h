@@ -407,7 +407,7 @@ struct PhaseChangeStruct
 struct PhaseSkippingStruct
 {
     PhaseSkippingStruct();
-    
+
     Player::Phase phase;
     ServerPlayer *player;
     bool isCost;
@@ -667,7 +667,7 @@ enum TriggerEvent
 
     TurnBroken, // For the skill 'DanShou'. Do not use it to trigger events
 
-    //new events for touhoukill, 
+    //new events for touhoukill,
     DrawPileSwaped,//like qiannian
     AfterGuanXing,
     KingdomChanged,

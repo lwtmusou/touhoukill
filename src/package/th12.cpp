@@ -155,7 +155,7 @@ public:
                         if (p->canSlash(victim))
                             listt << victim;
                     }
-                    //the list will not be empty since we utilizing targetFilter 
+                    //the list will not be empty since we utilizing targetFilter
                     ServerPlayer *newVictim = room->askForPlayerChosen(use.from, listt, objectName(), "@fahuaCollateral:" + p->objectName(), false, false);
                     CardUseStruct new_use;
                     new_use.from = use.from;
@@ -565,7 +565,7 @@ public:
 
 //case1.1 while provideCard went to discar pile , like skill Tianren
     //if the provider is self,it should not trigger skill
-//case2 while retrial card went to discard pile, we consdier the move.from as the responser, not judge.who!!!   
+//case2 while retrial card went to discard pile, we consdier the move.from as the responser, not judge.who!!!
     //if responser(move.from) is self, it could not trigger skill.
 //case 3 if the card went to DiscardPile from PlaceTable,shoud chcek whether it was from private pile, like woodenOx. This case should not trigger skill.
 
@@ -650,7 +650,7 @@ public:
                 record_ids.removeOne(id);
         }
         nazurin->tag["soujiExcept"] = record_ids;
-        
+
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
@@ -1125,7 +1125,7 @@ void ShuxinCard::onEffect(const CardEffectStruct &effect) const
         room->clearAG(effect.from);
         if (id == -1)
             break;
-        
+
         card_ids.removeOne(id);
         selected << id;
     }

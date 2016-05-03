@@ -33,7 +33,7 @@ public slots:
 
 class LightboxAnimation : public QGraphicsObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
     LightboxAnimation(const QString &general_name, const QString &skill_name, const QRectF &rect);

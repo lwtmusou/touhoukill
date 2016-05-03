@@ -54,9 +54,9 @@ public:
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    { 
-        
-        
+    {
+
+
         QString choice = invoke->invoker->tag["ciyuan"].toString();
         Player::Phase phase = ciyuanPhase(choice);
         QString choice1 = invoke->invoker->tag["ciyuan1"].toString();
@@ -270,7 +270,7 @@ public:
             default:
                 break;
             }
-            
+
 
         }
         else if (e == EventPhaseChanging) {
@@ -299,7 +299,7 @@ public:
                             d << SkillInvokeDetail(this, p, p, NULL, false, change.player);
                     }
                 }
-            }  
+            }
         }
         return d;
     }
@@ -308,13 +308,13 @@ public:
     {
         QStringList choices = shiquChoices(invoke->preferredTarget);
         QString choice = "cancel";
-        
+
         if (choices.length() > 1) {
             choices << "cancel";
             choice = room->askForChoice(invoke->invoker, objectName(), choices.join("+"));
         } else if (choices.length() == 1)
             choice = choices.first();
-            
+
         if (choice != "cancel") {
             QString prompt = "@shiqu-discard:" + choice + ":" + invoke->preferredTarget->objectName();
             invoke->invoker->tag["shiqu"] = QVariant::fromValue(choice);
@@ -339,7 +339,7 @@ public:
             phase = Player::Play;
         else if (choice == "shiqu_discard")
             phase = Player::Discard;
-        
+
         invoke->targets.first()->skip(Player::Finish);
 
         room->notifySkillInvoked(invoke->owner, objectName());
@@ -550,7 +550,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        
+
         QList<ServerPlayer *> logto;
         logto << invoke->targets;
         room->touhouLogmessage("#youyue", invoke->invoker, objectName(), logto, use.card->objectName());

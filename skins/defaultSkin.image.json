@@ -18,7 +18,7 @@
 "photoFocusFrame1": "image/system/frame/responding.png",
 "photoFocusFrame2": "image/system/frame/sos.png",
 "photoFrameWhenSelected": "image/system/frame/photoSelected.png",
-"dashboardLeftFrame": "image/system/dashboard-equip.png", 
+"dashboardLeftFrame": "image/system/dashboard-equip.png",
 "dashboardRightFrame": "image/system/dashboard-avatar.png",
 "dashboardMiddleFrame": "image/system/dashboard-hand.png",
 "dashboardHandCardNum-default": "image/fullskin/system/handcard/%1.png",
@@ -61,7 +61,7 @@
 "playerGeneralIcon-default-6": ["image/fullskin/generals/full/%1.png", [65, 0, 250, 289], [155, 179]],  //primary avatar for photo
 "playerGeneralIcon-default-7": ["image/generals/avatar/%1.png", [71, 28, 134, 134]],  //primary avatar for dashboard
 "playerGeneralIcon-default-8": ["image/generals/avatar/%1.png", [16, 49, 244, 100], [122, 50]],  //avatar for KOF mode
-                                           
+
 "heroSkinContainerGeneralIcon-default-0": ["image/fullskin/generals/full/%1.png", [55, 0, 155, 292]],
 "heroSkinContainerGeneralIcon-default": ["image/heroskin/fullskin/generals/full/%1_%2.png", [45, 0, 155, 292]],
 
@@ -78,7 +78,7 @@
 "playerGeneralIcon-anjiang-2": "image/generals/big/anjiang.png",
 "playerGeneralIcon-anjiang-4": ["image/fullskin/generals/full/anjiang.png", [63, 0, 124, 289], [77, 179]],
 "playerGeneralIcon-anjiang-5": ["image/generals/big/anjiang.png", [0, 0, 134, 134], [70, 70]],
-"playerGeneralIcon-anjiang-6": ["image/fullskin/generals/full/anjiang.png", [63, 0, 250, 289], [155, 179]], 
+"playerGeneralIcon-anjiang-6": ["image/fullskin/generals/full/anjiang.png", [63, 0, 250, 289], [155, 179]],
 "playerGeneralIcon-anjiang-7": "image/generals/big/anjiang.png",
 "playerGeneralIcon-anjiang-8": "image/generals/kof/anjiang.png",
 

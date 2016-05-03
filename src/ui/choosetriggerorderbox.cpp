@@ -225,7 +225,7 @@ QString TriggerOptionButton::displayedTextOf(const SkillInvokeDetailForClient &d
     }
     if (detail.owner != detail.invoker)
         text = tr("%1 (of %2's)").arg(text).arg(Sanguosha->translate(detail.owner->getGeneralName()));
-    
+
     if (times > 1)
         text += QString(" * %1").arg(times);
 

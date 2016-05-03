@@ -41,10 +41,10 @@ public:
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
     virtual const Card *viewAs(const QList<const Card *> &cards) const;
 
-	virtual bool shouldBeVisible(const Player *player) const;
+    virtual bool shouldBeVisible(const Player *player) const;
 
     LuaFunction should_be_visible;
-	
+
     LuaFunction view_filter;
     LuaFunction view_as;
 

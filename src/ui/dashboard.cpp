@@ -207,7 +207,7 @@ int Dashboard::width()
 
 
 void Dashboard::_createRight()
-{   //40 equals diff bettween middlefarme and rightframe 
+{   //40 equals diff bettween middlefarme and rightframe
     QRect rect = QRect(_m_width - G_DASHBOARD_LAYOUT.m_rightWidth, -40,
         G_DASHBOARD_LAYOUT.m_rightWidth,
         G_DASHBOARD_LAYOUT.m_normalHeight + 40);

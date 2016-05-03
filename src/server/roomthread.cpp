@@ -586,7 +586,7 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
     QListIterator<QSharedPointer<SkillInvokeDetail> > it(details);
     it.toBack();
     while (it.hasPrevious()) {
-        // search the last skill which triggered times isn't 0 from back to front. if found, save it to over_trigger. 
+        // search the last skill which triggered times isn't 0 from back to front. if found, save it to over_trigger.
         // if over_trigger is valid, then mark the skills which missed the trigger timing as it has triggered.
         const QSharedPointer<SkillInvokeDetail> &detail = it.previous();
         if (over_trigger.isNull() || !over_trigger->isValid()) {
@@ -637,7 +637,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) 
                         if (!sameTimingCompulsory)
                             sameTiming << ptr;
                     }
-                }    
+                }
             }
 
             // if not found, it means that all the skills is triggered done, we can exit the loop now.

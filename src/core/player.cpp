@@ -69,7 +69,7 @@ void Player::setHp(int hp)
 
 int Player::getHp() const
 {
-    if (hasSkill("huanmeng")) 
+    if (hasSkill("huanmeng"))
         return 0;
     //if (hasSkill("banling"))
     //    return qMin(linghp, renhp);

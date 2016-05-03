@@ -676,8 +676,8 @@ void RoomScene::handleGameEvent(const QVariant &args)
                 //const QString &heroSkinGeneralName = heroSkinContainer->getGeneralName();
                 if (noSkin)
                     break;
-                if (general_name == playerCardContainer->getPlayer()->getGeneralName()) { // check container which changed skin 
-                    if (player->getGeneralName() == general_name && Self != player) { // check this roomscene instance of the players who need notify 
+                if (general_name == playerCardContainer->getPlayer()->getGeneralName()) { // check container which changed skin
+                    if (player->getGeneralName() == general_name && Self != player) { // check this roomscene instance of the players who need notify
                         QString generalIconPath;
                         QRect clipRegion;
                         G_ROOM_SKIN.getHeroSkinContainerGeneralIconPathAndClipRegion(general_name,
@@ -4025,10 +4025,10 @@ void RoomScene::onGameStart()
         if (changeBackdrop)
             image_path = "backdrop/" + lord_name + ".jpg";
     }
-    
+
     if ((image_path != NULL) && QFile::exists(image_path))
         changeTableBg(image_path);
-    
+
     if (Config.EnableBgMusic) {
         // start playing background music
         Audio::playBGM(bgm_path);

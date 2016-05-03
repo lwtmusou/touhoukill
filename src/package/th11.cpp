@@ -83,7 +83,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (!use.card->isKindOf("Slash"))
             return QList<SkillInvokeDetail>();
-        
+
         QList<SkillInvokeDetail> d;
         foreach(ServerPlayer *p, use.to) {
             if (!p->hasLordSkill(objectName()))
@@ -303,7 +303,7 @@ public:
         QStringList    yaobanTargets;
         foreach(ServerPlayer *p, room->getOtherPlayers(damage.to))
             yaobanTargets << p->objectName();
-        
+
         ldlk->tag["yaoban_damage"] = QVariant::fromValue(damage);
         room->setPlayerProperty(ldlk, "yaoban", yaobanTargets.join("+"));
         room->askForUseCard(ldlk, "@@yaoban", "@yaoban:" + damage.to->objectName());
@@ -444,7 +444,7 @@ public:
         DamageStruct damage;
         damage.from = invoke->invoker;
         room->killPlayer(invoke->targets.first(), &damage);
-        
+
         return true; //avoid triggering askforpeach
     }
 };
@@ -492,7 +492,7 @@ JiuhaoCard::JiuhaoCard()
 }
 
 bool JiuhaoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
-{ 
+{
     Slash *card = new Slash(Card::NoSuit, 0);
     card->deleteLater();
     card->setFlags("jiuhao");

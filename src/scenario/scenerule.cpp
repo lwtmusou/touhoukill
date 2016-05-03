@@ -15,7 +15,7 @@ int SceneRule::getPriority() const
 bool SceneRule::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &) const
 {
     return false;
-    
+
     /*
     QStringList extensions = Sanguosha->getExtensions();
     QSet<QString> ban_packages = Config.BanPackages.toSet();

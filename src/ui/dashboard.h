@@ -249,7 +249,7 @@ protected:
     const FilterSkill *filter;
     QStringList _m_pile_expanded;
     QList<int> _m_id_expanded; //just for chaoren
-    
+
     // for equip skill/selections
     PixmapAnimation *_m_equipBorders[5];
     QSanSkillButton *_m_equipSkillBtns[5];
