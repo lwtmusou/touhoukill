@@ -90,7 +90,9 @@ void RoomThread1v1::run()
     next->setRole("renegade");
 
     room->broadcastProperty(first, "role");
+    room->setPlayerProperty(first, "role_shown", true);
     room->broadcastProperty(next, "role");
+    room->setPlayerProperty(next, "role_shown", true);
     room->adjustSeats();
 
     if (rule == "OL") {

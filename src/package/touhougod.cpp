@@ -1490,7 +1490,7 @@ FengyinCard::FengyinCard()
 
 bool FengyinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
 {
-    return(targets.isEmpty() && to_select->hasShownRole());//
+    return(targets.isEmpty() && to_select->hasShownRole());
 }
 
 void FengyinCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
@@ -1619,28 +1619,17 @@ public:
 class RoleShownHandler : public TriggerSkill
 {
 public:
-    RoleShownHandler() : TriggerSkill("#roleShownHandler")
+    RoleShownHandler() : TriggerSkill("roleshownhandler")
     {
-        events << GameStart << EventAcquireSkill; // << EventLoseSkill << EventPhaseChanging << Death << Debut;
+        events << GameStart;
+        global = true;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-
-        if (triggerEvent == GameStart) {
-            ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player && player->hasSkills("yibian|fengyin|fnegyin|huanxiang")) {
-                foreach(ServerPlayer *p, room->getAlivePlayers())
-                    room->setPlayerProperty(p, "role_shown", p->isLord() ? true : false);
-            }
-        }
-        if (triggerEvent == EventAcquireSkill) {
-            QString skillName = data.value<SkillAcquireDetachStruct>().skill->objectName();
-            if (skillName == "fengyin" || skillName == "yibian" || skillName == "huanxiang") {
-                foreach(ServerPlayer *p, room->getAlivePlayers())
-                    room->setPlayerProperty(p, "role_shown", p->hasShownRole() ? true : false);
-            }
-        }
+        ServerPlayer *player = data.value<ServerPlayer *>();
+        foreach(ServerPlayer *p, room->getAlivePlayers())
+            room->setPlayerProperty(p, "role_shown", p->isLord() ? true : false);
     }
 };
 
@@ -3606,10 +3595,6 @@ TouhouGodPackage::TouhouGodPackage()
     reimu_god->addSkill(new Yibian);
     reimu_god->addSkill(new Fengyin);
     reimu_god->addSkill(new Huanxiang);
-    reimu_god->addSkill(new RoleShownHandler);
-    related_skills.insertMulti("huanxiang", "#roleShownHandler");
-    related_skills.insertMulti("fengyin", "#roleShownHandler");
-    related_skills.insertMulti("yibian", "#roleShownHandler");
 
     General *shikieiki_god = new General(this, "shikieiki_god", "touhougod", 4, false);
     shikieiki_god->addSkill(new Quanjie);
@@ -3695,7 +3680,7 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<WendaoCard>();
     addMetaObject<RumoCard>();
 
-    skills << new Ziwo << new Benwo << new Chaowo << new Wendao << new ShenbaoSpear;
+    skills << new Ziwo << new Benwo << new Chaowo << new Wendao << new ShenbaoSpear << new RoleShownHandler;
 }
 
 ADD_PACKAGE(TouhouGod)

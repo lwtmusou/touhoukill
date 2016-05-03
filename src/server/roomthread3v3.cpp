@@ -309,7 +309,9 @@ void RoomThread3v3::assignRoles(const QString &scheme)
             player->setRole(map[player->getRole()]);
     }
 
-    foreach(ServerPlayer *player, room->m_players)
+    foreach(ServerPlayer *player, room->m_players) {
         room->broadcastProperty(player, "role");
+        room->setPlayerProperty(player, "role_shown", true);
+    }
 }
 

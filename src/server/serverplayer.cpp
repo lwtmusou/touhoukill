@@ -1238,10 +1238,12 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         }
     }
 
-    if (hasShownRole())
+    if (hasShownRole()) {
         room->notifyProperty(player, this, "role");
-    //for huashen  like skill pingyi
+        room->notifyProperty(player, this, "role_shown"); // notify client!!
+    }
 
+    //for huashen  like skill pingyi
     QString huashen_skill = this->tag.value("Huashen_skill", QString()).toString();
     QString huashen_target = this->tag.value("Huashen_target", QString()).toString();
     if (huashen_skill != NULL && huashen_target != NULL) {

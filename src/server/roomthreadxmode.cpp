@@ -240,7 +240,9 @@ void RoomThreadXMode::assignRoles(const QString &scheme)
     } while (!valid);
     room->m_players = players;
 
-    foreach(ServerPlayer *player, room->m_players)
+    foreach(ServerPlayer *player, room->m_players) {
         room->broadcastProperty(player, "role");
+        room->setPlayerProperty(player, "role_shown", true);
+    }
 }
 

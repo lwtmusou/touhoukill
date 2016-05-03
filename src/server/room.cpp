@@ -409,6 +409,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason)
 
     broadcastProperty(victim, "alive");
     broadcastProperty(victim, "role");
+    setPlayerProperty(victim, "role_shown", true);
 
     doBroadcastNotify(S_COMMAND_KILL_PLAYER, QVariant(victim->objectName()));
 
@@ -431,8 +432,10 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason)
         }
 
         if (expose_roles) {
-            foreach (ServerPlayer *player, m_alivePlayers)
+            foreach (ServerPlayer *player, m_alivePlayers) {
                 broadcastProperty(player, "role");
+                setPlayerProperty(victim, "role_shown", true);
+            }
 
             static QStringList continue_list;
             if (continue_list.isEmpty())
@@ -2364,12 +2367,15 @@ void Room::prepareForStart()
             }
 
             player->setRole(roles.at(i));
-            if (player->isLord())
+            if (player->isLord()) {
                 broadcastProperty(player, "role");
+                setPlayerProperty(player, "role_shown", true);
+            }
 
-            if (expose_roles)
+            if (expose_roles) {
                 broadcastProperty(player, "role");
-            else
+                setPlayerProperty(player, "role_shown", true);
+            } else
                 notifyProperty(player, player, "role");
         }
     } else if (mode == "06_3v3" || mode == "06_XMode" || mode == "02_1v1") {
@@ -2405,10 +2411,12 @@ void Room::prepareForStart()
                     player->setRole(role);
                     if (role == "lord") {
                         broadcastProperty(player, "role", "lord");
+                        setPlayerProperty(player, "role_shown", true);
                     } else {
-                        if (mode == "04_1v3")
+                        if (mode == "04_1v3") {
                             broadcastProperty(player, "role", role);
-                        else
+                            setPlayerProperty(player, "role_shown", true);
+                        } else
                             notifyProperty(player, player, "role");
                     }
                 }
@@ -2437,6 +2445,7 @@ void Room::prepareForStart()
                 else
                     player->setRole("rebel");
                 broadcastProperty(player, "role");
+                setPlayerProperty(player, "role_shown", true);
             }
         } else {
             if (Config.RandomSeat)
@@ -2992,6 +3001,7 @@ void Room::assignRoles()
         player->setRole(role);
         if (role == "lord") {
             broadcastProperty(player, "role", "lord");
+            setPlayerProperty(player, "role_shown", true);
         } else
             notifyProperty(player, player, "role");
     }
@@ -3153,14 +3163,17 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
         QString sentence = QString::fromUtf8(QByteArray::fromBase64(arg.toString().toLatin1()));
         if (sentence == ".BroadcastRoles") {
             _NO_BROADCAST_SPEAKING;
-            foreach(ServerPlayer *p, m_alivePlayers)
+            foreach(ServerPlayer *p, m_alivePlayers) {
                 broadcastProperty(p, "role", p->getRole());
+                setPlayerProperty(p, "role_shown", true);
+            }
         } else if (sentence.startsWith(".BroadcastRoles=")) {
             _NO_BROADCAST_SPEAKING;
             QString name = sentence.mid(12);
             foreach (ServerPlayer *p, m_alivePlayers) {
                 if (p->objectName() == name || p->getGeneralName() == name) {
                     broadcastProperty(p, "role", p->getRole());
+                    setPlayerProperty(p, "role_shown", true);
                     break;
                 }
             }
@@ -3940,8 +3953,10 @@ void Room::startGame()
         broadcastProperty(player, "hp");
         broadcastProperty(player, "maxhp");
 
-        if (mode == "06_3v3" || mode == "06_XMode")
+        if (mode == "06_3v3" || mode == "06_XMode") {
             broadcastProperty(player, "role");
+            setPlayerProperty(player, "role_shown", true);
+        }
     }
 
     preparePlayers();
@@ -4000,8 +4015,8 @@ bool Room::broadcastProperty(ServerPlayer *player, const char *property_name, co
     QString real_value = value;
     if (real_value.isNull()) real_value = player->property(property_name).toString();
 
-    if (strcmp(property_name, "role") == 0)
-        player->setShownRole(true);
+//     if (strcmp(property_name, "role") == 0)
+//         player->setShownRole(true);
 
     JsonArray arg;
     arg << player->objectName() << property_name << real_value;
