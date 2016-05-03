@@ -318,7 +318,7 @@ sgs.ai_skill_cardask["youyue-show"] = function(self, data)
 	if (res == 1 and self:isEnemy(target))  or (res== 2 and self:isFriend(target)) then
 		local cards = {}
 		for _,c in sgs.qlist(self.player:getCards("h")) do
-			if c:getSuit() == showcard:getSuit() then
+			if c:getTypeId() == showcard:getTypeId() then
 				table.insert(cards, c)
 			end
 		end

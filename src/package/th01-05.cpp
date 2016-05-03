@@ -580,15 +580,30 @@ public:
                 room->throwCard(c, to);
             }
 
-            QString suit = card->getSuitString();
+
+            if (invoke->invoker->isKongcheng()) {
+                use.nullified_list << to->objectName();
+                continue;
+            }
+                
+            //show card with the same suit
+            /*QString suit = card->getSuitString();
             suit = suit.toUpper();
             QString pattern = "." + suit[0];
             QStringList prompt_list1;
             prompt_list1 << "youyue-show" << use.card->objectName()
                 << to->objectName() << card->getSuitString();
+            */
+            //show card with the same type
+            QString type = card->getType();
+            QString pattern = "." + type.left(1).toUpper() + type.right(type.length() - 1);
+            QStringList prompt_list1;
+            prompt_list1 << "youyue-show" << use.card->objectName()
+                << to->objectName() << card->getType();
             QString prompt1 = prompt_list1.join(":");
             invoke->invoker->tag["youyue_target"] = QVariant::fromValue(to);
             invoke->invoker->tag["youyue_card"] = QVariant::fromValue(card);
+
             const Card *card1 = room->askForCard(invoke->invoker, pattern, prompt1, data, Card::MethodNone);
             if (card1)
                 room->showCard(invoke->invoker, card1->getEffectiveId());
