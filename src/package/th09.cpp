@@ -44,7 +44,7 @@ public:
     {
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("TrickCard") && use.from && use.from->hasSkill(this)
+            if (!use.card->isKindOf("BasicCard") && use.from && use.from->hasSkill(this)
                 && use.from->getPhase() == Player::Play)
                 room->setPlayerFlag(use.from, "zuiyue");
         } else if (triggerEvent == EventPhaseChanging) {

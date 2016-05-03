@@ -180,6 +180,7 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 	if self.player:hasSkill("kofliegong") and self.player:getPhase() == sgs.Player_Play and hcard >= self.player:getHp() then return true end
 	--if self.player:hasSkill("tieji") then return true end
 	if self.player:hasWeapon("Blade") and self:invokeTouhouJudge() then return true end
+	if self.player:hasFlag("zuiyue") then return true end
 	--勇仪主动吃酒
 	if  self:canGuaili(slash) then
 		return true
@@ -213,12 +214,22 @@ function SmartAI:useCardAnaleptic(card, use)
 end
 
 function SmartAI:searchForAnaleptic(use, enemy, slash)
+
 	if not self.toUse then return nil end
 	if not use.to then return nil end
 
+	--使用酒不过getTurnUseCard。。。 而是过getCardId getCardId无法处理0牌转化。 只好暂时耦合
+	if use.from:hasFlag("zuiyue") and use.from:hasSkill("zuiyue") then
+		local ana = sgs.cloneCard("analeptic", sgs.Card_NoSuit, 0)
+		ana:setSkillName("zuiyue")
+		if sgs.Analeptic_IsAvailable(self.player, ana) then
+			return ana
+		end
+	end
+	
 	local analeptic = self:getCard("Analeptic")
 	if not analeptic then return nil end
-
+			
 	local analepticAvail = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_Residue, self.player, analeptic)
 	local slashAvail = 0
 

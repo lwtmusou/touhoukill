@@ -1,18 +1,17 @@
+--酒貌似是使用就根本就不过useBasicCard。。。。不能通过turnuse插入card列表。。。
+--而是在使用杀的usecard function里调用的 getCardId。。。这个函数丝毫不用到getTurnUse。。。
+--[[local zuiyue_skill = {}
+zuiyue_skill.name = "zuiyue"
+table.insert(sgs.ai_skills, zuiyue_skill)
+zuiyue_skill.getTurnUseCard = function(self, inclusive)
+	if self.player:hasFlag("zuiyue") then
+		local ana = sgs.cloneCard("analeptic", sgs.Card_NoSuit, 0)
+		ana:setSkillName("zuiyue")
+		assert(ana)
+		return ana
+	end
+end]]
 
-sgs.ai_skill_invoke.zuiyue =function(self,data)
-	local yugi=self.room:findPlayerBySkillName("haoyin")
-	if not yugi or not self:isEnemy(yugi) then
-		return true
-	end
-	if self:getCardsNum("Slash") > 0 and sgs.Slash_IsAvailable(self.player)  then
-		return true
-	end
-	local use=data:toCardUse()
-	if  use.card:isKindOf("ExNihilo") then
-		return true
-	end
-	return false
-end
 sgs.ai_cardneed.zuiyue = function(to, card, self)
 	return card:isKindOf("Slash")  or card:isKindOf("TrickCard")
 end

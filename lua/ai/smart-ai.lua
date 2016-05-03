@@ -5356,6 +5356,7 @@ function getKnownCard(player, from, class_name, viewas, flags, pile)
 end
 
 function SmartAI:getCardId(class_name, player, acard)
+
 	player = player or self.player
 	local cards
 	if acard then cards = { acard }
