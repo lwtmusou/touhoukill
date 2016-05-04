@@ -715,10 +715,10 @@ end
 sgs.ai_cardneed.zhancao = function(to, card, self)
 	return card:isKindOf("EquipCard")
 end
-sgs.zhaocao_keep_value = {
+sgs.zhancao_keep_value = {
 	EquipCard = 7
 }
-sgs.ai_need_bear.zhaocao = function(self, card,from,tos)
+sgs.ai_need_bear.zhancao = function(self, card,from,tos)
 	from =from or self.player
 	if not card:isKindOf("EquipCard") then return false end
 	if self:getSameEquip(card,from) then

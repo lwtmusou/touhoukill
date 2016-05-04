@@ -270,28 +270,84 @@ sgs.ai_skill_invoke.langying =function(self,data)
 	return true
 end
 
-function yuanfeiTarget(self)
-	local targets ={}
-	for _,p in pairs (self.enemies) do
-		if (not self.player:inMyAttackRange(p) and not p:isKongcheng()) then
-			table.insert(targets, p)
+
+function SmartAI:yuanfeiValue(player)
+	local value = 0
+	local cards=self.player:getCards("h")
+	cards = self:touhouAppendExpandPileToList(self.player,cards)
+	local attackCard
+	for _,c in sgs.qlist(cards) do
+		if sgs.dynamic_value.damage_card[c:getClassName()] then
+			if c:isKindOf("TrickCard") and self:hasTrickEffective(c, player, self.player) then
+				attackCard = c
+				break
+			elseif c:isKindOf("Slash") and self:slashIsEffective(c, player, self.player)  then
+				attackCard = c
+				break
+			end
 		end
 	end
-	self:sort(targets, "defense")
-	if #targets > 0 then
-		return targets[1]
+	if attackCard then
+		value = 5 * (10 - player:getHp())
+		value = value + (2 * player:getHandcardNum())
+		value = value + 2 * player:getPile("wooden_ox"):length()
+		if not self.player:inMyAttackRange(player) then
+			local distance = self.player:distanceTo(player) 
+			local equipRange = 1
+			for _,c in sgs.qlist(cards) do
+				if c:isKindOf("Weapon") and sgs.weapon_range[c:getClassName()] >= distance  then
+					value = value + 5
+					break
+				elseif c:isKindOf("OffensiveHorse") and not self.player:getOffensiveHorse() and distance == 2 then 
+					equip = c
+					value = value + 5
+					break
+				end
+			end		
+		end
 	end
-	return nil
+	
+	return value, attackCard
 end
+
 local yuanfei_skill = {}
 yuanfei_skill.name = "yuanfei"
 table.insert(sgs.ai_skills, yuanfei_skill)
 function yuanfei_skill.getTurnUseCard(self)
-	if self.player:hasUsed("YuanfeiCard") or self.player:hasUsed("YuanfeiNearCard")  then return nil end
-	return sgs.Card_Parse("@YuanfeiCard=.")
+	if self.player:hasUsed("YuanfeiCard") then return nil end
+	if #self.enemies==0 then return nil end
+	local enemy_table={}
+	for _,e in pairs (self.enemies) do
+		local array={player = e, value = self:yuanfeiValue(e)}
+		table.insert(enemy_table,array)
+	end
+	local compare_func = function(a, b)
+		return a.value > b.value
+	end
+	table.sort(enemy_table, compare_func)
+	if enemy_table[1].value >= 5 then
+		local target = enemy_table[1].player
+		local _data = sgs.QVariant()
+		_data:setValue(target)
+		self.player:setTag("yuanfeiAI",_data)
+		if not self.player:inMyAttackRange(target) then
+			return sgs.Card_Parse("@YuanfeiCard=.")
+		else
+			local value, card = self:yuanfeiValue(target)
+			local cards=self.player:getCards("h")
+			cards = sgs.QList2Table(cards)
+			self:sortByUseValue(cards, true)
+			for _, c in pairs(cards) do
+				if c:getEffectiveId() ~= card:getEffectiveId() then
+					return sgs.Card_Parse("@YuanfeiCard="  .. c:getEffectiveId())
+				end
+			end
+		end
+	end
+	return nil
 end
 sgs.ai_skill_use_func.YuanfeiCard = function(card, use, self)
-	local target = yuanfeiTarget(self)
+	local target = self.player:getTag("yuanfeiAI"):toPlayer()
 	if target then
 		use.card = card
 		if use.to then

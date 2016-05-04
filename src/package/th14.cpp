@@ -629,7 +629,11 @@ YuanfeiCard::YuanfeiCard()
 
 bool YuanfeiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    return targets.isEmpty() && !Self->inMyAttackRange(to_select)
+    if (getSubcards().isEmpty())
+        return targets.isEmpty() && !Self->inMyAttackRange(to_select)
+            && to_select != Self;
+    else
+        return targets.isEmpty() && Self->inMyAttackRange(to_select)
         && to_select != Self;
 }
 
@@ -644,42 +648,17 @@ void YuanfeiCard::onEffect(const CardEffectStruct &effect) const
     room->touhouLogmessage("#yuanfei", target, "yuanfei");
 }
 
-YuanfeiNearCard::YuanfeiNearCard()
-{
-    m_skillName = "yuanfei";
-}
-
-bool YuanfeiNearCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
-{
-    return targets.isEmpty() && Self->inMyAttackRange(to_select)
-        && to_select != Self;
-}
-
-void YuanfeiNearCard::onEffect(const CardEffectStruct &effect) const
-{
-    Room *room = effect.to->getRoom();
-    ServerPlayer *target = effect.to;
-
-    room->setPlayerCardLimitation(target, "use,response", "BasicCard|.|.|.", true);
-    room->setPlayerCardLimitation(target, "use,response", "EquipCard|.|.|.", true);
-    room->setPlayerCardLimitation(target, "use,response", "TrickCard|.|.|.", true);
-
-    room->setPlayerFlag(target, "yuanfei");
-    room->touhouLogmessage("#yuanfei", target, "yuanfei");
-}
-
-
-class Yuanfei : public ViewAsSkill
+class YuanfeiVS : public ViewAsSkill
 {
 public:
-    Yuanfei() : ViewAsSkill("yuanfei")
+    YuanfeiVS() : ViewAsSkill("yuanfei")
     {
 
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return !player->hasUsed("YuanfeiCard") && !player->hasUsed("YuanfeiNearCard");
+        return !player->hasUsed("YuanfeiCard") ;
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
@@ -703,19 +682,20 @@ public:
         if (cards.length() != 1)
             return NULL;
 
-        YuanfeiNearCard *card = new YuanfeiNearCard;
+        YuanfeiCard *card = new YuanfeiCard;
         card->addSubcards(cards);
 
         return card;
     }
 };
 
-class YuanfeiClear : public TriggerSkill
+class Yuanfei : public TriggerSkill
 {
 public:
-    YuanfeiClear() : TriggerSkill("#yuanfei_clear")
+    Yuanfei() : TriggerSkill("yuanfei")
     {
         events << EventPhaseChanging;
+        view_as_skill = new YuanfeiVS;
     }
 
     void record(TriggerEvent, Room *room, QVariant &data) const
@@ -1007,8 +987,6 @@ TH14Package::TH14Package()
     General *kagerou = new General(this, "kagerou", "hzc", 4, false);
     kagerou->addSkill(new Langying);
     kagerou->addSkill(new Yuanfei);
-    kagerou->addSkill(new YuanfeiClear);
-    related_skills.insertMulti("yuanfei", "#yuanfei_clear");
 
     General *sekibanki = new General(this, "sekibanki", "hzc", 4, false);
     sekibanki->addSkill(new Feitou);
@@ -1022,7 +1000,6 @@ TH14Package::TH14Package()
 
     addMetaObject<LeitingCard>();
     addMetaObject<YuanfeiCard>();
-    addMetaObject<YuanfeiNearCard>();
     addMetaObject<LiangeCard>();
 }
 
