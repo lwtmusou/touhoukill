@@ -307,13 +307,8 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         QStringList choices = shiquChoices(invoke->preferredTarget);
-        QString choice = "cancel";
-
-        if (choices.length() > 1) {
-            choices << "cancel";
-            choice = room->askForChoice(invoke->invoker, objectName(), choices.join("+"));
-        } else if (choices.length() == 1)
-            choice = choices.first();
+        choices << "cancel";
+        QString choice = room->askForChoice(invoke->invoker, objectName(), choices.join("+"));
 
         if (choice != "cancel") {
             QString prompt = "@shiqu-discard:" + choice + ":" + invoke->preferredTarget->objectName();
