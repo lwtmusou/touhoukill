@@ -299,14 +299,12 @@ function SmartAI:yuanfeiValue(player)
 					value = value + 5
 					break
 				elseif c:isKindOf("OffensiveHorse") and not self.player:getOffensiveHorse() and distance == 2 then 
-					equip = c
 					value = value + 5
 					break
 				end
 			end		
 		end
 	end
-	
 	return value, attackCard
 end
 
