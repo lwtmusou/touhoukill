@@ -497,19 +497,19 @@ return{
 
 	["satori_god"] = "神 古明地觉",
 	["&satori_god"] = "神古明地觉" ,
-	["#satori_god"] = "小五",
+	["#satori_god"] = "大家的心病",
 
 	["yuyuko_god"] = "神 西行寺幽幽子" ,
 	["&yuyuko_god"] = "神西行寺幽幽子" ,
-	["#yuyuko_god"] = "uuz",
+	["#yuyuko_god"] = "天衣无缝的亡灵",
 
 	["shinmyoumaru_god"] = "神 少名针妙丸" ,
 	["&shinmyoumaru_god"] = "神少名针妙丸" ,
-	["#shinmyoumaru_god"] = "小人" ,
+	["#shinmyoumaru_god"] = "辉光之针的利立浦特" ,
 
 	["aya_god"] = "神 射命丸文" ,
 	["&aya_god"] = "神射命丸文" ,
-	["#aya_god"] = "狗腿" ,
+	["#aya_god"] = "风雨之鸦" ,
 
 	["yuyuko_1v3"] = "西行寺幽幽子",
 	["!yuyuko_1v3"] = "神 西行寺幽幽子-1v3",
