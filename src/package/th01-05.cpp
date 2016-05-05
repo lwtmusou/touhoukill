@@ -580,18 +580,10 @@ public:
                 use.nullified_list << to->objectName();
                 continue;
             }
-                
-            //show card with the same suit
-            /*QString suit = card->getSuitString();
-            suit = suit.toUpper();
-            QString pattern = "." + suit[0];
-            QStringList prompt_list1;
-            prompt_list1 << "youyue-show" << use.card->objectName()
-                << to->objectName() << card->getSuitString();
-            */
+
             //show card with the same type
             QString type = card->getType();
-            QString pattern = "." + type.left(1).toUpper() + type.right(type.length() - 1);
+            QString pattern = QString("%1Card|.|.|hand").arg(type.left(1).toUpper() + type.right(type.length() - 1));
             QStringList prompt_list1;
             prompt_list1 << "youyue-show" << use.card->objectName()
                 << to->objectName() << card->getType();
