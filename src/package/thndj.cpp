@@ -485,7 +485,7 @@ public:
             if (p->hasSkill(this)
                 && p->inMyAttackRange(damage.to)
                 && p != damage.from
-                && p != damage.to
+                && p != damage.to && damage.to->isAlive()
                 && damage.from != damage.to
                 && damage.from != NULL
                 && p->getMaxHp() > 1
