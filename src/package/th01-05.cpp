@@ -4,6 +4,8 @@
 #include "engine.h"
 #include "maneuvering.h"
 
+#include "clientplayer.h"
+
 class Ciyuan : public TriggerSkill
 {
 public:
@@ -758,6 +760,151 @@ public:
 
 
 
+class HuantongVS : public ViewAsSkill
+{
+public:
+    HuantongVS() : ViewAsSkill("huantong")
+    {
+        response_pattern = "@@huantong";
+        expand_pile = "dream";
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    {
+        return Self->getPile("dream").contains(to_select->getEffectiveId()) && selected.length() < 2;
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        if (cards.length() == 2){
+            DummyCard *dc = new DummyCard;
+            dc->addSubcards(cards);
+            return dc;
+        }
+        return NULL;
+    }
+};
+
+class Huantong : public TriggerSkill
+{
+public:
+    Huantong() : TriggerSkill("huantong")
+    {
+        events << DamageInflicted;
+        view_as_skill = new HuantongVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            if (p == damage.to || p->inMyAttackRange(damage.to))
+                d << SkillInvokeDetail(this, p, p, NULL, false, damage.to);
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
+            if (invoke->invoker->getPile("dream").length() >= 2) {
+                const Card *c = room->askForCard(invoke->invoker, "@@huantong", "@huantong:"+ invoke->preferredTarget->objectName(), data, Card::MethodNone, NULL, false, objectName());
+                if (c) {
+                    QVariantList ids;
+                    foreach(int card_id, c->getSubcards())
+                        ids << card_id;
+                    invoke->invoker->tag["huantong"] = ids;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        QVariantList ids = invoke->invoker->tag["huantong"].toList();
+        invoke->invoker->tag.remove("huantong");
+        if (ids.isEmpty()) {
+            CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, "", NULL, "dream", "");
+            invoke->invoker->addToPile("dream", room->getNCards(2), false, reason);
+        } else {
+            DamageStruct damage = data.value<DamageStruct>();
+            
+            QList<int> get_ids;
+            QList<int> throw_ids;
+            foreach(QVariant card_data, ids) {
+                int id = card_data.toInt();
+                room->showCard(invoke->invoker, id);
+                if (Sanguosha->getCard(id)->isKindOf("BasicCard"))
+                    get_ids << id;
+                else
+                    throw_ids << id;
+            }
+            if (!get_ids.isEmpty()) {
+                DummyCard dummy(get_ids);
+                damage.to->obtainCard(&dummy);
+            }
+
+            if (!throw_ids.isEmpty()) {
+                DummyCard dummy(throw_ids);
+                CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
+                room->throwCard(&dummy, reason, NULL);
+            }
+
+            
+            LogMessage log;
+            log.type = "#HuantongDamage";
+            log.from = damage.to;
+            log.arg = objectName();
+            log.arg2 = QString::number(get_ids.length());
+            room->sendLog(log);
+            
+            if (get_ids.isEmpty())
+                return true;
+            damage.damage = get_ids.length();
+            data = QVariant::fromValue(damage);
+        }
+
+        return false;
+    }
+};
+
+class Mengyan : public TriggerSkill
+{
+public:
+    Mengyan() : TriggerSkill("mengyan")
+    {
+        events << Damaged;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        QList<SkillInvokeDetail> d;
+        if (damage.damage > 1) {
+            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                if (!p->getPile("dream").isEmpty())
+                    d << SkillInvokeDetail(this, p, p);
+            }
+        }
+        return d;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DummyCard dummy(invoke->invoker->getPile("dream"));
+        CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
+        room->throwCard(&dummy, reason, NULL);
+        
+        RecoverStruct recover;
+        room->recover(invoke->invoker, recover);
+        invoke->invoker->drawCards(2);
+        return false;
+    }
+};
 
 
 TH0105Package::TH0105Package()
@@ -786,8 +933,10 @@ TH0105Package::TH0105Package()
     yuka_old->addSkill(new Yeyan);
     yuka_old->addSkill(new Menghuan);
 
-    General *gengetsumugetsu = new General(this, "gengetsumugetsu", "pc98", 4, false);
-    Q_UNUSED(gengetsumugetsu);
+    General *gengetsumugetsu = new General(this, "gengetsumugetsu", "pc98", 3, false);
+    gengetsumugetsu->addSkill(new Huantong);
+    gengetsumugetsu->addSkill(new Mengyan);
+
     General *elly = new General(this, "elly", "pc98", 4, false);
     Q_UNUSED(elly);
 

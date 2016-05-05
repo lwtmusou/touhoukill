@@ -199,6 +199,8 @@ alpha版XXXX联机版
 10 fix 战操ai
 11 fix 千百合ai 
 12 白板武将图片补齐
+13 fix ndj妖梦 反击 距离外的角色死亡那一次伤害能反击
+14 增加测试角色 梦月&幻月
 
 代码层面：待解决的已知问题
 1 常识 可以恢复 凭依 的 技能无效
@@ -210,6 +212,7 @@ https://go.microsoft.com/fwlink/?LinkId=615459
 40 加入Lua武将后Room的析构函数崩溃
 41 【念力】偶发性崩溃。。。 不确认原因 应该是dialog本身。
 43 笨蛋的拼点log还是显示为原来的点数。
+
 
 ai层面：希望改善的ai问题
 2 ai的 在使用拆顺的时候报错  可能和getarmor相关？ 可能和candiscard相关？   lua/ai/standard_cards-ai.lua:2987: attempt to index a nil value
