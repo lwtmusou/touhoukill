@@ -156,7 +156,12 @@ sgs.ai_slash_prohibit.xiangqi = function(self, from, to, card)
 	end
 	return false
 end
-
+sgs.ai_cardneed.xiangqi = function(to, card, self)
+	if not self:willSkipPlayPhase(to) then
+		return  (not to:getWeapon() and  getCardsNum("Weapon",to,self.player)<1 and card:isKindOf("Weapon"))
+		or (not to:getOffensiveHorse() and  getCardsNum("OffensiveHorse",to,self.player)<1 and card:isKindOf("OffensiveHorse"))
+	end
+end
 
 sgs.ai_skill_invoke.huzhu = function(self,data)
 	cards =self.player:getCards("h")

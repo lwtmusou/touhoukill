@@ -380,3 +380,103 @@ sgs.ai_skill_use_func.MenghuanCard = function(card, use, self)
 end
 
 sgs.ai_card_intention.MenghuanCard = -40
+
+sgs.ai_skill_invoke.huantong = true
+local function  huantongValue(cards, self, damage, huantongDamage)
+	local tmp = damage
+	tmp.damage = huantongDamage
+	local tmp = self:touhouDamage(tmp, self.player, damage.to)
+	local value = 0
+	if (tmp.damage < damage.damage and self:isFriend(damage.to)) or 
+	(tmp.damage > damage.damage and self:isEnemy(damage.to)) then
+		value = value + 2 * math.abs(damage.damage - tmp.damage)
+	end
+	if  tmp.damage > damage.to:getHp() then
+		if self:isFriend(damage.to) then
+			if self:hasWeiya() then  value = value - 10 end
+			value = value - 1
+		else
+			value = value + 1
+		end
+	end
+	for _,c in ipairs(cards) do
+		if c:isKindOf("Peach") or c:isKindOf("Analeptic") then
+			if self:isFriend(damage.to) then
+				value = value + 3 - tmp.damage
+			else
+				value = value - 2
+			end
+		else
+			if self:isFriend(damage.to) then
+				value = value + 1
+			else
+				value = value - 1
+			end
+		end
+	end
+	if tmp.damage >= 2 and self.player:hasSkill("mengyan") and self.player:getPile("dream") > 2 then
+		value = value + 2
+		if self.player:isWounded() or (self.player:objectName() == damage.to:objectName()) then
+			value = value + 2
+		end
+	end	
+	return value
+end
+sgs.ai_skill_cardask["@huantong"] = function(self, data)
+	local damage = data:toDamage()
+	if not self:isFriend(damage.to) and not self:isEnemy(damage.to) then return "." end
+	local ids = self.player:getPile("dream")
+	local basics, others = {}, {}
+	for _,id in sgs.qlist(ids) do
+		local card=sgs.Sanguosha:getCard(id)
+		if card:isKindOf("BasicCard") then 
+			table.insert(basics, card)
+		else
+			table.insert(others, card)
+		end
+	end
+	local inverse = self:isFriend(damage.to)
+	self:sortByUseValue(basics, inverse)
+	if self:cautionChangshi() then --有千年紫敌人，早点清除有价值的牌
+		self:sortByUseValue(others, true)
+	end
+	
+	local combines = {}
+	if #basics >=2 then
+		local cards = {basics[1], basics[2]}
+		local arr = {combine = cards, value = huantongValue(cards, self, damage, 2)}
+		table.insert(combines, arr)
+	end
+	if #basics > 0 and #others > 0 then
+		local cards = {basics[1], others[1]}
+		local arr = {combine = cards, value = huantongValue(cards, self, damage, 1)}
+		table.insert(combines, arr)
+	end
+	if #others >=2 then
+		cards = {others[1], others[2]}
+		local arr = {combine = cards, value = huantongValue(cards, self, damage, 0)}
+		table.insert(combines, arr)
+	end
+	
+	local compare_func = function(a, b)
+		return a.value > b.value
+	end
+	
+	table.sort(combines, compare_func)
+	if combines[1].value > 0 then
+		local huantongIds = {}
+		for _,c in ipairs (combines[1].combine) do
+			table.insert(huantongIds, c:getId())
+		end
+		return "$" .. table.concat(huantongIds, "+")
+	end
+	return "."
+end
+
+
+sgs.ai_cardneed.huantong = function(to, card, self)
+	if not self:willSkipPlayPhase(to) then
+		return  (not to:getWeapon() and  getCardsNum("Weapon",to,self.player)<1 and card:isKindOf("Weapon"))
+		or (not to:getOffensiveHorse() and  getCardsNum("OffensiveHorse",to,self.player)<1 and card:isKindOf("OffensiveHorse"))
+	end
+end
