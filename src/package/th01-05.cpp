@@ -827,7 +827,7 @@ public:
         invoke->invoker->tag.remove("huantong");
         if (ids.isEmpty()) {
             CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, "", NULL, "dream", "");
-            invoke->invoker->addToPile("dream", room->getNCards(2), false, reason);
+            invoke->invoker->addToPile("dream", room->getNCards(1), false, reason);
         } else {
             DamageStruct damage = data.value<DamageStruct>();
             
