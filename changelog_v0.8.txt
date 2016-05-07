@@ -213,7 +213,8 @@ https://go.microsoft.com/fwlink/?LinkId=615459
 40 加入Lua武将后Room的析构函数崩溃
 41 【念力】偶发性崩溃。。。 不确认原因 应该是dialog本身。
 43 笨蛋的拼点log还是显示为原来的点数。
-
+44 山女技能无效（也许可以放置play，等到技能修改后再做）
+45 仍存在：座次靠前的装备技能早于座次靠后的武将技能结算的情况。。。
 
 ai层面：希望改善的ai问题
 2 ai的 在使用拆顺的时候报错  可能和getarmor相关？ 可能和candiscard相关？   lua/ai/standard_cards-ai.lua:2987: attempt to index a nil value
