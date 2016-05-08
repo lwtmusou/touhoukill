@@ -941,35 +941,21 @@ function SmartAI:shuxinValue(target)
 		return 0
 	end
 	if self:touhouHandCardsFix(target) and self:isFriend(target) then
-		value = value + 10
+		value = value + 1
 	end
-
-
 	local canShanshi = self.player:hasSkill("shanshi") and self.player:getMark("shanshi_invoke") == 0
-	local spade = getKnownCard(target, self.player, "spade", viewas, "h", false)
-	local club = getKnownCard(target, self.player, "club", viewas, "h", false)
-	if  (spade > 0 or club > 0) then
-		if (self:isEnemy(target)) then
-			value = value + 30
-			if (spade > 0 and club > 0 and not target:isWounded()) then
-				value = value + 20
-			end
-		elseif (self:isFriend(target)) then
-			if canShanshi  and target:objectName() ~= self.player:objectName() then
-				value = value + 10
-			end
-			if spade > 0 and club > 0 and target:isWounded() then
-				value = value + 30
-			end
+    if canShanshi and self:isFriend(target) and self.player:objectName() ~= target:objectName() then
+		value = value + 1
+	end
+	local black = getKnownCard(target, self.player, "black", false, "he", false)
+	local recover = false
+	if target:isWounded() and black >= target:getHp() then recover = true end
+	if recover then
+		if self:isFriend(target) then
+			value = value + 2
 		end
-	else
-		if (self:isEnemy(target)) then
-			value = value + target:getCards("h"):length()
-		elseif (self:isFriend(target) and target:isWounded()) then
-			if canShanshi and target:objectName() ~= self.player:objectName() then
-				value = value + 10
-			end
-		end
+	elseif self:isEnemy(target) then
+		value = value + 1
 	end
 	return value
 end
@@ -1002,7 +988,40 @@ sgs.ai_card_intention.ShuxinCard = function(self, card, from, tos)
 		sgs.updateIntention(from, tos[1], 50)
 	end
 end
-sgs.ai_skill_askforag.shuxin = function(self, card_ids)
+sgs.ai_skill_cardask["@shuxin"] = function(self, data)
+    local hasBlack = false
+	local blacks = {}
+	for _,c in sgs.qlist(self.player:getCards("he")) do
+		if c:isBlack() then
+			table.insert(blacks, c)
+			if self.room:getCardPlace(c:getEffectiveId()) == sgs.Player_PlaceHand then
+				hasBlack = true
+			end
+		end
+	end
+	local cost = 0
+    if self.player:isWounded() and #blacks >= self.player:getHp() then
+		if self:isWeak(self.player) or self.player:getHp() <= 2 then
+			cost = self.player:getHp()
+		end
+	end
+	if hasBlack then
+		cost = math.max(cost, 1)
+	end
+	
+	
+	
+	if cost > 0 then
+		self:sortByKeepValue(blacks, true)
+		local ids = {}
+		for i = 1, cost, 1 do
+			table.insert(ids, blacks[i]:getId())
+		end
+		return "$" .. table.concat(ids, "+")
+	end
+	return "."
+end
+--[[sgs.ai_skill_askforag.shuxin = function(self, card_ids)
 
 	local preId = -1
 	local target = self.player:getTag("shuxin_target"):toPlayer()
@@ -1074,4 +1093,4 @@ sgs.ai_skill_askforag.shuxin = function(self, card_ids)
 	end
 
 	return -1
-end
+end]]

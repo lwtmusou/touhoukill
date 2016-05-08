@@ -1078,6 +1078,78 @@ ShuxinCard::ShuxinCard()
 
 bool ShuxinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
 {
+    return targets.isEmpty();
+}
+
+void ShuxinCard::onEffect(const CardEffectStruct &effect) const
+{
+    bool hasBlack = false;
+    Room *room = effect.to->getRoom();
+    foreach (const Card *c, effect.to->getCards("h")) {
+        if (c->isBlack() && !effect.to->isJilei(c)) {
+            hasBlack = true;
+            break;
+        }
+    }
+    QString pattern = hasBlack ? "@@shuxinVS!" : "@@shuxinVS";
+    const Card *card = room->askForCard(effect.to, pattern, "@shuxin");
+    if (hasBlack && card ==NULL) {
+        // force discard!!!
+        QList<const Card *> hc = effect.to->getCards("he");
+        foreach(const Card *c, hc) {
+            if (effect.to->isJilei(c) || !c->isBlack())
+                hc.removeOne(c);
+        }
+
+        if (hc.length() > 0) {
+            int x = qrand() % hc.length();
+            const Card *c = hc.value(x);
+            card = c;
+            room->throwCard(c, effect.to);
+        }
+    }
+    
+    if (card) {
+        if (card->subcardsLength() >= effect.to->getHp())
+            room->recover(effect.to, RecoverStruct());
+    } else if (!effect.to->isKongcheng()) {
+            room->showAllCards(effect.to);
+            room->getThread()->delay(1000);
+    }
+
+}
+
+
+class ShuxinVS : public ViewAsSkill
+{
+public:
+    ShuxinVS() : ViewAsSkill("shuxinVS")
+    {
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    {
+        return !Self->isJilei(to_select) && to_select->isBlack();
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        return pattern.startsWith("@@shuxinVS");
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        if (cards.length() > 0) {
+            DummyCard *dc = new DummyCard;
+            dc->addSubcards(cards);
+            return dc;
+        }
+        return NULL;
+    }
+};
+/*
+bool ShuxinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+{
     if (!targets.isEmpty())
         return false;
 
@@ -1143,7 +1215,7 @@ void ShuxinCard::onEffect(const CardEffectStruct &effect) const
     const Card *card2 = Sanguosha->getCard(selected.last());
     if (card1 != NULL && card2 != NULL && card1->getSuit() != card2->getSuit())
         room->recover(effect.to, RecoverStruct());
-}
+}*/
 
 class Shuxin : public ZeroCardViewAsSkill
 {
@@ -1211,7 +1283,7 @@ TH12Package::TH12Package()
     addMetaObject<NuhuoCard>();
     addMetaObject<ShuxinCard>();
 
-    skills << new FahuaDistance;
+    skills << new FahuaDistance << new ShuxinVS;
 }
 
 ADD_PACKAGE(TH12)
