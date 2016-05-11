@@ -3278,7 +3278,6 @@ function SmartAI:askForNullification(trick, from, to, positive) --尼玛一把�
 				--无观星友方判定区有兵粮寸断->视“鬼道”、“天妒”、“溃围”、“巧变”情形而定
 				if trick:isKindOf("SupplyShortage") then
 					if self:hasSkills("guidao|tiandu",to) then return nil end
-					if to:getMark("@kuiwei") == 0 then return nil end
 					if to:hasSkill("qiaobian") and not to:isKongcheng() then return nil end
 					return null_card
 				end
