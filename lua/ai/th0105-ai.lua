@@ -414,7 +414,7 @@ local function  huantongValue(cards, self, damage, huantongDamage)
 			end
 		end
 	end
-	if tmp.damage >= 2 and self.player:hasSkill("mengyan") and self.player:getPile("dream") > 2 then
+	if tmp.damage >= 2 and self.player:hasSkill("mengyan") and self.player:getPile("dream"):length() > 2 then
 		value = value + 2
 		if self.player:isWounded() or (self.player:objectName() == damage.to:objectName()) then
 			value = value + 2
