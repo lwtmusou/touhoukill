@@ -2633,6 +2633,7 @@ function SmartAI:getDangerousCard(who)
 	local weapon = who:getWeapon()
 	local armor = who:getArmor()
 	local treasure = who:getTreasure()
+	local offensiveHorse = who:getOffensiveHorse()
 	local defensiveHorse = who:getDefensiveHorse()
 
 	--魔操对策
@@ -2645,6 +2646,20 @@ function SmartAI:getDangerousCard(who)
 	if treasure and treasure:isKindOf("WoodenOx") and who:getPile("wooden_ox"):length() > 1 then
 		return treasure:getEffectiveId()
 	end
+	--保主
+	local lord = self.room:getLord()
+	if lord and self:isEnemy(lord, who)  and sgs.isLordInDanger() then
+		local distance = who:distanceTo(lord)
+		if weapon and who:getAttackRange() > distance then
+			return weapon:getEffectiveId()
+		end
+		if offensiveHorse and distance <= 2 then
+			return offensiveHorse:getEffectiveId()
+		end
+	end
+	
+	
+	
 	if weapon and (weapon:isKindOf("Crossbow") or weapon:isKindOf("GudingBlade")) then
 		for _, friend in ipairs(self.friends) do
 			if weapon:isKindOf("Crossbow") and who:distanceTo(friend) <= 1 and getCardsNum("Slash", who, self.player) > 0 then
@@ -2655,9 +2670,15 @@ function SmartAI:getDangerousCard(who)
 			end
 		end
 	end
-	if (weapon and who:getAttackRange() > 1 and  who:hasSkills(sgs.attackRange_skill)) then
-		return weapon:getEffectiveId()
+	if who:hasSkills(sgs.attackRange_skill) then
+		if weapon and who:getAttackRange() > 1  then
+			return weapon:getEffectiveId()
+		end
+		if offensiveHorse then
+			return offensiveHorse:getEffectiveId()
+		end
 	end
+	
 	if (weapon and weapon:isKindOf("Spear") and who:hasSkill("paoxiao") and who:getHandcardNum() >=1 ) then return weapon:getEffectiveId() end
 	if weapon and weapon:isKindOf("Axe")  then
 		if  self:hasSkills("luoyi|pojun|jiushi|jiuchi|jie|wenjiu|shenli|jieyuan", who) or who:getCards("he"):length() >=4 then
@@ -2668,7 +2689,7 @@ function SmartAI:getDangerousCard(who)
 	if armor and who:hasSkill("wunian") then return armor:getEffectiveId() end
 	if defensiveHorse and who:hasSkill("wunian") then return defensiveHorse end
 
-	local lord = self.room:getLord()
+	
 	if lord and lord:hasLordSkill("hujia") and self:isEnemy(lord) and armor and armor:isKindOf("EightDiagram") and who:getKingdom() == "wei" then
 		return armor:getEffectiveId()
 	end
