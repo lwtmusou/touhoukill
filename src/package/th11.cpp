@@ -630,7 +630,7 @@ class Gelong : public TriggerSkill
 public:
     Gelong() : TriggerSkill("gelong")
     {
-        events << TargetConfirming;
+        events << TargetConfirmed;
         frequency = Compulsory;
     }
 

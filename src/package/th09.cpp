@@ -211,7 +211,7 @@ class Huiwu : public TriggerSkill
 public:
     Huiwu() : TriggerSkill("huiwu")
     {
-        events << TargetConfirming;
+        events << TargetConfirmed;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const

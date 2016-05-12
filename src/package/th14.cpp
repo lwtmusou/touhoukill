@@ -61,7 +61,7 @@ public:
     Yicun() : TriggerSkill("yicun")
     {
         frequency = Compulsory;
-        events << TargetConfirming;
+        events << TargetConfirmed;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const

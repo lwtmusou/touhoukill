@@ -1284,7 +1284,7 @@ class Wushou : public TriggerSkill
 public:
     Wushou() : TriggerSkill("wushou")
     {
-        events << TargetConfirming;
+        events << TargetConfirmed;
         frequency = Frequent;
     }
 

@@ -1527,7 +1527,7 @@ class Wangwu : public TriggerSkill
 public:
     Wangwu() : TriggerSkill("wangwu")
     {
-        events << TargetConfirming;
+        events << TargetConfirmed;
         view_as_skill = new WangwuVS;
     }
 

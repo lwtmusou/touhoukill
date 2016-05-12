@@ -13,7 +13,7 @@ class Lingqi : public TriggerSkill
 public:
     Lingqi() : TriggerSkill("lingqi")
     {
-        events << TargetConfirming;
+        events << TargetConfirmed;
 
     }
 
@@ -1514,7 +1514,7 @@ class Guangji : public TriggerSkill
 public:
     Guangji() : TriggerSkill("guangji")
     {
-        events << TargetConfirming;
+        events << TargetConfirmed;
         view_as_skill = new SlmMolishaDiscardTianyi("guangji");
     }
 

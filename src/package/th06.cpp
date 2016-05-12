@@ -906,7 +906,7 @@ class Anyu : public TriggerSkill
 public:
     Anyu() : TriggerSkill("anyu")
     {
-        events << TargetConfirming;
+        events << TargetConfirmed;
         frequency = Compulsory;
     }
 

@@ -241,7 +241,7 @@ public:
     Weizhuang() : TriggerSkill("weizhuang")
     {
         frequency = Compulsory;
-        events << TargetConfirming;
+        events << TargetConfirmed;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -284,7 +284,7 @@ class Zhengyi : public TriggerSkill
 public:
     Zhengyi() : TriggerSkill("zhengyi")
     {
-        events << TargetConfirming;
+        events << TargetConfirmed;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -422,7 +422,7 @@ class Shuinan : public TriggerSkill
 public:
     Shuinan() : TriggerSkill("shuinan")
     {
-        events << TargetConfirming;
+        events << TargetConfirmed;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -525,7 +525,7 @@ public:
     Yunshang() : TriggerSkill("yunshang")
     {
         frequency = Compulsory;
-        events << TargetConfirming;
+        events << TargetConfirmed;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const

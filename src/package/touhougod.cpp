@@ -2775,7 +2775,7 @@ class Worao : public TriggerSkill
 public:
     Worao() : TriggerSkill("worao")
     {
-        events << TargetConfirming;
+        events << TargetConfirmed;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -2894,7 +2894,7 @@ public:
     Junwei() : TriggerSkill("junwei")
     {
         frequency = Compulsory;
-        events << TargetConfirming;
+        events << TargetConfirmed;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
