@@ -134,7 +134,7 @@ sgs.ai_skill_cardask["@sisheng-invoke"] = function(self)
 	local who = self.room:getCurrentDyingPlayer()
 
 	local getReturn = function()
-		return "$" .. self.player:getPile("jingjie").at(0)
+		return "$" .. self.player:getPile("jingjie"):first()
 	end
 
 	if self:isFriend(who) then
@@ -152,9 +152,9 @@ sgs.ai_skill_cardask["@sisheng-invoke"] = function(self)
 end
 
 
-sgs.ai_choicemade_filter.skillInvoke.sisheng = function(self, player, promptlist)
+sgs.ai_choicemade_filter.cardResponded["@sisheng-invoke"] = function(self, player, args)
 	local who= player:getRoom():getCurrentDyingPlayer()
-		if promptlist[#promptlist] == "yes" then
+		if args[#args] ~= "_nil_"  and who then
 			sgs.updateIntention(player, who, -70)
 		--else  --明桃不救的情况暂时不好排除
 		--  if player:getPile("jingjie"):length()>=2 then
@@ -187,13 +187,12 @@ sgs.ai_skill_cardask["@jingdong-target"] = function(self, data)
 	end
 	num = target:getHandcardNum() - target:getMaxCards()
 	if num == 0 then return "." end
-	cards = self.player:getPile("jingjie")
-	if cards:isEmpty() then return "." end
+	if self.player:getPile("jingjie"):isEmpty() then return "." end
 	if not self:isFriend(target) then
 		return "."
 	else
 		local getReturn = function()
-			return "$" .. self.player:getPile("jingjie").at(0)
+			return "$" .. self.player:getPile("jingjie"):first()
 		end
 		if self:isWeak(target) and num > 0 then
 			return getReturn()
@@ -211,12 +210,12 @@ sgs.ai_skill_cardask["@jingdong-target"] = function(self, data)
 	return "."
 end
 
-sgs.ai_choicemade_filter.skillInvoke.jingdong = function(self, player, promptlist)
-	local to=self.room:getCurrent()
-	if not (to:hasSkill("huanmeng") or to:hasSkill("zaozu") or to:hasSkill("yongheng"))then
+sgs.ai_choicemade_filter.cardResponded["@jingdong-target"] = function(self, player, args)
+	local to = self.room:getCurrent()
+    if not (to:hasSkill("huanmeng") or to:hasSkill("zaozu") or to:hasSkill("yongheng"))then
 		num = to:getHandcardNum() - to:getMaxCards()
-		if promptlist[#promptlist] == "yes" then
-				sgs.updateIntention(player, to, -60)
+		if args[#args] ~= "_nil_" then
+			sgs.updateIntention(player, to, -60)
 		else
 			if num >= 3 then
 				sgs.updateIntention(player, to, 30)
@@ -920,8 +919,7 @@ sgs.ai_choicemade_filter.skillChoice.youqu = function(self, player, args)
 	sgs.siling_lack[player:objectName()]["Red"] = 0
 	sgs.siling_lack[player:objectName()]["Black"] = 0
 end
-
-sgs.ai_skill_cardask.wangwu = function(self,data)
+sgs.ai_skill_cardask["@wangwu-invoke"] = function(self, data, pattern, target)
 	local target = data:toCardUse().from
 	if not target then return "." end
 	if self:isEnemy(target) then
@@ -939,9 +937,12 @@ sgs.ai_skill_cardask.wangwu = function(self,data)
 	end
 	return "."
 end
-sgs.ai_choicemade_filter.skillInvoke.wangwu = function(self, player, args)
-	local use = player:getTag("wangwu_use"):toCardUse()
+sgs.ai_choicemade_filter.cardResponded["@wangwu-invoke"] = function(self, player, args)
+		if args[#args] == "_nil_"  and who then
+			sgs.updateIntention(player, who, -70)
+		end
 
+	local use = player:getTag("wangwu_use"):toCardUse()
 	if use.card and (use.card:isRed() or  use.card:isBlack()) then
 		local str
 		if use.card:isRed() then
@@ -950,19 +951,8 @@ sgs.ai_choicemade_filter.skillInvoke.wangwu = function(self, player, args)
 		if use.card:isBlack() then
 			str = "Black"
 		end
-		if use.from and self:isEnemy(use.from,player) then
-			if args[#args] == "yes" then
-				local findSame =false
-				for _,id in sgs.qlist(player:getPile("siling")) do
-					if sgs.Sanguosha:getCard(id):sameColorWith(use.card) then
-						findSame =true
-						break
-					end
-				end
-				if not findSame then
-					sgs.siling_lack[player:objectName()][str] = 1
-				end
-			else
+		if use.from and self:isEnemy(use.from, player) then
+			if args[#args] == "_nil_" then
 				sgs.siling_lack[player:objectName()][str] = 1
 			end
 		end

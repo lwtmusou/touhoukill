@@ -1576,7 +1576,8 @@ public:
             player->setProperty("wangwu", "black");
             room->notifyProperty(player, player, "wangwu");
         }
-
+        // for ai record siling lack
+        player->tag["wangwu_use"] = data;
         QString prompt = "@wangwu-invoke:" + use.from->objectName() + ":" + use.card->objectName();
         const Card *c = room->askForCard(player, "@@wangwu", prompt, data, Card::MethodNone, NULL, false, "wangwu");
 
