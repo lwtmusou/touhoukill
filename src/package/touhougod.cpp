@@ -1625,9 +1625,8 @@ public:
         global = true;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    void record(TriggerEvent, Room *room, QVariant &) const
     {
-        ServerPlayer *player = data.value<ServerPlayer *>();
         foreach(ServerPlayer *p, room->getAlivePlayers())
             room->setPlayerProperty(p, "role_shown", p->isLord() ? true : false);
     }

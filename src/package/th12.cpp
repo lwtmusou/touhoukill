@@ -1076,7 +1076,7 @@ ShuxinCard::ShuxinCard()
 
 }
 
-bool ShuxinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+bool ShuxinCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const
 {
     return targets.isEmpty();
 }
@@ -1127,12 +1127,12 @@ public:
     {
     }
 
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
     {
         return !Self->isJilei(to_select) && to_select->isBlack();
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
     {
         return pattern.startsWith("@@shuxinVS");
     }
