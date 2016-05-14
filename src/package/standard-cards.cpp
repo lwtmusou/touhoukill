@@ -1643,7 +1643,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *to = qobject_cast<ServerPlayer *>(move.to);
@@ -1652,7 +1652,7 @@ public:
             to->addToPile("wooden_ox", invoke->owner->getPile("wooden_ox"), false, reason);
         } else
             invoke->owner->clearOnePrivatePile("wooden_ox");
-
+        room->addPlayerHistory(invoke->owner, "WoodenOxCard", -1);
         return false;
     }
 };
