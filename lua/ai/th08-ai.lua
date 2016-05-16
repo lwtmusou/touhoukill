@@ -618,8 +618,8 @@ sgs.ai_skill_use["@@chuangshi"] = function(self, prompt)
 			carduse.to:append(target)
 		end
 		self.room:useCard(carduse,false)
+		self.room:setPlayerFlag(self.player, "chuangshi")
 	end
-
 	return "."
 end
 local chuangshi_filter = function(self, player, carduse)

@@ -222,7 +222,7 @@ alpha版0514联机版
 **************************************************************
 alpha版XXx联机版
 1 fix 双刃ai
-
+2 fix ai创史并不少摸牌
 
 代码层面：待解决的已知问题
 1 常识 可以恢复 凭依 的 技能无效
@@ -239,7 +239,7 @@ https://go.microsoft.com/fwlink/?LinkId=615459
 46 阿空的核热二次转化的严格定义（体系层面）
 47 打出无效的定义（体系层面）
 48 超人到底是怎么通知的。。。。。 南蛮开出去。。。slm小伞卖血 一轮牌堆变动后。。。不显示新牌。。。
-
+49 dld萃香和ndj梅莉的冲突
 
 ai层面：希望改善的ai问题
 2 ai的 在使用拆顺的时候报错  可能和getarmor相关？ 可能和candiscard相关？   lua/ai/standard_cards-ai.lua:2987: attempt to index a nil value
