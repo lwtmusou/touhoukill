@@ -676,7 +676,12 @@ function SmartAI:useCardSlash(card, use)
 		for _, to in sgs.qlist(use.to) do
 			targets:append(to)
 		end
-		return card:targetFilter(targets, target, self.player)
+		local can =  card:targetFilter(targets, target, self.player)
+		if can and self.player:hasSkill("shuangren") and use.to:isEmpty() then
+			rangefix = -100
+		end
+		--self.player:gainMark("@aa", rangefix)
+		return can
 	end
 
 	--for shikong
