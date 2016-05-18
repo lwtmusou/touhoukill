@@ -2,7 +2,7 @@ return{
 	["thxwm"] = "线外萌SP" ,
 
 	--xwm001  势力：地 3血
-	["satori_xwm"] = "线外萌sp觉",
+	["satori_xwm"] = "线外萌SP觉",
 	["&satori_xwm"] = "线外萌觉",
 	["#satori_xwm"] = "第一届线外萌萌王",
 	["illustrator:satori_xwm"] = "ぎん太郎",
@@ -24,7 +24,7 @@ return{
 
 --*********************************
 	--xwm002  势力：妖 4血
-	["yuyuko_xwm"] = "线外萌sp幽幽子",
+	["yuyuko_xwm"] = "线外萌SP幽幽子",
 	["&yuyuko_xwm"] = "线外萌幽幽子",
 	["#yuyuko_xwm"] = "第一届线外萌准萌",
 	["illustrator:yuyuko_xwm"] = "藤原",
@@ -39,7 +39,7 @@ return{
 
 --*********************************
 	--xwm003  势力：主 4血
-	["marisa_xwm"] = "线外萌sp魔理沙",
+	["marisa_xwm"] = "线外萌SP魔理沙",
 	["&marisa_xwm"] = "线外萌魔理沙",
 	["#marisa_xwm"] = "第一届线外萌四强",
 	["illustrator:marisa_xwm"] = "甘党",
@@ -54,7 +54,7 @@ return{
 
 --*********************************
 	--xwm004  势力：战 3血
-	["aya_xwm"] = "线外萌sp文",
+	["aya_xwm"] = "线外萌SP文",
 	["&aya_xwm"] = "线外萌文",
 	["#aya_xwm"] = "第一届线外萌四强",
 	["illustrator:aya_xwm"] = "AUER",
@@ -69,7 +69,7 @@ return{
 
 --*********************************
 	--xwm005  势力：永 3血
-	["mokou_xwm"] = "线外萌sp妹红",
+	["mokou_xwm"] = "线外萌SP妹红",
 	["&mokou_xwm"] = "线外萌妹红",
 	["#mokou_xwm"] = "第二届线外萌萌王",
 	["illustrator:mokou_xwm"] = "Lowlight.K",
@@ -89,7 +89,7 @@ return{
 
 --*********************************
 	--xwm006  势力：红 3血
-	["remilia_xwm"] = "线外萌sp蕾米莉亚",
+	["remilia_xwm"] = "线外萌SP蕾米莉亚",
 	["&remilia_xwm"] = "线外萌蕾米",
 	["#remilia_xwm"] = "第二届线外萌准萌",
 	["illustrator:remilia_xwm"] = "とりのあくあ",

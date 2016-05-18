@@ -211,7 +211,7 @@ return{ ["th06"] = "红魔乡",
 	[":banyue"]= "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以失去1点体力，令一至三名角色依次摸一张牌。",
 
 	--hmx010
-	["sakuya_sp"] = "sp咲夜" ,
+	["sakuya_sp"] = "SP咲夜" ,
 	["#sakuya_sp"] = "红魔馆的女仆" ,
 
 }

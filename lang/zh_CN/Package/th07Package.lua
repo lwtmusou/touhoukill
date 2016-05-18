@@ -266,7 +266,7 @@ return
 
 --***********************************
 	--yym013  势力：妖 2血
-	["youmu_slm"] = "神灵庙sp妖梦",
+	["youmu_slm"] = "神灵庙SP妖梦",
 	["&youmu_slm"] = "神灵庙妖梦",
 	["#youmu_slm"] = "死欲的半灵",
 	["illustrator:youmu_slm"] = "alcd",

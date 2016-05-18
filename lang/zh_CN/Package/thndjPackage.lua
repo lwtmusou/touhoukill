@@ -2,7 +2,7 @@ return{
 	["thndj"] = "年代记SP",
 
 	--ndj001  势力：主 4血
-	["mokou_ndj"] = "年代记sp妹红" ,
+	["mokou_ndj"] = "年代记SP妹红" ,
 	["&mokou_ndj"] = "年代记妹红" ,
 	["#mokou_ndj"] = "炎杀姬" ,
 	["illustrator:mokou_ndj"] = "年代记",
@@ -16,7 +16,7 @@ return{
 
 --**********************************
 	--ndj002  势力：主 3血
-	["kaguya_ndj"] = "年代记sp辉夜" ,
+	["kaguya_ndj"] = "年代记SP辉夜" ,
 	["&kaguya_ndj"] = "年代记辉夜" ,
 	["#kaguya_ndj"] = "贤月公主" ,
 	["illustrator:kaguya_ndj"] = "年代记",
@@ -43,7 +43,7 @@ return{
 
 --**********************************
 	--ndj004  势力：妖 3血
-	["youmu_ndj"] = "年代记sp妖梦" ,
+	["youmu_ndj"] = "年代记SP妖梦" ,
 	["&youmu_ndj"] = "年代记妖梦" ,
 	["#youmu_ndj"] = "修行的庭师" ,
 	["illustrator:youmu_ndj"] = "年代记",
@@ -55,7 +55,7 @@ return{
 
 --**********************************
 	--ndj010  势力：外 3血
-	["merry_ndj"] = "年代记sp玛艾露贝莉" ,
+	["merry_ndj"] = "年代记SP玛艾露贝莉" ,
 	["&merry_ndj"] = "年代记梅莉" ,
 	["#merry_ndj"] = "境界探访者" ,
 	["illustrator:merry_ndj"] = "年代记",
@@ -70,7 +70,7 @@ return{
 
 --**********************************
 	--ndj011  势力：外 3血
-	["renko_ndj"] = "年代记sp莲子" ,
+	["renko_ndj"] = "年代记SP莲子" ,
 	["&renko_ndj"] = "年代记莲子",
 	["#renko_ndj"] = "科学少女" ,
 	["illustrator:renko_ndj"] = "年代记",
@@ -82,7 +82,7 @@ return{
 
 --**********************************
 	--ndj013  势力：外 4血
-	["sanae_ndj"] = "年代记sp早苗" ,
+	["sanae_ndj"] = "年代记SP早苗" ,
 	["&sanae_ndj"] = "年代记早苗",
 	["#sanae_ndj"] = "风月战姬" ,
 	["illustrator:sanae_ndj"] = "年代记",
