@@ -1938,8 +1938,6 @@ public:
         prompt_list << "jidong-discard" << use.card->objectName()
             << use.from->objectName() << use.card->getType();
         QString prompt = prompt_list.join(":");
-        //
-        //invoke->invoker->tag["youyue_card"] = QVariant::fromValue(card);
 
         const Card *card = room->askForCard(invoke->invoker, pattern, prompt, data, Card::MethodDiscard, NULL, false, objectName());
         if (card)

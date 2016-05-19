@@ -1182,7 +1182,7 @@ end
 
 sgs.ai_skill_cardask["jidong-confirm"] = function(self, data)
 	local target = self.player:getTag("jidong_target"):toPlayer()
-	--if not self:isEnemy(target) then  return "." end
+	if not self:isEnemy(target) then  return "." end
 	
 	local card = target:getTag("jidong_card"):toCard()
 	local cards = {} 
