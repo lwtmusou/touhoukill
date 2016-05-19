@@ -6163,8 +6163,13 @@ int Room::askForRende(ServerPlayer *liubei, QList<int> &cards, const QString &sk
 
             //Validate client response
             JsonArray clientReply = liubei->getClientReply().value<JsonArray>();
-            if (!success || clientReply.size() != 2)
-                return false;
+            if (!success || clientReply.size() != 2) {
+                if (!give_map.isEmpty())
+                    break;
+                else
+                    return false;
+            }
+                
 
             if (!JsonUtils::tryParse(clientReply[0], ids) || !JsonUtils::isString(clientReply[1]))
                 return false;
