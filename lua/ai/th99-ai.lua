@@ -1151,3 +1151,49 @@ sgs.ai_skill_playerchosen.daoyao = function(self, targets)
 	return target_table[1]
 end
 sgs.ai_playerchosen_intention.daoyao = -40
+
+sgs.ai_skill_cardask["jidong-discard"] = function(self, data)
+	local use = data:toCardUse()
+	if self:touhouCardUseEffectNullify(use, self.player) then return "." end
+	
+	local cards = {} 
+	for _,c in sgs.qlist(self.player:getCards("h")) do
+		if c:getTypeId() == use.card:getTypeId() then
+			table.insert(cards, c)
+		end	
+	end
+	if #cards <= 0 then
+		return "."
+	end
+	
+	
+	local compare_func = function(a, b)
+		return a:getNumber() < b:getNumber()
+	end
+	
+	table.sort(cards, compare_func)
+	
+	if self:isFriend(use.from) or not use.from:canDiscard(use.from, "h") then
+		return "$" .. cards[1]:getId()
+	else
+		return "$" .. cards[#cards]:getId()
+	end
+end
+
+sgs.ai_skill_cardask["jidong-confirm"] = function(self, data)
+	local target = self.player:getTag("jidong_target"):toPlayer()
+	--if not self:isEnemy(target) then  return "." end
+	
+	local card = target:getTag("jidong_card"):toCard()
+	local cards = {} 
+	for _,c in sgs.qlist(self.player:getCards("h")) do
+		if c:getNumber() > card:getNumber() then
+			table.insert(cards, c)
+		end	
+	end
+	if #cards <= 0 then
+		return "."
+	end
+	self:sortByUseValue(cards)
+	return "$" .. cards[1]:getId()
+end

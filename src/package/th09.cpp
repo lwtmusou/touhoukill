@@ -1632,8 +1632,7 @@ TH09Package::TH09Package()
     sumireko->addSkill(new Liqun);
     related_skills.insertMulti("nianli", "#nianlimod");
 
-    General *cirno = new General(this, "cirno_sp", "zhan", 4, false);
-    Q_UNUSED(cirno);
+
 
     addMetaObject<TianrenCard>();
     addMetaObject<NianliCard>();

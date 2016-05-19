@@ -231,10 +231,7 @@ return
 	["liqun"] = "离群",
 	[":liqun"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"blue\"><b>锁定技，</b></font>攻击范围内有其他战势力角色的其他角色与你的距离+1。",
 
-	-- zhan012
-	["cirno_sp"] = "SP琪露诺" ,
-	["#cirno_sp"] = "冰之妖精" ,
-	["&cirno_sp"] = "琪露诺",
+
 
 }
 
