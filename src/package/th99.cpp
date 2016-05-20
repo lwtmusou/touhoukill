@@ -1951,13 +1951,7 @@ public:
         const Card *card = invoke->invoker->tag["jidong_card"].value<const Card *>();
         bool can =  (card->getNumber() >= 13 || !use.from->canDiscard(use.from, "h")) ? true : false;
         if (!can) {
-            QString point = "A23456789-JQK";
-            point = point.right(point.length() - card->getNumber());
-            point = point.left(1);
-            point.replace("-", "10");
-            point.replace("J", "11");
-            point.replace("Q", "12");
-            point.replace("K", "13");
+            QString point = QString::number(card->getNumber() + 1);
             QString pattern = QString(".|.|%1~|hand").arg(point);
             QStringList prompt_list;
             prompt_list << "jidong-confirm" << use.card->objectName()
