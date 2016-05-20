@@ -1864,6 +1864,121 @@ public:
 };
 
 
+
+class Xunshi : public TriggerSkill
+{
+public:
+    Xunshi() : TriggerSkill("xunshi")
+    {
+        events << TargetConfirming;
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        QList<SkillInvokeDetail> d;
+        if (use.card->isKindOf("Peach") || use.card->isKindOf("Slash") || use.card->isNDTrick()) {
+            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                    if (use.from->isAlive() && p != use.from && !use.to.contains(p) 
+                        && (p->getHandcardNum() < use.from->getHandcardNum() ||  p->getHp() < use.from->getHp()))
+                    d << SkillInvokeDetail(this, p, p, NULL, true);
+            }
+        }
+        return d;
+    }
+
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), use.from->objectName());
+        QList<ServerPlayer *> logto;
+        logto << invoke->invoker;
+        room->touhouLogmessage("#xunshi", use.from, use.card->objectName(), logto, objectName());
+        
+
+        invoke->invoker->drawCards(1);
+        use.to << invoke->invoker;
+        room->sortByActionOrder(use.to);
+        data = QVariant::fromValue(use);
+        return false;
+    }
+};
+
+class Jidong : public TriggerSkill
+{
+public:
+    Jidong() : TriggerSkill("jidong")
+    {
+        events << TargetConfirmed;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        QList<SkillInvokeDetail> d;
+        if (use.card->isKindOf("Slash") || use.card->isKindOf("Duel")) {
+            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                if (use.from->isAlive() && p != use.from && use.to.contains(p) && p->canDiscard(p, "h"))
+                    d << SkillInvokeDetail(this, p, p, NULL);
+            }
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        QString type = use.card->getType();
+        QString pattern = QString("%1Card|.|.|hand").arg(type.left(1).toUpper() + type.right(type.length() - 1));
+        QStringList prompt_list;
+        prompt_list << "jidong-discard" << use.card->objectName()
+            << use.from->objectName() << use.card->getType();
+        QString prompt = prompt_list.join(":");
+
+        const Card *card = room->askForCard(invoke->invoker, pattern, prompt, data, Card::MethodDiscard, NULL, false, objectName());
+        if (card)
+            invoke->invoker->tag["jidong_card"] = QVariant::fromValue(card);
+        return card != NULL;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        const Card *card = invoke->invoker->tag["jidong_card"].value<const Card *>();
+        bool can =  (card->getNumber() >= 13 || !use.from->canDiscard(use.from, "h")) ? true : false;
+        if (!can) {
+            QString point = "A23456789-JQK";
+            point = point.right(point.length() - card->getNumber());
+            point = point.left(1);
+            point.replace("-", "10");
+            point.replace("J", "11");
+            point.replace("Q", "12");
+            point.replace("K", "13");
+            QString pattern = QString(".|.|%1~|hand").arg(point);
+            QStringList prompt_list;
+            prompt_list << "jidong-confirm" << use.card->objectName()
+                << use.from->objectName() << card->getNumberString();
+            QString prompt = prompt_list.join(":");
+            use.from->tag["jidong_target"] = QVariant::fromValue(invoke->invoker);
+            const Card *card = room->askForCard(use.from, pattern, prompt, data);
+            if (!card)
+                can = true;
+        }
+
+        if (can) {
+            use.nullified_list << invoke->invoker->objectName();
+            data = QVariant::fromValue(use);
+        }
+        return false;
+    }
+};
+
+
+
 TH99Package::TH99Package()
     : Package("th99")
 {
@@ -1925,6 +2040,10 @@ TH99Package::TH99Package()
     General *reisen2 = new General(this, "reisen2", "wai", 4, false);
     reisen2->addSkill(new Sixiang);
     reisen2->addSkill(new Daoyao);
+
+    General *cirno = new General(this, "cirno_sp", "wai", 3, false);
+    cirno->addSkill(new Xunshi);
+    cirno->addSkill(new Jidong);
 
     General *mamizou = new General(this, "mamizou_sp", "wai", 4, false);
     Q_UNUSED(mamizou);

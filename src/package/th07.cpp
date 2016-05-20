@@ -1236,7 +1236,7 @@ public:
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), invoke->targets.first()->objectName());
         if (room->askForCard(player, ".Equip", "@zhancao-discard", data, objectName()) == NULL)
             room->loseHp(player);
-        return true;
+        return false;
     }
 };
 
