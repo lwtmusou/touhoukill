@@ -4591,9 +4591,9 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
         for (int i = 0; i < cards_moves.size(); i++) {
             cards_moves[i].open = forceVisible || cards_moves[i].isRelevant(player)
                 //siling add to pile
-                || (cards_moves[i].reason.m_skillName == "siling"  && cards_moves[i].to == player)
-                || (cards_moves[i].reason.m_skillName == "dream"  && cards_moves[i].to == player)
-                || (cards_moves[i].reason.m_skillName == "wooden_ox"  && cards_moves[i].to == player)
+                || (cards_moves[i].to_pile_name == "siling"  && cards_moves[i].to == player)
+                || (cards_moves[i].to_pile_name == "dream"  && cards_moves[i].to == player)
+                || (cards_moves[i].to_pile_name == "wooden_ox"  && cards_moves[i].to == player)
                 // forceVisible will override cards to be visible
                 || cards_moves[i].to_place == Player::PlaceEquip
                 || cards_moves[i].from_place == Player::PlaceEquip
