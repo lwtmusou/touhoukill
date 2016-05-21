@@ -294,7 +294,7 @@ public:
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, use.to) {
                 if (p->hasSkill(this)) {
-                    bool invoke = p->isKongcheng();
+                    bool invoke = !p->isKongcheng();
                     if (!invoke) {
                         foreach (const Card *card, p->getEquips()) {
                             if (card->isRed()) {
