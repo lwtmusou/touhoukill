@@ -883,7 +883,7 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         QList<SkillInvokeDetail> d;
-        if (damage.damage > 1) {
+        if (damage.damage > 1 && damage.to->isAlive()) {
             foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (!p->getPile("dream").isEmpty())
                     d << SkillInvokeDetail(this, p, p, NULL, true);
