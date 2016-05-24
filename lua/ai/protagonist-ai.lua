@@ -1131,7 +1131,7 @@ end
 
 sgs.ai_skill_cardask["@mokai-dis"] = function(self)
 	local pile = self.player:getPile("tianyi")
-	return "$" .. pile:at(math.random(0, pile:length()))
+	return "$" .. pile:at(math.random(0, pile:length() - 1))
 end
 
 
@@ -1150,7 +1150,7 @@ sgs.ai_skill_cardask["@guangji-invoke"] =function(self,data)
 	_data:setValue(fakeEffect)
 	if sgs.ai_skill_cardask["slash-jink"] (self, _data, pattern, use.from) ~= "." then
 		local pile = self.player:getPile("tianyi")
-		return "$" .. pile:at(math.random(0, pile:length()))
+		return "$" .. pile:at(math.random(0, pile:length() - 1))
 	end
 	return "."
 end
