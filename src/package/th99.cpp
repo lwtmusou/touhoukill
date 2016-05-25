@@ -1864,7 +1864,6 @@ public:
 };
 
 
-
 class Xunshi : public TriggerSkill
 {
 public:
@@ -1881,7 +1880,8 @@ public:
         if (use.card->isKindOf("Peach") || use.card->isKindOf("Slash") || use.card->isNDTrick()) {
             foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                     if (use.from->isAlive() && p != use.from && !use.to.contains(p) 
-                        && (p->getHandcardNum() < use.from->getHandcardNum() ||  p->getHp() < use.from->getHp()))
+                        && (p->getHandcardNum() < use.from->getHandcardNum() ||  p->getHp() < use.from->getHp())
+                        && !use.from->isProhibited(p, use.card) && use.card->targetFilter(QList<const Player *>(), p, use.from))
                     d << SkillInvokeDetail(this, p, p, NULL, true);
             }
         }
@@ -1899,11 +1899,28 @@ public:
         logto << invoke->invoker;
         room->touhouLogmessage("#xunshi", use.from, use.card->objectName(), logto, objectName());
         
-
         invoke->invoker->drawCards(1);
         use.to << invoke->invoker;
         room->sortByActionOrder(use.to);
         data = QVariant::fromValue(use);
+
+        if (use.card->isKindOf("Collateral")) {
+            QList<ServerPlayer *> col_targets;
+            foreach(ServerPlayer *t, room->getOtherPlayers(invoke->invoker)) {
+                if (invoke->invoker->canSlash(t))
+                    col_targets << t;
+            }
+            ServerPlayer *victim = room->askForPlayerChosen(use.from, col_targets, objectName(), "@xunshi_col:" + invoke->invoker->objectName(), false);
+            invoke->invoker->tag["collateralVictim"] = QVariant::fromValue(victim);
+            if (victim) {
+                LogMessage log;
+                log.type = "#CollateralSlash";
+                log.from = use.from;
+                log.to << victim;
+                room->sendLog(log);
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), victim->objectName());
+            }
+        }
         return false;
     }
 };
