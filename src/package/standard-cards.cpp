@@ -123,6 +123,10 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
                 if (!isVirtualCard() || subcardsLength() > 0)
                     fire_slash->addSubcard(this);
                 fire_slash->setSkillName("Fan");
+                QStringList flags = use.card->getFlags();
+                foreach(QString flag, flags)
+                    fire_slash->setFlags(flag);
+
                 bool can_use = true;
                 foreach (ServerPlayer *p, use.to) {
                     if (!player->canSlash(p, fire_slash, false)) {
