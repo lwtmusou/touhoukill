@@ -364,6 +364,84 @@ public:
 
 
 
+
+
+class Jiexi : public TriggerSkill
+{
+public:
+    Jiexi() : TriggerSkill("jiexi")
+    {
+        events << CardUsed << CardResponded << EventPhaseChanging;
+        frequency = Compulsory;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        ServerPlayer *current = room->getCurrent();
+        if (current == NULL || current->isDead())
+            return;
+
+        if (e == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isKindOf("Jink") || use.card->isKindOf("Nullification"))
+                room->setPlayerMark(current, objectName(), current->getMark(objectName()) + 1);
+        } else if (e == CardResponded) {
+            CardResponseStruct resp = data.value<CardResponseStruct>();
+            if (resp.m_isUse && (resp.m_card->isKindOf("Jink") || resp.m_card->isKindOf("Nullification")))
+                room->setPlayerMark(current, objectName(), current->getMark(objectName()) + 1);
+        } else {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive && current->getMark(objectName()) > 0 )
+                room->setPlayerMark(current, objectName(), 0);
+        }
+    }
+};
+
+class JiexiTargetMod : public TargetModSkill
+{
+public:
+    JiexiTargetMod() : TargetModSkill("#jiexi_mod")
+    {
+        frequency = NotFrequent;
+        pattern = "Slash";
+    }
+
+    virtual int getExtraTargetNum(const Player *player, const Card *) const
+    {
+        if (player->hasSkill(objectName()) && player->getPhase() == Player::Play )
+            return player->getMark("jiexi");
+        else
+            return 0;
+    }
+
+    virtual int getResidueNum(const Player *from, const Card *card) const
+    {
+        if (from->hasSkill(objectName()) && from->getPhase() == Player::Play)
+            return from->getMark("jiexi");
+        else
+            return 0;
+    }
+};
+
+class JiexiAttackRange : public AttackRangeSkill
+{
+public:
+    JiexiAttackRange() : AttackRangeSkill("#jiexi_range")
+    {
+
+    }
+
+    virtual int getExtra(const Player *target, bool) const
+    {
+        if (target->hasSkill(objectName()) && target->getPhase() == Player::Play)
+            return target->getMark("jiexi");
+        return 0;
+    }
+};
+
+
+
+
 class Qianyi : public TriggerSkill
 {
 public:
@@ -921,8 +999,16 @@ TH0105Package::TH0105Package()
     chiyuri->addSkill(new Zhence);
     chiyuri->addSkill(new Shiqu);
 
-    General *rikako = new General(this, "rikako", "pc98", 4, false);
-    Q_UNUSED(rikako);
+    General *rikako = new General(this, "rikako", "pc98", 3, false);
+    //Room::_askForNullification
+    rikako->addSkill(new Skill("jinfa", Skill::Compulsory));
+    rikako->addSkill(new Jiexi);
+    rikako->addSkill(new JiexiTargetMod);
+    rikako->addSkill(new JiexiAttackRange);
+    related_skills.insertMulti("jiexi", "#jiexi_mod");
+    related_skills.insertMulti("jiexi", "#jiexi_range");
+
+
     General *kana = new General(this, "kana", "pc98", 3, false);
     kana->addSkill(new Qianyi);
     kana->addSkill(new Mengxiao);

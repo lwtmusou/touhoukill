@@ -1152,6 +1152,22 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     trickEffect.from = from;
     trickEffect.to = to;
     QVariant data = QVariant::fromValue(trickEffect);
+
+    if (to->hasSkill("jinfa") && !trick->isKindOf("Nullification")) {
+        Nullification *nul = new Nullification(Card::NoSuit, 0);
+        nul->setSkillName("jinfa");
+        if (to->isCardLimited(nul, Card::MethodUse))
+            delete nul;
+        else {
+            useCard(CardUseStruct(nul, to, QList<ServerPlayer *>()));
+            //process effect like "weiya" 
+            if (to->hasFlag("nullifiationNul"))
+                setPlayerFlag(to, "-nullifiationNul");
+            else
+                return !_askForNullification(nul, to, to, !positive, aiHelper);
+        }
+    }
+        
     foreach (ServerPlayer *player, m_alivePlayers) {
         if (player->hasNullification()) {
             if (!thread->trigger(TrickCardCanceling, this, data)) {
