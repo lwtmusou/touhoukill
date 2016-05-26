@@ -59,7 +59,12 @@ function gongfengvs_skill.getTurnUseCard(self)
 		if self.player:isKongcheng() then return nil end
 		if self.player:getKingdom() ~="fsl" then return nil end
 		if self.player:hasFlag("Forbidgongfeng") then return nil end
-		local handcards = self:getCards("Slash")
+		local handcards = {}
+		for _,c in sgs.qlist(self.player:getCards("h")) do
+			if c:isKindOf("Slash") then
+				table.insert(handcards, c)
+			end
+		end
 		if #handcards  ==0 then return nil end
 		self:sortByUseValue(handcards)
 
