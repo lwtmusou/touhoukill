@@ -362,7 +362,7 @@ public:
         //remain the information of origianl card
         new_slash->setSkillName(use.card->getSkillName());
         QStringList flags = use.card->getFlags();
-        foreach(QString flag, flags)
+        foreach(const QString &flag, flags)
             new_slash->setFlags(flag);
         use.card = new_slash;
         data = QVariant::fromValue(use);

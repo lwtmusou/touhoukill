@@ -124,7 +124,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
                     fire_slash->addSubcard(this);
                 fire_slash->setSkillName("Fan");
                 QStringList flags = use.card->getFlags();
-                foreach(QString flag, flags)
+                foreach(const QString &flag, flags)
                     fire_slash->setFlags(flag);
 
                 bool can_use = true;
