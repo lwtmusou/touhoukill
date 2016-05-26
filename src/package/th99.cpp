@@ -1878,12 +1878,14 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
         if (use.card->isKindOf("Peach") || use.card->isKindOf("Slash") || use.card->isNDTrick()) {
+            use.card->setFlags("xunshi");
             foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                     if (use.from->isAlive() && p != use.from && !use.to.contains(p) 
                         && (p->getHandcardNum() < use.from->getHandcardNum() ||  p->getHp() < use.from->getHp())
                         && !use.from->isProhibited(p, use.card) && use.card->targetFilter(QList<const Player *>(), p, use.from))
                     d << SkillInvokeDetail(this, p, p, NULL, true);
             }
+            use.card->setFlags("-xunshi");
         }
         return d;
     }
@@ -1922,6 +1924,23 @@ public:
             }
         }
         return false;
+    }
+};
+
+class XunshiDistance : public TargetModSkill
+{
+public:
+    XunshiDistance() : TargetModSkill("xunshi-dist")
+    {
+        pattern = "Slash,TrickCard+^DelayedTrick";
+    }
+
+    int getDistanceLimit(const Player *, const Card *card) const
+    {
+        if (card->hasFlag("xunshi"))
+            return 1000;
+
+        return 0;
     }
 };
 
@@ -2070,7 +2089,7 @@ TH99Package::TH99Package()
     addMetaObject<ZhuonongCard>();
     addMetaObject<YushouCard>();
     addMetaObject<PanduCard>();
-    skills << new DangjiaVS << new Luanying << new GanyingHandler << new XiufuMove;
+    skills << new DangjiaVS << new Luanying << new GanyingHandler << new XiufuMove << new XunshiDistance;
 }
 
 ADD_PACKAGE(TH99)
