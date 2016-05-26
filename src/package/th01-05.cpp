@@ -371,7 +371,7 @@ class Jiexi : public TriggerSkill
 public:
     Jiexi() : TriggerSkill("jiexi")
     {
-        events << CardUsed << CardResponded << EventPhaseChanging;
+        events << CardUsed << CardResponded << EventPhaseChanging << EventLoseSkill << EventAcquireSkill << EventSkillInvalidityChange;
         frequency = Compulsory;
     }
 
@@ -380,22 +380,36 @@ public:
         ServerPlayer *current = room->getCurrent();
         if (current == NULL || current->isDead())
             return;
-
+        //we need a visibile mark for noticing player, and unvisibile mark for processing pingyi 
         if (e == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("Jink") || use.card->isKindOf("Nullification"))
+            if (use.card->isKindOf("Jink") || use.card->isKindOf("Nullification")) {
                 room->setPlayerMark(current, objectName(), current->getMark(objectName()) + 1);
+                if (current->hasSkill("jiexi"))
+                    room->setPlayerMark(current, "@jiexi", current->getMark(objectName()));
+            }
         } else if (e == CardResponded) {
             CardResponseStruct resp = data.value<CardResponseStruct>();
-            if (resp.m_isUse && (resp.m_card->isKindOf("Jink") || resp.m_card->isKindOf("Nullification")))
+            if (resp.m_isUse && (resp.m_card->isKindOf("Jink") || resp.m_card->isKindOf("Nullification"))) {
                 room->setPlayerMark(current, objectName(), current->getMark(objectName()) + 1);
-        } else {
+                if (current->hasSkill("jiexi"))
+                    room->setPlayerMark(current, "@jiexi", current->getMark(objectName()));
+            }
+        } else if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive && current->getMark(objectName()) > 0 )
+            if (change.to == Player::NotActive && current->getMark(objectName()) > 0) {
                 room->setPlayerMark(current, objectName(), 0);
+                room->setPlayerMark(current, "@jiexi", 0);
+            }
+        } else if (e == EventLoseSkill || e == EventAcquireSkill || e == EventSkillInvalidityChange) {
+            if (current->hasSkill("jiexi"))
+                room->setPlayerMark(current, "@jiexi", current->getMark(objectName()));
+            else
+                room->setPlayerMark(current, "@jiexi", 0);
         }
     }
 };
+
 
 class JiexiTargetMod : public TargetModSkill
 {
