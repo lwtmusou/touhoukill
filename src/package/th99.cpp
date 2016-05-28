@@ -877,25 +877,45 @@ public:
 
 // if you or the original skill owner die, or the original skill owner lose the skill, you you should lose this skill, and make the original skill become valid.
 
-class Pingyi : public MasochismSkill
+class Pingyi : public TriggerSkill
 {
 public:
-    Pingyi() : MasochismSkill("pingyi")
+    Pingyi() : TriggerSkill("pingyi")
     {
+        events << Damage << Damaged << EventPhaseChanging;
     }
 
-    QList<SkillInvokeDetail> triggerable(const Room *, const DamageStruct &damage) const
+    void record(TriggerEvent e, Room *room, QVariant &data) const
     {
-        ServerPlayer *yori = damage.to;
-        if (yori->isDead() || !yori->hasSkill(this) ||  damage.from == NULL || yori->isNude() || yori == damage.from)
-            return QList<SkillInvokeDetail>();
+        if (e == EventPhaseChanging) {
+            PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
+            if (phase_change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                    if (p->hasFlag("pingyi_used"))
+                        room->setPlayerFlag(p, "-pingyi_used");
+                }
+            }
+        
+        }    
+    }
 
-        foreach (const Skill *skill, damage.from->getVisibleSkillList()) {
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
+    {
+        if (e == EventPhaseChanging)
+            return QList<SkillInvokeDetail>();
+        DamageStruct damage = data.value<DamageStruct>();
+        ServerPlayer *yori = (e == Damage) ? damage.from : damage.to;
+        ServerPlayer *target = (e == Damage) ? damage.to : damage.from;
+
+        if (yori == NULL || yori->isDead() || !yori->hasSkill(this) || yori->hasFlag("pingyi_used") ||  target == NULL || target->isDead() || yori == target)
+            return QList<SkillInvokeDetail>();
+        
+        foreach (const Skill *skill, target->getVisibleSkillList()) {
             if (skill->isLordSkill() || skill->isAttachedLordSkill() || skill->getFrequency() == Skill::Limited || skill->getFrequency() == Skill::Wake || skill->getFrequency() == Skill::Eternal)
                 continue;
 
-            if (!yori->hasSkill(skill, true) && damage.from->hasSkill(skill))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, false, damage.from);
+            if (!yori->hasSkill(skill, true) && target->hasSkill(skill))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, false, target);
         }
 
         return QList<SkillInvokeDetail>();
@@ -914,26 +934,25 @@ public:
             if (!yori->hasSkill(skill, true) && invoke->preferredTarget->hasSkill(skill))
                 skill_names << skill->objectName();
         }
-
+        skill_names << "cancel";
         yori->tag["pingyi_target"] = QVariant::fromValue(invoke->preferredTarget);
-
-        if (room->askForCard(yori, ".", "@pingyi-discard:" + invoke->preferredTarget->objectName(), data, Card::MethodDiscard, NULL, false, objectName())) {
-            QString skill_name = room->askForChoice(yori, objectName(), skill_names.join("+"));
-            invoke->tag["selected_skill"] = skill_name;
-            return true;
-        }
-
-        return false;
+        
+        //room->askForCard(yori, ".", "@pingyi-discard:" + invoke->preferredTarget->objectName(), data, Card::MethodDiscard, NULL, false, objectName()))
+        QString skill_name = room->askForChoice(yori, objectName(), skill_names.join("+"));
+        invoke->tag["selected_skill"] = skill_name;
+        return skill_name != "cancel";
     }
 
-    void onDamaged(Room *room, QSharedPointer<SkillInvokeDetail> invoke, const DamageStruct &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         QString skill_name = invoke->tag.value("selected_skill", QString()).toString();
         if (skill_name.isEmpty())
-            return;
+            return false;
 
         const Skill *skill = Sanguosha->getSkill(skill_name);
+        room->setPlayerFlag(invoke->invoker, "pingyi_used");
         skillProcess(room, invoke->invoker, invoke->targets.first(), skill);
+        return false;
     }
 
     static void skillProcess(Room *room, ServerPlayer *yori, ServerPlayer *skill_owner = NULL, const Skill *skill = NULL)
@@ -990,12 +1009,13 @@ class PingyiHandler : public TriggerSkill
 public:
     PingyiHandler() : TriggerSkill("#pingyi_handle")
     {
-        events << EventLoseSkill << Death;
+        events << EventLoseSkill << Death << EventPhaseChanging;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *who = NULL;
+        ServerPlayer *yori = NULL;
         if (triggerEvent == EventLoseSkill) {
             SkillAcquireDetachStruct ad = data.value<SkillAcquireDetachStruct>();
             if (ad.isAcquire)
@@ -1003,18 +1023,25 @@ public:
 
             if (ad.player->tag.contains("pingyi_invalidSkill") && ad.player->tag.value("pingyi_invalidSkill").toString() == ad.skill->objectName())
                 who = ad.player;
-        } else {
+            if (who != NULL)
+                yori = who->tag.value("pingyi_from").value<ServerPlayer *>();
+        } else if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
             if (death.who->tag.contains("pingyi_invalidSkill"))
                 who = death.who;
+            if (who != NULL)
+                yori = who->tag.value("pingyi_from").value<ServerPlayer *>();
+        } else {
+            PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
+            if (phase_change.to == Player::NotActive) {
+                yori = phase_change.player;
+                who =yori->tag.value("pingyi_originalOwner").value<ServerPlayer *>();
+            }
         }
-        if (who != NULL) {
-            ServerPlayer *yori = who->tag.value("pingyi_from").value<ServerPlayer *>();
-            if (yori != NULL)
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, true);
-        }
-
-
+        
+        if (yori != NULL && who != NULL)
+           return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, true);
+        
         return QList<SkillInvokeDetail>();
     }
 
