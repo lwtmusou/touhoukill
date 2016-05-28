@@ -428,7 +428,7 @@ public:
             return 0;
     }
 
-    virtual int getResidueNum(const Player *from, const Card *card) const
+    virtual int getResidueNum(const Player *from, const Card *) const
     {
         if (from->hasSkill(objectName()) && from->getPhase() == Player::Play)
             return from->getMark("jiexi");
