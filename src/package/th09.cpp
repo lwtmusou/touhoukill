@@ -707,7 +707,7 @@ public:
         QList<SkillInvokeDetail> d;
         foreach(ServerPlayer *tenshi, room->findPlayersBySkillName(objectName())) {
             foreach(ServerPlayer *p, room->getAllPlayers()) {
-                if (!p->isKongcheng()) {
+                if (!p->isNude()) {
                     d << SkillInvokeDetail(this, tenshi, tenshi);
                     break;
                 }
@@ -730,7 +730,7 @@ public:
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), prompt, true, true);
         invoke->invoker->tag.remove("feixiang_judge");
         if (target) {
-            int card_id = room->askForCardChosen(invoke->invoker, target, "h", objectName());
+            int card_id = room->askForCardChosen(invoke->invoker, target, "he", objectName());
             room->showCard(target, card_id);
             invoke->targets << target;
             invoke->invoker->tag["feixiang_id"] = QVariant::fromValue(card_id);
