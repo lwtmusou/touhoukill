@@ -276,7 +276,7 @@ public:
                 if (move.from_places[i] != Player::PlaceEquip) continue;
                 const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
                 if (card->objectName() == objectName()) {
-                    if (!move.from->isWounded()) {
+                    if (!move.from->isWounded() || !equipAvailable(move.from, EquipCard::ArmorLocation, objectName())) {
                         move.from->setFlags("-SilverLionRecover");
                         return QList<SkillInvokeDetail>();
                     }
