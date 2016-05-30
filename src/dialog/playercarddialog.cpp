@@ -100,6 +100,59 @@ QWidget *PlayerCardDialog::createHandcardButton()
         return area;
     }
 
+    if (!player->getShownHandcards().isEmpty()) {
+        QGroupBox *area = new QGroupBox(tr("Handcard area"));
+        QVBoxLayout *layout = new QVBoxLayout;
+        QList<int> shownIds = player->getShownHandcards();
+
+        for (int i = 0; i < shownIds.length(); i += 2) {
+            const Card *card = Sanguosha->getEngineCard(shownIds.at(i));
+            PlayerCardButton *button1 = new PlayerCardButton(card->getFullName());
+            button1->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
+
+            mapper.insert(button1, card->getId());
+            connect(button1, SIGNAL(clicked()), this, SLOT(emitId()));
+
+            PlayerCardButton *button2 = NULL;
+            if (i < shownIds.length() - 1) {
+                card = Sanguosha->getEngineCard(shownIds.at(i + 1));;
+                button2 = new PlayerCardButton(card->getFullName());
+                button2->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
+
+                mapper.insert(button2, card->getId());
+                connect(button2, SIGNAL(clicked()), this, SLOT(emitId()));
+            }
+            if (button1 && button2) {
+                QHBoxLayout *hlayout = new QHBoxLayout;
+                button1->setScale(0.65);
+                button2->setScale(0.65);
+                hlayout->addWidget(button1);
+                hlayout->addWidget(button2);
+                layout->addLayout(hlayout);
+            }
+            else {
+                Q_ASSERT(button1 != NULL);
+                layout->addWidget(button1);
+            }
+        }
+
+        int num = player->getHandcardNum() - shownIds.length();
+        if (num > 0) {
+            PlayerCardButton *button3 = new PlayerCardButton(tr("Handcard"));
+            button3->setObjectName("handcard_button");
+            button3->setDescription(tr("This guy has %1 hand card(s)").arg(num));
+            button3->setEnabled(method != Card::MethodDiscard || Self->canDiscard(player, "h"));
+            mapper.insert(button3, -1);
+            connect(button3, SIGNAL(clicked()), this, SLOT(emitId()));
+            layout->addWidget(button3);
+        }
+
+
+
+        area->setLayout(layout);
+        return area;
+    }
+
     PlayerCardButton *button = new PlayerCardButton(tr("Handcard"));
     button->setObjectName("handcard_button");
     int num = player->getHandcardNum();

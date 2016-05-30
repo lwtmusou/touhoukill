@@ -119,6 +119,23 @@ void Player::setChaoren(int chaoren)
     }
 }
 
+QList<int> Player::getShownHandcards() const
+{
+    return shown_handcards;
+}
+
+void Player::setShownHandcards(QList<int> ids)
+{
+    this->shown_handcards = ids;
+}
+
+bool Player::isShownHandcard(int id)
+{
+    if (shown_handcards.isEmpty() || id < 0)
+        return false;
+    return shown_handcards.contains(id);
+}
+
 
 int Player::getMaxHp() const
 {

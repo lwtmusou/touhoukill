@@ -1183,6 +1183,13 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         }
     }
 
+
+    JsonArray arg_shownhandcard;
+    arg_shownhandcard << objectName();
+    arg_shownhandcard << JsonUtils::toJsonArray(shown_handcards);
+    room->doNotify(player, S_COMMAND_SET_SHOWN_HANDCARD, arg_shownhandcard);
+
+
     foreach (QString mark_name, marks.keys()) {
         if (mark_name.startsWith("@")) {
             int value = getMark(mark_name);
@@ -1305,6 +1312,34 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
     move.to_place = Player::PlaceSpecial;
     move.reason = reason;
     room->moveCardsAtomic(move, open);
+}
+
+void ServerPlayer::addToShownHandCards(QList<int> card_ids)
+{
+    shown_handcards.append(card_ids);
+
+    JsonArray arg;
+    arg << objectName();
+    arg << JsonUtils::toJsonArray(shown_handcards);
+
+    foreach(ServerPlayer *player, room->getAllPlayers())
+        room->doNotify(player, S_COMMAND_SET_SHOWN_HANDCARD, arg);
+
+    //need set Konwn cards?
+    //room->doNotify(player, S_COMMAND_SET_KNOWN_CARDS, arg1);
+}
+
+void ServerPlayer::removeShownHandCards(QList<int> card_ids)
+{
+    foreach(int id, card_ids)
+        shown_handcards.removeOne(id);
+
+    JsonArray arg;
+    arg << objectName();
+    arg << JsonUtils::toJsonArray(shown_handcards);
+
+    foreach(ServerPlayer *player, room->getAllPlayers())
+        room->doNotify(player, S_COMMAND_SET_SHOWN_HANDCARD, arg);
 }
 
 void ServerPlayer::gainAnExtraTurn()

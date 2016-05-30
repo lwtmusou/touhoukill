@@ -116,6 +116,8 @@ public:
     void addToPile(const QString &pile_name, int card_id, bool open = true);
     void addToPile(const QString &pile_name, QList<int> card_ids, bool open = true);
     void addToPile(const QString &pile_name, QList<int> card_ids, bool open, CardMoveReason reason);
+    void addToShownHandCards(QList<int> card_ids);
+    void removeShownHandCards(QList<int> card_ids);
     void gainAnExtraTurn();
 
     void copyFrom(ServerPlayer *sp);

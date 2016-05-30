@@ -1274,6 +1274,11 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
         notifySkillInvoked(player, "duxin");
         doAnimate(S_ANIMATE_INDICATE, player->objectName(), who->objectName());
     }
+        
+    QList<int> shownHandcards = who->getShownHandcards();
+    QList<int> unkonwnHandcards = who->handCards();
+    foreach(int id, shownHandcards)
+        unkonwnHandcards.removeOne(id);
 
     if (handcard_visible && !who->isKongcheng()) {
         QList<int> handcards = who->handCards();
@@ -1283,7 +1288,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
         doNotify(player, S_COMMAND_SET_KNOWN_CARDS, arg);
     }
     int card_id = Card::S_UNKNOWN_CARD_ID;
-    if (who != player && !handcard_visible
+    if (who != player && !handcard_visible && shownHandcards.isEmpty()
         && (flags == "h"
         || (flags == "he" && !who->hasEquip())
         || (flags == "hej" && !who->hasEquip() && who->getJudgingArea().isEmpty())))
@@ -1314,12 +1319,17 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
             const QVariant &clientReply = player->getClientReply();
             if (!success || !JsonUtils::isNumber(clientReply)) {
                 // randomly choose a card
+                
                 card_id = cards.at(qrand() % cards.length())->getId();
             } else
                 card_id = clientReply.toInt();
 
-            if (card_id == Card::S_UNKNOWN_CARD_ID)
-                card_id = who->getRandomHandCardId();
+            if (card_id == Card::S_UNKNOWN_CARD_ID) {
+                if (shownHandcards.isEmpty())
+                    card_id = who->getRandomHandCardId();
+                else 
+                    card_id = unkonwnHandcards.at(qrand() % unkonwnHandcards.length());
+            }
         }
 
         if (!cards.contains(Sanguosha->getCard(card_id)))
