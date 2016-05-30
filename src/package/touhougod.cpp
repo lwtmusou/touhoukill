@@ -3536,6 +3536,49 @@ public:
 };
 
 
+class Xinhua : public TriggerSkill
+{
+public:
+    Xinhua() : TriggerSkill("xinhua")
+    {
+        events << TurnStart;
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        
+        QList<SkillInvokeDetail> d;
+        ServerPlayer *current = room->getCurrent();
+        if (current) {
+            foreach(ServerPlayer *p, room->getAllPlayers(current)) {
+                if (!p->isKongcheng()) {
+                    d << SkillInvokeDetail(this, current, current, NULL, true);
+                    return d;
+                }
+            }
+        }
+        return d;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getAllPlayers(), objectName(), "", true);
+        if (target) {
+            int id = room->askForCardChosen(invoke->invoker, target, "h", objectName());
+            if (id > -1) {
+                QList<int> ids;
+                ids << id;
+                target->addToShownHandCards(ids);
+            }
+        }
+            
+
+        return false;
+    }
+};
+
+
 
 TouhouGodPackage::TouhouGodPackage()
     : Package("touhougod")
@@ -3654,7 +3697,7 @@ TouhouGodPackage::TouhouGodPackage()
     seiga_god->addSkill(new Rumo);
 
     General *satori = new General(this, "satori_god", "touhougod", 4, false);
-    Q_UNUSED(satori);
+    satori->addSkill(new Xinhua);
 
     General *uuz = new General(this, "yuyuko_god", "touhougod", 4, false);
     Q_UNUSED(uuz);

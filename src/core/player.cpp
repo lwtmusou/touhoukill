@@ -127,6 +127,7 @@ QList<int> Player::getShownHandcards() const
 void Player::setShownHandcards(QList<int> ids)
 {
     this->shown_handcards = ids;
+    emit showncards_changed();
 }
 
 bool Player::isShownHandcard(int id)
@@ -907,7 +908,16 @@ bool Player::canDiscard(const Player *to, const QString &flags, QString reason) 
     static QChar equip_flag('e');
     static QChar judging_flag('j');
 
-    if (flags.contains(handcard_flag) && !to->isKongcheng()) return true;
+    if (flags.contains("s") && flags.contains("h")) {
+        if (!to->isKongcheng())
+            return true;
+    } else if (flags.contains("s")) {
+        if (!to->getShownHandcards().isEmpty())
+            return true;
+    } else if (flags.contains("h")) {
+        if ((to->getHandcardNum() - to->getShownHandcards().length()) > 0)
+            return true;
+    }
     if (flags.contains(judging_flag) && !to->getJudgingArea().isEmpty()) return true;
     if (flags.contains(equip_flag)) {
         QSet<QString> Equips;

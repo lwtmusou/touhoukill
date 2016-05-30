@@ -320,6 +320,7 @@ signals:
     void phase_changed();
     void owner_changed(bool owner);
     void chaoren_changed();
+    void showncards_changed();
 };
 
 #endif

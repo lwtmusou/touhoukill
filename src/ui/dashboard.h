@@ -127,6 +127,7 @@ public:
 public slots:
     virtual void updateAvatar();
     void updateChaoren();
+    void updateShown();
 
     void sortCards();
     void beginSorting();

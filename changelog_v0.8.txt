@@ -258,9 +258,10 @@ alpha版0521联机版
 49 dld萃香和ndj梅莉的冲突
 50 askForRende 人操仍可以选择前一次选择过都牌。
 51 PostCardEffected时机下，effect.card 若为转化牌， 可能已回复为原牌面信息。。。
-52 明牌区的flag处理 “hejs” 加一个s？ pattern如何parse 
+52 明牌区的flag处理 “hejs” 加一个s？ pattern如何parse   
+    所有 canDisCard  getCards(flags) 都需要重写
 53 UI层面 如何显示明牌区
-
+54 ai相关调整
 
 ai层面：希望改善的ai问题
 2 ai的 在使用拆顺的时候报错  可能和getarmor相关？ 可能和candiscard相关？   lua/ai/standard_cards-ai.lua:2987: attempt to index a nil value

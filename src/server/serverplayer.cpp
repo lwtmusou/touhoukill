@@ -491,8 +491,20 @@ QList<const Card *> ServerPlayer::getHandcards() const
 QList<const Card *> ServerPlayer::getCards(const QString &flags) const
 {
     QList<const Card *> cards;
-    if (flags.contains("h"))
+    if (flags.contains("h") && flags.contains("s"))
         cards << handcards;
+    else if (flags.contains("h")) {
+        foreach(const Card *c, handcards) {
+            if (!shown_handcards.contains(c->getEffectiveId()))
+                cards << c;
+        }
+    } else if (flags.contains("s")) {
+        foreach(const Card *c, handcards) {
+            if (shown_handcards.contains(c->getEffectiveId()))
+                cards << c;
+        }
+    }
+
     if (flags.contains("e"))
         cards << getEquips();
     if (flags.contains("j"))
