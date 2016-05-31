@@ -1470,11 +1470,18 @@ public:
     }
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        Slash *tmpslash = new Slash(Card::NoSuit, 0);
-        tmpslash->deleteLater();
-        if (player->isCardLimited(tmpslash, Card::MethodUse))
-            return false;
-        return (!player->hasFlag("Global_huweiFailed") && pattern == "slash" && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
+        if ((!player->hasFlag("Global_huweiFailed") && pattern == "slash" && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)) {
+            Slash *tmpslash = new Slash(Card::NoSuit, 0);
+            tmpslash->deleteLater();
+            if (player->isCardLimited(tmpslash, Card::MethodUse))
+                return false;
+            //check avaliable target
+            foreach(const Player *p, player->getAliveSiblings()){
+                if (tmpslash->targetFilter(QList<const Player *>(), p, player))
+                    return true;
+            }
+        }
+        return false;
     }
 };
 

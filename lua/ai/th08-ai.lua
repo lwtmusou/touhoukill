@@ -684,8 +684,12 @@ function sgs.ai_cardsview_valuable.huwei(self, class_name, player)
 	if player:isCardLimited(tmpslash, sgs.Card_MethodUse) then  return nil end
 	if class_name == "Slash" and (sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE)  then
 		 if not player:hasFlag("Global_huweiFailed") and player:getPhase() ~=sgs.Player_Play then
-			return "@HuweiCard=."
-		 end
+			for _,p in sgs.qlist(player:getAliveSiblings()) do
+                if (tmpslash:targetFilter(sgs.PlayerList(), p, player)) then
+					return "@HuweiCard=."
+				end
+			end
+		end
 	end
 end
 sgs.ai_playerchosen_intention.huwei = -60
