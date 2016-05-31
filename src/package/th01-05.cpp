@@ -887,9 +887,12 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
+        if (damage.damage != 1)
+            return QList<SkillInvokeDetail>();
+
         QList<SkillInvokeDetail> d;
         foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            if (p == damage.to || p->inMyAttackRange(damage.to))
+            if (p->inMyAttackRange(damage.to))
                 d << SkillInvokeDetail(this, p, p, NULL, false, damage.to);
         }
         return d;
@@ -968,7 +971,6 @@ public:
     Mengyan() : TriggerSkill("mengyan")
     {
         events << Damaged;
-        frequency = Compulsory;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
@@ -977,8 +979,8 @@ public:
         QList<SkillInvokeDetail> d;
         if (damage.damage > 1 && damage.to->isAlive()) {
             foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                if (!p->getPile("dream").isEmpty())
-                    d << SkillInvokeDetail(this, p, p, NULL, true);
+                if (p->isWounded())
+                    d << SkillInvokeDetail(this, p, p, NULL);
             }
         }
         return d;
@@ -986,13 +988,15 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        DummyCard dummy(invoke->invoker->getPile("dream"));
-        CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
-        room->throwCard(&dummy, reason, NULL);
-        
         RecoverStruct recover;
         room->recover(invoke->invoker, recover);
-        invoke->invoker->drawCards(2);
+        
+        CardsMoveStruct move;
+        move.card_ids = invoke->invoker->getPile("dream");
+        move.to_place = Player::PlaceHand;
+        move.to = invoke->invoker;
+        room->moveCardsAtomic(move, false);
+
         return false;
     }
 };

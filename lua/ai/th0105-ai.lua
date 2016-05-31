@@ -480,3 +480,5 @@ sgs.ai_cardneed.huantong = function(to, card, self)
 		or (not to:getOffensiveHorse() and  getCardsNum("OffensiveHorse",to,self.player)<1 and card:isKindOf("OffensiveHorse"))
 	end
 end
+
+sgs.ai_skill_invoke.mengyan = true
