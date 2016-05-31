@@ -436,8 +436,11 @@ void QijiDialog::popup()
         if (user == NULL)
             user = Self;
 
-
-        bool enabled = !user->isCardLimited(card, Card::MethodUse, true) && card->isAvailable(user);
+        bool avaliable = card->isAvailable(user);
+        if (object_name == "qiji" && user->getMark("xiubu"))
+            avaliable = true;
+            
+        bool enabled = !user->isCardLimited(card, Card::MethodUse, true) && avaliable;
         if (object_name == "huaxiang" && user->getMaxHp() > 2 && card->isKindOf("Peach"))
             enabled = false;
 
