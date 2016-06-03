@@ -49,10 +49,11 @@ bool Slash::IsAvailable(const Player *player, const Card *slash, bool considerSp
         if ((!has_weapon && player->hasWeapon("Crossbow")) || player->canSlashWithoutCrossbow(THIS_SLASH))
             return true;
         int used = player->getSlashCount();
-        int valid = 1 + Sanguosha->correctCardTarget(TargetModSkill::Residue, player, newslash);
+
+        int valid = 1 + Sanguosha->correctCardTarget(TargetModSkill::Residue, player, THIS_SLASH);
         if ((!has_weapon && player->hasWeapon("VSCrossbow")) && used < valid + 3)
             return true;
-
+        
         if (considerSpecificAssignee) {
             QStringList assignee_list = player->property("extra_slash_specific_assignee").toString().split("+");
             if (!assignee_list.isEmpty()) {
@@ -651,7 +652,17 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return Slash::IsAvailable(player) && EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
+        bool avalilable = Slash::IsAvailable(player);
+        //consider targetmod skill like "xiubu" need check specific card with subcards
+        if (player->getMark("xiubu") && player->getHandcardNum() <= 2) {
+            Slash *slash = new Slash(Card::SuitToBeDecided, 0);
+            slash->setSkillName(objectName());
+            slash->addSubcards(player->getHandcards());
+            if (!player->isCardLimited(slash, Card::MethodUse))
+                avalilable = true;
+        }
+            
+        return avalilable && EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const

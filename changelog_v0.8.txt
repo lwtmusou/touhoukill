@@ -237,6 +237,12 @@ alpha版0521联机版
 7 fix ai错误：  神中国(华想转化杀) 可以供奉给神奈子
 8 绯想buff  手牌改判 -> 牌改判
 9 依姬改动  1 凭依时效性：直到自己回合结束时 2 造成伤害时可以凭依 3 去掉弃牌cost
+10 fix 青冈 + 白银
+11 尝试加入 明牌区概念
+12 fix 护卫 被要求被动使用杀时，若没有合法目标仍可以发动技能的情况。
+13 【修补】 和 【奇迹】【丈八】的耦合。。。。    card->isAvalible 需要check特定的子卡。。。 
+14 削弱双月 
+
 
 体系层面：硬伤
 46 阿空的核热二次转化的严格定义（体系层面）
@@ -255,7 +261,10 @@ alpha版0521联机版
 49 dld萃香和ndj梅莉的冲突
 50 askForRende 人操仍可以选择前一次选择过都牌。
 51 PostCardEffected时机下，effect.card 若为转化牌， 可能已回复为原牌面信息。。。
-
+52 明牌区的flag处理 “hejs” 加一个s？ pattern如何parse   
+    所有 canDisCard  getCards(flags) 都需要重写
+53 UI层面 如何显示明牌区
+54 ai相关调整
 
 ai层面：希望改善的ai问题
 2 ai的 在使用拆顺的时候报错  可能和getarmor相关？ 可能和candiscard相关？   lua/ai/standard_cards-ai.lua:2987: attempt to index a nil value
@@ -285,4 +294,4 @@ ai层面：希望改善的ai问题
 
 
 服务器暂时禁掉以下白板：
-神绮 旧爱丽丝  梦月幻月 艾丽 魅魔  旧魔理沙 sp大狸子  sp咲夜
+神绮 旧爱丽丝 艾丽 魅魔  旧魔理沙 sp大狸子  sp咲夜

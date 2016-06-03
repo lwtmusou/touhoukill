@@ -65,6 +65,7 @@ Dashboard::Dashboard(QGraphicsItem *widget) //QGraphicsPixmapItem *widget
 
 
     connect(Self, SIGNAL(chaoren_changed()), this, SLOT(updateChaoren()));
+    connect(Self, SIGNAL(showncards_changed()), this, SLOT(updateShown()));
 
 #ifdef Q_OS_WIN
     taskbarButton = new QWinTaskbarButton(this);
@@ -1257,6 +1258,12 @@ void Dashboard::updateChaoren() {
     expandSpecialCard();
 }
 
+void Dashboard::updateShown() {
+    updatePending();
+    adjustCards();
+    update();
+}
+
 void Dashboard::onCardItemClicked()
 {
     CardItem *card_item = qobject_cast<CardItem *>(sender());
@@ -1305,6 +1312,10 @@ void Dashboard::updatePending()
             item->setEnabled(view_as_skill->viewFilter(pended, item->getCard()));
         if (!item->isEnabled())
             animations->effectOut(item);
+        if (Self->isShownHandcard(item->getCard()->getEffectiveId())) {
+            item->setFootnote(Sanguosha->translate("showcard"));
+            item->showFootnote();
+        }
     }
 
     for (int i = 0; i < 5; i++) {

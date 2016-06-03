@@ -414,9 +414,9 @@ local function  huantongValue(cards, self, damage, huantongDamage)
 			end
 		end
 	end
-	if tmp.damage >= 2 and self.player:hasSkill("mengyan") and self.player:getPile("dream"):length() > 2 then
-		value = value + 2
-		if self.player:isWounded() or (self.player:objectName() == damage.to:objectName()) then
+	if tmp.damage >= 2 and self.player:hasSkill("mengyan") then
+		value = self.player:getPile("dream"):length() - 2
+		if self.player:isWounded() then
 			value = value + 2
 		end
 	end	
@@ -480,3 +480,5 @@ sgs.ai_cardneed.huantong = function(to, card, self)
 		or (not to:getOffensiveHorse() and  getCardsNum("OffensiveHorse",to,self.player)<1 and card:isKindOf("OffensiveHorse"))
 	end
 end
+
+sgs.ai_skill_invoke.mengyan = true

@@ -81,6 +81,8 @@ public:
     // property setters/getters
     int getChaoren() const;//for chaoren
     void setChaoren(int chaoren);
+    QList<int> getShownHandcards() const;
+    bool isShownHandcard(int id);
     int getHp() const;
     int getRenHp() const;
     int getLingHp() const;
