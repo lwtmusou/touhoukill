@@ -229,7 +229,7 @@
     "magatamaImageSubArea": [0, 6, 22, 26], //for skill banling
     "magatamasBgVisible": true,
     "magatamasAnchor": ["rightBottom", [195, 260]], //right
-    "magatamasSubAnchor": ["rightTop", [195, 0]], //rightTop
+    "magatamasSubAnchor": ["leftBottom", [0, 260]], 
     "cardMoveArea": [-50, 65, 200, 130],
     "progressBarArea": ["bottomCenter", "bottomCenter", [-8, 0], [300, 18]],
     "progressBarHorizontal": true,
