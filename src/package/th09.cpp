@@ -721,7 +721,7 @@ public:
         JudgeStruct *judge = data.value<JudgeStruct *>();
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getAlivePlayers()) {
-            if (!p->isKongcheng())
+            if (!p->isNude())
                 targets << p;
         }
 
