@@ -276,7 +276,9 @@ public:
                 if (move.from_places[i] != Player::PlaceEquip) continue;
                 const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
                 if (card->objectName() == objectName()) {
-                    if (!move.from->isWounded() || !equipAvailable(move.from, EquipCard::ArmorLocation, objectName())) {
+                    // function  equipAvailable()    need armor remained in equip area
+                    if (!move.from->isWounded() || !move.from->tag["Qinggang"].toStringList().isEmpty() || move.from->getMark("Armor_Nullified") > 0
+                        || move.from->getMark("Equips_Nullified_to_Yourself") > 0){
                         move.from->setFlags("-SilverLionRecover");
                         return QList<SkillInvokeDetail>();
                     }
