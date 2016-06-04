@@ -414,11 +414,9 @@ local function  huantongValue(cards, self, damage, huantongDamage)
 			end
 		end
 	end
-	if tmp.damage >= 2 and self.player:hasSkill("mengyan") then
-		value = value + self.player:getPile("dream"):length() - 2
-		if self.player:isWounded() then
-			value = value + 2
-		end
+	if tmp.damage >= 2 and self.player:hasSkill("mengyan") and self.player:isWounded() then
+		-- recover count as 2 value
+		value = value + self.player:getPile("dream"):length()
 	end	
 	return value
 end
