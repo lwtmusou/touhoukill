@@ -29,7 +29,7 @@ public:
 
 private:
     QWidget *createAvatar();
-    QWidget *createHandcardButton();
+    QWidget *createHandcardButton(QString flags);
     QWidget *createEquipArea();
     QWidget *createJudgingArea();
 

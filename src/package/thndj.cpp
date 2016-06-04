@@ -202,7 +202,7 @@ public:
 
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *p, room->getOtherPlayers(damage.to)) {
-            if (p->hasSkill(this) && damage.to->canDiscard(p, "h"))
+            if (p->hasSkill(this) && damage.to->canDiscard(p, "hs"))
                 d << SkillInvokeDetail(this, p, p, NULL, false, damage.to);
         }
         return d;
@@ -220,7 +220,7 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), damage.to->objectName());
-        int card_id = room->askForCardChosen(damage.to, invoke->invoker, "h", objectName(), false, Card::MethodDiscard);
+        int card_id = room->askForCardChosen(damage.to, invoke->invoker, "hs", objectName(), false, Card::MethodDiscard);
         room->throwCard(card_id, invoke->invoker, damage.to);
         if (Sanguosha->getCard(card_id)->isBlack()) {
             QList<ServerPlayer *>logto;
@@ -783,7 +783,7 @@ public:
                 if (player->hasFlag("xiubu_first") && !player->hasFlag("xiubu_second")) {
                     QList<SkillInvokeDetail> d;
                     foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                        if ((p->inMyAttackRange(player) || p == player) && p->canDiscard(player, "h"))
+                        if ((p->inMyAttackRange(player) || p == player) && p->canDiscard(player, "hs"))
                             d << SkillInvokeDetail(this, p, p, NULL, false, player);
                     }
 
@@ -805,7 +805,7 @@ public:
         else {
             if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->preferredTarget->objectName());
-                int id = room->askForCardChosen(invoke->invoker, invoke->preferredTarget, "h", objectName());
+                int id = room->askForCardChosen(invoke->invoker, invoke->preferredTarget, "hs", objectName());
                 invoke->invoker->tag["xiubu_id"] = QVariant::fromValue(id);
                 return true;
             }

@@ -40,7 +40,7 @@ public:
         invoke->invoker->tag["xiangqi_card"] = QVariant::fromValue(damage.card);
         if (invoke->invoker->askForSkillInvoke("xiangqi", prompt)) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), damage.from->objectName());
-            int id = room->askForCardChosen(invoke->invoker, damage.from, "h", objectName());
+            int id = room->askForCardChosen(invoke->invoker, damage.from, "hs", objectName());
             room->showCard(damage.from, id);
             invoke->invoker->tag["xiangqi_id"] = QVariant::fromValue(id);
             return true;
@@ -290,7 +290,7 @@ public:
             return QList<SkillInvokeDetail>();
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *utsuho, room->findPlayersBySkillName(objectName())) {
-            if (utsuho->canDiscard(utsuho, "h"))
+            if (utsuho->canDiscard(utsuho, "hs"))
                 d << SkillInvokeDetail(this, utsuho, utsuho);
         }
         return d;
@@ -462,7 +462,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if (effect.to->isAlive() && effect.from->hasSkill(this) && effect.from->canDiscard(effect.from, "h"))
+        if (effect.to->isAlive() && effect.from->hasSkill(this) && effect.from->canDiscard(effect.from, "hs"))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.from, effect.from);
         return QList<SkillInvokeDetail>();
     }
@@ -912,7 +912,7 @@ public:
 
     void onDamaged(Room *room, QSharedPointer<SkillInvokeDetail> invoke, const DamageStruct &) const
     {
-        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "h", objectName());
+        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hs", objectName());
         room->obtainCard(invoke->invoker, id, false);
     }
 };

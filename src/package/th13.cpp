@@ -59,7 +59,7 @@ void QingtingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
             card = room->askForExchange(p, "qingting", 1, 1, false, "qingtingGive:" + source->objectName());
             p->tag.remove("qingting_give");
         } else
-            card = new DummyCard(QList<int>() << room->askForCardChosen(source, p, "h", "qingting"));
+            card = new DummyCard(QList<int>() << room->askForCardChosen(source, p, "hs", "qingting"));
         DELETE_OVER_SCOPE(const Card, card)
 
         source->obtainCard(card, false);
@@ -243,7 +243,7 @@ bool XihuaCard::do_xihua(ServerPlayer *tanuki) const
 
 
     ServerPlayer *target = room->askForPlayerChosen(tanuki, room->getOtherPlayers(tanuki), "xihua", "@xihua_chosen:" + xihuacard->objectName(), false, true);
-    int to_show = room->askForCardChosen(target, tanuki, "h", "xihua");
+    int to_show = room->askForCardChosen(target, tanuki, "hs", "xihua");
     room->showCard(tanuki, to_show);
 
     room->getThread()->delay();
@@ -1478,7 +1478,7 @@ public:
         foreach (ServerPlayer *p, room->getOtherPlayers(damage.to)) {
             if (p->getHp() >= damage.to->getHp()) {
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, damage.to->objectName(), p->objectName());
-                if (p->canDiscard(p, "he")) {
+                if (p->canDiscard(p, "hes")) {
                     p->tag["qingyu_source"] = QVariant::fromValue(damage.to);
 
                     const Card *cards = room->askForCard(p, ".|.|.|.", "@qingyu-discard:" + damage.to->objectName(), QVariant::fromValue(damage.to), Card::MethodDiscard);

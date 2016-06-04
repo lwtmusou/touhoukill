@@ -209,7 +209,7 @@ bool MiyaoCard::targetFilter(const QList<const Player *> &targets, const Player 
 void MiyaoCard::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
-    if (effect.to->canDiscard(effect.to, "h"))
+    if (effect.to->canDiscard(effect.to, "hs"))
         room->askForDiscard(effect.to, "miyao", 1, 1, false, false, "miyao_cardchosen");
 
     if (effect.to->isWounded()) {
@@ -623,7 +623,7 @@ public:
             use.nullified_list << "_ALL_TARGETS";
             data = QVariant::fromValue(use);
         }
-        if (src->canDiscard(src, "h"))
+        if (src->canDiscard(src, "hs"))
             room->askForDiscard(src, objectName(), 1, 1, false, false, "shishi_discard");
 
         return false;
@@ -1162,7 +1162,7 @@ public:
     static bool  hasChongqunTarget(ServerPlayer *player)
     {
         foreach(ServerPlayer *p, player->getRoom()->getOtherPlayers(player)) {
-            if (!p->isNude() && p->canDiscard(p, "he"))
+            if (!p->isNude() && p->canDiscard(p, "hes"))
                 return true;
         }
         return false;
@@ -1186,7 +1186,7 @@ public:
     {
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-            if (!p->isNude() && p->canDiscard(p, "he"))
+            if (!p->isNude() && p->canDiscard(p, "hes"))
                 targets << p;
         }
 

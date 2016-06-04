@@ -425,7 +425,7 @@ void SuodingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
         } else {
             for (int i = 0; i < map[sp]; i++) {
                 if (!sp->isKongcheng()) {
-                    int card_id = room->askForCardChosen(source, sp, "h", "suoding"); // fakemove/getrandomhandcard(without 2nd general!!!!)
+                    int card_id = room->askForCardChosen(source, sp, "hs", "suoding"); // fakemove/getrandomhandcard(without 2nd general!!!!)
                     sp->addToPile("suoding_cards", card_id, false);
                 }
             }

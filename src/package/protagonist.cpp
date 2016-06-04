@@ -508,7 +508,7 @@ JiezouCard::JiezouCard()
 void JiezouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     ServerPlayer *target = targets.first();
-    int id = room->askForCardChosen(source, target, "hej", "jiezou");
+    int id = room->askForCardChosen(source, target, "hejs", "jiezou");
     room->obtainCard(source, id, room->getCardPlace(id) != Player::PlaceHand);
     const Card *spade = room->askForCard(source, ".|spade", "@jiezou_spadecard", QVariant(), Card::MethodDiscard, NULL, false, "jiezou", false);
     if (spade == NULL) {
@@ -938,7 +938,7 @@ public:
             ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), prompt, true, true);
             if (target == NULL)
                 return false;
-            int obtainId = room->askForCardChosen(invoke->invoker, target, "h", objectName());
+            int obtainId = room->askForCardChosen(invoke->invoker, target, "hs", objectName());
             room->obtainCard(invoke->invoker, obtainId, false);
         }
         return false;
@@ -1091,7 +1091,7 @@ public:
     {
         ServerPlayer *reimu = data.value<ServerPlayer *>();
         if (reimu && reimu->hasSkill("bllmwuyu") && reimu->isAlive() && reimu->getPhase() == Player::Draw) {
-            if (reimu->getMark("@yu") > 0 || reimu->canDiscard(reimu, "h"))
+            if (reimu->getMark("@yu") > 0 || reimu->canDiscard(reimu, "hs"))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, reimu, reimu);
         }
         return QList<SkillInvokeDetail>();
@@ -1172,7 +1172,7 @@ public:
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         ServerPlayer *reimu = change.player;
         if (reimu && reimu->hasSkill("bllmwuyu") && change.to == Player::Judge  && !reimu->isSkipped(change.to)) {
-            if (reimu->getMark("@yu") > 0 || reimu->canDiscard(reimu, "h"))
+            if (reimu->getMark("@yu") > 0 || reimu->canDiscard(reimu, "hs"))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, reimu, reimu);
         }
         return QList<SkillInvokeDetail > ();
@@ -1262,7 +1262,7 @@ public:
     {
         ServerPlayer *reimu = data.value<ServerPlayer *>();
         if (reimu && reimu->hasSkill("bllmwuyu") && reimu->isAlive() && reimu->getPhase() == Player::Discard) {
-            if (reimu->getMark("@yu") > 0 || reimu->canDiscard(reimu, "h"))
+            if (reimu->getMark("@yu") > 0 || reimu->canDiscard(reimu, "hs"))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, reimu, reimu);
         }
         return QList<SkillInvokeDetail>();
@@ -1611,14 +1611,14 @@ void YinyangCard::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     const Card *card1 = NULL;
     const Card *card2 = NULL;
-    if (effect.to->canDiscard(effect.to, "h"))
+    if (effect.to->canDiscard(effect.to, "hs"))
         card1 = room->askForCard(effect.to, ".|.|.|hand!", "@yinyang_discard");
     if (card1) {
         effect.from->tag["yinyang_card"] = QVariant::fromValue(card1);
         effect.from->tag["yinyang_target"] = QVariant::fromValue(effect.to);
     }
 
-    if (effect.from->canDiscard(effect.from, "h"))
+    if (effect.from->canDiscard(effect.from, "hs"))
         card2 = room->askForCard(effect.from, ".|.|.|hand!", "@yinyang_discard");
     effect.from->tag.remove("yinyang_card");
     effect.from->tag.remove("yinyang_target");

@@ -914,10 +914,10 @@ void XinshangCard::onEffect(const CardEffectStruct &effect) const
         room->obtainCard(effect.from, card);
         room->setPlayerFlag(effect.from, "xinshang_effect");
     } else {
-        if (effect.from->canDiscard(effect.to, "he")) {
-            room->throwCard(room->askForCardChosen(effect.from, effect.to, "he", "xinshang", false, Card::MethodDiscard), effect.to, effect.from);
-            if (effect.from->canDiscard(effect.to, "he"))
-                room->throwCard(room->askForCardChosen(effect.from, effect.to, "he", "xinshang", false, Card::MethodDiscard), effect.to, effect.from);
+        if (effect.from->canDiscard(effect.to, "hes")) {
+            room->throwCard(room->askForCardChosen(effect.from, effect.to, "hes", "xinshang", false, Card::MethodDiscard), effect.to, effect.from);
+            if (effect.from->canDiscard(effect.to, "hes"))
+                room->throwCard(room->askForCardChosen(effect.from, effect.to, "hes", "xinshang", false, Card::MethodDiscard), effect.to, effect.from);
         }
     }
 }
@@ -1469,10 +1469,10 @@ void JiliaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     move.to_place = Player::PlaceHand;
     move.to = target;
     room->moveCardsAtomic(move, true);
-    if (target->getHandcardNum() <= target->getMaxCards() || !source->canDiscard(target, "h"))
+    if (target->getHandcardNum() <= target->getMaxCards() || !source->canDiscard(target, "hs"))
         return;
     if (room->askForSkillInvoke(source, "jiliao", "throwcard:" + target->objectName())) {
-        int to_throw = room->askForCardChosen(source, target, "h", "jiliao", false, Card::MethodDiscard);
+        int to_throw = room->askForCardChosen(source, target, "hs", "jiliao", false, Card::MethodDiscard);
         room->throwCard(to_throw, target, source);
     }
 }
@@ -1601,7 +1601,7 @@ public:
     {
         room->touhouLogmessage("#TouhouBuff", invoke->invoker, objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
-        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "h", objectName(), true);
+        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hs", objectName(), true);
         if (id > -1)
             room->obtainCard(invoke->invoker, id, false);
         return false;

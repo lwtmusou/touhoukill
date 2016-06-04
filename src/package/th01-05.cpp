@@ -297,7 +297,7 @@ public:
                 QStringList choices = shiquChoices(change.player);
                 if (choices.length() > 0) {
                     foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                        if (change.player->canDiscard(change.player, "he"))
+                        if (change.player->canDiscard(change.player, "hes"))
                             d << SkillInvokeDetail(this, p, p, NULL, false, change.player);
                     }
                 }
@@ -627,7 +627,7 @@ public:
 
             QList<ServerPlayer *> targets;
             foreach(ServerPlayer *to, use.to) {
-                if (to->isAlive() && to->canDiscard(to, "h") && use.from != to)
+                if (to->isAlive() && to->canDiscard(to, "hs") && use.from != to)
                     targets << to;
             }
             if (!targets.isEmpty())

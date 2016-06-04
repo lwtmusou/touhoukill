@@ -433,13 +433,13 @@ public:
         invoke->invoker->drawCards(2);
         QList<ServerPlayer *> listt;
         foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-            if (p->canDiscard(invoke->invoker, "h"))
+            if (p->canDiscard(invoke->invoker, "hs"))
                 listt << p;
         }
         if (listt.isEmpty())
             return false;
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, listt, "fandu", "@fandu-select", false, true);
-        int to_throw = room->askForCardChosen(target, invoke->invoker, "h", "fandu", false, Card::MethodDiscard);
+        int to_throw = room->askForCardChosen(target, invoke->invoker, "hs", "fandu", false, Card::MethodDiscard);
         room->throwCard(to_throw, invoke->invoker, target);
 
         return false;
@@ -521,7 +521,7 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "he", objectName());
+        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName());
         room->obtainCard(invoke->invoker, id, room->getCardPlace(id) != Player::PlaceHand);
 
         return false;
@@ -1361,14 +1361,14 @@ public:
         QList<ServerPlayer *> targets;
         foreach (const QString &c, distance_changed) {
             ServerPlayer *p = room->findPlayerByObjectName(c);
-            if (p != NULL && invoke->invoker->canDiscard(p, "h"))
+            if (p != NULL && invoke->invoker->canDiscard(p, "hs"))
                 targets << p;
         }
 
         foreach(ServerPlayer *q, room->getOtherPlayers(invoke->invoker)) {
             QStringList to_distance_changed = q->tag.value("distance_changed_" + QString::number(triggerEvent), QStringList()).toStringList();
             foreach(const QString &c, to_distance_changed) {
-                if (invoke->invoker == room->findPlayerByObjectName(c) && !targets.contains(q) && invoke->invoker->canDiscard(q, "h")) {
+                if (invoke->invoker == room->findPlayerByObjectName(c) && !targets.contains(q) && invoke->invoker->canDiscard(q, "hs")) {
                     targets << q;
                     break;
                 }
@@ -1382,7 +1382,7 @@ public:
         if (target == NULL)
             return false;
 
-        int id = room->askForCardChosen(invoke->invoker, target, "h", "ganying", false, Card::MethodDiscard);
+        int id = room->askForCardChosen(invoke->invoker, target, "hs", "ganying", false, Card::MethodDiscard);
         room->throwCard(id, target, invoke->invoker == target ? NULL : invoke->invoker);
 
         return false;
@@ -1451,7 +1451,7 @@ public:
                 invoke = true;
                 foreach(const QString &c, from_distance_changed) {
                     ServerPlayer *target = room->findPlayerByObjectName(c);
-                    if (target != NULL && p->canDiscard(target, "h") && !targets.contains(target))
+                    if (target != NULL && p->canDiscard(target, "hs") && !targets.contains(target))
                         targets << target;
                 }
             }
@@ -1462,7 +1462,7 @@ public:
                     ServerPlayer *to = room->findPlayerByObjectName(c);
                     if (to != NULL && p == to)
                         invoke = true;
-                    if (to != NULL && p == to && p->canDiscard(q, "h") && !targets.contains(q)) {
+                    if (to != NULL && p == to && p->canDiscard(q, "hs") && !targets.contains(q)) {
                         targets << q;
                         break;
                     }
@@ -1616,7 +1616,7 @@ bool PanduCard::targetFilter(const QList<const Player *> &targets, const Player 
 void PanduCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     ServerPlayer *target = targets.first();
-    int card_id = room->askForCardChosen(source, target, "h", "pandu");
+    int card_id = room->askForCardChosen(source, target, "hs", "pandu");
     room->showCard(target, card_id);
     Card *showcard = Sanguosha->getCard(card_id);
     if (showcard->isKindOf("Slash")) {
@@ -1833,7 +1833,7 @@ public:
         QList<SkillInvokeDetail> d;
         ServerPlayer *current = room->getCurrent();
         foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            if (current && current->canDiscard(current, "he"))
+            if (current && current->canDiscard(current, "hes"))
                 d << SkillInvokeDetail(this, p, p);
             else {
                 foreach(ServerPlayer *t, room->getOtherPlayers(p)) {
@@ -1851,7 +1851,7 @@ public:
     {
         QStringList choices;
         ServerPlayer *current = room->getCurrent();
-        if (current && current->canDiscard(current, "he"))
+        if (current && current->canDiscard(current, "hes"))
             choices << "discard";
 
         foreach(ServerPlayer *t, room->getOtherPlayers(invoke->invoker)) {
@@ -1985,7 +1985,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (use.card->isKindOf("Slash") || use.card->isKindOf("Duel")) {
             foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                if (use.from->isAlive() && p != use.from && use.to.contains(p) && p->canDiscard(p, "h"))
+                if (use.from->isAlive() && p != use.from && use.to.contains(p) && p->canDiscard(p, "hs"))
                     d << SkillInvokeDetail(this, p, p, NULL);
             }
         }
@@ -2012,7 +2012,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         const Card *card = invoke->invoker->tag["jidong_card"].value<const Card *>();
-        bool can =  (card->getNumber() >= 13 || !use.from->canDiscard(use.from, "h")) ? true : false;
+        bool can =  (card->getNumber() >= 13 || !use.from->canDiscard(use.from, "hs")) ? true : false;
         if (!can) {
             QString point = QString::number(card->getNumber() + 1);
             QString pattern = QString(".|.|%1~|hand").arg(point);

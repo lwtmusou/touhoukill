@@ -620,7 +620,7 @@ public:
         ServerPlayer *aya = data.value<ServerPlayer *>();
         if (aya->getPhase() == Player::Draw && aya->hasSkill(this)) {
             foreach(ServerPlayer *p, room->getOtherPlayers(aya)) {
-                if (aya->canDiscard(p, "h"))
+                if (aya->canDiscard(p, "hs"))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, aya, aya);
             }
         }
@@ -631,7 +631,7 @@ public:
     {
         QList<ServerPlayer *> players;
         foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-            if (invoke->invoker->canDiscard(p, "h"))
+            if (invoke->invoker->canDiscard(p, "hs"))
                 players << p;
         }
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, players, objectName(), "@toupai-select", true, true);
@@ -730,7 +730,7 @@ public:
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), prompt, true, true);
         invoke->invoker->tag.remove("feixiang_judge");
         if (target) {
-            int card_id = room->askForCardChosen(invoke->invoker, target, "he", objectName());
+            int card_id = room->askForCardChosen(invoke->invoker, target, "hes", objectName());
             room->showCard(target, card_id);
             invoke->targets << target;
             invoke->invoker->tag["feixiang_id"] = QVariant::fromValue(card_id);
@@ -1124,7 +1124,7 @@ public:
             if (player->inMyAttackRange(p) && draw) {
                 targets << p;
             }
-            else if (player->inMyAttackRange(p) && !draw && player->canDiscard(p, "h")) {
+            else if (player->inMyAttackRange(p) && !draw && player->canDiscard(p, "hs")) {
                 targets << p;
             }
         }
@@ -1215,7 +1215,7 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        room->throwCard(room->askForCardChosen(invoke->invoker, invoke->targets.first(), "h", objectName(), false, Card::MethodDiscard), invoke->targets.first(), invoke->invoker);
+        room->throwCard(room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hs", objectName(), false, Card::MethodDiscard), invoke->targets.first(), invoke->invoker);
         return false;
     }
 };

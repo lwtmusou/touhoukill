@@ -249,7 +249,7 @@ public:
         ServerPlayer *who = data.value<DyingStruct>().who;
         QList<ServerPlayer *> yukaris = room->findPlayersBySkillName(objectName());
         foreach (ServerPlayer *p, yukaris) {
-            if (who && p->getPile("jingjie").length() > 0 && p->canDiscard(who, "he") && who->getHp() < 1) {
+            if (who && p->getPile("jingjie").length() > 0 && p->canDiscard(who, "hes") && who->getHp() < 1) {
                 d << SkillInvokeDetail(this, p, p);
             }
         }
@@ -279,7 +279,7 @@ public:
             DELETE_OVER_SCOPE(const Card, card)
             id2 = card->getSubcards().first();
         } else
-            id2 = room->askForCardChosen(yukari, who, "he", objectName(), false, Card::MethodDiscard);
+            id2 = room->askForCardChosen(yukari, who, "hes", objectName(), false, Card::MethodDiscard);
 
         if (yukari->canDiscard(who, id2))
             room->throwCard(id2, who, yukari);
@@ -1311,10 +1311,10 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *to = damage.to;
         ServerPlayer *player = invoke->invoker;
-        int to_throw = room->askForCardChosen(player, to, "he", objectName());
+        int to_throw = room->askForCardChosen(player, to, "hes", objectName());
         player->addToPile("yin_mark", to_throw);
         if (!to->isNude()) {
-            int to_throw1 = room->askForCardChosen(player, to, "he", objectName());
+            int to_throw1 = room->askForCardChosen(player, to, "hes", objectName());
             player->addToPile("yin_mark", to_throw1);
         }
         return true;
@@ -1922,7 +1922,7 @@ public:
             mo.to_place = Player::PlaceHand;
             room->moveCardsAtomic(mo, true);
 
-            if (target->canDiscard(target, "h"))
+            if (target->canDiscard(target, "hs"))
                 room->askForDiscard(target, objectName(), 1, 1, false, false, "shoushu_discard");
         }
         return false;

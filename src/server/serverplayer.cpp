@@ -1337,11 +1337,17 @@ void ServerPlayer::addToShownHandCards(QList<int> card_ids)
     foreach(ServerPlayer *player, room->getAllPlayers())
         room->doNotify(player, S_COMMAND_SET_SHOWN_HANDCARD, arg);
 
+    LogMessage log;
+    log.type = "$AddShownHand";
+    log.from = this;
+    log.card_str = IntList2StringList(card_ids).join("+");
+    room->sendLog(log);
+    room->getThread()->delay();
     //need set Konwn cards?
     //room->doNotify(player, S_COMMAND_SET_KNOWN_CARDS, arg1);
 }
 
-void ServerPlayer::removeShownHandCards(QList<int> card_ids)
+void ServerPlayer::removeShownHandCards(QList<int> card_ids, bool sendLog)
 {
     foreach(int id, card_ids)
         shown_handcards.removeOne(id);
@@ -1352,6 +1358,16 @@ void ServerPlayer::removeShownHandCards(QList<int> card_ids)
 
     foreach(ServerPlayer *player, room->getAllPlayers())
         room->doNotify(player, S_COMMAND_SET_SHOWN_HANDCARD, arg);
+
+    if (sendLog) {
+        LogMessage log;
+        log.type = "$RemoveShownHand";
+        log.from = this;
+        log.card_str = IntList2StringList(card_ids).join("+");
+        room->sendLog(log);
+        room->getThread()->delay();
+    }
+
 }
 
 void ServerPlayer::gainAnExtraTurn()

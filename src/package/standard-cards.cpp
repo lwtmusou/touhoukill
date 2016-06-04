@@ -523,7 +523,7 @@ public:
     {
         bool draw_card = false;
 
-        if (!invoke->targets.first()->canDiscard(invoke->targets.first(), "h"))
+        if (!invoke->targets.first()->canDiscard(invoke->targets.first(), "hs"))
             draw_card = true;
         else {
             QString prompt = "double-sword-card:" + invoke->invoker->objectName();
@@ -1325,7 +1325,7 @@ void Snatch::onEffect(const CardEffectStruct &effect) const
 
     Room *room = effect.to->getRoom();
     bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical");
-    QString flag = using_2013 ? "he" : "hej";
+    QString flag = using_2013 ? "hes" : "hejs";
     int card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName());
     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
     room->obtainCard(effect.from, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
@@ -1350,7 +1350,7 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
 
     Room *room = effect.to->getRoom();
     bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical");
-    QString flag = using_2013 ? "he" : "hej";
+    QString flag = using_2013 ? "hes" : "hejs";
     if (!effect.from->canDiscard(effect.to, flag))
         return;
 
@@ -1371,7 +1371,7 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
             log.card_str = IntList2StringList(effect.to->handCards()).join("+");
             room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
 
-            card_id = room->askForCardChosen(effect.from, effect.to, "h", objectName(), true, Card::MethodDiscard);
+            card_id = room->askForCardChosen(effect.from, effect.to, "hs", objectName(), true, Card::MethodDiscard);
             //Fs: I want to use room->doGongxin here
         }
     }
@@ -1451,7 +1451,7 @@ public:
         if (!equipAvailable(damage.from, EquipCard::WeaponLocation, objectName(), damage.to))
             return QList<SkillInvokeDetail>();
 
-        if (damage.card && damage.by_user && damage.card->isKindOf("Slash") && damage.from->canDiscard(damage.to, "he") && !damage.chain && !damage.transfer && damage.from != damage.to)
+        if (damage.card && damage.by_user && damage.card->isKindOf("Slash") && damage.from->canDiscard(damage.to, "hes") && !damage.chain && !damage.transfer && damage.from != damage.to)
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
 
         return QList<SkillInvokeDetail>();
@@ -1465,12 +1465,12 @@ public:
         room->setEmotion(from, "weapon/ice_sword");
 
 
-        if (from->canDiscard(to, "he")) {
-            int card_id = room->askForCardChosen(from, to, "he", "IceSword", false, Card::MethodDiscard);
+        if (from->canDiscard(to, "hes")) {
+            int card_id = room->askForCardChosen(from, to, "hes", "IceSword", false, Card::MethodDiscard);
             room->throwCard(Sanguosha->getCard(card_id), to, from);
 
-            if (from->isAlive() && to->isAlive() && from->canDiscard(to, "he")) {
-                card_id = room->askForCardChosen(from, to, "he", "IceSword", false, Card::MethodDiscard);
+            if (from->isAlive() && to->isAlive() && from->canDiscard(to, "hes")) {
+                card_id = room->askForCardChosen(from, to, "hes", "IceSword", false, Card::MethodDiscard);
                 room->throwCard(Sanguosha->getCard(card_id), to, from);
             }
         }

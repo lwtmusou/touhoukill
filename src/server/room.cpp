@@ -1302,22 +1302,18 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
 
     //secondly, if can not choose visible(known) cards, then randomly choose a card.
     int card_id = Card::S_UNKNOWN_CARD_ID;
+    /*bool needSelect = false;
+    if (knownCards.length() < cards.length() && cards.length() > 1) {
+        if (who == player || handcard_visible)
+            needSelect = true;
+    }*/
+
+    //if (!needSelect)
     if (who != player && !handcard_visible && knownCards.isEmpty())
-        //&& (flags == "h"
-        //|| (flags == "he" && !who->hasEquip())
-        //|| (flags == "hej" && !who->hasEquip() && who->getJudgingArea().isEmpty())))
         card_id = cards.at(qrand() % cards.length())->getId();
         //card_id = who->getRandomHandCardId();
     else {
         AI *ai = player->getAI();
-
-        /*QList<const Card *> cards = who->getCards(flags);
-        foreach (const Card *card, cards) {
-            if ((method == Card::MethodDiscard && !player->canDiscard(who, card->getEffectiveId(), reason)) || disabled_ids.contains(card->getEffectiveId()))
-                cards.removeOne(card);
-        }
-        Q_ASSERT(!cards.isEmpty());*/
-
         if (ai) {
             thread->delay();
             card_id = ai->askForCardChosen(who, flags, reason, method);
@@ -4615,8 +4611,9 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
 {
     if (players.isEmpty()) players = m_players;
     // process dongcha
-    ServerPlayer *dongchaee = findChild<ServerPlayer *>(tag.value("Dongchaee").toString());
-    ServerPlayer *dongchaer = findChild<ServerPlayer *>(tag.value("Dongchaer").toString());
+    //ServerPlayer *dongchaee = findChild<ServerPlayer *>(tag.value("Dongchaee").toString());
+    //ServerPlayer *dongchaer = findChild<ServerPlayer *>(tag.value("Dongchaer").toString());
+    
     // Notify clients
     int moveId;
     if (isLostPhase)
@@ -4646,9 +4643,9 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                 || cards_moves[i].from_place == Player::PlaceTable
                 || cards_moves[i].to_place == Player::PlaceTable
                 // any card from/to place table should be visible
-                || player->hasFlag("Global_GongxinOperator")
+                || player->hasFlag("Global_GongxinOperator");
                 // the player put someone's cards to the drawpile
-                || (player != NULL && player == dongchaer && (cards_moves[i].isRelevant(dongchaee)));
+                //|| (player != NULL && player == dongchaer && (cards_moves[i].isRelevant(dongchaee)));
             // card from/to dongchaee is also visible to dongchaer
             arg << cards_moves[i].toVariant();
         }
