@@ -3545,9 +3545,8 @@ public:
     }
 
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &) const
     {
-        
         QList<SkillInvokeDetail> d;
         ServerPlayer *current = room->getCurrent();
         if (current) {
