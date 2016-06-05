@@ -213,7 +213,6 @@ bool XiufuCard::putToPile(Room *room, ServerPlayer *mori)
     move.card_ids = equips;
     move.to_place = Player::PlaceSpecial;
     move.open = true;
-    move.card_ids = equips;
 
     QList<CardsMoveStruct> _moves = QList<CardsMoveStruct>() << move;
     QList<ServerPlayer *> _mori = QList<ServerPlayer *>() << mori;

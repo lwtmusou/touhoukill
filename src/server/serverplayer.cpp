@@ -581,9 +581,27 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     const Card *card2;
 
     if (card1 == NULL) {
-        QList<const Card *> cards = room->askForPindianRace(this, target, reason);
-        card1 = cards.first();
-        card2 = cards.last();
+        //QList<const Card *> cards = room->askForPindianRace(this, target, reason);
+        //card1 = cards.first();
+        //card2 = cards.last();
+        
+        QList<ServerPlayer *> targets;
+        targets << this << target;
+        room->sortByActionOrder(targets);
+
+        card1 = room->askForPindian(targets.first(), this, target, reason);
+        //@todo: fix UI and log
+        if (targets.first()->isShownHandcard(card1->getEffectiveId()))
+            room->showCard(targets.first(), card1->getEffectiveId());
+
+        card2 = room->askForPindian(targets.last(), this, target, reason);
+
+        if (targets.first() != this) {
+            const Card *tmp = card1;
+            card1 = card2;
+            card2 = tmp;
+        }
+
     } else {
         if (card1->isVirtualCard()) {
             int card_id = card1->getEffectiveId();

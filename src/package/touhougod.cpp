@@ -3550,18 +3550,20 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
-
+        if (use.card->isKindOf("SkillCard"))
+            return d;
+        
         if (e == TargetSpecified) {
             if (use.from->hasSkill(this) && !use.from->isKongcheng()) {
                 foreach(ServerPlayer *p, use.to) {
-                    if (!p->isKongcheng())
+                    if (use.from != p && !p->isKongcheng())
                         d << SkillInvokeDetail(this, use.from, use.from, NULL, false, p);
                 }
             }
         } else {
             if (!use.from->isKongcheng()) {
                 foreach(ServerPlayer *p, use.to) {
-                    if (p->hasSkill(this) && !p->isKongcheng())
+                    if (use.from != p && p->hasSkill(this) && !p->isKongcheng())
                         d << SkillInvokeDetail(this, p, p, NULL, false, use.from);
                 }
             }
