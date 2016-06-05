@@ -3550,7 +3550,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
-        if (use.card->isKindOf("SkillCard"))
+        if (use.card->isKindOf("SkillCard") || use.from ==NULL )
             return d;
         
         if (e == TargetSpecified) {
