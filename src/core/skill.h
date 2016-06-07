@@ -45,6 +45,7 @@ public:
     Frequency getFrequency() const;
     QString getLimitMark() const;
     QStringList getSources() const;
+    bool matchAvaliablePattern(QString avaliablePattern, QString askedPattern) const;
 
 protected:
     Frequency frequency;

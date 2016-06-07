@@ -676,14 +676,14 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
     {
-        return pattern == "jink" || pattern == "slash";
+        return matchAvaliablePattern("jink", pattern) || matchAvaliablePattern("slash", pattern);
     }
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
         if (originalCard != NULL) {
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-            if (pattern == "jink") {
+            if (matchAvaliablePattern("jink", pattern)) {
                 Jink *jink = new Jink(originalCard->getSuit(), originalCard->getNumber());
                 jink->addSubcard(originalCard);
                 jink->setSkillName(objectName());
@@ -2081,7 +2081,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        return  pattern.contains("peach")
+        return  matchAvaliablePattern("peach", pattern)
             && !player->isKongcheng()
             && player->getMark("Global_PreventPeach") == 0
             && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)

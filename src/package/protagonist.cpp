@@ -997,7 +997,8 @@ public:
         card->deleteLater();
         if (player->isCardLimited(card, Card::MethodUse))
             return false;
-        if (pattern.contains("analeptic"))
+
+        if (matchAvaliablePattern("analeptic", pattern))
             return true;
         return false;
     }
@@ -1019,7 +1020,7 @@ public:
             BllmShiyuDummy *shiyu = new BllmShiyuDummy;
             shiyu->addSubcards(cards);
             return shiyu;
-        } else if (pattern.contains("analeptic"))
+        } else if (matchAvaliablePattern("analeptic", pattern))
             return new BllmShiyuCard;
         else
             return new BllmWuyuCard;

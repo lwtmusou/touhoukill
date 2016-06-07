@@ -407,27 +407,47 @@ public:
     {
     }
 
+    static QStringList responsePatterns() {
+        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+        Card::HandlingMethod method;
+        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+            method = Card::MethodResponse;
+        else
+            method = Card::MethodUse;
+
+        QStringList validPatterns;
+        QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+        foreach(const Card *card, cards) {
+            if ((card->isNDTrick() || card->isKindOf("BasicCard"))
+                && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+                QString pattern = card->objectName();
+                if (card->isKindOf("Slash"))
+                    pattern = "slash";
+                if (!validPatterns.contains(pattern) && !XihuaClear::xihua_choice_limit(Self, pattern, method))
+                    validPatterns << card->objectName();
+            }
+        }
+
+        QStringList checkedPatterns;
+        foreach(QString str, validPatterns) {
+            const Skill *skill = Sanguosha->getSkill("xihua");
+            if (skill->matchAvaliablePattern(str, pattern))
+                checkedPatterns << str;
+        }
+        return checkedPatterns;
+    }
+
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        if (player->isKongcheng() || pattern.startsWith(".") || pattern.startsWith("@")) return false;
-        if (pattern == "peach" && player->getMark("Global_PreventPeach") > 0) return false;
-        for (int i = 0; i < pattern.length(); i++) {
+        if (player->isKongcheng()) return false;
+        //if (player->isKongcheng() || pattern.startsWith(".") || pattern.startsWith("@")) return false;
+        QStringList checkedPatterns = responsePatterns();
+        if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0) return false;
+        /*for (int i = 0; i < pattern.length(); i++) {
             QChar ch = pattern[i];
             if (ch.isUpper() || ch.isDigit()) return false; // This is an extremely dirty hack!! For we need to prevent patterns like 'BasicCard'
-        }
-        //just check basic card
-        if (pattern == "slash")
-            return !(XihuaClear::xihua_choice_limit(player, "slash", Card::MethodResponse));
-        if (pattern == "jink")
-            return !XihuaClear::xihua_choice_limit(player, "jink", Card::MethodResponse);
-        if (pattern.contains("peach") && pattern.contains("analeptic"))
-            return (!XihuaClear::xihua_choice_limit(player, "peach", Card::MethodResponse) ||
-            !XihuaClear::xihua_choice_limit(player, "analeptic", Card::MethodResponse));
-        else if (pattern == "peach")
-            return !XihuaClear::xihua_choice_limit(player, "peach", Card::MethodResponse);
-        else if (pattern == "analeptic")
-            return !XihuaClear::xihua_choice_limit(player, "analeptic", Card::MethodResponse);
-        return true;
+        }*/
+        return !checkedPatterns.isEmpty();
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
@@ -440,13 +460,15 @@ public:
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE
             || Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-            if (pattern.contains("slash")) {
+            QStringList checkedPatterns = responsePatterns();
+            if (checkedPatterns.length() > 1 || checkedPatterns.contains("slash")) {
                 const Card *c = Self->tag.value("xihua").value<const Card *>();
                 if (c)
                     pattern = c->objectName();
                 else
                     return NULL;
-            }
+            } else
+                pattern = checkedPatterns.first();
             XihuaCard *card = new XihuaCard;
             card->setUserString(pattern);
             return card;
@@ -858,7 +880,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardAskedStruct s = data.value<CardAskedStruct>();
-        if (s.pattern == "jink") {
+        if (matchAvaliablePattern("jink", s.pattern)) {
             ServerPlayer *current = room->getCurrent();
             if (!s.player->hasSkill(this) || !current && !current->isAlive() || (current->getWeapon() != NULL))
                 return QList<SkillInvokeDetail>();

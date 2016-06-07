@@ -553,14 +553,8 @@ public:
                     if (src->hasFlag("henyi") && src->hasSkill(this)) {
                         ArcheryAttack *card = new ArcheryAttack(Card::NoSuit, 0);
                         card->deleteLater();
-                        if (!src->isCardLimited(card, Card::MethodUse)) {
-                            foreach(ServerPlayer *p, room->getOtherPlayers(src)) {
-                                if (!src->isProhibited(p, card)) {
-                                    d << SkillInvokeDetail(this, src, src);
-                                    break;
-                                }
-                            }
-                        }
+                        if (card->isAvailable(src) && !src->isCardLimited(card, Card::MethodUse))
+                            d << SkillInvokeDetail(this, src, src);
                     }
                 }
                 return d;
@@ -986,6 +980,10 @@ public:
         filter_pattern = ".|spade,heart|.|hand";
     }
 
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
+    {
+        return matchAvaliablePattern("lightning", pattern);
+    }
 
     virtual const Card *viewAs(const Card *originalCard) const
     {

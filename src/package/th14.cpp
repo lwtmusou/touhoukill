@@ -734,7 +734,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        return pattern.contains("slash") && player->getPile("feitou").length() > 0;
+        return matchAvaliablePattern("slash", pattern) && player->getPile("feitou").length() > 0;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const

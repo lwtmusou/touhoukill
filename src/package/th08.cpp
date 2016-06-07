@@ -1116,7 +1116,8 @@ public:
         CardAskedStruct s = data.value<CardAskedStruct>();
         if (s.player == NULL || s.player->isDead() || !s.player->hasSkill(this))
             return QList<SkillInvokeDetail>();
-        if (s.pattern == "jink") {
+
+        if (matchAvaliablePattern("jink", s.pattern)) {
             Jink *jink = new Jink(Card::NoSuit, 0);
             jink->deleteLater();
             if (!s.player->isCardLimited(jink, s.method))
@@ -1470,7 +1471,7 @@ public:
     }
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        if ((!player->hasFlag("Global_huweiFailed") && pattern == "slash" && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)) {
+        if ((!player->hasFlag("Global_huweiFailed") && matchAvaliablePattern("slash", pattern) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)) {
             Slash *tmpslash = new Slash(Card::NoSuit, 0);
             tmpslash->deleteLater();
             if (player->isCardLimited(tmpslash, Card::MethodUse))
@@ -1499,7 +1500,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (triggerEvent == CardAsked) {
             CardAskedStruct s = data.value<CardAskedStruct>();
-            if (s.pattern == "slash" && s.player->hasSkill(this) && s.player->getPhase() != Player::Play) {
+            if (matchAvaliablePattern("slash", s.pattern) && s.player->hasSkill(this) && s.player->getPhase() != Player::Play) {
                 Slash *tmpslash = new Slash(Card::NoSuit, 0);
                 tmpslash->deleteLater();
                 if (!s.player->isCardLimited(tmpslash, s.method))

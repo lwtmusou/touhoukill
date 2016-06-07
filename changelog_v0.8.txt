@@ -245,7 +245,12 @@ alpha版0521联机版
 15 试做 神 古明地觉 （缺少UI）
 16 dld萃香结算更改
 17 旧幽香主公技替换
-18 新角色 神绮（缺1技）
+18 新角色 神绮
+19 因神绮的技能而修改以下技能
+五欲 七曜 战阵 华音 萤火 护卫
+雷云 神德 奇迹  嫉妒 百鬼 酒虫
+戏画 穿壁 飞头 华想 
+
 
 
 体系层面：硬伤
@@ -268,6 +273,8 @@ alpha版0521联机版
     所有 canDisCard  getCards(flags) 都需要重写
 53 UI层面 如何显示明牌区
 54 cardlimit   jk苗回合 加减【昼夜】的cardlimit有问题。。。
+55 被动使用aoe时 不同于出牌阶段，这个aoe可以用出来。。。 【百鬼】
+56 考虑将 奇迹 戏画  华想 的dialog分开写
 
 ai层面：希望改善的ai问题
 2 ai的 在使用拆顺的时候报错  可能和getarmor相关？ 可能和candiscard相关？   lua/ai/standard_cards-ai.lua:2987: attempt to index a nil value

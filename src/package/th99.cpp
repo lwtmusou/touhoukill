@@ -912,7 +912,7 @@ public:
         foreach (const Skill *skill, target->getVisibleSkillList()) {
             if (skill->isLordSkill() || skill->isAttachedLordSkill() || skill->getFrequency() == Skill::Limited || skill->getFrequency() == Skill::Wake || skill->getFrequency() == Skill::Eternal)
                 continue;
-
+            skill->matchAvaliablePattern("1", "2");
             if (!yori->hasSkill(skill, true) && target->hasSkill(skill))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, false, target);
         }

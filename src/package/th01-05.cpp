@@ -1024,7 +1024,92 @@ public:
 };
 
 
+SqChuangshiCard::SqChuangshiCard()
+{
+    will_throw = false;
+    handling_method = Card::MethodNone;
+}
 
+bool SqChuangshiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    return !targets.contains(to_select);
+}
+
+void SqChuangshiCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
+{
+    foreach(ServerPlayer *p, targets)
+        room->setPlayerMark(p, "sqchuangshi", 1);
+}
+
+class SqChuangshiVS : public ZeroCardViewAsSkill
+{
+public:
+    SqChuangshiVS() : ZeroCardViewAsSkill("sqchuangshi")
+    {
+        response_pattern = "@@sqchuangshi";
+    }
+
+
+    virtual const Card *viewAs() const
+    {
+            return new SqChuangshiCard;
+    }
+};
+
+class SqChuangshi : public TriggerSkill
+{
+public:
+    SqChuangshi() : TriggerSkill("sqchuangshi")
+    {
+        events << EventPhaseStart << DamageDone << EventPhaseChanging;
+        view_as_skill = new SqChuangshiVS;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == DamageDone) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from && damage.from->getMark("sqchuangshi") > 0)
+                room->setTag("sqchuangshiDamage", true);
+        } else if (triggerEvent == EventPhaseChanging) {
+            room->setTag("sqchuangshiDamage", false);
+            foreach(ServerPlayer *p, room->getAllPlayers())
+                room->setPlayerMark(p, "sqchuangshi", 0);
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e == EventPhaseStart) {
+             ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->hasSkill(this) && player->isAlive() && player->getPhase() == Player::Play)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        room->askForUseCard(invoke->invoker, "@@sqchuangshi", "@sqchuangshi");
+        foreach(ServerPlayer *p, room->getAllPlayers()) {
+            if (p->getMark("sqchuangshi") > 0)
+                invoke->targets << p;
+        }
+        return !invoke->targets.isEmpty();
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        foreach(ServerPlayer *p, invoke->targets) {
+            QVariant damageTag = room->getTag("sqchuangshiDamage");
+            bool damage = damageTag.canConvert(QVariant::Bool) && damageTag.toBool();
+            if (damage)
+                break;
+            room->askForUseCard(p, "BasicCard+^Jink,TrickCard+^Nullification,EquipCard", "@sqchuangshi_use", -1, Card::MethodUse, false, objectName());
+        }
+        return false;
+    }
+};
 
 class Yuanfa : public TriggerSkill
 {
@@ -1044,7 +1129,8 @@ public:
             }
         } else if (e == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            room->setPlayerMark(use.from, "yuanfa", 1);
+            if (!use.card->isKindOf("SkillCard"))
+                room->setPlayerMark(use.from, "yuanfa", 1);
         } else if (e == CardResponded) {
             CardResponseStruct response = data.value<CardResponseStruct>();
             if (response.m_isUse)
@@ -1062,7 +1148,7 @@ public:
 
         foreach(ServerPlayer *p, room->getAllPlayers()) {
             if (p->getMark("yuanfa") > 0)
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         }
         return QList<SkillInvokeDetail>();
     }
@@ -1115,7 +1201,9 @@ public:
         CardResponseStruct resp = data.value<CardResponseStruct>();
         resp.m_isNullified = true;
         data = QVariant::fromValue(resp);
-        
+
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        room->touhouLogmessage("#shenwei", resp.m_from, objectName(), QList<ServerPlayer *>(), resp.m_card->objectName());
         return false;
     }
 };
@@ -1163,6 +1251,7 @@ TH0105Package::TH0105Package()
     Q_UNUSED(elly);
 
     General *shinki = new General(this, "shinki$", "pc98", 4, false);
+    shinki->addSkill(new SqChuangshi);
     shinki->addSkill(new Yuanfa);
     shinki->addSkill(new Shenwei);
 
@@ -1170,6 +1259,7 @@ TH0105Package::TH0105Package()
     Q_UNUSED(alice);
 
     //addMetaObject<MenghuanCard>();
+    addMetaObject<SqChuangshiCard>();
 
     //skills << new MenghuanVS;
 }

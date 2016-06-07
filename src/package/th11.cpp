@@ -578,6 +578,10 @@ public:
         response_or_use = true;
     }
 
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
+    {
+        return matchAvaliablePattern("duel", pattern);
+    }
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
@@ -1078,7 +1082,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         int num = invoke->invoker->tag["cuiji"].toInt();
         invoke->invoker->tag.remove("cuiji");
@@ -1098,6 +1102,11 @@ public:
     {
         filter_pattern = ".|spade|.|hand";
         response_or_use = true;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
+    {
+        return matchAvaliablePattern("savage_assault", pattern);
     }
 
     virtual const Card *viewAs(const Card *originalCard) const
@@ -1128,7 +1137,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
     {
-        return pattern.contains("analeptic") && Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_RESPONSE;
+        return matchAvaliablePattern("analeptic", pattern) && Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_RESPONSE;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const

@@ -1908,6 +1908,37 @@ public:
 
     }
 
+    static QStringList responsePatterns() {
+        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+        //if (pattern.contains("peach"))
+        //    Sanguosha->playSystemAudioEffect("win");
+        Card::HandlingMethod method;
+        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+            method = Card::MethodResponse;
+        else
+            method = Card::MethodUse;
+
+        QStringList validPatterns;
+        validPatterns << "slash" << "analeptic";
+        if (Self->getMaxHp() <= 3)
+            validPatterns << "jink";
+        if (Self->getMaxHp() <= 2)
+            validPatterns << "peach";
+        //if (Self->getMaxHp() <= 1)
+        //    validPatterns << "nullification";
+        QStringList checkedPatterns;
+        foreach(QString str, validPatterns) {
+            const Skill *skill = Sanguosha->getSkill("huaxiang");
+            if (skill->matchAvaliablePattern(str, pattern)) {
+                Card *card = Sanguosha->cloneCard(str);
+                DELETE_OVER_SCOPE(Card, card)
+                if (!Self->isCardLimited(card, method))
+                    checkedPatterns << str;
+            }
+        }
+        return checkedPatterns;
+    }
+
     virtual bool isEnabledAtPlay(const Player *player) const
     {
         if (player->getPile("rainbow").length() > 3) return false;
@@ -1926,57 +1957,19 @@ public:
     {
         if (player->getPile("rainbow").length() > 3) return false;
         if (player->isKongcheng()) return false;
-        QStringList validPatterns;
-        validPatterns << "slash" << "analeptic";
-        if (player->getMaxHp() <= 3)
-            validPatterns << "jink";
-        if (player->getMaxHp() <= 2)
-            validPatterns << "peach";
-        if (player->getMaxHp() <= 1)
-            validPatterns << "nullification";
-        bool valid = false;
-        foreach (QString str, validPatterns) {
-            if (pattern.contains(str)) {
-                valid = true;
-                break;
-            }
-        }
-        if (!valid) return false;
 
-        if (pattern == "peach" && player->getMark("Global_PreventPeach") > 0) return false;
-        for (int i = 0; i < pattern.length(); i++) {
+        QStringList checkedPatterns = responsePatterns();
+        if (checkedPatterns.contains("peach")  && checkedPatterns.length() == 1
+            && player->getMark("Global_PreventPeach") > 0) return false;
+        //if (checkedPatterns.contains("jink"))
+
+        return !checkedPatterns.isEmpty();
+        /*for (int i = 0; i < pattern.length(); i++) {
             QChar ch = pattern[i];
             if (ch.isUpper() || ch.isDigit()) return false;
-        }
+        }*/
 
-        if (pattern == "slash" || pattern == "jink") {
-            Card *card = Sanguosha->cloneCard(pattern);
-            DELETE_OVER_SCOPE(Card, card)
-            return !player->isCardLimited(card, Card::MethodResponse, true);
-        }
-
-        if (pattern.contains("peach") && pattern.contains("analeptic")) {
-            Card *peach = Sanguosha->cloneCard("peach");
-            Card *ana = Sanguosha->cloneCard("analeptic");
-            DELETE_OVER_SCOPE(Card, peach)
-            DELETE_OVER_SCOPE(Card, ana)
-            return !player->isCardLimited(peach, Card::MethodResponse, true) ||
-                !player->isCardLimited(ana, Card::MethodResponse, true);
-        } else if (pattern == "peach") {
-            Card *peach = Sanguosha->cloneCard("peach");
-            DELETE_OVER_SCOPE(Card, peach)
-            return !player->isCardLimited(peach, Card::MethodResponse, true);
-        } else if (pattern == "analeptic") {
-            Card *ana = Sanguosha->cloneCard("analeptic");
-            DELETE_OVER_SCOPE(Card, ana)
-            return !player->isCardLimited(ana, Card::MethodResponse, true);
-        }
-
-        return true;
     }
-
-
-
 
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
@@ -1999,18 +1992,20 @@ public:
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE
             || Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-            if (pattern.contains("slash")) {
+
+            QStringList checkedPatterns = responsePatterns();
+            if (checkedPatterns.length() >1 || checkedPatterns.contains("slash")) {
                 const Card *c = Self->tag.value("huaxiang").value<const Card *>();
                 if (c)
                     pattern = c->objectName();
                 else
                     return NULL;
-            }
+            } else
+                pattern = checkedPatterns.first();
             HuaxiangCard *card = new HuaxiangCard;
             card->setUserString(pattern);
             card->addSubcards(cards);
             return card;
-
         }
 
         const Card *c = Self->tag.value("huaxiang").value<const Card *>();
