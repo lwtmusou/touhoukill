@@ -1001,9 +1001,7 @@ public:
     static bool do_cuiji(ServerPlayer *player)
     {
         Room *room = player->getRoom();
-        QString choice = room->askForChoice(player, "cuiji", "red+black+cancel");
-        if (choice == "cancel")
-            return false;
+        QString choice = room->askForChoice(player, "cuiji_suit", "red+black");
         bool isred = (choice == "red");
         room->touhouLogmessage("#cuiji_choice", player, "cuiji", QList<ServerPlayer *>(), choice);
         room->notifySkillInvoked(player, "cuiji");
@@ -1036,16 +1034,16 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         DrawNCardsStruct s = data.value<DrawNCardsStruct>();
-        int num = 0;
-        for (int i = 0; i < s.n; ++i) {
-            if (do_cuiji(invoke->invoker))
-                num++;
-            else
-                break;
-        }
+        QStringList choices;
+        int max = qMin(s.n, 2);
+        for (int i = 0; i <= max; ++i)
+            choices << QString::number(i);
+        QString choice = room->askForChoice(invoke->invoker, objectName(), choices.join("+"), data);
+        int num = choices.indexOf(choice);
+
         invoke->invoker->tag["cuiji"] = QVariant::fromValue(num);
         return num > 0;
     }
@@ -1054,7 +1052,7 @@ public:
     {
         DrawNCardsStruct draw = data.value<DrawNCardsStruct>();
         int minus = draw.player->tag["cuiji"].toInt();
-        draw.player->tag.remove("cuiji");
+        
         draw.n = draw.n - minus;
         data = QVariant::fromValue(draw);
         return false;
@@ -1062,6 +1060,36 @@ public:
 
 
 };
+
+class CuijiEffect : public TriggerSkill
+{
+public:
+    CuijiEffect() : TriggerSkill("#cuiji")
+    {
+        events << AfterDrawNCards;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        DrawNCardsStruct dc = data.value<DrawNCardsStruct>();
+        int num = dc.player->tag["cuiji"].toInt();
+        if (num > 0)
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dc.player, dc.player, NULL, true);
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        int num = invoke->invoker->tag["cuiji"].toInt();
+        invoke->invoker->tag.remove("cuiji");
+
+        for (int i = 0; i < num; ++i)
+            Cuiji::do_cuiji(invoke->invoker);
+
+        return false;
+    }
+};
+
 
 class Baigui : public OneCardViewAsSkill
 {
@@ -1165,8 +1193,10 @@ TH11Package::TH11Package()
 
     General *suika_sp = new General(this, "suika_sp", "dld", 3, false);
     suika_sp->addSkill(new Cuiji);
+    suika_sp->addSkill(new CuijiEffect);
     suika_sp->addSkill(new Baigui);
     suika_sp->addSkill(new Jiuchong);
+    related_skills.insertMulti("cuiji", "#cuiji");
 
     addMetaObject<MaihuoCard>();
     addMetaObject<YaobanCard>();
