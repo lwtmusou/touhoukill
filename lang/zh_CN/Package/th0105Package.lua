@@ -85,7 +85,8 @@ return {
 	["yeyan"] = "夜魇",
 	[":yeyan"] = "出牌阶段结束时，你可以摸X张牌（X为没有手牌的角色数）。",
 	["menghuan"] = "梦幻",
-	[":menghuan"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"green\"><b>其他旧势力角色的出牌阶段限一次，</b></font>其可以交给你一张锦囊牌。",
+	--[":menghuan"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"green\"><b>其他旧势力角色的出牌阶段限一次，</b></font>其可以交给你一张锦囊牌。",
+	[":menghuan"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"blue\"><b>锁定技，</b></font>你的手牌上限+x。（x为其他旧势力角色最大的体力值）",
 	["menghuan_attach"]= "梦幻",
 	[":menghuan_attach"]= "若你属于旧势力，你可于出牌阶段将一张锦囊牌交给拥有主公技“梦幻”的角色。每阶段限一次。",
 
@@ -108,11 +109,20 @@ return {
 	["#elly"] = "馆的门卫" ,
 
 
-	--pc98001 神绮
+	--pc98001 神绮 势力：旧 4血
 	["shinki"] = "神绮" ,
 	["#shinki"] = "魔界之神" ,
+	["sq_chuangshi"] = "创世",
+	[":sq_chuangshi"] = "出牌阶段开始时，你可以选择至少一名角色，直到其中一名角色造成伤害为止，这些角色依次可以使用一张牌。", 
+	["yuanfa"] = "源法",
+	[":yuanfa"] = "结束阶段开始时，你可以指定于此回合内使用过牌的所有角色，这些角色依次摸一张牌。",
+	["shenwei"] = "神威",
+	[":shenwei"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"blue\"><b>锁定技，</b></font>其他角色于你的回合内使用<font size=\"5\", color=\"#FF0000\"><b>♦</b></font>【闪】时，若其在不少于两名旧势力角色的攻击范围内，此牌无效。",
+
 	--pc98002 萝莉丝
 	["alice_old"] = "爱丽丝",
 	["!alice_old"] = "旧作爱丽丝" ,
 	["#alice_old"] = "死之少女" ,
+	
+	
 }
