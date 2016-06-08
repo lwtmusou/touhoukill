@@ -249,7 +249,7 @@ alpha版0521联机版
 19 因神绮的技能而修改以下技能
 五欲 七曜 战阵 华音 萤火 护卫
 雷云 神德 奇迹  嫉妒 百鬼 酒虫
-戏画 穿壁 飞头 华想 
+戏画 穿壁 飞头 华想  天人
 20 补充了一些新角色bgm和 backdrop（并不全）
 
 
@@ -275,6 +275,7 @@ alpha版0521联机版
 54 cardlimit   jk苗回合 加减【昼夜】的cardlimit有问题。。。
 55 被动使用aoe时 不同于出牌阶段，这个aoe可以用出来。。。 【百鬼】
 56 考虑将 奇迹 戏画  华想 的dialog分开写
+
 
 ai层面：希望改善的ai问题
 2 ai的 在使用拆顺的时候报错  可能和getarmor相关？ 可能和candiscard相关？   lua/ai/standard_cards-ai.lua:2987: attempt to index a nil value

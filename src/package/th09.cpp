@@ -866,7 +866,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        return hasZhanGenerals(player) && (pattern == "slash")
+        return hasZhanGenerals(player) && (matchAvaliablePattern("slash", pattern))
             && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
             && (!player->hasFlag("Global_tianrenFailed"))
             && !player->isCurrent();
@@ -898,10 +898,14 @@ public:
         QString pattern = s.pattern;
         QString prompt = s.prompt;
 
-        bool can = ((pattern == "slash") || (pattern == "jink"));
+        bool can = (matchAvaliablePattern("slash", pattern) || matchAvaliablePattern("jink", pattern));
         if ((!can) || prompt.startsWith("@tianren"))
             return QList<SkillInvokeDetail>();
 
+        if (matchAvaliablePattern("slash", pattern))
+            pattern = "slash";
+        else
+            pattern = "jink";
         Card *dummy = Sanguosha->cloneCard(pattern);
         DELETE_OVER_SCOPE(Card, dummy)
         if (player->isCardLimited(dummy, s.method))
@@ -919,7 +923,7 @@ public:
         QString pattern = s.pattern;
         //for ai  to add global flag
         //slashsource or jinksource
-        if (pattern == "slash")
+        if (matchAvaliablePattern("slash", pattern))
             room->setTag("tianren_slash", true);
         else
             room->setTag("tianren_slash", false);
@@ -929,6 +933,10 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         QString pattern = data.value<CardAskedStruct>().pattern;
+        if (matchAvaliablePattern("slash", pattern))
+            pattern = "slash";
+        else
+            pattern = "jink";
         QVariant tohelp = QVariant::fromValue((ServerPlayer *)invoke->invoker);
         foreach (ServerPlayer *liege, room->getLieges("zhan", invoke->invoker)) {
             const Card *resp = room->askForCard(liege, pattern, "@tianren-" + pattern + ":" + invoke->invoker->objectName(),
