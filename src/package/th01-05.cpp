@@ -1030,7 +1030,7 @@ SqChuangshiCard::SqChuangshiCard()
     handling_method = Card::MethodNone;
 }
 
-bool SqChuangshiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+bool SqChuangshiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
 {
     return !targets.contains(to_select);
 }
@@ -1078,7 +1078,7 @@ public:
         }
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
     {
         if (e == EventPhaseStart) {
              ServerPlayer *player = data.value<ServerPlayer *>();
@@ -1088,7 +1088,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         room->askForUseCard(invoke->invoker, "@@sqchuangshi", "@sqchuangshi");
         foreach(ServerPlayer *p, room->getAllPlayers()) {
@@ -1098,7 +1098,7 @@ public:
         return !invoke->targets.isEmpty();
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         foreach(ServerPlayer *p, invoke->targets) {
             QVariant damageTag = room->getTag("sqchuangshiDamage");
@@ -1196,7 +1196,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardResponseStruct resp = data.value<CardResponseStruct>();
         resp.m_isNullified = true;
