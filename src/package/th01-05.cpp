@@ -1105,7 +1105,7 @@ public:
             bool damage = damageTag.canConvert(QVariant::Bool) && damageTag.toBool();
             if (damage)
                 break;
-            room->askForUseCard(p, "BasicCard+^Jink,TrickCard+^Nullification,EquipCard", "@sqchuangshi_use", -1, Card::MethodUse, false, objectName());
+            room->askForUseCard(p, "BasicCard+^Jink,TrickCard+^Nullification,EquipCard|.|.|hand", "@sqchuangshi_use", -1, Card::MethodUse, false, objectName());
         }
         return false;
     }

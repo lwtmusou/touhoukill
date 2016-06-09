@@ -542,7 +542,7 @@ public:
         if (!current || !current->isAlive() || current == s.player || !s.player->hasSkill(this))
             return QList<SkillInvokeDetail>();
 
-        if (s.pattern == "jink") {
+        if (matchAvaliablePattern("jink", s.pattern)) {
             Jink *jink = new Jink(Card::NoSuit, 0);
             jink->deleteLater();
             if (s.player->isCardLimited(jink, s.method))

@@ -667,7 +667,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        return  pattern == "slash" && EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
+        return  matchAvaliablePattern("slash", pattern) && EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
