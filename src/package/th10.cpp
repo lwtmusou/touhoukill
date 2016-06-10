@@ -471,7 +471,7 @@ void QijiDialog::popup()
             }
         }
 
-        if (checkedPatterns.length() <= 1 && !checkedPatterns.contains("slash")) // && 
+        if (object_name != "chuangshi" && checkedPatterns.length() <= 1 && !checkedPatterns.contains("slash")) // && 
             doNotShow = true;
     }
     
