@@ -1910,8 +1910,7 @@ public:
 
     static QStringList responsePatterns() {
         QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-        //if (pattern.contains("peach"))
-        //    Sanguosha->playSystemAudioEffect("win");
+
         Card::HandlingMethod method;
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             method = Card::MethodResponse;
@@ -1924,8 +1923,8 @@ public:
             validPatterns << "jink";
         if (Self->getMaxHp() <= 2)
             validPatterns << "peach";
-        //if (Self->getMaxHp() <= 1)
-        //    validPatterns << "nullification";
+        if (Self->getMaxHp() <= 1)
+            validPatterns << "nullification";
         QStringList checkedPatterns;
         foreach(QString str, validPatterns) {
             const Skill *skill = Sanguosha->getSkill("huaxiang");
@@ -1961,7 +1960,6 @@ public:
         QStringList checkedPatterns = responsePatterns();
         if (checkedPatterns.contains("peach")  && checkedPatterns.length() == 1
             && player->getMark("Global_PreventPeach") > 0) return false;
-        //if (checkedPatterns.contains("jink"))
 
         return !checkedPatterns.isEmpty();
         /*for (int i = 0; i < pattern.length(); i++) {

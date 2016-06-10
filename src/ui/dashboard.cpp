@@ -1041,6 +1041,7 @@ void Dashboard::startPending(const ViewAsSkill *skill)
     pendings.clear();
     unselectAll();
 
+
     bool expand = (skill && skill->isResponseOrUse());
     if (!expand && skill && skill->inherits("ResponseSkill")) {
         const ResponseSkill *resp_skill = qobject_cast<const ResponseSkill *>(skill);
@@ -1049,6 +1050,7 @@ void Dashboard::startPending(const ViewAsSkill *skill)
     }
     if (Self->hasFlag("Global_expandpileFailed"))
         expand = true;
+
 
     foreach (const QString &pileName, _m_pile_expanded) {
         if (!(pileName.startsWith("&") || pileName == "wooden_ox" || pileName == "piao"))
@@ -1064,7 +1066,10 @@ void Dashboard::startPending(const ViewAsSkill *skill)
                 expandPileCards("piao");
 
         }
-        expandSpecialCard();
+        if (skill && skill->objectName() == "guaiqi")
+            expandPileCards("modian");
+        else
+            expandSpecialCard();
     } else {
         foreach (const QString &pile, Self->getPileNames()) {
             if (pile.startsWith("&") || pile == "wooden_ox" || pile == "piao")
