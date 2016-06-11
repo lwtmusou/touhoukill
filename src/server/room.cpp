@@ -1374,9 +1374,6 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
     _m_roomState.setCurrentCardUsePattern(pattern);
 
-    //we need check cardLimit at here , instead of check it in eghitDiagram cardasked?
-
-
     const Card *card = NULL;
     CardAskedStruct s;
     s.player = player;

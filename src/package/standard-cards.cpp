@@ -862,7 +862,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardAskedStruct ask = data.value<CardAskedStruct>();
-        if (ask.pattern != "jink")
+        if (!matchAvaliablePattern("jink", ask.pattern))
             return QList<SkillInvokeDetail>();
 
         ServerPlayer *player = ask.player;
@@ -872,13 +872,8 @@ public:
         //since skill yuanfei,we need check
         Card *jink = Sanguosha->cloneCard("jink");
         DELETE_OVER_SCOPE(Card, jink)
-        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
-            if (player->isCardLimited(jink, Card::MethodResponse))
-                return QList<SkillInvokeDetail>();
-        } else if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-            if (player->isCardLimited(jink, Card::MethodUse))
-                return QList<SkillInvokeDetail>();
-        }
+        if (player->isCardLimited(jink, ask.method))
+            return QList<SkillInvokeDetail>();
         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
     }
 
