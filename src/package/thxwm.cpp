@@ -23,7 +23,7 @@ public:
         if (player->getPhase() == Player::Play) {
             foreach (ServerPlayer *satori, room->findPlayersBySkillName(objectName())) {
                 if (satori->getHandcardNum() < 5 && player->getHandcardNum() > satori->getHandcardNum())
-                    d << SkillInvokeDetail(this, satori, satori, false, true);
+                    d << SkillInvokeDetail(this, satori, satori, NULL, true);
             }
         }
         return d;

@@ -352,9 +352,10 @@ public:
         invoke->targets.first()->setPhase(phase);
         room->broadcastProperty(invoke->targets.first(), "phase");
         RoomThread *thread = room->getThread();
-        if (!thread->trigger(EventPhaseStart, room, QVariant::fromValue(invoke->targets.first())))
-            thread->trigger(EventPhaseProceeding, room, QVariant::fromValue(invoke->targets.first()));
-        thread->trigger(EventPhaseEnd, room, QVariant::fromValue(invoke->targets.first()));
+        QVariant t = QVariant::fromValue(invoke->targets.first());
+        if (!thread->trigger(EventPhaseStart, room, t))
+            thread->trigger(EventPhaseProceeding, room, t);
+        thread->trigger(EventPhaseEnd, room, t);
 
         //invoke->targets.first()->setPhase(Player::??);
         //room->broadcastProperty(invoke->targets.first(), "phase");

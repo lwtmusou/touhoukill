@@ -5,6 +5,9 @@
 #include <QFile>
 #include <QBuffer>
 #include <QMessageBox>
+
+#include <cmath>
+
 using namespace QSanProtocol;
 
 Recorder::Recorder(QObject *parent)
