@@ -553,14 +553,8 @@ public:
                     if (src->hasFlag("henyi") && src->hasSkill(this)) {
                         ArcheryAttack *card = new ArcheryAttack(Card::NoSuit, 0);
                         card->deleteLater();
-                        if (!src->isCardLimited(card, Card::MethodUse)) {
-                            foreach(ServerPlayer *p, room->getOtherPlayers(src)) {
-                                if (!src->isProhibited(p, card)) {
-                                    d << SkillInvokeDetail(this, src, src);
-                                    break;
-                                }
-                            }
-                        }
+                        if (card->isAvailable(src) && !src->isCardLimited(card, Card::MethodUse))
+                            d << SkillInvokeDetail(this, src, src);
                     }
                 }
                 return d;
@@ -620,7 +614,7 @@ public:
         ServerPlayer *aya = data.value<ServerPlayer *>();
         if (aya->getPhase() == Player::Draw && aya->hasSkill(this)) {
             foreach(ServerPlayer *p, room->getOtherPlayers(aya)) {
-                if (aya->canDiscard(p, "h"))
+                if (aya->canDiscard(p, "hs"))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, aya, aya);
             }
         }
@@ -631,7 +625,7 @@ public:
     {
         QList<ServerPlayer *> players;
         foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-            if (invoke->invoker->canDiscard(p, "h"))
+            if (invoke->invoker->canDiscard(p, "hs"))
                 players << p;
         }
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, players, objectName(), "@toupai-select", true, true);
@@ -707,7 +701,7 @@ public:
         QList<SkillInvokeDetail> d;
         foreach(ServerPlayer *tenshi, room->findPlayersBySkillName(objectName())) {
             foreach(ServerPlayer *p, room->getAllPlayers()) {
-                if (!p->isKongcheng()) {
+                if (!p->isNude()) {
                     d << SkillInvokeDetail(this, tenshi, tenshi);
                     break;
                 }
@@ -721,7 +715,7 @@ public:
         JudgeStruct *judge = data.value<JudgeStruct *>();
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getAlivePlayers()) {
-            if (!p->isKongcheng())
+            if (!p->isNude())
                 targets << p;
         }
 
@@ -730,7 +724,7 @@ public:
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), prompt, true, true);
         invoke->invoker->tag.remove("feixiang_judge");
         if (target) {
-            int card_id = room->askForCardChosen(invoke->invoker, target, "h", objectName());
+            int card_id = room->askForCardChosen(invoke->invoker, target, "hes", objectName());
             room->showCard(target, card_id);
             invoke->targets << target;
             invoke->invoker->tag["feixiang_id"] = QVariant::fromValue(card_id);
@@ -872,7 +866,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        return hasZhanGenerals(player) && (pattern == "slash")
+        return hasZhanGenerals(player) && (matchAvaliablePattern("slash", pattern))
             && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
             && (!player->hasFlag("Global_tianrenFailed"))
             && !player->isCurrent();
@@ -904,10 +898,14 @@ public:
         QString pattern = s.pattern;
         QString prompt = s.prompt;
 
-        bool can = ((pattern == "slash") || (pattern == "jink"));
+        bool can = (matchAvaliablePattern("slash", pattern) || matchAvaliablePattern("jink", pattern));
         if ((!can) || prompt.startsWith("@tianren"))
             return QList<SkillInvokeDetail>();
 
+        if (matchAvaliablePattern("slash", pattern))
+            pattern = "slash";
+        else
+            pattern = "jink";
         Card *dummy = Sanguosha->cloneCard(pattern);
         DELETE_OVER_SCOPE(Card, dummy)
         if (player->isCardLimited(dummy, s.method))
@@ -925,7 +923,7 @@ public:
         QString pattern = s.pattern;
         //for ai  to add global flag
         //slashsource or jinksource
-        if (pattern == "slash")
+        if (matchAvaliablePattern("slash", pattern))
             room->setTag("tianren_slash", true);
         else
             room->setTag("tianren_slash", false);
@@ -935,6 +933,10 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         QString pattern = data.value<CardAskedStruct>().pattern;
+        if (matchAvaliablePattern("slash", pattern))
+            pattern = "slash";
+        else
+            pattern = "jink";
         QVariant tohelp = QVariant::fromValue((ServerPlayer *)invoke->invoker);
         foreach (ServerPlayer *liege, room->getLieges("zhan", invoke->invoker)) {
             const Card *resp = room->askForCard(liege, pattern, "@tianren-" + pattern + ":" + invoke->invoker->objectName(),
@@ -986,6 +988,10 @@ public:
         filter_pattern = ".|spade,heart|.|hand";
     }
 
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
+    {
+        return matchAvaliablePattern("lightning", pattern);
+    }
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
@@ -1124,7 +1130,7 @@ public:
             if (player->inMyAttackRange(p) && draw) {
                 targets << p;
             }
-            else if (player->inMyAttackRange(p) && !draw && player->canDiscard(p, "h")) {
+            else if (player->inMyAttackRange(p) && !draw && player->canDiscard(p, "hs")) {
                 targets << p;
             }
         }
@@ -1215,7 +1221,7 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        room->throwCard(room->askForCardChosen(invoke->invoker, invoke->targets.first(), "h", objectName(), false, Card::MethodDiscard), invoke->targets.first(), invoke->invoker);
+        room->throwCard(room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hs", objectName(), false, Card::MethodDiscard), invoke->targets.first(), invoke->invoker);
         return false;
     }
 };

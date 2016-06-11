@@ -30,8 +30,8 @@ PlayerCardDialog::PlayerCardDialog(const ClientPlayer *player, const QString &fl
     vlayout1->addWidget(createAvatar());
     vlayout1->addStretch();
 
-    if (flags.contains(handcard_flag))
-        vlayout2->addWidget(createHandcardButton());
+    if (flags.contains("h") || flags.contains("s"))
+        vlayout2->addWidget(createHandcardButton(flags));
 
     if (flags.contains(equip_flag))
         vlayout2->addWidget(createEquipArea());
@@ -60,14 +60,27 @@ QWidget *PlayerCardDialog::createAvatar()
     return box;
 }
 
-QWidget *PlayerCardDialog::createHandcardButton()
+QWidget *PlayerCardDialog::createHandcardButton(QString flags)
 {
+    QList<const Card *> cards = player->getHandcards();
+    QList<int> shownIds = player->getShownHandcards();
+    QList<int> unshownIds;
+    foreach(const Card *c, cards) {
+        if (!shownIds.contains(c->getEffectiveId()))
+            unshownIds << c->getEffectiveId();
+    }
+    QList<int> selectableIds;
+    if (flags.contains("h"))
+        selectableIds << unshownIds;
+    if (flags.contains("s"))
+        selectableIds << shownIds;
+
+
     if (!player->isKongcheng() && (Self == player || handcard_visible)) {
         QGroupBox *area = new QGroupBox(tr("Handcard area"));
         QVBoxLayout *layout = new QVBoxLayout;
-        QList<const Card *> cards = player->getHandcards();
-        for (int i = 0; i < cards.length(); i += 2) {
-            const Card *card = Sanguosha->getEngineCard(cards.at(i)->getId());
+        for (int i = 0; i < selectableIds.length(); i += 2) {
+            const Card *card = Sanguosha->getEngineCard(selectableIds.at(i));
             PlayerCardButton *button1 = new PlayerCardButton(card->getFullName());
             button1->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
 
@@ -75,8 +88,8 @@ QWidget *PlayerCardDialog::createHandcardButton()
             connect(button1, SIGNAL(clicked()), this, SLOT(emitId()));
 
             PlayerCardButton *button2 = NULL;
-            if (i < cards.length() - 1) {
-                card = Sanguosha->getEngineCard(cards.at(i + 1)->getId());;
+            if (i < selectableIds.length() - 1) {
+                card = Sanguosha->getEngineCard(selectableIds.at(i + 1));;
                 button2 = new PlayerCardButton(card->getFullName());
                 button2->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
 
@@ -100,10 +113,59 @@ QWidget *PlayerCardDialog::createHandcardButton()
         return area;
     }
 
+    if (!player->getShownHandcards().isEmpty() && flags.contains("s")) {
+        QGroupBox *area = new QGroupBox(tr("Handcard area"));
+        QVBoxLayout *layout = new QVBoxLayout;
+        for (int i = 0; i < shownIds.length(); i += 2) {
+            const Card *card = Sanguosha->getEngineCard(shownIds.at(i));
+            PlayerCardButton *button1 = new PlayerCardButton(card->getFullName());
+            button1->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
+            button1->setEnabled(!disabled_ids.contains(shownIds.at(i)) && (method != Card::MethodDiscard || Self->canDiscard(player, shownIds.at(i))));
+            mapper.insert(button1, card->getId());
+            connect(button1, SIGNAL(clicked()), this, SLOT(emitId()));
+
+            PlayerCardButton *button2 = NULL;
+            if (i < shownIds.length() - 1) {
+                card = Sanguosha->getEngineCard(shownIds.at(i + 1));;
+                button2 = new PlayerCardButton(card->getFullName());
+                button2->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
+                button2->setEnabled(!disabled_ids.contains(shownIds.at(i + 1)) && (method != Card::MethodDiscard || Self->canDiscard(player, shownIds.at(i + 1))));
+                mapper.insert(button2, card->getId());
+                connect(button2, SIGNAL(clicked()), this, SLOT(emitId()));
+            }
+            if (button1 && button2) {
+                QHBoxLayout *hlayout = new QHBoxLayout;
+                button1->setScale(0.65);
+                button2->setScale(0.65);
+                hlayout->addWidget(button1);
+                hlayout->addWidget(button2);
+                layout->addLayout(hlayout);
+            }
+            else {
+                Q_ASSERT(button1 != NULL);
+                layout->addWidget(button1);
+            }
+        }
+        int num = player->getHandcardNum() - shownIds.length();
+        if (num > 0 && flags.contains("h")) {
+            PlayerCardButton *button3 = new PlayerCardButton(tr("Handcard"));
+            button3->setObjectName("handcard_button");
+            button3->setDescription(tr("This guy has %1 hand card(s)").arg(num));
+            button3->setEnabled(method != Card::MethodDiscard || Self->canDiscard(player, "h"));
+            mapper.insert(button3, -1);
+            connect(button3, SIGNAL(clicked()), this, SLOT(emitId()));
+            layout->addWidget(button3);
+        }
+
+        area->setLayout(layout);
+        return area;
+    }
+
     PlayerCardButton *button = new PlayerCardButton(tr("Handcard"));
     button->setObjectName("handcard_button");
     int num = player->getHandcardNum();
-    if (num == 0) {
+    if (num == 0 || 
+        (flags.contains("s") && !flags.contains("h") && shownIds.isEmpty())) {
         button->setDescription(tr("This guy has no any hand cards"));
         button->setEnabled(false);
     } else {

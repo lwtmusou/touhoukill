@@ -229,7 +229,7 @@
     "magatamaImageSubArea": [0, 6, 22, 26], //for skill banling
     "magatamasBgVisible": true,
     "magatamasAnchor": ["rightBottom", [195, 260]], //right
-    "magatamasSubAnchor": ["rightTop", [195, 0]], //rightTop
+    "magatamasSubAnchor": ["leftBottom", [0, 260]], 
     "cardMoveArea": [-50, 65, 200, 130],
     "progressBarArea": ["bottomCenter", "bottomCenter", [-8, 0], [300, 18]],
     "progressBarHorizontal": true,
@@ -261,9 +261,9 @@
 //"width": 0,
 "textArea": [[19, 2, 112, 20], [20, 2, 44, 20], [9, 2, 40, 20]],
 "textAreaDown": [[20, 3, 112, 20], [21, 3, 44, 20], [10, 3, 40, 20]],
-"textFont": [["simkai", [13, 13, 2], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // wide
-             ["simkai", [13, 13, 1], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // medium
-             ["simkai", [13, 13, 0], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]]],  // narrow
+"textFont": [["fzktf", [13, 13, 2], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // wide
+             ["fzktf", [13, 13, 1], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // medium
+             ["fzktf", [13, 13, 0], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]]],  // narrow
 
 // The following settings override the text color defined above
 // xxButtonColor = [normalColor, downColor, disabledColor, hoverColor]

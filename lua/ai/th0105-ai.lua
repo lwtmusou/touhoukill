@@ -385,7 +385,7 @@ sgs.ai_skill_invoke.huantong = true
 local function  huantongValue(cards, self, damage, huantongDamage)
 	local tmp = damage
 	tmp.damage = huantongDamage
-	local tmp = self:touhouDamage(tmp, self.player, damage.to)
+	local tmp = self:touhouDamage(tmp, tmp.from, tmp.to)
 	local value = 0
 	if (tmp.damage < damage.damage and self:isFriend(damage.to)) or 
 	(tmp.damage > damage.damage and self:isEnemy(damage.to)) then
@@ -414,11 +414,9 @@ local function  huantongValue(cards, self, damage, huantongDamage)
 			end
 		end
 	end
-	if tmp.damage >= 2 and self.player:hasSkill("mengyan") and self.player:getPile("dream"):length() > 2 then
-		value = value + 2
-		if self.player:isWounded() or (self.player:objectName() == damage.to:objectName()) then
-			value = value + 2
-		end
+	if tmp.damage >= 2 and self.player:hasSkill("mengyan") and self.player:isWounded() then
+		-- recover count as 2 value
+		value = value + self.player:getPile("dream"):length()
 	end	
 	return value
 end
@@ -480,3 +478,5 @@ sgs.ai_cardneed.huantong = function(to, card, self)
 		or (not to:getOffensiveHorse() and  getCardsNum("OffensiveHorse",to,self.player)<1 and card:isKindOf("OffensiveHorse"))
 	end
 end
+
+sgs.ai_skill_invoke.mengyan = true

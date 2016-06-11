@@ -769,8 +769,11 @@ function SmartAI:hasDiaopingEffect(from,target)
 	return false, nil
 end
 
-
-sgs.ai_skill_choice.cuiji=function(self)
+sgs.ai_skill_choice.cuiji=function(self, choices, data)
+	local s = choices:split("+")
+	return s[#s]
+end
+sgs.ai_skill_choice.cuiji_suit =function(self)
 	if self:isWeak(self.player) then
 		return "red"
 	else

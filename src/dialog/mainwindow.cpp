@@ -75,7 +75,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     scene = NULL;
 
-    setWindowTitle(tr("TouhouSatsu") + "    " + Sanguosha->getVersionName());
+    setWindowTitle(tr("TouhouSatsu") + "    " + Sanguosha->getVersionName() + "    " + Sanguosha->getVersionNumber());
 
     connection_dialog = new ConnectionDialog(this);
     connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(exec()));

@@ -294,7 +294,7 @@ public:
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, use.to) {
                 if (p->hasSkill(this)) {
-                    bool invoke = p->isKongcheng();
+                    bool invoke = !p->isKongcheng();
                     if (!invoke) {
                         foreach (const Card *card, p->getEquips()) {
                             if (card->isRed()) {
@@ -433,7 +433,7 @@ public:
 
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *p, use.to) {
-            if (p->hasSkill(this) && use.from != p && p->canDiscard(use.from, "h"))
+            if (p->hasSkill(this) && use.from != p && p->canDiscard(use.from, "hs"))
                 d << SkillInvokeDetail(this, p, p, NULL, false, use.from);
         }
 
@@ -451,7 +451,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), use.from->objectName());
-        int id = room->askForCardChosen(invoke->invoker, use.from, "h", objectName(), false, Card::MethodDiscard);
+        int id = room->askForCardChosen(invoke->invoker, use.from, "hs", objectName(), false, Card::MethodDiscard);
         room->throwCard(id, use.from, invoke->invoker);
         return false;
     }
@@ -506,7 +506,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.from->hasSkill(this))
+        if (damage.from != NULL && damage.from->hasSkill(this))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
 
         return QList<SkillInvokeDetail>();
@@ -816,7 +816,7 @@ public:
         bool invoke = false;
         do {
             if (damage.to->isAlive() && damage.to->hasSkill(this)) {
-                if (damage.from != NULL && damage.to->canDiscard(damage.from, "he")) {
+                if (damage.from != NULL && damage.to->canDiscard(damage.from, "hes")) {
                     invoke = true;
                     break;
                 }
@@ -849,7 +849,7 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         QStringList select;
-        if (damage.from != NULL && damage.to->canDiscard(damage.from, "he"))
+        if (damage.from != NULL && damage.to->canDiscard(damage.from, "hes"))
             select << "discard";
 
         QList<ServerPlayer *> fieldcard;
@@ -888,9 +888,9 @@ public:
         room->notifySkillInvoked(player, objectName());
         if (choice == "discard") {
             for (int i = 0; i < 2; i++) {
-                if (!player->canDiscard(damage.from, "he"))
+                if (!player->canDiscard(damage.from, "hes"))
                     return;
-                int card_id = room->askForCardChosen(player, damage.from, "he", objectName(), false, Card::MethodDiscard);
+                int card_id = room->askForCardChosen(player, damage.from, "hes", objectName(), false, Card::MethodDiscard);
                 room->throwCard(card_id, damage.from, player);
             }
         } else if (choice == "discardfield") {

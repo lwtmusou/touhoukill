@@ -21,7 +21,7 @@ public:
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->getPhase() == Player::Start && player->getHandcardNum() < 3 && player->isAlive()) {
             foreach (ServerPlayer *src, room->findPlayersBySkillName(objectName())) {
-                if (src->canDiscard(src, "he"))
+                if (src->canDiscard(src, "hes"))
                     d << SkillInvokeDetail(this, src, src, NULL, false, player);
             }
         } else if (player->getPhase() == Player::Discard && player->getHandcardNum() < 3 && player->hasFlag(objectName())) {
@@ -264,7 +264,7 @@ public:
 
 
             foreach(ServerPlayer *src, room->findPlayersBySkillName(objectName())) {
-                if (src->canDiscard(target, "h")) {
+                if (src->canDiscard(target, "hs")) {
                     Slash *slash = new Slash(Card::NoSuit, 0);
                     slash->setSkillName("_" + objectName());
                     slash->deleteLater();
@@ -294,7 +294,7 @@ public:
 
         Slash *slash = new Slash(Card::NoSuit, 0);
         slash->setSkillName("_" + objectName());
-        int id = room->askForCardChosen(invoke->invoker, target, "h", objectName(), false, Card::MethodDiscard);
+        int id = room->askForCardChosen(invoke->invoker, target, "hs", objectName(), false, Card::MethodDiscard);
         room->throwCard(id, target, invoke->invoker);
         room->useCard(CardUseStruct(slash, target, use.from), false);
         return false;
@@ -409,7 +409,7 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "he", objectName());
+        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName());
         room->obtainCard(invoke->invoker, id, room->getCardPlace(id) != Player::PlaceHand);
         return false;
     }
@@ -457,7 +457,7 @@ public:
             ServerPlayer *current = data.value<ServerPlayer *>();
             if (!current || current->getPhase() != Player::Discard || !room->getTag("wuchang").toBool())
                 return d;
-            if (current->canDiscard(current, "h")) {
+            if (current->canDiscard(current, "hs")) {
                 foreach (ServerPlayer *src, room->findPlayersBySkillName(objectName())) {
                     if (src != current)
                         d << SkillInvokeDetail(this, src, src, NULL, false, current);
@@ -521,7 +521,7 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "he", objectName());
+        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName());
         room->obtainCard(invoke->invoker, id, room->getCardPlace(id) != Player::PlaceHand);
         return false;
     }
@@ -542,7 +542,7 @@ public:
         if (!current || !current->isAlive() || current == s.player || !s.player->hasSkill(this))
             return QList<SkillInvokeDetail>();
 
-        if (s.pattern == "jink") {
+        if (matchAvaliablePattern("jink", s.pattern)) {
             Jink *jink = new Jink(Card::NoSuit, 0);
             jink->deleteLater();
             if (s.player->isCardLimited(jink, s.method))
@@ -734,7 +734,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        return pattern.contains("slash") && player->getPile("feitou").length() > 0;
+        return matchAvaliablePattern("slash", pattern) && player->getPile("feitou").length() > 0;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const

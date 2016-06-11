@@ -25,7 +25,7 @@ GameRule::GameRule(QObject *)
         << SlashHit << SlashEffected << SlashProceed
         << ConfirmDamage << DamageDone << DamageComplete
         << StartJudge << FinishRetrial << FinishJudge
-        << ChoiceMade;
+        << ChoiceMade << BeforeCardsMove;
 
 }
 
@@ -718,6 +718,21 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     if (flag.startsWith("Global_") && flag.endsWith("Failed"))
                         room->setPlayerFlag(p, "-" + flag);
                 }
+            }
+            break;
+        }
+        case BeforeCardsMove:
+        {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
+            if (player) {
+                QList<int> shownIds;
+                foreach(int id, move.card_ids) {
+                    if (player->isShownHandcard(id))
+                        shownIds << id;
+                }
+                if (!shownIds.isEmpty())
+                    player->removeShownHandCards(shownIds);
             }
             break;
         }

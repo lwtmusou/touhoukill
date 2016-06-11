@@ -162,7 +162,13 @@ config = {
 		"yorihime->toyohime",
 		"youmu_ndj|youmu_slm->youmu",
 		"yukari_sp->yukari",
+		"ran_sp->ran",
+		"youki->youmu",
 		"yuyuko_sp->yuyuko",
-		"seiga_god->seiga"
+		"myouren->byakuren_god",
+		"leira->prismriver",
+		"cirno_sp->cirno",
+		"seiga_god->seiga",
+		"satori_god->satori"
 	}
 }

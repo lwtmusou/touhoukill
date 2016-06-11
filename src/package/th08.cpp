@@ -209,7 +209,7 @@ bool MiyaoCard::targetFilter(const QList<const Player *> &targets, const Player 
 void MiyaoCard::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
-    if (effect.to->canDiscard(effect.to, "h"))
+    if (effect.to->canDiscard(effect.to, "hs"))
         room->askForDiscard(effect.to, "miyao", 1, 1, false, false, "miyao_cardchosen");
 
     if (effect.to->isWounded()) {
@@ -623,7 +623,7 @@ public:
             use.nullified_list << "_ALL_TARGETS";
             data = QVariant::fromValue(use);
         }
-        if (src->canDiscard(src, "h"))
+        if (src->canDiscard(src, "hs"))
             room->askForDiscard(src, objectName(), 1, 1, false, false, "shishi_discard");
 
         return false;
@@ -1116,7 +1116,8 @@ public:
         CardAskedStruct s = data.value<CardAskedStruct>();
         if (s.player == NULL || s.player->isDead() || !s.player->hasSkill(this))
             return QList<SkillInvokeDetail>();
-        if (s.pattern == "jink") {
+
+        if (matchAvaliablePattern("jink", s.pattern)) {
             Jink *jink = new Jink(Card::NoSuit, 0);
             jink->deleteLater();
             if (!s.player->isCardLimited(jink, s.method))
@@ -1162,7 +1163,7 @@ public:
     static bool  hasChongqunTarget(ServerPlayer *player)
     {
         foreach(ServerPlayer *p, player->getRoom()->getOtherPlayers(player)) {
-            if (!p->isNude() && p->canDiscard(p, "he"))
+            if (!p->isNude() && p->canDiscard(p, "hes"))
                 return true;
         }
         return false;
@@ -1186,7 +1187,7 @@ public:
     {
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-            if (!p->isNude() && p->canDiscard(p, "he"))
+            if (!p->isNude() && p->canDiscard(p, "hes"))
                 targets << p;
         }
 
@@ -1470,11 +1471,18 @@ public:
     }
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        Slash *tmpslash = new Slash(Card::NoSuit, 0);
-        tmpslash->deleteLater();
-        if (player->isCardLimited(tmpslash, Card::MethodUse))
-            return false;
-        return (!player->hasFlag("Global_huweiFailed") && pattern == "slash" && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
+        if ((!player->hasFlag("Global_huweiFailed") && matchAvaliablePattern("slash", pattern) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)) {
+            Slash *tmpslash = new Slash(Card::NoSuit, 0);
+            tmpslash->deleteLater();
+            if (player->isCardLimited(tmpslash, Card::MethodUse))
+                return false;
+            //check avaliable target
+            foreach(const Player *p, player->getAliveSiblings()){
+                if (tmpslash->targetFilter(QList<const Player *>(), p, player))
+                    return true;
+            }
+        }
+        return false;
     }
 };
 
@@ -1492,7 +1500,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (triggerEvent == CardAsked) {
             CardAskedStruct s = data.value<CardAskedStruct>();
-            if (s.pattern == "slash" && s.player->hasSkill(this) && s.player->getPhase() != Player::Play) {
+            if (matchAvaliablePattern("slash", s.pattern) && s.player->hasSkill(this) && s.player->getPhase() != Player::Play) {
                 Slash *tmpslash = new Slash(Card::NoSuit, 0);
                 tmpslash->deleteLater();
                 if (!s.player->isCardLimited(tmpslash, s.method))

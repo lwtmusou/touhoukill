@@ -65,6 +65,7 @@ Dashboard::Dashboard(QGraphicsItem *widget) //QGraphicsPixmapItem *widget
 
 
     connect(Self, SIGNAL(chaoren_changed()), this, SLOT(updateChaoren()));
+    connect(Self, SIGNAL(showncards_changed()), this, SLOT(updateShown()));
 
 #ifdef Q_OS_WIN
     taskbarButton = new QWinTaskbarButton(this);
@@ -1040,6 +1041,7 @@ void Dashboard::startPending(const ViewAsSkill *skill)
     pendings.clear();
     unselectAll();
 
+
     bool expand = (skill && skill->isResponseOrUse());
     if (!expand && skill && skill->inherits("ResponseSkill")) {
         const ResponseSkill *resp_skill = qobject_cast<const ResponseSkill *>(skill);
@@ -1048,6 +1050,7 @@ void Dashboard::startPending(const ViewAsSkill *skill)
     }
     if (Self->hasFlag("Global_expandpileFailed"))
         expand = true;
+
 
     foreach (const QString &pileName, _m_pile_expanded) {
         if (!(pileName.startsWith("&") || pileName == "wooden_ox" || pileName == "piao"))
@@ -1063,7 +1066,10 @@ void Dashboard::startPending(const ViewAsSkill *skill)
                 expandPileCards("piao");
 
         }
-        expandSpecialCard();
+        if (skill && skill->objectName() == "guaiqi")
+            expandPileCards("modian");
+        else
+            expandSpecialCard();
     } else {
         foreach (const QString &pile, Self->getPileNames()) {
             if (pile.startsWith("&") || pile == "wooden_ox" || pile == "piao")
@@ -1257,6 +1263,12 @@ void Dashboard::updateChaoren() {
     expandSpecialCard();
 }
 
+void Dashboard::updateShown() {
+    updatePending();
+    adjustCards();
+    update();
+}
+
 void Dashboard::onCardItemClicked()
 {
     CardItem *card_item = qobject_cast<CardItem *>(sender());
@@ -1305,6 +1317,10 @@ void Dashboard::updatePending()
             item->setEnabled(view_as_skill->viewFilter(pended, item->getCard()));
         if (!item->isEnabled())
             animations->effectOut(item);
+        if (Self->isShownHandcard(item->getCard()->getEffectiveId())) {
+            item->setFootnote(Sanguosha->translate("showcard"));
+            item->showFootnote();
+        }
     }
 
     for (int i = 0; i < 5; i++) {

@@ -82,7 +82,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_SYNCHRONIZE_DISCARD_PILE] = &Client::synchronizeDiscardPile;
     m_callbacks[S_COMMAND_CARD_FLAG] = &Client::setCardFlag;
     m_callbacks[S_COMMAND_SET_SKILL_INVALIDITY] = &Client::setPlayerSkillInvalidity;
-
+    m_callbacks[S_COMMAND_SET_SHOWN_HANDCARD] = &Client::setShownHandCards;
 
 
     // interactive methods
@@ -220,6 +220,21 @@ void Client::setPlayerSkillInvalidity(const QVariant &arg)
         emit skill_invalidity_changed(player);
     }
 }
+
+void Client::setShownHandCards(const QVariant &card_var)
+{
+    JsonArray card_str = card_var.value<JsonArray>();
+    if (card_str.size() != 2) return;
+    if (!JsonUtils::isString(card_str[0])) return;
+
+    QString who = card_str[0].toString();
+    QList<int> card_ids;
+    JsonUtils::tryParse(card_str[1], card_ids);
+
+    ClientPlayer *player = getPlayer(who);
+    player->setShownHandcards(card_ids);
+}
+
 
 void Client::signup()
 {

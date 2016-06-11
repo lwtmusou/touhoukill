@@ -1152,6 +1152,22 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     trickEffect.from = from;
     trickEffect.to = to;
     QVariant data = QVariant::fromValue(trickEffect);
+
+    if (to->hasSkill("jinfa") && !trick->isKindOf("Nullification")) {
+        Nullification *nul = new Nullification(Card::NoSuit, 0);
+        nul->setSkillName("jinfa");
+        if (to->isCardLimited(nul, Card::MethodUse))
+            delete nul;
+        else {
+            useCard(CardUseStruct(nul, to, QList<ServerPlayer *>()));
+            //process effect like "weiya" 
+            if (to->hasFlag("nullifiationNul"))
+                setPlayerFlag(to, "-nullifiationNul");
+            else
+                return !_askForNullification(nul, to, to, !positive, aiHelper);
+        }
+    }
+        
     foreach (ServerPlayer *player, m_alivePlayers) {
         if (player->hasNullification()) {
             if (!thread->trigger(TrickCardCanceling, this, data)) {
@@ -1258,6 +1274,23 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
         notifySkillInvoked(player, "duxin");
         doAnimate(S_ANIMATE_INDICATE, player->objectName(), who->objectName());
     }
+        
+    QList<int> shownHandcards = who->getShownHandcards();
+    QList<int> unknownHandcards = who->handCards();
+    foreach(int id, shownHandcards)
+        unknownHandcards.removeOne(id);
+    
+    //At first,collect selectable cards, and selectable knowncards
+    QList<const Card *> cards = who->getCards(flags);
+    QList<const Card *> knownCards = who->getCards(flags);
+    foreach(const Card *card, cards) {
+        if ((method == Card::MethodDiscard && !player->canDiscard(who, card->getEffectiveId(), reason)) || disabled_ids.contains(card->getEffectiveId())) {
+            cards.removeOne(card);
+            knownCards.removeOne(card);
+        } else if (unknownHandcards.contains(card->getEffectiveId()))
+            knownCards.removeOne(card);
+    }
+    Q_ASSERT(!cards.isEmpty());
 
     if (handcard_visible && !who->isKongcheng()) {
         QList<int> handcards = who->handCards();
@@ -1266,22 +1299,21 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
         arg << JsonUtils::toJsonArray(handcards);
         doNotify(player, S_COMMAND_SET_KNOWN_CARDS, arg);
     }
+
+    //secondly, if can not choose visible(known) cards, then randomly choose a card.
     int card_id = Card::S_UNKNOWN_CARD_ID;
-    if (who != player && !handcard_visible
-        && (flags == "h"
-        || (flags == "he" && !who->hasEquip())
-        || (flags == "hej" && !who->hasEquip() && who->getJudgingArea().isEmpty())))
-        card_id = who->getRandomHandCardId();
+    /*bool needSelect = false;
+    if (knownCards.length() < cards.length() && cards.length() > 1) {
+        if (who == player || handcard_visible)
+            needSelect = true;
+    }*/
+
+    //if (!needSelect)
+    if (who != player && !handcard_visible && knownCards.isEmpty())
+        card_id = cards.at(qrand() % cards.length())->getId();
+        //card_id = who->getRandomHandCardId();
     else {
         AI *ai = player->getAI();
-
-        QList<const Card *> cards = who->getCards(flags);
-        foreach (const Card *card, cards) {
-            if ((method == Card::MethodDiscard && !player->canDiscard(who, card->getEffectiveId(), reason)) || disabled_ids.contains(card->getEffectiveId()))
-                cards.removeOne(card);
-        }
-        Q_ASSERT(!cards.isEmpty());
-
         if (ai) {
             thread->delay();
             card_id = ai->askForCardChosen(who, flags, reason, method);
@@ -1302,8 +1334,12 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
             } else
                 card_id = clientReply.toInt();
 
-            if (card_id == Card::S_UNKNOWN_CARD_ID)
-                card_id = who->getRandomHandCardId();
+            if (card_id == Card::S_UNKNOWN_CARD_ID) {
+                if (shownHandcards.isEmpty())
+                    card_id = who->getRandomHandCardId();
+                else 
+                    card_id = unknownHandcards.at(qrand() % unknownHandcards.length());
+            }
         }
 
         if (!cards.contains(Sanguosha->getCard(card_id)))
@@ -1337,9 +1373,6 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     notifyMoveFocus(player, S_COMMAND_RESPONSE_CARD);
 
     _m_roomState.setCurrentCardUsePattern(pattern);
-
-    //we need check cardLimit at here , instead of check it in eghitDiagram cardasked?
-
 
     const Card *card = NULL;
     CardAskedStruct s;
@@ -4575,8 +4608,9 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
 {
     if (players.isEmpty()) players = m_players;
     // process dongcha
-    ServerPlayer *dongchaee = findChild<ServerPlayer *>(tag.value("Dongchaee").toString());
-    ServerPlayer *dongchaer = findChild<ServerPlayer *>(tag.value("Dongchaer").toString());
+    //ServerPlayer *dongchaee = findChild<ServerPlayer *>(tag.value("Dongchaee").toString());
+    //ServerPlayer *dongchaer = findChild<ServerPlayer *>(tag.value("Dongchaer").toString());
+    
     // Notify clients
     int moveId;
     if (isLostPhase)
@@ -4606,9 +4640,9 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                 || cards_moves[i].from_place == Player::PlaceTable
                 || cards_moves[i].to_place == Player::PlaceTable
                 // any card from/to place table should be visible
-                || player->hasFlag("Global_GongxinOperator")
+                || player->hasFlag("Global_GongxinOperator");
                 // the player put someone's cards to the drawpile
-                || (player != NULL && player == dongchaer && (cards_moves[i].isRelevant(dongchaee)));
+                //|| (player != NULL && player == dongchaer && (cards_moves[i].isRelevant(dongchaee)));
             // card from/to dongchaee is also visible to dongchaer
             arg << cards_moves[i].toVariant();
         }

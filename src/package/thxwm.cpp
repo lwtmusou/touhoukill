@@ -255,7 +255,7 @@ public:
         if (!damage.to->hasSkill(this) || damage.to->isDead())
             return QList<SkillInvokeDetail>();
         foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (damage.to->canDiscard(p, "h"))
+            if (damage.to->canDiscard(p, "hs"))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
         }
         return QList<SkillInvokeDetail>();
@@ -266,13 +266,13 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         QList<ServerPlayer *> targets;
         foreach(ServerPlayer *p, room->getAllPlayers()) {
-            if (damage.to->canDiscard(p, "h"))
+            if (damage.to->canDiscard(p, "hs"))
                 targets << p;
         }
 
         ServerPlayer *victim = room->askForPlayerChosen(damage.to, targets, objectName(), "@jubao-select", true, true);
         if (victim) {
-            int id = room->askForCardChosen(damage.to, victim, "h", objectName(), false, Card::MethodDiscard);
+            int id = room->askForCardChosen(damage.to, victim, "hs", objectName(), false, Card::MethodDiscard);
             room->throwCard(id, victim, damage.to);
             invoke->targets << victim;
             damage.to->tag["jubao_id"] = QVariant::fromValue(id);

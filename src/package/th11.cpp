@@ -40,7 +40,7 @@ public:
         invoke->invoker->tag["xiangqi_card"] = QVariant::fromValue(damage.card);
         if (invoke->invoker->askForSkillInvoke("xiangqi", prompt)) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), damage.from->objectName());
-            int id = room->askForCardChosen(invoke->invoker, damage.from, "h", objectName());
+            int id = room->askForCardChosen(invoke->invoker, damage.from, "hs", objectName());
             room->showCard(damage.from, id);
             invoke->invoker->tag["xiangqi_id"] = QVariant::fromValue(id);
             return true;
@@ -290,7 +290,7 @@ public:
             return QList<SkillInvokeDetail>();
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *utsuho, room->findPlayersBySkillName(objectName())) {
-            if (utsuho->canDiscard(utsuho, "h"))
+            if (utsuho->canDiscard(utsuho, "hs"))
                 d << SkillInvokeDetail(this, utsuho, utsuho);
         }
         return d;
@@ -362,7 +362,7 @@ public:
         //remain the information of origianl card
         new_slash->setSkillName(use.card->getSkillName());
         QStringList flags = use.card->getFlags();
-        foreach(QString flag, flags)
+        foreach(const QString &flag, flags)
             new_slash->setFlags(flag);
         use.card = new_slash;
         data = QVariant::fromValue(use);
@@ -462,7 +462,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if (effect.to->isAlive() && effect.from->hasSkill(this) && effect.from->canDiscard(effect.from, "h"))
+        if (effect.to->isAlive() && effect.from->hasSkill(this) && effect.from->canDiscard(effect.from, "hs"))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.from, effect.from);
         return QList<SkillInvokeDetail>();
     }
@@ -578,6 +578,10 @@ public:
         response_or_use = true;
     }
 
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
+    {
+        return matchAvaliablePattern("duel", pattern);
+    }
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
@@ -912,7 +916,7 @@ public:
 
     void onDamaged(Room *room, QSharedPointer<SkillInvokeDetail> invoke, const DamageStruct &) const
     {
-        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "h", objectName());
+        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hs", objectName());
         room->obtainCard(invoke->invoker, id, false);
     }
 };
@@ -1001,9 +1005,7 @@ public:
     static bool do_cuiji(ServerPlayer *player)
     {
         Room *room = player->getRoom();
-        QString choice = room->askForChoice(player, "cuiji", "red+black+cancel");
-        if (choice == "cancel")
-            return false;
+        QString choice = room->askForChoice(player, "cuiji_suit", "red+black");
         bool isred = (choice == "red");
         room->touhouLogmessage("#cuiji_choice", player, "cuiji", QList<ServerPlayer *>(), choice);
         room->notifySkillInvoked(player, "cuiji");
@@ -1036,16 +1038,16 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         DrawNCardsStruct s = data.value<DrawNCardsStruct>();
-        int num = 0;
-        for (int i = 0; i < s.n; ++i) {
-            if (do_cuiji(invoke->invoker))
-                num++;
-            else
-                break;
-        }
+        QStringList choices;
+        int max = qMin(s.n, 2);
+        for (int i = 0; i <= max; ++i)
+            choices << QString::number(i);
+        QString choice = room->askForChoice(invoke->invoker, objectName(), choices.join("+"), data);
+        int num = choices.indexOf(choice);
+
         invoke->invoker->tag["cuiji"] = QVariant::fromValue(num);
         return num > 0;
     }
@@ -1054,7 +1056,7 @@ public:
     {
         DrawNCardsStruct draw = data.value<DrawNCardsStruct>();
         int minus = draw.player->tag["cuiji"].toInt();
-        draw.player->tag.remove("cuiji");
+        
         draw.n = draw.n - minus;
         data = QVariant::fromValue(draw);
         return false;
@@ -1063,6 +1065,36 @@ public:
 
 };
 
+class CuijiEffect : public TriggerSkill
+{
+public:
+    CuijiEffect() : TriggerSkill("#cuiji")
+    {
+        events << AfterDrawNCards;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        DrawNCardsStruct dc = data.value<DrawNCardsStruct>();
+        int num = dc.player->tag["cuiji"].toInt();
+        if (num > 0)
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dc.player, dc.player, NULL, true);
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        int num = invoke->invoker->tag["cuiji"].toInt();
+        invoke->invoker->tag.remove("cuiji");
+
+        for (int i = 0; i < num; ++i)
+            Cuiji::do_cuiji(invoke->invoker);
+
+        return false;
+    }
+};
+
+
 class Baigui : public OneCardViewAsSkill
 {
 public:
@@ -1070,6 +1102,11 @@ public:
     {
         filter_pattern = ".|spade|.|hand";
         response_or_use = true;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
+    {
+        return matchAvaliablePattern("savage_assault", pattern);
     }
 
     virtual const Card *viewAs(const Card *originalCard) const
@@ -1100,7 +1137,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
     {
-        return pattern.contains("analeptic") && Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_RESPONSE;
+        return matchAvaliablePattern("analeptic", pattern) && Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_RESPONSE;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const
@@ -1165,8 +1202,10 @@ TH11Package::TH11Package()
 
     General *suika_sp = new General(this, "suika_sp", "dld", 3, false);
     suika_sp->addSkill(new Cuiji);
+    suika_sp->addSkill(new CuijiEffect);
     suika_sp->addSkill(new Baigui);
     suika_sp->addSkill(new Jiuchong);
+    related_skills.insertMulti("cuiji", "#cuiji");
 
     addMetaObject<MaihuoCard>();
     addMetaObject<YaobanCard>();

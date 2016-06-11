@@ -49,10 +49,11 @@ bool Slash::IsAvailable(const Player *player, const Card *slash, bool considerSp
         if ((!has_weapon && player->hasWeapon("Crossbow")) || player->canSlashWithoutCrossbow(THIS_SLASH))
             return true;
         int used = player->getSlashCount();
-        int valid = 1 + Sanguosha->correctCardTarget(TargetModSkill::Residue, player, newslash);
+
+        int valid = 1 + Sanguosha->correctCardTarget(TargetModSkill::Residue, player, THIS_SLASH);
         if ((!has_weapon && player->hasWeapon("VSCrossbow")) && used < valid + 3)
             return true;
-
+        
         if (considerSpecificAssignee) {
             QStringList assignee_list = player->property("extra_slash_specific_assignee").toString().split("+");
             if (!assignee_list.isEmpty()) {
@@ -123,6 +124,10 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
                 if (!isVirtualCard() || subcardsLength() > 0)
                     fire_slash->addSubcard(this);
                 fire_slash->setSkillName("Fan");
+                QStringList flags = use.card->getFlags();
+                foreach(const QString &flag, flags)
+                    fire_slash->setFlags(flag);
+
                 bool can_use = true;
                 foreach (ServerPlayer *p, use.to) {
                     if (!player->canSlash(p, fire_slash, false)) {
@@ -518,7 +523,7 @@ public:
     {
         bool draw_card = false;
 
-        if (!invoke->targets.first()->canDiscard(invoke->targets.first(), "h"))
+        if (!invoke->targets.first()->canDiscard(invoke->targets.first(), "hs"))
             draw_card = true;
         else {
             QString prompt = "double-sword-card:" + invoke->invoker->objectName();
@@ -647,12 +652,22 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return Slash::IsAvailable(player) && EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
+        bool avalilable = Slash::IsAvailable(player);
+        //consider targetmod skill like "xiubu" need check specific card with subcards
+        if (player->getMark("xiubu") && player->getHandcardNum() <= 2) {
+            Slash *slash = new Slash(Card::SuitToBeDecided, 0);
+            slash->setSkillName(objectName());
+            slash->addSubcards(player->getHandcards());
+            if (!player->isCardLimited(slash, Card::MethodUse))
+                avalilable = true;
+        }
+            
+        return avalilable && EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        return  pattern == "slash" && EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
+        return  matchAvaliablePattern("slash", pattern) && EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
@@ -847,7 +862,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardAskedStruct ask = data.value<CardAskedStruct>();
-        if (ask.pattern != "jink")
+        if (!matchAvaliablePattern("jink", ask.pattern))
             return QList<SkillInvokeDetail>();
 
         ServerPlayer *player = ask.player;
@@ -857,13 +872,8 @@ public:
         //since skill yuanfei,we need check
         Card *jink = Sanguosha->cloneCard("jink");
         DELETE_OVER_SCOPE(Card, jink)
-        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
-            if (player->isCardLimited(jink, Card::MethodResponse))
-                return QList<SkillInvokeDetail>();
-        } else if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-            if (player->isCardLimited(jink, Card::MethodUse))
-                return QList<SkillInvokeDetail>();
-        }
+        if (player->isCardLimited(jink, ask.method))
+            return QList<SkillInvokeDetail>();
         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
     }
 
@@ -1310,7 +1320,7 @@ void Snatch::onEffect(const CardEffectStruct &effect) const
 
     Room *room = effect.to->getRoom();
     bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical");
-    QString flag = using_2013 ? "he" : "hej";
+    QString flag = using_2013 ? "hes" : "hejs";
     int card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName());
     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
     room->obtainCard(effect.from, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
@@ -1335,7 +1345,7 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
 
     Room *room = effect.to->getRoom();
     bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical");
-    QString flag = using_2013 ? "he" : "hej";
+    QString flag = using_2013 ? "hes" : "hejs";
     if (!effect.from->canDiscard(effect.to, flag))
         return;
 
@@ -1356,7 +1366,7 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
             log.card_str = IntList2StringList(effect.to->handCards()).join("+");
             room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
 
-            card_id = room->askForCardChosen(effect.from, effect.to, "h", objectName(), true, Card::MethodDiscard);
+            card_id = room->askForCardChosen(effect.from, effect.to, "hs", objectName(), true, Card::MethodDiscard);
             //Fs: I want to use room->doGongxin here
         }
     }
@@ -1436,7 +1446,7 @@ public:
         if (!equipAvailable(damage.from, EquipCard::WeaponLocation, objectName(), damage.to))
             return QList<SkillInvokeDetail>();
 
-        if (damage.card && damage.by_user && damage.card->isKindOf("Slash") && damage.from->canDiscard(damage.to, "he") && !damage.chain && !damage.transfer && damage.from != damage.to)
+        if (damage.card && damage.by_user && damage.card->isKindOf("Slash") && damage.from->canDiscard(damage.to, "hes") && !damage.chain && !damage.transfer && damage.from != damage.to)
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
 
         return QList<SkillInvokeDetail>();
@@ -1450,12 +1460,12 @@ public:
         room->setEmotion(from, "weapon/ice_sword");
 
 
-        if (from->canDiscard(to, "he")) {
-            int card_id = room->askForCardChosen(from, to, "he", "IceSword", false, Card::MethodDiscard);
+        if (from->canDiscard(to, "hes")) {
+            int card_id = room->askForCardChosen(from, to, "hes", "IceSword", false, Card::MethodDiscard);
             room->throwCard(Sanguosha->getCard(card_id), to, from);
 
-            if (from->isAlive() && to->isAlive() && from->canDiscard(to, "he")) {
-                card_id = room->askForCardChosen(from, to, "he", "IceSword", false, Card::MethodDiscard);
+            if (from->isAlive() && to->isAlive() && from->canDiscard(to, "hes")) {
+                card_id = room->askForCardChosen(from, to, "hes", "IceSword", false, Card::MethodDiscard);
                 room->throwCard(Sanguosha->getCard(card_id), to, from);
             }
         }

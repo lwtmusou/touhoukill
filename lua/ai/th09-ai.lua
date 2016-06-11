@@ -380,25 +380,51 @@ sgs.ai_playerchosen_intention.toupai = 60
 
 sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 	local judge=self.player:getTag("feixiang_judge"):toJudge()
-	local card_id =self.player:getTag("feixiang_id"):toInt()
 	local cards={}
 	table.insert(cards,judge.card)
 	local ex_id=self:getRetrialCardId(cards, judge)
 	--ex_id==-1
-	if ex_id ~=-1 then
-		if judge.reason=="lightning" then
-			return nil
-		end
-	end
-	local new_targets={}
+	--if ex_id ~=-1 then
+	--	if judge.reason=="lightning" then
+	--		return nil
+	--	end
+	--end
+	
+	local retrial_targets={}
 	for _,target in sgs.qlist(targets) do
-		if self:touhouHandCardsFix(target) and #self.enemies>1 then
-			continue
+		local e_value = 0
+		for _, card in sgs.qlist(target:getCards("e")) do
+			local cards1={}
+			table.insert(cards1,card)
+			local self_card =  target:objectName()== self.player:objectName()
+			local new_id=self:getRetrialCardId(cards1, judge,self_card)
+			if new_id ~= -1 then
+				if (self:isEnemy(target)) then
+					e_value = e_value + 100
+				elseif (self:isFriend(target) and ex_id ~= -1) then
+					e_value = e_value + 30
+				elseif (not self:isFriend(target) and ex_id == -1) then
+					e_value = e_value + 50
+				end
+				break
+			elseif (self:isEnemy(target)) then
+				e_value = e_value + 5
+			end
 		end
-		if not target:isKongcheng() and self:isEnemy(target) then
-			if ex_id== -1 then
-				table.insert(new_targets,target)
-			else
+		
+		local array={player= target, value= e_value}
+		table.insert(retrial_targets,array)
+		
+		if e_value > 0  or self:touhouHandCardsFix(target) then continue end
+		
+		
+		if not target:isKongcheng()  then
+			if ex_id == -1 then
+			    if self:isEnemy(target) then
+					local array={player= target, value = 5 - target:getHandcards():length()}
+					table.insert(retrial_targets,array)
+				end
+			elseif self:isEnemy(target) then
 				local count=0
 				for _, card in sgs.qlist(target:getHandcards()) do
 					local flag = string.format("%s_%s_%s", "visible", global_room:getCurrent():objectName(), target:objectName())
@@ -407,25 +433,61 @@ sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 						table.insert(cards1,card)
 						local self_card =  target:objectName()== self.player:objectName()
 						local new_id=self:getRetrialCardId(cards1, judge,self_card)
-						if new_id==-1 then
-							count=count+1
+						if new_id ~=-1 then
+							count= count + 1 
 						end
 					end
 				end
-				local rate= count/ target:getHandcardNum()
-				if rate <= 1/2 then
-					table.insert(new_targets,target)
-				end
+				local array={player= target, value = 5 - target:getHandcards():length() + count}
+				table.insert(retrial_targets,array)
 			end
 		end
 	end
-	self:sort(new_targets, "chaofeng")
-	if #new_targets>0 then
-		return new_targets[1]
+	local compare_func = function(a, b)
+		return a.value > b.value
+	end
+	table.sort(retrial_targets, compare_func)
+	if #retrial_targets>0 then
+		return retrial_targets[1]
 	end
 	return nil
 end
-
+sgs.ai_skill_cardchosen.feixiang = function(self, who, flags)
+	local judge=self.player:getTag("feixiang_judge"):toJudge()
+	local cards={}
+	table.insert(cards,judge.card)
+	local ex_id=self:getRetrialCardId(cards, judge)
+	local r_cards = {}
+	local other_cards = {}
+	for _, card in sgs.qlist(who:getCards("e")) do
+		local cards1={}
+		table.insert(cards1,card)
+		local self_card =  who:objectName()== self.player:objectName()
+		local new_id=self:getRetrialCardId(cards1, judge,self_card)
+		if new_id ~= -1 then
+			table.insert(r_cards, card)
+		else
+			table.insert(other_cards, card)
+		end
+	end
+	self:sortByUseValue(r_cards, true)
+	if #r_cards > 0 then return r_cards[1] end
+	self:sortByUseValue(other_cards, true)
+	if #other_cards > 0 then return other_cards[1] end
+	local hands = who:getCards("h")
+	if who:objectName() == sele.player:objectName() then
+		for _, card in sgs.qlist(hands) do
+			local cards1={}
+			table.insert(cards1,card)
+			local self_card =  who:objectName()== self.player:objectName()
+			local new_id=self:getRetrialCardId(cards1, judge,self_card)
+			if new_id ~= -1 then
+				return card
+			end 
+		end
+	end
+	return hands:at(math.random(0, hands:length() - 1))
+end
 
 sgs.ai_playerchosen_intention.feixiang = 50
 

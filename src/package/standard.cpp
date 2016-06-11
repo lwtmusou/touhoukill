@@ -225,6 +225,7 @@ void AOE::onUse(Room *room, const CardUseStruct &card_use) const
     TrickCard::onUse(room, use);
 }
 
+
 QString SingleTargetTrick::getSubtype() const
 {
     return "single_target_trick";

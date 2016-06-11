@@ -425,7 +425,7 @@ void SuodingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
         } else {
             for (int i = 0; i < map[sp]; i++) {
                 if (!sp->isKongcheng()) {
-                    int card_id = room->askForCardChosen(source, sp, "h", "suoding"); // fakemove/getrandomhandcard(without 2nd general!!!!)
+                    int card_id = room->askForCardChosen(source, sp, "hs", "suoding"); // fakemove/getrandomhandcard(without 2nd general!!!!)
                     sp->addToPile("suoding_cards", card_id, false);
                 }
             }
@@ -665,7 +665,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        return  pattern.contains("peach")
+        return  matchAvaliablePattern("peach", pattern)
             && !player->isCurrent()
             && player->getMark("Global_PreventPeach") == 0
             && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
