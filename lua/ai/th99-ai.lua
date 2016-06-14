@@ -246,7 +246,8 @@ xiufu_skill.name = "xiufu"
 table.insert(sgs.ai_skills, xiufu_skill)
 xiufu_skill.getTurnUseCard = function(self)
 
-	if self.player:hasUsed("XiufuCard") then return nil end
+	--if self.player:hasUsed("XiufuCard") then return nil end
+	if self.player:hasFlag("xiufu_used") then return nil end
 	--or self.player:hasFlag("Global_xiufuFailed")
 	local ids = equip_in_discardpile(self)
 	if #ids == 0 then return nil end

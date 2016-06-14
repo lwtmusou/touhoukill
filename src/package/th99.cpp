@@ -254,15 +254,20 @@ void XiufuCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
     ServerPlayer *mori = card_use.from;
     if (mori->isOnline()) {
-        if (!putToPile(room, mori))
+        if (!putToPile(room, mori)) {
+            room->setPlayerFlag(mori, "Global_xiufuFailed");
             return;
+        }
 
         bool used = room->askForUseCard(mori, "@@xiufumove", "@xiufu-move", -1, Card::MethodNone, true, "xiufu");
 
         cleanUp(room, mori);
-        if (!used)
+        if (!used) {
+            room->setPlayerFlag(mori, "Global_xiufuFailed");
             return;
+        }
     } else {
+        room->setPlayerFlag(mori, "xiufu_used");
         // we use askforag and askforplayerchosen for AI
         QList<int> discardpile = room->getDiscardPile();
         QList<int> equips;
@@ -288,6 +293,7 @@ void XiufuCard::onUse(Room *room, const CardUseStruct &card_use) const
 
 void XiufuCard::use(Room *room, ServerPlayer *mori, QList<ServerPlayer *> &) const
 {
+    room->setPlayerFlag(mori, "xiufu_used");
     //process move
     int xiufu_id = mori->tag.value("xiufu_id", -1).toInt();
     if (xiufu_id == -1)
@@ -365,7 +371,8 @@ public:
 
     bool isEnabledAtPlay(const Player *player) const
     {
-        return !player->hasUsed("XiufuCard") || player->getMark("@xiufudebug") > 0;
+        return (!player->hasFlag("Global_xiufuFailed") &&  !player->hasFlag("xiufu_used")) 
+            || player->getMark("@xiufudebug") > 0;
     }
 
     const Card *viewAs() const
