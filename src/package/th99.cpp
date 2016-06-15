@@ -961,6 +961,10 @@ public:
         QString skill_name = invoke->tag.value("selected_skill", QString()).toString();
         if (skill_name.isEmpty())
             return false;
+        
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
 
         const Skill *skill = Sanguosha->getSkill(skill_name);
         room->setPlayerFlag(invoke->invoker, "pingyi_used");
