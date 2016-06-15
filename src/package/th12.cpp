@@ -902,7 +902,7 @@ public:
                 if (player->canDiscard(p, "ej"))
                     fieldcard2 << p;
             }
-            if (fieldcard2.length() == 0)
+            if (fieldcard2.length() == 0 || !player->isAlive())
                 return;
             ServerPlayer *player2 = room->askForPlayerChosen(player, fieldcard2, objectName(), "@jingxia-discardfield2", true);
             if (player2 != NULL) {
