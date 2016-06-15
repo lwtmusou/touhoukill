@@ -2193,7 +2193,7 @@ public:
         if (change.to == Player::NotActive && !room->getThread()->hasExtraTurn()) {
             QList<SkillInvokeDetail> d;
             foreach(ServerPlayer *p, room->getOtherPlayers(change.player)) {
-                ServerPlayer *t = p->tag["qinlue_current"].value<ServerPlayer *>();
+                ServerPlayer *t = p->tag["qinlue_target"].value<ServerPlayer *>();
                 if (t && t == change.player)
                     d << SkillInvokeDetail(this, p, p, NULL, true, change.player);
             }
@@ -2243,7 +2243,7 @@ public:
         if (change.to == Player::NotActive) {
             invoke->invoker->setMark("qinluePhase", 1);
             if (!invoke->invoker->faceUp())
-                invoke->invoker->tag.remove("qinlue_current");
+                invoke->invoker->tag.remove("qinlue_target");
             invoke->invoker->gainAnExtraTurn();
         } else if (change.to == Player::Play) {
             ServerPlayer *source = invoke->invoker;
@@ -2255,7 +2255,7 @@ public:
             const Card *card = room->askForCard(current, "Jink", prompt, QVariant::fromValue(source), Card::MethodDiscard);
             if (!card) {
                 current->skip(Player::Play);
-                source->tag["qinlue_current"] = QVariant::fromValue(current);
+                source->tag["qinlue_target"] = QVariant::fromValue(current);
             }
         }
 
@@ -2269,7 +2269,7 @@ class QinlueEffect : public TriggerSkill
 public:
     QinlueEffect() : TriggerSkill("#qinlue_effect")
     {
-        events << EventPhaseChanging << EventPhaseStart << TurnStart;
+        events << EventPhaseChanging << EventPhaseStart;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
@@ -2277,7 +2277,7 @@ public:
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->getPhase() == Player::RoundStart) {
-                ServerPlayer *target = player->tag["qinlue_current"].value<ServerPlayer *>();
+                ServerPlayer *target = player->tag["qinlue_target"].value<ServerPlayer *>();
                 if (target != NULL &&
                     (target->isAlive() && !target->isKongcheng() || !player->isKongcheng()))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true, target);
@@ -2286,11 +2286,11 @@ public:
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             ServerPlayer *player = change.player;
             if (change.to == Player::NotActive) {
-                ServerPlayer *target = player->tag["qinlue_current"].value<ServerPlayer *>();
+                ServerPlayer *target = player->tag["qinlue_target"].value<ServerPlayer *>();
                 if ((target != NULL && target->isAlive() && !player->isKongcheng()) || !player->getPile("zhanbei").isEmpty())
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true, target);
-                else if (target != NULL && target->isDead() && player->getPile("zhanbei").isEmpty())
-                    player->tag.remove("qinlue_current");
+                else if (target != NULL)
+                    player->tag.remove("qinlue_target");
             }
         }
         return QList<SkillInvokeDetail>();
@@ -2300,7 +2300,7 @@ public:
     {
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *player = invoke->invoker;
-            ServerPlayer *target = player->tag["qinlue_current"].value<ServerPlayer *>();
+            ServerPlayer *target = player->tag["qinlue_target"].value<ServerPlayer *>();
             if (!player->isKongcheng()) {
                 DummyCard *dummy = new DummyCard;
                 dummy->deleteLater();
@@ -2317,8 +2317,8 @@ public:
         } else if (triggerEvent == EventPhaseChanging) {
 
             ServerPlayer *player = invoke->invoker;
-            ServerPlayer *target = player->tag["qinlue_current"].value<ServerPlayer *>();
-            player->tag.remove("qinlue_current");
+            ServerPlayer *target = player->tag["qinlue_target"].value<ServerPlayer *>();
+            player->tag.remove("qinlue_target");
             if (target != NULL && target->isAlive()) {
                 DummyCard *dummy = new DummyCard;
                 dummy->deleteLater();
