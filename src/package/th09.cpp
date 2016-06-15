@@ -44,7 +44,7 @@ public:
     {
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (!use.card->isKindOf("BasicCard") && use.from && use.from->hasSkill(this)
+            if (!use.card->isKindOf("BasicCard") && !use.card->isKindOf("SkillCard") && use.from && use.from->hasSkill(this)
                 && use.from->getPhase() == Player::Play)
                 room->setPlayerFlag(use.from, "zuiyue");
         } else if (triggerEvent == EventPhaseChanging) {
@@ -722,7 +722,6 @@ public:
         QString prompt = "@feixiang-playerchosen:" + judge->who->objectName() + ":" + judge->reason;
         invoke->invoker->tag["feixiang_judge"] = data;
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), prompt, true, true);
-        invoke->invoker->tag.remove("feixiang_judge");
         if (target) {
             int card_id = room->askForCardChosen(invoke->invoker, target, "hes", objectName());
             room->showCard(target, card_id);

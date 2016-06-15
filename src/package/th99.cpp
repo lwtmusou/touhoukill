@@ -386,23 +386,29 @@ class XiufuDebug : public TriggerSkill
 public:
     XiufuDebug() : TriggerSkill("xiufu")
     {
-        events << MarkChanged;
+        events << MarkChanged << EventPhaseChanging;
         view_as_skill = new Xiufu;
     }
 
-    void record(TriggerEvent, Room *room, QVariant &data) const
+    void record(TriggerEvent e, Room *room, QVariant &data) const
     {
-        MarkChangeStruct change = data.value<MarkChangeStruct>();
-        if (change.name == "@xiufudebug") {
-            QList<int> equips;
-            foreach (int id, Sanguosha->getRandomCards()) {
-                const Card *card = Sanguosha->getEngineCard(id);
-                if (card->isKindOf("EquipCard") && room->getCardPlace(id) != Player::DiscardPile)
-                    equips << id;
-            }
+        if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.player->isAlive() && change.player->hasFlag("xiufu_used") && change.to == Player::Play)
+                room->setPlayerFlag(change.player, "-xiufu_used");
+        } else {
+            MarkChangeStruct change = data.value<MarkChangeStruct>();
+            if (change.name == "@xiufudebug") {
+                QList<int> equips;
+                foreach(int id, Sanguosha->getRandomCards()) {
+                    const Card *card = Sanguosha->getEngineCard(id);
+                    if (card->isKindOf("EquipCard") && room->getCardPlace(id) != Player::DiscardPile)
+                        equips << id;
+                }
 
-            DummyCard dummy(equips);
-            room->moveCardTo(&dummy, NULL, Player::DiscardPile);
+                DummyCard dummy(equips);
+                room->moveCardTo(&dummy, NULL, Player::DiscardPile);
+            }
         }
     }
 };
