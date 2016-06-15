@@ -1386,7 +1386,7 @@ void RoomScene::enableTargets(const Card *card)
             animations->effectOut(animationTarget);
             item->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
-        if (card->isKindOf("SavageAssault") || card->isKindOf("ArcheryAttack"))
+        if ((card->isKindOf("SavageAssault") || card->isKindOf("ArcheryAttack")) && status == Client::RespondingUse)
             ok_button->setEnabled(card->isAvailable(Self));
         else
             ok_button->setEnabled(true);

@@ -133,8 +133,8 @@ return {
 	["：modian_attach"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一张黑色手牌置于魔典技能人的人物牌上。",
 	["@modian"] = "魔典牌已经大于你的体力值，你需要弃置一张魔典牌",
 	["~modian"] = "选择一张魔典牌-->确定",
-	["modian：draw"] = "摸牌",
-	["modian：recover"] = "回复体力",
+	["modian:draw"] = "摸牌",
+	["modian:recover"] = "回复体力",
 	
 	["guaiqi"] = "怪绮",
 	[":guaiqi"] = "若“魔典”中有锦囊牌：你可以将一张【杀】当其中一张锦囊牌使用；你可以将一张“魔典”当【无懈可击】使用。", 

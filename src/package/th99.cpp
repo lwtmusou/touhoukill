@@ -1248,6 +1248,11 @@ void ZhuonongCard::onEffect(const CardEffectStruct &effect) const
     RecoverStruct recover;
     recover.who = effect.from;
     DamageStruct damage(objectName(), effect.from, effect.to, 1, DamageStruct::Fire);
+    
+    QString logtype = (choice == "rd") ? "#zhuonong_rd" : "#zhuonong_dr";
+    QList<ServerPlayer *> logto;
+    logto << effect.to;
+    room->touhouLogmessage(logtype, effect.from, "zhuonong", logto, QString::number(1));
     if (choice == "rd" && effect.to->isWounded())
         room->recover(effect.to, recover);
     room->damage(damage);
