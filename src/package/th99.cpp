@@ -909,7 +909,6 @@ public:
                         room->setPlayerFlag(p, "-pingyi_used");
                 }
             }
-        
         }    
     }
 
@@ -1026,14 +1025,12 @@ class PingyiHandler : public TriggerSkill
 public:
     PingyiHandler() : TriggerSkill("#pingyi_handle")
     {
-        events << EventLoseSkill << Death << EventPhaseChanging;
+        events << EventPhaseChanging; // << EventLoseSkill << Death
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
-        ServerPlayer *who = NULL;
-        ServerPlayer *yori = NULL;
-        if (triggerEvent == EventLoseSkill) {
+        /*if (triggerEvent == EventLoseSkill) {
             SkillAcquireDetachStruct ad = data.value<SkillAcquireDetachStruct>();
             if (ad.isAcquire)
                 return QList<SkillInvokeDetail>();
@@ -1048,17 +1045,14 @@ public:
                 who = death.who;
             if (who != NULL)
                 yori = who->tag.value("pingyi_from").value<ServerPlayer *>();
-        } else {
-            PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
-            if (phase_change.to == Player::NotActive) {
-                yori = phase_change.player;
-                who =yori->tag.value("pingyi_originalOwner").value<ServerPlayer *>();
-            }
+        }*/
+        PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
+        if (phase_change.to == Player::NotActive) {
+            ServerPlayer *yori = phase_change.player;
+            ServerPlayer *who = yori->tag.value("pingyi_originalOwner").value<ServerPlayer *>();
+            if (yori != NULL && who != NULL)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, true);
         }
-        
-        if (yori != NULL && who != NULL)
-           return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, true);
-        
         return QList<SkillInvokeDetail>();
     }
 
