@@ -1007,7 +1007,7 @@ AI *ServerPlayer::getAI() const
 {
     if (getState() == "online")
         return NULL;
-    else if (getState() == "trust" && !Config.EnableCheat)
+    else if (getState() != "robot" && !Config.EnableCheat)
         return trust_ai;
     else
         return ai;
