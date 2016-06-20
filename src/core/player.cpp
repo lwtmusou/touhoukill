@@ -312,6 +312,7 @@ int Player::distanceTo(const Player *other, int distance_fix) const
     if (this == other)
         return 0;
 
+    //point1: chuanwu is a fixed distance;
     int distance_limit = 0;
     if (hasSkill("chuanwu"))
         distance_limit = qMax(other->getHp(), 1);
@@ -322,13 +323,26 @@ int Player::distanceTo(const Player *other, int distance_fix) const
             return fixed_distance.value(other);
     }
 
-
-    int right = qAbs(seat - other->seat);
+    //point2: tianqu will change the starter while counting seat
+    bool tianqu = (hasSkill("tianqu")) ? true : false;
+    const Player *starter = this;
+    const Player *tianquStarter = NULL;
+    QList<const Player*> players = other->getAliveSiblings();
+    foreach(const Player *p, players) {
+        if (p->getMark("@road")) 
+            tianquStarter = p;
+        if (p->hasSkill("tianqu"))
+            tianqu = true;
+    }
+    if (tianquStarter != NULL && tianqu)
+        starter = tianquStarter;
+    
+    int right = qAbs(starter->seat - other->seat);
     int left = aliveCount() - right;
-    //check skill kongjian
+    //point3: skill kongjian will ignore pc98  while traversing
     if (this->hasLordSkill("kongjian")) {
-        int bigger = qMax(seat, other->seat);
-        int smaller = qMin(seat, other->seat);
+        int bigger = qMax(starter->seat, other->seat);
+        int smaller = qMin(starter->seat, other->seat);
         foreach(const Player *p, other->getAliveSiblings()) {
             if (p->getKingdom() == "pc98"  && p->getSeat() > smaller && p->getSeat() < bigger)
                 right--;
