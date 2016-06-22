@@ -130,6 +130,13 @@ sgs.ai_choicemade_filter.cardResponded["@shiqu-discard"] = function(self, player
 end
 
 
+sgs.ai_trick_prohibit.jinfa = function(self, from, to, card)
+	if not card:isKindOf("DelayedTrick")  then return false end
+	if self:isFriend(from,to) then return false end
+	return true
+end
+
+
 function SmartAI:qianyiPhase(target)
 	--willSkipPlayPhase 没考虑跳判定
 	if self:isEnemy(target) then
