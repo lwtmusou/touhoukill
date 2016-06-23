@@ -578,7 +578,7 @@ sgs.ai_skill_choice.pingyi=function(self, choices)
 	return "cancel"
 end
 sgs.ai_skill_cardask["@pingyi-discard"] = function(self, data)
-	local cards = self.player:getCards("he")
+	local cards = self.player:getCards("hes")
 	cards = sgs.QList2Table(cards)
 	if #cards==0 then return "." end
 	self:sortByUseValue(cards)
@@ -622,7 +622,7 @@ sgs.ai_skill_use["@@zheshe"] = function(self, data, method)
 
 	if not dmg then self.room:writeToConsole(debug.traceback()) return "." end
 
-	local cards = self.player:getCards("h")
+	local cards = self.player:getCards("hs")
 	cards = sgs.QList2Table(cards)
 	self:sortByUseValue(cards, true)
 	for _, card in ipairs(cards) do
@@ -868,7 +868,7 @@ end
 sgs.ai_skill_cardask["@zhujiu"] = function(self, data)
 	local target = self.player:getTag("zhujiu_target"):toPlayer()
 	if not target or not self:isFriend(target)  then return "." end
-	local cards= self.player:getCards("he")
+	local cards= self.player:getCards("hes")
 	cards = sgs.QList2Table(cards)
 	if #cards==0 then return "." end
 	self:sortByUseValue(cards, true)
@@ -1027,7 +1027,7 @@ sgs.ai_skill_playerchosen.bihuo = function(self, targets)
 	local normal_targets={}
 	local temp_targets={}
 	local has_heart=false
-	for _,c in sgs.qlist(self.player:getCards("h")) do
+	for _,c in sgs.qlist(self.player:getCards("hs")) do
 		if c:getSuit()== sgs.Card_Heart then
 			has_heart=true
 			break
@@ -1158,7 +1158,7 @@ sgs.ai_skill_cardask["jidong-discard"] = function(self, data)
 	if self:touhouCardUseEffectNullify(use, self.player) then return "." end
 	
 	local cards = {} 
-	for _,c in sgs.qlist(self.player:getCards("h")) do
+	for _,c in sgs.qlist(self.player:getCards("hs")) do
 		if c:getTypeId() == use.card:getTypeId() then
 			table.insert(cards, c)
 		end	
@@ -1174,7 +1174,7 @@ sgs.ai_skill_cardask["jidong-discard"] = function(self, data)
 	
 	table.sort(cards, compare_func)
 	
-	if self:isFriend(use.from) or not use.from:canDiscard(use.from, "h") then
+	if self:isFriend(use.from) or not use.from:canDiscard(use.from, "hs") then
 		return "$" .. cards[1]:getId()
 	else
 		return "$" .. cards[#cards]:getId()
@@ -1187,7 +1187,7 @@ sgs.ai_skill_cardask["jidong-confirm"] = function(self, data)
 	
 	local card = target:getTag("jidong_card"):toCard()
 	local cards = {} 
-	for _,c in sgs.qlist(self.player:getCards("h")) do
+	for _,c in sgs.qlist(self.player:getCards("hs")) do
 		if c:getNumber() > card:getNumber() then
 			table.insert(cards, c)
 		end	

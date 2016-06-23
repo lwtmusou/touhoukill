@@ -446,7 +446,7 @@ end]]
 --[[
 sgs.ai_skill_cardask["@zhanyi"] = function(self, data)
 
-	local cards = self.player:getCards("h")
+	local cards = self.player:getCards("hs")
 	cards = sgs.QList2Table(cards)
 	self:sortByUseValue(cards)
 

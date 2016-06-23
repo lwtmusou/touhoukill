@@ -60,7 +60,7 @@ function gongfengvs_skill.getTurnUseCard(self)
 		if self.player:getKingdom() ~="fsl" then return nil end
 		if self.player:hasFlag("Forbidgongfeng") then return nil end
 		local handcards = {}
-		for _,c in sgs.qlist(self.player:getCards("h")) do
+		for _,c in sgs.qlist(self.player:getCards("hs")) do
 			if c:isKindOf("Slash") then
 				table.insert(handcards, c)
 			end
@@ -274,7 +274,7 @@ function sgs.ai_cardsview_valuable.qiji(self, class_name, player)
 		return nil
 	end
 	local acard
-	for _,c in sgs.qlist(player:getCards("h"))do
+	for _,c in sgs.qlist(player:getCards("hs"))do
 				acard=c
 	end
 	local suit =acard:getSuitString()
@@ -459,7 +459,7 @@ sgs.ai_skill_cardask["@xinshang-spadecard"] = function(self,data)
 		local target=data:toPlayer()
 		if not self:isFriend(target) and target:getHandcardNum()>=2 then return "." end
 		local cards ={}
-		for _,card in sgs.qlist(self.player:getCards("h")) do
+		for _,card in sgs.qlist(self.player:getCards("hs")) do
 			if card:getSuit()==sgs.Card_Spade then
 				table.insert(cards,card)
 			end
@@ -542,7 +542,7 @@ end
 
 sgs.ai_skill_cardask["@liuxing"] = function(self,data)
 	local blacks ={}
-	for _, c in sgs.qlist(self.player:getCards("h")) do
+	for _, c in sgs.qlist(self.player:getCards("hs")) do
 		if c:isBlack() then
 			table.insert(blacks,c)
 		end
@@ -861,7 +861,7 @@ dfgzmsiyu_skill.name = "dfgzmsiyu"
 table.insert(sgs.ai_skills, dfgzmsiyu_skill)
 function dfgzmsiyu_skill.getTurnUseCard(self)
 	if self.player:hasUsed("DfgzmSiyuCard") then return nil end
-	local cards=self.player:getCards("h")
+	local cards=self.player:getCards("hs")
 
 	local can_qishu=true
 	if #self.enemies<2 then
@@ -925,7 +925,7 @@ sgs.ai_skill_use_func.DfgzmSiyuCard = function(card, use, self)
 	end
 end
 sgs.ai_skill_cardchosen.dfgzmsiyu = function(self, who, flags)
-	local cards= sgs.QList2Table(who:getCards("h"))
+	local cards= sgs.QList2Table(who:getCards("hs"))
 	local inverse = not self:isFriend(who)
 	self:sortByKeepValue(cards, inverse)
 	return cards[1]

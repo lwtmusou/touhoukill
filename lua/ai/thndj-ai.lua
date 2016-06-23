@@ -73,7 +73,7 @@ sgs.ai_skill_invoke.huanyue = function(self,data)
 
 	local canDamage = self:touhouNeedAvoidAttack(damage,damage.from,damage.to)
 	if canDamage then
-		local blacknum = getKnownCard(self.player, self.player, "black", false, "h")
+		local blacknum = getKnownCard(self.player, self.player, "black", false, "hs")
 		if (blacknum >= self.player:getHandcardNum()) then return true end
 		if damage.to:hasSkill("duxin") then return false end
 		local rate= blacknum / self.player:getHandcardNum()
@@ -110,7 +110,7 @@ sgs.ai_skill_discard.yuanhu = function(self,discard_num, min_num)
 
 	local toGive, allcards = {}, {}
 	local keep
-	for _, card in sgs.qlist(self.player:getCards("h")) do
+	for _, card in sgs.qlist(self.player:getCards("hs")) do
 		if not keep and (isCard("Jink", card, self.player) or isCard("Analeptic", card, self.player)) then
 			keep = true
 		else
@@ -141,7 +141,7 @@ function hunpo_skill.getTurnUseCard(self)
 	if self:getOverflow() >0 then
 		cards= sgs.QList2Table(self.player:getHandcards())
 	else
-		cards= sgs.QList2Table(self.player:getCards("he"))
+		cards= sgs.QList2Table(self.player:getCards("hes"))
 	end
 	self:sortByKeepValue(cards)
 	if #cards>0 then

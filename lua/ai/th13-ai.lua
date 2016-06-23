@@ -126,7 +126,7 @@ measure_xihua = function(self,card)
 	end
 
 	local success=0
-	for _,c in sgs.qlist(self.player:getCards("h")) do
+	for _,c in sgs.qlist(self.player:getCards("hs")) do
 		if card:objectName()==c:objectName() then
 			return false
 		end
@@ -314,7 +314,7 @@ function sgs.ai_cardsview_valuable.shijie(self, class_name, player)
 	if class_name == "Peach" then
 		local dying = player:getRoom():getCurrentDyingPlayer()
 		if not dying or not self:isFriend(dying, player) or player:isKongcheng() then return nil end
-		local cards = sgs.QList2Table(player:getCards("h"))
+		local cards = sgs.QList2Table(player:getCards("hs"))
 		self:sortByKeepValue(cards)
 		return "@ShijieCard="..cards[1]:getId()
 	end
@@ -589,7 +589,7 @@ sgs.ai_slash_prohibit.chuanbi = function(self, from, to, card)
 	if (current:getWeapon() ) then --and current:getMark("@tianyi_Weapon")==0
 		return false
 	end
-	if from:hasWeapon("Axe") and from:getCards("he"):length()>=2 then
+	if from:hasWeapon("Axe") and from:getCards("hes"):length()>=2 then
 		return false
 	end
 	return true
@@ -603,7 +603,7 @@ table.insert(sgs.ai_skills, duzhua_skill)
 duzhua_skill.getTurnUseCard = function(self, inclusive)
 
 		if self.player:hasFlag("duzhua") then return false end
-		local cards = self.player:getCards("h")
+		local cards = self.player:getCards("hs")
 		cards=self:touhouAppendExpandPileToList(self.player,cards)
 		cards = sgs.QList2Table(cards)
 		if #cards==0 then return false end
@@ -768,7 +768,7 @@ end
 		if self:touhouHpLocked(self.player)  then
 			return "."
 		end
-		local cards = sgs.QList2Table(self.player:getCards("h"))
+		local cards = sgs.QList2Table(self.player:getCards("hs"))
 		self:sortByKeepValue(cards)
 
 		return "$" .. cards[1]:getId()
@@ -885,7 +885,7 @@ local buming_skill = {}
 buming_skill.name = "buming"
 table.insert(sgs.ai_skills, buming_skill)
 buming_skill.getTurnUseCard = function(self)
-	cards =sgs.QList2Table(self.player:getCards("he"))
+	cards =sgs.QList2Table(self.player:getCards("hes"))
 	if #cards==0 then return nil end
 	self:sortByKeepValue(cards)
 	if self.player:hasUsed("BumingCard") then return nil end
@@ -906,7 +906,7 @@ sgs.ai_skill_use_func.BumingCard=function(card,use,self)
 	end
 end
 sgs.ai_skill_choice.buming=function(self)--因为有cardlimit  需要检测实际choice。。。
-	cards =sgs.QList2Table(self.player:getCards("h"))
+	cards =sgs.QList2Table(self.player:getCards("hs"))
 	local s=0
 	local j=0
 	for _,card in pairs (cards) do
@@ -1002,7 +1002,7 @@ sgs.ai_skill_invoke.qingyu = true
 sgs.ai_skill_cardask["@qingyu-discard"] = function(self, data)
 	local source=data:toPlayer()
 	if self:isEnemy(source) and self.player:getHandcardNum()>2 then
-		cards =sgs.QList2Table(self.player:getCards("h"))
+		cards =sgs.QList2Table(self.player:getCards("hs"))
 		self:sortByKeepValue(cards)
 		return "$" .. cards[1]:getId()
 	end

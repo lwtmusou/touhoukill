@@ -139,7 +139,7 @@ sgs.ai_skill_cardask["@boli-retrial"] = function(self, data)
 		if not sgs.bolisource  then sgs.bolisource = lord end
 		if not sgs.bolisource then return "." end
 		if not self:isFriend(lord) then return "." end
-		local cards = sgs.QList2Table(self.player:getCards("h"))
+		local cards = sgs.QList2Table(self.player:getCards("hs"))
 		local cards1={}
 		for _,card in pairs(cards) do
 			if card:getSuit()==sgs.Card_Heart then
@@ -183,7 +183,7 @@ function mofa_skill.getTurnUseCard(self)
 	if #self.enemies==0 then return false end
 
 
-	local cards = self.player:getCards("h")
+	local cards = self.player:getCards("hs")
 	local key_names={"Duel","SavageAssault","ArcheryAttack"}
 	local key_ids={}
 	local slashes={}
@@ -276,7 +276,7 @@ wuyuvs_skill.getTurnUseCard = function(self)
 	if self.player:hasFlag("Forbidwuyu") then return nil end
 
 
-	local cards = self.player:getCards("h")
+	local cards = self.player:getCards("hs")
 	cards = sgs.QList2Table(cards)
 	local card
 	self:sortByUseValue(cards,true)
@@ -415,7 +415,7 @@ sgs.ai_choicemade_filter.skillChoice.saiqian = function(self, player, args)
 end
 
 sgs.ai_skill_cardask["@saiqian-discard"] = function(self,data)
-		local cards = sgs.QList2Table(self.player:getCards("h"))
+		local cards = sgs.QList2Table(self.player:getCards("hs"))
 		if #cards==0 then return "." end
 		self:sortByCardNeed(cards)
 		for _,card in pairs (cards) do
@@ -441,7 +441,7 @@ sgs.saiqian_suit_value = {
 function jiezouSpade(self,player)
 	local cards
 	if player:objectName() == self.player:objectName() then
-		cards =self.player:getCards("he")
+		cards =self.player:getCards("hes")
 	else
 		cards=player:getCards("e")
 	end
@@ -532,12 +532,12 @@ sgs.ai_skill_cardchosen.jiezou = function(self, who, flags)
 				return card
 			end
 		end
-		local id = self:askForCardChosen(who, "he", "snatch", sgs.Card_MethodNone)
+		local id = self:askForCardChosen(who, "hes", "snatch", sgs.Card_MethodNone)
 		return sgs.Sanguosha:getCard(id)
 	end
 end
 sgs.ai_skill_cardask["@jiezou_spadecard"] = function(self, data)
-		local cards = sgs.QList2Table(self.player:getCards("he"))
+		local cards = sgs.QList2Table(self.player:getCards("hes"))
 		if #cards==0 then return "." end
 		self:sortByKeepValue(cards)
 		for _,card in pairs (cards) do
@@ -639,7 +639,7 @@ sgs.ai_skill_use["@@baoyi"] = function(self, prompt)
 		return "@BaoyiCard="..table.concat(delay_ids, "+")
 	end
 	local equips={}
-	for _,c in sgs.qlist(self.player:getCards("he")) do
+	for _,c in sgs.qlist(self.player:getCards("hes")) do
 		if c:isKindOf("EquipCard") then
 			if c:getSuit()== sgs.Card_Spade then
 				if delay_num>0 then
@@ -797,7 +797,7 @@ end
 sgs.ai_skill_cardchosen.zhize = function(self, who, flags)
 	local hearts={}
 	local others={}
-	for _,c in sgs.qlist(who:getCards("h")) do
+	for _,c in sgs.qlist(who:getCards("hs")) do
 		if self.player:hasSkill("chunxi") and c:getSuit() ==sgs.Card_Heatrt then
 			table.insert(hearts,c)
 		else
@@ -873,7 +873,7 @@ sgs.chunxi_suit_value = {
 
 
 function bllmwuyu_discard(player)
-	local cards = sgs.QList2Table(player:getCards("he"))
+	local cards = sgs.QList2Table(player:getCards("hes"))
 	local all_hearts={}
 	for _,c in pairs(cards) do
 		if c:getSuit()==sgs.Card_Heart
@@ -981,7 +981,7 @@ function sgs.ai_cardsview_valuable.bllmwuyu(self, class_name, player)
 					table.insert(hearts_e,c)
 				end
 			end
-			for _,c in sgs.qlist(player:getCards("h")) do
+			for _,c in sgs.qlist(player:getCards("hs")) do
 				if c:getSuit()==sgs.Card_Heart and not c:hasFlag("AIGlobal_SearchForAnaleptic") then
 					table.insert(hearts_h,c)
 				elseif not c:hasFlag("AIGlobal_SearchForAnaleptic") then
@@ -1107,7 +1107,7 @@ sgs.qiangyu_suit_value = {
 
 sgs.ai_skill_cardask["@mokai"] = function(self, data)
 	local cards = {}
-	for _,c in sgs.qlist(self.player:getCards("he")) do
+	for _,c in sgs.qlist(self.player:getCards("hes")) do
 		if c:isKindOf("EquipCard") then
 			table.insert(cards,c)
 		end
@@ -1165,10 +1165,10 @@ yinyang_skill.getTurnUseCard = function(self)
 	return sgs.Card_Parse("@YinyangCard=.")
 end
 sgs.ai_skill_use_func.YinyangCard=function(card,use,self)
-	--local heart = getKnownCard(self.player, self.player, "heart", viewas, "h", false)
+	--local heart = getKnownCard(self.player, self.player, "heart", viewas, "hs", false)
 
-	local red = getKnownCard(self.player, self.player, "red", viewas, "h", false)
-	local black = getKnownCard(self.player, self.player, "black", viewas, "h", false)
+	local red = getKnownCard(self.player, self.player, "red", viewas, "hs", false)
+	local black = getKnownCard(self.player, self.player, "black", viewas, "hs", false)
 	if red > 0 and black > 0 then
 		local targets = {}
 		for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do

@@ -164,12 +164,12 @@ sgs.ai_choicemade_filter.cardResponded["@sisheng-invoke"] = function(self, playe
 end
 
 sgs.ai_skill_cardchosen.sisheng = function(self, who, flags)
-	if flags == "he" then
+	if flags == "hes" then
 		local who= self.player:getRoom():getCurrentDyingPlayer()
 		if who:getEquip(1) and who:getEquip(1):isKindOf("SilverLion") then
 			return who:getEquip(1)
 		end
-		local hcards = who:getCards("h")
+		local hcards = who:getCards("hs")
 		if hcards:length()>0 then
 			return hcards:first()
 		end
@@ -234,7 +234,7 @@ sgs.ai_skill_discard.zhaoliao = function(self,discard_num, min_num)
 	if ecards:length()>0 then
 		table.insert(to_discard, ecards:first():getId())
 	else
-		local cards = self.player:getCards("h")
+		local cards = self.player:getCards("hs")
 		cards = sgs.QList2Table(cards)
 		if #cards > 0 then
 			self:sortByUseValue(cards)
@@ -420,7 +420,7 @@ table.insert(sgs.ai_skills, zhanzhen_skill)
 zhanzhen_skill.getTurnUseCard = function(self, inclusive)
 		if not sgs.Slash_IsAvailable(self.player)  then return false end
 		local ecards={}
-		local cards=self.player:getCards("he")
+		local cards=self.player:getCards("hes")
 		cards=self:touhouAppendExpandPileToList(self.player,cards)
 		for _,c in sgs.qlist(cards) do
 			if c:isKindOf("EquipCard") then
@@ -488,14 +488,14 @@ sgs.ai_skill_choice.shishen=function(self)
 	end
 	if self.player:hasFlag("shishen_choice") then
 		local ran = self.room:findPlayerBySkillName("zhaoliao")
-		if ran and ran:getCards("he")>=2 and self:isFriend(ran) then
+		if ran and ran:getCards("hes")>=2 and self:isFriend(ran) then
 			return "cancel"
 		else
 			return "shishen1"
 		end
 	end
 	if self.player:getPhase() == sgs.Player_Play  and self.player:getMark("@shi")==0    then
-		for _,card in sgs.qlist(self.player:getCards("h")) do
+		for _,card in sgs.qlist(self.player:getCards("hs")) do
 			if card:isNDTrick() and not card:isKindOf("Nullification")  then
 				local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 				self:useTrickCard(card, dummy_use)
@@ -657,7 +657,7 @@ sgs.ai_skill_invoke.zhancao = function(self,data)
 	end
 
 	local hasEquip=false
-	cards =self.player:getCards("he")
+	cards =self.player:getCards("hes")
 	for _,card in sgs.qlist(cards) do
 		if card:isKindOf("EquipCard") then
 			hasEquip=true
@@ -690,7 +690,7 @@ sgs.ai_skill_invoke.zhancao = function(self,data)
 end
 sgs.ai_skill_cardask["@zhancao-discard"] = function(self, data)
 
-	cards =self.player:getCards("he")
+	cards =self.player:getCards("hes")
 	cards=sgs.QList2Table(cards)
 	ecards={}
 	for _,card in pairs(cards) do
@@ -1065,7 +1065,7 @@ sgs.ai_skill_discard.juhe = function(self,discard_num)
 	local Weapon=self.player:getWeapon()
 	local Distance=self.player:getOffensiveHorse()
 	if  Distance and Weapon then
-		local gamerule = sgs.QList2Table(self.player:getCards("h"))
+		local gamerule = sgs.QList2Table(self.player:getCards("hs"))
 		self:sortByKeepValue(gamerule,false)
 		local gamerule_discard={}
 		for var=1, discard_num ,1 do
@@ -1076,7 +1076,7 @@ sgs.ai_skill_discard.juhe = function(self,discard_num)
 	local cards = {}
 	local tmp_dis
 	local weapons={}
-	for _,c in sgs.qlist(self.player:getCards("h")) do
+	for _,c in sgs.qlist(self.player:getCards("hs")) do
 		if not Distance and c:isKindOf("OffensiveHorse") and not tmp_dis then
 			tmp_dis=c
 		elseif not Weapon and c:isKindOf("Weapon") then
@@ -1193,7 +1193,7 @@ end
 sgs.ai_playerchosen_intention.shoushu = -70
 
 function SmartAI:canHuayin(player)
-	for _,c in sgs.qlist(player:getCards("h")) do
+	for _,c in sgs.qlist(player:getCards("hs")) do
 		if not c:isKindOf("BasicCard") then
 			return true
 		end

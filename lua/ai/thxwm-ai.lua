@@ -6,7 +6,7 @@ table.insert(sgs.ai_skills, shouhui_skill)
 function shouhui_skill.getTurnUseCard(self)
 	local ecards={}
 	sgs.ai_use_priority.ShouhuiCard =  3
-	for _,c in sgs.qlist(self.player:getCards("h")) do
+	for _,c in sgs.qlist(self.player:getCards("hs")) do
 		if c:isKindOf("EquipCard") then
 			if  sgs.ai_use_priority.ShouhuiCard <8  and self:getSameEquip(c) then
 				sgs.ai_use_priority.ShouhuiCard = 8
@@ -46,7 +46,7 @@ function sgs.ai_cardsview_valuable.shouhui(self, class_name, player)
 		if not dying or dying:objectName() ~= self.player:objectName() then
 			return nil
 		end
-		local cards=self.player:getCards("he")
+		local cards=self.player:getCards("hes")
 		local ecards={}
 		for _,c in sgs.qlist(cards) do
 			if c:isKindOf("EquipCard") then
@@ -177,7 +177,7 @@ sgs.ai_skill_invoke.xisan = function(self, data)
 	if self:isFriend(current) and current:hasSkill("souji") then
 		return true
 	end
-	cards=self.player:getCards("h")
+	cards=self.player:getCards("hs")
 	for _,card in sgs.qlist(cards) do
 		if keycard_xisan(card) then
 			return false
@@ -198,7 +198,7 @@ sgs.ai_skill_choice.xisan=function(self)
 end
 
 sgs.ai_skill_discard.xisan = function(self, discard_num, optional, include_equip)
-	cards=self.player:getCards("h")
+	cards=self.player:getCards("hs")
 	cards_table=sgs.QList2Table(cards)
 	self:sortByCardNeed(cards_table)
 	local d={}
@@ -231,7 +231,7 @@ sgs.ai_skill_playerchosen.jubao = function(self, targets)
 		if self:isEnemy(target) then
 			table.insert(enemies,target)
 			local  hasLoseEffect = self:getLeastHandcardNum(target) > target:getHandcardNum()-1
-			if not hasLoseEffect  and not self:doNotDiscard(target, "h")   then
+			if not hasLoseEffect  and not self:doNotDiscard(target, "hs")   then
 				table.insert(good_targets,target)
 			end
 		end

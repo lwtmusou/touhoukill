@@ -25,7 +25,7 @@ sgs.ai_skill_cardask["@jiexiandamage"] = function(self, data)
 		end
 	end
 
-	local cards=sgs.QList2Table(self.player:getCards("he"))
+	local cards=sgs.QList2Table(self.player:getCards("hes"))
 	local ecards={}
 	for _,card in pairs(cards) do
 		if card:getSuit()==sgs.Card_Heart then
@@ -40,7 +40,7 @@ end
 sgs.ai_skill_cardask["@jiexianrecover"] = function(self, data)
 	local target=data:toPlayer()
 	if not self:isEnemy(target) then return "." end
-	cards =self.player:getCards("he")
+	cards =self.player:getCards("hes")
 	cards=sgs.QList2Table(cards)
 	ecards={}
 	for _,card in pairs(cards) do
@@ -81,7 +81,7 @@ hongwu_skill.name = "hongwu"
 table.insert(sgs.ai_skills, hongwu_skill)
 function hongwu_skill.getTurnUseCard(self)
 	if self.player:getMark("@ye")>0 then return nil end
-	local handcards = sgs.QList2Table(self.player:getCards("he"))
+	local handcards = sgs.QList2Table(self.player:getCards("hes"))
 	if #handcards==0 then return nil end
 	self:sortByUseValue(handcards)
 	local hearts={}
@@ -124,7 +124,7 @@ shenqiang_skill.name = "shenqiang"
 table.insert(sgs.ai_skills, shenqiang_skill)
 function shenqiang_skill.getTurnUseCard(self)
 	if self.player:getMark("@ye")==0 then return nil end
-	local handcards = sgs.QList2Table(self.player:getCards("he"))
+	local handcards = sgs.QList2Table(self.player:getCards("hes"))
 	if #handcards==0 then return nil end
 	self:sortByUseValue(handcards)
 	reds={}
@@ -372,7 +372,7 @@ sgs.ai_skill_discard.jinguo = function(self, discard_num, min_num, optional, inc
 	if optional then
 		return {}
 	end
-	local flag = "h"
+	local flag = "hs"
 	local equips = self.player:getEquips()
 	if include_equip and not (equips:isEmpty() or self.player:isJilei(equips:first())) then flag = flag .. "e" end
 	local cards = self.player:getCards(flag)
@@ -726,7 +726,7 @@ table.insert(sgs.ai_skills, fengyin_skill)
 function fengyin_skill.getTurnUseCard(self)
 	if self.player:hasUsed("FengyinCard") then return nil end
 	local cards={}
-	for _,card in sgs.qlist(self.player:getCards("he")) do
+	for _,card in sgs.qlist(self.player:getCards("hes")) do
 		if card:getSuit() == sgs.Card_Heart then
 			table.insert(cards,card)
 		end
@@ -878,7 +878,7 @@ sgs.ai_skill_cardask["@quanjie-discard"] = function(self, data)
 	local num = getCardsNum("Slash", self.player, self.player)
 	if num < 2 then return "." end
 	local slashs = {}
-	for _,c in sgs.qlist(self.player:getCards("h")) do
+	for _,c in sgs.qlist(self.player:getCards("hs")) do
 		if c:isKindOf("Slash") then
 			table.insert(slashs, c)
 		end
@@ -905,9 +905,9 @@ luanwu_skill.getTurnUseCard = function(self, inclusive)
 		if not sgs.Slash_IsAvailable(self.player)  then return false end
 		local flag
 		if self.player:getMark("hualong") > 0 then
-			flag="he"
+			flag="hes"
 		else
-			flag="h"
+			flag="hs"
 		end
 		local cards = self.player:getCards(flag)
 		cards=self:touhouAppendExpandPileToList(self.player,cards)
@@ -981,7 +981,7 @@ sgs.ai_view_as.luanwu = function(card, player, card_place)
 			end
 		end
 	else
-		local cards = player:getCards("he")
+		local cards = player:getCards("hes")
 		cards = sgs.QList2Table(cards)
 		if #cards==0 then return nil end
 		local reds={}
@@ -1038,7 +1038,7 @@ huaxiang_skill.getTurnUseCard = function(self)
 	local current = self.room:getCurrent()
 	if not current or current:isDead() or current:getPhase() == sgs.Player_NotActive then return end
 
-	local cards = self.player:getCards("h")
+	local cards = self.player:getCards("hs")
 	--cards=self:touhouAppendExpandPileToList(self.player,cards)
 	local validCards = {}
 	for _,c in sgs.qlist(cards) do
@@ -1110,7 +1110,7 @@ function sgs.ai_cardsview_valuable.huaxiang(self, class_name, player)
 	end
 
 
-	local cards = self.player:getCards("h")
+	local cards = self.player:getCards("hs")
 	--cards=self:touhouAppendExpandPileToList(self.player,cards)
 	local validCards = {}
 	for _,c in sgs.qlist(cards) do
@@ -1174,7 +1174,7 @@ sgs.ai_skill_invoke.caiyu = function(self,data)
 end
 
 function caiyuValue(self, card)
-	local hands = self.player:getCards("h")
+	local hands = self.player:getCards("hs")
 	local num = 0
 	for _,c in sgs.qlist(hands) do
 		if c:getSuit() == card:getSuit() then
@@ -1185,7 +1185,7 @@ function caiyuValue(self, card)
 	return self:getKeepValue(card)* value
 end
 sgs.ai_skill_discard.caiyu = function(self,discard_num)
-	local hands = self.player:getCards("h")
+	local hands = self.player:getCards("hs")
 	local card_table={}
 	for _,c in sgs.qlist(hands) do
 		local array={card = c, value= caiyuValue(self, c)}
@@ -1218,7 +1218,7 @@ sgs.ai_skill_cardask["@qinlue-discard"] = function(self, data)
 	if not self:isEnemy(current)  then return "." end
 	local cards={}
 
-	for _,c in sgs.qlist(self.player:getCards("he")) do
+	for _,c in sgs.qlist(self.player:getCards("hes")) do
 		if c:isKindOf("Slash") or c:isKindOf("EquipCard") then
 			if self.player:canDiscard(self.player,c:getId()) then
 				table.insert(cards,c)
@@ -1295,7 +1295,7 @@ ziwo_skill.name = "ziwo"
 table.insert(sgs.ai_skills, ziwo_skill)
 ziwo_skill.getTurnUseCard = function(self)
 	if not self.player:isWounded() then return nil end
-	cards =sgs.QList2Table(self.player:getCards("h"))
+	cards =sgs.QList2Table(self.player:getCards("hs"))
 	if #cards<2 then return nil end
 	self:sortByKeepValue(cards)
 	use_cards={}
@@ -1320,7 +1320,7 @@ end
 
 sgs.ai_skill_discard.benwo = function(self, discard_num, min_num, optional, include_equip)
 	local to_discard = {}
-	local cards = self.player:getCards("he")
+	local cards = self.player:getCards("hes")
 	cards = sgs.QList2Table(cards)
 	self:sortByKeepValue(cards)
 	local num=math.min(#cards,discard_num)
@@ -1332,7 +1332,7 @@ end
 
 
 --[[sgs.ai_skill_cardask["chaowo"] = function(self)
-		local cards = sgs.QList2Table(self.player:getCards("h"))
+		local cards = sgs.QList2Table(self.player:getCards("hs"))
 		self:sortByKeepValue(cards)
 		return "$" .. cards[1]:getId()
 end]]
@@ -1406,7 +1406,7 @@ sgs.ai_skill_choice.zuosui= function(self, choices, data)
 	if choices:match("losehp") then
 		local target = self.player:getTag("zuosui_damage"):toDamage().to
 		local number = self.player:getTag("zuosui_number"):toInt()
-		local discard_num = target:getCards("he"):length() - number
+		local discard_num = target:getCards("hes"):length() - number
 		if self:isEnemy(target)then
 			if discard_num >= 2*number then
 				return "discard"
@@ -1420,7 +1420,7 @@ sgs.ai_skill_choice.zuosui= function(self, choices, data)
 		return "losehp"
 	else
 		local suwako =self.player:getTag("zuosui_source"):toPlayer()
-		local minus_discard_num = self.player:getCards("he"):length() - 4
+		local minus_discard_num = self.player:getCards("hes"):length() - 4
 		if self:isFriend(suwako) then
 			if minus_discard_num <=1 then
 				return "4"
@@ -1438,7 +1438,7 @@ end
 	local to=damage.to
 	local from= player
 	if from and to and damage.damage<=1 then
-		local minus_discard_num = to:getCards("he"):length() - 4
+		local minus_discard_num = to:getCards("hes"):length() - 4
 		if minus_discard_num >= 4 then
 			sgs.updateIntention(player, to, 40)
 		end
@@ -1496,7 +1496,7 @@ sgs.ai_skill_cardask["@junwei-discard"] = function(self, data)
 	local target = self.player:getTag("junwei_target"):toPlayer()
 	if self:isFriend(target)  then return "." end
 	local cards = {}
-	for _, card in sgs.qlist(self.player:getCards("he")) do
+	for _, card in sgs.qlist(self.player:getCards("hes")) do
 		if card:isRed() then continue end
 		table.insert(cards,card)
 	end
@@ -1528,7 +1528,7 @@ sgs.ai_skill_use["@@wendao"] = function(self, prompt)
 	local kingdoms = {}
 	local  targets={}
 	for _,p in pairs (self.enemies) do
-		if self.player:canDiscard(p, "h") then
+		if self.player:canDiscard(p, "hs") then
 			if not table.contains(kingdoms,p:getKingdom()) then
 				table.insert(targets,p:objectName())
 				table.insert(kingdoms,p:getKingdom())
@@ -1588,7 +1588,7 @@ function SmartAI:executorRewardOrPunish(victim,damage)
 					if self:isFriend(komachi,killer) then
 						return komachi
 					else
-						if killer:getCards("he"):length() + killer:getPile("wooden_ox"):length() > 3 then
+						if killer:getCards("hes"):length() + killer:getPile("wooden_ox"):length() > 3 then
 							return killer
 						else
 							return komachi

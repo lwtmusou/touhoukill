@@ -7,7 +7,7 @@ sgs.ai_skill_choice.ciyuan = function(self, choices, data)
 		end
 		if self.player:hasSkill("shigui") then
 			local useCount = 0
-			for _,c in sgs.qlist(self.player:getCards("h")) do
+			for _,c in sgs.qlist(self.player:getCards("hs")) do
 				if c:isKindOf("EquipCard") then
 					useCount = useCount + 1
 					continue
@@ -324,7 +324,7 @@ sgs.ai_skill_cardask["youyue-show"] = function(self, data)
 
 	if (res == 1 and self:isEnemy(target))  or (res== 2 and self:isFriend(target)) then
 		local cards = {}
-		for _,c in sgs.qlist(self.player:getCards("h")) do
+		for _,c in sgs.qlist(self.player:getCards("hs")) do
 			if c:getTypeId() == showcard:getTypeId() then
 				table.insert(cards, c)
 			end
@@ -346,7 +346,7 @@ menghuanvs_skill.getTurnUseCard = function(self)
 	if self.player:hasFlag("Forbidmenghuan") then return nil end
 	if self.player:getKingdom() ~="pc98" then return nil end
 
-	local cards = self.player:getCards("h")
+	local cards = self.player:getCards("hs")
 	cards = sgs.QList2Table(cards)
 	local card
 	self:sortByUseValue(cards,true)
@@ -487,3 +487,95 @@ sgs.ai_cardneed.huantong = function(to, card, self)
 end
 
 sgs.ai_skill_invoke.mengyan = true
+
+
+sgs.ai_skill_use["@@sqchuangshi"] = function(self, prompt)
+	local targets={}
+	for _, p in ipairs(self.friends_noself) do
+		table.insert(targets,p:objectName())
+	end
+	if #targets >1 then
+		return "@SqChuangshiCard=.->" .. table.concat(targets, "+")
+	end
+	return "."
+end
+
+sgs.ai_skill_invoke.yuanfa  = function(self)
+	local f = 0
+	local e = 0
+	for _,p in sgs.qlist(self.player:getAllPlayers()) do
+		if  p:getMark("yuanfa") == 0 then continue end
+		if self:isFriend(p) then
+			f = f + 1
+		end
+		if self:isEnemy(p) then
+			e = e + 1
+		end
+	end
+	return f > e
+end
+
+local modianvs_skill = {}
+modianvs_skill.name = "modian_attach"
+table.insert(sgs.ai_skills, modianvs_skill)
+function modianvs_skill.getTurnUseCard(self)
+	if self.player:isKongcheng() then return nil end
+	if self.player:hasFlag("Forbidmodian") then return nil end
+		
+	local cards = sgs.QList2Table(self.player:getCards("hs"))
+	local card
+	self:sortByUseValue(cards,true)
+	for _,acard in ipairs(cards)  do
+		if acard:isBlack() then
+			card = acard
+			break
+		end
+	end
+	if not card then return nil end
+
+	local skillcard = sgs.Card_Parse("@ModianCard="..card:getEffectiveId())
+
+	assert(skillcard)
+	return skillcard
+end
+local modianself_skill = {}
+modianself_skill.name = "modian"
+table.insert(sgs.ai_skills, modianself_skill)
+function modianself_skill.getTurnUseCard(self)
+	return modianvs_skill.getTurnUseCard(self)
+end
+sgs.ai_skill_use_func.ModianCard = function(card, use, self)
+	local targets = {}
+	for _,friend in ipairs(self.friends) do
+		if friend:hasSkill("modian") and not friend:hasFlag("modianInvoked") then
+			table.insert(targets, friend)
+		end
+	end
+	if #targets > 0 then
+		use.card = card
+		if use.to then
+			use.to:append(targets[1])
+			return
+		end
+	end
+end
+sgs.ai_card_intention.ModianCard = -40
+
+sgs.ai_skill_cardask["@modian"] = function(self, data)
+	local ids = self.player:getPile("modian")
+	local tricks = {}
+	for _,id in sgs.qlist(ids) do
+		local card = sgs.Sanguosha:getCard(id)
+		if not card:isKindOf("TrickCard") then 
+			return "$" .. id
+		end
+		table.insert(tricks, card)
+	end
+	self:sortByUseValue(tricks,true)
+	return "$" .. tricks[1]:getId()
+end
+
+sgs.ai_skill_choice.modian = function(self, choices, data)
+	if choices:match("recover") then return "recover" end
+	return "draw"
+end

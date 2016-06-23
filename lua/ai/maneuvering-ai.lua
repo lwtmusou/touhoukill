@@ -63,7 +63,7 @@ local fan_skill={}
 fan_skill.name="Fan"
 table.insert(sgs.ai_skills,fan_skill)
 fan_skill.getTurnUseCard=function(self)
-	local cards = self.player:getCards("h")
+	local cards = self.player:getCards("hs")
 	cards=self:touhouAppendExpandPileToList(self.player,cards)
 	cards=sgs.QList2Table(cards)
 	local slash_card
@@ -158,7 +158,7 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 	end
 
 	if target:hasSkill("zhenlie") then return false end
-	if target:hasSkill("zheshe") and target:canDiscard(target, "h") then return false end
+	if target:hasSkill("zheshe") and target:canDiscard(target, "hs") then return false end
 	if target:hasSkill("xiangle") then
 		local basicnum = 0
 		for _, acard in sgs.qlist(self.player:getHandcards()) do
@@ -192,14 +192,14 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 		end
 	end
 
-	if self.player:hasWeapon("Axe") and self.player:getCards("he"):length() > 4 then return true end
+	if self.player:hasWeapon("Axe") and self.player:getCards("hes"):length() > 4 then return true end
 
 	if ((self.player:hasSkill("roulin") and target:isFemale()) or (self.player:isFemale() and target:hasSkill("roulin"))) or self.player:hasSkill("wushuang") then
-		if getKnownCard(target, player, "Jink", true, "he") >= 2 then return false end
+		if getKnownCard(target, player, "Jink", true, "hes") >= 2 then return false end
 		return getCardsNum("Jink", target, self.player) < 2
 	end
 
-	if getKnownCard(target, self.player, "Jink", true, "he") >= 1 and not (self:getOverflow() > 0 and self:getCardsNum("Analeptic") > 1) then return false end
+	if getKnownCard(target, self.player, "Jink", true, "hes") >= 1 and not (self:getOverflow() > 0 and self:getCardsNum("Analeptic") > 1) then return false end
 	return self:getCardsNum("Analeptic") > 1 or getCardsNum("Jink", target) < 1 or sgs.card_lack[target:objectName()]["Jink"] == 1
 end
 
@@ -252,7 +252,7 @@ function SmartAI:searchForAnaleptic(use, enemy, slash)
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)
 	self:fillSkillCards(cards)
-	local allcards = self.player:getCards("he")
+	local allcards = self.player:getCards("hes")
 	allcards = sgs.QList2Table(allcards)
 
 	if self.player:getPhase() == sgs.Player_Play then
@@ -324,7 +324,7 @@ function SmartAI:useCardSupplyShortage(card, use)
 
 	local sb_daqiao = self.room:findPlayerBySkillName("yanxiao")
 	local yanxiao = sb_daqiao and not self:isFriend(sb_daqiao) and sb_daqiao:faceUp() and
-					(getKnownCard(sb_daqiao, self.player, "diamond", nil, "he") > 0
+					(getKnownCard(sb_daqiao, self.player, "diamond", nil, "hes") > 0
 					or sb_daqiao:getHandcardNum() + self:ImitateResult_DrawNCards(sb_daqiao, sb_daqiao:getVisibleSkillList()) > 3
 					or sb_daqiao:containsTrick("YanxiaoCard"))
 	--东方杀中类张郃的角色

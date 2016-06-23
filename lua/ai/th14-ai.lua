@@ -1,7 +1,7 @@
 sgs.ai_skill_cardask["@baochui"] = function(self, data)
 	local target = self.room:getCurrent()
 	if not self:isFriend(target) then return "." end
-	local cards=self.player:getCards("he")
+	local cards=self.player:getCards("hes")
 	cards = sgs.QList2Table(cards)
 	if #cards==0 then return "." end
 	self:sortByKeepValue(cards)
@@ -159,7 +159,7 @@ function SmartAI:canNizhuan(player, attacker)
 	local seija = self.room:findPlayerBySkillName("nizhuan")
 	if not player:isWounded() then return false end
 	if player:getLostHp() <= attacker:getLostHp() then return false end
-	if seija and self:isFriend(seija,player) and not self:isFriend(player,attacker) and seija:canDiscard(player,"h") then
+	if seija and self:isFriend(seija,player) and not self:isFriend(player,attacker) and seija:canDiscard(player,"hs") then
 		return true
 	end
 	return false
@@ -167,7 +167,7 @@ end
 
 
 sgs.ai_skill_cardask["@guizha"] = function(self, data)
-	for _,card in sgs.qlist(self.player:getCards("h") ) do
+	for _,card in sgs.qlist(self.player:getCards("hs") ) do
 		if card:isKindOf("Peach") then
 			return "$" .. card:getId()
 		end
@@ -273,7 +273,7 @@ end
 
 function SmartAI:yuanfeiValue(player)
 	local value = 0
-	local cards=self.player:getCards("h")
+	local cards=self.player:getCards("hs")
 	cards = self:touhouAppendExpandPileToList(self.player,cards)
 	local attackCard
 	for _,c in sgs.qlist(cards) do
@@ -332,7 +332,7 @@ function yuanfei_skill.getTurnUseCard(self)
 			return sgs.Card_Parse("@YuanfeiCard=.")
 		else
 			local value, card = self:yuanfeiValue(target)
-			local cards=self.player:getCards("h")
+			local cards=self.player:getCards("hs")
 			cards = sgs.QList2Table(cards)
 			self:sortByUseValue(cards, true)
 			for _, c in pairs(cards) do
@@ -355,7 +355,7 @@ sgs.ai_skill_use_func.YuanfeiCard = function(card, use, self)
 	end
 end
 sgs.ai_skill_use_func.YuanfeiNearCard = function(card, use, self)
-	local cards = self.player:getCards("h")
+	local cards = self.player:getCards("hs")
 	local yuanfei= sgs.Card_Parse("@YuanfeiNearCard="..cards:first():getEffectiveId())
 	self:sort(self.enemies, "defense")
 	for _, p in ipairs(self.enemies) do
@@ -386,7 +386,7 @@ sgs.ai_card_intention.YuanfeiNearCard = 60
 	-- end
 	-- local to_discard = {}
 	-- if not need_feitou then return to_discard end
-	-- local cards=self.player:getCards("he")
+	-- local cards=self.player:getCards("hes")
 	-- cards = sgs.QList2Table(cards)
 	-- self:sortByKeepValue(cards)
 	-- table.insert(to_discard, cards[1]:getEffectiveId())
@@ -460,7 +460,7 @@ liange_skill.name = "liange"
 table.insert(sgs.ai_skills, liange_skill)
 function liange_skill.getTurnUseCard(self)
 	if self.player:hasUsed("LiangeCard") then return nil end
-	local cards = sgs.QList2Table(self.player:getCards("he"))
+	local cards = sgs.QList2Table(self.player:getCards("hes"))
 	if #cards==0 then return nil end
 	self:sortByKeepValue(cards)
 	local peach

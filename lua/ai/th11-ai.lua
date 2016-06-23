@@ -39,9 +39,9 @@ sgs.ai_skill_invoke.xiangqi = function(self,data)
 			needCausedamage = true
 		end
 
-		local knownBasicNum = getKnownCard(from, self.player, "BasicCard", false, "h")
-		local knownTrickNum = getKnownCard(from, self.player, "TrickCard", false, "h")
-		local knownEquipNum = getKnownCard(from, self.player, "EquipCard", false, "h")
+		local knownBasicNum = getKnownCard(from, self.player, "BasicCard", false, "hs")
+		local knownTrickNum = getKnownCard(from, self.player, "TrickCard", false, "hs")
+		local knownEquipNum = getKnownCard(from, self.player, "EquipCard", false, "hs")
 		local UnknownNum = from:getHandcardNum() - knownBasicNum - knownTrickNum - knownEquipNum
 		local knownSameNum = 0
 		local knownDiffNum = 0
@@ -141,7 +141,7 @@ sgs.ai_slash_prohibit.xiangqi = function(self, from, to, card)
 
 	if not can_kill then
 		local peach_num = 0
-		for _,c in sgs.qlist(from:getCards("h")) do
+		for _,c in sgs.qlist(from:getCards("hs")) do
 			if c:isKindOf("Peach") or c:isKindOf("Analeptic") then
 				peach_num = peach_num + 1
 			end
@@ -164,7 +164,7 @@ sgs.ai_cardneed.xiangqi = function(to, card, self)
 end
 
 sgs.ai_skill_invoke.huzhu = function(self,data)
-	cards =self.player:getCards("h")
+	cards =self.player:getCards("hs")
 	cardname="Jink"
 	for _,card in sgs.qlist(cards) do
 		if card:isKindOf(cardname) then
@@ -187,7 +187,7 @@ sgs.ai_skill_invoke.huzhu_change = function(self,data)
 	local lord=self.room:getTag("huzhu_target"):toPlayer()
 	local jinks={}
 	if not self:isFriend(lord) then return false end
-	for _,card in sgs.qlist(self.player:getCards("h")) do
+	for _,card in sgs.qlist(self.player:getCards("hs")) do
 		if card:isKindOf("Jink") then
 			table.insert(jinks,card)
 		end
@@ -459,7 +459,7 @@ sgs.ai_skill_cardask["@songzang"] = function(self,data)
 
 	if not need_kill  then return "." end
 	local cards ={}
-	for _,card in sgs.qlist(self.player:getCards("he")) do
+	for _,card in sgs.qlist(self.player:getCards("hes")) do
 		if card:getSuit()==sgs.Card_Spade then
 			table.insert(cards,card)
 		end
@@ -478,7 +478,7 @@ end
 
 function SmartAI:canGuaili(slash)
 	if not self.player:hasSkill("guaili") then return false end
-	for _,c in sgs.qlist(self.player:getCards("h")) do
+	for _,c in sgs.qlist(self.player:getCards("hs")) do
 		if c:getEffectiveId() ~= slash:getEffectiveId() and c:isRed() then
 			return true
 		end
@@ -489,7 +489,7 @@ sgs.ai_skill_cardask["@guaili"] = function(self, data)
 	local effect = data:toSlashEffect()
 	if self:isEnemy(effect.to) then
 		local redCards = {}
-		for _,c in sgs.qlist(self.player:getCards("h")) do
+		for _,c in sgs.qlist(self.player:getCards("hs")) do
 			if  c:isRed() then
 				table.insert(redCards, c)
 			end
@@ -564,7 +564,7 @@ local jidu_skill = {}
 jidu_skill.name = "jidu"
 table.insert(sgs.ai_skills, jidu_skill)
 jidu_skill.getTurnUseCard = function(self, inclusive)
-		local cards = self.player:getCards("h")
+		local cards = self.player:getCards("hs")
 		cards=self:touhouAppendExpandPileToList(self.player,cards)
 		cards = sgs.QList2Table(cards)
 		if #cards==0 then return false end
@@ -606,7 +606,7 @@ end
 sgs.ai_skill_use["@@chuanran"] = function(self, prompt)
 	local id=self.player:getTag("chuanran_id"):toInt()
 	local cards={}
-	for _,c in sgs.qlist(self.player:getCards("he")) do
+	for _,c in sgs.qlist(self.player:getCards("hes")) do
 		if c:isBlack() then
 			table.insert(cards,c)
 		end
@@ -711,7 +711,7 @@ sgs.ai_skill_invoke.diaoping  =function(self,data)
 	if  self.player:getHandcardNum()>=2 then
 		return hasFriend
 	else
-		local lastCard = self.player:getCards("h"):first()
+		local lastCard = self.player:getCards("hs"):first()
 		if hasWeakFriend and not hasSelf then
 			return not lastCard:isKindOf("Peach")
 		elseif hasWeakFriend and hasSelf then
@@ -786,7 +786,7 @@ local baigui_skill = {}
 baigui_skill.name = "baigui"
 table.insert(sgs.ai_skills, baigui_skill)
 baigui_skill.getTurnUseCard = function(self, inclusive)
-		local cards = self.player:getCards("h")
+		local cards = self.player:getCards("hs")
 
 		cards=self:touhouAppendExpandPileToList(self.player,cards)
 		cards = sgs.QList2Table(cards)
@@ -855,7 +855,7 @@ local jiuchong_skill = {}
 jiuchong_skill.name = "jiuchong"
 table.insert(sgs.ai_skills, jiuchong_skill)
 jiuchong_skill.getTurnUseCard = function(self, inclusive)
-		local cards = self.player:getCards("h")
+		local cards = self.player:getCards("hs")
 		cards=self:touhouAppendExpandPileToList(self.player,cards)
 		cards = sgs.QList2Table(cards)
 		self:sortByUseValue(cards, true)

@@ -131,7 +131,7 @@ sgs.ai_need_bear.bumie = function(self, card,from,tos)
 	if not card  then return false end
 	local num = 0
 	local realId = card:getEffectiveId()
-	for _,c in sgs.qlist(from:getCards("h")) do
+	for _,c in sgs.qlist(from:getCards("hs")) do
 		if num >= from:getHandcardNum() then break end
 		if realId ~= -1 then
 			if c:getEffectiveId() == realId then
@@ -472,7 +472,7 @@ sgs.ai_skill_use["@@gesheng"] = function(self, prompt)
 end
 
 sgs.ai_skill_cardask["@yinghuo"] = function(self, data)
-	local ecards=self.player:getCards("h")
+	local ecards=self.player:getCards("hs")
 	if ecards:length()==0 then return "." end
 	for _,c in sgs.qlist(ecards) do
 		if c:isKindOf("Jink")then
@@ -493,7 +493,7 @@ sgs.ai_slash_prohibit.yinghuo = function(self, from, to, card)
 		return false
 	end
 	if getCardsNum("Jink", to, from) >0  then
-		if from:hasWeapon("Axe") and from:getCards("he"):length()>=3 then
+		if from:hasWeapon("Axe") and from:getCards("hes"):length()>=3 then
 			return false
 		end
 		return true
@@ -719,7 +719,7 @@ jinxi_skill.name = "jinxi"
 table.insert(sgs.ai_skills, jinxi_skill)
 function jinxi_skill.getTurnUseCard(self)
 	if self.player:getMark("@jinxi")==0 or not self.player:isWounded() then return nil end
-	local value = self.player:getCards("h"):length() + self.player:getHp()
+	local value = self.player:getCards("hs"):length() + self.player:getHp()
 	if value <=3 then
 		return sgs.Card_Parse("@JinxiCard=.")
 	end

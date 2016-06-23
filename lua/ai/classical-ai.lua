@@ -120,7 +120,7 @@
 		local huatuo = player
 		if #EruptSignal > 0 then
 			if card:getId() == EruptSignal[1] then
-				local cards = player:getCards("he")
+				local cards = player:getCards("hes")
 				for _,id in sgs.qlist(cards) do
 					if id ~= EruptSignal[1] then
 						local acard = sgs.Sanguosha:getCard(id)
@@ -186,7 +186,7 @@
 		if damage then
 			local aoe = damage.card
 			if aoe and aoe:isKindOf("AOE") then
-				local handcards = self.player:getCards("h")
+				local handcards = self.player:getCards("hs")
 				handcards = sgs.QList2Table(handcards)
 				self:sortByUseValue(handcards, true)
 				for _, id in ipairs(handcards) do

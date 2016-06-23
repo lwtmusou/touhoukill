@@ -474,7 +474,7 @@ sgs.ai_skill_cardchosen.feixiang = function(self, who, flags)
 	if #r_cards > 0 then return r_cards[1] end
 	self:sortByUseValue(other_cards, true)
 	if #other_cards > 0 then return other_cards[1] end
-	local hands = who:getCards("h")
+	local hands = who:getCards("hs")
 	if who:objectName() == sele.player:objectName() then
 		for _, card in sgs.qlist(hands) do
 			local cards1={}
@@ -737,7 +737,7 @@ local leiyun_skill = {}
 leiyun_skill.name = "leiyun"
 table.insert(sgs.ai_skills, leiyun_skill)
 leiyun_skill.getTurnUseCard = function(self, inclusive)
-		local cards = self.player:getCards("h")
+		local cards = self.player:getCards("hs")
 		cards=self:touhouAppendExpandPileToList(self.player,cards)
 		cards = sgs.QList2Table(cards)
 		self:sortByUseValue(cards, true)
@@ -842,7 +842,7 @@ sgs.ai_skill_cardask["@xiwang"] = function(self, data)
 	local target = self.player:getTag("xiwang_target"):toPlayer()
 	if not target or not self:isFriend(target) then return "." end
 
-	local cards = self.player:getCards("h")
+	local cards = self.player:getCards("hs")
 	cards = sgs.QList2Table(cards)
 	if #cards==0 then return "." end
 	self:sortByUseValue(cards)
@@ -881,7 +881,7 @@ table.insert(sgs.ai_skills, nianli_skill)
 nianli_skill.getTurnUseCard = function(self)
 	if self.player:hasUsed("NianliCard") then return nil end
 	if self.player:getPhase() ~= sgs.Player_Play then return nil end
-	-- local cards = self.player:getCards("h")
+	-- local cards = self.player:getCards("hs")
 
 	-- local validCards = {}
 	-- for _,c in sgs.qlist(cards) do

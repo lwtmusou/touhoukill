@@ -311,7 +311,7 @@ sgs.ai_skill_cardask["@weizhuang-discard"] = function(self, data)
 		end
 	end
 	if not effect then return "." end
-	local cards = sgs.QList2Table(self.player:getCards("h"))
+	local cards = sgs.QList2Table(self.player:getCards("hs"))
 	cards1={}
 	for _,card in pairs(cards) do
 		if card:isKindOf("BasicCard") then
@@ -455,7 +455,7 @@ sgs.ai_skill_cardask["@zhengyi"] = function(self, data)
 	local pattern = self:lingqiParse(self,self.player,use)
 	if pattern == 2 then
 		local cards = {}
-		for _,c in sgs.qlist(self.player:getCards("he")) do
+		for _,c in sgs.qlist(self.player:getCards("hes")) do
 			if c:isRed() then
 				table.insert(cards, c)
 			end
@@ -506,7 +506,7 @@ sgs.ai_skill_use["@@chuannan"] = function(self, prompt)
 	if self:touhouDelayTrickBadTarget(card,target,self.player) then
 		return "."
 	end
-	local cards = self.player:getCards("h")
+	local cards = self.player:getCards("hs")
 	cards=self:touhouAppendExpandPileToList(self.player,cards)
 	cards = sgs.QList2Table(cards)
 	self:sortByUseValue(cards,true)
@@ -717,7 +717,7 @@ sgs.ai_skill_choice.jingxia=function(self)
 	end
 	if fieldcard1:length()>0 then return "discardfield" end
 	if fieldcard:length()>1 then return "discardfield" end
-	if from and self:isEnemy(from) and not from:isNude() and  self.player:canDiscard(from, "he") then
+	if from and self:isEnemy(from) and not from:isNude() and  self.player:canDiscard(from, "hes") then
 		return "discard"
 	end
 	return "dismiss"
@@ -947,7 +947,7 @@ function SmartAI:shuxinValue(target)
     if canShanshi and self:isFriend(target) and self.player:objectName() ~= target:objectName() then
 		value = value + 1
 	end
-	local black = getKnownCard(target, self.player, "black", false, "he", false)
+	local black = getKnownCard(target, self.player, "black", false, "hes", false)
 	local recover = false
 	if target:isWounded() and black >= target:getHp() then recover = true end
 	if recover then
@@ -991,7 +991,7 @@ end
 sgs.ai_skill_cardask["@shuxin"] = function(self, data)
     local hasBlack = false
 	local blacks = {}
-	for _,c in sgs.qlist(self.player:getCards("he")) do
+	for _,c in sgs.qlist(self.player:getCards("hes")) do
 		if c:isBlack() then
 			table.insert(blacks, c)
 			if self.room:getCardPlace(c:getEffectiveId()) == sgs.Player_PlaceHand then
