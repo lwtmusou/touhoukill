@@ -277,6 +277,17 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const
 
 bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *) const
 {
+    //check targets feasible for skill "jifeng"
+    if (this->getSkillName() == "jifeng") {
+        bool can = false;
+        foreach(const Player *p, targets) {
+            if (Self->distanceTo(p) == subcards.length())
+                can = true;
+        }
+        if (!can)
+            return false;
+    }
+    
     //check targets feasible for skill "shikong"
     if (Self->hasSkill("shikong") && Self->getPhase() == Player::Play) {
         foreach (const Player *p, Self->getAliveSiblings()) {

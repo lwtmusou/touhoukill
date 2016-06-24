@@ -3808,44 +3808,14 @@ class Tianqu : public TriggerSkill
 public:
     Tianqu() : TriggerSkill("tianqu")
     {
-        events << EventPhaseStart;
+        events << CardUsed << CardFinished;
         frequency = Compulsory;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {
-        ServerPlayer *player = data.value<ServerPlayer *>();
-        if (!player->hasSkill(this) || player->isDead() || player->getPhase() != Player::Start)
-            return QList<SkillInvokeDetail>();
-        foreach(ServerPlayer *p, room->getAllPlayers()) {
-            if (p->getMark("@road") > 0)
-                return QList<SkillInvokeDetail>();
-        }
-
-        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
-    }
-
-    // compulsory effect, cost omitted
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        invoke->invoker->gainMark("@road");
-        return false;
-    }
-};
-
-class Jifeng : public TriggerSkill
-{
-public:
-    Jifeng() : TriggerSkill("jifeng")
-    {
-        events << TargetSpecifying;
     }
 
     static ServerPlayer *adjanceny(ServerPlayer *player)
     {
         Room *room = player->getRoom();
-        int matchCount = (player->getSeat() == room->getAllPlayers().length()) ?  1 : player->getSeat() + 1;
+        int matchCount = (player->getSeat() == room->getAllPlayers().length()) ? 1 : player->getSeat() + 1;
 
         foreach(ServerPlayer *p, room->getAllPlayers()) {
             if (p->getSeat() == matchCount)
@@ -3854,24 +3824,32 @@ public:
         return player;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-        QList<SkillInvokeDetail> d;
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (!use.card->isKindOf("Slash") || use.from == NULL || !use.from->isAlive())
-            return d;
-        
-        ServerPlayer *tianqu = NULL;
-        foreach(ServerPlayer *p, room->getAllPlayers()) {
-            if (p->getMark("@road") > 0)
-                tianqu = p;
+        //record times of using card
+        if (triggerEvent == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from->isCurrent() && use.card->isKindOf("Slash")) {
+                if (use.from->hasFlag("tianqu_first"))
+                    use.from->setFlags("tianqu_second");
+                else
+                    use.from->setFlags("tianqu_first");
+            }
         }
-        if (tianqu == NULL)
-            return d;
+    }
 
-        QList<ServerPlayer *> ayas = room->findPlayersBySkillName(objectName());
-        foreach(ServerPlayer *p, ayas)
-            d << SkillInvokeDetail(this, p, p, NULL, false, tianqu);
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        if (triggerEvent == CardUsed)
+            return QList<SkillInvokeDetail>();
+        
+        CardUseStruct use = data.value<CardUseStruct>();
+        QList<SkillInvokeDetail> d;
+        if (use.card->isKindOf("Slash") && use.from && use.from->isCurrent() && !use.from->hasFlag("tianqu_second")) {
+            
+            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName()))
+                d << SkillInvokeDetail(this, p, p, NULL, true);
+        }
         return d;
     }
 
@@ -3879,32 +3857,106 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        CardUseStruct use = data.value<CardUseStruct>();
-        QList<ServerPlayer *> before;
+        ServerPlayer *starter = NULL;
         foreach(ServerPlayer *p, room->getAllPlayers()) {
-            if (!use.from->inMyAttackRange(p))
-                before << p;
+            if (p->getMark("@road") > 0) {
+                starter = p;
+                break;
+            }
         }
 
-        invoke->targets.first()->loseMark("@road");
-        ServerPlayer *next = adjanceny(invoke->targets.first());
-        next->gainMark("@road");
-
-        QList<ServerPlayer *> targets;
-        foreach(ServerPlayer *p, before) {
-            if (use.from->inMyAttackRange(p) && !use.to.contains(p) && !use.from->isProhibited(p, use.card))
-                targets << p;
-        }
-        if (!targets.isEmpty()) {
-            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@jifeng", true, true);
-            use.to << target;
-            room->sortByActionOrder(use.to);
-            data = QVariant::fromValue(use);
-        }
+        if (starter != NULL) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            bool move = true;
+            if (use.from && use.from->isAlive() && use.from != invoke->invoker)
+                move = !room->askForUseSlashTo(invoke->invoker, use.from, "@tianqu");
+            if (move) {
+                starter->loseMark("@road");
+                ServerPlayer *next = adjanceny(starter);
+                next->gainMark("@road");
+            }
+        } else
+            invoke->invoker->gainMark("@road");
         return false;
     }
 };
 
+class JifengVS : public ViewAsSkill
+{
+public:
+    JifengVS() : ViewAsSkill("jifeng")
+    {
+        response_or_use = true;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return Slash::IsAvailable(player);
+    }
+
+    virtual bool viewFilter(const QList<const Card*> &selected, const Card*to_select) const
+    {
+        return !to_select->isEquipped();
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        return matchAvaliablePattern("slash", pattern) && 
+            Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        if (cards.length() == 0)
+            return NULL;
+        Slash *slash = new Slash(Card::SuitToBeDecided, -1);
+        slash->addSubcards(cards);
+        slash->setSkillName(objectName());
+        return slash;
+    }
+};
+
+class Jifeng : public TriggerSkill
+{
+public:
+    Jifeng() : TriggerSkill("jifeng")
+    {
+        events << CardUsed;
+        view_as_skill = new JifengVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->getSkillName() == "jifeng" && use.card->isRed() && use.from->isAlive())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    // compulsory effect, cost omitted
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        invoke->invoker->drawCards(1);
+        return false;
+    }
+};
+
+class JifengTargetMod : public TargetModSkill
+{
+public:
+    JifengTargetMod() : TargetModSkill("#jifeng")
+    {
+        pattern = "Slash";
+    }
+    virtual int getDistanceLimit(const Player *from, const Card *card) const
+    {
+        if (card->getSkillName() == "jifeng")
+            return 1000;
+        return 0;
+    }
+};
 
 TouhouGodPackage::TouhouGodPackage()
     : Package("touhougod")
@@ -4036,6 +4088,8 @@ TouhouGodPackage::TouhouGodPackage()
     General *aya_god = new General(this, "aya_god", "touhougod", 4, false);
     aya_god->addSkill(new Tianqu);
     aya_god->addSkill(new Jifeng);
+    aya_god->addSkill(new JifengTargetMod);
+    related_skills.insertMulti("jifeng", "#jifeng");
 
     General *uuz13 = new General(this, "yuyuko_1v3", "touhougod", 1, false, true);
     Q_UNUSED(uuz13);
