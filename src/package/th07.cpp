@@ -1780,11 +1780,24 @@ class Jixiong : public TriggerSkill
 public:
     Jixiong() : TriggerSkill("jixiong")
     {
-        events << CardsMoveOneTime;
+        events << CardsMoveOneTime << EventPhaseChanging;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    void record(TriggerEvent e, Room *room, QVariant &) const
     {
+        if (e == EventPhaseChanging) {
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                if (p->hasFlag("jixiong_used"))
+                    room->setPlayerFlag(p, "-jixiong_used");
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e == EventPhaseChanging)
+            return QList<SkillInvokeDetail>();
+
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.to_place != Player::DiscardPile)
             return QList<SkillInvokeDetail>();
@@ -1797,7 +1810,7 @@ public:
             const Card *card = Sanguosha->getCard(id);
             if (card != NULL && card->getSuit() == Card::Heart && card->getNumber() >= 11 && card->getNumber() <= 13) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->hasSkill(this))
+                    if (p->hasSkill(this) && !p->hasFlag("jixiong_used"))
                         d << SkillInvokeDetail(this, p, p, NULL, false, current);
                 }
             }
@@ -1807,6 +1820,7 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
+        room->setPlayerFlag(invoke->invoker, "jixiong_used");
         room->recover(invoke->targets.first(), RecoverStruct());
         return false;
     }
@@ -1839,7 +1853,7 @@ public:
             const Card *card = Sanguosha->getCard(id);
             if (card != NULL && card->getSuit() == Card::Spade && card->getNumber() >= 11 && card->getNumber() <= 13) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->hasSkill("jixiong"))
+                    if (p->hasSkill("jixiong") && !p->hasFlag("jixiong_used"))
                         d << SkillInvokeDetail(this, p, p, NULL, false, current);
                 }
             }
@@ -1850,6 +1864,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         if (invoke->invoker->askForSkillInvoke("jixiong2", QVariant::fromValue(invoke->preferredTarget))) {
+            room->setPlayerFlag(invoke->invoker, "jixiong_used");
             LogMessage log;
             log.type = "#InvokeSkill";
             log.from = invoke->invoker;
@@ -1864,7 +1879,7 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        room->damage(DamageStruct("jixiong", invoke->invoker, invoke->targets.first()));
+        room->damage(DamageStruct("jixiong", NULL, invoke->targets.first()));
         return false;
     }
 };
