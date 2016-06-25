@@ -1246,7 +1246,7 @@ int Engine::correctCardTarget(const TargetModSkill::ModType type, const Player *
     } else if (type == TargetModSkill::ExtraTarget) {
         foreach (const TargetModSkill *skill, targetmod_skills) {
             ExpPattern p(skill->getPattern());
-            if (p.match(from, card)) {
+            if (p.match(from, card) && from->getMark("chuangshi_user") == 0) {
                 x += skill->getExtraTargetNum(from, card);
             }
         }
