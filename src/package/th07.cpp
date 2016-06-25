@@ -110,8 +110,10 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.to->isAlive() && damage.to->getKingdom() == "yym") {
                 foreach (ServerPlayer *p, room->getOtherPlayers(damage.to)) {
-                    if (p->hasLordSkill(objectName()))
-                        details << SkillInvokeDetail(this, p, damage.to);
+                    if (p->hasLordSkill(objectName())) {
+                        for (int i = 0; i < damage.damage; ++i)
+                            details << SkillInvokeDetail(this, p, damage.to);
+                    }
                 }
             }
         } else if (event == FinishJudge) {
