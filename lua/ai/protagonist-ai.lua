@@ -166,6 +166,13 @@ sgs.ai_choicemade_filter.cardResponded["@boli-retrial"] = function(self, player,
 	end
 end
 
+sgs.ai_slash_prohibit.lingqi = function(self, from, to, card)
+	if self:isFriend(from,to) then
+		return false
+	end
+	local wizard_type ,wizard = self:getFinalRetrial()
+	return  (wizard  and self:invokeTouhouJudge(to))
+end
 
 
 sgs.ai_skillProperty.boli = function(self)
