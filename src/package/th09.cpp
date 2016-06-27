@@ -652,7 +652,7 @@ public:
             QList<int>  ids;
             QList<int>  able;
             QList<int>  disable;
-            foreach(const Card *c, target->getCards("h")) {
+            foreach(const Card *c, target->getCards("hs")) {
                 int id = c->getEffectiveId();
                 ids << id;
                 if (c->isRed() && !throwIds.contains(id))
@@ -1086,7 +1086,7 @@ public:
         room->clearAG();
 
         int num = 0;
-        foreach(const Card *c, target->getCards("h")) {
+        foreach(const Card *c, target->getCards("hs")) {
             if (c->isKindOf("BasicCard"))
                 num++;
         }

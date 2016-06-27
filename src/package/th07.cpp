@@ -391,7 +391,7 @@ public:
         ServerPlayer *a = data.value<DamageStruct>().to;
         ServerPlayer *ran = invoke->invoker;
         ran->tag["zhaoliao_target"] = QVariant::fromValue(a);
-        const Card *cards = room->askForExchange(ran, "zhaoliao", ran->getCards("he").length(), 1, true, "@zhaoliao:" + a->objectName(), true);
+        const Card *cards = room->askForExchange(ran, "zhaoliao", ran->getCards("hes").length(), 1, true, "@zhaoliao:" + a->objectName(), true);
         ran->tag.remove("zhaoliao_target");
         if (cards) {
             room->notifySkillInvoked(ran, objectName());
@@ -2162,7 +2162,7 @@ public:
         room->getThread()->delay();
         room->getThread()->delay();
         ExNihilo *exnihilo = new ExNihilo(Card::SuitToBeDecided, -1);
-        exnihilo->addSubcards(invoke->invoker->getCards("h"));
+        exnihilo->addSubcards(invoke->invoker->getCards("hs"));
         exnihilo->setSkillName("_huayin");
         CardUseStruct use;
         use.from = invoke->invoker;

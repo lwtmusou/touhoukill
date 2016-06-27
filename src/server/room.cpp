@@ -3086,7 +3086,7 @@ void Room::setPlayerSkillInvalidity(ServerPlayer *player, const QString &skill_n
     doBroadcastNotify(QSanProtocol::S_COMMAND_SET_SKILL_INVALIDITY, arr);
 
     foreach (ServerPlayer *p, getAllPlayers())
-        filterCards(p, p->getCards("he"), true);
+        filterCards(p, p->getCards("hes"), true);
 
     JsonArray args;
     args << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
@@ -4750,7 +4750,7 @@ void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
     player->setGender(player->getGeneral()->getGender());
     foreach(const Skill *skill, player->getGeneral()->getSkillList())
         player->addSkill(skill->objectName());
-    filterCards(player, player->getCards("he"), true);
+    filterCards(player, player->getCards("hes"), true);
 }
 
 void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general)

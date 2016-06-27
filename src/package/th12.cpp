@@ -1085,7 +1085,7 @@ void ShuxinCard::onEffect(const CardEffectStruct &effect) const
 {
     bool hasBlack = false;
     Room *room = effect.to->getRoom();
-    foreach (const Card *c, effect.to->getCards("h")) {
+    foreach (const Card *c, effect.to->getCards("hs")) {
         if (c->isBlack() && !effect.to->isJilei(c)) {
             hasBlack = true;
             break;
@@ -1095,7 +1095,7 @@ void ShuxinCard::onEffect(const CardEffectStruct &effect) const
     const Card *card = room->askForCard(effect.to, pattern, "@shuxin");
     if (hasBlack && card ==NULL) {
         // force discard!!!
-        QList<const Card *> hc = effect.to->getCards("he");
+        QList<const Card *> hc = effect.to->getCards("hes");
         foreach(const Card *c, hc) {
             if (effect.to->isJilei(c) || !c->isBlack())
                 hc.removeOne(c);

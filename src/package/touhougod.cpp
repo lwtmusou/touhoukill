@@ -664,7 +664,7 @@ public:
                 int id = -1;
                 //auto throw
                 if (p->getHandcardNum() == 1)
-                    id = p->getCards("h").first()->getEffectiveId();
+                    id = p->getCards("hs").first()->getEffectiveId();
                 else {
                     const Card *cards = room->askForExchange(p, objectName(), 1, 1, false, "cuixiang-exchange:" + player->objectName() + ":" + objectName());
                     DELETE_OVER_SCOPE(const Card, cards)
@@ -856,7 +856,7 @@ public:
             if (x == 0)
                 return false;
             int y = x / 2;
-            if (x > player->getCards("he").length())
+            if (x > player->getCards("hes").length())
                 room->loseHp(player, y);
             else {
                 if (!room->askForDiscard(player, objectName(), x, x, true, true, "@jinguo:" + QString::number(x) + ":" + QString::number(y)))
@@ -1471,7 +1471,7 @@ public:
                     targets << p;
                 }
             }
-            foreach (const Card *c, player->getCards("he")) {
+            foreach (const Card *c, player->getCards("hes")) {
                 ids << c->getEffectiveId();
             }
             QString prompt = "yibian_give";
@@ -2754,7 +2754,7 @@ public:
             damage.to->drawCards(x);
             room->loseHp(damage.to, x);
         } else {
-            int discardNum = damage.to->getCards("he").length() > x ? damage.to->getCards("he").length() - x : 0;
+            int discardNum = damage.to->getCards("hes").length() > x ? damage.to->getCards("he").length() - x : 0;
             if (discardNum > 0)
                 room->askForDiscard(damage.to, objectName(), discardNum, discardNum, false, true);
         }

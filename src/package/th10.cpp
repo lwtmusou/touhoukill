@@ -322,10 +322,10 @@ public:
         ServerPlayer *target = invoke->targets.first();
         room->handleAcquireDetachSkills(target, "qiankun");
         room->handleAcquireDetachSkills(target, "chuancheng");
-        if (invoke->invoker->getCards("hej").length() > 0) {
+        if (invoke->invoker->getCards("hejs").length() > 0) {
             DummyCard *allcard = new DummyCard;
             allcard->deleteLater();
-            allcard->addSubcards(invoke->invoker->getCards("hej"));
+            allcard->addSubcards(invoke->invoker->getCards("hejs"));
             room->obtainCard(target, allcard, CardMoveReason(CardMoveReason::S_REASON_RECYCLE, target->objectName()), false);
         }
         return false;

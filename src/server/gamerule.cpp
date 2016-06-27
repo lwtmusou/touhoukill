@@ -363,7 +363,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             const Skill *skill = s.skill;
             bool refilter = skill->inherits("FilterSkill");
             if (refilter)
-                room->filterCards(s.player, s.player->getCards("he"), triggerEvent == EventLoseSkill);
+                room->filterCards(s.player, s.player->getCards("hes"), triggerEvent == EventLoseSkill);
 
             break;
         }
