@@ -1013,7 +1013,8 @@ sgs.ai_slash_prohibit.hpymsiyu = function(self, from, to, card)
 		return false
 	end
 	local callback=sgs.ai_damage_prohibit["hpymsiyu"]
-	return callback(self, from, to, card)
+	local damage = sgs.DamageStruct(card, from, to, 1, self:touhouDamageNature(card,from,to))
+	return callback(self, from, to, damage)
 end
 sgs.ai_trick_prohibit.hpymsiyu = function(self, from, to, card)
 	if self:isFriend(from,to) then return false end
@@ -1024,11 +1025,12 @@ sgs.ai_trick_prohibit.hpymsiyu = function(self, from, to, card)
 	end
 	if isDamage then
 		local callback=sgs.ai_damage_prohibit["hpymsiyu"]
-		return callback(self, from, to, card)
+		local damage = sgs.DamageStruct(card, from, to, 1, self:touhouDamageNature(card,from,to))
+		return callback(self, from, to, damage)
 	end
 	return false
 end
-sgs.ai_damage_prohibit.hpymsiyu = function(self, from, to, card)
+sgs.ai_damage_prohibit.hpymsiyu = function(self, from, to, damage)
 	if not to:hasSkills("hpymsiyu+juhe") then return false end
 	if to:getPhase() ~=sgs.Player_NotActive then return false end
 	if self:isFriend(from,to) then return false end
@@ -1039,13 +1041,7 @@ sgs.ai_damage_prohibit.hpymsiyu = function(self, from, to, card)
 		end
 	end
 	--后面的暂且不管了。。。。
-	local fakeDamage=sgs.DamageStruct()
-	fakeDamage.card=card
-	fakeDamage.nature= self:touhouDamageNature(card,from,to)
-	fakeDamage.damage=1
-	fakeDamage.from=from
-	fakeDamage.to=to
-	if self:touhouDamage(fakeDamage,from,to).damage < to:getHp() then
+	if self:touhouDamage(damage,from,to).damage < to:getHp() then
 		return false
 	end
 	if to:containsTrick("indulgence") or to:containsTrick("supply_shortage") then

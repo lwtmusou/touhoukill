@@ -821,7 +821,8 @@ sgs.ai_slash_prohibit.zhongyan = function(self, from, to, card)
 	end
 	if to:getMark("@zhongyan")==0 then return false end
 	local callback=sgs.ai_damage_prohibit["zhongyan"]
-	return callback(self, from, to, card)
+	local damage = sgs.DamageStruct(card, from, to, 1, self:touhouDamageNature(card,from,to))
+	return callback(self, from, to, damage)
 end
 sgs.ai_trick_prohibit.zhongyan = function(self, from, to, card)
 	if self:isFriend(from,to) then
@@ -830,9 +831,10 @@ sgs.ai_trick_prohibit.zhongyan = function(self, from, to, card)
 	if to:getMark("@zhongyan")==0 then return false end
 	if not self:touhouIsDamageCard(card) then return false end
 	local callback=sgs.ai_damage_prohibit["zhongyan"]
-	return callback(self, from, to, card)
+	local damage = sgs.DamageStruct(card, from, to, 1, self:touhouDamageNature(card,from,to))
+	return callback(self, from, to, damage)
 end
-sgs.ai_damage_prohibit.zhongyan = function(self, from, to, card)
+sgs.ai_damage_prohibit.zhongyan = function(self, from, to, damage)
 	if self:isFriend(from,to) then
 		return false
 	end
@@ -841,15 +843,7 @@ sgs.ai_damage_prohibit.zhongyan = function(self, from, to, card)
 		return false
 	end
 	if (from:getLostHp()>=2 or from:getHp()<=1)  then
-		local fakeDamage=sgs.DamageStruct()
-		if card then
-			fakeDamage.card=card
-		end
-		fakeDamage.nature= sgs.DamageStruct_Normal
-		fakeDamage.damage=1
-		fakeDamage.from=from
-		fakeDamage.to=to
-		if not self:touhouDamageEffect(fakeDamage,from,to) then
+		if not self:touhouDamageEffect(damage,from,to) then
 			return true
 		end
 	end

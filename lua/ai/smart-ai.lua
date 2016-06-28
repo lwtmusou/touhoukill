@@ -7490,6 +7490,21 @@ function SmartAI:touhouDamageBenefit(damage,from,to)
 	end
 end
 
+
+function SmartAI:touhouDamageProhibit(damage,from,to)
+	for _, askill in sgs.qlist(to:getVisibleSkillList()) do
+		local s_name = askill:objectName()
+		if not to:hasSkill(s_name) then--需要check技能无效
+			continue
+		end
+		local filter = sgs.ai_damage_prohibit[s_name]
+		if filter and type(filter) == "function" and filter(self, from, to, damage) then
+			return true
+		end
+	end
+	return false
+end
+
 --东方杀相关
 --评估血的价值
 function SmartAI:touhouHpValue(player)

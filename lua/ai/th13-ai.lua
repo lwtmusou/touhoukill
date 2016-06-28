@@ -1044,7 +1044,8 @@ sgs.ai_slash_prohibit.qingyu = function(self, from, to, card)
 		return false
 	end
 	local callback=sgs.ai_damage_prohibit["qingyu"]
-	return callback(self, from, to, card)
+	local damage = sgs.DamageStruct(card, from, to, 1, self:touhouDamageNature(card,from,to))
+	return callback(self, from, to, damage)
 end
 sgs.ai_trick_prohibit.qingyu = function(self, from, to, card)
 	if self:isFriend(from,to) then return false end
@@ -1055,24 +1056,17 @@ sgs.ai_trick_prohibit.qingyu = function(self, from, to, card)
 	end
 	if isDamage then
 		local callback=sgs.ai_damage_prohibit["qingyu"]
-		return callback(self, from, to, card)
+		local damage = sgs.DamageStruct(card, from, to, 1, self:touhouDamageNature(card,from,to))
+		return callback(self, from, to, damage)
 	end
 	return false
 end
-sgs.ai_damage_prohibit.qingyu = function(self, from, to, card)
+sgs.ai_damage_prohibit.qingyu = function(self, from, to, damage)
 
 	if self:isFriend(from,to) then return false end
 	local num = self:qingyuNum(to)
 	if num < 5 then return false end
-	local fakeDamage=sgs.DamageStruct()
-	if card then
-		fakeDamage.card=card
-	end
-	fakeDamage.nature= self:touhouDamageNature(card,from,to)
-	fakeDamage.damage=1
-	fakeDamage.from=from
-	fakeDamage.to=to
-	if self:touhouDamageEffect(fakeDamage,from,to) then
+	if self:touhouDamageEffect(damage,from,to) then
 		return false
 	end
 	return true

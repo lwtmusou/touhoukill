@@ -749,6 +749,9 @@ sgs.ai_skill_use_func.ZhuonongCard = function(card, use, self)
 			if self:touhouDamageTransfer(p) then
 				continue
 			end
+			if self:touhouDamageProhibit(sgs.DamageStruct(nil, self.player, p, 1, sgs.DamageStruct_Fire), self.player, p) then
+				continue
+			end
 			if p:hasSkill("ganying")  and self.player:distanceTo(p) >1 then
 				continue
 			end
@@ -1149,9 +1152,28 @@ sgs.ai_skill_playerchosen.daoyao = function(self, targets)
 			return p
 		end
 	end
-	return target_table[1]
+	return nil
 end
 sgs.ai_playerchosen_intention.daoyao = -40
+sgs.ai_slash_prohibit.sixiang = function(self, from, to, card)
+	if self:isFriend(from,to) then
+		return false
+	end
+	local callback=sgs.ai_damage_prohibit["sixiang"]
+	local damage = sgs.DamageStruct(card, from, to, 1, self:touhouDamageNature(card,from,to))
+	return callback(self, from, to, damage)
+end
+sgs.ai_damage_prohibit.sixiang = function(self, from, to, damage)
+	if not to:hasSkill("daoyao") then return false end
+	if self:isFriend(from,to) then return false end
+	if not to:isChained() then return false end
+	if damage.nature == sgs.DamageStruct_Normal then return false end
+	return self:touhouDamage(damage,from,to).damage < to:getHp() 
+	--暂不考虑连弩
+end
+
+
+
 
 sgs.ai_skill_cardask["jidong-discard"] = function(self, data)
 	local use = data:toCardUse()
