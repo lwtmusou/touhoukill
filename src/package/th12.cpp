@@ -1115,8 +1115,8 @@ void ShuxinCard::onEffect(const CardEffectStruct &effect) const
     } else if (!effect.to->isKongcheng()) {
             room->showAllCards(effect.to);
             room->getThread()->delay(1000);
+            room->clearAG();
     }
-
 }
 
 

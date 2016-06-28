@@ -1114,7 +1114,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardAskedStruct s = data.value<CardAskedStruct>();
-        if (s.player == NULL || s.player->isDead() || !s.player->hasSkill(this))
+        if (s.player == NULL || s.player->isDead() || !s.player->hasSkill(this) || s.player->isKongcheng())
             return QList<SkillInvokeDetail>();
 
         if (matchAvaliablePattern("jink", s.pattern)) {
