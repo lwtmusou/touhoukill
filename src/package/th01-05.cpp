@@ -1179,7 +1179,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         ServerPlayer  *current = room->getCurrent();
-        if (!current || !current->hasSkill(objectName()) || !current->isAlive())
+        if (!current || !current->hasLordSkill(objectName()) || !current->isAlive())
             return QList<SkillInvokeDetail>();
 
         CardResponseStruct resp = data.value<CardResponseStruct>();
