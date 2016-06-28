@@ -4067,7 +4067,6 @@ TouhouGodPackage::TouhouGodPackage()
     cirno_god->addSkill(new Aoyi);
     cirno_god->addSkill(new AoyiEffect);
     cirno_god->addSkill(new AoyiTargetMod);
-    related_skills.insertMulti("aoyi", "#aoyi_handle");
     related_skills.insertMulti("aoyi", "#aoyi_mod");
     related_skills.insertMulti("aoyi", "#aoyi");
 

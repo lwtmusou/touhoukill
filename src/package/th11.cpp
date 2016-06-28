@@ -1183,7 +1183,7 @@ TH11Package::TH11Package()
     General *yugi = new General(this, "yugi", "dld", 4, false);
     yugi->addSkill(new Guaili);
     yugi->addSkill(new Jiuhao);
-    related_skills.insertMulti("jiuhao", "#jiuhaoTargetMod");
+
 
 
     General *parsee = new General(this, "parsee", "dld", 3, false);

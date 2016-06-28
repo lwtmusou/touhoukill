@@ -880,7 +880,6 @@ THNDJPackage::THNDJPackage()
     mokou_ndj->addSkill(new Rexue);
     mokou_ndj->addSkill(new Sidou);
     mokou_ndj->addSkill(new TymhWuyu);
-    related_skills.insertMulti("rexue", "#rexue_count");
 
     General *kaguya_ndj = new General(this, "kaguya_ndj", "zhu", 3, false);
     kaguya_ndj->addSkill(new Huanyue);
