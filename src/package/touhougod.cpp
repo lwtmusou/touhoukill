@@ -3856,24 +3856,22 @@ public:
         return player;
     }
 
-    void record(TriggerEvent triggerEvent, Room *, QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         //record times of using card
         if (triggerEvent == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.from->isCurrent() && use.from->getPhase() == Player::Play && use.card->isKindOf("Slash")) {
-                if (use.from->hasFlag("duyu_first"))
-                    use.from->setFlags("duyu_second");
-                else
-                    use.from->setFlags("duyu_first");
+                if (!use.from->hasFlag("duyu")) {
+                    use.from->setFlags("duyu");
+                    room->setCardFlag(use.card, "duyu");
+                }
             }
         }
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.from == Player::Play) {
-                change.player->setFlags("-duyu_first");
-                change.player->setFlags("-duyu_second");
-            }
+            if (change.from == Player::Play)
+                change.player->setFlags("-duyu");
         }
     }
 
@@ -3882,7 +3880,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (triggerEvent == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("Slash") && use.from && use.from->isCurrent() && use.from->getPhase() == Player::Play && !use.from->hasFlag("duyu_second")) {
+            if (use.from && use.from->isCurrent() && use.from->getPhase() == Player::Play && use.card->hasFlag("duyu")) {
                 ServerPlayer *starter = NULL;
                 foreach(ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getMark("@road") > 0) {
