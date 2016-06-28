@@ -6319,7 +6319,7 @@ function SmartAI:hasTrickEffective(card, to, from)
 		local count = 0
 		for _,p in sgs.qlist(self.room:getAlivePlayers()) do
 			if self:isFriend(to, p)  and sgs.dynamic_value.benefit[card:getClassName()] then
-				count_f =  count_f + getCardsNum("Nullification", p, self.player)
+				count =  count + getCardsNum("Nullification", p, self.player)
 			end
 			if self:isEnemy(to, p) and 
 			(sgs.dynamic_value.damage_card[card:getClassName()] or sgs.dynamic_value.control_card[card:getClassName()]) then
