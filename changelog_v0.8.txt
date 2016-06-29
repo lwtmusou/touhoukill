@@ -272,7 +272,9 @@ alpha版0619联机版
 10 增加对策ai  有改判的敌人时，【杀】无视对面的灵梦
 11 铃仙2号对策 让敌人的铃仙2号更加不动白
 12 fix 技能代码调整时，删除的附加技能没有清理干净，导致凭依此技能时崩溃
-
+13 UI调整： onSkillActivated中的instance_use增加一个GlobalFlag    
+   对应问题现象： 妖术 协奏 askForUseCard() 引起的被动使用AOE 无中等targetFix类时会不经询问直接使用。。。
+   原因： RoomScene::updateStatus --> skillButton::click()  -->  onSkillActivated --> instance_use
 
 体系层面：硬伤
 46 阿空的核热二次转化的严格定义（体系层面）

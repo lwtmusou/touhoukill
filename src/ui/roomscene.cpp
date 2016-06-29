@@ -2947,7 +2947,7 @@ void RoomScene::onSkillActivated()
         cancel_button->setEnabled(true);
 
         const Card *card = dashboard->pendingCard();
-        if (card && card->targetFixed() && card->isAvailable(Self)) {
+        if (card && card->targetFixed() && card->isAvailable(Self) && !Self->hasFlag("Global_InstanceUse_Failed")) {
             bool instance_use = skill->inherits("ZeroCardViewAsSkill");
             if (!instance_use) {
                 QList<const Card *> cards;

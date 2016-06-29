@@ -621,6 +621,7 @@ public:
         Card *card = Sanguosha->cloneCard(cardname);
         QString prompt = "@xiezou:" + card->objectName();
         delete card;
+        room->setPlayerFlag(invoke->invoker, "Global_InstanceUse_Failed");
         room->askForUseCard(invoke->invoker, "@@xiezou", prompt);
         return false;
     }
@@ -1050,6 +1051,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         ServerPlayer *player = invoke->invoker;
         room->setPlayerProperty(player, "yaoshu_card", use.card->objectName());
+        room->setPlayerFlag(player, "Global_InstanceUse_Failed");
         room->askForUseCard(player, "@@yaoshu", "@yaoshu:" + use.card->objectName());
         return false;
     }
