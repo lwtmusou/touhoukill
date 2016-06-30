@@ -503,7 +503,7 @@ end
 sgs.ai_skill_invoke.yuanfa  = function(self)
 	local f = 0
 	local e = 0
-	for _,p in sgs.qlist(self.player:getAllPlayers()) do
+	for _,p in sgs.qlist(self.room:getAllPlayers()) do
 		if  p:getMark("yuanfa") == 0 then continue end
 		if self:isFriend(p) then
 			f = f + 1
