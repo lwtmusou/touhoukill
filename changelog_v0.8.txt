@@ -275,7 +275,10 @@ alpha版0619联机版
 13 UI调整： onSkillActivated中的instance_use增加一个GlobalFlag    
    对应问题现象： 妖术 协奏 askForUseCard() 引起的被动使用AOE 无中等targetFix类时会不经询问直接使用。。。
    原因： RoomScene::updateStatus --> skillButton::click()  -->  onSkillActivated --> instance_use
-
+14 fix 讨还 可讨还自己。。。
+   
+   
+   
 体系层面：硬伤
 46 阿空的核热二次转化的严格定义（体系层面）
 47 打出无效的定义（体系层面）

@@ -670,11 +670,8 @@ public:
                     DELETE_OVER_SCOPE(const Card, cards)
                     id = cards->getSubcards().first();
                 }
-                room->throwCard(id, p, p);
-                //we need id to check cardplace,
-                //since skill "jinian",  the last handcard will be return.
-                if (room->getCardPlace(id) == Player::DiscardPile)
-                    idlist << id;
+                room->throwCard(id, p);
+                idlist << id;
             } else {
                 QList<int> cards = room->getNCards(1);
                 room->throwCard(cards.first(), NULL, p);
@@ -682,17 +679,25 @@ public:
             }
         }
 
+        //we need id to check cardplace,
+        //since skill "jinian",  the last handcard will be return.
+        QList<int> able;
+        foreach(int id, idlist) {
+            if (room->getCardPlace(id) == Player::DiscardPile)
+                able << id;
+        }
+        
         int x = qMin(idlist.length(), 2);
         if (x == 0)
             return false;
-        room->fillAG(idlist, NULL);
+        room->fillAG(able, NULL);
         for (int i = 0; i < x; i++) {
 
-            int card_id = room->askForAG(player, idlist, false, "cuixiang");
+            int card_id = room->askForAG(player, able, false, "cuixiang");
             //just for displaying chosen card in ag container
             room->takeAG(player, card_id, false);
             room->obtainCard(player, card_id, true);
-            idlist.removeOne(card_id);
+            able.removeOne(card_id);
         }
         room->clearAG();
         return false;

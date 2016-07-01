@@ -485,7 +485,7 @@ public:
                     return QList<SkillInvokeDetail>();
 
                 ServerPlayer *thrower = room->findPlayerByObjectName(move.reason.m_playerId);
-                if (thrower == NULL || thrower->isDead() || thrower->isKongcheng())
+                if (thrower == NULL || thrower->isDead() || thrower->isKongcheng() || from == thrower)
                     return QList<SkillInvokeDetail>();
 
                 QList<SkillInvokeDetail> d;
