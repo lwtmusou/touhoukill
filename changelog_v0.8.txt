@@ -277,8 +277,8 @@ alpha版0619联机版
    原因： RoomScene::updateStatus --> skillButton::click()  -->  onSkillActivated --> instance_use
 14 fix 讨还 可讨还自己。。。
 15 fix 人鬼  人鬼弃牌效果不选择目标时崩溃
-   
-   
+16 锁定微调描述，并修改代码。  实际体验没什么变化
+
 体系层面：硬伤
 46 阿空的核热二次转化的严格定义（体系层面）
 47 打出无效的定义（体系层面）

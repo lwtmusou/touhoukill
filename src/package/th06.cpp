@@ -431,7 +431,6 @@ void SuodingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
             }
         }
     }
-    source->setFlags("suoding");
 }
 
 
@@ -458,29 +457,21 @@ class Suoding : public TriggerSkill
 public:
     Suoding() : TriggerSkill("suoding")
     {
-        events << EventPhaseChanging << Death;
+        events << EventPhaseChanging ;
         view_as_skill = new SuodingVS;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
-        ServerPlayer *sixteen = NULL;
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to != Player::NotActive)
                 return QList<SkillInvokeDetail>();
-            sixteen = change.player;
 
-        } else if (triggerEvent == Death) {
-            DeathStruct death = data.value<DeathStruct>();
-            sixteen = death.who;
-        }
-        if (!sixteen->hasFlag("suoding"))
-            return QList<SkillInvokeDetail>();
-
-        foreach (ServerPlayer *liege, room->getAllPlayers()) {
-            if (!liege->getPile("suoding_cards").isEmpty())
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, sixteen, sixteen, NULL, true);
+            foreach(ServerPlayer *liege, room->getAllPlayers()) {
+                if (!liege->getPile("suoding_cards").isEmpty())
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
+            }
         }
         return QList<SkillInvokeDetail>();
     }
