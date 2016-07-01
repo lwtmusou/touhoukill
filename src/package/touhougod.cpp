@@ -1184,6 +1184,8 @@ public:
             if (all.isEmpty())
                 return false;
             ServerPlayer *s = room->askForPlayerChosen(player, all, "renguidiscard", "@rengui-discard:" + QString::number(y), true, true);
+            if (s == NULL)
+                return false;
             for (int i = 0; i < y; ++i) {
                 if (!player->canDiscard(s, "hes"))
                     break;
