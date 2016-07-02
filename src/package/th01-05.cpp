@@ -6,6 +6,148 @@
 
 #include "clientplayer.h"
 
+class Eling : public TriggerSkill
+{
+public:
+    Eling() : TriggerSkill("eling")
+    {
+        events << Predamage;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.nature != DamageStruct::Normal)
+            return QList<SkillInvokeDetail>();
+        QList<SkillInvokeDetail> d;
+        if (damage.from && damage.from->hasSkill(this))
+            d << SkillInvokeDetail(this, damage.from, damage.from);
+        if (damage.to && damage.to->hasSkill(this))
+            d << SkillInvokeDetail(this, damage.to, damage.to);
+
+        return d;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+
+        JudgeStruct judge;
+        judge.reason = objectName();
+        judge.who = invoke->invoker;
+        judge.good = true;
+        judge.pattern = ".|black";
+
+        room->judge(judge);
+
+        if (judge.isGood()) {
+            damage.nature = DamageStruct::Thunder;
+            data = QVariant::fromValue(damage);
+        }
+        return false;
+    }
+
+};
+
+class Xieqi : public TriggerSkill
+{
+public:
+    Xieqi() : TriggerSkill("xieqi")
+    {
+        events << Damaged;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (!damage.card || damage.from == NULL || damage.nature == DamageStruct::Normal)
+            return QList<SkillInvokeDetail>();
+
+        QList<int> ids;
+        if (damage.card->isVirtualCard())
+            ids = damage.card->getSubcards();
+        else
+            ids << damage.card->getEffectiveId();
+
+        if (ids.isEmpty()) return QList<SkillInvokeDetail>();
+        foreach(int id, ids) {
+            if (room->getCardPlace(id) != Player::PlaceTable) return QList<SkillInvokeDetail>();
+        }
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *mima, room->findPlayersBySkillName(objectName()))
+                d << SkillInvokeDetail(this, mima, mima);
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(damage.from), objectName(), "@xieqi", true, true);
+        if (target != NULL)
+            invoke->targets << target;
+        return target != NULL;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        invoke->targets.first()->obtainCard(damage.card);
+        return false;
+    }
+
+};
+
+class Fuchou : public TriggerSkill
+{
+public:
+    Fuchou() : TriggerSkill("fuchou$")
+    {
+        frequency = Compulsory;
+        events << EventPhaseStart;
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        ServerPlayer *current = data.value<ServerPlayer *>();
+        if (!current || current->getKingdom() != "pc98" || current->getPhase() != Player::Play)
+            return QList<SkillInvokeDetail>();
+
+        QList<ServerPlayer *> rans = room->findPlayersBySkillName(objectName());
+
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->getOtherPlayers(current)) {
+            if (!p->hasLordSkill(objectName()))
+                continue;
+            foreach(ServerPlayer *t, room->getOtherPlayers(p)) {
+                if (p->inMyAttackRange(t) && t->getHp() > p->getHp() && !t->isChained()) {
+                    d << SkillInvokeDetail(this, p, current, NULL, true);
+                    break;
+                }
+            }
+        }
+        return d;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        foreach(ServerPlayer *t, room->getOtherPlayers(invoke->owner)) {
+            if (invoke->owner->inMyAttackRange(t) && t->getHp() > invoke->owner->getHp() && !t->isChained()) {
+                t->setChained(true);
+
+                room->broadcastProperty(t, "chained");
+                room->setEmotion(t, "chain");
+                QVariant _data = QVariant::fromValue(t);
+                room->getThread()->trigger(ChainStateChanged, room, _data);
+            }
+        }
+        return false;
+    }
+};
+
+
+
+
 class Ciyuan : public TriggerSkill
 {
 public:
@@ -1514,7 +1656,9 @@ TH0105Package::TH0105Package()
     : Package("th0105")
 {
     General *mima = new General(this, "mima$", "pc98", 4, false);
-    Q_UNUSED(mima);
+    mima->addSkill(new Eling);
+    mima->addSkill(new Xieqi);
+    mima->addSkill(new Fuchou);
 
     General *yumemi = new General(this, "yumemi$", "pc98", 4, false);
     yumemi->addSkill(new Ciyuan);
