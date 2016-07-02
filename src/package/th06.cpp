@@ -66,7 +66,7 @@ class SkltKexue : public TriggerSkill
 public:
     SkltKexue() : TriggerSkill("skltkexue")
     {
-        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut;
+        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut << Revive;
     }
 
     void record(TriggerEvent, Room *room, QVariant &) const

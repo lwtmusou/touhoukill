@@ -313,9 +313,8 @@ class Wuyu : public TriggerSkill
 public:
     Wuyu() : TriggerSkill("wuyu$")
     {
-        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << EventPhaseChanging;
+        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Revive << EventPhaseChanging;
     }
-
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
@@ -451,7 +450,7 @@ class Saiqian : public TriggerSkill
 public:
     Saiqian() : TriggerSkill("saiqian")
     {
-        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Death << Debut;
+        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Death << Debut << Revive;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const

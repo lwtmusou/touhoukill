@@ -141,7 +141,7 @@ class Dangjia : public TriggerSkill
 public:
     Dangjia() : TriggerSkill("dangjia$")
     {
-        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging;
+        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Revive;
     }
 
 

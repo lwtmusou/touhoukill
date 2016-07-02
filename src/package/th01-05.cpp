@@ -801,7 +801,7 @@ class Menghuan : public TriggerSkill
 public:
     Menghuan() : TriggerSkill("menghuan$")
     {
-        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging;
+        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Revive;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
@@ -1219,7 +1219,7 @@ ModianCard::ModianCard()
     m_skillName = "modian_attach";
 }
 
-bool ModianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+bool ModianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
 {
     return targets.isEmpty() && to_select->hasSkill("modian")
         && !to_select->hasFlag("modianInvoked");
@@ -1316,7 +1316,7 @@ public:
         return !player->hasFlag("Forbidmodian");
     }
 
-    virtual bool viewFilter(const QList<const Card*> &selected, const Card*to_select) const
+    virtual bool viewFilter(const QList<const Card*> &, const Card*to_select) const
     {
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
             return  to_select->isBlack() && !to_select->isEquipped() && !Self->getPile("modian").contains(to_select->getEffectiveId());
@@ -1342,7 +1342,7 @@ class Modian : public TriggerSkill
 public:
     Modian() : TriggerSkill("modian")
     {
-        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Death << Debut;
+        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Death << Debut << Revive;
         view_as_skill = new ModianSelfVS;
     }
 
@@ -1370,8 +1370,7 @@ public:
                 }
             }
 
-        }
-        else if (triggerEvent == EventPhaseChanging) {
+        } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
             if (phase_change.from == Player::Play) {
                 foreach(ServerPlayer *p, room->getAllPlayers()) {

@@ -170,7 +170,7 @@ class Gongfeng : public TriggerSkill
 public:
     Gongfeng() : TriggerSkill("gongfeng$")
     {
-        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging;
+        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Revive;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
