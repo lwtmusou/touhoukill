@@ -11,6 +11,7 @@ return {
 	[":eling"] = "当你即将造成或受到的非属性伤害时，你可以判定，若为黑色，此伤害改为雷属性伤害。",
 	["xieqi"] = "邪气",
 	[":xieqi"] = "一名角色造成属性伤害后，你可以令另一名角色获得造成伤害的牌。",
+	["@xieqi"] = "你可以发动<font color=\"blue\"><b>邪气</b></font>， 令一名角色获得伤害牌<font color=\"#00FF00\"><b>%src </b></font>。",
 	["fuchou"] = "复仇",
 	[":fuchou"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"blue\"><b>锁定技，</b></font>其他旧势力角色的出牌阶段开始时，你攻击范围内的体力值大于你的角色横置。",
 	

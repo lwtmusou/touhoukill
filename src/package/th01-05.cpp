@@ -82,7 +82,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(damage.from), objectName(), "@xieqi", true, true);
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(damage.from), objectName(), "@xieqi:" + damage.card->objectName(), true, true);
         if (target != NULL)
             invoke->targets << target;
         return target != NULL;
@@ -131,8 +131,11 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
+        room->notifySkillInvoked(invoke->owner, objectName());
+        room->touhouLogmessage("#TriggerSkill", invoke->owner, objectName());
         foreach(ServerPlayer *t, room->getOtherPlayers(invoke->owner)) {
             if (invoke->owner->inMyAttackRange(t) && t->getHp() > invoke->owner->getHp() && !t->isChained()) {
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->owner->objectName(), t->objectName());
                 t->setChained(true);
 
                 room->broadcastProperty(t, "chained");
