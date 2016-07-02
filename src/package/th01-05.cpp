@@ -1418,7 +1418,12 @@ public:
         } else {
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
             if (matchAvaliablePattern("nullification", pattern)) {
-                return selected.isEmpty() && Self->getPile("modian").contains(to_select->getEffectiveId());
+                if (selected.isEmpty())
+                    return Self->getPile("modian").contains(to_select->getEffectiveId());
+                else if (selected.length() == 1) {
+                    return selected.first()->isKindOf("Nullification") && to_select->isKindOf("Slash");
+                }
+                return false;
             } else {
                 if (selected.isEmpty())
                     return Self->getPile("modian").contains(to_select->getEffectiveId()) && matchAvaliablePattern(to_select->objectName(), pattern);
@@ -1451,12 +1456,22 @@ public:
         } else {
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
             if (matchAvaliablePattern("nullification", pattern)) {
-                if (cards.length() != 1)
-                    return NULL;
-                Nullification *nul = new Nullification(Card::SuitToBeDecided, -1);
-                nul->addSubcards(cards);
-                nul->setSkillName(objectName());
-                return nul;
+                if (cards.length() == 1) {
+                    Nullification *nul = new Nullification(Card::SuitToBeDecided, -1);
+                    nul->addSubcards(cards);
+                    nul->setSkillName(objectName());
+                    return nul;
+                } else if (cards.length() == 2) {
+                    Nullification *nul = new Nullification(Card::SuitToBeDecided, -1);
+                    foreach(const Card *c, cards) {
+                        if (c->isKindOf("Slash"))
+                            nul->addSubcard(c);
+                    }
+                    nul->setSkillName(objectName());
+                    return nul;
+                
+                }
+                return NULL;
             } else {
                 if (cards.length() != 2)
                     return NULL;
