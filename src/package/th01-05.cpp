@@ -88,7 +88,7 @@ public:
         return target != NULL;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
         invoke->targets.first()->obtainCard(damage.card);
@@ -129,7 +129,7 @@ public:
         return d;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         room->notifySkillInvoked(invoke->owner, objectName());
         room->touhouLogmessage("#TriggerSkill", invoke->owner, objectName());
@@ -1170,6 +1170,214 @@ public:
 };
 
 
+LianmuCard::LianmuCard()
+{
+    will_throw = false;
+}
+
+bool LianmuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    Slash *card = new Slash(Card::NoSuit, 0);
+    card->deleteLater();
+    card->setSkillName("lianmu");
+    return card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
+}
+
+bool LianmuCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+    Slash *card = new Slash(Card::NoSuit, 0);
+    card->deleteLater();
+    card->setSkillName("lianmu");
+    return card->targetsFeasible(targets, Self);
+}
+
+const Card *LianmuCard::validate(CardUseStruct &use) const
+{
+    Slash *card = new Slash(Card::NoSuit, 0);
+    card->setSkillName("lianmu");
+    use.from->getRoom()->setPlayerFlag(use.from, "lianmu_used");
+    return card;
+}
+
+class LianmuVS : public ZeroCardViewAsSkill
+{
+public:
+    LianmuVS() : ZeroCardViewAsSkill("lianmu")
+    {
+        response_pattern = "@@lianmu";
+    }
+
+    virtual const Card *viewAs() const
+    {
+        LianmuCard *slash = new LianmuCard;
+        return slash;
+    }
+};
+
+class Lianmu : public TriggerSkill
+{
+public:
+    Lianmu() : TriggerSkill("lianmu")
+    {
+        events << DamageDone << CardFinished << EventPhaseChanging;
+        view_as_skill = new LianmuVS;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == DamageDone) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.card->isKindOf("Slash"))
+                room->setCardFlag(damage.card, "lianmu_damage");
+        }
+
+        if (triggerEvent == EventPhaseChanging) {
+            foreach(ServerPlayer *p, room->getAllPlayers())
+                room->setPlayerFlag(p, "-lianmu_used");
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        if (triggerEvent == CardFinished) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from && use.from->hasSkill(this) && !use.from->hasFlag("lianmu_used") 
+                && use.card->isKindOf("Slash") && !use.card->hasFlag("lianmu_damage"))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        room->askForUseCard(invoke->invoker, "@@lianmu", "@lianmu");
+        return false;
+    }
+};
+
+class LianmuTargetMod : public TargetModSkill
+{
+public:
+    LianmuTargetMod() : TargetModSkill("#lianmu_mod")
+    {
+        frequency = NotFrequent;
+        pattern = "Slash";
+    }
+
+    virtual int getExtraTargetNum(const Player *, const Card *card) const
+    {
+        if (card->getSkillName() == "lianmu")
+            return 1;
+        else
+            return 0;
+    }
+
+    int getDistanceLimit(const Player *, const Card *card) const
+    {
+        if (card->getSkillName() == "lianmu")
+            return 1000;
+
+        return 0;
+    }
+};
+
+
+
+class HuanweiEffect : public TriggerSkill
+{
+public:
+    HuanweiEffect() : TriggerSkill("#huanwei")
+    {
+        events << EventAcquireSkill << EventLoseSkill << GameStart << EventSkillInvalidityChange << EventPhaseStart << DamageCaused;
+
+        frequency = Compulsory;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == GameStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player && player->hasSkill("huanwei"))
+                room->filterCards(player, player->getCards("hes"), true);
+        }
+        if (triggerEvent == EventLoseSkill || triggerEvent == EventAcquireSkill) {
+            SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
+            if (a.skill->objectName() == "huanwei")
+                room->filterCards(a.player, a.player->getCards("hes"), true);
+        }
+       
+        if (triggerEvent == EventSkillInvalidityChange) {
+            QList<SkillInvalidStruct>invalids = data.value<QList<SkillInvalidStruct>>();
+            foreach(SkillInvalidStruct v, invalids) {
+                if (!v.skill || v.skill->objectName() == "huanwei") {
+                    room->filterCards(v.player, v.player->getCards("hes"), true);
+                    //if (!v.invalid)
+                }
+            }
+        }
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->hasSkill(this) && (player->getPhase() == Player::RoundStart || player->getPhase() == Player::NotActive))
+                room->filterCards(player, player->getCards("hes"), true);
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        if (triggerEvent == DamageCaused) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.chain || damage.transfer || !damage.by_user || !damage.from || !damage.from->hasSkill("huanwei") || !damage.from->isCurrent())
+                return QList<SkillInvokeDetail>();
+            if (damage.card->isKindOf("Slash") && damage.card->getSuit() == Card::Spade)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+
+        damage.damage = damage.damage - 1;
+        QList<ServerPlayer *> logto;
+        logto << damage.to;
+        room->touhouLogmessage("#HuanweiTrigger", invoke->invoker, "huanwei", logto, QString::number(1));
+        room->notifySkillInvoked(invoke->invoker, "huanwei");
+        data = QVariant::fromValue(damage);
+        if (damage.damage == 0)
+            return true;
+
+        return false;
+    }
+};
+
+
+class Huanwei : public FilterSkill
+{
+public:
+    Huanwei() : FilterSkill("huanwei")
+    {
+    }
+
+    virtual bool viewFilter(const Card *to_select) const
+    {
+        Room *room = Sanguosha->currentRoom();
+        ServerPlayer *player = room->getCardOwner(to_select->getId());
+        return  player != NULL && !player->isCurrent() && to_select->getSuit() == Card::Spade && to_select->isKindOf("Slash");
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const
+    {
+        Jink *jink = new Jink(originalCard->getSuit(), originalCard->getNumber());
+        jink->setSkillName(objectName());
+        WrappedCard *card = Sanguosha->getWrappedCard(originalCard->getId());
+        card->takeOver(jink);
+        return card;
+    }
+};
+
+
+
 SqChuangshiCard::SqChuangshiCard()
 {
     will_throw = false;
@@ -1696,7 +1904,12 @@ TH0105Package::TH0105Package()
     gengetsumugetsu->addSkill(new Mengyan);
 
     General *elly = new General(this, "elly", "pc98", 4, false);
-    Q_UNUSED(elly);
+    elly->addSkill(new Lianmu);
+    elly->addSkill(new LianmuTargetMod);
+    elly->addSkill(new HuanweiEffect);
+    elly->addSkill(new Huanwei);
+    related_skills.insertMulti("lianmu", "#lianmu_mod");
+    related_skills.insertMulti("huanwei", "#huanwei");
 
     General *shinki = new General(this, "shinki$", "pc98", 4, false);
     shinki->addSkill(new SqChuangshi);
@@ -1708,6 +1921,7 @@ TH0105Package::TH0105Package()
     alice_old->addSkill(new Guaiqi);
 
     //addMetaObject<MenghuanCard>();
+    addMetaObject<LianmuCard>();
     addMetaObject<SqChuangshiCard>();
     addMetaObject<ModianCard>();
 
