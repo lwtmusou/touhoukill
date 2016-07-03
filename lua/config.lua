@@ -168,6 +168,7 @@ config = {
 		"myouren->byakuren_god",
 		"leira->prismriver",
 		"cirno_sp->cirno",
+		"mamizou_sp->mamizou",
 		"seiga_god->seiga",
 		"satori_god->satori"
 	}
