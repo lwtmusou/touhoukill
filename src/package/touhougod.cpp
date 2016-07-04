@@ -836,7 +836,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->hasSkill(this) && player->getPhase() == Player::Play)
+        if (player->hasSkill(this) && player->getPhase() == Player::Play && player->isAlive())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
         return QList<SkillInvokeDetail>();
     }
