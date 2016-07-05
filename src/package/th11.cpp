@@ -22,6 +22,8 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         QList<SkillInvokeDetail> d;
+        if (!damage.by_user)
+            return d;
         foreach (ServerPlayer *satori, room->findPlayersBySkillName(objectName())) {
             if (damage.from && damage.from != satori && damage.card  && !damage.from->isKongcheng()
                 && damage.to != damage.from && damage.to->isAlive()
