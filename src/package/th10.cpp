@@ -860,7 +860,7 @@ class Qiji : public TriggerSkill
 public:
     Qiji() : TriggerSkill("qiji")
     {
-        events << EventPhaseChanging;
+        events << EventPhaseChanging << PreCardUsed;
         view_as_skill = new QijiVS;
     }
 
@@ -869,12 +869,21 @@ public:
         return QijiDialog::getInstance("qiji");
     }
 
-    void record(TriggerEvent, Room *room, QVariant &) const
+    void record(TriggerEvent e, Room *room, QVariant &data) const
     {
-        foreach(ServerPlayer *p, room->getAlivePlayers()) {
-            if (p->getMark("qiji") > 0)
-                room->setPlayerMark(p, "qiji", 0);
+        if (e == EventPhaseChanging) {
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                if (p->getMark("qiji") > 0)
+                    room->setPlayerMark(p, "qiji", 0);
+                }
         }
+        //record for ai, since AI prefer use a specific card,  but not the SkillCard QijiCard.
+        if (e == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->getSkillName() == objectName())
+                room->setPlayerMark(use.from, "qiji", 1);
+        }
+
     }
 };
 
