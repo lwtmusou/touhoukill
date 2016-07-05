@@ -1227,7 +1227,7 @@ public:
     {
         if (triggerEvent == DamageDone) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.card->isKindOf("Slash"))
+            if (damage.card && damage.card->isKindOf("Slash"))
                 room->setCardFlag(damage.card, "lianmu_damage");
         }
 
