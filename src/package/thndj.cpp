@@ -717,14 +717,14 @@ class Xiubu : public TriggerSkill
 public:
     Xiubu() : TriggerSkill("xiubu")
     {
-        events << CardResponded << CardUsed << EventPhaseChanging << EventPhaseEnd;
+        events << CardResponded << CardUsed << EventPhaseChanging << EventPhaseEnd << PreCardUsed;
     }
 
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         //clear histroy
-        if (triggerEvent == CardUsed) {
+        if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.m_isLastHandcard && use.m_addHistory && use.from->getMark("xiubu") > 0) {
                 room->addPlayerHistory(use.from, use.card->getClassName(), -1);

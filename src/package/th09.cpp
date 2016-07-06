@@ -1454,7 +1454,7 @@ class Nianli : public TriggerSkill
 public:
     Nianli() : TriggerSkill("nianli")
     {
-        events << TargetSpecified;
+        events << TargetSpecified << PreCardUsed;
         view_as_skill = new NianliVS;
     }
 
@@ -1463,8 +1463,23 @@ public:
         return NianliDialog::getInstance("nianli");
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
+        //clear histroy
+        if (triggerEvent == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.m_addHistory && use.card->getSkillName() == objectName()) {
+                room->addPlayerHistory(use.from, use.card->getClassName(), -1);
+                use.m_addHistory = false;
+                data = QVariant::fromValue(use);
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        if (triggerEvent != TargetSpecified)
+            return QList<SkillInvokeDetail>();
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->getSkillName() == objectName() && use.from && use.from->isAlive())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);

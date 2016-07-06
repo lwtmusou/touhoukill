@@ -641,9 +641,7 @@ void YuanfeiCard::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
     ServerPlayer *target = effect.to;
-    room->setPlayerCardLimitation(target, "use,response", "BasicCard|.|.|.", true);
-    room->setPlayerCardLimitation(target, "use,response", "EquipCard|.|.|.", true);
-    room->setPlayerCardLimitation(target, "use,response", "TrickCard|.|.|.", true);
+    room->setPlayerCardLimitation(target, "use,response", ".|.|.|.", true);
     room->setPlayerFlag(target, "yuanfei");
     room->touhouLogmessage("#yuanfei", target, "yuanfei");
 }
@@ -705,9 +703,7 @@ public:
             foreach(ServerPlayer *p, room->getAllPlayers()) {
                 if (p->hasFlag("yuanfei")) {
                     p->setFlags("-yuanfei");
-                    room->removePlayerCardLimitation(p, "use,response", "BasicCard|.|.|.$1");
-                    room->removePlayerCardLimitation(p, "use,response", "EquipCard|.|.|.$1");
-                    room->removePlayerCardLimitation(p, "use,response", "TrickCard|.|.|.$1");
+                    room->removePlayerCardLimitation(p, "use,response", ".|.|.|.$1");
                 }
             }
         }
@@ -754,12 +750,27 @@ class Feitou : public TriggerSkill
 public:
     Feitou() : TriggerSkill("feitou")
     {
-        events << EventPhaseStart;
+        events << EventPhaseStart << PreCardUsed;
         view_as_skill = new FeitouVS;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
+        //clear histroy
+        if (triggerEvent == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.m_addHistory && use.card->getSkillName() == objectName()) {
+                room->addPlayerHistory(use.from, use.card->getClassName(), -1);
+                use.m_addHistory = false;
+                data = QVariant::fromValue(use);
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        if (triggerEvent != EventPhaseStart)
+            return QList<SkillInvokeDetail>();
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->getPhase() == Player::Finish && player->hasSkill(this))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);

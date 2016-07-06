@@ -556,7 +556,11 @@ public:
                 && (use.card->isKindOf("Peach") || use.card->isKindOf("Analeptic")))
                 room->setPlayerFlag(use.from, "jiuhao");
             if (use.card->hasFlag(objectName())) {
-                room->addPlayerHistory(use.from, use.card->getClassName(), -1);
+                if (use.m_addHistory) {
+                    room->addPlayerHistory(use.from, use.card->getClassName(), -1);
+                    use.m_addHistory = false;
+                    data = QVariant::fromValue(use);
+                }
                 room->setPlayerFlag(use.from, "jiuhaoused");
             }
         } else if (triggerEvent == EventPhaseChanging) {

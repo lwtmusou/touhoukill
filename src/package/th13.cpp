@@ -952,6 +952,11 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->getSkillName() == "duzhua") {
             room->setPlayerFlag(use.from, objectName());
+            if (use.m_addHistory) {
+                room->addPlayerHistory(use.from, use.card->getClassName(), -1);
+                use.m_addHistory = false;
+                data = QVariant::fromValue(use);
+            }
         }
     }
 };
