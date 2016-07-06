@@ -253,8 +253,32 @@ sgs.ai_skill_choice.zhaoliao=function(self)
 	if self.player:isKongcheng() then return "zhaoliao1" end
 	return "zhaoliao2"
 end
---sgs.ai_skill_use["@@zhaoliao"] = function(self, prompt)
+sgs.ai_skill_use["@@zhaoliaoVS"] = function(self, prompt, method)
+	
+	local cards = self.player:getHandcards()
+	cards=self:touhouAppendExpandPileToList(self.player, cards)
+	cards = sgs.QList2Table(cards)
+	if #cards == 0 then return "." end
+	
+	self:sortByUseValue(cards, false)
 
+	local card = sgs.cloneCard("ex_nihilo", sgs.Card_SuitToBeDecided, -1)
+	card:addSubcard(cards[1])
+	local ids = {}
+	table.insert(ids, cards[1]:getId())
+	
+	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+	card:setSkillName("_zhaoliao")
+
+	self:useTrickCard(card, dummy_use)
+	
+	if not dummy_use.card then return "." end
+	local carduse=sgs.CardUseStruct()
+	carduse.card = card
+	carduse.from = self.player
+	self.room:useCard(carduse, false)
+	--return dummy_use.card:toString() .. "=" .. table.concat(ids, "+") .. "->"
+end
 
 sgs.ai_skill_invoke.jiaoxia = function(self)
 	return self:invokeTouhouJudge()

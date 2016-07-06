@@ -347,7 +347,7 @@ class ZhaoliaoVS : public OneCardViewAsSkill
 public:
     ZhaoliaoVS() : OneCardViewAsSkill("zhaoliaoVS")
     {
-        response_pattern = "@@zhaoliaoVS!";
+        response_pattern = "@@zhaoliaoVS";
         response_or_use = true;
     }
 
@@ -411,11 +411,10 @@ public:
 
         ServerPlayer *player = data.value<DamageStruct>().to;
         ServerPlayer *ran = invoke->invoker;
-        QString choice;
-        ExNihilo *exnihilo = new ExNihilo(Card::SuitToBeDecided, -1);
+        //ExNihilo *exnihilo = new ExNihilo(Card::SuitToBeDecided, -1);
 #pragma message WARN("todo_Fs: port the getExpandPile() function from V2")
 
-        if (player->isKongcheng()) {
+        /*if (player->isKongcheng()) {
             bool expand_pile = false;
             if (!player->getPile("wooden_ox").isEmpty())
                 expand_pile = true;
@@ -425,15 +424,16 @@ public:
                 choice = "zhaoliao1";
         } else if (player->isCardLimited(exnihilo, Card::MethodUse, true))
             choice = "zhaoliao1";
-        else
-            choice = room->askForChoice(ran, objectName(), "zhaoliao1+zhaoliao2");
+        else */
+        QString choice = room->askForChoice(ran, objectName(), "zhaoliao1+zhaoliao2");
 
         if (choice == "zhaoliao1") {
             // memory leak!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            delete exnihilo;
+            //delete exnihilo;
             ran->drawCards(1);
         } else {
-            if (!room->askForUseCard(player, "@@zhaoliaoVS!", "zhaoliaouse")) {
+            room->askForUseCard(player, "@@zhaoliaoVS", "zhaoliaouse");
+            /*if (!room->askForUseCard(player, "@@zhaoliaoVS!", "zhaoliaouse")) {
                 QList<int> handcards = player->handCards();
                 handcards << player->getPile("wooden_ox");
                 if (player->hasSkill("shanji"))
@@ -442,7 +442,7 @@ public:
                 exnihilo->setSkillName("_zhaoliao");
                 room->useCard(CardUseStruct(exnihilo, player), true);
             } else
-                delete exnihilo;
+                delete exnihilo;*/
         }
 
         return false;
