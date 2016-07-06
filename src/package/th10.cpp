@@ -1191,16 +1191,45 @@ class Changshi : public TriggerSkill
 public:
     Changshi() : TriggerSkill("changshi")
     {
-        events << EventPhaseStart << Death << EventPhaseChanging;
+        events << EventPhaseStart << EventPhaseChanging;
         frequency = Eternal;
     }
 
-    static void skillProcess(Room *room, ServerPlayer *sanae, bool invalidity)
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-        foreach(ServerPlayer *p, room->getOtherPlayers(sanae))
-            room->setPlayerSkillInvalidity(p, NULL, invalidity);
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasFlag("changshiInvoked")) {
+                        room->setPlayerSkillInvalidity(p, NULL, false);
+                    }
+                }
+            }
+        }
+    }
 
-        if (!invalidity) return;
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseStart){
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->getPhase() == Player::RoundStart && player->hasSkill(this))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        room->touhouLogmessage("#changshi01", invoke->invoker, "changshi");
+        room->notifySkillInvoked(invoke->invoker, objectName());
+
+        foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
+            room->setPlayerSkillInvalidity(p, NULL, true);
+            p->setFlags("changshiInvoked");
+        }
+
         //deal with mark and private pile
         QStringList marks;
         marks << "@clock" << "@kinki" << "@qiannian" << "@shi" << "@ye" << "@yu" << "@zhengti"
@@ -1226,44 +1255,6 @@ public:
                     p->loseAllMarks(m);
             }
 
-        }
-    }
-
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
-    {
-        if (triggerEvent == Death) {
-            DeathStruct death = data.value<DeathStruct>();
-            if (death.who->hasFlag("changshiInvoked"))
-                skillProcess(room, death.who, false);
-        } else if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.player->hasFlag("changshiInvoked") && change.to == Player::NotActive)
-                skillProcess(room, change.player, false);
-        }
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
-    {
-
-        if (triggerEvent == EventPhaseStart){
-            ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player->getPhase() == Player::RoundStart && player->hasSkill(this))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
-        }
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        if (triggerEvent == EventPhaseStart) {
-            ServerPlayer *player = invoke->invoker;
-            foreach(ServerPlayer *p, room->getOtherPlayers(player))
-                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
-            room->touhouLogmessage("#changshi01", player, "changshi");
-            room->notifySkillInvoked(player, objectName());
-
-            skillProcess(room, player, true);
-            player->setFlags("changshiInvoked");
         }
         return false;
     }

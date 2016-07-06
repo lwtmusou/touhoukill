@@ -161,7 +161,6 @@ public:
             judge.relative_player = invoke->owner;
             room->judge(judge);
 
-            invoke->invoker->tag.remove("uuz_wangxiang");
         } else {
             JudgeStruct * judge = data.value<JudgeStruct *>();
             invoke->owner->obtainCard(judge->card);

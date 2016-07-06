@@ -1281,12 +1281,29 @@ class Jijing : public TriggerSkill
 public:
     Jijing() : TriggerSkill("jijing")
     {
-        events << Damaged;
+        events << Damaged << EventPhaseChanging;
         frequency = Compulsory;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive && change.player->hasFlag("jijing")) {
+                foreach(ServerPlayer *p, room->getOtherPlayers(change.player)) {
+                    if (p->getMark("@jijing") > 0) {
+                        room->setPlayerMark(p, "@jijing", 0);
+                        room->setFixedDistance(change.player, p, -1);
+                    }
+                }
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e != Damaged)
+            return QList<SkillInvokeDetail>();
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.to->isDead())
             return QList<SkillInvokeDetail>();
@@ -1304,50 +1321,9 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         room->notifySkillInvoked(invoke->invoker, objectName());
-        room->setFixedDistance(invoke->invoker, invoke->targets.first(), 1);
-        invoke->targets.first()->gainMark("@jijing");
         room->setPlayerFlag(invoke->invoker, "jijing");
-        return false;
-    }
-};
-
-class JijingClear : public TriggerSkill
-{
-public:
-    JijingClear() : TriggerSkill("#jijing")
-    {
-        events << EventPhaseChanging;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {
-        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if (change.to == Player::NotActive && change.player->hasFlag("jijing")) {
-            foreach (ServerPlayer *p, room->getOtherPlayers(change.player)) {
-                if (p->getMark("@jijing") > 0)
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
-            }
-        }
-
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-            if (p->getMark("@jijing") > 0)
-                invoke->targets << p;
-        }
-        return true;
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        foreach (ServerPlayer *p, invoke->targets) {
-            p->loseAllMarks("@jijing");
-            room->setFixedDistance(invoke->invoker, p, -1);
-        }
-
+        room->setFixedDistance(invoke->invoker, invoke->targets.first(), 1);
+        invoke->targets.first()->gainMark("@jijing");// trigger ganying
         return false;
     }
 };
@@ -2236,8 +2212,6 @@ TH99Package::TH99Package()
     General *lunar = new General(this, "lunar", "wai", 4, false);
     lunar->addSkill(new Zhuonong);
     lunar->addSkill(new Jijing);
-    lunar->addSkill(new JijingClear);
-    related_skills.insertMulti("jijing", "#jijing");
 
     General *star = new General(this, "star", "wai", 4, false);
     star->addSkill(new Ganying);
