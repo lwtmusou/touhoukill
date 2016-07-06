@@ -1110,6 +1110,144 @@ public:
 };
 
 
+
+
+class Mizong : public TriggerSkill
+{
+public:
+    Mizong() : TriggerSkill("mizong")
+    {
+        events << EventPhaseStart << FinishJudge << EventPhaseChanging;
+        frequency = Compulsory;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive && change.player->hasFlag("mizong")) {
+                foreach(ServerPlayer *p, room->getOtherPlayers(change.player)) {
+                    if (p->getMark("@mizong") > 0) {
+                        room->setPlayerMark(p, "@mizong", 0);
+                        room->setFixedDistance(change.player, p, -1);
+                        
+                        QStringList assignee_list = change.player->property("extra_slash_specific_assignee").toString().split("+");
+                        assignee_list.removeOne(change.player->objectName());
+                        room->setPlayerProperty(change.player, "extra_slash_specific_assignee", assignee_list.join("+"));
+                    }
+                }
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *, const QVariant &data) const
+    {
+        if (event == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (!player->hasSkill(this) || player->isDead() || player->getPhase() != Player::Play)
+                return QList<SkillInvokeDetail>();
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+        } else if (event == FinishJudge) {
+            JudgeStruct * judge = data.value<JudgeStruct *>();
+            if (judge->reason == objectName() && judge->card->isBlack()) {
+                if (judge->who->isAlive())
+                   return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, judge->who, judge->who, NULL, true);
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        if (triggerEvent == EventPhaseStart) {
+            room->notifySkillInvoked(invoke->owner, objectName());
+            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), objectName(), "@mizong");
+            if (target != NULL)
+                invoke->targets << target;
+            return target != NULL;
+        } else
+            return true;
+        return false;
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseStart) {
+            JudgeStruct judge;
+            judge.who = invoke->invoker;
+            judge.reason = objectName();
+            judge.good = true;
+            judge.play_animation = false;
+            room->judge(judge);
+
+            if (judge.card->isRed()) {
+                room->setPlayerFlag(invoke->invoker, "mizong");
+                room->setFixedDistance(invoke->invoker, invoke->targets.first(), 1);
+                invoke->targets.first()->gainMark("@mizong"); //gainMark could trigger skill Ganying
+
+                QStringList assignee_list = invoke->invoker->property("extra_slash_specific_assignee").toString().split("+");
+                assignee_list << invoke->targets.first()->objectName();
+                room->setPlayerProperty(invoke->invoker, "extra_slash_specific_assignee", assignee_list.join("+"));
+            }
+        } else if (triggerEvent == FinishJudge) {
+            JudgeStruct * judge = data.value<JudgeStruct *>();
+            invoke->owner->obtainCard(judge->card);
+        }
+        return false;
+    }
+};
+
+class Yinren : public TriggerSkill
+{
+public:
+    Yinren() : TriggerSkill("yinren")
+    {
+        events << EventPhaseChanging << TargetSpecified;
+        frequency = Compulsory;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasFlag("yinren")) {
+                        p->setFlags("-yinren");
+                        room->setPlayerSkillInvalidity(p, NULL, false);
+                        room->removePlayerCardLimitation(p, "use,response", ".|red|.|.$1");
+                    }
+                }
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *, const QVariant &data) const
+    {
+        if (event != TargetSpecified)
+            return QList<SkillInvokeDetail>();
+
+        QList<SkillInvokeDetail> d;
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.from && use.from->hasSkill(this) && use.card->isKindOf("Slash") && use.card->isBlack()) {
+            foreach(ServerPlayer *p, use.to)
+               d << SkillInvokeDetail(this, use.from, use.from, NULL, false, p);
+        }
+        return d;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        room->setPlayerSkillInvalidity(invoke->targets.first(), NULL, true);
+        QString pattern = ".|red|.|.";
+        room->setPlayerCardLimitation(invoke->targets.first(), "use,response", pattern, true);
+        invoke->targets.first()->setFlags(objectName());
+        return false;
+    }
+};
+
+
 TH06Package::TH06Package()
     : Package("th06")
 {
@@ -1154,8 +1292,9 @@ TH06Package::TH06Package()
     daiyousei->addSkill(new Juxian);
     daiyousei->addSkill(new Banyue);
 
-    General *sakuya_sp = new General(this, "sakuya_sp", "hmx", 3, false);
-    Q_UNUSED(sakuya_sp);
+    General *sakuya_sp = new General(this, "sakuya_sp", "hmx", 4, false);
+    sakuya_sp->addSkill(new Mizong);
+    sakuya_sp->addSkill(new Yinren);
 
     addMetaObject<SkltKexueCard>();
     addMetaObject<SuodingCard>();
