@@ -2046,7 +2046,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
-        if (((use.card->isKindOf("Slash") && use.card->isBlack()) || use.card->isKindOf("Snatch") || use.card->isKindOf("Dismantlement"))) {
+        if (use.card->isKindOf("Slash") || use.card->isKindOf("Snatch") || use.card->isKindOf("Dismantlement")) {
             if (e == TargetConfirmed) {
                 foreach(ServerPlayer *p, use.to) {
                     if (p->hasSkill(this))
@@ -2077,8 +2077,9 @@ public:
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (e == TargetConfirmed) {
-            invoke->invoker->drawCards(2);
-            int num = invoke->invoker->getHandcardNum() - 1;
+            if (invoke->invoker->getHandcardNum() < 3)
+                invoke->invoker->drawCards(3 - invoke->invoker->getHandcardNum());
+            int num =  qMin(2, invoke->invoker->getHandcardNum());
             if (num > 0) {
                 const Card *cards = room->askForExchange(invoke->invoker, objectName(), num, num, false, "zhangmu_exchange:" + QString::number(num));
                 DELETE_OVER_SCOPE(const Card, cards)
