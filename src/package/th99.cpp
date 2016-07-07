@@ -2046,7 +2046,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
-        if ((use.card->isKindOf("Slash") || use.card->isKindOf("Snatch") || use.card->isKindOf("Dismantlement"))) {
+        if (((use.card->isKindOf("Slash") && use.card->isBlack()) || use.card->isKindOf("Snatch") || use.card->isKindOf("Dismantlement"))) {
             if (e == TargetConfirmed) {
                 foreach(ServerPlayer *p, use.to) {
                     if (p->hasSkill(this))
