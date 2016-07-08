@@ -25,6 +25,7 @@
 #include <QDateTime>
 #include <QFile>
 #include <QTextStream>
+#include <ctime>
 
 #include <lua.hpp>
 
@@ -521,6 +522,7 @@ void Room::gameOver(const QString &winner)
     }
 
     game_finished = true;
+    saveWinnerTable(winner);
 
     //defaultHeroSkin();
     emit game_over(winner);
@@ -6487,5 +6489,67 @@ bool Room::roleStatusCommand(ServerPlayer *player)
 
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
     return true;
+}
+
+void Room::saveWinnerTable(const QString &winner)
+{
+    QString mode = Config.GameMode;
+    if (mode.endsWith("1v1") || mode.endsWith("1v3") || mode == "06_XMode")
+        return;
+    //mode.contains("_mini_")  mode == "custom_scenario"
+
+    QFile file("etc/winner.txt");
+    if (!file.open(QIODevice::ReadWrite))
+        return;
+
+    //sort for counting initial seat
+    QList<ServerPlayer *> all;
+    for (int i = 0; i < getAllPlayers(true).length(); i++) {
+        if (getAllPlayers(true).at(i)->isLord() || !all.isEmpty())
+            all << getAllPlayers(true).at(i);
+    }
+    for (int i = 0; i < getAllPlayers(true).length(); i++) {
+        if (getAllPlayers(true).at(i)->isLord())
+            break;
+        else
+            all << getAllPlayers(true).at(i);
+    }
+
+    QString line;
+    QTextStream stream(&file);
+    stream.readAll();
+
+    char date[128];
+    char time[128];
+    _strtime_s(time);
+    _strdate_s(date);
+    line.append(QString("Date: %1 %2").arg(date).arg(time));
+    line.append("\n");
+    QStringList winners = winner.split("+");
+    for (int i = 0; i < all.length(); i++) {
+        ServerPlayer *p = getAllPlayers(true).at(i);
+        line.append(p->getGeneralName());
+        line.append(" ");
+        line.append(p->getRole());
+        line.append(" ");
+        line.append(QString::number(i+1));
+        line.append(" ");
+        if (p->getState() != "robot")
+            line.append("human");
+        else
+            line.append("robot");
+        line.append(" ");
+        if (winners.contains(p->getRole()))
+            line.append("win");
+        else
+            line.append("lose");
+        line.append("\n");
+    }
+    
+    
+    stream << line;
+    file.close();
+
+    return;        
 }
 
