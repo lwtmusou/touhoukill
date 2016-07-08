@@ -421,65 +421,56 @@ void QijiDialog::popup()
     bool doNotShow = false;
     QStringList checkedPatterns;
     QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY) {
-        // collect avaliable patterns for specific skill
-        QStringList validPatterns;
-        if (object_name == "huaxiang") {
-            
-            validPatterns << "slash" << "analeptic";
-            if (Self->getMaxHp() <= 3)
-                validPatterns << "jink";
-            if (Self->getMaxHp() <= 2)
-                validPatterns << "peach";
-        }
-        if (object_name == "xihua") {
-            QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-            foreach(const Card *card, cards) {
-                if ((card->isNDTrick() || card->isKindOf("BasicCard"))
-                    && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
-                    QString pattern = card->objectName();
-                    if (card->isKindOf("Slash"))
-                        pattern = "slash";
-                    QString markName = "xihua_record_" + pattern;
-                    if (!validPatterns.contains(pattern) && Self->getMark(markName) == 0)
-                        validPatterns << card->objectName();
-                }
+    bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+
+    //collect avaliable patterns for specific skill
+    QStringList validPatterns;
+    if (object_name == "huaxiang") {
+        validPatterns << "slash" << "analeptic";
+        if (Self->getMaxHp() <= 3)
+            validPatterns << "jink";
+        if (Self->getMaxHp() <= 2)
+            validPatterns << "peach";
+    }
+    if (object_name == "xihua") {
+        QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+        foreach(const Card *card, cards) {
+            if ((card->isNDTrick() || card->isKindOf("BasicCard"))
+                && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+                QString name = card->objectName();
+                if (card->isKindOf("Slash"))
+                    name = "slash";
+                QString markName = "xihua_record_" + name;
+                if (!validPatterns.contains(name) && Self->getMark(markName) == 0)
+                    validPatterns << card->objectName();
             }
         }
-        if (object_name == "qiji") {
-            QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-            foreach(const Card *card, cards) {
-                if ((card->isNDTrick() || card->isKindOf("BasicCard"))
-                    && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
-                    QString pattern = card->objectName();
-                    if (card->isKindOf("Slash"))
-                        pattern = "slash";
-                    if (!validPatterns.contains(pattern))
-                        validPatterns << card->objectName();
-                }
+    }
+    if (object_name == "qiji") {
+        QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+        foreach(const Card *card, cards) {
+            if ((card->isNDTrick() || card->isKindOf("BasicCard"))
+                && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+                QString name = card->objectName();
+                if (card->isKindOf("Slash"))
+                    name = "slash";
+                if (!validPatterns.contains(name))
+                    validPatterns << card->objectName();
             }
         }
-        //then match it and check "CardLimit"
-       
-        foreach(QString str, validPatterns) {
-            const Skill *skill = Sanguosha->getSkill(object_name);
-            if (skill->matchAvaliablePattern(str, pattern)) {
-                Card *card = Sanguosha->cloneCard(str);
-                DELETE_OVER_SCOPE(Card, card)
+    }
+    //then match it and check "CardLimit"
+    foreach(QString str, validPatterns) {
+        const Skill *skill = Sanguosha->getSkill(object_name);
+        if (play || skill->matchAvaliablePattern(str, pattern)) {
+            Card *card = Sanguosha->cloneCard(str);
+            DELETE_OVER_SCOPE(Card, card)
                 if (!Self->isCardLimited(card, method))
                     checkedPatterns << str;
-            }
         }
-
-        if (object_name != "chuangshi" && checkedPatterns.length() <= 1 && !checkedPatterns.contains("slash")) // && 
-            doNotShow = true;
     }
-    
-    
-    //if (Sanguosha->currentRoomState()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY
-    //    && object_name != "chuangshi" &&  !Sanguosha->currentRoomState()->getCurrentCardUsePattern().contains("slash"))
-    //    doNotShow = true;
-    if (doNotShow) {
+    //while responsing, if only one pattern were checked, emit click()
+    if (object_name != "chuangshi" && !play && checkedPatterns.length() <= 1 && !checkedPatterns.contains("slash")) {
         emit onButtonClick();
         return;
     }
@@ -503,24 +494,11 @@ void QijiDialog::popup()
         bool avaliable = card->isAvailable(user);
         if (object_name == "qiji" && user->getMark("xiubu"))
             avaliable = true;
-        
-        bool checked = (checkedPatterns.isEmpty() || checkedPatterns.contains(card->objectName()) || (card->isKindOf("Slash") && checkedPatterns.contains("slash")));
+
+        bool checked = (checkedPatterns.contains(card->objectName()) || (card->isKindOf("Slash") && checkedPatterns.contains("slash")));
         bool enabled = !user->isCardLimited(card, method, true) && avaliable && checked;
-
-        if (object_name == "xihua" && enabled){
-            QString xihuaUsed = "xihua_record_" + card->objectName();
-            if (card->isKindOf("Slash"))
-                xihuaUsed = "xihua_record_slash";
-            if (user->getMark(xihuaUsed) > 0)
-                enabled = false;
-        }
-
-
         button->setEnabled(enabled);
     }
-
-    //if only one choice
-
 
     Self->tag.remove(object_name);
     exec();
