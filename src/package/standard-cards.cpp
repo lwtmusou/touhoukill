@@ -1332,6 +1332,9 @@ void Snatch::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical");
     QString flag = using_2013 ? "hes" : "hejs";
+    //for  AI: skill Liyou   
+    //sgs.ai_choicemade_filter.cardChosen.snatch
+    effect.from->tag["SnatchCard"] = QVariant::fromValue(effect.card);
     int card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName());
     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
     room->obtainCard(effect.from, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);

@@ -3121,6 +3121,10 @@ sgs.dynamic_value.control_card.Dismantlement = true
 sgs.ai_choicemade_filter.cardChosen.snatch = function(self, player, args)
 	local from = findPlayerByObjectName(self.room, args[3])
 	local to = findPlayerByObjectName(self.room, args[4])
+	if from then
+		local snatch = from:getTag("SnatchCard"):toCard()
+		if snatch and snatch:getSkillName() == "liyou" then return end
+	end
 	if from and to then
 		local id = tonumber(args[2])
 		local place = self.room:getCardPlace(id)
