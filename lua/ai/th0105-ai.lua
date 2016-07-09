@@ -515,6 +515,117 @@ sgs.ai_skill_invoke.yuanfa  = function(self)
 	return f > e
 end
 
+
+
+local guaiqi_skill = {}
+guaiqi_skill.name = "guaiqi"
+table.insert(sgs.ai_skills, guaiqi_skill)
+guaiqi_skill.getTurnUseCard = function(self)
+	local piles = self.player:getPile("modian")
+	local guaiqis = {}
+	for _,id in sgs.qlist(piles) do
+		local c = sgs.Sanguosha:getCard(id)
+		if c:isKindOf("TrickCard") and not c:isKindOf("Nullification") and not table.contains(guaiqis,  c:objectName()) then
+			table.insert(guaiqis, c:objectName())
+		end
+	end
+	if #guaiqis == 0 then return nil end
+	
+	local cards = self.player:getHandcards()
+	cards = self:touhouAppendExpandPileToList(self.player, cards)
+	local slashes = {}
+	for _,c in sgs.qlist(cards) do
+		if (c:isKindOf("Slash")) then
+			table.insert(slashes, c)
+		end
+	end
+	if #slashes == 0 then return nil end
+	self:sortByUseValue(slashes, true)
+	
+	
+	local choices={}
+	for i = 1, #guaiqis do
+		local forbiden = guaiqis[i]
+		forbid = sgs.cloneCard(forbiden, slashes[1]:getSuit(),slashes[1]:getNumber())
+		if self.player:isCardLimited(forbid, sgs.Card_MethodUse, true) or not forbid:isAvailable(self.player) then
+		else
+			table.insert(choices,guaiqis[i])
+		end
+	end
+	local suit = slashes[1]:getSuitString()
+	local number = slashes[1]:getNumberString()
+	local card_id = slashes[1]:getEffectiveId()
+
+	local choice
+	if not choice and table.contains(choices,"dismantlement") then
+		for _,p in pairs(self.friends_noself) do
+			if p:containsTrick("indulgence") or  p:containsTrick("supply_shortage")  then
+				choice="dismantlement"
+			end
+		end
+	end
+	if not choice and table.contains(choices,"god_salvation") then
+		local aoe = sgs.cloneCard("god_salvation",slashes[1]:getSuit(), slashes[1]:getNumber())
+		if self:willUseGodSalvation(aoe) then
+				choice="god_salvation"
+		end
+	end
+	if not choice and table.contains(choices,"savage_assault") then
+		local aoe = sgs.cloneCard("savage_assault",slashes[1]:getSuit(), slashes[1]:getNumber())
+		if self:getAoeValue(aoe, self.player)>0 then
+				choice="savage_assault"
+		end
+	end
+	if not choice and table.contains(choices,"archery_attack") then
+		local aoe = sgs.cloneCard("archery_attack",slashes[1]:getSuit(), slashes[1]:getNumber())
+		if self:getAoeValue(aoe, self.player)>0 then
+				choice="archery_attack"
+		end
+	end
+	if not choice and table.contains(choices,"ex_nihilo")  then
+		choice="ex_nihilo"
+	end
+	if not choice then
+		choice = choices[1]
+	end
+	local str= (choice..":guaiqi[%s:%s]=%d"):format(suit, number, card_id)
+	local parsed_card = sgs.Card_Parse(str)
+	return parsed_card
+end
+
+function sgs.ai_cardsview_valuable.guaiqi(self, class_name, player)
+	if class_name ~= "Nullification" then return nil end
+	local hasNul = false
+	local piles = self.player:getPile("modian")
+	local modians = {}
+	for _,id in sgs.qlist(piles) do
+		local c = sgs.Sanguosha:getCard(id)
+		if c:isKindOf("TrickCard") then
+			table.insert(modians, c)
+		end
+		if c:isKindOf("Nullification") then
+			hasNul = true
+		end
+	end
+	if hasNul then
+		local cards = self.player:getHandcards()
+		cards = self:touhouAppendExpandPileToList(self.player, cards)
+		for _,c in sgs.qlist(cards) do
+			if (c:isKindOf("Slash")) then
+				table.insert(modians, c)
+			end
+		end
+	end
+	
+	if #modians == 0 then return nil end
+	self:sortByUseValue(modians, true)
+	
+	local suit = modians[1]:getSuitString()
+	local number = modians[1]:getNumberString()
+	local card_id = modians[1]:getEffectiveId()
+	return ("nullification:guaiqi[%s:%s]=%d"):format(suit, number, card_id)
+end
+
 local modianvs_skill = {}
 modianvs_skill.name = "modian_attach"
 table.insert(sgs.ai_skills, modianvs_skill)
