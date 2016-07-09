@@ -758,6 +758,39 @@ sgs.ai_card_intention.BanyueCard = function(self, card, from, tos)
 	end
 end
 
+sgs.ai_skill_playerchosen.mizong = function(self, targets)
+	local target =self:touhouFindPlayerToDraw(false, 1)
+	for _,target in sgs.qlist(targets) do
+		if self:isWeak(target) and self:isEnemy(target) then
+			return targets
+		end
+	end
+	if #self.enemies > 0 then
+		self:sort(self.enemies, "hp")
+		return self.enemies[1]
+	end
+	for _,target in sgs.qlist(targets) do
+		if  not self:isFriend(target) then
+			return targets
+		end
+	end
+end
+sgs.ai_playerchosen_intention.mizong = 20
+
+sgs.ai_skill_invoke.yinren = function(self, data)
+	local target = data:toPlayer()
+	return self:isEnemy(target)
+end
+sgs.ai_cardneed.yinren = function(to, card, self)
+	return card:isKindOf("Slash") and card:isBlack()
+end
+sgs.ai_choicemade_filter.skillInvoke.yinren = function(self, player, promptlist)
+	local to = player:getTag("yinren-target"):toPlayer()
+	if to and promptlist[#promptlist] == "yes" then
+		sgs.updateIntention(player, to, 60)
+	end
+end
+
 --嘲讽值设定
 --[[sgs.ai_chaofeng.hmx001 = 2
 sgs.ai_chaofeng.hmx002 = -2
