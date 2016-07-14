@@ -916,7 +916,7 @@ public:
                 return;
             if (!change.player->hasSkill("yexing")) return;
             int mark = change.player->getMark("@shi");
-            if (mark > 0 && (mark + change.num == 0))
+            if (mark > 0 && (mark + change.num == 0) && change.player->hasSkill(this))
                 room->setPlayerCardLimitation(change.player, "use", "TrickCard+^DelayedTrick", false);
             else if (mark == 0 && (mark + change.num > 0))
                 room->removePlayerCardLimitation(change.player, "use", "TrickCard+^DelayedTrick$0");
@@ -937,7 +937,7 @@ public:
             QList<SkillInvalidStruct>invalids = data.value<QList<SkillInvalidStruct>>();
             foreach(SkillInvalidStruct v, invalids) {
                 if (!v.skill || v.skill->objectName() == "yexing") {
-                    if (!v.invalid && v.player->getMark("@shi") == 0)
+                    if (!v.invalid && v.player->getMark("@shi") == 0  && v.player->hasSkill(this, true))
                         room->setPlayerCardLimitation(v.player, "use", "TrickCard+^DelayedTrick", false);
                     else if (v.invalid)
                         room->removePlayerCardLimitation(v.player, "use", "TrickCard+^DelayedTrick$0");
