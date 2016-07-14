@@ -26,21 +26,19 @@ sgs.ai_skill_discard.qingting = function(self)
 	local target=self.player:getTag("qingting_give"):toPlayer()
 	local isReturn =false
 	if not target then
-		target=self.player:getTag("qingting_return"):toPlayer()
+		target = self.player:getTag("qingting_return"):toPlayer()
 		isReturn =true
 	end
 	local to_discard = {}
 
-	local need_give=1
+	local need_give = 1
 	if isReturn then
 		for _,p in sgs.qlist(self.room:getOtherPlayers(target)) do
 			if p:getMark("@qingting")>0 then
-				need_give=need_give+1
+				need_give = need_give + 1
 			end
 		end
 	end
-
-
 
 	if isReturn then
 		if target:hasSkill("chunxi") or target:hasSkill("xingyun") then
@@ -65,18 +63,15 @@ sgs.ai_skill_discard.qingting = function(self)
 		end
 	end
 
-
 	local cards={}
-	if isReturn and self.player:getHandcards():length()>need_give then
-		local tmpcards=self.player:getHandcards()
-		tmpcards=sgs.QList2Table(tmpcards)
+	if isReturn and self.player:getHandcards():length() > need_give then
+		local tmpcards = sgs.QList2Table(self.player:getHandcards())
 		self:sortByKeepValue(tmpcards)
 		for var=1, need_give, 1 do
 			table.insert(cards,tmpcards[var])
 		end
 	else
-		cards=self.player:getHandcards()
-		cards=sgs.QList2Table(cards)
+		cards = sgs.QList2Table(self.player:getHandcards())
 	end
 
 	if self:isFriend(target) then
@@ -85,12 +80,12 @@ sgs.ai_skill_discard.qingting = function(self)
 		self:sortByUseValue(cards)
 	end
 
-	local tmpCard=cards[1]
+	local tmpCard = cards[1]
 	if self:isEnemy(target) and tmpCard:isKindOf("Peach") then
-		for var=1, #cards, 1 do
+		for var= 1, #cards, 1 do
 			if not cards[var]:isKindOf("Peach") then
-				tmpCard=cards[var]
-				break;
+				tmpCard = cards[var]
+				break
 			end
 		end
 	end

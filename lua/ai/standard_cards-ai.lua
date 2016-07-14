@@ -941,7 +941,7 @@ function countRangeFix(slash, from)
 				range_fix = range_fix +  sgs.weapon_range[from:getWeapon():getClassName()] - from:getAttackRange(false)
 		end
 		if (from:getOffensiveHorse() and slash:getSubcards():contains(from:getOffensiveHorse():getId())) then
-				range_fix = range_fix + 1;
+				range_fix = range_fix + 1
 		end
 	end
 	return range_fix

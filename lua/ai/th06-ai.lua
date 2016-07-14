@@ -247,7 +247,7 @@ end
 sgs.ai_skill_use_func.SuodingCard = function(card, use, self)
 		self:sort(self.enemies, "handcard")
 		over=math.min(self:getOverflow(),3)
-		enemy_check=false;
+		enemy_check=false
 		if over >0 then
 			use.card = card
 
