@@ -417,8 +417,6 @@ void QijiDialog::popup()
     else
         method = Card::MethodUse;
 
-
-    bool doNotShow = false;
     QStringList checkedPatterns;
     QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
     bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);

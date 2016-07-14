@@ -580,11 +580,19 @@ bool Player::isSkillInvalid(const Skill *skill) const
     if (skill == NULL)
         return isSkillInvalid("_ALL_SKILLS");
 
+    if (skill->getFrequency() == Skill::Eternal)
+        return false;
+
     return isSkillInvalid(skill->objectName());
 }
 
 bool Player::isSkillInvalid(const QString &skill_name) const
 {
+    if (skill_name != "_ALL_SKILLS") {
+        const Skill *skill = Sanguosha->getSkill(skill_name);
+        if (skill && skill->getFrequency() == Skill::Eternal)
+            return false;
+    }
     if (skill_invalid.contains("_ALL_SKILLS"))
         return true;
 
