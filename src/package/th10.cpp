@@ -496,7 +496,7 @@ void QijiDialog::popup()
             avaliable = true;
 
         bool checked = (checkedPatterns.contains(card->objectName()) || (card->isKindOf("Slash") && checkedPatterns.contains("slash")));
-        bool enabled = !user->isCardLimited(card, method, true) && avaliable && checked;
+        bool enabled = !user->isCardLimited(card, method, true) && avaliable && (checked || object_name == "chuangshi");
         button->setEnabled(enabled);
     }
 
