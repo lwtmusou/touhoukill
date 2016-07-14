@@ -109,7 +109,7 @@ public:
             QList<SkillInvalidStruct>invalids = data.value<QList<SkillInvalidStruct>>();
             foreach(SkillInvalidStruct v, invalids) {
                 if (!v.skill || v.skill->objectName() == "zhouye") {
-                    if (!v.invalid && v.player->getMark("@ye") == 0)
+                    if (!v.invalid && v.player->getMark("@ye") == 0 && v.player->hasSkill(this, true))
                         room->setPlayerCardLimitation(v.player, "use", "Slash", false);
                     else if (v.invalid)
                         room->removePlayerCardLimitation(v.player, "use", "Slash$0");
@@ -121,11 +121,10 @@ public:
             if (change.name != "@ye")
                 return;
             int mark = change.player->getMark("@ye");
-            if (mark > 0 && (mark + change.num == 0)) {
+            if (mark > 0 && (mark + change.num == 0) && change.player->hasSkill(this))
                 room->setPlayerCardLimitation(change.player, "use", "Slash", false);
-            } else if (mark == 0 && (mark + change.num > 0)) {
+            else if (mark == 0 && (mark + change.num > 0))
                 room->removePlayerCardLimitation(change.player, "use", "Slash$0");
-            }
         }
     }
 
@@ -686,7 +685,7 @@ public:
             if (room->getCardPlace(id) == Player::DiscardPile)
                 able << id;
         }
-        
+
         int x = qMin(idlist.length(), 2);
         if (x == 0)
             return false;
@@ -3552,7 +3551,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (use.card->isKindOf("SkillCard") || use.from ==NULL )
             return d;
-        
+
         if (e == TargetSpecified) {
             if (use.from->hasSkill(this) && !use.from->isKongcheng()) {
                 foreach(ServerPlayer *p, use.to) {
@@ -3573,7 +3572,7 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        
+
         LogMessage log;
         log.type = "#ChoosePlayerWithSkill";
         log.from = invoke->invoker;
@@ -3651,7 +3650,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (e == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if ((use.card->isKindOf("BasicCard") || use.card->isNDTrick()) && 
+            if ((use.card->isKindOf("BasicCard") || use.card->isNDTrick()) &&
                 !dongchaTargets(use.from, use.card).isEmpty()) {
                 foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                     if (use.from != p)
@@ -3684,7 +3683,7 @@ public:
             targets = dongchaTargets(response.m_from, response.m_card);
             prompt = prompt + response.m_from->objectName() + ":" + response.m_card->objectName();
         }
-        
+
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), prompt, true, true);
         if (target)
             invoke->targets << target;
@@ -3742,7 +3741,7 @@ public:
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (e == BeforeCardsMove) {
-            if (move.from != NULL && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD 
+            if (move.from != NULL && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD
                 && move.from_places.contains(Player::PlaceHand) && move.to_place == Player::DiscardPile) {
                 QVariantList record_ids = room->getTag("zhuiyi").toList();
                 foreach(int id, move.card_ids) {
@@ -3764,7 +3763,7 @@ public:
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
-    {   
+    {
         QList<SkillInvokeDetail> d;
         if (e == CardsMoveOneTime) {
             QVariantList record_ids = room->getTag("zhuiyi").toList();
@@ -3907,7 +3906,7 @@ public:
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {        
+    {
         CardUseStruct use = data.value<CardUseStruct>();
         bool move = true;
         if (use.from && use.from->isAlive() && use.from != invoke->invoker)
@@ -3998,7 +3997,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
     {
-        return matchAvaliablePattern("slash", pattern) && 
+        return matchAvaliablePattern("slash", pattern) &&
             Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
     }
 
