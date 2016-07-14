@@ -1256,9 +1256,9 @@ end
 sgs.ai_skill_use_func.HuayinCard=function(card,use,self)
 	if (sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_PLAY) then
 		local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
-		local card=sgs.cloneCard("peach", sgs.Card_NoSuit, 0)
-		card:setSkillName("huayin")
-		if self.player:isWounded() and not self.player:isCardLimited(card, sgs.Card_MethodUse, true) then
+		local peach = sgs.cloneCard("peach", sgs.Card_NoSuit, 0)
+		peach:setSkillName("huayin")
+		if self.player:isWounded() and not self.player:isCardLimited(peach, sgs.Card_MethodUse, true) then
 			use.card = card
 		end
 		--响应【宴会】没达成
