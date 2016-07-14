@@ -170,6 +170,7 @@ config = {
 		"cirno_sp->cirno",
 		"mamizou_sp->mamizou",
 		"seiga_god->seiga",
-		"satori_god->satori"
+		"satori_god->satori",
+		"sakuya_sp->sakuya_god",
 	}
 }

@@ -1332,8 +1332,8 @@ void Snatch::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical");
     QString flag = using_2013 ? "hes" : "hejs";
-    //for  AI: skill Liyou   
-    //sgs.ai_choicemade_filter.cardChosen.snatch
+    //for AIFsgs.ai_choicemade_filter.cardChosen.snatch    
+    //like Liyou  Xunshi
     effect.from->tag["SnatchCard"] = QVariant::fromValue(effect.card);
     int card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName());
     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
@@ -1367,6 +1367,9 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
 
     int card_id = -1;
     AI *ai = effect.from->getAI();
+    //for AIFsgs.ai_choicemade_filter.cardChosen.snatch    
+    //like Xunshi
+    effect.from->tag["DismantlementCard"] = QVariant::fromValue(effect.card);
     if ((!isNeoqixi && !using_2013) || ai)
         card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName(), false, Card::MethodDiscard);
     else {

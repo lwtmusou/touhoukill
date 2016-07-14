@@ -1137,6 +1137,7 @@ sgs.ai_card_intention.Slash = function(self, card, from, tos)
 				continue
 			end
 		end
+		if to:hasSkill("xunshi") and #tos > 1 then value = 0 end
 		if  from:hasSkill("dongjie") and not to:faceUp() then value= 0 end --self:isFriend(from,to) and
 		if self:sidieEffect(from)  then value = 0 end
 		if from:hasSkill("lizhi") and self:isFriend(from,to) then value = 0 end
@@ -1524,6 +1525,7 @@ sgs.ai_card_intention.Peach = function(self, card, from, tos)
 		if to:hasSkill("guizha") and not card:isVirtualCard() then
 			continue
 		end
+		if to:hasSkill("xunshi") and #tos > 1 then continue end
 		sgs.updateIntention(from, to, -120)
 	end
 end
@@ -3123,7 +3125,14 @@ sgs.ai_choicemade_filter.cardChosen.snatch = function(self, player, args)
 	local to = findPlayerByObjectName(self.room, args[4])
 	if from then
 		local snatch = from:getTag("SnatchCard"):toCard()
-		if snatch and snatch:getSkillName() == "liyou" then return end
+		if snatch then
+			if snatch:getSkillName() == "liyou" then return end
+			if snatch:hasFlag("xunshi") then return end
+		end
+		local dismantlement = from:getTag("DismantlementCard"):toCard()
+		if dismantlement then
+			if dismantlement:hasFlag("xunshi") then return end
+		end
 	end
 	if from and to then
 		local id = tonumber(args[2])

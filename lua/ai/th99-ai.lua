@@ -1220,3 +1220,11 @@ sgs.ai_skill_cardask["jidong-confirm"] = function(self, data)
 	self:sortByUseValue(cards)
 	return "$" .. cards[1]:getId()
 end
+
+sgs.ai_choicemade_filter.cardResponded["jidong-confirm"] = function(self, player, args)
+	if args[#args] ~= "_nil_" then
+		local target = player:getTag("jidong_target"):toPlayer()
+		if not target then return end
+		sgs.updateIntention(player, target, 50)
+	end
+end

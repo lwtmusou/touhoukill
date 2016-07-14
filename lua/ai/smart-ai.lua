@@ -1342,6 +1342,10 @@ end
 
 function sgs.updateIntentions(from, tos, intention, card)
 	for _, to in ipairs(tos) do
+		if card and (card:isNDTrick() or card:isKindOf("BasicCard")) and #tos > 1
+			and to:hasSkill("xunshi") then
+			continue
+		end
 		sgs.updateIntention(from, to, intention, card)
 	end
 end

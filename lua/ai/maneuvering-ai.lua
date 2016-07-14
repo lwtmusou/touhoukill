@@ -731,6 +731,7 @@ end
 sgs.ai_card_intention.IronChain = function(self, card, from, tos)
 	local liuxie = self.room:findPlayerBySkillName("huangen")
 	for _, to in ipairs(tos) do
+		if to:hasSkill("xunshi") and #tos > 1 then continue end
 		if not to:isChained() then
 			if self:needWakeYueshi(to) then
 				continue

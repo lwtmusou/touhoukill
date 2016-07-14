@@ -1924,7 +1924,9 @@ public:
         QList<ServerPlayer *> logto;
         logto << invoke->invoker;
         room->touhouLogmessage("#xunshi", use.from, use.card->objectName(), logto, objectName());
-        
+
+        //wtf!?  this flag can not detected in sgs.ai_choicemade_filter.cardChosen.snatch 
+        room->setCardFlag(use.card, "xunshi");
         invoke->invoker->drawCards(1);
         use.to << invoke->invoker;
         room->sortByActionOrder(use.to);
