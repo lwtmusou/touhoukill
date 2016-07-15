@@ -54,16 +54,13 @@ void QingtingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
         if (p->isKongcheng())
             continue;
         const Card *card;
-        if (source->getMark("shengge") == 0) {
-            if (p->getHandcardNum() == 1)
-                card = p->getHandcards().first();
-            else {
-                p->tag["qingting_give"] = QVariant::fromValue(source);
-                card = room->askForExchange(p, "qingting", 1, 1, false, "qingtingGive:" + source->objectName());
-                p->tag.remove("qingting_give");
-            }
-        } else
+        if (source->getMark("shengge") > 0 || p->getHandcardNum() == 1)
             card = new DummyCard(QList<int>() << room->askForCardChosen(source, p, "hs", "qingting"));
+        else {
+            p->tag["qingting_give"] = QVariant::fromValue(source);
+            card = room->askForExchange(p, "qingting", 1, 1, false, "qingtingGive:" + source->objectName());
+            p->tag.remove("qingting_give");
+        }
         DELETE_OVER_SCOPE(const Card, card)
 
         source->obtainCard(card, false);
