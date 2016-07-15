@@ -2694,7 +2694,7 @@ function SmartAI:getDangerousCard(who)
 	end
 	if armor and armor:isKindOf("EightDiagram") and who:hasSkill("leiji") then return armor:getEffectiveId() end
 	if armor and who:hasSkill("wunian") then return armor:getEffectiveId() end
-	if defensiveHorse and who:hasSkill("wunian") then return defensiveHorse end
+	if defensiveHorse and who:hasSkill("wunian") then return defensiveHorse:getEffectiveId() end
 
 	
 	if lord and lord:hasLordSkill("hujia") and self:isEnemy(lord) and armor and armor:isKindOf("EightDiagram") and who:getKingdom() == "wei" then
