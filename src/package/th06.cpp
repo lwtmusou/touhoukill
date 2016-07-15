@@ -1204,7 +1204,6 @@ public:
     Yinren() : TriggerSkill("yinren")
     {
         events << EventPhaseChanging << TargetSpecified;
-        frequency = Compulsory;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
