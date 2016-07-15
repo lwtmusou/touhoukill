@@ -684,17 +684,19 @@ public:
     virtual const Card *viewAs(const Card *originalCard) const
     {
         if (originalCard != NULL) {
+            bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-            if (matchAvaliablePattern("jink", pattern)) {
-                Jink *jink = new Jink(originalCard->getSuit(), originalCard->getNumber());
-                jink->addSubcard(originalCard);
-                jink->setSkillName(objectName());
-                return jink;
-            } else {
+            if (play || matchAvaliablePattern("slash", pattern)) {
                 Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
                 slash->addSubcard(originalCard);
                 slash->setSkillName(objectName());
                 return slash;
+            } else {
+                Jink *jink = new Jink(originalCard->getSuit(), originalCard->getNumber());
+                jink->addSubcard(originalCard);
+                jink->setSkillName(objectName());
+                return jink;
+
             }
         } else
             return NULL;
