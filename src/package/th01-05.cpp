@@ -35,8 +35,8 @@ public:
         JudgeStruct judge;
         judge.reason = objectName();
         judge.who = invoke->invoker;
-        judge.good = true;
-        judge.pattern = ".|black";
+        judge.good = false;
+        judge.pattern = ".|heart";
 
         room->judge(judge);
 
@@ -54,7 +54,7 @@ class Xieqi : public TriggerSkill
 public:
     Xieqi() : TriggerSkill("xieqi")
     {
-        events << Damaged;
+        events << Damage;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
@@ -82,16 +82,22 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(damage.from), objectName(), "@xieqi:" + damage.card->objectName(), true, true);
-        if (target != NULL)
-            invoke->targets << target;
-        return target != NULL;
+        if (invoke->invoker == damage.from) {
+            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(damage.from), objectName(), "@xieqi:" + damage.card->objectName(), true, true);
+            if (target != NULL)
+                invoke->targets << target;
+            return target != NULL;
+        } else
+            return invoke->invoker->askForSkillInvoke(this, data);
     }
 
     bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        invoke->targets.first()->obtainCard(damage.card);
+        if (invoke->invoker == damage.from)
+            invoke->targets.first()->obtainCard(damage.card);
+        else
+            invoke->invoker->obtainCard(damage.card);
         return false;
     }
 
