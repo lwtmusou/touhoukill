@@ -803,11 +803,16 @@ public:
         if (triggerEvent == EventPhaseEnd)
             return true;
         else {
-            if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
-                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->preferredTarget->objectName());
-                int id = room->askForCardChosen(invoke->invoker, invoke->preferredTarget, "hs", objectName());
-                invoke->invoker->tag["xiubu_id"] = QVariant::fromValue(id);
-                return true;
+            if (invoke->invoker == invoke->preferredTarget) {
+                if (room->askForCard(invoke->invoker, ".", "@xiubu-self", QVariant::fromValue(invoke->preferredTarget), objectName()))
+                    return true;
+            } else {
+                if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
+                    room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->preferredTarget->objectName());
+                    int id = room->askForCardChosen(invoke->invoker, invoke->preferredTarget, "hs", objectName());
+                    room->throwCard(id, invoke->preferredTarget, invoke->invoker);
+                    return true;
+                }
             }
         }
         return false;
@@ -817,13 +822,8 @@ public:
     {
         if (triggerEvent == EventPhaseEnd)
             invoke->invoker->drawCards(2);
-        else {
-            int id = invoke->invoker->tag["xiubu_id"].toInt();
-            invoke->invoker->tag.remove("xiubu_id");
-
-            room->throwCard(id, invoke->targets.first(), invoke->invoker);
+        else
             room->setPlayerMark(invoke->targets.first(), "xiubu", 1);
-        }
 
         return false;
     }

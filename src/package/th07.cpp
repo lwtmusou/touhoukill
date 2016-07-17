@@ -283,7 +283,7 @@ public:
             id2 = room->askForCardChosen(yukari, who, "hes", objectName(), false, Card::MethodDiscard);
 
         if (yukari->canDiscard(who, id2))
-            room->throwCard(id2, who, yukari);
+            room->throwCard(id2, who, yukari == who ? NULL: yukari);
 
         RecoverStruct recover;
         recover.recover = 1;

@@ -276,26 +276,36 @@ public:
         return d;
     }
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        QString prompt = "target:" + use.from->objectName() + ":" + use.to.first()->objectName();
+        ServerPlayer *target = use.to.first();
         invoke->invoker->tag["nizhuan_carduse"] = data;
-        return invoke->invoker->askForSkillInvoke(objectName(), prompt);
+        if (target == invoke->invoker) {
+            if (room->askForCard(target, ".", "@nizhuan-self", data, objectName()))
+                return true;
+        } else {
+            QString prompt = "target:" + use.from->objectName() + ":" + target->objectName();
+            if (invoke->invoker->askForSkillInvoke(objectName(), prompt)) {
+                int id = room->askForCardChosen(invoke->invoker, target, "hs", objectName(), false, Card::MethodDiscard);
+                room->throwCard(id, target, invoke->invoker);
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        ServerPlayer* target = use.to.first();
+        ServerPlayer *target = use.to.first();
         use.nullified_list << target->objectName();
         data = QVariant::fromValue(use);
 
         Slash *slash = new Slash(Card::NoSuit, 0);
         slash->setSkillName("_" + objectName());
-        int id = room->askForCardChosen(invoke->invoker, target, "hs", objectName(), false, Card::MethodDiscard);
-        room->throwCard(id, target, invoke->invoker);
         room->useCard(CardUseStruct(slash, target, use.from), false);
         return false;
     }

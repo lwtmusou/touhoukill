@@ -155,7 +155,7 @@ public:
         Card *card = Sanguosha->getCard(cd_id);
         if (card->isBlack())
             player->gainMark("@ye", 1);
-        room->throwCard(cd_id, player);
+        room->throwCard(cd_id, NULL);
 
         return false;
     }
@@ -1188,8 +1188,12 @@ public:
             for (int i = 0; i < y; ++i) {
                 if (!player->canDiscard(s, "hes"))
                     break;
-                int id = room->askForCardChosen(player, s, "hes", objectName(), false, Card::MethodDiscard);
-                room->throwCard(id, s, player);
+                if (s == player)
+                    room->askForDiscard(s, "rengui-discard", 1, 1, false, true);
+                else {
+                    int id = room->askForCardChosen(player, s, "hes", objectName(), false, Card::MethodDiscard);
+                    room->throwCard(id, s, player);
+                }
             }
         }
 
@@ -3000,9 +3004,19 @@ void WendaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
 {
     room->sortByActionOrder(targets);
     foreach (ServerPlayer *p, targets) {
-        int card_id = room->askForCardChosen(source, p, "hs", objectName(), false, Card::MethodDiscard);
-        room->throwCard(card_id, p, source);
-        if (Sanguosha->getCard(card_id)->isRed()) {
+        const Card *wendaoCard = NULL;
+        if (p == source) {
+            wendaoCard = room->askForCard(p, ".!", "@wendao-dis", QVariant(), QString());
+            if (wendaoCard == NULL) {
+                wendaoCard = p->getRandomHandCard();
+                room->throwCard(wendaoCard, p);
+            }
+        } else {
+            int card_id = room->askForCardChosen(source, p, "hs", objectName(), false, Card::MethodDiscard);
+            room->throwCard(card_id, p, source);
+            wendaoCard = Sanguosha->getCard(card_id);
+        }
+        if (wendaoCard->isRed()) {
             RecoverStruct recover;
             room->recover(source, recover);
         }

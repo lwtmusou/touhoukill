@@ -1518,8 +1518,12 @@ void JiliaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     if (target->getHandcardNum() <= target->getMaxCards() || !source->canDiscard(target, "hs"))
         return;
     if (room->askForSkillInvoke(source, "jiliao", "throwcard:" + target->objectName())) {
-        int to_throw = room->askForCardChosen(source, target, "hs", "jiliao", false, Card::MethodDiscard);
-        room->throwCard(to_throw, target, source);
+        if (target == source)
+            room->askForDiscard(source, "jiliao", 1, 1, false, false);
+        else {
+            int to_throw = room->askForCardChosen(source, target, "hs", "jiliao", false, Card::MethodDiscard);
+            room->throwCard(to_throw, target, source);
+        }
     }
 }
 

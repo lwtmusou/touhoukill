@@ -1137,6 +1137,10 @@ public:
                     }
                 }
             }
+        } else if (triggerEvent == FinishJudge) {
+            JudgeStruct *judge = data.value<JudgeStruct *>();
+            if (judge->reason == objectName() && judge->card->isRed())
+                judge->pattern = "red";
         }
     }
 
@@ -1181,7 +1185,7 @@ public:
             judge.play_animation = false;
             room->judge(judge);
 
-            if (judge.card->isRed()) {
+            if (judge.pattern == "red") {
                 room->setPlayerFlag(invoke->invoker, "mizong");
                 room->setFixedDistance(invoke->invoker, invoke->targets.first(), 1);
                 invoke->targets.first()->gainMark("@mizong"); //gainMark could trigger skill Ganying

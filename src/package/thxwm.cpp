@@ -272,30 +272,37 @@ public:
 
         ServerPlayer *victim = room->askForPlayerChosen(damage.to, targets, objectName(), "@jubao-select", true, true);
         if (victim) {
-            int id = room->askForCardChosen(damage.to, victim, "hs", objectName(), false, Card::MethodDiscard);
-            room->throwCard(id, victim, damage.to);
             invoke->targets << victim;
-            damage.to->tag["jubao_id"] = QVariant::fromValue(id);
             return true;
         }
         return false;
     }
 
-    void onDamaged(Room *room, QSharedPointer<SkillInvokeDetail> invoke, const DamageStruct &) const
+    void onDamaged(Room *room, QSharedPointer<SkillInvokeDetail> invoke, const DamageStruct &damage) const
     {
         ServerPlayer *victim = invoke->targets.first();
-        int id = invoke->invoker->tag["jubao_id"].toInt();
-        invoke->invoker->tag.remove("jubao_id");
+        const Card *jubaoCard = NULL;
+        if (victim == damage.to) {
+            jubaoCard = room->askForCard(victim, ".!", "@jubao-dis", QVariant(), QString());
+            if (jubaoCard == NULL) {
+                jubaoCard = victim->getRandomHandCard();
+                room->throwCard(jubaoCard, victim);
+            }
+        } else {
+            int id = room->askForCardChosen(damage.to, victim, "hs", objectName(), false, Card::MethodDiscard);
+            room->throwCard(id, victim, damage.to);
+            jubaoCard = Sanguosha->getCard(id);
+        }
         DummyCard dummy;
         int count = 0;
         foreach(const Card *c, victim->getEquips()) {
-            if (invoke->invoker->canDiscard(victim, c->getEffectiveId()) && c->isRed() == Sanguosha->getCard(id)->isRed()) {
+            if (invoke->invoker->canDiscard(victim, c->getEffectiveId()) && c->sameColorWith(jubaoCard)) {
                 dummy.addSubcard(c);
                 count = count + 1;
             }
         }
         if (count > 0)
-            room->throwCard(&dummy, victim, invoke->invoker);
+            room->throwCard(&dummy, victim, invoke->invoker == victim ? NULL : invoke->invoker);
     }
 
 };

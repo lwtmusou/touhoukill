@@ -1607,13 +1607,13 @@ void ModianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
         if (alice->getPile("modian").length() > alice->getHp()) {
             const Card *c = room->askForCard(alice, "@@modian!", "@modian", QVariant(), Card::MethodNone, NULL, false, "modian");
             // force discard!!!
-            /*if (c == NULL) {
-                
+            if (c == NULL) {
                 QList<int> modians = alice->getPile("modian");
-                
+
                 int x = qrand() % modians.length();
                 int id = modians.value(x);
-            }*/
+                c = Sanguosha->getCard(id);
+            }
 
             CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
             room->throwCard(c, reason, NULL);

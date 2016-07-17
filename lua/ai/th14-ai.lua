@@ -140,6 +140,12 @@ sgs.ai_cardneed.leiting = function(to, card, self)
 	end
 end
 
+sgs.ai_skill_cardask["@nizhuan-self"] = function(self, data)
+	if (sgs.ai_skill_invoke.nizhuan(self, data)) then
+		local dis = self:askForDiscard("Dummy", 1, 1, false, false)
+		return tostring(dis[1])
+	end
+end
 sgs.ai_skill_invoke.nizhuan =function(self,data)
 	local use = self.player:getTag("nizhuan_carduse"):toCardUse()
 	local to=use.to:first()

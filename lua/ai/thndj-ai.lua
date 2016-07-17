@@ -219,6 +219,13 @@ sgs.ai_choicemade_filter.skillInvoke.mengwei = function(self, player, args)
 	end
 end
 
+sgs.ai_skill_cardask["@xiubu-self"] = function(self, data)
+	if sgs.ai_skill_invoke.xiubu(self, data) then
+		local dis = self:askForDiscard("Dummy", 1, 1, false, false)
+		return tostring(dis[1])
+	end
+end
+
 sgs.ai_skill_invoke.xiubu =function(self,data)
 	local target = data:toPlayer()
 	if not target then return false end

@@ -518,12 +518,13 @@ void ShijieCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
     judge.reason = "shijie";
     judge.who = who;
     judge.good = true;
-    judge.pattern = ".|.|.";
+    judge.pattern = ".";
+    judge.play_animation = false;
     room->judge(judge);
     QList<ServerPlayer *> listt;
     foreach (ServerPlayer *p, room->getAlivePlayers()) {
         foreach (const Card *c, p->getCards("e")) {
-            if (judge.card->getSuit() == c->getSuit() && source->canDiscard(p, c->getEffectiveId()))
+            if (judge.pattern == c->getSuitString() && source->canDiscard(p, c->getEffectiveId()))
                 listt << p;
         }
     }
@@ -533,24 +534,14 @@ void ShijieCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
             return;
         QList<int> disabled_ids;
         foreach (const Card *c, target->getCards("e")) {
-            if (judge.card->getSuit() != c->getSuit() || !source->canDiscard(target, c->getEffectiveId()))
+            if (judge.pattern != c->getSuitString() || !source->canDiscard(target, c->getEffectiveId()))
                 disabled_ids << c->getEffectiveId();
         }
         //for ai
-        int suit_id;
-        if (judge.card->getSuit() == Card::Spade)
-            suit_id = 1;
-        else if (judge.card->getSuit() == Card::Heart)
-            suit_id = 2;
-        else if (judge.card->getSuit() == Card::Club)
-            suit_id = 3;
-        else if (judge.card->getSuit() == Card::Diamond)
-            suit_id = 4;
-        source->tag["shijie_suit"] = QVariant::fromValue(suit_id);
+        source->tag["shijie_suit"] = QVariant::fromValue(judge.pattern);
 
-        int id = room->askForCardChosen(source, target, "e", "shijie",
-            false, Card::MethodDiscard, disabled_ids);
-        room->throwCard(id, target, source);
+        int id = room->askForCardChosen(source, target, "e", "shijie", false, Card::MethodDiscard, disabled_ids);
+        room->throwCard(id, target, source == target ? NULL : source);
         RecoverStruct recover;
         recover.recover = 1;
         recover.who = source;
@@ -558,10 +549,10 @@ void ShijieCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
     }
 }
 
-class Shijie : public OneCardViewAsSkill
+class ShijieVS : public OneCardViewAsSkill
 {
 public:
-    Shijie() : OneCardViewAsSkill("shijie")
+    ShijieVS() : OneCardViewAsSkill("shijie")
     {
         filter_pattern = ".|.|.|hand!";
     }
@@ -585,6 +576,23 @@ public:
             return card;
         } else
             return NULL;
+    }
+};
+
+class Shijie : public TriggerSkill
+{
+public:
+    Shijie() : TriggerSkill("shijie")
+    {
+        events << FinishJudge;
+        view_as_skill = new ShijieVS;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        JudgeStruct *judge = data.value<JudgeStruct *>();
+        if (judge->reason == "shijie")
+            judge->pattern = judge->card->getSuitString();
     }
 };
 

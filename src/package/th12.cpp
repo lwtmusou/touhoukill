@@ -890,8 +890,12 @@ public:
             for (int i = 0; i < 2; i++) {
                 if (!player->canDiscard(damage.from, "hes"))
                     return;
-                int card_id = room->askForCardChosen(player, damage.from, "hes", objectName(), false, Card::MethodDiscard);
-                room->throwCard(card_id, damage.from, player);
+                if (damage.from == player)
+                    room->askForDiscard(player, "jingxia", 1, 1, false, true);
+                else {
+                    int card_id = room->askForCardChosen(player, damage.from, "hes", objectName(), false, Card::MethodDiscard);
+                    room->throwCard(card_id, damage.from, player);
+                }
             }
         } else if (choice == "discardfield") {
             ServerPlayer *player1 = room->askForPlayerChosen(player, fieldcard, objectName(), "@jingxia-discardfield");

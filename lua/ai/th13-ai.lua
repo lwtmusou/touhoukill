@@ -328,23 +328,9 @@ sgs.ai_skill_playerchosen.shijie = function(self, targets)
 	return targets:first()
 end
 sgs.ai_skill_cardchosen.shijie = function(self, who, flags)
-	local suit_id = self.player:getTag("shijie_suit"):toInt()
-	local function cardsuit(card)
-		if card:getSuit() ==sgs.Card_Spade then
-			return 1
-		end
-		if card:getSuit() ==sgs.Card_Heart then
-			return 2
-		end
-		if card:getSuit() ==sgs.Card_Club then
-			return 3
-		end
-		if card:getSuit() ==sgs.Card_Diamond then
-			return 4
-		end
-	end
+	local suit_id = self.player:getTag("shijie_suit"):toString()
 	for _,c in sgs.qlist(who:getCards("e")) do
-		if cardsuit(c) == suit_id then
+		if c:getSuitString() == suit_id then
 			return c
 		end
 	end
