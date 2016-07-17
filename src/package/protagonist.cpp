@@ -1731,12 +1731,12 @@ public:
 
 
 
-class ShicongVS : public OneCardViewAsSkill
+class ToushiVS : public OneCardViewAsSkill
 {
 public:
-    ShicongVS() : OneCardViewAsSkill("shicong")
+    ToushiVS() : OneCardViewAsSkill("toushi")
     {
-        response_pattern = "@@shicong";
+        response_pattern = "@@toushi";
         response_or_use = true;
     }
 
@@ -1748,23 +1748,23 @@ public:
     virtual const Card *viewAs(const Card *originalCard) const
     {
         if (originalCard) {
-            QString cardname = Self->property("shicong_card").toString();
+            QString cardname = Self->property("toushi_card").toString();
             Card *card = Sanguosha->cloneCard(cardname, originalCard->getSuit(), originalCard->getNumber());
             card->addSubcard(originalCard);
-            card->setSkillName("shicong");
+            card->setSkillName("toushi");
             return card;
         }
         return NULL;
     }
 };
 
-class Shicong : public TriggerSkill
+class Toushi : public TriggerSkill
 {
 public:
-    Shicong() : TriggerSkill("shicong")
+    Toushi() : TriggerSkill("toushi")
     {
         events << EventPhaseEnd << PreCardUsed << CardResponded << EventPhaseChanging;
-        view_as_skill = new ShicongVS;
+        view_as_skill = new ToushiVS;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
@@ -1784,12 +1784,12 @@ public:
             }
             if (player && player->getPhase() == Player::Play
                 && card && card->getHandlingMethod() == Card::MethodUse)
-                room->setPlayerProperty(player, "shicong_card", card->objectName());
+                room->setPlayerProperty(player, "toushi_card", card->objectName());
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.from == Player::Play) {
                 foreach (ServerPlayer *p, room->getAllPlayers())
-                    room->setPlayerProperty(p, "shicong_card", QVariant());
+                    room->setPlayerProperty(p, "toushi_card", QVariant());
             }
         }
     }
@@ -1800,7 +1800,7 @@ public:
         if (triggerEvent == EventPhaseEnd) {
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->getPhase() == Player::Play) {
-                QString cardname = player->property("shicong_card").toString();
+                QString cardname = player->property("toushi_card").toString();
                 Card *card = Sanguosha->cloneCard(cardname);
                 if (card == NULL)
                     return QList<SkillInvokeDetail>();
@@ -1820,13 +1820,13 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         ServerPlayer *current = data.value<ServerPlayer *>();
-        QString cardname = current->property("shicong_card").toString();
+        QString cardname = current->property("toushi_card").toString();
         Card *card = Sanguosha->cloneCard(cardname);
-        QString prompt = "@shicong:" + card->objectName();
+        QString prompt = "@toushi:" + card->objectName();
         delete card;
-        //room->setPlayerFlag(invoke->invoker, "Global_InstanceUse_Failed");
-        room->setPlayerProperty(invoke->invoker, "shicong_card", cardname);
-        room->askForUseCard(invoke->invoker, "@@shicong", prompt);
+
+        room->setPlayerProperty(invoke->invoker, "toushi_card", cardname);
+        room->askForUseCard(invoke->invoker, "@@toushi", prompt);
         return false;
     }
 };
@@ -1960,7 +1960,7 @@ ProtagonistPackage::ProtagonistPackage()
     reimu_old->addSkill(new Lingji);
 
     General *marisa_old = new General(this, "marisa_old", "zhu", 4, false);
-    marisa_old->addSkill(new Shicong);
+    marisa_old->addSkill(new Toushi);
     marisa_old->addSkill(new Moli);
 
 

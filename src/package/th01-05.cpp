@@ -125,9 +125,9 @@ public:
         foreach(ServerPlayer *p, room->getOtherPlayers(current)) {
             if (!p->hasLordSkill(objectName()))
                 continue;
-            foreach(ServerPlayer *t, room->getOtherPlayers(p)) {
-                if (p->inMyAttackRange(t) && t->getHp() > p->getHp() && !t->isChained()) {
-                    d << SkillInvokeDetail(this, p, current, NULL, true);
+            foreach(ServerPlayer *t, room->getOtherPlayers(current)) {
+                if (current->inMyAttackRange(t) && t->getHp() > p->getHp() && !t->isChained()) {
+                    d << SkillInvokeDetail(this, p, current);
                     break;
                 }
             }
@@ -135,20 +135,47 @@ public:
         return d;
     }
 
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        QList<ServerPlayer *> targets;
+        foreach(ServerPlayer *t, room->getOtherPlayers(invoke->invoker)) {
+            if (invoke->invoker->inMyAttackRange(t) && t->getHp() > invoke->owner->getHp() && !t->isChained()) {
+                targets << t;
+            }
+        }
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@fuchou:" + invoke->owner->objectName());
+        if (target != NULL) {
+            LogMessage log;
+            log.type = "#InvokeOthersSkill";
+            log.from = invoke->invoker;
+            log.to << invoke->owner;
+            log.arg = objectName();
+            room->sendLog(log);
+
+            invoke->targets << target;
+
+            LogMessage log1;
+            log1.type = "#ChooseFuchou";
+            log1.from = invoke->invoker;
+            log1.to << target;
+            room->sendLog(log1);
+
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
+        }
+
+        return target != NULL;
+    }
+
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        room->notifySkillInvoked(invoke->owner, objectName());
-        room->touhouLogmessage("#TriggerSkill", invoke->owner, objectName());
-        foreach(ServerPlayer *t, room->getOtherPlayers(invoke->owner)) {
-            if (invoke->owner->inMyAttackRange(t) && t->getHp() > invoke->owner->getHp() && !t->isChained()) {
-                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->owner->objectName(), t->objectName());
-                t->setChained(true);
+        if (invoke->owner->askForSkillInvoke(this, QVariant::fromValue(invoke->targets.first()))) {
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->owner->objectName(), invoke->targets.first()->objectName());
+            invoke->targets.first()->setChained(true);
 
-                room->broadcastProperty(t, "chained");
-                room->setEmotion(t, "chain");
-                QVariant _data = QVariant::fromValue(t);
-                room->getThread()->trigger(ChainStateChanged, room, _data);
-            }
+            room->broadcastProperty(invoke->targets.first(), "chained");
+            room->setEmotion(invoke->targets.first(), "chain");
+            QVariant _data = QVariant::fromValue(invoke->targets.first());
+            room->getThread()->trigger(ChainStateChanged, room, _data);
         }
         return false;
     }
