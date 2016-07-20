@@ -824,6 +824,9 @@ public:
         room->touhouLogmessage("#youyue", invoke->invoker, objectName(), logto, use.card->objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
         foreach(ServerPlayer *to, invoke->targets) {
+            if (!to->canDiscard(to, "hs"))
+                continue;
+
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), to->objectName());
             QStringList prompt_list;
             prompt_list << "youyue-discard" << use.card->objectName()
