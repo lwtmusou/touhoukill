@@ -1248,10 +1248,12 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        room->setPlayerSkillInvalidity(invoke->targets.first(), NULL, true);
-        QString pattern = ".|red|.|.";
-        room->setPlayerCardLimitation(invoke->targets.first(), "use,response", pattern, true);
-        invoke->targets.first()->setFlags(objectName());
+        if (!invoke->targets.first()->hasFlag(objectName())) {
+            invoke->targets.first()->setFlags(objectName());
+            room->setPlayerSkillInvalidity(invoke->targets.first(), NULL, true);
+            QString pattern = ".|red|.|.";
+            room->setPlayerCardLimitation(invoke->targets.first(), "use,response", pattern, true);
+        }
         return false;
     }
 };
