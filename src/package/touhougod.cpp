@@ -3822,6 +3822,140 @@ public:
 
 
 
+
+
+class Fanhun : public TriggerSkill
+{
+public:
+    Fanhun() : TriggerSkill("fanhun")
+    {
+        events << EventPhaseStart;
+        frequency = Eternal;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+
+        ServerPlayer *player = data.value<ServerPlayer *>();
+        if (player->hasSkill(this) && player->getPhase() == Player::Finish && player->getHp() < 1)
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+        return QList<SkillInvokeDetail>();
+    }
+
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        ServerPlayer *player = invoke->invoker;
+        room->setPlayerMark(player, objectName(), player->getMark(objectName()) + 1);
+        RecoverStruct recov;
+        recov.recover = player->getMaxHp() - player->getHp();
+        recov.who = player;
+        room->recover(player, recov);
+        room->loseMaxHp(player);
+        return false;
+    }
+};
+
+class Youdie : public TriggerSkill
+{
+public:
+    Youdie() : TriggerSkill("youdie")
+    {
+        events << EventPhaseChanging << PreCardUsed << DamageDone << EnterDying << TurnStart;
+        frequency = Compulsory;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == DamageDone) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from && damage.from->isCurrent())
+                room->setTag("youdieDamage", true);
+        }
+        if (triggerEvent == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from->isCurrent() && !use.card->isKindOf("SkillCard"))
+                room->setTag("youdieUse", true);
+        }
+        if (triggerEvent == EnterDying) {
+            room->setTag("youdieDying", true);
+        }
+        
+        if (triggerEvent == TurnStart) {
+            room->setTag("youdieUse", false);
+            room->setTag("youdieDamage", false);
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        QList<SkillInvokeDetail> d;
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.player->isAlive() && change.to == Player::NotActive) {
+                QList<ServerPlayer *> uuzs = room->findPlayersBySkillName(objectName());
+                if (uuzs.isEmpty())
+                    return d;
+                QVariant useTag = room->getTag("youdieUse");
+                bool used = useTag.canConvert(QVariant::Bool) && useTag.toBool();
+                QVariant damageTag = room->getTag("youdieDamage");
+                bool damaged = damageTag.canConvert(QVariant::Bool) && damageTag.toBool();
+                QVariant dyingTag = room->getTag("youdieDying");
+                bool dying = dyingTag.canConvert(QVariant::Bool) && dyingTag.toBool();
+                bool lowHp = true;
+                bool lowHandcardNum = true;
+                foreach(ServerPlayer *p, room->getOtherPlayers(change.player)) {
+                    if (p->getHandcardNum() < change.player->getHandcardNum())
+                        lowHandcardNum = false;
+                    if (p->getHp() < change.player->getHp())
+                        lowHp = false;
+                    if (!lowHp && !lowHandcardNum)
+                        break;
+                }
+
+                foreach(ServerPlayer *p, uuzs) {
+                    int x = p->getMark("fanhun") + 1;
+                    bool invoke = false;
+                    if (p == change.player)
+                        invoke = ((used && x >= 1) || (damaged && x >= 2) || (lowHandcardNum && x >= 3)
+                            || (lowHp && x >=4) || (dying && x >= 5));
+                    else
+                        invoke = ((!used && x >= 1) || (!damaged && x >= 2) || (!lowHandcardNum && x >= 3)
+                            || (!lowHp && x >= 4) || (!dying && x >= 5));
+
+                    if (invoke)
+                        d << SkillInvokeDetail(this, p, p, NULL, true, change.player);
+                }
+            }
+        }
+        return d;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        if (invoke->invoker == invoke->targets.first()) {
+            int x = invoke->invoker->getMark("fanhun") + 1;
+            invoke->invoker->gainMark("@die", x);
+            invoke->invoker->drawCards(x);
+        } else {
+            bool loseHp = invoke->invoker->getMark("@die") == 0;
+            if (!loseHp)
+                loseHp = invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->targets.first()));
+            if (!loseHp)
+                invoke->invoker->loseMark("@die", 1);
+            else {
+                room->loseHp(invoke->targets.first());
+                room->loseHp(invoke->invoker);
+            }
+        }
+        return false;
+    }
+};
+
+
+
+
 class Tianqu : public TriggerSkill
 {
 public:
@@ -4191,8 +4325,9 @@ TouhouGodPackage::TouhouGodPackage()
     satori_god->addSkill(new Dongcha);
     satori_god->addSkill(new Zhuiyi);
 
-    General *uuz = new General(this, "yuyuko_god", "touhougod", 4, false);
-    Q_UNUSED(uuz);
+    General *yuyuko_god = new General(this, "yuyuko_god", "touhougod", 5, false);
+    yuyuko_god->addSkill(new Fanhun);
+    yuyuko_god->addSkill(new Youdie);
 
     General *aya_god = new General(this, "aya_god", "touhougod", 4, false);
     aya_god->addSkill(new Tianqu);

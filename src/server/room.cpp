@@ -207,6 +207,9 @@ void Room::outputEventStack()
 
 void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
 {
+    if (player->hasSkill("fanhun"))
+        return;
+    
     setPlayerFlag(player, "Global_Dying");
     QStringList currentdying = getTag("CurrentDying").toStringList();
     currentdying << player->objectName();
