@@ -1303,6 +1303,14 @@ void Dashboard::onCardItemClicked()
 //#include "wind.h"
 void Dashboard::updatePending()
 {
+    foreach(CardItem *item, m_handCards) {
+        item->hideFootnote();
+        if (Self->isShownHandcard(item->getCard()->getEffectiveId())) {
+            item->setFootnote(Sanguosha->translate("shown_card"));
+            item->showFootnote();
+        }
+    }
+
     if (!view_as_skill) return;
     QList<const Card *> cards;
     foreach(CardItem *item, pendings)
@@ -1317,10 +1325,6 @@ void Dashboard::updatePending()
             item->setEnabled(view_as_skill->viewFilter(pended, item->getCard()));
         if (!item->isEnabled())
             animations->effectOut(item);
-        if (Self->isShownHandcard(item->getCard()->getEffectiveId())) {
-            item->setFootnote(Sanguosha->translate("showcard"));
-            item->showFootnote();
-        }
     }
 
     for (int i = 0; i < 5; i++) {

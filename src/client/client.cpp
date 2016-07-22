@@ -233,6 +233,7 @@ void Client::setShownHandCards(const QVariant &card_var)
 
     ClientPlayer *player = getPlayer(who);
     player->setShownHandcards(card_ids);
+    player->changePile("shown_card", true, card_ids);
 }
 
 

@@ -368,7 +368,12 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
     QString treasure_name;
     if (player->getTreasure()) treasure_name = player->getTreasure()->objectName();
 
-    const QList<int> &pile = player->getPile(pile_name);
+    QList<int> pile;
+    if (pile_name == "shown_card")
+        pile = player->getShownHandcards();
+    else
+        pile = player->getPile(pile_name);
+
     if (pile.size() == 0) {
         if (_m_privatePiles.contains(pile_name)) {
             delete _m_privatePiles[pile_name];
@@ -384,6 +389,8 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
             button->setObjectName(pile_name);
             if (treasure_name == pile_name)
                 button->setProperty("treasure", "true");
+            else if (pile_name == "shown_card")
+                button->setProperty("shown_card", "true");
             else
                 button->setProperty("private_pile", "true");
             QGraphicsProxyWidget *button_widget = new QGraphicsProxyWidget(_getPileParent());
@@ -403,6 +410,8 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
         menu = new QMenu(button);
         if (treasure_name == pile_name)
             menu->setProperty("treasure", "true");
+        else if (pile_name == "shown_card")
+            menu->setProperty("shown_card", "true");
         else
             menu->setProperty("private_pile", "true");
 

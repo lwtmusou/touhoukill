@@ -505,7 +505,7 @@ return{
 	["@dongcha"]= "你可以发动 “洞察”， 暗置一名角色的手牌， 使 <font color=\"#00FF00\"><b>%src </b></font> 使用的 【%dest】无效。",
 	["zhuiyi"] = "追忆",
 	[":zhuiyi"] = "<font color=\"blue\"><b>锁定技，</b></font>当一名角色的明置手牌因弃置而置入弃牌堆后，你获得之。",
-	
+	["shown_card"] = "明牌",
 	
 	["yuyuko_god"] = "神 西行寺幽幽子" ,
 	["&yuyuko_god"] = "神西行寺幽幽子" ,

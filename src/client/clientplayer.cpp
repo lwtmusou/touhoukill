@@ -125,22 +125,26 @@ QTextDocument *ClientPlayer::getMarkDoc() const
 
 void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids)
 {
-    if (add)
-        piles[name].append(card_ids);
-    else {
-        foreach (int card_id, card_ids) {
-            if (piles[name].isEmpty()) break;
-            if (piles[name].contains(Card::S_UNKNOWN_CARD_ID) && !piles[name].contains(card_id))
-                piles[name].removeOne(Card::S_UNKNOWN_CARD_ID);
-            else if (piles[name].contains(card_id))
-                piles[name].removeOne(card_id);
-            else
-                piles[name].takeLast();
-        }
-    }
-
-    if (!name.startsWith("#"))
+    if (name == "shown_card")
         emit pile_changed(name);
+    else {
+        if (add)
+            piles[name].append(card_ids);
+        else {
+            foreach(int card_id, card_ids) {
+                if (piles[name].isEmpty()) break;
+                if (piles[name].contains(Card::S_UNKNOWN_CARD_ID) && !piles[name].contains(card_id))
+                    piles[name].removeOne(Card::S_UNKNOWN_CARD_ID);
+                else if (piles[name].contains(card_id))
+                    piles[name].removeOne(card_id);
+                else
+                    piles[name].takeLast();
+            }
+        }
+
+        if (!name.startsWith("#"))
+            emit pile_changed(name);
+    }
 }
 
 QString ClientPlayer::getDeathPixmapPath() const
