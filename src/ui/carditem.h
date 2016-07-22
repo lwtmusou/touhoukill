@@ -78,6 +78,10 @@ public:
     {
         _m_showFootnote = false;
     }
+    inline QString getFootnote()
+    {
+        return footnote;
+    }
 
     static CardItem *FindItem(const QList<CardItem *> &items, int card_id);
 
@@ -100,6 +104,7 @@ protected:
     QAbstractAnimation *m_currentAnimation;
     QImage _m_footnoteImage;
     bool _m_showFootnote;
+    QString footnote;
     // QGraphicsPixmapItem *_m_footnoteItem;
     QMutex m_animationMutex;
     double m_opacityAtHome;

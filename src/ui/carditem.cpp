@@ -23,6 +23,7 @@ void CardItem::_initialize()
     _m_width = G_COMMON_LAYOUT.m_cardNormalWidth;
     _m_height = G_COMMON_LAYOUT.m_cardNormalHeight;
     _m_showFootnote = true;
+    footnote = QString();
     m_isSelected = false;
     _m_isUnknownGeneral = false;
     auto_back = true;
@@ -323,5 +324,6 @@ void CardItem::setFootnote(const QString &desc)
     QPainter painter(&_m_footnoteImage);
     font.paintText(&painter, QRect(QPoint(0, 0), rect.size()),
         (Qt::AlignmentFlag)((int)Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWrapAnywhere), desc);
+    footnote = desc;
 }
 

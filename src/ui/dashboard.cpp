@@ -1304,7 +1304,8 @@ void Dashboard::onCardItemClicked()
 void Dashboard::updatePending()
 {
     foreach(CardItem *item, m_handCards) {
-        item->hideFootnote();
+        if (item->getFootnote() == Sanguosha->translate("shown_card"))
+            item->hideFootnote();
         if (Self->isShownHandcard(item->getCard()->getEffectiveId())) {
             item->setFootnote(Sanguosha->translate("shown_card"));
             item->showFootnote();
