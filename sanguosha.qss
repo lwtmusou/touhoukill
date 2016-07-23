@@ -147,3 +147,16 @@ QPushButton[treasure = true] {
     border-radius: 5px;
     color: white;
 }
+
+
+QMenu[shown_card = true] {
+    background-color: rgba(10, 22, 0, 200);
+    border-radius: 3px;
+    color: white;
+}
+
+QPushButton[shown_card = true] {
+    background-color: rgba(10, 22, 0, 200);
+    border-radius: 3px;
+    color: white;
+}
