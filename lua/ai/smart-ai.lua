@@ -11,7 +11,7 @@ math.randomseed(os.time())
 SmartAI = (require "middleclass").class("SmartAI")
 
 --original_version = "QSanguosha AI 20140901 (V1.414213562 Alpha)"
-version = "TouhouSatsu AI 20160411"
+version = "TouhouSatsu AI 20160724"
 
 
 
@@ -2468,7 +2468,7 @@ function SmartAI:filterEvent(event, player, data)
 		--盲狙？
 		local who = to[1]
 		if sgs.turncount <= 1 and lord and who and from  and sgs.evaluatePlayerRole(from) == "neutral" then
-				if  (card:isKindOf("YinlingCard") or card:isKindOf("FireAttack")
+				if  (card:isKindOf("FireAttack")
 					or ((card:isKindOf("Dismantlement") or card:isKindOf("Snatch"))
 						and not self:needToThrowArmor(who) and not who:hasSkills("tuntian+zaoxian")
 						and not (who:getCards("j"):length() > 0 and not who:containsTrick("YanxiaoCard"))
@@ -3203,11 +3203,11 @@ function SmartAI:askForNullification(trick, from, to, positive) --尼玛一把�
 
 	if self:isFriend(to) and to:hasFlag("AIGlobal_NeedToWake") then return end
 
-	if from and not from:hasSkill("jueqing") then
+	if from then
 		if (trick:isKindOf("Duel") or trick:isKindOf("FireAttack") or trick:isKindOf("AOE")) and
-			(to:hasSkill("wuyan") or (self:getDamagedEffects(to, from) and self:isFriend(to))) then
+			(self:getDamagedEffects(to, from) and self:isFriend(to)) then
 			return nil
-		end --“绝情”“无言”、决斗、火攻、AOE
+		end --原三国杀于此处考虑“绝情”“无言”、决斗、火攻、AOE
 		if (trick:isKindOf("Duel") or trick:isKindOf("AOE")) and not self:damageIsEffective(to, sgs.DamageStruct_Normal) then return nil end --决斗、AOE
 		if trick:isKindOf("FireAttack") and not self:damageIsEffective(to, sgs.DamageStruct_Fire) then return nil end --火攻
 	end
@@ -3252,8 +3252,8 @@ function SmartAI:askForNullification(trick, from, to, positive) --尼玛一把�
 					end
 				else
 					if trick:isKindOf("Snatch") then return null_card end
-					if trick:isKindOf("Duel") and not from:hasSkill("wuyan") and self:isWeak(to) then return null_card end
-					if trick:isKindOf("FireAttack") and from:objectName() ~= to:objectName() and not from:hasSkill("wuyan") then
+					if trick:isKindOf("Duel") and self:isWeak(to) then return null_card end
+					if trick:isKindOf("FireAttack") and from:objectName() ~= to:objectName() then
 						if from:getHandcardNum() > 2
 							or self:isWeak(to)
 							or to:hasArmorEffect("Vine")
@@ -3287,7 +3287,7 @@ function SmartAI:askForNullification(trick, from, to, positive) --尼玛一把�
 				end
 			end
 			--非无言来源使用多目标攻击性非延时锦囊
-			if trick:isKindOf("AOE") and not (from:hasSkill("wuyan") and not (menghuo and trick:isKindOf("SavageAssault"))) then
+			if trick:isKindOf("AOE") then
 				local lord = getLord(self.player)
 				local currentplayer = self.room:getCurrent()
 				--主公
@@ -3317,7 +3317,7 @@ function SmartAI:askForNullification(trick, from, to, positive) --尼玛一把�
 				end
 			end
 			--非无言来源对自己使用决斗
-			if trick:isKindOf("Duel") and not from:hasSkill("wuyan") then
+			if trick:isKindOf("Duel") then
 				if self.player:objectName() == to:objectName() then
 					if self:hasSkills(sgs.masochism_skill, self.player) and
 						(self.player:getHp() > 1 or self:getCardsNum("Peach") > 0 or self:getCardsNum("Analeptic") > 0) then
@@ -5899,40 +5899,6 @@ function SmartAI:aoeIsEffective(card, to, source)
 		return false
 	end
 
-	if source:hasSkill("noswuyan") or to:hasSkill("noswuyan") then
-		return false
-	end
-
-	if (source:hasSkill("wuyan") and to:hasSkill("wuyan")) and not source:hasSkill("jueqing") then
-		return false
-	end
-
-	if card:isKindOf("SavageAssault") then
-		if to:hasSkill("huoshou") or to:hasSkill("juxiang") then
-			return false
-		end
-	end
-
-	if to:getMark("@late") > 0 then
-		return false
-	end
-
-	if to:hasSkill("danlao") and #players > 2 then
-		return false
-	end
-
-	local liuxie = self.room:findPlayerBySkillName("huangen")
-	if liuxie and liuxie:getHp() > 0 and #players > 2 then
-		local friends = self:getFriends(liuxie)
-		self:sort(friends, "defense")
-		local n = math.min(liuxie:getHp(), #friends)
-		if n > 0 then
-			for i = 1, n, 1 do
-				if to:objectName() == friends[i]:objectName() then return false end
-			end
-		end
-	end
-
 	if not self:hasTrickEffective(card, to, source) or not self:damageIsEffective(to, sgs.DamageStruct_Normal, source) then
 		return false
 	end
@@ -6212,25 +6178,6 @@ function SmartAI:getAoeValue(card, player)
 		end
 	end
 
-	if isEffective_E + isEffective_F > 1 then
-		for _, player in sgs.qlist(self.room:getAlivePlayers()) do
-			if player:hasSkill("huangen") then
-				if self:isFriend(player, attacker) then
-					if player:getHp() >= #self:getFriendsNoself(attacker) then
-						good = good + 300
-					else
-						good = good + player:getHp() * 50
-					end
-				elseif self:isEnemy(player, attacker) then
-					if player:getHp() >= #self:getEnemies(attacker) then
-						bad = bad + 300
-					else
-						bad = bad + player:getHp() * 50
-					end
-				end
-			end
-		end
-	end
 
 	local enemy_number = 0
 	for _, player in sgs.qlist(self.room:getOtherPlayers(attacker)) do
@@ -6387,24 +6334,6 @@ function SmartAI:hasTrickEffective(card, to, from)
 		end
 	end
 
-	if to:objectName() ~= from:objectName() then
-		if from:hasSkill("noswuyan") or to:hasSkill("noswuyan") then
-			if card:isKindOf("TrickCard") and not card:isKindOf("DelayedTrick") then
-				return false
-			end
-		end
-	end
-
-	if to:hasSkills("wuyan|hongyan") and card:isKindOf("Lightning") then return false end
-
-	if (from:hasSkill("wuyan") or to:hasSkill("wuyan")) and not from:hasSkill("jueqing") then
-		if card:isKindOf("TrickCard") and
-			(card:isKindOf("Duel") or card:isKindOf("FireAttack") or card:isKindOf("Drowning")
-			or card:isKindOf("ArcheryAttack") or card:isKindOf("SavageAssault")) then
-			return false
-		end
-	end
-
 	local nature = sgs.DamageStruct_Normal
 	if card:isKindOf("FireAttack") then nature = sgs.DamageStruct_Fire end
 
@@ -6460,12 +6389,6 @@ function SmartAI:useTrickCard(card, use)
 
 		local menghuo = nil
 		if card:isKindOf("SavageAssault") then menghuo = self.room:findPlayerBySkillName("huoshou") end
-		if self.player:hasSkill("noswuyan")
-			or (self.player:hasSkill("wuyan") and not self.player:hasSkill("jueqing")
-				and not (menghuo and (not menghuo:hasSkill("wuyan") or menghuo:hasSkill("jueqing")) and avail > 1)
-				) then
-			if self.player:hasSkill("huangen") and self.player:getHp() > 0 and avail > 1 and avail_friends > 0 then use.card = card else return end
-		end
 
 		local mode = global_room:getMode()
 		if mode:find("p") and mode >= "04p" then
