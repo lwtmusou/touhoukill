@@ -229,21 +229,6 @@ function sgs.getDefenseSlash(player, self)
 	local jink = sgs.cloneCard("jink")
 	if player:isCardLimited(jink, sgs.Card_MethodUse) then defense = 0 end
 
-	if player:hasFlag("QianxiTarget") then
-		local red = player:getMark("@qianxi_red") > 0
-		local black = player:getMark("@qianxi_black") > 0
-		if red then
-			if player:hasSkill("qingguo") or (player:hasSkill("longhun") and player:isWounded()) then
-				defense = defense - 1
-			else
-				defense = 0
-			end
-		elseif black then
-			if player:hasSkill("qingguo") then
-				defense = defense - 1
-			end
-		end
-	end
 
 	defense = defense + math.min(player:getHp() * 0.45, 10)
 
@@ -1240,7 +1225,7 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 		end
 		if self.player:getHandcardNum() == 1 and self:needKongcheng() then return getJink() end
 		if not self:hasLoseHandcardEffective() and not self.player:isKongcheng() then return getJink() end
-		if target:hasSkill("mengjin") and not (target:hasSkill("nosqianxi") and target:distanceTo(self.player) == 1) then
+		if target:hasSkill("mengjin") then
 			if self:doNotDiscard(self.player, "hes", true) then return getJink() end
 			if self.player:getCards("hes"):length() == 1 and not self.player:getArmor() then return getJink() end
 			if self.player:hasSkills("jijiu|qingnang") and self.player:getCards("hes"):length() > 1 then return "." end
@@ -1250,24 +1235,24 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 				return "."
 			end
 		end
-		if not (target:hasSkill("nosqianxi") and target:distanceTo(self.player) == 1) then
-			if target:hasWeapon("Axe") then
-				if target:hasSkills(sgs.lose_equip_skill) and target:getEquips():length() > 1 and target:getCards("hes"):length() > 2 then return "." end
-				if target:getHandcardNum() - target:getHp() > 2 and not self:isWeak() and not self:getOverflow() then return "." end
-			--elseif target:hasWeapon("Blade") then
-			--  if slash:isKindOf("NatureSlash") and self.player:hasArmorEffect("Vine")
-			--      or self.player:hasArmorEffect("RenwangShield")
-			--      or self:hasEightDiagramEffect()
-			--      or self:hasHeavySlashDamage(target, slash)
-			--      or (self.player:getHp() == 1 and #self.friends_noself == 0) then
-			--  elseif (self:getCardsNum("Jink") <= getCardsNum("Slash", target, self.player) or self.player:hasSkill("qingnang")) and self.player:getHp() > 1
-			--          or self.player:hasSkill("jijiu") and getKnownCard(self.player, self.player, "red") > 0
-			--          or self:canUseJieyuanDecrease(target)
-			--      then
-			--      return "."
-			--  end
-			end
+
+		if target:hasWeapon("Axe") then
+			if target:hasSkills(sgs.lose_equip_skill) and target:getEquips():length() > 1 and target:getCards("hes"):length() > 2 then return "." end
+			if target:getHandcardNum() - target:getHp() > 2 and not self:isWeak() and not self:getOverflow() then return "." end
+		--elseif target:hasWeapon("Blade") then
+		--  if slash:isKindOf("NatureSlash") and self.player:hasArmorEffect("Vine")
+		--      or self.player:hasArmorEffect("RenwangShield")
+		--      or self:hasEightDiagramEffect()
+		--      or self:hasHeavySlashDamage(target, slash)
+		--      or (self.player:getHp() == 1 and #self.friends_noself == 0) then
+		--  elseif (self:getCardsNum("Jink") <= getCardsNum("Slash", target, self.player) or self.player:hasSkill("qingnang")) and self.player:getHp() > 1
+		--          or self.player:hasSkill("jijiu") and getKnownCard(self.player, self.player, "red") > 0
+		--          or self:canUseJieyuanDecrease(target)
+		--      then
+		--      return "."
+		--  end
 		end
+		
 	end
 	return getJink() --or "."
 end
@@ -1317,9 +1302,7 @@ function SmartAI:canHit(to, from, conservative)
 		if card:isRed() then hasRed = true end
 		if card:isBlack() then hasBlack = true end
 	end
-	--if to:hasFlag("dahe") and not hasHeart then return true end
-	if to:getMark("@qianxi_red") > 0 and not hasBlack then return true end
-	if to:getMark("@qianxi_black") > 0 and not hasRed then return true end
+
 	if not conservative and self:hasHeavySlashDamage(from, nil, to) then conservative = true end
 	if not conservative and from:hasSkill("moukui") then conservative = true end
 	if not conservative and self:hasEightDiagramEffect(to) and not IgnoreArmor(from, to) then return false end

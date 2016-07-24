@@ -459,12 +459,6 @@ function SmartAI:assignKeep(num, start)
 		end
 	end
 
-		for _, enemy in ipairs(self.enemies) do
-			if enemy:hasSkill("nosqianxi") and enemy:distanceTo(self.player) == 1 then
-				self.keepdata.Jink = 6
-			end
-		end
-
 		if self:isWeak() then
 			for _, ap in sgs.qlist(self.room:getAlivePlayers()) do
 				if ap:hasSkill("buyi") and self:isFriend(ap) then
@@ -3621,8 +3615,6 @@ function sgs.ai_skill_cardask.nullfilter(self, data, pattern, target)
 		end
 	end
 	if effect and self:hasHeavySlashDamage(target, effect.slash, self.player) then return end
-	if target and target:hasSkill("jueqing") and self:needToLoseHp() then return "." end
-	if effect and effect.from and effect.from:hasSkill("nosqianxi") and effect.from:distanceTo(self.player) == 1 then return end
 	if not self:damageIsEffective(nil, damage_nature, target) then return "." end
 	if target and target:hasSkill("guagu") and self.player:isLord() then return "." end
 	if effect and target and target:hasWeapon("IceSword") and self.player:getCards("hes"):length() > 1 then return end
@@ -3983,7 +3975,6 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 			for _, enemy in ipairs(self.enemies) do
 				if enemy:hasWeapon("GudingBlade") and
 				(enemy:canSlash(self.player) or enemy:hasSkill("shensu") or enemy:hasSkill("wushen") or enemy:hasSkill("jiangchi")) then return end
-				if enemy:canSlash(self.player, nil, true) and enemy:hasSkill("nosqianxi") and enemy:distanceTo(self.player) == 1 then return end
 			end
 		end
 	end
@@ -5028,9 +5019,6 @@ function SmartAI:getDamagedEffects(to, from, slash)
 	to = to or self.player
 
 	if slash then
-		if from:hasSkill("nosqianxi") and from:distanceTo(to) == 1 and not self:isFriend(from, to) then
-			return false
-		end
 		if from:hasWeapon("IceSword") and to:getCards("hes"):length() > 1 and not self:isFriend(from, to) then
 			return false
 		end
@@ -6947,7 +6935,6 @@ function SmartAI:dontRespondPeachInJudge(judge)
 		local target = sgs.shaoying_target
 		if target:hasArmorEffect("Vine") and target:getHp() > 3 or target:getHp() > 2 then return true end
 	elseif judge.reason == "tieji" then return true
-	elseif judge.reason == "nosqianxi" or judge.reason == "qianxi" then return true
 	elseif judge.reason == "beige" then return true
 	end
 
