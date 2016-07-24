@@ -6064,11 +6064,8 @@ function SmartAI:getAoeValueTo(card, to, from)
 				if to:hasSkill("tanlan") and self:isEnemy(to) and not from:isKongcheng() then value = value + 10 end
 			end
 		end
-
 	else
 		value = value + 10
-		if to:hasSkill("juxiang") and not card:isVirtualCard() then value = value + 20 end
-		if to:hasSkill("danlao") and self.player:aliveCount() > 2 then value = value + 20 end
 	end
 	value=value + self:touhouGetAoeValueTo(card, to, from)
 	return value
