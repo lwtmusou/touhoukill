@@ -4,7 +4,6 @@ function SmartAI:canAttack(enemy, attacker, nature)
 	local damage = 1
 	if nature == sgs.DamageStruct_Fire and not enemy:hasArmorEffect("SilverLion") then
 		if enemy:hasArmorEffect("Vine") then damage = damage + 1 end
-		if enemy:getMark("@gale") > 0 then damage = damage + 1 end
 	end
 	if #self.enemies == 1 then return true end
 	if self:getDamagedEffects(enemy, attacker) or (self:needToLoseHp(enemy, attacker, false, true) and #self.enemies > 1) or not sgs.isGoodTarget(enemy, self.enemies, self) then return false end
@@ -87,10 +86,6 @@ function sgs.isGoodTarget(player, targets, self, isSlash)
 		return true
 	end
 
-	if player:hasSkill("hunzi") and player:getMark("hunzi") == 0 and player:isLord() and player:getHp() == 2 and sgs.current_mode_players["loyalist"] > 0 then
-		return false
-	end
-
 	if m_skill and sgs.isGoodHp(player) then
 		return false
 	else
@@ -108,8 +103,6 @@ function sgs.getDefenseSlash(player, self)
 	local knownJink = getKnownCard(player, attacker, "Jink", true)
 
 	if sgs.card_lack[player:objectName()]["Jink"] == 1 and knownJink == 0 then defense = 0 end
-
-
 
 	defense = defense + knownJink * 1.2
 
@@ -229,7 +222,6 @@ function sgs.getDefenseSlash(player, self)
 	local jink = sgs.cloneCard("jink")
 	if player:isCardLimited(jink, sgs.Card_MethodUse) then defense = 0 end
 
-
 	defense = defense + math.min(player:getHp() * 0.45, 10)
 
 	if attacker then
@@ -242,7 +234,6 @@ function sgs.getDefenseSlash(player, self)
 		if player:hasSkill("jieming") then defense = defense + 4 end
 		if player:hasSkill("yiji") then defense = defense + 4 end
 		if player:hasSkill("guixin") then defense = defense + 4 end
-		if player:hasSkill("yuce") then defense = defense + 2 end
 	end
 
 	if not sgs.isGoodTarget(player) then defense = defense + 10 end
@@ -463,7 +454,7 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 	self.equipsToDec = 0
 	if not eff then return false end
 
-	if (to:hasArmorEffect("Vine") or to:getMark("@gale") > 0) and self:getCardId("FireSlash") and slash:isKindOf("ThunderSlash") and self:objectiveLevel(to) >= 3 then
+	if to:hasArmorEffect("Vine") and self:getCardId("FireSlash") and slash:isKindOf("ThunderSlash") and self:objectiveLevel(to) >= 3 then
 		 return false
 	end
 
@@ -576,7 +567,7 @@ function SmartAI:isPriorFriendOfSlash(friend, card, source)
 			and (self:findLeijiTarget(friend, 50, source)
 				or (friend:isLord() and source:hasSkill("guagu") and friend:getLostHp() >= 1 and getCardsNum("Jink", friend, source) == 0)
 				or (friend:hasSkill("jieming") and source:hasSkill("nosrende") and (huatuo and self:isFriend(huatuo, source)))
-				or (friend:hasSkill("hunzi") and friend:getHp() == 2 and self:getDamagedEffects(friend, source))) then
+				) then
 		return true
 	end
 	if card:isKindOf("NatureSlash") and friend:isChained() and self:isGoodChainTarget(friend, source, nil, nil, card) then return true end
@@ -1362,9 +1353,6 @@ function SmartAI:useCardPeach(card, use)
 		return
 	end
 
-	if self.player:hasSkill("longhun") and not self.player:isLord() and
-		math.min(self.player:getMaxCards(), self.player:getHandcardNum()) + self.player:getCards("e"):length() > 3 then return end
-
 	local peaches = 0
 	local cards = self.player:getHandcards()
 	local lord= getLord(self.player)
@@ -1373,9 +1361,6 @@ function SmartAI:useCardPeach(card, use)
 	for _,card in ipairs(cards) do
 		if isCard("Peach", card, self.player) then peaches = peaches + 1 end
 	end
-
-	if self.player:isLord() and (self.player:hasSkill("hunzi") and self.player:getMark("hunzi") == 0)
-		and self.player:getHp() < 4 and self.player:getHp() > peaches then return end
 
 	if (self.player:hasSkill("nosrende") or (self.player:hasSkill("rende") and not self.player:hasUsed("RendeCard"))) and self:findFriendsByType(sgs.Friend_Draw) then return end
 
@@ -1412,11 +1397,6 @@ function SmartAI:useCardPeach(card, use)
 			mustusepeach = true
 			break
 		end
-	end
-
-	local jinxuandi = self.room:findPlayerBySkillName("wuling")
-	if jinxuandi and jinxuandi:getMark("@water") > 0 and self.player:getLostHp() >= 2 then
-		mustusepeach = true
 	end
 
 	if self.player:getHp() == 1 and not (lord and self:isFriend(lord) and lord:getHp() < 2 and self:isWeak(lord)) then
@@ -2697,7 +2677,6 @@ function SmartAI:getValuableCard(who)
 
 	local equips = sgs.QList2Table(who:getEquips())
 	for _,equip in ipairs(equips) do
-		if who:hasSkill("longhun") and not equip:getSuit() == sgs.Card_Diamond then return equip:getEffectiveId() end
 		if self:hasSkills("guose|yanxiao", who) and equip:getSuit() == sgs.Card_Diamond then  return equip:getEffectiveId() end
 		if who:hasSkill("baobian") and who:getHp() <= 2 then return  equip:getEffectiveId() end
 		if self:hasSkills("qixi|duanliang|yinling|guidao", who) and equip:isBlack() then  return equip:getEffectiveId() end
@@ -4083,10 +4062,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 				end
 			elseif card:isKindOf("FireAttack") and self:hasTrickEffective(card, enemy, self.player) then
 				local FFF
-				local jinxuandi = self.room:findPlayerBySkillName("wuling")
-				if jinxuandi and jinxuandi:getMark("@fire") > 0 then FFF = true end
-				if self.player:hasSkill("shaoying") then FFF = true end
-				if enemy:getHp() == 1 or enemy:hasArmorEffect("Vine") or enemy:getMark("@gale") > 0 then FFF = true end
+				if enemy:getHp() == 1 or enemy:hasArmorEffect("Vine") then FFF = true end
 				if FFF then
 					local suits= {}
 					local suitnum = 0
