@@ -652,9 +652,6 @@ function SmartAI:getUseValue(card)
 		if card:isKindOf("Duel") then v = v + self:getCardsNum("Slash") * 2 end
 		if self.player:hasSkill("nosjizhi") then v = v + 4 end
 		if self.player:hasSkill("jizhi") then v = v + 3 end
-		if self.player:hasSkill("wumou") and card:isNDTrick() and not card:isKindOf("AOE") then
-			if not (card:isKindOf("Duel") and self.player:hasUsed("WuqianCard")) then v = 1 end
-		end
 	end
 
 	if self:hasSkills(sgs.need_kongcheng) then
@@ -3181,16 +3178,9 @@ function SmartAI:askForNullification(trick, from, to, positive) --尼玛一把�
 		end
 	end
 
-	local menghuo = self.room:findPlayerBySkillName("huoshou") --祸首
 	if null_card then null_card = sgs.Card_Parse(null_card) else return nil end --没有无懈可击
 	if self.player:isLocked(null_card) then return nil end
 	if (from and from:isDead()) or (to and to:isDead()) then return nil end --已死
-	if self.player:hasSkill("wumou") then
-		if self.player:getMark("@wrath") == 0 and (self:isWeak() or self.player:isLord()) then return nil end
-		if to:objectName() == self.player:objectName() and not self:isWeak() and (trick:isKindOf("AOE") or trick:isKindOf("Duel") or trick:isKindOf("FireAttack")) then
-			return
-		end
-	end
 
 
 	if trick:isKindOf("FireAttack") then
@@ -3642,7 +3632,6 @@ function sgs.ai_skill_cardask.nullfilter(self, data, pattern, target)
 	if target and self:needDeath() then return "." end
 	if self:needBear() and self.player:getHp() > 2 then return "." end
 	if self.player:hasSkill("zili") and not self.player:hasSkill("paiyi") and self.player:getLostHp() < 2 then return "." end
-	if self.player:hasSkill("wumou") and self.player:getMark("@wrath") < 7 and self.player:getHp() > 2 then return "." end
 
 	if self.player:hasSkill("longhun") and self.player:getHp() > 1 then
 		return "."
@@ -6065,11 +6054,6 @@ function SmartAI:getAoeValue(card, player)
 		return goodnull - null_num - badnull >= 2
 	end
 
-	if card:isKindOf("SavageAssault") then
-		local menghuo = self.room:findPlayerBySkillName("huoshou")
-		attacker = menghuo or attacker
-	end
-
 	local isEffective_F, isEffective_E = 0, 0
 	for _, friend in ipairs(self:getFriendsNoself(attacker)) do
 		good = good + self:getAoeValueTo(card, friend, attacker)
@@ -6128,9 +6112,6 @@ function SmartAI:getAoeValue(card, player)
 	if attacker:hasSkills("shenfen+kuangbao") then
 		forbid_start = false
 		good = good + 3 * enemy_number
-		if not attacker:hasSkill("wumou") then
-			good = good + 3 * enemy_number
-		end
 		if self.player:getMark("@wrath") > 0 then
 			good = good + enemy_number
 		end
@@ -6290,10 +6271,6 @@ function SmartAI:useTrickCard(card, use)
 	if self.player:hasSkill("ytchengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 then return end
 	if self:needBear() and not ("amazing_grace|ex_nihilo|snatch|iron_chain|collateral"):match(card:objectName()) then return end
 	if self:touhouNeedBear(card) and not ("amazing_grace|ex_nihilo|snatch|iron_chain|collateral"):match(card:objectName()) then  return end
-	if self.player:hasSkill("wumou") and self.player:getMark("@wrath") < 7 then
-		if not (card:isKindOf("AOE") or card:isKindOf("DelayedTrick") or card:isKindOf("IronChain") or card:isKindOf("Drowning"))
-			and not (card:isKindOf("Duel") and self.player:getMark("@wrath") > 0) then return end
-	end
 	if self:needRende() and not card:isKindOf("ExNihilo") then return end
 	if card:isKindOf("AOE") then
 		local others = self.room:getOtherPlayers(self.player)
@@ -6308,9 +6285,6 @@ function SmartAI:useTrickCard(card, use)
 			end
 		end
 		if avail < 1 then return end
-
-		local menghuo = nil
-		if card:isKindOf("SavageAssault") then menghuo = self.room:findPlayerBySkillName("huoshou") end
 
 		local mode = global_room:getMode()
 		if mode:find("p") and mode >= "04p" then

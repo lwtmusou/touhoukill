@@ -2146,9 +2146,9 @@ sgs.ai_skill_cardask.aoe = function(self, data, pattern, target, name)
 	local aoe
 	if type(data) == "userdata" then aoe = data:toCardEffect().card else aoe = sgs.cloneCard(name) end
 	assert(aoe ~= nil)
-	local menghuo = self.room:findPlayerBySkillName("huoshou")
+
 	local attacker = target
-	if menghuo and aoe:isKindOf("SavageAssault") then attacker = menghuo end
+
 	--***东方杀先定义一个预估伤害
 	local fakeDamage=sgs.DamageStruct()
 	fakeDamage.card=aoe
