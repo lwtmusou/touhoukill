@@ -132,7 +132,7 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 		return false
 	end
 
-	if target:hasArmorEffect("SilverLion") and not (self.player:hasWeapon("QinggangSword") or self.player:hasSkill("jueqing")) then
+	if target:hasArmorEffect("SilverLion") and not self.player:hasWeapon("QinggangSword") then
 		return
 	end
 
@@ -474,8 +474,6 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 	source = source or self.player
 	nature = nature or sgs.DamageStruct_Fire
 
-	if source:hasSkill("jueqing") then return not self:isFriend(who, source) end
-
 	damagecount = damagecount or 1
 	if slash and slash:isKindOf("Slash") then
 		nature = slash:isKindOf("FireSlash") and sgs.DamageStruct_Fire
@@ -639,7 +637,6 @@ function SmartAI:useCardIronChain(card, use)
 
 	local chainSelf = (not use.current_targets or not table.contains(use.current_targets, self.player:objectName()))
 						and (self:needToLoseHp(self.player) or self:getDamagedEffects(self.player)) and not self.player:isChained()
-						and not self.player:hasSkill("jueqing")
 						and (self:getCardId("FireSlash") or self:getCardId("ThunderSlash") or
 							(self:getCardId("Slash") and (self.player:hasWeapon("Fan") or self.player:hasSkill("lihuo")))
 						or (self:getCardId("FireAttack") and self.player:getHandcardNum() > 2))
@@ -774,21 +771,20 @@ function SmartAI:useCardFireAttack(fire_attack, use) --ÄáÂê ³Ô¾Æ+»ð¹¥+¶ªÉ± È»ºó¶
 			return false
 		end
 		local damage = 1
-		if not self.player:hasSkill("jueqing") and not enemy:hasArmorEffect("SilverLion") then
+		if not enemy:hasArmorEffect("SilverLion") then
 			if enemy:hasArmorEffect("Vine") then damage = damage + 1 end
 			if enemy:getMark("@gale") > 0 then damage = damage + 1 end
 		end
-		if not self.player:hasSkill("jueqing") and enemy:hasSkill("mingshi") and self.player:getEquips():length() <= enemy:getEquips():length() then
+		if enemy:hasSkill("mingshi") and self.player:getEquips():length() <= enemy:getEquips():length() then
 			damage = damage - 1
 		end
 		return self:objectiveLevel(enemy) > 3 and damage > 0 and not enemy:isKongcheng() and not self.room:isProhibited(self.player, enemy, fire_attack)
 				and self:damageIsEffective(enemy, sgs.DamageStruct_Fire, self.player) and not self:cantbeHurt(enemy, self.player, damage)
 				and self:hasTrickEffective(fire_attack, enemy)
 				and sgs.isGoodTarget(enemy, self.enemies, self)
-				and (self.player:hasSkill("jueqing")
-					or (not (enemy:hasSkill("jianxiong") and not self:isWeak(enemy))
+				and (not (enemy:hasSkill("jianxiong") and not self:isWeak(enemy))
 						and not (self:getDamagedEffects(enemy, self.player))
-						and not (enemy:isChained() and not self:isGoodChainTarget(enemy))))
+						and not (enemy:isChained() and not self:isGoodChainTarget(enemy)))
 	end
 
 	local enemies, targets = {}, {}
@@ -811,7 +807,7 @@ function SmartAI:useCardFireAttack(fire_attack, use) --ÄáÂê ³Ô¾Æ+»ð¹¥+¶ªÉ± È»ºó¶
 
 	if (not use.current_targets or not table.contains(use.current_targets, self.player:objectName()))
 		and self.role ~= "renegade" and can_FireAttack_self and self.player:isChained() and self:isGoodChainTarget(self.player)
-		and self.player:getHandcardNum() > 1 and not self.player:hasSkill("jueqing") and not self.player:hasSkill("mingshi")
+		and self.player:getHandcardNum() > 1 and not self.player:hasSkill("mingshi")
 		and not self.room:isProhibited(self.player, self.player, fire_attack)
 		and self:damageIsEffective(self.player, sgs.DamageStruct_Fire, self.player) and not self:cantbeHurt(self.player)
 		and self:hasTrickEffective(fire_attack, self.player)
@@ -844,11 +840,11 @@ function SmartAI:useCardFireAttack(fire_attack, use) --ÄáÂê ³Ô¾Æ+»ð¹¥+¶ªÉ± È»ºó¶
 			if enemy:hasArmorEffect("Vine") then damage = damage + 1 end
 			if enemy:getMark("@gale") > 0 then damage = damage + 1 end
 		end
-		if not self.player:hasSkill("jueqing") and enemy:hasSkill("mingshi") and self.player:getEquips():length() <= enemy:getEquips():length() then
+		if enemy:hasSkill("mingshi") and self.player:getEquips():length() <= enemy:getEquips():length() then
 			damage = damage - 1
 		end
 		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName()))
-			and not self.player:hasSkill("jueqing") and self:damageIsEffective(enemy, sgs.DamageStruct_Fire, self.player) and damage > 1 then
+			and self:damageIsEffective(enemy, sgs.DamageStruct_Fire, self.player) and damage > 1 then
 			if not table.contains(targets, enemy) then table.insert(targets, enemy) end
 		end
 	end

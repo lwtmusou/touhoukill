@@ -337,12 +337,11 @@ function sgs.getDefense(player, gameProcess)
 		if player:hasSkill("leiji") then defense = defense + 0.4 end
 		if player:hasSkill("nosleiji") then defense = defense + 0.4 end
 		if player:hasSkill("noszhenlie") then defense = defense + 0.2 end
-		if player:hasSkill("hongyan") then defense = defense + 0.2 end
 	end
 
 	if player:hasSkills("tuntian+zaoxian") then defense = defense + player:getHandcardNum() * 0.4 end
 	if player:hasSkill("aocai") and player:getPhase() == sgs.Player_NotActive then defense = defense + 0.3 end
-	if (attacker and not attacker:hasSkill("jueqing")) or gameProcess then
+	if attacker or gameProcess then
 		local m = sgs.masochism_skill:split("|")
 		for _, masochism in ipairs(m) do
 			if player:hasSkill(masochism) and sgs.isGoodHp(player) then
@@ -763,7 +762,7 @@ function SmartAI:getDynamicUsePriority(card)
 	if card:isKindOf("DelayedTrick") and not card:isKindOf("YanxiaoCard") and #card:getSkillName() > 0 then
 		return (sgs.ai_use_priority[card:getClassName()] or 0.01) - 0.01
 	end
-	if self.player:hasSkill("danshou") and not self.player:hasSkill("jueqing")
+	if self.player:hasSkill("danshou") 
 		and (card:isKindOf("Slash") or card:isKindOf("Duel") or card:isKindOf("AOE")
 			or sgs.dynamic_value.damage_card[card:getClassName()]) then
 		return 0
@@ -3633,7 +3632,6 @@ function sgs.ai_skill_cardask.nullfilter(self, data, pattern, target)
 	end
 	if effect and self:hasHeavySlashDamage(target, effect.slash, self.player) then return end
 	if target and target:hasSkill("jueqing") and self:needToLoseHp() then return "." end
-	if target and target:hasSkill("jueqing") then return end
 	if effect and effect.from and effect.from:hasSkill("nosqianxi") and effect.from:distanceTo(self.player) == 1 then return end
 	if not self:damageIsEffective(nil, damage_nature, target) then return "." end
 	if target and target:hasSkill("guagu") and self.player:isLord() then return "." end
@@ -3645,13 +3643,7 @@ function sgs.ai_skill_cardask.nullfilter(self, data, pattern, target)
 	if self:needBear() and self.player:getHp() > 2 then return "." end
 	if self.player:hasSkill("zili") and not self.player:hasSkill("paiyi") and self.player:getLostHp() < 2 then return "." end
 	if self.player:hasSkill("wumou") and self.player:getMark("@wrath") < 7 and self.player:getHp() > 2 then return "." end
-	--[[if self.player:hasSkill("tianxiang") then
-		local dmgStr = {damage = 1, nature = damage_nature or sgs.DamageStruct_Normal}
-		local willTianxiang = sgs.ai_skill_use["@@tianxiang"](self, dmgStr, sgs.Card_MethodDiscard)
-		if willTianxiang ~= "." then return "." end
-	elseif self.player:hasSkill("longhun") and self.player:getHp() > 1 then
-		return "."
-	end]]
+
 	if self.player:hasSkill("longhun") and self.player:getHp() > 1 then
 		return "."
 	end
@@ -3797,58 +3789,25 @@ function SmartAI:hasHeavySlashDamage(from, slash, to, getValue)
 	slash = slash or self:getCard("Slash", from)--东方函数不能用 问题因该是这里，，，
 	to = to or self.player
 	if not from or not to then self.room:writeToConsole(debug.traceback()) return false end
-	if not from:hasSkill("jueqing") and (to:hasArmorEffect("SilverLion") and not IgnoreArmor(from, to)) then
+	if (to:hasArmorEffect("SilverLion") and not IgnoreArmor(from, to)) then
 		if getValue then return 1
 		else return false end
 	end
 
-	--if self:touhouDamage(slash,from,to) >1 then
-		--只是东方杀体系下已经判定为重伤害的可以返回
-		--其他调用hasHeavySlashDamage的地方没有给slash??
-	--  return true
-	--end
 	local dmg = 1
 
 	local fireSlash = slash and (slash:isKindOf("FireSlash") or
 		(slash:objectName() == "slash" and (from:hasWeapon("Fan") or (from:hasSkill("lihuo") and not self:isWeak(from)))))
 	local thunderSlash = slash and slash:isKindOf("ThunderSlash")
-	local jinxuandi = self.room:findPlayerBySkillName("wuling")
-
-	if jinxuandi and jinxuandi:getMark("@fire") > 0 then
-		fireSlash = true
-		thunderSlash = false
-	end
-
 	if (slash and slash:hasFlag("drank")) then
 		dmg = dmg + 1
 	elseif from:getMark("drank") > 0 then
 		dmg = dmg + from:getMark("drank")
 	end
-	if from:hasFlag("luoyi") then dmg = dmg + 1 end
-	if from:hasFlag("neoluoyi") then dmg = dmg + 1 end
-	--if slash and from:hasSkill("jie") and slash:isRed() then dmg = dmg + 1 end
-	if slash and from:hasSkill("wenjiu") and slash:isBlack() then dmg = dmg + 1 end
-	if slash and from:hasFlag("shenli") and from:getMark("@struggle") > 0 then dmg = dmg + math.min(3, from:getMark("@struggle")) end
 
-	if not from:hasSkill("jueqing") then
-		if from:hasSkill("anjian") and not to:inMyAttackRange(from) then dmg = dmg + 1 end
-
-		local guanyu = self.room:findPlayerBySkillName("zhongyi")
-		if guanyu and guanyu:getPile("loyal"):length() > 0 and self:isFriend(guanyu, from) then dmg = dmg + 1 end
-
-		if to:hasArmorEffect("Vine") and not IgnoreArmor(from, to) and fireSlash then dmg = dmg + 1 end
-		if to:getMark("@gale") > 0 and fireSlash then dmg = dmg + 1 end
-		if fireSlash and jinxuandi and jinxuandi:getMark("@wind") > 0 then dmg = dmg + 1 end
-		if thunderSlash and jinxuandi and jinxuandi:getMark("@thunder") > 0 then dmg = dmg + 1 end
-		if from:hasWeapon("GudingBlade") and slash and to:isKongcheng() then dmg = dmg + 1 end
-		if from:hasSkill("jieyuan") and to:getHp() >= from:getHp() and from:getHandcardNum() >= 3 then dmg = dmg + 1 end
-		if to:hasSkill("jieyuan") and from:getHp() >= to:getHp()
-			and (to:getHandcardNum() > 3 or (getKnownCard(to, from, "heart") + getKnownCard(to, from, "diamond")) > 0)
-		then
-			dmg = dmg - 1
-		end
-		if (fireSlash or thunderSlash) and jinxuandi and jinxuandi:getMark("@earth") > 0 and dmg > 1 then dmg = 1 end
-	end
+	if to:hasArmorEffect("Vine") and not IgnoreArmor(from, to) and fireSlash then dmg = dmg + 1 end
+	if from:hasWeapon("GudingBlade") and slash and to:isKongcheng() then dmg = dmg + 1 end
+	
 	if getValue then return dmg end
 	return (dmg > 1)
 end
@@ -5035,20 +4994,7 @@ function SmartAI:damageIsEffective(to, nature, from)
 	to = to or self.player
 	from = from or self.room:getCurrent()
 	nature = nature or sgs.DamageStruct_Normal
-	--“不灭”比绝情优先
-	--if to:hasSkill("bumie") and to:getHp()==1 then
-	--  return false
-	--end
-	if from:hasSkill("jueqing") then return true end
-	--[[if to:hasSkill("jingdian")  and nature == sgs.DamageStruct_Thunder then
-		return false
-	end
-	if to:hasSkill("bingpo")  and to:getHp()==1 and not nature == sgs.DamageStruct_Fire  then
-		return false
-	end
-	if to:hasSkill("micai") and to:isKongcheng() then
-		return false
-	end]]
+
 	local jinxuandi = self.room:findPlayerBySkillName("wuling")
 	if jinxuandi and jinxuandi:getMark("@fire") > 0 then nature = sgs.DamageStruct_Fire end
 
@@ -5091,7 +5037,6 @@ end
 function SmartAI:getDamagedEffects(to, from, slash)
 	from = from or self.room:getCurrent()
 	to = to or self.player
-	if from:hasSkill("jueqing") then return false end
 
 	if slash then
 		if from:hasSkill("nosqianxi") and from:distanceTo(to) == 1 and not self:isFriend(from, to) then
@@ -6031,38 +5976,18 @@ function SmartAI:getAoeValueTo(card, to, from)
 			end
 		end
 
-		if not from:hasSkill("jueqing") then
-			if self.room:getMode() ~= "06_3v3" and self.room:getMode() ~= "06_XMode" then
-				if to:getHp() == 1 and isLord(from) and sgs.evaluatePlayerRole(to) == "loyalist" and self:getCardsNum("Peach") == 0 then
-					value = value - from:getCardCount() * 20
-				end
+		
+		if self.room:getMode() ~= "06_3v3" and self.room:getMode() ~= "06_XMode" then
+			if to:getHp() == 1 and isLord(from) and sgs.evaluatePlayerRole(to) == "loyalist" and self:getCardsNum("Peach") == 0 then
+				value = value - from:getCardCount() * 20
 			end
+		end
 
-			if to:getHp() > 1 then
-				if to:hasSkill("quanji") then value = value + 10 end
-				if to:hasSkill("langgu") and self:isEnemy(to, from) then value = value - 15 end
-
-				if to:hasSkill("jianxiong") then
-					value = value + ((card:isVirtualCard() and card:subcardsLength()*10) or 10)
-				end
-				if to:hasSkills("fenyong+xuehen") and to:getMark("@fenyong") == 0 then
-					value = value + 30
-				end
-
-				if to:hasSkill("shenfen") and to:hasSkill("kuangbao") then
-					value = value + math.min(25, to:getMark("@wrath")*5)
-				end
-
-				if to:hasSkill("beifa") and to:getHandcardNum() == 1 and self:needKongcheng(to) then
-					if sj_num == 1 or getCardsNum("Nullification", to, from) == 1 then
-						value = value + 20
-					elseif self:getKnownNum(to) < 1 then
-						value = value + 5
-					end
-				end
-
-				if to:hasSkill("tanlan") and self:isEnemy(to) and not from:isKongcheng() then value = value + 10 end
+		if to:getHp() > 1 then
+			if to:hasSkill("jianxiong") then
+				value = value + ((card:isVirtualCard() and card:subcardsLength()*10) or 10)
 			end
+			if to:hasSkill("tanlan") and self:isEnemy(to) and not from:isKongcheng() then value = value + 10 end
 		end
 	else
 		value = value + 10
@@ -6731,16 +6656,12 @@ end
 function SmartAI:needToLoseHp(to, from, isSlash, passive, recover)
 	from = from or self.room:getCurrent()
 	to = to or self.player
-	if isSlash and not from:hasSkill("jueqing") then
-		if from:hasSkill("nosqianxi") and from:distanceTo(to) == 1 and not self:isFriend(from, to) then
-			return false
-		end
+	if isSlash then
 		if from:hasWeapon("IceSword") and to:getCards("hes"):length() > 1 and not self:isFriend(from, to) then
 			return false
 		end
 	end
 	if self:hasHeavySlashDamage(from, nil, to) then return false end
-	if from:hasSkill("jueqing") and self:hasSkills(sgs.masochism_skill, to) then return false end
 	if to:hasSkill("pudu") and not recover then return false end
 	local n = getBestHp(to)
 
@@ -8056,7 +7977,6 @@ end
 function SmartAI:cantbeHurt(player, from, damageNum)
 	from = from or self.player
 	damageNum = damageNum or 1
-	if from:hasSkill("jueqing") then return false end
 	local maxfriendmark = 0
 	local maxenemymark = 0
 	local dyingfriend = 0
