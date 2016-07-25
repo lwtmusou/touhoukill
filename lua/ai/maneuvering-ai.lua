@@ -105,8 +105,7 @@ function sgs.ai_armor_value.Vine(player, self)
 	if player:isChained() and (not self:isGoodChainTarget(player, self.player, nil, nil, fslash) or not self:isGoodChainTarget(player, self.player, nil, nil, tslash)) then return -2 end
 
 	for _, enemy in ipairs(self:getEnemies(player)) do
-		if (enemy:canSlash(player) and enemy:hasWeapon("Fan")) or self:hasSkills("huoji|zonghuo", enemy)
-		  or (enemy:hasSkill("yeyan") and enemy:getMark("@flame") > 0) then return -2 end
+		if (enemy:canSlash(player) and enemy:hasWeapon("Fan")) or self:hasSkills("huoji|zonghuo", enemy) then return -2 end
 		if getKnownCard(enemy, player, "FireSlash", true) >= 1 or getKnownCard(enemy, player, "FireAttack", true) >= 1 or
 			getKnownCard(enemy, player, "Fan") >= 1 then return -2 end
 	end
@@ -118,14 +117,12 @@ end
 function SmartAI:shouldUseAnaleptic(target, slash)
 	if sgs.turncount <= 1 and self.role == "renegade" and sgs.isLordHealthy() and self:getOverflow() < 2 then return false end
 	if target:hasSkill("xuying") then return false end
-	--【冰魄】对策
-	local fakeDamage=sgs.DamageStruct()
-	fakeDamage.card=slash
-	fakeDamage.nature= self:touhouDamageNature(slash,self.player,target)
-	fakeDamage.damage=2
-	fakeDamage.from=self.player
-	fakeDamage.to=target
-	local fakeDamage1 = fakeDamage
+	--默认杀的effective 已经check过了？
+	
+	
+	--造伤估值  关联技能 例如冰魄
+	--还缺判断是否需要主动使用damageEffect 如神隐
+	local fakeDamage = sgs.DamageStruct(slash, self.player, target, 2, self:touhouDamageNature(slash,self.player,target))
 	if not self:touhouNeedAvoidAttack(fakeDamage,self.player,target) or fakeDamage.damage<2 then
 		return false
 	end
@@ -155,7 +152,6 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 		return false
 	end
 
-	if target:hasSkill("zhenlie") then return false end
 	if target:hasSkill("zheshe") and target:canDiscard(target, "hs") then return false end
 	if target:hasSkill("xiangle") then
 		local basicnum = 0
@@ -169,10 +165,6 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 		if blacknum < 3 then return false end
 	end
 
-	local hcard = target:getHandcardNum()
-	if self.player:hasSkill("liegong") and self.player:getPhase() == sgs.Player_Play and (hcard >= self.player:getHp() or hcard <= self.player:getAttackRange()) then return true end
-	if self.player:hasSkill("kofliegong") and self.player:getPhase() == sgs.Player_Play and hcard >= self.player:getHp() then return true end
-	--if self.player:hasSkill("tieji") then return true end
 	if self.player:hasWeapon("Blade") and self:invokeTouhouJudge() then return true end
 	if self.player:hasFlag("zuiyue") then return true end
 	--勇仪主动吃酒

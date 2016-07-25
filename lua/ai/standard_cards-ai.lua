@@ -147,19 +147,13 @@ function sgs.getDefenseSlash(player, self)
 	if hasEightDiagram then
 		defense = defense + 1.3
 		if player:hasSkill("tiandu") then defense = defense + 0.6 end
-		if player:hasSkill("gushou") then defense = defense + 0.4 end
 		if player:hasSkill("leiji") then defense = defense + 0.4 end
-		if player:hasSkill("noszhenlie") then defense = defense + 0.2 end
-		if player:hasSkill("hongyan") then defense = defense + 0.2 end
 	end
 
 	if player:hasSkill("mingzhe") and getCardsNum("Jink", player) >= 1 then
 		defense = defense + 0.2
 	end
 
-	if player:hasSkill("gushou") and getCardsNum("Jink", player) >= 1 then
-		defense = defense + 0.2
-	end
 
 	if player:hasSkill("tuntian") and player:hasSkill("zaoxian") and getCardsNum("Jink", player) >= 1 then
 		defense = defense + 1.5
@@ -487,13 +481,6 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 			return nature ~= sgs.DamageStruct_Normal or (can_convert and (from:hasWeapon("Fan") or (from:hasSkill("lihuo") and not self:isWeak(from))))
 		end
 	end
-	-- 收到0伤害防止伤害时
-	local fakeDamage=sgs.DamageStruct()
-	fakeDamage.card=slash
-	fakeDamage.nature= self:touhouDamageNature(slash,from,to)
-	fakeDamage.damage=1
-	fakeDamage.from=from
-	fakeDamage.to=to
 
 	if to:hasSkill("xuying") and to:getHandcardNum() > 0 then return true end
 	if to:hasSkill("zhengti") then--严格来讲应该往后挪
@@ -508,8 +495,13 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 			end
 		end
 	end
-	if self:touhouDamage(fakeDamage,from,to).damage<=0  then
-		if not self:touhouDamageEffect(fakeDamage,from,to) then
+	
+	
+	-- 收到0伤害防止伤害时
+	local fakeDamage = sgs.DamageStruct(slash, from, to, 1, self:touhouDamageNature(slash, from, to))
+	if self:touhouDamage(fakeDamage,from,to).damage <= 0 then
+		local effect, willEffect = self:touhouDamageEffect(fakeDamage,from,to)
+		if not effect then
 			return false
 		end
 	end
@@ -2112,21 +2104,12 @@ sgs.ai_skill_cardask.aoe = function(self, data, pattern, target, name)
 
 	local attacker = target
 
-	--***东方杀先定义一个预估伤害
-	local fakeDamage=sgs.DamageStruct()
-	fakeDamage.card=aoe
-	fakeDamage.nature= sgs.DamageStruct_Normal
-	fakeDamage.damage=1
-	fakeDamage.from=attacker
-	fakeDamage.to=self.player
-	--****
 
 	if not self:damageIsEffective(nil, nil, attacker) then return "." end
 	--if self:getDamagedEffects(self.player, attacker) or self:needToLoseHp(self.player, attacker) then return "." end
-
-
-	if not self:touhouDamageEffect(fakeDamage,attacker,self.player)
-	and (self:getDamagedEffects(self.player, attacker) or self:needToLoseHp(self.player, attacker)) then return "." end
+	local fakeDamage=sgs.DamageStruct(aoe, attacker, self.player, self:touhouDamageNature(aoe, attacker, self.player))
+	local effect, willEffect = self:touhouDamageEffect(fakeDamage,attacker,self.player)
+	if not effect and (self:getDamagedEffects(self.player, attacker) or self:needToLoseHp(self.player, attacker)) then return "." end
 
 	---*******东方杀相关
 	--收到aoe 0伤害 不用出杀闪

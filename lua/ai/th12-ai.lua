@@ -838,14 +838,9 @@ sgs.ai_skill_use_func.NuhuoCard=function(card,use,self)
 	for _,p in sgs.qlist(others) do
 		if  self.player:inMyAttackRange(p)
 		and self:canAttack(p) and self.player:canSlash(p,slash,true)  then
-			local fakeDamage=sgs.DamageStruct()
-			fakeDamage.card=slash
-			fakeDamage.nature= self:touhouDamageNature(slash,self.player,p)
-			fakeDamage.damage=1
-			fakeDamage.from=self.player
-			fakeDamage.to=p
-
-			if p:hasSkill("xuying") or self:touhouDamage(fakeDamage,self.player,p).damage>0   or self:touhouDamageEffect(fakeDamage,self.player,p) then
+			local fakeDamage=sgs.DamageStruct(slash, self.player, p, 1, self:touhouDamageNature(slash, self.player, p))
+			local effect, willEffect = self:touhouDamageEffect(fakeDamage, self.player, p)
+			if p:hasSkill("xuying") or self:touhouDamage(fakeDamage,self.player,p).damage>0   or effect then
 				if self:isEnemy(p) then
 					table.insert(targets,p)
 				end
@@ -881,13 +876,9 @@ sgs.ai_skill_playerchosen.nuhuo = function(self, targets)
 	self:sort(target_table,"hp")
 	for _,p in pairs (target_table) do
 		if self:isEnemy(p) and self:canAttack(p,source) then
-			local fakeDamage=sgs.DamageStruct()
-			fakeDamage.card=slash
-			fakeDamage.nature= self:touhouDamageNature(slash,source,p)
-			fakeDamage.damage=1
-			fakeDamage.from=source
-			fakeDamage.to=p
-			if p:hasSkill("xuying") or self:touhouDamage(fakeDamage,source,p).damage>0   or self:touhouDamageEffect(fakeDamage,source,p) then
+			local fakeDamage=sgs.DamageStruct(slash, source, p, 1, self:touhouDamageNature(slash, source, p))
+			local effect, willEffect = self:touhouDamageEffect(fakeDamage, source, p)
+			if p:hasSkill("xuying") or self:touhouDamage(fakeDamage,source,p).damage>0   or effect then
 				return p
 			end
 		end
@@ -900,13 +891,9 @@ sgs.ai_playerchosen_intention.nuhuo =function(self, from, to)
 	for _,p in sgs.qlist(self.room:getOtherPlayers(source)) do
 		if source:canSlash(p,slash,true) and not self:isFriend(p,to) then
 			-- and self:canAttack(p,source)
-			local fakeDamage=sgs.DamageStruct()
-			fakeDamage.card=slash
-			fakeDamage.nature= self:touhouDamageNature(slash,source,p)
-			fakeDamage.damage=1
-			fakeDamage.from=source
-			fakeDamage.to=p
-			if p:hasSkill("xuying") or self:touhouDamage(fakeDamage,source,p).damage>0   or self:touhouDamageEffect(fakeDamage,source,p) then
+			local fakeDamage=sgs.DamageStruct(slash, source, p, 1, self:touhouDamageNature(slash, source, p))
+			local effect, willEffect = self:touhouDamageEffect(fakeDamage, source, p)
+			if p:hasSkill("xuying") or self:touhouDamage(fakeDamage,source,p).damage>0   or effect then
 				sgs.updateIntention(from, to, 10)
 				break
 			end

@@ -312,7 +312,7 @@ function sgs.getDefense(player, gameProcess)
 		return sgs.ai_defense[player:objectName()]
 	end
 	--local defense = math.min(sgs.getValue(player), player:getHp() * 3)
-	local handcard = (player:getMark("yijue") > 0) and 0 or player:getHandcardNum()
+	local handcard = player:getHandcardNum()
 	if player:hasSkill("shanji") then
 		handcard = handcard+player:getPile("piao"):length()
 	end
@@ -333,10 +333,8 @@ function sgs.getDefense(player, gameProcess)
 	if hasEightDiagram then
 		defense = defense + 1.3
 		if player:hasSkill("tiandu") then defense = defense + 0.6 end
-		if player:hasSkill("gushou") then defense = defense + 0.4 end
 		if player:hasSkill("leiji") then defense = defense + 0.4 end
 		if player:hasSkill("nosleiji") then defense = defense + 0.4 end
-		if player:hasSkill("noszhenlie") then defense = defense + 0.2 end
 	end
 
 	if player:hasSkills("tuntian+zaoxian") then defense = defense + player:getHandcardNum() * 0.4 end
@@ -3154,17 +3152,14 @@ function SmartAI:askForNullification(trick, from, to, positive) --尼玛一把�
 	if current:isAlive() and current:hasSkill("souji") and self:isEnemy(current) then
 		return false
 	end
-	if trick:isKindOf("AOE") or trick:isKindOf("Duel") or trick:isKindOf("FireAttack") then
-		local dummy_damage=sgs.DamageStruct(trick, from, to, 1, sgs.DamageStruct_Normal)
+	
+	if self:touhouIsDamageCard(trick) then
+		local dummy_damage = sgs.DamageStruct(trick, from, to, 1, sgs.DamageStruct_Normal)
 		if trick:isKindOf("FireAttack") then
 			dummy_damage.nature= sgs.DamageStruct_Fire
 		end
-		local final_damage=self:touhouDamage(dummy_damage,from, to)
-		if final_damage.damage<=0 then
-			if self:touhouDamageEffect(dummy_damage,from,to) and self:isEnemy(from,to) then
-			else
-				return false
-			end
+		if not self:touhouNeedAvoidAttack(dummy_damage, from, to) then
+			return false
 		end
 	end
 
@@ -5908,7 +5903,6 @@ function SmartAI:getAoeValueTo(card, to, from)
 			if self:hasSkills("mingzhe|gushou", to) then value = value + 8 end
 			if to:hasSkill("xiaoguo") then value = value - 4 end
 		elseif card:isKindOf("SavageAssault") and sj_num >= 1 then
-			if to:hasSkill("gushou") then value = value + 8 end
 			if to:hasSkill("xiaoguo") then value = value - 4 end
 		end
 
@@ -6090,6 +6084,11 @@ function SmartAI:getAoeValue(card, player)
 	if xiahou and self:isEnemy(xiahou) and xiahou:getMark("YanyuDiscard2") > 0 then bad = bad + 50 end
 
 	for _, target in sgs.qlist(self.room:getOtherPlayers(attacker)) do
+		local fakeDamage = sgs.DamageStruct(card, attacker, target, 1, self:touhouDamageNature(card, attacker, target))
+		local effect, willEffect = self:touhouDamageEffect(fakeDamage,from,to)
+		if effect then
+			good = good + 60
+		end
 		if self:touhouCardAttackWaste(card,attacker,target) then
 			if self:isFriend(attacker,target) then
 				good= good+80
@@ -6204,14 +6203,8 @@ function SmartAI:hasTrickEffective(card, to, from)
 	end
 	--**东方杀相关
 	if card:isKindOf("Duel") or card:isKindOf("FireAttack")  then
-		local fakeDamage=sgs.DamageStruct()
-		fakeDamage.card=card
-		fakeDamage.nature= self:touhouDamageNature(card,from,to)
-		fakeDamage.damage=1
-		fakeDamage.from=from
-		fakeDamage.to=to
-		if self:touhouDamage(fakeDamage,from,to).damage<1
-		and not self:touhouDamageEffect(fakeDamage,from,to) then
+		local fakeDamage = sgs.DamageStruct(card, from, to, 1, self:touhouDamageNature(card,from,to))
+		if not self:touhouNeedAvoidAttack(fakeDamage, from, to, true) then
 			return false
 		end
 	end
@@ -7124,44 +7117,52 @@ function SmartAI:touhouDamageInflicted(damage,from,to)
 	return damage
 end
 --东方杀相关
---造成伤害时有取消伤害的
---【冻结】【死蝶】【神隐】【理智】
+--造成伤害时有特殊效果的情况
 function SmartAI:touhouDamageEffect(damage,from,to)
-	if to:hasSkill("huanmeng") then return false end
-	if not from then return false end
+	if not from or not to then return false, false end
+	if to:hasSkill("huanmeng") then return false, false end
+	local hasEffect = false
+	local willUse = true
+	--有时间需要好好整理willuse的情况
+	
+
 	if damage.card and damage.card:isKindOf("Slash") then
 		if from:hasSkill("dongjie") then
-			return true
+			--第四个参数ignoreDamageEffect 一定要是true 否则无限嵌套
+			if (damage.damage >= to:getHp() and self:isEnemy(from, to)) then
+				willUse = not self:touhouNeedAvoidAttack(damage, from, to, true)
+			end
+			return true, willUse
 		end
 		if self:sidieEffect(from) then
-			return true
+			return true, willUse
 		end
 		if from:hasWeapon("IceSword") and not to:isNude() then
-			return true
+			return true, willUse
 		end
 	end
 	if from:hasSkill("lizhi") then
-		return true
+		return true, willUse
 	end
 	if from:hasSkill("shenyin") and not to:isNude() then
-		return true
+		return true, willUse
 	end
 	if from:hasSkill("huanming")  and from:getMark("huanming") == 0 then
 		if  not self:isFriend(from,to) and to:getHp() > from:getHp() then
-			return true
+			return true, willUse
 		end
 	end
 	if from:hasSkill("zuosui")  then
 		if self:isFriend(from,to) then
 			if to:getCards("hes"):length()<=4 then
-				return true
+				return true, willUse
 			end
 		else
-			return true
+			return true, willUse
 		end
 
 	end
-	return false
+	return false, willUse
 end
 
 
@@ -7423,21 +7424,6 @@ function SmartAI:touhouGetAoeValueTo(card, to, from)
 			end
 		end
 	end
-
-	local fakeDamage=sgs.DamageStruct()
-	fakeDamage.card=slash
-	fakeDamage.nature= sgs.DamageStruct_Normal
-	fakeDamage.damage=1
-	fakeDamage.from=from
-	fakeDamage.to=to
-
-
-	if self:touhouDamage(fakeDamage,from,to) ==0  then
-		if self:touhouDamageEffect(fakeDamage,from,to) and not self:isFriend(to,from) then
-		else
-			value = value + 60
-		end
-	end
 	return value
 end
 
@@ -7537,9 +7523,9 @@ function SmartAI:touhouNeedAvoidAttack(damage,from,to,ignoreDamageEffect, damage
 	if to:hasSkill("xuying") and to:getHandcardNum() > 0 and damage.card and damage.card:isKindOf("Slash") then return true end
 	ignoreDamageEffect = ignoreDamageEffect or false
 	damageStep = damageStep or 1
-	local effect = false
+	local effect, willEffect = false, false
 	if not ignoreDamageEffect then
-		effect = self:touhouDamageEffect(damage,from,to)
+		effect, willEffect = self:touhouDamageEffect(damage,from,to)
 		if from and effect and self:isFriend(from,to) then
 			return false
 		end
@@ -7552,7 +7538,7 @@ function SmartAI:touhouNeedAvoidAttack(damage,from,to,ignoreDamageEffect, damage
 			return false
 		end
 	else
-		recover=self:touhouRecoverAfterAttack(real_damage,to)
+		local recover = self:touhouRecoverAfterAttack(real_damage, to)
 		if not effect and to:getHp() <= to:getHp()-real_damage.damage+recover then
 			return false
 		end

@@ -965,13 +965,10 @@ end
 sgs.ai_skill_choice.yushou = function(self, choices)
 	local target =self.player:getTag("yushou_target"):toPlayer()
 	if not target then return "cancel" end
-	local fakeDamage=sgs.DamageStruct()
-	fakeDamage.card = nil
-	fakeDamage.nature = sgs.DamageStruct_Normal
-	fakeDamage.damage = 1
-	fakeDamage.from = self.player
-	fakeDamage.to = target
-	if self:touhouDamageEffect(fakeDamage, self.player, target) then
+
+	local fakeDamage=sgs.DamageStruct(nil, self.player, target, 1, sgs.DamageStruct_Normal)
+	local effect, willEffect = self:touhouDamageEffect(fakeDamage, self.player, target)
+	if effect then
 		return "damage"
 	end
 	if target and self:isEnemy(target) then

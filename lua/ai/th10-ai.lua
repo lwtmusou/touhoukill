@@ -843,7 +843,8 @@ sgs.ai_damage_prohibit.zhongyan = function(self, from, to, damage)
 		return false
 	end
 	if (from:getLostHp()>=2 or from:getHp()<=1)  then
-		if not self:touhouDamageEffect(damage,from,to) then
+		local effect, willEffect = self:touhouDamageEffect(damage,from,to)
+		if not effect then
 			return true
 		end
 	end

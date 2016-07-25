@@ -1047,7 +1047,8 @@ sgs.ai_damage_prohibit.qingyu = function(self, from, to, damage)
 	if self:isFriend(from,to) then return false end
 	local num = self:qingyuNum(to)
 	if num < 5 then return false end
-	if self:touhouDamageEffect(damage,from,to) then
+	local effect, willEffect = self:touhouDamageEffect(damage,from,to)
+	if effect then
 		return false
 	end
 	return true

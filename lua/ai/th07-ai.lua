@@ -398,8 +398,8 @@ sgs.ai_slash_prohibit.hesheng = function(self, from, to, card)
 		end
 	end
 	if prevent then
-		local damage=sgs.DamageStruct(card, from, to,self:touhouDamageNature(card,from,to))
-		local slash_effect=self:touhouDamageEffect(damage,from,to)
+		local damage=sgs.DamageStruct(card, from, to, 1, self:touhouDamageNature(card,from,to))
+		local slash_effect, willEffect=self:touhouDamageEffect(damage,from,to)
 		if slash_effect then return false end
 	end
 	return prevent
