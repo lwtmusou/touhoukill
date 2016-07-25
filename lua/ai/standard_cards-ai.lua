@@ -2107,7 +2107,8 @@ sgs.ai_skill_cardask.aoe = function(self, data, pattern, target, name)
 
 	if not self:damageIsEffective(nil, nil, attacker) then return "." end
 	--if self:getDamagedEffects(self.player, attacker) or self:needToLoseHp(self.player, attacker) then return "." end
-	local fakeDamage=sgs.DamageStruct(aoe, attacker, self.player, self:touhouDamageNature(aoe, attacker, self.player))
+	
+	local fakeDamage=sgs.DamageStruct(aoe, attacker, self.player, 1, self:touhouDamageNature(aoe, attacker, self.player))
 	local effect, willEffect = self:touhouDamageEffect(fakeDamage,attacker,self.player)
 	if not effect and (self:getDamagedEffects(self.player, attacker) or self:needToLoseHp(self.player, attacker)) then return "." end
 
