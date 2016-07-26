@@ -762,12 +762,10 @@ public:
             if (!wound)
                 return QList<SkillInvokeDetail>();
 
-            QList<SkillInvokeDetail> d;
             foreach (Player::Place place, move.from_places) {
                 if (place == Player::PlaceEquip)
-                    d << SkillInvokeDetail(this, ko, ko);
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, ko, ko);
             }
-            return d;
         }
 
         return QList<SkillInvokeDetail>();
