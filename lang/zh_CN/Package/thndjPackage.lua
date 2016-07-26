@@ -75,7 +75,7 @@ return{
 	["#renko_ndj"] = "科学少女" ,
 	["illustrator:renko_ndj"] = "年代记",
 	["liangzi"]= "量子",
-	[":liangzi"]= "<font color=\"blue\"><b>锁定技，</b></font>当你使用或打出一张基本牌后，你选择一项：横置，或重置。",
+	[":liangzi"]= "<font color=\"blue\"><b>锁定技，</b></font>当你使用或打出基本牌后，你选择一项：横置，或重置。",
 	["kexue"] = "科学",
 	[":kexue"] = "若你处于连环状态，你于出牌阶段空闲时间点使用【杀】时无距离限制，且可以额外指定任意数量的其他角色为目标。",
 
