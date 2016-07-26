@@ -1262,7 +1262,12 @@ public:
         ServerPlayer *player = invoke->invoker;
         room->touhouLogmessage("#TriggerSkill", player, objectName());
         room->notifySkillInvoked(player, objectName());
-        DummyCard dummy(move.card_ids);
+        QList <int> ids;
+        foreach(int id, move.card_ids) {
+            if (room->getCardPlace(id) != Player::DiscardPile)
+                ids << id;
+        }
+        
 
         move.card_ids.clear();
         move.from_places.clear();
@@ -1270,8 +1275,12 @@ public:
 
         data = QVariant::fromValue(move);
 
-        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), objectName(), "");
-        room->throwCard(&dummy, reason, NULL);
+        if (!ids.isEmpty()) {
+            DummyCard dummy(ids);
+            CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), objectName(), "");
+            room->throwCard(&dummy, reason, NULL);
+        }
+
 
 
         return false;
