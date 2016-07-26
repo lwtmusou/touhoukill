@@ -218,7 +218,7 @@ return{
 	["illustrator:shizuha_3"] = "姫神かをり",
 	["origin:shizuha_3"] = "p号：34359840，个人ID：4103725",
 	["jiliao"] = "寂寥",
-	[":jiliao"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一名角色的装备区里的所有牌返回该角色手牌。然后若该角色的手牌数大于其手牌上限，你可以弃置该角色的一张手牌。",
+	[":jiliao"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可令一名角色获得其装备区里的所有牌（可以为零），然后若其手牌数大于其手牌上限，你可以弃置其一张手牌。",
 	["jiliao:throwcard"] = "“寂寥”：<font color=\"#00FF00\"><b>%src </b></font> 的手牌数大于其手牌上限，你可以弃置其一张手牌。" ,
 	["zhongyan"] = "终焉",
 	["@zhongyan"] = "终焉",
