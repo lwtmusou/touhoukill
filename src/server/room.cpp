@@ -6179,7 +6179,7 @@ int Room::askForRende(ServerPlayer *liubei, QList<int> &cards, const QString &sk
             }
         } else {
             JsonArray arg;
-            arg << JsonUtils::toJsonArray(cards);
+            arg << JsonUtils::toJsonArray(remain_cards);
             arg << optional;
             arg << max_num;
             JsonArray player_names;
