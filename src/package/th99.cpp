@@ -308,16 +308,20 @@ void XiufuCard::use(Room *room, ServerPlayer *mori, QList<ServerPlayer *> &) con
     QList<CardsMoveStruct> exchangeMove;
     CardsMoveStruct move1(equip->getId(), target, Player::PlaceEquip, CardMoveReason(CardMoveReason::S_REASON_TRANSFER, mori->objectName()));
     exchangeMove.push_back(move1);
-    if (equipped_id != -1) {
+    //since new equip could not move into gaoao's area, the equipped one will maintain.
+    if (equipped_id != -1 && !target->hasSkill("gaoao")) {
         CardsMoveStruct move2(equipped_id, NULL, Player::DiscardPile, CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, target->objectName()));
         exchangeMove.push_back(move2);
     }
+    
+    if (!target->hasSkill("gaoao")) {
+        LogMessage zhijian;
+        zhijian.type = "$ZhijianEquip";
+        zhijian.from = target;
+        zhijian.card_str = QString::number(equip->getId());
+        room->sendLog(zhijian);
+    }
 
-    LogMessage zhijian;
-    zhijian.type = "$ZhijianEquip";
-    zhijian.from = target;
-    zhijian.card_str = QString::number(equip->getId());
-    room->sendLog(zhijian);
 
     room->moveCardsAtomic(exchangeMove, true);
 }
