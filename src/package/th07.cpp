@@ -1657,6 +1657,29 @@ public:
                 room->throwCard(trick, reason, NULL);
             }
 
+            // AmazingGrace::clearRestCards();  private function
+            //******************************
+            room->clearAG();
+            QVariantList ag_list = room->getTag("AmazingGrace").toList();
+            room->removeTag("AmazingGrace");
+            if (!ag_list.isEmpty()) {
+                DummyCard *dummy = new DummyCard(VariantList2IntList(ag_list));
+                CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString(), "amazing_grace", QString());
+                room->throwCard(dummy, reason, NULL);
+                delete dummy;
+            }
+            //******************************
+
+
+            foreach(int id, Sanguosha->getRandomCards()) {
+                if (room->getCardPlace(id) == Player::PlaceTable)
+                    room->moveCardTo(Sanguosha->getCard(id), NULL, Player::DiscardPile, true);
+                if (Sanguosha->getCard(id)->hasFlag("using"))
+                    room->setCardFlag(Sanguosha->getCard(id), "-using");
+            }
+
+
+
             invoke->invoker->addMark("siyuinvoke");
             room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
             room->notifySkillInvoked(invoke->invoker, objectName());
