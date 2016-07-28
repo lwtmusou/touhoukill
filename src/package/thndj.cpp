@@ -779,7 +779,7 @@ public:
                     card = response.m_card;
             }
             if (player && player->getPhase() == Player::Play
-                && card && card->getHandlingMethod() == Card::MethodUse) {
+                && card && card->getHandlingMethod() == Card::MethodUse && !card->isKindOf("SkillCard")) {
                 if (player->hasFlag("xiubu_first") && !player->hasFlag("xiubu_second")) {
                     QList<SkillInvokeDetail> d;
                     foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
