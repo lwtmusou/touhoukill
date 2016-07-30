@@ -1543,7 +1543,7 @@ public:
         if (use.card && (use.card->isKindOf("Slash") || use.card->isNDTrick()) && (use.card->isRed() || use.card->isBlack())) {
             if (use.from && use.from->isAlive()) {
                 foreach(ServerPlayer *p, use.to) {
-                    if (p->hasSkill(this) && !p->getPile("siling").isEmpty()) {
+                    if (p != use.from && p->hasSkill(this) && !p->getPile("siling").isEmpty()) {
                         foreach (int id, p->getPile("siling")) {
                             if (Sanguosha->getCard(id)->sameColorWith(use.card)) {
                                 d << SkillInvokeDetail(this, p, p);
