@@ -962,22 +962,23 @@ sgs.ai_skill_cardchosen.yushou = function(self, who, flags)
 	return cards[1]
 end
 
-sgs.ai_skill_choice.yushou = function(self, choices)
+sgs.ai_skill_invoke.yushou_damage = function(self,data)
 	local target =self.player:getTag("yushou_target"):toPlayer()
-	if not target then return "cancel" end
-
+	if not target then return false end
+	
 	local fakeDamage=sgs.DamageStruct(nil, self.player, target, 1, sgs.DamageStruct_Normal)
 	local effect, willEffect = self:touhouDamageEffect(fakeDamage, self.player, target)
 	if effect then
-		return "damage"
+		return true
 	end
 	if target and self:isEnemy(target) then
 		if not self:getDamagedEffects(target, self.player, false) then
-			return "damage"
+			return true
 		end
 	end
-	return "cancel"
+	return false
 end
+
 sgs.ai_use_priority.YushouCard = 8
 
 local pandu_skill = {}

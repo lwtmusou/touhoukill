@@ -212,7 +212,7 @@ return{
 	["@zhujiu"] = "你可以发动“祝酒”，交给 %src 一张牌，然后摸一张牌",
 	["yushou"] = "御兽",
 	[":yushou"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一名角色装备区里的一张装备牌置于另一名角色的装备区里（不可替换装备区里的牌），前者可以对后者造成1点伤害。",
-	["yushou:damage"] = "御兽伤害",
+    ["yushou_damage:confirm"]= "你可以通过 <font color=\"#00FF00\"><b> 御兽</b></font> ，对<font color=\"#FF8000\"><b>%src </b></font> 造成1点伤害。",
 
 --****************************
 	--wai012  势力：外 3血

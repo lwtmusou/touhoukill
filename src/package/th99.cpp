@@ -1487,7 +1487,7 @@ public:
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *to, use.to) {
                 foreach (ServerPlayer *p, room->getOtherPlayers(to)) {
-                    if (p->hasSkill(this))
+                    if (p->hasSkill(this) && !p->isNude())
                         d << SkillInvokeDetail(this, p, to);
                 }
             }
@@ -1566,7 +1566,6 @@ void YushouCard::onUse(Room *room, const CardUseStruct &card_use) const
         }
     }
     from->tag["yushou_target"] = QVariant::fromValue(to2);
-    to1->tag["yushou_target"] = QVariant::fromValue(to2);
     int card_id = room->askForCardChosen(from, to1, "e", "yushou", false, Card::MethodNone, disable);
 
     const Card *card = Sanguosha->getCard(card_id);
@@ -1574,8 +1573,9 @@ void YushouCard::onUse(Room *room, const CardUseStruct &card_use) const
         CardMoveReason(CardMoveReason::S_REASON_TRANSFER,
         from->objectName(), "yushou", QString()));
 
-    QString choice = room->askForChoice(to1, "yushou", "damage+cancel");
-    if (choice == "damage")
+    QString prompt = "confirm:" + to2->objectName();
+    to1->tag["yushou_target"] = QVariant::fromValue(to2);
+    if (to1->askForSkillInvoke("yushou_damage", prompt))
         room->damage(DamageStruct("yushou", to1, to2, 1, DamageStruct::Normal));
 
 }
