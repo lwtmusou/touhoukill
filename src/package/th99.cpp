@@ -603,7 +603,12 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         room->notifySkillInvoked(invoke->invoker, objectName());
-        invoke->targets.first()->setMark("shituPhase", 1);
+
+        //invoke->targets.first()->setMark("shituPhase", 1);
+        ExtraTurnStruct extra;
+        extra.player = invoke->targets.first();
+        extra.set_phases << Player::RoundStart << Player::Draw << Player::NotActive;
+        room->setTag("ExtraTurnStruct", QVariant::fromValue(extra));
         invoke->targets.first()->gainAnExtraTurn();
 
         return false;

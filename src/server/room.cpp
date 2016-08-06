@@ -1494,6 +1494,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
     if (card) {
         bool isHandcard = true;
+        bool isShowncard = false;
         QList<int> ids;
         if (!card->isVirtualCard()) ids << card->getEffectiveId();
         else ids = card->getSubcards();
@@ -1506,6 +1507,16 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             }
         } else {
             isHandcard = false;
+        }
+
+
+        if (!ids.isEmpty()) {
+            foreach(int id, ids) {
+                if (getCardOwner(id)->isShownHandcard(id)) {
+                    isShowncard = true;
+                    break;
+                }
+            }
         }
 
         ChoiceMadeStruct s;
@@ -1542,6 +1553,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 notifySkillInvoked(player, card->getSkillName());
             CardResponseStruct resp(card, to, method == Card::MethodUse, isRetrial, isProvision, player);
             resp.m_isHandcard = isHandcard;
+            resp.m_isShowncard = isShowncard;
             QVariant data = QVariant::fromValue(resp);
             thread->trigger(CardResponded, this, data);
             resp = data.value<CardResponseStruct>();
@@ -3425,6 +3437,13 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
         }
     } else
         card_use.m_isLastHandcard = false;
+
+    if (!ids.isEmpty()) {
+        foreach(int id, ids) {
+            if (use.from->isShownHandcard(id))
+                card_use.m_showncards << id;
+        }
+    }
 
 
     if (card_use.from->isCardLimited(card, card->getHandlingMethod())

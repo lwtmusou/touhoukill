@@ -518,3 +518,8 @@ SkillInvalidStruct::SkillInvalidStruct()
     : player(NULL), skill(NULL), invalid(false)
 {
 }
+
+ExtraTurnStruct::ExtraTurnStruct()
+    : player(NULL), set_phases(QList<Player::Phase>()), reason(QString()), extraTarget(NULL)
+{
+}

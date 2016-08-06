@@ -190,13 +190,14 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 room->setTag("FirstRound", false);
                 room->setPlayerFlag(player, "Global_FirstRound");
             }
+            
 
             LogMessage log;
             log.type = "$AppendSeparator";
             room->sendLog(log);
             room->addPlayerMark(player, "Global_TurnCount");
 
-            bool isShitu = false;
+            /*bool isShitu = false;
             if (player->getMark("shituPhase") > 0) { // for th99 shitu
                 player->setMark("shituPhase", 0);
                 isShitu = true;
@@ -205,25 +206,27 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             if (player->getMark("qinluePhase") > 0) { // for touhougod qinlue
                 player->setMark("qinluePhase", 0);
                 isQinlue = true;
-            }
+            }*/
 
+            //clear extraTurn infomation
+            QList<Player::Phase> set_phases;
+            ExtraTurnStruct extra = room->getTag("ExtraTurnStruct").value<ExtraTurnStruct>();
+            if (extra.player == player)
+                set_phases = extra.set_phases;
+            room->removeTag("ExtraTurnStruct");
+            if (extra.player != NULL && extra.player != player)
+                extra.player->tag.remove("ExtraTurnInfo");
 
             if (!player->faceUp()) {
                 room->setPlayerFlag(player, "-Global_FirstRound");
                 player->turnOver();
             } else if (player->isAlive()) {
-                if (isShitu) {
-                    QList<Player::Phase> set_phases;
-                    set_phases << Player::RoundStart << Player::Draw << Player::NotActive;
-                    player->play(set_phases);
-                } else if (isQinlue) {
-                    QList<Player::Phase> set_phases;
-                    set_phases << Player::RoundStart << Player::Play << Player::NotActive;
-                    player->play(set_phases);
-                } else
-                    player->play();
-            }
 
+                if (set_phases.isEmpty())
+                    player->play();
+                else
+                    player->play(set_phases);
+            }
             break;
         }
         case EventPhaseProceeding:

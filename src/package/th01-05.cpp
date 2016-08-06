@@ -469,14 +469,14 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
         QList<SkillInvokeDetail> d;
-        if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::Finish) {
-                QStringList choices = shiquChoices(change.player);
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *current = data.value<ServerPlayer *>();
+            if (current->getPhase() == Player::Finish && !current->tag.value("touhou-extra", false).toBool() && !room->getThread()->hasExtraTurn()) {
+                QStringList choices = shiquChoices(current);
                 if (choices.length() > 0) {
                     foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                        if (change.player->canDiscard(change.player, "hes"))
-                            d << SkillInvokeDetail(this, p, p, NULL, false, change.player);
+                        if (p->canDiscard(p, "hes"))
+                            d << SkillInvokeDetail(this, p, p, NULL, false, current);
                     }
                 }
             }
@@ -503,7 +503,6 @@ public:
     {
         QString choice = invoke->invoker->tag["shiqu"].toString();
         Player::Phase phase;
-
         if (choice == "shiqu_start")
             phase = Player::Start;
         else if (choice == "shiqu_judge")
@@ -515,8 +514,7 @@ public:
         else if (choice == "shiqu_discard")
             phase = Player::Discard;
 
-        invoke->targets.first()->skip(Player::Finish);
-
+        //invoke->targets.first()->skip(Player::Finish);
         room->notifySkillInvoked(invoke->owner, objectName());
         LogMessage log;
         log.type = "#shiqu";
@@ -526,7 +524,13 @@ public:
         log.arg2 = choice;
         room->sendLog(log);
 
+        ExtraTurnStruct extra;
+        extra.player = invoke->targets.first();
+        extra.set_phases << Player::RoundStart << phase << Player::NotActive;
+        room->setTag("ExtraTurnStruct", QVariant::fromValue(extra));
+        invoke->targets.first()->gainAnExtraTurn();
 
+        /*
         invoke->targets.first()->setPhase(phase);
         room->broadcastProperty(invoke->targets.first(), "phase");
         RoomThread *thread = room->getThread();
@@ -534,7 +538,7 @@ public:
         if (!thread->trigger(EventPhaseStart, room, t))
             thread->trigger(EventPhaseProceeding, room, t);
         thread->trigger(EventPhaseEnd, room, t);
-
+        */
         //invoke->targets.first()->setPhase(Player::??);
         //room->broadcastProperty(invoke->targets.first(), "phase");
         return false;

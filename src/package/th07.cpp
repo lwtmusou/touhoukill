@@ -1687,14 +1687,7 @@ public:
             room->touhouLogmessage("#touhouExtraTurn", invoke->invoker, objectName());
 
             invoke->invoker->gainAnExtraTurn();
-            // shitu cleanup
-            foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if (p->getMark("shituPhase") > 0)
-                    p->setMark("shituPhase", 0);
-                if (p->getMark("qinluePhase") > 0)
-                    p->setMark("qinluePhase", 0);
-            }
-            // end
+
             throw TurnBroken;
 
             Q_UNREACHABLE();

@@ -141,6 +141,13 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                         checkpoint = true;
                     } else if (!player->getPile(p).isEmpty() && player->getPile(p).contains(id)) {
                         checkpoint = true;
+                    } else if (p == "show" && card->getEffectiveId() >= 0) {
+                        foreach(int id1, player->getShownHandcards()) {
+                            if (id1 == id) {
+                                checkpoint = true;
+                                break;
+                            }
+                        }
                     }
                     if (checkpoint)
                         break;

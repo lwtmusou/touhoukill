@@ -260,8 +260,9 @@ void RoomThread::actionNormal(GameRule *game_rule)
                 if (room->isFinished())
                     break;
                 nextExtraTurnCopy->tag["touhou-extra"] = false;
+                nextExtraTurnCopy->tag.remove("ExtraTurnInfo");
                 room->setTag("touhou-extra", false);
-
+                
                 current = extraTurnReturn;
                 extraTurnReturn = NULL;
             }

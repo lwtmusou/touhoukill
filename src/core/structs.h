@@ -97,6 +97,7 @@ struct CardUseStruct
     bool m_addHistory;
     bool m_isHandcard;
     bool m_isLastHandcard;
+    QList<int> m_showncards;
     QStringList nullified_list;
 };
 
@@ -428,7 +429,7 @@ struct PhaseStruct
 struct CardResponseStruct
 {
     inline CardResponseStruct(const Card *card = NULL, ServerPlayer *who = NULL, bool isuse = false, bool isRetrial = false, bool isProvision = false, ServerPlayer *from = NULL)
-        : m_card(card), m_who(who), m_isUse(isuse), m_isRetrial(isRetrial), m_isProvision(isProvision), m_isHandcard(false), m_from(from), m_isNullified(false)
+        : m_card(card), m_who(who), m_isUse(isuse), m_isRetrial(isRetrial), m_isProvision(isProvision), m_isHandcard(false), m_from(from), m_isNullified(false),m_isShowncard(false)
     {
     }
 
@@ -440,6 +441,7 @@ struct CardResponseStruct
     bool m_isHandcard;
     ServerPlayer *m_from;
     bool m_isNullified;
+    bool m_isShowncard;
 };
 
 struct MarkChangeStruct
@@ -566,6 +568,17 @@ struct ChoiceMadeStruct
     ChoiceType type;
     QStringList args;
 };
+
+struct ExtraTurnStruct
+{
+    ExtraTurnStruct();
+
+    ServerPlayer *player;
+    QList<Player::Phase> set_phases;
+    QString reason;
+    ServerPlayer *extraTarget;//record related target  --qinlue
+};
+
 
 enum TriggerEvent
 {
@@ -699,5 +712,6 @@ Q_DECLARE_METATYPE(const Card *)
 Q_DECLARE_METATYPE(ServerPlayer *)
 Q_DECLARE_METATYPE(JudgeStruct *)
 Q_DECLARE_METATYPE(PindianStruct *)
+Q_DECLARE_METATYPE(ExtraTurnStruct)
 #endif
 
