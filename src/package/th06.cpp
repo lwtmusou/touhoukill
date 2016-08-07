@@ -1132,7 +1132,7 @@ public:
                         room->setFixedDistance(change.player, p, -1);
                         
                         QStringList assignee_list = change.player->property("extra_slash_specific_assignee").toString().split("+");
-                        assignee_list.removeOne(change.player->objectName());
+                        assignee_list.removeOne(p->objectName());
                         room->setPlayerProperty(change.player, "extra_slash_specific_assignee", assignee_list.join("+"));
                     }
                 }
