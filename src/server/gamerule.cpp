@@ -197,17 +197,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             room->sendLog(log);
             room->addPlayerMark(player, "Global_TurnCount");
 
-            /*bool isShitu = false;
-            if (player->getMark("shituPhase") > 0) { // for th99 shitu
-                player->setMark("shituPhase", 0);
-                isShitu = true;
-            }
-            bool isQinlue = false;
-            if (player->getMark("qinluePhase") > 0) { // for touhougod qinlue
-                player->setMark("qinluePhase", 0);
-                isQinlue = true;
-            }*/
-
             //clear extraTurn infomation
             QList<Player::Phase> set_phases;
             ExtraTurnStruct extra = room->getTag("ExtraTurnStruct").value<ExtraTurnStruct>();
@@ -307,10 +296,19 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     card_use = data.value<CardUseStruct>();
                 }
 
-                if (card_use.card && !(card_use.card->isVirtualCard() && card_use.card->getSubcards().isEmpty()) && !card_use.card->targetFixed() && card_use.to.isEmpty()) {
+                /*if (card_use.card && !(card_use.card->isVirtualCard() && card_use.card->getSubcards().isEmpty()) && !card_use.card->targetFixed() && card_use.to.isEmpty()) {
                     if (room->getCardPlace(card_use.card->getEffectiveId()) == Player::PlaceTable) {
                         CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
                         room->throwCard(card_use.card, reason, NULL);
+                        break;
+                    }
+                }*/
+                //1) exclude SkillCard 2)changed move reason (USE) 3)keep extraData
+                if (card_use.card && card_use.card->getTypeId() != Card::TypeSkill  && !(card_use.card->isVirtualCard() && card_use.card->getSubcards().isEmpty()) && card_use.to.isEmpty()) {
+                    if (room->getCardPlace(card_use.card->getEffectiveId()) == Player::PlaceTable) {
+                        CardMoveReason reason(CardMoveReason::S_REASON_USE, card_use.from->objectName(), QString(), card_use.card->getSkillName(), QString());
+                        reason.m_extraData = QVariant::fromValue(card_use.card);
+                        room->moveCardTo(card_use.card, card_use.from, NULL, Player::DiscardPile, reason, true);
                         break;
                     }
                 }

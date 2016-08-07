@@ -183,9 +183,8 @@ CommonTranslationTable = {
 	["#FilterJudge"] = "%from 的“%arg”效果被触发，判定牌被改变",
 	["$CancelTarget"] = "%from 使用【%arg】的目标 %to 被取消",
 	["$CancelTargetNoUser"] = "【%arg】的目标 %to 被取消",
+	["$CancelWithoutTarget"] = "%from 使用的 【%arg】被取消",-- eg.【闪】 【无懈可击】
 	["$ViewRole"] = "%from 观看了 %to 的身份 %arg",
-	["$CancelTarget"] = "%from 使用【%arg】的目标 %to 被取消",
-	["$CancelTargetNoUser"] = "【%arg】的目标 %to 被取消",
 	["#UseLuckCard"] = "%from 使用了 <font color=\"yellow\"><b>手气卡</b></font>",
 	["#ForbidExtraTurn"] = "由于场上存在其他额外回合效果， %from 的额外回合效果被防止" ,
 	["#Revive"] = "%from 复活，重新加入游戏。",

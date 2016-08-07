@@ -1276,13 +1276,18 @@ public:
         data = QVariant::fromValue(move);
 
         if (!ids.isEmpty()) {
-            DummyCard dummy(ids);
-            CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), objectName(), "");
-            room->throwCard(&dummy, reason, NULL);
+            bool isUse = ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE   && move.from != NULL);
+                DummyCard dummy(ids);
+                CardMoveReason reason(isUse ? CardMoveReason::S_REASON_USE : CardMoveReason::S_REASON_NATURAL_ENTER, 
+                    isUse ? move.from->objectName() : player->objectName(), 
+                    objectName(), QString());
+                if (isUse) {
+                    const Card *card = move.reason.m_extraData.value<const Card *>();
+                    if (card)
+                        reason.m_extraData = QVariant::fromValue(card);
+                }
+                room->throwCard(&dummy, reason, NULL);
         }
-
-
-
         return false;
     }
 };
@@ -3695,12 +3700,13 @@ public:
     {
         if (e == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
+            // SkillCard has already excluded
+            room->touhouLogmessage(use.card->isKindOf("Nullification") ? "$CancelWithoutTarget" : "$CancelTarget", use.from, use.card->objectName(), use.to);
             if (use.card->isKindOf("Nullification"))
                 room->setPlayerFlag(use.from, "nullifiationNul");
-            else {
-                use.nullified_list << "_ALL_TARGETS";
-                data = QVariant::fromValue(use);
-            }
+            else
+                use.to.clear();
+            data = QVariant::fromValue(use);
             if (!use.m_showncards.isEmpty() && !use.from->getCards("h").isEmpty()) {
                 int id = room->askForCardChosen(invoke->invoker, use.from, "h", objectName());
                 QList<int> show_ids;
@@ -3711,6 +3717,7 @@ public:
             CardResponseStruct resp = data.value<CardResponseStruct>();
             resp.m_isNullified = true;
             data = QVariant::fromValue(resp);
+            room->touhouLogmessage("$CancelWithoutTarget", resp.m_from, resp.m_card->objectName(), QList<ServerPlayer *>());
             if (resp.m_isShowncard && !resp.m_from->getCards("h").isEmpty()) {
                 int id = room->askForCardChosen(invoke->invoker, resp.m_from, "h", objectName());
                 QList<int> show_ids;
@@ -3718,6 +3725,7 @@ public:
                 resp.m_from->addToShownHandCards(show_ids);
             }
         }
+
         return false;
     }
 };

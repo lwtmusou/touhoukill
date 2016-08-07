@@ -85,6 +85,7 @@ void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     if (targets.isEmpty()) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), getSkillName(), QString());
         room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+        return;
     }
     int equipped_id = Card::S_UNKNOWN_CARD_ID;
     ServerPlayer *target = targets.first();
@@ -259,8 +260,12 @@ void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const
     RoomThread *thread = room->getThread();
     thread->trigger(PreCardUsed, room,data);
 
-    CardMoveReason reason(CardMoveReason::S_REASON_USE, use.from->objectName(), use.to.first()->objectName(), getSkillName(), QString());
-    room->moveCardTo(this, use.from, use.to.first(), Player::PlaceDelayedTrick, reason, true);
+    //CardMoveReason reason(CardMoveReason::S_REASON_USE, use.from->objectName(), use.to.first()->objectName(), getSkillName(), QString());
+    //room->moveCardTo(this, use.from, use.to.first(), Player::PlaceDelayedTrick, reason, true);
+
+    CardMoveReason reason(CardMoveReason::S_REASON_USE, use.from->objectName(), QString(), card_use.card->getSkillName(), QString());
+    CardsMoveStruct move(card_use.card->getEffectiveId(), NULL, Player::PlaceTable, reason);
+    room->moveCardsAtomic(move, true);
 
     thread->trigger(CardUsed, room, data);
     thread->trigger(CardFinished, room, data);
@@ -276,7 +281,11 @@ void DelayedTrick::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
             if (room->getCardOwner(getEffectiveId()) != source) return;
         }
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), getSkillName(), QString());
-        room->moveCardTo(this, room->getCardOwner(getEffectiveId()), NULL, Player::DiscardPile, reason, true);
+        //room->moveCardTo(this, room->getCardOwner(getEffectiveId()), NULL, Player::DiscardPile, reason, true);
+        room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+    } else {
+        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), targets.first()->objectName(), getSkillName(), QString());
+        room->moveCardTo(this, source, targets.first(), Player::PlaceDelayedTrick, reason, true);
     }
 }
 
