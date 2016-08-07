@@ -143,13 +143,7 @@ public:
                 logto.removeOne(invoke->invoker);
                 room->touhouLogmessage("#fahua_change", use.from, use.card->objectName(), logto);
 
-                if (use.card->isKindOf("DelayedTrick")) {
-                    CardsMoveStruct move;
-                    move.card_ids << use.card->getId();
-                    move.to_place = Player::PlaceDelayedTrick;
-                    move.to = p;
-                    room->moveCardsAtomic(move, true);
-                } else if (use.card->isKindOf("Collateral")) {
+                if (use.card->isKindOf("Collateral")) {
                     QList<ServerPlayer *> listt;
                     foreach (ServerPlayer *victim, room->getOtherPlayers(p)) {
                         if (p->canSlash(victim))
