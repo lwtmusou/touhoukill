@@ -703,65 +703,52 @@ class Baoyi : public TriggerSkill
 public:
     Baoyi() : TriggerSkill("baoyi")
     {
-        events << EventPhaseStart << EventPhaseEnd;
+        events << EventPhaseStart;
         view_as_skill = new BaoyiVS;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *marisa = data.value<ServerPlayer *>();
-        if (!marisa || marisa->isDead() || marisa->getPhase() != Player::Start)
-            return QList<SkillInvokeDetail>();
-        if (triggerEvent == EventPhaseStart) {
-            if (!marisa->isAllNude() && marisa->hasSkill(this))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, marisa, marisa);
-        } else if (triggerEvent == EventPhaseEnd) {
-            if (marisa->hasFlag("baoyi"))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, marisa, marisa, NULL, true);
-        }
+        if (marisa && marisa->isAlive() && marisa->getPhase() == Player::Start
+            && !marisa->isAllNude() && marisa->hasSkill(this))
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, marisa, marisa);
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        if (triggerEvent == EventPhaseStart) {
-            return room->askForUseCard(invoke->invoker, "@@baoyi", "@baoyi");
-        } else if (triggerEvent == EventPhaseEnd) {
-            invoke->invoker->setFlags("-baoyi");
-            return true;
-        }
-        return false;
+        return room->askForUseCard(invoke->invoker, "@@baoyi", "@baoyi");
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         ServerPlayer *marisa = invoke->invoker;
-        if (triggerEvent == EventPhaseStart) {
-            int num = marisa->tag["baoyi"].toInt();
-            marisa->tag.remove("baoyi");
+        int num = marisa->tag["baoyi"].toInt();
+        marisa->tag.remove("baoyi");
 
-            while (num--) {
-                QList<ServerPlayer *> listt;
-                foreach(ServerPlayer *p, room->getOtherPlayers(marisa)) {
-                    if (marisa->canSlash(p, NULL, false))
-                        listt << p;
-                }
-                if (listt.isEmpty())
-                    break;
-                ServerPlayer * target = room->askForPlayerChosen(marisa, listt, "baoyi", "@@baoyi_chosen:" + QString::number(num + 1), true, true);
-                if (target == NULL)
-                    break;
-                CardUseStruct carduse;
-                Slash *slash = new Slash(Card::NoSuit, 0);
-                //slash->deleteLater();
-                slash->setSkillName("baoyi");
-                carduse.card = slash;
-                carduse.from = marisa;
-                carduse.to << target;
-                room->useCard(carduse);
+        while (num--) {
+            QList<ServerPlayer *> listt;
+            foreach(ServerPlayer *p, room->getOtherPlayers(marisa)) {
+                if (marisa->canSlash(p, NULL, false))
+                    listt << p;
             }
-        } else if (triggerEvent == EventPhaseEnd) {
-            room->touhouLogmessage("#TouhouBuff", marisa, "baoyi");
+            if (listt.isEmpty())
+                break;
+            ServerPlayer * target = room->askForPlayerChosen(marisa, listt, "baoyi", "@@baoyi_chosen:" + QString::number(num + 1), true, true);
+            if (target == NULL)
+                break;
+            CardUseStruct carduse;
+            Slash *slash = new Slash(Card::NoSuit, 0);
+            //slash->deleteLater();
+            slash->setSkillName("baoyi");
+            carduse.card = slash;
+            carduse.from = marisa;
+            carduse.to << target;
+            room->useCard(carduse);
+        }
+        if (marisa->hasFlag("baoyi")) {
+            marisa->setFlags("-baoyi");
             marisa->drawCards(2);
         }
         return false;

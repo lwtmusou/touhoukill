@@ -148,61 +148,32 @@ class Shenpan : public TriggerSkill
 public:
     Shenpan() : TriggerSkill("shenpan")
     {
-        events << EventPhaseStart << EventPhaseEnd << EventPhaseChanging;
+        events << EventPhaseStart;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
-        if (triggerEvent == EventPhaseChanging) {
-            foreach (ServerPlayer *p, room->getAllPlayers())
-                p->tag.remove("shenpan");
-        }
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
-    {
-        if (triggerEvent == EventPhaseChanging)
-            return QList<SkillInvokeDetail>();
-
         ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->getPhase() != Player::Draw)
-            return QList<SkillInvokeDetail>();
-        if (triggerEvent == EventPhaseStart && player->hasSkill(this)) {
+        if (player && player->isAlive() && player->hasSkill(this) && player->getPhase() == Player::Draw)
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-        } else if (triggerEvent == EventPhaseEnd) {
-            ServerPlayer *target = player->tag["shenpan"].value<ServerPlayer *>();
-            if (target && target->getHandcardNum() > target->getHp())
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-        }
         return QList<SkillInvokeDetail>();
     }
 
 
-    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        if (triggerEvent == EventPhaseStart) {
-            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), objectName(), "@shenpan-select", true, true);
-            if (target) {
-                invoke->invoker->tag["shenpan"] = QVariant::fromValue(target);
-                invoke->targets << target;
-                return true;
-            }
-        } else
-            return true;
-
-        return false;
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), objectName(), "@shenpan-select", true, true);
+        if (target != NULL)
+            invoke->targets << target;
+        return target != NULL;
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        if (triggerEvent == EventPhaseStart) {
-            room->damage(DamageStruct(objectName(), invoke->invoker, invoke->targets.first(), 1, DamageStruct::Thunder));
-            return true;
-        } else {
-            room->touhouLogmessage("#TouhouBuff", invoke->invoker, objectName());
+        room->damage(DamageStruct(objectName(), invoke->invoker, invoke->targets.first(), 1, DamageStruct::Thunder));
+        if (invoke->targets.first()->isAlive() && invoke->targets.first()->getHandcardNum() > invoke->targets.first()->getHp())
             room->drawCards(invoke->invoker, 1);
-        }
-        return false;
+        return true;
     }
 };
 
