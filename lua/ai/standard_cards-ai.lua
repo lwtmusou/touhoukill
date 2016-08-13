@@ -1128,9 +1128,9 @@ end
 sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 	local function getJink()--主要是闪无效
 		--威压无效
-
 		if self:hasWeiya() then
-			if self:getCardsNum("Jink") < 2 and not (self.player:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng)) then return "." end
+			if (self:getCardsNum("Jink") < 2 or self:getCardsNum("Jink", "hs", true) < 1) 
+			and not (self.player:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng)) then return "." end
 		end
 		--天人出闪的耦合。。。
 
@@ -2119,10 +2119,10 @@ sgs.ai_skill_cardask.aoe = function(self, data, pattern, target, name)
 	end
 	if self:hasWeiya()then
 		if  not (self.player:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng)) then
-			if pattern=="jink" and self:getCardsNum("Jink") < 2 then
+			if pattern=="jink" and (self:getCardsNum("Jink") < 2 or self:getCardsNum("Jink", "hs", true) < 1) then
 				return "."
 			end
-			if pattern=="slash" and self:getCardsNum("Slash") < 2 then
+			if pattern=="slash" and (self:getCardsNum("Slash") < 2 or self:getCardsNum("Slash", "hs", true) < 1)then
 				return "."
 			end
 		end

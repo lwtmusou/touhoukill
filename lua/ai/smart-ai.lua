@@ -715,6 +715,9 @@ function SmartAI:adjustUsePriority(card, v)
 		for _, id in ipairs(id_table) do
 			if self.player:getPile("wooden_ox"):contains(id) then
 				v = v + 0.05
+				if self:hasWeiya() then
+					v = v + 0.2
+				end
 				break
 			end
 		end
@@ -3617,8 +3620,9 @@ function sgs.ai_skill_cardask.nullfilter(self, data, pattern, target)
 
 end
 
+--是否该考虑接受method信息。。。有必要区分弃置/使用
+--现有的card_lack的添加确认 也存在潜在小问题。。。
 function SmartAI:askForCard(pattern, prompt, data)
-
 	local target, target2
 	local parsedPrompt = prompt:split(":")
 	local players

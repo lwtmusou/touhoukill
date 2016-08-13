@@ -282,6 +282,22 @@ function SmartAI:hasWeiya(player)
 	return false
 end
 
+sgs.ai_skill_cardask["@weiya"] = function(self, data, pattern, target)
+	local Pattern2ClassName = {
+		["slash"] = "Slash", ["jink"] = "Jink",
+		["peach"] = "Peach", ["analeptic"] = "Analeptic",
+		["nullification"] = "Nullification"
+	}
+	if Pattern2ClassName[pattern] then
+		local cards = self.player:getHandcards()
+		for _, card in sgs.qlist(cards) do
+			if card:isKindOf(Pattern2ClassName[pattern]) then
+				return "$" .. card:getEffectiveId()
+			end
+		end
+	end
+	return "."
+end
 
 sgs.ai_skill_invoke.judu =function(self,data)
 	if not self:invokeTouhouJudge() then return false end
