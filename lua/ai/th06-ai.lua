@@ -299,26 +299,9 @@ sgs.ai_skillProperty.huisu = function(self)
 	return "cause_judge"
 end
 
-sgs.ai_skill_invoke.bolan = function(self)
-	local current = self.room:getCurrent()
-	if current and current:hasSkill("souji") and not self:isFriend(current) then
-		return self.player:getPile("yao_mark"):length() + self.player:getHandcardNum() <= self.player:getMaxHp()
-	end
-	if self.player:getPile("yao_mark"):length()>0 then
-		return true
-	else
-		if self.player:getHandcardNum()> 5 then
-			return false
-		end
-	end
-	return true
-end
+sgs.ai_skill_invoke.bolan = true
 
-
-sgs.ai_skill_discard.qiyao_got = sgs.ai_skill_discard.gamerule
-
-
-function sgs.ai_cardsview_valuable.qiyao(self, class_name, player)
+function sgs.ai_cardsview_valuable.hezhou(self, class_name, player)
 	if class_name == "Peach" then
 		if (sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE) then
 			return nil
@@ -327,16 +310,15 @@ function sgs.ai_cardsview_valuable.qiyao(self, class_name, player)
 		if self.player:getMark("Global_PreventPeach")>0 then return nil end
 
 
-		local hand_trick={}
+		local all ={}
 		local real_peach={}
-		local cards = self.player:getHandcards()
+		local cards = self.player:getCards("hes")
 		cards=self:touhouAppendExpandPileToList(self.player,cards)
-
 		for _,c in sgs.qlist(cards) do
 			if c:isKindOf("Peach") then
 				table.insert(real_peach,c)
-			elseif c:isNDTrick()then
-				table.insert(hand_trick,c)
+			else
+				table.insert(all,c)
 			end
 		end
 
@@ -344,27 +326,63 @@ function sgs.ai_cardsview_valuable.qiyao(self, class_name, player)
 			return nil
 		end
 
-		local card
-		if #hand_trick>0 then
-			self:sortByKeepValue(hand_trick)
-			card=hand_trick[1]
+		local cards = {}
+		self:sortByKeepValue(all)
+		local function isCombine(card1, card2)
+			if card1:getType() == card2:getType() then
+				return false
+			end			
+			if (card1:isKindOf("WoodenOx") and self.player:getPile("wooden_ox"):contains(card2:getId())) then
+				return false
+			elseif (card2:isKindOf("WoodenOx") and self.player:getPile("wooden_ox"):contains(card1:getId())) then
+				return false
+			end
+			return true
 		end
-		if card then
-			local suit = card:getSuitString()
-			local number = card:getNumberString()
-			local card_id = card:getEffectiveId()
-			return ("peach:qiyao[%s:%s]=%d"):format(suit, number, card_id)
+
+		for index, c in ipairs(all) do
+			for index1 = index+1, #all, 1 do
+				if (isCombine(c, all[index1])) then
+					table.insert(cards,c)
+					table.insert(cards,all[index1])
+					break
+				end
+			end
+			if #cards>0 then
+				break
+			end
+		end
+		
+		
+		if #cards == 2 then
+			local card_id1 = cards[1]:getEffectiveId()
+			local card_id2 = cards[2]:getEffectiveId()
+
+			local card_str = ("peach:%s[%s:%s]=%d+%d"):format("hezhou", "to_be_decided", 0, card_id1, card_id2)
+			return card_str
 		end
 		return nil
 	end
 end
-sgs.qiyao_keep_value = {
+sgs.hezhou_keep_value = {
 	Peach = 10,
 	TrickCard = 8
 }
-sgs.ai_cardneed.qiyao = function(to, card, self)
-	return getCardsNum("TrickCard", to, self.player) <1
-	 and card:isKindOf("TrickCard")
+sgs.ai_cardneed.hezhou = function(to, card, self)
+	local ClassName = {"TrickCard", "EquipCard", "BasicCard"}
+	for _,class in ipairs(ClassName)  do
+		if card:isKindOf(class) and getCardsNum(class, to, self.player) <1 then
+			return true
+		end
+	end
+end
+
+sgs.ai_playerchosen_intention.hezhou = -70
+sgs.ai_no_playerchosen_intention.hezhou =function(self, from)
+	local lord =self.room:getLord()
+	if lord  then
+		sgs.updateIntention(from, lord, 10)
+	end
 end
 
 

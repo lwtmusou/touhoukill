@@ -559,76 +559,61 @@ class Bolan : public TriggerSkill
 public:
     Bolan() : TriggerSkill("bolan")
     {
-        events << CardsMoveOneTime << EventPhaseChanging;
-        // Frequency = Frequent;
+        events << CardUsed << EventPhaseChanging;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseChanging){
+            foreach(ServerPlayer *p, room->getAllPlayers())
+                p->setFlags("-" + objectName());
+        }
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
-        if (triggerEvent == CardsMoveOneTime) {
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.to_place == Player::DiscardPile && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE) {
-                const Card *card = move.reason.m_extraData.value<const Card *>();
-                if (!card || !card->isNDTrick() || card->isKindOf("Nullification"))
-                    return QList<SkillInvokeDetail>();
+        if (triggerEvent != CardUsed)
+            return QList<SkillInvokeDetail>();
 
-                QList<SkillInvokeDetail> d;
-                foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->hasSkill(this)) {
-                        if (room->getCardPlace(move.card_ids.first()) == Player::DiscardPile && p != move.from)
-                            d << SkillInvokeDetail(this, p, p);
-                    }
-                }
-                return d;
-            }
-        } else if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to != Player::NotActive)
-                return QList<SkillInvokeDetail>();
-
-            QList<SkillInvokeDetail> d;
-            foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if (!p->getPile("yao_mark").isEmpty())
-                    d << SkillInvokeDetail(this, p, p, NULL, true);
-            }
-
+        CardUseStruct use = data.value<CardUseStruct>();
+        QList<SkillInvokeDetail> d;
+        if (!use.card->isNDTrick())
             return d;
+        foreach(ServerPlayer *p, room->getAllPlayers()) {
+            if (p->hasSkill(this) && p !=use.from && !p->hasFlag(objectName()))
+                d << SkillInvokeDetail(this, p, p);
         }
-
-        return QList<SkillInvokeDetail>();
+        return d;
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        if (triggerEvent == CardsMoveOneTime) {
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            const Card *card = move.reason.m_extraData.value<const Card *>();
-            QString prompt = "obtain:" + card->objectName();
-            return invoke->invoker->askForSkillInvoke(this, prompt);
-        } else if (triggerEvent == EventPhaseChanging) {
-            return true;
+        CardUseStruct use = data.value<CardUseStruct>();
+        QList<int> list = room->getNCards(2);
+        ServerPlayer *player = invoke->invoker;
+        player->setFlags(objectName());
+
+        CardsMoveStruct move(list, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, invoke->invoker->objectName(), objectName(), QString()));
+        room->moveCardsAtomic(move, true);
+
+        QList<int> able;
+        QList<int> disabled;
+        foreach(int id, list) {
+            Card *tmp_card = Sanguosha->getCard(id);
+            if (tmp_card->isKindOf("TrickCard") || use.card->getSuit() == tmp_card->getSuit())
+                able << id;
+            else
+                disabled << id;
         }
 
-        return false;
-    }
-
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        if (triggerEvent == CardsMoveOneTime) {
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            const Card *card = move.reason.m_extraData.value<const Card *>();
-            invoke->invoker->addToPile("yao_mark", card);
-        } else {
-            CardsMoveStruct move;
-            move.card_ids = invoke->invoker->getPile("yao_mark");
-            move.to_place = Player::PlaceHand;
-            move.to = invoke->invoker;
-            room->moveCardsAtomic(move, true);
-
-            room->touhouLogmessage("#bolan_Invoke", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(move.card_ids.length()));
-            int x = invoke->invoker->getHandcardNum() - invoke->invoker->getMaxHp();
-            if (x > 0)
-                room->askForDiscard(invoke->invoker, objectName(), x, x, false, false, "bolan_discard:" + QString::number(x));
+        if (!able.isEmpty()) {
+            DummyCard dummy(able);
+            room->obtainCard(player, &dummy);
+        }
+        if (!disabled.isEmpty()) {
+            CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, invoke->invoker->objectName(), objectName(), QString());
+            DummyCard dummy(disabled);
+            room->throwCard(&dummy, reason, NULL);
         }
 
         return false;
@@ -636,17 +621,32 @@ public:
 };
 
 
-class Qiyao : public OneCardViewAsSkill
+class HezhouVS : public ViewAsSkill
 {
 public:
-    Qiyao() : OneCardViewAsSkill("qiyao")
+    HezhouVS() : ViewAsSkill("hezhou")
     {
         response_or_use = true;
     }
 
-    virtual bool viewFilter(const Card *to_select) const
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
     {
-        return to_select->isNDTrick() && !to_select->isEquipped();
+        if (selected.length() == 0)
+            return true;
+        else if (selected.length() == 1) {
+            if (to_select->getTypeId() == selected.first()->getTypeId())
+                return false;
+            else {
+                QList<int> ids = Self->getPile("wooden_ox");
+                if (to_select->isKindOf("WoodenOx") && ids.contains(selected.first()->getId()))
+                    return false;
+                else if (selected.first()->isKindOf("WoodenOx") && ids.contains(to_select->getId()))
+                    return false;
+                else
+                    return true;
+            }
+        } else
+            return false;
     }
 
     virtual bool isEnabledAtPlay(const Player *) const
@@ -662,17 +662,86 @@ public:
             && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
     {
-        if (originalCard != NULL) {
-            Peach *peach = new Peach(originalCard->getSuit(), originalCard->getNumber());
-            peach->addSubcard(originalCard);
-            peach->setSkillName("qiyao");
-            return peach;
-        } else
+        if (cards.length() != 2)
             return NULL;
+        Peach *peach = new Peach(Card::SuitToBeDecided, -1);
+        peach->addSubcards(cards);
+        peach->setSkillName(objectName());
+        return peach;
     }
 };
+
+
+class Hezhou : public TriggerSkill
+{
+public:
+    Hezhou() : TriggerSkill("hezhou")
+    {
+        events << CardsMoveOneTime;
+        view_as_skill = new HezhouVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
+        if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile
+            && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE) {
+            const Card *card = move.reason.m_extraData.value<const Card *>();
+            if (card && card->getSkillName() == objectName()) {
+                foreach(int id, move.card_ids) {
+                    if (Sanguosha->getCard(id)->isKindOf("TrickCard") && room->getCardPlace(id) == Player::DiscardPile)
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+                }
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *player = invoke->invoker;
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        QString name = "";
+        foreach(int id, move.card_ids) {
+            if (Sanguosha->getCard(id)->isKindOf("TrickCard"))
+                name = Sanguosha->getCard(id)->objectName();
+        }
+        ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(),
+            "@hezhou:" + name, true, true);
+        if (target != NULL)
+            invoke->targets << target;
+        return target != NULL;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *player = invoke->invoker;
+        ServerPlayer *target = invoke->targets.first();
+
+        QList<int> ids;
+        foreach(int id, move.card_ids) {
+            if (Sanguosha->getCard(id)->isKindOf("TrickCard") && room->getCardPlace(id) == Player::DiscardPile)
+                ids << id;
+        }
+        
+        move.removeCardIds(ids);
+        data = QVariant::fromValue(move);
+
+        CardsMoveStruct mo;
+        mo.card_ids = ids;
+        mo.to = target;
+        mo.to_place = Player::PlaceHand;
+        room->moveCardsAtomic(mo, true);
+
+        return false;
+    }
+};
+
 
 class Neijin : public TriggerSkill
 {
@@ -1280,7 +1349,7 @@ TH06Package::TH06Package()
 
     General *patchouli = new General(this, "patchouli", "hmx", 3, false);
     patchouli->addSkill(new Bolan);
-    patchouli->addSkill(new Qiyao);
+    patchouli->addSkill(new Hezhou);
 
     General *meirin = new General(this, "meirin", "hmx", 4, false);
     meirin->addSkill(new Neijin);

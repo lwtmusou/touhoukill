@@ -149,7 +149,7 @@ function setInitialTables()
 						"noslijian|manjuan|tuxi|qiaobian|yongsi|zhiheng|luoshen|nosrende|rende|mingce|wansha|gongxin|jilve|anxu|" ..
 						"qice|yinling|qingcheng|houyuan|zhaoxin|shuangren"..
 						"|saiqian|qiangyu|miyao|maihuo|jiushu|weizhi|qingting|shenshou"
-	sgs.save_skill =        "jijiu|buyi|nosjiefan|chunlao|qiyao"
+	sgs.save_skill =        "jijiu|buyi|nosjiefan|chunlao|hezhou"
 	--攻击除外 --其实只有查询雷击目标用到了
 	sgs.exclusive_skill =       "huilei|duanchang|wuhun|buqu|dushi"
 	sgs.cardneed_skill =        "paoxiao|tianyi|xianzhen|shuangxiong|nosjizhi|jizhi|guose|duanliang|qixi|qingnang|yinling|luoyi|guhuo|nosguhuo|kanpo|" ..
@@ -707,7 +707,6 @@ function SmartAI:adjustUsePriority(card, v)
 	end
 	if self.player:hasSkill("mingzhe") and card:isRed() then v = v + (self.player:getPhase() ~= sgs.Player_NotActive and 0.05 or -0.05) end
 	if card:isKindOf("Peach") and card:getSkillName() == "shende" then v = v + 0.21 end
-	if card:isKindOf("Peach") and card:getSkillName() == "qiyao" then v = v + 0.21 end
 	if not self.player:getPile("wooden_ox"):isEmpty()  then  --and self.player:getMark("@tianyi_Treasure") ==0
 		local id_table = {}
 		if not card:isVirtualCard() then id_table = { card:getEffectiveId() }
@@ -1437,7 +1436,6 @@ function sgs.gameProcess(room, arg)  --尼玛 不看具体技能和牌的数量�
 			if rebel_num > 1 and aplayer:hasSkill("hpymsiyu+juhe") then rebel_value = rebel_value + 1 end
 			if aplayer:hasSkill("wuchang")  then rebel_value = rebel_value + 10 end
 			if  aplayer:hasSkill("shizhu") then rebel_value = rebel_value + 1 end
-			if  aplayer:hasSkills("bolan+qiyao") then rebel_value = rebel_value + 10 end
 		elseif role == "loyalist" or role == "lord" then
 			local loyal_hp
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then loyal_hp = 4
@@ -5514,8 +5512,6 @@ function getCardsNum(class_name, player, from)
 			return math.max(num, math.max(0, math.min(player:getCardCount(true), player:getHp() - 1)))
 		elseif player:hasSkill("shende") then
 			return num+player:getPile("shende"):length()/2
-		elseif player:hasSkill("qiyao") then
-			return num + ndtrick
 		else
 			return num
 		end
