@@ -338,9 +338,11 @@ public:
         if (player->isCardLimited(dummy_peach, Card::MethodUse))
             return false;
 
+        int peachId = -1; //force to use
         foreach (const Card *card, player->getHandcards()) {
             if (card->isKindOf("Peach")) {
                 hasPeach = true;
+                peachId = card->getEffectiveId();
                 break;
             }
         }
@@ -353,8 +355,9 @@ public:
         room->clearAG();
         while (hasPeach && victim->getHp() < 1) {
             const Card *supply_card = room->askForCard(player, "Peach|.|.|hand!", "@guizha:" + victim->objectName(), data, Card::MethodNone, victim, false, objectName(), false);
+            peachId = (supply_card != NULL) ? supply_card->getEffectiveId() : peachId;
             Peach *peach = new Peach(Card::SuitToBeDecided, -1);
-            peach->addSubcard(supply_card->getEffectiveId());
+            peach->addSubcard(peachId);
             peach->setSkillName("_guizha");
             room->useCard(CardUseStruct(peach, player, victim), false);
             if (victim->getHp() > 0) {
@@ -365,6 +368,7 @@ public:
             hasPeach = false;
             foreach (const Card *card, player->getHandcards()) {
                 if (card->isKindOf("Peach")) {
+                    peachId = card->getEffectiveId();
                     hasPeach = true;
                     break;
                 }
