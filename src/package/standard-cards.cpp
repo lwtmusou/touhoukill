@@ -950,7 +950,7 @@ void AmazingGrace::clearRestCards(Room *room) const
 
 }
 
-void AmazingGrace::doPreAction(Room *room, const CardUseStruct &) const
+void AmazingGrace::doPreAction(Room *room, const CardUseStruct &use) const
 {
     int count = room->getAllPlayers().length();
     foreach (ServerPlayer *p, room->getAllPlayers()) {
@@ -961,6 +961,8 @@ void AmazingGrace::doPreAction(Room *room, const CardUseStruct &) const
         }
     }
     QList<int> card_ids = room->getNCards(count);
+    CardsMoveStruct move(card_ids, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, use.from->objectName(), objectName(), QString()));
+    room->moveCardsAtomic(move, true);
     room->fillAG(card_ids);
     room->setTag("AmazingGrace", IntList2VariantList(card_ids));
 }

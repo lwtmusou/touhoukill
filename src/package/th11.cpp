@@ -1008,7 +1008,7 @@ public:
         events << DrawNCards;
     }
 
-    static bool do_cuiji(ServerPlayer *player)
+    static void do_cuiji(ServerPlayer *player)
     {
         Room *room = player->getRoom();
         QString choice = room->askForChoice(player, "cuiji_suit", "red+black");
@@ -1016,6 +1016,7 @@ public:
         room->touhouLogmessage("#cuiji_choice", player, "cuiji", QList<ServerPlayer *>(), choice);
         room->notifySkillInvoked(player, "cuiji");
         int acquired = 0;
+        QList<int> throwIds;
         while (acquired < 1) {
             int id = room->drawCard();
             CardsMoveStruct move(id, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, player->objectName()));
@@ -1027,13 +1028,16 @@ public:
                 acquired = acquired + 1;
                 CardsMoveStruct move2(id, player, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_GOTBACK, player->objectName()));
                 room->moveCardsAtomic(move2, false);
-            } else {
-                CardsMoveStruct move3(id, NULL, Player::DiscardPile, CardMoveReason(CardMoveReason::S_REASON_NATURAL_ENTER, ""));
-                room->moveCardsAtomic(move3, true);
-            }
-        }
-        return true;
 
+                if (!throwIds.isEmpty()) {
+                    CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), "cuiji", QString());
+                    DummyCard dummy(throwIds);
+                    room->throwCard(&dummy, reason, NULL);
+                    throwIds.clear();
+                }
+            } else
+                throwIds << id;
+        }
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
