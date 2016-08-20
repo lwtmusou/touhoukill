@@ -1512,7 +1512,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
         if (!ids.isEmpty()) {
             foreach(int id, ids) {
-                if (getCardOwner(id)->isShownHandcard(id)) {
+                ServerPlayer *shownCardOwner = getCardOwner(id);
+                if (shownCardOwner && shownCardOwner->isShownHandcard(id)) {
                     isShowncard = true;
                     break;
                 }

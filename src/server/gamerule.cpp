@@ -726,7 +726,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-            if (player) {
+            if (player != NULL) {
                 QList<int> shownIds;
                 foreach(int id, move.card_ids) {
                     if (player->isShownHandcard(id))
