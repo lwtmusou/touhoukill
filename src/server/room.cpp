@@ -4642,11 +4642,14 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
         JsonArray arg;
         arg << moveId;
         for (int i = 0; i < cards_moves.size(); i++) {
+            ServerPlayer *to = NULL;
+            foreach(ServerPlayer *player, m_players) {
+                if (player->objectName() == cards_moves[i].to_player_name) {
+                    to = player;
+                    break;
+                }
+            }
             cards_moves[i].open = forceVisible || cards_moves[i].isRelevant(player)
-                //siling add to pile
-                || (cards_moves[i].to_pile_name == "siling"  && cards_moves[i].to == player)
-                || (cards_moves[i].to_pile_name == "dream"  && cards_moves[i].to == player)
-                || (cards_moves[i].to_pile_name == "wooden_ox"  && cards_moves[i].to == player)
                 // forceVisible will override cards to be visible
                 || cards_moves[i].to_place == Player::PlaceEquip
                 || cards_moves[i].from_place == Player::PlaceEquip
@@ -4659,6 +4662,9 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                 || cards_moves[i].from_place == Player::PlaceTable
                 || cards_moves[i].to_place == Player::PlaceTable
                 // any card from/to place table should be visible
+                || (cards_moves[i].to_place == Player::PlaceSpecial
+                    && to && to->pileOpen(cards_moves[i].to_pile_name, player->objectName()))
+                // pile open to specific players
                 || player->hasFlag("Global_GongxinOperator");
                 // the player put someone's cards to the drawpile
                 //|| (player != NULL && player == dongchaer && (cards_moves[i].isRelevant(dongchaee)));

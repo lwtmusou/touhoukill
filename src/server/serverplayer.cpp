@@ -1323,11 +1323,12 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
 {
     QList<ServerPlayer *> open_players;
     if (!open) {
-        foreach (int id, card_ids) {
+        open_players << this;
+        /*foreach (int id, card_ids) {
             ServerPlayer *owner = room->getCardOwner(id);
             if (owner && !open_players.contains(owner))
                 open_players << owner;
-        }
+        }*/
     } else {
         open_players = room->getAllPlayers();
     }
