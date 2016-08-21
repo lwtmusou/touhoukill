@@ -1319,23 +1319,15 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
     return addToPile(pile_name, card_ids, open, CardMoveReason());
 }
 
-void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool open, CardMoveReason reason)
+void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool open, CardMoveReason reason, QList<ServerPlayer *> open_players)
 {
-    QList<ServerPlayer *> open_players;
-    if (!open) {
-        open_players << this;
-        /*foreach (int id, card_ids) {
-            ServerPlayer *owner = room->getCardOwner(id);
-            if (owner && !open_players.contains(owner))
-                open_players << owner;
-        }*/
-    } else {
+    if (open)
         open_players = room->getAllPlayers();
-    }
+    else if (open_players.isEmpty())
+        open_players << this;
     foreach(ServerPlayer *p, open_players)
         setPileOpen(pile_name, p->objectName());
     piles[pile_name].append(card_ids);
-
 
     CardsMoveStruct move;
     move.card_ids = card_ids;
