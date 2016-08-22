@@ -507,7 +507,7 @@ public:
         if (use.card != NULL && use.card->isKindOf("Slash")) {
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, use.to) {
-                if (diff(use.from, p)) {
+                if (p->isAlive() && diff(use.from, p)) {
                     if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
                         continue;
                     d << SkillInvokeDetail(this, use.from, use.from, NULL, false, p);
