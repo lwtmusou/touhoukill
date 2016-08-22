@@ -1235,7 +1235,7 @@ public:
     {
         if (triggerEvent == EventPhaseStart) {
             room->notifySkillInvoked(invoke->owner, objectName());
-            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), objectName(), "@mizong", true, true);
+            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), objectName(), "@mizong-ask", true, true);
             if (target != NULL)
                 invoke->targets << target;
             return target != NULL;
