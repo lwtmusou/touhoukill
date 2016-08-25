@@ -1212,6 +1212,7 @@ sgs.ai_skill_playerchosen.shoushu = function(self, targets)
 end
 sgs.ai_playerchosen_intention.shoushu = -70
 
+
 function SmartAI:canHuayin(player)
 	for _,c in sgs.qlist(player:getCards("hs")) do
 		if not c:isKindOf("BasicCard") then
@@ -1220,21 +1221,31 @@ function SmartAI:canHuayin(player)
 	end
 	return false
 end
-local huayin_skill = {}
-huayin_skill.name = "huayin"
-table.insert(sgs.ai_skills, huayin_skill)
-huayin_skill.getTurnUseCard = function(self)
+function turnUse_huayin(self)
 	if self.player:getMark("Global_PreventPeach")>0  or self.player:hasFlag("Global_huayinFailed") then return nil end
 	if self:canHuayin(self.player) then
 		local ids = {}
 		for _, c in sgs.qlist(self.player:getHandcards()) do
 			table.insert(ids, c:getId())
 		end
-		return sgs.Card_Parse("@HuayinCard=" .. table.concat(ids, "+"))
+		return "@HuayinCard=" .. table.concat(ids, "+")
 	end
+	return nil
+end
+
+local huayin_skill = {}
+huayin_skill.name = "huayin"
+table.insert(sgs.ai_skills, huayin_skill)
+huayin_skill.getTurnUseCard = function(self)
+	local str = turnUse_huayin(self)
+	if not str then return nil end
+	return sgs.Card_Parse(str)
 end
 
 function sgs.ai_cardsview_valuable.huayin(self, class_name, player)
+	if class_name == "sqchuangshi" then
+		return turnUse_huayin(self)
+	end
 	if class_name == "Peach" then
 		if (sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE) then
 			return nil

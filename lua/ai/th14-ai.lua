@@ -417,7 +417,7 @@ feitou_skill.getTurnUseCard = function(self, inclusive)
 	return slash
 end
 function sgs.ai_cardsview_valuable.feitou(self, class_name, player)
-	if class_name == "Slash" then
+	if self:touhouClassMatch(class_name, "Slash") then
 		if self.player:getPile("feitou"):isEmpty() then return nil end
 		local ids=self.player:getPile("feitou")
 		local card= sgs.Sanguosha:getCard(ids:first())

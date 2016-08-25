@@ -500,6 +500,54 @@ sgs.ai_skill_use["@@sqchuangshi"] = function(self, prompt)
 	return "."
 end
 
+--暂时不考虑是否使得整个创史过程继续下去，以及源法有谁能摸牌的问题。
+sgs.ai_skill_use["BasicCard+^Jink,TrickCard+^Nullification,EquipCard|.|.|sqchuangshi"] = function(self, prompt, method)
+	local cards =  self:getCards("sqchuangshi", "hes")
+	self:sortByUseValue(cards)
+	for _, card in ipairs(cards) do
+		if card:getTypeId() == sgs.Card_TypeTrick and not card:isKindOf("Nullification") then
+			local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+			self:useTrickCard(card, dummy_use)
+			if dummy_use.card then
+				if dummy_use.to:isEmpty() then
+					if card:isKindOf("IronChain") then
+						return "."
+					end
+					return dummy_use.card:toString()
+				else
+					local target_objectname = {}
+					for _, p in sgs.qlist(dummy_use.to) do
+						table.insert(target_objectname, p:objectName())
+					end
+					return dummy_use.card:toString() .. "->" .. table.concat(target_objectname, "+")
+				end
+			end
+		elseif card:getTypeId() == sgs.Card_TypeBasic and not card:isKindOf("Jink") then
+			local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+			self:useBasicCard(card, dummy_use)
+			if dummy_use.card then
+				if dummy_use.to:isEmpty() then
+					return dummy_use.card:toString()
+				else
+					local target_objectname = {}
+					for _, p in sgs.qlist(dummy_use.to) do
+						table.insert(target_objectname, p:objectName())
+					end
+					return dummy_use.card:toString() .. "->" .. table.concat(target_objectname, "+")
+				end
+			end
+		elseif card:getTypeId() == sgs.Card_TypeEquip then
+			local dummy_use = { isDummy = true }
+			self:useEquipCard(card, dummy_use)
+			if dummy_use.card then
+				return dummy_use.card:toString()
+			end
+		end
+	end
+	return "."
+end
+
+
 sgs.ai_skill_invoke.yuanfa  = function(self)
 	local f = 0
 	local e = 0
@@ -516,11 +564,7 @@ sgs.ai_skill_invoke.yuanfa  = function(self)
 end
 
 
-
-local guaiqi_skill = {}
-guaiqi_skill.name = "guaiqi"
-table.insert(sgs.ai_skills, guaiqi_skill)
-guaiqi_skill.getTurnUseCard = function(self)
+function turnUse_guaiqi(self)
 	local piles = self.player:getPile("modian")
 	local guaiqis = {}
 	for _,id in sgs.qlist(piles) do
@@ -589,11 +633,23 @@ guaiqi_skill.getTurnUseCard = function(self)
 		choice = choices[1]
 	end
 	local str= (choice..":guaiqi[%s:%s]=%d"):format(suit, number, card_id)
+	return str
+end
+
+local guaiqi_skill = {}
+guaiqi_skill.name = "guaiqi"
+table.insert(sgs.ai_skills, guaiqi_skill)
+guaiqi_skill.getTurnUseCard = function(self)
+	local str= turnUse_guaiqi(self)
+	if not str then return nil end
 	local parsed_card = sgs.Card_Parse(str)
 	return parsed_card
 end
 
 function sgs.ai_cardsview_valuable.guaiqi(self, class_name, player)
+	if class_name == "sqchuangshi" then
+		return turnUse_guaiqi(self)
+	end
 	if class_name ~= "Nullification" then return nil end
 	local hasNul = false
 	local piles = self.player:getPile("modian")

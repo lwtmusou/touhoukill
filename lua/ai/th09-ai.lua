@@ -676,7 +676,7 @@ sgs.ai_skill_cardask["@tianren-slash"] = function(self, data)
 	return "."
 end
 function sgs.ai_cardsview_valuable.tianren(self, class_name, player, need_lord)
-	if class_name == "Slash" and sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE
+	if self:touhouClassMatch(class_name, "Slash") and sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE
 		and not player:hasFlag("Global_tianrenFailed") and (need_lord == false or player:hasLordSkill("tianren")) then
 		local current = self.room:getCurrent()
 		if current:getKingdom() == "zhan" and self:getOverflow(current) > 2 and not self:hasCrossbowEffect(current) then

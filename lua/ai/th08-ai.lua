@@ -682,7 +682,7 @@ end
 function sgs.ai_cardsview_valuable.huwei(self, class_name, player)
 	local tmpslash = sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
 	if player:isCardLimited(tmpslash, sgs.Card_MethodUse) then  return nil end
-	if class_name == "Slash" and (sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE)  then
+	if self:touhouClassMatch(class_name, "Slash") and (sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE)  then
 		 if not player:hasFlag("Global_huweiFailed") and player:getPhase() ~=sgs.Player_Play then
 			for _,p in sgs.qlist(player:getAliveSiblings()) do
                 if (tmpslash:targetFilter(sgs.PlayerList(), p, player)) then

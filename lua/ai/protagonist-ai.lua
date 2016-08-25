@@ -977,7 +977,7 @@ sgs.ai_skill_invoke.bllmwuyu = function(self,data)
 end
 
 function sgs.ai_cardsview_valuable.bllmwuyu(self, class_name, player)
-	if class_name == "Analeptic"  then
+	if self:touhouClassMatch(class_name, "Analeptic")  then
 		if player:isKongcheng() then return nil end
 		if player:getMark("@yu")==0 then
 			local hearts_e={}

@@ -5055,6 +5055,7 @@ local function cardsViewValuable(self, class_name, player)
 end
 
 local function cardsView(self, class_name, player)
+
 	for _, skill in ipairs(getPlayerSkillList(player)) do
 		local askill = skill:objectName()
 		if player:hasSkill(askill) or player:hasLordSkill(askill) then
@@ -5335,6 +5336,7 @@ function SmartAI:getCards(class_name, flag)
 		--card_place = room:getCardPlace(card:getEffectiveId())
 		card_place = sgs.getCardPlace(room, card)
 		if class_name == "." and card_place ~= sgs.Player_PlaceSpecial then table.insert(cards, card)
+		elseif class_name == "sqchuangshi"  and not prohibitUseDirectly(card, player) then table.insert(cards, card)
 		elseif card:isKindOf(class_name) and not prohibitUseDirectly(card, player) and card_place ~= sgs.Player_PlaceSpecial then table.insert(cards, card)
 		else
 			card_str = getSkillViewCard(card, class_name, player, card_place)
@@ -7872,7 +7874,12 @@ function SmartAI:touhouNeedBear(card,from,tos)
 end
 
 
-
+function SmartAI:touhouClassMatch(classes, class_name)
+	if (classes == class_name or classes:match("sqchuangshi")) then
+		return true
+	end
+	return false
+end
 
 
 

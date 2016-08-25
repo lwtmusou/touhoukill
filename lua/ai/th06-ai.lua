@@ -302,13 +302,14 @@ end
 sgs.ai_skill_invoke.bolan = true
 
 function sgs.ai_cardsview_valuable.hezhou(self, class_name, player)
-	if class_name == "Peach" then
+	if self:touhouClassMatch(class_name, "Peach") then
 		if (sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE) then
 			return nil
 		end
 		if self.player:getPhase()~= sgs.Player_NotActive then return nil end
 		if self.player:getMark("Global_PreventPeach")>0 then return nil end
-
+        local dying = player:getRoom():getCurrentDyingPlayer()
+		if not dying or self.player:getLostHp() < 1 then return nil end
 
 		local all ={}
 		local real_peach={}

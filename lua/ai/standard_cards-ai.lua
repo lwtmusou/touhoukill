@@ -1813,7 +1813,7 @@ function cardsView_spear(self, player, skill_name)
 end
 
 function sgs.ai_cardsview.Spear(self, class_name, player)
-	if class_name == "Slash" then
+	if self:touhouClassMatch(class_name, "Slash") then
 		return cardsView_spear(self, player, "Spear")
 	end
 end
