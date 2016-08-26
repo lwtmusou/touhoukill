@@ -68,7 +68,7 @@ LightboxAnimation::LightboxAnimation(const QString &general_name, const QString 
     generalPixmap->setParentItem(this);
     generalPixmap->load("image/animate/skill_bg.png", QSize(1000, 550), false);
     generalPixmap->setTransformOriginPoint(generalPixmap->boundingRect().width() / 2, generalPixmap->boundingRect().height() / 2);
-    generalPixmap->setPixmap(G_ROOM_SKIN.getPixmap(G_ROOM_SKIN.S_SKIN_KEY_LIGHTBOX, general_name, true));
+    generalPixmap->setPixmap(G_ROOM_SKIN.getPixmap(G_ROOM_SKIN.S_SKIN_KEY_LIGHTBOX, general_name, true, false));
     generalPixmap->setScale(0.3);
     generalPixmap->setPos(-generalPixmap->boundingRect().width(), rect.height() / 2.5 - generalPixmap->boundingRect().height() / 2);
     generalPixmap->setZValue(0);
