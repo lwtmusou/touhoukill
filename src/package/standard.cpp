@@ -275,7 +275,7 @@ void DelayedTrick::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
 {
     QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
     bool all_nullified = nullified_list.contains("_ALL_TARGETS");
-    if (all_nullified || targets.isEmpty()) {
+    if (all_nullified || targets.isEmpty() || targets.first()->isDead()) {
         if (movable) {
             onNullified(source);
             if (room->getCardOwner(getEffectiveId()) != source) return;
