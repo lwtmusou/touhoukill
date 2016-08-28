@@ -3364,6 +3364,16 @@ public:
         limit_mark = "@tongling";
     }
 
+    static bool  findSameSkill(const Skill *source_skill, ServerPlayer *player)
+    {
+        foreach(ServerPlayer *p, player->getRoom()->getAlivePlayers()) {
+            foreach(const Skill *skill, p->getGeneral()->getVisibleSkillList()) {
+                if (skill->objectName() == source_skill->objectName())
+                    return true;
+            }
+        }
+        return false;
+    }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
@@ -3379,20 +3389,6 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        /*QList<ServerPlayer *> listt;
-        foreach(ServerPlayer *p, room->getAllPlayers(true)) {
-            if (p->isDead()) {
-                if (p->getGeneral() != NULL && p->getGeneralName() != "sujiang" && p->getGeneralName() != "sujiangf") {
-                    listt << p;
-                }
-            }
-        }
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, listt, objectName(), "@tongling", true, true);
-        if (target)
-            invoke->targets << target;
-
-        return target != NULL;*/
-
         if (!invoke->invoker->isOnline()) {
             QStringList skill_names;
             QList<ServerPlayer *> targets;
@@ -3402,7 +3398,8 @@ public:
                     foreach(const Skill *skill, p->getGeneral()->getVisibleSkillList()) {
                         if (skill->isLordSkill()
                             || skill->getFrequency() == Skill::Eternal
-                            || skill->getFrequency() == Skill::Wake)
+                            || skill->getFrequency() == Skill::Wake
+                            || findSameSkill(skill, invoke->invoker))
                             continue;
                         if (!skill_names.contains(skill->objectName())) {
                             skill_names << skill->objectName();
@@ -3459,7 +3456,8 @@ public:
         foreach(const Skill *skill, general->getVisibleSkillList()) {
             if (skill->isLordSkill()
                 || skill->getFrequency() == Skill::Eternal
-                || skill->getFrequency() == Skill::Wake)
+                || skill->getFrequency() == Skill::Wake 
+                || findSameSkill(skill, invoke->invoker))
                 continue;
             if (!skill_names.contains(skill->objectName()))
                 skill_names << skill->objectName();
