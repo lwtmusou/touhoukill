@@ -3367,7 +3367,7 @@ public:
     static bool  findSameSkill(const Skill *source_skill, ServerPlayer *player)
     {
         foreach(ServerPlayer *p, player->getRoom()->getAlivePlayers()) {
-            foreach(const Skill *skill, p->getGeneral()->getVisibleSkillList()) {
+            foreach(const Skill *skill, p->getVisibleSkillList()) {
                 if (skill->objectName() == source_skill->objectName())
                     return true;
             }
