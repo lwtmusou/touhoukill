@@ -502,7 +502,7 @@ end
 
 --暂时不考虑是否使得整个创史过程继续下去，以及源法有谁能摸牌的问题。
 sgs.ai_skill_use["BasicCard+^Jink,TrickCard+^Nullification,EquipCard|.|.|sqchuangshi"] = function(self, prompt, method)
-	local cards =  self:getCards("sqchuangshi", "hes")
+	local cards =  self:getCards("sqchuangshi", "hs")
 	self:sortByUseValue(cards)
 	for _, card in ipairs(cards) do
 		if card:getTypeId() == sgs.Card_TypeTrick and not card:isKindOf("Nullification") then
