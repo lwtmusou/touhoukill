@@ -68,6 +68,7 @@ public:
     void output(const QString &message);
     void outputEventStack();
     void enterDying(ServerPlayer *player, DamageStruct *reason);
+    int dyingThreshold();
     ServerPlayer *getCurrentDyingPlayer() const;
     void killPlayer(ServerPlayer *victim, DamageStruct *reason = NULL);
     void revivePlayer(ServerPlayer *player);

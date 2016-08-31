@@ -3820,7 +3820,62 @@ public:
 
 
 
+class Fanhun : public TriggerSkill
+{
+public:
+    Fanhun() : TriggerSkill("fanhun")
+    {
+        events << EventPhaseStart;
+        frequency = Eternal;
+    }
 
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+
+        
+        ServerPlayer *player = data.value<ServerPlayer *>();
+        if (player->hasSkill(this) && player->getPhase() == Player::RoundStart) {
+            bool invoke = true;
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+                if (p->getHp() < player->getHp()) {
+                    invoke = false;
+                    break;
+                }
+            }
+            if (invoke)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+        } else if (player->hasSkill(this) && player->getPhase() == Player::Finish) {
+            bool invoke = true;
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+                if (p->getMaxHp() > player->getMaxHp()) {
+                    invoke = false;
+                    break;
+                }
+            }
+            if (invoke)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        ServerPlayer *player = invoke->invoker;
+        if (player->getPhase() == Player::RoundStart) {
+            room->setPlayerProperty(player, "maxhp", player->getMaxHp() + 1);
+            RecoverStruct recov;
+            recov.recover = player->getMaxHp() - player->getHp();
+            room->recover(player, recov);
+        } else if (player->getPhase() == Player::Finish)
+            room->killPlayer(player);
+
+        return false;
+    }
+};
+
+
+/*
 class Fanhun : public TriggerSkill
 {
 public:
@@ -3852,7 +3907,7 @@ public:
         return false;
     }
 };
-
+*/
 class Youdie : public TriggerSkill
 {
 public:
@@ -4322,9 +4377,9 @@ TouhouGodPackage::TouhouGodPackage()
     satori_god->addSkill(new Dongcha);
     satori_god->addSkill(new Zhuiyi);
 
-    General *yuyuko_god = new General(this, "yuyuko_god", "touhougod", 5, false);
+    General *yuyuko_god = new General(this, "yuyuko_god", "touhougod", 0, false);
     yuyuko_god->addSkill(new Fanhun);
-    yuyuko_god->addSkill(new Youdie);
+    //yuyuko_god->addSkill(new Youdie);
 
     General *aya_god = new General(this, "aya_god", "touhougod", 4, false);
     aya_god->addSkill(new Tianqu);
