@@ -3867,12 +3867,105 @@ public:
             RecoverStruct recov;
             recov.recover = player->getMaxHp() - player->getHp();
             room->recover(player, recov);
+
+            CardsMoveStruct move(player->getPile("die"), player, player, Player::PlaceSpecial, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()));
+            room->moveCardsAtomic(move, true);
+
         } else if (player->getPhase() == Player::Finish)
             room->killPlayer(player);
 
         return false;
     }
 };
+
+
+class YoudieVS : public OneCardViewAsSkill
+{
+public:
+    YoudieVS() : OneCardViewAsSkill("youdie")
+    {
+        response_pattern = "@@youdie!";
+        expand_pile = "die";
+    }
+
+    bool viewFilter(const Card *to_select) const
+    {
+        return Self->getPile("die").contains(to_select->getId());
+    }
+
+    const Card *viewAs(const Card *originalCard) const
+    {
+        return originalCard;
+    }
+};
+
+class Youdie : public TriggerSkill
+{
+public:
+    Youdie() : TriggerSkill("youdie")
+    {
+        events << CardFinished << Damaged;
+        frequency = Compulsory;
+        view_as_skill = new YoudieVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        if (triggerEvent == Damaged) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from && damage.from->isAlive() && damage.to->hasSkill(this) && !damage.to->getPile("die").isEmpty())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true, damage.from);
+        } else if (triggerEvent == CardFinished) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            QList<SkillInvokeDetail> d;
+            QList<int> able;
+            foreach(int id, use.card->getSubcards()) {
+                if (room->getCardPlace(id) == Player::DiscardPile)
+                    able << id;
+            }
+            
+            if (able.isEmpty())
+                return d;
+
+            foreach(ServerPlayer *p, use.to) {
+                if (p->hasSkill(this))
+                    d << SkillInvokeDetail(this, p, p, NULL, true);
+            }
+            return d;
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (triggerEvent == CardFinished) {
+            room->notifySkillInvoked(invoke->invoker, objectName());
+            CardUseStruct use = data.value<CardUseStruct>();
+            QList<SkillInvokeDetail> d;
+            QList<int> able;
+            foreach(int id, use.card->getSubcards()) {
+                if (room->getCardPlace(id) == Player::DiscardPile)
+                    able << id;
+            }
+
+            invoke->invoker->addToPile("die", able);
+        } else if (triggerEvent == Damaged) {
+            //
+            QString prompt = "@youdie-invoke:" + invoke->targets.first()->objectName();
+            const Card *c = room->askForCard(invoke->invoker, "@@youdie!", prompt, data, Card::MethodNone, NULL, false, objectName());
+            //force give
+            if (!c) {
+                QList<int> hc = invoke->invoker->getPile("die");
+                int x = qrand() % hc.length();
+                Sanguosha->getCard(hc.value(x));
+                room->obtainCard(invoke->targets.first(), hc.value(x), true);
+            } else
+                room->obtainCard(invoke->targets.first(), c, true);
+        }
+        return false;
+    }
+};
+
 
 
 /*
@@ -3908,6 +4001,7 @@ public:
     }
 };
 */
+/*
 class Youdie : public TriggerSkill
 {
 public:
@@ -4004,7 +4098,7 @@ public:
         return false;
     }
 };
-
+*/
 
 
 
@@ -4379,7 +4473,7 @@ TouhouGodPackage::TouhouGodPackage()
 
     General *yuyuko_god = new General(this, "yuyuko_god", "touhougod", 0, false);
     yuyuko_god->addSkill(new Fanhun);
-    //yuyuko_god->addSkill(new Youdie);
+    yuyuko_god->addSkill(new Youdie);
 
     General *aya_god = new General(this, "aya_god", "touhougod", 4, false);
     aya_god->addSkill(new Tianqu);
