@@ -3834,15 +3834,15 @@ public:
 
         
         ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->hasSkill(this) && player->getPhase() == Player::RoundStart) {
-            bool invoke = true;
+        if (player->hasSkill(this) && player->getPhase() == Player::RoundStart && player->getHp() < 1) {
+            /*bool invoke = true;
             foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
                 if (p->getHp() < player->getHp()) {
                     invoke = false;
                     break;
                 }
             }
-            if (invoke)
+            if (invoke)*/
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
         } else if (player->hasSkill(this) && player->getPhase() == Player::Finish) {
             bool invoke = true;
