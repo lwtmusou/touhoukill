@@ -3913,7 +3913,7 @@ public:
     {
         if (triggerEvent == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.from && damage.from->isAlive() && damage.to->hasSkill(this) && !damage.to->getPile("die").isEmpty())
+            if (damage.from && damage.from->isAlive() && damage.from != damage.to &&  damage.to->hasSkill(this) && !damage.to->getPile("die").isEmpty())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true, damage.from);
         } else if (triggerEvent == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();

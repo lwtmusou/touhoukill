@@ -1255,3 +1255,94 @@ sgs.lingji_suit_value = {
 	heart = 4.8
 }
 
+
+sgs.ai_skill_use["@@toushi"] = function(self, prompt)
+	local cards = {}
+	for _,c in sgs.qlist(self:touhouAppendExpandPileToList(self.player, self.player:getCards("hes"))) do
+		if c:isKindOf("BasicCard") or c:getSuit() == sgs.Card_Spade then
+			table.insert(cards, c)
+		end
+	end
+	if #cards == 0 then return "." end
+	self:sortByUseValue(cards)
+	
+
+	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+	local cardname=self.player:property("toushi_card"):toString()
+	local card=sgs.cloneCard(cardname, cards[1]:getSuit(), cards[1]:getNumber())
+	card:addSubcard(cards[1])
+	card:setSkillName("toushi")
+	local target
+	if card:isKindOf("TrickCard") then
+		self:useTrickCard(card, dummy_use)
+	else
+		self:useBasicCard(card, dummy_use)
+	end
+
+	if not dummy_use.card then return false end
+	if dummy_use.to:isEmpty() then
+		if card:isKindOf("IronChain") then
+			return "."
+		end
+		return dummy_use.card:toString()
+	else
+		local target_objectname = {}
+		if card:isKindOf("IronChain") then
+			for _, p in sgs.qlist(dummy_use.to) do
+				if (self:isEnemy(p) and not p:isChained())
+				or (self:isFriend(p) and p:isChained())then
+					table.insert(target_objectname, p:objectName())
+				end
+				if #target_objectname==2 then break end
+			end
+		else
+			for _, p in sgs.qlist(dummy_use.to) do
+				if self:isEnemy(p) then
+					table.insert(target_objectname, p:objectName())
+					target=p
+					break
+				end
+			end
+		end
+
+		if card:isKindOf("Collateral") then
+			local victim
+			for _,p in sgs.qlist(self.room:getOtherPlayers(target))do
+				if self:isEnemy(p) and target:canSlash(p,nil,true) then
+					table.insert(target_objectname, p:objectName())
+					victim=p
+					break
+				end
+			end
+			if not victim then
+				return "."
+			end
+		end
+		if #target_objectname>0 then
+			return dummy_use.card:toString() .. "->" .. table.concat(target_objectname, "+")
+		end
+	end
+	return "."
+end
+sgs.ai_cardneed.toushi = function(to, card, self)
+	return card:isKindOf("BasicCard") or card:getSuit() == sgs.Card_Spade
+end
+
+
+sgs.ai_skill_playerchosen.moli = function(self, targets)
+	targets=sgs.QList2Table(targets)
+	self:sort(targets,"hp")
+	for _,p in pairs(targets) do
+		if (self:isFriend(p) and p:isWounded() and getBestHp(p) > p:getHp()) then
+			return p
+		end
+	end
+	return nil
+end
+sgs.ai_playerchosen_intention.moli = -70
+sgs.ai_no_playerchosen_intention.moli =function(self, from)
+	local lord =self.room:getLord()
+	if lord and  lord:isWounded() and getBestHp(lord) > lord:getHp()  then
+		sgs.updateIntention(from, lord, 10)
+	end
+end
