@@ -1226,3 +1226,90 @@ sgs.ai_choicemade_filter.cardResponded["jidong-confirm"] = function(self, player
 		sgs.updateIntention(player, target, 50)
 	end
 end
+
+
+
+sgs.ai_skill_invoke.zhangmu = function(self, data)
+	local use = self.player:getTag("zhangmu"):toCardUse()	
+	if use.card:isKindOf("Slash") then
+		if self:getCardsNum("Jink") > 0 then
+			return self.player:getHandcardNum() < 3
+		elseif self.player:getHp() == 1 and (self:getCardsNum("Peach") > 0 or self:getCardsNum("Analeptic") > 0) then
+			return self.player:getHandcardNum() < 3
+		else 
+			return self.player:getHandcardNum() <= 1
+		end
+	else
+		if self:isFriend(use.from) then
+			if self.player:getHandcardNum() > 1 then
+				return self.player:getCards("j"):isEmpty()
+			else
+				return true
+			end
+		else
+			return self.player:getCards("e"):isEmpty() or self.player:getHandcardNum() <= 1
+		end
+	end
+	return false
+end
+sgs.ai_skill_discard.zhangmu = function(self)
+	local use = self.player:getTag("zhangmu"):toCardUse()
+	local to_discard = {}
+	local cards = self.player:getHandcards()
+	cards = sgs.QList2Table(cards)
+	self:sortByKeepValue(cards)
+	local keep
+	if use.card:isKindOf("Slash") then
+		for _, hcard in ipairs(cards) do
+			if hcard:isKindOf("Jink") then
+				keep = hcard
+				break
+			elseif self.player:getHp() == 1 and (hcard:isKindOf("Peach") or hcard:isKindOf("Analeptic")) then
+				keep = hcard
+				break
+			end
+		end
+		
+		if not keep then
+			keep = cards[1]
+		end
+	else
+		if self:isFriend(use.from) then
+			for _, hcard in ipairs(cards) do
+				for _, askill in sgs.qlist(use.from:getVisibleSkillList()) do
+					local callback = sgs.ai_cardneed[askill:objectName()]
+					if type(callback)=="function" and callback(friend, hcard, self) then
+						keep = hcard
+						break
+					end
+				end
+				if keep then break end
+			end
+			if not keep then
+				keep = cards[1]
+			end
+		else
+			keep = cards[#cards]
+		end
+	end
+	
+	for _, hcard in ipairs(cards) do
+		if hcard ~= keep then
+			table.insert(to_discard, hcard:getEffectiveId())
+		end
+	end
+	return to_discard
+end
+
+sgs.ai_skill_playerchosen.liyou = function(self, targets)
+	local cards = self.player:getCards("hes")
+	cards = sgs.QList2Table(cards)
+	local card, p = self:getCardNeedPlayer(cards)
+	if card and p and p:objectName() ~= self.player:objectName() and self:isFriend(p) then
+		return p
+	elseif #self.friends_noself > 0 then
+		return self.friends_noself[1]
+	end
+	return nil
+end
+sgs.ai_playerchosen_intention.liyou = -30

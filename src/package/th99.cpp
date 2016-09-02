@@ -2080,6 +2080,7 @@ public:
         if (e == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
             QString  prompt = "target:" + use.from->objectName() + ":" + use.card->objectName();
+            invoke->invoker->tag["zhangmu"] = data;
             return invoke->invoker->askForSkillInvoke(objectName(), prompt);
         }
         return true;
