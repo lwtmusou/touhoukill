@@ -1173,6 +1173,14 @@ sgs.ai_choicemade_filter.skillInvoke.jixiong = function(self, player, args)
 		end
 	end
 end
+sgs.ai_choicemade_filter.skillInvoke.jixiong2 = function(self, player, args)
+	local target = self.room:getCurrent()
+	if current then
+		if args[#args] == "yes" then
+			sgs.updateIntention(player, current, 50)
+		end
+	end
+end
 
 local yujian_skill = {}
 yujian_skill.name = "yujian"
