@@ -211,8 +211,10 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
         return;
     
     int threshold = dyingThreshold();
-    if (threshold >= player->getMaxHp())
+    if (threshold >= player->getMaxHp()) {
         killPlayer(player, reason);
+        return;
+    }
 
     setPlayerFlag(player, "Global_Dying");
     QStringList currentdying = getTag("CurrentDying").toStringList();
