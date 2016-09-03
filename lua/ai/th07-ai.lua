@@ -1164,7 +1164,7 @@ sgs.ai_skill_invoke.jixiong2 = function(self,data)
 	return false
 end
 sgs.ai_choicemade_filter.skillInvoke.jixiong = function(self, player, args)
-	local target = self.room:getCurrent()
+	local current = self.room:getCurrent()
 	if current then
 		if args[#args] == "yes" then
 			sgs.updateIntention(player, current, -50)
@@ -1174,7 +1174,7 @@ sgs.ai_choicemade_filter.skillInvoke.jixiong = function(self, player, args)
 	end
 end
 sgs.ai_choicemade_filter.skillInvoke.jixiong2 = function(self, player, args)
-	local target = self.room:getCurrent()
+	local current = self.room:getCurrent()
 	if current then
 		if args[#args] == "yes" then
 			sgs.updateIntention(player, current, 50)
