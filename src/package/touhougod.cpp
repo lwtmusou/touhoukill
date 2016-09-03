@@ -3918,6 +3918,8 @@ public:
         } else if (triggerEvent == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
             QList<SkillInvokeDetail> d;
+            if (use.card->isKindOf("Jink") || use.card->isKindOf("SkillCard") || use.card->isKindOf("Nullification"))
+                return d;
             QList<int> able;
             foreach(int id, use.card->getSubcards()) {
                 if (room->getCardPlace(id) == Player::DiscardPile)
@@ -3928,7 +3930,7 @@ public:
                 return d;
 
             foreach(ServerPlayer *p, use.to) {
-                if (p->hasSkill(this))
+                if (p->hasSkill(this) && use.from && use.from != p)
                     d << SkillInvokeDetail(this, p, p, NULL, true);
             }
             return d;

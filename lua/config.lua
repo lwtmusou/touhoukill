@@ -172,5 +172,6 @@ config = {
 		"seiga_god->seiga",
 		"satori_god->satori",
 		"sakuya_sp->sakuya_god",
+		"yuyuko_god->yuyuko_xwm"
 	}
 }
