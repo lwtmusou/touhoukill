@@ -1124,7 +1124,7 @@ sgs.ai_skill_choice.daoyao= function(self, choices, data)
 		if current and self:isEnemy(current) then return "discard" end
 	end
 	if choices:match("draw") then
-		for _,p in ipairs(self.friends) do
+		for _,p in ipairs(self.friends_noself) do
 			if p:isChained() then
 				return "draw"
 			end
