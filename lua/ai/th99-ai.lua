@@ -1278,7 +1278,7 @@ sgs.ai_skill_discard.zhangmu = function(self)
 			for _, hcard in ipairs(cards) do
 				for _, askill in sgs.qlist(use.from:getVisibleSkillList()) do
 					local callback = sgs.ai_cardneed[askill:objectName()]
-					if type(callback)=="function" and callback(friend, hcard, self) then
+					if type(callback)=="function" and callback(use.from, hcard, self) then
 						keep = hcard
 						break
 					end
