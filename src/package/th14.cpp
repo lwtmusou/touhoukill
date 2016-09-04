@@ -508,7 +508,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.from->hasSkill(this)) {
+        if (damage.from && damage.from->isAlive() && damage.from->hasSkill(this)) {
             foreach (ServerPlayer *p, room->getOtherPlayers(damage.from)) {
                 if (p->getHp() > damage.from->getHp() && !p->isNude())
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from);

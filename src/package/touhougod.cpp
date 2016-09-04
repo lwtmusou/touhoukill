@@ -3256,7 +3256,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.from == damage.to
+        if (!damage.from || damage.from == damage.to
             || damage.from->getMark("@huanming") == 0
             || damage.to->getHp() <= 0 || !damage.from->hasSkill(this))
             return QList<SkillInvokeDetail>();

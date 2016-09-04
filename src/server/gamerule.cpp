@@ -378,9 +378,9 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             if (player == NULL)
                 break;
 
-            
             if (player->getHp() > room->dyingThreshold())
                 break;
+
             if (data.canConvert<DamageStruct>()) {
                 DamageStruct damage = data.value<DamageStruct>();
                 room->enterDying(player, &damage);
