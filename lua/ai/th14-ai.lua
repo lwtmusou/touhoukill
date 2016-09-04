@@ -128,7 +128,6 @@ sgs.ai_skill_cardask["@leiting"] = function(self, data)
 	if temp then
 		return "$" .. temp
 	end
-	local target =data:toPlayer()
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)
 	self:sortByKeepValue(cards)
