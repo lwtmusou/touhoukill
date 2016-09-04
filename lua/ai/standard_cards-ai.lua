@@ -117,6 +117,14 @@ function sgs.getDefenseSlash(player, self)
 	if self and self:canKexue(player) then
 		defense = defense + 10
 	end
+	if self and player:hasSkills("lingqi") then
+		if (self:invokeTouhouJudge(player)) then
+			defense = defense + 10
+		end
+		if player:hasSkills("qixiang") and player:getHandcardNum() < player:getMaxCards() then
+			defense = defense + 10
+		end
+	end
 	if player:hasSkill("juxian") and player:faceUp() then
 		defense = defense + 10
 	end
