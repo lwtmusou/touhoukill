@@ -91,8 +91,10 @@ public:
             if (!p->hasLordSkill(objectName()))
                 continue;
             foreach (ServerPlayer *liege, room->getLieges("dld", p)) {
-                if (liege != use.from && !use.to.contains(liege) && use.from->canSlash(liege, use.card, false) )
+                if (liege != use.from && !use.to.contains(liege) && use.from->canSlash(liege, use.card, false)) {
                     d << SkillInvokeDetail(this, p, p);
+                    break;
+                }
             }
         }
         return d;
