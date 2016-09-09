@@ -588,7 +588,7 @@ public:
         view_as_skill = new ShijieVS;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    void record(TriggerEvent, Room *, QVariant &data) const
     {
         JudgeStruct *judge = data.value<JudgeStruct *>();
         if (judge->reason == "shijie")
@@ -753,19 +753,16 @@ XiefaCard::XiefaCard()
 
 bool XiefaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-
+    Slash *slash = new Slash(Card::NoSuit, 0);
+    slash->deleteLater();
     if (targets.length() == 0) {
         if (to_select == Self)
             return false;
-        if (to_select->hasSkill("zhouye") && to_select->getMark("@ye") == 0)
+        if (to_select->isCardLimited(slash, Card::MethodUse))
             return false;
 
-        //if (to_select->hasSkill("xihua") && to_select->getMark("xihua_record_slash") > 0)
-        //    return false;
         return true;
     } else if (targets.length() == 1) {
-        Slash *slash = new Slash(Card::NoSuit, 0);
-        slash->deleteLater();
         if (!targets.first()->canSlash(to_select, slash, true))
             return false;
         return targets.first()->inMyAttackRange(to_select);

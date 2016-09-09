@@ -2039,7 +2039,9 @@ void Room::setPlayerCardLimitation(ServerPlayer *player, const QString &limit_li
     arg << limit_list;
     arg << pattern;
     arg << single_turn;
-    doNotify(player, S_COMMAND_CARD_LIMITATION, arg);
+    arg << player->objectName();
+    //doNotify(player, S_COMMAND_CARD_LIMITATION, arg);
+    doBroadcastNotify(S_COMMAND_CARD_LIMITATION, arg);
 }
 
 void Room::removePlayerCardLimitation(ServerPlayer *player, const QString &limit_list,
@@ -2052,7 +2054,9 @@ void Room::removePlayerCardLimitation(ServerPlayer *player, const QString &limit
     arg << limit_list;
     arg << pattern;
     arg << false;
-    doNotify(player, S_COMMAND_CARD_LIMITATION, arg);
+    arg << player->objectName();
+    //doNotify(player, S_COMMAND_CARD_LIMITATION, arg);
+    doBroadcastNotify(S_COMMAND_CARD_LIMITATION, arg);
 }
 
 void Room::clearPlayerCardLimitation(ServerPlayer *player, bool single_turn)
@@ -2064,7 +2068,9 @@ void Room::clearPlayerCardLimitation(ServerPlayer *player, bool single_turn)
     arg << QVariant();
     arg << QVariant();
     arg << single_turn;
-    doNotify(player, S_COMMAND_CARD_LIMITATION, arg);
+    arg << player->objectName();
+    //doNotify(player, S_COMMAND_CARD_LIMITATION, arg);
+    doBroadcastNotify(S_COMMAND_CARD_LIMITATION, arg);
 }
 
 void Room::setCardFlag(const Card *card, const QString &flag, ServerPlayer *who)
