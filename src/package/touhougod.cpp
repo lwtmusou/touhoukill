@@ -794,15 +794,10 @@ void HuimieCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
 {
     ServerPlayer *target = targets.first();
     source->gainMark("@kinki");
-    if (!target->isChained()) {
-        target->setChained(!target->isChained());
-        room->broadcastProperty(target, "chained");
-        room->setEmotion(target, "chain");
-        QVariant _data = QVariant::fromValue(target);
-        room->getThread()->trigger(ChainStateChanged, room, _data);
-    }
-    room->damage(DamageStruct("huimie", source, target, 1, DamageStruct::Fire));
+    if (!target->isChained())
+        room->setPlayerProperty(target, "chained", true);
 
+    room->damage(DamageStruct("huimie", source, target, 1, DamageStruct::Fire));
 }
 
 class Huimie : public ZeroCardViewAsSkill
@@ -3507,13 +3502,8 @@ void RumoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targ
     int num = qMax(source->getHp(), 1);
     room->sortByActionOrder(targets);
     foreach(ServerPlayer *target, targets) {
-        if (!target->isChained()) {
-            target->setChained(!target->isChained());
-            room->broadcastProperty(target, "chained");
-            room->setEmotion(target, "chain");
-            QVariant _data = QVariant::fromValue(target);
-            room->getThread()->trigger(ChainStateChanged, room, _data);
-        }
+        if (!target->isChained())
+            room->setPlayerProperty(target, "chained", true);
     }
     source->drawCards(num);
 }

@@ -451,14 +451,18 @@ void IronChain::onUse(Room *room, const CardUseStruct &card_use) const
 
 void IronChain::onEffect(const CardEffectStruct &effect) const
 {
+    //an alternative approach
+    effect.to->getRoom()->setPlayerProperty(effect.to, "chained", !effect.to->isChained());
+    //original method
+    /*
     effect.to->setChained(!effect.to->isChained());
 
     Room *room = effect.to->getRoom();
-
+    
     room->broadcastProperty(effect.to, "chained");
     room->setEmotion(effect.to, "chain");
     QVariant v = QVariant::fromValue(effect.to);
-    room->getThread()->trigger(ChainStateChanged, room, v);
+    room->getThread()->trigger(ChainStateChanged, room, v);*/
 }
 
 SupplyShortage::SupplyShortage(Card::Suit suit, int number)

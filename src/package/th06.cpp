@@ -767,12 +767,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         ServerPlayer *meirin = invoke->invoker;
-        invoke->invoker->setChained(true);
-
-        room->broadcastProperty(meirin, "chained");
-        room->setEmotion(meirin, "chain");
-        QVariant _data = QVariant::fromValue(meirin);
-        room->getThread()->trigger(ChainStateChanged, room, _data);
+        room->setPlayerProperty(meirin, "chained", true);
 
         int num = meirin->getMaxHp() - meirin->getHandcardNum();
         meirin->drawCards(num);
@@ -817,15 +812,9 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        ServerPlayer *target = invoke->targets.first();
-        invoke->invoker->setChained(false);
-        room->broadcastProperty(invoke->invoker, "chained");
-        room->setEmotion(invoke->invoker, "chain");
-        QVariant _data = QVariant::fromValue(invoke->invoker);
-        room->getThread()->trigger(ChainStateChanged, room, _data);
+        room->setPlayerProperty(invoke->invoker, "chained", false);
 
-        room->damage(DamageStruct(objectName(), invoke->invoker, target, 1, DamageStruct::Normal));
-
+        room->damage(DamageStruct(objectName(), invoke->invoker, invoke->targets.first(), 1, DamageStruct::Normal));
         return false;
     }
 };

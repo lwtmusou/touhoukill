@@ -1979,6 +1979,7 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
     }
 
     if (strcmp(property_name, "chained") == 0) {
+        setEmotion(player, "chain");
         QVariant v = QVariant::fromValue(player);
         thread->trigger(ChainStateChanged, this, v);
     }

@@ -659,12 +659,7 @@ public:
         room->sendLog(log);
         room->notifySkillInvoked(invoke->invoker, "liangzi");
 
-        invoke->invoker->setChained(!invoke->invoker->isChained());
-        room->broadcastProperty(invoke->invoker, "chained");
-        room->setEmotion(invoke->invoker, "chain");
-        QVariant data = QVariant::fromValue(invoke->invoker);
-        room->getThread()->trigger(ChainStateChanged, room, data);
-
+        room->setPlayerProperty(invoke->invoker, "chained", !invoke->invoker->isChained());
         return false;
     }
 };

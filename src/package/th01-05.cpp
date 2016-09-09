@@ -170,12 +170,8 @@ public:
     {
         if (invoke->owner->askForSkillInvoke(this, QVariant::fromValue(invoke->targets.first()))) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->owner->objectName(), invoke->targets.first()->objectName());
-            invoke->targets.first()->setChained(true);
 
-            room->broadcastProperty(invoke->targets.first(), "chained");
-            room->setEmotion(invoke->targets.first(), "chain");
-            QVariant _data = QVariant::fromValue(invoke->targets.first());
-            room->getThread()->trigger(ChainStateChanged, room, _data);
+            room->setPlayerProperty(invoke->targets.first(), "chained", true);
         }
         return false;
     }
