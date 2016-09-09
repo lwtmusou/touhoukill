@@ -3959,16 +3959,39 @@ public:
             if (!c) {
                 QList<int> hc = invoke->invoker->getPile("die");
                 int x = qrand() % hc.length();
-                Sanguosha->getCard(hc.value(x));
+                //this flag should notify client player
+                room->setPlayerFlag(invoke->invoker, "youdieProhibit_" + Sanguosha->getCard(hc.value(x))->objectName());
                 room->obtainCard(invoke->targets.first(), hc.value(x), true);
-            } else
+            } else {
+                room->setPlayerFlag(invoke->invoker, "youdieProhibit_" + c->objectName());
                 room->obtainCard(invoke->targets.first(), c, true);
+            }
         }
         return false;
     }
 };
 
+class YoudieProhibit : public ProhibitSkill
+{
+public:
+    YoudieProhibit() : ProhibitSkill("#youdieprevent")
+    {
+    }
 
+    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &) const
+    {
+        QString card_name = card->objectName();
+        foreach(const QString &flag, to->getFlagList()) {
+            if (flag.startsWith("youdieProhibit")) {
+                if (flag.endsWith(card_name))
+                    return true;
+                else if (card_name.contains("slash") && flag.endsWith("slash"))
+                    return true;
+            }
+        }
+        return false;
+    }
+};
 
 /*
 class Fanhun : public TriggerSkill
@@ -4476,6 +4499,8 @@ TouhouGodPackage::TouhouGodPackage()
     General *yuyuko_god = new General(this, "yuyuko_god", "touhougod", 0, false);
     yuyuko_god->addSkill(new Fanhun);
     yuyuko_god->addSkill(new Youdie);
+    yuyuko_god->addSkill(new YoudieProhibit);
+    related_skills.insertMulti("youdie", "#youdieprevent");
 
     General *aya_god = new General(this, "aya_god", "touhougod", 4, false);
     aya_god->addSkill(new Tianqu);
