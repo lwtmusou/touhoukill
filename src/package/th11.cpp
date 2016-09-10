@@ -754,8 +754,11 @@ public:
 
     bool cost(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        if (e == TargetSpecified)
-            return room->askForCard(invoke->invoker, ".|.|.|.", "@jidu", data, objectName());
+        if (e == TargetSpecified) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            QString prompt = "@jidu:" + use.from->objectName() + ":" + use.card->objectName();
+            return room->askForCard(invoke->invoker, ".|.|.|.", prompt, data, objectName());
+        }
         return true;
     }
 
@@ -767,6 +770,12 @@ public:
         }
         else if (e == ConfirmDamage) {
             DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from) {
+                room->touhouLogmessage("#TouhouBuff", damage.from, objectName());
+                QList<ServerPlayer *> logto;
+                logto << damage.to;
+                room->touhouLogmessage("#jidu_damage", damage.from, QString::number(damage.damage + 1), logto, QString::number(damage.damage));
+            }
             damage.damage = damage.damage + 1;
             data = QVariant::fromValue(damage);
         }
@@ -799,7 +808,7 @@ public:
             damage.from->drawCards(1);
             int max = qMin(damage.from->getCards("hes").length(), 2);
             if (max > 0) {
-                const Card *cards = room->askForExchange(damage.from, objectName(), max, max, true, "@gelong");
+                const Card *cards = room->askForExchange(damage.from, objectName(), max, max, true, "@gelong:"+ damage.to->objectName() + ":" + QString::number(max));
                 room->obtainCard(damage.to, cards, false);
             }
         } else {

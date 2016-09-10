@@ -560,7 +560,7 @@ sgs.ai_cardneed.jiuhao = function(to, card, self)
 end
 sgs.ai_use_priority.JiuhaoCard = sgs.ai_use_priority.Slash
 
-local jidu_skill = {}
+--[[local jidu_skill = {}
 jidu_skill.name = "jidu"
 table.insert(sgs.ai_skills, jidu_skill)
 jidu_skill.getTurnUseCard = function(self, inclusive)
@@ -583,6 +583,7 @@ jidu_skill.getTurnUseCard = function(self, inclusive)
 		end
 end
 sgs.ai_skill_invoke.jidu =true
+]]
 
 sgs.ai_skill_cardask["@jidu"] = function(self, data)
 	local use = data:toCardUse()
@@ -600,7 +601,7 @@ sgs.ai_skill_cardask["@jidu"] = function(self, data)
 	end
 	if e <= f then return "." end
 	
-	local cards = cards = sgs.QList2Table(self.player:getCards("hes"))
+	local cards = sgs.QList2Table(self.player:getCards("hes"))
 	self:sortByUseValue(cards)
 	if #cards <= 0 then return "." end
 	return "$" .. cards[1]:getId()
