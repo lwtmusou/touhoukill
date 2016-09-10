@@ -803,6 +803,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, damage.to->objectName(), damage.from->objectName());
         QString choice  = room->askForChoice(damage.from, objectName(), "gelong1+gelong2");
         if (choice == "gelong1") {
             damage.from->drawCards(1);
@@ -828,7 +829,7 @@ class Chuanran : public TriggerSkill
 public:
     Chuanran() : TriggerSkill("chuanran")
     {
-        events << DamageCaused;
+        events << Damage;
         frequency = Compulsory;
     }
 
@@ -836,23 +837,13 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         QList<ServerPlayer *> yamames = room->findPlayersBySkillName(objectName());
-        if (yamames.isEmpty() || !damage.from || damage.from->isDead())
+        if (yamames.isEmpty() || damage.nature != DamageStruct::Normal || !damage.from || damage.from->isDead() || damage.to->isChained())
             return QList<SkillInvokeDetail>();
-        
 
         QList<SkillInvokeDetail> d;
         foreach(ServerPlayer *p, yamames) {
-            if (p == damage.from) {
-                if (!damage.to->isChained())
-                    d << SkillInvokeDetail(this, p, p, NULL, true, damage.to);
-            } else if (p == damage.to) {
-                if (!damage.from->isChained())
-                    d << SkillInvokeDetail(this, p, p, NULL, true, damage.from);
-            } else {
-                if (!damage.from->isChained() && damage.to->isChained())
-                    d << SkillInvokeDetail(this, p, p, NULL, true, damage.from);
-                else if (!damage.to->isChained() && damage.from->isChained())
-                    d << SkillInvokeDetail(this, p, p, NULL, true, damage.to);
+            if ((p == damage.from || damage.from->isChained()) && damage.to != p) {
+                d << SkillInvokeDetail(this, p, p, NULL, true, damage.to);
             }
         }
         return d;
@@ -860,6 +851,14 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
+        room->notifySkillInvoked(invoke->owner, objectName());
+        LogMessage log;
+        log.type = "#TriggerSkill";
+        log.from = invoke->owner;
+        log.arg = objectName();
+        room->sendLog(log);
+
+        invoke->owner->drawCards(1);
         room->setPlayerProperty(invoke->targets.first(), "chained", true);
         return false;
     }
@@ -870,7 +869,7 @@ class Rebing : public TriggerSkill
 public:
     Rebing() : TriggerSkill("rebing")
     {
-        events << EventPhaseStart << ChainStateChanged << TurnedOver;
+        events << EventPhaseStart;// << ChainStateChanged << TurnedOver;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
@@ -878,7 +877,17 @@ public:
         ServerPlayer *current = room->getCurrent();
         if (!current)
             return;
-        if (triggerEvent == ChainStateChanged) {
+        if (triggerEvent == EventPhaseStart) {
+            if (current->getPhase() == Player::RoundStart) {
+                int marks = 0;
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->isChained() || !p->faceUp())
+                        marks++;
+                }
+                room->setPlayerMark(current, objectName(), marks);
+            }
+        }
+        /*if (triggerEvent == ChainStateChanged) {
             ServerPlayer *p = data.value<ServerPlayer *>();
             if (p->isChained())
                 current->setFlags(objectName());
@@ -887,7 +896,7 @@ public:
             ServerPlayer *p = data.value<ServerPlayer *>();
             if (!p->faceUp())
                 current->setFlags(objectName());
-        }
+        }*/
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent t, const Room *room, const QVariant &data) const
@@ -897,20 +906,21 @@ public:
 
         QList<SkillInvokeDetail> d;
         ServerPlayer *current = data.value<ServerPlayer *>();
-        if (current->getPhase() == Player::Finish
-            && !current->hasFlag(objectName())) {
-            bool can = false;
-            foreach(ServerPlayer *p, room->getOtherPlayers(current)) {
-                if (current->inMyAttackRange(p) && (p->isChained() || !p->faceUp())) {
-                    can = true;
-                    break;
-                }
+        if (current->getPhase() == Player::Finish) {
+            int marks = 0;
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if (p->isChained() || !p->faceUp())
+                    marks++;
             }
+
+            bool can = (marks <= current->getMark(objectName()));
             if (!can)
                 return d;
             QList<ServerPlayer *> yamames = room->findPlayersBySkillName(objectName());
             foreach(ServerPlayer *p, yamames) {
-                if (p != current && p->canDiscard(p, "hes") && !current->isNude())
+                if (p != current 
+                    && (p->inMyAttackRange(current) || !current->faceUp() || current->isChained())
+                    && p->canDiscard(p, "hes") && !current->isNude())
                     d << SkillInvokeDetail(this, p, p);
             }
         }
@@ -919,12 +929,14 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        return room->askForCard(invoke->invoker, ".|.|.|.", "@rebing", data, objectName());
+        ServerPlayer *current = data.value<ServerPlayer *>();
+        return room->askForCard(invoke->invoker, ".|.|.|.", "@rebing:" + current->objectName(), data, objectName());
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         ServerPlayer *current = data.value<ServerPlayer *>();
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->owner->objectName(), current->objectName());
         int id = room->askForCardChosen(invoke->invoker, current, "hes", objectName());
         room->obtainCard(invoke->invoker, id, room->getCardPlace(id) != Player::PlaceHand);
         return false;

@@ -1808,6 +1808,13 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
+        room->notifySkillInvoked(invoke->owner, objectName());
+        LogMessage log;
+        log.type = "#TriggerSkill";
+        log.from = invoke->owner;
+        log.arg = objectName();
+        room->sendLog(log);
+        
         room->setPlayerProperty(invoke->invoker, "chained", true);
 
         room->recover(invoke->invoker, RecoverStruct());
@@ -1871,6 +1878,15 @@ public:
         QString choice = invoke->tag.value("daoyao").toString();
         if (choice == "discard") {
             ServerPlayer *current = room->getCurrent();
+            room->notifySkillInvoked(invoke->owner, objectName());
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->owner->objectName(), current->objectName());
+
+            LogMessage log;
+            log.type = "#InvokeSkill";
+            log.from = invoke->owner;
+            log.arg = objectName();
+            room->sendLog(log);
+
             room->askForDiscard(current, objectName(), 1, 1, false, true, "daoyao_discard:" + invoke->invoker->objectName());
         } else if (choice == "draw") {
             QList<ServerPlayer *> targets;
