@@ -584,8 +584,40 @@ jidu_skill.getTurnUseCard = function(self, inclusive)
 end
 sgs.ai_skill_invoke.jidu =true
 
+sgs.ai_skill_cardask["@jidu"] = function(self, data)
+	local use = data:toCardUse()
+	if self:touhouCardUseEffectNullify(use, self.player) then return "." end
+	local e = 0
+	local f = 0
+	--需要预估伤害值
+	for _,p in sgs.qlist(use.to) do
+		if self:isFriend(p) then
+			f = f+1
+		end
+		if self:isEnemy(p) then
+			e = e+1
+		end
+	end
+	if e <= f then return "." end
+	
+	local cards = cards = sgs.QList2Table(self.player:getCards("hes"))
+	self:sortByUseValue(cards)
+	if #cards <= 0 then return "." end
+	return "$" .. cards[1]:getId()
+end
 
+sgs.ai_skill_invoke.gelong = function(self,data)
+	local damage = data:toDamage()
+	return not self:isFriend(damage.from)
+end
 sgs.ai_skill_choice.gelong= function(self)
+	if not self.player:faceUp() or self.player:isWounded() then
+		return "gelong2"
+	end
+	return "gelong1"
+end
+
+--[[sgs.ai_skill_choice.gelong= function(self)
 	local num=self.player:getHandcardNum()-self.player:getMaxCards()
 	if self:touhouHpLocked(self.player) then
 		return "gelong1"
@@ -600,7 +632,7 @@ sgs.ai_skill_choice.gelong= function(self)
 	else
 		return "gelong1"
 	end
-end
+end]]
 
 
 sgs.ai_skill_use["@@chuanran"] = function(self, prompt)

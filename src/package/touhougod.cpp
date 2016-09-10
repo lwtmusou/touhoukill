@@ -491,7 +491,7 @@ public:
     {
         if (triggerEvent == Damage) {
              DamageStruct damage = data.value<DamageStruct>();
-             if (damage.card != NULL && damage.from->getPhase() == Player::Play) {
+             if (damage.card != NULL && damage.from && damage.from->getPhase() == Player::Play) {
                  if (damage.card->hasFlag("jubian_card")) {
                      if (!damage.card->hasFlag("jubian_used"))
                          damage.card->setFlags("jubian_used");
