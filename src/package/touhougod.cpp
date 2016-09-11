@@ -92,27 +92,33 @@ public:
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
+        ServerPlayer *player;
+        bool set = false;
+        bool remove = false;
+        
         if (triggerEvent == EventLoseSkill) {
             SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
+            player = a.player;
             if (a.skill->objectName() == "zhouye")
-                room->removePlayerCardLimitation(a.player, "use", "Slash$0");
+                remove = true;
         } else if (triggerEvent == EventAcquireSkill) {
             SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
+            player = a.player;
             if (a.skill->objectName() ==  "zhouye" && a.player->getMark("@ye") == 0)
-                room->setPlayerCardLimitation(a.player, "use", "Slash", false);
+               set = true;
         } else if (triggerEvent == GameStart) {
-            ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player && player->hasSkill("zhouye")) {
-                room->setPlayerCardLimitation(player, "use", "Slash", false);
-            }
+            player = data.value<ServerPlayer *>();
+            if (player && player->hasSkill("zhouye"))
+                set = true;
         } else if (triggerEvent == EventSkillInvalidityChange) {
             QList<SkillInvalidStruct>invalids = data.value<QList<SkillInvalidStruct>>();
             foreach(SkillInvalidStruct v, invalids) {
                 if (!v.skill || v.skill->objectName() == "zhouye") {
-                    if (!v.invalid && v.player->getMark("@ye") == 0 && v.player->hasSkill(this, true))
-                        room->setPlayerCardLimitation(v.player, "use", "Slash", false);
+                    player = v.player;
+                    if (!v.invalid && v.player->getMark("@ye") == 0 && v.player->hasSkill(this))
+                        set = true;
                     else if (v.invalid)
-                        room->removePlayerCardLimitation(v.player, "use", "Slash$0");
+                        remove = true;
                 }
             }
 
@@ -120,11 +126,22 @@ public:
             MarkChangeStruct change = data.value<MarkChangeStruct>();
             if (change.name != "@ye")
                 return;
+            player = change.player;
             int mark = change.player->getMark("@ye");
             if (mark > 0 && (mark + change.num == 0) && change.player->hasSkill(this))
-                room->setPlayerCardLimitation(change.player, "use", "Slash", false);
+                set = true;
             else if (mark == 0 && (mark + change.num > 0))
-                room->removePlayerCardLimitation(change.player, "use", "Slash$0");
+                remove = true;
+        }
+
+        if (player != NULL) {
+            if (set && player->getMark("zhouye_limit") == 0) {
+                room->setPlayerCardLimitation(player, "use", "Slash", false);
+                room->setPlayerMark(player, "zhouye_limit", 1);
+            } else if (remove && player->getMark("zhouye_limit") > 0) {
+                room->removePlayerCardLimitation(player, "use", "Slash$0");
+                room->setPlayerMark(player, "zhouye_limit", 0);
+            }
         }
     }
 
@@ -291,29 +308,48 @@ public:
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
+        ServerPlayer *player;
+        bool set = false;
+        bool remove = false;
+        
+        
         if (triggerEvent == GameStart) {
-            ServerPlayer *player = data.value<ServerPlayer *>();
+            player = data.value<ServerPlayer *>();
             if (player && player->hasSkill("aoyi"))
-                room->setPlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick", false);
+                set = true;
         } else if (triggerEvent == EventLoseSkill) {
             SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
+            player = a.player;
             if (a.skill->objectName() == "aoyi")
-                room->removePlayerCardLimitation(a.player, "use", "TrickCard+^DelayedTrick$0");
+                remove = true;
         } else if (triggerEvent == EventAcquireSkill) {
             SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
+            player = a.player;
             if (a.skill->objectName() == "aoyi")
-                room->setPlayerCardLimitation(a.player, "use", "TrickCard+^DelayedTrick", false);
+                set = true;
         } else if (triggerEvent == EventSkillInvalidityChange) {
             QList<SkillInvalidStruct>invalids = data.value<QList<SkillInvalidStruct>>();
             foreach(SkillInvalidStruct v, invalids) {
                 if (!v.skill || v.skill->objectName() == "aoyi") {
-                    if (!v.invalid  && v.player->hasSkill(this, true))
-                        room->setPlayerCardLimitation(v.player, "use", "TrickCard+^DelayedTrick", false);
+                    player = v.player;
+                    if (!v.invalid  && v.player->hasSkill(this))
+                        set = true;
                     else if (v.invalid)
-                        room->removePlayerCardLimitation(v.player, "use", "TrickCard+^DelayedTrick$0");
+                        remove = true;
                 }
             }
 
+        }
+
+        if (player != NULL) {
+            if (set && player->getMark("aoyi_limit") == 0) {
+                room->setPlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick", false);
+                room->setPlayerMark(player, "aoyi_limit", 1);
+            }
+            else if (remove && player->getMark("aoyi_limit") > 0) {
+                room->removePlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick$0");
+                room->setPlayerMark(player, "aoyi_limit", 0);
+            }
         }
 
     }
@@ -861,7 +897,8 @@ public:
                 if (!room->askForDiscard(player, objectName(), x, x, true, true, "@jinguo:" + QString::number(x) + ":" + QString::number(y)))
                     room->loseHp(player, y);
             }
-        }
+        } else
+            player->skip(Player::Discard);
         return false;
     }
 };

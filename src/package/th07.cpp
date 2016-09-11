@@ -911,41 +911,56 @@ public:
     {
         if (triggerEvent == CardEffected || triggerEvent == SlashEffected)
             return;
+        ServerPlayer *player;
+        bool set = false;
+        bool remove = false;
 
+        
         if (triggerEvent == PreMarkChange) {
             MarkChangeStruct change = data.value<MarkChangeStruct>();
+            player = change.player;
             if (change.name != "@shi")
                 return;
             if (!change.player->hasSkill("yexing")) return;
             int mark = change.player->getMark("@shi");
             if (mark > 0 && (mark + change.num == 0) && change.player->hasSkill(this))
-                room->setPlayerCardLimitation(change.player, "use", "TrickCard+^DelayedTrick", false);
+                set = true;
             else if (mark == 0 && (mark + change.num > 0))
-                room->removePlayerCardLimitation(change.player, "use", "TrickCard+^DelayedTrick$0");
-            return;
+                remove = true;
         } else if (triggerEvent == GameStart) {
-            ServerPlayer *player = data.value<ServerPlayer *>();
+            player = data.value<ServerPlayer *>();
             if (player && player->hasSkill("yexing"))
-                room->setPlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick", false);
+                set = true;
         } else if (triggerEvent == EventLoseSkill) {
             SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
+            player = a.player;
             if (a.skill->objectName() == "yexing")
-                room->removePlayerCardLimitation(a.player, "use", "TrickCard+^DelayedTrick$0");
+                remove = true;
         } else if (triggerEvent == EventAcquireSkill) {
             SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
             if (a.skill->objectName() == "yexing" && a.player->getMark("@shi") == 0)
-                room->setPlayerCardLimitation(a.player, "use", "TrickCard+^DelayedTrick", false);
+                set = true;
         } else if (triggerEvent == EventSkillInvalidityChange) {
             QList<SkillInvalidStruct>invalids = data.value<QList<SkillInvalidStruct>>();
             foreach(SkillInvalidStruct v, invalids) {
                 if (!v.skill || v.skill->objectName() == "yexing") {
-                    if (!v.invalid && v.player->getMark("@shi") == 0  && v.player->hasSkill(this, true))
-                        room->setPlayerCardLimitation(v.player, "use", "TrickCard+^DelayedTrick", false);
+                    player = v.player;
+                    if (!v.invalid && v.player->getMark("@shi") == 0 && v.player->hasSkill(this))
+                        set = true;
                     else if (v.invalid)
-                        room->removePlayerCardLimitation(v.player, "use", "TrickCard+^DelayedTrick$0");
+                        remove = true;
                 }
             }
-
+        }
+        
+        if (player != NULL) {
+            if (set && player->getMark("yexing_limit") == 0) {
+                room->setPlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick", false);
+                room->setPlayerMark(player, "yexing_limit", 1);
+            } else if (remove && player->getMark("yexing_limit") > 0) {
+                room->removePlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick$0");
+                room->setPlayerMark(player, "yexing_limit", 0);
+            }
         }
     }
 
