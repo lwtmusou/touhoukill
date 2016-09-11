@@ -460,6 +460,7 @@ public:
     }
 };
 
+/*
 class Fanji : public TriggerSkill
 {
 public:
@@ -520,10 +521,59 @@ public:
         room->damage(DamageStruct("fanji", invoke->invoker, damage.from));
         return false;
     }
+};*/
+
+class Fanji : public TriggerSkill
+{
+public:
+    Fanji() : TriggerSkill("fanji")
+    {
+        events << Damaged;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        QList<SkillInvokeDetail> d;
+        if (damage.to->isDead() || !damage.from || damage.from->isDead() || damage.from == damage.to)
+            return d;
+
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            if (p != damage.from
+                && (p->inMyAttackRange(damage.to) || p == damage.to))
+                d << SkillInvokeDetail(this, p, p, NULL, false, damage.from);
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        invoke->invoker->tag["fanji_damage"] = data;
+        QString prompt = "target:" + damage.from->objectName() + ":" + damage.to->objectName();
+        if (invoke->invoker->askForSkillInvoke(this, prompt)) {
+            QString choice = room->askForChoice(invoke->invoker, objectName(), "hp+maxhp");
+            if (choice == "maxhp")
+                room->loseMaxHp(invoke->invoker);
+            else
+                room->loseHp(invoke->invoker);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (invoke->invoker->isAlive())
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), damage.from->objectName());
+        room->damage(DamageStruct("fanji", (invoke->invoker->isAlive()) ? invoke->invoker : NULL, damage.from));
+
+        return false;
+    }
 };
-
-
-
 
 class Zaiwu : public TriggerSkill
 {

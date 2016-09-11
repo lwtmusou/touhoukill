@@ -635,7 +635,7 @@ end
 	end
 end]]
 
-
+--[[
 sgs.ai_skill_use["@@chuanran"] = function(self, prompt)
 	local id=self.player:getTag("chuanran_id"):toInt()
 	local cards={}
@@ -660,7 +660,7 @@ sgs.ai_skill_use["@@chuanran"] = function(self, prompt)
 	local target
 	for _,p in sgs.qlist(others) do
 		if self:isEnemy(p) and not p:containsTrick(card:objectName()) and not self:touhouDelayTrickBadTarget(card, p,self.player)then
-			--[[if self:playerGetRound(p) > self:playerGetRound(self.player) then--山女先行动
+			if self:playerGetRound(p) > self:playerGetRound(self.player) then--山女先行动
 				if card:isKindOf("Indulgence") then
 					break
 				elseif card:isKindOf("SupplyShortage") then
@@ -676,7 +676,7 @@ sgs.ai_skill_use["@@chuanran"] = function(self, prompt)
 						end
 					end
 				end
-			else]]
+			else
 				target=p
 				break
 			--end
@@ -710,7 +710,18 @@ sgs.ai_skill_playerchosen.rebing = function(self, targets)
 	return nil
 end
 sgs.ai_playerchosen_intention.rebing = 30
+]]
 
+sgs.ai_skill_cardask["@rebing"] = function(self, data)
+	local current = self.room:getCurrent()
+	if not current or current:isDead() then  return "." end
+	if not self:isEnemy(current) then  return "." end
+	
+	local cards = sgs.QList2Table(self.player:getCards("hes"))
+	self:sortByUseValue(cards)
+	if #cards <= 0 then return "." end
+	return "$" .. cards[1]:getId()
+end
 
 sgs.ai_skill_invoke.diaoping  =function(self,data)
 	if self.player:isKongcheng() then return false end

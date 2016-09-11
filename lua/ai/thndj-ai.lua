@@ -170,6 +170,12 @@ sgs.ai_skill_invoke.fanji = function(self,data)
 	end
 	return false
 end
+sgs.ai_skill_choice.fanji= function(self, choices, data)
+	if self.player:isWounded() then
+		return "maxhp"
+	end
+	return "hp"
+end
 --[[sgs.ai_choicemade_filter.skillInvoke.fanji = function(self, player, args)
 	local damage = player:getTag("fanji_damage"):toDamage()
 	local to=damage.to
