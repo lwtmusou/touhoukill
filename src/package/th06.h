@@ -31,7 +31,15 @@ public:
 };
 
 
+class ZhenyeCard : public SkillCard
+{
+    Q_OBJECT
 
+public:
+    Q_INVOKABLE ZhenyeCard();
+
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
 
 class BanyueCard : public SkillCard
 {

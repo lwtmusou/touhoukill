@@ -591,7 +591,39 @@ sgs.ai_damageInflicted.bingpo =function(self, damage)
 end
 
 
-
+sgs.ai_skill_use["@@zhenye"] = function(self, prompt)
+	local target_table = sgs.QList2Table(self.room:getOtherPlayers(self.player))
+	self:sort(target_table,"handcard")
+	local target
+	for _,p in pairs (target_table) do
+		if self:isFriend(p) and not p:faceUp()then
+			target = p
+			break
+		end
+		if self:isEnemy(p) and p:faceUp()then
+			target = p
+			break
+		end
+	end
+	
+	
+	local blacks = {}
+	
+	for _,c in sgs.qlist(self.player:getCards("hs")) do
+		if (c:isBlack()) then table.insert(blacks, c) end
+	end
+	self:sortByUseValue(blacks)
+	if (self.player:getHandcardNum() - #blacks) > target:getHandcardNum()  or #blacks == 0 then
+		return "."
+	end
+	local num =  math.max(self.player:getHandcardNum() - target:getHandcardNum(), 1)
+	local ids = {}
+	for index, c in ipairs(blacks) do
+		table.insert(ids, c:getEffectiveId())
+		if index >= num then break end
+	end
+	return "@ZhenyeCard="..table.concat(ids, "+")
+end
 
 sgs.ai_skill_playerchosen.zhenye = function(self, targets)
 	local target_table= sgs.QList2Table(targets)
@@ -648,7 +680,17 @@ sgs.ai_slash_prohibit.anyu = function(self, from, to, card)
 	if self:isFriend(from, to) then return false end
 	return not self:isWeak(to) and not to:faceUp()
 end
-
+sgs.ai_skill_cardask["@anyu"] = function(self, data)
+	if self.player:faceUp() then  return "." end
+	local blacks = {}
+	for _,c in sgs.qlist(self.player:getCards("hes")) do
+		if (c:isBlack()) then table.insert(blacks, c) end
+	end
+	
+	self:sortByUseValue(blacks)
+	if  #blacks== 0 then  return "." end
+	return "$" .. cards[1]:getId()
+end
 
 --function SmartAI:getEnemyNumBySeat(from, to, target, include_neutral)
 qiyue_find_righter = function(room,target)
