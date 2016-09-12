@@ -680,7 +680,7 @@ sgs.ai_slash_prohibit.anyu = function(self, from, to, card)
 	if self:isFriend(from, to) then return false end
 	return not self:isWeak(to) and not to:faceUp()
 end
-sgs.ai_skill_cardask["@anyu"] = function(self, data)
+--[[sgs.ai_skill_cardask["@anyu"] = function(self, data)
 	if self.player:faceUp() then  return "." end
 	local blacks = {}
 	for _,c in sgs.qlist(self.player:getCards("hes")) do
@@ -690,7 +690,7 @@ sgs.ai_skill_cardask["@anyu"] = function(self, data)
 	self:sortByUseValue(blacks)
 	if  #blacks== 0 then  return "." end
 	return "$" .. cards[1]:getId()
-end
+end]]
 
 --function SmartAI:getEnemyNumBySeat(from, to, target, include_neutral)
 qiyue_find_righter = function(room,target)

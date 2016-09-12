@@ -985,6 +985,7 @@ public:
     }
 };
 
+/*
 class Anyu : public TriggerSkill
 {
 public:
@@ -1020,7 +1021,7 @@ public:
             invoke->invoker->drawCards(1);
         return false;
     }
-};
+};*/
 
 /*
 class Zhenye : public TriggerSkill
@@ -1058,7 +1059,7 @@ public:
 
         return false;
     }
-};
+};*/
 
 class Anyu : public TriggerSkill
 {
@@ -1097,7 +1098,7 @@ public:
         return false;
     }
 };
-*/
+
 
 
 class Qiyue : public TriggerSkill
