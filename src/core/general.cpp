@@ -179,6 +179,10 @@ QString General::getSkillDescription(bool include_name, bool yellow) const
         name.prepend(QString("<img src='image/kingdom/icon/%1.png'/>    ").arg(kingdom));
         for (int i = 0; i < max_hp; i++)
             name.append("<img src='image/system/magatamas/5.png' height = 12/>");
+        if (hasSkill("banling")) {
+            for (int i = 0; i < max_hp; i++)
+                name.append("<img src='image/system/magatamas/1.png' height = 12/>");
+        }
         name.append("<br/> <br/>");
         description.prepend(name);
     }
