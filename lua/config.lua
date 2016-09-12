@@ -48,7 +48,7 @@ config = {
 		"TH14",
 		--"TH15", --0.8不对应
 		"TH99",
-		"THXWM",
+		--"THXWM", --基于契合等问题，暂时移除
 		"THNDJ",
 		"TouhouGod",
 		"Standard", --此包内带pattern的定义 不能屏蔽。。。
