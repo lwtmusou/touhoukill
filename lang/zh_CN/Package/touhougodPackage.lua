@@ -185,7 +185,7 @@ return{
 	["illustrator:youmu_god_2"] = "しがらき",
 	["origin:youmu_god_2"] = "p号：30393575，个人ID：1004274",
 	["banling"] = "半灵",
-	[":banling"] = "<font color=\"#808080\"><b>永久技，</b></font>你拥有两种体力：人体力和灵体力。你的基础手牌上限与两种体力中较少的那种相同。每当你的体力或体力上限发生1点改变时，你选择两种体力中的一种进行结算。当任一种体力值扣减至0时，你进入濒死状态。",
+	[":banling"] = "<font color=\"#808080\"><b>永久技，</b></font>你拥有人体力和灵体力。你的体力值与其中较少的那种相同。若你的体力或体力上限将发生1点改变，你选择两种体力中的一种进行结算。",
 	["#lingtilidamage"] = "%from 的 %arg 被触发， %from 选择了扣减 %arg2 点 “灵”体力。",
 	["#rentilidamage"] = "%from 的 %arg 被触发， %from 选择了扣减 %arg2 点 “人”体力。",
 	["#rentilirecover"] = "%from 的 %arg 被触发， %from 选择了回复 %arg2 点 “人”体力。",

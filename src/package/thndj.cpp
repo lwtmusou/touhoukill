@@ -131,11 +131,7 @@ public:
                 disable << target->getWeapon()->getId();
 #pragma message WARN("todo_Fs: split this askforcardchosen. this skill is \"put the cards in judge area to the discard pile\"")
             int card_id = room->askForCardChosen(mokou, target, "je", objectName(), false, Card::MethodDiscard, disable);
-            if (target->getJudgingAreaID().contains(card_id))
-                room->throwCard(card_id, NULL);
-            else
-                room->throwCard(card_id, target, mokou);
-
+            room->throwCard(card_id, (target->getJudgingAreaID().contains(card_id)) ? NULL : target, mokou);
             return true;
         }
 
