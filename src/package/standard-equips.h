@@ -75,6 +75,14 @@ public:
     Q_INVOKABLE EightDiagram(Card::Suit suit, int number = 2);
 };
 
+class BreastPlate : public Armor
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE BreastPlate(Card::Suit suit = Card::Club, int number = 2);
+};
+
 class IceSword : public Weapon
 {
     Q_OBJECT

@@ -929,6 +929,54 @@ EightDiagram::EightDiagram(Suit suit, int number)
     setObjectName("EightDiagram");
 }
 
+
+class BreastPlateSkill : public ArmorSkill
+{
+public:
+    BreastPlateSkill() : ArmorSkill("BreastPlate")
+    {
+        events << DamageInflicted;
+        frequency = Compulsory;
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.damage >= damage.to->getHp() && damage.to->getArmor() && damage.to->getArmor()->objectName() == objectName() 
+            && equipAvailable(damage.to, EquipCard::ArmorLocation, objectName())) {
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        room->obtainCard(invoke->invoker, invoke->invoker->getArmor()->getEffectiveId());
+        DamageStruct damage = data.value<DamageStruct>();
+        LogMessage log;
+        log.type = "#BreastPlate";
+        log.from = invoke->invoker;
+        if (damage.from)
+            log.to << damage.from;
+        log.arg = QString::number(damage.damage);
+        if (damage.nature == DamageStruct::Normal)
+            log.arg2 = "normal_nature";
+        else if (damage.nature == DamageStruct::Fire)
+            log.arg2 = "fire_nature";
+        else if (damage.nature == DamageStruct::Thunder)
+            log.arg2 = "thunder_nature";
+        room->sendLog(log);
+        return true;
+    }
+};
+
+BreastPlate::BreastPlate(Card::Suit suit, int number)
+    : Armor(suit, number)
+{
+    setObjectName("BreastPlate");
+}
+
 AmazingGrace::AmazingGrace(Suit suit, int number)
     : GlobalEffect(suit, number)
 {
@@ -1775,12 +1823,13 @@ StandardCardPackage::StandardCardPackage()
         << new KylinBow
 
         << new EightDiagram(Card::Spade)
-        << new EightDiagram(Card::Club);
+        << new BreastPlate(Card::Club);
+        //<< new EightDiagram(Card::Club);
 
     skills << new DoubleSwordSkill << new QinggangSwordSkill
         << new BladeSkill << new SpearSkill << new AxeSkill
         << new KylinBowSkill << new EightDiagramSkill
-        << new HalberdSkill;
+        << new HalberdSkill << new BreastPlateSkill;
 
     QList<Card *> horses;
     horses << new DefensiveHorse(Card::Spade, 5)

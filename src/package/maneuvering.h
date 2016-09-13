@@ -67,6 +67,14 @@ public:
     Q_INVOKABLE GudingBlade(Card::Suit suit, int number);
 };
 
+class IronArmor : public Armor
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE IronArmor(Card::Suit suit, int number);
+};
+
 class Vine : public Armor
 {
     Q_OBJECT

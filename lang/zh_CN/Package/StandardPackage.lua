@@ -122,6 +122,10 @@ local t = {
 	["@wooden_ox-move"] = "你可以将【木牛流马】移动至一名其他角色的装备区",
 	["#WoodenOx"] = "%from 使用/打出了 %arg 张 %arg2 牌",
 
+	
+	["BreastPlate"] = "护心镜",
+	[":BreastPlate"] = "装备牌·防具<br /><b>防具技能</b>：当你受到伤害时，若此伤害不小于X点（X为你的体力值），你可以获得装备区里的此牌，若如此做，防止此伤害。",
+	["#BreastPlate"] = "%from 防止了 %to 对其造成的 %arg 点伤害[%arg2]",
 }
 
 local ohorses = { "ChiTu", "DaYuan", "ZiXing"}

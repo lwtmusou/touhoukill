@@ -174,6 +174,32 @@ GudingBlade::GudingBlade(Suit suit, int number)
 
 
 
+
+class IronArmorSkill : public ProhibitSkill
+{
+public:
+    IronArmorSkill() : ProhibitSkill("IronArmor")
+    {
+    }
+
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &) const
+    {
+        if (EquipSkill::equipAvailable(to, EquipCard::ArmorLocation, objectName())) {
+            return card->isKindOf("FireAttack")
+                || card->isKindOf("IronChain")
+                || card->isKindOf("NatureSlash");
+        }
+        return false;
+    }
+};
+
+IronArmor::IronArmor(Suit suit, int number)
+    : Armor(suit, number)
+{
+    setObjectName("IronArmor");
+}
+
+
 class VineSkill : public ArmorSkill
 {
 public:
@@ -189,11 +215,13 @@ public:
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.nature == DamageStruct::Normal)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
-        } else if (triggerEvent == CardEffected) {
+        }
+        else if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.card != NULL && (effect.card->isKindOf("SavageAssault") || effect.card->isKindOf("ArcheryAttack")))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
-        } else if (triggerEvent == DamageInflicted) {
+        }
+        else if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
             if (equipAvailable(damage.to, EquipCard::ArmorLocation, objectName()) && damage.nature == DamageStruct::Fire)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
@@ -217,7 +245,8 @@ public:
 
             effect.to->setFlags("Global_NonSkillNullify");
             return true;
-        } else if (triggerEvent == CardEffected) {
+        }
+        else if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
             room->setEmotion(invoke->invoker, "armor/vine");
             LogMessage log;
@@ -229,7 +258,8 @@ public:
 
             effect.to->setFlags("Global_NonSkillNullify");
             return true;
-        } else if (triggerEvent == DamageInflicted) {
+        }
+        else if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
             room->setEmotion(invoke->invoker, "armor/vineburn");
             LogMessage log;
@@ -251,6 +281,7 @@ Vine::Vine(Suit suit, int number)
 {
     setObjectName("Vine");
 }
+
 
 class SilverLionSkill : public ArmorSkill
 {
@@ -501,9 +532,9 @@ ManeuveringPackage::ManeuveringPackage()
     QList<Card *> cards;
 
     // spade
-    cards //<< new IceSlash(Card::Spade, 4)
-        << new GudingBlade(Card::Spade, 1)
-        << new Vine(Card::Spade, 2)
+    cards << new GudingBlade(Card::Spade, 1)
+        //<< new Vine(Card::Spade, 2)
+        << new IronArmor(Card::Spade, 2)
         << new Analeptic(Card::Spade, 3)
         << new ThunderSlash(Card::Spade, 4)
         << new ThunderSlash(Card::Spade, 5)
@@ -568,7 +599,7 @@ ManeuveringPackage::ManeuveringPackage()
         card->setParent(this);
 
     skills << new GudingBladeSkill << new FanSkill
-        << new VineSkill << new SilverLionSkill;
+        << new VineSkill << new SilverLionSkill << new IronArmorSkill;
 }
 
 ADD_PACKAGE(Maneuvering)
