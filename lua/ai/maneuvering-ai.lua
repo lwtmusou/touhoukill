@@ -151,7 +151,9 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 	if merry and self:isFriend(merry, target) and self:canLuanying(merry, slash) then
 		return false
 	end
-
+	if fakeDamage.damage >= target:getHp() and target:hasArmorEffect("BreastPlate") and target:getArmor() and target:getArmor():objectName() == "BreastPlate"  then
+		return false
+	end
 	if target:hasSkill("zheshe") and target:canDiscard(target, "hs") then return false end
 	if target:hasSkill("xiangle") then
 		local basicnum = 0
