@@ -3805,7 +3805,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 		end
 	end
 
-	local eightdiagram, silverlion, vine, renwang, DefHorse, OffHorse, wooden_ox
+	local eightdiagram, silverlion, vine, renwang, ironarmor, DefHorse, OffHorse, wooden_ox
 	local weapon, crossbow, halberd, double, qinggang, axe, gudingdao
 	for _, card in ipairs(cards) do
 		if card:isKindOf("EightDiagram") then eightdiagram = card:getEffectiveId()
@@ -3821,7 +3821,8 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 		elseif card:isKindOf("GudingBlade") then gudingdao = card:getEffectiveId()
 		elseif card:isKindOf("Halberd") then halberd = card:getEffectiveId()
 		elseif card:isKindOf("Weapon") then weapon = card:getEffectiveId()
-		elseif card:isKindOf("WoodenOx") then wooden_ox = card:getEffectiveId() end
+		elseif card:isKindOf("WoodenOx") then wooden_ox = card:getEffectiveId() 
+		elseif card:isKindOf("IronArmor") then ironarmor = card:getEffectiveId() end
 	end
 
 	if eightdiagram then
@@ -3875,7 +3876,16 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 	if renwang then
 		if sgs.ai_armor_value.RenwangShield(self.player, self) > 0 and self:getCardsNum("Jink") == 0 then return renwang end
 	end
-
+	
+	if ironarmor then
+		for _, enemy in ipairs(self.enemies) do
+			if enemy:hasSkill("zhence") then return ironarmor end
+			if getCardsNum("FireAttack", enemy, self.player) > 0 then return ironarmor end
+			if getCardsNum("FireSlash", enemy, self.player) > 0 then return ironarmor end
+			--if enemy:getFormation():contains(self.player) and getCardsNum("BurningCamps", enemy, self.player) > 0 then return ironarmor end
+		end
+	end
+	
 	if DefHorse and (not self.player:hasSkill("leiji") or self:getCardsNum("Jink") == 0) then
 		local before_num, after_num = 0, 0
 		for _, enemy in ipairs(self.enemies) do
@@ -4106,6 +4116,10 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 		if not inAttackRange then return weapon end
 	end
 
+	if eightdiagram or silverlion or vine or renwang or ironarmor then
+		return renwang or eightdiagram or ironarmor or silverlion or vine
+	end
+
 	self:sortByCardNeed(cards, true)
 	for _, card in ipairs(cards) do
 		if not card:isKindOf("TrickCard") and not card:isKindOf("Peach") then
@@ -4182,3 +4196,19 @@ sgs.ai_no_playerchosen_intention.wooden_ox =function(self, from)
 		end
 	end
 end
+
+
+--BreastPlate
+sgs.ai_skill_invoke.BreastPlate = true
+function sgs.ai_armor_value.BreastPlate(player, self)
+	if player:hasSkills("huanmeng|bumie") then
+		return 0
+	end
+	if player:getHp() >= 3 then
+		return 2
+	else
+		return 5.5
+	end
+end
+
+sgs.ai_use_priority.BreastPlate = 0.9

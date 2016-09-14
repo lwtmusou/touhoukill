@@ -7030,6 +7030,9 @@ function SmartAI:touhouConfirmDamage(damage,from,to)
 		if damage.card:hasFlag("yuxueinvoked") then
 			damage.damage=damage.damage+1
 		end
+		if damage.card:hasFlag("jidu_card") then
+			damage.damage=damage.damage+1
+		end
 	end
 	return damage
 	--由于confirm时不需要check技能，所以没有用查询技能列表的方式，直接在此函数枚举
@@ -7092,7 +7095,6 @@ function SmartAI:touhouDamageInflicted(damage,from,to)
 
 	--技能优先于藤甲等防具
 	if from and not self:touhouIgnoreArmor(damage.card,from,to)  then
-
 		if to:hasArmorEffect("Vine") then
 			if damage.nature == sgs.DamageStruct_Fire  then
 				damage.damage=damage.damage+1

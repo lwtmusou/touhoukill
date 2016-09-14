@@ -875,4 +875,16 @@ sgs.dynamic_value.damage_card.FireAttack = true
 
 sgs.ai_card_intention.FireAttack = 80
 
+--IronArmor
+function sgs.ai_armor_value.IronArmor(player, self)
+	if self:isWeak(player) then
+		for _, p in sgs.qlist(self.room:getOtherPlayers(player)) do
+			if p:hasSkill("zhence") and self:isEnemy(player, p) then
+				return 5
+			end
+		end
+	end
+	return 2.5
+end
 
+sgs.ai_use_priority.IronArmor = 0.82
