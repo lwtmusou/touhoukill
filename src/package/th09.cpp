@@ -713,7 +713,7 @@ public:
         Card *card = Sanguosha->getCard(card_id);
         if (!target->isCardLimited(card, Card::MethodResponse))
             room->retrial(card, target, judge, objectName());
-        return true;
+        return false;
     }
 };
 
