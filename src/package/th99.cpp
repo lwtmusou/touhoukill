@@ -1745,7 +1745,7 @@ public:
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, room->getAllPlayers()) {
                 QVariantMap bihuo_list = p->tag.value("bihuo", QVariantMap()).toMap();
-                p->tag.remove("bihuo");
+
                 foreach (const QString &key, bihuo_list.keys()) {
                     int n = bihuo_list.value(key, 0).toInt();
                     if (n <= 0)
@@ -1756,7 +1756,7 @@ public:
                         continue;
 
                     SkillInvokeDetail s(this, kos, p, NULL, true);
-                    s.tag["n"] = n;
+                    //s.tag["n"] = n;
                     d << s;
                 }
             }
@@ -1769,7 +1769,12 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        int n = invoke->tag.value("n", 0).toInt();
+        //int n = invoke->tag.value("n", 0).toInt();
+        QVariantMap bihuo_list = invoke->invoker->tag.value("bihuo", QVariantMap()).toMap();
+        int n = bihuo_list.value(invoke->owner->objectName(), 0).toInt();
+        bihuo_list[invoke->owner->objectName()] = 0;
+        invoke->invoker->tag["bihuo"] = bihuo_list;
+        
         if (n <= 0)
             return false;
         n = qMin(n, invoke->invoker->getHandcardNum());
