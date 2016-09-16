@@ -476,6 +476,84 @@ Crossbow::Crossbow(Suit suit, int number)
     setObjectName("Crossbow");
 }
 
+
+TribladeSkillCard::TribladeSkillCard() : SkillCard()
+{
+    setObjectName("Triblade");
+    m_skillName = "Triblade";
+}
+
+bool TribladeSkillCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+{
+    return targets.length() == 0 && to_select->hasFlag("Global_TribladeFailed");
+}
+
+void TribladeSkillCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
+    room->damage(DamageStruct("Triblade", source, targets[0]));
+}
+
+class TribladeSkillVS : public OneCardViewAsSkill
+{
+public:
+    TribladeSkillVS() : OneCardViewAsSkill("Triblade")
+    {
+        response_pattern = "@@Triblade";
+        filter_pattern = ".|.|.|hand!";
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const
+    {
+        TribladeSkillCard *c = new TribladeSkillCard;
+        c->addSubcard(originalCard);
+        return c;
+    }
+};
+
+class TribladeSkill : public WeaponSkill
+{
+public:
+    TribladeSkill() : WeaponSkill("Triblade")
+    {
+        events << Damage;
+        view_as_skill = new TribladeSkillVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (!damage.from || damage.from->isDead() 
+            || !equipAvailable(damage.from, EquipCard::WeaponLocation, objectName()) || !damage.from->canDiscard(damage.from, "hs"))
+            return QList<SkillInvokeDetail>();
+
+        if (damage.to && damage.to->isAlive() && damage.card && damage.card->isKindOf("Slash")
+            && damage.by_user && !damage.chain && !damage.transfer) {
+            foreach(ServerPlayer *p, room->getOtherPlayers(damage.from)) {
+                if (damage.to->distanceTo(p) == 1) {
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from);
+                }
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        foreach(ServerPlayer *p, room->getOtherPlayers(damage.from)){
+            if (damage.to->distanceTo(p) == 1)
+                room->setPlayerFlag(p, "Global_TribladeFailed");
+        }
+        room->askForUseCard(invoke->invoker, "@@Triblade", "@Triblade");
+        return false;
+    }
+};
+
+Triblade::Triblade(Card::Suit suit, int number) : Weapon(suit, number, 3)
+{
+    setObjectName("Triblade");
+}
+
 class DoubleSwordSkill : public WeaponSkill
 {
 public:
@@ -1812,7 +1890,8 @@ StandardCardPackage::StandardCardPackage()
 
         << new Peach(Card::Diamond, 12)
 
-        << new Crossbow(Card::Club)
+        << new Triblade(Card::Club)
+        //<< new Crossbow(Card::Club)
         << new Crossbow(Card::Diamond)
         << new DoubleSword
         << new QinggangSword
@@ -1829,7 +1908,7 @@ StandardCardPackage::StandardCardPackage()
     skills << new DoubleSwordSkill << new QinggangSwordSkill
         << new BladeSkill << new SpearSkill << new AxeSkill
         << new KylinBowSkill << new EightDiagramSkill
-        << new HalberdSkill << new BreastPlateSkill;
+        << new HalberdSkill << new BreastPlateSkill << new TribladeSkill;
 
     QList<Card *> horses;
     horses << new DefensiveHorse(Card::Spade, 5)
@@ -1848,6 +1927,7 @@ StandardCardPackage::StandardCardPackage()
 
     cards << horses;
 
+    addMetaObject<TribladeSkillCard>();
     skills << new HorseSkill;
 
     cards << new AmazingGrace(Card::Heart, 3)

@@ -255,9 +255,7 @@ void YaobanCard::onEffect(const CardEffectStruct &effect) const
 
 bool YaobanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    QString str = Self->property("yaoban").toString();
-    QStringList yaoban_targets = str.split("+");
-    return  targets.isEmpty() && yaoban_targets.contains(to_select->objectName());
+    return  targets.isEmpty() && to_select->hasFlag("Global_yaobanFailed");
 }
 
 class YaobanVS : public OneCardViewAsSkill
@@ -304,15 +302,9 @@ public:
     {
         ServerPlayer *ldlk = invoke->invoker;
         DamageStruct damage = data.value<DamageStruct>();
-        QStringList    yaobanTargets;
         foreach(ServerPlayer *p, room->getOtherPlayers(damage.to))
-            yaobanTargets << p->objectName();
-
-        ldlk->tag["yaoban_damage"] = QVariant::fromValue(damage);
-        room->setPlayerProperty(ldlk, "yaoban", yaobanTargets.join("+"));
+            room->setPlayerFlag(p, "Global_yaobanFailed");
         room->askForUseCard(ldlk, "@@yaoban", "@yaoban:" + damage.to->objectName());
-        room->setPlayerProperty(ldlk, "yaoban", QVariant());
-        ldlk->tag.remove("yaoban_damage");
         return false;
     }
 };

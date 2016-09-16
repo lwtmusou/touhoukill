@@ -279,11 +279,10 @@ end
 
 sgs.ai_skill_use["@@yaoban"] = function(self, prompt)
 	if self.player:isKongcheng() then return "." end
-	local damage=self.player:getTag("yaoban_damage"):toDamage()
-	local to=damage.to
+
 	local targets={}
-	for _, p in ipairs(self.enemies) do
-		if to:objectName()~=p:objectName() then
+	for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if p:hasFlag("Global_yaobanFailed") and self:isEnemy(p) then
 			local fakeDamage=sgs.DamageStruct()
 			fakeDamage.card=nil
 			fakeDamage.nature= sgs.DamageStruct_Normal

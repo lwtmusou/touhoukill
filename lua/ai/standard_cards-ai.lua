@@ -4212,3 +4212,45 @@ function sgs.ai_armor_value.BreastPlate(player, self)
 end
 
 sgs.ai_use_priority.BreastPlate = 0.9
+
+sgs.weapon_range.Triblade = 3
+sgs.ai_skill_use["@@Triblade"] = function(self, prompt)
+	local targets = sgs.SPlayerList()
+	for _, p in sgs.qlist(self.room:getAllPlayers()) do
+		if p:hasFlag("Global_TribladeFailed") then targets:append(p) end
+	end
+
+	if targets:isEmpty() then return "." end
+	local id
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByKeepValue(cards)
+	for _, c in ipairs(cards) do
+		if not self.player:isCardLimited(c, sgs.Card_MethodDiscard) and not self:isValuableCard(c) then id = c:getEffectiveId() break end
+	end
+	if not id then return "." end
+	for _, target in sgs.qlist(targets) do
+		if self:isEnemy(target) and self:damageIsEffective(target, nil, self.player) and not self:getDamagedEffects(target, self.player)
+			and not self:needToLoseHp(target, self.player) then
+			--return "@TribladeSkillCard=" .. id .. "&tribladeskill->" .. target:objectName()
+			return "@TribladeSkillCard=".. id .."->" .. target:objectName()
+		end
+	end
+	--对友军部分暂时不做
+	--[[for _, target in sgs.qlist(targets) do
+		if self:isFriend(target) and self:damageIsEffective(target, nil, self.player)
+			and (self:getDamagedEffects(target, self.player) or self:needToLoseHp(target, self.player, nil, true)) then
+			return "@TribladeSkillCard=" .. id .. "&tribladeskill->" .. target:objectName()
+		end
+	end]]
+	return "."
+end
+function sgs.ai_slash_weaponfilter.Triblade(self, to, player)
+	if player:distanceTo(to) > math.max(sgs.weapon_range.Triblade, player:getAttackRange()) then return end
+	return sgs.card_lack[to:objectName()]["Jink"] == 1 or getCardsNum("Jink", to, self.player) == 0
+end
+function sgs.ai_weapon_value.Triblade(self, enemy, player)
+	if not enemy then return 1 end
+	if enemy and player:getHandcardNum() > 2 then return math.min(3.8, player:getHandcardNum() - 1) end
+end
+
+sgs.ai_use_priority.Triblade = 2.673
