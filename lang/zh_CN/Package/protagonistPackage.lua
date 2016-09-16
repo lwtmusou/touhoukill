@@ -27,7 +27,7 @@ return {
 	["illustrator:reimu_4"] = "pico",
 	["origin:reimu_4"] = "p号：20132493",
 	["lingqi"] = "灵气",
-	[":lingqi"] = "当你成为【杀】或非延时类锦囊牌的目标后，你可以判定，若结果为<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>，此牌对你无效。",
+	[":lingqi"] = "当你成为【杀】或普通锦囊牌的目标后，你可以判定，若结果为<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>，此牌对你无效。",
 	["lingqi:target"] = " <font color=\"#00FF00\"><b>%src </b></font> 使用【%dest】指定了你为目标，你可以发动“灵气”。",
 	["~lingqi"]= "选择一张牌→指定任意数量的角色→点击“确定” 或者取消发动",
 	["#LingqiAvoid"] = "“%arg2”效果被触发，【%arg】 对 %from 无效",

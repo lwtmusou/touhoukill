@@ -21,7 +21,7 @@ return{
 	["#kaguya_ndj"] = "贤月公主" ,
 	["illustrator:kaguya_ndj"] = "年代记",
 	["huanyue"]= "幻月",
-	[":huanyue"]= "当其他角色受到非延时类锦囊牌造成的伤害时，你可令其弃置你的一张手牌，若为黑色，此伤害+1。",
+	[":huanyue"]= "当其他角色受到普通锦囊牌造成的伤害时，你可令其弃置你的一张手牌，若为黑色，此伤害+1。",
 	["#huanyue_log"]= "%from 对 %to 的伤害由 %arg 点增加到 %arg2 点。",
 	["huanyue:target"]= "<font color=\"#00FF00\"><b>%src </b></font> 受到 <font color=\"#00FF00\"><b>【%dest】 </b></font>的伤害， 你是否发动“幻月”。",
 	["sizhai"] = "死宅",
