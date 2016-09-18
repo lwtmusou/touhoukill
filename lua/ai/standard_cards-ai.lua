@@ -4232,7 +4232,7 @@ sgs.ai_skill_use["@@Triblade"] = function(self, prompt)
 		if self:isEnemy(target) and self:damageIsEffective(target, nil, self.player) and not self:getDamagedEffects(target, self.player)
 			and not self:needToLoseHp(target, self.player) then
 			--return "@TribladeSkillCard=" .. id .. "&tribladeskill->" .. target:objectName()
-			return "@TribladeSkillCard=".. id .."->" .. target:objectName()
+			return "@TribladeCard=".. id .."->" .. target:objectName()
 		end
 	end
 	--对友军部分暂时不做

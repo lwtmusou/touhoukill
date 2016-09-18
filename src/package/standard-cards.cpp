@@ -477,18 +477,17 @@ Crossbow::Crossbow(Suit suit, int number)
 }
 
 
-TribladeSkillCard::TribladeSkillCard() : SkillCard()
+TribladeCard::TribladeCard() : SkillCard()
 {
-    setObjectName("Triblade");
     m_skillName = "Triblade";
 }
 
-bool TribladeSkillCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+bool TribladeCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
 {
     return targets.length() == 0 && to_select->hasFlag("Global_TribladeFailed");
 }
 
-void TribladeSkillCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void TribladeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     room->damage(DamageStruct("Triblade", source, targets[0]));
 }
@@ -504,7 +503,7 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
-        TribladeSkillCard *c = new TribladeSkillCard;
+        TribladeCard *c = new TribladeCard;
         c->addSubcard(originalCard);
         return c;
     }
@@ -1927,7 +1926,7 @@ StandardCardPackage::StandardCardPackage()
 
     cards << horses;
 
-    addMetaObject<TribladeSkillCard>();
+    addMetaObject<TribladeCard>();
     skills << new HorseSkill;
 
     cards << new AmazingGrace(Card::Heart, 3)
