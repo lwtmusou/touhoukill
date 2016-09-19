@@ -826,17 +826,25 @@ class Dongjie : public TriggerSkill
 public:
     Dongjie() : TriggerSkill("dongjie")
     {
-        events << DamageCaused;
+        events << DamageCaused << EventPhaseChanging;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
+        if (triggerEvent == EventPhaseChanging) {
+            foreach(ServerPlayer *p, room->getAllPlayers())
+                p->setFlags("-" + objectName());
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
+    {
+        if (e != DamageCaused)
+            return QList<SkillInvokeDetail>();
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.chain || damage.transfer || !damage.by_user)
             return QList<SkillInvokeDetail>();
-        if (damage.from == NULL || damage.from == damage.to)
-            return QList<SkillInvokeDetail>();
-        if (damage.card && damage.card->isKindOf("Slash") && damage.from->hasSkill(this))
+        if (damage.from && damage.card && damage.from->hasSkill(this) && !damage.from->hasFlag(objectName()))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
 
         return QList<SkillInvokeDetail>();
@@ -847,6 +855,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), damage.to->objectName());
 
+        invoke->invoker->setFlags(objectName());
         QList<ServerPlayer *> logto;
         logto << damage.to;
         room->touhouLogmessage("#Dongjie", invoke->invoker, "dongjie", logto);
@@ -869,11 +878,8 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        ServerPlayer *player = damage.to;
-        if (!player->hasSkill(this))
-            return QList<SkillInvokeDetail>();
-        if (damage.nature != DamageStruct::Fire && (damage.damage > 1 || player->getHp() <= 1))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+        if (damage.to->hasSkill(this) && damage.nature != DamageStruct::Fire && damage.damage >= damage.to->getHp())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
         return QList<SkillInvokeDetail>();
     }
 

@@ -557,7 +557,7 @@ sgs.dongjie_keep_value = {
 }
 
 
-sgs.ai_slash_prohibit.bingpo = function(self, from, to, card)
+--[[sgs.ai_slash_prohibit.bingpo = function(self, from, to, card)
 	if card:isKindOf("FireSlash") or from:hasSkill("here") then
 		if not self:isFriend(to) then
 			return false
@@ -580,10 +580,11 @@ sgs.ai_slash_prohibit.bingpo = function(self, from, to, card)
 		end
 	end
 	return false
-end
+end]]
 sgs.ai_damageInflicted.bingpo =function(self, damage)
 	if damage.nature ~= sgs.DamageStruct_Fire then
-		if damage.damage>1 or damage.to:getHp()==1 then
+		if damage.damage >= damage.to:getHp()==1 then
+		--if damage.damage>1 or damage.to:getHp()==1 then
 			damage.damage=0
 		end
 	end
@@ -661,8 +662,7 @@ sgs.ai_skill_choice.anyu= function(self, choices, data)
 
 	local use=data:toCardUse()
 	local dongjie=false
-	if use.from and use.card:isKindOf("Slash")
-	and use.from:hasSkill("dongjie") and self:isFriend(use.from)  then
+	if use.from and use.from:hasSkill("dongjie") and self:isFriend(use.from)  then
 		dongjie=true
 	end
 	if dongjie then

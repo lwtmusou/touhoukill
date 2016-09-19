@@ -7130,19 +7130,21 @@ function SmartAI:touhouDamageEffect(damage,from,to)
 	--有时间需要好好整理willuse的情况
 	
 
-	if damage.card and damage.card:isKindOf("Slash") then
-		if from:hasSkill("dongjie") then
+	if damage.card  then
+		if from:hasSkill("dongjie")  and not from:hasFlag("dongjie") then
 			--第四个参数ignoreDamageEffect 一定要是true 否则无限嵌套
 			if (damage.damage >= to:getHp() and self:isEnemy(from, to)) then
 				willUse = not self:touhouNeedAvoidAttack(damage, from, to, true)
 			end
 			return true, willUse
 		end
-		if self:sidieEffect(from) then
-			return true, willUse
-		end
-		if from:hasWeapon("IceSword") and not to:isNude() then
-			return true, willUse
+		if  damage.card:isKindOf("Slash") then
+			if self:sidieEffect(from) then
+				return true, willUse
+			end
+			if from:hasWeapon("IceSword") and not to:isNude() then
+				return true, willUse
+			end
 		end
 	end
 	if from:hasSkill("lizhi") then
