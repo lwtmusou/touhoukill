@@ -583,7 +583,7 @@ sgs.dongjie_keep_value = {
 end]]
 sgs.ai_damageInflicted.bingpo =function(self, damage)
 	if damage.nature ~= sgs.DamageStruct_Fire then
-		if damage.damage >= damage.to:getHp()==1 then
+		if damage.damage >= damage.to:getHp() then
 		--if damage.damage>1 or damage.to:getHp()==1 then
 			damage.damage=0
 		end

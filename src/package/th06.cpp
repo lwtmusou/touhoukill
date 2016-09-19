@@ -1466,7 +1466,7 @@ TH06Package::TH06Package()
     General *cirno = new General(this, "cirno", "hmx", 3, false);
     cirno->addSkill(new Dongjie);
     cirno->addSkill(new Bingpo);
-    cirno->addSkill(new Bendan);
+    //cirno->addSkill(new Bendan);
 
     General *rumia = new General(this, "rumia", "hmx", 3, false);
     rumia->addSkill(new Zhenye);
