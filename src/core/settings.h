@@ -75,6 +75,8 @@ public:
     bool EnableAutoTarget;
     bool EnableIntellectualSelection;
     bool EnableDoubleClick;
+    bool EnableAutoSaveRecord;
+    bool NetworkOnly;
 
     bool DefaultHeroSkin;
 
@@ -90,6 +92,7 @@ public:
 
     QString BackgroundImage;
     QString TableBgImage;
+    QString RecordSavePath;
     bool UseLordBackdrop;
     bool EnableSurprisingGenerals;
     QStringList KnownSurprisingGenerals;

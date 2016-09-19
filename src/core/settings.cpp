@@ -138,6 +138,10 @@ void Settings::init()
     TableBgImage = value("TableBgImage", "backdrop/default.jpg").toString();
     UseLordBackdrop = value("UseLordBackdrop", true).toBool();
 
+    EnableAutoSaveRecord = value("EnableAutoSaveRecord", false).toBool();
+    NetworkOnly = value("NetworkOnly", false).toBool();
+    RecordSavePath = value("RecordSavePath", "records/").toString();
+
     EnableSurprisingGenerals = value("EnableSurprisingGenerals", false).toBool();
     KnownSurprisingGenerals = value("KnownSurprisingGenerals", QStringList()).toStringList();
 

@@ -634,6 +634,26 @@
         <source>Game</source>
         <translation>游戏</translation>
     </message>
+	<message>
+        <location filename="../src/dialog/configdialog.ui" line="639"/>
+        <source>Game Record</source>
+        <translation>游戏录像</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/configdialog.ui" line="692"/>
+        <source>Setup Record Paths</source>
+        <translation>设置录像保存路径</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/configdialog.ui" line="675"/>
+        <source>Network Game Only</source>
+        <translation>只保存联机游戏</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/configdialog.ui" line="653"/>
+        <source>Enable Auto Save</source>
+        <translation>启用自动保存</translation>
+    </message>
     <message>
         <location filename="../src/dialog/configdialog.ui" line="544"/>
         <source>Never nullify my single target trick</source>

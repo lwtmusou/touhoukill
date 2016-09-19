@@ -3282,6 +3282,8 @@ void RoomScene::onGameOver()
     fillTable(winner_table, winner_list);
     fillTable(loser_table, loser_list);
 
+    if (!ClientInstance->getReplayer() && Config.value("EnableAutoSaveRecord", false).toBool())
+        saveReplayRecord(true, Config.value("NetworkOnly", false).toBool());
 
     addRestartButton(dialog);
     m_roomMutex.unlock();
@@ -3319,14 +3321,71 @@ void RoomScene::addRestartButton(QDialog *dialog)
 
 void RoomScene::saveReplayRecord()
 {
+    
+    saveReplayRecord(false);
+    /*
     QString location = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
     QString filename = QFileDialog::getSaveFileName(main_window,
         tr("Save replay record"),
         location,
         tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
 
-    if (!filename.isEmpty()) ClientInstance->save(filename);
+    if (!filename.isEmpty()) ClientInstance->save(filename);*/
 }
+
+
+void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only)
+{
+    if (auto_save) {
+        int human = 0;
+        int players = ClientInstance->getPlayers().length();
+        foreach(const ClientPlayer *player, ClientInstance->getPlayers()) {
+            if (player == Self) {
+                human++;
+                continue;
+            }
+            if (player->getState() != "robot")
+                human++;
+        }
+        bool is_network = (human >= 2);
+        if (network_only && !is_network) return;
+        QString location = Config.value("RecordSavePaths", "records/").toString();
+        if (!location.startsWith(":")) {
+            location.replace("\\", "/");
+            if (!location.endsWith("/"))
+                location.append("/");
+            if (!QDir(location).exists())
+                QDir().mkdir(location);
+            location.append(QString("%1(%2)-").arg(Sanguosha->translate(Self->getGeneralName()))
+                .arg(Sanguosha->translate(Self->getRole())));
+                //.arg(QString::number(human)).arg(QString::number(players)));
+            location.append(QDateTime::currentDateTime().toString("yyyyMMddhhmmss"));
+            location.append(".txt");
+            ClientInstance->save(location);
+        }
+        return;
+    }
+
+    QString location = Config.value("LastReplayDir").toString();
+    if (location.isEmpty())
+        location = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+
+    QString filename = QFileDialog::getSaveFileName(main_window,
+        tr("Save replay record"),
+        location,
+        tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
+        //tr("QSanguosha Replay File(*.qsgs)"));
+
+    if (!filename.isEmpty()) {
+        ClientInstance->save(filename);
+
+        QFileInfo file_info(filename);
+        QString last_dir = file_info.absoluteDir().path();
+        Config.setValue("LastReplayDir", last_dir);
+    }
+}
+
+
 
 ScriptExecutor::ScriptExecutor(QWidget *parent)
     : QDialog(parent)

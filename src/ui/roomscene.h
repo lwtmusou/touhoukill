@@ -217,6 +217,7 @@ public:
     void showServerInformation();
     void surrender();
     void saveReplayRecord();
+    void saveReplayRecord(const bool auto_save, const bool network_only = false);
     void makeDamage();
     void makeKilling();
     void makeReviving();

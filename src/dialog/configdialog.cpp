@@ -63,6 +63,25 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     int aver = (color.red() + color.green() + color.blue()) / 3;
     palette.setColor(QPalette::Base, aver >= 208 ? Qt::black : Qt::white);
     ui->textEditFontLineEdit->setPalette(palette);
+
+
+    ui->enableAutoSaveCheckBox->setChecked(Config.EnableAutoSaveRecord);
+    ui->networkOnlyCheckBox->setChecked(Config.NetworkOnly);
+
+    ui->networkOnlyCheckBox->setEnabled(ui->enableAutoSaveCheckBox->isChecked());
+    ui->recordPathSetupLabel->setEnabled(ui->enableAutoSaveCheckBox->isChecked());
+    ui->recordPathSetupLineEdit->setEnabled(ui->enableAutoSaveCheckBox->isChecked());
+    ui->browseRecordPathButton->setEnabled(ui->enableAutoSaveCheckBox->isChecked());
+    ui->resetRecordPathButton->setEnabled(ui->enableAutoSaveCheckBox->isChecked());
+
+    connect(ui->enableAutoSaveCheckBox, &QCheckBox::toggled, ui->networkOnlyCheckBox, &QCheckBox::setEnabled);
+    connect(ui->enableAutoSaveCheckBox, &QCheckBox::toggled, ui->recordPathSetupLabel, &QLabel::setEnabled);
+    connect(ui->enableAutoSaveCheckBox, &QCheckBox::toggled, ui->recordPathSetupLineEdit, &QLineEdit::setEnabled);
+    connect(ui->enableAutoSaveCheckBox, &QCheckBox::toggled, ui->browseRecordPathButton, &QPushButton::setEnabled);
+    connect(ui->enableAutoSaveCheckBox, &QCheckBox::toggled, ui->resetRecordPathButton, &QPushButton::setEnabled);
+
+    ui->recordPathSetupLineEdit->setText(Config.RecordSavePath);
+
 }
 
 void ConfigDialog::showFont(QLineEdit *lineedit, const QFont &font)
@@ -137,6 +156,30 @@ void ConfigDialog::on_resetTableBgButton_clicked()
     emit tableBg_changed();
 }
 
+
+void ConfigDialog::on_browseRecordPathButton_clicked()
+{
+    QString path = QFileDialog::getExistingDirectory(this,
+        tr("Select a Record Paths"),
+        "records/");
+
+    if (!path.isEmpty() && ui->recordPathSetupLineEdit->text() != path) {
+        ui->recordPathSetupLineEdit->setText(path);
+        Config.RecordSavePath = path;
+    }
+}
+
+void ConfigDialog::on_resetRecordPathButton_clicked()
+{
+    ui->recordPathSetupLineEdit->clear();
+
+    QString path = "records/";
+    if (ui->recordPathSetupLineEdit->text() != path) {
+        ui->recordPathSetupLineEdit->setText(path);
+        Config.RecordSavePath = path;
+    }
+}
+
 void ConfigDialog::saveConfig()
 {
     float volume = ui->bgmVolumeSlider->value() / 100.0;
@@ -188,6 +231,13 @@ void ConfigDialog::saveConfig()
     Config.BubbleChatBoxDelaySeconds = ui->bubbleChatBoxDelaySpinBox->value();
     Config.setValue("BubbleChatBoxDelaySeconds", Config.BubbleChatBoxDelaySeconds);
 
+    Config.EnableAutoSaveRecord = ui->enableAutoSaveCheckBox->isChecked();
+    Config.setValue("EnableAutoSaveRecord", Config.EnableAutoSaveRecord);
+
+    Config.NetworkOnly = ui->networkOnlyCheckBox->isChecked();
+    Config.setValue("NetworkOnly", Config.NetworkOnly);
+
+    Config.setValue("RecordSavePath", Config.RecordSavePath);
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked()
