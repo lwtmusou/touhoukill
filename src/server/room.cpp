@@ -207,10 +207,10 @@ void Room::outputEventStack()
 
 void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
 {
-    if (player->hasSkill("fanhun"))
-        return;
+    //if (player->hasSkill("fanhun"))
+    //    return;
     
-    int threshold = dyingThreshold();
+    int threshold = dyingThreshold(player);
     if (threshold >= player->getMaxHp()) {
         killPlayer(player, reason);
         return;
@@ -249,7 +249,7 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
                 sendLog(log);
 
                 foreach (ServerPlayer *saver, getAllPlayers()) {
-                    threshold = dyingThreshold();
+                    threshold = dyingThreshold(player);
                     DyingStruct dying = dying_data.value<DyingStruct>();
                     dying.nowAskingForPeaches = saver;
                     dying_data = QVariant::fromValue(dying);
@@ -287,11 +287,11 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
 }
 
 
-int Room::dyingThreshold()
+int Room::dyingThreshold(ServerPlayer *player)
 {
     int value = 0;
-    ServerPlayer *uuz = findPlayerBySkillName("fanhun");
-    if (uuz != NULL)
+    ServerPlayer *uuz = getCurrent();
+    if (uuz != NULL && player != uuz && uuz->hasSkill("yousi"))
         value =  qMax(0, uuz->getHp());
     return value;
 }
@@ -1787,7 +1787,7 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
     _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
 
     const Card *card = NULL;
-    int threshold = dyingThreshold();
+    int threshold = dyingThreshold(dying);
 
     AI *ai = player->getAI();
     if (ai)
@@ -3644,7 +3644,7 @@ void Room::loseMaxHp(ServerPlayer *victim, int lose)
     log2.arg2 = QString::number(victim->getMaxHp());
     sendLog(log2);
     
-    if (victim->getMaxHp() <= dyingThreshold())
+    if (victim->getMaxHp() <= dyingThreshold(victim))
         killPlayer(victim);
     else {
         QVariant v = QVariant::fromValue(victim);

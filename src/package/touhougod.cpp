@@ -3852,55 +3852,36 @@ class Fanhun : public TriggerSkill
 public:
     Fanhun() : TriggerSkill("fanhun")
     {
-        events << EventPhaseStart;
+        events << EventPhaseEnd << Dying;
         frequency = Eternal;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
     {
 
-        
-        ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->hasSkill(this) && player->getPhase() == Player::RoundStart && player->getHp() < 1) {
-            /*bool invoke = true;
-            foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
-                if (p->getHp() < player->getHp()) {
-                    invoke = false;
-                    break;
-                }
-            }
-            if (invoke)*/
+        if (e == EventPhaseEnd) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->hasSkill(this) && player->getPhase() == Player::Play && player->getMaxHp() > 4)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
-        } else if (player->hasSkill(this) && player->getPhase() == Player::Finish) {
-            bool invoke = true;
-            foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
-                if (p->getMaxHp() > player->getMaxHp()) {
-                    invoke = false;
-                    break;
-                }
-            }
-            if (invoke)
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+        } else if (e == Dying) {
+            ServerPlayer *who = data.value<DyingStruct>().who;
+            if (who->hasSkill(this))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, who, who, NULL, true);
         }
         return QList<SkillInvokeDetail>();
     }
 
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        ServerPlayer *player = invoke->invoker;
-        if (player->getPhase() == Player::RoundStart) {
-            room->setPlayerProperty(player, "maxhp", player->getMaxHp() + 1);
+        if (e == Dying) {
+            room->setPlayerProperty(invoke->invoker, "maxhp", invoke->invoker->getMaxHp() + 1);
             RecoverStruct recov;
-            recov.recover = player->getMaxHp() - player->getHp();
-            room->recover(player, recov);
-
-            CardsMoveStruct move(player->getPile("die"), player, player, Player::PlaceSpecial, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()));
-            room->moveCardsAtomic(move, true);
-
-        } else if (player->getPhase() == Player::Finish)
-            room->killPlayer(player);
-
+            recov.recover = invoke->invoker->getMaxHp() - invoke->invoker->getHp();
+            room->recover(invoke->invoker, recov);
+            invoke->invoker->drawCards(invoke->invoker->getMaxHp());
+        } else if (e == EventPhaseEnd)
+            room->killPlayer(invoke->invoker);
         return false;
     }
 };
@@ -4523,11 +4504,12 @@ TouhouGodPackage::TouhouGodPackage()
     satori_god->addSkill(new Dongcha);
     satori_god->addSkill(new Zhuiyi);
 
-    General *yuyuko_god = new General(this, "yuyuko_god", "touhougod", 0, false);
+    General *yuyuko_god = new General(this, "yuyuko_god", "touhougod", 1, false);
     yuyuko_god->addSkill(new Fanhun);
-    yuyuko_god->addSkill(new Youdie);
-    yuyuko_god->addSkill(new YoudieProhibit);
-    related_skills.insertMulti("youdie", "#youdieprevent");
+    //yuyuko_god->addSkill(new Youdie);
+    //yuyuko_god->addSkill(new YoudieProhibit);
+    yuyuko_god->addSkill(new Skill("yousi", Skill::Compulsory));
+    //related_skills.insertMulti("youdie", "#youdieprevent");
 
     General *aya_god = new General(this, "aya_god", "touhougod", 4, false);
     aya_god->addSkill(new Tianqu);
