@@ -5075,10 +5075,7 @@ void RoomScene::highlightSkillButton(QString skill_name, bool highlight)
     foreach (QSanSkillButton *button, m_skillButtons) {
         QString  button_name = button->getSkill()->objectName();
         if (button_name == skill_name || skill_name.startsWith(button_name)) {
-            if (button->getSkill()->getFrequency() != Skill::Wake
-                ) {
-                //if (button->getStyle() == QSanSkillButton::S_STYLE_TOGGLE
-                //   ) { //&& button->isEnabled() vs skill is not enabled
+            if (button->getSkill()->getFrequency() != Skill::Wake) {
                 if (!button->isDown()) {
                     if (highlight)
                         button->setState(QSanButton::S_STATE_HOVER, true);

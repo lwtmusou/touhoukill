@@ -474,8 +474,9 @@ sgs.ai_card_intention.XinshangCard = 50
 
 
 sgs.ai_damageInflicted.micai =function(self, damage)
-	if  damage.to:getHandcardNum()<damage.damage then
-		damage.damage= damage.to:getHandcardNum()
+	if  damage.to:getHandcardNum() < damage.damage then
+		--damage.damage = damage.to:getHandcardNum()
+		damage.damage = damage.damage - 1
 	end
 	return damage
 end

@@ -1149,7 +1149,7 @@ sgs.ai_skill_askforag.shizhao = function(self, card_ids)
 	return -1
 end
 
-sgs.ai_skill_invoke.jixiong = function(self,data)
+sgs.ai_skill_invoke.jixiong1 = function(self,data)
 	local player = data:toPlayer()
 	if player then
 		return self:isFriend(player)
@@ -1163,7 +1163,7 @@ sgs.ai_skill_invoke.jixiong2 = function(self,data)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.jixiong = function(self, player, args)
+sgs.ai_choicemade_filter.skillInvoke.jixiong1 = function(self, player, args)
 	local current = self.room:getCurrent()
 	if current then
 		if args[#args] == "yes" then

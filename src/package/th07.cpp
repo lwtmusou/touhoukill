@@ -1810,11 +1810,20 @@ public:
 };
 
 // the skill's 2 "subskill"s are of the same timing, and have different effect, so we must split them
-
 class Jixiong : public TriggerSkill
 {
 public:
     Jixiong() : TriggerSkill("jixiong")
+    {
+        events << EventPhaseChanging;
+    }
+};
+
+
+class Jixiong1 : public TriggerSkill
+{
+public:
+    Jixiong1() : TriggerSkill("#jixiong1")
     {
         events << CardsMoveOneTime << EventPhaseChanging;
     }
@@ -1854,9 +1863,25 @@ public:
         return d;
     }
 
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        if (invoke->invoker->askForSkillInvoke("jixiong1", QVariant::fromValue(invoke->preferredTarget))) {
+            room->setPlayerFlag(invoke->invoker, "jixiong_used");
+            LogMessage log;
+            log.type = "#InvokeSkill";
+            log.from = invoke->invoker;
+            log.arg = "jixiong";
+            room->sendLog(log);
+            room->notifySkillInvoked(invoke->invoker, "jixiong");
+            return true;
+        }
+
+        return false;
+    }
+
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        room->setPlayerFlag(invoke->invoker, "jixiong_used");
+        //room->setPlayerFlag(invoke->invoker, "jixiong_used");
         room->recover(invoke->targets.first(), RecoverStruct());
         return false;
     }
@@ -2311,7 +2336,9 @@ TH07Package::TH07Package()
     General *ran_sp = new General(this, "ran_sp", "yym", 4, false);
     ran_sp->addSkill(new Shizhao);
     ran_sp->addSkill(new Jixiong);
+    ran_sp->addSkill(new Jixiong1);
     ran_sp->addSkill(new Jixiong2);
+    related_skills.insertMulti("jixiong", "#jixiong1");
     related_skills.insertMulti("jixiong", "#jixiong2");
 
     General *youki = new General(this, "youki", "yym", 4);
