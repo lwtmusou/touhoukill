@@ -245,7 +245,7 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
                 log.type = "#AskForPeaches";
                 log.from = player;
                 log.to = getAllPlayers();
-                log.arg = QString::number(threshold + 1 - player->getHp());
+                log.arg = QString::number(threshold - player->getHp());
                 sendLog(log);
 
                 foreach (ServerPlayer *saver, getAllPlayers()) {
