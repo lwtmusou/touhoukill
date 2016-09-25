@@ -1641,7 +1641,7 @@ public:
             else
                 youmu = data.value<HpLostStruct>().player;
 
-            if (youmu != NULL && youmu->isAlive() && youmu->hasSkill(this) && youmu->getHp() < 1 && !youmu->isCurrent())
+            if (youmu != NULL && youmu->isAlive() && youmu->hasSkill(this) && youmu->getHp() < youmu->dyingThreshold() && !youmu->isCurrent())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, youmu, youmu, NULL, true);
         } else {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();

@@ -809,7 +809,7 @@ public:
 
         player->gainMark("@kinki");
         RecoverStruct recover;
-        recover.recover = 1 - player->getHp();
+        recover.recover = player->dyingThreshold() - player->getHp();
         room->recover(player, recover);
 
         room->damage(DamageStruct(objectName(), player, current));
@@ -2660,7 +2660,7 @@ public:
         room->notifySkillInvoked(player, objectName());
         room->addPlayerMark(player, objectName());
 
-        int x = 1 - player->getHp();
+        int x = player->dyingThreshold() - player->getHp();
         RecoverStruct recov;
         recov.recover = x;
         recov.who = player;
@@ -3852,16 +3852,16 @@ class Fanhun : public TriggerSkill
 public:
     Fanhun() : TriggerSkill("fanhun")
     {
-        events << EventPhaseEnd << Dying;
+        events << EventPhaseStart << Dying;
         frequency = Eternal;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
     {
 
-        if (e == EventPhaseEnd) {
+        if (e == EventPhaseStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player->hasSkill(this) && player->getPhase() == Player::Play && player->getMaxHp() > 4)
+            if (player->hasSkill(this) && player->getPhase() == Player::Finish && player->getMaxHp() > 4)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
         } else if (e == Dying) {
             ServerPlayer *who = data.value<DyingStruct>().who;
@@ -3880,7 +3880,7 @@ public:
             recov.recover = invoke->invoker->getMaxHp() - invoke->invoker->getHp();
             room->recover(invoke->invoker, recov);
             invoke->invoker->drawCards(invoke->invoker->getMaxHp());
-        } else if (e == EventPhaseEnd)
+        } else if (e == EventPhaseStart)
             room->killPlayer(invoke->invoker);
         return false;
     }

@@ -76,6 +76,16 @@ int Player::getHp() const
     return hp;
 }
 
+int Player::dyingThreshold() const
+{
+    int value = 1;
+    foreach(const Player *p, getAliveSiblings()) {
+        if (p->hasSkill("yousi") && p->isCurrent())
+            value = qMax(0, p->getHp());
+    }
+    return value;
+}
+
 void Player::setRenHp(int renhp)
 {
     if (this->renhp != renhp) {

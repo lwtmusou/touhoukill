@@ -1041,17 +1041,21 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *player = invoke->invoker;
-        int num = player->getHandcardNum();
-        if (num == 0) {
+        //int num = player->getHandcardNum();
+        /*if (num == 0) {
             room->touhouLogmessage("#micai01", player, "micai", QList<ServerPlayer *>(), QString::number(damage.damage - num));
             room->notifySkillInvoked(player, objectName());
             return true;
-        } else if (damage.damage > num) {
-            room->touhouLogmessage("#micai01", player, "micai", QList<ServerPlayer *>(), QString::number(damage.damage - num));
-            damage.damage = num;
-            room->notifySkillInvoked(player, objectName());
-            data = QVariant::fromValue(damage);
-        }
+        } else
+            */
+
+        room->touhouLogmessage("#micai01", player, "micai", QList<ServerPlayer *>(), QString::number(1));
+        damage.damage = damage.damage -1;
+        room->notifySkillInvoked(player, objectName());
+        if (damage.damage == 0)
+            return true;
+        data = QVariant::fromValue(damage);
+        
         return false;
     }
 };

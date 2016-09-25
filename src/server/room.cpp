@@ -210,8 +210,8 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
     //if (player->hasSkill("fanhun"))
     //    return;
     
-    int threshold = dyingThreshold(player);
-    if (threshold >= player->getMaxHp()) {
+    int threshold = player->dyingThreshold();
+    if (threshold > player->getMaxHp()) {
         killPlayer(player, reason);
         return;
     }
@@ -234,11 +234,11 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
 
     bool enterdying = thread->trigger(EnterDying, this, dying_data);
 
-    if (!(player->isDead() || player->getHp() > threshold || enterdying)) {
+    if (!(player->isDead() || player->getHp() >= threshold || enterdying)) {
         thread->trigger(Dying, this, dying_data);
 
         if (player->isAlive()) {
-            if (player->getHp() > threshold) {
+            if (player->getHp() >= threshold) {
                 setPlayerFlag(player, "-Global_Dying");
             } else {
                 LogMessage log;
@@ -249,11 +249,11 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
                 sendLog(log);
 
                 foreach (ServerPlayer *saver, getAllPlayers()) {
-                    threshold = dyingThreshold(player);
+                    threshold = player->dyingThreshold();
                     DyingStruct dying = dying_data.value<DyingStruct>();
                     dying.nowAskingForPeaches = saver;
                     dying_data = QVariant::fromValue(dying);
-                    if (player->getHp() > threshold || player->isDead())
+                    if (player->getHp() >= threshold || player->isDead())
                         break;
                     QString cd = saver->property("currentdying").toString();
                     setPlayerProperty(saver, "currentdying", player->objectName());
@@ -286,15 +286,6 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
     thread->trigger(QuitDying, this, dying_data);
 }
 
-
-int Room::dyingThreshold(ServerPlayer *player)
-{
-    int value = 0;
-    ServerPlayer *uuz = getCurrent();
-    if (uuz != NULL && player != uuz && uuz->hasSkill("yousi"))
-        value =  qMax(0, uuz->getHp());
-    return value;
-}
 
 
 ServerPlayer *Room::getCurrentDyingPlayer() const
@@ -1787,19 +1778,19 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
     _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
 
     const Card *card = NULL;
-    int threshold = dyingThreshold(dying);
+    int threshold = dying->dyingThreshold();
 
     AI *ai = player->getAI();
     if (ai)
         card = ai->askForSinglePeach(dying);
     else {
-        int peaches = threshold + 1 - dying->getHp();
+        int peaches = threshold - dying->getHp();
         if (dying->hasSkill("banling")) {
             peaches = 0;
             if (dying->getRenHp() <= 0)
-                peaches = peaches + threshold + 1 - dying->getRenHp();
+                peaches = peaches + threshold - dying->getRenHp();
             if (dying->getLingHp() <= 0)
-                peaches = peaches + threshold + 1 - dying->getLingHp();
+                peaches = peaches + threshold - dying->getLingHp();
         }
         JsonArray arg;
         arg << dying->objectName();
@@ -1824,7 +1815,7 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
         ChoiceMadeStruct s;
         s.player = player;
         s.type = ChoiceMadeStruct::Peach;
-        s.args << dying->objectName() << QString::number(threshold + 1 - dying->getHp()) << card->toString();
+        s.args << dying->objectName() << QString::number(threshold - dying->getHp()) << card->toString();
         QVariant decisionData = QVariant::fromValue(s);
         thread->trigger(ChoiceMade, this, decisionData);
         result = card;
@@ -3644,7 +3635,7 @@ void Room::loseMaxHp(ServerPlayer *victim, int lose)
     log2.arg2 = QString::number(victim->getMaxHp());
     sendLog(log2);
     
-    if (victim->getMaxHp() <= dyingThreshold(victim))
+    if (victim->getMaxHp() < victim->dyingThreshold())
         killPlayer(victim);
     else {
         QVariant v = QVariant::fromValue(victim);

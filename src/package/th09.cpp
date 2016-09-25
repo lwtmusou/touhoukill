@@ -730,6 +730,10 @@ public:
         JudgeStruct * judge = data.value<JudgeStruct *>();
         if (!judge->who || !judge->who->isAlive())
             return QList<SkillInvokeDetail>();
+        ServerPlayer *dying = room->getCurrentDyingPlayer();
+        if (dying != NULL && dying->isAlive())
+            return QList<SkillInvokeDetail>();
+
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *tenshi, room->findPlayersBySkillName(objectName())) {
             if (judge->card->isRed() && judge->who->getHp() > 0)

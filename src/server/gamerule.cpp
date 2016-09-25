@@ -378,9 +378,9 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             if (player == NULL)
                 break;
 
-            if (player->getHp() > room->dyingThreshold(player))
+            if (player->getHp() >= player->dyingThreshold())
                 break;
-
+            
             if (data.canConvert<DamageStruct>()) {
                 DamageStruct damage = data.value<DamageStruct>();
                 room->enterDying(player, &damage);
@@ -393,9 +393,9 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         {
             DyingStruct dying = data.value<DyingStruct>();
             const Card *peach = NULL;
-            int threshold = room->dyingThreshold(dying.who);
+            int threshold = dying.who->dyingThreshold();
 
-            while (dying.who->getHp() <= threshold) {
+            while (dying.who->getHp() < threshold) {
                 peach = NULL;
 
                 if (dying.who->isAlive())
@@ -404,15 +404,15 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 if (peach == NULL)
                     break;
                 room->useCard(CardUseStruct(peach, dying.nowAskingForPeaches, dying.who), false);
-                threshold = room->dyingThreshold(dying.who);
+                threshold = dying.who->dyingThreshold();
             }
             break;
         }
         case AskForPeachesDone:
         {
             DyingStruct dying = data.value<DyingStruct>();
-            int threshold = room->dyingThreshold(dying.who);
-            if (dying.who->getHp() <= threshold && dying.who->isAlive())
+            int threshold = dying.who->dyingThreshold();
+            if (dying.who->getHp() < threshold && dying.who->isAlive())
                 room->killPlayer(dying.who, dying.damage);
 
             break;

@@ -119,7 +119,7 @@ return{
 	[":xinshang"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可令一名其他角色摸一张牌，然后其选择一项：将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌交给你，并令你于此回合内使用牌时无距离和使用次数限制；或令你依次弃置其两张牌。",
 	["@xinshang-spadecard"] = "请交给 <font color=\"#00FF00\"><b>%src </b></font> 一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌，否则将被 <font color=\"#00FF00\"><b>%src </b></font> 弃置两张牌。",
 	["micai"] = "迷彩",
-	[":micai"] = "<font color=\"blue\"><b>锁定技，</b></font>当你受到伤害时，若此伤害多于X点（X为你的手牌数），将此伤害改为X点。",
+	[":micai"] = "<font color=\"blue\"><b>锁定技，</b></font>当你受到伤害时，若此伤害多于X点（X为你的手牌数），此伤害-1。",
 	["#micai01"]= "%from 的 “%arg” 被触发，防止了 %arg2 点伤害。",
 
 --************************************************
