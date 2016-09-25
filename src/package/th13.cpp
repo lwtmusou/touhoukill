@@ -438,7 +438,7 @@ public:
         return checkedPatterns;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    virtual bool isEnabledAtResponse(const Player *player, const QString &) const
     {
         if (player->isKongcheng()) return false;
         //if (player->isKongcheng() || pattern.startsWith(".") || pattern.startsWith("@")) return false;

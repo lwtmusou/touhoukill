@@ -253,7 +253,7 @@ void YaobanCard::onEffect(const CardEffectStruct &effect) const
     effect.from->getRoom()->damage(DamageStruct("yaoban", effect.from, effect.to));
 }
 
-bool YaobanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+bool YaobanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
 {
     return  targets.isEmpty() && to_select->hasFlag("Global_yaobanFailed");
 }
@@ -864,7 +864,7 @@ public:
         events << EventPhaseStart;// << ChainStateChanged << TurnedOver;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
     {
         ServerPlayer *current = room->getCurrent();
         if (!current)

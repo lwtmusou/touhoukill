@@ -1037,7 +1037,7 @@ public:
         events << EventPhaseChanging; // << EventLoseSkill << Death
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         /*if (triggerEvent == EventLoseSkill) {
             SkillAcquireDetachStruct ad = data.value<SkillAcquireDetachStruct>();

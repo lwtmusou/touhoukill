@@ -3338,7 +3338,7 @@ void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only)
 {
     if (auto_save) {
         int human = 0;
-        int players = ClientInstance->getPlayers().length();
+        // int players = ClientInstance->getPlayers().length();
         foreach(const ClientPlayer *player, ClientInstance->getPlayers()) {
             if (player == Self) {
                 human++;

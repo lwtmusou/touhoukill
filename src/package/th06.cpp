@@ -562,7 +562,7 @@ public:
         events << CardUsed << EventPhaseChanging;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
     {
         if (triggerEvent == EventPhaseChanging){
             foreach(ServerPlayer *p, room->getAllPlayers())
@@ -720,7 +720,6 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        ServerPlayer *player = invoke->invoker;
         ServerPlayer *target = invoke->targets.first();
 
         QList<int> ids;
@@ -803,7 +802,7 @@ void TaijiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     delete dummy;
 }
 
-bool TaijiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+bool TaijiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
 {
     return  targets.isEmpty() && to_select->hasFlag("Global_taijiFailed");
 }
@@ -816,7 +815,7 @@ public:
         response_pattern = "@@taiji";
     }
 
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
     {
         return !to_select->isKindOf("BasicCard");
     }
@@ -849,7 +848,7 @@ public:
         events << SlashMissed;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if (!effect.to || effect.to->isDead())
@@ -877,7 +876,7 @@ public:
         return d;
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         foreach(ServerPlayer *p, room->getOtherPlayers(effect.to))
@@ -906,7 +905,7 @@ public:
         events << SlashMissed;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if (!effect.from || effect.from->isDead())
@@ -934,7 +933,7 @@ public:
         return d;
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         foreach(ServerPlayer *p, room->getOtherPlayers(effect.from))
@@ -1004,7 +1003,7 @@ public:
         events << DamageCaused << EventPhaseChanging;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
     {
         if (triggerEvent == EventPhaseChanging) {
             foreach(ServerPlayer *p, room->getAllPlayers())
@@ -1160,7 +1159,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         return room->askForUseCard(invoke->invoker, "@@zhenye", "@zhenye");
     }

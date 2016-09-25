@@ -182,7 +182,7 @@ public:
     {
     }
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &) const
+    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &) const
     {
         if (EquipSkill::equipAvailable(to, EquipCard::ArmorLocation, objectName())) {
             return card->isKindOf("FireAttack")
