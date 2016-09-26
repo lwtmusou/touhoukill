@@ -3290,7 +3290,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if (!damage.from || damage.from == damage.to
             || damage.from->getMark("@huanming") == 0
-            || damage.to->getHp() <= 0 || !damage.from->hasSkill(this))
+            || damage.to->getHp() < damage.from->dyingThreshold() || damage.from->getHp() < damage.to->dyingThreshold() || !damage.from->hasSkill(this))
             return QList<SkillInvokeDetail>();
         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from);
     }
