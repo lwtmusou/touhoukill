@@ -59,7 +59,7 @@ return
 	["illustrator:mokou_3"] = "ideolo",
 	["origin:mokou_3"] = "p号：13292224，个人ID：61513",
 	["bumie"] = "不灭",
-	[":bumie"] = "<font color=\"blue\"><b>锁定技，</b></font>你的体力最少为1。若你的体力为1且没有手牌，你摸一张牌并展示之，若此牌不为<font size=\"5\", color=\"#FF0000\"><b>♦</b></font>，你失去1点体力上限并回复体力至上限。",
+	[":bumie"] = "<font color=\"blue\"><b>锁定技，</b></font>你的体力最少为体力下限。若你的体力不大于体力下限且没有手牌，你摸一张牌并展示之，若此牌不为<font size=\"5\", color=\"#FF0000\"><b>♦</b></font>，你失去1点体力上限并回复体力至上限。",
 	["#bumie01"] = " %from 的 “%arg” 被触发， %from 最多扣减 %arg2 点体力。",
 	["#bumie02"] = "由于 “%arg” 的效果， %from 失去了一点体力上限，并将体力值恢复至 %arg2 点。",
 	["lizhan"]= "历战",

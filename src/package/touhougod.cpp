@@ -3310,6 +3310,8 @@ public:
         room->doLightbox("$huanmingAnimate", 4000);
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.to->objectName());
 
+        int source_Hp = player->getHp();
+        int victim_Hp = damage.to->getHp();
         int source_newHp = qMin(damage.to->getHp(), player->getMaxHp());
         int victim_newHp = qMin(player->getHp(), damage.to->getMaxHp());
         room->setPlayerProperty(player, "hp", source_newHp);
@@ -3317,6 +3319,18 @@ public:
 
         room->touhouLogmessage("#GetHp", player, QString::number(player->getHp()), QList<ServerPlayer *>(), QString::number(player->getMaxHp()));
         room->touhouLogmessage("#GetHp", damage.to, QString::number(damage.to->getHp()), QList<ServerPlayer *>(), QString::number(damage.to->getMaxHp()));
+        if (source_Hp > source_newHp) {
+            HpLostStruct l;
+            l.player = player;
+            l.num = source_Hp - source_newHp;
+            room->getThread()->trigger(PostHpReduced, room, QVariant::fromValue(l));
+        } else if (victim_Hp > victim_newHp) {
+            HpLostStruct l;
+            l.player = damage.to;
+            l.num = victim_Hp - victim_newHp;
+            room->getThread()->trigger(PostHpReduced, room, QVariant::fromValue(l));
+        }
+        
         return true;
     }
 };

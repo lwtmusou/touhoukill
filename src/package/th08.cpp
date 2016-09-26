@@ -269,9 +269,9 @@ public:
             changehp = hplost.num;
             mokou = hplost.player;
         }
-
+        int threshold = mokou->dyingThreshold();
         if (mokou->hasSkill(this)) {
-            if (mokou->getHp() - changehp < 1)
+            if (mokou->getHp() - changehp < threshold)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, mokou, mokou, NULL, true);
         }
         return QList<SkillInvokeDetail>();
@@ -281,7 +281,7 @@ public:
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         ServerPlayer *mokou = invoke->invoker;
-        int changehp = mokou->getHp() - 1;
+        int changehp = mokou->getHp() - mokou->dyingThreshold();
 
         room->touhouLogmessage("#bumie01", mokou, "bumie", QList<ServerPlayer *>(), QString::number(changehp));
         room->notifySkillInvoked(mokou, objectName());
@@ -321,7 +321,7 @@ public:
             QList<ServerPlayer *> targets;
             QList<SkillInvokeDetail> d;
             foreach(SkillInvalidStruct v, invalids) {
-                if (v.player->hasSkill(this) && v.player->getHp() == 1 && v.player->isKongcheng()) {
+                if (v.player->hasSkill(this) && v.player->getHp() <= v.player->dyingThreshold() && v.player->isKongcheng()) {
                     targets << v.player;
                     d << SkillInvokeDetail(this, v.player, v.player, NULL, true);
                 }

@@ -480,7 +480,7 @@ return{
 	[":yindu"] = "当其他角色死亡时，你可以摸三张牌。若如此做，不执行奖惩。",
 	["yindu:invoke"] = "你是否发动“引渡”，摸 3 张牌，若如此做，<font color=\"#00FF00\"><b>%src </b></font>的死亡将不会执行奖惩",
 	["huanming"] = "换命",
-	[":huanming"] = "<font color=\"red\"><b>限定技，</b></font>当你对其他角色造成伤害时，若你的体力值不小于其体力下限，且其体力值不小于你的体力下限，你可以防止此伤害，并与其交换体力。",
+	[":huanming"] = "<font color=\"red\"><b>限定技，</b></font>当你对其他角色造成伤害时，你可以防止此伤害，并与其交换体力。",
 	["$huanmingAnimate"]= "skill=komachi_god:huanming",
 	["chuanwu"] = "川雾",
 	[":chuanwu"] = "<font color=\"blue\"><b>锁定技，</b></font>你与其他角色的距离最多为X（X为其体力值且最少为1）。",
