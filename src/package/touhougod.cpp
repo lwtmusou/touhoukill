@@ -3901,252 +3901,32 @@ public:
 };
 
 
-class YoudieVS : public OneCardViewAsSkill
+//the effect is in  Player::dyingThreshold()
+//this triggerskill is for skilleffect
+class Yousi : public TriggerSkill
 {
 public:
-    YoudieVS() : OneCardViewAsSkill("youdie")
+    Yousi() : TriggerSkill("yousi")
     {
-        response_pattern = "@@youdie!";
-        expand_pile = "die";
-    }
-
-    bool viewFilter(const Card *to_select) const
-    {
-        return Self->getPile("die").contains(to_select->getId());
-    }
-
-    const Card *viewAs(const Card *originalCard) const
-    {
-        return originalCard;
-    }
-};
-
-class Youdie : public TriggerSkill
-{
-public:
-    Youdie() : TriggerSkill("youdie")
-    {
-        events << CardFinished << Damaged;
-        frequency = Compulsory;
-        view_as_skill = new YoudieVS;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
-    {
-        if (triggerEvent == Damaged) {
-            DamageStruct damage = data.value<DamageStruct>();
-            if (damage.from && damage.from->isAlive() && damage.from != damage.to &&  damage.to->hasSkill(this) && !damage.to->getPile("die").isEmpty())
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true, damage.from);
-        } else if (triggerEvent == CardFinished) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            QList<SkillInvokeDetail> d;
-            if (use.card->isKindOf("Jink") || use.card->isKindOf("SkillCard") || use.card->isKindOf("Nullification"))
-                return d;
-            QList<int> able;
-            foreach(int id, use.card->getSubcards()) {
-                if (room->getCardPlace(id) == Player::DiscardPile)
-                    able << id;
-            }
-            
-            if (able.isEmpty())
-                return d;
-
-            foreach(ServerPlayer *p, use.to) {
-                if (p->hasSkill(this) && use.from && use.from != p)
-                    d << SkillInvokeDetail(this, p, p, NULL, true);
-            }
-            return d;
-        }
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        if (triggerEvent == CardFinished) {
-            room->notifySkillInvoked(invoke->invoker, objectName());
-            CardUseStruct use = data.value<CardUseStruct>();
-            QList<SkillInvokeDetail> d;
-            QList<int> able;
-            foreach(int id, use.card->getSubcards()) {
-                if (room->getCardPlace(id) == Player::DiscardPile)
-                    able << id;
-            }
-
-            invoke->invoker->addToPile("die", able);
-        } else if (triggerEvent == Damaged) {
-            //
-            QString prompt = "@youdie-invoke:" + invoke->targets.first()->objectName();
-            const Card *c = room->askForCard(invoke->invoker, "@@youdie!", prompt, data, Card::MethodNone, NULL, false, objectName());
-            //force give
-            if (!c) {
-                QList<int> hc = invoke->invoker->getPile("die");
-                int x = qrand() % hc.length();
-                //this flag should notify client player
-                room->setPlayerFlag(invoke->invoker, "youdieProhibit_" + Sanguosha->getCard(hc.value(x))->objectName());
-                room->obtainCard(invoke->targets.first(), hc.value(x), true);
-            } else {
-                room->setPlayerFlag(invoke->invoker, "youdieProhibit_" + c->objectName());
-                room->obtainCard(invoke->targets.first(), c, true);
-            }
-        }
-        return false;
-    }
-};
-
-class YoudieProhibit : public ProhibitSkill
-{
-public:
-    YoudieProhibit() : ProhibitSkill("#youdieprevent")
-    {
-    }
-
-    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &) const
-    {
-        QString card_name = card->objectName();
-        foreach(const QString &flag, to->getFlagList()) {
-            if (flag.startsWith("youdieProhibit")) {
-                if (flag.endsWith(card_name))
-                    return true;
-                else if (card_name.contains("slash") && flag.endsWith("slash"))
-                    return true;
-            }
-        }
-        return false;
-    }
-};
-
-/*
-class Fanhun : public TriggerSkill
-{
-public:
-    Fanhun() : TriggerSkill("fanhun")
-    {
-        events << EventPhaseStart;
-        frequency = Eternal;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
-    {
-
-        ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->hasSkill(this) && player->getPhase() == Player::Finish && player->getHp() < 1)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
-        return QList<SkillInvokeDetail>();
-    }
-
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        ServerPlayer *player = invoke->invoker;
-        room->setPlayerMark(player, objectName(), player->getMark(objectName()) + 1);
-        RecoverStruct recov;
-        recov.recover = player->getMaxHp() - player->getHp();
-        recov.who = player;
-        room->recover(player, recov);
-        room->loseMaxHp(player);
-        return false;
-    }
-};
-*/
-/*
-class Youdie : public TriggerSkill
-{
-public:
-    Youdie() : TriggerSkill("youdie")
-    {
-        events << EventPhaseChanging << PreCardUsed << DamageDone << EnterDying << TurnStart;
+        events << PostHpReduced;
         frequency = Compulsory;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+
+    void record(TriggerEvent, Room *room, QVariant &data) const
     {
-        if (triggerEvent == DamageDone) {
-            DamageStruct damage = data.value<DamageStruct>();
-            if (damage.from && damage.from->isCurrent())
-                room->setTag("youdieDamage", true);
-        }
-        if (triggerEvent == PreCardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from->isCurrent() && !use.card->isKindOf("SkillCard"))
-                room->setTag("youdieUse", true);
-        }
-        if (triggerEvent == EnterDying) {
-            room->setTag("youdieDying", true);
-        }
-        
-        if (triggerEvent == TurnStart) {
-            room->setTag("youdieUse", false);
-            room->setTag("youdieDamage", false);
-        }
-    }
+        ServerPlayer *victim = NULL;
+        if (data.canConvert<DamageStruct>())
+            victim = data.value<DamageStruct>().to;
+        else
+            victim = data.value<HpLostStruct>().player;
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
-    {
-        QList<SkillInvokeDetail> d;
-        if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.player->isAlive() && change.to == Player::NotActive) {
-                QList<ServerPlayer *> uuzs = room->findPlayersBySkillName(objectName());
-                if (uuzs.isEmpty())
-                    return d;
-                QVariant useTag = room->getTag("youdieUse");
-                bool used = useTag.canConvert(QVariant::Bool) && useTag.toBool();
-                QVariant damageTag = room->getTag("youdieDamage");
-                bool damaged = damageTag.canConvert(QVariant::Bool) && damageTag.toBool();
-                QVariant dyingTag = room->getTag("youdieDying");
-                bool dying = dyingTag.canConvert(QVariant::Bool) && dyingTag.toBool();
-                bool lowHp = true;
-                bool lowHandcardNum = true;
-                foreach(ServerPlayer *p, room->getOtherPlayers(change.player)) {
-                    if (p->getHandcardNum() < change.player->getHandcardNum())
-                        lowHandcardNum = false;
-                    if (p->getHp() < change.player->getHp())
-                        lowHp = false;
-                    if (!lowHp && !lowHandcardNum)
-                        break;
-                }
-
-                foreach(ServerPlayer *p, uuzs) {
-                    int x = p->getMark("fanhun") + 1;
-                    bool invoke = false;
-                    if (p == change.player)
-                        invoke = ((used && x >= 1) || (damaged && x >= 2) || (lowHandcardNum && x >= 3)
-                            || (lowHp && x >=4) || (dying && x >= 5));
-                    else
-                        invoke = ((!used && x >= 1) || (!damaged && x >= 2) || (!lowHandcardNum && x >= 3)
-                            || (!lowHp && x >= 4) || (!dying && x >= 5));
-
-                    if (invoke)
-                        d << SkillInvokeDetail(this, p, p, NULL, true, change.player);
-                }
-            }
+        ServerPlayer *uuz = room->getCurrent();
+        if (uuz && uuz->isAlive() && uuz != victim && uuz->hasSkill(this) && victim->getHp() < victim->dyingThreshold()) {
+            room->notifySkillInvoked(uuz, objectName());
         }
-        return d;
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        room->notifySkillInvoked(invoke->invoker, objectName());
-        if (invoke->invoker == invoke->targets.first()) {
-            int x = invoke->invoker->getMark("fanhun") + 1;
-            invoke->invoker->gainMark("@die", x);
-            invoke->invoker->drawCards(x);
-        } else {
-            bool loseHp = invoke->invoker->getMark("@die") == 0;
-            if (!loseHp)
-                loseHp = invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->targets.first()));
-            if (!loseHp)
-                invoke->invoker->loseMark("@die", 1);
-            else {
-                room->loseHp(invoke->targets.first());
-                room->loseHp(invoke->invoker);
-            }
-        }
-        return false;
     }
 };
-*/
-
 
 
 class Tianqu : public TriggerSkill
@@ -4520,10 +4300,7 @@ TouhouGodPackage::TouhouGodPackage()
 
     General *yuyuko_god = new General(this, "yuyuko_god", "touhougod", 1, false);
     yuyuko_god->addSkill(new Fanhun);
-    //yuyuko_god->addSkill(new Youdie);
-    //yuyuko_god->addSkill(new YoudieProhibit);
-    yuyuko_god->addSkill(new Skill("yousi", Skill::Compulsory));
-    //related_skills.insertMulti("youdie", "#youdieprevent");
+    yuyuko_god->addSkill(new Yousi);
 
     General *aya_god = new General(this, "aya_god", "touhougod", 4, false);
     aya_god->addSkill(new Tianqu);

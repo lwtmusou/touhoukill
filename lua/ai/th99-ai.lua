@@ -111,7 +111,8 @@ end
 
 
 function choose_xiufuId(self, card_ids)
-
+	self.player:removeTag("xiufu_equipid")
+	self.player:removeTag("xiufu_target")
 	local weapons={}
 	local armors={}
 	local dhorses={}
