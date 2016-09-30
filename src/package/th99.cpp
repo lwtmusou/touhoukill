@@ -1912,7 +1912,7 @@ class Xunshi : public TriggerSkill
 public:
     Xunshi() : TriggerSkill("xunshi")
     {
-        events << TargetConfirming;
+        events << TargetSpecifying;
         frequency = Compulsory;
     }
 
