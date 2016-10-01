@@ -1180,7 +1180,8 @@ sgs.ai_skill_cardask["jidong-discard"] = function(self, data)
 	
 	local cards = {} 
 	for _,c in sgs.qlist(self.player:getCards("hs")) do
-		if c:getTypeId() == use.card:getTypeId() then
+		--if c:getTypeId() == use.card:getTypeId() then
+		if c:isKindOf("BasicCard") then
 			table.insert(cards, c)
 		end	
 	end

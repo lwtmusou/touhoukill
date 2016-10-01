@@ -2018,14 +2018,14 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        QString type = use.card->getType();
-        QString pattern = QString("%1Card|.|.|hand").arg(type.left(1).toUpper() + type.right(type.length() - 1));
+        //QString type = use.card->getType();
+        //QString pattern = QString("%1Card|.|.|hand").arg(type.left(1).toUpper() + type.right(type.length() - 1));
         QStringList prompt_list;
         prompt_list << "jidong-discard" << use.card->objectName()
-            << use.from->objectName() << use.card->getType();
+            << use.from->objectName() << "basic";// use.card->getType();
         QString prompt = prompt_list.join(":");
 
-        const Card *card = room->askForCard(invoke->invoker, pattern, prompt, data, Card::MethodDiscard, NULL, false, objectName());
+        const Card *card = room->askForCard(invoke->invoker, ".Basic", prompt, data, Card::MethodDiscard, NULL, false, objectName());
         if (card)
             invoke->invoker->tag["jidong_card"] = QVariant::fromValue(card);
         return card != NULL;
