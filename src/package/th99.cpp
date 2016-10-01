@@ -1923,7 +1923,7 @@ public:
         if (use.card->isKindOf("Peach") || use.card->isKindOf("Slash") || use.card->isNDTrick()) {
             use.card->setFlags("xunshi");
             foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                if (use.from->isAlive() && p != use.from && !use.to.contains(p)
+                if (use.from->isAlive() && p != use.from && !use.to.contains(p) && !use.to.isEmpty()
                     && (p->getHandcardNum() < use.from->getHandcardNum() || p->getHp() < use.from->getHp())
                     && !use.from->isProhibited(p, use.card)) {
                     if (use.card->isKindOf("Peach") && use.card->isAvailable(p))
