@@ -128,6 +128,7 @@ public:
     QStringList SurprisingGenerals;
     QStringList LordBGMConvertList;
 
+
 private:
     void _loadMiniScenarios();
     void _loadModScenarios();

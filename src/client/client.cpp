@@ -490,7 +490,6 @@ void Client::loseCards(const QVariant &arg)
         move.from = getPlayer(move.from_player_name);
         move.to = getPlayer(move.to_player_name);
         Player::Place srcPlace = move.from_place;
-
         if (srcPlace == Player::PlaceSpecial)
             ((ClientPlayer *)move.from)->changePile(move.from_pile_name, false, move.card_ids);
         else {

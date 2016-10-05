@@ -167,7 +167,6 @@ void ServerPlayer::bury()
     throwAllCards();
     throwAllMarks();
     clearPrivatePiles();
-
     room->clearPlayerCardLimitation(this, false);
 
     this->tag.remove("Huashen_skill");

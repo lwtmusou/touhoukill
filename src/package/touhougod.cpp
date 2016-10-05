@@ -490,7 +490,7 @@ public:
             return QList<SkillInvokeDetail>();
 
         if (damage.from && damage.from != damage.to && damage.from->getPhase() == Player::Play && damage.from->hasSkill(this)
-            && damage.card->isKindOf("Slash") && damage.from->canDiscard(damage.to, "e"))
+            && damage.card && damage.card->isKindOf("Slash") && damage.from->canDiscard(damage.to, "e"))
                  return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
             return QList<SkillInvokeDetail>();
     }

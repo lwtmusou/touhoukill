@@ -1364,7 +1364,7 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.chain || damage.transfer || !damage.by_user || !damage.from || !damage.from->hasSkill("huanwei") || !damage.from->isCurrent())
                 return QList<SkillInvokeDetail>();
-            if (damage.card->isKindOf("Slash") && damage.card->getSuit() == Card::Spade)
+            if (damage.card && damage.card->isKindOf("Slash") && damage.card->getSuit() == Card::Spade)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
         }
         return QList<SkillInvokeDetail>();

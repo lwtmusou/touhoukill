@@ -436,7 +436,6 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason)
 
     victim->detachAllSkills();
     thread->trigger(BuryVictim, this, data);
-
     if (!victim->isAlive() && Config.EnableAI) {
         bool expose_roles = true;
         foreach (ServerPlayer *player, m_alivePlayers) {
@@ -4180,7 +4179,6 @@ void Room::throwCard(const Card *card, const CardMoveReason &reason, ServerPlaye
         sendLog(log);
     }
 
-
     QList<CardsMoveStruct> moves;
     if (who) {
         CardsMoveStruct move(to_discard, who, NULL, Player::PlaceUnknown, Player::DiscardPile, reason);
@@ -4418,7 +4416,6 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
         i++;
     }
     cards_moves = _separateMoves(moveOneTimes);
-
     notifyMoveCards(true, cards_moves, forceMoveVisible);
     // First, process remove card
     for (int i = 0; i < cards_moves.size(); i++) {

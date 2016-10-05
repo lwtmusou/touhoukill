@@ -569,66 +569,6 @@ public:
 
 
 /*
-class JiduVS : public OneCardViewAsSkill
-{
-public:
-    JiduVS() : OneCardViewAsSkill("jidu")
-    {
-        filter_pattern = ".|.|.|hand";
-        response_or_use = true;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
-    {
-        return matchAvaliablePattern("duel", pattern);
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const
-    {
-        if (originalCard != NULL) {
-            Duel *duel = new Duel(Card::SuitToBeDecided, -1);
-            duel->addSubcard(originalCard);
-            duel->setSkillName(objectName());
-            return duel;
-        } else
-            return NULL;
-    }
-};
-
-class Jidu : public MasochismSkill
-{
-public:
-    Jidu() : MasochismSkill("jidu")
-    {
-        view_as_skill = new JiduVS;
-    }
-
-    QList<SkillInvokeDetail> triggerable(const Room *, const DamageStruct &damage) const
-    {
-        if (damage.card && damage.card->isKindOf("Duel") && damage.to->hasSkill(this) && damage.to->isAlive())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
-        return QList<SkillInvokeDetail>();
-    }
-
-    void onDamaged(Room *, QSharedPointer<SkillInvokeDetail> invoke, const DamageStruct &) const
-    {
-        invoke->invoker->drawCards(1);
-    }
-};
-
-class JiduProhibit : public ProhibitSkill
-{
-public:
-    JiduProhibit() : ProhibitSkill("#jiduprevent")
-    {
-    }
-
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &) const
-    {
-        return card->getSkillName() == "jidu" && from->getHp() > to->getHp();
-    }
-};
-
 class Gelong : public TriggerSkill
 {
 public:
