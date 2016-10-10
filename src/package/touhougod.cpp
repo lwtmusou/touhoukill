@@ -1083,8 +1083,9 @@ public:
     {
         ServerPlayer *player = invoke->invoker;
         if (triggerEvent == PreHpLost) {
-            player->tag["banling_minus"] = data;
-            for (int i = 0; i < data.toInt(); i++) {
+            HpLostStruct hplost = data.value<HpLostStruct>();
+            player->tag["banling_minus"] = QVariant::fromValue(hplost.num);
+            for (int i = 0; i < hplost.num; i++) {
                 QString choice = room->askForChoice(player, "banling_minus", "lingtili+rentili");
                 if (choice == "lingtili") {
                     room->touhouLogmessage("#lingtilidamage", player, "banling", QList<ServerPlayer *>(), QString::number(1));
@@ -1101,7 +1102,7 @@ public:
             LogMessage log;
             log.type = "#LoseHp";
             log.from = player;
-            log.arg = QString::number(data.toInt());
+            log.arg = QString::number(hplost.num);
             room->sendLog(log);
             log.arg = QString::number(player->getHp());
             log.arg2 = QString::number(player->getMaxHp());
