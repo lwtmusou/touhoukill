@@ -337,7 +337,7 @@ public:
         else if (triggerEvent == EventAcquireSkill)
             mokou = data.value<SkillAcquireDetachStruct>().player;
 
-        if (mokou != NULL && mokou->isAlive() && mokou->hasSkill(this) && mokou->getHp() == 1 && mokou->isKongcheng())
+        if (mokou != NULL && mokou->isAlive() && mokou->hasSkill(this) && mokou->getHp() <= mokou->dyingThreshold() && mokou->isKongcheng())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, mokou, mokou, NULL, true);
         return QList<SkillInvokeDetail>();
     }
