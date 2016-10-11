@@ -354,7 +354,8 @@ void PlayerCardContainer::updateHp()
         _m_sub_hpBox->update();
     }
 
-    if (m_player->getHp() > 0 || m_player->getMaxHp() == 0)
+    //if (m_player->getHp() > 0 || m_player->getMaxHp() == 0)
+    if (m_player->getHp() >= m_player->dyingThreshold() || m_player->getMaxHp() < m_player->dyingThreshold())
         _m_saveMeIcon->setVisible(false);
 }
 
