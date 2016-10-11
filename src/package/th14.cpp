@@ -282,7 +282,7 @@ public:
         ServerPlayer *target = use.to.first();
         invoke->invoker->tag["nizhuan_carduse"] = data;
         if (target == invoke->invoker) {
-            if (room->askForCard(target, ".", "@nizhuan-self", data, objectName()))
+            if (room->askForCard(target, ".", "@nizhuan-self:" + use.from->objectName(), data, objectName()))
                 return true;
         } else {
             QString prompt = "target:" + use.from->objectName() + ":" + target->objectName();
