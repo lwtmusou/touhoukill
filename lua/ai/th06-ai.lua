@@ -592,39 +592,6 @@ sgs.ai_damageInflicted.bingpo =function(self, damage)
 end
 
 
-sgs.ai_skill_use["@@zhenye"] = function(self, prompt)
-	local target_table = sgs.QList2Table(self.room:getOtherPlayers(self.player))
-	self:sort(target_table,"handcard")
-	local target
-	for _,p in pairs (target_table) do
-		if self:isFriend(p) and not p:faceUp()then
-			target = p
-			break
-		end
-		if self:isEnemy(p) and p:faceUp()then
-			target = p
-			break
-		end
-	end
-	
-	
-	local blacks = {}
-	
-	for _,c in sgs.qlist(self.player:getCards("hs")) do
-		if (c:isBlack()) then table.insert(blacks, c) end
-	end
-	self:sortByUseValue(blacks)
-	if (self.player:getHandcardNum() - #blacks) > target:getHandcardNum()  or #blacks == 0 then
-		return "."
-	end
-	local num =  math.max(self.player:getHandcardNum() - target:getHandcardNum(), 1)
-	local ids = {}
-	for index, c in ipairs(blacks) do
-		table.insert(ids, c:getEffectiveId())
-		if index >= num then break end
-	end
-	return "@ZhenyeCard="..table.concat(ids, "+")
-end
 
 sgs.ai_skill_playerchosen.zhenye = function(self, targets)
 	local target_table= sgs.QList2Table(targets)
@@ -650,7 +617,7 @@ sgs.ai_playerchosen_intention.zhenye =function(self, from, to)
 end
 
 
-
+sgs.ai_skill_invoke.anyu = true
 sgs.ai_skill_choice.anyu= function(self, choices, data)
 	if self.player:faceUp() then
 		return "draw"
@@ -660,14 +627,15 @@ sgs.ai_skill_choice.anyu= function(self, choices, data)
 		return "draw"
 	end
 
-	local use=data:toCardUse()
+	--[[local damage =data:toDamage()
 	local dongjie=false
-	if use.from and use.from:hasSkill("dongjie") and self:isFriend(use.from)  then
+	if damage.from and damage.from:hasSkill("dongjie") and self:isFriend(use.from)  then
 		dongjie=true
 	end
 	if dongjie then
 		return "draw"
-	elseif self:isWeak(self.player) and self:getOverflow() <2 then
+	else]]
+	if self:isWeak(self.player) and self:getOverflow() <2 then
 		return "draw"
 	elseif self:getOverflow() >=2 then
 		return "turnover"
@@ -680,17 +648,7 @@ sgs.ai_slash_prohibit.anyu = function(self, from, to, card)
 	if self:isFriend(from, to) then return false end
 	return not self:isWeak(to) and not to:faceUp()
 end
---[[sgs.ai_skill_cardask["@anyu"] = function(self, data)
-	if self.player:faceUp() then  return "." end
-	local blacks = {}
-	for _,c in sgs.qlist(self.player:getCards("hes")) do
-		if (c:isBlack()) then table.insert(blacks, c) end
-	end
-	
-	self:sortByUseValue(blacks)
-	if  #blacks== 0 then  return "." end
-	return "$" .. cards[1]:getId()
-end]]
+
 
 --function SmartAI:getEnemyNumBySeat(from, to, target, include_neutral)
 qiyue_find_righter = function(room,target)

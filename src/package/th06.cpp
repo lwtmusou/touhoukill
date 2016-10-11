@@ -1094,116 +1094,8 @@ public:
 };
 
 
-ZhenyeCard::ZhenyeCard()
-{
-    will_throw = true;
-    target_fixed = true;
-    handling_method = Card::MethodDiscard;
-}
-
-void ZhenyeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
-{
-    QList<ServerPlayer *> targets;
-    foreach(ServerPlayer *p, room->getOtherPlayers(source)) {
-        if (p->getHandcardNum() >= source->getHandcardNum())
-            targets << p;
-    }
-
-    if (!targets.isEmpty()) {
-        ServerPlayer *target = room->askForPlayerChosen(source, targets, "zhenye", "@zhenye-select", true, true);
-        if (target) {
-            source->turnOver();
-            target->turnOver();
-        }
-    }
-}
-class ZhenyeVS : public ViewAsSkill
-{
-public:
-    ZhenyeVS() : ViewAsSkill("zhenye")
-    {
-        response_pattern = "@@zhenye";
-    }
 
 
-    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
-    {
-        return  to_select->isBlack() && !Self->isJilei(to_select);
-    }
-
-    virtual const Card *viewAs(const QList<const Card *> &cards) const
-    {
-        if (cards.length() > 0) {
-            ZhenyeCard *card = new ZhenyeCard;
-            card->addSubcards(cards);
-            return card;
-        }
-        return NULL;
-    }
-};
-class Zhenye : public TriggerSkill
-{
-public:
-    Zhenye() : TriggerSkill("zhenye")
-    {
-        events << EventPhaseStart;
-        view_as_skill = new ZhenyeVS;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
-    {
-        ServerPlayer *nokia = data.value<ServerPlayer *>();
-        if (nokia->hasSkill(this) && nokia->getPhase() == Player::Finish && nokia->canDiscard(nokia, "hes"))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, nokia, nokia);
-
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        return room->askForUseCard(invoke->invoker, "@@zhenye", "@zhenye");
-    }
-};
-
-/*
-class Anyu : public TriggerSkill
-{
-public:
-    Anyu() : TriggerSkill("anyu")
-    {
-        events << TargetConfirmed;
-        frequency = Compulsory;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
-    {
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (!(use.card->isBlack() && (use.card->isKindOf("Slash") || use.card->isNDTrick())))
-            return QList<SkillInvokeDetail>();
-
-        QList<SkillInvokeDetail> d;
-        foreach (ServerPlayer *nokia, use.to) {
-            if (nokia->hasSkill(this))
-                d << SkillInvokeDetail(this, nokia, nokia, NULL, true);
-        }
-
-        return d;
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        room->touhouLogmessage("#TriggerSkill", invoke->invoker, "anyu");
-        room->notifySkillInvoked(invoke->invoker, objectName());
-        const Card *card = room->askForCard(invoke->invoker, ".|black", "@anyu", data, objectName());
-        if (card)
-            invoke->invoker->turnOver();
-        else
-            invoke->invoker->drawCards(1);
-        return false;
-    }
-};*/
-
-/*
 class Zhenye : public TriggerSkill
 {
 public:
@@ -1239,37 +1131,32 @@ public:
 
         return false;
     }
-};*/
+};
 
 class Anyu : public TriggerSkill
 {
 public:
     Anyu() : TriggerSkill("anyu")
     {
-        events << TargetConfirmed;
-        frequency = Compulsory;
+        events << Damaged;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (!(use.card->isBlack() && (use.card->isKindOf("Slash") || use.card->isNDTrick())))
+        DamageStruct damage = data.value<DamageStruct>();
+        if (!damage.card || !damage.card->isBlack())
             return QList<SkillInvokeDetail>();
 
-        QList<SkillInvokeDetail> d;
-        foreach(ServerPlayer *nokia, use.to) {
-            if (nokia->hasSkill(this))
-                d << SkillInvokeDetail(this, nokia, nokia, NULL, true);
-        }
-
-        return d;
+        if (damage.to->isAlive() && damage.to->hasSkill(this))
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
+        return QList<SkillInvokeDetail>();
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        room->touhouLogmessage("#TriggerSkill", invoke->invoker, "anyu");
+        //room->touhouLogmessage("#TriggerSkill", invoke->invoker, "anyu");
         QString choice = room->askForChoice(invoke->invoker, objectName(), "turnover+draw", data);
-        room->notifySkillInvoked(invoke->invoker, objectName());
+        //room->notifySkillInvoked(invoke->invoker, objectName());
         if (choice == "turnover")
             invoke->invoker->turnOver();
         else
@@ -1665,7 +1552,6 @@ TH06Package::TH06Package()
     addMetaObject<SkltKexueCard>();
     addMetaObject<SuodingCard>();
     addMetaObject<TaijiCard>();
-    addMetaObject<ZhenyeCard>();
     addMetaObject<BanyueCard>();
 
     skills << new SkltKexueVS;
