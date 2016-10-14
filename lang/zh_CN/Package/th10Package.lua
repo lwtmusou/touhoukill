@@ -222,7 +222,7 @@ return{
 	["jiliao:throwcard"] = "“寂寥”：<font color=\"#00FF00\"><b>%src </b></font> 的手牌数大于其手牌上限，你可以弃置其一张手牌。" ,
 	["zhongyan"] = "终焉",
 	["@zhongyan"] = "终焉",
-	[":zhongyan"] = "<font color=\"red\"><b>限定技，</b></font>当你受到其他角色对你造成的伤害时，你可以防止此伤害，并令其失去X点体力（X为其已损失的体力值且最少为1）。",
+	[":zhongyan"] = "<font color=\"red\"><b>限定技，</b></font>当你受到其他角色造成的伤害时，你可以防止此伤害，并令其失去X点体力（X为其已损失的体力值且最少为1）。",
 	["zhongyan:target"] = "<font color=\"#00FF00\"><b>%src </b></font> 将对你造成伤害，你可以发动限定技“终焉”，防止此伤害，并令其失去 %dest 点体力。" ,
 	["$zhongyanAnimate"]= "skill=shizuha:zhongyan",
 
