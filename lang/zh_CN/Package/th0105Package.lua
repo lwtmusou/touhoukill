@@ -7,13 +7,20 @@ return {
 	--pc98010 魅魔
 	["mima"] = "魅魔" ,
 	["#mima"] = "将命运托付给久远的梦的精神" ,
+	["meiling"] = "魅灵",
+	[":meiling"] = "一名角色受到其他角色造成的伤害后，你可获得造成伤害的牌。若你与该角色的距离大于x，来源对你造成1点伤害。（x为你已损失的体力值）",
+	["meiling:distance"]= "你是否发动“魅灵”，获得【%arg】。 你到 受伤者<font color=\"#00FF00\"><b>%src </b></font> 的距离为 <font color=\"#FF8000\"><b>%dest </b></font>。",
+	["fuchou"] = "复仇",
+	[":fuchou"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"blue\"><b>锁定技，</b></font>你使用【杀】指定其他旧势力角色的攻击范围内且体力值大于其的目标后，此【杀】不计入次数限制。",
+	["#fuchou"] = "%from 的 主公技 %arg 被触发， %from 使用的【杀】不计入次数限制。",
+
 	["eling"] = "恶灵",
 	[":eling"] = "当你造成非属性伤害时或当你受到非属性伤害时，你可以判定，若结果不为<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>，此伤害视为雷属性。",
 	["xieqi"] = "邪气",
 	[":xieqi"] = "当你造成属性伤害后，你可令一名其他角色获得造成伤害的牌。当其他角色造成属性伤害后，你可以获得造成伤害的牌。",
 	["@xieqi"] = "你可以发动<font color=\"blue\"><b>邪气</b></font>， 令一名角色获得伤害牌<font color=\"#00FF00\"><b>%src </b></font>。",
-	["fuchou"] = "复仇",
-	[":fuchou"] = "<font color=\"orange\"><b>主公技，</b></font>其他旧势力角色的出牌阶段开始时，其可以选择其攻击范围内的体力值大于你的一名角色，你可令该角色横置。",
+	
+	--[":fuchou"] = "<font color=\"orange\"><b>主公技，</b></font>其他旧势力角色的出牌阶段开始时，其可以选择其攻击范围内的体力值大于你的一名角色，你可令该角色横置。",
 	["@fuchou"] = "你可以响应<font color=\"#00FF00\"><b>%src </b></font>的主公技“复仇”，指定一个体力值小于<font color=\"#00FF00\"><b>%src </b></font>的对象。",
 	["#ChooseFuchou"] = "%from 选择了 %to",
 	

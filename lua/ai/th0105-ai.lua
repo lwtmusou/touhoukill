@@ -1,3 +1,30 @@
+sgs.ai_skill_invoke.meiling = function(self,data)
+	local damage = self.player:getTag("meiling"):toDamage()
+	local will_damage = (self.player:distanceTo(damage.to)  > self.player:getLostHp())
+	if (not will_damage) then
+		return true
+	end
+	if (self:isFriend(damage.from) and damage.from:hasSkill("moli")) then
+		if (not self.player:hasFlag("meiling_AIDamage")) then
+			self.player:setFlags("meiling_AIDamage")
+			return true
+		end
+	end
+	local point = self:isWeak(self.player) and -2 or 0
+	for _, id in sgs.qlist(damage.card:getSubcards()) do
+		local card_x = sgs.Sanguosha:getEngineCard(id)
+		if card_x:isKindOf("Peach") then
+			point = point + 3
+		elseif card_x:isKindOf("TrickCard") then
+			point = point + 2
+		else
+			point = point + 1
+		end
+	end
+	
+	return point > 1
+end
+
 sgs.ai_skill_choice.ciyuan = function(self, choices, data)
 	local choice_table = choices:split("+")
 	if choices:match("cancel") then

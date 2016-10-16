@@ -6,6 +6,60 @@
 
 #include "clientplayer.h"
 
+class Meiling : public TriggerSkill
+{
+public:
+    Meiling() : TriggerSkill("meiling")
+    {
+        events << Damaged;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (!damage.card || damage.from == NULL || damage.to->isDead())
+            return QList<SkillInvokeDetail>();
+
+        QList<int> ids;
+        if (damage.card->isVirtualCard())
+            ids = damage.card->getSubcards();
+        else
+            ids << damage.card->getEffectiveId();
+
+        if (ids.isEmpty()) return QList<SkillInvokeDetail>();
+        foreach(int id, ids) {
+            if (room->getCardPlace(id) != Player::PlaceTable) return QList<SkillInvokeDetail>();
+        }
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *mima, room->findPlayersBySkillName(objectName())) {
+            if (mima != damage.from)
+                d << SkillInvokeDetail(this, mima, mima);
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        QString prompt = "distance:" + damage.to->objectName() + ":" + QString::number(invoke->invoker->distanceTo(damage.to)) 
+           + ":" + damage.card->objectName();
+        invoke->invoker->tag["meiling"] = data;
+        return invoke->invoker->askForSkillInvoke(this, prompt);
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        invoke->invoker->obtainCard(damage.card);
+        if (damage.to->isAlive() && damage.from->isAlive() 
+            && invoke->invoker->distanceTo(damage.to) > invoke->invoker->getLostHp()) {
+            room->damage(DamageStruct(objectName(), damage.from, invoke->invoker, 1, DamageStruct::Normal));
+        }
+        return false;
+    }
+
+};
+
 class Eling : public TriggerSkill
 {
 public:
@@ -109,69 +163,41 @@ public:
     Fuchou() : TriggerSkill("fuchou$")
     {
         frequency = Compulsory;
-        events << EventPhaseStart;
+        events << TargetConfirmed;
     }
 
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
-        ServerPlayer *current = data.value<ServerPlayer *>();
-        if (!current || current->getKingdom() != "pc98" || current->getPhase() != Player::Play)
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (!use.card->isKindOf("Slash") || !use.from->isAlive() || !use.from->hasLordSkill(this))
             return QList<SkillInvokeDetail>();
-
-        QList<ServerPlayer *> rans = room->findPlayersBySkillName(objectName());
-
+        
         QList<SkillInvokeDetail> d;
-        foreach(ServerPlayer *p, room->getOtherPlayers(current)) {
-            if (!p->hasLordSkill(objectName()))
-                continue;
-            foreach(ServerPlayer *t, room->getOtherPlayers(current)) {
-                if (current->inMyAttackRange(t) && t->getHp() > p->getHp() && !t->isChained()) {
-                    d << SkillInvokeDetail(this, p, current);
+        bool can = false;
+        foreach(ServerPlayer *t, use.to) {
+            foreach(ServerPlayer *p, room->getOtherPlayers(t)) {
+                if (p->inMyAttackRange(t) && t->getHp() > p->getHp() && p != use.from) {
+                    can = true;
                     break;
                 }
             }
         }
-        return d;
+        if (can)
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
+        return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        QList<ServerPlayer *> targets;
-        foreach(ServerPlayer *t, room->getOtherPlayers(invoke->invoker)) {
-            if (invoke->invoker->inMyAttackRange(t) && t->getHp() > invoke->owner->getHp() && !t->isChained()) {
-                targets << t;
-            }
-        }
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@fuchou:" + invoke->owner->objectName());
-        if (target != NULL) {
-            LogMessage log;
-            log.type = "#InvokeOthersSkill";
-            log.from = invoke->invoker;
-            log.to << invoke->owner;
-            log.arg = objectName();
-            room->sendLog(log);
-
-            invoke->targets << target;
-
-            LogMessage log1;
-            log1.type = "#ChooseFuchou";
-            log1.from = invoke->invoker;
-            log1.to << target;
-            room->sendLog(log1);
-
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
-        }
-
-        return target != NULL;
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        if (invoke->owner->askForSkillInvoke(this, QVariant::fromValue(invoke->targets.first()))) {
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->owner->objectName(), invoke->targets.first()->objectName());
-
-            room->setPlayerProperty(invoke->targets.first(), "chained", true);
+        CardUseStruct use = data.value<CardUseStruct>();
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        room->touhouLogmessage("#fuchou", invoke->invoker, objectName());
+        //room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->owne1huir->objectName(), invoke->targets.first()->objectName());
+        if (use.m_addHistory) {
+            room->addPlayerHistory(use.from, use.card->getClassName(), -1);
+            use.m_addHistory = false;
+            data = QVariant::fromValue(use);
         }
         return false;
     }
@@ -1903,8 +1929,8 @@ TH0105Package::TH0105Package()
     : Package("th0105")
 {
     General *mima = new General(this, "mima$", "pc98", 4, false);
-    mima->addSkill(new Eling);
-    mima->addSkill(new Xieqi);
+    mima->addSkill(new Meiling);
+    //mima->addSkill(new Xieqi);
     mima->addSkill(new Fuchou);
 
     General *yumemi = new General(this, "yumemi$", "pc98", 4, false);
