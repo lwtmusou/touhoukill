@@ -68,8 +68,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (!use.card->isKindOf("Peach") && !use.card->isKindOf("Analeptic"))
             return QList<SkillInvokeDetail>();
-        if (!use.to.contains(use.from) || use.from->getPhase() != Player::Play ||
-           use.from->isKongcheng() || use.from->getHp() < 1 || !use.from->isAlive())
+        if (use.from->getPhase() != Player::Play || use.from->isKongcheng() || !use.from->isAlive())
             return QList<SkillInvokeDetail>();
         QList<SkillInvokeDetail> d;
         foreach(ServerPlayer *suika, room->findPlayersBySkillName(objectName())) {
@@ -94,14 +93,13 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
-
         if (!invoke->invoker->isKongcheng() && invoke->invoker->pindian(invoke->targets.first(), objectName())) {
             if (invoke->invoker->isWounded()) {
                 RecoverStruct recover;
                 recover.recover = 1;
                 room->recover(invoke->invoker, recover);
             }
-            use.nullified_list << invoke->targets.first()->objectName();
+            use.nullified_list << "_ALL_TARGETS";
             data = QVariant::fromValue(use);
             room->setPlayerFlag(invoke->targets.first(), "Global_PlayPhaseTerminated");
         }
