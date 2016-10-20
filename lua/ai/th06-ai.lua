@@ -385,7 +385,16 @@ sgs.ai_no_playerchosen_intention.hezhou =function(self, from)
 		sgs.updateIntention(from, lord, 10)
 	end
 end
-
+sgs.ai_skill_playerchosen.hezhou = function(self, targets)
+	local target =self:touhouFindPlayerToDraw(false, 1)
+	if not target and #self.friends_noself>0 then
+		target= self.friends_noself[1]
+	end
+	if target then
+		return target
+	end
+	return nil
+end
 
 sgs.ai_skill_invoke.neijin = function(self)
 	local current = self.room:getCurrent()
