@@ -23,7 +23,7 @@ return{
 	["jiushu"] = "救赎",
 	[":jiushu"] = "结束阶段开始时，你可以摸X张牌（X为你已损失的体力值）。",
 	["fahua"] = "法华",
-	[":fahua"] = "<font color=\"orange\"><b>主公技，</b></font>当你成为其他角色使用锦囊牌的目标时，你可令不是此牌的使用者或目标的其他星势力角色依次选择是否代替你成为此牌的目标。",
+	[":fahua"] = "<font color=\"orange\"><b>主公技，</b></font>当你成为其他角色使用锦囊牌的唯一目标时，你可令其他星势力角色依次选择是否将此牌转移给该角色。",
 	["fahua_change"]= "法华",
 	["fahua_change:tricktarget"]= "你可以响应 <font color=\"#00FF00\"><b>%dest </b></font> 的主公技“法华”，代替 <font color=\"#00FF00\"><b>%dest </b></font> 成为 <font color=\"#FF8000\"><b>%src </b></font> 使用的【%arg】的目标。",
 	["#fahua_change"]= "%to 代替其成为 %from 使用的 %arg 的目标。",

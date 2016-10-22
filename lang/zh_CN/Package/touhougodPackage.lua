@@ -222,7 +222,7 @@ return{
 	["illustrator:reisen_god_2"] = "赤りんご",
 	["origin:reisen_god_2"] = "p号：1438991，个人ID：164813",
 	["ningshi"] = "凝视",
-	[":ningshi"] = "<font color=\"blue\"><b>锁定技，</b></font>当你于出牌阶段内使用【杀】或锦囊牌指定其他角色为目标后，若此牌只指定了一名角色为目标，其须失去1点体力。",
+	[":ningshi"] = "<font color=\"blue\"><b>锁定技，</b></font>当你于出牌阶段内使用【杀】或锦囊牌指定其他角色为唯一目标后，其失去1点体力。",
 	["@ningshi"] = "请弃置 %src 张牌，否则将失去 %src 点体力",
 	["gaoao"] = "高傲",
 	[":gaoao"] = "<font color=\"blue\"><b>锁定技，</b></font>若一张牌于你的回合外将进入你的区域，改为将此牌置入弃牌堆。",

@@ -83,21 +83,17 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (!use.card->isKindOf("Slash"))
+        if (!use.card->isKindOf("Slash") || use.to.length() != 1)
+            return QList<SkillInvokeDetail>();
+        if (!use.to.first()->hasLordSkill(objectName()))
             return QList<SkillInvokeDetail>();
 
-        QList<SkillInvokeDetail> d;
-        foreach(ServerPlayer *p, use.to) {
-            if (!p->hasLordSkill(objectName()))
-                continue;
-            foreach (ServerPlayer *liege, room->getLieges("dld", p)) {
-                if (liege != use.from && !use.to.contains(liege) && use.from->canSlash(liege, use.card, false)) {
-                    d << SkillInvokeDetail(this, p, p);
-                    break;
-                }
+        foreach(ServerPlayer *liege, room->getLieges("dld", use.to.first())) {
+            if (use.from->canSlash(liege, use.card, false)) {
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.to.first(), use.to.first());
             }
         }
-        return d;
+        return QList<SkillInvokeDetail>();
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
@@ -105,9 +101,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getLieges("dld", invoke->invoker)) {
-            if (p == use.from)
-                continue;
-            if (use.from->canSlash(p, use.card, false) && !use.to.contains(p))
+            if (use.from->canSlash(p, use.card, false))
                 targets << p;
         }
 

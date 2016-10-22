@@ -21,7 +21,7 @@ return{
 	["duxin"] = "读心",
 	[":duxin"] = "<font color=\"blue\"><b>锁定技，</b></font>当你需要选择其他角色的手牌时，其手牌对你可见，直到此选择结束。",
 	["huzhu"] = "护主",
-	[":huzhu"] = "<font color=\"orange\"><b>主公技，</b></font>当你成为【杀】的目标时，你可令不是此【杀】的使用者或目标的其他地势力角色依次选择是否代替你成为此【杀】的目标。",
+	[":huzhu"] = "<font color=\"orange\"><b>主公技，</b></font>当你成为【杀】的唯一目标时，你可令其他地势力角色依次选择是否将此【杀】转移给该角色。",
 	["huzhu_change"]= "护主",
 	["huzhu_change:slashtarget"]= "你可以响应 <font color=\"#00FF00\"><b>%dest </b></font> 的主公技“护主”，代替 <font color=\"#00FF00\"><b>%dest </b></font> 成为 <font color=\"#FF8000\"><b>%src </b></font> 使用的【%arg】的目标。",
 	["#huzhu_change"]= "%to 代替其成为 %from 使用的 %arg 的目标。",

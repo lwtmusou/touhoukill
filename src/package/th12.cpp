@@ -78,35 +78,28 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (!(use.card->isKindOf("TrickCard") && use.from != NULL))
+        if (!(use.card->isKindOf("TrickCard") && use.from != NULL)  || use.to.length() != 1)
             return QList<SkillInvokeDetail>();
-        QList<ServerPlayer *> byakurens;
-        foreach (ServerPlayer *p, use.to) {
-            if (p->hasLordSkill(this) && p != use.from) {
-                byakurens << p;
-            }
-        }
+
+        if ( use.to.first() == use.from || !use.to.first()->hasLordSkill(this))
+            return QList<SkillInvokeDetail>();
 
         use.card->setFlags("fahua");
-        QList<SkillInvokeDetail> d;
-        foreach (ServerPlayer *p, byakurens) {
-            bool flag = false;
-            foreach (ServerPlayer *q, room->getLieges("xlc", p)) {
-                if (q == use.from)
-                    continue;
-                if (use.to.contains(q) || use.from->isProhibited(q, use.card))
-                    continue;
-                if (!use.card->targetFilter(QList<const Player *>(), q, use.from))
-                    continue;
-                d << SkillInvokeDetail(this, p, p);
-                flag = true;
-                break;
-            }
-            if (flag)
+        bool invoke = false;
+        foreach(ServerPlayer *q, room->getLieges("xlc", use.to.first())) {
+            //if (q == use.from)
+            //    continue;
+            if (use.from->isProhibited(q, use.card))
                 continue;
+            if (!use.card->targetFilter(QList<const Player *>(), q, use.from))
+                continue;
+            invoke = true;
+            break;
         }
         use.card->setFlags("-fahua");
-        return d;
+        if (invoke)
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.to.first(), use.to.first());
+        return QList<SkillInvokeDetail>();
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
@@ -116,8 +109,8 @@ public:
         use.card->setFlags("fahua");
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getLieges("xlc", invoke->invoker)) {
-            if (p == use.from)
-                continue;
+            //if (p == use.from)
+            //    continue;
             if (use.to.contains(p) || use.from->isProhibited(p, use.card)) {
                 continue;
             }

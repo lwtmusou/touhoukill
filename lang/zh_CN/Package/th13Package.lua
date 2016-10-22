@@ -139,7 +139,7 @@ return{
 	["illustrator:kyouko_2"] = "ideolo",
 	["origin:kyouko_2"] = "个人ID：61513",
 	["huisheng"] = "回声",
-	[":huisheng"] = "当其他角色使用的只指定了你为目标的基本牌或普通锦囊牌结算后，你可以视为对其使用一张与此牌名称相同且属性相同的牌。",
+	[":huisheng"] = "当其他角色使用的基本牌或普通锦囊牌结算后，若你为此牌的唯一目标，你可以视为对其使用一张与此牌名称相同且属性相同的牌。",
 	["~huisheng"] = "回声",
 	["@huisheng-use"] = "你可以发动“回声”，对 <font color=\"#00FF00\"><b>%src </b></font> 使用一张【%dest】。",
 	["songjing"] = "诵经",

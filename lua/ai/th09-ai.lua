@@ -309,7 +309,7 @@ end
 sgs.ai_choicemade_filter.skillInvoke.judu = function(self, player, args)
 	local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
 	if args[#args] == "yes" then
-	sgs.updateIntention(damage.from, damage.to, 70)
+		sgs.updateIntention(damage.from, damage.to, 70)
 	end
 end
 sgs.ai_skillProperty.judu = function(self)
