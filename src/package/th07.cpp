@@ -1855,7 +1855,7 @@ public:
             const Card *card = Sanguosha->getCard(id);
             if (card != NULL && card->getSuit() == Card::Heart && card->getNumber() >= 11 && card->getNumber() <= 13) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->hasSkill(this) && !p->hasFlag("jixiong_used"))
+                    if (p->hasSkill("jixiong") && !p->hasFlag("jixiong_used"))
                         d << SkillInvokeDetail(this, p, p, NULL, false, current);
                 }
             }
@@ -1881,7 +1881,6 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        //room->setPlayerFlag(invoke->invoker, "jixiong_used");
         room->recover(invoke->targets.first(), RecoverStruct());
         return false;
     }

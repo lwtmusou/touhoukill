@@ -1360,9 +1360,7 @@ TH11Package::TH11Package()
 
     General *parsee = new General(this, "parsee", "dld", 3, false);
     parsee->addSkill(new Jidu);
-    //parsee->addSkill(new JiduProhibit);
     parsee->addSkill(new Gelong);
-    //related_skills.insertMulti("jidu", "#jiduprevent");
 
     General *yamame = new General(this, "yamame", "dld", 4, false);
     yamame->addSkill(new Chuanran);

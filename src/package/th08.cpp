@@ -321,7 +321,7 @@ public:
             QList<ServerPlayer *> targets;
             QList<SkillInvokeDetail> d;
             foreach(SkillInvalidStruct v, invalids) {
-                if (v.player->hasSkill(this) && v.player->getHp() <= v.player->dyingThreshold() && v.player->isKongcheng()) {
+                if (v.player->hasSkill("bumie") && v.player->getHp() <= v.player->dyingThreshold() && v.player->isKongcheng()) {
                     targets << v.player;
                     d << SkillInvokeDetail(this, v.player, v.player, NULL, true);
                 }
