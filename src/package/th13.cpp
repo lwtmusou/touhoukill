@@ -1497,30 +1497,32 @@ public:
 
     QList<SkillInvokeDetail> triggerable(const Room *room, const DamageStruct &damage) const
     {
+        QList<ServerPlayer *> targets;
         if (damage.to->hasSkill(this) && damage.to->isAlive()) {
             foreach (ServerPlayer *p, room->getOtherPlayers(damage.to)) {
                 if (p->getHp() >= damage.to->getHp())
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
+                    targets << p;
             }
         }
+        if (!targets.isEmpty())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, targets);
         return QList<SkillInvokeDetail>();
     }
 
     void onDamaged(Room *room, QSharedPointer<SkillInvokeDetail> invoke, const DamageStruct &damage) const
     {
-        foreach (ServerPlayer *p, room->getOtherPlayers(damage.to)) {
-            if (p->getHp() >= damage.to->getHp()) {
-                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, damage.to->objectName(), p->objectName());
-                if (p->canDiscard(p, "hes")) {
-                    p->tag["qingyu_source"] = QVariant::fromValue(damage.to);
+        foreach (ServerPlayer *p, invoke->targets) {
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, damage.to->objectName(), p->objectName());
+            if (p->canDiscard(p, "hes")) {
+                p->tag["qingyu_source"] = QVariant::fromValue(damage.to);
 
-                    const Card *cards = room->askForCard(p, ".|.|.|.", "@qingyu-discard:" + damage.to->objectName(), QVariant::fromValue(damage.to), Card::MethodDiscard);
-                    p->tag.remove("qingyu_source");
-                    if (cards == NULL)
-                        damage.to->drawCards(1);
-                } else
+                const Card *cards = room->askForCard(p, ".|.|.|.", "@qingyu-discard:" + damage.to->objectName(), QVariant::fromValue(damage.to), Card::MethodDiscard);
+                p->tag.remove("qingyu_source");
+                if (cards == NULL)
                     damage.to->drawCards(1);
             }
+            else
+                damage.to->drawCards(1);
         }
     }
 };
