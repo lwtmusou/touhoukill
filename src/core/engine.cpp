@@ -1028,7 +1028,6 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
     // shuffle them
     qShuffle(all_generals);
 
-
     int addcount = 0;
     QStringList general_list = QStringList();
     int godmax = Config.value("GodLimit", 1).toInt();
@@ -1270,3 +1269,4 @@ int Engine::correctAttackRange(const Player *target, bool include_weapon /* = tr
 
     return extra;
 }
+

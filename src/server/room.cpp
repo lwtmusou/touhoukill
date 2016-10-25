@@ -6596,4 +6596,3 @@ void Room::saveWinnerTable(const QString &winner)
 
     return;        
 }
-
