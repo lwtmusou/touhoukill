@@ -529,7 +529,7 @@ void ShijieCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
         }
     }
     if (!listt.isEmpty()) {
-        ServerPlayer * target = room->askForPlayerChosen(source, listt, "shijie", "@@shijie_chosen", false, true);
+        ServerPlayer * target = room->askForPlayerChosen(source, listt, "shijie", "@@shijie_chosen", true, true);
         if (target == NULL)
             return;
         QList<int> disabled_ids;
