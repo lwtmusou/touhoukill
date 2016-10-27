@@ -703,7 +703,7 @@
                  </layout>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_7">
+                 <layout class="QHBoxLayout" name="horizontalLayout_1">
                   <item>
                    <spacer name="horizontalSpacer_3">
                     <property name="orientation">

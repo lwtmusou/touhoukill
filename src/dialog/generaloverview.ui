@@ -64,11 +64,7 @@
        <string>Kingdom</string>
       </property>
      </column>
-     <column>
-      <property name="text">
-       <string>Gender</string>
-      </property>
-     </column>
+
      <column>
       <property name="text">
        <string>MaxHP</string>
