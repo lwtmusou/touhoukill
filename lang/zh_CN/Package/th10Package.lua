@@ -24,7 +24,7 @@ return{
 	["qiankun"] = "乾坤",
 	[":qiankun"] = "<font color=\"blue\"><b>锁定技，</b></font>你的手牌上限+2。",
 	["gongfeng"] = "供奉",
-	[":gongfeng"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"green\"><b>其他风势力角色的出牌阶段限一次，</b></font>该角色可以将一张【杀】交给你。",
+	[":gongfeng"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"green\"><b>其他风势力角色的出牌阶段限一次，</b></font>其可以将一张【杀】交给你。",
 	["gongfeng_attach"]= "供奉给杀",
 	[":gongfeng_attach"]= "若你属于风势力，你可于出牌阶段将一张【杀】交给拥有主公技“供奉”的角色。每阶段限一次。",
 
