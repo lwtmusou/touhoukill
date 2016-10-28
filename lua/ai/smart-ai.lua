@@ -168,7 +168,7 @@ function setInitialTables()
 	sgs.judge_reason =      "bazhen|EightDiagram|Blade|wuhun|supply_shortage|tuntian|nosqianxi|nosmiji|indulgence|lightning|baonue"..
 									"|nosleiji|leiji|caizhaoji_hujia|tieji|luoshen|ganglie|neoganglie|vsganglie|kofkuanggu"..
 							"|lingqi|pohuai|huisu"
-	sgs.no_intention_damage="nuhuo|pohuai|zhuonong"
+	sgs.no_intention_damage = "nuhuo|pohuai|zhuonong|meiling"
 	sgs.attackRange_skill = "nengwu|bushu|xiangqi|fanji|xiubu|huantong"
 
 	sgs.Friend_All = 0
