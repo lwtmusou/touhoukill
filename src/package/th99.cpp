@@ -1034,33 +1034,23 @@ class PingyiHandler : public TriggerSkill
 public:
     PingyiHandler() : TriggerSkill("#pingyi_handle")
     {
-        events << EventPhaseChanging; // << EventLoseSkill << Death
+        events << EventPhaseChanging << Death;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
-        /*if (triggerEvent == EventLoseSkill) {
-            SkillAcquireDetachStruct ad = data.value<SkillAcquireDetachStruct>();
-            if (ad.isAcquire)
-                return QList<SkillInvokeDetail>();
-
-            if (ad.player->tag.contains("pingyi_invalidSkill") && ad.player->tag.value("pingyi_invalidSkill").toString() == ad.skill->objectName())
-                who = ad.player;
-            if (who != NULL)
-                yori = who->tag.value("pingyi_from").value<ServerPlayer *>();
-        } else if (triggerEvent == Death) {
+        if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
-            if (death.who->tag.contains("pingyi_invalidSkill"))
-                who = death.who;
-            if (who != NULL)
-                yori = who->tag.value("pingyi_from").value<ServerPlayer *>();
-        }*/
-        PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
-        if (phase_change.to == Player::NotActive) {
-            ServerPlayer *yori = phase_change.player;
-            ServerPlayer *who = yori->tag.value("pingyi_originalOwner").value<ServerPlayer *>();
-            if (yori != NULL && who != NULL)
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, true);
+            if (death.who->tag.contains("pingyi_skill"))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, death.who, death.who, NULL, true);
+        } else if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
+            if (phase_change.to == Player::NotActive) {
+                ServerPlayer *yori = phase_change.player;
+                ServerPlayer *who = yori->tag.value("pingyi_originalOwner").value<ServerPlayer *>();
+                if (yori != NULL && who != NULL)
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, true);
+            }
         }
         return QList<SkillInvokeDetail>();
     }
@@ -1072,45 +1062,6 @@ public:
     }
 };
 
-class PingyiHandler2 : public TriggerSkill
-{
-public:
-    PingyiHandler2() : TriggerSkill("#pingyi_handle2")
-    {
-        events << EventLoseSkill << Death;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
-    {
-        ServerPlayer *yori = NULL;
-        if (triggerEvent == EventLoseSkill) {
-            SkillAcquireDetachStruct ad = data.value<SkillAcquireDetachStruct>();
-            if (ad.isAcquire)
-                return QList<SkillInvokeDetail>();
-
-            if (ad.player->tag.contains("pingyi_skill") && ad.player->tag.value("pingyi_skill").toString() == ad.skill->objectName())
-                yori = ad.player;
-        } else {
-            DeathStruct death = data.value<DeathStruct>();
-            if (death.who->tag.contains("pingyi_skill"))
-                yori = death.who;
-        }
-
-        if (yori != NULL)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, true);
-
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        ServerPlayer *orig = invoke->invoker->tag.value("pingyi_originalOwner").value<ServerPlayer *>();
-        QString skill_name = invoke->invoker->tag.value("pingyi_skill").toString();
-        room->setPlayerSkillInvalidity(orig, skill_name, false);
-
-        return false;
-    }
-};
 
 ZhesheCard::ZhesheCard()
 {
@@ -2228,9 +2179,7 @@ TH99Package::TH99Package()
     General *yorihime = new General(this, "yorihime", "wai", 4, false);
     yorihime->addSkill(new Pingyi);
     yorihime->addSkill(new PingyiHandler);
-    yorihime->addSkill(new PingyiHandler2);
     related_skills.insertMulti("pingyi", "#pingyi_handle");
-    related_skills.insertMulti("pingyi", "#pingyi_handle2");
 
 
     General *sunny = new General(this, "sunny", "wai", 4, false);
