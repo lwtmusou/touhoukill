@@ -247,7 +247,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (event == Damage) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.from->isAlive() && damage.from->getKingdom() == "zhan") {
+            if (damage.from && damage.from->isAlive() && damage.from->getKingdom() == "zhan") {
                 foreach (ServerPlayer *p, room->getOtherPlayers(damage.from)) {
                     if (p->hasLordSkill(objectName())) {
                         for (int i = 0; i < damage.damage; i++)
