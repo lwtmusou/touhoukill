@@ -692,9 +692,8 @@ public:
         if (cards.length() == 0 && !has_delaytrick) {
             return NULL;
         }
-        if (cards.length() > 0) {
+        if (cards.length() > 0)
             card->addSubcards(cards);
-        }
         return card;
     }
 };
@@ -718,6 +717,7 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
+        room->setPlayerFlag(invoke->invoker, "Global_InstanceUse_Failed");
         return room->askForUseCard(invoke->invoker, "@@baoyi", "@baoyi");
     }
 

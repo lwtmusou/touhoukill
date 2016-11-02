@@ -2861,11 +2861,15 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         room->notifySkillInvoked(invoke->invoker, objectName());
         room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
-        if (invoke->invoker->getMark("@xinyang") == 0)
+        QString choice = "loseHp"; 
+        if (invoke->invoker->getMark("@xinyang") > 0)
+            choice = room->askForChoice(invoke->invoker, objectName(), "loseHp+discardMark", data);
+
+        if (choice == "loseHp")
             room->loseMaxHp(invoke->invoker, 1);
         else
             invoke->invoker->loseMark("@xinyang", invoke->invoker->getMark("@xinyang"));

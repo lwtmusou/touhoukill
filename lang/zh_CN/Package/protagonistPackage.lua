@@ -201,7 +201,7 @@ return {
 	[":xinghui"] = "当一张“天仪”从你的人物牌上离开时，你可以摸一张牌。",
 
 	--zhu009
-	["reimu_old"] = "旧作灵梦" ,
+	["reimu_old"] = "旧作SP灵梦" ,
 	["#reimu_old"] = "维护梦与传统的巫女" ,
 	["&reimu_old"] = "旧作灵梦" ,
 	["illustrator:reimu_old"] = "november",
@@ -214,7 +214,7 @@ return {
 
 
 	--zhu010
-	["marisa_old"] = "旧作魔理沙" ,
+	["marisa_old"] = "旧作SP魔理沙" ,
 	["#marisa_old"] = "源于魔法与红梦的存在" ,
 	["&marisa_old"] = "旧作魔理沙" ,
 	["toushi"] = "偷师" ,

@@ -1479,6 +1479,10 @@ sgs.ai_skill_discard.worao = function(self)
 	table.insert(woraoGive, cards[1]:getId())
 	return woraoGive
 end
+sgs.ai_skill_choice.shenhua = function(self, choices, data)
+	return "discardMark"
+end
+
 
 sgs.ai_skill_invoke.hongfo = function(self,data)
 	return true
