@@ -1829,11 +1829,11 @@ public:
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-        if (triggerEvent == DamageCaused) {
+        if (triggerEvent == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.from)
+            if (damage.from && damage.from->isAlive())
                 room->setPlayerMark(damage.from, objectName(), damage.from->getMark(objectName()) + damage.damage);
-            if (damage.to)
+            if (damage.to && damage.to->isAlive())
                 room->setPlayerMark(damage.to, objectName(), damage.to->getMark(objectName()) + damage.damage);
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
