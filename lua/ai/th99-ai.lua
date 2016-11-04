@@ -1299,6 +1299,7 @@ sgs.ai_skill_discard.zhangmu = function(self)
 		if hcard ~= keep then
 			table.insert(to_discard, hcard:getEffectiveId())
 		end
+		if #to_discard >= 2 then break end		
 	end
 	return to_discard
 end
