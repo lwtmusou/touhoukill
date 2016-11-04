@@ -1794,7 +1794,7 @@ public:
                     return QList<SkillInvokeDetail>();
                 DELETE_OVER_SCOPE(Card, card)
                     
-                if (card->isKindOf("Slash") || card->isNDTrick()) {
+                if (card->isKindOf("Slash") || (card->isNDTrick() && !card->isKindOf("Nullification"))) {
                     foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                         if (p != player && !p->isCardLimited(card, Card::MethodUse))
                             d << SkillInvokeDetail(this, p, p);
@@ -1824,12 +1824,12 @@ class Moli : public TriggerSkill
 public:
     Moli() : TriggerSkill("moli")
     {
-        events << DamageCaused << Damaged << EventPhaseStart << EventPhaseChanging;
+        events << EventPhaseStart << EventPhaseChanging << DamageDone;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-        if (triggerEvent == Damaged) {
+        if (triggerEvent == DamageDone) {
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.from && damage.from->isAlive())
                 room->setPlayerMark(damage.from, objectName(), damage.from->getMark(objectName()) + damage.damage);

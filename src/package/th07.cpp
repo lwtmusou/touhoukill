@@ -605,7 +605,8 @@ public:
                 if (card == NULL)
                     return QList<SkillInvokeDetail>();
                 DELETE_OVER_SCOPE(Card, card)
-                if (card->isKindOf("Slash") || card->isKindOf("Peach") || card->isNDTrick()) {
+                if (card->isKindOf("Slash") || card->isKindOf("Peach") 
+                    || (card->isNDTrick() && !card->isKindOf("Nullification"))) {
                     if (!player->isCardLimited(card, Card::MethodUse))
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
                 }
