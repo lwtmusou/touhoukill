@@ -4308,8 +4308,8 @@ TouhouGodPackage::TouhouGodPackage()
     yuyuko_god->addSkill(new Yousi);
 
     General *aya_god = new General(this, "aya_god", "touhougod", 4, false);
-    aya_god->addSkill(new Tianqu);
-    aya_god->addSkill(new Duyu);
+    //aya_god->addSkill(new Tianqu);
+    //aya_god->addSkill(new Duyu);
     aya_god->addSkill(new Fengmi);
     aya_god->addSkill(new FengmiTargetMod);
     related_skills.insertMulti("fengmi", "#fengmi");

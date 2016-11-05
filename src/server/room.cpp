@@ -206,10 +206,7 @@ void Room::outputEventStack()
 }
 
 void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
-{
-    //if (player->hasSkill("fanhun"))
-    //    return;
-    
+{   
     int threshold = player->dyingThreshold();
     if (threshold > player->getMaxHp()) {
         killPlayer(player, reason);
@@ -1965,7 +1962,6 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
     if (strcmp(property_name, "maxhp") == 0) {
         QVariant v = QVariant::fromValue(player);
         thread->trigger(MaxHpChanged, this, v);
-
     }
 
     if (strcmp(property_name, "chained") == 0) {
