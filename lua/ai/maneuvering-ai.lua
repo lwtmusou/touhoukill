@@ -561,8 +561,18 @@ end
 --铁索能不能有其他目标时，不要锁卖血流啊
 --静电对策需要详细写
 function SmartAI:useCardIronChain(card, use)
-
-	local needTarget = (card:getSkillName() == "guhuo" or card:getSkillName() == "nosguhuo" or card:getSkillName() == "qice")
+	local needTarget = (card:getSkillName() == "guhuo" or card:getSkillName() == "nosguhuo" 
+		or card:getSkillName() == "qice" or card:getSkillName() == "chaoren")
+	if not needTarget then
+		needTarget = self.player:getPile("wooden_ox"):contains(card:getEffectiveId())
+		--getSubcards()为empty。。。 什么鬼
+		--[[for _, id in sgs.qlist(self.player:getPile("wooden_ox")) do
+			if card:getSubcards():contains(id) then
+				needTarget = true
+				break
+			end
+		end]]
+	end
 	if not needTarget then use.card = card end
 	local toyohime =self.room:findPlayerBySkillName("yueshi")
 	if not needTarget then

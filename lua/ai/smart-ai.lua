@@ -7687,6 +7687,9 @@ function SmartAI:touhouAppendExpandPileToList(player,cards)
 			cards:prepend(sgs.Sanguosha:getCard(id))
 		end
 	end
+	--if player:hasSkill("chaoren") then
+	--	cards:prepend(sgs.Sanguosha:getCard(self.room:getDrawPile():first()))
+	--end
 	return cards
 end
 
