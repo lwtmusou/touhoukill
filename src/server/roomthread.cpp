@@ -446,7 +446,7 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
             QSharedPointer<SkillInvokeDetail> ptr(new SkillInvokeDetail(t));
             r << ptr;
         }
-        if (r.length() == 1) {
+        if (r.length() == 1 && r.first()->preferredTarget == NULL) {
             // if the skill has only one instance of the invokedetail, we copy the tag to the old instance(overwrite the old ones), and use the old instance, delete the new one
             foreach (const QSharedPointer<SkillInvokeDetail> &detail, (detailsList + triggered).toSet()) {
                 if (detail->sameSkill(*r.first())) {
