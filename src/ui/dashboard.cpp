@@ -1048,6 +1048,7 @@ void Dashboard::startPending(const ViewAsSkill *skill)
         if (resp_skill && (resp_skill->getRequest() == Card::MethodResponse || resp_skill->getRequest() == Card::MethodUse))
             expand = true;
     }
+    //deal askForCard at first, then use the card automaticly
     if (Self->hasFlag("Global_expandpileFailed"))
         expand = true;
 
@@ -1068,7 +1069,7 @@ void Dashboard::startPending(const ViewAsSkill *skill)
         }
         if (skill && skill->objectName() == "guaiqi")
             expandPileCards("modian");
-        else
+        else if (!(skill && skill->isResponseOrUse()))
             expandSpecialCard();
     } else {
         foreach (const QString &pile, Self->getPileNames()) {
