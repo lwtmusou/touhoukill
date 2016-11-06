@@ -51,6 +51,19 @@ QString Analeptic::getSubtype() const
     return "buff_card";
 }
 
+bool Analeptic::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    //ignore ExtraTarget
+    //int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    //if (targets.length() >= total_num)
+    //    return false;
+    if (targets.isEmpty()) {
+        if (to_select == Self) return true;
+        if (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed")) return true;        
+    }
+    return false;
+}
+
 bool Analeptic::IsAvailable(const Player *player, const Card *analeptic)
 {
     Analeptic *newanaleptic = new Analeptic(Card::NoSuit, 0);
@@ -378,7 +391,10 @@ FireAttack::FireAttack(Card::Suit suit, int number)
 bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    return targets.length() < total_num && !to_select->isKongcheng() && (to_select != Self || !Self->isLastHandCard(this, true));
+    bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
+        && to_select != Self && !hasFlag("IgnoreFailed"));
+    return targets.length() < total_num && (!to_select->isKongcheng() || ignore) 
+        && (to_select != Self || !Self->isLastHandCard(this, true));
 }
 
 void FireAttack::onEffect(const CardEffectStruct &effect) const
@@ -508,7 +524,11 @@ SupplyShortage::SupplyShortage(Card::Suit suit, int number)
 
 bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    if (!targets.isEmpty() || to_select->containsTrick(objectName()) || to_select == Self)
+    
+    if (!targets.isEmpty() || to_select == Self)
+        return false;
+    bool ignore = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+    if (to_select->containsTrick(objectName()) && !ignore)
         return false;
     int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
     int rangefix = 0;

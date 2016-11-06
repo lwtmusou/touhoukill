@@ -467,7 +467,7 @@ public:
 
     virtual int getExtraTargetNum(const Player *player, const Card *card) const
     {
-        if (player->hasSkill(objectName()) && player->getPhase() == Player::Play && card->isKindOf("Slash"))
+        if (player->hasSkill(objectName()) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && card->isKindOf("Slash"))
             return shikong_modNum(player, card) - 1;
         else
             return 0;
@@ -3934,210 +3934,28 @@ public:
 };
 
 
-class Tianqu : public TriggerSkill
+
+class Tianqu : public TargetModSkill
 {
 public:
-    Tianqu() : TriggerSkill("tianqu")
+    Tianqu() : TargetModSkill("tianqu")
     {
-        events << EventPhaseStart;
-        frequency = Compulsory;
+        pattern = ".";
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    virtual int getResidueNum(const Player *from, const Card *card) const
     {
-        QList<SkillInvokeDetail> d;
-        ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->getPhase() != Player::Start)
-            return QList<SkillInvokeDetail>();
-        foreach(ServerPlayer *p, room->getAllPlayers()) {
-            if (p->getMark("@road") > 0) {
-                return QList<SkillInvokeDetail>();
-            }
-        }
-        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName()))
-            d << SkillInvokeDetail(this, p, p, NULL, true);
-        return d;
+        if (from->hasSkill("tianqu"))
+            return 1000;
+        return 0;
     }
 
-
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    virtual int getDistanceLimit(const Player *from, const Card *card) const
     {
-        invoke->invoker->gainMark("@road");
-        return false;
-    }
-};
-
-class Duyu : public TriggerSkill
-{
-public:
-    Duyu() : TriggerSkill("duyu")
-    {
-        events << CardUsed << CardFinished << EventPhaseChanging;
-        frequency = Compulsory;
-    }
-
-    static ServerPlayer *adjanceny(ServerPlayer *player)
-    {
-        Room *room = player->getRoom();
-        int matchCount = (player->getSeat() == room->getAllPlayers().length()) ? 1 : player->getSeat() + 1;
-
-        foreach(ServerPlayer *p, room->getAllPlayers()) {
-            if (p->getSeat() == matchCount)
-                return p;
-        }
-        return player;
-    }
-
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
-    {
-        //record times of using card
-        if (triggerEvent == CardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from->isCurrent() && use.from->getPhase() == Player::Play && use.card->isKindOf("Slash")) {
-                if (!use.from->hasFlag("duyu")) {
-                    use.from->setFlags("duyu");
-                    room->setCardFlag(use.card, "duyu");
-                }
-            }
-        }
-        if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.from == Player::Play)
-                change.player->setFlags("-duyu");
-        }
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
-    {
-        QList<SkillInvokeDetail> d;
-        if (triggerEvent == CardFinished) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from && use.from->isCurrent() && use.from->getPhase() == Player::Play && use.card->hasFlag("duyu")) {
-                ServerPlayer *starter = NULL;
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->getMark("@road") > 0) {
-                        starter = p;
-                        break;
-                    }
-                }
-                if (starter != NULL) {
-                    foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                        if (p != use.from)
-                            d << SkillInvokeDetail(this, p, p, NULL, true, starter);
-                    }
-                }
-            }
-        }
-        return d;
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        CardUseStruct use = data.value<CardUseStruct>();
-        bool move = true;
-        if (use.from && use.from->isAlive() && use.from != invoke->invoker)
-            move = !room->askForUseSlashTo(invoke->invoker, use.from, "@duyu:" + use.from->objectName() + ":" + invoke->targets.first()->objectName());
-        if (move) {
-            invoke->targets.first()->loseMark("@road");
-            ServerPlayer *next = adjanceny(invoke->targets.first());
-            next->gainMark("@road");
-        }
-
-        return false;
-    }
-};
-
-FengmiCard::FengmiCard()
-{
-    will_throw = false;
-}
-
-bool FengmiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
-{
-    Slash *slash = new Slash(Card::SuitToBeDecided, -1);
-    slash->deleteLater();
-    slash->setSkillName("fengmi");
-
-    bool can = false;
-    foreach(const Player *p, targets) {
-        if (Self->distanceTo(p) == subcards.length()) {
-            can = true;
-            break;
-        }
-    }
-    if (can)
-        return slash->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, slash, targets);
-    else
-        return  (Self->distanceTo(to_select) == subcards.length()) && slash->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, slash, targets);
-}
-
-bool FengmiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
-{
-    bool can = false;
-    foreach(const Player *p, targets) {
-        if (Self->distanceTo(p) == subcards.length()) {
-            can = true;
-            break;
-        }
-    }
-    Slash *slash = new Slash(Card::SuitToBeDecided, -1);
-    slash->deleteLater();
-    slash->setSkillName("fengmi");
-    return can && slash->targetsFeasible(targets, Self);
-}
-
-const Card *FengmiCard::validate(CardUseStruct &) const
-{
-    Slash *slash = new Slash(Card::SuitToBeDecided, -1);
-    slash->addSubcards(subcards);
-    slash->setSkillName("fengmi");
-    return slash;
-}
-
-const Card *FengmiCard::validateInResponse(ServerPlayer *) const
-{
-    Slash *slash = new Slash(Card::SuitToBeDecided, -1);
-    slash->addSubcards(subcards);
-    slash->setSkillName("fengmi");
-    return slash;
-}
-
-
-class FengmiVS : public ViewAsSkill
-{
-public:
-    FengmiVS() : ViewAsSkill("fengmi")
-    {
-        response_or_use = true;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const
-    {
-        return Slash::IsAvailable(player);
-    }
-
-    virtual bool viewFilter(const QList<const Card*> &, const Card*to_select) const
-    {
-        return !to_select->isEquipped();
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
-    {
-        return matchAvaliablePattern("slash", pattern) &&
-            Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
-    }
-
-    virtual const Card *viewAs(const QList<const Card *> &cards) const
-    {
-        if (cards.length() == 0)
-            return NULL;
-        //Slash *slash = new Slash(Card::SuitToBeDecided, -1);
-        //slash->addSubcards(cards);
-        //slash->setSkillName(objectName());
-        //return slash;
-        FengmiCard *card = new FengmiCard;
-        card->addSubcards(cards);
-        return card;
+        if (from->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !card->hasFlag("IgnoreFailed"))
+            return 1000;
+        else
+            return 0;
     }
 };
 
@@ -4146,42 +3964,42 @@ class Fengmi : public TriggerSkill
 public:
     Fengmi() : TriggerSkill("fengmi")
     {
-        events << CardUsed;
-        view_as_skill = new FengmiVS;
+        events << TargetSpecified;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->getSkillName() == objectName() && use.card->isRed() && use.from->isAlive())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
-
-        return QList<SkillInvokeDetail>();
+        QList<SkillInvokeDetail> d;
+        if (use.from && use.from->isAlive() && use.from->hasSkill(this)
+            && use.card->isKindOf("Slash")) {
+            foreach(ServerPlayer *p, use.to) {
+                if (p != use.from && p->canDiscard(p, "hejs"))
+                    d << SkillInvokeDetail(this, use.from, use.from, NULL, false, p);
+            }
+        }
+        return d;
     }
 
     // compulsory effect, cost omitted
 
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        invoke->invoker->drawCards(1);
+        DummyCard dummy;
+        ServerPlayer *target = invoke->targets.first();
+        foreach(const Card *c, target->getCards("hesj")) {
+            if (target->canDiscard(target, c->getEffectiveId()))
+                dummy.addSubcard(c);
+        }
+        int count = dummy.getSubcards().length();
+        if (count > 0) {
+            room->throwCard(&dummy, target, target);
+            target->drawCards(count);
+        }
         return false;
     }
 };
 
-class FengmiTargetMod : public TargetModSkill
-{
-public:
-    FengmiTargetMod() : TargetModSkill("#fengmi")
-    {
-        pattern = "Slash";
-    }
-    virtual int getDistanceLimit(const Player *, const Card *card) const
-    {
-        if (card->getSkillName() == "fengmi")
-            return 1000;
-        return 0;
-    }
-};
 
 TouhouGodPackage::TouhouGodPackage()
     : Package("touhougod")
@@ -4308,11 +4126,8 @@ TouhouGodPackage::TouhouGodPackage()
     yuyuko_god->addSkill(new Yousi);
 
     General *aya_god = new General(this, "aya_god", "touhougod", 4, false);
-    //aya_god->addSkill(new Tianqu);
-    //aya_god->addSkill(new Duyu);
+    aya_god->addSkill(new Tianqu);
     aya_god->addSkill(new Fengmi);
-    aya_god->addSkill(new FengmiTargetMod);
-    related_skills.insertMulti("fengmi", "#fengmi");
 
     General *uuz13 = new General(this, "yuyuko_1v3", "touhougod", 1, false, true);
     Q_UNUSED(uuz13);
@@ -4327,7 +4142,6 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<ChaowoCard>();
     addMetaObject<WendaoCard>();
     addMetaObject<RumoCard>();
-    addMetaObject<FengmiCard>();
 
     skills << new Ziwo << new Benwo << new Chaowo << new Wendao << new ShenbaoSpear << new RoleShownHandler;
 }

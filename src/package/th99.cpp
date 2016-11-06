@@ -1614,6 +1614,7 @@ public:
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
+        use.card->setFlags("IgnoreFailed");
         foreach (ServerPlayer *p, use.to) {
             if (!p->hasSkill(this) || p->isKongcheng())
                 continue;
@@ -1629,7 +1630,7 @@ public:
             if (flag)
                 d << SkillInvokeDetail(this, p, p);
         }
-
+        use.card->setFlags("-IgnoreFailed");
         return d;
     }
 
@@ -1637,10 +1638,12 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QList<ServerPlayer *> targets;
+        use.card->setFlags("IgnoreFailed");
         foreach (ServerPlayer *q, room->getOtherPlayers(invoke->invoker)) {
             if (!(use.from == q || use.to.contains(q)) && use.from->canSlash(q, use.card, false))
                 targets << q;
         }
+        use.card->setFlags("-IgnoreFailed");
 
         QString prompt = "@bihuo-playerchosen:" + use.from->objectName();
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), prompt, true, true);
@@ -1873,6 +1876,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (use.card->isKindOf("Peach") || use.card->isKindOf("Slash") || use.card->isNDTrick()) {
             use.card->setFlags("xunshi");
+            use.card->setFlags("IgnoreFailed");
             foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (use.from->isAlive() && p != use.from && !use.to.contains(p) && !use.to.isEmpty()
                     && (p->getHandcardNum() < use.from->getHandcardNum() || p->getHp() < use.from->getHp())
@@ -1884,6 +1888,7 @@ public:
                 }
                     
             }
+            use.card->setFlags("-IgnoreFailed");
             use.card->setFlags("-xunshi");
         }
         return d;

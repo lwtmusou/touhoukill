@@ -58,15 +58,21 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const
         case Player::Judge:
         {
             QList<const Card *> tricks = player->getJudgingArea();
+            QList<const Card *> effected;
             while (!tricks.isEmpty() && player->isAlive()) {
                 //Skill "jingxia" can discard tricks in this phase
                 tricks = player->getJudgingArea();
+                //the effected card may return to judgingArea, such as double Linghting by skill "tianqu"
+                foreach(const Card *card, effected) {
+                    if (tricks.contains(card))
+                        tricks.removeOne(card);
+                }
                 if (tricks.length() == 0)
                     break;
                 const Card *trick = tricks.takeLast();
 
                 bool on_effect = room->cardEffect(trick, NULL, player);
-
+                effected << trick;
                 if (!on_effect)
                     trick->onNullified(player);
             }

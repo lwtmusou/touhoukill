@@ -88,11 +88,14 @@ public:
         if (!use.to.first()->hasLordSkill(objectName()))
             return QList<SkillInvokeDetail>();
 
+        use.card->setFlags("IgnoreFailed");
         foreach(ServerPlayer *liege, room->getLieges("dld", use.to.first())) {
             if (use.from->canSlash(liege, use.card, false)) {
+                use.card->setFlags("-IgnoreFailed");
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.to.first(), use.to.first());
             }
         }
+        use.card->setFlags("-IgnoreFailed");
         return QList<SkillInvokeDetail>();
     }
 
@@ -100,10 +103,12 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QList<ServerPlayer *> targets;
+        use.card->setFlags("IgnoreFailed");
         foreach (ServerPlayer *p, room->getLieges("dld", invoke->invoker)) {
             if (use.from->canSlash(p, use.card, false))
                 targets << p;
         }
+        use.card->setFlags("-IgnoreFailed");
 
         foreach (ServerPlayer *p, targets) {
             room->setTag("huzhu_target", QVariant::fromValue(invoke->invoker));

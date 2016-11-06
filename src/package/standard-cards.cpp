@@ -277,19 +277,9 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const
 
 bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *) const
 {
-    //check targets feasible for skill "jifeng"
-    /*if (this->getSkillName() == "jifeng") {
-        bool can = false;
-        foreach(const Player *p, targets) {
-            if (Self->distanceTo(p) == subcards.length())
-                can = true;
-        }
-        if (!can)
-            return false;
-    }*/
     
     //check targets feasible for skill "shikong"
-    if (Self->hasSkill("shikong") && Self->getPhase() == Player::Play) {
+    if (Self->hasSkill("shikong") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
         foreach (const Player *p, Self->getAliveSiblings()) {
             if (Slash::IsSpecificAssignee(p, Self, this)) {
                 return !targets.isEmpty();
@@ -402,11 +392,26 @@ bool Jink::isAvailable(const Player *) const
 Peach::Peach(Suit suit, int number) : BasicCard(suit, number)
 {
     setObjectName("peach");
+    target_fixed = true;
 }
 
 QString Peach::getSubtype() const
 {
     return "recover_card";
+}
+
+bool Peach::targetFixed() const
+{
+    bool ignore = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
+    if (ignore)
+        return false;
+    if (Self && Self->getKingdom() == "zhan" && Self->getPhase() == Player::Play) {
+        foreach(const Player *p, Self->getAliveSiblings()) {
+            if (p->hasLordSkill("yanhui") && p->isWounded())
+                return false;
+        }
+    }
+    return target_fixed;
 }
 
 void Peach::onUse(Room *room, const CardUseStruct &card_use) const
@@ -432,6 +437,10 @@ void Peach::onEffect(const CardEffectStruct &effect) const
 
 bool Peach::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
+    //ignore ExtraTarget
+    //int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    //if (targets.length() >= total_num)
+    //    return false;
     if (targets.isEmpty() && to_select->isWounded()) {
         bool globalDying = false;
 
@@ -449,6 +458,7 @@ bool Peach::targetFilter(const QList<const Player *> &targets, const Player *to_
         } else {
             if (to_select == Self) return true;
             if (Self->getKingdom() == "zhan" && Self->getPhase() == Player::Play &&  to_select->hasLordSkill("yanhui")) return true;
+            if (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) return true;
         }
     }
     return false;
@@ -458,15 +468,14 @@ bool Peach::isAvailable(const Player *player) const
 {
     if (!player->isProhibited(player, this) && BasicCard::isAvailable(player)) {
         if (player->isWounded()) return true;
-        if (player->getKingdom() == "zhan") {
-            foreach (const Player *p, Self->getAliveSiblings()) {
-                if (p->hasLordSkill("yanhui") && p->isWounded())
-                    return true;
-            }
+        bool ignore = (player->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
+        foreach(const Player *p, Self->getAliveSiblings()) {
+            if (ignore && p->isWounded())
+                return true;
+            if (p->hasLordSkill("yanhui") && p->isWounded() && player->getKingdom() == "zhan" && player->getPhase() == Player::Play)
+                return true;   
         }
-
     }
-
     return false;
 }
 
@@ -1215,8 +1224,9 @@ Collateral::Collateral(Card::Suit suit, int number)
 bool Collateral::isAvailable(const Player *player) const
 {
     bool canUse = false;
+    bool ignore = (player->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
     foreach (const Player *p, player->getAliveSiblings()) {
-        if (p->getWeapon()) {
+        if (p->getWeapon() || (p != player && ignore)) {
             canUse = true;
             break;
         }
@@ -1244,7 +1254,11 @@ bool Collateral::targetFilter(const QList<const Player *> &targets,
             return false;
         return slashFrom->canSlash(to_select);
     } else {
-        if (!to_select->getWeapon() || to_select == Self)
+        bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+        if (to_select == Self)
+            return false;
+
+        if (!to_select->getWeapon() && !ignore)
             return false;
 
         foreach (const Player *p, to_select->getAliveSiblings()) {
@@ -1436,8 +1450,13 @@ Snatch::Snatch(Suit suit, int number)
 
 bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
+
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    if (targets.length() >= total_num || to_select->isAllNude() || to_select == Self)
+    if (targets.length() >= total_num || to_select == Self)
+        return false;
+    bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
+        && to_select != Self && !hasFlag("IgnoreFailed"));
+    if (to_select->isAllNude() && !ignore)
         return false;
     int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
     int rangefix = 0;
@@ -1476,7 +1495,10 @@ Dismantlement::Dismantlement(Suit suit, int number)
 bool Dismantlement::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    return targets.length() < total_num && !to_select->isAllNude() && to_select != Self;
+    bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
+        && to_select != Self && !hasFlag("IgnoreFailed"));
+    return targets.length() < total_num  && to_select != Self
+        && (!to_select->isAllNude() || ignore);
 }
 
 void Dismantlement::onEffect(const CardEffectStruct &effect) const
@@ -1529,7 +1551,9 @@ Indulgence::Indulgence(Suit suit, int number)
 
 bool Indulgence::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    return targets.isEmpty() && !to_select->containsTrick(objectName()) && to_select != Self;
+    bool ignore = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+    return targets.isEmpty() && (!to_select->containsTrick(objectName()) || ignore) 
+        && to_select != Self;
 }
 
 void Indulgence::takeEffect(ServerPlayer *target) const
@@ -1544,6 +1568,15 @@ Disaster::Disaster(Card::Suit suit, int number)
     target_fixed = true;
 }
 
+
+bool Disaster::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+    if (ignore)
+        return targets.isEmpty();
+    return targets.isEmpty() && to_select == Self;
+}
+
 void Disaster::onUse(Room *room, const CardUseStruct &card_use) const
 {
     CardUseStruct use = card_use;
@@ -1554,6 +1587,9 @@ void Disaster::onUse(Room *room, const CardUseStruct &card_use) const
 
 bool Disaster::isAvailable(const Player *player) const
 {
+    bool ignore = (player->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
+    if (ignore)
+        return true;
     if (player->containsTrick(objectName()))
         return false;
 

@@ -333,26 +333,12 @@ int Player::distanceTo(const Player *other, int distance_fix) const
             return fixed_distance.value(other);
     }
 
-    //point2: tianqu will change the starter while counting seat
-    bool tianqu = (hasSkill("tianqu")) ? true : false;
-    const Player *starter = this;
-    const Player *tianquStarter = NULL;
-    QList<const Player*> players = other->getAliveSiblings();
-    foreach(const Player *p, players) {
-        if (p->getMark("@road")) 
-            tianquStarter = p;
-        if (p->hasSkill("tianqu"))
-            tianqu = true;
-    }
-    if (tianquStarter != NULL && tianqu)
-        starter = tianquStarter;
-    
-    int right = qAbs(starter->seat - other->seat);
+    int right = qAbs(this->seat - other->seat);
     int left = aliveCount() - right;
-    //point3: skill kongjian will ignore pc98  while traversing
+    //point2: skill kongjian will ignore pc98  while traversing
     if (this->hasLordSkill("kongjian")) {
-        int bigger = qMax(starter->seat, other->seat);
-        int smaller = qMin(starter->seat, other->seat);
+        int bigger = qMax(this->seat, other->seat);
+        int smaller = qMin(this->seat, other->seat);
         foreach(const Player *p, other->getAliveSiblings()) {
             if (p->getKingdom() == "pc98"  && p->getSeat() > smaller && p->getSeat() < bigger)
                 right--;

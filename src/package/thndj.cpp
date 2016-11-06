@@ -719,7 +719,7 @@ public:
     }
     virtual int getDistanceLimit(const Player *from, const Card *) const
     {
-        if (from->getPhase() == Player::Play  && from->hasSkill(objectName()) && from->isChained())
+        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && from->hasSkill(objectName()) && from->isChained())
             return 1000;
         else
             return 0;
@@ -728,7 +728,7 @@ public:
 
     virtual int getExtraTargetNum(const Player *player, const Card *) const
     {
-        if (player->getPhase() == Player::Play  && player->hasSkill(objectName()) && player->isChained())
+        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && player->hasSkill(objectName()) && player->isChained())
             return 1000;
         else
             return 0;

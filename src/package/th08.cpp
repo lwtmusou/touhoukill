@@ -530,6 +530,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (!use.card->isKindOf("Slash")) return QList<SkillInvokeDetail>();
         QList<SkillInvokeDetail> d;
+        use.card->setFlags("IgnoreFailed");
         foreach(ServerPlayer *to, use.to) {
             if (to->hasSkill(this)) {
                 foreach(ServerPlayer *p, room->getOtherPlayers(to)) {
@@ -541,6 +542,7 @@ public:
                 }
             }
         }
+        use.card->setFlags("-IgnoreFailed");
         return d;
     }
 
@@ -549,11 +551,13 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         ServerPlayer *player = invoke->invoker;
         QList<ServerPlayer *> listt;
+        use.card->setFlags("IgnoreFailed");
         foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
             if (use.from->canSlash(p, use.card, true) && !use.to.contains(p)
                 && use.from->inMyAttackRange(p))
                 listt << p;
         }
+        use.card->setFlags("-IgnoreFailed");
         player->tag["huanshi_source"] = data; //for ai
         ServerPlayer *target = room->askForPlayerChosen(player, listt, objectName(), "@huanshi:" + use.from->objectName(), true, true);
         player->tag.remove("huanshi_source");

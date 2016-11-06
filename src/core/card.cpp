@@ -595,12 +595,15 @@ Card *Card::Clone(const Card *card)
 
 bool Card::targetFixed() const
 {
+    bool ignore = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
+    if (ignore && !isKindOf("SkillCard"))
+        return false;
     return target_fixed;
 }
 
 bool Card::targetsFeasible(const QList<const Player *> &targets, const Player *) const
 {
-    if (target_fixed)
+    if (targetFixed())
         return true;
     else
         return !targets.isEmpty();

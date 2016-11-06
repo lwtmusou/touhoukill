@@ -67,7 +67,10 @@
 63 fix ai超人 木牛可以重铸的问题
 64 fix getSkillAndSort 函数  曾导致 神觉aoe  
   前位秦心因心花换牌插入一个弃置后，心花对余下角色（空城角色）的不正常触发 的问题
-
+65 神文推重
+   绕过对目标的合法性检测： 涉及 isProhibited() 
+   Peach ， EquipCard 等对象 添加了 targetFixed() targetFilter()   （card.i 文件里的对应接口 尚未同步）
+66 fix 超人和丈八的一个UI错误  
 
 ****【残留问题】**************************
 饼美需要再check一下：
@@ -90,7 +93,6 @@
 56 考虑将 奇迹 戏画  华想 的dialog分开写
 57 非延时锦囊转化为延时锦囊转化后， postCardEffect时机下，取得的effect.card已经被还原为原牌面。 关联技能是 【睿智】，目前的解决法不是完美的
 61 胜率统计中 为 求得 intial seat 进行的sort有误？ 出现了主不在一号位的情况？
-
 
 ai层面：希望改善的ai问题
 2 ai的 在使用拆顺的时候报错  可能和getarmor相关？ 可能和candiscard相关？   lua/ai/standard_cards-ai.lua:2987: attempt to index a nil value

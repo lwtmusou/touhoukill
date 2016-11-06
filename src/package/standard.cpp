@@ -57,16 +57,37 @@ Card::CardType EquipCard::getTypeId() const
 
 bool EquipCard::isAvailable(const Player *player) const
 {
+    bool ignore = (player->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
+    if (ignore)
+        return true;
     return !player->isProhibited(player, this) && Card::isAvailable(player);
 }
+
+
+bool EquipCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+    if (ignore)
+        return targets.isEmpty();
+    return targets.isEmpty() && to_select == Self;
+}
+
 
 void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
     CardUseStruct use = card_use;
-
     ServerPlayer *player = use.from;
     if (use.to.isEmpty())
         use.to << player;
+
+    if (!use.to.contains(player)) {
+        LogMessage log;
+        log.from = player;
+        log.to = use.to;
+        log.type = "#UseCard";
+        log.card_str = use.card->toString();
+        room->sendLog(log);
+    }
 
     QVariant data = QVariant::fromValue(use);
     RoomThread *thread = room->getThread();
@@ -232,8 +253,12 @@ QString SingleTargetTrick::getSubtype() const
     return "single_target_trick";
 }
 
-bool SingleTargetTrick::targetFilter(const QList<const Player *> &, const Player *, const Player *) const
+
+bool SingleTargetTrick::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
+    int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    if (targets.length() >= total_num)
+        return false;
     return true;
 }
 
@@ -374,6 +399,10 @@ void DelayedTrick::onNullified(ServerPlayer *target) const
 
             thread->trigger(TargetConfirmed, room, data);
             break;
+        }
+        if (!p) {
+            CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), getSkillName(), QString());
+            room->moveCardTo(this, target, target, Player::PlaceDelayedTrick, reason, true);
         }
         if (p)
             onNullified(p);

@@ -85,6 +85,7 @@ public:
             return QList<SkillInvokeDetail>();
 
         use.card->setFlags("fahua");
+        use.card->setFlags("IgnoreFailed");
         bool invoke = false;
         foreach(ServerPlayer *q, room->getLieges("xlc", use.to.first())) {
             //if (q == use.from)
@@ -97,6 +98,7 @@ public:
             break;
         }
         use.card->setFlags("-fahua");
+        use.card->setFlags("-IgnoreFailed");
         if (invoke)
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.to.first(), use.to.first());
         return QList<SkillInvokeDetail>();
@@ -105,8 +107,8 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-
-        use.card->setFlags("fahua");
+        use.card->setFlags("fahua");// for distance limit 
+        use.card->setFlags("IgnoreFailed");//for factor which named "ignore" and related with Function "isProhibited" and  "targetFilter"
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getLieges("xlc", invoke->invoker)) {
             //if (p == use.from)
@@ -119,6 +121,7 @@ public:
             targets << p;
         }
         use.card->setFlags("-fahua");
+        use.card->setFlags("-IgnoreFailed");
 
         room->setTag("fahua_target", QVariant::fromValue(invoke->invoker));
         room->setTag("fahua_use", data);

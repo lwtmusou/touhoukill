@@ -43,7 +43,7 @@ class Analeptic : public BasicCard
 public:
     Q_INVOKABLE Analeptic(Card::Suit suit, int number);
     virtual QString getSubtype() const;
-
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     static bool IsAvailable(const Player *player, const Card *analeptic = NULL);
 
     virtual bool isAvailable(const Player *player) const;
