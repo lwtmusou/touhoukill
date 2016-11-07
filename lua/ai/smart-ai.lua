@@ -2534,14 +2534,15 @@ function SmartAI:filterEvent(event, player, data)
 			if damage.nature ~= sgs.DamageStruct_Normal and not damage.chain then
 				for _, p in sgs.qlist(self.room:getAlivePlayers()) do
 					local added = 0
-					if p:objectName() == damage.to:objectName() and p:isChained() and p:getHp() <= damage.damage then
-						sgs.ai_NeedPeach[p:objectName()] = damage.damage + 1 - p:getHp()
+					local dyingThreshold = p:dyingThreshold()
+					if p:objectName() == damage.to:objectName() and p:isChained() and (p:getHp() - damage.damage) < dyingThreshold  then
+						sgs.ai_NeedPeach[p:objectName()] = damage.damage + dyingThreshold - p:getHp()
 					elseif p:objectName() ~= damage.to:objectName() and p:isChained() and self:damageIsEffective(p, damage.nature, damage.from) then
 						if damage.nature == sgs.DamageStruct_Fire then
 							added = p:hasArmorEffect("Vine") and added + 1 or added
-							sgs.ai_NeedPeach[p:objectName()] = damage.damage + 1 + added - p:getHp()
+							sgs.ai_NeedPeach[p:objectName()] = damage.damage + dyingThreshold + added - p:getHp()
 						elseif damage.nature == sgs.DamageStruct_Thunder then
-							sgs.ai_NeedPeach[p:objectName()] = damage.damage + 1 + added - p:getHp()
+							sgs.ai_NeedPeach[p:objectName()] = damage.damage + dyingThreshold + added - p:getHp()
 						end
 					end
 				end
@@ -4365,7 +4366,7 @@ function SmartAI:willUsePeachTo(dying)
 
 		if self:getCardsNum("Peach") + self:getCardsNum("Analeptic") <= sgs.ai_NeedPeach[self.player:objectName()] and not isLord(dying) then return "." end
 
-		if math.ceil(self:getAllPeachNum()) < 1 - dying:getHp() and not isLord(dying) then return "." end
+		if math.ceil(self:getAllPeachNum()) < dying:dyingThreshold() - dying:getHp() and not isLord(dying) then return "." end
 
 		if not dying:isLord() and dying:objectName() ~= self.player:objectName() then
 			local possible_friend = 0
