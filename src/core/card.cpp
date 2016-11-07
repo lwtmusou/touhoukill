@@ -596,7 +596,7 @@ Card *Card::Clone(const Card *card)
 bool Card::targetFixed() const
 {
     bool ignore = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
-    if (ignore && !isKindOf("SkillCard"))
+    if (ignore && !(isKindOf("SkillCard") || isKindOf("AOE") || isKindOf("GlobalEffect")))
         return false;
     return target_fixed;
 }
