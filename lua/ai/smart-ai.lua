@@ -7211,9 +7211,6 @@ function SmartAI:touhouEffectNullify(card,from,to)
 			end
 		end
 
-		if from:hasSkill("jingtao") and card:isKindOf("Slash") then
-			return false
-		end
 
 		--防具相关
 		if to:hasArmorEffect("Vine") then

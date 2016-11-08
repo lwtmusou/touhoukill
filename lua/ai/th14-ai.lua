@@ -433,32 +433,6 @@ sgs.ai_skill_invoke.shizhu =function(self,data)
 end
 
 
-sgs.ai_skill_invoke.aige =function(self,data)
-	local target=data:toPlayer()
-	return self:isEnemy(target)
-end
-sgs.ai_choicemade_filter.skillInvoke.aige = function(self, player, args)
-	local to = player:getTag("aige_target"):toPlayer()
-	if  to and  args[#args] == "yes" then
-		sgs.updateIntention(player, to, 50)
-	end
-end
-
-sgs.ai_skill_invoke.jingtao =function(self,data)
-	local target =self.player:getTag("jingtao_target"):toPlayer()
-	if self:isEnemy(target) then
-		return true
-	else
-		return false
-	end
-end
-sgs.ai_choicemade_filter.skillInvoke.jingtao = function(self, player, args)
-	local to = player:getTag("jingtao_target"):toPlayer()
-	if  to and  args[#args] == "yes" then
-		sgs.updateIntention(player, to, 50)
-	end
-end
-
 
 local liange_skill = {}
 liange_skill.name = "liange"
