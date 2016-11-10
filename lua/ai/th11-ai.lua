@@ -617,110 +617,41 @@ sgs.ai_skill_choice.gelong= function(self)
 	return "gelong1"
 end
 
---[[sgs.ai_skill_choice.gelong= function(self)
-	local num=self.player:getHandcardNum()-self.player:getMaxCards()
-	if self:touhouHpLocked(self.player) then
-		return "gelong1"
-	end
-	local card = sgs.cloneCard("supply_shortage")
-	local source=self.room:findPlayerBySkillName("gelong")
-	if self:touhouDelayTrickBadTarget(card, self.player, source) then
-		return "gelong2"
-	end
-	if num>=1 or self.player:getHp()<2 then
-		return "gelong2"
-	else
-		return "gelong1"
-	end
-end]]
-
---[[
-sgs.ai_skill_use["@@chuanran"] = function(self, prompt)
-	local id=self.player:getTag("chuanran_id"):toInt()
-	local cards={}
-	for _,c in sgs.qlist(self.player:getCards("hes")) do
-		if c:isBlack() then
-			table.insert(cards,c)
-		end
-	end
-
-	if #cards==0 then return "." end
-
-	local card=sgs.Sanguosha:getCard(id)
-	local real_delay=true
-	if not card:isKindOf("DelayedTrick") then
-		card= sgs.cloneCard("supply_shortage")
-		card:addSubcard(id)
-		real_delay=false
-	end
-	local current=self.room:getCurrent()
-	others=self.room:getOtherPlayers(current)
-	self.room:sortByActionOrder(others)
-	local target
-	for _,p in sgs.qlist(others) do
-		if self:isEnemy(p) and not p:containsTrick(card:objectName()) and not self:touhouDelayTrickBadTarget(card, p,self.player)then
-			if self:playerGetRound(p) > self:playerGetRound(self.player) then--山女先行动
-				if card:isKindOf("Indulgence") then
-					break
-				elseif card:isKindOf("SupplyShortage") then
-					if not real_delay then
-						target=p
-						break
-					else
-						if  self.player:distanceTo(p) ==1 and not self.player:isProhibited(p, card) then
-							break
-						else
-							target=p
-							break
-						end
-					end
-				end
-			else
-				target=p
-				break
-			--end
-		end
-	end
-	if target then
-		self:sortByKeepValue(cards,true)
-		 return "@ChuanranCard="..cards[1]:getEffectiveId().."->"..target:objectName()
-	end
-	return "."
-end
-
-sgs.chuanran_suit_value = {
-	spade = 3.9,
-	club = 3.9
-}
-sgs.ai_cardneed.chuanran = function(to, card, self)
-	return  card:isBlack()
-end
-sgs.ai_card_intention.ChuanranCard=40
 
 
 sgs.ai_skill_playerchosen.rebing = function(self, targets)
-	local target_table =sgs.QList2Table(targets)
-	self:sort(target_table, "handcard")
-	for _,p in pairs (target_table) do
-		if self:isEnemy(p) then
-			return p
+	local current = self.room:getCurrent()
+	local hasSlash  = getCardsNum("Slash", current, self.player) > 0
+	if (self:isFriend(current) and not hasSlash) then return nil end
+	local otherTargets = {}
+	local enemyTargets = {}
+	for _,p in sgs.qlist(targets) do
+		if (self:isEnemy(p)) then
+			table.insert(enemyTargets, p)
+		else
+			table.insert(otherTargets, p)
+		end
+	end
+	if #enemyTargets > 0 then
+		self:sort(enemyTargets, "defenseSlash")
+		--暂时不考虑什么  SmartAI:slashProhibit(card, enemy, from)
+		--和damageEffect
+		return enemyTargets[1]
+	end
+	if #otherTargets > 0 and self:isEnemy(current) then
+		self:sort(enemyTargets, "defenseSlash")
+		target = otherTargets[#otherTargets]
+		--没有具体的slash 无法考证slashEffective
+		if not hasSlash then
+			return target
+		elseif not target:isWeak() and current:getHandcardNum() <=2 then
+			return target
 		end
 	end
 	return nil
 end
-sgs.ai_playerchosen_intention.rebing = 30
-]]
 
-sgs.ai_skill_cardask["@rebing"] = function(self, data)
-	local current = self.room:getCurrent()
-	if not current or current:isDead() then  return "." end
-	if not self:isEnemy(current) then  return "." end
-	
-	local cards = sgs.QList2Table(self.player:getCards("hes"))
-	self:sortByUseValue(cards)
-	if #cards <= 0 then return "." end
-	return "$" .. cards[1]:getId()
-end
+
 
 sgs.ai_skill_invoke.diaoping  =function(self,data)
 	if self.player:isKongcheng() then return false end

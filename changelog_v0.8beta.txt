@@ -71,6 +71,9 @@
    绕过对目标的合法性检测： 涉及 isProhibited() 
    Peach ， EquipCard 等对象 添加了 targetFixed() targetFilter()   （card.i 文件里的对应接口 尚未同步）
 66 fix 超人和丈八的一个UI错误  
+67 调整蜘蛛
+68 调整辉夜【永恒】  告别随时检测
+
 
 ****【残留问题】**************************
 饼美需要再check一下：

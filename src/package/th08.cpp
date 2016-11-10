@@ -15,7 +15,7 @@ class Yongheng : public TriggerSkill
 public:
     Yongheng() : TriggerSkill("yongheng")
     {
-        events << EventPhaseChanging << CardsMoveOneTime << EventAcquireSkill << EventSkillInvalidityChange;
+        events << EventPhaseChanging << CardsMoveOneTime;
         frequency = Compulsory;
     }
 
@@ -37,20 +37,17 @@ public:
     {
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::Discard && change.player->hasSkill(objectName())) {
+            if (change.to == Player::Discard && change.player->hasSkill(objectName()))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
-            } else if (change.to == Player::NotActive && change.player->hasSkill(objectName()) && change.player->getHandcardNum() != 4) {
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
-            }
         } else if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             QList<ServerPlayer *> kaguyas;
             ServerPlayer *kaguya1 = qobject_cast<ServerPlayer *>(move.from);
             ServerPlayer *kaguya2 = qobject_cast<ServerPlayer *>(move.to);
-            if (kaguya1 != NULL && kaguya1->isAlive() && kaguya1->hasSkill(this) && move.from_places.contains(Player::PlaceHand)
+            if (kaguya1 && kaguya1->isAlive() && kaguya1->hasSkill(this) && move.from_places.contains(Player::PlaceHand)
             && kaguya1->getHandcardNum() != 4 && kaguya1->getPhase() == Player::NotActive)
                 kaguyas << kaguya1;
-            if (kaguya2 != NULL && kaguya2->isAlive() && kaguya2->hasSkill(this) && move.to_place == Player::PlaceHand
+            if (kaguya2 && kaguya2->isAlive() && kaguya2->hasSkill(this) && move.to_place == Player::PlaceHand
                 && kaguya2->getHandcardNum() != 4 && kaguya2->getPhase() == Player::NotActive)
                 kaguyas << kaguya2;
             if (kaguyas.length() > 1)
@@ -61,21 +58,6 @@ public:
                     d << SkillInvokeDetail(this, p, p, NULL, true);
                 return d;
             }
-        } else if (triggerEvent == EventAcquireSkill) {
-            SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
-            if (a.player->getPhase() == Player::NotActive && a.player->hasSkill(this) && a.player->getHandcardNum() != 4)
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, a.player, a.player, NULL, true);
-        } else if (triggerEvent == EventSkillInvalidityChange) {
-            QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct>>();
-            QList<ServerPlayer *> targets;
-            QList<SkillInvokeDetail> d;
-            foreach(SkillInvalidStruct v, invalids) {
-                if (v.player->hasSkill(this) && v.player->getHandcardNum() != 4 && !targets.contains(v.player)) {
-                    targets << v.player;
-                    d << SkillInvokeDetail(this, v.player, v.player, NULL, true);
-                }
-            }
-            return d;
         }
         return QList<SkillInvokeDetail>();
     }
@@ -89,8 +71,8 @@ public:
                 room->touhouLogmessage("#TriggerSkill", invoke->invoker, "yongheng");
                 room->notifySkillInvoked(invoke->invoker, objectName());
                 invoke->invoker->skip(change.to);
-            } else
                 adjustHandcardNum(invoke->invoker, 4, "yongheng");
+            }  
         } else
             adjustHandcardNum(invoke->invoker, 4, "yongheng");
         return false;
