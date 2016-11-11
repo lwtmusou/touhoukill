@@ -113,7 +113,7 @@ return{
 	["illustrator:suika_god_2"] = "チョモラン ティア",
 	["origin:suika_god_2"] = "p号：32178545，个人ID：76370",
 	["huanmeng"] = "幻梦",
-	[":huanmeng"] = "<font color=\"#808080\"><b>永久技，</b></font>你没有体力和体力上限。你跳过摸牌阶段和弃牌阶段。你的回合开始时，若你没有手牌，你死亡。",
+	[":huanmeng"] = "<font color=\"#808080\"><b>永久技，</b></font>你没有体力和体力上限。你跳过摸牌阶段和弃牌阶段。回合开始时，若你没有手牌，你死亡。",
 	["cuixiang"] = "萃想",
 	[":cuixiang"] = "<font color=\"blue\"><b>锁定技，</b></font>准备阶段开始时，所有其他角色须依次弃置一张手牌（若没有手牌，将牌堆顶的一张牌置入弃牌堆），然后你获得零至两张以此法置入弃牌堆的牌。",
 	["cuixiang-exchange"] = "<font color=\"#00FF00\"><b>%src </b></font> 的“%dest”被触发，请弃置一张手牌。",

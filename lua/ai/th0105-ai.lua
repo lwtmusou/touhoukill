@@ -131,20 +131,20 @@ end
 
 sgs.ai_skill_choice.shiqu = function(self, choices, data)
 	local current = self.room:getCurrent()
-	if self:isEnemy(current) and choices:match("shiqu_discard") and self:getOverflow(self.player) >= 2 then
+	if self:isEnemy(current) and choices:match("shiqu_discard") and self:getOverflow(current) >= 2 then
 		return "shiqu_discard"
 	end
 	if self:isFriend(current) then
-		if choices:match("shiqu_draw") then
-			return "shiqu_draw"
-		end
 		if choices:match("shiqu_play") and current:getHandcardNum() > 3 then
 			return "shiqu_play"
 		end
 	end
+	if choices:match("shiqu_draw") then
+		return "shiqu_draw"
+	end
 	return "cancel"
 end
-sgs.ai_choicemade_filter.cardResponded["@shiqu-discard"] = function(self, player, args)
+--[[sgs.ai_choicemade_filter.cardResponded["@shiqu-discard"] = function(self, player, args)
 	local choice = player:getTag("shiqu"):toString()
 	local current = self.room:getCurrent()
 	if args[#args] ~= "_nil_" then
@@ -153,6 +153,33 @@ sgs.ai_choicemade_filter.cardResponded["@shiqu-discard"] = function(self, player
 		elseif choice == "shiqu_play" or choice == "shiqu_draw" then
 			sgs.updateIntention(player, current, -80)
 		end
+	end
+end]]
+sgs.ai_skill_use["@@shiqu"] = function(self, prompt)
+	local current = self.room:getCurrent()
+	local choice = self.player:getTag("shiqu"):toString()
+	local cards = self.player:getCards("hes")
+	cards = sgs.QList2Table(cards)
+	self:sortByKeepValue(cards)
+	
+	if choice == "shiqu_discard" and self:isEnemy(current) then
+		return "@ShiquCard=" ..cards[1]:getEffectiveId().. "->" .. current:objectName()
+	end
+	if choice == "shiqu_play" and self:isFriend(current) and current:getHandcardNum() > 3 then
+		return "@ShiquCard=" ..cards[1]:getEffectiveId().. "->" .. current:objectName()
+	end
+	if choice == "shiqu_draw" then
+		local target = (self:isFriend(current) and self:isWeak(current))  and current or self.player
+		return "@ShiquCard=" ..cards[1]:getEffectiveId().. "->" .. target:objectName()
+	end
+	return "."
+end
+sgs.ai_card_intention.ShiquCard = function(self, card, from, tos)
+	local choice = from:getTag("shiqu"):toString()
+	if choice == "shiqu_discard" then
+		sgs.updateIntention(from, tos[1], 80)
+	elseif choice == "shiqu_play" or choice == "shiqu_draw" then
+		sgs.updateIntention(from, tos[1], -80)
 	end
 end
 
