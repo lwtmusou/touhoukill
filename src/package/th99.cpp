@@ -1881,12 +1881,11 @@ public:
                 if (use.from->isAlive() && p != use.from && !use.to.contains(p) && !use.to.isEmpty()
                     && (p->getHandcardNum() < use.from->getHandcardNum() || p->getHp() < use.from->getHp())
                     && !use.from->isProhibited(p, use.card)) {
-                    if (use.card->isKindOf("Peach") && use.card->isAvailable(p))
+                    if (use.card->isKindOf("Peach") && p->isWounded())
                         d << SkillInvokeDetail(this, p, p, NULL, true);
                     else if (use.card->targetFilter(QList<const Player *>(), p, use.from))
                         d << SkillInvokeDetail(this, p, p, NULL, true);
                 }
-                    
             }
             use.card->setFlags("-IgnoreFailed");
             use.card->setFlags("-xunshi");

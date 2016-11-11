@@ -275,7 +275,7 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const
     room->slashEffect(effect);
 }
 
-bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *) const
+bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
     
     //check targets feasible for skill "shikong"
@@ -441,9 +441,10 @@ bool Peach::targetFilter(const QList<const Player *> &targets, const Player *to_
     //int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     //if (targets.length() >= total_num)
     //    return false;
+    if (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) 
+        return true;
     if (targets.isEmpty() && to_select->isWounded()) {
         bool globalDying = false;
-
         QList<const Player *> players = Self->getSiblings();
         players << Self;
         foreach (const Player *p, players) {
@@ -458,7 +459,6 @@ bool Peach::targetFilter(const QList<const Player *> &targets, const Player *to_
         } else {
             if (to_select == Self) return true;
             if (Self->getKingdom() == "zhan" && Self->getPhase() == Player::Play &&  to_select->hasLordSkill("yanhui")) return true;
-            if (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) return true;
         }
     }
     return false;
@@ -466,15 +466,16 @@ bool Peach::targetFilter(const QList<const Player *> &targets, const Player *to_
 
 bool Peach::isAvailable(const Player *player) const
 {
-    if (!player->isProhibited(player, this) && BasicCard::isAvailable(player)) {
-        if (player->isWounded()) return true;
-        bool ignore = (player->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
-        foreach(const Player *p, Self->getAliveSiblings()) {
-            if (ignore && p->isWounded())
-                return true;
-            if (p->hasLordSkill("yanhui") && p->isWounded() && player->getKingdom() == "zhan" && player->getPhase() == Player::Play)
-                return true;   
-        }
+    if (!BasicCard::isAvailable(player))
+        return false;
+    bool ignore = (player->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
+    if (ignore)
+        return true;
+    if (player->isWounded() && !player->isProhibited(player, this)) return true;
+    foreach(const Player *p, player->getAliveSiblings()) {
+        if (p->hasLordSkill("yanhui") && p->isWounded() && player->getKingdom() == "zhan" && player->getPhase() == Player::Play
+            && !player->isProhibited(p, this))
+            return true;   
     }
     return false;
 }
