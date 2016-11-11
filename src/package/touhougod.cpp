@@ -3893,6 +3893,8 @@ public:
 
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
+        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        room->notifySkillInvoked(invoke->invoker, objectName());
         if (e == Dying) {
             room->setPlayerProperty(invoke->invoker, "maxhp", invoke->invoker->getMaxHp() + 1);
             RecoverStruct recov;
