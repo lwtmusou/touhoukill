@@ -602,6 +602,8 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const
     if (meta) {
         QObject *card_obj = meta->newInstance();
         SkillCard *card = qobject_cast<SkillCard *>(card_obj);
+        if (card == NULL)
+            delete card_obj;
         return card;
     } else
         return NULL;
@@ -609,7 +611,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const
 
 QString Engine::getVersionNumber() const
 {
-    return "20160925";
+    return "20161113";
 }
 
 QString Engine::getVersion() const
