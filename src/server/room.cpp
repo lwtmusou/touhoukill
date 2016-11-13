@@ -4950,7 +4950,7 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use)
 {
     tryPause();
 
-    if (player->hasFlag("Global_PlayPhaseTerminated")) {
+    if (player->hasFlag("Global_PlayPhaseTerminated") || player->hasFlag("Global_TurnTerminated")) {
         setPlayerFlag(player, "-Global_PlayPhaseTerminated");
         //for "dangjia" intention ai
         //need record  PlayPhaseTerminated

@@ -110,6 +110,41 @@ sgs.ai_need_bear.shigui = function(self, card,from,tos)
 	return false
 end
 
+sgs.ai_skill_invoke.chongdong = true
+sgs.ai_skill_cardask["@chongdong"] = function(self, data)
+	local current = self.room:getCurrent()
+	if current and current:isAlive() and self:isEnemy(current) then
+		local cards = sgs.QList2Table(self.player:getCards("hs"))
+		self:sortByCardNeed(cards)
+		if #cards > 0 then
+			return "$" .. cards[1]:getId()
+		end
+	end
+	return "."
+end
+table.insert(sgs.ai_global_flags, "chongdong_source")
+sgs.ai_choicemade_filter.skillInvoke.chongdong = function(self, player, args)
+	if args[#args] == "yes" then
+		sgs.chongdong_source = player
+	end
+end
+sgs.ai_choicemade_filter.cardResponded["@chongdong"] = function(self, player, args)
+	if args[#args] ~= "_nil_" then
+		sgs.updateIntention(player, sgs.chongdong_source, -80)
+		sgs.chongdong_source = nil
+	elseif sgs.chongdong_source then
+		--其他地方不用的话，不用即时清理也行
+		local lieges = player:getRoom():getLieges("pc98", sgs.chongdong_source)
+		if lieges and not lieges:isEmpty() then
+			if player:objectName() == lieges:last():objectName() then
+				sgs.chongdong_source = nil
+			end
+		end
+	end
+end
+
+
+
 sgs.ai_skill_use["@@zhence"] = function(self, prompt)
 	local change = self.player:getTag("zhence"):toPhaseChange()
 	if change.to == sgs.Player_Draw or (change.to == sgs.Player_Play and self:getOverflow(self.player) < 2) then
@@ -291,6 +326,34 @@ sgs.ai_choicemade_filter.skillChoice.qianyi = function(self, player, args)
 	end
 end
 
+sgs.ai_skill_cardask["@lubiao"] = function(self, data)
+	local current = self.room:getCurrent()
+	if current and current:isAlive() and self:isEnemy(current) then
+		local cards = sgs.QList2Table(self.player:getCards("hs"))
+		self:sortByCardNeed(cards)
+		if #cards > 0 then
+			return "$" .. cards[1]:getId()
+		end
+	end
+	return "."
+end
+sgs.ai_skill_choice.lubiao = function(self, choices, data)
+	local current = self.room:getCurrent()
+	if choices:match("play") and self:getOverflow(current) > 1 then
+		return "play"
+	end
+	if choices:match("draw") then
+		return "draw"
+	else
+		return "play"
+	end
+end
+sgs.ai_choicemade_filter.cardResponded["@lubiao"] = function(self, player, args)
+	local current = self.room:getCurrent()
+	if current and args[#args] ~= "_nil_" then
+		sgs.updateIntention(player, current, 80)
+	end
+end
 
 sgs.ai_skill_playerchosen.mengxiao = function(self, targets)
 	local move = self.player:getTag("mengxiao"):toMoveOneTime()
@@ -340,7 +403,7 @@ sgs.ai_skill_cardchosen.mengxiao = function(self, who, flags)
 		return cards[1]
 	end
 end
-sgs.ai_choicemade_filter.cardChosen.sidou = sgs.ai_choicemade_filter.cardChosen.snatch
+sgs.ai_choicemade_filter.cardChosen.mengxiao = sgs.ai_choicemade_filter.cardChosen.snatch
 
 
 function youyue_judge(self,target,card)
