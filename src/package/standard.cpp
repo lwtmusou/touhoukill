@@ -358,11 +358,12 @@ void DelayedTrick::onNullified(ServerPlayer *target) const
 {
     Room *room = target->getRoom();
     RoomThread *thread = room->getThread();
+
     if (movable) {
         QList<ServerPlayer *> players = room->getOtherPlayers(target);
         players << target;
-        ServerPlayer *p = NULL;
-
+        ServerPlayer *next = NULL;//next meaning this next one 
+        bool next2next = false;//it's meaning another next(a second next) is necessary 
         foreach (ServerPlayer *player, players) {
             if (player->containsTrick(objectName()))
                 continue;
@@ -380,9 +381,9 @@ void DelayedTrick::onNullified(ServerPlayer *target) const
                 continue;
             }
 
+            next = player;
             CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), getSkillName(), QString());
             room->moveCardTo(this, target, player, Player::PlaceDelayedTrick, reason, true);
-
             if (target == player) break;
 
             CardUseStruct use;
@@ -393,19 +394,21 @@ void DelayedTrick::onNullified(ServerPlayer *target) const
             thread->trigger(TargetConfirming, room, data);
             CardUseStruct new_use = data.value<CardUseStruct>();
             if (new_use.to.isEmpty()) {
-                p = player;
+                next2next = true;
                 break;
             }
 
             thread->trigger(TargetConfirmed, room, data);
             break;
         }
-        if (!p) {
+        //case:stop.
+        if (!next) {
             CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), getSkillName(), QString());
             room->moveCardTo(this, target, target, Player::PlaceDelayedTrick, reason, true);
         }
-        if (p)
-            onNullified(p);
+        //case: next2next
+        if (next && next2next)
+            onNullified(next);
     } else {
         CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, target->objectName());
         room->throwCard(this, reason, NULL);
