@@ -3945,7 +3945,7 @@ public:
         pattern = ".";
     }
 
-    virtual int getResidueNum(const Player *from, const Card *card) const
+    virtual int getResidueNum(const Player *from, const Card *) const
     {
         if (from->hasSkill("tianqu"))
             return 1000;

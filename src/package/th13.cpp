@@ -1492,30 +1492,53 @@ class Qingyu : public MasochismSkill
 public:
     Qingyu() : MasochismSkill("qingyu")
     {
-        frequency = Frequent;
     }
 
-    QList<SkillInvokeDetail> triggerable(const Room *room, const DamageStruct &damage) const
+    QList<SkillInvokeDetail> triggerable(const Room *, const DamageStruct &damage) const
     {
-        QList<ServerPlayer *> targets;
-        if (damage.to->hasSkill(this) && damage.to->isAlive()) {
-            foreach (ServerPlayer *p, room->getOtherPlayers(damage.to)) {
-                if (p->getHp() >= damage.to->getHp())
-                    targets << p;
-            }
-        }
-        if (!targets.isEmpty())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, targets);
+        
+        if (damage.to->hasSkill(this) && damage.to->isAlive() 
+            && !damage.to->isKongcheng() && !damage.to->containsTrick("supply_shortage"))
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
         return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        const Card *card = room->askForCard(invoke->invoker, ".|.|.|hand", "@qingyu", data, Card::MethodNone, NULL, false, objectName());
+        if (card) {
+            room->notifySkillInvoked(invoke->invoker, objectName());
+            LogMessage log;
+            log.type = "#InvokeSkill";
+            log.from = invoke->invoker;
+            log.arg = objectName();
+            room->sendLog(log);
+
+            Card *supplyshortage = Sanguosha->cloneCard("supply_shortage", card->getSuit(), card->getNumber());
+            WrappedCard *vs_card = Sanguosha->getWrappedCard(card->getSubcards().first());
+            vs_card->setSkillName(objectName());
+            vs_card->takeOver(supplyshortage);
+            room->broadcastUpdateCard(room->getAlivePlayers(), vs_card->getId(), vs_card);
+            CardsMoveStruct  move;
+            move.card_ids << vs_card->getId();
+            move.to = invoke->invoker;
+            move.to_place = Player::PlaceDelayedTrick;
+            room->moveCardsAtomic(move, true);
+        }
+        return card != NULL;
     }
 
     void onDamaged(Room *room, QSharedPointer<SkillInvokeDetail> invoke, const DamageStruct &damage) const
     {
-        foreach (ServerPlayer *p, invoke->targets) {
+        QList<ServerPlayer *> targets;
+        foreach(ServerPlayer *p, room->getOtherPlayers(damage.to)) {
+            if (p->getHp() >= damage.to->getHp())
+                targets << p;
+        }
+        foreach (ServerPlayer *p, targets) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, damage.to->objectName(), p->objectName());
             if (p->canDiscard(p, "hes")) {
                 p->tag["qingyu_source"] = QVariant::fromValue(damage.to);
-
                 const Card *cards = room->askForCard(p, ".|.|.|.", "@qingyu-discard:" + damage.to->objectName(), QVariant::fromValue(damage.to), Card::MethodDiscard);
                 p->tag.remove("qingyu_source");
                 if (cards == NULL)
@@ -1551,7 +1574,7 @@ public:
         if (invoke->invoker->isWounded())
             choice = room->askForChoice(invoke->invoker, objectName(), "draw+recover");
         if (choice == "draw")
-            invoke->invoker->drawCards(2);
+            invoke->invoker->drawCards(1);
         else
             room->recover(invoke->invoker, RecoverStruct());
         return false;

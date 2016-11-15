@@ -99,11 +99,11 @@ return{
 	["illustrator:seiga"] = "桐葉",
 	["origin:seiga"] = "p号：24756353，个人ID：260108",
 	["illustrator:seiga_1"] = "ぬぬっこ",
-	["origin:seiga_1"] = "p号：22465190，个人ID：1030312",--（作者态度可以用）
+	["origin:seiga_1"] = "p号：22465190，个人ID：1030312",
 	["illustrator:seiga_2"] = "みぃこ",
 	["origin:seiga_2"] = "p号：42397248，个人ID：5044827",
 	["illustrator:seiga_3"] = "まぐろいど",
-	["origin:seiga_3"] = "p号：22021510，个人ID：2096991",--（貌似可以？）
+	["origin:seiga_3"] = "p号：22021510，个人ID：2096991",
 	["illustrator:seiga_4"] = "みゅーと",
 	["origin:seiga_4"] = "p号：27261606，个人ID：1203504",
 	["xiefa"]= "邪法",
@@ -152,7 +152,7 @@ return{
 	["&yuyuko_slm"] = "神灵庙幽幽子" ,
 	["#yuyuko_slm"] = "不再彷徨的亡灵" ,
 	["illustrator:yuyuko_slm"] = "meola",
-	["origin:yuyuko_slm"] = "p号：11911124，个人ID：31990", --（许可范围奇怪。。。）
+	["origin:yuyuko_slm"] = "p号：11911124，个人ID：31990",
 	["illustrator:yuyuko_slm_1"] = "みや",
 	["origin:yuyuko_slm_1"] = "p号：22766094，个人ID：41977",
 	["illustrator:yuyuko_slm_2"] = "一葉モカ",
@@ -202,12 +202,13 @@ return{
 	["illustrator:kogasa_slm_2"] = "村上４時",
 	["origin:kogasa_slm_2"] = "p号：27202944，个人ID：309850",
 	["illustrator:kogasa_slm_3"] = "プリンプリン",
-	["origin:kogasa_slm_3"] = "p号：9172954，个人ID：4179",--（貌似可）
-	["qingyu"] = "晴雨" ,
-	[":qingyu"] = "当你受到伤害后，你可以指定体力值不小于你的所有其他角色，这些角色依次选择一项：弃置一张牌，或令你摸一张牌。" ,
+	["origin:kogasa_slm_3"] = "p号：9172954，个人ID：4179",
+	["qingyu"] = "晴雨",
+	[":qingyu"] = "当你受到伤害后，你可以将一张手牌当【兵粮寸断】置入你的判定区，若如此做，你指定所有体力值不小于你的其他角色，这些角色依次选择一项：弃置一张牌，或令你摸一张牌。" ,
+	["@qingyu"] = "你可以发动“晴雨”，将一张手牌当做【兵粮寸断】置入你的判定区",
 	["@qingyu-discard"] = "请弃置一张牌，否则 <font color=\"#00FF00\"><b>%src </b></font> 将摸一张牌。" ,
-	["guoke"] = "过客" ,
-	[":guoke"] = "当一张牌离开你的判定区时，你可以选择一项：摸两张牌，或回复1点体力。" ,
+	["guoke"] = "过客",
+	[":guoke"] = "当一张牌离开你的判定区时，你可以选择一项：摸一张牌，或回复1点体力。" ,
 	["guoke:recover"] = "回复1点体力" ,
 	["guoke:draw"] = "摸两张牌" ,
 }
