@@ -377,6 +377,8 @@ sgs.ai_choicemade_filter.cardResponded["@lubiao"] = function(self, player, args)
 	end
 end
 
+
+sgs.ai_skill_invoke.mengxiao = true
 sgs.ai_skill_playerchosen.mengxiao = function(self, targets)
 	local move = self.player:getTag("mengxiao"):toMoveOneTime()
 	--暂时没管闪电等特殊情况

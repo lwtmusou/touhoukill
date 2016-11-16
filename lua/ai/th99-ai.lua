@@ -1120,27 +1120,23 @@ sgs.ai_slash_prohibit.sixiang = function(self, from, to, card)
 end
 
 sgs.ai_skill_choice.daoyao= function(self, choices, data)
-	if choices:match("discard") then
-		local current = self.room:getCurrent()
-		if current and self:isEnemy(current) then return "discard" end
+	local target=self.player:getTag("daoyao-target"):toPlayer()
+	if choices:match("discard") and self:isEnemy(target) then
+		return "discard" 
 	end
-	if choices:match("draw") then
-		for _,p in ipairs(self.friends_noself) do
-			if p:isChained() then
-				return "draw"
-			end
-		end
+	if choices:match("draw") and self:isFriend(target) then
+		return "draw"
 	end
-
-	return "cancel"
+	local invokes = choices:split("+")
+	return invokes[1]
 end
 sgs.ai_choicemade_filter.skillChoice.daoyao = function(self, player, args)
 	local choice = args[#args]
-	if  choice == "discard" then
-		local current = self.room:getCurrent()
-		if current then
-			sgs.updateIntention(player, current, 40)
-		end
+	local target=self.player:getTag("daoyao-target"):toPlayer()
+	if  choice == "discard"  and target then
+		sgs.updateIntention(player, target, 40)
+	elseif choice == "draw" and target then
+		sgs.updateIntention(player, target, -40)
 	end
 end
 sgs.ai_skill_playerchosen.daoyao = function(self, targets)
@@ -1149,11 +1145,13 @@ sgs.ai_skill_playerchosen.daoyao = function(self, targets)
 	for _,p in ipairs(target_table) do
 		if self:isFriend(p) then
 			return p
+		elseif p:isCurrent() and  self:isEnemy(p) and p:canDiscard(p, "hes") then
+			return p
 		end
 	end
 	return nil
 end
-sgs.ai_playerchosen_intention.daoyao = -40
+--sgs.ai_playerchosen_intention.daoyao = -40
 sgs.ai_slash_prohibit.sixiang = function(self, from, to, card)
 	if self:isFriend(from,to) then
 		return false

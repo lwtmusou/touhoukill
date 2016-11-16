@@ -1810,52 +1810,33 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        QStringList choices;
-        ServerPlayer *current = room->getCurrent();
-        if (current && current->canDiscard(current, "hes"))
-            choices << "discard";
-
+        QList<ServerPlayer *> targets;
         foreach(ServerPlayer *t, room->getOtherPlayers(invoke->invoker)) {
-            if (t->isChained()) {
-                choices << "draw";
-                break;
-            }
+            if (t->isChained() || (t->isCurrent() && t->canDiscard(t, "hes")))
+                targets << t;
         }
-        choices.prepend("cancel");
-
-        QString choice = room->askForChoice(invoke->invoker, objectName(), choices.join("+"), data);
-        if (choice == "cancel")
-            return false;
-
-        invoke->tag["daoyao"] = choice;
-        return true;
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@daoyao", true, true);
+        if (target)
+            invoke->targets << target;
+        return target != NULL;
     }
 
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        QString choice = invoke->tag.value("daoyao").toString();
-        if (choice == "discard") {
-            ServerPlayer *current = room->getCurrent();
-            room->notifySkillInvoked(invoke->owner, objectName());
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->owner->objectName(), current->objectName());
-
-            LogMessage log;
-            log.type = "#InvokeSkill";
-            log.from = invoke->owner;
-            log.arg = objectName();
-            room->sendLog(log);
-
-            room->askForDiscard(current, objectName(), 1, 1, false, true, "daoyao_discard:" + invoke->invoker->objectName());
-        } else if (choice == "draw") {
-            QList<ServerPlayer *> targets;
-            foreach(ServerPlayer *t, room->getOtherPlayers(invoke->invoker)) {
-                if (t->isChained())
-                    targets << t;
-            }
-            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@daoyao", false, true);
+        QStringList choices;
+        ServerPlayer *target = invoke->targets.first();
+        if (target->isCurrent() && target->canDiscard(target, "hes"))
+            choices << "discard";
+        if (target->isChained())
+            choices << "draw";
+        invoke->invoker->tag["daoyao-target"] = QVariant::fromValue(target);
+        QString choice = room->askForChoice(invoke->invoker, objectName(), choices.join("+"), data);
+        if (choice == "discard")
+            room->askForDiscard(target, objectName(), 1, 1, false, true, "daoyao_discard:" + invoke->invoker->objectName());
+        else
             target->drawCards(1);
-        }
+
         return false;
     }
 };
