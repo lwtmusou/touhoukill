@@ -529,7 +529,7 @@ function SmartAI:isPriorFriendOfSlash(friend, card, source)
 	end
 	if friend:hasSkill("xuying") then return false end
 	--可以取消伤害 所以和hasheavyslashdamage无关？？
-	if source:hasSkill("dongjie") and not from:hasFlag("dongjie") and not friend:faceUp() then return true end
+	if source:hasSkill("dongjie") and not source:hasFlag("dongjie") and not friend:faceUp() then return true end
 	if friend:hasSkill("anyu") and not friend:faceUp() and card:isBlack() and sgs.card_lack[friend:objectName()]["Jink"] == 0 then return true end
 	--[[if friend:hasSkill("huanshi") and self:touhouCanHuanshi(card,source,friend)>0 then
 		if sgs.card_lack[friend:objectName()]["Jink"] == 0 then

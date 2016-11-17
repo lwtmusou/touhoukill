@@ -154,6 +154,7 @@ public:
     const General *getGeneral() const;
 
     bool isLord() const;
+	bool isCurrent() const;
 
     void acquireSkill(const char *skill_name);
     void detachSkill(const char *skill_name);
