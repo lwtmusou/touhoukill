@@ -338,7 +338,7 @@ function SmartAI:slashProhibit(card, enemy, from)
 
 	if self:isFriend(enemy, from) then
 		if self:sidieEffect(from) then return false end
-		if from:hasSkill("dongjie") and not enemy:faceUp() then return false end
+		if from:hasSkill("dongjie") and not from:hasFlag("dongjie") and not enemy:faceUp() then return false end
 		if card:isKindOf("FireSlash") or from:hasWeapon("Fan") or from:hasSkill("zonghuo")  then
 			if enemy:hasArmorEffect("Vine") and not (enemy:isChained() and self:isGoodChainTarget(enemy, nil, nil, nil, card)) then return true end
 		end
@@ -529,7 +529,7 @@ function SmartAI:isPriorFriendOfSlash(friend, card, source)
 	end
 	if friend:hasSkill("xuying") then return false end
 	--可以取消伤害 所以和hasheavyslashdamage无关？？
-	if source:hasSkill("dongjie") and not friend:faceUp() then return true end
+	if source:hasSkill("dongjie") and not from:hasFlag("dongjie") and not friend:faceUp() then return true end
 	if friend:hasSkill("anyu") and not friend:faceUp() and card:isBlack() and sgs.card_lack[friend:objectName()]["Jink"] == 0 then return true end
 	--[[if friend:hasSkill("huanshi") and self:touhouCanHuanshi(card,source,friend)>0 then
 		if sgs.card_lack[friend:objectName()]["Jink"] == 0 then
@@ -1089,7 +1089,7 @@ sgs.ai_card_intention.Slash = function(self, card, from, tos)
 			end
 		end
 		if to:hasSkill("xunshi") and #tos > 1 then value = 0 end
-		if  from:hasSkill("dongjie") and not to:faceUp() then value= 0 end --self:isFriend(from,to) and
+		if  from:hasSkill("dongjie") and not from:hasFlag("dongjie") and not to:faceUp() then value= 0 end --self:isFriend(from,to) and
 		if self:sidieEffect(from)  then value = 0 end
 		if from:hasSkill("lizhi") and self:isFriend(from,to) then value = 0 end
 		--if to:hasSkill("huanshi") and self:touhouCanHuanshi(card,from,to)>0 then
