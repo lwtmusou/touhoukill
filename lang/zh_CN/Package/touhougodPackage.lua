@@ -2,20 +2,6 @@ return{
 	["touhougod"]= "神",
 	["#ChooseKingdom"]= "%from 选择了 %arg 势力",
 
-	["zun"] = "ZUN",["#zun"] = "创幻神主",
-	["!zun"] = "ZUN",
-	--["designer:zun"] = "星野梦美 | 程序:三国有单",
-	["illustrator:zun"] = "未知",
-	["chuanghuan"] = "创幻",
-	[":chuanghuan"] = "<font color=\"blue\"><b>(粗略完成，有待大修改。)</b></font><font color=\"#808080\"><b>永久技，</b></font>所有玩家均展示人物牌后，你随机获得人物牌堆里的四张人物牌，称为“幻想牌”。准备阶段开始时，你随机获得两张“幻想牌”。你可以在恰当的时机，将一张“幻想牌”置入人物牌堆，获得该“幻想牌”的一个技能（永久技、限定技、觉醒技、主公技除外），并在下列时机时失去该技能：1获得该技能的回合结束时 2 此技能发动或被触发，并执行相应效果后（回合内）。",
-	["@huanxiangs"]= "幻想牌",
-	["shenzhu"] = "神主",
-	[":shenzhu"] = "<font color=\"#808080\"><b>永久技，</b></font>你的体力上限为玩家数的一半（向上取整）。",
-	["chuanghuan_browse"]= "查看幻想牌",
-	["chuanghuan_select"]= "获得技能",
-	["#chuanghuangain"]= "%from获得了“%arg”",
-	["#chuanghuan1"]= "%from发动了“%arg”",
-
 --*************************************
 	--shen001  势力：神 4血
 	["yukari_god"] = "神 八云紫",

@@ -661,6 +661,7 @@ void GeneralOverview::askChangeSkin()
     }
     ui->generalPhoto->setPixmap(pixmap);
     ui->illustratorLineEdit->setText(getIllustratorInfo(general_name));
+    ui->originLineEdit->setText(getOriginInfo(general_name));
 }
 
 void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,
