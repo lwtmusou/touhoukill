@@ -145,6 +145,7 @@ config = {
 	},
 
 	bgm_convert_pairs = {
+		--BGM： 由于开始尝试加入arrange代替原曲，曲目对应关系可能有变，以后转换列表还要重新整理。
 		"kosuzu->akyuu",
 		"tokiko->rinnosuke",
 		"yatsuhashi->benben",
@@ -171,8 +172,13 @@ config = {
 		"mamizou_sp->mamizou",
 		"seiga_god->seiga",
 		"satori_god->satori",
-		"sakuya_sp->sakuya_god",
+		"sakuya_sp|sakuya_god->sakuya",
 		"yuyuko_god->yuyuko_xwm",
-		"aya_god->aya_sp"
+		"aya_god->aya_sp",
+		"reisen2->tewi",
+
+		"komachi_god->komachi",
+		"kogasa_slm->kogasa",
+		"koishi_god->koishi",
 	}
 }

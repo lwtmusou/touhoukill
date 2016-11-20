@@ -4131,8 +4131,8 @@ TouhouGodPackage::TouhouGodPackage()
     aya_god->addSkill(new Tianqu);
     aya_god->addSkill(new Fengmi);
 
-    General *uuz13 = new General(this, "yuyuko_1v3", "touhougod", 1, false, true);
-    Q_UNUSED(uuz13);
+    //General *uuz13 = new General(this, "yuyuko_1v3", "touhougod", 1, false, true);
+    //Q_UNUSED(uuz13);
 
     addMetaObject<HongwuCard>();
     addMetaObject<ShenqiangCard>();
