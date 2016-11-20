@@ -954,13 +954,13 @@ void CustomAssignDialog::getChosenGeneral(QString name)
 {
     if (choose_general2) {
         const General *general2 = Sanguosha->getGeneral(name);
-        QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(general2->objectName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY);
+        QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(general2->objectName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY, false);
         pixmap = pixmap.scaled(G_COMMON_LAYOUT.m_tinyAvatarSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         general_label2->setPixmap(pixmap);
         if (list->currentItem())
             general2_mapping[list->currentItem()->data(Qt::UserRole).toString()] = name;
     } else {
-        QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(name, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY);
+        QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(name, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY, false);
         pixmap = pixmap.scaled(G_COMMON_LAYOUT.m_tinyAvatarSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         general_label->setPixmap(pixmap);
         if (list->currentItem())
@@ -1048,7 +1048,7 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current)
 
     QString player_name = current->data(Qt::UserRole).toString();
     if (!general_mapping.value(player_name, "").isEmpty()) {
-        QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(general_mapping.value(player_name), QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY);
+        QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(general_mapping.value(player_name), QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY, false);
         pixmap = pixmap.scaled(G_COMMON_LAYOUT.m_tinyAvatarSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         general_label->setPixmap(pixmap);
     } else
@@ -1056,7 +1056,7 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current)
 
 
     if (!general2_mapping.value(player_name, "").isEmpty()) {
-        QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(general2_mapping.value(player_name), QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY);
+        QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(general2_mapping.value(player_name), QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY, false);
         pixmap = pixmap.scaled(G_COMMON_LAYOUT.m_tinyAvatarSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         general_label2->setPixmap(pixmap);
     } else

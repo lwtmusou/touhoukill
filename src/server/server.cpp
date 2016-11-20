@@ -534,7 +534,7 @@ void BanlistDialog::addGeneral(const QString &name)
         item->setData(Qt::UserRole, QVariant::fromValue(name));
         list->addItem(item);
     } else {
-        QIcon icon(G_ROOM_SKIN.getGeneralPixmap(name, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY));
+        QIcon icon(G_ROOM_SKIN.getGeneralPixmap(name, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY, false));
         QString text = Sanguosha->translate(name);
         QListWidgetItem *item = new QListWidgetItem(icon, text, list);
         item->setSizeHint(QSize(60, 60));
@@ -954,7 +954,7 @@ void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pa
 
         QListWidgetItem *item = new QListWidgetItem(list);
         item->setData(Qt::UserRole, general->objectName());
-        item->setIcon(QIcon(G_ROOM_SKIN.getGeneralPixmap(general->objectName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY)));
+        item->setIcon(QIcon(G_ROOM_SKIN.getGeneralPixmap(general->objectName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY, false)));
 
         bool checked = false;
         if (ex_generals.isEmpty()) {
