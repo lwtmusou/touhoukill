@@ -161,7 +161,7 @@ config = {
 		"shikieiki_god->shikieiki",
 		"moukou_xwm->shirasawa",
 		"yorihime->toyohime",
-		"youmu_ndj|youmu_slm->youmu",
+		"youmu_ndj|youmu_slm|youmu_god->youmu",
 		"yukari_sp->yukari",
 		"ran_sp->ran",
 		"youki->youmu",

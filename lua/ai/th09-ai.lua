@@ -398,59 +398,69 @@ sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 	local judge=self.player:getTag("feixiang_judge"):toJudge()
 	local cards={}
 	table.insert(cards,judge.card)
-	local ex_id=self:getRetrialCardId(cards, judge)
-
+	local ex_id = self:getRetrialCardId(cards, judge)
+    --ex_id 不为-1 则代表 当前判定对天子而言是个好结果
 	local retrial_targets={}
 	for _,target in sgs.qlist(targets) do
 		local e_value = 0
 		local cards1 = sgs.QList2Table(target:getCards("e"))
 		local self_card =  target:objectName()== self.player:objectName()
 		local new_id = self:getRetrialCardId(cards1, judge,self_card)
-		if new_id ~= -1 then
-			if (self:isEnemy(target)) then
+		--new_id 不为-1 代表 装备区的id去改判，可以得到好结果
+		
+		--装备判断
+		if ex_id == -1 and new_id ~= -1 then
+			if self:isEnemy(target) then
 				e_value = e_value + 100
-			elseif (self:isFriend(target) and ex_id ~= -1) then
-				e_value = e_value + 30
-			elseif (not self:isFriend(target) and ex_id == -1) then
+			elseif self:isFriend(target) then
+				e_value = e_value + 20
+			else
 				e_value = e_value + 50
 			end
-		elseif (self:isEnemy(target)) and target:getCards("e"):length() > 0 then
-			e_value = e_value + 5
+		elseif ex_id == -1 and new_id == -1 then
+			if self:isEnemy(target) and #cards1 > 0 then
+				e_value = e_value + 10
+			end
+		--elseif ex_id ~= -1 and new_id == -1 then
+		elseif ex_id ~= -1 and new_id ~= -1 then
+			if self:isEnemy(target) then
+				e_value = e_value + 50
+			end
 		end
 		
+
 		local array={player= target, value= e_value}
 		table.insert(retrial_targets,array)
 		
-		if e_value > 0  or self:touhouHandCardsFix(target) then continue end
-		if not target:isKongcheng()  then
-			if ex_id == -1 then
-			    if self:isEnemy(target) then
-					local array={player= target, value = 5 - target:getHandcards():length()}
-					table.insert(retrial_targets,array)
-				elseif (self.player:objectName() == target:objectName()) then
-					local cards1 = sgs.QList2Table(target:getHandcards())
-					local new_id=self:getRetrialCardId(cards1, judge, true)
-					if new_id ~= -1 then
-						local array={player= target, value = 30}
-						table.insert(retrial_targets,array)
-					end
-				end
-			elseif self:isEnemy(target) then
-				local count=0
-				for _, card in sgs.qlist(target:getHandcards()) do
-					local flag = string.format("%s_%s_%s", "visible", global_room:getCurrent():objectName(), target:objectName())
-					if  card:hasFlag("visible") or card:hasFlag(flag) then
-						local cards1={}
-						table.insert(cards1,card)
-						local new_id=self:getRetrialCardId(cards1, judge, false)
-						if new_id ~=-1 then
-							count= count + 1 
-						end
-					end
-				end
-				local array={player= target, value = 5 - target:getHandcards():length() + count}
+		if e_value > 0  or self:touhouHandCardsFix(target) or target:isKongcheng() then continue end
+		--手牌判断
+		if ex_id == -1 then
+			if self:isEnemy(target) then
+				local array={player= target, value = 5 - target:getHandcards():length()}
 				table.insert(retrial_targets,array)
+			elseif (self.player:objectName() == target:objectName()) then
+				local cards1 = sgs.QList2Table(target:getHandcards())
+				local new_id=self:getRetrialCardId(cards1, judge, true)
+				if new_id ~= -1 then
+					local array={player= target, value = 30}
+					table.insert(retrial_targets,array)
+				end
 			end
+		elseif self:isEnemy(target) then --敌人的已知手牌
+			local count=0
+			for _, card in sgs.qlist(target:getHandcards()) do
+				local flag = string.format("%s_%s_%s", "visible", global_room:getCurrent():objectName(), target:objectName())
+				if  card:hasFlag("visible") or card:hasFlag(flag) then
+					local cards1={}
+					table.insert(cards1,card)
+					local new_id=self:getRetrialCardId(cards1, judge, false)
+					if new_id ~=-1 then 
+						count= count + 1 
+					end
+				end
+			end
+			local array={player= target, value = 5 - target:getHandcards():length() + count}
+			table.insert(retrial_targets,array)
 		end
 	end
 	local compare_func = function(a, b)
