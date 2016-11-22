@@ -1143,7 +1143,7 @@ sgs.ai_skill_playerchosen.daoyao = function(self, targets)
 	local target_table = sgs.QList2Table(targets)
 	self:sort(target_table, "handcard")
 	for _,p in ipairs(target_table) do
-		if self:isFriend(p) then
+		if self:isFriend(p) and p:isChained() then
 			return p
 		elseif p:isCurrent() and  self:isEnemy(p) and p:canDiscard(p, "hes") then
 			return p
