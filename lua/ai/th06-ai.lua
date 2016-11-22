@@ -787,10 +787,9 @@ sgs.ai_card_intention.BanyueCard = function(self, card, from, tos)
 end
 
 sgs.ai_skill_playerchosen.mizong = function(self, targets)
-	local target =self:touhouFindPlayerToDraw(false, 1)
 	for _,target in sgs.qlist(targets) do
 		if self:isWeak(target) and self:isEnemy(target) then
-			return targets
+			return target
 		end
 	end
 	if #self.enemies > 0 then
@@ -799,9 +798,10 @@ sgs.ai_skill_playerchosen.mizong = function(self, targets)
 	end
 	for _,target in sgs.qlist(targets) do
 		if  not self:isFriend(target) then
-			return targets
+			return target
 		end
 	end
+	return targets:first()
 end
 sgs.ai_playerchosen_intention.mizong = 20
 
