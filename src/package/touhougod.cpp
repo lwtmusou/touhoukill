@@ -3930,6 +3930,7 @@ public:
 
         ServerPlayer *uuz = room->getCurrent();
         if (uuz && uuz->isAlive() && uuz != victim && uuz->hasSkill(this) && victim->getHp() < victim->dyingThreshold()) {
+            room->touhouLogmessage("#TriggerSkill", uuz, objectName());
             room->notifySkillInvoked(uuz, objectName());
         }
     }

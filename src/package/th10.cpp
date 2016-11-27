@@ -334,56 +334,44 @@ public:
 
 
 
-class Zhunbei : public PhaseChangeSkill
+class DfgzmJiyi : public TriggerSkill
 {
 public:
-    Zhunbei() :PhaseChangeSkill("zhunbei")
+    DfgzmJiyi() : TriggerSkill ("dfgzmjiyi")
     {
-
+        events << EventPhaseStart << EventPhaseChanging;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
     {
-        ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->getPhase() == Player::Draw && player->hasSkill(this))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-        return QList<SkillInvokeDetail>();
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *player) const
-    {
-        player->setFlags("zhunbei");
-        return true;
-    }
-};
-
-class ZhunbeiEffect : public TriggerSkill
-{
-public:
-    ZhunbeiEffect() : TriggerSkill("#zhunbei_effect")
-    {
-        events << EventPhaseChanging;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
-    {
-        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if (change.to == Player::NotActive && change.player->hasFlag("zhunbei")) {
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
+        if (e == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->getPhase() == Player::Draw && player->hasSkill(this))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+        } else if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive && change.player->hasFlag(objectName())) {
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
+            }
         }
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        invoke->invoker->setFlags("-zhunbei");
-        room->touhouLogmessage("#TouhouBuff", invoke->invoker, "zhunbei");
-        room->notifySkillInvoked(invoke->invoker, "zhunbei");
-        invoke->invoker->drawCards(3);
+        if (e == EventPhaseStart) {
+            invoke->invoker->setFlags(objectName());
+            return true;
+        } else if (e == EventPhaseChanging) {
+            //invoke->invoker->setFlags("-zhunbei");
+            room->touhouLogmessage("#TouhouBuff", invoke->invoker, objectName());
+            room->notifySkillInvoked(invoke->invoker, "zhunbei");
+            invoke->invoker->drawCards(3);
+        }
         return false;
     }
-
 };
+
 
 
 QijiDialog *QijiDialog::getInstance(const QString &object, bool left, bool right)
@@ -1866,11 +1854,8 @@ TH10Package::TH10Package()
     suwako->addSkill(new Chuancheng);
 
     General *sanae = new General(this, "sanae", "fsl", 3, false);
-    sanae->addSkill(new Zhunbei);
-    sanae->addSkill(new ZhunbeiEffect);
+    sanae->addSkill(new DfgzmJiyi);
     sanae->addSkill(new Qiji);
-    related_skills.insertMulti("zhunbei", "#zhunbei_effect");
-
 
     General *aya = new General(this, "aya", "fsl", 3, false);
     aya->addSkill(new Fengshen);

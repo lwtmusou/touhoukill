@@ -191,7 +191,7 @@ sgs.ai_skill_playerchosen.chuancheng = function(self,targets)
 end
 
 
-sgs.ai_skill_invoke.zhunbei  =function(self,data)
+sgs.ai_skill_invoke.dfgzmjiyi  =function(self,data)
 	if self.player:isKongcheng() then return false end
 	return true
 end
