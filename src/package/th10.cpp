@@ -417,8 +417,7 @@ void QijiDialog::popup()
             validPatterns << "jink";
         if (Self->getMaxHp() <= 2)
             validPatterns << "peach";
-    }
-    if (object_name == "xihua") {
+    } else if (object_name == "xihua") {
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach(const Card *card, cards) {
             if ((card->isNDTrick() || card->isKindOf("BasicCard"))
@@ -432,7 +431,8 @@ void QijiDialog::popup()
             }
         }
     }
-    if (object_name == "qiji") {
+    //if (object_name == "qiji") {
+    else {
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach(const Card *card, cards) {
             if ((card->isNDTrick() || card->isKindOf("BasicCard"))
@@ -690,6 +690,7 @@ const Card *QijiCard::validateInResponse(ServerPlayer *user) const
     Room *room = user->getRoom();
 
     QString to_use;
+    // use_list is useless?
     if (user_string == "peach+analeptic") {
         QStringList use_list;
         Card *peach = Sanguosha->cloneCard("peach");

@@ -84,7 +84,8 @@ beta版本体：
 75 鉴于目前使用全幅界面。  皮肤的avatar文件可以考虑删除。 其他会出现avatar的地方默认使用 人物的原始avatar。
    如： connection dialog， custom assign dialog， server 的 banlist   
 76 优化 绯想 觅踪ai 
-
+77 中国试做
+78 早苗 技能名改动  准备--》祭仪
 
 ****【残留问题】**************************
 饼美需要再check一下：
