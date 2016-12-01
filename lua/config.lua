@@ -176,7 +176,7 @@ config = {
 		"yuyuko_god->yuyuko_xwm",
 		"aya_god->aya_sp",
 		"reisen2->tewi",
-
+        "merry->renko",
 		"komachi_god->komachi",
 		"kogasa_slm->kogasa",
 		"koishi_god->koishi",
