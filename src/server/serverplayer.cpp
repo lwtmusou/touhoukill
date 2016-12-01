@@ -1233,10 +1233,9 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     }
 
     foreach (const Skill *skill, getVisibleSkillList(true)) {
-        //lord skill
-        if (this == player && skill->isLordSkill() && !hasLordSkill(skill->objectName())) {
+        //should not nofity the lord skill 
+        if (skill->isLordSkill() && !hasLordSkill(skill->objectName()))
             continue;
-        }
         QString skill_name = skill->objectName();
         JsonArray arg_acquire;
         arg_acquire << S_GAME_EVENT_ACQUIRE_SKILL;
