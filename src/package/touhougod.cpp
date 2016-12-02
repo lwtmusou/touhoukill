@@ -7,7 +7,7 @@
 #include "engine.h"
 #include "standard.h"
 #include "client.h"
-#include "maneuvering.h" // for iceslash
+#include "maneuvering.h" // for huaxiang
 #include "th10.h" //for huaxiang
 
 class Jiexian : public TriggerSkill
@@ -296,142 +296,124 @@ public:
 
 
 
-class AoyiEffect : public TriggerSkill
+class Aoyi : public TriggerSkill
 {
 public:
-    AoyiEffect() : TriggerSkill("#aoyi")
+    Aoyi() : TriggerSkill("aoyi")
     {
-        events << GameStart << CardUsed << EventAcquireSkill << EventLoseSkill << EventSkillInvalidityChange;
-
+        events << TargetSpecified << ConfirmDamage;
         frequency = Compulsory;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
-        ServerPlayer *player;
-        bool set = false;
-        bool remove = false;
-        
-        
-        if (triggerEvent == GameStart) {
-            player = data.value<ServerPlayer *>();
-            if (player && player->hasSkill("aoyi"))
-                set = true;
-        } else if (triggerEvent == EventLoseSkill) {
-            SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
-            player = a.player;
-            if (a.skill->objectName() == "aoyi")
-                remove = true;
-        } else if (triggerEvent == EventAcquireSkill) {
-            SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
-            player = a.player;
-            if (a.skill->objectName() == "aoyi")
-                set = true;
-        } else if (triggerEvent == EventSkillInvalidityChange) {
-            QList<SkillInvalidStruct>invalids = data.value<QList<SkillInvalidStruct>>();
-            foreach(SkillInvalidStruct v, invalids) {
-                if (!v.skill || v.skill->objectName() == "aoyi") {
-                    player = v.player;
-                    if (!v.invalid  && v.player->hasSkill(this))
-                        set = true;
-                    else if (v.invalid)
-                        remove = true;
-                }
-            }
-
-        }
-
-        if (player != NULL) {
-            if (set && player->getMark("aoyi_limit") == 0) {
-                room->setPlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick", false);
-                room->setPlayerMark(player, "aoyi_limit", 1);
-            }
-            else if (remove && player->getMark("aoyi_limit") > 0) {
-                room->removePlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick$0");
-                room->setPlayerMark(player, "aoyi_limit", 0);
-            }
-        }
-
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
-    {
-        if (triggerEvent == CardUsed) {
+        if (triggerEvent == TargetSpecified) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("IceSlash") && use.from->hasSkill(this))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
+            if (use.card->isKindOf("Slash") && use.from->getWeapon() != NULL) {
+                ServerPlayer *source = room->findPlayerBySkillName(objectName());
+                if (source && source != use.from)
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, source, source, NULL, true);
+            }
+        } else if (triggerEvent == ConfirmDamage) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (!damage.card || !damage.card->isKindOf("Slash"))
+                return QList<SkillInvokeDetail>();
+
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if (damage.card->hasFlag("AoyiDamage_" + p->objectName())) {
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, p, p, NULL, true);
+                }   
+            }
         }
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        ServerPlayer *player = invoke->invoker;
-        QStringList choices;
-        choices << "aoyi1";
-        QList<ServerPlayer *> all;
-        foreach(ServerPlayer *p, room->getAlivePlayers()) {
-            if (player->canDiscard(p, "ej"))
-                all << p;
+        if (triggerEvent == TargetSpecified) {
+            room->notifySkillInvoked(invoke->invoker, objectName());
+            room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+            CardUseStruct use = data.value<CardUseStruct>();
+            use.card->setFlags("AoyiDamage_" + invoke->invoker->objectName());
+        } else if (triggerEvent == ConfirmDamage) {
+            DamageStruct damage = data.value<DamageStruct>();
+            damage.from = invoke->invoker->isAlive() ? invoke->invoker : NULL;
+            data = QVariant::fromValue(damage);
         }
-        if (all.length() > 0)
-            choices << "aoyi2";
-        QString choice = room->askForChoice(player, "aoyi", choices.join("+"));
-        if (choice == "aoyi1") {
-            room->touhouLogmessage("#InvokeSkill", player, "aoyi");
-            room->notifySkillInvoked(player, objectName());
-            player->drawCards(player->getLostHp());
-        }
-        else {
-
-            ServerPlayer *s = room->askForPlayerChosen(player, all, "aoyi", "aoyi_chosenplayer", false, true);
-            int to_throw = room->askForCardChosen(player, s, "ej", "aoyi", false, Card::MethodDiscard);
-            room->throwCard(to_throw, s, player);
-        }
-
         return false;
     }
 };
 
-class Aoyi : public FilterSkill
+class Jiwu : public TriggerSkill
 {
 public:
-    Aoyi() : FilterSkill("aoyi")
+    Jiwu() : TriggerSkill("jiwu")
     {
+        events << Dying << DamageCaused << EventPhaseStart;
+        frequency = Eternal;
     }
 
-    virtual bool viewFilter(const Card *to_select) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
     {
-        return  to_select->isNDTrick();
+        if (e == Dying) {
+            DyingStruct dying = data.value<DyingStruct>();
+            if (dying.damage && dying.damage->from) {
+                ServerPlayer *killer = dying.damage->from;
+                if (killer->hasSkill(this) && killer != dying.who && killer->isAlive())
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, killer, killer, NULL, true);
+            }
+        } else if (e == DamageCaused) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from && damage.from->hasSkill(this) && damage.from->isAlive() 
+                && damage.to->getMark("@ice") > 0)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
+        } else if (e == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->hasSkill(this) && player->getPhase() == Player::RoundStart) {
+                foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+                    if (p->getMark("@ice") == 0)
+                        return QList<SkillInvokeDetail>();
+                }
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+            }
+        }
+        return QList<SkillInvokeDetail>();
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        IceSlash *slash = new IceSlash(originalCard->getSuit(), originalCard->getNumber());
-        slash->setSkillName(objectName());
-        WrappedCard *card = Sanguosha->getWrappedCard(originalCard->getId());
-        card->takeOver(slash);
-        return card;
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        if (e == Dying) {
+            DyingStruct dying = data.value<DyingStruct>();
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), dying.who->objectName());
+            room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+            dying.who->gainMark("@ice");
+        } else if (e == DamageCaused) {
+            DamageStruct damage = data.value<DamageStruct>();
+            QList<ServerPlayer *> logto;
+            logto << damage.to;
+            room->touhouLogmessage("#Jiwu", invoke->invoker, objectName(), logto);
+            return true;
+        } else if (e == EventPhaseStart) {
+            QString winner;
+            QString role = invoke->invoker->getRole();
+            
+            if (role ==  "lord" || role == "loyalist")
+                winner = "lord+loyalist";
+            else if (role == "rebel")
+                winner = "rebel";
+            else if (role == "renegade")
+                winner = invoke->invoker->objectName();
+            if (!winner.isNull()) {
+                room->touhouLogmessage("#JiwuWin", invoke->invoker, role);
+                room->gameOver(winner);
+                return true;
+            }
+        }
+        return false;
     }
 };
 
-class AoyiTargetMod : public TargetModSkill
-{
-public:
-    AoyiTargetMod() : TargetModSkill("#aoyi_mod")
-    {
-        frequency = NotFrequent;
-    }
-
-    virtual int getResidueNum(const Player *from, const Card *card) const
-    {
-        if (from->hasSkill("aoyi") && card->isKindOf("IceSlash"))
-            return 1000;
-        else
-            return 0;
-    }
-
-};
 
 
 
@@ -4016,12 +3998,9 @@ TouhouGodPackage::TouhouGodPackage()
     remilia_god->addSkill(new Shenqiang);
     remilia_god->addSkill(new Yewang);
 
-    General *cirno_god = new General(this, "cirno_god", "touhougod", 4, false);
+    General *cirno_god = new General(this, "cirno_god", "touhougod", 9, false);
     cirno_god->addSkill(new Aoyi);
-    cirno_god->addSkill(new AoyiEffect);
-    cirno_god->addSkill(new AoyiTargetMod);
-    related_skills.insertMulti("aoyi", "#aoyi_mod");
-    related_skills.insertMulti("aoyi", "#aoyi");
+    cirno_god->addSkill(new Jiwu);
 
     General *utsuho_god = new General(this, "utsuho_god", "touhougod", 4, false);
     utsuho_god->addSkill(new Shikong);

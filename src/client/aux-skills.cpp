@@ -2,7 +2,6 @@
 #include "client.h"
 #include "standard.h"
 #include "clientplayer.h"
-#include "touhoucard.h"//YijiCard
 #include "engine.h"
 
 DiscardSkill::DiscardSkill()

@@ -63,9 +63,7 @@ void Settings::init()
     GameMode = value("GameMode", "08p").toString();
 
     QStringList banpackagelist = value("BanPackages").toStringList();
-    if (banpackagelist.isEmpty()) {
-        banpackagelist << "touhoucard";
-    }
+
     setValue("BanPackages", banpackagelist);
 
     BanPackages = value("BanPackages").toStringList();

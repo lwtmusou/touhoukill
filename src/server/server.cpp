@@ -125,7 +125,7 @@ QWidget *ServerDialog::createPackageTab()
         switch (package->getType()) {
             case Package::GeneralPack:
             {
-                if (extension == "standard")
+                if (extension == "standard" || extension == "test")
                     continue;
                 row = i / 5;
                 column = i % 5;
@@ -136,8 +136,6 @@ QWidget *ServerDialog::createPackageTab()
             }
             case Package::CardPack:
             {
-                if (extension == "touhoucard")
-                    continue;
                 row = j / 5;
                 column = j % 5;
                 j++;
