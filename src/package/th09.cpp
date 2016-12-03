@@ -1319,10 +1319,11 @@ void NianliDialog::popup()
         const Card *c = Sanguosha->cloneCard(card_name);
         if (Self->isCardLimited(c, Card::MethodUse) || !c->isAvailable(Self))
             can = false;
-        delete c;
+       
         button->setEnabled(can);
         button->setToolTip(c->getDescription());
         layout->addWidget(button);
+        delete c;
 
         if (!map.contains(card_name)) {
             Card *c = Sanguosha->cloneCard(card_name);
