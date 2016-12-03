@@ -296,58 +296,10 @@ public:
 
 
 
-class Aoyi : public TriggerSkill
+class Bingfeng : public TriggerSkill
 {
 public:
-    Aoyi() : TriggerSkill("aoyi")
-    {
-        events << TargetSpecified << ConfirmDamage;
-        frequency = Compulsory;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
-    {
-        if (triggerEvent == TargetSpecified) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("Slash") && use.from->getWeapon() != NULL) {
-                ServerPlayer *source = room->findPlayerBySkillName(objectName());
-                if (source && source != use.from)
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, source, source, NULL, true);
-            }
-        } else if (triggerEvent == ConfirmDamage) {
-            DamageStruct damage = data.value<DamageStruct>();
-            if (!damage.card || !damage.card->isKindOf("Slash"))
-                return QList<SkillInvokeDetail>();
-
-            foreach(ServerPlayer *p, room->getAllPlayers()) {
-                if (damage.card->hasFlag("AoyiDamage_" + p->objectName())) {
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, p, p, NULL, true);
-                }   
-            }
-        }
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        if (triggerEvent == TargetSpecified) {
-            room->notifySkillInvoked(invoke->invoker, objectName());
-            room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
-            CardUseStruct use = data.value<CardUseStruct>();
-            use.card->setFlags("AoyiDamage_" + invoke->invoker->objectName());
-        } else if (triggerEvent == ConfirmDamage) {
-            DamageStruct damage = data.value<DamageStruct>();
-            damage.from = invoke->invoker->isAlive() ? invoke->invoker : NULL;
-            data = QVariant::fromValue(damage);
-        }
-        return false;
-    }
-};
-
-class Jiwu : public TriggerSkill
-{
-public:
-    Jiwu() : TriggerSkill("jiwu")
+    Bingfeng() : TriggerSkill("bingfeng")
     {
         events << Dying << DamageCaused << EventPhaseStart;
         frequency = Eternal;
@@ -359,7 +311,7 @@ public:
             DyingStruct dying = data.value<DyingStruct>();
             if (dying.damage && dying.damage->from) {
                 ServerPlayer *killer = dying.damage->from;
-                if (killer->hasSkill(this) && killer != dying.who && killer->isAlive())
+                if (killer->hasSkill(this) && killer != dying.who && killer->isAlive() && dying.who->getMark("@ice") == 0)
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, killer, killer, NULL, true);
             }
         } else if (e == DamageCaused) {
@@ -392,8 +344,12 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
             QList<ServerPlayer *> logto;
             logto << damage.to;
-            room->touhouLogmessage("#Jiwu", invoke->invoker, objectName(), logto);
-            return true;
+            room->touhouLogmessage("#Bingfeng", invoke->invoker, objectName(), logto, QString::number(1));
+
+            damage.damage = damage.damage - 1;
+            data = QVariant::fromValue(damage);
+            if (damage.damage == 0)
+                return true;
         } else if (e == EventPhaseStart) {
             QString winner;
             QString role = invoke->invoker->getRole();
@@ -405,7 +361,7 @@ public:
             else if (role == "renegade")
                 winner = invoke->invoker->objectName();
             if (!winner.isNull()) {
-                room->touhouLogmessage("#JiwuWin", invoke->invoker, role);
+                room->touhouLogmessage("#BingfengWin", invoke->invoker, role);
                 room->gameOver(winner);
                 return true;
             }
@@ -414,6 +370,55 @@ public:
     }
 };
 
+class Wushen : public TriggerSkill
+{
+public:
+    Wushen() : TriggerSkill("wushen")
+    {
+        events << TargetSpecified << ConfirmDamage;
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        if (triggerEvent == TargetSpecified) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isKindOf("Slash") && use.from->getWeapon() != NULL) {
+                ServerPlayer *source = room->findPlayerBySkillName(objectName());
+                if (source && source != use.from)
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, source, source, NULL, true);
+            }
+        }
+        else if (triggerEvent == ConfirmDamage) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (!damage.card || !damage.card->isKindOf("Slash"))
+                return QList<SkillInvokeDetail>();
+
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if (damage.card->hasFlag("WushenDamage_" + p->objectName())) {
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, p, p, NULL, true);
+                }
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (triggerEvent == TargetSpecified) {
+            room->notifySkillInvoked(invoke->invoker, objectName());
+            room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+            CardUseStruct use = data.value<CardUseStruct>();
+            use.card->setFlags("WushenDamage_" + invoke->invoker->objectName());
+        }
+        else if (triggerEvent == ConfirmDamage) {
+            DamageStruct damage = data.value<DamageStruct>();
+            damage.from = invoke->invoker->isAlive() ? invoke->invoker : NULL;
+            data = QVariant::fromValue(damage);
+        }
+        return false;
+    }
+};
 
 
 
@@ -3999,8 +4004,8 @@ TouhouGodPackage::TouhouGodPackage()
     remilia_god->addSkill(new Yewang);
 
     General *cirno_god = new General(this, "cirno_god", "touhougod", 9, false);
-    cirno_god->addSkill(new Aoyi);
-    cirno_god->addSkill(new Jiwu);
+    cirno_god->addSkill(new Bingfeng);
+    cirno_god->addSkill(new Wushen);
 
     General *utsuho_god = new General(this, "utsuho_god", "touhougod", 4, false);
     utsuho_god->addSkill(new Shikong);
