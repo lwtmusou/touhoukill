@@ -1013,7 +1013,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (e == TargetSpecified || e == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (!use.card->isKindOf("Slash"))
+            if (!use.card->isKindOf("Slash") || use.to.length() != 1)
                 return d;
             QList<int> ids;
             if (use.card->isVirtualCard())
@@ -1025,18 +1025,10 @@ public:
             foreach(int id, ids) {
                 if (room->getCardPlace(id) != Player::PlaceTable) return QList<SkillInvokeDetail>();
             }
-
-            QList<ServerPlayer *> meirins;
-            if (e == TargetSpecified && use.from->isAlive() && use.from->hasSkill(this)) {
-                foreach(ServerPlayer *p, use.to) {
-                    d << SkillInvokeDetail(this, use.from, use.from, NULL, false, p);
-                }
-            } else if (e == TargetConfirmed) {
-                foreach(ServerPlayer *p, use.to) {
-                    if (p->isAlive() && p->hasSkill(this))
-                        d << SkillInvokeDetail(this, p, p, NULL, false, use.from);
-                }
-            }
+            if (e == TargetSpecified && use.from->isAlive() && use.from->hasSkill(this) && use.to.first()->isAlive())
+                    d << SkillInvokeDetail(this, use.from, use.from, NULL, false, use.to.first());
+             else if (e == TargetConfirmed && use.to.first()->isAlive() && use.to.first()->hasSkill(this))
+                    d << SkillInvokeDetail(this, use.to.first(), use.to.first(), NULL, false, use.from);
         } else if (e == SlashMissed) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (!effect.from || effect.from->isDead())
