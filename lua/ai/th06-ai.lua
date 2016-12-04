@@ -396,138 +396,109 @@ sgs.ai_skill_playerchosen.hezhou = function(self, targets)
 	return nil
 end
 
-sgs.ai_skill_invoke.neijin = function(self)
-	local current = self.room:getCurrent()
-	if current then
-		return self:isFriend(current)
-	end
-	return false
-end
-sgs.ai_choicemade_filter.skillInvoke.neijin = function(self, player, promptlist)
-	local current = self.room:getCurrent()
-	if  current and  promptlist[#promptlist] == "yes" then
-		sgs.updateIntention(player, current, -40)
-	end
-end
-
-sgs.ai_skill_playerchosen.taiji = function(self, targets)
-	if #self.enemies > 0 then
-		self:sort(self.enemies, "hp")
-		return self.enemies[1]
-	end
-	return nil
-end
-
-
---[[
-sgs.ai_skill_cardask["douhun-slash"]  = function(self, data, pattern, target)
-	local effect = data:toSlashEffect()
-	local p
-	if effect.from:objectName()==self.player:objectName() then
-		p=effect.to
-	else
-		p=effect.from
-	end
-	if self:isFriend(p) then return "." end
-	if self.player:hasSkill("zhanyi") then
-		return self:getCardId("Slash")
-	elseif p:hasSkill("zhanyi") then
-		local rate=1
-		if self.player:hasSkill("weiya") and self:hasWeiya(p) then
-			rate=2
-		end
-		if self:getCardsNum("Slash") > (getCardsNum("Slash", p, self.player)+p:getPile("qi"):length())*rate then
-			return self:getCardId("Slash")
-		end
-	end
-	return "."
-end
-sgs.ai_cardneed.douhun = function(to, card, self)
-	return getCardsNum("Slash", to, self.player) <2
-	 and card:isKindOf("Slash")
-end
-
-sgs.ai_slash_prohibit.douhun = function(self, from, to, card)
-
-	if self.player:objectName()~=from:objectName() then return false end
-	if to:hasSkills("douhun+zhanyi") then
-		local rate=1
-		if from:hasSkill("weiya") and self:hasWeiya() then
-			rate=2
-		end
-		if self:getCardsNum("Slash") <=
-		(getCardsNum("Slash", to, from)+to:getPile("qi"):length())*rate then
+sgs.ai_skill_invoke.taiji = function(self, data)
+	local use=self.player:getTag("taiji"):toCardUse()
+	--默认只补给自己人
+	if self:isFriend(use.to:first()) then
+		if self.player:objectName() ~= use.to:first():objectName() then
 			return true
+		elseif self:isFriend(use.from) then
+			return true
+		else
+			return getCardsNum("Slash", use.from, self.player) <= 1
 		end
 	end
 	return false
 end
-]]
---[[sgs.ai_view_as.zhanyi = function(card, player, card_place)
-		local suit = card:getSuitString()
-		local number = card:getNumberString()
-		local card_id = card:getEffectiveId()
-		if card_place == sgs.Player_PlaceHand and not card:isKindOf("Peach") and not card:hasFlag("using") then
-				return ("slash:zhanyi[%s:%s]=%d"):format(suit, number, card_id)
-		end
-end]]
---[[
-sgs.ai_skill_cardask["@zhanyi"] = function(self, data)
 
-	local cards = self.player:getCards("hs")
+
+local beishui_skill = {}
+beishui_skill.name = "taiji"
+table.insert(sgs.ai_skills, beishui_skill)
+beishui_skill.getTurnUseCard = function(self)
+    if self.player:getMark("beishui") >0 then return nil end 
+	local x = math.max(self.player:getHp(), 1)
+    
+	local cards = self.player:getCards("hes")
+	cards=self:touhouAppendExpandPileToList(self.player,cards)
 	cards = sgs.QList2Table(cards)
-	self:sortByUseValue(cards)
-
-	local maxNum = #cards - self.player:getMaxCards()
-	local qis={}
+	if #cards < x then return nil end
+	self:sortByKeepValue(cards)
+	local ids = {}
+	local count = 0
 	for _,c in pairs(cards) do
-		if  not c:isKindOf("Peach") and not c:isKindOf("Slash")  then
-			table.insert(qis,c:getEffectiveId())
-		end
-		if #qis >= maxNum then
-			break
-		end
+		table.insert(ids, c:getEffectiveId())
+		count = count + 1
+		if (count >= x) then break end
 	end
-	local canAddSlash = #qis < maxNum
-	if canAddSlash then
-		for _,c in sgs.qlist(cards) do
-			if  c:isKindOf("Slash")  then
-				table.insert(qis,c:getEffectiveId())
-			end
-			if #qis >= maxNum then
-				break
-			end
+	
+	local beishuiCards = {}
+	local pattern = "slash|peach" --|analeptic
+	local patterns = pattern:split("|")
+	for i = 1, #patterns do
+		local forbidden = patterns[i]
+		local forbid = sgs.cloneCard(forbidden)
+		if not self.player:isLocked(forbid) and forbid:isAvailable(self.player) then
+			table.insert(beishuiCards,forbid)
 		end
 	end
 
-	if #qis==0 then return "." end
-	return "$" .. table.concat(qis, "+")
+    if #beishuiCards < 1 then return nil end
+	self:sortByUseValue(beishuiCards, false)
+	local choice = beishuiCards[1]:objectName()
+	local card_str = (choice..":%s[%s:%s]="):format("beishui", "to_be_decided", -1)   
+	for _,id in pairs(ids) do
+		if id == ids[#ids] then
+			card_str = card_str .. id
+		else
+			card_str = card_str .. id .. "+"		
+		end
+	end
+     
+	
+	local parsed_card = sgs.Card_Parse(card_str)
+	return parsed_card
 end
-]]
---[[
-function sgs.ai_cardsview_valuable.zhanyi(self, class_name, player)
+function sgs.ai_cardsview_valuable.beishui(self, class_name, player)
+	if (sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE) then
+		return nil
+	end
+	local x = math.max(self.player:getHp(), 1)
+	local cards = self.player:getCards("hes")
+	cards=self:touhouAppendExpandPileToList(self.player,cards)
+	cards = sgs.QList2Table(cards)
+	if #cards < x then return nil end
+	self:sortByKeepValue(cards)
+	local ids = {}
+	local count = 0
+	for _,c in pairs(cards) do
+		table.insert(ids, c:getEffectiveId())
+		count = count + 1
+		if (count >= x) then break end
+	end
+	
+
+	local card_str
+	if class_name == "Peach" then
+		local dying = player:getRoom():getCurrentDyingPlayer()
+		if not dying  then return nil end
+		card_str =  ("peach:beishui[%s:%s]="):format("to_be_decided", -1) 
+	end
+	if class_name == "Jink" then
+		card_str = ("jink:beishui[%s:%s]="):format("to_be_decided", -1) 
+	end
 	if class_name == "Slash" then
-		if (sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE) then
-			return nil
-		end
-		if self.player:getPile("qi"):isEmpty() then return nil end
-		local ids=self.player:getPile("qi")
-		local card= sgs.Sanguosha:getCard(ids:first())
-		local suit = card:getSuitString()
-		local number = card:getNumberString()
-		local card_id = card:getEffectiveId()
-		return ("slash:zhanyi[%s:%s]=%d"):format(suit, number, card_id)
+		card_str = ("slash:beishui[%s:%s]="):format("to_be_decided", -1) 
 	end
-end]]
-
-sgs.ai_cardneed.zhanyi = function(to, card, self)
-	return card:isKindOf("Slash")
-	--return  card:isRed()
+	for _,id in pairs(ids) do
+		if id == ids[#ids] then
+			card_str = card_str .. id
+		else
+			card_str = card_str .. id .. "+"		
+		end
+	end
+	return card_str
 end
-sgs.ai_skill_invoke.zhanyi = function(self)
-	return true
-end
-
 
 
 sgs.ai_skill_invoke.dongjie = function(self, data)

@@ -752,6 +752,7 @@ function SmartAI:getDynamicUsePriority(card)
 	if card:isKindOf("DelayedTrick") and not card:isKindOf("YanxiaoCard") and #card:getSkillName() > 0 then
 		return (sgs.ai_use_priority[card:getClassName()] or 0.01) - 0.01
 	end
+
 	if self.player:hasSkill("danshou") 
 		and (card:isKindOf("Slash") or card:isKindOf("Duel") or card:isKindOf("AOE")
 			or sgs.dynamic_value.damage_card[card:getClassName()]) then
@@ -785,7 +786,11 @@ function SmartAI:getDynamicUsePriority(card)
 	if card:getTypeId() == sgs.Card_TypeEquip then
 		if self:hasSkills(sgs.lose_equip_skill) then value = value + 12 end
 	end
-
+    if card:isKindOf("BasicCard") and card:getSkillName() == "beishui" then
+		if card:getSubcards():length() > 1 then 
+			value = value - 2
+		end
+	end
 	if card:isKindOf("AmazingGrace") or card:isKindOf("FengrangCard") then
 		dynamic_value = 10
 		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do

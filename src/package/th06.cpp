@@ -1048,6 +1048,14 @@ public:
         return d;
     }
 
+    bool cost(TriggerEvent e, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (e == SlashMissed)
+            return true;
+        invoke->invoker->tag["taiji"] = data;
+        return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget));
+    }
+
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (e == TargetSpecified || e == TargetConfirmed) {
@@ -1242,9 +1250,10 @@ public:
     }
 
 
-    virtual bool viewFilter(const QList<const Card *> &, const Card *) const
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *) const
     {
-        return true;
+        int num = qMax(1, Self->getHp());
+        return selected.length() < num;
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const
