@@ -174,7 +174,14 @@ end
 
 
 
-
+sgs.ai_damageCaused.bingfeng = function(self, damage)
+	if damage.card then
+		if  damage.card:isKindOf("Slash") and damage.to:getMark("@ice") >0 then
+			damage.damage = math.max(0, damage.damage -1)
+		end
+	end
+	return damage
+end
 
 sgs.ai_skill_choice.aoyi=function(self)
 	local friend_wizzard= self:invokeTouhouJudge()

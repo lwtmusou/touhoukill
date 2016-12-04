@@ -559,6 +559,13 @@ void RoomScene::handleGameEvent(const QVariant &args)
                 }
                 log_box->appendLog(type, player->objectName(), QStringList(), QString(), newHeroName, arg2);
             }
+
+            //change bgm and backgroud
+            if (player->isLord()) {
+                ClientInstance->lord_name = newHeroName;
+                setLordBGM(newHeroName);
+                setLordBackdrop(newHeroName);
+            }
             if (player != Self) break;
             const General* oldHero = isSecondaryHero ? player->getGeneral2() : player->getGeneral();
             const General* newHero = Sanguosha->getGeneral(newHeroName);
@@ -579,12 +586,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
                     Config.setValue("KnownSurprisingGenerals", Config.KnownSurprisingGenerals);
                 }
             }
-            //change bgm and backgroud
-            if (player->isLord()) {
-                ClientInstance->lord_name = newHeroName;
-                setLordBGM(newHeroName);
-                setLordBackdrop(newHeroName);
-            }
+
             break;
         }
         case S_GAME_EVENT_PLAYER_REFORM:
