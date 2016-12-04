@@ -412,7 +412,6 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 	if to:hasSkill("huiwu")  and self:isFriend(to, from) then--没考虑死蝶
 		return false
 	end
-	if to:getMark("@late") > 0 then return false end
 
 	local natures = {
 		Slash = sgs.DamageStruct_Normal,
@@ -502,6 +501,8 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 	if self:touhouDamage(fakeDamage,from,to).damage <= 0 then
 		local effect, willEffect = self:touhouDamageEffect(fakeDamage,from,to)
 		if not effect then
+			return false
+		elseif not willEffect then
 			return false
 		end
 	end
@@ -1152,7 +1153,7 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 
 	if not self:hasHeavySlashDamage(target, slash, self.player) and self:getDamagedEffects(self.player, target, slash) then return "." end
 	if slash:isKindOf("NatureSlash") and self.player:isChained() and self:isGoodChainTarget(self.player, nil, nil, nil, slash) then return "." end
-
+	
 	---***调用东方杀相关函数
 	if self.player:hasSkill("xuying") then--虚影必须要闪
 		return getJink()

@@ -7122,7 +7122,7 @@ function SmartAI:touhouDamageInflicted(damage,from,to)
 	return damage
 end
 --东方杀相关
---造成伤害时有特殊效果的情况
+--造成伤害时有特殊效果的情况  和 slashIsEffective 有明显关联。。。
 function SmartAI:touhouDamageEffect(damage,from,to)
 	if not from or not to then return false, false end
 	if to:hasSkill("huanmeng") then return false, false end
@@ -7168,6 +7168,11 @@ function SmartAI:touhouDamageEffect(damage,from,to)
 			return true, willUse
 		end
 
+	end
+	if from:hasSkill("lianmu") and not from:hasFlag("lianmu_used")  then
+		if damage.card and damage.card:isKindOf("Slash")  and not damage.card:hasFlag("lianmu_damage")then
+			return true, willUse
+		end
 	end
 	return false, willUse
 end

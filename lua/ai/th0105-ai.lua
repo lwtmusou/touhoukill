@@ -630,6 +630,35 @@ end
 sgs.ai_skill_invoke.mengyan = true
 
 
+
+sgs.ai_skill_use["@@lianmu"] = function(self, prompt)
+	local slash = sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
+	slash:setSkillName("lianmu");
+	
+	local dummy_use = { isDummy = true, to = sgs.SPlayerList()}
+	self:useBasicCard(slash, dummy_use)
+	local targets = {}
+	if dummy_use.card and  not dummy_use.to:isEmpty() then 
+		for _, p in sgs.qlist(dummy_use.to) do
+			table.insert(targets, p:objectName())
+		end
+	end
+	
+	if #targets >0 then
+		return "@LianmuCard=.->" .. table.concat(targets, "+")
+	end
+	return "."
+end
+
+sgs.ai_damageCaused.huanwei = function(self, damage)
+	if damage.card and not damage.chain and not damage.transfer then
+		if  damage.card:isKindOf("Slash") and  damage.card:getSuit() == sgs.Card_Spade then
+			damage.damage = math.max(0, damage.damage -1)
+		end
+	end
+	return damage
+end
+
 sgs.ai_skill_use["@@sqchuangshi"] = function(self, prompt)
 	local targets={}
 	for _, p in ipairs(self.friends_noself) do

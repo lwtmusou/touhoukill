@@ -505,17 +505,16 @@ end
 sgs.ai_skill_invoke.renou = true
 --具体如何选人偶牌 尚没有策略。。。
 
-
-sgs.ai_skill_choice.shishen=function(self)
+sgs.ai_skill_invoke.shishen=function(self)
 	if self.player:getPhase() == sgs.Player_Start then
-		return "shishen1"
+		return true
 	end
 	if self.player:hasFlag("shishen_choice") then
 		local ran = self.room:findPlayerBySkillName("zhaoliao")
 		if ran and ran:getCards("hes")>=2 and self:isFriend(ran) then
-			return "cancel"
+			return false
 		else
-			return "shishen1"
+			return true
 		end
 	end
 	if self.player:getPhase() == sgs.Player_Play  and self.player:getMark("@shi")==0    then
@@ -524,17 +523,18 @@ sgs.ai_skill_choice.shishen=function(self)
 				local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 				self:useTrickCard(card, dummy_use)
 				if  dummy_use.card then
-					if card:isKindOf("AOE") or card:isKindOf("GlobalEffect") then
-						return "shishen2"
+					if card:isKindOf("AOE") or card:isKindOf("GlobalEffect") or card:isKindOf("ExNihilo") then
+						return true
 					elseif not dummy_use.to:isEmpty() then
-						return "shishen2"
+						return true
 					end
 				end
 			end
 		end
 	end
-	return "cancel"
+	return false
 end
+
 sgs.ai_slash_prohibit.yexing = function(self, from, to, card)
 	if to:hasSkill("yexing") and to:getMark("@shi") == 0 then
 		if not card:isKindOf("NatureSlash") or  from:hasSkill("here") then

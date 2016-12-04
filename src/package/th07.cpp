@@ -912,7 +912,7 @@ public:
     {
         if (triggerEvent == CardEffected || triggerEvent == SlashEffected)
             return;
-        ServerPlayer *player;
+        ServerPlayer *player = NULL;
         bool set = false;
         bool remove = false;
 
@@ -939,6 +939,7 @@ public:
                 remove = true;
         } else if (triggerEvent == EventAcquireSkill) {
             SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
+            player = a.player;
             if (a.skill->objectName() == "yexing" && a.player->getMark("@shi") == 0)
                 set = true;
         } else if (triggerEvent == EventSkillInvalidityChange) {
