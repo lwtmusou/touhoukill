@@ -579,6 +579,12 @@ void RoomScene::handleGameEvent(const QVariant &args)
                     Config.setValue("KnownSurprisingGenerals", Config.KnownSurprisingGenerals);
                 }
             }
+            //change bgm and backgroud
+            if (player->isLord()) {
+                ClientInstance->lord_name = newHeroName;
+                setLordBGM(newHeroName);
+                setLordBackdrop(newHeroName);
+            }
             break;
         }
         case S_GAME_EVENT_PLAYER_REFORM:
@@ -4057,45 +4063,8 @@ void RoomScene::onGameStart()
     trust_button->setEnabled(true);
 #ifdef AUDIO_SUPPORT
 
-    //intialize default path
-    bgm_path = Config.value("BackgroundMusic", "audio/title/main.ogg").toString();
-    image_path = Config.TableBgImage;
-    QString lord_name = ClientInstance->lord_name;
-    if (lord_name != NULL) {
-        bool changeBGM = Config.value("UseLordBGM", true).toBool();
-        bool changeBackdrop = Config.value("UseLordBackdrop", true).toBool();
-        if (changeBGM) {
-            bgm_path = "audio/bgm/" + lord_name + ".ogg";
-            if ((bgm_path == NULL) || !QFile::exists(bgm_path)) {
-                foreach (QString cv_pair, Sanguosha->LordBGMConvertList) {
-                    bool shouldBreak = false;
-                    QStringList pairs = cv_pair.split("->");
-                    QStringList cv_from = pairs.at(0).split("|");
-                    foreach (QString from, cv_from) {
-                        if (from == lord_name) {
-                            bgm_path = "audio/bgm/" + pairs.at(1) + ".ogg";
-                            shouldBreak = true;
-                            break;
-                        }
-                    }
-                    if (shouldBreak)
-                        break;
-                }
-            }
-        }
-        if (changeBackdrop)
-            image_path = "backdrop/" + lord_name + ".jpg";
-    }
-
-    if ((image_path != NULL) && QFile::exists(image_path))
-        changeTableBg(image_path);
-
-    if (Config.EnableBgMusic) {
-        // start playing background music
-        Audio::playBGM(bgm_path);
-
-        Audio::setBGMVolume(Config.BGMVolume);
-    }
+    setLordBGM();
+    setLordBackdrop();
 
 #endif
 
@@ -5142,4 +5111,62 @@ bool RoomScene::isHighlightStatus(Client::Status status)
             break;
     }
     return false;
+}
+
+
+void RoomScene::setLordBGM(QString lord)
+{
+#ifdef AUDIO_SUPPORT
+    if (!Config.EnableBgMusic)
+        return;
+    Audio::stopBGM();
+
+    bool changeBGM = Config.value("UseLordBGM", true).toBool();
+    //intialize default path
+    bgm_path = Config.value("BackgroundMusic", "audio/title/main.ogg").toString();
+    QString lord_name = (lord == NULL) ? ClientInstance->lord_name : lord;
+    if (lord_name == NULL)
+        lord_name = Self->getGeneralName();
+    if (changeBGM) {
+        bgm_path = "audio/bgm/" + lord_name + ".ogg";
+        if ((bgm_path == NULL) || !QFile::exists(bgm_path)) {
+            foreach(QString cv_pair, Sanguosha->LordBGMConvertList) {
+                bool shouldBreak = false;
+                QStringList pairs = cv_pair.split("->");
+                QStringList cv_from = pairs.at(0).split("|");
+                foreach(QString from, cv_from) {
+                    if (from == lord_name) {
+                        bgm_path = "audio/bgm/" + pairs.at(1) + ".ogg";
+                        shouldBreak = true;
+                        break;
+                    }
+                }
+                if (shouldBreak)
+                    break;
+            }
+        }
+    }
+
+    Audio::playBGM(bgm_path);
+
+    Audio::setBGMVolume(Config.BGMVolume);
+
+
+#endif
+}
+
+void RoomScene::setLordBackdrop(QString lord)
+{
+    bool changeBackdrop = Config.value("UseLordBackdrop", true).toBool();
+    //intialize default path
+    image_path = Config.TableBgImage;
+    QString lord_name = (lord == NULL) ? ClientInstance->lord_name : lord;
+    if (lord_name == NULL)
+        lord_name = Self->getGeneralName();
+    if (changeBackdrop)
+        image_path = "backdrop/" + lord_name + ".jpg";
+
+    if ((image_path != NULL) && QFile::exists(image_path))
+        changeTableBg(image_path);
+
 }

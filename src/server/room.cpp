@@ -4767,9 +4767,9 @@ void Room::preparePlayers()
                 player->addSkill(skill->objectName());
         }
         player->setGender(player->getGeneral()->getGender());
-
     }
-
+    
+     
     JsonArray args;
     args << (int)QSanProtocol::S_GAME_EVENT_PREPARE_SKILL;
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);

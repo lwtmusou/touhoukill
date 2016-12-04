@@ -516,8 +516,7 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName)
             connect(_m_equipSkillBtns[i], SIGNAL(clicked()), this, SLOT(_onEquipSelectChanged()));
             connect(_m_equipSkillBtns[i], SIGNAL(enable_changed()), this, SLOT(_onEquipSelectChanged()));
             QSanSkillButton *btn = _m_equipSkillBtns[i];
-            //if (btn != NULL)
-            //    Sanguosha->playSystemAudioEffect("win-cc");
+
             _mutexEquipAnim.unlock();
             return btn;
         }

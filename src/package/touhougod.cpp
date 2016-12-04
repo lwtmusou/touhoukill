@@ -10,6 +10,86 @@
 #include "maneuvering.h" // for huaxiang
 #include "th10.h" //for huaxiang
 
+
+class Chuanghuan : public TriggerSkill
+{
+public:
+    Chuanghuan() : TriggerSkill("chuanghuan")
+    {
+        events << GameStart;
+    }
+
+    virtual int getPriority() const
+    {
+        return 5;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *room, const QVariant &data) const
+    {
+        
+        QList<SkillInvokeDetail> d; 
+        if (data.isNull()) {
+            foreach(ServerPlayer *zun, room->findPlayersBySkillName(objectName()))
+                d << SkillInvokeDetail(this, zun, zun, NULL, true);
+        }
+        return d;
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+
+        //get ganerals
+        QSet<QString> all = Sanguosha->getLimitedGeneralNames().toSet();
+        if (isNormalGameMode(room->getMode())
+            || room->getMode().contains("_mini_")
+            || room->getMode() == "custom_scenario")
+            all.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
+        else if (room->getMode() == "06_XMode") {
+            foreach(ServerPlayer *p, room->getAlivePlayers())
+                all.subtract(p->tag["XModeBackup"].toStringList().toSet());
+        }
+        else if (room->getMode() == "02_1v1") {
+            all.subtract(Config.value("Banlist/1v1", "").toStringList().toSet());
+            foreach(ServerPlayer *p, room->getAlivePlayers())
+                all.subtract(p->tag["1v1Arrange"].toStringList().toSet());
+        }
+
+        QSet<QString> room_set;
+        foreach(ServerPlayer *player, room->getAllPlayers(true)) {
+            QString name = player->getGeneralName();
+            if (Sanguosha->isGeneralHidden(name))
+                continue;
+            room_set << name;
+
+            if (!player->getGeneral2()) continue;
+            name = player->getGeneral2Name();
+            if (Sanguosha->isGeneralHidden(name))
+                continue;
+            room_set << name;
+        }
+
+
+        QStringList names = (all - room_set).toList();
+        qShuffle(names);
+        if (names.isEmpty()) return false;
+
+        int n = room->getAlivePlayers().length();
+        n = qMin(n, names.length());
+        QStringList generals = names.mid(0, n);
+        
+        room->getThread()->delay(1000);
+        //change hero
+        QString general = room->askForGeneral(invoke->invoker, generals);
+        room->changeHero(invoke->invoker, general, true, true, false, true);
+        QString kingdom = invoke->invoker->getGeneral()->getKingdom();
+        room->setPlayerProperty(invoke->invoker, "kingdom", kingdom);
+        
+        return false;
+    }
+};
+
 class Jiexian : public TriggerSkill
 {
 public:
@@ -4001,6 +4081,9 @@ public:
 TouhouGodPackage::TouhouGodPackage()
     : Package("touhougod")
 {
+    General *zun = new General(this, "zun", "touhougod", 1);
+    zun->addSkill(new Chuanghuan);
+ 
     General *yukari_god = new General(this, "yukari_god", "touhougod", 4, false);
     yukari_god->addSkill(new Jiexian);
 

@@ -694,7 +694,7 @@ enum TriggerEvent
     TurnBroken, // For the skill 'DanShou'. Do not use it to trigger events
 
     //new events for touhoukill,
-    DrawPileSwaped,//like qiannian
+    DrawPileSwaped,//for qiannian
     AfterGuanXing,
     KingdomChanged,
 

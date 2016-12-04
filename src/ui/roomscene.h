@@ -231,6 +231,8 @@ public:
     void doDiscardButton();
     void highlightSkillButton(QString skill_name, bool highlight);
     bool isHighlightStatus(Client::Status status);
+    void setLordBGM(QString lord = QString());
+    void setLordBackdrop(QString lord = QString());
 
     void doSkinChange(const QString &generalName, int skinIndex);
     inline QPointF tableCenterPos()
