@@ -880,7 +880,7 @@ QStringList Engine::getRandomLords() const
 
     QStringList lords;
     QStringList splords_package; //lords  in sp package will be not count as a lord.
-    splords_package << "thxwm" << "thndj";
+    splords_package << "thndj";
     foreach (QString alord, getLords()) {
         if (banlist_ban.contains(alord)) continue;
         const General *general = getGeneral(alord);

@@ -48,7 +48,6 @@ config = {
 		"TH14",
 		--"TH15", --0.8不对应
 		"TH99",
-		--"THXWM", --基于契合等问题，暂时移除
 		"THNDJ",
 		"TouhouGod",
 		"Standard", --此包内带pattern的定义 不能屏蔽。。。
@@ -177,6 +176,7 @@ config = {
 		"aya_god->aya_sp",
 		"reisen2->tewi",
         "merry->renko",
+		"lunar|star->sunny",
 		"komachi_god->komachi",
 		"kogasa_slm->kogasa",
 		"koishi_god->koishi",
