@@ -116,8 +116,10 @@ return{
 	--dld006  势力：地 3血
 	["parsee"]= "水桥帕露西",
 	["#parsee"]= "地壳下的嫉妒心",
-	["illustrator:parsee"] = "岩本ゼロゴ",
-	["origin:parsee"] = "个人ID：3080",
+	["illustrator:parsee"] = "東天紅",
+	["origin:parsee"] = "p号：48906838， 个人ID：3757061",
+	--["illustrator:parsee"] = "岩本ゼロゴ",
+	--["origin:parsee"] = "个人ID：3080",
 	["illustrator:parsee_1"] = "みきぷらす",
 	["origin:parsee_1"] = "p号：14442359，个人ID：626832",
 	["illustrator:parsee_2"] = "あとき",
@@ -133,13 +135,6 @@ return{
 	["gelong:gelong1"]= "摸一张牌再交出两张牌",
 	["gelong:gelong2"]= "翻面并回复1点体力",
 	["@gelong"] = "“葛笼”: 你须交给<font color=\"#00FF00\"><b>%src </b></font>  %dest 张牌。",
-
-	-- ["jidu"]= "嫉妒",
-	-- [":jidu"]= "你可以将一张手牌当【决斗】使用，体力值小于你的角色不是此【决斗】的合法目标。当你受到【决斗】造成的伤害后，你可以摸一张牌。",
-	-- ["gelong"]= "葛笼",
-	-- [":gelong"]= "<font color=\"blue\"><b>锁定技，</b></font>当你成为【杀】的目标后，此【杀】的使用者须选择一项：失去1点体力，然后摸一张牌；或将牌堆顶的一张牌当【兵粮寸断】置于其判定区里。",
-	-- ["gelong:gelong1"]= "失去1点体力，然后摸一张牌",
-	-- ["gelong:gelong2"]= "将牌堆顶的一张牌当【兵粮寸断】置于你的判定区里",
 
 --*********************************************
 	--dld007  势力：地 4血
