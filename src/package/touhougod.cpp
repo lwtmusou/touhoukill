@@ -3484,6 +3484,8 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
+        
+        room->doLightbox("$tonglingAnimate", 4000);
         room->removePlayerMark(invoke->invoker, "@tongling");
         const General *general = invoke->targets.first()->getGeneral();
         QString new_general = invoke->targets.first()->isMale() ? "sujiang" : "sujiangf";
@@ -3537,6 +3539,11 @@ bool RumoCard::targetsFeasible(const QList<const Player *> &targets, const Playe
 {
     int num = qMax(Self->getHp(), 1);
     return targets.length() >0 && targets.length() <= num && targets.contains(Self);
+}
+void RumoCard::onUse(Room *room, const CardUseStruct &card_use) const
+{
+    room->doLightbox("$rumoAnimate", 4000);
+    SkillCard::onUse(room, card_use);
 }
 
 void RumoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
