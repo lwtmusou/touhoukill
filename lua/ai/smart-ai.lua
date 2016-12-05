@@ -4511,7 +4511,6 @@ function SmartAI:getTurnUse()
 
 		local type = card:getTypeId()
 		self["use" .. sgs.ai_type_name[type + 1] .. "Card"](self, card, dummy_use)
-
 		if dummy_use.card then
 			if dummy_use.card:isKindOf("Slash") then
 				if  dummy_use.card:hasFlag("jiuhao") or dummy_use.card:getSkillName() == "duzhua" then
@@ -5734,9 +5733,18 @@ function SmartAI:useSkillCard(card,use)
 	end
 
 
-	if not use.isDummy
-		and not self.player:hasSkill(card:getSkillName()) and not self.player:hasLordSkill(card:getSkillName()) then
-		return
+	if not use.isDummy then
+		--modian 和 modian_attach两个skill都能发动  但技能卡的skillname注明的是modian_attach
+		--魔典强行耦合。。。
+		if (card:getSkillName() == "modian_attach") then
+			if not self.player:hasSkill("modian") and not self.player:hasSkill("modian_attach") then
+				return
+			end
+		else
+			if not self.player:hasSkill(card:getSkillName()) and not self.player:hasLordSkill(card:getSkillName()) then
+				return
+			end
+		end
 	end
 	if sgs.ai_skill_use_func[name] then
 		sgs.ai_skill_use_func[name](card, use, self)
