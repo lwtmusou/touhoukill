@@ -173,6 +173,9 @@ return{
 	--xlc009 势力：星 4血
 	["myouren"] = "命莲" ,
 	["#myouren"] = "拔苦与乐的僧侣" ,
+	["illustrator:myouren"] = "腦子",
+	["origin:myouren"] = "p号：27969549,个人ID:3101656",
+	
 	["shanshi"] = "善逝" ,
 	[":shanshi"] = "当你于其他角色的回合内失去牌后或其他角色于你的回合内失去牌后，你可令你与其各摸一张牌。<font color=\"green\"><b>每阶段限一次。</b></font>" ,
 	["shuxin"] = "赎心" ,

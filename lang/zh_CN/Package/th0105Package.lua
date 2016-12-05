@@ -7,6 +7,9 @@ return {
 	--pc98010 魅魔
 	["mima"] = "魅魔" ,
 	["#mima"] = "将命运托付给久远的梦的精神" ,
+	["illustrator:mima"] = "Cro",
+	["origin:mima"] = "p号：4117188，个人ID：185077",
+	
 	["meiling"] = "魅灵",
 	[":meiling"] = "一名角色受到其他角色造成的伤害后，你可获得造成伤害的牌。若你与该角色的距离大于x，来源对你造成1点伤害。（x为你已损失的体力值）",
 	["meiling:distance"]= "你是否发动“魅灵”，获得【%arg】。 你到 受伤者<font color=\"#00FF00\"><b>%src </b></font> 的距离为 <font color=\"#FF8000\"><b>%dest </b></font>。",
@@ -23,6 +26,9 @@ return {
 	--pc98006 冈崎梦美  势力：旧 4血
 	["yumemi"] = "冈崎梦美" ,
 	["#yumemi"] = "梦幻传说" ,
+	["illustrator:yumemi"] = "",
+	["origin:yumemi"] = "p号： ,个人ID",
+	
 	["ciyuan"] = "次元",
 	[":ciyuan"] = "回合开始时，你可以交换此回合两个阶段的顺序。",
 	["#ciyuan"] = "%from 将 %arg 和 %arg2 的执行顺序互换",
@@ -52,6 +58,10 @@ return {
 	--pc98007 北白河千百合 势力：旧 4血
 	["chiyuri"] = "北白河千百合" ,
 	["#chiyuri"] = "超越时空的梦幻居民" ,
+	["illustrator:chiyuri"] = "ワダンテ",
+	["origin:chiyuri"] = "p号：51430579 ,个人ID:3811457",
+	
+	
 	["zhence"] = "侦测",
 	[":zhence"] = "摸牌阶段或出牌阶段开始前，你可以视为使用【火攻】。当你使用此牌造成伤害后，你摸一张牌并跳过该阶段。",
 	["@zhence"]= "你可以发动“侦测”， 视为使用【火攻】。若你以此法造成伤害，你须摸一牌并跳过<font color=\"#FF8000\"><b>%src </b></font>阶段",
@@ -70,6 +80,9 @@ return {
 	--pc98008 朝仓理香子 势力：旧 3血
 	["rikako"] = "朝仓理香子" ,
 	["#rikako"] = "寻找梦想的科学",
+	["illustrator:rikako"] = "べる",
+	["origin:rikako"] = "p号：7874458 ,个人ID:125888",
+	
 	["jinfa"] = "禁法",
 	[":jinfa"] = "<font color=\"blue\"><b>锁定技，</b></font>当锦囊牌对你生效前，你视为使用【无懈可击】。",
 	["jiexi"] = "解析",
@@ -79,6 +92,9 @@ return {
 	["kana"] = "卡娜" ,
 	["!kana"] = "卡娜•安娜贝拉尔" ,
 	["#kana"] = "失去梦的少女骚灵" ,
+	["illustrator:kana"] = "Culter",
+	["origin:kana"] = "p号：37805413,个人ID:542147",
+	
 	["qianyi"] = "迁移",
 	[":qianyi"] = "其他角色的回合开始时，你可以将你装备区里的一张牌置于其装备区里（可替换装备区里的牌）。若如此做，你回复1点体力，令其跳过此回合的一个你选择的阶段。",
 	["@qianyi"]= "你可以发动“迁移”， 将装备区的一张牌移动到<font color=\"#FF8000\"><b>%src </b></font>的装备区",
@@ -104,6 +120,9 @@ return {
 	["!yuka_old"]= "旧作幽香",
 	["yuka_old"]= "幽香",
 	["#yuka_old"] = "妖怪小姐" ,
+	["illustrator:yuka_old"] = "くろぬこネーロ",
+	["origin:yuka_old"] = "p号：32809829,个人ID:335493",
+	
 	["youyue"] = "幽月",
 	[":youyue"] = "<font color=\"blue\"><b>锁定技，</b></font>当你使用【杀】或普通锦囊牌指定目标后，除你以外的目标角色依次弃置一张手牌并令你选择一项：展示一张与之类别相同手牌，或此牌对其无效。",
 	["#youyue"] = "%from 对 %to 使用%arg2，并触发了“%arg”效果 ",
@@ -121,6 +140,8 @@ return {
 	["gengetsumugetsu"] = "幻月 & 梦月" ,
 	["&gengetsumugetsu"] = "幻月梦月" ,
 	["#gengetsumugetsu"] = "女仆 & 恶魔" ,
+	["illustrator:gengetsumugetsu"] = "べらぼう",
+	["origin:gengetsumugetsu"] = "p号：54503236,个人ID:6259229",
 	["huantong"] = "幻痛",
 	[":huantong"] = "当你攻击范围内的一名角色受到伤害时，若伤害值为1，你可以选择一项：将牌堆顶的一张牌扣置于人物牌上，称为“梦幻”；或展示两张“梦幻”，令其获得其中的基本牌并将其余的置入弃牌堆，然后将伤害值改为X点（X为基本牌数）。",
 	["@huantong"] = "你可以发动“幻痛”，展示两张“梦幻”，修改 <font color=\"#FF8000\"><b>%src </b></font> 受到的伤害。 （直接点取消为增加一张“梦幻”） ",
@@ -134,6 +155,9 @@ return {
 	--pc98005 艾丽
 	["elly"] = "艾丽" ,
 	["#elly"] = "馆的门卫" ,
+	["illustrator:elly"] = "菊月",
+	["origin:elly"] = "p号：43923582,个人ID:429883",
+	
 	["lianmu"] = "镰幕",
 	[":lianmu"] = "当你使用【杀】结算完毕后，若此【杀】未造成伤害，你可以视为使用【杀】，此【杀】无距离限制，且可以额外指定一名其他角色为目标。<font color=\"green\"><b>每阶段限一次。</b></font>",
 	["@lianmu"] = "你可以发动“镰幕”视为使用【杀】",
@@ -145,6 +169,9 @@ return {
 	--pc98001 神绮 势力：旧 4血
 	["shinki"] = "神绮" ,
 	["#shinki"] = "魔界之神" ,
+	["illustrator:shinki"] = "Vetina",
+	["origin:shinki"] = "p号：13059449,个人ID:516980",
+	
 	["sqchuangshi"] = "创世",
 	[":sqchuangshi"] = "出牌阶段开始时，你可以选择至少一名角色，直到其中一名角色造成伤害为止，这些角色依次可以使用一张牌。", 
 	["@sqchuangshi"] = "“创世”： 你可以选择任意名角色，这些角色可以使用一张牌";
@@ -160,6 +187,9 @@ return {
 	["alice_old"] = "旧作爱丽丝",
 	["#alice_old"] = "死之少女" ,
 	["&alice_old"] = "爱丽丝" ,
+	["illustrator:alice_old"] = " MAKI",
+	["origin:alice_old"] = "p号：15034012,个人ID:1251",
+	
 	["modian"] = "魔典",
 	[":modian"] = "<font color=\"green\"><b>每名角色的出牌阶段限一次，</b></font>其可以将一张黑色手牌置于你的人物牌上，称为“魔典”。然后若“魔典”数大于你的体力值，你将一张“魔典”置入弃牌堆并选择一项：回复1点体力，或摸一张牌。", 
 	["modian_attach"] = "魔典给牌",
