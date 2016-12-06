@@ -123,6 +123,8 @@ public:
 
     int getSeat() const;
     void setSeat(int seat);
+    int getInitialSeat() const;
+    void setInitialSeat(int seat);
     bool isAdjacentTo(const Player *another) const;
     QString getPhaseString() const;
     void setPhaseString(const QString &phase_str);
@@ -300,6 +302,7 @@ private:
     bool role_shown;
     QString state;
     int seat;
+    int initialSeat;//for record
     bool alive;
 
     Phase phase;

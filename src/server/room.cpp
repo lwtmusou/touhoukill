@@ -3163,6 +3163,12 @@ void Room::adjustSeats()
         player_circle << player->objectName();
 
     doBroadcastNotify(S_COMMAND_ARRANGE_SEATS, JsonUtils::toJsonArray(player_circle));
+    
+    //record initial seat
+    foreach(ServerPlayer *player, m_players) {
+        if (player->getInitialSeat() == 0)
+            player->setInitialSeat(player->getSeat());
+    }
 }
 
 int Room::getCardFromPile(const QString &card_pattern)
@@ -6531,29 +6537,34 @@ bool Room::roleStatusCommand(ServerPlayer *player)
     return true;
 }
 
+#include <QFileDialog>
 void Room::saveWinnerTable(const QString &winner)
 {
     QString mode = Config.GameMode;
     if (mode.endsWith("1v1") || mode.endsWith("1v3") || mode == "06_XMode")
         return;
     //mode.contains("_mini_")  mode == "custom_scenario"
+    
+    //check human players
+    int count = 0;
+    foreach(ServerPlayer *p, getAllPlayers(true)) {
+        if (p->getState() != "robot")
+            count++;
+    }
+    if (count < getAllPlayers(true).length() / 2)
+        return;
 
-    QFile file("etc/winner.txt");
+    QString location = "etc/winner/";
+    if (!QDir(location).exists())
+        QDir().mkdir(location);
+
+    location.append(QDateTime::currentDateTime().toString("yyyyMMdd"));
+    location.append(".txt");
+    QFile file(location);
+    
     if (!file.open(QIODevice::ReadWrite))
         return;
 
-    //sort for counting initial seat
-    QList<ServerPlayer *> all;
-    for (int i = 0; i < getAllPlayers(true).length(); i++) {
-        if (getAllPlayers(true).at(i)->isLord() || !all.isEmpty())
-            all << getAllPlayers(true).at(i);
-    }
-    for (int i = 0; i < getAllPlayers(true).length(); i++) {
-        if (getAllPlayers(true).at(i)->isLord())
-            break;
-        else
-            all << getAllPlayers(true).at(i);
-    }
 
     QString line;
     QTextStream stream(&file);
@@ -6566,13 +6577,12 @@ void Room::saveWinnerTable(const QString &winner)
     line.append(QString("Date: %1 %2").arg(date).arg(time));
     line.append("\n");
     QStringList winners = winner.split("+");
-    for (int i = 0; i < all.length(); i++) {
-        ServerPlayer *p = getAllPlayers(true).at(i);
+    foreach(ServerPlayer *p, getAllPlayers(true)) {
         line.append(p->getGeneralName());
         line.append(" ");
         line.append(p->getRole());
         line.append(" ");
-        line.append(QString::number(i+1));
+        line.append(QString::number(p->getInitialSeat()));
         line.append(" ");
         if (p->getState() != "robot")
             line.append("human");
@@ -6585,10 +6595,9 @@ void Room::saveWinnerTable(const QString &winner)
             line.append("lose");
         line.append("\n");
     }
-    
+
     
     stream << line;
     file.close();
-
-    return;        
+     
 }
