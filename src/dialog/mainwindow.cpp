@@ -95,7 +95,7 @@ MainWindow::MainWindow(QWidget *parent)
         QString bgm = "audio/title/main.ogg";
         if (QFile::exists(bgm)) {
             Audio::stopBGM();
-            Audio::playBGM(bgm);
+            Audio::playBGM(bgm, true, true);
             Audio::setBGMVolume(Config.BGMVolume);
         }
     }

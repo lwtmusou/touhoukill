@@ -2965,7 +2965,7 @@ void Room::run()
     // initialize random seed for later use
     qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
     Config.AIDelay = Config.OriginAIDelay;
-    Audio::stopBGM();
+    //Audio::stopBGM();
     foreach (ServerPlayer *player, m_players) {
         //Ensure that the game starts with all player's mutex locked
         player->drainAllLocks();

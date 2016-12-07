@@ -1730,7 +1730,7 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 void RoomScene::chooseGeneral(const QStringList &generals)
 {
-    Audio::stopBGM();
+    //Audio::stopBGM();
     QApplication::alert(main_window);
     if (!main_window->isActiveWindow())
         Sanguosha->playSystemAudioEffect("prelude");
@@ -3245,7 +3245,7 @@ void RoomScene::onGameOver()
         win_effect = "win";
         foreach (const Player *player, ClientInstance->getPlayers()) {
             if (player->property("win").toBool() && player->getGeneralName().contains("caocao")) {
-                Audio::stop();
+                Audio::stopAll();
                 win_effect = "win-cc";
                 break;
             }
@@ -5150,7 +5150,6 @@ void RoomScene::setLordBGM(QString lord)
     }
 
     Audio::playBGM(bgm_path);
-
     Audio::setBGMVolume(Config.BGMVolume);
 
 
