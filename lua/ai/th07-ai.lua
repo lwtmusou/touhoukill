@@ -16,9 +16,6 @@ sgs.ai_skill_playerchosen.sidie = function(self, targets)
 	end
 
 
-	--local dummy_damage=sgs.DamageStruct(slash, sidie, p, 1, sgs.DamageStruct_Normal)
-	--local final_damage=self:touhouDamage(dummy_damage,sidie, p)
-
 	return nil
 end
 sgs.ai_playerchosen_intention.sidie = 30
@@ -128,7 +125,6 @@ sgs.ai_skill_discard.jingjie = function(self)
 end
 
 
---sgs.ai_choicemade_filter.cardChosen.sisheng = -50
 
 sgs.ai_skill_cardask["@sisheng-invoke"] = function(self)
 	local who = self.room:getCurrentDyingPlayer()

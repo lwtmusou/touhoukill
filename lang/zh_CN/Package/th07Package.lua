@@ -6,9 +6,11 @@ return
 	--yym001  势力：妖 4血
 	["yuyuko"] = "西行寺幽幽子",
 	["#yuyuko"] = "华胥的亡灵",
+	["designer:yuyuko"] = "星野梦美☆",
+	
 	["illustrator:yuyuko"] = "uni8",
 	["illustrator:yuyuko_1"] = "伊神",
-	["origin:yuyuko_1"] = "p号：37042965，个人ID：7563462", --原作者已经退p站
+	["origin:yuyuko_1"] = "p号：37042965，个人ID：7563462", 
 	["illustrator:yuyuko_2"] = "カズ",
 	["origin:yuyuko_2"] = "p号：12369257，个人ID：137496",
 	["illustrator:yuyuko_3"] = "桜",
@@ -17,6 +19,7 @@ return
 	["origin:yuyuko_4"] = "p号：20179063，个人ID：154634",
 	["illustrator:yuyuko_5"] = "栗",
 	["origin:yuyuko_5"] = "p号：41565155，个人ID：36168",
+	
 	["sidie"] = "死蝶",
 	[":sidie"] = "当你使用【杀】对目标角色造成伤害时，你可令其视为对你指定的一名角色使用【杀】，若如此做，你防止此伤害并摸两张牌。<font color=\"green\"><b>每阶段限一次。</b></font>",
 	["@sidie"] = "指定一名角色，防止你对<font color=\"#00FF00\"><b>%src </b></font>造成的伤害，视为<font color=\"#00FF00\"><b>%src </b></font> 对你指定的角色使用【杀】。" ,
@@ -28,18 +31,21 @@ return
 	--yym002  势力：妖 3血
 	["yukari"]= "八云紫",
 	["#yukari"]= "潜藏于境界中的妖怪",
+	["designer:yukari"] = "星野梦美☆",
+	
 	["illustrator:yukari"] = "shinia",
-	["origin:yukari"] = "p号：35803665，个人ID：44778", --(台湾)
+	["origin:yukari"] = "p号：35803665，个人ID：44778", 
 	["illustrator:yukari_1"] = "An2A",
 	["origin:yukari_1"] = "个人ID：173876",
 	["illustrator:yukari_2"] = "会帆",
-	["origin:yukari_2"] = "p号：29181595，个人ID：146732", --（作者明确表态可用）
+	["origin:yukari_2"] = "p号：29181595，个人ID：146732", 
 	["illustrator:yukari_3"] = "オード",
 	["origin:yukari_3"] = "p号：45718515，个人ID：16791",
 	["illustrator:yukari_4"] = "カズ",
 	["origin:yukari_4"] = "p号：32199814，个人ID：137496",
 	["illustrator:yukari_5"] = "el-zheng",
 	["origin:yukari_5"] = "p号：4624786，个人ID：142066",
+	
 	["jingjie"]= "境界",
 	[":jingjie"]= "摸牌阶段摸牌后或每当你受到1点伤害后，你可以摸一张牌，然后将一张手牌置于人物牌上，称为“境界”。",
 	["jingjie_exchange"]= "将一张手牌作为“境界”置于你的人物牌上。",
@@ -57,15 +63,18 @@ return
 	--yym003  势力：妖 3血
 	["ran"]= "八云蓝",
 	["#ran"]= "境界妖怪的式神",
+	["designer:ran"] = "星野梦美☆",
+	
 	["illustrator:ran"] = "風見鴉",
-	["origin:ran"] = "p号：15783828，个人ID：7435",-- (作者表态可以用)
+	["origin:ran"] = "p号：15783828，个人ID：7435",
 	["illustrator:ran_1"] = "akeboshi kagayo (p号:)",
 	["illustrator:ran_2"] = "ryosios",
-	["origin:ran_2"] = "p号：19945874，个人ID：1508165", --（作者表态可用）
+	["origin:ran_2"] = "p号：19945874，个人ID：1508165", 
 	["illustrator:ran_3"] = "NAbyssor",
 	["origin:ran_3"] = "p号：7824041，个人ID：467511",
 	["illustrator:ran_4"] = "もねてぃ",
 	["origin:ran_4"] = "p号：43359730，个人ID：3066815",
+	
 	["zhaoliao"]= "照料",
 	[":zhaoliao"]= "每当其他角色受到伤害后，你可以将至少一张牌交给该角色，选择一项：你摸一张牌，或令其可以将一张手牌当【无中生有】使用。",
 	["@zhaoliao"]= "你可以发动“照料”，将至少一张牌交给<font color=\"#00FF00\"><b> %src </b></font>",
@@ -81,18 +90,21 @@ return
 	--yym004  势力：妖 4血
 	["youmu"] = "魂魄妖梦",
 	["#youmu"] = "半分虚幻的庭师",
+	["designer:youmu"] = "三国有单",
+	
 	["illustrator:youmu"] = "ideolo",
-	["origin:youmu"] = "p号：17185841，个人ID：61513", --（国人）
+	["origin:youmu"] = "p号：17185841，个人ID：61513", 
 	["illustrator:youmu_1"] = "リリア",
 	["origin:youmu_1"] = "p号：20186464，个人ID：997454",
 	["illustrator:youmu_2"] = "6U",
-	["origin:youmu_2"] = "p号：9865392，个人ID：94883",-- (第一条禁止 第三条 允许 好矛盾。。。)
+	["origin:youmu_2"] = "p号：9865392，个人ID：94883",
 	["illustrator:youmu_3"] = "saki",
 	["origin:youmu_3"] = "p号：31353307，个人ID：1903735",
 	["illustrator:youmu_4"] = "daiaru",
 	["origin:youmu_4"] = "p号：34625332，个人ID：711526",
 	["illustrator:youmu_5"] = "へんき",
 	["origin:youmu_5"] = "p号：39828576，个人ID：2557806",
+	
 	["shuangren"] = "双刃",
 	[":shuangren"] = "你使用【杀】可以额外（无距离限制）指定一名角色为目标。",
 	["zhanwang"] = "斩妄",
@@ -105,6 +117,8 @@ return
 	["prismriver"]= "普莉兹姆利巴三姐妹",
 	["&prismriver"]= "骚灵乐团",
 	["#prismriver"]= "骚灵乐团",
+	["designer:prismriver"] = "星野梦美☆",
+	
 	["illustrator:prismriver"] = "桜井天智",
 	["origin:prismriver"] = "p号：6753458，个人ID：1218861",
 	["illustrator:prismriver_1"] = "ke-ta",
@@ -115,12 +129,13 @@ return
 	["origin:prismriver_3"] = "p号：23504639，个人ID：10210",
 	["illustrator:prismriver_4"] = "風太郎",
 	["origin:prismriver_4"] = "p号：16810088，个人ID：1808291",
+	
 	["xiezou"] = "协奏",
-	[":xiezou"] = "出牌阶段结束时，若你于此阶段内使用的最后的牌为【杀】或【桃】或普通锦囊牌，你可以视为使用一张与此牌名称相同且属性相同的牌。",
+	[":xiezou"] = "出牌阶段结束时，若你于此阶段内使用的最后的牌为【杀】或【桃】或普通锦囊牌，你可以视为使用与此牌名称相同且属性相同的牌。",
 	["@xiezou"]= "此阶段内你使用的最后的牌为【%src】，你可以发动“协奏”，视为你使用一张与此牌名称相同的牌。",
 	["~xiezou"]= "若此牌需要指定目标，你先指定目标，再确定。",
 	["hesheng"] = "和声",
-	[":hesheng"] = "<font color=\"blue\"><b>锁定技，</b></font>每当你受到伤害时，若场上有延时锦囊牌，防止此伤害。",
+	[":hesheng"] = "<font color=\"blue\"><b>锁定技，</b></font>当你受到伤害时，若场上有延时锦囊牌，防止此伤害。",
 	["#hesheng"] = "场上有延时锦囊牌， %from 的技能 “%arg” 被触发, %from 防止了 %arg2 点伤害。",
 
 --***********************************
@@ -128,6 +143,8 @@ return
 	["alice"]="爱丽丝",
 	["#alice"]= "七色的人偶使",
 	["!alice"]="爱丽丝•玛格特罗依德",
+	["designer:alice"] = "星野梦美☆",
+	
 	["illustrator:alice"] = "An2A",
 	["origin:alice"] = "个人ID：173876",
 	["illustrator:alice_1"] = "葉庭",
@@ -135,11 +152,12 @@ return
 	["illustrator:alice_2"] = "non",
 	["origin:alice_2"] = "p号：5402342，个人ID：19068",
 	["illustrator:alice_3"] = "sayori",
-	["origin:alice_3"] = "p号：15327079，个人ID：104409",--(国人)
+	["origin:alice_3"] = "p号：15327079，个人ID：104409",
 	["illustrator:alice_4"] = "鶴亀",
 	["origin:alice_4"] = "p号：39786186，个人ID：55875",
 	["illustrator:alice_5"] = "藍·Hallelujah",
 	["origin:alice_5"] = "p号：34362905，个人ID：142290",
+	
 	["zhanzhen"]= "战阵",
 	[":zhanzhen"]= "你可以将一张装备牌当【杀】或【闪】使用或打出。当此牌置入弃牌堆后，你可令一名其他角色获得之。",
 	["@zhanzhen"] = "你可以将发动“战阵”的牌 <font color=\"#FF8000\"><b>%dest </b></font>  交给一名其他角色",
@@ -150,6 +168,8 @@ return
 	--yym007  势力：妖 3血
 	["chen"] = "橙",
 	["#chen"] = "凶兆的黑猫",
+	["designer:chen"] = "星野梦美☆",
+	
 	["illustrator:chen"] = "An2A",
 	["origin:chen"] = "个人ID：173876",
 	["illustrator:chen_1"] = "池田ピロウ",
@@ -158,6 +178,7 @@ return
 	["origin:chen_2"] = "个人ID：173876",
 	["illustrator:chen_3"] = "Sw",
 	["origin:chen_3"] = "p号：7631745，个人ID：41099",
+	
 	["shishen"] = "式神",
 	[":shishen"] = "出牌阶段开始时，若你没有“式”标记，你可以获得一枚“式”标记。准备阶段开始时或每当你受到伤害后，你可以弃所有“式”标记。",
 	["shishen1"]= "弃所有“式”标记",
@@ -167,7 +188,7 @@ return
 	["#yexing_vine"] = "野性",
 	[":yexing"] = "<font color=\"blue\"><b>锁定技，</b></font>若你没有“式”标记，你不能使用普通锦囊牌，普通【杀】、【南蛮入侵】、【万箭齐发】对你无效，你的攻击范围+1。",
 	["yaoshu"] = "妖术",
-	[":yaoshu"] = "当你使用手牌中的普通锦囊牌（【无懈可击】除外）结算后，你可以视为使用一张与此牌名称相同的牌。",
+	[":yaoshu"] = "当你使用手牌中的普通锦囊牌（【无懈可击】除外）结算后，你可以视为使用与此牌名称相同的牌。",
 	["@yaoshu"]= "你可以发动“妖术”，视为你使用一张【%src】。",
 	["~yaoshu"]= "若此牌需要指定目标，你先指定目标，再确定。",
 
@@ -176,6 +197,8 @@ return
 	["letty"]="蕾迪",
 	["#letty"]= "冬季的遗忘之物",
 	["!letty"]="蕾迪·霍瓦特罗克",
+	["designer:letty"] = "星野梦美☆",
+	
 	["illustrator:letty"] = "JQ3C273!",
 	["origin:letty"] = "p号：3590936，个人ID：431033",--(国人)
 	["illustrator:letty_1"] = "伍長",
@@ -184,22 +207,26 @@ return
 	["origin:letty_2"] = "p号：46533796，个人ID：3682550",
 	["illustrator:letty_3"] = "猫水瀬",
 	["origin:letty_3"] = "p号：41617791，个人ID：3682550",
+	
 	["jiyi"]= "记忆",
 	[":jiyi"]= "当你翻面后，你可以摸两张牌，然后你可以将一至两张手牌交给一至两名其他角色。",
 	["jiyi_give"] = "【记忆】：你还可以将至多两张手张牌交给一名角色。",
 	["chunmian"]= "春眠",
-	[":chunmian"]= "<font color=\"blue\"><b>锁定技，</b></font>结束阶段开始时，你须翻面。",
+	[":chunmian"]= "<font color=\"blue\"><b>锁定技，</b></font>结束阶段开始时，你翻面。",
 
 --***********************************
 	--yym009  势力：妖 3血
 	["lilywhite"] = "莉莉怀特",
 	["#lilywhite"] = "带来春天的妖精",
+	["designer:lilywhite"] = "星野梦美☆",
+	
 	["illustrator:lilywhite"] = "c7肘",
-	["origin:lilywhite"] = "个人ID：217707",--(国人,表态可以)
+	["origin:lilywhite"] = "个人ID：217707",
 	["illustrator:lilywhite_1"] = "Cloudy.R",
-	["origin:lilywhite_1"] = "p号：33026830，个人ID：800504",--(国人)
+	["origin:lilywhite_1"] = "p号：33026830，个人ID：800504",
 	["illustrator:lilywhite_2"] = "能義たか好",
 	["origin:lilywhite_2"] = "p号：35653997，个人ID：1067404",
+	
 	["baochun"] = "报春",
 	[":baochun"] = "当你受到伤害后，你可令一名角色摸X张牌（X为你已损失的体力值）。",
 	["@baochun"] = "指定一名角色，该角色摸 %src 张牌",
@@ -210,12 +237,15 @@ return
 	--yym010  势力：妖 3血
 	["shanghai"] = "上海人形" ,
 	["#shanghai"] = "人偶使的手足" ,
+	["designer:shanghai"] = "星野梦美☆",
+	
 	["illustrator:shanghai"] = "もちき",
 	["origin:shanghai"] = "p号：3338979，个人ID：3338979",
 	["illustrator:shanghai_1"] = "もちき",
 	["origin:shanghai_1"] = "p号：26892845，个人ID：3338979",
 	["illustrator:shanghai_2"] = "光華",
 	["origin:shanghai_2"] = "p号：25041883，个人ID：1708123",
+	
 	["zhancao"] = "战操" ,
 	[":zhancao"] = "当你或你攻击范围内的一名角色成为【杀】的目标后，你可令此【杀】对其无效，然后你选择一项：弃置一张装备牌，或失去1点体力。" ,
 	["@zhancao-discard"] = "“战操”：请弃置一张装备牌，否则失去1点体力。" ,
@@ -228,12 +258,15 @@ return
 	["yukari_sp"] = "SP千年紫",
 	["&yukari_sp"] = "千年紫",
 	["#yukari_sp"] = "千年前的妖怪",
+	["designer:yukari_sp"] = "星野梦美☆",
+	
 	["illustrator:yukari_sp"] = "ファルまろ",
 	["origin:yukari_sp"] = "p号：41579000，个人ID：1218472",
 	["illustrator:yukari_sp_1"] = "千嗣",
 	["origin:yukari_sp_1"] = "p号：19674598，个人ID：258097",
 	["illustrator:yukari_sp_2"] = "ideolo",
 	["origin:yukari_sp_2"] = "p号：10250212，个人ID：61513",
+	
 	["shenyin"] = "神隐",
 	[":shenyin"] = "当你对有牌的角色造成伤害时，你可以防止此伤害，并依次将其两张牌置于人物牌上，称为“隐”。",
 	["yin_mark"] = "隐",
@@ -246,13 +279,16 @@ return
 	["yuyuko_sp"]="SP千年幽幽子",
 	["&yuyuko_sp"]="千年幽幽子",
 	["#yuyuko_sp"]= "千年前的舞姬",
---["designer:yuyuko_sp"] = "星野梦美 | 程序:fsu0413",
+	["designer:yuyuko_sp"] = "星野梦美☆",
+	
 	["illustrator:yuyuko_sp"] = "めっこ",
 	["origin:yuyuko_sp"] = "p号：10128798，个人ID：814762",
 	["illustrator:yuyuko_sp_1"] = "えふぇ",
-	["origin:yuyuko_sp_1"] = "p号：38910128，个人ID：292644", --（作者说明非合同绘 非商业可用）
+	["origin:yuyuko_sp_1"] = "p号：38910128，个人ID：292644",
 	["illustrator:yuyuko_sp_2"] = "irua",
 	["origin:yuyuko_sp_2"] = "p号：3888300，个人ID：484261",
+	
+	
 	["youqu"]= "幽曲",
 	[":youqu"]= "<font color=\"blue\"><b>锁定技，</b></font>结束阶段开始时，你将牌堆顶的一至三张牌扣置于人物牌上，称为“死灵”。准备阶段开始时，若“死灵”数不小于2，你获得所有“死灵”并对你造成1点伤害。",
 	["#silinggain"]= "%from 收回了人物牌上的 %arg2 张 “%arg”牌",
@@ -270,25 +306,30 @@ return
 	["youmu_slm"] = "神灵庙SP妖梦",
 	["&youmu_slm"] = "神灵庙妖梦",
 	["#youmu_slm"] = "死欲的半灵",
+	["designer:youmu_slm"] = "星野梦美☆",
+	
 	["illustrator:youmu_slm"] = "alcd",
 	["origin:youmu_slm"] = "p号：14362406，个人ID：2334059",
 	["illustrator:youmu_slm_1"] = "竜徹",
 	["origin:youmu_slm_1"] = "p号：5976425，个人ID：63354",
 	["illustrator:youmu_slm_2"] = "さざなみみぉ",
 	["origin:youmu_slm_2"] = "p号：13635722，个人ID：1092517",
+	
 	["hpymsiyu"] = "死欲",
-	[":hpymsiyu"] = "<font color=\"blue\"><b>锁定技，</b></font>当你的体力值于你的回合外扣减至低于体力下限后，你不进入濒死状态，你翻至正面朝上，将你判定区里的所有牌置入弃牌堆，然后终止一切结算，当前回合结束。并在此回合结束后进行一个额外的回合。此额外回合结束时，若你的体力值为0，你进入濒死状态。<br /><br />" ..
+	[":hpymsiyu"] = "<font color=\"blue\"><b>锁定技，</b></font>当你的体力值于你的回合外扣减至低于体力下限后，你不进入濒死状态，你翻至正面朝上，将你判定区里的牌置入弃牌堆，终止一切结算，当前回合结束。此回合结束后进行一个额外的回合。该额外回合结束时，若你的体力值为0，你进入濒死状态。<br /><br />" ..
 					"♦此技能可以突破无法多重执行额外回合效果的限制进行额外回合。",
 	["juhe"] = "居合",
 	[":juhe"] = "摸牌阶段摸牌时，你可以多摸三张牌，然后弃置X张手牌（X为你的体力值）。",
 	["juhe_discard"]= "“居合”：请弃置 %src 张手牌",
 
 
-	--yym014
+--***********************************
+	--yym014 势力：妖 4血
 	["ran_sp"] = "九尾妖狐SP蓝" ,
 	["&ran_sp"] = "九尾蓝",
 	["#ran_sp"] = "妖兽的顶点" ,
 	["designer:ran_sp"] = "辰焰天明",
+	
 	["illustrator:ran_sp"] = "",
 	["origin:ran_sp"] = "p号：,个人ID:",
 	
@@ -301,12 +342,15 @@ return
 	["jixiong1"] = "吉凶(回血)" ,
 	["jixiong2"] = "吉凶(伤害)" ,
 
-	--yym015
+--***********************************
+	--yym015 势力：妖 4血
 	["youki"] = "魂魄妖忌" ,
 	["#youki"] = "先代庭师" ,
 	["designer:youki"] = "辰焰天明",
+	
 	["illustrator:youki"] = "砂雲",
 	["origin:youki"] = "p号：1779336,个人ID:295604",
+	
 	["shoushu"] = "授术" ,
 	[":shoushu"] = "当你使用或打出的基本牌置入弃牌堆后，你可令一名其他角色获得之，然后其弃置一张手牌。",
 	["@shoushu"] = "你可以发动“授术”， 将使用/打出的 %src  交给一名其他角色" ,
@@ -314,13 +358,16 @@ return
 	["yujian"] = "御剑",
 	[":yujian"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以与一名角色拼点，当你赢后，你将所有拼点牌当【杀】对其使用。",
 
-	--yym016
+--***********************************
+	--yym016 势力：妖 3血
 	["!leira"] = "蕾拉·普利兹姆莉巴" ,
 	["leira"] = "蕾拉",
 	["#leira"] = "魔法歌唱家",
 	["designer:leira"] = "辰焰天明",
+	
 	["illustrator:leira"] = "",
 	["origin:leira"] = "p号：,个人ID:",
+	
 	["huayin"] = "华音" ,
 	[":huayin"] = "当你需要使用【桃】时，你可以展示所有手牌，若如此做，你将其中的所有非基本牌当【桃】使用。此【桃】结算完毕后，你将所有手牌当【无中生有】使用。" ,
 	["huanling"] = "唤灵",

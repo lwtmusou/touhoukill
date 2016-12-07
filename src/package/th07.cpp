@@ -408,43 +408,13 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-
         ServerPlayer *player = data.value<DamageStruct>().to;
         ServerPlayer *ran = invoke->invoker;
-        //ExNihilo *exnihilo = new ExNihilo(Card::SuitToBeDecided, -1);
-#pragma message WARN("todo_Fs: port the getExpandPile() function from V2")
-
-        /*if (player->isKongcheng()) {
-            bool expand_pile = false;
-            if (!player->getPile("wooden_ox").isEmpty())
-                expand_pile = true;
-            if (player->hasSkill("shanji") && !player->getPile("piao").isEmpty())
-                expand_pile = true;
-            if (!expand_pile)
-                choice = "zhaoliao1";
-        } else if (player->isCardLimited(exnihilo, Card::MethodUse, true))
-            choice = "zhaoliao1";
-        else */
         QString choice = room->askForChoice(ran, objectName(), "zhaoliao1+zhaoliao2");
-
-        if (choice == "zhaoliao1") {
-            // memory leak!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            //delete exnihilo;
+        if (choice == "zhaoliao1")
             ran->drawCards(1);
-        } else {
+        else
             room->askForUseCard(player, "@@zhaoliaoVS", "zhaoliaouse");
-            /*if (!room->askForUseCard(player, "@@zhaoliaoVS!", "zhaoliaouse")) {
-                QList<int> handcards = player->handCards();
-                handcards << player->getPile("wooden_ox");
-                if (player->hasSkill("shanji"))
-                    handcards << player->getPile("piao");
-                exnihilo->addSubcard(handcards.value(qrand() % handcards.length()));
-                exnihilo->setSkillName("_zhaoliao");
-                room->useCard(CardUseStruct(exnihilo, player), true);
-            } else
-                delete exnihilo;*/
-        }
-
         return false;
     }
 };
