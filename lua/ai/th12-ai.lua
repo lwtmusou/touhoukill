@@ -87,12 +87,6 @@ sgs.ai_skill_invoke.fahua_change = function(self,data)
 			end
 		end
 	end
-	--if self:hasTrickEffective(use.card, self.player, use.from) then
-	--  return true
-	--end
-	--if self:hasSkill("weizhuang") and use.from:isKongcheng() then
-	--  return true
-	--end
 
 	if self:isWeak(lord) then
 		return true
@@ -131,24 +125,6 @@ function weizhi_skill.getTurnUseCard(self)
 	if not self.player:hasUsed("WeizhiCard") then
 		return sgs.Card_Parse("@WeizhiCard=.")
 	end
-	--[[if self.player:hasUsed("WeizhiCard") then return nil end
-	local handcards = sgs.QList2Table(self.player:getHandcards())
-	if #handcards==0 then return nil end
-	self:sortByUseValue(handcards)
-	changes={}
-	for _,c in pairs (handcards) do
-		if not c:isKindOf("TrickCard") then
-			table.insert(changes,c)
-		end
-	end
-	if #changes>1 then
-		use_cards={}
-		table.insert(use_cards,changes[1]:getId())
-		table.insert(use_cards,changes[2]:getId())
-		--return sgs.Card_Parse("#weizhi:" .. table.concat(use_cards, "+") .. ":")
-		return sgs.Card_Parse("@WeizhiCard=" .. table.concat(use_cards, "+") )
-	end
-	return nil]]
 end
 
 sgs.ai_skill_use_func.WeizhiCard = function(card, use, self)
@@ -263,15 +239,8 @@ sgs.ai_skill_use_func.WeizhiCard = function(card, use, self)
 	end
 
 	if #use_cards > 0 then
-		--if self.room:getMode() == "02_1v1" and sgs.GetConfig("1v1/Rule", "Classical") ~= "Classical" then
-		--  local use_cards_kof = { use_cards[1] }
-		--  if #use_cards > 1 then table.insert(use_cards_kof, use_cards[2]) end
-		--  use.card = sgs.Card_Parse("@WeizhiCard=" .. table.concat(use_cards_kof, "+"))
-		--  return
-		--else
 			use.card = sgs.Card_Parse("@WeizhiCard=" .. table.concat(use_cards, "+"))
 			return
-		--end
 	end
 end
 
@@ -339,107 +308,6 @@ sgs.ai_trick_prohibit.weizhuang = function(self, from, to, card)
 end
 
 
---[[sgs.ai_skill_playerchosen.jinghua = function(self, targets)
-
-	local current=self.player:getRoom():getCurrent()
-	local list1={}
-	local list2={}
-	local list3={}
-	local jinghua_target
-
-	if current:objectName()~=self.player:objectName()
-		and self.player:getHp()<2 then return nil end
-
-	for _,target in sgs.qlist(targets) do
-		if target:getCards("j"):length()>0  then
-			for _,card in sgs.qlist(target:getCards("j")) do
-				if card:isKindOf("Indulgence") and self:isFriend(target) then
-						table.insert(list1,target:objectName())
-						if current:objectName()==target:objectName() then
-							jinghua_target=target
-						end
-				elseif card:isKindOf("SupplyShortage") and self:isFriend(target) then
-						table.insert(list2,target:objectName())
-						if current:objectName()==target:objectName() then
-							jinghua_target=target
-						end
-				elseif  card:isKindOf("Lightning") and not self:invokeTouhouJudge() then
-							table.insert(list3,target:objectName())
-						if current:objectName()==target:objectName() then
-							jinghua_target=target
-						end
-				end
-			end
-		end
-	end
-	if #list1==0 and  #list2==0 and #list3==0 then return nil end
-
-
-	if not jinghua_target then
-		for _,target in sgs.qlist(targets) do
-			if (table.contains(list1,target:objectName()) and table.contains(list2,target:objectName())) or
-			(table.contains(list1,target:objectName()) and table.contains(list3,target:objectName()))
-			or  (table.contains(list2,target:objectName()) and table.contains(list3,target:objectName())) then
-				jinghua_target=target
-			end
-		end
-	end
-
-
-	if not jinghua_target then
-		if current:objectName()==self.player:objectName() then
-			if #list3>0 then
-				jinghua_target=  findPlayerByObjectName(self.room, list3[1])
-			end
-			if #list2>0 then
-				jinghua_target= findPlayerByObjectName(self.room, list2[1])
-			end
-			if #list1>0 then
-				jinghua_target= findPlayerByObjectName(self.room, list1[1])
-			end
-		end
-	end
-
-
-	if jinghua_target and jinghua_target:faceUp() then
-		for _,card in sgs.qlist(jinghua_target:getCards("j")) do
-			if card:isKindOf("SupplyShortage") or card:isKindOf("Indulgence")
-			or (card:isKindOf("Lightning") and not self:invokeTouhouJudge())then
-				self.player:setTag("jinghua_id",sgs.QVariant(card:getId()))
-				break
-			end
-		end
-		return jinghua_target
-	else
-		return nil
-	end
-end
-
-sgs.ai_skill_cardchosen.jinghua = function(self, who, flags)
-	local id =self.player:getTag("jinghua_id"):toInt()
-	self.player:removeTag("jinghua_id")
-	return sgs.Sanguosha:getCard(id)
-end
-
-sgs.ai_no_playerchosen_intention.jinghua =function(self, from)
-
-	local lord =self.room:getLord()
-	if lord and from:getPhase() ~=sgs.Player_NotActive then
-		if lord:containsTrick("indulgence") or lord:containsTrick("supply_shortage") then
-			sgs.updateIntention(from, lord, 10)
-		end
-	end
-end
-
-sgs.ai_choicemade_filter.cardChosen.jinghua = sgs.ai_choicemade_filter.cardChosen.dismantlement
-
-sgs.ai_trick_prohibit.jinghua = function(self, from, to, card)
-	if not card:isKindOf("DelayedTrick")  then return false end
-	if self:isFriend(from,to) then return false end
-	return true
-end
-]]
-
 --function SmartAI:hasTrickEffective(card, to, from) ??
 sgs.ai_skill_cardask["@zhengyi"] = function(self, data)
 	local use =data:toCardUse()
@@ -489,31 +357,7 @@ sgs.ai_no_playerchosen_intention.baota =function(self, from)
 	end
 end
 
---[[sgs.ai_skill_invoke.chuannan = function(self,data)
-	return true
-end
-sgs.ai_skill_use["@@chuannan"] = function(self, prompt)
-	local damage=self.player:getTag("chuannan_damage"):toDamage()
-	local target
-	if damage.to:objectName() == self.player:objectName() then
-		target =damage.from
-	else
-		target =damage.to
-	end
-	if not target then return "." end
-	if self:isFriend(target) then return "." end
-	local card = sgs.cloneCard("supply_shortage")
-	if self:touhouDelayTrickBadTarget(card,target,self.player) then
-		return "."
-	end
-	local cards = self.player:getCards("hs")
-	cards=self:touhouAppendExpandPileToList(self.player,cards)
-	cards = sgs.QList2Table(cards)
-	self:sortByUseValue(cards,true)
-	if #cards==0 then return "." end
-	return "@chuannanCard=".. cards[1]:getId() .."->" .. target:objectName()
-end
-]]
+
 sgs.ai_skill_invoke.shuinan = function(self,data)
 	local target=data:toPlayer()
 	if target and self:isEnemy(target) then
@@ -1008,76 +852,3 @@ sgs.ai_skill_cardask["@shuxin"] = function(self, data)
 	end
 	return "."
 end
---[[sgs.ai_skill_askforag.shuxin = function(self, card_ids)
-
-	local preId = -1
-	local target = self.player:getTag("shuxin_target"):toPlayer()
-	if not target then return -1 end
-
-	for _,c in sgs.qlist(target:getHandcards()) do
-		if c:isBlack() and not table.contains(card_ids, c:getId()) then
-			preId = c:getId()
-			break
-		end
-	end
-	local canShanshi = self.player:hasSkill("shanshi") and self.player:getMark("shanshi_invoke") == 0
-
-	local getBlack = function(pre_id, id_table, checksuit, samesuit)
-		local tmp, spade, club =  {}, {}, {}
-		for _,id in pairs (id_table) do
-			local c = sgs.Sanguosha:getCard(id)
-			local insert = pre_id < 0
-			if (not checksuit) then
-				insert = true
-			else
-				if (samesuit and c:getSuit() == sgs.Sanguosha:getCard(pre_id):getSuit())  or
-				(not samesuit and c:getSuit() ~= sgs.Sanguosha:getCard(pre_id):getSuit()) then
-				insert = true
-				end
-			end
-
-			if  insert then
-				table.insert(tmp, c)
-				if c:getSuit() == sgs.Card_Spade then
-					table.insert(spade, c)
-				end
-				if c:getSuit() == sgs.Card_Club then
-					table.insert(club, c)
-				end
-			end
-		end
-		return tmp, spade, club
-	end
-
-	if self:isFriend(target) and target:isWounded() then
-		local blacks, spades, clubs = getBlack(preId, card_ids, true, false)
-		if #spades == 0  and #clubs == 0 then return -1 end
-		if preId == -1 then
-			if #spades > 0 and #clubs > 0 then
-				self:sortByUseValue(spades)
-				return spades[1]:getId()
-			elseif canShanshi then
-				self:sortByUseValue(blacks)
-				return blacks[1]:getId()
-			end
-		else
-			self:sortByUseValue(blacks)
-			return blacks[1]:getId()
-		end
-	end
-
-	if self:isEnemy(target) then
-		if preId == -1 or not target:isWounded() then
-			local blacks, spades, clubs = getBlack(preId, card_ids, false, false)
-			if #spades == 0  and #clubs == 0 then return -1 end
-			self:sortByUseValue(blacks, true)
-			return blacks[1]:getId()
-		else
-			local blacks, spades, clubs = getBlack(preId, card_ids, true, true)
-			self:sortByUseValue(blacks, true)
-			return blacks[1]:getId()
-		end
-	end
-
-	return -1
-end]]

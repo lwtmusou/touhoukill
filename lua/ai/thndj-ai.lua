@@ -176,21 +176,7 @@ sgs.ai_skill_choice.fanji= function(self, choices, data)
 	end
 	return "hp"
 end
---[[sgs.ai_choicemade_filter.skillInvoke.fanji = function(self, player, args)
-	local damage = player:getTag("fanji_damage"):toDamage()
-	local to=damage.to
-	local from=damage.from
-	if from and to and from:objectName()~= to:objectName() then
-		if args[#args] == "yes" then
-		sgs.updateIntention(player, to, -50)
-		sgs.updateIntention(player, from, 50)
-		else
-		sgs.updateIntention(player, from, -10)
-		sgs.updateIntention(player, to, 20)
-		end
-	end
-end
-]]
+
 
 sgs.ai_skill_invoke.zaiwu = function(self,data)
 	local target = self.player:getTag("zaiwu"):toPlayer()

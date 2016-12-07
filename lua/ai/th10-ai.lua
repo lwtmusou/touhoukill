@@ -347,9 +347,7 @@ sgs.ai_skill_use_func.FengshenCard = function(card, use, self)
 				end
 			end
 		end
-		--for _, p in ipairs(self.friends_noself) do
-			--if self:getDamagedEffects(p, self.player) then
-		--end
+
 		if #weaks>0 and #weaksIn1 ==0 then
 			use.card = card
 			if use.to then
@@ -524,12 +522,7 @@ sgs.ai_choicemade_filter.skillInvoke.jie = function(self, player, args)
 		end
 	end
 end
---[[sgs.ai_cardneed.jie = function(to, card, self)
-	if not self:willSkipPlayPhase(to) then
-		return  (not to:getWeapon() and  getCardsNum("Weapon",to,self.player)<1 and card:isKindOf("Weapon"))
-		or (not to:getOffensiveHorse() and  getCardsNum("OffensiveHorse",to,self.player)<1 and card:isKindOf("OffensiveHorse"))
-	end
-end]]
+
 function SmartAI:canJie(player)
 	for _,p in sgs.qlist(self.room:getOtherPlayers(player)) do
 		if self:isFriend(p, player) and p:hasSkill("jie") and p:getHp() > 1  then
@@ -675,15 +668,7 @@ function jiliaoParse(self, player)
 	or self:needToThrowArmor(player) then
 		effect =true
 	end
-	--[[if player:hasSkill("mokai") then
-		local marks={"@tianyi_Weapon","@tianyi_OffensiveHorse","@tianyi_DefensiveHorse","@tianyi_Armor"}
-		for _,m in pairs(marks)do
-			if player:getMark(m)>0 then
-				effect =true
-				break
-			end
-		end
-	end]]
+
 	local ecards=player:getCards("e")
 	if  ecards:length()>0 and player:hasSkills("chunxi|xingyun") then
 		for _,c in sgs.qlist(ecards)do

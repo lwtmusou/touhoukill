@@ -1,16 +1,5 @@
 --酒貌似是使用就根本就不过useBasicCard。。。。不能通过turnuse插入card列表。。。
 --而是在使用杀的usecard function里调用的 getCardId。。。这个函数丝毫不用到getTurnUse。。。
---[[local zuiyue_skill = {}
-zuiyue_skill.name = "zuiyue"
-table.insert(sgs.ai_skills, zuiyue_skill)
-zuiyue_skill.getTurnUseCard = function(self, inclusive)
-	if self.player:hasFlag("zuiyue") then
-		local ana = sgs.cloneCard("analeptic", sgs.Card_NoSuit, 0)
-		ana:setSkillName("zuiyue")
-		assert(ana)
-		return ana
-	end
-end]]
 
 sgs.ai_cardneed.zuiyue = function(to, card, self)
 	return card:isKindOf("Slash")  or card:isKindOf("TrickCard")
@@ -221,7 +210,6 @@ sgs.ai_choicemade_filter.skillInvoke.huiwu = function(self, player, args)
 end
 sgs.ai_benefitBySlashed.huiwu = function(self, card,source,target)
 	return true
-	--return self:isFriend(source, target)
 end
 
 
@@ -366,13 +354,6 @@ sgs.ai_skill_playerchosen.toupai = function(self, targets)
 	end
 	if #enemies==0 then return nil end
 
-	--[[local compare_func = function(a, b)
-		return self:toupaiValue(a) > self:toupaiValue(b)
-	end
-	table.sort(enemies, compare_func)
-	if enemies[1] and self:toupaiValue(enemies[1])>=15 then
-		return enemies[1]
-	end]]
 	--考虑计算量 应该采用的算法
 	--因为遍历table（玩家数不多）本身的时间比较少，而计算value的时间比较多
 	--不过前提是value取值算法固定..不会因为比较的玩家发生变化而改变
@@ -897,24 +878,7 @@ table.insert(sgs.ai_skills, nianli_skill)
 nianli_skill.getTurnUseCard = function(self)
 	if self.player:hasUsed("NianliCard") then return nil end
 	if self.player:getPhase() ~= sgs.Player_Play then return nil end
-	-- local cards = self.player:getCards("hs")
 
-	-- local validCards = {}
-	-- for _,c in sgs.qlist(cards) do
-		-- local can = true
-		-- for _,id in sgs.qlist(self.player:getPile("rainbow")) do
-			-- if c:getSuit() == sgs.Sanguosha:getCard(id):getSuit() then
-				-- can = false
-				-- break
-			-- end
-		-- end
-		-- if can then
-			-- table.insert( validCards, c)
-		-- end
-	-- end
-
-	-- if #validCards == 0 then return nil end
-	-- self:sortByKeepValue(validCards)
 
 	local nianliCards = {}
 	local nianli = "slash|snatch"

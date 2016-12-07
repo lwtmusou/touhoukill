@@ -230,19 +230,6 @@ function maihuo_skill.getTurnUseCard(self)
 	end
 end
 sgs.ai_skill_use_func.MaihuoCard = function(card, use, self)
---sgs.ai_skill_use_func["#maihuo"] = function(card, use, self)
-		--[[self:sort(self.friends_noself,"handcard")
-		if #self.friends_noself >0 then
-			use.card = card
-			p =self.friends_noself[1]
-			if self:touhouHandCardsFix(p) and #self.friends_noself >1 then
-				p =self.friends_noself[2]
-			end
-			if use.to then
-				use.to:append(p)
-				if use.to:length() >= 1 then return end
-			end
-		end]]
 		local target = self:touhouFindPlayerToDraw(false, 2)
 		if not target and #self.friends_noself>0 then
 			target= self.friends_noself[1]
@@ -384,17 +371,14 @@ sgs.ai_skill_cardask["@songzang"] = function(self,data)
 	local dying = data:toDying()
 	local source = self:findRealKiller(dying.who, dying.damage)
 	local executor = self:executorRewardOrPunish(dying.who, dying.damage)
-	--[[if dying.damage and dying.damage.from then
-		source  = dying.damage.from
-	end]]
+
 	local self_role = self.player:getRole()
 	local target=self.room:getCurrentDyingPlayer()
 	local target_role=sgs.ai_role[target:objectName()]
 	local need_kill=false
 	local need_peachs = math.abs(1-target:getHp())
-	--[[if self.room:getLord():hasLordSkill("tymhwuyu") then
-		source = self.room:getLord()
-	end]]
+
+	
 	if self_role== "loyalist" or self_role =="lord" then
 		if self:isEnemy(target)  then
 			if self:getOverflow()>0 then
@@ -559,30 +543,6 @@ sgs.ai_cardneed.jiuhao = function(to, card, self)
 end
 sgs.ai_use_priority.JiuhaoCard = sgs.ai_use_priority.Slash
 
---[[local jidu_skill = {}
-jidu_skill.name = "jidu"
-table.insert(sgs.ai_skills, jidu_skill)
-jidu_skill.getTurnUseCard = function(self, inclusive)
-		local cards = self.player:getCards("hs")
-		cards=self:touhouAppendExpandPileToList(self.player,cards)
-		cards = sgs.QList2Table(cards)
-		if #cards==0 then return false end
-		self:sortByKeepValue(cards)
-		local spade_card=cards[1]
-
-		if spade_card then
-				local suit = spade_card:getSuitString()
-				local number = spade_card:getNumberString()
-				local card_id = spade_card:getEffectiveId()
-				local trick_str = ("duel:jidu[%s:%s]=%d"):format(suit, number, card_id)
-				local trick = sgs.Card_Parse(trick_str)
-
-				assert(trick)
-				return trick
-		end
-end
-sgs.ai_skill_invoke.jidu =true
-]]
 
 sgs.ai_skill_cardask["@jidu"] = function(self, data)
 	local use = data:toCardUse()

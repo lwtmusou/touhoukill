@@ -76,27 +76,7 @@ sgs.ai_skill_choice.ciyuan = function(self, choices, data)
 	end
 end
 
---[[sgs.ai_skill_invoke.shigui = function(self,data)
-	local phase = self.player:getPhase()
-	local pahseCount = self.player:getMark("shigui")
-	local diff = math.abs(pahseCount - self.player:getHandcardNum())
-	if phase == sgs.Player_Draw then
-		if  diff > 2 then
-			return true
-		elseif pahseCount - self.player:getHandcardNum() == 2 then
-			return not self:isWeak(self.player)
-		end
-	end
-	if phase == sgs.Player_Play then
-		if not self.player:isWounded() then return false end
-		if  diff <= self:getOverflow(self.player) or pahseCount <= 4 then
-			return true
-		elseif self:isWeak(self.player) and diff <= 2 then
-			return true
-		end
-	end
-	return false
-end]]
+
 sgs.ai_skill_invoke.shigui = function(self,data)
 	local phase = self.player:getPhase()
 	local pahseCount = self.player:getMark("shigui")
@@ -201,17 +181,7 @@ sgs.ai_skill_choice.shiqu = function(self, choices, data)
 	end
 	return "cancel"
 end
---[[sgs.ai_choicemade_filter.cardResponded["@shiqu-discard"] = function(self, player, args)
-	local choice = player:getTag("shiqu"):toString()
-	local current = self.room:getCurrent()
-	if args[#args] ~= "_nil_" then
-		if choice == "shiqu_discard" then
-			sgs.updateIntention(player, current, 80)
-		elseif choice == "shiqu_play" or choice == "shiqu_draw" then
-			sgs.updateIntention(player, current, -80)
-		end
-	end
-end]]
+
 sgs.ai_skill_use["@@shiqu"] = function(self, prompt)
 	local current = self.room:getCurrent()
 	local choice = self.player:getTag("shiqu"):toString()
@@ -480,54 +450,6 @@ end
 
 sgs.ai_skill_invoke.yeyan = true
 
-local menghuanvs_skill = {}
-menghuanvs_skill.name = "menghuan_attach"
-table.insert(sgs.ai_skills, menghuanvs_skill)
-menghuanvs_skill.getTurnUseCard = function(self)
-	if self.player:hasFlag("Forbidmenghuan") then return nil end
-	if self.player:getKingdom() ~="pc98" then return nil end
-
-	local cards = self.player:getCards("hs")
-	cards = sgs.QList2Table(cards)
-	local card
-	self:sortByUseValue(cards,true)
-	for _,acard in ipairs(cards)  do
-		if acard:isKindOf("TrickCard") then
-			card = acard
-			break
-		end
-	end
-	if not card then return nil end
-
-	local card_id = card:getEffectiveId()
-	local card_str ="@MenghuanCard="..card_id
-	local skillcard = sgs.Card_Parse(card_str)
-
-	assert(skillcard)
-
-	return skillcard
-end
-
-sgs.ai_skill_use_func.MenghuanCard = function(card, use, self)
-	local targets = {}
-	for _,friend in ipairs(self.friends_noself) do
-		if friend:hasLordSkill("menghuan") then
-			if not friend:hasFlag("menghuanInvoked") then
-				table.insert(targets, friend)
-			end
-		end
-	end
-
-	if #targets > 0 then
-		use.card = card
-		if use.to then
-			use.to:append(targets[1])
-			if use.to:length()>=1 then return end
-		end
-	end
-end
-
-sgs.ai_card_intention.MenghuanCard = -40
 
 sgs.ai_skill_invoke.huantong = true
 local function  huantongValue(cards, self, damage, huantongDamage)
@@ -670,7 +592,7 @@ sgs.ai_skill_use["@@sqchuangshi"] = function(self, prompt)
 	return "."
 end
 
---暂时不考虑是否使得整个创史过程继续下去，以及源法有谁能摸牌的问题。
+--暂时不考虑是否使得整个创世过程继续下去，以及源法有谁能摸牌的问题。
 sgs.ai_skill_use["BasicCard+^Jink,TrickCard+^Nullification,EquipCard|.|.|sqchuangshi"] = function(self, prompt, method)
 	local cards =  self:getCards("sqchuangshi", "hs")
 	self:sortByUseValue(cards)

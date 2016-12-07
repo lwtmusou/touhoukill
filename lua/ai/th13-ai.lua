@@ -560,9 +560,7 @@ sgs.ai_slash_prohibit.chuanbi = function(self, from, to, card)
 	if self:hasWeiya(to) then
 		return false
 	end
-	--if from:hasSkill("douhun") then
-	--  return false
-	--end
+
 	local current =self.room:getCurrent()
 	if not current or  current:isDead() then
 		return false
@@ -675,39 +673,7 @@ sgs.ai_skill_use["@@huisheng"] = function(self, prompt)
 end
 
 
---[[sgs.ai_skill_invoke.huisheng = function(self,data)
-	local use=self.room:getTag("huisheng_use"):toCardUse()
-	local target = use.from
-	local card = use.card
-	if not target then return false end
-	if not card then return false end
-	if self:isFriend(target) then
-		if card:isKindOf("Peach") and target:isWounded() then
-			return true
-		end
-	end
-	if self:isEnemy(target) then
-		if card:isKindOf("Duel") then
-			return self:getCardsNum("Slash") >= getCardsNum("Slash", target, self.player)
-		end
-		if not card:isKindOf("Peach") then
-			return true
-		end
-	end
-end
-sgs.ai_skill_playerchosen.huisheng = function(self, targets)--回声借刀
-	for _,target in sgs.qlist(targets) do
-		if self:isEnemy(target) then
-			return target
-		end
-	end
-	return targets:first()
-end
-]]
-
-
 sgs.ai_skill_invoke.songjing = true
-
 
 
 sgs.ai_need_bear.chuixue = function(self, card,from,tos)
@@ -742,18 +708,7 @@ sgs.ai_skill_playerchosen.chuixue = function(self, targets)
 	return nil
 end
 
---[[sgs.ai_skill_cardask["@chuixue-discard"] = function(self)
-		if self.player:isKongcheng() then
-			return "."
-		end
-		if self:touhouHpLocked(self.player)  then
-			return "."
-		end
-		local cards = sgs.QList2Table(self.player:getCards("hs"))
-		self:sortByKeepValue(cards)
 
-		return "$" .. cards[1]:getId()
-end]]
 sgs.ai_playerchosen_intention.chuixue = 50
 
 --sgs.ai_card_intention.Slash
@@ -773,9 +728,7 @@ sgs.ai_slash_prohibit.wushou = function(self, from, to, card)
 	if self:hasWeiya(to) then
 		return false
 	end
-	--if from:hasSkill("douhun") then
-	--  return false
-	--end
+
 	if to:getHp()<=3 and to:hasSkill("wushou")
 	and self:isEnemy(from,to)  then
 		if to:hasArmorEffect("EightDiagram")

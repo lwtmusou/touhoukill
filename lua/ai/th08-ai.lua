@@ -168,20 +168,6 @@ function lizhan_slash(player,objectName)
 end
 sgs.ai_skill_invoke.lizhan = function(self)
 	return true
-	--[[local target=self.player:getTag("lizhan_target"):toPlayer()
-	if target and self:isEnemy(target)  then
-		return true
-	end
-	if target and self:isFriend(target)  then
-		if target:hasSkill("wushou") and target:getHp()<=3
-		and target:hasArmorEffect("Vine") then
-			id=lizhan_slash(self.player,"notNatureSlash")
-			if id ~=-1 then
-				return true
-			end
-		end
-	end
-	return false]]
 end
 sgs.ai_skill_askforag.lizhan = function(self, card_ids)
 	local id= lizhan_slash(self.player,"FireSlash")

@@ -380,25 +380,6 @@ sgs.ai_card_intention.YuanfeiCard = 60
 sgs.ai_card_intention.YuanfeiNearCard = 60
 
 
--- sgs.ai_skill_discard.feitou = function(self)
-	-- local need_feitou
-
-	-- if self:getOverflow(player)>0 then
-		-- need_feitou=true
-	-- else
-		-- need_feitou= self:getCardsNum("Slash") == 0
-	-- end
-	-- if self:cautionChangshi()  then
-		-- need_feitou= false
-	-- end
-	-- local to_discard = {}
-	-- if not need_feitou then return to_discard end
-	-- local cards=self.player:getCards("hes")
-	-- cards = sgs.QList2Table(cards)
-	-- self:sortByKeepValue(cards)
-	-- table.insert(to_discard, cards[1]:getEffectiveId())
-	-- return to_discard
--- end
 
 sgs.ai_skill_invoke.feitou = true
 local feitou_skill = {}
