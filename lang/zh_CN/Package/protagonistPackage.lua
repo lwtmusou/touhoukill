@@ -15,7 +15,8 @@ return {
 	--zhu001 势力：主 4血
 	["reimu"] = "博丽灵梦",
 	["#reimu"] = "乐园的美妙巫女",
-	--["designer:reimu"] = "星野梦美 | 程序:三国有单",
+	["designer:reimu"] = "星野梦美☆",
+	
 	["illustrator:reimu"] = "tearfish",
 	["origin:reimu"] = "p号：5228650",
 	["illustrator:reimu_1"] = "蒼空キズナ",
@@ -26,6 +27,7 @@ return {
 	["origin:reimu_3"] = "p号：22911671",
 	["illustrator:reimu_4"] = "pico",
 	["origin:reimu_4"] = "p号：20132493",
+	
 	["lingqi"] = "灵气",
 	[":lingqi"] = "当你成为【杀】或普通锦囊牌的目标后，你可以判定，若结果为<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>，此牌对你无效。",
 	["lingqi:target"] = " <font color=\"#00FF00\"><b>%src </b></font> 使用【%dest】指定了你为目标，你可以发动“灵气”。",
@@ -44,16 +46,19 @@ return {
 	--zhu002 势力：主 4血
 	["marisa"] = "雾雨魔理沙",
 	["#marisa"] = "普通的魔法使",
+	["designer:marisa"] = "星野梦美☆",
+	
 	["illustrator:marisa"] = "An2A",
 	["origin:marisa"] = "个人ID：173876",
 	["illustrator:marisa_1"] = "えふぇ",
-	["origin:marisa_1"] = "p号：34689497，个人ID：292644", --（作者说明非合同绘 非商业可用）
+	["origin:marisa_1"] = "p号：34689497，个人ID：292644",
 	["illustrator:marisa_2"] = "zen",
 	["origin:marisa_2"] = "p号：40523568，个人ID：31564",
 	["illustrator:marisa_3"] = "An2A",
 	["origin:marisa_3"] = "个人ID：173876",
 	["illustrator:marisa_4"] = "shinia",
 	["origin:marisa_4"] = "p号：20443348，个人ID：44778",
+	
 	["mofa"] = "魔法",
 	[":mofa"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张手牌，若如此做，你于此回合内使用的【杀】或普通锦囊牌造成的伤害+1。若以此法弃置了<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，你摸一张牌。",
 	["#mofa_notice"]= "由于 %arg 的效果，此回合内 %from 使用的牌造成的伤害+1。",
@@ -69,14 +74,17 @@ return {
 	["reimu_sp"] = "SP无节操灵梦",
 	["#reimu_sp"] = "十万巫女",
 	["&reimu_sp"] = "无节操灵梦",
+	["designer:reimu_sp"] = "星野梦美☆",
+	
 	["illustrator:reimu_sp"] = "しがらき",
 	["origin:reimu_sp"] = "p号：19597658，个人ID：1004274",
 	["illustrator:reimu_sp_1"] = "あめろ",
 	["origin:reimu_sp_1"] = "p号：31824198，个人ID：37336",
 	["illustrator:reimu_sp_2"] = "唯",
 	["origin:reimu_sp_2"] = "p号：35756906，个人ID：230943",
+	
 	["saiqian"] = "赛钱",
-	[":saiqian"] = "<font color=\"green\"><b>其他角色的出牌阶段限一次，</b></font>其可以将一至三张手牌交给你，然后你可以选择一至两项：弃置一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌，或失去1点体力。你每选择一项，该角色回复1点体力。",
+	[":saiqian"] = "<font color=\"green\"><b>其他角色的出牌阶段限一次，</b></font>其可以将一至三张手牌交给你，然后你可以选择至多两项：弃置一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌，或失去1点体力。你每选择一项，该角色回复1点体力。",
 	["saiqian_attach"] = "赛钱送牌",
 	[":saiqian_attach"] = "你可以将一至三张手牌交给拥有“赛钱”的角色。",
 	["losehp_saiqian"]= "失去1点体力，该角色回复1点体力",
@@ -90,12 +98,15 @@ return {
 	["marisa_sp"] = "SP大盗魔理沙",
 	["&marisa_sp"] = "大盗魔理沙",
 	["#marisa_sp"] = "大盗",
+	["designer:marisa_sp"] = "星野梦美☆",
+	
 	["illustrator:marisa_sp"] = "seeker",
-	["origin:marisa_sp"] = "p号：13164043，个人ID：694807", --（国人）
+	["origin:marisa_sp"] = "p号：13164043，个人ID：694807", 
 	["illustrator:marisa_sp_1"] = "NEKO",
-	["origin:marisa_sp_1"] = "p号：42655610，个人ID：2600911", --（国人）
+	["origin:marisa_sp_1"] = "p号：42655610，个人ID：2600911", 
 	["illustrator:marisa_sp_2"] = "夢職人",
 	["origin:marisa_sp_2"] = "p号：15273460，个人ID：274333",
+	
 	["jiezou"] = "借走",
 	[":jiezou"] = "出牌阶段，你可以获得其他角色区域里的一张牌，然后选择一项：弃置一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，或失去1点体力并结束此阶段。",
 	["@jiezou_spadecard"]= "请弃置一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，否则你将失去1点体力并结束出牌阶段。",
@@ -112,14 +123,17 @@ return {
 	["marisa_sp2"] = "SP超魔理沙",
 	["&marisa_sp2"] = "超魔理沙",
 	["#marisa_sp2"] = "超·恋之魔女",
+	["designer:marisa_sp2"] = "星野梦美☆",
+	
 	["illustrator:marisa_sp2"] = "AUER",
-	["origin:marisa_sp2"] = "p号：1150651，个人ID：178301", --（国人）
+	["origin:marisa_sp2"] = "p号：1150651，个人ID：178301", 
 	["illustrator:marisa_sp2_1"] = "御月ユウヤ",
 	["origin:marisa_sp2_1"] = "p号：13678531，个人ID：4971",
 	["illustrator:marisa_sp2_2"] = "御月ユウヤ",
 	["origin:marisa_sp2_2"] = "p号：750367，个人ID：4971",
+	
 	["baoyi"] = "爆衣",
-	[":baoyi"] = "准备阶段开始时，你可以弃置任意数量的装备牌和你判定区里的所有牌。每以此法弃置一张牌，你可以视为对一名角色使用【杀】。然后若以此法弃置了不少于一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，你摸两张牌。",
+	[":baoyi"] = "准备阶段开始时，你可以弃置任意数量的装备牌和你判定区里的所有牌（总计至少一张）。每以此法弃置一张牌，你可以视为对一名角色使用【杀】。然后若以此法弃置了不少于一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，你摸两张牌。",
 	["@baoyi"] = "你可以发动“爆衣”，弃置任意数量的装备牌并弃置判定区里的所有牌。",
 	["~baoyi"] = "弃置X张可以视为使用X张【杀】。",
 	["@@baoyi_chosen"] = "你可以指定一名其他角色，视为对其使用【杀】。提示：你还可以视为使用 <font color=\"#00FF00\"><b>%src </b></font> 张【杀】。",
@@ -130,17 +144,20 @@ return {
 	["reimu_yym"]= "妖妖梦SP灵梦",
 	["&reimu_yym"]= "妖妖梦灵梦",
 	["#reimu_yym"]= "春巫女",
+	["designer:reimu_yym"] = "星野梦美☆",
+	
 	["illustrator:reimu_yym"] = "みゃけ",
 	["origin:reimu_yym"] = "p号：9705615，个人ID：60103",
 	["illustrator:reimu_yym_1"] = "萩原",
 	["origin:reimu_yym_1"] = "p号：16215731，个人ID：37062",
 	["illustrator:reimu_yym_2"] = "かがよ",
 	["origin:reimu_yym_2"] = "p号：9056340，个人ID：693172",
+	
 	["zhize"]= "职责",
 	[":zhize"]= "<font color=\"blue\"><b>锁定技，</b></font>摸牌阶段开始时，你选择一项：失去1点体力并跳过此回合的出牌阶段；或放弃摸牌，改为观看一名有手牌的其他角色的手牌，你可以获得其中的一张。",
-	["@@zhize"]= "请指定一名其他角色，观看其手牌并获得其中一张，否则你将失去1点体力并跳过此回合的出牌阶段。",
+	["@@zhize"]= "请指定一名其他角色，观看其手牌并可以获得其中一张，否则你将失去1点体力并跳过此回合的出牌阶段。",
 	["chunxi"]= "春息",
-	[":chunxi"]= "当你获得牌后，你可以展示其中任意张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌。每以此法展示一张牌，你可以获得一名其他角色的一张手牌。",
+	[":chunxi"]= "当你获得牌后，你可以展示其中至少一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌。每以此法展示一张牌，你可以获得一名其他角色的一张手牌。",
 	["@chunxi"]= "你可以，发动“春息”，展示你获得的至少一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌",
 	["~chunxi"]= "选择任意张此次获得的红桃牌 -> 确定",
 	["chunxi-target"]= "本次春息展示了 %dest 张牌。现在你可以选择一名角色获得其一张手牌。 本次选择是其中的第 %src 次。",
@@ -149,16 +166,19 @@ return {
 	["reimu_slm"] = "神灵庙SP灵梦" ,
 	["#reimu_slm"] = "五欲的巫女" ,
 	["&reimu_slm"] = "神灵庙灵梦" ,
+	["designer:reimu_slm"] = "星野梦美☆",
+	
 	["illustrator:reimu_slm"] = "藤原",
 	["origin:reimu_slm"] = "p号：51160511，个人ID：27517",
 	["illustrator:reimu_slm_1"] = "ぬぬっこ",
-	["origin:reimu_slm_1"] = "p号：24429823，个人ID：1030312",--（作者态度可以用）
+	["origin:reimu_slm_1"] = "p号：24429823，个人ID：1030312",
 	["illustrator:reimu_slm_2"] = "青芝クレハ_",
 	["origin:reimu_slm_2"] = "p号：13295146，个人ID：49165",
 	["illustrator:reimu_slm_3"] = "きんたろ",
 	["origin:reimu_slm_3"] = "p号：18697741，个人ID：10009",
+	
 	["bllmwuyu"] = "五欲" ,
-	[":bllmwuyu"] = "准备阶段开始时，你可以将“欲”标记补至X+1枚（X为你已损失的体力值）。你可以弃一枚“欲”标记或一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，发动下列技能中的一个：<font color=\"blue\"><b>“名欲”</b></font>（你可以跳过判定阶段）<font color=\"blue\"><b>“财欲”</b></font>（摸牌阶段开始时，你可以摸一张牌）<font color=\"blue\"><b>“色欲”</b></font>（出牌阶段，你可以额外使用一张【杀】）<font color=\"blue\"><b>“睡欲”</b></font>（弃牌阶段，你的手牌上限视为4）<font color=\"blue\"><b>“食欲”</b></font>（你可以将一张手牌当【酒】使用）" ,
+	[":bllmwuyu"] = "准备阶段开始时，你可以将“欲”标记补至X+1枚（X为你已损失的体力值）。你可以弃一枚“欲”标记或一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，发动下列技能中的一个：<font color=\"blue\"><b>“名欲”</b></font>（你可以跳过判定阶段）<font color=\"blue\"><b>“财欲”</b></font>（摸牌阶段开始时，你可以摸一张牌）<font color=\"blue\"><b>“色欲”</b></font>（出牌阶段，你使用【杀】的额外次数上限+1）<font color=\"blue\"><b>“睡欲”</b></font>（弃牌阶段，你的手牌上限视为4）<font color=\"blue\"><b>“食欲”</b></font>（你可以将一张手牌当【酒】使用）" ,
 	["bllmcaiyu"] = "财欲" ,
 	["bllmseyu"] = "色欲" ,
 	["bllmmingyu"] = "名欲" ,
@@ -177,12 +197,15 @@ return {
 	["marisa_slm"] = "神灵庙SP魔理沙",
 	["&marisa_slm"] = "神灵庙魔理沙",
 	["#marisa_slm"] = "强欲的魔法使",
+	["designer:marisa_slm"] = "星野梦美☆",
+	
 	["illustrator:marisa_slm"] = "まるかた",
 	["origin:marisa_slm"] = "p号：8831829，个人ID：6359",
 	["illustrator:marisa_slm_1"] = "まるかた",
 	["origin:marisa_slm_1"] = "p号：3168979，个人ID：6359",
 	["illustrator:marisa_slm_2"] = "れい亜",
 	["origin:marisa_slm_2"] = "p号：36286762，个人ID：444732",
+	
 	["qiangyu"] = "强欲",
 	[":qiangyu"] = "当你从牌堆顶摸牌时，你可以多摸两张牌，然后选择一项：弃置两张手牌，或弃置一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌。",
 	["qiangyu-discard"]= "请弃置一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌，否则弃置两张手牌",
@@ -225,7 +248,7 @@ return {
 	["origin:marisa_old"] = "p号：50400667，个人ID：90042",
 	
 	["toushi"] = "偷师" ,
-	[":toushi"] = "其他角色的出牌阶段结束时，若其于此阶段内使用的最后的牌是杀或非延时锦囊，你可以将一张基本牌或<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌当与此牌名称相同且属性相同的牌使用。。" ,
+	[":toushi"] = "其他角色的出牌阶段结束时，若其于此阶段内使用的最后的牌为【杀】或普通锦囊牌，你可以将一张基本牌或<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌当与此牌名称相同且属性相同的牌使用。。" ,
 	["@toushi"]= "你可以发动“偷师”，视为你使用将一张 基本牌 或<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌当做 【%src】使用。",
 	["~toushi"]= "若此牌需要指定目标，你先指定目标，再确定。",
 	["moli"] = "魔力" ,

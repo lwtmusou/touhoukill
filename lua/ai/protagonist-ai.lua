@@ -1068,39 +1068,6 @@ sgs.ai_skill_cardask["qiangyu-discard"] = function(self, data)
 	end
 	return "$" .. table.concat(ids, "+")
 end
---[[sgs.ai_skill_cardask["qiangyu_spadecard"] = function(self, data)
-	--主动下天仪增加爆发
-	if self.player:getMark("@tianyi_Weapon")>0 then
-		if self.player:getEquip(0):getSuit()==sgs.Card_Spade then
-			return "$" ..self.player:getEquip(0):getId()
-		end
-	end
-	if self.player:getMark("@tianyi_Armor")>0 then
-		if self.player:getEquip(1):getSuit()==sgs.Card_Spade then
-			return "$" ..self.player:getEquip(1):getId()
-		end
-	end
-	if self.player:getMark("@tianyi_DefensiveHorse")>0 then
-		if self.player:getEquip(2):getSuit()==sgs.Card_Spade then
-			return "$" ..self.player:getEquip(2):getId()
-		end
-	end
-	if self.player:getMark("@tianyi_OffensiveHorse")>0 then
-		if self.player:getEquip(3):getSuit()==sgs.Card_Spade then
-			return "$" ..self.player:getEquip(3):getId()
-		end
-	end
-
-	--手牌里的情况
-	--暂时没考虑太多。。。强欲弃牌策略要怎么写呢？
-	for _, card in sgs.qlist(self.player:getHandcards()) do
-		if card:getSuit()==sgs.Card_Spade  and (card:isKindOf("BasicCard"))  then
-			return "$" ..card:getId()
-		end
-	end
-	return "."
-end]]
---sgs.ai_skill_discard.qiangyu = sgs.ai_skill_discard.gamerule
 
 
 sgs.ai_cardneed.qiangyu = function(to, card, self)
