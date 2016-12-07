@@ -10,10 +10,14 @@ QProgressBar::chunk{
     background: #B22222;
 }
 
-QToolTip{
-    border: 0px solid;
+QToolTip{ 
     background: rgb(0,0,0);
+	border: 2px solid darkkhaki;
+    padding: 1px;
+    border-radius: 3px;
 }
+
+
 
 QTextEdit{
     border: 10px;
@@ -33,7 +37,11 @@ QTextEdit[description = true]{
     background-color: rgba(255,255,255,255);
 }
 
+/*
 QTextEdit QScrollBar:vertical  {
+	border: 1px solid grey;
+    background-color: rgba(43, 45, 31, 114);
+    width: 10px;
      margin: 22px 0 22px 0;
 }
 
@@ -78,6 +86,40 @@ QScrollBar::up-arrow:vertical
 QScrollBar::down-arrow:vertical
 {
     border-image: url(image/system/button/scroll-down-arrow.png);
+}*/
+
+QScrollBar#sgsVSB:vertical {
+    border: 1px solid grey;
+    background-color: rgba(43, 45, 31, 114);
+    width: 10px;
+    margin: 21px 0 21px 0;
+}
+QScrollBar#sgsVSB::handle:vertical {
+    background-color: rgb(95, 86, 63);
+    min-height: 20px;
+}
+QScrollBar#sgsVSB::add-line:vertical {
+    border: 1px solid grey;
+    background-color: rgba(43, 45, 31, 114);
+    height: 20px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+QScrollBar#sgsVSB::sub-line:vertical {
+    border: 1px solid grey;
+    background-color: rgba(43, 45, 31, 114);
+    height: 20px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+QScrollBar#sgsVSB::up-arrow:vertical {
+    border-image: url(image/system/button/scroll-up-arrow.png);
+}
+QScrollBar#sgsVSB::down-arrow:vertical {
+    border-image: url(image/system/button/scroll-down-arrow.png);
+}
+QScrollBar#sgsVSB::add-page:vertical, QScrollBar#sgsVSB::sub-page:vertical {
+    background: none;
 }
 
  QLineEdit#chat_edit{
@@ -160,3 +202,6 @@ QPushButton[shown_card = true] {
     border-radius: 3px;
     color: white;
 }
+
+
+
