@@ -67,6 +67,11 @@ void QingtingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
         room->setPlayerMark(p, "@qingting", 1);
 
     }
+
+    //get delay
+    if (source->isOnline())
+        room->getThread()->delay(2000);
+
     foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
         if (p->getMark("@qingting") == 0)
             continue;
@@ -441,13 +446,9 @@ public:
     virtual bool isEnabledAtResponse(const Player *player, const QString &) const
     {
         if (player->isKongcheng()) return false;
-        //if (player->isKongcheng() || pattern.startsWith(".") || pattern.startsWith("@")) return false;
         QStringList checkedPatterns = responsePatterns();
         if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0) return false;
-        /*for (int i = 0; i < pattern.length(); i++) {
-            QChar ch = pattern[i];
-            if (ch.isUpper() || ch.isDigit()) return false; // This is an extremely dirty hack!! For we need to prevent patterns like 'BasicCard'
-        }*/
+       
         return !checkedPatterns.isEmpty();
     }
 
