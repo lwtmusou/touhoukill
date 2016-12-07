@@ -80,6 +80,7 @@ return {
 	--pc98008 朝仓理香子 势力：旧 3血
 	["rikako"] = "朝仓理香子" ,
 	["#rikako"] = "寻找梦想的科学",
+	["designer:rikako"] = "辰焰天明",
 	["illustrator:rikako"] = "べる",
 	["origin:rikako"] = "p号：7874458 ,个人ID:125888",
 	
@@ -120,6 +121,7 @@ return {
 	["!yuka_old"]= "旧作幽香",
 	["yuka_old"]= "幽香",
 	["#yuka_old"] = "妖怪小姐" ,
+	["designer:yuka_old"] = "辰焰天明",
 	["illustrator:yuka_old"] = "くろぬこネーロ",
 	["origin:yuka_old"] = "p号：32809829,个人ID:335493",
 	
@@ -140,6 +142,7 @@ return {
 	["gengetsumugetsu"] = "幻月 & 梦月" ,
 	["&gengetsumugetsu"] = "幻月梦月" ,
 	["#gengetsumugetsu"] = "女仆 & 恶魔" ,
+	["designer:gengetsumugetsu"] = "辰焰天明",
 	["illustrator:gengetsumugetsu"] = "べらぼう",
 	["origin:gengetsumugetsu"] = "p号：54503236,个人ID:6259229",
 	["huantong"] = "幻痛",
@@ -155,6 +158,7 @@ return {
 	--pc98005 艾丽
 	["elly"] = "艾丽" ,
 	["#elly"] = "馆的门卫" ,
+	["designer:elly"] = "工藤",
 	["illustrator:elly"] = "菊月",
 	["origin:elly"] = "p号：43923582,个人ID:429883",
 	
@@ -169,6 +173,7 @@ return {
 	--pc98001 神绮 势力：旧 4血
 	["shinki"] = "神绮" ,
 	["#shinki"] = "魔界之神" ,
+	["designer:shinki"] = "辰焰天明",
 	["illustrator:shinki"] = "Vetina",
 	["origin:shinki"] = "p号：13059449,个人ID:516980",
 	
@@ -187,6 +192,7 @@ return {
 	["alice_old"] = "旧作爱丽丝",
 	["#alice_old"] = "死之少女" ,
 	["&alice_old"] = "爱丽丝" ,
+	["designer:alice_old"] = "辰焰天明",
 	["illustrator:alice_old"] = " MAKI",
 	["origin:alice_old"] = "p号：15034012,个人ID:1251",
 	

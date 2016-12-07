@@ -218,6 +218,7 @@ return{
 	--wai012  势力：外 3血
 	["kosuzu"] = "本居小铃",
 	["#kosuzu"] = "识文解意的爱书人",
+	["designer:kosuzu"] = "天空寺奈寺美",
 	["illustrator:kosuzu"] = "藤ちょこ",
 	["illustrator:kosuzu_1"] = "音無空太",
 	["origin:kosuzu_1"] = "p号：50873812",
@@ -236,6 +237,7 @@ return{
 	--wai013  势力：外  4血
 	["reisen2"] = "铃仙二号" ,
 	["#reisen2"] = "赎罪的月兔" ,
+	["designer:reisen2"] = "辰焰天明",
 	["illustrator:reisen2"] = "くろぬこネーロ",
 	["origin:reisen2"] = "p号：33268695,个人ID:335493",
 	["sixiang"] = "思乡",

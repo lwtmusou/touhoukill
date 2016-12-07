@@ -204,6 +204,7 @@ return {
 	["reimu_old"] = "旧作SP灵梦" ,
 	["#reimu_old"] = "维护梦与传统的巫女" ,
 	["&reimu_old"] = "旧作灵梦" ,
+	["designer:reimu_old"] = "圆神狂热信徒",
 	["illustrator:reimu_old"] = "november",
 	["origin:reimu_old"] = "p号：31984422，个人ID：1979063",
 	
@@ -219,6 +220,7 @@ return {
 	["marisa_old"] = "旧作SP魔理沙" ,
 	["#marisa_old"] = "源于魔法与红梦的存在" ,
 	["&marisa_old"] = "旧作魔理沙" ,
+	["designer:marisa_old"] = "圆神狂热信徒",
 	["illustrator:marisa_old"] = "カタケイ",
 	["origin:marisa_old"] = "p号：50400667，个人ID：90042",
 	

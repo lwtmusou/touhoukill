@@ -173,6 +173,8 @@ return{
 	--xlc009 势力：星 4血
 	["myouren"] = "命莲" ,
 	["#myouren"] = "拔苦与乐的僧侣" ,
+	["designer:myouren"] = "辰焰天明",
+	
 	["illustrator:myouren"] = "腦子",
 	["origin:myouren"] = "p号：27969549,个人ID:3101656",
 	

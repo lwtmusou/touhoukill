@@ -168,6 +168,7 @@ return{
 	--fsl008  势力：风 4血
 	["momizi"] = "犬走椛",
 	["#momizi"] = "山上的千里眼",
+	["designer:momizi"] = "天空寺奈寺美",
 	["illustrator:momizi"] = "啓々",
 	["origin:momizi"] = "p号：4742307，个人ID：30974",-- (非社团作品可以)
 	["illustrator:momizi_1"] = "みや",

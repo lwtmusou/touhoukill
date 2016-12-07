@@ -288,6 +288,7 @@ return
 	["ran_sp"] = "九尾妖狐SP蓝" ,
 	["&ran_sp"] = "九尾蓝",
 	["#ran_sp"] = "妖兽的顶点" ,
+	["designer:ran_sp"] = "辰焰天明",
 	["illustrator:ran_sp"] = "",
 	["origin:ran_sp"] = "p号：,个人ID:",
 	
@@ -303,6 +304,7 @@ return
 	--yym015
 	["youki"] = "魂魄妖忌" ,
 	["#youki"] = "先代庭师" ,
+	["designer:youki"] = "辰焰天明",
 	["illustrator:youki"] = "砂雲",
 	["origin:youki"] = "p号：1779336,个人ID:295604",
 	["shoushu"] = "授术" ,
@@ -316,6 +318,7 @@ return
 	["!leira"] = "蕾拉·普利兹姆莉巴" ,
 	["leira"] = "蕾拉",
 	["#leira"] = "魔法歌唱家",
+	["designer:leira"] = "辰焰天明",
 	["illustrator:leira"] = "",
 	["origin:leira"] = "p号：,个人ID:",
 	["huayin"] = "华音" ,
