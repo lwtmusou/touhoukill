@@ -1030,14 +1030,6 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *player = invoke->invoker;
-        //int num = player->getHandcardNum();
-        /*if (num == 0) {
-            room->touhouLogmessage("#micai01", player, "micai", QList<ServerPlayer *>(), QString::number(damage.damage - num));
-            room->notifySkillInvoked(player, objectName());
-            return true;
-        } else
-            */
-
         room->touhouLogmessage("#micai01", player, "micai", QList<ServerPlayer *>(), QString::number(1));
         damage.damage = damage.damage -1;
         room->notifySkillInvoked(player, objectName());

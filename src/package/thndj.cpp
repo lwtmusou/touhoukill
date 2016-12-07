@@ -456,69 +456,6 @@ public:
     }
 };
 
-/*
-class Fanji : public TriggerSkill
-{
-public:
-    Fanji() : TriggerSkill("fanji")
-    {
-        events << Damaged;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {
-        DamageStruct damage = data.value<DamageStruct>();
-        QList<SkillInvokeDetail> d;
-
-        // 1.you are hit by others
-        if (damage.to->hasSkill(this) && damage.to->isAlive() && damage.from != damage.to && damage.from != NULL) {
-            SkillInvokeDetail s(this, damage.to, damage.to, NULL, false, damage.from);
-            s.tag["lostmaxhp"] = false;
-            d << s;
-        }
-
-        // 2.one who in your attack range is hit by another player(but not you)
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (p->hasSkill(this)
-                && p->inMyAttackRange(damage.to)
-                && p != damage.from
-                && p != damage.to && damage.to->isAlive()
-                && damage.from != damage.to
-                && damage.from != NULL
-                && p->getMaxHp() > 1
-                ) {
-                SkillInvokeDetail s(this, p, p, NULL, false, damage.from);
-                s.tag["lostmaxhp"] = true;
-                d << s;
-            }
-        }
-        return d;
-    }
-
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        DamageStruct damage = data.value<DamageStruct>();
-        invoke->invoker->tag["fanji_damage"] = data;
-        QString prompt = "target:" + damage.from->objectName() + ":" + damage.to->objectName();
-        if (invoke->invoker->askForSkillInvoke(this, prompt)) {
-            if (invoke->tag.value("lostmaxhp", false).toBool())
-                room->loseMaxHp(invoke->invoker);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        DamageStruct damage = data.value<DamageStruct>();
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), damage.from->objectName());
-        room->damage(DamageStruct("fanji", invoke->invoker, damage.from));
-        return false;
-    }
-};*/
-
 class Fanji : public TriggerSkill
 {
 public:

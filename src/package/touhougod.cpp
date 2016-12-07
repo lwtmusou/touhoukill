@@ -1432,14 +1432,6 @@ void ShenshouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
 
     room->showCard(source, subcards.first());
 
-    //    tempcard=sgs.Sanguosha:cloneCard("slash",sgs.Card_Spade,5)
-
-    //    local mes=sgs.LogMessage()
-    //    mes.type="$ShenshouTurnOver"
-    //    mes.from=source
-    //    mes.arg="shenshou"
-    //    mes.card_str=tempcard:toString()
-    //    room:sendLog(mes)
 
     room->moveCardTo(card, target, Player::PlaceHand, true);
 
@@ -2086,10 +2078,6 @@ public:
             && player->getMark("Global_PreventPeach") > 0) return false;
 
         return !checkedPatterns.isEmpty();
-        /*for (int i = 0; i < pattern.length(); i++) {
-            QChar ch = pattern[i];
-            if (ch.isUpper() || ch.isDigit()) return false;
-        }*/
 
     }
 

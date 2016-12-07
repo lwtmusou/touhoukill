@@ -541,38 +541,6 @@ public:
         }
         return false;
     }
-
-    /*bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        QString choice = invoke->invoker->tag["shiqu"].toString();
-        Player::Phase phase;
-        if (choice == "shiqu_start")
-            phase = Player::Start;
-        else if (choice == "shiqu_judge")
-            phase = Player::Judge;
-        else if (choice == "shiqu_draw")
-            phase = Player::Draw;
-        else if (choice == "shiqu_play")
-            phase = Player::Play;
-        else if (choice == "shiqu_discard")
-            phase = Player::Discard;
-
-        room->notifySkillInvoked(invoke->owner, objectName());
-        LogMessage log;
-        log.type = "#shiqu";
-        log.from = invoke->invoker;
-        log.to << invoke->targets.first();
-        log.arg = objectName();
-        log.arg2 = choice;
-        room->sendLog(log);
-
-        ExtraTurnStruct extra;
-        extra.player = invoke->targets.first();
-        extra.set_phases << Player::RoundStart << phase << Player::NotActive;
-        room->setTag("ExtraTurnStruct", QVariant::fromValue(extra));
-        invoke->targets.first()->gainAnExtraTurn();
-        return false;
-    }*/
 };
 
 
@@ -1077,122 +1045,6 @@ public:
 
 };
 
-/*
-MenghuanCard::MenghuanCard()
-{
-    will_throw = false;
-    handling_method = Card::MethodNone;
-    m_skillName = "menghuan_attach";
-}
-
-void MenghuanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
-{
-    ServerPlayer *lord = targets.first();
-    if (lord->hasLordSkill("menghuan")) {
-        room->setPlayerFlag(lord, "menghuanInvoked");
-
-        room->notifySkillInvoked(lord, "menghuan");
-        CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), lord->objectName(), "menghuan", QString());
-        room->obtainCard(lord, this, reason);
-        QList<ServerPlayer *> lords;
-        QList<ServerPlayer *> players = room->getOtherPlayers(source);
-        foreach(ServerPlayer *p, players) {
-            if (p->hasLordSkill("menghuan") && !p->hasFlag("menghuanInvoked"))
-                lords << p;
-        }
-        if (lords.isEmpty())
-            room->setPlayerFlag(source, "Forbidmenghuan");
-    }
-}
-
-bool MenghuanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
-{
-    return targets.isEmpty() && to_select->hasLordSkill("menghuan")
-        && to_select != Self && !to_select->hasFlag("menghuanInvoked");
-}
-
-class MenghuanVS : public OneCardViewAsSkill
-{
-public:
-    MenghuanVS() :OneCardViewAsSkill("menghuan_attach")
-    {
-        attached_lord_skill = true;
-        filter_pattern = "TrickCard";
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const
-    {
-        return  !player->hasFlag("Forbidmenghuan") && shouldBeVisible(player);
-    }
-
-    virtual bool shouldBeVisible(const Player *Self) const
-    {
-        return Self && Self->getKingdom() == "pc98";
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const
-    {
-        MenghuanCard *card = new MenghuanCard;
-        card->addSubcard(originalCard);
-
-        return card;
-    }
-};
-
-class Menghuan : public TriggerSkill
-{
-public:
-    Menghuan() : TriggerSkill("menghuan$")
-    {
-        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Revive;
-    }
-
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
-    {
-        if (triggerEvent != EventPhaseChanging) { //the case operating attach skill
-            static QString attachName = "menghuan_attach";
-            QList<ServerPlayer *> lords;
-            foreach(ServerPlayer *p, room->getAllPlayers()) {
-                if (p->hasLordSkill(this, true))
-                    lords << p;
-            }
-
-            if (lords.length() > 1) {
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
-                    if (!p->hasSkill(attachName, true))
-                        room->attachSkillToPlayer(p, attachName);
-                }
-            }
-            else if (lords.length() == 1) {
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->hasLordSkill(this, true) && p->hasSkill(attachName, true))
-                        room->detachSkillFromPlayer(p, attachName, true);
-                    else if (!p->hasLordSkill(this, true) && !p->hasSkill(attachName, true))
-                        room->attachSkillToPlayer(p, attachName);
-                }
-            }
-            else {
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->hasSkill(attachName, true))
-                        room->detachSkillFromPlayer(p, attachName, true);
-                }
-            }
-        }
-        else if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
-            if (phase_change.from == Player::Play) {
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->hasFlag("menghuanInvoked"))
-                        room->setPlayerFlag(p, "-menghuanInvoked");
-                    if (p->hasFlag("Forbidmenghuan"))
-                        room->setPlayerFlag(p, "-Forbidmenghuan");
-                }
-            }
-        }
-    }
-
-};
-*/
 
 class Menghuan : public MaxCardsSkill
 {
@@ -2072,7 +1924,6 @@ TH0105Package::TH0105Package()
     yumemi->addSkill(new Ciyuan);
     yumemi->addSkill(new Shigui);
     yumemi->addSkill(new Chongdong);
-    //yumemi->addSkill(new Skill("kongjian$", Skill::Compulsory));
 
     General *chiyuri = new General(this, "chiyuri", "pc98", 4, false);
     chiyuri->addSkill(new Zhence);
@@ -2118,13 +1969,12 @@ TH0105Package::TH0105Package()
     alice_old->addSkill(new Modian);
     alice_old->addSkill(new Guaiqi);
 
-    //addMetaObject<MenghuanCard>();
     addMetaObject<ShiquCard>();
     addMetaObject<LianmuCard>();
     addMetaObject<SqChuangshiCard>();
     addMetaObject<ModianCard>();
 
-    skills << new ModianVS; //<< new MenghuanVS;
+    skills << new ModianVS;
 }
 
 ADD_PACKAGE(TH0105)

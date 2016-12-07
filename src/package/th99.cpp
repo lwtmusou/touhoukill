@@ -1306,26 +1306,6 @@ public:
     bool effect(TriggerEvent , Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         invoke->invoker->drawCards(1, objectName());
-        //tag is  always empty, why?
-        /*QStringList distance_changed = invoke->invoker->tag.value("distance_changed_" + QString::number(triggerEvent), QStringList()).toStringList();
-        if (distance_changed.isEmpty())
-            return false;
-        QList<ServerPlayer *> targets;
-        foreach (const QString &c, distance_changed) {
-            ServerPlayer *p = room->findPlayerByObjectName(c);
-            if (p != NULL && invoke->invoker->canDiscard(p, "hs"))
-                targets << p;
-        }
-
-        foreach(ServerPlayer *q, room->getOtherPlayers(invoke->invoker)) {
-            QStringList to_distance_changed = q->tag.value("distance_changed_" + QString::number(triggerEvent), QStringList()).toStringList();
-            foreach(const QString &c, to_distance_changed) {
-                if (invoke->invoker == room->findPlayerByObjectName(c) && !targets.contains(q) && invoke->invoker->canDiscard(q, "hs")) {
-                    targets << q;
-                    break;
-                }
-            }
-        }*/
         if (invoke->targets.isEmpty())
             return false;
 
@@ -1954,11 +1934,9 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        //QString type = use.card->getType();
-        //QString pattern = QString("%1Card|.|.|hand").arg(type.left(1).toUpper() + type.right(type.length() - 1));
         QStringList prompt_list;
         prompt_list << "jidong-discard" << use.card->objectName()
-            << use.from->objectName() << "basic";// use.card->getType();
+            << use.from->objectName() << "basic";
         QString prompt = prompt_list.join(":");
 
         const Card *card = room->askForCard(invoke->invoker, ".Basic", prompt, data, Card::MethodDiscard, NULL, false, objectName());
