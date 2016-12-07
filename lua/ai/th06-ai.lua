@@ -413,7 +413,7 @@ end
 
 
 local beishui_skill = {}
-beishui_skill.name = "taiji"
+beishui_skill.name = "beishui"
 table.insert(sgs.ai_skills, beishui_skill)
 beishui_skill.getTurnUseCard = function(self)
     if self.player:getMark("beishui") >0 then return nil end 
@@ -537,30 +537,6 @@ sgs.dongjie_keep_value = {
 }
 
 
---[[sgs.ai_slash_prohibit.bingpo = function(self, from, to, card)
-	if card:isKindOf("FireSlash") or from:hasSkill("here") then
-		if not self:isFriend(to) then
-			return false
-		else
-			return true
-		end
-	end
-	if to:getHp()==1 then
-		if not self:isFriend(to) then
-			return true
-		else
-			return false
-		end
-	end
-	if self:hasHeavySlashDamage(from, card, to)then
-		if not self:isFriend(to) then
-			return true
-		else
-			return false
-		end
-	end
-	return false
-end]]
 sgs.ai_damageInflicted.bingpo =function(self, damage)
 	if damage.nature ~= sgs.DamageStruct_Fire then
 		if damage.damage >= damage.to:getHp() then
@@ -790,14 +766,5 @@ sgs.ai_choicemade_filter.skillInvoke.yinren = function(self, player, promptlist)
 	end
 end
 
---嘲讽值设定
---[[sgs.ai_chaofeng.hmx001 = 2
-sgs.ai_chaofeng.hmx002 = -2
-sgs.ai_chaofeng.hmx003 = -2
-sgs.ai_chaofeng.hmx004 = 3
-sgs.ai_chaofeng.hmx005 = -1
-sgs.ai_chaofeng.hmx006 = 0
-sgs.ai_chaofeng.hmx007 = 0
-sgs.ai_chaofeng.hmx008 = 4
-sgs.ai_chaofeng.hmx009 = 3]]
+
 

@@ -556,6 +556,8 @@ public:
     }
 };
 
+
+
 class Bolan : public TriggerSkill
 {
 public:
@@ -622,7 +624,6 @@ public:
     }
 };
 
-
 class HezhouVS : public ViewAsSkill
 {
 public:
@@ -675,7 +676,6 @@ public:
         return peach;
     }
 };
-
 
 class Hezhou : public TriggerSkill
 {
@@ -742,261 +742,6 @@ public:
         return false;
     }
 };
-
-
-class Neijin : public TriggerSkill
-{
-public:
-    Neijin() : TriggerSkill("neijin")
-    {
-        events << EventPhaseEnd;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {
-        ServerPlayer *player = data.value<ServerPlayer *>();
-        QList<SkillInvokeDetail> d;
-        if (player->getPhase() == Player::Play && player->isAlive()) {
-            foreach(ServerPlayer *meirin, room->getAllPlayers()) {
-                if (meirin != player && meirin->hasSkill(this) && meirin->getHandcardNum() < meirin->getMaxHp() && !meirin->isChained())
-                    d << SkillInvokeDetail(this, meirin, meirin, NULL, false, player);
-            }
-        }
-        return d;
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        ServerPlayer *meirin = invoke->invoker;
-        room->setPlayerProperty(meirin, "chained", true);
-
-        int num = meirin->getMaxHp() - meirin->getHandcardNum();
-        meirin->drawCards(num);
-        num = qMin(num, meirin->getHandcardNum());
-        if (num == 0)
-            return false;
-
-        const Card *giveCards = room->askForExchange(meirin, objectName(), num, num, false, "neijin_exchange:" + invoke->targets.first()->objectName() + ":" + QString::number(num));
-        room->obtainCard(invoke->targets.first(), giveCards, false);
-        delete giveCards;
-        return false;
-    }
-};
-
-
-/*
-TaijiCard::TaijiCard()
-{
-    will_throw = true;
-    handling_method = Card::MethodUse;
-    m_skillName = "taiji";
-}
-
-void TaijiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
-{
-    QVariantList record_ids = source->tag["taijiTemp"].toList();
-    QList<int> ids;
-    foreach(QVariant card_data, record_ids) {
-        ids << card_data.toInt();
-    }
-    DummyCard *dummy = new DummyCard(ids);
-    room->obtainCard(targets.first(), dummy);
-    delete dummy;
-}
-
-bool TaijiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
-{
-    return  targets.isEmpty() && to_select->hasFlag("Global_taijiFailed");
-}
-
-class TaijiVS : public OneCardViewAsSkill
-{
-public:
-    TaijiVS() :OneCardViewAsSkill("taiji")
-    {
-        response_pattern = "@@taiji";
-    }
-
-    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
-    {
-        return !to_select->isKindOf("BasicCard");
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const
-    {
-        TaijiCard *card = new TaijiCard;
-        card->addSubcard(originalCard);
-
-        return card;
-    }
-};
-*/
-//Empty skill
-/*
-class Taiji : public TriggerSkill
-{
-public:
-    Taiji() : TriggerSkill("taiji")
-    {
-        events << SlashMissed;
-        view_as_skill = new TaijiVS;
-    }
-};
-
-class Taiji1 : public TriggerSkill
-{
-public:
-    Taiji1() : TriggerSkill("#taiji1")
-    {
-        events << SlashMissed;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {
-        SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if (!effect.to || effect.to->isDead())
-            return QList<SkillInvokeDetail>();
-        const Card *jink = effect.jink;
-        if (!jink) return QList<SkillInvokeDetail>();
-
-        QList<int> ids;
-        if (!jink->isVirtualCard()) {
-            if (room->getCardPlace(jink->getEffectiveId()) == Player::DiscardPile)
-                ids << jink->getEffectiveId();
-        } else {
-            foreach(int id, jink->getSubcards()) {
-                if (room->getCardPlace(id) == Player::DiscardPile)
-                    ids << id;
-            }
-        }
-        if (ids.isEmpty()) return QList<SkillInvokeDetail>();
-        
-        QList<SkillInvokeDetail> d;
-        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            if (p->distanceTo(effect.to) <= 1 && p->canDiscard(p, "hes"))
-                d << SkillInvokeDetail(this, p, p, NULL, false, effect.to);
-        }
-        return d;
-    }
-
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        foreach(ServerPlayer *p, room->getOtherPlayers(effect.to))
-            room->setPlayerFlag(p, "Global_taijiFailed");
-        QVariantList record_ids;
-        if (!effect.jink->isVirtualCard()) {
-            if (room->getCardPlace(effect.jink->getEffectiveId()) == Player::DiscardPile)
-                record_ids << effect.jink->getEffectiveId();
-        } else {
-            foreach(int id, effect.jink->getSubcards()) {
-                if (room->getCardPlace(id) == Player::DiscardPile)
-                    record_ids << id;
-            }
-        }
-        invoke->invoker->tag["taijiTemp"] = record_ids;
-        room->askForUseCard(invoke->invoker, "@@taiji", "@taiji1:" + effect.to->objectName());
-        return false;
-    }
-};
-
-class Taiji2 : public TriggerSkill
-{
-public:
-    Taiji2() : TriggerSkill("#taiji2")
-    {
-        events << SlashMissed;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {
-        SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if (!effect.from || effect.from->isDead())
-            return QList<SkillInvokeDetail>();
-        const Card *slash = effect.slash;
-        if (!slash) return QList<SkillInvokeDetail>();
-
-        QList<int> ids;
-        if (!slash->isVirtualCard()) {
-            if (room->getCardPlace(slash->getEffectiveId()) == Player::PlaceTable)
-                ids << slash->getEffectiveId();
-        } else {
-            foreach(int id, slash->getSubcards()) {
-                if (room->getCardPlace(id) == Player::PlaceTable)
-                    ids << id;
-            }
-        }
-        if (ids.isEmpty()) return QList<SkillInvokeDetail>();
-
-        QList<SkillInvokeDetail> d;
-        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            if (p->distanceTo(effect.from) <= 1 && p != effect.from && p->canDiscard(p, "hes"))
-                d << SkillInvokeDetail(this, p, p, NULL, false, effect.from);
-        }
-        return d;
-    }
-
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        foreach(ServerPlayer *p, room->getOtherPlayers(effect.from))
-            room->setPlayerFlag(p, "Global_taijiFailed");
-        QVariantList record_ids;
-        if (!effect.slash->isVirtualCard()) {
-            if (room->getCardPlace(effect.slash->getEffectiveId()) == Player::PlaceTable)
-                record_ids << effect.slash->getEffectiveId();
-        }
-        else {
-            foreach(int id, effect.slash->getSubcards()) {
-                if (room->getCardPlace(id) == Player::PlaceTable)
-                    record_ids << id;
-            }
-        }
-        invoke->invoker->tag["taijiTemp"] = record_ids;
-        room->askForUseCard(invoke->invoker, "@@taiji", "@taiji2:" + effect.from->objectName());
-        return false;
-    }
-};
-*/
-/*
-class Taiji : public TriggerSkill
-{
-public:
-    Taiji() : TriggerSkill("taiji")
-    {
-        events << Damaged;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
-    {
-        DamageStruct damage = data.value<DamageStruct>();
-        if (damage.to->isAlive() && damage.to->hasSkill(this) && damage.to->isChained() && damage.nature == DamageStruct::Normal)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
-
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), objectName(), "@taiji", true, true);
-        if (target) {
-            invoke->targets << target;
-            return true;
-        }
-
-        return false;
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        room->setPlayerProperty(invoke->invoker, "chained", false);
-
-        room->damage(DamageStruct(objectName(), invoke->invoker, invoke->targets.first(), 1, DamageStruct::Normal));
-        return false;
-    }
-};*/
-
-
 
 
 
@@ -1192,8 +937,6 @@ const Card *BeishuiCard::validateInResponse(ServerPlayer *user) const
     user->getRoom()->setPlayerMark(user, "beishui", 1);
     return use_card;
 }
-
-
 
 class BeishuiVS : public ViewAsSkill
 {
@@ -1400,33 +1143,6 @@ public:
         room->touhouLogmessage("#bingpolog", invoke->invoker, "bingpo", QList<ServerPlayer *>(), QString::number(damage.damage));
         room->notifySkillInvoked(invoke->invoker, objectName());
         return true;
-    }
-};
-
-
-class Bendan : public FilterSkill
-{
-public:
-    Bendan() : FilterSkill("bendan")
-    {
-
-    }
-
-    virtual bool viewFilter(const Card *to_select) const
-    {
-        Room *room = Sanguosha->currentRoom();
-
-        ServerPlayer *cirno = room->getCardOwner(to_select->getEffectiveId());
-        return (cirno != NULL && cirno->hasSkill(objectName()));
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const
-    {
-        WrappedCard *wrap = Sanguosha->getWrappedCard(originalCard->getEffectiveId());
-        wrap->setNumber(9);
-        wrap->setSkillName(objectName());
-        wrap->setModified(true);
-        return wrap;
     }
 };
 
@@ -1858,18 +1574,12 @@ TH06Package::TH06Package()
     patchouli->addSkill(new Hezhou);
 
     General *meirin = new General(this, "meirin", "hmx", 4, false);
-    //meirin->addSkill(new Neijin);
     meirin->addSkill(new Taiji);
     meirin->addSkill(new Beishui);
-    //meirin->addSkill(new Taiji1);
-    //meirin->addSkill(new Taiji2);
-    //related_skills.insertMulti("taiji", "#taiji1");
-    //related_skills.insertMulti("taiji", "#taiji2");
 
     General *cirno = new General(this, "cirno", "hmx", 3, false);
     cirno->addSkill(new Dongjie);
     cirno->addSkill(new Bingpo);
-    //cirno->addSkill(new Bendan);
 
     General *rumia = new General(this, "rumia", "hmx", 3, false);
     rumia->addSkill(new Zhenye);
@@ -1889,7 +1599,6 @@ TH06Package::TH06Package()
 
     addMetaObject<SkltKexueCard>();
     addMetaObject<SuodingCard>();
-    //addMetaObject<TaijiCard>();
     addMetaObject<BeishuiCard>();
     addMetaObject<BanyueCard>();
 
