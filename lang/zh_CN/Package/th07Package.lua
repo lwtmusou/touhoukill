@@ -200,7 +200,7 @@ return
 	["designer:letty"] = "星野梦美☆",
 	
 	["illustrator:letty"] = "JQ3C273!",
-	["origin:letty"] = "p号：3590936，个人ID：431033",--(国人)
+	["origin:letty"] = "p号：3590936，个人ID：431033",
 	["illustrator:letty_1"] = "伍長",
 	["origin:letty_1"] = "p号：7388774，个人ID：90464",
 	["illustrator:letty_2"] = "猫水瀬",

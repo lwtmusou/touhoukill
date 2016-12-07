@@ -6,8 +6,10 @@ return{
 	--slm001  势力：灵 4血
 	["miko"] = "丰聪耳神子",
 	["#miko"] = "圣德道士",
+	["designer:miko"] = "星野梦美☆",
+	
 	["illustrator:miko"] = "NAbyssor",
-	["origin:miko"] = "p号：21176402，个人ID：467511",--(国人)
+	["origin:miko"] = "p号：21176402，个人ID：467511",
 	["illustrator:miko_1"] = "カズ",
 	["origin:miko_1"] = "p号：36122574，个人ID：137496",
 	["illustrator:miko_2"] = "泉水茜",
@@ -16,6 +18,7 @@ return{
 	["origin:miko_3"] = "p号：21141746，个人ID：44784",
 	["illustrator:miko_4"] = "七瀬尚",
 	["origin:miko_4"] = "p号：23917375，个人ID：312852",
+	
 	["shengge"] = "圣格",
 	[":shengge"] = "<font color=\"purple\"><b>觉醒技，</b></font>准备阶段开始时，若你没有手牌，你失去1点体力上限，摸三张牌，改变技能“倾听”。",
 	["$shenggeAnimate"]= "skill=miko:shengge",
@@ -33,8 +36,10 @@ return{
 	--slm002  势力：灵 4血
 	["mamizou"] = "二岩猯藏",
 	["#mamizou"] = "狸猫怪十变化",
+	["designer:mamizou"] = "星野梦美☆",
+	
 	["illustrator:mamizou"] = "ideolo",
-	["origin:mamizou"] = "p号：27366760，个人ID：61513", --（国人）
+	["origin:mamizou"] = "p号：27366760，个人ID：61513", 
 	["illustrator:mamizou_1"] = "ふーえん",
 	["origin:mamizou_1"] = "p号：36315798，个人ID：131669",
 	["illustrator:mamizou_2"] = "まくわうに",
@@ -43,6 +48,7 @@ return{
 	["origin:mamizou_3"] = "p号：33663902，个人ID：264281",
 	["illustrator:mamizou_4"] = "7",
 	["origin:mamizou_4"] = "p号：46198301，个人ID：547647",
+	
 	["xihua"] = "戏画",
 	[":xihua"] = "当你需要使用或打出基本牌或普通锦囊牌时，你可以声明之（不能声明于此回合内以此法声明过的牌），并令一名其他角色展示你的一张手牌：若此牌与你声明的牌类别相同或此牌的点数为J-K，你将此牌当你声明的牌使用或打出。否则，弃置之。",
 	["#Xihua_failed"] = "%from 发动 “%arg” 声明【%arg2】失败。",
@@ -58,16 +64,19 @@ return{
 	--slm003  势力：灵 3血
 	["futo"] = "物部布都",
 	["#futo"] = "古代日本的尸解仙",
+	["designer:futo"] = "星野梦美☆",
+	
 	["illustrator:futo"] = "とりのあくあ",
 	["origin:futo"] = "p号：22092678，个人ID：1960050",
 	["illustrator:futo_1"] = "Mik-cis",
 	["origin:futo_1"] = "p号：33480707，个人ID：1006311",
 	["illustrator:futo_2"] = "ななしな",
-	["origin:futo_2"] = "p号：23798022，个人ID：274594",--(貌似可)
+	["origin:futo_2"] = "p号：23798022，个人ID：274594",
 	["illustrator:futo_3"] = "キタユキ",
 	["origin:futo_3"] = "p号：32655390，个人ID：199411",
 	["illustrator:futo_4"] = "まくわうに",
 	["origin:futo_4"] = "p号：33451843，个人ID：941624",
+	
 	["shijie"] = "尸解",
 	[":shijie"] = "当一名角色向你求【桃】时，你可以弃置一张手牌，令其判定。然后你可以弃置场上一张与结果的花色相同的装备牌，令其回复1点体力。",
 	["@@shijie_chosen"] = "你需要选择“尸解”装备，请指定一名有装备的对象",
@@ -80,12 +89,15 @@ return{
 	--slm004  势力：灵 4血
 	["toziko"] = "苏我屠自古",
 	["#toziko"] = "神明后裔的亡灵",
+	["designer:toziko"] = "星野梦美☆",
+	
 	["illustrator:toziko"] = "まぐろいど",
-	["origin:toziko"] = "p号：22946343，个人ID：2096991",--（貌似可以？）
+	["origin:toziko"] = "p号：22946343，个人ID：2096991",
 	["illustrator:toziko_1"] = "遠坂あさぎ",
 	["origin:toziko_1"] = "p号：26376620，个人ID：3302692",
 	["illustrator:toziko_2"] = "ぬぬっこ",
 	["origin:toziko_2"] = "p号：22618790，个人ID：1030312",
+	
 	["leishi"] = "雷矢",
 	[":leishi"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以视为对一名有手牌的角色使用雷【杀】，此【杀】不计入次数限制。当此【杀】被【闪】抵消时，你失去1点体力。",
 	["fenyuan"] = "愤怨",
@@ -96,6 +108,8 @@ return{
 	--slm005  势力：灵 3血
 	["seiga"]= "霍青娥",
 	["#seiga"]= "穿壁之邪仙人",
+	["designer:seiga"] = "星野梦美☆",
+	
 	["illustrator:seiga"] = "桐葉",
 	["origin:seiga"] = "p号：24756353，个人ID：260108",
 	["illustrator:seiga_1"] = "ぬぬっこ",
@@ -106,6 +120,7 @@ return{
 	["origin:seiga_3"] = "p号：22021510，个人ID：2096991",
 	["illustrator:seiga_4"] = "みゅーと",
 	["origin:seiga_4"] = "p号：27261606，个人ID：1203504",
+	
 	["xiefa"]= "邪法",
 	[":xiefa"]= "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一张手牌交给一名其他角色，令其视为对其攻击范围内的你指定的一名角色使用【杀】。当此【杀】被【闪】抵消时，其失去1点体力。当目标角色受到此【杀】造成的伤害后，你摸一张牌。",
 	["chuanbi"]= "穿壁",
@@ -115,6 +130,8 @@ return{
 	--slm006  势力：灵 4血
 	["yoshika"]= "宫古芳香",
 	["#yoshika"]= "忠诚的尸体",
+	["designer:yoshika"] = "星野梦美☆",
+	
 	["illustrator:yoshika"] = "ハシコ",
 	["origin:yoshika"] = "p号：18277982，个人ID：74348",
 	["illustrator:yoshika_1"] = "KS",
@@ -123,6 +140,7 @@ return{
 	["origin:yoshika_2"] = "p号：35882272，个人ID：192311",
 	["illustrator:yoshika_3"] = "tucana",
 	["origin:yoshika_3"] = "p号：18499354，个人ID：1593245",
+	
 	["duzhua"]= "毒爪",
 	[":duzhua"]= "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一张红色手牌当【杀】使用，此【杀】不计入次数限制。",
 	["taotie"]= "饕餮",
@@ -132,12 +150,15 @@ return{
 	--slm007  势力：灵 3血
 	["kyouko"] = "幽谷响子",
 	["#kyouko"] = "念经的山灵",
+	["designer:kyouko"] = "星野梦美☆",
+	
 	["illustrator:kyouko"] = "砂雲",
 	["origin:kyouko"] = "p号：19958781，个人ID：295604",
 	["illustrator:kyouko_1"] = "潜男",
 	["origin:kyouko_1"] = "p号：18253434，个人ID：1220170",
 	["illustrator:kyouko_2"] = "ideolo",
 	["origin:kyouko_2"] = "个人ID：61513",
+	
 	["huisheng"] = "回声",
 	[":huisheng"] = "当其他角色使用的基本牌或普通锦囊牌结算后，若你为此牌的唯一目标，你可以视为对其使用一张与此牌名称相同且属性相同的牌。",
 	["~huisheng"] = "回声",
@@ -151,12 +172,15 @@ return{
 	["yuyuko_slm"] = "神灵庙SP幽幽子" ,
 	["&yuyuko_slm"] = "神灵庙幽幽子" ,
 	["#yuyuko_slm"] = "不再彷徨的亡灵" ,
+	["designer:yuyuko_slm"] = "星野梦美☆",
+	
 	["illustrator:yuyuko_slm"] = "meola",
 	["origin:yuyuko_slm"] = "p号：11911124，个人ID：31990",
 	["illustrator:yuyuko_slm_1"] = "みや",
 	["origin:yuyuko_slm_1"] = "p号：22766094，个人ID：41977",
 	["illustrator:yuyuko_slm_2"] = "一葉モカ",
 	["origin:yuyuko_slm_2"] = "p号：17232914，个人ID：464525",
+	
 	["chuixue"] = "吹雪" ,
 	[":chuixue"] = "弃牌阶段结束时，若此阶段内你弃置了不少于一张手牌，你可令一名其他角色选择一项：弃置一张手牌，此牌的花色不能与此阶段内你弃置的任一张手牌相同；或失去1点体力。" ,
 	["@chuixue-select"] = "请指定“吹雪”的目标。" ,
@@ -170,6 +194,8 @@ return{
 	["nue_slm"] = "神灵庙SP鵺",
 	["&nue_slm"] = "神灵庙鵺",
 	["#nue_slm"] = "古代妖怪之一",
+	["designer:nue_slm"] = "星野梦美☆",
+	
 	["illustrator:nue_slm"] = "赤シオ",
 	["origin:nue_slm"] = "p号：6203096，个人ID：341747",
 	["illustrator:nue_slm_1"] = "赤シオ",
@@ -178,13 +204,14 @@ return{
 	["origin:nue_slm_2"] = "p号：9785493，个人ID：1167548",
 	["illustrator:nue_slm_3"] = "赤シオ",
 	["origin:nue_slm_3"] = "p号：26650042，个人ID：341747",
+	
 	["buming"] = "不明",
-	[":buming"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可弃置一张牌，令你攻击范围内的一名角色选择一项：令你视为对其使用一张【杀】，或令你视为对其使用一张【决斗】。",
+	[":buming"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可弃置一张牌，令你攻击范围内的一名角色选择一项：令你视为对其使用【杀】，或令你视为对其使用【决斗】。",
 	["slash_buming"] = "视为你被使用【杀】",
 	["duel_buming"] = "视为你被使用【决斗】",
 	["#buming_choose"]= "%from 选择了 “%arg”。",
 	["zhengti"] = "正体",
-	[":zhengti"] = "<font color=\"blue\"><b>锁定技，</b></font>当你受到其他角色造成的伤害后，来源须获得一枚“正体”标记。当你受到伤害时，若其他角色有“正体”标记，你弃一名其他角色的一枚“正体”标记，然后将此伤害转移给该角色。",
+	[":zhengti"] = "<font color=\"blue\"><b>锁定技，</b></font>当你受到其他角色造成的伤害后，来源获得一枚“正体”标记。当你受到伤害时，若其他角色有“正体”标记，你弃一名其他角色的一枚“正体”标记，然后将此伤害转移给该角色。",
 	["@zhengti"] = "正体",
 	["@zhengti-choose"]= "指定一名有“正体”标记的其他角色，转移伤害。",
 	["zhengti_extra"] = "正体",
@@ -195,6 +222,8 @@ return{
 	["kogasa_slm"] = "神灵庙SP小伞" ,
 	["&kogasa_slm"] = "神灵庙小伞" ,
 	["#kogasa_slm"] = "为难的遗忘之物" ,
+	["designer:kogasa_slm"] = "星野梦美☆",
+	
 	["illustrator:kogasa_slm"] = "にろ",
 	["origin:kogasa_slm"] = "p号：26300308，个人ID：194231",
 	["illustrator:kogasa_slm_1"] = "竜",
@@ -203,6 +232,7 @@ return{
 	["origin:kogasa_slm_2"] = "p号：27202944，个人ID：309850",
 	["illustrator:kogasa_slm_3"] = "プリンプリン",
 	["origin:kogasa_slm_3"] = "p号：9172954，个人ID：4179",
+	
 	["qingyu"] = "晴雨",
 	[":qingyu"] = "当你受到伤害后，你可以将一张手牌当【兵粮寸断】置入你的判定区，若如此做，你指定所有体力值不小于你的其他角色，这些角色依次选择一项：弃置一张牌，或令你摸一张牌。" ,
 	["@qingyu"] = "你可以发动“晴雨”，将一张手牌当做【兵粮寸断】置入你的判定区",

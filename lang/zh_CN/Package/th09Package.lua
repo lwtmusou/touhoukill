@@ -8,6 +8,8 @@ return
 	--zhan001  势力：战 3血
 	["suika"] = "伊吹萃香",
 	["#suika"] = "不羁奔放的古豪",
+	["designer:suika"] = "星野梦美☆",
+	
 	["illustrator:suika"] = "阿桜",
 	["origin:suika"] = "p号：24157010，个人ID：39753",--(貌似ok)
 	["illustrator:suika_1"] = "ryosios",
@@ -18,6 +20,7 @@ return
 	["origin:suika_3"] = "p号：11675411，个人ID：52449",
 	["illustrator:suika_5"] = "伊吹のつ",
 	["origin:suika_5"] = "p号：43405095，个人ID：7013",
+	
 	["zuiyue"] = "醉月",
 	[":zuiyue"] = "出牌阶段，若你于此阶段内使用过非基本牌，你可以视为使用【酒】。",
 	["doujiu"] = "斗酒",
@@ -32,6 +35,8 @@ return
 	["shikieiki"] = "四季映姬" ,
 	["#shikieiki"] = "乐园的最高裁判长" ,
 	["!shikieiki"] = "四季映姬·亚玛萨那度" ,
+	["designer:shikieiki"] = "星野梦美☆",
+	
 	["illustrator:shikieiki"] = "風花風花",
 	["origin:shikieiki"] = "p号：37523603，个人ID：1316750",
 	["illustrator:shikieiki_1"] = "ideolo",
@@ -57,14 +62,17 @@ return
 	--zhan003  势力：战 4血
 	["komachi"] = "小野塚小町",
 	["#komachi"] = "三途河的领路人",
+	["designer:komachi"] = "星野梦美☆",
+	
 	["illustrator:komachi"] = "赤りんご",
-	["origin:komachi"] = "p号：1377034，个人ID：164813",-- (貌似可以用的样子。。但其个人网站乱码 确认不能。。。)
+	["origin:komachi"] = "p号：1377034，个人ID：164813",
 	["illustrator:komachi_1"] = "七々しう",
 	["origin:komachi_1"] = "p号：10420340，个人ID：236979",
 	["illustrator:komachi_2"] = "牛",
-	["origin:komachi_2"] = "p号：23773957，个人ID：964140",-- (国人)
+	["origin:komachi_2"] = "p号：23773957，个人ID：964140",
 	["illustrator:komachi_3"] = "pico",
 	["origin:komachi_3"] = "p号：14285106，个人ID：347929",
+	
 	["silian"] = "死镰",
 	[":silian"] = "<font color=\"blue\"><b>锁定技，</b></font>当你使用【杀】对目标角色造成伤害时，若其体力值为1，此伤害+2。",
 	["#silian"] = "%from 的技能“死镰”被触发, %from 使用的【杀】对 %to 造成的伤害+2。",
@@ -75,16 +83,19 @@ return
 	--zhan004  势力：战 4血
 	["yuka"] = "风见幽香",
 	["#yuka"] = "四季的鲜花之主",
+	["designer:yuka"] = "星野梦美☆",
+	
 	["illustrator:yuka"] = "Reina",
-	["origin:yuka"] = "p号：7593428，个人ID：309664",-- (香港)
+	["origin:yuka"] = "p号：7593428，个人ID：309664",
 	["illustrator:yuka_1"] = "Cloudy.R",
-	["origin:yuka_1"] = "p号：42739088，个人ID：800504",--(国人)
+	["origin:yuka_1"] = "p号：42739088，个人ID：800504",
 	["illustrator:yuka_2"] = "平坂イネ",
 	["origin:yuka_2"] = "p号：18480142，个人ID：1605711",
 	["illustrator:yuka_3"] = "An2A",
 	["origin:yuka_3"] = "个人ID：173876",
 	["illustrator:yuka_4"] = "赤シオ",
 	["origin:yuka_4"] = "p号：27321553，个人ID：341747",
+	
 	["weiya"] = "威压",
 	[":weiya"] = "<font color=\"blue\"><b>锁定技，</b></font>当其他角色于你的回合内使用或打出基本牌或【无懈可击】时（代替判定牌时除外），其选择一项：令此牌无效，或弃置一张与此牌名称相同的牌。",
 	["@weiya"]= "由于“威压”的效果，你需要弃置一张【%src】，否则之前的【%src】无效。",
@@ -96,16 +107,19 @@ return
 	["medicine"]="梅蒂馨",
 	["#medicine"]= "小小的甜蜜毒药",
 	["!medicine"]="梅蒂馨·梅兰克莉",
+	["designer:medicine"] = "星野梦美☆",
+	
 	["illustrator:medicine"] = "フカヒレ",
 	["origin:medicine"] = "p号：9174315，个人ID：58338",
 	["illustrator:medicine_1"] = "DQN",
-	["origin:medicine_1"] = "p号：39996142，个人ID：144174",--(表态可以)
+	["origin:medicine_1"] = "p号：39996142，个人ID：144174",
 	["illustrator:medicine_2"] = "亜音",
-	["origin:medicine_2"] = "p号：30981893，个人ID：759647",--（国人？）
+	["origin:medicine_2"] = "p号：30981893，个人ID：759647",
 	["illustrator:medicine_3"] = "とりこ",
 	["origin:medicine_3"] = "p号：4357443，个人ID：73846",
 	["illustrator:medicine_4"] = "甘党",
 	["origin:medicine_4"] = "p号：15735289，个人ID：298982",
+	
 	["judu"]= "剧毒",
 	[":judu"]= "当你对其他角色造成伤害后，你可以判定，若结果为黑色2-9，其失去1点体力。",
 	["henyi"]= "恨意",
@@ -116,12 +130,15 @@ return
 	["aya_sp"]="SP记者文",
 	["&aya_sp"]="记者文",
 	["#aya_sp"]= "捏造新闻记者",
+	["designer:aya_sp"] = "星野梦美☆",
+	
 	["illustrator:aya_sp"] = "An2A",
 	["origin:aya_sp"] = "个人ID：173876",
 	["illustrator:aya_sp_1"] = "えふぇ",
-	["origin:aya_sp_1"] = "p号：18047920，个人ID：292644", --（作者说明非合同绘 非商业可用）
+	["origin:aya_sp_1"] = "p号：18047920，个人ID：292644",
 	["illustrator:aya_sp_2"] = "ゆらみ 琥珀",
 	["origin:aya_sp_2"] = "p号：37017005，个人ID：321156",
+	
 	["toupai"]= "偷拍",
 	[":toupai"]= "摸牌阶段开始时，你可以放弃摸牌，改为观看一名有手牌的其他角色的手牌，你可以弃置其中的一至三张红色牌。每以此法弃置一张基本牌，你摸一张牌。",
 	["@toupai-select"]= "你可以放弃摸牌，指定一名其他角色，观看其所有手牌，你可以弃置其中的一至三张红色牌。每以此法弃置一张基本牌，你摸一张牌。",
@@ -131,8 +148,10 @@ return
 	--zhan007  势力：战 4血
 	["tenshi"] = "比那名居天子",
 	["#tenshi"] = "非想非非想天的少女",
+	["designer:tenshi"] = "星野梦美☆",
+	
 	["illustrator:tenshi"] = "ななしな",
-	["origin:tenshi"] = "p号：23718711，个人ID：274594",--(貌似可)
+	["origin:tenshi"] = "p号：23718711，个人ID：274594",
 	["illustrator:tenshi_1"] = "君と子音",
 	["origin:tenshi_1"] = "p号：29746812，个人ID：8254",
 	["illustrator:tenshi_2"] = "kirero",
@@ -140,7 +159,8 @@ return
 	["illustrator:tenshi_3"] = "赤シオ",
 	["origin:tenshi_3"] = "p号：9218445，个人ID：341747",
 	["illustrator:tenshi_4"] = " 亜音",
-	["origin:tenshi_4"] = "p号：45069411，个人ID：759647",--（国人？）
+	["origin:tenshi_4"] = "p号：45069411，个人ID：759647",
+	
 	["feixiang"] = "绯想",
 	[":feixiang"] = "当判定牌生效前，你可以选择一名角色的一张牌并令其打出此牌代替判定牌。",
 	["@feixiang-playerchosen"] = "<font color=\"#00FF00\"><b>%src </b></font> 将要进行 “%dest” 的判定，你可以发动“绯想”，指定一名角色并展示其一张手牌。",
@@ -156,6 +176,8 @@ return
 	--zhan008  势力：战 4血
 	["iku"] = "永江衣玖",
 	["#iku"] = "美丽的绯之衣",
+	["designer:iku"] = "星野梦美☆",
+	
 	["illustrator:iku"] = "しろさ",
 	["origin:iku"] = "p号：3805501，个人ID：374262",
 	["illustrator:iku_1"] = "しろさ",
@@ -164,6 +186,7 @@ return
 	["origin:iku_2"] = "p号：39033688，个人ID：91059",
 	["illustrator:iku_3"] = "爽希",
 	["origin:iku_3"] = "p号：38916055，个人ID：2318975",
+	
 	["jingdian"] = "静电",
 	[":jingdian"] = "<font color=\"blue\"><b>锁定技，</b></font>每当你受到雷电伤害时，防止此伤害，你摸3x张牌（x为此次伤害的点数）。",
 	["#jingdian"] = "%from 的技能 “%arg” 被触发，%from 防止了 %arg2 点雷电伤害。",
@@ -174,6 +197,8 @@ return
 	--zhan009  势力：战 4血
 	["hatate"] = "姬海棠果",
 	["#hatate"] = "当代的念写记者",
+	["designer:hatate"] = "星野梦美☆",
+	
 	["illustrator:hatate"] = "朱シオ",
 	["origin:hatate"] = "p号：18358973，个人ID：341747",
 	["illustrator:hatate_1"] = "nyanya",
@@ -184,8 +209,9 @@ return
 	["origin:hatate_3"] = "p号：21411887，个人ID：1225738",
 	["illustrator:hatate_4"] = "c7肘",
 	["origin:hatate_4"] = "p号：29166434，个人ID：217707",
+	
 	["kuaizhao"] = "快照",
-	[":kuaizhao"] = "摸牌阶段，你可以少摸一张牌，令你攻击范围内的一名有手牌的角色展示其所有手牌，你摸X张牌（X为其中基本牌的数量且最多为2）。",
+	[":kuaizhao"] = "摸牌阶段，你可以少摸一张牌，令你攻击范围内的一名有手牌的角色展示手牌，你摸X张牌（X为其中基本牌的数量且最多为2）。",
 	["@kuaizhao-select_one"] = "指定一名其他角色，展示其所有手牌。",
 	["duanjiao"] = "短焦",
 	[":duanjiao"] = "<font color=\"blue\"><b>锁定技，</b></font>你的攻击范围为3。",
@@ -194,6 +220,8 @@ return
 	 --zhan010  势力：战 4血
 	["kokoro"] = "秦心",
 	["#kokoro"] = "表情丰富的扑克脸",
+	["designer:kokoro"] = "三国有单",
+	
 	["illustrator:kokoro"] = "ゾウノセ",
 	["origin:kokoro"] = "p号：38863400",
 	["illustrator:kokoro_1"] = "薄稀",
@@ -202,6 +230,7 @@ return
 	["origin:kokoro_2"] = "p号：38589315",
 	["illustrator:kokoro_3"] = "ゾウノセ",
 	["origin:kokoro_3"] = "p号：39419401",
+	
 	["nengwu"] = "能舞",
 	[":nengwu"] = "当你于摸牌阶段外回复体力后或获得一次牌后，你可令你攻击范围内的一名角色摸一张牌。当你于出牌阶段外受到伤害后或失去一次手牌后，你可以弃置你攻击范围内一名角色的一张手牌。",
 	["nengwudraw"] = "能舞(摸牌)",
@@ -212,10 +241,12 @@ return
 	[":xiwang"] = "<font color=\"orange\"><b>主公技，</b></font>当一名角色于其回合外使用或打出一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌时，若当前回合的角色是其他战势力角色，其可以将一张手牌交给你。",
 	["@xiwang"] = "你可以发动 %src   的“希望”，交给其一张手牌。",
 
-
+--**********************************************
 	 --zhan011  势力：战 4血
 	["sumireko"] = "宇佐见堇子",
 	["#sumireko"] = "秘封俱乐部的初代会长",
+	["designer:sumireko"] = "星野梦美☆",
+	
 	["illustrator:sumireko"] = "りひと",
 	["origin:sumireko"] = "p号：53754910",
 	["illustrator:sumireko_1"] = "チマQ",
@@ -230,8 +261,6 @@ return
 	[":shenmi"] = "摸牌阶段摸牌后，若你的手牌数大于手牌上限，你可以观看牌堆顶的三张牌并改变其中任意数量的牌的顺序。",
 	["liqun"] = "离群",
 	[":liqun"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"blue\"><b>锁定技，</b></font>攻击范围内有其他战势力角色的其他角色与你的距离+1。",
-
-
 
 }
 

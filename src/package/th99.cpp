@@ -1722,105 +1722,6 @@ public:
 
 
 
-class Sixiang : public TriggerSkill
-{
-public:
-    Sixiang() : TriggerSkill("sixiang")
-    {
-        events << EventPhaseStart;
-        frequency = Compulsory;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {
-        QList<SkillInvokeDetail> d;
-        ServerPlayer *current = data.value<ServerPlayer *>();
-        if (current->getPhase() == Player::Start) {
-            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                if (!p->isChained())
-                    d << SkillInvokeDetail(this, p, p, NULL, true);
-            }
-        }
-        return d;
-    }
-
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        room->notifySkillInvoked(invoke->owner, objectName());
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = invoke->owner;
-        log.arg = objectName();
-        room->sendLog(log);
-        
-        room->setPlayerProperty(invoke->invoker, "chained", true);
-
-        room->recover(invoke->invoker, RecoverStruct());
-        return false;
-    }
-};
-
-class Daoyao : public TriggerSkill
-{
-public:
-    Daoyao() : TriggerSkill("daoyao")
-    {
-        events << HpRecover;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &) const
-    {
-        QList<SkillInvokeDetail> d;
-        ServerPlayer *current = room->getCurrent();
-        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            if (current && current->canDiscard(current, "hes"))
-                d << SkillInvokeDetail(this, p, p);
-            else {
-                foreach(ServerPlayer *t, room->getOtherPlayers(p)) {
-                    if (t->isChained()) {
-                        d << SkillInvokeDetail(this, p, p);
-                        break;
-                    }
-                }
-            }
-        }
-        return d;
-    }
-
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        QList<ServerPlayer *> targets;
-        foreach(ServerPlayer *t, room->getOtherPlayers(invoke->invoker)) {
-            if (t->isChained() || (t->isCurrent() && t->canDiscard(t, "hes")))
-                targets << t;
-        }
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@daoyao", true, true);
-        if (target)
-            invoke->targets << target;
-        return target != NULL;
-    }
-
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        QStringList choices;
-        ServerPlayer *target = invoke->targets.first();
-        if (target->isCurrent() && target->canDiscard(target, "hes"))
-            choices << "discard";
-        if (target->isChained())
-            choices << "draw";
-        invoke->invoker->tag["daoyao-target"] = QVariant::fromValue(target);
-        QString choice = room->askForChoice(invoke->invoker, objectName(), choices.join("+"), data);
-        if (choice == "discard")
-            room->askForDiscard(target, objectName(), 1, 1, false, true, "daoyao_discard:" + invoke->invoker->objectName());
-        else
-            target->drawCards(1);
-
-        return false;
-    }
-};
-
 
 class Xunshi : public TriggerSkill
 {
@@ -2112,6 +2013,107 @@ public:
     }
 };
 
+
+class Sixiang : public TriggerSkill
+{
+public:
+    Sixiang() : TriggerSkill("sixiang")
+    {
+        events << EventPhaseStart;
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        QList<SkillInvokeDetail> d;
+        ServerPlayer *current = data.value<ServerPlayer *>();
+        if (current->getPhase() == Player::Start) {
+            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                if (!p->isChained())
+                    d << SkillInvokeDetail(this, p, p, NULL, true);
+            }
+        }
+        return d;
+    }
+
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        room->notifySkillInvoked(invoke->owner, objectName());
+        LogMessage log;
+        log.type = "#TriggerSkill";
+        log.from = invoke->owner;
+        log.arg = objectName();
+        room->sendLog(log);
+
+        room->setPlayerProperty(invoke->invoker, "chained", true);
+
+        room->recover(invoke->invoker, RecoverStruct());
+        return false;
+    }
+};
+
+class Daoyao : public TriggerSkill
+{
+public:
+    Daoyao() : TriggerSkill("daoyao")
+    {
+        events << HpRecover;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &) const
+    {
+        QList<SkillInvokeDetail> d;
+        ServerPlayer *current = room->getCurrent();
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            if (current && current->canDiscard(current, "hes"))
+                d << SkillInvokeDetail(this, p, p);
+            else {
+                foreach(ServerPlayer *t, room->getOtherPlayers(p)) {
+                    if (t->isChained()) {
+                        d << SkillInvokeDetail(this, p, p);
+                        break;
+                    }
+                }
+            }
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        QList<ServerPlayer *> targets;
+        foreach(ServerPlayer *t, room->getOtherPlayers(invoke->invoker)) {
+            if (t->isChained() || (t->isCurrent() && t->canDiscard(t, "hes")))
+                targets << t;
+        }
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@daoyao", true, true);
+        if (target)
+            invoke->targets << target;
+        return target != NULL;
+    }
+
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        QStringList choices;
+        ServerPlayer *target = invoke->targets.first();
+        if (target->isCurrent() && target->canDiscard(target, "hes"))
+            choices << "discard";
+        if (target->isChained())
+            choices << "draw";
+        invoke->invoker->tag["daoyao-target"] = QVariant::fromValue(target);
+        QString choice = room->askForChoice(invoke->invoker, objectName(), choices.join("+"), data);
+        if (choice == "discard")
+            room->askForDiscard(target, objectName(), 1, 1, false, true, "daoyao_discard:" + invoke->invoker->objectName());
+        else
+            target->drawCards(1);
+
+        return false;
+    }
+};
+
+
 TH99Package::TH99Package()
     : Package("th99")
 {
@@ -2166,10 +2168,6 @@ TH99Package::TH99Package()
     kosuzu->addSkill(new BihuoReturn);
     related_skills.insertMulti("bihuo", "#bihuo");
 
-    General *reisen2 = new General(this, "reisen2", "wai", 4, false);
-    reisen2->addSkill(new Sixiang);
-    reisen2->addSkill(new Daoyao);
-
     General *cirno = new General(this, "cirno_sp", "wai", 3, false);
     cirno->addSkill(new Xunshi);
     cirno->addSkill(new Jidong);
@@ -2178,6 +2176,9 @@ TH99Package::TH99Package()
     mamizou->addSkill(new Zhangmu);
     mamizou->addSkill(new Liyou);
 
+    General *reisen2 = new General(this, "reisen2", "wai", 4, false);
+    reisen2->addSkill(new Sixiang);
+    reisen2->addSkill(new Daoyao);
 
 
     addMetaObject<QiuwenCard>();

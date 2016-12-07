@@ -96,7 +96,7 @@ return{ ["th06"] = "红魔乡",
 	["patchouli"] = "帕秋莉",
 	["#patchouli"] = "不动的大图书馆",
 	["!patchouli"] = "帕秋莉·诺蕾姬",
-	["designer:"] = "bullytou",	
+	["designer:patchouli"] = "bullytou",	
 	
 	["illustrator:patchouli"] = "萩原",
 	["origin:patchouli_1"] = "个人ID：37062",

@@ -5,7 +5,10 @@ return{
 	["mokou_ndj"] = "年代记SP妹红" ,
 	["&mokou_ndj"] = "年代记妹红" ,
 	["#mokou_ndj"] = "炎杀姬" ,
+	["designer:mokou_ndj"] = "星野梦美☆",
+	
 	["illustrator:mokou_ndj"] = "年代记",
+	
 	["rexue"]= "热血",
 	[":rexue"]= "<font color=\"blue\"><b>锁定技，</b></font>你的回合结束前，若此回合不是额外回合，且你的体力为1，且此回合内没有角色死亡，你回复1点体力，然后摸一张牌，并在此回合结束后进行一个额外的回合。",
 	["sidou"] = "死斗",
@@ -19,7 +22,10 @@ return{
 	["kaguya_ndj"] = "年代记SP辉夜" ,
 	["&kaguya_ndj"] = "年代记辉夜" ,
 	["#kaguya_ndj"] = "贤月公主" ,
+	["designer:kaguya_ndj"] = "星野梦美☆",
+	
 	["illustrator:kaguya_ndj"] = "年代记",
+	
 	["huanyue"]= "幻月",
 	[":huanyue"]= "当其他角色受到普通锦囊牌造成的伤害时，你可令其弃置你的一张手牌，若为黑色，此伤害+1。",
 	["#huanyue_log"]= "%from 对 %to 的伤害由 %arg 点增加到 %arg2 点。",
@@ -34,7 +40,9 @@ return{
 	["&yukari_ndj"] = "年代记紫" ,
 	["#yukari_ndj"] = "境界中驻足的妖怪贤者" ,
 	["designer:yukari_ndj"] = "辰焰天明",
+	
 	["illustrator:yukari_ndj"] = "年代记" ,
+	
 	["yuanhu"] = "援护" ,
 	[":yuanhu"] = "其他角色的摸牌阶段，其可以少摸一张牌，令你摸一张牌，若如此做，你可以将至多两张手牌交给该角色" ,
 	["yuanhu:invoke"] = "您想发动 <font color=\"#FF8000\"><b>%src </b></font> 的“援护”吗？" ,
@@ -47,7 +55,10 @@ return{
 	["youmu_ndj"] = "年代记SP妖梦" ,
 	["&youmu_ndj"] = "年代记妖梦" ,
 	["#youmu_ndj"] = "修行的庭师" ,
+	["designer:youmu_ndj"] = "",
+	
 	["illustrator:youmu_ndj"] = "年代记",
+	
 	["hunpo"]= "魂魄",
 	[":hunpo"]= "出牌阶段，若你的体力上限小于4，你可以弃置一张牌，增加1点体力上限。",
 	["fanji"] = "反击",
@@ -62,7 +73,9 @@ return{
 	["&merry_ndj"] = "年代记梅莉" ,
 	["#merry_ndj"] = "境界探访者" ,
 	["designer:merry_ndj"] = "辰焰天明",
+	
 	["illustrator:merry_ndj"] = "年代记",
+	
 	["zaiwu"]= "载物",
 	[":zaiwu"]= "其他角色的摸牌阶段：若你的体力值大于该角色，你可令其多摸一张牌；若你的体力值为1且不大于其，你可令其少摸一张牌。",
 	["zaiwu:minus"]= "你可以发动“载物”，令<font color=\"#FF8000\"><b>%src </b></font> 少摸一张牌",
@@ -77,7 +90,10 @@ return{
 	["renko_ndj"] = "年代记SP莲子" ,
 	["&renko_ndj"] = "年代记莲子",
 	["#renko_ndj"] = "科学少女" ,
+	["designer:renko_ndj"] = "星野梦美☆",
+	
 	["illustrator:renko_ndj"] = "年代记",
+	
 	["liangzi"]= "量子",
 	[":liangzi"]= "<font color=\"blue\"><b>锁定技，</b></font>当你使用或打出基本牌后，你选择一项：横置，或重置。",
 	["kexue"] = "科学",
@@ -90,6 +106,7 @@ return{
 	["&sanae_ndj"] = "年代记早苗",
 	["#sanae_ndj"] = "风月战姬" ,
 	["designer:sanae_ndj"] = "辰焰天明",
+	
 	["illustrator:sanae_ndj"] = "年代记",
 	["xiubu"]= "修补",
 	[":xiubu"]= "当一名角色于其出牌阶段内使用第一张牌时，若其为你或在你的攻击范围内，你可以弃置其一张手牌，令其于此阶段内使用最后的手牌时无距离限制且不计入次数限制。若如此做，此阶段结束时，若其于此阶段内使用过不少于两张牌，其摸两张牌。",
