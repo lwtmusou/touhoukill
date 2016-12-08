@@ -24,7 +24,7 @@ public:
         return 5;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         
         QList<SkillInvokeDetail> d; 
@@ -35,7 +35,7 @@ public:
         return d;
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         room->notifySkillInvoked(invoke->invoker, objectName());
         room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
@@ -2314,12 +2314,25 @@ public:
             }
             return d;
         }
+        else if (change.to == Player::NotActive) {
+            if (!change.player)
+                return QList<SkillInvokeDetail>();
+            foreach(ServerPlayer *player, room->getOtherPlayers(change.player)) {
+                ExtraTurnStruct extra = player->tag["ExtraTurnInfo"].value<ExtraTurnStruct>();
+                if (extra.reason == "qinlue" && extra.extraTarget == change.player) {
+                    if (change.player->isAlive() && !change.player->isKongcheng() || !player->isKongcheng())
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true, change.player);
+                }
+            }
+        }
         return QList<SkillInvokeDetail>();
     }
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to == Player::NotActive)
+            return true;
         ServerPlayer *source = invoke->invoker;
         ServerPlayer *current = change.player;
 
@@ -2332,24 +2345,45 @@ public:
     {
         ServerPlayer *source = invoke->invoker;
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        ServerPlayer *current = change.player;
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), current->objectName());
-
-        QString  prompt = "@qinlue-discard1:" + source->objectName();
-        const Card *card = room->askForCard(current, "Jink", prompt, QVariant::fromValue(source), Card::MethodDiscard);
-        if (!card) {
-            current->skip(Player::Play);
-            if (!room->getThread()->hasExtraTurn()) {
-                ExtraTurnStruct extra;
-                extra.player = invoke->invoker;
-                extra.set_phases << Player::RoundStart << Player::Play << Player::NotActive;
-                extra.reason = "qinlue";
-                extra.extraTarget = current;
-                room->setTag("ExtraTurnStruct", QVariant::fromValue(extra));
-                source->tag["ExtraTurnInfo"] = QVariant::fromValue(extra);
-                invoke->invoker->gainAnExtraTurn();
+        if (change.to == Player::NotActive) {
+            if (!invoke->invoker->isKongcheng()) {
+                DummyCard *dummy = new DummyCard;
+                dummy->deleteLater();
+                dummy->addSubcards(invoke->invoker->getHandcards());
+                invoke->invoker->addToPile("zhanbei", dummy, false);
             }
+
+            if (change.player->isAlive() && !change.player->isKongcheng()) {
+                DummyCard *dummy1 = new DummyCard;
+                dummy1->deleteLater();
+                dummy1->addSubcards(change.player->getHandcards());
+                room->obtainCard(invoke->invoker, dummy1, false);
+            }
+            if (!invoke->invoker->faceUp())
+                invoke->invoker->turnOver();
+
+        } else {
+            ServerPlayer *current = change.player;
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), current->objectName());
+
+            QString  prompt = "@qinlue-discard1:" + source->objectName();
+            const Card *card = room->askForCard(current, "Jink", prompt, QVariant::fromValue(source), Card::MethodDiscard);
+            if (!card) {
+                current->skip(Player::Play);
+                if (!room->getThread()->hasExtraTurn()) {
+                    ExtraTurnStruct extra;
+                    extra.player = invoke->invoker;
+                    extra.set_phases << Player::RoundStart << Player::Play << Player::NotActive;
+                    extra.reason = "qinlue";
+                    extra.extraTarget = current;
+                    room->setTag("ExtraTurnStruct", QVariant::fromValue(extra));
+                    source->tag["ExtraTurnInfo"] = QVariant::fromValue(extra);
+                    invoke->invoker->gainAnExtraTurn();
+                }
+            }
+        
         }
+
         return false;
     }
 
@@ -2360,22 +2394,12 @@ class QinlueEffect : public TriggerSkill
 public:
     QinlueEffect() : TriggerSkill("#qinlue_effect")
     {
-        events << EventPhaseChanging << EventPhaseStart;
+        events << EventPhaseChanging;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
-        if (triggerEvent == EventPhaseStart) {
-            ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player->getPhase() == Player::RoundStart) {
-                ExtraTurnStruct extra = player->tag["ExtraTurnInfo"].value<ExtraTurnStruct>();
-                if (extra.reason == "qinlue" && extra.extraTarget != NULL) {
-                    ServerPlayer *target = extra.extraTarget;
-                    if (target->isAlive() && !target->isKongcheng() || !player->isKongcheng())
-                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true, target);
-                }
-            }
-        } else if (triggerEvent == EventPhaseChanging) {
+        if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             ServerPlayer *player = change.player;
             if (change.to == Player::NotActive) {
@@ -2392,23 +2416,7 @@ public:
 
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        if (triggerEvent == EventPhaseStart) {
-            ServerPlayer *player = invoke->invoker;
-            ServerPlayer *target = player->tag["ExtraTurnInfo"].value<ExtraTurnStruct>().extraTarget;
-            if (!player->isKongcheng()) {
-                DummyCard *dummy = new DummyCard;
-                dummy->deleteLater();
-                dummy->addSubcards(player->getHandcards());
-                player->addToPile("zhanbei", dummy, false);
-            }
-
-            if (target != NULL && target->isAlive() && !target->isKongcheng()) {
-                DummyCard *dummy1 = new DummyCard;
-                dummy1->deleteLater();
-                dummy1->addSubcards(target->getHandcards());
-                room->obtainCard(player, dummy1, false);
-            }
-        } else if (triggerEvent == EventPhaseChanging) {
+        if (triggerEvent == EventPhaseChanging) {
             ServerPlayer *player = invoke->invoker;
             ServerPlayer *target = player->tag["ExtraTurnInfo"].value<ExtraTurnStruct>().extraTarget;
             if (target != NULL && target->isAlive()) {

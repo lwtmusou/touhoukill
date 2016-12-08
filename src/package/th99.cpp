@@ -1587,11 +1587,14 @@ public:
         events << TargetConfirming << EventPhaseChanging;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         if (triggerEvent == EventPhaseChanging) {
-            foreach(ServerPlayer *p, room->getAllPlayers())
-                room->setPlayerMark(p, objectName(), 0);
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAllPlayers())
+                    room->setPlayerMark(p, objectName(), 0);
+            }
         }
     }
 

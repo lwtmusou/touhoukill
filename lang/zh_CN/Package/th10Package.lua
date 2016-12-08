@@ -205,7 +205,7 @@ return{
 	["origin:momizi_6"] = "p号：45871178，个人ID：1537530",
 	
 	["tianyan"] = "天眼",
-	[":tianyan"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以摸X张牌（X为角色数且最多为4），然后将X张手牌以任意顺序置于牌堆顶。",
+	[":tianyan"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以摸X张牌（X为角色数且最多为4），然后将X张牌以任意顺序置于牌堆顶。",
 	["tianyan_exchange"]= "请选择 %src 张要置于牌堆顶的牌。",
 	["$GuanxingTop"] = "置于牌堆顶的牌：%card",
 	["$GuanxingBottom"] = "置于牌堆底的牌：%card",

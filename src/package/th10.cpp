@@ -1387,7 +1387,7 @@ void TianyanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &)
     int x = qMin(room->alivePlayerCount(), 4);
 
     source->drawCards(x);
-    const Card *cards = room->askForExchange(source, "tianyan", x, x, false, "tianyan_exchange:" + QString::number(x));
+    const Card *cards = room->askForExchange(source, "tianyan", x, x, true, "tianyan_exchange:" + QString::number(x));
     DELETE_OVER_SCOPE(const Card, cards)
     CardsMoveStruct move;
     move.card_ids = cards->getSubcards();

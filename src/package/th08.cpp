@@ -290,7 +290,7 @@ class BumieMaxhp : public TriggerSkill
 public:
     BumieMaxhp() : TriggerSkill("#bumie")
     {
-        events << HpChanged << CardsMoveOneTime << EventAcquireSkill << EventSkillInvalidityChange;
+        events << HpChanged << CardsMoveOneTime;
         frequency = Compulsory;
     }
 
@@ -298,26 +298,11 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
-        if (triggerEvent == EventSkillInvalidityChange) {
-            QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct>>();
-            QList<ServerPlayer *> targets;
-            QList<SkillInvokeDetail> d;
-            foreach(SkillInvalidStruct v, invalids) {
-                if (v.player->hasSkill("bumie") && v.player->getHp() <= v.player->dyingThreshold() && v.player->isKongcheng()) {
-                    targets << v.player;
-                    d << SkillInvokeDetail(this, v.player, v.player, NULL, true);
-                }
-            }
-            return d;
-        }
-
         ServerPlayer *mokou = NULL;
         if (triggerEvent == HpChanged)
             mokou = data.value<ServerPlayer *>();
         else if (triggerEvent == CardsMoveOneTime)
             mokou = qobject_cast<ServerPlayer *>(data.value<CardsMoveOneTimeStruct>().from);
-        else if (triggerEvent == EventAcquireSkill)
-            mokou = data.value<SkillAcquireDetachStruct>().player;
 
         if (mokou != NULL && mokou->isAlive() && mokou->hasSkill(this) && mokou->getHp() <= mokou->dyingThreshold() && mokou->isKongcheng())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, mokou, mokou, NULL, true);
