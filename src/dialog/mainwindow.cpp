@@ -341,6 +341,13 @@ void MainWindow::enterRoom()
 
 void MainWindow::gotoStartScene()
 {
+    //play BGM 
+    if (Config.EnableBgMusic && !Audio::isBackgroundMusicPlaying()) {
+        Audio::stopBGM();
+        Audio::playBGM("audio/title/main.ogg", true, true);
+        Audio::setBGMVolume(Config.BGMVolume);
+    }
+    
     ServerInfo.DuringGame = false;
     QList<Server *> servers = findChildren<Server *>();
     if (!servers.isEmpty())
