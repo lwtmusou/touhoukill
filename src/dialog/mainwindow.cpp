@@ -93,11 +93,11 @@ MainWindow::MainWindow(QWidget *parent)
     //play title BGM
     if (Config.EnableBgMusic) {
         QString bgm = "audio/title/main.ogg";
-        if (QFile::exists(bgm)) {
+        //if (QFile::exists(bgm)) {
             Audio::stopBGM();
             Audio::playBGM(bgm, true, true);
             Audio::setBGMVolume(Config.BGMVolume);
-        }
+        //}
     }
 
     QList<QAction *> actions;

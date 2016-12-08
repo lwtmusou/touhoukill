@@ -84,8 +84,8 @@ public:
     };
 
     explicit BackgroundMusicPlayList(const QStringList &fileNames,
-        BackgroundMusicPlayList::PlayOrder order = Sequential)
-        : m_fileNames(fileNames), m_order(order), m_index(-1)
+        BackgroundMusicPlayList::PlayOrder order = Sequential, const QStringList openings = QStringList())
+        : m_fileNames(fileNames), m_order(order), m_openings(openings), m_index(-1)
     {
     }
 
@@ -136,10 +136,22 @@ public:
 private:
     void fillRandomQueue()
     {
+        
         m_randomQueue = m_fileNames;
-
+        m_randomQueue.prepend("");
         qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
-        qShuffle(m_randomQueue);
+        
+        if (m_openings.isEmpty())
+            qShuffle(m_randomQueue);
+        else{
+            qShuffle(m_openings);
+            QString first = m_openings.takeFirst();
+            foreach(QString opening, m_openings) {
+                m_randomQueue << opening;
+            }
+            qShuffle(m_randomQueue);
+            m_randomQueue.prepend(first);
+        }
     }
 
 private:
@@ -147,6 +159,7 @@ private:
     QStringList m_randomQueue;
     PlayOrder m_order;
     int m_index;
+    QStringList m_openings;//need play title/open at first
 };
 
 #include <QFileDialog>
@@ -166,6 +179,7 @@ public:
                 = random ? BackgroundMusicPlayList::Shuffle : BackgroundMusicPlayList::Sequential;
             
             QStringList all = fileNames.split(";");
+            QStringList openings;
             if (playFolder) {
                 //just support title only
                 QString path = "audio/title/";
@@ -174,13 +188,17 @@ public:
                 filter << "*.ogg";
                 dir->setNameFilters(filter);
                 QList<QFileInfo> file_info(dir->entryInfoList(filter));
+                
                 foreach(QFileInfo file, file_info) {
-                    if (!all.contains(path + file.fileName()))
-                        all << path + file.fileName();
+                    QString fileName = path + file.fileName();
+                    if ((file.fileName().startsWith("main") || file.fileName().startsWith("opening")))
+                        openings << fileName;
+                    else if (!all.contains(fileName))
+                        all << fileName;
                 }
             }
 
-            QScopedPointer<BackgroundMusicPlayList> playList(new BackgroundMusicPlayList(all, playOrder));
+            QScopedPointer<BackgroundMusicPlayList> playList(new BackgroundMusicPlayList(all, playOrder, openings));
             if (!m_playList || (*m_playList != *playList)) {
                 m_playList.swap(playList);
                 m_count = m_playList->count();

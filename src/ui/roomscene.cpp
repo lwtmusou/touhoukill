@@ -5122,7 +5122,6 @@ void RoomScene::setLordBGM(QString lord)
     if (!Config.EnableBgMusic)
         return;
     Audio::stopBGM();
-
     bool changeBGM = Config.value("UseLordBGM", true).toBool();
     //intialize default path
     bgm_path = Config.value("BackgroundMusic", "audio/title/main.ogg").toString();
@@ -5148,9 +5147,12 @@ void RoomScene::setLordBGM(QString lord)
             }
         }
     }
-
-    Audio::playBGM(bgm_path);
+    if (!QFile::exists(bgm_path))
+        Audio::playBGM("audio/title/main.ogg", true, true);
+    else
+        Audio::playBGM(bgm_path);
     Audio::setBGMVolume(Config.BGMVolume);
+
 
 
 #endif
