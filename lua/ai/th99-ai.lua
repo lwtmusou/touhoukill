@@ -1069,7 +1069,7 @@ sgs.ai_playerchosen_intention.bihuo =function(self, from, to)
 	sgs.ai_bihuo_effect =true
 end
 sgs.ai_slash_prohibit.bihuo = function(self, from, to, card)
-	if to:isKongcheng() then
+	if to:isKongcheng()  or to:getMark("bihuo") > 0 then
 		return false
 	end
 	if self:isFriend(from,to) then

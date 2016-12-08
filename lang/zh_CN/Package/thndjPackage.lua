@@ -55,7 +55,7 @@ return{
 	["youmu_ndj"] = "年代记SP妖梦" ,
 	["&youmu_ndj"] = "年代记妖梦" ,
 	["#youmu_ndj"] = "修行的庭师" ,
-	["designer:youmu_ndj"] = "",
+	["designer:youmu_ndj"] = "星野梦美☆",
 	
 	["illustrator:youmu_ndj"] = "年代记",
 	

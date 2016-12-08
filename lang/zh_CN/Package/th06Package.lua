@@ -168,7 +168,7 @@ return{ ["th06"] = "红魔乡",
 	--hmx007  势力：红 3血
 	["rumia"] = "露米娅",
 	["#rumia"] = "宵暗的妖怪",
-
+    ["designer:rumia"] = "星野梦美☆",
 	
 	["illustrator:rumia"] = "ポップル",
 	["origin:rumia"] = "p号：6034882，个人ID：888775",
@@ -238,7 +238,7 @@ return{ ["th06"] = "红魔乡",
 	["sakuya_sp"] = "SP猎人咲夜" ,
 	["#sakuya_sp"] = "吸血鬼猎人" ,
 	["&sakuya_sp"] = "猎人咲夜" ,
-	
+	["designer:sakuya_sp"] = "星野梦美☆",
 	
 	["illustrator:sakuya_sp"] = "羽々斬",
 	["origin:sakuya_sp"] = "p号：47540364,个人ID:2179695",

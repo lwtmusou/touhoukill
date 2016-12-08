@@ -5,7 +5,7 @@ return{
 	--dld001  势力：地 3血
 	["satori"] = "古明地觉",
 	["#satori"] = "连怨灵也恐惧的少女",
-	["designer:satori"] = "",
+	["designer:satori"] = "星野梦美☆",
 	
 	["illustrator:satori"] = "かめ",
 	["origin:satori"] = "p号：2776523，个人ID：87447",
@@ -109,7 +109,7 @@ return{
 	--dld005  势力：地 4血
 	["yugi"] = "星熊勇仪",
 	["#yugi"] = "人所谈论的怪力乱神",
-	["designer:yugi"] = "",
+	["designer:yugi"] = "星野梦美☆",
 	
 	["illustrator:yugi"] = "Ж",
 	["origin:yugi"] = "p号：3206198，个人ID：7541",

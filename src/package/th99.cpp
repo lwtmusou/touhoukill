@@ -1584,11 +1584,21 @@ class Bihuo : public TriggerSkill
 public:
     Bihuo() : TriggerSkill("bihuo")
     {
-        events << TargetConfirming;
+        events << TargetConfirming << EventPhaseChanging;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
     {
+        if (triggerEvent == EventPhaseChanging) {
+            foreach(ServerPlayer *p, room->getAllPlayers())
+                room->setPlayerMark(p, objectName(), 0);
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e != TargetConfirming)
+            return QList<SkillInvokeDetail>();
         CardUseStruct use = data.value<CardUseStruct>();
         if (!use.card->isKindOf("Slash"))
             return QList<SkillInvokeDetail>();
@@ -1596,7 +1606,7 @@ public:
         QList<SkillInvokeDetail> d;
         use.card->setFlags("IgnoreFailed");
         foreach (ServerPlayer *p, use.to) {
-            if (!p->hasSkill(this) || p->isKongcheng())
+            if (!p->hasSkill(this) || p->isKongcheng() || p->getMark(objectName()) > 0)
                 continue;
 
             bool flag = false;
@@ -1633,6 +1643,7 @@ public:
             i += invoke->invoker->getHandcardNum();
             bihuo_list[invoke->invoker->objectName()] = i;
             target->tag["bihuo"] = bihuo_list;
+            room->setPlayerMark(invoke->invoker, objectName(), 1);
 
             const Card *c = invoke->invoker->wholeHandCards();
             CardMoveReason r(CardMoveReason::S_REASON_GIVE, invoke->owner->objectName(), objectName(), QString());

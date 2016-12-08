@@ -463,6 +463,7 @@ function sgs.ai_cardsview_valuable.beishui(self, class_name, player)
 	if (sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE) then
 		return nil
 	end
+	if self.player:getMark("beishui") > 0 then return nil end 
 	local x = math.max(self.player:getHp(), 1)
 	local cards = self.player:getCards("hes")
 	cards=self:touhouAppendExpandPileToList(self.player,cards)
