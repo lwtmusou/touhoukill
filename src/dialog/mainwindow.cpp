@@ -166,6 +166,12 @@ void MainWindow::gotoScene(QGraphicsScene *scene)
     //QResizeEvent e(QSize(view->size().width() - 4, view->size().height() - 4), view->size());
     QResizeEvent e(QSize(view->size().width(), view->size().height()), view->size());
     view->resizeEvent(&e);
+    //play BGM 
+    if (Config.EnableBgMusic && !Audio::isBackgroundMusicPlaying()) {
+        Audio::stopBGM();
+        Audio::playBGM("audio/title/main.ogg", true, true);
+        Audio::setBGMVolume(Config.BGMVolume);
+    }
     changeBackground();
 }
 

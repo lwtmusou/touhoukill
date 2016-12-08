@@ -547,6 +547,10 @@ return{
 	
 	["illustrator:yuyuko_god"] = "赤りんご",
 	["origin:yuyuko_god"] = "p号：32219109,个人ID:164813",
+	["illustrator:yuyuko_god_1"] = "NEKO",
+	["origin:yuyuko_god_1"] = "p号：33060621,个人ID:2600911",
+	["illustrator:yuyuko_god_2"] = "RAN",
+	["origin:yuyuko_god_2"] = "p号：60095372,个人ID:2957827",
 	
 	["fanhun"] = "反魂",
 	[":fanhun"] = "<font color=\"#808080\"><b>永久技，</b></font>你进入濒死状态时，增加1点体力上限，将体力回复至体力上限，摸体力上限张数的牌。结束阶段开始时，若你的体力上限大于4，你死亡。",
@@ -562,6 +566,8 @@ return{
 	
 	["illustrator:satori_god"] = "ぼんた",
 	["origin:satori_god"] = "p号：17281878,个人ID:12945",
+	["illustrator:satori_god_1"] = "hitsu ",
+	["origin:satori_god_1"] = "p号：47473508,个人ID:671593",
 	
 	["xinhua"] = "心花",
 	[":xinhua"] = "当你成为其他角色使用牌的目标后或当你使用牌指定其他角色为目标后，你可以选择你和该角色的各一张手牌，交换之并依次明置之。",
@@ -582,6 +588,8 @@ return{
 	
 	["illustrator:aya_god"] = "夜汽車",
 	["origin:aya_god"] = "p号：27449018,个人ID:186716",
+	["illustrator:aya_god_1"] = "风骚华探长",
+	["origin:aya_god_1"] = "p号：52206792,个人ID:4122676",
 	
 	["tianqu"] = "天衢",
 	[":tianqu"] = "你于出牌阶段空闲时间点使用牌可以无视合法性选择其他角色为目标。你使用牌无次数限制。",
@@ -597,6 +605,8 @@ return{
 	
 	["illustrator:seiga_god"] = "白蘇ふぁみ",
 	["origin:seiga_god"] = "p号：54003676,个人ID:5860132",
+	["illustrator:seiga_god_1"] = "ゾウノセ",
+	["origin:seiga_god_1"] = "p号：35834843,个人ID:2622803",
 	
 	["huanhun"] = "还魂",
 	[":huanhun"] = "<font color=\"#808080\"><b>永久技，</b></font>当其他角色死亡后，若你已死亡，你以游戏开始时的状态重新加入游戏。",

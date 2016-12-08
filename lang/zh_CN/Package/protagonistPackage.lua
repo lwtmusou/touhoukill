@@ -228,8 +228,12 @@ return {
 	["#reimu_old"] = "维护梦与传统的巫女" ,
 	["&reimu_old"] = "旧作灵梦" ,
 	["designer:reimu_old"] = "圆神狂热信徒",
+	
 	["illustrator:reimu_old"] = "november",
 	["origin:reimu_old"] = "p号：31984422，个人ID：1979063",
+	["illustrator:reimu_old_1"] = "くろぬこネーロ",
+	["origin:reimu_old_1"] = "p号：32920520，个人ID：335493",
+
 	
 	["yinyang"] = "阴阳" ,
 	[":yinyang"] = "出牌阶段限一次，你可令一名其他角色弃置一张手牌，然后你弃置一张手牌。若以此法弃置了两张颜色不同的牌，其摸一张牌然后回复1点体力。若以此法弃置了两张颜色相同的牌，你摸两张牌然后失去1点体力。" ,
