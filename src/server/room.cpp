@@ -6551,7 +6551,7 @@ void Room::saveWinnerTable(const QString &winner)
         if (p->getState() != "robot")
             count++;
     }
-    if (count < getAllPlayers(true).length() / 2)
+    if (getAllPlayers(true).length() < 6 || count < getAllPlayers(true).length() / 2)
         return;
 
     QString location = "etc/winner/";
