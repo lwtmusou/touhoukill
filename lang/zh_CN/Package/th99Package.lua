@@ -146,8 +146,8 @@ return{
 	["#yorihime"] = "受神灵凭依的月之公主",
 	["designer:yorihime"] = "星野梦美☆",
 	
-	["illustrator:yorihime"] = "PFALZ",
-	["origin:yorihime"] = "p号：3470615，个人ID：6539",
+	["illustrator:yorihime"] = "六羽田 トモエ ",
+	["origin:yorihime"] = "",
 	["illustrator:yorihime_1"] = "PFALZ",
 	["origin:yorihime_1"] = "p号：8345313，个人ID：6539",
 	["illustrator:yorihime_2"] = "ideolo",
@@ -276,6 +276,8 @@ return{
 	
 	["illustrator:cirno_sp"] = "隂宅",
 	["origin:cirno_sp"] = "p号：无,个人ID:979179",
+	["illustrator:cirno_sp_1"] = "ゆき",
+	["origin:cirno_sp_1"] = "p号：20341828,个人ID:20341828",
 	
 	["xunshi"] = "寻事",
 	[":xunshi"] = "<font color=\"blue\"><b>锁定技，</b></font>当其他角色使用【杀】或【桃】或普通锦囊牌指定目标时，若你不是此牌的目标，且其体力值或手牌数大于你，你摸一张牌并成为额外目标。",
@@ -293,8 +295,10 @@ return{
 	["&mamizou_sp"] = "铃奈庵猯藏" ,
 	["designer:mamizou_sp"] = "星野梦美☆",
 	
-	["illustrator:mamizou_sp"] = "りひと",
-	["origin:mamizou_sp"] = "p号：53048830,个人ID:1463626",
+	["illustrator:mamizou_sp"] = "抽风男",
+	["origin:mamizou_sp"] = "p号：44181708,个人ID:9838093",
+	["illustrator:mamizou_sp_1"] = "りひと",
+	["origin:mamizou_sp_1"] = "p号：53048830,个人ID:1463626",
 	
 	["zhangmu"] = "障目",
 	[":zhangmu"] = "当你成为【杀】或【过河拆桥】或【顺手牵羊】的目标后，你可以将手牌补至三张，然后将两张手牌扣置于人物牌上，称为“障”。若如此做，此牌结算完毕后：若你没有手牌，获得所有“障”；否则，将所有“障”置入弃牌堆。",
@@ -313,8 +317,11 @@ return{
 	["#reisen2"] = "赎罪的月兔" ,
 	["designer:reisen2"] = "辰焰天明",
 	
-	["illustrator:reisen2"] = "くろぬこネーロ",
-	["origin:reisen2"] = "p号：33268695,个人ID:335493",
+	["illustrator:reisen2"] = " 小龍 ",
+	["origin:reisen2"] = "p号：56463981,个人ID:8780063",
+	["illustrator:reisen2_1"] = "くろぬこネーロ",
+	["origin:reisen2_1"] = "p号：33268695,个人ID:335493",
+	
 	["sixiang"] = "思乡",
 	[":sixiang"] = "<font color=\"blue\"><b>锁定技，</b></font>一名角色的准备阶段开始时，若你不处于连环状态，你横置并回复1点体力。",
 	["daoyao"] = "捣药",

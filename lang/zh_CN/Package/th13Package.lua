@@ -140,6 +140,8 @@ return{
 	["origin:yoshika_2"] = "p号：35882272，个人ID：192311",
 	["illustrator:yoshika_3"] = "tucana",
 	["origin:yoshika_3"] = "p号：18499354，个人ID：1593245",
+	["illustrator:yoshika_4"] = " 二酸化炭素 ",
+	["origin:yoshika_4"] = "p号：56385422",
 	
 	["duzhua"]= "毒爪",
 	[":duzhua"]= "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一张红色手牌当【杀】使用，此【杀】不计入次数限制。",
@@ -180,6 +182,9 @@ return{
 	["origin:yuyuko_slm_1"] = "p号：22766094，个人ID：41977",
 	["illustrator:yuyuko_slm_2"] = "一葉モカ",
 	["origin:yuyuko_slm_2"] = "p号：17232914，个人ID：464525",
+	["illustrator:yuyuko_slm_3"] = "はいばね",
+	["origin:yuyuko_slm_3"] = "p号：22145913",
+	
 	
 	["chuixue"] = "吹雪" ,
 	[":chuixue"] = "弃牌阶段结束时，若此阶段内你弃置了不少于一张手牌，你可令一名其他角色选择一项：弃置一张手牌，此牌的花色不能与此阶段内你弃置的任一张手牌相同；或失去1点体力。" ,

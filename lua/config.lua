@@ -10,7 +10,7 @@ config = {
 	 --"gzz"
 	},
 	kingdom_colors = {
-		pc98 = "#0000ff";
+		pc98 = "#a699cc";
 		zhu ="#853dcc",
 		hmx = "#cc1414",
 		yym = "#3d3dcc",
@@ -151,7 +151,7 @@ config = {
 		"kosuzu->akyuu",
 		"tokiko->rinnosuke",
 		"unzan->ichirin",
-		"mokou_sp->mokou",
+		"mokou_sp|mokou_ndj->mokou",
 		"nue_slm->nue",
 		"sanae_slm|sanae_sp|sanae_ndj->sanae",
 		"yorihime->toyohime",
@@ -165,9 +165,10 @@ config = {
 		"mamizou_sp->mamizou",
 		"sakuya_sp->sakuya",
 		"reisen2->tewi",
-        "merry->renko",
+        "merry|merry_ndj|renko_ndj->renko",
 		"lunar|star->sunny",
 		"kogasa_slm->kogasa",
 		"shanghai->alice",
+		"kaguya_ndj->kaguya",
 	}
 }

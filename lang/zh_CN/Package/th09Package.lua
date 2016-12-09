@@ -47,7 +47,9 @@ return
 	["origin:shikieiki_3"] = "p号：8978341，个人ID：319018", --（貌似可以）
 	["illustrator:shikieiki_4"] = "カズ",
 	["origin:shikieiki_4"] = "p号：4734540，个人ID：137496",
-
+	["illustrator:shikieiki_5"] = " 偽造光 ",
+	["origin:shikieiki_5"] = "p号：19042745，个人ID：90809",
+	
 	["shenpan"] = "审判" ,
 	[":shenpan"] = "摸牌阶段开始时，你可以放弃摸牌，对一名其他角色造成1点雷电伤害，然后若其手牌数大于其体力值，你摸一张牌。" ,
 	["@shenpan-select"] = "你可以对一名其他角色发动“审判”。",
@@ -95,6 +97,8 @@ return
 	["origin:yuka_3"] = "个人ID：173876",
 	["illustrator:yuka_4"] = "赤シオ",
 	["origin:yuka_4"] = "p号：27321553，个人ID：341747",
+	["illustrator:yuka_5"] = "薩摩シャモ",
+	["origin:yuka_5"] = "p号：57598230，个人ID：18839016",
 	
 	["weiya"] = "威压",
 	[":weiya"] = "<font color=\"blue\"><b>锁定技，</b></font>当其他角色于你的回合内使用或打出基本牌或【无懈可击】时（代替判定牌时除外），其选择一项：令此牌无效，或弃置一张与此牌名称相同的牌。",
@@ -104,9 +108,9 @@ return
 
 --**********************************************
 	--zhan005  势力：战 3血
-	["medicine"]="梅蒂馨",
+	["medicine"]="梅蒂欣",
 	["#medicine"]= "小小的甜蜜毒药",
-	["!medicine"]="梅蒂馨·梅兰克莉",
+	["!medicine"]="梅蒂欣·梅兰可莉",
 	["designer:medicine"] = "星野梦美☆",
 	
 	["illustrator:medicine"] = "フカヒレ",
@@ -138,6 +142,10 @@ return
 	["origin:aya_sp_1"] = "p号：18047920，个人ID：292644",
 	["illustrator:aya_sp_2"] = "ゆらみ 琥珀",
 	["origin:aya_sp_2"] = "p号：37017005，个人ID：321156",
+	["illustrator:aya_sp_3"] = " ウラジロ ",
+	["origin:aya_sp_3"] = "p号：48319281，个人ID：3517911",
+
+
 	
 	["toupai"]= "偷拍",
 	[":toupai"]= "摸牌阶段开始时，你可以放弃摸牌，改为观看一名有手牌的其他角色的手牌，你可以弃置其中的一至三张红色牌。每以此法弃置一张基本牌，你摸一张牌。",
@@ -160,6 +168,8 @@ return
 	["origin:tenshi_3"] = "p号：9218445，个人ID：341747",
 	["illustrator:tenshi_4"] = " 亜音",
 	["origin:tenshi_4"] = "p号：45069411，个人ID：759647",
+	["illustrator:tenshi_5"] = " 甘党",
+	["origin:tenshi_5"] = "p号：23900559，个人ID：298982",
 	
 	["feixiang"] = "绯想",
 	[":feixiang"] = "当判定牌生效前，你可以选择一名角色的一张牌并令其打出此牌代替判定牌。",

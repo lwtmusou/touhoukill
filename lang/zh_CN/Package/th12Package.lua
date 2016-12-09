@@ -20,6 +20,8 @@ return{
 	["origin:byakuren_4"] = "p号：28915858，个人ID：544479",
 	["illustrator:byakuren_5"] = "えふぇ",
 	["origin:byakuren_5"] = "p号：35775774，个人ID：292644",
+	["illustrator:byakuren_6"] = "粗茶",
+	["origin:byakuren_6"] = "p号：51629988",
 	
 	["pudu"] = "普渡",
 	[":pudu"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可令一名已受伤的其他角色回复1点体力，然后你失去1点体力。",
@@ -69,6 +71,8 @@ return{
 	["origin:toramaru_3"] = "p号：15554954，个人ID：915945",
 	["illustrator:toramaru_4"] = "hacko.",
 	["origin:toramaru_4"] = "p号：45146370，个人ID：1289866",
+	["illustrator:toramaru_5"] = "伊吹のつ.",
+	["origin:toramaru_5"] = "p号：57959067",
 	
 	["zhengyi"] = "正义",
 	[":zhengyi"] = "当你成为黑色【杀】或黑色普通锦囊牌的目标后，你可以弃置一张红色牌，令此牌对你无效。",

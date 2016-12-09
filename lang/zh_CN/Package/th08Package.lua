@@ -21,6 +21,8 @@ return
 	["origin:kaguya_4"] = "p号：35692337，个人ID：5771665",
 	["illustrator:kaguya_5"] = "エミニャ",
 	["origin:kaguya_5"] = "p号：25988635，个人ID：2888863",
+	["illustrator:kaguya_6"] = " kirero ",
+	["origin:kaguya_6"] = "p号：60021754，个人ID：35490",
 	
 	["yongheng"] = "永恒",
 	[":yongheng"] = "<font color=\"blue\"><b>锁定技，</b></font>你跳过弃牌阶段并将手牌调整至四张。当你于回合外获得或失去手牌后，你将手牌调整至四张。",
@@ -34,8 +36,8 @@ return
 	["#eirin"] = "月之头脑",
 	["designer:eirin"] = "星野梦美☆",
 	
-	["illustrator:eirin"] = "岩本ゼロゴ",
-	["origin:eirin"] = "个人ID：3080",
+	["illustrator:eirin"] = "ryosios",
+	["origin:eirin"] = "p号：50353643, 个人ID：1508165",
 	["illustrator:eirin_1"] = "ふうりん",
 	["origin:eirin_1"] = "p号：29195668，个人ID：174971",
 	["illustrator:eirin_2"] = "なむこ",
@@ -44,6 +46,8 @@ return
 	["origin:eirin_3"] = "p号：9195991，个人ID：110090",
 	["illustrator:eirin_4"] = "竹内真太郎",
 	["origin:eirin_4"] = "p号：15726814，个人ID：293912",
+	["illustrator:eirin_5"] = "岩本ゼロゴ",
+	["origin:eirin_5"] = "个人ID：3080",
 	
 	["ruizhi"] = "睿智",
 	[":ruizhi"] = "在普通锦囊牌对你结算后，若你已受伤，你可以判定，若结果为红色，你回复1点体力。",
@@ -66,6 +70,8 @@ return
 	["origin:mokou_2"] = "p号：11667838，个人ID：281166",
 	["illustrator:mokou_3"] = "ideolo",
 	["origin:mokou_3"] = "p号：13292224，个人ID：61513",
+	["illustrator:mokou_4"] = " saku ",
+	["origin:mokou_4"] = "p号：2318512，个人ID：19937",
 	
 	["bumie"] = "不灭",
 	[":bumie"] = "<font color=\"blue\"><b>锁定技，</b></font>每当你扣减1点体力时，若你的体力不大于体力下限，防止此体力扣减效果。当你扣减体力值后或失去手牌后，若你的体力不大于体力下限且没有手牌，你摸一张牌并展示之，若此牌不为<font size=\"5\", color=\"#FF0000\"><b>♦</b></font>，你失去1点体力上限并回复体力至上限。",
@@ -114,6 +120,8 @@ return
 	["origin:keine_2"] = "p号：9193603，个人ID：61513", 
 	["illustrator:keine_3"] = "にしもん",
 	["origin:keine_3"] = "p号：46607061，个人ID：202286",
+	["illustrator:keine_4"] = "Vetina",
+	["origin:keine_4"] = "p号：20977707，个人ID：516980",
 	
 	["shishi"] = "噬史",
 	[":shishi"] = "当其他角色使用【杀】或普通锦囊牌时，若没有“历史”，你可令此牌无效。若如此做，将此牌置于人物牌上，称为“历史”，然后你弃置一张手牌。",
@@ -206,6 +214,8 @@ return
 	["origin:shirasawa_2"] = "p号：42363199，个人ID：3757061",
 	["illustrator:shirasawa_3"] = "kaze",
 	["origin:shirasawa_3"] = "p号：41073789，个人ID：2579204",
+	["illustrator:shirasawa_4"] = "いちやん",
+	["origin:shirasawa_4"] = "p号：28601583，个人ID：3096443",
 	
 	["chuangshi"] = "创史",
 	[":chuangshi"] = "摸牌阶段开始时，你可令一名其他角色视为使用你指定的任意基本牌或普通锦囊牌（【酒】、【南蛮入侵】、【万箭齐发】、【桃园结义】除外，此牌需指定的目标由你选择）。若如此做，此阶段你少摸一张牌。",
@@ -232,6 +242,8 @@ return
 	["origin:mokou_sp_1"] = "p号：17461431，个人ID：286217",
 	["illustrator:mokou_sp_2"] = "藍空",
 	["origin:mokou_sp_2"] = "p号：22011676，个人ID：74414",
+	["illustrator:mokou_sp_3"] = "Lowlight.K ",
+	["origin:mokou_sp_3"] = "(p号: 10738620)",
 	
 	["huwei"] = "护卫",
 	[":huwei"] = "当你于出牌阶段外需要使用或打出【杀】时，你可以摸两张牌。当你于出牌阶段外使用、打出或弃置一张【杀】时，你可令一名其他角色摸两张牌。",

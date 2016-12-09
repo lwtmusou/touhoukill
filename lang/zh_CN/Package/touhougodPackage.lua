@@ -23,7 +23,9 @@ return{
 	["origin:yukari_god_1"] = "p号:18527886，个人ID：2600911" ,
 	["illustrator:yukari_god_2"] = "鈴蘭",
 	["origin:yukari_god_2"] = "p号:26157977，个人ID：1086157" ,
-
+	["illustrator:yukari_god_3"] = "stari ",
+	["origin:yukari_god_3"] = "",
+	
 	["jiexian"] = "界线",
 	[":jiexian"] = "当一名角色受到伤害时，你可以弃置一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，防止此伤害，令其回复1点体力。当一名角色回复体力时，你可以弃置一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，防止此体力回复效果，令其受到无来源的1点伤害。",
 	["@jiexiandamage"] = "你可以发动“界线”，弃置一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，防止 <font color=\"#00FF00\"><b>%src </b></font> 受到的伤害，并使其回复1点体力。",
@@ -45,6 +47,8 @@ return{
 	["origin:remilia_god_1"] = "p号:33584365，个人ID：1686747" ,
 	["illustrator:remilia_god_2"] = "non",
 	["origin:remilia_god_2"] = "p号:37458038，个人ID：19068" ,
+	["illustrator:remilia_god_2"] = "UGUME",
+	["origin:remilia_god_2"] = "p号:53998812，个人ID：1457830" ,
 
 	["zhouye"] = "昼夜",
 	[":zhouye"] = "<font color=\"blue\"><b>锁定技，</b></font>准备阶段开始时，你弃所有“夜”标记，然后将牌堆顶的一张牌置入弃牌堆，若为黑色，你获得一枚“夜”标记。若你没有“夜”标记，你不能使用【杀】。",
@@ -142,6 +146,10 @@ return{
 	["origin:flandre_god_1"] = "p号：10349300，个人ID：94883", 
 	["illustrator:flandre_god_2"] = "6U",
 	["origin:flandre_god_2"] = "p号：18638832，个人ID：94883",
+	["illustrator:flandre_god_2"] = "6U",
+	["origin:flandre_god_2"] = "p号：18638832，个人ID：94883",
+	["illustrator:flandre_god_3"] = "6U",
+	["origin:flandre_god_3"] = "p号：22217688，个人ID：94883",
 	
 	["kuangyan"]= "狂宴",
 	[":kuangyan"]= "当你于其他角色的回合内进入濒死状态时，你可以获得一枚“禁忌”标记并回复体力至体力下限，然后对当前回合的角色造成1点伤害。",
@@ -167,6 +175,8 @@ return{
 	["origin:sakuya_god_1"] = "p号：17018428，个人ID：64821",
 	["illustrator:sakuya_god_2"] = "Tro",
 	["origin:sakuya_god_2"] = "p号：16104268，个人ID：52449",
+	["illustrator:sakuya_god_3"] = " c7肘 ",
+	["origin:sakuya_god_3"] = "p号：44808875，个人ID：217707",
 	
 	["shicao"] = "时操",
 	[":shicao"] = "<font color=\"blue\"><b>锁定技，</b></font>准备阶段开始时，若此回合不是额外回合，你获得一枚“时”标记。",
@@ -197,6 +207,8 @@ return{
 	["origin:youmu_god_1"] = "p号：34846796，个人ID：825635",
 	["illustrator:youmu_god_2"] = "しがらき",
 	["origin:youmu_god_2"] = "p号：30393575，个人ID：1004274",
+	["illustrator:youmu_god_3"] = "ryosios",
+	["origin:youmu_god_3"] = "p号：50353497，个人ID：1508165",
 	
 	["banling"] = "半灵",
 	[":banling"] = "<font color=\"#808080\"><b>永久技，</b></font>你拥有人体力和灵体力。你的体力值与其中较少的那种相同。若你的体力或体力上限将发生1点改变，你选择两种体力中的一种进行结算。",
@@ -308,6 +320,8 @@ return{
 	["origin:shikieiki_god_1"] = "p号：32122356，个人ID：286217",
 	["illustrator:shikieiki_god_2"] = "memai",
 	["origin:shikieiki_god_2"] = "p号：2537720",
+	["illustrator:shikieiki_god_3"] = "memai",
+	["origin:shikieiki_god_3"] = "p号：2537720",
 	
 	["quanjie"] = "劝诫" ,
 	[":quanjie"] = "其他角色的出牌阶段开始时，你可令其选择一项：摸一张牌，其于此回合内不能使用【杀】；或弃置一张【杀】。" ,
@@ -329,6 +343,8 @@ return{
 	["origin:meirin_god_1"] = "p号：14127493，个人ID：293912",
 	["illustrator:meirin_god_2"] = "もねてぃ",
 	["origin:meirin_god_2"] = "p号：43112047，个人ID：3066815",
+	["illustrator:meirin_god_3"] = "純（すなお）",
+	["origin:meirin_god_3"] = "p号：58340947，个人ID：209109",
 	
 	["huaxiang"] = "华想",
 	[":huaxiang"] = "当你需要使用或打出基本牌或【无懈可击】时，你可以声明之（若你的体力上限大于3，不能声明【闪】；若大于2，不能声明【桃】；若大于1，不能声明【无懈可击】），并将一张与你人物牌上的任何一张牌花色均不同的手牌置于人物牌上，称为“虹”，你视为使用或打出了一张你声明的牌。",
@@ -356,6 +372,10 @@ return{
 	["origin:eirin_god_1"] = "p号：38148654，个人ID：942466",
 	["illustrator:eirin_god_2"] = "にしもん",
 	["origin:eirin_god_2"] = "p号：45011715，个人ID：202286",
+	["illustrator:eirin_god_3"] = "minusT",
+	["origin:eirin_god_3"] = "p号：57556628，个人ID：15772166",
+	["illustrator:eirin_god_4"] = "鏡 Area",
+	["origin:eirin_god_4"] = "p号：49697676，个人ID：2623593",
 	
 	["qiannian"] = "千年",
 	[":qiannian"] = "<font color=\"blue\"><b>锁定技，</b></font>游戏开始时或洗牌后，你获得一枚“岁月”标记。摸牌阶段，你多摸X张牌（X为“岁月”标记的数量）。你的手牌上限增加X的2倍。",
@@ -394,6 +414,8 @@ return{
 	["origin:byakuren_god_1"] = "p号：13228444，个人ID：1372893",
 	["illustrator:byakuren_god_2"] = "覚醒",
 	["origin:byakuren_god_2"] = "p号：36099374，个人ID：838019",
+	["illustrator:byakuren_god_3"] = "ゾウノセ",
+	["origin:byakuren_god_3"] = "p号：54089405",
 	
 	["chaoren"] = "超人" ,
 	[":chaoren"] = "牌堆顶的牌对你可见。你可以使用或打出此牌。",
@@ -449,6 +471,8 @@ return{
 	["origin:suwako_god_1"] = "p号：51609431",
 	["illustrator:suwako_god_2"] = "もしよ",
 	["origin:suwako_god_2"] = "p号：45182321",
+	["illustrator:suwako_god_3"] = " 粟 ",
+	["origin:suwako_god_3"] = "p号：44497383",
 
 	["zuosui"] = "作祟",
 	[":zuosui"] = "当你对其他角色造成伤害时，你可以防止此伤害并获得一枚“信仰”标记，令其选择一个不大于4的正整数X，然后你选择一项：令其摸X张牌，然后其失去X点体力；或令其将牌弃至X张。",
@@ -508,6 +532,8 @@ return{
 	["origin:kaguya_god_1"] = "p号：26921148",
 	["illustrator:kaguya_god_2"] = "乃絵のえる",
 	["origin:kaguya_god_2"] = "p号：51840626",
+	["illustrator:kaguya_god_3"] = "鏡 Area",
+	["origin:kaguya_god_3"] = "p号：46207117，个人ID：2623593",
 	
 	["shenbao"] = "神宝",
 	[":shenbao"] = "<font color=\"blue\"><b>锁定技，</b></font>视为你装备着场上的所有装备牌（武器牌的攻击范围取最长，名称不同的装备牌效果均叠加，你不能发动不在你装备区里的【木牛流马】的特效）。",
@@ -545,10 +571,10 @@ return{
 	["#yuyuko_god"] = "天衣无缝的亡灵",
 	["designer:yuyuko_god"] = "三国有单",
 	
-	["illustrator:yuyuko_god"] = "赤りんご",
-	["origin:yuyuko_god"] = "p号：32219109,个人ID:164813",
-	["illustrator:yuyuko_god_1"] = "NEKO",
-	["origin:yuyuko_god_1"] = "p号：33060621,个人ID:2600911",
+	["illustrator:yuyuko_god"] = "NEKO",
+	["origin:yuyuko_god"] = "p号：33060621,个人ID:2600911",
+	["illustrator:yuyuko_god_1"] = "赤りんご",
+	["origin:yuyuko_god_1"] = "p号：32219109,个人ID:164813",
 	["illustrator:yuyuko_god_2"] = "RAN",
 	["origin:yuyuko_god_2"] = "p号：60095372,个人ID:2957827",
 	
@@ -568,6 +594,8 @@ return{
 	["origin:satori_god"] = "p号：17281878,个人ID:12945",
 	["illustrator:satori_god_1"] = "hitsu ",
 	["origin:satori_god_1"] = "p号：47473508,个人ID:671593",
+		["illustrator:satori_god_2"] = "皆村",
+	["origin:satori_god_2"] = "p号：28695491，个人ID：6098",
 	
 	["xinhua"] = "心花",
 	[":xinhua"] = "当你成为其他角色使用牌的目标后或当你使用牌指定其他角色为目标后，你可以选择你和该角色的各一张手牌，交换之并依次明置之。",
@@ -586,10 +614,14 @@ return{
 	["#aya_god"] = "风雨之鸦" ,
 	["designer:aya_god"] = "三国有单",
 	
-	["illustrator:aya_god"] = "夜汽車",
-	["origin:aya_god"] = "p号：27449018,个人ID:186716",
+	["illustrator:aya_god"] = "リリア",
+	["origin:aya_god"] = "p号：10207828，个人ID：997454",
 	["illustrator:aya_god_1"] = "风骚华探长",
 	["origin:aya_god_1"] = "p号：52206792,个人ID:4122676",
+	["illustrator:aya_god_2"] = "夜汽車",
+	["origin:aya_god_2"] = "p号：27449018,个人ID:186716",
+	["illustrator:aya_god_3"] = "中壱（なかいち）",
+	["origin:aya_god_3"] = "p号：54770479,个人ID:2134064",
 	
 	["tianqu"] = "天衢",
 	[":tianqu"] = "你于出牌阶段空闲时间点使用牌可以无视合法性选择其他角色为目标。你使用牌无次数限制。",
