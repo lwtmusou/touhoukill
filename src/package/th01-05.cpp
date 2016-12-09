@@ -737,10 +737,10 @@ public:
 
 };
 
-class Youyue : public TriggerSkill
+class Yeyan : public TriggerSkill
 {
 public:
-    Youyue() : TriggerSkill("youyue")
+    Yeyan() : TriggerSkill("yeyan")
     {
         events << TargetSpecified;
         frequency = Compulsory;
@@ -768,7 +768,7 @@ public:
 
         QList<ServerPlayer *> logto;
         logto << invoke->targets;
-        room->touhouLogmessage("#youyue", invoke->invoker, objectName(), logto, use.card->objectName());
+        room->touhouLogmessage("#yeyan", invoke->invoker, objectName(), logto, use.card->objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
         foreach(ServerPlayer *to, invoke->targets) {
             if (!to->canDiscard(to, "hs"))
@@ -776,7 +776,7 @@ public:
 
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), to->objectName());
             QStringList prompt_list;
-            prompt_list << "youyue-discard" << use.card->objectName()
+            prompt_list << "yeyan-discard" << use.card->objectName()
                 << invoke->invoker->objectName();
             QString prompt = prompt_list.join(":");
             const Card *card = room->askForCard(to, ".!", prompt, data, Card::MethodDiscard);
@@ -808,11 +808,11 @@ public:
             QString type = card->getType();
             QString pattern = QString("%1Card|.|.|hand").arg(type.left(1).toUpper() + type.right(type.length() - 1));
             QStringList prompt_list1;
-            prompt_list1 << "youyue-show" << use.card->objectName()
+            prompt_list1 << "yeyan-show" << use.card->objectName()
                 << to->objectName() << card->getType();
             QString prompt1 = prompt_list1.join(":");
-            invoke->invoker->tag["youyue_target"] = QVariant::fromValue(to);
-            invoke->invoker->tag["youyue_card"] = QVariant::fromValue(card);
+            invoke->invoker->tag["yeyan_target"] = QVariant::fromValue(to);
+            invoke->invoker->tag["yeyan_card"] = QVariant::fromValue(card);
 
             const Card *card1 = room->askForCard(invoke->invoker, pattern, prompt1, data, Card::MethodNone);
             if (card1)
@@ -827,10 +827,10 @@ public:
 
 };
 
-class Yeyan : public TriggerSkill
+class Youyue : public TriggerSkill
 {
 public:
-    Yeyan() : TriggerSkill("yeyan")
+    Youyue() : TriggerSkill("youyue")
     {
         events << EventPhaseEnd;
     }
@@ -1761,8 +1761,8 @@ TH0105Package::TH0105Package()
     kana->addSkill(new Mengxiao);
 
     General *yuka_old = new General(this, "yuka_old$", "pc98", 4, false);
-    yuka_old->addSkill(new Youyue);
     yuka_old->addSkill(new Yeyan);
+    yuka_old->addSkill(new Youyue);
     yuka_old->addSkill(new Menghuan);
 
     General *gengetsumugetsu = new General(this, "gengetsumugetsu", "pc98", 3, false);

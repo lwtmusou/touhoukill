@@ -275,7 +275,7 @@ sgs.ai_skill_playerchosen.mengxiao = function(self, targets)
 end
 
 
-function youyue_judge(self,target,card)
+function yeyan_judge(self,target,card)
 	if card:isKindOf("AmazingGrace") then
 		return 2
 	end
@@ -302,10 +302,10 @@ function youyue_judge(self,target,card)
 	end
 	return 1
 end
-sgs.ai_skill_cardask["youyue-show"] = function(self, data)
-	local target = self.player:getTag("youyue_target"):toPlayer()
+sgs.ai_skill_cardask["yeyan-show"] = function(self, data)
+	local target = self.player:getTag("yeyan_target"):toPlayer()
 	local use = data:toCardUse()
-	local showcard = self.player:getTag("youyue_card"):toCard()
+	local showcard = self.player:getTag("yeyan_card"):toCard()
 	local res = youyue_judge(self, target, use.card)
 
 	if (res == 1 and self:isEnemy(target))  or (res== 2 and self:isFriend(target)) then
@@ -323,7 +323,7 @@ sgs.ai_skill_cardask["youyue-show"] = function(self, data)
 	return "."
 end
 
-sgs.ai_skill_invoke.yeyan = true
+sgs.ai_skill_invoke.youyue = true
 
 
 sgs.ai_skill_invoke.huantong = true

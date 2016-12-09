@@ -5,13 +5,13 @@ return {
 
 	--pc98001 魅魔 势力：旧 4血
 	["mima"] = "魅魔" ,
-	["#mima"] = "将命运托付给久远的梦的精神",
+	["#mima"] = "复仇的幽灵",
 	["designer:mima"] = "bullytou",
 	
-	["illustrator:mima"] = "Cro",
-	["origin:mima"] = "p号：4117188，个人ID：185077",
-	["illustrator:mima_1"] = "ん",
-	["origin:mima_1"] = "个人ID：134827",
+	["illustrator:mima"] = "ん",
+	["origin:mima"] = "个人ID：134827",
+	["illustrator:mima_1"] = "Cro",
+	["origin:mima_1"] = "p号：4117188，个人ID：185077",
 	["illustrator:mima_2"] = "カタケイ",
 	["origin:mima_2"] = "p号：43376152, 个人ID：90042",
 	
@@ -28,13 +28,13 @@ return {
 	["yumemi"] = "冈崎梦美",
 	["#yumemi"] = "梦幻传说",
 	["designer:yumemi"] = "三国有单",
-	
-	["illustrator:yumemi"] = "qyx",
-	["origin:yumemi"] = "个人ID:31564",
+		
+	["illustrator:yumemi"] = "poppy",
+	["origin:yumemi"] = "个人ID:3596054",
 	["illustrator:yumemi_1"] = "Yukian",
 	["origin:yumemi_1"] = "p号： 42368069,个人ID:4440",
-	["illustrator:yumemi_2"] = "poppy",
-	["origin:yumemi_2"] = "个人ID:3596054",
+	["illustrator:yumemi_2"] = "qyx",
+	["origin:yumemi_2"] = "个人ID:31564",
 	["illustrator:yumemi_3"] = "隂宅",
 	["origin:yumemi_3"] = "个人ID:979179",
 	["illustrator:yumemi_4"] = " えに ",
@@ -54,8 +54,6 @@ return {
 	[":shigui"] = "摸牌阶段或出牌阶段结束时，你可以将手牌调整至X张（X为此回合已执行阶段数）。若以此法获得牌，你失去1点体力；若以此法失去牌，你回复1点体力。<font color=\"green\"><b>每回合限一次。</b></font>",
 
 	
-	--["shigui"] = "时轨",
-	--[":shigui"] = "出牌阶段结束时，若你的手牌数大于X（X为此回合已执行阶段的数量），你可以将手牌弃至X张，回复1点体力。摸牌阶段结束时，若你的手牌数小于X，你可以将手牌补至X张，失去1点体力。",
 	["shigui_draw"] = "时轨(摸牌)",
 	["shigui_play"] = "时轨(弃牌)",
 	["shigui_discard"] = "你发动“时轨(弃牌)”，请弃置%src张手牌。",
@@ -74,14 +72,16 @@ return {
 	["#chiyuri"] = "超越时空的梦幻居民",
 	["designer:chiyuri"] = "三国有单",
 	
-	["illustrator:chiyuri"] = "ワダンテ",
-	["origin:chiyuri"] = "p号：51430579 ,个人ID:3811457",
+	["illustrator:chiyuri"] = "・・・（mitei）",
+	["origin:chiyuri"] = "p号： 50573343,个人ID:4752685",
 	["illustrator:chiyuri_1"] = "伊吹のつ",
 	["origin:chiyuri_1"] = "p号： 51921215,个人ID:7013",
 	["illustrator:chiyuri_2"] = "miya (tsumazukanai)",
 	["origin:chiyuri_2"] = "p号：,个人ID:",
 	["illustrator:chiyuri_3"] = " 朧月カケル ",
 	["origin:chiyuri_3"] = "p号：1969063,个人ID:47896",
+	["illustrator:chiyuri_4"] = "ワダンテ",
+	["origin:chiyuri_4"] = "p号：51430579 ,个人ID:3811457",
 	
 	["zhence"] = "侦测",
 	[":zhence"] = "摸牌阶段或出牌阶段开始前，你可以视为使用【火攻】。当你使用此牌造成伤害后，你摸一张牌并跳过该阶段。",
@@ -121,11 +121,12 @@ return {
 	["#kana"] = "失去梦的少女骚灵" ,
 	["designer:kana"] = "三国有单",
 	
-	["illustrator:kana"] = "Culter",
-	["origin:kana"] = "p号：37805413,个人ID:542147",
+	["illustrator:kana"] = " c7肘 ",
+	["origin:kana"] = "p号：44923233,个人ID:217707",
 	["illustrator:kana_1"] = "Magician",
 	["origin:kana_1"] = "p号：51366112,个人ID:5100338",
-
+	["illustrator:kana_2"] = "Culter",
+	["origin:kana_2"] = "p号：37805413,个人ID:542147",
 	
 	["lubiao"] = "路标",
 	[":lubiao"] = "其他角色的回合开始时，若你的判定区里没有牌，你可以选择将牌堆顶的一张牌：当【兵粮寸断】置于你的判定区里，令其跳过摸牌阶段；或当【乐不思蜀】置于你的判定区里，令其跳过出牌阶段。",
@@ -144,35 +145,39 @@ return {
 	["#yuka_old"] = "妖怪小姐" ,
 	["designer:yuka_old"] = "辰焰天明",
 	
-	["illustrator:yuka_old"] = "くろぬこネーロ",
-	["origin:yuka_old"] = "p号：32809829,个人ID:335493",
+	["illustrator:yuka_old"] = "ヨークタウンCV-5",
+	["origin:yuka_old"] = "p号：57810973,个人ID:4602524",
 	["illustrator:yuka_old_1"] = "fancybetty ",
 	["origin:yuka_old_1"] = ":",
+	["illustrator:yuka_old_2"] = "くろぬこネーロ",
+	["origin:yuka_old_2"] = "p号：32809829,个人ID:335493",	
 	
-	["youyue"] = "幽月",
-	[":youyue"] = "<font color=\"blue\"><b>锁定技，</b></font>当你使用【杀】或普通锦囊牌指定目标后，除你以外的目标角色依次弃置一张手牌并令你选择一项：展示一张与之类别相同手牌，或此牌对其无效。",
-	["#youyue"] = "%from 对 %to 使用%arg2，并触发了“%arg”效果 ",
-	["youyue-discard"] = "%dest 对你使用 %src 并触发了幽月， 请弃置一张手牌",
-	["youyue-show"] = "“幽月”： 你可以展示一张 %arg ， 令 %src 对 %dest 继续生效",
 	["yeyan"] = "夜魇",
-	[":yeyan"] = "出牌阶段结束时，你可以摸X张牌（X为没有手牌的角色数）。",
+	[":yeyan"] = "<font color=\"blue\"><b>锁定技，</b></font>当你使用【杀】或普通锦囊牌指定目标后，除你以外的目标角色依次弃置一张手牌并令你选择一项：展示一张与之类别相同手牌，或此牌对其无效。",
+	["#yeyan"] = "%from 对 %to 使用%arg2，并触发了“%arg”效果 ",
+	["yeyan-discard"] = "%dest 对你使用 %src 并触发了夜魇， 请弃置一张手牌",
+	["yeyan-show"] = "“夜魇”： 你可以展示一张 %arg ， 令 %src 对 %dest 继续生效",
+	["youyue"] = "幽月",
+	[":youyue"] = "出牌阶段结束时，你可以摸X张牌（X为没有手牌的角色数）。",
 	["menghuan"] = "梦幻",
 	[":menghuan"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"blue\"><b>锁定技，</b></font>你的手牌上限+Y。（Y为其他旧势力角色最大的体力值）",
 
 	
 --************************************************
 	--pc98007 幻月/梦月 势力：旧 3血
-	["gengetsumugetsu"] = "幻月 & 梦月" ,
-	["&gengetsumugetsu"] = "幻月梦月" ,
+	["gengetsumugetsu"] = "梦月 & 幻月" ,
+	["&gengetsumugetsu"] = "梦月幻月" ,
 	["#gengetsumugetsu"] = "女仆 & 恶魔" ,
 	["designer:gengetsumugetsu"] = "辰焰天明",
 	
-	["illustrator:gengetsumugetsu"] = "べらぼう",
-	["origin:gengetsumugetsu"] = "p号：54503236,个人ID:6259229",
+	["illustrator:gengetsumugetsu"] = " tengu ",
+	["origin:gengetsumugetsu"] = "p号：55411659,个人ID:4767631",
 	["illustrator:gengetsumugetsu_1"] = "二酸化炭素",
 	["origin:gengetsumugetsu_1"] = "p号：55591943,个人ID:9149093",
 	["illustrator:gengetsumugetsu_2"] = "カタケイ",
 	["origin:gengetsumugetsu_2"] = "p号：59852466,个人ID:90042",
+	["illustrator:gengetsumugetsu_3"] = "べらぼう",
+	["origin:gengetsumugetsu_3"] = "p号：54503236,个人ID:6259229",
 	
 	["huantong"] = "幻痛",
 	[":huantong"] = "当你攻击范围内的一名角色受到伤害时，若伤害值为1，你可以选择一项：将牌堆顶的一张牌扣置于人物牌上，称为“幻”；或展示两张“幻”，令其获得其中的基本牌并将其余的置入弃牌堆，然后将伤害值改为X点（X为基本牌数）。",
@@ -190,13 +195,16 @@ return {
 	["elly"] = "艾丽" ,
 	["#elly"] = "馆的门卫" ,
 	["designer:elly"] = "工藤",
-	["illustrator:elly"] = "菊月",
-	["origin:elly"] = "p号：43923582,个人ID:429883",
 	
+	["illustrator:elly"] = "ミルキャラ",
+	["origin:elly"] = "p号：23409861,个人ID:19359",
 	["illustrator:elly_1"] = "sheya",
 	["origin:elly_1"] = "p号：59479020,个人ID:11764388",
 	["illustrator:elly_2"] = "shouen kigashi ",
 	["origin:elly_2"] = "",
+	["illustrator:elly_3"] = "菊月",
+	["origin:elly_3"] = "p号：43923582,个人ID:429883",
+	
 	["lianmu"] = "镰幕",
 	[":lianmu"] = "当你使用【杀】结算完毕后，若此【杀】未造成伤害，你可以视为使用【杀】，此【杀】无距离限制，且可以额外指定一名其他角色为目标。<font color=\"green\"><b>每阶段限一次。</b></font>",
 	["@lianmu"] = "你可以发动“镰幕”视为使用【杀】",
@@ -212,12 +220,14 @@ return {
 	["#shinki"] = "魔界之神" ,
 	["designer:shinki"] = "辰焰天明",
 	
-	["illustrator:shinki"] = "Vetina",
-	["origin:shinki"] = "p号：13059449,个人ID:516980",
-	["illustrator:shinki_1"] = "音無空太",
-	["origin:shinki_1"] = "p号：50941526,个人ID:6273920",
+
+	["illustrator:shinki"] = "音無空太",
+	["origin:shinki"] = "p号：50941526,个人ID:6273920",
+	["illustrator:shinki_1"] = "Vetina",
+	["origin:shinki_1"] = "p号：13059449,个人ID:516980",
 	["illustrator:shinki_2"] = "Hysteria",
 	["origin:shinki_2"] = "p号：,个人ID:1777704",
+
 	
 	["sqchuangshi"] = "创世",
 	[":sqchuangshi"] = "出牌阶段开始时，你可以选择至少一名角色，直到其中一名角色造成伤害为止，这些角色依次可以使用一张牌。", 
@@ -238,12 +248,14 @@ return {
 	["&alice_old"] = "爱丽丝" ,
 	["designer:alice_old"] = "辰焰天明",
 	
-	["illustrator:alice_old"] = " MAKI",
-	["origin:alice_old"] = "p号：15034012,个人ID:1251",
+	["illustrator:alice_old"] = " みや ",
+	["origin:alice_old"] = "",
 	["illustrator:alice_old_1"] = " cierra (ra-bit) ",
 	["origin:alice_old_1"] = "",
 	["illustrator:alice_old_2"] = " ミーモク",
 	["origin:alice_old_2"] = "p号：29830485,个人ID:1021390",
+	["illustrator:alice_old_3"] = " MAKI",
+	["origin:alice_old_3"] = "p号：15034012,个人ID:1251",
 	
 	["modian"] = "魔典",
 	[":modian"] = "<font color=\"green\"><b>每名角色的出牌阶段限一次，</b></font>其可以将一张黑色手牌置于你的人物牌上，称为“魔典”。然后若“魔典”数大于你的体力值，你将一张“魔典”置入弃牌堆并选择一项：回复1点体力，或摸一张牌。", 
