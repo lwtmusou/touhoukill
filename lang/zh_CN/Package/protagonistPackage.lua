@@ -223,7 +223,56 @@ return {
 	["xinghui"] = "星辉",
 	[":xinghui"] = "当一张“天仪”从你的人物牌上离开时，你可以摸一张牌。",
 
-	--zhu009
+
+
+--************************************************
+	--zhu009  势力：主 4血
+	["sanae_slm"] = "神灵庙SP早苗",
+	["&sanae_slm"] = "神灵庙早苗",
+	["#sanae_slm"] = "私欲的巫女",
+	["designer:sanae_slm"] = "星野梦美☆",
+	
+	["illustrator:sanae_slm"] = "小強",
+	["origin:sanae_slm"] = "p号：19757581，个人ID：1754781",
+	["illustrator:sanae_slm_1"] = "An2A",
+	["origin:sanae_slm_1"] = "p号：27724528，个人ID：173876",
+	["illustrator:sanae_slm_2"] = "木shiyo",
+	["origin:sanae_slm_2"] = "p号：34431982，个人ID：40222",
+	
+	["yuwang_list"] = "欲望",
+	["dfgzmsiyu"] = "私欲",
+	[":dfgzmsiyu"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一张手牌交给一名其他角色。此回合结束时，你观看其手牌并获得其中的一张。",
+	["qishu"] = "奇术",
+	[":qishu"] = "你使用最后的手牌时无距离限制。出牌阶段，当你对其他角色使用【杀】或普通锦囊牌时，若此牌是你最后的手牌，你可以额外指定任意数量的其他角色为目标。",
+	["~qishu"] = "第一个目标为持有武器的角色，第二个目标为出杀的目标。",
+	["@qishu-add"] = "请选择【%arg】的额外目标",
+	["#QishuAdd"] = "%from 发动了“%arg2”为【%arg】增加了额外目标 %to",
+	
+--***********************************
+	--zhu010  势力：主 2血
+	["youmu_slm"] = "神灵庙SP妖梦",
+	["&youmu_slm"] = "神灵庙妖梦",
+	["#youmu_slm"] = "死欲的半灵",
+	["designer:youmu_slm"] = "星野梦美☆",
+	
+	["illustrator:youmu_slm"] = "alcd",
+	["origin:youmu_slm"] = "p号：14362406，个人ID：2334059",
+	["illustrator:youmu_slm_1"] = "竜徹",
+	["origin:youmu_slm_1"] = "p号：5976425，个人ID：63354",
+	["illustrator:youmu_slm_2"] = "さざなみみぉ",
+	["origin:youmu_slm_2"] = "p号：13635722，个人ID：1092517",
+	["illustrator:youmu_slm_3"] = " 60枚 ",
+	["origin:youmu_slm_3"] = "p号：54120760，个人ID：3322006",
+	
+	["hpymsiyu"] = "死欲",
+	[":hpymsiyu"] = "<font color=\"blue\"><b>锁定技，</b></font>当你的体力值于你的回合外扣减至低于体力下限后，你不进入濒死状态，你翻至正面朝上，将你判定区里的牌置入弃牌堆，终止一切结算，当前回合结束。此回合结束后进行一个额外的回合。该额外回合结束时，若你的体力值为0，你进入濒死状态。<br /><br />" ..
+					"♦此技能可以突破无法多重执行额外回合效果的限制进行额外回合。",
+	["juhe"] = "居合",
+	[":juhe"] = "摸牌阶段摸牌时，你可以多摸三张牌，然后弃置X张手牌（X为你的体力值）。",
+	["juhe_discard"]= "“居合”：请弃置 %src 张手牌",
+
+--***********************************
+	--zhu011  势力：主 4血
 	["reimu_old"] = "旧作SP灵梦" ,
 	["#reimu_old"] = "维护梦与传统的巫女" ,
 	["&reimu_old"] = "旧作灵梦" ,
@@ -243,13 +292,17 @@ return {
 	["@lingji"] = "你可以发动“灵击”对一名其他角色造成一点伤害",
 
 
-	--zhu010
+--***********************************
+	--zhu012  势力：主 4血
 	["marisa_old"] = "旧作SP魔理沙" ,
-	["#marisa_old"] = "源于魔法与红梦的存在" ,
+	["#marisa_old"] = "魔法与红梦化成的存在" ,
 	["&marisa_old"] = "旧作魔理沙" ,
 	["designer:marisa_old"] = "圆神狂热信徒",
-	["illustrator:marisa_old"] = "カタケイ",
-	["origin:marisa_old"] = "p号：50400667，个人ID：90042",
+	
+	["illustrator:marisa_old"] = "fancybetty",
+	["origin:marisa_old"] = "p号：，个人ID：",
+	["illustrator:marisa_old_1"] = "カタケイ",
+	["origin:marisa_old_1"] = "p号：50400667，个人ID：90042",
 	
 	["toushi"] = "偷师" ,
 	[":toushi"] = "其他角色的出牌阶段结束时，若其于此阶段内使用的最后的牌为【杀】或普通锦囊牌，你可以将一张基本牌或<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌当与此牌名称相同且属性相同的牌使用。。" ,

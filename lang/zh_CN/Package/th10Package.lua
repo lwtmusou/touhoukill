@@ -49,6 +49,8 @@ return{
 	["origin:suwako_4"] = "个人ID：173876",
 	["illustrator:suwako_5"] = "たまの毛太郎",
 	["origin:suwako_5"] = "p号：34452052，个人ID：16731",
+	["illustrator:suwako_6"] = " UGUME ",
+	["origin:suwako_6"] = "p号：44628917，个人ID：1457830",
 	
 	["bushu"] = "不输",
 	[":bushu"] = "当你或你攻击范围内的一名角色受到伤害后，若其存活，你可以与来源拼点：若你赢，其回复1点体力；若你没赢，你获得来源的拼点牌。",
@@ -73,6 +75,8 @@ return{
 	["origin:sanae_3"] = "p号：16318792，个人ID：94883",
 	["illustrator:sanae_4"] = "non",
 	["origin:sanae_4"] = "p号：44910310，个人ID：19068",
+	["illustrator:sanae_5"] = "鏡 Area",
+	["origin:sanae_5"] = "p号：41921615",
 	
 	["dfgzmjiyi"] = "祭仪",
 	[":dfgzmjiyi"] = "摸牌阶段开始时，你可以放弃摸牌，若如此做，此回合结束时，你摸三张牌。",
@@ -98,14 +102,17 @@ return{
 	
 	["illustrator:aya"] = "sayori",
 	["origin:aya"] = "p号：9560039，个人ID：104409",
-	["illustrator:aya_1"] = "リリア",
-	["origin:aya_1"] = "p号：10207828，个人ID：997454",
+	["illustrator:aya_1"] = "菊のすけまる",
+	["origin:aya_1"] = "p号：51592335，个人ID：455068",
 	["illustrator:aya_2"] = "しらび",
 	["origin:aya_2"] = "p号：16988865，个人ID：216403",
 	["illustrator:aya_3"] = "NEKO",
 	["origin:aya_3"] = "p号：31067277，个人ID：2600911", 
 	["illustrator:aya_4"] = "kirero",
 	["origin:aya_4"] = "p号：33231066，个人ID：35490",
+	["illustrator:aya_5"] = "AUER",
+	["origin:aya_5"] = "p号：12802720，个人ID：178301", 
+	
 	["fengshen"] = "风神",
 	[":fengshen"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张红色手牌，令你攻击范围内的一名角色或距离为1的任意数量的角色各选择一项：弃置一张【杀】，或受到你造成的1点伤害。",
 	["@fengshen-discard"] = "请弃置一张【杀】，否则受到 <font color=\"#00FF00\"><b>%src </b></font> 对你造成的1点伤害",
@@ -128,6 +135,8 @@ return{
 	["origin:nitori_3"] = "p号：15558347，个人ID：347929",
 	["illustrator:nitori_4"] = "みや",
 	["origin:nitori_4"] = "p号：16295072，个人ID：41977",
+	["illustrator:nitori_5"] = " 紅緒 ",
+	["origin:nitori_5"] = "p号：47429766",
 	
 	["xinshang"] = "心伤",
 	[":xinshang"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可令一名其他角色摸一张牌，然后其选择一项：将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌交给你，并令你于此回合内使用牌时无距离和使用次数限制；或令你依次弃置其两张牌。",
@@ -175,6 +184,8 @@ return{
 	["origin:sanae_sp_1"] = "p号：20577229，个人ID：544479",
 	["illustrator:sanae_sp_2"] = "にいち",
 	["origin:sanae_sp_2"] = "p号：29225835，个人ID：1035047",
+	["illustrator:sanae_sp_3"] = "yamasan",
+	["origin:sanae_sp_3"] = "p号：27578964",
 	
 	["changshi"] = "常识",
 	[":changshi"] = "<font color=\"#808080\"><b>永久技，</b></font>回合开始时，你令所有其他角色的所有技能于此回合内失效（永久技除外），将所有处于特殊位置的牌置入弃牌堆，弃所有标记。",
@@ -187,7 +198,7 @@ return{
 	--fsl008  势力：风 4血
 	["momizi"] = "犬走椛",
 	["#momizi"] = "山上的千里眼",
-	["designer:momizi"] = "天空寺奈寺美",
+	["designer:momizi"] = "星野梦美☆",
 	
 	["illustrator:momizi"] = "啓々",
 	["origin:momizi"] = "p号：4742307，个人ID：30974",
@@ -254,27 +265,6 @@ return{
 	["zhongyan:target"] = "<font color=\"#00FF00\"><b>%src </b></font> 将对你造成伤害，你可以发动限定技“终焉”，防止此伤害，并令其失去 %dest 点体力。" ,
 	["$zhongyanAnimate"]= "skill=shizuha:zhongyan",
 
---************************************************
-	--fsl011  势力：风 4血
-	["sanae_slm"] = "神灵庙SP早苗",
-	["&sanae_slm"] = "神灵庙早苗",
-	["#sanae_slm"] = "私欲的巫女",
-	["designer:sanae_slm"] = "星野梦美☆",
-	
-	["illustrator:sanae_slm"] = "小強",
-	["origin:sanae_slm"] = "p号：19757581，个人ID：1754781",
-	["illustrator:sanae_slm_1"] = "An2A",
-	["origin:sanae_slm_1"] = "p号：27724528，个人ID：173876",
-	["illustrator:sanae_slm_2"] = "木shiyo",
-	["origin:sanae_slm_2"] = "p号：34431982，个人ID：40222",
-	
-	["yuwang_list"] = "欲望",
-	["dfgzmsiyu"] = "私欲",
-	[":dfgzmsiyu"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一张手牌交给一名其他角色。此回合结束时，你观看其手牌并获得其中的一张。",
-	["qishu"] = "奇术",
-	[":qishu"] = "你使用最后的手牌时无距离限制。出牌阶段，当你对其他角色使用【杀】或普通锦囊牌时，若此牌是你最后的手牌，你可以额外指定任意数量的其他角色为目标。",
-	["~qishu"] = "第一个目标为持有武器的角色，第二个目标为出杀的目标。",
-	["@qishu-add"] = "请选择【%arg】的额外目标",
-	["#QishuAdd"] = "%from 发动了“%arg2”为【%arg】增加了额外目标 %to",
+
 
 }

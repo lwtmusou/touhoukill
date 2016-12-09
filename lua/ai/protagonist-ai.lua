@@ -1131,6 +1131,193 @@ end
 sgs.ai_skill_invoke.xinghui = true
 
 
+
+
+
+
+
+local dfgzmsiyu_skill = {}
+dfgzmsiyu_skill.name = "dfgzmsiyu"
+table.insert(sgs.ai_skills, dfgzmsiyu_skill)
+function dfgzmsiyu_skill.getTurnUseCard(self)
+	if self.player:hasUsed("DfgzmSiyuCard") then return nil end
+	local cards=self.player:getCards("hs")
+
+	local can_qishu=true
+	if #self.enemies<2 then
+		can_qishu=false
+	end
+	if not self.player:hasSkill("qishu") then
+		can_qishu=false
+	end
+	local qishu_card
+	if can_qishu then
+		for _,c in sgs.qlist(cards) do
+			if c:isKindOf("Jink") then
+				qishu_card=c
+				break
+			end
+		end
+	end
+	if can_qishu and cards:length()==2 and not qishu_card then
+		if cards:first():isKindOf("Dismantlement") or  cards:first():isKindOf("Snatch") then
+			qishu_card=cards:last()
+		elseif cards:last():isKindOf("Dismantlement") or  cards:last():isKindOf("Snatch") then
+			qishu_card=cards:first()
+		elseif cards:first():isKindOf("Slash") and sgs.Slash_IsAvailable(self.player) then
+			qishu_card=cards:last()
+		elseif cards:last():isKindOf("Slash") and sgs.Slash_IsAvailable(self.player) then
+			qishu_card=cards:first()
+		end
+	end
+	sgs.ai_use_priority.DfgzmSiyuCard = (qishu_card and can_qishu) and 8 or 0
+	if not qishu_card then
+		cards = sgs.QList2Table(cards)
+		self:sortByKeepValue(cards)
+		qishu_card=cards[1]
+	end
+	if (qishu_card) then
+		return sgs.Card_Parse("@DfgzmSiyuCard=" .. qishu_card:getEffectiveId())
+	end
+	return nil
+end
+sgs.ai_skill_use_func.DfgzmSiyuCard = function(card, use, self)
+	local target
+	self:sort(self.enemies,"handcard")
+	for var=#self.enemies, 1, -1 do
+		if self.enemies[var]:hasSkills("chunxi|xingyun") then
+			local heart=sgs.Sanguosha:getCard(card:getSubcards():first())
+			if heart:getSuit()~=sgs.Card_Heart then
+				target=self.enemies[var]
+				break
+			end
+		else
+			target=self.enemies[var]
+			break
+		end
+	end
+	if target then
+		use.card=card
+		if use.to then
+			use.to:append(target)
+			if use.to:length()>=1 then return end
+		end
+	end
+end
+sgs.ai_skill_cardchosen.dfgzmsiyu = function(self, who, flags)
+	local cards= sgs.QList2Table(who:getCards("hs"))
+	local inverse = not self:isFriend(who)
+	self:sortByKeepValue(cards, inverse)
+	return cards[1]
+end
+
+
+
+
+
+
+
+sgs.ai_slash_prohibit.hpymsiyu = function(self, from, to, card)
+	if self:isFriend(from,to) then
+		return false
+	end
+	local callback=sgs.ai_damage_prohibit["hpymsiyu"]
+	local damage = sgs.DamageStruct(card, from, to, 1, self:touhouDamageNature(card,from,to))
+	return callback(self, from, to, damage)
+end
+sgs.ai_trick_prohibit.hpymsiyu = function(self, from, to, card)
+	if self:isFriend(from,to) then return false end
+	local isDamage=false
+	if ( card:isKindOf("Duel") or card:isKindOf("AOE") or card:isKindOf("FireAttack")
+			or sgs.dynamic_value.damage_card[card:getClassName()]) then
+		isDamage=true
+	end
+	if isDamage then
+		local callback=sgs.ai_damage_prohibit["hpymsiyu"]
+		local damage = sgs.DamageStruct(card, from, to, 1, self:touhouDamageNature(card,from,to))
+		return callback(self, from, to, damage)
+	end
+	return false
+end
+sgs.ai_damage_prohibit.hpymsiyu = function(self, from, to, damage)
+	if not to:hasSkills("hpymsiyu+juhe") then return false end
+	if to:getPhase() ~=sgs.Player_NotActive then return false end
+	if self:isFriend(from,to) then return false end
+	--强制不去集火
+	for _,p in sgs.qlist(self.room:getOtherPlayers(to)) do
+		if not self:isFriend(from,p) then
+			return true
+		end
+	end
+	--后面的暂且不管了。。。。
+	if self:touhouDamage(damage,from,to).damage < to:getHp() then
+		return false
+	end
+	if to:containsTrick("indulgence") or to:containsTrick("supply_shortage") then
+		return true
+	end
+	if not to:faceUp() then
+		return true
+	end
+	local recoverNum = self:getAllPeachNum(to) + getCardsNum("Analeptic", to, self.player)
+	return recoverNum>0
+end
+
+
+sgs.ai_skill_invoke.juhe = true
+--sgs.ai_skill_discard.juhe = sgs.ai_skill_discard.gamerule
+sgs.ai_skill_discard.juhe = function(self,discard_num)
+	local Weapon=self.player:getWeapon()
+	local Distance=self.player:getOffensiveHorse()
+	if  Distance and Weapon then
+		local gamerule = sgs.QList2Table(self.player:getCards("hs"))
+		self:sortByKeepValue(gamerule,false)
+		local gamerule_discard={}
+		for var=1, discard_num ,1 do
+			table.insert(gamerule_discard,gamerule[var]:getId())
+		end
+		return gamerule_discard
+	end
+	local cards = {}
+	local tmp_dis
+	local weapons={}
+	for _,c in sgs.qlist(self.player:getCards("hs")) do
+		if not Distance and c:isKindOf("OffensiveHorse") and not tmp_dis then
+			tmp_dis=c
+		elseif not Weapon and c:isKindOf("Weapon") then
+				table.insert(weapons,c)
+		else
+			table.insert(cards,c)
+		end
+	end
+	if #weapons>1 then
+		self:sortByUseValue(weapons,false)
+		for var=2, #weapons ,1 do
+			table.insert(cards,weapons[var])
+		end
+	end
+
+	self:sortByKeepValue(cards)
+	local to_discard = {}
+	for var=1, discard_num ,1 do
+		table.insert(to_discard,cards[var]:getId())
+	end
+	return to_discard
+end
+function SmartAI:touhouBreakDamage(damage,to)
+	if to:hasSkill("hpymsiyu") and to:getPhase()==sgs.Player_NotActive then
+		if to:getHp()>0   then
+			return damage.damage>= to:getHp()
+		else
+			return damage.damage>0
+		end
+	end
+	return false
+end
+
+
+
+
 local yinyang_skill = {}
 yinyang_skill.name = "yinyang"
 table.insert(sgs.ai_skills, yinyang_skill)
