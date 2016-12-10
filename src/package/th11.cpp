@@ -734,7 +734,7 @@ public:
                 && !current->isNude()) {
             bool invoke = false;
             foreach(ServerPlayer *p, room->getOtherPlayers(current)) {
-                if (current->inMyAttackRange(p) && current->canSlash(p)) {
+                if (current->inMyAttackRange(p)) {
                     invoke = true;
                     break;
                 }
@@ -755,7 +755,7 @@ public:
         ServerPlayer *current = data.value<ServerPlayer *>();
         QList<ServerPlayer *> targets;
         foreach(ServerPlayer *p, room->getOtherPlayers(current)) {
-            if (current->inMyAttackRange(p) && current->canSlash(p))
+            if (current->inMyAttackRange(p))
                 targets << p;
         }
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@rebing:" + current->objectName(), true, true);
