@@ -254,7 +254,7 @@ QString SingleTargetTrick::getSubtype() const
 }
 
 
-bool SingleTargetTrick::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+bool SingleTargetTrick::targetFilter(const QList<const Player *> &targets, const Player *, const Player *Self) const
 {
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     if (targets.length() >= total_num)
