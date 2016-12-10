@@ -176,7 +176,7 @@ end
 
 sgs.ai_damageCaused.bingfeng = function(self, damage)
 	if damage.card then
-		if  damage.card:isKindOf("Slash") and damage.to:getMark("@ice") >0 then
+		if  damage.to:getMark("@ice") > 0 then
 			damage.damage = math.max(0, damage.damage -1)
 		end
 	end

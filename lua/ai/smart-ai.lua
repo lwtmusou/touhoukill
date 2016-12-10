@@ -7012,8 +7012,10 @@ function SmartAI:touhouDamage(original_damage,from,to,step)
 	end
 	step = step or 1
 	
-	local baka = self.room:findPlayerBySkillName("wushen")
-	if (baka and from:getWeapon()) then from = baka end
+	if (damage.card and damage.card:isKindOf("Slash") and from) then
+		local baka = self.room:findPlayerBySkillName("wushen")
+		if (baka and from:getWeapon()) then from = baka end
+	end
 	if step <= 1 then
 	--分别对应伤害各个时机
 		damage=self:touhouConfirmDamage(damage,from,to)

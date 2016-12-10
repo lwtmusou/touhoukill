@@ -206,9 +206,8 @@ void Room::outputEventStack()
 }
 
 void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
-{   
-    int threshold = player->dyingThreshold();
-    if (threshold > player->getMaxHp()) {
+{
+    if (player->dyingThreshold() > player->getMaxHp()) {
         killPlayer(player, reason);
         return;
     }
@@ -231,26 +230,24 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
 
     bool enterdying = thread->trigger(EnterDying, this, dying_data);
 
-    if (!(player->isDead() || player->getHp() >= threshold || enterdying)) {
+    if (!(player->isDead() || player->getHp() >= player->dyingThreshold() || enterdying)) {
         thread->trigger(Dying, this, dying_data);
-
         if (player->isAlive()) {
-            if (player->getHp() >= threshold) {
+            if (player->getHp() >= player->dyingThreshold()) {
                 setPlayerFlag(player, "-Global_Dying");
             } else {
                 LogMessage log;
                 log.type = "#AskForPeaches";
                 log.from = player;
                 log.to = getAllPlayers();
-                log.arg = QString::number(threshold - player->getHp());
+                log.arg = QString::number(player->dyingThreshold() - player->getHp());
                 sendLog(log);
 
                 foreach (ServerPlayer *saver, getAllPlayers()) {
-                    threshold = player->dyingThreshold();
                     DyingStruct dying = dying_data.value<DyingStruct>();
                     dying.nowAskingForPeaches = saver;
                     dying_data = QVariant::fromValue(dying);
-                    if (player->getHp() >= threshold || player->isDead())
+                    if (player->getHp() >= player->dyingThreshold() || player->isDead())
                         break;
                     QString cd = saver->property("currentdying").toString();
                     setPlayerProperty(saver, "currentdying", player->objectName());
@@ -6537,7 +6534,8 @@ bool Room::roleStatusCommand(ServerPlayer *player)
     return true;
 }
 
-#include <QFileDialog>
+#include <QFile>
+#include <QDir> 
 void Room::saveWinnerTable(const QString &winner)
 {
     QString mode = Config.GameMode;
@@ -6553,12 +6551,12 @@ void Room::saveWinnerTable(const QString &winner)
     }
     if (getAllPlayers(true).length() < 6 || count < getAllPlayers(true).length() / 2)
         return;
-
+    
     QString location = "etc/winner/";
     if (!QDir(location).exists())
         QDir().mkdir(location);
-
-    location.append(QDateTime::currentDateTime().toString("yyyyMMdd"));
+    QDateTime time = QDateTime::currentDateTime();
+    location.append(time.toString("yyyyMMdd"));
     location.append(".txt");
     QFile file(location);
     
@@ -6568,13 +6566,10 @@ void Room::saveWinnerTable(const QString &winner)
 
     QString line;
     QTextStream stream(&file);
-    stream.readAll();
-
-    char date[128];
-    char time[128];
-    _strtime_s(time);
-    _strdate_s(date);
-    line.append(QString("Date: %1 %2").arg(date).arg(time));
+    stream.seek(file.size());
+    
+    line.append(QString("Date: %1/%2 %3:%4:%5").arg(time.toString("MM")).arg(time.toString("dd"))
+        .arg(time.toString("hh")).arg(time.toString("mm")).arg(time.toString("ss")));
     line.append("\n");
     QStringList winners = winner.split("+");
     foreach(ServerPlayer *p, getAllPlayers(true)) {

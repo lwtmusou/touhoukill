@@ -382,7 +382,7 @@ public:
     Bingfeng() : TriggerSkill("bingfeng")
     {
         events << Dying << DamageCaused << EventPhaseStart;
-        frequency = Eternal;
+        frequency = Compulsory;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const

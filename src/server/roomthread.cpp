@@ -258,7 +258,7 @@ void RoomThread::actionNormal(GameRule *game_rule)
                 trigger(TurnStart, room, data);
 
                 if (room->isFinished())
-                    break;
+                    return;// break;
                 nextExtraTurnCopy->tag["touhou-extra"] = false;
                 nextExtraTurnCopy->tag.remove("ExtraTurnInfo");
                 room->setTag("touhou-extra", false);
@@ -309,7 +309,7 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule)
             trigger(TurnStart, room, data);
 
             if (room->isFinished())
-                break;
+                return;//break;
             nextExtraTurnCopy->tag["touhou-extra"] = false;
             room->setTag("touhou-extra", false);
 
