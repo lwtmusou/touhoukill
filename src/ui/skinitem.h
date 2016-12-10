@@ -11,7 +11,7 @@ class SkinItem : public QGraphicsObject
 
 public:
     SkinItem(const QString &skinName, const QRect &clipRect,
-        int skinIndex, bool used, QGraphicsItem *parent = 0);
+             int skinIndex, bool used, QGraphicsItem *parent = 0);
 
     void setUsed(bool used)
     {

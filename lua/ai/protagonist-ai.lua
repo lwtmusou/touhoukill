@@ -1419,7 +1419,7 @@ sgs.ai_skill_use["@@toushi"] = function(self, prompt)
 	end
 	if #cards == 0 then return "." end
 	self:sortByUseValue(cards)
-	
+
 
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 	local cardname=self.player:property("toushi_card"):toString()

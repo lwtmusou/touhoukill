@@ -200,7 +200,7 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer
                     room->installEquip(sp, equip);
                 else
                     room->moveCardTo(Sanguosha->getCard(equip.toInt()), NULL, sp,
-                    Player::PlaceEquip, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()));
+                                     Player::PlaceEquip, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()));
             }
 
             str = this->players.at(i)["judge"];
@@ -208,7 +208,7 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer
                 QStringList judges = str.split(",");
                 foreach(QString judge, judges)
                     room->moveCardTo(Sanguosha->getCard(judge.toInt()), NULL, sp,
-                    Player::PlaceDelayedTrick, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()));
+                                     Player::PlaceDelayedTrick, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()));
             }
 
             str = this->players.at(i)["hand"];

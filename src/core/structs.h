@@ -147,9 +147,9 @@ public:
     inline bool operator == (const CardMoveReason &other) const
     {
         return m_reason == other.m_reason
-            && m_playerId == other.m_playerId && m_targetId == other.m_targetId
-            && m_skillName == other.m_skillName
-            && m_eventName == other.m_eventName;
+                && m_playerId == other.m_playerId && m_targetId == other.m_targetId
+                && m_skillName == other.m_skillName
+                && m_eventName == other.m_eventName;
     }
 
     static const int S_REASON_UNKNOWN = 0x00;
@@ -250,7 +250,7 @@ struct CardsMoveStruct
     }
 
     inline CardsMoveStruct(const QList<int> &ids, Player *from, Player *to, Player::Place from_place,
-        Player::Place to_place, CardMoveReason reason)
+                           Player::Place to_place, CardMoveReason reason)
     {
         this->card_ids = ids;
         this->from_place = from_place;
@@ -276,7 +276,7 @@ struct CardsMoveStruct
     }
 
     inline CardsMoveStruct(int id, Player *from, Player *to, Player::Place from_place,
-        Player::Place to_place, CardMoveReason reason)
+                           Player::Place to_place, CardMoveReason reason)
     {
         this->card_ids << id;
         this->from_place = from_place;
@@ -304,13 +304,13 @@ struct CardsMoveStruct
     inline bool operator == (const CardsMoveStruct &other) const
     {
         return from == other.from && from_place == other.from_place
-            && from_pile_name == other.from_pile_name && from_player_name == other.from_player_name;
+                && from_pile_name == other.from_pile_name && from_player_name == other.from_player_name;
     }
 
     inline bool operator < (const CardsMoveStruct &other) const
     {
         return from < other.from || from_place < other.from_place
-            || from_pile_name < other.from_pile_name || from_player_name < other.from_player_name;
+                || from_pile_name < other.from_pile_name || from_player_name < other.from_player_name;
     }
 
     QList<int> card_ids;

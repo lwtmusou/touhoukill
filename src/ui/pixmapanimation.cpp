@@ -80,11 +80,11 @@ PixmapAnimation *PixmapAnimation::GetPixmapAnimation(QGraphicsItem *parent, cons
     if (pma->valid()) {
         if (emotion == "no-success") {
             pma->moveBy(pma->boundingRect().width() * 0.25,
-                pma->boundingRect().height() * 0.25);
+                        pma->boundingRect().height() * 0.25);
             pma->setScale(0.5);
         } else if (emotion == "success") {
             pma->moveBy(pma->boundingRect().width() * 0.1,
-                pma->boundingRect().height() * 0.1);
+                        pma->boundingRect().height() * 0.1);
             pma->setScale(0.8);
         } else if (emotion.contains("double_sword"))
             pma->moveBy(13, -20);
@@ -94,7 +94,7 @@ PixmapAnimation *PixmapAnimation::GetPixmapAnimation(QGraphicsItem *parent, cons
             pma->moveBy(-20, -20);
 
         pma->moveBy((parent->boundingRect().width() - pma->boundingRect().width()) / 2,
-            (parent->boundingRect().height() - pma->boundingRect().height()) / 2);
+                    (parent->boundingRect().height() - pma->boundingRect().height()) / 2);
 
         pma->setParentItem(parent);
         pma->setZValue(20002.0);

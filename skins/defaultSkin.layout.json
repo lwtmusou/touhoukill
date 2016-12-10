@@ -28,7 +28,6 @@
     "generalButtonPositionIconRegion": [-1, 2, 29, 24],
     "generalButtonNameRegion": [26, 0, 60, 23],
 
-
     // When hp exceeds 5, we use text (e.g. 5/8) instead of drawing more than 5 magatamas. The color
     // and font are specified below.
     // All the font in skin file takes the following format:
@@ -59,7 +58,6 @@
     "logBoxHeightPercentage": 0.6,
     "chatBoxHeightPercentage": 0.4,
     "infoPlaneWidthPercentage": 0.2,
-    //"infoPlaneWidthPercentage": 0.18,
     "photoRoomPadding": 10,
     "photoDashboardPadding": 40,
     "photoHDistance": 32,
@@ -74,16 +72,11 @@
 {
     "normalWidth": 175,//163
     "normalHeight": 210,//192,
-
     "mainFrameArea": [0, 0, 175, 210],
-
     "canvasArea": [0, 0, 175, 210],
-
     "handCardNumIconArea": [-8, 125, 30, 18],
     "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255], 1, 30, [0, 0], [20, 20, 20, 200]],
     "equipAreas": [[1, 137, 162, 21], [1, 151, 162, 21], [1, 165, 162, 21], [1, 179, 162, 21], [1, 193, 162, 21]],
-
-
     "equipImageArea": [0, 1, 150, 19],
     //"equipTextArea": [35, -5, 85, 21], // need adjustment
     "equipSuitArea": [117, 2, 21, 17],
@@ -99,25 +92,20 @@
     "roleShownArea": [135, -5, 38, 38],
     "changePrimaryHeroSkinBtnPos": [25, 35],
 
-
     "borderWidth": 15,
     "avatarImageType": 1,
     "secondaryAvatarImageType": 4,
     "primaryAvatarImageType": 6,
     "circleImageType": 0,
-
     "avatarArea": [0, 0, 175, 210],//163, 190
-
     "secondaryAvatarArea": [78, 1, 77, 179],
     "circleArea": [1, 1, 155, 179],
     "avatarNameArea": [3, 23, 100, 100],
-    "avatarNameFont": ["@SimLi", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
+    "avatarNameFont": ["@simli", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
     "smallAvatarNameArea": [78, 23, 40, 60],
-    "smallAvatarNameFont": ["@SimLi", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
+    "smallAvatarNameFont": ["@simli", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
     "kingdomIconArea": [2, -1, 28, 28],
     "kingdomMaskArea": [-2, 14, 36, 120],
-
-
     "screenNameArea": [0, 0, 157, 15],
     "screenNameFont": ["SimSun", 12, 0, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
     "magatamasHorizontal": false,
@@ -128,14 +116,13 @@
     //"magatamasAnchor": ["bottomRight", [156, 194]],
     "magatamasAnchor": ["bottomRight", [174, 225]],
     "magatamasSubAnchor": ["topRight", [174, 35]],
-
     "cardMoveArea": [-15, 35, 200, 130],
     "phaseArea": [25, 207, 140, 12],
     "onlineStatusArea": [127, 24, 30, 25],
     "onlineStatusBgColor": [0, 0, 0, 0],
     "onlineStatusFont": ["SimSun",12, 0, [255, 255, 255, 255], 3, 10, [0, 0], [20, 20, 20, 155]],
     "skillNameArea": [45, 30, 300, 50],
-    "skillNameFont": ["SimLi", 30, 0, [255, 255, 255, 255], 2, 20, [0, 0], [255, 20, 255, 128]],
+    "skillNameFont": ["simli", 30, 0, [255, 255, 255, 255], 2, 20, [0, 0], [255, 20, 255, 128]],
     "progressBarArea": ["topLeft", "bottomLeft", [0, 10], [160, 10]],
     "progressBarHorizontal": true,
     "privatePileStartPos": [27, 18],
@@ -150,7 +137,7 @@
     "duanchangMaskColor": [255, 255, 255, 128],
     "deathEffectColor": [50, 50, 50, 255],
     "extraSkillArea": [32, 116, 56, 20],
-    "extraSkillFont": ["SimLi", [16, 16, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
+    "extraSkillFont": ["simli", [16, 16, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
     "extraSkillTextArea": [32, 113, 56, 20]
 },
 "dashboard":
@@ -173,7 +160,7 @@
     "equipDistanceArea": [0, 0, 0, 0],
     "equipPointArea": [117, -5, 30, 30],
     "equipTianyiArea": [0, 5, 21, 17],// for skill mokai
-    "equipFont": ["SimLi", 9, 60, [0, 0, 0, 255], 3, 8, [0, 0], [240, 240, 240, 200]],
+    "equipFont": ["simli", 9, 60, [0, 0, 0, 255], 3, 8, [0, 0], [240, 240, 240, 200]],
     "equipPointFont": ["arial", [14, 14, 3], 20, [0, 0, 0, 255], 1, 0, [0, 0], [240, 240, 240, 200]],
     "delayedTrickFirstRegion": [0, 0, 28, 28],
     "delayedTrickStep": [28, 0],
@@ -197,13 +184,12 @@
     "focusFrameArea": [0, 0, 200, 240],
 
     "smallAvatarNameArea": [84, 36, 18, 36],
-    "avatarNameFont": ["SimLi", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
-
-     // "avatarNameFont": ["@simli", [12, 12, 1], 60, [255, 255, 255, 255], 5, 8, [0, 0], [50, 50, 50, 150]],
+    "avatarNameFont": ["simli", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
+    // "avatarNameFont": ["@simli", [12, 12, 1], 60, [255, 255, 255, 255], 5, 8, [0, 0], [50, 50, 50, 150]],
     // "smallAvatarNameFont": ["@simli", [12, 12, 1], 40, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
 
     "skillNameArea": [55, 30, 300, 50],
-    "skillNameFont": ["SimLi", 30, 0, [255, 255, 255, 255], 2, 20, [0, 0], [255, 20, 255, 128]],
+    "skillNameFont": ["simli", 30, 0, [255, 255, 255, 255], 2, 20, [0, 0], [255, 20, 255, 128]],
 
     // must be in one of the following format:
     // [offsetX, offestY, sizeX, sizeY]
@@ -229,7 +215,7 @@
     "magatamaImageSubArea": [0, 6, 22, 26], //for skill banling
     "magatamasBgVisible": true,
     "magatamasAnchor": ["rightBottom", [195, 260]], //right
-    "magatamasSubAnchor": ["leftBottom", [0, 260]], 
+    "magatamasSubAnchor": ["leftBottom", [0, 260]],
     "cardMoveArea": [-50, 65, 200, 130],
     "progressBarArea": ["bottomCenter", "bottomCenter", [-8, 0], [300, 18]],
     "progressBarHorizontal": true,

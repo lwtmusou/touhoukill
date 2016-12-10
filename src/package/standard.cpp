@@ -115,11 +115,11 @@ void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 
     QList<CardsMoveStruct> exchangeMove;
     CardsMoveStruct move1(getEffectiveId(), target, Player::PlaceEquip,
-        CardMoveReason(CardMoveReason::S_REASON_USE, target->objectName()));
+                          CardMoveReason(CardMoveReason::S_REASON_USE, target->objectName()));
     exchangeMove.push_back(move1);
     if (equipped_id != Card::S_UNKNOWN_CARD_ID) {
         CardsMoveStruct move2(equipped_id, NULL, Player::DiscardPile,
-            CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, target->objectName()));
+                              CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, target->objectName()));
         exchangeMove.push_back(move2);
     }
     LogMessage log;
@@ -362,8 +362,8 @@ void DelayedTrick::onNullified(ServerPlayer *target) const
     if (movable) {
         QList<ServerPlayer *> players = room->getOtherPlayers(target);
         players << target;
-        ServerPlayer *next = NULL;//next meaning this next one 
-        bool next2next = false;//it's meaning another next(a second next) is necessary 
+        ServerPlayer *next = NULL;//next meaning this next one
+        bool next2next = false;//it's meaning another next(a second next) is necessary
         foreach (ServerPlayer *player, players) {
             if (player->containsTrick(objectName()))
                 continue;
@@ -444,10 +444,10 @@ void Weapon::onUse(Room *room, const CardUseStruct &card_use) const
     CardUseStruct use = card_use;
     ServerPlayer *player = card_use.from;
     if (room->getMode() == "04_1v3"
-        && use.card->isKindOf("Weapon")
-        && (player->isCardLimited(use.card, Card::MethodUse)
-        || (!player->getPile("wooden_ox").contains(getEffectiveId())
-        || player->askForSkillInvoke("weapon_recast", QVariant::fromValue(use))))) {
+            && use.card->isKindOf("Weapon")
+            && (player->isCardLimited(use.card, Card::MethodUse)
+                || (!player->getPile("wooden_ox").contains(getEffectiveId())
+                    || player->askForSkillInvoke("weapon_recast", QVariant::fromValue(use))))) {
         CardMoveReason reason(CardMoveReason::S_REASON_RECAST, player->objectName());
         reason.m_eventName = "weapon_recast";
         room->moveCardTo(use.card, player, NULL, Player::DiscardPile, reason);

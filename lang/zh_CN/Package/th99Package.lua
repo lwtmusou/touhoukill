@@ -6,9 +6,9 @@ return{
 	["akyuu"] = "稗田阿求",
 	["#akyuu"] = "幻想乡的记忆" ,
 	["designer:akyuu"] = "星野梦美☆",
-	
+
 	["illustrator:akyuu"] = "Dinyc",
-	["origin:akyuu"] = "p号：13086025，个人ID：1146229", 
+	["origin:akyuu"] = "p号：13086025，个人ID：1146229",
 	["illustrator:akyuu_1"] = "bon",
 	["origin:akyuu_1"] = "p号：17813885，个人ID：1225738",
 	["illustrator:akyuu_2"] = "しろきつね",
@@ -19,7 +19,7 @@ return{
 	["origin:akyuu_4"] = "p号：22930694，个人ID：453278",
 	["illustrator:akyuu_5"] = "カズ",
 	["origin:akyuu_5"] = "p号：30516709，个人ID：137496",
-	
+
 	["qiuwen"] = "求闻" ,
 	[":qiuwen"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以摸三张牌。" ,
 	["zaozu"] = "早卒" ,
@@ -34,16 +34,16 @@ return{
 	["rinnosuke"] = "森近霖之助",
 	["#rinnosuke"] = "古道具店主" ,
 	["designer:rinnosuke"] = "星野梦美☆",
-	
+
 	["illustrator:rinnosuke"] = "会帆",
-	["origin:rinnosuke"] = "p号：9279786，个人ID：146732", 
+	["origin:rinnosuke"] = "p号：9279786，个人ID：146732",
 	["illustrator:rinnosuke_1"] = "会帆",
 	["origin:rinnosuke_1"] = "p号：8207269，个人ID：146732",
 	["illustrator:rinnosuke_2"] = "砂雲",
 	["origin:rinnosuke_2"] = "p号：32531449，个人ID：295604",
 	["illustrator:rinnosuke_3"] = "会帆",
 	["origin:rinnosuke_3"] = "p号：20880112，个人ID：146732",
-	
+
 	["xiufu"] = "修复" ,
 	["#xiufu_temp"] = "修复" ,
 	[":xiufu"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将弃牌堆里的一张装备牌置于一名角色的装备区里（可替换装备区里的牌）。" ,
@@ -56,14 +56,14 @@ return{
 	["tokiko"] = "朱鹭子",
 	["#tokiko"] = "无名的读书妖怪",
 	["designer:tokiko"] = "星野梦美☆",
-	
+
 	["illustrator:tokiko"] = "会帆",
-	["origin:tokiko"] = "p号：4910103，个人ID：146732", 
+	["origin:tokiko"] = "p号：4910103，个人ID：146732",
 	["illustrator:tokiko_1"] = "会帆",
-	["origin:tokiko_1"] = "p号：3179899，个人ID：146732", 
+	["origin:tokiko_1"] = "p号：3179899，个人ID：146732",
 	["illustrator:tokiko_2"] = "会帆",
 	["origin:tokiko_2"] = "p号：12769894，个人ID：146732",
-	
+
 	["fandu"] = "泛读",
 	[":fandu"] = "准备阶段开始时或每当你受到1点伤害后，你可以摸两张牌，然后令一名其他角色弃置你的一张手牌。",
 	["@fandu-select"] = "由于“泛读”的效果，请指定一名其他角色，该角色将弃置你的一张手牌。",
@@ -77,7 +77,7 @@ return{
 	["renko"] = "宇佐见莲子",
 	["#renko"] = "窥知时空之目",
 	["designer:renko"] = "星野梦美☆",
-	
+
 	["illustrator:renko"] = "ideolo",
 	["origin:renko"] = "个人ID：61513",
 	["illustrator:renko_1"] = "orga",
@@ -86,7 +86,7 @@ return{
 	["origin:renko_2"] = "p号：21521777，个人ID：38674",
 	["illustrator:renko_3"] = "An2A",
 	["origin:renko_3"] = "个人ID：173876",
-	
+
 	["shitu"] = "识途",
 	[":shitu"] = "你的回合结束前，若此回合不是额外回合，且此回合内没有角色受到过伤害，且没有角色死亡，你可令一名角色在此回合结束后进行一个仅有摸牌阶段的额外的回合。",
 	["@shitu-playerchoose"] = "指定一名角色，令其进行一个额外的回合，但此回合没有摸牌阶段以外的阶段。",
@@ -97,7 +97,7 @@ return{
 	["#merry"] = "看穿境界之目",
 	["!merry"] = "玛艾露贝莉·赫恩",
 	["designer:merry"] = "星野梦美☆",
-	
+
 	["illustrator:merry"] = "shigureru",
 	["origin:merry"] = "p号：47417381，个人ID：145972",
 	["illustrator:merry_1"] = "asagi",
@@ -106,7 +106,7 @@ return{
 	["origin:merry_2"] = "p号：33908738，个人ID：335493",
 	["illustrator:merry_3"] = "An2A",
 	["origin:merry_3"] = "个人ID：173876",
-	
+
 	["mengxian"] = "梦现",
 	[":mengxian"] = "<font color=\"purple\"><b>觉醒技，</b></font>准备阶段开始时，若“境界”数不小于3，你失去1点体力上限，回复1点体力，获得技能“乱影”（当其他角色使用或打出基本牌时（代替判定牌时除外），你可以交给其一张颜色相同的“境界”，令此牌无效）。",
 	["#MengxianWake"] = "%from 的人物牌上的“境界”为 %arg2 张，触发“%arg”觉醒。",
@@ -121,7 +121,7 @@ return{
 	["toyohime"] = "绵月丰姬",
 	["#toyohime"] = "连系海与山的月之公主",
 	["designer:toyohime"] = "星野梦美☆",
-	
+
 	["illustrator:toyohime"] = "シネカ",
 	["origin:toyohime"] = "p号：13173842，个人ID：1154113",
 	["illustrator:toyohime_1"] = "砂雲",
@@ -130,7 +130,7 @@ return{
 	["origin:toyohime_2"] = "p号：39062984，个人ID：304123",
 	["illustrator:toyohime_3"] = "s-syago",
 	["origin:toyohime_3"] = "p号：46344470，个人ID：380709",
-	
+
 	["lianxi"] = "连系",
 	[":lianxi"] = "当你使用或打出【杀】时，你可以视为使用或重铸【铁索连环】。",
 	["@lianxi"]= "你可以使用或重铸【铁索连环】。",
@@ -145,14 +145,14 @@ return{
 	["yorihime"] = "绵月依姬",
 	["#yorihime"] = "受神灵凭依的月之公主",
 	["designer:yorihime"] = "星野梦美☆",
-	
+
 	["illustrator:yorihime"] = "六羽田 トモエ ",
 	["origin:yorihime"] = "",
 	["illustrator:yorihime_1"] = "PFALZ",
 	["origin:yorihime_1"] = "p号：8345313，个人ID：6539",
 	["illustrator:yorihime_2"] = "ideolo",
 	["origin:yorihime_2"] = "个人ID：61513",
-	
+
 	["pingyi"] = "凭依",
 	[":pingyi"] = "当你对其他角色造成伤害后或当你受到其他角色造成的伤害后，若其存活，你可令该角色的一个有效的技能（主公技，限定技，觉醒技，永久技除外）无效，你获得此技能。若如此做，当你的回合结束时或你死亡时或下一次你发动“凭依”时，你失去此技能，该角色的此技能恢复有效。<font color=\"green\"><b>每回合限一次。</b></font>",
 	["@pingyi-discard"]= "弃置一张牌，“凭依” <font color=\"#00FF00\"><b>%src </b></font> 的技能。",
@@ -166,7 +166,7 @@ return{
 	["!sunny"] = "桑尼·米尔克",
 	["sunny"] = "桑尼",
 	["designer:sunny"] = "星野梦美☆",
-	
+
 	["#sunny"] = "闪耀的日之光",
 	["illustrator:sunny"] = "Sui.",
 	["origin:sunny"] = "p号：19453374，个人ID：304123",
@@ -174,7 +174,7 @@ return{
 	["origin:sunny_1"] = "p号：13854664，个人ID：467511",
 	["illustrator:sunny_2"] = "Sui.",
 	["origin:sunny_2"] = "p号：16739718，个人ID：304123",
-	
+
 	["zheshe"] = "折射",
 	[":zheshe"] = "当你受到伤害时，若来源不是你，你可以弃置一张手牌，防止此伤害，并对一名角色造成1点伤害。此伤害结算结束时，其摸X张牌（X为其已损失的体力值）。",
 	["@zheshe"] = "请弃置一张手牌,发动“折射”，防止此伤害，并对一名角色造成1点伤害。",
@@ -188,21 +188,21 @@ return{
 	["lunar"] = "露娜",
 	["#lunar"] = "寂静的月之光",
 	["designer:lunar"] = "星野梦美☆",
-	
+
 	["illustrator:lunar"] = "yucke",
 	["origin:lunar"] = "p号：16951942，个人ID：183590",
 	["illustrator:lunar_1"] = "NEKO",
-	["origin:lunar_1"] = "p号：28822375，个人ID：2600911", 
+	["origin:lunar_1"] = "p号：28822375，个人ID：2600911",
 	["illustrator:lunar_2"] = "ke-ta",
 	["origin:lunar_2"] = "个人ID：3104565",
-	
+
 	["zhuonong"] = "捉弄",
 	[":zhuonong"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以选择一项：对一名角色造成1点火焰伤害，然后令其回复1点体力；或令一名角色回复1点体力（可以为未受伤的角色），然后对其造成1点火焰伤害。",
 	["zhuonong:dr"] = "对其造成1点火焰伤害，然后令其回复1点体力",
 	["zhuonong:rd"] = "令其回复1点体力，然后对其造成1点火焰伤害",
 	["#zhuonong_dr"]= "%from 发动 %arg  的效果为： 对 %to 造成%arg2 点 火焰伤害， 令 %to 回复 %arg2 点体力后。",
 	["#zhuonong_rd"]= "%from 发动 %arg  的效果为：  %to 回复 %arg2 点体力后， 对 %to 造成%arg2 点 火焰伤害。",
-	
+
 	["jijing"] = "寂静",
 	[":jijing"] = "<font color=\"blue\"><b>锁定技，</b></font>当其他角色于你的回合内受到伤害后，你与其的距离于此回合内视为1。",
 	["@jijing"] = "寂静",
@@ -213,7 +213,7 @@ return{
 	["star"] = "斯塔",
 	["#star"] = "照射的星之光",
 	["designer:star"] = "星野梦美☆",
-	
+
 	["illustrator:star"] = "綾瀬 みどり",
 	["illustrator:star_1"] = "和茶",
 	["origin:star_1"] = "p号：38503262，个人ID：3312169",
@@ -221,7 +221,7 @@ return{
 	["origin:star_2"] = "p号：38836967，个人ID：111793",
 	["illustrator:star_3"] = "べにたま",
 	["origin:star_3"] = "p号：35650634，个人ID：17902",
-	
+
 	["ganying"] = "感应",
 	[":ganying"] = "当你与不少于一名角色的距离和/或不少于一名角色与你的距离发生一次改变后，你可以摸一张牌，然后你可以弃置其中一名其他角色的一张手牌。",
 	["@ganying"]= "选择与你距离改变的其他角色，弃置其一张牌",
@@ -231,7 +231,7 @@ return{
 	["kasen"] = "茨木華扇",
 	["#kasen"] = "独臂有角的仙人",
 	["designer:kasen"] = "三国有单",
-	
+
 	["illustrator:kasen"] = "ニッカ",
 	["origin:kasen"] = "p号：17069244",
 	["illustrator:kasen_1"] = "ダバディ",
@@ -244,14 +244,14 @@ return{
 	["@zhujiu"] = "你可以发动“祝酒”，交给 %src 一张牌，然后摸一张牌",
 	["yushou"] = "御兽",
 	[":yushou"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一名角色装备区里的一张牌置入另一名角色的装备区，前者可以对后者造成1点伤害。",
-    ["yushou_damage:confirm"]= "你可以通过 <font color=\"#00FF00\"><b> 御兽</b></font> ，对<font color=\"#FF8000\"><b>%src </b></font> 造成1点伤害。",
+	["yushou_damage:confirm"]= "你可以通过 <font color=\"#00FF00\"><b> 御兽</b></font> ，对<font color=\"#FF8000\"><b>%src </b></font> 造成1点伤害。",
 
 --****************************
 	--wai012  势力：外 3血
 	["kosuzu"] = "本居小铃",
 	["#kosuzu"] = "识文解意的爱书人",
 	["designer:kosuzu"] = "天空寺奈寺美",
-	
+
 	["illustrator:kosuzu"] = "藤ちょこ",
 	["illustrator:kosuzu_1"] = "音無空太",
 	["origin:kosuzu_1"] = "p号：50873812",
@@ -272,13 +272,13 @@ return{
 	["cirno_sp"] = "三月精SP琪露诺" ,
 	["#cirno_sp"] = "活力无限的小姑娘" ,
 	["&cirno_sp"] = "三月精琪露诺",
-	["designer:cirno_sp"] = "bullytou",	
-	
+	["designer:cirno_sp"] = "bullytou",
+
 	["illustrator:cirno_sp"] = "隂宅",
 	["origin:cirno_sp"] = "p号：无,个人ID:979179",
 	["illustrator:cirno_sp_1"] = "ゆき",
 	["origin:cirno_sp_1"] = "p号：20341828,个人ID:20341828",
-	
+
 	["xunshi"] = "寻事",
 	[":xunshi"] = "<font color=\"blue\"><b>锁定技，</b></font>当其他角色使用【杀】或【桃】或普通锦囊牌指定目标时，若你不是此牌的目标，且其体力值或手牌数大于你，你摸一张牌并成为额外目标。",
 	["#xunshi"]= "%to 触发了“%arg2”， 成为 %from 使用的 %arg 的额外目标。",
@@ -287,19 +287,19 @@ return{
 	[":jidong"] = "当你成为【杀】或【决斗】的目标后，你可以弃置一张基本牌，令使用者选择一项：弃置一张点数大于你弃置的牌的手牌，或令此牌对你无效。",
 	["jidong-discard"] = "你成为 %dest 使用的 %src 的目标， 你可以发动 “急冻” 弃置一张 %arg",
 	["jidong-confirm"] = " %dest 对你使用的 %src 发动了 “急冻”， 若想令此牌对其生效， 请弃置一张大于 %arg 点的牌",
-	
+
 --**************************************
 	--wai014 势力：外  3血
 	["mamizou_sp"] = "铃奈庵SP猯藏" ,
 	["#mamizou_sp"] = "谁也抓不住的伪装者" ,
 	["&mamizou_sp"] = "铃奈庵猯藏" ,
 	["designer:mamizou_sp"] = "星野梦美☆",
-	
+
 	["illustrator:mamizou_sp"] = "抽风男",
 	["origin:mamizou_sp"] = "p号：44181708,个人ID:9838093",
 	["illustrator:mamizou_sp_1"] = "りひと",
 	["origin:mamizou_sp_1"] = "p号：53048830,个人ID:1463626",
-	
+
 	["zhangmu"] = "障目",
 	[":zhangmu"] = "当你成为【杀】或【过河拆桥】或【顺手牵羊】的目标后，你可以将手牌补至三张，然后将两张手牌扣置于人物牌上，称为“障”。若如此做，此牌结算完毕后：若你没有手牌，获得所有“障”；否则，将所有“障”置入弃牌堆。",
 	["zhang"] = "障",
@@ -309,24 +309,24 @@ return{
 	["liyou"] = "利诱",
 	[":liyou"] = "准备阶段开始时，你可令一名其他角色视为对你使用【顺手牵羊】。",
 	["@liyou"] = "你可以发动“利诱”，选择一名角色，视为其对你使用【顺手牵羊】",
-	
+
 
 --****************************
 	--wai015  势力：外  4血
 	["reisen2"] = "铃仙二号" ,
 	["#reisen2"] = "赎罪的月兔" ,
 	["designer:reisen2"] = "辰焰天明",
-	
+
 	["illustrator:reisen2"] = " 小龍 ",
 	["origin:reisen2"] = "p号：56463981,个人ID:8780063",
 	["illustrator:reisen2_1"] = "くろぬこネーロ",
 	["origin:reisen2_1"] = "p号：33268695,个人ID:335493",
-	
+
 	["sixiang"] = "思乡",
 	[":sixiang"] = "<font color=\"blue\"><b>锁定技，</b></font>一名角色的准备阶段开始时，若你不处于连环状态，你横置并回复1点体力。",
 	["daoyao"] = "捣药",
 	[":daoyao"] = "当一名角色回复体力后，你可以选择一项：令一名处于连环状态的其他角色摸一张牌，或令当前回合的角色弃置一张牌。",
 	["daoyao_discard"]= "%src 发动“捣药” 令你弃置 1 张牌",
 	["@daoyao"] = "你可以发动 “捣药” 选择处于铁索状态的其他角色 或 当前回合人",
-    
+
 }

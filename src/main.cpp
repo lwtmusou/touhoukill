@@ -26,9 +26,9 @@
 using namespace google_breakpad;
 
 static bool callback(const wchar_t *dump_path, const wchar_t *id,
-    void *, EXCEPTION_POINTERS *,
-    MDRawAssertionInfo *,
-    bool succeeded)
+                     void *, EXCEPTION_POINTERS *,
+                     MDRawAssertionInfo *,
+                     bool succeeded)
 {
     if (succeeded)
         qWarning("Dump file created in %s, dump guid is %s\n", dump_path, id);
@@ -40,7 +40,7 @@ static bool callback(const wchar_t *dump_path, const wchar_t *id,
 int main(int argc, char *argv[])
 {
     ExceptionHandler eh(L"./dmp", NULL, callback, NULL,
-        ExceptionHandler::HANDLER_ALL);
+                        ExceptionHandler::HANDLER_ALL);
 #else
 int main(int argc, char *argv[])
 {

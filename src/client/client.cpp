@@ -26,8 +26,8 @@ Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent, const QString &filename)
     : QObject(parent), m_isDiscardActionRefusable(true),
-    status(NotActive), alive_count(1), swap_pile(0),
-    _m_roomState(true)
+      status(NotActive), alive_count(1), swap_pile(0),
+      _m_roomState(true)
 {
     ClientInstance = this;
     m_isGameOver = false;
@@ -872,7 +872,7 @@ QString Client::setPromptList(const QStringList &texts)
 void Client::commandFormatWarning(const QString &str, const QRegExp &rx, const char *command)
 {
     QString text = tr("The argument (%1) of command %2 does not conform the format %3")
-        .arg(str).arg(command).arg(rx.pattern());
+            .arg(str).arg(command).arg(rx.pattern());
     QMessageBox::warning(NULL, tr("Command format warning"), text);
 }
 
@@ -923,10 +923,10 @@ void Client::askForCardOrUseCard(const QVariant &cardUsage)
     if (usage.size() >= 3 && JsonUtils::isNumber(usage[2])) {
         Card::HandlingMethod method = (Card::HandlingMethod)(usage[2].toInt());
         switch (method) {
-            case Card::MethodDiscard: status = RespondingForDiscard; break;
-            case Card::MethodUse: status = RespondingUse; break;
-            case Card::MethodResponse: status = Responding; break;
-            default: status = RespondingNonTrigger; break;
+        case Card::MethodDiscard: status = RespondingForDiscard; break;
+        case Card::MethodUse: status = RespondingUse; break;
+        case Card::MethodResponse: status = Responding; break;
+        default: status = RespondingNonTrigger; break;
         }
     }
     setStatus(status);
@@ -975,10 +975,10 @@ void Client::askForSurrender(const QVariant &initiator)
     if (!JsonUtils::isString(initiator)) return;
 
     QString text = tr("%1 initiated a vote for disadvataged side to claim "
-        "capitulation. Click \"OK\" to surrender or \"Cancel\" to resist.")
-        .arg(Sanguosha->translate(initiator.toString()));
+                      "capitulation. Click \"OK\" to surrender or \"Cancel\" to resist.")
+            .arg(Sanguosha->translate(initiator.toString()));
     text.append(tr("<br/> <b>Notice</b>: if all people on your side decides to surrender. "
-        "You'll lose this game."));
+                   "You'll lose this game."));
     skill_name = "surrender";
 
     prompt_doc->setHtml(text);
@@ -996,8 +996,8 @@ void Client::askForNullification(const QVariant &arg)
 {
     JsonArray args = arg.value<JsonArray>();
     if (args.size() != 3 || !JsonUtils::isString(args[0])
-        || !(args[1].isNull() || JsonUtils::isString(args[1]))
-        || !JsonUtils::isString(args[2]))
+            || !(args[1].isNull() || JsonUtils::isString(args[1]))
+            || !JsonUtils::isString(args[2]))
         return;
 
     QString trick_name = args[0].toString();
@@ -1026,13 +1026,13 @@ void Client::askForNullification(const QVariant &arg)
 
     if (source == NULL) {
         prompt_doc->setHtml(tr("Do you want to use nullification to trick card %1 from %2?")
-            .arg(Sanguosha->translate(trick_card->objectName()))
-            .arg(getPlayerName(target_player->objectName())));
+                            .arg(Sanguosha->translate(trick_card->objectName()))
+                            .arg(getPlayerName(target_player->objectName())));
     } else {
         prompt_doc->setHtml(tr("%1 used trick card %2 to %3 <br>Do you want to use nullification?")
-            .arg(getPlayerName(source->objectName()))
-            .arg(Sanguosha->translate(trick_name))
-            .arg(getPlayerName(target_player->objectName())));
+                            .arg(getPlayerName(source->objectName()))
+                            .arg(Sanguosha->translate(trick_name))
+                            .arg(getPlayerName(target_player->objectName())));
     }
 
     _m_roomState.setCurrentCardUsePattern("nullification");
@@ -1118,7 +1118,7 @@ int Client::alivePlayerCount() const
 ClientPlayer *Client::getPlayer(const QString &name)
 {
     if (name == Self->objectName() ||
-        name == QSanProtocol::S_PLAYER_SELF_REFERENCE_ID)
+            name == QSanProtocol::S_PLAYER_SELF_REFERENCE_ID)
         return Self;
     else
         return findChild<ClientPlayer *>(name);
@@ -1219,7 +1219,7 @@ void Client::setCardFlag(const QVariant &pattern_str)
 void Client::updatePileNum()
 {
     QString pile_str = tr("Draw pile: <b>%1</b>, discard pile: <b>%2</b>, swap times: <b>%3</b>")
-        .arg(pile_num).arg(discarded_list.length()).arg(swap_pile);
+            .arg(pile_num).arg(discarded_list.length()).arg(swap_pile);
     lines_doc->setHtml(QString("<font color='%1'><p align = \"center\">" + pile_str + "</p></font>").arg(Config.TextEditColor.name()));
 }
 
@@ -1227,7 +1227,7 @@ void Client::askForDiscard(const QVariant &reqvar)
 {
     JsonArray req = reqvar.value<JsonArray>();
     if (req.size() != 6 || !JsonUtils::isNumber(req[0]) || !JsonUtils::isNumber(req[1]) || !JsonUtils::isBool(req[2])
-        || !JsonUtils::isBool(req[3]) || !JsonUtils::isString(req[4]) || !JsonUtils::isString(req[5]))
+            || !JsonUtils::isBool(req[3]) || !JsonUtils::isString(req[4]) || !JsonUtils::isString(req[5]))
         return;
 
 
@@ -1264,7 +1264,7 @@ void Client::askForExchange(const QVariant &exchange)
 {
     JsonArray args = exchange.value<JsonArray>();
     if (args.size() != 6 || !JsonUtils::isNumber(args[0]) || !JsonUtils::isNumber(args[1]) || !JsonUtils::isBool(args[2])
-        || !JsonUtils::isString(args[3]) || !JsonUtils::isBool(args[4]) || !JsonUtils::isString(args[5]))
+            || !JsonUtils::isString(args[3]) || !JsonUtils::isBool(args[4]) || !JsonUtils::isString(args[5]))
         return;
 
     discard_num = args[0].toInt();
@@ -1454,7 +1454,7 @@ void Client::askForCardChosen(const QVariant &ask_str)
 {
     JsonArray ask = ask_str.value<JsonArray>();
     if (ask.size() != 6 || !JsonUtils::isStringArray(ask, 0, 2)
-        || !JsonUtils::isBool(ask[3]) || !JsonUtils::isNumber(ask[4]))
+            || !JsonUtils::isBool(ask[3]) || !JsonUtils::isNumber(ask[4]))
         return;
     QString player_name = ask[0].toString();
     QString flags = ask[1].toString();
@@ -1502,8 +1502,8 @@ void Client::askForTriggerOrder(const QVariant &ask_str)
 {
     JsonArray ask = ask_str.value<JsonArray>();
     if (ask.size() != 2
-        || !ask[0].canConvert<JsonArray>()
-        || !JsonUtils::isBool(ask[1])) return;
+            || !ask[0].canConvert<JsonArray>()
+            || !JsonUtils::isBool(ask[1])) return;
     QVariantList l = ask[0].toList();
     bool optional = ask[1].toBool();
 
@@ -1818,8 +1818,8 @@ void Client::askForYiji(const QVariant &ask_str)
         setPromptList(texts);
     } else {
         prompt_doc->setHtml(tr("Please distribute %1 cards %2 as you wish")
-            .arg(count)
-            .arg(m_isDiscardActionRefusable ? QString() : tr("to another player")));
+                            .arg(count)
+                            .arg(m_isDiscardActionRefusable ? QString() : tr("to another player")));
     }
 
     //@todo: use cards directly rather than the QString
@@ -1947,7 +1947,7 @@ void Client::speak(const QVariant &speak)
     title = QString("<b>%1</b>").arg(title);
 
     QString line = tr("<font color='%1'>[%2] said: %3 </font>")
-        .arg(Config.TextEditColor.name()).arg(title).arg(text);
+            .arg(Config.TextEditColor.name()).arg(title).arg(text);
 
     emit line_spoken(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
 }
@@ -2004,7 +2004,7 @@ void Client::animate(const QVariant &animate_str)
 {
     JsonArray animate = animate_str.value<JsonArray>();
     if (animate.size() != 3 || !JsonUtils::isNumber(animate[0])
-        || !JsonUtils::isString(animate[1]) || !JsonUtils::isString(animate[2]))
+            || !JsonUtils::isString(animate[1]) || !JsonUtils::isString(animate[2]))
         return;
 
     QStringList args;
@@ -2017,9 +2017,9 @@ void Client::setFixedDistance(const QVariant &set_str)
 {
     JsonArray set = set_str.value<JsonArray>();
     if (set.size() != 3
-        || !JsonUtils::isString(set[0])
-        || !JsonUtils::isString(set[1])
-        || !JsonUtils::isNumber(set[2])) return;
+            || !JsonUtils::isString(set[0])
+            || !JsonUtils::isString(set[1])
+            || !JsonUtils::isNumber(set[2])) return;
 
     ClientPlayer *from = getPlayer(set[0].toString());
     ClientPlayer *to = getPlayer(set[1].toString());

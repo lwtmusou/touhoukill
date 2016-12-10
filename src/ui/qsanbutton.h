@@ -49,7 +49,7 @@ public:
     void setEnabled(bool enabled);
     bool isDown();
     bool isMouseInside() const;
-    public slots:
+public slots:
     void click();
 
 protected:

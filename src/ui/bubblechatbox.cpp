@@ -54,8 +54,8 @@ private:
 
 BubbleChatBox::BubbleChatBox(const QRect &area, QGraphicsItem *parent/* = 0*/)
     : QGraphicsObject(parent), m_backgroundPixmap("image/system/bubble.png"),
-    m_rect(m_backgroundPixmap.rect()), m_area(area), m_chatLabel(new BubbleChatLabel(this)),
-    m_appearAndDisappear(new QPropertyAnimation(this, "opacity", this))
+      m_rect(m_backgroundPixmap.rect()), m_area(area), m_chatLabel(new BubbleChatLabel(this)),
+      m_appearAndDisappear(new QPropertyAnimation(this, "opacity", this))
 {
     m_chatLabel->setFont(Config.UIFont);
     m_chatLabel->setWrapMode(QTextOption::WrapAnywhere);
@@ -133,7 +133,7 @@ void BubbleChatBox::setText(const QString &text)
     m_rect.setSize(QSize(boxWidth + BOX_RIGHT_FRAME_WIDTH, height * lineCount + BOX_FRAME_HEIGHT));
 
     m_chatLabel->setPos(QPointF(BOX_LEFT_FRAME_WIDTH,
-        m_rect.center().y() - (height * lineCount) + (lineCount - 1) * (height / 2) - (imgCount > 0 ? 1 : 0)));
+                                m_rect.center().y() - (height * lineCount) + (lineCount - 1) * (height / 2) - (imgCount > 0 ? 1 : 0)));
     m_chatLabel->setBoundingRect(QRectF(0, 0, boxWidth, height * lineCount + (MAX_LINE_COUNT - lineCount) * 1));
 
     updatePos();

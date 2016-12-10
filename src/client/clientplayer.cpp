@@ -28,25 +28,25 @@ int ClientPlayer::getHandcardNum() const
 void ClientPlayer::addCard(const Card *card, Place place)
 {
     switch (place) {
-        case PlaceHand:
-        {
-            if (card) known_cards << card;
-            handcard_num++;
-            break;
-        }
-        case PlaceEquip:
-        {
-            WrappedCard *equip = Sanguosha->getWrappedCard(card->getEffectiveId());
-            setEquip(equip);
-            break;
-        }
-        case PlaceDelayedTrick:
-        {
-            addDelayedTrick(card);
-            break;
-        }
-        default:
-            break;
+    case PlaceHand:
+    {
+        if (card) known_cards << card;
+        handcard_num++;
+        break;
+    }
+    case PlaceEquip:
+    {
+        WrappedCard *equip = Sanguosha->getWrappedCard(card->getEffectiveId());
+        setEquip(equip);
+        break;
+    }
+    case PlaceDelayedTrick:
+    {
+        addDelayedTrick(card);
+        break;
+    }
+    default:
+        break;
     }
 }
 
@@ -83,26 +83,26 @@ bool ClientPlayer::isLastHandCard(const Card *card, bool contain) const
 void ClientPlayer::removeCard(const Card *card, Place place)
 {
     switch (place) {
-        case PlaceHand:
-        {
-            handcard_num--;
-            if (card)
-                known_cards.removeOne(card);
-            break;
-        }
-        case PlaceEquip:
-        {
-            WrappedCard *equip = Sanguosha->getWrappedCard(card->getEffectiveId());
-            removeEquip(equip);
-            break;
-        }
-        case PlaceDelayedTrick:
-        {
-            removeDelayedTrick(card);
-            break;
-        }
-        default:
-            break;
+    case PlaceHand:
+    {
+        handcard_num--;
+        if (card)
+            known_cards.removeOne(card);
+        break;
+    }
+    case PlaceEquip:
+    {
+        WrappedCard *equip = Sanguosha->getWrappedCard(card->getEffectiveId());
+        removeEquip(equip);
+        break;
+    }
+    case PlaceDelayedTrick:
+    {
+        removeDelayedTrick(card);
+        break;
+    }
+    default:
+        break;
     }
 }
 
@@ -208,11 +208,11 @@ void ClientPlayer::setMark(const QString &mark, int value)
 
         if (itor.key().startsWith("@") && itor.value() > 0) {
 #define _EXCLUDE_MARK(markname) do {\
-                if (itor.key() == QString("@%1").arg(#markname)) {\
-                    markname##_mark = itor.value();\
-                    continue;\
-                                }\
-                    } while (false)
+    if (itor.key() == QString("@%1").arg(#markname)) {\
+    markname##_mark = itor.value();\
+    continue;\
+        }\
+        } while (false)
 
             _EXCLUDE_MARK(huashen);
             _EXCLUDE_MARK(yongsi_test);
@@ -234,19 +234,19 @@ void ClientPlayer::setMark(const QString &mark, int value)
     //<img src='image/mark/%1.png' />2<br>
     // keep these marks at a certain place
 #define _SET_MARK(markname) do {\
-        if (markname##_mark > 0) {\
-            QString mark_text = QString("<img src='image/mark/test/@%1.png' />").arg(#markname);\
-            if (markname##_mark != 1) {\
-                mark_text.append(QString("%1").arg(markname##_mark));\
-                        }\
-            if (this != Self) {\
-                mark_text.append("<br>");\
-                text.prepend(mark_text);\
-                        } else {\
-                text.append(mark_text);\
-                        }\
-                }\
-        } while (false)
+    if (markname##_mark > 0) {\
+    QString mark_text = QString("<img src='image/mark/test/@%1.png' />").arg(#markname);\
+    if (markname##_mark != 1) {\
+    mark_text.append(QString("%1").arg(markname##_mark));\
+}\
+    if (this != Self) {\
+    mark_text.append("<br>");\
+    text.prepend(mark_text);\
+} else {\
+    text.append(mark_text);\
+}\
+}\
+} while (false)
 
     _SET_MARK(huashen);
     _SET_MARK(yongsi_test);

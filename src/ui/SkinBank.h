@@ -71,7 +71,7 @@ public:
     static const char *S_SKIN_KEY_DEFAULT;
     static const char *S_SKIN_KEY_DEFAULT_SECOND;
     bool load(const QString &layoutConfigFileName, const QString &imageConfigFileName,
-        const QString &audioConfigFileName, const QString &animationConfigFileName);
+              const QString &audioConfigFileName, const QString &animationConfigFileName);
     QPixmap getPixmap(const QString &key, const QString &arg = QString(), bool cache = false, bool heroSkin = true) const;
     QPixmap getPixmapFileName(const QString &key) const;
     QPixmap getPixmapFromFileName(const QString &fileName, bool cache = false) const;
@@ -85,10 +85,10 @@ protected:
     virtual bool _loadImageConfig(const QVariant &config);
     virtual bool _loadAnimationConfig(const QVariant &config) = 0;
     QString _readConfig(const QVariant &dictionary, const QString &key,
-        const QString &defaultValue = QString()) const;
+                        const QString &defaultValue = QString()) const;
     QString _readImageConfig(const QString &key, QRect &clipRegion, bool &clipping,
-        QSize &newScale, bool &scaled,
-        const QString &defaultValue = QString()) const;
+                             QSize &newScale, bool &scaled,
+                             const QString &defaultValue = QString()) const;
 
     JsonObject _m_imageConfig;
     JsonObject _m_audioConfig;
@@ -237,8 +237,8 @@ public:
         QColor m_skillTextShadowColors[QSanButton::S_NUM_BUTTON_STATES * QSanInvokeSkillButton::S_NUM_SKILL_TYPES];
 
         QSanShadowTextFont getSkillTextFont(QSanButton::ButtonState state,
-            QSanInvokeSkillButton::SkillType type,
-            QSanInvokeSkillButton::SkillButtonWidth width) const;
+                                            QSanInvokeSkillButton::SkillType type,
+                                            QSanInvokeSkillButton::SkillButtonWidth width) const;
 
     };
 
@@ -304,8 +304,8 @@ public:
     QString getButtonPixmapPath(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state) const;
     QPixmap getButtonPixmap(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state) const;
     QPixmap getSkillButtonPixmap(QSanButton::ButtonState state,
-        QSanInvokeSkillButton::SkillType type,
-        QSanInvokeSkillButton::SkillButtonWidth width) const;
+                                 QSanInvokeSkillButton::SkillType type,
+                                 QSanInvokeSkillButton::SkillButtonWidth width) const;
     QPixmap getCardMainPixmap(const QString &cardName, bool cache = false, bool heroSkin = true) const;
     QPixmap getCardSuitPixmap(Card::Suit suit) const;
     QPixmap getCardTianyiPixmap() const;
@@ -320,12 +320,12 @@ public:
 
 
     void getHeroSkinContainerGeneralIconPathAndClipRegion(const QString &generalName,
-        int skinIndex, QString &generalIconPath, QRect &clipRegion) const;
+                                                          int skinIndex, QString &generalIconPath, QRect &clipRegion) const;
 
 
     // Animations
     QAbstractAnimation *createHuaShenAnimation(QPixmap &huashenAvatar, QPoint topLeft, QGraphicsItem *parent,
-        QGraphicsItem *&huashenItemCreated) const;
+                                               QGraphicsItem *&huashenItemCreated) const;
     //QAbstractAnimation *createHuaShenAnimation(QPixmap &huashenAvatar, QPoint topLeft, QGraphicsItem *parent,
     //                                          GraphicsPixmapHoverItem *&huashenItemCreated) const;
 

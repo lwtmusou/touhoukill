@@ -76,9 +76,9 @@ const int *const SanFreeTypeFont::loadFont(const QString &fontName)
 }
 
 bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text,
-    const int *const font, const QColor &color, QSize &fontSize,
-    int spacing, int weight, QRect &boundingBox,
-    const Qt::Orientation &orient, const Qt::Alignment &align)
+                                  const int *const font, const QColor &color, QSize &fontSize,
+                                  int spacing, int weight, QRect &boundingBox,
+                                  const Qt::Orientation &orient, const Qt::Alignment &align)
 {
     if (!m_ftLib || font == NULL || painter == NULL || text.isEmpty()) {
         return false;
@@ -170,7 +170,7 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text,
 
         if (useKerning && previous && glyph_index) {
             error = FT_Get_Kerning(face, previous, glyph_index,
-                FT_KERNING_DEFAULT, &delta);
+                                   FT_KERNING_DEFAULT, &delta);
             currentX += delta.x >> 6;
         }
         previous = glyph_index;
@@ -186,7 +186,7 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text,
         bitmap = slot->bitmap;
 
         Q_ASSERT(bitmap.pitch == bitmap.width ||
-            bitmap.pitch == (bitmap.width - 1) / 8 + 1);
+                 bitmap.pitch == (bitmap.width - 1) / 8 + 1);
 
         bool mono = true;
         if (bitmap.pitch == bitmap.width) {
@@ -324,9 +324,9 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text,
 }
 
 bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QString &text,
-    const int *const font, const QColor &color, QSize &fontSize,
-    int spacing, int weight, QRect &boundingBox,
-    const Qt::Alignment &align)
+                                           const int *const font, const QColor &color, QSize &fontSize,
+                                           int spacing, int weight, QRect &boundingBox,
+                                           const Qt::Alignment &align)
 {
     if (!m_ftLib || font == NULL || painter == NULL || text.isEmpty()) {
         return false;
@@ -417,7 +417,7 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
 
         if (useKerning && previous && glyph_index) {
             error = FT_Get_Kerning(face, previous, glyph_index,
-                FT_KERNING_DEFAULT, &delta);
+                                   FT_KERNING_DEFAULT, &delta);
             currentX += delta.x >> 6;
         }
         previous = glyph_index;
@@ -437,7 +437,7 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
         currentY = currentY + tmpYOffset;
 
         Q_ASSERT(bitmap.pitch == bitmap.width ||
-            bitmap.pitch == (bitmap.width - 1) / 8 + 1);
+                 bitmap.pitch == (bitmap.width - 1) / 8 + 1);
 
         //@todo put it back
         bool mono = true;

@@ -123,28 +123,28 @@ QWidget *ServerDialog::createPackageTab()
         extension_group->addButton(checkbox);
 
         switch (package->getType()) {
-            case Package::GeneralPack:
-            {
-                if (extension == "standard" || extension == "test")
-                    continue;
-                row = i / 5;
-                column = i % 5;
-                i++;
+        case Package::GeneralPack:
+        {
+            if (extension == "standard" || extension == "test")
+                continue;
+            row = i / 5;
+            column = i % 5;
+            i++;
 
-                layout1->addWidget(checkbox, row, column + 1);
-                break;
-            }
-            case Package::CardPack:
-            {
-                row = j / 5;
-                column = j % 5;
-                j++;
+            layout1->addWidget(checkbox, row, column + 1);
+            break;
+        }
+        case Package::CardPack:
+        {
+            row = j / 5;
+            column = j % 5;
+            j++;
 
-                layout2->addWidget(checkbox, row, column + 1);
-                break;
-            }
-            default:
-                break;
+            layout2->addWidget(checkbox, row, column + 1);
+            break;
+        }
+        default:
+            break;
         }
     }
 
@@ -414,9 +414,9 @@ void ServerDialog::updateButtonEnablility(QAbstractButton *button)
 {
     if (!button) return;
     if (button->objectName().contains("scenario")
-        || button->objectName().contains("mini")
-        || button->objectName().contains("1v1")
-        || button->objectName().contains("1v3")) {
+            || button->objectName().contains("mini")
+            || button->objectName().contains("1v1")
+            || button->objectName().contains("1v3")) {
         //basara_checkbox->setChecked(false);
         //basara_checkbox->setEnabled(false);
     } else {
@@ -888,7 +888,7 @@ void ServerDialog::onDetectButtonClicked()
     QList<QHostAddress> vAddressList = vHostInfo.addresses();
     foreach (QHostAddress address, vAddressList) {
         if (!address.isNull() && address != QHostAddress::LocalHost
-            && address.protocol() == QAbstractSocket::IPv4Protocol) {
+                && address.protocol() == QAbstractSocket::IPv4Protocol) {
             address_edit->setText(address.toString());
             return;
         }
@@ -928,18 +928,18 @@ void Select3v3GeneralDialog::fillTabWidget()
     QList<const Package *> packages = Sanguosha->findChildren<const Package *>();
     foreach (const Package *package, packages) {
         switch (package->getType()) {
-            case Package::GeneralPack:
-            case Package::MixedPack:
-            {
-                QListWidget *list = new QListWidget;
-                list->setViewMode(QListView::IconMode);
-                list->setDragDropMode(QListView::NoDragDrop);
-                fillListWidget(list, package);
+        case Package::GeneralPack:
+        case Package::MixedPack:
+        {
+            QListWidget *list = new QListWidget;
+            list->setViewMode(QListView::IconMode);
+            list->setDragDropMode(QListView::NoDragDrop);
+            fillListWidget(list, package);
 
-                tab_widget->addTab(list, Sanguosha->translate(package->objectName()));
-            }
-            default:
-                break;
+            tab_widget->addTab(list, Sanguosha->translate(package->objectName()));
+        }
+        default:
+            break;
         }
     }
 }
@@ -957,7 +957,7 @@ void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pa
         bool checked = false;
         if (ex_generals.isEmpty()) {
             checked = (pack->objectName() == "standard" || pack->objectName() == "wind")
-                && general->objectName() != "yuji";
+                    && general->objectName() != "yuji";
         } else
             checked = ex_generals.contains(general->objectName());
 
@@ -1132,11 +1132,11 @@ bool ServerDialog::config()
     //Config.setValue("OfficialRule", official_3v3_ComboBox->itemData(official_3v3_ComboBox->currentIndex()).toString());
     Config.endGroup();
 
-     Config.beginGroup("1v1");
-     Config.setValue("Rule", official_1v1_ComboBox->itemData(official_1v1_ComboBox->currentIndex()).toString());
-     //Config.setValue("UsingExtension", kof_using_extension_checkbox->isChecked());
-     //Config.setValue("UsingCardExtension", kof_card_extension_checkbox->isChecked());
-     Config.endGroup();
+    Config.beginGroup("1v1");
+    Config.setValue("Rule", official_1v1_ComboBox->itemData(official_1v1_ComboBox->currentIndex()).toString());
+    //Config.setValue("UsingExtension", kof_using_extension_checkbox->isChecked());
+    //Config.setValue("UsingCardExtension", kof_card_extension_checkbox->isChecked());
+    Config.endGroup();
 
     //Config.beginGroup("XMode");
     //Config.setValue("RoleChooseX", role_choose_xmode_ComboBox->itemData(role_choose_xmode_ComboBox->currentIndex()).toString());

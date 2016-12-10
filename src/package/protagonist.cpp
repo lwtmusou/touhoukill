@@ -216,8 +216,8 @@ public:
     {
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from && use.from->hasFlag("mofa_invoked") 
-                && (use.card->isKindOf("Slash") || use.card->isNDTrick()))
+            if (use.from && use.from->hasFlag("mofa_invoked")
+                    && (use.card->isKindOf("Slash") || use.card->isNDTrick()))
                 room->setCardFlag(use.card, "mofa_card");
         }
     }
@@ -282,7 +282,7 @@ void WuyuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targ
 bool WuyuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     return targets.isEmpty() && to_select->hasLordSkill("wuyu")
-        && to_select != Self && !to_select->hasFlag("wuyuInvoked");
+            && to_select != Self && !to_select->hasFlag("wuyuInvoked");
 }
 
 class WuyuVS : public OneCardViewAsSkill
@@ -370,7 +370,7 @@ SaiqianCard::SaiqianCard()
 bool SaiqianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     return targets.isEmpty() && to_select->hasSkill("saiqian")
-        && to_select != Self && !to_select->hasFlag("saiqianInvoked");
+            && to_select != Self && !to_select->hasFlag("saiqianInvoked");
 }
 
 void SaiqianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
@@ -711,7 +711,7 @@ public:
     {
         ServerPlayer *marisa = data.value<ServerPlayer *>();
         if (marisa && marisa->isAlive() && marisa->getPhase() == Player::Start
-            && !marisa->isAllNude() && marisa->hasSkill(this))
+                && !marisa->isAllNude() && marisa->hasSkill(this))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, marisa, marisa);
         return QList<SkillInvokeDetail>();
     }
@@ -920,7 +920,7 @@ public:
                 return false;
             QStringList prompt_list;
             prompt_list << "chunxi-target" << QString::number(i+1)
-                << QString::number(count);
+                        << QString::number(count);
             QString prompt = prompt_list.join(":");
             ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), prompt, true, true);
             if (target == NULL)
@@ -1669,7 +1669,7 @@ bool ExtraCollateralCard::targetFilter(const QList<const Player *> &targets, con
 
     if (targets.isEmpty())
         return !tos.contains(to_select->objectName())
-        && !Self->isProhibited(to_select, coll) && coll->targetFilter(targets, to_select, Self);
+                && !Self->isProhibited(to_select, coll) && coll->targetFilter(targets, to_select, Self);
     else
         return coll->targetFilter(targets, to_select, Self);
 }
@@ -2070,7 +2070,7 @@ public:
             if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD){
                 foreach(int id, move.card_ids) {
                     if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand
-                         || move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceEquip) {
+                            || move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceEquip) {
                         if (Sanguosha->getCard(id)->getSuit() == Card::Heart) {
                             heart = true;
                             break;
@@ -2183,7 +2183,7 @@ public:
                     card = response.m_card;
             }
             if (player && player->getPhase() == Player::Play
-                && card && card->getHandlingMethod() == Card::MethodUse)
+                    && card && card->getHandlingMethod() == Card::MethodUse)
                 room->setPlayerProperty(player, "toushi_card", card->objectName());
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -2205,8 +2205,8 @@ public:
                 if (card == NULL)
                     return QList<SkillInvokeDetail>();
                 DELETE_OVER_SCOPE(Card, card)
-                    
-                if (card->isKindOf("Slash") || (card->isNDTrick() && !card->isKindOf("Nullification"))) {
+
+                        if (card->isKindOf("Slash") || (card->isNDTrick() && !card->isKindOf("Nullification"))) {
                     foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                         if (p != player && !p->isCardLimited(card, Card::MethodUse))
                             d << SkillInvokeDetail(this, p, p);

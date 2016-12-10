@@ -117,9 +117,9 @@ void EmphasizeEffect::draw(QPainter *painter)
     QPoint offset;
     QPixmap pixmap = sourcePixmap(Qt::LogicalCoordinates, &offset);
     const QRectF target = boundingRect().adjusted(s.width() * scale - 1,
-        s.height() * scale,
-        -s.width() * scale,
-        -s.height() * scale);
+                                                  s.height() * scale,
+                                                  -s.width() * scale,
+                                                  -s.height() * scale);
     const QRectF source(s.width() * 0.1, s.height() * 0.1, s.width(), s.height());
 
     painter->setRenderHint(QPainter::SmoothPixmapTransform);
@@ -131,9 +131,9 @@ QRectF EmphasizeEffect::boundingRectFor(const QRectF &sourceRect) const
     qreal scale = 0.1;
     QRectF rect(sourceRect);
     rect.adjust(-sourceRect.width() * scale,
-        -sourceRect.height() * scale,
-        sourceRect.width() * scale,
-        sourceRect.height() * scale);
+                -sourceRect.height() * scale,
+                sourceRect.width() * scale,
+                sourceRect.height() * scale);
     return rect;
 }
 
@@ -170,9 +170,9 @@ QRectF SentbackEffect::boundingRectFor(const QRectF &sourceRect) const
     qreal scale = 0.05;
     QRectF rect(sourceRect);
     rect.adjust(-sourceRect.width() * scale,
-        -sourceRect.height() * scale,
-        sourceRect.width() * scale,
-        sourceRect.height() * scale);
+                -sourceRect.height() * scale,
+                sourceRect.width() * scale,
+                sourceRect.height() * scale);
     return rect;
 }
 

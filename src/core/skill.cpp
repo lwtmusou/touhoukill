@@ -163,8 +163,8 @@ bool Skill::matchAvaliablePattern(QString avaliablePattern, QString askedPattern
                 }
                 
                 if (name.contains(card->objectName()) || card->isKindOf(name.toLocal8Bit().data())
-                    || ("%" + card->objectName() == name)
-                    || (card->getEffectiveId() == name.toInt(&isInt) && isInt))
+                        || ("%" + card->objectName() == name)
+                        || (card->getEffectiveId() == name.toInt(&isInt) && isInt))
                     checkpoint = positive;
                 else
                     checkpoint = !positive;
@@ -184,17 +184,17 @@ ViewAsSkill::ViewAsSkill(const QString &name)
 }
 
 bool ViewAsSkill::isAvailable(const Player *invoker,
-    CardUseStruct::CardUseReason reason,
-    const QString &pattern) const
+                              CardUseStruct::CardUseReason reason,
+                              const QString &pattern) const
 {
     if (!invoker->hasSkill(objectName()) && !invoker->hasLordSkill(objectName())&& !invoker->hasFlag(objectName())) // For Shuangxiong
         return false;
     switch (reason) {
-        case CardUseStruct::CARD_USE_REASON_PLAY: return isEnabledAtPlay(invoker);
-        case CardUseStruct::CARD_USE_REASON_RESPONSE:
-        case CardUseStruct::CARD_USE_REASON_RESPONSE_USE: return isEnabledAtResponse(invoker, pattern);
-        default:
-            return false;
+    case CardUseStruct::CARD_USE_REASON_PLAY: return isEnabledAtPlay(invoker);
+    case CardUseStruct::CARD_USE_REASON_RESPONSE:
+    case CardUseStruct::CARD_USE_REASON_RESPONSE_USE: return isEnabledAtResponse(invoker, pattern);
+    default:
+        return false;
     }
 }
 
@@ -557,20 +557,20 @@ bool EquipSkill::equipAvailable(const Player *p, EquipCard::Location location, c
         return false;
 
     switch (location) {
-        case EquipCard::WeaponLocation:
-            if (!p->hasWeapon(equipName))
-                return false;
-            break;
-        case EquipCard::ArmorLocation:
-            if (!p->hasArmorEffect(equipName))
-                return false;
-            break;
-        case EquipCard::TreasureLocation:
-            if (!p->hasTreasure(equipName))
-                return false;
-            break;
-        default:
-            break; // shenmegui?
+    case EquipCard::WeaponLocation:
+        if (!p->hasWeapon(equipName))
+            return false;
+        break;
+    case EquipCard::ArmorLocation:
+        if (!p->hasArmorEffect(equipName))
+            return false;
+        break;
+    case EquipCard::TreasureLocation:
+        if (!p->hasTreasure(equipName))
+            return false;
+        break;
+    default:
+        break; // shenmegui?
     }
 
     return true;

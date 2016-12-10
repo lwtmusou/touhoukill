@@ -753,7 +753,7 @@ function SmartAI:getDynamicUsePriority(card)
 		return (sgs.ai_use_priority[card:getClassName()] or 0.01) - 0.01
 	end
 
-	if self.player:hasSkill("danshou") 
+	if self.player:hasSkill("danshou")
 		and (card:isKindOf("Slash") or card:isKindOf("Duel") or card:isKindOf("AOE")
 			or sgs.dynamic_value.damage_card[card:getClassName()]) then
 		return 0
@@ -786,8 +786,8 @@ function SmartAI:getDynamicUsePriority(card)
 	if card:getTypeId() == sgs.Card_TypeEquip then
 		if self:hasSkills(sgs.lose_equip_skill) then value = value + 12 end
 	end
-    if card:isKindOf("BasicCard") and card:getSkillName() == "beishui" then
-		if card:getSubcards():length() > 1 then 
+	if card:isKindOf("BasicCard") and card:getSkillName() == "beishui" then
+		if card:getSubcards():length() > 1 then
 			value = value - 2
 		end
 	end
@@ -3160,7 +3160,7 @@ function SmartAI:askForNullification(trick, from, to, positive) --尼玛一把�
 	if current:isAlive() and current:hasSkill("souji") and self:isEnemy(current) then
 		return false
 	end
-	
+
 	if self:touhouIsDamageCard(trick) then
 		local dummy_damage = sgs.DamageStruct(trick, from, to, 1, sgs.DamageStruct_Normal)
 		if trick:isKindOf("FireAttack") then
@@ -3784,7 +3784,7 @@ function SmartAI:hasHeavySlashDamage(from, slash, to, getValue)
 
 	if to:hasArmorEffect("Vine") and not IgnoreArmor(from, to) and fireSlash then dmg = dmg + 1 end
 	if from:hasWeapon("GudingBlade") and slash and to:isKongcheng() then dmg = dmg + 1 end
-	
+
 	if getValue then return dmg end
 	return (dmg > 1)
 end
@@ -4982,7 +4982,7 @@ function SmartAI:damageIsEffective(to, nature, from)
 	end
 
 	if from:hasSkill("lizhi") and self:isFriend(from,to) then return false end
-	
+
 	if to:hasLordSkill("shichou") and to:getMark("xhate") == 1 then
 		for _, p in sgs.qlist(self.room:getOtherPlayers(to)) do
 			if p:getMark("hate_" .. to:objectName()) > 0 and p:getMark("@hate_to") > 0 then return self:damageIsEffective(p, nature, from) end
@@ -5932,7 +5932,7 @@ function SmartAI:getAoeValueTo(card, to, from)
 			end
 		end
 
-		
+
 		if self.room:getMode() ~= "06_3v3" and self.room:getMode() ~= "06_XMode" then
 			if to:getHp() == 1 and isLord(from) and sgs.evaluatePlayerRole(to) == "loyalist" and self:getCardsNum("Peach") == 0 then
 				value = value - from:getCardCount() * 20
@@ -6147,9 +6147,9 @@ function SmartAI:hasTrickEffective(card, to, from)
 			if self:isFriend(to, p)  and sgs.dynamic_value.benefit[card:getClassName()] then
 				count =  count + getCardsNum("Nullification", p, self.player)
 			end
-			if self:isEnemy(to, p) and 
+			if self:isEnemy(to, p) and
 			(sgs.dynamic_value.damage_card[card:getClassName()] or sgs.dynamic_value.control_card[card:getClassName()]) then
-				count =  count	+ getCardsNum("Nullification", p, self.player)
+				count =  count  + getCardsNum("Nullification", p, self.player)
 			end
 			if count > 0 then break end
 		end
@@ -7011,7 +7011,7 @@ function SmartAI:touhouDamage(original_damage,from,to,step)
 		return damage
 	end
 	step = step or 1
-	
+
 	if (damage.card and damage.card:isKindOf("Slash") and from) then
 		local baka = self.room:findPlayerBySkillName("wushen")
 		if (baka and from:getWeapon()) then from = baka end
@@ -7147,7 +7147,7 @@ function SmartAI:touhouDamageEffect(damage,from,to)
 	local hasEffect = false
 	local willUse = true
 	--有时间需要好好整理willuse的情况
-	
+
 
 	if damage.card  then
 		if from:hasSkill("dongjie")  and not from:hasFlag("dongjie") then
@@ -7709,7 +7709,7 @@ function SmartAI:touhouAppendExpandPileToList(player,cards)
 		end
 	end
 	--if player:hasSkill("chaoren") then
-	--	cards:prepend(sgs.Sanguosha:getCard(self.room:getDrawPile():first()))
+	--  cards:prepend(sgs.Sanguosha:getCard(self.room:getDrawPile():first()))
 	--end
 	return cards
 end

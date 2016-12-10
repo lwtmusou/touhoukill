@@ -128,7 +128,7 @@ bool TablePile::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStru
     if (card_items.isEmpty())
         return false;
     else if (moveInfo.from_place == Player::PlaceDelayedTrick
-        && moveInfo.reason.m_reason == CardMoveReason::S_REASON_NATURAL_ENTER) {
+             && moveInfo.reason.m_reason == CardMoveReason::S_REASON_NATURAL_ENTER) {
         foreach (CardItem *item, card_items) {
             item->deleteLater();
             card_items.clear();
@@ -157,8 +157,8 @@ bool TablePile::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStru
         card_item->setHomeOpacity(1.0);
         card_item->showFootnote();
         if (moveInfo.from_place == Player::DrawPile
-            || moveInfo.from_place == Player::PlaceJudge
-            || moveInfo.from_place == Player::PlaceTable) {
+                || moveInfo.from_place == Player::PlaceJudge
+                || moveInfo.from_place == Player::PlaceTable) {
             card_item->setOpacity(0.0);
             card_item->setPos(rightMostPos);
             rightMostPos += QPointF(G_COMMON_LAYOUT.m_cardNormalWidth, 0);

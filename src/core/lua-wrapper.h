@@ -57,7 +57,7 @@ public:
 class LuaViewAsSkill : public ViewAsSkill
 {
     Q_OBJECT
-        Q_ENUMS(GuhuoDialogType)
+    Q_ENUMS(GuhuoDialogType)
 
 public:
     enum GuhuoDialogType
@@ -337,14 +337,14 @@ public:
         else {
             if (Card::isKindOf(cardType)) return true;
             switch (subclass) {
-                case TypeSingleTargetTrick: return strcmp(cardType, "SingleTargetTrick") == 0; break;
-                case TypeDelayedTrick: return strcmp(cardType, "DelayedTrick") == 0; break;
-                case TypeAOE: return strcmp(cardType, "AOE") == 0; break;
-                case TypeGlobalEffect: return strcmp(cardType, "GlobalEffect") == 0; break;
-                case TypeNormal:
-                default:
-                    return false;
-                    break;
+            case TypeSingleTargetTrick: return strcmp(cardType, "SingleTargetTrick") == 0; break;
+            case TypeDelayedTrick: return strcmp(cardType, "DelayedTrick") == 0; break;
+            case TypeAOE: return strcmp(cardType, "AOE") == 0; break;
+            case TypeGlobalEffect: return strcmp(cardType, "GlobalEffect") == 0; break;
+            case TypeNormal:
+            default:
+                return false;
+                break;
             }
         }
     }

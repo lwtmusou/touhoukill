@@ -45,7 +45,7 @@ public:
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (!use.card->isKindOf("BasicCard") && !use.card->isKindOf("SkillCard") && use.from && use.from->hasSkill(this)
-                && use.from->getPhase() == Player::Play)
+                    && use.from->getPhase() == Player::Play)
                 room->setPlayerFlag(use.from, "zuiyue");
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -123,7 +123,7 @@ public:
         foreach(ServerPlayer *p, use.to) {
             if (p->hasLordSkill("yanhui") && p != use.from) {
                 if ((use.card->isKindOf("Analeptic") && p->hasFlag("Global_Dying"))
-                    || (use.card->isKindOf("Peach") && use.m_reason == CardUseStruct::CARD_USE_REASON_PLAY)) {
+                        || (use.card->isKindOf("Peach") && use.m_reason == CardUseStruct::CARD_USE_REASON_PLAY)) {
                     QList<ServerPlayer *> logto;
                     logto << p;
                     room->touhouLogmessage("#InvokeOthersSkill", use.from, objectName(), logto);
@@ -393,7 +393,7 @@ public:
         } else if (triggerEvent == CardResponded) {
             CardResponseStruct resp = data.value<CardResponseStruct>();
             if (resp.m_from == current || !resp.m_card->isKindOf("BasicCard")
-                || resp.m_isRetrial || resp.m_isProvision)
+                    || resp.m_isRetrial || resp.m_isProvision)
                 return QList<SkillInvokeDetail>();
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current, NULL, true);
         }
@@ -531,7 +531,7 @@ public:
         } else if (triggerEvent == DamageCaused) { //need not check weather damage.from has this skill
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.card && damage.card->getSkillName() == "henyi" && damage.to->isCurrent()
-                && damage.from && damage.from->hasSkill(this)) {
+                    && damage.from && damage.from->hasSkill(this)) {
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
             }
         }
@@ -790,7 +790,7 @@ const Card *TianrenCard::validate(CardUseStruct &cardUse) const
     foreach (ServerPlayer *liege, lieges) {
         try {
             slash = room->askForCard(liege, "slash", "@tianren-slash:" + lord->objectName(),
-                QVariant(), Card::MethodResponse, lord, false, QString(), true);
+                                     QVariant(), Card::MethodResponse, lord, false, QString(), true);
         }
         catch (TriggerEvent triggerEvent) {
             if (triggerEvent == TurnBroken) {
@@ -839,9 +839,9 @@ public:
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
         return hasZhanGenerals(player) && (matchAvaliablePattern("slash", pattern))
-            && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
-            && (!player->hasFlag("Global_tianrenFailed"))
-            && !player->isCurrent();
+                && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
+                && (!player->hasFlag("Global_tianrenFailed"))
+                && !player->isCurrent();
         //(player->getPhase() == Player::NotActive)
     }
 
@@ -880,8 +880,8 @@ public:
             pattern = "jink";
         Card *dummy = Sanguosha->cloneCard(pattern);
         DELETE_OVER_SCOPE(Card, dummy)
-        if (player->isCardLimited(dummy, s.method))
-            return QList<SkillInvokeDetail>();
+                if (player->isCardLimited(dummy, s.method))
+                return QList<SkillInvokeDetail>();
 
         if (!room->getLieges("zhan", player).isEmpty())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
@@ -912,7 +912,7 @@ public:
         QVariant tohelp = QVariant::fromValue((ServerPlayer *)invoke->invoker);
         foreach (ServerPlayer *liege, room->getLieges("zhan", invoke->invoker)) {
             const Card *resp = room->askForCard(liege, pattern, "@tianren-" + pattern + ":" + invoke->invoker->objectName(),
-                tohelp, Card::MethodResponse, invoke->invoker, false, QString(), true);
+                                                tohelp, Card::MethodResponse, invoke->invoker, false, QString(), true);
             if (resp) {
                 room->provide(resp, liege);
                 return true;
@@ -1122,7 +1122,7 @@ public:
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *playerTo = qobject_cast<ServerPlayer *>(move.to);
             if (playerTo != NULL && playerTo->isAlive() && playerTo->hasSkill(this) && move.to_place == Player::PlaceHand
-                && playerTo->getPhase() != Player::Draw && !nengwuTargets(playerTo, true).isEmpty()) {
+                    && playerTo->getPhase() != Player::Draw && !nengwuTargets(playerTo, true).isEmpty()) {
                 d << SkillInvokeDetail(this, playerTo, playerTo);
             }
         }
@@ -1319,7 +1319,7 @@ void NianliDialog::popup()
         const Card *c = Sanguosha->cloneCard(card_name);
         if (Self->isCardLimited(c, Card::MethodUse) || !c->isAvailable(Self))
             can = false;
-       
+
         button->setEnabled(can);
         button->setToolTip(c->getDescription());
         layout->addWidget(button);
@@ -1357,7 +1357,7 @@ bool NianliCard::targetFilter(const QList<const Player *> &targets, const Player
     const Card *card = Self->tag.value("nianli").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::SuitToBeDecided, 0);
     DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("nianli");
+            new_card->setSkillName("nianli");
     if (new_card->targetFixed())
         return false;
     return new_card && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
@@ -1368,7 +1368,7 @@ bool NianliCard::targetFixed() const
     const Card *card = Self->tag.value("nianli").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::SuitToBeDecided, 0);
     DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("nianli");
+            new_card->setSkillName("nianli");
     //return false;
     return new_card && new_card->targetFixed();
 }
@@ -1378,7 +1378,7 @@ bool NianliCard::targetsFeasible(const QList<const Player *> &targets, const Pla
     const Card *card = Self->tag.value("nianli").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::SuitToBeDecided, 0);
     DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("nianli");
+            new_card->setSkillName("nianli");
     return new_card && new_card->targetsFeasible(targets, Self);
 }
 

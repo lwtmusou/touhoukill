@@ -3,11 +3,23 @@
 
 config = {
 	developers = {
-	} ,
+	},
 
 	kingdoms = {
-	 "zhu", "pc98", "hmx","yym","yyc","zhan","fsl","dld","xlc","slm","hzc","wai","touhougod" ,
-	 --"gzz"
+		"zhu",
+		"pc98",
+		"hmx",
+		"yym",
+		"yyc",
+		"zhan",
+		"fsl",
+		"dld",
+		"xlc",
+		"slm",
+		"hzc",
+		"wai",
+		"touhougod",
+		--"gzz"
 	},
 	kingdom_colors = {
 		pc98 = "#a699cc";
@@ -165,7 +177,7 @@ config = {
 		"mamizou_sp->mamizou",
 		"sakuya_sp->sakuya",
 		"reisen2->tewi",
-        "merry|merry_ndj|renko_ndj->renko",
+		"merry|merry_ndj|renko_ndj->renko",
 		"lunar|star->sunny",
 		"kogasa_slm->kogasa",
 		"shanghai->alice",

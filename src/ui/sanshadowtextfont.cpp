@@ -6,25 +6,25 @@
 #include <QGraphicsPixmapItem>
 
 SanShadowTextFont::SanShadowTextFont() : m_shadowRadius(-1),
-m_shadowDecadeFactor(1.0), m_shadowColor(Qt::black), m_shadowOffset(QPoint(0, 0))
+    m_shadowDecadeFactor(1.0), m_shadowColor(Qt::black), m_shadowOffset(QPoint(0, 0))
 {
 }
 
 SanShadowTextFont::SanShadowTextFont(const QString &fontName)
     : SanSimpleTextFont(fontName),
-    m_shadowRadius(-1),
-    m_shadowDecadeFactor(1.0),
-    m_shadowColor(Qt::black),
-    m_shadowOffset(QPoint(0, 0))
+      m_shadowRadius(-1),
+      m_shadowDecadeFactor(1.0),
+      m_shadowColor(Qt::black),
+      m_shadowOffset(QPoint(0, 0))
 {
 }
 
 SanShadowTextFont::SanShadowTextFont(const QString &fontName, const QSize &fontSize,
-    int shadowRadius, double shadowDecadeFactor, const QColor &shadowColor,
-    const QPoint &shadowOffset, const QColor &color, int spacing, int weight)
+                                     int shadowRadius, double shadowDecadeFactor, const QColor &shadowColor,
+                                     const QPoint &shadowOffset, const QColor &color, int spacing, int weight)
     : SanSimpleTextFont(fontName, fontSize, color, spacing, weight),
-    m_shadowRadius(shadowRadius), m_shadowDecadeFactor(shadowDecadeFactor),
-    m_shadowColor(shadowColor), m_shadowOffset(shadowOffset)
+      m_shadowRadius(shadowRadius), m_shadowDecadeFactor(shadowDecadeFactor),
+      m_shadowColor(shadowColor), m_shadowOffset(shadowOffset)
 {
 }
 
@@ -52,7 +52,7 @@ bool SanShadowTextFont::tryParse(const QVariant &arg)
 }
 
 void SanShadowTextFont::paintText(QPainter *const painter, const QRect &pos,
-    const Qt::Alignment &align, const QString &text) const
+                                  const Qt::Alignment &align, const QString &text) const
 {
     QPixmap pixmap;
     if (_paintTextHelper(pos, align, text, pixmap)) {
@@ -61,7 +61,7 @@ void SanShadowTextFont::paintText(QPainter *const painter, const QRect &pos,
 }
 
 void SanShadowTextFont::paintText(QGraphicsPixmapItem *const item, const QRect &pos,
-    const Qt::Alignment &align, const QString &text) const
+                                  const Qt::Alignment &align, const QString &text) const
 {
     QPixmap pixmap;
     if (_paintTextHelper(pos, align, text, pixmap)) {
@@ -71,11 +71,11 @@ void SanShadowTextFont::paintText(QGraphicsPixmapItem *const item, const QRect &
 }
 
 bool SanShadowTextFont::_paintTextHelper(const QRect &pos,
-    const Qt::Alignment &align, const QString &text,
-    QPixmap &pixmap) const
+                                         const Qt::Alignment &align, const QString &text,
+                                         QPixmap &pixmap) const
 {
     if (pos.width() <= 0 || pos.height() <= 0
-        || m_fontSize.width() <= 0 || m_fontSize.height() <= 0) {
+            || m_fontSize.width() <= 0 || m_fontSize.height() <= 0) {
         return false;
     }
 
@@ -85,18 +85,18 @@ bool SanShadowTextFont::_paintTextHelper(const QRect &pos,
     // @todo: currently, we have not considered m_shadowOffset yet
     QPainter imagePainter(&image);
     SanSimpleTextFont::paintText(&imagePainter, QRect(m_shadowRadius, m_shadowRadius,
-        pos.width() - m_shadowRadius * 2, pos.height() - m_shadowRadius * 2), align, text);
+                                                      pos.width() - m_shadowRadius * 2, pos.height() - m_shadowRadius * 2), align, text);
 
     if (m_shadowRadius < 0
-        || (m_shadowRadius == 0
-        && m_shadowOffset.x() == 0
-        && m_shadowOffset.y() == 0)) {
+            || (m_shadowRadius == 0
+                && m_shadowOffset.x() == 0
+                && m_shadowOffset.y() == 0)) {
         pixmap = QPixmap::fromImage(image);
         return true;
     }
 
     QImage shadow = SanUiUtils::produceShadow(image, m_shadowColor,
-        m_shadowRadius, m_shadowDecadeFactor);
+                                              m_shadowRadius, m_shadowDecadeFactor);
 
     pixmap = QPixmap::fromImage(shadow);
     QPainter shadowPainter(&pixmap);

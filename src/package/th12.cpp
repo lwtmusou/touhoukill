@@ -107,7 +107,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        use.card->setFlags("fahua");// for distance limit 
+        use.card->setFlags("fahua");// for distance limit
         use.card->setFlags("IgnoreFailed");//for factor which named "ignore" and related with Function "isProhibited" and  "targetFilter"
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getLieges("xlc", invoke->invoker)) {
@@ -340,8 +340,8 @@ public:
             if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile) {
                 foreach (int id, move.card_ids) {
                     if (room->getCardPlace(id) == Player::DiscardPile
-                        && (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial
-                        && move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
+                            && (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial
+                                && move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
                 }
             }
@@ -357,8 +357,8 @@ public:
             QList<int> ids;
             foreach (int id, move.card_ids) {
                 if (room->getCardPlace(id) == Player::DiscardPile
-                    && (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial
-                    && move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
+                        && (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial
+                            && move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
                     ids << id;
             }
             room->fillAG(ids, player);
@@ -553,11 +553,11 @@ public:
         frequency = Frequent;
     }
 
-//case1.1 while provideCard went to discar pile , like skill Tianren
+    //case1.1 while provideCard went to discar pile , like skill Tianren
     //if the provider is self,it should not trigger skill
-//case2 while retrial card went to discard pile, we consdier the move.from as the responser, not judge.who!!!
+    //case2 while retrial card went to discard pile, we consdier the move.from as the responser, not judge.who!!!
     //if responser(move.from) is self, it could not trigger skill.
-//case 3 if the card went to DiscardPile from PlaceTable,shoud chcek whether it was from private pile, like woodenOx. This case should not trigger skill.
+    //case 3 if the card went to DiscardPile from PlaceTable,shoud chcek whether it was from private pile, like woodenOx. This case should not trigger skill.
 
     void record(TriggerEvent, Room *room, QVariant &data) const
     {
@@ -569,7 +569,7 @@ public:
         if (move.to_place == Player::PlaceTable) {
             //record "soujiExcept"  for case 3
             if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
-                || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE) {
+                    || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE) {
                 QVariantList record_ids = nazurin->tag["soujiExcept"].toList();
                 foreach (int id, move.card_ids) {
                     if (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceHand && move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceEquip) {
@@ -975,7 +975,7 @@ public:
         Slash *slash = new Slash(Card::NoSuit, 0);
         slash->deleteLater();
         if (!player->isCardLimited(slash, Card::MethodUse)
-            && !player->hasUsed("NuhuoCard")) {
+                && !player->hasUsed("NuhuoCard")) {
             foreach (const Player *p, player->getAliveSiblings()) {
                 if (player->canSlash(p, slash, true))
                     return true;
@@ -1105,9 +1105,9 @@ void ShuxinCard::onEffect(const CardEffectStruct &effect) const
         if (card->subcardsLength() >= effect.to->getHp())
             room->recover(effect.to, RecoverStruct());
     } else if (!effect.to->isKongcheng()) {
-            room->showAllCards(effect.to);
-            room->getThread()->delay(1000);
-            room->clearAG();
+        room->showAllCards(effect.to);
+        room->getThread()->delay(1000);
+        room->clearAG();
     }
 }
 

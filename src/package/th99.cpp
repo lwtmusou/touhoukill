@@ -84,8 +84,8 @@ DangjiaCard::DangjiaCard()
 bool DangjiaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     return targets.isEmpty() && to_select->hasLordSkill("dangjia")
-        && to_select != Self && !to_select->hasFlag("dangjiaInvoked")
-        && !to_select->isKongcheng() && to_select->isWounded();
+            && to_select != Self && !to_select->hasFlag("dangjiaInvoked")
+            && !to_select->isKongcheng() && to_select->isWounded();
 }
 
 void DangjiaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
@@ -375,8 +375,8 @@ public:
 
     bool isEnabledAtPlay(const Player *player) const
     {
-        return (!player->hasFlag("Global_xiufuFailed") &&  !player->hasFlag("xiufu_used")) 
-            || player->getMark("@xiufudebug") > 0;
+        return (!player->hasFlag("Global_xiufuFailed") &&  !player->hasFlag("xiufu_used"))
+                || player->getMark("@xiufudebug") > 0;
     }
 
     const Card *viewAs() const
@@ -558,15 +558,15 @@ public:
     void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
     {
         switch (triggerEvent) {
-            case DamageDone:
-            case Death:
-                room->setTag("shituDamageOrDeath", true);
-                break;
-            case TurnStart:
-                room->setTag("shituDamageOrDeath", false);
-                break;
-            default:
-                break;
+        case DamageDone:
+        case Death:
+            room->setTag("shituDamageOrDeath", true);
+            break;
+        case TurnStart:
+            room->setTag("shituDamageOrDeath", false);
+            break;
+        default:
+            break;
         }
     }
 
@@ -918,7 +918,7 @@ public:
                         room->setPlayerFlag(p, "-pingyi_used");
                 }
             }
-        }    
+        }
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
@@ -1292,7 +1292,7 @@ public:
 class Ganying;
 namespace
 {
-    Ganying *ganying_instance;
+Ganying *ganying_instance;
 }
 
 class Ganying : public TriggerSkill
@@ -1506,8 +1506,8 @@ void YushouCard::onUse(Room *room, const CardUseStruct &card_use) const
 
     const Card *card = Sanguosha->getCard(card_id);
     room->moveCardTo(card, to1, to2, Player::PlaceEquip,
-        CardMoveReason(CardMoveReason::S_REASON_TRANSFER,
-        from->objectName(), "yushou", QString()));
+                     CardMoveReason(CardMoveReason::S_REASON_TRANSFER,
+                                    from->objectName(), "yushou", QString()));
 
     QString prompt = "confirm:" + to2->objectName();
     to1->tag["yushou_target"] = QVariant::fromValue(to2);
@@ -1755,8 +1755,8 @@ public:
             use.card->setFlags("IgnoreFailed");
             foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (use.from->isAlive() && p != use.from && !use.to.contains(p) && !use.to.isEmpty()
-                    && (p->getHandcardNum() < use.from->getHandcardNum() || p->getHp() < use.from->getHp())
-                    && !use.from->isProhibited(p, use.card)) {
+                        && (p->getHandcardNum() < use.from->getHandcardNum() || p->getHp() < use.from->getHp())
+                        && !use.from->isProhibited(p, use.card)) {
                     if (use.card->isKindOf("Peach") && p->isWounded())
                         d << SkillInvokeDetail(this, p, p, NULL, true);
                     else if (use.card->targetFilter(QList<const Player *>(), p, use.from))
@@ -1780,7 +1780,7 @@ public:
         logto << invoke->invoker;
         room->touhouLogmessage("#xunshi", use.from, use.card->objectName(), logto, objectName());
 
-        //wtf!?  this flag can not detected in sgs.ai_choicemade_filter.cardChosen.snatch 
+        //wtf!?  this flag can not detected in sgs.ai_choicemade_filter.cardChosen.snatch
         room->setCardFlag(use.card, "xunshi");
         invoke->invoker->drawCards(1);
         use.to << invoke->invoker;
@@ -1851,7 +1851,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         QStringList prompt_list;
         prompt_list << "jidong-discard" << use.card->objectName()
-            << use.from->objectName() << "basic";
+                    << use.from->objectName() << "basic";
         QString prompt = prompt_list.join(":");
 
         const Card *card = room->askForCard(invoke->invoker, ".Basic", prompt, data, Card::MethodDiscard, NULL, false, objectName());
@@ -1870,7 +1870,7 @@ public:
             QString pattern = QString(".|.|%1~|hand").arg(point);
             QStringList prompt_list;
             prompt_list << "jidong-confirm" << use.card->objectName()
-                << use.from->objectName() << card->getNumberString();
+                        << use.from->objectName() << card->getNumberString();
             QString prompt = prompt_list.join(":");
             use.from->tag["jidong_target"] = QVariant::fromValue(invoke->invoker);
             const Card *card = room->askForCard(use.from, pattern, prompt, data);
@@ -1912,7 +1912,7 @@ public:
                 foreach(ServerPlayer *p, use.to) {
                     QString flag = "zhangmu_" + p->objectName();
                     if (use.card->hasFlag(flag) && !p->getPile("zhang").isEmpty())
-                       d << SkillInvokeDetail(this, p, p, NULL, true); 
+                        d << SkillInvokeDetail(this, p, p, NULL, true);
                 }
             }
         }
@@ -1940,7 +1940,7 @@ public:
                 const Card *cards = room->askForExchange(invoke->invoker, objectName(), num, num, false, "zhangmu_exchange:" + QString::number(num));
                 DELETE_OVER_SCOPE(const Card, cards)
 
-                invoke->invoker->addToPile("zhang", cards, false);
+                        invoke->invoker->addToPile("zhang", cards, false);
                 CardUseStruct use = data.value<CardUseStruct>();
                 room->setCardFlag(use.card, "zhangmu_" + invoke->invoker->objectName());
             }

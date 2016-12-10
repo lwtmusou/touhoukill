@@ -10,7 +10,7 @@ class UdpDetector;
 
 namespace Ui
 {
-    class ConnectionDialog;
+class ConnectionDialog;
 }
 
 class ConnectionDialog : public QDialog

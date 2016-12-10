@@ -74,8 +74,8 @@ void Photo::refresh()
         QPainter painter(&image);
         painter.fillRect(QRect(0, 0, rect.width(), rect.height()), G_PHOTO_LAYOUT.m_onlineStatusBgColor);
         G_PHOTO_LAYOUT.m_onlineStatusFont.paintText(&painter, QRect(QPoint(0, 0), rect.size()),
-            Qt::AlignCenter,
-            Sanguosha->translate(state_str));
+                                                    Qt::AlignCenter,
+                                                    Sanguosha->translate(state_str));
         QPixmap pixmap = QPixmap::fromImage(image);
         _paintPixmap(_m_onlineStatusItem, rect, pixmap, _m_groupMain);
         _layBetween(_m_onlineStatusItem, _m_mainFrame, _m_chainIcon);
@@ -124,7 +124,7 @@ void Photo::setEmotion(const QString &emotion, bool permanent)
         QPixmap pixmap = QPixmap(path);
         emotion_item->setPixmap(pixmap);
         emotion_item->setPos((G_PHOTO_LAYOUT.m_normalWidth - pixmap.width()) / 2,
-            (G_PHOTO_LAYOUT.m_normalHeight - pixmap.height()) / 2);
+                             (G_PHOTO_LAYOUT.m_normalHeight - pixmap.height()) / 2);
         _layBetween(emotion_item, _m_chainIcon, _m_roleComboBox);
 
         QPropertyAnimation *appear = new QPropertyAnimation(emotion_item, "opacity");
@@ -183,9 +183,9 @@ void Photo::tremble()
     QTimer::singleShot(1000, this, SLOT(hideSkillName()));
     }*/
 
-    //void Photo::hideSkillName() {
-    //    _m_skillNameItem->hide();
-    //}
+//void Photo::hideSkillName() {
+//    _m_skillNameItem->hide();
+//}
 
 void Photo::hideEmotion()
 {
@@ -269,8 +269,8 @@ void Photo::setFrame(FrameType type)
         }
     } else {
         _paintPixmap(_m_focusFrame, G_PHOTO_LAYOUT.m_focusFrameArea,
-            _getPixmap(QSanRoomSkin::S_SKIN_KEY_FOCUS_FRAME, QString::number(type)),
-            _m_groupMain);
+                     _getPixmap(QSanRoomSkin::S_SKIN_KEY_FOCUS_FRAME, QString::number(type)),
+                     _m_groupMain);
         _layBetween(_m_focusFrame, _m_avatarArea, _m_mainFrame);
         _m_focusFrame->show();
     }
@@ -315,10 +315,10 @@ QPointF Photo::getHeroSkinContainerPosition() const
 
     if (photoRect.right() <= tableRect.left()) {
         QPointF result(photoRect.right() + 10, photoRect.top()
-            - ((heroSkinContainerHeight - photoHeight) / 2));
+                       - ((heroSkinContainerHeight - photoHeight) / 2));
 
         int yBottomDiff = (result.y() + heroSkinContainerHeight)
-            - (tableRect.bottom() + tablePadding);
+                - (tableRect.bottom() + tablePadding);
         if (yBottomDiff > 0) {
             result.setY(result.y() - yBottomDiff);
         } else if (result.y() < tableRect.top() - tablePadding) {
@@ -328,10 +328,10 @@ QPointF Photo::getHeroSkinContainerPosition() const
         return result;
     } else if (photoRect.bottom() <= tableRect.top()) {
         QPointF result(photoRect.left()
-            - ((heroSkinContainerWidth - photoWidth) / 2), photoRect.bottom() + 10);
+                       - ((heroSkinContainerWidth - photoWidth) / 2), photoRect.bottom() + 10);
 
         int xRightDiff = (result.x() + heroSkinContainerWidth)
-            - (tableRect.right() + tablePadding);
+                - (tableRect.right() + tablePadding);
         if (xRightDiff > 0) {
             result.setX(result.x() - xRightDiff);
         } else if (result.x() < tableRect.left() - tablePadding) {
@@ -341,10 +341,10 @@ QPointF Photo::getHeroSkinContainerPosition() const
         return result;
     } else {
         QPointF result(photoRect.left() - heroSkinContainerWidth - 10, photoRect.top()
-            - ((heroSkinContainerHeight - photoHeight) / 2));
+                       - ((heroSkinContainerHeight - photoHeight) / 2));
 
         int yBottomDiff = (result.y() + heroSkinContainerHeight)
-            - (tableRect.bottom() + tablePadding);
+                - (tableRect.bottom() + tablePadding);
         if (yBottomDiff > 0) {
             result.setY(result.y() - yBottomDiff);
         } else if (result.y() < tableRect.top() - tablePadding) {

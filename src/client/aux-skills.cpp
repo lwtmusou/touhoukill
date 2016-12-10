@@ -6,7 +6,7 @@
 
 DiscardSkill::DiscardSkill()
     : ViewAsSkill("discard"), card(new DummyCard),
-    num(0), include_equip(false), is_discard(true)
+      num(0), include_equip(false), is_discard(true)
 {
     card->setParent(this);
 }

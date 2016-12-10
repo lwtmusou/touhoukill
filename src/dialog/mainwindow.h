@@ -13,7 +13,7 @@
 
 namespace Ui
 {
-    class MainWindow;
+class MainWindow;
 }
 
 class FitView;

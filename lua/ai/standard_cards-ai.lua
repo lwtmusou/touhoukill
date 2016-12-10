@@ -494,8 +494,8 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 			end
 		end
 	end
-	
-	
+
+
 	-- 收到0伤害防止伤害时
 	local fakeDamage = sgs.DamageStruct(slash, from, to, 1, self:touhouDamageNature(slash, from, to))
 	if self:touhouDamage(fakeDamage,from,to).damage <= 0 then
@@ -1123,7 +1123,7 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 	local function getJink()--主要是闪无效
 		--威压无效
 		if self:hasWeiya() then
-			if (self:getCardsNum("Jink") < 2 or self:getCardsNum("Jink", "hs", true) < 1) 
+			if (self:getCardsNum("Jink") < 2 or self:getCardsNum("Jink", "hs", true) < 1)
 			and not (self.player:getHandcardNum() == 1 and self:hasSkills(sgs.need_kongcheng)) then return "." end
 		end
 		--天人出闪的耦合。。。
@@ -1153,7 +1153,7 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 
 	if not self:hasHeavySlashDamage(target, slash, self.player) and self:getDamagedEffects(self.player, target, slash) then return "." end
 	if slash:isKindOf("NatureSlash") and self.player:isChained() and self:isGoodChainTarget(self.player, nil, nil, nil, slash) then return "." end
-	
+
 	---***调用东方杀相关函数
 	if self.player:hasSkill("xuying") then--虚影必须要闪
 		return getJink()
@@ -1183,7 +1183,7 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 	if self:isFriend(target) then
 		if self:findLeijiTarget(self.player, 50, target) then return getJink() end
 		if target:hasSkill("jieyin") and not self.player:isWounded() and self.player:isMale() and not self.player:hasSkills("leiji|nosleiji") then return "." end
-		
+
 		if (target:hasSkill("nosrende") or (target:hasSkill("rende") and not target:hasUsed("RendeCard"))) and self.player:hasSkill("jieming") then return "." end
 		if target:hasSkill("pojun") and not self.player:faceUp() then return "." end
 	else
@@ -1229,7 +1229,7 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 		--      return "."
 		--  end
 		end
-		
+
 	end
 	return getJink() --or "."
 end
@@ -2101,7 +2101,7 @@ sgs.ai_skill_cardask.aoe = function(self, data, pattern, target, name)
 
 	if not self:damageIsEffective(nil, nil, attacker) then return "." end
 	--if self:getDamagedEffects(self.player, attacker) or self:needToLoseHp(self.player, attacker) then return "." end
-	
+
 	local fakeDamage=sgs.DamageStruct(aoe, attacker, self.player, 1, self:touhouDamageNature(aoe, attacker, self.player))
 	local effect, willEffect = self:touhouDamageEffect(fakeDamage,attacker,self.player)
 	if not effect and (self:getDamagedEffects(self.player, attacker) or self:needToLoseHp(self.player, attacker)) then return "." end
@@ -2558,9 +2558,9 @@ function SmartAI:getDangerousCard(who)
 			return offensiveHorse:getEffectiveId()
 		end
 	end
-	
-	
-	
+
+
+
 	if weapon and (weapon:isKindOf("Crossbow") or weapon:isKindOf("GudingBlade")) then
 		for _, friend in ipairs(self.friends) do
 			if weapon:isKindOf("Crossbow") and who:distanceTo(friend) <= 1 and getCardsNum("Slash", who, self.player) > 0 then
@@ -2579,7 +2579,7 @@ function SmartAI:getDangerousCard(who)
 			return offensiveHorse:getEffectiveId()
 		end
 	end
-	
+
 	if (weapon and weapon:isKindOf("Spear") and who:hasSkill("paoxiao") and who:getHandcardNum() >=1 ) then return weapon:getEffectiveId() end
 	if weapon and weapon:isKindOf("Axe")  then
 		if  self:hasSkills("luoyi|pojun|jiushi|jiuchi|jie|wenjiu|shenli|jieyuan", who) or who:getCards("hes"):length() >=4 then
@@ -2590,7 +2590,7 @@ function SmartAI:getDangerousCard(who)
 	if armor and who:hasSkill("wunian") then return armor:getEffectiveId() end
 	if defensiveHorse and who:hasSkill("wunian") then return defensiveHorse:getEffectiveId() end
 
-	
+
 	if lord and lord:hasLordSkill("hujia") and self:isEnemy(lord) and armor and armor:isKindOf("EightDiagram") and who:getKingdom() == "wei" then
 		return armor:getEffectiveId()
 	end
@@ -3564,7 +3564,7 @@ function SmartAI:willUseLightning(card)
 		local friends = 0
 		local enemies = 0
 		for _,player in ipairs(players) do
-			if self:objectiveLevel(player) >= 4 
+			if self:objectiveLevel(player) >= 4
 			  and not (player:hasSkill("weimu") and card:isBlack())
 			  and not player:hasSkills(avoidLightning) then
 				enemies = enemies + 1
@@ -3810,7 +3810,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 		elseif card:isKindOf("GudingBlade") then gudingdao = card:getEffectiveId()
 		elseif card:isKindOf("Halberd") then halberd = card:getEffectiveId()
 		elseif card:isKindOf("Weapon") then weapon = card:getEffectiveId()
-		elseif card:isKindOf("WoodenOx") then wooden_ox = card:getEffectiveId() 
+		elseif card:isKindOf("WoodenOx") then wooden_ox = card:getEffectiveId()
 		elseif card:isKindOf("IronArmor") then ironarmor = card:getEffectiveId() end
 	end
 
@@ -3865,7 +3865,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 	if renwang then
 		if sgs.ai_armor_value.RenwangShield(self.player, self) > 0 and self:getCardsNum("Jink") == 0 then return renwang end
 	end
-	
+
 	if ironarmor then
 		for _, enemy in ipairs(self.enemies) do
 			if enemy:hasSkill("zhence") then return ironarmor end
@@ -3874,7 +3874,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 			--if enemy:getFormation():contains(self.player) and getCardsNum("BurningCamps", enemy, self.player) > 0 then return ironarmor end
 		end
 	end
-	
+
 	if DefHorse and (not self.player:hasSkill("leiji") or self:getCardsNum("Jink") == 0) then
 		local before_num, after_num = 0, 0
 		for _, enemy in ipairs(self.enemies) do

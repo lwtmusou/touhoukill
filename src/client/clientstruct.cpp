@@ -16,10 +16,10 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
     if (OperationTimeout == 0)
         return 0;
     else if (command == QSanProtocol::S_COMMAND_CHOOSE_GENERAL
-        || command == QSanProtocol::S_COMMAND_ASK_GENERAL)
+             || command == QSanProtocol::S_COMMAND_ASK_GENERAL)
         timeOut = OperationTimeout * 1500;
     else if (command == QSanProtocol::S_COMMAND_SKILL_GUANXING
-        || command == QSanProtocol::S_COMMAND_ARRANGE_GENERAL)
+             || command == QSanProtocol::S_COMMAND_ARRANGE_GENERAL)
         timeOut = OperationTimeout * 2000;
     else if (command == QSanProtocol::S_COMMAND_NULLIFICATION)
         timeOut = NullificationCountDown * 1000;
@@ -157,10 +157,10 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
 
     if (info.Enable2ndGeneral) {
         switch (info.MaxHpScheme) {
-            case 0: max_hp_label->setText(QString(tr("Sum - %1")).arg(info.Scheme0Subtraction)); break;
-            case 1: max_hp_label->setText(tr("Minimum")); break;
-            case 2: max_hp_label->setText(tr("Maximum")); break;
-            case 3: max_hp_label->setText(tr("Average")); break;
+        case 0: max_hp_label->setText(QString(tr("Sum - %1")).arg(info.Scheme0Subtraction)); break;
+        case 1: max_hp_label->setText(tr("Minimum")); break;
+        case 2: max_hp_label->setText(tr("Maximum")); break;
+        case 3: max_hp_label->setText(tr("Average")); break;
         }
     } else {
         max_hp_label->setText(tr("2nd general is disabled"));

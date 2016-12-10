@@ -138,7 +138,7 @@ bool KnownBoth::isAvailable(const Player *player) const
     if (sub.isEmpty() || sub.contains(-1))
         can_rec = false;
     return (can_use && !player->isCardLimited(this, Card::MethodUse))
-        || (can_rec && !player->isCardLimited(this, Card::MethodRecast));
+            || (can_rec && !player->isCardLimited(this, Card::MethodRecast));
 }
 
 bool KnownBoth::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -219,7 +219,7 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const
 
     effect.to->setFlags("KnownBothTarget");// For AI
     QString choice = room->askForChoice(effect.from, objectName(),
-        choices.join("+"), QVariant::fromValue(effect.to));
+                                        choices.join("+"), QVariant::fromValue(effect.to));
     effect.to->setFlags("-KnownBothTarget");
     LogMessage log;
     log.type = "#KnownBothView";
@@ -393,7 +393,7 @@ public:
         events << DamageInflicted;
         frequency = Compulsory;
     }
-/*
+    /*
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -444,7 +444,7 @@ public:
         events << TargetConfirming;
         frequency = Compulsory;
     }
-/*
+    /*
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -503,7 +503,7 @@ public:
         events << DrawNCards << EventPhaseStart;
         view_as_skill = new JadeSealViewAsSkill;
     }
-/*
+    /*
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer* &) const
     {
@@ -569,7 +569,7 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
     if (!effect.to->getEquips().isEmpty()
-        && room->askForChoice(effect.to, objectName(), "throw+damage", QVariant::fromValue(effect)) == "throw")
+            && room->askForChoice(effect.to, objectName(), "throw+damage", QVariant::fromValue(effect)) == "throw")
         effect.to->throwAllEquips();
     else
         room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1, DamageStruct::Thunder));
@@ -691,7 +691,7 @@ void LureTiger::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     room->removeTag("targets" + this->toString());
 
     source->drawCards(1, objectName());
-/*
+    /*
 
     QList<int> table_cardids = room->getCardIdsOnTable(this);
     if (!table_cardids.isEmpty()) {
@@ -719,7 +719,7 @@ public:
         events << Death << EventPhaseChanging;
         global = true;
     }
-/*
+    /*
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const
     {
@@ -1093,7 +1093,7 @@ public:
         events << EventPhaseChanging;
         global = true;
     }
-/*
+    /*
 
     virtual int getPriority() const
     {
@@ -1217,75 +1217,75 @@ HegemonyCardsPackage::HegemonyCardsPackage()
     QList<Card *> cards;
 
     cards
-        // basics
-        // -- spade
-        << new Slash(Card::Spade, 4)
-        << new Analeptic(Card::Spade, 6) // transfer
-        << new Slash(Card::Spade, 7)
-        << new Slash(Card::Spade, 8)
-        << new ThunderSlash(Card::Spade, 9)
-        << new ThunderSlash(Card::Spade, 10)
-        << new ThunderSlash(Card::Spade, 11) // transfer
-        // -- heart
-        << new Jink(Card::Heart, 4)
-        << new Jink(Card::Heart, 5)
-        << new Jink(Card::Heart, 6)
-        << new Jink(Card::Heart, 7)
-        << new Peach(Card::Heart, 8)
-        << new Peach(Card::Heart, 9)
-        << new Slash(Card::Heart, 10)
-        << new Slash(Card::Heart, 11)
-        // -- club
-        << new Slash(Card::Club, 4)
-        << new ThunderSlash(Card::Club, 5) // transfer
-        << new Slash(Card::Club, 6)
-        << new Slash(Card::Club, 7)
-        << new Slash(Card::Club, 8)
-        << new Analeptic(Card::Club, 9)
-        // -- diamond
-        << new Peach(Card::Diamond, 2)
-        << new Peach(Card::Diamond, 3) // transfer
-        << new Jink(Card::Diamond, 6)
-        << new Jink(Card::Diamond, 7)
-        << new FireSlash(Card::Diamond, 8)
-        << new FireSlash(Card::Diamond, 9)
-        << new Jink(Card::Diamond, 13)
+            // basics
+            // -- spade
+            << new Slash(Card::Spade, 4)
+            << new Analeptic(Card::Spade, 6) // transfer
+            << new Slash(Card::Spade, 7)
+            << new Slash(Card::Spade, 8)
+            << new ThunderSlash(Card::Spade, 9)
+            << new ThunderSlash(Card::Spade, 10)
+            << new ThunderSlash(Card::Spade, 11) // transfer
+               // -- heart
+            << new Jink(Card::Heart, 4)
+            << new Jink(Card::Heart, 5)
+            << new Jink(Card::Heart, 6)
+            << new Jink(Card::Heart, 7)
+            << new Peach(Card::Heart, 8)
+            << new Peach(Card::Heart, 9)
+            << new Slash(Card::Heart, 10)
+            << new Slash(Card::Heart, 11)
+               // -- club
+            << new Slash(Card::Club, 4)
+            << new ThunderSlash(Card::Club, 5) // transfer
+            << new Slash(Card::Club, 6)
+            << new Slash(Card::Club, 7)
+            << new Slash(Card::Club, 8)
+            << new Analeptic(Card::Club, 9)
+               // -- diamond
+            << new Peach(Card::Diamond, 2)
+            << new Peach(Card::Diamond, 3) // transfer
+            << new Jink(Card::Diamond, 6)
+            << new Jink(Card::Diamond, 7)
+            << new FireSlash(Card::Diamond, 8)
+            << new FireSlash(Card::Diamond, 9)
+            << new Jink(Card::Diamond, 13)
 
-        // tricks
-        // -- spade
-        << new ThreatenEmperor(Card::Spade, 1) // transfer
-        << new BurningCamps(Card::Spade, 3) // transfer
-        << new FightTogether(Card::Spade, 12)
-        << new Nullification(Card::Spade, 13)
-        // -- heart
-        << new AllianceFeast()
-        << new LureTiger(Card::Heart, 2)
-        << new BurningCamps(Card::Heart, 12) //transfer
-        << new Drowning(Card::Heart, 13)
-        // -- club
-        << new ImperialOrder(Card::Club, 3)
-        << new FightTogether(Card::Club, 10)
-        << new BurningCamps(Card::Club, 11) //transfer
-        << new Drowning(Card::Club, 12)
-        // -- diamond
-        << new ThreatenEmperor(Card::Diamond, 1) // transfer
-        << new ThreatenEmperor(Card::Diamond, 4) // transfer
-        << new LureTiger(Card::Diamond, 10) // transfer
+               // tricks
+               // -- spade
+            << new ThreatenEmperor(Card::Spade, 1) // transfer
+            << new BurningCamps(Card::Spade, 3) // transfer
+            << new FightTogether(Card::Spade, 12)
+            << new Nullification(Card::Spade, 13)
+               // -- heart
+            << new AllianceFeast()
+            << new LureTiger(Card::Heart, 2)
+            << new BurningCamps(Card::Heart, 12) //transfer
+            << new Drowning(Card::Heart, 13)
+               // -- club
+            << new ImperialOrder(Card::Club, 3)
+            << new FightTogether(Card::Club, 10)
+            << new BurningCamps(Card::Club, 11) //transfer
+            << new Drowning(Card::Club, 12)
+               // -- diamond
+            << new ThreatenEmperor(Card::Diamond, 1) // transfer
+            << new ThreatenEmperor(Card::Diamond, 4) // transfer
+            << new LureTiger(Card::Diamond, 10) // transfer
 
-        // equips
-        << new IronArmor();
+               // equips
+            << new IronArmor();
     Horse *horse = new OffensiveHorse(Card::Heart, 3, -1); // transfer
     horse->setObjectName("JingFan");
     cards
-        << horse
-        << new JadeSeal(Card::Club, 1)
-        << new Breastplate(); // transfer
+            << horse
+            << new JadeSeal(Card::Club, 1)
+            << new Breastplate(); // transfer
 
     skills << new IronArmorSkill
-        << new JadeSealSkill
-        << new BreastplateSkill
-        << new LureTigerSkill << new LureTigerProhibit
-        << new ThreatenEmperorSkill;
+           << new JadeSealSkill
+           << new BreastplateSkill
+           << new LureTigerSkill << new LureTigerProhibit
+           << new ThreatenEmperorSkill;
     insertRelatedSkills("lure_tiger_effect", "#lure_tiger-prohibit");
 
     foreach(Card *card, cards)

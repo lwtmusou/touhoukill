@@ -69,8 +69,8 @@ private:
     QCheckBox *rest_in_DP_box;
     QCheckBox *ended_by_pile, *single_turn, *before_next;
     QLabel *ended_by_pile_text, *ended_by_pile_text2,
-        *single_turn_text, *single_turn_text2,
-        *before_next_text, *before_next_text2;
+    *single_turn_text, *single_turn_text2,
+    *before_next_text, *before_next_text2;
     QPushButton *extra_skill_set;
     QPushButton *move_list_up_button, *move_list_down_button;
     QCheckBox *move_list_check, *move_pile_check;

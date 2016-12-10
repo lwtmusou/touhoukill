@@ -118,8 +118,8 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 	if sgs.turncount <= 1 and self.role == "renegade" and sgs.isLordHealthy() and self:getOverflow() < 2 then return false end
 	if target:hasSkill("xuying") then return false end
 	--默认杀的effective 已经check过了？
-	
-	
+
+
 	--造伤估值  关联技能 例如冰魄
 	--还缺判断是否需要主动使用damageEffect 如神隐
 	local fakeDamage = sgs.DamageStruct(slash, self.player, target, 2, self:touhouDamageNature(slash,self.player,target))
@@ -214,10 +214,10 @@ function SmartAI:searchForAnaleptic(use, enemy, slash)
 			return ana
 		end
 	end
-	
+
 	local analeptic = self:getCard("Analeptic")
 	if not analeptic then return nil end
-			
+
 	local analepticAvail = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_Residue, self.player, analeptic)
 	local slashAvail = 0
 
@@ -561,7 +561,7 @@ end
 --铁索能不能有其他目标时，不要锁卖血流啊
 --静电对策需要详细写
 function SmartAI:useCardIronChain(card, use)
-	local needTarget = (card:getSkillName() == "guhuo" or card:getSkillName() == "nosguhuo" 
+	local needTarget = (card:getSkillName() == "guhuo" or card:getSkillName() == "nosguhuo"
 		or card:getSkillName() == "qice" or card:getSkillName() == "chaoren")
 	if not needTarget then
 		needTarget = self.player:getPile("wooden_ox"):contains(card:getEffectiveId())
@@ -608,7 +608,7 @@ function SmartAI:useCardIronChain(card, use)
 		end
 	end
 
-	-- add enemies	
+	-- add enemies
 	self:sort(self.enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
 		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName()))
@@ -697,7 +697,7 @@ sgs.ai_skill_cardask["@fire-attack"] = function(self, data, pattern, target)
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	local convert = { [".S"] = "spade", [".D"] = "diamond", [".H"] = "heart", [".C"] = "club"}
 	local card
-    --寻事被火攻砸惨了。先强行不砸队友。。。反正使用火攻本身现在也没考虑队友
+	--寻事被火攻砸惨了。先强行不砸队友。。。反正使用火攻本身现在也没考虑队友
 	if target:objectName() ~= self.player:objectName() and self:isFriend(target) then return "." end
 
 	self:sortByUseValue(cards, true)

@@ -208,7 +208,7 @@ end
 
 sgs.ai_choicemade_filter.cardResponded["@jingdong-target"] = function(self, player, args)
 	local to = self.room:getCurrent()
-    if not (to:hasSkill("huanmeng") or to:hasSkill("zaozu") or to:hasSkill("yongheng"))then
+	if not (to:hasSkill("huanmeng") or to:hasSkill("zaozu") or to:hasSkill("yongheng"))then
 		num = to:getHandcardNum() - to:getMaxCards()
 		if args[#args] ~= "_nil_" then
 			sgs.updateIntention(player, to, -60)
@@ -250,24 +250,24 @@ sgs.ai_skill_choice.zhaoliao=function(self)
 	return "zhaoliao2"
 end
 sgs.ai_skill_use["@@zhaoliaoVS"] = function(self, prompt, method)
-	
+
 	local cards = self.player:getHandcards()
 	cards=self:touhouAppendExpandPileToList(self.player, cards)
 	cards = sgs.QList2Table(cards)
 	if #cards == 0 then return "." end
-	
+
 	self:sortByUseValue(cards, false)
 
 	local card = sgs.cloneCard("ex_nihilo", sgs.Card_SuitToBeDecided, -1)
 	card:addSubcard(cards[1])
 	local ids = {}
 	table.insert(ids, cards[1]:getId())
-	
+
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 	card:setSkillName("_zhaoliao")
 
 	self:useTrickCard(card, dummy_use)
-	
+
 	if not dummy_use.card then return "." end
 	local carduse=sgs.CardUseStruct()
 	carduse.card = card

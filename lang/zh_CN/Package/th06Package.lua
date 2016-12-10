@@ -6,7 +6,7 @@ return{ ["th06"] = "红魔乡",
 	["#remilia"] = "红之恶魔",
 	["!remilia"] = "蕾米莉亚·斯卡雷特",
 	["designer:remilia"] = "星野梦美☆",
-	
+
 	["illustrator:remilia"] = "ke-ta",
 	["origin:remilia"] = "p号：18583207，个人ID：3104565",
 	["illustrator:remilia_1"] = "ザネリ",
@@ -23,7 +23,7 @@ return{ ["th06"] = "红魔乡",
 	["origin:remilia_6"] = "p号：27496231，个人ID：27452",
 	["illustrator:remilia_7"] = "宮瀬まひろ",
 	["origin:remilia_7"] = "p号：49397233，个人ID：544479",
-	
+
 	["skltkexue"] = "渴血",
 	[":skltkexue"] = "当你向其他角色求【桃】时，若其体力值大于其体力下限，其可以失去1点体力并摸两张牌，令你回复1点体力。",
 	["skltkexue_attach"]= "渴血出桃",
@@ -41,21 +41,21 @@ return{ ["th06"] = "红魔乡",
 	["#flandre"] = "恶魔之妹",
 	["!flandre"] = "芙兰朵露·斯卡雷特",
 	["designer:flandre"] = "星野梦美☆",
-	
-	
+
+
 	["illustrator:flandre"] = "大嘘",
 	["origin:flandre"] = "个人ID：457541",
 	["illustrator:flandre_1"] = "ideolo",
-	["origin:flandre_1"] = "p号：32092803，个人ID：61513", 
+	["origin:flandre_1"] = "p号：32092803，个人ID：61513",
 	["illustrator:flandre_2"] = "茨乃",
 	["origin:flandre_2"] = "p号：752120，个人ID：67388",
 	["illustrator:flandre_3"] = "赤りんご",
-	["origin:flandre_3"] = "p号：7768620，个人ID：164813", 
+	["origin:flandre_3"] = "p号：7768620，个人ID：164813",
 	["illustrator:flandre_4"] = "6U",
 	["origin:flandre_4"] = "p号：45272630，个人ID：94883",
 	["illustrator:flandre_5"] = " 東天紅 ",
 	["origin:flandre_5"] = "p号：34472028，个人ID：3757061",
-	
+
 	["pohuai"] = "破坏",
 	[":pohuai"] = "<font color=\"blue\"><b>锁定技，</b></font>准备阶段开始时，你判定，若结果为【杀】，你选择距离不大于1的所有角色，你对这些角色依次造成1点伤害。",
 	["yuxue"] = "浴血",
@@ -70,13 +70,13 @@ return{ ["th06"] = "红魔乡",
 	["sakuya"] = "十六夜咲夜",
 	["#sakuya"] = "完美潇洒的从者",
 	["designer:sakuya"] = "星野梦美☆",
-	
+
 	["illustrator:sakuya"] = "もねてぃ!",
-	["origin:sakuya"] = "p号：56844886，个人ID：3066815", 
+	["origin:sakuya"] = "p号：56844886，个人ID：3066815",
 	["illustrator:sakuya_1"] = "かなりあ",
 	["origin:sakuya_1"] = "p号：2862235，个人ID：180460",
 	["illustrator:sakuya_2"] = "刃天",
-	["origin:sakuya_2"] = "p号：21597876，个人ID：512849", 
+	["origin:sakuya_2"] = "p号：21597876，个人ID：512849",
 	["illustrator:sakuya_3"] = "赤りんご",
 	["origin:sakuya_3"] = "个人ID：164813",
 	["illustrator:sakuya_4"] = "ジョンディー",
@@ -84,8 +84,8 @@ return{ ["th06"] = "红魔乡",
 	["illustrator:sakuya_5"] = "藤宮ふみや",
 	["origin:sakuya_5"] = "p号：37762298，个人ID：4556900",
 	["illustrator:sakuya_6"] = "JQ3C273!",
-	["origin:sakuya_6"] = "p号：9734150，个人ID：431033", 
-	
+	["origin:sakuya_6"] = "p号：9734150，个人ID：431033",
+
 	["suoding"] = "锁定",
 	[":suoding"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以依次将一至三名角色的共计一至三张手牌扣置于其人物牌旁，直到此回合结束。",
 	["suoding_cards"] = "锁定",
@@ -101,12 +101,12 @@ return{ ["th06"] = "红魔乡",
 	["patchouli"] = "帕秋莉",
 	["#patchouli"] = "不动的大图书馆",
 	["!patchouli"] = "帕秋莉·诺蕾姬",
-	["designer:patchouli"] = "bullytou",	
-	
+	["designer:patchouli"] = "bullytou",
+
 	["illustrator:patchouli"] = "萩原",
 	["origin:patchouli_1"] = "个人ID：37062",
 	["illustrator:patchouli_1"] = "ryosios",
-	["origin:patchouli_1"] = "p号：41382219，个人ID：1508165", 
+	["origin:patchouli_1"] = "p号：41382219，个人ID：1508165",
 	["illustrator:patchouli_2"] = "パンチ",
 	["origin:patchouli_2"] = "p号：5182740，个人ID：48755",
 	["illustrator:patchouli_3"] = "miya9",
@@ -117,19 +117,19 @@ return{ ["th06"] = "红魔乡",
 	["origin:patchouli_5"] = "p号：33195548，个人ID：652180",
 	["illustrator:patchouli_6"] = " ファルまろ ",
 	["origin:patchouli_6"] = "p号：45374100，个人ID：1218472",
-	
+
 	["bolan"] = "博览",
 	[":bolan"] = "当其他角色使用普通锦囊牌时，你可以亮出牌堆顶的两张牌，你获得其中的与此牌花色相同的牌和锦囊牌，将其余的牌置入弃牌堆。<font color=\"green\"><b>每阶段限一次。</b></font>",
 	["hezhou"] = "合咒",
 	[":hezhou"] = "你可以于你的回合外将两张类别不同的牌当【桃】使用。当你以此法使用的牌置入弃牌堆后，你可令一名其他角色获得以此法置入弃牌堆的锦囊牌。",
-    ["@hezhou"] = "你可以发动“合咒” 将 <font color=\"#FF8000\"><b>%src </b></font>  交给一名其他角色",
+	["@hezhou"] = "你可以发动“合咒” 将 <font color=\"#FF8000\"><b>%src </b></font>  交给一名其他角色",
 
 --************************************************
 	--hmx005  势力：红 4血
 	["meirin"] = "红美铃",
 	["#meirin"] = "华人小姑娘",
 	["designer:meirin"] = "三国有单",
-	
+
 	["illustrator:meirin"] = "yudofu",
 	["origin:meirin"] = "p号：3804946",
 	["illustrator:meirin_1"] = "NEKO",
@@ -142,7 +142,7 @@ return{ ["th06"] = "红魔乡",
 	["origin:meirin_4"] = "p号：35513635，个人ID：3066815",
 	["illustrator:meirin_5"] = "もねてぃ",
 	["origin:meirin_5"] = "p号：47581096，个人ID：3066815",
-	
+
 	["taiji"] = "太极",
 	[":taiji"] = "当你使用【杀】指定唯一目标后或当你成为【杀】的唯一目标后， 你可令目标角色获得此【杀】。若如此做，此【杀】不计入次数限制，且当此【杀】被【闪】抵消时，此【杀】的使用者获得此【闪】。",
 	["beishui"] = "背水",
@@ -152,11 +152,11 @@ return{ ["th06"] = "红魔乡",
 	["cirno"] = "琪露诺",
 	["#cirno"] = "湖上的冰精",
 	["designer:cirno"] = "星野梦美☆",
-	
+
 	["illustrator:cirno"] = "ちんちくりん",
 	["origin:cirno"] = "p号：7616113，个人ID：3401",
 	["illustrator:cirno_1"] = "6U",
-	["origin:cirno_1"] = "p号：10269990，个人ID：94883", 
+	["origin:cirno_1"] = "p号：10269990，个人ID：94883",
 	["illustrator:cirno_2"] = "あくぁまりん",
 	["origin:cirno_2"] = "p号：1441901，个人ID：70728",
 	["illustrator:cirno_3"] = "しょういん",
@@ -165,7 +165,7 @@ return{ ["th06"] = "红魔乡",
 	["origin:cirno_4"] = "p号：20779267，个人ID：36168",
 	["illustrator:cirno_5"] = "藤宮 ふみや ",
 	["origin:cirno_5"] = "",
-	
+
 	["dongjie"] = "冻结",
 	[":dongjie"] = "当你使用牌对目标角色造成伤害时，你可以防止此伤害并摸一张牌，然后该角色翻面并摸一张牌。<font color=\"green\"><b>每阶段限一次。</b></font>",
 	["#Dongjie"] = "%from 发动了“%arg”，防止了对 %to 的伤害",
@@ -179,8 +179,8 @@ return{ ["th06"] = "红魔乡",
 	--hmx007  势力：红 3血
 	["rumia"] = "露米娅",
 	["#rumia"] = "宵暗的妖怪",
-    ["designer:rumia"] = "星野梦美☆",
-	
+	["designer:rumia"] = "星野梦美☆",
+
 	["illustrator:rumia"] = "ポップル",
 	["origin:rumia"] = "p号：6034882，个人ID：888775",
 	["illustrator:rumia_1"] = "蘇我サクラ",
@@ -193,7 +193,7 @@ return{ ["th06"] = "红魔乡",
 	["origin:rumia_4"] = "p号：35541348，个人ID：1350867",
 	["illustrator:rumia_5"] = " Spark621 ",
 	["origin:rumia_5"] = "p号：52409111，个人ID：2488754",
-	
+
 	["zhenye"] = "真夜",
 	[":zhenye"] = "结束阶段开始时，你可以翻面，令一名其他角色翻面。",
 	["@zhenye-select"]= "你可以指定一名其他角色，你和该角色依次翻面。",
@@ -207,7 +207,7 @@ return{ ["th06"] = "红魔乡",
 	["koakuma"] = "小恶魔",
 	["#koakuma"] = "图书馆中的使魔",
 	["designer:koakuma"] = "星野梦美☆",
-	
+
 	["illustrator:koakuma"] = "cercis",
 	["illustrator:koakuma_1"] = "ぎん太郎",
 	["origin:koakuma_1"] = "p号：8593014，个人ID：95886",
@@ -217,7 +217,7 @@ return{ ["th06"] = "红魔乡",
 	["origin:koakuma_3"] = "p号：15952878，个人ID：346855",
 	["illustrator:koakuma_4"] = "しろさ",
 	["origin:koakuma_4"] = "p号：27795527，个人ID：374262",
-	
+
 	["qiyue"] = "契约",
 	[":qiyue"] = "其他角色的准备阶段开始时，你可以摸一张牌，然后失去1点体力或体力上限，令该角色跳过此回合的判定阶段和摸牌阶段。",
 	["qiyue:maxhp"]= "失去1点体力上限",
@@ -232,36 +232,36 @@ return{ ["th06"] = "红魔乡",
 	["daiyousei"]= "大妖精",
 	["#daiyousei"]= "雾之湖畔的妖精",
 	["designer:daiyousei"] = "星野梦美☆",
-	
+
 	["illustrator:daiyousei"] = "住吉眞白",
 	["origin:daiyousei"] = "p号：19870726，个人ID：2388526",
 	["illustrator:daiyousei_1"] = "伊吹のつ",
 	["origin:daiyousei_1"] = "p号：34272295，个人ID：7013",
 	["illustrator:daiyousei_2"] = "うぬ",
 	["origin:daiyousei_2"] = "p号：42578781，个人ID：444909",
-	
+
 	["juxian"]= "具现",
 	[":juxian"]= "当你进入濒死状态时，若你的人物牌正面朝上，你可以翻面，亮出牌堆顶的三张牌，然后选择一种花色并获得与所选花色不同的牌，将其余的牌置入弃牌堆并回复等量的体力。",
 	["banyue"]= "半月",
 	[":banyue"]= "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以失去1点体力，令一至三名角色各摸一张牌。",
 
-	
+
 --************************************************
 	--hmx010 势力：红 4血
 	["sakuya_sp"] = "SP猎人咲夜" ,
 	["#sakuya_sp"] = "吸血鬼猎人" ,
 	["&sakuya_sp"] = "猎人咲夜" ,
 	["designer:sakuya_sp"] = "星野梦美☆",
-	
+
 	["illustrator:sakuya_sp"] = "羽々斬",
 	["origin:sakuya_sp"] = "p号：47540364,个人ID:2179695",
 	["illustrator:sakuya_sp_1"] = " 老D ",
 	["origin:sakuya_sp_1"] = "p号：49665855,个人ID:6317889",
-	
+
 	["mizong"]= "觅踪",
 	[":mizong"]= "<font color=\"blue\"><b>锁定技，</b></font>出牌阶段开始时，你选择一名其他角色并进行判定，当黑色判定牌生效后，你获得之。若结果为红色，你于此回合内与其距离视为1且对其使用【杀】无次数限制。",
 	["@mizong-ask"]= "你触发了“觅踪”，请指定一名其他角色。",
-    ["@mizong"] = "觅踪" ,
+	["@mizong"] = "觅踪" ,
 	["yinren"]= "银刃",
 	[":yinren"]= "当你使用黑色【杀】指定其他角色为目标后，你可令其的所有技能于此回合内无效（永久技除外）且其于此回合内不能使用或打出红色牌。",
 }

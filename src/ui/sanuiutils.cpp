@@ -24,7 +24,7 @@ void SanUiUtils::makeGray(QPixmap &pixmap)
 }
 
 QImage SanUiUtils::produceShadow(const QImage &image,
-    const QColor &shadowColor, int radius, double decade)
+                                 const QColor &shadowColor, int radius, double decade)
 {
     const uchar *const oldImage = image.bits();
     int cols = image.width();

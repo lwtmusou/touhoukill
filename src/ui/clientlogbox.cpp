@@ -14,7 +14,7 @@ ClientLogBox::ClientLogBox(QWidget *parent)
 }
 
 void ClientLogBox::appendLog(const QString &type, const QString &from_general, const QStringList &tos,
-    QString card_str, QString arg, QString arg2)
+                             QString card_str, QString arg, QString arg2)
 {
     if (Self->hasFlag("marshalling")) return;
 
@@ -174,7 +174,7 @@ void ClientLogBox::appendLog(const QStringList &log_str)
         return;
     }
     appendLog(log_str[0], log_str[1], log_str[2].isEmpty() ? QStringList() : log_str[2].split("+"),
-        log_str[3], log_str[4], log_str[5]);
+            log_str[3], log_str[4], log_str[5]);
 }
 
 QString ClientLogBox::append(const QString &text)

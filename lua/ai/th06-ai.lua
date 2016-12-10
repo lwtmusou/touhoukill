@@ -308,7 +308,7 @@ function sgs.ai_cardsview_valuable.hezhou(self, class_name, player)
 		end
 		if self.player:getPhase()~= sgs.Player_NotActive then return nil end
 		if self.player:getMark("Global_PreventPeach")>0 then return nil end
-        local dying = player:getRoom():getCurrentDyingPlayer()
+		local dying = player:getRoom():getCurrentDyingPlayer()
 		if not dying or self.player:getLostHp() < 1 then return nil end
 
 		local all ={}
@@ -332,7 +332,7 @@ function sgs.ai_cardsview_valuable.hezhou(self, class_name, player)
 		local function isCombine(card1, card2)
 			if card1:getType() == card2:getType() then
 				return false
-			end			
+			end
 			if (card1:isKindOf("WoodenOx") and self.player:getPile("wooden_ox"):contains(card2:getId())) then
 				return false
 			elseif (card2:isKindOf("WoodenOx") and self.player:getPile("wooden_ox"):contains(card1:getId())) then
@@ -353,8 +353,8 @@ function sgs.ai_cardsview_valuable.hezhou(self, class_name, player)
 				break
 			end
 		end
-		
-		
+
+
 		if #cards == 2 then
 			local card_id1 = cards[1]:getEffectiveId()
 			local card_id2 = cards[2]:getEffectiveId()
@@ -416,9 +416,9 @@ local beishui_skill = {}
 beishui_skill.name = "beishui"
 table.insert(sgs.ai_skills, beishui_skill)
 beishui_skill.getTurnUseCard = function(self)
-    if self.player:getMark("beishui") >0 then return nil end 
+	if self.player:getMark("beishui") >0 then return nil end
 	local x = math.max(self.player:getHp(), 1)
-    
+
 	local cards = self.player:getCards("hes")
 	cards=self:touhouAppendExpandPileToList(self.player,cards)
 	cards = sgs.QList2Table(cards)
@@ -431,7 +431,7 @@ beishui_skill.getTurnUseCard = function(self)
 		count = count + 1
 		if (count >= x) then break end
 	end
-	
+
 	local beishuiCards = {}
 	local pattern = "slash|peach" --|analeptic
 	local patterns = pattern:split("|")
@@ -443,19 +443,19 @@ beishui_skill.getTurnUseCard = function(self)
 		end
 	end
 
-    if #beishuiCards < 1 then return nil end
+	if #beishuiCards < 1 then return nil end
 	self:sortByUseValue(beishuiCards, false)
 	local choice = beishuiCards[1]:objectName()
-	local card_str = (choice..":%s[%s:%s]="):format("beishui", "to_be_decided", -1)   
+	local card_str = (choice..":%s[%s:%s]="):format("beishui", "to_be_decided", -1)
 	for _,id in pairs(ids) do
 		if id == ids[#ids] then
 			card_str = card_str .. id
 		else
-			card_str = card_str .. id .. "+"		
+			card_str = card_str .. id .. "+"
 		end
 	end
-     
-	
+
+
 	local parsed_card = sgs.Card_Parse(card_str)
 	return parsed_card
 end
@@ -463,7 +463,7 @@ function sgs.ai_cardsview_valuable.beishui(self, class_name, player)
 	if (sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE) then
 		return nil
 	end
-	if self.player:getMark("beishui") > 0 then return nil end 
+	if self.player:getMark("beishui") > 0 then return nil end
 	local x = math.max(self.player:getHp(), 1)
 	local cards = self.player:getCards("hes")
 	cards=self:touhouAppendExpandPileToList(self.player,cards)
@@ -477,25 +477,25 @@ function sgs.ai_cardsview_valuable.beishui(self, class_name, player)
 		count = count + 1
 		if (count >= x) then break end
 	end
-	
+
 
 	local card_str
 	if class_name == "Peach" then
 		local dying = player:getRoom():getCurrentDyingPlayer()
 		if not dying  then return nil end
-		card_str =  ("peach:beishui[%s:%s]="):format("to_be_decided", -1) 
+		card_str =  ("peach:beishui[%s:%s]="):format("to_be_decided", -1)
 	end
 	if class_name == "Jink" then
-		card_str = ("jink:beishui[%s:%s]="):format("to_be_decided", -1) 
+		card_str = ("jink:beishui[%s:%s]="):format("to_be_decided", -1)
 	end
 	if class_name == "Slash" then
-		card_str = ("slash:beishui[%s:%s]="):format("to_be_decided", -1) 
+		card_str = ("slash:beishui[%s:%s]="):format("to_be_decided", -1)
 	end
 	for _,id in pairs(ids) do
 		if id == ids[#ids] then
 			card_str = card_str .. id
 		else
-			card_str = card_str .. id .. "+"		
+			card_str = card_str .. id .. "+"
 		end
 	end
 	return card_str

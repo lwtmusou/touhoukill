@@ -380,7 +380,7 @@ sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 	local cards={}
 	table.insert(cards,judge.card)
 	local ex_id = self:getRetrialCardId(cards, judge)
-    --ex_id 不为-1 则代表 当前判定对天子而言是个好结果
+	--ex_id 不为-1 则代表 当前判定对天子而言是个好结果
 	local retrial_targets={}
 	for _,target in sgs.qlist(targets) do
 		local e_value = 0
@@ -388,7 +388,7 @@ sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 		local self_card =  target:objectName()== self.player:objectName()
 		local new_id = self:getRetrialCardId(cards1, judge,self_card)
 		--new_id 不为-1 代表 装备区的id去改判，可以得到好结果
-		
+
 		--装备判断
 		if ex_id == -1 and new_id ~= -1 then
 			if self:isEnemy(target) then
@@ -408,11 +408,11 @@ sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 				e_value = e_value + 50
 			end
 		end
-		
+
 
 		local array={player= target, value= e_value}
 		table.insert(retrial_targets,array)
-		
+
 		if e_value > 0  or self:touhouHandCardsFix(target) or target:isKongcheng() then continue end
 		--手牌判断
 		if ex_id == -1 then
@@ -435,8 +435,8 @@ sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 					local cards1={}
 					table.insert(cards1,card)
 					local new_id=self:getRetrialCardId(cards1, judge, false)
-					if new_id ~=-1 then 
-						count= count + 1 
+					if new_id ~=-1 then
+						count= count + 1
 					end
 				end
 			end

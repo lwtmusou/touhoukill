@@ -80,39 +80,39 @@ protected:
 namespace JsonUtils
 {
 
-    inline bool isNumber(const QVariant &var)
-    {
-        //three number types defined by JsonCPP
-        return var.userType() == QMetaType::Double || var.userType() == QMetaType::Int || var.userType() == QMetaType::UInt;
-    }
+inline bool isNumber(const QVariant &var)
+{
+    //three number types defined by JsonCPP
+    return var.userType() == QMetaType::Double || var.userType() == QMetaType::Int || var.userType() == QMetaType::UInt;
+}
 
-    inline bool isString(const QVariant &var)
-    {
-        return var.userType() == QMetaType::QString;
-    }
+inline bool isString(const QVariant &var)
+{
+    return var.userType() == QMetaType::QString;
+}
 
-    inline bool isBool(const QVariant &var)
-    {
-        return var.userType() == QMetaType::Bool;
-    }
+inline bool isBool(const QVariant &var)
+{
+    return var.userType() == QMetaType::Bool;
+}
 
-    bool isStringArray(const QVariant &var, unsigned from, unsigned to);
-    bool isNumberArray(const QVariant &var, unsigned from, unsigned to);
+bool isStringArray(const QVariant &var, unsigned from, unsigned to);
+bool isNumberArray(const QVariant &var, unsigned from, unsigned to);
 
-    QVariant toJsonArray(const QList<int> &intArray);
-    QVariant toJsonArray(const QStringList &stringArray);
+QVariant toJsonArray(const QList<int> &intArray);
+QVariant toJsonArray(const QStringList &stringArray);
 
-    bool tryParse(const QVariant &, int &);
-    bool tryParse(const QVariant &, double &);
-    bool tryParse(const QVariant &, bool &);
+bool tryParse(const QVariant &, int &);
+bool tryParse(const QVariant &, double &);
+bool tryParse(const QVariant &, bool &);
 
-    bool tryParse(const QVariant &var, QStringList &list);
-    bool tryParse(const QVariant &var, QList<int> &list);
-    bool tryParse(const QVariant &arg, QRect &result);
-    bool tryParse(const QVariant &arg, QSize &result);
-    bool tryParse(const QVariant &arg, QPoint &result);
-    bool tryParse(const QVariant &arg, QColor &result);
-    bool tryParse(const QVariant &arg, Qt::Alignment &align);
+bool tryParse(const QVariant &var, QStringList &list);
+bool tryParse(const QVariant &var, QList<int> &list);
+bool tryParse(const QVariant &arg, QRect &result);
+bool tryParse(const QVariant &arg, QSize &result);
+bool tryParse(const QVariant &arg, QPoint &result);
+bool tryParse(const QVariant &arg, QColor &result);
+bool tryParse(const QVariant &arg, Qt::Alignment &align);
 }
 
 #endif // JSON_H

@@ -17,7 +17,7 @@ LuaProhibitSkill::LuaProhibitSkill(const char *name)
 
 LuaViewAsSkill::LuaViewAsSkill(const char *name, const char *response_pattern)
     : ViewAsSkill(name), view_filter(0), view_as(0), should_be_visible(0),
-    enabled_at_play(0), enabled_at_response(0), enabled_at_nullification(0), guhuo_dialog_type(NoDialog)
+      enabled_at_play(0), enabled_at_response(0), enabled_at_nullification(0), guhuo_dialog_type(NoDialog)
 {
     this->response_pattern = response_pattern;
 }
@@ -65,7 +65,7 @@ static QHash<QString, QString> LuaSkillCardsSkillName;
 
 LuaSkillCard::LuaSkillCard(const char *name, const char *skillName)
     : SkillCard(), filter(0), feasible(0),
-    about_to_use(0), on_use(0), on_effect(0), on_validate(0), on_validate_in_response(0)
+      about_to_use(0), on_use(0), on_effect(0), on_validate(0), on_validate_in_response(0)
 {
     if (name) {
         LuaSkillCards.insert(name, this);
@@ -175,8 +175,8 @@ QString LuaSkillCard::toString(bool hidden) const
 {
     Q_UNUSED(hidden);
     return QString("#%1[%2:%3]:%4:%5").arg(objectName())
-        .arg(getSuitString()).arg(getNumberString())
-        .arg(subcardString()).arg(user_string);
+            .arg(getSuitString()).arg(getNumberString())
+            .arg(subcardString()).arg(user_string);
 }
 
 LuaBasicCard::LuaBasicCard(Card::Suit suit, int number, const char *obj_name, const char *class_name, const char *subtype)
@@ -209,7 +209,7 @@ LuaBasicCard *LuaBasicCard::clone(Card::Suit suit, int number) const
 
 LuaTrickCard::LuaTrickCard(Card::Suit suit, int number, const char *obj_name, const char *class_name, const char *subtype)
     : TrickCard(suit, number), filter(0), feasible(0), available(0), is_cancelable(0),
-    about_to_use(0), on_use(0), on_effect(0), on_nullified(0)
+      about_to_use(0), on_use(0), on_effect(0), on_nullified(0)
 {
     setObjectName(obj_name);
     this->class_name = class_name;

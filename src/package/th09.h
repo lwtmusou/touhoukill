@@ -31,7 +31,7 @@ class NianliDialog : public QDialog
 public:
     static NianliDialog *getInstance(const QString &object);
 
-    public slots:
+public slots:
     void popup();
     void selectCard(QAbstractButton *button);
 

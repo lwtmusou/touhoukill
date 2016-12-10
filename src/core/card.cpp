@@ -19,8 +19,8 @@ const Card::Suit Card::AllSuits[4] = {
 
 Card::Card(Suit suit, int number, bool target_fixed)
     : target_fixed(target_fixed), mute(false),
-    will_throw(true), has_preact(false), can_recast(false),
-    m_suit(suit), m_number(number), m_id(-1)
+      will_throw(true), has_preact(false), can_recast(false),
+      m_suit(suit), m_number(number), m_id(-1)
 {
     handling_method = will_throw ? Card::MethodDiscard : Card::MethodUse;
 }
@@ -33,13 +33,13 @@ QString Card::getSuitString() const
 QString Card::Suit2String(Suit suit)
 {
     switch (suit) {
-        case Spade: return "spade";
-        case Heart: return "heart";
-        case Club: return "club";
-        case Diamond: return "diamond";
-        case NoSuitBlack: return "no_suit_black";
-        case NoSuitRed: return "no_suit_red";
-        default: return "no_suit";
+    case Spade: return "spade";
+    case Heart: return "heart";
+    case Club: return "club";
+    case Diamond: return "diamond";
+    case NoSuitBlack: return "no_suit_black";
+    case NoSuitRed: return "no_suit_red";
+    default: return "no_suit";
     }
 }
 
@@ -147,16 +147,16 @@ bool Card::sameColorWith(const Card *other) const
 Card::Color Card::getColor() const
 {
     switch (getSuit()) {
-        case Spade:
-        case Club:
-        case NoSuitBlack:
-            return Black;
-        case Heart:
-        case Diamond:
-        case NoSuitRed:
-            return Red;
-        default:
-            return Colorless;
+    case Spade:
+    case Club:
+    case NoSuitBlack:
+        return Black;
+    case Heart:
+    case Diamond:
+    case NoSuitRed:
+        return Red;
+    default:
+        return Colorless;
     }
 }
 
@@ -209,54 +209,54 @@ bool Card::CompareByType(const Card *a, const Card *b)
         if (basic.isEmpty())
             basic << "slash" << "ice_slash" << "thunder_slash" << "fire_slash" << "jink" << "peach" << "analeptic";
         switch (a->getTypeId()) {
-            case TypeBasic:
-            {
-                foreach (QString object_name, basic) {
-                    if (a->objectName() == object_name) {
-                        if (b->objectName() == object_name)
-                            return CompareBySuit(a, b);
-                        else
-                            return true;
-                    }
+        case TypeBasic:
+        {
+            foreach (QString object_name, basic) {
+                if (a->objectName() == object_name) {
                     if (b->objectName() == object_name)
-                        return false;
+                        return CompareBySuit(a, b);
+                    else
+                        return true;
                 }
+                if (b->objectName() == object_name)
+                    return false;
+            }
+            return CompareBySuit(a, b);
+            break;
+        }
+        case TypeTrick:
+        {
+            if (a->objectName() == b->objectName())
                 return CompareBySuit(a, b);
-                break;
-            }
-            case TypeTrick:
-            {
-                if (a->objectName() == b->objectName())
-                    return CompareBySuit(a, b);
-                else
-                    return a->objectName() < b->objectName();
-                break;
-            }
-            case TypeEquip:
-            {
-                const EquipCard *eq_a = qobject_cast<const EquipCard *>(a->getRealCard());
-                const EquipCard *eq_b = qobject_cast<const EquipCard *>(b->getRealCard());
-                if (eq_a->location() == eq_b->location()) {
-                    if (eq_a->isKindOf("Weapon")) {
-                        const Weapon *wep_a = qobject_cast<const Weapon *>(a->getRealCard());
-                        const Weapon *wep_b = qobject_cast<const Weapon *>(b->getRealCard());
-                        if (wep_a->getRange() == wep_b->getRange())
-                            return CompareBySuit(a, b);
-                        else
-                            return wep_a->getRange() < wep_b->getRange();
-                    } else {
-                        if (a->objectName() == b->objectName())
-                            return CompareBySuit(a, b);
-                        else
-                            return a->objectName() < b->objectName();
-                    }
+            else
+                return a->objectName() < b->objectName();
+            break;
+        }
+        case TypeEquip:
+        {
+            const EquipCard *eq_a = qobject_cast<const EquipCard *>(a->getRealCard());
+            const EquipCard *eq_b = qobject_cast<const EquipCard *>(b->getRealCard());
+            if (eq_a->location() == eq_b->location()) {
+                if (eq_a->isKindOf("Weapon")) {
+                    const Weapon *wep_a = qobject_cast<const Weapon *>(a->getRealCard());
+                    const Weapon *wep_b = qobject_cast<const Weapon *>(b->getRealCard());
+                    if (wep_a->getRange() == wep_b->getRange())
+                        return CompareBySuit(a, b);
+                    else
+                        return wep_a->getRange() < wep_b->getRange();
                 } else {
-                    return eq_a->location() < eq_b->location();
+                    if (a->objectName() == b->objectName())
+                        return CompareBySuit(a, b);
+                    else
+                        return a->objectName() < b->objectName();
                 }
-                break;
+            } else {
+                return eq_a->location() < eq_b->location();
             }
-            default:
-                return CompareBySuit(a, b);
+            break;
+        }
+        default:
+            return CompareBySuit(a, b);
         }
     }
 }
@@ -290,31 +290,31 @@ QString Card::getLogName() const
     QString number_string;
 
     switch (getSuit()) {
-        case Spade:
-        case Heart:
-        case Club:
-        case Diamond:
-        {
-            suit_char = QString("<img src='image/system/log/%1.png' height = 12/>").arg(getSuitString());
-            break;
-        }
-        case NoSuitRed:
-        {
-            suit_char = tr("NoSuitRed");
-            break;
-        }
-        case NoSuitBlack:
-        {
-            suit_char = tr("NoSuitBlack");
-            break;
-        }
-        case NoSuit:
-        {
-            suit_char = tr("NoSuit");
-            break;
-        }
-        default:
-            break;
+    case Spade:
+    case Heart:
+    case Club:
+    case Diamond:
+    {
+        suit_char = QString("<img src='image/system/log/%1.png' height = 12/>").arg(getSuitString());
+        break;
+    }
+    case NoSuitRed:
+    {
+        suit_char = tr("NoSuitRed");
+        break;
+    }
+    case NoSuitBlack:
+    {
+        suit_char = tr("NoSuitBlack");
+        break;
+    }
+    case NoSuit:
+    {
+        suit_char = tr("NoSuit");
+        break;
+    }
+    default:
+        break;
     }
 
     if (m_number > 0 && m_number <= 13)
@@ -360,8 +360,8 @@ QString Card::toString(bool hidden) const
         return QString::number(m_id);
     else
         return QString("%1:%2[%3:%4]=%5")
-        .arg(objectName()).arg(m_skillName)
-        .arg(getSuitString()).arg(getNumberString()).arg(subcardString());
+                .arg(objectName()).arg(m_skillName)
+                .arg(getSuitString()).arg(getNumberString()).arg(subcardString());
 }
 
 QString Card::getEffectName() const
@@ -769,7 +769,7 @@ void Card::clearSubcards()
 bool Card::isAvailable(const Player *player) const
 {
     return !player->isCardLimited(this, handling_method)
-        || (can_recast && !player->isCardLimited(this, Card::MethodRecast));
+            || (can_recast && !player->isCardLimited(this, Card::MethodRecast));
 }
 
 const Card *Card::validate(CardUseStruct &) const
@@ -875,8 +875,8 @@ QString SkillCard::toString(bool hidden) const
     QString str;
     if (!hidden)
         str = QString("@%1[%2:%3]=%4")
-        .arg(metaObject()->className()).arg(getSuitString())
-        .arg(getNumberString()).arg(subcardString());
+                .arg(metaObject()->className()).arg(getSuitString())
+                .arg(getNumberString()).arg(subcardString());
     else
         str = QString("@%1[no_suit:-]=.").arg(metaObject()->className());
 

@@ -35,7 +35,7 @@ public:
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->getPhase() == Player::Start) {
             return room->askForCard(invoke->invoker, ".|.|.|hand,equipped", "@baochui:" + player->objectName(), QVariant::fromValue(player), Card::MethodDiscard,
-                NULL, false, objectName());
+                                    NULL, false, objectName());
         }
         return true;
     }
@@ -127,7 +127,7 @@ public:
         if (triggerEvent == EventPhaseEnd) {
             ServerPlayer *current = data.value<ServerPlayer *>();;
             if (!current || current->getKingdom() != "hzc" || current->getPhase() != Player::Discard
-                || !current->isAlive())
+                    || !current->isAlive())
                 return d;
 
             bool invoke = false;
@@ -446,10 +446,10 @@ public:
                 return;
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.from == current &&
-                (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
+                    (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
                 foreach (int id, move.card_ids) {
                     if ((move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand) &&
-                        Sanguosha->getCard(id)->isRed()) {
+                            Sanguosha->getCard(id)->isRed()) {
                         room->setTag("wuchang", false);
                         break;
                     }
@@ -645,10 +645,10 @@ bool YuanfeiCard::targetFilter(const QList<const Player *> &targets, const Playe
 {
     if (getSubcards().isEmpty())
         return targets.isEmpty() && !Self->inMyAttackRange(to_select)
-            && to_select != Self;
+                && to_select != Self;
     else
         return targets.isEmpty() && Self->inMyAttackRange(to_select)
-        && to_select != Self;
+                && to_select != Self;
 }
 
 void YuanfeiCard::onEffect(const CardEffectStruct &effect) const
@@ -848,7 +848,7 @@ public:
                 foreach (int id, move.card_ids) {
                     Card *card = Sanguosha->getCard(id);
                     if (card->isKindOf("Peach") && !temp_ids.contains(id)
-                        && room->getCardPlace(id) == Player::DiscardPile)
+                            && room->getCardPlace(id) == Player::DiscardPile)
                         shizhu_ids << id;
                 }
                 room->setTag("shizhuPeach", shizhu_ids);

@@ -132,7 +132,7 @@ public:
     // @todo: the following two functions should be merged into one.
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self,
-        int &maxVotes) const;
+                              int &maxVotes) const;
     virtual bool isAvailable(const Player *player) const;
 
     inline virtual const Card *getRealCard() const

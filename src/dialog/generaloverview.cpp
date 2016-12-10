@@ -31,7 +31,7 @@ GeneralSearch::GeneralSearch(GeneralOverview *parent)
     setLayout(layout);
 
     connect(this, SIGNAL(search(bool, QString, QString, QStringList, QStringList, int, int, QStringList)),
-        parent, SLOT(startSearch(bool, QString, QString, QStringList, QStringList, int, int, QStringList)));
+            parent, SLOT(startSearch(bool, QString, QString, QStringList, QStringList, int, int, QStringList)));
 }
 
 QWidget *GeneralSearch::createInfoTab()
@@ -572,10 +572,10 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
 
     if (general_name.contains("caocao")) {
         QCommandLinkButton *win_button = new QCommandLinkButton(tr("Victory"),
-            tr("Six dragons lead my chariot, "
-            "I will ride the wind with the greatest speed."
-            "With all of the feudal lords under my command,"
-            "to rule the world with one name!"));
+                                                                tr("Six dragons lead my chariot, "
+                                                                   "I will ride the wind with the greatest speed."
+                                                                   "With all of the feudal lords under my command,"
+                                                                   "to rule the world with one name!"));
 
         button_layout->addWidget(win_button);
         addCopyAction(win_button);
@@ -665,7 +665,7 @@ void GeneralOverview::askChangeSkin()
 }
 
 void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,
-    const QStringList &kingdoms, int lower, int upper, const QStringList &packages)
+                                  const QStringList &kingdoms, int lower, int upper, const QStringList &packages)
 {
     QList<const General *> generals;
     foreach (const General *general, all_generals) {

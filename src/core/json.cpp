@@ -240,42 +240,42 @@ QByteArray clearComment(const QByteArray &src)
     int max = result.size() - 1;
     for (int i = 0; i < max; i++) {
         switch (result.at(i)) {
-            case '/':
-                if (result.at(i + 1) == '*') { // multi-line comment
-                    int offset = i;
+        case '/':
+            if (result.at(i + 1) == '*') { // multi-line comment
+                int offset = i;
+                i++;
+                while (i < max && (result.at(i) != '*' || result.at(i + 1) != '/')) {
                     i++;
-                    while (i < max && (result.at(i) != '*' || result.at(i + 1) != '/')) {
-                        i++;
-                    }
+                }
 
-                    int length = i + 2 - offset;
-                    result.remove(offset, length);
-                    i = offset - 1;
-                    max -= length;
+                int length = i + 2 - offset;
+                result.remove(offset, length);
+                i = offset - 1;
+                max -= length;
 
-                } else if (result.at(i + 1) == '/') { // single-line comment
-                    int offset = i;
+            } else if (result.at(i + 1) == '/') { // single-line comment
+                int offset = i;
+                i++;
+                while (i < max + 1 && result.at(i) != '\n') {
                     i++;
-                    while (i < max + 1 && result.at(i) != '\n') {
-                        i++;
-                    }
+                }
 
-                    int length = i + 1 - offset;
-                    result.remove(offset, length);
-                    i = offset - 1;
-                    max -= length;
+                int length = i + 1 - offset;
+                result.remove(offset, length);
+                i = offset - 1;
+                max -= length;
+            }
+            break;
+        case '"': // string
+            while (i < max + 1 && result.at(i) != '"') {
+                if (result.at(i) == '\\') {
+                    i += 2;
+                } else {
+                    i++;
                 }
-                break;
-            case '"': // string
-                while (i < max + 1 && result.at(i) != '"') {
-                    if (result.at(i) == '\\') {
-                        i += 2;
-                    } else {
-                        i++;
-                    }
-                }
-                break;
-            default:;
+            }
+            break;
+        default:;
         }
     }
     return result;

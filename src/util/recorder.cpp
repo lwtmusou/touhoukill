@@ -83,7 +83,7 @@ QByteArray Recorder::PNG2TXT(const QString filename)
 
 Replayer::Replayer(QObject *parent, const QString &filename)
     : QThread(parent), m_commandSeriesCounter(1),
-    filename(filename), speed(1.0), playing(true)
+      filename(filename), speed(1.0), playing(true)
 {
     QIODevice *device = NULL;
     if (filename.endsWith(".png")) {
@@ -191,8 +191,8 @@ void Replayer::run()
 
     QList<CommandType> nondelays;
     nondelays << S_COMMAND_ADD_PLAYER
-        << S_COMMAND_REMOVE_PLAYER
-        << S_COMMAND_SPEAK;
+              << S_COMMAND_REMOVE_PLAYER
+              << S_COMMAND_SPEAK;
 
     foreach (Pair pair, pairs) {
         int delay = qMin(pair.elapsed - last, 2500);

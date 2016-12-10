@@ -323,7 +323,7 @@ void CardItem::setFootnote(const QString &desc)
     _m_footnoteImage.fill(Qt::transparent);
     QPainter painter(&_m_footnoteImage);
     font.paintText(&painter, QRect(QPoint(0, 0), rect.size()),
-        (Qt::AlignmentFlag)((int)Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWrapAnywhere), desc);
+                   (Qt::AlignmentFlag)((int)Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWrapAnywhere), desc);
     footnote = desc;
 }
 

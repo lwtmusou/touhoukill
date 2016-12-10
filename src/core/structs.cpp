@@ -12,7 +12,7 @@ bool CardsMoveStruct::tryParse(const QVariant &arg)
     if (args.size() != 8) return false;
 
     if ((!JsonUtils::isNumber(args[0]) && !args[0].canConvert<JsonArray>()) ||
-        !JsonUtils::isNumberArray(args, 1, 2) || !JsonUtils::isStringArray(args, 3, 6)) return false;
+            !JsonUtils::isNumberArray(args, 1, 2) || !JsonUtils::isStringArray(args, 3, 6)) return false;
 
     if (JsonUtils::isNumber(args[0])) {
         int size = args[0].toInt();
@@ -120,7 +120,7 @@ CardEffectStruct::CardEffectStruct()
 
 SlashEffectStruct::SlashEffectStruct()
     : jink_num(1), slash(NULL), jink(NULL), from(NULL), to(NULL), drank(0), nature(DamageStruct::Normal),
-    multiple(false), nullified(false)
+      multiple(false), nullified(false)
 {
 }
 
@@ -151,7 +151,7 @@ bool PindianStruct::isSuccess() const
 
 JudgeStruct::JudgeStruct()
     : who(NULL), card(NULL), pattern("."), good(true), time_consuming(false),
-    negative(false), play_animation(true), retrial_by_response(NULL), relative_player(NULL), _m_result(TRIAL_RESULT_UNKNOWN)
+      negative(false), play_animation(true), retrial_by_response(NULL), relative_player(NULL), _m_result(TRIAL_RESULT_UNKNOWN)
 {
 }
 
@@ -222,7 +222,7 @@ CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer 
 bool CardUseStruct::isValid(const QString &pattern) const
 {
     Q_UNUSED(pattern)
-        return card != NULL;
+    return card != NULL;
     /*if (card == NULL) return false;
     if (!card->getSkillName().isEmpty()) {
     bool validSkill = false;

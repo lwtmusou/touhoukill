@@ -7,7 +7,7 @@ return{
 	["shinmyoumaru"] = "少名针妙丸",
 	["#shinmyoumaru"] = "小人的末裔",
 	["designer:shinmyoumaru"] = "三国有单",
-	
+
 	["illustrator:shinmyoumaru"] = "ミイル",
 	["origin:shinmyoumaru"] = "p号：38962368",
 	["illustrator:shinmyoumaru_1"] = "東天紅",
@@ -31,7 +31,7 @@ return{
 	["raiko"] = "堀川雷鼓",
 	["#raiko"] = "梦幻的打击乐手",
 	["designer:raiko"] = "星野梦美☆",
-	
+
 	["illustrator:raiko"] = "伊吹のつ",
 	["origin:raiko"] = "p号：41891311",
 	["illustrator:raiko_1"] = "泉水茜",
@@ -47,7 +47,7 @@ return{
 	["seija"] = "鬼人正邪",
 	["#seija"] = "逆袭的天邪鬼",
 	["designer:seija"] = "星野梦美☆",
-	
+
 	["illustrator:seija"] = "藤宮ふみや",
 	["origin:seija"] = "p号：37885158",
 	["illustrator:seija_1"] = "ふらぺち",
@@ -68,7 +68,7 @@ return{
 	["benben"] = "九十九弁弁",
 	["#benben"] = "古旧琵琶的付丧神",
 	["designer:benben"] = "星野梦美☆",
-	
+
 	["illustrator:benben"] = "neko",
 	["origin:benben"] = "p号：38047797",
 	["illustrator:benben_1"] = "会帆",
@@ -87,7 +87,7 @@ return{
 	["yatsuhashi"] = "九十九八桥",
 	["#yatsuhashi"] = "古旧的琴的付丧神",
 	["designer:yatsuhashi"] = "星野梦美☆",
-	
+
 	["illustrator:yatsuhashi"] = "neko",
 	["origin:yatsuhashi"] = "p号：38047797",
 	["illustrator:yatsuhashi_1"] = "ウミガラス",
@@ -106,7 +106,7 @@ return{
 	["kagerou"] = "今泉影狼",
 	["#kagerou"] = "竹林的人狼",
 	["designer:kagerou"] = "星野梦美☆",
-	
+
 	["illustrator:kagerou"] = "myaaco",
 	["origin:kagerou"] = "p号：38562704",
 	["illustrator:kagerou_1"] = "kirero",
@@ -124,7 +124,7 @@ return{
 	["sekibanki"] = "赤蛮奇",
 	["#sekibanki"] = "辘轳首的怪奇",
 	["designer:sekibanki"] = "星野梦美☆",
-	
+
 	["illustrator:sekibanki"] = "kito",
 	["origin:sekibanki"] = "p号：36127927",
 	["illustrator:sekibanki_1"] = "シエロ",
@@ -141,7 +141,7 @@ return{
 	["wakasagihime"] = "若鹭姬",
 	["#wakasagihime"] = "栖息于淡水的人鱼",
 	["designer:wakasagihime"] = "星野梦美☆",
-	
+
 	["illustrator:wakasagihime"] = "neme",
 	["origin:wakasagihime"] = "p号：39196423",
 	["illustrator:wakasagihime_1"] = "s-syogo",

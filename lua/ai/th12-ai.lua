@@ -775,7 +775,7 @@ function SmartAI:shuxinValue(target)
 		value = value + 1
 	end
 	local canShanshi = self.player:hasSkill("shanshi") and self.player:getMark("shanshi_invoke") == 0
-    if canShanshi and self:isFriend(target) and self.player:objectName() ~= target:objectName() then
+	if canShanshi and self:isFriend(target) and self.player:objectName() ~= target:objectName() then
 		value = value + 1
 	end
 	local black = getKnownCard(target, self.player, "black", false, "hes", false)
@@ -820,7 +820,7 @@ sgs.ai_card_intention.ShuxinCard = function(self, card, from, tos)
 	end
 end
 sgs.ai_skill_cardask["@shuxin"] = function(self, data)
-    local hasBlack = false
+	local hasBlack = false
 	local blacks = {}
 	for _,c in sgs.qlist(self.player:getCards("hes")) do
 		if c:isBlack() then
@@ -831,7 +831,7 @@ sgs.ai_skill_cardask["@shuxin"] = function(self, data)
 		end
 	end
 	local cost = 0
-    if self.player:isWounded() and #blacks >= self.player:getHp() then
+	if self.player:isWounded() and #blacks >= self.player:getHp() then
 		if self:isWeak(self.player) or self.player:getHp() <= 2 then
 			cost = self.player:getHp()
 		end
@@ -839,9 +839,9 @@ sgs.ai_skill_cardask["@shuxin"] = function(self, data)
 	if hasBlack then
 		cost = math.max(cost, 1)
 	end
-	
-	
-	
+
+
+
 	if cost > 0 then
 		self:sortByKeepValue(blacks, true)
 		local ids = {}

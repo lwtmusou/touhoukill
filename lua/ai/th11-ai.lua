@@ -378,7 +378,7 @@ sgs.ai_skill_cardask["@songzang"] = function(self,data)
 	local need_kill=false
 	local need_peachs = math.abs(1-target:getHp())
 
-	
+
 	if self_role== "loyalist" or self_role =="lord" then
 		if self:isEnemy(target)  then
 			if self:getOverflow()>0 then
@@ -559,7 +559,7 @@ sgs.ai_skill_cardask["@jidu"] = function(self, data)
 		end
 	end
 	if e <= f then return "." end
-	
+
 	local cards = sgs.QList2Table(self.player:getCards("hes"))
 	self:sortByUseValue(cards)
 	if #cards <= 0 then return "." end

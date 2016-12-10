@@ -63,7 +63,7 @@ void QingtingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
         }
         DELETE_OVER_SCOPE(const Card, card)
 
-        source->obtainCard(card, false);
+                source->obtainCard(card, false);
         room->setPlayerMark(p, "@qingting", 1);
 
     }
@@ -82,7 +82,7 @@ void QingtingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
         source->tag["qingting_return"] = QVariant::fromValue(p);
         const Card *card = room->askForExchange(source, "qingting", 1, 1, false, "qingtingReturn:" + p->objectName());
         DELETE_OVER_SCOPE(const Card, card)
-        source->tag.remove("qingting_return");
+                source->tag.remove("qingting_return");
         p->obtainCard(card, false);
     }
 
@@ -127,8 +127,8 @@ public:
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *miko = qobject_cast<ServerPlayer *>(move.from);
         if (miko != NULL && miko->isAlive() && miko->hasLordSkill(objectName()) && move.from_places.contains(Player::PlaceHand)
-            && (move.to_place == Player::PlaceHand && move.to && move.to != miko
-            && move.to->getKingdom() == "slm"))
+                && (move.to_place == Player::PlaceHand && move.to && move.to != miko
+                    && move.to->getKingdom() == "slm"))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, miko, miko);
         return QList<SkillInvokeDetail>();
     }
@@ -196,8 +196,8 @@ public:
         QString markName = "xihua_record_" + pattern;
         Card *c = Sanguosha->cloneCard(pattern);
         DELETE_OVER_SCOPE(Card, c)
-        if (method == Card::MethodNone)
-            method = Card::MethodUse;
+                if (method == Card::MethodNone)
+                method = Card::MethodUse;
         if (player->getMark(markName) > 0 || player->isCardLimited(c, method, true))
             return true;
         else
@@ -242,8 +242,8 @@ bool XihuaCard::do_xihua(ServerPlayer *tanuki) const
     Room *room = tanuki->getRoom();
     Card *xihuacard = Sanguosha->cloneCard(tanuki->tag["xihua_choice"].toString());
     DELETE_OVER_SCOPE(Card, xihuacard)
-    //record xihua cardname which has used
-    ServerPlayer *current = room->getCurrent();
+            //record xihua cardname which has used
+            ServerPlayer *current = room->getCurrent();
     if (current && current->isAlive() && current->isCurrent())
         XihuaClear::xihua_record(room, tanuki, xihuacard->objectName());
 
@@ -278,7 +278,7 @@ bool XihuaCard::targetFilter(const QList<const Player *> &targets, const Player 
         if (!user_string.isEmpty()) {
             Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
             DELETE_OVER_SCOPE(Card, card)
-            card->setSkillName("xihua");
+                    card->setSkillName("xihua");
             return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
         }
         return false;
@@ -290,7 +290,7 @@ bool XihuaCard::targetFilter(const QList<const Player *> &targets, const Player 
 
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
     DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("xihua");
+            new_card->setSkillName("xihua");
     if (new_card->targetFixed())
         return false;
     return new_card && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
@@ -302,7 +302,7 @@ bool XihuaCard::targetFixed() const
         if (!user_string.isEmpty()) {
             Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
             DELETE_OVER_SCOPE(Card, card)
-            card->setSkillName("xihua");
+                    card->setSkillName("xihua");
             return card && card->targetFixed();
         }
         return false;
@@ -313,7 +313,7 @@ bool XihuaCard::targetFixed() const
     const Card *card = Self->tag.value("xihua").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
     DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("xihua");
+            new_card->setSkillName("xihua");
     //return false defaultly
     //we need a confirming chance to pull back, since  this is a zero cards viewas Skill.
     return false;//new_card && new_card->targetFixed();
@@ -335,7 +335,7 @@ bool XihuaCard::targetsFeasible(const QList<const Player *> &targets, const Play
     const Card *card = Self->tag.value("xihua").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
     DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("xihua");
+            new_card->setSkillName("xihua");
     if (card->isKindOf("IronChain") && targets.length() == 0)
         return false;
     return new_card && new_card->targetsFeasible(targets, Self);
@@ -379,7 +379,7 @@ const Card *XihuaCard::validateInResponse(ServerPlayer *user) const
         if (!XihuaClear::xihua_choice_limit(user, "peach", Card::MethodResponse))
             use_list << "peach";
         if (!Config.BanPackages.contains("maneuvering")
-            && !XihuaClear::xihua_choice_limit(user, "analeptic", Card::MethodResponse))
+                && !XihuaClear::xihua_choice_limit(user, "analeptic", Card::MethodResponse))
             use_list << "analeptic";
         to_use = room->askForChoice(user, "xihua_skill_saveself", use_list.join("+"));
     } else
@@ -425,7 +425,7 @@ public:
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach(const Card *card, cards) {
             if ((card->isNDTrick() || card->isKindOf("BasicCard"))
-                && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+                    && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
                 QString pattern = card->objectName();
                 if (card->isKindOf("Slash"))
                     pattern = "slash";
@@ -448,7 +448,7 @@ public:
         if (player->isKongcheng()) return false;
         QStringList checkedPatterns = responsePatterns();
         if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0) return false;
-       
+
         return !checkedPatterns.isEmpty();
     }
 
@@ -460,7 +460,7 @@ public:
     virtual const Card *viewAs() const
     {
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE
-            || Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+                || Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
             QStringList checkedPatterns = responsePatterns();
             if (checkedPatterns.length() > 1 || checkedPatterns.contains("slash")) {
@@ -1031,7 +1031,7 @@ bool HuishengCard::targetFilter(const QList<const Player *> &targets, const Play
     QString str = Self->property("huisheng_target").toString();
     Card *new_card = Sanguosha->cloneCard(cardname);
     DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("huisheng");
+            new_card->setSkillName("huisheng");
     if (new_card->isKindOf("Peach"))
         return to_select->objectName() == str && new_card->isAvailable(to_select);
     if (new_card->targetFixed() && !targets.isEmpty())
@@ -1039,7 +1039,7 @@ bool HuishengCard::targetFilter(const QList<const Player *> &targets, const Play
     if (targets.isEmpty() && to_select->objectName() != str)
         return false;
     return new_card
-        && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
+            && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
 }
 
 bool HuishengCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
@@ -1047,7 +1047,7 @@ bool HuishengCard::targetsFeasible(const QList<const Player *> &targets, const P
     QString cardname = Self->property("huisheng_card").toString();
     Card *new_card = Sanguosha->cloneCard(cardname);
     DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("huisheng");
+            new_card->setSkillName("huisheng");
     //if ((new_card->isKindOf("IronChain")|| new_card->isKindOf("Peach"))&& targets.length()!=1)
     //    return false;
     if (targets.length() < 1)
@@ -1103,13 +1103,13 @@ public:
             if (use.card->isKindOf("Jink") || use.from->hasFlag("Global_ProcessBroken") || !use.from->isAlive())
                 return QList<SkillInvokeDetail>();
             if (use.from  && use.to.length() == 1
-                && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
+                    && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
                 ServerPlayer *source = use.to.first();
                 if (use.from != source  && source->hasSkill(this) && source->isAlive() && use.from->isAlive()) {
-                        Card *card = Sanguosha->cloneCard(use.card->objectName());
-                        DELETE_OVER_SCOPE(Card, card)
+                    Card *card = Sanguosha->cloneCard(use.card->objectName());
+                    DELETE_OVER_SCOPE(Card, card)
                             if (!source->isCardLimited(card, Card::MethodUse) && !source->isProhibited(use.from, card))
-                                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, source, source);
+                            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, source, source);
                 }
             }
         }
@@ -1232,7 +1232,7 @@ public:
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
             if (player != NULL && player->getPhase() == Player::Discard
-                && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)) {
+                    && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)) {
                 foreach (int id, move.card_ids) {
                     if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand) {
                         Card *card = Sanguosha->getCard(id);
@@ -1375,8 +1375,8 @@ bool BumingCard::targetFilter(const QList<const Player *> &targets, const Player
         slash->addSubcard(subcards.first());//need add subcard,since we need  check rangefix
         QList<const Player *> targets2;
         return (slash->targetFilter(targets2, to_select, Self) && !(Self->isCardLimited(slash, Card::MethodUse)))
-            || (Self->distanceTo(to_select, rangefix) <= Self->getAttackRange() &&
-            !Self->isProhibited(to_select, duel) && !Self->isCardLimited(duel, Card::MethodUse));
+                || (Self->distanceTo(to_select, rangefix) <= Self->getAttackRange() &&
+                    !Self->isProhibited(to_select, duel) && !Self->isCardLimited(duel, Card::MethodUse));
     }
     return false;
 }
@@ -1498,8 +1498,8 @@ public:
     QList<SkillInvokeDetail> triggerable(const Room *, const DamageStruct &damage) const
     {
         
-        if (damage.to->hasSkill(this) && damage.to->isAlive() 
-            && !damage.to->isKongcheng() && !damage.to->containsTrick("supply_shortage"))
+        if (damage.to->hasSkill(this) && damage.to->isAlive()
+                && !damage.to->isKongcheng() && !damage.to->containsTrick("supply_shortage"))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
         return QList<SkillInvokeDetail>();
     }

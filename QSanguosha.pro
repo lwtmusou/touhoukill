@@ -64,8 +64,6 @@ SOURCES += \
     src/package/th15.cpp \
     src/package/th99.cpp \
     src/package/thndj.cpp \
-    src/package/thxwm.cpp \
-    src/package/touhoucard.cpp \
     src/package/touhougod.cpp \
     src/scenario/miniscenarios.cpp \
     src/scenario/scenario.cpp \
@@ -172,8 +170,6 @@ HEADERS += \
     src/package/th15.h \
     src/package/th99.h \
     src/package/thndj.h \
-    src/package/thxwm.h \
-    src/package/touhoucard.h \
     src/package/touhougod.h \
     src/scenario/miniscenarios.h \
     src/scenario/scenario.h \

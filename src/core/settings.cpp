@@ -30,7 +30,7 @@ Settings::Settings()
 #else
     : QSettings("QSanguosha.org", "QSanguosha"),
 #endif
-    Rect(-ViewWidth / 2, -ViewHeight / 2, ViewWidth, ViewHeight)
+      Rect(-ViewWidth / 2, -ViewHeight / 2, ViewWidth, ViewHeight)
 {
 }
 

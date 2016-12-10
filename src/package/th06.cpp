@@ -422,8 +422,8 @@ void SuodingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
         if (source == sp) {
             const Card *cards = room->askForExchange(source, "suoding", map.value(sp), map.value(sp), false, "suoding_exchange:" + QString::number(map[sp]));
             DELETE_OVER_SCOPE(const Card, cards)
-            foreach (int id, cards->getSubcards())
-                sp->addToPile("suoding_cards", id, false);
+                    foreach (int id, cards->getSubcards())
+                    sp->addToPile("suoding_cards", id, false);
         } else {
             for (int i = 0; i < map[sp]; i++) {
                 if (!sp->isKongcheng()) {
@@ -660,9 +660,9 @@ public:
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
         return  matchAvaliablePattern("peach", pattern)
-            && !player->isCurrent()
-            && player->getMark("Global_PreventPeach") == 0
-            && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
+                && !player->isCurrent()
+                && player->getMark("Global_PreventPeach") == 0
+                && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
     }
 
 
@@ -691,7 +691,7 @@ public:
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
         if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile
-            && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE) {
+                && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE) {
             const Card *card = move.reason.m_extraData.value<const Card *>();
             if (card && card->getSkillName() == objectName()) {
                 foreach(int id, move.card_ids) {
@@ -713,7 +713,7 @@ public:
                 name = Sanguosha->getCard(id)->objectName();
         }
         ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(),
-            "@hezhou:" + name, true, true);
+                                                        "@hezhou:" + name, true, true);
         if (target != NULL)
             invoke->targets << target;
         return target != NULL;
@@ -771,9 +771,9 @@ public:
                 if (room->getCardPlace(id) != Player::PlaceTable) return QList<SkillInvokeDetail>();
             }
             if (e == TargetSpecified && use.from->isAlive() && use.from->hasSkill(this) && use.to.first()->isAlive())
-                    d << SkillInvokeDetail(this, use.from, use.from, NULL, false, use.to.first());
-             else if (e == TargetConfirmed && use.to.first()->isAlive() && use.to.first()->hasSkill(this))
-                    d << SkillInvokeDetail(this, use.to.first(), use.to.first(), NULL, false, use.from);
+                d << SkillInvokeDetail(this, use.from, use.from, NULL, false, use.to.first());
+            else if (e == TargetConfirmed && use.to.first()->isAlive() && use.to.first()->hasSkill(this))
+                d << SkillInvokeDetail(this, use.to.first(), use.to.first(), NULL, false, use.from);
         } else if (e == SlashMissed) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (!effect.from || effect.from->isDead())
@@ -835,7 +835,7 @@ bool BeishuiCard::targetFilter(const QList<const Player *> &targets, const Playe
         if (!user_string.isEmpty()) {
             Card *card = Sanguosha->cloneCard(user_string.split("+").first());
             DELETE_OVER_SCOPE(Card, card)
-            card->addSubcards(subcards);
+                    card->addSubcards(subcards);
             return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
         }
         return false;
@@ -847,7 +847,7 @@ bool BeishuiCard::targetFilter(const QList<const Player *> &targets, const Playe
     const Card *card = Self->tag.value("beishui").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName());
     DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("beishui");
+            new_card->setSkillName("beishui");
     new_card->addSubcards(subcards);
     return new_card && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
 }
@@ -858,8 +858,8 @@ bool BeishuiCard::targetFixed() const
         if (!user_string.isEmpty()) {
             Card *card = Sanguosha->cloneCard(user_string.split("+").first());
             DELETE_OVER_SCOPE(Card, card)
-                card->addSubcards(subcards);
-                return card && card->targetFixed();
+                    card->addSubcards(subcards);
+            return card && card->targetFixed();
         }
         return false;
     }
@@ -870,7 +870,7 @@ bool BeishuiCard::targetFixed() const
     const Card *card = Self->tag.value("beishui").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName());
     DELETE_OVER_SCOPE(Card, new_card)
-        new_card->setSkillName("beishui");
+            new_card->setSkillName("beishui");
     new_card->addSubcards(subcards);
     return new_card && new_card->targetFixed();
 }
@@ -881,8 +881,8 @@ bool BeishuiCard::targetsFeasible(const QList<const Player *> &targets, const Pl
         if (!user_string.isEmpty()) {
             Card *card = Sanguosha->cloneCard(user_string.split("+").first());
             DELETE_OVER_SCOPE(Card, card)
-                card->addSubcards(subcards);
-                return card && card->targetsFeasible(targets, Self);
+                    card->addSubcards(subcards);
+            return card && card->targetsFeasible(targets, Self);
         }
         return false;
     }
@@ -893,7 +893,7 @@ bool BeishuiCard::targetsFeasible(const QList<const Player *> &targets, const Pl
     const Card *card = Self->tag.value("beishui").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName());
     DELETE_OVER_SCOPE(Card, new_card)
-        new_card->setSkillName("beishui");
+            new_card->setSkillName("beishui");
     new_card->addSubcards(subcards);
     return new_card && new_card->targetsFeasible(targets, Self);
 }
@@ -918,11 +918,11 @@ const Card *BeishuiCard::validateInResponse(ServerPlayer *user) const
         QStringList use_list;
         Card *peach = Sanguosha->cloneCard("peach");
         DELETE_OVER_SCOPE(Card, peach)
-            if (!user->isCardLimited(peach, Card::MethodResponse, true))
+                if (!user->isCardLimited(peach, Card::MethodResponse, true))
                 use_list << "peach";
         Card *ana = Sanguosha->cloneCard("analeptic");
         DELETE_OVER_SCOPE(Card, ana)
-            if (!Config.BanPackages.contains("maneuvering") && !user->isCardLimited(ana, Card::MethodResponse, true))
+                if (!Config.BanPackages.contains("maneuvering") && !user->isCardLimited(ana, Card::MethodResponse, true))
                 use_list << "analeptic";
         to_use = room->askForChoice(user, "qiji_skill_saveself", use_list.join("+"));
     }
@@ -958,7 +958,7 @@ public:
             if (skill->matchAvaliablePattern(str, pattern)) {
                 Card *card = Sanguosha->cloneCard(str);
                 DELETE_OVER_SCOPE(Card, card)
-                    if (!Self->isCardLimited(card, method))
+                        if (!Self->isCardLimited(card, method))
                         checkedPatterns << str;
             }
         }
@@ -974,7 +974,7 @@ public:
             return true;
         Card *card = Sanguosha->cloneCard("peach", Card::NoSuit, 0);
         DELETE_OVER_SCOPE(Card, card)
-        return card->isAvailable(player);
+                return card->isAvailable(player);
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &) const
@@ -987,7 +987,7 @@ public:
 
         QStringList checkedPatterns = responsePatterns();
         if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1
-            && player->getMark("Global_PreventPeach") > 0) return false;
+                && player->getMark("Global_PreventPeach") > 0) return false;
 
         return !checkedPatterns.isEmpty();
     }
@@ -1446,7 +1446,7 @@ public:
             JudgeStruct * judge = data.value<JudgeStruct *>();
             if (judge->reason == objectName() && judge->card->isBlack()) {
                 if (judge->who->isAlive())
-                   return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, judge->who, judge->who, NULL, true);
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, judge->who, judge->who, NULL, true);
             }
         }
         return QList<SkillInvokeDetail>();
@@ -1526,7 +1526,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from && use.from->hasSkill(this) && use.card->isKindOf("Slash") && use.card->isBlack()) {
             foreach(ServerPlayer *p, use.to)
-               d << SkillInvokeDetail(this, use.from, use.from, NULL, false, p);
+                d << SkillInvokeDetail(this, use.from, use.from, NULL, false, p);
         }
         return d;
     }

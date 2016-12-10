@@ -4,6 +4,7 @@
 #include <QTime>
 #include <QStringList>
 #include <QSet>
+#include <QDir>
 
 #include "audio.h"
 #include "fmod.h"
@@ -27,7 +28,7 @@ public:
         }
 
         FMOD_System_CreateSound(System, fileName.toLatin1(),
-            mode, NULL, &m_sound);
+                                mode, NULL, &m_sound);
         FMOD_Sound_SetSoundGroup(m_sound, soundGroup);
         FMOD_System_Update(System);
     }
@@ -45,7 +46,7 @@ public:
         }
 
         FMOD_System_PlaySound(System, FMOD_CHANNEL_FREE,
-            m_sound, false, &m_channel);
+                              m_sound, false, &m_channel);
         FMOD_System_Update(System);
     }
 
@@ -84,7 +85,7 @@ public:
     };
 
     explicit BackgroundMusicPlayList(const QStringList &fileNames,
-        BackgroundMusicPlayList::PlayOrder order = Sequential, const QStringList openings = QStringList())
+                                     BackgroundMusicPlayList::PlayOrder order = Sequential, const QStringList openings = QStringList())
         : m_fileNames(fileNames), m_order(order), m_openings(openings), m_index(-1)
     {
     }
@@ -162,7 +163,6 @@ private:
     QStringList m_openings;//need play title/open at first
 };
 
-#include <QFileDialog>
 class BackgroundMusicPlayer : public QObject
 {
 public:
@@ -176,7 +176,7 @@ public:
 
         {
             BackgroundMusicPlayList::PlayOrder playOrder
-                = random ? BackgroundMusicPlayList::Shuffle : BackgroundMusicPlayList::Sequential;
+                    = random ? BackgroundMusicPlayList::Shuffle : BackgroundMusicPlayList::Sequential;
             
             QStringList all = fileNames.split(";");
             QStringList openings;
@@ -277,7 +277,7 @@ void Audio::quit()
         EffectGroup = NULL;
         BackgroundMusicGroup = NULL;
 
-    
+
         SoundCache.clear();
         backgroundMusicPlayer.shutdown();
 
@@ -357,8 +357,8 @@ QString Audio::getVersion()
     unsigned int version = 0;
     if (NULL != System && FMOD_OK == FMOD_System_GetVersion(System, &version)) {
         return QString("%1.%2.%3").arg((version & 0xFFFF0000) >> 16, 0, 16)
-            .arg((version & 0xFF00) >> 8, 2, 16, QChar('0'))
-            .arg((version & 0xFF), 2, 16, QChar('0'));
+                .arg((version & 0xFF00) >> 8, 2, 16, QChar('0'))
+                .arg((version & 0xFF), 2, 16, QChar('0'));
     }
 
     return "";

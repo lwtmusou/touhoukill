@@ -112,7 +112,7 @@ public:
 
 
     static void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect,
-        const QPixmap &pixmap, QGraphicsItem *parent);
+                             const QPixmap &pixmap, QGraphicsItem *parent);
 
     inline void hookMouseEvents();
 
@@ -310,8 +310,8 @@ private:
     bool _allZAdjusted;
 
     void showHeroSkinListHelper(const General *general,
-        GraphicsPixmapHoverItem *avatarIcon,
-        HeroSkinContainer *&heroSkinContainer);
+                                GraphicsPixmapHoverItem *avatarIcon,
+                                HeroSkinContainer *&heroSkinContainer);
 
 signals:
     void selected_changed();

@@ -25,10 +25,10 @@ void RoomThreadXMode::run()
 
     foreach (ServerPlayer *player, room->m_players) {
         switch (player->getRoleEnum()) {
-            case Player::Lord: warm_leader = player; break;
-            case Player::Renegade: cool_leader = player; break;
-            default:
-                break;
+        case Player::Lord: warm_leader = player; break;
+        case Player::Renegade: cool_leader = player; break;
+        default:
+            break;
         }
     }
 
@@ -74,7 +74,7 @@ void RoomThreadXMode::run()
         player->tag.remove("XModeBackup");
     }
     startArrange(QList<ServerPlayer *>() << warm_leader << cool_leader,
-        QList<QStringList>() << warm_backup << cool_backup);
+                 QList<QStringList>() << warm_backup << cool_backup);
 }
 
 void RoomThreadXMode::startArrange(QList<ServerPlayer *> &players, QList<QStringList> &to_arrange)
@@ -191,7 +191,7 @@ void RoomThreadXMode::assignRoles(const QString &scheme)
 {
     QStringList roles;
     roles << "lord" << "loyalist" << "rebel"
-        << "renegade" << "rebel" << "loyalist";
+          << "renegade" << "rebel" << "loyalist";
 
     if (scheme == "Random") {
         qShuffle(roles);
@@ -202,7 +202,7 @@ void RoomThreadXMode::assignRoles(const QString &scheme)
     } else {
         QStringList all_roles;
         all_roles << "leader1" << "guard1" << "guard2"
-            << "leader2" << "guard2" << "guard1";
+                  << "leader2" << "guard2" << "guard1";
         assignRoles(all_roles, scheme);
 
         QMap<QString, QString> map;
@@ -232,7 +232,7 @@ void RoomThreadXMode::assignRoles(const QString &scheme)
             int next = (i + 1) % total;
             int next2 = (next + 1) % total;
             if (players.at(i)->getRole().at(0) == players.at(next)->getRole().at(0)
-                && players.at(i)->getRole().at(0) == players.at(next2)->getRole().at(0)) {
+                    && players.at(i)->getRole().at(0) == players.at(next2)->getRole().at(0)) {
                 valid = false;
                 break;
             }

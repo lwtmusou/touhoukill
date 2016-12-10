@@ -125,7 +125,7 @@ end
 sgs.ai_skill_cardask["@leiting"] = function(self, data)
 	local temp =self.player:getTag("temp_leiting"):toInt()
 	self.player:removeTag("temp_leiting")
-	if temp > -1 and self.room:getCardOwner(temp):objectName() == self.player:objectName() 
+	if temp > -1 and self.room:getCardOwner(temp):objectName() == self.player:objectName()
 		and self.room:getCardPlace(temp) == sgs.Player_PlaceHand  then
 		return "$" .. temp
 	end
@@ -299,17 +299,17 @@ function SmartAI:yuanfeiValue(player)
 		value = value + (2 * player:getHandcardNum())
 		value = value + 2 * player:getPile("wooden_ox"):length()
 		if not self.player:inMyAttackRange(player) then
-			local distance = self.player:distanceTo(player) 
+			local distance = self.player:distanceTo(player)
 			local equipRange = 1
 			for _,c in sgs.qlist(cards) do
 				if c:isKindOf("Weapon") and sgs.weapon_range[c:getClassName()] >= distance  then
 					value = value + 5
 					break
-				elseif c:isKindOf("OffensiveHorse") and not self.player:getOffensiveHorse() and distance == 2 then 
+				elseif c:isKindOf("OffensiveHorse") and not self.player:getOffensiveHorse() and distance == 2 then
 					value = value + 5
 					break
 				end
-			end		
+			end
 		end
 	end
 	return value, attackCard

@@ -13,7 +13,7 @@ class GraphicsPixmapHoverItem : public QObject, public QGraphicsPixmapItem
 
 public:
     explicit GraphicsPixmapHoverItem(PlayerCardContainer *playerCardContainer,
-        QGraphicsItem *parent = 0);
+                                     QGraphicsItem *parent = 0);
 
     void stopChangeHeroSkinAnimation();
     bool isSkinChangingFinished() const

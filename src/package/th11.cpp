@@ -26,8 +26,8 @@ public:
             return d;
         foreach (ServerPlayer *satori, room->findPlayersBySkillName(objectName())) {
             if (damage.from && damage.from != satori && damage.card  && !damage.from->isKongcheng()
-                && damage.to != damage.from && damage.to->isAlive()
-                && (satori->inMyAttackRange(damage.to) || damage.to == satori))
+                    && damage.to != damage.from && damage.to->isAlive()
+                    && (satori->inMyAttackRange(damage.to) || damage.to == satori))
                 d << SkillInvokeDetail(this, satori, satori);
         }
         return d;
@@ -145,7 +145,7 @@ void MaihuoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     room->moveCardTo(Sanguosha->getCard(subcards.first()), NULL, Player::DrawPile);
     QList<int> card_to_show = room->getNCards(2, false);
     CardsMoveStruct move(card_to_show, NULL, Player::PlaceTable,
-        CardMoveReason(CardMoveReason::S_REASON_TURNOVER, targets.first()->objectName()));
+                         CardMoveReason(CardMoveReason::S_REASON_TURNOVER, targets.first()->objectName()));
     room->moveCardsAtomic(move, true);
     room->getThread()->delay();
     bool bothred = true;
@@ -324,7 +324,7 @@ public:
             QList<SkillInvokeDetail> d;
             if (triggerEvent == TargetSpecifying) {
                 if (use.from->hasSkill(this))
-                d << SkillInvokeDetail(this, use.from, use.from, NULL, true);
+                    d << SkillInvokeDetail(this, use.from, use.from, NULL, true);
             } else {
                 foreach(ServerPlayer *p, use.to) {
                     if (p->hasSkill(this))
@@ -379,7 +379,7 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.from && damage.from->isAlive() && damage.to->isAlive()
-            && damage.from != damage.to && damage.to->hasSkill(this)) {
+                && damage.from != damage.to && damage.to->hasSkill(this)) {
             FireSlash *slash = new FireSlash(Card::NoSuit, 0);
             slash->deleteLater();
             if (!damage.to->isCardLimited(slash, Card::MethodUse) && damage.to->canSlash(damage.from, slash, false))
@@ -546,7 +546,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             //since pingyi, we need to record "peach used" for everyone.
             if (use.from->getPhase() == Player::Play
-                && (use.card->isKindOf("Peach") || use.card->isKindOf("Analeptic")))
+                    && (use.card->isKindOf("Peach") || use.card->isKindOf("Analeptic")))
                 room->setPlayerFlag(use.from, "jiuhao");
             if (use.card->hasFlag(objectName())) {
                 if (use.m_addHistory) {
@@ -730,8 +730,8 @@ public:
     {
         QList<SkillInvokeDetail> d;
         ServerPlayer *current = data.value<ServerPlayer *>();
-        if (current->getPhase() == Player::Finish && (!current->faceUp() || current->isChained()) 
-            && !current->isNude()) {
+        if (current->getPhase() == Player::Finish && (!current->faceUp() || current->isChained())
+                && !current->isNude()) {
             bool invoke = false;
             foreach(ServerPlayer *p, room->getOtherPlayers(current)) {
                 if (current->inMyAttackRange(p) && current->canSlash(p)) {

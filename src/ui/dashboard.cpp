@@ -210,17 +210,17 @@ int Dashboard::width()
 void Dashboard::_createRight()
 {   //40 equals diff bettween middlefarme and rightframe
     QRect rect = QRect(_m_width - G_DASHBOARD_LAYOUT.m_rightWidth, -40,
-        G_DASHBOARD_LAYOUT.m_rightWidth,
-        G_DASHBOARD_LAYOUT.m_normalHeight + 40);
+                       G_DASHBOARD_LAYOUT.m_rightWidth,
+                       G_DASHBOARD_LAYOUT.m_normalHeight + 40);
     _paintPixmap(_m_rightFrame, rect, QPixmap(1, 1), _m_groupMain);
     _paintPixmap(_m_rightFrameBg, QRect(0, 0, rect.width(), rect.height()),
-        _getPixmap(QSanRoomSkin::S_SKIN_KEY_RIGHTFRAME), _m_rightFrame);
+                 _getPixmap(QSanRoomSkin::S_SKIN_KEY_RIGHTFRAME), _m_rightFrame);
     _m_rightFrame->setZValue(-1000); // nobody should be under me.
 
     _m_skillDock = new QSanInvokeSkillDock(_m_rightFrame);
     QRect avatar = G_DASHBOARD_LAYOUT.m_avatarArea;
     _m_skillDock->setPos(avatar.left() + 25, avatar.bottom() +
-        G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height() - 25);
+                         G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height() - 25);
     _m_skillDock->setWidth(avatar.width() - 50);
 }
 
@@ -229,13 +229,13 @@ void Dashboard::_updateFrames()
 {
     // Here is where we adjust all frames to actual width
     QRect rect = QRect(G_DASHBOARD_LAYOUT.m_leftWidth, 0,
-        width() - G_DASHBOARD_LAYOUT.m_rightWidth - G_DASHBOARD_LAYOUT.m_leftWidth, G_DASHBOARD_LAYOUT.m_normalHeight);
+                       width() - G_DASHBOARD_LAYOUT.m_rightWidth - G_DASHBOARD_LAYOUT.m_leftWidth, G_DASHBOARD_LAYOUT.m_normalHeight);
     _paintPixmap(_m_middleFrame, rect, _getPixmap(QSanRoomSkin::S_SKIN_KEY_MIDDLEFRAME), this);
     QRect rect2 = QRect(0, 0, width(), G_DASHBOARD_LAYOUT.m_normalHeight);
     trusting_item->setRect(rect2);
     trusting_item->setPos(0, 0);
     trusting_text->setPos((rect2.width() - Config.BigFont.pixelSize() * 4.5) / 2,
-        (rect2.height() - Config.BigFont.pixelSize()) / 2);
+                          (rect2.height() - Config.BigFont.pixelSize()) / 2);
     _m_rightFrame->setX(_m_width - G_DASHBOARD_LAYOUT.m_rightWidth);
     Q_ASSERT(button_widget);
     button_widget->setX(rect.width() - getButtonWidgetWidth());
@@ -585,10 +585,10 @@ void Dashboard::_createExtraButtons()
     //QRectF sortHandRect = this->boundingRect();
     //sortHandRect = this->mapRectToItem(this, sortHandRect);//_m_rightFrame
     m_btnSortHandcard->setPos(0,
-        -m_btnReverseSelection->boundingRect().height());
+                              -m_btnReverseSelection->boundingRect().height());
 
     m_btnNoNullification->setPos(m_btnSortHandcard->boundingRect().width(),
-        -m_btnReverseSelection->boundingRect().height());
+                                 -m_btnReverseSelection->boundingRect().height());
     //m_btnNoNullification->setPos(m_btnReverseSelection->boundingRect().right() + m_btnSortHandcard->boundingRect().width() + G_DASHBOARD_LAYOUT.m_rswidth,
     //                             -m_btnReverseSelection->boundingRect().height());
     m_btnNoNullification->hide();
@@ -957,10 +957,10 @@ void Dashboard::beginSorting()
         type = (SortType)(action->data().toInt());
 
     switch (type) {
-        case ByType: std::sort(m_handCards.begin(), m_handCards.end(), CompareByType); break;
-        case BySuit: std::sort(m_handCards.begin(), m_handCards.end(), CompareBySuit); break;
-        case ByNumber: std::sort(m_handCards.begin(), m_handCards.end(), CompareByNumber); break;
-        default: Q_ASSERT(false);
+    case ByType: std::sort(m_handCards.begin(), m_handCards.end(), CompareByType); break;
+    case BySuit: std::sort(m_handCards.begin(), m_handCards.end(), CompareBySuit); break;
+    case ByNumber: std::sort(m_handCards.begin(), m_handCards.end(), CompareByNumber); break;
+    default: Q_ASSERT(false);
     }
 
     adjustCards();
@@ -987,8 +987,8 @@ void Dashboard::cancelNullification()
 {
     ClientInstance->m_noNullificationThisTime = !ClientInstance->m_noNullificationThisTime;
     if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
-        && Sanguosha->getCurrentCardUsePattern() == "nullification"
-        && RoomSceneInstance->isCancelButtonEnabled()) {
+            && Sanguosha->getCurrentCardUsePattern() == "nullification"
+            && RoomSceneInstance->isCancelButtonEnabled()) {
         RoomSceneInstance->doCancelButton();
     }
 }
@@ -1347,7 +1347,7 @@ void Dashboard::updatePending()
             pending_card = NULL;
         }
         if (view_as_skill->objectName().contains("guhuo")
-            && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+                && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             foreach (CardItem *item, m_handCards) {
                 item->hideFootnote();
                 if (new_pending_card && item->getCard() == cards.first()) {
@@ -1436,13 +1436,13 @@ QPointF Dashboard::getHeroSkinContainerPosition() const
         : m_secondaryHeroSkinContainer->boundingRect();;*/
     QRectF heroSkinContainerRect = m_primaryHeroSkinContainer->boundingRect();
     return QPointF(avatarParentRect.left() - heroSkinContainerRect.width() - 120,
-        avatarParentRect.bottom() - heroSkinContainerRect.height() - 5);
+                   avatarParentRect.bottom() - heroSkinContainerRect.height() - 5);
 }
 
 bool Dashboard::isItemUnderMouse(QGraphicsItem *item)
 {
     return (item->isUnderMouse() && !_m_skillDock->isUnderMouse())
-        || (_m_skillDock->isUnderMouse() && _m_screenNameItem->isVisible());
+            || (_m_skillDock->isUnderMouse() && _m_screenNameItem->isVisible());
 }
 
 void Dashboard::onAvatarHoverEnter()

@@ -20,7 +20,7 @@ class HeroSkinContainer : public QGraphicsObject
 
 public:
     HeroSkinContainer(const QString &generalName,
-        const QString &kingdom, QGraphicsItem *parent = 0);
+                      const QString &kingdom, QGraphicsItem *parent = 0);
 
     ~HeroSkinContainer()
     {

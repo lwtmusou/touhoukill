@@ -25,7 +25,7 @@ class General : public QObject
 
 public:
     explicit General(Package *package, const QString &name, const QString &kingdom,
-        int max_hp = 4, bool male = true, bool hidden = false, bool never_shown = false);
+                     int max_hp = 4, bool male = true, bool hidden = false, bool never_shown = false);
 
     // property getters/setters
     int getMaxHp() const;

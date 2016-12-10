@@ -25,7 +25,7 @@ QStringList RoomThread3v3::getGeneralsWithoutExtension() const
     const Package *windpack = Sanguosha->findChild<const Package *>("wind");
 
     generals << stdpack->findChildren<const General *>()
-        << windpack->findChildren<const General *>();
+             << windpack->findChildren<const General *>();
 
     generals.removeOne(Sanguosha->getGeneral("yuji"));
     QStringList list_nostal, list_neo;
@@ -48,11 +48,11 @@ QStringList RoomThread3v3::getGeneralsWithoutExtension() const
     } else if (rule == "2013") {
         QStringList list_remove, list_add;
         list_remove << "nos_zhangjiao" << "nos_caoren" << "lvmeng" << "xiahoudun" << "weiyan"
-            << "luxun" << "huangzhong" << "xuchu" << "nos_zhoutai" << "zhaoyun"
-            << "guanyu" << "lvbu";
+                    << "luxun" << "huangzhong" << "xuchu" << "nos_zhoutai" << "zhaoyun"
+                    << "guanyu" << "lvbu";
         list_add << "sunjian" << "xuhuang" << "pangde" << "jiaxu" << "sunce"
-            << "jiangwei" << "zhugejin" << "vs_xiahoudun" << "vs_guanyu" << "vs_zhaoyun"
-            << "vs_lvbu" << "wenpin";
+                 << "jiangwei" << "zhugejin" << "vs_xiahoudun" << "vs_guanyu" << "vs_zhaoyun"
+                 << "vs_lvbu" << "wenpin";
         foreach(QString general_name, list_remove)
             generals.removeOne(Sanguosha->getGeneral(general_name));
         foreach(QString general_name, list_add)
@@ -78,10 +78,10 @@ void RoomThread3v3::run()
 
     foreach (ServerPlayer *player, room->m_players) {
         switch (player->getRoleEnum()) {
-            case Player::Lord: warm_leader = player; break;
-            case Player::Renegade: cool_leader = player; break;
-            default:
-                break;
+        case Player::Lord: warm_leader = player; break;
+        case Player::Renegade: cool_leader = player; break;
+        default:
+            break;
         }
     }
 
@@ -272,7 +272,7 @@ void RoomThread3v3::assignRoles(const QString &scheme)
 {
     QStringList roles;
     roles << "lord" << "loyalist" << "rebel"
-        << "renegade" << "rebel" << "loyalist";
+          << "renegade" << "rebel" << "loyalist";
 
     if (scheme == "Random") {
         // the easiest way
@@ -285,7 +285,7 @@ void RoomThread3v3::assignRoles(const QString &scheme)
     } else {
         QStringList all_roles;
         all_roles << "leader1" << "guard1" << "guard2"
-            << "leader2" << "guard2" << "guard1";
+                  << "leader2" << "guard2" << "guard1";
         assignRoles(all_roles, scheme);
 
         QMap<QString, QString> map;

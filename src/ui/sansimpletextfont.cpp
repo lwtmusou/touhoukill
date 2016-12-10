@@ -13,20 +13,20 @@ QHash<QString, const int *> SanSimpleTextFont::m_fontBank;
 
 SanSimpleTextFont::SanSimpleTextFont()
     : m_fontFace(NULL),
-    m_fontSize(QSize(12, 12)), m_color(Qt::white),
-    m_spacing(0), m_weight(0), m_vertical(false)
+      m_fontSize(QSize(12, 12)), m_color(Qt::white),
+      m_spacing(0), m_weight(0), m_vertical(false)
 {
 }
 
 SanSimpleTextFont::SanSimpleTextFont(const QString &fontName)
     : m_fontSize(QSize(12, 12)), m_color(Qt::white),
-    m_spacing(0), m_weight(0), m_vertical(false)
+      m_spacing(0), m_weight(0), m_vertical(false)
 {
     _initFontFace(fontName);
 }
 
 SanSimpleTextFont::SanSimpleTextFont(const QString &fontName, const QSize &fontSize,
-    const QColor &color, int spacing, int weight) : m_vertical(false)
+                                     const QColor &color, int spacing, int weight) : m_vertical(false)
 {
     _initFontFace(fontName);
 
@@ -65,10 +65,10 @@ bool SanSimpleTextFont::tryParse(const QVariant &argvar)
 }
 
 void SanSimpleTextFont::paintText(QPainter *const painter,
-    const QRect &pos, const Qt::Alignment &align, const QString &text) const
+                                  const QRect &pos, const Qt::Alignment &align, const QString &text) const
 {
     if (pos.width() <= 0 || pos.height() <= 0
-        || m_fontSize.width() <= 0 || m_fontSize.height() <= 0) {
+            || m_fontSize.width() <= 0 || m_fontSize.height() <= 0) {
         return;
     }
 
@@ -76,16 +76,16 @@ void SanSimpleTextFont::paintText(QPainter *const painter,
     QRect actualRect = pos;
     if ((align & Qt::TextWrapAnywhere) && !m_vertical) {
         SanFreeTypeFont::getInstance()->paintStringMultiLine(painter, text, m_fontFace,
-            m_color, actualSize, m_spacing, m_weight, actualRect, align);
+                                                             m_color, actualSize, m_spacing, m_weight, actualRect, align);
     } else {
         SanFreeTypeFont::getInstance()->paintString(painter, text, m_fontFace,
-            m_color, actualSize, m_spacing, m_weight, actualRect,
-            m_vertical ? Qt::Vertical : Qt::Horizontal, align);
+                                                    m_color, actualSize, m_spacing, m_weight, actualRect,
+                                                    m_vertical ? Qt::Vertical : Qt::Horizontal, align);
     }
 }
 
 void SanSimpleTextFont::paintText(QGraphicsPixmapItem *const item,
-    const QRect &pos, const Qt::Alignment &align, const QString &text) const
+                                  const QRect &pos, const Qt::Alignment &align, const QString &text) const
 {
     QPixmap pixmap(pos.size());
     pixmap.fill(Qt::transparent);

@@ -34,7 +34,7 @@ class QijiDialog : public QDialog
 public:
     static QijiDialog *getInstance(const QString &object, bool left = true, bool right = true);
 
-    public slots:
+public slots:
     void popup();
     void selectCard(QAbstractButton *button);
 

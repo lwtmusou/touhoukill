@@ -21,7 +21,7 @@ sgs.ai_skill_invoke.meiling = function(self,data)
 			point = point + 1
 		end
 	end
-	
+
 	return point > 1
 end
 
@@ -81,7 +81,7 @@ sgs.ai_skill_invoke.shigui = function(self,data)
 	local phase = self.player:getPhase()
 	local pahseCount = self.player:getMark("shigui")
 	local diff = pahseCount - self.player:getHandcardNum()
-	
+
 	if diff < 2 and diff > 0 then
 		if  diff > 2 then
 			return true
@@ -188,7 +188,7 @@ sgs.ai_skill_use["@@shiqu"] = function(self, prompt)
 	local cards = self.player:getCards("hes")
 	cards = sgs.QList2Table(cards)
 	self:sortByKeepValue(cards)
-	
+
 	if choice == "shiqu_discard" and self:isEnemy(current) then
 		return "@ShiquCard=" ..cards[1]:getEffectiveId().. "->" .. current:objectName()
 	end
@@ -220,7 +220,7 @@ end
 
 sgs.ai_skill_invoke.lubiao = function(self,data)
 	local current = self.room:getCurrent()
-	return current and current:isAlive() and self:isEnemy(current) 
+	return current and current:isAlive() and self:isEnemy(current)
 end
 
 sgs.ai_skill_choice.lubiao = function(self, choices, data)
@@ -332,7 +332,7 @@ local function  huantongValue(cards, self, damage, huantongDamage)
 	tmp.damage = huantongDamage
 	local tmp = self:touhouDamage(tmp, tmp.from, tmp.to)
 	local value = 0
-	if (tmp.damage < damage.damage and self:isFriend(damage.to)) or 
+	if (tmp.damage < damage.damage and self:isFriend(damage.to)) or
 	(tmp.damage > damage.damage and self:isEnemy(damage.to)) then
 		value = value + 2 * math.abs(damage.damage - tmp.damage)
 	end
@@ -362,7 +362,7 @@ local function  huantongValue(cards, self, damage, huantongDamage)
 	if tmp.damage >= 2 and self.player:hasSkill("mengyan") and self.player:isWounded() then
 		-- recover count as 2 value
 		value = value + self.player:getPile("dream"):length()
-	end	
+	end
 	return value
 end
 sgs.ai_skill_cardask["@huantong"] = function(self, data)
@@ -372,7 +372,7 @@ sgs.ai_skill_cardask["@huantong"] = function(self, data)
 	local basics, others = {}, {}
 	for _,id in sgs.qlist(ids) do
 		local card=sgs.Sanguosha:getCard(id)
-		if card:isKindOf("BasicCard") then 
+		if card:isKindOf("BasicCard") then
 			table.insert(basics, card)
 		else
 			table.insert(others, card)
@@ -383,7 +383,7 @@ sgs.ai_skill_cardask["@huantong"] = function(self, data)
 	if self:cautionChangshi() then --有千年紫敌人，早点清除有价值的牌
 		self:sortByUseValue(others, true)
 	end
-	
+
 	local combines = {}
 	if #basics >=2 then
 		local cards = {basics[1], basics[2]}
@@ -400,11 +400,11 @@ sgs.ai_skill_cardask["@huantong"] = function(self, data)
 		local arr = {combine = cards, value = huantongValue(cards, self, damage, 0)}
 		table.insert(combines, arr)
 	end
-	
+
 	local compare_func = function(a, b)
 		return a.value > b.value
 	end
-	
+
 	table.sort(combines, compare_func)
 	if combines[1].value > 0 then
 		local huantongIds = {}
@@ -431,16 +431,16 @@ sgs.ai_skill_invoke.mengyan = true
 sgs.ai_skill_use["@@lianmu"] = function(self, prompt)
 	local slash = sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
 	slash:setSkillName("lianmu");
-	
+
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList()}
 	self:useBasicCard(slash, dummy_use)
 	local targets = {}
-	if dummy_use.card and  not dummy_use.to:isEmpty() then 
+	if dummy_use.card and  not dummy_use.to:isEmpty() then
 		for _, p in sgs.qlist(dummy_use.to) do
 			table.insert(targets, p:objectName())
 		end
 	end
-	
+
 	if #targets >0 then
 		return "@LianmuCard=.->" .. table.concat(targets, "+")
 	end
@@ -541,7 +541,7 @@ function turnUse_guaiqi(self)
 		end
 	end
 	if #guaiqis == 0 then return nil end
-	
+
 	local cards = self.player:getHandcards()
 	cards = self:touhouAppendExpandPileToList(self.player, cards)
 	local slashes = {}
@@ -552,8 +552,8 @@ function turnUse_guaiqi(self)
 	end
 	if #slashes == 0 then return nil end
 	self:sortByUseValue(slashes, true)
-	
-	
+
+
 	local choices={}
 	for i = 1, #guaiqis do
 		local forbiden = guaiqis[i]
@@ -639,10 +639,10 @@ function sgs.ai_cardsview_valuable.guaiqi(self, class_name, player)
 			end
 		end
 	end
-	
+
 	if #modians == 0 then return nil end
 	self:sortByUseValue(modians, true)
-	
+
 	local suit = modians[1]:getSuitString()
 	local number = modians[1]:getNumberString()
 	local card_id = modians[1]:getEffectiveId()
@@ -655,7 +655,7 @@ table.insert(sgs.ai_skills, modianvs_skill)
 function modianvs_skill.getTurnUseCard(self)
 	if self.player:isKongcheng() then return nil end
 	if self.player:hasFlag("Forbidmodian") then return nil end
-		
+
 	local cards = sgs.QList2Table(self.player:getCards("hs"))
 	local card
 	self:sortByUseValue(cards,true)
@@ -700,7 +700,7 @@ sgs.ai_skill_cardask["@modian"] = function(self, data)
 	local tricks = {}
 	for _,id in sgs.qlist(ids) do
 		local card = sgs.Sanguosha:getCard(id)
-		if not card:isKindOf("TrickCard") then 
+		if not card:isKindOf("TrickCard") then
 			return "$" .. id
 		end
 		table.insert(tricks, card)

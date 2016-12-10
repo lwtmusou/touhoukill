@@ -60,7 +60,7 @@ void RecAnalysis::initialize(QString dir)
                 QStringList ban_packages = texts.at(5).split("+");
                 foreach (const Package *package, Sanguosha->getPackages()) {
                     if (!ban_packages.contains(package->objectName())
-                        && Sanguosha->getScenario(package->objectName()) == NULL)
+                            && Sanguosha->getScenario(package->objectName()) == NULL)
                         m_recordPackages << Sanguosha->translate(package->objectName());
                 }
 
@@ -170,7 +170,7 @@ void RecAnalysis::initialize(QString dir)
         if (packet.getCommandType() == S_COMMAND_CHANGE_HP) {
             JsonArray change = packet.getMessageBody().value<JsonArray>();
             if (change.size() != 3 || !JsonUtils::isString(change[0])
-                || !JsonUtils::isNumber(change[1]) || !JsonUtils::isNumber(change[2]))
+                    || !JsonUtils::isNumber(change[1]) || !JsonUtils::isNumber(change[2]))
                 continue;
 
             QString name = change[0].toString();
@@ -415,11 +415,11 @@ void RecAnalysis::setDesignation()
     addDesignation(tr("Burning Soul"), MostDamage | MostDamaged);
     addDesignation(tr("Regretful Lose"), MostDamage | ZeroKill, M_ALL_PLAYER, true, QString(), false, false, false, true);
     addDesignation(tr("Fall Short"), NoOption, findPlayerOfKills(m_recordPlayers - 2), m_recordWinners.contains("lord"),
-        "renegade", false, false, false, true);
+                   "renegade", false, false, false, true);
     addDesignation(tr("Wicked Kill"), LeastDamage | MostKill);
     addDesignation(tr("Peaceful Watcher"), ZeroDamage | LeastDamaged, findPlayerOfRecover(1));
     addDesignation(tr("MVP"), MostKill | MostDamage | MostRecover, findPlayerOfDamage(10) & findPlayerOfRecover(10),
-        true, QString(), true, false, true);
+                   true, QString(), true, false, true);
     addDesignation(tr("Useless alive"), ZeroDamage | ZeroDamaged | ZeroRecover | ZeroKill);
     addDesignation(tr("Awe Prestige"), MostKill | MostDamage, findPlayerOfKills(3), true, "lord", true);
 
@@ -472,14 +472,14 @@ void RecAnalysis::setDesignation()
 }
 
 void RecAnalysis::addDesignation(const QString &designation,
-    unsigned long designation_union,
-    unsigned int data_requirement,
-    bool custom_condition,
-    const QString &addition_option_role,
-    bool need_alive,
-    bool need_dead,
-    bool need_win,
-    bool need_lose)
+                                 unsigned long designation_union,
+                                 unsigned int data_requirement,
+                                 bool custom_condition,
+                                 const QString &addition_option_role,
+                                 bool need_alive,
+                                 bool need_dead,
+                                 bool need_win,
+                                 bool need_lose)
 {
     if (!custom_condition) return;
 
@@ -504,14 +504,14 @@ void RecAnalysis::addDesignation(const QString &designation,
             }
 
         if (need_win
-            && !m_recordWinners.contains(m_recordMap[objectName]->m_role)
-            && !m_recordWinners.contains(objectName)) {
+                && !m_recordWinners.contains(m_recordMap[objectName]->m_role)
+                && !m_recordWinners.contains(objectName)) {
             has_player = false;
         }
 
         if (need_lose
-            && (m_recordWinners.contains(m_recordMap[objectName]->m_role)
-            || m_recordWinners.contains(objectName))) {
+                && (m_recordWinners.contains(m_recordMap[objectName]->m_role)
+                    || m_recordWinners.contains(objectName))) {
             has_player = false;
         }
 
@@ -625,7 +625,7 @@ void RecAnalysis::initialDesignation()
 
 PlayerRecordStruct::PlayerRecordStruct()
     : m_statue("online"), m_turnCount(0), m_recover(0), m_damage(0),
-    m_damaged(0), m_kill(0), m_isAlive(true)
+      m_damaged(0), m_kill(0), m_isAlive(true)
 {
 }
 

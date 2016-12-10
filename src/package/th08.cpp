@@ -45,10 +45,10 @@ public:
             ServerPlayer *kaguya1 = qobject_cast<ServerPlayer *>(move.from);
             ServerPlayer *kaguya2 = qobject_cast<ServerPlayer *>(move.to);
             if (kaguya1 && kaguya1->isAlive() && kaguya1->hasSkill(this) && move.from_places.contains(Player::PlaceHand)
-            && kaguya1->getHandcardNum() != 4 && kaguya1->getPhase() == Player::NotActive)
+                    && kaguya1->getHandcardNum() != 4 && kaguya1->getPhase() == Player::NotActive)
                 kaguyas << kaguya1;
             if (kaguya2 && kaguya2->isAlive() && kaguya2->hasSkill(this) && move.to_place == Player::PlaceHand
-                && kaguya2->getHandcardNum() != 4 && kaguya2->getPhase() == Player::NotActive)
+                    && kaguya2->getHandcardNum() != 4 && kaguya2->getPhase() == Player::NotActive)
                 kaguyas << kaguya2;
             if (kaguyas.length() > 1)
                 std::sort(kaguyas.begin(), kaguyas.end(), ServerPlayer::CompareByActionOrder);
@@ -72,7 +72,7 @@ public:
                 room->notifySkillInvoked(invoke->invoker, objectName());
                 invoke->invoker->skip(change.to);
                 adjustHandcardNum(invoke->invoker, 4, "yongheng");
-            }  
+            }
         } else
             adjustHandcardNum(invoke->invoker, 4, "yongheng");
         return false;
@@ -502,7 +502,7 @@ public:
             if (to->hasSkill(this)) {
                 foreach(ServerPlayer *p, room->getOtherPlayers(to)) {
                     if (use.from->canSlash(p, use.card, true) && !use.to.contains(p)
-                        && use.from->inMyAttackRange(p)) {
+                            && use.from->inMyAttackRange(p)) {
                         d << SkillInvokeDetail(this, to, to);
                         break;
                     }
@@ -521,7 +521,7 @@ public:
         use.card->setFlags("IgnoreFailed");
         foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
             if (use.from->canSlash(p, use.card, true) && !use.to.contains(p)
-                && use.from->inMyAttackRange(p))
+                    && use.from->inMyAttackRange(p))
                 listt << p;
         }
         use.card->setFlags("-IgnoreFailed");
@@ -562,8 +562,8 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->isKindOf("Slash") || use.card->isNDTrick()) {
             foreach (ServerPlayer *keine, room->findPlayersBySkillName(objectName())) {
-                    if (use.from != keine && keine->getPile("lishi").length() == 0)
-                        d << SkillInvokeDetail(this, keine, keine);
+                if (use.from != keine && keine->getPile("lishi").length() == 0)
+                    d << SkillInvokeDetail(this, keine, keine);
             }
         }
         return d;
@@ -733,7 +733,7 @@ public:
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->getPhase() == Player::Play && player->hasSkill(this) && !player->isKongcheng()
-                && hasBuxianTarget(player))
+                    && hasBuxianTarget(player))
                 return  QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         } else if (triggerEvent == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
@@ -881,7 +881,7 @@ public:
         player->tag.remove("xingyun");
 
         for (int i = 0; i < count; ++i) {
-             QString choice = "letdraw";
+            QString choice = "letdraw";
             if (player->isWounded())
                 choice = room->askForChoice(player, objectName(), "letdraw+recover", data);
             if (choice == "letdraw") {
@@ -915,7 +915,7 @@ bool GeshengCard::targetFilter(const QList<const Player *> &targets, const Playe
 
     bool canUse = !Self->isLocked(indl);
     if (canUse &&  to_select != Self
-        && !to_select->containsTrick("indulgence") && !Self->isProhibited(to_select, indl))
+            && !to_select->containsTrick("indulgence") && !Self->isProhibited(to_select, indl))
         return true;
     return false;
 }
@@ -1251,12 +1251,12 @@ public:
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
     {
-         if (triggerEvent == EventPhaseChanging) {
-             foreach(ServerPlayer *player, room->getAllPlayers()) {
-                 if (player->hasFlag("chuangshi"))
-                     player->setFlags("-chuangshi");
-             }
-         }
+        if (triggerEvent == EventPhaseChanging) {
+            foreach(ServerPlayer *player, room->getAllPlayers()) {
+                if (player->hasFlag("chuangshi"))
+                    player->setFlags("-chuangshi");
+            }
+        }
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
@@ -1305,13 +1305,13 @@ bool ChuangshiCard::targetFilter(const QList<const Player *> &targets, const Pla
     const Card *card = Self->tag.value("chuangshi").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName());
     DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("chuangshi");
+            new_card->setSkillName("chuangshi");
 
     if (new_card->targetFixed())
         return false;
     if (new_card->isKindOf("FireAttack"))
         return new_card && (new_card->targetFilter(targets, to_select, user) || (to_select == user && !user->isKongcheng()))
-        && !user->isProhibited(to_select, new_card, targets);
+                && !user->isProhibited(to_select, new_card, targets);
     else
         return new_card && new_card->targetFilter(targets, to_select, user) && !user->isProhibited(to_select, new_card, targets);
 }
@@ -1322,7 +1322,7 @@ bool ChuangshiCard::targetsFeasible(const QList<const Player *> &targets, const 
     const Card *card = Self->tag.value("chuangshi").value<const Card *>();
     Card *new_card = Sanguosha->cloneCard(card->objectName());
     DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("chuangshi");
+            new_card->setSkillName("chuangshi");
     if (card->isKindOf("IronChain") && targets.length() == 0)
         return false;
     return new_card && new_card->targetsFeasible(targets, user);
@@ -1333,7 +1333,7 @@ void ChuangshiCard::onUse(Room *room, const CardUseStruct &card_use) const
     card_use.from->setFlags("chuangshi");
     Card *card = Sanguosha->cloneCard(user_string);
     DELETE_OVER_SCOPE(Card, card)
-    if (card->isKindOf("Collateral")) {
+            if (card->isKindOf("Collateral")) {
         ServerPlayer *from = card_use.from; //ensure that the length of use.to should be 2.
         ServerPlayer *to1 = card_use.to.at(0);
         ServerPlayer *to2 = card_use.to.at(1);
@@ -1353,7 +1353,7 @@ void ChuangshiCard::onUse(Room *room, const CardUseStruct &card_use) const
         use.card = use_card;
         room->useCard(use);
     } else
-        SkillCard::onUse(room, card_use);
+    SkillCard::onUse(room, card_use);
 }
 
 void ChuangshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
@@ -1385,7 +1385,7 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.from && damage.from->isAlive() && damage.to->isAlive()
-            && damage.to->hasSkill(this) && damage.from->getHandcardNum() > damage.to->getHp()) {
+                && damage.to->hasSkill(this) && damage.from->getHandcardNum() > damage.to->getHp()) {
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.from);
         }
         return QList<SkillInvokeDetail>();
@@ -1489,7 +1489,7 @@ public:
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
             if (player != NULL && player->isAlive() && player->hasSkill(this) && player->getPhase() != Player::Play
-                && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
+                    && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
                 foreach(int id, move.card_ids) {
                     if (Sanguosha->getCard(id)->isKindOf("Slash"))
                         d << SkillInvokeDetail(this, player, player);

@@ -11,7 +11,7 @@ QList<QPixmap> GraphicsPixmapHoverItem::m_skinChangingFrames;
 int GraphicsPixmapHoverItem::m_skinChangingFrameCount = 0;
 
 GraphicsPixmapHoverItem::GraphicsPixmapHoverItem(PlayerCardContainer *playerCardContainer,
-    QGraphicsItem *parent) : QGraphicsPixmapItem(parent),
+                                                 QGraphicsItem *parent) : QGraphicsPixmapItem(parent),
     m_playerCardContainer(playerCardContainer), m_timer(0), m_val(0),
     m_currentSkinChangingFrameIndex(-1)
 {
@@ -41,7 +41,7 @@ void GraphicsPixmapHoverItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
     qgraphicssvgitem.cpp!
     */
 static void qt_graphicsItem_highlightSelected(
-    QGraphicsItem *item, QPainter *painter, const QStyleOptionGraphicsItem *option)
+        QGraphicsItem *item, QPainter *painter, const QStyleOptionGraphicsItem *option)
 {
     const QRectF murect = painter->transform().mapRect(QRectF(0, 0, 1, 1));
     if (qFuzzyIsNull(qMax(murect.width(), murect.height())))
@@ -53,26 +53,26 @@ static void qt_graphicsItem_highlightSelected(
 
     qreal itemPenWidth;
     switch (item->type()) {
-        case QGraphicsEllipseItem::Type:
-            itemPenWidth = static_cast<QGraphicsEllipseItem *>(item)->pen().widthF();
-            break;
-        case QGraphicsPathItem::Type:
-            itemPenWidth = static_cast<QGraphicsPathItem *>(item)->pen().widthF();
-            break;
-        case QGraphicsPolygonItem::Type:
-            itemPenWidth = static_cast<QGraphicsPolygonItem *>(item)->pen().widthF();
-            break;
-        case QGraphicsRectItem::Type:
-            itemPenWidth = static_cast<QGraphicsRectItem *>(item)->pen().widthF();
-            break;
-        case QGraphicsSimpleTextItem::Type:
-            itemPenWidth = static_cast<QGraphicsSimpleTextItem *>(item)->pen().widthF();
-            break;
-        case QGraphicsLineItem::Type:
-            itemPenWidth = static_cast<QGraphicsLineItem *>(item)->pen().widthF();
-            break;
-        default:
-            itemPenWidth = 1.0;
+    case QGraphicsEllipseItem::Type:
+        itemPenWidth = static_cast<QGraphicsEllipseItem *>(item)->pen().widthF();
+        break;
+    case QGraphicsPathItem::Type:
+        itemPenWidth = static_cast<QGraphicsPathItem *>(item)->pen().widthF();
+        break;
+    case QGraphicsPolygonItem::Type:
+        itemPenWidth = static_cast<QGraphicsPolygonItem *>(item)->pen().widthF();
+        break;
+    case QGraphicsRectItem::Type:
+        itemPenWidth = static_cast<QGraphicsRectItem *>(item)->pen().widthF();
+        break;
+    case QGraphicsSimpleTextItem::Type:
+        itemPenWidth = static_cast<QGraphicsSimpleTextItem *>(item)->pen().widthF();
+        break;
+    case QGraphicsLineItem::Type:
+        itemPenWidth = static_cast<QGraphicsLineItem *>(item)->pen().widthF();
+        break;
+    default:
+        itemPenWidth = 1.0;
     }
     const qreal pad = itemPenWidth / 2;
 
@@ -80,9 +80,9 @@ static void qt_graphicsItem_highlightSelected(
 
     const QColor fgcolor = option->palette.windowText().color();
     const QColor bgcolor( // ensure good contrast against fgcolor
-        fgcolor.red() > 127 ? 0 : 255,
-        fgcolor.green() > 127 ? 0 : 255,
-        fgcolor.blue() > 127 ? 0 : 255);
+                          fgcolor.red() > 127 ? 0 : 255,
+                          fgcolor.green() > 127 ? 0 : 255,
+                          fgcolor.blue() > 127 ? 0 : 255);
 
     painter->setPen(QPen(bgcolor, penWidth, Qt::SolidLine));
     painter->setBrush(Qt::NoBrush);
@@ -94,7 +94,7 @@ static void qt_graphicsItem_highlightSelected(
 }
 
 void GraphicsPixmapHoverItem::paint(QPainter *painter,
-    const QStyleOptionGraphicsItem *option, QWidget *)
+                                    const QStyleOptionGraphicsItem *option, QWidget *)
 {
     if (pixmap().isNull()) {
         return;
@@ -106,21 +106,21 @@ void GraphicsPixmapHoverItem::paint(QPainter *painter,
 
     QPainter tempPainter(&tempPix);
     tempPainter.setRenderHint(QPainter::SmoothPixmapTransform,
-        (transformationMode() == Qt::SmoothTransformation));
+                              (transformationMode() == Qt::SmoothTransformation));
 
     if (m_val > 0) {
         tempPainter.drawPixmap(offset(), m_heroSkinPixmap);
 
         double percent = 1 - (double)m_val / (double)m_max;
         QRectF rect = QRectF(offset().x(), offset().y(),
-            boundingRect().width(), percent * boundingRect().height());
+                             boundingRect().width(), percent * boundingRect().height());
 
         tempPainter.setClipRect(rect);
         tempPainter.drawPixmap(offset(), pixmap());
 
         tempPainter.setClipRect(boundingRect());
         tempPainter.drawPixmap(rect.left() - 9, rect.bottom() - 25,
-            m_skinChangingFrames[m_currentSkinChangingFrameIndex]);
+                               m_skinChangingFrames[m_currentSkinChangingFrameIndex]);
 
 
         tempPainter.end();
@@ -173,7 +173,7 @@ void GraphicsPixmapHoverItem::startChangeHeroSkinAnimation(const QString &genera
         QSize itemSize = boundingRect().size().toSize();
         if (m_heroSkinPixmap.size() != itemSize) {
             m_heroSkinPixmap = m_heroSkinPixmap.scaled(itemSize, Qt::IgnoreAspectRatio,
-                Qt::SmoothTransformation);
+                                                       Qt::SmoothTransformation);
         }
 
         m_timer = startTimer(m_interval);
@@ -197,11 +197,11 @@ void GraphicsPixmapHoverItem::initSkinChangingFrames()
     m_skinChangingFrameCount = PixmapAnimation::GetFrameCount(CHANGE_SKIN_EMOTION_NAME);
     for (int i = 0; i < m_skinChangingFrameCount; ++i) {
         QString fileName = QString("image/system/emotion/%1/%2.png")
-            .arg(CHANGE_SKIN_EMOTION_NAME).arg(QString::number(i));
+                .arg(CHANGE_SKIN_EMOTION_NAME).arg(QString::number(i));
 
         QPixmap framePixmap = G_ROOM_SKIN.getPixmapFromFileName(fileName);
         m_skinChangingFrames << framePixmap.scaled(framePixmap.width() + 25,//15
-            framePixmap.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+                                                   framePixmap.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     }
 }
 

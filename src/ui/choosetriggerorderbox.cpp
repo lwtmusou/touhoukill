@@ -254,7 +254,7 @@ void TriggerOptionButton::needDisabled(bool disabled)
 
 ChooseTriggerOrderBox::ChooseTriggerOrderBox()
     : optional(true), m_minimumWidth(0),
-    cancel(new Button(tr("cancel"), 0.6)), progressBar(NULL)
+      cancel(new Button(tr("cancel"), 0.6)), progressBar(NULL)
 {
     cancel->hide();
     cancel->setParentItem(this);
@@ -282,9 +282,9 @@ QRectF ChooseTriggerOrderBox::boundingRect() const
     int width = m_minimumWidth + m_leftBlankWidth * 2;
 
     int height = m_topBlankWidth
-        + options.size() * optionButtonHeight
-        + (options.size() - 1) * interval
-        + bottom_blank_width;
+            + options.size() * optionButtonHeight
+            + (options.size() - 1) * interval
+            + bottom_blank_width;
 
     if (ServerInfo.OperationTimeout != 0)
         height += 12;

@@ -177,7 +177,7 @@ public:
     inline virtual QString toString(bool hidden = false) const
     {
         Q_UNUSED(hidden)
-            return QString::number(m_id);
+        return QString::number(m_id);
     }
     inline virtual bool isNDTrick() const
     {
@@ -196,13 +196,13 @@ public:
 
     // @todo: the following two functions should be merged into one.
     inline virtual bool targetFilter(const QList<const Player *> &targets,
-        const Player *to_select, const Player *Self) const
+                                     const Player *to_select, const Player *Self) const
     {
         return m_card->targetFilter(targets, to_select, Self);
     }
 
     inline virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select,
-        const Player *Self, int &maxVotes) const
+                                     const Player *Self, int &maxVotes) const
     {
         Q_ASSERT(m_card != NULL);
         return m_card->targetFilter(targets, to_select, Self, maxVotes);

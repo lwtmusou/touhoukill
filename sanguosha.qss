@@ -10,9 +10,9 @@ QProgressBar::chunk{
     background: #B22222;
 }
 
-QToolTip{ 
+QToolTip{
     background: rgb(0,0,0);
-	border: 2px solid darkkhaki;
+    border: 2px solid darkkhaki;
     padding: 1px;
     border-radius: 3px;
 }
@@ -39,7 +39,7 @@ QTextEdit[description = true]{
 
 /*
 QTextEdit QScrollBar:vertical  {
-	border: 1px solid grey;
+    border: 1px solid grey;
     background-color: rgba(43, 45, 31, 114);
     width: 10px;
      margin: 22px 0 22px 0;
@@ -71,7 +71,7 @@ QScrollBar:sub-page
      subcontrol-origin: margin;
  }
 
-QScrollBar::handle:vertical    {    
+QScrollBar::handle:vertical    {
     border : 2px solid gray;
     border-radius: 6px;
     background-color: solid gray;
@@ -133,7 +133,7 @@ QScrollBar#sgsVSB::add-page:vertical, QScrollBar#sgsVSB::sub-page:vertical {
 QStatusBar::item {
      border: 0px solid grey;
  }
- 
+
 QStatusBar{
     background-image: url(image/system/skill-dock.png);
     color:white;

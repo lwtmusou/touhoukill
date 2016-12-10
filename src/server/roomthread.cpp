@@ -29,10 +29,10 @@ QString LogMessage::toString() const
         if (player != NULL) tos << player->objectName();
 
     return QString("%1:%2->%3:%4:%5:%6")
-        .arg(type)
-        .arg(from ? from->objectName() : "")
-        .arg(tos.join("+"))
-        .arg(card_str).arg(arg).arg(arg2);
+            .arg(type)
+            .arg(from ? from->objectName() : "")
+            .arg(tos.join("+"))
+            .arg(card_str).arg(arg).arg(arg2);
 }
 
 QVariant LogMessage::toJsonValue() const
@@ -50,8 +50,8 @@ QVariant LogMessage::toJsonValue() const
 QString EventTriplet::toString() const
 {
     return QString("event[%1], room[%2]\n")
-        .arg(_m_event)
-        .arg(_m_room->getId());
+            .arg(_m_event)
+            .arg(_m_room->getId());
 }
 
 RoomThread::RoomThread(Room *room)
@@ -356,10 +356,10 @@ void RoomThread::run()
         if (room->getMode() == "06_3v3") {
             foreach (ServerPlayer *player, room->m_players) {
                 switch (player->getRoleEnum()) {
-                    case Player::Lord: warm.prepend(player); break;
-                    case Player::Loyalist: warm.append(player); break;
-                    case Player::Renegade: cool.prepend(player); break;
-                    case Player::Rebel: cool.append(player); break;
+                case Player::Lord: warm.prepend(player); break;
+                case Player::Loyalist: warm.append(player); break;
+                case Player::Renegade: cool.prepend(player); break;
+                case Player::Rebel: cool.append(player); break;
                 }
             }
             order = room->askForOrder(cool.first(), "cool");
@@ -476,9 +476,9 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
             } else {
                 // do a stable sort to r and s since we should judge the trigger order
                 static std::function<bool(const QSharedPointer<SkillInvokeDetail> &, const QSharedPointer<SkillInvokeDetail> &)> preferredTargetLess =
-                    [](const QSharedPointer<SkillInvokeDetail> &a1, const QSharedPointer<SkillInvokeDetail> &a2) {
-                        return a1->preferredTargetLess(*a2);
-                    };
+                        [](const QSharedPointer<SkillInvokeDetail> &a1, const QSharedPointer<SkillInvokeDetail> &a2) {
+                    return a1->preferredTargetLess(*a2);
+                };
 
                 std::stable_sort(r.begin(), r.end(), preferredTargetLess);
                 std::stable_sort(s.begin(), s.end(), preferredTargetLess);

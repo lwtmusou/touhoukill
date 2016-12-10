@@ -234,7 +234,7 @@ void QSanSkillButton::setSkill(const Skill *skill)
 
     Skill::Frequency freq = skill->getFrequency();
     if (freq == Skill::Frequent
-        || (freq == Skill::NotFrequent && skill->inherits("TriggerSkill") && !skill->inherits("EquipSkill") && _m_viewAsSkill == NULL)) {
+            || (freq == Skill::NotFrequent && skill->inherits("TriggerSkill") && !skill->inherits("EquipSkill") && _m_viewAsSkill == NULL)) {
         setStyle(QSanButton::S_STYLE_TOGGLE);
         setState(freq == Skill::Frequent ? QSanButton::S_STATE_DOWN : QSanButton::S_STATE_UP);
         _setSkillType(QSanInvokeSkillButton::S_SKILL_FREQUENT);
@@ -290,9 +290,9 @@ void QSanInvokeSkillButton::_repaint()
         QString skillName = Sanguosha->translate(_m_skill->objectName());
         if (_m_enumWidth != S_WIDTH_WIDE) skillName = skillName.left(2);
         font.paintText(&painter,
-            (ButtonState)i == S_STATE_DOWN ? G_DASHBOARD_LAYOUT.m_skillTextAreaDown[_m_enumWidth] :
-            G_DASHBOARD_LAYOUT.m_skillTextArea[_m_enumWidth],
-            Qt::AlignCenter, skillName);
+                       (ButtonState)i == S_STATE_DOWN ? G_DASHBOARD_LAYOUT.m_skillTextAreaDown[_m_enumWidth] :
+                                                        G_DASHBOARD_LAYOUT.m_skillTextArea[_m_enumWidth],
+                       Qt::AlignCenter, skillName);
     }
     setSize(_m_bgPixmap[0].size());
 }
@@ -431,7 +431,7 @@ void QSanInvokeSkillDock::update()
         //for regular skill
         for (int i = 0; i < rows; i++) {
             int rowTop = (RoomSceneInstance->m_skillButtonSank) ? (-rowH - 2 * (rows - i - 1)) :
-                ((-rows + i) * rowH);
+                                                                  ((-rows + i) * rowH);
             int btnWidth = (_m_width - 20) / btnNum[i];
             for (int j = 0; j < btnNum[i]; j++) {
                 QSanInvokeSkillButton *button = regular_buttons[m++];//all_buttons[m++];
@@ -448,7 +448,7 @@ void QSanInvokeSkillDock::update()
         if (lordskillNum > 3) x_ls++;
         for (int i = 0; i < x_ls; i++) {
             int rowTop = (RoomSceneInstance->m_skillButtonSank) ? (-rowH - 2 * (x_ls - i - 1)) :
-                ((-x_ls + i) * rowH);
+                                                                  ((-x_ls + i) * rowH);
             int btnWidth = _m_width / lordBtnNum[i];
             if (lordBtnNum[i] == 1)
                 btnWidth = _m_width / 2;

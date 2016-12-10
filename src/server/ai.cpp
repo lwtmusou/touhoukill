@@ -342,7 +342,7 @@ const Card *TrustAI::askForSinglePeach(ServerPlayer *dying)
             if (card->isKindOf("Peach"))
                 return card;
             if (card->isKindOf("Analeptic")
-                && (dying == self || (dying->hasLordSkill("yanhui") && self->getKingdom() == "zhan")))
+                    && (dying == self || (dying->hasLordSkill("yanhui") && self->getKingdom() == "zhan")))
                 return card;
         }
     }
