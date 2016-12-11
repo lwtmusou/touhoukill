@@ -306,7 +306,7 @@ sgs.ai_skill_cardask["yeyan-show"] = function(self, data)
 	local target = self.player:getTag("yeyan_target"):toPlayer()
 	local use = data:toCardUse()
 	local showcard = self.player:getTag("yeyan_card"):toCard()
-	local res = youyue_judge(self, target, use.card)
+	local res = yeyan_judge(self, target, use.card)
 
 	if (res == 1 and self:isEnemy(target))  or (res== 2 and self:isFriend(target)) then
 		local cards = {}

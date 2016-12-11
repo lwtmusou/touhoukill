@@ -174,7 +174,7 @@ public:
         death.useViewAsKiller = true;
         data = QVariant::fromValue(death);
 
-        room->touhouLogmessage("#TriggerSkill", invoke->invoker, "tymhwuyu");
+        room->touhouLogmessage("#TriggerSkill", invoke->owner, "tymhwuyu");
         room->notifySkillInvoked(invoke->owner, objectName());
         return false;
     }
