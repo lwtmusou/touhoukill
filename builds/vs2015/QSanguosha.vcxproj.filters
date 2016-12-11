@@ -209,9 +209,6 @@
     <ClCompile Include="..\..\src\ui\rolecombobox.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\dialog\scenario-overview.cpp">
-      <Filter>dialog</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\server\ai.cpp">
       <Filter>server</Filter>
     </ClCompile>
@@ -306,9 +303,6 @@
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="Release\moc_scenario.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_scenario-overview.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="Release\moc_roomthread3v3.cpp">
@@ -567,9 +561,6 @@
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="Debug\moc_roomthread3v3.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_scenario-overview.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="Debug\moc_scenario.cpp">
@@ -987,9 +978,6 @@
       <Filter>dialog</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\dialog\roleassigndialog.h">
-      <Filter>dialog</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\scenario-overview.h">
       <Filter>dialog</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\package\standard-equips.h">

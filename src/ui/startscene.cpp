@@ -21,7 +21,7 @@ StartScene::StartScene()
     QGraphicsSimpleTextItem *website_text = addSimpleText(tr("TouhouSatsu QQ Qun: 384318315"), website_font);
     website_text->setBrush(Qt::white);
     website_text->setPos(Config.Rect.width() / 2 - website_text->boundingRect().width(),
-                         Config.Rect.height() / 2 - website_text->boundingRect().height());
+                         Config.Rect.height() / 2.1 - website_text->boundingRect().height());
     server_log = NULL;
 }
 
@@ -35,10 +35,10 @@ void StartScene::addButton(QAction *action)
 
     QRectF rect = button->boundingRect();
     int n = buttons.length();
-    if (n < 5)
-        button->setPos(-rect.width() - 5, (n - 1) * (rect.height() * 1.2));
+    if (n < 4)
+        button->setPos(-rect.width() - 5, (n - 0.6) * (rect.height() * 1.2));
     else
-        button->setPos(5, (n - 6) * (rect.height() * 1.2));
+        button->setPos(5, (n - 4.6) * (rect.height() * 1.2));
 
     buttons << button;
 }

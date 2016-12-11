@@ -6,7 +6,6 @@
 #include "generaloverview.h"
 #include "cardoverview.h"
 #include "ui_mainwindow.h"
-#include "scenario-overview.h"
 #include "window.h"
 #include "pixmapanimation.h"
 #include "record-analysis.h"
@@ -105,11 +104,9 @@ MainWindow::MainWindow(QWidget *parent)
             << ui->actionStart_Server
             << ui->actionPC_Console_Start
             << ui->actionReplay
-            << ui->actionConfigure
             << ui->actionGeneral_Overview
             << ui->actionCard_Overview
-            << ui->actionScenario_Overview
-            << ui->actionAbout
+            << ui->actionConfigure
             << ui->actionAbout_Us;
 
     foreach(QAction *action, actions)
@@ -366,11 +363,9 @@ void MainWindow::gotoStartScene()
             << ui->actionStart_Server
             << ui->actionPC_Console_Start
             << ui->actionReplay
-            << ui->actionConfigure
             << ui->actionGeneral_Overview
             << ui->actionCard_Overview
-            << ui->actionScenario_Overview
-            << ui->actionAbout
+            << ui->actionConfigure
             << ui->actionAbout_Us;
 
     foreach(QAction *action, actions)
@@ -628,12 +623,6 @@ void MainWindow::on_actionRole_assign_table_triggered()
     window->setZValue(32766);
 
     window->appear();
-}
-
-void MainWindow::on_actionScenario_Overview_triggered()
-{
-    ScenarioOverview *dialog = new ScenarioOverview(this);
-    dialog->show();
 }
 
 BroadcastBox::BroadcastBox(Server *server, QWidget *parent)

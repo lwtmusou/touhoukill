@@ -20,7 +20,7 @@
 <x>0</x>
 <y>0</y>
 <width>600</width>
-<height>23</height>
+<height>22</height>
 </rect>
 </property>
 <widget class="QMenu" name="menuGame">
@@ -40,7 +40,6 @@
 <addaction name="actionConfigure"/>
 <addaction name="actionGeneral_Overview"/>
 <addaction name="actionCard_Overview"/>
-<addaction name="actionScenario_Overview"/>
 <addaction name="actionView_ban_list"/>
 <addaction name="actionBroadcast"/>
 <addaction name="actionReplay_file_convert"/>
