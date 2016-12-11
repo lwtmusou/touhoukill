@@ -30,6 +30,7 @@ void Slash::setNature(DamageStruct::Nature nature)
 bool Slash::IsAvailable(const Player *player, const Card *slash, bool considerSpecificAssignee)
 {
     Slash *newslash = new Slash(Card::NoSuit, 0);
+    newslash->setFlags("Global_SlashAvailabilityChecker");
     newslash->deleteLater();
 #define THIS_SLASH (slash == NULL ? newslash : slash)
     if (player->isCardLimited(THIS_SLASH, Card::MethodUse))

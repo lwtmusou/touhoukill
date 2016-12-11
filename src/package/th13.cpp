@@ -926,7 +926,7 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return  !player->hasFlag("duzhua");
+        return !player->hasFlag("duzhua") && Slash::IsAvailable(player);
     }
 
     virtual const Card *viewAs(const Card *originalCard) const
@@ -974,7 +974,7 @@ public:
 
     virtual int getResidueNum(const Player *from, const Card *card) const
     {
-        if (from->hasSkill("duzhua") && card->getSkillName() == "duzhua")
+        if (from->hasSkill("duzhua") && ((card->getSkillName() == "duzhua") || card->hasFlag("Global_SlashAvailabilityChecker")))
             return 1;
         else
             return 0;

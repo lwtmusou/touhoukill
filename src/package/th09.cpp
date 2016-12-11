@@ -1316,7 +1316,8 @@ void NianliDialog::popup()
         group->addButton(button);
 
         bool can = true;
-        const Card *c = Sanguosha->cloneCard(card_name);
+        Card *c = Sanguosha->cloneCard(card_name);
+        c->setSkillName("nianli");
         if (Self->isCardLimited(c, Card::MethodUse) || !c->isAvailable(Self))
             can = false;
 
@@ -1502,12 +1503,12 @@ class NianliTargetMod : public TargetModSkill
 public:
     NianliTargetMod() : TargetModSkill("#nianlimod")
     {
-        pattern = "Slash,Snatch";
+        pattern = "Slash";
     }
 
     virtual int getResidueNum(const Player *from, const Card *card) const
     {
-        if (from->hasSkill("nianli") && card->getSkillName() == "nianli")
+        if (from->hasSkill("nianli") && ((card->getSkillName() == "nianli") || card->hasFlag("Global_SlashAvailabilityChecker")))
             return 1000;
         else
             return 0;
