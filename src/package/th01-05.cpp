@@ -1507,12 +1507,12 @@ public:
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
     {
-        return !to_select->isEquipped()  && to_select->isBlack()  && selected.length() < 2;
+        return !to_select->isEquipped()  && to_select->isBlack()  && selected.isEmpty();
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const
     {
-        if (cards.length() > 0) {
+        if (cards.length() == 1) {
             ModianCard *card = new ModianCard;
             card->addSubcards(cards);
             return card;
