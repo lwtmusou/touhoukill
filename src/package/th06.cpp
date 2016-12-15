@@ -1042,7 +1042,7 @@ class Beishui : public TriggerSkill
 public:
     Beishui() : TriggerSkill("beishui")
     {
-        events << EventPhaseChanging << PreCardUsed;
+        events << EventPhaseChanging << PreCardUsed << CardResponded;
         view_as_skill = new BeishuiVS;
     }
 
@@ -1065,8 +1065,12 @@ public:
             if (use.card->getSkillName() == objectName())
                 room->setPlayerMark(use.from, "beishui", 1);
         }
+        if (e == CardResponded) {
+            CardResponseStruct response = data.value<CardResponseStruct>();
+            if (response.m_from && response.m_isUse && !response.m_isProvision && response.m_card && response.m_card->getSkillName() == objectName())
+                room->setPlayerMark(response.m_from, "beishui", 1);
+        }
     }
-
 };
 
 
