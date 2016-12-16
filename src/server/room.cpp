@@ -6584,7 +6584,9 @@ void Room::saveWinnerTable(const QString &winner)
         else
             line.append("robot");
         line.append(" ");
-        if (winners.contains(p->getRole()))
+        if (winner == ".")
+            line.append("draw");
+        else if (winners.contains(p->getRole()) || winner == p->objectName())
             line.append("win");
         else
             line.append("lose");
