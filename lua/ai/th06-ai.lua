@@ -484,12 +484,12 @@ function sgs.ai_cardsview_valuable.beishui(self, class_name, player)
 		local dying = player:getRoom():getCurrentDyingPlayer()
 		if not dying  then return nil end
 		card_str =  ("peach:beishui[%s:%s]="):format("to_be_decided", -1)
-	end
-	if class_name == "Jink" then
+	elseif class_name == "Jink" then
 		card_str = ("jink:beishui[%s:%s]="):format("to_be_decided", -1)
-	end
-	if class_name == "Slash" then
+	elseif class_name == "Slash" then
 		card_str = ("slash:beishui[%s:%s]="):format("to_be_decided", -1)
+	else
+		return nil
 	end
 	for _,id in pairs(ids) do
 		if id == ids[#ids] then
