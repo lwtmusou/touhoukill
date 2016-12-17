@@ -968,8 +968,6 @@ public:
     virtual bool isEnabledAtPlay(const Player *player) const
     {
         if (player->getMark("beishui") > 0) return false;
-        int num = qMax(1, player->getHp());
-        if (player->getHandcardNum() + player->getEquips().length() < num) return false;
         if (Slash::IsAvailable(player) || Analeptic::IsAvailable(player))
             return true;
         Card *card = Sanguosha->cloneCard("peach", Card::NoSuit, 0);
@@ -982,8 +980,6 @@ public:
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             return false;
         if (player->getMark("beishui") > 0) return false;
-        int num = qMax(1, player->getHp());
-        if (player->getHandcardNum() + player->getEquips().length() < num) return false;
 
         QStringList checkedPatterns = responsePatterns();
         if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1
