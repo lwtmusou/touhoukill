@@ -2292,6 +2292,8 @@ void Room::changeHero(ServerPlayer *player, const QString &new_general, bool ful
     arg << isSecondaryHero;
     arg << sendLog;
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+    
+    player->tag["init_general"] = player->getGeneralName();
 
     if (isSecondaryHero)
         changePlayerGeneral2(player, new_general);
@@ -6573,7 +6575,11 @@ void Room::saveWinnerTable(const QString &winner)
     line.append("\n");
     QStringList winners = winner.split("+");
     foreach(ServerPlayer *p, getAllPlayers(true)) {
-        line.append(p->getGeneralName());
+        QString originalName = p->tag.value("init_general", QString()).toString();
+        if (originalName != NULL && Sanguosha->getGeneral(originalName))
+            line.append(Sanguosha->getGeneral(originalName)->objectName());
+        else
+            line.append(p->getGeneralName());
         line.append(" ");
         line.append(p->getRole());
         line.append(" ");
