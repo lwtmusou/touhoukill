@@ -317,7 +317,8 @@ void Room::revivePlayer(ServerPlayer *player)
 
         foreach(const Skill *skill, player->getVisibleSkillList()) {
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
-                addPlayerMark(player, skill->getLimitMark());
+                //addPlayerMark(player, skill->getLimitMark());
+                setPlayerMark(player, skill->getLimitMark(), 1);
         }
 
         player->drawCards(4);
@@ -715,7 +716,8 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                 thread->addTriggerSkill(trigger_skill);
             }
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
-                addPlayerMark(player, skill->getLimitMark());
+                //addPlayerMark(player, skill->getLimitMark());
+                setPlayerMark(player, skill->getLimitMark(), 1);
 
             if (skill->isVisible()) {
                 JsonArray args;
@@ -2317,7 +2319,8 @@ void Room::changeHero(ServerPlayer *player, const QString &new_general, bool ful
                     game_start = true;
             }
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
-                addPlayerMark(player, skill->getLimitMark());
+                setPlayerMark(player, skill->getLimitMark(), 1);
+                //addPlayerMark(player, skill->getLimitMark());
             SkillAcquireDetachStruct s;
             s.isAcquire = true;
             s.player = player;
@@ -4894,7 +4897,8 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open)
         thread->addTriggerSkill(trigger_skill);
     }
     if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
-        addPlayerMark(player, skill->getLimitMark());
+        //addPlayerMark(player, skill->getLimitMark());
+        setPlayerMark(player, skill->getLimitMark(), 1);
 
     if (skill->isVisible()) {
         if (open) {
