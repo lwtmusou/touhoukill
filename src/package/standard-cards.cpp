@@ -107,10 +107,9 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
                 room->setPlayerFlag(target, "-SlashAssignee");
     }
 
-    /* actually it's not proper to put the codes here.
-       considering the nasty design of the client and the convenience as well,
-       I just move them here */
-    if (objectName() == "slash" && use.m_isOwnerUse) {
+
+    //since the weapon Fan has changed, this code is no need any more.
+    /*if (objectName() == "slash" && use.m_isOwnerUse) {
         bool has_changed = false;
         QString skill_name = getSkillName();
         if (!skill_name.isEmpty()) {
@@ -142,7 +141,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
                     delete fire_slash;
             }
         }
-    }
+    }*/
     if (((use.card->isVirtualCard() && use.card->subcardsLength() == 0) || use.card->hasFlag("pandu")) && !player->hasFlag("slashDisableExtraTarget")) {
         QList<ServerPlayer *> targets_ts;
         while (true) {
@@ -223,8 +222,8 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
         room->setEmotion(player, "weapon/spear");
     else if (use.to.size() > 1 && player->hasWeapon("Halberd") && player->isLastHandCard(this))
         room->setEmotion(player, "weapon/halberd");
-    else if (use.card->isVirtualCard() && use.card->getSkillName() == "fan")
-        room->setEmotion(player, "weapon/fan");
+    //else if (use.card->isVirtualCard() && use.card->getSkillName() == "fan")
+    //    room->setEmotion(player, "weapon/fan");
 
     if (player->getPhase() == Player::Play && player->hasFlag("Global_MoreSlashInOneTurn") && player->hasWeapon("Crossbow")) {
         player->setFlags("-Global_MoreSlashInOneTurn");

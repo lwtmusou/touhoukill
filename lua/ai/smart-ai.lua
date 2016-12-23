@@ -6218,6 +6218,8 @@ function SmartAI:hasTrickEffective(card, to, from)
 		self.equipsToDec = 0
 		if not eff then return false end
 	end
+	
+	if to:hasArmorEffect("IronArmor") and (card:isKindOf("FireAttack") or card:isKindOf("IronChain")) then return false end
 	--**东方杀相关
 	if card:isKindOf("Duel") or card:isKindOf("FireAttack")  then
 		local fakeDamage = sgs.DamageStruct(card, from, to, 1, self:touhouDamageNature(card,from,to))
@@ -7241,6 +7243,11 @@ function SmartAI:touhouEffectNullify(card,from,to)
 				return true
 			end
 			if card:isKindOf("SavageAssault") or card:isKindOf("ArcheryAttack")then
+				return true
+			end
+		end
+		if to:hasArmorEffect("IronArmor") then
+			if card:isKindOf("NatureSlash") or card:isKindOf("IronChain") or card:isKindOf("FireAttack")then
 				return true
 			end
 		end

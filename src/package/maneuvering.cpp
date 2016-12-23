@@ -105,7 +105,7 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const
     }
 }
 
-class FanSkill : public OneCardViewAsSkill
+/*class FanSkill : public OneCardViewAsSkill
 {
 public:
     FanSkill() : OneCardViewAsSkill("Fan")
@@ -131,6 +131,56 @@ public:
         acard->addSubcard(originalCard->getId());
         acard->setSkillName(objectName());
         return acard;
+    }
+};*/
+class FanSkill : public WeaponSkill
+{
+public:
+    FanSkill() : WeaponSkill("Fan")
+    {
+        events << TargetSpecified;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
+            return QList<SkillInvokeDetail>();
+        if (use.card->isKindOf("Slash") && use.from->isAlive()) {
+            if (use.card->isKindOf("FireSlash") || !use.card->isKindOf("NatureSlash"))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->isKindOf("FireSlash"))
+            invoke->invoker->drawCards(1);
+        else if (!use.card->isKindOf("NatureSlash")) {
+            FireSlash *fire_slash = new FireSlash(use.card->getSuit(), use.card->getNumber());
+            if (use.card->getSubcards().length() > 0)
+                fire_slash->addSubcards(use.card->getSubcards());
+            else {
+                int id = use.card->getEffectiveId();
+                if (id > -1)
+                    fire_slash->addSubcard(id);
+            }
+
+            fire_slash->setSkillName("Fan");
+            //When TargetSpecified, no need to check canSlash()
+            QStringList flags = use.card->getFlags();
+            foreach(const QString &flag, flags)
+                fire_slash->setFlags(flag);
+            invoke->invoker->tag["Jink_" + fire_slash->toString()] = invoke->invoker->tag["Jink_" + use.card->toString()];
+            
+            use.card = fire_slash;
+            data = QVariant::fromValue(use);
+        }
+        room->setEmotion(invoke->invoker, "weapon/fan");
+
+        return false;
     }
 };
 
@@ -187,8 +237,56 @@ GudingBlade::GudingBlade(Suit suit, int number)
 
 
 
+class IronArmorSkill : public ArmorSkill
+{
+public:
+    IronArmorSkill() : ArmorSkill("IronArmor")
+    {
+        events << SlashEffected << CardEffected;
+        frequency = Compulsory;
+    }
 
-class IronArmorSkill : public ProhibitSkill
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        
+        if (triggerEvent == SlashEffected) {
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            if (!equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()))
+                return QList<SkillInvokeDetail>();
+            if (effect.slash->isKindOf("NatureSlash"))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
+        } else if (triggerEvent == CardEffected) {
+            CardEffectStruct effect = data.value<CardEffectStruct>();
+            if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.card != NULL && (effect.card->isKindOf("IronChain") || effect.card->isKindOf("FireAttack")))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
+        }
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        LogMessage log;
+        log.type = "#ArmorNullify";
+        log.from = invoke->invoker;
+        log.arg = objectName();
+        if (triggerEvent == SlashEffected) {
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            log.arg2 = effect.slash->objectName();
+        }
+        else if (triggerEvent == CardEffected) {
+            CardEffectStruct effect = data.value<CardEffectStruct>();
+            log.arg2 = effect.card->objectName();
+        }
+        room->sendLog(log);
+        //armor emotion is not ready
+        room->setEmotion(invoke->invoker, "skill_nullify");
+        invoke->invoker->setFlags("Global_NonSkillNullify");
+        return true;
+    }
+};
+
+/*class IronArmorSkill : public ProhibitSkill
 {
 public:
     IronArmorSkill() : ProhibitSkill("IronArmor")
@@ -204,7 +302,7 @@ public:
         }
         return false;
     }
-};
+};*/
 
 IronArmor::IronArmor(Suit suit, int number)
     : Armor(suit, number)

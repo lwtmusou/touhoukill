@@ -440,6 +440,12 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 			end
 		end
 	end
+	
+	if not ignore_armor and  to:hasArmorEffect("IronArmor")  then
+		if slash:isKindOf("NatureSlash") then return false end
+		if not slash:isKindOf("NatureSlash") and from:hasWeapon("Fan") and self:isFriend(from, to) then return false end
+	end
+
 	local nature = natures[slash:getClassName()]
 	self.equipsToDec = sgs.getCardNumAtCertainPlace(slash, from, sgs.Player_PlaceEquip)
 	if from:hasSkill("zonghuo") then nature = sgs.DamageStruct_Fire end
@@ -3867,8 +3873,10 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 	end
 
 	if ironarmor then
+		if self.player:hasSkill("here") then return ironarmor end
 		for _, enemy in ipairs(self.enemies) do
 			if enemy:hasSkill("zhence") then return ironarmor end
+			if enemy:hasSkill("here") then return ironarmor end
 			if getCardsNum("FireAttack", enemy, self.player) > 0 then return ironarmor end
 			if getCardsNum("FireSlash", enemy, self.player) > 0 then return ironarmor end
 			--if enemy:getFormation():contains(self.player) and getCardsNum("BurningCamps", enemy, self.player) > 0 then return ironarmor end

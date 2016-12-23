@@ -32,17 +32,26 @@ sgs.ai_use_priority.Vine = 0.95
 
 sgs.ai_skill_invoke.Fan = function(self, data)
 	local use = data:toCardUse()
+	if use.card:isKindOf("FireSlash") then
+		return true
+	end
 	for _, target in sgs.qlist(use.to) do
 		if self:isFriend(target) then
 			if not self:damageIsEffective(target, sgs.DamageStruct_Fire) then return true end
 			if target:isChained() and self:isGoodChainTarget(target, nil, nil, nil, use.card) then return true end
+			--local card = self:copyHereSlash(use.card)
+			if self:slashIsEffective(use.card, target, use.from) then
+				return true
+			end
 		else
 			if not self:damageIsEffective(target, sgs.DamageStruct_Fire) then return false end
 			if target:isChained() and not self:isGoodChainTarget(target, nil, nil, nil, use.card) then return false end
+			if target:hasArmorEffect("IronArmor") then return false end
 			if target:isChained() and self:isGoodChainTarget(target, nil, nil, nil, use.card) then return true end
 			if target:hasArmorEffect("Vine") then
 				return true
 			end
+			
 		end
 	end
 	return false
@@ -786,7 +795,7 @@ function SmartAI:useCardFireAttack(fire_attack, use) --ÄáÂê ³Ô¾Æ+»ð¹¥+¶ªÉ± È»ºó¶
 
 	local can_FireAttack_self
 	for _, card in ipairs(canDis) do
-		if (not isCard("Peach", card, self.player) or self:getCardsNum("Peach") >= 3)
+		if (not isCard("Peach", card, self.player) or self:getCardsNum("Peach") >= 3) and not self.player:hasArmorEffect("IronArmor")
 			and (not isCard("Analeptic", card, self.player) or self:getCardsNum("Analeptic") >= 2) then
 			can_FireAttack_self = true
 		end
