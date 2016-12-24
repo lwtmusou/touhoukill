@@ -50,7 +50,7 @@ QWidget *PlayerCardDialog::createAvatar()
     box->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
     QLabel *avatar = new QLabel(box);
-    avatar->setPixmap(QPixmap(G_ROOM_SKIN.getGeneralPixmap(player->getGeneralName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE)));
+    avatar->setPixmap(QPixmap(G_ROOM_SKIN.getGeneralPixmap(player->getGeneralName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE, false)));
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(avatar);
