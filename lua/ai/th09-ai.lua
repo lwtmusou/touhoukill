@@ -315,8 +315,7 @@ sgs.ai_skill_invoke.henyi =function(self,data)
 end
 
 
-
-function SmartAI:toupaiValue(player)
+--[[function SmartAI:toupaiValue(player)
 	if self:touhouHandCardsFix(player) or player:hasSkill("heibai") then
 		return 0
 	end
@@ -342,8 +341,66 @@ function SmartAI:toupaiValue(player)
 		end
 	end
 	return value
+end]]
+function SmartAI:toupaiValue(player)
+	if self:touhouHandCardsFix(player) then
+		return 0
+	end
+
+	local value=0
+	if player:hasSkills("xisan|yongheng|kongpiao") then
+		value= - 20
+	end
+	for _, card in sgs.qlist(player:getHandcards()) do
+		local flag = string.format("%s_%s_%s", "visible", global_room:getCurrent():objectName(), player:objectName())
+		if  card:hasFlag("visible") or card:hasFlag(flag) then
+			if card:isKindOf("BasicCard")  then
+					value=value+10
+				if card:isRed() and player:hasSkill("qucai") then
+					value=value+20
+				end
+				if card:isKindOf("Peach") then
+					value=value+10
+				end
+			end
+		else
+			value=value+5
+		end
+	end
+	return value
 end
-sgs.ai_skill_playerchosen.toupai = function(self, targets)
+sgs.ai_skill_use["@@toupai"] = function(self, prompt)
+	self:sort(self.enemies,"handcard")
+	self.enemies = sgs.reverse(self.enemies)
+	local enemies = self.enemies
+	for _,p in pairs(self.enemies) do
+		if self:touhouHandCardsFix(p) then
+			table.removeOne(enemies, p)
+		end
+	end
+	if #enemies==0 then return "." end
+	enemy_table={}
+	for _,e in pairs (enemies) do
+		local array={player=e, value=self:toupaiValue(e)}
+		table.insert(enemy_table,array)
+	end
+	local compare_func = function(a, b)
+		return a.value > b.value
+	end
+	table.sort(enemy_table, compare_func)
+	local target_objectname = {}
+	for _, t in ipairs(enemy_table) do
+		if t.value < 15 and #target_objectname == 0 then return "." end
+		table.insert(target_objectname, t.player:objectName())
+		if #target_objectname >=2 then break end
+	end
+	if #target_objectname >=0 then
+		return "@ToupaiCard=.->" .. table.concat(target_objectname, "+")
+	end
+	return "."
+end
+sgs.ai_card_intention.ToupaiCard = 50
+--[[sgs.ai_skill_playerchosen.toupai = function(self, targets)
 	self:sort(self.enemies,"handcard")
 	self.enemies = sgs.reverse(self.enemies)
 	local enemies = self.enemies
@@ -371,9 +428,11 @@ sgs.ai_skill_playerchosen.toupai = function(self, targets)
 		return enemy_table[1].player
 	end
 	return nil
-end
-sgs.ai_playerchosen_intention.toupai = 60
+end]]
+--sgs.ai_playerchosen_intention.toupai = 60
 --sgs.ai_skill_askforag.toupai = function(self, card_ids)
+sgs.ai_skill_invoke.qucai = true
+
 
 sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 	local judge=self.player:getTag("feixiang_judge"):toJudge()

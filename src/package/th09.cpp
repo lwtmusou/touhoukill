@@ -567,8 +567,95 @@ public:
     }
 };
 
+ToupaiCard::ToupaiCard()
+{
+    //will_throw = false;
+    //handling_method = Card::MethodNone;
+}
+
+bool ToupaiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    return targets.length() < 2 && to_select != Self && !to_select->isKongcheng();
+}
+
+void ToupaiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
+    foreach(ServerPlayer *p, targets) {
+        if (!p->isKongcheng()) {
+            room->showAllCards(p, source);
+            room->getThread()->delay(1000);
+            room->clearAG(source);
+
+            QList<int>  ids;
+            QList<int>  able;
+            QList<int>  disable;
+            foreach(const Card *c, p->getCards("hs")) {
+                int id = c->getEffectiveId();
+                ids << id;
+                if (c->isKindOf("BasicCard") && source->canDiscard(p, id))
+                    able << id;
+                else
+                    disable << id;
+            }
+            if (!able.isEmpty()) {
+                room->fillAG(ids, source, disable);
+                int id = room->askForAG(source, able, true, objectName());
+                room->clearAG(source);
+                if (id > -1)
+                    room->throwCard(id, p, source);
+            }
+        }
+    }
+}
+
+class ToupaiVS : public ZeroCardViewAsSkill
+{
+public:
+    ToupaiVS() : ZeroCardViewAsSkill("toupai")
+    {
+        response_pattern = "@@toupai";
+    }
 
 
+    virtual const Card *viewAs() const
+    {
+        ToupaiCard *card = new ToupaiCard;
+        return card;
+    }
+};
+
+class Toupai : public PhaseChangeSkill
+{
+public:
+    Toupai() :PhaseChangeSkill("toupai")
+    {
+        view_as_skill = new ToupaiVS;
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        ServerPlayer *aya = data.value<ServerPlayer *>();
+        if (aya->getPhase() == Player::Draw && aya->hasSkill(this)) {
+            foreach(ServerPlayer *p, room->getOtherPlayers(aya)) {
+                if (!p->isKongcheng())
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, aya, aya);
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        return room->askForUseCard(invoke->invoker, "@@toupai", "@toupai");
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const
+    {
+        return true;
+    }
+};
+/*
 class Toupai : public PhaseChangeSkill
 {
 public:
@@ -652,6 +739,50 @@ public:
             player->drawCards(drawNum);
         }
         return true;
+    }
+};
+*/
+class Qucai : public TriggerSkill
+{
+public:
+    Qucai() : TriggerSkill("qucai")
+    {
+        events << CardUsed << CardResponded << CardsMoveOneTime;
+        frequency = Frequent;
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        ServerPlayer *player = room->getCurrent();
+        if (!player || player->isDead() || !player->hasSkill(this))
+            return QList<SkillInvokeDetail>();
+        if (triggerEvent == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isRed() && use.from != player)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+        } else if (triggerEvent == CardResponded) {
+            CardResponseStruct response = data.value<CardResponseStruct>();
+            if (response.m_from && player != response.m_from 
+                && response.m_isUse && response.m_card && response.m_card->isRed())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+        } else if (triggerEvent == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
+            if (from && player != from && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
+                foreach(int id, move.card_ids) {
+                    if (Sanguosha->getCard(id)->isRed())
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+                }
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        invoke->invoker->drawCards(1);
+        return false;
     }
 };
 
@@ -1598,6 +1729,7 @@ TH09Package::TH09Package()
 
     General *aya_sp = new General(this, "aya_sp", "zhan", 4, false);
     aya_sp->addSkill(new Toupai);
+    aya_sp->addSkill(new Qucai);
 
     General *tenshi = new General(this, "tenshi$", "zhan", 4, false);
     tenshi->addSkill(new Feixiang);
@@ -1628,7 +1760,7 @@ TH09Package::TH09Package()
     related_skills.insertMulti("nianli", "#nianlimod");
 
 
-
+    addMetaObject<ToupaiCard>();
     addMetaObject<TianrenCard>();
     addMetaObject<NianliCard>();
 }
