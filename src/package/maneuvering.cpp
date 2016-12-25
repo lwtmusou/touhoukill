@@ -168,8 +168,10 @@ public:
                     fire_slash->addSubcard(id);
             }
 
-            fire_slash->setSkillName("Fan");
-            //When TargetSpecified, no need to check canSlash()
+            // When TargetSpecified, no need to check canSlash()
+            //remain the information of origianl card
+            fire_slash->setSkillName(use.card->getSkillName());
+            //fire_slash->setSkillName("Fan");
             QStringList flags = use.card->getFlags();
             foreach(const QString &flag, flags)
                 fire_slash->setFlags(flag);
