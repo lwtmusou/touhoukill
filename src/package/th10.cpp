@@ -1194,7 +1194,7 @@ public:
         //deal with mark and private pile
         QStringList marks;
         marks << "@clock" << "@kinki" << "@qiannian" << "@shi" << "@ye" << "@yu" << "@zhengti"
-              << "@xinyang";
+              << "@xinyang" << "@ice";
         QStringList disablePiles;
         disablePiles << "wooden_ox";
         foreach(ServerPlayer *p, room->getAlivePlayers()) {
