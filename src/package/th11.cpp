@@ -650,7 +650,7 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.card && damage.card->isKindOf("Slash") && damage.from  && damage.from->isAlive() && damage.to->hasSkill(this) && damage.to->isAlive()) {
-            return QList<SkillInvokeDetail> () << SkillInvokeDetail(this, damage.to, damage.to);
+            return QList<SkillInvokeDetail> () << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.from);
         }
         return QList<SkillInvokeDetail>();
     }
