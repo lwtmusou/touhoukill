@@ -494,6 +494,7 @@ public:
         else if (triggerEvent == ConfirmDamage) {
             DamageStruct damage = data.value<DamageStruct>();
             damage.from = invoke->invoker->isAlive() ? invoke->invoker : NULL;
+            damage.by_user = false;
             data = QVariant::fromValue(damage);
         }
         return false;
