@@ -2013,15 +2013,47 @@ void YinyangCard::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     const Card *card1 = NULL;
     const Card *card2 = NULL;
-    if (effect.to->canDiscard(effect.to, "hs"))
+    if (effect.to->canDiscard(effect.to, "hs")) {
         card1 = room->askForCard(effect.to, ".|.|.|hand!", "@yinyang_discard");
+        if (!card1) {
+            // force discard!!!
+            QList<const Card *> hc = effect.to->getHandcards();
+            foreach(const Card *c, hc) {
+                if (effect.to->isJilei(c))
+                    hc.removeOne(c);
+            }
+
+            if (hc.length() > 0) {
+                int x = qrand() % hc.length();
+                card1 = hc.value(x);
+                room->throwCard(card1, effect.to);
+            }
+        }
+    }
+        
+
     if (card1) {
         effect.from->tag["yinyang_card"] = QVariant::fromValue(card1);
         effect.from->tag["yinyang_target"] = QVariant::fromValue(effect.to);
     }
 
-    if (effect.from->canDiscard(effect.from, "hs"))
+    if (effect.from->canDiscard(effect.from, "hs")) {
         card2 = room->askForCard(effect.from, ".|.|.|hand!", "@yinyang_discard");
+        if (!card2) {
+            // force discard!!!
+            QList<const Card *> hc = effect.from->getHandcards();
+            foreach(const Card *c, hc) {
+                if (effect.to->isJilei(c))
+                    hc.removeOne(c);
+            }
+
+            if (hc.length() > 0) {
+                int x = qrand() % hc.length();
+                card2 = hc.value(x);
+                room->throwCard(card2, effect.from);
+            }
+        }
+    }
     effect.from->tag.remove("yinyang_card");
     effect.from->tag.remove("yinyang_target");
 
