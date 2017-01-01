@@ -8,3 +8,4 @@
 8 fix 武神和 damage.by_user
 9 fix 斩妄
 10 fix 阴阳强制弃牌（否则阴阳询问时掉线会产生问题）
+11 图书nerf

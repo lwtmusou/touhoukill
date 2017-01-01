@@ -581,7 +581,7 @@ public:
 
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
-        if (!use.card->isNDTrick())
+        if (!use.card->isNDTrick() || use.from->getPhase() != Player::Play)
             return d;
         foreach(ServerPlayer *p, room->getAllPlayers()) {
             if (p->hasSkill(this) && p !=use.from && !p->hasFlag(objectName()))
