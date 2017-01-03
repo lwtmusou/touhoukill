@@ -267,6 +267,120 @@ public:
     }
 };
 
+class JinghuaVS : public OneCardViewAsSkill
+{
+public:
+    JinghuaVS() : OneCardViewAsSkill("jinghua")
+    {
+        filter_pattern = ".|red|.|.";
+        response_pattern = "nullification";
+        response_or_use = true;
+    }
+
+    const Card *viewAs(const Card *originalCard) const
+    {
+        Card *ncard = new Nullification(originalCard->getSuit(), originalCard->getNumber());
+        ncard->addSubcard(originalCard);
+        ncard->setSkillName(objectName());
+        return ncard;
+    }
+
+    bool isEnabledAtNullification(const ServerPlayer *player) const
+    {
+        foreach(const Card *equip, player->getEquips()) {
+            if (equip->isRed()) return true;
+        }
+        return !player->isKongcheng() || !player->getHandPile().isEmpty();
+    }
+};
+
+class Jinghua : public TriggerSkill
+{
+public:
+    Jinghua() : TriggerSkill("jinghua")
+    {
+        events << CardUsed;
+        view_as_skill = new JinghuaVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.from->hasSkill(this) && use.card->isKindOf("Nullification")) {
+            //room->setTag("NullifiationTarget", data);
+            CardEffectStruct effect = room->getTag("NullifiationTarget").value<CardEffectStruct>();
+            if (effect.card) {
+                QList<int> ids;
+                if (effect.card->isVirtualCard())
+                    ids = effect.card->getSubcards();
+                else
+                    ids << effect.card->getEffectiveId();
+
+                if (ids.isEmpty()) return QList<SkillInvokeDetail>();
+                
+                foreach(int id, ids) {
+                    if (effect.card->isKindOf("Nullification")) {
+                        if (room->getCardPlace(id) != Player::DiscardPile) return QList<SkillInvokeDetail>();
+                    } else {
+                        if (room->getCardPlace(id) != Player::PlaceTable) return QList<SkillInvokeDetail>();
+                    }  
+                }
+            }
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardEffectStruct effect = room->getTag("NullifiationTarget").value<CardEffectStruct>();
+        QList<int> ids;
+        if (effect.card->isVirtualCard())
+            ids = effect.card->getSubcards();
+        else
+            ids << effect.card->getEffectiveId();
+        room->moveCardsToEndOfDrawpile(ids, true);
+        if (ids.length() > 1) {
+            //QList<int> card_ids = room->getNCards(ids.length(), false, true);
+            room->askForGuanxing(invoke->invoker, ids, Room::GuanxingDownOnly, objectName());
+        }
+        return false;
+    }
+};
+
+
+class Weiguang : public TriggerSkill
+{
+public:
+    Weiguang() : TriggerSkill("weiguang")
+    {
+        events << TargetSpecified;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if ((use.card->isNDTrick() && !use.card->isKindOf("Nullification"))) {
+            QList<SkillInvokeDetail> d;
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if (p->isAlive() && p->hasSkill(this) && (p == use.from || use.to.contains(p)))
+                    d << SkillInvokeDetail(this, p, p);
+            }
+            return d;
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardsMoveStruct move;
+        move.to = invoke->invoker;
+        move.to_place = Player::PlaceHand;
+        move.card_ids << room->drawCard(true);
+        room->moveCardsAtomic(move, false);
+        return false;
+    }
+};
 
 
 class Zhengyi : public TriggerSkill
@@ -1173,8 +1287,10 @@ TH12Package::TH12Package()
     nue->addSkill(new Weizhuang);
 
     General *toramaru = new General(this, "toramaru", "xlc", 4, false);
-    toramaru->addSkill(new Zhengyi);
-    toramaru->addSkill(new Baota);
+    toramaru->addSkill(new Jinghua);
+    toramaru->addSkill(new Weiguang);
+    //toramaru->addSkill(new Zhengyi);
+    //toramaru->addSkill(new Baota);
 
     General *murasa = new General(this, "murasa", "xlc", 4, false);
     murasa->addSkill(new Shuinan);

@@ -1178,6 +1178,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
                 return !_askForNullification(nul, to, to, !positive, aiHelper);
         }
     }
+    setTag("NullifiationTarget", data);
 
     foreach (ServerPlayer *player, m_alivePlayers) {
         if (player->hasNullification()) {
@@ -1264,7 +1265,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
         if (result) {
             result = !_askForNullification(card, repliedPlayer, to, !positive, aiHelper);
         } else {
-            result = _askForNullification(card, from, to, positive, aiHelper);
+            result = _askForNullification(trick, from, to, positive, aiHelper);
         }
     }
     return result;
