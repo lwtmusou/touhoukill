@@ -339,6 +339,10 @@ public:
             ids = effect.card->getSubcards();
         else
             ids << effect.card->getEffectiveId();
+        //CardsMoveStruct move;
+        //move.to_place = Player::DrawPile;
+        //move.card_ids << ids;
+        //room->moveCardsAtomic(move, false);
         room->moveCardsToEndOfDrawpile(ids, true);
         if (ids.length() > 1) {
             //QList<int> card_ids = room->getNCards(ids.length(), false, true);

@@ -450,12 +450,13 @@ public:
     }
 };
 
+//change damage.from in gamerule  SlashHit
 class Wushen : public TriggerSkill
 {
 public:
     Wushen() : TriggerSkill("wushen")
     {
-        events << TargetSpecified << ConfirmDamage;
+        events << TargetSpecified;
         frequency = Compulsory;
     }
 
@@ -469,7 +470,7 @@ public:
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, source, source, NULL, true);
             }
         }
-        else if (triggerEvent == ConfirmDamage) {
+        /*else if (triggerEvent == ConfirmDamage) {
             DamageStruct damage = data.value<DamageStruct>();
             if (!damage.card || !damage.card->isKindOf("Slash"))
                 return QList<SkillInvokeDetail>();
@@ -479,24 +480,35 @@ public:
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, p, p, NULL, true);
                 }
             }
-        }
+        }*/
         return QList<SkillInvokeDetail>();
     }
 
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (triggerEvent == TargetSpecified) {
-            room->notifySkillInvoked(invoke->invoker, objectName());
-            room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
             CardUseStruct use = data.value<CardUseStruct>();
             use.card->setFlags("WushenDamage_" + invoke->invoker->objectName());
+
+
+            room->notifySkillInvoked(invoke->invoker, objectName());
+            //room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+            //room->touhouLogmessage("#WushenChange", invoke->invoker, objectName());
+            LogMessage log;
+            log.type = "$WushenChange";
+            log.arg = objectName();
+            log.from = invoke->invoker;
+            log.card_str = use.card->toString();
+            room->sendLog(log);
+
+            
         }
-        else if (triggerEvent == ConfirmDamage) {
+        /*else if (triggerEvent == ConfirmDamage) {
             DamageStruct damage = data.value<DamageStruct>();
             damage.from = invoke->invoker->isAlive() ? invoke->invoker : NULL;
             damage.by_user = false;
             data = QVariant::fromValue(damage);
-        }
+        }*/
         return false;
     }
 };

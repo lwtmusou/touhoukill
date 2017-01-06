@@ -62,7 +62,7 @@ return{
 	["#YewangTrigger"]= "%from 的 “%arg” 被触发，减少了 %arg2 点伤害。",
 
 --*************************************
-	--shen003  势力：神 4血
+	--shen003  势力：神 9血
 	["cirno_god"] = "神 琪露诺",
 	["&cirno_god"] = "神琪露诺",
 	["#cirno_god"] = "最强",
@@ -85,7 +85,8 @@ return{
 	["ice_slash"] = "冰杀",
 	["#Bingfeng"] = "%from 的“%arg”被触发， 减少了 %arg2 点 对 %to 的伤害",
 	["#BingfengWin"] = "%from 的 身份是 “%arg”， 其阵营获胜",
-
+    ["$WushenChange"] = "%from 的“%arg”被触发， 其将成为 %card 的伤害来源。",
+	
 --*************************************
 	--shen004  势力：神 4血
 	["utsuho_god"] = "神 灵乌路空",

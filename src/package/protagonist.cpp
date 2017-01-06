@@ -226,7 +226,7 @@ public:
     {
         if (triggerEvent == ConfirmDamage) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.card && damage.card->hasFlag("mofa_card") && !damage.card->hasFlag("mofa_" + damage.to->objectName()))
+            if (damage.card && damage.card->hasFlag("mofa_card"))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
         }
         return QList<SkillInvokeDetail>();
@@ -244,8 +244,6 @@ public:
                 room->touhouLogmessage("#mofa_damage", marisa, QString::number(damage.damage + 1), logto, QString::number(damage.damage));
             }
             damage.damage = damage.damage + 1;
-            //prevent trigger repeatly
-            room->setCardFlag(damage.card, "mofa_" + damage.to->objectName());
             data = QVariant::fromValue(damage);
         }
         return false;
