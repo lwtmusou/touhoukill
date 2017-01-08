@@ -307,7 +307,6 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from->hasSkill(this) && use.card->isKindOf("Nullification")) {
-            //room->setTag("NullifiationTarget", data);
             CardEffectStruct effect = room->getTag("NullifiationTarget").value<CardEffectStruct>();
             if (effect.card) {
                 QList<int> ids;
@@ -339,11 +338,19 @@ public:
             ids = effect.card->getSubcards();
         else
             ids << effect.card->getEffectiveId();
+
         //CardsMoveStruct move;
         //move.to_place = Player::DrawPile;
         //move.card_ids << ids;
         //room->moveCardsAtomic(move, false);
         room->moveCardsToEndOfDrawpile(ids, true);
+
+        LogMessage l;
+        l.type = "$jinghua";
+        l.from = invoke->invoker;
+        l.card_str = IntList2StringList(ids).join("+");
+        room->sendLog(l);
+
         if (ids.length() > 1) {
             //QList<int> card_ids = room->getNCards(ids.length(), false, true);
             room->askForGuanxing(invoke->invoker, ids, Room::GuanxingDownOnly, objectName());
@@ -375,7 +382,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         CardsMoveStruct move;
         move.to = invoke->invoker;
@@ -847,6 +854,179 @@ public:
 
 
 
+
+class Xunbao : public TriggerSkill
+{
+public:
+    Xunbao() : TriggerSkill("xunbao")
+    {
+        events << CardUsed << CardResponded;
+        frequency = Frequent;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
+    {
+        if (e == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from->hasSkill(this) && use.from->isAlive())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+        }
+        if (e == CardResponded) {
+            CardResponseStruct response = data.value<CardResponseStruct>();
+            if (response.m_isUse && response.m_from && response.m_from->isAlive() &&response.m_from->hasSkill(this))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, response.m_from, response.m_from);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        const Card *card = NULL;
+        if (e == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            card = use.card;
+        }
+        if (e == CardResponded) {
+            CardResponseStruct response = data.value<CardResponseStruct>();
+            card = response.m_card;
+        }
+
+        QList<int> ids;
+        //ids << room->getDrawPile().last();
+        ids << room->drawCard(true);
+
+        room->fillAG(ids, invoke->invoker);
+        int id = room->askForAG(invoke->invoker, ids, true, objectName());
+        room->clearAG(invoke->invoker);
+
+        if (id > -1) {
+            CardsMoveStruct move(ids, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, invoke->invoker->objectName(), objectName(), QString()));
+            room->moveCardsAtomic(move, true);
+
+            if (Sanguosha->getCard(id)->getSuit() == card->getSuit()) {
+                DummyCard dummy(ids);
+                invoke->invoker->obtainCard(&dummy);
+            }
+            else {
+                CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, invoke->invoker->objectName(), objectName(), QString());
+                DummyCard dummy(ids);
+                room->throwCard(&dummy, reason, NULL);
+            }
+        } else {
+            room->askForGuanxing(invoke->invoker, ids, Room::GuanxingDownOnly, objectName());
+        }
+        return false;
+    }
+
+
+};
+
+class LingbaiVS : public OneCardViewAsSkill
+{
+public:
+    LingbaiVS() : OneCardViewAsSkill("lingbai")
+    {
+        response_or_use = true;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return player->getMark("@lingbai-trick") > 0 && Slash::IsAvailable(player);
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        if (player->getMark("@lingbai-trick") > 0 && (matchAvaliablePattern("slash", pattern) || matchAvaliablePattern("jink", pattern)))
+            return true;
+        if (player->getMark("@lingbai-basic") > 0 && matchAvaliablePattern("nullification", pattern))
+            return true;
+        return false;
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    {
+        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+        bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+        if (play || matchAvaliablePattern("slash", pattern) || matchAvaliablePattern("jink", pattern))
+            return to_select->isNDTrick();
+        else if (matchAvaliablePattern("nullification", pattern))
+            return to_select->isKindOf("BasicCard");
+        return false;
+    }
+
+    const Card *viewAs(const Card *originalCard) const
+    {
+        
+        bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+        if (play || matchAvaliablePattern("slash", pattern)) {
+            Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
+            slash->addSubcard(originalCard);
+            slash->setSkillName(objectName());
+            return slash;
+        } else if (matchAvaliablePattern("jink", pattern)) {
+            Jink *jink = new Jink(originalCard->getSuit(), originalCard->getNumber());
+            jink->addSubcard(originalCard);
+            jink->setSkillName(objectName());
+            return jink;
+
+        } else if (matchAvaliablePattern("nullification", pattern)) {
+            Card *ncard = new Nullification(originalCard->getSuit(), originalCard->getNumber());
+            ncard->addSubcard(originalCard);
+            ncard->setSkillName(objectName());
+            return ncard;
+        }
+        return NULL;
+    }
+
+    bool isEnabledAtNullification(const ServerPlayer *player) const
+    {
+        if (player->getMark("@lingbai-basic") == 0) return false;
+        return !player->isKongcheng() || !player->getHandPile().isEmpty();
+    }
+};
+
+class Lingbai : public TriggerSkill
+{
+public:
+    Lingbai() : TriggerSkill("lingbai")
+    {
+        events << TargetConfirmed << EventPhaseChanging;
+        view_as_skill = new LingbaiVS;
+    }
+
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == TargetConfirmed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isNDTrick()) {
+                foreach(ServerPlayer *p, use.to) {
+                    if (p->hasSkill(this))
+                        room->setPlayerMark(p, "@lingbai-trick", 1);
+                }
+            }  else if (use.card->isKindOf("BasicCard")) {
+                foreach(ServerPlayer *p, use.to) {
+                    if (p->hasSkill(this))
+                        room->setPlayerMark(p, "@lingbai-basic", 1);
+                }
+            }
+        } else if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    room->setPlayerMark(p, "@lingbai-trick", 0);
+                    room->setPlayerMark(p, "@lingbai-basic", 0);
+                }
+            }
+        }
+    }
+};
+
+
+
+
+
 class Yiwang : public TriggerSkill
 {
 public:
@@ -1305,8 +1485,10 @@ TH12Package::TH12Package()
     ichirin->addSkill(new Yunshang);
 
     General *nazrin = new General(this, "nazrin", "xlc", 3, false);
-    nazrin->addSkill(new Souji);
-    nazrin->addSkill(new Tansuo);
+    nazrin->addSkill(new Xunbao);
+    nazrin->addSkill(new Lingbai);
+    //nazrin->addSkill(new Souji);
+    //nazrin->addSkill(new Tansuo);
 
     General *kogasa = new General(this, "kogasa", "xlc", 3, false);
     kogasa->addSkill(new Yiwang);

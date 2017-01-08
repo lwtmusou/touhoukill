@@ -899,6 +899,200 @@ public:
 
 
 
+YegeCard::YegeCard()
+{
+    handling_method = Card::MethodNone;
+}
+
+bool YegeCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    if (!targets.isEmpty()) return false;
+    if (to_select->getPhase() != Player::Play) return false;
+    Indulgence *indl = new Indulgence(getSuit(), getNumber());
+    indl->addSubcard(getEffectiveId());
+    indl->setSkillName("yege");
+    indl->deleteLater();
+
+    bool canUse = !Self->isLocked(indl);
+    if (canUse &&  to_select != Self
+        && !to_select->containsTrick("indulgence") && !Self->isProhibited(to_select, indl))
+        return true;
+    return false;
+}
+
+const Card *YegeCard::validate(CardUseStruct &cardUse) const
+{
+    ServerPlayer *to = cardUse.to.first();
+    if (!to->containsTrick("indulgence")) {
+        Indulgence *indulgence = new Indulgence(getSuit(), getNumber());
+        indulgence->addSubcard(getEffectiveId());
+        indulgence->setSkillName("yege");
+        return indulgence;
+    }
+    return this;
+}
+
+class YegeVS : public OneCardViewAsSkill
+{
+public:
+    YegeVS() : OneCardViewAsSkill("yege")
+    {
+        filter_pattern = ".|.|.|hand";
+        response_or_use = true;
+        response_pattern = "@@yege";
+    }
+
+
+    virtual const Card *viewAs(const Card *originalCard) const
+    {
+        if (originalCard) {
+            YegeCard *indl = new YegeCard;
+            indl->addSubcard(originalCard);
+            indl->setSkillName(objectName());
+            return indl;
+        }
+        return NULL;
+    }
+};
+
+class Yege : public TriggerSkill
+{
+public:
+    Yege() : TriggerSkill("yege")
+    {
+        events << EventPhaseStart;
+        view_as_skill = new YegeVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        ServerPlayer *player = data.value<ServerPlayer *>();
+        if (player->getPhase() != Player::Play) return QList<SkillInvokeDetail>();
+
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->getAllPlayers()) {
+            foreach(const Card *c, p->getCards("j")) {
+                if (c->isKindOf("Indulgence"))
+                    return QList<SkillInvokeDetail>();
+            }
+        }
+
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            if (p != player)
+                d << SkillInvokeDetail(this, p, p, NULL, false, player);
+       } 
+       return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        QString prompt = "@yege:" + invoke->preferredTarget->objectName();
+        const Card *card = room->askForUseCard(invoke->invoker, "@@yege", prompt);
+        return card != NULL;
+    }
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    { 
+       invoke->invoker->drawCards(1);
+       return false;
+    }
+};
+
+
+class Laolong : public TriggerSkill
+{
+public:
+    Laolong() : TriggerSkill("laolong")
+    {
+        events << DamageCaused << DamageInflicted;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (e == DamageCaused) {
+            if (damage.from && damage.to  && damage.to != damage.from 
+                && damage.from->hasSkill(this) && damage.from->isAlive()) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    foreach(const Card *c, p->getCards("j")) {
+                        if (c->isBlack() && damage.from->canDiscard(p, c->getEffectiveId()))
+                            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from);
+                    }
+                }
+            }
+        }
+        if (e == DamageInflicted) {
+            if (damage.from && damage.to  && damage.to != damage.from 
+                && damage.to->hasSkill(this) && damage.to->isAlive()) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    foreach(const Card *c, p->getCards("j")) {
+                        if (c->isRed() && damage.to->canDiscard(p, c->getEffectiveId()))
+                            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
+                    }
+                }
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        QList<ServerPlayer *> targets;
+        foreach(ServerPlayer *p, room->getAllPlayers()) {
+            foreach(const Card *c, p->getCards("j")) {
+                if (((e == DamageCaused && c->isBlack()) || e == DamageInflicted && c->isRed())
+                    && invoke->invoker->canDiscard(p, c->getEffectiveId())) {
+                    targets << p;
+                    break;
+                }
+            }
+        }
+        DamageStruct damage = data.value<DamageStruct>();
+        QString prompt = (e == DamageCaused) ? ("@laolong1:" + damage.to->objectName() + ":" + QString::number(damage.damage)) : ("@laolong2:" + damage.from->objectName() + ":" + QString::number(damage.damage));
+
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), prompt, true, true);
+        if (target) {
+            QList<int> disable;
+            foreach(const Card *c, target->getCards("j")) {
+                if ((e == DamageCaused && c->isRed()) || (e == DamageInflicted && c->isBlack())
+                    || !invoke->invoker->canDiscard(target, c->getEffectiveId())) {
+                    disable << c->getEffectiveId();
+                }
+            }
+            int card_id = room->askForCardChosen(invoke->invoker, target, "j", objectName(), false, Card::MethodDiscard, disable);
+            room->throwCard(card_id, (target->getJudgingAreaID().contains(card_id)) ? NULL : target, invoke->invoker);
+            return true;
+        }
+        return false;
+    }
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        int record = damage.damage;
+        QList<ServerPlayer *> logto;
+        logto << damage.to;
+        if (e == DamageInflicted)
+            damage.damage = damage.damage - 1;
+            
+        if (e == DamageCaused)
+            damage.damage = damage.damage + 1;
+        room->touhouLogmessage("#laolong_damage", damage.from, QString::number(damage.damage), logto, QString::number(record));
+        data = QVariant::fromValue(damage);
+        if (damage.damage == 0)
+            return true;
+        return false;
+    }
+};
+
+
+
+
+
+
+
+
+
 GeshengCard::GeshengCard()
 {
     handling_method = Card::MethodNone;
@@ -1604,8 +1798,10 @@ TH08Package::TH08Package()
     related_skills.insertMulti("buxian", "#buxian");
 
     General *mystia = new General(this, "mystia", "yyc", 3, false);
-    mystia->addSkill(new Gesheng);
-    mystia->addSkill(new Yemang);
+    mystia->addSkill(new Yege);
+    mystia->addSkill(new Laolong);
+    //mystia->addSkill(new Gesheng);
+    //mystia->addSkill(new Yemang);
 
     General *wriggle = new General(this, "wriggle", "yyc", 3, false);
     wriggle->addSkill(new Yinghuo);
@@ -1624,6 +1820,7 @@ TH08Package::TH08Package()
     addMetaObject<KuangzaoCard>();
     addMetaObject<BuxianCard>();
     addMetaObject<XingyunCard>();
+    addMetaObject<YegeCard>();
     addMetaObject<GeshengCard>();
     addMetaObject<ChuangshiCard>();
     addMetaObject<HuweiCard>();
