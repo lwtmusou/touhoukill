@@ -456,6 +456,18 @@ sgs.ai_skill_use["@@gesheng"] = function(self, prompt)
 	end
 
 end
+sgs.ai_skill_use["@@yege"] = function(self, prompt)
+	local current = self.room:getCurrent()
+	if self:isEnemy(current) then
+		local cards = self.player:getHandcards()
+		cards=self:touhouAppendExpandPileToList(self.player,cards)
+		cards = sgs.QList2Table(cards)
+		self:sortByUseValue(cards)
+		if #cards == 0 then return "." end	
+		return "@YegeCard=".. cards[1]:getId() .."->" .. current:objectName()
+	end
+	return "."
+end
 
 sgs.ai_skill_cardask["@yinghuo"] = function(self, data)
 	local ecards=self.player:getCards("hs")
