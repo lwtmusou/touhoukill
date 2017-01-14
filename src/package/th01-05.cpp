@@ -1448,47 +1448,35 @@ bool ModianCard::targetFilter(const QList<const Player *> &targets, const Player
 void ModianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     ServerPlayer *alice = targets.first();
-    if (alice->hasSkill("modian")) {
+    room->setPlayerFlag(alice, "modianInvoked");
+    room->notifySkillInvoked(alice, "modian");
 
-        room->setPlayerFlag(alice, "modianInvoked");
-        room->notifySkillInvoked(alice, "modian");
+    CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, "", NULL, "modian", "");
+    alice->addToPile("modian", subcards, true, reason);
 
-        CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, "", NULL, "modian", "");
-        alice->addToPile("modian", subcards, true, reason);
+    if (alice->getPile("modian").length() > alice->getHp()) {
+        const Card *c = room->askForCard(alice, "@@modian!", "@modian", QVariant(), Card::MethodNone, NULL, false, "modian");
+        // force discard!!!
+        if (c == NULL) {
+            QList<int> modians = alice->getPile("modian");
 
-        QList<ServerPlayer *> alices;
-        QList<ServerPlayer *> players = room->getAllPlayers();
-        foreach(ServerPlayer *p, players) {
-            if (p->hasSkill("modian") && !p->hasFlag("modianInvoked"))
-                alices << p;
+            int x = qrand() % modians.length();
+            int id = modians.value(x);
+            c = Sanguosha->getCard(id);
         }
-        if (alices.isEmpty())
-            room->setPlayerFlag(source, "Forbidmodian");
 
-        if (alice->getPile("modian").length() > alice->getHp()) {
-            const Card *c = room->askForCard(alice, "@@modian!", "@modian", QVariant(), Card::MethodNone, NULL, false, "modian");
-            // force discard!!!
-            if (c == NULL) {
-                QList<int> modians = alice->getPile("modian");
+        CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
+        room->throwCard(c, reason, NULL);
 
-                int x = qrand() % modians.length();
-                int id = modians.value(x);
-                c = Sanguosha->getCard(id);
-            }
-
-            CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
-            room->throwCard(c, reason, NULL);
-
-            QStringList choices;
-            choices << "draw";
-            if (alice->isWounded())
-                choices << "recover";
-            QString choice = room->askForChoice(alice, "modian", choices.join("+"));
-            if (choice == "draw")
-                alice->drawCards(1);
-            else
-                room->recover(alice, RecoverStruct());
-        }
+        QStringList choices;
+        choices << "draw";
+        if (alice->isWounded())
+            choices << "recover";
+        QString choice = room->askForChoice(alice, "modian", choices.join("+"));
+        if (choice == "draw")
+            alice->drawCards(1);
+        else
+            room->recover(alice, RecoverStruct());
     }
 }
 
@@ -1502,7 +1490,11 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return !player->hasFlag("Forbidmodian");
+        foreach(const Player *p, player->getAliveSiblings()) {
+            if (p->hasSkill("modian") && !p->hasFlag("modianInvoked"))
+                return true;
+        }
+        return false;
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
@@ -1528,12 +1520,15 @@ public:
     {
         expand_pile = "modian";
         response_pattern = "@@modian!";
-        //filter_pattern = ".|.|.|modian";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return !player->hasFlag("Forbidmodian");
+        foreach(const Player *p, player->getAliveSiblings()) {
+            if (p->hasSkill("modian") && !p->hasFlag("modianInvoked"))
+                return true;
+        }
+        return false;
     }
 
     virtual bool viewFilter(const QList<const Card*> &, const Card*to_select) const
@@ -1596,8 +1591,6 @@ public:
                 foreach(ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasFlag("modianInvoked"))
                         room->setPlayerFlag(p, "-modianInvoked");
-                    if (p->hasFlag("Forbidmodian"))
-                        room->setPlayerFlag(p, "-Forbidmodian");
                 }
             }
         }

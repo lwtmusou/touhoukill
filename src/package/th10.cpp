@@ -114,21 +114,11 @@ GongfengCard::GongfengCard()
 void GongfengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     ServerPlayer *kanako = targets.first();
-    if (kanako->hasLordSkill("gongfeng")) {
-        room->setPlayerFlag(kanako, "gongfengInvoked");
+    room->setPlayerFlag(kanako, "gongfengInvoked");
 
-        room->notifySkillInvoked(kanako, "gongfeng");
-        CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), kanako->objectName(), "gongfeng", QString());
-        room->obtainCard(kanako, this, reason);
-        QList<ServerPlayer *> kanakos;
-        QList<ServerPlayer *> players = room->getOtherPlayers(source);
-        foreach (ServerPlayer *p, players) {
-            if (p->hasLordSkill("gongfeng") && !p->hasFlag("gongfengInvoked"))
-                kanakos << p;
-        }
-        if (kanakos.isEmpty())
-            room->setPlayerFlag(source, "Forbidgongfeng");
-    }
+    room->notifySkillInvoked(kanako, "gongfeng");
+    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), kanako->objectName(), "gongfeng", QString());
+    room->obtainCard(kanako, this, reason); 
 }
 
 bool GongfengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -148,7 +138,12 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return  !player->hasFlag("Forbidgongfeng") && shouldBeVisible(player);
+        if (!shouldBeVisible(player)) return false;
+        foreach(const Player *p, player->getAliveSiblings()) {
+            if (p->hasLordSkill("gongfeng") && !p->hasFlag("gongfengInvoked"))
+                return true;
+        }
+        return false;
     }
 
     virtual bool shouldBeVisible(const Player *Self) const
@@ -209,8 +204,6 @@ public:
                 foreach(ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasFlag("gongfengInvoked"))
                         room->setPlayerFlag(p, "-gongfengInvoked");
-                    if (p->hasFlag("Forbidgongfeng"))
-                        room->setPlayerFlag(p, "-Forbidgongfeng");
                 }
             }
         }

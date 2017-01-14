@@ -262,21 +262,11 @@ WuyuCard::WuyuCard()
 void WuyuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     ServerPlayer *marisa = targets.first();
-    if (marisa->hasLordSkill("wuyu")) {
-        room->setPlayerFlag(marisa, "wuyuInvoked");
+    room->setPlayerFlag(marisa, "wuyuInvoked");
 
-        room->notifySkillInvoked(marisa, "wuyu");
-        CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), marisa->objectName(), "wuyu", QString());
-        room->obtainCard(marisa, this, reason);
-        QList<ServerPlayer *> marisas;
-        QList<ServerPlayer *> players = room->getOtherPlayers(source);
-        foreach (ServerPlayer *p, players) {
-            if (p->hasLordSkill("wuyu") && !p->hasFlag("wuyuInvoked"))
-                marisas << p;
-        }
-        if (marisas.isEmpty())
-            room->setPlayerFlag(source, "Forbidwuyu");
-    }
+    room->notifySkillInvoked(marisa, "wuyu");
+    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), marisa->objectName(), "wuyu", QString());
+    room->obtainCard(marisa, this, reason);
 }
 
 bool WuyuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -297,7 +287,11 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return !player->hasFlag("Forbidwuyu");
+        foreach(const Player *p, player->getAliveSiblings()) {
+            if (p->hasLordSkill("wuyu") && !p->hasFlag("wuyuInvoked"))
+                return true;
+        }
+        return false;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const
@@ -351,8 +345,6 @@ public:
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasFlag("wuyuInvoked"))
                         room->setPlayerFlag(p, "-wuyuInvoked");
-                    if (p->hasFlag("Forbidwuyu"))
-                        room->setPlayerFlag(p, "-Forbidwuyu");
                 }
             }
         }
@@ -384,15 +376,6 @@ void SaiqianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
         room->notifySkillInvoked(reimu, "saiqian");
         CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), reimu->objectName(), "saiqian", QString());
         room->obtainCard(reimu, this, reason, false);
-        QList<ServerPlayer *> reimus;
-        QList<ServerPlayer *> players = room->getOtherPlayers(source);
-        foreach (ServerPlayer *p, players) {
-            if (p->hasSkill("saiqian") && !p->hasFlag("saiqianInvoked"))
-                reimus << p;
-        }
-        if (reimus.isEmpty())
-            room->setPlayerFlag(source, "Forbidsaiqian");
-
 
         //start effect
         QStringList saiqian_str;
@@ -427,7 +410,11 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return !player->hasFlag("Forbidsaiqian");
+        foreach(const Player *p, player->getAliveSiblings()) {
+            if (p->hasSkill("saiqian") && !p->hasFlag("saiqianInvoked"))
+                return true;
+        }
+        return false;
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
@@ -489,8 +476,6 @@ public:
                 foreach(ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasFlag("saiqianInvoked"))
                         room->setPlayerFlag(p, "-saiqianInvoked");
-                    if (p->hasFlag("Forbidsaiqian"))
-                        room->setPlayerFlag(p, "-Forbidsaiqian");
                 }
             }
         }

@@ -795,9 +795,9 @@ local function findBumingTarget(self,card)
 	for _, p in ipairs(self.enemies) do
 
 		if inBumingRange(bumingType,self.player,p) then
-			if p:hasSkill("yemang") and bumingType==2 then
-				rangefix=rangefix+1
-			end
+			--if p:hasSkill("yemang") and bumingType==2 then
+			--	rangefix=rangefix+1
+			--end
 			local slash = sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
 			local duel = sgs.cloneCard("duel", sgs.Card_NoSuit, 0)
 

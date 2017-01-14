@@ -91,24 +91,13 @@ bool DangjiaCard::targetFilter(const QList<const Player *> &targets, const Playe
 void DangjiaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     ServerPlayer *akyu = targets.first();
-    if (akyu->hasLordSkill("dangjia")) {
-        room->setPlayerFlag(akyu, "dangjiaInvoked");
+    room->setPlayerFlag(akyu, "dangjiaInvoked");
 
-        room->notifySkillInvoked(akyu, "dangjia");
-        if (!source->pindian(akyu, "dangjia", NULL)) {
-            RecoverStruct recov;
-            recov.who = source;
-            room->recover(akyu, recov);
-        }
-
-        QList<ServerPlayer *> akyus;
-        QList<ServerPlayer *> players = room->getOtherPlayers(source);
-        foreach (ServerPlayer *p, players) {
-            if (p->hasLordSkill("dangjia") && !p->hasFlag("dangjiaInvoked"))
-                akyus << p;
-        }
-        if (akyus.isEmpty())
-            room->setPlayerFlag(source, "Forbiddangjia");
+    room->notifySkillInvoked(akyu, "dangjia");
+    if (!source->pindian(akyu, "dangjia", NULL)) {
+        RecoverStruct recov;
+        recov.who = source;
+        room->recover(akyu, recov);
     }
 }
 
@@ -122,7 +111,12 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return  shouldBeVisible(player) && !player->hasFlag("Forbiddangjia") && !player->isKongcheng();
+        if (player->isKongcheng() || !shouldBeVisible(player)) return false;
+        foreach(const Player *p, player->getAliveSiblings()) {
+            if (p->hasLordSkill("dangjia") && !p->hasFlag("dangjiaInvoked"))
+                return true;
+        }
+        return false;
     }
 
     virtual bool shouldBeVisible(const Player *Self) const
@@ -177,8 +171,6 @@ public:
             PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
             if (phase_change.from != Player::Play)
                 return;
-            if (phase_change.player->hasFlag("Forbiddangjia"))
-                room->setPlayerFlag(phase_change.player, "-Forbiddangjia");
             QList<ServerPlayer *> players = room->getOtherPlayers(phase_change.player);
             foreach (ServerPlayer *p, players) {
                 if (p->hasFlag("dangjiaInvoked"))

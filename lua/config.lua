@@ -182,5 +182,6 @@ config = {
 		"kogasa_slm->kogasa",
 		"shanghai->alice",
 		"kaguya_ndj->kaguya",
+		"mystia_sp->mystia",
 	}
 }

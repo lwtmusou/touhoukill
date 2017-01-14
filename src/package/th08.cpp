@@ -1239,6 +1239,7 @@ public:
     }
 };
 
+/*
 class Yemang : public ProhibitSkill
 {
 public:
@@ -1265,7 +1266,7 @@ public:
         return false;
     }
 };
-
+*/
 
 
 class Yinghuo : public TriggerSkill
@@ -1764,6 +1765,158 @@ public:
 
 
 
+
+class Yemang : public ProhibitSkill
+{
+public:
+    Yemang() : ProhibitSkill("yemang")
+    {
+    }
+
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &) const
+    {
+        if (card->isKindOf("Slash") && from->distanceTo(to) > 1) {
+            foreach(const Player *p, from->getAliveSiblings()) {
+                if (p->hasSkill(objectName()) && p->inMyAttackRange(from))
+                    return true;
+            }
+        }
+        return false;
+    }
+};
+
+
+
+MingmuCard::MingmuCard()
+{
+    will_throw = false;
+    handling_method = Card::MethodNone;
+    m_skillName = "mingmu_attach";
+}
+
+bool MingmuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    return targets.isEmpty() && to_select->hasSkill("mingmu")
+        && to_select != Self && !to_select->hasFlag("mingmuInvoked");
+}
+
+void MingmuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
+    ServerPlayer *mystia = targets.first();
+    room->setPlayerFlag(mystia, "mingmuInvoked");
+    room->notifySkillInvoked(mystia, "mingmu");
+    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), mystia->objectName(), "mingmu", QString());
+    room->obtainCard(mystia, this, reason, false);
+
+    const Card *card = room->askForCard(mystia, "Slash", "@mingmu:" + source->objectName(), QVariant(), Card::MethodNone, NULL, false, objectName());
+    bool invalid = true;
+    if (card) {
+        CardMoveReason reason1(CardMoveReason::S_REASON_GIVE, mystia->objectName(), source->objectName(), "mingmu", QString());
+        room->obtainCard(source, card, reason1);
+        if (mystia->hasSkill("yemang")) {
+            QString prompt = "invoke:" + source->objectName();
+            invalid = mystia->askForSkillInvoke("mingmu", prompt);
+        }
+        
+    }
+    if (invalid && mystia->hasSkill("yemang")) {
+        room->setPlayerFlag(mystia, "mingmuInvalid");
+        room->touhouLogmessage("#mingmuInvalid", mystia, "yemang");
+        const Skill *yemang = Sanguosha->getSkill("yemang");
+        room->setPlayerSkillInvalidity(mystia, yemang, true);
+    }
+}
+
+class MingmuVS : public ViewAsSkill
+{
+public:
+    MingmuVS() : ViewAsSkill("mingmu_attach")
+    {
+        attached_lord_skill = true;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        foreach(const Player *p, player->getAliveSiblings()) {
+            if (p->hasSkill("mingmu") && !p->hasFlag("mingmuInvoked"))
+                return true;
+        }
+        return false;
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *) const
+    {
+        return selected.length() < 2;
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        if (cards.length() > 0 && cards.length() <= 2) {
+            MingmuCard *card = new MingmuCard;
+            card->addSubcards(cards);
+            return card;
+        }
+        else
+            return NULL;
+    }
+};
+
+class Mingmu : public TriggerSkill
+{
+public:
+    Mingmu() : TriggerSkill("mingmu")
+    {
+        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Death << Debut << Revive;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent != EventPhaseChanging) { //the case operating attach skill
+            QList<ServerPlayer *> sources;
+            static QString attachName = "mingmu_attach";
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if (p->hasSkill(this, true))
+                    sources << p;
+            }
+
+            if (sources.length() > 1) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (!p->hasSkill(attachName, true))
+                        room->attachSkillToPlayer(p, attachName);
+                }
+            }
+            else if (sources.length() == 1) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasSkill(this, true) && p->hasSkill(attachName, true))
+                        room->detachSkillFromPlayer(p, attachName, true);
+                    else if (!p->hasSkill(this, true) && !p->hasSkill(attachName, true))
+                        room->attachSkillToPlayer(p, attachName);
+                }
+            }
+            else {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasSkill(attachName, true))
+                        room->detachSkillFromPlayer(p, attachName, true);
+                }
+            }
+        }
+        else if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
+            if (phase_change.from == Player::Play) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasFlag("mingmuInvoked"))
+                        room->setPlayerFlag(p, "-mingmuInvoked");
+                    if (p->hasFlag("mingmuInvalid")) {
+                        const Skill *yemang = Sanguosha->getSkill("yemang");
+                        room->setPlayerSkillInvalidity(p, yemang, false);
+                    }
+                }
+            }
+        }
+    }
+};
+
+
 TH08Package::TH08Package()
     : Package("th08")
 {
@@ -1815,6 +1968,9 @@ TH08Package::TH08Package()
     mokou_sp->addSkill(new Huwei);
     mokou_sp->addSkill(new Jinxi);
 
+    General *mystia_sp = new General(this, "mystia_sp", "yyc", 3, false);
+    mystia_sp->addSkill(new Yemang);
+    mystia_sp->addSkill(new Mingmu);
 
     addMetaObject<MiyaoCard>();
     addMetaObject<KuangzaoCard>();
@@ -1825,6 +1981,9 @@ TH08Package::TH08Package()
     addMetaObject<ChuangshiCard>();
     addMetaObject<HuweiCard>();
     addMetaObject<JinxiCard>();
+    addMetaObject<MingmuCard>();
+
+    skills << new MingmuVS;
 }
 
 ADD_PACKAGE(TH08)
