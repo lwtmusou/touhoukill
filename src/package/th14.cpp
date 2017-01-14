@@ -200,6 +200,21 @@ void LeitingCard::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     effect.from->drawCards(2);
     const Card *cards = room->askForCard(effect.from, ".|.|.|hand!", "@leiting:" + effect.to->objectName(), QVariant::fromValue(effect.to), Card::MethodDiscard);
+    if (!cards) {
+        // force discard!!!
+        QList<const Card *> hc = effect.to->getHandcards();
+        foreach(const Card *c, hc) {
+            if (effect.to->isJilei(c))
+                hc.removeOne(c);
+        }
+
+        if (hc.length() == 0)
+            return;
+            
+        int x = qrand() % hc.length();
+        cards = hc.value(x);
+        room->throwCard(cards, effect.to);
+    }
     Card *discard = Sanguosha->getCard(cards->getEffectiveId());
     if (discard->getSuit() == Card::Heart) {
         effect.to->drawCards(1);
@@ -355,6 +370,7 @@ public:
         room->clearAG();
         while (hasPeach && victim->getHp() < 1) {
             const Card *supply_card = room->askForCard(player, "Peach|.|.|hand!", "@guizha:" + victim->objectName(), data, Card::MethodNone, victim, false, objectName(), false);
+            //force to supply!
             peachId = (supply_card != NULL) ? supply_card->getEffectiveId() : peachId;
             Peach *peach = new Peach(Card::SuitToBeDecided, -1);
             peach->addSubcard(peachId);

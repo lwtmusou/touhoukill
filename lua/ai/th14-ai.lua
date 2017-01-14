@@ -125,7 +125,7 @@ end
 sgs.ai_skill_cardask["@leiting"] = function(self, data)
 	local temp =self.player:getTag("temp_leiting"):toInt()
 	self.player:removeTag("temp_leiting")
-	if temp > -1 and self.room:getCardOwner(temp):objectName() == self.player:objectName()
+	if temp > -1 and self.room:getCardOwner(temp) and self.room:getCardOwner(temp):objectName() == self.player:objectName()
 		and self.room:getCardPlace(temp) == sgs.Player_PlaceHand  then
 		return "$" .. temp
 	end

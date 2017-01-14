@@ -704,7 +704,7 @@ public:
         //clear histroy
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.m_isLastHandcard && use.m_addHistory && use.from->getMark("xiubu") > 0) {
+            if (use.m_isLastHandcard && use.m_addHistory && !use.card->isKindOf("SkillCard") && use.from->getMark("xiubu") > 0) {
                 room->addPlayerHistory(use.from, use.card->getClassName(), -1);
                 use.m_addHistory = false;
                 data = QVariant::fromValue(use);
@@ -725,11 +725,12 @@ public:
                     card = response.m_card;
             }
             if (player && player->getPhase() == Player::Play
-                    && card && card->getHandlingMethod() == Card::MethodUse) {
+                    && card && card->getHandlingMethod() == Card::MethodUse && !card->isKindOf("SkillCard")) {
                 if (player->hasFlag("xiubu_first"))
                     player->setFlags("xiubu_second");
                 else
                     player->setFlags("xiubu_first");
+                    
             }
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
