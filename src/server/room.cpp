@@ -515,7 +515,7 @@ QStringList Room::aliveRoles(ServerPlayer *except) const
     return roles;
 }
 
-void Room::gameOver(const QString &winner)
+void Room::gameOver(const QString &winner, bool isSurrender)
 {
     QStringList all_roles;
     foreach (ServerPlayer *player, m_players) {
@@ -530,7 +530,7 @@ void Room::gameOver(const QString &winner)
     }
 
     game_finished = true;
-    saveWinnerTable(winner);
+    saveWinnerTable(winner, isSurrender);
 
     //defaultHeroSkin();
     emit game_over(winner);
@@ -2691,20 +2691,20 @@ bool Room::makeSurrender(ServerPlayer *initiator)
 
     // vote counting
     if (loyalGiveup && renegadeGiveup && !rebelGiveup)
-        gameOver("rebel");
+        gameOver("rebel", true);
     else if (loyalGiveup && !renegadeGiveup && rebelGiveup)
-        gameOver("renegade");
+        gameOver("renegade", true);
     else if (!loyalGiveup && renegadeGiveup && rebelGiveup)
-        gameOver("lord+loyalist");
+        gameOver("lord+loyalist", true);
     else if (loyalGiveup && renegadeGiveup && rebelGiveup) {
         // if everyone give up, then ensure that the initiator doesn't win.
         QString playerRole = initiator->getRole();
         if (playerRole == "lord" || playerRole == "loyalist")
-            gameOver(renegadeAlive >= rebelAlive ? "renegade" : "rebel");
+            gameOver(renegadeAlive >= rebelAlive ? "renegade" : "rebel", true);
         else if (playerRole == "renegade")
-            gameOver(loyalAlive >= rebelAlive ? "loyalist+lord" : "rebel");
+            gameOver(loyalAlive >= rebelAlive ? "loyalist+lord" : "rebel", true);
         else if (playerRole == "rebel")
-            gameOver(renegadeAlive >= loyalAlive ? "renegade" : "loyalist+lord");
+            gameOver(renegadeAlive >= loyalAlive ? "renegade" : "loyalist+lord", true);
     }
 
     m_surrenderRequestReceived = false;
@@ -6543,14 +6543,15 @@ bool Room::roleStatusCommand(ServerPlayer *player)
 
 #include <QFile>
 #include <QDir> 
-void Room::saveWinnerTable(const QString &winner)
+void Room::saveWinnerTable(const QString &winner, bool isSurrender)
 {
+    //check gameMode
     QString mode = Config.GameMode;
     if (mode.endsWith("1v1") || mode.endsWith("1v3") || mode == "06_XMode")
         return;
     //mode.contains("_mini_")  mode == "custom_scenario"
     
-    //check human players
+    //check human players and check Surrender
     int count = 0;
     foreach(ServerPlayer *p, getAllPlayers(true)) {
         if (p->getState() != "robot")
@@ -6559,6 +6560,20 @@ void Room::saveWinnerTable(const QString &winner)
     if (getAllPlayers(true).length() < 6 || count < getAllPlayers(true).length() / 2)
         return;
     
+    if (isSurrender) {
+        ServerPlayer *lord = getLord();
+        bool lordALive = false;
+        if (!lord || lord->isAlive())
+            lordALive = true;
+        int round = getTag("Global_RoundCount").toInt();
+        int death = getAllPlayers(true).length() - getAllPlayers().length();
+        if (round < 2 && lordALive 
+            && death < (getAllPlayers(true).length() / 4))
+            return;
+    }
+
+
+
     QString location = "etc/winner/";
     if (!QDir(location).exists())
         QDir().mkdir(location);

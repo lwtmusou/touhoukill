@@ -198,6 +198,11 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             room->setPlayerFlag(player, "Global_FirstRound");
         }
 
+        if (player->isLord()&& !player->tag.value("touhou-extra", false).toBool()) {
+            QString mode = Config.GameMode;
+            if (!mode.endsWith("1v1") && !mode.endsWith("1v3") && mode != "06_XMode")
+                room->setTag("Global_RoundCount", room->getTag("Global_RoundCount").toInt() + 1);
+        }
 
         LogMessage log;
         log.type = "$AppendSeparator";

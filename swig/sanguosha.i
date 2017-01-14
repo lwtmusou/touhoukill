@@ -1285,7 +1285,7 @@ public:
     void killPlayer(ServerPlayer *victim, DamageStruct *reason = NULL);
     void revivePlayer(ServerPlayer *player);
     QStringList aliveRoles(ServerPlayer *except = NULL) const;
-    void gameOver(const char *winner);
+    void gameOver(const char *winner, bool isSurrender = false);
     void slashEffect(const SlashEffectStruct &effect);
     void slashResult(const SlashEffectStruct &effect, const Card *jink);
     void attachSkillToPlayer(ServerPlayer *player, const char *skill_name,bool is_other_attach =false);
