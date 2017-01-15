@@ -547,7 +547,7 @@ public:
 
     virtual int getExtraTargetNum(const Player *player, const Card *card) const
     {
-        if (player->hasSkill(objectName()) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && card->isKindOf("Slash"))
+        if (player->hasSkill(objectName()) && player->getPhase() == Player::Play && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && card->isKindOf("Slash"))
             return shikong_modNum(player, card) - 1;
         else
             return 0;
