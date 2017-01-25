@@ -1845,9 +1845,11 @@ QSharedPointer<SkillInvokeDetail> Room::askForTriggerOrder(ServerPlayer *player,
             foreach (const QSharedPointer<SkillInvokeDetail> &ptr, sameTiming) {
 
                 QString skill = ptr->skill->objectName();
-                skill.append(":").append(ptr->owner->objectName()).append(":").append(ptr->invoker->objectName());
+                // owner or invoker could be NULL
+                QString ownerName = (ptr->owner) ? ptr->owner->objectName() : QString();
+                QString invokerName = (ptr->invoker) ? ptr->invoker->objectName() : QString();
+                skill.append(":").append(ownerName).append(":").append(invokerName);
                 if (ptr->preferredTarget) {
-
                     skill.append(":").append(ptr->preferredTarget->objectName());
                     if (currentSkillName == ptr->skill->objectName()) {
                         preferIndex++;
