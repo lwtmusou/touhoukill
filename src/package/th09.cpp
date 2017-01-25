@@ -771,8 +771,11 @@ public:
             ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
             if (from && player != from && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
                 foreach(int id, move.card_ids) {
-                    if (Sanguosha->getCard(id)->isRed())
-                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+                    if (Sanguosha->getCard(id)->isRed()) {
+                        Player::Place from_place = move.from_places.at(move.card_ids.indexOf(id));
+                        if (from_place == Player::PlaceHand || from_place == Player::PlaceEquip)
+                            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player); 
+                    }
                 }
             }
         }
