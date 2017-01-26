@@ -802,7 +802,7 @@ public:
                 able << id;
         }
 
-        int x = qMin(idlist.length(), 2);
+        int x = qMin(able.length(), 2);
         if (x == 0)
             return false;
         room->fillAG(able, NULL);
