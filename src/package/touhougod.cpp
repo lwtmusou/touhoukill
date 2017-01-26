@@ -807,12 +807,13 @@ public:
             return false;
         room->fillAG(able, NULL);
         for (int i = 0; i < x; i++) {
-
             int card_id = room->askForAG(player, able, false, "cuixiang");
             //just for displaying chosen card in ag container
             room->takeAG(player, card_id, false);
             room->obtainCard(player, card_id, true);
             able.removeOne(card_id);
+            if (able.isEmpty())
+                break;
         }
         room->clearAG();
         return false;
