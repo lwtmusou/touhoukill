@@ -178,7 +178,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             QList<int> n_list;
             foreach (DrawNCardsStruct s, s_list)
                 n_list << s.n;
-            room->drawCards(room->getPlayers(), n_list, QString());
+            room->drawCards(room->getPlayers(), n_list, "initialDraw");
             if (Config.LuckCardLimitation > 0)
                 room->askForLuckCard();
             foreach (DrawNCardsStruct s, s_list) {
@@ -834,7 +834,7 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const
     draw_num = s.n;
 
     try {
-        player->drawCards(draw_num);
+        player->drawCards(draw_num, "initialDraw");
         room->setTag("FirstRound", false);
     }
     catch (TriggerEvent triggerEvent) {
@@ -893,7 +893,7 @@ void GameRule::changeGeneralXMode(ServerPlayer *player) const
     s = data.value<DrawNCardsStruct>();
     int num = s.n;
     try {
-        player->drawCards(num);
+        player->drawCards(num, "initialDraw");
         room->setTag("FirstRound", false);
     }
     catch (TriggerEvent triggerEvent) {
@@ -1052,7 +1052,7 @@ bool HulaoPassMode::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer
             QList<int> n_list;
             foreach (DrawNCardsStruct s, s_list)
                 n_list << s.n;
-            room->drawCards(room->getPlayers(), n_list, QString());
+            room->drawCards(room->getPlayers(), n_list, "initialDraw");
             if (Config.LuckCardLimitation > 0)
                 room->askForLuckCard();
             foreach (DrawNCardsStruct s, s_list) {

@@ -544,9 +544,139 @@ public:
 };
 
 
+class Zhenli : public TriggerSkill
+{
+public:
+    Zhenli() : TriggerSkill("zhenli")
+    {
+        frequency = Compulsory;
+        events << CardsMoveOneTime << AfterDrawInitialCards;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        if (triggerEvent == AfterDrawInitialCards) {
+            DrawNCardsStruct dc = data.value<DrawNCardsStruct>();
+            if (dc.player->hasSkill(this))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dc.player, dc.player, NULL, true);
+        } else if (triggerEvent == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.reason.m_reason == CardMoveReason::S_REASON_DRAW && move.reason.m_extraData.toString() == "drawFromDrawpile"){
+                ServerPlayer *rikako = qobject_cast<ServerPlayer *>(move.to);
+                if (rikako != NULL && rikako->hasSkill(this)) {
+                    foreach(int id, move.card_ids) {
+                        if (room->getCardPlace(id) == Player::PlaceHand && room->getCardOwner(id) == rikako)
+                            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, rikako, rikako, NULL, true);
+                    }
+                }
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    //default cost
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        if (triggerEvent == AfterDrawInitialCards)
+            invoke->invoker->drawCards(24);
+        else if (triggerEvent == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            QList<int> ids;
+            foreach(int id, move.card_ids) {
+                if (room->getCardPlace(id) == Player::PlaceHand && room->getCardOwner(id) == invoke->invoker)
+                    ids << id;
+            }
+            invoke->invoker->addToPile("zhenli", ids, false);
+        }
+        return false;
+    }
+};
 
 
+class QiusuoVS : public ViewAsSkill
+{
+public:
+    QiusuoVS() : ViewAsSkill("qiusuo")
+    {
+        response_pattern = "@@qiusuo";
+        expand_pile = "zhenli";
+    }
 
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    {
+        if (Self->getPile("zhenli").contains(to_select->getEffectiveId())) {
+            if (selected.isEmpty())
+                return true;
+            else
+                return to_select->getNumber() == selected.first()->getNumber();
+        }
+        return false;
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        if (cards.length() > 0) {
+            DummyCard *dc = new DummyCard;
+            dc->addSubcards(cards);
+            return dc;
+        }
+        return NULL;
+    }
+};
+
+class Qiusuo : public TriggerSkill
+{
+public:
+    Qiusuo() : TriggerSkill("qiusuo")
+    {
+        events << EventPhaseStart;
+        view_as_skill = new QiusuoVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        ServerPlayer *current = data.value<ServerPlayer *>();
+        if (current->getPhase() == Player::Play && current->hasSkill(this) 
+            && !current->getPile("zhenli").isEmpty())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current);
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        const Card *c = room->askForCard(invoke->invoker, "@@qiusuo", "@qiusuo", data, Card::MethodNone, NULL, false, objectName());
+        if (c) {
+            QVariantList ids;
+            foreach(int card_id, c->getSubcards())
+                ids << card_id;
+            invoke->invoker->tag["qiusuo"] = ids;
+            return true;
+        }
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        QVariantList ids = invoke->invoker->tag["qiusuo"].toList();
+        invoke->invoker->tag.remove("qiusuo");
+        room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
+        QList<int> get_ids;
+        foreach(QVariant card_data, ids) {
+            int id = card_data.toInt();
+            room->showCard(invoke->invoker, id);
+            get_ids << id;
+        }
+        DummyCard dummy(get_ids);
+        invoke->invoker->obtainCard(&dummy);
+        return false;
+    }
+};
+
+
+/*
 class Jiexi : public TriggerSkill
 {
 public:
@@ -633,7 +763,7 @@ public:
         return 0;
     }
 };
-
+*/
 
 
 class Lubiao : public TriggerSkill
@@ -1445,7 +1575,7 @@ bool ModianCard::targetFilter(const QList<const Player *> &targets, const Player
             && !to_select->hasFlag("modianInvoked");
 }
 
-void ModianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void ModianCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
 {
     ServerPlayer *alice = targets.first();
     room->setPlayerFlag(alice, "modianInvoked");
@@ -1739,14 +1869,16 @@ TH0105Package::TH0105Package()
     chiyuri->addSkill(new Zhence);
     chiyuri->addSkill(new Shiqu);
 
-    General *rikako = new General(this, "rikako", "pc98", 3, false);
+    General *rikako = new General(this, "rikako", "pc98", 4, false);
+    rikako->addSkill(new Zhenli);
+    rikako->addSkill(new Qiusuo);
     //Room::_askForNullification
-    rikako->addSkill(new Skill("jinfa", Skill::Compulsory));
-    rikako->addSkill(new Jiexi);
-    rikako->addSkill(new JiexiTargetMod);
-    rikako->addSkill(new JiexiAttackRange);
-    related_skills.insertMulti("jiexi", "#jiexi_mod");
-    related_skills.insertMulti("jiexi", "#jiexi_range");
+    //rikako->addSkill(new Skill("jinfa", Skill::Compulsory));
+    //rikako->addSkill(new Jiexi);
+    //rikako->addSkill(new JiexiTargetMod);
+    //rikako->addSkill(new JiexiAttackRange);
+    //related_skills.insertMulti("jiexi", "#jiexi_mod");
+    //related_skills.insertMulti("jiexi", "#jiexi_range");
 
 
     General *kana = new General(this, "kana", "pc98", 3, false);

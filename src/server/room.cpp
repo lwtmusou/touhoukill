@@ -1164,7 +1164,8 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     trickEffect.to = to;
     QVariant data = QVariant::fromValue(trickEffect);
 
-    if (to->hasSkill("jinfa") && !trick->isKindOf("Nullification")) {
+    //for skill "jinfa"
+    /*if (to->hasSkill("jinfa") && !trick->isKindOf("Nullification")) {
         Nullification *nul = new Nullification(Card::NoSuit, 0);
         nul->setSkillName("jinfa");
         if (to->isCardLimited(nul, Card::MethodUse))
@@ -1177,7 +1178,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
             else
                 return !_askForNullification(nul, to, to, !positive, aiHelper);
         }
-    }
+    }*/
     setTag("NullifiationTarget", data);
 
     foreach (ServerPlayer *player, m_alivePlayers) {
@@ -4133,7 +4134,8 @@ void Room::drawCards(QList<ServerPlayer *> players, QList<int> n_list, const QSt
         move.to = player;
         move.to_place = Player::PlaceHand;
         move.reason = CardMoveReason(CardMoveReason::S_REASON_DRAW, player->objectName());
-        move.reason.m_extraData = "drawFromDrawpile";
+        if (reason != "initialDraw")
+            move.reason.m_extraData = "drawFromDrawpile";
         moves.append(move);
     }
     moveCardsAtomic(moves, false);
