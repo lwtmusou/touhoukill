@@ -960,8 +960,7 @@ function SmartAI:qingyuNum(player)
 end
 sgs.ai_need_damaged.qingyu = function(self, attacker, player)
 	local num = self:qingyuNum(player)
-
-	if player:containsTrick("indulgence") then
+	if player:containsTrick("indulgence") or player:containsTrick("supply_shortage") then
 		return false
 	end
 	if player:getLostHp()==0  then
