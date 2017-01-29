@@ -1194,6 +1194,8 @@ public:
         if (use.card->isKindOf("Slash")) {
             QList<ServerPlayer *> srcs = room->findPlayersBySkillName(objectName());
             foreach (ServerPlayer *p, srcs) {
+                if (!p->canDiscard(p, "hes"))
+                    continue;
                 foreach (ServerPlayer *to, use.to) {
                     if (to->isAlive() && (p->inMyAttackRange(to) || p == to))
                         d << SkillInvokeDetail(this, p, p, NULL, false, to);
@@ -1205,30 +1207,22 @@ public:
 
 
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        ServerPlayer *player = invoke->invoker;
         CardUseStruct use = data.value<CardUseStruct>();
-        ServerPlayer *to = invoke->preferredTarget;
-
-        player->tag["zhancao_carduse"] = data;
-        player->tag["zhancao_target"] = QVariant::fromValue(to);
-        QString prompt = "target:" + use.from->objectName() + ":" + to->objectName();
-        bool effect = player->askForSkillInvoke(this, prompt);
-        player->tag.remove("zhancao_carduse");
-        player->tag.remove("zhancao_target");
-        return effect;
+        invoke->invoker->tag["zhancao_target"] = QVariant::fromValue(invoke->preferredTarget);
+        QString prompt = "@zhancao-discard:" + use.from->objectName() + ":" + invoke->preferredTarget->objectName();
+        return room->askForCard(invoke->invoker, ".Equip", prompt, data, objectName()) != NULL;
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        ServerPlayer *player = invoke->invoker;
         CardUseStruct use = data.value<CardUseStruct>();
         use.nullified_list << invoke->targets.first()->objectName();
         data = QVariant::fromValue(use);
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), invoke->targets.first()->objectName());
-        if (room->askForCard(player, ".Equip", "@zhancao-discard", data, objectName()) == NULL)
-            room->loseHp(player);
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
+        room->touhouLogmessage("#zhancaoTarget", invoke->invoker, objectName(), QList<ServerPlayer *>() << invoke->targets.first());
+        
         return false;
     }
 };
@@ -1251,7 +1245,7 @@ void MocaoCard::onEffect(const CardEffectStruct &effect) const
     int card_id = room->askForCardChosen(effect.from, effect.to, "e", "mocao");
     room->obtainCard(effect.from, card_id);
     if (effect.to->isWounded())
-        effect.to->drawCards(effect.to->getLostHp());
+        effect.to->drawCards(qMin(5, effect.to->getLostHp()));
 }
 
 class Mocao : public ZeroCardViewAsSkill

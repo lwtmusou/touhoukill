@@ -659,8 +659,7 @@ sgs.ai_need_damaged.baochun = function(self, attacker, player)
 	return false
 end
 
-
-sgs.ai_skill_invoke.zhancao = function(self,data)
+--[[sgs.ai_skill_invoke.zhancao = function(self,data)
 	local use=self.player:getTag("zhancao_carduse"):toCardUse()
 	local target =self.player:getTag("zhancao_target"):toPlayer()
 	if not self:isFriend(target) then return false end
@@ -707,12 +706,27 @@ sgs.ai_skill_invoke.zhancao = function(self,data)
 		end
 	end
 	return false
-end
+end]]
 sgs.ai_skill_cardask["@zhancao-discard"] = function(self, data)
+    local use = data:toCardUse()
+	local target =self.player:getTag("zhancao_target"):toPlayer()
+	if not self:isFriend(target) then return "." end
+	if not self:slashIsEffective(use.card, target, use.from) then return "." end
+	if self:touhouCardUseEffectNullify(use,target) then return "." end
+	if self:isFriend(use.from) then
+		local fakeDamage=sgs.DamageStruct()
+		fakeDamage.card=use.card
+		fakeDamage.nature= self:touhouDamageNature(use.card, use.from, target)
+		fakeDamage.damage=1
+		fakeDamage.from=use.from
+		fakeDamage.to= target
+		if not self:touhouNeedAvoidAttack(fakeDamage, use.from,target) then  return "."  end
+	end
 
-	cards =self.player:getCards("hes")
+	
+	local cards =self.player:getCards("hes")
 	cards=sgs.QList2Table(cards)
-	ecards={}
+	local ecards={}
 	for _,card in pairs(cards) do
 		if card:isKindOf("EquipCard") then
 			table.insert(ecards,card)
@@ -720,17 +734,20 @@ sgs.ai_skill_cardask["@zhancao-discard"] = function(self, data)
 	end
 
 	if #ecards==0 then return "." end
-	self:sortByCardNeed(ecards)
-	return "$" .. ecards[1]:getId()
+	if self:isWeak(target) or getCardsNum("Jink", target, self.player) < 1 or sgs.card_lack[target:objectName()]["Jink"] >0 then
+		self:sortByCardNeed(ecards)
+		return "$" .. ecards[1]:getId()
+	end
+	return "."
 end
-sgs.ai_choicemade_filter.skillInvoke.zhancao = function(self, player, args)
+--[[sgs.ai_choicemade_filter.skillInvoke.zhancao = function(self, player, args)
 	local target =player:getTag("zhancao_target"):toPlayer()
 	if target then
 		if args[#args] == "yes" then
 			sgs.updateIntention(player, target, -50)
 		end
 	end
-end
+end]]
 sgs.ai_cardneed.zhancao = function(to, card, self)
 	return card:isKindOf("EquipCard")
 end
@@ -755,7 +772,12 @@ sgs.ai_need_bear.zhancao = function(self, card,from,tos)
 	end
 	return false
 end
-
+sgs.ai_choicemade_filter.cardResponded["@zhancao-discard"] = function(self, player, args)
+	local target = player:getTag("zhancao_target"):toPlayer()
+	if target and args[#args] ~= "_nil_" then
+		sgs.updateIntention(player, target, -60)
+	end
+end
 
 local mocao_skill = {}
 mocao_skill.name = "mocao"

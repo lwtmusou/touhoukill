@@ -261,11 +261,11 @@ return
 	["origin:shanghai_2"] = "p号：25041883，个人ID：1708123",
 
 	["zhancao"] = "战操" ,
-	[":zhancao"] = "当你或你攻击范围内的一名角色成为【杀】的目标后，你可令此【杀】对其无效，然后你选择一项：弃置一张装备牌，或失去1点体力。" ,
-	["@zhancao-discard"] = "“战操”：请弃置一张装备牌，否则失去1点体力。" ,
-	["zhancao:target"] = "<font color=\"#00FF00\"><b>%src </b></font>使用【杀】指定了<font color=\"#FF8000\"><b>%dest </b></font>为目标，你可以发动“战操”。" ,
+	[":zhancao"] = "当你或你攻击范围内的一名角色成为【杀】的目标后，你可以弃置一张装备牌，令此【杀】对其无效。",
+	["@zhancao-discard"] = "<font color=\"#00FF00\"><b>%src </b></font>使用【杀】指定了<font color=\"#FF8000\"><b>%dest </b></font>为目标，你可以发动“战操”弃置一张装备牌，使此杀对<font color=\"#FF8000\"><b>%dest </b></font>无效" ,
+	["#zhancaoTarget"] = "%from 使用 %arg 的对象是 %to。" ,
 	["mocao"] = "魔操" ,
-	[":mocao"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以获得一名其他角色装备区里的一张牌，然后其摸X张牌（X为其已损失的体力值）。" ,
+	[":mocao"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以获得一名其他角色装备区里的一张牌，然后其摸X张牌（X为其已损失的体力值且最多为5）。" ,
 
 --***********************************
 	--yym011  势力：妖 4血
