@@ -79,6 +79,7 @@ int Player::getHp() const
 int Player::dyingThreshold() const
 {
     int value = 1;
+    value = value + getMark("@ezhaoDying");
     foreach(const Player *p, getAliveSiblings()) {
         if (p->hasSkill("yousi") && p->isCurrent())
             value = qMax(0, p->getHp());

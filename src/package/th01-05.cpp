@@ -1853,6 +1853,136 @@ public:
 };
 
 
+
+
+BaosiCard::BaosiCard()
+{
+    handling_method = Card::MethodUse;
+    m_skillName = "baosi";
+}
+
+void BaosiCard::onEffect(const CardEffectStruct &effect) const
+{
+    QVariantMap baosi_list = effect.from->tag.value("baosi", QVariantMap()).toMap();
+    baosi_list[effect.to->objectName()] = true;
+    effect.from->tag["baosi"] = baosi_list;
+}
+
+bool BaosiCard::targetFilter(const QList<const Player *> &, const Player *to_select, const Player *) const
+{
+    return  to_select->hasFlag("Global_baosiFailed");
+}
+
+class BaosiVS : public ZeroCardViewAsSkill
+{
+public:
+    BaosiVS() :ZeroCardViewAsSkill("baosi")
+    {
+        response_pattern = "@@baosi";
+    }
+
+    virtual const Card *viewAs() const
+    {
+        BaosiCard *card = new BaosiCard;
+        return card;
+    }
+};
+
+class Baosi : public TriggerSkill
+{
+public:
+    Baosi() : TriggerSkill("baosi")
+    {
+        events << TargetSpecifying;
+        view_as_skill = new BaosiVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.from && use.from->hasSkill(this)) {
+            if (use.card->isKindOf("Slash") || (use.card->isBlack() && use.card->isNDTrick())) {
+                foreach(ServerPlayer*p, room->getOtherPlayers(use.from)) {
+                    if (!use.to.contains(p) && p->getHp() <= p->dyingThreshold() 
+                        && !use.from->isProhibited(p, use.card))
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+                }
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+            if (!use.to.contains(p) && p->getHp() <= p->dyingThreshold()
+                && !use.from->isProhibited(p, use.card))
+                room->setPlayerFlag(p, "Global_baosiFailed");
+        }    
+        return room->askForUseCard(invoke->invoker, "@@baosi", "@baosi:" + use.card->objectName());
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        QVariantMap baosi_list = invoke->invoker->tag.value("baosi", QVariantMap()).toMap();
+        invoke->invoker->tag.remove("baosi");
+        foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+            bool add = baosi_list.value(p->objectName(), false).toBool();
+            if (add)
+                use.to << p;
+        }
+        room->sortByActionOrder(use.to);
+        data = QVariant::fromValue(use);
+        return false;
+    }
+};
+
+
+EzhaoCard::EzhaoCard()
+{
+}
+
+bool EzhaoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    return targets.isEmpty() && to_select != Self &&  to_select->getLostHp() < Self->getLostHp();
+}
+
+void EzhaoCard::onUse(Room *room, const CardUseStruct &card_use) const
+{
+    room->doLightbox("$ezhaoAnimate", 4000);
+    SkillCard::onUse(room, card_use);
+}
+
+void EzhaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
+    room->removePlayerMark(source, "@ezhao");
+    QString mark = "@ezhaoDying";
+    room->setPlayerMark(targets.first(), mark, targets.first()->getMark(mark) + 1);
+}
+
+class Ezhao : public ZeroCardViewAsSkill
+{
+public:
+    Ezhao() : ZeroCardViewAsSkill("ezhao")
+    {
+        frequency = Limited;
+        limit_mark = "@ezhao";
+    }
+
+    virtual const Card *viewAs() const
+    {
+        return new EzhaoCard;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return player->getMark("@ezhao") >= 1;
+    }
+};
+
+
 TH0105Package::TH0105Package()
     : Package("th0105")
 {
@@ -1911,10 +2041,18 @@ TH0105Package::TH0105Package()
     alice_old->addSkill(new Modian);
     alice_old->addSkill(new Guaiqi);
 
+
+    General *sariel = new General(this, "sariel", "pc98", 4, false);
+    sariel->addSkill(new Baosi);
+    sariel->addSkill(new Ezhao);
+
+
     addMetaObject<ShiquCard>();
     addMetaObject<LianmuCard>();
     addMetaObject<SqChuangshiCard>();
     addMetaObject<ModianCard>();
+    addMetaObject<BaosiCard>();
+    addMetaObject<EzhaoCard>();
 
     skills << new ModianVS;
 }
