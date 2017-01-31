@@ -7,6 +7,7 @@ MagatamasBoxItem::MagatamasBoxItem()
     : QGraphicsObject(NULL)
 {
     m_hp = 0;
+    m_dyingHp = 1;
     m_maxHp = 0;
 }
 
@@ -14,6 +15,7 @@ MagatamasBoxItem::MagatamasBoxItem(QGraphicsItem *parent)
     : QGraphicsObject(parent)
 {
     m_hp = 0;
+    m_dyingHp = 1;
     m_maxHp = 0;
 }
 
@@ -37,6 +39,8 @@ void MagatamasBoxItem::_updateLayout()
     for (int i = 0; i < 6; i++) {
         _icons[i] = G_ROOM_SKIN.getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS).arg(QString::number(i)), QString(), true)
                 .scaled(m_iconSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        _dyingIcons[i] = G_ROOM_SKIN.getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_DYINGLINE).arg(QString::number(i)), QString(), true)
+            .scaled(m_iconSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     }
 
     for (int i = 1; i < 6; i++) {
@@ -68,10 +72,11 @@ QRectF MagatamasBoxItem::boundingRect() const
         return QRectF(0, 0, m_iconSize.width(), buckets * m_iconSize.height());
 }
 
-void MagatamasBoxItem::setHp(int hp)
+void MagatamasBoxItem::setHp(int hp, int dying)
 {
     _doHpChangeAnimation(hp);
     m_hp = hp;
+    m_dyingHp = dying;
     update();
 }
 
@@ -207,12 +212,18 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
         for (i = 0; i < lostHp; ++i) {
             QRect rect(xStep * i, yStep * i, m_imageArea.width(), m_imageArea.height());
             rect.translate(m_imageArea.topLeft());
-            painter->drawPixmap(rect, _icons[0]);
+            if ((m_maxHp - i ) < m_dyingHp)
+                painter->drawPixmap(rect, _dyingIcons[0]);
+            else
+                painter->drawPixmap(rect, _icons[0]);
         }
         for (; i < m_maxHp; ++i) {
             QRect rect(xStep * i, yStep * i, m_imageArea.width(), m_imageArea.height());
             rect.translate(m_imageArea.topLeft());
-            painter->drawPixmap(rect, _icons[imageIndex]);
+            if ((m_maxHp - i ) < m_dyingHp)
+                painter->drawPixmap(rect, _dyingIcons[imageIndex]);
+            else
+                painter->drawPixmap(rect, _icons[imageIndex]);
         }
 
     } else {

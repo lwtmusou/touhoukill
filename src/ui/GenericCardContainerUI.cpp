@@ -339,17 +339,17 @@ void PlayerCardContainer::updateHp()
 {
     Q_ASSERT(_m_hpBox && _m_saveMeIcon && m_player);
     if (!m_player->hasSkill("banling")) {
-        _m_hpBox->setHp(m_player->getHp());
+        _m_hpBox->setHp(m_player->getHp(), m_player->dyingThreshold());
         _m_hpBox->setMaxHp(m_player->getMaxHp());
         _m_hpBox->update();
         _m_sub_hpBox->setHp(0);
         _m_sub_hpBox->setMaxHp(0);
         _m_sub_hpBox->update();
     } else {
-        _m_hpBox->setHp(m_player->getRenHp());
+        _m_hpBox->setHp(m_player->getRenHp(), m_player->dyingThreshold());
         _m_hpBox->setMaxHp(m_player->getMaxHp());
         _m_hpBox->update();
-        _m_sub_hpBox->setHp(m_player->getLingHp());
+        _m_sub_hpBox->setHp(m_player->getLingHp(), m_player->dyingThreshold());
         _m_sub_hpBox->setMaxHp(m_player->getMaxHp());
         _m_sub_hpBox->update();
     }

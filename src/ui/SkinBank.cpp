@@ -62,6 +62,7 @@ const char *QSanRoomSkin::S_SKIN_KEY_SYSTEM_AUDIO_EFFECT = "systemAudioEffect-%1
 const char *QSanRoomSkin::S_SKIN_KEY_PLAYER_GENERAL_ICON = "playerGeneralIcon-%2-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_BG = "magatamasBg%1";
 const char *QSanRoomSkin::S_SKIN_KEY_MAGATAMAS = "magatamas%1";
+const char *QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_DYINGLINE = "magatamasDying%1";
 const char *QSanRoomSkin::S_SKIN_KEY_PROGRESS_BAR_IMAGE = "progressBar";
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_IMAGE = "generalCircleImage-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_MASK = "generalCircleMask-%1";

@@ -379,6 +379,7 @@ public:
     static const char *S_SKIN_KEY_EXTRA_SKILL_BG;
     static const char *S_SKIN_KEY_MAGATAMAS_BG;
     static const char *S_SKIN_KEY_MAGATAMAS;
+    static const char *S_SKIN_KEY_MAGATAMAS_DYINGLINE;
     static const char *S_SKIN_KEY_PLAYER_AUDIO_EFFECT;
     static const char *S_SKIN_KEY_SYSTEM_AUDIO_EFFECT;
     static const char *S_SKIN_KEY_EQUIP_ICON;

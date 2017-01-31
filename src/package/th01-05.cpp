@@ -1958,8 +1958,7 @@ void EzhaoCard::onUse(Room *room, const CardUseStruct &card_use) const
 void EzhaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     room->removePlayerMark(source, "@ezhao");
-    QString mark = "@ezhaoDying";
-    room->setPlayerMark(targets.first(), mark, targets.first()->getMark(mark) + 1);
+    room->setPlayerProperty(targets.first(), "dyingFactor", targets.first()->getDyingFactor() + 1);
 }
 
 class Ezhao : public ZeroCardViewAsSkill

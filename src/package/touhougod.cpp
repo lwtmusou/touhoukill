@@ -3521,6 +3521,58 @@ public:
     }
 };
 
+class YousiUI : public TriggerSkill
+{
+public:
+    YousiUI() : TriggerSkill("#yousi")
+    {
+        events << EventAcquireSkill << EventLoseSkill << EventSkillInvalidityChange << EventPhaseStart << Death << HpChanged;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        ServerPlayer *yuyuko = NULL;
+        //bool notify = false;
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->hasSkill("yousi")) {
+                if (player->getPhase() == Player::RoundStart || player->getPhase() == Player::NotActive)
+                    yuyuko = player;
+            }
+        }
+        else if (triggerEvent == EventAcquireSkill || triggerEvent == EventLoseSkill) {
+            SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
+            if (a.skill->objectName() == "yousi" && a.player->isCurrent())
+                yuyuko = a.player;
+        }
+        else if (triggerEvent == EventSkillInvalidityChange) {
+            QList<SkillInvalidStruct>invalids = data.value<QList<SkillInvalidStruct>>();
+            foreach(SkillInvalidStruct v, invalids) {
+                if (v.player->isCurrent() && (!v.skill || v.skill->objectName() == "yousi")) {
+                    yuyuko = v.player;
+                    break;
+                }
+            }
+        }
+        else if (triggerEvent == Death) {
+            DeathStruct death = data.value<DeathStruct>();
+            if (death.who->hasSkill("yousi") && death.who->isCurrent())
+                yuyuko = death.who;
+        }
+        else if (triggerEvent == HpChanged) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->isCurrent() && player->hasSkill("yousi"))
+                yuyuko = player;
+        }
+        
+        if (yuyuko) {
+            foreach(ServerPlayer *p, room->getOtherPlayers(yuyuko)) {
+                room->setPlayerProperty(p, "dyingFactor", p->getDyingFactor());
+            }
+        }
+    }
+};
+
 
 
 
@@ -4210,6 +4262,8 @@ TouhouGodPackage::TouhouGodPackage()
     General *yuyuko_god = new General(this, "yuyuko_god", "touhougod", 1, false);
     yuyuko_god->addSkill(new Fanhun);
     yuyuko_god->addSkill(new Yousi);
+    yuyuko_god->addSkill(new YousiUI);
+    related_skills.insertMulti("yousi", "#yousi");
 
     General *satori_god = new General(this, "satori_god", "touhougod", 3, false);
     satori_god->addSkill(new Xinhua);

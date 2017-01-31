@@ -7,7 +7,7 @@
 
 Player::Player(QObject *parent)
     : QObject(parent), owner(false), general(NULL), general2(NULL),
-      m_gender(General::Sexless), hp(-1), max_hp(-1), renhp(-1), linghp(-1), chaoren(-1), role_shown(false), state("online"), seat(0), initialSeat(0), alive(true),
+      m_gender(General::Sexless), hp(-1), max_hp(-1), renhp(-1), linghp(-1), dyingFactor(0), chaoren(-1), role_shown(false), state("online"), seat(0), initialSeat(0), alive(true),
       phase(NotActive), weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL), treasure(NULL),
       face_up(true), chained(false)
 {
@@ -78,10 +78,9 @@ int Player::getHp() const
 
 int Player::dyingThreshold() const
 {
-    int value = 1;
-    value = value + getMark("@ezhaoDying");
+    int value = 1 + dyingFactor;
     foreach(const Player *p, getAliveSiblings()) {
-        if (p->hasSkill("yousi") && p->isCurrent())
+        if (p->isCurrent() && p->hasSkill("yousi"))
             value = qMax(0, p->getHp());
     }
     return value;
@@ -107,6 +106,13 @@ void Player::setLingHp(int linghp)
     }
 }
 
+void Player::setDyingFactor(int dyingFactor)
+{
+    if (this->dyingFactor != dyingFactor)
+        this->dyingFactor = dyingFactor;
+    emit hp_changed();
+}
+
 int Player::getRenHp() const
 {
     return renhp;
@@ -116,6 +122,12 @@ int Player::getLingHp() const
 {
     return linghp;
 }
+
+int Player::getDyingFactor() const
+{
+    return dyingFactor;
+}
+
 
 int Player::getChaoren() const
 {

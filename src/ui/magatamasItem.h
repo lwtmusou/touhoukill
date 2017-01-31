@@ -16,7 +16,7 @@ public:
     {
         return m_hp;
     }
-    void setHp(int hp);
+    void setHp(int hp, int dying = 1);
     inline int getMaxHp() const
     {
         return m_maxHp;
@@ -65,12 +65,14 @@ protected:
     Qt::Alignment m_align;
     bool anchorEnabled;
     int m_hp;
+    int m_dyingHp;
     int m_maxHp;
     Qt::Orientation m_orientation;
     bool m_showBackground;
     QSize m_iconSize;
     QRect m_imageArea;
     QPixmap _icons[6];
+    QPixmap _dyingIcons[6];
     QPixmap _bgImages[6];
 };
 #endif
