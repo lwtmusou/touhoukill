@@ -312,6 +312,7 @@ void Room::revivePlayer(ServerPlayer *player)
     if (initialize) {
         setPlayerProperty(player, "maxhp", player->getGeneral()->getMaxHp());
         setPlayerProperty(player, "hp", player->getMaxHp());
+        setPlayerProperty(player, "dyingFactor", 0);
         setEmotion(player, "revive");
         touhouLogmessage("#Revive", player);
 
