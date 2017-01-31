@@ -89,6 +89,8 @@ public:
     void setHp(int hp);
     void setRenHp(int renhp);
     void setLingHp(int linghp);
+    int getDyingFactor() const;
+    void setDyingFactor(int dyingFactor);
     int getMaxHp() const;
     void setMaxHp(int max_hp);
     int getLostHp() const;
