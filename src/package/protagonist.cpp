@@ -1857,7 +1857,7 @@ public:
         }
         else {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.player->getMark("siyuinvoke") > 0 && change.to == Player::NotActive && change.player->getHp() < 1)
+            if (change.player->getMark("siyuinvoke") > 0 && change.to == Player::NotActive && change.player->getHp() < change.player->dyingThreshold())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
         }
 
