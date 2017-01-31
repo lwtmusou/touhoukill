@@ -1901,7 +1901,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from && use.from->hasSkill(this)) {
-            if (use.card->isKindOf("Slash") || (use.card->isBlack() && use.card->isNDTrick())) {
+            if (use.card->isKindOf("Slash") || (use.card->isBlack() && use.card->isNDTrick() && !use.card->isKindOf("Nullification"))) {
                 foreach(ServerPlayer*p, room->getOtherPlayers(use.from)) {
                     if (!use.to.contains(p) && p->getHp() <= p->dyingThreshold() 
                         && !use.from->isProhibited(p, use.card))
