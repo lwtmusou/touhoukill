@@ -299,40 +299,52 @@ class Jinghua : public TriggerSkill
 public:
     Jinghua() : TriggerSkill("jinghua")
     {
-        events << CardUsed;
+        events << CardUsed << PostCardEffected;
         view_as_skill = new JinghuaVS;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    void record(TriggerEvent e, Room *room, QVariant &data) const
     {
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from->hasSkill(this) && use.card->isKindOf("Nullification")) {
-            CardEffectStruct effect = room->getTag("NullifiationTarget").value<CardEffectStruct>();
-            if (effect.card) {
-                QList<int> ids;
-                if (effect.card->isVirtualCard())
-                    ids = effect.card->getSubcards();
-                else
-                    ids << effect.card->getEffectiveId();
+        if (e == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isKindOf("Nullification"))
+                room->setPlayerFlag(use.from, "jinghua");
+        }
+    }
 
-                if (ids.isEmpty()) return QList<SkillInvokeDetail>();
-                
-                foreach(int id, ids) {
-                    if (effect.card->isKindOf("Nullification")) {
-                        if (room->getCardPlace(id) != Player::DiscardPile) return QList<SkillInvokeDetail>();
-                    } else {
-                        if (room->getCardPlace(id) != Player::PlaceTable) return QList<SkillInvokeDetail>();
-                    }  
-                }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e != PostCardEffected)
+            return QList<SkillInvokeDetail>();
+
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        if (effect.from && effect.to->hasSkill(this) && effect.to->isAlive() && effect.to->hasFlag("jinghua") && effect.card->isNDTrick()) {
+            QList<int> ids;
+            if (effect.card->isVirtualCard())
+                ids = effect.card->getSubcards();
+            else
+                ids << effect.card->getEffectiveId();
+
+            if (ids.isEmpty()) return QList<SkillInvokeDetail>();
+            foreach(int id, ids) {
+                if (room->getCardPlace(id) != Player::PlaceTable) return QList<SkillInvokeDetail>();
             }
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to);
         }
         return QList<SkillInvokeDetail>();
     }
 
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        QString prompt = "invoke:" + effect.card->objectName();
+        return invoke->invoker->askForSkillInvoke(objectName(), prompt);
+    }
+
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        CardEffectStruct effect = room->getTag("NullifiationTarget").value<CardEffectStruct>();
+        CardEffectStruct effect = data.value<CardEffectStruct>();
         QList<int> ids;
         if (effect.card->isVirtualCard())
             ids = effect.card->getSubcards();
@@ -365,20 +377,14 @@ class Weiguang : public TriggerSkill
 public:
     Weiguang() : TriggerSkill("weiguang")
     {
-        events << TargetSpecified;
+        events << CardUsed;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if ((use.card->isNDTrick() && !use.card->isKindOf("Nullification"))) {
-            QList<SkillInvokeDetail> d;
-            foreach(ServerPlayer *p, room->getAllPlayers()) {
-                if (p->isAlive() && p->hasSkill(this) && (p == use.from || use.to.contains(p)))
-                    d << SkillInvokeDetail(this, p, p);
-            }
-            return d;
-        }
+        if ((use.card->isNDTrick() && !use.card->isVirtualCard() && use.from->hasSkill(this) && use.from->isAlive()))
+            return QList<SkillInvokeDetail>()<< SkillInvokeDetail(this, use.from, use.from);
         return QList<SkillInvokeDetail>();
     }
 
@@ -892,33 +898,44 @@ public:
         }
 
         QList<int> ids;
-        //ids << room->getDrawPile().last();
-        ids << room->drawCard(true);
+        
+        if (room->getDrawPile().length() < 2)
+            room->swapPile();
+        
+        const QList<int> &drawpile = room->getDrawPile();
+        ids << drawpile.last();
+        if (drawpile.length() >= 2)
+            ids << drawpile.at(drawpile.length() - 2);
+        //= room->getNCards(2, true, true);
+        //ids << room->drawCard(true);
 
-        room->fillAG(ids, invoke->invoker);
-        int id = room->askForAG(invoke->invoker, ids, true, objectName());
+        QList<int>  able;
+        QList<int> disable;
+        foreach(int id, ids) {
+            if (Sanguosha->getCard(id)->getSuit() == card->getSuit())
+                able << id;
+            else
+                disable << id;
+        }
+
+        room->fillAG(ids, invoke->invoker, disable);
+        int choose_id = room->askForAG(invoke->invoker, able, true, objectName());
         room->clearAG(invoke->invoker);
 
-        if (id > -1) {
-            CardsMoveStruct move(ids, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, invoke->invoker->objectName(), objectName(), QString()));
+        if (choose_id > -1) {
+            QList<int> ids1; 
+            ids1 << choose_id;
+            CardsMoveStruct move(ids1, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, invoke->invoker->objectName(), objectName(), QString()));
             room->moveCardsAtomic(move, true);
-
-            if (Sanguosha->getCard(id)->getSuit() == card->getSuit()) {
-                DummyCard dummy(ids);
-                invoke->invoker->obtainCard(&dummy);
-            }
-            else {
-                CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, invoke->invoker->objectName(), objectName(), QString());
-                DummyCard dummy(ids);
-                room->throwCard(&dummy, reason, NULL);
-            }
-        } else {
-            room->askForGuanxing(invoke->invoker, ids, Room::GuanxingDownOnly, objectName());
+            ids.removeOne(choose_id);
+            DummyCard dummy(ids1);
+            invoke->invoker->obtainCard(&dummy);
         }
+
+        //room->moveCardsToEndOfDrawpile(ids);
+        //room->askForGuanxing(invoke->invoker, ids, Room::GuanxingDownOnly, objectName());
         return false;
     }
-
-
 };
 
 class LingbaiVS : public OneCardViewAsSkill
@@ -931,32 +948,23 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return player->getMark("@lingbai-trick") > 0 && Slash::IsAvailable(player);
+        return player->getMark("@lingbai") > 0 && Slash::IsAvailable(player);
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        if (player->getMark("@lingbai-trick") > 0 && (matchAvaliablePattern("slash", pattern) || matchAvaliablePattern("jink", pattern)))
-            return true;
-        if (player->getMark("@lingbai-basic") > 0 && matchAvaliablePattern("nullification", pattern))
+        if (player->getMark("@lingbai") > 0 && (matchAvaliablePattern("slash", pattern) || matchAvaliablePattern("jink", pattern)))
             return true;
         return false;
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
     {
-        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-        bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
-        if (play || matchAvaliablePattern("slash", pattern) || matchAvaliablePattern("jink", pattern))
-            return to_select->isNDTrick();
-        else if (matchAvaliablePattern("nullification", pattern))
-            return to_select->isKindOf("BasicCard");
-        return false;
+        return  !to_select->isEquipped();
     }
 
     const Card *viewAs(const Card *originalCard) const
     {
-        
         bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
         QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
         if (play || matchAvaliablePattern("slash", pattern)) {
@@ -970,19 +978,8 @@ public:
             jink->setSkillName(objectName());
             return jink;
 
-        } else if (matchAvaliablePattern("nullification", pattern)) {
-            Card *ncard = new Nullification(originalCard->getSuit(), originalCard->getNumber());
-            ncard->addSubcard(originalCard);
-            ncard->setSkillName(objectName());
-            return ncard;
         }
         return NULL;
-    }
-
-    bool isEnabledAtNullification(const ServerPlayer *player) const
-    {
-        if (player->getMark("@lingbai-basic") == 0) return false;
-        return !player->isKongcheng() || !player->getHandPile().isEmpty();
     }
 };
 
@@ -1002,22 +999,15 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isNDTrick()) {
                 foreach(ServerPlayer *p, use.to) {
-                    if (p->hasSkill(this))
-                        room->setPlayerMark(p, "@lingbai-trick", 1);
+                    if (p->hasSkill(this) && !p->isCurrent())
+                        room->setPlayerMark(p, "@lingbai", 1);
                 }
-            }  else if (use.card->isKindOf("BasicCard")) {
-                foreach(ServerPlayer *p, use.to) {
-                    if (p->hasSkill(this))
-                        room->setPlayerMark(p, "@lingbai-basic", 1);
-                }
-            }
+            } 
         } else if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
-                    room->setPlayerMark(p, "@lingbai-trick", 0);
-                    room->setPlayerMark(p, "@lingbai-basic", 0);
-                }
+                foreach(ServerPlayer *p, room->getAllPlayers())
+                    room->setPlayerMark(p, "@lingbai", 0);
             }
         }
     }

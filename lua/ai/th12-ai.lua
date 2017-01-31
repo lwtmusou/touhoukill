@@ -522,44 +522,30 @@ sgs.ai_skill_invoke.souji = true
 sgs.ai_skill_invoke.tansuo = true
 
 sgs.ai_skill_invoke.xunbao = true
+--[[sgs.ai_skill_askforag.xunbao = function(self, card_ids)
+	if #card_ids > 0 then
+		return card_ids[1]
+	end
+	return -1
+end]]
 function sgs.ai_cardsview_valuable.lingbai(self, class_name, player)
 	if class_name == "Slash"  or  class_name == "Jink" then
-		if self.player:getMark("@lingbai-trick") == 0 then return nil end
-		local tricks ={}
-		local cards=self.player:getCards("hes")
-		cards=self:touhouAppendExpandPileToList(self.player,cards)
-		for _,c in sgs.qlist(cards) do
-			if c:isNDTrick() then
-				table.insert(tricks,c)
-			end
-		end
-		if #tricks ==0 then return false end
-		self:sortByUseValue(tricks , true)
-		local suit = tricks[1]:getSuitString()
-		local number = tricks[1]:getNumberString()
-		local card_id = tricks[1]:getEffectiveId()
+		if self.player:getMark("@lingbai") == 0 then return nil end
+		local cards=self.player:getCards("hs")
+		cards = self:touhouAppendExpandPileToList(self.player,cards)
+		cards = sgs.QList2Table(cards)
+
+		if #cards ==0 then return nil end
+		--为啥会stack overflow。。。
+		--self:sortByUseValue(cards, true)
+		local suit = cards[1]:getSuitString()
+		local number = cards[1]:getNumberString()
+		local card_id = cards[1]:getEffectiveId()
 		if (class_name == "Slash") then
 			return ("slash:lingbai[%s:%s]=%d"):format(suit, number, card_id)
 		else
 			return ("jink:lingbai[%s:%s]=%d"):format(suit, number, card_id)
 		end
-	end
-	if class_name == "Nullification" then
-		if self.player:getMark("@lingbai-basic") == 0 then return nil end
-		local basics ={}
-		local cards=self.player:getCards("hes")
-		cards=self:touhouAppendExpandPileToList(self.player,cards)
-		for _,c in sgs.qlist(cards) do
-			if c:isKindOf("BasicCard") then
-				table.insert(basics,c)
-			end
-		end
-		if #basics ==0 then return false end
-		self:sortByUseValue(basics, true)
-		local suit = basics[1]:getSuitString()
-		local number = basics[1]:getNumberString()
-		local card_id = basics[1]:getEffectiveId()
-		return ("nullification:lingbai[%s:%s]=%d"):format(suit, number, card_id)
 	end
 end
 local lingbai_skill = {}
@@ -567,21 +553,16 @@ lingbai_skill.name = "lingbai"
 table.insert(sgs.ai_skills, lingbai_skill)
 lingbai_skill.getTurnUseCard = function(self, inclusive)
 	if not sgs.Slash_IsAvailable(self.player)  then return false end
-	if self.player:getMark("@lingbai-trick") == 0 then return false end
+	if self.player:getMark("@lingbai") == 0 then return false end
 	
-	local tricks={}
-	local cards=self.player:getCards("hes")
+	local cards=self.player:getCards("hs")
 	cards=self:touhouAppendExpandPileToList(self.player,cards)
-	for _,c in sgs.qlist(cards) do
-		if c:isNDTrick() then
-			table.insert(tricks,c)
-		end
-	end
-	if #tricks==0 then return false end
-	self:sortByUseValue(tricks, true)
-	local suit = tricks[1]:getSuitString()
-	local number = tricks[1]:getNumberString()
-	local card_id = tricks[1]:getEffectiveId()
+	cards = sgs.QList2Table(cards)
+	if #cards==0 then return false end
+	self:sortByUseValue(cards, true)
+	local suit = cards[1]:getSuitString()
+	local number = cards[1]:getNumberString()
+	local card_id = cards[1]:getEffectiveId()
 	local slash_str = ("slash:lingbai[%s:%s]=%d"):format(suit, number, card_id)
 	local slash = sgs.Card_Parse(slash_str)
 
