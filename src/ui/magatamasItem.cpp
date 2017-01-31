@@ -237,6 +237,11 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
         G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(painter, rect, Qt::AlignCenter, "/");
         rect.translate(xStep, yStep);
         G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(painter, rect, Qt::AlignCenter, QString::number(m_maxHp));
+        if (m_dyingHp > 1) {
+            rect.translate(xStep, yStep);
+            QString dyingLine = QString("%1 %2 %3").arg(QString("(")).arg(QString::number(m_dyingHp - 1)).arg(QString(")"));
+            G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(painter, rect, Qt::AlignLeft, dyingLine);
+        }
     }
 }
 
