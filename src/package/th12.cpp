@@ -380,7 +380,7 @@ public:
         events << CardUsed;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if ((use.card->isNDTrick() && !use.card->isVirtualCard() && use.from->hasSkill(this) && use.from->isAlive()))
@@ -874,7 +874,7 @@ public:
     {
         if (e == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from->hasSkill(this) && use.from->isAlive())
+            if (use.from->hasSkill(this) && use.from->isAlive() && !use.card->isKindOf("SkillCard"))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
         }
         if (e == CardResponded) {
@@ -908,6 +908,10 @@ public:
             ids << drawpile.at(drawpile.length() - 2);
         //= room->getNCards(2, true, true);
         //ids << room->drawCard(true);
+        LogMessage l;
+        l.type = "$xunbaoDrawpile";
+        l.card_str = IntList2StringList(ids).join("+");
+        room->doNotify(invoke->invoker, QSanProtocol::S_COMMAND_LOG_SKILL, l.toJsonValue());
 
         QList<int>  able;
         QList<int> disable;
@@ -917,6 +921,8 @@ public:
             else
                 disable << id;
         }
+
+
 
         room->fillAG(ids, invoke->invoker, disable);
         int choose_id = room->askForAG(invoke->invoker, able, true, objectName());
@@ -958,7 +964,7 @@ public:
         return false;
     }
 
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
     {
         return  !to_select->isEquipped();
     }

@@ -126,6 +126,7 @@ CommonTranslationTable = {
 	["$PasteCard"] = "%from 对 %to 使用延时锦囊 %card",
 	["$LightningMove"] = "%card 从 %from 移动到 %to",
 	["$TurnOver"] = "%from 亮出了牌堆顶的 %card",
+	["$TurnOverBottom"] = "%from 亮出了牌堆底的 %card",
 	["$DiscardCard"] = "%from 弃置了 %card",
 	["$DiscardCardWithSkill"] = "%from 发动“%arg”弃置了 %card",
 	["$DiscardCardByOther"] = "%from 弃置了 %to 的卡牌 %card",

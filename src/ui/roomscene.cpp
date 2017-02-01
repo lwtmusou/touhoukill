@@ -2145,8 +2145,8 @@ QString RoomScene::_translateMovement(const CardsMoveStruct &move)
     } else if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_SHOW) {
         if (reason.m_reason == CardMoveReason::S_REASON_JUDGE)
             result.append(Sanguosha->translate("judge"));
-        else if (reason.m_reason == CardMoveReason::S_REASON_TURNOVER)
-            result.append(Sanguosha->translate("turnover"));
+        else if (reason.m_reason == CardMoveReason::S_REASON_TURNOVER)//ignore turnover from bottom...
+                result.append(Sanguosha->translate("turnover"));
         else if (reason.m_reason == CardMoveReason::S_REASON_DEMONSTRATE)
             result.append(Sanguosha->translate("show"));
         else if (reason.m_reason == CardMoveReason::S_REASON_PREVIEW)
@@ -2299,8 +2299,10 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
         foreach(int card_id, move.card_ids)
             log_box->appendLog(type, to_general, QStringList(), QString::number(card_id));
     }
-    if (move.reason.m_reason == CardMoveReason::S_REASON_TURNOVER)
-        log_box->appendLog("$TurnOver", move.reason.m_playerId, QStringList(), IntList2StringList(move.card_ids).join("+"));
+    if (move.reason.m_reason == CardMoveReason::S_REASON_TURNOVER) {
+        QString type = (move.reason.m_skillName == "xunbao") ? "$TurnOverBottom" : "$TurnOver";
+        log_box->appendLog(type, move.reason.m_playerId, QStringList(), IntList2StringList(move.card_ids).join("+"));
+    }
 }
 
 void RoomScene::addSkillButton(const Skill *skill, bool)
