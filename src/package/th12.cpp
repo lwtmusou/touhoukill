@@ -389,7 +389,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if ((use.card->isKindOf("BasicCard") && !use.card->isVirtualCard() && use.from->hasSkill(this) && use.from->isAlive()))
+        if ((use.card->isKindOf("TrickCard") && !use.card->isVirtualCard() && use.from->hasSkill(this) && use.from->isAlive()))
             return QList<SkillInvokeDetail>()<< SkillInvokeDetail(this, use.from, use.from);
         return QList<SkillInvokeDetail>();
     }
