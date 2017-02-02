@@ -299,7 +299,7 @@ class Jinghua : public TriggerSkill
 public:
     Jinghua() : TriggerSkill("jinghua")
     {
-        events << CardUsed << PostCardEffected;
+        events << CardUsed << EventPhaseChanging << PostCardEffected;
         view_as_skill = new JinghuaVS;
     }
 
@@ -309,6 +309,12 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Nullification"))
                 room->setPlayerFlag(use.from, "jinghua");
+        } else if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAllPlayers())
+                    room->setPlayerFlag(p, "-jinghua");
+            }
         }
     }
 
