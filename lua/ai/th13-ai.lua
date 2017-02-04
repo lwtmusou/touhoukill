@@ -959,6 +959,7 @@ function SmartAI:qingyuNum(player)
 	return num
 end
 sgs.ai_need_damaged.qingyu = function(self, attacker, player)
+	if player:isKongcheng() then return false end
 	local num = self:qingyuNum(player)
 	if player:containsTrick("indulgence") or player:containsTrick("supply_shortage") then
 		return false

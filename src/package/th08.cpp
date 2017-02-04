@@ -1808,22 +1808,28 @@ void MingmuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), mystia->objectName(), "mingmu", QString());
     room->obtainCard(mystia, this, reason, false);
 
-    const Card *card = room->askForCard(mystia, "Slash", "@mingmu:" + source->objectName(), QVariant(), Card::MethodNone, NULL, false, objectName());
-    bool invalid = true;
-    if (card) {
-        CardMoveReason reason1(CardMoveReason::S_REASON_GIVE, mystia->objectName(), source->objectName(), "mingmu", QString());
-        room->obtainCard(source, card, reason1);
-        if (mystia->hasSkill("yemang")) {
-            QString prompt = "invoke:" + source->objectName();
-            invalid = mystia->askForSkillInvoke("mingmu", prompt);
+    QStringList option;
+    option << "mingmu_give" << "mingmu_disable";
+    while (!option.isEmpty() && mystia->isAlive()) {
+        QString choice = room->askForChoice(mystia, "mingmu", option.join("+"));
+        if (choice == "mingmu_give") {
+            const Card *card = room->askForCard(mystia, "Slash", "@mingmu:" + source->objectName(), QVariant(), Card::MethodNone, NULL, false, objectName());
+            if (card) {
+                CardMoveReason reason1(CardMoveReason::S_REASON_GIVE, mystia->objectName(), source->objectName(), "mingmu", QString());
+                room->obtainCard(source, card, reason1);
+                option << "cancel";
+            }
+        } else if (choice == "mingmu_disable") {
+            option << "cancel";
+            room->setPlayerFlag(mystia, "mingmuInvalid");
+            room->touhouLogmessage("#mingmuInvalid", mystia, "yemang");
+            const Skill *yemang = Sanguosha->getSkill("yemang");
+            room->setPlayerSkillInvalidity(mystia, yemang, true);
         }
-        
-    }
-    if (invalid && mystia->hasSkill("yemang")) {
-        room->setPlayerFlag(mystia, "mingmuInvalid");
-        room->touhouLogmessage("#mingmuInvalid", mystia, "yemang");
-        const Skill *yemang = Sanguosha->getSkill("yemang");
-        room->setPlayerSkillInvalidity(mystia, yemang, true);
+        else if (choice == "cancel")
+            break;
+
+        option.removeOne(choice);
     }
 }
 

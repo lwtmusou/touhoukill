@@ -469,6 +469,13 @@ sgs.ai_skill_use["@@yege"] = function(self, prompt)
 	return "."
 end
 
+
+sgs.ai_skill_choice.mingmu = function(self, choices, data)
+	local choice_table = choices:split("+")
+	return choice_table[1]
+end
+
+
 sgs.ai_skill_cardask["@yinghuo"] = function(self, data)
 	local ecards=self.player:getCards("hs")
 	if ecards:length()==0 then return "." end

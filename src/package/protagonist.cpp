@@ -368,38 +368,35 @@ bool SaiqianCard::targetFilter(const QList<const Player *> &targets, const Playe
 void SaiqianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     ServerPlayer *reimu = targets.first();
-    if (reimu->hasSkill("saiqian")) {
+    room->setPlayerFlag(reimu, "saiqianInvoked");
+    room->notifySkillInvoked(reimu, "saiqian");
+    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), reimu->objectName(), "saiqian", QString());
+    room->obtainCard(reimu, this, reason, false);
 
-        reimu->tag["saiqian_source"] = QVariant::fromValue(source);
-
-        room->setPlayerFlag(reimu, "saiqianInvoked");
-        room->notifySkillInvoked(reimu, "saiqian");
-        CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), reimu->objectName(), "saiqian", QString());
-        room->obtainCard(reimu, this, reason, false);
-
-        //start effect
-        QStringList saiqian_str;
-        saiqian_str << "losehp_saiqian" << "discard_saiqian" << "cancel_saiqian";
-        RecoverStruct recov;
-        recov.who = reimu;
-        recov.reason = "saiqian";
-        while (!saiqian_str.isEmpty() && reimu->isAlive()) {
-            QString choice = room->askForChoice(reimu, "saiqian", saiqian_str.join("+"));
-            if (choice == "cancel_saiqian")
-                return;
-            else if (choice == "losehp_saiqian") {
-                room->touhouLogmessage("#saiqian_lose", reimu, "saiqian");
-                room->loseHp(reimu);
-                room->recover(source, recov);
-            } else if (choice == "discard_saiqian") {
-                const Card *heartcard = room->askForCard(reimu, ".H", "@saiqian-discard:" + source->objectName(), QVariant::fromValue(source), Card::MethodDiscard, NULL, true, "saiqian");
-                if (heartcard != NULL)
-                    room->recover(source, recov);
-            }
-            saiqian_str.removeOne(choice);
+    //start effect
+    QStringList saiqian_str;
+    saiqian_str << "losehp_saiqian" << "discard_saiqian" << "cancel_saiqian";
+    RecoverStruct recov;
+    recov.who = reimu;
+    recov.reason = "saiqian";
+    while (!saiqian_str.isEmpty() && reimu->isAlive()) {
+        QString choice = room->askForChoice(reimu, "saiqian", saiqian_str.join("+"));
+        if (choice == "cancel_saiqian")
+            return;
+        else if (choice == "losehp_saiqian") {
+            room->touhouLogmessage("#saiqian_lose", reimu, "saiqian");
+            room->loseHp(reimu);
+            room->recover(source, recov);
         }
+        else if (choice == "discard_saiqian") {
+            const Card *heartcard = room->askForCard(reimu, ".H", "@saiqian-discard:" + source->objectName(), QVariant::fromValue(source), Card::MethodDiscard, NULL, true, "saiqian");
+            if (heartcard != NULL)
+                room->recover(source, recov);
+        }
+        saiqian_str.removeOne(choice);
     }
 }
+
 class SaiqianVS : public ViewAsSkill
 {
 public:

@@ -396,7 +396,7 @@ end
 sgs.ai_card_intention.SaiqianCard = -60
 
 sgs.ai_skill_choice.saiqian= function(self, choices, data)
-	local source=self.player:getTag("saiqian_source"):toPlayer()
+	local source= self.room:getCurrent()
 	if not source or not source:isWounded() or not self:isFriend(source) then return "cancel_saiqian" end
 	if  source:getHp()+1 > getBestHp(source) then return "cancel_saiqian" end
 	if choices:match("discard_saiqian") then
@@ -413,7 +413,7 @@ sgs.ai_skill_choice.saiqian= function(self, choices, data)
 end
 sgs.ai_choicemade_filter.skillChoice.saiqian = function(self, player, args)
 	local choice = args[#args]
-	local target =player:getTag("saiqian_source"):toPlayer()
+	local target = self.room:getCurrent()
 
 	if not target or not target:isWounded() then return end
 	if  choice == "losehp_saiqian" then
@@ -434,7 +434,7 @@ sgs.ai_skill_cardask["@saiqian-discard"] = function(self,data)
 end
 sgs.ai_choicemade_filter.cardResponded["@saiqian-discard"] = function(self, player, args)
 	if args[#args] ~= "_nil_" then
-		local target =player:getTag("saiqian_source"):toPlayer()
+		local target = self.room:getCurrent()
 		if not target or not target:isWounded() then return end
 		sgs.updateIntention(player, target, -80)
 	end

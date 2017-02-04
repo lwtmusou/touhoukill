@@ -278,4 +278,7 @@ return
 	["@mingmu"]= "你是否选择交给 <font color=\"#00FF00\"><b>%src </b></font> 一张【杀】，若不交给，则你的技能“夜盲”将于此阶段无效",
 	["mingmu:invoke"] = "你是否要令你的技能“夜盲”于<font color=\"#00FF00\"><b>%src </b></font>的出牌阶段无效。",
 	["#mingmuInvalid"] = " %from 的技能 “%arg” 于此阶段内无效。",
+	["mingmu_disable"]= "明目无效",
+	["mingmu_give"]= "明目给杀",
+	
 }
