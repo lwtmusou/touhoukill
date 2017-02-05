@@ -1441,6 +1441,8 @@ function sgs.gameProcess(room, arg)  --尼玛 不看具体技能和牌的数量�
 			if rebel_num > 1 and aplayer:hasSkill("hpymsiyu+juhe") then rebel_value = rebel_value + 1 end
 			if aplayer:hasSkill("wuchang")  then rebel_value = rebel_value + 10 end
 			if  aplayer:hasSkill("shizhu") then rebel_value = rebel_value + 1 end
+			if aplayer:hasSkill("jinxi") and self.player:getMark("@jinxi") > 0  and not self:isWeak(aplayer) then  rebel_value = rebel_value + 2 end
+			if aplayer:hasSkills("bolan+hezhou") then rebel_value = rebel_value + 10 end
 		elseif role == "loyalist" or role == "lord" then
 			local loyal_hp
 			if aplayer:hasSkill("benghuai") and aplayer:getHp() > 4 then loyal_hp = 4
@@ -1459,6 +1461,7 @@ function sgs.gameProcess(room, arg)  --尼玛 不看具体技能和牌的数量�
 			end
 			if aplayer:getMark("@duanchang")==1 and aplayer:getMaxHp() <=3 then loyal_value = loyal_value - 1 end
 			if aplayer:getMark("@pingyi") > 0 then loyal_value = loyal_value - 3  end
+			if aplayer:hasSkills("bolan+hezhou") then loyal_value = loyal_value + 8 end
 		end
 	end
 	local diff = loyal_value - rebel_value + (loyal_num + 1 - rebel_num) * 2
