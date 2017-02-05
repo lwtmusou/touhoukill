@@ -290,7 +290,7 @@ sgs.ai_skill_invoke.huisu = function(self)
 	return self:invokeTouhouJudge()
 end
 sgs.ai_need_damaged.huisu = function(self, attacker, player)
-	if self.player:getLostHp() < 1 then
+	if self.player:getLostHp() < 1 and not self.player:hasFlag("huisu") then
 		return self:needtouhouDamageJudge()
 	end
 	return false

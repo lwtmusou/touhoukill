@@ -1418,9 +1418,9 @@ public:
         ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), "chuangshi", "@chuangshi_target", true, true);
         if (target != NULL) {
             room->setPlayerMark(target, "chuangshi_user", 1);
-            //target->gainMark("chuangshi_user");//need use gainMark to notify the client player.
             room->setPlayerProperty(player, "chuangshi_user", target->objectName());
             const Card *card = room->askForUseCard(player, "@@chuangshi", "@chuangshi_prompt:" + target->objectName());
+            room->setPlayerMark(target, "chuangshi_user", 0);
             return card != NULL;
         }
         return false;
@@ -1538,7 +1538,6 @@ void ChuangshiCard::onUse(Room *room, const CardUseStruct &card_use) const
         ServerPlayer *chuangshi_user = Chuangshi::getChuangshiUser1(from);
 
         room->setPlayerMark(chuangshi_user, "chuangshi_user", 0);
-        //from->addMark("chuangshi", 1);
         room->touhouLogmessage("#ChoosePlayerWithSkill", from, "chuangshi", logto, "");
         Card *use_card = Sanguosha->cloneCard(card->objectName());
         use_card->setSkillName("_chuangshi");
@@ -1557,7 +1556,6 @@ void ChuangshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> 
     Card * use_card = Sanguosha->cloneCard(user_string);
 
     room->setPlayerMark(user, "chuangshi_user", 0);
-    //source->addMark("chuangshi", 1);
     CardUseStruct carduse;
     use_card->setSkillName("_chuangshi");
     carduse.card = use_card;

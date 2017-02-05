@@ -502,7 +502,7 @@ public:
         return false;
     }
 };
-
+/*
 class Huisu : public TriggerSkill
 {
 public:
@@ -555,8 +555,69 @@ public:
         return false;
     }
 };
+*/
+class Huisu : public TriggerSkill
+{
+public:
+    Huisu() : TriggerSkill("huisu")
+    {
+        events << PostHpReduced << EventPhaseChanging << EventPhaseStart;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == PostHpReduced) {
+            ServerPlayer *player = NULL;
+            if (data.canConvert<DamageStruct>())
+                player = data.value<DamageStruct>().to;
+            else if (data.canConvert<HpLostStruct>())
+                player = data.value<HpLostStruct>().player;
+            if (player == NULL)
+                return;
+            else
+                room->setPlayerFlag(player, "huisu");
+        }
+        else if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAllPlayers())
+                    room->setPlayerFlag(p, "-huisu");
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        if (triggerEvent != EventPhaseStart) return QList<SkillInvokeDetail>();
+
+        ServerPlayer *current = data.value<ServerPlayer *>();
+        if (!current || current->getPhase() != Player::Finish) return QList<SkillInvokeDetail>();
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->getAllPlayers()) {
+            if (p->hasSkill(this) && p->hasFlag("huisu"))
+                d << SkillInvokeDetail(this, p, p);
+        }
+        return d;
+    }
 
 
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        JudgeStruct judge;
+        judge.pattern = ".|red";
+        judge.good = true;
+        judge.reason = objectName();
+        judge.who = invoke->invoker;
+        room->judge(judge);
+
+        if (judge.isGood()) {
+            RecoverStruct recov;
+            recov.recover = 1;
+            room->recover(invoke->invoker, recov);
+        }
+        return false;
+    }
+};
 
 class Bolan : public TriggerSkill
 {
