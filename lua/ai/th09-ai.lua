@@ -374,7 +374,7 @@ sgs.ai_skill_use["@@toupai"] = function(self, prompt)
 	self.enemies = sgs.reverse(self.enemies)
 	local enemies = self.enemies
 	for _,p in pairs(self.enemies) do
-		if self:touhouHandCardsFix(p) then
+		if p:isKongcheng() or self:touhouHandCardsFix(p)  then
 			table.removeOne(enemies, p)
 		end
 	end
