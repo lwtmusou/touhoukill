@@ -1658,6 +1658,8 @@ public:
             if (p->hasSkill("modian") && !p->hasFlag("modianInvoked"))
                 return true;
         }
+        if (player->hasSkill("modian") && !player->hasFlag("modianInvoked"))
+            return true;
         return false;
     }
 
