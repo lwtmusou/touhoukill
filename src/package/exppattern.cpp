@@ -119,13 +119,19 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
     QString place = factors.at(3);
     if (!player || place == ".") checkpoint = true;
     if (!checkpoint) {
+        bool findOneShow = false;//only for check palce "show"
+        bool needCheckShow = place.split(",").contains("show");//only for check palce "show"
+
         QList<int> ids;
         if (card->isVirtualCard())
             ids = card->getSubcards();
         else
             ids << card->getEffectiveId();
+        
         if (!ids.isEmpty()) {
             foreach (int id, ids) {
+                if (findOneShow)
+                    break;
                 checkpoint = false;
                 const Card *card = Sanguosha->getCard(id);
                 foreach (QString p, place.split(",")) {
@@ -138,14 +144,22 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                                 break;
                             }
                         }
+                    } else if (p.startsWith("%")) {
+                        p = p.mid(1);
+                        foreach(const Player *pl, player->getAliveSiblings())
+                            if (!pl->getPile(p).isEmpty() && pl->getPile(p).contains(id)) {
+                                checkpoint = true;
+                                break;
+                            }
                     } else if (p == "sqchuangshi" && card->getEffectiveId() >= 0 && !player->hasEquip(card)) {
                         checkpoint = true;
                     } else if (!player->getPile(p).isEmpty() && player->getPile(p).contains(id)) {
                         checkpoint = true;
-                    } else if (p == "show" && card->getEffectiveId() >= 0) {
+                    } if (p == "show") {// && card->getEffectiveId() >= 0
                         foreach(int id1, player->getShownHandcards()) {
                             if (id1 == id) {
                                 checkpoint = true;
+                                findOneShow = true;
                                 break;
                             }
                         }
@@ -153,7 +167,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                     if (checkpoint)
                         break;
                 }
-                if (!checkpoint)
+                if (!checkpoint && !needCheckShow)
                     break;
             }
         }

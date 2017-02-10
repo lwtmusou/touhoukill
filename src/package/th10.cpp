@@ -729,10 +729,10 @@ public:
         foreach(const Card *card, cards) {
             if ((card->isNDTrick() || card->isKindOf("BasicCard"))
                     && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
-                QString pattern = card->objectName();
+                QString p = card->objectName();
                 if (card->isKindOf("Slash"))
-                    pattern = "slash";
-                if (!validPatterns.contains(pattern))
+                    p = "slash";
+                if (!validPatterns.contains(p))
                     validPatterns << card->objectName();
             }
         }

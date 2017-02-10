@@ -157,6 +157,8 @@ public:
                     logto << newVictim;
                     room->touhouLogmessage("#CollateralSlash", use.from, use.card->objectName(), logto);
                 }
+
+
                 break;
             }
         }

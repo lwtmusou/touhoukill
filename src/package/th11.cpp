@@ -125,6 +125,7 @@ public:
                 logto << p;
                 logto.removeOne(invoke->invoker);
                 room->touhouLogmessage("#huzhu_change", use.from, use.card->objectName(), logto);
+
                 break;
             }
         }

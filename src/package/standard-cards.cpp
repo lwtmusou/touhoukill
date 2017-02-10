@@ -781,7 +781,6 @@ public:
         Slash *slash = new Slash(Card::SuitToBeDecided, 0);
         slash->setSkillName(objectName());
         slash->addSubcards(cards);
-
         return slash;
     }
 };

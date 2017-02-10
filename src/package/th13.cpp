@@ -426,10 +426,10 @@ public:
         foreach(const Card *card, cards) {
             if ((card->isNDTrick() || card->isKindOf("BasicCard"))
                     && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
-                QString pattern = card->objectName();
+                QString p = card->objectName();
                 if (card->isKindOf("Slash"))
-                    pattern = "slash";
-                if (!validPatterns.contains(pattern) && !XihuaClear::xihua_choice_limit(Self, pattern, method))
+                    p = "slash";
+                if (!validPatterns.contains(p) && !XihuaClear::xihua_choice_limit(Self, p, method))
                     validPatterns << card->objectName();
             }
         }

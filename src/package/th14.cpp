@@ -199,27 +199,31 @@ void LeitingCard::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
     effect.from->drawCards(2);
+    if (effect.from->isKongcheng())
+        return;
+    QList<const Card *> hc = effect.from->getHandcards();
+    foreach(const Card *c, hc) {
+        if (effect.from->isJilei(c))
+            hc.removeOne(c);
+    }
+    if (hc.length() == 0) {
+        // jilei show all cards
+        room->doJileiShow(effect.from, effect.from->handCards());
+        return;
+    }
+
     const Card *cards = room->askForCard(effect.from, ".|.|.|hand!", "@leiting:" + effect.to->objectName(), QVariant::fromValue(effect.to), Card::MethodDiscard);
     if (!cards) {
-        // force discard!!!
-        QList<const Card *> hc = effect.to->getHandcards();
-        foreach(const Card *c, hc) {
-            if (effect.to->isJilei(c))
-                hc.removeOne(c);
-        }
-
-        if (hc.length() == 0)
-            return;
-            
+        //force discard!!!    
         int x = qrand() % hc.length();
         cards = hc.value(x);
         room->throwCard(cards, effect.to);
     }
-    Card *discard = Sanguosha->getCard(cards->getEffectiveId());
-    if (discard->getSuit() == Card::Heart) {
+
+    if (cards->getSuit() == Card::Heart) {
         effect.to->drawCards(1);
         room->damage(DamageStruct("leiting", NULL, effect.to, 1, DamageStruct::Thunder));
-    } else if (discard->getSuit() == Card::Spade) {
+    } else if (cards->getSuit() == Card::Spade) {
         ThunderSlash *slash = new ThunderSlash(Card::NoSuit, 0);
         // if return without usecard,we need delete this new thunderslash?
         if (effect.to->isCardLimited(slash, Card::MethodUse))

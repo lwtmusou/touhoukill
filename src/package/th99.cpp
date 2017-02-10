@@ -1076,7 +1076,7 @@ class ZhesheVS : public OneCardViewAsSkill
 public:
     ZhesheVS() :OneCardViewAsSkill("zheshe")
     {
-        filter_pattern = ".|.|.|hand!";//"^EquipCard!" ;
+        filter_pattern = ".|.|.|hand!";
         response_pattern = "@@zheshe";
     }
 

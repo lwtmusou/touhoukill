@@ -901,10 +901,23 @@ public:
         room->touhouLogmessage("#yeyan", invoke->invoker, objectName(), logto, use.card->objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
         foreach(ServerPlayer *to, invoke->targets) {
-            if (!to->canDiscard(to, "hs"))
+            if (to->isKongcheng())
                 continue;
-
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), to->objectName());
+
+
+            QList<const Card *> hc = to->getHandcards();
+            foreach(const Card *c, hc) {
+                if (to->isJilei(c))
+                    hc.removeOne(c);
+            }
+            if (hc.length() == 0) {
+                // jilei show all cards
+                room->doJileiShow(to, to->handCards());
+                continue;
+            }
+                
+            
             QStringList prompt_list;
             prompt_list << "yeyan-discard" << use.card->objectName()
                         << invoke->invoker->objectName();
@@ -912,16 +925,6 @@ public:
             const Card *card = room->askForCard(to, ".!", prompt, data, Card::MethodDiscard);
             if (!card) {
                 // force discard!!!
-                QList<const Card *> hc = to->getHandcards();
-                foreach(const Card *c, hc) {
-                    if (to->isJilei(c))
-                        hc.removeOne(c);
-                }
-
-                if (hc.length() == 0)
-                    return false;
-
-
                 int x = qrand() % hc.length();
                 const Card *c = hc.value(x);
                 card = c;

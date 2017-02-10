@@ -1157,12 +1157,9 @@ void Dashboard::expandPileCards(const QString &pile_name)
 
     }
 
-
-
     foreach(CardItem *card_item, card_items)
         _addHandCard(card_item, true, Sanguosha->translate(pile_name));
-
-
+    
     adjustCards();
     _playMoveCardsAnimation(card_items, false);
     foreach(CardItem *card_item, card_items)
@@ -1223,7 +1220,7 @@ void Dashboard::retractPileCards(const QString &pile_name)
     if (pile.isEmpty()) return;
     CardItem *card_item;
 
-    foreach (int card_id, Self->getPile(pile_name)) {
+    foreach(int card_id, pile) {
         card_item = CardItem::FindItem(m_handCards, card_id);
         if (card_item == selected) selected = NULL;
         Q_ASSERT(card_item);

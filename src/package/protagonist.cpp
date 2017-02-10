@@ -191,7 +191,7 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return !player->hasUsed("MofaCard");
+        return !player->hasUsed("MofaCard") && !player->isKongcheng();
     }
 
     virtual const Card *viewAs(const Card *originalCard) const
@@ -1314,7 +1314,6 @@ public:
     Qiangyu() : TriggerSkill("qiangyu")
     {
         events << CardsMoveOneTime << BeforeCardsMove;
-        // frequency = Frequent;
         view_as_skill = new QiangyuVS;
     }
 
@@ -1354,19 +1353,28 @@ public:
             invoke->invoker->setFlags("qiangyu");
         } else {
             invoke->invoker->setFlags("-qiangyu");
+            if (invoke->invoker->isKongcheng())
+                return false;
+            QList<const Card *> hc = invoke->invoker->getHandcards();
+            bool hasSpade = false;
+            foreach(const Card *c, hc) {
+                if (invoke->invoker->isJilei(c))
+                    hc.removeOne(c);
+                else if (c->getSuit() == Card::Spade)
+                    hasSpade = true;
+            }
+
+            if (!hasSpade && hc.length() < 2) {
+                // jilei show all cards
+                room->doJileiShow(invoke->invoker, invoke->invoker->handCards());
+                return false;
+            }
+
             const Card *card = room->askForCard(invoke->invoker, "@@qiangyu!", "qiangyu-discard", data, Card::MethodDiscard, NULL, false, objectName());
             if (!card) {
                 // force discard!!!
                 DummyCard *dc = new DummyCard;
                 dc->deleteLater();
-                QList<const Card *> hc = invoke->invoker->getHandcards();
-                foreach (const Card *c, hc) {
-                    if (invoke->invoker->isJilei(c))
-                        hc.removeOne(c);
-                }
-
-                if (hc.length() == 0)
-                    return false;
 
                 if (hc.length() > 2) {
                     for (int i = 0; i < 2; ++i) {
@@ -1375,37 +1383,10 @@ public:
                         hc.removeAt(x);
                         dc->addSubcard(c);
                     }
-                } else
-                    dc->addSubcards(hc);
-
-                room->throwCard(dc, invoke->invoker);
-                card = dc;
-            }
-            if ((card->subcardsLength() == 0 || (card->subcardsLength() == 1 && Sanguosha->getCard(card->getSubcards().first())->getSuit() != Card::Spade)) && !invoke->invoker->isKongcheng()) {
-                // jilei show all cards
-                JsonArray gongxinArgs;
-                gongxinArgs << invoke->invoker->objectName();
-                gongxinArgs << false;
-                gongxinArgs << JsonUtils::toJsonArray(invoke->invoker->handCards());
-
-                foreach (int cardId, invoke->invoker->handCards()) {
-                    WrappedCard *card = Sanguosha->getWrappedCard(cardId);
-                    if (card->isModified())
-                        room->broadcastUpdateCard(room->getOtherPlayers(invoke->invoker), cardId, card);
-                    else
-                        room->broadcastResetCard(room->getOtherPlayers(invoke->invoker), cardId);
                 }
-
-                LogMessage log;
-                log.type = "$JileiShowAllCards";
-                log.from = invoke->invoker;
-
-                foreach(int card_id, invoke->invoker->handCards())
-                    Sanguosha->getCard(card_id)->setFlags("visible");
-                log.card_str = IntList2StringList(invoke->invoker->handCards()).join("+");
-                room->sendLog(log);
-
-                room->doBroadcastNotify(QSanProtocol::S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
+                else
+                    dc->addSubcards(hc);
+                room->throwCard(dc, invoke->invoker);
             }
         }
         return false;
@@ -1993,50 +1974,60 @@ void YinyangCard::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     const Card *card1 = NULL;
     const Card *card2 = NULL;
-    if (effect.to->canDiscard(effect.to, "hs")) {
-        card1 = room->askForCard(effect.to, ".|.|.|hand!", "@yinyang_discard");
-        if (!card1) {
-            // force discard!!!
-            QList<const Card *> hc = effect.to->getHandcards();
-            foreach(const Card *c, hc) {
-                if (effect.to->isJilei(c))
-                    hc.removeOne(c);
-            }
 
-            if (hc.length() > 0) {
-                int x = qrand() % hc.length();
-                card1 = hc.value(x);
-                room->throwCard(card1, effect.to);
-            }
-        }
+    //The First Discard
+    QList<const Card *> hc1 = effect.to->getHandcards();
+    foreach(const Card *c, hc1) {
+        if (effect.to->isJilei(c))
+            hc1.removeOne(c);
     }
+    if (hc1.length() == 0) {
+        // jilei show all cards
+        room->doJileiShow(effect.to, effect.to->handCards());
+        return;
+    }
+    card1 = room->askForCard(effect.to, ".|.|.|hand!", "@yinyang_discard");
+    if (!card1) {
+        // force discard!!!
+        int x = qrand() % hc1.length();
+        card1 = hc1.value(x);
+        room->throwCard(card1, effect.to);
         
+    }
 
-    if (card1) {
+
+    if (card1) { //for AI
         effect.from->tag["yinyang_card"] = QVariant::fromValue(card1);
         effect.from->tag["yinyang_target"] = QVariant::fromValue(effect.to);
     }
 
-    if (effect.from->canDiscard(effect.from, "hs")) {
-        card2 = room->askForCard(effect.from, ".|.|.|hand!", "@yinyang_discard");
-        if (!card2) {
-            // force discard!!!
-            QList<const Card *> hc = effect.from->getHandcards();
-            foreach(const Card *c, hc) {
-                if (effect.to->isJilei(c))
-                    hc.removeOne(c);
-            }
 
-            if (hc.length() > 0) {
-                int x = qrand() % hc.length();
-                card2 = hc.value(x);
-                room->throwCard(card2, effect.from);
-            }
+
+    //The Second Discard
+    if (effect.from->isKongcheng())
+        return;
+    QList<const Card *> hc2 = effect.from->getHandcards();
+    foreach(const Card *c, hc2) {
+        if (effect.from->isJilei(c))
+            hc2.removeOne(c);
+    }
+    if (hc2.length() == 0) {
+        // jilei show all cards
+        room->doJileiShow(effect.from, effect.from->handCards());
+        return;
+    }
+    card2 = room->askForCard(effect.from, ".|.|.|hand!", "@yinyang_discard");
+    if (!card2) {
+        // force discard!!!
+        if (hc2.length() > 0) {
+            int x = qrand() % hc2.length();
+            card2 = hc2.value(x);
+            room->throwCard(card2, effect.from);
         }
     }
+
     effect.from->tag.remove("yinyang_card");
     effect.from->tag.remove("yinyang_target");
-
     if (card1 && card2) {
         if (card1->isRed() == card2->isRed()) {
             effect.from->drawCards(2);

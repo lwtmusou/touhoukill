@@ -1382,7 +1382,6 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                              bool isRetrial, const QString &skill_name, bool isProvision, int notice_index)
 {
     Q_ASSERT(pattern != "slash" || method != Card::MethodUse); // use askForUseSlashTo instead
-
     tryPause();
     notifyMoveFocus(player, S_COMMAND_RESPONSE_CARD);
 
@@ -1542,6 +1541,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             reason.m_extraData = QVariant::fromValue(card);
             if (theProvider != NULL)
                 moveCardTo(card, theProvider, NULL, Player::PlaceTable, reason, true);
+            else if (!card->isVirtualCard() && getCardOwner(card->getEffectiveId()) && getCardOwner(card->getEffectiveId()) != player) //only for Skill Xinhua
+                moveCardTo(card, getCardOwner(card->getEffectiveId()), NULL, Player::PlaceTable, reason, true);
             else
                 moveCardTo(card, player, NULL, Player::PlaceTable, reason, true);
         } else if (method == Card::MethodDiscard) {
@@ -1553,6 +1554,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             reason.m_extraData = QVariant::fromValue(card);
             if (theProvider != NULL)
                 moveCardTo(card, theProvider, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason);
+            else if (!card->isVirtualCard() && getCardOwner(card->getEffectiveId()) && getCardOwner(card->getEffectiveId()) != player) //only for Skill Xinhua
+                moveCardTo(card, getCardOwner(card->getEffectiveId()), NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason);
             else
                 moveCardTo(card, player, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason);
         }
@@ -5269,29 +5272,7 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
             }
 
             if (card_num < min_num && !jilei_list.isEmpty()) {
-                JsonArray gongxinArgs;
-                gongxinArgs << player->objectName();
-                gongxinArgs << false;
-                gongxinArgs << JsonUtils::toJsonArray(jilei_list);
-
-                foreach (int cardId, jilei_list) {
-                    WrappedCard *card = Sanguosha->getWrappedCard(cardId);
-                    if (card->isModified())
-                        broadcastUpdateCard(getOtherPlayers(player), cardId, card);
-                    else
-                        broadcastResetCard(getOtherPlayers(player), cardId);
-                }
-
-                LogMessage log;
-                log.type = "$JileiShowAllCards";
-                log.from = player;
-
-                foreach(int card_id, jilei_list)
-                    Sanguosha->getCard(card_id)->setFlags("visible");
-                log.card_str = IntList2StringList(jilei_list).join("+");
-                sendLog(log);
-
-                doBroadcastNotify(S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
+                doJileiShow(player, jilei_list);
                 return false;
             }
             return true;
@@ -5343,6 +5324,35 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
 
     return true;
 }
+
+
+void Room::doJileiShow(ServerPlayer *player, QList<int> jilei_ids)
+{
+    JsonArray gongxinArgs;
+    gongxinArgs << player->objectName();
+    gongxinArgs << false;
+    gongxinArgs << JsonUtils::toJsonArray(jilei_ids);
+
+    foreach(int cardId, jilei_ids) {
+        WrappedCard *card = Sanguosha->getWrappedCard(cardId);
+        if (card->isModified())
+            broadcastUpdateCard(getOtherPlayers(player), cardId, card);
+        else
+            broadcastResetCard(getOtherPlayers(player), cardId);
+    }
+
+    LogMessage log;
+    log.type = "$JileiShowAllCards";
+    log.from = player;
+
+    foreach(int card_id, jilei_ids)
+        Sanguosha->getCard(card_id)->setFlags("visible");
+    log.card_str = IntList2StringList(jilei_ids).join("+");
+    sendLog(log);
+
+    doBroadcastNotify(S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
+}
+
 
 const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, int discard_num, int min_num, bool include_equip, const QString &prompt, bool optional)
 {

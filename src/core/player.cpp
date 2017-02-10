@@ -1106,6 +1106,8 @@ int Player::getCardCount(bool include_equip, bool include_judging) const
 
 QList<int> Player::getPile(const QString &pile_name) const
 {
+    if (pile_name == "shown_card")
+        return getShownHandcards();
     return piles[pile_name];
 }
 
