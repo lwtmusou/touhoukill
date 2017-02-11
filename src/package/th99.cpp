@@ -544,16 +544,18 @@ class Shitu : public TriggerSkill
 public:
     Shitu() : TriggerSkill("shitu")
     {
-        events << EventPhaseChanging << DamageDone << Death << TurnStart;
+        events << EventPhaseChanging << DamageDone << TurnStart;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         switch (triggerEvent) {
-        case DamageDone:
-        case Death:
-            room->setTag("shituDamageOrDeath", true);
+        case DamageDone: {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from && damage.from->isCurrent())
+                room->setTag("shituDamageOrDeath", true);
             break;
+        }
         case TurnStart:
             room->setTag("shituDamageOrDeath", false);
             break;
