@@ -533,39 +533,47 @@ end
 
 function turnUse_guaiqi(self)
 	local piles = self.player:getPile("modian")
-	local guaiqis = {}
+	local guaiqis = {}-- for use trick
+	local tricks = {}-- for use slash
+	local slashes = {}
 	for _,id in sgs.qlist(piles) do
 		local c = sgs.Sanguosha:getCard(id)
-		if c:isKindOf("TrickCard") and not c:isKindOf("Nullification") and not table.contains(guaiqis,  c:objectName()) then
-			table.insert(guaiqis, c:objectName())
+		if c:isKindOf("TrickCard") then
+			table.insert(tricks, c)
 		end
-	end
-	if #guaiqis == 0 then return nil end
-
-	local cards = self.player:getHandcards()
-	cards = self:touhouAppendExpandPileToList(self.player, cards)
-	local slashes = {}
-	for _,c in sgs.qlist(cards) do
-		if (c:isKindOf("Slash")) then
+		if c:isKindOf("Slash") then
 			table.insert(slashes, c)
 		end
 	end
-	if #slashes == 0 then return nil end
-	self:sortByUseValue(slashes, true)
-
+	if (#slashes > 0) then
+		for _,id in sgs.qlist(piles) do
+			local c = sgs.Sanguosha:getCard(id)
+			if c:isKindOf("TrickCard") and not c:isKindOf("Nullification") and not table.contains(guaiqis,  c:objectName()) then
+				table.insert(guaiqis, c:objectName())
+			end
+		end
+	end
+	if (#tricks > 0) then
+		table.insert(guaiqis, "slash")
+	end
+	if #guaiqis == 0 then return nil end
+	
+	
 
 	local choices={}
 	for i = 1, #guaiqis do
 		local forbiden = guaiqis[i]
-		forbid = sgs.cloneCard(forbiden, slashes[1]:getSuit(),slashes[1]:getNumber())
+		local forbid
+		if forbiden == "slash" then
+			forbid = sgs.cloneCard(forbiden, tricks[1]:getSuit(),tricks[1]:getNumber())
+		else
+			forbid = sgs.cloneCard(forbiden, slashes[1]:getSuit(),slashes[1]:getNumber())
+		end
 		if self.player:isCardLimited(forbid, sgs.Card_MethodUse, true) or not forbid:isAvailable(self.player) then
 		else
 			table.insert(choices,guaiqis[i])
 		end
 	end
-	local suit = slashes[1]:getSuitString()
-	local number = slashes[1]:getNumberString()
-	local card_id = slashes[1]:getEffectiveId()
 
 	local choice
 	if not choice and table.contains(choices,"dismantlement") then
@@ -599,7 +607,15 @@ function turnUse_guaiqi(self)
 	if not choice then
 		choice = choices[1]
 	end
-	local str= (choice..":guaiqi[%s:%s]=%d"):format(suit, number, card_id)
+	
+	local str  = (choice..":guaiqi[%s:%s]="):format("to_be_decided", -1)
+	if (choice == "slash") then
+		self:sortByUseValue(tricks, true)
+		str = str .. tricks[1]:getEffectiveId()
+	else
+		self:sortByUseValue(slashes, true)
+		str = str .. slashes[1]:getEffectiveId()
+	end
 	return str
 end
 
@@ -617,36 +633,51 @@ function sgs.ai_cardsview_valuable.guaiqi(self, class_name, player)
 	if class_name == "sqchuangshi" then
 		return turnUse_guaiqi(self)
 	end
-	if class_name ~= "Nullification" then return nil end
-	local hasNul = false
-	local piles = self.player:getPile("modian")
-	local modians = {}
-	for _,id in sgs.qlist(piles) do
-		local c = sgs.Sanguosha:getCard(id)
-		if c:isKindOf("TrickCard") then
-			table.insert(modians, c)
-		end
-		if c:isKindOf("Nullification") then
-			hasNul = true
-		end
+	
+	if (sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE) then
+		return nil
 	end
-	if hasNul then
-		local cards = self.player:getHandcards()
-		cards = self:touhouAppendExpandPileToList(self.player, cards)
-		for _,c in sgs.qlist(cards) do
-			if (c:isKindOf("Slash")) then
+	if class_name == "Slash" then
+		local piles = self.player:getPile("modian")
+		local modians = {}
+		for _,id in sgs.qlist(piles) do
+			local c = sgs.Sanguosha:getCard(id)
+			if c:isKindOf("TrickCard") then
 				table.insert(modians, c)
 			end
 		end
+		if #modians == 0 then return nil end
+		self:sortByUseValue(modians, true)
+		local suit = modians[1]:getSuitString()
+		local number = modians[1]:getNumberString()
+		local card_id = modians[1]:getEffectiveId()
+		return ("slash:guaiqi[%s:%s]=%d"):format(suit, number, card_id)
 	end
+	
 
-	if #modians == 0 then return nil end
-	self:sortByUseValue(modians, true)
+	if class_name == "Nullification" then 
+		local hasNul = false
+		local piles = self.player:getPile("modian")
+		local modians = {}
+		for _,id in sgs.qlist(piles) do
+			local c = sgs.Sanguosha:getCard(id)
+			if c:isKindOf("Slash") then
+				table.insert(modians, c)
+			end
+			if c:isKindOf("Nullification") then
+				hasNul = true
+			end
+		end
+		if not hasNul then return nil end
+		if #modians == 0 then return nil end
+		self:sortByUseValue(modians, true)
 
-	local suit = modians[1]:getSuitString()
-	local number = modians[1]:getNumberString()
-	local card_id = modians[1]:getEffectiveId()
-	return ("nullification:guaiqi[%s:%s]=%d"):format(suit, number, card_id)
+		local suit = modians[1]:getSuitString()
+		local number = modians[1]:getNumberString()
+		local card_id = modians[1]:getEffectiveId()
+		return ("nullification:guaiqi[%s:%s]=%d"):format(suit, number, card_id)
+	end
+	return nil
 end
 
 local modianvs_skill = {}
@@ -660,7 +691,7 @@ function modianvs_skill.getTurnUseCard(self)
 	local card
 	self:sortByUseValue(cards,true)
 	for _,acard in ipairs(cards)  do
-		if acard:isBlack() then
+		if acard:isNDTrick() or acard:isKindOf("Slash") then
 			card = acard
 			break
 		end
@@ -682,6 +713,9 @@ sgs.ai_skill_use_func.ModianCard = function(card, use, self)
 	local targets = {}
 	for _,friend in ipairs(self.friends) do
 		if friend:hasSkill("modian") and not friend:hasFlag("modianInvoked") then
+			if not friend:isWounded() and friend:getPile("modian"):length() >= friend:getHp()  then
+				continue
+			end
 			table.insert(targets, friend)
 		end
 	end
@@ -709,7 +743,7 @@ sgs.ai_skill_cardask["@modian"] = function(self, data)
 	return "$" .. tricks[1]:getId()
 end
 
-sgs.ai_skill_choice.modian = function(self, choices, data)
+--[[sgs.ai_skill_choice.modian = function(self, choices, data)
 	if choices:match("recover") then return "recover" end
 	return "draw"
-end
+end]]

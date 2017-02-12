@@ -1578,15 +1578,30 @@ bool ModianCard::targetFilter(const QList<const Player *> &targets, const Player
             && !to_select->hasFlag("modianInvoked");
 }
 
-void ModianCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
+void ModianCard::use(Room *room, ServerPlayer *src, QList<ServerPlayer *> &targets) const
 {
     ServerPlayer *alice = targets.first();
     room->setPlayerFlag(alice, "modianInvoked");
     room->notifySkillInvoked(alice, "modian");
 
+    bool draw = true;
+    foreach(int id, alice->getPile("modian")) {
+        if (Sanguosha->getCard(id)->objectName() == Sanguosha->getCard(subcards.first())->objectName()) {
+            draw = false;
+            break;
+        }
+        else if (Sanguosha->getCard(id)->isKindOf("Slash") && Sanguosha->getCard(subcards.first())->isKindOf("Slash")) {
+            draw = false;
+            break;
+        }
+    }
+    if (draw)
+        src->drawCards(1);
+
+
     CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, "", NULL, "modian", "");
     alice->addToPile("modian", subcards, true, reason);
-
+    
     if (alice->getPile("modian").length() > alice->getHp()) {
         const Card *c = room->askForCard(alice, "@@modian!", "@modian", QVariant(), Card::MethodNone, NULL, false, "modian");
         // force discard!!!
@@ -1600,16 +1615,7 @@ void ModianCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets)
 
         CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
         room->throwCard(c, reason, NULL);
-
-        QStringList choices;
-        choices << "draw";
-        if (alice->isWounded())
-            choices << "recover";
-        QString choice = room->askForChoice(alice, "modian", choices.join("+"));
-        if (choice == "draw")
-            alice->drawCards(1);
-        else
-            room->recover(alice, RecoverStruct());
+        room->recover(alice, RecoverStruct());
     }
 }
 
@@ -1632,7 +1638,7 @@ public:
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
     {
-        return !to_select->isEquipped()  && to_select->isBlack()  && selected.isEmpty();
+        return selected.isEmpty() && !to_select->isEquipped()  && (to_select->isNDTrick() || to_select->isKindOf("Slash"));
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const
@@ -1669,7 +1675,7 @@ public:
     virtual bool viewFilter(const QList<const Card*> &, const Card*to_select) const
     {
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
-            return  to_select->isBlack() && !to_select->isEquipped() && !Self->getPile("modian").contains(to_select->getEffectiveId());
+            return  (to_select->isNDTrick() || to_select->isKindOf("Slash")) && !to_select->isEquipped() && !Self->getPile("modian").contains(to_select->getEffectiveId());
         else
             return  Self->getPile("modian").contains(to_select->getEffectiveId());
         return false;
@@ -1733,6 +1739,156 @@ public:
 };
 
 
+class Guaiqi : public ViewAsSkill
+{
+public:
+    Guaiqi() : ViewAsSkill("guaiqi")
+    {
+        expand_pile = "modian";
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->getPile("modian").isEmpty();
+    }
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        if (player->getPile("modian").isEmpty())
+            return false;
+        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
+            return false;
+        if (matchAvaliablePattern("slash", pattern)) {
+            foreach(int id, player->getPile("modian")) {
+                if (Sanguosha->getCard(id)->isKindOf("TrickCard"))
+                    return true;
+            }
+        }
+
+        bool trick = false;
+        foreach(int id, player->getPile("modian")) {
+            if (Sanguosha->getCard(id)->isKindOf("TrickCard") 
+                && matchAvaliablePattern(Sanguosha->getCard(id)->objectName(), pattern)) {
+                trick = true;
+                break;
+            }
+        }
+        if (trick) {
+            foreach(int id, player->getPile("modian")) {
+                if (Sanguosha->getCard(id)->isKindOf("Slash"))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    virtual bool viewFilter(const QList<const Card*> &selected, const Card *to_select) const
+    {
+        if (!Self->getPile("modian").contains(to_select->getEffectiveId()))
+            return false;
+        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+            if (selected.isEmpty())
+                return true;
+            else if (selected.length() == 1)
+                return to_select->getTypeId() != selected.first()->getTypeId();
+        }
+        else {
+            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+            if (selected.isEmpty()) {
+                if (to_select->isKindOf("TrickCard"))
+                    return matchAvaliablePattern("slash", pattern) || matchAvaliablePattern(to_select->objectName(), pattern);
+            }
+            else if (selected.length() == 1) {
+                if (to_select->getTypeId() == selected.first()->getTypeId())
+                    return false;
+                if (selected.first()->isKindOf("Slash"))
+                    return matchAvaliablePattern(to_select->objectName(), pattern);
+                else
+                    return (matchAvaliablePattern(selected.first()->objectName(), pattern));
+            }
+            return false;
+        }
+        return false;
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        //Play
+        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+            if (cards.length() == 1 && cards.first()->isKindOf("TrickCard")) {
+                Slash *slash = new Slash(cards.first()->getSuit(), cards.first()->getNumber());
+                slash->addSubcard(cards.first());
+                slash->setSkillName(objectName());
+                return slash;
+            
+            }
+            else if (cards.length() == 2) {
+                foreach(const Card *c, cards) {
+                    if (c->isKindOf("TrickCard")) {
+                        Card *card = Sanguosha->cloneCard(c->objectName());
+                        foreach(const Card *c, cards) {
+                            if (c->isKindOf("Slash")) {
+                                card->addSubcard(c);
+                                card->setSkillName(objectName());
+                                return card;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else {// RESPONSE_USE
+            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+            if (cards.length() == 1 && cards.first()->isKindOf("TrickCard") && matchAvaliablePattern("slash", pattern)) {
+                Slash *slash = new Slash(cards.first()->getSuit(), cards.first()->getNumber());
+                slash->addSubcard(cards.first());
+                slash->setSkillName(objectName());
+                return slash;
+            } 
+            else if (cards.length() == 2) {
+                foreach(const Card *c, cards) {
+                    if (c->isKindOf("TrickCard") && matchAvaliablePattern(c->objectName(), pattern)) {
+                        Card *card = Sanguosha->cloneCard(c->objectName());
+                        foreach(const Card *c, cards) {
+                            if (c->isKindOf("Slash")) {
+                                card->addSubcard(c);
+                                card->setSkillName(objectName());
+                                return card;
+                            }
+                        }
+                    }
+                }
+            
+            }
+        }
+        return NULL;
+    }
+
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const
+    {
+        bool hasNul = false;
+        foreach(int id, player->getPile("modian")) {
+            if (Sanguosha->getCard(id)->isKindOf("Nullification")) {
+                hasNul = true;
+                break;
+            }
+        }
+        if (hasNul) {
+            foreach(int id, player->getPile("modian")) {
+                if (Sanguosha->getCard(id)->isKindOf("Slash")) {
+                    Nullification *nul = new Nullification(Card::SuitToBeDecided, -1);
+                    nul->addSubcard(id);
+                    DELETE_OVER_SCOPE(Nullification, nul)
+
+                        if (!player->isCardLimited(nul, Card::MethodUse, true))
+                            return true;
+                }
+            }
+        }
+        return false;
+    }
+};
+
+/*
 class Guaiqi : public ViewAsSkill
 {
 public:
@@ -1856,7 +2012,7 @@ public:
         return false;
     }
 };
-
+*/
 
 
 

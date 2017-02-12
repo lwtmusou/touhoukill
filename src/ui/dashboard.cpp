@@ -1066,9 +1066,7 @@ void Dashboard::startPending(const ViewAsSkill *skill)
                 expandPileCards("piao");
 
         }
-        if (skill && skill->objectName() == "guaiqi")
-            expandPileCards("modian");
-        else if (!(skill && skill->isResponseOrUse()))
+        if (!(skill && skill->isResponseOrUse()))
             expandSpecialCard();
     } else {
         foreach (const QString &pile, Self->getPileNames()) {
