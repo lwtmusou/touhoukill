@@ -1015,7 +1015,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         ServerPlayer *player = use.from;
-        if (use.card && use.card->isNDTrick() && !use.card->isKindOf("Nullification")) {
+        if (player && player->isAlive() && player->hasSkill(this) && use.card && use.card->isNDTrick() && !use.card->isKindOf("Nullification")) {
             if (use.card->getSkillName() == "yaoshu")
                 return QList<SkillInvokeDetail>();
 
