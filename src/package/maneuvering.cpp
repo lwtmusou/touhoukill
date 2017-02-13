@@ -559,7 +559,8 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
             }
         }
     }
-
+    if (this->getSkillName() == "guaiqi")//modian is not count as HandPile
+        rec = false;
 
     if (rec && Self->isCardLimited(this, Card::MethodUse))
         return targets.length() == 0;
