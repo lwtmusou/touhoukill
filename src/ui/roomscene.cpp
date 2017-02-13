@@ -1385,6 +1385,7 @@ void RoomScene::enableTargets(const Card *card)
     }
 
     Client::Status status = ClientInstance->getStatus();
+    
     if (card->targetFixed()
             || ((status & Client::ClientStatusBasicMask) == Client::Responding
                 && (status == Client::Responding || (card->getTypeId() != Card::TypeSkill && status != Client::RespondingUse)))
@@ -1395,6 +1396,8 @@ void RoomScene::enableTargets(const Card *card)
             item->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
         if ((card->isKindOf("SavageAssault") || card->isKindOf("ArcheryAttack")) && status == Client::RespondingUse)
+            ok_button->setEnabled(card->isAvailable(Self));
+        else if (card->isKindOf("Peach") && status == Client::RespondingUse)
             ok_button->setEnabled(card->isAvailable(Self));
         else
             ok_button->setEnabled(true);
