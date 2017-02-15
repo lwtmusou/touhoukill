@@ -3740,25 +3740,25 @@ public:
         return checkedPatterns;
     }
 
-    static bool hasShown() {
+    static bool hasShown(const Player *player) {
         bool hasShown = false;
-        foreach(const Player *p, Self->getAliveSiblings()) {
+        foreach(const Player *p, player->getAliveSiblings()) {
             if (!p->getShownHandcards().isEmpty()) {
                 hasShown = true;
+                break;
             }
-            break;
         }
         return hasShown;
     }
 
     bool isEnabledAtPlay(const Player *player) const
     {
-        return hasShown() && !player->hasFlag("xinhua_used");
+        return  hasShown(player) &&!player->hasFlag("xinhua_used");//
     }
 
     bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        if (!hasShown() || player->hasFlag("xinhua_used"))
+        if (!hasShown(player) || player->hasFlag("xinhua_used"))
             return false;
         QStringList checkedPatterns = responsePatterns();
         if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0) return false;
@@ -3822,7 +3822,7 @@ public:
         view_as_skill = new XinhuaVS;
     }
 
-    void record(TriggerEvent e, Room *room, QVariant &) const
+    void record(TriggerEvent, Room *room, QVariant &) const
     {
         foreach(ServerPlayer *p, room->getAlivePlayers())
             room->setPlayerFlag(p, "-xinhua_used");

@@ -574,7 +574,7 @@ function turnUse_guaiqi(self)
 			table.insert(choices,guaiqis[i])
 		end
 	end
-
+	if #choices == 0 then return nil end
 	local choice
 	if not choice and table.contains(choices,"dismantlement") then
 		for _,p in pairs(self.friends_noself) do
