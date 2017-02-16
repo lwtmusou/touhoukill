@@ -2390,14 +2390,11 @@ public:
                     extra.set_phases << Player::RoundStart << Player::Play << Player::NotActive;
                     extra.reason = "qinlue";
                     extra.extraTarget = current;
-                    room->setTag("ExtraTurnStruct", QVariant::fromValue(extra));
                     source->tag["ExtraTurnInfo"] = QVariant::fromValue(extra);
                     invoke->invoker->gainAnExtraTurn();
                 }
             }
-
         }
-
         return false;
     }
 

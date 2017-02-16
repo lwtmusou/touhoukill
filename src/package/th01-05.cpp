@@ -418,7 +418,7 @@ void ShiquCard::onEffect(const CardEffectStruct &effect) const
     ExtraTurnStruct extra;
     extra.player = effect.to;
     extra.set_phases << Player::RoundStart << phase << Player::NotActive;
-    room->setTag("ExtraTurnStruct", QVariant::fromValue(extra));
+    effect.to->tag["ExtraTurnInfo"] = QVariant::fromValue(extra);
     effect.to->gainAnExtraTurn();
 }
 

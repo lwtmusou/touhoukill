@@ -209,14 +209,15 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         room->sendLog(log);
         room->addPlayerMark(player, "Global_TurnCount");
 
-        //clear extraTurn infomation
+        
         QList<Player::Phase> set_phases;
-        ExtraTurnStruct extra = room->getTag("ExtraTurnStruct").value<ExtraTurnStruct>();
-        if (extra.player == player)
+        ExtraTurnStruct extra = player->tag["ExtraTurnInfo"].value<ExtraTurnStruct>();
+        if (!extra.set_phases.isEmpty())
             set_phases = extra.set_phases;
-        room->removeTag("ExtraTurnStruct");
-        if (extra.player != NULL && extra.player != player)
-            extra.player->tag.remove("ExtraTurnInfo");
+        //clear other's extraTurn infomation
+        foreach(ServerPlayer *p, room->getOtherPlayers(player))
+            p->tag.remove("ExtraTurnInfo");
+            
 
         if (!player->faceUp()) {
             room->setPlayerFlag(player, "-Global_FirstRound");
