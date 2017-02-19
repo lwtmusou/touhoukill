@@ -1595,13 +1595,19 @@ public:
         view_as_skill = new DfgzmsiyuVS;
     }
 
+    void record(TriggerEvent, Room *room, QVariant &data) const
+    {
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to == Player::RoundStart)
+            change.player->tag.remove("dfgzmsiyu");
+    }
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to == Player::NotActive) {
             ServerPlayer *target = change.player->tag["dfgzmsiyu"].value<ServerPlayer *>();
-            change.player->tag.remove("dfgzmsiyu");
-            if (target != NULL && target->isAlive() && !target->isKongcheng())
+            if (change.player->isAlive() && target != NULL && target->isAlive() && !target->isKongcheng())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true, target);
         }
         return QList<SkillInvokeDetail>();
