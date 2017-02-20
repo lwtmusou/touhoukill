@@ -1,10 +1,10 @@
 #include "roomthread.h"
-#include "room.h"
+#include "ai.h"
 #include "engine.h"
 #include "gamerule.h"
-#include "scenerule.h"
+#include "room.h"
 #include "scenario.h"
-#include "ai.h"
+#include "scenerule.h"
 #include "settings.h"
 #include "standard.h"
 
@@ -25,21 +25,25 @@ LogMessage::LogMessage()
 QString LogMessage::toString() const
 {
     QStringList tos;
-    foreach(ServerPlayer *player, to)
-        if (player != NULL) tos << player->objectName();
+    foreach (ServerPlayer *player, to)
+        if (player != NULL)
+            tos << player->objectName();
 
     return QString("%1:%2->%3:%4:%5:%6")
-            .arg(type)
-            .arg(from ? from->objectName() : "")
-            .arg(tos.join("+"))
-            .arg(card_str).arg(arg).arg(arg2);
+        .arg(type)
+        .arg(from ? from->objectName() : "")
+        .arg(tos.join("+"))
+        .arg(card_str)
+        .arg(arg)
+        .arg(arg2);
 }
 
 QVariant LogMessage::toJsonValue() const
 {
     QStringList tos;
-    foreach(ServerPlayer *player, to)
-        if (player != NULL) tos << player->objectName();
+    foreach (ServerPlayer *player, to)
+        if (player != NULL)
+            tos << player->objectName();
 
     QStringList log;
     log << type << (from ? from->objectName() : "") << tos.join("+") << card_str << arg << arg2;
@@ -50,12 +54,14 @@ QVariant LogMessage::toJsonValue() const
 QString EventTriplet::toString() const
 {
     return QString("event[%1], room[%2]\n")
-            .arg(_m_event)
-            .arg(_m_room->getId());
+        .arg(_m_event)
+        .arg(_m_room->getId());
 }
 
 RoomThread::RoomThread(Room *room)
-    : room(room), nextExtraTurn(NULL), extraTurnReturn(NULL)
+    : room(room)
+    , nextExtraTurn(NULL)
+    , extraTurnReturn(NULL)
 {
 }
 
@@ -79,7 +85,7 @@ void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start)
 
 void RoomThread::constructTriggerTable()
 {
-    foreach(ServerPlayer *player, room->getPlayers())
+    foreach (ServerPlayer *player, room->getPlayers())
         addPlayerSkills(player, true);
 }
 
@@ -136,15 +142,15 @@ ServerPlayer *RoomThread::find3v3Next(QList<ServerPlayer *> &first, QList<Server
 void RoomThread::run3v3(QList<ServerPlayer *> &first, QList<ServerPlayer *> &second, GameRule *game_rule, ServerPlayer *current)
 {
     try {
-        forever {
+        forever
+        {
             room->setCurrent(current);
             QVariant v = QVariant::fromValue(current);
             trigger(TurnStart, room, v);
             room->setPlayerFlag(current, "actioned");
             current = find3v3Next(first, second);
         }
-    }
-    catch (TriggerEvent triggerEvent) {
+    } catch (TriggerEvent triggerEvent) {
         if (triggerEvent == TurnBroken)
             _handleTurnBroken3v3(first, second, game_rule);
         else
@@ -168,8 +174,7 @@ void RoomThread::_handleTurnBroken3v3(QList<ServerPlayer *> &first, QList<Server
 
         ServerPlayer *next = find3v3Next(first, second);
         run3v3(first, second, game_rule, next);
-    }
-    catch (TriggerEvent triggerEvent) {
+    } catch (TriggerEvent triggerEvent) {
         if (triggerEvent == TurnBroken) {
             _handleTurnBroken3v3(first, second, game_rule);
         } else {
@@ -187,7 +192,8 @@ ServerPlayer *RoomThread::findHulaoPassNext(ServerPlayer *, QList<ServerPlayer *
 void RoomThread::actionHulaoPass(ServerPlayer *uuz, QList<ServerPlayer *> league, GameRule *game_rule)
 {
     try {
-        forever{
+        forever
+        {
             ServerPlayer *current = room->getCurrent();
             QVariant v = QVariant::fromValue(current);
             trigger(TurnStart, room, v);
@@ -204,8 +210,7 @@ void RoomThread::actionHulaoPass(ServerPlayer *uuz, QList<ServerPlayer *> league
             }
             room->setCurrent(next);
         }
-    }
-    catch (TriggerEvent triggerEvent) {
+    } catch (TriggerEvent triggerEvent) {
         if (triggerEvent == TurnBroken)
             _handleTurnBrokenHulaoPass(uuz, league, game_rule);
         else
@@ -228,8 +233,7 @@ void RoomThread::_handleTurnBrokenHulaoPass(ServerPlayer *uuz, QList<ServerPlaye
 
         room->setCurrent(next);
         actionHulaoPass(uuz, league, game_rule);
-    }
-    catch (TriggerEvent triggerEvent) {
+    } catch (TriggerEvent triggerEvent) {
         if (triggerEvent == TurnBroken)
             _handleTurnBrokenHulaoPass(uuz, league, game_rule);
         else
@@ -240,7 +244,8 @@ void RoomThread::_handleTurnBrokenHulaoPass(ServerPlayer *uuz, QList<ServerPlaye
 void RoomThread::actionNormal(GameRule *game_rule)
 {
     try {
-        forever {
+        forever
+        {
             ServerPlayer *current = room->getCurrent();
             QVariant data = QVariant::fromValue(current);
             trigger(TurnStart, room, data);
@@ -258,19 +263,18 @@ void RoomThread::actionNormal(GameRule *game_rule)
                 trigger(TurnStart, room, data);
 
                 if (room->isFinished())
-                    return;// break;
+                    return; // break;
                 nextExtraTurnCopy->tag["touhou-extra"] = false;
                 nextExtraTurnCopy->tag.remove("ExtraTurnInfo");
                 room->setTag("touhou-extra", false);
-                
+
                 current = extraTurnReturn;
                 extraTurnReturn = NULL;
             }
 
             room->setCurrent(current->getNextAlive());
         }
-    }
-    catch (TriggerEvent triggerEvent) {
+    } catch (TriggerEvent triggerEvent) {
         if (triggerEvent == TurnBroken)
             _handleTurnBrokenNormal(game_rule);
         else
@@ -309,7 +313,7 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule)
             trigger(TurnStart, room, data);
 
             if (room->isFinished())
-                return;//break;
+                return; //break;
             nextExtraTurnCopy->tag["touhou-extra"] = false;
             room->setTag("touhou-extra", false);
 
@@ -320,8 +324,7 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule)
         ServerPlayer *next = player->getNextAlive();
         room->setCurrent(next);
         actionNormal(game_rule);
-    }
-    catch (TriggerEvent triggerEvent) {
+    } catch (TriggerEvent triggerEvent) {
         if (triggerEvent == TurnBroken)
             _handleTurnBrokenNormal(game_rule);
         else
@@ -340,12 +343,13 @@ void RoomThread::run()
         game_rule = new GameRule(this);
 
     addTriggerSkill(game_rule);
-    foreach(const TriggerSkill *triggerSkill, Sanguosha->getGlobalTriggerSkills())
+    foreach (const TriggerSkill *triggerSkill, Sanguosha->getGlobalTriggerSkills())
         addTriggerSkill(triggerSkill);
 
     if (room->getScenario() != NULL) {
         const ScenarioRule *rule = room->getScenario()->getRule();
-        if (rule) addTriggerSkill(rule);
+        if (rule)
+            addTriggerSkill(rule);
     }
 
     // start game
@@ -356,10 +360,18 @@ void RoomThread::run()
         if (room->getMode() == "06_3v3") {
             foreach (ServerPlayer *player, room->m_players) {
                 switch (player->getRoleEnum()) {
-                case Player::Lord: warm.prepend(player); break;
-                case Player::Loyalist: warm.append(player); break;
-                case Player::Renegade: cool.prepend(player); break;
-                case Player::Rebel: cool.append(player); break;
+                case Player::Lord:
+                    warm.prepend(player);
+                    break;
+                case Player::Loyalist:
+                    warm.append(player);
+                    break;
+                case Player::Renegade:
+                    cool.prepend(player);
+                    break;
+                case Player::Rebel:
+                    cool.append(player);
+                    break;
                 }
             }
             order = room->askForOrder(cool.first(), "cool");
@@ -397,8 +409,7 @@ void RoomThread::run()
 
             actionNormal(game_rule);
         }
-    }
-    catch (TriggerEvent triggerEvent) {
+    } catch (TriggerEvent triggerEvent) {
         if (triggerEvent == GameFinished) {
             game_rule->deleteLater();
             Sanguosha->unregisterRoom();
@@ -433,7 +444,7 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
         while (it_triggerable.hasNext()) {
             const SkillInvokeDetail &t = it_triggerable.next();
             if (!t.isValid())
-                it_triggerable.remove();  // remove the invalid item from the list
+                it_triggerable.remove(); // remove the invalid item from the list
         }
 
         if (triggerable.isEmpty()) // i.e. there is no valid item returned from the skill's triggerable
@@ -476,9 +487,9 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
             } else {
                 // do a stable sort to r and s since we should judge the trigger order
                 static std::function<bool(const QSharedPointer<SkillInvokeDetail> &, const QSharedPointer<SkillInvokeDetail> &)> preferredTargetLess =
-                        [](const QSharedPointer<SkillInvokeDetail> &a1, const QSharedPointer<SkillInvokeDetail> &a2) {
-                    return a1->preferredTargetLess(*a2);
-                };
+                    [](const QSharedPointer<SkillInvokeDetail> &a1, const QSharedPointer<SkillInvokeDetail> &a2) {
+                        return a1->preferredTargetLess(*a2);
+                    };
 
                 std::stable_sort(r.begin(), r.end(), preferredTargetLess);
                 std::stable_sort(s.begin(), s.end(), preferredTargetLess);
@@ -570,9 +581,7 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
                     else if (over_trigger)
                         p->triggered = true;
                 }
-
             }
-
         }
 
         details << r;
@@ -606,14 +615,15 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) 
     event_stack.push_back(triplet);
 
     QList<const TriggerSkill *> skillList = skill_table[triggerEvent]; // find all the skills, do the record first. it do the things only for record. it should not and must not interfere the procedure of other skills.
-    foreach(const TriggerSkill *skill, skillList)
+    foreach (const TriggerSkill *skill, skillList)
         skill->record(triggerEvent, room, data);
 
     QList<QSharedPointer<SkillInvokeDetail> > details;
     QList<QSharedPointer<SkillInvokeDetail> > triggered;
     bool interrupt = false;
     try {
-        forever {
+        forever
+        {
             getSkillAndSort(triggerEvent, room, details, triggered, data);
 
             QList<QSharedPointer<SkillInvokeDetail> > sameTiming;
@@ -629,7 +639,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) 
                     else {
                         //For Compulsory Skill at the  same timing, just add the first one into sameTiming.  etc. like QinggangSword
                         bool sameTimingCompulsory = false;
-                        foreach(const QSharedPointer<SkillInvokeDetail> &detail, sameTiming) {
+                        foreach (const QSharedPointer<SkillInvokeDetail> &detail, sameTiming) {
                             if (detail->skill == ptr->skill) {
                                 sameTimingCompulsory = true;
                                 break;
@@ -696,9 +706,8 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data) 
 
         event_stack.pop_back();
 
-    }
-    catch (TriggerEvent triggerEvent) {
-        foreach(AI *ai, room->ais)
+    } catch (TriggerEvent triggerEvent) {
+        foreach (AI *ai, room->ais)
             ai->filterEvent(triggerEvent, data);
 
         event_stack.pop_back();
@@ -735,9 +744,9 @@ void RoomThread::addTriggerSkill(const TriggerSkill *skill)
 
 void RoomThread::delay(long secs)
 {
-    if (secs == -1) secs = Config.AIDelay;
+    if (secs == -1)
+        secs = Config.AIDelay;
     Q_ASSERT(secs >= 0);
     if (room->property("to_test").toString().isEmpty() && Config.AIDelay > 0)
         msleep(secs);
 }
-

@@ -1,18 +1,17 @@
 #ifndef _MAIN_WINDOW_H
 #define _MAIN_WINDOW_H
 
-#include "engine.h"
-#include "connectiondialog.h"
 #include "configdialog.h"
+#include "connectiondialog.h"
+#include "engine.h"
 
+#include <QCheckBox>
+#include <QComboBox>
 #include <QMainWindow>
 #include <QSettings>
-#include <QComboBox>
-#include <QCheckBox>
 #include <QSpinBox>
 
-namespace Ui
-{
+namespace Ui {
 class MainWindow;
 }
 
@@ -106,4 +105,3 @@ private slots:
 };
 
 #endif
-

@@ -1,13 +1,14 @@
 #ifndef _CARD_ITEM_H
 #define _CARD_ITEM_H
 
-#include "card.h"
 #include "QSanSelectableItem.h"
+#include "SkinBank.h"
+#include "card.h"
 #include "settings.h"
+
 #include <QAbstractAnimation>
 #include <QMutex>
 #include <QSize>
-#include "SkinBank.h"
 
 class FilterSkill;
 class General;
@@ -34,8 +35,7 @@ public:
     // For move card animation
     void setHomePos(QPointF home_pos);
     QPointF homePos() const;
-    QAbstractAnimation *getGoBackAnimation(bool doFadeEffect, bool smoothTransition = false,
-                                           int duration = Config.S_MOVE_CARD_ANIMATION_DURATION);
+    QAbstractAnimation *getGoBackAnimation(bool doFadeEffect, bool smoothTransition = false, int duration = Config.S_MOVE_CARD_ANIMATION_DURATION);
     void goBack(bool playAnimation, bool doFade = true);
     inline QAbstractAnimation *getCurrentAnimation()
     {
@@ -95,7 +95,6 @@ public:
         emit clicked();
     }
 
-
 private slots:
     void currentAnimationDestroyed();
 
@@ -136,8 +135,6 @@ signals:
     void enter_hover();
     void leave_hover();
     void movement_animation_finished();
-
 };
 
 #endif
-

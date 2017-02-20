@@ -1,19 +1,17 @@
 #ifndef _ROOM_SCENE_H
 #define _ROOM_SCENE_H
 
-#include "photo.h"
-#include "dashboard.h"
-#include "TablePile.h"
-#include "card.h"
-#include "client.h"
-#include "aux-skills.h"
-#include "clientlogbox.h"
-#include "chatwidget.h"
 #include "SkinBank.h"
-#include "sprite.h"
+#include "TablePile.h"
+#include "aux-skills.h"
+#include "card.h"
+#include "chatwidget.h"
+#include "client.h"
+#include "clientlogbox.h"
+#include "dashboard.h"
+#include "photo.h"
 #include "qsanbutton.h"
-
-
+#include "sprite.h"
 
 class Window;
 class Button;
@@ -25,18 +23,18 @@ struct RoomLayout;
 class BubbleChatBox;
 class ChooseTriggerOrderBox;
 
-#include <QGraphicsScene>
-#include <QTableWidget>
-#include <QMainWindow>
-#include <QTextEdit>
-#include <QSpinBox>
 #include <QDialog>
-#include <QGraphicsWidget>
 #include <QGraphicsProxyWidget>
-#include <QThread>
+#include <QGraphicsScene>
+#include <QGraphicsWidget>
 #include <QHBoxLayout>
+#include <QMainWindow>
 #include <QMutex>
+#include <QSpinBox>
 #include <QStack>
+#include <QTableWidget>
+#include <QTextEdit>
+#include <QThread>
 
 class ScriptExecutor : public QDialog
 {
@@ -196,8 +194,7 @@ public slots:
     // choice dialog
     void chooseGeneral(const QStringList &generals);
     void chooseSuit(const QStringList &suits);
-    void chooseCard(const ClientPlayer *playerName, const QString &flags, const QString &reason,
-                    bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids);
+    void chooseCard(const ClientPlayer *playerName, const QString &flags, const QString &reason, bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids);
     void chooseKingdom(const QStringList &kingdoms);
     void chooseOption(const QString &skillName, const QStringList &options);
     void chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand reason);
@@ -239,6 +236,7 @@ public slots:
     {
         return m_tableCenterPos;
     }
+
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -258,7 +256,7 @@ private:
     const QSanRoomSkin::RoomLayout *_m_roomLayout;
     const QSanRoomSkin::PhotoLayout *_m_photoLayout;
     const QSanRoomSkin::CommonLayout *_m_commonLayout;
-    const QSanRoomSkin* _m_roomSkin;
+    const QSanRoomSkin *_m_roomSkin;
     QGraphicsItem *_m_last_front_item;
     double _m_last_front_ZValue;
     GenericCardContainer *_getGenericCardContainer(Player::Place place, Player *player);
@@ -339,11 +337,11 @@ private:
         {
             m_card_ids = move.card_ids;
         }
-        inline bool operator ==(const _MoveCardsClassifier &other) const
+        inline bool operator==(const _MoveCardsClassifier &other) const
         {
             return m_card_ids == other.m_card_ids;
         }
-        inline bool operator <(const _MoveCardsClassifier &other) const
+        inline bool operator<(const _MoveCardsClassifier &other) const
         {
             return m_card_ids.first() < other.m_card_ids.first();
         }
@@ -414,8 +412,6 @@ private slots:
     void onSkillDeactivated();
     void doTimeout();
 
-
-
     void startInXs();
     void hideAvatars();
     void changeHp(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);
@@ -485,4 +481,3 @@ signals:
 extern RoomScene *RoomSceneInstance;
 
 #endif
-

@@ -13,8 +13,8 @@ typedef int LuaFunction;
 #include "roomthread.h"
 #include "serverplayer.h"
 
-#include <QString>
 #include <QObject>
+#include <QString>
 
 class AI : public QObject
 {
@@ -26,7 +26,9 @@ public:
 
     enum Relation
     {
-        Friend, Enemy, Neutrality
+        Friend,
+        Enemy,
+        Neutrality
     };
     static Relation GetRelation3v3(const ServerPlayer *a, const ServerPlayer *b);
     static Relation GetRelation(const ServerPlayer *a, const ServerPlayer *b);
@@ -129,4 +131,3 @@ private:
 };
 
 #endif
-

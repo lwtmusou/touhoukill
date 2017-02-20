@@ -1,19 +1,15 @@
 #ifndef _th10_H
 #define _th10_H
 
-#include "package.h"
 #include "card.h"
+#include "package.h"
 
-
-
-#include <QGroupBox>
 #include <QAbstractButton>
 #include <QButtonGroup>
 #include <QDialog>
+#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-
-
 
 class GongfengCard : public SkillCard
 {
@@ -25,7 +21,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
 };
-
 
 class QijiDialog : public QDialog
 {
@@ -68,11 +63,6 @@ public:
     virtual const Card *validateInResponse(ServerPlayer *user) const;
 };
 
-
-
-
-
-
 class FengshenCard : public SkillCard
 {
     Q_OBJECT
@@ -94,8 +84,6 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-
-
 class TianyanCard : public SkillCard
 {
     Q_OBJECT
@@ -116,8 +104,6 @@ public:
     virtual const Card *validate(CardUseStruct &card_use) const;
 };
 
-
-
 class JiliaoCard : public SkillCard
 {
     Q_OBJECT
@@ -129,8 +115,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
-
 class TH10Package : public Package
 {
     Q_OBJECT
@@ -140,4 +124,3 @@ public:
 };
 
 #endif
-

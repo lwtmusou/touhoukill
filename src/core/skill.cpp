@@ -1,16 +1,18 @@
 #include "skill.h"
-#include "settings.h"
+#include "client.h"
 #include "engine.h"
 #include "player.h"
 #include "room.h"
-#include "client.h"
-#include "standard.h"
 #include "scenario.h"
+#include "settings.h"
+#include "standard.h"
 
 #include <QFile>
 
 Skill::Skill(const QString &name, Frequency frequency)
-    : frequency(frequency), limit_mark(QString()), attached_lord_skill(false)
+    : frequency(frequency)
+    , limit_mark(QString())
+    , attached_lord_skill(false)
 {
     static QChar lord_symbol('$');
 
@@ -133,7 +135,6 @@ QDialog *Skill::getDialog() const
     return NULL;
 }
 
-
 bool Skill::matchAvaliablePattern(QString avaliablePattern, QString askedPattern) const
 {
     //avaliablePattern specifying to a real card
@@ -142,36 +143,36 @@ bool Skill::matchAvaliablePattern(QString avaliablePattern, QString askedPattern
     if (askedPattern == "peach+analeptic")
         askedPattern = "peach,analeptic";
 
-
     //ignore spliting "#"
     QStringList factors = askedPattern.split('|');
     bool checkpoint = false;
     QStringList card_types = factors.at(0).split(',');
 
-    foreach(QString or_name, card_types) {
+    foreach (QString or_name, card_types) {
         checkpoint = false;
-        foreach(QString name, or_name.split('+')) {
+        foreach (QString name, or_name.split('+')) {
             if (name == ".") {
                 checkpoint = true;
-            }
-            else {
+            } else {
                 bool isInt = false;
                 bool positive = true;
                 if (name.startsWith('^')) {
                     positive = false;
                     name = name.mid(1);
                 }
-                
+
                 if (name.contains(card->objectName()) || card->isKindOf(name.toLocal8Bit().data())
-                        || ("%" + card->objectName() == name)
-                        || (card->getEffectiveId() == name.toInt(&isInt) && isInt))
+                    || ("%" + card->objectName() == name)
+                    || (card->getEffectiveId() == name.toInt(&isInt) && isInt))
                     checkpoint = positive;
                 else
                     checkpoint = !positive;
             }
-            if (!checkpoint) break;
+            if (!checkpoint)
+                break;
         }
-        if (checkpoint) break;
+        if (checkpoint)
+            break;
     }
 
     delete card;
@@ -179,7 +180,10 @@ bool Skill::matchAvaliablePattern(QString avaliablePattern, QString askedPattern
 }
 
 ViewAsSkill::ViewAsSkill(const QString &name)
-    : Skill(name), response_pattern(QString()), response_or_use(false), expand_pile(QString())
+    : Skill(name)
+    , response_pattern(QString())
+    , response_or_use(false)
+    , expand_pile(QString())
 {
 }
 
@@ -187,12 +191,14 @@ bool ViewAsSkill::isAvailable(const Player *invoker,
                               CardUseStruct::CardUseReason reason,
                               const QString &pattern) const
 {
-    if (!invoker->hasSkill(objectName()) && !invoker->hasLordSkill(objectName())&& !invoker->hasFlag(objectName())) // For Shuangxiong
+    if (!invoker->hasSkill(objectName()) && !invoker->hasLordSkill(objectName()) && !invoker->hasFlag(objectName())) // For Shuangxiong
         return false;
     switch (reason) {
-    case CardUseStruct::CARD_USE_REASON_PLAY: return isEnabledAtPlay(invoker);
+    case CardUseStruct::CARD_USE_REASON_PLAY:
+        return isEnabledAtPlay(invoker);
     case CardUseStruct::CARD_USE_REASON_RESPONSE:
-    case CardUseStruct::CARD_USE_REASON_RESPONSE_USE: return isEnabledAtResponse(invoker, pattern);
+    case CardUseStruct::CARD_USE_REASON_RESPONSE_USE:
+        return isEnabledAtResponse(invoker, pattern);
     default:
         return false;
     }
@@ -217,7 +223,8 @@ bool ViewAsSkill::isEnabledAtNullification(const ServerPlayer *) const
 
 const ViewAsSkill *ViewAsSkill::parseViewAsSkill(const Skill *skill)
 {
-    if (skill == NULL) return NULL;
+    if (skill == NULL)
+        return NULL;
     if (skill->inherits("ViewAsSkill")) {
         const ViewAsSkill *view_as_skill = qobject_cast<const ViewAsSkill *>(skill);
         return view_as_skill;
@@ -226,7 +233,8 @@ const ViewAsSkill *ViewAsSkill::parseViewAsSkill(const Skill *skill)
         const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
         Q_ASSERT(trigger_skill != NULL);
         const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
-        if (view_as_skill != NULL) return view_as_skill;
+        if (view_as_skill != NULL)
+            return view_as_skill;
     }
     return NULL;
 }
@@ -250,7 +258,8 @@ bool ZeroCardViewAsSkill::viewFilter(const QList<const Card *> &, const Card *) 
 }
 
 OneCardViewAsSkill::OneCardViewAsSkill(const QString &name)
-    : ViewAsSkill(name), filter_pattern(QString())
+    : ViewAsSkill(name)
+    , filter_pattern(QString())
 {
 }
 
@@ -264,7 +273,8 @@ bool OneCardViewAsSkill::viewFilter(const Card *to_select) const
     if (!inherits("FilterSkill") && !filter_pattern.isEmpty()) {
         QString pat = filter_pattern;
         if (pat.endsWith("!")) {
-            if (Self->isJilei(to_select)) return false;
+            if (Self->isJilei(to_select))
+                return false;
             pat.chop(1);
         } else if (response_or_use && pat.contains("hand")) {
             pat.replace("hand", "hand,wooden_ox,piao");
@@ -290,7 +300,9 @@ FilterSkill::FilterSkill(const QString &name)
 }
 
 TriggerSkill::TriggerSkill(const QString &name)
-    : Skill(name), view_as_skill(NULL), global(false)
+    : Skill(name)
+    , view_as_skill(NULL)
+    , global(false)
 {
 }
 
@@ -311,7 +323,6 @@ int TriggerSkill::getPriority() const
 
 void TriggerSkill::record(TriggerEvent, Room *, QVariant &) const
 {
-
 }
 
 QList<SkillInvokeDetail> TriggerSkill::triggerable(TriggerEvent, const Room *, const QVariant &) const
@@ -343,7 +354,7 @@ bool TriggerSkill::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail
 }
 
 ScenarioRule::ScenarioRule(Scenario *scenario)
-    :TriggerSkill(scenario->objectName())
+    : TriggerSkill(scenario->objectName())
 {
     setParent(scenario);
 }
@@ -396,7 +407,8 @@ bool PhaseChangeSkill::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDe
 }
 
 DrawCardsSkill::DrawCardsSkill(const QString &name, bool is_initial)
-    : TriggerSkill(name), is_initial(is_initial)
+    : TriggerSkill(name)
+    , is_initial(is_initial)
 {
     if (is_initial)
         events << DrawInitialCards;
@@ -475,9 +487,9 @@ int TargetModSkill::getExtraTargetNum(const Player *, const Card *) const
     return 0;
 }
 
-AttackRangeSkill::AttackRangeSkill(const QString &name) : Skill(name, Skill::Compulsory)
+AttackRangeSkill::AttackRangeSkill(const QString &name)
+    : Skill(name, Skill::Compulsory)
 {
-
 }
 
 int AttackRangeSkill::getExtra(const Player *, bool) const
@@ -491,7 +503,8 @@ int AttackRangeSkill::getFixed(const Player *, bool) const
 }
 
 SlashNoDistanceLimitSkill::SlashNoDistanceLimitSkill(const QString &skill_name)
-    : TargetModSkill(QString("#%1-slash-ndl").arg(skill_name)), name(skill_name)
+    : TargetModSkill(QString("#%1-slash-ndl").arg(skill_name))
+    , name(skill_name)
 {
 }
 
@@ -504,7 +517,8 @@ int SlashNoDistanceLimitSkill::getDistanceLimit(const Player *from, const Card *
 }
 
 FakeMoveSkill::FakeMoveSkill(const QString &name)
-    : TriggerSkill(QString("#%1-fake-move").arg(name)), name(name)
+    : TriggerSkill(QString("#%1-fake-move").arg(name))
+    , name(name)
 {
     events << BeforeCardsMove << CardsMoveOneTime;
     frequency = Compulsory;
@@ -542,7 +556,6 @@ QList<SkillInvokeDetail> FakeMoveSkill::triggerable(TriggerEvent, const Room *ro
 EquipSkill::EquipSkill(const QString &name)
     : TriggerSkill(name)
 {
-
 }
 
 bool EquipSkill::equipAvailable(const Player *p, EquipCard::Location location, const QString &equipName, const Player *to /*= NULL*/)
@@ -598,4 +611,3 @@ TreasureSkill::TreasureSkill(const QString &name)
     : EquipSkill(name)
 {
 }
-

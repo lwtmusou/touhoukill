@@ -1,11 +1,11 @@
 #include "sprite.h"
 
 #include <QAnimationGroup>
-#include <QPropertyAnimation>
-#include <QParallelAnimationGroup>
-#include <QSequentialAnimationGroup>
-#include <QtCore/qmath.h>
 #include <QPainter>
+#include <QParallelAnimationGroup>
+#include <QPropertyAnimation>
+#include <QSequentialAnimationGroup>
+#include <QtMath>
 
 EffectAnimation::EffectAnimation(QObject *parent)
     : QObject(parent)
@@ -20,7 +20,8 @@ void EffectAnimation::fade(QGraphicsItem *map)
     if (effect) {
         effectOut(map);
         effect = registered.value(map);
-        if (effect) effect->deleteLater();
+        if (effect)
+            effect->deleteLater();
         registered.insert(map, new FadeEffect(true));
         return;
     }
@@ -37,7 +38,8 @@ void EffectAnimation::emphasize(QGraphicsItem *map, bool stay)
     if (effect) {
         effectOut(map);
         effect = registered.value(map);
-        if (effect) effect->deleteLater();
+        if (effect)
+            effect->deleteLater();
         registered.insert(map, new EmphasizeEffect(stay));
         return;
     }
@@ -53,7 +55,8 @@ void EffectAnimation::sendBack(QGraphicsItem *map)
     if (effect) {
         effectOut(map);
         effect = registered.value(map);
-        if (effect) effect->deleteLater();
+        if (effect)
+            effect->deleteLater();
         registered.insert(map, new SentbackEffect(true));
         return;
     }
@@ -72,7 +75,8 @@ void EffectAnimation::effectOut(QGraphicsItem *map)
     }
 
     effect = registered.value(map);
-    if (effect) effect->deleteLater();
+    if (effect)
+        effect->deleteLater();
     registered.insert(map, NULL);
 }
 
@@ -84,12 +88,14 @@ void EffectAnimation::deleteEffect()
 
 void EffectAnimation::deleteEffect(QAnimatedEffect *effect)
 {
-    if (!effect) return;
+    if (!effect)
+        return;
     effect->deleteLater();
     QGraphicsItem *pix = effects.key(effect);
     if (pix) {
         QAnimatedEffect *effect = registered.value(pix);
-        if (effect) effect->reset();
+        if (effect)
+            effect->reset();
         pix->setGraphicsEffect(registered.value(pix));
         effects.insert(pix, registered.value(pix));
         registered.insert(pix, NULL);
@@ -227,4 +233,3 @@ void FadeEffect::draw(QPainter *painter)
     painter->setOpacity(index / 40.0);
     painter->drawPixmap(offset, pixmap);
 }
-

@@ -1,8 +1,8 @@
 #include "cardcontainer.h"
-#include "clientplayer.h"
 #include "carditem.h"
-#include "engine.h"
 #include "client.h"
+#include "clientplayer.h"
+#include "engine.h"
 
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
@@ -42,7 +42,7 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
     } else if (!items.isEmpty()) {
         retained_stack.push(retained());
         items_stack.push(items);
-        foreach(CardItem *item, items)
+        foreach (CardItem *item, items)
             item->hide();
         items.clear();
     }
@@ -88,9 +88,9 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
         item->setHomeOpacity(1.0);
         item->setFlag(QGraphicsItem::ItemIsFocusable);
 
-
         item->setAcceptedMouseButtons(Qt::LeftButton);
-        if (disabled_ids.contains(item->getCard()->getEffectiveId())) item->setEnabled(false);
+        if (disabled_ids.contains(item->getCard()->getEffectiveId()))
+            item->setEnabled(false);
         item->show();
     }
 }
@@ -128,7 +128,7 @@ void CardContainer::clear()
 
 void CardContainer::freezeCards(bool is_frozen)
 {
-    foreach(CardItem *item, items)
+    foreach (CardItem *item, items)
         item->setFrozen(is_frozen);
 }
 
@@ -143,7 +143,8 @@ QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Pla
                 break;
             }
         }
-        if (to_take == NULL) continue;
+        if (to_take == NULL)
+            continue;
 
         to_take->setEnabled(false);
 
@@ -151,7 +152,6 @@ QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Pla
         copy->setPos(mapToScene(to_take->pos()));
         copy->setEnabled(false);
         result.append(copy);
-
 
         copy->setAcceptedMouseButtons(0);
 
@@ -181,7 +181,8 @@ void CardContainer::startChoose()
 
 void CardContainer::startGongxin(const QList<int> &enabled_ids)
 {
-    if (enabled_ids.isEmpty()) return;
+    if (enabled_ids.isEmpty())
+        return;
     foreach (CardItem *item, items) {
         const Card *card = item->getCard();
         if (card && enabled_ids.contains(card->getEffectiveId()))
@@ -244,7 +245,7 @@ void CardContainer::view(const ClientPlayer *player)
 {
     QList<int> card_ids;
     QList<const Card *> cards = player->getHandcards();
-    foreach(const Card *card, cards)
+    foreach (const Card *card, cards)
         card_ids << card->getEffectiveId();
 
     fillCards(card_ids);
@@ -276,7 +277,6 @@ void GuanxingBox::doGuanxing(const QList<int> &card_ids, bool up_only)
         up_items << card_item;
         card_item->setParentItem(this);
         card_item->setAcceptedMouseButtons(Qt::LeftButton);
-
     }
 
     show();
@@ -294,7 +294,8 @@ void GuanxingBox::doGuanxing(const QList<int> &card_ids, bool up_only)
 void GuanxingBox::adjust()
 {
     CardItem *item = qobject_cast<CardItem *>(sender());
-    if (item == NULL) return;
+    if (item == NULL)
+        return;
 
     up_items.removeOne(item);
     down_items.removeOne(item);
@@ -319,9 +320,9 @@ void GuanxingBox::adjust()
 
 void GuanxingBox::clear()
 {
-    foreach(CardItem *card_item, up_items)
+    foreach (CardItem *card_item, up_items)
         card_item->deleteLater();
-    foreach(CardItem *card_item, down_items)
+    foreach (CardItem *card_item, down_items)
         card_item->deleteLater();
 
     up_items.clear();
@@ -333,13 +334,12 @@ void GuanxingBox::clear()
 void GuanxingBox::reply()
 {
     QList<int> up_cards, down_cards;
-    foreach(CardItem *card_item, up_items)
+    foreach (CardItem *card_item, up_items)
         up_cards << card_item->getCard()->getId();
 
-    foreach(CardItem *card_item, down_items)
+    foreach (CardItem *card_item, down_items)
         down_cards << card_item->getCard()->getId();
 
     ClientInstance->onPlayerReplyGuanxing(up_cards, down_cards);
     clear();
 }
-

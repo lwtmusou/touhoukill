@@ -1,11 +1,11 @@
 #include "hegemony-cards.h"
 
 #if 0
-#include "maneuvering.h"
-#include "standard.h"
-#include "engine.h"
 #include "client.h"
+#include "engine.h"
+#include "maneuvering.h"
 #include "roomthread.h"
+#include "standard.h"
 
 
 AwaitExhausted::AwaitExhausted(Card::Suit suit, int number) : TrickCard(suit, number)

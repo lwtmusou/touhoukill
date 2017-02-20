@@ -1,32 +1,25 @@
 #include "engine.h"
+#include "RoomState.h"
+#include "ai.h"
+#include "audio.h"
+#include "banpair.h"
 #include "card.h"
 #include "client.h"
-#include "ai.h"
-#include "settings.h"
-#include "scenario.h"
-#include "lua.hpp"
-#include "banpair.h"
-#include "audio.h"
-#include "protocol.h"
-#include "structs.h"
 #include "lua-wrapper.h"
-#include "RoomState.h"
-
-//#include "guandu-scenario.h"
-//#include "couple-scenario.h"
-//#include "boss-mode-scenario.h"
-//#include "zombie-scenario.h"
-//#include "fancheng-scenario.h"
-
-#include <QFile>
-#include <QTextStream>
-#include <QStringList>
-#include <QMessageBox>
+#include "lua.hpp"
+#include "miniscenarios.h"
+#include "protocol.h"
+#include "scenario.h"
+#include "scenario.h"
+#include "settings.h"
+#include "structs.h"
+#include <QApplication>
 #include <QDir>
 #include <QFile>
-#include <QApplication>
-#include <scenario.h>
-#include <miniscenarios.h>
+#include <QFile>
+#include <QMessageBox>
+#include <QStringList>
+#include <QTextStream>
 
 Engine *Sanguosha = NULL;
 
@@ -38,7 +31,8 @@ int Engine::getMiniSceneCounts()
 void Engine::_loadMiniScenarios()
 {
     static bool loaded = false;
-    if (loaded) return;
+    if (loaded)
+        return;
     int i = 1;
     while (true) {
         if (!QFile::exists(QString("etc/customScenes/%1.txt").arg(QString::number(i))))
@@ -77,12 +71,11 @@ Engine::Engine()
     DoLuaScript(lua, "lua/config.lua");
 
     QStringList package_names = GetConfigFromLuaState(lua, "package_names").toStringList();
-    foreach(QString name, package_names)
+    foreach (QString name, package_names)
         addPackage(name);
 
     SurprisingGenerals = GetConfigFromLuaState(lua, "surprising_generals").toStringList();
     LordBGMConvertList = GetConfigFromLuaState(lua, "bgm_convert_pairs").toStringList();
-
 
     _loadMiniScenarios();
     _loadModScenarios();
@@ -129,7 +122,6 @@ void Engine::addTranslationEntry(const char *key, const char *value)
     translations.insert(key, QString::fromUtf8(value));
 }
 
-
 Engine::~Engine()
 {
     lua_close(lua);
@@ -158,7 +150,8 @@ const Scenario *Engine::getScenario(const QString &name) const
         return m_miniScenes[name];
     else if (name == "custom_scenario")
         return m_customScene;
-    else return NULL;
+    else
+        return NULL;
 }
 
 void Engine::addSkills(const QList<const Skill *> &all_skills)
@@ -250,7 +243,7 @@ void Engine::addPackage(Package *package)
             luaArmor_className2objectName.insert(lcard->getClassName(), lcard->objectName());
             if (!luaArmors.keys().contains(lcard->getClassName()))
                 luaArmors.insert(lcard->getClassName(), lcard->clone());
-        }/* else if (card->isKindOf("LuaTreasure")) {
+        } /* else if (card->isKindOf("LuaTreasure")) {
             const LuaTreasure *lcard = qobject_cast<const LuaTreasure *>(card);
             Q_ASSERT(lcard != NULL);
             luaTreasure_className2objectName.insert(lcard->getClassName(), lcard->objectName());
@@ -270,17 +263,20 @@ void Engine::addPackage(Package *package)
     foreach (General *general, all_generals) {
         addSkills(general->findChildren<const Skill *>());
         foreach (QString skill_name, general->getExtraSkillSet()) {
-            if (skill_name.startsWith("#")) continue;
+            if (skill_name.startsWith("#"))
+                continue;
             foreach (const Skill *related, getRelatedSkills(skill_name))
                 general->addSkill(related->objectName());
         }
         generals.insert(general->objectName(), general);
-        if (isGeneralHidden(general->objectName())) continue;
-        if (general->isLord()) lord_list << general->objectName();
+        if (isGeneralHidden(general->objectName()))
+            continue;
+        if (general->isLord())
+            lord_list << general->objectName();
     }
 
     QList<const QMetaObject *> metas = package->getMetaObjects();
-    foreach(const QMetaObject *meta, metas)
+    foreach (const QMetaObject *meta, metas)
         metaobjects.insert(meta->className(), meta);
 }
 
@@ -306,7 +302,7 @@ QString Engine::translate(const QString &to_translate) const
 {
     QStringList list = to_translate.split("\\");
     QString res;
-    foreach(QString str, list)
+    foreach (QString str, list)
         res.append(translations.value(str, str));
     return res;
 }
@@ -322,7 +318,8 @@ int Engine::getRoleIndex() const
 const CardPattern *Engine::getPattern(const QString &name) const
 {
     const CardPattern *ptn = patterns.value(name, NULL);
-    if (ptn) return ptn;
+    if (ptn)
+        return ptn;
 
     ExpPattern *expptn = new ExpPattern(name);
     patterns.insert(name, expptn);
@@ -356,7 +353,7 @@ Card::HandlingMethod Engine::getCardHandlingMethod(const QString &method_name) c
 QList<const Skill *> Engine::getRelatedSkills(const QString &skill_name) const
 {
     QList<const Skill *> skills;
-    foreach(QString name, related_skills.values(skill_name))
+    foreach (QString name, related_skills.values(skill_name))
         skills << getSkill(name);
 
     return skills;
@@ -365,10 +362,12 @@ QList<const Skill *> Engine::getRelatedSkills(const QString &skill_name) const
 const Skill *Engine::getMainSkill(const QString &skill_name) const
 {
     const Skill *skill = getSkill(skill_name);
-    if (!skill || skill->isVisible() || related_skills.keys().contains(skill_name)) return skill;
+    if (!skill || skill->isVisible() || related_skills.keys().contains(skill_name))
+        return skill;
     foreach (QString key, related_skills.keys()) {
-        foreach(QString name, related_skills.values(key))
-            if (name == skill_name) return getSkill(key);
+        foreach (QString name, related_skills.values(key))
+            if (name == skill_name)
+                return getSkill(key);
     }
     return skill;
 }
@@ -466,8 +465,10 @@ CardUseStruct::CardUseReason Engine::getCurrentCardUseReason()
 bool Engine::isGeneralHidden(const QString &general_name) const
 {
     const General *general = getGeneral(general_name);
-    if (!general) return false;
-    if (!general->isVisible()) return false;
+    if (!general)
+        return false;
+    if (!general->isVisible())
+        return false;
     if (!general->isHidden())
         return Config.ExtraHiddenGenerals.contains(general_name);
     else
@@ -533,51 +534,60 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
     Card *card = NULL;
     if (luaBasicCard_className2objectName.keys().contains(name)) {
         const LuaBasicCard *lcard = luaBasicCards.value(name, NULL);
-        if (!lcard) return NULL;
+        if (!lcard)
+            return NULL;
         card = lcard->clone(suit, number);
     } else if (luaBasicCard_className2objectName.values().contains(name)) {
         QString class_name = luaBasicCard_className2objectName.key(name, name);
         const LuaBasicCard *lcard = luaBasicCards.value(class_name, NULL);
-        if (!lcard) return NULL;
+        if (!lcard)
+            return NULL;
         card = lcard->clone(suit, number);
     } else if (luaTrickCard_className2objectName.keys().contains(name)) {
         const LuaTrickCard *lcard = luaTrickCards.value(name, NULL);
-        if (!lcard) return NULL;
+        if (!lcard)
+            return NULL;
         card = lcard->clone(suit, number);
     } else if (luaTrickCard_className2objectName.values().contains(name)) {
         QString class_name = luaTrickCard_className2objectName.key(name, name);
         const LuaTrickCard *lcard = luaTrickCards.value(class_name, NULL);
-        if (!lcard) return NULL;
+        if (!lcard)
+            return NULL;
         card = lcard->clone(suit, number);
     } else if (luaWeapon_className2objectName.keys().contains(name)) {
         const LuaWeapon *lcard = luaWeapons.value(name, NULL);
-        if (!lcard) return NULL;
+        if (!lcard)
+            return NULL;
         card = lcard->clone(suit, number);
     } else if (luaWeapon_className2objectName.values().contains(name)) {
         QString class_name = luaWeapon_className2objectName.key(name, name);
         const LuaWeapon *lcard = luaWeapons.value(class_name, NULL);
-        if (!lcard) return NULL;
+        if (!lcard)
+            return NULL;
         card = lcard->clone(suit, number);
     } else if (luaArmor_className2objectName.keys().contains(name)) {
         const LuaArmor *lcard = luaArmors.value(name, NULL);
-        if (!lcard) return NULL;
+        if (!lcard)
+            return NULL;
         card = lcard->clone(suit, number);
     } else if (luaArmor_className2objectName.values().contains(name)) {
         QString class_name = luaArmor_className2objectName.key(name, name);
         const LuaArmor *lcard = luaArmors.value(class_name, NULL);
-        if (!lcard) return NULL;
+        if (!lcard)
+            return NULL;
         card = lcard->clone(suit, number);
     } else if (luaTreasure_className2objectName.keys().contains(name)) {
         const LuaTreasure *lcard = luaTreasures.value(name, NULL);
-        if (!lcard) return NULL;
+        if (!lcard)
+            return NULL;
         card = lcard->clone(suit, number);
     } else if (luaTreasure_className2objectName.values().contains(name)) {
         QString class_name = luaTreasure_className2objectName.key(name, name);
         const LuaTreasure *lcard = luaTreasures.value(class_name, NULL);
-        if (!lcard) return NULL;
+        if (!lcard)
+            return NULL;
         card = lcard->clone(suit, number);
-    }
-    else {
+    } else {
         const QMetaObject *meta = metaobjects.value(name, NULL);
         if (meta == NULL)
             meta = metaobjects.value(className2objectName.key(name, QString()), NULL);
@@ -587,10 +597,11 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
             card = qobject_cast<Card *>(card_obj);
         }
     }
-    if (!card) return NULL;
+    if (!card)
+        return NULL;
     card->clearFlags();
     if (!flags.isEmpty()) {
-        foreach(QString flag, flags)
+        foreach (QString flag, flags)
             card->setFlags(flag);
     }
     return card;
@@ -827,10 +838,18 @@ QStringList Engine::getRoleList(const QString &mode) const
     for (int i = 0; roles[i] != '\0'; i++) {
         QString role;
         switch (roles[i].toLatin1()) {
-        case 'Z': role = "lord"; break;
-        case 'C': role = "loyalist"; break;
-        case 'N': role = "renegade"; break;
-        case 'F': role = "rebel"; break;
+        case 'Z':
+            role = "lord";
+            break;
+        case 'C':
+            role = "loyalist";
+            break;
+        case 'N':
+            role = "renegade";
+            break;
+        case 'F':
+            role = "rebel";
+            break;
         }
         role_list << role;
     }
@@ -854,10 +873,10 @@ QStringList Engine::getLords(bool contain_banned) const
             continue;
         if (!contain_banned) {
             if (ServerInfo.GameMode.endsWith("p")
-                    || ServerInfo.GameMode.endsWith("pd")
-                    || ServerInfo.GameMode.endsWith("pz")
-                    || ServerInfo.GameMode.contains("_mini_")
-                    || ServerInfo.GameMode == "custom_scenario")
+                || ServerInfo.GameMode.endsWith("pd")
+                || ServerInfo.GameMode.endsWith("pz")
+                || ServerInfo.GameMode.contains("_mini_")
+                || ServerInfo.GameMode == "custom_scenario")
                 if (Config.value("Banlist/Roles", "").toStringList().contains(lord))
                     continue;
             if (Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
@@ -882,7 +901,8 @@ QStringList Engine::getRandomLords() const
     QStringList splords_package; //lords  in sp package will be not count as a lord.
     splords_package << "thndj";
     foreach (QString alord, getLords()) {
-        if (banlist_ban.contains(alord)) continue;
+        if (banlist_ban.contains(alord))
+            continue;
         const General *general = getGeneral(alord);
         if (splords_package.contains(general->getPackage()))
             continue;
@@ -899,7 +919,8 @@ QStringList Engine::getRandomLords() const
 
     QStringList nonlord_list;
     foreach (QString nonlord, generals.keys()) {
-        if (isGeneralHidden(nonlord)) continue;
+        if (isGeneralHidden(nonlord))
+            continue;
         const General *general = generals.value(nonlord);
         if (lord_list.contains(nonlord)) {
             if (!splords_package.contains(general->getPackage()))
@@ -936,7 +957,8 @@ QStringList Engine::getRandomLords() const
             addcount++;
         }
 
-        if (i == nonlord_list.length() - 1) break;
+        if (i == nonlord_list.length() - 1)
+            break;
     }
 
     return lords;
@@ -950,7 +972,8 @@ QStringList Engine::getLimitedGeneralNames() const
         QList<const General *> hulao_generals = QList<const General *>();
         foreach (QString pack_name, GetConfigFromLuaState(lua, "hulao_packages").toStringList()) {
             const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
-            if (pack) hulao_generals << pack->findChildren<const General *>();
+            if (pack)
+                hulao_generals << pack->findChildren<const General *>();
         }
 
         foreach (const General *general, hulao_generals) {
@@ -1017,8 +1040,8 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
     Q_ASSERT(all_generals.count() >= count);
 
     if (isNormalGameMode(ServerInfo.GameMode)
-            || ServerInfo.GameMode.contains("_mini_")
-            || ServerInfo.GameMode == "custom_scenario")
+        || ServerInfo.GameMode.contains("_mini_")
+        || ServerInfo.GameMode == "custom_scenario")
         general_set.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
     else if (ServerInfo.GameMode == "04_1v3")
         general_set.subtract(Config.value("Banlist/HulaoPass", "").toStringList().toSet());
@@ -1046,7 +1069,6 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
         if (i == all_generals.count() - 1)
             break;
     }
-
 
     //QStringList general_list = all_generals.mid(0, count);
     //Q_ASSERT(general_list.count() == count);
@@ -1145,7 +1167,7 @@ const Skill *Engine::getSkill(const EquipCard *equip) const
     if (equip == NULL)
         skill = NULL;
     else
-        skill = /*Sanguosha->*/getSkill(equip->objectName());
+        skill = /*Sanguosha->*/ getSkill(equip->objectName());
 
     return skill;
 }
@@ -1182,7 +1204,8 @@ const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const
 const ProhibitSkill *Engine::isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others) const
 {
     bool ignore = (from->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
-                   && to != from && !card->hasFlag("IgnoreFailed"));
+                   && to != from
+                   && !card->hasFlag("IgnoreFailed"));
     if (ignore && !card->isKindOf("SkillCard"))
         return NULL;
     foreach (const ProhibitSkill *skill, prohibit_skills) {
@@ -1201,7 +1224,6 @@ int Engine::correctDistance(const Player *from, const Player *to) const
         correct += skill->getCorrect(from, to);
     }
 
-
     return correct;
 }
 
@@ -1217,7 +1239,8 @@ int Engine::correctMaxCards(const Player *target, bool fixed, const QString &exc
 
         if (fixed) {
             int f = skill->getFixed(target);
-            if (f >= 0) return f;
+            if (f >= 0)
+                return f;
         } else {
             extra += skill->getExtra(target);
         }
@@ -1235,7 +1258,8 @@ int Engine::correctCardTarget(const TargetModSkill::ModType type, const Player *
             ExpPattern p(skill->getPattern());
             if (p.match(from, card)) {
                 int residue = skill->getResidueNum(from, card);
-                if (residue >= 998) return residue;
+                if (residue >= 998)
+                    return residue;
                 x += residue;
             }
         }
@@ -1244,7 +1268,8 @@ int Engine::correctCardTarget(const TargetModSkill::ModType type, const Player *
             ExpPattern p(skill->getPattern());
             if (p.match(from, card)) {
                 int distance_limit = skill->getDistanceLimit(from, card);
-                if (distance_limit >= 998) return distance_limit;
+                if (distance_limit >= 998)
+                    return distance_limit;
                 x += distance_limit;
             }
         }
@@ -1267,7 +1292,8 @@ int Engine::correctAttackRange(const Player *target, bool include_weapon /* = tr
     foreach (const AttackRangeSkill *skill, attackrange_skills) {
         if (fixed) {
             int f = skill->getFixed(target, include_weapon);
-            if (f >= 0) return f;
+            if (f >= 0)
+                return f;
         } else {
             extra += skill->getExtra(target, include_weapon);
         }
@@ -1275,4 +1301,3 @@ int Engine::correctAttackRange(const Player *target, bool include_weapon /* = tr
 
     return extra;
 }
-

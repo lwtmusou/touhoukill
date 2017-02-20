@@ -1,9 +1,9 @@
 #include "util.h"
 #include "lua.hpp"
 
-#include <QVariant>
-#include <QStringList>
 #include <QMessageBox>
+#include <QStringList>
+#include <QVariant>
 
 extern "C" {
 int luaopen_sgs(lua_State *);
@@ -16,20 +16,17 @@ QVariant GetValueFromLuaState(lua_State *L, const char *table_name, const char *
 
     QVariant data;
     switch (lua_type(L, -1)) {
-    case LUA_TSTRING:
-    {
+    case LUA_TSTRING: {
         data = QString::fromUtf8(lua_tostring(L, -1));
         lua_pop(L, 1);
         break;
     }
-    case LUA_TNUMBER:
-    {
+    case LUA_TNUMBER: {
         data = lua_tonumber(L, -1);
         lua_pop(L, 1);
         break;
     }
-    case LUA_TTABLE:
-    {
+    case LUA_TTABLE: {
         lua_rawgeti(L, -1, 1);
         bool isArray = !lua_isnil(L, -1);
         lua_pop(L, 1);
@@ -98,7 +95,8 @@ QList<int> StringList2IntList(const QStringList &stringlist)
         QString n = stringlist.at(i);
         bool ok;
         intlist.append(n.toInt(&ok));
-        if (!ok) return QList<int>();
+        if (!ok)
+            return QList<int>();
     }
     return intlist;
 }
@@ -118,7 +116,8 @@ QList<int> VariantList2IntList(const QVariantList &variantlist)
         QVariant n = variantlist.at(i);
         bool ok;
         intlist.append(n.toInt(&ok));
-        if (!ok) return QList<int>();
+        if (!ok)
+            return QList<int>();
     }
     return intlist;
 }

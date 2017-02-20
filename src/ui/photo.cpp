@@ -1,26 +1,26 @@
 #include "photo.h"
-#include "clientplayer.h"
-#include "settings.h"
+#include "SkinBank.h"
 #include "carditem.h"
-#include "engine.h"
-#include "standard.h"
 #include "client.h"
+#include "clientplayer.h"
+#include "engine.h"
 #include "playercarddialog.h"
 #include "rolecombobox.h"
-#include "SkinBank.h"
 #include "roomscene.h"
+#include "settings.h"
+#include "standard.h"
 
-#include <QPainter>
 #include <QDrag>
+#include <QFile>
+#include <QGraphicsProxyWidget>
 #include <QGraphicsScene>
 #include <QGraphicsSceneHoverEvent>
+#include <QMenu>
 #include <QMessageBox>
-#include <QGraphicsProxyWidget>
-#include <QTimer>
+#include <QPainter>
 #include <QPropertyAnimation>
 #include <QPushButton>
-#include <QMenu>
-#include <QFile>
+#include <QTimer>
 
 #include "pixmapanimation.h"
 
@@ -36,7 +36,8 @@ using namespace QSanProtocol;
 // kingdom mask and kingdom icon (decouple from player)
 // make layers (drawing order) configurable
 
-Photo::Photo() : PlayerCardContainer()
+Photo::Photo()
+    : PlayerCardContainer()
 {
     _m_mainFrame = NULL;
     m_player = NULL;
@@ -65,7 +66,8 @@ Photo::Photo() : PlayerCardContainer()
 void Photo::refresh()
 {
     PlayerCardContainer::refresh();
-    if (!m_player) return;
+    if (!m_player)
+        return;
     QString state_str = m_player->getState();
     if (!state_str.isEmpty() && state_str != "online") {
         QRect rect = G_PHOTO_LAYOUT.m_onlineStatusArea;
@@ -73,23 +75,20 @@ void Photo::refresh()
         image.fill(Qt::transparent);
         QPainter painter(&image);
         painter.fillRect(QRect(0, 0, rect.width(), rect.height()), G_PHOTO_LAYOUT.m_onlineStatusBgColor);
-        G_PHOTO_LAYOUT.m_onlineStatusFont.paintText(&painter, QRect(QPoint(0, 0), rect.size()),
-                                                    Qt::AlignCenter,
-                                                    Sanguosha->translate(state_str));
+        G_PHOTO_LAYOUT.m_onlineStatusFont.paintText(&painter, QRect(QPoint(0, 0), rect.size()), Qt::AlignCenter, Sanguosha->translate(state_str));
         QPixmap pixmap = QPixmap::fromImage(image);
         _paintPixmap(_m_onlineStatusItem, rect, pixmap, _m_groupMain);
         _layBetween(_m_onlineStatusItem, _m_mainFrame, _m_chainIcon);
-        if (!_m_onlineStatusItem->isVisible()) _m_onlineStatusItem->show();
+        if (!_m_onlineStatusItem->isVisible())
+            _m_onlineStatusItem->show();
     } else if (_m_onlineStatusItem != NULL && state_str == "online")
         _m_onlineStatusItem->hide();
-
 }
 
 QRectF Photo::boundingRect() const
 {
     return QRect(0, 0, G_PHOTO_LAYOUT.m_normalWidth, G_PHOTO_LAYOUT.m_normalHeight);
 }
-
 
 void Photo::repaintAll()
 {
@@ -198,7 +197,8 @@ void Photo::hideEmotion()
 
 void Photo::updateDuanchang()
 {
-    if (!m_player) return;
+    if (!m_player)
+        return;
     _m_duanchangMask->setVisible(m_player->getMark("@duanchang") > 0);
 }
 
@@ -241,7 +241,7 @@ bool Photo::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &
 
     Player::Place place = moveInfo.to_place;
 
-    foreach(CardItem *card_item, card_items)
+    foreach (CardItem *card_item, card_items)
         card_item->setHomeOpacity(homeOpacity);
     if (place == Player::PlaceEquip) {
         addEquips(card_items);
@@ -268,9 +268,7 @@ void Photo::setFrame(FrameType type)
                 _m_focusFrame->hide();
         }
     } else {
-        _paintPixmap(_m_focusFrame, G_PHOTO_LAYOUT.m_focusFrameArea,
-                     _getPixmap(QSanRoomSkin::S_SKIN_KEY_FOCUS_FRAME, QString::number(type)),
-                     _m_groupMain);
+        _paintPixmap(_m_focusFrame, G_PHOTO_LAYOUT.m_focusFrameArea, _getPixmap(QSanRoomSkin::S_SKIN_KEY_FOCUS_FRAME, QString::number(type)), _m_groupMain);
         _layBetween(_m_focusFrame, _m_avatarArea, _m_mainFrame);
         _m_focusFrame->show();
     }
@@ -314,11 +312,10 @@ QPointF Photo::getHeroSkinContainerPosition() const
     const int tablePadding = 5;
 
     if (photoRect.right() <= tableRect.left()) {
-        QPointF result(photoRect.right() + 10, photoRect.top()
-                       - ((heroSkinContainerHeight - photoHeight) / 2));
+        QPointF result(photoRect.right() + 10, photoRect.top() - ((heroSkinContainerHeight - photoHeight) / 2));
 
         int yBottomDiff = (result.y() + heroSkinContainerHeight)
-                - (tableRect.bottom() + tablePadding);
+            - (tableRect.bottom() + tablePadding);
         if (yBottomDiff > 0) {
             result.setY(result.y() - yBottomDiff);
         } else if (result.y() < tableRect.top() - tablePadding) {
@@ -328,10 +325,11 @@ QPointF Photo::getHeroSkinContainerPosition() const
         return result;
     } else if (photoRect.bottom() <= tableRect.top()) {
         QPointF result(photoRect.left()
-                       - ((heroSkinContainerWidth - photoWidth) / 2), photoRect.bottom() + 10);
+                           - ((heroSkinContainerWidth - photoWidth) / 2),
+                       photoRect.bottom() + 10);
 
         int xRightDiff = (result.x() + heroSkinContainerWidth)
-                - (tableRect.right() + tablePadding);
+            - (tableRect.right() + tablePadding);
         if (xRightDiff > 0) {
             result.setX(result.x() - xRightDiff);
         } else if (result.x() < tableRect.left() - tablePadding) {
@@ -340,11 +338,10 @@ QPointF Photo::getHeroSkinContainerPosition() const
 
         return result;
     } else {
-        QPointF result(photoRect.left() - heroSkinContainerWidth - 10, photoRect.top()
-                       - ((heroSkinContainerHeight - photoHeight) / 2));
+        QPointF result(photoRect.left() - heroSkinContainerWidth - 10, photoRect.top() - ((heroSkinContainerHeight - photoHeight) / 2));
 
         int yBottomDiff = (result.y() + heroSkinContainerHeight)
-                - (tableRect.bottom() + tablePadding);
+            - (tableRect.bottom() + tablePadding);
         if (yBottomDiff > 0) {
             result.setY(result.y() - yBottomDiff);
         } else if (result.y() < tableRect.top() - tablePadding) {

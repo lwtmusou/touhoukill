@@ -1,10 +1,11 @@
 #include "uiUtils.h"
-#include <qpixmap.h>
-#include <qimage.h>
-#include <qfile.h>
-#include <qdir.h>
-#include <qdesktopservices.h>
-#include <qmutex.h>
+
+#include <QDesktopServices>
+#include <QDir>
+#include <QFile>
+#include <QImage>
+#include <QMutex>
+#include <QPixmap>
 
 QImage QSanUiUtils::produceShadow(const QImage &image, QColor shadowColor, int radius, double decade)
 {
@@ -28,14 +29,17 @@ QImage QSanUiUtils::produceShadow(const QImage &image, QColor shadowColor, int r
     for (int y = 0; y < rows; y++) {
         for (int x = 0; x < cols; x++) {
             uchar oldVal = _OLD_PIXEL(x, y);
-            if (oldVal == 0) continue;
+            if (oldVal == 0)
+                continue;
             for (int dy = -radius; dy <= radius; dy++) {
                 for (int dx = -radius; dx <= radius; dx++) {
                     int wx = x + dx;
                     int wy = y + dy;
                     int dist = dx * dx + dy * dy;
-                    if (wx < 0 || wy < 0 || wx >= cols || wy >= rows) continue;
-                    if (dx * dx + dy * dy > radius * radius) continue;
+                    if (wx < 0 || wy < 0 || wx >= cols || wy >= rows)
+                        continue;
+                    if (dx * dx + dy * dy > radius * radius)
+                        continue;
                     int newVal = alpha - decade * dist;
                     Q_ASSERT((wy * cols + wx) * 4 < cols * rows * 4);
                     _NEW_PIXEL(wx, wy) = (uchar)qMax((int)_NEW_PIXEL(wx, wy), newVal);
@@ -68,7 +72,7 @@ void QSanUiUtils::makeGray(QPixmap &pixmap)
 #include FT_BITMAP_H
 #include FT_OUTLINE_H
 
-static FT_Library  _ftlib;
+static FT_Library _ftlib;
 static bool _ftLibInitialized = false;
 
 static bool _initLibrary()
@@ -131,9 +135,7 @@ int *QSanUiUtils::QSanFreeTypeFont::loadFont(const QString &fontName)
 
 static QMutex _paintTextMutex;
 
-bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text, int *font, QColor color,
-                                                 QSize &fontSize, int spacing, int weight, QRect boundingBox,
-                                                 Qt::Orientation orient, Qt::Alignment align)
+bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text, int *font, QColor color, QSize &fontSize, int spacing, int weight, QRect boundingBox, Qt::Orientation orient, Qt::Alignment align)
 {
     if (!_ftLibInitialized || font == NULL || painter == NULL || text.isNull())
         return false;
@@ -144,8 +146,10 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
     int xstep, ystep;
     Qt::Alignment hAlign = align & Qt::AlignHorizontal_Mask;
     Qt::Alignment vAlign = align & Qt::AlignVertical_Mask;
-    if (hAlign == 0) hAlign = Qt::AlignHCenter;
-    if (vAlign == 0) vAlign = Qt::AlignVCenter;
+    if (hAlign == 0)
+        hAlign = Qt::AlignHCenter;
+    if (vAlign == 0)
+        vAlign = Qt::AlignVCenter;
 
     QPoint topLeft = boundingBox.topLeft();
     boundingBox.moveTopLeft(QPoint(0, 0));
@@ -175,7 +179,8 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
                 fontSize.setWidth(xstep - spacing);
         }
     }
-    if (fontSize.width() <= 0 || fontSize.height() <= 0) return false;
+    if (fontSize.width() <= 0 || fontSize.height() <= 0)
+        return false;
     // we allocate larger area than necessary in case we need bold font
     int rows = boundingBox.height() + pixelsAdded + 3;
     int cols = boundingBox.width() + pixelsAdded + 3;
@@ -193,8 +198,8 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
 #if (defined(_NEW_PIXEL) || defined(_FONT_PIXEL))
 #error("macro _NEW_PIXEL or _FONT_PIXEL already in use")
 #endif
-#define _NEW_PIXEL(x, y, channel) (newImage[((y) * cols + (x)) * 4 + channel])
-#define _FONT_PIXEL(x, y) (bitmap.buffer[(y) * rowStep + (x)])
+#define _NEW_PIXEL(x, y, channel) (newImage[((y)*cols + (x)) * 4 + channel])
+#define _FONT_PIXEL(x, y) (bitmap.buffer[(y)*rowStep + (x)])
     // we do not do kerning for vertical layout for now
     bool useKerning = ((orient == Qt::Horizontal) && !(align & Qt::AlignJustify));
 
@@ -207,10 +212,11 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
     int currentX = 0;
     int currentY = 0;
     for (int i = 0; i < len; i++) {
-        FT_Vector  delta;
+        FT_Vector delta;
         FT_UInt glyph_index = FT_Get_Char_Index(face, charcodes[i]);
         error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT | FT_LOAD_NO_BITMAP);
-        if (error) continue;
+        if (error)
+            continue;
 
         if (useKerning && previous && glyph_index) {
             error = FT_Get_Kerning(face, previous, glyph_index, FT_KERNING_DEFAULT, &delta);
@@ -242,8 +248,10 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
             currentX = (fontSize.width() - bitmap.width) / 2;
 
         // now paint the bitmap to the new region;
-        if (currentX < 0) currentX = 0;
-        if (currentY < 0) currentY = 0;
+        if (currentX < 0)
+            currentX = 0;
+        if (currentY < 0)
+            currentY = 0;
         for (int y = 0; y < fontRows; y++) {
             if (currentY + y >= rows)
                 break;
@@ -330,17 +338,16 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
             Q_ASSERT(false);
         }
     }
-    if (xstart < 0) xstart = 0;
-    if (ystart < 0) ystart = 0;
+    if (xstart < 0)
+        xstart = 0;
+    if (ystart < 0)
+        ystart = 0;
     QImage result(newImage, cols, rows, QImage::Format_ARGB32);
     painter->drawImage(topLeft.x() + xstart, topLeft.y() + ystart, result);
     return true;
 }
 
-bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QString text,
-                                                          int *font, QColor color,
-                                                          QSize &fontSize, int spacing, QRect boundingBox,
-                                                          Qt::Alignment align)
+bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QString text, int *font, QColor color, QSize &fontSize, int spacing, QRect boundingBox, Qt::Alignment align)
 {
     if (!_ftLibInitialized || font == NULL || painter == NULL)
         return false;
@@ -361,7 +368,8 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QSt
 
     int ystep = fontSize.height() + spacing;
 
-    if (fontSize.width() <= 0 || fontSize.height() <= 0) return false;
+    if (fontSize.width() <= 0 || fontSize.height() <= 0)
+        return false;
     // AlignJustifx means the text should fill out the whole rect space
     // so we increase the step
 
@@ -402,7 +410,8 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QSt
         FT_Vector delta;
         FT_UInt glyph_index = FT_Get_Char_Index(face, charcodes[i]);
         error = FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER);
-        if (error) continue;
+        if (error)
+            continue;
 
         if (useKerning && previous && glyph_index) {
             error = FT_Get_Kerning(face, previous, glyph_index, FT_KERNING_DEFAULT, &delta);
@@ -430,8 +439,8 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QSt
 #if (defined(_NEW_PIXEL) || defined(_FONT_PIXEL))
 #error("macro _NEW_PIXEL or _FONT_PIXEL already in use")
 #endif
-#define _NEW_PIXEL(x, y, channel) (newImage[((y) * cols + (x)) * 4 + channel])
-#define _FONT_PIXEL(x, y) (bitmap.buffer[(y) * rowStep + (x)])
+#define _NEW_PIXEL(x, y, channel) (newImage[((y)*cols + (x)) * 4 + channel])
+#define _FONT_PIXEL(x, y) (bitmap.buffer[(y)*rowStep + (x)])
             uchar *fontPtr = &_FONT_PIXEL(0, y);
             uchar *imagePtr = &_NEW_PIXEL(currentX, currentY + y, 3);
 #undef _NEW_PIXEL
@@ -465,7 +474,8 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QSt
             currentX += slot->advance.x >> 6;
         else
             currentX += xstep;
-        if (currentX > maxX) maxX = currentX;
+        if (currentX > maxX)
+            maxX = currentX;
         currentY -= tmpYOffset;
     }
     _paintTextMutex.unlock();
@@ -494,10 +504,11 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QSt
         ystart = 0;
         Q_ASSERT(false);
     }
-    if (xstart < 0) xstart = 0;
-    if (ystart < 0) ystart = 0;
+    if (xstart < 0)
+        xstart = 0;
+    if (ystart < 0)
+        ystart = 0;
     QImage result(newImage, cols, rows, QImage::Format_ARGB32);
     painter->drawImage(topLeft.x() + xstart, topLeft.y() + ystart, result);
     return true;
 }
-

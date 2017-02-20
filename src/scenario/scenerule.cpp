@@ -1,8 +1,9 @@
-#include "settings.h"
-#include "engine.h"
 #include "scenerule.h"
+#include "engine.h"
+#include "settings.h"
 
-SceneRule::SceneRule(QObject *parent) : GameRule(parent)
+SceneRule::SceneRule(QObject *parent)
+    : GameRule(parent)
 {
     events << GameStart;
 }

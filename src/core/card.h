@@ -1,9 +1,9 @@
 #ifndef _CARD_H
 #define _CARD_H
 
-#include <QObject>
-#include <QMap>
 #include <QIcon>
+#include <QMap>
+#include <QObject>
 
 class Room;
 class Player;
@@ -39,15 +39,29 @@ public:
     // enumeration type
     enum Suit
     {
-        Spade, Club, Heart, Diamond, NoSuitBlack, NoSuitRed, NoSuit, SuitToBeDecided = -1
+        Spade,
+        Club,
+        Heart,
+        Diamond,
+        NoSuitBlack,
+        NoSuitRed,
+        NoSuit,
+        SuitToBeDecided = -1
     };
     enum Color
     {
-        Red, Black, Colorless
+        Red,
+        Black,
+        Colorless
     };
     enum HandlingMethod
     {
-        MethodNone, MethodUse, MethodResponse, MethodDiscard, MethodRecast, MethodPindian
+        MethodNone,
+        MethodUse,
+        MethodResponse,
+        MethodDiscard,
+        MethodRecast,
+        MethodPindian
     };
 
     static const Suit AllSuits[4];
@@ -55,7 +69,10 @@ public:
     // card types
     enum CardType
     {
-        TypeSkill, TypeBasic, TypeTrick, TypeEquip
+        TypeSkill,
+        TypeBasic,
+        TypeTrick,
+        TypeEquip
     };
 
     // constructor
@@ -119,8 +136,6 @@ public:
     virtual void addSubcards(const QList<int> &subcards_list);
     virtual int subcardsLength() const;
 
-
-
     virtual QString getType() const = 0;
     virtual QString getSubtype() const = 0;
     virtual CardType getTypeId() const = 0;
@@ -131,8 +146,7 @@ public:
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     // @todo: the following two functions should be merged into one.
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self,
-                              int &maxVotes) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, int &maxVotes) const;
     virtual bool isAvailable(const Player *player) const;
 
     inline virtual const Card *getRealCard() const
@@ -150,7 +164,8 @@ public:
 
     inline virtual bool isKindOf(const char *cardType) const
     {
-        Q_ASSERT(cardType); return inherits(cardType);
+        Q_ASSERT(cardType);
+        return inherits(cardType);
     }
     inline virtual QStringList getFlags() const
     {
@@ -227,4 +242,3 @@ public:
 };
 
 #endif
-

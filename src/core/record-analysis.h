@@ -52,7 +52,8 @@ public:
                         const QString &addition_option_role = QString(),
                         bool need_alive = false,
                         bool need_dead = false,
-                        bool need_win = false, bool need_lose = false);
+                        bool need_win = false,
+                        bool need_lose = false);
     void initialDesignation();
 
 private:
@@ -99,4 +100,3 @@ struct PlayerRecordStruct
 };
 
 #endif
-

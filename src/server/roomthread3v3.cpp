@@ -1,10 +1,10 @@
 #include "roomthread3v3.h"
-#include "room.h"
-#include "engine.h"
 #include "ai.h"
-#include "lua.hpp"
-#include "settings.h"
+#include "engine.h"
 #include "generalselector.h"
+#include "lua.hpp"
+#include "room.h"
+#include "settings.h"
 
 #include <QDateTime>
 
@@ -12,7 +12,7 @@ using namespace QSanProtocol;
 using namespace JsonUtils;
 
 RoomThread3v3::RoomThread3v3(Room *room)
-    :room(room)
+    : room(room)
 {
     room->getRoomState()->reset();
 }
@@ -29,43 +29,80 @@ QStringList RoomThread3v3::getGeneralsWithoutExtension() const
 
     generals.removeOne(Sanguosha->getGeneral("yuji"));
     QStringList list_nostal, list_neo;
-    list_nostal << "nos_liubei" << "nos_diaochan" << "nos_huangyueying" << "nos_zhangjiao" << "nos_caoren" << "nos_zhoutai";
-    list_neo << "liubei" << "diaochan" << "huangyueying" << "st_yuanshu" << "st_huaxiong" << "zhangjiao" << "caoren" << "zhoutai";
-    foreach(QString general_name, list_neo)
+    list_nostal << "nos_liubei"
+                << "nos_diaochan"
+                << "nos_huangyueying"
+                << "nos_zhangjiao"
+                << "nos_caoren"
+                << "nos_zhoutai";
+    list_neo << "liubei"
+             << "diaochan"
+             << "huangyueying"
+             << "st_yuanshu"
+             << "st_huaxiong"
+             << "zhangjiao"
+             << "caoren"
+             << "zhoutai";
+    foreach (QString general_name, list_neo)
         generals.removeOne(Sanguosha->getGeneral(general_name));
-    foreach(QString general_name, list_nostal)
+    foreach (QString general_name, list_nostal)
         generals << Sanguosha->getGeneral(general_name);
 
     QString rule = Config.value("3v3/OfficialRule", "2013").toString();
     if (rule == "2012") {
         QStringList list_remove, list_add;
-        list_remove << "nos_zhangjiao" << "nos_caoren" << "lvmeng" << "xiahoudun" << "weiyan";
-        list_add << "sunjian" << "menghuo" << "xuhuang" << "pangde" << "zhugejin";
-        foreach(QString general_name, list_remove)
+        list_remove << "nos_zhangjiao"
+                    << "nos_caoren"
+                    << "lvmeng"
+                    << "xiahoudun"
+                    << "weiyan";
+        list_add << "sunjian"
+                 << "menghuo"
+                 << "xuhuang"
+                 << "pangde"
+                 << "zhugejin";
+        foreach (QString general_name, list_remove)
             generals.removeOne(Sanguosha->getGeneral(general_name));
-        foreach(QString general_name, list_add)
+        foreach (QString general_name, list_add)
             generals << Sanguosha->getGeneral(general_name);
     } else if (rule == "2013") {
         QStringList list_remove, list_add;
-        list_remove << "nos_zhangjiao" << "nos_caoren" << "lvmeng" << "xiahoudun" << "weiyan"
-                    << "luxun" << "huangzhong" << "xuchu" << "nos_zhoutai" << "zhaoyun"
-                    << "guanyu" << "lvbu";
-        list_add << "sunjian" << "xuhuang" << "pangde" << "jiaxu" << "sunce"
-                 << "jiangwei" << "zhugejin" << "vs_xiahoudun" << "vs_guanyu" << "vs_zhaoyun"
-                 << "vs_lvbu" << "wenpin";
-        foreach(QString general_name, list_remove)
+        list_remove << "nos_zhangjiao"
+                    << "nos_caoren"
+                    << "lvmeng"
+                    << "xiahoudun"
+                    << "weiyan"
+                    << "luxun"
+                    << "huangzhong"
+                    << "xuchu"
+                    << "nos_zhoutai"
+                    << "zhaoyun"
+                    << "guanyu"
+                    << "lvbu";
+        list_add << "sunjian"
+                 << "xuhuang"
+                 << "pangde"
+                 << "jiaxu"
+                 << "sunce"
+                 << "jiangwei"
+                 << "zhugejin"
+                 << "vs_xiahoudun"
+                 << "vs_guanyu"
+                 << "vs_zhaoyun"
+                 << "vs_lvbu"
+                 << "wenpin";
+        foreach (QString general_name, list_remove)
             generals.removeOne(Sanguosha->getGeneral(general_name));
-        foreach(QString general_name, list_add)
+        foreach (QString general_name, list_add)
             generals << Sanguosha->getGeneral(general_name);
     }
 
     QStringList general_names;
-    foreach(const General *general, generals)
+    foreach (const General *general, generals)
         general_names << general->objectName();
 
     return general_names;
 }
-
 
 void RoomThread3v3::run()
 {
@@ -78,8 +115,12 @@ void RoomThread3v3::run()
 
     foreach (ServerPlayer *player, room->m_players) {
         switch (player->getRoleEnum()) {
-        case Player::Lord: warm_leader = player; break;
-        case Player::Renegade: cool_leader = player; break;
+        case Player::Lord:
+            warm_leader = player;
+            break;
+        case Player::Renegade:
+            cool_leader = player;
+            break;
         default:
             break;
         }
@@ -176,9 +217,10 @@ void RoomThread3v3::startArrange(QList<ServerPlayer *> &players)
             online.removeOne(player);
         }
     }
-    if (online.isEmpty()) return;
+    if (online.isEmpty())
+        return;
 
-    foreach(ServerPlayer *player, online)
+    foreach (ServerPlayer *player, online)
         player->m_commandArgs = QVariant();
 
     room->doBroadcastRequest(online, S_COMMAND_ARRANGE_GENERAL);
@@ -271,8 +313,12 @@ void RoomThread3v3::assignRoles(const QStringList &roles, const QString &scheme)
 void RoomThread3v3::assignRoles(const QString &scheme)
 {
     QStringList roles;
-    roles << "lord" << "loyalist" << "rebel"
-          << "renegade" << "rebel" << "loyalist";
+    roles << "lord"
+          << "loyalist"
+          << "rebel"
+          << "renegade"
+          << "rebel"
+          << "loyalist";
 
     if (scheme == "Random") {
         // the easiest way
@@ -284,8 +330,12 @@ void RoomThread3v3::assignRoles(const QString &scheme)
         assignRoles(roles, scheme);
     } else {
         QStringList all_roles;
-        all_roles << "leader1" << "guard1" << "guard2"
-                  << "leader2" << "guard2" << "guard1";
+        all_roles << "leader1"
+                  << "guard1"
+                  << "guard2"
+                  << "leader2"
+                  << "guard2"
+                  << "guard1";
         assignRoles(all_roles, scheme);
 
         QMap<QString, QString> map;
@@ -305,13 +355,12 @@ void RoomThread3v3::assignRoles(const QString &scheme)
             room->m_players.swap(2, 5);
         }
 
-        foreach(ServerPlayer *player, room->m_players)
+        foreach (ServerPlayer *player, room->m_players)
             player->setRole(map[player->getRole()]);
     }
 
-    foreach(ServerPlayer *player, room->m_players) {
+    foreach (ServerPlayer *player, room->m_players) {
         room->broadcastProperty(player, "role");
         room->setPlayerProperty(player, "role_shown", true);
     }
 }
-

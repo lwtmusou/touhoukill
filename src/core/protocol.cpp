@@ -1,7 +1,8 @@
 #include "protocol.h"
 #include "json.h"
-#include <sstream>
+
 #include <algorithm>
+#include <sstream>
 
 using namespace std;
 using namespace QSanProtocol;
@@ -28,7 +29,8 @@ bool QSanProtocol::Countdown::tryParse(const QVariant &var)
     }
 
     if (val.size() == 2) {
-        if (!JsonUtils::isNumberArray(val, 0, 1)) return false;
+        if (!JsonUtils::isNumberArray(val, 0, 1))
+            return false;
         current = (time_t)val[0].toInt();
         max = (time_t)val[1].toInt();
         type = S_COUNTDOWN_USE_SPECIFIED;
@@ -59,9 +61,10 @@ QVariant QSanProtocol::Countdown::toVariant() const
 }
 
 QSanProtocol::Packet::Packet(int packetDescription, CommandType command)
-    : globalSerial(0), localSerial(0),
-      command(command),
-      packetDescription(static_cast<PacketDescription>(packetDescription))
+    : globalSerial(0)
+    , localSerial(0)
+    , command(command)
+    , packetDescription(static_cast<PacketDescription>(packetDescription))
 {
 }
 

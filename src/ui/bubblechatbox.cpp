@@ -1,11 +1,11 @@
 #include "bubblechatbox.h"
 #include "settings.h"
 
+#include <QBitmap>
 #include <QGraphicsScene>
 #include <QPainter>
-#include <QTextDocument>
-#include <QBitmap>
 #include <QPropertyAnimation>
+#include <QTextDocument>
 
 const int PIXELS_PER_LINE = 168;
 const int BOX_MIN_WIDTH = 42;
@@ -20,7 +20,8 @@ class BubbleChatLabel : public QGraphicsTextItem
 {
 public:
     explicit BubbleChatLabel(QGraphicsItem *parent = 0)
-        : QGraphicsTextItem(parent), m_doc(document())
+        : QGraphicsTextItem(parent)
+        , m_doc(document())
     {
     }
 
@@ -52,10 +53,13 @@ private:
     QTextDocument *m_doc;
 };
 
-BubbleChatBox::BubbleChatBox(const QRect &area, QGraphicsItem *parent/* = 0*/)
-    : QGraphicsObject(parent), m_backgroundPixmap("image/system/bubble.png"),
-      m_rect(m_backgroundPixmap.rect()), m_area(area), m_chatLabel(new BubbleChatLabel(this)),
-      m_appearAndDisappear(new QPropertyAnimation(this, "opacity", this))
+BubbleChatBox::BubbleChatBox(const QRect &area, QGraphicsItem *parent /* = 0*/)
+    : QGraphicsObject(parent)
+    , m_backgroundPixmap("image/system/bubble.png")
+    , m_rect(m_backgroundPixmap.rect())
+    , m_area(area)
+    , m_chatLabel(new BubbleChatLabel(this))
+    , m_appearAndDisappear(new QPropertyAnimation(this, "opacity", this))
 {
     m_chatLabel->setFont(Config.UIFont);
     m_chatLabel->setWrapMode(QTextOption::WrapAnywhere);

@@ -6,8 +6,8 @@ class TriggerSkill;
 class Card;
 class Slash;
 
-#include "serverplayer.h"
 #include "player.h"
+#include "serverplayer.h"
 
 #include <QVariant>
 
@@ -16,7 +16,7 @@ struct DamageStruct
     enum Nature
     {
         Normal, // normal slash, duel and most damage caused by skill
-        Fire,  // fire slash, fire attack and few damage skill (Yeyan, etc)
+        Fire, // fire slash, fire attack and few damage skill (Yeyan, etc)
         Thunder, // lightning, thunder slash, and few damage skill (Leiji, etc)
         Ice
     };
@@ -144,19 +144,19 @@ public:
     bool tryParse(const QVariant &);
     QVariant toVariant() const;
 
-    inline bool operator == (const CardMoveReason &other) const
+    inline bool operator==(const CardMoveReason &other) const
     {
         return m_reason == other.m_reason
-                && m_playerId == other.m_playerId && m_targetId == other.m_targetId
-                && m_skillName == other.m_skillName
-                && m_eventName == other.m_eventName;
+            && m_playerId == other.m_playerId && m_targetId == other.m_targetId
+            && m_skillName == other.m_skillName
+            && m_eventName == other.m_eventName;
     }
 
     static const int S_REASON_UNKNOWN = 0x00;
     static const int S_REASON_USE = 0x01;
     static const int S_REASON_RESPONSE = 0x02;
     static const int S_REASON_DISCARD = 0x03;
-    static const int S_REASON_RECAST = 0x04;          // ironchain etc.
+    static const int S_REASON_RECAST = 0x04; // ironchain etc.
     static const int S_REASON_PINDIAN = 0x05;
     static const int S_REASON_DRAW = 0x06;
     static const int S_REASON_GOTCARD = 0x07;
@@ -165,42 +165,40 @@ public:
     static const int S_REASON_PUT = 0x0A;
 
     //subcategory of use
-    static const int S_REASON_LETUSE = 0x11;           // use a card when self is not current
+    static const int S_REASON_LETUSE = 0x11; // use a card when self is not current
 
     //subcategory of response
     static const int S_REASON_RETRIAL = 0x12;
 
     //subcategory of discard
-    static const int S_REASON_RULEDISCARD = 0x13;       //  discard at one's Player::Discard for gamerule
-    static const int S_REASON_THROW = 0x23;             /*  gamerule(dying or punish)
-                                                            as the cost of some skills   */
-    static const int S_REASON_DISMANTLE = 0x33;         //  one throw card of another
+    static const int S_REASON_RULEDISCARD = 0x13; //  discard at one's Player::Discard for gamerule
+    static const int S_REASON_THROW = 0x23; //  gamerule(dying or punish) as the cost of some skills
+    static const int S_REASON_DISMANTLE = 0x33; //  one throw card of another
 
     //subcategory of gotcard
-    static const int S_REASON_GIVE = 0x17;              // from one hand to another hand
-    static const int S_REASON_EXTRACTION = 0x27;        // from another's place to one's hand
-    static const int S_REASON_GOTBACK = 0x37;           // from placetable to hand
-    static const int S_REASON_RECYCLE = 0x47;           // from discardpile to hand
-    static const int S_REASON_ROB = 0x57;               // got a definite card from other's hand
-    static const int S_REASON_PREVIEWGIVE = 0x67;       // give cards after previewing, i.e. Yiji & Miji
+    static const int S_REASON_GIVE = 0x17; // from one hand to another hand
+    static const int S_REASON_EXTRACTION = 0x27; // from another's place to one's hand
+    static const int S_REASON_GOTBACK = 0x37; // from placetable to hand
+    static const int S_REASON_RECYCLE = 0x47; // from discardpile to hand
+    static const int S_REASON_ROB = 0x57; // got a definite card from other's hand
+    static const int S_REASON_PREVIEWGIVE = 0x67; // give cards after previewing, i.e. Yiji & Miji
 
     //subcategory of show
-    static const int S_REASON_TURNOVER = 0x18;          // show n cards from drawpile
-    static const int S_REASON_JUDGE = 0x28;             // show a card from drawpile for judge
-    static const int S_REASON_PREVIEW = 0x38;           // Not done yet, plan for view some cards for self only(guanxing yiji miji)
-    static const int S_REASON_DEMONSTRATE = 0x48;       // show a card which copy one to move to table
+    static const int S_REASON_TURNOVER = 0x18; // show n cards from drawpile
+    static const int S_REASON_JUDGE = 0x28; // show a card from drawpile for judge
+    static const int S_REASON_PREVIEW = 0x38; // Not done yet, plan for view some cards for self only(guanxing yiji miji)
+    static const int S_REASON_DEMONSTRATE = 0x48; // show a card which copy one to move to table
 
     //subcategory of transfer
-    static const int S_REASON_SWAP = 0x19;              // exchange card for two players
-    static const int S_REASON_OVERRIDE = 0x29;          // exchange cards from cards in game
-    static const int S_REASON_EXCHANGE_FROM_PILE = 0x39;// exchange cards from cards moved out of game (for qixing only)
+    static const int S_REASON_SWAP = 0x19; // exchange card for two players
+    static const int S_REASON_OVERRIDE = 0x29; // exchange cards from cards in game
+    static const int S_REASON_EXCHANGE_FROM_PILE = 0x39; // exchange cards from cards moved out of game (for qixing only)
 
     //subcategory of put
-    static const int S_REASON_NATURAL_ENTER = 0x1A;     //  a card with no-owner move into discardpile
-    //  e.g. delayed trick enters discardpile
-    static const int S_REASON_REMOVE_FROM_PILE = 0x2A;  //  cards moved out of game go back into discardpile
-    static const int S_REASON_JUDGEDONE = 0x3A;         //  judge card move into discardpile
-    static const int S_REASON_CHANGE_EQUIP = 0x4A;      //  replace existed equip
+    static const int S_REASON_NATURAL_ENTER = 0x1A; //  a card with no-owner move into discardpile e.g. delayed trick enters discardpile
+    static const int S_REASON_REMOVE_FROM_PILE = 0x2A; //  cards moved out of game go back into discardpile
+    static const int S_REASON_JUDGEDONE = 0x3A; //  judge card move into discardpile
+    static const int S_REASON_CHANGE_EQUIP = 0x4A; //  replace existed equip
 
     static const int S_MASK_BASIC_REASON = 0x0F;
 };
@@ -226,7 +224,7 @@ struct CardsMoveOneTimeStruct
 
     inline void removeCardIds(const QList<int> &to_remove)
     {
-        foreach(int id, to_remove) {
+        foreach (int id, to_remove) {
             int index = card_ids.indexOf(id);
             if (index != -1) {
                 card_ids.removeAt(index);
@@ -249,8 +247,7 @@ struct CardsMoveStruct
         is_last_handcard = false;
     }
 
-    inline CardsMoveStruct(const QList<int> &ids, Player *from, Player *to, Player::Place from_place,
-                           Player::Place to_place, CardMoveReason reason)
+    inline CardsMoveStruct(const QList<int> &ids, Player *from, Player *to, Player::Place from_place, Player::Place to_place, CardMoveReason reason)
     {
         this->card_ids = ids;
         this->from_place = from_place;
@@ -259,8 +256,10 @@ struct CardsMoveStruct
         this->to = to;
         this->reason = reason;
         is_last_handcard = false;
-        if (from) from_player_name = from->objectName();
-        if (to) to_player_name = to->objectName();
+        if (from)
+            from_player_name = from->objectName();
+        if (to)
+            to_player_name = to->objectName();
     }
 
     inline CardsMoveStruct(const QList<int> &ids, Player *to, Player::Place to_place, CardMoveReason reason)
@@ -272,11 +271,11 @@ struct CardsMoveStruct
         this->to = to;
         this->reason = reason;
         is_last_handcard = false;
-        if (to) to_player_name = to->objectName();
+        if (to)
+            to_player_name = to->objectName();
     }
 
-    inline CardsMoveStruct(int id, Player *from, Player *to, Player::Place from_place,
-                           Player::Place to_place, CardMoveReason reason)
+    inline CardsMoveStruct(int id, Player *from, Player *to, Player::Place from_place, Player::Place to_place, CardMoveReason reason)
     {
         this->card_ids << id;
         this->from_place = from_place;
@@ -285,8 +284,10 @@ struct CardsMoveStruct
         this->to = to;
         this->reason = reason;
         is_last_handcard = false;
-        if (from) from_player_name = from->objectName();
-        if (to) to_player_name = to->objectName();
+        if (from)
+            from_player_name = from->objectName();
+        if (to)
+            to_player_name = to->objectName();
     }
 
     inline CardsMoveStruct(int id, Player *to, Player::Place to_place, CardMoveReason reason)
@@ -298,19 +299,20 @@ struct CardsMoveStruct
         this->to = to;
         this->reason = reason;
         is_last_handcard = false;
-        if (to) to_player_name = to->objectName();
+        if (to)
+            to_player_name = to->objectName();
     }
 
-    inline bool operator == (const CardsMoveStruct &other) const
+    inline bool operator==(const CardsMoveStruct &other) const
     {
         return from == other.from && from_place == other.from_place
-                && from_pile_name == other.from_pile_name && from_player_name == other.from_player_name;
+            && from_pile_name == other.from_pile_name && from_player_name == other.from_player_name;
     }
 
-    inline bool operator < (const CardsMoveStruct &other) const
+    inline bool operator<(const CardsMoveStruct &other) const
     {
         return from < other.from || from_place < other.from_place
-                || from_pile_name < other.from_pile_name || from_player_name < other.from_player_name;
+            || from_pile_name < other.from_pile_name || from_player_name < other.from_player_name;
     }
 
     QList<int> card_ids;
@@ -442,7 +444,15 @@ struct PhaseStruct
 struct CardResponseStruct
 {
     inline CardResponseStruct(const Card *card = NULL, ServerPlayer *who = NULL, bool isuse = false, bool isRetrial = false, bool isProvision = false, ServerPlayer *from = NULL)
-        : m_card(card), m_who(who), m_isUse(isuse), m_isRetrial(isRetrial), m_isProvision(isProvision), m_isHandcard(false), m_from(from), m_isNullified(false),m_isShowncard(false)
+        : m_card(card)
+        , m_who(who)
+        , m_isUse(isuse)
+        , m_isRetrial(isRetrial)
+        , m_isProvision(isProvision)
+        , m_isHandcard(false)
+        , m_from(from)
+        , m_isNullified(false)
+        , m_isShowncard(false)
     {
     }
 
@@ -500,7 +510,7 @@ struct SkillInvokeDetail
 
     QVariantMap tag; // used to add a tag to the struct. useful for skills like Tieqi and Liegong to save a QVariantList for assisting to assign targets
 
-    bool operator <(const SkillInvokeDetail &arg2) const; // the operator < for sorting the invoke order.
+    bool operator<(const SkillInvokeDetail &arg2) const; // the operator < for sorting the invoke order.
     bool sameSkill(const SkillInvokeDetail &arg2) const; // the operator ==. it only judge the skill name, the skill invoker, and the skill owner. it don't judge the skill target because it is chosen by the skill invoker
     bool sameTimingWith(const SkillInvokeDetail &arg2) const; // used to judge 2 skills has the same timing. only 2 structs with the same priority and the same invoker and the same "whether or not it is a skill of equip"
     bool isValid() const; // validity check
@@ -589,9 +599,8 @@ struct ExtraTurnStruct
     ServerPlayer *player;
     QList<Player::Phase> set_phases;
     QString reason;
-    ServerPlayer *extraTarget;//record related target  --qinlue
+    ServerPlayer *extraTarget; //record related target  --qinlue
 };
-
 
 enum TriggerEvent
 {
@@ -633,16 +642,16 @@ enum TriggerEvent
     TurnedOver,
     ChainStateChanged,
 
-    ConfirmDamage,    // confirm the damage's count and damage's nature
-    Predamage,        // trigger the certain skill -- jueqing
-    DamageForseen,    // the first event in a damage -- kuangfeng dawu
-    DamageCaused,     // the moment for -- qianxi..
-    DamageInflicted,  // the moment for -- tianxiang..
-    PreDamageDone,    // before reducing Hp
-    DamageDone,       // it's time to do the damage
-    Damage,           // the moment for -- lieren..
-    Damaged,          // the moment for -- yiji..
-    DamageComplete,   // the moment for trigger iron chain
+    ConfirmDamage, // confirm the damage's count and damage's nature
+    Predamage, // trigger the certain skill -- jueqing
+    DamageForseen, // the first event in a damage -- kuangfeng dawu
+    DamageCaused, // the moment for -- qianxi..
+    DamageInflicted, // the moment for -- tianxiang..
+    PreDamageDone, // before reducing Hp
+    DamageDone, // it's time to do the damage
+    Damage, // the moment for -- lieren..
+    Damaged, // the moment for -- yiji..
+    DamageComplete, // the moment for trigger iron chain
 
     EnterDying,
     Dying,
@@ -694,7 +703,7 @@ enum TriggerEvent
     TurnBroken, // For the skill 'DanShou'. Do not use it to trigger events
 
     //new events for touhoukill,
-    DrawPileSwaped,//for qiannian
+    DrawPileSwaped, //for qiannian
     AfterGuanXing,
     KingdomChanged,
 
@@ -727,4 +736,3 @@ Q_DECLARE_METATYPE(JudgeStruct *)
 Q_DECLARE_METATYPE(PindianStruct *)
 Q_DECLARE_METATYPE(ExtraTurnStruct)
 #endif
-

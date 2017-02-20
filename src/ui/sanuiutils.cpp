@@ -1,8 +1,8 @@
 #include "sanuiutils.h"
 
-#include <QPixmap>
-#include <QImage>
 #include <QColor>
+#include <QImage>
+#include <QPixmap>
 
 #define NEW_PIXEL_CHANNEL(x, y, channel) (newImage[(y * cols + x) * 4 + channel])
 #define NEW_PIXEL(x, y) NEW_PIXEL_CHANNEL(x, y, 3)
@@ -24,7 +24,9 @@ void SanUiUtils::makeGray(QPixmap &pixmap)
 }
 
 QImage SanUiUtils::produceShadow(const QImage &image,
-                                 const QColor &shadowColor, int radius, double decade)
+                                 const QColor &shadowColor,
+                                 int radius,
+                                 double decade)
 {
     const uchar *const oldImage = image.bits();
     int cols = image.width();

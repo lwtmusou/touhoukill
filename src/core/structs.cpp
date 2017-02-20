@@ -1,7 +1,7 @@
 #include "structs.h"
-#include "protocol.h"
-#include "json.h"
 #include "exppattern.h"
+#include "json.h"
+#include "protocol.h"
 #include "room.h"
 #include "skill.h"
 #include <functional>
@@ -9,10 +9,11 @@
 bool CardsMoveStruct::tryParse(const QVariant &arg)
 {
     JsonArray args = arg.value<JsonArray>();
-    if (args.size() != 8) return false;
+    if (args.size() != 8)
+        return false;
 
-    if ((!JsonUtils::isNumber(args[0]) && !args[0].canConvert<JsonArray>()) ||
-            !JsonUtils::isNumberArray(args, 1, 2) || !JsonUtils::isStringArray(args, 3, 6)) return false;
+    if ((!JsonUtils::isNumber(args[0]) && !args[0].canConvert<JsonArray>()) || !JsonUtils::isNumberArray(args, 1, 2) || !JsonUtils::isStringArray(args, 3, 6))
+        return false;
 
     if (JsonUtils::isNumber(args[0])) {
         int size = args[0].toInt();
@@ -78,12 +79,23 @@ QVariant CardMoveReason::toVariant() const
 }
 
 DamageStruct::DamageStruct()
-    : from(NULL), to(NULL), card(NULL), damage(1), nature(Normal), chain(false), transfer(false), by_user(true), reason(QString())
+    : from(NULL)
+    , to(NULL)
+    , card(NULL)
+    , damage(1)
+    , nature(Normal)
+    , chain(false)
+    , transfer(false)
+    , by_user(true)
+    , reason(QString())
 {
 }
 
 DamageStruct::DamageStruct(const Card *card, ServerPlayer *from, ServerPlayer *to, int damage, DamageStruct::Nature nature)
-    : chain(false), transfer(false), by_user(true), reason(QString())
+    : chain(false)
+    , transfer(false)
+    , by_user(true)
+    , reason(QString())
 {
     this->card = card;
     this->from = from;
@@ -93,7 +105,10 @@ DamageStruct::DamageStruct(const Card *card, ServerPlayer *from, ServerPlayer *t
 }
 
 DamageStruct::DamageStruct(const QString &reason, ServerPlayer *from, ServerPlayer *to, int damage, DamageStruct::Nature nature)
-    : card(NULL), chain(false), transfer(false), by_user(true)
+    : card(NULL)
+    , chain(false)
+    , transfer(false)
+    , by_user(true)
 {
     this->from = from;
     this->to = to;
@@ -101,7 +116,6 @@ DamageStruct::DamageStruct(const QString &reason, ServerPlayer *from, ServerPlay
     this->nature = nature;
     this->reason = reason;
 }
-
 
 QString DamageStruct::getReason() const
 {
@@ -112,35 +126,56 @@ QString DamageStruct::getReason() const
     return QString();
 }
 
-
 CardEffectStruct::CardEffectStruct()
-    : card(NULL), from(NULL), to(NULL), multiple(false), nullified(false)
+    : card(NULL)
+    , from(NULL)
+    , to(NULL)
+    , multiple(false)
+    , nullified(false)
 {
 }
 
 SlashEffectStruct::SlashEffectStruct()
-    : jink_num(1), slash(NULL), jink(NULL), from(NULL), to(NULL), drank(0), nature(DamageStruct::Normal),
-      multiple(false), nullified(false)
+    : jink_num(1)
+    , slash(NULL)
+    , jink(NULL)
+    , from(NULL)
+    , to(NULL)
+    , drank(0)
+    , nature(DamageStruct::Normal)
+    , multiple(false)
+    , nullified(false)
 {
 }
 
 DyingStruct::DyingStruct()
-    : who(NULL), damage(NULL), nowAskingForPeaches(NULL)
+    : who(NULL)
+    , damage(NULL)
+    , nowAskingForPeaches(NULL)
 {
 }
 
 DeathStruct::DeathStruct()
-    : who(NULL), damage(NULL), viewAsKiller(NULL), useViewAsKiller(false)
+    : who(NULL)
+    , damage(NULL)
+    , viewAsKiller(NULL)
+    , useViewAsKiller(false)
 {
 }
 
 RecoverStruct::RecoverStruct()
-    : recover(1), who(NULL), card(NULL)
+    : recover(1)
+    , who(NULL)
+    , card(NULL)
 {
 }
 
 PindianStruct::PindianStruct()
-    : from(NULL), to(NULL), from_card(NULL), to_card(NULL), success(false)
+    : from(NULL)
+    , to(NULL)
+    , from_card(NULL)
+    , to_card(NULL)
+    , success(false)
 {
 }
 
@@ -150,8 +185,16 @@ bool PindianStruct::isSuccess() const
 }
 
 JudgeStruct::JudgeStruct()
-    : who(NULL), card(NULL), pattern("."), good(true), time_consuming(false),
-      negative(false), play_animation(true), retrial_by_response(NULL), relative_player(NULL), _m_result(TRIAL_RESULT_UNKNOWN)
+    : who(NULL)
+    , card(NULL)
+    , pattern(".")
+    , good(true)
+    , time_consuming(false)
+    , negative(false)
+    , play_animation(true)
+    , retrial_by_response(NULL)
+    , relative_player(NULL)
+    , _m_result(TRIAL_RESULT_UNKNOWN)
 {
 }
 
@@ -187,12 +230,18 @@ bool JudgeStruct::isGood(const Card *card) const
 }
 
 PhaseChangeStruct::PhaseChangeStruct()
-    : from(Player::NotActive), to(Player::NotActive), player(NULL)
+    : from(Player::NotActive)
+    , to(Player::NotActive)
+    , player(NULL)
 {
 }
 
 CardUseStruct::CardUseStruct()
-    : card(NULL), from(NULL), m_isOwnerUse(true), m_addHistory(true), nullified_list(QStringList())
+    : card(NULL)
+    , from(NULL)
+    , m_isOwnerUse(true)
+    , m_addHistory(true)
+    , nullified_list(QStringList())
 {
 }
 
@@ -276,7 +325,8 @@ bool CardUseStruct::tryParse(const QVariant &usage, Room *room)
     JsonArray targets = arr.value(1).value<JsonArray>();
 
     for (int i = 0; i < targets.size(); i++) {
-        if (!JsonUtils::isString(targets.value(i))) return false;
+        if (!JsonUtils::isString(targets.value(i)))
+            return false;
         to << room->findChild<ServerPlayer *>(targets.value(i).toString());
     }
     return true;
@@ -322,14 +372,13 @@ QString CardUseStruct::toString() const
     return l.join("->");
 }
 
-
 MarkChangeStruct::MarkChangeStruct()
-    : num(1), player(NULL)
+    : num(1)
+    , player(NULL)
 {
-
 }
 
-bool SkillInvokeDetail::operator <(const SkillInvokeDetail &arg2) const // the operator < for sorting the invoke order.
+bool SkillInvokeDetail::operator<(const SkillInvokeDetail &arg2) const // the operator < for sorting the invoke order.
 {
     //  we sort firstly according to the priority, then the seat of invoker, at last whether it is a skill of an equip.
     if (!isValid() || !arg2.isValid())
@@ -380,12 +429,23 @@ bool SkillInvokeDetail::sameTimingWith(const SkillInvokeDetail &arg2) const // u
 }
 
 SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill /*= NULL*/, ServerPlayer *owner /*= NULL*/, ServerPlayer *invoker /*= NULL*/, QList<ServerPlayer *> targets /*= QList<ServerPlayer *>()*/, bool isCompulsory /*= false*/, ServerPlayer *preferredTarget /*= NULL*/)
-    : skill(skill), owner(owner), invoker(invoker), targets(targets), isCompulsory(isCompulsory), triggered(false), preferredTarget(preferredTarget)
+    : skill(skill)
+    , owner(owner)
+    , invoker(invoker)
+    , targets(targets)
+    , isCompulsory(isCompulsory)
+    , triggered(false)
+    , preferredTarget(preferredTarget)
 {
 }
 
 SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, bool isCompulsory /*= false*/, ServerPlayer *preferredTarget /*= NULL*/)
-    : skill(skill), owner(owner), invoker(invoker), isCompulsory(isCompulsory), triggered(false), preferredTarget(preferredTarget)
+    : skill(skill)
+    , owner(owner)
+    , invoker(invoker)
+    , isCompulsory(isCompulsory)
+    , triggered(false)
+    , preferredTarget(preferredTarget)
 {
     if (target != NULL)
         targets << target;
@@ -393,10 +453,10 @@ SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *ow
 
 bool SkillInvokeDetail::isValid() const // validity check
 {
-    return skill != NULL/* && owner != NULL && invoker != NULL*/;
+    return skill != NULL /* && owner != NULL && invoker != NULL*/;
 }
 
-bool SkillInvokeDetail::preferredTargetLess(const SkillInvokeDetail & arg2) const
+bool SkillInvokeDetail::preferredTargetLess(const SkillInvokeDetail &arg2) const
 {
     std::function<Room *(ServerPlayer *)> getRoom = [this](ServerPlayer *p) -> Room * {
         if (p != NULL)
@@ -480,7 +540,9 @@ QStringList SkillInvokeDetail::toList() const
 }
 
 SkillAcquireDetachStruct::SkillAcquireDetachStruct()
-    : skill(NULL), player(NULL), isAcquire(false)
+    : skill(NULL)
+    , player(NULL)
+    , isAcquire(false)
 {
 }
 
@@ -495,7 +557,8 @@ CardAskedStruct::CardAskedStruct()
 }
 
 HpLostStruct::HpLostStruct()
-    : player(NULL), num(0)
+    : player(NULL)
+    , num(0)
 {
 }
 
@@ -505,21 +568,30 @@ JinkEffectStruct::JinkEffectStruct()
 }
 
 PhaseSkippingStruct::PhaseSkippingStruct()
-    : phase(Player::NotActive), player(NULL), isCost(false)
+    : phase(Player::NotActive)
+    , player(NULL)
+    , isCost(false)
 {
 }
 
 DrawNCardsStruct::DrawNCardsStruct()
-    : player(NULL), n(0), isInitial(false)
+    : player(NULL)
+    , n(0)
+    , isInitial(false)
 {
 }
 
 SkillInvalidStruct::SkillInvalidStruct()
-    : player(NULL), skill(NULL), invalid(false)
+    : player(NULL)
+    , skill(NULL)
+    , invalid(false)
 {
 }
 
 ExtraTurnStruct::ExtraTurnStruct()
-    : player(NULL), set_phases(QList<Player::Phase>()), reason(QString()), extraTarget(NULL)
+    : player(NULL)
+    , set_phases(QList<Player::Phase>())
+    , reason(QString())
+    , extraTarget(NULL)
 {
 }

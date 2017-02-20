@@ -1,10 +1,10 @@
 #ifdef AUDIO_SUPPORT
 
 #include <QCache>
-#include <QTime>
-#include <QStringList>
-#include <QSet>
 #include <QDir>
+#include <QSet>
+#include <QStringList>
+#include <QTime>
 
 #include "audio.h"
 #include "fmod.h"
@@ -18,7 +18,8 @@ class Sound
 {
 public:
     explicit Sound(const QString &fileName, bool backgroundMusic = false)
-        : m_sound(NULL), m_channel(NULL)
+        : m_sound(NULL)
+        , m_channel(NULL)
     {
         FMOD_MODE mode = FMOD_DEFAULT;
         FMOD_SOUNDGROUP *soundGroup = EffectGroup;
@@ -27,8 +28,7 @@ public:
             soundGroup = BackgroundMusicGroup;
         }
 
-        FMOD_System_CreateSound(System, fileName.toLatin1(),
-                                mode, NULL, &m_sound);
+        FMOD_System_CreateSound(System, fileName.toLatin1(), mode, NULL, &m_sound);
         FMOD_Sound_SetSoundGroup(m_sound, soundGroup);
         FMOD_System_Update(System);
     }
@@ -45,8 +45,7 @@ public:
             FMOD_Sound_SetMode(m_sound, FMOD_LOOP_NORMAL);
         }
 
-        FMOD_System_PlaySound(System, FMOD_CHANNEL_FREE,
-                              m_sound, false, &m_channel);
+        FMOD_System_PlaySound(System, FMOD_CHANNEL_FREE, m_sound, false, &m_channel);
         FMOD_System_Update(System);
     }
 
@@ -79,18 +78,26 @@ private:
 class BackgroundMusicPlayList
 {
 public:
-    enum PlayOrder {
+    enum PlayOrder
+    {
         Sequential = 1,
         Shuffle = 2,
     };
 
     explicit BackgroundMusicPlayList(const QStringList &fileNames,
-                                     BackgroundMusicPlayList::PlayOrder order = Sequential, const QStringList openings = QStringList())
-        : m_fileNames(fileNames), m_order(order), m_openings(openings), m_index(-1)
+                                     BackgroundMusicPlayList::PlayOrder order = Sequential,
+                                     const QStringList openings = QStringList())
+        : m_fileNames(fileNames)
+        , m_order(order)
+        , m_openings(openings)
+        , m_index(-1)
     {
     }
 
-    int count() const { return m_fileNames.size(); }
+    int count() const
+    {
+        return m_fileNames.size();
+    }
 
     bool operator==(const BackgroundMusicPlayList &other) const
     {
@@ -113,7 +120,10 @@ public:
             return false;
         }
     }
-    bool operator!=(const BackgroundMusicPlayList &other) const { return !(*this == other); }
+    bool operator!=(const BackgroundMusicPlayList &other) const
+    {
+        return !(*this == other);
+    }
 
     QString nextFileName()
     {
@@ -125,8 +135,7 @@ public:
             QString fileName = m_randomQueue.takeFirst();
             m_index = m_fileNames.indexOf(fileName);
             return fileName;
-        }
-        else {
+        } else {
             if (++m_index >= m_fileNames.size()) {
                 m_index = 0;
             }
@@ -137,17 +146,16 @@ public:
 private:
     void fillRandomQueue()
     {
-        
         m_randomQueue = m_fileNames;
         m_randomQueue.prepend("");
         qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
-        
+
         if (m_openings.isEmpty())
             qShuffle(m_randomQueue);
-        else{
+        else {
             qShuffle(m_openings);
             QString first = m_openings.takeFirst();
-            foreach(QString opening, m_openings) {
+            foreach (QString opening, m_openings) {
                 m_randomQueue << opening;
             }
             qShuffle(m_randomQueue);
@@ -160,13 +168,17 @@ private:
     QStringList m_randomQueue;
     PlayOrder m_order;
     int m_index;
-    QStringList m_openings;//need play title/open at first
+    QStringList m_openings; //need play title/open at first
 };
 
 class BackgroundMusicPlayer : public QObject
 {
 public:
-    BackgroundMusicPlayer() : m_timer(0), m_count(0) {}
+    BackgroundMusicPlayer()
+        : m_timer(0)
+        , m_count(0)
+    {
+    }
 
     void play(const QString &fileNames, bool random, bool playFolder = false)
     {
@@ -176,8 +188,8 @@ public:
 
         {
             BackgroundMusicPlayList::PlayOrder playOrder
-                    = random ? BackgroundMusicPlayList::Shuffle : BackgroundMusicPlayList::Sequential;
-            
+                = random ? BackgroundMusicPlayList::Shuffle : BackgroundMusicPlayList::Sequential;
+
             QStringList all = fileNames.split(";");
             QStringList openings;
             if (playFolder) {
@@ -188,8 +200,8 @@ public:
                 filter << "*.ogg";
                 dir->setNameFilters(filter);
                 QList<QFileInfo> file_info(dir->entryInfoList(filter));
-                
-                foreach(QFileInfo file, file_info) {
+
+                foreach (QFileInfo file, file_info) {
                     QString fileName = path + file.fileName();
                     if ((file.fileName().startsWith("main") || file.fileName().startsWith("opening")))
                         openings << fileName;
@@ -220,7 +232,10 @@ public:
         }
     }
 
-    void shutdown() { m_sound.reset(); }
+    void shutdown()
+    {
+        m_sound.reset();
+    }
 
 protected:
     virtual void timerEvent(QTimerEvent *)
@@ -277,7 +292,6 @@ void Audio::quit()
         EffectGroup = NULL;
         BackgroundMusicGroup = NULL;
 
-
         SoundCache.clear();
         backgroundMusicPlayer.shutdown();
 
@@ -286,15 +300,14 @@ void Audio::quit()
     }
 }
 
-void Audio::play(const QString &fileName, bool continuePlayWhenPlaying/* = false*/)
+void Audio::play(const QString &fileName, bool continuePlayWhenPlaying /* = false*/)
 {
     if (NULL != System) {
         Sound *sound = SoundCache[fileName];
         if (NULL == sound) {
             sound = new Sound(fileName);
             SoundCache.insert(fileName, sound);
-        }
-        else if (!continuePlayWhenPlaying && sound->isPlaying()) {
+        } else if (!continuePlayWhenPlaying && sound->isPlaying()) {
             return;
         }
 
@@ -312,7 +325,7 @@ void Audio::setBGMVolume(float volume)
     FMOD_SoundGroup_SetVolume(BackgroundMusicGroup, volume);
 }
 
-void Audio::playBGM(const QString &fileNames, bool random/* = false*/, bool playFolder)
+void Audio::playBGM(const QString &fileNames, bool random /* = false*/, bool playFolder)
 {
     if (NULL != System) {
         if (!m_customBackgroundMusicFileName.isEmpty()) {
@@ -332,7 +345,8 @@ void Audio::stopBGM()
     }
 }
 
-bool Audio::isBackgroundMusicPlaying() {
+bool Audio::isBackgroundMusicPlaying()
+{
     int numPlaying = 0;
     FMOD_SoundGroup_GetNumPlaying(BackgroundMusicGroup, &numPlaying);
     return numPlaying > 0;
@@ -356,9 +370,7 @@ QString Audio::getVersion()
     */
     unsigned int version = 0;
     if (NULL != System && FMOD_OK == FMOD_System_GetVersion(System, &version)) {
-        return QString("%1.%2.%3").arg((version & 0xFFFF0000) >> 16, 0, 16)
-                .arg((version & 0xFF00) >> 8, 2, 16, QChar('0'))
-                .arg((version & 0xFF), 2, 16, QChar('0'));
+        return QString("%1.%2.%3").arg((version & 0xFFFF0000) >> 16, 0, 16).arg((version & 0xFF00) >> 8, 2, 16, QChar('0')).arg((version & 0xFF), 2, 16, QChar('0'));
     }
 
     return "";

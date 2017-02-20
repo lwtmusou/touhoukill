@@ -1,11 +1,10 @@
 #ifndef GRAPHICSPIXMAPHOVERITEM_H
 #define GRAPHICSPIXMAPHOVERITEM_H
 
-#include <QObject>
 #include <QGraphicsPixmapItem>
+#include <QObject>
 
 class PlayerCardContainer;
-
 
 class GraphicsPixmapHoverItem : public QObject, public QGraphicsPixmapItem
 {

@@ -1,18 +1,17 @@
 #include "qsanbutton.h"
-#include "clientplayer.h"
 #include "SkinBank.h"
+#include "clientplayer.h"
 #include "engine.h"
 //#include "client.h"
 
-#include <QPixmap>
-#include <qbitmap.h>
-#include <QPainter>
 #include <QGraphicsSceneHoverEvent>
 #include <QGraphicsView>
+#include <QPainter>
+#include <QPixmap>
+#include <qbitmap.h>
 
-
-
-QSanButton::QSanButton(QGraphicsItem *parent) : QGraphicsObject(parent)
+QSanButton::QSanButton(QGraphicsItem *parent)
+    : QGraphicsObject(parent)
 {
     _m_state = S_STATE_UP;
     _m_style = S_STYLE_PUSH;
@@ -41,7 +40,6 @@ QSanButton::QSanButton(const QString &groupName, const QString &buttonName, QGra
 
 void QSanButton::click()
 {
-
     if (isEnabled()) {
         _onMouseClick(true);
     }
@@ -89,7 +87,8 @@ void QSanButton::setEnabled(bool enabled)
         _m_mouseEntered = false;
     }
     QGraphicsObject::setEnabled(enabled);
-    if (!enabled) setState(S_STATE_DISABLED);
+    if (!enabled)
+        setState(S_STATE_DISABLED);
     update();
     emit enable_changed();
 }
@@ -112,12 +111,13 @@ bool QSanButton::insideButton(QPointF pos) const
 
 void QSanButton::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    if (_m_state == S_STATE_DISABLED) return;
+    if (_m_state == S_STATE_DISABLED)
+        return;
     QPointF point = event->pos();
-    if (_m_mouseEntered || !insideButton(point)) return; // fake event;
+    if (_m_mouseEntered || !insideButton(point))
+        return; // fake event;
 
-
-    if (_m_state == S_STATE_HOVER)//when askforSkillInvoke
+    if (_m_state == S_STATE_HOVER) //when askforSkillInvoke
         return;
     Q_ASSERT(_m_state != S_STATE_HOVER);
 
@@ -128,10 +128,10 @@ void QSanButton::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
 void QSanButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 {
-    if (_m_state == S_STATE_DISABLED) return;
-    if (!_m_mouseEntered) return;
-
-
+    if (_m_state == S_STATE_DISABLED)
+        return;
+    if (!_m_mouseEntered)
+        return;
 
     Q_ASSERT(_m_state != S_STATE_DISABLED);
     if (_m_state == S_STATE_HOVER)
@@ -143,19 +143,23 @@ void QSanButton::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
     QPointF point = event->pos();
     if (insideButton(point)) {
-        if (!_m_mouseEntered) hoverEnterEvent(event);
+        if (!_m_mouseEntered)
+            hoverEnterEvent(event);
     } else {
-        if (_m_mouseEntered) hoverLeaveEvent(event);
+        if (_m_mouseEntered)
+            hoverLeaveEvent(event);
     }
 }
 
 void QSanButton::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     QPointF point = event->pos();
-    if (!insideButton(point)) return;
+    if (!insideButton(point))
+        return;
 
     Q_ASSERT(_m_state != S_STATE_DISABLED);
-    if (_m_style == S_STYLE_TOGGLE) return;
+    if (_m_style == S_STYLE_TOGGLE)
+        return;
     setState(S_STATE_DOWN);
 }
 
@@ -174,7 +178,8 @@ void QSanButton::_onMouseClick(bool inside)
     }
     update();
 
-    if (inside) emit clicked();
+    if (inside)
+        emit clicked();
 }
 
 void QSanButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
@@ -211,7 +216,8 @@ void QSanSkillButton::_setSkillType(SkillType type)
 
 void QSanSkillButton::onMouseClick()
 {
-    if (_m_skill == NULL) return;
+    if (_m_skill == NULL)
+        return;
 
     if ((_m_style == S_STYLE_TOGGLE && isDown() && _m_emitActivateSignal) || _m_style == S_STYLE_PUSH) {
         emit skill_activated();
@@ -230,11 +236,12 @@ void QSanSkillButton::setSkill(const Skill *skill)
     // such that sometimes the actual viewas skill is nested inside a trigger skill.
     // Since the trigger skill is not relevant, we flatten it before we create the button.
     _m_viewAsSkill = ViewAsSkill::parseViewAsSkill(_m_skill);
-    if (skill == NULL) skill = _m_skill;
+    if (skill == NULL)
+        skill = _m_skill;
 
     Skill::Frequency freq = skill->getFrequency();
     if (freq == Skill::Frequent
-            || (freq == Skill::NotFrequent && skill->inherits("TriggerSkill") && !skill->inherits("EquipSkill") && _m_viewAsSkill == NULL)) {
+        || (freq == Skill::NotFrequent && skill->inherits("TriggerSkill") && !skill->inherits("EquipSkill") && _m_viewAsSkill == NULL)) {
         setStyle(QSanButton::S_STYLE_TOGGLE);
         setState(freq == Skill::Frequent ? QSanButton::S_STATE_DOWN : QSanButton::S_STATE_UP);
         _setSkillType(QSanInvokeSkillButton::S_SKILL_FREQUENT);
@@ -273,7 +280,8 @@ void QSanSkillButton::setSkill(const Skill *skill)
         _m_emitDeactivateSignal = false;
         _m_canEnable = true;
         _m_canDisable = true;
-    } else Q_ASSERT(false);
+    } else
+        Q_ASSERT(false);
     setToolTip(skill->getDescription());
 
     Q_ASSERT((int)_m_skillType <= 5 && _m_state <= 3);
@@ -288,11 +296,12 @@ void QSanInvokeSkillButton::_repaint()
         const IQSanComponentSkin::QSanShadowTextFont &font = G_DASHBOARD_LAYOUT.getSkillTextFont((ButtonState)i, _m_skillType, _m_enumWidth);
         QPainter painter(&_m_bgPixmap[i]);
         QString skillName = Sanguosha->translate(_m_skill->objectName());
-        if (_m_enumWidth != S_WIDTH_WIDE) skillName = skillName.left(2);
+        if (_m_enumWidth != S_WIDTH_WIDE)
+            skillName = skillName.left(2);
         font.paintText(&painter,
-                       (ButtonState)i == S_STATE_DOWN ? G_DASHBOARD_LAYOUT.m_skillTextAreaDown[_m_enumWidth] :
-                                                        G_DASHBOARD_LAYOUT.m_skillTextArea[_m_enumWidth],
-                       Qt::AlignCenter, skillName);
+                       (ButtonState)i == S_STATE_DOWN ? G_DASHBOARD_LAYOUT.m_skillTextAreaDown[_m_enumWidth] : G_DASHBOARD_LAYOUT.m_skillTextArea[_m_enumWidth],
+                       Qt::AlignCenter,
+                       skillName);
     }
     setSize(_m_bgPixmap[0].size());
 }
@@ -308,14 +317,14 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
         QString generalName = "";
 
         foreach (const Player *p, Self->getSiblings()) {
-            const General* general = p->getGeneral();
+            const General *general = p->getGeneral();
             if (general->hasSkill(engskillname)) {
                 generalName = general->objectName();
                 break;
             }
         }
         if (generalName == "") {
-            const General* general = Self->getGeneral();
+            const General *general = Self->getGeneral();
             if (general && general->hasSkill(engskillname))
                 generalName = general->objectName();
         }
@@ -407,10 +416,10 @@ void QSanInvokeSkillDock::update()
         }
         if (lordskillNum > 3) {
             int half = lordskillNum / 2;
-            lordBtnNum[0] = half;//btnNum[rows] = half;
+            lordBtnNum[0] = half; //btnNum[rows] = half;
             lordBtnNum[1] = lordskillNum - half; //btnNum[rows + 1] = lordskillNum - half;
         } else if (lordskillNum > 0) {
-            lordBtnNum[0] = lordskillNum;//btnNum[rows] = lordskillNum;
+            lordBtnNum[0] = lordskillNum; //btnNum[rows] = lordskillNum;
         }
 
         // If the buttons in rows are 3, 1, then balance them to 2, 2
@@ -419,7 +428,7 @@ void QSanInvokeSkillDock::update()
                 btnNum[rows - 1] = 2;
                 btnNum[rows - 2] = 2;
             }
-        } else if (rows == 1 && btnNum[0] == 3) {//&& lordskillNum == 0
+        } else if (rows == 1 && btnNum[0] == 3) { //&& lordskillNum == 0
             btnNum[0] = 2;
             btnNum[1] = 1;
             rows = 2;
@@ -427,28 +436,26 @@ void QSanInvokeSkillDock::update()
 
         int m = 0;
 
-
         //for regular skill
         for (int i = 0; i < rows; i++) {
-            int rowTop = (RoomSceneInstance->m_skillButtonSank) ? (-rowH - 2 * (rows - i - 1)) :
-                                                                  ((-rows + i) * rowH);
+            int rowTop = (RoomSceneInstance->m_skillButtonSank) ? (-rowH - 2 * (rows - i - 1)) : ((-rows + i) * rowH);
             int btnWidth = (_m_width - 20) / btnNum[i];
             for (int j = 0; j < btnNum[i]; j++) {
-                QSanInvokeSkillButton *button = regular_buttons[m++];//all_buttons[m++];
+                QSanInvokeSkillButton *button = regular_buttons[m++]; //all_buttons[m++];
                 button->setButtonWidth((QSanInvokeSkillButton::SkillButtonWidth)(btnNum[i] - 1));
                 button->setPos(btnWidth * j, rowTop);
             }
-
         }
 
         //for lord skill
         int w = 0;
         int x_ls = 0;
-        if (lordskillNum > 0) x_ls++;
-        if (lordskillNum > 3) x_ls++;
+        if (lordskillNum > 0)
+            x_ls++;
+        if (lordskillNum > 3)
+            x_ls++;
         for (int i = 0; i < x_ls; i++) {
-            int rowTop = (RoomSceneInstance->m_skillButtonSank) ? (-rowH - 2 * (x_ls - i - 1)) :
-                                                                  ((-x_ls + i) * rowH);
+            int rowTop = (RoomSceneInstance->m_skillButtonSank) ? (-rowH - 2 * (x_ls - i - 1)) : ((-x_ls + i) * rowH);
             int btnWidth = _m_width / lordBtnNum[i];
             if (lordBtnNum[i] == 1)
                 btnWidth = _m_width / 2;
@@ -462,9 +469,7 @@ void QSanInvokeSkillDock::update()
                 button->setPos(0 - btnWidth * (j + 1) - G_DASHBOARD_LAYOUT.m_rightWidth + 45, rowTop - G_DASHBOARD_LAYOUT.m_normalHeight);
                 //
             }
-
         }
-
 
         delete btnNum;
         delete lordBtnNum;

@@ -1,28 +1,30 @@
 #include "connectiondialog.h"
-#include "ui_connectiondialog.h"
-#include "settings.h"
-#include "engine.h"
-#include "detector.h"
 #include "SkinBank.h"
+#include "detector.h"
+#include "engine.h"
+#include "settings.h"
+#include "ui_connectiondialog.h"
 
-#include <QMessageBox>
-#include <QTimer>
-#include <QRadioButton>
 #include <QBoxLayout>
+#include <QMessageBox>
+#include <QRadioButton>
+#include <QTimer>
 
 static const int ShrinkWidth = 285;
 static const int ExpandWidth = 826;
 
 void ConnectionDialog::hideAvatarList()
 {
-    if (!ui->avatarList->isVisible()) return;
+    if (!ui->avatarList->isVisible())
+        return;
     ui->avatarList->hide();
     ui->avatarList->clear();
 }
 
 void ConnectionDialog::showAvatarList()
 {
-    if (ui->avatarList->isVisible()) return;
+    if (ui->avatarList->isVisible())
+        return;
     ui->avatarList->clear();
     QList<const General *> generals = Sanguosha->findChildren<const General *>();
     foreach (const General *general, generals) {
@@ -35,7 +37,8 @@ void ConnectionDialog::showAvatarList()
 }
 
 ConnectionDialog::ConnectionDialog(QWidget *parent)
-    : QDialog(parent), ui(new Ui::ConnectionDialog)
+    : QDialog(parent)
+    , ui(new Ui::ConnectionDialog)
 {
     ui->setupUi(this);
 
@@ -48,7 +51,8 @@ ConnectionDialog::ConnectionDialog(QWidget *parent)
     ui->connectButton->setFocus();
 
     ui->avatarPixmap->setPixmap(G_ROOM_SKIN.getGeneralPixmap(Config.UserAvatar,
-                                                             QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE, false));
+                                                             QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE,
+                                                             false));
 
     hideAvatarList();
 
@@ -122,8 +126,7 @@ void ConnectionDialog::on_clearHistoryButton_clicked()
 void ConnectionDialog::on_detectLANButton_clicked()
 {
     UdpDetectorDialog *detector_dialog = new UdpDetectorDialog(this);
-    connect(detector_dialog, SIGNAL(address_chosen(QString)),
-            ui->hostComboBox->lineEdit(), SLOT(setText(QString)));
+    connect(detector_dialog, SIGNAL(address_chosen(QString)), ui->hostComboBox->lineEdit(), SLOT(setText(QString)));
 
     detector_dialog->exec();
 }
@@ -193,4 +196,3 @@ void UdpDetectorDialog::chooseAddress(QListWidgetItem *item)
     QString address = item->data(Qt::UserRole).toString();
     emit address_chosen(address);
 }
-

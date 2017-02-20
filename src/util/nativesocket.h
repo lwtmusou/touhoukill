@@ -24,7 +24,6 @@ private:
     QUdpSocket *daemon;
 };
 
-
 class NativeClientSocket : public ClientSocket
 {
     Q_OBJECT
@@ -51,4 +50,3 @@ private:
 };
 
 #endif
-

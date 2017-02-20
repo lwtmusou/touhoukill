@@ -1,8 +1,8 @@
 #ifndef _th07_H
 #define _th07_H
 
-#include "package.h"
 #include "card.h"
+#include "package.h"
 
 class MocaoCard : public SkillCard
 {
@@ -26,7 +26,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
 class HuayinCard : public SkillCard
 {
     Q_OBJECT
@@ -41,7 +40,6 @@ public:
     virtual const Card *validateInResponse(ServerPlayer *user) const;
 };
 
-
 class TH07Package : public Package
 {
     Q_OBJECT
@@ -51,4 +49,3 @@ public:
 };
 
 #endif
-

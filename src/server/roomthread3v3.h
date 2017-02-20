@@ -3,8 +3,8 @@
 
 class Room;
 
-#include <QThread>
 #include <QSemaphore>
+#include <QThread>
 
 #include "serverplayer.h"
 
@@ -34,4 +34,3 @@ private:
 };
 
 #endif
-

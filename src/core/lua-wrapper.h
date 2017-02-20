@@ -1,9 +1,9 @@
 #ifndef _LUA_WRAPPER_H
 #define _LUA_WRAPPER_H
 
-#include "util.h"
 #include "skill.h"
 #include "standard.h"
+#include "util.h"
 
 typedef int LuaFunction;
 
@@ -26,7 +26,10 @@ public:
         this->global = global;
     }
 
-    virtual inline int getPriority() const { return priority; }
+    virtual inline int getPriority() const
+    {
+        return priority;
+    }
 
     virtual void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const;
 
@@ -62,7 +65,10 @@ class LuaViewAsSkill : public ViewAsSkill
 public:
     enum GuhuoDialogType
     {
-        NoDialog = 0, LeftOnlyDialog = 1, RightOnlyDialog = 2, LeftRightDialog = 3
+        NoDialog = 0,
+        LeftOnlyDialog = 1,
+        RightOnlyDialog = 2,
+        LeftRightDialog = 3
     };
 
     LuaViewAsSkill(const char *name, const char *response_pattern = "");
@@ -283,7 +289,11 @@ class LuaTrickCard : public TrickCard
 public:
     enum SubClass
     {
-        TypeNormal, TypeSingleTargetTrick, TypeDelayedTrick, TypeAOE, TypeGlobalEffect
+        TypeNormal,
+        TypeSingleTargetTrick,
+        TypeDelayedTrick,
+        TypeAOE,
+        TypeGlobalEffect
     };
 
     Q_INVOKABLE LuaTrickCard(Card::Suit suit, int number, const char *obj_name, const char *class_name, const char *subtype);
@@ -335,12 +345,21 @@ public:
         if (strcmp(cardType, "LuaCard") == 0 || QString(cardType) == class_name)
             return true;
         else {
-            if (Card::isKindOf(cardType)) return true;
+            if (Card::isKindOf(cardType))
+                return true;
             switch (subclass) {
-            case TypeSingleTargetTrick: return strcmp(cardType, "SingleTargetTrick") == 0; break;
-            case TypeDelayedTrick: return strcmp(cardType, "DelayedTrick") == 0; break;
-            case TypeAOE: return strcmp(cardType, "AOE") == 0; break;
-            case TypeGlobalEffect: return strcmp(cardType, "GlobalEffect") == 0; break;
+            case TypeSingleTargetTrick:
+                return strcmp(cardType, "SingleTargetTrick") == 0;
+                break;
+            case TypeDelayedTrick:
+                return strcmp(cardType, "DelayedTrick") == 0;
+                break;
+            case TypeAOE:
+                return strcmp(cardType, "AOE") == 0;
+                break;
+            case TypeGlobalEffect:
+                return strcmp(cardType, "GlobalEffect") == 0;
+                break;
             case TypeNormal:
             default:
                 return false;
@@ -446,7 +465,10 @@ public:
     virtual void onInstall(ServerPlayer *player) const;
     virtual void onUninstall(ServerPlayer *player) const;
 
-    inline virtual QString getClassName() const { return class_name; }
+    inline virtual QString getClassName() const
+    {
+        return class_name;
+    }
     inline virtual bool isKindOf(const char *cardType) const
     {
         if (strcmp(cardType, "LuaCard") == 0 || QString(cardType) == class_name)

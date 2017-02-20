@@ -1,10 +1,8 @@
 #ifndef _th13_H
 #define _th13_H
 
-#include "package.h"
 #include "card.h"
-
-
+#include "package.h"
 
 class QingtingCard : public SkillCard
 {
@@ -32,7 +30,6 @@ public:
     virtual const Card *validateInResponse(ServerPlayer *user) const;
 };
 
-
 class ShijieCard : public SkillCard
 {
     Q_OBJECT
@@ -54,7 +51,6 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-
 class XiefaCard : public SkillCard
 {
     Q_OBJECT
@@ -68,7 +64,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
 class HuishengCard : public SkillCard
 {
     Q_OBJECT
@@ -81,8 +76,6 @@ public:
     virtual const Card *validate(CardUseStruct &card_use) const;
 };
 
-
-
 class BumingCard : public SkillCard
 {
     Q_OBJECT
@@ -94,7 +87,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
 class TH13Package : public Package
 {
     Q_OBJECT
@@ -104,4 +96,3 @@ public:
 };
 
 #endif
-

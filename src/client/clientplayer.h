@@ -1,8 +1,8 @@
 #ifndef _CLIENT_PLAYER_H
 #define _CLIENT_PLAYER_H
 
-#include "player.h"
 #include "clientstruct.h"
+#include "player.h"
 
 class Client;
 class QTextDocument;
@@ -46,4 +46,3 @@ signals:
 extern ClientPlayer *Self;
 
 #endif
-

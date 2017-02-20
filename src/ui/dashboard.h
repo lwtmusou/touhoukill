@@ -1,28 +1,27 @@
 #ifndef _DASHBOARD_H
 #define _DASHBOARD_H
 
-#include "QSanSelectableItem.h"
-#include "qsanbutton.h"
-#include "carditem.h"
-#include "player.h"
-#include "skill.h"
-#include "protocol.h"
-#include "TimedProgressBar.h"
 #include "GenericCardContainerUI.h"
+#include "QSanSelectableItem.h"
+#include "TimedProgressBar.h"
+#include "carditem.h"
 #include "pixmapanimation.h"
+#include "player.h"
+#include "protocol.h"
+#include "qsanbutton.h"
+#include "skill.h"
 #include "sprite.h"
 
-#include <QPushButton>
 #include <QComboBox>
 #include <QGraphicsLinearLayout>
 #include <QLineEdit>
 #include <QMutex>
 #include <QPropertyAnimation>
+#include <QPushButton>
 
 #ifdef Q_OS_WIN
 class QWinTaskbarButton;
 #endif
-
 
 class Dashboard : public PlayerCardContainer
 {
@@ -32,7 +31,9 @@ class Dashboard : public PlayerCardContainer
 public:
     enum SortType
     {
-        ByType, BySuit, ByNumber
+        ByType,
+        BySuit,
+        ByNumber
     };
 
     Dashboard(QGraphicsItem *button_widget);
@@ -111,7 +112,6 @@ public:
 
     int width();
     int height();
-
 
     void showNullificationButton();
     void hideNullificationButton();
@@ -230,12 +230,11 @@ protected:
     QGraphicsRectItem *trusting_item;
     QGraphicsSimpleTextItem *trusting_text;
 
-    QSanInvokeSkillDock* _m_skillDock;
+    QSanInvokeSkillDock *_m_skillDock;
     const QSanRoomSkin::DashboardLayout *_dlayout;
 
     //for animated effects
     EffectAnimation *animations;
-
 
     // for parts creation
     void _createLeft();
@@ -266,14 +265,12 @@ protected:
     QMenu *_m_sort_menu;
     //QMenu *_m_carditem_context_menu;
 
-
     QList<CardItem *> _m_cardItemsAnimationFinished;
     QMutex m_mutexCardItemsAnimationFinished;
 
 #ifdef Q_OS_WIN
     QWinTaskbarButton *taskbarButton;
 #endif
-
 
 protected slots:
     virtual void _onEquipSelectChanged();
@@ -306,4 +303,3 @@ signals:
 };
 
 #endif
-

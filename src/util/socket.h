@@ -2,8 +2,8 @@
 #define _SOCKET_H
 
 #include <QObject>
-#include <QTcpSocket>
 #include <QTcpServer>
+#include <QTcpSocket>
 
 class ClientSocket;
 
@@ -41,4 +41,3 @@ signals:
 typedef char buffer_t[16000];
 
 #endif
-

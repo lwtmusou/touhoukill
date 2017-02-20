@@ -4,8 +4,8 @@
 #include "package.h"
 
 #if 0
-#include "standard.h"
 #include "skill.h"
+#include "standard.h"
 
 class AwaitExhausted : public TrickCard
 {
@@ -170,6 +170,5 @@ class HegemonyCardsPackage : public Package
 public:
     HegemonyCardsPackage();
 };
-
 
 #endif

@@ -19,16 +19,16 @@
     *********************************************************************/
 
 #include "choosetriggerorderbox.h"
-#include "engine.h"
 #include "button.h"
-#include "skinbank.h"
 #include "client.h"
 #include "clientplayer.h"
+#include "engine.h"
+#include "skinbank.h"
 #include "timedprogressbar.h"
 
+#include <QGraphicsProxyWidget>
 #include <QGraphicsSceneMouseEvent>
 #include <QPropertyAnimation>
-#include <QGraphicsProxyWidget>
 
 static qreal initialOpacity = 0.8;
 static int optionButtonHeight = 40;
@@ -40,23 +40,27 @@ const int ChooseTriggerOrderBox::interval = 15;
 const int ChooseTriggerOrderBox::m_leftBlankWidth = 37;
 
 SkillInvokeDetailForClient::SkillInvokeDetailForClient()
-    : skill(NULL), owner(NULL), invoker(NULL), preferredTarget(NULL), preferredTargetSeat(-1)
+    : skill(NULL)
+    , owner(NULL)
+    , invoker(NULL)
+    , preferredTarget(NULL)
+    , preferredTargetSeat(-1)
 {
 }
 
-bool SkillInvokeDetailForClient::operator ==(const SkillInvokeDetailForClient &arg2) const
+bool SkillInvokeDetailForClient::operator==(const SkillInvokeDetailForClient &arg2) const
 {
     return skill == arg2.skill && owner == arg2.owner && invoker == arg2.invoker && preferredTarget == arg2.preferredTarget && preferredTargetSeat == arg2.preferredTargetSeat;
 }
 
-bool SkillInvokeDetailForClient::operator ==(const QVariantMap &arg2) const
+bool SkillInvokeDetailForClient::operator==(const QVariantMap &arg2) const
 {
     SkillInvokeDetailForClient arg2str;
     arg2str.tryParse(arg2);
     return (*this) == arg2str;
 }
 
-bool operator ==(const QVariantMap &arg1, const SkillInvokeDetailForClient &arg2)
+bool operator==(const QVariantMap &arg1, const SkillInvokeDetailForClient &arg2)
 {
     SkillInvokeDetailForClient arg1str;
     arg1str.tryParse(arg1);
@@ -126,14 +130,19 @@ QString SkillInvokeDetailForClient::toString() const
 }
 
 TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QVariantMap &skillDetail, int width)
-    : QGraphicsObject(parent), width(width), times(1)
+    : QGraphicsObject(parent)
+    , width(width)
+    , times(1)
 {
     detail.tryParse(skillDetail);
     construct();
 }
 
 TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const SkillInvokeDetailForClient &skillDetail, int width)
-    : QGraphicsObject(parent), detail(skillDetail), width(width), times(1)
+    : QGraphicsObject(parent)
+    , detail(skillDetail)
+    , width(width)
+    , times(1)
 {
     construct();
 }
@@ -253,8 +262,10 @@ void TriggerOptionButton::needDisabled(bool disabled)
 }
 
 ChooseTriggerOrderBox::ChooseTriggerOrderBox()
-    : optional(true), m_minimumWidth(0),
-      cancel(new Button(tr("cancel"), 0.6)), progressBar(NULL)
+    : optional(true)
+    , m_minimumWidth(0)
+    , cancel(new Button(tr("cancel"), 0.6))
+    , progressBar(NULL)
 {
     cancel->hide();
     cancel->setParentItem(this);
@@ -282,9 +293,9 @@ QRectF ChooseTriggerOrderBox::boundingRect() const
     int width = m_minimumWidth + m_leftBlankWidth * 2;
 
     int height = m_topBlankWidth
-            + options.size() * optionButtonHeight
-            + (options.size() - 1) * interval
-            + bottom_blank_width;
+        + options.size() * optionButtonHeight
+        + (options.size() - 1) * interval
+        + bottom_blank_width;
 
     if (ServerInfo.OperationTimeout != 0)
         height += 12;
@@ -351,7 +362,6 @@ void ChooseTriggerOrderBox::chooseOption(const QVariantList &options, bool optio
         cancel->show();
     }
 
-
     if (ServerInfo.OperationTimeout != 0) {
         if (!progressBar) {
             progressBar = new QSanCommandProgressBar;
@@ -376,7 +386,7 @@ void ChooseTriggerOrderBox::clear()
         progressBar = NULL;
     }
 
-    foreach(TriggerOptionButton *button, optionButtons)
+    foreach (TriggerOptionButton *button, optionButtons)
         button->deleteLater();
 
     optionButtons.clear();

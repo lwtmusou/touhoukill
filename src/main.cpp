@@ -1,34 +1,30 @@
 #include <QApplication>
 
 #include <QCoreApplication>
-#include <QTranslator>
-#include <QDir>
-#include <cstring>
 #include <QDateTime>
+#include <QDir>
+#include <QTranslator>
+#include <cstring>
 
-#include "mainwindow.h"
-#include "settings.h"
-#include "banpair.h"
-#include "server.h"
 #include "audio.h"
+#include "banpair.h"
+#include "mainwindow.h"
+#include "server.h"
+#include "settings.h"
 
 #ifdef USE_BREAKPAD
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable: 4091)
+#pragma warning(disable : 4091)
 #endif
 #include "breakpad/client/windows/handler/exception_handler.h"
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 
-
 using namespace google_breakpad;
 
-static bool callback(const wchar_t *dump_path, const wchar_t *id,
-                     void *, EXCEPTION_POINTERS *,
-                     MDRawAssertionInfo *,
-                     bool succeeded)
+static bool callback(const wchar_t *dump_path, const wchar_t *id, void *, EXCEPTION_POINTERS *, MDRawAssertionInfo *, bool succeeded)
 {
     if (succeeded)
         qWarning("Dump file created in %s, dump guid is %s\n", dump_path, id);
@@ -39,8 +35,7 @@ static bool callback(const wchar_t *dump_path, const wchar_t *id,
 
 int main(int argc, char *argv[])
 {
-    ExceptionHandler eh(L"./dmp", NULL, callback, NULL,
-                        ExceptionHandler::HANDLER_ALL);
+    ExceptionHandler eh(L"./dmp", NULL, callback, NULL, ExceptionHandler::HANDLER_ALL);
 #else
 int main(int argc, char *argv[])
 {
@@ -122,4 +117,3 @@ int main(int argc, char *argv[])
 
     return qApp->exec();
 }
-

@@ -7,7 +7,6 @@ class ServerPlayer;
 struct lua_State;
 class Room;
 
-
 class GeneralSelector : public QObject
 {
     Q_OBJECT
@@ -34,8 +33,6 @@ private:
     LuaFunction select1v1Func;
     LuaFunction arrange3v3Func;
     LuaFunction arrange1v1Func;
-
 };
 
 #endif
-

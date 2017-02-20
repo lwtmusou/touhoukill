@@ -10,8 +10,7 @@ class SkinItem : public QGraphicsObject
     Q_OBJECT
 
 public:
-    SkinItem(const QString &skinName, const QRect &clipRect,
-             int skinIndex, bool used, QGraphicsItem *parent = 0);
+    SkinItem(const QString &skinName, const QRect &clipRect, int skinIndex, bool used, QGraphicsItem *parent = 0);
 
     void setUsed(bool used)
     {
@@ -24,7 +23,6 @@ public:
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *);
-
 
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *)
     {

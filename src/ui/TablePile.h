@@ -1,11 +1,11 @@
 #ifndef _TABLE_PILE_H
 #define _TABLE_PILE_H
 
-#include "QSanSelectableItem.h"
-#include "player.h"
-#include "carditem.h"
-#include "protocol.h"
 #include "GenericCardContainerUI.h"
+#include "QSanSelectableItem.h"
+#include "carditem.h"
+#include "player.h"
+#include "protocol.h"
 
 #include <QGraphicsObject>
 #include <QPixmap>
@@ -15,7 +15,9 @@ class TablePile : public GenericCardContainer
     Q_OBJECT
 
 public:
-    inline TablePile() : GenericCardContainer(), m_currentTime(0)
+    inline TablePile()
+        : GenericCardContainer()
+        , m_currentTime(0)
     {
         m_timer = startTimer(S_CLEARANCE_UPDATE_INTERVAL_MSEC);
     }
@@ -60,4 +62,3 @@ protected:
 };
 
 #endif
-

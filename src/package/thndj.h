@@ -1,10 +1,8 @@
 #ifndef _thndj_H
 #define _thndj_H
 
-#include "package.h"
 #include "card.h"
-
-
+#include "package.h"
 
 class HunpoCard : public SkillCard
 {
@@ -25,4 +23,3 @@ public:
 };
 
 #endif
-

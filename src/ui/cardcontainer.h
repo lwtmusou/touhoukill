@@ -4,9 +4,9 @@
 class CardItem;
 class ClientPlayer;
 
+#include "GenericCardContainerUI.h"
 #include "QSanSelectableItem.h"
 #include "carditem.h"
-#include "GenericCardContainerUI.h"
 
 #include <QStack>
 
@@ -95,4 +95,3 @@ private:
 };
 
 #endif
-

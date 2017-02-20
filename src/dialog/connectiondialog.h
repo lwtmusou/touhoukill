@@ -1,15 +1,14 @@
 #ifndef _CONNECTION_DIALOG_H
 #define _CONNECTION_DIALOG_H
 
+#include <QButtonGroup>
+#include <QComboBox>
 #include <QDialog>
 #include <QListWidget>
-#include <QComboBox>
-#include <QButtonGroup>
 
 class UdpDetector;
 
-namespace Ui
-{
+namespace Ui {
 class ConnectionDialog;
 }
 
@@ -57,4 +56,3 @@ signals:
 };
 
 #endif
-

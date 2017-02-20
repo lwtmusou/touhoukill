@@ -5,10 +5,10 @@ class Skill;
 class Card;
 class Player;
 
-#include <QObject>
 #include <QHash>
-#include <QStringList>
 #include <QMap>
+#include <QObject>
+#include <QStringList>
 
 #include "json.h"
 
@@ -30,7 +30,10 @@ class Package : public QObject
 public:
     enum Type
     {
-        GeneralPack, CardPack, MixedPack, SpecialPack
+        GeneralPack,
+        CardPack,
+        MixedPack,
+        SpecialPack
     };
 
     Package(const QString &name, Type pack_type = GeneralPack)
@@ -64,7 +67,7 @@ public:
         return type;
     }
 
-    template<typename T>
+    template <typename T>
     void addMetaObject()
     {
         metaobjects << &T::staticMetaObject;
@@ -99,4 +102,3 @@ public:
 #define ADD_PACKAGE(name) static PackageAdder name##PackageAdder(#name, new name##Package);
 
 #endif
-

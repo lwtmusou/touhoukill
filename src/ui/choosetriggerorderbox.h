@@ -42,14 +42,14 @@ struct SkillInvokeDetailForClient
 
     SkillInvokeDetailForClient();
 
-    bool operator ==(const SkillInvokeDetailForClient &arg2) const;
-    bool operator ==(const QVariantMap &arg2) const;
+    bool operator==(const SkillInvokeDetailForClient &arg2) const;
+    bool operator==(const QVariantMap &arg2) const;
     bool tryParse(const QVariantMap &map);
     bool tryParse(const QString &str);
     QString toString() const;
 };
 
-bool operator ==(const QVariantMap &arg1, const SkillInvokeDetailForClient &arg2);
+bool operator==(const QVariantMap &arg1, const SkillInvokeDetailForClient &arg2);
 
 class TriggerOptionButton : public QGraphicsObject
 {

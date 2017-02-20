@@ -1,20 +1,19 @@
 #include "carditem.h"
-#include "engine.h"
-#include "skill.h"
 #include "clientplayer.h"
+#include "engine.h"
 #include "settings.h"
+#include "skill.h"
 
-#include <cmath>
-#include <QPainter>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsScene>
 #include <QFocusEvent>
+#include <QGraphicsScene>
+#include <QGraphicsSceneMouseEvent>
+#include <QPainter>
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
+#include <cmath>
 
 void CardItem::_initialize()
 {
-
     setAcceptedMouseButtons(0);
 
     setFlag(QGraphicsItem::ItemIsMovable);
@@ -145,7 +144,8 @@ QAbstractAnimation *CardItem::getGoBackAnimation(bool doFade, bool smoothTransit
         QParallelAnimationGroup *group = new QParallelAnimationGroup;
         QPropertyAnimation *disappear = new QPropertyAnimation(this, "opacity");
         double middleOpacity = qMax(opacity(), m_opacityAtHome);
-        if (middleOpacity == 0) middleOpacity = 1.0;
+        if (middleOpacity == 0)
+            middleOpacity = 1.0;
         disappear->setEndValue(m_opacityAtHome);
         if (!smoothTransition) {
             disappear->setKeyValueAt(0.2, middleOpacity);
@@ -231,13 +231,15 @@ const int CardItem::_S_MOVE_JITTER_TOLERANCE = 200;
 
 void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if (frozen) return;
+    if (frozen)
+        return;
     _m_lastMousePressScenePos = mapToParent(mouseEvent->pos());
 }
 
 void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if (frozen) return;
+    if (frozen)
+        return;
 
     QPointF totalMove = mapToParent(mouseEvent->pos()) - _m_lastMousePressScenePos;
     if (totalMove.x() * totalMove.x() + totalMove.y() * totalMove.y() < _S_MOVE_JITTER_TOLERANCE)
@@ -252,7 +254,8 @@ void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void CardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if (!(flags() & QGraphicsItem::ItemIsMovable)) return;
+    if (!(flags() & QGraphicsItem::ItemIsMovable))
+        return;
     QPointF newPos = mapToParent(mouseEvent->pos());
     QPointF totalMove = newPos - _m_lastMousePressScenePos;
     if (totalMove.x() * totalMove.x() + totalMove.y() * totalMove.y() >= _S_CLICK_JITTER_TOLERANCE) {
@@ -263,7 +266,8 @@ void CardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (frozen) return;
+    if (frozen)
+        return;
 
     if (hasFocus()) {
         event->accept();
@@ -281,7 +285,6 @@ void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 {
     emit leave_hover();
 }
-
 
 void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
@@ -305,14 +308,13 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidge
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardNumberArea, G_ROOM_SKIN.getCardNumberPixmap(card->getNumber(), card->isBlack()));
         QRect rect = G_COMMON_LAYOUT.m_cardFootnoteArea;
         // Deal with stupid QT...
-        if (_m_showFootnote) painter->drawImage(rect, _m_footnoteImage);
+        if (_m_showFootnote)
+            painter->drawImage(rect, _m_footnoteImage);
     }
 
     if (!_m_avatarName.isEmpty())
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardAvatarArea, G_ROOM_SKIN.getCardAvatarPixmap(_m_avatarName, false));
 }
-
-
 
 void CardItem::setFootnote(const QString &desc)
 {
@@ -322,8 +324,6 @@ void CardItem::setFootnote(const QString &desc)
     _m_footnoteImage = QImage(rect.size(), QImage::Format_ARGB32);
     _m_footnoteImage.fill(Qt::transparent);
     QPainter painter(&_m_footnoteImage);
-    font.paintText(&painter, QRect(QPoint(0, 0), rect.size()),
-                   (Qt::AlignmentFlag)((int)Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWrapAnywhere), desc);
+    font.paintText(&painter, QRect(QPoint(0, 0), rect.size()), (Qt::AlignmentFlag)((int)Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWrapAnywhere), desc);
     footnote = desc;
 }
-

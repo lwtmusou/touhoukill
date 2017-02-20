@@ -5,11 +5,12 @@
 
 void GeneralSelector::initialize()
 {
-#define GETFUNCFROMLUASTATE(funcname) do { \
-        lua_getglobal(L, #funcname); \
-        funcname ## Func = luaL_ref(L, LUA_REGISTRYINDEX); \
-        Q_ASSERT(funcname ## Func != 0); \
-    } while(false)
+#define GETFUNCFROMLUASTATE(funcname)                    \
+    do {                                                 \
+        lua_getglobal(L, #funcname);                     \
+        funcname##Func = luaL_ref(L, LUA_REGISTRYINDEX); \
+        Q_ASSERT(funcname##Func != 0);                   \
+    } while (false)
 
     GETFUNCFROMLUASTATE(initialize);
     GETFUNCFROMLUASTATE(selectFirst);
@@ -22,7 +23,6 @@ void GeneralSelector::initialize()
 #undef GETFUNCFROMLUASTATE
 
     callLuaInitialize();
-
 }
 
 static void pushLuaFunction(lua_State *l, LuaFunction f)
@@ -187,6 +187,5 @@ QStringList GeneralSelector::arrange1v1(ServerPlayer *player)
 
     return player->getSelected();
 }
-
 
 %}

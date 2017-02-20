@@ -1,8 +1,8 @@
 #include "roomthread1v1.h"
-#include "room.h"
 #include "engine.h"
-#include "settings.h"
 #include "generalselector.h"
+#include "room.h"
+#include "settings.h"
 
 #include <QDateTime>
 
@@ -59,7 +59,6 @@ void RoomThread1v1::run()
     QSet<QString> banset = Config.value("Banlist/1v1").toStringList().toSet();
     general_names = Sanguosha->getRandomGenerals(total_num, banset);
 
-
     if (rule == "Classical") {
         QStringList known_list = general_names.mid(0, 6);
         unknown_list = general_names.mid(6, 4);
@@ -67,7 +66,10 @@ void RoomThread1v1::run()
         for (int i = 0; i < 4; i++)
             general_names[i + 6] = QString("x%1").arg(QString::number(i));
 
-        room->doBroadcastNotify(S_COMMAND_FILL_GENERAL, toJsonArray(known_list << "x0" << "x1" << "x2" << "x3"));
+        room->doBroadcastNotify(S_COMMAND_FILL_GENERAL, toJsonArray(known_list << "x0"
+                                                                               << "x1"
+                                                                               << "x2"
+                                                                               << "x3"));
     } else if (rule == "2013") {
         room->doBroadcastNotify(S_COMMAND_FILL_GENERAL, toJsonArray(general_names));
     } else if (rule == "OL") {
@@ -77,8 +79,12 @@ void RoomThread1v1::run()
         for (int i = 0; i < 6; i++)
             general_names[i + 6] = QString("x%1").arg(QString::number(i));
 
-        room->doBroadcastNotify(S_COMMAND_FILL_GENERAL, toJsonArray(known_list << "x0" << "x1" << "x2"
-                                                                    << "x3" << "x4" << "x5"));
+        room->doBroadcastNotify(S_COMMAND_FILL_GENERAL, toJsonArray(known_list << "x0"
+                                                                               << "x1"
+                                                                               << "x2"
+                                                                               << "x3"
+                                                                               << "x4"
+                                                                               << "x5"));
     }
 
     int index = qrand() % 2;
@@ -191,9 +197,10 @@ void RoomThread1v1::startArrange(QList<ServerPlayer *> players)
             online.removeOne(player);
         }
     }
-    if (online.isEmpty()) return;
+    if (online.isEmpty())
+        return;
 
-    foreach(ServerPlayer *player, online)
+    foreach (ServerPlayer *player, online)
         player->m_commandArgs = QVariant();
 
     room->doBroadcastRequest(online, S_COMMAND_ARRANGE_GENERAL);
@@ -227,9 +234,10 @@ void RoomThread1v1::askForFirstGeneral(QList<ServerPlayer *> players)
             online.removeOne(player);
         }
     }
-    if (online.isEmpty()) return;
+    if (online.isEmpty())
+        return;
 
-    foreach(ServerPlayer *player, online)
+    foreach (ServerPlayer *player, online)
         player->m_commandArgs = toJsonArray(player->getSelected());
 
     room->doBroadcastRequest(online, S_COMMAND_CHOOSE_GENERAL);
@@ -264,7 +272,7 @@ void RoomThread1v1::arrange(ServerPlayer *player, const QStringList &arranged)
 
     foreach (QString general, arranged) {
         room->doNotify(player, S_COMMAND_REVEAL_GENERAL, JsonArray() << player->objectName() << general);
-        if (rule != "Classical") break;
+        if (rule != "Classical")
+            break;
     }
 }
-

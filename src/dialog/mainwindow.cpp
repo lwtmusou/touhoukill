@@ -1,38 +1,39 @@
 #include "mainwindow.h"
-#include "startscene.h"
-#include "roomscene.h"
-#include "server.h"
-#include "client.h"
-#include "generaloverview.h"
-#include "cardoverview.h"
-#include "ui_mainwindow.h"
-#include "window.h"
-#include "pixmapanimation.h"
-#include "record-analysis.h"
 #include "AboutUs.h"
 #include "audio.h"
+#include "cardoverview.h"
+#include "client.h"
+#include "generaloverview.h"
+#include "pixmapanimation.h"
+#include "record-analysis.h"
+#include "roomscene.h"
+#include "server.h"
+#include "startscene.h"
+#include "ui_mainwindow.h"
+#include "window.h"
 
-#include <qmath.h>
-#include <QGraphicsView>
+#include <QCheckBox>
+#include <QDesktopServices>
+#include <QFileDialog>
 #include <QGraphicsItem>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsTextItem>
-#include <QVariant>
-#include <QMessageBox>
-#include <QTime>
-#include <QProcess>
-#include <QCheckBox>
-#include <QFileDialog>
-#include <QDesktopServices>
-#include <QSystemTrayIcon>
+#include <QGraphicsView>
 #include <QInputDialog>
 #include <QLabel>
+#include <QMessageBox>
+#include <QProcess>
 #include <QStatusBar>
+#include <QSystemTrayIcon>
+#include <QTime>
+#include <QVariant>
+#include <qmath.h>
 
 class FitView : public QGraphicsView
 {
 public:
-    FitView(QGraphicsScene *scene) : QGraphicsView(scene)
+    FitView(QGraphicsScene *scene)
+        : QGraphicsView(scene)
     {
         setSceneRect(Config.Rect);
         setRenderHints(QPainter::TextAntialiasing | QPainter::Antialiasing);
@@ -56,8 +57,7 @@ public:
             return;
         } else if (scene()->inherits("StartScene")) {
             StartScene *start_scene = qobject_cast<StartScene *>(scene());
-            QRectF newSceneRect(-event->size().width() / 2, -event->size().height() / 2,
-                                event->size().width(), event->size().height());
+            QRectF newSceneRect(-event->size().width() / 2, -event->size().height() / 2, event->size().width(), event->size().height());
             start_scene->setSceneRect(newSceneRect);
             setSceneRect(start_scene->sceneRect());
             if (newSceneRect != start_scene->sceneRect())
@@ -69,7 +69,8 @@ public:
 };
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     scene = NULL;
@@ -109,7 +110,7 @@ MainWindow::MainWindow(QWidget *parent)
             << ui->actionConfigure
             << ui->actionAbout_Us;
 
-    foreach(QAction *action, actions)
+    foreach (QAction *action, actions)
         start_scene->addButton(action);
     view = new FitView(scene);
 
@@ -123,9 +124,6 @@ MainWindow::MainWindow(QWidget *parent)
     addAction(ui->actionFullscreen);
 
     systray = NULL;
-
-
-
 }
 
 void MainWindow::restoreFromConfig()
@@ -341,7 +339,6 @@ void MainWindow::enterRoom()
     gotoScene(room_scene);
 }
 
-
 void MainWindow::gotoStartScene()
 {
     //play BGM
@@ -350,7 +347,7 @@ void MainWindow::gotoStartScene()
         Audio::playBGM("audio/title/main.ogg", true, true);
         Audio::setBGMVolume(Config.BGMVolume);
     }
-    
+
     ServerInfo.DuringGame = false;
     QList<Server *> servers = findChildren<Server *>();
     if (!servers.isEmpty())
@@ -368,7 +365,7 @@ void MainWindow::gotoStartScene()
             << ui->actionConfigure
             << ui->actionAbout_Us;
 
-    foreach(QAction *action, actions)
+    foreach (QAction *action, actions)
         start_scene->addButton(action);
 
     setCentralWidget(view);
@@ -462,9 +459,9 @@ void MainWindow::on_actionAbout_triggered()
 #endif
 
     content.append(tr("Current version: %1 %2 (%3)<br/>")
-                   .arg(Sanguosha->getVersion())
-                   .arg(config)
-                   .arg(Sanguosha->getVersionName()));
+                       .arg(Sanguosha->getVersion())
+                       .arg(config)
+                       .arg(Sanguosha->getVersionName()));
 
     const char *date = __DATE__;
     const char *time = __TIME__;
@@ -575,17 +572,26 @@ void MainWindow::on_actionRole_assign_table_triggered()
 
     QStringList headers;
     headers << tr("Count") << tr("Lord") << tr("Loyalist") << tr("Rebel") << tr("Renegade");
-    foreach(QString header, headers)
+    foreach (QString header, headers)
         content += QString("<th>%1</th>").arg(header);
 
     content = QString("<tr>%1</tr>").arg(content);
 
     QStringList rows;
-    rows << "2 1 0 1 0" << "3 1 0 1 1" << "4 1 0 2 1"
-         << "5 1 1 2 1" << "6 1 1 3 1" << "6d 1 1 2 2"
-         << "7 1 2 3 1" << "8 1 2 4 1" << "8d 1 2 3 2"
-         << "8z 1 3 4 0" << "9 1 3 4 1" << "10 1 3 4 2"
-         << "10z 1 4 5 0" << "10o 1 3 5 1";
+    rows << "2 1 0 1 0"
+         << "3 1 0 1 1"
+         << "4 1 0 2 1"
+         << "5 1 1 2 1"
+         << "6 1 1 3 1"
+         << "6d 1 1 2 2"
+         << "7 1 2 3 1"
+         << "8 1 2 4 1"
+         << "8d 1 2 3 2"
+         << "8z 1 3 4 0"
+         << "9 1 3 4 1"
+         << "10 1 3 4 2"
+         << "10z 1 4 5 0"
+         << "10o 1 3 5 1";
 
     foreach (QString row, rows) {
         QStringList cells = row.split(" ");
@@ -605,7 +611,7 @@ void MainWindow::on_actionRole_assign_table_triggered()
 
         QString row_content;
         row_content = QString("<td>%1</td>").arg(header);
-        foreach(QString cell, cells)
+        foreach (QString cell, cells)
             row_content += QString("<td>%1</td>").arg(cell);
 
         content += QString("<tr>%1</tr>").arg(row_content);
@@ -626,7 +632,8 @@ void MainWindow::on_actionRole_assign_table_triggered()
 }
 
 BroadcastBox::BroadcastBox(Server *server, QWidget *parent)
-    : QDialog(parent), server(server)
+    : QDialog(parent)
+    , server(server)
 {
     setWindowTitle(tr("Broadcast"));
 
@@ -698,11 +705,11 @@ void MainWindow::on_actionPC_Console_Start_triggered()
     startConnection();
 }
 
-#include <QGroupBox>
-#include <QToolButton>
+#include "recorder.h"
 #include <QCommandLinkButton>
 #include <QFormLayout>
-#include "recorder.h"
+#include <QGroupBox>
+#include <QToolButton>
 
 void MainWindow::on_actionReplay_file_convert_triggered()
 {
@@ -746,7 +753,8 @@ void MainWindow::on_actionRecord_analysis_triggered()
                                                     location,
                                                     tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
 
-    if (filename.isEmpty()) return;
+    if (filename.isEmpty())
+        return;
 
     QDialog *rec_dialog = new QDialog(this);
     rec_dialog->setWindowTitle(tr("Record Analysis"));
@@ -794,7 +802,7 @@ void MainWindow::on_actionRecord_analysis_triggered()
 
         item = new QTableWidgetItem;
         bool is_win = record->getRecordWinners().contains(rec->m_role)
-                || record->getRecordWinners().contains(record_map.key(rec));
+            || record->getRecordWinners().contains(record_map.key(rec));
         item->setText(is_win ? tr("Win") : tr("Lose"));
         table->setItem(i, 4, item);
 
@@ -931,4 +939,3 @@ void MainWindow::on_actionAbout_GPLv3_triggered()
 
     window->appear();
 }
-

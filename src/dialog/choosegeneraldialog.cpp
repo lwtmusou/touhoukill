@@ -1,20 +1,20 @@
 #include "choosegeneraldialog.h"
-#include "general.h"
-#include "engine.h"
-#include "client.h"
-#include "settings.h"
-#include "protocol.h"
 #include "SkinBank.h"
+#include "client.h"
+#include "engine.h"
+#include "general.h"
+#include "protocol.h"
+#include "settings.h"
 
-#include <QSignalMapper>
-#include <QLineEdit>
+#include <QCheckBox>
 #include <QGridLayout>
 #include <QLabel>
-#include <QTimerEvent>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QRadioButton>
-#include <QCheckBox>
+#include <QSignalMapper>
 #include <QTabWidget>
+#include <QTimerEvent>
 
 using namespace QSanProtocol;
 
@@ -105,10 +105,8 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         }
     }
 
-
     QLayout *layout = NULL;
-    const int columns = tooManyGenerals ? G_COMMON_LAYOUT.m_chooseGeneralBoxSwitchIconEachRowForTooManyGenerals :
-                                          G_COMMON_LAYOUT.m_chooseGeneralBoxSwitchIconEachRow;
+    const int columns = tooManyGenerals ? G_COMMON_LAYOUT.m_chooseGeneralBoxSwitchIconEachRowForTooManyGenerals : G_COMMON_LAYOUT.m_chooseGeneralBoxSwitchIconEachRow;
     if (generals.length() <= columns) {
         layout = new QHBoxLayout;
 
@@ -121,7 +119,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
             layout->addWidget(label);
         }
 
-        foreach(OptionButton *button, buttons)
+        foreach (OptionButton *button, buttons)
             layout->addWidget(button);
     } else {
         QGridLayout *grid_layout = new QGridLayout;
@@ -132,7 +130,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
             const General *lord = Sanguosha->getGeneral(lord_name);
 
             QLabel *label = new QLabel;
-            label->setPixmap(G_ROOM_SKIN.getCardMainPixmap(lord->objectName(),false, false));
+            label->setPixmap(G_ROOM_SKIN.getCardMainPixmap(lord->objectName(), false, false));
             label->setToolTip(lord->getSkillDescription(true));
             lord_layout->addWidget(label);
         }
@@ -170,12 +168,13 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     if (!view_only) {
         // role prompt
         QLabel *role_label = new QLabel(tr("Your role is %1").arg(Sanguosha->translate(Self->getRole())));
-        if (lord_name.size()) role_label->setText(tr("The lord has chosen %1. Your seat is %2. %3")
-                                                  .arg(Sanguosha->translate(lord_name))
-                                                  .arg(Sanguosha->translate("CAPITAL("
-                                                                            + QString::number(Self->getSeat())
-                                                                            + ")"))
-                                                  .arg(role_label->text()));
+        if (lord_name.size())
+            role_label->setText(tr("The lord has chosen %1. Your seat is %2. %3")
+                                    .arg(Sanguosha->translate(lord_name))
+                                    .arg(Sanguosha->translate("CAPITAL("
+                                                              + QString::number(Self->getSeat())
+                                                              + ")"))
+                                    .arg(role_label->text()));
         dialog_layout->addWidget(role_label);
     }
 
@@ -193,7 +192,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     }
 
     bool free_choose = ServerInfo.FreeChoose
-            || ServerInfo.GameMode.startsWith("_mini_") || ServerInfo.GameMode == "custom_scenario";
+        || ServerInfo.GameMode.startsWith("_mini_") || ServerInfo.GameMode == "custom_scenario";
 
     if (!view_only && free_choose) {
         QPushButton *free_choose_button = new QPushButton(tr("Free choose ..."));
@@ -233,7 +232,8 @@ void ChooseGeneralDialog::freeChoose()
 }
 
 FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
-    : QDialog(parent), pair_choose(pair_choose)
+    : QDialog(parent)
+    , pair_choose(pair_choose)
 {
     setWindowTitle(tr("Free choose generals"));
 
@@ -302,10 +302,12 @@ void FreeChooseDialog::chooseGeneral()
                 break;
             }
         }
-        if (second.isEmpty()) emit general_chosen(first);
+        if (second.isEmpty())
+            emit general_chosen(first);
     } else {
         QAbstractButton *button = group->checkedButton();
-        if (button) emit general_chosen(button->objectName());
+        if (button)
+            emit general_chosen(button->objectName());
     }
 
     accept();
@@ -325,8 +327,8 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals)
         const General *general = generals.at(i);
         QString general_name = general->objectName();
         QString text = QString("%1[%2]")
-                .arg(Sanguosha->translate(general_name))
-                .arg(Sanguosha->translate(general->getPackage()));
+                           .arg(Sanguosha->translate(general_name))
+                           .arg(Sanguosha->translate(general->getPackage()));
 
         QAbstractButton *button;
         if (pair_choose)
@@ -355,8 +357,7 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals)
     tab->setLayout(tablayout);
 
     if (pair_choose) {
-        connect(group, SIGNAL(buttonClicked(QAbstractButton *)),
-                this, SLOT(uncheckExtraButton(QAbstractButton *)));
+        connect(group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(uncheckExtraButton(QAbstractButton *)));
     }
 
     return tab;
@@ -381,4 +382,3 @@ void FreeChooseDialog::uncheckExtraButton(QAbstractButton *click_button)
         }
     }
 }
-

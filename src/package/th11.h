@@ -1,9 +1,8 @@
 #ifndef _th11_H
 #define _th11_H
 
-#include "package.h"
 #include "card.h"
-
+#include "package.h"
 
 class MaihuoCard : public SkillCard
 {
@@ -48,4 +47,3 @@ public:
 };
 
 #endif
-

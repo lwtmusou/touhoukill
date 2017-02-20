@@ -37,4 +37,3 @@ void UdpDetector::onReadReady()
         emit detected(server_name, from.toString());
     }
 }
-

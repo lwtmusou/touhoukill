@@ -1,15 +1,15 @@
 #include "settings.h"
-#include "photo.h"
 #include "card.h"
 #include "engine.h"
+#include "photo.h"
 
-#include <QFontDatabase>
-#include <QStringList>
-#include <QFile>
-#include <QMessageBox>
 #include <QApplication>
-#include <QNetworkInterface>
 #include <QDateTime>
+#include <QFile>
+#include <QFontDatabase>
+#include <QMessageBox>
+#include <QNetworkInterface>
+#include <QStringList>
 
 Settings Config;
 
@@ -26,11 +26,13 @@ const int Settings::S_JUDGE_LONG_DELAY = 800;
 
 Settings::Settings()
 #ifdef Q_OS_WIN32
-    : QSettings("config.ini", QSettings::IniFormat),
+    : QSettings("config.ini", QSettings::IniFormat)
+    ,
 #else
-    : QSettings("QSanguosha.org", "QSanguosha"),
+    : QSettings("QSanguosha.org", "QSanguosha")
+    ,
 #endif
-      Rect(-ViewWidth / 2, -ViewHeight / 2, ViewWidth, ViewHeight)
+    Rect(-ViewWidth / 2, -ViewHeight / 2, ViewWidth, ViewHeight)
 {
 }
 
@@ -126,8 +128,6 @@ void Settings::init()
     BGMVolume = value("BGMVolume", 1.0f).toFloat();
     EffectVolume = value("EffectVolume", 1.0f).toFloat();
 
-
-
     int length = 8;
     int index = qrand() % length + 1;
     QString bgFilename = QString("%1%2%3").arg("backdrop/hall/gensoukyou_").arg(index).arg(".jpg");
@@ -161,7 +161,7 @@ void Settings::init()
 
     QStringList banlist = value("Banlist/Roles").toStringList();
     if (banlist.isEmpty()) {
-        foreach(QString ban_general, roles_ban)
+        foreach (QString ban_general, roles_ban)
             banlist << ban_general;
 
         setValue("Banlist/Roles", banlist);
@@ -169,7 +169,7 @@ void Settings::init()
 
     banlist = value("Banlist/1v1").toStringList();
     if (banlist.isEmpty()) {
-        foreach(QString ban_general, kof_ban)
+        foreach (QString ban_general, kof_ban)
             banlist << ban_general;
 
         setValue("Banlist/1v1", banlist);
@@ -177,7 +177,7 @@ void Settings::init()
 
     banlist = value("Banlist/HulaoPass").toStringList();
     if (banlist.isEmpty()) {
-        foreach(QString ban_general, hulao_ban)
+        foreach (QString ban_general, hulao_ban)
             banlist << ban_general;
 
         setValue("Banlist/HulaoPass", banlist);
@@ -185,7 +185,7 @@ void Settings::init()
 
     banlist = value("Banlist/XMode").toStringList();
     if (banlist.isEmpty()) {
-        foreach(QString ban_general, xmode_ban)
+        foreach (QString ban_general, xmode_ban)
             banlist << ban_general;
 
         setValue("Banlist/XMode", banlist);
@@ -193,7 +193,7 @@ void Settings::init()
 
     banlist = value("Banlist/Basara").toStringList();
     if (banlist.isEmpty()) {
-        foreach(QString ban_general, basara_ban)
+        foreach (QString ban_general, basara_ban)
             banlist << ban_general;
 
         setValue("Banlist/Basara", banlist);
@@ -201,14 +201,14 @@ void Settings::init()
 
     banlist = value("Banlist/Hegemony").toStringList();
     if (banlist.isEmpty()) {
-        foreach(QString ban_general, hegemony_ban)
+        foreach (QString ban_general, hegemony_ban)
             banlist << ban_general;
         setValue("Banlist/Hegemony", banlist);
     }
 
     banlist = value("Banlist/Pairs").toStringList();
     if (banlist.isEmpty()) {
-        foreach(QString ban_general, pairs_ban)
+        foreach (QString ban_general, pairs_ban)
             banlist << ban_general;
 
         setValue("Banlist/Pairs", banlist);
@@ -216,7 +216,10 @@ void Settings::init()
 
     QStringList forbid_packages = value("ForbidPackages").toStringList();
     if (forbid_packages.isEmpty()) {
-        forbid_packages << "New3v3Card" << "New3v3_2013Card" << "New1v1Card" << "test";
+        forbid_packages << "New3v3Card"
+                        << "New3v3_2013Card"
+                        << "New1v1Card"
+                        << "test";
 
         setValue("ForbidPackages", forbid_packages);
     }

@@ -1,15 +1,16 @@
 #include "configdialog.h"
-#include "ui_configdialog.h"
-#include "settings.h"
 #include "engine.h"
+#include "settings.h"
+#include "ui_configdialog.h"
 
-#include <QFileDialog>
-#include <QDesktopServices>
-#include <QFontDialog>
 #include <QColorDialog>
+#include <QDesktopServices>
+#include <QFileDialog>
+#include <QFontDialog>
 
 ConfigDialog::ConfigDialog(QWidget *parent)
-    : QDialog(parent), ui(new Ui::ConfigDialog)
+    : QDialog(parent)
+    , ui(new Ui::ConfigDialog)
 {
     ui->setupUi(this);
 
@@ -64,7 +65,6 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     palette.setColor(QPalette::Base, aver >= 208 ? Qt::black : Qt::white);
     ui->textEditFontLineEdit->setPalette(palette);
 
-
     ui->enableAutoSaveCheckBox->setChecked(Config.EnableAutoSaveRecord);
     ui->networkOnlyCheckBox->setChecked(Config.NetworkOnly);
 
@@ -81,7 +81,6 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     connect(ui->enableAutoSaveCheckBox, &QCheckBox::toggled, ui->resetRecordPathButton, &QPushButton::setEnabled);
 
     ui->recordPathSetupLineEdit->setText(Config.RecordSavePath);
-
 }
 
 void ConfigDialog::showFont(QLineEdit *lineedit, const QFont &font)
@@ -156,7 +155,6 @@ void ConfigDialog::on_resetTableBgButton_clicked()
     emit tableBg_changed();
 }
 
-
 void ConfigDialog::on_browseRecordPathButton_clicked()
 {
     QString path = QFileDialog::getExistingDirectory(this,
@@ -227,7 +225,6 @@ void ConfigDialog::saveConfig()
     Config.DefaultHeroSkin = ui->defaultHeroskinCheckBox->isChecked();
     Config.setValue("DefaultHeroSkin", Config.DefaultHeroSkin);
 
-
     Config.BubbleChatBoxDelaySeconds = ui->bubbleChatBoxDelaySpinBox->value();
     Config.setValue("BubbleChatBoxDelaySeconds", Config.BubbleChatBoxDelaySeconds);
 
@@ -272,7 +269,6 @@ void ConfigDialog::on_changeAppFontButton_clicked()
     }
 }
 
-
 void ConfigDialog::on_setTextEditFontButton_clicked()
 {
     bool ok;
@@ -299,4 +295,3 @@ void ConfigDialog::on_setTextEditColorButton_clicked()
         ui->textEditFontLineEdit->setPalette(palette);
     }
 }
-

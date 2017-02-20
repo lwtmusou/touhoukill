@@ -1,24 +1,24 @@
 #ifndef _SPRITE_H
 #define _SPRITE_H
 
+#include <QEasingCurve>
+#include <QGraphicsEffect>
+#include <QGraphicsItem>
+#include <QMap>
 #include <QObject>
 #include <QTimer>
-#include <QGraphicsItem>
-#include <QGraphicsEffect>
-#include <QMap>
-#include <QEasingCurve>
 
 #include "QSanSelectableItem.h"
 
 class Sprite : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
-    Q_INTERFACES(QGraphicsItem)
     Q_PROPERTY(qreal opacity READ opacity WRITE setOpacity)
     Q_PROPERTY(qreal scale READ scale WRITE setScale)
 
 public:
-    Sprite(QGraphicsItem *parent = NULL) : QGraphicsPixmapItem(parent)
+    Sprite(QGraphicsItem *parent = NULL)
+        : QGraphicsPixmapItem(parent)
     {
     }
 };
@@ -111,4 +111,3 @@ protected:
 };
 
 #endif
-

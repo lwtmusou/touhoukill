@@ -1,10 +1,10 @@
 #ifndef _ROLE_ASSIGN_DIALOG_H
 #define _ROLE_ASSIGN_DIALOG_H
 
+#include <QCheckBox>
+#include <QComboBox>
 #include <QDialog>
 #include <QListWidget>
-#include <QComboBox>
-#include <QCheckBox>
 #include <QMap>
 
 class RoleAssignDialog : public QDialog
@@ -31,4 +31,3 @@ private slots:
 };
 
 #endif
-

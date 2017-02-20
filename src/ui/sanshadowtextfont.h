@@ -12,11 +12,7 @@ class SanShadowTextFont : public SanSimpleTextFont
 public:
     SanShadowTextFont();
     explicit SanShadowTextFont(const QString &fontName);
-    SanShadowTextFont(const QString &fontName, const QSize &fontSize,
-                      int shadowRadius, double shadowDecadeFactor,
-                      const QColor &shadowColor = Qt::black,
-                      const QPoint &shadowOffset = QPoint(0, 0),
-                      const QColor &color = Qt::white, int spacing = 0, int weight = 0);
+    SanShadowTextFont(const QString &fontName, const QSize &fontSize, int shadowRadius, double shadowDecadeFactor, const QColor &shadowColor = Qt::black, const QPoint &shadowOffset = QPoint(0, 0), const QColor &color = Qt::white, int spacing = 0, int weight = 0);
 
     int shadowRadius() const
     {
@@ -56,17 +52,14 @@ public:
 
     bool tryParse(const QVariant &arg);
 
-    void paintText(QPainter *const painter, const QRect &pos, const Qt::Alignment &align,
-                   const QString &text) const;
+    void paintText(QPainter *const painter, const QRect &pos, const Qt::Alignment &align, const QString &text) const;
 
     // this function's prototype is confusing. It will CLEAR ALL contents on the
     // QGraphicsPixmapItem passed in and then start drawing.
-    void paintText(QGraphicsPixmapItem *const item, const QRect &pos,
-                   const Qt::Alignment &align, const QString &text) const;
+    void paintText(QGraphicsPixmapItem *const item, const QRect &pos, const Qt::Alignment &align, const QString &text) const;
 
 private:
-    bool _paintTextHelper(const QRect &pos, const Qt::Alignment &align,
-                          const QString &text, QPixmap &pixmap) const;
+    bool _paintTextHelper(const QRect &pos, const Qt::Alignment &align, const QString &text, QPixmap &pixmap) const;
 
     int m_shadowRadius;
     double m_shadowDecadeFactor;

@@ -1,8 +1,8 @@
 #ifndef TH0105_H
 #define TH0105_H
 
-#include "package.h"
 #include "card.h"
+#include "package.h"
 
 class ShiquCard : public SkillCard
 {
@@ -14,7 +14,6 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
-
 
 class LianmuCard : public SkillCard
 {
@@ -40,7 +39,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
 class ModianCard : public SkillCard
 {
     Q_OBJECT
@@ -51,8 +49,6 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
-
-
 
 class BaosiCard : public SkillCard
 {

@@ -3,19 +3,19 @@
 
 #include "RoomState.h"
 #include "card.h"
-#include "general.h"
-#include "skill.h"
-#include "package.h"
 #include "exppattern.h"
+#include "general.h"
+#include "package.h"
 #include "protocol.h"
+#include "skill.h"
 #include "util.h"
 
 #include <QHash>
-#include <QStringList>
-#include <QMetaObject>
-#include <QThread>
 #include <QList>
+#include <QMetaObject>
 #include <QMutex>
+#include <QStringList>
+#include <QThread>
 
 class AI;
 class Scenario;
@@ -128,7 +128,6 @@ public:
     QStringList SurprisingGenerals;
     QStringList LordBGMConvertList;
 
-
 private:
     void _loadMiniScenarios();
     void _loadModScenarios();
@@ -166,7 +165,7 @@ private:
     QHash<QString, QString> luaTrickCard_className2objectName;
     QHash<QString, const LuaTrickCard *> luaTrickCards;
     QHash<QString, QString> luaWeapon_className2objectName;
-    QHash<QString, const LuaWeapon*> luaWeapons;
+    QHash<QString, const LuaWeapon *> luaWeapons;
     QHash<QString, QString> luaArmor_className2objectName;
     QHash<QString, const LuaArmor *> luaArmors;
     QHash<QString, QString> luaTreasure_className2objectName;
@@ -181,4 +180,3 @@ static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key)
 extern Engine *Sanguosha;
 
 #endif
-

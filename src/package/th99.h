@@ -1,9 +1,8 @@
 #ifndef _th99_H
 #define _th99_H
 
-#include "package.h"
 #include "card.h"
-
+#include "package.h"
 
 class QiuwenCard : public SkillCard
 {
@@ -64,7 +63,6 @@ public:
     virtual const Card *validate(CardUseStruct &use) const;
 };
 
-
 class ZhesheCard : public SkillCard
 {
     Q_OBJECT
@@ -97,7 +95,6 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-
 };
 
 class PanduCard : public SkillCard
@@ -111,8 +108,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
-
 class TH99Package : public Package
 {
     Q_OBJECT
@@ -122,4 +117,3 @@ public:
 };
 
 #endif
-

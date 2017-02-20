@@ -1,9 +1,10 @@
 #include "generalselector.h"
 
-#include <QApplication>
-#include <QMessageBox>
 #include "lua.hpp"
 #include "room.h"
+
+#include <QApplication>
+#include <QMessageBox>
 
 GeneralSelector::GeneralSelector(Room *room)
     : QObject(room)
@@ -17,4 +18,3 @@ GeneralSelector::GeneralSelector(Room *room)
     } else
         initialize();
 }
-

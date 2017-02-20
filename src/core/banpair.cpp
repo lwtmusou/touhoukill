@@ -91,4 +91,3 @@ const QSet<BanPair> BanPair::getBanPairSet()
 {
     return BanPairSet;
 }
-

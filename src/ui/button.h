@@ -3,9 +3,9 @@
 
 #include "settings.h"
 
-#include <QGraphicsObject>
 #include <QFont>
 #include <QFontMetrics>
+#include <QGraphicsObject>
 
 class Button : public QGraphicsObject
 {
@@ -45,4 +45,3 @@ signals:
 };
 
 #endif
-

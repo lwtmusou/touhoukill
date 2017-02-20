@@ -1,9 +1,8 @@
 #ifndef _th14_H
 #define _th14_H
 
-#include "package.h"
 #include "card.h"
-
+#include "package.h"
 
 class LeitingCard : public SkillCard
 {
@@ -26,7 +25,6 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-
 class LiangeCard : public SkillCard
 {
     Q_OBJECT
@@ -37,8 +35,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
-
 class TH14Package : public Package
 {
     Q_OBJECT
@@ -48,4 +44,3 @@ public:
 };
 
 #endif
-

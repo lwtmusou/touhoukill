@@ -1,7 +1,9 @@
 #include "WrappedCard.h"
 
 WrappedCard::WrappedCard(Card *card)
-    : Card(card->getSuit(), card->getNumber()), m_card(NULL), m_isModified(false)
+    : Card(card->getSuit(), card->getNumber())
+    , m_card(NULL)
+    , m_isModified(false)
 {
     m_id = card->getId();
     copyEverythingFrom(card);
@@ -55,4 +57,3 @@ void WrappedCard::setFlags(const QString &flag) const
     m_card->setFlags(flag);
     m_isModified = true;
 }
-

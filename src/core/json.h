@@ -62,7 +62,7 @@ public:
     {
         return value.value<JsonObject>();
     }
-    inline const QVariant& toVariant() const
+    inline const QVariant &toVariant() const
     {
         return value;
     }
@@ -77,8 +77,7 @@ protected:
     QString error;
 };
 
-namespace JsonUtils
-{
+namespace JsonUtils {
 
 inline bool isNumber(const QVariant &var)
 {

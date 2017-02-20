@@ -2,7 +2,8 @@
 #include "engine.h"
 
 Scenario::Scenario(const QString &name)
-    : Package(name, Package::SpecialPack), rule(NULL)
+    : Package(name, Package::SpecialPack)
+    , rule(NULL)
 {
 }
 
@@ -59,4 +60,3 @@ AI::Relation Scenario::relationTo(const ServerPlayer *a, const ServerPlayer *b) 
 {
     return AI::GetRelation(a, b);
 }
-

@@ -1,9 +1,9 @@
 #ifndef LIGHTBOXANIMATION_H
 #define LIGHTBOXANIMATION_H
 
+#include <QBrush>
 #include <QGraphicsObject>
 #include <QGraphicsRectItem>
-#include <QBrush>
 
 class QSanSelectableItem;
 class QGraphicsTextItem;
@@ -29,7 +29,6 @@ public slots:
     void show();
     void hide();
 };
-
 
 class LightboxAnimation : public QGraphicsObject
 {
@@ -58,9 +57,6 @@ private:
 
 signals:
     void finished();
-
-
 };
-
 
 #endif

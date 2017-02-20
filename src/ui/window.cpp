@@ -1,15 +1,16 @@
 #include "window.h"
-#include "settings.h"
 #include "button.h"
+#include "settings.h"
 
-#include <QPainter>
+#include <QGraphicsDropShadowEffect>
 #include <QGraphicsRotation>
+#include <QPainter>
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
-#include <QGraphicsDropShadowEffect>
 
 Window::Window(const QString &title, const QSizeF &size, const QString &path)
-    : size(size), keep_when_disappear(false)
+    : size(size)
+    , keep_when_disappear(false)
 {
     setFlags(ItemIsMovable);
 
@@ -131,7 +132,6 @@ void Window::appear()
     group->addAnimation(opacity);
 
     group->start(QAbstractAnimation::DeleteWhenStopped);
-
 }
 
 void Window::disappear()

@@ -1,8 +1,8 @@
 #ifndef _STANDARD_H
 #define _STANDARD_H
 
-#include "package.h"
 #include "card.h"
+#include "package.h"
 #include "roomthread.h"
 // don't include "skill.h" here for skill.h included this file for equipcard
 
@@ -28,7 +28,8 @@ class BasicCard : public Card
     Q_OBJECT
 
 public:
-    BasicCard(Suit suit, int number) : Card(suit, number)
+    BasicCard(Suit suit, int number)
+        : Card(suit, number)
     {
         handling_method = Card::MethodUse;
     }
@@ -36,7 +37,7 @@ public:
     virtual CardType getTypeId() const;
 };
 
-class TrickCard :public Card
+class TrickCard : public Card
 {
     Q_OBJECT
 
@@ -67,7 +68,8 @@ public:
         TreasureLocation
     };
 
-    EquipCard(Suit suit, int number) : Card(suit, number, true)
+    EquipCard(Suit suit, int number)
+        : Card(suit, number, true)
     {
         handling_method = MethodUse;
     }
@@ -91,7 +93,8 @@ class GlobalEffect : public TrickCard
     Q_OBJECT
 
 public:
-    Q_INVOKABLE GlobalEffect(Card::Suit suit, int number) : TrickCard(suit, number)
+    Q_INVOKABLE GlobalEffect(Card::Suit suit, int number)
+        : TrickCard(suit, number)
     {
         target_fixed = true;
     }
@@ -129,7 +132,8 @@ class AOE : public TrickCard
     Q_OBJECT
 
 public:
-    AOE(Suit suit, int number) : TrickCard(suit, number)
+    AOE(Suit suit, int number)
+        : TrickCard(suit, number)
     {
         target_fixed = true;
     }
@@ -138,7 +142,7 @@ public:
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
-class SavageAssault :public AOE
+class SavageAssault : public AOE
 {
     Q_OBJECT
 
@@ -161,7 +165,8 @@ class SingleTargetTrick : public TrickCard
     Q_OBJECT
 
 public:
-    SingleTargetTrick(Suit suit, int number) : TrickCard(suit, number)
+    SingleTargetTrick(Suit suit, int number)
+        : TrickCard(suit, number)
     {
     }
     virtual QString getSubtype() const;
@@ -294,7 +299,8 @@ class Armor : public EquipCard
     Q_OBJECT
 
 public:
-    Armor(Suit suit, int number) : EquipCard(suit, number)
+    Armor(Suit suit, int number)
+        : EquipCard(suit, number)
     {
     }
     virtual QString getSubtype() const;
@@ -302,15 +308,14 @@ public:
     virtual Location location() const;
     virtual QString getCommonEffectName() const;
 };
-
-
 
 class Treasure : public EquipCard
 {
     Q_OBJECT
 
 public:
-    Treasure(Suit suit, int number) : EquipCard(suit, number)
+    Treasure(Suit suit, int number)
+        : EquipCard(suit, number)
     {
     }
     virtual QString getSubtype() const;
@@ -319,7 +324,6 @@ public:
 
     virtual QString getCommonEffectName() const;
 };
-
 
 class Horse : public EquipCard
 {
@@ -408,7 +412,7 @@ public:
     virtual bool isAvailable(const Player *player) const;
 };
 
-class Snatch :public SingleTargetTrick
+class Snatch : public SingleTargetTrick
 {
     Q_OBJECT
 
@@ -431,4 +435,3 @@ public:
 };
 
 #endif
-

@@ -1,10 +1,8 @@
 #ifndef _protagonist_H
 #define _protagonist_H
 
-#include "package.h"
 #include "card.h"
-
-
+#include "package.h"
 
 class MofaCard : public SkillCard
 {
@@ -15,8 +13,6 @@ public:
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
-
-
 
 class WuyuCard : public SkillCard
 {
@@ -81,7 +77,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
 class BllmSeyuCard : public SkillCard
 {
     Q_OBJECT
@@ -145,7 +140,6 @@ public:
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
-
 class YinyangCard : public SkillCard
 {
     Q_OBJECT
@@ -157,7 +151,6 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-
 class ProtagonistPackage : public Package
 {
     Q_OBJECT
@@ -167,4 +160,3 @@ public:
 };
 
 #endif
-

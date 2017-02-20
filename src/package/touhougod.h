@@ -1,8 +1,8 @@
 #ifndef _touhougod_H
 #define _touhougod_H
 
-#include "package.h"
 #include "card.h"
+#include "package.h"
 
 class HongwuCard : public SkillCard
 {
@@ -13,7 +13,6 @@ public:
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
-
 
 class ShenqiangCard : public SkillCard
 {
@@ -57,7 +56,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
 class HuaxiangCard : public SkillCard
 {
     Q_OBJECT
@@ -94,7 +92,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
 class WendaoCard : public SkillCard
 {
     Q_OBJECT
@@ -121,7 +118,6 @@ public:
     virtual const Card *validateInResponse(ServerPlayer *user) const;
 };
 
-
 class RumoCard : public SkillCard
 {
     Q_OBJECT
@@ -144,4 +140,3 @@ public:
 };
 
 #endif
-

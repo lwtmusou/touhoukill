@@ -2,10 +2,10 @@
 #define _BAN_PAIR_H
 
 #include <QDialog>
-#include <QPair>
 #include <QListWidget>
+#include <QPair>
 
-struct BanPair : public QPair <QString, QString>
+struct BanPair : public QPair<QString, QString>
 {
     BanPair();
     BanPair(const QString &first, const QString &second);
@@ -20,4 +20,3 @@ struct BanPair : public QPair <QString, QString>
 };
 
 #endif
-

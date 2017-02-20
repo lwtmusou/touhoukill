@@ -1,8 +1,8 @@
 #include "chatwidget.h"
 #include "engine.h"
-#include <QPainter>
 #include <QGraphicsSceneMouseEvent>
 #include <QMessageBox>
+#include <QPainter>
 
 MyPixmapItem::MyPixmapItem(const QPixmap &pixmap, QGraphicsItem *parentItem)
     : QGraphicsPixmapItem(pixmap, parentItem)
@@ -23,7 +23,8 @@ void MyPixmapItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
     setVisible(false);
     QString msg = "";
     int result = mouseCanClick(event->pos().x(), event->pos().y());
-    if (result == -1) return;
+    if (result == -1)
+        return;
     if (itemName == "faceboard")
         msg = "<#" + QString::number(result + 1) + "#>";
     else if (itemName == "easytextboard")
@@ -168,7 +169,6 @@ void ChatWidget::showEasyTextBoard()
     chat_face_board->setVisible(false);
 }
 
-
 void ChatWidget::showFaceBoard()
 {
     chat_face_board->setVisible(!chat_face_board->isVisible());
@@ -229,4 +229,3 @@ QGraphicsProxyWidget *ChatWidget::addWidget(QWidget *widget, int x)
 
     return proxy_widget;
 }
-

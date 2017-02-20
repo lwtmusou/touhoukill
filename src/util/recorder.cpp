@@ -2,8 +2,8 @@
 #include "client.h"
 #include "serverplayer.h"
 
-#include <QFile>
 #include <QBuffer>
+#include <QFile>
 #include <QMessageBox>
 
 #include <cmath>
@@ -82,8 +82,11 @@ QByteArray Recorder::PNG2TXT(const QString filename)
 }
 
 Replayer::Replayer(QObject *parent, const QString &filename)
-    : QThread(parent), m_commandSeriesCounter(1),
-      filename(filename), speed(1.0), playing(true)
+    : QThread(parent)
+    , m_commandSeriesCounter(1)
+    , filename(filename)
+    , speed(1.0)
+    , playing(true)
 {
     QIODevice *device = NULL;
     if (filename.endsWith(".png")) {
@@ -223,4 +226,3 @@ QString Replayer::getPath() const
 {
     return filename;
 }
-

@@ -1,10 +1,10 @@
 #include "AboutUs.h"
 #include "engine.h"
 
+#include <QFile>
+#include <QHBoxLayout>
 #include <QListWidget>
 #include <QTextBrowser>
-#include <QHBoxLayout>
-#include <QFile>
 #include <QTextStream>
 
 AboutUsDialog::AboutUsDialog(QWidget *parent)

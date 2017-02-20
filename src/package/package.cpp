@@ -5,4 +5,3 @@ PackageHash &PackageAdder::packages()
 {
     return *(::Packages());
 }
-

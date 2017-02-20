@@ -1,8 +1,8 @@
 #ifndef _SCENARIO_H
 #define _SCENARIO_H
 
-#include "package.h"
 #include "ai.h"
+#include "package.h"
 
 class Room;
 class ScenarioRule;
@@ -27,9 +27,10 @@ public:
 
 protected:
     QString lord;
-    QStringList loyalists, rebels, renegades;
+    QStringList loyalists;
+    QStringList rebels;
+    QStringList renegades;
     ScenarioRule *rule;
 };
 
 #endif
-

@@ -7,8 +7,8 @@ class ServerPlayer;
 class QDialog;
 
 #include "room.h"
-#include "structs.h"
 #include "standard.h"
+#include "structs.h"
 
 #include <QObject>
 
@@ -51,7 +51,6 @@ protected:
     Frequency frequency;
     QString limit_mark;
     bool attached_lord_skill;
-
 
 private:
     bool lord_skill;
@@ -345,4 +344,3 @@ public:
 };
 
 #endif
-

@@ -6,21 +6,21 @@ class QGroupBox;
 class QLabel;
 class QRadioButton;
 
-#include "socket.h"
-#include "detector.h"
 #include "clientstruct.h"
+#include "detector.h"
+#include "socket.h"
 
-#include <QDialog>
-#include <QLineEdit>
-#include <QSpinBox>
-#include <QCheckBox>
 #include <QButtonGroup>
+#include <QCheckBox>
 #include <QComboBox>
+#include <QDialog>
 #include <QLayoutItem>
+#include <QLineEdit>
 #include <QListWidget>
+#include <QMultiHash>
+#include <QSpinBox>
 #include <QSplitter>
 #include <QTabWidget>
-#include <QMultiHash>
 
 class Package;
 
@@ -51,7 +51,7 @@ public:
     BanlistDialog(QWidget *parent, bool view = false);
 
 private:
-    QList<QListWidget *>lists;
+    QList<QListWidget *> lists;
     QListWidget *list;
     int item;
     QStringList ban_list;
@@ -110,7 +110,7 @@ private:
     QCheckBox *forbid_same_ip_checkbox;
     QCheckBox *disable_chat_checkbox;
     QCheckBox *second_general_checkbox;
-    QCheckBox *scene_checkbox;    //changjing
+    QCheckBox *scene_checkbox; //changjing
     QCheckBox *same_checkbox;
     QCheckBox *basara_checkbox;
     QCheckBox *hegemony_checkbox;
@@ -202,4 +202,3 @@ signals:
 };
 
 #endif
-

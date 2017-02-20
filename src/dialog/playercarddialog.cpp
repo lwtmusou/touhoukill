@@ -1,24 +1,26 @@
 #include "playercarddialog.h"
 #include "carditem.h"
-#include "standard.h"
-#include "engine.h"
 #include "client.h"
-
+#include "engine.h"
+#include "standard.h"
 
 #include <QCommandLinkButton>
-#include <QVBoxLayout>
 #include <QGroupBox>
-#include <QLabel>
 #include <QHBoxLayout>
+#include <QLabel>
+#include <QVBoxLayout>
 
 PlayerCardButton::PlayerCardButton(const QString &name)
-    : QCommandLinkButton(name), scale(1.0)
+    : QCommandLinkButton(name)
+    , scale(1.0)
 {
 }
 
-PlayerCardDialog::PlayerCardDialog(const ClientPlayer *player, const QString &flags,
-                                   bool handcard_visible, Card::HandlingMethod method, const QList<int> &disabled_ids)
-    : player(player), handcard_visible(handcard_visible), method(method), disabled_ids(disabled_ids)
+PlayerCardDialog::PlayerCardDialog(const ClientPlayer *player, const QString &flags, bool handcard_visible, Card::HandlingMethod method, const QList<int> &disabled_ids)
+    : player(player)
+    , handcard_visible(handcard_visible)
+    , method(method)
+    , disabled_ids(disabled_ids)
 {
     QVBoxLayout *vlayout1 = new QVBoxLayout, *vlayout2 = new QVBoxLayout;
     QHBoxLayout *layout = new QHBoxLayout;
@@ -65,7 +67,7 @@ QWidget *PlayerCardDialog::createHandcardButton(QString flags)
     QList<const Card *> cards = player->getHandcards();
     QList<int> shownIds = player->getShownHandcards();
     QList<int> unshownIds;
-    foreach(const Card *c, cards) {
+    foreach (const Card *c, cards) {
         if (!shownIds.contains(c->getEffectiveId()))
             unshownIds << c->getEffectiveId();
     }
@@ -74,7 +76,6 @@ QWidget *PlayerCardDialog::createHandcardButton(QString flags)
         selectableIds << unshownIds;
     if (flags.contains("s"))
         selectableIds << shownIds;
-
 
     if (!player->isKongcheng() && (Self == player || handcard_visible)) {
         QGroupBox *area = new QGroupBox(tr("Handcard area"));
@@ -89,7 +90,8 @@ QWidget *PlayerCardDialog::createHandcardButton(QString flags)
 
             PlayerCardButton *button2 = NULL;
             if (i < selectableIds.length() - 1) {
-                card = Sanguosha->getEngineCard(selectableIds.at(i + 1));;
+                card = Sanguosha->getEngineCard(selectableIds.at(i + 1));
+                ;
                 button2 = new PlayerCardButton(card->getFullName());
                 button2->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
 
@@ -126,7 +128,8 @@ QWidget *PlayerCardDialog::createHandcardButton(QString flags)
 
             PlayerCardButton *button2 = NULL;
             if (i < shownIds.length() - 1) {
-                card = Sanguosha->getEngineCard(shownIds.at(i + 1));;
+                card = Sanguosha->getEngineCard(shownIds.at(i + 1));
+                ;
                 button2 = new PlayerCardButton(card->getFullName());
                 button2->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
                 button2->setEnabled(!disabled_ids.contains(shownIds.at(i + 1)) && (method != Card::MethodDiscard || Self->canDiscard(player, shownIds.at(i + 1))));
@@ -140,8 +143,7 @@ QWidget *PlayerCardDialog::createHandcardButton(QString flags)
                 hlayout->addWidget(button1);
                 hlayout->addWidget(button2);
                 layout->addLayout(hlayout);
-            }
-            else {
+            } else {
                 Q_ASSERT(button1 != NULL);
                 layout->addWidget(button1);
             }
@@ -164,8 +166,7 @@ QWidget *PlayerCardDialog::createHandcardButton(QString flags)
     PlayerCardButton *button = new PlayerCardButton(tr("Handcard"));
     button->setObjectName("handcard_button");
     int num = player->getHandcardNum();
-    if (num == 0 ||
-            (flags.contains("s") && !flags.contains("h") && shownIds.isEmpty())) {
+    if (num == 0 || (flags.contains("s") && !flags.contains("h") && shownIds.isEmpty())) {
         button->setDescription(tr("This guy has no any hand cards"));
         button->setEnabled(false);
     } else {
@@ -301,4 +302,3 @@ void PlayerCardDialog::emitId()
     if (id != -2)
         emit card_id_chosen(id);
 }
-

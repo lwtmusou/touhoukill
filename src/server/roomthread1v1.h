@@ -1,8 +1,8 @@
 #ifndef _ROOM_THREAD_1V1_H
 #define _ROOM_THREAD_1V1_H
 
-#include <QThread>
 #include <QStringList>
+#include <QThread>
 
 class Room;
 class ServerPlayer;
@@ -30,4 +30,3 @@ private:
 };
 
 #endif
-

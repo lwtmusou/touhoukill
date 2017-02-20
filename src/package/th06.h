@@ -1,9 +1,8 @@
 #ifndef _th06_H
 #define _th06_H
 
-#include "package.h"
 #include "card.h"
-
+#include "package.h"
 
 class SkltKexueCard : public SkillCard
 {
@@ -22,14 +21,11 @@ class SuodingCard : public SkillCard
 public:
     Q_INVOKABLE SuodingCard();
 
-    virtual bool targetFilter(const QList<const Player *> &targets,
-                              const Player *to_select, const Player *Self) const;
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select,
-                              const Player *Self, int &maxVotes) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, int &maxVotes) const;
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
-
 
 class BeishuiCard : public SkillCard
 {
@@ -66,4 +62,3 @@ public:
 };
 
 #endif
-

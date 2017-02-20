@@ -3,13 +3,13 @@
 
 #include "protocol.h"
 
-#include <QObject>
-#include <QTime>
-#include <QThread>
-#include <QMutex>
-#include <QSemaphore>
 #include <QImage>
 #include <QMap>
+#include <QMutex>
+#include <QObject>
+#include <QSemaphore>
+#include <QThread>
+#include <QTime>
 
 class Recorder : public QObject
 {
@@ -77,4 +77,3 @@ signals:
 };
 
 #endif
-

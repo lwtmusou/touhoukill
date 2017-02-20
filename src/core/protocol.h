@@ -142,7 +142,7 @@ enum CommandType
     S_COMMAND_ADD_ROBOT,
     S_COMMAND_FILL_ROBOTS,
     S_COMMAND_SIGNUP,
-    S_COMMAND_UPDATE_SKILL ,
+    S_COMMAND_UPDATE_SKILL,
     S_COMMAND_SET_SKILL_INVALIDITY,
     S_COMMAND_SET_SHOWN_HANDCARD
 };
@@ -213,7 +213,9 @@ public:
     time_t current;
     time_t max;
     inline Countdown(CountdownType type = S_COUNTDOWN_NO_LIMIT, time_t current = 0, time_t max = 0)
-        : type(type), current(current), max(max)
+        : type(type)
+        , current(current)
+        , max(max)
     {
     }
     bool tryParse(const QVariant &val);
@@ -293,4 +295,3 @@ protected:
 }
 
 #endif
-

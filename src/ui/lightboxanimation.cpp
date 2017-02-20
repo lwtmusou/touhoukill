@@ -2,33 +2,36 @@
 
 #include <QGraphicsTextItem>
 
-#include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
-#include <QSequentialAnimationGroup>
 #include <QPauseAnimation>
+#include <QPropertyAnimation>
+#include <QSequentialAnimationGroup>
 
-#include <QPen>
 #include <QBrush>
+#include <QPen>
 
+#include "QSanSelectableItem.h"
 #include "SkinBank.h"
 #include "engine.h"
-#include "QSanSelectableItem.h"
-
 
 RectObject::RectObject(const QBrush &brush /*= QBrush()*/, QGraphicsItem *parent /*= NULL*/)
-    : QGraphicsObject(parent), m_brush(brush)
+    : QGraphicsObject(parent)
+    , m_brush(brush)
 {
 }
 
 RectObject::RectObject(const QRectF &rect, const QBrush &brush /*= QBrush()*/, QGraphicsItem *parent /*= NULL*/)
-    : QGraphicsObject(parent), m_boundingRect(rect), m_brush(brush)
+    : QGraphicsObject(parent)
+    , m_boundingRect(rect)
+    , m_brush(brush)
 {
 }
 
 RectObject::RectObject(qreal x, qreal y, qreal w, qreal h, const QBrush &brush /*= QBrush()*/, QGraphicsItem *parent /*= NULL*/)
-    : QGraphicsObject(parent), m_boundingRect(x, y, w, h), m_brush(brush)
+    : QGraphicsObject(parent)
+    , m_boundingRect(x, y, w, h)
+    , m_brush(brush)
 {
-
 }
 
 QRectF RectObject::boundingRect() const
@@ -54,8 +57,13 @@ void RectObject::hide()
 }
 
 LightboxAnimation::LightboxAnimation(const QString &general_name, const QString &skill_name, const QRectF &rect)
-    : background(NULL), generalPixmap(NULL), flick(NULL), skillName(NULL),
-      general_name(general_name), skill_name(skill_name), rect(rect)
+    : background(NULL)
+    , generalPixmap(NULL)
+    , flick(NULL)
+    , skillName(NULL)
+    , general_name(general_name)
+    , skill_name(skill_name)
+    , rect(rect)
 {
     hide();
 

@@ -1,10 +1,10 @@
 #ifndef _UI_UTILS_H
 #define _UI_UTILS_H
 
-#include <QImage>
 #include <QColor>
-#include <qrect.h>
+#include <QImage>
 #include <qpainter.h>
+#include <qrect.h>
 
 namespace QSanUiUtils {
 // This is in no way a generic diation fuction. It is some dirty trick that
@@ -31,16 +31,10 @@ QString resolveFont(const QString &fontName);
 // @param orient
 //        Suggest whether the text is laid out horizontally or vertically.
 // @return True if succeed.
-bool paintQString(QPainter *painter, QString text,
-                  int *font, QColor color,
-                  QSize &fontSize, int spacing, int weight, QRect boundingBox,
-                  Qt::Orientation orient, Qt::Alignment align);
+bool paintQString(QPainter *painter, QString text, int *font, QColor color, QSize &fontSize, int spacing, int weight, QRect boundingBox, Qt::Orientation orient, Qt::Alignment align);
 
 // Currently, we online support horizotal layout for multiline text
-bool paintQStringMultiLine(QPainter *painter, QString text,
-                           int *font, QColor color,
-                           QSize &fontSize, int spacing, QRect boundingBox,
-                           Qt::Alignment align);
+bool paintQStringMultiLine(QPainter *painter, QString text, int *font, QColor color, QSize &fontSize, int spacing, QRect boundingBox, Qt::Alignment align);
 }
 }
 

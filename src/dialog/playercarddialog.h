@@ -3,9 +3,9 @@
 
 #include "clientplayer.h"
 
+#include <QCommandLinkButton>
 #include <QDialog>
 #include <QMap>
-#include <QCommandLinkButton>
 
 class MagatamaWidget : public QWidget
 {
@@ -23,9 +23,7 @@ class PlayerCardDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit PlayerCardDialog(const ClientPlayer *player, const QString &flags = "hej",
-                              bool handcard_visible = false, Card::HandlingMethod method = Card::MethodNone,
-                              const QList<int> &disabled_ids = QList<int>());
+    explicit PlayerCardDialog(const ClientPlayer *player, const QString &flags = "hej", bool handcard_visible = false, Card::HandlingMethod method = Card::MethodNone, const QList<int> &disabled_ids = QList<int>());
 
 private:
     QWidget *createAvatar();
@@ -66,4 +64,3 @@ private:
 };
 
 #endif
-

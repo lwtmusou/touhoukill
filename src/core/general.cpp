@@ -1,17 +1,20 @@
 #include "general.h"
-#include "engine.h"
-#include "skill.h"
-#include "package.h"
 #include "client.h"
+#include "engine.h"
+#include "package.h"
 #include "settings.h"
+#include "skill.h"
 
-#include <QSize>
 #include <QFile>
+#include <QSize>
 
-General::General(Package *package, const QString &name, const QString &kingdom,
-                 int max_hp, bool male, bool hidden, bool never_shown)
-    : QObject(package), kingdom(kingdom), max_hp(max_hp), gender(male ? Male : Female),
-      hidden(hidden), never_shown(never_shown)
+General::General(Package *package, const QString &name, const QString &kingdom, int max_hp, bool male, bool hidden, bool never_shown)
+    : QObject(package)
+    , kingdom(kingdom)
+    , max_hp(max_hp)
+    , gender(male ? Male : Female)
+    , hidden(hidden)
+    , never_shown(never_shown)
 {
     static QChar lord_symbol('$');
     if (name.endsWith(lord_symbol)) {
@@ -78,7 +81,7 @@ bool General::isTotallyHidden() const
 bool General::isVisible() const
 {
     return !Sanguosha->SurprisingGenerals.contains(objectName())
-            || Config.KnownSurprisingGenerals.contains(objectName());
+        || Config.KnownSurprisingGenerals.contains(objectName());
 }
 
 void General::addSkill(Skill *skill)
@@ -91,7 +94,8 @@ void General::addSkill(Skill *skill)
 
 void General::addSkill(const QString &skill_name)
 {
-    if (extra_set.contains(skill_name)) return;
+    if (extra_set.contains(skill_name))
+        return;
     extra_set << skill_name;
     if (!skillname_list.contains(skill_name))
         skillname_list << skill_name;
@@ -201,4 +205,3 @@ void General::lastWord() const
     }
     Sanguosha->playAudioEffect(filename);
 }
-

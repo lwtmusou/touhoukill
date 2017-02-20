@@ -1,15 +1,15 @@
 #include "roleassigndialog.h"
 
-#include <QHBoxLayout>
-#include <QPushButton>
-#include <QMessageBox>
-#include <qlist.h>
-#include "general.h"
-#include "player.h"
 #include "client.h"
 #include "engine.h"
+#include "general.h"
+#include "player.h"
 #include "roomscene.h"
 #include "settings.h"
+#include <QHBoxLayout>
+#include <QMessageBox>
+#include <QPushButton>
+#include <qlist.h>
 
 using namespace QSanProtocol;
 
@@ -26,8 +26,8 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
 
     if (Config.FreeAssignSelf) {
         QString text = QString("%1[%2]")
-                .arg(Self->screenName())
-                .arg(Sanguosha->translate("lord"));
+                           .arg(Self->screenName())
+                           .arg(Sanguosha->translate("lord"));
 
         QListWidgetItem *item = new QListWidgetItem(text, list);
         item->setData(Qt::UserRole, Self->objectName());
@@ -39,8 +39,8 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
             QString role = role_list.at(i);
             const ClientPlayer *player = players.at(i);
             QString text = QString("%1[%2]")
-                    .arg(player->screenName())
-                    .arg(Sanguosha->translate(role));
+                               .arg(player->screenName())
+                               .arg(Sanguosha->translate(role));
 
             QListWidgetItem *item = new QListWidgetItem(text, list);
             item->setData(Qt::UserRole, player->objectName());
@@ -82,8 +82,7 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     setLayout(mainlayout);
 
     connect(role_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateRole(int)));
-    connect(list, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
-            this, SLOT(updateRole(QListWidgetItem *)));
+    connect(list, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(updateRole(QListWidgetItem *)));
     connect(moveUpButton, SIGNAL(clicked()), this, SLOT(moveUp()));
     connect(moveDownButton, SIGNAL(clicked()), this, SLOT(moveDown()));
     connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
@@ -128,8 +127,7 @@ void RoleAssignDialog::accept()
         ClientInstance->onPlayerAssignRole(names, roles);
         QDialog::accept();
     } else {
-        QMessageBox::warning(this, tr("Warning"),
-                             tr("The roles that you assigned do not comform with the current game mode"));
+        QMessageBox::warning(this, tr("Warning"), tr("The roles that you assigned do not comform with the current game mode"));
     }
 }
 
@@ -186,4 +184,3 @@ void RoomScene::startAssign()
     RoleAssignDialog *dialog = new RoleAssignDialog(main_window);
     dialog->exec();
 }
-

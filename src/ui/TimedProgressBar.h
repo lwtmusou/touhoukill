@@ -1,19 +1,24 @@
 #ifndef _TIMED_PROGRESS_BAR_H
 #define _TIMED_PROGRESS_BAR_H
 
-#include <QProgressBar>
-#include <QTimerEvent>
-#include <QShowEvent>
-#include <QPaintEvent>
 #include <QMutex>
+#include <QPaintEvent>
+#include <QProgressBar>
+#include <QShowEvent>
+#include <QTimerEvent>
 
 class TimedProgressBar : public QProgressBar
 {
     Q_OBJECT
 public:
     inline TimedProgressBar()
-        : m_hasTimer(false), m_autoHide(false), m_timer(0),
-          m_step(0), m_max(0), m_val(0), m_mutex(QMutex::Recursive)
+        : m_hasTimer(false)
+        , m_autoHide(false)
+        , m_timer(0)
+        , m_step(0)
+        , m_max(0)
+        , m_val(0)
+        , m_mutex(QMutex::Recursive)
     {
         setTextVisible(false);
     }
@@ -41,7 +46,10 @@ public:
     virtual void show();
     virtual void hide();
 
-    bool hasTimer() const { return m_hasTimer; }
+    bool hasTimer() const
+    {
+        return m_hasTimer;
+    }
 
 signals:
     void timedOut();
@@ -78,4 +86,3 @@ protected:
 };
 
 #endif
-

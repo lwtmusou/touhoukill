@@ -1,7 +1,8 @@
 #include "TimedProgressBar.h"
+#include "SkinBank.h"
 #include "clientstruct.h"
+
 #include <QPainter>
-#include <SkinBank.h>
 
 void TimedProgressBar::show()
 {
@@ -53,8 +54,10 @@ void TimedProgressBar::timerEvent(QTimerEvent *)
     m_mutex.unlock();
     setValue(val);
     emit timerStep(val, m_max);
-    if (doHide) hide();
-    if (emitTimeout) emit timedOut();
+    if (doHide)
+        hide();
+    if (emitTimeout)
+        emit timedOut();
 }
 
 using namespace QSanProtocol;
@@ -103,4 +106,3 @@ void QSanCommandProgressBar::setCountdown(Countdown countdown)
     m_val = countdown.current;
     m_mutex.unlock();
 }
-

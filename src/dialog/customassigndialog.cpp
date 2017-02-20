@@ -1,32 +1,34 @@
 #include "customassigndialog.h"
-#include "miniscenarios.h"
 #include "SkinBank.h"
+#include "miniscenarios.h"
 #include "settings.h"
 
-#include <QPushButton>
-#include <QMessageBox>
-#include <QRadioButton>
-#include <QPixmap>
-#include <QIcon>
-#include <QGroupBox>
-#include <QFrame>
-#include <QFile>
-#include <QFileDialog>
 #include <QCommandLinkButton>
 #include <QCompleter>
+#include <QFile>
+#include <QFileDialog>
+#include <QFrame>
+#include <QGroupBox>
+#include <QIcon>
+#include <QMessageBox>
+#include <QPixmap>
+#include <QPushButton>
+#include <QRadioButton>
 
-static QLayout *HLay(QWidget *left, QWidget *right, QWidget *mid = NULL,
-                     QWidget *rear = NULL, bool is_vertically = false)
+static QLayout *HLay(QWidget *left, QWidget *right, QWidget *mid = NULL, QWidget *rear = NULL, bool is_vertically = false)
 {
     QBoxLayout *layout;
-    if (is_vertically) layout = new QVBoxLayout;
-    else layout = new QHBoxLayout;
+    if (is_vertically)
+        layout = new QVBoxLayout;
+    else
+        layout = new QHBoxLayout;
 
     layout->addWidget(left);
     if (mid)
         layout->addWidget(mid);
     layout->addWidget(right);
-    if (rear) layout->addWidget(rear);
+    if (rear)
+        layout->addWidget(rear);
 
     return layout;
 }
@@ -34,9 +36,11 @@ static QLayout *HLay(QWidget *left, QWidget *right, QWidget *mid = NULL,
 CustomAssignDialog *CustomInstance = NULL;
 
 CustomAssignDialog::CustomAssignDialog(QWidget *parent)
-    : QDialog(parent),
-      choose_general2(false),
-      is_ended_by_pile(false), is_single_turn(false), is_before_next(false)
+    : QDialog(parent)
+    , choose_general2(false)
+    , is_ended_by_pile(false)
+    , is_single_turn(false)
+    , is_before_next(false)
 {
     setWindowTitle(tr("Custom mini scene"));
 
@@ -53,11 +57,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
             num_ComboBox->addItem(tr("%1 persons").arg(QString::number(i + 2)), i + 2);
 
         QString player = (i == 0 ? "Player" : "AI");
-        QString text = (i == 0 ? QString("%1[%2]").arg(Sanguosha->translate(player)).arg(tr("Unknown")) :
-                                 QString("%1%2[%3]")
-                                 .arg(Sanguosha->translate(player))
-                                 .arg(QString::number(i))
-                                 .arg(tr("Unknown")));
+        QString text = (i == 0 ? QString("%1[%2]").arg(Sanguosha->translate(player)).arg(tr("Unknown")) : QString("%1%2[%3]").arg(Sanguosha->translate(player)).arg(QString::number(i)).arg(tr("Unknown")));
         if (i != 0)
             player.append(QString::number(i));
         player_mapping[i] = player;
@@ -264,7 +264,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     judge_list = new QListWidget;
     pile_list = new QListWidget;
     QVBoxLayout *info_lay = new QVBoxLayout(), *equip_lay = new QVBoxLayout(), *hand_lay = new QVBoxLayout(),
-            *judge_lay = new QVBoxLayout(), *pile_lay = new QVBoxLayout();
+                *judge_lay = new QVBoxLayout(), *pile_lay = new QVBoxLayout();
 
     move_list_up_button = new QPushButton(tr("Move Up"));
     move_list_down_button = new QPushButton(tr("Move Down"));
@@ -325,8 +325,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     setLayout(mainlayout);
 
     connect(role_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateRole(int)));
-    connect(list, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
-            this, SLOT(on_list_itemSelectionChanged(QListWidgetItem *)));
+    connect(list, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(on_list_itemSelectionChanged(QListWidgetItem *)));
     connect(move_list_up_button, SIGNAL(clicked()), this, SLOT(exchangeListItem()));
     connect(move_list_down_button, SIGNAL(clicked()), this, SLOT(exchangeListItem()));
     connect(move_list_check, SIGNAL(toggled(bool)), this, SLOT(setMoveButtonAvaliable(bool)));
@@ -384,7 +383,7 @@ void CustomAssignDialog::exchangePlayersInfo(QListWidgetItem *first, QListWidget
     QList<int> judges(player_judges[first_name]), equips(player_equips[first_name]), hands(player_handcards[first_name]);
     int hp = player_hp[first_name], maxhp = player_maxhp[first_name], start_draw = player_start_draw[first_name];
     bool turned = player_turned[first_name], chained = player_chained[first_name],
-            free_general = free_choose_general[first_name], free_general2 = free_choose_general2[first_name];
+         free_general = free_choose_general[first_name], free_general2 = free_choose_general2[first_name];
     QStringList ex_skills(player_exskills[first_name]);
     QMap<QString, int> marks(player_marks[first_name]);
     bool setting_nationality = set_nationality.value(first_name, false);
@@ -439,9 +438,7 @@ void CustomAssignDialog::exchangePlayersInfo(QListWidgetItem *first, QListWidget
 
 QString CustomAssignDialog::setListText(QString name, QString role, int index)
 {
-    QString text = random_roles_box->isChecked() ? QString("[%1]").arg(Sanguosha->translate(role)) :
-                                                   QString("%1[%2]").arg(Sanguosha->translate(name))
-                                                   .arg(Sanguosha->translate(role));
+    QString text = random_roles_box->isChecked() ? QString("[%1]").arg(Sanguosha->translate(role)) : QString("%1[%2]").arg(Sanguosha->translate(name)).arg(Sanguosha->translate(role));
 
     if (index >= 0)
         list->item(index)->setText(text);
@@ -456,7 +453,8 @@ void CustomAssignDialog::updateListItems()
         if (i != 0)
             name.append(QString::number(i));
 
-        if (role_mapping[name].isEmpty()) role_mapping[name] = "unknown";
+        if (role_mapping[name].isEmpty())
+            role_mapping[name] = "unknown";
         QListWidgetItem *item = new QListWidgetItem(setListText(name, role_mapping[name]));
         item->setData(Qt::UserRole, name);
         item_map[i] = item;
@@ -710,7 +708,6 @@ void CustomAssignDialog::updatePileInfo(int row)
 
     if (pile_list->count() > 0)
         pile_list->setCurrentRow(0);
-
 }
 
 void CustomAssignDialog::updatePlayerHpInfo(QString name)
@@ -1044,7 +1041,8 @@ void CustomAssignDialog::exchangeListItem()
 
 void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current)
 {
-    if (list->count() == 0 || current == NULL) return;
+    if (list->count() == 0 || current == NULL)
+        return;
 
     QString player_name = current->data(Qt::UserRole).toString();
     if (!general_mapping.value(player_name, "").isEmpty()) {
@@ -1053,7 +1051,6 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current)
         general_label->setPixmap(pixmap);
     } else
         general_label->setPixmap(QPixmap(QString("image/system/disabled.png")));
-
 
     if (!general2_mapping.value(player_name, "").isEmpty()) {
         QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(general2_mapping.value(player_name), QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY, false);
@@ -1088,7 +1085,8 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current)
     }
 
     int val = 4;
-    if (player_start_draw.keys().contains(player_name)) val = player_start_draw[player_name];
+    if (player_start_draw.keys().contains(player_name))
+        val = player_start_draw[player_name];
     player_draw->setValue(val);
 
     starter_box->setEnabled(starter.isEmpty() || starter == player_name);
@@ -1167,11 +1165,13 @@ void CustomAssignDialog::checkEndedByPileBox(bool toggled)
 void CustomAssignDialog::load()
 {
     QString filename;
-    if (sender()->objectName() == "default_load") filename = "etc/customScenes/custom_scenario.txt";
-    else filename = QFileDialog::getOpenFileName(this,
-                                                 tr("Open mini scenario settings"),
-                                                 "etc/customScenes",
-                                                 tr("Pure text replay file (*.txt)"));
+    if (sender()->objectName() == "default_load")
+        filename = "etc/customScenes/custom_scenario.txt";
+    else
+        filename = QFileDialog::getOpenFileName(this,
+                                                tr("Open mini scenario settings"),
+                                                "etc/customScenes",
+                                                tr("Pure text replay file (*.txt)"));
 
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -1217,7 +1217,8 @@ void CustomAssignDialog::load()
     while (!in.atEnd()) {
         QString line = in.readLine();
         line = line.trimmed();
-        if (line.isEmpty()) continue;
+        if (line.isEmpty())
+            continue;
 
         if (!line.startsWith("setPile:") && !line.startsWith("extraOptions:") && !line.startsWith("general:")) {
             QMessageBox::warning(this, tr("Warning"), tr("Data is unreadable"));
@@ -1227,14 +1228,15 @@ void CustomAssignDialog::load()
 
         if (line.startsWith("setPile:")) {
             QStringList list = line.remove("setPile:").split(",");
-            foreach(QString id, list)
+            foreach (QString id, list)
                 set_pile.prepend(id.toInt());
             continue;
         } else if (line.startsWith("extraOptions:")) {
             line.remove("extraOptions:");
 
             foreach (QString option, line.split(" ")) {
-                if (option.isEmpty()) continue;
+                if (option.isEmpty())
+                    continue;
                 options << option;
             }
             continue;
@@ -1250,12 +1252,15 @@ void CustomAssignDialog::load()
             features = line.split(" ");
         foreach (QString str, features) {
             QStringList keys = str.split(":");
-            if (keys.size() < 2) continue;
-            if (keys.first().size() < 1) continue;
+            if (keys.size() < 2)
+                continue;
+            if (keys.first().size() < 1)
+                continue;
             player.insert(keys.at(0), keys.at(1));
         }
 
-        if (player["role"] != QString()) role_mapping[name] = player["role"];
+        if (player["role"] != QString())
+            role_mapping[name] = player["role"];
 
         if (player["general"] == "select")
             free_choose_general[name] = true;
@@ -1279,9 +1284,12 @@ void CustomAssignDialog::load()
         else
             player_start_draw[name] = 4;
 
-        if (player["starter"] != QString()) starter = name;
-        if (player["chained"] != QString()) player_chained[name] = true;
-        if (player["turned"] != QString()) player_turned[name] = true;
+        if (player["starter"] != QString())
+            starter = name;
+        if (player["chained"] != QString())
+            player_chained[name] = true;
+        if (player["turned"] != QString())
+            player_turned[name] = true;
         if (player["nationality"] != QString()) {
             assign_nationality[name] = player["nationality"];
             set_nationality[name] = true;
@@ -1290,7 +1298,7 @@ void CustomAssignDialog::load()
         }
         if (player["acquireSkills"] != QString()) {
             QStringList skills;
-            foreach(QString skill_name, player["acquireSkills"].split(","))
+            foreach (QString skill_name, player["acquireSkills"].split(","))
                 skills << skill_name;
 
             player_exskills[name].append(skills);
@@ -1479,7 +1487,8 @@ bool CustomAssignDialog::save(QString path)
             return false;
         }
         line.append(QString("role:%1 ").arg(role_mapping[name]));
-        if (starter == name) line.append("starter:true ");
+        if (starter == name)
+            line.append("starter:true ");
         if (!player_marks[name].isEmpty()) {
             line.append("marks:");
             QMap<QString, int> marks = player_marks[name];
@@ -1495,11 +1504,16 @@ bool CustomAssignDialog::save(QString path)
                 line.append(" ");
             }
         }
-        if (player_maxhp[name] > 0) line.append(QString("maxhp:%1 ").arg(player_maxhp[name]));
-        if (player_hp[name] > 0) line.append(QString("hp:%1 ").arg(player_hp[name]));
-        if (player_turned[name]) line.append("turned:true ");
-        if (player_chained[name]) line.append("chained:true ");
-        if (set_nationality[name]) line.append(QString("nationality:%1 ").arg(assign_nationality[name]));
+        if (player_maxhp[name] > 0)
+            line.append(QString("maxhp:%1 ").arg(player_maxhp[name]));
+        if (player_hp[name] > 0)
+            line.append(QString("hp:%1 ").arg(player_hp[name]));
+        if (player_turned[name])
+            line.append("turned:true ");
+        if (player_chained[name])
+            line.append("chained:true ");
+        if (set_nationality[name])
+            line.append(QString("nationality:%1 ").arg(assign_nationality[name]));
         if (player_exskills[name].length() > 0) {
             line.append("acquireSkills:");
             foreach (QString skill_name, player_exskills[name]) {
@@ -1526,21 +1540,24 @@ bool CustomAssignDialog::save(QString path)
 
         if (player_equips[name].length()) {
             line.append("equip:");
-            foreach(int equip, player_equips[name]) line.append(QString("%1,").arg(equip));
+            foreach (int equip, player_equips[name])
+                line.append(QString("%1,").arg(equip));
             line.chop(1);
             line.append(" ");
         }
 
         if (player_handcards[name].length()) {
             line.append("hand:");
-            foreach(int hand, player_handcards[name]) line.append(QString("%1,").arg(hand));
+            foreach (int hand, player_handcards[name])
+                line.append(QString("%1,").arg(hand));
             line.chop(1);
             line.append(" ");
         }
 
         if (player_judges[name].length()) {
             line.append("judge:");
-            foreach(int judge, player_judges[name]) line.append(QString("%1,").arg(judge));
+            foreach (int judge, player_judges[name])
+                line.append(QString("%1,").arg(judge));
             line.chop(1);
             line.append(" ");
         }
@@ -1559,7 +1576,6 @@ bool CustomAssignDialog::save(QString path)
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
         return false;
 
-
     QTextStream out(&file);
     out << line;
     file.close();
@@ -1568,7 +1584,8 @@ bool CustomAssignDialog::save(QString path)
 
 //---------------------------------------
 
-GeneralAssignDialog::GeneralAssignDialog(QWidget *parent, bool can_ban) : QDialog(parent)
+GeneralAssignDialog::GeneralAssignDialog(QWidget *parent, bool can_ban)
+    : QDialog(parent)
 {
     setWindowTitle(tr("Mini choose generals"));
 
@@ -1579,7 +1596,7 @@ GeneralAssignDialog::GeneralAssignDialog(QWidget *parent, bool can_ban) : QDialo
 
     QList<const General *> all_generals = Sanguosha->findChildren<const General *>();
     QMap<QString, QList<const General *> > map;
-    foreach(const General *general, all_generals)
+    foreach (const General *general, all_generals)
         map[general->getKingdom()] << general;
 
     QStringList kingdoms = Sanguosha->getKingdoms();
@@ -1639,8 +1656,8 @@ QWidget *GeneralAssignDialog::createTab(const QList<const General *> &generals)
             continue;
 
         QString text = QString("%1[%2]")
-                .arg(Sanguosha->translate(general_name))
-                .arg(Sanguosha->translate(general->getPackage()));
+                           .arg(Sanguosha->translate(general_name))
+                           .arg(Sanguosha->translate(general->getPackage()));
 
         QAbstractButton *button;
         button = new QRadioButton(text);
@@ -1677,8 +1694,10 @@ void GeneralAssignDialog::clearGeneral()
 //------------------------------
 
 CardAssignDialog::CardAssignDialog(QWidget *parent, QString card_type, QString class_name, QList<int> excluded)
-    : QDialog(parent), card_type(card_type), class_name(class_name),
-      excluded_card(excluded)
+    : QDialog(parent)
+    , card_type(card_type)
+    , class_name(class_name)
+    , excluded_card(excluded)
 {
     setWindowTitle(tr("Custom Card Chosen"));
     QVBoxLayout *vlayout = new QVBoxLayout;
@@ -1773,7 +1792,8 @@ void CardAssignDialog::updateCardList()
 //-----------------------------------
 
 SkillAssignDialog::SkillAssignDialog(QDialog *parent, QString player_name, QStringList &player_skills)
-    : QDialog(parent), update_skills(player_skills)
+    : QDialog(parent)
+    , update_skills(player_skills)
 {
     setWindowTitle(tr("Skill Chosen"));
     QHBoxLayout *layout = new QHBoxLayout;
@@ -1902,7 +1922,7 @@ void SkillAssignDialog::updateSkillList()
     skill_list->clear();
     skill_info->clear();
 
-    foreach(QString skill_name, update_skills) {
+    foreach (QString skill_name, update_skills) {
         if (Sanguosha->getSkill(skill_name) != NULL) {
             QListWidgetItem *item = new QListWidgetItem(Sanguosha->translate(skill_name));
             item->setData(Qt::UserRole, skill_name);
@@ -1923,4 +1943,3 @@ void SkillAssignDialog::accept()
     emit skill_update(update_skills);
     QDialog::accept();
 }
-

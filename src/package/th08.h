@@ -1,9 +1,8 @@
 #ifndef _th08_H
 #define _th08_H
 
-#include "package.h"
 #include "card.h"
-
+#include "package.h"
 
 class MiyaoCard : public SkillCard
 {
@@ -26,7 +25,6 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
-
 
 class BuxianCard : public SkillCard
 {
@@ -51,33 +49,26 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
 class GeshengCard : public SkillCard
 {
     Q_OBJECT
 
-
 public:
     Q_INVOKABLE GeshengCard();
 
-
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual const Card *validate(CardUseStruct &cardUse) const;
-
 };
 
 class YegeCard : public SkillCard
 {
     Q_OBJECT
 
-
 public:
     Q_INVOKABLE YegeCard();
 
-
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual const Card *validate(CardUseStruct &cardUse) const;
-
 };
 
 class ChuangshiCard : public SkillCard
@@ -87,18 +78,11 @@ class ChuangshiCard : public SkillCard
 public:
     Q_INVOKABLE ChuangshiCard();
 
-
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-
-
 };
-
-
-
-
 
 class HuweiCard : public SkillCard
 {
@@ -132,7 +116,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
 class TH08Package : public Package
 {
     Q_OBJECT
@@ -142,4 +125,3 @@ public:
 };
 
 #endif
-

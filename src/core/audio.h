@@ -18,11 +18,18 @@ public:
     static void stopBGM();
     static bool isBackgroundMusicPlaying();
 
-    static const QString &getCustomBackgroundMusicFileName() { return m_customBackgroundMusicFileName; }
-    static void setCustomBackgroundMusicFileName(const QString &customBackgroundMusicFileName) {
+    static const QString &getCustomBackgroundMusicFileName()
+    {
+        return m_customBackgroundMusicFileName;
+    }
+    static void setCustomBackgroundMusicFileName(const QString &customBackgroundMusicFileName)
+    {
         m_customBackgroundMusicFileName = customBackgroundMusicFileName;
     }
-    static void resetCustomBackgroundMusicFileName() { m_customBackgroundMusicFileName.clear(); }
+    static void resetCustomBackgroundMusicFileName()
+    {
+        m_customBackgroundMusicFileName.clear();
+    }
 
     static void stopAll();
 
@@ -36,4 +43,3 @@ private:
 #endif // AUDIO_SUPPORT
 
 #endif
-

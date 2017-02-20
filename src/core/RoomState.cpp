@@ -1,10 +1,10 @@
 #include "RoomState.h"
-#include "engine.h"
 #include "WrappedCard.h"
+#include "engine.h"
 
 RoomState::~RoomState()
 {
-    foreach(Card *card, m_cards.values())
+    foreach (Card *card, m_cards.values())
         delete card;
     m_cards.clear();
 }
@@ -19,7 +19,8 @@ Card *RoomState::getCard(int cardId) const
 void RoomState::resetCard(int cardId)
 {
     Card *newCard = Card::Clone(Sanguosha->getEngineCard(cardId));
-    if (newCard == NULL) return;
+    if (newCard == NULL)
+        return;
     newCard->setFlags(m_cards[cardId]->getFlags());
     m_cards[cardId]->copyEverythingFrom(newCard);
     newCard->clearFlags();
@@ -29,7 +30,7 @@ void RoomState::resetCard(int cardId)
 // Reset all cards, generals' states of the room instance
 void RoomState::reset()
 {
-    foreach(WrappedCard *card, m_cards.values())
+    foreach (WrappedCard *card, m_cards.values())
         delete card;
     m_cards.clear();
 
@@ -40,4 +41,3 @@ void RoomState::reset()
         m_cards[i] = new WrappedCard(Card::Clone(clonedCard));
     }
 }
-

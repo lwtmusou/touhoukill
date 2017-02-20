@@ -332,6 +332,7 @@ private:
 
 #include <QMessageBox>
 
+
 static void Error(lua_State *L)
 {
     const char *error_string = lua_tostring(L, -1);

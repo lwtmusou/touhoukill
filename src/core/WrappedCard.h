@@ -68,7 +68,6 @@ public:
     {
         Q_ASSERT(m_card != NULL);
         m_card->onNullified(target);
-
     }
     inline virtual bool isModified() const
     {
@@ -196,13 +195,13 @@ public:
 
     // @todo: the following two functions should be merged into one.
     inline virtual bool targetFilter(const QList<const Player *> &targets,
-                                     const Player *to_select, const Player *Self) const
+                                     const Player *to_select,
+                                     const Player *Self) const
     {
         return m_card->targetFilter(targets, to_select, Self);
     }
 
-    inline virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select,
-                                     const Player *Self, int &maxVotes) const
+    inline virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, int &maxVotes) const
     {
         Q_ASSERT(m_card != NULL);
         return m_card->targetFilter(targets, to_select, Self, maxVotes);
@@ -267,4 +266,3 @@ protected:
 };
 
 #endif
-

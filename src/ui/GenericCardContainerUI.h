@@ -1,26 +1,24 @@
 #ifndef _GENERAL_CARD_CONTAINER_UI_H
 #define _GENERAL_CARD_CONTAINER_UI_H
 
-#include "carditem.h"
-#include "player.h"
 #include "QSanSelectableItem.h"
 #include "SkinBank.h"
 #include "TimedProgressBar.h"
+#include "carditem.h"
+#include "graphicspixmaphoveritem.h"
+#include "heroskincontainer.h"
 #include "magatamasItem.h"
+#include "player.h"
 #include "rolecombobox.h"
 
-#include "graphicspixmaphoveritem.h"
-#include <QGraphicsPixmapItem>
-#include "heroskincontainer.h"
-
-#include <QGraphicsScene>
+#include <QGraphicsEffect>
 #include <QGraphicsItem>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsScene>
+#include <QLabel>
 #include <QMutex>
-
-#include <qparallelanimationgroup.h>
-#include <qgraphicseffect.h>
-#include <qvariant.h>
-#include <qlabel.h>
+#include <QParallelAnimationGroup>
+#include <QVariant>
 
 class GenericCardContainer : public QGraphicsObject
 {
@@ -110,13 +108,11 @@ public:
     virtual void updateAvatarTooltip();
     virtual void setRoleShown(bool shown = false);
 
-
-    static void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect,
-                             const QPixmap &pixmap, QGraphicsItem *parent);
+    static void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QPixmap &pixmap, QGraphicsItem *parent);
 
     inline void hookMouseEvents();
 
-    QPixmap paintByMask(QPixmap& source);
+    QPixmap paintByMask(QPixmap &source);
     QPixmap _getAvatarIcon(const QString &generalName);
     QPixmap getSmallAvatarIcon(const QString &generalName);
     GraphicsPixmapHoverItem *getAvartarItem() const
@@ -130,7 +126,6 @@ public:
 
     void stopHeroSkinChangingAnimation();
     void showSkillName(const QString &skill_name, bool isSelf);
-
 
 public slots:
     void updateAvatar();
@@ -148,6 +143,7 @@ public slots:
     void showDistance();
     virtual void refresh();
     void hideSkillName();
+
 protected:
     // overrider parent functions
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
@@ -215,7 +211,7 @@ protected:
     QGraphicsPixmapItem *_m_avatarNameItem, *_m_smallAvatarNameItem;
     GraphicsPixmapHoverItem *_m_avatarIcon, *_m_smallAvatarIcon;
     //QGraphicsPixmapItem *_m_avatarIcon, *_m_smallAvatarIcon, *_m_circleItem;
-    QGraphicsPixmapItem  *_m_circleItem;
+    QGraphicsPixmapItem *_m_circleItem;
 
     QGraphicsPixmapItem *_m_screenNameItem;
     QGraphicsPixmapItem *_m_chainIcon, *_m_faceTurnedIcon;
@@ -321,4 +317,3 @@ signals:
 };
 
 #endif
-

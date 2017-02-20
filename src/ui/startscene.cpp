@@ -1,11 +1,11 @@
 #include "startscene.h"
-#include "engine.h"
 #include "audio.h"
+#include "engine.h"
 
-#include <QPropertyAnimation>
-#include <QParallelAnimationGroup>
-#include <QNetworkInterface>
 #include <QGraphicsDropShadowEffect>
+#include <QNetworkInterface>
+#include <QParallelAnimationGroup>
+#include <QPropertyAnimation>
 
 StartScene::StartScene()
 {
@@ -70,7 +70,7 @@ void StartScene::switchToServer(Server *server)
     group->addAnimation(logo_shrink);
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
-    foreach(Button *button, buttons)
+    foreach (Button *button, buttons)
         delete button;
     buttons.clear();
 
@@ -119,9 +119,7 @@ void StartScene::printServerInfo()
     server_log->append(tr("Binding port number is %1").arg(Config.ServerPort));
     server_log->append(tr("Game mode is %1").arg(Sanguosha->getModeName(Config.GameMode)));
     server_log->append(tr("Player count is %1").arg(Sanguosha->getPlayerCount(Config.GameMode)));
-    server_log->append(Config.OperationNoLimit ?
-                           tr("There is no time limit") :
-                           tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));
+    server_log->append(Config.OperationNoLimit ? tr("There is no time limit") : tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));
     server_log->append(Config.EnableCheat ? tr("Cheat is enabled") : tr("Cheat is disabled"));
     if (Config.EnableCheat)
         server_log->append(Config.FreeChoose ? tr("Free choose is enabled") : tr("Free choose is disabled"));
@@ -129,22 +127,27 @@ void StartScene::printServerInfo()
     if (Config.Enable2ndGeneral) {
         QString scheme_str;
         switch (Config.MaxHpScheme) {
-        case 0: scheme_str = QString(tr("Sum - %1")).arg(Config.Scheme0Subtraction); break;
-        case 1: scheme_str = tr("Minimum"); break;
-        case 2: scheme_str = tr("Maximum"); break;
-        case 3: scheme_str = tr("Average"); break;
+        case 0:
+            scheme_str = QString(tr("Sum - %1")).arg(Config.Scheme0Subtraction);
+            break;
+        case 1:
+            scheme_str = tr("Minimum");
+            break;
+        case 2:
+            scheme_str = tr("Maximum");
+            break;
+        case 3:
+            scheme_str = tr("Average");
+            break;
         }
         server_log->append(tr("Secondary general is enabled, max hp scheme is %1").arg(scheme_str));
     } else
         server_log->append(tr("Seconardary general is disabled"));
 
-    server_log->append(Config.EnableSame ?
-                           tr("Same Mode is enabled") :
-                           tr("Same Mode is disabled"));
+    server_log->append(Config.EnableSame ? tr("Same Mode is enabled") : tr("Same Mode is disabled"));
 
     if (Config.EnableAI) {
         server_log->append(tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));
     } else
         server_log->append(tr("This server is AI disabled"));
 }
-

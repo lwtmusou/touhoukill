@@ -1,14 +1,14 @@
 #include "clientstruct.h"
-#include "engine.h"
 #include "client.h"
+#include "engine.h"
 #include "settings.h"
 
 ServerInfoStruct ServerInfo;
 
+#include <QCheckBox>
 #include <QFormLayout>
 #include <QLabel>
 #include <QListWidget>
-#include <QCheckBox>
 
 time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance)
 {
@@ -157,10 +157,18 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
 
     if (info.Enable2ndGeneral) {
         switch (info.MaxHpScheme) {
-        case 0: max_hp_label->setText(QString(tr("Sum - %1")).arg(info.Scheme0Subtraction)); break;
-        case 1: max_hp_label->setText(tr("Minimum")); break;
-        case 2: max_hp_label->setText(tr("Maximum")); break;
-        case 3: max_hp_label->setText(tr("Average")); break;
+        case 0:
+            max_hp_label->setText(QString(tr("Sum - %1")).arg(info.Scheme0Subtraction));
+            break;
+        case 1:
+            max_hp_label->setText(tr("Minimum"));
+            break;
+        case 2:
+            max_hp_label->setText(tr("Maximum"));
+            break;
+        case 3:
+            max_hp_label->setText(tr("Average"));
+            break;
         }
     } else {
         max_hp_label->setText(tr("2nd general is disabled"));

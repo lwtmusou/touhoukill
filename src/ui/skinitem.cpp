@@ -5,10 +5,13 @@
 const char *HEROSKIN_USED_ICON = "image/system/heroskin-used.png";
 const char *HEROSKIN_SELECT_FRAME_ICON = "image/system/frame/heroskin-select.png";
 
-SkinItem::SkinItem(const QString &skinName, const QRect &clipRect,
-                   int skinIndex, bool used, QGraphicsItem *parent/* = 0*/)
-    : QGraphicsObject(parent), m_skinPixmap(skinName), m_clipRect(clipRect),
-      m_skinIndex(skinIndex), m_used(used), m_hoverEnter(false)
+SkinItem::SkinItem(const QString &skinName, const QRect &clipRect, int skinIndex, bool used, QGraphicsItem *parent /* = 0*/)
+    : QGraphicsObject(parent)
+    , m_skinPixmap(skinName)
+    , m_clipRect(clipRect)
+    , m_skinIndex(skinIndex)
+    , m_used(used)
+    , m_hoverEnter(false)
 {
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton);

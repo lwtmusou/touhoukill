@@ -1,8 +1,8 @@
 #ifndef _ROOM_THREAD_H
 #define _ROOM_THREAD_H
 
-#include <QThread>
 #include <QSemaphore>
+#include <QThread>
 #include <QVariant>
 
 #include "structs.h"
@@ -27,7 +27,8 @@ class EventTriplet
 {
 public:
     inline EventTriplet(TriggerEvent triggerEvent, Room *room)
-        : _m_event(triggerEvent), _m_room(room)
+        : _m_event(triggerEvent)
+        , _m_room(room)
     {
     }
     QString toString() const;
@@ -46,10 +47,8 @@ public:
     void constructTriggerTable();
     bool trigger(TriggerEvent triggerEvent, Room *room);
 
-
     void getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QSharedPointer<SkillInvokeDetail> > &detailsList, const QList<QSharedPointer<SkillInvokeDetail> > &triggered, const QVariant &data);
     bool trigger(TriggerEvent triggerEvent, Room *room, QVariant &data); // player is deleted. a lot of things is able to put in data. make a struct for every triggerevent isn't absolutely unreasonable.
-
 
     void addPlayerSkills(ServerPlayer *player, bool invoke_game_start = false);
 
@@ -62,12 +61,24 @@ public:
     void actionNormal(GameRule *game_rule);
 
     const QList<EventTriplet> *getEventStack() const;
-    inline GameRule *gameRule() const { return game_rule; }
+    inline GameRule *gameRule() const
+    {
+        return game_rule;
+    }
 
-    void setNextExtraTurn(ServerPlayer *p) { nextExtraTurn = p; }
-    inline bool hasExtraTurn() const { return nextExtraTurn != NULL; }
+    void setNextExtraTurn(ServerPlayer *p)
+    {
+        nextExtraTurn = p;
+    }
+    inline bool hasExtraTurn() const
+    {
+        return nextExtraTurn != NULL;
+    }
 
-    inline Room *getRoom() const { return room; }
+    inline Room *getRoom() const
+    {
+        return room;
+    }
 
 protected:
     virtual void run();
@@ -91,4 +102,3 @@ private:
 };
 
 #endif
-

@@ -1,9 +1,9 @@
 #ifndef _MINI_SCENARIOS_H
 #define _MINI_SCENARIOS_H
 
-#include "scenario.h"
 #include "engine.h"
 #include "room.h"
+#include "scenario.h"
 
 class MiniSceneRule : public ScenarioRule
 {
@@ -25,7 +25,7 @@ public:
     void loadSetting(QString path);
 
 protected:
-    QList< QMap<QString, QString> > players;
+    QList<QMap<QString, QString> > players;
     QString setup;
     QMap<QString, QVariant> ex_options;
     static const QString _S_DEFAULT_HERO;
@@ -59,7 +59,8 @@ class CustomScenario : public MiniScene
     Q_OBJECT
 
 public:
-    CustomScenario() : MiniScene("custom_scenario")
+    CustomScenario()
+        : MiniScene("custom_scenario")
     {
         setupCustom(NULL);
     }
@@ -70,11 +71,11 @@ class LoadedScenario : public MiniScene
     Q_OBJECT
 
 public:
-    LoadedScenario(const QString &name) : MiniScene(QString(MiniScene::S_KEY_MINISCENE).arg(name))
+    LoadedScenario(const QString &name)
+        : MiniScene(QString(MiniScene::S_KEY_MINISCENE).arg(name))
     {
         setupCustom(name);
     }
 };
 
 #endif
-

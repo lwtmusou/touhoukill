@@ -1,9 +1,9 @@
 #include "nativesocket.h"
 #include "settings.h"
 
-#include <QTcpSocket>
 #include <QRegExp>
 #include <QStringList>
+#include <QTcpSocket>
 #include <QUdpSocket>
 
 NativeServerSocket::NativeServerSocket()
@@ -65,8 +65,7 @@ void NativeClientSocket::init()
 {
     connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
     connect(socket, SIGNAL(readyRead()), this, SLOT(getMessage()));
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)),
-            this, SLOT(raiseError(QAbstractSocket::SocketError)));
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(raiseError(QAbstractSocket::SocketError)));
     connect(socket, SIGNAL(connected()), this, SIGNAL(connected()));
 }
 
@@ -142,18 +141,23 @@ void NativeClientSocket::raiseError(QAbstractSocket::SocketError socket_error)
     QString reason;
     switch (socket_error) {
     case QAbstractSocket::ConnectionRefusedError:
-        reason = tr("Connection was refused or timeout"); break;
+        reason = tr("Connection was refused or timeout");
+        break;
     case QAbstractSocket::RemoteHostClosedError:
-        reason = tr("Remote host close this connection"); break;
+        reason = tr("Remote host close this connection");
+        break;
     case QAbstractSocket::HostNotFoundError:
-        reason = tr("Host not found"); break;
+        reason = tr("Host not found");
+        break;
     case QAbstractSocket::SocketAccessError:
-        reason = tr("Socket access error"); break;
+        reason = tr("Socket access error");
+        break;
     case QAbstractSocket::NetworkError:
         return; // this error is ignored ...
-    default: reason = tr("Unknow error"); break;
+    default:
+        reason = tr("Unknow error");
+        break;
     }
 
     emit error_message(tr("Connection failed, error code = %1\n reason:\n %2").arg(socket_error).arg(reason));
 }
-

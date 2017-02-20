@@ -1,16 +1,15 @@
 #ifndef _th09_H
 #define _th09_H
 
-#include "package.h"
 #include "card.h"
+#include "package.h"
 
-#include <QGroupBox>
 #include <QAbstractButton>
 #include <QButtonGroup>
 #include <QDialog>
+#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-
 
 class ToupaiCard : public SkillCard
 {
@@ -23,7 +22,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
 class TianrenCard : public SkillCard
 {
     Q_OBJECT
@@ -34,7 +32,6 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual const Card *validate(CardUseStruct &cardUse) const;
 };
-
 
 class NianliDialog : public QDialog
 {
@@ -74,7 +71,6 @@ public:
     virtual const Card *validate(CardUseStruct &card_use) const;
 };
 
-
 class TH09Package : public Package
 {
     Q_OBJECT
@@ -84,4 +80,3 @@ public:
 };
 
 #endif
-

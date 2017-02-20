@@ -1,16 +1,16 @@
 #include "generaloverview.h"
-#include "ui_generaloverview.h"
+#include "SkinBank.h"
+#include "client.h"
+#include "clientstruct.h"
 #include "engine.h"
 #include "settings.h"
-#include "SkinBank.h"
-#include "clientstruct.h"
-#include "client.h"
+#include "ui_generaloverview.h"
 
+#include <QClipboard>
+#include <QCommandLinkButton>
+#include <QGroupBox>
 #include <QMessageBox>
 #include <QRadioButton>
-#include <QGroupBox>
-#include <QCommandLinkButton>
-#include <QClipboard>
 
 static QLayout *HLay(QWidget *left, QWidget *right)
 {
@@ -30,8 +30,7 @@ GeneralSearch::GeneralSearch(GeneralOverview *parent)
     layout->addLayout(createButtonLayout());
     setLayout(layout);
 
-    connect(this, SIGNAL(search(bool, QString, QString, QStringList, QStringList, int, int, QStringList)),
-            parent, SLOT(startSearch(bool, QString, QString, QStringList, QStringList, int, int, QStringList)));
+    connect(this, SIGNAL(search(bool, QString, QString, QStringList, QStringList, int, int, QStringList)), parent, SLOT(startSearch(bool, QString, QString, QStringList, QStringList, int, int, QStringList)));
 }
 
 QWidget *GeneralSearch::createInfoTab()
@@ -224,25 +223,25 @@ void GeneralSearch::clearAll()
     include_hidden_checkbox->setChecked(true);
     nickname_edit->clear();
     name_edit->clear();
-    foreach(QAbstractButton *button, gender_buttons->buttons())
+    foreach (QAbstractButton *button, gender_buttons->buttons())
         button->setChecked(false);
-    foreach(QAbstractButton *button, kingdom_buttons->buttons())
+    foreach (QAbstractButton *button, kingdom_buttons->buttons())
         button->setChecked(false);
     maxhp_lower_spinbox->setValue(0);
     maxhp_upper_spinbox->setValue(0);
-    foreach(QAbstractButton *button, package_buttons->buttons())
+    foreach (QAbstractButton *button, package_buttons->buttons())
         button->setChecked(false);
 }
 
 void GeneralSearch::selectAllPackages()
 {
-    foreach(QAbstractButton *button, package_buttons->buttons())
+    foreach (QAbstractButton *button, package_buttons->buttons())
         button->setChecked(true);
 }
 
 void GeneralSearch::unselectAllPackages()
 {
-    foreach(QAbstractButton *button, package_buttons->buttons())
+    foreach (QAbstractButton *button, package_buttons->buttons())
         button->setChecked(false);
 }
 
@@ -257,7 +256,8 @@ GeneralOverview *GeneralOverview::getInstance(QWidget *main_window)
 }
 
 GeneralOverview::GeneralOverview(QWidget *parent)
-    : QDialog(parent), ui(new Ui::GeneralOverview)
+    : QDialog(parent)
+    , ui(new Ui::GeneralOverview)
 {
     ui->setupUi(this);
     origin_window_title = windowTitle();
@@ -531,14 +531,15 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     QList<const Skill *> skills = general->getVisibleSkillList();
     foreach (QString skill_name, general->getRelatedSkillNames()) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
-        if (skill && skill->isVisible()) skills << skill;
+        if (skill && skill->isVisible())
+            skills << skill;
     }
 
     ui->skillTextEdit->clear();
 
     resetButtons();
 
-    foreach(const Skill *skill, skills)
+    foreach (const Skill *skill, skills)
         addLines(skill);
 
     QString last_word = Sanguosha->translate("~" + general->objectName());
@@ -664,8 +665,7 @@ void GeneralOverview::askChangeSkin()
     ui->originLineEdit->setText(getOriginInfo(general_name));
 }
 
-void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,
-                                  const QStringList &kingdoms, int lower, int upper, const QStringList &packages)
+void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders, const QStringList &kingdoms, int lower, int upper, const QStringList &packages)
 {
     QList<const General *> generals;
     foreach (const General *general, all_generals) {

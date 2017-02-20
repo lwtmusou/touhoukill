@@ -1,12 +1,15 @@
 #include "aux-skills.h"
 #include "client.h"
-#include "standard.h"
 #include "clientplayer.h"
 #include "engine.h"
+#include "standard.h"
 
 DiscardSkill::DiscardSkill()
-    : ViewAsSkill("discard"), card(new DummyCard),
-      num(0), include_equip(false), is_discard(true)
+    : ViewAsSkill("discard")
+    , card(new DummyCard)
+    , num(0)
+    , include_equip(false)
+    , is_discard(true)
 {
     card->setParent(this);
 }
@@ -103,9 +106,7 @@ bool ShowOrPindianSkill::matchPattern(const Player *player, const Card *card) co
     return pattern && pattern->match(player, card);
 }
 
-
 // -------------------------------------------
-
 
 class YijiCard : public SkillCard
 {
@@ -147,6 +148,7 @@ public:
             room->recover(source, recover);
         }
     }
+
 private:
     QSet<QString> set;
 };
@@ -229,4 +231,3 @@ const Card *ChoosePlayerSkill::viewAs() const
 {
     return card;
 }
-

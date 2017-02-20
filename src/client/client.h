@@ -1,12 +1,12 @@
 #ifndef _CLIENT_H
 #define _CLIENT_H
 
-#include "clientplayer.h"
 #include "card.h"
-#include "skill.h"
-#include "socket.h"
+#include "clientplayer.h"
 #include "clientstruct.h"
 #include "protocol.h"
+#include "skill.h"
+#include "socket.h"
 
 class Recorder;
 class Replayer;
@@ -37,7 +37,7 @@ public:
         AskForGeneralTaken = 0x0D,
         AskForArrangement = 0x0E,
 
-        AskForTriggerOrder = 0x010010,//@todo
+        AskForTriggerOrder = 0x010010, //@todo
 
         RespondingUse = 0x11,
         RespondingForDiscard = 0x21,
@@ -87,7 +87,7 @@ public:
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
 
-    typedef void (Client::*Callback) (const QVariant &);
+    typedef void (Client::*Callback)(const QVariant &);
 
     void checkVersion(const QVariant &server_version);
     void setup(const QVariant &setup_str);
@@ -294,8 +294,7 @@ signals:
     void kingdoms_got(const QStringList &kingdoms);
     void suits_got(const QStringList &suits);
     void options_got(const QString &skillName, const QStringList &options);
-    void cards_got(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible,
-                   Card::HandlingMethod method, QList<int> disabled_ids);
+    void cards_got(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids);
     void roles_got(const QString &scheme, const QStringList &roles);
     void directions_got();
     void orders_got(QSanProtocol::Game3v3ChooseOrderCommand reason);
@@ -362,4 +361,3 @@ signals:
 extern Client *ClientInstance;
 
 #endif
-

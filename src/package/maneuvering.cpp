@@ -58,8 +58,10 @@ bool Analeptic::targetFilter(const QList<const Player *> &targets, const Player 
     //if (targets.length() >= total_num)
     //    return false;
     if (targets.isEmpty()) {
-        if (to_select == Self) return true;
-        if (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed")) return true;
+        if (to_select == Self)
+            return true;
+        if (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"))
+            return true;
     }
     return false;
 }
@@ -136,7 +138,8 @@ public:
 class FanSkill : public WeaponSkill
 {
 public:
-    FanSkill() : WeaponSkill("Fan")
+    FanSkill()
+        : WeaponSkill("Fan")
     {
         events << TargetSpecified;
     }
@@ -173,10 +176,10 @@ public:
             fire_slash->setSkillName(use.card->getSkillName());
             //fire_slash->setSkillName("Fan");
             QStringList flags = use.card->getFlags();
-            foreach(const QString &flag, flags)
+            foreach (const QString &flag, flags)
                 fire_slash->setFlags(flag);
             invoke->invoker->tag["Jink_" + fire_slash->toString()] = invoke->invoker->tag["Jink_" + use.card->toString()];
-            
+
             use.card = fire_slash;
             data = QVariant::fromValue(use);
         }
@@ -195,7 +198,8 @@ Fan::Fan(Suit suit, int number)
 class GudingBladeSkill : public WeaponSkill
 {
 public:
-    GudingBladeSkill() : WeaponSkill("GudingBlade")
+    GudingBladeSkill()
+        : WeaponSkill("GudingBlade")
     {
         events << DamageCaused;
         frequency = Compulsory;
@@ -237,12 +241,11 @@ GudingBlade::GudingBlade(Suit suit, int number)
     setObjectName("GudingBlade");
 }
 
-
-
 class IronArmorSkill : public ArmorSkill
 {
 public:
-    IronArmorSkill() : ArmorSkill("IronArmor")
+    IronArmorSkill()
+        : ArmorSkill("IronArmor")
     {
         events << SlashEffected << CardEffected;
         frequency = Compulsory;
@@ -250,7 +253,6 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
-        
         if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (!equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()))
@@ -275,8 +277,7 @@ public:
         if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             log.arg2 = effect.slash->objectName();
-        }
-        else if (triggerEvent == CardEffected) {
+        } else if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
             log.arg2 = effect.card->objectName();
         }
@@ -312,11 +313,11 @@ IronArmor::IronArmor(Suit suit, int number)
     setObjectName("IronArmor");
 }
 
-
 class VineSkill : public ArmorSkill
 {
 public:
-    VineSkill() : ArmorSkill("Vine")
+    VineSkill()
+        : ArmorSkill("Vine")
     {
         events << DamageInflicted << SlashEffected << CardEffected;
         frequency = Compulsory;
@@ -328,13 +329,11 @@ public:
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.nature == DamageStruct::Normal)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
-        }
-        else if (triggerEvent == CardEffected) {
+        } else if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.card != NULL && (effect.card->isKindOf("SavageAssault") || effect.card->isKindOf("ArcheryAttack")))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
-        }
-        else if (triggerEvent == DamageInflicted) {
+        } else if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
             if (equipAvailable(damage.to, EquipCard::ArmorLocation, objectName()) && damage.nature == DamageStruct::Fire)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
@@ -358,8 +357,7 @@ public:
 
             effect.to->setFlags("Global_NonSkillNullify");
             return true;
-        }
-        else if (triggerEvent == CardEffected) {
+        } else if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
             room->setEmotion(invoke->invoker, "armor/vine");
             LogMessage log;
@@ -371,8 +369,7 @@ public:
 
             effect.to->setFlags("Global_NonSkillNullify");
             return true;
-        }
-        else if (triggerEvent == DamageInflicted) {
+        } else if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
             room->setEmotion(invoke->invoker, "armor/vineburn");
             LogMessage log;
@@ -395,11 +392,11 @@ Vine::Vine(Suit suit, int number)
     setObjectName("Vine");
 }
 
-
 class SilverLionSkill : public ArmorSkill
 {
 public:
-    SilverLionSkill() : ArmorSkill("SilverLion")
+    SilverLionSkill()
+        : ArmorSkill("SilverLion")
     {
         events << DamageInflicted << CardsMoveOneTime;
         frequency = Compulsory;
@@ -417,12 +414,13 @@ public:
             if (!move.from_places.contains(Player::PlaceEquip))
                 return QList<SkillInvokeDetail>();
             for (int i = 0; i < move.card_ids.size(); i++) {
-                if (move.from_places[i] != Player::PlaceEquip) continue;
+                if (move.from_places[i] != Player::PlaceEquip)
+                    continue;
                 const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
                 if (card->objectName() == objectName()) {
                     // function  equipAvailable()    need armor remained in equip area
                     if (!move.from->isWounded() || !move.from->tag["Qinggang"].toStringList().isEmpty() || move.from->getMark("Armor_Nullified") > 0
-                            || move.from->getMark("Equips_Nullified_to_Yourself") > 0){
+                        || move.from->getMark("Equips_Nullified_to_Yourself") > 0) {
                         move.from->setFlags("-SilverLionRecover");
                         return QList<SkillInvokeDetail>();
                     }
@@ -456,7 +454,8 @@ public:
             RecoverStruct recover;
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             for (int i = 0; i < move.card_ids.size(); i++) {
-                if (move.from_places[i] != Player::PlaceEquip) continue;
+                if (move.from_places[i] != Player::PlaceEquip)
+                    continue;
                 const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
                 if (card->objectName() == objectName()) {
                     recover.card = card;
@@ -492,9 +491,10 @@ bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player
 {
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
-                   && to_select != Self && !hasFlag("IgnoreFailed"));
+                   && to_select != Self
+                   && !hasFlag("IgnoreFailed"));
     return targets.length() < total_num && (!to_select->isKongcheng() || ignore)
-            && (to_select != Self || !Self->isLastHandCard(this, true));
+        && (to_select != Self || !Self->isLastHandCard(this, true));
 }
 
 void FireAttack::onEffect(const CardEffectStruct &effect) const
@@ -541,7 +541,7 @@ bool IronChain::targetFilter(const QList<const Player *> &targets, const Player 
 
 bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    bool rec =  (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) && can_recast;
+    bool rec = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) && can_recast;
     QList<int> sub;
     if (isVirtualCard())
         sub = subcards;
@@ -559,13 +559,11 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
             }
         }
     }
-    if (this->getSkillName() == "guaiqi")//modian is not count as HandPile
+    if (this->getSkillName() == "guaiqi") //modian is not count as HandPile
         rec = false;
 
     if (rec && Self->isCardLimited(this, Card::MethodUse))
         return targets.length() == 0;
-
-
 
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
         return targets.length() != 0;
@@ -580,7 +578,6 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
 void IronChain::onUse(Room *room, const CardUseStruct &card_use) const
 {
     if (card_use.to.isEmpty()) {
-
         LogMessage log;
         log.type = "#Card_Recast";
         log.from = card_use.from;
@@ -625,7 +622,6 @@ SupplyShortage::SupplyShortage(Card::Suit suit, int number)
 
 bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    
     if (!targets.isEmpty() || to_select == Self)
         return false;
     bool ignore = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
@@ -654,7 +650,7 @@ ManeuveringPackage::ManeuveringPackage()
 
     // spade
     cards << new GudingBlade(Card::Spade, 1)
-             //<< new Vine(Card::Spade, 2)
+          //<< new Vine(Card::Spade, 2)
           << new IronArmor(Card::Spade, 2)
           << new Analeptic(Card::Spade, 3)
           << new ThunderSlash(Card::Spade, 4)
@@ -716,7 +712,7 @@ ManeuveringPackage::ManeuveringPackage()
 
     cards << hualiu;
 
-    foreach(Card *card, cards)
+    foreach (Card *card, cards)
         card->setParent(this);
 
     skills << new GudingBladeSkill << new FanSkill
@@ -724,4 +720,3 @@ ManeuveringPackage::ManeuveringPackage()
 }
 
 ADD_PACKAGE(Maneuvering)
-

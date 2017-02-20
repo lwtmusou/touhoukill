@@ -1,9 +1,9 @@
 #include "clientlogbox.h"
-#include "settings.h"
-#include "engine.h"
-#include "clientplayer.h"
 #include "client.h"
+#include "clientplayer.h"
+#include "engine.h"
 #include "roomscene.h"
+#include "settings.h"
 
 #include <QPalette>
 
@@ -13,10 +13,10 @@ ClientLogBox::ClientLogBox(QWidget *parent)
     setReadOnly(true);
 }
 
-void ClientLogBox::appendLog(const QString &type, const QString &from_general, const QStringList &tos,
-                             QString card_str, QString arg, QString arg2)
+void ClientLogBox::appendLog(const QString &type, const QString &from_general, const QStringList &tos, QString card_str, QString arg, QString arg2)
 {
-    if (Self->hasFlag("marshalling")) return;
+    if (Self->hasFlag("marshalling"))
+        return;
 
     if (type == "$AppendSeparator") {
         append(QString(tr("<font color='%1'>------------------------------</font>")).arg(Config.TextEditColor.name()));
@@ -32,7 +32,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
     QString to;
     if (!tos.isEmpty()) {
         QStringList to_list;
-        foreach(QString to, tos)
+        foreach (QString to, tos)
             to_list << ClientInstance->getPlayerName(to);
         to = to_list.join(", ");
         to = bold(to, Qt::red);
@@ -80,18 +80,21 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
 
     if (!card_str.isEmpty() && !from_general.isEmpty()) {
         // do Indicator animation
-        foreach(QString to, tos)
+        foreach (QString to, tos)
             RoomSceneInstance->showIndicator(from_general, to);
 
         const Card *card = Card::Parse(card_str);
-        if (card == NULL) return;
+        if (card == NULL)
+            return;
 
         QString card_name = card->getLogName();
         card_name = bold(card_name, Qt::yellow);
 
         QString reason = tr("using");
-        if (type.endsWith("_Resp")) reason = tr("playing");
-        if (type.endsWith("_Recast")) reason = tr("recasting");
+        if (type.endsWith("_Resp"))
+            reason = tr("playing");
+        if (type.endsWith("_Recast"))
+            reason = tr("recasting");
 
         if (card->isVirtualCard()) {
             QString skill_name = Sanguosha->translate(card->getSkillName());
@@ -135,7 +138,8 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
         } else
             log = tr("%from %2 %1").arg(card_name).arg(reason);
 
-        if (!to.isEmpty()) log.append(tr(", target is %to"));
+        if (!to.isEmpty())
+            log.append(tr(", target is %to"));
     } else
         log = Sanguosha->translate(type);
 
@@ -173,8 +177,7 @@ void ClientLogBox::appendLog(const QStringList &log_str)
         append(QString("<font color='%2'>%1</font>").arg(err_string).arg(Config.TextEditColor.name()));
         return;
     }
-    appendLog(log_str[0], log_str[1], log_str[2].isEmpty() ? QStringList() : log_str[2].split("+"),
-            log_str[3], log_str[4], log_str[5]);
+    appendLog(log_str[0], log_str[1], log_str[2].isEmpty() ? QStringList() : log_str[2].split("+"), log_str[3], log_str[4], log_str[5]);
 }
 
 QString ClientLogBox::append(const QString &text)
@@ -183,4 +186,3 @@ QString ClientLogBox::append(const QString &text)
     QTextEdit::append(to_append);
     return to_append;
 }
-

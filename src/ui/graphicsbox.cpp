@@ -19,8 +19,8 @@
     *********************************************************************/
 
 #include "graphicsbox.h"
-#include "skinbank.h"
 #include "roomscene.h"
+#include "skinbank.h"
 
 #include <QGraphicsDropShadowEffect>
 #include <QPainter>
@@ -35,7 +35,6 @@ GraphicsBox::GraphicsBox(const QString &title)
 
 GraphicsBox::~GraphicsBox()
 {
-
 }
 
 void GraphicsBox::paintGraphicsBoxStyle(QPainter *painter, const QString &boxTitle, const QRectF &rect)

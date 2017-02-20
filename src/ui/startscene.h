@@ -1,12 +1,12 @@
 #ifndef _START_SCENE_H
 #define _START_SCENE_H
 
-#include "button.h"
 #include "QSanSelectableItem.h"
+#include "button.h"
 #include "server.h"
 
-#include <QGraphicsScene>
 #include <QAction>
+#include <QGraphicsScene>
 #include <QTextEdit>
 
 class StartScene : public QGraphicsScene
@@ -28,4 +28,3 @@ private:
 };
 
 #endif
-

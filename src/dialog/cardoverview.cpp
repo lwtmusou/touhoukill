@@ -1,13 +1,13 @@
 #include "cardoverview.h"
-#include "ui_cardoverview.h"
+#include "SkinBank.h"
+#include "client.h"
+#include "clientstruct.h"
 #include "engine.h"
 #include "settings.h"
-#include "clientstruct.h"
-#include "client.h"
-#include "SkinBank.h"
+#include "ui_cardoverview.h"
 
-#include <QMessageBox>
 #include <QFile>
+#include <QMessageBox>
 
 static CardOverview *Overview;
 
@@ -20,7 +20,8 @@ CardOverview *CardOverview::getInstance(QWidget *main_window)
 }
 
 CardOverview::CardOverview(QWidget *parent)
-    : QDialog(parent), ui(new Ui::CardOverview)
+    : QDialog(parent)
+    , ui(new Ui::CardOverview)
 {
     ui->setupUi(this);
 
@@ -160,7 +161,8 @@ void CardOverview::askCard()
 
 void CardOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem *)
 {
-    if (Self) askCard();
+    if (Self)
+        askCard();
 }
 
 void CardOverview::on_malePlayButton_clicked()
@@ -200,4 +202,3 @@ void CardOverview::on_playAudioEffectButton_clicked()
         }
     }
 }
-

@@ -2,11 +2,12 @@
 #define _SETTINGS_H
 
 #include "protocol.h"
-#include <QSettings>
-#include <QFont>
-#include <QRectF>
-#include <QPixmap>
+
 #include <QBrush>
+#include <QFont>
+#include <QPixmap>
+#include <QRectF>
+#include <QSettings>
 
 class Settings : public QSettings
 {
@@ -109,4 +110,3 @@ public:
 extern Settings Config;
 
 #endif
-

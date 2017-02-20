@@ -1,14 +1,16 @@
 #include "indicatoritem.h"
 #include "engine.h"
 
-#include <QPainter>
 #include <QGraphicsBlurEffect>
-#include <QSequentialAnimationGroup>
-#include <QPropertyAnimation>
+#include <QPainter>
 #include <QPauseAnimation>
+#include <QPropertyAnimation>
+#include <QSequentialAnimationGroup>
 
 IndicatorItem::IndicatorItem(const QPointF &start, const QPointF &real_finish, Player *player)
-    : start(start), finish(start), real_finish(real_finish)
+    : start(start)
+    , finish(start)
+    , real_finish(real_finish)
 {
     color = Sanguosha->getKingdomColor(player->getKingdom());
     width = player->isLord() ? 4 : 3;
@@ -63,7 +65,6 @@ void IndicatorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, Q
     linearGrad.setColorAt(0, start_color);
     linearGrad.setColorAt(1, color.lighter());
 
-
     QBrush brush(linearGrad);
     pen.setBrush(brush);
 
@@ -83,4 +84,3 @@ QRectF IndicatorItem::boundingRect() const
 
     return QRectF(0, 0, width, height).adjusted(-2, -2, 2, 2);
 }
-

@@ -1,8 +1,8 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
-#include "general.h"
 #include "WrappedCard.h"
+#include "general.h"
 
 #include <QObject>
 #include <QTcpSocket>
@@ -54,17 +54,35 @@ class Player : public QObject
 public:
     enum Phase
     {
-        RoundStart, Start, Judge, Draw, Play, Discard, Finish, NotActive, PhaseNone
+        RoundStart,
+        Start,
+        Judge,
+        Draw,
+        Play,
+        Discard,
+        Finish,
+        NotActive,
+        PhaseNone
     };
     enum Place
     {
-        PlaceHand, PlaceEquip, PlaceDelayedTrick, PlaceJudge,
-        PlaceSpecial, DiscardPile, DrawPile, PlaceTable, PlaceUnknown,
+        PlaceHand,
+        PlaceEquip,
+        PlaceDelayedTrick,
+        PlaceJudge,
+        PlaceSpecial,
+        DiscardPile,
+        DrawPile,
+        PlaceTable,
+        PlaceUnknown,
         PlaceWuGu
     };
     enum Role
     {
-        Lord, Loyalist, Rebel, Renegade
+        Lord,
+        Loyalist,
+        Rebel,
+        Renegade
     };
 
     explicit Player(QObject *parent);
@@ -73,14 +91,14 @@ public:
     QString screenName() const;
 
     // property setters/getters
-    int getChaoren() const;//for chaoren
+    int getChaoren() const; //for chaoren
     void setChaoren(int chaoren);
     QList<int> getShownHandcards() const;
     void setShownHandcards(QList<int> ids);
     bool isShownHandcard(int id);
 
     int getHp() const;
-    int getRenHp() const;//for banling
+    int getRenHp() const; //for banling
     int getLingHp() const;
     void setHp(int hp);
     void setRenHp(int renhp);
@@ -223,10 +241,8 @@ public:
     void setChained(bool chained);
     bool isChained() const;
 
-    bool canSlash(const Player *other, const Card *slash, bool distance_limit = true,
-                  int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
-    bool canSlash(const Player *other, bool distance_limit = true,
-                  int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
+    bool canSlash(const Player *other, const Card *slash, bool distance_limit = true, int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
+    bool canSlash(const Player *other, bool distance_limit = true, int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
     int getCardCount(bool include_equip = true, bool = false) const;
 
     QList<int> getPile(const QString &pile_name) const;
@@ -298,7 +314,7 @@ private:
     const General *general, *general2;
     General::Gender m_gender;
     int hp, max_hp;
-    int renhp, linghp;//for banling
+    int renhp, linghp; //for banling
     int dyingFactor;
     int chaoren;
     QString kingdom;
@@ -306,7 +322,7 @@ private:
     bool role_shown;
     QString state;
     int seat;
-    int initialSeat;//for record
+    int initialSeat; //for record
     bool alive;
 
     Phase phase;
@@ -332,4 +348,3 @@ signals:
 };
 
 #endif
-

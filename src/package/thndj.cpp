@@ -1,17 +1,16 @@
 #include "thndj.h"
 
+#include "client.h"
+#include "engine.h"
 #include "general.h"
 #include "skill.h"
-#include "engine.h"
 #include "standard.h"
-#include "client.h"
-
-
 
 class Rexue : public TriggerSkill
 {
 public:
-    Rexue() : TriggerSkill("rexue")
+    Rexue()
+        : TriggerSkill("rexue")
     {
         events << EventPhaseChanging << TurnStart << Death;
         frequency = Compulsory;
@@ -30,11 +29,10 @@ public:
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.player->hasSkill(this)
-                    && change.to == Player::NotActive
-                    && change.player->getHp() == 1
-                    && !change.player->tag.value("touhou-extra", false).toBool()
-                    && !room->getTag("rexueDeathInThisRound").toBool()
-                    )
+                && change.to == Player::NotActive
+                && change.player->getHp() == 1
+                && !change.player->tag.value("touhou-extra", false).toBool()
+                && !room->getTag("rexueDeathInThisRound").toBool())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
         }
 
@@ -61,7 +59,8 @@ public:
 class Sidou : public TriggerSkill
 {
 public:
-    Sidou() : TriggerSkill("sidou")
+    Sidou()
+        : TriggerSkill("sidou")
     {
         events << EventPhaseStart;
     }
@@ -150,7 +149,8 @@ public:
 class TymhWuyu : public TriggerSkill
 {
 public:
-    TymhWuyu() : TriggerSkill("tymhwuyu$")
+    TymhWuyu()
+        : TriggerSkill("tymhwuyu$")
     {
         events << Death;
     }
@@ -180,12 +180,11 @@ public:
     }
 };
 
-
-
 class Huanyue : public TriggerSkill
 {
 public:
-    Huanyue() : TriggerSkill("huanyue")
+    Huanyue()
+        : TriggerSkill("huanyue")
     {
         events << DamageInflicted;
     }
@@ -219,7 +218,7 @@ public:
         int card_id = room->askForCardChosen(damage.to, invoke->invoker, "hs", objectName(), false, Card::MethodDiscard);
         room->throwCard(card_id, invoke->invoker, damage.to);
         if (Sanguosha->getCard(card_id)->isBlack()) {
-            QList<ServerPlayer *>logto;
+            QList<ServerPlayer *> logto;
             logto << damage.to;
             room->touhouLogmessage("#huanyue_log", damage.from, QString::number(damage.damage), logto, QString::number(damage.damage + 1));
             damage.damage = damage.damage + 1;
@@ -232,7 +231,8 @@ public:
 class Sizhai : public TriggerSkill
 {
 public:
-    Sizhai() : TriggerSkill("sizhai")
+    Sizhai()
+        : TriggerSkill("sizhai")
     {
         events << EventPhaseStart << CardUsed << CardResponded;
         frequency = Frequent;
@@ -286,12 +286,11 @@ public:
     }
 };
 
-
-
 class Yuanhu : public TriggerSkill
 {
 public:
-    Yuanhu() : TriggerSkill("yuanhu")
+    Yuanhu()
+        : TriggerSkill("yuanhu")
     {
         events << DrawNCards << AfterDrawNCards;
     }
@@ -314,7 +313,6 @@ public:
                 QStringList drawer = dc.player->tag.value("yuanhu_drawers", QStringList()).toStringList();
                 if (drawer.isEmpty())
                     return QList<SkillInvokeDetail>();
-
 
                 QList<SkillInvokeDetail> d;
                 foreach (const QString &s, drawer.toSet()) {
@@ -342,8 +340,7 @@ public:
                 data = QVariant::fromValue(dc);
                 return true;
             }
-        }
-        else {
+        } else {
             QStringList drawer = invoke->invoker->tag.value("yuanhu_drawers", QStringList()).toStringList();
             drawer.removeOne(invoke->owner->objectName());
             invoke->invoker->tag["yuanhu_drawers"] = QVariant::fromValue(drawer);
@@ -377,7 +374,8 @@ public:
 class Shouxie : public TriggerSkill
 {
 public:
-    Shouxie() : TriggerSkill("shouxie")
+    Shouxie()
+        : TriggerSkill("shouxie")
     {
         events << EventPhaseChanging << EventPhaseStart;
         frequency = Compulsory;
@@ -409,8 +407,6 @@ public:
     }
 };
 
-
-
 HunpoCard::HunpoCard()
 {
     will_throw = true;
@@ -428,7 +424,8 @@ void HunpoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) c
 class Hunpo : public OneCardViewAsSkill
 {
 public:
-    Hunpo() : OneCardViewAsSkill("hunpo")
+    Hunpo()
+        : OneCardViewAsSkill("hunpo")
     {
         filter_pattern = ".|.|.|.!";
     }
@@ -442,8 +439,6 @@ public:
     {
         return !player->isNude() && player->getMaxHp() < 4;
     }
-
-
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
@@ -459,7 +454,8 @@ public:
 class Fanji : public TriggerSkill
 {
 public:
-    Fanji() : TriggerSkill("fanji")
+    Fanji()
+        : TriggerSkill("fanji")
     {
         events << Damaged;
     }
@@ -471,9 +467,9 @@ public:
         if (damage.to->isDead() || !damage.from || damage.from->isDead() || damage.from == damage.to)
             return d;
 
-        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+        foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
             if (p != damage.from
-                    && (p->inMyAttackRange(damage.to) || p == damage.to))
+                && (p->inMyAttackRange(damage.to) || p == damage.to))
                 d << SkillInvokeDetail(this, p, p, NULL, false, damage.from);
         }
         return d;
@@ -511,7 +507,8 @@ public:
 class Zaiwu : public TriggerSkill
 {
 public:
-    Zaiwu() : TriggerSkill("zaiwu")
+    Zaiwu()
+        : TriggerSkill("zaiwu")
     {
         events << DrawNCards;
     }
@@ -520,7 +517,7 @@ public:
     {
         DrawNCardsStruct qnum = data.value<DrawNCardsStruct>();
         QList<SkillInvokeDetail> d;
-        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+        foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
             if (p == qnum.player)
                 continue;
             if (p->getHp() > qnum.player->getHp())
@@ -533,7 +530,7 @@ public:
 
     bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        QString prompt =  (invoke->invoker->getHp()  > invoke->preferredTarget->getHp()) ? "plus:" : "minus:";
+        QString prompt = (invoke->invoker->getHp() > invoke->preferredTarget->getHp()) ? "plus:" : "minus:";
         prompt = prompt + invoke->preferredTarget->objectName();
         invoke->invoker->tag["zaiwu"] = QVariant::fromValue(invoke->preferredTarget);
         return invoke->invoker->askForSkillInvoke(this, prompt);
@@ -541,7 +538,7 @@ public:
 
     bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        bool plus = invoke->invoker->getHp()  > invoke->targets.first()->getHp();
+        bool plus = invoke->invoker->getHp() > invoke->targets.first()->getHp();
         DrawNCardsStruct draw = data.value<DrawNCardsStruct>();
         if (!plus)
             draw.n = draw.n - 1;
@@ -556,7 +553,8 @@ public:
 class Mengwei : public TriggerSkill
 {
 public:
-    Mengwei() : TriggerSkill("mengwei")
+    Mengwei()
+        : TriggerSkill("mengwei")
     {
         events << EventPhaseChanging;
     }
@@ -568,7 +566,7 @@ public:
         if (change.to != Player::Play || player->isSkipped(Player::Play))
             return QList<SkillInvokeDetail>();
         QList<SkillInvokeDetail> d;
-        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
             if (p->hasSkill(this) && p->isWounded() && !p->isKongcheng())
                 d << SkillInvokeDetail(this, p, player);
         }
@@ -594,20 +592,17 @@ public:
         const Card *card = room->askForExchange(invoke->owner, objectName(), 1, 1, true, prompt);
         DELETE_OVER_SCOPE(const Card, card)
 
-                invoke->invoker->obtainCard(card, false);
+        invoke->invoker->obtainCard(card, false);
 
         return false;
     }
-
 };
-
-
-
 
 class Liangzi : public TriggerSkill
 {
 public:
-    Liangzi() : TriggerSkill("liangzi")
+    Liangzi()
+        : TriggerSkill("liangzi")
     {
         events << CardUsed << CardResponded;
         frequency = Compulsory;
@@ -650,7 +645,8 @@ public:
 class Kexue : public TargetModSkill
 {
 public:
-    Kexue() : TargetModSkill("kexue")
+    Kexue()
+        : TargetModSkill("kexue")
     {
         pattern = "Slash";
     }
@@ -661,7 +657,6 @@ public:
         else
             return 0;
     }
-
 
     virtual int getExtraTargetNum(const Player *player, const Card *) const
     {
@@ -675,7 +670,8 @@ public:
 class KexueEffect : public TriggerSkill
 {
 public:
-    KexueEffect() : TriggerSkill("#kexue-effect")
+    KexueEffect()
+        : TriggerSkill("#kexue-effect")
     {
         events << PreCardUsed;
     }
@@ -688,16 +684,14 @@ public:
     }
 };
 
-
-
 class Xiubu : public TriggerSkill
 {
 public:
-    Xiubu() : TriggerSkill("xiubu")
+    Xiubu()
+        : TriggerSkill("xiubu")
     {
         events << CardResponded << CardUsed << EventPhaseChanging << EventPhaseEnd << PreCardUsed;
     }
-
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
@@ -714,7 +708,7 @@ public:
         //record times of using card
         if (triggerEvent == CardUsed || triggerEvent == CardResponded) {
             ServerPlayer *player = NULL;
-            const Card * card = NULL;
+            const Card *card = NULL;
             if (triggerEvent == CardUsed) {
                 player = data.value<CardUseStruct>().from;
                 card = data.value<CardUseStruct>().card;
@@ -725,12 +719,13 @@ public:
                     card = response.m_card;
             }
             if (player && player->getPhase() == Player::Play
-                    && card && card->getHandlingMethod() == Card::MethodUse && !card->isKindOf("SkillCard")) {
+                && card
+                && card->getHandlingMethod() == Card::MethodUse
+                && !card->isKindOf("SkillCard")) {
                 if (player->hasFlag("xiubu_first"))
                     player->setFlags("xiubu_second");
                 else
                     player->setFlags("xiubu_first");
-                    
             }
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -744,10 +739,9 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
-
         if (triggerEvent == CardUsed || triggerEvent == CardResponded) {
             ServerPlayer *player = NULL;
-            const Card * card = NULL;
+            const Card *card = NULL;
             if (triggerEvent == CardUsed) {
                 player = data.value<CardUseStruct>().from;
                 card = data.value<CardUseStruct>().card;
@@ -758,10 +752,12 @@ public:
                     card = response.m_card;
             }
             if (player && player->getPhase() == Player::Play
-                    && card && card->getHandlingMethod() == Card::MethodUse && !card->isKindOf("SkillCard")) {
+                && card
+                && card->getHandlingMethod() == Card::MethodUse
+                && !card->isKindOf("SkillCard")) {
                 if (player->hasFlag("xiubu_first") && !player->hasFlag("xiubu_second")) {
                     QList<SkillInvokeDetail> d;
-                    foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                    foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                         if ((p->inMyAttackRange(player) || p == player) && p->canDiscard(player, "hs"))
                             d << SkillInvokeDetail(this, p, p, NULL, false, player);
                     }
@@ -806,13 +802,13 @@ public:
 
         return false;
     }
-
 };
 
 class XiubuTargetMod : public TargetModSkill
 {
 public:
-    XiubuTargetMod() : TargetModSkill("#xiubu-mod")
+    XiubuTargetMod()
+        : TargetModSkill("#xiubu-mod")
     {
         pattern = "BasicCard,TrickCard";
     }
@@ -823,7 +819,7 @@ public:
             return false;
         QList<int> wood_ox = player->getPile("wooden_ox");
         int wood_num = 0;
-        foreach(int id, subcards) {
+        foreach (int id, subcards) {
             if (wood_ox.contains(id))
                 wood_num++;
         }
@@ -848,9 +844,7 @@ public:
         else
             return 0;
     }
-
 };
-
 
 THNDJPackage::THNDJPackage()
     : Package("thndj")
@@ -891,4 +885,3 @@ THNDJPackage::THNDJPackage()
 }
 
 ADD_PACKAGE(THNDJ)
-

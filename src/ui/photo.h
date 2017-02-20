@@ -1,16 +1,16 @@
 #ifndef _PHOTO_H
 #define _PHOTO_H
 
-#include "QSanSelectableItem.h"
-#include "player.h"
-#include "carditem.h"
-#include "protocol.h"
-
 #include "GenericCardContainerUI.h"
+#include "QSanSelectableItem.h"
+#include "carditem.h"
+#include "player.h"
+#include "protocol.h"
 #include "sprite.h"
+
+#include <QComboBox>
 #include <QGraphicsObject>
 #include <QPixmap>
-#include <QComboBox>
 
 class ClientPlayer;
 class RoleComboBox;
@@ -117,4 +117,3 @@ protected:
 };
 
 #endif
-

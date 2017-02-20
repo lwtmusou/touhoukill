@@ -1,10 +1,10 @@
 #ifndef SANSIMPLETEXTFONT_H
 #define SANSIMPLETEXTFONT_H
 
-#include <Qt>
-#include <QSize>
 #include <QColor>
 #include <QHash>
+#include <QSize>
+#include <Qt>
 
 #include "json.h"
 
@@ -13,14 +13,12 @@ class QPainter;
 class QRect;
 class QGraphicsPixmapItem;
 
-
 class SanSimpleTextFont
 {
 public:
     SanSimpleTextFont();
     explicit SanSimpleTextFont(const QString &fontName);
-    SanSimpleTextFont(const QString &fontName, const QSize &fontSize,
-                      const QColor &color = Qt::white, int spacing = 0, int weight = 0);
+    SanSimpleTextFont(const QString &fontName, const QSize &fontSize, const QColor &color = Qt::white, int spacing = 0, int weight = 0);
 
     const QSize &size() const
     {
@@ -61,13 +59,13 @@ public:
     bool tryParse(const QVariant &arg);
 
     void paintText(QPainter *const painter,
-                   const QRect &pos, const Qt::Alignment &align,
+                   const QRect &pos,
+                   const Qt::Alignment &align,
                    const QString &text) const;
 
     // this function's prototype is confusing. It will CLEAR ALL contents on the
     // QGraphicsPixmapItem passed in and then start drawing.
-    void paintText(QGraphicsPixmapItem *const item, const QRect &pos,
-                   const Qt::Alignment &align, const QString &text) const;
+    void paintText(QGraphicsPixmapItem *const item, const QRect &pos, const Qt::Alignment &align, const QString &text) const;
 
 protected:
     void _initFontFace(const QString &fontName);

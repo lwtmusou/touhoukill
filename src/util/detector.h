@@ -3,8 +3,8 @@
 
 #include <QObject>
 #include <QString>
-#include <QUdpSocket>
 #include <QThread>
+#include <QUdpSocket>
 
 class Detector : public QObject
 {
@@ -35,4 +35,3 @@ private:
 };
 
 #endif
-

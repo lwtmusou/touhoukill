@@ -1,12 +1,12 @@
 #include "ai.h"
-#include "serverplayer.h"
-#include "engine.h"
-#include "standard.h"
-#include "maneuvering.h"
-#include "lua.hpp"
-#include "scenario.h"
 #include "aux-skills.h"
+#include "engine.h"
+#include "lua.hpp"
+#include "maneuvering.h"
+#include "scenario.h"
+#include "serverplayer.h"
 #include "settings.h"
+#include "standard.h"
 
 AI::AI(ServerPlayer *player)
     : self(player)
@@ -16,7 +16,7 @@ AI::AI(ServerPlayer *player)
 
 typedef QPair<QString, QString> RolePair;
 
-struct RoleMapping : public QMap < RolePair, AI::Relation >
+struct RoleMapping : public QMap<RolePair, AI::Relation>
 {
     void set(const QString &role1, const QString &role2, AI::Relation relation, bool bidirectional = false)
     {
@@ -42,7 +42,8 @@ AI::Relation AI::GetRelation3v3(const ServerPlayer *a, const ServerPlayer *b)
 
 AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b)
 {
-    if (a == b) return Friend;
+    if (a == b)
+        return Friend;
     static RoleMapping map, map_good, map_bad;
     if (map.isEmpty()) {
         map.set("lord", "lord", Friend);
@@ -89,9 +90,15 @@ AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b)
     foreach (ServerPlayer *player, players) {
         switch (player->getRoleEnum()) {
         case Player::Lord:
-        case Player::Loyalist: good++; break;
-        case Player::Rebel: bad++; break;
-        case Player::Renegade: good++; break;
+        case Player::Loyalist:
+            good++;
+            break;
+        case Player::Rebel:
+            bad++;
+            break;
+        case Player::Renegade:
+            good++;
+            break;
         }
     }
 
@@ -132,8 +139,9 @@ QList<ServerPlayer *> AI::getEnemies() const
 {
     QList<ServerPlayer *> players = room->getOtherPlayers(self);
     QList<ServerPlayer *> enemies;
-    foreach(ServerPlayer *p, players)
-        if (isEnemy(p)) enemies << p;
+    foreach (ServerPlayer *p, players)
+        if (isEnemy(p))
+            enemies << p;
 
     return enemies;
 }
@@ -142,8 +150,9 @@ QList<ServerPlayer *> AI::getFriends() const
 {
     QList<ServerPlayer *> players = room->getOtherPlayers(self);
     QList<ServerPlayer *> friends;
-    foreach(ServerPlayer *p, players)
-        if (isFriend(p)) friends << p;
+    foreach (ServerPlayer *p, players)
+        if (isFriend(p))
+            friends << p;
 
     return friends;
 }
@@ -187,10 +196,14 @@ bool TrustAI::useCard(const Card *card)
             const Weapon *ole_weapon = qobject_cast<const Weapon *>(weapon->getRealCard());
             return new_weapon->getRange() > ole_weapon->getRange();
         }
-        case EquipCard::ArmorLocation: return !self->getArmor();
-        case EquipCard::OffensiveHorseLocation: return !self->getOffensiveHorse();
-        case EquipCard::DefensiveHorseLocation: return !self->getDefensiveHorse();
-        case EquipCard::TreasureLocation: return !self->getTreasure();
+        case EquipCard::ArmorLocation:
+            return !self->getArmor();
+        case EquipCard::OffensiveHorseLocation:
+            return !self->getOffensiveHorse();
+        case EquipCard::DefensiveHorseLocation:
+            return !self->getDefensiveHorse();
+        case EquipCard::TreasureLocation:
+            return !self->getTreasure();
         default:
             return true;
         }
@@ -211,11 +224,14 @@ QString TrustAI::askForKingdom()
     kingdoms.removeOne("zhu");
     kingdoms.removeOne("touhougod");
     QString selfKingdom = self->getGeneral()->getKingdom();
-    if (!lord) return kingdoms.at(qrand() % kingdoms.length());
+    if (!lord)
+        return kingdoms.at(qrand() % kingdoms.length());
 
     switch (self->getRoleEnum()) {
-    case Player::Lord: role = kingdoms.at(qrand() % kingdoms.length()); break;
-    case Player::Renegade:{
+    case Player::Lord:
+        role = kingdoms.at(qrand() % kingdoms.length());
+        break;
+    case Player::Renegade: {
         if (lord->getGeneral()->isLord() || self->hasSkill("hongfo"))
             role = lord->getKingdom();
         else if (lord->getGeneral2() && lord->getGeneral2()->isLord())
@@ -290,8 +306,9 @@ const Card *TrustAI::askForCard(const QString &pattern, const QString &prompt, c
 
     response_skill->setPattern(pattern);
     QList<const Card *> cards = self->getHandcards();
-    foreach(const Card *card, cards)
-        if (response_skill->matchPattern(self, card)) return card;
+    foreach (const Card *card, cards)
+        if (response_skill->matchPattern(self, card))
+            return card;
 
     return NULL;
 }
@@ -342,7 +359,7 @@ const Card *TrustAI::askForSinglePeach(ServerPlayer *dying)
             if (card->isKindOf("Peach"))
                 return card;
             if (card->isKindOf("Analeptic")
-                    && (dying == self || (dying->hasLordSkill("yanhui") && self->getKingdom() == "zhan")))
+                && (dying == self || (dying->hasLordSkill("yanhui") && self->getKingdom() == "zhan")))
                 return card;
         }
     }
@@ -370,7 +387,8 @@ void TrustAI::askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int>
 }
 
 LuaAI::LuaAI(ServerPlayer *player)
-    : TrustAI(player), callback(0)
+    : TrustAI(player)
+    , callback(0)
 {
 }
 
@@ -507,4 +525,3 @@ void LuaAI::askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int> &
     getTable(L, bottom);
     getTable(L, up);
 }
-

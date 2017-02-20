@@ -1,9 +1,9 @@
 #include "pixmapanimation.h"
 #include "SkinBank.h"
 
+#include <QDir>
 #include <QPainter>
 #include <QPixmapCache>
-#include <QDir>
 #include <QTimer>
 
 const int PixmapAnimation::S_DEFAULT_INTERVAL = 50;
@@ -15,7 +15,8 @@ PixmapAnimation::PixmapAnimation(QGraphicsScene *)
 
 void PixmapAnimation::advance(int phase)
 {
-    if (phase) current++;
+    if (phase)
+        current++;
     if (current >= frames.size()) {
         current = 0;
         emit finished();
@@ -59,7 +60,8 @@ void PixmapAnimation::timerEvent(QTimerEvent *)
 void PixmapAnimation::start(bool permanent, int interval)
 {
     _m_timerId = startTimer(interval);
-    if (!permanent) connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
+    if (!permanent)
+        connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 void PixmapAnimation::stop()
@@ -117,7 +119,8 @@ QPixmap PixmapAnimation::GetFrameFromCache(const QString &filename)
     QPixmap pixmap;
     if (!QPixmapCache::find(filename, &pixmap)) {
         pixmap.load(filename);
-        if (!pixmap.isNull()) QPixmapCache::insert(filename, pixmap);
+        if (!pixmap.isNull())
+            QPixmapCache::insert(filename, pixmap);
     }
     return pixmap;
 }
@@ -129,4 +132,3 @@ int PixmapAnimation::GetFrameCount(const QString &emotion)
     dir.setNameFilters(QStringList("*.png"));
     return dir.entryList(QDir::Files | QDir::NoDotAndDotDot).count();
 }
-

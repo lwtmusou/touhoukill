@@ -18,7 +18,6 @@ TH15Package::TH15Package()
     Q_UNUSED(clownpiece);
     General *hecatia = new General(this, "hecatia", "gzz", 4, false);
     Q_UNUSED(hecatia);
-
 }
 
 ADD_PACKAGE(TH15)
