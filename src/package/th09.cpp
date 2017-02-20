@@ -650,7 +650,7 @@ public:
         return room->askForUseCard(invoke->invoker, "@@toupai", "@toupai");
     }
 
-    virtual bool onPhaseChange(ServerPlayer *player) const
+    virtual bool onPhaseChange(ServerPlayer *) const
     {
         return true;
     }
@@ -782,7 +782,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         invoke->invoker->drawCards(1);
         return false;

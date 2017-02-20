@@ -1595,7 +1595,7 @@ public:
         view_as_skill = new DfgzmsiyuVS;
     }
 
-    void record(TriggerEvent, Room *room, QVariant &data) const
+    void record(TriggerEvent, Room *, QVariant &data) const
     {
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to == Player::RoundStart)

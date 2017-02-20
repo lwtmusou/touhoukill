@@ -3753,7 +3753,7 @@ public:
         return  hasShown(player) &&!player->hasFlag("xinhua_used");//
     }
 
-    bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    bool isEnabledAtResponse(const Player *player, const QString &) const
     {
         if (!hasShown(player) || player->hasFlag("xinhua_used"))
             return false;
