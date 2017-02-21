@@ -159,6 +159,13 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                                 break;
                             }
                         }
+                    } else if (p == "handOnly" && card->getEffectiveId() >= 0) {
+                        foreach(const Card *c, player->getHandcards()) {
+                            if (c->getEffectiveId() == id && !player->getShownHandcards().contains(id)) {
+                                checkpoint = true;
+                                break;
+                            }
+                        }
                     } else if (p.startsWith("%")) {
                         p = p.mid(1);
                         foreach (const Player *pl, player->getAliveSiblings())
@@ -171,13 +178,10 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                     } else if (!player->getPile(p).isEmpty() && player->getPile(p).contains(id)) {
                         checkpoint = true;
                     }
-                    if (p == "show") { // && card->getEffectiveId() >= 0
-                        foreach (int id1, player->getShownHandcards()) {
-                            if (id1 == id) {
-                                checkpoint = true;
-                                findOneShow = true;
-                                break;
-                            }
+                    if (p == "show") {
+                        if (player->getShownHandcards().contains(id)) {
+                            checkpoint = true;
+                            findOneShow = true;
                         }
                     }
                     if (checkpoint)

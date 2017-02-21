@@ -141,7 +141,7 @@ public:
     FanSkill()
         : WeaponSkill("Fan")
     {
-        events << TargetSpecified;
+        events << TargetSpecifying;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const

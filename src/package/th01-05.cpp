@@ -2006,7 +2006,7 @@ public:
 
 BaosiCard::BaosiCard()
 {
-    handling_method = Card::MethodUse;
+    handling_method = Card::MethodNone;
     m_skillName = "baosi";
 }
 
@@ -2132,6 +2132,154 @@ public:
     }
 };
 
+
+
+ZongjiuCard::ZongjiuCard()
+{
+    will_throw = false;
+    handling_method = Card::MethodNone;//related to UseCardLimit
+}
+
+bool ZongjiuCard::targetFixed() const
+{
+    Analeptic *ana = new Analeptic(Card::NoSuit, 0);
+    ana->setSkillName("zongjiu");
+    ana->deleteLater();
+    return ana->targetFixed();
+}
+
+
+const Card *ZongjiuCard::validate(CardUseStruct &use) const
+{
+    use.from->removeShownHandCards(subcards, true);
+    Analeptic *ana = new Analeptic(Card::NoSuit, 0);
+    ana->setSkillName("zongjiu");
+    return ana;
+}
+
+class ZongjiuVS : public OneCardViewAsSkill
+{
+public:
+    ZongjiuVS()
+        : OneCardViewAsSkill("zongjiu")
+    {
+        filter_pattern = ".|.|.|show";
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return Analeptic::IsAvailable(player) && !player->getShownHandcards().isEmpty();
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        return !player->getShownHandcards().isEmpty() && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE 
+            && matchAvaliablePattern("analeptic", pattern);
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const
+    {
+        if (originalCard != NULL) {
+            ZongjiuCard *card = new ZongjiuCard;
+            card->addSubcard(originalCard);
+            return card;
+        }
+        else
+            return NULL;
+    }
+};
+
+
+
+class Zongjiu : public TriggerSkill
+{
+public:
+    Zongjiu()
+        : TriggerSkill("zongjiu")
+    {
+        events << CardUsed;
+        view_as_skill = new ZongjiuVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        QList<SkillInvokeDetail> d;
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->isKindOf("Peach")) {
+            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                if (p->getCards("h").length() > 0)
+                    d << SkillInvokeDetail(this, p, p);
+            }
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        const Card *card = room->askForCard(invoke->invoker, ".|.|.|handOnly", "@zongjiu", data, Card::MethodNone, NULL, false, objectName());
+        if (card) {
+            invoke->invoker->tag["zongjiu1"] = QVariant::fromValue(card->getEffectiveId());
+            return true;
+        }
+        return false;
+    }
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        int id = invoke->invoker->tag["zongjiu1"].toInt();
+        invoke->invoker->addToShownHandCards(QList<int>() << id);
+        return false;
+    }
+};
+
+
+class Xingyou : public TriggerSkill
+{
+public:
+    Xingyou()
+        : TriggerSkill("xingyou")
+    {
+        events << CardUsed << SlashMissed;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isKindOf("Slash") && use.from->isAlive() && use.from->hasSkill(this)) {
+                foreach(int id, use.from->getShownHandcards()) {
+                    if (Sanguosha->getCard(id)->getSuit() == use.card->getSuit())
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+                }
+            }
+        }
+        else {
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            if (effect.from->isAlive() && effect.from->hasSkill(this) 
+                    && effect.to->isAlive() && effect.from->canDiscard(effect.to, "hes")) {
+                foreach(int id, effect.from->getShownHandcards()) {
+                    if (Sanguosha->getCard(id)->getSuit() ==  effect.slash->getSuit())
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.from, effect.from, NULL, false, effect.to);
+                }
+            }
+        }
+        
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (e == CardUsed) {
+            invoke->invoker->drawCards(1);
+        }
+        else {
+            int card_id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName(), false, Card::MethodDiscard);
+            room->throwCard(card_id, invoke->targets.first(), invoke->invoker);
+        }
+        return false;
+    }
+};
+
 TH0105Package::TH0105Package()
     : Package("th0105")
 {
@@ -2193,12 +2341,18 @@ TH0105Package::TH0105Package()
     sariel->addSkill(new Baosi);
     sariel->addSkill(new Ezhao);
 
+
+    General *konngara = new General(this, "konngara", "pc98", 4, false);
+    konngara->addSkill(new Zongjiu);
+    konngara->addSkill(new Xingyou);
+
     addMetaObject<ShiquCard>();
     addMetaObject<LianmuCard>();
     addMetaObject<SqChuangshiCard>();
     addMetaObject<ModianCard>();
     addMetaObject<BaosiCard>();
     addMetaObject<EzhaoCard>();
+    addMetaObject<ZongjiuCard>();
 
     skills << new ModianVS;
 }

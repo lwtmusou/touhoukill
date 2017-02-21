@@ -246,9 +246,8 @@ public:
         ServerPlayer *who = data.value<DyingStruct>().who;
         QList<ServerPlayer *> yukaris = room->findPlayersBySkillName(objectName());
         foreach (ServerPlayer *p, yukaris) {
-            if (who && p->getPile("jingjie").length() > 0 && p->canDiscard(who, "hes") && who->getHp() < 1) {
+            if (who && p->getPile("jingjie").length() > 0 && p->canDiscard(who, "hes") && who->getHp() < 1)
                 d << SkillInvokeDetail(this, p, p);
-            }
         }
         return d;
     }
@@ -1908,13 +1907,13 @@ bool HuayinCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 
 const Card *HuayinCard::validate(CardUseStruct &use) const
 {
-    Peach *card = new Peach(Card::SuitToBeDecided, 0);
+    Peach *card = new Peach(Card::SuitToBeDecided, -1);
     foreach (int id, subcards) {
         use.from->getRoom()->showCard(use.from, id);
         if (!Sanguosha->getCard(id)->isKindOf("BasicCard"))
             card->addSubcard(id);
     }
-    if (!card->getSubcards().isEmpty()) {
+    if (!card->getSubcards().isEmpty() && !use.from->isCardLimited(card, Card::MethodUse, true)) {
         card->setSkillName("huayin");
         return card;
     } else {
@@ -1926,13 +1925,13 @@ const Card *HuayinCard::validate(CardUseStruct &use) const
 
 const Card *HuayinCard::validateInResponse(ServerPlayer *user) const
 {
-    Peach *card = new Peach(Card::SuitToBeDecided, 0);
+    Peach *card = new Peach(Card::SuitToBeDecided, -1);
     foreach (int id, subcards) {
         user->getRoom()->showCard(user, id);
         if (!Sanguosha->getCard(id)->isKindOf("BasicCard"))
             card->addSubcard(id);
     }
-    if (!card->getSubcards().isEmpty()) {
+    if (!card->getSubcards().isEmpty() && !user->isCardLimited(card, Card::MethodUse, true)) {
         card->setSkillName("huayin");
         return card;
     } else {
@@ -1948,6 +1947,17 @@ public:
     HuayinVS()
         : ViewAsSkill("huayin")
     {
+    }
+
+    static bool cardLimit(const Player *player) 
+    {
+        Peach *peach = new Peach(Card::SuitToBeDecided, -1);
+        peach->deleteLater();
+        foreach(const Card*c, player->getHandcards()) {
+            if (c->isKindOf("BasicCard"))
+                peach->addSubcard(c);
+        }
+        return !peach->getSubcards().isEmpty() && player->isCardLimited(peach, Card::MethodUse, true);
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
@@ -1975,7 +1985,8 @@ public:
     {
         if (cards.length() < Self->getHandcardNum())
             return NULL;
-
+        if (cardLimit(Self))
+            return NULL;
         HuayinCard *card = new HuayinCard;
         card->addSubcards(cards);
         return card;

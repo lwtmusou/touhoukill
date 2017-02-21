@@ -73,6 +73,17 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
+class ZongjiuCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ZongjiuCard();
+
+    virtual bool targetFixed() const;
+    virtual const Card *validate(CardUseStruct &card_use) const;
+};
+
 class TH0105Package : public Package
 {
     Q_OBJECT
