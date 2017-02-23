@@ -552,7 +552,7 @@ public:
                     card = response.m_card;
             }
             if (player && player->getPhase() == Player::Play
-                && card
+                && card && !card->isKindOf("SkillCard")
                 && card->getHandlingMethod() == Card::MethodUse)
                 room->setPlayerProperty(player, "xiezou_card", card->objectName());
         } else if (triggerEvent == EventPhaseChanging) {
