@@ -862,7 +862,7 @@ THNDJPackage::THNDJPackage()
     yukari_ndj->addSkill(new Yuanhu);
     yukari_ndj->addSkill(new Shouxie);
 
-    General *youmu_ndj = new General(this, "youmu_ndj", "yym", 3, false);
+    General *youmu_ndj = new General(this, "youmu_ndj", "yym", 4, false);
     youmu_ndj->addSkill(new Hunpo);
     youmu_ndj->addSkill(new Fanji);
 
