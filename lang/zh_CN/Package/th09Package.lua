@@ -178,7 +178,7 @@ return
 
 	["feixiang"] = "绯想",
 	[":feixiang"] = "当判定牌生效前，你可以选择一名角色的一张牌并令其打出此牌代替判定牌。",
-	["@feixiang-playerchosen"] = "<font color=\"#00FF00\"><b>%src </b></font> 将要进行 “%dest” 的判定，你可以发动“绯想”，指定一名角色并展示其一张手牌。",
+	["@feixiang-playerchosen"] = "<font color=\"#00FF00\"><b>%src </b></font> 将要进行 “%dest” 的判定，你可以发动“绯想”，指定一名角色并选择该角色的一张牌。",
 	["dizhen"] = "地震",
 	[":dizhen"] = "当一名角色的红色判定牌生效后，若没有角色处于濒死状态，你可以对其造成1点伤害。",
 	["dizhen:target"] = "<font color=\"#00FF00\"><b>%src </b></font> 的 “%dest” 的判定结果为红色，你可以对其发动“地震”。",
