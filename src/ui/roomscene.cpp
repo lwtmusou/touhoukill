@@ -4054,7 +4054,7 @@ KOFOrderBox::KOFOrderBox(bool self, QGraphicsScene *scene)
 void KOFOrderBox::revealGeneral(const QString &name)
 {
     if (revealed < 3) {
-        avatars[revealed]->setPixmap(G_ROOM_SKIN.getGeneralPixmap(name, QSanRoomSkin::S_GENERAL_ICON_SIZE_KOF));
+        avatars[revealed]->setPixmap(G_ROOM_SKIN.getGeneralPixmap(name, QSanRoomSkin::S_GENERAL_ICON_SIZE_KOF, false));
         avatars[revealed]->setObjectName(name);
         const General *general = Sanguosha->getGeneral(name);
         if (general)
