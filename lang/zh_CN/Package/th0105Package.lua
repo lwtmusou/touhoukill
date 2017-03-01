@@ -290,7 +290,7 @@ return {
 	["@baosi"] = "你可以发动“报死”， 选择 体力值不大于其体力下限的其他角色 成为 你使用的 【<font color=\"#FF8000\"><b>%src </b></font>】 的 额外目标",
 	["~baosi"] = "选择目标 --> 确定",
 	["ezhao"] = "噩兆",
-	[":ezhao"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可令一名已损失的体力值小于你的角色增加1点体力下限。",
+	[":ezhao"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可以选择至少一名已受伤的角色，这些角色各回复1点体力并加1点体力下限。",
 	["$ezhaoAnimate"]= "skill=sariel:ezhao",
 	
 	

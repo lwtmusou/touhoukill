@@ -2096,7 +2096,7 @@ EzhaoCard::EzhaoCard()
 
 bool EzhaoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    return targets.isEmpty() && to_select != Self && to_select->getLostHp() < Self->getLostHp();
+    return to_select != Self && to_select->isWounded();
 }
 
 void EzhaoCard::onUse(Room *room, const CardUseStruct &card_use) const
@@ -2108,7 +2108,10 @@ void EzhaoCard::onUse(Room *room, const CardUseStruct &card_use) const
 void EzhaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     room->removePlayerMark(source, "@ezhao");
-    room->setPlayerProperty(targets.first(), "dyingFactor", targets.first()->getDyingFactor() + 1);
+    foreach (ServerPlayer *p, targets){
+        room->recover(p, RecoverStruct());
+        room->setPlayerProperty(p, "dyingFactor", p->getDyingFactor() + 1);
+    }
 }
 
 class Ezhao : public ZeroCardViewAsSkill
@@ -2224,7 +2227,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         int id = invoke->invoker->tag["zongjiu1"].toInt();
         invoke->invoker->addToShownHandCards(QList<int>() << id);
