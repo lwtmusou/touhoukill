@@ -193,6 +193,10 @@ protected:
     {
         return QSanRoomSkin::S_SKIN_KEY_DASHBOARD;
     }
+    inline virtual QAbstractAnimation *_getPlayerRemovedEffect()
+    {
+        return _removedEffect;
+    }
     virtual QPointF getHeroSkinContainerPosition() const;
     //virtual const QSanShadowTextFont &getSkillNameFont() const {
     //    return G_DASHBOARD_LAYOUT.m_skillNameFont;
@@ -261,6 +265,9 @@ protected:
 
     void drawEquip(QPainter *painter, const CardItem *equip, int order);
     void setSelectedItem(CardItem *card_item);
+
+    virtual void _initializeRemovedEffect();
+    QPropertyAnimation *_removedEffect;
 
     QMenu *_m_sort_menu;
     //QMenu *_m_carditem_context_menu;

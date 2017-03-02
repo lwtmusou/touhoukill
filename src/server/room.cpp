@@ -173,7 +173,7 @@ QList<ServerPlayer *> Room::getAllPlayers(bool include_dead) const
 
     ServerPlayer *starter = current;
     if (current->getPhase() == Player::NotActive)
-        starter = current->getNextAlive();
+        starter = qobject_cast<ServerPlayer *>(current->getNextAlive(1,false));
     int index = count_players.indexOf(starter);
     if (index == -1)
         return count_players;
@@ -1993,6 +1993,8 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
         QVariant v = QVariant::fromValue(player);
         thread->trigger(ChainStateChanged, this, v);
     }
+    if (strcmp(property_name, "removed") == 0)
+        thread->trigger(RemoveStateChanged, this, QVariant::fromValue(player));
 
     if (strcmp(property_name, "role_shown") == 0) {
         setPlayerMark(player, "AI_RoleShown", value.toBool() ? 1 : 0);
@@ -3143,6 +3145,7 @@ void Room::swapSeat(ServerPlayer *a, ServerPlayer *b)
         broadcastProperty(player, "seat");
 
         player->setNext(m_players.at((i + 1) % m_players.length()));
+        broadcastProperty(player, "next");
     }
 }
 
@@ -3966,7 +3969,14 @@ bool Room::hasWelfare(const ServerPlayer *player) const
 
 ServerPlayer *Room::getFront(ServerPlayer *a, ServerPlayer *b) const
 {
-    ServerPlayer *starter = current;
+    QList<ServerPlayer *> players = getAllPlayers(true);
+    int index_a = players.indexOf(a), index_b = players.indexOf(b);
+    if (index_a < index_b)
+        return a;
+    else
+        return b;
+    
+    /*ServerPlayer *starter = current;
     if (starter == NULL)
         starter = m_players.first();
     bool loop = false;
@@ -3978,7 +3988,7 @@ ServerPlayer *Room::getFront(ServerPlayer *a, ServerPlayer *b) const
             return b;
     }
 
-    return a;
+    return a;*/
 }
 
 void Room::reconnect(ServerPlayer *player, ClientSocket *socket)

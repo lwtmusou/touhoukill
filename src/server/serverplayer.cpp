@@ -24,7 +24,7 @@ ServerPlayer::ServerPlayer(Room *room)
     , trust_ai(new TrustAI(this))
     , recorder(NULL)
     , _m_phases_index(0)
-    , next(NULL)
+    //, next(NULL)
 {
     semas = new QSemaphore *[S_NUM_SEMAPHORES];
     for (int i = 0; i < S_NUM_SEMAPHORES; i++)
@@ -232,9 +232,17 @@ QList<int> ServerPlayer::forceToDiscard(int discard_num, bool include_equip, boo
     return to_discard;
 }
 
-int ServerPlayer::aliveCount() const
+int ServerPlayer::aliveCount(bool includeRemoved) const
 {
-    return room->alivePlayerCount();
+    //return room->alivePlayerCount();
+    int n = room->alivePlayerCount();
+    if (!includeRemoved) {
+        foreach(ServerPlayer *p, room->getAllPlayers()) {
+            if (p->isRemoved())
+                n--;
+        }
+    }
+    return n;
 }
 
 int ServerPlayer::getHandcardNum() const
@@ -1039,7 +1047,7 @@ QList<ServerPlayer *> ServerPlayer::getVictims() const
 {
     return victims;
 }
-
+/*
 void ServerPlayer::setNext(ServerPlayer *next)
 {
     this->next = next;
@@ -1062,7 +1070,7 @@ ServerPlayer *ServerPlayer::getNextAlive(int n) const
         while (next->isDead());
     }
     return next;
-}
+}*/
 
 int ServerPlayer::getGeneralMaxHp() const
 {

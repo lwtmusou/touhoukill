@@ -16,6 +16,9 @@ class ClientPlayer;
 class RoleComboBox;
 class QPushButton;
 
+
+class QPropertyAnimation;
+
 class Photo : public PlayerCardContainer
 {
     Q_OBJECT
@@ -95,6 +98,11 @@ protected:
     {
         return QSanRoomSkin::S_SKIN_KEY_PHOTO;
     }
+    inline virtual QAbstractAnimation *_getPlayerRemovedEffect()
+    {
+        return _blurEffect;
+    }
+    
     virtual QPointF getHeroSkinContainerPosition() const;
 
     //virtual const QSanShadowTextFont &getSkillNameFont() const {
@@ -106,6 +114,8 @@ protected:
     bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
 
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QPropertyAnimation *initializeBlurEffect(GraphicsPixmapHoverItem *icon);
+    virtual void _initializeRemovedEffect();
 
     FrameType _m_frameType;
     QGraphicsPixmapItem *_m_mainFrame;
@@ -114,6 +124,7 @@ protected:
     QGraphicsPixmapItem *_m_focusFrame;
     QGraphicsPixmapItem *_m_onlineStatusItem;
     QGraphicsRectItem *_m_duanchangMask;
+    QParallelAnimationGroup *_blurEffect;
 };
 
 #endif

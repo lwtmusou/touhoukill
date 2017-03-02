@@ -17,12 +17,6 @@ public:
         from = new QComboBox;
         to = new QComboBox;
 
-        from_seat = new QLineEdit;
-        to_seat = new QLineEdit;
-
-        from_seat->setReadOnly(true);
-        to_seat->setReadOnly(true);
-
         left = new QLineEdit;
         right = new QLineEdit;
 
@@ -53,7 +47,6 @@ public:
     }
 
     QComboBox *from, *to;
-    QLineEdit *from_seat, *to_seat;
     QLineEdit *left, *right;
     QLineEdit *min;
     QList<QLineEdit *> distance_edits;
@@ -78,8 +71,6 @@ DistanceViewDialog::DistanceViewDialog(QWidget *parent)
 
     layout->addRow(tr("From"), ui->from);
     layout->addRow(tr("To"), ui->to);
-    layout->addRow(tr("From seat"), ui->from_seat);
-    layout->addRow(tr("To seat"), ui->to_seat);
     layout->addRow(tr("Left"), ui->left);
     layout->addRow(tr("Right"), ui->right);
     layout->addRow(tr("Minimum"), ui->min);
@@ -112,31 +103,27 @@ void DistanceViewDialog::showDistance()
 
     const ClientPlayer *from = ClientInstance->getPlayer(from_name);
     const ClientPlayer *to = ClientInstance->getPlayer(to_name);
+    
+    
+    if (from->isRemoved() || to->isRemoved()) {
+        ui->right->setText(tr("Not exist"));
+        ui->left->setText(tr("Not exist"));
+        ui->min->setText(tr("Not exist"));
+    }
+    else {
+        int right_distance = from->originalRightDistanceTo(to);
+        ui->right->setText(QString::number(right_distance));
 
-    ui->from_seat->setText(QString::number(from->getSeat()));
-    ui->to_seat->setText(QString::number(to->getSeat()));
+        int left_distance = from->aliveCount(false) - right_distance;
+        ui->left->setText(QString::number(left_distance));
 
-    int left_distance = qAbs(from->getSeat()
-                             + ((from->getSeat() < to->getSeat()) ? from->aliveCount() : -from->aliveCount())
-                             - to->getSeat());
-    ui->left->setText(QString("|%1%2%3-%4|=%5")
-                          .arg(from->getSeat())
-                          .arg((from->getSeat() < to->getSeat()) ? "+" : "-")
-                          .arg(from->aliveCount())
-                          .arg(to->getSeat())
-                          .arg(left_distance));
-
-    int right_distance = qAbs(from->getSeat() - to->getSeat());
-    ui->right->setText(QString("|%1-%2|=%3")
-                           .arg(from->getSeat())
-                           .arg(to->getSeat())
-                           .arg(right_distance));
-
-    int min = qMin(left_distance, right_distance);
-    ui->min->setText(QString("min(%1, %2)=%3")
-                         .arg(left_distance)
-                         .arg(right_distance)
-                         .arg(min));
+        int min = qMin(left_distance, right_distance);
+        ui->min->setText(QString("min(%1, %2)=%3")
+            .arg(left_distance)
+            .arg(right_distance)
+            .arg(min));
+    }
+    
 
     foreach (QLineEdit *edit, ui->distance_edits) {
         const Skill *skill = Sanguosha->getSkill(edit->objectName());
@@ -152,6 +139,9 @@ void DistanceViewDialog::showDistance()
     }
 
     ui->in_attack->setText(from->inMyAttackRange(to) ? tr("Yes") : tr("No"));
-
-    ui->final->setText(QString::number(from->distanceTo(to)));
+    
+    if (from->isRemoved() || to->isRemoved())
+        ui->final->setText(tr("Not exist"));
+    else
+        ui->final->setText(QString::number(from->distanceTo(to)));
 }

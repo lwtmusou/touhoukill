@@ -575,6 +575,7 @@ void PlayerCardContainer::repaintAll()
     //}
 
     _adjustComponentZValues();
+    _initializeRemovedEffect();
     refresh();
 }
 
@@ -600,6 +601,7 @@ void PlayerCardContainer::setPlayer(ClientPlayer *player)
         connect(player, &ClientPlayer::pile_changed, this, &PlayerCardContainer::updatePile);
         connect(player, &ClientPlayer::role_changed, _m_roleComboBox, &RoleComboBox::fix);
         connect(player, &ClientPlayer::hp_changed, this, &PlayerCardContainer::updateHp);
+        connect(player, &ClientPlayer::removedChanged, this, &PlayerCardContainer::onRemovedChanged);
 
         QTextDocument *textDoc = m_player->getMarkDoc();
         Q_ASSERT(_m_markItem);
@@ -1190,6 +1192,15 @@ void PlayerCardContainer::showDistance()
         _m_distanceItem->hide();
     else
         _m_distanceItem->show();
+}
+
+void PlayerCardContainer::onRemovedChanged()
+{
+    QAbstractAnimation::Direction direction = m_player->isRemoved() ? QAbstractAnimation::Forward
+        : QAbstractAnimation::Backward;
+
+    _getPlayerRemovedEffect()->setDirection(direction);
+    _getPlayerRemovedEffect()->start();
 }
 
 void PlayerCardContainer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)

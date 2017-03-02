@@ -1037,7 +1037,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         ServerPlayer *current = room->getCurrent();
-        ServerPlayer *next = current->getNextAlive();
+        ServerPlayer *next = qobject_cast<ServerPlayer *>(current->getNextAlive(1, false));
         QString prompt = "extraturn:" + next->objectName();
         return invoke->invoker->askForSkillInvoke(objectName(), prompt);
     }
@@ -1895,7 +1895,7 @@ public:
 
         ymsnd->gainMark("@duanzui-extra");
         QList<ServerPlayer *> logto;
-        logto << current->getNext();
+        logto << qobject_cast<ServerPlayer *>(current->getNext(false));
         room->touhouLogmessage("#touhouExtraTurn", ymsnd, NULL, logto);
         ymsnd->gainAnExtraTurn();
 

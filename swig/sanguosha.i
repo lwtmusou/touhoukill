@@ -149,8 +149,9 @@ public:
     bool faceUp() const;
     void setFaceUp(bool face_up);
 
-    virtual int aliveCount() const = 0;
+    virtual int aliveCount(bool includeRemoved = true) const = 0;
     void setFixedDistance(const Player *player, int distance);
+	int originalRightDistanceTo(const Player *other) const;
     int distanceTo(const Player *other, int distance_fix = 0) const;
     const General *getAvatarGeneral() const;
     const General *getGeneral() const;
@@ -267,6 +268,15 @@ public:
 
     QList<const Player *> getSiblings() const;
     QList<const Player *> getAliveSiblings() const;
+
+
+	void setNext(Player *next);
+    void setNext(const char *next);
+    Player *getNext(bool ignoreRemoved = true) const;
+    QString getNextName() const;
+    Player *getLast(bool ignoreRemoved = true) const;
+    Player *getNextAlive(int n = 1, bool ignoreRemoved = true) const;
+    Player *getLastAlive(int n = 1, bool ignoreRemoved = true) const;
 };
 
 %extend Player {
@@ -338,7 +348,7 @@ public:
     bool isOnline() const;
     bool isOffline() const;
 
-    virtual int aliveCount() const;
+    virtual int aliveCount(bool includeRemoved = true) const;
     virtual int getHandcardNum() const;
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);
@@ -350,9 +360,9 @@ public:
     void startRecord();
     void saveRecord(const char *filename);
 
-    void setNext(ServerPlayer *next);
-    ServerPlayer *getNext() const;
-    ServerPlayer *getNextAlive(int n = 1) const;
+    //void setNext(ServerPlayer *next);
+    //ServerPlayer *getNext() const;
+    //ServerPlayer *getNextAlive(int n = 1) const;
 
     void addToSelected(const char *general);
     QStringList getSelected() const;
@@ -385,7 +395,7 @@ class ClientPlayer: public Player {
 public:
     explicit ClientPlayer(Client *client);
     virtual void setFlags(const char *flag);
-    virtual int aliveCount() const;
+    virtual int aliveCount(bool includeRemoved = true) const;
     virtual int getHandcardNum() const;
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);
@@ -862,6 +872,7 @@ enum TriggerEvent
 
     TurnedOver,
     ChainStateChanged,
+    RemoveStateChanged,
 
     ConfirmDamage,    // confirm the damage's count and damage's nature
     Predamage,        // trigger the certain skill -- jueqing
@@ -1482,8 +1493,10 @@ public:
 };
 
 %extend Room {
-    ServerPlayer *nextPlayer() const{
-        return $self->getCurrent()->getNextAlive();
+    ServerPlayer *nextPlayer(ServerPlayer *player) const{
+		Q_UNUSED($self);
+        return qobject_cast<ServerPlayer *>(player->getNextAlive());
+        //return $self->getCurrent()->getNextAlive();
     }
     void output(const char *msg) {
         if(Config.value("DebugOutput", false).toBool())

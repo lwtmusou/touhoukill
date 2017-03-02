@@ -3393,9 +3393,12 @@ function SmartAI:useCardIndulgence(card, use)
 
 	if #self.enemies == 0 then
 		if sgs.turncount <= 1 and self.role == "lord" and not sgs.isRolePredictable()
-			and sgs.evaluatePlayerRole(self.player:getNextAlive()) == "neutral"
-			and not (self.player:hasLordSkill("shichou") and self.player:getNextAlive():getKingdom() == "shu") then
-			enemies = self:exclude({self.player:getNextAlive()}, card)
+			--and sgs.evaluatePlayerRole(self.player:getNextAlive()) == "neutral"
+			and sgs.evaluatePlayerRole(self.room:findPlayer(self.player:getNextAlive():objectName())) == "neutral"
+			--and not (self.player:hasLordSkill("shichou") and self.player:getNextAlive():getKingdom() == "shu") 
+			then
+			--enemies = self:exclude({self.player:getNextAlive()}, card)
+			enemies = self:exclude({ self.room:findPlayer(self.player:getNextAlive():objectName()) }, card)
 		end
 	else
 		enemies = self:exclude(self.enemies, card)
@@ -3550,7 +3553,8 @@ function SmartAI:willUseLightning(card)
 		for _, aplayer in ipairs(self.enemies) do
 			if aplayer:hasSkill("guanxing") or (aplayer:hasSkill("gongxin") and hashy)
 			or aplayer:hasSkill("xinzhan") or aplayer:hasSkill("tianyan") or aplayer:hasSkill("shenmi")  then
-				if self:isFriend(aplayer:getNextAlive()) then return true end
+				--if self:isFriend(aplayer:getNextAlive()) then return true end
+				if self:isFriend(self.room:findPlayer(aplayer:getNextAlive():objectName())) then return true end
 			end
 		end
 		return false
@@ -3641,7 +3645,8 @@ end
 sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 
 	local NextPlayerCanUse, NextPlayerisEnemy
-	local NextPlayer = self.player:getNextAlive()
+	--local NextPlayer = self.player:getNextAlive()
+	local NextPlayer = self.room:findPlayer(self.player:getNextAlive():objectName())
 	if sgs.turncount > 1 and not self:willSkipPlayPhase(NextPlayer) then
 		if self:isFriend(NextPlayer) and sgs.evaluatePlayerRole(NextPlayer) ~= "neutral" then
 			NextPlayerCanUse = true
@@ -3666,10 +3671,12 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 	end
 
 	local nextfriend_num = 0
-	local aplayer = self.player:getNextAlive()
+	--local aplayer = self.player:getNextAlive()
+	local aplayer = self.room:findPlayer(self.player:getNextAlive():objectName())
 	for i =1, self.player:aliveCount() do
 		if self:isFriend(aplayer) then
-			aplayer = aplayer:getNextAlive()
+			--aplayer = aplayer:getNextAlive()
+			aplayer = self.room:findPlayer(aplayer:getNextAlive():objectName())
 			nextfriend_num = nextfriend_num + 1
 		else
 			break
@@ -4251,3 +4258,249 @@ function sgs.ai_weapon_value.Triblade(self, enemy, player)
 end
 
 sgs.ai_use_priority.Triblade = 2.673
+
+
+
+
+function SmartAI:useCardLureTiger(LureTiger, use)
+	sgs.ai_use_priority.LureTiger = 4.9
+	if not LureTiger:isAvailable(self.player) then return end
+
+	local players = sgs.PlayerList()
+
+	local card = self:getCard("BurningCamps")
+	if card and card:isAvailable(self.player) then
+		--local nextp = self.player:getNextAlive()
+		local nextp = self.room:nextPlayer(self.player)
+		local first
+		while true do
+			if LureTiger:targetFilter(players, nextp, self.player) and self:hasTrickEffective(LureTiger, nextp, self.player) then
+				if not first then
+					if self:isEnemy(nextp) then
+						first = nextp
+					else
+						players:append(nextp)
+					end
+				else
+					if first:getKingdom() ~= nextp:getKingdom() or self:isFriend(nextp) then
+						players:append(nextp)
+					end
+				end
+				--nextp = nextp:getNextAlive()
+				nextp = self.room:nextPlayer(nextp)
+			else
+				break
+			end
+		end
+		if first then
+			use.card = LureTiger
+			if use.to then
+				for _, p in sgs.qlist(players) do
+					use.to:append(self.room:findPlayer(p:objectName()))
+				end
+			end
+			return
+		end
+	end
+
+	players = sgs.PlayerList()
+
+	card = self:getCard("ArcheryAttack")
+	if card and card:isAvailable(self.player) and self:getAoeValue(card) > 0 then
+		self:sort(self.friends_noself, "hp")
+		for _, friend in ipairs(self.friends_noself) do
+			if self:isFriend(friend) and LureTiger:targetFilter(players, friend, self.player) and self:hasTrickEffective(LureTiger, friend, self.player) then
+				players:append(friend)
+			end
+		end
+		for _, friend in ipairs(self.friends_noself) do
+			if LureTiger:targetFilter(players, friend, self.player) and not players:contains(friend) and self:hasTrickEffective(LureTiger, friend, self.player) then
+				players:append(friend)
+			end
+		end
+		if players:length() > 0 then
+			sgs.ai_use_priority.LureTiger = sgs.ai_use_priority.ArcheryAttack + 0.2
+			use.card = LureTiger
+			if use.to then
+				for _, p in sgs.qlist(players) do
+					use.to:append(self.room:findPlayer(p:objectName()))
+				end
+			end
+			return
+		end
+	end
+
+	players = sgs.PlayerList()
+
+	card = self:getCard("SavageAssault")
+	if card and card:isAvailable(self.player) and self:getAoeValue(card) > 0 then
+		self:sort(self.friends_noself, "hp")
+		for _, friend in ipairs(self.friends_noself) do
+			if self:isFriend(friend) and LureTiger:targetFilter(players, friend, self.player) and self:aoeIsEffective(LureTiger, friend, self.player) then
+				players:append(friend)
+			end
+		end
+		for _, friend in ipairs(self.friends_noself) do
+			if LureTiger:targetFilter(players, friend, self.player) and not players:contains(friend) and self:aoeIsEffective(LureTiger, friend, self.player) then
+				players:append(friend)
+			end
+		end
+		if players:length() > 0 then
+			sgs.ai_use_priority.LureTiger = sgs.ai_use_priority.SavageAssault + 0.2
+			use.card = LureTiger
+			if use.to then
+				for _, p in sgs.qlist(players) do
+					use.to:append(self.room:findPlayer(p:objectName()))
+				end
+			end
+			return
+		end
+	end
+
+	players = sgs.PlayerList()
+
+	card = self:getCard("Drowning")
+	if card and card:isAvailable(self.player) and self:getAoeValue(card) > 0 then
+		self:sort(self.enemies, "hp")
+		for _, enemy in ipairs(self.enemies) do
+			if self:needToThrowArmor(enemy) and enemy:getEquips():length() == 1 and self.player:canDiscard(enemy, enemy:getArmor():getId())
+					and LureTiger:targetFilter(players, friend, self.player) and self:aoeIsEffective(LureTiger, friend, self.player) then
+				players:append(friend)
+			end
+		end
+		self:sort(self.friends_noself, "hp")
+		for _, friend in ipairs(self.friends_noself) do
+			if not self:needToThrowArmor(friend) and self:isFriend(friend) and not players:contains(friend)
+					and LureTiger:targetFilter(players, friend, self.player) and self:aoeIsEffective(LureTiger, friend, self.player) then
+				players:append(friend)
+			end
+		end
+		for _, friend in ipairs(self.friends_noself) do
+			if not self:needToThrowArmor(friend) and LureTiger:targetFilter(players, friend, self.player)
+					and not players:contains(friend) and self:aoeIsEffective(LureTiger, friend, self.player) then
+				players:append(friend)
+			end
+		end
+		if players:length() > 0 then
+			sgs.ai_use_priority.LureTiger = sgs.ai_use_priority.Drowning + 0.2
+			use.card = LureTiger
+			if use.to then
+				for _, p in sgs.qlist(players) do
+					use.to:append(self.room:findPlayer(p:objectName()))
+				end
+			end
+			return
+		end
+	end
+
+	players = sgs.PlayerList()
+
+	card = self:getCard("Slash")
+	if card and self:slashIsAvailable(self.player, card) then
+		local dummyuse = { isDummy = true, to = sgs.SPlayerList() }
+		self.player:setFlags("slashNoDistanceLimit")
+		self:useCardSlash(card, dummyuse)
+		self.player:setFlags("-slashNoDistanceLimit")
+		if dummyuse.card then
+			local total_num = 2 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, LureTiger)
+			local function getPlayersFromTo(one)
+				local targets1 = sgs.PlayerList()
+				local targets2 = sgs.PlayerList()
+				local nextp = self.player:getNextAlive()
+				while true do
+					if LureTiger:targetFilter(targets1, nextp, self.player) and self:hasTrickEffective(LureTiger, nextp, self.player) then
+						if one:objectName() ~= nextp:objectName() then
+							targets1:append(nextp)
+						else
+							break
+						end
+						nextp = nextp:getNextAlive()
+					else
+						targets1 = sgs.PlayerList()
+						break
+					end
+				end
+				nextp = one:getNextAlive()
+				while true do
+					if LureTiger:targetFilter(targets2, nextp, self.player) and self:hasTrickEffective(LureTiger, nextp, self.player) then
+						if self.player:objectName() ~= nextp:objectName() then
+							targets2:append(nextp)
+						else
+							break
+						end
+						nextp = nextp:getNextAlive()
+					else
+						targets2 = sgs.PlayerList()
+						break
+					end
+				end
+				if targets1:length() > 0 and targets2:length() >= targets1:length() and targets1:length() <= total_num then
+					return targets1
+				elseif targets2:length() > 0 and targets1:length() >= targets2:length() and targets2:length() <= total_num then
+					return targets2
+				end
+				return
+			end
+
+			for _, to in sgs.qlist(dummyuse.to) do
+				if self.player:distanceTo(to) > self.player:getAttackRange() and self.player:distanceTo(to, -total_num) <= self.player:getAttackRange() then
+					local sps = getPlayersFromTo(to)
+					if sps then
+						sgs.ai_use_priority.LureTiger = 3
+						use.card = LureTiger
+						if use.to then
+							for _, p in sgs.qlist(sps) do
+								use.to:append(self.room:findPlayer(p:objectName()))
+							end
+						end
+						return
+					end
+				end
+			end
+		end
+
+	end
+
+	players = sgs.PlayerList()
+
+	card = self:getCard("GodSalvation")
+	if card and card:isAvailable(self.player) then
+		self:sort(self.enemies, "hp")
+		for _, enemy in ipairs(self.enemies) do
+			if LureTiger:targetFilter(players, enemy, self.player) and self:hasTrickEffective(LureTiger, enemy, self.player) then
+				players:append(enemy)
+			end
+		end
+		if players:length() > 0 then
+			sgs.ai_use_priority.LureTiger = sgs.ai_use_priority.GodSalvation + 0.1
+			use.card = LureTiger
+			if use.to then
+				for _, p in sgs.qlist(players) do
+					use.to:append(self.room:findPlayer(p:objectName()))
+				end
+			end
+			return
+		end
+	end
+
+	players = sgs.PlayerList()
+
+	if self.player:objectName() == self.room:getCurrent():objectName() then
+		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+			if LureTiger:targetFilter(players, player, self.player) and self:hasTrickEffective(LureTiger, player, self.player) then
+				sgs.ai_use_priority.LureTiger = 0.3
+				use.card = LureTiger
+				if use.to then use.to:append(player) end
+				return
+			end
+		end
+	end
+end
+
+--[[sgs.ai_nullification.LureTiger = function(self, card, from, to, positive)
+	return false
+end]]
+
+sgs.ai_use_value.LureTiger = 5
+sgs.ai_use_priority.LureTiger = 4.9
+sgs.ai_keep_value.LureTiger = 3.22

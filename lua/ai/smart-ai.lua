@@ -11,7 +11,7 @@ math.randomseed(os.time())
 SmartAI = (require "middleclass").class("SmartAI")
 
 --original_version = "QSanguosha AI 20140901 (V1.414213562 Alpha)"
-version = "TouhouSatsu AI 20160724"
+version = "TouhouSatsu AI 20170302"
 
 
 
@@ -2491,7 +2491,7 @@ function SmartAI:filterEvent(event, player, data)
 			end
 		end
 
-		if from and sgs.ai_role[from:objectName()] == "rebel" and not self:isFriend(from, from:getNextAlive())
+		if from and sgs.ai_role[from:objectName()] == "rebel" and not self:isFriend(from, self.room:findPlayer(from:getNextAlive():objectName())) --self:isFriend(from, from:getNextAlive())
 			and (card:isKindOf("SavageAssault") or card:isKindOf("ArcheryAttack") or card:isKindOf("Duel") or card:isKindOf("Slash")) then
 			for _, target in ipairs(to) do
 				if self:isFriend(target, from) and sgs.ai_role[target:objectName()] == "rebel" and target:getHp() == 1 and target:isKongcheng()
@@ -3323,7 +3323,8 @@ function SmartAI:askForNullification(trick, from, to, positive) --尼玛一把�
 
 		--五谷：目前只无邪桃子和无中，其他情况待补充
 		if trick:isKindOf("AmazingGrace") and self:isEnemy(to) then
-			local NP = to:getNextAlive()
+			--local NP = to:getNextAlive()
+			local NP = self.room:findPlayer(to:getNextAlive():objectName())
 			if self:isFriend(NP) then
 				local ag_ids = self.room:getTag("AmazingGrace"):toStringList()
 				local peach_num, exnihilo_num, snatch_num, analeptic_num, crossbow_num = 0, 0, 0, 0, 0
@@ -3684,7 +3685,8 @@ function SmartAI:askForAG(card_ids, refusable, reason)
 		return -1
 	end
 	if refusable and reason == "xinzhan" then
-		local next_player = self.player:getNextAlive()
+		--local next_player = self.player:getNextAlive()
+		local next_player = self.room:findPlayer(self.player:getNextAlive():objectName())
 		if self:isFriend(next_player) and next_player:containsTrick("indulgence") and not next_player:containsTrick("YanxiaoCard") then
 			if #card_ids == 1 then return -1 end
 		end
@@ -6237,7 +6239,8 @@ end
 function SmartAI:useTrickCard(card, use)
 	if not card then global_room:writeToConsole(debug.traceback()) return end
 	if self.player:hasSkill("ytchengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 then return end
-	if self:needBear() and not ("amazing_grace|ex_nihilo|snatch|iron_chain|collateral"):match(card:objectName()) then return end
+	--handcardsNum will not reduce
+	if self:needBear() and not ("amazing_grace|ex_nihilo|snatch|iron_chain|collateral|lure_tiger"):match(card:objectName()) then return end
 	if self:touhouNeedBear(card) and not ("amazing_grace|ex_nihilo|snatch|iron_chain|collateral"):match(card:objectName()) then  return end
 	if self:needRende() and not card:isKindOf("ExNihilo") then return end
 	if card:isKindOf("AOE") then
@@ -7684,7 +7687,7 @@ end
 
 function SmartAI:touhouGetJudges(player)
 	local judgeReasons = {}
-	player = player or self.player:getNextAlive()
+	player = player or self.room:findPlayer(self.player:getNextAlive():objectName()) --self.player:getNextAlive()
 	for _, askill in sgs.qlist(player:getVisibleSkillList()) do
 		local s_name = askill:objectName()
 		if not player:hasSkill(s_name) then--需要check技能无效
@@ -8217,7 +8220,8 @@ end
 sgs.ai_skill_choice["3v3_direction"] = function(self, choices, data)
 	local card = data:toCard()
 	local aggressive = (card and card:isKindOf("AOE"))
-	if self:isFriend(self.player:getNextAlive()) == aggressive then return "cw" else return "ccw" end
+	--if self:isFriend(self.player:getNextAlive()) == aggressive then return "cw" else return "ccw" end
+	if self:isFriend(self.room:findPlayer(self.player:getNextAlive():objectName())) == aggressive then return "cw" else return "ccw" end
 end
 
  sgs.ai_skill_choice["askForTriggerOrder"] = function(self, choices, data)

@@ -144,6 +144,8 @@ public slots:
     virtual void refresh();
     void hideSkillName();
 
+    void onRemovedChanged();
+
 protected:
     // overrider parent functions
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
@@ -167,6 +169,8 @@ protected:
     //virtual const QRect &getSkillNameArea() const = 0;
     //virtual const QSanShadowTextFont &getSkillNameFont() const = 0;
 
+    virtual QAbstractAnimation *_getPlayerRemovedEffect() = 0;
+    virtual void _initializeRemovedEffect() = 0;
     QGraphicsPixmapItem *_m_skillNameItem;
 
     void _createRoleComboBox();

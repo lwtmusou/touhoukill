@@ -186,7 +186,7 @@ void RoomThread::_handleTurnBroken3v3(QList<ServerPlayer *> &first, QList<Server
 ServerPlayer *RoomThread::findHulaoPassNext(ServerPlayer *, QList<ServerPlayer *>)
 {
     ServerPlayer *current = room->getCurrent();
-    return current->getNextAlive();
+    return qobject_cast<ServerPlayer *>(current->getNextAlive(1, false));
 }
 
 void RoomThread::actionHulaoPass(ServerPlayer *uuz, QList<ServerPlayer *> league, GameRule *game_rule)
@@ -272,7 +272,7 @@ void RoomThread::actionNormal(GameRule *game_rule)
                 extraTurnReturn = NULL;
             }
 
-            room->setCurrent(current->getNextAlive());
+            room->setCurrent(qobject_cast<ServerPlayer *>(current->getNextAlive(1,false)));
         }
     } catch (TriggerEvent triggerEvent) {
         if (triggerEvent == TurnBroken)
@@ -321,7 +321,7 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule)
             extraTurnReturn = NULL;
         }
 
-        ServerPlayer *next = player->getNextAlive();
+        ServerPlayer *next = qobject_cast<ServerPlayer *>(player->getNextAlive(1,false));
         room->setCurrent(next);
         actionNormal(game_rule);
     } catch (TriggerEvent triggerEvent) {
@@ -399,7 +399,8 @@ void RoomThread::run()
                 ServerPlayer *first = room->getPlayers().first();
                 if (first->getRole() != "renegade")
                     first = room->getPlayers().at(1);
-                ServerPlayer *second = first->getNext();
+                ServerPlayer *second = room->getOtherPlayers(first).first();
+                //ServerPlayer *second = first->getNext();
                 QVariant v1 = QVariant::fromValue(first);
                 trigger(Debut, room, v1);
                 QVariant v2 = QVariant::fromValue(second);

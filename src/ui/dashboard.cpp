@@ -1481,3 +1481,12 @@ if (NULL != _m_carditem_context_menu) {
 _m_carditem_context_menu->popup(QCursor::pos());
 }
 }*/
+
+void Dashboard::_initializeRemovedEffect()
+{
+    _removedEffect = new QPropertyAnimation(this, "opacity", this);
+    _removedEffect->setDuration(2000);
+    _removedEffect->setEasingCurve(QEasingCurve::OutInBounce);
+    _removedEffect->setEndValue(0.6);
+    _removedEffect->setStartValue(1.0);
+}

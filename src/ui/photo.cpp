@@ -351,3 +351,25 @@ QPointF Photo::getHeroSkinContainerPosition() const
         return result;
     }
 }
+
+QPropertyAnimation *Photo::initializeBlurEffect(GraphicsPixmapHoverItem *icon)
+{
+    QGraphicsBlurEffect *effect = new QGraphicsBlurEffect;
+    effect->setBlurHints(QGraphicsBlurEffect::AnimationHint);
+    effect->setBlurRadius(0);
+    icon->setGraphicsEffect(effect);
+
+    QPropertyAnimation *animation = new QPropertyAnimation(effect, "blurRadius");
+    animation->setEasingCurve(QEasingCurve::OutInBounce);
+    animation->setDuration(2000);
+    animation->setStartValue(0);
+    animation->setEndValue(5);
+    return animation;
+}
+
+void Photo::_initializeRemovedEffect()
+{
+    _blurEffect = new QParallelAnimationGroup(this);
+    _blurEffect->addAnimation(initializeBlurEffect(_m_avatarIcon));
+    _blurEffect->addAnimation(initializeBlurEffect(_m_smallAvatarIcon));
+}

@@ -591,7 +591,8 @@ end
 sgs.ai_use_value.TianyanCard = 8
 sgs.ai_use_priority.TianyanCard = 7
 sgs.ai_skill_discard.tianyan = function(self,discard_num, min_num)
-	local next_player = self.player:getNextAlive()
+	--local next_player = self.player:getNextAlive()
+	local next_player =  self.room:nextPlayer(self.player)
 	local judgeReasons = self:touhouGetJudges(next_player)
 	local cards = self.player:getCards("hes")
 	cards = sgs.QList2Table(cards)

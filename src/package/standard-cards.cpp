@@ -1881,6 +1881,137 @@ void WoodenOx::onUninstall(ServerPlayer *player) const
     Treasure::onUninstall(player);
 }
 
+
+
+LureTiger::LureTiger(Card::Suit suit, int number)
+    : TrickCard(suit, number)
+{
+    setObjectName("lure_tiger");
+}
+
+QString LureTiger::getSubtype() const
+{
+    return "lure_tiger";
+}
+
+bool LureTiger::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    if (targets.length() >= total_num)
+        return false;
+    if (Self->isCardLimited(this, Card::MethodUse))
+        return false;
+
+    return to_select != Self;
+}
+
+void LureTiger::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
+    QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
+    bool all_nullified = nullified_list.contains("_ALL_TARGETS");
+    foreach(ServerPlayer *target, targets) {
+        CardEffectStruct effect;
+        effect.card = this;
+        effect.from = source;
+        effect.to = target;
+        effect.multiple = (targets.length() > 1);
+        effect.nullified = (all_nullified || nullified_list.contains(target->objectName()));
+
+        QVariantList players;
+        for (int i = targets.indexOf(target); i < targets.length(); i++) {
+            if (!nullified_list.contains(targets.at(i)->objectName()) && !all_nullified)
+                players.append(QVariant::fromValue(targets.at(i)));
+        }
+        //for HegNullification???
+        room->setTag("targets" + this->toString(), QVariant::fromValue(players));
+
+        room->cardEffect(effect);
+    }
+
+    room->removeTag("targets" + this->toString());
+
+    source->drawCards(1, objectName());
+    /*
+
+    QList<int> table_cardids = room->getCardIdsOnTable(this);
+    if (!table_cardids.isEmpty()) {
+    DummyCard dummy(table_cardids);
+    CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
+    if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
+    room->moveCardTo(&dummy, source, NULL, Player::DiscardPile, reason, true);
+    }*/
+}
+
+void LureTiger::onEffect(const CardEffectStruct &effect) const
+{
+    Room *room = effect.to->getRoom();
+
+    room->setPlayerCardLimitation(effect.to, "use", ".", false);
+    room->setPlayerProperty(effect.to, "removed", true);
+    effect.from->setFlags("LureTigerUser");
+}
+
+class LureTigerSkill : public TriggerSkill
+{
+public:
+    LureTigerSkill() : TriggerSkill("lure_tiger_effect")
+    {
+        events << Death << EventPhaseChanging;
+        global = true;
+    }
+    
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        ServerPlayer *player = NULL;
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive)
+                player = change.player;
+        } else if (triggerEvent == Death) {
+            DeathStruct death = data.value<DeathStruct>();
+            player = death.who;
+        }
+
+        if (player == NULL || !player->hasFlag("LureTigerUser"))
+            return;
+
+        foreach(ServerPlayer *p, room->getOtherPlayers(player))
+            if (p->isRemoved()) {
+                room->setPlayerProperty(p, "removed", false);
+                room->removePlayerCardLimitation(p, "use", ".$0");
+            }
+    
+    }
+
+};
+
+class LureTigerProhibit : public ProhibitSkill
+{
+public:
+    LureTigerProhibit() : ProhibitSkill("#lure_tiger-prohibit")
+    {
+    }
+
+    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &) const
+    {
+        return to->isRemoved() && card->getTypeId() != Card::TypeSkill;
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 StandardCardPackage::StandardCardPackage()
     : Package("standard_cards", Package::CardPack)
 {
@@ -2034,8 +2165,13 @@ StandardExCardPackage::StandardExCardPackage()
           << new RenwangShield(Card::Club, 2)
           << new Lightning(Card::Heart, 12)
           << new Nullification(Card::Diamond, 12)
-          << new WoodenOx(Card::Diamond, 5);
-    skills << new RenwangShieldSkill << new IceSwordSkill << new WoodenOxSkill << new WoodenOxTriggerSkill;
+          << new WoodenOx(Card::Diamond, 5)
+          << new LureTiger(Card::Spade, 9)
+          << new LureTiger(Card::Heart, 2)
+          << new LureTiger(Card::Club, 10);
+    skills << new RenwangShieldSkill << new IceSwordSkill << new WoodenOxSkill << new WoodenOxTriggerSkill
+        << new LureTigerSkill << new LureTigerProhibit;
+    insertRelatedSkills("lure_tiger_effect", "#lure_tiger-prohibit");
 
     foreach (Card *card, cards)
         card->setParent(this);

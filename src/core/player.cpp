@@ -30,6 +30,7 @@ Player::Player(QObject *parent)
     , treasure(NULL)
     , face_up(true)
     , chained(false)
+    , removed(false)
 {
 }
 
@@ -343,6 +344,8 @@ int Player::getAttackRange(bool include_weapon) const
 
 bool Player::inMyAttackRange(const Player *other) const
 {
+    if (distanceTo(other) == -1)
+        return false;
     if (this == other)
         return false;
 
@@ -357,11 +360,24 @@ void Player::setFixedDistance(const Player *player, int distance)
         fixed_distance.insert(player, distance);
 }
 
+int Player::originalRightDistanceTo(const Player *other) const
+{
+    int right = 0;
+    Player *next_p = parent()->findChild<Player *>(objectName());
+    while (next_p != other) {
+        next_p = next_p->getNextAlive();
+        right++;
+    }
+    return right;
+}
+
 int Player::distanceTo(const Player *other, int distance_fix) const
 {
     if (this == other)
         return 0;
 
+    if (isRemoved() || other->isRemoved())
+        return -1;
     //point1: chuanwu is a fixed distance;
     int distance_limit = 0;
     if (hasSkill("chuanwu"))
@@ -373,19 +389,9 @@ int Player::distanceTo(const Player *other, int distance_fix) const
             return fixed_distance.value(other);
     }
 
-    int right = qAbs(this->seat - other->seat);
-    int left = aliveCount() - right;
-    //point2: skill kongjian will ignore pc98  while traversing
-    if (this->hasLordSkill("kongjian")) {
-        int bigger = qMax(this->seat, other->seat);
-        int smaller = qMin(this->seat, other->seat);
-        foreach (const Player *p, other->getAliveSiblings()) {
-            if (p->getKingdom() == "pc98" && p->getSeat() > smaller && p->getSeat() < bigger)
-                right--;
-            else if (p->getKingdom() == "pc98" && (p->getSeat() < smaller || p->getSeat() > bigger))
-                left--;
-        }
-    }
+    int right = originalRightDistanceTo(other);
+    //int right = qAbs(this->seat - other->seat);
+    int left = aliveCount(false) - right;
     int distance = qMin(left, right);
 
     distance += Sanguosha->correctDistance(this, other);
@@ -397,6 +403,55 @@ int Player::distanceTo(const Player *other, int distance_fix) const
         distance = 1;
 
     return distance;
+}
+
+void Player::setNext(Player *next)
+{
+    this->next = next->objectName();
+}
+
+void Player::setNext(const QString &next)
+{
+    this->next = next;
+}
+
+Player *Player::getNext(bool ignoreRemoved) const
+{
+    Player *next_p = parent()->findChild<Player *>(next);
+    if (ignoreRemoved && next_p->isRemoved())
+        return next_p->getNext(ignoreRemoved);
+    return next_p;
+}
+
+QString Player::getNextName() const
+{
+    return next;
+}
+
+Player *Player::getLast(bool ignoreRemoved) const
+{
+    foreach(Player *p, parent()->findChildren<Player *>()) {
+        if (p->getNext(ignoreRemoved) == this)
+            return p;
+    }
+    return NULL;
+}
+
+Player *Player::getNextAlive(int n, bool ignoreRemoved) const
+{
+    bool hasAlive = (aliveCount(!ignoreRemoved) > 0);
+    Player *next = parent()->findChild<Player *>(objectName());
+    if (!hasAlive) return next;
+    for (int i = 0; i < n; ++i) {
+        do next = next->getNext(ignoreRemoved);
+        while (next->isDead());
+    }
+    return next;
+}
+
+Player *Player::getLastAlive(int n, bool ignoreRemoved) const
+{
+    return getNextAlive(aliveCount(!ignoreRemoved) - n, ignoreRemoved);
 }
 
 void Player::setGeneral(const General *new_general)
@@ -1104,6 +1159,20 @@ void Player::setChained(bool chained)
     }
 }
 
+
+bool Player::isRemoved() const
+{
+    return removed;
+}
+
+void Player::setRemoved(bool removed)
+{
+    if (this->removed != removed) {
+        this->removed = removed;
+        emit removedChanged();
+    }
+}
+
 void Player::addMark(const QString &mark, int add_num)
 {
     int value = marks.value(mark, 0);
@@ -1436,8 +1505,8 @@ bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool i
                 return true;
         }
     }
-
-    return false;
+    return removed;
+    //return false;
 }
 
 void Player::addQinggangTag(const Card *card)

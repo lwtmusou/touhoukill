@@ -44,7 +44,7 @@ config = {
 		"StandardExCard",
 		"Maneuvering",
 
-		"touhoucard",
+		--"touhoucard",
 
 		--武将包
 		"Protagonist",

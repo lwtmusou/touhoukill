@@ -133,6 +133,12 @@ local t = {
 	["Tribladeskill"] = "三尖两刃刀",
 	["@Triblade"] = "你可以发动【三尖两刃刀】的效果",
 	["~Triblade"] = "选择一张牌→选择一名角色→点击确定",
+	
+	
+	["lure_tiger"] = "调虎离山",
+	[":lure_tiger"] = "锦囊牌\n\n使用时机：出牌阶段。\n使用目标：至多两名其他角色。\n作用效果：目标角色于此回合结束之前不计入距离和座次计算且不能使用牌且不是牌的合法目标。\n执行动作：此牌结算结束时，你摸一张牌。",
+	["lure_tiger_effect"] = "调虎离山",
+	["#lure_tiger-prohibit"] = "调虎离山",
 }
 
 local ohorses = { "ChiTu", "DaYuan", "ZiXing"}
