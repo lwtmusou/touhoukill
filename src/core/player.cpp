@@ -1505,8 +1505,8 @@ bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool i
                 return true;
         }
     }
-    return removed;
-    //return false;
+    //return removed;
+    return false;
 }
 
 void Player::addQinggangTag(const Card *card)
