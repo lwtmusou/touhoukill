@@ -1956,34 +1956,25 @@ class LureTigerSkill : public TriggerSkill
 public:
     LureTigerSkill() : TriggerSkill("lure_tiger_effect")
     {
-        events << Death << EventPhaseChanging;
+        events << EventPhaseChanging;
         global = true;
     }
     
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-        ServerPlayer *player = NULL;
-        if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive)
-                player = change.player;
-        } else if (triggerEvent == Death) {
-            DeathStruct death = data.value<DeathStruct>();
-            player = death.who;
-        }
-
-        if (player == NULL || !player->hasFlag("LureTigerUser"))
-            return;
-
-        foreach(ServerPlayer *p, room->getOtherPlayers(player))
-            if (p->isRemoved()) {
-                room->setPlayerProperty(p, "removed", false);
-                room->removePlayerCardLimitation(p, "use", ".$0");
+        //the current player can also to be removed
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to == Player::NotActive) {
+            foreach(ServerPlayer *p, room->getAllPlayers(true))
+            {
+                if (p->isRemoved()) {
+                    room->setPlayerProperty(p, "removed", false);
+                    room->removePlayerCardLimitation(p, "use", ".$0");
+                }
             }
-    
+        }
     }
-
 };
 
 class LureTigerProhibit : public ProhibitSkill

@@ -175,6 +175,9 @@ void ServerPlayer::bury()
     throwAllMarks();
     clearPrivatePiles();
     room->clearPlayerCardLimitation(this, false);
+    room->setPlayerProperty(this, "dyingFactor", 0);
+    if (isRemoved())
+        room->setPlayerProperty(this, "removed", false);
 
     this->tag.remove("Huashen_skill");
     this->tag.remove("Huashen_target");
