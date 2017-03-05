@@ -115,8 +115,14 @@ end
 sgs.ai_skill_invoke.chongdong = true
 sgs.ai_skill_cardask["@chongdong"] = function(self, data)
 	local current = self.room:getCurrent()
-	if current and current:isAlive() and self:isEnemy(current) then
-		local cards = sgs.QList2Table(self.player:getCards("hs"))
+	local lord = self.room:getLord()
+	if current and lord and current:isAlive() and self:isFriend(lord) and self:isEnemy(current) then
+		local cards = {} 
+		for _,c in sgs.qlist(self.player:getCards("hs")) do
+			if c:isRed() then
+				table.insert(cards, c)
+			end
+		end
 		self:sortByCardNeed(cards)
 		if #cards > 0 then
 			return "$" .. cards[1]:getId()
