@@ -1183,7 +1183,7 @@ public:
         room->notifySkillInvoked(player, objectName());
         if (choice == "discard") {
             for (int i = 0; i < 2; i++) {
-                if (!player->canDiscard(damage.from, "hes"))
+                if (player->isDead() || !player->canDiscard(damage.from, "hes"))
                     return;
                 if (damage.from == player)
                     room->askForDiscard(player, "jingxia", 1, 1, false, true);

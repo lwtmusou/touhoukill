@@ -948,9 +948,9 @@ void XinshangCard::onEffect(const CardEffectStruct &effect) const
         room->obtainCard(effect.from, card);
         room->setPlayerFlag(effect.from, "xinshang_effect");
     } else {
-        if (effect.from->canDiscard(effect.to, "hes")) {
+        if (effect.from->isAlive() && effect.from->canDiscard(effect.to, "hes")) {
             room->throwCard(room->askForCardChosen(effect.from, effect.to, "hes", "xinshang", false, Card::MethodDiscard), effect.to, effect.from);
-            if (effect.from->canDiscard(effect.to, "hes"))
+            if (effect.from->isAlive() && effect.from->canDiscard(effect.to, "hes"))
                 room->throwCard(room->askForCardChosen(effect.from, effect.to, "hes", "xinshang", false, Card::MethodDiscard), effect.to, effect.from);
         }
     }

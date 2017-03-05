@@ -787,6 +787,9 @@ public:
             }
         }
 
+        if (player->isDead())
+            return false;
+
         //we need id to check cardplace,
         //since skill "jinian",  the last handcard will be return.
         QList<int> able;
@@ -1291,7 +1294,7 @@ public:
             if (s == NULL)
                 return false;
             for (int i = 0; i < y; ++i) {
-                if (!player->canDiscard(s, "hes"))
+                if (player->isDead() || !player->canDiscard(s, "hes"))
                     break;
                 if (s == player)
                     room->askForDiscard(s, "rengui-discard", 1, 1, false, true);
@@ -3093,6 +3096,8 @@ void WendaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
 {
     room->sortByActionOrder(targets);
     foreach (ServerPlayer *p, targets) {
+        if (source->isDead())
+            break;
         const Card *wendaoCard = NULL;
         if (p == source) {
             wendaoCard = room->askForCard(p, ".!", "@wendao-dis", QVariant(), QString());

@@ -931,6 +931,8 @@ public:
                 room->throwCard(c, to);
             }
 
+            if (invoke->invoker->isDead())
+                continue;
             if (invoke->invoker->isKongcheng()) {
                 use.nullified_list << to->objectName();
                 continue;
