@@ -573,7 +573,7 @@ public:
                 if (card == NULL)
                     return QList<SkillInvokeDetail>();
                 DELETE_OVER_SCOPE(Card, card)
-                if (card->isKindOf("Slash") || card->isKindOf("Peach")
+                if (card->isKindOf("Slash") //|| card->isKindOf("Peach")
                     || (card->isNDTrick() && !card->isKindOf("Nullification"))) {
                     if (!player->isCardLimited(card, Card::MethodUse))
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
@@ -595,6 +595,54 @@ public:
     }
 };
 
+
+class Hesheng : public TriggerSkill
+{
+public:
+    Hesheng()
+        : TriggerSkill("hesheng")
+    {
+        events << EventPhaseStart << CardsMoveOneTime << EventPhaseChanging;
+        frequency = Frequent;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == CardsMoveOneTime) {
+            ServerPlayer *current = room->getCurrent();
+            if (!current || current->isDead())
+                return;
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.to_place == Player::DiscardPile)
+                room->setPlayerMark(current, objectName(), current->getMark(objectName()) + move.card_ids.length());
+        }
+        else if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive)
+                room->setPlayerMark(change.player, objectName(), 0);
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
+    {
+        if (e != EventPhaseStart)
+            return QList<SkillInvokeDetail>();
+        ServerPlayer *current = data.value<ServerPlayer *>();
+        if (current->hasSkill(this) && current->isAlive() && current->getPhase() == Player::Finish
+            && current->getHp() < current->getMark(objectName())
+            && current->isWounded())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current);
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        RecoverStruct recover;
+        room->recover(invoke->invoker, recover);
+        return false;
+    }
+};
+/*
 class Hesheng : public TriggerSkill
 {
 public:
@@ -627,7 +675,7 @@ public:
         room->notifySkillInvoked(invoke->invoker, objectName());
         return true;
     }
-};
+};*/
 
 class ZhanzhenVS : public OneCardViewAsSkill
 {

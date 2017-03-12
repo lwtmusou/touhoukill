@@ -223,7 +223,7 @@ sgs.ai_trick_prohibit.jinfa = function(self, from, to, card)
 	return true
 end
 
-
+--[[
 sgs.ai_skill_invoke.lubiao = function(self,data)
 	local current = self.room:getCurrent()
 	return current and current:isAlive() and self:isEnemy(current)
@@ -248,37 +248,75 @@ sgs.ai_choicemade_filter.skillInvoke.lubiao = function(self, player, args)
 		end
 	end
 end
+]]
 
-
-
-sgs.ai_skill_invoke.mengxiao = true
-sgs.ai_skill_playerchosen.mengxiao = function(self, targets)
-	local move = self.player:getTag("mengxiao"):toMoveOneTime()
-	--暂时没管闪电等特殊情况
-	for _,p in sgs.qlist(targets) do
-		if self:isFriend(p) then
-			for _,c in sgs.qlist(p:getCards("j")) do
-				for _,id in sgs.qlist(move.card_ids) do
-					if sgs.Sanguosha:getCard(id):getSuit() == c:getSuit() then
-						return p
-					end
-				end
+sgs.ai_skill_choice.mengxiao = function(self, choices, data)
+	local current = self.room:getCurrent()
+	if choices:match("indulgence") then
+		for _,p in pairs(self.enemies) do
+			if self:getOverflow(p) > 1 then
+				return "indulgence"
 			end
-		end
+		end		
 	end
-	for _,p in sgs.qlist(targets) do
-		if self:isEnemy(p) then
-			for _,c in sgs.qlist(p:getCards("e")) do
-				for _,id in sgs.qlist(move.card_ids) do
-					if sgs.Sanguosha:getCard(id):getSuit() == c:getSuit() then
-						return p
-					end
-				end
-			end
-		end
+	if choices:match("supply_shortage") then
+		return "supply_shortage"
+	elseif choices:match("indulgence") then 
+		return "indulgence"
 	end
-	return nil
+	return "cancel"
 end
+sgs.ai_skill_invoke.mengxiao = function(self,data)
+	local current = self.room:getCurrent()
+	return current and current:isAlive() and self:isEnemy(current)
+end
+sgs.ai_choicemade_filter.skillInvoke.mengxiao = function(self, player, args)
+	local current = self.room:getCurrent()
+	if current then
+		if args[#args] == "yes" then
+			sgs.updateIntention(player, current, 60)
+		end
+	end
+end
+sgs.ai_skill_cardchosen.mengxiao = function(self, who, flags)
+	local current = self.room:getCurrent()
+	local cards= {}
+	for _,c in sgs.qlist(who:getCards("j")) do
+		if (not who:isProhibited(current, c) and not current:containsTrick(c:objectName())) then
+			table.insert(cards, c)
+		end
+	end
+	if #cards>0 then
+		return cards[1]
+	end
+end
+
+
+function lubiaoInvoke(self)
+	local prevent=false
+	for _,p in sgs.qlist(self.room:getAlivePlayers())do
+		if (p:getCards("j"):length()>0 ) then
+			prevent=true
+			break
+		end
+	end
+	return prevent
+end
+--[[sgs.ai_slash_prohibit.lubiao = function(self, from, to, card)
+	if not to:hasSkill("lubiao") then return false end
+	if lubiaoInvoke(self) then
+		local damage=sgs.DamageStruct(card, from, to, 1, self:touhouDamageNature(card,from,to))
+		return self:touhouNeedAvoidAttack(damage, from, to)
+	end
+	return false
+end]]
+sgs.ai_damageInflicted.lubiao =function(self, damage)
+	if lubiaoInvoke(self) then
+		damage.damage= damage.damage - 1 
+	end
+	return damage
+end
+
 
 
 function yeyan_judge(self,target,card)

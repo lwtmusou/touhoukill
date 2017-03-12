@@ -766,22 +766,50 @@ public:
 };
 */
 
-class Lubiao : public TriggerSkill
+class Mengxiao : public TriggerSkill
 {
 public:
-    Lubiao()
-        : TriggerSkill("lubiao")
+    Mengxiao()
+        : TriggerSkill("mengxiao")
     {
         events << EventPhaseStart;
     }
 
+    static QStringList mengxiaoChoices(ServerPlayer *kana, ServerPlayer *target = NULL)
+    {
+        QStringList trick_list;
+        if (target) {
+            foreach(const Card *trick, kana->getJudgingArea()) {
+                if (!target->containsTrick(trick->objectName()) && !kana->isProhibited(target, trick))
+                    trick_list << trick->objectName();
+            }
+        } else {
+            QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+            foreach(const Card *card, cards) {
+                if (card->getTypeId() == Card::TypeTrick && !card->isNDTrick()
+                    && !trick_list.contains(card->objectName())
+                    && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+                    if (!kana->containsTrick(card->objectName()))
+                        trick_list << card->objectName();
+                }
+            }
+        }
+        return trick_list;
+    }
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
+        
         ServerPlayer *current = data.value<ServerPlayer *>();
-        if (current->getPhase() == Player::RoundStart) {
+        if (current->getPhase() == Player::Finish && current->hasSkill(this) && current->isAlive() && !current->isKongcheng()) {
+            QStringList trick_list = mengxiaoChoices(current);
+            if (trick_list.isEmpty())
+                return QList<SkillInvokeDetail>();
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current);
+        } else if (current->getPhase() == Player::Start) {
             QList<SkillInvokeDetail> d;
-            foreach (ServerPlayer *p, room->getOtherPlayers(current)) {
-                if (p->hasSkill(this) && p->getCards("j").isEmpty())
+            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                if (p != current && !mengxiaoChoices(p, current).isEmpty())
                     d << SkillInvokeDetail(this, p, p, NULL, false, current);
             }
             return d;
@@ -789,41 +817,111 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         ServerPlayer *current = data.value<ServerPlayer *>();
-        QList<int> list = room->getNCards(1);
-        //do not consider cardlimit or targetFilter
-        QString choice = room->askForChoice(invoke->invoker, objectName(), "play+draw", data);
-        QString cardname = (choice == "draw") ? "supply_shortage" : "indulgence";
+        if (current->getPhase() == Player::Finish) {
+            QStringList trick_list = mengxiaoChoices(invoke->invoker);
+            trick_list << "cancel";
+            QString choice = room->askForChoice(invoke->invoker, objectName(), trick_list.join("+"), data);
+            if (choice == "cancel")
+                return false;
 
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), current->objectName());
-        LogMessage log;
-        log.type = "#InvokeSkill";
-        log.from = invoke->invoker;
-        log.arg = objectName();
-        room->sendLog(log);
+            const Card *card = room->askForCard(invoke->invoker, ".", "@mengxiao:" + choice, data, Card::MethodNone, NULL, false, objectName());
+            if (!card)
+                return false;
 
-        Card *supplyshortage = Sanguosha->cloneCard(cardname);
-        WrappedCard *vs_card = Sanguosha->getWrappedCard(list.first());
-        vs_card->setSkillName("lubiao");
-        vs_card->takeOver(supplyshortage);
-        room->broadcastUpdateCard(room->getAlivePlayers(), vs_card->getId(), vs_card);
+            room->notifySkillInvoked(invoke->invoker, objectName());
 
-        CardsMoveStruct move;
-        move.card_ids << vs_card->getId();
-        move.to = invoke->invoker;
-        move.to_place = Player::PlaceDelayedTrick;
-        room->moveCardsAtomic(move, true);
+            LogMessage log;
+            log.type = "$Mengxiao";
+            log.from = invoke->invoker;
+            log.arg = objectName();
+            log.arg2 = choice;
+            log.card_str = QString::number(card->getEffectiveId());
+            room->sendLog(log);
 
-        if (choice == "draw")
-            current->skip(Player::Draw);
-        else
-            current->skip(Player::Play);
+            Card *delayTrick = Sanguosha->cloneCard(choice);
+            WrappedCard *vs_card = Sanguosha->getWrappedCard(card->getEffectiveId());
+            vs_card->setSkillName(objectName());
+            vs_card->takeOver(delayTrick);
+            room->broadcastUpdateCard(room->getAlivePlayers(), vs_card->getId(), vs_card);
+
+            CardsMoveStruct move;
+            move.card_ids << vs_card->getId();
+            move.to = invoke->invoker;
+            move.to_place = Player::PlaceDelayedTrick;
+            room->moveCardsAtomic(move, true);
+        
+        } 
+        else {
+#pragma message WARN("todo_lwtmusou:two steps -> one step   using askForUseCard")
+            //step 1: invoke
+            if (!invoke->invoker->askForSkillInvoke(this, data))
+                return false;
+
+            //step 2:choose id 
+            QStringList trick_list = mengxiaoChoices(invoke->invoker, current);
+            QList<int> disable;
+            foreach(const Card *trick, invoke->invoker->getJudgingArea()) {
+                if (!trick_list.contains(trick->objectName()))
+                    disable << trick->getEffectiveId();
+            }
+            int card_id = room->askForCardChosen(invoke->invoker, invoke->invoker, "j", objectName(), false, Card::MethodDiscard, disable);
+            const Card *card = Sanguosha->getCard(card_id);
+            room->moveCardTo(card, invoke->invoker, current, Player::PlaceDelayedTrick,
+                    CardMoveReason(CardMoveReason::S_REASON_TRANSFER,
+                        invoke->invoker->objectName(), objectName(), QString()));
+        }
+        
+
         return false;
     }
 };
 
+
+class Lubiao : public TriggerSkill
+{
+public:
+    Lubiao()
+        : TriggerSkill("lubiao")
+    {
+        events << DamageInflicted;
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        bool can = false;
+        foreach(ServerPlayer *p, room->getAllPlayers()) {
+            if (p->getCards("j").length() > 0) {
+                can = true;
+                break;
+            }
+        }
+        DamageStruct damage = data.value<DamageStruct>();
+        if (can && damage.to->hasSkill(this))
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        damage.damage = damage.damage - 1;
+
+        room->touhouLogmessage("#lubiao", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(1));
+        room->notifySkillInvoked(invoke->invoker, objectName());
+
+        if (damage.damage == 0)
+            return true;
+        data = QVariant::fromValue(damage);
+
+        return false;
+    }
+};
+
+/*
 class Mengxiao : public TriggerSkill
 {
 public:
@@ -867,7 +965,7 @@ public:
         room->recover(invoke->invoker, recover);
         return false;
     }
-};
+};*/
 
 class Yeyan : public TriggerSkill
 {
@@ -2313,8 +2411,9 @@ TH0105Package::TH0105Package()
     //related_skills.insertMulti("jiexi", "#jiexi_range");
 
     General *kana = new General(this, "kana", "pc98", 3, false);
-    kana->addSkill(new Lubiao);
     kana->addSkill(new Mengxiao);
+    kana->addSkill(new Lubiao);
+
 
     General *yuka_old = new General(this, "yuka_old$", "pc98", 4, false);
     yuka_old->addSkill(new Yeyan);

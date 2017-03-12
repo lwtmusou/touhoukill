@@ -383,6 +383,8 @@ sgs.ai_skill_use["@@xiezou"] = function(self, prompt)
 	return "."
 end
 
+sgs.ai_skill_invoke.hesheng = true
+--[[
 sgs.ai_slash_prohibit.hesheng = function(self, from, to, card)
 	local prevent=false
 	if not to:hasSkill("hesheng") then return false end
@@ -413,7 +415,7 @@ sgs.ai_damageInflicted.hesheng =function(self, damage)
 	end
 	return damage
 end
-
+]]
 
 
 sgs.ai_view_as.zhanzhen = function(card, player, card_place)
