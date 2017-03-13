@@ -290,7 +290,22 @@ sgs.ai_skill_cardchosen.mengxiao = function(self, who, flags)
 		return cards[1]
 	end
 end
-
+sgs.ai_trick_prohibit.mengxiao = function(self, from, to, card)
+	if not card:isKindOf("DelayedTrick")  then return false end
+	if self:isFriend(from,to) then return false end
+	if self.room:alivePlayerCount()==2 then
+		return false
+	end
+	local nextp = self.room:nextPlayer(from)
+	while true do
+		if nextp:objectName() == from:objectName() or nextp:objectName() == to:objectName() then
+			break
+		end
+		if self:isFriend(self.player, nextp) then return true end
+		nextp = self.room:nextPlayer(nextp)
+	end
+	return false
+end
 
 function lubiaoInvoke(self)
 	local prevent=false
