@@ -1814,13 +1814,13 @@ public:
     HpymSiyu()
         : TriggerSkill("hpymsiyu")
     {
-        events << PostHpReduced << EventPhaseChanging;
+        events << EnterDying << EventPhaseChanging; //<< PostHpReduced
         frequency = Compulsory;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
-        if (triggerEvent == PostHpReduced) {
+        /*if (triggerEvent == PostHpReduced) {
             ServerPlayer *youmu = NULL;
             if (data.canConvert<DamageStruct>())
                 youmu = data.value<DamageStruct>().to;
@@ -1829,6 +1829,11 @@ public:
 
             if (youmu != NULL && youmu->isAlive() && youmu->hasSkill(this) && youmu->getHp() < youmu->dyingThreshold() && !youmu->isCurrent())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, youmu, youmu, NULL, true);
+        }*/
+        if (triggerEvent == EnterDying) {
+            DyingStruct dying = data.value<DyingStruct>();
+            if (dying.who->hasSkill(this) && !dying.who->isCurrent())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dying.who, dying.who, NULL, true);
         } else {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.player->getMark("siyuinvoke") > 0 && change.to == Player::NotActive && change.player->getHp() < change.player->dyingThreshold())
@@ -1847,8 +1852,8 @@ public:
     }
 
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        if (triggerEvent == PostHpReduced) {
+    {   //triggerEvent == PostHpReduced
+        if (triggerEvent == EnterDying) {
             if (!invoke->invoker->faceUp())
                 invoke->invoker->turnOver();
 
@@ -1885,6 +1890,11 @@ public:
             room->touhouLogmessage("#touhouExtraTurn", invoke->invoker, objectName());
 
             invoke->invoker->gainAnExtraTurn();
+
+            //only for UI //While EnterDying, need QuitDying to change '_m_saveMeIcon'  
+            JsonArray arg;
+            arg << QSanProtocol::S_GAME_EVENT_PLAYER_QUITDYING << invoke->invoker->objectName();
+            room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 
             throw TurnBroken;
 
