@@ -234,6 +234,8 @@ void AOE::onUse(Room *room, const CardUseStruct &card_use) const
             log.arg2 = objectName();
             room->sendLog(log);
 
+            if (player->hasSkill(skill))
+                room->notifySkillInvoked(player, skill->objectName());
             room->broadcastSkillInvoke(skill->objectName());
         } else
             targets << player;

@@ -448,4 +448,17 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
+
+
+class Drowning : public AOE {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Drowning(Card::Suit suit, int number);
+
+    //virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual bool isAvailable(const Player *player) const;
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+};
 #endif

@@ -4363,21 +4363,15 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 	if card and card:isAvailable(self.player) and self:getAoeValue(card) > 0 then
 		self:sort(self.enemies, "hp")
 		for _, enemy in ipairs(self.enemies) do
-			if self:needToThrowArmor(enemy) and enemy:getEquips():length() == 1 and self.player:canDiscard(enemy, enemy:getArmor():getId())
-					and LureTiger:targetFilter(players, friend, self.player) and self:aoeIsEffective(LureTiger, friend, self.player) then
-				players:append(friend)
+			if self:needToThrowArmor(enemy)
+					and LureTiger:targetFilter(players, enemy, self.player) and self:aoeIsEffective(LureTiger, enemy, self.player) then
+				players:append(enemy)
 			end
 		end
 		self:sort(self.friends_noself, "hp")
 		for _, friend in ipairs(self.friends_noself) do
-			if not self:needToThrowArmor(friend) and self:isFriend(friend) and not players:contains(friend)
+			if friend:canDiscard(friend, "e") and not self:needToThrowArmor(friend) and self:isFriend(friend) and not players:contains(friend)
 					and LureTiger:targetFilter(players, friend, self.player) and self:aoeIsEffective(LureTiger, friend, self.player) then
-				players:append(friend)
-			end
-		end
-		for _, friend in ipairs(self.friends_noself) do
-			if not self:needToThrowArmor(friend) and LureTiger:targetFilter(players, friend, self.player)
-					and not players:contains(friend) and self:aoeIsEffective(LureTiger, friend, self.player) then
 				players:append(friend)
 			end
 		end
@@ -4504,3 +4498,9 @@ end]]
 sgs.ai_use_value.LureTiger = 5
 sgs.ai_use_priority.LureTiger = 4.9
 sgs.ai_keep_value.LureTiger = 3.22
+
+
+
+sgs.ai_use_value.Drowning = 3.7
+sgs.ai_use_priority.Drowning = 3.5
+sgs.ai_keep_value.Drowning = 3.63

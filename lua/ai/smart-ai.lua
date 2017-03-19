@@ -3250,6 +3250,8 @@ function SmartAI:askForNullification(trick, from, to, positive) --尼玛一把�
 				 --敌方顺手牵羊、过河拆桥敌方判定区延时性锦囊->命中
 				if (trick:isKindOf("Snatch") or trick:isKindOf("Dismantlement")) and to:getCards("j"):length() > 0 then
 					return null_card
+				elseif trick:isKindOf("Drowning") and self:needToThrowArmor(to) then
+					return null_card
 				end
 			end
 		end
@@ -5796,9 +5798,12 @@ function SmartAI:aoeIsEffective(card, to, source)
 	if  to:hasSkill("huanmeng") then
 		return false
 	end
-	if to:hasArmorEffect("Vine") then
+	if to:hasArmorEffect("Vine") and (card:isKindOf("SavageAssault") or card:isKindOf("ArcheryAttack")) then
 		return false
 	end
+	if card:isKindOf("Drowning") and not to:canDiscard(to, "e") then
+		return false
+	end	
 	if self.room:isProhibited(self.player, to, card) then
 		return false
 	end
@@ -5904,7 +5909,15 @@ function SmartAI:getAoeValueTo(card, to, from)
 
 		if self:getDamagedEffects(to, from) then value = value + 40 end
 		if self:needToLoseHp(to, from, nil, true) then value = value + 10 end
-
+        
+		if card:isKindOf("Drowning") then
+			if to:hasSkills(sgs.lose_equip_skill) and to:canDiscard(to, "e") then
+				value = value + 50
+			end
+			if self:needToThrowArmor(to) and  self:isFriend(to) then
+				value = value + 20
+			end
+		end
 		if card:isKindOf("ArcheryAttack") then
 			if to:hasSkills("leiji|nosleiji") and (sj_num >= 1 or self:hasEightDiagramEffect(to)) and self:findLeijiTarget(to, 50, from) then
 				value = value + 100
@@ -6243,13 +6256,15 @@ function SmartAI:useTrickCard(card, use)
 	if self:needBear() and not ("amazing_grace|ex_nihilo|snatch|iron_chain|collateral|lure_tiger"):match(card:objectName()) then return end
 	if self:touhouNeedBear(card) and not ("amazing_grace|ex_nihilo|snatch|iron_chain|collateral"):match(card:objectName()) then  return end
 	if self:needRende() and not card:isKindOf("ExNihilo") then return end
-	if card:isKindOf("AOE") then
+	if card:isKindOf("AOE") and not card:isKindOf("BurningCamps") then
 		local others = self.room:getOtherPlayers(self.player)
 		others = sgs.QList2Table(others)
 		local avail = #others
 		local avail_friends = 0
 		for _, other in ipairs(others) do
 			if self.room:isProhibited(self.player, other, card) then
+				avail = avail - 1
+			elseif (card:isKindOf("Drowning") and not other:canDiscard(other, "e")) then
 				avail = avail - 1
 			elseif self:isFriend(other) then
 				avail_friends = avail_friends + 1
@@ -6262,6 +6277,7 @@ function SmartAI:useTrickCard(card, use)
 			if self.player:isLord() and sgs.turncount < 2 and card:isKindOf("ArcheryAttack") and self:getOverflow() < 1 then return end
 			if self.role == "loyalist" and sgs.turncount < 2 and card:isKindOf("ArcheryAttack") then return end
 			if self.role == "rebel" and sgs.turncount < 2 and card:isKindOf("SavageAssault") then return end
+			if sgs.turncount < 2 and card:isKindOf("Drowning") then return end
 		end
 
 		local good = self:getAoeValue(card)
