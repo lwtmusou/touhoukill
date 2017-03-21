@@ -6251,7 +6251,6 @@ end
 
 function SmartAI:useTrickCard(card, use)
 	if not card then global_room:writeToConsole(debug.traceback()) return end
-	if self.player:hasSkill("ytchengxiang") and self.player:getHandcardNum() < 8 and card:getNumber() < 7 then return end
 	--handcardsNum will not reduce
 	if self:needBear() and not ("amazing_grace|ex_nihilo|snatch|iron_chain|collateral|lure_tiger"):match(card:objectName()) then return end
 	if self:touhouNeedBear(card) and not ("amazing_grace|ex_nihilo|snatch|iron_chain|collateral"):match(card:objectName()) then  return end

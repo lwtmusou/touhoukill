@@ -4504,3 +4504,46 @@ sgs.ai_keep_value.LureTiger = 3.22
 sgs.ai_use_value.Drowning = 3.7
 sgs.ai_use_priority.Drowning = 3.5
 sgs.ai_keep_value.Drowning = 3.63
+
+
+function SmartAI:useCardKnownBoth(KnownBoth, use)
+	
+	local targets = sgs.PlayerList()
+	local total_num = 2 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, KnownBoth)
+
+	
+	self:sort(self.enemies, "defense")
+	sgs.reverse(self.enemies)
+	for _, enemy in ipairs(self.enemies) do
+		if KnownBoth:targetFilter(targets, enemy, self.player) and not targets:contains(enemy)
+				and self:hasTrickEffective(KnownBoth, enemy, self.player) then
+			use.card = KnownBoth
+			targets:append(enemy)
+			if use.to then 
+				use.to:append(enemy)
+				if use.to:length() == total_num then return end
+			end
+		end
+	end
+	--if (self.room:getTag("KnownBothUsed"):toBool()) then
+		use.card = KnownBoth
+		return
+	--end
+	--[[if self.player:objectName() == self.room:getCurrent():objectName() then
+		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+			if KnownBoth:targetFilter(targets, player, self.player) and self:hasTrickEffective(KnownBoth, player, self.player) and not targets:contains(player) then
+				--sgs.ai_use_priority.KnownBoth = 0.3
+				use.card = KnownBoth
+				targets:append(player)
+				if use.to then
+					use.to:append(player)
+					if use.to:length() == total_num then return end
+				end
+			end
+		end
+	end]]
+end
+
+sgs.ai_use_value.KnownBoth = 5.5
+sgs.ai_keep_value.KnownBoth = 3.33
+sgs.ai_use_priority.KnownBoth = 9.1
