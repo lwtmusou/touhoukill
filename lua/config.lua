@@ -17,9 +17,9 @@ config = {
 		"xlc",
 		"slm",
 		"hzc",
+		"gzz",
 		"wai",
-		"touhougod",
-		--"gzz"
+		"touhougod"
 	},
 	kingdom_colors = {
 		pc98 = "#a699cc";
@@ -58,7 +58,7 @@ config = {
 		"TH12",
 		"TH13",
 		"TH14",
-		--"TH15", --0.8不对应
+		"TH15", --0.8不对应
 		"TH99",
 		"THNDJ",
 		"TouhouGod",
