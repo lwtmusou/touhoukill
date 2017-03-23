@@ -1612,6 +1612,179 @@ public:
     }
 };
 
+
+
+class XiaoyinVS : public OneCardViewAsSkill
+{
+public:
+    XiaoyinVS()
+        : OneCardViewAsSkill("xiaoyinVS")
+    {
+        response_pattern = "@@xiaoyinVS!";
+        response_or_use = true;
+    }
+
+    virtual bool viewFilter(const Card *c) const
+    {
+        return !c->isEquipped();
+    }
+
+    virtual const Card *viewAs(const Card *c) const
+    {
+        LureTiger *lure = new LureTiger(Card::SuitToBeDecided, 0);
+        lure->addSubcard(c);
+        lure->setSkillName("_xiaoyin");
+        return lure;
+    }
+};
+
+class Xiaoyin : public TriggerSkill
+{
+public:
+    Xiaoyin()
+        : TriggerSkill("xiaoyin")
+    {
+        events << EventPhaseStart;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        ServerPlayer *player = data.value<ServerPlayer *>();
+        if (player->getPhase() != Player::Play || player->isDead() || player->isKongcheng())
+            return QList<SkillInvokeDetail>();
+
+        LureTiger *card = new LureTiger(Card::SuitToBeDecided, 0);
+        card->deleteLater();
+        if (player->isCardLimited(card, Card::MethodUse, true))
+            return QList<SkillInvokeDetail>();
+
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+               if (!player->isProhibited(p, card) && player->inMyAttackRange(p))
+                    d << SkillInvokeDetail(this, p, p, NULL, false, player);
+        }
+        return d;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *target = invoke->targets.first();
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
+        room->setPlayerFlag(invoke->invoker, "Global_xiaoyinFailed");
+        const Card* card = room->askForUseCard(target, "@@xiaoyinVS!", "xiaoyinuse:" + invoke->invoker->objectName());
+        if (card == NULL) {
+            //force use!
+            foreach(const Card *c, target->getHandcards()) {
+                LureTiger *lure = new LureTiger(Card::SuitToBeDecided, 0);
+                lure->addSubcard(c->getEffectiveId());
+                lure->setSkillName("_xiaoyin");
+                room->setCardFlag(lure, "lure_" + invoke->invoker->objectName());
+                if (!target->isCardLimited(lure, Card::MethodUse, true) && !target->isProhibited(invoke->invoker, lure)) {
+                    room->useCard(CardUseStruct(lure, target, invoke->invoker), false);
+                    return false;
+                }
+                else
+                    delete lure;
+            }
+            room->showAllCards(invoke->targets.first());
+            room->getThread()->delay(1000);
+            room->clearAG();
+        }
+        return false;
+    }
+};
+
+class XiaoyinProhibit : public ProhibitSkill
+{
+public:
+    XiaoyinProhibit()
+        : ProhibitSkill("#xiaoyin")
+    {
+    }
+
+    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &) const
+    {
+        return card->getSkillName() == "xiaoyin" && !to->hasFlag("Global_xiaoyinFailed") && !card->hasFlag("lure_" + to->objectName());
+    }
+};
+
+class Fenghua : public TriggerSkill
+{
+public:
+    Fenghua()
+        : TriggerSkill("fenghua")
+    {
+        events << GameStart << CardsMoveOneTime << TargetConfirmed << Debut;
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        if (triggerEvent == GameStart || triggerEvent == Debut) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player && player->hasSkill(this))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+        }
+        else if (triggerEvent == TargetConfirmed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            QList<SkillInvokeDetail> d;
+            if (use.card->isKindOf("Slash") || use.card->isNDTrick()) {
+                foreach(ServerPlayer *p, use.to) {
+                    if (!p->hasSkill(this))
+                        continue;
+                    foreach(int id, p->getPile(objectName())) {
+                        if (Sanguosha->getCard(id)->getSuit() == use.card->getSuit()) {
+                            d << SkillInvokeDetail(this, p, p, NULL, true);
+                            break;
+                        }
+                    }
+                }
+            }
+            return d;
+        }
+        else if (triggerEvent == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            ServerPlayer *satsuki = qobject_cast<ServerPlayer *>(move.from);
+            if (satsuki != NULL && satsuki->isAlive() && satsuki->hasSkill(this) && move.from_places.contains(Player::PlaceSpecial)) {
+                for (int i = 0; i < move.card_ids.size(); i++) {
+                    if (move.from_pile_names.value(i) == objectName())
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, satsuki, satsuki, NULL, true);
+                }
+            }
+        }
+        
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (triggerEvent == GameStart || triggerEvent == Debut || triggerEvent == CardsMoveOneTime)
+            invoke->invoker->addToPile(objectName(), room->getNCards(1));
+        else if (triggerEvent == TargetConfirmed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            use.nullified_list << invoke->invoker->objectName();
+            data = QVariant::fromValue(use);
+
+            QList<int> ids = invoke->invoker->getPile(objectName());
+            room->notifySkillInvoked(invoke->invoker, objectName());
+
+            //room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+            LogMessage mes;
+            mes.type = "$Fenghua";
+            mes.from = invoke->invoker;
+            mes.arg = objectName();
+            mes.card_str = IntList2StringList(ids).join("+");
+            room->sendLog(mes);
+
+            DummyCard dummy(ids);
+            room->obtainCard(invoke->invoker, &dummy);
+        }
+        return false;
+    }
+};
+
+
 TH06Package::TH06Package()
     : Package("th06")
 {
@@ -1659,12 +1832,18 @@ TH06Package::TH06Package()
     sakuya_sp->addSkill(new Mizong);
     sakuya_sp->addSkill(new Yinren);
 
+    General *satsuki = new General(this, "satsuki", "hmx", 3, false);
+    satsuki->addSkill(new Xiaoyin);
+    satsuki->addSkill(new XiaoyinProhibit);
+    satsuki->addSkill(new Fenghua);
+    related_skills.insertMulti("xiaoyin", "#xiaoyin");
+
     addMetaObject<SkltKexueCard>();
     addMetaObject<SuodingCard>();
     addMetaObject<BeishuiCard>();
     addMetaObject<BanyueCard>();
 
-    skills << new SkltKexueVS;
+    skills << new SkltKexueVS << new XiaoyinVS;
 }
 
 ADD_PACKAGE(TH06)
