@@ -3552,7 +3552,7 @@ function SmartAI:willUseLightning(card)
 		end
 		for _, aplayer in ipairs(self.enemies) do
 			if aplayer:hasSkill("guanxing") or (aplayer:hasSkill("gongxin") and hashy)
-			or aplayer:hasSkill("xinzhan") or aplayer:hasSkill("tianyan") or aplayer:hasSkill("shenmi")  then
+			or aplayer:hasSkill("xinzhan") or aplayer:hasSkill("buju") or aplayer:hasSkill("shenmi")  then
 				--if self:isFriend(aplayer:getNextAlive()) then return true end
 				if self:isFriend(self.room:findPlayer(aplayer:getNextAlive():objectName())) then return true end
 			end

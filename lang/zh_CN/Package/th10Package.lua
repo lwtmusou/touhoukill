@@ -197,11 +197,11 @@ return{
 --************************************************
 	--fsl008  势力：风 4血
 	["momizi"] = "犬走椛",
-	["#momizi"] = "山上的千里眼",
-	["designer:momizi"] = "星野梦美☆",
+	["#momizi"] = "下端哨戒天狗",
+	["designer:momizi"] = "辰焰天明",
 
-	["illustrator:momizi"] = "啓々",
-	["origin:momizi"] = "p号：4742307，个人ID：30974",
+	["illustrator:momizi"] = "unkonwn",
+	["origin:momizi"] = "unkonwn",
 	["illustrator:momizi_1"] = "みや",
 	["origin:momizi_1"] = "p号：16407016，个人ID：41977",
 	["illustrator:momizi_2"] = "kirero",
@@ -215,11 +215,13 @@ return{
 	["illustrator:momizi_6"] = "kittona",
 	["origin:momizi_6"] = "p号：45871178，个人ID：1537530",
 
-	["tianyan"] = "天眼",
-	[":tianyan"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以摸X张牌（X为角色数且最多为4），然后将X张牌以任意顺序置于牌堆顶。",
-	["tianyan_exchange"]= "请选择 %src 张要置于牌堆顶的牌。",
-	["$GuanxingTop"] = "置于牌堆顶的牌：%card",
-	["$GuanxingBottom"] = "置于牌堆底的牌：%card",
+	["shouhu"] = "守护",
+	[":shouhu"] = "出牌阶段开始时，你可令一名体力值小于你的角色回复1点体力。",
+	["@shouhu"] = "你可令发动“守护”，令一名体力值小于你的角色回复1点体力。",
+	["shaojie"] = "哨戒",
+	[":shaojie"] = "其他角色的出牌阶段开始时，若你在其攻击范围内，你可以明置其一张手牌。当其他角色使用明置手牌或与其任意一张明置手牌颜色相同的牌对你造成伤害时，你可以防止此伤害。",
+    ["#shaojie"] = "%from 发动了技能 “%arg”， 防止了 %arg2 点伤害。",
+	["shaojie:invoke"]= "你是否发动“哨戒”，防止<font color=\"#FF8000\"><b>%src </b></font> 使用【%dest】 对你造成的 <font color=\"#00FF00\"><b>%arg </b></font> 点伤害 。",
 
 --************************************************
 	--fsl009  势力：风 4血
@@ -266,5 +268,19 @@ return{
 	["$zhongyanAnimate"]= "skill=shizuha:zhongyan",
 
 
+--************************************************
+	--fsl011  势力：风 4血
+	["momizi_sp"] = "SP犬走椛",
+	["&momizi_sp"] = "棋手椛",
+	["#momizi_sp"] = "钻研棋技的天狗",
+	["designer:momizi_sp"] = "星野梦美☆",
 
+	["illustrator:momizi"] = "啓々",
+	["origin:momizi"] = "p号：4742307，个人ID：30974",
+
+	["buju"] = "布局",
+	[":buju"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以摸X张牌（X为角色数且最多为4），然后将X张牌以任意顺序置于牌堆顶。",
+	["buju_exchange"]= "请选择 %src 张要置于牌堆顶的牌。",
+	["$GuanxingTop"] = "置于牌堆顶的牌：%card",
+	["$GuanxingBottom"] = "置于牌堆底的牌：%card",
 }

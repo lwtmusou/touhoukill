@@ -183,5 +183,6 @@ config = {
 		"shanghai->alice",
 		"kaguya_ndj->kaguya",
 		"mystia_sp->mystia",
+		"momizi_sp->momizi",
 	}
 }

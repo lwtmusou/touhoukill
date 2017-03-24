@@ -3517,6 +3517,8 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
             if (use.from->isShownHandcard(id))
                 card_use.m_showncards << id;
         }
+        if (!card_use.m_showncards.isEmpty())
+            setCardFlag(card_use.card, "showncards");
     }
 
     if (card_use.from->isCardLimited(card, card->getHandlingMethod())

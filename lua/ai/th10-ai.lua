@@ -578,19 +578,19 @@ end
 
 sgs.ai_skill_invoke.jinian = true
 
-local tianyan_skill = {}
-tianyan_skill.name = "tianyan"
-table.insert(sgs.ai_skills, tianyan_skill)
-function tianyan_skill.getTurnUseCard(self)
-	if self.player:hasUsed("TianyanCard") then return nil end
-	return sgs.Card_Parse("@TianyanCard=.")
+local buju_skill = {}
+buju_skill.name = "buju"
+table.insert(sgs.ai_skills, buju_skill)
+function buju_skill.getTurnUseCard(self)
+	if self.player:hasUsed("BujuCard") then return nil end
+	return sgs.Card_Parse("@BujuCard=.")
 end
-sgs.ai_skill_use_func.TianyanCard = function(card, use, self)
+sgs.ai_skill_use_func.BujuCard = function(card, use, self)
 	use.card=card
 end
-sgs.ai_use_value.TianyanCard = 8
-sgs.ai_use_priority.TianyanCard = 7
-sgs.ai_skill_discard.tianyan = function(self,discard_num, min_num)
+sgs.ai_use_value.BujuCard = 8
+sgs.ai_use_priority.BujuCard = 7
+sgs.ai_skill_discard.buju = function(self,discard_num, min_num)
 	--local next_player = self.player:getNextAlive()
 	local next_player =  self.room:nextPlayer(self.player)
 	local judgeReasons = self:touhouGetJudges(next_player)
