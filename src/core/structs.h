@@ -554,6 +554,17 @@ struct SkillInvalidStruct
     bool invalid;
 };
 
+
+struct BrokenEquipChangedStruct
+{
+    BrokenEquipChangedStruct();
+
+    ServerPlayer *player;
+    QList<int> ids;
+    bool broken;
+
+};
+
 struct ChoiceMadeStruct
 {
     ChoiceMadeStruct();
@@ -642,6 +653,7 @@ enum TriggerEvent
     TurnedOver,
     ChainStateChanged,
     RemoveStateChanged,
+    BrokenEquipChanged,
 
     ConfirmDamage, // confirm the damage's count and damage's nature
     Predamage, // trigger the certain skill -- jueqing
@@ -736,4 +748,5 @@ Q_DECLARE_METATYPE(ServerPlayer *)
 Q_DECLARE_METATYPE(JudgeStruct *)
 Q_DECLARE_METATYPE(PindianStruct *)
 Q_DECLARE_METATYPE(ExtraTurnStruct)
+Q_DECLARE_METATYPE(BrokenEquipChangedStruct)
 #endif

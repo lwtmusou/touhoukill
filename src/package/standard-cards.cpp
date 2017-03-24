@@ -1737,12 +1737,12 @@ public:
         const Horse *horse = NULL;
         if (from->getOffensiveHorse() && from->getMark("Equips_Nullified_to_Yourself") == 0) {
             horse = qobject_cast<const Horse *>(from->getOffensiveHorse()->getRealCard());
-            if (horse)
+            if (horse && !from->isBrokenEquip(horse->getEffectiveId()))
                 correct += horse->getCorrect();
         }
         if (to->getDefensiveHorse() && to->getMark("Equips_Nullified_to_Yourself") == 0) {
             horse = qobject_cast<const Horse *>(to->getDefensiveHorse()->getRealCard());
-            if (horse)
+            if (horse && !to->isBrokenEquip(horse->getEffectiveId()))
                 correct += horse->getCorrect();
         }
         return correct;
@@ -1787,7 +1787,7 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return !player->hasUsed("WoodenOxCard");
+        return !player->hasUsed("WoodenOxCard") && player->hasTreasure(objectName());
     }
 
     virtual const Card *viewAs(const Card *originalCard) const

@@ -486,7 +486,10 @@ void PlayerCardContainer::updateMarks()
             _m_markItem->setPos(newRect.topLeft());
     } else
         _m_markItem->setPos(newRect.left(), newRect.top() + newRect.height() / 2);
-    //for tianyi
+}
+
+void PlayerCardContainer::updateBrokenEquips()
+{
     _updateEquips();
 }
 
@@ -607,6 +610,7 @@ void PlayerCardContainer::setPlayer(ClientPlayer *player)
         Q_ASSERT(_m_markItem);
         _m_markItem->setDocument(textDoc);
         connect(textDoc, SIGNAL(contentsChanged()), this, SLOT(updateMarks()));
+        connect(player, &ClientPlayer::brokenEquips_changed, this, &PlayerCardContainer::updateBrokenEquips);
     }
     updateAvatar();
     refresh();
@@ -699,6 +703,28 @@ QPixmap PlayerCardContainer::_getEquipPixmap(const EquipCard *equip)
         if (isTianyi) {
             painter.drawPixmap(_m_layout->m_equipTianyiArea, G_ROOM_SKIN.getCardTianyiPixmap());
         }
+
+        /*if (m_player->isBrokenEquip(equip->getEffectiveId()))
+            painter.setBrush(G_PHOTO_LAYOUT.m_drankMaskColor);
+        else
+            painter.setBrush(Qt::NoBrush);
+        */
+        if (m_player->isBrokenEquip(equip->getEffectiveId())) {
+            painter.drawPixmap(_m_layout->m_equipTianyiArea, G_ROOM_SKIN.getCardTianyiPixmap());
+            //Sanguosha->playSystemAudioEffect("win");
+        }
+        //else
+            //Sanguosha->playSystemAudioEffect("lose");
+        /*if (m_player->isBrokenEquip(equip->getEffectiveId())) {
+                painter.setRenderHints(QPainter::HighQualityAntialiasing);
+            QPen pen(Qt::red);
+            pen.setWidth(3);
+            painter.setPen(pen);
+            painter.drawLine(25, 6, 40, 20);
+            painter.drawLine(25, 20, 40, 6);
+        
+        }*/
+
     }
     // equip point
     if (realCard->isRed()) {

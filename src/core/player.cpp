@@ -180,6 +180,25 @@ bool Player::isShownHandcard(int id)
     return shown_handcards.contains(id);
 }
 
+QList<int> Player::getBrokenEquips() const
+{
+    return broken_equips;
+}
+
+void Player::setBrokenEquips(QList<int> ids)
+{
+    this->broken_equips = ids;
+    emit brokenEquips_changed();
+}
+
+bool Player::isBrokenEquip(int id) const
+{
+    if (broken_equips.isEmpty() || id < 0)
+        return false;
+    return broken_equips.contains(id);
+}
+
+
 int Player::getMaxHp() const
 {
     if (hasSkill("huanmeng")) {
@@ -331,7 +350,8 @@ int Player::getAttackRange(bool include_weapon) const
     if (include_weapon) {
         const Weapon *card = qobject_cast<const Weapon *>(weapon->getRealCard());
         Q_ASSERT(card);
-        weapon_range = card->getRange();
+        if (!isBrokenEquip(card->getEffectiveId()))
+            weapon_range = card->getRange();
     }
 
     int real_range = qMax(original_range, weapon_range) + Sanguosha->correctAttackRange(this, include_weapon, false);
@@ -933,7 +953,7 @@ bool Player::hasWeapon(const QString &weapon_name, bool selfOnly) const
         }
     }
 
-    if (!weapon)
+    if (!weapon || isBrokenEquip(weapon->getEffectiveId()))
         return false;
     if (weapon->objectName() == weapon_name || weapon->isKindOf(weapon_name.toStdString().c_str()))
         return true;
@@ -962,7 +982,7 @@ bool Player::hasArmorEffect(const QString &armor_name, bool selfOnly) const
         }
     }
 
-    if (!armor)
+    if (!armor || isBrokenEquip(armor->getEffectiveId()))
         return false;
     if (armor->objectName() == armor_name || armor->isKindOf(armor_name.toStdString().c_str()))
         return true;
@@ -973,7 +993,7 @@ bool Player::hasArmorEffect(const QString &armor_name, bool selfOnly) const
 // @todo: fit skill shenbao.
 bool Player::hasTreasure(const QString &treasure_name) const
 {
-    if (!treasure || getMark("Equips_Nullified_to_Yourself") > 0)
+    if (!treasure || getMark("Equips_Nullified_to_Yourself") > 0 || isBrokenEquip(treasure->getEffectiveId()))
         return false;
     if (treasure->objectName() == treasure_name || treasure->isKindOf(treasure_name.toStdString().c_str()))
         return true;
@@ -1286,12 +1306,26 @@ QList<int> Player::getHandPile() const
     QList<int> result;
     foreach (const QString &pile, getPileNames()) {
 #pragma message WARN("todo_Fs: chaoren is not handpile. the cards on chaoren can't be used in an ViewAsSkill")
-        if (pile.startsWith("&") || (pile == "wooden_ox" && hasTreasure("wooden_ox")) || (pile == "piao" && hasSkill("shanji")) || (pile == "chaoren" && hasSkill("chaoren"))) {
+        if (pile.startsWith("&") || (pile == "wooden_ox" && hasTreasure("wooden_ox")) || (pile == "chaoren" && hasSkill("chaoren"))) {
             foreach (int id, getPile(pile))
                 result.append(id);
         }
     }
     return result;
+}
+
+QStringList Player::getHandPileList(bool view_as_skill) const
+{
+    QStringList handlist;
+    if (view_as_skill)
+        handlist.append("hand");
+    foreach(const QString &pile, this->getPileNames()) {
+        if (pile.startsWith("&") || pile.startsWith("^"))
+            handlist.append(pile);
+        else if (pile == "wooden_ox" && hasTreasure("wooden_ox")) 
+            handlist.append(pile);
+    }
+    return handlist;
 }
 
 void Player::addHistory(const QString &name, int times)

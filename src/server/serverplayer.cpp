@@ -543,16 +543,14 @@ bool ServerPlayer::hasNullification() const
         if (card->objectName() == "nullification")
             return true;
     }
-    foreach (int id, getPile("wooden_ox")) {
-        if (Sanguosha->getCard(id)->objectName() == "nullification")
-            return true;
-    }
-    if (hasSkill("shanji")) {
-        foreach (int i, getPile("piao")) {
-            if (Sanguosha->getCard(i)->isKindOf("Nullification"))
+
+    if (hasTreasure("wooden_ox")) {
+        foreach (int id, getPile("wooden_ox")) {
+            if (Sanguosha->getCard(id)->objectName() == "nullification")
                 return true;
         }
     }
+
     if (hasSkill("chaoren")) {
         bool ok = false;
         int id = property("chaoren").toInt(&ok);
@@ -1253,6 +1251,11 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     arg_shownhandcard << JsonUtils::toJsonArray(shown_handcards);
     room->doNotify(player, S_COMMAND_SET_SHOWN_HANDCARD, arg_shownhandcard);
 
+    JsonArray arg_brokenIds;
+    arg_brokenIds << objectName();
+    arg_brokenIds << JsonUtils::toJsonArray(broken_equips);
+    room->doNotify(player, S_COMMAND_SET_BROKEN_EQUIP, arg_brokenIds);
+
     foreach (QString mark_name, marks.keys()) {
         if (mark_name.startsWith("@")) {
             int value = getMark(mark_name);
@@ -1410,6 +1413,67 @@ void ServerPlayer::removeShownHandCards(QList<int> card_ids, bool sendLog)
         room->getThread()->delay();
     }
 }
+
+
+void ServerPlayer::addBrokenEquips(QList<int> card_ids)
+{
+    broken_equips.append(card_ids);
+
+    JsonArray arg;
+    arg << objectName();
+    arg << JsonUtils::toJsonArray(broken_equips);
+
+    foreach(ServerPlayer *player, room->getAllPlayers())
+        room->doNotify(player, S_COMMAND_SET_BROKEN_EQUIP, arg);
+
+    LogMessage log;
+    log.type = "$AddBrokenEquip";
+    log.from = this;
+    log.card_str = IntList2StringList(card_ids).join("+");
+    room->sendLog(log);
+    room->getThread()->delay();
+
+    BrokenEquipChangedStruct b;
+    b.player = this;
+    b.ids = card_ids;
+    b.broken = true;
+    room->getThread()->trigger(BrokenEquipChanged, room, QVariant::fromValue(b));
+}
+
+void ServerPlayer::removeBrokenEquips(QList<int> card_ids, bool sendLog)
+{
+    foreach(int id, card_ids)
+        broken_equips.removeOne(id);
+
+    JsonArray arg;
+    arg << objectName();
+    arg << JsonUtils::toJsonArray(broken_equips);
+
+    foreach(ServerPlayer *player, room->getAllPlayers())
+        room->doNotify(player, S_COMMAND_SET_BROKEN_EQUIP, arg);
+
+    if (sendLog) {
+        LogMessage log;
+        log.type = "$RemoveBrokenEquip";
+        log.from = this;
+        log.card_str = IntList2StringList(card_ids).join("+");
+        room->sendLog(log);
+        room->getThread()->delay();
+    }
+    BrokenEquipChangedStruct b;
+    b.player = this;
+    b.ids = card_ids;
+    b.broken = false;
+    /*if (b.player->getTreasure() && b.ids.contains(b.player->getTreasure()->getEffectiveId())) {
+        JsonArray args;
+        args << QSanProtocol::S_GAME_EVENT_BROKEN_EQUIP_CHANGED; 
+        args << objectName();
+        args << "wooden_ox";
+        getRoom()->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+    }*/
+    room->getThread()->trigger(BrokenEquipChanged, room, QVariant::fromValue(b));
+}
+
 
 void ServerPlayer::gainAnExtraTurn()
 {

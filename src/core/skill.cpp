@@ -277,7 +277,8 @@ bool OneCardViewAsSkill::viewFilter(const Card *to_select) const
                 return false;
             pat.chop(1);
         } else if (response_or_use && pat.contains("hand")) {
-            pat.replace("hand", "hand,wooden_ox,piao");
+            pat.replace("hand", "hand,wooden_ox");
+            //pat.replace("hand", handlist.join(","));
         }
         ExpPattern pattern(pat);
         return pattern.match(Self, to_select);

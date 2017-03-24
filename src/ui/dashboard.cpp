@@ -68,6 +68,7 @@ Dashboard::Dashboard(QGraphicsItem *widget) //QGraphicsPixmapItem *widget
 
     connect(Self, SIGNAL(chaoren_changed()), this, SLOT(updateChaoren()));
     connect(Self, SIGNAL(showncards_changed()), this, SLOT(updateShown()));
+    connect(Self, SIGNAL(brokenEquips_changed()), this, SLOT(updateHandPile()));
 
 #ifdef Q_OS_WIN
     taskbarButton = new QWinTaskbarButton(this);
@@ -639,7 +640,7 @@ void Dashboard::skillButtonDeactivated()
 void Dashboard::selectAll()
 {
     foreach (const QString &pile, Self->getPileNames()) {
-        if (pile.startsWith("&") || pile == "wooden_ox" || pile == "piao")
+        if (pile.startsWith("&") || pile == "wooden_ox")
             retractPileCards(pile);
     }
     retractSpecialCard();
@@ -1022,12 +1023,12 @@ void Dashboard::disableAllCards()
 void Dashboard::enableCards()
 {
     m_mutexEnableCards.lock();
-    foreach (const QString &pile, Self->getPileNames()) {
+    /*foreach (const QString &pile, Self->getPileNames()) {
         if (pile.startsWith("&") || pile == "wooden_ox")
             expandPileCards(pile);
-        if (Self->hasSkill("shanji") && pile == "piao")
-            expandPileCards("piao");
-    }
+    }*/
+    foreach(const QString &pile, Self->getHandPileList(false))
+        expandPileCards(pile);
     expandSpecialCard();
 
     foreach (CardItem *card_item, m_handCards) {
@@ -1062,23 +1063,23 @@ void Dashboard::startPending(const ViewAsSkill *skill)
         expand = true;
 
     foreach (const QString &pileName, _m_pile_expanded) {
-        if (!(pileName.startsWith("&") || pileName == "wooden_ox" || pileName == "piao"))
+        if (!(pileName.startsWith("&") || pileName == "wooden_ox"))
             retractPileCards(pileName);
     }
     retractSpecialCard();
 
     if (expand) {
-        foreach (const QString &pile, Self->getPileNames()) {
+        /*foreach (const QString &pile, Self->getPileNames()) {
             if (pile.startsWith("&") || pile == "wooden_ox")
                 expandPileCards(pile);
-            if (Self->hasSkill("shanji") && pile == "piao")
-                expandPileCards("piao");
-        }
+        }*/
+        foreach(const QString &pile, Self->getHandPileList(false))
+            expandPileCards(pile);
         if (!(skill && skill->isResponseOrUse()))
             expandSpecialCard();
     } else {
         foreach (const QString &pile, Self->getPileNames()) {
-            if (pile.startsWith("&") || pile == "wooden_ox" || pile == "piao")
+            if (pile.startsWith("&") || pile == "wooden_ox")
                 retractPileCards(pile);
         }
         retractSpecialCard();
@@ -1113,7 +1114,7 @@ void Dashboard::stopPending()
     view_as_skill = NULL;
     pending_card = NULL;
     foreach (const QString &pile, Self->getPileNames()) {
-        if (pile.startsWith("&") || pile == "wooden_ox" || pile == "piao")
+        if (pile.startsWith("&") || pile == "wooden_ox")
             retractPileCards(pile);
     }
     retractSpecialCard();
@@ -1260,6 +1261,13 @@ void Dashboard::retractSpecialCard()
 void Dashboard::updateChaoren()
 {
     expandSpecialCard();
+}
+void Dashboard::updateHandPile() {
+    WrappedCard *t = Self->getTreasure();
+    if (t) {
+        if (Self->isBrokenEquip(t->getEffectiveId()))
+            retractPileCards("wooden_ox");
+    }
 }
 
 void Dashboard::updateShown()

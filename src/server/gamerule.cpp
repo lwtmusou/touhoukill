@@ -5,7 +5,6 @@
 #include "serverplayer.h"
 #include "settings.h"
 #include "standard.h"
-
 #include <QTime>
 
 GameRule::GameRule(QObject *)
@@ -25,7 +24,7 @@ GameRule::GameRule(QObject *)
            << SlashHit << SlashEffected << SlashProceed
            << ConfirmDamage << DamageDone << DamageComplete
            << StartJudge << FinishRetrial << FinishJudge
-           << ChoiceMade << BeforeCardsMove;
+           << ChoiceMade << BeforeCardsMove << EventPhaseStart;
 }
 
 int GameRule::getPriority() const
@@ -219,6 +218,11 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
     case EventPhaseProceeding: {
         ServerPlayer *player = data.value<ServerPlayer *>();
         onPhaseProceed(player);
+        break;
+    }case EventPhaseStart: {
+        ServerPlayer *current = data.value<ServerPlayer *>();
+        if (current && current->getPhase() == Player::Finish && !current->getBrokenEquips().isEmpty())
+            current->removeBrokenEquips(current->getBrokenEquips());
         break;
     }
     case EventPhaseEnd: {
@@ -721,6 +725,14 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             }
             if (!shownIds.isEmpty())
                 player->removeShownHandCards(shownIds);
+
+            QList<int> brokenIds;
+            foreach(int id, move.card_ids) {
+                if (player->isBrokenEquip(id))
+                    brokenIds << id;
+            }
+            if (!brokenIds.isEmpty())
+                player->removeBrokenEquips(brokenIds, false);
         }
         break;
     }

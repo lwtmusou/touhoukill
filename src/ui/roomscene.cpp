@@ -475,8 +475,6 @@ void RoomScene::handleGameEvent(const QVariant &args)
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
         container->updateAvatarTooltip();
-        if (ClientInstance->getStatus() == Client::Playing && skill_name == "shanji")
-            dashboard->expandPileCards("piao");
         dashboard->expandSpecialCard(); //for chaoren
         break;
     }
@@ -500,9 +498,6 @@ void RoomScene::handleGameEvent(const QVariant &args)
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
         container->updateAvatarTooltip();
-        if (skill_name == "shanji")
-            dashboard->retractPileCards("piao");
-
         dashboard->expandSpecialCard(); //for chaoren
         break;
     }
@@ -2515,7 +2510,6 @@ void RoomScene::useSelectedCard()
         dashboard->stopPending();
     else {
         dashboard->retractPileCards("wooden_ox");
-        dashboard->retractPileCards("piao");
         dashboard->retractPileCards("chaoren");
         foreach (const QString &pile, Self->getPileNames()) {
             if (pile.startsWith("&"))

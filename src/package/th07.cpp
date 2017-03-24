@@ -1456,8 +1456,7 @@ public:
         bool visible = invoke->invoker->tag["xijian_visible"].toBool();
         invoke->invoker->tag.remove("xijian_id");
         invoke->invoker->tag.remove("xijian_visible");
-        //need reason to slove the disambugation of the move of piao is
-        //xijian a "piao" or using a "piao"
+
         CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, player->objectName(), objectName(), QString());
         room->obtainCard(player, Sanguosha->getCard(card_id), reason, visible);
         return false;

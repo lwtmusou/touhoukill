@@ -595,3 +595,11 @@ ExtraTurnStruct::ExtraTurnStruct()
     , extraTarget(NULL)
 {
 }
+
+
+BrokenEquipChangedStruct::BrokenEquipChangedStruct()
+    : player(NULL)
+    , ids(QList<int>())
+    , broken(false)
+{
+}

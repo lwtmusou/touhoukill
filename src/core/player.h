@@ -99,6 +99,10 @@ public:
     QList<int> getShownHandcards() const;
     void setShownHandcards(QList<int> ids);
     bool isShownHandcard(int id);
+    QList<int> getBrokenEquips() const;
+    void setBrokenEquips(QList<int> ids);
+    bool isBrokenEquip(int id) const;
+
 
     int getHp() const;
     int getRenHp() const; //for banling
@@ -268,6 +272,7 @@ public:
     bool pileOpen(const QString &pile_name, const QString &player) const;
     void setPileOpen(const QString &pile_name, const QString &player);
     QList<int> getHandPile() const;
+    QStringList getHandPileList(bool view_as_skill = true) const;
 
     void addHistory(const QString &name, int times = 1);
     void clearHistory();
@@ -323,6 +328,7 @@ protected:
     QHash<QString, int> history;
     QStringList skill_invalid;
     QList<int> shown_handcards;
+    QList<int> broken_equips;
 
 private:
     QString screen_name;
@@ -365,6 +371,7 @@ signals:
     void chaoren_changed();
     void showncards_changed();
     void removedChanged();
+    void brokenEquips_changed();
 };
 
 #endif

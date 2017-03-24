@@ -143,7 +143,8 @@ public slots:
     void showDistance();
     virtual void refresh();
     void hideSkillName();
-
+    
+    void updateBrokenEquips();
     void onRemovedChanged();
 
 protected:
