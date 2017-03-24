@@ -1674,7 +1674,7 @@ public:
         QList<int> subcards = card->getSubcards();
         if (subcards.length() == 0 || player->isKongcheng())
             return false;
-        QList<int> wood_ox = player->getPile("wooden_ox");
+        QList<int> wood_ox = player->getHandPile();//player->getPile("wooden_ox");
         int wood_num = 0;
         foreach (int id, subcards) {
             if (wood_ox.contains(id))
@@ -2305,6 +2305,153 @@ public:
     }
 };
 
+
+
+BodongCard::BodongCard()
+{
+    will_throw = true;
+}
+
+bool BodongCard::targetFilter(const QList<const Player *> &, const Player *, const Player *) const
+{
+    Q_ASSERT(false);
+    return false;
+}
+
+bool BodongCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *, int &maxVotes) const
+{
+    if (to_select->getEquips().isEmpty())
+        return false;
+    int i = 0;
+
+    foreach(const Player *player, targets) {
+        if (player == to_select)
+            i++;
+    }
+
+    maxVotes = qMax(3 - targets.size(), 0) + i;
+    return maxVotes > 0;
+}
+
+bool BodongCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const
+{
+    if (targets.toSet().size() > 3 || targets.toSet().size() == 0)
+        return false;
+    QMap<const Player *, int> map;
+
+    foreach(const Player *sp, targets)
+        map[sp]++;
+    foreach(const Player *sp, map.keys()) {
+        int num = sp->getEquips().length() - sp->getBrokenEquips().length();
+        if (map[sp] >  num || num <= 0)
+            return false;
+    }
+
+    return true;
+}
+
+void BodongCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
+    QMap<ServerPlayer *, int> map;
+    foreach(ServerPlayer *sp, targets)
+        map[sp]++;
+
+    QList<ServerPlayer *> newtargets = map.keys();
+    room->sortByActionOrder(newtargets);
+    foreach(ServerPlayer *sp, newtargets) {
+        //if (source == sp)
+        QList<int> ids;
+        QList<int> disable;
+        foreach(const Card *c, sp->getCards("e")) {
+            if (sp->isBrokenEquip(c->getEffectiveId()))
+                disable << c->getEffectiveId();
+        }
+        for (int i = 0; i < map[sp]; i++) {
+            int id = room->askForCardChosen(source, sp, "e", objectName(), false, Card::MethodNone, disable);
+            ids << id;
+            disable << id;
+        }
+        sp->addBrokenEquips(ids);
+    }
+}
+
+class Bodong : public OneCardViewAsSkill
+{
+public:
+    Bodong()
+        : OneCardViewAsSkill("bodong")
+    {
+        filter_pattern = ".|.|.|hand!";
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->hasUsed("BodongCard") && !player->isKongcheng();
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const
+    {
+        if (originalCard != NULL) {
+            BodongCard *card = new BodongCard;
+            card->addSubcard(originalCard);
+            return card;
+        }
+        else
+            return NULL;
+    }
+};
+
+
+class Huanlong : public TriggerSkill
+{
+public:
+    Huanlong()
+        : TriggerSkill("huanlong")
+    {
+        events << Damage << Damaged;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        
+        DamageStruct damage = data.value<DamageStruct>();
+        ServerPlayer *player = NULL;
+        if (triggerEvent == Damage)
+            player = damage.from;
+        else
+            player = damage.to;
+
+        if (player == NULL || player->isDead() || player->getBrokenEquips().isEmpty())
+            return QList<SkillInvokeDetail>();
+
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            if (p->canDiscard(player, "hs"))//p != player && 
+                d << SkillInvokeDetail(this, p, p, NULL, false, player);
+        }
+        return d;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
+        QList<int> disable;
+        foreach(const Card *c, invoke->targets.first()->getCards("e")) {
+            if (!invoke->targets.first()->isBrokenEquip(c->getEffectiveId()))
+                disable << c->getEffectiveId();
+        }
+        int id1 = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "e", objectName(), false, Card::MethodNone, disable);
+        invoke->targets.first()->removeBrokenEquips(QList<int>() << id1);
+
+        if (invoke->invoker->canDiscard(invoke->targets.first(), "hs")) {
+            int id2 = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hs", objectName(), false, Card::MethodDiscard);
+            room->throwCard(id2, invoke->targets.first(), invoke->invoker);
+        }
+        return false;
+    }
+};
+
+
 ProtagonistPackage::ProtagonistPackage()
     : Package("protagonist")
 {
@@ -2372,6 +2519,10 @@ ProtagonistPackage::ProtagonistPackage()
     marisa_old->addSkill(new Toushi);
     marisa_old->addSkill(new Moli);
 
+    General *reisen_gzz = new General(this, "reisen_gzz", "zhu", 4, false);
+    reisen_gzz->addSkill(new Bodong);
+    reisen_gzz->addSkill(new Huanlong);
+
     addMetaObject<MofaCard>();
     addMetaObject<WuyuCard>();
     addMetaObject<SaiqianCard>();
@@ -2386,6 +2537,7 @@ ProtagonistPackage::ProtagonistPackage()
     addMetaObject<DfgzmSiyuCard>();
     addMetaObject<ExtraCollateralCard>();
     addMetaObject<YinyangCard>();
+    addMetaObject<BodongCard>();
 
     skills << new WuyuVS << new SaiqianVS;
 }
