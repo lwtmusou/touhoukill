@@ -1881,8 +1881,6 @@ void WoodenOx::onUninstall(ServerPlayer *player) const
     Treasure::onUninstall(player);
 }
 
-
-
 LureTiger::LureTiger(Card::Suit suit, int number)
     : TrickCard(suit, number)
 {
@@ -1909,7 +1907,7 @@ void LureTiger::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 {
     QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
     bool all_nullified = nullified_list.contains("_ALL_TARGETS");
-    foreach(ServerPlayer *target, targets) {
+    foreach (ServerPlayer *target, targets) {
         CardEffectStruct effect;
         effect.card = this;
         effect.from = source;
@@ -1931,12 +1929,11 @@ void LureTiger::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     room->removeTag("targets" + this->toString());
 
     source->drawCards(1, objectName());
-    
-
 
     if (room->getCardPlace(getEffectiveId()) == Player::PlaceTable) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
-        if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
+        if (targets.size() == 1)
+            reason.m_targetId = targets.first()->objectName();
         reason.m_extraData = QVariant::fromValue((const Card *)this);
         room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
     }
@@ -1954,20 +1951,19 @@ void LureTiger::onEffect(const CardEffectStruct &effect) const
 class LureTigerSkill : public TriggerSkill
 {
 public:
-    LureTigerSkill() : TriggerSkill("lure_tiger_effect")
+    LureTigerSkill()
+        : TriggerSkill("lure_tiger_effect")
     {
         events << EventPhaseChanging;
         global = true;
     }
-    
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         //the current player can also to be removed
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to == Player::NotActive) {
-            foreach(ServerPlayer *p, room->getAllPlayers(true))
-            {
+            foreach (ServerPlayer *p, room->getAllPlayers(true)) {
                 if (p->isRemoved()) {
                     room->setPlayerProperty(p, "removed", false);
                     room->removePlayerCardLimitation(p, "use", ".$0");
@@ -1980,7 +1976,8 @@ public:
 class LureTigerProhibit : public ProhibitSkill
 {
 public:
-    LureTigerProhibit() : ProhibitSkill("#lure_tiger-prohibit")
+    LureTigerProhibit()
+        : ProhibitSkill("#lure_tiger-prohibit")
     {
     }
 
@@ -1989,8 +1986,6 @@ public:
         return to->isRemoved() && card->getTypeId() != Card::TypeSkill;
     }
 };
-
-
 
 Drowning::Drowning(Suit suit, int number)
     : AOE(suit, number)
@@ -2002,7 +1997,7 @@ void Drowning::onUse(Room *room, const CardUseStruct &card_use) const
 {
     ServerPlayer *source = card_use.from;
     QList<ServerPlayer *> targets, other_players = room->getOtherPlayers(source);
-    foreach(ServerPlayer *player, other_players) {
+    foreach (ServerPlayer *player, other_players) {
         const ProhibitSkill *skill = room->isProhibited(source, player, this);
         if (skill) {
             LogMessage log;
@@ -2015,8 +2010,7 @@ void Drowning::onUse(Room *room, const CardUseStruct &card_use) const
             if (player->hasSkill(skill))
                 room->notifySkillInvoked(player, skill->objectName());
             room->broadcastSkillInvoke(skill->objectName());
-        }
-        else if (!player->canDiscard(player, "e"))
+        } else if (!player->canDiscard(player, "e"))
             continue;
         else
             targets << player;
@@ -2035,7 +2029,7 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
         // force discard!!!
         if (!card) {
             QList<const Card *> equips = effect.to->getCards("e");
-            foreach(const Card *c, equips) {
+            foreach (const Card *c, equips) {
                 if (effect.to->isJilei(c))
                     equips.removeOne(c);
             }
@@ -2047,12 +2041,11 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
     }
 }
 
-
 bool Drowning::isAvailable(const Player *player) const
 {
     bool canUse = false;
     QList<const Player *> players = player->getAliveSiblings();
-    foreach(const Player *p, players) {
+    foreach (const Player *p, players) {
         if (player->isProhibited(p, this) || !p->canDiscard(p, "e"))
             continue;
 
@@ -2062,9 +2055,6 @@ bool Drowning::isAvailable(const Player *player) const
 
     return canUse && TrickCard::isAvailable(player);
 }
-
-
-
 
 KnownBoth::KnownBoth(Card::Suit suit, int number)
     : TrickCard(suit, number)
@@ -2087,7 +2077,7 @@ bool KnownBoth::targetFilter(const QList<const Player *> &targets, const Player 
     if (targets.length() >= total_num || to_select == Self)
         return false;
 
-    return !to_select->isKongcheng()  && (to_select->getShownHandcards().length() < to_select->getHandcardNum());
+    return !to_select->isKongcheng() && (to_select->getShownHandcards().length() < to_select->getHandcardNum());
 }
 
 bool KnownBoth::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
@@ -2099,12 +2089,11 @@ bool KnownBoth::targetsFeasible(const QList<const Player *> &targets, const Play
     else
         sub << getEffectiveId();
 
-    foreach(int id, sub) {
+    foreach (int id, sub) {
         if (Self->getHandPile().contains(id)) {
             rec = false;
             break;
-        }
-        else { // for  skill chaoren
+        } else { // for  skill chaoren
             if (id == Self->property("chaoren").toInt()) {
                 rec = false;
                 break;
@@ -2142,8 +2131,7 @@ void KnownBoth::onUse(Room *room, const CardUseStruct &card_use) const
         card_use.from->broadcastSkillInvoke("@recast");
 
         card_use.from->drawCards(1);
-    }
-    else
+    } else
         TrickCard::onUse(room, card_use);
 }
 
@@ -2161,7 +2149,7 @@ void KnownBoth::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 {
     QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
     bool all_nullified = nullified_list.contains("_ALL_TARGETS");
-    foreach(ServerPlayer *target, targets) {
+    foreach (ServerPlayer *target, targets) {
         CardEffectStruct effect;
         effect.card = this;
         effect.from = source;
@@ -2185,7 +2173,7 @@ void KnownBoth::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     if (source->isAlive() && source->isCurrent()) {
         room->touhouLogmessage("#KnownBothLimit", source);
         room->setTag("KnownBothUsed", true);
-        foreach(ServerPlayer *p, room->getOtherPlayers(source)) {
+        foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
             if (p->getMark("KnownBoth_Limit") == 0) {
                 room->setPlayerCardLimitation(p, "use", ".|.|.|show", true);
                 room->setPlayerMark(p, "KnownBoth_Limit", 1);
@@ -2193,16 +2181,14 @@ void KnownBoth::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
         }
     }
 
-
-
     if (room->getCardPlace(getEffectiveId()) == Player::PlaceTable) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
-        if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
+        if (targets.size() == 1)
+            reason.m_targetId = targets.first()->objectName();
         reason.m_extraData = QVariant::fromValue((const Card *)this);
         room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
     }
 }
-
 
 class KnownBothSkill : public TriggerSkill
 {
@@ -2219,7 +2205,7 @@ public:
         if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getMark("KnownBoth_Limit") > 0) {
                         room->removePlayerCardLimitation(p, "use", ".|.|.|show$1");
                         room->setPlayerMark(p, "KnownBoth_Limit", 0);
@@ -2230,7 +2216,7 @@ public:
         } else {
             QVariant knownBothTag = room->getTag("KnownBothUsed");
             if (knownBothTag.canConvert(QVariant::Bool) && knownBothTag.toBool() && room->getCurrent()) {
-                foreach(ServerPlayer *p, room->getOtherPlayers(room->getCurrent())) {
+                foreach (ServerPlayer *p, room->getOtherPlayers(room->getCurrent())) {
                     if (p->getMark("KnownBoth_Limit") == 0) {
                         room->setPlayerCardLimitation(p, "use", ".|.|.|show", true);
                         room->setPlayerMark(p, "KnownBoth_Limit", 1);
@@ -2403,7 +2389,7 @@ StandardExCardPackage::StandardExCardPackage()
           << new KnownBoth(Card::Diamond, 3)
           << new KnownBoth(Card::Spade, 4);
     skills << new RenwangShieldSkill << new IceSwordSkill << new WoodenOxSkill << new WoodenOxTriggerSkill
-        << new LureTigerSkill << new LureTigerProhibit << new KnownBothSkill;
+           << new LureTigerSkill << new LureTigerProhibit << new KnownBothSkill;
     insertRelatedSkills("lure_tiger_effect", "#lure_tiger-prohibit");
 
     foreach (Card *card, cards)

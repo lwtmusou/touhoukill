@@ -1852,7 +1852,7 @@ public:
     }
 
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {   //triggerEvent == PostHpReduced
+    { //triggerEvent == PostHpReduced
         if (triggerEvent == EnterDying) {
             if (!invoke->invoker->faceUp())
                 invoke->invoker->turnOver();
@@ -1891,7 +1891,7 @@ public:
 
             invoke->invoker->gainAnExtraTurn();
 
-            //only for UI //While EnterDying, need QuitDying to change '_m_saveMeIcon'  
+            //only for UI //While EnterDying, need QuitDying to change '_m_saveMeIcon'
             JsonArray arg;
             arg << QSanProtocol::S_GAME_EVENT_PLAYER_QUITDYING << invoke->invoker->objectName();
             room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
@@ -2182,7 +2182,8 @@ public:
                     card = response.m_card;
             }
             if (player && player->getPhase() == Player::Play
-                && card && !card->isKindOf("SkillCard")
+                && card
+                && !card->isKindOf("SkillCard")
                 && card->getHandlingMethod() == Card::MethodUse)
                 room->setPlayerProperty(player, "toushi_card", card->objectName());
         } else if (triggerEvent == EventPhaseChanging) {

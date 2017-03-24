@@ -430,7 +430,7 @@ QString Player::getNextName() const
 
 Player *Player::getLast(bool ignoreRemoved) const
 {
-    foreach(Player *p, parent()->findChildren<Player *>()) {
+    foreach (Player *p, parent()->findChildren<Player *>()) {
         if (p->getNext(ignoreRemoved) == this)
             return p;
     }
@@ -441,9 +441,11 @@ Player *Player::getNextAlive(int n, bool ignoreRemoved) const
 {
     bool hasAlive = (aliveCount(!ignoreRemoved) > 0);
     Player *next = parent()->findChild<Player *>(objectName());
-    if (!hasAlive) return next;
+    if (!hasAlive)
+        return next;
     for (int i = 0; i < n; ++i) {
-        do next = next->getNext(ignoreRemoved);
+        do
+            next = next->getNext(ignoreRemoved);
         while (next->isDead());
     }
     return next;
@@ -1158,7 +1160,6 @@ void Player::setChained(bool chained)
         emit state_changed();
     }
 }
-
 
 bool Player::isRemoved() const
 {

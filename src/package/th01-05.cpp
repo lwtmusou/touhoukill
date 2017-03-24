@@ -779,13 +779,13 @@ public:
     {
         QStringList trick_list;
         if (target) {
-            foreach(const Card *trick, kana->getJudgingArea()) {
+            foreach (const Card *trick, kana->getJudgingArea()) {
                 if (!target->containsTrick(trick->objectName()) && !kana->isProhibited(target, trick))
                     trick_list << trick->objectName();
             }
         } else {
             QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-            foreach(const Card *card, cards) {
+            foreach (const Card *card, cards) {
                 if (card->getTypeId() == Card::TypeTrick && !card->isNDTrick()
                     && !trick_list.contains(card->objectName())
                     && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
@@ -799,7 +799,6 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
-        
         ServerPlayer *current = data.value<ServerPlayer *>();
         if (current->getPhase() == Player::Finish && current->hasSkill(this) && current->isAlive() && !current->isKongcheng()) {
             QStringList trick_list = mengxiaoChoices(current);
@@ -808,7 +807,7 @@ public:
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current);
         } else if (current->getPhase() == Player::Start) {
             QList<SkillInvokeDetail> d;
-            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (p != current && !mengxiaoChoices(p, current).isEmpty())
                     d << SkillInvokeDetail(this, p, p, NULL, false, current);
             }
@@ -852,33 +851,28 @@ public:
             move.to = invoke->invoker;
             move.to_place = Player::PlaceDelayedTrick;
             room->moveCardsAtomic(move, true);
-        
-        } 
-        else {
+
+        } else {
 #pragma message WARN("todo_lwtmusou:two steps -> one step   using askForUseCard")
             //step 1: invoke
             if (!invoke->invoker->askForSkillInvoke(this, data))
                 return false;
 
-            //step 2:choose id 
+            //step 2:choose id
             QStringList trick_list = mengxiaoChoices(invoke->invoker, current);
             QList<int> disable;
-            foreach(const Card *trick, invoke->invoker->getJudgingArea()) {
+            foreach (const Card *trick, invoke->invoker->getJudgingArea()) {
                 if (!trick_list.contains(trick->objectName()))
                     disable << trick->getEffectiveId();
             }
             int card_id = room->askForCardChosen(invoke->invoker, invoke->invoker, "j", objectName(), false, Card::MethodDiscard, disable);
             const Card *card = Sanguosha->getCard(card_id);
-            room->moveCardTo(card, invoke->invoker, current, Player::PlaceDelayedTrick,
-                    CardMoveReason(CardMoveReason::S_REASON_TRANSFER,
-                        invoke->invoker->objectName(), objectName(), QString()));
+            room->moveCardTo(card, invoke->invoker, current, Player::PlaceDelayedTrick, CardMoveReason(CardMoveReason::S_REASON_TRANSFER, invoke->invoker->objectName(), objectName(), QString()));
         }
-        
 
         return false;
     }
 };
-
 
 class Lubiao : public TriggerSkill
 {
@@ -893,7 +887,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         bool can = false;
-        foreach(ServerPlayer *p, room->getAllPlayers()) {
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (p->getCards("j").length() > 0) {
                 can = true;
                 break;
@@ -2208,7 +2202,7 @@ void EzhaoCard::onUse(Room *room, const CardUseStruct &card_use) const
 void EzhaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     room->removePlayerMark(source, "@ezhao");
-    foreach (ServerPlayer *p, targets){
+    foreach (ServerPlayer *p, targets) {
         room->recover(p, RecoverStruct());
         room->setPlayerProperty(p, "dyingFactor", p->getDyingFactor() + 1);
     }
@@ -2235,12 +2229,10 @@ public:
     }
 };
 
-
-
 ZongjiuCard::ZongjiuCard()
 {
     will_throw = false;
-    handling_method = Card::MethodNone;//related to UseCardLimit
+    handling_method = Card::MethodNone; //related to UseCardLimit
 }
 
 bool ZongjiuCard::targetFixed() const
@@ -2250,7 +2242,6 @@ bool ZongjiuCard::targetFixed() const
     ana->deleteLater();
     return ana->targetFixed();
 }
-
 
 const Card *ZongjiuCard::validate(CardUseStruct &use) const
 {
@@ -2276,7 +2267,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        return !player->getShownHandcards().isEmpty() && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE 
+        return !player->getShownHandcards().isEmpty() && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
             && matchAvaliablePattern("analeptic", pattern);
     }
 
@@ -2286,13 +2277,10 @@ public:
             ZongjiuCard *card = new ZongjiuCard;
             card->addSubcard(originalCard);
             return card;
-        }
-        else
+        } else
             return NULL;
     }
 };
-
-
 
 class Zongjiu : public TriggerSkill
 {
@@ -2309,7 +2297,7 @@ public:
         QList<SkillInvokeDetail> d;
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->isKindOf("Peach")) {
-            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (p->getCards("h").length() > 0)
                     d << SkillInvokeDetail(this, p, p);
             }
@@ -2335,7 +2323,6 @@ public:
     }
 };
 
-
 class Xingyou : public TriggerSkill
 {
 public:
@@ -2350,23 +2337,23 @@ public:
         if (e == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Slash") && use.from->isAlive() && use.from->hasSkill(this)) {
-                foreach(int id, use.from->getShownHandcards()) {
+                foreach (int id, use.from->getShownHandcards()) {
                     if (Sanguosha->getCard(id)->getSuit() == use.card->getSuit())
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
                 }
             }
-        }
-        else {
+        } else {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.from->isAlive() && effect.from->hasSkill(this) 
-                    && effect.to->isAlive() && effect.from->canDiscard(effect.to, "hes")) {
-                foreach(int id, effect.from->getShownHandcards()) {
-                    if (Sanguosha->getCard(id)->getSuit() ==  effect.slash->getSuit())
+            if (effect.from->isAlive() && effect.from->hasSkill(this)
+                && effect.to->isAlive()
+                && effect.from->canDiscard(effect.to, "hes")) {
+                foreach (int id, effect.from->getShownHandcards()) {
+                    if (Sanguosha->getCard(id)->getSuit() == effect.slash->getSuit())
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.from, effect.from, NULL, false, effect.to);
                 }
             }
         }
-        
+
         return QList<SkillInvokeDetail>();
     }
 
@@ -2374,8 +2361,7 @@ public:
     {
         if (e == CardUsed) {
             invoke->invoker->drawCards(1);
-        }
-        else {
+        } else {
             int card_id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName(), false, Card::MethodDiscard);
             room->throwCard(card_id, invoke->targets.first(), invoke->invoker);
         }
@@ -2414,7 +2400,6 @@ TH0105Package::TH0105Package()
     kana->addSkill(new Mengxiao);
     kana->addSkill(new Lubiao);
 
-
     General *yuka_old = new General(this, "yuka_old$", "pc98", 4, false);
     yuka_old->addSkill(new Yeyan);
     yuka_old->addSkill(new Youyue);
@@ -2444,7 +2429,6 @@ TH0105Package::TH0105Package()
     General *sariel = new General(this, "sariel", "pc98", 4, false);
     sariel->addSkill(new Baosi);
     sariel->addSkill(new Ezhao);
-
 
     General *konngara = new General(this, "konngara", "pc98", 4, false);
     konngara->addSkill(new Zongjiu);

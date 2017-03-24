@@ -1,9 +1,8 @@
 #include "th15.h"
 #include "general.h"
 
-#include "skill.h"
 #include "engine.h"
-
+#include "skill.h"
 
 YidanCard::YidanCard()
 {
@@ -21,11 +20,11 @@ bool YidanCard::targetFilter(const QList<const Player *> &targets, const Player 
     if (targets.length() >= slash_targets)
         return false;
     if (!Self->isProhibited(to_select, card, targets)) {
-        foreach(const Card* c, to_select->getEquips()) {
+        foreach (const Card *c, to_select->getEquips()) {
             if (card->getSuit() == c->getSuit())
                 return true;
         }
-        foreach(int id, to_select->getShownHandcards()) {
+        foreach (int id, to_select->getShownHandcards()) {
             if (card->getSuit() == Sanguosha->getCard(id)->getSuit())
                 return true;
         }
@@ -42,8 +41,8 @@ bool YidanCard::targetsFeasible(const QList<const Player *> &targets, const Play
     card->deleteLater();
 
     bool yidan = false;
-    foreach(const Player *p, targets) {
-        foreach(const Card* c, p->getEquips()) {
+    foreach (const Player *p, targets) {
+        foreach (const Card *c, p->getEquips()) {
             if (card->getSuit() == c->getSuit()) {
                 yidan = true;
                 break;
@@ -51,7 +50,7 @@ bool YidanCard::targetsFeasible(const QList<const Player *> &targets, const Play
         }
         if (yidan)
             break;
-        foreach(int id, p->getShownHandcards()) {
+        foreach (int id, p->getShownHandcards()) {
             if (card->getSuit() == Sanguosha->getCard(id)->getSuit()) {
                 yidan = true;
                 break;
@@ -59,7 +58,7 @@ bool YidanCard::targetsFeasible(const QList<const Player *> &targets, const Play
         }
         if (yidan)
             break;
-    }    
+    }
     return yidan && card->targetsFeasible(targets, Self);
 }
 
@@ -140,11 +139,11 @@ public:
     virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &) const
     {
         if (to->hasSkill("yidan") && card->isKindOf("Slash")) {
-            foreach(const Card* c, to->getEquips()) {
+            foreach (const Card *c, to->getEquips()) {
                 if (card->getSuit() == c->getSuit())
                     return true;
             }
-            foreach(int id, to->getShownHandcards()) {
+            foreach (int id, to->getShownHandcards()) {
                 if (card->getSuit() == Sanguosha->getCard(id)->getSuit())
                     return true;
             }
@@ -153,32 +152,25 @@ public:
     }
 };
 
-
-
-
-
-
-
 TH15Package::TH15Package()
     : Package("th15")
 {
-    //General *junko = new General(this, "junko$", "gzz", 4, false);
+    General *junko = new General(this, "junko$", "gzz", 4, false, true, true);
 
     General *seiran = new General(this, "seiran", "gzz", 4, false);
     seiran->addSkill(new Yidan);
     seiran->addSkill(new YidanProhibit);
     related_skills.insertMulti("yidan", "#yidan");
 
-    //General *ringo = new General(this, "ringo", "gzz", 4, false);
+    General *ringo = new General(this, "ringo", "gzz", 4, false, true, true);
 
-    //General *doremy = new General(this, "doremy", "gzz", 4, false);
+    General *doremy = new General(this, "doremy", "gzz", 4, false, true, true);
 
-    //General *sagume = new General(this, "sagume", "gzz", 4, false);
+    General *sagume = new General(this, "sagume", "gzz", 4, false, true, true);
 
-    //General *clownpiece = new General(this, "clownpiece", "gzz", 4, false);
+    General *clownpiece = new General(this, "clownpiece", "gzz", 4, false, true, true);
 
-    //General *hecatia = new General(this, "hecatia", "gzz", 4, false);
-
+    General *hecatia = new General(this, "hecatia", "gzz", 4, false, true, true);
 
     addMetaObject<YidanCard>();
 }

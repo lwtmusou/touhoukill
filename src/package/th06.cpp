@@ -1612,8 +1612,6 @@ public:
     }
 };
 
-
-
 class XiaoyinVS : public OneCardViewAsSkill
 {
 public:
@@ -1659,9 +1657,9 @@ public:
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
-        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-               if (!player->isProhibited(p, card) && player->inMyAttackRange(p))
-                    d << SkillInvokeDetail(this, p, p, NULL, false, player);
+        foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            if (!player->isProhibited(p, card) && player->inMyAttackRange(p))
+                d << SkillInvokeDetail(this, p, p, NULL, false, player);
         }
         return d;
     }
@@ -1671,10 +1669,10 @@ public:
         ServerPlayer *target = invoke->targets.first();
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
         room->setPlayerFlag(invoke->invoker, "Global_xiaoyinFailed");
-        const Card* card = room->askForUseCard(target, "@@xiaoyinVS!", "xiaoyinuse:" + invoke->invoker->objectName());
+        const Card *card = room->askForUseCard(target, "@@xiaoyinVS!", "xiaoyinuse:" + invoke->invoker->objectName());
         if (card == NULL) {
             //force use!
-            foreach(const Card *c, target->getHandcards()) {
+            foreach (const Card *c, target->getHandcards()) {
                 LureTiger *lure = new LureTiger(Card::SuitToBeDecided, 0);
                 lure->addSubcard(c->getEffectiveId());
                 lure->setSkillName("_xiaoyin");
@@ -1682,8 +1680,7 @@ public:
                 if (!target->isCardLimited(lure, Card::MethodUse, true) && !target->isProhibited(invoke->invoker, lure)) {
                     room->useCard(CardUseStruct(lure, target, invoke->invoker), false);
                     return false;
-                }
-                else
+                } else
                     delete lure;
             }
             room->showAllCards(invoke->targets.first());
@@ -1724,15 +1721,14 @@ public:
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player && player->hasSkill(this))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
-        }
-        else if (triggerEvent == TargetConfirmed) {
+        } else if (triggerEvent == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
             QList<SkillInvokeDetail> d;
             if (use.card->isKindOf("Slash") || use.card->isNDTrick()) {
-                foreach(ServerPlayer *p, use.to) {
+                foreach (ServerPlayer *p, use.to) {
                     if (!p->hasSkill(this))
                         continue;
-                    foreach(int id, p->getPile(objectName())) {
+                    foreach (int id, p->getPile(objectName())) {
                         if (Sanguosha->getCard(id)->getSuit() == use.card->getSuit()) {
                             d << SkillInvokeDetail(this, p, p, NULL, true);
                             break;
@@ -1741,8 +1737,7 @@ public:
                 }
             }
             return d;
-        }
-        else if (triggerEvent == CardsMoveOneTime) {
+        } else if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *satsuki = qobject_cast<ServerPlayer *>(move.from);
             if (satsuki != NULL && satsuki->isAlive() && satsuki->hasSkill(this) && move.from_places.contains(Player::PlaceSpecial)) {
@@ -1752,7 +1747,6 @@ public:
                 }
             }
         }
-        
 
         return QList<SkillInvokeDetail>();
     }
@@ -1783,7 +1777,6 @@ public:
         return false;
     }
 };
-
 
 TH06Package::TH06Package()
     : Package("th06")

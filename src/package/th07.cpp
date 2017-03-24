@@ -552,7 +552,8 @@ public:
                     card = response.m_card;
             }
             if (player && player->getPhase() == Player::Play
-                && card && !card->isKindOf("SkillCard")
+                && card
+                && !card->isKindOf("SkillCard")
                 && card->getHandlingMethod() == Card::MethodUse)
                 room->setPlayerProperty(player, "xiezou_card", card->objectName());
         } else if (triggerEvent == EventPhaseChanging) {
@@ -595,7 +596,6 @@ public:
     }
 };
 
-
 class Hesheng : public TriggerSkill
 {
 public:
@@ -615,8 +615,7 @@ public:
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.to_place == Player::DiscardPile)
                 room->setPlayerMark(current, objectName(), current->getMark(objectName()) + move.card_ids.length());
-        }
-        else if (e == EventPhaseChanging) {
+        } else if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive)
                 room->setPlayerMark(change.player, objectName(), 0);
@@ -1997,11 +1996,11 @@ public:
     {
     }
 
-    static bool cardLimit(const Player *player) 
+    static bool cardLimit(const Player *player)
     {
         Peach *peach = new Peach(Card::SuitToBeDecided, -1);
         peach->deleteLater();
-        foreach(const Card*c, player->getHandcards()) {
+        foreach (const Card *c, player->getHandcards()) {
             if (c->isKindOf("BasicCard"))
                 peach->addSubcard(c);
         }

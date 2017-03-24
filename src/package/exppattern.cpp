@@ -160,7 +160,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                             }
                         }
                     } else if (p == "handOnly" && card->getEffectiveId() >= 0) {
-                        foreach(const Card *c, player->getHandcards()) {
+                        foreach (const Card *c, player->getHandcards()) {
                             if (c->getEffectiveId() == id && !player->getShownHandcards().contains(id)) {
                                 checkpoint = true;
                                 break;

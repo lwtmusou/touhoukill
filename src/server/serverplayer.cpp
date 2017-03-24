@@ -24,7 +24,7 @@ ServerPlayer::ServerPlayer(Room *room)
     , trust_ai(new TrustAI(this))
     , recorder(NULL)
     , _m_phases_index(0)
-    //, next(NULL)
+//, next(NULL)
 {
     semas = new QSemaphore *[S_NUM_SEMAPHORES];
     for (int i = 0; i < S_NUM_SEMAPHORES; i++)
@@ -240,7 +240,7 @@ int ServerPlayer::aliveCount(bool includeRemoved) const
     //return room->alivePlayerCount();
     int n = room->alivePlayerCount();
     if (!includeRemoved) {
-        foreach(ServerPlayer *p, room->getAllPlayers()) {
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (p->isRemoved())
                 n--;
         }

@@ -272,7 +272,7 @@ void RoomThread::actionNormal(GameRule *game_rule)
                 extraTurnReturn = NULL;
             }
 
-            room->setCurrent(qobject_cast<ServerPlayer *>(current->getNextAlive(1,false)));
+            room->setCurrent(qobject_cast<ServerPlayer *>(current->getNextAlive(1, false)));
         }
     } catch (TriggerEvent triggerEvent) {
         if (triggerEvent == TurnBroken)
@@ -321,7 +321,7 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule)
             extraTurnReturn = NULL;
         }
 
-        ServerPlayer *next = qobject_cast<ServerPlayer *>(player->getNextAlive(1,false));
+        ServerPlayer *next = qobject_cast<ServerPlayer *>(player->getNextAlive(1, false));
         room->setCurrent(next);
         actionNormal(game_rule);
     } catch (TriggerEvent triggerEvent) {

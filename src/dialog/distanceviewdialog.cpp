@@ -103,14 +103,12 @@ void DistanceViewDialog::showDistance()
 
     const ClientPlayer *from = ClientInstance->getPlayer(from_name);
     const ClientPlayer *to = ClientInstance->getPlayer(to_name);
-    
-    
+
     if (from->isRemoved() || to->isRemoved()) {
         ui->right->setText(tr("Not exist"));
         ui->left->setText(tr("Not exist"));
         ui->min->setText(tr("Not exist"));
-    }
-    else {
+    } else {
         int right_distance = from->originalRightDistanceTo(to);
         ui->right->setText(QString::number(right_distance));
 
@@ -119,11 +117,10 @@ void DistanceViewDialog::showDistance()
 
         int min = qMin(left_distance, right_distance);
         ui->min->setText(QString("min(%1, %2)=%3")
-            .arg(left_distance)
-            .arg(right_distance)
-            .arg(min));
+                             .arg(left_distance)
+                             .arg(right_distance)
+                             .arg(min));
     }
-    
 
     foreach (QLineEdit *edit, ui->distance_edits) {
         const Skill *skill = Sanguosha->getSkill(edit->objectName());
@@ -139,7 +136,7 @@ void DistanceViewDialog::showDistance()
     }
 
     ui->in_attack->setText(from->inMyAttackRange(to) ? tr("Yes") : tr("No"));
-    
+
     if (from->isRemoved() || to->isRemoved())
         ui->final->setText(tr("Not exist"));
     else

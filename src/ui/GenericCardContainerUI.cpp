@@ -1197,7 +1197,7 @@ void PlayerCardContainer::showDistance()
 void PlayerCardContainer::onRemovedChanged()
 {
     QAbstractAnimation::Direction direction = m_player->isRemoved() ? QAbstractAnimation::Forward
-        : QAbstractAnimation::Backward;
+                                                                    : QAbstractAnimation::Backward;
 
     _getPlayerRemovedEffect()->setDirection(direction);
     _getPlayerRemovedEffect()->start();

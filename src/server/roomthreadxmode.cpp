@@ -1,6 +1,6 @@
 #include "roomthreadxmode.h"
-#include "room.h"
 #include "engine.h"
+#include "room.h"
 #include "settings.h"
 
 #include <QDateTime>
@@ -25,8 +25,12 @@ void RoomThreadXMode::run()
 
     foreach (ServerPlayer *player, room->m_players) {
         switch (player->getRoleEnum()) {
-        case Player::Lord: warm_leader = player; break;
-        case Player::Renegade: cool_leader = player; break;
+        case Player::Lord:
+            warm_leader = player;
+            break;
+        case Player::Renegade:
+            cool_leader = player;
+            break;
         default:
             break;
         }
@@ -35,7 +39,8 @@ void RoomThreadXMode::run()
     QList<const General *> generals = QList<const General *>();
     foreach (QString pack_name, GetConfigFromLuaState(Sanguosha->getLuaState(), "xmode_packages").toStringList()) {
         const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
-        if (pack) generals << pack->findChildren<const General *>();
+        if (pack)
+            generals << pack->findChildren<const General *>();
     }
 
     foreach (const General *general, generals) {
@@ -44,8 +49,9 @@ void RoomThreadXMode::run()
         general_names << general->objectName();
     }
 
-    foreach(QString name, Config.value("Banlist/XMode").toStringList())
-        if (general_names.contains(name)) general_names.removeOne(name);
+    foreach (QString name, Config.value("Banlist/XMode").toStringList())
+        if (general_names.contains(name))
+            general_names.removeOne(name);
 
     qShuffle(general_names);
 
@@ -95,7 +101,8 @@ void RoomThreadXMode::startArrange(QList<ServerPlayer *> &players, QList<QString
             online_index << i;
         }
     }
-    if (online.isEmpty()) return;
+    if (online.isEmpty())
+        return;
 
     for (int i = 0; i < online.length(); i++) {
         ServerPlayer *player = online.at(i);
@@ -190,8 +197,12 @@ void RoomThreadXMode::assignRoles(const QStringList &roles, const QString &schem
 void RoomThreadXMode::assignRoles(const QString &scheme)
 {
     QStringList roles;
-    roles << "lord" << "loyalist" << "rebel"
-          << "renegade" << "rebel" << "loyalist";
+    roles << "lord"
+          << "loyalist"
+          << "rebel"
+          << "renegade"
+          << "rebel"
+          << "loyalist";
 
     if (scheme == "Random") {
         qShuffle(roles);
@@ -201,8 +212,12 @@ void RoomThreadXMode::assignRoles(const QString &scheme)
         assignRoles(roles, scheme);
     } else {
         QStringList all_roles;
-        all_roles << "leader1" << "guard1" << "guard2"
-                  << "leader2" << "guard2" << "guard1";
+        all_roles << "leader1"
+                  << "guard1"
+                  << "guard2"
+                  << "leader2"
+                  << "guard2"
+                  << "guard1";
         assignRoles(all_roles, scheme);
 
         QMap<QString, QString> map;
@@ -218,7 +233,7 @@ void RoomThreadXMode::assignRoles(const QString &scheme)
             map["guard2"] = "loyalist";
         }
 
-        foreach(ServerPlayer *player, room->m_players)
+        foreach (ServerPlayer *player, room->m_players)
             player->setRole(map[player->getRole()]);
     }
 
@@ -232,7 +247,7 @@ void RoomThreadXMode::assignRoles(const QString &scheme)
             int next = (i + 1) % total;
             int next2 = (next + 1) % total;
             if (players.at(i)->getRole().at(0) == players.at(next)->getRole().at(0)
-                    && players.at(i)->getRole().at(0) == players.at(next2)->getRole().at(0)) {
+                && players.at(i)->getRole().at(0) == players.at(next2)->getRole().at(0)) {
                 valid = false;
                 break;
             }
@@ -240,9 +255,8 @@ void RoomThreadXMode::assignRoles(const QString &scheme)
     } while (!valid);
     room->m_players = players;
 
-    foreach(ServerPlayer *player, room->m_players) {
+    foreach (ServerPlayer *player, room->m_players) {
         room->broadcastProperty(player, "role");
         room->setPlayerProperty(player, "role_shown", true);
     }
 }
-

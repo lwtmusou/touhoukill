@@ -23,7 +23,7 @@ int ClientPlayer::aliveCount(bool includeRemoved) const
     if (!includeRemoved) {
         if (isRemoved())
             n--;
-        foreach(const Player *p, getAliveSiblings())
+        foreach (const Player *p, getAliveSiblings())
             if (p->isRemoved())
                 n--;
     }

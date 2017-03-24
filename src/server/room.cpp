@@ -173,7 +173,7 @@ QList<ServerPlayer *> Room::getAllPlayers(bool include_dead) const
 
     ServerPlayer *starter = current;
     if (current->getPhase() == Player::NotActive)
-        starter = qobject_cast<ServerPlayer *>(current->getNextAlive(1,false));
+        starter = qobject_cast<ServerPlayer *>(current->getNextAlive(1, false));
     int index = count_players.indexOf(starter);
     if (index == -1)
         return count_players;
@@ -3974,7 +3974,7 @@ ServerPlayer *Room::getFront(ServerPlayer *a, ServerPlayer *b) const
         return a;
     else
         return b;
-    
+
     /*ServerPlayer *starter = current;
     if (starter == NULL)
         starter = m_players.first();
