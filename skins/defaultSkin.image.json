@@ -170,6 +170,8 @@
 // equips
 "photoEquip-default": "image/fullskin/small-equips/%1.png",
 "dashboardEquip-default": "image/equips/%1.png",
+"photoEquipBroken-default": "image/fullskin/small-equips/blank.png", //%1_broken
+"dashboardEquipBroken-default": "image/equips/blank.png",//%1_broken
 "dashboardKingdomColorMask-default": "image/fullskin/kingdom/frame/dashboard/%1.png",
 
 // kingdoms

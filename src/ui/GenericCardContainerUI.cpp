@@ -1,4 +1,4 @@
-#include "GenericCardContainerUI.h"
+﻿#include "GenericCardContainerUI.h"
 #include "clientplayer.h"
 #include "engine.h"
 #include "graphicspixmaphoveritem.h"
@@ -503,6 +503,11 @@ void PlayerCardContainer::_updateEquips()
         const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard()->getRealCard());
         QPixmap pixmap = _getEquipPixmap(equip_card);
         _m_equipLabel[i]->setPixmap(pixmap);
+        /*if (m_player->isBrokenEquip(equip_card->getEffectiveId())) {
+            QPalette palette;
+            palette.setColor(QPalette::Background, G_PHOTO_LAYOUT.m_drankMaskColor);
+            _m_equipLabel[i]->setPalette(palette);
+        }*/
         _m_equipRegions[i]->setPos(_m_layout->m_equipAreas[i].topLeft());
     }
 }
@@ -678,8 +683,10 @@ QPixmap PlayerCardContainer::_getEquipPixmap(const EquipCard *equip)
     equipIcon.fill(Qt::transparent);
     QPainter painter(&equipIcon);
     // icon / background
-    painter.drawPixmap(_m_layout->m_equipImageArea, _getPixmap(QSanRoomSkin::S_SKIN_KEY_EQUIP_ICON, equip->objectName()));
-
+    if (!m_player->isBrokenEquip(equip->getEffectiveId()))
+        painter.drawPixmap(_m_layout->m_equipImageArea, _getPixmap(QSanRoomSkin::S_SKIN_KEY_EQUIP_ICON, equip->objectName()));
+    else
+        painter.drawPixmap(_m_layout->m_equipImageArea, _getPixmap(QSanRoomSkin::S_SKIN_KEY_EQUIP_BROKEN_ICON, equip->objectName()));
     // equip name
     _m_layout->m_equipFont.paintText(&painter,
                                      _m_layout->m_equipTextArea,
@@ -687,45 +694,18 @@ QPixmap PlayerCardContainer::_getEquipPixmap(const EquipCard *equip)
                                      Sanguosha->translate(equip->objectName()));
     // equip suit
     painter.drawPixmap(_m_layout->m_equipSuitArea, G_ROOM_SKIN.getCardSuitPixmap(realCard->getSuit()));
-    // equip tianyi for skill mokai
-    if (m_player != NULL) {
-        bool isTianyi = false;
-        if (realCard->isKindOf("Weapon") && m_player->getMark("@tianyi_Weapon") > 0)
-            isTianyi = true;
-        else if (realCard->isKindOf("Armor") && m_player->getMark("@tianyi_Armor") > 0)
-            isTianyi = true;
-        else if (realCard->isKindOf("DefensiveHorse") && m_player->getMark("@tianyi_DefensiveHorse") > 0)
-            isTianyi = true;
-        else if (realCard->isKindOf("OffensiveHorse") && m_player->getMark("@tianyi_OffensiveHorse") > 0)
-            isTianyi = true;
-        else if (realCard->isKindOf("Treasure") && m_player->getMark("@tianyi_Treasure") > 0)
-            isTianyi = true;
-        if (isTianyi) {
-            painter.drawPixmap(_m_layout->m_equipTianyiArea, G_ROOM_SKIN.getCardTianyiPixmap());
-        }
+    //test UI
+    //if (m_player->isBrokenEquip(equip->getEffectiveId()))
+    //    painter.drawPixmap(_m_layout->m_equipTianyiArea, G_ROOM_SKIN.getCardTianyiPixmap());
+    /*if (m_player->isBrokenEquip(equip->getEffectiveId())) {
+        painter.setRenderHints(QPainter::HighQualityAntialiasing);
+        QPen pen(Qt::red);
+        pen.setWidth(3);
+        painter.setPen(pen);
+        painter.drawLine(25, 6, 40, 20);
+        painter.drawLine(25, 20, 40, 6);
+    }*/
 
-        /*if (m_player->isBrokenEquip(equip->getEffectiveId()))
-            painter.setBrush(G_PHOTO_LAYOUT.m_drankMaskColor);
-        else
-            painter.setBrush(Qt::NoBrush);
-        */
-        if (m_player->isBrokenEquip(equip->getEffectiveId())) {
-            painter.drawPixmap(_m_layout->m_equipTianyiArea, G_ROOM_SKIN.getCardTianyiPixmap());
-            //Sanguosha->playSystemAudioEffect("win");
-        }
-        //else
-            //Sanguosha->playSystemAudioEffect("lose");
-        /*if (m_player->isBrokenEquip(equip->getEffectiveId())) {
-                painter.setRenderHints(QPainter::HighQualityAntialiasing);
-            QPen pen(Qt::red);
-            pen.setWidth(3);
-            painter.setPen(pen);
-            painter.drawLine(25, 6, 40, 20);
-            painter.drawLine(25, 20, 40, 6);
-        
-        }*/
-
-    }
     // equip point
     if (realCard->isRed()) {
         _m_layout->m_equipPointFontRed.paintText(&painter,

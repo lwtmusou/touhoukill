@@ -31,6 +31,7 @@ const char *QSanRoomSkin::S_SKIN_KEY_BUTTON_SKILL = "skill";
 
 // player container
 const char *QSanRoomSkin::S_SKIN_KEY_EQUIP_ICON = "%1Equip-%2";
+const char *QSanRoomSkin::S_SKIN_KEY_EQUIP_BROKEN_ICON = "%1EquipBroken-%2";
 const char *QSanRoomSkin::S_SKIN_KEY_MAINFRAME = "%1MainFrame";
 const char *QSanRoomSkin::S_SKIN_KEY_LEFTFRAME = "%1LeftFrame";
 const char *QSanRoomSkin::S_SKIN_KEY_RIGHTFRAME = "%1RightFrame";

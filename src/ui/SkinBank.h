@@ -377,6 +377,7 @@ public:
     static const char *S_SKIN_KEY_PLAYER_AUDIO_EFFECT;
     static const char *S_SKIN_KEY_SYSTEM_AUDIO_EFFECT;
     static const char *S_SKIN_KEY_EQUIP_ICON;
+    static const char *S_SKIN_KEY_EQUIP_BROKEN_ICON;
     static const char *S_SKIN_KEY_PROGRESS_BAR_IMAGE;
     static const char *S_SKIN_KEY_GENERAL_CIRCLE_IMAGE;
     static const char *S_SKIN_KEY_GENERAL_CIRCLE_MASK;

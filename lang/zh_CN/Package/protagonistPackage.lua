@@ -318,9 +318,10 @@ return {
 	["reisen_gzz"] = "绀珠传SP铃仙",
 	["&reisen_gzz"] = "绀珠传铃仙",
 	["#reisen_gzz"] = "地上的月兔",
-	["designer:reisen_gzz"] = "无",
+	["designer:reisen_gzz"] = "蔚海幽浮",
 	["bodong"] = "波动" ,
 	[":bodong"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张手牌，横置场上至多三张装备牌。",
     ["huanlong"] = "幻胧",
 	[":huanlong"] = "当装备区有横置牌的角色收到或造成伤害后，你可以重置其一张装备牌，然后弃置其一张手牌。",
+	
  }
