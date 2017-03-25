@@ -6,6 +6,7 @@
 class PixmapAnimation : public QObject, public QGraphicsItem
 {
     Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
 
 public:
     PixmapAnimation(QGraphicsScene *scene = 0);

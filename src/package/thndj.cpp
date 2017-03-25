@@ -817,7 +817,7 @@ public:
         QList<int> subcards = card->getSubcards();
         if (subcards.length() == 0 || player->isKongcheng())
             return false;
-        QList<int> wood_ox = player->getHandPile();//player->getPile("wooden_ox");
+        QList<int> wood_ox = player->getHandPile(); //player->getPile("wooden_ox");
         int wood_num = 0;
         foreach (int id, subcards) {
             if (wood_ox.contains(id))

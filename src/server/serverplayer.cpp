@@ -1414,7 +1414,6 @@ void ServerPlayer::removeShownHandCards(QList<int> card_ids, bool sendLog)
     }
 }
 
-
 void ServerPlayer::addBrokenEquips(QList<int> card_ids)
 {
     broken_equips.append(card_ids);
@@ -1423,7 +1422,7 @@ void ServerPlayer::addBrokenEquips(QList<int> card_ids)
     arg << objectName();
     arg << JsonUtils::toJsonArray(broken_equips);
 
-    foreach(ServerPlayer *player, room->getAllPlayers())
+    foreach (ServerPlayer *player, room->getAllPlayers())
         room->doNotify(player, S_COMMAND_SET_BROKEN_EQUIP, arg);
 
     LogMessage log;
@@ -1442,14 +1441,14 @@ void ServerPlayer::addBrokenEquips(QList<int> card_ids)
 
 void ServerPlayer::removeBrokenEquips(QList<int> card_ids, bool sendLog)
 {
-    foreach(int id, card_ids)
+    foreach (int id, card_ids)
         broken_equips.removeOne(id);
 
     JsonArray arg;
     arg << objectName();
     arg << JsonUtils::toJsonArray(broken_equips);
 
-    foreach(ServerPlayer *player, room->getAllPlayers())
+    foreach (ServerPlayer *player, room->getAllPlayers())
         room->doNotify(player, S_COMMAND_SET_BROKEN_EQUIP, arg);
 
     if (sendLog) {
@@ -1473,7 +1472,6 @@ void ServerPlayer::removeBrokenEquips(QList<int> card_ids, bool sendLog)
     }*/
     room->getThread()->trigger(BrokenEquipChanged, room, QVariant::fromValue(b));
 }
-
 
 void ServerPlayer::gainAnExtraTurn()
 {

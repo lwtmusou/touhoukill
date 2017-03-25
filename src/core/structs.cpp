@@ -596,7 +596,6 @@ ExtraTurnStruct::ExtraTurnStruct()
 {
 }
 
-
 BrokenEquipChangedStruct::BrokenEquipChangedStruct()
     : player(NULL)
     , ids(QList<int>())

@@ -259,7 +259,6 @@ void Client::setBrokenEquips(const QVariant &card_var)
     player->setBrokenEquips(card_ids);
 }
 
-
 void Client::signup()
 {
     if (replayer)

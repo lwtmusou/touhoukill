@@ -219,7 +219,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         ServerPlayer *player = data.value<ServerPlayer *>();
         onPhaseProceed(player);
         break;
-    }case EventPhaseStart: {
+    }
+    case EventPhaseStart: {
         ServerPlayer *current = data.value<ServerPlayer *>();
         if (current && current->getPhase() == Player::Finish && !current->getBrokenEquips().isEmpty())
             current->removeBrokenEquips(current->getBrokenEquips());
@@ -727,7 +728,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 player->removeShownHandCards(shownIds);
 
             QList<int> brokenIds;
-            foreach(int id, move.card_ids) {
+            foreach (int id, move.card_ids) {
                 if (player->isBrokenEquip(id))
                     brokenIds << id;
             }

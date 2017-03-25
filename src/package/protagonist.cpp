@@ -1674,7 +1674,7 @@ public:
         QList<int> subcards = card->getSubcards();
         if (subcards.length() == 0 || player->isKongcheng())
             return false;
-        QList<int> wood_ox = player->getHandPile();//player->getPile("wooden_ox");
+        QList<int> wood_ox = player->getHandPile(); //player->getPile("wooden_ox");
         int wood_num = 0;
         foreach (int id, subcards) {
             if (wood_ox.contains(id))
@@ -2305,8 +2305,6 @@ public:
     }
 };
 
-
-
 BodongCard::BodongCard()
 {
     will_throw = true;
@@ -2324,7 +2322,7 @@ bool BodongCard::targetFilter(const QList<const Player *> &targets, const Player
         return false;
     int i = 0;
 
-    foreach(const Player *player, targets) {
+    foreach (const Player *player, targets) {
         if (player == to_select)
             i++;
     }
@@ -2339,11 +2337,11 @@ bool BodongCard::targetsFeasible(const QList<const Player *> &targets, const Pla
         return false;
     QMap<const Player *, int> map;
 
-    foreach(const Player *sp, targets)
+    foreach (const Player *sp, targets)
         map[sp]++;
-    foreach(const Player *sp, map.keys()) {
+    foreach (const Player *sp, map.keys()) {
         int num = sp->getEquips().length() - sp->getBrokenEquips().length();
-        if (map[sp] >  num || num <= 0)
+        if (map[sp] > num || num <= 0)
             return false;
     }
 
@@ -2353,16 +2351,16 @@ bool BodongCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 void BodongCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     QMap<ServerPlayer *, int> map;
-    foreach(ServerPlayer *sp, targets)
+    foreach (ServerPlayer *sp, targets)
         map[sp]++;
 
     QList<ServerPlayer *> newtargets = map.keys();
     room->sortByActionOrder(newtargets);
-    foreach(ServerPlayer *sp, newtargets) {
+    foreach (ServerPlayer *sp, newtargets) {
         //if (source == sp)
         QList<int> ids;
         QList<int> disable;
-        foreach(const Card *c, sp->getCards("e")) {
+        foreach (const Card *c, sp->getCards("e")) {
             if (sp->isBrokenEquip(c->getEffectiveId()))
                 disable << c->getEffectiveId();
         }
@@ -2395,12 +2393,10 @@ public:
             BodongCard *card = new BodongCard;
             card->addSubcard(originalCard);
             return card;
-        }
-        else
+        } else
             return NULL;
     }
 };
-
 
 class Huanlong : public TriggerSkill
 {
@@ -2413,7 +2409,6 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
-        
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *player = NULL;
         if (triggerEvent == Damage)
@@ -2425,8 +2420,8 @@ public:
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
-        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            if (p->canDiscard(player, "hs"))//p != player && 
+        foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            if (p->canDiscard(player, "hs")) //p != player &&
                 d << SkillInvokeDetail(this, p, p, NULL, false, player);
         }
         return d;
@@ -2436,7 +2431,7 @@ public:
     {
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
         QList<int> disable;
-        foreach(const Card *c, invoke->targets.first()->getCards("e")) {
+        foreach (const Card *c, invoke->targets.first()->getCards("e")) {
             if (!invoke->targets.first()->isBrokenEquip(c->getEffectiveId()))
                 disable << c->getEffectiveId();
         }
@@ -2450,7 +2445,6 @@ public:
         return false;
     }
 };
-
 
 ProtagonistPackage::ProtagonistPackage()
     : Package("protagonist")

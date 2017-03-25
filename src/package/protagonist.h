@@ -151,7 +151,6 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-
 class BodongCard : public SkillCard
 {
     Q_OBJECT
@@ -164,9 +163,6 @@ public:
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
-
-
-
 
 class ProtagonistPackage : public Package
 {

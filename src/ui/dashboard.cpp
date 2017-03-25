@@ -1027,7 +1027,7 @@ void Dashboard::enableCards()
         if (pile.startsWith("&") || pile == "wooden_ox")
             expandPileCards(pile);
     }*/
-    foreach(const QString &pile, Self->getHandPileList(false))
+    foreach (const QString &pile, Self->getHandPileList(false))
         expandPileCards(pile);
     expandSpecialCard();
 
@@ -1073,7 +1073,7 @@ void Dashboard::startPending(const ViewAsSkill *skill)
             if (pile.startsWith("&") || pile == "wooden_ox")
                 expandPileCards(pile);
         }*/
-        foreach(const QString &pile, Self->getHandPileList(false))
+        foreach (const QString &pile, Self->getHandPileList(false))
             expandPileCards(pile);
         if (!(skill && skill->isResponseOrUse()))
             expandSpecialCard();
@@ -1262,7 +1262,8 @@ void Dashboard::updateChaoren()
 {
     expandSpecialCard();
 }
-void Dashboard::updateHandPile() {
+void Dashboard::updateHandPile()
+{
     WrappedCard *t = Self->getTreasure();
     if (t) {
         if (Self->isBrokenEquip(t->getEffectiveId()))

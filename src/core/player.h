@@ -103,7 +103,6 @@ public:
     void setBrokenEquips(QList<int> ids);
     bool isBrokenEquip(int id) const;
 
-
     int getHp() const;
     int getRenHp() const; //for banling
     int getLingHp() const;
@@ -354,7 +353,7 @@ private:
     bool removed;
     QList<int> judging_area;
     QHash<const Player *, int> fixed_distance;
-    
+
     QString next;
 
     QMap<Card::HandlingMethod, QStringList> card_limitation;

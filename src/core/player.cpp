@@ -198,7 +198,6 @@ bool Player::isBrokenEquip(int id) const
     return broken_equips.contains(id);
 }
 
-
 int Player::getMaxHp() const
 {
     if (hasSkill("huanmeng")) {
@@ -1319,10 +1318,10 @@ QStringList Player::getHandPileList(bool view_as_skill) const
     QStringList handlist;
     if (view_as_skill)
         handlist.append("hand");
-    foreach(const QString &pile, this->getPileNames()) {
+    foreach (const QString &pile, this->getPileNames()) {
         if (pile.startsWith("&") || pile.startsWith("^"))
             handlist.append(pile);
-        else if (pile == "wooden_ox" && hasTreasure("wooden_ox")) 
+        else if (pile == "wooden_ox" && hasTreasure("wooden_ox"))
             handlist.append(pile);
     }
     return handlist;

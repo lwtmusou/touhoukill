@@ -554,7 +554,6 @@ struct SkillInvalidStruct
     bool invalid;
 };
 
-
 struct BrokenEquipChangedStruct
 {
     BrokenEquipChangedStruct();
@@ -562,7 +561,6 @@ struct BrokenEquipChangedStruct
     ServerPlayer *player;
     QList<int> ids;
     bool broken;
-
 };
 
 struct ChoiceMadeStruct

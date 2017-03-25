@@ -1384,7 +1384,6 @@ public:
     }
 };
 
-
 class Shouhu : public TriggerSkill
 {
 public:
@@ -1397,7 +1396,7 @@ public:
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->getPhase() == Player::Play && player->hasSkill(this)) {
-            foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+            foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
                 if (p->isWounded() && p->getHp() < player->getHp())
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
             }
@@ -1408,7 +1407,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         QList<ServerPlayer *> targets;
-        foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+        foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
             if (p->isWounded() && p->getHp() < invoke->invoker->getHp())
                 targets << p;
         }
@@ -1417,7 +1416,7 @@ public:
             invoke->targets << t;
             return true;
         }
-            
+
         return false;
     }
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
@@ -1426,7 +1425,6 @@ public:
         return false;
     }
 };
-
 
 class Shaojie : public TriggerSkill
 {
@@ -1443,22 +1441,21 @@ public:
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->getPhase() != Player::Play)
                 return QList<SkillInvokeDetail>();
-            if (player->getShownHandcards().length()  >= player->getHandcardNum())
+            if (player->getShownHandcards().length() >= player->getHandcardNum())
                 return QList<SkillInvokeDetail>();
 
             QList<SkillInvokeDetail> d;
-            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (player->inMyAttackRange(p))
                     d << SkillInvokeDetail(this, p, p, NULL, false, player);
             }
             return d;
-        }
-        else {
+        } else {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.to->hasSkill(this) && damage.from &&damage.from != damage.to) {
+            if (damage.to->hasSkill(this) && damage.from && damage.from != damage.to) {
                 if (damage.card->hasFlag("showncards"))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
-                foreach(int id, damage.from->getShownHandcards()) {
+                foreach (int id, damage.from->getShownHandcards()) {
                     if (damage.card->getColor() == Sanguosha->getCard(id)->getColor())
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
                 }
@@ -1471,9 +1468,7 @@ public:
     {
         if (triggerEvent == EventPhaseStart) {
             return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget));
-        }
-        else
-        {
+        } else {
             DamageStruct damage = data.value<DamageStruct>();
             QString prompt = "invoke:" + damage.from->objectName() + ":" + damage.card->objectName() + ":" + QString::number(damage.damage);
             return invoke->invoker->askForSkillInvoke(this, prompt);
@@ -1486,8 +1481,7 @@ public:
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
             int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "h", objectName());
             invoke->targets.first()->addToShownHandCards(QList<int>() << id);
-        }
-        else {
+        } else {
             DamageStruct damage = data.value<DamageStruct>();
             room->touhouLogmessage("#shaojie", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(damage.damage));
             room->notifySkillInvoked(invoke->invoker, objectName());
@@ -1496,8 +1490,6 @@ public:
         return false;
     }
 };
-
-
 
 FengrangCard::FengrangCard()
 {
@@ -1562,7 +1554,6 @@ public:
         return true;
     }
 };
-
 
 JiliaoCard::JiliaoCard()
 {
@@ -1657,7 +1648,6 @@ public:
     }
 };
 
-
 BujuCard::BujuCard()
 {
     target_fixed = true;
@@ -1670,7 +1660,7 @@ void BujuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) co
     source->drawCards(x);
     const Card *cards = room->askForExchange(source, "buju", x, x, true, "buju_exchange:" + QString::number(x));
     DELETE_OVER_SCOPE(const Card, cards)
-        CardsMoveStruct move;
+    CardsMoveStruct move;
     move.card_ids = cards->getSubcards();
     move.from = source;
     move.to_place = Player::DrawPile;
@@ -1696,7 +1686,6 @@ public:
         return new BujuCard;
     }
 };
-
 
 TH10Package::TH10Package()
     : Package("th10")
