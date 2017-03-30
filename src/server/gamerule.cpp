@@ -715,7 +715,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         }
         break;
     }
-    case BeforeCardsMove: {
+    case BeforeCardsMove: { //to be record? not effect 
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
         if (player != NULL) {
@@ -732,8 +732,11 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 if (player->isBrokenEquip(id))
                     brokenIds << id;
             }
-            if (!brokenIds.isEmpty())
+            if (!brokenIds.isEmpty()) {
                 player->removeBrokenEquips(brokenIds, false);
+                move.broken_ids = brokenIds;
+                data = QVariant::fromValue(move);
+            }
         }
         break;
     }

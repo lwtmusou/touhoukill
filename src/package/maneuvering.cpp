@@ -416,6 +416,8 @@ public:
             for (int i = 0; i < move.card_ids.size(); i++) {
                 if (move.from_places[i] != Player::PlaceEquip)
                     continue;
+                if (move.broken_ids.contains(move.card_ids[i]))
+                    continue;
                 const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
                 if (card->objectName() == objectName()) {
                     // function  equipAvailable()    need armor remained in equip area

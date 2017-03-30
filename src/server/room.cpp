@@ -4355,6 +4355,7 @@ QList<CardsMoveOneTimeStruct> Room::_mergeMoves(QList<CardsMoveStruct> cards_mov
         moveOneTime.origin_to_pile_name = cls.m_origin_to_pile_name;
         foreach (CardsMoveStruct move, moveMap[cls]) {
             moveOneTime.card_ids.append(move.card_ids);
+            moveOneTime.broken_ids.append(move.broken_ids);
             for (int i = 0; i < move.card_ids.size(); i++) {
                 moveOneTime.from_places.append(move.from_place);
                 moveOneTime.origin_from_places.append(move.from_place);
@@ -4392,6 +4393,7 @@ QList<CardsMoveStruct> Room::_separateMoves(QList<CardsMoveOneTimeStruct> moveOn
 {
     QList<_MoveSeparateClassifier> classifiers;
     QList<QList<int> > ids;
+    QList<int> broken_ids;
     foreach (CardsMoveOneTimeStruct moveOneTime, moveOneTimes) {
         for (int i = 0; i < moveOneTime.card_ids.size(); i++) {
             _MoveSeparateClassifier classifier(moveOneTime, i);
@@ -4405,6 +4407,7 @@ QList<CardsMoveStruct> Room::_separateMoves(QList<CardsMoveOneTimeStruct> moveOn
                 ids << new_ids;
             }
         }
+        broken_ids << moveOneTime.broken_ids;
     }
 
     QList<CardsMoveStruct> card_moves;
@@ -4427,6 +4430,10 @@ QList<CardsMoveStruct> Room::_separateMoves(QList<CardsMoveOneTimeStruct> moveOn
         card_move.to_pile_name = cls.m_to_pile_name;
         card_move.open = cls.m_open;
         card_move.card_ids = ids.at(i);
+        foreach (int id, ids.at(i)) {
+            if (broken_ids.contains(id))
+                card_move.broken_ids << id;
+        }
         card_move.reason = cls.m_reason;
 
         card_move.origin_from = cls.m_from;
