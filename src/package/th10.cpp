@@ -1452,7 +1452,7 @@ public:
             return d;
         } else {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.to->hasSkill(this) && damage.from && damage.from != damage.to) {
+            if (damage.to->hasSkill(this) && damage.from && damage.from != damage.to && damage.card) {
                 if (damage.card->hasFlag("showncards"))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
                 foreach (int id, damage.from->getShownHandcards()) {

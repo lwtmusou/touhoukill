@@ -216,7 +216,7 @@ void LeitingCard::onEffect(const CardEffectStruct &effect) const
         //force discard!!!
         int x = qrand() % hc.length();
         cards = hc.value(x);
-        room->throwCard(cards, effect.to);
+        room->throwCard(cards, effect.from);
     }
 
     if (cards->getSuit() == Card::Heart) {
