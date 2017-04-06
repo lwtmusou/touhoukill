@@ -221,7 +221,8 @@ struct CardsMoveOneTimeStruct
 
     QList<bool> open; // helper to prevent sending card_id to unrelevant clients
     bool is_last_handcard;
-    QList<int> broken_ids; //record broken equip IDs from EquipPlace 
+    QList<int> broken_ids; //record broken equip IDs from EquipPlace
+    QList<int> shown_ids; //record broken shown IDs from HandPlace
 
     inline void removeCardIds(const QList<int> &to_remove)
     {
@@ -329,6 +330,7 @@ struct CardsMoveStruct
     Player *origin_from, *origin_to;
     QString origin_from_pile_name, origin_to_pile_name; //for case of the movement transitted
     QList<int> broken_ids; //record broken equip IDs from EquipPlace 
+    QList<int> shown_ids; //record broken shown IDs from HandPlace
 
     bool tryParse(const QVariant &arg);
     QVariant toVariant() const;

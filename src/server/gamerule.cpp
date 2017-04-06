@@ -724,8 +724,12 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 if (player->isShownHandcard(id))
                     shownIds << id;
             }
-            if (!shownIds.isEmpty())
+            if (!shownIds.isEmpty()) {
                 player->removeShownHandCards(shownIds);
+                move.shown_ids = shownIds;
+                data = QVariant::fromValue(move);
+            }
+                
 
             QList<int> brokenIds;
             foreach (int id, move.card_ids) {
