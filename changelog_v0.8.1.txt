@@ -68,7 +68,7 @@
 57 fix犬走椛【哨戒】无伤害牌时的崩溃
 58 fix 雷霆发动中离线的强制弃牌的log问题
 59 翻新 莉格露
-
+60 fix 场上存在调虎状态时，然后断线重练，不能正确反映调虎的错误
 
 
 未处理的bug：
@@ -77,4 +77,5 @@
 2 检查一下 明牌的 UI？ 没有及时清理 pile？
 3  检查一下 response 和 response use 时的 target fix 与 target feasbile 道不清说不完的关系。。。  特别是roomscenene和 各种技能卡 调用时。。。
   还是挺乱的。。。
+
   
