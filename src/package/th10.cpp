@@ -659,7 +659,8 @@ bool QijiCard::targetsFeasible(const QList<const Player *> &targets, const Playe
     DELETE_OVER_SCOPE(Card, new_card)
     new_card->addSubcard(oc);
     new_card->setSkillName("qiji");
-    if (card->isKindOf("IronChain") && targets.length() == 0)
+    //if (card->isKindOf("IronChain") && targets.length() == 0)
+    if (card->canRecast() && targets.length() == 0)
         return false;
     return new_card && new_card->targetsFeasible(targets, Self);
 }

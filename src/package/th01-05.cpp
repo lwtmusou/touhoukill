@@ -2369,6 +2369,340 @@ public:
     }
 };
 
+
+class Huanshu : public TriggerSkill
+{
+public:
+    Huanshu()
+        : TriggerSkill("huanshu")
+    {
+        events << PostCardEffected;
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        if (effect.from && effect.from != effect.to && effect.to->hasSkill(this) && effect.to->isAlive()
+            && effect.to->getShownHandcards().length() < effect.to->getHp() && (effect.card->isNDTrick() || effect.card->isKindOf("BasicCard"))) {
+            QList<int> ids;
+            if (effect.card->isVirtualCard())
+                ids = effect.card->getSubcards();
+            else
+                ids << effect.card->getEffectiveId();
+
+            if (ids.isEmpty())
+                return QList<SkillInvokeDetail>();
+            foreach(int id, ids) {
+                if (room->getCardPlace(id) != Player::PlaceTable)
+                    return QList<SkillInvokeDetail>();
+            }
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        invoke->invoker->obtainCard(effect.card);
+        invoke->invoker->addToShownHandCards(effect.card->getSubcards());
+        return false;
+    }
+};
+
+
+QirenCard::QirenCard()
+{
+    will_throw = false;
+}
+
+bool QirenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    int shownId = (Self->getShownHandcards().contains(subcards.first())) ? subcards.first() : subcards.last();
+    Card *oc = Sanguosha->getCard(shownId);
+    int id = (Self->getShownHandcards().contains(subcards.first())) ? subcards.last() : subcards.first();
+
+    //do not consider extraTarget
+    if (oc->isKindOf("Collateral") && !targets.isEmpty()) {
+        return false;
+    }
+    //only consider slashTargetFix
+    if (Sanguosha->getCard(id)->isKindOf("Slash")) {
+        if (Self->hasFlag("slashTargetFix")) {
+            if (Self->hasFlag("slashDisableExtraTarget")) {
+                return to_select->hasFlag("SlashAssignee") && oc->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, oc, targets);
+            }
+            else {
+                bool need_specific_assignee = true;
+                foreach(const Player *p, Self->getAliveSiblings()) {
+                    if (p->hasFlag("SlashAssignee") && targets.contains(p)) {
+                        need_specific_assignee = false;
+                        break;
+                    }
+                }
+                if (need_specific_assignee)
+                    return to_select->hasFlag("SlashAssignee") && oc->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, oc, targets);
+            }
+        }   
+    }
+
+    return oc->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, oc, targets);
+}
+
+bool QirenCard::targetFixed() const
+{
+    int shownId = (Self->getShownHandcards().contains(subcards.first())) ? subcards.first() : subcards.last();
+    return Sanguosha->getCard(shownId)->targetFixed();
+}
+
+bool QirenCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+    int shownId = (Self->getShownHandcards().contains(subcards.first())) ? subcards.first() : subcards.last();
+    int id = (Self->getShownHandcards().contains(subcards.first())) ? subcards.last() : subcards.first();
+
+    //if (Sanguosha->getCard(shownId)->isKindOf("IronChain") && targets.length() == 0)
+    if (Sanguosha->getCard(shownId)->canRecast() && targets.length() == 0)
+        return false;
+    //do not consider extraTarget
+    if (Sanguosha->getCard(shownId)->isKindOf("Collateral"))
+        return targets.length() == 1;
+    return Sanguosha->getCard(shownId)->targetsFeasible(targets, Self);
+}
+
+bool QirenCard::isAvailable(const Player *player) const
+{
+    int shownId = (Self->getShownHandcards().contains(subcards.first())) ? subcards.first() : subcards.last();
+    int id = (Self->getShownHandcards().contains(subcards.first())) ? subcards.last() : subcards.first();
+
+    Card *oc = Sanguosha->getCard(shownId);
+
+    //Do not check isAvaliable() in ViewFilter in ViewAsSkill 
+    //check prohibit
+    if (oc->targetFixed()) {
+        if (oc->isKindOf("AOE") || oc->isKindOf("GlobalEffect")) {
+            QList<const Player *> players = player->getAliveSiblings();
+            if (oc->isKindOf("GlobalEffect"))
+                players << Self;
+            int count = 0;
+            foreach(const Player *p, players) {
+                if (!player->isProhibited(p, oc))
+                    count++;
+            }
+            if (count == 0)
+                return false;
+        }
+        else if (oc->isKindOf("EquipCard") || oc->isKindOf("Peach") || oc->isKindOf("Analeptic")
+            || oc->isKindOf("DelayedTrick")) {
+            if (player->isProhibited(player, oc))
+                return false;
+        }
+    }
+    //check times
+    Card *card = Sanguosha->getCard(id);
+    bool play = player->getPhase() == Player::Play && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY;
+    if (card->isKindOf("Slash") && play) {
+        if (!Slash::IsAvailable(player, card, true))
+            return false;
+    }
+    if (card->isKindOf("Analeptic") && play) {
+        if (player->usedTimes("Analeptic") > Sanguosha->correctCardTarget(TargetModSkill::Residue, Self, card))
+            return false;
+    }
+    return !player->isCardLimited(card, Card::MethodUse);
+}
+//operate the targets
+void QirenCard::onUse(Room *room, const CardUseStruct &card_use) const
+{
+    int shownId = (card_use.from->isShownHandcard(subcards.first())) ? subcards.first() : subcards.last();
+    int id = (card_use.from->isShownHandcard(subcards.first())) ? subcards.last() : subcards.first();
+    Card *oc = Sanguosha->getCard(shownId);
+    Card *card = Sanguosha->getCard(id);
+    QList<ServerPlayer *> targets;
+    CardUseStruct use = card_use;
+    use.card = card;
+    //target_fixed
+    if (use.to.isEmpty()) {
+        if (oc->isKindOf("AOE") || oc->isKindOf("GlobalEffect")) {
+            ServerPlayer *source = card_use.from;
+            QList<ServerPlayer *> players = (oc->isKindOf("GlobalEffect")) ? room->getAllPlayers() : room->getOtherPlayers(source);
+            foreach(ServerPlayer *player, players) {
+                const ProhibitSkill *skill = room->isProhibited(source, player, oc);
+                if (skill) {
+                    LogMessage log;
+                    log.type = "#SkillAvoid";
+                    log.from = player;
+                    log.arg = skill->objectName();
+                    log.arg2 = objectName();
+                    room->sendLog(log);
+
+                    if (player->hasSkill(skill))
+                        room->notifySkillInvoked(player, skill->objectName());
+                    room->broadcastSkillInvoke(skill->objectName());
+                }
+                else
+                    targets << player;
+            }
+            use.to = targets;
+        } else if (oc->isKindOf("EquipCard") || oc->isKindOf("Peach") || oc->isKindOf("Analeptic")
+            || oc->isKindOf("DelayedTrick")) {
+            use.to << use.from;
+        }
+    }
+
+    room->setPlayerFlag(use.from, "qirenUsed"); 
+    use.from->removeShownHandCards(QList<int>() << shownId, true);
+    LogMessage log;
+    log.type = "#Qiren";
+    log.from = use.from;
+    log.arg = oc->objectName();
+    log.arg2 = "qiren";
+    room->sendLog(log);
+
+    if (card->isKindOf("Collateral")) {
+        QList<ServerPlayer *>killers = use.to;
+        ServerPlayer *killer;
+        use.to.clear();
+        foreach(ServerPlayer *k, killers) {
+            QList<ServerPlayer *> victims;
+            foreach(ServerPlayer *p, room->getOtherPlayers(k)) {
+                if (k->canSlash(p)) {
+                    victims << p;
+                }
+            }
+            if (!victims.isEmpty() && killer == NULL) {
+                killer = k;
+                use.to << killer;
+                ServerPlayer *victim = room->askForPlayerChosen(use.from, victims, "qiren", "@qiren:" + killer->objectName());
+                use.to << victim;   
+            }
+            else {
+                room->setCardFlag(card, "qirenCollater_" + k->objectName());
+            }
+        }
+        if (use.to.length() != 2)
+            return;
+    }
+
+    //do new use
+    room->useCard(use);
+}
+
+class QirenVS : public ViewAsSkill
+{
+public:
+    QirenVS()
+        : ViewAsSkill("qiren")
+    {
+        response_or_use = true;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->getShownHandcards().isEmpty() && !player->hasFlag("qirenUsed");
+    }
+    virtual bool isEnabledAtResponse(const Player *player, const QString &) const
+    {
+        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+            return false;
+        return !player->getShownHandcards().isEmpty() && !player->hasFlag("qirenUsed");
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    {
+        if (to_select->isEquipped())
+            return false;
+        if (to_select->isKindOf("Jink") || to_select->isKindOf("Nullification"))
+            return false;
+
+        if (selected.length() >= 2)
+            return false;
+
+        if (!Self->isShownHandcard(to_select->getEffectiveId())) {
+            if (to_select->isKindOf("EquipCard") || to_select->isKindOf("DelayedTrick"))
+                return false;
+            if (Self->isCardLimited(to_select, Card::MethodUse))
+                return false;
+            bool matchPattern = true;
+            if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+                QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+                ExpPattern p(pattern);
+                matchPattern = p.match(Self, to_select);
+            }
+            return (selected.isEmpty() ||
+                Self->isShownHandcard(selected.first()->getEffectiveId())) && matchPattern;
+        }
+        else {
+            return selected.isEmpty() || !Self->isShownHandcard(selected.first()->getEffectiveId());
+        }
+        return false;
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        if (cards.length() != 2)
+            return NULL;
+
+        QirenCard *card = new QirenCard;
+        card->addSubcards(cards);
+        return card;
+    }
+};
+
+class Qiren : public TriggerSkill
+{
+public:
+    Qiren()
+        : TriggerSkill("qiren")
+    {
+        events << EventPhaseChanging << PreCardUsed;
+        view_as_skill = new QirenVS;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == EventPhaseChanging) {
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                if (p->hasFlag("qirenUsed"))
+                    room->setPlayerFlag(p, "-qirenUsed");
+            }
+        }
+        else if (e == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isKindOf("Collateral")) {
+                foreach(ServerPlayer*k, room->getAlivePlayers()) {
+                    if (use.card->hasFlag("qirenCollater_" + k->objectName())) {
+                        QList<ServerPlayer *> victims;
+                        foreach(ServerPlayer *p, room->getOtherPlayers(k)) {
+                            if (k->canSlash(p))
+                                victims << p;
+                        }
+                        if (!victims.isEmpty()) {
+                            use.to << k;
+                            ServerPlayer *victim = room->askForPlayerChosen(use.from, victims, "qiren", "@qiren:" + k->objectName());
+                            k->tag["collateralVictim"] = QVariant::fromValue((ServerPlayer *)victim);
+                            LogMessage log;
+                            log.type = "#QishuAdd";
+                            log.from = use.from;
+                            log.to << k;
+                            log.arg = use.card->objectName();
+                            log.arg2 = "qiren";
+                            room->sendLog(log);
+
+                            LogMessage log1;
+                            log1.type = "#CollateralSlash";
+                            log1.from = use.from;
+                            log1.to << victim;
+                            room->sendLog(log1);
+                        }
+                    }
+                }
+                data = QVariant::fromValue(use);
+            }
+        }
+    }
+};
+
 TH0105Package::TH0105Package()
     : Package("th0105")
 {
@@ -2434,6 +2768,10 @@ TH0105Package::TH0105Package()
     konngara->addSkill(new Zongjiu);
     konngara->addSkill(new Xingyou);
 
+    General *yumeko = new General(this, "yumeko", "pc98", 4, false);
+    yumeko->addSkill(new Huanshu);
+    yumeko->addSkill(new Qiren);
+
     addMetaObject<ShiquCard>();
     addMetaObject<LianmuCard>();
     addMetaObject<SqChuangshiCard>();
@@ -2441,6 +2779,7 @@ TH0105Package::TH0105Package()
     addMetaObject<BaosiCard>();
     addMetaObject<EzhaoCard>();
     addMetaObject<ZongjiuCard>();
+    addMetaObject<QirenCard>();
 
     skills << new ModianVS;
 }

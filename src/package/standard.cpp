@@ -162,6 +162,11 @@ QString GlobalEffect::getSubtype() const
 
 void GlobalEffect::onUse(Room *room, const CardUseStruct &card_use) const
 {
+    if (!card_use.to.isEmpty()) {
+        TrickCard::onUse(room, card_use);
+        return;
+    }
+    
     ServerPlayer *source = card_use.from;
     QList<ServerPlayer *> targets, all_players = room->getAllPlayers();
     foreach (ServerPlayer *player, all_players) {
@@ -222,6 +227,11 @@ bool AOE::isAvailable(const Player *player) const
 
 void AOE::onUse(Room *room, const CardUseStruct &card_use) const
 {
+    if (!card_use.to.isEmpty()){
+        TrickCard::onUse(room, card_use);
+        return;
+    }
+
     ServerPlayer *source = card_use.from;
     QList<ServerPlayer *> targets, other_players = room->getOtherPlayers(source);
     foreach (ServerPlayer *player, other_players) {

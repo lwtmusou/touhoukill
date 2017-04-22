@@ -1399,6 +1399,8 @@ void RoomScene::enableTargets(const Card *card)
             ok_button->setEnabled(card->isAvailable(Self));
         else if (card->isKindOf("Peach") && status == Client::RespondingUse)
             ok_button->setEnabled(card->isAvailable(Self));
+        else if (card->isKindOf("QirenCard") && status == Client::RespondingUse)
+            ok_button->setEnabled(card->isAvailable(Self));
         else
             ok_button->setEnabled(true);
         return;

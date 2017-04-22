@@ -1733,7 +1733,8 @@ bool ChuangshiCard::targetsFeasible(const QList<const Player *> &targets, const 
     Card *new_card = Sanguosha->cloneCard(card->objectName());
     DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("chuangshi");
-    if (card->isKindOf("IronChain") && targets.length() == 0)
+    //if (card->isKindOf("IronChain") && targets.length() == 0)
+    if (card->canRecast() && targets.length() == 0)
         return false;
     return new_card && new_card->targetsFeasible(targets, user);
 }

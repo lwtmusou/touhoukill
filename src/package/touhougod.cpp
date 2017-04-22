@@ -3628,7 +3628,8 @@ bool XinhuaCard::targetFixed() const
 bool XinhuaCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
     const Card *oc = Sanguosha->getCard(subcards.first());
-    if (oc->isKindOf("IronChain") && targets.length() == 0)
+    //if (oc->isKindOf("IronChain") && targets.length() == 0)
+    if (oc->canRecast() && targets.length() == 0)
         return false;
     return oc->targetsFeasible(targets, Self);
 }
