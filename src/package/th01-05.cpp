@@ -2580,8 +2580,41 @@ void QirenCard::onUse(Room *room, const CardUseStruct &card_use) const
                 room->setCardFlag(card, "qirenCollater_" + k->objectName());
             }
         }
-        if (use.to.length() != 2)
+        //if Collateral has no effect, do use directly for moving this card.
+        if (use.to.length() != 2) {
+            use.to = killers;
+            QList<CardsMoveStruct> moves;
+            
+
+            QVariant data = QVariant::fromValue(use);
+            RoomThread *thread = room->getThread();
+
+            thread->trigger(PreCardUsed, room, data);
+            use = data.value<CardUseStruct>();
+
+
+            LogMessage log;
+            log.from = use.from;
+            log.to << use.to;
+            log.type = "#UseCard";
+            log.card_str = use.card->toString();
+            room->sendLog(log);
+            
+            CardMoveReason reason(CardMoveReason::S_REASON_USE, use.from->objectName(), QString(), use.card->getSkillName(), QString());
+            if (use.to.size() == 1)
+                reason.m_targetId = use.to.first()->objectName();
+
+            reason.m_extraData = QVariant::fromValue(use.card);
+            CardsMoveStruct move(use.card->getEffectiveId(), NULL, Player::PlaceTable, reason);
+            moves.append(move);
+            room->moveCardsAtomic(moves, true);
+
+            thread->trigger(CardUsed, room, data);
+            use = data.value<CardUseStruct>();
+            thread->trigger(CardFinished, room, data);
             return;
+        }
+            
     }
 
     //do new use
