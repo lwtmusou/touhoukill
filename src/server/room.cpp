@@ -1249,7 +1249,8 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
         return false;
 
     card = card->validateInResponse(repliedPlayer);
-
+    if (repliedPlayer->isCardLimited(card, Card::MethodUse))
+        card = NULL;
     if (card == NULL)
         return _askForNullification(trick, from, to, positive, aiHelper);
 
@@ -1479,6 +1480,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     }
 
     card = card->validateInResponse(player);
+    if (player->isCardLimited(card, method))
+        card = NULL;
     const Card *result = NULL;
     //card log
     if (card) {
@@ -1823,6 +1826,8 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
         card = NULL;
     if (card != NULL)
         card = card->validateInResponse(player);
+        if (card && player->isCardLimited(card, Card::MethodUse))
+            card = NULL;
     else
         return NULL;
 
