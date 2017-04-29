@@ -866,29 +866,29 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         ServerPlayer *who = data.value<DyingStruct>().who;
-        ServerPlayer *current = room->getCurrent();
-        if (!current || !current->isAlive() || who == current || !who->hasSkill(this))
+        if (who->isCurrent() || !who->hasSkill(this))
             return QList<SkillInvokeDetail>();
-        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, who, who, NULL, true, current);
+        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, who, who);
     }
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    /*bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         return invoke->invoker->askForSkillInvoke(objectName(), "recover:" + invoke->preferredTarget->objectName());
-    }
+    }*/
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        ServerPlayer *current = invoke->targets.first();
         ServerPlayer *player = invoke->invoker;
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), current->objectName());
-
         player->gainMark("@kinki");
         RecoverStruct recover;
         recover.recover = player->dyingThreshold() - player->getHp();
         room->recover(player, recover);
 
-        room->damage(DamageStruct(objectName(), player, current));
+        ServerPlayer *current = room->getCurrent();
+        if (current && current->isAlive()) {
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), current->objectName());
+            room->damage(DamageStruct(objectName(), player, current));
+        }
         return false;
     }
 };

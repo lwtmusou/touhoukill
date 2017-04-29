@@ -248,7 +248,7 @@ end
 sgs.ai_skill_invoke.kuangyan = function(self,data)
 	if self.player:getMark("@kinki")>0 then return true end
 	current=self.room:getCurrent()
-	if self:isFriend(current) and current:getHp()<3 then
+	if current and self:isFriend(current) and current:getHp()<3 then
 		return false
 	end
 	return true
@@ -256,7 +256,7 @@ end
 sgs.ai_slash_prohibit.kuangyan = function(self, from, to, card)
 	if to:hasSkill("kuangyan")  and to:getHp()==1 then
 		local current=self.room:getCurrent()
-		if  current:isAlive()  and self:isEnemy(current,to)  then
+		if  current and current:isAlive()  and self:isEnemy(current,to)  then
 			if self:isFriend(from,to) then
 				return false
 			else
