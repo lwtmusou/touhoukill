@@ -1824,11 +1824,11 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
 
     if (card && player->isCardLimited(card, Card::MethodUse))
         card = NULL;
-    if (card != NULL)
+    if (card != NULL) {
         card = card->validateInResponse(player);
         if (card && player->isCardLimited(card, Card::MethodUse))
             card = NULL;
-    else
+    } else
         return NULL;
 
     const Card *result = NULL;
