@@ -520,7 +520,7 @@ ShoucangCard::ShoucangCard()
 {
     will_throw = false;
     target_fixed = true;
-    handling_method = Card::MethodUse;
+    //handling_method = Card::MethodUse;
     m_skillName = "shoucang";
 }
 
@@ -793,7 +793,7 @@ ChunxiCard::ChunxiCard()
 {
     will_throw = false;
     target_fixed = true;
-    handling_method = Card::MethodUse;
+    //handling_method = Card::MethodUse;
     m_skillName = "chunxi";
 }
 

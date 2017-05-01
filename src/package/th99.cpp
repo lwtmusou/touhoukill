@@ -1534,7 +1534,7 @@ public:
 
 PanduCard::PanduCard()
 {
-    handling_method = Card::MethodUse;
+    //handling_method = Card::MethodUse;
     mute = true;
 }
 

@@ -1352,7 +1352,7 @@ public:
 BumingCard::BumingCard()
 {
     will_throw = true;
-    handling_method = Card::MethodUse;
+    //handling_method = Card::MethodUse;
     m_skillName = "buming";
 }
 
