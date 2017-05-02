@@ -1683,13 +1683,13 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
         }
         break;
     }
-    case Qt::Key_Z: {
+    /*case Qt::Key_Z: {
         if (dashboard) {
             m_skillButtonSank = !m_skillButtonSank;
             dashboard->updateSkillButton();
         }
         break;
-    }
+    }*/
     }
 }
 
