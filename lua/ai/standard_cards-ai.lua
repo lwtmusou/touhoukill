@@ -651,13 +651,13 @@ function SmartAI:useCardSlash(card, use)
 
 	--for shikong
 	--简单粗暴
-	if  self.player:hasSkill("shikong") and self.player:getPhase()==sgs.Player_Play
+	--[[if  self.player:hasSkill("shikong") and self.player:getPhase()==sgs.Player_Play
 	and not self.player:hasFlag("slashTargetFixToOne") then
-		--[[for _,p in sgs.qlist(self.player:getAliveSiblings()) {
-			if (card:IsSpecificAssignee(p, self.player, this)) {
-				return !targets.isEmpty();
-			}
-		}]]
+		--for _,p in sgs.qlist(self.player:getAliveSiblings()) {
+		--	if (card:IsSpecificAssignee(p, self.player, this)) {
+		--		return !targets.isEmpty();
+		--	}
+		--}
 		local shikong_f = 0
 		local shikong_e = 0
 		local shikongTargets = sgs.SPlayerList()
@@ -685,7 +685,7 @@ function SmartAI:useCardSlash(card, use)
 		end
 		--不考虑双将可以添加其他目标，直接return
 		return
-	end
+	end]]
 
 
 

@@ -507,6 +507,44 @@ public:
     }
 };
 
+
+class Shikong : public TriggerSkill
+{
+public:
+    Shikong()
+        : TriggerSkill("shikong")
+    {
+        events << CardUsed;
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->isKindOf("Slash") && use.from->hasSkill(this))
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        use.to.clear();
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+            if (invoke->invoker->canSlash(p, use.card)) {
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
+                use.to << p;
+            }
+        }
+        room->touhouLogmessage("#Shikong", invoke->invoker, objectName(), use.to);
+        data = QVariant::fromValue(use);
+        return false;
+    }
+};
+
+/*
 class Shikong : public TargetModSkill
 {
 public:
@@ -544,7 +582,7 @@ public:
         else
             return 0;
     }
-};
+};*/
 
 class Ronghui : public TriggerSkill
 {
@@ -562,8 +600,8 @@ public:
         if (damage.chain || damage.transfer || !damage.by_user)
             return QList<SkillInvokeDetail>();
 
-        if (damage.from && damage.from != damage.to && damage.from->getPhase() == Player::Play && damage.from->hasSkill(this)
-            && damage.card
+        if (damage.from && damage.from != damage.to  && damage.from->hasSkill(this)
+            && damage.card //&& damage.from->getPhase() == Player::Play
             && damage.card->isKindOf("Slash")
             && damage.from->canDiscard(damage.to, "e"))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
@@ -603,7 +641,7 @@ public:
     {
         if (triggerEvent == Damage) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.card != NULL && damage.from && damage.from->getPhase() == Player::Play) {
+            if (damage.card != NULL && damage.from) { //&& damage.from->getPhase() == Player::Play
                 if (damage.card->hasFlag("jubian_card")) {
                     if (!damage.card->hasFlag("jubian_used"))
                         damage.card->setFlags("jubian_used");
@@ -619,7 +657,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->hasFlag("jubian_card") && use.card->hasFlag("jubian_used")
                 && use.from->hasSkill(this)
-                && use.from->getPhase() == Player::Play)
+                && use.from->getPhase() == Player::Play && use.from->isWounded())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
         }
         return QList<SkillInvokeDetail>();
@@ -863,7 +901,7 @@ public:
         events << Dying;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *who = data.value<DyingStruct>().who;
         if (who->isCurrent() || !who->hasSkill(this))
@@ -2291,6 +2329,164 @@ public:
     }
 };
 
+
+class Qinlue : public TriggerSkill
+{
+public:
+    Qinlue()
+        : TriggerSkill("qinlue")
+    {
+        events << EventPhaseChanging;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to == Player::Play) {
+            ServerPlayer *current = change.player;
+            if (!current || !current->isCurrent() || current->isSkipped(Player::Play))
+                return QList<SkillInvokeDetail>();
+
+            QList<SkillInvokeDetail> d;
+            foreach(ServerPlayer *source, room->findPlayersBySkillName(objectName())) {
+                if (current != source && source->canDiscard(source, "hes"))
+                    d << SkillInvokeDetail(this, source, source);
+            }
+            return d;
+        }
+        else if (change.to == Player::NotActive) {
+            if (!change.player)
+                return QList<SkillInvokeDetail>();
+            foreach(ServerPlayer *player, room->getOtherPlayers(change.player)) {
+                ExtraTurnStruct extra = player->tag["ExtraTurnInfo"].value<ExtraTurnStruct>();
+                if (extra.reason == "qinlue" && extra.extraTarget == change.player) {
+                    if (!player->faceUp())
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true, change.player);
+                }
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to == Player::NotActive)
+            return true;
+        ServerPlayer *source = invoke->invoker;
+        ServerPlayer *current = change.player;
+
+        QString prompt = "@qinlue-discard:" + current->objectName();
+        const Card *card = room->askForCard(source, "Slash,EquipCard", prompt, QVariant::fromValue(current), Card::MethodDiscard, current, false, "qinlue");
+        return card != NULL;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *source = invoke->invoker;
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to == Player::NotActive) {
+            if (!invoke->invoker->faceUp())
+                invoke->invoker->turnOver();
+        }
+        else {
+            ServerPlayer *current = change.player;
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), current->objectName());
+
+            QString prompt = "@qinlue-discard1:" + source->objectName();
+            const Card *card = room->askForCard(current, "Jink", prompt, QVariant::fromValue(source), Card::MethodDiscard);
+            if (!card) {
+                //current->skip(Player::Play);
+                room->setPlayerFlag(current, "Global_TurnTerminated");
+                if (!room->getThread()->hasExtraTurn()) {
+                    ExtraTurnStruct extra;
+                    extra.player = invoke->invoker;
+                    extra.set_phases << Player::RoundStart << Player::Play << Player::NotActive;
+                    extra.reason = "qinlue";
+                    extra.extraTarget = current;
+                    source->tag["ExtraTurnInfo"] = QVariant::fromValue(extra);
+                    invoke->invoker->gainAnExtraTurn();
+                }
+                return true; //skip = True
+            }
+        }
+        return false;
+    }
+};
+
+class QinlueEffect : public TriggerSkill
+{
+public:
+    QinlueEffect()
+        : TriggerSkill("#qinlue_effect")
+    {
+        events << EventPhaseChanging << EventPhaseStart;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        ServerPlayer *player = NULL;
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive)
+                player = change.player;
+        }
+        else if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *current = data.value<ServerPlayer *>();
+            if (current->getPhase() == Player::RoundStart)
+                player = current;
+                
+        }
+        if (player != NULL) {
+            ExtraTurnStruct extra = player->tag["ExtraTurnInfo"].value<ExtraTurnStruct>();
+            if (extra.reason == "qinlue" && extra.extraTarget != NULL) {
+                ServerPlayer *target = extra.extraTarget;
+                if (target->isAlive() && player->isAlive() && (!player->isKongcheng() || !target->isKongcheng()))
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true, target);
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        ServerPlayer *player = invoke->invoker;
+        ServerPlayer *target = player->tag["ExtraTurnInfo"].value<ExtraTurnStruct>().extraTarget;
+            
+        int n1 = player->getHandcardNum();
+        int n2 = target->getHandcardNum();
+        // need process known cards?
+        /*foreach(ServerPlayer *p, room->getAlivePlayers()) {
+            if (p != player && p != target) {
+                    JsonArray arr;
+                    arr << player->objectName() << target->objectName();
+                    room->doNotify(p, QSanProtocol::S_COMMAND_EXCHANGE_KNOWN_CARDS, arr);
+            }
+       }*/
+
+        QList<CardsMoveStruct> exchangeMove;
+        CardsMoveStruct move1(player->handCards(), target, Player::PlaceHand,
+            CardMoveReason(CardMoveReason::S_REASON_SWAP, player->objectName(), target->objectName(), "qinlue", QString()));
+        CardsMoveStruct move2(target->handCards(), player, Player::PlaceHand,
+            CardMoveReason(CardMoveReason::S_REASON_SWAP, target->objectName(), player->objectName(), "qinlue", QString()));
+        exchangeMove.push_back(move1);
+        exchangeMove.push_back(move2);
+        room->moveCardsAtomic(exchangeMove, false);
+
+        /*LogMessage log;
+        log.type = "#Qinlue";
+        log.from = player;
+        log.to << target;
+        log.arg = QString::number(n1);
+        log.arg2 = QString::number(n2);
+        room->sendLog(log);
+        room->getThread()->delay();*/
+        return false;
+  }
+};
+
+
+/*
 class Qinlue : public TriggerSkill
 {
 public:
@@ -2432,6 +2628,7 @@ public:
         return false;
     }
 };
+*/
 
 class Chaoren : public TriggerSkill
 {

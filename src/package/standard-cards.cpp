@@ -181,8 +181,8 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
     if (use.to.size() > 1 && player->hasSkill("xuedian")) {
         room->broadcastSkillInvoke("xuedian", 1);
         room->notifySkillInvoked(player, "xuedian");
-    } else if (use.to.size() > 1 && player->hasSkill("shikong") && player->getPhase() == Player::Play) {
-        room->notifySkillInvoked(player, "shikong");
+    //} else if (use.to.size() > 1 && player->hasSkill("shikong") && player->getPhase() == Player::Play) {
+    //    room->notifySkillInvoked(player, "shikong");
     } else if (use.to.size() > 1 && player->hasSkill("shuangren")) {
         room->broadcastSkillInvoke("shuangren");
         room->notifySkillInvoked(player, "shuangren");
@@ -275,7 +275,7 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const
 bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
     //check targets feasible for skill "shikong"
-    if (Self->hasSkill("shikong") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+    /*if (Self->hasSkill("shikong") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
         foreach (const Player *p, Self->getAliveSiblings()) {
             if (Slash::IsSpecificAssignee(p, Self, this)) {
                 return !targets.isEmpty();
@@ -298,7 +298,7 @@ bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *
                 }
             }
         }
-    }
+    }*/
     return !targets.isEmpty();
 }
 
