@@ -725,6 +725,9 @@ sgs.ai_skill_cardask["@fire-attack"] = function(self, data, pattern, target)
 						or self:isGoodChainTarget(target) or target:hasArmorEffect("Vine") then
 					needKeepPeach = false
 				end
+				if (self.player:hasSkill("fenxiang") and self.player:getCards("h"):contains(acard)) then
+					needKeepPeach = false
+				end
 				if lord and not self:isEnemy(lord) and sgs.isLordInDanger() and self:getCardsNum("Peach") == 1 and self.player:aliveCount() > 2 then
 					needKeepPeach = true
 				end
@@ -890,7 +893,7 @@ function SmartAI:useCardFireAttack(fire_attack, use) --ÄáÂê ³Ô¾Æ+»ð¹¥+¶ªÉ± È»ºó¶
 	end
 end
 
---[[sgs.ai_cardshow.fire_attack = function(self, requestor)
+sgs.ai_cardshow.fire_attack = function(self, requestor)
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	if requestor:objectName() == self.player:objectName() then
 		self:sortByUseValue(cards, true)
@@ -909,10 +912,10 @@ end
 	end
 
 	return result
-end]]
+end
 sgs.ai_skill_cardask["@fire_attack_show"] = function(self, data)
 	local cards = sgs.QList2Table(self.player:getCards("h"))
-	local requestor = data:toCardEffect().from
+	requestor = data:toCardEffect().to
 	if requestor:objectName() == self.player:objectName() then
 		self:sortByUseValue(cards, true)
 		return cards[1]
@@ -928,6 +931,7 @@ sgs.ai_skill_cardask["@fire_attack_show"] = function(self, data)
 			index = priority[card:getSuitString()]
 		end
 	end
+	self.player:gainMark("@nini")
 	return "$" .. result:getId()
 end
 

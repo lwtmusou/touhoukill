@@ -558,8 +558,23 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
     QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
     QString prompt = QString("@fire-attack:%1::%2").arg(effect.to->objectName()).arg(suit_str);
     if (effect.from->isAlive()) {
-        const Card *card_to_throw = room->askForCard(effect.from, pattern, prompt);
-        if (card_to_throw)
+        bool damage = false;
+        if (effect.from->hasSkill("fengxiang")) {
+            const Card *card_to_throw = room->askForCard(effect.from, pattern, prompt, QVariant::fromValue(effect), Card::MethodNone);
+            if (card_to_throw) {
+                if (!effect.from->isShownHandcard(card_to_throw->getId()) && effect.from->askForSkillInvoke("fengxiang_show", "show"))
+                    effect.from->addToShownHandCards(QList<int>() << card_to_throw->getEffectiveId());
+                else
+                    room->throwCard(card_to_throw, effect.from, effect.from);
+                damage = true;
+            }
+        }
+        else {
+            const Card *card_to_throw = room->askForCard(effect.from, pattern, prompt);
+            if (card_to_throw)
+                damage = true;
+        }
+        if (damage)
             room->damage(DamageStruct(this, effect.from, effect.to, 1, DamageStruct::Fire));
         else
             effect.from->setFlags("FireAttackFailed_" + effect.to->objectName()); // For AI

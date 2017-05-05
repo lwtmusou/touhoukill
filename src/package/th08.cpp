@@ -221,6 +221,77 @@ public:
     }
 };
 
+
+class Kaifeng : public TriggerSkill
+{
+public:
+    Kaifeng()
+        : TriggerSkill("kaifeng")
+    {
+        events << Damaged << DamageCaused;
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.nature != DamageStruct::Fire || !damage.from || damage.from == damage.to)
+            return QList<SkillInvokeDetail>();
+        if (triggerEvent == DamageCaused) {
+            if (damage.from->hasSkill(this) && damage.from->getHp() < damage.to->getHp())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
+        }
+        else if (triggerEvent == Damaged) {
+            if (damage.to->hasSkill(this) && damage.to->getHp() < damage.from->getHp())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.from);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        QString prompt = "recover:" + QString::number(invoke->preferredTarget->getHp());
+        return invoke->invoker->askForSkillInvoke(objectName(), prompt);
+    }
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *mokou = invoke->invoker;
+        ServerPlayer *target = invoke->targets.first();
+        RecoverStruct recover;
+        recover.recover = target->getHp() - mokou->getHp();
+        room->recover(mokou, recover);
+        return false;
+    }
+};
+
+class Fengxiang : public OneCardViewAsSkill
+{
+public:
+    Fengxiang()
+        : OneCardViewAsSkill("fengxiang")
+    {
+        filter_pattern = ".|red|.|hand";
+        response_or_use = true;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        return matchAvaliablePattern("fire_attack", pattern) && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const
+    {
+        if (originalCard) {
+            FireAttack *card = new FireAttack(Card::SuitToBeDecided, -1);
+            card->addSubcard(originalCard);
+            card->setSkillName(objectName());
+            return card;
+        }
+        return NULL;
+    }
+};
+
+
 class Bumie : public TriggerSkill
 {
 public:
@@ -2144,10 +2215,12 @@ TH08Package::TH08Package()
     eirin->addSkill(new Miyao);
 
     General *mokou = new General(this, "mokou", "yyc", 4, false);
-    mokou->addSkill(new Bumie);
-    mokou->addSkill(new BumieMaxhp);
-    mokou->addSkill(new Lizhan);
-    related_skills.insertMulti("bumie", "#bumie");
+    mokou->addSkill(new Kaifeng);
+    mokou->addSkill(new Fengxiang);
+    //mokou->addSkill(new Bumie);
+    //mokou->addSkill(new BumieMaxhp);
+    //mokou->addSkill(new Lizhan);
+    //related_skills.insertMulti("bumie", "#bumie");
 
     General *reisen = new General(this, "reisen", "yyc", 4, false);
     reisen->addSkill(new Kuangzao);

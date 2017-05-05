@@ -148,6 +148,72 @@ sgs.ai_need_bear.bumie = function(self, card,from,tos)
 	end
 	return num >= from:getHandcardNum()
 end
+sgs.ai_skill_invoke.kaifeng = true
+sgs.ai_benefitBySlashed.kaifeng = function(self, card,source,target)
+	if card:isKindOf("FireSlash")  and  target:getHp() < source:getHp() 
+	and  target:getHp() > target:dyingThreshold() then 
+		return true 
+	end
+	return false
+end
+sgs.ai_slash_prohibit.kaifeng = function(self, from, to, card)
+	if self:isFriend(from,to) then
+		return false
+	end
+	if card:isKindOf("FireSlash")  and  to:getHp() < from:getHp() 
+	and  to:getHp() > to:dyingThreshold() then
+		return true
+	end
+	return false
+end
+
+sgs.ai_skill_invoke.fengxiang_show = true
+local fengxiang_skill={}
+fengxiang_skill.name="fengxiang"
+table.insert(sgs.ai_skills,fengxiang_skill)
+fengxiang_skill.getTurnUseCard=function(self)
+	local cards = self.player:getCards("hs")
+	cards=self:touhouAppendExpandPileToList(self.player, cards)
+	cards=sgs.QList2Table(cards)
+	local card
+	self:sortByUseValue(cards,true)
+	for _,acard in ipairs(cards) do
+		if acard:isRed() and not acard:isKindOf("Peach") and (self:getDynamicUsePriority(acard) < sgs.ai_use_value.FireAttack or self:getOverflow() > 0) then
+			if acard:isKindOf("Slash") and self:getCardsNum("Slash") == 1 then
+				local keep
+				local dummy_use = { isDummy = true , to = sgs.SPlayerList() }
+				self:useBasicCard(acard, dummy_use)
+				if dummy_use.card and dummy_use.to and dummy_use.to:length() > 0 then
+					for _, p in sgs.qlist(dummy_use.to) do
+						if p:getHp() <= 1 then keep = true break end
+					end
+					if dummy_use.to:length() > 1 then keep = true end
+				end
+				if keep then sgs.ai_use_priority.Slash = sgs.ai_use_priority.FireAttack + 0.1
+				else
+					sgs.ai_use_priority.Slash = 2.6
+					card = acard
+					break
+				end
+			else
+				card = acard
+				break
+			end
+		end
+	end
+	if not card then return nil end
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	local card_str = ("fire_attack:fengxiang[%s:%s]=%d"):format(suit, number, card_id)
+	local skillcard = sgs.Card_Parse(card_str)
+	assert(skillcard)
+	return skillcard
+end
+sgs.ai_cardneed.fengxiang = function(to, card, self)
+	return card:isRed()
+end
+
 
 function lizhan_slash(player,objectName)
 	local ids=player:getTag("lizhan"):toIntList()

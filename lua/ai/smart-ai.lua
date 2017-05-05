@@ -2569,6 +2569,7 @@ function SmartAI:filterEvent(event, player, data)
 		local reason = damage.reason
 		if damage.card and damage.card:getSkillName()=="chuangshi" then  intention = 0 end
 		if damage.card and from and damage.card:hasFlag("WushenDamage_" .. damage.from:objectName()) then  intention = 0 end
+		if damage.nature == sgs.DamageStruct_Fire and to:hasSkill("kaifeng") then intention = 0 end
 		if not damage.card then
 			local intention
 			if sgs.ai_quhu_effect then
