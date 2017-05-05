@@ -198,6 +198,7 @@ sgs.ai_choicemade_filter.skillInvoke.zaiwu = function(self, player, args)
 		end
 	end
 end
+--[[
 sgs.ai_skill_invoke.mengwei = function(self,data)
 	local target = data:toPlayer()
 	if not target then return false end
@@ -210,7 +211,7 @@ sgs.ai_choicemade_filter.skillInvoke.mengwei = function(self, player, args)
 		sgs.updateIntention(player, target, -30)
 	end
 end
-
+]]
 sgs.ai_skill_cardask["@xiubu-self"] = function(self, data)
 	if sgs.ai_skill_invoke.xiubu(self, data) then
 		local dis = self:askForDiscard("Dummy", 1, 1, false, false)

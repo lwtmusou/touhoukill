@@ -550,6 +550,216 @@ public:
     }
 };
 
+class LiexiVS : public ZeroCardViewAsSkill
+{
+public:
+    LiexiVS()
+        : ZeroCardViewAsSkill("liexi")
+    {
+        response_pattern = "@@liexi";
+    }
+
+    virtual const Card *viewAs() const
+    {
+        Slash *s = new Slash(Card::NoSuit, 0);
+        s->setSkillName(objectName());
+        return s;
+    }
+};
+class Liexi : public TriggerSkill
+{
+public:
+    Liexi()
+        : TriggerSkill("liexi")
+    {
+        events << EventPhaseEnd << TargetSpecifying;
+        view_as_skill = new LiexiVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e == EventPhaseEnd) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->hasSkill(this) && player->getPhase() == Player::Play) {
+                Slash *s = new Slash(Card::NoSuit, 0);
+                s->setSkillName(objectName());
+                s->deleteLater();
+                if (!player->isCardLimited(s, Card::MethodUse)) {
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+                }
+            }
+        }
+        else if (e == TargetSpecifying) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isKindOf("Slash") && use.card->getSkillName() == objectName()) {
+                foreach(ServerPlayer *t, room->getOtherPlayers(use.from)) {
+                    if (!use.to.contains(t) && use.from->canSlash(t, use.card, false))
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
+                }
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+    bool cost(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        if (e == EventPhaseEnd) {
+            room->askForUseCard(invoke->invoker, "@@liexi", "@liexi");
+            return false;
+        }
+        return true;
+    }
+
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        QList<ServerPlayer *> targets;
+        foreach(ServerPlayer *t, room->getOtherPlayers(use.from)) {
+            if (!use.to.contains(t) && use.from->canSlash(t, use.card, false))
+                targets << t;
+        }
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@liexi_extra");
+        QString prompt = "target:" + use.from->objectName() + ":" + invoke->invoker->objectName() + ":" + use.card->objectName();
+        if (target->askForSkillInvoke("liexi_extra", prompt)) {
+            use.to << target;
+            room->sortByActionOrder(use.to);
+            data = QVariant::fromValue(use);
+            target->drawCards(1);
+
+            room->touhouLogmessage("#liexi_extra", use.from, use.card->objectName(), QList<ServerPlayer *>() << target);
+        }
+        else {
+            use.nullified_list << "_ALL_TARGETS";
+            data = QVariant::fromValue(use);
+        }
+
+        return false;
+    }
+};
+class LiexiTargetMod : public TargetModSkill
+{
+public:
+    LiexiTargetMod()
+        : TargetModSkill("#liexi")
+    {
+        pattern = "Slash";
+    }
+
+    int getDistanceLimit(const Player *, const Card *card) const
+    {
+        if (card->getSkillName() == "liexi")
+            return 1000;
+
+        return 0;
+    }
+};
+
+class Mengwei : public TriggerSkill
+{
+public:
+    Mengwei()
+        : TriggerSkill("mengwei")
+    {
+        events << TargetConfirming << DamageDone << PostCardEffected << SlashEffected;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        switch (triggerEvent) {
+        case DamageDone: {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.card->isKindOf("Slash") && damage.card->hasFlag("mengwei_extra"))
+                room->setCardFlag(damage.card, "mengwei_damage");
+            break;
+        }case PostCardEffected: {
+            CardEffectStruct effect = data.value<CardEffectStruct>();
+            if (effect.card->hasFlag("mengwei_extra") && !effect.card->hasFlag("mengwei_damage"))
+                room->setCardFlag(effect.card, "mengwei_cancel");
+            break;
+        }
+        default:
+            break;
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        QList<SkillInvokeDetail> d;
+        if (e == TargetConfirming) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isKindOf("Slash")) {
+                foreach(ServerPlayer *p, use.to) {
+                    if (p->hasSkill(this)) {
+                        foreach(ServerPlayer *t, room->getOtherPlayers(p)) {
+                            if (!use.to.contains(t) && use.from->canSlash(t, use.card, false))
+                                d << SkillInvokeDetail(this, p, p);
+                        }
+                    }
+                }
+            }
+        } else if (e == SlashEffected) {
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            if (effect.slash->hasFlag("mengwei_cancel")) {
+                d << SkillInvokeDetail(this, effect.from, effect.from, NULL, true);
+            }
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *player = invoke->invoker;
+        if (e == TargetConfirming) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            QList<ServerPlayer *> targets;
+            foreach(ServerPlayer *t, room->getOtherPlayers(player)) {
+                if (!use.to.contains(t) && use.from->canSlash(t, use.card, false))
+                    targets << t;
+            }
+
+            ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@mengwei:" + use.from->objectName(), true, true);
+            if (target) {
+                invoke->targets << target;
+                return true;
+            }
+        }
+        else if (e == SlashEffected)
+            return true;
+        return false;
+    }
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (e == TargetConfirming) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            QString prompt = "target:" + use.from->objectName() + ":" + invoke->invoker->objectName() + ":" + use.card->objectName();
+            if (invoke->targets.first()->askForSkillInvoke("mengwei_extra", prompt)) {
+                use.to << invoke->targets.first();
+                room->sortByActionOrder(use.to);
+                room->setCardFlag(use.card, "mengwei_extra");
+                data = QVariant::fromValue(use);
+                invoke->targets.first()->drawCards(1);
+
+                room->touhouLogmessage("#mengwei_extra", use.from, use.card->objectName(), QList<ServerPlayer *>() << invoke->targets.first());
+            }
+        }
+        else if (e == SlashEffected) {
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            LogMessage log;
+            log.type = "#MengweiNullified";
+            log.from = effect.from;
+            log.to << effect.to;
+            log.arg = objectName();
+            log.arg2 = effect.slash->objectName();
+            room->sendLog(log);
+            room->setEmotion(effect.to, "skill_nullify");
+            return true;
+        }
+        return false;
+    }
+};
+
+/*
 class Mengwei : public TriggerSkill
 {
 public:
@@ -596,7 +806,7 @@ public:
 
         return false;
     }
-};
+};*/
 
 class Liangzi : public TriggerSkill
 {
@@ -867,8 +1077,10 @@ THNDJPackage::THNDJPackage()
     youmu_ndj->addSkill(new Fanji);
 
     General *merry_ndj = new General(this, "merry_ndj", "wai", 3, false);
-    merry_ndj->addSkill(new Zaiwu);
+    merry_ndj->addSkill(new Liexi);
+    merry_ndj->addSkill(new LiexiTargetMod);
     merry_ndj->addSkill(new Mengwei);
+    related_skills.insertMulti("liexi", "#liexi");
 
     General *renko_ndj = new General(this, "renko_ndj", "wai", 4, false);
     renko_ndj->addSkill(new Liangzi);
