@@ -709,6 +709,129 @@ public:
     }
 };
 
+class Xushi : public TriggerSkill
+{
+public:
+    Xushi()
+        : TriggerSkill("xushi")
+    {
+        events << TargetSpecifying << EventPhaseChanging;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == EventPhaseChanging) {
+            foreach(ServerPlayer *t, room->getAlivePlayers()) {
+                room->setPlayerFlag(t, "-xushi_used");
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e != TargetSpecifying)
+            return QList<SkillInvokeDetail>();
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->isKindOf("EquipCard") || use.to.length() != 1 || !use.from)
+            return QList<SkillInvokeDetail>();
+
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            if (use.to.contains(p) || use.from == p || p->hasFlag("xushi_used"))
+                continue;
+            foreach(ServerPlayer *t, room->getOtherPlayers(use.to.first())) {
+                if (!use.from->isProhibited(t, use.card)
+                    && use.card->targetFilter(QList<const Player *>(), t, use.from)
+                    && (!p->getCards("h").isEmpty() || !t->getCards("s").isEmpty())) {
+                    d << SkillInvokeDetail(this, p, p);
+                    break;
+                }
+            }
+        }
+        return d;
+    }
+    bool cost(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        QString prompt = "use:" + use.from->objectName()  + ":" + use.to.first()->objectName() + ":" + use.card->objectName();
+        return invoke->invoker->askForSkillInvoke(objectName(), prompt);
+    }
+
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        invoke->invoker->setFlags("xushi_used");
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), use.from->objectName());
+        QList<ServerPlayer *> targets;
+        if (!invoke->invoker->getCards("h").isEmpty())
+            targets << invoke->invoker;
+
+        if (!use.to.first()->getCards("s").isEmpty())
+             targets << use.to.first();
+        
+
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@xushi");
+        QString flag = (target == invoke->invoker) ? "h" : "s";
+        int card_id = room->askForCardChosen(invoke->invoker, target, flag, objectName());
+        if (flag == "h")
+            target->addToShownHandCards(QList<int>() << card_id);
+        else
+            target->removeShownHandCards(QList<int>() << card_id, true);
+
+        QList<ServerPlayer *> victims;
+        foreach(ServerPlayer *t, room->getOtherPlayers(use.to.first())) {
+            if (!use.from->isProhibited(t, use.card)
+                && use.card->targetFilter(QList<const Player *>(), t, use.from))
+                victims << t;
+        }
+        if (!victims.isEmpty()) {
+            ServerPlayer *newTarget = room->askForPlayerChosen(use.from, victims, objectName(), "@xushi_newTarget:" + use.card->objectName());
+            use.to.clear();
+            use.to << newTarget;
+            room->touhouLogmessage("#xushi_newTarget", use.from, use.card->objectName(), QList<ServerPlayer *>() << newTarget);
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, use.from->objectName(),  newTarget->objectName());
+            data = QVariant::fromValue(use);
+        }
+        return false;
+    }
+};
+
+class Xinyue : public MasochismSkill
+{
+public:
+    Xinyue()
+        : MasochismSkill("xinyue")
+    {
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.from && damage.from->isAlive() && damage.to->isAlive()
+            && damage.to->hasSkill(this)
+            && damage.from->getHandcardNum() > damage.to->getCards("s").length()) {
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.from);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        invoke->invoker->tag["xinyue_target"] = QVariant::fromValue(damage.from);
+        QString prompt = "target:" + damage.from->objectName() + "::" + QString::number(invoke->invoker->getCards("s").length());
+        return invoke->invoker->askForSkillInvoke(objectName(), prompt);
+    }
+
+    void onDamaged(Room *room, QSharedPointer<SkillInvokeDetail> invoke, const DamageStruct &) const
+    {
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
+        int x = invoke->targets.first()->getHandcardNum() - invoke->invoker->getCards("s").length();
+        room->askForDiscard(invoke->targets.first(), "wangyue", x, x, false, false);
+    }
+};
+
 BuxianCard::BuxianCard()
 {
     will_throw = false;
@@ -1853,6 +1976,47 @@ void ChuangshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> 
     room->useCard(carduse, true);
 }
 
+
+class Wangyue : public MasochismSkill
+{
+public:
+    Wangyue()
+        : MasochismSkill("wangyue")
+    {
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.from && damage.from->isAlive() && damage.to->isAlive()
+            && damage.to->hasSkill(this)
+            && damage.from->getHandcardNum() > damage.to->getHandcardNum() && damage.to->getHandcardNum() < 5) {
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.from);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        //invoke->invoker->tag["wangyue_target"] = QVariant::fromValue(damage.from);
+        int num = qMin(5, damage.from->getHandcardNum());
+        QString prompt = "target:" + damage.from->objectName() + "::" + QString::number(num);
+        return invoke->invoker->askForSkillInvoke(objectName(), prompt);
+    }
+
+    void onDamaged(Room *room, QSharedPointer<SkillInvokeDetail> invoke, const DamageStruct &) const
+    {
+        //room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
+        int num = qMin(5, invoke->targets.first()->getHandcardNum());
+        int x = num - invoke->invoker->getHandcardNum();
+        invoke->invoker->drawCards(x);
+        //room->askForDiscard(invoke->targets.first(), "wangyue", x, x, false, false);
+
+    }
+};
+
+/*
 class Wangyue : public MasochismSkill
 {
 public:
@@ -1886,7 +2050,7 @@ public:
         int x = invoke->targets.first()->getHandcardNum() - invoke->invoker->getHp();
         room->askForDiscard(invoke->targets.first(), "wangyue", x, x, false, false);
     }
-};
+};*/
 
 HuweiCard::HuweiCard()
 {
@@ -2227,8 +2391,10 @@ TH08Package::TH08Package()
     reisen->addSkill(new Huanshi);
 
     General *keine = new General(this, "keine", "yyc", 3, false);
-    keine->addSkill(new Shishi);
-    keine->addSkill(new Shouye);
+    //keine->addSkill(new Shishi);
+    //keine->addSkill(new Shouye);
+    keine->addSkill(new Xushi);
+    keine->addSkill(new Xinyue);
 
     General *tewi = new General(this, "tewi", "yyc", 3, false);
     tewi->addSkill(new Buxian);
