@@ -624,7 +624,7 @@ sgs.ai_skillProperty.taotie = function(self)
 	return "cause_judge"
 end
 
-
+--[[
 sgs.ai_skill_use["@@huisheng"] = function(self, prompt)
 	local use=self.room:getTag("huisheng_use"):toCardUse()
 	local target = use.from
@@ -671,10 +671,33 @@ sgs.ai_skill_use["@@huisheng"] = function(self, prompt)
 	end
 	return "@HuishengCard=.->" .. table.concat(targets, "+")
 end
-
+]]
 
 sgs.ai_skill_invoke.songjing = true
-
+sgs.ai_skill_cardask["@gongzhen"] = function(self, data, pattern, target)
+	local damage =data:toDamage()
+	if not self.player:isEnemy(damage.to) then return "." end
+	
+	local convert = { [".S"] = "spade", [".D"] = "diamond", [".H"] = "heart", [".C"] = "club"}
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	local card
+	self:sortByUseValue(cards, true)
+	for _, acard in ipairs(cards) do
+		if acard:getSuitString() == convert[pattern]  and not sel.player:isJilei(acard) then
+			if not isCard("Peach", acard, self.player) then
+				card = acard
+				break
+			end
+		end
+	end
+	return card and card:getId() or "."
+end
+sgs.ai_choicemade_filter.cardResponded["@gongzhen"] = function(self, player, args)
+	local to = findPlayerByObjectName(self.room, (args[2]:split(":"))[2])
+	if to and args[#args] ~= "_nil_" then
+		sgs.updateIntention(player, to, 80)
+	end
+end
 
 sgs.ai_need_bear.chuixue = function(self, card,from,tos)
 	from = from or self.player

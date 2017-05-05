@@ -184,5 +184,6 @@ config = {
 		"kaguya_ndj->kaguya",
 		"mystia_sp->mystia",
 		"momizi_sp->momizi",
+		"kyouko_sp->kyouko",
 	}
 }

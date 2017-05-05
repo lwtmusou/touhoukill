@@ -1018,6 +1018,7 @@ public:
     }
 };
 
+/*
 HuishengCard::HuishengCard()
 {
     will_throw = false;
@@ -1166,6 +1167,7 @@ public:
             return 0;
     }
 };
+*/
 
 class Songjing : public TriggerSkill
 {
@@ -1202,6 +1204,48 @@ public:
         return false;
     }
 };
+
+class Gongzhen : public TriggerSkill
+{
+public:
+    Gongzhen()
+        : TriggerSkill("gongzhen")
+    {
+        events << Damaged;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (!damage.card || !damage.card->isKindOf("Slash") || damage.card->getSuit() == Card::NoSuit)
+            return QList<SkillInvokeDetail>();
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            if (p->inMyAttackRange(damage.to) && p->canDiscard(p, "hs"))
+                d << SkillInvokeDetail(this, p, p);
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        QString suit_str = damage.card->getSuitString();
+        QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
+        QString prompt = QString("@gongzhen:%1::%2").arg(damage.to->objectName()).arg(suit_str);
+        return room->askForCard(invoke->invoker, pattern, prompt, data, objectName());
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), damage.to->objectName());
+        room->damage(DamageStruct(objectName(), invoke->invoker, damage.to));
+        return true;
+    }
+};
+
+
 
 class Chuixue : public TriggerSkill
 {
@@ -1615,10 +1659,11 @@ TH13Package::TH13Package()
     related_skills.insertMulti("duzhua", "#duzhuaTargetMod");
 
     General *kyouko = new General(this, "kyouko", "slm", 3, false);
-    kyouko->addSkill(new Huisheng);
-    kyouko->addSkill(new HuishengTargetMod);
+    //kyouko->addSkill(new Huisheng);
+    //kyouko->addSkill(new HuishengTargetMod);
     kyouko->addSkill(new Songjing);
-    related_skills.insertMulti("huisheng_effect", "#huisheng_effect");
+    kyouko->addSkill(new Gongzhen);
+    //related_skills.insertMulti("huisheng", "#huisheng_effect");
 
     General *yuyuko_slm = new General(this, "yuyuko_slm", "slm", 3, false);
     yuyuko_slm->addSkill(new Chuixue);
@@ -1637,7 +1682,7 @@ TH13Package::TH13Package()
     addMetaObject<ShijieCard>();
     addMetaObject<LeishiCard>();
     addMetaObject<XiefaCard>();
-    addMetaObject<HuishengCard>();
+    //addMetaObject<HuishengCard>();
     addMetaObject<BumingCard>();
 }
 

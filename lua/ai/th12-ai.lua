@@ -925,3 +925,59 @@ sgs.ai_skill_cardask["@shuxin"] = function(self, data)
 	end
 	return "."
 end
+
+
+
+sgs.ai_skill_use["@@huisheng"] = function(self, prompt)
+	local use=self.room:getTag("huisheng_use"):toCardUse()
+	local target = use.from
+	local card = use.card
+	if not target then return "."    end
+	if not card then return "."  end
+
+	local needHuisheng=false
+	if self:isFriend(target) then
+		if card:isKindOf("Peach") and target:isWounded() then
+			needHuisheng= true
+		end
+	end
+	if self:isEnemy(target) then
+		if card:isKindOf("Duel") then
+			needHuisheng = self:getCardsNum("Slash") >= getCardsNum("Slash", target, self.player)
+		end
+		if not card:isKindOf("Peach") then
+			needHuisheng= true
+		end
+	end
+	if not needHuisheng then return "."  end
+
+	local victim
+	if card:isKindOf("Collateral") then
+		local others ={}
+		for _,p in sgs.qlist(self.room:getOtherPlayers(target)) do
+			if self:isEnemy(p) and target:canSlash(p) then
+				victim= p
+				break
+			elseif target:canSlash(p) then
+				table.insert(others,p)
+			end
+		end
+		if not victim and #others>0 then
+			victim=others[1]
+		end
+	end
+
+	local targets={}
+	table.insert(targets,target:objectName())
+	if victim then
+		table.insert(targets,victim:objectName())
+	end
+	return "@HuishengCard=.->" .. table.concat(targets, "+")
+end
+
+
+sgs.ai_skill_invoke.yexiang = function(self,data)
+	local target=data:toPlayer()
+	return self:isEnemy(target)
+end
+sgs.ai_choicemade_filter.cardChosen.yexiang = sgs.ai_choicemade_filter.cardChosen.dismantlement
