@@ -495,8 +495,44 @@ bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player
     bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
                    && to_select != Self
                    && !hasFlag("IgnoreFailed"));
-    return targets.length() < total_num && (!to_select->isKongcheng() || ignore)
-        && (to_select != Self || !Self->isLastHandCard(this, true));
+   
+    //return targets.length() < total_num && (!to_select->isKongcheng() || ignore)
+    //    && (to_select != Self || !Self->isLastHandCard(this, true));
+    if (targets.length() < total_num) {
+        bool checkHand = false;
+        if (to_select != Self) {
+            if (to_select->isKongcheng())
+                checkHand = false;
+            else if (to_select->getHandcardNum() >  to_select->getShownHandcards().length())
+                checkHand = true;
+            return checkHand || ignore;
+        }
+        else {
+            QList<int> ids;
+            if (isVirtualCard())
+                ids = getSubcards();
+            else
+                ids << getEffectiveId();
+
+            QList<int> shownIds = to_select->getShownHandcards();
+            QList<const Card*> HandCards = to_select->getHandcards();
+            int hand = 0;
+            int shown = 0;
+            foreach(int id, ids) {
+                foreach(const Card*c, HandCards) {
+                    if (c->getEffectiveId() == id)
+                        hand++;
+                }
+                if (shownIds.contains(id))
+                    shown++;
+            }
+            if ((to_select->getHandcardNum() - to_select->getShownHandcards().length()) >
+                (hand -shown))
+                checkHand = true;
+        }
+        return  checkHand;
+    }
+    return false;
 }
 
 void FireAttack::onEffect(const CardEffectStruct &effect) const
@@ -504,9 +540,19 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.from->getRoom();
     if (effect.to->isKongcheng())
         return;
+    if (effect.to->getHandcardNum() <= effect.to->getShownHandcards().length())
+        return;
 
-    const Card *card = room->askForCardShow(effect.to, effect.from, objectName());
+    //const Card *card = room->askForCardShow(effect.to, effect.from, objectName());
+    const Card *card = room->askForCard(effect.to, ".|.|.|handOnly!", "@fire_attack_show", QVariant::fromValue(effect), Card::MethodNone);
+    if (!card) {
+        // force show!!!
+        QList<const Card *> hc = effect.to->getCards("h");
+        int x = qrand() % hc.length();
+        card = hc.value(x);
+    }
     room->showCard(effect.to, card->getEffectiveId());
+    effect.to->addToShownHandCards(QList<int>() << card->getEffectiveId());
 
     QString suit_str = card->getSuitString();
     QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());

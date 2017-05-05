@@ -766,7 +766,26 @@ function SmartAI:useCardFireAttack(fire_attack, use) --ÄáÂê ³Ô¾Æ+»ð¹¥+¶ªÉ± È»ºó¶
 
 
 	self:sort(self.enemies, "defense")
-
+    local fire_Kongcheng = function(enemy)
+		if (enemy:objectName() == self.player:objectName())  then
+			local unShowns = enemy:getCards("h")
+            if (fire_attack:isVirtualCard()) then
+				local num = 0
+				for _, id in sgs.qlist(fire_attack:getSubcards()) do
+					local card = sgs.sanguosha:getCard(id)
+					if unShowns:contains(card) then
+						num = num+1
+					end
+				end
+				return num >= unShowns:length()
+			else
+				if unShowns:length() == 1 and unShowns:contains(fire_attack) then
+					return true
+				end
+			end
+        end
+		return enemy:getCards("h"):length() == 0
+	end
 	local can_attack = function(enemy)
 		if self.player:hasFlag("FireAttackFailed_" .. enemy:objectName()) then
 			return false
@@ -775,7 +794,8 @@ function SmartAI:useCardFireAttack(fire_attack, use) --ÄáÂê ³Ô¾Æ+»ð¹¥+¶ªÉ± È»ºó¶
 		if not enemy:hasArmorEffect("SilverLion") then
 			if enemy:hasArmorEffect("Vine") then damage = damage + 1 end
 		end
-		return self:objectiveLevel(enemy) > 3 and damage > 0 and not enemy:isKongcheng() and not self.room:isProhibited(self.player, enemy, fire_attack)
+		return self:objectiveLevel(enemy) > 3 and damage > 0 and not fire_Kongcheng(enemy) --not enemy:isKongcheng() 
+				and not self.room:isProhibited(self.player, enemy, fire_attack)
 				and self:damageIsEffective(enemy, sgs.DamageStruct_Fire, self.player) and not self:cantbeHurt(enemy, self.player, damage)
 				and self:hasTrickEffective(fire_attack, enemy)
 				and sgs.isGoodTarget(enemy, self.enemies, self)
@@ -804,7 +824,7 @@ function SmartAI:useCardFireAttack(fire_attack, use) --ÄáÂê ³Ô¾Æ+»ð¹¥+¶ªÉ± È»ºó¶
 
 	if (not use.current_targets or not table.contains(use.current_targets, self.player:objectName()))
 		and self.role ~= "renegade" and can_FireAttack_self and self.player:isChained() and self:isGoodChainTarget(self.player)
-		and self.player:getHandcardNum() > 1
+		and	fire_Kongcheng(self.player)--and self.player:getHandcardNum() > 1
 		and not self.room:isProhibited(self.player, self.player, fire_attack)
 		and self:damageIsEffective(self.player, sgs.DamageStruct_Fire, self.player) and not self:cantbeHurt(self.player)
 		and self:hasTrickEffective(fire_attack, self.player)
@@ -816,9 +836,9 @@ function SmartAI:useCardFireAttack(fire_attack, use) --ÄáÂê ³Ô¾Æ+»ð¹¥+¶ªÉ± È»ºó¶
 
 	for _, enemy in ipairs(enemies) do
 		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName())) and enemy:getHandcardNum() == 1 then
-			local handcards = sgs.QList2Table(enemy:getHandcards())
+			local handcards = sgs.QList2Table(getCards("h"))--enemy:getHandcards()
 			local flag = string.format("%s_%s_%s", "visible", self.player:objectName(), enemy:objectName())
-			if handcards[1]:hasFlag("visible") or handcards[1]:hasFlag(flag) then
+			if (handcards[1]:hasFlag("visible") or handcards[1]:hasFlag(flag)) then
 				local suitstring = handcards[1]:getSuitString()
 				if not lack[suitstring] and not table.contains(targets, enemy) then
 					table.insert(targets, enemy)
@@ -870,7 +890,7 @@ function SmartAI:useCardFireAttack(fire_attack, use) --ÄáÂê ³Ô¾Æ+»ð¹¥+¶ªÉ± È»ºó¶
 	end
 end
 
-sgs.ai_cardshow.fire_attack = function(self, requestor)
+--[[sgs.ai_cardshow.fire_attack = function(self, requestor)
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	if requestor:objectName() == self.player:objectName() then
 		self:sortByUseValue(cards, true)
@@ -889,6 +909,26 @@ sgs.ai_cardshow.fire_attack = function(self, requestor)
 	end
 
 	return result
+end]]
+sgs.ai_skill_cardask["@fire_attack_show"] = function(self, data)
+	local cards = sgs.QList2Table(self.player:getCards("h"))
+	local requestor = data:toCardEffect().from
+	if requestor:objectName() == self.player:objectName() then
+		self:sortByUseValue(cards, true)
+		return cards[1]
+	end
+
+	local priority = { heart = 4, spade = 3, club = 2, diamond = 1 }
+	if requestor:hasSkill("hongyan") then priority = { spade = 10, club = 2, diamond = 1, heart = 0 } end
+	local index = -1
+	local result
+	for _, card in ipairs(cards) do
+		if priority[card:getSuitString()] > index then
+			result = card
+			index = priority[card:getSuitString()]
+		end
+	end
+	return "$" .. result:getId()
 end
 
 sgs.ai_use_value.FireAttack = 4.8
