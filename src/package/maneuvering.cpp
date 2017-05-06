@@ -683,6 +683,12 @@ SupplyShortage::SupplyShortage(Card::Suit suit, int number)
     judge.reason = objectName();
 }
 
+
+QString SupplyShortage::getSubtype() const
+{
+    return "unmovable_delayed_trick";
+}
+
 bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     if (!targets.isEmpty() || to_select == Self)

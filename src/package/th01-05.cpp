@@ -786,7 +786,7 @@ public:
         } else {
             QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
             foreach (const Card *card, cards) {
-                if (card->getTypeId() == Card::TypeTrick && !card->isNDTrick()
+                if (card->getTypeId() == Card::TypeTrick && !card->isNDTrick() //&& card->getSubtype() == "unmovable_delayed_trick"
                     && !trick_list.contains(card->objectName())
                     && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
                     if (!kana->containsTrick(card->objectName()))

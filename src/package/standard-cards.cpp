@@ -1569,6 +1569,11 @@ Indulgence::Indulgence(Suit suit, int number)
     judge.reason = objectName();
 }
 
+QString Indulgence::getSubtype() const
+{
+    return "unmovable_delayed_trick";
+}
+
 bool Indulgence::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     bool ignore = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
@@ -1586,6 +1591,11 @@ Disaster::Disaster(Card::Suit suit, int number)
     : DelayedTrick(suit, number, true)
 {
     target_fixed = true;
+}
+
+QString Disaster::getSubtype() const
+{
+    return "movable_delayed_trick";
 }
 
 bool Disaster::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -2227,6 +2237,65 @@ public:
     }
 };
 
+
+
+SavingEnergy::SavingEnergy(Suit suit, int number)
+    : DelayedTrick(suit, number)
+{
+    setObjectName("saving_energy");
+
+    judge.pattern = ".|spade";
+    judge.good = false;
+    judge.negative = false;
+    judge.reason = objectName();
+}
+
+QString SavingEnergy::getSubtype() const
+{
+    return "unmovable_delayed_trick";
+}
+
+bool SavingEnergy::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    bool ignore = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+    return targets.isEmpty() && (!to_select->containsTrick(objectName()) || ignore);
+}
+
+void SavingEnergy::takeEffect(ServerPlayer *target) const
+{
+    target->skip(Player::Discard);
+    target->addToPile("saving_energy", this);
+}
+
+
+class SavingEnergySkill : public TriggerSkill
+{
+public:
+    SavingEnergySkill()
+        : TriggerSkill("saving_energy_effect")
+    {
+        events << EventPhaseChanging;
+        global = true;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to == Player::NotActive && change.player->isAlive() && !change.player->getPile("saving_energy").isEmpty())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
+        
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        QList<int> ids = invoke->invoker->getPile("saving_energy");
+        DummyCard dummy(ids);
+        invoke->invoker->obtainCard(&dummy);
+        return false;
+    }
+};
+
 StandardCardPackage::StandardCardPackage()
     : Package("standard_cards", Package::CardPack)
 {
@@ -2377,19 +2446,20 @@ StandardExCardPackage::StandardExCardPackage()
 {
     QList<Card *> cards;
     cards << new IceSword(Card::Spade, 2)
-          << new RenwangShield(Card::Club, 2)
-          << new Lightning(Card::Heart, 12)
-          << new Nullification(Card::Diamond, 12)
-          << new WoodenOx(Card::Diamond, 5)
-          << new LureTiger(Card::Spade, 9)
-          << new LureTiger(Card::Heart, 2)
-          << new LureTiger(Card::Club, 10)
-          << new Drowning(Card::Heart, 13)
-          << new Drowning(Card::Club, 7)
-          << new KnownBoth(Card::Diamond, 3)
-          << new KnownBoth(Card::Spade, 4);
+        << new RenwangShield(Card::Club, 2)
+        << new Lightning(Card::Heart, 12)
+        << new Nullification(Card::Diamond, 12)
+        << new WoodenOx(Card::Diamond, 5)
+        << new LureTiger(Card::Heart, 2)
+        << new LureTiger(Card::Diamond, 10)
+        << new Drowning(Card::Spade, 13)
+        << new Drowning(Card::Club, 7)
+        << new KnownBoth(Card::Club, 3)
+        << new KnownBoth(Card::Spade, 4)
+        << new SavingEnergy(Card::Diamond, 9)
+        << new SavingEnergy(Card::Heart, 11);
     skills << new RenwangShieldSkill << new IceSwordSkill << new WoodenOxSkill << new WoodenOxTriggerSkill
-           << new LureTigerSkill << new LureTigerProhibit << new KnownBothSkill;
+           << new LureTigerSkill << new LureTigerProhibit << new KnownBothSkill << new SavingEnergySkill;
     insertRelatedSkills("lure_tiger_effect", "#lure_tiger-prohibit");
 
     foreach (Card *card, cards)

@@ -1357,7 +1357,7 @@ public:
     static QStringList prohibitPiles()
     {
         QStringList names;
-        names << "suoding_cards"
+        names << "suoding_cards" << "saving_energy"
               << "wooden_ox";
         return names;
     }

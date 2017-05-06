@@ -239,6 +239,7 @@ class Indulgence : public DelayedTrick
 public:
     Q_INVOKABLE Indulgence(Card::Suit suit, int number);
 
+    virtual QString getSubtype() const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void takeEffect(ServerPlayer *target) const;
 };
@@ -249,6 +250,7 @@ class Disaster : public DelayedTrick
 
 public:
     Disaster(Card::Suit suit, int number);
+    virtual QString getSubtype() const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual bool isAvailable(const Player *player) const;
@@ -476,4 +478,17 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
+
+class SavingEnergy : public DelayedTrick
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE SavingEnergy(Card::Suit suit, int number);
+
+    virtual QString getSubtype() const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void takeEffect(ServerPlayer *target) const;
+};
+
 #endif

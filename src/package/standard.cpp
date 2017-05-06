@@ -345,7 +345,7 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const
     judge_struct.who = effect.to;
     room->judge(judge_struct);
 
-    if (judge_struct.isBad()) {
+    if (judge_struct.negative == judge_struct.isBad()) {
         takeEffect(effect.to);
         if (room->getCardOwner(getEffectiveId()) == NULL) {
             CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());

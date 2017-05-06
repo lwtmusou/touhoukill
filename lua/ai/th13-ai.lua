@@ -676,7 +676,7 @@ end
 sgs.ai_skill_invoke.songjing = true
 sgs.ai_skill_cardask["@gongzhen"] = function(self, data, pattern, target)
 	local damage =data:toDamage()
-	if not self.player:isEnemy(damage.to) then return "." end
+	if not self:isEnemy(damage.to) then return "." end
 	
 	local convert = { [".S"] = "spade", [".D"] = "diamond", [".H"] = "heart", [".C"] = "club"}
 	local cards = sgs.QList2Table(self.player:getHandcards())

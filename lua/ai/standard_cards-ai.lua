@@ -4547,3 +4547,61 @@ end
 sgs.ai_use_value.KnownBoth = 5.5
 sgs.ai_keep_value.KnownBoth = 3.33
 sgs.ai_use_priority.KnownBoth = 9.1
+
+
+function SmartAI:useCardSavingEnergy(card, use)
+	local friends = self:exclude(self.friends, card)
+	if #friends == 0 then return end
+
+	local zhanghe = self.room:findPlayerBySkillName("qiaobian")
+	local zhanghe_seat = zhanghe and zhanghe:faceUp() and not self:isFriend(zhanghe) and zhanghe:getSeat() or 0
+	
+	--东方杀中类张郃的角色
+	local mouko = self.room:findPlayerBySkillName("sidou")
+	local mouko_seat = mouko and mouko:faceUp() and not self:isFriend(mouko) and mouko:getSeat() or 0
+	local marisa = self.room:findPlayerBySkillName("jiezou")
+	local marisa_seat = marisa and card:getSuit()==sgs.Card_Spade and marisa:faceUp()  and not self:isFriend(marisa) and marisa:getSeat() or 0
+	
+	local getvalue = function(friend)
+		if friend:containsTrick("saving_energy") or friend:containsTrick("YanxiaoCard") then
+			return -100
+		end
+		if zhanghe_seat > 0 and (self:playerGetRound(zhanghe) <= self:playerGetRound(friend) or not friend:faceUp()) then
+			return -100
+		end
+		if friend:hasSkills("yongheng|zaozu") then return -100 end
+		local value = friend:getHandcardNum() - friend:getMaxCards()
+		if mouko_seat > 0 and (self:playerGetRound(mouko) <= self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 or not enemy:faceUp()) then
+			return - 100 end
+		if marisa_seat > 0 and (self:playerGetRound(marisa) < self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 or not enemy:faceUp()) then
+			return - 100 end
+		
+		--可以在此列举各种吃进手牌比较多的技能。。。
+		if self:isWeak(friend) then value = value + 3 end
+		if friend:isLord() then value = value + 3 end
+		if self:objectiveLevel(friend) < 3 then value = value - 10 end
+		if not friend:faceUp() then value = value - 10 end
+		if self:needBear(friend) then value = value - 20 end
+		value = value + (self.room:alivePlayerCount() - self:playerGetRound(friend)) / 2
+		return value
+	end
+
+	local cmp = function(a, b)
+		return getvalue(a) > getvalue(b)
+	end
+
+	table.sort(friends, cmp)
+	local target = friends[1]
+	if getvalue(target) > -100 then
+		use.card = card
+		if use.to then use.to:append(target) end
+		return
+	end
+end
+
+
+
+sgs.ai_use_value.SavingEnergy = 9
+sgs.ai_use_priority.SavingEnergy = 0.6
+sgs.ai_keep_value.SavingEnergy = 3
+sgs.ai_card_intention.SavingEnergy = -80

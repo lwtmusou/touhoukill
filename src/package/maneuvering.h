@@ -127,6 +127,7 @@ class SupplyShortage : public DelayedTrick
 public:
     Q_INVOKABLE SupplyShortage(Card::Suit suit, int number);
 
+    virtual QString getSubtype() const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void takeEffect(ServerPlayer *target) const;
 };

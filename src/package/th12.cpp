@@ -1627,12 +1627,24 @@ public:
         events << CardsMoveOneTime;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *victim = qobject_cast<ServerPlayer *>(move.from);
         QList<SkillInvokeDetail> d;
         if (victim != NULL && victim->isAlive() && move.from_places.contains(Player::PlaceDelayedTrick)) {
+            bool can = false;
+            foreach(int id, move.card_ids) {
+                if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceDelayedTrick) {
+                    WrappedCard *vs_card = Sanguosha->getWrappedCard(id);
+                    if (vs_card->getSubtype() == "unmovable_delayed_trick") {
+                        can = true;
+                        break;
+                    }
+                }
+            }
+            if (!can)
+                return d;
             foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (p != victim && p->canDiscard(victim, "hs")) {
                     d << SkillInvokeDetail(this, p, p, NULL, false, victim);
