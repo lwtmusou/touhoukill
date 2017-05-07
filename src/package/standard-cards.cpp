@@ -108,40 +108,6 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
                 room->setPlayerFlag(target, "-SlashAssignee");
     }
 
-    //since the weapon Fan has changed, this code is no need any more.
-    /*if (objectName() == "slash" && use.m_isOwnerUse) {
-        bool has_changed = false;
-        QString skill_name = getSkillName();
-        if (!skill_name.isEmpty()) {
-            const Skill *skill = Sanguosha->getSkill(skill_name);
-            if (skill && !skill->inherits("FilterSkill"))
-                has_changed = true;
-        }
-        if (!has_changed || subcardsLength() == 0) {
-            QVariant data = QVariant::fromValue(use);
-            if (use.card->objectName() == "slash" && player->hasWeapon("Fan")) {
-                FireSlash *fire_slash = new FireSlash(getSuit(), getNumber());
-                if (!isVirtualCard() || subcardsLength() > 0)
-                    fire_slash->addSubcard(this);
-                fire_slash->setSkillName("Fan");
-                QStringList flags = use.card->getFlags();
-                foreach(const QString &flag, flags)
-                    fire_slash->setFlags(flag);
-
-                bool can_use = true;
-                foreach (ServerPlayer *p, use.to) {
-                    if (!player->canSlash(p, fire_slash, false)) {
-                        can_use = false;
-                        break;
-                    }
-                }
-                if (can_use && room->askForSkillInvoke(player, "Fan", data))
-                    use.card = fire_slash;
-                else
-                    delete fire_slash;
-            }
-        }
-    }*/
     if (((use.card->isVirtualCard() && use.card->subcardsLength() == 0) || use.card->hasFlag("pandu")) && !player->hasFlag("slashDisableExtraTarget")) {
         QList<ServerPlayer *> targets_ts;
         while (true) {
@@ -221,8 +187,6 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
         room->setEmotion(player, "weapon/spear");
     else if (use.to.size() > 1 && player->hasWeapon("Halberd") && player->isLastHandCard(this))
         room->setEmotion(player, "weapon/halberd");
-    //else if (use.card->isVirtualCard() && use.card->getSkillName() == "fan")
-    //    room->setEmotion(player, "weapon/fan");
 
     if (player->getPhase() == Player::Play && player->hasFlag("Global_MoreSlashInOneTurn") && player->hasWeapon("Crossbow")) {
         player->setFlags("-Global_MoreSlashInOneTurn");
@@ -411,10 +375,6 @@ void Peach::onEffect(const CardEffectStruct &effect) const
 
 bool Peach::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    //ignore ExtraTarget
-    //int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    //if (targets.length() >= total_num)
-    //    return false;
     if (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"))
         return true;
     if (targets.isEmpty() && to_select->isWounded()) {
@@ -1238,13 +1198,13 @@ bool Collateral::targetFilter(const QList<const Player *> &targets,
 {
     if (!targets.isEmpty()) {
         // @todo: fix this. We should probably keep the codes here, but change the code in
-        // roomscene such that if it is collateral, then targetFilter's result is overrode
+        // roomscene such that if it is collateral, then targetFilter's result is overriden
         Q_ASSERT(targets.length() <= 2);
         if (targets.length() == 2)
             return false;
         const Player *slashFrom = targets[0];
-        /* @todo: develop a new mechanism of filtering targets
-                    to remove the coupling here and to fix the similar bugs caused by TongJi */
+        // @todo: develop a new mechanism of filtering targets
+        // to remove the coupling here and to fix the similar bugs caused by TongJi 
         if (to_select == Self && to_select->hasSkill("kongcheng") && Self->isLastHandCard(this, true))
             return false;
         return slashFrom->canSlash(to_select);
@@ -1307,7 +1267,7 @@ void Collateral::onEffect(const CardEffectStruct &effect) const
             doCollateral(room, killer, victim, prompt);
     } else {
         if (killer->isDead()) {
-            ; // do nothing
+             // do nothing
         } else if (!killer->getWeapon()) {
             doCollateral(room, killer, victim, prompt);
         } else {
@@ -2338,7 +2298,6 @@ StandardCardPackage::StandardCardPackage()
           << new Peach(Card::Diamond, 12)
 
           << new Triblade(Card::Club)
-          //<< new Crossbow(Card::Club)
           << new Crossbow(Card::Diamond)
           << new DoubleSword
           << new QinggangSword
@@ -2350,7 +2309,6 @@ StandardCardPackage::StandardCardPackage()
 
           << new EightDiagram(Card::Spade)
           << new BreastPlate(Card::Club);
-    //<< new EightDiagram(Card::Club);
 
     skills << new DoubleSwordSkill << new QinggangSwordSkill
            << new BladeSkill << new SpearSkill << new AxeSkill

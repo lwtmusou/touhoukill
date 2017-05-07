@@ -114,11 +114,10 @@ public:
         use.card->setFlags("IgnoreFailed"); //for factor which named "ignore" and related with Function "isProhibited" and  "targetFilter"
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getLieges("xlc", invoke->invoker)) {
-            //if (p == use.from)
-            //    continue;
-            if (use.to.contains(p) || use.from->isProhibited(p, use.card)) {
+
+            if (use.to.contains(p) || use.from->isProhibited(p, use.card)) 
                 continue;
-            }
+            
             if (!use.card->targetFilter(QList<const Player *>(), p, use.from))
                 continue;
             targets << p;
@@ -955,8 +954,7 @@ public:
             invoke->invoker->obtainCard(&dummy);
         }
 
-        //room->moveCardsToEndOfDrawpile(ids);
-        //room->askForGuanxing(invoke->invoker, ids, Room::GuanxingDownOnly, objectName());
+
         return false;
     }
 };
@@ -1496,8 +1494,7 @@ bool HuishengCard::targetsFeasible(const QList<const Player *> &targets, const P
     Card *new_card = Sanguosha->cloneCard(cardname);
     DELETE_OVER_SCOPE(Card, new_card)
         new_card->setSkillName("huisheng");
-    //if ((new_card->isKindOf("IronChain")|| new_card->isKindOf("Peach"))&& targets.length()!=1)
-    //    return false;
+
     if (targets.length() < 1)
         return false;
     return new_card && new_card->targetsFeasible(targets, Self);
@@ -1689,8 +1686,6 @@ TH12Package::TH12Package()
     General *toramaru = new General(this, "toramaru", "xlc", 4, false);
     toramaru->addSkill(new Jinghua);
     toramaru->addSkill(new Weiguang);
-    //toramaru->addSkill(new Zhengyi);
-    //toramaru->addSkill(new Baota);
 
     General *murasa = new General(this, "murasa", "xlc", 4, false);
     murasa->addSkill(new Shuinan);
@@ -1703,8 +1698,6 @@ TH12Package::TH12Package()
     General *nazrin = new General(this, "nazrin", "xlc", 3, false);
     nazrin->addSkill(new Xunbao);
     nazrin->addSkill(new Lingbai);
-    //nazrin->addSkill(new Souji);
-    //nazrin->addSkill(new Tansuo);
 
     General *kogasa = new General(this, "kogasa", "xlc", 3, false);
     kogasa->addSkill(new Yiwang);

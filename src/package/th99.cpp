@@ -961,7 +961,6 @@ public:
         skill_names << "cancel";
         yori->tag["pingyi_target"] = QVariant::fromValue(invoke->preferredTarget);
 
-        //room->askForCard(yori, ".", "@pingyi-discard:" + invoke->preferredTarget->objectName(), data, Card::MethodDiscard, NULL, false, objectName()))
         QString skill_name = room->askForChoice(yori, objectName(), skill_names.join("+"));
         invoke->tag["selected_skill"] = skill_name;
         return skill_name != "cancel";

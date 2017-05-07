@@ -53,10 +53,6 @@ QString Analeptic::getSubtype() const
 
 bool Analeptic::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    //ignore ExtraTarget
-    //int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    //if (targets.length() >= total_num)
-    //    return false;
     if (targets.isEmpty()) {
         if (to_select == Self)
             return true;
@@ -107,34 +103,6 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const
     }
 }
 
-/*class FanSkill : public OneCardViewAsSkill
-{
-public:
-    FanSkill() : OneCardViewAsSkill("Fan")
-    {
-        filter_pattern = "%slash";
-        response_or_use = true;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const
-    {
-        return Slash::IsAvailable(player) && EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
-    }
-
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
-    {
-        return Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
-                && matchAvaliablePattern("slash", pattern) && EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const
-    {
-        FireSlash *acard = new FireSlash(originalCard->getSuit(), originalCard->getNumber());
-        acard->addSubcard(originalCard->getId());
-        acard->setSkillName(objectName());
-        return acard;
-    }
-};*/
 class FanSkill : public WeaponSkill
 {
 public:
@@ -174,7 +142,6 @@ public:
             // When TargetSpecified, no need to check canSlash()
             //remain the information of origianl card
             fire_slash->setSkillName(use.card->getSkillName());
-            //fire_slash->setSkillName("Fan");
             QStringList flags = use.card->getFlags();
             foreach (const QString &flag, flags)
                 fire_slash->setFlags(flag);
@@ -289,23 +256,6 @@ public:
     }
 };
 
-/*class IronArmorSkill : public ProhibitSkill
-{
-public:
-    IronArmorSkill() : ProhibitSkill("IronArmor")
-    {
-    }
-
-    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &) const
-    {
-        if (EquipSkill::equipAvailable(to, EquipCard::ArmorLocation, objectName())) {
-            return card->isKindOf("FireAttack")
-                    || card->isKindOf("IronChain")
-                    || card->isKindOf("NatureSlash");
-        }
-        return false;
-    }
-};*/
 
 IronArmor::IronArmor(Suit suit, int number)
     : Armor(suit, number)
@@ -496,8 +446,6 @@ bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player
                    && to_select != Self
                    && !hasFlag("IgnoreFailed"));
    
-    //return targets.length() < total_num && (!to_select->isKongcheng() || ignore)
-    //    && (to_select != Self || !Self->isLastHandCard(this, true));
     if (targets.length() < total_num) {
         bool checkHand = false;
         if (to_select != Self) {
@@ -543,7 +491,6 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
     if (effect.to->getHandcardNum() <= effect.to->getShownHandcards().length())
         return;
 
-    //const Card *card = room->askForCardShow(effect.to, effect.from, objectName());
     const Card *card = room->askForCard(effect.to, ".|.|.|handOnly!", "@fire_attack_show", QVariant::fromValue(effect), Card::MethodNone);
     if (!card) {
         // force show!!!
@@ -659,18 +606,7 @@ void IronChain::onUse(Room *room, const CardUseStruct &card_use) const
 
 void IronChain::onEffect(const CardEffectStruct &effect) const
 {
-    //an alternative approach
     effect.to->getRoom()->setPlayerProperty(effect.to, "chained", !effect.to->isChained());
-    //original method
-    /*
-    effect.to->setChained(!effect.to->isChained());
-
-    Room *room = effect.to->getRoom();
-    
-    room->broadcastProperty(effect.to, "chained");
-    room->setEmotion(effect.to, "chain");
-    QVariant v = QVariant::fromValue(effect.to);
-    room->getThread()->trigger(ChainStateChanged, room, v);*/
 }
 
 SupplyShortage::SupplyShortage(Card::Suit suit, int number)

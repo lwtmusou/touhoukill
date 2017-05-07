@@ -655,93 +655,8 @@ public:
         return true;
     }
 };
-/*
-class Toupai : public PhaseChangeSkill
-{
-public:
-    Toupai() :PhaseChangeSkill("toupai")
-    {
-
-    }
 
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {
-        ServerPlayer *aya = data.value<ServerPlayer *>();
-        if (aya->getPhase() == Player::Draw && aya->hasSkill(this)) {
-            foreach(ServerPlayer *p, room->getOtherPlayers(aya)) {
-                if (aya->canDiscard(p, "hs"))
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, aya, aya);
-            }
-        }
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        QList<ServerPlayer *> players;
-        foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-            if (invoke->invoker->canDiscard(p, "hs"))
-                players << p;
-        }
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, players, objectName(), "@toupai-select", true, true);
-        if (target) {
-            invoke->invoker->tag["toupai-target"] = QVariant::fromValue(target);
-            return true;
-        }
-        return false;
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *player) const
-    {
-        Room *room = player->getRoom();
-
-        ServerPlayer *target = player->tag["toupai-target"].value<ServerPlayer *>();
-        player->tag.remove("toupai-target");
-        QList<int> throwIds;
-        int drawNum =  0;
-        room->showAllCards(target, player);
-        room->getThread()->delay(1000);
-        room->clearAG(player);
-
-        for (int i = 0; i < 3; i++) {
-            QList<int>  ids;
-            QList<int>  able;
-            QList<int>  disable;
-            foreach(const Card *c, target->getCards("hs")) {
-                int id = c->getEffectiveId();
-                ids << id;
-                if (c->isRed() && !throwIds.contains(id))
-                    able << id;
-                else
-                    disable << id;
-            }
-
-            if (able.isEmpty())
-                break;
-
-            //int id = room->doGongxin(player, target, ids, "toupai");
-            room->fillAG(ids, player, disable);
-            int id = room->askForAG(player, able, true, objectName());
-            room->clearAG(player);
-
-            if (id > -1){
-                throwIds << id;
-                if (Sanguosha->getCard(id)->isKindOf("BasicCard"))
-                    drawNum++;
-            } else
-                break;
-        }
-        if (!throwIds.isEmpty()) {
-            CardMoveReason reason(CardMoveReason::S_REASON_DISMANTLE, player->objectName(), "", "toupai", "");
-            DummyCard dummy(throwIds);
-            room->throwCard(&dummy, reason, target, player);
-            player->drawCards(drawNum);
-        }
-        return true;
-    }
-};
-*/
 class Qucai : public TriggerSkill
 {
 public:
@@ -974,7 +889,6 @@ public:
             && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
             && (!player->hasFlag("Global_tianrenFailed"))
             && !player->isCurrent();
-        //(player->getPhase() == Player::NotActive)
     }
 
     virtual const Card *viewAs() const

@@ -415,9 +415,9 @@ bool SkillInvokeDetail::operator<(const SkillInvokeDetail &arg2) const // the op
     return !skill->inherits("EquipSkill") && arg2.skill->inherits("EquipSkill");
 }
 
-bool SkillInvokeDetail::sameSkill(const SkillInvokeDetail &arg2) const // it only judge the skill name, the skill invoker, the skill owner and the preferred target. it don't judge the real skill target because it is chosen by the skill invoker
+bool SkillInvokeDetail::sameSkill(const SkillInvokeDetail &arg2) const // it only judge the skill name, the skill invoker and the skill owner. It don't judge the skill target because it is chosen by the skill invoker
 {
-    return skill == arg2.skill && owner == arg2.owner && invoker == arg2.invoker /*&& preferredTarget == arg2.preferredTarget*/;
+    return skill == arg2.skill && owner == arg2.owner && invoker == arg2.invoker;
 }
 
 bool SkillInvokeDetail::sameTimingWith(const SkillInvokeDetail &arg2) const // used to judge 2 skills has the same timing. only 2 structs with the same priority and the same invoker and the same "whether or not it is a skill of equip"
@@ -453,35 +453,17 @@ SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *ow
 
 bool SkillInvokeDetail::isValid() const // validity check
 {
-    return skill != NULL /* && owner != NULL && invoker != NULL*/;
+    return skill != NULL;
 }
 
 bool SkillInvokeDetail::preferredTargetLess(const SkillInvokeDetail &arg2) const
 {
-    std::function<Room *(ServerPlayer *)> getRoom = [this](ServerPlayer *p) -> Room * {
-        if (p != NULL)
-            return p->getRoom();
-        else {
-            // let's treat it as a gamerule, the gamerule is created inside roomthread
-            RoomThread *thread = qobject_cast<RoomThread *>(skill->thread());
-            if (thread == NULL)
-                return NULL;
-
-            return thread->getRoom();
-        }
-
-        return NULL;
-    };
 
     if (skill == arg2.skill && owner == arg2.owner && invoker == arg2.invoker) {
         // we compare preferred target to ensure the target selected is in the order of seat only in the case that 2 skills are the same
-        if (preferredTarget != NULL && arg2.preferredTarget != NULL) {
-            Room *room = getRoom(owner);
-            if (room == NULL)
-                return false;
-
+        if (preferredTarget != NULL && arg2.preferredTarget != NULL) 
             return ServerPlayer::CompareByActionOrder(preferredTarget, arg2.preferredTarget);
-        }
+        
     }
 
     return false;

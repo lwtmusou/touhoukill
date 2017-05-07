@@ -507,60 +507,8 @@ public:
         return false;
     }
 };
-/*
-class Huisu : public TriggerSkill
-{
-public:
-    Huisu() : TriggerSkill("huisu")
-    {
-        events << PostHpLost << Damaged;
-    }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
-    {
-        ServerPlayer *sixteen = NULL;
-        if (triggerEvent == Damaged) {
-            DamageStruct damage = data.value<DamageStruct>();
-            sixteen = damage.to;
-        } else if (triggerEvent == PostHpLost) {
-            HpLostStruct hplost = data.value<HpLostStruct>();
-            sixteen = hplost.player;
-        }
 
-        if (!sixteen->hasSkill(this) || sixteen->isDead())
-            return QList<SkillInvokeDetail>();
-
-        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, sixteen, sixteen);
-    }
-
-    // the cost is only askForSkillInvoke, omitted
-
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        JudgeStruct judge;
-        if (triggerEvent == Damaged)
-            judge.pattern = ".|red|2~9";
-        else
-            judge.pattern = ".|heart|2~9";
-
-        judge.good = true;
-        if (triggerEvent == Damaged)
-            judge.reason = "huisu1";
-        else
-            judge.reason = "huisu2";
-
-        judge.who = invoke->invoker;
-        room->judge(judge);
-
-        if (judge.isGood()) {
-            RecoverStruct recov;
-            recov.recover = 1;
-            room->recover(invoke->invoker, recov);
-        }
-        return false;
-    }
-};
-*/
 class Huisu : public TriggerSkill
 {
 public:
@@ -1273,9 +1221,7 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        //room->touhouLogmessage("#TriggerSkill", invoke->invoker, "anyu");
         QString choice = room->askForChoice(invoke->invoker, objectName(), "turnover+draw", data);
-        //room->notifySkillInvoked(invoke->invoker, objectName());
         if (choice == "turnover")
             invoke->invoker->turnOver();
         else

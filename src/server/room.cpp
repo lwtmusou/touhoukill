@@ -3982,19 +3982,6 @@ ServerPlayer *Room::getFront(ServerPlayer *a, ServerPlayer *b) const
     else
         return b;
 
-    /*ServerPlayer *starter = current;
-    if (starter == NULL)
-        starter = m_players.first();
-    bool loop = false;
-    for (ServerPlayer *p = starter; p != starter || !loop; p = p->getNext()) {
-        loop = true;
-        if (p == a)
-            return a;
-        else if (p == b)
-            return b;
-    }
-
-    return a;*/
 }
 
 void Room::reconnect(ServerPlayer *player, ClientSocket *socket)
@@ -4006,9 +3993,7 @@ void Room::reconnect(ServerPlayer *player, ClientSocket *socket)
 
     broadcastProperty(player, "state");
 
-    //JsonArray args;
-    //args << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
-    //doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+
 }
 
 void Room::marshal(ServerPlayer *player)
@@ -4163,8 +4148,7 @@ bool Room::broadcastProperty(ServerPlayer *player, const char *property_name, co
     if (real_value.isNull())
         real_value = player->property(property_name).toString();
 
-    //     if (strcmp(property_name, "role") == 0)
-    //         player->setShownRole(true);
+
 
     JsonArray arg;
     arg << player->objectName() << property_name << real_value;
@@ -4758,9 +4742,7 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
 {
     if (players.isEmpty())
         players = m_players;
-    // process dongcha
-    //ServerPlayer *dongchaee = findChild<ServerPlayer *>(tag.value("Dongchaee").toString());
-    //ServerPlayer *dongchaer = findChild<ServerPlayer *>(tag.value("Dongchaer").toString());
+
 
     // Notify clients
     int moveId;
@@ -4801,8 +4783,7 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                 // pile open to specific players
                 || player->hasFlag("Global_GongxinOperator");
             // the player put someone's cards to the drawpile
-            //|| (player != NULL && player == dongchaer && (cards_moves[i].isRelevant(dongchaee)));
-            // card from/to dongchaee is also visible to dongchaer
+
             arg << cards_moves[i].toVariant();
         }
         doNotify(player, isLostPhase ? S_COMMAND_LOSE_CARD : S_COMMAND_GET_CARD, arg);
@@ -5014,7 +4995,6 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open)
         thread->addTriggerSkill(trigger_skill);
     }
     if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
-        //addPlayerMark(player, skill->getLimitMark());
         setPlayerMark(player, skill->getLimitMark(), 1);
 
     if (skill->isVisible()) {

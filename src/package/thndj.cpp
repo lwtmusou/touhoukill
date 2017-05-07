@@ -759,55 +759,6 @@ public:
     }
 };
 
-/*
-class Mengwei : public TriggerSkill
-{
-public:
-    Mengwei()
-        : TriggerSkill("mengwei")
-    {
-        events << EventPhaseChanging;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {
-        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        ServerPlayer *player = change.player;
-        if (change.to != Player::Play || player->isSkipped(Player::Play))
-            return QList<SkillInvokeDetail>();
-        QList<SkillInvokeDetail> d;
-        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (p->hasSkill(this) && p->isWounded() && !p->isKongcheng())
-                d << SkillInvokeDetail(this, p, player);
-        }
-        return d;
-    }
-
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        invoke->invoker->tag["mengwei"] = QVariant::fromValue(invoke->owner);
-        if (invoke->invoker->askForSkillInvoke(objectName(), QVariant::fromValue(invoke->owner))) {
-            invoke->invoker->skip(Player::Play);
-            return true;
-        }
-
-        return false;
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        RecoverStruct recover;
-        room->recover(invoke->owner, recover);
-        QString prompt = "mengwei_give:" + invoke->invoker->objectName();
-        const Card *card = room->askForExchange(invoke->owner, objectName(), 1, 1, true, prompt);
-        DELETE_OVER_SCOPE(const Card, card)
-
-        invoke->invoker->obtainCard(card, false);
-
-        return false;
-    }
-};*/
-
 class Liangzi : public TriggerSkill
 {
 public:

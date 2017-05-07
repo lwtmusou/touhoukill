@@ -952,7 +952,7 @@ LiangeCard::LiangeCard()
 void LiangeCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
 {
     room->moveCardTo(Sanguosha->getCard(subcards.first()), NULL, Player::DrawPile);
-    QList<int> idlist = room->getNCards(2); //(2, false)
+    QList<int> idlist = room->getNCards(2); 
 
     room->fillAG(idlist, targets.first());
     int card_id = room->askForAG(targets.first(), idlist, false, "liange");

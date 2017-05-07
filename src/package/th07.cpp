@@ -641,40 +641,7 @@ public:
         return false;
     }
 };
-/*
-class Hesheng : public TriggerSkill
-{
-public:
-    Hesheng()
-        : TriggerSkill("hesheng")
-    {
-        events << DamageInflicted;
-        frequency = Compulsory;
-    }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {
-        bool can = false;
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (p->getCards("j").length() > 0) {
-                can = true;
-                break;
-            }
-        }
-        DamageStruct damage = data.value<DamageStruct>();
-        if (can && damage.to->hasSkill(this))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        DamageStruct damage = data.value<DamageStruct>();
-        room->touhouLogmessage("#hesheng", invoke->invoker, "hesheng", QList<ServerPlayer *>(), QString::number(damage.damage));
-        room->notifySkillInvoked(invoke->invoker, objectName());
-        return true;
-    }
-};*/
 
 class ZhanzhenVS : public OneCardViewAsSkill
 {

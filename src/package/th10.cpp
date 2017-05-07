@@ -839,7 +839,9 @@ public:
                     room->setPlayerMark(p, "qiji", 0);
             }
         }
+
         //record for ai, since AI prefer use a specific card,  but not the SkillCard QijiCard.
+        // Fs: @lwtmusou consider move this to AI related code. There is AI::filterEvent which can trigger some code in AI usage
         if (e == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->getSkillName() == objectName())

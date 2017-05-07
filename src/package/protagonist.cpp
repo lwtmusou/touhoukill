@@ -1820,16 +1820,6 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
-        /*if (triggerEvent == PostHpReduced) {
-            ServerPlayer *youmu = NULL;
-            if (data.canConvert<DamageStruct>())
-                youmu = data.value<DamageStruct>().to;
-            else
-                youmu = data.value<HpLostStruct>().player;
-
-            if (youmu != NULL && youmu->isAlive() && youmu->hasSkill(this) && youmu->getHp() < youmu->dyingThreshold() && !youmu->isCurrent())
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, youmu, youmu, NULL, true);
-        }*/
         if (triggerEvent == EnterDying) {
             DyingStruct dying = data.value<DyingStruct>();
             if (dying.who->hasSkill(this) && !dying.who->isCurrent())
@@ -1852,7 +1842,7 @@ public:
     }
 
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    { //triggerEvent == PostHpReduced
+    { 
         if (triggerEvent == EnterDying) {
             if (!invoke->invoker->faceUp())
                 invoke->invoker->turnOver();

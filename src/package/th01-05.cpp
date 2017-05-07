@@ -98,7 +98,6 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         room->notifySkillInvoked(invoke->invoker, objectName());
         room->touhouLogmessage("#fuchou", invoke->invoker, objectName());
-        //room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->owne1huir->objectName(), invoke->targets.first()->objectName());
         if (use.m_addHistory) {
             room->addPlayerHistory(use.from, use.card->getClassName(), -1);
             use.m_addHistory = false;
@@ -224,10 +223,6 @@ public:
             if (current->hasSkill(this) && !current->hasFlag("shigui_used") && (current->getPhase() == Player::Draw || current->getPhase() == Player::Play)
                 && current->getHandcardNum() != current->getMark("shigui"))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current);
-            //if (current->hasSkill(this) && current->getPhase() == Player::Draw && current->getHandcardNum() < current->getMark("shigui"))
-            //    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current);
-            //else if (current->hasSkill(this) && current->getPhase() == Player::Play && current->getHandcardNum() > current->getMark("shigui"))
-            //    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current);
         }
         return QList<SkillInvokeDetail>();
     }
@@ -255,15 +250,6 @@ public:
             room->loseHp(current);
         }
 
-        /*if (current->getPhase() == Player::Draw) {
-            current->drawCards(current->getMark("shigui") - current->getHandcardNum());
-            room->loseHp(current);
-        } else if (current->getPhase() == Player::Play) {
-            int x = current->getHandcardNum() - current->getMark("shigui");
-            room->askForDiscard(invoke->invoker, objectName(), x, x, false, false, "shigui_discard:" + QString::number(x));
-            RecoverStruct recover;
-            room->recover(invoke->invoker, recover);
-        }*/
         return false;
     }
 };
@@ -677,94 +663,6 @@ public:
     }
 };
 
-/*
-class Jiexi : public TriggerSkill
-{
-public:
-    Jiexi() : TriggerSkill("jiexi")
-    {
-        events << CardUsed << CardResponded << EventPhaseChanging << EventLoseSkill << EventAcquireSkill << EventSkillInvalidityChange;
-        frequency = Compulsory;
-    }
-
-    void record(TriggerEvent e, Room *room, QVariant &data) const
-    {
-        ServerPlayer *current = room->getCurrent();
-        if (current == NULL || current->isDead())
-            return;
-        //we need a visibile mark for noticing player, and unvisibile mark for processing pingyi
-        if (e == CardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("Jink") || use.card->isKindOf("Nullification")) {
-                room->setPlayerMark(current, objectName(), current->getMark(objectName()) + 1);
-                if (current->hasSkill("jiexi"))
-                    room->setPlayerMark(current, "@jiexi", current->getMark(objectName()));
-            }
-        } else if (e == CardResponded) {
-            CardResponseStruct resp = data.value<CardResponseStruct>();
-            if (resp.m_isUse && (resp.m_card->isKindOf("Jink") || resp.m_card->isKindOf("Nullification"))) {
-                room->setPlayerMark(current, objectName(), current->getMark(objectName()) + 1);
-                if (current->hasSkill("jiexi"))
-                    room->setPlayerMark(current, "@jiexi", current->getMark(objectName()));
-            }
-        } else if (e == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive && current->getMark(objectName()) > 0) {
-                room->setPlayerMark(current, objectName(), 0);
-                room->setPlayerMark(current, "@jiexi", 0);
-            }
-        } else if (e == EventLoseSkill || e == EventAcquireSkill || e == EventSkillInvalidityChange) {
-            if (current->hasSkill("jiexi"))
-                room->setPlayerMark(current, "@jiexi", current->getMark(objectName()));
-            else
-                room->setPlayerMark(current, "@jiexi", 0);
-        }
-    }
-};
-
-
-class JiexiTargetMod : public TargetModSkill
-{
-public:
-    JiexiTargetMod() : TargetModSkill("#jiexi_mod")
-    {
-        frequency = NotFrequent;
-        pattern = "Slash";
-    }
-
-    virtual int getExtraTargetNum(const Player *player, const Card *) const
-    {
-        if (player->hasSkill(objectName()) && player->getPhase() == Player::Play )
-            return player->getMark("jiexi");
-        else
-            return 0;
-    }
-
-    virtual int getResidueNum(const Player *from, const Card *) const
-    {
-        if (from->hasSkill(objectName()) && from->getPhase() == Player::Play)
-            return from->getMark("jiexi");
-        else
-            return 0;
-    }
-};
-
-class JiexiAttackRange : public AttackRangeSkill
-{
-public:
-    JiexiAttackRange() : AttackRangeSkill("#jiexi_range")
-    {
-
-    }
-
-    virtual int getExtra(const Player *target, bool) const
-    {
-        if (target->hasSkill(objectName()) && target->getPhase() == Player::Play)
-            return target->getMark("jiexi");
-        return 0;
-    }
-};
-*/
 
 class Mengxiao : public TriggerSkill
 {
@@ -915,51 +813,6 @@ public:
     }
 };
 
-/*
-class Mengxiao : public TriggerSkill
-{
-public:
-    Mengxiao()
-        : TriggerSkill("mengxiao")
-    {
-        events << EventPhaseStart << CardsMoveOneTime << EventPhaseChanging;
-    }
-
-    void record(TriggerEvent e, Room *room, QVariant &data) const
-    {
-        if (e == CardsMoveOneTime) {
-            ServerPlayer *kana = room->getCurrent();
-            if (!kana || kana->isDead())
-                return;
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.to_place == Player::DiscardPile)
-                room->setPlayerMark(kana, objectName(), kana->getMark(objectName()) + move.card_ids.length());
-        } else if (e == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive)
-                room->setPlayerMark(change.player, objectName(), 0);
-        }
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
-    {
-        if (e != EventPhaseStart)
-            return QList<SkillInvokeDetail>();
-        ServerPlayer *kana = data.value<ServerPlayer *>();
-        if (kana->hasSkill(this) && kana->isAlive() && kana->getPhase() == Player::Finish
-            && kana->getHp() < kana->getMark(objectName())
-            && kana->isWounded())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, kana, kana);
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        RecoverStruct recover;
-        room->recover(invoke->invoker, recover);
-        return false;
-    }
-};*/
 
 class Yeyan : public TriggerSkill
 {
@@ -1972,131 +1825,6 @@ public:
     }
 };
 
-/*
-class Guaiqi : public ViewAsSkill
-{
-public:
-    Guaiqi() : ViewAsSkill("guaiqi")
-    {
-        expand_pile = "modian";
-        response_or_use = true;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const
-    {
-        return !player->getPile("modian").isEmpty();
-    }
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
-    {
-        foreach(int id, player->getPile("modian")) {
-            if (Sanguosha->getCard(id)->isKindOf("TrickCard") &&
-                    (matchAvaliablePattern("nullification", pattern) || matchAvaliablePattern(Sanguosha->getCard(id)->objectName(), pattern)))
-                return true;
-        }
-        return false;
-    }
-
-    virtual bool viewFilter(const QList<const Card*> &selected, const Card *to_select) const
-    {
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
-            if (selected.isEmpty())
-                return to_select->isKindOf("TrickCard") && Self->getPile("modian").contains(to_select->getEffectiveId());
-            else if (selected.length() == 1)
-                return to_select->isKindOf("Slash") && !Self->getPile("modian").contains(to_select->getEffectiveId());
-        } else {
-            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-            if (matchAvaliablePattern("nullification", pattern)) {
-                if (selected.isEmpty())
-                    return Self->getPile("modian").contains(to_select->getEffectiveId());
-                else if (selected.length() == 1) {
-                    return selected.first()->isKindOf("Nullification") && to_select->isKindOf("Slash");
-                }
-                return false;
-            } else {
-                if (selected.isEmpty())
-                    return Self->getPile("modian").contains(to_select->getEffectiveId()) && matchAvaliablePattern(to_select->objectName(), pattern);
-                else if (selected.length() == 1)
-                    return to_select->isKindOf("Slash") && !Self->getPile("modian").contains(to_select->getEffectiveId());
-            }
-        }
-        return false;
-    }
-
-    virtual const Card *viewAs(const QList<const Card *> &cards) const
-    {
-        
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
-            if (cards.length() != 2)
-                return NULL;
-            foreach(const Card *c, cards) {
-                if (c->isKindOf("TrickCard")) {
-                    Card *card = Sanguosha->cloneCard(c->objectName());
-                    foreach(const Card *c, cards) {
-                        if (c->isKindOf("Slash")) {
-                            card->addSubcard(c);
-                            card->setSkillName(objectName());
-                            return card;
-                        }
-                    }
-                }
-                return NULL;
-            }
-        } else {
-            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-            if (matchAvaliablePattern("nullification", pattern)) {
-                if (cards.length() == 1) {
-                    Nullification *nul = new Nullification(Card::SuitToBeDecided, -1);
-                    nul->addSubcards(cards);
-                    nul->setSkillName(objectName());
-                    return nul;
-                } else if (cards.length() == 2) {
-                    Nullification *nul = new Nullification(Card::SuitToBeDecided, -1);
-                    foreach(const Card *c, cards) {
-                        if (c->isKindOf("Slash"))
-                            nul->addSubcard(c);
-                    }
-                    nul->setSkillName(objectName());
-                    return nul;
-
-                }
-                return NULL;
-            } else {
-                if (cards.length() != 2)
-                    return NULL;
-                foreach(const Card *c, cards) {
-                    if (c->isKindOf("TrickCard")) {
-                        Card *card = Sanguosha->cloneCard(c->objectName());
-                        foreach(const Card *c, cards) {
-                            if (c->isKindOf("Slash")) {
-                                card->addSubcard(c);
-                                card->setSkillName(objectName());
-                                return card;
-                            }
-                        }
-                    }
-                    return NULL;
-                }
-            }
-        }
-        return NULL;
-    }
-
-    virtual bool isEnabledAtNullification(const ServerPlayer *player) const
-    {
-        foreach(int id, player->getPile("modian")) {
-            if (Sanguosha->getCard(id)->isKindOf("TrickCard")) {
-                Nullification *nul = new Nullification(Card::SuitToBeDecided, -1);
-                nul->addSubcard(id);
-                DELETE_OVER_SCOPE(Nullification, nul)
-
-                        if (!player->isCardLimited(nul, Card::MethodUse, true))
-                        return true;
-            }
-        }
-        return false;
-    }
-};
-*/
 
 BaosiCard::BaosiCard()
 {
@@ -2460,7 +2188,6 @@ bool QirenCard::targetsFeasible(const QList<const Player *> &targets, const Play
 {
     int shownId = (Self->getShownHandcards().contains(subcards.first())) ? subcards.first() : subcards.last();
 
-    //if (Sanguosha->getCard(shownId)->isKindOf("IronChain") && targets.length() == 0)
     if (Sanguosha->getCard(shownId)->canRecast() && targets.length() == 0)
         return false;
     //do not consider extraTarget
@@ -2510,6 +2237,7 @@ bool QirenCard::isAvailable(const Player *player) const
     }
     return !player->isCardLimited(card, Card::MethodUse);
 }
+
 //operate the targets
 void QirenCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
@@ -2754,13 +2482,6 @@ TH0105Package::TH0105Package()
     General *rikako = new General(this, "rikako", "pc98", 4, false);
     rikako->addSkill(new Zhenli);
     rikako->addSkill(new Qiusuo);
-    //Room::_askForNullification
-    //rikako->addSkill(new Skill("jinfa", Skill::Compulsory));
-    //rikako->addSkill(new Jiexi);
-    //rikako->addSkill(new JiexiTargetMod);
-    //rikako->addSkill(new JiexiAttackRange);
-    //related_skills.insertMulti("jiexi", "#jiexi_mod");
-    //related_skills.insertMulti("jiexi", "#jiexi_range");
 
     General *kana = new General(this, "kana", "pc98", 3, false);
     kana->addSkill(new Mengxiao);

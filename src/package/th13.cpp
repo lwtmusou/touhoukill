@@ -333,7 +333,7 @@ bool XihuaCard::targetsFeasible(const QList<const Player *> &targets, const Play
     Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
     DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("xihua");
-    //if (card->isKindOf("IronChain") && targets.length() == 0)
+
     if (card->canRecast() && targets.length() == 0)
         return false;
     return new_card && new_card->targetsFeasible(targets, Self);
@@ -1018,156 +1018,6 @@ public:
     }
 };
 
-/*
-HuishengCard::HuishengCard()
-{
-    will_throw = false;
-}
-
-bool HuishengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
-{
-    QString cardname = Self->property("huisheng_card").toString();
-    QString str = Self->property("huisheng_target").toString();
-    Card *new_card = Sanguosha->cloneCard(cardname);
-    DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("huisheng");
-    if (new_card->isKindOf("Peach"))
-        return to_select->objectName() == str && new_card->isAvailable(to_select);
-    if (new_card->targetFixed() && !targets.isEmpty())
-        return false;
-    if (targets.isEmpty() && to_select->objectName() != str)
-        return false;
-    return new_card
-        && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
-}
-
-bool HuishengCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
-{
-    QString cardname = Self->property("huisheng_card").toString();
-    Card *new_card = Sanguosha->cloneCard(cardname);
-    DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("huisheng");
-    //if ((new_card->isKindOf("IronChain")|| new_card->isKindOf("Peach"))&& targets.length()!=1)
-    //    return false;
-    if (targets.length() < 1)
-        return false;
-    return new_card && new_card->targetsFeasible(targets, Self);
-}
-
-const Card *HuishengCard::validate(CardUseStruct &card_use) const
-{
-    QString cardname = card_use.from->property("huisheng_card").toString();
-    Card *card = Sanguosha->cloneCard(cardname);
-    card->setSkillName("huisheng");
-    return card;
-}
-
-class HuishengVS : public ZeroCardViewAsSkill
-{
-public:
-    HuishengVS()
-        : ZeroCardViewAsSkill("huisheng")
-    {
-        response_pattern = "@@huisheng";
-    }
-
-    virtual const Card *viewAs() const
-    {
-        return new HuishengCard;
-    }
-};
-
-class Huisheng : public TriggerSkill
-{
-public:
-    Huisheng()
-        : TriggerSkill("huisheng")
-    {
-        events << CardFinished << PreCardUsed;
-        view_as_skill = new HuishengVS;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
-    {
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (triggerEvent == PreCardUsed && use.card->getSkillName() == "huisheng") { //change aoe target for huisheng
-            if (use.card->isKindOf("AOE") || use.card->isKindOf("GlobalEffect")) {
-                ServerPlayer *target = use.from->tag["huisheng_target"].value<ServerPlayer *>();
-                foreach (ServerPlayer *p, use.to) {
-                    if (p != target)
-                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
-                }
-            }
-        } else if (triggerEvent == CardFinished) {
-            if (use.card->isKindOf("Jink") || use.from->hasFlag("Global_ProcessBroken") || !use.from->isAlive())
-                return QList<SkillInvokeDetail>();
-            if (use.from && use.to.length() == 1
-                && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
-                ServerPlayer *source = use.to.first();
-                if (use.from != source && source->hasSkill(this) && source->isAlive() && use.from->isAlive()) {
-                    Card *card = Sanguosha->cloneCard(use.card->objectName());
-                    DELETE_OVER_SCOPE(Card, card)
-                    if (!source->isCardLimited(card, Card::MethodUse) && !source->isProhibited(use.from, card))
-                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, source, source);
-                }
-            }
-        }
-
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        if (triggerEvent == CardFinished) {
-            room->setTag("huisheng_use", data);
-            CardUseStruct use = data.value<CardUseStruct>();
-            Card *card = Sanguosha->cloneCard(use.card->objectName());
-
-            QString prompt = "@huisheng-use:" + use.from->objectName() + ":" + card->objectName();
-            room->setPlayerProperty(invoke->invoker, "huisheng_card", card->objectName());
-            delete card;
-            room->setPlayerProperty(invoke->invoker, "huisheng_target", use.from->objectName());
-            invoke->invoker->tag["huisheng_target"] = QVariant::fromValue(use.from);
-            room->askForUseCard(invoke->invoker, "@@huisheng", prompt);
-            room->setPlayerProperty(invoke->invoker, "huisheng_target", QVariant());
-            return false;
-        }
-
-        return true;
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        CardUseStruct use = data.value<CardUseStruct>();
-        ServerPlayer *target = use.from->tag["huisheng_target"].value<ServerPlayer *>();
-        foreach (ServerPlayer *p, room->getAlivePlayers()) {
-            if (use.to.contains(p) && p != target)
-                use.to.removeOne(p);
-        }
-        invoke->invoker->tag.remove("huisheng_target");
-        data = QVariant::fromValue(use);
-        return false;
-    }
-};
-
-class HuishengTargetMod : public TargetModSkill
-{
-public:
-    HuishengTargetMod()
-        : TargetModSkill("#huisheng_effect")
-    {
-        pattern = "BasicCard,TrickCard";
-    }
-
-    virtual int getDistanceLimit(const Player *, const Card *card) const
-    {
-        if (card->getSkillName() == "huisheng")
-            return 1000;
-        else
-            return 0;
-    }
-};
-*/
 
 class Songjing : public TriggerSkill
 {
@@ -1659,11 +1509,8 @@ TH13Package::TH13Package()
     related_skills.insertMulti("duzhua", "#duzhuaTargetMod");
 
     General *kyouko = new General(this, "kyouko", "slm", 3, false);
-    //kyouko->addSkill(new Huisheng);
-    //kyouko->addSkill(new HuishengTargetMod);
     kyouko->addSkill(new Songjing);
     kyouko->addSkill(new Gongzhen);
-    //related_skills.insertMulti("huisheng", "#huisheng_effect");
 
     General *yuyuko_slm = new General(this, "yuyuko_slm", "slm", 3, false);
     yuyuko_slm->addSkill(new Chuixue);
@@ -1682,7 +1529,6 @@ TH13Package::TH13Package()
     addMetaObject<ShijieCard>();
     addMetaObject<LeishiCard>();
     addMetaObject<XiefaCard>();
-    //addMetaObject<HuishengCard>();
     addMetaObject<BumingCard>();
 }
 
