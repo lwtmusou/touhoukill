@@ -732,7 +732,7 @@ public:
         if (e != TargetSpecifying)
             return QList<SkillInvokeDetail>();
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->isKindOf("EquipCard") || use.to.length() != 1 || !use.from)
+        if (use.card->getTypeId() == Card::TypeEquip || use.card->getTypeId() == Card::TypeSkill || use.to.length() != 1 || use.from == NULL)
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
