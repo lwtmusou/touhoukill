@@ -2452,17 +2452,6 @@ public:
     {
         ServerPlayer *player = invoke->invoker;
         ServerPlayer *target = player->tag["ExtraTurnInfo"].value<ExtraTurnStruct>().extraTarget;
-            
-        int n1 = player->getHandcardNum();
-        int n2 = target->getHandcardNum();
-        // need process known cards?
-        /*foreach(ServerPlayer *p, room->getAlivePlayers()) {
-            if (p != player && p != target) {
-                    JsonArray arr;
-                    arr << player->objectName() << target->objectName();
-                    room->doNotify(p, QSanProtocol::S_COMMAND_EXCHANGE_KNOWN_CARDS, arr);
-            }
-       }*/
 
         QList<CardsMoveStruct> exchangeMove;
         CardsMoveStruct move1(player->handCards(), target, Player::PlaceHand,
@@ -2473,14 +2462,6 @@ public:
         exchangeMove.push_back(move2);
         room->moveCardsAtomic(exchangeMove, false);
 
-        /*LogMessage log;
-        log.type = "#Qinlue";
-        log.from = player;
-        log.to << target;
-        log.arg = QString::number(n1);
-        log.arg2 = QString::number(n2);
-        room->sendLog(log);
-        room->getThread()->delay();*/
         return false;
   }
 };

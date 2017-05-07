@@ -272,33 +272,8 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const
     room->slashEffect(effect);
 }
 
-bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+bool Slash::targetsFeasible(const QList<const Player *> &targets, const Player *) const
 {
-    //check targets feasible for skill "shikong"
-    /*if (Self->hasSkill("shikong") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
-        foreach (const Player *p, Self->getAliveSiblings()) {
-            if (Slash::IsSpecificAssignee(p, Self, this)) {
-                return !targets.isEmpty();
-            }
-        }
-
-        int rangefix = 0;
-        if (Self->getWeapon() && subcards.contains(Self->getWeapon()->getId())) {
-            const Weapon *weapon = qobject_cast<const Weapon *>(Self->getWeapon()->getRealCard());
-            rangefix += weapon->getRange() - Self->getAttackRange(false);
-        }
-
-        if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
-            rangefix += 1;
-
-        foreach (const Player *p, Self->getAliveSiblings()) {
-            if (Self->inMyAttackRange(p) && Self->canSlash(p, this, true, rangefix)) {
-                if (!targets.contains(p)) {
-                    return false;
-                }
-            }
-        }
-    }*/
     return !targets.isEmpty();
 }
 
@@ -1968,7 +1943,7 @@ public:
         global = true;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    void record(TriggerEvent, Room *room, QVariant &data) const
     {
         //the current player can also to be removed
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -2278,7 +2253,7 @@ public:
         global = true;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to == Player::NotActive && change.player->isAlive() && !change.player->getPile("saving_energy").isEmpty())
@@ -2287,7 +2262,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         QList<int> ids = invoke->invoker->getPile("saving_energy");
         DummyCard dummy(ids);

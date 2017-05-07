@@ -2188,7 +2188,7 @@ EzhaoCard::EzhaoCard()
 {
 }
 
-bool EzhaoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+bool EzhaoCard::targetFilter(const QList<const Player *> &, const Player *to_select, const Player *Self) const
 {
     return to_select != Self && to_select->isWounded();
 }
@@ -2332,7 +2332,7 @@ public:
         events << CardUsed << SlashMissed;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
     {
         if (e == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
@@ -2357,7 +2357,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         if (e == CardUsed) {
             invoke->invoker->drawCards(1);
@@ -2380,7 +2380,7 @@ public:
         frequency = Compulsory;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardEffectStruct effect = data.value<CardEffectStruct>();
         if (effect.from && effect.from != effect.to && effect.to->hasSkill(this) && effect.to->isAlive()
@@ -2402,7 +2402,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardEffectStruct effect = data.value<CardEffectStruct>();
         invoke->invoker->obtainCard(effect.card);
@@ -2459,7 +2459,6 @@ bool QirenCard::targetFixed() const
 bool QirenCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
     int shownId = (Self->getShownHandcards().contains(subcards.first())) ? subcards.first() : subcards.last();
-    int id = (Self->getShownHandcards().contains(subcards.first())) ? subcards.last() : subcards.first();
 
     //if (Sanguosha->getCard(shownId)->isKindOf("IronChain") && targets.length() == 0)
     if (Sanguosha->getCard(shownId)->canRecast() && targets.length() == 0)
@@ -2561,7 +2560,7 @@ void QirenCard::onUse(Room *room, const CardUseStruct &card_use) const
 
     if (card->isKindOf("Collateral")) {
         QList<ServerPlayer *>killers = use.to;
-        ServerPlayer *killer;
+        ServerPlayer *killer = NULL;
         use.to.clear();
         foreach(ServerPlayer *k, killers) {
             QList<ServerPlayer *> victims;

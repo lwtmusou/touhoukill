@@ -62,7 +62,7 @@ bool YidanCard::targetsFeasible(const QList<const Player *> &targets, const Play
     return yidan && card->targetsFeasible(targets, Self);
 }
 
-const Card *YidanCard::validate(CardUseStruct &use) const
+const Card *YidanCard::validate(CardUseStruct &) const
 {
     Slash *card = new Slash(Card::SuitToBeDecided, 0);
     card->addSubcards(subcards);
@@ -80,12 +80,12 @@ public:
         response_or_use = true;
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const
+    virtual bool isEnabledAtPlay(const Player *) const
     {
         return true;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
     {
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             return false;
@@ -156,6 +156,7 @@ TH15Package::TH15Package()
     : Package("th15")
 {
     General *junko = new General(this, "junko$", "gzz", 4, false, true, true);
+    Q_UNUSED(junko)
 
     General *seiran = new General(this, "seiran", "gzz", 4, false);
     seiran->addSkill(new Yidan);
@@ -163,14 +164,19 @@ TH15Package::TH15Package()
     related_skills.insertMulti("yidan", "#yidan");
 
     General *ringo = new General(this, "ringo", "gzz", 4, false, true, true);
+    Q_UNUSED(ringo)
 
     General *doremy = new General(this, "doremy", "gzz", 4, false, true, true);
+    Q_UNUSED(doremy)
 
     General *sagume = new General(this, "sagume", "gzz", 4, false, true, true);
+    Q_UNUSED(sagume)
 
     General *clownpiece = new General(this, "clownpiece", "gzz", 4, false, true, true);
+    Q_UNUSED(clownpiece)
 
     General *hecatia = new General(this, "hecatia", "gzz", 4, false, true, true);
+    Q_UNUSED(hecatia)
 
     addMetaObject<YidanCard>();
 }
