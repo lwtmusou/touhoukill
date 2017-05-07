@@ -1217,7 +1217,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (!damage.card || !damage.card->isKindOf("Slash") || damage.card->getSuit() == Card::NoSuit)
+        if (!damage.card || !damage.to->isAlive() || !damage.card->isKindOf("Slash") || damage.card->getSuit() == Card::NoSuit)
             return QList<SkillInvokeDetail>();
         QList<SkillInvokeDetail> d;
         foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
@@ -1241,7 +1241,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), damage.to->objectName());
         room->damage(DamageStruct(objectName(), invoke->invoker, damage.to));
-        return true;
+        return false;
     }
 };
 
