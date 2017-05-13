@@ -94,7 +94,8 @@
 76 fix 【梦违】指定多个目标
 77 新月回调为 （旧）望月
 78 神绮微调
-
+79 fix 死欲妖梦一个bug  此bug曾导致天子不能对一血妖梦地震  （因为还在currentdying行列）
+80 fix 骚灵死后也能协奏的bug
 
 **********************************
 未处理的bug：
@@ -103,6 +104,6 @@
 2 检查一下 明牌的 UI？ 没有及时清理 pile？
 3  检查一下 response 和 response use 时的 target fix 与 target feasbile 道不清说不完的关系。。。  特别是roomscenene和 各种技能卡 调用时。。。
   还是挺乱的。。。
-
+4 global_Dying flag 清理有问题？  霍青娥死亡后复活， 客户端player类下查得到flag  server端的player查不到。。。
  
   

@@ -1886,6 +1886,11 @@ public:
             arg << QSanProtocol::S_GAME_EVENT_PLAYER_QUITDYING << invoke->invoker->objectName();
             room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 
+            //clear currentDying tag
+            QStringList currentdying = room->getTag("CurrentDying").toStringList();
+            currentdying.removeOne(invoke->invoker->objectName());
+            room->setTag("CurrentDying", QVariant::fromValue(currentdying));
+
             throw TurnBroken;
 
             Q_UNREACHABLE();

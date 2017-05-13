@@ -568,7 +568,7 @@ public:
     {
         if (triggerEvent == EventPhaseEnd) {
             ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player->getPhase() == Player::Play && player->hasSkill(this)) {
+            if (player->getPhase() == Player::Play && player->hasSkill(this) && player->isAlive()) {
                 QString cardname = player->property("xiezou_card").toString();
                 Card *card = Sanguosha->cloneCard(cardname);
                 if (card == NULL)
