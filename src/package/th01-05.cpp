@@ -1360,18 +1360,13 @@ public:
     SqChuangshi()
         : TriggerSkill("sqchuangshi")
     {
-        events << EventPhaseStart << DamageDone << EventPhaseChanging;
+        events << EventPhaseStart << EventPhaseChanging;
         view_as_skill = new SqChuangshiVS;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-        if (triggerEvent == DamageDone) {
-            DamageStruct damage = data.value<DamageStruct>();
-            if (damage.from && damage.from->getMark("sqchuangshi") > 0)
-                room->setTag("sqchuangshiDamage", true);
-        } else if (triggerEvent == EventPhaseChanging) {
-            room->setTag("sqchuangshiDamage", false);
+        if (triggerEvent == EventPhaseChanging) {
             foreach (ServerPlayer *p, room->getAllPlayers())
                 room->setPlayerMark(p, "sqchuangshi", 0);
         }
@@ -1399,13 +1394,8 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        foreach (ServerPlayer *p, invoke->targets) {
-            QVariant damageTag = room->getTag("sqchuangshiDamage");
-            bool damage = damageTag.canConvert(QVariant::Bool) && damageTag.toBool();
-            if (damage)
-                break;
+        foreach (ServerPlayer *p, invoke->targets) 
             room->askForUseCard(p, "BasicCard+^Jink,TrickCard+^Nullification,EquipCard|.|.|sqchuangshi", "@sqchuangshi_use", -1, Card::MethodUse, false, objectName());
-        }
         return false;
     }
 };
