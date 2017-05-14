@@ -4252,6 +4252,143 @@ public:
     }
 };
 
+class Huixing : public TriggerSkill
+{
+public:
+    Huixing()
+        : TriggerSkill("huixing")
+    {
+        events << PreCardUsed << CardResponded << CardFinished << EventPhaseChanging;
+    }
+
+    static ServerPlayer *HuixingNext(CardUseStruct use)
+    {
+        ServerPlayer *source = use.to.first();
+        if (!source->isAlive())
+            return NULL;
+        ServerPlayer *next = qobject_cast<ServerPlayer *>(source->getNextAlive(1));
+        QStringList currentUsed = use.from->getRoom()->getTag("Huixing").toStringList();
+        if (next->getHandcardNum() >= currentUsed.length())
+            return NULL;
+
+        Card *card = Sanguosha->cloneCard(use.card->objectName());
+        DELETE_OVER_SCOPE(Card, card)
+        //if (use.card->isKindOf("Peach") && next->isWounded())
+        //else if (use.card->targetFilter(QList<const Player *>(), next, use.from))
+        if (!use.from->isCardLimited(card, Card::MethodUse) && !use.from->isProhibited(next, card))
+            return next;
+
+        return NULL;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == PreCardUsed || e == CardResponded) {
+            const Card *card = NULL;
+            if (e == PreCardUsed)
+                card = data.value<CardUseStruct>().card;
+            else {
+                CardResponseStruct response = data.value<CardResponseStruct>();
+                if (response.m_isUse)
+                    card = response.m_card;
+            }
+            ServerPlayer *current = room->getCurrent();
+            if (current == NULL || card == NULL || card->getTypeId() == Card::TypeSkill)
+                return;
+
+            QStringList currentUsed = room->getTag("Huixing").toStringList();
+            QString name = card->objectName();
+            if (card->isKindOf("Slash"))
+                name = "slash";
+            if (!currentUsed.contains(name)) {
+                currentUsed << name;
+                room->setTag("Huixing", QVariant::fromValue(currentUsed));
+                //room->setPlayerMark(current, "@huixing", currentUsed.length());
+            }
+        }
+        if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive)
+                room->removeTag("Huixing");
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
+    {
+        if (e != CardFinished)
+            return QList<SkillInvokeDetail>();
+            
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.from && use.from->hasSkill(this) && use.from->isAlive() 
+                && use.to.length() == 1
+                && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
+                ServerPlayer *next = HuixingNext(use);
+                if (next != NULL)
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, false, next);                       
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        Card *card = Sanguosha->cloneCard(use.card->objectName());
+        card->setSkillName(objectName());
+        room->useCard(CardUseStruct(card, invoke->invoker, invoke->targets.first()), false);
+        return false;
+    }
+};
+
+
+class Mofu : public TriggerSkill
+{
+public:
+    Mofu()
+        : TriggerSkill("mofu")
+    {
+        events << PreCardUsed;
+    }
+
+    void record(TriggerEvent, Room *room, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.from->hasSkill("mofu") && use.card->getSuit() == Card::Spade) {
+            room->setPlayerFlag(use.from, objectName());
+            if (use.m_addHistory) {
+                room->addPlayerHistory(use.from, use.card->getClassName(), -1);
+                use.m_addHistory = false;
+                data = QVariant::fromValue(use);
+            }
+        }
+    }
+};
+
+class MofuTargetMod : public TargetModSkill
+{
+public:
+    MofuTargetMod()
+        : TargetModSkill("#mofu")
+    {
+        pattern = ".";
+    }
+
+    /*virtual int getResidueNum(const Player *from, const Card *card) const
+    {
+        if (from->hasSkill("mofu") && card->getSuit() == Card::Spade)
+            return 1000;
+        return 0;
+    }*/
+
+    virtual int getDistanceLimit(const Player *from, const Card *card) const
+    {
+        if (from->hasSkill("mofu") && card->getSuit() == Card::Spade)
+            return 1000;
+        else
+            return 0;
+    }
+};
+
+
 TouhouGodPackage::TouhouGodPackage()
     : Package("touhougod")
 {
@@ -4385,6 +4522,12 @@ TouhouGodPackage::TouhouGodPackage()
     seiga_god->addSkill(new Rumo);
     //General *uuz13 = new General(this, "yuyuko_1v3", "touhougod", 1, false, true);
     //Q_UNUSED(uuz13);
+
+    General *marisa_god = new General(this, "marisa_god", "touhougod", 4, false);
+    marisa_god->addSkill(new Huixing);
+    marisa_god->addSkill(new Mofu);
+    marisa_god->addSkill(new MofuTargetMod);
+    related_skills.insertMulti("mofu", "#mofu");
 
     addMetaObject<HongwuCard>();
     addMetaObject<ShenqiangCard>();
