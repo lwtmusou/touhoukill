@@ -59,8 +59,7 @@ void IndicatorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, Q
     int baseX = qMin(start.x(), finish.x());
     int baseY = qMin(start.y(), finish.y());
 
-    QLinearGradient linearGrad(start - QPoint(baseX, baseY),
-                               finish - QPoint(baseX, baseY));
+    QLinearGradient linearGrad(start - QPoint(baseX, baseY), finish - QPoint(baseX, baseY));
     QColor start_color(255, 255, 255, 0);
     linearGrad.setColorAt(0, start_color);
     linearGrad.setColorAt(1, color.lighter());

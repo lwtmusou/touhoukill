@@ -12,7 +12,8 @@ class SanShadowTextFont : public SanSimpleTextFont
 public:
     SanShadowTextFont();
     explicit SanShadowTextFont(const QString &fontName);
-    SanShadowTextFont(const QString &fontName, const QSize &fontSize, int shadowRadius, double shadowDecadeFactor, const QColor &shadowColor = Qt::black, const QPoint &shadowOffset = QPoint(0, 0), const QColor &color = Qt::white, int spacing = 0, int weight = 0);
+    SanShadowTextFont(const QString &fontName, const QSize &fontSize, int shadowRadius, double shadowDecadeFactor, const QColor &shadowColor = Qt::black,
+                      const QPoint &shadowOffset = QPoint(0, 0), const QColor &color = Qt::white, int spacing = 0, int weight = 0);
 
     int shadowRadius() const
     {

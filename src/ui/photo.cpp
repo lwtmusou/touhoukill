@@ -122,8 +122,7 @@ void Photo::setEmotion(const QString &emotion, bool permanent)
     if (QFile::exists(path)) {
         QPixmap pixmap = QPixmap(path);
         emotion_item->setPixmap(pixmap);
-        emotion_item->setPos((G_PHOTO_LAYOUT.m_normalWidth - pixmap.width()) / 2,
-                             (G_PHOTO_LAYOUT.m_normalHeight - pixmap.height()) / 2);
+        emotion_item->setPos((G_PHOTO_LAYOUT.m_normalWidth - pixmap.width()) / 2, (G_PHOTO_LAYOUT.m_normalHeight - pixmap.height()) / 2);
         _layBetween(emotion_item, _m_chainIcon, _m_roleComboBox);
 
         QPropertyAnimation *appear = new QPropertyAnimation(emotion_item, "opacity");
@@ -314,8 +313,7 @@ QPointF Photo::getHeroSkinContainerPosition() const
     if (photoRect.right() <= tableRect.left()) {
         QPointF result(photoRect.right() + 10, photoRect.top() - ((heroSkinContainerHeight - photoHeight) / 2));
 
-        int yBottomDiff = (result.y() + heroSkinContainerHeight)
-            - (tableRect.bottom() + tablePadding);
+        int yBottomDiff = (result.y() + heroSkinContainerHeight) - (tableRect.bottom() + tablePadding);
         if (yBottomDiff > 0) {
             result.setY(result.y() - yBottomDiff);
         } else if (result.y() < tableRect.top() - tablePadding) {
@@ -324,12 +322,9 @@ QPointF Photo::getHeroSkinContainerPosition() const
 
         return result;
     } else if (photoRect.bottom() <= tableRect.top()) {
-        QPointF result(photoRect.left()
-                           - ((heroSkinContainerWidth - photoWidth) / 2),
-                       photoRect.bottom() + 10);
+        QPointF result(photoRect.left() - ((heroSkinContainerWidth - photoWidth) / 2), photoRect.bottom() + 10);
 
-        int xRightDiff = (result.x() + heroSkinContainerWidth)
-            - (tableRect.right() + tablePadding);
+        int xRightDiff = (result.x() + heroSkinContainerWidth) - (tableRect.right() + tablePadding);
         if (xRightDiff > 0) {
             result.setX(result.x() - xRightDiff);
         } else if (result.x() < tableRect.left() - tablePadding) {
@@ -340,8 +335,7 @@ QPointF Photo::getHeroSkinContainerPosition() const
     } else {
         QPointF result(photoRect.left() - heroSkinContainerWidth - 10, photoRect.top() - ((heroSkinContainerHeight - photoHeight) / 2));
 
-        int yBottomDiff = (result.y() + heroSkinContainerHeight)
-            - (tableRect.bottom() + tablePadding);
+        int yBottomDiff = (result.y() + heroSkinContainerHeight) - (tableRect.bottom() + tablePadding);
         if (yBottomDiff > 0) {
             result.setY(result.y() - yBottomDiff);
         } else if (result.y() < tableRect.top() - tablePadding) {

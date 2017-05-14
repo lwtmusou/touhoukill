@@ -39,9 +39,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                     positive = false;
                     name = name.mid(1);
                 }
-                if (card->isKindOf(name.toLocal8Bit().data())
-                    || (card->objectName() == name)
-                    || ("%" + card->objectName() == name)
+                if (card->isKindOf(name.toLocal8Bit().data()) || (card->objectName() == name) || ("%" + card->objectName() == name)
                     || (card->getEffectiveId() == name.toInt(&isInt) && isInt))
                     checkpoint = positive;
                 else
@@ -70,9 +68,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
             positive = false;
             suit = suit.mid(1);
         }
-        if (card->getSuitString() == suit
-            || (card->isBlack() && suit == "black")
-            || (card->isRed() && suit == "red"))
+        if (card->getSuitString() == suit || (card->isBlack() && suit == "black") || (card->isRed() && suit == "red"))
             checkpoint = positive;
         else
             checkpoint = !positive;
@@ -110,10 +106,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                 checkpoint = true;
         } else if (number.toInt(&isInt) == cdn && isInt) {
             checkpoint = true;
-        } else if ((number == "A" && cdn == 1)
-                   || (number == "J" && cdn == 11)
-                   || (number == "Q" && cdn == 12)
-                   || (number == "K" && cdn == 13)) {
+        } else if ((number == "A" && cdn == 1) || (number == "J" && cdn == 11) || (number == "Q" && cdn == 12) || (number == "K" && cdn == 13)) {
             checkpoint = true;
         }
         if (checkpoint)

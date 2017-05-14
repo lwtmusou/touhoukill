@@ -10,12 +10,10 @@
 #include "miniscenarios.h"
 #include "protocol.h"
 #include "scenario.h"
-#include "scenario.h"
 #include "settings.h"
 #include "structs.h"
 #include <QApplication>
 #include <QDir>
-#include <QFile>
 #include <QFile>
 #include <QMessageBox>
 #include <QStringList>
@@ -389,16 +387,12 @@ int Engine::getGeneralCount(bool include_banned) const
         const General *general = itor.value();
         if (getBanPackages().contains(general->getPackage()))
             total--;
-        else if ((isNormalGameMode(ServerInfo.GameMode)
-                  || ServerInfo.GameMode.contains("_mini_")
-                  || ServerInfo.GameMode == "custom_scenario")
+        else if ((isNormalGameMode(ServerInfo.GameMode) || ServerInfo.GameMode.contains("_mini_") || ServerInfo.GameMode == "custom_scenario")
                  && Config.value("Banlist/Roles").toStringList().contains(general->objectName()))
             total--;
-        else if (ServerInfo.GameMode == "04_1v3"
-                 && Config.value("Banlist/HulaoPass").toStringList().contains(general->objectName()))
+        else if (ServerInfo.GameMode == "04_1v3" && Config.value("Banlist/HulaoPass").toStringList().contains(general->objectName()))
             total--;
-        else if (ServerInfo.GameMode == "06_XMode"
-                 && Config.value("Banlist/XMode").toStringList().contains(general->objectName()))
+        else if (ServerInfo.GameMode == "06_XMode" && Config.value("Banlist/XMode").toStringList().contains(general->objectName()))
             total--;
         else if (ServerInfo.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
             total--;
@@ -730,12 +724,7 @@ QString Engine::getSetupString() const
         mode = mode + Config.value("1v1/Rule", "2013").toString();
     else if (mode == "06_3v3")
         mode = mode + Config.value("3v3/OfficialRule", "2013").toString();
-    setup_items << server_name
-                << Config.GameMode
-                << QString::number(timeout)
-                << QString::number(Config.NullificationCountDown)
-                << Sanguosha->getBanPackages().join("+")
-                << flags;
+    setup_items << server_name << Config.GameMode << QString::number(timeout) << QString::number(Config.NullificationCountDown) << Sanguosha->getBanPackages().join("+") << flags;
 
     return setup_items.join(":");
 }
@@ -782,8 +771,7 @@ QString Engine::getRoles(const QString &mode) const
 
     if (modes.contains(mode)) {
         static const char *table1[] = {
-            "",
-            "",
+            "",          "",
 
             "ZF", // 2
             "ZFN", // 3
@@ -797,8 +785,7 @@ QString Engine::getRoles(const QString &mode) const
         };
 
         static const char *table2[] = {
-            "",
-            "",
+            "",          "",
 
             "ZF", // 2
             "ZFN", // 3
@@ -872,10 +859,7 @@ QStringList Engine::getLords(bool contain_banned) const
         if (getBanPackages().contains(general->getPackage()))
             continue;
         if (!contain_banned) {
-            if (ServerInfo.GameMode.endsWith("p")
-                || ServerInfo.GameMode.endsWith("pd")
-                || ServerInfo.GameMode.endsWith("pz")
-                || ServerInfo.GameMode.contains("_mini_")
+            if (ServerInfo.GameMode.endsWith("p") || ServerInfo.GameMode.endsWith("pd") || ServerInfo.GameMode.endsWith("pz") || ServerInfo.GameMode.contains("_mini_")
                 || ServerInfo.GameMode == "custom_scenario")
                 if (Config.value("Banlist/Roles", "").toStringList().contains(lord))
                     continue;
@@ -1039,9 +1023,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
     Q_ASSERT(all_generals.count() >= count);
 
-    if (isNormalGameMode(ServerInfo.GameMode)
-        || ServerInfo.GameMode.contains("_mini_")
-        || ServerInfo.GameMode == "custom_scenario")
+    if (isNormalGameMode(ServerInfo.GameMode) || ServerInfo.GameMode.contains("_mini_") || ServerInfo.GameMode == "custom_scenario")
         general_set.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
     else if (ServerInfo.GameMode == "04_1v3")
         general_set.subtract(Config.value("Banlist/HulaoPass", "").toStringList().toSet());
@@ -1203,9 +1185,7 @@ const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const
 
 const ProhibitSkill *Engine::isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others) const
 {
-    bool ignore = (from->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
-                   && to != from
-                   && !card->hasFlag("IgnoreFailed"));
+    bool ignore = (from->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to != from && !card->hasFlag("IgnoreFailed"));
     if (ignore && !card->isKindOf("SkillCard"))
         return NULL;
     foreach (const ProhibitSkill *skill, prohibit_skills) {

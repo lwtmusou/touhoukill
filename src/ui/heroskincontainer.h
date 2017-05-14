@@ -17,9 +17,7 @@ class HeroSkinContainer : public QGraphicsObject
     Q_OBJECT
 
 public:
-    HeroSkinContainer(const QString &generalName,
-                      const QString &kingdom,
-                      QGraphicsItem *parent = 0);
+    HeroSkinContainer(const QString &generalName, const QString &kingdom, QGraphicsItem *parent = 0);
 
     ~HeroSkinContainer()
     {

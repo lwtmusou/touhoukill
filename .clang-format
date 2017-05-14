@@ -3,13 +3,15 @@ BasedOnStyle: Webkit
 AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
+AlignEscapedNewlinesLeft: true
 AlignTrailingComments: false
 AllowShortBlocksOnASingleLine: false
 AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
-BinPackArguments: false
-BinPackParameters: false
+AllowAllParametersOfDeclarationOnNextLine: true
+BinPackArguments: true
+BinPackParameters: true
 BreakBeforeBraces: Custom
 BraceWrapping:
     AfterClass: true
@@ -22,15 +24,18 @@ BraceWrapping:
     BeforeCatch: false
     BeforeElse: false
     IndentBraces: false
-# ColumnLimit: 5000
-ForEachMacros: ['foreach', 'Q_FOREACH']
+ColumnLimit: 180
+Cpp11BracedListStyle: true
+ForEachMacros: ['foreach', 'Q_FOREACH', 'forever', 'Q_FOREVER']
+# FixNamespaceComments: true
 IndentCaseLabels: false
 # IndentWidth: 4
 KeepEmptyLinesAtTheStartOfBlocks: false
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None
 PointerAlignment: Right
-# SortIncludes: true
+ReflowComments: false
+SortIncludes: true
 SpaceAfterCStyleCast: false
 # SpaceAfterTemplateKeyword: false
 SpaceBeforeParens: ControlStatements
@@ -38,5 +43,6 @@ SpaceInEmptyParentheses: false
 SpacesInAngles: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
+Standard: Cpp03
 UseTab: Never
 TabWidth: 4

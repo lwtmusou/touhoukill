@@ -340,10 +340,7 @@ QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreas
             if (ban_list.contains(name))
                 continue;
         }
-        if (Config.GameMode.endsWith("p")
-            || Config.GameMode.endsWith("pd")
-            || Config.GameMode.endsWith("pz")
-            || Config.GameMode.contains("_mini_")
+        if (Config.GameMode.endsWith("p") || Config.GameMode.endsWith("pd") || Config.GameMode.endsWith("pz") || Config.GameMode.contains("_mini_")
             || Config.GameMode == "custom_scenario") {
             QStringList ban_list = Config.value("Banlist/Roles").toStringList();
             if (ban_list.contains(name))
@@ -694,7 +691,8 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     ChoiceMadeStruct s;
     s.player = this;
     s.type = ChoiceMadeStruct::Pindian;
-    s.args << reason << objectName() << QString::number(pindian_struct.from_card->getEffectiveId()) << target->objectName() << QString::number(pindian_struct.to_card->getEffectiveId());
+    s.args << reason << objectName() << QString::number(pindian_struct.from_card->getEffectiveId()) << target->objectName()
+           << QString::number(pindian_struct.to_card->getEffectiveId());
     QVariant decisionData = QVariant::fromValue(s);
     thread->trigger(ChoiceMade, room, decisionData);
 
@@ -760,8 +758,7 @@ void ServerPlayer::play(QList<Player::Phase> set_phases)
         if (!set_phases.contains(NotActive))
             set_phases << NotActive;
     } else {
-        set_phases << RoundStart << Start << Judge << Draw << Play
-                   << Discard << Finish << NotActive;
+        set_phases << RoundStart << Start << Judge << Draw << Play << Discard << Finish << NotActive;
     }
 
     phases = set_phases;
@@ -1166,7 +1163,6 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     if (isChained())
         room->notifyProperty(player, this, "chained");
 
-
     room->notifyProperty(player, this, "removed");
 
     QList<ServerPlayer *> players;
@@ -1439,7 +1435,8 @@ void ServerPlayer::addBrokenEquips(QList<int> card_ids)
     b.player = this;
     b.ids = card_ids;
     b.broken = true;
-    room->getThread()->trigger(BrokenEquipChanged, room, QVariant::fromValue(b));
+    QVariant bv = QVariant::fromValue(b);
+    room->getThread()->trigger(BrokenEquipChanged, room, bv);
 }
 
 void ServerPlayer::removeBrokenEquips(QList<int> card_ids, bool sendLog)
@@ -1466,14 +1463,8 @@ void ServerPlayer::removeBrokenEquips(QList<int> card_ids, bool sendLog)
     b.player = this;
     b.ids = card_ids;
     b.broken = false;
-    /*if (b.player->getTreasure() && b.ids.contains(b.player->getTreasure()->getEffectiveId())) {
-        JsonArray args;
-        args << QSanProtocol::S_GAME_EVENT_BROKEN_EQUIP_CHANGED; 
-        args << objectName();
-        args << "wooden_ox";
-        getRoom()->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
-    }*/
-    room->getThread()->trigger(BrokenEquipChanged, room, QVariant::fromValue(b));
+    QVariant bv = QVariant::fromValue(b);
+    room->getThread()->trigger(BrokenEquipChanged, room, bv);
 }
 
 void ServerPlayer::gainAnExtraTurn()

@@ -882,15 +882,6 @@
     <ClCompile Include="Release\moc_lightboxanimation.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_hegemony-cards.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_hegemony-cards.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\hegemony-cards.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -1165,9 +1156,6 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\ui\lightboxanimation.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\hegemony-cards.h">
-      <Filter>package</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

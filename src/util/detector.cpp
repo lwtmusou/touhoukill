@@ -14,10 +14,7 @@ void UdpDetector::detect()
     socket->bind(Config.DetectorPort, QUdpSocket::ShareAddress);
 
     const char *ask_str = "whoIsServer";
-    socket->writeDatagram(ask_str,
-                          strlen(ask_str) + 1,
-                          QHostAddress::Broadcast,
-                          Config.ServerPort);
+    socket->writeDatagram(ask_str, strlen(ask_str) + 1, QHostAddress::Broadcast, Config.ServerPort);
 }
 
 void UdpDetector::stop()

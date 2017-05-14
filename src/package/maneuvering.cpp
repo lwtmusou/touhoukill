@@ -228,7 +228,8 @@ public:
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
         } else if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.card != NULL && (effect.card->isKindOf("IronChain") || effect.card->isKindOf("FireAttack")))
+            if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.card != NULL
+                && (effect.card->isKindOf("IronChain") || effect.card->isKindOf("FireAttack")))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
         }
 
@@ -256,7 +257,6 @@ public:
     }
 };
 
-
 IronArmor::IronArmor(Suit suit, int number)
     : Armor(suit, number)
 {
@@ -281,7 +281,8 @@ public:
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
         } else if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.card != NULL && (effect.card->isKindOf("SavageAssault") || effect.card->isKindOf("ArcheryAttack")))
+            if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.card != NULL
+                && (effect.card->isKindOf("SavageAssault") || effect.card->isKindOf("ArcheryAttack")))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
         } else if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
@@ -442,20 +443,17 @@ FireAttack::FireAttack(Card::Suit suit, int number)
 bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
-                   && to_select != Self
-                   && !hasFlag("IgnoreFailed"));
-   
+    bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+
     if (targets.length() < total_num) {
         bool checkHand = false;
         if (to_select != Self) {
             if (to_select->isKongcheng())
                 checkHand = false;
-            else if (to_select->getHandcardNum() >  to_select->getShownHandcards().length())
+            else if (to_select->getHandcardNum() > to_select->getShownHandcards().length())
                 checkHand = true;
             return checkHand || ignore;
-        }
-        else {
+        } else {
             QList<int> ids;
             if (isVirtualCard())
                 ids = getSubcards();
@@ -463,22 +461,21 @@ bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player
                 ids << getEffectiveId();
 
             QList<int> shownIds = to_select->getShownHandcards();
-            QList<const Card*> HandCards = to_select->getHandcards();
+            QList<const Card *> HandCards = to_select->getHandcards();
             int hand = 0;
             int shown = 0;
-            foreach(int id, ids) {
-                foreach(const Card*c, HandCards) {
+            foreach (int id, ids) {
+                foreach (const Card *c, HandCards) {
                     if (c->getEffectiveId() == id)
                         hand++;
                 }
                 if (shownIds.contains(id))
                     shown++;
             }
-            if ((to_select->getHandcardNum() - to_select->getShownHandcards().length()) >
-                (hand -shown))
+            if ((to_select->getHandcardNum() - to_select->getShownHandcards().length()) > (hand - shown))
                 checkHand = true;
         }
-        return  checkHand;
+        return checkHand;
     }
     return false;
 }
@@ -515,8 +512,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
                     room->throwCard(card_to_throw, effect.from, effect.from);
                 damage = true;
             }
-        }
-        else {
+        } else {
             const Card *card_to_throw = room->askForCard(effect.from, pattern, prompt);
             if (card_to_throw)
                 damage = true;
@@ -619,7 +615,6 @@ SupplyShortage::SupplyShortage(Card::Suit suit, int number)
     judge.reason = objectName();
 }
 
-
 QString SupplyShortage::getSubtype() const
 {
     return "unmovable_delayed_trick";
@@ -629,7 +624,8 @@ bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Pl
 {
     if (!targets.isEmpty() || to_select == Self)
         return false;
-    bool ignore = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+    bool ignore
+        = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
     if (to_select->containsTrick(objectName()) && !ignore)
         return false;
     int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
@@ -652,6 +648,8 @@ ManeuveringPackage::ManeuveringPackage()
     : Package("maneuvering", Package::CardPack)
 {
     QList<Card *> cards;
+
+    // clang-format off
 
     // spade
     cards << new GudingBlade(Card::Spade, 1)
@@ -712,6 +710,8 @@ ManeuveringPackage::ManeuveringPackage()
           << new Jink(Card::Diamond, 11)
           << new FireAttack(Card::Diamond, 12);
 
+    // clang-format on
+
     DefensiveHorse *hualiu = new DefensiveHorse(Card::Diamond, 13);
     hualiu->setObjectName("HuaLiu");
 
@@ -720,8 +720,7 @@ ManeuveringPackage::ManeuveringPackage()
     foreach (Card *card, cards)
         card->setParent(this);
 
-    skills << new GudingBladeSkill << new FanSkill
-           << new VineSkill << new SilverLionSkill << new IronArmorSkill;
+    skills << new GudingBladeSkill << new FanSkill << new VineSkill << new SilverLionSkill << new IronArmorSkill;
 }
 
 ADD_PACKAGE(Maneuvering)

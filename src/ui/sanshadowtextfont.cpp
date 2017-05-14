@@ -22,7 +22,8 @@ SanShadowTextFont::SanShadowTextFont(const QString &fontName)
 {
 }
 
-SanShadowTextFont::SanShadowTextFont(const QString &fontName, const QSize &fontSize, int shadowRadius, double shadowDecadeFactor, const QColor &shadowColor, const QPoint &shadowOffset, const QColor &color, int spacing, int weight)
+SanShadowTextFont::SanShadowTextFont(const QString &fontName, const QSize &fontSize, int shadowRadius, double shadowDecadeFactor, const QColor &shadowColor,
+                                     const QPoint &shadowOffset, const QColor &color, int spacing, int weight)
     : SanSimpleTextFont(fontName, fontSize, color, spacing, weight)
     , m_shadowRadius(shadowRadius)
     , m_shadowDecadeFactor(shadowDecadeFactor)
@@ -71,14 +72,9 @@ void SanShadowTextFont::paintText(QGraphicsPixmapItem *const item, const QRect &
     }
 }
 
-bool SanShadowTextFont::_paintTextHelper(const QRect &pos,
-                                         const Qt::Alignment &align,
-                                         const QString &text,
-                                         QPixmap &pixmap) const
+bool SanShadowTextFont::_paintTextHelper(const QRect &pos, const Qt::Alignment &align, const QString &text, QPixmap &pixmap) const
 {
-    if (pos.width() <= 0 || pos.height() <= 0
-        || m_fontSize.width() <= 0
-        || m_fontSize.height() <= 0) {
+    if (pos.width() <= 0 || pos.height() <= 0 || m_fontSize.width() <= 0 || m_fontSize.height() <= 0) {
         return false;
     }
 
@@ -89,10 +85,7 @@ bool SanShadowTextFont::_paintTextHelper(const QRect &pos,
     QPainter imagePainter(&image);
     SanSimpleTextFont::paintText(&imagePainter, QRect(m_shadowRadius, m_shadowRadius, pos.width() - m_shadowRadius * 2, pos.height() - m_shadowRadius * 2), align, text);
 
-    if (m_shadowRadius < 0
-        || (m_shadowRadius == 0
-            && m_shadowOffset.x() == 0
-            && m_shadowOffset.y() == 0)) {
+    if (m_shadowRadius < 0 || (m_shadowRadius == 0 && m_shadowOffset.x() == 0 && m_shadowOffset.y() == 0)) {
         pixmap = QPixmap::fromImage(image);
         return true;
     }

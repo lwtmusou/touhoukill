@@ -10,8 +10,7 @@ const char *CHANGE_SKIN_EMOTION_NAME = "skin_changing";
 QList<QPixmap> GraphicsPixmapHoverItem::m_skinChangingFrames;
 int GraphicsPixmapHoverItem::m_skinChangingFrameCount = 0;
 
-GraphicsPixmapHoverItem::GraphicsPixmapHoverItem(PlayerCardContainer *playerCardContainer,
-                                                 QGraphicsItem *parent)
+GraphicsPixmapHoverItem::GraphicsPixmapHoverItem(PlayerCardContainer *playerCardContainer, QGraphicsItem *parent)
     : QGraphicsPixmapItem(parent)
     , m_playerCardContainer(playerCardContainer)
     , m_timer(0)
@@ -43,8 +42,7 @@ void GraphicsPixmapHoverItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
     NOTE: This function is a duplicate of qt_graphicsItem_highlightSelected() in
     qgraphicssvgitem.cpp!
     */
-static void qt_graphicsItem_highlightSelected(
-    QGraphicsItem *item, QPainter *painter, const QStyleOptionGraphicsItem *option)
+static void qt_graphicsItem_highlightSelected(QGraphicsItem *item, QPainter *painter, const QStyleOptionGraphicsItem *option)
 {
     const QRectF murect = painter->transform().mapRect(QRectF(0, 0, 1, 1));
     if (qFuzzyIsNull(qMax(murect.width(), murect.height())))
@@ -83,9 +81,7 @@ static void qt_graphicsItem_highlightSelected(
 
     const QColor fgcolor = option->palette.windowText().color();
     const QColor bgcolor( // ensure good contrast against fgcolor
-        fgcolor.red() > 127 ? 0 : 255,
-        fgcolor.green() > 127 ? 0 : 255,
-        fgcolor.blue() > 127 ? 0 : 255);
+        fgcolor.red() > 127 ? 0 : 255, fgcolor.green() > 127 ? 0 : 255, fgcolor.blue() > 127 ? 0 : 255);
 
     painter->setPen(QPen(bgcolor, penWidth, Qt::SolidLine));
     painter->setBrush(Qt::NoBrush);
@@ -96,9 +92,7 @@ static void qt_graphicsItem_highlightSelected(
     painter->drawRect(item->boundingRect().adjusted(pad, pad, -pad, -pad));
 }
 
-void GraphicsPixmapHoverItem::paint(QPainter *painter,
-                                    const QStyleOptionGraphicsItem *option,
-                                    QWidget *)
+void GraphicsPixmapHoverItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
     if (pixmap().isNull()) {
         return;
@@ -108,8 +102,7 @@ void GraphicsPixmapHoverItem::paint(QPainter *painter,
     tempPix.fill(Qt::transparent);
 
     QPainter tempPainter(&tempPix);
-    tempPainter.setRenderHint(QPainter::SmoothPixmapTransform,
-                              (transformationMode() == Qt::SmoothTransformation));
+    tempPainter.setRenderHint(QPainter::SmoothPixmapTransform, (transformationMode() == Qt::SmoothTransformation));
 
     if (m_val > 0) {
         tempPainter.drawPixmap(offset(), m_heroSkinPixmap);
@@ -195,15 +188,11 @@ void GraphicsPixmapHoverItem::initSkinChangingFrames()
 {
     m_skinChangingFrameCount = PixmapAnimation::GetFrameCount(CHANGE_SKIN_EMOTION_NAME);
     for (int i = 0; i < m_skinChangingFrameCount; ++i) {
-        QString fileName = QString("image/system/emotion/%1/%2.png")
-                               .arg(CHANGE_SKIN_EMOTION_NAME)
-                               .arg(QString::number(i));
+        QString fileName = QString("image/system/emotion/%1/%2.png").arg(CHANGE_SKIN_EMOTION_NAME).arg(QString::number(i));
 
         QPixmap framePixmap = G_ROOM_SKIN.getPixmapFromFileName(fileName);
         m_skinChangingFrames << framePixmap.scaled(framePixmap.width() + 25, //15
-                                                   framePixmap.height(),
-                                                   Qt::IgnoreAspectRatio,
-                                                   Qt::SmoothTransformation);
+                                                   framePixmap.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     }
 }
 

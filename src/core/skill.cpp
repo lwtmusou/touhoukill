@@ -161,8 +161,7 @@ bool Skill::matchAvaliablePattern(QString avaliablePattern, QString askedPattern
                     name = name.mid(1);
                 }
 
-                if (name.contains(card->objectName()) || card->isKindOf(name.toLocal8Bit().data())
-                    || ("%" + card->objectName() == name)
+                if (name.contains(card->objectName()) || card->isKindOf(name.toLocal8Bit().data()) || ("%" + card->objectName() == name)
                     || (card->getEffectiveId() == name.toInt(&isInt) && isInt))
                     checkpoint = positive;
                 else
@@ -187,9 +186,7 @@ ViewAsSkill::ViewAsSkill(const QString &name)
 {
 }
 
-bool ViewAsSkill::isAvailable(const Player *invoker,
-                              CardUseStruct::CardUseReason reason,
-                              const QString &pattern) const
+bool ViewAsSkill::isAvailable(const Player *invoker, CardUseStruct::CardUseReason reason, const QString &pattern) const
 {
     if (!invoker->hasSkill(objectName()) && !invoker->hasLordSkill(objectName()) && !invoker->hasFlag(objectName())) // For Shuangxiong
         return false;

@@ -26,10 +26,10 @@
 using namespace QSanProtocol;
 
 Dashboard::Dashboard(QGraphicsItem *widget) //QGraphicsPixmapItem *widget
-    : button_widget(widget),
-      selected(NULL),
-      view_as_skill(NULL),
-      filter(NULL)
+    : button_widget(widget)
+    , selected(NULL)
+    , view_as_skill(NULL)
+    , filter(NULL)
 {
     Q_ASSERT(button_widget);
     _dlayout = &G_DASHBOARD_LAYOUT;
@@ -226,8 +226,7 @@ void Dashboard::_updateFrames()
     QRect rect2 = QRect(0, 0, width(), G_DASHBOARD_LAYOUT.m_normalHeight);
     trusting_item->setRect(rect2);
     trusting_item->setPos(0, 0);
-    trusting_text->setPos((rect2.width() - Config.BigFont.pixelSize() * 4.5) / 2,
-                          (rect2.height() - Config.BigFont.pixelSize()) / 2);
+    trusting_text->setPos((rect2.width() - Config.BigFont.pixelSize() * 4.5) / 2, (rect2.height() - Config.BigFont.pixelSize()) / 2);
     _m_rightFrame->setX(_m_width - G_DASHBOARD_LAYOUT.m_rightWidth);
     Q_ASSERT(button_widget);
     button_widget->setX(rect.width() - getButtonWidgetWidth());
@@ -583,11 +582,9 @@ void Dashboard::_createExtraButtons()
     //m_btnReverseSelection->boundingRect().right() + G_DASHBOARD_LAYOUT.m_rswidth,G_DASHBOARD_LAYOUT.m_leftWidth
     //QRectF sortHandRect = this->boundingRect();
     //sortHandRect = this->mapRectToItem(this, sortHandRect);//_m_rightFrame
-    m_btnSortHandcard->setPos(0,
-                              -m_btnReverseSelection->boundingRect().height());
+    m_btnSortHandcard->setPos(0, -m_btnReverseSelection->boundingRect().height());
 
-    m_btnNoNullification->setPos(m_btnSortHandcard->boundingRect().width(),
-                                 -m_btnReverseSelection->boundingRect().height());
+    m_btnNoNullification->setPos(m_btnSortHandcard->boundingRect().width(), -m_btnReverseSelection->boundingRect().height());
     //m_btnNoNullification->setPos(m_btnReverseSelection->boundingRect().right() + m_btnSortHandcard->boundingRect().width() + G_DASHBOARD_LAYOUT.m_rswidth,
     //                             -m_btnReverseSelection->boundingRect().height());
     m_btnNoNullification->hide();
@@ -997,8 +994,7 @@ void Dashboard::reverseSelection()
 void Dashboard::cancelNullification()
 {
     ClientInstance->m_noNullificationThisTime = !ClientInstance->m_noNullificationThisTime;
-    if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
-        && Sanguosha->getCurrentCardUsePattern() == "nullification"
+    if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE && Sanguosha->getCurrentCardUsePattern() == "nullification"
         && RoomSceneInstance->isCancelButtonEnabled()) {
         RoomSceneInstance->doCancelButton();
     }
@@ -1356,8 +1352,7 @@ void Dashboard::updatePending()
             delete pending_card;
             pending_card = NULL;
         }
-        if (view_as_skill->objectName().contains("guhuo")
-            && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+        if (view_as_skill->objectName().contains("guhuo") && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             foreach (CardItem *item, m_handCards) {
                 item->hideFootnote();
                 if (new_pending_card && item->getCard() == cards.first()) {
@@ -1450,14 +1445,12 @@ QPointF Dashboard::getHeroSkinContainerPosition() const
         ? m_primaryHeroSkinContainer->boundingRect()
         : m_secondaryHeroSkinContainer->boundingRect();;*/
     QRectF heroSkinContainerRect = m_primaryHeroSkinContainer->boundingRect();
-    return QPointF(avatarParentRect.left() - heroSkinContainerRect.width() - 120,
-                   avatarParentRect.bottom() - heroSkinContainerRect.height() - 5);
+    return QPointF(avatarParentRect.left() - heroSkinContainerRect.width() - 120, avatarParentRect.bottom() - heroSkinContainerRect.height() - 5);
 }
 
 bool Dashboard::isItemUnderMouse(QGraphicsItem *item)
 {
-    return (item->isUnderMouse() && !_m_skillDock->isUnderMouse())
-        || (_m_skillDock->isUnderMouse() && _m_screenNameItem->isVisible());
+    return (item->isUnderMouse() && !_m_skillDock->isUnderMouse()) || (_m_skillDock->isUnderMouse() && _m_screenNameItem->isVisible());
 }
 
 void Dashboard::onAvatarHoverEnter()

@@ -23,9 +23,7 @@ public:
         if (!damage.by_user)
             return d;
         foreach (ServerPlayer *satori, room->findPlayersBySkillName(objectName())) {
-            if (damage.from && damage.from != satori && damage.card && !damage.from->isKongcheng()
-                && damage.to != damage.from
-                && damage.to->isAlive()
+            if (damage.from && damage.from != satori && damage.card && !damage.from->isKongcheng() && damage.to != damage.from && damage.to->isAlive()
                 && (satori->inMyAttackRange(damage.to) || damage.to == satori))
                 d << SkillInvokeDetail(this, satori, satori);
         }
@@ -377,9 +375,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.from && damage.from->isAlive() && damage.to->isAlive()
-            && damage.from != damage.to
-            && damage.to->hasSkill(this)) {
+        if (damage.from && damage.from->isAlive() && damage.to->isAlive() && damage.from != damage.to && damage.to->hasSkill(this)) {
             FireSlash *slash = new FireSlash(Card::NoSuit, 0);
             slash->deleteLater();
             if (!damage.to->isCardLimited(slash, Card::MethodUse) && damage.to->canSlash(damage.from, slash, false))
@@ -546,8 +542,7 @@ public:
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             //since pingyi, we need to record "peach used" for everyone.
-            if (use.from->getPhase() == Player::Play
-                && (use.card->isKindOf("Peach") || use.card->isKindOf("Analeptic")))
+            if (use.from->getPhase() == Player::Play && (use.card->isKindOf("Peach") || use.card->isKindOf("Analeptic")))
                 room->setPlayerFlag(use.from, "jiuhao");
             if (use.card->hasFlag(objectName())) {
                 if (use.m_addHistory) {
@@ -727,8 +722,7 @@ public:
     {
         QList<SkillInvokeDetail> d;
         ServerPlayer *current = data.value<ServerPlayer *>();
-        if (current->getPhase() == Player::Finish && (!current->faceUp() || current->isChained())
-            && !current->isNude()) {
+        if (current->getPhase() == Player::Finish && (!current->faceUp() || current->isChained()) && !current->isNude()) {
             bool invoke = false;
             foreach (ServerPlayer *p, room->getOtherPlayers(current)) {
                 if (current->inMyAttackRange(p)) {

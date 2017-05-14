@@ -44,8 +44,7 @@ public:
     {
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (!use.card->isKindOf("BasicCard") && !use.card->isKindOf("SkillCard") && use.from && use.from->hasSkill(this)
-                && use.from->getPhase() == Player::Play)
+            if (!use.card->isKindOf("BasicCard") && !use.card->isKindOf("SkillCard") && use.from && use.from->hasSkill(this) && use.from->getPhase() == Player::Play)
                 room->setPlayerFlag(use.from, "zuiyue");
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -124,8 +123,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         foreach (ServerPlayer *p, use.to) {
             if (p->hasLordSkill("yanhui") && p != use.from) {
-                if ((use.card->isKindOf("Analeptic") && p->hasFlag("Global_Dying"))
-                    || (use.card->isKindOf("Peach") && use.m_reason == CardUseStruct::CARD_USE_REASON_PLAY)) {
+                if ((use.card->isKindOf("Analeptic") && p->hasFlag("Global_Dying")) || (use.card->isKindOf("Peach") && use.m_reason == CardUseStruct::CARD_USE_REASON_PLAY)) {
                     QList<ServerPlayer *> logto;
                     logto << p;
                     room->touhouLogmessage("#InvokeOthersSkill", use.from, objectName(), logto);
@@ -390,9 +388,7 @@ public:
             }
         } else if (triggerEvent == CardResponded) {
             CardResponseStruct resp = data.value<CardResponseStruct>();
-            if (resp.m_from == current || !resp.m_card->isKindOf("BasicCard")
-                || resp.m_isRetrial
-                || resp.m_isProvision)
+            if (resp.m_from == current || !resp.m_card->isKindOf("BasicCard") || resp.m_isRetrial || resp.m_isProvision)
                 return QList<SkillInvokeDetail>();
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current, NULL, true);
         }
@@ -529,9 +525,7 @@ public:
             }
         } else if (triggerEvent == DamageCaused) { //need not check weather damage.from has this skill
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.card && damage.card->getSkillName() == "henyi" && damage.to->isCurrent()
-                && damage.from
-                && damage.from->hasSkill(this)) {
+            if (damage.card && damage.card->getSkillName() == "henyi" && damage.to->isCurrent() && damage.from && damage.from->hasSkill(this)) {
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
             }
         }
@@ -656,7 +650,6 @@ public:
     }
 };
 
-
 class Qucai : public TriggerSkill
 {
 public:
@@ -678,10 +671,7 @@ public:
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         } else if (triggerEvent == CardResponded) {
             CardResponseStruct response = data.value<CardResponseStruct>();
-            if (response.m_from && player != response.m_from
-                && response.m_isUse
-                && response.m_card
-                && response.m_card->isRed())
+            if (response.m_from && player != response.m_from && response.m_isUse && response.m_card && response.m_card->isRed())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         } else if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
@@ -885,10 +875,8 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        return hasZhanGenerals(player) && (matchAvaliablePattern("slash", pattern))
-            && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
-            && (!player->hasFlag("Global_tianrenFailed"))
-            && !player->isCurrent();
+        return hasZhanGenerals(player) && (matchAvaliablePattern("slash", pattern)) && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
+            && (!player->hasFlag("Global_tianrenFailed")) && !player->isCurrent();
     }
 
     virtual const Card *viewAs() const
@@ -957,7 +945,8 @@ public:
             pattern = "jink";
         QVariant tohelp = QVariant::fromValue((ServerPlayer *)invoke->invoker);
         foreach (ServerPlayer *liege, room->getLieges("zhan", invoke->invoker)) {
-            const Card *resp = room->askForCard(liege, pattern, "@tianren-" + pattern + ":" + invoke->invoker->objectName(), tohelp, Card::MethodResponse, invoke->invoker, false, QString(), true);
+            const Card *resp = room->askForCard(liege, pattern, "@tianren-" + pattern + ":" + invoke->invoker->objectName(), tohelp, Card::MethodResponse, invoke->invoker, false,
+                                                QString(), true);
             if (resp) {
                 room->provide(resp, liege);
                 return true;
@@ -1164,8 +1153,7 @@ public:
                 return QList<SkillInvokeDetail>();
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *playerTo = qobject_cast<ServerPlayer *>(move.to);
-            if (playerTo != NULL && playerTo->isAlive() && playerTo->hasSkill(this) && move.to_place == Player::PlaceHand
-                && playerTo->getPhase() != Player::Draw
+            if (playerTo != NULL && playerTo->isAlive() && playerTo->hasSkill(this) && move.to_place == Player::PlaceHand && playerTo->getPhase() != Player::Draw
                 && !nengwuTargets(playerTo, true).isEmpty()) {
                 d << SkillInvokeDetail(this, playerTo, playerTo);
             }
@@ -1207,8 +1195,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (triggerEvent == Damaged) {
             ServerPlayer *player = data.value<DamageStruct>().to;
-            if (player->hasSkill("nengwu") && player->isAlive() && player->getPhase() != Player::Play
-                && !Nengwu::nengwuTargets(player, false).isEmpty())
+            if (player->hasSkill("nengwu") && player->isAlive() && player->getPhase() != Player::Play && !Nengwu::nengwuTargets(player, false).isEmpty())
                 d << SkillInvokeDetail(this, player, player);
         } else if (triggerEvent == CardsMoveOneTime) {
             if (room->getTag("FirstRound").toBool())
@@ -1216,8 +1203,7 @@ public:
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *playerFrom = qobject_cast<ServerPlayer *>(move.from);
             if (playerFrom != NULL && playerFrom->isAlive() && playerFrom->hasSkill("nengwu") && move.from_places.contains(Player::PlaceHand)
-                && playerFrom->getPhase() != Player::Play
-                && !Nengwu::nengwuTargets(playerFrom, false).isEmpty()) {
+                && playerFrom->getPhase() != Player::Play && !Nengwu::nengwuTargets(playerFrom, false).isEmpty()) {
                 d << SkillInvokeDetail(this, playerFrom, playerFrom);
             }
         }

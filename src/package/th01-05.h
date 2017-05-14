@@ -84,7 +84,6 @@ public:
     virtual const Card *validate(CardUseStruct &card_use) const;
 };
 
-
 class QirenCard : public SkillCard
 {
     Q_OBJECT

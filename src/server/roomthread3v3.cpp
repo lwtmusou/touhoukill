@@ -24,8 +24,7 @@ QStringList RoomThread3v3::getGeneralsWithoutExtension() const
     const Package *stdpack = Sanguosha->findChild<const Package *>("standard");
     const Package *windpack = Sanguosha->findChild<const Package *>("wind");
 
-    generals << stdpack->findChildren<const General *>()
-             << windpack->findChildren<const General *>();
+    generals << stdpack->findChildren<const General *>() << windpack->findChildren<const General *>();
 
     generals.removeOne(Sanguosha->getGeneral("yuji"));
     QStringList list_nostal, list_neo;

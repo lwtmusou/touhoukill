@@ -436,7 +436,6 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-
 class LureTiger : public TrickCard
 {
     Q_OBJECT
@@ -451,8 +450,8 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-
-class Drowning : public AOE {
+class Drowning : public AOE
+{
     Q_OBJECT
 
 public:
@@ -462,7 +461,6 @@ public:
     virtual bool isAvailable(const Player *player) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
-
 
 class KnownBoth : public TrickCard
 {

@@ -508,7 +508,6 @@ public:
     }
 };
 
-
 class Huisu : public TriggerSkill
 {
 public:
@@ -676,9 +675,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        return matchAvaliablePattern("peach", pattern)
-            && !player->isCurrent()
-            && player->getMark("Global_PreventPeach") == 0
+        return matchAvaliablePattern("peach", pattern) && !player->isCurrent() && player->getMark("Global_PreventPeach") == 0
             && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
     }
 
@@ -1003,8 +1000,7 @@ public:
             return false;
 
         QStringList checkedPatterns = responsePatterns();
-        if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1
-            && player->getMark("Global_PreventPeach") > 0)
+        if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0)
             return false;
 
         return !checkedPatterns.isEmpty();

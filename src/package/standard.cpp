@@ -166,7 +166,7 @@ void GlobalEffect::onUse(Room *room, const CardUseStruct &card_use) const
         TrickCard::onUse(room, card_use);
         return;
     }
-    
+
     ServerPlayer *source = card_use.from;
     QList<ServerPlayer *> targets, all_players = room->getAllPlayers();
     foreach (ServerPlayer *player, all_players) {
@@ -227,7 +227,7 @@ bool AOE::isAvailable(const Player *player) const
 
 void AOE::onUse(Room *room, const CardUseStruct &card_use) const
 {
-    if (!card_use.to.isEmpty()){
+    if (!card_use.to.isEmpty()) {
         TrickCard::onUse(room, card_use);
         return;
     }
@@ -452,11 +452,9 @@ void Weapon::onUse(Room *room, const CardUseStruct &card_use) const
 {
     CardUseStruct use = card_use;
     ServerPlayer *player = card_use.from;
-    if (room->getMode() == "04_1v3"
-        && use.card->isKindOf("Weapon")
-        && (player->isCardLimited(use.card, Card::MethodUse)
-            || (!player->getHandPile().contains(getEffectiveId()) //!player->getPile("wooden_ox").contains(getEffectiveId())
-                || player->askForSkillInvoke("weapon_recast", QVariant::fromValue(use))))) {
+    if (room->getMode() == "04_1v3" && use.card->isKindOf("Weapon")
+        && (player->isCardLimited(use.card, Card::MethodUse) || (!player->getHandPile().contains(getEffectiveId()) //!player->getPile("wooden_ox").contains(getEffectiveId())
+                                                                 || player->askForSkillInvoke("weapon_recast", QVariant::fromValue(use))))) {
         CardMoveReason reason(CardMoveReason::S_REASON_RECAST, player->objectName());
         reason.m_eventName = "weapon_recast";
         room->moveCardTo(use.card, player, NULL, Player::DiscardPile, reason);

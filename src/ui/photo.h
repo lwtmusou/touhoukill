@@ -16,7 +16,6 @@ class ClientPlayer;
 class RoleComboBox;
 class QPushButton;
 
-
 class QPropertyAnimation;
 
 class Photo : public PlayerCardContainer
@@ -102,7 +101,7 @@ protected:
     {
         return _blurEffect;
     }
-    
+
     virtual QPointF getHeroSkinContainerPosition() const;
 
     //virtual const QSanShadowTextFont &getSkillNameFont() const {

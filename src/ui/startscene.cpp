@@ -20,8 +20,7 @@ StartScene::StartScene()
     //QGraphicsSimpleTextItem *website_text = addSimpleText("http://qsanguosha.org", website_font);
     QGraphicsSimpleTextItem *website_text = addSimpleText(tr("TouhouSatsu QQ Qun: 384318315"), website_font);
     website_text->setBrush(Qt::white);
-    website_text->setPos(Config.Rect.width() / 2 - website_text->boundingRect().width(),
-                         Config.Rect.height() / 2.1 - website_text->boundingRect().height());
+    website_text->setPos(Config.Rect.width() / 2 - website_text->boundingRect().width(), Config.Rect.height() / 2.1 - website_text->boundingRect().height());
     server_log = NULL;
 }
 

@@ -40,7 +40,8 @@ private:
     QButtonGroup *package_buttons;
 
 signals:
-    void search(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders, const QStringList &kingdoms, int lower, int upper, const QStringList &packages);
+    void search(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders, const QStringList &kingdoms, int lower, int upper,
+                const QStringList &packages);
 
 protected:
     virtual void accept();
@@ -86,7 +87,8 @@ private:
     QString getOriginInfo(const QString &general_name);
 
 public slots:
-    void startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders, const QStringList &kingdoms, int lower, int upper, const QStringList &packages);
+    void startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders, const QStringList &kingdoms, int lower, int upper,
+                     const QStringList &packages);
 
 private slots:
     void playAudioEffect();

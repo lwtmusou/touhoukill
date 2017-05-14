@@ -61,8 +61,7 @@ void RecAnalysis::initialize(QString dir)
                 m_recordPlayers = texts.at(2).split("_").first().remove(QRegExp("[^0-9]")).toInt();
                 QStringList ban_packages = texts.at(5).split("+");
                 foreach (const Package *package, Sanguosha->getPackages()) {
-                    if (!ban_packages.contains(package->objectName())
-                        && Sanguosha->getScenario(package->objectName()) == NULL)
+                    if (!ban_packages.contains(package->objectName()) && Sanguosha->getScenario(package->objectName()) == NULL)
                         m_recordPackages << Sanguosha->translate(package->objectName());
                 }
 
@@ -179,9 +178,7 @@ void RecAnalysis::initialize(QString dir)
 
         if (packet.getCommandType() == S_COMMAND_CHANGE_HP) {
             JsonArray change = packet.getMessageBody().value<JsonArray>();
-            if (change.size() != 3 || !JsonUtils::isString(change[0])
-                || !JsonUtils::isNumber(change[1])
-                || !JsonUtils::isNumber(change[2]))
+            if (change.size() != 3 || !JsonUtils::isString(change[0]) || !JsonUtils::isNumber(change[1]) || !JsonUtils::isNumber(change[2]))
                 continue;
 
             QString name = change[0].toString();
@@ -494,15 +491,8 @@ void RecAnalysis::setDesignation()
     addDesignation(tr("Impasse Strike"), NoOption, M_ALL_PLAYER, rebel_num == 1, "rebel", true, false, true);
 }
 
-void RecAnalysis::addDesignation(const QString &designation,
-                                 unsigned long designation_union,
-                                 unsigned int data_requirement,
-                                 bool custom_condition,
-                                 const QString &addition_option_role,
-                                 bool need_alive,
-                                 bool need_dead,
-                                 bool need_win,
-                                 bool need_lose)
+void RecAnalysis::addDesignation(const QString &designation, unsigned long designation_union, unsigned int data_requirement, bool custom_condition,
+                                 const QString &addition_option_role, bool need_alive, bool need_dead, bool need_win, bool need_lose)
 {
     if (!custom_condition)
         return;
@@ -528,15 +518,11 @@ void RecAnalysis::addDesignation(const QString &designation,
                 break;
             }
 
-        if (need_win
-            && !m_recordWinners.contains(m_recordMap[objectName]->m_role)
-            && !m_recordWinners.contains(objectName)) {
+        if (need_win && !m_recordWinners.contains(m_recordMap[objectName]->m_role) && !m_recordWinners.contains(objectName)) {
             has_player = false;
         }
 
-        if (need_lose
-            && (m_recordWinners.contains(m_recordMap[objectName]->m_role)
-                || m_recordWinners.contains(objectName))) {
+        if (need_lose && (m_recordWinners.contains(m_recordMap[objectName]->m_role) || m_recordWinners.contains(objectName))) {
             has_player = false;
         }
 

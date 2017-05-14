@@ -76,7 +76,8 @@ const int *const SanFreeTypeFont::loadFont(const QString &fontName)
     }
 }
 
-bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text, const int *const font, const QColor &color, QSize &fontSize, int spacing, int weight, QRect &boundingBox, const Qt::Orientation &orient, const Qt::Alignment &align)
+bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text, const int *const font, const QColor &color, QSize &fontSize, int spacing, int weight,
+                                  QRect &boundingBox, const Qt::Orientation &orient, const Qt::Alignment &align)
 {
     if (!m_ftLib || font == NULL || painter == NULL || text.isEmpty()) {
         return false;
@@ -319,7 +320,8 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text, 
     return true;
 }
 
-bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QString &text, const int *const font, const QColor &color, QSize &fontSize, int spacing, int weight, QRect &boundingBox, const Qt::Alignment &align)
+bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QString &text, const int *const font, const QColor &color, QSize &fontSize, int spacing, int weight,
+                                           QRect &boundingBox, const Qt::Alignment &align)
 {
     if (!m_ftLib || font == NULL || painter == NULL || text.isEmpty()) {
         return false;

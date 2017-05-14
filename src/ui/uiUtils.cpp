@@ -135,7 +135,8 @@ int *QSanUiUtils::QSanFreeTypeFont::loadFont(const QString &fontName)
 
 static QMutex _paintTextMutex;
 
-bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text, int *font, QColor color, QSize &fontSize, int spacing, int weight, QRect boundingBox, Qt::Orientation orient, Qt::Alignment align)
+bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text, int *font, QColor color, QSize &fontSize, int spacing, int weight, QRect boundingBox,
+                                                 Qt::Orientation orient, Qt::Alignment align)
 {
     if (!_ftLibInitialized || font == NULL || painter == NULL || text.isNull())
         return false;
@@ -347,7 +348,8 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
     return true;
 }
 
-bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QString text, int *font, QColor color, QSize &fontSize, int spacing, QRect boundingBox, Qt::Alignment align)
+bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QString text, int *font, QColor color, QSize &fontSize, int spacing, QRect boundingBox,
+                                                          Qt::Alignment align)
 {
     if (!_ftLibInitialized || font == NULL || painter == NULL)
         return false;

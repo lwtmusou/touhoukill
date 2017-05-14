@@ -196,8 +196,7 @@ QWidget *PlayerCardDialog::createEquipArea()
         PlayerCardButton *button = new PlayerCardButton(weapon->getFullName() + suffix1);
 
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(weapon->getId())->getSuit()));
-        button->setEnabled(!disabled_ids.contains(weapon->getEffectiveId())
-                           && (method != Card::MethodDiscard || Self->canDiscard(player, weapon->getEffectiveId())));
+        button->setEnabled(!disabled_ids.contains(weapon->getEffectiveId()) && (method != Card::MethodDiscard || Self->canDiscard(player, weapon->getEffectiveId())));
         mapper.insert(button, weapon->getId());
         connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
         layout->addWidget(button);
@@ -209,8 +208,7 @@ QWidget *PlayerCardDialog::createEquipArea()
             suffix2 = tr("broken_equip");
         PlayerCardButton *button = new PlayerCardButton(armor->getFullName() + suffix2);
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(armor->getId())->getSuit()));
-        button->setEnabled(!disabled_ids.contains(armor->getEffectiveId())
-                           && (method != Card::MethodDiscard || Self->canDiscard(player, armor->getEffectiveId())));
+        button->setEnabled(!disabled_ids.contains(armor->getEffectiveId()) && (method != Card::MethodDiscard || Self->canDiscard(player, armor->getEffectiveId())));
         mapper.insert(button, armor->getId());
         connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
         layout->addWidget(button);
@@ -222,8 +220,7 @@ QWidget *PlayerCardDialog::createEquipArea()
             suffix3 = tr("broken_equip");
         PlayerCardButton *button = new PlayerCardButton(horse->getFullName() + tr("(+1 horse)") + suffix3);
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(horse->getId())->getSuit()));
-        button->setEnabled(!disabled_ids.contains(horse->getEffectiveId())
-                           && (method != Card::MethodDiscard || Self->canDiscard(player, horse->getEffectiveId())));
+        button->setEnabled(!disabled_ids.contains(horse->getEffectiveId()) && (method != Card::MethodDiscard || Self->canDiscard(player, horse->getEffectiveId())));
         mapper.insert(button, horse->getId());
         connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
         layout->addWidget(button);
@@ -235,8 +232,7 @@ QWidget *PlayerCardDialog::createEquipArea()
             suffix4 = tr("broken_equip");
         PlayerCardButton *button = new PlayerCardButton(horse->getFullName() + tr("(-1 horse)") + suffix4);
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(horse->getId())->getSuit()));
-        button->setEnabled(!disabled_ids.contains(horse->getEffectiveId())
-                           && (method != Card::MethodDiscard || Self->canDiscard(player, horse->getEffectiveId())));
+        button->setEnabled(!disabled_ids.contains(horse->getEffectiveId()) && (method != Card::MethodDiscard || Self->canDiscard(player, horse->getEffectiveId())));
         mapper.insert(button, horse->getId());
         connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
         layout->addWidget(button);
@@ -248,8 +244,7 @@ QWidget *PlayerCardDialog::createEquipArea()
             suffix5 = tr("broken_equip");
         PlayerCardButton *button = new PlayerCardButton(treasure->getFullName() + suffix5);
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(treasure->getId())->getSuit()));
-        button->setEnabled(!disabled_ids.contains(treasure->getEffectiveId())
-                           && (method != Card::MethodDiscard || Self->canDiscard(player, treasure->getEffectiveId())));
+        button->setEnabled(!disabled_ids.contains(treasure->getEffectiveId()) && (method != Card::MethodDiscard || Self->canDiscard(player, treasure->getEffectiveId())));
         mapper.insert(button, treasure->getId());
         connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
         layout->addWidget(button);
@@ -279,8 +274,7 @@ QWidget *PlayerCardDialog::createJudgingArea()
         PlayerCardButton *button = new PlayerCardButton(name);
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(real->getSuit()));
         layout->addWidget(button);
-        button->setEnabled(!disabled_ids.contains(card->getEffectiveId())
-                           && (method != Card::MethodDiscard || Self->canDiscard(player, card->getEffectiveId())));
+        button->setEnabled(!disabled_ids.contains(card->getEffectiveId()) && (method != Card::MethodDiscard || Self->canDiscard(player, card->getEffectiveId())));
         mapper.insert(button, card->getId());
         connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
     }

@@ -125,8 +125,7 @@ void GongfengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
 
 bool GongfengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    return targets.isEmpty() && to_select->hasLordSkill("gongfeng")
-        && to_select != Self && !to_select->hasFlag("gongfengInvoked");
+    return targets.isEmpty() && to_select->hasLordSkill("gongfeng") && to_select != Self && !to_select->hasFlag("gongfengInvoked");
 }
 
 class GongfengVS : public OneCardViewAsSkill
@@ -241,8 +240,7 @@ public:
 
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *suwako, room->findPlayersBySkillName(objectName())) {
-                if (damage.from != suwako && !damage.from->isKongcheng() && (suwako->inMyAttackRange(damage.to) || suwako == damage.to)
-                    && !suwako->isKongcheng())
+                if (damage.from != suwako && !damage.from->isKongcheng() && (suwako->inMyAttackRange(damage.to) || suwako == damage.to) && !suwako->isKongcheng())
                     d << SkillInvokeDetail(this, suwako, suwako);
             }
             return d;
@@ -414,8 +412,7 @@ void QijiDialog::popup()
     } else if (object_name == "xihua") {
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach (const Card *card, cards) {
-            if ((card->isNDTrick() || card->isKindOf("BasicCard"))
-                && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+            if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
                 QString name = card->objectName();
                 if (card->isKindOf("Slash"))
                     name = "slash";
@@ -429,8 +426,7 @@ void QijiDialog::popup()
     else {
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach (const Card *card, cards) {
-            if ((card->isNDTrick() || card->isKindOf("BasicCard"))
-                && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+            if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
                 QString name = card->objectName();
                 if (card->isKindOf("Slash"))
                     name = "slash";
@@ -505,8 +501,7 @@ QGroupBox *QijiDialog::createLeft()
         ban_list << "Analeptic";
 
     foreach (const Card *card, cards) {
-        if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName())
-            && !ban_list.contains(card->getClassName())
+        if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName())
             && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
             Card *c = Sanguosha->cloneCard(card->objectName());
             c->setParent(this);
@@ -539,8 +534,7 @@ QGroupBox *QijiDialog::createRight()
 
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     foreach (const Card *card, cards) {
-        if (card->isNDTrick() && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName())
-            && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+        if (card->isNDTrick() && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName()) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
             Card *c = Sanguosha->cloneCard(card->objectName());
             c->setSkillName(object_name);
             c->setParent(this);
@@ -728,8 +722,7 @@ public:
         QStringList validPatterns;
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach (const Card *card, cards) {
-            if ((card->isNDTrick() || card->isKindOf("BasicCard"))
-                && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+            if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
                 QString p = card->objectName();
                 if (card->isKindOf("Slash"))
                     p = "slash";
@@ -946,7 +939,8 @@ void XinshangCard::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     effect.to->drawCards(1);
 
-    const Card *card = room->askForCard(effect.to, ".S", "@xinshang-spadecard:" + effect.from->objectName(), QVariant::fromValue(effect.from), Card::MethodNone, NULL, false, "xinshang", false);
+    const Card *card
+        = room->askForCard(effect.to, ".S", "@xinshang-spadecard:" + effect.from->objectName(), QVariant::fromValue(effect.from), Card::MethodNone, NULL, false, "xinshang", false);
     if (card != NULL) {
         room->obtainCard(effect.from, card);
         room->setPlayerFlag(effect.from, "xinshang_effect");
@@ -1257,8 +1251,7 @@ public:
                 || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE) {
                 QVariantList record_ids = sanae->tag["jinianTemp"].toList();
                 foreach (int id, move.card_ids) {
-                    if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand
-                        && !record_ids.contains(id))
+                    if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand && !record_ids.contains(id))
                         record_ids << id;
                 }
                 sanae->tag["jinianTemp"] = record_ids;
@@ -1268,8 +1261,7 @@ public:
             //2 temp ids: record lasthand ids for retrial
             QVariantList record_ids = sanae->tag["jinianTemp"].toList();
             foreach (int id, move.card_ids) {
-                if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand
-                    && !record_ids.contains(id))
+                if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand && !record_ids.contains(id))
                     record_ids << id;
             }
             sanae->tag["jinianTemp"] = record_ids;
@@ -1283,9 +1275,7 @@ public:
             if (move.is_last_handcard) {
                 //3.1 directly went to discardpile
                 foreach (int id, move.card_ids) {
-                    if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand
-                        && !ids.contains(id)
-                        && room->getCardPlace(id) == Player::DiscardPile)
+                    if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand && !ids.contains(id) && room->getCardPlace(id) == Player::DiscardPile)
                         ids << id;
                 }
             } else {
@@ -1316,9 +1306,7 @@ public:
         if (move.reason.m_extraData.value<ServerPlayer *>() != NULL)
             player = move.reason.m_extraData.value<ServerPlayer *>();
 
-        if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile
-            && !player->hasFlag("jinian_used")
-            && player->isAlive()) {
+        if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile && !player->hasFlag("jinian_used") && player->isAlive()) {
             QVariantList ids = player->tag["jinian"].toList();
             foreach (int id, move.card_ids) {
                 if (ids.contains(id))
@@ -1520,8 +1508,7 @@ public:
     {
         AmazingGrace *card = new AmazingGrace(Card::NoSuit, 0);
         card->deleteLater();
-        return !player->hasUsed("FengrangCard")
-            && card->isAvailable(player);
+        return !player->hasUsed("FengrangCard") && card->isAvailable(player);
     }
 
     virtual const Card *viewAs() const
@@ -1543,9 +1530,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardEffectStruct effect = data.value<CardEffectStruct>();
-        if (effect.to && effect.to->hasSkill(objectName())
-            && effect.card
-            && effect.card->isKindOf("AmazingGrace"))
+        if (effect.to && effect.to->hasSkill(objectName()) && effect.card && effect.card->isKindOf("AmazingGrace"))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
         return QList<SkillInvokeDetail>();
     }

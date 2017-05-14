@@ -179,8 +179,7 @@ public:
         return m_tableRect;
     }
 
-    void addHeroSkinContainer(ClientPlayer *player,
-                              HeroSkinContainer *heroSkinContainer);
+    void addHeroSkinContainer(ClientPlayer *player, HeroSkinContainer *heroSkinContainer);
     HeroSkinContainer *findHeroSkinContainer(const QString &generalName) const;
     QSet<HeroSkinContainer *> getHeroSkinContainers();
 

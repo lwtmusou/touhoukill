@@ -128,8 +128,7 @@ public:
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *miko = qobject_cast<ServerPlayer *>(move.from);
         if (miko != NULL && miko->isAlive() && miko->hasLordSkill(objectName()) && move.from_places.contains(Player::PlaceHand)
-            && (move.to_place == Player::PlaceHand && move.to && move.to != miko
-                && move.to->getKingdom() == "slm"))
+            && (move.to_place == Player::PlaceHand && move.to && move.to != miko && move.to->getKingdom() == "slm"))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, miko, miko);
         return QList<SkillInvokeDetail>();
     }
@@ -376,8 +375,7 @@ const Card *XihuaCard::validateInResponse(ServerPlayer *user) const
         QStringList use_list;
         if (!XihuaClear::xihua_choice_limit(user, "peach", Card::MethodResponse))
             use_list << "peach";
-        if (!Config.BanPackages.contains("maneuvering")
-            && !XihuaClear::xihua_choice_limit(user, "analeptic", Card::MethodResponse))
+        if (!Config.BanPackages.contains("maneuvering") && !XihuaClear::xihua_choice_limit(user, "analeptic", Card::MethodResponse))
             use_list << "analeptic";
         to_use = room->askForChoice(user, "xihua_skill_saveself", use_list.join("+"));
     } else
@@ -422,8 +420,7 @@ public:
         QStringList validPatterns;
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach (const Card *card, cards) {
-            if ((card->isNDTrick() || card->isKindOf("BasicCard"))
-                && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+            if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
                 QString p = card->objectName();
                 if (card->isKindOf("Slash"))
                     p = "slash";
@@ -1018,7 +1015,6 @@ public:
     }
 };
 
-
 class Songjing : public TriggerSkill
 {
 public:
@@ -1070,7 +1066,7 @@ public:
         if (!damage.card || !damage.to->isAlive() || !damage.card->isKindOf("Slash") || damage.card->getSuit() == Card::NoSuit)
             return QList<SkillInvokeDetail>();
         QList<SkillInvokeDetail> d;
-        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+        foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
             if (p->inMyAttackRange(damage.to) && p->canDiscard(p, "hs"))
                 d << SkillInvokeDetail(this, p, p);
         }
@@ -1094,8 +1090,6 @@ public:
         return false;
     }
 };
-
-
 
 class Chuixue : public TriggerSkill
 {
@@ -1123,8 +1117,7 @@ public:
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-            if (player != NULL && player->getPhase() == Player::Discard
-                && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)) {
+            if (player != NULL && player->getPhase() == Player::Discard && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)) {
                 foreach (int id, move.card_ids) {
                     if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand) {
                         Card *card = Sanguosha->getCard(id);
@@ -1391,9 +1384,7 @@ public:
 
     QList<SkillInvokeDetail> triggerable(const Room *, const DamageStruct &damage) const
     {
-        if (damage.to->hasSkill(this) && damage.to->isAlive()
-            && !damage.to->isKongcheng()
-            && !damage.to->containsTrick("supply_shortage"))
+        if (damage.to->hasSkill(this) && damage.to->isAlive() && !damage.to->isKongcheng() && !damage.to->containsTrick("supply_shortage"))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
         return QList<SkillInvokeDetail>();
     }

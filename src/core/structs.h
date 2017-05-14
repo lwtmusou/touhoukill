@@ -146,9 +146,7 @@ public:
 
     inline bool operator==(const CardMoveReason &other) const
     {
-        return m_reason == other.m_reason
-            && m_playerId == other.m_playerId && m_targetId == other.m_targetId
-            && m_skillName == other.m_skillName
+        return m_reason == other.m_reason && m_playerId == other.m_playerId && m_targetId == other.m_targetId && m_skillName == other.m_skillName
             && m_eventName == other.m_eventName;
     }
 
@@ -307,14 +305,12 @@ struct CardsMoveStruct
 
     inline bool operator==(const CardsMoveStruct &other) const
     {
-        return from == other.from && from_place == other.from_place
-            && from_pile_name == other.from_pile_name && from_player_name == other.from_player_name;
+        return from == other.from && from_place == other.from_place && from_pile_name == other.from_pile_name && from_player_name == other.from_player_name;
     }
 
     inline bool operator<(const CardsMoveStruct &other) const
     {
-        return from < other.from || from_place < other.from_place
-            || from_pile_name < other.from_pile_name || from_player_name < other.from_player_name;
+        return from < other.from || from_place < other.from_place || from_pile_name < other.from_pile_name || from_player_name < other.from_player_name;
     }
 
     QList<int> card_ids;
@@ -329,7 +325,7 @@ struct CardsMoveStruct
     Player::Place origin_from_place, origin_to_place;
     Player *origin_from, *origin_to;
     QString origin_from_pile_name, origin_to_pile_name; //for case of the movement transitted
-    QList<int> broken_ids; //record broken equip IDs from EquipPlace 
+    QList<int> broken_ids; //record broken equip IDs from EquipPlace
     QList<int> shown_ids; //record broken shown IDs from HandPlace
 
     bool tryParse(const QVariant &arg);
@@ -501,7 +497,8 @@ struct CardAskedStruct
 
 struct SkillInvokeDetail
 {
-    explicit SkillInvokeDetail(const TriggerSkill *skill = NULL, ServerPlayer *owner = NULL, ServerPlayer *invoker = NULL, QList<ServerPlayer *> targets = QList<ServerPlayer *>(), bool isCompulsory = false, ServerPlayer *preferredTarget = NULL);
+    explicit SkillInvokeDetail(const TriggerSkill *skill = NULL, ServerPlayer *owner = NULL, ServerPlayer *invoker = NULL, QList<ServerPlayer *> targets = QList<ServerPlayer *>(),
+                               bool isCompulsory = false, ServerPlayer *preferredTarget = NULL);
     SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, bool isCompulsory = false, ServerPlayer *preferredTarget = NULL);
 
     const TriggerSkill *skill; // the skill
@@ -515,8 +512,10 @@ struct SkillInvokeDetail
     QVariantMap tag; // used to add a tag to the struct. useful for skills like Tieqi and Liegong to save a QVariantList for assisting to assign targets
 
     bool operator<(const SkillInvokeDetail &arg2) const; // the operator < for sorting the invoke order.
-    bool sameSkill(const SkillInvokeDetail &arg2) const; // the operator ==. it only judge the skill name, the skill invoker, and the skill owner. it don't judge the skill target because it is chosen by the skill invoker
-    bool sameTimingWith(const SkillInvokeDetail &arg2) const; // used to judge 2 skills has the same timing. only 2 structs with the same priority and the same invoker and the same "whether or not it is a skill of equip"
+    // the operator ==. it only judge the skill name, the skill invoker, and the skill owner. it don't judge the skill target because it is chosen by the skill invoker
+    bool sameSkill(const SkillInvokeDetail &arg2) const;
+    // used to judge 2 skills has the same timing. only 2 structs with the same priority and the same invoker and the same "whether or not it is a skill of equip"
+    bool sameTimingWith(const SkillInvokeDetail &arg2) const;
     bool isValid() const; // validity check
     bool preferredTargetLess(const SkillInvokeDetail &arg2) const;
 

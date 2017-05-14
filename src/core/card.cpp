@@ -10,12 +10,7 @@
 
 const int Card::S_UNKNOWN_CARD_ID = -1;
 
-const Card::Suit Card::AllSuits[4] = {
-    Card::Spade,
-    Card::Club,
-    Card::Heart,
-    Card::Diamond
-};
+const Card::Suit Card::AllSuits[4] = {Card::Spade, Card::Club, Card::Heart, Card::Diamond};
 
 Card::Card(Suit suit, int number, bool target_fixed)
     : target_fixed(target_fixed)
@@ -190,7 +185,7 @@ bool Card::match(const QString &pattern) const
 
 bool Card::CompareByNumber(const Card *a, const Card *b)
 {
-    static Suit new_suits[] = { Spade, Heart, Club, Diamond, NoSuitBlack, NoSuitRed, NoSuit };
+    static Suit new_suits[] = {Spade, Heart, Club, Diamond, NoSuitBlack, NoSuitRed, NoSuit};
     Suit suit1 = new_suits[a->getSuit()];
     Suit suit2 = new_suits[b->getSuit()];
 
@@ -202,7 +197,7 @@ bool Card::CompareByNumber(const Card *a, const Card *b)
 
 bool Card::CompareBySuit(const Card *a, const Card *b)
 {
-    static Suit new_suits[] = { Spade, Heart, Club, Diamond, NoSuitBlack, NoSuitRed, NoSuit };
+    static Suit new_suits[] = {Spade, Heart, Club, Diamond, NoSuitBlack, NoSuitRed, NoSuit};
     Suit suit1 = new_suits[a->getSuit()];
     Suit suit2 = new_suits[b->getSuit()];
 
@@ -372,12 +367,7 @@ QString Card::toString(bool hidden) const
     if (!isVirtualCard())
         return QString::number(m_id);
     else
-        return QString("%1:%2[%3:%4]=%5")
-            .arg(objectName())
-            .arg(m_skillName)
-            .arg(getSuitString())
-            .arg(getNumberString())
-            .arg(subcardString());
+        return QString("%1:%2[%3:%4]=%5").arg(objectName()).arg(m_skillName).arg(getSuitString()).arg(getNumberString()).arg(subcardString());
 }
 
 QString Card::getEffectName() const
@@ -779,8 +769,7 @@ void Card::clearSubcards()
 
 bool Card::isAvailable(const Player *player) const
 {
-    return !player->isCardLimited(this, handling_method)
-        || (can_recast && !player->isCardLimited(this, Card::MethodRecast));
+    return !player->isCardLimited(this, handling_method) || (can_recast && !player->isCardLimited(this, Card::MethodRecast));
 }
 
 const Card *Card::validate(CardUseStruct &) const
@@ -885,11 +874,7 @@ QString SkillCard::toString(bool hidden) const
 {
     QString str;
     if (!hidden)
-        str = QString("@%1[%2:%3]=%4")
-                  .arg(metaObject()->className())
-                  .arg(getSuitString())
-                  .arg(getNumberString())
-                  .arg(subcardString());
+        str = QString("@%1[%2:%3]=%4").arg(metaObject()->className()).arg(getSuitString()).arg(getNumberString()).arg(subcardString());
     else
         str = QString("@%1[no_suit:-]=.").arg(metaObject()->className());
 

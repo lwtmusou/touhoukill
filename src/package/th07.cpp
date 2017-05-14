@@ -484,9 +484,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.chain || damage.transfer || !damage.by_user || !damage.from || damage.from->isDead()
-            || damage.from == damage.to
-            || !damage.from->hasSkill(this))
+        if (damage.chain || damage.transfer || !damage.by_user || !damage.from || damage.from->isDead() || damage.from == damage.to || !damage.from->hasSkill(this))
             return QList<SkillInvokeDetail>();
         if (damage.card && damage.card->isKindOf("Slash") && !damage.to->getEquips().isEmpty())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
@@ -551,10 +549,7 @@ public:
                 if (response.m_isUse)
                     card = response.m_card;
             }
-            if (player && player->getPhase() == Player::Play
-                && card
-                && !card->isKindOf("SkillCard")
-                && card->getHandlingMethod() == Card::MethodUse)
+            if (player && player->getPhase() == Player::Play && card && !card->isKindOf("SkillCard") && card->getHandlingMethod() == Card::MethodUse)
                 room->setPlayerProperty(player, "xiezou_card", card->objectName());
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -627,9 +622,7 @@ public:
         if (e != EventPhaseStart)
             return QList<SkillInvokeDetail>();
         ServerPlayer *current = data.value<ServerPlayer *>();
-        if (current->hasSkill(this) && current->isAlive() && current->getPhase() == Player::Finish
-            && current->getHp() < current->getMark(objectName())
-            && current->isWounded())
+        if (current->hasSkill(this) && current->isAlive() && current->getPhase() == Player::Finish && current->getHp() < current->getMark(objectName()) && current->isWounded())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current);
         return QList<SkillInvokeDetail>();
     }
@@ -641,7 +634,6 @@ public:
         return false;
     }
 };
-
 
 class ZhanzhenVS : public OneCardViewAsSkill
 {
@@ -715,7 +707,8 @@ public:
         const Card *card = move.reason.m_extraData.value<const Card *>();
         const Card *realcard = Sanguosha->getEngineCard(move.card_ids.first());
         player->tag["zhanzhen"] = QVariant::fromValue(realcard);
-        ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "@zhanzhen:" + card->objectName() + ":" + realcard->objectName(), true, true);
+        ServerPlayer *target
+            = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "@zhanzhen:" + card->objectName() + ":" + realcard->objectName(), true, true);
         if (target) {
             player->tag["zhanzhen_select"] = QVariant::fromValue(target);
             return true;
@@ -956,8 +949,7 @@ public:
         }
         if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if ((effect.card->isKindOf("SavageAssault") || effect.card->isKindOf("ArcheryAttack")) && effect.to->getMark("@shi") == 0
-                && effect.to->hasSkill("yexing"))
+            if ((effect.card->isKindOf("SavageAssault") || effect.card->isKindOf("ArcheryAttack")) && effect.to->getMark("@shi") == 0 && effect.to->hasSkill("yexing"))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
         }
         return QList<SkillInvokeDetail>();
@@ -1324,7 +1316,8 @@ public:
     static QStringList prohibitPiles()
     {
         QStringList names;
-        names << "suoding_cards" << "saving_energy"
+        names << "suoding_cards"
+              << "saving_energy"
               << "wooden_ox";
         return names;
     }
@@ -1987,11 +1980,8 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        return matchAvaliablePattern("peach", pattern)
-            && !player->isKongcheng()
-            && player->getMark("Global_PreventPeach") == 0
-            && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
-            && !player->hasFlag("Global_huayinFailed");
+        return matchAvaliablePattern("peach", pattern) && !player->isKongcheng() && player->getMark("Global_PreventPeach") == 0
+            && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) && !player->hasFlag("Global_huayinFailed");
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const

@@ -83,9 +83,8 @@ DangjiaCard::DangjiaCard()
 
 bool DangjiaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    return targets.isEmpty() && to_select->hasLordSkill("dangjia")
-        && to_select != Self && !to_select->hasFlag("dangjiaInvoked")
-        && !to_select->isKongcheng() && to_select->isWounded();
+    return targets.isEmpty() && to_select->hasLordSkill("dangjia") && to_select != Self && !to_select->hasFlag("dangjiaInvoked") && !to_select->isKongcheng()
+        && to_select->isWounded();
 }
 
 void DangjiaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
@@ -369,8 +368,7 @@ public:
 
     bool isEnabledAtPlay(const Player *player) const
     {
-        return (!player->hasFlag("Global_xiufuFailed") && !player->hasFlag("xiufu_used"))
-            || player->getMark("@xiufudebug") > 0;
+        return (!player->hasFlag("Global_xiufuFailed") && !player->hasFlag("xiufu_used")) || player->getMark("@xiufudebug") > 0;
     }
 
     const Card *viewAs() const
@@ -936,7 +934,8 @@ public:
             return QList<SkillInvokeDetail>();
 
         foreach (const Skill *skill, target->getVisibleSkillList()) {
-            if (skill->isLordSkill() || skill->isAttachedLordSkill() || skill->getFrequency() == Skill::Limited || skill->getFrequency() == Skill::Wake || skill->getFrequency() == Skill::Eternal)
+            if (skill->isLordSkill() || skill->isAttachedLordSkill() || skill->getFrequency() == Skill::Limited || skill->getFrequency() == Skill::Wake
+                || skill->getFrequency() == Skill::Eternal)
                 continue;
             if (!yori->hasSkill(skill, true) && target->hasSkill(skill))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, false, target);
@@ -952,7 +951,8 @@ public:
         QStringList skill_names;
 
         foreach (const Skill *skill, invoke->preferredTarget->getVisibleSkillList()) {
-            if (skill->isLordSkill() || skill->isAttachedLordSkill() || skill->getFrequency() == Skill::Limited || skill->getFrequency() == Skill::Wake || skill->getFrequency() == Skill::Eternal)
+            if (skill->isLordSkill() || skill->isAttachedLordSkill() || skill->getFrequency() == Skill::Limited || skill->getFrequency() == Skill::Wake
+                || skill->getFrequency() == Skill::Eternal)
                 continue;
 
             if (!yori->hasSkill(skill, true) && invoke->preferredTarget->hasSkill(skill))
@@ -1751,8 +1751,7 @@ public:
             use.card->setFlags("IgnoreFailed");
             foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (use.from->isAlive() && p != use.from && !use.to.contains(p) && !use.to.isEmpty()
-                    && (p->getHandcardNum() < use.from->getHandcardNum() || p->getHp() < use.from->getHp())
-                    && !use.from->isProhibited(p, use.card)) {
+                    && (p->getHandcardNum() < use.from->getHandcardNum() || p->getHp() < use.from->getHp()) && !use.from->isProhibited(p, use.card)) {
                     if (use.card->isKindOf("Peach") && p->isWounded())
                         d << SkillInvokeDetail(this, p, p, NULL, true);
                     else if (use.card->targetFilter(QList<const Player *>(), p, use.from))
@@ -1847,8 +1846,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QStringList prompt_list;
-        prompt_list << "jidong-discard" << use.card->objectName()
-                    << use.from->objectName() << "basic";
+        prompt_list << "jidong-discard" << use.card->objectName() << use.from->objectName() << "basic";
         QString prompt = prompt_list.join(":");
 
         const Card *card = room->askForCard(invoke->invoker, ".Basic", prompt, data, Card::MethodDiscard, NULL, false, objectName());
@@ -1866,8 +1864,7 @@ public:
             QString point = QString::number(card->getNumber() + 1);
             QString pattern = QString(".|.|%1~|hand").arg(point);
             QStringList prompt_list;
-            prompt_list << "jidong-confirm" << use.card->objectName()
-                        << use.from->objectName() << card->getNumberString();
+            prompt_list << "jidong-confirm" << use.card->objectName() << use.from->objectName() << card->getNumberString();
             QString prompt = prompt_list.join(":");
             use.from->tag["jidong_target"] = QVariant::fromValue(invoke->invoker);
             const Card *card = room->askForCard(use.from, pattern, prompt, data);

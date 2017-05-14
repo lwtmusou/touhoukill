@@ -4,7 +4,6 @@
 #include "card.h"
 #include "package.h"
 
-
 class YidanCard : public SkillCard
 {
     Q_OBJECT

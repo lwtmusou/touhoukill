@@ -4,7 +4,6 @@
 #include <QDateTime>
 #include <QDir>
 #include <QTranslator>
-#include <cstring>
 
 #include "audio.h"
 #include "banpair.h"
@@ -12,34 +11,8 @@
 #include "server.h"
 #include "settings.h"
 
-#ifdef USE_BREAKPAD
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4091)
-#endif
-#include "breakpad/client/windows/handler/exception_handler.h"
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
-
-using namespace google_breakpad;
-
-static bool callback(const wchar_t *dump_path, const wchar_t *id, void *, EXCEPTION_POINTERS *, MDRawAssertionInfo *, bool succeeded)
-{
-    if (succeeded)
-        qWarning("Dump file created in %s, dump guid is %s\n", dump_path, id);
-    else
-        qWarning("Dump failed\n");
-    return succeeded;
-}
-
 int main(int argc, char *argv[])
 {
-    ExceptionHandler eh(L"./dmp", NULL, callback, NULL, ExceptionHandler::HANDLER_ALL);
-#else
-int main(int argc, char *argv[])
-{
-#endif
     if (argc > 1 && strcmp(argv[1], "-server") == 0) {
         new QCoreApplication(argc, argv);
     } else {
@@ -115,5 +88,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    return qApp->exec();
+    int execResult = qApp->exec();
+    delete qApp;
+    return execResult;
 }

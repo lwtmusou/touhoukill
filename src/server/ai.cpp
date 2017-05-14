@@ -358,8 +358,7 @@ const Card *TrustAI::askForSinglePeach(ServerPlayer *dying)
         foreach (const Card *card, cards) {
             if (card->isKindOf("Peach"))
                 return card;
-            if (card->isKindOf("Analeptic")
-                && (dying == self || (dying->hasLordSkill("yanhui") && self->getKingdom() == "zhan")))
+            if (card->isKindOf("Analeptic") && (dying == self || (dying->hasLordSkill("yanhui") && self->getKingdom() == "zhan")))
                 return card;
         }
     }

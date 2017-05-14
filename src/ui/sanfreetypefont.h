@@ -41,10 +41,12 @@ public:
     // @param orient
     //        Suggest whether the text is laid out horizontally or vertically.
     // @return true if succeed.
-    bool paintString(QPainter *const painter, const QString &text, const int *const font, const QColor &color, QSize &fontSize, int spacing, int weight, QRect &boundingBox, const Qt::Orientation &orient, const Qt::Alignment &align);
+    bool paintString(QPainter *const painter, const QString &text, const int *const font, const QColor &color, QSize &fontSize, int spacing, int weight, QRect &boundingBox,
+                     const Qt::Orientation &orient, const Qt::Alignment &align);
 
     // Currently, we online support horizotal layout for multiline text
-    bool paintStringMultiLine(QPainter *const painter, const QString &text, const int *const font, const QColor &color, QSize &fontSize, int spacing, int weight, QRect &boundingBox, const Qt::Alignment &align);
+    bool paintStringMultiLine(QPainter *const painter, const QString &text, const int *const font, const QColor &color, QSize &fontSize, int spacing, int weight,
+                              QRect &boundingBox, const Qt::Alignment &align);
 
 private:
     SanFreeTypeFont();

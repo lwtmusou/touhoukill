@@ -194,9 +194,7 @@ public:
     }
 
     // @todo: the following two functions should be merged into one.
-    inline virtual bool targetFilter(const QList<const Player *> &targets,
-                                     const Player *to_select,
-                                     const Player *Self) const
+    inline virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
     {
         return m_card->targetFilter(targets, to_select, Self);
     }

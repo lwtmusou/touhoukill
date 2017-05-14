@@ -28,10 +28,7 @@ public:
     {
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.player->hasSkill(this)
-                && change.to == Player::NotActive
-                && change.player->getHp() == 1
-                && !change.player->tag.value("touhou-extra", false).toBool()
+            if (change.player->hasSkill(this) && change.to == Player::NotActive && change.player->getHp() == 1 && !change.player->tag.value("touhou-extra", false).toBool()
                 && !room->getTag("rexueDeathInThisRound").toBool())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
         }
@@ -468,8 +465,7 @@ public:
             return d;
 
         foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            if (p != damage.from
-                && (p->inMyAttackRange(damage.to) || p == damage.to))
+            if (p != damage.from && (p->inMyAttackRange(damage.to) || p == damage.to))
                 d << SkillInvokeDetail(this, p, p, NULL, false, damage.from);
         }
         return d;
@@ -588,11 +584,10 @@ public:
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
                 }
             }
-        }
-        else if (e == TargetSpecifying) {
+        } else if (e == TargetSpecifying) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Slash") && use.card->getSkillName() == objectName()) {
-                foreach(ServerPlayer *t, room->getOtherPlayers(use.from)) {
+                foreach (ServerPlayer *t, room->getOtherPlayers(use.from)) {
                     if (!use.to.contains(t) && use.from->canSlash(t, use.card, false))
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
                 }
@@ -609,12 +604,11 @@ public:
         return true;
     }
 
-
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QList<ServerPlayer *> targets;
-        foreach(ServerPlayer *t, room->getOtherPlayers(use.from)) {
+        foreach (ServerPlayer *t, room->getOtherPlayers(use.from)) {
             if (!use.to.contains(t) && use.from->canSlash(t, use.card, false))
                 targets << t;
         }
@@ -627,8 +621,7 @@ public:
             target->drawCards(1);
 
             room->touhouLogmessage("#liexi_extra", use.from, use.card->objectName(), QList<ServerPlayer *>() << target);
-        }
-        else {
+        } else {
             use.nullified_list << "_ALL_TARGETS";
             data = QVariant::fromValue(use);
         }
@@ -671,7 +664,8 @@ public:
             if (damage.card->isKindOf("Slash") && damage.card->hasFlag("mengwei_extra"))
                 room->setCardFlag(damage.card, "mengwei_damage");
             break;
-        }case PostCardEffected: {
+        }
+        case PostCardEffected: {
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if (effect.card->hasFlag("mengwei_extra") && !effect.card->hasFlag("mengwei_damage"))
                 room->setCardFlag(effect.card, "mengwei_cancel");
@@ -688,10 +682,10 @@ public:
         if (e == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Slash")) {
-                foreach(ServerPlayer *p, use.to) {
+                foreach (ServerPlayer *p, use.to) {
                     if (p->hasSkill(this)) {
-                        foreach(ServerPlayer *t, room->getOtherPlayers(p)) {
-                            if (!use.to.contains(t) && use.from->canSlash(t, use.card, false)){
+                        foreach (ServerPlayer *t, room->getOtherPlayers(p)) {
+                            if (!use.to.contains(t) && use.from->canSlash(t, use.card, false)) {
                                 d << SkillInvokeDetail(this, p, p);
                                 break;
                             }
@@ -714,7 +708,7 @@ public:
         if (e == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
             QList<ServerPlayer *> targets;
-            foreach(ServerPlayer *t, room->getOtherPlayers(player)) {
+            foreach (ServerPlayer *t, room->getOtherPlayers(player)) {
                 if (!use.to.contains(t) && use.from->canSlash(t, use.card, false))
                     targets << t;
             }
@@ -724,8 +718,7 @@ public:
                 invoke->targets << target;
                 return true;
             }
-        }
-        else if (e == SlashEffected)
+        } else if (e == SlashEffected)
             return true;
         return false;
     }
@@ -744,8 +737,7 @@ public:
 
                 room->touhouLogmessage("#mengwei_extra", use.from, use.card->objectName(), QList<ServerPlayer *>() << invoke->targets.first());
             }
-        }
-        else if (e == SlashEffected) {
+        } else if (e == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             LogMessage log;
             log.type = "#MengweiNullified";
@@ -881,10 +873,7 @@ public:
                 if (response.m_isUse)
                     card = response.m_card;
             }
-            if (player && player->getPhase() == Player::Play
-                && card
-                && card->getHandlingMethod() == Card::MethodUse
-                && !card->isKindOf("SkillCard")) {
+            if (player && player->getPhase() == Player::Play && card && card->getHandlingMethod() == Card::MethodUse && !card->isKindOf("SkillCard")) {
                 if (player->hasFlag("xiubu_first"))
                     player->setFlags("xiubu_second");
                 else
@@ -914,10 +903,7 @@ public:
                 if (response.m_isUse)
                     card = response.m_card;
             }
-            if (player && player->getPhase() == Player::Play
-                && card
-                && card->getHandlingMethod() == Card::MethodUse
-                && !card->isKindOf("SkillCard")) {
+            if (player && player->getPhase() == Player::Play && card && card->getHandlingMethod() == Card::MethodUse && !card->isKindOf("SkillCard")) {
                 if (player->hasFlag("xiubu_first") && !player->hasFlag("xiubu_second")) {
                     QList<SkillInvokeDetail> d;
                     foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {

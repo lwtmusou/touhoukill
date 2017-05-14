@@ -136,8 +136,7 @@ void BubbleChatBox::setText(const QString &text)
     int height = fm.lineSpacing() + fm.xHeight();
     m_rect.setSize(QSize(boxWidth + BOX_RIGHT_FRAME_WIDTH, height * lineCount + BOX_FRAME_HEIGHT));
 
-    m_chatLabel->setPos(QPointF(BOX_LEFT_FRAME_WIDTH,
-                                m_rect.center().y() - (height * lineCount) + (lineCount - 1) * (height / 2) - (imgCount > 0 ? 1 : 0)));
+    m_chatLabel->setPos(QPointF(BOX_LEFT_FRAME_WIDTH, m_rect.center().y() - (height * lineCount) + (lineCount - 1) * (height / 2) - (imgCount > 0 ? 1 : 0)));
     m_chatLabel->setBoundingRect(QRectF(0, 0, boxWidth, height * lineCount + (MAX_LINE_COUNT - lineCount) * 1));
 
     updatePos();

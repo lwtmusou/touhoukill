@@ -49,7 +49,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
 class GeshengCard : public SkillCard
 {
     Q_OBJECT
@@ -72,7 +71,6 @@ public:
     virtual const Card *validate(CardUseStruct &cardUse) const;
 };
 
-
 class YinghuoCard : public SkillCard
 {
     Q_OBJECT
@@ -87,7 +85,6 @@ public:
     virtual const Card *validate(CardUseStruct &card_use) const;
     virtual const Card *validateInResponse(ServerPlayer *user) const;
 };
-
 
 class ChuangshiCard : public SkillCard
 {

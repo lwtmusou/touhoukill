@@ -31,7 +31,8 @@ QString resolveFont(const QString &fontName);
 // @param orient
 //        Suggest whether the text is laid out horizontally or vertically.
 // @return True if succeed.
-bool paintQString(QPainter *painter, QString text, int *font, QColor color, QSize &fontSize, int spacing, int weight, QRect boundingBox, Qt::Orientation orient, Qt::Alignment align);
+bool paintQString(QPainter *painter, QString text, int *font, QColor color, QSize &fontSize, int spacing, int weight, QRect boundingBox, Qt::Orientation orient,
+                  Qt::Alignment align);
 
 // Currently, we online support horizotal layout for multiline text
 bool paintQStringMultiLine(QPainter *painter, QString text, int *font, QColor color, QSize &fontSize, int spacing, QRect boundingBox, Qt::Alignment align);

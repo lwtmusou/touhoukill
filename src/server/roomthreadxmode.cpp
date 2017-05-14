@@ -79,8 +79,7 @@ void RoomThreadXMode::run()
         }
         player->tag.remove("XModeBackup");
     }
-    startArrange(QList<ServerPlayer *>() << warm_leader << cool_leader,
-                 QList<QStringList>() << warm_backup << cool_backup);
+    startArrange(QList<ServerPlayer *>() << warm_leader << cool_leader, QList<QStringList>() << warm_backup << cool_backup);
 }
 
 void RoomThreadXMode::startArrange(QList<ServerPlayer *> &players, QList<QStringList> &to_arrange)
@@ -246,8 +245,7 @@ void RoomThreadXMode::assignRoles(const QString &scheme)
         for (int i = 0; i < total; i++) {
             int next = (i + 1) % total;
             int next2 = (next + 1) % total;
-            if (players.at(i)->getRole().at(0) == players.at(next)->getRole().at(0)
-                && players.at(i)->getRole().at(0) == players.at(next2)->getRole().at(0)) {
+            if (players.at(i)->getRole().at(0) == players.at(next)->getRole().at(0) && players.at(i)->getRole().at(0) == players.at(next2)->getRole().at(0)) {
                 valid = false;
                 break;
             }

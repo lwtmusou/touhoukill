@@ -410,10 +410,7 @@ void ServerDialog::updateButtonEnablility(QAbstractButton *button)
 {
     if (!button)
         return;
-    if (button->objectName().contains("scenario")
-        || button->objectName().contains("mini")
-        || button->objectName().contains("1v1")
-        || button->objectName().contains("1v3")) {
+    if (button->objectName().contains("scenario") || button->objectName().contains("mini") || button->objectName().contains("1v1") || button->objectName().contains("1v3")) {
         //basara_checkbox->setChecked(false);
         //basara_checkbox->setEnabled(false);
     } else {
@@ -896,8 +893,7 @@ void ServerDialog::onDetectButtonClicked()
     QHostInfo vHostInfo = QHostInfo::fromName(QHostInfo::localHostName());
     QList<QHostAddress> vAddressList = vHostInfo.addresses();
     foreach (QHostAddress address, vAddressList) {
-        if (!address.isNull() && address != QHostAddress::LocalHost
-            && address.protocol() == QAbstractSocket::IPv4Protocol) {
+        if (!address.isNull() && address != QHostAddress::LocalHost && address.protocol() == QAbstractSocket::IPv4Protocol) {
             address_edit->setText(address.toString());
             return;
         }
@@ -965,8 +961,7 @@ void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pa
 
         bool checked = false;
         if (ex_generals.isEmpty()) {
-            checked = (pack->objectName() == "standard" || pack->objectName() == "wind")
-                && general->objectName() != "yuji";
+            checked = (pack->objectName() == "standard" || pack->objectName() == "wind") && general->objectName() != "yuji";
         } else
             checked = ex_generals.contains(general->objectName());
 

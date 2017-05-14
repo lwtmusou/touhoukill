@@ -32,9 +32,7 @@ HeroSkinContainer *HeroSkinContainer::m_currentTopMostContainer = NULL;
 QMap<QString, QStringList> HeroSkinContainer::m_generalToSkinFiles;
 QMap<QString, bool> HeroSkinContainer::m_generalToHasSkin;
 
-HeroSkinContainer::HeroSkinContainer(const QString &generalName,
-                                     const QString &kingdom,
-                                     QGraphicsItem *parent /* = 0*/)
+HeroSkinContainer::HeroSkinContainer(const QString &generalName, const QString &kingdom, QGraphicsItem *parent /* = 0*/)
     : QGraphicsObject(parent)
     , m_generalName(generalName)
     , m_backgroundPixmap("image/system/heroskin-container.png")
@@ -44,9 +42,7 @@ HeroSkinContainer::HeroSkinContainer(const QString &generalName,
     setFlag(ItemIsMovable);
     setCursor(Qt::ArrowCursor);
 
-    QSanButton *closeButton = new QSanButton("player_container",
-                                             "close-heroskin",
-                                             this); //"change-heroskin"
+    QSanButton *closeButton = new QSanButton("player_container", "close-heroskin", this); //"change-heroskin"
 
     //QSanButton *closeButton = new QSanButton("card_container",
     //"close", this);
@@ -57,8 +53,7 @@ HeroSkinContainer::HeroSkinContainer(const QString &generalName,
 
     QGraphicsPixmapItem *kingdomColorMaskIcon = NULL;
     PlayerCardContainer::_paintPixmap(kingdomColorMaskIcon, QRect(11, -5, 130, 40), //11, 6, 87, 21
-                                      G_ROOM_SKIN.getPixmapFromFileName(QString(KINGDOM_COLORMASK_PIXMAP_PATH).arg(kingdom)),
-                                      this);
+                                      G_ROOM_SKIN.getPixmapFromFileName(QString(KINGDOM_COLORMASK_PIXMAP_PATH).arg(kingdom)), this);
 
     QGraphicsPixmapItem *kingdomIcon = NULL;
     PlayerCardContainer::_paintPixmap(kingdomIcon, QRect(9, 2, 28, 25), G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON, kingdom), this);
@@ -69,8 +64,7 @@ HeroSkinContainer::HeroSkinContainer(const QString &generalName,
     }
     QGraphicsPixmapItem *avatarNameItem = new QGraphicsPixmapItem(this);
     getAvatarNameFont().paintText(avatarNameItem, QRect(34, -8, 100, 40), //34, -8, 60, 40
-                                  Qt::AlignLeft | Qt::AlignJustify,
-                                  name);
+                                  Qt::AlignLeft | Qt::AlignJustify, name);
 
     initSkins();
     fillSkins();
@@ -175,10 +169,7 @@ void HeroSkinContainer::createSkinItem(int skinIndex, QGraphicsItem *parent, boo
 {
     QString generalIconPath;
     QRect clipRegion;
-    G_ROOM_SKIN.getHeroSkinContainerGeneralIconPathAndClipRegion(m_generalName,
-                                                                 skinIndex,
-                                                                 generalIconPath,
-                                                                 clipRegion);
+    G_ROOM_SKIN.getHeroSkinContainerGeneralIconPathAndClipRegion(m_generalName, skinIndex, generalIconPath, clipRegion);
     if (QFile::exists(generalIconPath)) {
         SkinItem *skinItem = new SkinItem(generalIconPath, clipRegion, skinIndex, used, parent);
         connect(skinItem, SIGNAL(clicked(int)), this, SLOT(skinSelected(int)));
@@ -257,8 +248,7 @@ void HeroSkinContainer::close()
 void HeroSkinContainer::skinSelected(int skinIndex)
 {
     Config.beginGroup("HeroSkin");
-    (0 == skinIndex) ? Config.remove(m_generalName)
-                     : Config.setValue(m_generalName, skinIndex);
+    (0 == skinIndex) ? Config.remove(m_generalName) : Config.setValue(m_generalName, skinIndex);
     Config.endGroup();
 
     close();

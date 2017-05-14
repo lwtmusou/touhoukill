@@ -30,7 +30,8 @@ GeneralSearch::GeneralSearch(GeneralOverview *parent)
     layout->addLayout(createButtonLayout());
     setLayout(layout);
 
-    connect(this, SIGNAL(search(bool, QString, QString, QStringList, QStringList, int, int, QStringList)), parent, SLOT(startSearch(bool, QString, QString, QStringList, QStringList, int, int, QStringList)));
+    connect(this, SIGNAL(search(bool, QString, QString, QStringList, QStringList, int, int, QStringList)), parent,
+            SLOT(startSearch(bool, QString, QString, QStringList, QStringList, int, int, QStringList)));
 }
 
 QWidget *GeneralSearch::createInfoTab()
@@ -43,7 +44,8 @@ QWidget *GeneralSearch::createInfoTab()
     layout->addWidget(include_hidden_checkbox);
 
     nickname_label = new QLabel(tr("Nickname"));
-    nickname_label->setToolTip(tr("<font color=#FFFF33>Input characters included by the nickname. '?' and '*' is available. Every nickname meets the condition if the line is empty.</font>"));
+    nickname_label->setToolTip(
+        tr("<font color=#FFFF33>Input characters included by the nickname. '?' and '*' is available. Every nickname meets the condition if the line is empty.</font>"));
     nickname_edit = new QLineEdit;
     nickname_edit->clear();
     layout->addLayout(HLay(nickname_label, nickname_edit));
@@ -572,11 +574,10 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     }
 
     if (general_name.contains("caocao")) {
-        QCommandLinkButton *win_button = new QCommandLinkButton(tr("Victory"),
-                                                                tr("Six dragons lead my chariot, "
-                                                                   "I will ride the wind with the greatest speed."
-                                                                   "With all of the feudal lords under my command,"
-                                                                   "to rule the world with one name!"));
+        QCommandLinkButton *win_button = new QCommandLinkButton(tr("Victory"), tr("Six dragons lead my chariot, "
+                                                                                  "I will ride the wind with the greatest speed."
+                                                                                  "With all of the feudal lords under my command,"
+                                                                                  "to rule the world with one name!"));
 
         button_layout->addWidget(win_button);
         addCopyAction(win_button);
@@ -665,7 +666,8 @@ void GeneralOverview::askChangeSkin()
     ui->originLineEdit->setText(getOriginInfo(general_name));
 }
 
-void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders, const QStringList &kingdoms, int lower, int upper, const QStringList &packages)
+void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders, const QStringList &kingdoms, int lower, int upper,
+                                  const QStringList &packages)
 {
     QList<const General *> generals;
     foreach (const General *general, all_generals) {

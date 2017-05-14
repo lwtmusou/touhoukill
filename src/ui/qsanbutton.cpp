@@ -240,8 +240,7 @@ void QSanSkillButton::setSkill(const Skill *skill)
         skill = _m_skill;
 
     Skill::Frequency freq = skill->getFrequency();
-    if (freq == Skill::Frequent
-        || (freq == Skill::NotFrequent && skill->inherits("TriggerSkill") && !skill->inherits("EquipSkill") && _m_viewAsSkill == NULL)) {
+    if (freq == Skill::Frequent || (freq == Skill::NotFrequent && skill->inherits("TriggerSkill") && !skill->inherits("EquipSkill") && _m_viewAsSkill == NULL)) {
         setStyle(QSanButton::S_STYLE_TOGGLE);
         setState(freq == Skill::Frequent ? QSanButton::S_STATE_DOWN : QSanButton::S_STATE_UP);
         _setSkillType(QSanInvokeSkillButton::S_SKILL_FREQUENT);
@@ -298,10 +297,8 @@ void QSanInvokeSkillButton::_repaint()
         QString skillName = Sanguosha->translate(_m_skill->objectName());
         if (_m_enumWidth != S_WIDTH_WIDE)
             skillName = skillName.left(2);
-        font.paintText(&painter,
-                       (ButtonState)i == S_STATE_DOWN ? G_DASHBOARD_LAYOUT.m_skillTextAreaDown[_m_enumWidth] : G_DASHBOARD_LAYOUT.m_skillTextArea[_m_enumWidth],
-                       Qt::AlignCenter,
-                       skillName);
+        font.paintText(&painter, (ButtonState)i == S_STATE_DOWN ? G_DASHBOARD_LAYOUT.m_skillTextAreaDown[_m_enumWidth] : G_DASHBOARD_LAYOUT.m_skillTextArea[_m_enumWidth],
+                       Qt::AlignCenter, skillName);
     }
     setSize(_m_bgPixmap[0].size());
 }

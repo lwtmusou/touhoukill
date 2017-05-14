@@ -114,10 +114,9 @@ public:
         use.card->setFlags("IgnoreFailed"); //for factor which named "ignore" and related with Function "isProhibited" and  "targetFilter"
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getLieges("xlc", invoke->invoker)) {
-
-            if (use.to.contains(p) || use.from->isProhibited(p, use.card)) 
+            if (use.to.contains(p) || use.from->isProhibited(p, use.card))
                 continue;
-            
+
             if (!use.card->targetFilter(QList<const Player *>(), p, use.from))
                 continue;
             targets << p;
@@ -329,11 +328,7 @@ public:
             return QList<SkillInvokeDetail>();
 
         CardEffectStruct effect = data.value<CardEffectStruct>();
-        if (effect.from && effect.from != effect.to
-            && effect.to->hasSkill(this)
-            && effect.to->isAlive()
-            && effect.to->hasFlag("jinghua")
-            && effect.card->isNDTrick()) {
+        if (effect.from && effect.from != effect.to && effect.to->hasSkill(this) && effect.to->isAlive() && effect.to->hasFlag("jinghua") && effect.card->isNDTrick()) {
             QList<int> ids;
             if (effect.card->isVirtualCard())
                 ids = effect.card->getSubcards();
@@ -487,8 +482,7 @@ public:
             if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile) {
                 foreach (int id, move.card_ids) {
                     if (room->getCardPlace(id) == Player::DiscardPile
-                        && (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial
-                            && move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
+                        && (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial && move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
                 }
             }
@@ -504,8 +498,7 @@ public:
             QList<int> ids;
             foreach (int id, move.card_ids) {
                 if (room->getCardPlace(id) == Player::DiscardPile
-                    && (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial
-                        && move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
+                    && (move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceSpecial && move.from_places.at(move.card_ids.indexOf(id)) != Player::PlaceDelayedTrick))
                     ids << id;
             }
             room->fillAG(ids, player);
@@ -954,7 +947,6 @@ public:
             invoke->invoker->obtainCard(&dummy);
         }
 
-
         return false;
     }
 };
@@ -1279,8 +1271,7 @@ public:
     {
         Slash *slash = new Slash(Card::NoSuit, 0);
         slash->deleteLater();
-        if (!player->isCardLimited(slash, Card::MethodUse)
-            && !player->hasUsed("NuhuoCard")) {
+        if (!player->isCardLimited(slash, Card::MethodUse) && !player->hasUsed("NuhuoCard")) {
             foreach (const Player *p, player->getAliveSiblings()) {
                 if (player->canSlash(p, slash, true))
                     return true;
@@ -1321,7 +1312,8 @@ public:
         if (move.from == NULL || move.from->isDead())
             return QList<SkillInvokeDetail>();
         // one lose a card
-        if ((move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip)) && (move.to != move.from || (move.to_place != Player::PlaceHand && move.to_place != Player::PlaceEquip))) {
+        if ((move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip))
+            && (move.to != move.from || (move.to_place != Player::PlaceHand && move.to_place != Player::PlaceEquip))) {
             if (move.from->hasSkill(this) && !move.from->isCurrent()) {
                 // you lose a card in other's round
                 ServerPlayer *current = room->getCurrent();
@@ -1457,13 +1449,11 @@ public:
         return new ShuxinCard;
     }
 
-
     bool isEnabledAtPlay(const Player *player) const
     {
         return !player->hasUsed("ShuxinCard");
     }
 };
-
 
 HuishengCard::HuishengCard()
 {
@@ -1476,7 +1466,7 @@ bool HuishengCard::targetFilter(const QList<const Player *> &targets, const Play
     QString str = Self->property("huisheng_target").toString();
     Card *new_card = Sanguosha->cloneCard(cardname);
     DELETE_OVER_SCOPE(Card, new_card)
-        new_card->setSkillName("huisheng");
+    new_card->setSkillName("huisheng");
     if (new_card->isKindOf("Peach"))
         return to_select->objectName() == str && new_card->isAvailable(to_select);
     if (new_card->targetFixed() && !targets.isEmpty())
@@ -1484,7 +1474,7 @@ bool HuishengCard::targetFilter(const QList<const Player *> &targets, const Play
     if (targets.isEmpty() && to_select->objectName() != str)
         return false;
     return new_card
-    
+
         && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
 }
 
@@ -1493,7 +1483,7 @@ bool HuishengCard::targetsFeasible(const QList<const Player *> &targets, const P
     QString cardname = Self->property("huisheng_card").toString();
     Card *new_card = Sanguosha->cloneCard(cardname);
     DELETE_OVER_SCOPE(Card, new_card)
-        new_card->setSkillName("huisheng");
+    new_card->setSkillName("huisheng");
 
     if (targets.length() < 1)
         return false;
@@ -1539,23 +1529,21 @@ public:
         if (triggerEvent == PreCardUsed && use.card->getSkillName() == "huisheng") { //change aoe target for huisheng
             if (use.card->isKindOf("AOE") || use.card->isKindOf("GlobalEffect")) {
                 ServerPlayer *target = use.from->tag["huisheng_target"].value<ServerPlayer *>();
-                foreach(ServerPlayer *p, use.to) {
+                foreach (ServerPlayer *p, use.to) {
                     if (p != target)
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
                 }
             }
-        }
-        else if (triggerEvent == CardFinished) {
+        } else if (triggerEvent == CardFinished) {
             if (use.card->isKindOf("Jink") || use.from->hasFlag("Global_ProcessBroken") || !use.from->isAlive())
                 return QList<SkillInvokeDetail>();
-            if (use.from && use.to.length() == 1
-                && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
+            if (use.from && use.to.length() == 1 && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
                 ServerPlayer *source = use.to.first();
                 if (use.from != source && source->hasSkill(this) && source->isAlive() && use.from->isAlive()) {
                     Card *card = Sanguosha->cloneCard(use.card->objectName());
                     DELETE_OVER_SCOPE(Card, card)
-                        if (!source->isCardLimited(card, Card::MethodUse) && !source->isProhibited(use.from, card))
-                            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, source, source);
+                    if (!source->isCardLimited(card, Card::MethodUse) && !source->isProhibited(use.from, card))
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, source, source);
                 }
             }
         }
@@ -1587,7 +1575,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         ServerPlayer *target = use.from->tag["huisheng_target"].value<ServerPlayer *>();
-        foreach(ServerPlayer *p, room->getAlivePlayers()) {
+        foreach (ServerPlayer *p, room->getAlivePlayers()) {
             if (use.to.contains(p) && p != target)
                 use.to.removeOne(p);
         }
@@ -1631,7 +1619,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (victim != NULL && victim->isAlive() && move.from_places.contains(Player::PlaceDelayedTrick)) {
             bool can = false;
-            foreach(int id, move.card_ids) {
+            foreach (int id, move.card_ids) {
                 if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceDelayedTrick) {
                     WrappedCard *vs_card = Sanguosha->getWrappedCard(id);
                     if (vs_card->getSubtype() == "unmovable_delayed_trick") {
@@ -1642,7 +1630,7 @@ public:
             }
             if (!can)
                 return d;
-            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (p != victim && p->canDiscard(victim, "hs")) {
                     d << SkillInvokeDetail(this, p, p, NULL, false, victim);
                 }
@@ -1667,9 +1655,6 @@ public:
         return false;
     }
 };
-
-
-
 
 TH12Package::TH12Package()
     : Package("th12")

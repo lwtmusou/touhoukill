@@ -36,7 +36,8 @@ public:
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->getPhase() == Player::Start) {
-            return room->askForCard(invoke->invoker, ".|.|.|hand,equipped", "@baochui:" + player->objectName(), QVariant::fromValue(player), Card::MethodDiscard, NULL, false, objectName());
+            return room->askForCard(invoke->invoker, ".|.|.|hand,equipped", "@baochui:" + player->objectName(), QVariant::fromValue(player), Card::MethodDiscard, NULL, false,
+                                    objectName());
         }
         return true;
     }
@@ -127,8 +128,7 @@ public:
         if (triggerEvent == EventPhaseEnd) {
             ServerPlayer *current = data.value<ServerPlayer *>();
             ;
-            if (!current || current->getKingdom() != "hzc" || current->getPhase() != Player::Discard
-                || !current->isAlive())
+            if (!current || current->getKingdom() != "hzc" || current->getPhase() != Player::Discard || !current->isAlive())
                 return d;
 
             bool invoke = false;
@@ -588,7 +588,8 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
-        const Card *card = room->askForCard(invoke->targets.first(), ".|red|.|hand", "@juwang:" + invoke->invoker->objectName(), data, Card::MethodDiscard, NULL, false, objectName());
+        const Card *card
+            = room->askForCard(invoke->targets.first(), ".|red|.|hand", "@juwang:" + invoke->invoker->objectName(), data, Card::MethodDiscard, NULL, false, objectName());
         if (card == NULL)
             room->damage(DamageStruct(objectName(), invoke->invoker, invoke->targets.first(), 1));
         return false;
@@ -656,11 +657,9 @@ YuanfeiCard::YuanfeiCard()
 bool YuanfeiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     if (getSubcards().isEmpty())
-        return targets.isEmpty() && !Self->inMyAttackRange(to_select)
-            && to_select != Self;
+        return targets.isEmpty() && !Self->inMyAttackRange(to_select) && to_select != Self;
     else
-        return targets.isEmpty() && Self->inMyAttackRange(to_select)
-            && to_select != Self;
+        return targets.isEmpty() && Self->inMyAttackRange(to_select) && to_select != Self;
 }
 
 void YuanfeiCard::onEffect(const CardEffectStruct &effect) const
@@ -857,8 +856,7 @@ public:
 
                 foreach (int id, move.card_ids) {
                     Card *card = Sanguosha->getCard(id);
-                    if (card->isKindOf("Peach") && !temp_ids.contains(id)
-                        && room->getCardPlace(id) == Player::DiscardPile)
+                    if (card->isKindOf("Peach") && !temp_ids.contains(id) && room->getCardPlace(id) == Player::DiscardPile)
                         shizhu_ids << id;
                 }
                 room->setTag("shizhuPeach", shizhu_ids);
@@ -952,7 +950,7 @@ LiangeCard::LiangeCard()
 void LiangeCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
 {
     room->moveCardTo(Sanguosha->getCard(subcards.first()), NULL, Player::DrawPile);
-    QList<int> idlist = room->getNCards(2); 
+    QList<int> idlist = room->getNCards(2);
 
     room->fillAG(idlist, targets.first());
     int card_id = room->askForAG(targets.first(), idlist, false, "liange");

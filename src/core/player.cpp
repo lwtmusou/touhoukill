@@ -277,9 +277,7 @@ void Player::setInitialSeat(int seat)
 bool Player::isAdjacentTo(const Player *another) const
 {
     int alive_length = 1 + getAliveSiblings().length();
-    return qAbs(seat - another->seat) == 1
-        || (seat == 1 && another->seat == alive_length)
-        || (seat == alive_length && another->seat == 1);
+    return qAbs(seat - another->seat) == 1 || (seat == 1 && another->seat == alive_length) || (seat == alive_length && another->seat == 1);
 }
 
 bool Player::isAlive() const
@@ -962,8 +960,7 @@ bool Player::hasWeapon(const QString &weapon_name, bool selfOnly) const
 
 bool Player::hasArmorEffect(const QString &armor_name, bool selfOnly) const
 {
-    if (!tag["Qinggang"].toStringList().isEmpty() || getMark("Armor_Nullified") > 0
-        || getMark("Equips_Nullified_to_Yourself") > 0)
+    if (!tag["Qinggang"].toStringList().isEmpty() || getMark("Armor_Nullified") > 0 || getMark("Equips_Nullified_to_Yourself") > 0)
         return false;
 
     if (hasSkill("shenbao") && !selfOnly) {
@@ -1334,10 +1331,7 @@ void Player::addHistory(const QString &name, int times)
 
 int Player::getSlashCount() const
 {
-    return history.value("Slash", 0)
-        + history.value("ThunderSlash", 0)
-        + history.value("FireSlash", 0)
-        + history.value("IceSlash", 0);
+    return history.value("Slash", 0) + history.value("ThunderSlash", 0) + history.value("FireSlash", 0) + history.value("IceSlash", 0);
 }
 
 void Player::clearHistory()
@@ -1409,9 +1403,7 @@ QList<const Skill *> Player::getSkillList(bool include_equip, bool visible_only)
 
     foreach (QString skill_name, skills + acquired_skills.toList()) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
-        if (skill
-            && (include_equip || !hasEquipSkill(skill->objectName()))
-            && (!visible_only || skill->isVisible()))
+        if (skill && (include_equip || !hasEquipSkill(skill->objectName())) && (!visible_only || skill->isVisible()))
             skillList << skill;
     }
 
@@ -1502,8 +1494,7 @@ void Player::removeCardLimitation(const QString &limit_list, const QString &patt
 void Player::clearCardLimitation(bool single_turn)
 {
     QList<Card::HandlingMethod> limit_type;
-    limit_type << Card::MethodUse << Card::MethodResponse << Card::MethodDiscard
-               << Card::MethodRecast << Card::MethodPindian;
+    limit_type << Card::MethodUse << Card::MethodResponse << Card::MethodDiscard << Card::MethodRecast << Card::MethodPindian;
     foreach (Card::HandlingMethod method, limit_type) {
         QStringList limit_patterns = card_limitation[method];
         foreach (QString pattern, limit_patterns) {

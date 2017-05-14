@@ -57,7 +57,6 @@ public:
     void onEffect(const CardEffectStruct &effect) const;
 };
 
-
 class HuishengCard : public SkillCard
 {
     Q_OBJECT

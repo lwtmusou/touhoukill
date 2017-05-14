@@ -25,9 +25,7 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     QStringList role_list = Sanguosha->getRoleList(ServerInfo.GameMode);
 
     if (Config.FreeAssignSelf) {
-        QString text = QString("%1[%2]")
-                           .arg(Self->screenName())
-                           .arg(Sanguosha->translate("lord"));
+        QString text = QString("%1[%2]").arg(Self->screenName()).arg(Sanguosha->translate("lord"));
 
         QListWidgetItem *item = new QListWidgetItem(text, list);
         item->setData(Qt::UserRole, Self->objectName());
@@ -38,9 +36,7 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
         for (int i = 0; i < players.length(); i++) {
             QString role = role_list.at(i);
             const ClientPlayer *player = players.at(i);
-            QString text = QString("%1[%2]")
-                               .arg(player->screenName())
-                               .arg(Sanguosha->translate(role));
+            QString text = QString("%1[%2]").arg(player->screenName()).arg(Sanguosha->translate(role));
 
             QListWidgetItem *item = new QListWidgetItem(text, list);
             item->setData(Qt::UserRole, player->objectName());

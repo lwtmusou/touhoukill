@@ -96,10 +96,7 @@ ConfigDialog::~ConfigDialog()
 
 void ConfigDialog::on_browseBgButton_clicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this,
-                                                    tr("Select a background image"),
-                                                    "backdrop/",
-                                                    tr("Images (*.png *.bmp *.jpg)"));
+    QString filename = QFileDialog::getOpenFileName(this, tr("Select a background image"), "backdrop/", tr("Images (*.png *.bmp *.jpg)"));
 
     if (!filename.isEmpty()) {
         ui->bgPathLineEdit->setText(filename);
@@ -129,10 +126,7 @@ void ConfigDialog::on_resetBgButton_clicked()
 
 void ConfigDialog::on_browseTableBgButton_clicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this,
-                                                    tr("Select a tableBg image"),
-                                                    "backdrop/",
-                                                    tr("Images (*.png *.bmp *.jpg)"));
+    QString filename = QFileDialog::getOpenFileName(this, tr("Select a tableBg image"), "backdrop/", tr("Images (*.png *.bmp *.jpg)"));
 
     if (!filename.isEmpty()) {
         ui->tableBgPathLineEdit->setText(filename);
@@ -157,9 +151,7 @@ void ConfigDialog::on_resetTableBgButton_clicked()
 
 void ConfigDialog::on_browseRecordPathButton_clicked()
 {
-    QString path = QFileDialog::getExistingDirectory(this,
-                                                     tr("Select a Record Paths"),
-                                                     "records/");
+    QString path = QFileDialog::getExistingDirectory(this, tr("Select a Record Paths"), "records/");
 
     if (!path.isEmpty() && ui->recordPathSetupLineEdit->text() != path) {
         ui->recordPathSetupLineEdit->setText(path);
@@ -239,10 +231,7 @@ void ConfigDialog::saveConfig()
 
 void ConfigDialog::on_browseBgMusicButton_clicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this,
-                                                    tr("Select a background music"),
-                                                    "audio/system",
-                                                    tr("Audio files (*.wav *.mp3 *.ogg)"));
+    QString filename = QFileDialog::getOpenFileName(this, tr("Select a background music"), "audio/system", tr("Audio files (*.wav *.mp3 *.ogg)"));
     if (!filename.isEmpty()) {
         ui->bgMusicPathLineEdit->setText(filename);
         Config.setValue("BackgroundMusic", filename);
