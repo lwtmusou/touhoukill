@@ -1596,27 +1596,39 @@ public:
     Chongqun()
         : TriggerSkill("chongqun")
     {
-        events << CardsMoveOneTime;
+        events << CardsMoveOneTime << EventPhaseChanging;
     }
 
     static bool hasChongqunTarget(ServerPlayer *player)
     {
         foreach (ServerPlayer *p, player->getRoom()->getOtherPlayers(player)) {
-            if (!p->isNude() && player->canDiscard(p, "hes"))
+            if (!p->isNude() && player->canDiscard(p, "hs"))
                 return true;
         }
         return false;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    void record(TriggerEvent e, Room *room, QVariant &data) const
     {
+        if (e == EventPhaseChanging) {
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                if (p->hasFlag("chongqun"))
+                    room->setPlayerFlag(p, "-chongqun");
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
+    {
+        if (e != CardsMoveOneTime)
+            return QList<SkillInvokeDetail>();
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (!move.from_places.contains(Player::PlaceHand))
             return QList<SkillInvokeDetail>();
 
         if (!move.shown_ids.isEmpty()) {
             ServerPlayer *invoker = qobject_cast<ServerPlayer *>(move.from);
-            if (invoker == NULL || invoker->isCurrent() || !invoker->hasSkill(this) || invoker->isDead() || !hasChongqunTarget(invoker))
+            if (invoker == NULL || invoker->hasFlag("chongqun") || !invoker->hasSkill(this) || invoker->isDead() || !hasChongqunTarget(invoker))
                 return QList<SkillInvokeDetail>();
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, invoker, invoker);
         }
@@ -1627,7 +1639,7 @@ public:
     {
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-            if (!p->isNude() && invoke->invoker->canDiscard(p, "hes"))
+            if (!p->isNude() && invoke->invoker->canDiscard(p, "hs"))
                 targets << p;
         }
 
@@ -1642,7 +1654,8 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         //room->askForDiscard(invoke->targets.first(), objectName(), 1, 1, false, true, "chongqun_discard:" + invoke->invoker->objectName());
-        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName());
+        room->setPlayerFlag(invoke->invoker, "chongqun");
+        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hs", objectName());
         room->throwCard(id, invoke->targets.first(), invoke->invoker);
         return false;
     }
