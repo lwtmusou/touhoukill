@@ -155,8 +155,17 @@ public:
 TH15Package::TH15Package()
     : Package("th15")
 {
-    General *junko = new General(this, "junko$", "gzz", 4, false, true, true);
-    Q_UNUSED(junko)
+    General *junko = new General(this, "junko$", "gzz", 4, false);
+    junko->addSkill(new Skill("wuhui"));
+    junko->addSkill(new Skill("chunhua"));
+    junko->addSkill(new Skill("shayi$"));
+
+    General *hecatia = new General(this, "hecatia", "gzz", 4, false);
+    hecatia->addSkill(new Skill("santi", Skill::Compulsory));
+
+    General *clownpiece = new General(this, "clownpiece", "gzz", 3, false);
+    clownpiece->addSkill(new Skill("kuangluan"));
+    clownpiece->addSkill(new Skill("yuyan"));
 
     General *seiran = new General(this, "seiran", "gzz", 4, false);
     seiran->addSkill(new Yidan);
@@ -172,11 +181,8 @@ TH15Package::TH15Package()
     General *sagume = new General(this, "sagume", "gzz", 4, false, true, true);
     Q_UNUSED(sagume)
 
-    General *clownpiece = new General(this, "clownpiece", "gzz", 4, false, true, true);
-    Q_UNUSED(clownpiece)
 
-    General *hecatia = new General(this, "hecatia", "gzz", 4, false, true, true);
-    Q_UNUSED(hecatia)
+    
 
     addMetaObject<YidanCard>();
 }

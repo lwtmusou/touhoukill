@@ -148,6 +148,7 @@ local t = {
 
 	["saving_energy"] = "养精蓄锐",
 	[":saving_energy"] = "一次性延时锦囊牌<br />出牌时机：出牌阶段<br />使用目标：一名角色。<br />作用效果：目标角色进行判定，若结果不为<font color=\"black\"><b>♠</b></font>，目标角色跳过此回合的弃牌阶段，并将此牌置于人物牌旁。此回合结束时，其获得此牌。",
+	["saving_energy_effect"] = "养精蓄锐",
 }
 
 local ohorses = { "ChiTu", "DaYuan", "ZiXing"}

@@ -2452,8 +2452,10 @@ TH0105Package::TH0105Package()
     yuka_old->addSkill(new Menghuan);
 
     General *gengetsumugetsu = new General(this, "gengetsumugetsu", "pc98", 3, false);
-    gengetsumugetsu->addSkill(new Huantong);
-    gengetsumugetsu->addSkill(new Mengyan);
+    //gengetsumugetsu->addSkill(new Huantong);
+    //gengetsumugetsu->addSkill(new Mengyan);
+    gengetsumugetsu->addSkill(new Skill("xuxiang"));
+    gengetsumugetsu->addSkill(new Skill("huanjue"));
 
     General *elly = new General(this, "elly", "pc98", 4, false);
     elly->addSkill(new Lianmu);
