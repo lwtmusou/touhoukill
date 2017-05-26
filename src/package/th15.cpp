@@ -131,6 +131,13 @@ public:
     void record(TriggerEvent e, Room *room, QVariant &data) const
     {
         if (e == GameStart || e == Debut || e == EventAcquireSkill) {
+            QList<ServerPlayer *> junkos;
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if (p->hasSkill("chunhua", false))
+                    junkos << p;
+            }
+            if (junkos.isEmpty())
+                return;
             foreach(ServerPlayer *p, room->getAllPlayers()){
                 if (!p->hasSkill("#chunhua-filter"))
                     room->acquireSkill(p, "#chunhua-filter", false);
@@ -790,10 +797,8 @@ TH15Package::TH15Package()
     junko->addSkill(new Wuhui);
     junko->addSkill(new Chunhua);
     junko->addSkill(new ChunhuaEffect);
-    junko->addSkill(new ChunhuaFilter);
     junko->addSkill(new Shayi);
     related_skills.insertMulti("chunhua", "#chunhua");
-    related_skills.insertMulti("chunhua", "#chunhua-filter");
 
     General *hecatia = new General(this, "hecatia", "gzz", 4, false);
     hecatia->addSkill(new Santi);
