@@ -63,6 +63,197 @@ public:
     }
 };
 
+class Chunhua : public TriggerSkill
+{
+public:
+    Chunhua()
+        : TriggerSkill("chunhua")
+    {
+        events << TargetConfirmed << TargetSpecified;
+    }
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->getTypeId() == Card::TypeBasic || use.card->isNDTrick()) {
+            if (e == TargetSpecified && use.from && use.from->isAlive() 
+                && use.from->hasSkill(this) && !use.from->hasFlag("chunhua_used"))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+            if (e == TargetConfirmed) {
+                QList<SkillInvokeDetail> d;
+                foreach(ServerPlayer *p, use.to) {
+                    if (p->isAlive() && p->hasSkill(this) && !p->hasFlag("chunhua_used"))
+                        d << SkillInvokeDetail(this, p, p);
+                }
+                return d;
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        room->setPlayerFlag(invoke->invoker, "chunhua_used");
+        foreach(ServerPlayer *p, room->getAlivePlayers()) {
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
+            foreach(const Skill *skill, p->getVisibleSkillList()) {
+                if (skill->getFrequency() != Skill::Compulsory)
+                    continue;
+                room->setPlayerSkillInvalidity(p, skill, true);
+            }
+            p->tag["chunhua"] = QVariant::fromValue(use.card->objectName());
+            room->filterCards(p, p->getCards("hes"), true);
+        }
+        return false;
+    }
+};
+
+class ChunhuaEffect : public TriggerSkill
+{
+public:
+    ChunhuaEffect()
+        : TriggerSkill("#chunhua")
+    {
+        events << EventPhaseChanging << ShownCardChanged << Dying << GameStart << Debut << EventAcquireSkill;
+    }
+
+    static void clearChunhua(ServerPlayer *player) {
+        Room *room = player->getRoom();
+        foreach(const Skill *skill, player->getVisibleSkillList()) {
+            if (skill->getFrequency() != Skill::Compulsory)
+                continue;
+            room->setPlayerSkillInvalidity(player, skill, false);
+        }
+        player->tag.remove("chunhua");
+        room->filterCards(player, player->getCards("hes"), true);
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == GameStart || e == Debut || e == EventAcquireSkill) {
+            foreach(ServerPlayer *p, room->getAllPlayers()){
+                if (!p->hasSkill("#chunhua-filter"))
+                    room->acquireSkill(p, "#chunhua-filter", false);
+            }
+        }
+        
+        if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAllPlayers(true)) {
+                    room->setPlayerFlag(p, "-chunhua_used");
+                    clearChunhua(p);
+                }
+            }
+        }
+        if (e == Dying) {
+            foreach(ServerPlayer *p, room->getAllPlayers(true))
+                clearChunhua(p);
+        }
+        if (e == ShownCardChanged) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            room->filterCards(player, player->getCards("hes"), true);
+        }
+    }
+
+};
+
+class ChunhuaFilter : public FilterSkill
+
+{
+public:
+    ChunhuaFilter() : FilterSkill("#chunhua-filter")
+    {
+    }
+
+    bool viewFilter(const Card *to_select) const
+    {
+        Room *room = Sanguosha->currentRoom();
+        ServerPlayer *player = room->getCardOwner(to_select->getId());
+        if (player != NULL) {
+            QString name = player->tag["chunhua"].toString();
+            return !name.isEmpty() && player->isShownHandcard(to_select->getId());
+        }
+        return false;
+    }
+
+    const Card *viewAs(const Card *originalCard) const
+    {
+        Room *room = Sanguosha->currentRoom();
+        ServerPlayer *player = room->getCardOwner(originalCard->getId());
+        if (player != NULL) {
+            QString name = player->tag["chunhua"].toString();
+            Card *new_card = Sanguosha->cloneCard(name, originalCard->getSuit(), originalCard->getNumber());
+            new_card->setSkillName("chunhua");
+            WrappedCard *card = Sanguosha->getWrappedCard(originalCard->getId());
+            card->takeOver(new_card);
+            //new_card->setModified(true);
+            return card;
+        }
+        return originalCard;
+    }
+
+};
+
+class Shayi : public TriggerSkill
+{
+public:
+    Shayi()
+        : TriggerSkill("shayi$")
+    {
+        events << CardUsed;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card == NULL || !use.card->canDamage() 
+            || !use.from || use.from->isDead() || use.from->getKingdom() != "gzz")
+            return QList<SkillInvokeDetail>();
+
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->getOtherPlayers(use.from)) {
+            if (p->hasLordSkill(this))
+                d << SkillInvokeDetail(this, p, use.from); 
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (invoke->invoker->askForSkillInvoke("shayi_change", data)) {
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->owner->objectName());
+
+            room->broadcastSkillInvoke(objectName());
+            room->notifySkillInvoked(invoke->owner, objectName());
+            LogMessage log;
+            log.type = "#InvokeOthersSkill";
+            log.from = invoke->invoker;
+            log.to << invoke->owner;
+            log.arg = objectName();
+            room->sendLog(log);
+
+            return invoke->owner->askForSkillInvoke(objectName(), data);
+        }
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        use.from = invoke->owner;
+        data = QVariant::fromValue(use);
+
+        LogMessage log;
+        log.type = "$Shayi";
+        log.from = invoke->owner;
+        log.card_str = use.card->toString();
+        log.arg = objectName();
+        room->sendLog(log);
+        return false;
+    }
+};
+
 
 
 class Santi : public TriggerSkill
@@ -597,8 +788,12 @@ TH15Package::TH15Package()
 {
     General *junko = new General(this, "junko$", "gzz", 4, false);
     junko->addSkill(new Wuhui);
-    junko->addSkill(new Skill("chunhua"));
-    junko->addSkill(new Skill("shayi$"));
+    junko->addSkill(new Chunhua);
+    junko->addSkill(new ChunhuaEffect);
+    junko->addSkill(new ChunhuaFilter);
+    junko->addSkill(new Shayi);
+    related_skills.insertMulti("chunhua", "#chunhua");
+    related_skills.insertMulti("chunhua", "#chunhua-filter");
 
     General *hecatia = new General(this, "hecatia", "gzz", 4, false);
     hecatia->addSkill(new Santi);

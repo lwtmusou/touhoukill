@@ -21,6 +21,7 @@ Card::Card(Suit suit, int number, bool target_fixed)
     , m_suit(suit)
     , m_number(number)
     , m_id(-1)
+    ,can_damage(false)
 {
     handling_method = will_throw ? Card::MethodDiscard : Card::MethodUse;
 }
@@ -785,6 +786,11 @@ const Card *Card::validateInResponse(ServerPlayer *) const
 bool Card::isMute() const
 {
     return mute;
+}
+
+bool Card::canDamage() const
+{
+    return can_damage;
 }
 
 bool Card::willThrow() const

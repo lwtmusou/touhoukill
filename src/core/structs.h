@@ -659,6 +659,7 @@ enum TriggerEvent
     ChainStateChanged,
     RemoveStateChanged,
     BrokenEquipChanged,
+    ShownCardChanged,
 
     ConfirmDamage, // confirm the damage's count and damage's nature
     Predamage, // trigger the certain skill -- jueqing

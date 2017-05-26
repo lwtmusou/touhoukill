@@ -1106,6 +1106,159 @@ public:
     }
 };
 
+
+class Xuxiang : public TriggerSkill
+{
+public:
+    Xuxiang()
+        : TriggerSkill("xuxiang")
+    {
+        events << DamageCaused;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        QList<SkillInvokeDetail> d;
+        if (damage.card && damage.card->isKindOf("Slash") 
+            && damage.by_user && damage.from && damage.from->isAlive() 
+            && !damage.from->isKongcheng()) {
+            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                if (!p->hasFlag("xuxiang_used") && p != damage.from && !p->isKongcheng())
+                    d << SkillInvokeDetail(this, p, p, NULL, false, damage.from);
+            }
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        QString prompt = "target:" + damage.from->objectName() + ":" + damage.to->objectName() 
+            + ":" + damage.card->objectName() + ":" + QString::number(damage.damage);
+        return room->askForSkillInvoke(invoke->invoker, objectName(), prompt);
+
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
+        DamageStruct damage = data.value<DamageStruct>();
+        invoke->invoker->tag["xuxiang"] = QVariant::fromValue(damage);
+        room->setPlayerFlag(invoke->invoker, "xuxiang_used");
+        if (invoke->invoker->pindian(invoke->targets.first(), objectName())) {
+            DamageStruct new_damage = invoke->invoker->tag.value("xuxiang").value<DamageStruct>();
+            if (new_damage.damage == 0)
+                return true;
+            data = QVariant::fromValue(new_damage);
+        }
+        return false;
+    }
+};
+
+
+class XuxiangRecord : public TriggerSkill
+{
+public:
+    XuxiangRecord()
+        : TriggerSkill("#xuxiang")
+    {
+        events << Pindian << EventPhaseChanging;
+    }
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == Pindian) {
+            PindianStruct *pindian = data.value<PindianStruct *>();
+            if (pindian->reason == "xuxiang" && pindian->from_number > pindian->to_number) {
+                DamageStruct damage = pindian->from->tag.value("xuxiang").value<DamageStruct>();
+                int d = 0;
+                if (pindian->from_card->isBlack())
+                    d++;
+                if (pindian->to_card->isBlack())
+                    d++;
+                damage.damage = d;
+                pindian->from->tag["xuxiang"] = QVariant::fromValue(damage);
+            }
+        }
+        else if (triggerEvent == EventPhaseChanging) {
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                if (p->hasFlag("xuxiang_used"))
+                    room->setPlayerFlag(p, "-xuxiang_used");
+            }
+        }
+    }
+};
+
+class Huanjue : public TriggerSkill
+{
+public:
+    Huanjue()
+        : TriggerSkill("huanjue")
+    {
+        events << PindianAsked;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        PindianStruct *pindian = data.value<PindianStruct *>();
+        if (pindian->askedPlayer->hasSkill(this)) {
+            ServerPlayer *target = (pindian->askedPlayer == pindian->from) ? pindian->to : pindian->from;
+            if (pindian->askedPlayer->inMyAttackRange(target) && pindian->from_card == NULL)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, pindian->askedPlayer, pindian->askedPlayer, NULL, false, target);
+        }
+        if (pindian->askedPlayer->hasFlag(objectName())) {
+            ServerPlayer *owner = (pindian->askedPlayer == pindian->from) ? pindian->to : pindian->from;
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, owner, pindian->askedPlayer, NULL, false, owner);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        QVariant notify_data = QVariant::fromValue(invoke->preferredTarget);
+        bool can =  invoke->invoker->askForSkillInvoke(this, notify_data);
+        if (!can && invoke->invoker->hasFlag(objectName()))
+            room->setPlayerFlag(invoke->invoker, "-huanjue");
+        return can;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        PindianStruct *pindian = data.value<PindianStruct *>();
+        int id = -1;
+        if (invoke->invoker->hasFlag(objectName())) {
+            room->setPlayerFlag(invoke->invoker, "-huanjue");
+            id = room->drawCard();
+        }
+        else {
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
+
+            QList<int> list = room->getNCards(2);
+            room->returnToTopDrawPile(list);
+
+            room->fillAG(list, invoke->invoker);
+            id = room->askForAG(invoke->invoker, list, false, objectName());
+            room->clearAG(invoke->invoker);
+            if (pindian->from_card == NULL && pindian->to_card == NULL)
+                room->setPlayerFlag(invoke->targets.first(), objectName());
+        }
+        if (id > -1) {
+            Card *c = Sanguosha->getCard(id);
+            if (invoke->invoker == pindian->from)
+                pindian->from_card = c;
+            else
+                pindian->to_card = c;
+            room->showCard(invoke->invoker, id);
+            data = QVariant::fromValue(pindian);
+            CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, invoke->invoker->objectName(),invoke->targets.first()->objectName(), pindian->reason, QString());
+            //room->moveCardTo(c, invoke->invoker, NULL, Player::PlaceTable, reason1, false);
+            //room->moveCardTo(c, invoke->invoker, NULL, Player::PlaceWuGu, reason1, false);
+        }
+        return false;
+    }
+};
+
+
 LianmuCard::LianmuCard()
 {
     will_throw = false;
@@ -2454,8 +2607,10 @@ TH0105Package::TH0105Package()
     General *gengetsumugetsu = new General(this, "gengetsumugetsu", "pc98", 3, false);
     //gengetsumugetsu->addSkill(new Huantong);
     //gengetsumugetsu->addSkill(new Mengyan);
-    gengetsumugetsu->addSkill(new Skill("xuxiang"));
-    gengetsumugetsu->addSkill(new Skill("huanjue"));
+    gengetsumugetsu->addSkill(new Xuxiang);
+    gengetsumugetsu->addSkill(new XuxiangRecord);
+    gengetsumugetsu->addSkill(new Huanjue);
+    related_skills.insertMulti("xuxiang", "#xuxiang");
 
     General *elly = new General(this, "elly", "pc98", 4, false);
     elly->addSkill(new Lianmu);

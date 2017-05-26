@@ -330,7 +330,7 @@ public:
 
     QList<Player::Phase> &getPhases();
     void skip(Player::Phase phase, bool isCost = false, bool sendLog = true);
-    void insertPhase(Player::Phase phase);
+    void insertPhases(QList<Player::Phase> new_phases, int index = -1);
     bool isSkipped(Player::Phase phase);
 
     void gainMark(const char *mark, int n = 1);
@@ -511,6 +511,7 @@ struct CardEffectStruct {
     ServerPlayer *to;
     bool multiple;
     bool nullified;
+	bool canceled;
 };
 
 struct SlashEffectStruct {
@@ -529,6 +530,7 @@ struct SlashEffectStruct {
     DamageStruct::Nature nature;
     bool multiple;
     bool nullified;
+	bool canceled;
 };
 
 struct CardUseStruct {
@@ -628,6 +630,7 @@ struct PindianStruct {
 
     ServerPlayer *from;
     ServerPlayer *to;
+	ServerPlayer *askedPlayer;
     const Card *from_card;
     const Card *to_card;
     int from_number;
@@ -980,6 +983,7 @@ public:
     QString getDescription(bool yellow = true) const;
 
     virtual bool isMute() const;
+	virtual bool canDamage() const;
     virtual bool willThrow() const;
     virtual bool canRecast() const;
     void setCanRecast(bool can);
@@ -1473,7 +1477,7 @@ public:
                     bool is_preview = false, bool visible = false, bool optional = true, int max_num = -1,
                     QList<ServerPlayer *> players = QList<ServerPlayer *>(), CardMoveReason reason = CardMoveReason(),
                     const char *prompt = NULL, bool notify_skill = false);
-    const Card *askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const char *reason);
+    const Card *askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const char *reason, PindianStruct *pindian);
     QList<const Card *> askForPindianRace(ServerPlayer *from, ServerPlayer *to, const char *reason);
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const char *reason,
                                      const char *prompt = NULL, bool optional = false, bool notify_skill = false);

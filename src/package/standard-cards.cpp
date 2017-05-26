@@ -16,6 +16,7 @@ Slash::Slash(Suit suit, int number)
     setObjectName("slash");
     nature = DamageStruct::Normal;
     drank = 0;
+    can_damage = true;
 }
 
 DamageStruct::Nature Slash::getNature() const
@@ -1117,6 +1118,7 @@ SavageAssault::SavageAssault(Suit suit, int number)
     : AOE(suit, number)
 {
     setObjectName("savage_assault");
+    can_damage = true;
 }
 
 void SavageAssault::onEffect(const CardEffectStruct &effect) const
@@ -1138,6 +1140,7 @@ ArcheryAttack::ArcheryAttack(Card::Suit suit, int number)
     : AOE(suit, number)
 {
     setObjectName("archery_attack");
+    can_damage = true;
 }
 
 void ArcheryAttack::onEffect(const CardEffectStruct &effect) const
@@ -1325,6 +1328,7 @@ Duel::Duel(Suit suit, int number)
     : SingleTargetTrick(suit, number)
 {
     setObjectName("duel");
+    can_damage = true;
 }
 
 bool Duel::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -1531,7 +1535,7 @@ Lightning::Lightning(Suit suit, int number)
     : Disaster(suit, number)
 {
     setObjectName("lightning");
-
+    can_damage = true;
     judge.pattern = ".|spade|2~9";
     judge.good = false;
     judge.reason = objectName();

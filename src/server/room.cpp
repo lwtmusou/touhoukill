@@ -4756,8 +4756,9 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                 // only cards moved to hand/special can be invisible
                 || cards_moves[i].from_place == Player::DiscardPile || cards_moves[i].to_place == Player::DiscardPile
                 // any card from/to discard pile should be visible
-                || cards_moves[i].from_place == Player::PlaceTable || cards_moves[i].to_place == Player::PlaceTable
-                // any card from/to place table should be visible
+                || cards_moves[i].from_place == Player::PlaceTable
+                || (cards_moves[i].to_place == Player::PlaceTable && ((cards_moves[i].reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_PINDIAN) || !cards_moves[i].shown_ids.isEmpty())
+                // any card from/to place table should be visible,except pindian
                 || (cards_moves[i].to_place == Player::PlaceSpecial && to && to->pileOpen(cards_moves[i].to_pile_name, player->objectName()))
                 // pile open to specific players
                 || player->hasFlag("Global_GongxinOperator");

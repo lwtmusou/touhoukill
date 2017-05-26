@@ -103,6 +103,7 @@ public:
     QString getDescription(bool yellow = true) const;
 
     virtual bool isMute() const;
+    virtual bool canDamage() const;
     virtual bool willThrow() const;
     virtual bool canRecast() const;
     void setCanRecast(bool can);
@@ -204,6 +205,7 @@ protected:
     Suit m_suit;
     int m_number;
     int m_id;
+    bool can_damage;
     QString m_skillName;
     Card::HandlingMethod handling_method;
 
