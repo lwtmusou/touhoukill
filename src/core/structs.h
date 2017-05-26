@@ -50,6 +50,7 @@ struct CardEffectStruct
     bool multiple; // helper to judge whether the card has multiple targets
     // does not make sense if the card inherits SkillCard
     bool nullified;
+    bool canceled;//for cancel process, like "kuangluan"
 };
 
 struct SlashEffectStruct
@@ -69,6 +70,7 @@ struct SlashEffectStruct
     DamageStruct::Nature nature;
     bool multiple;
     bool nullified;
+    bool canceled;
 };
 
 struct CardUseStruct
@@ -374,6 +376,7 @@ struct PindianStruct
 
     ServerPlayer *from;
     ServerPlayer *to;
+    ServerPlayer *askedPlayer;
     const Card *from_card;
     const Card *to_card;
     int from_number;
@@ -648,6 +651,7 @@ enum TriggerEvent
     FinishRetrial,
     FinishJudge,
 
+    PindianAsked,
     PindianVerifying,
     Pindian,
 
@@ -683,6 +687,7 @@ enum TriggerEvent
     SlashProceed,
     SlashHit,
     SlashMissed,
+    Cancel,
 
     JinkEffect,
 

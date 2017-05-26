@@ -132,6 +132,7 @@ CardEffectStruct::CardEffectStruct()
     , to(NULL)
     , multiple(false)
     , nullified(false)
+    , canceled(false)
 {
 }
 
@@ -145,6 +146,7 @@ SlashEffectStruct::SlashEffectStruct()
     , nature(DamageStruct::Normal)
     , multiple(false)
     , nullified(false)
+    , canceled(false)
 {
 }
 
@@ -173,6 +175,7 @@ RecoverStruct::RecoverStruct()
 PindianStruct::PindianStruct()
     : from(NULL)
     , to(NULL)
+    , askedPlayer(NULL)
     , from_card(NULL)
     , to_card(NULL)
     , success(false)

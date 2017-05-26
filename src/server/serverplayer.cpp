@@ -585,8 +585,15 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     log.to << target;
     room->sendLog(log);
 
-    const Card *card2;
+    const Card *card2 = NULL;
+    PindianStruct pindian_struct;
+    pindian_struct.from = this;
+    pindian_struct.to = target;
+    if (card1 != NULL)
+        pindian_struct.from_card = card1;
+    pindian_struct.reason = reason;
 
+    PindianStruct *pindian = &pindian_struct;//for tmp record.
     if (card1 == NULL) {
         //QList<const Card *> cards = room->askForPindianRace(this, target, reason);
         //card1 = cards.first();
@@ -596,44 +603,47 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
         targets << this << target;
         room->sortByActionOrder(targets);
 
-        card1 = room->askForPindian(targets.first(), this, target, reason);
+        card1 = room->askForPindian(targets.first(), this, target, reason, pindian);
         //@todo: fix UI and log
         if (targets.first()->isShownHandcard(card1->getEffectiveId()))
             room->showCard(targets.first(), card1->getEffectiveId());
 
-        card2 = room->askForPindian(targets.last(), this, target, reason);
+        card2 = room->askForPindian(targets.last(), this, target, reason, pindian);
 
+        //sort card
         if (targets.first() != this) {
             const Card *tmp = card1;
             card1 = card2;
             card2 = tmp;
         }
-
     } else {
         if (card1->isVirtualCard()) {
             int card_id = card1->getEffectiveId();
             card1 = Sanguosha->getCard(card_id);
         }
-        card2 = room->askForPindian(target, this, target, reason);
+
+        card2 = room->askForPindian(target, this, target, reason, pindian);
     }
 
     if (card1 == NULL || card2 == NULL)
         return false;
 
-    PindianStruct pindian_struct;
-    pindian_struct.from = this;
-    pindian_struct.to = target;
+    //PindianStruct pindian_struct;
+    //pindian_struct.from = this;
+    //pindian_struct.to = target;
     pindian_struct.from_card = card1;
     pindian_struct.to_card = card2;
     pindian_struct.from_number = card1->getNumber();
     pindian_struct.to_number = card2->getNumber();
-    pindian_struct.reason = reason;
+    //pindian_struct.askedPlayer = NULL;
+    //pindian_struct.reason = reason;
 
     CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, pindian_struct.from->objectName(), pindian_struct.to->objectName(), pindian_struct.reason, QString());
     room->moveCardTo(pindian_struct.from_card, pindian_struct.from, NULL, Player::PlaceTable, reason1, true);
 
     CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, pindian_struct.to->objectName());
     room->moveCardTo(pindian_struct.to_card, pindian_struct.to, NULL, Player::PlaceTable, reason2, true);
+    
 
     LogMessage log2;
     log2.type = "$PindianResult";
@@ -831,7 +841,8 @@ void ServerPlayer::skip(Player::Phase phase, bool isCost, bool sendLog)
                 return;
             }
             _m_phases_state[i].skipped = (isCost ? -1 : 1);
-            break;
+            //defaultly skip all phases even someone has same pahses.
+            //break;
         }
     }
 
@@ -856,12 +867,21 @@ void ServerPlayer::skip(Player::Phase phase, bool isCost, bool sendLog)
     }
 }
 
-void ServerPlayer::insertPhase(Player::Phase phase)
+void ServerPlayer::insertPhases(QList<Player::Phase> new_phases, int index)
 {
-    PhaseStruct _phase;
-    _phase.phase = phase;
-    phases.insert(_m_phases_index, phase);
-    _m_phases_state.insert(_m_phases_index, _phase);
+    if (index == -1)
+        index = _m_phases_index;
+    for (int i = 0; i < new_phases.size(); i++) {
+        PhaseStruct _phase;
+        _phase.phase = new_phases[i];
+        phases.insert(index + i, new_phases[i]);
+        _m_phases_state.insert(index + i, _phase);
+        //_m_phases_state << _phase;
+    }
+    //PhaseStruct _phase;
+    //_phase.phase = phase;
+    //phases.insert(index, phase);
+    //_m_phases_state.insert(index, _phase);
 }
 
 void ServerPlayer::exchangePhases(Player::Phase phase1, Player::Phase phase2)
@@ -896,6 +916,7 @@ bool ServerPlayer::isSkipped(Player::Phase phase)
     }
     return false;
 }
+
 
 void ServerPlayer::gainMark(const QString &mark, int n)
 {

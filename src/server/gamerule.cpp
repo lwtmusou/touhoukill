@@ -532,10 +532,10 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         }
 
         QVariant data = QVariant::fromValue(effect);
-        if (effect.jink_num > 0)
+        //if (effect.jink_num > 0)
             room->getThread()->trigger(SlashProceed, room, data);
-        else
-            room->slashResult(effect, NULL);
+        //else
+        //    room->slashResult(effect, NULL);
         break;
     }
     case SlashProceed: {
@@ -543,6 +543,20 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         QString slasher = effect.from->objectName();
         if (!effect.to->isAlive())
             break;
+
+        //process skill cancel, like kaungluan.
+        if (room->getThread()->trigger(Cancel, room, data)) {
+            effect = data.value<SlashEffectStruct>();
+            if (!effect.canceled)
+                room->slashResult(effect, NULL);
+
+            break;// will not trigger event "SlashMissed"
+        }
+
+        if (effect.jink_num == 0){
+            room->slashResult(effect, NULL);
+            break; 
+        }
         if (effect.jink_num == 1) {
             const Card *jink = room->askForCard(effect.to, "jink", "slash-jink:" + slasher, data, Card::MethodUse, effect.from);
             room->slashResult(effect, room->isJinkEffected(effect, jink) ? jink : NULL);

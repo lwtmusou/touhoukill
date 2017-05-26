@@ -595,7 +595,7 @@ void Room::slashEffect(const SlashEffectStruct &effect)
     QVariant data = QVariant::fromValue(effect);
     if (thread->trigger(SlashEffected, this, data)) {
         if (!effect.to->hasFlag("Global_NonSkillNullify"))
-            ; //setEmotion(effect.to, "skill_nullify");
+            ;//setEmotion(effect.to, "skill_nullify");
         else
             effect.to->setFlags("-Global_NonSkillNullify");
         if (effect.slash)
@@ -1129,9 +1129,14 @@ void Room::obtainCard(ServerPlayer *target, int card_id, bool unhide)
 
 bool Room::isCanceled(const CardEffectStruct &effect)
 {
+    QVariant edata = QVariant::fromValue(effect);
+    if (getThread()->trigger(Cancel, this, edata)) {
+        CardEffectStruct effect1 = edata.value<CardEffectStruct>();
+        return effect1.canceled;
+    }
+        
     if (!effect.card->isCancelable(effect))
         return false;
-
     QVariant decisionData = QVariant::fromValue(effect.to);
     setTag("NullifyingTarget", decisionData);
     decisionData = QVariant::fromValue(effect.from);
@@ -5657,11 +5662,22 @@ int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> e
     return card_id; // Do remember to remove the tag later!
 }
 
-const Card *Room::askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const QString &reason)
+const Card *Room::askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const QString &reason, PindianStruct *pindian)
 {
     if (!from->isAlive() || !to->isAlive())
         return NULL;
     Q_ASSERT(!player->isKongcheng());
+
+    pindian->askedPlayer = player;
+    QVariant pdata = QVariant::fromValue(pindian);
+    getThread()->trigger(PindianAsked, this, pdata);
+    pindian = pdata.value<PindianStruct *>();
+
+    if (player == from && pindian->from_card != NULL)
+        return pindian->from_card;
+    if (player == to && pindian->to_card != NULL)
+        return pindian->to_card;
+
     tryPause();
     notifyMoveFocus(player, S_COMMAND_PINDIAN);
 
