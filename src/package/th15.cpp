@@ -827,7 +827,7 @@ TH15Package::TH15Package()
     
 
     addMetaObject<YidanCard>();
-    skills << new KuangluanEffect;
+    skills << new KuangluanEffect << new ChunhuaFilter;
 }
 
 ADD_PACKAGE(TH15)
