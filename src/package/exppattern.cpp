@@ -8,7 +8,7 @@ ExpPattern::ExpPattern(const QString &exp)
 
 bool ExpPattern::match(const Player *player, const Card *card) const
 {
-    foreach (QString one_exp, exp.split('#'))
+    foreach(QString one_exp, exp.split('#'))
         if (matchOne(player, card, one_exp))
             return true;
 
@@ -39,7 +39,9 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                     positive = false;
                     name = name.mid(1);
                 }
-                if (card->isKindOf(name.toLocal8Bit().data()) || (card->objectName() == name) || ("%" + card->objectName() == name)
+                //sometimes, the first character need to Upper
+                QString kindOfName = name.left(1).toUpper() + name.right(name.length() - 1);
+                if (card->isKindOf(kindOfName.toLocal8Bit().data()) || (card->objectName() == name) || ("%" + card->objectName() == name)
                     || (card->getEffectiveId() == name.toInt(&isInt) && isInt))
                     checkpoint = positive;
                 else
