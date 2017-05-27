@@ -50,7 +50,7 @@ struct CardEffectStruct
     bool multiple; // helper to judge whether the card has multiple targets
     // does not make sense if the card inherits SkillCard
     bool nullified;
-    bool canceled;//for cancel process, like "kuangluan"
+    bool canceled;//for cancel process, like "yuyi"
 };
 
 struct SlashEffectStruct

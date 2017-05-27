@@ -4,16 +4,16 @@
 #include "engine.h"
 #include "skill.h"
 
-class Wuhui : public TriggerSkill
+class Xiahui : public TriggerSkill
 {
 public:
-    Wuhui()
-        : TriggerSkill("wuhui")
+    Xiahui()
+        : TriggerSkill("xiahui")
     {
         events << Damage << Damaged;
     }
 
-    static QList<ServerPlayer *> wuhuiTargets(const Room *room) {
+    static QList<ServerPlayer *> xiahuiTargets(const Room *room) {
         QList<ServerPlayer *> targets;
         foreach(ServerPlayer *p, room->getAlivePlayers()) {
             if (!p->getCards("h").isEmpty())
@@ -28,14 +28,14 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         QList<SkillInvokeDetail> d;
         if (e == Damage && damage.from && damage.from->isAlive() && damage.from->hasSkill(this)) {
-            QList<ServerPlayer *> targets = wuhuiTargets(room);
+            QList<ServerPlayer *> targets = xiahuiTargets(room);
             if (targets.isEmpty())
                 return d;
             for (int i = 0; i < damage.damage; i++)
                 d << SkillInvokeDetail(this, damage.from, damage.from, targets);      
         }
         if (e == Damaged && damage.to && damage.to->isAlive() && damage.to->hasSkill(this)) {
-            QList<ServerPlayer *> targets = wuhuiTargets(room);
+            QList<ServerPlayer *> targets = xiahuiTargets(room);
             if (targets.isEmpty())
                 return d;
             for (int i = 0; i < damage.damage; i++)
@@ -46,7 +46,7 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, invoke->targets, objectName(), "@wuhui", true, true);
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, invoke->targets, objectName(), "@xiahui", true, true);
         if (target) {
             invoke->targets.clear();
             invoke->targets << target;
@@ -398,11 +398,11 @@ public:
 };
 
 
-class Kuangluan : public TriggerSkill
+class Yuyi : public TriggerSkill
 {
 public:
-    Kuangluan()
-        : TriggerSkill("kuangluan")
+    Yuyi()
+        : TriggerSkill("yuyi")
     {
         events << TargetSpecified << EventPhaseChanging;
     }
@@ -414,10 +414,10 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.from && use.from->getPhase() == Player::Play &&
                 (use.card->isNDTrick() || use.card->isKindOf("Slash"))) {
-                if (use.from->hasFlag("kuangluan_first"))
-                    room->setPlayerFlag(use.from, "kuangluan_second");
+                if (use.from->hasFlag("yuyi_first"))
+                    room->setPlayerFlag(use.from, "yuyi_second");
                 else
-                    room->setPlayerFlag(use.from, "kuangluan_first");
+                    room->setPlayerFlag(use.from, "yuyi_first");
             }
         
         }
@@ -425,8 +425,8 @@ public:
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.from == Player::Play) {
-                change.player->setFlags("-kuangluan_first");
-                change.player->setFlags("-kuangluan_second");
+                change.player->setFlags("-yuyi_first");
+                change.player->setFlags("-yuyi_second");
             }
         }
     }
@@ -438,7 +438,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.from && use.from->getPhase() == Player::Play &&
                 (use.card->isNDTrick() || use.card->isKindOf("Slash"))) {
-                if (use.from->hasFlag("kuangluan_first") && !use.from->hasFlag("kuangluan_second")) {
+                if (use.from->hasFlag("yuyi_first") && !use.from->hasFlag("yuyi_second")) {
                     QList<SkillInvokeDetail> d;
                     
                     foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
@@ -463,13 +463,19 @@ public:
         QString choice = room->askForChoice(invoke->invoker, objectName(), select.join("+"), data);
         if (choice == "cancel")
             return false;
-        invoke->tag["kuangluan"] = choice;
+        invoke->tag["yuyi"] = choice;
+        LogMessage log;
+        log.type = "#InvokeSkill";
+        log.from = invoke->invoker;
+        log.arg = objectName();
+        room->sendLog(log);
+        room->notifySkillInvoked(invoke->invoker, objectName());
         return true;
     }
 
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        QString choice = invoke->tag.value("kuangluan").toString();
+        QString choice = invoke->tag.value("yuyi").toString();
         ServerPlayer *target = (choice == "changeProcess") ? invoke->invoker : invoke->targets.first();
         int id = room->askForCardChosen(invoke->invoker, target, "h", objectName());
         QList<int> ids;
@@ -477,7 +483,15 @@ public:
         target->addToShownHandCards(ids);
         if (choice == "changeProcess") {
             CardUseStruct use = data.value<CardUseStruct>();
-            room->setCardFlag(use.card, "kuangluanProcess");//gamerule process true effect 
+            LogMessage log;
+            log.type = "#YuyiChanged";
+            log.from = invoke->invoker;
+            log.to = use.to;
+            log.arg = use.card->objectName();
+            log.arg2 = objectName();
+            room->sendLog(log);
+            
+            room->setCardFlag(use.card, "yuyiProcess");//gamerule process true effect 
         }
         return false;
     }
@@ -485,11 +499,11 @@ public:
 };
 
 
-class KuangluanEffect : public TriggerSkill
+class YuyiEffect : public TriggerSkill
 {
 public:
-    KuangluanEffect()
-        : TriggerSkill("#kuangluan")
+    YuyiEffect()
+        : TriggerSkill("#yuyi")
     {
         events << Cancel;
         global = true;//it is game rule. not general skill
@@ -499,7 +513,7 @@ public:
     {
         if (data.canConvert<CardEffectStruct>()) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (!effect.card->hasFlag("kuangluanProcess"))
+            if (!effect.card->hasFlag("yuyiProcess"))
                 return QList<SkillInvokeDetail>();
 
             if (effect.to->isAlive() && effect.from->isAlive() && effect.from != effect.to
@@ -508,7 +522,7 @@ public:
         }
         else {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (!effect.slash->hasFlag("kuangluanProcess"))
+            if (!effect.slash->hasFlag("yuyiProcess"))
                 return QList<SkillInvokeDetail>();
             if (effect.to->isAlive() && effect.from->isAlive() && effect.from != effect.to
                 && !effect.to->isKongcheng() && !effect.from->isKongcheng())
@@ -518,7 +532,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         const Card *card = NULL;
         if (data.canConvert<CardEffectStruct>()) {
@@ -530,7 +544,7 @@ public:
             card = effect.slash;
         }
         QString prompt = "cancel:" + invoke->preferredTarget->objectName() + ":" + card->objectName();
-        return invoke->invoker->askForSkillInvoke("kuangluanProcess", prompt);
+        return invoke->invoker->askForSkillInvoke("yuyiProcess", prompt);
     }
 
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
@@ -544,13 +558,13 @@ public:
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             card = effect.slash;
         }
-        if (invoke->invoker->pindian(invoke->targets.first(), "kuangluanProcess")) {
+        if (invoke->invoker->pindian(invoke->targets.first(), "yuyiProcess")) {
             LogMessage log;
-            log.type = "#KuangluanCancel";
+            log.type = "#YuyiCancel";
             log.from = invoke->targets.first();
             log.to << invoke->invoker;
             log.arg = card->objectName();
-            log.arg2 = "kuangluan";
+            log.arg2 = "yuyi";
             room->sendLog(log);
 
             if (data.canConvert<CardEffectStruct>()) {
@@ -570,11 +584,11 @@ public:
 };
 
 
-class Yuyan : public TriggerSkill
+class Kuangluan : public TriggerSkill
 {
 public:
-    Yuyan()
-        : TriggerSkill("yuyan")
+    Kuangluan()
+        : TriggerSkill("kuangluan")
     {
         events << PindianAsked << CardsMoveOneTime;
     }
@@ -794,7 +808,7 @@ TH15Package::TH15Package()
     : Package("th15")
 {
     General *junko = new General(this, "junko$", "gzz", 4, false);
-    junko->addSkill(new Wuhui);
+    junko->addSkill(new Xiahui);
     junko->addSkill(new Chunhua);
     junko->addSkill(new ChunhuaEffect);
     junko->addSkill(new Shayi);
@@ -806,8 +820,8 @@ TH15Package::TH15Package()
     related_skills.insertMulti("santi", "#santi");
 
     General *clownpiece = new General(this, "clownpiece", "gzz", 3, false);
+    clownpiece->addSkill(new Yuyi);
     clownpiece->addSkill(new Kuangluan);
-    clownpiece->addSkill(new Yuyan);
 
     General *seiran = new General(this, "seiran", "gzz", 4, false);
     seiran->addSkill(new Yidan);
@@ -827,7 +841,7 @@ TH15Package::TH15Package()
     
 
     addMetaObject<YidanCard>();
-    skills << new KuangluanEffect << new ChunhuaFilter;
+    skills << new YuyiEffect << new ChunhuaFilter;
 }
 
 ADD_PACKAGE(TH15)
