@@ -547,10 +547,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         //process skill cancel, like kaungluan.
         if (room->getThread()->trigger(Cancel, room, data)) {
             effect = data.value<SlashEffectStruct>();
-            if (!effect.canceled)
-                room->slashResult(effect, NULL);
-
-            break;// will not trigger event "SlashMissed"
+            room->slashResult(effect, NULL);
+            break;
         }
 
         if (effect.jink_num == 0){

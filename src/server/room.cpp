@@ -609,11 +609,11 @@ void Room::slashResult(const SlashEffectStruct &effect, const Card *jink)
     result_effect.jink = jink;
     QVariant data = QVariant::fromValue(result_effect);
 
-    if (jink == NULL) {
+    if (jink == NULL && !effect.canceled) {
         if (effect.to->isAlive())
             thread->trigger(SlashHit, this, data);
     } else {
-        if (effect.to->isAlive()) {
+        if (effect.to->isAlive() && effect.jink != NULL) {
             if (jink->getSkillName() != "eight_diagram")
                 setEmotion(effect.to, "jink");
         }

@@ -693,7 +693,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if (effect.slash->hasFlag("leishislash"))
+        if (effect.slash->hasFlag("leishislash") && effect.jink != NULL)
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.from, effect.from, NULL, true);
         return QList<SkillInvokeDetail>();
     }
@@ -848,7 +848,7 @@ public:
     {
         if (triggerEvent == SlashMissed) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.slash->hasFlag(objectName()) && effect.from->isAlive())
+            if (effect.slash->hasFlag(objectName()) && effect.from->isAlive() && effect.jink != NULL)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, NULL, effect.from, NULL, true);
         } else if (triggerEvent == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();

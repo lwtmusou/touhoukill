@@ -2200,7 +2200,8 @@ public:
             }
         } else {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.from->isAlive() && effect.from->hasSkill(this) && effect.to->isAlive() && effect.from->canDiscard(effect.to, "hes")) {
+            if (effect.from->isAlive() && effect.from->hasSkill(this) && effect.jink != NULL
+                && effect.to->isAlive() && effect.from->canDiscard(effect.to, "hes")) {
                 foreach (int id, effect.from->getShownHandcards()) {
                     if (Sanguosha->getCard(id)->getSuit() == effect.slash->getSuit())
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.from, effect.from, NULL, false, effect.to);

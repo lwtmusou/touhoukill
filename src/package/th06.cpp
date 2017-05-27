@@ -792,7 +792,7 @@ public:
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (!effect.from || effect.from->isDead())
                 return QList<SkillInvokeDetail>();
-            if (!effect.slash || !effect.slash->hasFlag("taiji_" + effect.from->objectName()))
+            if (!effect.slash || effect.jink == NULL || !effect.slash->hasFlag("taiji_" + effect.from->objectName()))
                 return QList<SkillInvokeDetail>();
             QList<int> ids;
             if (effect.jink->isVirtualCard())

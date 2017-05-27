@@ -780,7 +780,7 @@ public:
         if (!equipAvailable(effect.from, EquipCard::WeaponLocation, objectName()))
             return QList<SkillInvokeDetail>();
 
-        if (!effect.to->isAlive())
+        if (!effect.to->isAlive() || effect.jink == NULL)
             return QList<SkillInvokeDetail>();
 
         int cardLimit = 2;
