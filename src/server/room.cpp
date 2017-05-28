@@ -767,10 +767,9 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QString &skill_
     handleAcquireDetachSkills(player, skill_names.split("|"), acquire_only);
 }
 
-bool Room::doRequest(ServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg, bool wait, QString operaiton)
+bool Room::doRequest(ServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg, bool wait)
 {
-    int rate = operationTimeRate(command, operaiton);
-    time_t timeOut = ServerInfo.getCommandTimeout(command, S_SERVER_INSTANCE, rate);
+    time_t timeOut = ServerInfo.getCommandTimeout(command, S_SERVER_INSTANCE);
     return doRequest(player, command, arg, timeOut, wait);
 }
 
@@ -1467,7 +1466,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             arg << notice_index;
             arg << QString(skill_name);
 
-            bool success = doRequest(player, S_COMMAND_RESPONSE_CARD, arg, true, pattern);
+            bool success = doRequest(player, S_COMMAND_RESPONSE_CARD, arg, true);
             JsonArray clientReply = player->getClientReply().value<JsonArray>();
             if (success && !clientReply.isEmpty())
                 card = Card::Parse(clientReply[0].toString());
@@ -1654,7 +1653,7 @@ const Card *Room::askForUseCard(ServerPlayer *player, const QString &pattern, co
         ask_str << notice_index;
         ask_str << QString(skill_name);
 
-        bool success = success = doRequest(player, S_COMMAND_RESPONSE_CARD, ask_str, true, pattern);
+        bool success = success = doRequest(player, S_COMMAND_RESPONSE_CARD, ask_str, true);
         if (success) {
             const QVariant &clientReply = player->getClientReply();
             isCardUsed = !clientReply.isNull();
@@ -5453,7 +5452,7 @@ const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, in
         exchange_str << optional;
         exchange_str << reason;
 
-        bool success = doRequest(player, S_COMMAND_EXCHANGE_CARD, exchange_str, true, reason);
+        bool success = doRequest(player, S_COMMAND_EXCHANGE_CARD, exchange_str, true);
         //@todo: also check if the player does have that card!!!
         JsonArray clientReply = player->getClientReply().value<JsonArray>();
         if (!success || clientReply.size() > discard_num || clientReply.size() < min_num || !JsonUtils::tryParse(clientReply, to_exchange)) {
@@ -6699,11 +6698,3 @@ void Room::saveWinnerTable(const QString &winner, bool isSurrender)
     file.close();
 }
 
-
-int Room::operationTimeRate(QSanProtocol::CommandType command, QString pattern) {
-    if (command == QSanProtocol::S_COMMAND_RESPONSE_CARD && pattern == "@@qiusuo")
-        return 4;
-    if (command == QSanProtocol::S_COMMAND_EXCHANGE_CARD && pattern == "qingting")
-        return 3;
-    return 2;
-}

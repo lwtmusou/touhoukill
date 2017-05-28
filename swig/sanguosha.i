@@ -1349,7 +1349,7 @@ public:
     void retrial(const Card *card, ServerPlayer *player, JudgeStruct * judge, const char *skill_name, bool exchange = false);
 
     bool doRequest(ServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg, time_t timeOut, bool wait);
-    bool doRequest(ServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg, bool wait, QString operation = QString());
+    bool doRequest(ServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg, bool wait);
 
     bool doBroadcastRequest(QList<ServerPlayer *> &players, QSanProtocol::CommandType command, time_t timeOut);
     bool doBroadcastRequest(QList<ServerPlayer *> &players, QSanProtocol::CommandType command);

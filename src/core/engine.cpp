@@ -1281,3 +1281,20 @@ int Engine::correctAttackRange(const Player *target, bool include_weapon /* = tr
 
     return extra;
 }
+
+
+int Engine::operationTimeRate(QSanProtocol::CommandType command, QVariant msg) {
+    int rate = 2; //default
+    JsonArray arg = msg.value<JsonArray>();
+    if (command == QSanProtocol::S_COMMAND_RESPONSE_CARD) {
+        QString pattern = arg[0].toString();
+        if (pattern == "@@qiusuo")
+            rate = 4;
+    }
+    if (command == QSanProtocol::S_COMMAND_EXCHANGE_CARD) {
+        QString reason = arg[5].toString();
+        if (reason == "qingting")
+            rate = 3;
+    }
+    return rate;
+}

@@ -381,11 +381,14 @@ bool Client::processServerRequest(const Packet &packet)
     CommandType command = packet.getCommandType();
     QVariant msg = packet.getMessageBody();
 
+    
     if (!replayer) {
+        //process count max
+        int rate = Sanguosha->operationTimeRate(command, msg);
         Countdown countdown;
         countdown.current = 0;
         countdown.type = Countdown::S_COUNTDOWN_USE_DEFAULT;
-        countdown.max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
+        countdown.max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE, rate);
         setCountdown(countdown);
     }
 

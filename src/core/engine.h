@@ -127,6 +127,8 @@ public:
 
     QStringList SurprisingGenerals;
     QStringList LordBGMConvertList;
+    int operationTimeRate(QSanProtocol::CommandType command, QVariant msg);
+
 
 private:
     void _loadMiniScenarios();
