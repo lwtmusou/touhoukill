@@ -617,15 +617,41 @@ public:
     Qiusuo()
         : TriggerSkill("qiusuo")
     {
-        events << EventPhaseStart;
+        events << EventPhaseStart << DamageDone << TurnStart;
         view_as_skill = new QiusuoVS;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
+        switch (triggerEvent) {
+        case DamageDone: {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from && damage.from->isCurrent())
+                room->setTag("qiusuoDamageOrDeath", true);
+            break;
+        }
+        case TurnStart:
+            room->setTag("qiusuoDamageOrDeath", false);
+            break;
+        default:
+            break;
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e != EventPhaseStart)
+            return QList<SkillInvokeDetail>();
         ServerPlayer *current = data.value<ServerPlayer *>();
-        if (current->getPhase() == Player::Play && current->hasSkill(this) && !current->getPile("zhenli").isEmpty())
+        if (current->getPhase() == Player::Start && current->hasSkill(this) && !current->getPile("zhenli").isEmpty())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current);
+        if (current->getPhase() == Player::Finish && current->hasSkill(this)) {
+            QVariant tag = room->getTag("qiusuoDamageOrDeath");
+            bool can = tag.canConvert(QVariant::Bool) && tag.toBool();
+            if (can)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current);
+        }
+        
         return QList<SkillInvokeDetail>();
     }
 

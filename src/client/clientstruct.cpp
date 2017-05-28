@@ -10,7 +10,7 @@ ServerInfoStruct ServerInfo;
 #include <QLabel>
 #include <QListWidget>
 
-time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance)
+time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance, int operationRate)
 {
     time_t timeOut;
     if (OperationTimeout == 0)
@@ -22,7 +22,7 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
     else if (command == QSanProtocol::S_COMMAND_NULLIFICATION)
         timeOut = NullificationCountDown * 1000;
     else
-        timeOut = OperationTimeout * 1000;
+        timeOut = OperationTimeout * 500 * operationRate;
 
     if (instance == QSanProtocol::S_SERVER_INSTANCE)
         timeOut += Config.S_SERVER_TIMEOUT_GRACIOUS_PERIOD;

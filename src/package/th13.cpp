@@ -59,7 +59,7 @@ void QingtingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
             card = new DummyCard(QList<int>() << room->askForCardChosen(source, p, "hs", "qingting"));
         else {
             p->tag["qingting_give"] = QVariant::fromValue(source);
-            card = room->askForExchange(p, "qingting", 1, 1, false, "qingtingGive:" + source->objectName());
+            card = room->askForExchange(p, "qingting_give", 1, 1, false, "qingtingGive:" + source->objectName());
             p->tag.remove("qingting_give");
         }
         DELETE_OVER_SCOPE(const Card, card)

@@ -4520,14 +4520,25 @@ TouhouGodPackage::TouhouGodPackage()
     seiga_god->addSkill(new Huanhun);
     seiga_god->addSkill(new Tongling);
     seiga_god->addSkill(new Rumo);
-    //General *uuz13 = new General(this, "yuyuko_1v3", "touhougod", 1, false, true);
-    //Q_UNUSED(uuz13);
+    
 
-    General *marisa_god = new General(this, "marisa_god", "touhougod", 4, false);
+    General *marisa_god = new General(this, "marisa_god", "touhougod", 4, false, true, true);
     marisa_god->addSkill(new Huixing);
     marisa_god->addSkill(new Mofu);
     marisa_god->addSkill(new MofuTargetMod);
     related_skills.insertMulti("mofu", "#mofu");
+
+    General *alice_god = new General(this, "alice_god", "touhougod", 4, false, true, true);
+    Q_UNUSED(alice_god);
+    General *shinmyoumaru_god = new General(this, "shinmyoumaru_god", "touhougod", 4, false, true, true);
+    Q_UNUSED(shinmyoumaru_god);
+    General *tenshi_god = new General(this, "tenshi_god", "touhougod", 3, false, true, true);
+    Q_UNUSED(tenshi_god);
+    General *uuz13 = new General(this, "yuyuko_1v3", "touhougod", 1, false, true, true);
+    Q_UNUSED(uuz13);
+
+    General *kaguya13 = new General(this, "kaguya_1v3", "touhougod", 1, false, true, true);
+    Q_UNUSED(kaguya13);
 
     addMetaObject<HongwuCard>();
     addMetaObject<ShenqiangCard>();

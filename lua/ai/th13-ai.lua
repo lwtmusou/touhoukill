@@ -22,49 +22,66 @@ end
 sgs.ai_skill_use_func.QingtingCard=function(card,use,self)
 	use.card = card
 end
-sgs.ai_skill_discard.qingting = function(self)
+sgs.ai_skill_discard.qingting_give = function(self)
 	local target=self.player:getTag("qingting_give"):toPlayer()
-	local isReturn =false
-	if not target then
-		target = self.player:getTag("qingting_return"):toPlayer()
-		isReturn =true
+	local to_discard = {}
+	local cards = sgs.QList2Table(self.player:getHandcards())
+
+	if self:isFriend(target) then
+		self:sortByUseValue(cards, true)
+	else
+		self:sortByUseValue(cards)
 	end
+
+	local tmpCard = cards[1]
+	if self:isEnemy(target) and tmpCard:isKindOf("Peach") then
+		for var= 1, #cards, 1 do
+			if not cards[var]:isKindOf("Peach") then
+				tmpCard = cards[var]
+				break
+			end
+		end
+	end
+	table.insert(to_discard, tmpCard:getEffectiveId())
+	return to_discard
+end
+sgs.ai_skill_discard.qingting = function(self)
+	local target = self.player:getTag("qingting_return"):toPlayer()
 	local to_discard = {}
 
 	local need_give = 1
-	if isReturn then
-		for _,p in sgs.qlist(self.room:getOtherPlayers(target)) do
-			if p:getMark("@qingting")>0 then
-				need_give = need_give + 1
-			end
+
+	for _,p in sgs.qlist(self.room:getOtherPlayers(target)) do
+		if p:getMark("@qingting")>0 then
+			need_give = need_give + 1
 		end
 	end
 
-	if isReturn then
-		if target:hasSkill("chunxi") or target:hasSkill("xingyun") then
-			local redcard
-			for _,c in sgs.qlist(self.player:getHandcards())do
-				if self:isFriend(target) then
-					if c:getSuit()==sgs.Card_Heart then
-						redcard=c
-						break
-					end
-				else
-					if c:getSuit()~=sgs.Card_Heart then
-						redcard=c
-						break
-					end
+	
+	if target:hasSkill("chunxi") or target:hasSkill("xingyun") then
+		local redcard
+		for _,c in sgs.qlist(self.player:getHandcards())do
+			if self:isFriend(target) then
+				if c:getSuit()==sgs.Card_Heart then
+					redcard=c
+					break
+				end
+			else
+				if c:getSuit()~=sgs.Card_Heart then
+					redcard=c
+					break
 				end
 			end
-			if  redcard then
-				table.insert(to_discard, redcard:getEffectiveId())
-				return to_discard
-			end
+		end
+		if  redcard then
+			table.insert(to_discard, redcard:getEffectiveId())
+			return to_discard
 		end
 	end
+	
 
 	local cards={}
-	if isReturn and self.player:getHandcards():length() > need_give then
+	if self.player:getHandcards():length() > need_give then
 		local tmpcards = sgs.QList2Table(self.player:getHandcards())
 		self:sortByKeepValue(tmpcards)
 		for var=1, need_give, 1 do
@@ -92,6 +109,7 @@ sgs.ai_skill_discard.qingting = function(self)
 	table.insert(to_discard, tmpCard:getEffectiveId())
 	return to_discard
 end
+
 sgs.ai_use_value.QingtingCard = 7
 sgs.ai_use_priority.QingtingCard = 7
 
