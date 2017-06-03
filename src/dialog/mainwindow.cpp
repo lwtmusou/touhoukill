@@ -6,6 +6,7 @@
 #include "generaloverview.h"
 #include "pixmapanimation.h"
 #include "record-analysis.h"
+#include "recorder.h"
 #include "roomscene.h"
 #include "server.h"
 #include "startscene.h"
@@ -13,12 +14,15 @@
 #include "window.h"
 
 #include <QCheckBox>
+#include <QCommandLinkButton>
 #include <QDesktopServices>
 #include <QFileDialog>
+#include <QFormLayout>
 #include <QGraphicsItem>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsTextItem>
 #include <QGraphicsView>
+#include <QGroupBox>
 #include <QInputDialog>
 #include <QLabel>
 #include <QMessageBox>
@@ -26,8 +30,9 @@
 #include <QStatusBar>
 #include <QSystemTrayIcon>
 #include <QTime>
+#include <QToolButton>
 #include <QVariant>
-#include <qmath.h>
+#include <QtMath>
 
 class FitView : public QGraphicsView
 {
@@ -680,12 +685,6 @@ void MainWindow::on_actionPC_Console_Start_triggered()
     Config.HostAddress = "127.0.0.1";
     startConnection();
 }
-
-#include "recorder.h"
-#include <QCommandLinkButton>
-#include <QFormLayout>
-#include <QGroupBox>
-#include <QToolButton>
 
 void MainWindow::on_actionReplay_file_convert_triggered()
 {

@@ -651,7 +651,7 @@ public:
             if (can)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current);
         }
-        
+
         return QList<SkillInvokeDetail>();
     }
 
@@ -1132,7 +1132,6 @@ public:
     }
 };
 
-
 class Xuxiang : public TriggerSkill
 {
 public:
@@ -1146,10 +1145,8 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         QList<SkillInvokeDetail> d;
-        if (damage.card && damage.card->isKindOf("Slash") 
-            && damage.by_user && damage.from && damage.from->isAlive() 
-            && !damage.from->isKongcheng()) {
-            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+        if (damage.card && damage.card->isKindOf("Slash") && damage.by_user && damage.from && damage.from->isAlive() && !damage.from->isKongcheng()) {
+            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (!p->hasFlag("xuxiang_used") && p != damage.from && !p->isKongcheng())
                     d << SkillInvokeDetail(this, p, p, NULL, false, damage.from);
             }
@@ -1160,10 +1157,8 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        QString prompt = "target:" + damage.from->objectName() + ":" + damage.to->objectName() 
-            + ":" + damage.card->objectName() + ":" + QString::number(damage.damage);
+        QString prompt = "target:" + damage.from->objectName() + ":" + damage.to->objectName() + ":" + damage.card->objectName() + ":" + QString::number(damage.damage);
         return room->askForSkillInvoke(invoke->invoker, objectName(), prompt);
-
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
@@ -1181,7 +1176,6 @@ public:
         return false;
     }
 };
-
 
 class XuxiangRecord : public TriggerSkill
 {
@@ -1205,9 +1199,8 @@ public:
                 damage.damage = d;
                 pindian->from->tag["xuxiang"] = QVariant::fromValue(damage);
             }
-        }
-        else if (triggerEvent == EventPhaseChanging) {
-            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+        } else if (triggerEvent == EventPhaseChanging) {
+            foreach (ServerPlayer *p, room->getAlivePlayers()) {
                 if (p->hasFlag("xuxiang_used"))
                     room->setPlayerFlag(p, "-xuxiang_used");
             }
@@ -1224,7 +1217,7 @@ public:
         events << PindianAsked;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         PindianStruct *pindian = data.value<PindianStruct *>();
         if (pindian->askedPlayer->hasSkill(this)) {
@@ -1239,10 +1232,10 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         QVariant notify_data = QVariant::fromValue(invoke->preferredTarget);
-        bool can =  invoke->invoker->askForSkillInvoke(this, notify_data);
+        bool can = invoke->invoker->askForSkillInvoke(this, notify_data);
         if (!can && invoke->invoker->hasFlag(objectName()))
             room->setPlayerFlag(invoke->invoker, "-huanjue");
         return can;
@@ -1255,8 +1248,7 @@ public:
         if (invoke->invoker->hasFlag(objectName())) {
             room->setPlayerFlag(invoke->invoker, "-huanjue");
             id = room->drawCard();
-        }
-        else {
+        } else {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
 
             QList<int> list = room->getNCards(2);
@@ -1276,14 +1268,13 @@ public:
                 pindian->to_card = c;
             room->showCard(invoke->invoker, id);
             data = QVariant::fromValue(pindian);
-            CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, invoke->invoker->objectName(),invoke->targets.first()->objectName(), pindian->reason, QString());
+            CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, invoke->invoker->objectName(), invoke->targets.first()->objectName(), pindian->reason, QString());
             //room->moveCardTo(c, invoke->invoker, NULL, Player::PlaceTable, reason1, false);
             //room->moveCardTo(c, invoke->invoker, NULL, Player::PlaceWuGu, reason1, false);
         }
         return false;
     }
 };
-
 
 LianmuCard::LianmuCard()
 {
@@ -1358,7 +1349,8 @@ public:
     {
         if (triggerEvent == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from && use.from->isAlive() && use.from->hasSkill(this) && !use.from->hasFlag("lianmu_used") && use.card->isKindOf("Slash") && !use.card->hasFlag("lianmu_damage"))
+            if (use.from && use.from->isAlive() && use.from->hasSkill(this) && !use.from->hasFlag("lianmu_used") && use.card->isKindOf("Slash")
+                && !use.card->hasFlag("lianmu_damage"))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
         }
         return QList<SkillInvokeDetail>();
@@ -2226,8 +2218,7 @@ public:
             }
         } else {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.from->isAlive() && effect.from->hasSkill(this) && effect.jink != NULL
-                && effect.to->isAlive() && effect.from->canDiscard(effect.to, "hes")) {
+            if (effect.from->isAlive() && effect.from->hasSkill(this) && effect.jink != NULL && effect.to->isAlive() && effect.from->canDiscard(effect.to, "hes")) {
                 foreach (int id, effect.from->getShownHandcards()) {
                     if (Sanguosha->getCard(id)->getSuit() == effect.slash->getSuit())
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.from, effect.from, NULL, false, effect.to);
