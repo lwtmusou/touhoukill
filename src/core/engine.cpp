@@ -12,12 +12,14 @@
 #include "scenario.h"
 #include "settings.h"
 #include "structs.h"
+
 #include <QApplication>
 #include <QDir>
 #include <QFile>
 #include <QMessageBox>
 #include <QStringList>
 #include <QTextStream>
+#include <QVersionNumber>
 
 Engine *Sanguosha = NULL;
 
@@ -627,6 +629,11 @@ QString Engine::getVersion() const
 QString Engine::getVersionName() const
 {
     return "V0.8.5";
+}
+
+QVersionNumber Engine::getQVersionNumber() const
+{
+    return QVersionNumber(0, 8, 5);
 }
 
 QString Engine::getMODName() const
@@ -1282,8 +1289,8 @@ int Engine::correctAttackRange(const Player *target, bool include_weapon /* = tr
     return extra;
 }
 
-
-int Engine::operationTimeRate(QSanProtocol::CommandType command, QVariant msg) {
+int Engine::operationTimeRate(QSanProtocol::CommandType command, QVariant msg)
+{
     int rate = 2; //default
     JsonArray arg = msg.value<JsonArray>();
     if (command == QSanProtocol::S_COMMAND_RESPONSE_CARD) {

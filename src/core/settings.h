@@ -76,6 +76,7 @@ public:
     bool EnableAutoTarget;
     bool EnableIntellectualSelection;
     bool EnableDoubleClick;
+    bool EnableAutoUpdate;
     bool EnableAutoSaveRecord;
     bool NetworkOnly;
 

@@ -7,7 +7,9 @@
 
 #include <QCheckBox>
 #include <QComboBox>
+#include <QJsonObject>
 #include <QMainWindow>
+#include <QNetworkReply>
 #include <QSettings>
 #include <QSpinBox>
 
@@ -23,6 +25,8 @@ class QTextEdit;
 class QToolButton;
 class QGroupBox;
 class RoomItem;
+class QProgressBar;
+class QLabel;
 
 class BroadcastBox : public QDialog
 {
@@ -45,6 +49,46 @@ public:
     static void preload();
 };
 
+class UpdateDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    UpdateDialog(QWidget *parent = 0);
+    void setInfo(const QString &v, const QVersionNumber &vn, const QString &updateScript, const QString &updatePack, const QJsonObject &updateHash);
+
+private:
+    QProgressBar *bar;
+    QLabel *lbl;
+    QNetworkAccessManager *downloadManager;
+    QNetworkReply *scriptReply;
+    QNetworkReply *packReply;
+
+    QString m_updateScript;
+    QString m_updatePack;
+    QJsonObject m_updateHash;
+
+    bool m_finishedScript;
+    bool m_finishedPack;
+
+    bool m_busy;
+
+    void startUpdate();
+    bool packHashVerify(const QByteArray &arr);
+
+private slots:
+    void startDownload();
+    void downloadProgress(quint64 downloaded, quint64 total);
+    void finishedScript();
+    void errScript();
+    void finishedPack();
+    void errPack();
+
+public slots:
+    void accept();
+    void reject();
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -64,8 +108,11 @@ private:
     ConnectionDialog *connection_dialog;
     ConfigDialog *config_dialog;
     QSystemTrayIcon *systray;
+    QNetworkAccessManager *autoUpdateManager;
 
     void restoreFromConfig();
+    void checkForUpdate();
+    void parseUpdateInfo(const QString &v, const QVersionNumber &vn, const QJsonObject &ob);
 
 public slots:
     void startConnection();
@@ -102,6 +149,9 @@ private slots:
     void changeBackground();
     void changeTableBg();
     void on_actionView_ban_list_triggered();
+
+    void updateError(QNetworkReply::NetworkError e);
+    void updateInfoReceived();
 };
 
 #endif

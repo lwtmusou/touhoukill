@@ -115,6 +115,7 @@ void Settings::init()
     EnableAutoTarget = value("EnableAutoTarget", true).toBool();
     EnableIntellectualSelection = value("EnableIntellectualSelection", true).toBool();
     EnableDoubleClick = value("EnableDoubleClick", false).toBool();
+    EnableAutoUpdate = value("EnableAutoUpdate", true).toBool();
     BubbleChatBoxDelaySeconds = value("BubbleChatBoxDelaySeconds", 2).toInt();
     DefaultHeroSkin = value("DefaultHeroSkin", true).toBool();
 

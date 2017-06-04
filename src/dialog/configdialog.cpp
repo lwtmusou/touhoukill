@@ -45,8 +45,8 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->autoTargetCheckBox->setChecked(Config.EnableAutoTarget);
     ui->intellectualSelectionCheckBox->setChecked(Config.EnableIntellectualSelection);
     ui->defaultHeroskinCheckBox->setChecked(Config.DefaultHeroSkin);
-
     ui->doubleClickCheckBox->setChecked(Config.EnableDoubleClick);
+    ui->autoUpdateCheckBox->setChecked(Config.EnableAutoUpdate);
     ui->bubbleChatBoxDelaySpinBox->setSuffix(tr(" second"));
     ui->bubbleChatBoxDelaySpinBox->setValue(Config.BubbleChatBoxDelaySeconds);
 
@@ -227,6 +227,9 @@ void ConfigDialog::saveConfig()
     Config.setValue("NetworkOnly", Config.NetworkOnly);
 
     Config.setValue("RecordSavePath", Config.RecordSavePath);
+
+    Config.setValue("EnableAutoUpdate", ui->autoUpdateCheckBox->isChecked());
+    Config.EnableAutoUpdate = ui->autoUpdateCheckBox->isChecked();
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked()

@@ -15,7 +15,9 @@
 
 #include <QCheckBox>
 #include <QCommandLinkButton>
+#include <QCryptographicHash>
 #include <QDesktopServices>
+#include <QDialogButtonBox>
 #include <QFileDialog>
 #include <QFormLayout>
 #include <QGraphicsItem>
@@ -24,14 +26,20 @@
 #include <QGraphicsView>
 #include <QGroupBox>
 #include <QInputDialog>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QLabel>
 #include <QMessageBox>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 #include <QProcess>
+#include <QProgressBar>
 #include <QStatusBar>
 #include <QSystemTrayIcon>
 #include <QTime>
 #include <QToolButton>
 #include <QVariant>
+#include <QVersionNumber>
 #include <QtMath>
 
 class FitView : public QGraphicsView
@@ -76,6 +84,7 @@ public:
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , autoUpdateManager(new QNetworkAccessManager(this))
 {
     ui->setupUi(this);
     scene = NULL;
@@ -123,6 +132,9 @@ MainWindow::MainWindow(QWidget *parent)
     addAction(ui->actionFullscreen);
 
     systray = NULL;
+
+    if (Config.EnableAutoUpdate)
+        checkForUpdate();
 }
 
 void MainWindow::restoreFromConfig()
@@ -137,6 +149,16 @@ void MainWindow::restoreFromConfig()
     ui->actionEnable_Hotkey->setChecked(Config.EnableHotKey);
     ui->actionNever_nullify_my_trick->setChecked(Config.NeverNullifyMyTrick);
     ui->actionNever_nullify_my_trick->setEnabled(false);
+}
+
+void MainWindow::checkForUpdate()
+{
+    QNetworkRequest req;
+    req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    req.setUrl(QUrl("http://fsu0413.github.io/TouhouKillUpdate.json"));
+    QNetworkReply *reply = autoUpdateManager->get(req);
+    connect(reply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &MainWindow::updateError);
+    connect(reply, &QNetworkReply::finished, this, &MainWindow::updateInfoReceived);
 }
 
 void MainWindow::closeEvent(QCloseEvent *)
@@ -838,6 +860,81 @@ void MainWindow::on_actionView_ban_list_triggered()
     dialog->exec();
 }
 
+void MainWindow::updateError(QNetworkReply::NetworkError)
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    if (reply != NULL)
+        disconnect(reply, &QNetworkReply::finished, this, 0);
+}
+
+void MainWindow::parseUpdateInfo(const QString &v, const QVersionNumber &vn, const QJsonObject &ob)
+{
+#if defined(Q_OS_WIN)
+    QJsonValue value = ob.value("Win");
+#elif defined(Q_OS_MACOS)
+    QJsonValue value = ob.value("Mac");
+#else
+    QJsonValue value = ob.value("Oth");
+#endif
+    if (value.isString()) {
+        // fullpack
+        QMessageBox::information(this, tr("New Version Avaliable"),
+                                 tr("New Version %1(%3) available.\n"
+                                    "But we don\'t support auto-updating from %2 to %1 on this platform.\n"
+                                    "Please download the full package from <a href=\"%4\">Here</a>.")
+                                     .arg(v)
+                                     .arg(Sanguosha->getVersionNumber())
+                                     .arg(vn.toString())
+                                     .arg(value.toString()));
+    } else if (value.isObject()) {
+        QJsonObject updateOb = value.toObject();
+        QString updateScript = updateOb.value("UpdateScript").toString();
+        QString updatePack = updateOb.value("UpdatePack").toString();
+        QJsonObject updateHash = updateOb.value("UpdatePackHash").toObject();
+        if (!updateScript.isEmpty() && !updatePack.isEmpty() && !updateHash.isEmpty()) {
+            UpdateDialog upd;
+            upd.setInfo(v, vn, updateScript, updatePack, updateHash);
+            upd.exec();
+        }
+    }
+}
+
+void MainWindow::updateInfoReceived()
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    if (reply == NULL)
+        return;
+    QByteArray arr = reply->readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(arr);
+    if (!doc.isObject()) {
+        qDebug() << "error document when parsing update data";
+        return;
+    }
+
+    QJsonObject ob = doc.object();
+    if (!ob.contains("LatestVersion") || !ob.value("LatestVersion").isString()) {
+        qDebug() << "LatestVersion field is incorrect";
+        return;
+    }
+
+    QString latestVersion = ob.value("LatestVersion").toString();
+    QVersionNumber ver = QVersionNumber::fromString(ob.value("LatestVersionNumber").toString());
+    if (latestVersion > Sanguosha->getVersionNumber()) {
+        // there is a new version available now!!
+        QString from = QString("From") + Sanguosha->getVersionNumber();
+        if (ob.contains(from))
+            parseUpdateInfo(latestVersion, ver, ob.value(from).toObject());
+        else {
+            QVersionNumber pref = QVersionNumber::commonPrefix(Sanguosha->getQVersionNumber(), ver);
+            from = QString("From") + pref.toString();
+            if (ob.contains(from))
+                parseUpdateInfo(latestVersion, ver, ob.value(from).toObject());
+            else
+                parseUpdateInfo(latestVersion, ver, ob.value("FullPack").toObject());
+        }
+    }
+}
+
 #include "audio.h"
 
 void MainWindow::on_actionAbout_fmod_triggered()
@@ -905,4 +1002,220 @@ void MainWindow::on_actionAbout_GPLv3_triggered()
     window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0, scene && scene->inherits("RoomScene") ? scene->height() : 0);
 
     window->appear();
+}
+
+UpdateDialog::UpdateDialog(QWidget *parent)
+    : QDialog(parent)
+    , bar(new QProgressBar)
+    , lbl(new QLabel)
+    , downloadManager(new QNetworkAccessManager(this))
+    , scriptReply(NULL)
+    , packReply(NULL)
+    , m_busy(false)
+    , m_finishedScript(false)
+    , m_finishedPack(false)
+{
+    setWindowTitle(tr("New Version Available"));
+
+    bar->setMaximum(10000);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    layout->addWidget(lbl);
+    layout->addWidget(bar);
+
+    QPushButton *yesBtn = new QPushButton(tr("Yes"));
+    connect(yesBtn, &QPushButton::clicked, [yesBtn]() -> void { yesBtn->setDisabled(true); });
+
+    QPushButton *noBtn = new QPushButton(tr("No"));
+    connect(noBtn, &QPushButton::clicked, [this]() -> void { QDialog::reject(); });
+    connect(yesBtn, &QPushButton::clicked, [noBtn]() -> void { noBtn->setDisabled(true); });
+
+    connect(yesBtn, &QPushButton::clicked, this, &UpdateDialog::startDownload);
+
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->addWidget(yesBtn);
+    hlayout->addWidget(noBtn);
+
+    layout->addLayout(hlayout);
+
+    setLayout(layout);
+}
+
+void UpdateDialog::setInfo(const QString &v, const QVersionNumber &vn, const QString &updateScript, const QString &updatePack, const QJsonObject &updateHash)
+{
+    lbl->setText(tr("New Version %1(%3) available.\n"
+                    "We support auto-updating from %2 to %1 on this platform.\n"
+                    "Click 'Yes' to update now.")
+                     .arg(v)
+                     .arg(Sanguosha->getVersionNumber())
+                     .arg(vn.toString()));
+
+    m_updateScript = updateScript;
+    m_updatePack = updatePack;
+    m_updateHash = updateHash;
+}
+
+void UpdateDialog::startUpdate()
+{
+// we should run update script and then exit this main program.
+#if defined(Q_OS_WIN)
+    QStringList arg;
+    arg << "UpdateScript.vbs" << QString::number(QCoreApplication::applicationPid());
+    QProcess::startDetached("wscript", arg, QCoreApplication::applicationDirPath());
+#elif defined(Q_OS_ANDROID)
+// call JNI to install the package
+#else
+    QStringList arg;
+    arg << QString::number(QCoreApplication::applicationPid());
+    QProcess::startDetached("UpdateScript.sh", arg, QCoreApplication::applicationDirPath());
+#endif
+
+    QCoreApplication::exit(0);
+    QDialog::accept();
+}
+
+bool UpdateDialog::packHashVerify(const QByteArray &arr)
+{
+    static const QMap<QString, QCryptographicHash::Algorithm> algorithms{std::make_pair<QString, QCryptographicHash::Algorithm>("MD5", QCryptographicHash::Md5),
+                                                                         std::make_pair<QString, QCryptographicHash::Algorithm>("SHA1", QCryptographicHash::Sha1)};
+
+    foreach (const QString &str, algorithms.keys()) {
+        if (m_updateHash.contains(str)) {
+            QString hash = m_updateHash.value(str).toString();
+            QByteArray calculatedHash = QCryptographicHash::hash(arr, algorithms.value(str));
+            if (hash.toUpper() != QString::fromLatin1(calculatedHash.toHex()).toUpper())
+                return false;
+        }
+    }
+
+    return true;
+}
+
+void UpdateDialog::startDownload()
+{
+    if (m_updatePack.isEmpty() || m_updateScript.isEmpty()) {
+        QMessageBox::critical(this, tr("Update Error"), tr("An error occurred when downloading packages.\nURL is empty."));
+        QDialog::reject();
+    }
+
+    m_busy = true;
+
+    QNetworkRequest reqPack;
+    reqPack.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    reqPack.setUrl(QUrl(m_updatePack));
+    packReply = downloadManager->get(reqPack);
+    connect(packReply, &QNetworkReply::downloadProgress, this, &UpdateDialog::downloadProgress);
+    connect(packReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errPack);
+    connect(packReply, &QNetworkReply::finished, this, &UpdateDialog::finishedPack);
+
+    QNetworkRequest reqScript;
+    reqScript.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    reqScript.setUrl(QUrl(m_updateScript));
+    scriptReply = downloadManager->get(reqScript);
+    connect(scriptReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errScript);
+    connect(scriptReply, &QNetworkReply::finished, this, &UpdateDialog::finishedScript);
+}
+
+void UpdateDialog::downloadProgress(quint64 downloaded, quint64 total)
+{
+    bar->setValue(10000 * downloaded / total);
+}
+
+void UpdateDialog::finishedScript()
+{
+#if defined(Q_OS_WIN)
+    QString suffix = ".vbs";
+#else
+    QString suffix = ".sh";
+#endif
+    QByteArray arr = scriptReply->readAll();
+    QFile file;
+    file.setFileName(QString("UpdateScript") + suffix);
+    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    file.write(arr);
+    file.close();
+
+#ifdef Q_OS_UNIX
+    file.setPermissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther);
+#endif
+
+    m_finishedScript = true;
+    if (m_finishedPack && m_finishedScript)
+        startUpdate();
+}
+
+void UpdateDialog::errScript()
+{
+    if (scriptReply != NULL) {
+        disconnect(scriptReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errScript);
+        disconnect(scriptReply, &QNetworkReply::finished, this, &UpdateDialog::finishedScript);
+    }
+    if (packReply != NULL) {
+        disconnect(packReply, &QNetworkReply::downloadProgress, this, &UpdateDialog::downloadProgress);
+        disconnect(packReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errPack);
+        disconnect(packReply, &QNetworkReply::finished, this, &UpdateDialog::finishedPack);
+    }
+
+    QMessageBox::critical(this, tr("Update Error"), tr("An error occurred when downloading packages.\nCannot download the update script."));
+    QDialog::reject();
+}
+
+void UpdateDialog::finishedPack()
+{
+#if defined(Q_OS_WIN)
+    QString suffix = ".7z";
+#elif defined(Q_OS_ANDROID)
+    QString suffix = ".apk";
+#else
+    QString suffix = ".tar.xz";
+#endif
+    QByteArray arr = packReply->readAll();
+
+    if (!packHashVerify(arr)) {
+        QMessageBox::critical(this, tr("Update Error"), tr("An error occurred when downloading packages.\nDownload pack checksum mismatch."));
+        QDialog::reject();
+        return;
+    }
+
+    QFile file;
+    file.setFileName(QString("UpdatePack") + suffix);
+    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    file.write(arr);
+    file.close();
+
+#ifdef Q_OS_WIN
+    file.setPermissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther);
+#endif
+
+    m_finishedPack = true;
+
+    if (m_finishedPack && m_finishedScript)
+        startUpdate();
+}
+
+void UpdateDialog::errPack()
+{
+    if (scriptReply != NULL) {
+        disconnect(scriptReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errScript);
+        disconnect(scriptReply, &QNetworkReply::finished, this, &UpdateDialog::finishedScript);
+    }
+    if (packReply != NULL) {
+        disconnect(packReply, &QNetworkReply::downloadProgress, this, &UpdateDialog::downloadProgress);
+        disconnect(packReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errPack);
+        disconnect(packReply, &QNetworkReply::finished, this, &UpdateDialog::finishedPack);
+    }
+
+    QMessageBox::critical(this, tr("Update Error"), tr("An error occurred when downloading packages.\nCannot download the update pack."));
+    QDialog::reject();
+}
+
+void UpdateDialog::accept()
+{
+}
+
+void UpdateDialog::reject()
+{
+    if (!m_busy)
+        QDialog::reject();
 }

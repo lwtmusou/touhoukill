@@ -24,6 +24,7 @@ class LuaTrickCard;
 class LuaWeapon;
 class LuaArmor;
 class LuaTreasure;
+class QVersionNumber;
 
 struct lua_State;
 
@@ -50,6 +51,7 @@ public:
     QString getVersionNumber() const;
     QString getVersion() const;
     QString getVersionName() const;
+    QVersionNumber getQVersionNumber() const;
     QString getMODName() const;
     QStringList getExtensions() const;
     QStringList getKingdoms() const;
@@ -128,7 +130,6 @@ public:
     QStringList SurprisingGenerals;
     QStringList LordBGMConvertList;
     int operationTimeRate(QSanProtocol::CommandType command, QVariant msg);
-
 
 private:
     void _loadMiniScenarios();
