@@ -595,7 +595,7 @@ void Room::slashEffect(const SlashEffectStruct &effect)
     QVariant data = QVariant::fromValue(effect);
     if (thread->trigger(SlashEffected, this, data)) {
         if (!effect.to->hasFlag("Global_NonSkillNullify"))
-            ;//setEmotion(effect.to, "skill_nullify");
+            ; //setEmotion(effect.to, "skill_nullify");
         else
             effect.to->setFlags("-Global_NonSkillNullify");
         if (effect.slash)
@@ -1134,7 +1134,7 @@ bool Room::isCanceled(const CardEffectStruct &effect)
         CardEffectStruct effect1 = edata.value<CardEffectStruct>();
         return effect1.canceled;
     }
-        
+
     if (!effect.card->isCancelable(effect))
         return false;
     QVariant decisionData = QVariant::fromValue(effect.to);
@@ -4756,7 +4756,8 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                 || cards_moves[i].from_place == Player::DiscardPile || cards_moves[i].to_place == Player::DiscardPile
                 // any card from/to discard pile should be visible
                 || cards_moves[i].from_place == Player::PlaceTable
-                || (cards_moves[i].to_place == Player::PlaceTable && ((cards_moves[i].reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_PINDIAN) || !cards_moves[i].shown_ids.isEmpty())
+                || (cards_moves[i].to_place == Player::PlaceTable && ((cards_moves[i].reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_PINDIAN)
+                    || !cards_moves[i].shown_ids.isEmpty())
                 // any card from/to place table should be visible,except pindian
                 || (cards_moves[i].to_place == Player::PlaceSpecial && to && to->pileOpen(cards_moves[i].to_pile_name, player->objectName()))
                 // pile open to specific players
@@ -6697,4 +6698,3 @@ void Room::saveWinnerTable(const QString &winner, bool isSurrender)
     stream << line;
     file.close();
 }
-

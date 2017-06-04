@@ -593,7 +593,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
         pindian_struct.from_card = card1;
     pindian_struct.reason = reason;
 
-    PindianStruct *pindian = &pindian_struct;//for tmp record.
+    PindianStruct *pindian = &pindian_struct; //for tmp record.
     if (card1 == NULL) {
         //QList<const Card *> cards = room->askForPindianRace(this, target, reason);
         //card1 = cards.first();
@@ -609,11 +609,9 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
         //@todo: fix UI and log
         //if (targets.first()->isShownHandcard(card1->getEffectiveId()))
         //    need_reveal = false;
-            //room->showCard(targets.first(), card1->getEffectiveId());
+        //room->showCard(targets.first(), card1->getEffectiveId());
         CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, targets.first()->objectName(), targets.last()->objectName(), pindian_struct.reason, QString());
         room->moveCardTo(card1, targets.first(), NULL, Player::PlaceTable, reason1, false);
-
-
 
         card2 = room->askForPindian(targets.last(), this, target, reason, pindian);
         //if (need_reveal) // only for UI
@@ -635,7 +633,6 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
         card2 = room->askForPindian(target, this, target, reason, pindian);
         CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, target->objectName());
         room->moveCardTo(card2, target, NULL, Player::PlaceTable, reason2, false);
-
     }
 
     if (card1 == NULL || card2 == NULL)
@@ -651,13 +648,11 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     //pindian_struct.askedPlayer = NULL;
     //pindian_struct.reason = reason;
 
-
     //CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, pindian_struct.from->objectName(), pindian_struct.to->objectName(), pindian_struct.reason, QString());
     //room->moveCardTo(pindian_struct.from_card, pindian_struct.from, NULL, Player::PlaceTable, reason1, false);
 
     //CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, pindian_struct.to->objectName());
     //room->moveCardTo(pindian_struct.to_card, pindian_struct.to, NULL, Player::PlaceTable, reason2, false);
-    
 
     LogMessage log2;
     log2.type = "$PindianResult";
@@ -930,7 +925,6 @@ bool ServerPlayer::isSkipped(Player::Phase phase)
     }
     return false;
 }
-
 
 void ServerPlayer::gainMark(const QString &mark, int n)
 {

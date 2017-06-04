@@ -4317,14 +4317,12 @@ public:
     {
         if (e != CardFinished)
             return QList<SkillInvokeDetail>();
-            
+
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from && use.from->hasSkill(this) && use.from->isAlive() 
-                && use.to.length() == 1
-                && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
-                ServerPlayer *next = HuixingNext(use);
-                if (next != NULL)
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, false, next);                       
+        if (use.from && use.from->hasSkill(this) && use.from->isAlive() && use.to.length() == 1 && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
+            ServerPlayer *next = HuixingNext(use);
+            if (next != NULL)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, false, next);
         }
         return QList<SkillInvokeDetail>();
     }
@@ -4338,7 +4336,6 @@ public:
         return false;
     }
 };
-
 
 class Mofu : public TriggerSkill
 {
@@ -4387,7 +4384,6 @@ public:
             return 0;
     }
 };
-
 
 TouhouGodPackage::TouhouGodPackage()
     : Package("touhougod")
@@ -4520,7 +4516,6 @@ TouhouGodPackage::TouhouGodPackage()
     seiga_god->addSkill(new Huanhun);
     seiga_god->addSkill(new Tongling);
     seiga_god->addSkill(new Rumo);
-    
 
     General *marisa_god = new General(this, "marisa_god", "touhougod", 4, false, true, true);
     marisa_god->addSkill(new Huixing);

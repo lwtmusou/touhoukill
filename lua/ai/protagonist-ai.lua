@@ -484,20 +484,21 @@ sgs.ai_skill_use_func.JiezouCard = function(card, use, self)
 		local enemies ={}
 
 		for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-			if p:isAllNude() then continue end
-			if self:isFriend(p) then
-				local jcards=p:getCards("j")
-				for _,card in sgs.qlist(jcards) do
-					if card:getSuit()==sgs.Card_Spade and not card:isKindOf("Lightning") then
-						table.insert(friends,p)
+			if not p:isAllNude() then
+				if self:isFriend(p) then
+					local jcards=p:getCards("j")
+					for _,card in sgs.qlist(jcards) do
+						if card:getSuit()==sgs.Card_Spade and not card:isKindOf("Lightning") then
+							table.insert(friends,p)
+						end
 					end
 				end
-			end
-			if self:isEnemy(p) then
-				if jiezouSpade(self,p) then
-					table.insert(enemies_spade,p)
-				elseif not p:isNude() then
-					table.insert(enemies,p)
+				if self:isEnemy(p) then
+					if jiezouSpade(self,p) then
+						table.insert(enemies_spade,p)
+					elseif not p:isNude() then
+						table.insert(enemies,p)
+					end
 				end
 			end
 		end

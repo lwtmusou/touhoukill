@@ -977,8 +977,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.damage >= damage.to->getHp() && damage.to->isAlive()
-            && !damage.to->isCurrent() &&  damage.to->getArmor() && damage.to->getArmor()->objectName() == objectName()
+        if (damage.damage >= damage.to->getHp() && damage.to->isAlive() && !damage.to->isCurrent() && damage.to->getArmor() && damage.to->getArmor()->objectName() == objectName()
             && equipAvailable(damage.to, EquipCard::ArmorLocation, objectName())) {
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
         }

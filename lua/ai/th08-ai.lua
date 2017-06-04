@@ -141,7 +141,6 @@ sgs.ai_need_bear.bumie = function(self, card,from,tos)
 			for _,id in sgs.qlist(card:getSubcards()) do
 				if c:getEffectiveId() == id then
 					num = num + 1
-					continue
 				end
 			end
 		end

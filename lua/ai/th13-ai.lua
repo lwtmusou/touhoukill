@@ -388,11 +388,12 @@ sgs.ai_skill_use_func.LeishiCard = function(card, use, self)
 		local slash = sgs.cloneCard("thunder_slash", sgs.Card_NoSuit, 0)
 		local targets={}
 		for _, p in ipairs(self.enemies) do
-			if p:hasSkill("jingdian") then continue end
-			if not p:isKongcheng() and  self.player:canSlash(p,slash,false) then
-				if getCardsNum("Jink", p, self.player) < 1
-				or sgs.card_lack[p:objectName()]["Jink"] == 1 or self:isWeak(p)  then
-					table.insert(targets,p)
+			if not p:hasSkill("jingdian") then  
+				if not p:isKongcheng() and  self.player:canSlash(p,slash,false) then
+					if getCardsNum("Jink", p, self.player) < 1
+					or sgs.card_lack[p:objectName()]["Jink"] == 1 or self:isWeak(p)  then
+						table.insert(targets,p)
+					end
 				end
 			end
 		end
@@ -490,21 +491,22 @@ sgs.ai_skill_use_func.XiefaCard = function(card, use, self)
 		if  #good_targets>0 then
 			for _, p in ipairs(good_targets) do
 				for _,a in pairs (self.friends_noself) do
-					if not a:inMyAttackRange(p) then continue end
-					if a:canSlash(p,slash,true) then
-						if self:slashIsEffective(slash, p, a) then
-							local fakeDamage=sgs.DamageStruct()
-							fakeDamage.card=slash
-							fakeDamage.nature= self:touhouDamageNature(slash,a,p)
-							fakeDamage.damage=1
-							fakeDamage.from=a
-							fakeDamage.to=p
-							slash_eff= self:touhouDamage(fakeDamage,a,p).damage>0
-						end
-						if slash_eff then
-							attacker=a
-							victim=p
-							break
+					if  a:inMyAttackRange(p) then  
+						if a:canSlash(p,slash,true) then
+							if self:slashIsEffective(slash, p, a) then
+								local fakeDamage=sgs.DamageStruct()
+								fakeDamage.card=slash
+								fakeDamage.nature= self:touhouDamageNature(slash,a,p)
+								fakeDamage.damage=1
+								fakeDamage.from=a
+								fakeDamage.to=p
+								slash_eff= self:touhouDamage(fakeDamage,a,p).damage>0
+							end
+							if slash_eff then
+								attacker=a
+								victim=p
+								break
+							end
 						end
 					end
 				end
@@ -515,11 +517,12 @@ sgs.ai_skill_use_func.XiefaCard = function(card, use, self)
 
 			for _, p in ipairs(nojink_targets) do
 				for _,a in pairs (self.friends_noself) do
-					if not a:inMyAttackRange(p) then continue end
-					if a:canSlash(p,slash,true) then
-						attacker=a
-						victim=p
-						break
+					if  a:inMyAttackRange(p) then  
+						if a:canSlash(p,slash,true) then
+							attacker=a
+							victim=p
+							break
+						end
 					end
 				end
 			end
@@ -528,11 +531,12 @@ sgs.ai_skill_use_func.XiefaCard = function(card, use, self)
 		if not attacker  and #bad_targets>0 then
 			for _,p in ipairs(bad_targets) do
 				for _,a in pairs (self.enemies) do
-					if not a:inMyAttackRange(p) then continue end
+					if  a:inMyAttackRange(p) then  
 					if a:canSlash(p,slash,true) and self:slashIsEffective(slash, p, a) then
 						attacker=a
 						victim=p
 						break
+					end
 					end
 				end
 			end

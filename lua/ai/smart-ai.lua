@@ -1336,11 +1336,9 @@ end
 
 function sgs.updateIntentions(from, tos, intention, card)
 	for _, to in ipairs(tos) do
-		if card and (card:isNDTrick() or card:isKindOf("BasicCard")) and #tos > 1
-			and to:hasSkill("xunshi") then
-			continue
+		if not (card and (card:isNDTrick() or card:isKindOf("BasicCard")) and #tos > 1 and to:hasSkill("xunshi")) then
+			sgs.updateIntention(from, to, intention, card)
 		end
-		sgs.updateIntention(from, to, intention, card)
 	end
 end
 
@@ -2371,13 +2369,12 @@ function SmartAI:filterEvent(event, player, data)
 			if lord and lord:getGeneral():isLord() then
 				local hasKingdomLordSkill = false
 				for _,s in sgs.qlist(lord:getVisibleSkillList()) do
-					if not s:isLordSkill() then
-						continue
-					end
-					local callback = sgs.ai_skillProperty[s:objectName()]
-					if not callback or callback(self) ~= "noKingdom" then
-						hasKingdomLordSkill = true
-						break
+					if s:isLordSkill() then
+						local callback = sgs.ai_skillProperty[s:objectName()]
+						if not callback or callback(self) ~= "noKingdom" then
+							hasKingdomLordSkill = true
+							break
+						end
 					end
 				end
 				if hasKingdomLordSkill then
@@ -3863,16 +3860,15 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 
 	local friends_table = include_self and self.friends or self.friends_noself
 	for _, player in ipairs(friends_table) do
-		if player:getPhase()==sgs.Player_NotActive and player:hasSkills("gaoao")  then
-			continue
-		end
-		local exclude = self:needKongcheng(player) or self:willSkipPlayPhase(player)
-		if self:hasSkills("keji|qiaobian|shensu", player) or player:getHp() - player:getHandcardNum() >= 3
-			or (player:isLord() and self:isWeak(player) and self:getEnemyNumBySeat(self.player, player) >= 1) then
-			exclude = false
-		end
-		if self:objectiveLevel(player) <= -2 and not hasManjuanEffect(player) and not exclude then
-			table.insert(friends, player)
+		if not (player:getPhase()==sgs.Player_NotActive and player:hasSkills("gaoao")) then
+			local exclude = self:needKongcheng(player) or self:willSkipPlayPhase(player)
+			if self:hasSkills("keji|qiaobian|shensu", player) or player:getHp() - player:getHandcardNum() >= 3
+				or (player:isLord() and self:isWeak(player) and self:getEnemyNumBySeat(self.player, player) >= 1) then
+				exclude = false
+			end
+			if self:objectiveLevel(player) <= -2 and not hasManjuanEffect(player) and not exclude then
+				table.insert(friends, player)
+			end
 		end
 	end
 
@@ -4703,27 +4699,26 @@ function SmartAI:getFinalRetrial(player, reason)
 		end
 	end
 	for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
-		--if self:hasSkills(sgs.wizard_harm_skill .. "|huanshi", aplayer) and self:canRetrial(aplayer, player, reason) then
 		if self:hasSkills(sgs.wizard_harm_skill , aplayer) and self:canRetrial(aplayer, player, reason) then
-
-			if aplayer:hasSkill("mingyun") then continue end
-			if self:isFriend(aplayer) then
-				tmpfriend = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
-				if tmpfriend > maxfriendseat then
-					maxfriendseat = tmpfriend
-					wizardf = aplayer
-				end
-			elseif self:isEnemy(aplayer) then
-				tmpenemy = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
-				if tmpenemy > maxenemyseat then
-					maxenemyseat = tmpenemy
-					wizarde = aplayer
-				end
-			else
-				tmpnetural = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
-				if tmpnetural > maxneturalseat then
-					maxneturalseat = tmpnetural
-					wizardn = aplayer
+			if not aplayer:hasSkill("mingyun") then  
+				if self:isFriend(aplayer) then
+					tmpfriend = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
+					if tmpfriend > maxfriendseat then
+						maxfriendseat = tmpfriend
+						wizardf = aplayer
+					end
+				elseif self:isEnemy(aplayer) then
+					tmpenemy = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
+					if tmpenemy > maxenemyseat then
+						maxenemyseat = tmpenemy
+						wizarde = aplayer
+					end
+				else
+					tmpnetural = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
+					if tmpnetural > maxneturalseat then
+						maxneturalseat = tmpnetural
+						wizardn = aplayer
+					end
 				end
 			end
 		end
@@ -6136,12 +6131,12 @@ function SmartAI:getAoeValue(card, player)
 	for _, target in sgs.qlist(self.room:getOtherPlayers(attacker)) do
 		for _, askill in sgs.qlist(target:getVisibleSkillList()) do
 			local s_name = askill:objectName()
-			if not target:hasSkill(s_name) then continue end
-			local filter = sgs.ai_trick_prohibit[s_name]
-			if filter and type(filter) == "function"
-				and filter(self, attacker, target, card) then
-				good=-100
-				break
+			if target:hasSkill(s_name) then  
+				local filter = sgs.ai_trick_prohibit[s_name]
+				if filter and type(filter) == "function" and filter(self, attacker, target, card) then
+					good=-100
+					break
+				end
 			end
 		end
 		if good<=-100 then
@@ -7086,12 +7081,11 @@ function SmartAI:touhouDamageCaused(damage,from,to)
 	if from and from:isAlive() then
 		for _, askill in sgs.qlist(from:getVisibleSkillList()) do
 			local s_name = askill:objectName()
-			if not from:hasSkill(s_name) then--需要check技能无效
-				continue
-			end
-			local filter = sgs.ai_damageCaused[s_name]
-			if filter and type(filter) == "function"  then
-				damage= filter(self, damage)
+			if  from:hasSkill(s_name) then --需要check技能无效
+				local filter = sgs.ai_damageCaused[s_name]
+				if filter and type(filter) == "function"  then
+					damage= filter(self, damage)
+				end
 			end
 		end
 	end
@@ -7123,16 +7117,15 @@ function SmartAI:touhouDamageInflicted(damage,from,to)
 	--能正常衡量的只有必然减少伤害的事件
 	for _, askill in sgs.qlist(to:getVisibleSkillList()) do
 		local s_name = askill:objectName()
-		if not to:hasSkill(s_name) then--需要check技能无效
-			continue
-		end
-		local filter = sgs.ai_damageInflicted[s_name]
-		if filter and type(filter) == "function"  then
+		if  to:hasSkill(s_name) then--需要check技能无效
+			local filter = sgs.ai_damageInflicted[s_name]
+			if filter and type(filter) == "function"  then
 				damage= filter(self, damage)
-		end
-		if damage.damage<1 then
-			damage.damage=0
-			return damage
+			end
+			if damage.damage<1 then
+				damage.damage=0
+				return damage
+			end
 		end
 	end
 
@@ -7317,12 +7310,11 @@ end
 function SmartAI:touhouDamageProhibit(damage,from,to)
 	for _, askill in sgs.qlist(to:getVisibleSkillList()) do
 		local s_name = askill:objectName()
-		if not to:hasSkill(s_name) then--需要check技能无效
-			continue
-		end
-		local filter = sgs.ai_damage_prohibit[s_name]
-		if filter and type(filter) == "function" and filter(self, from, to, damage) then
-			return true
+		if  to:hasSkill(s_name) then--需要check技能无效
+			local filter = sgs.ai_damage_prohibit[s_name]
+			if filter and type(filter) == "function" and filter(self, from, to, damage) then
+				return true
+			end
 		end
 	end
 	return false
@@ -7384,35 +7376,8 @@ function SmartAI:touhouIgnoreArmor(card,from,to)
 		return true
 	end
 	if not card then return false end
-	--if from:hasSkill("louguan") and card:isKindOf("Slash")
-	--  and not card:isRed() then
-	--  return true
-	--end
 	return false
 end
---东方杀相关
---【幻视】
---[[function SmartAI:touhouCanHuanshi(card,from,to)
-	targets1={}
-	targets2={}
-	if not to:hasSkill("huanshi") then return 0 end
-	for _,p in sgs.qlist(self.room:getOtherPlayers(from)) do
-		--if p:objectName()==to:objectName() then continue end
-		if  from:canSlash(p,card,true)  and from:inMyAttackRange(p)  then
-				if self:isFriend(from, p) then
-					table.insert(targets1,p)
-				end
-				if self:isEnemy(from, p) then
-					table.insert(targets2,p)
-				end
-		end
-	end
-	if self:isFriend(from,to) then
-		return #targets2 - 1
-	else
-		return 1- #targets1
-	end
-end]]
 
 --东方杀相关
 --【死蝶】
@@ -7424,9 +7389,6 @@ function SmartAI:touhouSidieTarget(card,from)
 	end
 	for _,p in sgs.qlist(self.room:getOtherPlayers(from)) do
 		if self:isFriend(from,p) and from:canSlash(p,card,true) then
-			--if p:hasSkill("huanshi") then
-			--  table.insert(targets,p:objectName())
-			--end
 			if p:hasSkills("guaili|shuangren|huwei|lianxi|shende") then
 				table.insert(targets,p:objectName())
 			end
@@ -7434,6 +7396,7 @@ function SmartAI:touhouSidieTarget(card,from)
 	end
 	return targets
 end
+
 --东方杀相关
 --所有补拍流 弃牌流都要注意的函数
 --【永恒】
@@ -7443,6 +7406,7 @@ function SmartAI:touhouHandCardsFix(player)
 	end
 	return false
 end
+
 --【永恒】【吸散】【死宅】【集厄】【控牌】
 function SmartAI:touhouDrawCardsInNotActive(player)
 	if player:hasSkills("yongheng|xisan|sizhai|jie|kongpiao") then
@@ -7529,11 +7493,12 @@ function SmartAI:touhouIsPriorUseOtherCard(player,card,phase)
 		end
 	end
 	for _,c in sgs.qlist(player:getCards("hs"))do
-		if c:getId() == card:getId() then continue end
-		for _,t in pairs(types) do
-			if c:isKindOf(t) then
-				if self:touhouDummyUse(player,c) then
-					return true
+		if not (c:getId() == card:getId()) then
+			for _,t in pairs(types) do
+				if c:isKindOf(t) then
+					if self:touhouDummyUse(player,c) then
+						return true
+					end
 				end
 			end
 		end
@@ -7706,12 +7671,11 @@ function SmartAI:touhouGetJudges(player)
 	player = player or self.room:findPlayer(self.player:getNextAlive():objectName()) --self.player:getNextAlive()
 	for _, askill in sgs.qlist(player:getVisibleSkillList()) do
 		local s_name = askill:objectName()
-		if not player:hasSkill(s_name) then--需要check技能无效
-				continue
-		end
-		local filter = sgs.ai_judge_model[s_name]
-		if filter and type(filter) == "function"  then
-			table.insert(judgeReasons, s_name)
+		if player:hasSkill(s_name) then--需要check技能无效
+			local filter = sgs.ai_judge_model[s_name]
+			if filter and type(filter) == "function"  then
+				table.insert(judgeReasons, s_name)
+			end
 		end
 	end
 
@@ -7788,14 +7752,12 @@ function SmartAI:touhouFindPlayerToDraw(include_self, drawnum, players)
 	local friends = {}
 	for _, player in ipairs(players) do
 		if self:isFriend(player) and not self:cautionRenegade(self.player, player)  then--
-			if  (player:hasSkill("micai") and player:isKongcheng() and drawnum <= 2) then
-				continue
+			if not (player:hasSkill("micai") and player:isKongcheng() and drawnum <= 2) then
+				--其实不应该完全否定 所以还是量化好。。。
+				if not (player:getPhase()==sgs.Player_NotActive and player:hasSkills("gaoao|yongheng")) then
+					table.insert(friends, player)
+				end
 			end
-			--其实不应该完全否定 所以还是量化好。。。
-			if player:getPhase()==sgs.Player_NotActive and player:hasSkills("gaoao|yongheng")  then
-				continue
-			end
-			table.insert(friends, player)
 		end
 	end
 	if #friends == 0 then return end
@@ -7905,11 +7867,11 @@ function SmartAI:trickProhibit(card, enemy, from)
 	from = from or self.player
 	for _, askill in sgs.qlist(enemy:getVisibleSkillList()) do
 		local s_name = askill:objectName()
-		if not enemy:hasSkill(s_name) then continue end
-		local filter = sgs.ai_trick_prohibit[s_name]
-			if filter and type(filter) == "function"
-			and filter(self, from, enemy, card) then
-			return true
+		if  enemy:hasSkill(s_name) then  
+			local filter = sgs.ai_trick_prohibit[s_name]
+				if filter and type(filter) == "function"  filter(self, from, enemy, card) then
+				return true
+			end
 		end
 	end
 	return false
@@ -7920,11 +7882,11 @@ function SmartAI:touhouNeedBear(card,from,tos)
 	tos = tos or sgs.SPlayerList()
 	for _, askill in sgs.qlist(from:getVisibleSkillList()) do
 		local s_name = askill:objectName()
-		if not from:hasSkill(s_name) then continue end
-		local filter = sgs.ai_need_bear[s_name]
-			if filter and type(filter) == "function"
-			and filter(self, card,from,tos) then
-			return true
+		if  from:hasSkill(s_name) then  
+			local filter = sgs.ai_need_bear[s_name]
+			if filter and type(filter) == "function" and filter(self, card,from,tos) then
+				return true
+			end
 		end
 	end
 	return false

@@ -44,8 +44,8 @@ sgs.ai_skill_use_func.DangjiaCard = function(card, use, self)
 
 	local max_num = 0, max_card
 	local min_num = 14, min_card
-		for _, hcard in sgs.qlist(cards) do
-			if hcard:isKindOf("Peach") then continue end
+	for _, hcard in sgs.qlist(cards) do
+		if not hcard:isKindOf("Peach") then  
 			if hcard:getNumber() > max_num then
 				max_num = hcard:getNumber()
 				max_card = hcard
@@ -63,6 +63,7 @@ sgs.ai_skill_use_func.DangjiaCard = function(card, use, self)
 				end
 			end
 		end
+	end
 	if not min_card then return nil end
 
 	if min_card:getNumber()>=12 then return nil end

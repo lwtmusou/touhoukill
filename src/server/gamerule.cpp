@@ -533,7 +533,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
 
         QVariant data = QVariant::fromValue(effect);
         //if (effect.jink_num > 0)
-            room->getThread()->trigger(SlashProceed, room, data);
+        room->getThread()->trigger(SlashProceed, room, data);
         //else
         //    room->slashResult(effect, NULL);
         break;
@@ -551,9 +551,9 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             break;
         }
 
-        if (effect.jink_num == 0){
+        if (effect.jink_num == 0) {
             room->slashResult(effect, NULL);
-            break; 
+            break;
         }
         if (effect.jink_num == 1) {
             const Card *jink = room->askForCard(effect.to, "jink", "slash-jink:" + slasher, data, Card::MethodUse, effect.from);

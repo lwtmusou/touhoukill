@@ -277,9 +277,9 @@ sgs.ai_skill_use["@@yaoban"] = function(self, prompt)
 			fakeDamage.from=self.player
 			fakeDamage.to=p
 			local yaoban_effect = self:touhouNeedAvoidAttack(fakeDamage, self.player, p)
-			--local yaoban_effect= self:touhouDamage(fakeDamage,self.player,p).damage>0
-			if not  yaoban_effect then continue end
-			table.insert(targets,p)
+			if   yaoban_effect then  
+				table.insert(targets,p)
+			end
 		end
 	end
 
@@ -354,13 +354,12 @@ function Cansave(self,dying,need_peachs)
 		if peach_asked and p:objectName() ==self.player:objectName() then
 			peach_asked=false
 		end
-		if peach_asked then
-			continue
-		end
-		if self:isFriend(p,dying) then
-			peachs=peachs+ getCardsNum("Peach", p, self.player)
-			if p:objectName() ==dying:objectName() then
-				peachs=peachs+ getCardsNum("Analeptic", p, self.player)
+		if not peach_asked then
+			if self:isFriend(p,dying) then
+				peachs=peachs+ getCardsNum("Peach", p, self.player)
+				if p:objectName() ==dying:objectName() then
+					peachs=peachs+ getCardsNum("Analeptic", p, self.player)
+				end
 			end
 		end
 	end

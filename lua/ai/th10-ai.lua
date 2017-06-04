@@ -323,26 +323,27 @@ sgs.ai_skill_use_func.FengshenCard = function(card, use, self)
 		local weaksIn1={}
 		for _, p in ipairs(self.enemies) do
 			if self.player:inMyAttackRange(p)  then
-				if self:getDamagedEffects(p, self.player) then
-					continue
-				end
-				local fakeDamage=sgs.DamageStruct()
-				fakeDamage.card=nil
-				fakeDamage.nature= sgs.DamageStruct_Normal
-				fakeDamage.damage=1
-				fakeDamage.from=self.player
-				fakeDamage.to=p
-				local fengshen_effect= self:touhouNeedAvoidAttack(fakeDamage,self.player, p)
-				if not  fengshen_effect then continue end
-				table.insert(targetsInAttackRange,p)
+				if not self:getDamagedEffects(p, self.player) then
+					
+					local fakeDamage=sgs.DamageStruct()
+					fakeDamage.card=nil
+					fakeDamage.nature= sgs.DamageStruct_Normal
+					fakeDamage.damage=1
+					fakeDamage.from=self.player
+					fakeDamage.to=p
+					local fengshen_effect= self:touhouNeedAvoidAttack(fakeDamage,self.player, p)
+					if   fengshen_effect then  
+						table.insert(targetsInAttackRange,p)
 
-				if self.player:distanceTo(p) == 1 then
-					table.insert(targetsIn1,p)
-				end
-				if self:isWeak(p) then
-					table.insert(weaks,p)
-					if self.player:distanceTo(p) == 1 then
-						table.insert(weaksIn1,p)
+						if self.player:distanceTo(p) == 1 then
+							table.insert(targetsIn1,p)
+						end
+						if self:isWeak(p) then
+							table.insert(weaks,p)
+							if self.player:distanceTo(p) == 1 then
+								table.insert(weaksIn1,p)
+							end
+						end
 					end
 				end
 			end
@@ -439,10 +440,9 @@ sgs.ai_skill_use_func.XinshangCard = function(card, use, self)
 		targets={}
 		for _, p in ipairs(self.enemies) do
 			if not p:isKongcheng() then
-				if self:touhouHandCardsFix(p) and p:getCards("e"):length()==0 then
-					continue
+				if not (self:touhouHandCardsFix(p) and p:getCards("e"):length()==0) then
+					table.insert(targets,p)
 				end
-				table.insert(targets,p)
 			end
 		end
 		if #targets >0 then

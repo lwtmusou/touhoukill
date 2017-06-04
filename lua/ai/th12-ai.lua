@@ -79,11 +79,11 @@ sgs.ai_skill_invoke.fahua_change = function(self,data)
 	for _, liege in sgs.qlist(lieges) do
 		if liege:objectName()== self.player:objectName() then
 			fahua_invoked=false
-			continue
-		end
-		if not fahua_invoked and self:isFriend(lord,liege) then
-			if  fahua_loyalist(self,use.from,liege,use.card) then
-				return false
+		else
+			if not fahua_invoked and self:isFriend(lord,liege) then
+				if  fahua_loyalist(self,use.from,liege,use.card) then
+					return false
+				end
 			end
 		end
 	end

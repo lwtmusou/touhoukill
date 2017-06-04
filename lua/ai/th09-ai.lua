@@ -78,24 +78,23 @@ sgs.ai_skill_playerchosen.shenpan = function(self, targets)
 	local good_friends={}
 	local x,y
 	for _,target in pairs(target_table) do
-		if not self:damageIsEffective(target, sgs.DamageStruct_Thunder, self.player) then
-			continue
-		end
-		local damage=sgs.DamageStruct("shenpan", self.player, target, 1, sgs.DamageStruct_Thunder)
+		if  self:damageIsEffective(target, sgs.DamageStruct_Thunder, self.player) then
+			local damage=sgs.DamageStruct("shenpan", self.player, target, 1, sgs.DamageStruct_Thunder)
 
-		local final_damage=self:touhouDamage(damage,self.player,target)
-		if final_damage.damage <=0 then continue end
-
-		x,y=self:touhouChainDamage(damage,self.player,target)
-		if x>y then
-			table.insert(chain_targets,target)
-		end
-		if self:isWeak(target)  then
-			table.insert(weak_targets,target)
-		end
-		final_hp= math.max(0,target:getHp()-final_damage.damage)
-		if target:getHandcardNum()>final_hp  then
-			table.insert(shenpan_targets,target)
+			local final_damage=self:touhouDamage(damage,self.player,target)
+			if not (final_damage.damage <=0) then  
+				x,y=self:touhouChainDamage(damage,self.player,target)
+				if x>y then
+					table.insert(chain_targets,target)
+				end
+				if self:isWeak(target)  then
+					table.insert(weak_targets,target)
+				end
+				final_hp= math.max(0,target:getHp()-final_damage.damage)
+				if target:getHandcardNum()>final_hp  then
+					table.insert(shenpan_targets,target)
+				end
+			end
 		end
 	end
 	for _,p in pairs (self.friends_noself)do
@@ -472,35 +471,36 @@ sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 		local array={player= target, value= e_value}
 		table.insert(retrial_targets,array)
 
-		if e_value > 0  or self:touhouHandCardsFix(target) or target:isKongcheng() then continue end
-		--手牌判断
-		if ex_id == -1 then
-			if self:isEnemy(target) then
-				local array={player= target, value = 5 - target:getHandcards():length()}
-				table.insert(retrial_targets,array)
-			elseif (self.player:objectName() == target:objectName()) then
-				local cards1 = sgs.QList2Table(target:getHandcards())
-				local new_id=self:getRetrialCardId(cards1, judge, true)
-				if new_id ~= -1 then
-					local array={player= target, value = 30}
+		if not (e_value > 0  or self:touhouHandCardsFix(target) or target:isKongcheng()) then  
+			--手牌判断
+			if ex_id == -1 then
+				if self:isEnemy(target) then
+					local array={player= target, value = 5 - target:getHandcards():length()}
 					table.insert(retrial_targets,array)
-				end
-			end
-		elseif self:isEnemy(target) then --敌人的已知手牌
-			local count=0
-			for _, card in sgs.qlist(target:getHandcards()) do
-				local flag = string.format("%s_%s_%s", "visible", global_room:getCurrent():objectName(), target:objectName())
-				if  card:hasFlag("visible") or card:hasFlag(flag) then
-					local cards1={}
-					table.insert(cards1,card)
-					local new_id=self:getRetrialCardId(cards1, judge, false)
-					if new_id ~=-1 then
-						count= count + 1
+				elseif (self.player:objectName() == target:objectName()) then
+					local cards1 = sgs.QList2Table(target:getHandcards())
+					local new_id=self:getRetrialCardId(cards1, judge, true)
+					if new_id ~= -1 then
+						local array={player= target, value = 30}
+						table.insert(retrial_targets,array)
 					end
 				end
+			elseif self:isEnemy(target) then --敌人的已知手牌
+				local count=0
+				for _, card in sgs.qlist(target:getHandcards()) do
+					local flag = string.format("%s_%s_%s", "visible", global_room:getCurrent():objectName(), target:objectName())
+					if  card:hasFlag("visible") or card:hasFlag(flag) then
+						local cards1={}
+						table.insert(cards1,card)
+						local new_id=self:getRetrialCardId(cards1, judge, false)
+						if new_id ~=-1 then
+							count= count + 1
+						end
+					end
+				end
+				local array={player= target, value = 5 - target:getHandcards():length() + count}
+				table.insert(retrial_targets,array)
 			end
-			local array={player= target, value = 5 - target:getHandcards():length() + count}
-			table.insert(retrial_targets,array)
 		end
 	end
 	local compare_func = function(a, b)

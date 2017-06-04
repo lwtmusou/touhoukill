@@ -295,8 +295,9 @@ sgs.ai_use_priority.Analeptic = 3.0
 
 sgs.ai_card_intention.Analeptic = function(self, card, from, tos)
 	for _, to in ipairs(tos) do
-		if not to:hasFlag("Global_Dying") then continue end
-		sgs.updateIntention(from, to, -120)
+		if to:hasFlag("Global_Dying") then 
+			sgs.updateIntention(from, to, -120)
+		end
 	end
 end
 
@@ -603,17 +604,17 @@ function SmartAI:useCardIronChain(card, use)
 
 	self:sort(self.friends, "defense")
 	for _, friend in ipairs(self.friends) do
-		if use.current_targets and table.contains(use.current_targets, friend:objectName()) then continue end
-		if friend:isChained() and not self:isGoodChainPartner(friend) and self:hasTrickEffective(card, friend) then
-			if self:needWakeYueshi(friend) then
-				continue
-			end
-			table.insert(friendtargets, friend)
-		else
-			if self:needWakeYueshi(friend) then
-				table.insert(friendtargets, friend)
+		if not (use.current_targets and table.contains(use.current_targets, friend:objectName())) then
+			if friend:isChained() and not self:isGoodChainPartner(friend) and self:hasTrickEffective(card, friend) then
+				if not self:needWakeYueshi(friend) then
+					table.insert(friendtargets, friend)
+				end
 			else
-				table.insert(otherfriends, friend)
+				if self:needWakeYueshi(friend) then
+					table.insert(friendtargets, friend)
+				else
+					table.insert(otherfriends, friend)
+				end
 			end
 		end
 	end
@@ -626,10 +627,9 @@ function SmartAI:useCardIronChain(card, use)
 			and not enemy:hasSkill("jingdian")
 			and self:hasTrickEffective(card, enemy) and not (self:objectiveLevel(enemy) <= 3)
 			and not self:getDamagedEffects(enemy) and not self:needToLoseHp(enemy) and sgs.isGoodTarget(enemy, self.enemies, self) then
-			if self:needWakeYueshi(enemy) then
-				continue
+			if not self:needWakeYueshi(enemy) then
+				table.insert(enemytargets, enemy)
 			end
-			table.insert(enemytargets, enemy)
 		end
 	end
 
@@ -687,14 +687,14 @@ end
 
 sgs.ai_card_intention.IronChain = function(self, card, from, tos)
 	for _, to in ipairs(tos) do
-		if to:hasSkill("xunshi") and #tos > 1 then continue end
-		if not to:isChained() then
-			if self:needWakeYueshi(to) then
-				continue
+		if not (to:hasSkill("xunshi") and #tos > 1) then
+			if not to:isChained() then
+				if not self:needWakeYueshi(to) then
+					sgs.updateIntention(from, to, 60)
+				end
+			else
+				sgs.updateIntention(from, to, -60)
 			end
-			sgs.updateIntention(from, to, 60)
-		else
-			sgs.updateIntention(from, to, -60)
 		end
 	end
 end

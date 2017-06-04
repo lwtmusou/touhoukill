@@ -453,7 +453,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if (effect.to->isAlive() && effect.jink != NULL &&  effect.from->hasSkill(this) && effect.from->canDiscard(effect.from, "hs"))
+        if (effect.to->isAlive() && effect.jink != NULL && effect.from->hasSkill(this) && effect.from->canDiscard(effect.from, "hs"))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.from, effect.from);
         return QList<SkillInvokeDetail>();
     }

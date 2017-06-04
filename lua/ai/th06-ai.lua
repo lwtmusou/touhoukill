@@ -143,28 +143,29 @@ end
 function SmartAI:pohuaiBenefit(player)
 	local value=0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if player:distanceTo(p) > 1 then continue end
-		local damage=sgs.DamageStruct("pohuai", player, p, 1, sgs.DamageStruct_Normal)
-		local final_damage=self:touhouDamage(damage,player, p)
-		if final_damage.damage>0 then
-			if self:isFriend(p) then
-				if self:getDamagedEffects(player) then
-					value = value+1
-				else
-					value = value-1
+		if not (player:distanceTo(p) > 1) then  
+			local damage=sgs.DamageStruct("pohuai", player, p, 1, sgs.DamageStruct_Normal)
+			local final_damage=self:touhouDamage(damage,player, p)
+			if final_damage.damage>0 then
+				if self:isFriend(p) then
+					if self:getDamagedEffects(player) then
+						value = value+1
+					else
+						value = value-1
+					end
+				elseif self:isEnemy(p) then
+					if self:getDamagedEffects(player) then
+						value = value-1
+					else
+						value = value+1
+					end
 				end
-			elseif self:isEnemy(p) then
-				if self:getDamagedEffects(player) then
-					value = value-1
-				else
-					value = value+1
-				end
-			end
-			if player:hasSkill("shengyan") then
-				if self:isFriend(player) then
-					value = value + 1
-				else
-					value = value - 1
+				if player:hasSkill("shengyan") then
+					if self:isFriend(player) then
+						value = value + 1
+					else
+						value = value - 1
+					end
 				end
 			end
 		end

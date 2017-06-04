@@ -592,11 +592,11 @@ function SmartAI:isTargetForRedundantSlash(card, target,source,targets)
 	end
 	for _, askill in sgs.qlist(target:getVisibleSkillList()) do
 		local s_name = askill:objectName()
-		if not target:hasSkill(s_name) then continue end
-		local filter = sgs.ai_benefitBySlashed[s_name]
-			if filter and type(filter) == "function"
-			and filter(self, card,source,target) then
-			return true
+		if  target:hasSkill(s_name) then  
+			local filter = sgs.ai_benefitBySlashed[s_name]
+			if filter and type(filter) == "function" and filter(self, card,source,target) then
+				return true
+			end
 		end
 	end
 	return false
@@ -1087,12 +1087,12 @@ sgs.ai_card_intention.Slash = function(self, card, from, tos)
 		speakTrigger(card, from, to)
 		for _, askill in sgs.qlist(to:getVisibleSkillList()) do
 			local s_name = askill:objectName()
-			if not to:hasSkill(s_name) then continue end
-			local filter = sgs.ai_benefitBySlashed[s_name]
-			if filter and type(filter) == "function"
-				and filter(self, card,from,to) then
-				value = 0
-				continue
+			if  to:hasSkill(s_name) then  
+				local filter = sgs.ai_benefitBySlashed[s_name]
+				if filter and type(filter) == "function"
+					and filter(self, card,from,to) then
+					value = 0
+				end
 			end
 		end
 		if to:hasSkill("xunshi") and #tos > 1 then value = 0 end
@@ -1459,12 +1459,13 @@ end
 
 sgs.ai_card_intention.Peach = function(self, card, from, tos)
 	for _, to in ipairs(tos) do
-		if to:hasSkill("wuhun") then continue end
-		if to:hasSkill("guizha") and not card:isVirtualCard() then
-			continue
+		if not to:hasSkill("wuhun") then  
+			if not (to:hasSkill("guizha") and not card:isVirtualCard()) then
+				if not (to:hasSkill("xunshi") and #tos > 1) then  
+					sgs.updateIntention(from, to, -120)
+				end
+			end
 		end
-		if to:hasSkill("xunshi") and #tos > 1 then continue end
-		sgs.updateIntention(from, to, -120)
 	end
 end
 
@@ -2735,11 +2736,12 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 			if not player:getJudgingArea():isEmpty() and self:hasTrickEffective(card, player)
 				and ((player:containsTrick("lightning") and  judgeMode== 2)
 				or (#self.enemies == 0 and not (player:containsTrick("lightning") and  judgeMode== 1))) then  --确认的敌人为0你就拆了 坑爹  忠内残局 因为有敌人反倒不拆了 擦你妹
-				if player:hasSkill("baoyi") then continue end
-				local tricks = player:getCards("j")
-				for _, trick in sgs.qlist(tricks) do
-					if trick:isKindOf("Lightning") and (not isDiscard or self.player:canDiscard(player, trick:getId())) then
-						if addTarget(player, trick:getEffectiveId()) then return end
+				if not player:hasSkill("baoyi") then  
+					local tricks = player:getCards("j")
+					for _, trick in sgs.qlist(tricks) do
+						if trick:isKindOf("Lightning") and (not isDiscard or self.player:canDiscard(player, trick:getId())) then
+							if addTarget(player, trick:getEffectiveId()) then return end
+						end
 					end
 				end
 			end
@@ -2801,29 +2803,30 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 	local friends = self:exclude(self.friends_noself, card)
 	if not using_2013 then
 		for _, friend in ipairs(friends) do
-			if friend:hasSkill("baoyi") then continue end
-			if (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")) and not friend:containsTrick("YanxiaoCard")
-				and self:hasTrickEffective(card, friend) then
-				local cardchosen
-				tricks = friend:getJudgingArea()
-				for _, trick in sgs.qlist(tricks) do
-					if trick:isKindOf("Indulgence") and (not isDiscard or self.player:canDiscard(friend, trick:getId())) then
-						if friend:getHp() <= friend:getHandcardNum() or friend:isLord() or name == "snatch" then
+			if not friend:hasSkill("baoyi") then  
+				if (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")) and not friend:containsTrick("YanxiaoCard")
+					and self:hasTrickEffective(card, friend) then
+					local cardchosen
+					tricks = friend:getJudgingArea()
+					for _, trick in sgs.qlist(tricks) do
+						if trick:isKindOf("Indulgence") and (not isDiscard or self.player:canDiscard(friend, trick:getId())) then
+							if friend:getHp() <= friend:getHandcardNum() or friend:isLord() or name == "snatch" then
+								cardchosen = trick:getEffectiveId()
+								break
+							end
+						end
+						if trick:isKindOf("SupplyShortage") and (not isDiscard or self.player:canDiscard(friend, trick:getId())) then
+							cardchosen = trick:getEffectiveId()
+							break
+						end
+						if trick:isKindOf("Indulgence") and (not isDiscard or self.player:canDiscard(friend, trick:getId())) then
 							cardchosen = trick:getEffectiveId()
 							break
 						end
 					end
-					if trick:isKindOf("SupplyShortage") and (not isDiscard or self.player:canDiscard(friend, trick:getId())) then
-						cardchosen = trick:getEffectiveId()
-						break
+					if cardchosen then
+						if addTarget(friend, cardchosen) then return end
 					end
-					if trick:isKindOf("Indulgence") and (not isDiscard or self.player:canDiscard(friend, trick:getId())) then
-						cardchosen = trick:getEffectiveId()
-						break
-					end
-				end
-				if cardchosen then
-					if addTarget(friend, cardchosen) then return end
 				end
 			end
 		end
