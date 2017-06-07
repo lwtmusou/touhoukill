@@ -1484,7 +1484,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     }
 
     card = card->validateInResponse(player);
-    if (player->isCardLimited(card, method))
+    if (card !=NULL && player->isCardLimited(card, method))
         card = NULL;
     const Card *result = NULL;
     //card log
