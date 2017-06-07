@@ -599,31 +599,18 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
         //card1 = cards.first();
         //card2 = cards.last();
 
-        QList<ServerPlayer *> targets;
-        targets << this << target;
-        room->sortByActionOrder(targets);
-
-        //bool need_reveal = true;
-
-        card1 = room->askForPindian(targets.first(), this, target, reason, pindian);
+        card1 = room->askForPindian(this, this, target, reason, pindian);
         //@todo: fix UI and log
         //if (targets.first()->isShownHandcard(card1->getEffectiveId()))
         //    need_reveal = false;
         //room->showCard(targets.first(), card1->getEffectiveId());
-        CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, targets.first()->objectName(), targets.last()->objectName(), pindian_struct.reason, QString());
-        room->moveCardTo(card1, targets.first(), NULL, Player::PlaceTable, reason1, false);
+        CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, objectName(), target->objectName(), pindian_struct.reason, QString());
+        room->moveCardTo(card1, this, NULL, Player::PlaceTable, reason1, false);
 
-        card2 = room->askForPindian(targets.last(), this, target, reason, pindian);
-        //if (need_reveal) // only for UI
-        CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, targets.last()->objectName());
-        room->moveCardTo(card2, targets.last(), NULL, Player::PlaceTable, reason2, true);
+        card2 = room->askForPindian(target, this, target, reason, pindian);
+        CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, target->objectName());
+        room->moveCardTo(card2, target, NULL, Player::PlaceTable, reason2, true);
 
-        //sort card
-        if (targets.first() != this) {
-            const Card *tmp = card1;
-            card1 = card2;
-            card2 = tmp;
-        }
     } else {
         if (card1->isVirtualCard()) {
             int card_id = card1->getEffectiveId();
