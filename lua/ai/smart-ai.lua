@@ -7869,7 +7869,7 @@ function SmartAI:trickProhibit(card, enemy, from)
 		local s_name = askill:objectName()
 		if  enemy:hasSkill(s_name) then  
 			local filter = sgs.ai_trick_prohibit[s_name]
-				if filter and type(filter) == "function"  filter(self, from, enemy, card) then
+			if filter and type(filter) == "function" and filter(self, from, enemy, card) then
 				return true
 			end
 		end
