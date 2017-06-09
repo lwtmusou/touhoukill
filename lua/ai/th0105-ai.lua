@@ -309,7 +309,7 @@ end
 
 function lubiaoInvoke(self, card)
 	for _,p in sgs.qlist(self.room:getAlivePlayers())do
-		for _,c in sgs.qlist(p:getCards("j")) then
+		for _,c in sgs.qlist(p:getCards("j")) do
 			if (c:getColor() == card:getColor()) then
 				return true
 			end
