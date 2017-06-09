@@ -805,16 +805,15 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
-        bool can = false;
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.card == NULL || !damage.to->hasSkill(this))
+            return QList<SkillInvokeDetail>();
         foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (p->getCards("j").length() > 0) {
-                can = true;
-                break;
+            foreach(const Card *c, p->getCards("j")) {
+                if (!c->sameColorWith(damage.card))
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
             }
         }
-        DamageStruct damage = data.value<DamageStruct>();
-        if (can && damage.to->hasSkill(this))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
         return QList<SkillInvokeDetail>();
     }
 

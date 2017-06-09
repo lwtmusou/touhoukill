@@ -307,15 +307,15 @@ sgs.ai_trick_prohibit.mengxiao = function(self, from, to, card)
 	return false
 end
 
-function lubiaoInvoke(self)
-	local prevent=false
+function lubiaoInvoke(self, card)
 	for _,p in sgs.qlist(self.room:getAlivePlayers())do
-		if (p:getCards("j"):length()>0 ) then
-			prevent=true
-			break
+		for _,c in sgs.qlist(p:getCards("j")) then
+			if (c:getColor() == card:getColor()) then
+				return true
+			end
 		end
 	end
-	return prevent
+	return false
 end
 --[[sgs.ai_slash_prohibit.lubiao = function(self, from, to, card)
 	if not to:hasSkill("lubiao") then return false end
@@ -326,7 +326,7 @@ end
 	return false
 end]]
 sgs.ai_damageInflicted.lubiao =function(self, damage)
-	if lubiaoInvoke(self) then
+	if damage.card and lubiaoInvoke(self, damage.card)then
 		damage.damage= damage.damage - 1 
 	end
 	return damage
