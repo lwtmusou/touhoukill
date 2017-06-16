@@ -42,6 +42,11 @@
 #include <QVersionNumber>
 #include <QtMath>
 
+#ifdef Q_OS_WIN
+#include <QWinTaskbarButton>
+#include <QWinTaskbarProgress>
+#endif
+
 class FitView : public QGraphicsView
 {
 public:
@@ -1014,6 +1019,7 @@ UpdateDialog::UpdateDialog(QWidget *parent)
     , m_busy(false)
     , m_finishedScript(false)
     , m_finishedPack(false)
+    , taskbarButton(NULL)
 {
     setWindowTitle(tr("New Version Available"));
 
@@ -1058,6 +1064,9 @@ void UpdateDialog::setInfo(const QString &v, const QVersionNumber &vn, const QSt
 
 void UpdateDialog::startUpdate()
 {
+#ifdef Q_OS_WIN
+    taskbarButton->progress()->hide();
+#endif
 // we should run update script and then exit this main program.
 #if defined(Q_OS_WIN)
     QStringList arg;
@@ -1097,6 +1106,7 @@ void UpdateDialog::startDownload()
     if (m_updatePack.isEmpty() || m_updateScript.isEmpty()) {
         QMessageBox::critical(this, tr("Update Error"), tr("An error occurred when downloading packages.\nURL is empty."));
         QDialog::reject();
+        return;
     }
 
     m_busy = true;
@@ -1115,11 +1125,19 @@ void UpdateDialog::startDownload()
     scriptReply = downloadManager->get(reqScript);
     connect(scriptReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errScript);
     connect(scriptReply, &QNetworkReply::finished, this, &UpdateDialog::finishedScript);
+
+#ifdef Q_OS_WIN
+    taskbarButton->progress()->reset();
+    taskbarButton->progress()->show();
+#endif
 }
 
 void UpdateDialog::downloadProgress(quint64 downloaded, quint64 total)
 {
     bar->setValue(10000 * downloaded / total);
+#ifdef Q_OS_WIN
+    taskbarButton->progress()->setValue(10000 * downloaded / total);
+#endif
 }
 
 void UpdateDialog::finishedScript()
@@ -1147,6 +1165,9 @@ void UpdateDialog::finishedScript()
 
 void UpdateDialog::errScript()
 {
+#ifdef Q_OS_WIN
+    taskbarButton->progress()->hide();
+#endif
     if (scriptReply != NULL) {
         disconnect(scriptReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errScript);
         disconnect(scriptReply, &QNetworkReply::finished, this, &UpdateDialog::finishedScript);
@@ -1174,6 +1195,9 @@ void UpdateDialog::finishedPack()
 
     if (!packHashVerify(arr)) {
         QMessageBox::critical(this, tr("Update Error"), tr("An error occurred when downloading packages.\nDownload pack checksum mismatch."));
+#ifdef Q_OS_WIN
+        taskbarButton->progress()->hide();
+#endif
         QDialog::reject();
         return;
     }
@@ -1196,6 +1220,9 @@ void UpdateDialog::finishedPack()
 
 void UpdateDialog::errPack()
 {
+#ifdef Q_OS_WIN
+    taskbarButton->progress()->hide();
+#endif
     if (scriptReply != NULL) {
         disconnect(scriptReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errScript);
         disconnect(scriptReply, &QNetworkReply::finished, this, &UpdateDialog::finishedScript);
@@ -1218,4 +1245,18 @@ void UpdateDialog::reject()
 {
     if (!m_busy)
         QDialog::reject();
+}
+
+void UpdateDialog::showEvent(QShowEvent *e)
+{
+    QDialog::showEvent(e);
+#ifdef Q_OS_WIN
+    taskbarButton = new QWinTaskbarButton(this);
+    taskbarButton->setWindow(windowHandle());
+    QWinTaskbarProgress *prog = taskbarButton->progress();
+    prog->setVisible(false);
+    prog->setMinimum(0);
+    prog->reset();
+    prog->setMaximum(10000);
+#endif
 }

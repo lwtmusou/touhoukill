@@ -27,6 +27,7 @@ class QGroupBox;
 class RoomItem;
 class QProgressBar;
 class QLabel;
+class QWinTaskbarButton;
 
 class BroadcastBox : public QDialog
 {
@@ -63,6 +64,7 @@ private:
     QNetworkAccessManager *downloadManager;
     QNetworkReply *scriptReply;
     QNetworkReply *packReply;
+    QWinTaskbarButton *taskbarButton;
 
     QString m_updateScript;
     QString m_updatePack;
@@ -87,6 +89,9 @@ private slots:
 public slots:
     void accept();
     void reject();
+
+protected:
+    void showEvent(QShowEvent *event) override;
 };
 
 class MainWindow : public QMainWindow
