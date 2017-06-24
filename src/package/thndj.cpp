@@ -576,7 +576,7 @@ public:
     {
         if (e == EventPhaseEnd) {
             ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player->hasSkill(this) && player->getPhase() == Player::Play) {
+            if (player->hasSkill(this) && player->getPhase() == Player::Play && player->isAlive()) {
                 Slash *s = new Slash(Card::NoSuit, 0);
                 s->setSkillName(objectName());
                 s->deleteLater();
