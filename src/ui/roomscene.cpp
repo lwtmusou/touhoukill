@@ -3563,7 +3563,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         labels << tr("Role");
 
         labels << tr("TurnCount");
-        labels << tr("Recover") << tr("Damage") << tr("Damaged") << tr("Kill") << tr("Designation");
+        labels << tr("Recover") << tr("Damage") << tr("Damaged") << tr("Kill");
         labels << tr("Handcards");
     }
     table->setHorizontalHeaderLabels(labels);
@@ -3645,10 +3645,6 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         item = new QTableWidgetItem;
         item->setText(QString::number(rec->m_kill));
         table->setItem(i, 8, item);
-
-        item = new QTableWidgetItem;
-        item->setText(rec->m_designation.join(", "));
-        table->setItem(i, 9, item);
 
         item = new QTableWidgetItem;
         QString handcards = QString::fromUtf8(QByteArray::fromBase64(player->property("last_handcards").toString().toLatin1()));

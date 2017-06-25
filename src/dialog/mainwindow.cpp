@@ -767,7 +767,7 @@ void MainWindow::on_actionRecord_analysis_triggered()
     static QStringList labels;
     if (labels.isEmpty()) {
         labels << tr("ScreenName") << tr("General") << tr("Role") << tr("Living") << tr("WinOrLose") << tr("TurnCount") << tr("Recover") << tr("Damage") << tr("Damaged")
-               << tr("Kill") << tr("Designation");
+               << tr("Kill");
     }
     table->setHorizontalHeaderLabels(labels);
     table->setSelectionBehavior(QTableWidget::SelectRows);
@@ -821,10 +821,6 @@ void MainWindow::on_actionRecord_analysis_triggered()
         item = new QTableWidgetItem;
         item->setText(QString::number(rec->m_kill));
         table->setItem(i, 9, item);
-
-        item = new QTableWidgetItem;
-        item->setText(rec->m_designation.join(", "));
-        table->setItem(i, 10, item);
         i++;
     }
 
