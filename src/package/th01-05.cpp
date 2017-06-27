@@ -1188,27 +1188,48 @@ public:
     {
         events << Pindian << EventPhaseChanging;
     }
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
     {
-        if (triggerEvent == Pindian) {
-            PindianStruct *pindian = data.value<PindianStruct *>();
-            if (pindian->reason == "xuxiang" && pindian->from_number > pindian->to_number) {
-                DamageStruct damage = pindian->from->tag.value("xuxiang").value<DamageStruct>();
-                int d = damage.damage;
-                if (pindian->from_card->isKindOf("Jink") || pindian->to_card->isKindOf("Jink"))
-                    d++;
-                if (pindian->from_card->isKindOf("Slash") || pindian->to_card->isKindOf("Slash"))
-                    d--;
-                damage.damage = qMax(0, d);
-                pindian->from->tag["xuxiang"] = QVariant::fromValue(damage);
-            }
-        } else if (triggerEvent == EventPhaseChanging) {
+        if (triggerEvent == EventPhaseChanging) {
             foreach (ServerPlayer *p, room->getAlivePlayers()) {
                 if (p->hasFlag("xuxiang_used"))
                     room->setPlayerFlag(p, "-xuxiang_used");
             }
         }
     }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        if (triggerEvent == Pindian) {
+            PindianStruct *pindian = data.value<PindianStruct *>();
+            if (pindian->reason == "xuxiang" && pindian->from_number > pindian->to_number) {
+                if (pindian->from_card->isKindOf("Jink") || pindian->to_card->isKindOf("Jink") ||
+                    pindian->from_card->isKindOf("Slash") || pindian->to_card->isKindOf("Slash"))
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, pindian->from, pindian->from, NULL, true);
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+    
+    
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        PindianStruct *pindian = data.value<PindianStruct *>();
+        DamageStruct damage = pindian->from->tag.value("xuxiang").value<DamageStruct>();
+        int d = damage.damage;
+        if (pindian->from_card->isKindOf("Jink") || pindian->to_card->isKindOf("Jink")) {
+            if (invoke->invoker->askForSkillInvoke("xuxiang_plus"))
+                d++;
+        }
+        if (pindian->from_card->isKindOf("Slash") || pindian->to_card->isKindOf("Slash")) {
+            if (invoke->invoker->askForSkillInvoke("xuxiang_minus"))
+                d--;
+        }
+        damage.damage = qMax(0, d);
+        pindian->from->tag["xuxiang"] = QVariant::fromValue(damage);
+        return false;
+    }
+
 };
 
 class Huanjue : public TriggerSkill
