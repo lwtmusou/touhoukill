@@ -1168,6 +1168,10 @@ public:
         room->setPlayerFlag(invoke->invoker, "xuxiang_used");
         if (invoke->invoker->pindian(invoke->targets.first(), objectName())) {
             DamageStruct new_damage = invoke->invoker->tag.value("xuxiang").value<DamageStruct>();
+            if (new_damage.damage < damage.damage)
+                room->touhouLogmessage("#Xuxiang_minus", damage.to, objectName(), QList<ServerPlayer *>(), QString::number(1));
+            if (new_damage.damage > damage.damage)
+                room->touhouLogmessage("#Xuxiang_plus", damage.to, objectName(), QList<ServerPlayer *>(), QString::number(1));
             if (new_damage.damage == 0)
                 return true;
             data = QVariant::fromValue(new_damage);
@@ -1190,12 +1194,12 @@ public:
             PindianStruct *pindian = data.value<PindianStruct *>();
             if (pindian->reason == "xuxiang" && pindian->from_number > pindian->to_number) {
                 DamageStruct damage = pindian->from->tag.value("xuxiang").value<DamageStruct>();
-                int d = 0;
-                if (pindian->from_card->isBlack())
+                int d = damage.damage;
+                if (pindian->from_card->isKindOf("Jink") || pindian->to_card->isKindOf("Jink"))
                     d++;
-                if (pindian->to_card->isBlack())
-                    d++;
-                damage.damage = d;
+                if (pindian->from_card->isKindOf("Slash") || pindian->to_card->isKindOf("Slash"))
+                    d--;
+                damage.damage = qMax(0, d);
                 pindian->from->tag["xuxiang"] = QVariant::fromValue(damage);
             }
         } else if (triggerEvent == EventPhaseChanging) {
