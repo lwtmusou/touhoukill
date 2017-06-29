@@ -4608,3 +4608,30 @@ sgs.ai_use_value.SavingEnergy = 9
 sgs.ai_use_priority.SavingEnergy = 0.6
 sgs.ai_keep_value.SavingEnergy = 3
 sgs.ai_card_intention.SavingEnergy = -80
+
+
+sgs.weapon_range.DeathSickle = 2
+sgs.ai_skill_invoke.DeathSickle = function(self, data)
+	local target = data:toPlayer()
+	if target then
+		return self:isEnemy(target)
+	end
+	return false
+end
+function sgs.ai_slash_weaponfilter.DeathSickle(self, to, player)
+	if self:isEnemy(to) and (to:dyingThreshold() + 1 ) >= to:getHp() then 
+		return sgs.card_lack[to:objectName()]["Jink"] == 1 or getCardsNum("Jink", to, self.player) == 0
+	end
+	return false
+end
+function sgs.ai_weapon_value.DoubleSword(self, enemy, player)
+	if enemy and  self:isWeak(enemey) then return 4 end
+end
+sgs.ai_use_priority.DeathSickle = 2.673
+
+sgs.ai_choicemade_filter.skillInvoke.DeathSickle = function(self, player, args)
+	local target = player:getTag("DeathSickleTarget"):toPlayer()
+	if target and args[#args] == "yes" then
+		sgs.updateIntention(player, target, 60)
+	end
+end

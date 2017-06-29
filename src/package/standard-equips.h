@@ -137,6 +137,15 @@ public:
     virtual void onUninstall(ServerPlayer *player) const;
 };
 
+
+class DeathSickle : public Weapon
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE DeathSickle(Card::Suit suit, int number);
+};
+
 class StandardCardPackage : public Package
 {
     Q_OBJECT

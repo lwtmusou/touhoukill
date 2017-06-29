@@ -2201,6 +2201,87 @@ public:
     }
 };
 
+
+class DeathSickleSkill : public WeaponSkill
+{
+public:
+    DeathSickleSkill()
+        : WeaponSkill("DeathSickle")
+    {
+        events << TargetSpecified << EventPhaseChanging;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    int mark = p->getMark("DeathSickle");
+                    if (mark > 0) {
+                        room->setPlayerMark(p, "DeathSickle", 0);
+                        room->setPlayerProperty(p, "dyingFactor", p->getDyingFactor() - mark);
+                    }
+                }
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
+    {
+        if (e != TargetSpecified)
+            return QList<SkillInvokeDetail>();
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
+            return QList<SkillInvokeDetail>();
+
+        if (use.card != NULL && use.card->isKindOf("Slash")) {
+            QList<SkillInvokeDetail> d;
+            foreach(ServerPlayer *p, use.to) {
+                if (p->isAlive()) {
+                    if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
+                        continue;
+                    d << SkillInvokeDetail(this, use.from, use.from, NULL, false, p);
+                }
+            }
+            return d;
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        invoke->invoker->tag["DeathSickleTarget"] = QVariant::fromValue(invoke->preferredTarget);
+        if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
+            //room->setEmotion(invoke->invoker, "weapon/death_sickle");
+            return true;
+        }
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        ServerPlayer *target = invoke->targets.first();
+        room->touhouLogmessage("#DeathSickle", target, QString::number(target->dyingThreshold() + 1), QList<ServerPlayer *>(), QString::number(1));
+        room->setPlayerMark(target, "DeathSickle", target->getMark("DeathSickle") + 1);
+        room->setPlayerProperty(target, "dyingFactor", target->getDyingFactor() + 1);
+        return false;
+    }
+};
+
+DeathSickle::DeathSickle(Card::Suit suit, int number)
+    : Weapon(suit, number, 2)
+{
+    setObjectName("DeathSickle");
+}
+
+
+
+
+
+
+
+
 StandardCardPackage::StandardCardPackage()
     : Package("standard_cards", Package::CardPack)
 {
@@ -2374,12 +2455,12 @@ StandardExCardPackage::StandardExCardPackage()
         << new KnownBoth(Card::Club, 3)
         << new KnownBoth(Card::Spade, 4)
         << new SavingEnergy(Card::Diamond, 9)
-        << new SavingEnergy(Card::Heart, 11);
-
+        << new SavingEnergy(Card::Heart, 11)
+        << new DeathSickle(Card::Club, 1);
     // clang-format on
 
     skills << new RenwangShieldSkill << new IceSwordSkill << new WoodenOxSkill << new WoodenOxTriggerSkill << new LureTigerSkill << new LureTigerProhibit << new KnownBothSkill
-           << new SavingEnergySkill;
+           << new SavingEnergySkill << new DeathSickleSkill;
     insertRelatedSkills("lure_tiger_effect", "#lure_tiger-prohibit");
 
     foreach (Card *card, cards)

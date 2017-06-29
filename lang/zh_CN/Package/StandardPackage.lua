@@ -149,6 +149,11 @@ local t = {
 	["saving_energy"] = "养精蓄锐",
 	[":saving_energy"] = "一次性延时锦囊牌<br />出牌时机：出牌阶段<br />使用目标：一名角色。<br />作用效果：目标角色进行判定，若结果不为<font color=\"black\"><b>♠</b></font>，目标角色跳过此回合的弃牌阶段，并将此牌置于人物牌旁。此回合结束时，其获得此牌。",
 	["saving_energy_effect"] = "养精蓄锐",
+	
+	
+	["DeathSickle"] = "死神镰刀",
+	[":DeathSickle"] = "装备牌·武器\n\n攻击范围：2<br/>技能：当你使用【杀】指定一名目标后，你可令其体力下限于此回合内+1。",
+	["#DeathSickle"] = "%from 体力下限增加了%arg2 点， 当前体力下限 为 %arg 点。",
 }
 
 local ohorses = { "ChiTu", "DaYuan", "ZiXing"}
