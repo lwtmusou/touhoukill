@@ -346,7 +346,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.chain || damage.transfer || !damage.by_user || !damage.from || damage.from == damage.to || !damage.from->hasSkill(this))
             return QList<SkillInvokeDetail>();
-        if (damage.card && damage.card->isKindOf("Slash") && damage.to->getHp() == 1)
+        if (damage.card && damage.card->isKindOf("Slash") && damage.to->getHp() <= damage.to->dyingThreshold())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
         return QList<SkillInvokeDetail>();
     }

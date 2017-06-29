@@ -242,7 +242,7 @@ sgs.ai_skill_invoke.mingtu = true
 
 sgs.ai_damageCaused.silian = function(self, damage)
 	if damage.card and not damage.chain and not damage.transfer then
-		if  damage.card:isKindOf("Slash") and  damage.to:getHp()==1 then
+		if  damage.card:isKindOf("Slash") and  damage.to:getHp() <= damage.to:dyingThreshold() then
 			damage.damage=damage.damage+2
 		end
 	end
