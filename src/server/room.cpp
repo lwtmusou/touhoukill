@@ -327,7 +327,6 @@ void Room::revivePlayer(ServerPlayer *player)
 
         foreach (const Skill *skill, player->getVisibleSkillList()) {
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
-                //addPlayerMark(player, skill->getLimitMark());
                 setPlayerMark(player, skill->getLimitMark(), 1);
         }
 

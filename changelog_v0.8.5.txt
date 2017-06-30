@@ -116,7 +116,7 @@
 95 双月再调整
 96 小町【死镰】调整
 97 新武器 死神镰刀
-
+98 fix 满血可以吃桃 （原因应该是 神霍青娥复活后的GlobalDyingflag问题）
 
 **********************************
 未处理的bug：
@@ -125,7 +125,7 @@
 2 检查一下 明牌的 UI？ 没有及时清理 pile？
 3  检查一下 response 和 response use 时的 target fix 与 target feasbile 道不清说不完的关系。。。  特别是roomscenene和 各种技能卡 调用时。。。
   还是挺乱的。。。
-4 global_Dying flag 清理有问题？  霍青娥死亡后复活， 客户端player类下查得到flag  server端的player查不到。。。
-5 主动吃酒是回血。 @死欲妖梦
+4 global_Dying flag 清理有问题  霍青娥死亡后复活， 客户端player类下查得到flag  server端的player查不到。。。
+5 有报告 死欲妖梦 主动吃酒是回血。   然而无法重现。。看代码也觉得不可能
 6 私家牌堆UI调整一下
-7 slm小伞两个延时
+

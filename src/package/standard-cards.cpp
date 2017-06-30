@@ -404,16 +404,19 @@ bool Peach::isAvailable(const Player *player) const
 {
     if (!BasicCard::isAvailable(player))
         return false;
-    bool ignore = (player->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
+    bool isPlay = Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY;
+    bool ignore = (player->hasSkill("tianqu") && isPlay && !hasFlag("IgnoreFailed"));
     if (ignore)
         return true;
     if (player->isWounded() && !player->isProhibited(player, this))
         return true;
     foreach (const Player *p, player->getAliveSiblings()) {
-        if (p->hasLordSkill("yanhui") && p->isWounded() && player->getKingdom() == "zhan" && player->getPhase() == Player::Play && !player->isProhibited(p, this))
-            return true;
-        if (p->hasFlag("Global_Dying"))
-            return true;
+        if (!player->isProhibited(p, this)) {
+            if (p->hasFlag("Global_Dying") && !isPlay)
+                return true;
+            if (p->hasLordSkill("yanhui") && p->isWounded() && player->getKingdom() == "zhan" && player->getPhase() == Player::Play)
+                return true;
+        }
     }
     return false;
 }
@@ -2249,7 +2252,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         invoke->invoker->tag["DeathSickleTarget"] = QVariant::fromValue(invoke->preferredTarget);
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
