@@ -4053,12 +4053,36 @@ public:
         return -1;
     }
 
+    static bool canHuanhun(ServerPlayer *player) {
+        QString role = player->getRole();
+        if (role == "renegade") 
+            return true;
+        int loyalist = 0;
+        int rebel = 0;
+        int renegade = 0;
+        foreach(ServerPlayer *p, player->getRoom()->getAllPlayers()) {
+            if (p->getRole() == "rebel")
+                rebel++;
+            else if (p->getRole() == "renegde")
+                renegade++;
+            else if (p->getRole() == "loyalist" || p->getRole() == "lord")
+                loyalist++;
+        }
+        renegade = qMin(1, renegade);
+        if (role == "rebel")
+            return rebel < loyalist || rebel < renegade;
+        else
+            return loyalist < rebel || loyalist < renegade;
+        return false;
+    }
+
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         DeathStruct death = data.value<DeathStruct>();
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *p, room->getOtherPlayers(death.who, true)) {
-            if (p->isDead() && p->hasSkill(this))
+            if (p->isDead() && p->hasSkill(this) && canHuanhun(p))
                 d << SkillInvokeDetail(this, p, p, NULL, true);
         }
         return d;
@@ -4200,9 +4224,30 @@ RumoCard::RumoCard()
 {
 }
 
+static int rumoNum(const Player *seiga){
+    int loyalist = 0;
+    int rebel = 0;
+    int renegade = 0;
+    QList<const Player *> players = seiga->getAliveSiblings();
+    players.append(Self);
+    foreach(const Player *p, players) {
+        if (p->getRole() == "rebel")
+            rebel++;
+        else if (p->getRole() == "renegade")
+            renegade++;
+        else if (p->getRole() == "loyalist" || p->getRole() == "lord")
+            loyalist++;
+    }
+    renegade = qMin(renegade, 1);
+    int num = qMax(renegade, loyalist);
+    num = qMax(num, rebel);
+
+    return num;
+}
+
 bool RumoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    int num = qMax(Self->getHp(), 1);
+    int num = rumoNum(Self);
     if (!targets.contains(Self))
         return to_select == Self && targets.length() < num;
     return !targets.contains(to_select) && targets.length() < num;
@@ -4210,7 +4255,7 @@ bool RumoCard::targetFilter(const QList<const Player *> &targets, const Player *
 
 bool RumoCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    int num = qMax(Self->getHp(), 1);
+    int num = rumoNum(Self);
     return targets.length() > 0 && targets.length() <= num && targets.contains(Self);
 }
 void RumoCard::onUse(Room *room, const CardUseStruct &card_use) const
@@ -4222,7 +4267,22 @@ void RumoCard::onUse(Room *room, const CardUseStruct &card_use) const
 void RumoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     room->removePlayerMark(source, "@rumo");
-    int num = qMax(source->getHp(), 1);
+    QStringList roles = room->aliveRoles();
+    int loyalist = 0;
+    int rebel = 0;
+    int renegade = 0;
+    foreach(QString role, roles) {
+        if (role == "rebel")
+            rebel++;
+        else if (role == "renegade")
+            renegade++;
+        else if (role == "loyalist" || role == "lord")
+            loyalist++;
+    }
+    renegade = qMin(renegade, 1);
+    int num = qMax(renegade, loyalist);
+    num = qMax(num, rebel);
+
     room->sortByActionOrder(targets);
     foreach (ServerPlayer *target, targets) {
         if (!target->isChained())

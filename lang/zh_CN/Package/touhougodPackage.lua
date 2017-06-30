@@ -656,12 +656,12 @@ return{
 	["origin:seiga_god_1"] = "p号：35834843,个人ID:2622803",
 
 	["huanhun"] = "还魂",
-	[":huanhun"] = "<font color=\"#808080\"><b>永久技，</b></font>当其他角色死亡后，若你已死亡，你以游戏开始时的状态重新加入游戏。",
+	[":huanhun"] = "<font color=\"#808080\"><b>永久技，</b></font>当其他角色死亡后，若你已死亡且不属于现存人数最多的阵营，你以游戏开始时的状态重新加入游戏。",
 	["tongling"] = "通灵",
 	[":tongling"] = "<font color=\"red\"><b>限定技，</b></font>回合开始时，你可以获得一名死亡角色的人物牌，并获得其上的一个技能（永久技，觉醒技，主公技及其他角色拥有的技能除外）。",
 	["$tonglingAnimate"]= "skill=seiga_god:tongling",
 	["rumo"] = "入魔",
-	[":rumo"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可令包括你在内的至多X名角色横置，然后你摸X张牌（X为你的体力值且最少为1）。",
+	[":rumo"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可令包括你在内的至多X名角色横置，然后你摸X张牌（X为人数最多的阵营的角色数）。",
 	["$rumoAnimate"]= "skill=seiga_god:rumo",
 
 

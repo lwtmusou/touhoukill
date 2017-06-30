@@ -1412,19 +1412,36 @@ sgs.ai_skill_choice.tongling = function(self, choices)
 	return "cancel"
 end
 
+function rumoNum(player)
+    local loyalist, rebel, renegade = 0, 0 , 0
+    for _,role in ipairs(player:getRoom():aliveRoles()) do
+        if (role == "rebel") then
+            rebel =rebel + 1
+        elseif (role == "renegade") then
+            renegade = renegde + 1
+        elseif (role == "loyalist" or role == "lord") then
+            loyalist = loyalist + 1
+		end
+    end
+    renegade = math.min(renegade, 1)
+    local num = math.max(renegade, loyalist);
+    num = math.max(num, rebel)
+	return num
+end
+
 local rumo_skill = {}
 rumo_skill.name = "rumo"
 table.insert(sgs.ai_skills, rumo_skill)
 function rumo_skill.getTurnUseCard(self)
 	if self.player:getMark("@rumo")==0 then return nil end
-	local num = math.max(self.player:getHp(), 1)
+	local num = rumoNum(self.player)
 	if num > 1 then
 		return sgs.Card_Parse("@RumoCard=.")
 	end
 	return nil
 end
 sgs.ai_skill_use_func.RumoCard=function(card,use,self)
-	local num = math.max(self.player:getHp(), 1)
+	local num =  rumoNum(self.player)
 	local targets={}
 	table.insert(targets, self.player)
 	for _,p in ipairs (self.enemies) do
