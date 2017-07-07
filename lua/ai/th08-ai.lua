@@ -421,7 +421,7 @@ sgs.ai_no_playerchosen_intention.shouye = function(self, from)
 	end
 end
 
-
+--[[
 sgs.ai_skill_invoke.xinyue =function(self,data)
 	local target=self.player:getTag("wangyue_target"):toPlayer()
 	if target and self:isEnemy(target) then
@@ -450,7 +450,39 @@ sgs.ai_need_damaged.xinyue = function(self, attacker, player)
 	end
 	return false
 end
+]]
 
+sgs.ai_skill_invoke.xinyue =function(self,data)
+	local target=self.player:getTag("xinyue_target"):toPlayer()
+	if target and self:isEnemy(target) then
+		return true
+	end
+	return false
+end
+sgs.ai_choicemade_filter.skillInvoke.xinyue = function(self, player, args)
+	local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
+	local from=damage.from
+	if from:getHandcardNum()>player:getHp() then
+		if args[#args] == "yes" then
+			sgs.updateIntention(player, from, 60)
+		else
+			sgs.updateIntention(player, from, -60)
+		end
+	end
+end
+sgs.ai_need_damaged.xinyue = function(self, attacker, player)
+	if not self:getDamageSource(attacker) then return false end
+	if  self:isEnemy(attacker,player) then
+		if player:getLostHp()>0 then
+			return false
+		else
+			if attacker:getHandcardNum() >= 5  and not self:touhouDrawCardsInNotActive(attacker) then
+				return true
+			end
+		end
+	end
+	return false
+end
 
 sgs.ai_skill_use["@@buxian"] = function(self, prompt)
 	local handcards = sgs.QList2Table(self.player:getHandcards())
@@ -740,37 +772,7 @@ sgs.ai_skill_use_func.ChuangshiCard=function(card,use,self)
 end
 
 sgs.ai_skill_invoke.wangyue = true
---[[sgs.ai_skill_invoke.wangyue =function(self,data)
-	local target=self.player:getTag("wangyue_target"):toPlayer()
-	if target and self:isEnemy(target) then
-		return true
-	end
-	return false
-end
-sgs.ai_choicemade_filter.skillInvoke.wangyue = function(self, player, args)
-	local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
-	local from=damage.from
-	if from:getHandcardNum()>player:getHp() then
-		if args[#args] == "yes" then
-			sgs.updateIntention(player, from, 60)
-		else
-			sgs.updateIntention(player, from, -60)
-		end
-	end
-end
-sgs.ai_need_damaged.wangyue = function(self, attacker, player)
-	if not self:getDamageSource(attacker) then return false end
-	if  self:isEnemy(attacker,player) then
-		if player:getLostHp()>0 then
-			return false
-		else
-			if attacker:getHandcardNum() >= 5  and not self:touhouDrawCardsInNotActive(attacker) then
-				return true
-			end
-		end
-	end
-	return false
-end]]
+
 
 
 sgs.ai_skill_invoke.huwei = true

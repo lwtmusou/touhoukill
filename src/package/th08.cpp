@@ -810,7 +810,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.from && damage.from->isAlive() && damage.to->isAlive()
             && damage.to->hasSkill(this)
-            && damage.from->getHandcardNum() > damage.to->getCards("s").length()) {
+            && damage.from->getHandcardNum() > damage.to->getHp()) {
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.from);
         }
         return QList<SkillInvokeDetail>();
@@ -820,15 +820,15 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         invoke->invoker->tag["xinyue_target"] = QVariant::fromValue(damage.from);
-        QString prompt = "target:" + damage.from->objectName() + "::" + QString::number(invoke->invoker->getCards("s").length());
+        QString prompt = "target:" + damage.from->objectName() + "::" + QString::number(invoke->invoker->getHp());
         return invoke->invoker->askForSkillInvoke(objectName(), prompt);
     }
 
     void onDamaged(Room *room, QSharedPointer<SkillInvokeDetail> invoke, const DamageStruct &) const
     {
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
-        int x = invoke->targets.first()->getHandcardNum() - invoke->invoker->getCards("s").length();
-        room->askForDiscard(invoke->targets.first(), "wangyue", x, x, false, false);
+        int x = invoke->targets.first()->getHandcardNum() - invoke->invoker->getHp();
+        room->askForDiscard(invoke->targets.first(), objectName(), x, x, false, false);
     }
 };
 
