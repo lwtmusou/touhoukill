@@ -34,6 +34,7 @@ struct DamageStruct
     bool transfer;
     bool by_user;
     QString reason;
+    bool trigger_chain;
 
     QString getReason() const;
 };

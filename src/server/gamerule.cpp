@@ -433,10 +433,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
 
         room->applyDamage(damage.to, damage);
         if ((damage.nature != DamageStruct::Normal) && damage.to->isChained() && !damage.chain) {
-            int n = room->getTag("is_chained").toInt();
-            n++;
-            room->setTag("is_chained", n);
-            room->setTag("ChainStarter", QVariant::fromValue(damage.to->objectName()));
+            damage.trigger_chain = true;
+            data = QVariant::fromValue(damage);
         }
         room->getThread()->trigger(PostHpReduced, room, data);
 
@@ -448,17 +446,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         if ((damage.nature != DamageStruct::Normal) && damage.to->isChained())
             room->setPlayerProperty(damage.to, "chained", false);
 
-        if (room->getTag("is_chained").toInt() > 0) {
+        if (damage.trigger_chain) {
             if ((damage.nature != DamageStruct::Normal) && !damage.chain) {
-                // iron chain effect
-                int n = room->getTag("is_chained").toInt();
-                QString starter;
-                starter = room->getTag("ChainStarter").toString();
-                if (starter.isEmpty() || starter != damage.to->objectName())
-                    break;
-
-                n--;
-                room->setTag("is_chained", n);
                 QList<ServerPlayer *> chained_players;
                 if (room->getCurrent()->isDead())
                     chained_players = room->getOtherPlayers(room->getCurrent());

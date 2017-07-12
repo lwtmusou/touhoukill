@@ -88,6 +88,7 @@ DamageStruct::DamageStruct()
     , transfer(false)
     , by_user(true)
     , reason(QString())
+    , trigger_chain(false)
 {
 }
 
@@ -96,6 +97,7 @@ DamageStruct::DamageStruct(const Card *card, ServerPlayer *from, ServerPlayer *t
     , transfer(false)
     , by_user(true)
     , reason(QString())
+    , trigger_chain(false)
 {
     this->card = card;
     this->from = from;
@@ -109,6 +111,7 @@ DamageStruct::DamageStruct(const QString &reason, ServerPlayer *from, ServerPlay
     , chain(false)
     , transfer(false)
     , by_user(true)
+    , trigger_chain(false)
 {
     this->from = from;
     this->to = to;
