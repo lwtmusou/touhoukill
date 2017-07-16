@@ -331,11 +331,11 @@ public:
     }
 };
 
-class Silian : public TriggerSkill
+class Boming : public TriggerSkill
 {
 public:
-    Silian()
-        : TriggerSkill("silian")
+    Boming()
+        : TriggerSkill("boming")
     {
         frequency = Compulsory;
         events << DamageCaused;
@@ -357,7 +357,7 @@ public:
 
         QList<ServerPlayer *> logto;
         logto << damage.to;
-        room->touhouLogmessage("#TriggerSkill", invoke->invoker, "silian", logto);
+        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName(), logto);
         room->notifySkillInvoked(invoke->invoker, objectName());
         damage.damage = damage.damage + 2;
         data = QVariant::fromValue(damage);
@@ -1606,7 +1606,7 @@ TH09Package::TH09Package()
     shikieiki->addSkill(new Huazhong);
 
     General *komachi = new General(this, "komachi", "zhan", 4, false);
-    komachi->addSkill(new Silian);
+    komachi->addSkill(new Boming);
     komachi->addSkill(new Mingtu);
 
     General *yuka = new General(this, "yuka", "zhan", 4, false);

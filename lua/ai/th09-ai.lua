@@ -240,7 +240,7 @@ end
 
 sgs.ai_skill_invoke.mingtu = true
 
-sgs.ai_damageCaused.silian = function(self, damage)
+sgs.ai_damageCaused.boming = function(self, damage)
 	if damage.card and not damage.chain and not damage.transfer then
 		if  damage.card:isKindOf("Slash") and  damage.to:getHp() <= damage.to:dyingThreshold() then
 			damage.damage=damage.damage+2
@@ -248,7 +248,7 @@ sgs.ai_damageCaused.silian = function(self, damage)
 	end
 	return damage
 end
-sgs.ai_cardneed.silian = function(to, card, self)
+sgs.ai_cardneed.boming = function(to, card, self)
 	if not self:willSkipPlayPhase(to) then
 		return getCardsNum("Slash", to, self.player) <1
 		and card:isKindOf("Slash")
