@@ -4577,6 +4577,10 @@ TouhouGodPackage::TouhouGodPackage()
     seiga_god->addSkill(new Tongling);
     seiga_god->addSkill(new Rumo);
 
+    General *nue_god = new General(this, "nue_god", "touhougod", 3, false);
+    nue_god->addSkill(new Skill("anyun"));
+    nue_god->addSkill(new Skill("benzun", Skill::Compulsory));
+
     General *marisa_god = new General(this, "marisa_god", "touhougod", 4, false, true, true);
     marisa_god->addSkill(new Huixing);
     marisa_god->addSkill(new Mofu);
