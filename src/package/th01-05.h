@@ -99,6 +99,17 @@ public:
     virtual bool isAvailable(const Player *player) const;
 };
 
+class LiuzhuanCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE LiuzhuanCard();
+
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+
 class TH0105Package : public Package
 {
     Q_OBJECT

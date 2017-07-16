@@ -2617,6 +2617,192 @@ public:
     }
 };
 
+
+
+class Jinduan : public TriggerSkill
+{
+public:
+    Jinduan()
+        : TriggerSkill("jinduan")
+    {
+        events << CardUsed << CardResponded;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        ServerPlayer *player = NULL;
+        const Card *card = NULL;
+        if (e == CardUsed) {
+            player = data.value<CardUseStruct>().from;
+            card = data.value<CardUseStruct>().card;
+        }
+        else {
+            CardResponseStruct response = data.value<CardResponseStruct>();
+            player = response.m_from;
+            if (response.m_isUse)
+                card = response.m_card;
+        }
+        if (card == NULL || card->getTypeId() != Card::TypeBasic)
+            return QList<SkillInvokeDetail>();
+        if (player == NULL || player->isDead() || player->isCurrent() || player->getBrokenEquips().length() >= player->getEquips().length())
+            return QList<SkillInvokeDetail>();
+        //check card
+        QList<int> ids;
+        if (card->isVirtualCard())
+            ids = card->getSubcards();
+        else
+            ids << card->getEffectiveId();
+
+        if (ids.isEmpty())
+            return QList<SkillInvokeDetail>();
+
+        foreach(int id, ids) {
+            if (room->getCardPlace(id) != Player::PlaceTable && e == CardUsed)
+                return QList<SkillInvokeDetail>();
+            if (room->getCardPlace(id) != Player::DiscardPile && e == CardResponded)
+                return QList<SkillInvokeDetail>();
+        }
+
+
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName()))
+            d << SkillInvokeDetail(this, p, p, NULL, false, player);
+        return d;
+    }
+
+    
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *target = invoke->targets.first();
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
+        const Card *card = NULL;
+        if (e == CardUsed)
+            card = data.value<CardUseStruct>().card;
+        else {
+            CardResponseStruct response = data.value<CardResponseStruct>();
+            card = response.m_card;
+        }
+        
+        QList<int> ids;
+        foreach(const Card *c, target->getCards("e")) {
+            if (!target->isBrokenEquip(c->getEffectiveId()))
+                ids << c->getEffectiveId();
+        }
+        if (!ids.isEmpty())
+            target->addBrokenEquips(ids);
+        target->obtainCard(card);
+        return false;
+    }
+};
+
+LiuzhuanCard::LiuzhuanCard()
+{
+    target_fixed = true;
+    will_throw = false;
+    handling_method = Card::MethodNone;
+}
+
+void LiuzhuanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+{
+    LogMessage log;
+    log.type = "#Card_Recast";
+    log.from = source;
+    log.card_str = IntList2StringList(subcards).join("+");
+    room->sendLog(log);
+
+    CardMoveReason reason(CardMoveReason::S_REASON_RECAST, source->objectName());
+    reason.m_skillName = getSkillName();
+    DummyCard *dummy = new DummyCard(subcards);
+    dummy->deleteLater();
+    room->moveCardTo(dummy, source, NULL, Player::DiscardPile, reason);
+    source->broadcastSkillInvoke("@recast");
+
+    source->drawCards(subcards.length());
+}
+
+class LiuzhuanVS : public ViewAsSkill
+{
+public:
+    LiuzhuanVS()
+        : ViewAsSkill("liuzhuanVS")
+    {
+        response_pattern = "@@liuzhuanVS";
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
+    {
+        QStringList l = Self->property("liuzhuan").toString().split("+");
+        QList<int> ids = StringList2IntList(l);
+        return ids.contains(to_select->getId());
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        LiuzhuanCard *card = new LiuzhuanCard();
+        card->addSubcards(cards);
+        return card;
+    }
+};
+
+class Liuzhuan : public TriggerSkill
+{
+public:
+    Liuzhuan()
+        : TriggerSkill("liuzhuan")
+    {
+        events << BrokenEquipChanged << ShownCardChanged;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e == BrokenEquipChanged) {
+            BrokenEquipChangedStruct b = data.value<BrokenEquipChangedStruct>();
+            if (b.player == NULL || b.player->isDead() || b.moveFromEquip)
+                return QList<SkillInvokeDetail>();
+            QList<SkillInvokeDetail> d;
+            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                if (p == b.player || p->inMyAttackRange(b.player))
+                    d << SkillInvokeDetail(this, p, p, NULL, false, b.player);
+            }
+            return d;
+        }
+        if (e == ShownCardChanged) {
+            ShownCardChangedStruct s = data.value<ShownCardChangedStruct>();
+            if (s.player == NULL || s.player->isDead() || s.moveFromHand)
+                return QList<SkillInvokeDetail>();
+            QList<SkillInvokeDetail> d;
+            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                if (p == s.player || p->inMyAttackRange(s.player))
+                    d << SkillInvokeDetail(this, p, p, NULL, false, s.player);
+            }
+            return d;
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *target = invoke->targets.first();
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
+        QList<int> ids;
+        if (e == BrokenEquipChanged) {
+            BrokenEquipChangedStruct b = data.value<BrokenEquipChangedStruct>();
+            ids = b.ids;
+        } else {
+            ShownCardChangedStruct s = data.value<ShownCardChangedStruct>();
+            ids = s.ids;
+        }
+        QString cardsList = IntList2StringList(ids).join("+");
+        room->setPlayerProperty(target, "liuzhuan", cardsList);
+        room->askForUseCard(target, "@@liuzhuanVS", "liuzhuanuse");
+        return false;
+    }
+};
+
+
 TH0105Package::TH0105Package()
     : Package("th0105")
 {
@@ -2683,6 +2869,10 @@ TH0105Package::TH0105Package()
     yumeko->addSkill(new Huanshu);
     yumeko->addSkill(new Qiren);
 
+    General *yukimai = new General(this, "yukimai", "pc98", 3, false);
+    yukimai->addSkill(new Jinduan);
+    yukimai->addSkill(new Liuzhuan);
+
     addMetaObject<ShiquCard>();
     addMetaObject<LianmuCard>();
     addMetaObject<SqChuangshiCard>();
@@ -2691,8 +2881,9 @@ TH0105Package::TH0105Package()
     addMetaObject<EzhaoCard>();
     addMetaObject<ZongjiuCard>();
     addMetaObject<QirenCard>();
+    addMetaObject<LiuzhuanCard>();
 
-    skills << new ModianVS;
+    skills << new ModianVS << new LiuzhuanVS;
 }
 
 ADD_PACKAGE(TH0105)

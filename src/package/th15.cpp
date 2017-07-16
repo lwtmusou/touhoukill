@@ -158,8 +158,8 @@ public:
                 clearChunhua(p);
         }
         if (e == ShownCardChanged) {
-            ServerPlayer *player = data.value<ServerPlayer *>();
-            room->filterCards(player, player->getCards("hes"), true);
+            ShownCardChangedStruct s = data.value<ShownCardChangedStruct>();
+            room->filterCards(s.player, s.player->getCards("hes"), true);
         }
     }
 };

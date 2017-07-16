@@ -568,7 +568,19 @@ struct BrokenEquipChangedStruct
     ServerPlayer *player;
     QList<int> ids;
     bool broken;
+    bool moveFromEquip;
 };
+
+struct ShownCardChangedStruct
+{
+    ShownCardChangedStruct();
+
+    ServerPlayer *player;
+    QList<int> ids;
+    bool shown;
+    bool moveFromHand;
+};
+
 
 struct ChoiceMadeStruct
 {
@@ -757,4 +769,5 @@ Q_DECLARE_METATYPE(JudgeStruct *)
 Q_DECLARE_METATYPE(PindianStruct *)
 Q_DECLARE_METATYPE(ExtraTurnStruct)
 Q_DECLARE_METATYPE(BrokenEquipChangedStruct)
+Q_DECLARE_METATYPE(ShownCardChangedStruct)
 #endif

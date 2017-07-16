@@ -591,5 +591,14 @@ BrokenEquipChangedStruct::BrokenEquipChangedStruct()
     : player(NULL)
     , ids(QList<int>())
     , broken(false)
+    , moveFromEquip(false)
+{
+}
+
+ShownCardChangedStruct::ShownCardChangedStruct()
+    : player(NULL)
+    , ids(QList<int>())
+    , shown(false)
+    , moveFromHand(false)
 {
 }
