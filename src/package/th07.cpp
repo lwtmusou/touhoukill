@@ -1048,6 +1048,216 @@ public:
     }
 };
 
+
+QimenCard::QimenCard()
+{
+}
+
+bool QimenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+{
+    
+
+    
+    if (targets.isEmpty())
+        return to_select->hasFlag("Global_qimenFailed");
+    else {
+        //for extra targets or multiple targets like Collateral
+        QString cardname = Self->property("qimen_card").toString();
+        Card *new_card = Sanguosha->cloneCard(cardname);
+        DELETE_OVER_SCOPE(Card, new_card)
+        new_card->setSkillName("qimen");
+        return new_card && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
+    }
+    return false;
+}
+
+bool QimenCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+    QString cardname = Self->property("qimen_card").toString();
+    Card *new_card = Sanguosha->cloneCard(cardname);
+    DELETE_OVER_SCOPE(Card, new_card)
+    new_card->setSkillName("qimen");
+
+    if (targets.length() < 1)
+        return false;
+    return new_card && new_card->targetsFeasible(targets, Self);
+}
+
+const Card *QimenCard::validate(CardUseStruct &card_use) const
+{
+    QString cardname = card_use.from->property("qimen_card").toString();
+    Card *card = Sanguosha->cloneCard(cardname);
+    card->setSkillName("qimen");
+    card_use.from->getRoom()->setPlayerMark(card_use.from, "qimen", 1);
+    return card;
+}
+
+class QimenVS : public ZeroCardViewAsSkill
+{
+public:
+    QimenVS()
+        : ZeroCardViewAsSkill("qimen")
+    {
+        response_pattern = "@@qimen";
+    }
+
+    virtual const Card *viewAs() const
+    {
+        return new QimenCard;
+    }
+};
+
+class Qimen : public TriggerSkill
+{
+public:
+    Qimen()
+        : TriggerSkill("qimen")
+    {
+        events << CardFinished << EventPhaseChanging;
+        view_as_skill = new QimenVS;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == CardFinished) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            ServerPlayer *player = use.from;
+            if (use.card->getSkillName() == "qimen")
+                room->setPlayerProperty(player, "qimen_card", QVariant());
+        } else if (e == EventPhaseChanging) {
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                if (p->getMark("qimen") > 0)
+                    room->setPlayerMark(p, "qijimen", 0);
+            }
+        }
+    }
+
+    static QList<ServerPlayer *> qimenTargets(CardUseStruct use) {
+        QList<ServerPlayer *> tos;
+        const Card *c = Sanguosha->cloneCard(use.card->objectName());
+        DELETE_OVER_SCOPE(const Card, c)
+        if (use.from->isCardLimited(c, Card::MethodUse))
+           return tos;
+        c->setFlags("qimen");
+        c->setFlags("IgnoreFailed");
+        foreach(ServerPlayer *p, use.from->getRoom()->getOtherPlayers(use.to.first())) {
+            if (use.from->inMyAttackRange(p) == use.from->inMyAttackRange(use.to.first()))
+                continue;
+            if (use.from->isProhibited(p, c))
+                continue;
+            if (c->isKindOf("Peach") && c->isAvailable(p)) {
+                tos << p;
+                continue;
+            }
+                
+            if (!c->targetFilter(QList<const Player *>(), p, use.from))
+                continue;
+            tos << p;
+        }
+        c->setFlags("-qimen");
+        c->setFlags("-IgnoreFailed");
+        return tos;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
+    {
+        if (e != CardFinished)
+            return QList<SkillInvokeDetail>();
+        CardUseStruct use = data.value<CardUseStruct>();
+        ServerPlayer *player = use.from;
+        if (player && player->isAlive() && player->hasSkill(this) && player->getMark(objectName()) == 0
+            && use.to.length() == 1 && use.card) {
+            bool check_card = ((use.card->isNDTrick() && !use.card->isKindOf("Nullification")) || (use.card->getTypeId() == Card::TypeBasic && !use.card->isKindOf("Jink")));
+            if (!check_card || use.card->getSkillName() == "qimen" || !use.m_isHandcard)
+                return QList<SkillInvokeDetail>();
+
+            //for turnbroken
+            if (player->hasFlag("Global_ProcessBroken") || !player->hasSkill(this))
+                return QList<SkillInvokeDetail>();
+
+            QList<ServerPlayer *> tos = qimenTargets(use);
+            if (!tos.isEmpty())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        ServerPlayer *player = invoke->invoker;
+        room->setPlayerProperty(player, "qimen_card", use.card->objectName());
+        room->setPlayerFlag(player, "Global_InstanceUse_Failed");
+        QList<ServerPlayer *> tos = qimenTargets(use);
+        foreach(ServerPlayer *p, tos)
+            room->setPlayerFlag(p, "Global_qimenFailed");
+        QString prompt = player->inMyAttackRange(use.to.first()) ? "@qimen1:" : "@qimen2:";
+        room->askForUseCard(player, "@@qimen", prompt + use.card->objectName());
+        return false;
+    }
+};
+
+class QimenDistance : public TargetModSkill
+{
+public:
+    QimenDistance()
+        : TargetModSkill("qimen-dist")
+    {
+        pattern = "BasicCard,TrickCard+^DelayedTrick";
+    }
+
+    int getDistanceLimit(const Player *, const Card *card) const
+    {
+        if (card->hasFlag("qimen"))
+            return 1000;
+
+        return 0;
+    }
+};
+
+class Dunjia : public TriggerSkill
+{
+public:
+    Dunjia()
+        : TriggerSkill("dunjia")
+    {
+        events << DamageInflicted;
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.from == NULL || !damage.to->hasSkill(this))
+            return QList<SkillInvokeDetail>();
+        if (damage.from->inMyAttackRange(damage.to) && damage.nature != DamageStruct::Normal)
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
+        else if (!damage.from->inMyAttackRange(damage.to) && damage.nature == DamageStruct::Normal)
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        damage.damage = damage.damage - 1;
+        QList<ServerPlayer *> tos;
+        tos << invoke->invoker;
+        QString logo_type = (damage.nature == DamageStruct::Normal) ? "#Dunjia1" : "#Dunjia2";
+        room->touhouLogmessage(logo_type, damage.from, objectName(), tos, QString::number(1));
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        data = QVariant::fromValue(damage);
+        if (damage.damage == 0)
+            return true;
+
+        return false;
+    }
+};
+
+
+
+
+
 class Jiyi : public TriggerSkill
 {
 public:
@@ -2122,11 +2332,13 @@ TH07Package::TH07Package()
     alice->addSkill(new Renou);
 
     General *chen = new General(this, "chen", "yym", 3, false);
-    chen->addSkill(new Shishen);
-    chen->addSkill(new Yexing);
-    chen->addSkill(new YexingEffect);
-    chen->addSkill(new Yaoshu);
-    related_skills.insertMulti("yexing", "#yexing");
+    chen->addSkill(new Qimen);
+    chen->addSkill(new Dunjia);
+    //chen->addSkill(new Shishen);
+    //chen->addSkill(new Yexing);
+    //chen->addSkill(new YexingEffect);
+    //chen->addSkill(new Yaoshu);
+    //related_skills.insertMulti("yexing", "#yexing");
 
     General *letty = new General(this, "letty", "yym", 4, false);
     letty->addSkill(new Jiyi);
@@ -2164,11 +2376,12 @@ TH07Package::TH07Package()
     leira->addSkill(new Huayin);
     leira->addSkill(new Huanling);
 
+    addMetaObject<QimenCard>();
     addMetaObject<MocaoCard>();
     addMetaObject<YujianCard>();
     addMetaObject<HuayinCard>();
 
-    skills << new ZhaoliaoVS;
+    skills << new ZhaoliaoVS << new QimenDistance;
 }
 
 ADD_PACKAGE(TH07)

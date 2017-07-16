@@ -8,7 +8,6 @@
 
 QiuwenCard::QiuwenCard()
 {
-    mute = true;
     target_fixed = true;
 }
 

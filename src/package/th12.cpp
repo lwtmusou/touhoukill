@@ -1473,9 +1473,7 @@ bool HuishengCard::targetFilter(const QList<const Player *> &targets, const Play
         return false;
     if (targets.isEmpty() && to_select->objectName() != str)
         return false;
-    return new_card
-
-        && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
+    return new_card && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
 }
 
 bool HuishengCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
