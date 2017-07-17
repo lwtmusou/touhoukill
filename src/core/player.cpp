@@ -198,6 +198,16 @@ bool Player::isBrokenEquip(int id) const
     return broken_equips.contains(id);
 }
 
+QStringList Player::getExtraGenerals() const
+{
+    return extra_generals;
+}
+
+void Player::setExtraGenerals(const QStringList &generals)
+{
+    this->extra_generals = generals;
+}
+
 int Player::getMaxHp() const
 {
     if (hasSkill("huanmeng")) {

@@ -200,6 +200,12 @@ RoomScene::RoomScene(QMainWindow *main_window)
     addItem(card_container);
     card_container->setZValue(9.0);
 
+    pileContainer = new CardContainer;
+    pileContainer->hide();
+    addItem(pileContainer);
+    pileContainer->setZValue(9.0);
+
+
     connect(card_container, SIGNAL(item_chosen(int)), ClientInstance, SLOT(onPlayerChooseAG(int)));
     connect(card_container, SIGNAL(item_gongxined(int)), ClientInstance, SLOT(onPlayerReplyGongxin(int)));
 
@@ -1100,6 +1106,8 @@ void RoomScene::updateTable()
 
     m_tablePile->adjustCards();
     card_container->setPos(m_tableCenterPos);
+    pileContainer->setPos(m_tableCenterPos);
+    //pileContainer->setPos(m_tableCenterPos - QPointF(pileContainer->boundingRect().width() / 2, pileContainer->boundingRect().height() / 2));
     guanxing_box->setPos(m_tableCenterPos);
     m_chooseTriggerOrderBox->setPos(m_tableCenterPos - QPointF(m_chooseTriggerOrderBox->boundingRect().width() / 2, m_chooseTriggerOrderBox->boundingRect().height() / 2));
     prompt_box->setPos(m_tableCenterPos);
@@ -1989,7 +1997,8 @@ GenericCardContainer *RoomScene::_getGenericCardContainer(Player::Place place, P
         return m_tablePile;
     // @todo: AG must be a pile with name rather than simply using the name special...
     else if (player == NULL && place == Player::PlaceSpecial)
-        return card_container;
+        return pileContainer;
+        //return card_container;
     else if (player == Self)
         return dashboard;
     else if (player != NULL)
@@ -3935,6 +3944,46 @@ void RoomScene::showPlayerCards()
         }
     }
 }
+
+
+void RoomScene::showPile(const QList<int> &card_ids, const QString &name, const ClientPlayer *target)
+{
+    pileContainer->clear();
+    bringToFront(pileContainer);
+    pileContainer->setObjectName(name);
+    if (name == "huashencard" && target->hasSkill("anyun")) {
+        QStringList huashens = target->getExtraGenerals();
+        QList<CardItem *> generals;
+        foreach(QString arg, huashens) {
+            CardItem *item = new CardItem(arg);
+            addItem(item);
+            item->setParentItem(pileContainer);
+            generals.append(item);
+        }
+        pileContainer->fillGeneralCards(generals);
+    }
+    else {
+        pileContainer->fillCards(card_ids);
+    }
+    pileContainer->setPos(m_tableCenterPos - QPointF(pileContainer->boundingRect().width() / 2, pileContainer->boundingRect().height() / 2));
+    pileContainer->show();
+}
+
+QString RoomScene::getCurrentShownPileName()
+{
+    if (pileContainer->isVisible())
+        return pileContainer->objectName();
+    else
+        return NULL;
+}
+
+
+void RoomScene::hidePile()
+{
+    pileContainer->clear();
+}
+
+
 
 KOFOrderBox::KOFOrderBox(bool self, QGraphicsScene *scene)
 {

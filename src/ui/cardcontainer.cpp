@@ -3,12 +3,13 @@
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
+#include "roomscene.h"
 
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 
 CardContainer::CardContainer()
-    : _m_background("image/system/card-container.png")
+    : _m_background("image/system/card-container.png"), scene_width(0), itemCount(0)
 {
     setTransform(QTransform::fromTranslate(-_m_background.width() / 2, -_m_background.height() / 2), true);
     _m_boundingRect = QRectF(QPoint(0, 0), _m_background.size());
@@ -94,6 +95,74 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
         item->show();
     }
 }
+
+void CardContainer::fillGeneralCards(const QList<CardItem *> &card_item, const QList<CardItem *> &disabled_item)
+{
+    if (card_item == items)
+        return;
+
+    QList<CardItem *> card_items = card_item;
+    if (card_items.isEmpty() && items.isEmpty())
+        return;
+    else if (card_item.isEmpty() && !items.isEmpty()) {
+        card_items = items;
+        items.clear();
+    }
+    else if (!items.isEmpty()) {
+        retained_stack.push(retained());
+        items_stack.push(items);
+        foreach(CardItem *item, items)
+            item->hide();
+        items.clear();
+    }
+
+
+    scene_width = RoomSceneInstance->sceneRect().width();
+    //confirm_button->hide();
+
+    items.append(card_items);
+    itemCount = items.length();
+    prepareGeometryChange();
+
+    int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
+    int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;
+    bool one_row = true;
+    int width = (card_width + cardInterval) * itemCount - cardInterval + 50;
+    if (width * 1.5 > scene_width) {
+        width = (card_width + cardInterval) * ((itemCount + 1) / 2) - cardInterval + 50;
+        one_row = false;
+    }
+    int first_row = one_row ? itemCount : (itemCount + 1) / 2;
+
+    for (int i = 0; i < itemCount; i++) {
+        QPointF pos;
+        if (i < first_row) {
+            pos.setX(25 + (card_width + cardInterval) * i);
+            pos.setY(45);
+        }
+        else {
+            if (itemCount % 2 == 1)
+                pos.setX(25 + card_width / 2 + cardInterval / 2
+                    + (card_width + cardInterval) * (i - first_row));
+            else
+                pos.setX(25 + (card_width + cardInterval) * (i - first_row));
+                pos.setY(45 + card_height + cardInterval);
+        }
+        CardItem *item = items[i];
+        item->resetTransform();
+        item->setPos(pos);
+        item->setHomePos(pos);
+        item->setOpacity(1.0);
+        item->setHomeOpacity(1.0);
+        item->setFlag(QGraphicsItem::ItemIsFocusable);
+        if (disabled_item.contains(item))
+            item->setEnabled(false);
+        //item->setOuterGlowEffectEnabled(true);
+        item->show();
+    }
+    //confirm_button->setPos(boundingRect().center().x() - confirm_button->boundingRect().width() / 2, boundingRect().height() - 40);
+}
+
 
 bool CardContainer::_addCardItems(QList<CardItem *> &, const CardsMoveStruct &)
 {

@@ -136,6 +136,8 @@ public slots:
     void updateDrankState();
     virtual void updateDuanchang();
     void updatePile(const QString &pile_name);
+    virtual void showPile();
+    virtual void hidePile();
     void updateRole(const QString &role);
     void updateMarks();
     void updateVotes(bool need_select = true, bool display_1 = false);
@@ -233,6 +235,8 @@ protected:
     QGraphicsTextItem *_m_markItem;
     QGraphicsPixmapItem *_m_selectedFrame;
     QMap<QString, QGraphicsProxyWidget *> _m_privatePiles;
+    QGraphicsProxyWidget *_m_privatePileArea;
+
 
     // The frame that is maintained by roomscene. Items in this area has positions
     // or contents that cannot be decided based on the information of PlayerCardContainer

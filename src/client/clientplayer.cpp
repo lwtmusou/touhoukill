@@ -130,7 +130,7 @@ QTextDocument *ClientPlayer::getMarkDoc() const
 
 void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids)
 {
-    if (name == "shown_card")
+    if (name == "shown_card" || name == "huashencard")
         emit pile_changed(name);
     else {
         if (add)

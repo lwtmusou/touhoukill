@@ -236,6 +236,10 @@ public slots:
         return m_tableCenterPos;
     }
 
+    void showPile(const QList<int> &card_ids, const QString &name, const ClientPlayer *target);
+    QString getCurrentShownPileName();
+    void hidePile();
+
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -283,6 +287,7 @@ private:
 
     QList<QGraphicsPixmapItem *> role_items;
     CardContainer *card_container;
+    CardContainer *pileContainer;
 
     QList<QSanSkillButton *> m_skillButtons;
 
@@ -455,6 +460,7 @@ private slots:
     void startAssign();
 
     void doPindianAnimation();
+
 
     // 3v3 mode & 1v1 mode
     void fillGenerals(const QStringList &names);

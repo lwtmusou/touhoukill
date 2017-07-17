@@ -134,6 +134,7 @@ public:
     void setPlayerSkillInvalidity(const QVariant &arg);
     void setShownHandCards(const QVariant &card_str);
     void setBrokenEquips(const QVariant &card_str);
+    void setExtraGenerals(const QVariant &arg);
 
     void fillAG(const QVariant &cards_str);
     void takeAG(const QVariant &take_str);

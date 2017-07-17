@@ -4445,6 +4445,107 @@ public:
     }
 };
 
+
+class Anyun : public TriggerSkill
+{
+public:
+    Anyun()
+        : TriggerSkill("anyun")
+    {
+        events << GameStart;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        QList<SkillInvokeDetail> d;
+        if (triggerEvent == GameStart) {
+            ServerPlayer *nue = data.value<ServerPlayer *>();
+            if (nue && nue->hasSkill(this))
+                d << SkillInvokeDetail(this, nue, nue, NULL, true);
+        }
+        return d;
+    }
+
+    static void AcquireGenerals(ServerPlayer *zuoci, int n)
+    {
+        Room *room = zuoci->getRoom();
+        QStringList huashens = zuoci->getExtraGenerals();
+        QStringList list = GetAvailableGenerals(zuoci);
+        qShuffle(list);
+        if (list.isEmpty()) return;
+        n = qMin(n, list.length());
+
+        QStringList acquired = list.mid(0, n);
+        //add triggerSkill
+        foreach(QString name, acquired) {
+            huashens << name;
+            const General *general = Sanguosha->getGeneral(name);
+            if (general) {
+                foreach(const TriggerSkill *skill, general->getTriggerSkills()) {
+                    if (skill->isVisible())
+                        room->getThread()->addTriggerSkill(skill);
+                }
+            }
+        }
+
+        LogMessage log;
+        log.type = "#GetHuashen";
+        log.from = zuoci;
+        log.arg = QString::number(n);
+        log.arg2 = QString::number(huashens.length());
+        room->sendLog(log);
+
+        zuoci->addExtraGenerals(acquired);
+    }
+
+
+    static QStringList GetAvailableGenerals(ServerPlayer *zuoci)
+    {
+        QSet<QString> all = Sanguosha->getLimitedGeneralNames().toSet();
+        Room *room = zuoci->getRoom();
+        if (isNormalGameMode(room->getMode())
+            || room->getMode().contains("_mini_")
+            || room->getMode() == "custom_scenario")
+            all.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
+        else if (room->getMode() == "06_XMode") {
+            foreach(ServerPlayer *p, room->getAlivePlayers())
+                all.subtract(p->tag["XModeBackup"].toStringList().toSet());
+        }
+        else if (room->getMode() == "02_1v1") {
+            all.subtract(Config.value("Banlist/1v1", "").toStringList().toSet());
+            foreach(ServerPlayer *p, room->getAlivePlayers())
+                all.subtract(p->tag["1v1Arrange"].toStringList().toSet());
+        }
+        QSet<QString> huashen_set, room_set;
+        huashen_set = zuoci->getExtraGenerals().toSet();
+
+        foreach(ServerPlayer *player, room->getAllPlayers(true)) {
+            QString name = player->getGeneralName();
+            //deal conflict with seiga_god
+            if (name == "sujiang" || name == "sujiangf")
+                name = player->tag.value("init_general", QString()).toString();
+            room_set << name;
+            //do not consider general2
+        }
+
+        static QSet<QString> banned;
+        // ban nue and zun
+        if (banned.isEmpty())
+            banned << "nue_god" << "zun";
+
+        return (all - banned - huashen_set - room_set).toList();
+    }
+
+
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        AcquireGenerals(invoke->invoker, 3);
+        return false;
+    }
+};
+
+
 TouhouGodPackage::TouhouGodPackage()
     : Package("touhougod")
 {
@@ -4578,7 +4679,7 @@ TouhouGodPackage::TouhouGodPackage()
     seiga_god->addSkill(new Rumo);
 
     General *nue_god = new General(this, "nue_god", "touhougod", 3, false);
-    nue_god->addSkill(new Skill("anyun"));
+    nue_god->addSkill(new Anyun);
     nue_god->addSkill(new Skill("benzun", Skill::Compulsory));
 
     General *marisa_god = new General(this, "marisa_god", "touhougod", 4, false, true, true);

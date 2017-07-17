@@ -102,6 +102,8 @@ public:
     QList<int> getBrokenEquips() const;
     void setBrokenEquips(QList<int> ids);
     bool isBrokenEquip(int id) const;
+    QStringList getExtraGenerals() const;
+    void setExtraGenerals(const QStringList &generals);
 
     int getHp() const;
     int getRenHp() const; //for banling
@@ -328,6 +330,7 @@ protected:
     QStringList skill_invalid;
     QList<int> shown_handcards;
     QList<int> broken_equips;
+    QStringList extra_generals;//for anyun UI
 
 private:
     QString screen_name;

@@ -339,12 +339,14 @@ void PlayerCardContainer::updateHp()
 
 void PlayerCardContainer::updatePile(const QString &pile_name)
 {
-    ClientPlayer *player = (ClientPlayer *)sender();
+    //ClientPlayer *player = (ClientPlayer *)sender();
+    ClientPlayer *player = qobject_cast<ClientPlayer *>(sender());
     if (!player)
         player = m_player;
     if (!player)
         return;
-
+    //if (pile_name == "huashencard")
+    //    Sanguosha->playSystemAudioEffect("lose");
     QString treasure_name;
     if (player->getTreasure())
         treasure_name = player->getTreasure()->objectName();
@@ -352,8 +354,19 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
     QList<int> pile;
     if (pile_name == "shown_card")
         pile = player->getShownHandcards();
-    else
+    else if (pile_name == "huashencard") {
+        int n = player->getExtraGenerals().length();
+        if (n == 0) return;
+        for (int i = 0; i < n; i++) {
+            pile.append(i + 1);
+        }
+    } else
         pile = player->getPile(pile_name);
+    
+    QString shownpilename = RoomSceneInstance->getCurrentShownPileName();
+    if (!shownpilename.isEmpty() && shownpilename == pile_name)
+        hidePile();
+
 
     if (pile.size() == 0) {
         if (_m_privatePiles.contains(pile_name)) {
@@ -363,10 +376,10 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
         }
     } else {
         // retrieve menu and create a new pile if necessary
-        QMenu *menu;
         QPushButton *button;
         if (!_m_privatePiles.contains(pile_name)) {
-            button = new QPushButton;
+            button = new QPushButton(_m_privatePileArea->widget());
+            //button = new QPushButton;
             button->setObjectName(pile_name);
             if (treasure_name == pile_name)
                 button->setProperty("treasure", "true");
@@ -379,43 +392,22 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
             button_widget->setWidget(button);
             _m_privatePiles[pile_name] = button_widget;
         } else {
-            button = (QPushButton *)(_m_privatePiles[pile_name]->widget());
-            menu = button->menu();
+            //button = (QPushButton *)(_m_privatePiles[pile_name]->widget());
+            button = qobject_cast<QPushButton *>((_m_privatePiles[pile_name]->widget()));
+            if (button == NULL)
+                qWarning("PlayerCardContainer::updatePile: button == NULL");
         }
 
-        //button->setText(QString("%1(%2)").arg(Sanguosha->translate(pile_name)).arg(pile.length()));
         QString text = Sanguosha->translate(pile_name);
         if (pile.length() > 0)
             text.append(QString("(%1)").arg(pile.length()));
         button->setText(text);
-        menu = new QMenu(button);
-        if (treasure_name == pile_name)
-            menu->setProperty("treasure", "true");
-        else if (pile_name == "shown_card")
-            menu->setProperty("shown_card", "true");
-        else
-            menu->setProperty("private_pile", "true");
 
-        //Sort the cards in pile by number can let players know what is in this pile more clear.
-        //If someone has "buqu", we can got which card he need or which he hate easier.
-        QList<const Card *> cards;
-        foreach (int card_id, pile) {
-            const Card *card = Sanguosha->getCard(card_id);
-            if (card != NULL)
-                cards << card;
-        }
-        std::sort(cards.begin(), cards.end(), Card::CompareByNumber);
+        disconnect(button, &QPushButton::pressed, this, &PlayerCardContainer::showPile);
+        connect(button, &QPushButton::pressed, this, &PlayerCardContainer::showPile);
 
-        foreach (const Card *card, cards)
-            menu->addAction(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()), card->getFullName());
-
-        int length = cards.count();
-        if (length > 0)
-            button->setMenu(menu);
-        else {
-            delete menu;
-            button->setMenu(NULL);
-        }
+        disconnect(button, &QPushButton::released, this, &PlayerCardContainer::hidePile);
+        connect(button, &QPushButton::released, this, &PlayerCardContainer::hidePile);
     }
     //set treasure pile at first
     QPoint start = _m_layout->m_privatePileStartPos;
@@ -435,6 +427,26 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
         widget->resize(size);
     }
 }
+
+void PlayerCardContainer::showPile()
+{
+    QPushButton *button = qobject_cast<QPushButton *>(sender());
+    if (button) {
+        const ClientPlayer *player = getPlayer();
+        if (!player) return;
+        QList<int> card_ids = player->getPile(button->objectName());
+        if (button->objectName() == "huashencard") RoomSceneInstance->showPile(card_ids, button->objectName(), player);
+        if (card_ids.isEmpty() || card_ids.contains(-1)) return;
+        RoomSceneInstance->showPile(card_ids, button->objectName(), player);
+    }
+}
+
+void PlayerCardContainer::hidePile()
+{
+    RoomSceneInstance->hidePile();
+}
+
+
 
 void PlayerCardContainer::updateDrankState()
 {
@@ -886,6 +898,11 @@ PlayerCardContainer::PlayerCardContainer()
     _m_roleShownIcon = NULL;
     m_player = NULL;
     _m_selectedFrame = NULL;
+    _m_privatePileArea = new QGraphicsProxyWidget(this);
+    QWidget *pileArea = new QWidget(NULL, Qt::Tool);//It currently needn't to be visible. 
+    pileArea->setAttribute(Qt::WA_TranslucentBackground);
+    pileArea->resize(1, 1);
+    _m_privatePileArea->setWidget(pileArea);
 
     for (int i = 0; i < 5; i++) {
         _m_equipCards[i] = NULL;

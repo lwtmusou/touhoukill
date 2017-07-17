@@ -1346,26 +1346,26 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         room->notifyProperty(player, this, "chaoren");
 }
 
-void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool open)
+void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool open, QList<ServerPlayer *> open_players)
 {
     QList<int> card_ids;
     if (card->isVirtualCard())
         card_ids = card->getSubcards();
     else
         card_ids << card->getEffectiveId();
-    return addToPile(pile_name, card_ids, open);
+    return addToPile(pile_name, card_ids, open, open_players);
 }
 
-void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open)
+void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open, QList<ServerPlayer *> open_players)
 {
     QList<int> card_ids;
     card_ids << card_id;
-    return addToPile(pile_name, card_ids, open);
+    return addToPile(pile_name, card_ids, open, open_players);
 }
 
-void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool open)
+void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool open, QList<ServerPlayer *> open_players)
 {
-    return addToPile(pile_name, card_ids, open, CardMoveReason());
+    return addToPile(pile_name, card_ids, open, CardMoveReason(), open_players);
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool open, CardMoveReason reason, QList<ServerPlayer *> open_players)
@@ -1497,6 +1497,19 @@ void ServerPlayer::removeBrokenEquips(QList<int> card_ids, bool sendLog, bool mo
     b.moveFromEquip = moveFromEquip;
     QVariant bv = QVariant::fromValue(b);
     room->getThread()->trigger(BrokenEquipChanged, room, bv);
+}
+
+
+void ServerPlayer::addExtraGenerals(const QStringList &generals)
+{
+    extra_generals << generals;
+
+    QString g = extra_generals.join("|");
+    JsonArray arg;
+    arg << objectName();
+    arg << g;
+
+    room->doNotify(this, S_COMMAND_SET_EXTRA_GENERAL, arg);
 }
 
 void ServerPlayer::gainAnExtraTurn()
