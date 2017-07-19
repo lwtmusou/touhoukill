@@ -7603,7 +7603,7 @@ function SmartAI:roleParse()--为主忠盲狙  自动增加克制主公的明反
 	--可以转化为列表型
 	if  lord:hasSkills("shanji|jingjie|shende") then
 		for _,p in sgs.qlist(self.room:getOtherPlayers(lord)) do
-			if p:hasSkills("changshi|xijian") then
+			if p:hasSkills("changshi") then
 				sgs.updateIntention(p, lord, 150)
 			end
 		end

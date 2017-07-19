@@ -570,8 +570,8 @@ end
 function SmartAI:cautionChangshi()
 	local sanae = self.room:findPlayerBySkillName("changshi")
 	if sanae then return true end
-	local yukari = self.room:findPlayerBySkillName("xijian")
-	if yukari and not self:isFriend(yukari) then return true end
+	--local yukari = self.room:findPlayerBySkillName("xijian")
+	--if yukari and not self:isFriend(yukari) then return true end
 	return false
 end
 

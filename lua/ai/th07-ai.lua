@@ -827,6 +827,7 @@ sgs.ai_card_intention.MocaoCard = function(self, card, from, tos)
 end
 
 --function SmartAI:getDamagedEffects(to, from, slash)
+--[[
 sgs.ai_skill_invoke.shenyin = function(self,data)
 	local target=data:toPlayer()
 	local damage  = self.player:getTag("shenyin_damage"):toDamage()
@@ -915,7 +916,7 @@ sgs.ai_playerchosen_intention.xijian =function(self, from, to)
 		sgs.updateIntention(from, target, -50)
 	end
 end
-
+]]
 
 
 sgs.ai_skill_choice.youqu=function(self)
