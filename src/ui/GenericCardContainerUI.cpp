@@ -355,7 +355,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
     if (pile_name == "shown_card")
         pile = player->getShownHandcards();
     else if (pile_name == "huashencard") {
-        int n = player->getExtraGenerals().length();
+        int n = player->getHiddenGenerals().length();
         if (n == 0) return;
         for (int i = 0; i < n; i++) {
             pile.append(i + 1);

@@ -102,8 +102,8 @@ public:
     QList<int> getBrokenEquips() const;
     void setBrokenEquips(QList<int> ids);
     bool isBrokenEquip(int id) const;
-    QStringList getExtraGenerals() const;
-    void setExtraGenerals(const QStringList &generals);
+    QStringList getHiddenGenerals() const;
+    void setHiddenGenerals(const QStringList &generals);
 
     int getHp() const;
     int getRenHp() const; //for banling
@@ -200,8 +200,8 @@ public:
     void detachAllSkills();
     virtual void addSkill(const QString &skill_name);
     virtual void loseSkill(const QString &skill_name);
-    bool hasSkill(const QString &skill_name, bool include_lose = false) const;
-    bool hasSkill(const Skill *skill, bool include_lose = false) const;
+    bool hasSkill(const QString &skill_name, bool include_lose = false, bool include_hidden = true) const;
+    bool hasSkill(const Skill *skill, bool include_lose = false, bool include_hidden = true) const;
     bool hasSkills(const QString &skill_name, bool include_lose = false) const;
     bool hasInnateSkill(const QString &skill_name) const;
     bool hasInnateSkill(const Skill *skill) const;
@@ -330,7 +330,7 @@ protected:
     QStringList skill_invalid;
     QList<int> shown_handcards;
     QList<int> broken_equips;
-    QStringList extra_generals;//for anyun UI
+    QStringList hidden_generals;//for anyun UI
 
 private:
     QString screen_name;

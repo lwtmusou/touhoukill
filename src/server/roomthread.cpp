@@ -683,6 +683,9 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room,
             // if cost returned false, we don't process with the skill's left trigger times(use the trick of set it as triggered)
             // if effect returned true, exit the whole loop.
             if (invoke->skill->cost(triggerEvent, room, invoke, data)) {
+                //show hidden skill firstly
+                if (invoke->invoker)
+                    invoke->invoker->showHiddenSkill(invoke->skill->objectName());
                 // if we don't insert the target in the cost and there is a preferred target, we set the preferred target as the only target of the skill
                 if (invoke->preferredTarget != NULL && invoke->targets.isEmpty())
                     invoke->targets << invoke->preferredTarget;

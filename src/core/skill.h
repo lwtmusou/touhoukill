@@ -29,7 +29,7 @@ public:
         Eternal
     };
 
-    explicit Skill(const QString &name, Frequency frequent = NotFrequent);
+    explicit Skill(const QString &name, Frequency frequent = NotFrequent, const QString &showType = "trigger");
     bool isLordSkill() const;
     bool isAttachedLordSkill() const;
     virtual bool shouldBeVisible(const Player *Self) const; // usually for attached skill
@@ -46,11 +46,13 @@ public:
     QString getLimitMark() const;
     QStringList getSources() const;
     bool matchAvaliablePattern(QString avaliablePattern, QString askedPattern) const;
+    QString getShowType() const;
 
 protected:
     Frequency frequency;
     QString limit_mark;
     bool attached_lord_skill;
+    QString show_type;
 
 private:
     bool lord_skill;

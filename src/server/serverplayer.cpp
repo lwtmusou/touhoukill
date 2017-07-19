@@ -1500,22 +1500,76 @@ void ServerPlayer::removeBrokenEquips(QList<int> card_ids, bool sendLog, bool mo
 }
 
 
-void ServerPlayer::addExtraGenerals(const QStringList &generals)
+void ServerPlayer::addHiddenGenerals(const QStringList &generals)
 {
-    extra_generals << generals;
+    hidden_generals << generals;
 
-    QString g = extra_generals.join("|");
+    QString g = hidden_generals.join("|");
     JsonArray arg;
     arg << objectName();
     arg << g;
 
-    room->doNotify(this, S_COMMAND_SET_EXTRA_GENERAL, arg);
+    room->doNotify(this, S_COMMAND_SET_HIDDEN_GENERAL, arg);
+}
+
+void ServerPlayer::removeHiddenGenerals(const QStringList &generals)
+{
+    foreach (QString name, generals)
+        hidden_generals.removeOne(name);
+
+    QString g = hidden_generals.join("|");
+    JsonArray arg;
+    arg << objectName();
+    arg << g;
+
+    room->doNotify(this, S_COMMAND_SET_HIDDEN_GENERAL, arg);
 }
 
 void ServerPlayer::gainAnExtraTurn()
 {
     room->getThread()->setNextExtraTurn(this);
 }
+
+void ServerPlayer::showHiddenSkill(const QString &skill_name)
+{
+    if (hasSkill(skill_name, false, false))
+        return;
+    QString name = this->tag.value("anyun_general", QString()).toString();
+    if (name != NULL) {
+        const General *hidden = Sanguosha->getGeneral(name);
+        if (hidden)
+            return;
+    }
+
+    if (hasSkill(skill_name)) {
+        QString generalName;
+        foreach(QString name, hidden_generals) {
+            const General *hidden = Sanguosha->getGeneral(name);
+            if (hidden->hasSkill(skill_name)) {
+                generalName = name;
+                break;
+            }
+        }
+        if (generalName != NULL) {
+            JsonArray arg;
+            arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+            arg << objectName();
+            arg << generalName;
+            arg << skill_name;
+
+            room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+            this->tag["anyun_skill"] = skill_name;
+            this->tag["anyun_general"] = generalName;
+            foreach(const Skill *skill, Sanguosha->getGeneral(generalName)->getVisibleSkillList()) {
+                if (!skill->isLordSkill() && !skill->isAttachedLordSkill()
+                    && skill->getFrequency() != Skill::Limited && skill->getFrequency() != Skill::Wake  && skill->getFrequency() != Skill::Eternal)
+                room->handleAcquireDetachSkills(this, skill->objectName(), true);
+            }
+            room->filterCards(this, this->getCards("hes"), true);
+        }
+    }
+}
+
 
 void ServerPlayer::copyFrom(ServerPlayer *sp)
 {

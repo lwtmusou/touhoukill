@@ -198,14 +198,14 @@ bool Player::isBrokenEquip(int id) const
     return broken_equips.contains(id);
 }
 
-QStringList Player::getExtraGenerals() const
+QStringList Player::getHiddenGenerals() const
 {
-    return extra_generals;
+    return hidden_generals;
 }
 
-void Player::setExtraGenerals(const QStringList &generals)
+void Player::setHiddenGenerals(const QStringList &generals)
 {
-    this->extra_generals = generals;
+    this->hidden_generals = generals;
 }
 
 int Player::getMaxHp() const
@@ -598,17 +598,28 @@ bool Player::isCurrent() const
     return phase != Player::NotActive;
 }
 
-bool Player::hasSkill(const QString &skill_name, bool include_lose) const
+bool Player::hasSkill(const QString &skill_name, bool include_lose, bool include_hidden) const
 {
-    return hasSkill(Sanguosha->getSkill(skill_name), include_lose);
+    return hasSkill(Sanguosha->getSkill(skill_name), include_lose, include_hidden);
 }
 
-bool Player::hasSkill(const Skill *skill, bool include_lose /* = false */) const
+bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden) const
 {
     if (skill == NULL)
         return false;
 
     QString skill_name = skill->objectName();
+    //prevent infinite recursion
+    if (include_hidden && !isSkillInvalid("anyun")
+        && (skills.contains("anyun") || acquired_skills.contains("anyun"))
+        && !skill->isLordSkill() && !skill->isAttachedLordSkill() 
+        && skill->getFrequency() != Skill::Limited && skill->getFrequency() != Skill::Wake  && skill->getFrequency() != Skill::Eternal) {
+        foreach(QString name, hidden_generals) {
+            const General *hidden = Sanguosha->getGeneral(name);
+            if (hidden->hasSkill(skill_name))
+                return true;
+        }
+    }
 
     if (!include_lose && !hasEquipSkill(skill_name) && skill->getFrequency() != Skill::Eternal) {
         if (isSkillInvalid(skill_name))

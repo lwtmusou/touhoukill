@@ -3952,7 +3952,7 @@ void RoomScene::showPile(const QList<int> &card_ids, const QString &name, const 
     bringToFront(pileContainer);
     pileContainer->setObjectName(name);
     if (name == "huashencard" && target->hasSkill("anyun")) {
-        QStringList huashens = target->getExtraGenerals();
+        QStringList huashens = target->getHiddenGenerals();
         QList<CardItem *> generals;
         foreach(QString arg, huashens) {
             CardItem *item = new CardItem(arg);

@@ -9,10 +9,11 @@
 
 #include <QFile>
 
-Skill::Skill(const QString &name, Frequency frequency)
+Skill::Skill(const QString &name, Frequency frequency, const QString &showType)
     : frequency(frequency)
     , limit_mark(QString())
     , attached_lord_skill(false)
+    , show_type(showType)
 {
     static QChar lord_symbol('$');
 
@@ -120,6 +121,11 @@ Skill::Frequency Skill::getFrequency() const
     return frequency;
 }
 
+QString Skill::getShowType() const
+{
+    return show_type;
+}
+
 QString Skill::getLimitMark() const
 {
     return limit_mark;
@@ -179,7 +185,7 @@ bool Skill::matchAvaliablePattern(QString avaliablePattern, QString askedPattern
 }
 
 ViewAsSkill::ViewAsSkill(const QString &name)
-    : Skill(name)
+    : Skill(name, Skill::NotFrequent, "viewas")
     , response_pattern(QString())
     , response_or_use(false)
     , expand_pile(QString())
@@ -450,7 +456,7 @@ ProhibitSkill::ProhibitSkill(const QString &name)
 }
 
 DistanceSkill::DistanceSkill(const QString &name)
-    : Skill(name, Skill::Compulsory)
+    : Skill(name, Skill::Compulsory, "state")
 {
 }
 

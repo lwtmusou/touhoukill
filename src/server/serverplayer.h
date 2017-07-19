@@ -120,8 +120,11 @@ public:
     void removeShownHandCards(QList<int> card_ids, bool sendLog = false, bool moveFromHand = false);
     void addBrokenEquips(QList<int> card_ids);
     void removeBrokenEquips(QList<int> card_ids, bool sendLog = true, bool moveFromEquip = false);
-    void addExtraGenerals(const QStringList &generals);
+    void addHiddenGenerals(const QStringList &generals);
+    void removeHiddenGenerals(const QStringList &generals);
     void gainAnExtraTurn();
+    void showHiddenSkill(const QString &skill_name);
+
 
     void copyFrom(ServerPlayer *sp);
 
