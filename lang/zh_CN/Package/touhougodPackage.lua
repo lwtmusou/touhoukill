@@ -678,7 +678,7 @@ return{
     ["#GetHuashen"] = "%from 获得了  %arg 张 X",
     ["huashencard"] = "X化身",
     ["#anyun_AskForGeneralShow"] = "暗云",
-
+    ["invoke_hidden_compulsory:compulsory"] = "你可以发动隐藏的锁定技 <font color=\"#FF8000\"><b>%src </b></font> 。",
 
 
 	["marisa_god"] = "神 雾雨魔理沙",

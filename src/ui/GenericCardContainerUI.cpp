@@ -345,8 +345,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
         player = m_player;
     if (!player)
         return;
-    //if (pile_name == "huashencard")
-    //    Sanguosha->playSystemAudioEffect("lose");
+
     QString treasure_name;
     if (player->getTreasure())
         treasure_name = player->getTreasure()->objectName();
@@ -435,7 +434,12 @@ void PlayerCardContainer::showPile()
         const ClientPlayer *player = getPlayer();
         if (!player) return;
         QList<int> card_ids = player->getPile(button->objectName());
-        if (button->objectName() == "huashencard") RoomSceneInstance->showPile(card_ids, button->objectName(), player);
+        if (button->objectName() == "huashencard") {
+            if (player == Self)
+                RoomSceneInstance->showPile(card_ids, button->objectName(), player);
+            else
+                return;
+        } 
         if (card_ids.isEmpty() || card_ids.contains(-1)) return;
         RoomSceneInstance->showPile(card_ids, button->objectName(), player);
     }

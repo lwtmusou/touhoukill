@@ -4537,7 +4537,7 @@ public:
             banned << "nue_god" << "zun";
         QSet<QString> test;
         if (init)
-            test << "aya" << "kaguya_god" << "reimu";
+            test << "aya" << "kaguya_god" << "shinmyoumaru";
         else
             test << "marisa";
         return test.toList();

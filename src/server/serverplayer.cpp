@@ -1509,7 +1509,8 @@ void ServerPlayer::addHiddenGenerals(const QStringList &generals)
     arg << objectName();
     arg << g;
 
-    room->doNotify(this, S_COMMAND_SET_HIDDEN_GENERAL, arg);
+    room->doBroadcastNotify(S_COMMAND_SET_HIDDEN_GENERAL, arg);
+    //room->doNotify(this, S_COMMAND_SET_HIDDEN_GENERAL, arg);
 }
 
 void ServerPlayer::removeHiddenGenerals(const QStringList &generals)
@@ -1521,8 +1522,8 @@ void ServerPlayer::removeHiddenGenerals(const QStringList &generals)
     JsonArray arg;
     arg << objectName();
     arg << g;
-
-    room->doNotify(this, S_COMMAND_SET_HIDDEN_GENERAL, arg);
+    room->doBroadcastNotify(S_COMMAND_SET_HIDDEN_GENERAL, arg);
+    //room->doNotify(this, S_COMMAND_SET_HIDDEN_GENERAL, arg);
 }
 
 void ServerPlayer::gainAnExtraTurn()
@@ -1530,17 +1531,43 @@ void ServerPlayer::gainAnExtraTurn()
     room->getThread()->setNextExtraTurn(this);
 }
 
-void ServerPlayer::showHiddenSkill(const QString &skill_name)
+
+bool ServerPlayer::canShowHiddenSkill()
+{
+    QString name = this->tag.value("anyun_general", QString()).toString();
+    if (name != NULL) {
+        const General *hidden = Sanguosha->getGeneral(name);
+        if (hidden)
+            return false;
+    }
+    return !hidden_generals.isEmpty();
+}
+
+bool ServerPlayer::isHiddenSkill(const QString &skill_name)
 {
     if (hasSkill(skill_name, false, false))
+        return false;
+    QString name = this->tag.value("anyun_general", QString()).toString();
+    if (name != NULL) {
+        const General *hidden = Sanguosha->getGeneral(name);
+        if (hidden && hidden->hasSkill(skill_name))
+            return false;
+    }
+    return hasSkill(skill_name);
+}
+
+void ServerPlayer::showHiddenSkill(const QString &skill_name)
+{
+    /*if (hasSkill(skill_name, false, false))
         return;
     QString name = this->tag.value("anyun_general", QString()).toString();
     if (name != NULL) {
         const General *hidden = Sanguosha->getGeneral(name);
         if (hidden)
             return;
-    }
-
+    }*/
+    if (!canShowHiddenSkill() || !isHiddenSkill(skill_name))
+        return;
     if (hasSkill(skill_name)) {
         QString generalName;
         foreach(QString name, hidden_generals) {
