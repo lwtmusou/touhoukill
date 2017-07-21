@@ -104,6 +104,9 @@ public:
     bool isBrokenEquip(int id) const;
     QStringList getHiddenGenerals() const;
     void setHiddenGenerals(const QStringList &generals);
+    QString getShownHiddenGeneral() const;
+    void setShownHiddenGeneral(const QString &general);
+    bool canShowHiddenSkill() const;
 
     int getHp() const;
     int getRenHp() const; //for banling
@@ -330,7 +333,8 @@ protected:
     QStringList skill_invalid;
     QList<int> shown_handcards;
     QList<int> broken_equips;
-    QStringList hidden_generals;//for anyun UI
+    QStringList hidden_generals;//for anyun
+    QString shown_hidden_general;
 
 private:
     QString screen_name;

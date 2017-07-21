@@ -1007,7 +1007,7 @@ TH11Package::TH11Package()
     General *satori = new General(this, "satori$", "dld", 3, false);
     satori->addSkill(new Xiangqi);
     //Room::askForCardChosen
-    satori->addSkill(new Skill("duxin", Skill::Compulsory));
+    satori->addSkill(new Skill("duxin", Skill::Compulsory, "static"));
     satori->addSkill(new Huzhu);
 
     General *koishi = new General(this, "koishi", "dld", 3, false);

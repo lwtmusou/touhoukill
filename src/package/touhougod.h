@@ -4,6 +4,13 @@
 #include "card.h"
 #include "package.h"
 
+#include <QAbstractButton>
+#include <QButtonGroup>
+#include <QDialog>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+
 class HongwuCard : public SkillCard
 {
     Q_OBJECT
@@ -130,6 +137,31 @@ public:
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
+
+
+class AnyunDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    static AnyunDialog *getInstance(const QString &object);
+
+    public slots:
+    void popup();
+    void selectSkill(QAbstractButton *button);
+
+private:
+    explicit AnyunDialog(const QString &object);
+
+    QVBoxLayout *layout;
+    QButtonGroup *group;
+
+    QString object_name;
+
+signals:
+    void onButtonClick();
+};
+
 
 class TouhouGodPackage : public Package
 {

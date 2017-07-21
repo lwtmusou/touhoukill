@@ -123,10 +123,10 @@ public:
     void addHiddenGenerals(const QStringList &generals);
     void removeHiddenGenerals(const QStringList &generals);
     void gainAnExtraTurn();
-    bool canShowHiddenSkill();
+
     bool isHiddenSkill(const QString &skill_name);
     void showHiddenSkill(const QString &skill_name);
-
+    QStringList checkTargetModSkillShow(const CardUseStruct &use);
 
     void copyFrom(ServerPlayer *sp);
 

@@ -1523,7 +1523,20 @@ void ServerPlayer::removeHiddenGenerals(const QStringList &generals)
     arg << objectName();
     arg << g;
     room->doBroadcastNotify(S_COMMAND_SET_HIDDEN_GENERAL, arg);
-    //room->doNotify(this, S_COMMAND_SET_HIDDEN_GENERAL, arg);
+
+    shown_hidden_general = QString();
+    JsonArray arg1;
+    arg1 << objectName();
+    arg1 << QString();
+    room->doBroadcastNotify(S_COMMAND_SET_SHOWN_HIDDEN_GENERAL, arg1);
+
+    foreach(QString name, generals) {
+        room->touhouLogmessage("#RemoveHiddenGeneral", this, name);
+        foreach(const Skill *skill, Sanguosha->getGeneral(name)->getVisibleSkillList()) {
+            room->handleAcquireDetachSkills(this, "-" + skill->objectName(), true);
+        }
+    }
+    room->filterCards(this, this->getCards("hes"), true);
 }
 
 void ServerPlayer::gainAnExtraTurn()
@@ -1532,22 +1545,11 @@ void ServerPlayer::gainAnExtraTurn()
 }
 
 
-bool ServerPlayer::canShowHiddenSkill()
-{
-    QString name = this->tag.value("anyun_general", QString()).toString();
-    if (name != NULL) {
-        const General *hidden = Sanguosha->getGeneral(name);
-        if (hidden)
-            return false;
-    }
-    return !hidden_generals.isEmpty();
-}
-
 bool ServerPlayer::isHiddenSkill(const QString &skill_name)
 {
     if (hasSkill(skill_name, false, false))
         return false;
-    QString name = this->tag.value("anyun_general", QString()).toString();
+    QString name = getShownHiddenGeneral();
     if (name != NULL) {
         const General *hidden = Sanguosha->getGeneral(name);
         if (hidden && hidden->hasSkill(skill_name))
@@ -1558,14 +1560,8 @@ bool ServerPlayer::isHiddenSkill(const QString &skill_name)
 
 void ServerPlayer::showHiddenSkill(const QString &skill_name)
 {
-    /*if (hasSkill(skill_name, false, false))
+    if (skill_name == NULL)
         return;
-    QString name = this->tag.value("anyun_general", QString()).toString();
-    if (name != NULL) {
-        const General *hidden = Sanguosha->getGeneral(name);
-        if (hidden)
-            return;
-    }*/
     if (!canShowHiddenSkill() || !isHiddenSkill(skill_name))
         return;
     if (hasSkill(skill_name)) {
@@ -1578,6 +1574,9 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
             }
         }
         if (generalName != NULL) {
+            room->touhouLogmessage("#ShowHiddenGeneral", this, generalName);
+
+
             JsonArray arg;
             arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
             arg << objectName();
@@ -1585,8 +1584,13 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
             arg << skill_name;
 
             room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
-            this->tag["anyun_skill"] = skill_name;
-            this->tag["anyun_general"] = generalName;
+
+            shown_hidden_general = generalName;
+            JsonArray arg1;
+            arg1 << objectName();
+            arg1 << generalName;
+            room->doBroadcastNotify(S_COMMAND_SET_SHOWN_HIDDEN_GENERAL, arg1);
+
             foreach(const Skill *skill, Sanguosha->getGeneral(generalName)->getVisibleSkillList()) {
                 if (!skill->isLordSkill() && !skill->isAttachedLordSkill()
                     && skill->getFrequency() != Skill::Limited && skill->getFrequency() != Skill::Wake  && skill->getFrequency() != Skill::Eternal)
@@ -1596,6 +1600,47 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
         }
     }
 }
+
+QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
+{
+    if (use.card == NULL || use.card->getTypeId() == Card::TypeSkill)
+        return QStringList();
+    if (!canShowHiddenSkill())
+        return QStringList();
+
+    QList<const TargetModSkill *> tarmods;
+    foreach(QString hidden, getHiddenGenerals()) {
+        const General *g = Sanguosha->getGeneral(hidden);
+        foreach(const Skill *skill, g->getSkillList()) {
+            if (skill->inherits("TargetModSkill")) {
+                const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
+                tarmods << tarmod;
+            }
+        }
+    }
+    if (tarmods.isEmpty())
+        return QStringList();
+
+    QStringList shows;
+    //check extra target
+    foreach(const TargetModSkill *tarmod, tarmods) {
+        if (tarmod->getExtraTargetNum(use.from, use.card) > 0 && !shows.contains(tarmod->objectName())) {
+            shows << tarmod->objectName();
+        }
+    }
+
+    //check ResidueNum
+    if (use.from->usedTimes(use.card->getClassName()) >= 2) {
+        foreach(const TargetModSkill *tarmod, tarmods) {
+            if (tarmod->getResidueNum(use.from, use.card) > 0 && !shows.contains(tarmod->objectName()) ) {
+                shows << tarmod->objectName();
+            }
+        }
+    }
+    return shows;
+    //return QStringList();
+}
+
 
 
 void ServerPlayer::copyFrom(ServerPlayer *sp)

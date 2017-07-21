@@ -177,6 +177,8 @@ void Engine::addSkills(const QList<const Skill *> &all_skills)
             if (trigger_skill && trigger_skill->isGlobal())
                 global_trigger_skills << trigger_skill;
         }
+        else if (skill->inherits("ViewAsSkill"))
+            viewas_skills << qobject_cast<const ViewAsSkill *>(skill);
     }
 }
 
@@ -203,6 +205,11 @@ QList<const AttackRangeSkill *> Engine::getAttackRangeSkills() const
 QList<const TriggerSkill *> Engine::getGlobalTriggerSkills() const
 {
     return global_trigger_skills;
+}
+
+QList<const ViewAsSkill*> Engine::getViewAsSkills() const
+{
+    return viewas_skills;
 }
 
 void Engine::addPackage(Package *package)
@@ -618,7 +625,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const
 
 QString Engine::getVersionNumber() const
 {
-    return "20170529";
+    return "20170721";
 }
 
 QString Engine::getVersion() const

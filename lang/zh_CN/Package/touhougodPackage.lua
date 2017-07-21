@@ -677,10 +677,12 @@ return{
 	[":benzun"] = "<font color=\"blue\"><b>锁定技，</b></font>一名角色的回合结束时，你若有明置的X，你须移除之并重新扣置一张X。（若该角色不为你，改为你观看两张新武将牌并扣置一张）最后，体力上限调整为游戏开始时，并移除你的标记和武将牌上的牌。",
     ["#GetHuashen"] = "%from 获得了  %arg 张 X",
     ["huashencard"] = "X化身",
-    ["#anyun_AskForGeneralShow"] = "暗云",
+    ["#anyunShowStatic"] = "暗云（公开状态技）",
     ["invoke_hidden_compulsory:compulsory"] = "你可以发动隐藏的锁定技 <font color=\"#FF8000\"><b>%src </b></font> 。",
-
-
+    ["#RemoveHiddenGeneral"] = "%from 移除了明置的人物牌  %arg ",
+	["#ShowHiddenGeneral"] = "%from 公开了人物牌  %arg ",
+    ["#GetHuashenDetail"] = "%from 获得了“化身牌” %arg",
+	
 	["marisa_god"] = "神 雾雨魔理沙",
 	["&marisa_god"] = "神雾雨魔理沙",
 	["#marisa_god"] = "奇妙的魔法使",

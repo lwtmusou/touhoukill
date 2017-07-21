@@ -846,6 +846,7 @@ public:
 FengshenCard::FengshenCard()
 {
     will_throw = true;
+    m_skillName = "fengshen";
 }
 
 bool FengshenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const

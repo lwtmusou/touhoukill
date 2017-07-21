@@ -679,6 +679,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
     thread->trigger(PreCardUsed, room, data);
     card_use = data.value<CardUseStruct>();
 
+    
     if (card_use.card->getTypeId() != TypeSkill) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), card_use.card->getSkillName(), QString());
         if (card_use.to.size() == 1)
@@ -691,9 +692,17 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
             moves.append(move);
         }
         room->moveCardsAtomic(moves, true);
-    } else if (card_use.card->willThrow()) {
-        CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), card_use.card->getSkillName(), QString());
-        room->moveCardTo(this, player, NULL, Player::DiscardPile, reason, true);
+        // show general
+        player->showHiddenSkill(card_use.card->getSkillName());
+    }
+    else {
+        const SkillCard *skill_card = qobject_cast<const SkillCard *>(card_use.card);
+        // show general
+        player->showHiddenSkill(skill_card->getSkillName());
+        if (card_use.card->willThrow()) {
+            CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), card_use.card->getSkillName(), QString());
+            room->moveCardTo(this, player, NULL, Player::DiscardPile, reason, true);
+        }
     }
 
     thread->trigger(CardUsed, room, data);
@@ -743,6 +752,16 @@ void Card::onEffect(const CardEffectStruct &) const
 bool Card::isCancelable(const CardEffectStruct &) const
 {
     return false;
+}
+
+QString Card::showSkill() const
+{
+    return show_skill;
+}
+
+void Card::setShowSkill(const QString &skill_name)
+{
+    show_skill = skill_name;
 }
 
 void Card::addSubcard(int card_id)
@@ -924,3 +943,22 @@ QString DummyCard::toString(bool) const
 {
     return "$" + subcardString();
 }
+
+/*
+ShowDistanceCard::ShowDistanceCard()
+    : SkillCard()
+{
+    mute = true;
+    target_fixed = true;
+    handling_method = Card::MethodNone;
+}
+
+const Card *ShowDistanceCard::validate(CardUseStruct &card_use) const
+{
+    QString c = toString().split(":").last();   //damn it again!
+    const DistanceSkill *skill = qobject_cast<const DistanceSkill *>(Sanguosha->getSkill(c));
+    if (skill) {
+        card_use.from->showGeneral(card_use.from->inHeadSkills(skill));
+    }
+    return NULL;
+}*/

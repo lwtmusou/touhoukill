@@ -9,6 +9,7 @@
 #include "skill.h"
 #include "standard.h"
 #include "th10.h" //for huaxiang
+#include <QCommandLinkButton>
 
 class Chuanghuan : public TriggerSkill
 {
@@ -3361,6 +3362,7 @@ public:
     {
         events << HpChanged;
         frequency = Compulsory;
+        show_type = "static";
     }
 
     void record(TriggerEvent, Room *room, QVariant &data) const
@@ -4445,6 +4447,118 @@ public:
     }
 };
 
+AnyunDialog *AnyunDialog::getInstance(const QString &object)
+{
+    static AnyunDialog *instance;
+    if (instance == NULL || instance->objectName() != object) {
+        instance = new AnyunDialog(object);
+    }
+    return instance;
+}
+
+AnyunDialog::AnyunDialog(const QString &object)
+    : object_name(object)
+{
+    setObjectName(object);
+    setWindowTitle(Sanguosha->translate(object));
+    group = new QButtonGroup(this);
+
+    layout = new QVBoxLayout;
+    setLayout(layout);
+
+    connect(group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(selectSkill(QAbstractButton *)));
+}
+
+void AnyunDialog::popup()
+{
+    //only test CARD_USE_REASON_PLAY;
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY) {
+        emit onButtonClick();
+        return;
+    }
+
+    foreach(QAbstractButton *button, group->buttons()) {
+        layout->removeWidget(button);
+        group->removeButton(button);
+        delete button;
+    }
+
+    QStringList skill_names;
+    foreach(QString hidden, Self->getHiddenGenerals()) {
+        const General *g = Sanguosha->getGeneral(hidden);
+        foreach(const Skill *skill, g->getSkillList()) {
+            //if (skill->inherits("ViewAsSkill"))
+            const ViewAsSkill*vs = Sanguosha->getViewAsSkill(skill->objectName());
+            if (vs)
+                skill_names << vs->objectName();
+        }
+    }
+
+    foreach(QString skill_name, skill_names) {
+        QCommandLinkButton *button = new QCommandLinkButton;
+        button->setText(Sanguosha->translate(skill_name));
+        button->setObjectName(skill_name);
+        group->addButton(button);
+
+        bool can = true;
+        
+        button->setEnabled(can);
+        button->setToolTip(Sanguosha->getSkill(skill_name)->getDescription());
+        layout->addWidget(button);
+
+    }
+
+    Self->tag.remove(object_name);
+    exec();
+}
+
+void AnyunDialog::selectSkill(QAbstractButton *button)
+{
+    const QString skill = button->objectName();
+    Self->tag[object_name] = QVariant::fromValue(skill);
+    emit onButtonClick();
+    accept();
+}
+
+class AnyunVS : public ViewAsSkill
+{
+public:
+    AnyunVS()
+        : ViewAsSkill("anyun")
+    {
+        response_or_use = true;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return player->canShowHiddenSkill();
+    }
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        const ViewAsSkill*s = Sanguosha->getViewAsSkill("fengshen");
+        return s->isEnabledAtResponse(player, pattern);
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    {
+        QString name = Self->tag.value("anyun", QString()).toString();
+        if (name != NULL) {
+            const ViewAsSkill*s = Sanguosha->getViewAsSkill(name);
+            return s->viewFilter(selected, to_select);
+        }
+        return false;
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        QString name = Self->tag.value("anyun", QString()).toString();
+        if (name != NULL) {
+            const ViewAsSkill*s = Sanguosha->getViewAsSkill(name);
+            return s->viewAs(cards);
+        }
+        return NULL;
+    }
+};
 
 class Anyun : public TriggerSkill
 {
@@ -4453,7 +4567,13 @@ public:
         : TriggerSkill("anyun")
     {
         events << GameStart;
-        //view_as_skill = new AnyunVS;
+        view_as_skill = new AnyunVS;
+        
+    }
+
+    virtual QDialog *getDialog() const
+    {
+        return AnyunDialog::getInstance("anyun");
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
@@ -4477,6 +4597,11 @@ public:
         n = qMin(n, list.length());
 
         QStringList acquired = list.mid(0, n);
+        if (n > 1 && !init) {
+            QString limit_general = room->askForGeneral(zuoci, acquired);
+            acquired.clear();
+            acquired << limit_general;
+        }
         //add triggerSkill
         foreach(QString name, acquired) {
             huashens << name;
@@ -4495,6 +4620,22 @@ public:
         log.arg = QString::number(n);
         log.arg2 = QString::number(huashens.length());
         room->sendLog(log);
+
+
+        //l.type = "$chaorendrawpile";
+        //l.card_str = IntList2StringList(watchlist).join("+");
+        LogMessage l;
+        l.type = "#GetHuashenDetail";
+        l.from = zuoci;
+        l.arg = acquired.join("\\, \\");
+
+        room->doNotify(zuoci, QSanProtocol::S_COMMAND_LOG_SKILL, l.toJsonValue());
+
+        //LogMessage log;
+        //log.type = "#GetHuashenDetail";
+        //log.from = zuoci;
+        //log.arg = huashens.join("\\, \\");
+        //room->sendLog(log);
 
         zuoci->addHiddenGenerals(acquired);
         if (!deleteName.isEmpty())
@@ -4537,9 +4678,9 @@ public:
             banned << "nue_god" << "zun";
         QSet<QString> test;
         if (init)
-            test << "aya" << "kaguya_god" << "shinmyoumaru";
+            test << "yoshika" << "aya" << "nue_slm";
         else
-            test << "marisa";
+            test << "marisa" << "reimu" << "aya_sp";
         return test.toList();
         //return (all - banned - huashen_set - room_set).toList();
     }
@@ -4554,58 +4695,29 @@ public:
 };
 
 
-class Anyun_AskForGeneralShow : public TriggerSkill
+class AnyunShowStaticSkill : public TriggerSkill
 {
 public:
-    Anyun_AskForGeneralShow() : TriggerSkill("#anyun_AskForGeneralShow")
+    AnyunShowStaticSkill() : TriggerSkill("#anyunShowStatic")
     {
         events << EventPhaseStart;
         //global = true;
     }
 
-    static QList<const Skill*> getShowSkills(ServerPlayer *nue) {
+    static QList<const Skill*> getStaticSkills(ServerPlayer *nue) {
         QList<const Skill*> show;
+        QString shown = nue->getShownHiddenGeneral();
+        if (shown != NULL)
+            return show;
         QStringList generals = nue->getHiddenGenerals();
         foreach(QString name, generals) {
             const General *p = Sanguosha->getGeneral(name);
             foreach(const Skill *skill, p->getVisibleSkillList()) {
-                if (skill->getShowType() == "state")
+                if (skill->getShowType() == "static")
                     show << skill;
             }
         }
         return show;
-    }
-
-    static void showGeneral(ServerPlayer *nue, bool ignore_rule, QString skillName)
-    {
-        Room *room = nue->getRoom();
-        QString generalName;
-        QStringList generals = nue->getHiddenGenerals();
-        foreach(QString name, generals) {
-            const General *p = Sanguosha->getGeneral(name);
-            foreach(const Skill *skill, p->getVisibleSkillList()) {
-                if (skill->objectName() == skillName) {
-                    generalName = p->objectName();
-                }    
-            }
-        }
-        JsonArray arg;
-        arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-        arg << nue->objectName();
-        //if (skill_owner == NULL || skill == NULL) {
-        //    arg << QString() << QString();
-        arg << generalName;
-        arg << skillName;
-        
-        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
-        nue->tag["anyun_skill"] = skillName;
-        nue->tag["anyun_general"] = generalName;
-        foreach(const Skill *skill, Sanguosha->getGeneral(generalName)->getVisibleSkillList()) {
-            if (!skill->isLordSkill() && !skill->isAttachedLordSkill()
-                && skill->getFrequency() != Skill::Limited && skill->getFrequency() != Skill::Wake  && skill->getFrequency() != Skill::Eternal)
-                room->handleAcquireDetachSkills(nue, skill->objectName(), true);
-        }
-        room->filterCards(nue, nue->getCards("hes"), true);
     }
 
 
@@ -4615,22 +4727,33 @@ public:
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *nue = data.value<ServerPlayer *>();
             if (nue && nue->hasSkill("anyun") && nue->getPhase() == Player::Start) {
-                QList<const Skill*> show = getShowSkills(nue);
+                QList<const Skill*> show = getStaticSkills(nue);
                 if (!show.isEmpty())
                     d << SkillInvokeDetail(this, nue, nue);
-            }    
-            //&& !player->hasShownGeneral1()
-            //    && player->disableShow(true).isEmpty();
+            }
         }
         return d; 
     }
 
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        QList<const Skill*> show = getStaticSkills(invoke->invoker);
+        QStringList skills;
+        foreach (const Skill *s, show)
+            skills << s->objectName();
+        skills << "cancel";
+        QString choice = room->askForChoice(invoke->invoker, objectName(), skills.join("+"), data);
+        if (choice == "cancel")
+            return false;
+
+        invoke->tag["anyun_state"] = choice;
+        return true;
+    }
+
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        QList<const Skill*> show = getShowSkills(invoke->invoker);
-        showGeneral(invoke->invoker, false, "fengsu");
-        //invoke->invoker->gainMark("@" + show.first()->objectName());
-        //player->showGeneral(true, true);
+        QString name = invoke->tag.value("anyun_state").toString();
+        invoke->invoker->showHiddenSkill(name);
         return false;
     }
 };
@@ -4640,58 +4763,47 @@ class Benzun : public TriggerSkill
 public:
     Benzun() : TriggerSkill("benzun")
     {
-        events << EventPhaseChanging;
+        events << EventPhaseChanging << GameStart;
         frequency = Compulsory;
     }
 
-    static void hideGeneral(ServerPlayer *nue, QString generalName)
+    void record(TriggerEvent e, Room *room, QVariant &data) const
     {
-        Room *room = nue->getRoom();
-        
-        JsonArray arg;
-        arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-        arg << nue->objectName();
-        arg << QString() << QString();
-        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
-        nue->tag.remove("anyun_skill");
-        nue->tag.remove("anyun_general");
-        foreach(const Skill *skill, Sanguosha->getGeneral(generalName)->getVisibleSkillList()) {
-            room->handleAcquireDetachSkills(nue, "-" + skill->objectName(), true);
+        if (e == GameStart) {
+            ServerPlayer *nue = data.value<ServerPlayer *>();
+            if (nue)
+                nue->tag["init_MaxHp"] = QVariant::fromValue(nue->getMaxHp());
         }
-        room->filterCards(nue, nue->getCards("hes"), true);
     }
-
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
+        if (triggerEvent != EventPhaseChanging)
+            return QList<SkillInvokeDetail>();
         QList<SkillInvokeDetail> d;
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         ServerPlayer *nue = change.player;
         if (change.to == Player::NotActive) {
-            ServerPlayer *nue = change.player;
-            if (nue && nue->hasSkill(this)) {
-                QString name = nue->tag.value("anyun_general", QString()).toString();
+            foreach(ServerPlayer *nue, room->findPlayersBySkillName(objectName())) {
+                QString name = nue->getShownHiddenGeneral();
                 QStringList generals = nue->getHiddenGenerals();
                 if (name != NULL && generals.contains(name))
                     d << SkillInvokeDetail(this, nue, nue, NULL, true);
             }
         }
-            
-            //&& !player->hasShownGeneral1()
-            //    && player->disableShow(true).isEmpty();
-        
         return d;
     }
 
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        QString name = invoke->invoker->tag.value("anyun_general", QString()).toString();
-        hideGeneral(invoke->invoker, name);
-        QStringList names;
+        QString name = invoke->invoker->getShownHiddenGeneral();
+        QStringList names; 
         names << name;
-        Anyun::AcquireGenerals(invoke->invoker, 1,false, names);
-        //invoke->invoker->gainMark("@" + show.first()->objectName());
-        //player->showGeneral(true, true);
+        int n = (invoke->invoker->isCurrent()) ? 1 : 2;
+        Anyun::AcquireGenerals(invoke->invoker, n, false, names);
+
+        int maxhp = invoke->invoker->tag["init_MaxHp"].toInt();
+        room->setPlayerProperty(invoke->invoker, "maxhp", maxhp);
         return false;
     }
 };
@@ -4831,9 +4943,9 @@ TouhouGodPackage::TouhouGodPackage()
 
     General *nue_god = new General(this, "nue_god", "touhougod", 3, false);
     nue_god->addSkill(new Anyun);
-    nue_god->addSkill(new Anyun_AskForGeneralShow);
+    nue_god->addSkill(new AnyunShowStaticSkill);
     nue_god->addSkill(new Benzun);
-    related_skills.insertMulti("anyun", "#anyun_AskForGeneralShow");
+    related_skills.insertMulti("anyun", "#anyunShowStatic");
 
     General *marisa_god = new General(this, "marisa_god", "touhougod", 4, false, true, true);
     marisa_god->addSkill(new Huixing);

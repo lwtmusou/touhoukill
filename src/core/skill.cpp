@@ -456,12 +456,12 @@ ProhibitSkill::ProhibitSkill(const QString &name)
 }
 
 DistanceSkill::DistanceSkill(const QString &name)
-    : Skill(name, Skill::Compulsory, "state")
+    : Skill(name, Skill::Compulsory, "static")
 {
 }
 
 MaxCardsSkill::MaxCardsSkill(const QString &name)
-    : Skill(name, Skill::Compulsory)
+    : Skill(name, Skill::Compulsory, "static")
 {
 }
 
@@ -492,7 +492,7 @@ int TargetModSkill::getExtraTargetNum(const Player *, const Card *) const
 }
 
 AttackRangeSkill::AttackRangeSkill(const QString &name)
-    : Skill(name, Skill::Compulsory)
+    : Skill(name, Skill::Compulsory, "static")
 {
 }
 

@@ -88,6 +88,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_SET_SHOWN_HANDCARD] = &Client::setShownHandCards;
     m_callbacks[S_COMMAND_SET_BROKEN_EQUIP] = &Client::setBrokenEquips;
     m_callbacks[S_COMMAND_SET_HIDDEN_GENERAL] = &Client::setHiddenGenerals;
+    m_callbacks[S_COMMAND_SET_SHOWN_HIDDEN_GENERAL] = &Client::setShownHiddenGeneral;
 
     // interactive methods
     m_interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
@@ -274,6 +275,19 @@ void Client::setHiddenGenerals(const QVariant &arg)
     ClientPlayer *player = getPlayer(who);
     player->setHiddenGenerals(names);
     player->changePile("huashencard", false, QList<int>());
+}
+
+void Client::setShownHiddenGeneral(const QVariant &arg)
+{
+    JsonArray str = arg.value<JsonArray>();
+    if (str.size() != 2)
+        return;
+
+    QString who = str[0].toString();
+    QString general = str[1].toString();
+
+    ClientPlayer *player = getPlayer(who);
+    player->setShownHiddenGeneral(general);
 }
 
 void Client::signup()

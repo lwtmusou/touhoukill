@@ -208,6 +208,27 @@ void Player::setHiddenGenerals(const QStringList &generals)
     this->hidden_generals = generals;
 }
 
+bool Player::canShowHiddenSkill() const
+{
+    if (shown_hidden_general != NULL) {
+        const General *hidden = Sanguosha->getGeneral(shown_hidden_general);
+        if (hidden)
+            return false;
+    }
+    return !hidden_generals.isEmpty();
+}
+
+
+QString Player::getShownHiddenGeneral() const
+{
+    return shown_hidden_general;
+}
+
+void Player::setShownHiddenGeneral(const QString &general)
+{
+    this->shown_hidden_general = general;
+}
+
 int Player::getMaxHp() const
 {
     if (hasSkill("huanmeng")) {
@@ -613,11 +634,15 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
     if (include_hidden && !isSkillInvalid("anyun")
         && (skills.contains("anyun") || acquired_skills.contains("anyun"))
         && !skill->isLordSkill() && !skill->isAttachedLordSkill() 
-        && skill->getFrequency() != Skill::Limited && skill->getFrequency() != Skill::Wake  && skill->getFrequency() != Skill::Eternal) {
-        foreach(QString name, hidden_generals) {
-            const General *hidden = Sanguosha->getGeneral(name);
-            if (hidden->hasSkill(skill_name))
-                return true;
+        && skill->getFrequency() != Skill::Limited && skill->getFrequency() != Skill::Wake  && skill->getFrequency() != Skill::Eternal
+        && skill->getShowType() != "static") {
+        QString shown = shown_hidden_general;
+        if (shown == NULL) {
+            foreach(QString hidden, hidden_generals) {
+                const General *g = Sanguosha->getGeneral(hidden);
+                if (g->hasSkill(skill_name))
+                    return true;
+            }
         }
     }
 

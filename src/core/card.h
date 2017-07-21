@@ -163,6 +163,9 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
+    virtual QString showSkill() const;
+    virtual void setShowSkill(const QString &skill_name);
+
     inline virtual bool isKindOf(const char *cardType) const
     {
         Q_ASSERT(cardType);
@@ -210,6 +213,7 @@ protected:
     Card::HandlingMethod handling_method;
 
     mutable QStringList flags;
+    QString show_skill;
 };
 
 class SkillCard : public Card
@@ -229,6 +233,18 @@ public:
 protected:
     QString user_string;
 };
+
+/*
+class ShowDistanceCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ShowDistanceCard();
+
+    const Card *validate(CardUseStruct &card_use) const;
+};*/
+
 
 class DummyCard : public SkillCard
 {

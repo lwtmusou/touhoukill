@@ -23,7 +23,7 @@ public:
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
-        foreach (ServerPlayer *reimu, use.to) {
+        foreach(ServerPlayer *reimu, use.to) {
             if (reimu->hasSkill(this))
                 d << SkillInvokeDetail(this, reimu, reimu);
         }
@@ -620,10 +620,7 @@ public:
 
     virtual int getExtra(const Player *target) const
     {
-        if (target->hasSkill(objectName()))
-            return target->getMark("shoucang");
-        else
-            return 0;
+        return target->getMark("shoucang");
     }
 };
 

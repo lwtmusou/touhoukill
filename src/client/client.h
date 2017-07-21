@@ -135,6 +135,7 @@ public:
     void setShownHandCards(const QVariant &card_str);
     void setBrokenEquips(const QVariant &card_str);
     void setHiddenGenerals(const QVariant &arg);
+    void setShownHiddenGeneral(const QVariant &arg);
 
     void fillAG(const QVariant &cards_str);
     void takeAG(const QVariant &take_str);
