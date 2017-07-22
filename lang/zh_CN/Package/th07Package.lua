@@ -32,11 +32,11 @@ return
 --***********************************
 	--yym002  势力：妖 4血
 	["yukari"]= "八云紫",
-	["#yukari"]= "潜藏于境界中的妖怪",
-	["designer:yukari"] = "星野梦美☆",
+	["#yukari"]= "神隐的主犯",
+	["designer:yukari"] = "三国有单",
 
-	["illustrator:yukari"] = "shinia",
-	["origin:yukari"] = "p号：35803665，个人ID：44778",
+    ["illustrator:yukari"] = "菊月",
+	["origin:yukari"] = "p号:51599308，个人ID：429883" ,
 	["illustrator:yukari_1"] = "An2A",
 	["origin:yukari_1"] = "个人ID：173876",
 	["illustrator:yukari_2"] = "会帆",
@@ -287,8 +287,9 @@ return
 	["&yukari_sp"] = "千年紫",
 	["#yukari_sp"] = "潜藏于境界中的妖怪",--千年前的妖怪
 	["designer:yukari_sp"] = "星野梦美☆",
-	["illustrator:yukari_sp"] = "菊月",
-	["origin:yukari_sp"] = "p号:51599308，个人ID：429883" ,
+	
+	["illustrator:yukari_sp"] = "shinia",
+	["origin:yukari_sp"] = "p号：35803665，个人ID：44778",
 	["illustrator:yukari_sp_1"] = "千嗣",
 	["origin:yukari_sp_1"] = "p号：19674598，个人ID：258097",
 	["illustrator:yukari_sp_2"] = "ideolo",

@@ -264,10 +264,7 @@ void XijianCard::onUse(Room *room, const CardUseStruct &card_use) const
     ServerPlayer *from = card_use.from;
     ServerPlayer *to1 = card_use.to.at(0);
     ServerPlayer *to2 = card_use.to.at(1);
-    //QList<ServerPlayer *> logto;
-    //logto << to1 << to2;
-    //room->touhouLogmessage("#ChoosePlayerWithSkill", from, "yushou", logto, "");
-    //room->notifySkillInvoked(card_use.from, "yushou");
+
     QList<int> disable;
     foreach(const Card *card, to1->getJudgingArea()) {
         if (to2->containsTrick(card->objectName()))
@@ -283,6 +280,7 @@ void XijianCard::onUse(Room *room, const CardUseStruct &card_use) const
     int card_id = room->askForCardChosen(from, to1, "hejs", "xijian", false, Card::MethodNone, disable);
     Player::Place place = room->getCardPlace(card_id);
     const Card *card = Sanguosha->getCard(card_id);
+    card_use.from->showHiddenSkill("xijian");
     if (place == Player::PlaceHand)
         to2->obtainCard(card, to1->isShownHandcard(card_id));
     else {
@@ -344,7 +342,6 @@ public:
     }
 
 };
-
 
 
 
@@ -450,6 +447,8 @@ public:
         ServerPlayer *yukari = invoke->invoker;
         ServerPlayer *who = data.value<DyingStruct>().who;
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, yukari->objectName(), who->objectName());
+        room->touhouLogmessage("#ChoosePlayerWithSkill", yukari, objectName(), QList<ServerPlayer *>() << who);
+
         int id2;
         if (yukari == who) {
             const Card *card = room->askForExchange(yukari, objectName(), 1, 1, true, "@sisheng");
@@ -569,6 +568,7 @@ public:
         const Card *cards = room->askForExchange(ran, "zhaoliao", ran->getCards("hes").length(), 1, true, "@zhaoliao:" + a->objectName(), true);
         ran->tag.remove("zhaoliao_target");
         if (cards) {
+            ran->showHiddenSkill("zhaoliao");
             room->notifySkillInvoked(ran, objectName());
             QList<ServerPlayer *> logto;
             logto << a;
@@ -767,8 +767,7 @@ public:
         QString prompt = "@xiezou:" + card->objectName();
         delete card;
         room->setPlayerFlag(invoke->invoker, "Global_InstanceUse_Failed");
-        room->askForUseCard(invoke->invoker, "@@xiezou", prompt);
-        return false;
+        return room->askForUseCard(invoke->invoker, "@@xiezou", prompt);
     }
 };
 
@@ -1373,8 +1372,7 @@ public:
         foreach(ServerPlayer *p, tos)
             room->setPlayerFlag(p, "Global_qimenFailed");
         QString prompt = player->inMyAttackRange(use.to.first()) ? "@qimen1:" : "@qimen2:";
-        room->askForUseCard(player, "@@qimen", prompt + use.card->objectName());
-        return false;
+        return room->askForUseCard(player, "@@qimen", prompt + use.card->objectName());
     }
 };
 
@@ -1434,8 +1432,6 @@ public:
         return false;
     }
 };
-
-
 
 
 
@@ -1521,7 +1517,7 @@ public:
         ServerPlayer *player = invoke->invoker;
         ServerPlayer *target = room->askForPlayerChosen(player, room->getAlivePlayers(), objectName(), "@" + objectName() + ":" + QString::number(player->getLostHp()), true, true);
         if (target) {
-            invoke->invoker->tag["baochun_target"] = QVariant::fromValue(target);
+            invoke->targets << target;
             return true;
         }
 
@@ -1530,7 +1526,7 @@ public:
 
     bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        ServerPlayer *target = invoke->invoker->tag["baochun_target"].value<ServerPlayer *>();
+        ServerPlayer *target = invoke->targets.first();
         invoke->invoker->tag.remove("baochun_target");
         target->drawCards(invoke->invoker->getLostHp());
         return false;
@@ -2182,9 +2178,8 @@ public:
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         const Card *card = move.reason.m_extraData.value<const Card *>();
         ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "@shoushu:" + card->objectName(), true, true);
-
         if (target) {
-            player->tag["shoushu_select"] = QVariant::fromValue(target);
+            invoke->targets << target;
             return true;
         }
         return false;
@@ -2193,9 +2188,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        ServerPlayer *player = invoke->invoker;
-        ServerPlayer *target = player->tag.value("shoushu_select").value<ServerPlayer *>();
-        player->tag.remove("shoushu_select");
+        ServerPlayer *target = invoke->targets.first();
         if (target) {
             CardsMoveStruct mo;
             mo.card_ids = move.card_ids;
@@ -2264,7 +2257,7 @@ public:
             slash->addSubcard(pindian->from_card);
             slash->addSubcard(pindian->to_card);
             if (pindian->from->canSlash(pindian->to, slash, false))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, pindian->from, pindian->from, NULL, true, pindian->to);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, pindian->from, pindian->from, NULL, true, pindian->to, false);
         }
         return QList<SkillInvokeDetail>();
     }
