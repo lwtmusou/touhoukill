@@ -4472,10 +4472,10 @@ AnyunDialog::AnyunDialog(const QString &object)
 void AnyunDialog::popup()
 {
     //only test CARD_USE_REASON_PLAY;
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY) {
-        emit onButtonClick();
-        return;
-    }
+    bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+        //emit onButtonClick();
+        //return;
+    
 
     foreach(QAbstractButton *button, group->buttons()) {
         layout->removeWidget(button);
@@ -4489,8 +4489,15 @@ void AnyunDialog::popup()
         foreach(const Skill *skill, g->getSkillList()) {
             //if (skill->inherits("ViewAsSkill"))
             const ViewAsSkill*vs = Sanguosha->getViewAsSkill(skill->objectName());
-            if (vs)
-                skill_names << vs->objectName();
+            if (vs) {
+                if (play && vs->isEnabledAtPlay(Self))
+                    skill_names << vs->objectName();
+                if (!play) {
+                    QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+                    if (vs->isEnabledAtResponse(Self, pattern))
+                        skill_names << vs->objectName();
+                }
+            }
         }
     }
 
@@ -4501,7 +4508,6 @@ void AnyunDialog::popup()
         group->addButton(button);
 
         bool can = true;
-        
         button->setEnabled(can);
         button->setToolTip(Sanguosha->getSkill(skill_name)->getDescription());
         layout->addWidget(button);
@@ -4529,14 +4535,38 @@ public:
         response_or_use = true;
     }
 
+    static bool hasHiddenViewas(const Player *player) {
+        bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+        foreach(QString hidden, Self->getHiddenGenerals()) {
+            const General *g = Sanguosha->getGeneral(hidden);
+            foreach(const Skill *skill, g->getSkillList()) {
+                const ViewAsSkill*vs = Sanguosha->getViewAsSkill(skill->objectName());
+                if (vs) {
+                    if (play && vs->isEnabledAtPlay(player))
+                        return true;
+                    if (!play) {
+                        if (vs->isEnabledAtResponse(player, pattern))
+                            return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return player->canShowHiddenSkill();
+        if (!player->canShowHiddenSkill())
+            return false;
+        return hasHiddenViewas(player);
     }
+    
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        const ViewAsSkill*s = Sanguosha->getViewAsSkill("fengshen");
-        return s->isEnabledAtResponse(player, pattern);
+        if (!player->canShowHiddenSkill())
+            return false;
+        return hasHiddenViewas(player);
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
@@ -4622,8 +4652,6 @@ public:
         room->sendLog(log);
 
 
-        //l.type = "$chaorendrawpile";
-        //l.card_str = IntList2StringList(watchlist).join("+");
         LogMessage l;
         l.type = "#GetHuashenDetail";
         l.from = zuoci;
@@ -4631,11 +4659,6 @@ public:
 
         room->doNotify(zuoci, QSanProtocol::S_COMMAND_LOG_SKILL, l.toJsonValue());
 
-        //LogMessage log;
-        //log.type = "#GetHuashenDetail";
-        //log.from = zuoci;
-        //log.arg = huashens.join("\\, \\");
-        //room->sendLog(log);
 
         zuoci->addHiddenGenerals(acquired);
         if (!deleteName.isEmpty())
@@ -4678,16 +4701,16 @@ public:
             banned << "nue_god" << "zun";
         QSet<QString> test;
         if (init)
-            test << "yoshika" << "aya" << "nue_slm";
+            test << "shinki" << "yumeko" << "konngara";
         else
-            test << "marisa" << "reimu" << "aya_sp";
+            test << "marisa" << "yukari" << "aya_sp";
         return test.toList();
         //return (all - banned - huashen_set - room_set).toList();
     }
 
 
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         AcquireGenerals(invoke->invoker, 3, true, QStringList());
         return false;
@@ -4721,7 +4744,7 @@ public:
     }
 
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
         QList<SkillInvokeDetail> d;
         if (triggerEvent == EventPhaseStart) {
@@ -4735,7 +4758,7 @@ public:
         return d; 
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         QList<const Skill*> show = getStaticSkills(invoke->invoker);
         QStringList skills;
@@ -4750,10 +4773,13 @@ public:
         return true;
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         QString name = invoke->tag.value("anyun_state").toString();
+        // this flag is only for checking hasSkill during showHidden 
+        room->setPlayerFlag(invoke->invoker, "has_anyu_state");
         invoke->invoker->showHiddenSkill(name);
+        room->setPlayerFlag(invoke->invoker, "-has_anyu_state");
         return false;
     }
 };
@@ -4767,7 +4793,7 @@ public:
         frequency = Compulsory;
     }
 
-    void record(TriggerEvent e, Room *room, QVariant &data) const
+    void record(TriggerEvent e, Room *, QVariant &data) const
     {
         if (e == GameStart) {
             ServerPlayer *nue = data.value<ServerPlayer *>();
@@ -4782,7 +4808,6 @@ public:
             return QList<SkillInvokeDetail>();
         QList<SkillInvokeDetail> d;
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        ServerPlayer *nue = change.player;
         if (change.to == Player::NotActive) {
             foreach(ServerPlayer *nue, room->findPlayersBySkillName(objectName())) {
                 QString name = nue->getShownHiddenGeneral();
@@ -4794,7 +4819,7 @@ public:
         return d;
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         QString name = invoke->invoker->getShownHiddenGeneral();
         QStringList names; 
@@ -4804,6 +4829,30 @@ public:
 
         int maxhp = invoke->invoker->tag["init_MaxHp"].toInt();
         room->setPlayerProperty(invoke->invoker, "maxhp", maxhp);
+
+
+        QStringList disablePiles;
+        disablePiles << "wooden_ox" << "suoding_cards" << "saving_energy";
+        //throw cards in special place
+        QList<int> idlist;
+        foreach(QString pile, invoke->invoker->getPileNames()) {
+            if (!disablePiles.contains(pile))
+                idlist << invoke->invoker->getPile(pile);
+        }
+        if (idlist.length() > 0) {
+            CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, invoke->invoker->objectName(), NULL, "benzun", "");
+            CardsMoveStruct move(idlist, invoke->invoker, Player::DiscardPile, reason);
+            room->moveCardsAtomic(move, true);
+       }
+        //@todo: find a standard method for confriming removable mark 
+        QStringList marks;
+        marks << "@clock" << "@kinki" << "@qiannian" << "@shi"
+            << "@ye" << "@yu" << "@zhengti" << "@xinyang"
+            << "@ice";
+        foreach(QString m, marks) {
+            if (invoke->invoker->getMark(m) > 0)
+                invoke->invoker->loseAllMarks(m);
+        }
         return false;
     }
 };

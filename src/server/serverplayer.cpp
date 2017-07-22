@@ -1597,6 +1597,10 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
                 room->handleAcquireDetachSkills(this, skill->objectName(), true);
             }
             room->filterCards(this, this->getCards("hes"), true);
+
+            //keep showing huashen for a short time
+            if (getPhase() == Player::Finish)
+                room->getThread()->delay(1000);
         }
     }
 }

@@ -502,8 +502,8 @@ struct CardAskedStruct
 struct SkillInvokeDetail
 {
     explicit SkillInvokeDetail(const TriggerSkill *skill = NULL, ServerPlayer *owner = NULL, ServerPlayer *invoker = NULL, QList<ServerPlayer *> targets = QList<ServerPlayer *>(),
-                               bool isCompulsory = false, ServerPlayer *preferredTarget = NULL);
-    SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, bool isCompulsory = false, ServerPlayer *preferredTarget = NULL);
+                               bool isCompulsory = false, ServerPlayer *preferredTarget = NULL, bool showHidden = true);
+    SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, bool isCompulsory = false, ServerPlayer *preferredTarget = NULL, bool showHidden = true);
 
     const TriggerSkill *skill; // the skill
     ServerPlayer *owner; // skill owner. 2 structs with the same skill and skill owner are treated as of a same skill.
@@ -512,7 +512,7 @@ struct SkillInvokeDetail
     bool isCompulsory; // judge the skill is compulsory or not. It is set in the skill's triggerable
     bool triggered; // judge whether the skill is triggered
     ServerPlayer *preferredTarget; // the preferred target of a certain skill
-
+    bool showhidden;
     QVariantMap tag; // used to add a tag to the struct. useful for skills like Tieqi and Liegong to save a QVariantList for assisting to assign targets
 
     bool operator<(const SkillInvokeDetail &arg2) const; // the operator < for sorting the invoke order.

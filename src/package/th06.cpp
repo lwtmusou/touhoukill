@@ -71,6 +71,7 @@ public:
         : TriggerSkill("skltkexue")
     {
         events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut << Revive;
+        show_type = "static";
     }
 
     void record(TriggerEvent, Room *room, QVariant &) const
@@ -289,7 +290,7 @@ public:
             if (damage.from == damage.to)
                 return QList<SkillInvokeDetail>();
             if (damage.card && damage.card->isKindOf("Slash") && damage.card->hasFlag("yuxueSlash"))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true, NULL, false);
         }
 
         return QList<SkillInvokeDetail>();
@@ -300,16 +301,21 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if (triggerEvent == Damaged) {
             room->setPlayerFlag(invoke->invoker, "SlashRecorder_yuxueSlash");
-            if (!room->askForUseCard(invoke->invoker, "slash", "@yuxue", -1, Card::MethodUse, false, objectName()))
-                room->setPlayerFlag(invoke->invoker, "-SlashRecorder_yuxueSlash");
+            const Card *c = room->askForUseCard(invoke->invoker, "slash", "@yuxue", -1, Card::MethodUse, false, objectName());
+            room->setPlayerFlag(invoke->invoker, "-SlashRecorder_yuxueSlash");
+            return c != NULL;
+
         } else if (triggerEvent == ConfirmDamage)
             return true;
 
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
     {
+        if (triggerEvent != ConfirmDamage)
+            return false;
+
         DamageStruct damage = data.value<DamageStruct>();
         damage.damage = damage.damage + 1;
         if (damage.from) {
@@ -805,7 +811,7 @@ public:
                 if (room->getCardPlace(id) != Player::DiscardPile)
                     return QList<SkillInvokeDetail>();
             }
-            d << SkillInvokeDetail(this, effect.from, effect.from, NULL, true);
+            d << SkillInvokeDetail(this, effect.from, effect.from, NULL, true, NULL, false);
         }
         return d;
     }
@@ -1017,7 +1023,7 @@ public:
         int num = qMax(1, Self->getHp());
         if (cards.length() != num)
             return NULL;
-
+        
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
 
@@ -1035,7 +1041,7 @@ public:
             card->addSubcards(cards);
             return card;
         }
-
+        
         const Card *c = Self->tag.value("beishui").value<const Card *>();
         if (c) {
             BeishuiCard *card = new BeishuiCard;

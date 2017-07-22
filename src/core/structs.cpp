@@ -437,7 +437,8 @@ bool SkillInvokeDetail::sameTimingWith(const SkillInvokeDetail &arg2) const
 }
 
 SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill /*= NULL*/, ServerPlayer *owner /*= NULL*/, ServerPlayer *invoker /*= NULL*/,
-                                     QList<ServerPlayer *> targets /*= QList<ServerPlayer *>()*/, bool isCompulsory /*= false*/, ServerPlayer *preferredTarget /*= NULL*/)
+                                     QList<ServerPlayer *> targets /*= QList<ServerPlayer *>()*/, bool isCompulsory /*= false*/, ServerPlayer *preferredTarget /*= NULL*/
+                                     ,bool showHidden)
     : skill(skill)
     , owner(owner)
     , invoker(invoker)
@@ -445,17 +446,19 @@ SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill /*= NULL*/, Serve
     , isCompulsory(isCompulsory)
     , triggered(false)
     , preferredTarget(preferredTarget)
+    ,showhidden(showHidden)
 {
 }
 
 SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, bool isCompulsory /*= false*/,
-                                     ServerPlayer *preferredTarget /*= NULL*/)
+                                     ServerPlayer *preferredTarget /*= NULL*/, bool showHidden)
     : skill(skill)
     , owner(owner)
     , invoker(invoker)
     , isCompulsory(isCompulsory)
     , triggered(false)
     , preferredTarget(preferredTarget)
+    , showhidden(showHidden)
 {
     if (target != NULL)
         targets << target;

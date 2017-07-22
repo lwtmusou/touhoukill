@@ -1523,7 +1523,6 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         }
     }
     //trigger event
-
     if (card) {
         bool isHandcard = true;
         bool isShowncard = false;
@@ -1585,6 +1584,12 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 moveCardTo(card, player, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason);
         }
 
+        //show hidden general
+        QString showskill = card->getSkillName();
+        //if (skill_name == "bllmwuyu")
+        //    showskill = skill_name;
+        player->showHiddenSkill(skill_name);
+        player->showHiddenSkill(card->getSkillName());
         if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial) {
             if (!card->getSkillName().isNull() && card->getSkillName(true) == card->getSkillName(false) && player->hasSkill(card->getSkillName()))
                 notifySkillInvoked(player, card->getSkillName());
@@ -1670,6 +1675,8 @@ const Card *Room::askForUseCard(ServerPlayer *player, const QString &pattern, co
         s.args << card_use.toString();
         QVariant decisionData = QVariant::fromValue(s);
         thread->trigger(ChoiceMade, this, decisionData);
+        //show hidden general
+        player->showHiddenSkill(skill_name);
         if (!useCard(card_use, addHistory))
             return askForUseCard(player, pattern, prompt, notice_index, method, addHistory);
 

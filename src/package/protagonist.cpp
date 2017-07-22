@@ -432,6 +432,7 @@ public:
         : TriggerSkill("saiqian")
     {
         events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Death << Debut << Revive;
+        show_type = "static";
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
@@ -1783,6 +1784,9 @@ public:
                     log.to << victim;
                     room->sendLog(log);
                     room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, extra->objectName(), victim->objectName());
+                    
+                    //show hidden general
+                    player->showHiddenSkill(objectName());
                 }
             } else
                 break;

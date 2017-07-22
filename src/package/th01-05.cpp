@@ -747,19 +747,36 @@ public:
             const Card *card = room->askForCard(invoke->invoker, ".", "@mengxiao:" + choice, data, Card::MethodNone, NULL, false, objectName());
             if (!card)
                 return false;
+            invoke->tag["mengxiao_choice"] = QVariant::fromValue(choice);
+            invoke->tag["mengxiao_id"] = QVariant::fromValue(card->getEffectiveId());
+            return true;
+        } else {
+            return invoke->invoker->askForSkillInvoke(this, data);
+        }
 
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *current = room->getCurrent();
+        if (current->getPhase() == Player::Finish) {
             room->notifySkillInvoked(invoke->invoker, objectName());
+
+            
+            int card_id = invoke->tag["mengxiao_id"].toInt();
+            QString choice = invoke->tag.value("mengxiao_choice", QString()).toString();
 
             LogMessage log;
             log.type = "$Mengxiao";
             log.from = invoke->invoker;
             log.arg = objectName();
             log.arg2 = choice;
-            log.card_str = QString::number(card->getEffectiveId());
+            log.card_str = QString::number(card_id);
             room->sendLog(log);
 
             Card *delayTrick = Sanguosha->cloneCard(choice);
-            WrappedCard *vs_card = Sanguosha->getWrappedCard(card->getEffectiveId());
+            WrappedCard *vs_card = Sanguosha->getWrappedCard(card_id);
             vs_card->setSkillName(objectName());
             vs_card->takeOver(delayTrick);
             room->broadcastUpdateCard(room->getAlivePlayers(), vs_card->getId(), vs_card);
@@ -769,26 +786,21 @@ public:
             move.to = invoke->invoker;
             move.to_place = Player::PlaceDelayedTrick;
             room->moveCardsAtomic(move, true);
-
-        } else {
-#pragma message WARN("todo_lwtmusou:two steps -> one step   using askForUseCard")
-            //step 1: invoke
-            if (!invoke->invoker->askForSkillInvoke(this, data))
-                return false;
-
-            //step 2:choose id
+        }
+        else {
             QStringList trick_list = mengxiaoChoices(invoke->invoker, current);
             QList<int> disable;
-            foreach (const Card *trick, invoke->invoker->getJudgingArea()) {
+            foreach(const Card *trick, invoke->invoker->getJudgingArea()) {
                 if (!trick_list.contains(trick->objectName()))
                     disable << trick->getEffectiveId();
             }
             int card_id = room->askForCardChosen(invoke->invoker, invoke->invoker, "j", objectName(), false, Card::MethodDiscard, disable);
+
             const Card *card = Sanguosha->getCard(card_id);
             room->moveCardTo(card, invoke->invoker, current, Player::PlaceDelayedTrick,
-                             CardMoveReason(CardMoveReason::S_REASON_TRANSFER, invoke->invoker->objectName(), objectName(), QString()));
-        }
+                CardMoveReason(CardMoveReason::S_REASON_TRANSFER, invoke->invoker->objectName(), objectName(), QString()));
 
+        }
         return false;
     }
 };
@@ -1382,8 +1394,7 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        room->askForUseCard(invoke->invoker, "@@lianmu", "@lianmu");
-        return false;
+        return room->askForUseCard(invoke->invoker, "@@lianmu", "@lianmu");
     }
 };
 
@@ -1817,6 +1828,7 @@ public:
     {
         events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Death << Debut << Revive;
         view_as_skill = new ModianSelfVS;
+        show_type = "static";
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
@@ -2411,6 +2423,8 @@ void QirenCard::onUse(Room *room, const CardUseStruct &card_use) const
     QList<ServerPlayer *> targets;
     CardUseStruct use = card_use;
     use.card = card;
+    //show hidden
+    card_use.from->showHiddenSkill("qiren");
     //target_fixed
     if (use.to.isEmpty()) {
         if (oc->isKindOf("AOE") || oc->isKindOf("GlobalEffect")) {
@@ -2500,7 +2514,7 @@ void QirenCard::onUse(Room *room, const CardUseStruct &card_use) const
             return;
         }
     }
-
+    
     //do new use
     room->useCard(use);
 }

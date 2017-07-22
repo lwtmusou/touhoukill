@@ -301,6 +301,7 @@ FilterSkill::FilterSkill(const QString &name)
     : OneCardViewAsSkill(name)
 {
     frequency = Compulsory;
+    show_type = "static";
 }
 
 TriggerSkill::TriggerSkill(const QString &name)
