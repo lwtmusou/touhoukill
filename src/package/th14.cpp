@@ -304,6 +304,7 @@ public:
         } else {
             QString prompt = "target:" + use.from->objectName() + ":" + target->objectName();
             if (invoke->invoker->askForSkillInvoke(objectName(), prompt)) {
+                invoke->invoker->showHiddenSkill(objectName());
                 int id = room->askForCardChosen(invoke->invoker, target, "hs", objectName(), false, Card::MethodDiscard);
                 room->throwCard(id, target, invoke->invoker);
                 return true;
@@ -621,28 +622,24 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        ServerPlayer *player = invoke->invoker;
-        if (player->askForSkillInvoke(objectName(), data)) {
-            QList<int> equips;
-            foreach (const Card *e, (player->getEquips()))
-                equips << e->getId();
-
-            CardsMoveStruct move;
-            move.card_ids = equips;
-            move.from_place = Player::PlaceEquip;
-            move.to_place = Player::PlaceHand;
-            move.from = player;
-            move.to = player;
-
-            room->moveCardsAtomic(move, true);
-
-            return true;
-        }
-        return false;
+        return invoke->invoker->askForSkillInvoke(objectName(), data);
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
+        ServerPlayer *player = invoke->invoker;
+        QList<int> equips;
+        foreach(const Card *e, (player->getEquips()))
+            equips << e->getId();
+
+        CardsMoveStruct move;
+        move.card_ids = equips;
+        move.from_place = Player::PlaceEquip;
+        move.to_place = Player::PlaceHand;
+        move.from = player;
+        move.to = player;
+        room->moveCardsAtomic(move, true);
+        
         Jink *card = new Jink(Card::NoSuit, 0);
         card->setSkillName("_langying");
         room->provide(card);
@@ -898,45 +895,36 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        ServerPlayer *source = invoke->invoker;
-        if (source->askForSkillInvoke(objectName(), data)) {
-            QList<int> temp_ids;
-            QVariantList shizhu_ids = room->getTag("shizhuPeach").toList();
-            foreach (QVariant card_data, shizhu_ids) {
-                if (room->getCardPlace(card_data.toInt()) == Player::DiscardPile)
-                    temp_ids << card_data.toInt();
-            }
-
-            room->fillAG(temp_ids, source);
-            int id = room->askForAG(source, temp_ids, false, objectName());
-            room->clearAG(source);
-            if (id > -1) {
-                room->showAllCards(source);
-                room->getThread()->delay(1000);
-                room->clearAG();
-                bool hand_peach = false;
-                foreach (const Card *card, source->getHandcards()) {
-                    if (card->isKindOf("Peach")) {
-                        hand_peach = true;
-                        break;
-                    }
-                }
-                if (!hand_peach) {
-                    source->tag["shizhu_id"] = QVariant::fromValue(id);
-                    return true;
-                }
-            }
-        }
-        return false;
+        return invoke->invoker->askForSkillInvoke(objectName(), data);
     }
 
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         ServerPlayer *source = invoke->invoker;
-        int id = source->tag["shizhu_id"].toInt();
-        source->tag.remove("shizhu_id");
-        source->obtainCard(Sanguosha->getCard(id), true);
+        QList<int> temp_ids;
+        QVariantList shizhu_ids = room->getTag("shizhuPeach").toList();
+        foreach(QVariant card_data, shizhu_ids) {
+            if (room->getCardPlace(card_data.toInt()) == Player::DiscardPile)
+                temp_ids << card_data.toInt();
+        }
 
+        room->fillAG(temp_ids, source);
+        int id = room->askForAG(source, temp_ids, false, objectName());
+        room->clearAG(source);
+        if (id > -1) {
+            room->showAllCards(source);
+            room->getThread()->delay(1000);
+            room->clearAG();
+            bool hand_peach = false;
+            foreach(const Card *card, source->getHandcards()) {
+                if (card->isKindOf("Peach")) {
+                    hand_peach = true;
+                    break;
+                }
+            }
+            if (!hand_peach)
+                source->obtainCard(Sanguosha->getCard(id), true);
+        }
         return false;
     }
 };

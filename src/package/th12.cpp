@@ -962,12 +962,12 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return player->getMark("@lingbai") > 0 && Slash::IsAvailable(player);
+        return player->getMark("lingbai") > 0 && Slash::IsAvailable(player);
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        if (player->getMark("@lingbai") > 0 && (matchAvaliablePattern("slash", pattern) || matchAvaliablePattern("jink", pattern)))
+        if (player->getMark("lingbai") > 0 && (matchAvaliablePattern("slash", pattern) || matchAvaliablePattern("jink", pattern)))
             return true;
         return false;
     }
@@ -1013,14 +1013,14 @@ public:
             if (use.card->isNDTrick()) {
                 foreach (ServerPlayer *p, use.to) {
                     if (p->hasSkill(this) && !p->isCurrent())
-                        room->setPlayerMark(p, "@lingbai", 1);
+                        room->setPlayerMark(p, "lingbai", 1);
                 }
             }
         } else if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
                 foreach (ServerPlayer *p, room->getAllPlayers())
-                    room->setPlayerMark(p, "@lingbai", 0);
+                    room->setPlayerMark(p, "lingbai", 0);
             }
         }
     }

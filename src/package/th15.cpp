@@ -383,7 +383,7 @@ public:
                 removeSantiLimit(change.player);
         } else if (triggerEvent == EventPhaseStart) {
             ServerPlayer *current = room->getCurrent();
-            if (current->getPhase() == Player::Play && current->hasSkill("santi"))
+            if (current->getPhase() == Player::Play && current->hasSkill("santi", false, false))
                 setSantiLimit(current);
         }
     }

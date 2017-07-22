@@ -404,9 +404,12 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
 
         disconnect(button, &QPushButton::pressed, this, &PlayerCardContainer::showPile);
         connect(button, &QPushButton::pressed, this, &PlayerCardContainer::showPile);
+    
+        if (pile_name != "huashencard") {
+            disconnect(button, &QPushButton::released, this, &PlayerCardContainer::hidePile);
+            connect(button, &QPushButton::released, this, &PlayerCardContainer::hidePile);
+        }
 
-        disconnect(button, &QPushButton::released, this, &PlayerCardContainer::hidePile);
-        connect(button, &QPushButton::released, this, &PlayerCardContainer::hidePile);
     }
     //set treasure pile at first
     QPoint start = _m_layout->m_privatePileStartPos;

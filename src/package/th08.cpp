@@ -842,7 +842,7 @@ void BuxianCard::onUse(Room *room, const CardUseStruct &card_use) const
 
     thread->trigger(PreCardUsed, room, data);
     use = data.value<CardUseStruct>();
-
+    use.from->showHiddenSkill("buxian");
     LogMessage log;
     log.from = card_use.from;
     log.to << card_use.to;
@@ -937,7 +937,7 @@ public:
     {
         PindianStruct *pindian = data.value<PindianStruct *>();
         if (pindian->reason == "buxian")
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, pindian->from, pindian->from, NULL, true);
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, pindian->from, pindian->from, NULL, true, NULL, false);
         return QList<SkillInvokeDetail>();
     }
 
@@ -1222,14 +1222,7 @@ public:
 
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), prompt, true, true);
         if (target) {
-            QList<int> disable;
-            foreach (const Card *c, target->getCards("j")) {
-                if ((e == DamageCaused && c->isRed()) || (e == DamageInflicted && c->isBlack()) || !invoke->invoker->canDiscard(target, c->getEffectiveId())) {
-                    disable << c->getEffectiveId();
-                }
-            }
-            int card_id = room->askForCardChosen(invoke->invoker, target, "j", objectName(), false, Card::MethodDiscard, disable);
-            room->throwCard(card_id, (target->getJudgingAreaID().contains(card_id)) ? NULL : target, invoke->invoker);
+            invoke->targets << target;
             return true;
         }
         return false;
@@ -1237,6 +1230,16 @@ public:
 
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
+        ServerPlayer *target = invoke->targets.first();
+        QList<int> disable;
+        foreach(const Card *c, target->getCards("j")) {
+            if ((e == DamageCaused && c->isRed()) || (e == DamageInflicted && c->isBlack()) || !invoke->invoker->canDiscard(target, c->getEffectiveId())) {
+                disable << c->getEffectiveId();
+            }
+        }
+        int card_id = room->askForCardChosen(invoke->invoker, target, "j", objectName(), false, Card::MethodDiscard, disable);
+        room->throwCard(card_id, (target->getJudgingAreaID().contains(card_id)) ? NULL : target, invoke->invoker);
+        
         DamageStruct damage = data.value<DamageStruct>();
         int record = damage.damage;
         QList<ServerPlayer *> logto;
@@ -1981,7 +1984,6 @@ public:
 
 JinxiCard::JinxiCard()
 {
-    mute = true;
     target_fixed = true;
 }
 
@@ -2129,6 +2131,7 @@ public:
         : TriggerSkill("mingmu")
     {
         events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Death << Debut << Revive;
+        show_type = "static";
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const

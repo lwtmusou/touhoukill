@@ -9,7 +9,8 @@
 #include <QGraphicsSceneMouseEvent>
 
 CardContainer::CardContainer()
-    : _m_background("image/system/card-container.png"), scene_width(0), itemCount(0)
+    : _m_background("image/system/card-container.png"),
+    scene_width(0), itemCount(0)
 {
     setTransform(QTransform::fromTranslate(-_m_background.width() / 2, -_m_background.height() / 2), true);
     _m_boundingRect = QRectF(QPoint(0, 0), _m_background.size());
@@ -160,6 +161,8 @@ void CardContainer::fillGeneralCards(const QList<CardItem *> &card_item, const Q
         //item->setOuterGlowEffectEnabled(true);
         item->show();
     }
+    close_button->setPos(boundingRect().center().x() - close_button->boundingRect().width() / 2, boundingRect().height() - 40);
+    close_button->show();
     //confirm_button->setPos(boundingRect().center().x() - confirm_button->boundingRect().width() / 2, boundingRect().height() - 40);
 }
 

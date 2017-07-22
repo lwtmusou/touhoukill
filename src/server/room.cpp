@@ -1677,6 +1677,7 @@ const Card *Room::askForUseCard(ServerPlayer *player, const QString &pattern, co
         thread->trigger(ChoiceMade, this, decisionData);
         //show hidden general
         player->showHiddenSkill(skill_name);
+        player->showHiddenSkill(card_use.card->getSkillName());
         if (!useCard(card_use, addHistory))
             return askForUseCard(player, pattern, prompt, notice_index, method, addHistory);
 

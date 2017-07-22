@@ -82,15 +82,12 @@ public:
     {
         QVariant _data = QVariant::fromValue(invoke->preferredTarget);
         invoke->invoker->tag["doujiu_target"] = _data;
-        if (room->askForSkillInvoke(invoke->invoker, objectName(), _data)) {
-            invoke->invoker->drawCards(1);
-            return true;
-        }
-        return false;
+        return room->askForSkillInvoke(invoke->invoker, objectName(), _data);
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
+        invoke->invoker->drawCards(1);
         CardUseStruct use = data.value<CardUseStruct>();
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
         if (!invoke->invoker->isKongcheng() && invoke->invoker->pindian(invoke->targets.first(), objectName())) {
@@ -732,10 +729,7 @@ public:
         invoke->invoker->tag["feixiang_judge"] = data;
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), prompt, true, true);
         if (target) {
-            int card_id = room->askForCardChosen(invoke->invoker, target, "hes", objectName());
-            room->showCard(target, card_id);
             invoke->targets << target;
-            invoke->invoker->tag["feixiang_id"] = QVariant::fromValue(card_id);
             return true;
         }
         return false;
@@ -745,8 +739,8 @@ public:
     {
         JudgeStruct *judge = data.value<JudgeStruct *>();
         ServerPlayer *target = invoke->targets.first();
-        int card_id = invoke->invoker->tag["feixiang_id"].toInt();
-        invoke->invoker->tag.remove("feixiang_id");
+        int card_id = room->askForCardChosen(invoke->invoker, target, "hes", objectName());
+        room->showCard(target, card_id);
         Card *card = Sanguosha->getCard(card_id);
         if (!target->isCardLimited(card, Card::MethodResponse))
             room->retrial(card, target, judge, objectName());

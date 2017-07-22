@@ -647,7 +647,6 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room,
                 break;
 
             QSharedPointer<SkillInvokeDetail> invoke = sameTiming.first();
-
             // treat the invoker is NULL, if the triggered skill is some kind of gamerule
             if (sameTiming.length() >= 2 && invoke->invoker != NULL
                 && (invoke->skill->getPriority() >= -5

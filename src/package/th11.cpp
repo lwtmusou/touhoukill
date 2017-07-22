@@ -596,7 +596,7 @@ public:
         } else if (e == ConfirmDamage) {
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.card && damage.card->hasFlag("jidu_card"))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true,NULL, false);
         }
         return QList<SkillInvokeDetail>();
     }
@@ -804,6 +804,7 @@ public:
         while (use.from->isAlive() && good_result == false && skillowner->getHandcardNum() > 0 && use.from->getHandcardNum() > 0) {
             if (!room->askForSkillInvoke(skillowner, "diaoping", prompt))
                 return false;
+            skillowner->showHiddenSkill(objectName());
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, skillowner->objectName(), use.from->objectName());
 
             if (skillowner->pindian(use.from, "diaoping", NULL)) {

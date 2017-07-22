@@ -524,17 +524,22 @@ public:
         else {
             //for intention ai
             invoke->invoker->tag["taohuantarget"] = QVariant::fromValue(invoke->preferredTarget);
-            if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget)))
-                invoke->invoker->pindian(invoke->preferredTarget, objectName());
+            return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget));
         }
-
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName());
-        room->obtainCard(invoke->invoker, id, room->getCardPlace(id) != Player::PlaceHand);
+        if (e == Pindian) {
+            int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName());
+            room->obtainCard(invoke->invoker, id, room->getCardPlace(id) != Player::PlaceHand);
+        }
+        else
+        {
+            invoke->invoker->pindian(invoke->preferredTarget, objectName());
+        }
+
 
         return false;
     }
@@ -1439,6 +1444,7 @@ public:
         invoke->owner->tag["zhujiu_target"] = QVariant::fromValue(invoke->invoker);
         const Card *c = room->askForCard(invoke->owner, "..", "@zhujiu:" + invoke->invoker->objectName(), data, Card::MethodNone);
         if (c) {
+            invoke->owner->showHiddenSkill(objectName());
             CardMoveReason r(CardMoveReason::S_REASON_GIVE, invoke->owner->objectName(), objectName(), QString());
             room->obtainCard(invoke->invoker, c, r, room->getCardPlace(c->getEffectiveId()) != Player::PlaceHand);
 
@@ -1501,7 +1507,7 @@ void YushouCard::onUse(Room *room, const CardUseStruct &card_use) const
     }
     from->tag["yushou_target"] = QVariant::fromValue(to2);
     int card_id = room->askForCardChosen(from, to1, "e", "yushou", false, Card::MethodNone, disable);
-
+    from->showHiddenSkill("yushou");
     const Card *card = Sanguosha->getCard(card_id);
     room->moveCardTo(card, to1, to2, Player::PlaceEquip, CardMoveReason(CardMoveReason::S_REASON_TRANSFER, from->objectName(), "yushou", QString()));
 
@@ -1533,7 +1539,6 @@ public:
 PanduCard::PanduCard()
 {
     handling_method = Card::MethodNone;
-    mute = true;
 }
 
 bool PanduCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -1638,6 +1643,8 @@ public:
         QString prompt = "@bihuo-playerchosen:" + use.from->objectName();
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), prompt, true, true);
         if (target) {
+            invoke->invoker->showHiddenSkill(objectName());
+            
             QVariantMap bihuo_list = target->tag.value("bihuo", QVariantMap()).toMap();
             int i = bihuo_list.value(invoke->invoker->objectName(), 0).toInt();
             i += invoke->invoker->getHandcardNum();

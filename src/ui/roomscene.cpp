@@ -20,6 +20,7 @@
 #include "settings.h"
 #include "uiUtils.h"
 #include "window.h"
+#include "generaloverview.h"
 
 #include <QApplication>
 #include <QCheckBox>
@@ -3953,6 +3954,18 @@ void RoomScene::showPile(const QList<int> &card_ids, const QString &name, const 
     pileContainer->setObjectName(name);
     if (name == "huashencard" && target->hasSkill("anyun")) {
         QStringList huashens = target->getHiddenGenerals();
+        //another method
+        /*QList<const General*> hiddens;
+        foreach(QString arg, huashens) {
+            const General*g = Sanguosha->getGeneral(arg);
+            if (g)
+                hiddens << g;
+        }
+        
+        GeneralOverview *overview = GeneralOverview::getInstance(main_window);
+        overview->fillGenerals(hiddens);
+        overview->show();
+        return;*/
         QList<CardItem *> generals;
         foreach(QString arg, huashens) {
             CardItem *item = new CardItem(arg);

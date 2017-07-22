@@ -1485,6 +1485,7 @@ public:
         : TriggerSkill("yibian")
     {
         events << EventPhaseStart;
+        show_type = "static";
     }
 
     static bool sameRole(ServerPlayer *player1, ServerPlayer *player2)
@@ -2390,6 +2391,7 @@ public:
         : TriggerSkill("chaoren")
     {
         events << NumOfEvents;
+        show_type = "static";
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
@@ -3431,6 +3433,7 @@ public:
     {
         events << PostHpReduced;
         frequency = Compulsory;
+        show_type = "static";
     }
 
     void record(TriggerEvent, Room *room, QVariant &data) const
@@ -3757,6 +3760,7 @@ public:
     {
         frequency = Compulsory;
         events << NumOfEvents;
+        show_type = "static";
     }
 
     void record(TriggerEvent, Room *room, QVariant &) const
@@ -4020,8 +4024,6 @@ public:
         }
         return d;
     }
-
-    // compulsory effect, cost omitted
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
@@ -4588,6 +4590,23 @@ public:
         }
         return NULL;
     }
+
+    bool isEnabledAtNullification(const ServerPlayer *player) const
+    {
+        if (!player->canShowHiddenSkill())
+            return false;
+        foreach(QString hidden, player->getHiddenGenerals()) {
+            const General *g = Sanguosha->getGeneral(hidden);
+            foreach(const Skill *skill, g->getSkillList()) {
+                const ViewAsSkill*vs = Sanguosha->getViewAsSkill(skill->objectName());
+                if (vs) {
+                    if (vs->isEnabledAtNullification(player))
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
 };
 
 class Anyun : public TriggerSkill
@@ -4638,7 +4657,7 @@ public:
             const General *general = Sanguosha->getGeneral(name);
             if (general) {
                 foreach(const TriggerSkill *skill, general->getTriggerSkills()) {
-                    if (skill->isVisible())
+                    //if (skill->isVisible())
                         room->getThread()->addTriggerSkill(skill);
                 }
             }
@@ -4701,7 +4720,7 @@ public:
             banned << "nue_god" << "zun";
         QSet<QString> test;
         if (init)
-            test << "shinki" << "shanghai" << "ran_sp";
+            test << "kaguya_god" << "satori_god" << "yukari_god";
         else
             test << "marisa" << "yukari" << "aya_sp";
         return test.toList();
@@ -4735,7 +4754,7 @@ public:
         QStringList generals = nue->getHiddenGenerals();
         foreach(QString name, generals) {
             const General *p = Sanguosha->getGeneral(name);
-            foreach(const Skill *skill, p->getVisibleSkillList()) {
+            foreach(const Skill *skill, p->getSkillList()) {
                 if (skill->getShowType() == "static")
                     show << skill;
             }

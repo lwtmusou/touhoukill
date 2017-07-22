@@ -1526,6 +1526,7 @@ public:
     {
         events << TrickCardCanceling;
         frequency = Compulsory;
+        show_type = "static";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const

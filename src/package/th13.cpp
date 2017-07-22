@@ -777,7 +777,7 @@ void XiefaCard::onUse(Room *room, const CardUseStruct &card_use) const
     CardUseStruct use = card_use;
     QVariant data = QVariant::fromValue(use);
     RoomThread *thread = room->getThread();
-
+    use.from->showHiddenSkill("xiefa");
     thread->trigger(PreCardUsed, room, data);
     use = data.value<CardUseStruct>();
 
