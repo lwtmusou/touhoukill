@@ -73,6 +73,7 @@ public:
     virtual bool isEnabledAtPlay(const Player *player) const;
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const;
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const;
+    virtual QStringList getDialogCardOptions() const;
     static const ViewAsSkill *parseViewAsSkill(const Skill *skill);
     inline bool isResponseOrUse() const
     {

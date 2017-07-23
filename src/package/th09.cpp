@@ -1329,8 +1329,7 @@ void NianliDialog::popup()
     }
 
     QStringList card_names;
-    card_names << "slash"
-               << "snatch";
+    card_names << "slash" << "snatch";
 
     foreach (QString card_name, card_names) {
         QCommandLinkButton *button = new QCommandLinkButton;
@@ -1349,11 +1348,11 @@ void NianliDialog::popup()
         layout->addWidget(button);
         delete c;
 
-        if (!map.contains(card_name)) {
+        /*if (!map.contains(card_name)) {
             Card *c = Sanguosha->cloneCard(card_name);
             c->setParent(this);
             map.insert(card_name, c);
-        }
+        }*/
     }
 
     Self->tag.remove(object_name);
@@ -1362,8 +1361,8 @@ void NianliDialog::popup()
 
 void NianliDialog::selectCard(QAbstractButton *button)
 {
-    const Card *card = map.value(button->objectName());
-    Self->tag[object_name] = QVariant::fromValue(card);
+    //const Card *card = map.value(button->objectName());
+    Self->tag[object_name] = QVariant::fromValue(button->objectName());
 
     emit onButtonClick();
     accept();
@@ -1377,8 +1376,7 @@ NianliCard::NianliCard()
 
 bool NianliCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    const Card *card = Self->tag.value("nianli").value<const Card *>();
-    Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::SuitToBeDecided, 0);
+    Card *new_card = Sanguosha->cloneCard(user_string, Card::SuitToBeDecided, 0);
     DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("nianli");
     if (new_card->targetFixed())
@@ -1388,8 +1386,7 @@ bool NianliCard::targetFilter(const QList<const Player *> &targets, const Player
 
 bool NianliCard::targetFixed() const
 {
-    const Card *card = Self->tag.value("nianli").value<const Card *>();
-    Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::SuitToBeDecided, 0);
+    Card *new_card = Sanguosha->cloneCard(user_string, Card::SuitToBeDecided, 0);
     DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("nianli");
     //return false;
@@ -1398,8 +1395,7 @@ bool NianliCard::targetFixed() const
 
 bool NianliCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    const Card *card = Self->tag.value("nianli").value<const Card *>();
-    Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::SuitToBeDecided, 0);
+    Card *new_card = Sanguosha->cloneCard(user_string, Card::SuitToBeDecided, 0);
     DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("nianli");
     return new_card && new_card->targetsFeasible(targets, Self);
@@ -1430,13 +1426,18 @@ public:
         return !player->hasUsed("NianliCard");
     }
 
+    virtual QStringList getDialogCardOptions() const {
+        QStringList options;
+        options << "slash" << "snatch";
+        return options;
+    }
+
     virtual const Card *viewAs() const
     {
-        const Card *c = Self->tag.value("nianli").value<const Card *>();
-        //we need get the real subcard.
-        if (c) {
+        QString name = Self->tag.value("nianli", QString()).toString();
+        if (name != NULL) {
             NianliCard *card = new NianliCard;
-            card->setUserString(c->objectName());
+            card->setUserString(name);
             return card;
         } else
             return NULL;

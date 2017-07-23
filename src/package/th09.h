@@ -49,7 +49,7 @@ private:
 
     QVBoxLayout *layout;
     QButtonGroup *group;
-    QHash<QString, const Card *> map;
+    //QHash<QString, const Card *> map;
 
     QString object_name;
 

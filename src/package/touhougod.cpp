@@ -1877,62 +1877,41 @@ HuaxiangCard::HuaxiangCard()
 
 bool HuaxiangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-        if (!user_string.isEmpty()) {
-            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
-            DELETE_OVER_SCOPE(Card, card)
-            return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
-        }
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return false;
-    } else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+    if (user_string == NULL)
         return false;
-    }
-
-    const Card *card = Self->tag.value("huaxiang").value<const Card *>();
-    Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
-    DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("huaxiang");
-    return new_card && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
+            
+    Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+    DELETE_OVER_SCOPE(Card, card)
+    card->setSkillName("huaxiang");
+    return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
 }
 
 bool HuaxiangCard::targetFixed() const
 {
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-        if (!user_string.isEmpty()) {
-            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
-            DELETE_OVER_SCOPE(Card, card)
-            return card && card->targetFixed();
-        }
-        return false;
-    } else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
-    }
-
-    const Card *card = Self->tag.value("huaxiang").value<const Card *>();
-    Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
-    DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("huaxiang");
-    return new_card && new_card->targetFixed();
+    
+    if (!user_string.isEmpty())
+        return false;
+    Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+    DELETE_OVER_SCOPE(Card, card)
+    card->setSkillName("huaxiang");
+    return card && card->targetFixed();
 }
 
 bool HuaxiangCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-        if (!user_string.isEmpty()) {
-            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
-            DELETE_OVER_SCOPE(Card, card)
-            return card && card->targetsFeasible(targets, Self);
-        }
-        return false;
-    } else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
-    }
-
-    const Card *card = Self->tag.value("huaxiang").value<const Card *>();
-    Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
-    DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("huaxiang");
-    return new_card && new_card->targetsFeasible(targets, Self);
+    
+    if (user_string == NULL)
+        return false;
+    Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+    DELETE_OVER_SCOPE(Card, card)
+    card->setSkillName("huaxiang");
+    return card && card->targetsFeasible(targets, Self);
 }
 
 const Card *HuaxiangCard::validate(CardUseStruct &card_use) const
@@ -2070,9 +2049,9 @@ public:
 
             QStringList checkedPatterns = responsePatterns();
             if (checkedPatterns.length() > 1 || checkedPatterns.contains("slash")) {
-                const Card *c = Self->tag.value("huaxiang").value<const Card *>();
-                if (c)
-                    pattern = c->objectName();
+                QString name = Self->tag.value("huaxiang", QString()).toString();
+                if (name != NULL)
+                    pattern = name;
                 else
                     return NULL;
             } else
@@ -2083,10 +2062,10 @@ public:
             return card;
         }
 
-        const Card *c = Self->tag.value("huaxiang").value<const Card *>();
-        if (c) {
+        QString name = Self->tag.value("huaxiang", QString()).toString();
+        if (name != NULL) {
             HuaxiangCard *card = new HuaxiangCard;
-            card->setUserString(c->objectName());
+            card->setUserString(name);
             card->addSubcards(cards);
             return card;
         } else
@@ -4449,6 +4428,163 @@ public:
     }
 };
 
+/*
+AnyunDialog *AnyunDialog::getInstance(const QString &object, bool left, bool right)
+{
+    static AnyunDialog *instance;
+    if (instance == NULL || instance->objectName() != object) {
+        instance = new AnyunDialog(object, left, right);
+    }
+    return instance;
+}
+
+AnyunDialog::AnyunDialog(const QString &object, bool left, bool right)
+    : object_name(object)
+{
+    setObjectName(object);
+    setWindowTitle(Sanguosha->translate(object)); //need translate title?
+    group = new QButtonGroup(this);
+    layout = new QHBoxLayout;
+
+    connect(group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(selectSkill(QAbstractButton *)));
+}
+
+void AnyunDialog::popup()
+{
+
+    layout->addWidget(createLeft());
+    layout->addWidget(createRight());
+    setLayout(layout);
+
+    
+
+
+    Self->tag.remove(object_name);
+    exec();
+}
+
+void AnyunDialog::selectSkill(QAbstractButton *button)
+{
+    const QString op = button->objectName();
+    QStringList ops = op.split(":");
+    if (ops.length() > 1) {
+        //object_name is "anyun", ops1 is selected skill, ops2 is cardname.
+        Self->tag[object_name] = QVariant::fromValue(ops.first());
+        Self->tag[ops.first()] = QVariant::fromValue(ops.last());
+    }
+    else
+        Self->tag[object_name] = QVariant::fromValue(op);
+    emit onButtonClick();
+    accept();
+}
+
+QGroupBox *AnyunDialog::createLeft()
+{
+    QGroupBox *box = new QGroupBox;
+    box->setTitle(Sanguosha->translate("skill"));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+    foreach(QString hidden, Self->getHiddenGenerals()) {
+        const General *g = Sanguosha->getGeneral(hidden);
+        foreach(const Skill *skill, g->getSkillList()) {
+            const ViewAsSkill*vs = Sanguosha->getViewAsSkill(skill->objectName());
+            if (vs) {
+                QStringList ops = vs->getDialogCardOptions();
+                if (ops.isEmpty()) {
+                    QCommandLinkButton *button = new QCommandLinkButton;
+                    button->setText(Sanguosha->translate(vs->objectName()));
+                    button->setObjectName(vs->objectName());
+                    group->addButton(button);
+
+                    bool enable = false;
+                    if (play && vs->isEnabledAtPlay(Self))
+                        enable = true;
+                    else if (!play && vs->isEnabledAtResponse(Self, pattern))
+                        enable = true;
+
+                    button->setEnabled(enable);
+                    button->setToolTip(Sanguosha->getSkill(vs->objectName())->getDescription());
+                    layout->addWidget(button);
+                }
+            }
+        }
+    }
+
+    layout->addStretch();
+    box->setLayout(layout);
+    return box;
+}
+
+QGroupBox *AnyunDialog::createRight()
+{
+    QGroupBox *box = new QGroupBox(Sanguosha->translate("card"));
+    QHBoxLayout *layout = new QHBoxLayout;
+
+    QGroupBox *box1 = new QGroupBox(Sanguosha->translate("basic"));
+    QVBoxLayout *layout1 = new QVBoxLayout;
+
+    QGroupBox *box2 = new QGroupBox(Sanguosha->translate("trick"));
+    QVBoxLayout *layout2 = new QVBoxLayout;
+
+    bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+    foreach(QString hidden, Self->getHiddenGenerals()) {
+        const General *g = Sanguosha->getGeneral(hidden);
+        foreach(const Skill *skill, g->getSkillList()) {
+            const ViewAsSkill*vs = Sanguosha->getViewAsSkill(skill->objectName());
+            if (vs) {
+                QStringList ops = vs->getDialogCardOptions();
+                if (ops.isEmpty())
+                    continue;
+
+                bool enable = false;
+                if (play && vs->isEnabledAtPlay(Self))
+                    enable = true;
+                else if (!play && vs->isEnabledAtResponse(Self, pattern))
+                    enable = true;
+
+                QString name1 = Sanguosha->translate(vs->objectName());
+                foreach(QString cardname, ops) {
+                    QCommandLinkButton *button = new QCommandLinkButton;
+                    QString name2 = Sanguosha->translate(cardname);
+                    button->setText(name1 + ":" + name2);
+                    button->setObjectName(vs->objectName() + ":" + cardname);
+                    group->addButton(button);
+
+                    Card *c = Sanguosha->cloneCard(cardname);
+                    c->setSkillName(vs->objectName());
+                    if (Self->isCardLimited(c, Card::MethodUse) || !c->isAvailable(Self))
+                        enable = false;
+
+                    button->setEnabled(enable);
+                    button->setToolTip(Sanguosha->getSkill(vs->objectName())->getDescription());
+                    QVBoxLayout *layout = (c->getTypeId() == Card::TypeBasic) ? layout1 : layout2;
+                    layout->addWidget(button);
+                    delete c;
+                }
+            }
+        }
+    }
+
+
+    box->setLayout(layout);
+    box1->setLayout(layout1);
+    box2->setLayout(layout2);
+
+    layout1->addStretch();
+    layout2->addStretch();
+
+    layout->addWidget(box1);
+    layout->addWidget(box2);
+    return box;
+}
+*/
+
+
+
+
 AnyunDialog *AnyunDialog::getInstance(const QString &object)
 {
     static AnyunDialog *instance;
@@ -4492,29 +4628,53 @@ void AnyunDialog::popup()
             //if (skill->inherits("ViewAsSkill"))
             const ViewAsSkill*vs = Sanguosha->getViewAsSkill(skill->objectName());
             if (vs) {
+                bool add = false;
                 if (play && vs->isEnabledAtPlay(Self))
-                    skill_names << vs->objectName();
+                    add = true;
                 if (!play) {
                     QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
                     if (vs->isEnabledAtResponse(Self, pattern))
-                        skill_names << vs->objectName();
+                        add = true;
+                }
+                if (add) {
+                    QStringList ops = vs->getDialogCardOptions();
+                    if (ops.isEmpty()) {
+                        QCommandLinkButton *button = new QCommandLinkButton;
+                        button->setText(Sanguosha->translate(vs->objectName()));
+                        button->setObjectName(vs->objectName());
+                        group->addButton(button);
+
+                        button->setEnabled(true);
+                        button->setToolTip(Sanguosha->getSkill(vs->objectName())->getDescription());
+                        layout->addWidget(button);
+                    }
+                    else {
+                        QString name1 = Sanguosha->translate(vs->objectName());
+                        foreach(QString cardname, ops) {
+                            QCommandLinkButton *button = new QCommandLinkButton;
+                            QString name2 = Sanguosha->translate(cardname);
+                            button->setText(name1 + ":" + name2);
+                            button->setObjectName(vs->objectName() + ":" + cardname);
+                            group->addButton(button);
+
+
+                            bool can = true;
+                            Card *c = Sanguosha->cloneCard(cardname);
+                            c->setSkillName(vs->objectName());
+                            if (Self->isCardLimited(c, Card::MethodUse) || !c->isAvailable(Self))
+                                can = false;
+
+                            button->setEnabled(can);
+                            button->setToolTip(Sanguosha->getSkill(vs->objectName())->getDescription());
+                            layout->addWidget(button);
+                            delete c;
+                        }
+                    }
                 }
             }
         }
     }
 
-    foreach(QString skill_name, skill_names) {
-        QCommandLinkButton *button = new QCommandLinkButton;
-        button->setText(Sanguosha->translate(skill_name));
-        button->setObjectName(skill_name);
-        group->addButton(button);
-
-        bool can = true;
-        button->setEnabled(can);
-        button->setToolTip(Sanguosha->getSkill(skill_name)->getDescription());
-        layout->addWidget(button);
-
-    }
 
     Self->tag.remove(object_name);
     exec();
@@ -4522,8 +4682,15 @@ void AnyunDialog::popup()
 
 void AnyunDialog::selectSkill(QAbstractButton *button)
 {
-    const QString skill = button->objectName();
-    Self->tag[object_name] = QVariant::fromValue(skill);
+    const QString op = button->objectName();
+    QStringList ops = op.split(":");
+    if (ops.length() > 1) {
+        //object_name is "anyun", ops1 is selected skill, ops2 is cardname.
+        Self->tag[object_name] = QVariant::fromValue(ops.first());
+        Self->tag[ops.first()] = QVariant::fromValue(ops.last());
+    }
+    else
+        Self->tag[object_name] = QVariant::fromValue(op);
     emit onButtonClick();
     accept();
 }
@@ -4720,7 +4887,7 @@ public:
             banned << "nue_god" << "zun";
         QSet<QString> test;
         if (init)
-            test << "kaguya_god" << "satori_god" << "yukari_god";
+            test << "sanae" << "aya" << "yukari_god";
         else
             test << "marisa" << "yukari" << "aya_sp";
         return test.toList();
@@ -4755,7 +4922,8 @@ public:
         foreach(QString name, generals) {
             const General *p = Sanguosha->getGeneral(name);
             foreach(const Skill *skill, p->getSkillList()) {
-                if (skill->getShowType() == "static")
+                if (skill->getShowType() == "static" && !skill->isLordSkill() && !skill->isAttachedLordSkill()
+                    && skill->getFrequency() != Skill::Limited && skill->getFrequency() != Skill::Wake  && skill->getFrequency() != Skill::Eternal)
                     show << skill;
             }
         }

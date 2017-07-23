@@ -482,7 +482,7 @@ void QijiDialog::popup()
 void QijiDialog::selectCard(QAbstractButton *button)
 {
     const Card *card = map.value(button->objectName());
-    Self->tag[object_name] = QVariant::fromValue(card);
+    Self->tag[object_name] = QVariant::fromValue(card->objectName());
 
     emit onButtonClick();
     accept();
@@ -586,77 +586,51 @@ QijiCard::QijiCard()
 
 bool QijiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-        if (!user_string.isEmpty()) {
-            const Card *oc = Sanguosha->getCard(subcards.first());
-            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), oc->getSuit(), oc->getNumber());
-            DELETE_OVER_SCOPE(Card, card)
-            card->addSubcard(oc);
-            return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
-        }
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return false;
-    } else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+    
+    if (user_string == NULL)
         return false;
-    }
-
-    const Card *card = Self->tag.value("qiji").value<const Card *>();
+        
     const Card *oc = Sanguosha->getCard(subcards.first());
-    Card *new_card = Sanguosha->cloneCard(card->objectName(), oc->getSuit(), oc->getNumber());
-    DELETE_OVER_SCOPE(Card, new_card)
-    new_card->addSubcard(oc);
-    new_card->setSkillName("qiji");
-    return new_card && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
+    Card *card = Sanguosha->cloneCard(user_string.split("+").first());
+    DELETE_OVER_SCOPE(Card, card)
+    card->addSubcard(oc);
+    card->setSkillName("qiji");
+    return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
 }
 
 bool QijiCard::targetFixed() const
 {
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-        if (!user_string.isEmpty()) {
-            const Card *oc = Sanguosha->getCard(subcards.first());
-            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), oc->getSuit(), oc->getNumber());
-            DELETE_OVER_SCOPE(Card, card)
-            card->addSubcard(oc);
-            return card && card->targetFixed();
-        }
-        return false;
-    } else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
-    }
-
-    const Card *card = Self->tag.value("qiji").value<const Card *>();
+    if (user_string != NULL)
+        return false;
+        
     const Card *oc = Sanguosha->getCard(subcards.first());
-    Card *new_card = Sanguosha->cloneCard(card->objectName(), oc->getSuit(), oc->getNumber());
-    DELETE_OVER_SCOPE(Card, new_card)
-    new_card->addSubcard(oc);
-    new_card->setSkillName("qiji");
-    return new_card && new_card->targetFixed();
+    Card *card = Sanguosha->cloneCard(user_string.split("+").first());
+    DELETE_OVER_SCOPE(Card, card)
+    card->addSubcard(oc);
+    card->setSkillName("qiji");
+    return card && card->targetFixed();
 }
 
 bool QijiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-        if (!user_string.isEmpty()) {
-            const Card *oc = Sanguosha->getCard(subcards.first());
-            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), oc->getSuit(), oc->getNumber());
-            DELETE_OVER_SCOPE(Card, card)
-            card->addSubcard(oc);
-            return card && card->targetsFeasible(targets, Self);
-        }
-        return false;
-    } else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
-    }
-
-    const Card *card = Self->tag.value("qiji").value<const Card *>();
+    
+    if (user_string == NULL)
+        return false;
+            
     const Card *oc = Sanguosha->getCard(subcards.first());
-    Card *new_card = Sanguosha->cloneCard(card->objectName(), oc->getSuit(), oc->getNumber());
-    DELETE_OVER_SCOPE(Card, new_card)
-    new_card->addSubcard(oc);
-    new_card->setSkillName("qiji");
-    //if (card->isKindOf("IronChain") && targets.length() == 0)
+    Card *card = Sanguosha->cloneCard(user_string.split("+").first());
+    DELETE_OVER_SCOPE(Card, card)
+    card->addSubcard(oc);
+    card->setSkillName("qiji");
     if (card->canRecast() && targets.length() == 0)
         return false;
-    return new_card && new_card->targetsFeasible(targets, Self);
+    return card && card->targetsFeasible(targets, Self);
 }
 
 const Card *QijiCard::validate(CardUseStruct &use) const
@@ -774,9 +748,9 @@ public:
             QStringList checkedPatterns = responsePatterns();
 
             if (checkedPatterns.length() > 1 || checkedPatterns.contains("slash")) {
-                const Card *c = Self->tag.value("qiji").value<const Card *>();
-                if (c)
-                    pattern = c->objectName();
+                QString name = Self->tag.value("qiji", QString()).toString();
+                if (name != NULL)
+                    pattern = name;
                 else
                     return NULL;
             } else
@@ -786,11 +760,10 @@ public:
             card->addSubcard(originalCard);
             return card;
         }
-
-        const Card *c = Self->tag.value("qiji").value<const Card *>();
-        if (c) {
+        QString name = Self->tag.value("qiji", QString()).toString();
+        if (name != NULL) {
             QijiCard *card = new QijiCard;
-            card->setUserString(c->objectName());
+            card->setUserString(name);
             card->addSubcard(originalCard);
             return card;
         } else
@@ -806,6 +779,17 @@ public:
         if (player->isCardLimited(nul, Card::MethodUse, true))
             return false;
         return player->getHandcardNum() == 1;
+    }
+
+    virtual QStringList getDialogCardOptions() const {
+        QStringList options;
+        QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+        foreach(const Card *card, cards) {
+            if ((card->isNDTrick() || card->getTypeId() == Card::TypeBasic) 
+                && !options.contains(card->objectName()) && !ServerInfo.Extensions.contains("!" + card->getPackage()))
+                options << card->objectName();
+        }
+        return options;
     }
 };
 

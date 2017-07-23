@@ -1648,11 +1648,10 @@ public:
 
     virtual const Card *viewAs() const
     {
-        const Card *c = Self->tag.value("chuangshi").value<const Card *>();
-        //we need get the real subcard.
-        if (c) {
+        QString name = Self->tag.value("chuangshi", QString()).toString();
+        if (name != NULL) {
             ChuangshiCard *card = new ChuangshiCard;
-            card->setUserString(c->objectName());
+            card->setUserString(name);
             return card;
         }
         return NULL;
@@ -1757,8 +1756,8 @@ ChuangshiCard::ChuangshiCard()
 bool ChuangshiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     const Player *user = Chuangshi::getChuangshiUser(Self);
-    const Card *card = Self->tag.value("chuangshi").value<const Card *>();
-    Card *new_card = Sanguosha->cloneCard(card->objectName());
+    QString name = Self->tag.value("chuangshi", QString()).toString();
+    Card *new_card = Sanguosha->cloneCard(name);
     DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("chuangshi");
 
@@ -1773,12 +1772,12 @@ bool ChuangshiCard::targetFilter(const QList<const Player *> &targets, const Pla
 bool ChuangshiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
     const Player *user = Chuangshi::getChuangshiUser(Self);
-    const Card *card = Self->tag.value("chuangshi").value<const Card *>();
-    Card *new_card = Sanguosha->cloneCard(card->objectName());
+    QString name = Self->tag.value("chuangshi", QString()).toString();
+    Card *new_card = Sanguosha->cloneCard(name);
     DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("chuangshi");
     //if (card->isKindOf("IronChain") && targets.length() == 0)
-    if (card->canRecast() && targets.length() == 0)
+    if (new_card->canRecast() && targets.length() == 0)
         return false;
     return new_card && new_card->targetsFeasible(targets, user);
 }

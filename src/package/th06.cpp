@@ -853,68 +853,45 @@ BeishuiCard::BeishuiCard()
 
 bool BeishuiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-        if (!user_string.isEmpty()) {
-            Card *card = Sanguosha->cloneCard(user_string.split("+").first());
-            DELETE_OVER_SCOPE(Card, card)
-            card->addSubcards(subcards);
-            return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
-        }
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return false;
-    } else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+    
+    if (user_string == NULL)
         return false;
-    }
-
-    const Card *card = Self->tag.value("beishui").value<const Card *>();
-    Card *new_card = Sanguosha->cloneCard(card->objectName());
-    DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("beishui");
-    new_card->addSubcards(subcards);
-    return new_card && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
+            
+    Card *card = Sanguosha->cloneCard(user_string.split("+").first());
+    DELETE_OVER_SCOPE(Card, card)
+    card->addSubcards(subcards);
+    card->setSkillName("beishui");
+    return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
 }
 
 bool BeishuiCard::targetFixed() const
 {
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-        if (!user_string.isEmpty()) {
-            Card *card = Sanguosha->cloneCard(user_string.split("+").first());
-            DELETE_OVER_SCOPE(Card, card)
-            card->addSubcards(subcards);
-            return card && card->targetFixed();
-        }
-        return false;
-    } else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
-    }
-
-    const Card *card = Self->tag.value("beishui").value<const Card *>();
-    Card *new_card = Sanguosha->cloneCard(card->objectName());
-    DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("beishui");
-    new_card->addSubcards(subcards);
-    return new_card && new_card->targetFixed();
+    if (user_string == NULL)
+        return false;
+            
+    Card *card = Sanguosha->cloneCard(user_string.split("+").first());
+    DELETE_OVER_SCOPE(Card, card)
+    card->addSubcards(subcards);
+    card->setSkillName("beishui");
+    return card && card->targetFixed();
 }
 
 bool BeishuiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-        if (!user_string.isEmpty()) {
-            Card *card = Sanguosha->cloneCard(user_string.split("+").first());
-            DELETE_OVER_SCOPE(Card, card)
-            card->addSubcards(subcards);
-            return card && card->targetsFeasible(targets, Self);
-        }
-        return false;
-    } else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
-    }
-
-    const Card *card = Self->tag.value("beishui").value<const Card *>();
-    Card *new_card = Sanguosha->cloneCard(card->objectName());
-    DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("beishui");
-    new_card->addSubcards(subcards);
-    return new_card && new_card->targetsFeasible(targets, Self);
+    if (user_string == NULL)
+        return false;
+            
+    Card *card = Sanguosha->cloneCard(user_string.split("+").first());
+    DELETE_OVER_SCOPE(Card, card)
+    card->addSubcards(subcards);
+    card->setSkillName("beishui");
+    return card && card->targetsFeasible(targets, Self);
 }
 
 const Card *BeishuiCard::validate(CardUseStruct &card_use) const
@@ -1023,15 +1000,15 @@ public:
         int num = qMax(1, Self->getHp());
         if (cards.length() != num)
             return NULL;
-        
+
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
 
             QStringList checkedPatterns = responsePatterns();
             if (checkedPatterns.length() > 1 || checkedPatterns.contains("slash")) {
-                const Card *c = Self->tag.value("beishui").value<const Card *>();
-                if (c)
-                    pattern = c->objectName();
+                QString name = Self->tag.value("beishui", QString()).toString();
+                if (name != NULL)
+                    pattern = name;
                 else
                     return NULL;
             } else
@@ -1042,13 +1019,15 @@ public:
             return card;
         }
         
-        const Card *c = Self->tag.value("beishui").value<const Card *>();
-        if (c) {
+
+        QString name = Self->tag.value("beishui", QString()).toString();
+        if (name != NULL) {
             BeishuiCard *card = new BeishuiCard;
-            card->setUserString(c->objectName());
+            card->setUserString(name);
             card->addSubcards(cards);
             return card;
-        } else
+        }
+        else
             return NULL;
     }
 };

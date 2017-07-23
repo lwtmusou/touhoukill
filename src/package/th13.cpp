@@ -270,72 +270,44 @@ bool XihuaCard::do_xihua(ServerPlayer *tanuki) const
 
 bool XihuaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-        if (!user_string.isEmpty()) {
-            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
-            DELETE_OVER_SCOPE(Card, card)
-            card->setSkillName("xihua");
-            return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
-        }
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return false;
-    } else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+    
+    if (user_string == NULL)
         return false;
-    }
+    Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+    DELETE_OVER_SCOPE(Card, card)
+    card->setSkillName("xihua");
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && card->targetFixed())
+        return false;
+    return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
 
-    const Card *card = Self->tag.value("xihua").value<const Card *>();
-
-    Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
-    DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("xihua");
-    if (new_card->targetFixed())
-        return false;
-    return new_card && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
 }
 
 bool XihuaCard::targetFixed() const
 {
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-        if (!user_string.isEmpty()) {
-            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
-            DELETE_OVER_SCOPE(Card, card)
-            card->setSkillName("xihua");
-            return card && card->targetFixed();
-        }
-        return false;
-    } else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
-    }
-
-    const Card *card = Self->tag.value("xihua").value<const Card *>();
-    Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
-    DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("xihua");
+    if (user_string == NULL)
+        return false;
+    
     //return false defaultly
     //we need a confirming chance to pull back, since  this is a zero cards viewas Skill.
-    return false; //new_card && new_card->targetFixed();
+    return false;
 }
 
 bool XihuaCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-        if (!user_string.isEmpty()) {
-            Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
-            card->setSkillName("xihua");
-            return card && card->targetsFeasible(targets, Self);
-        }
-        return false;
-    } else if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
-    }
-
-    const Card *card = Self->tag.value("xihua").value<const Card *>();
-    Card *new_card = Sanguosha->cloneCard(card->objectName(), Card::NoSuit, 0);
-    DELETE_OVER_SCOPE(Card, new_card)
-    new_card->setSkillName("xihua");
-
+    
+    if (user_string == NULL)
+        return false;
+    Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+    card->setSkillName("xihua");
     if (card->canRecast() && targets.length() == 0)
         return false;
-    return new_card && new_card->targetsFeasible(targets, Self);
+    return card && card->targetsFeasible(targets, Self);
 }
 
 const Card *XihuaCard::validate(CardUseStruct &card_use) const
@@ -461,9 +433,9 @@ public:
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
             QStringList checkedPatterns = responsePatterns();
             if (checkedPatterns.length() > 1 || checkedPatterns.contains("slash")) {
-                const Card *c = Self->tag.value("xihua").value<const Card *>();
-                if (c)
-                    pattern = c->objectName();
+                QString name = Self->tag.value("xihua", QString()).toString();
+                if (name != NULL)
+                    pattern = name;
                 else
                     return NULL;
             } else
@@ -473,11 +445,10 @@ public:
             return card;
         }
 
-        const Card *c = Self->tag.value("xihua").value<const Card *>();
-        //we need get the real subcard.
-        if (c) {
+        QString name = Self->tag.value("xihua", QString()).toString();
+        if (name != NULL) {
             XihuaCard *card = new XihuaCard;
-            card->setUserString(c->objectName());
+            card->setUserString(name);
             return card;
         } else
             return NULL;
