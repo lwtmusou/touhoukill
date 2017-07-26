@@ -830,7 +830,7 @@ public:
         return Slash::IsAvailable(player);
     }
 
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
         return matchAvaliablePattern("jink", pattern) || matchAvaliablePattern("slash", pattern);
     }
@@ -1387,9 +1387,8 @@ public:
 
     int getDistanceLimit(const Player *, const Card *card) const
     {
-        if (card->hasFlag("qimen"))
+        if (card->getSkillName() == "qimen")
             return 1000;
-
         return 0;
     }
 };

@@ -3561,13 +3561,13 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
 
     try {
         if (card_use.card->getRealCard() == card) {
-            /*if (use.from) {
+            if (use.from) {
                 QStringList tarmod_detect = use.from->checkTargetModSkillShow(card_use);
                 if (!tarmod_detect.isEmpty()) {
                     QString to_show = askForChoice(card_use.from, "tarmod_show", tarmod_detect.join("+"), QVariant::fromValue(card_use));
                     card_use.from->showHiddenSkill(to_show);
                 }            
-            }*/
+            }
             
             if (card->isKindOf("DelayedTrick") && card->isVirtualCard() && card->subcardsLength() == 1) {
                 Card *trick = Sanguosha->cloneCard(card);

@@ -1545,18 +1545,6 @@ void ServerPlayer::gainAnExtraTurn()
 }
 
 
-bool ServerPlayer::isHiddenSkill(const QString &skill_name)
-{
-    if (hasSkill(skill_name, false, false))
-        return false;
-    QString name = getShownHiddenGeneral();
-    if (name != NULL) {
-        const General *hidden = Sanguosha->getGeneral(name);
-        if (hidden && hidden->hasSkill(skill_name))
-            return false;
-    }
-    return hasSkill(skill_name);
-}
 
 void ServerPlayer::showHiddenSkill(const QString &skill_name)
 {
@@ -1625,24 +1613,43 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     if (tarmods.isEmpty())
         return QStringList();
 
-    QStringList shows;
+    
+    QSet<QString> showExtraTarget;
+    QSet<QString> showResidueNum;
+    QSet<QString> showDistanceLimit;
     //check extra target
-    foreach(const TargetModSkill *tarmod, tarmods) {
-        if (tarmod->getExtraTargetNum(use.from, use.card) > 0 && !shows.contains(tarmod->objectName())) {
-            shows << tarmod->objectName();
+    int num = use.to.length() - 1;
+    if (num >= 1) {
+        foreach(const TargetModSkill *tarmod, tarmods) {
+            if (tarmod->getExtraTargetNum(use.from, use.card) >= num)
+                showExtraTarget << tarmod->objectName();
+        }
+    }
+    
+    //check ResidueNum
+    num = use.from->usedTimes(use.card->getClassName()) - 1;
+    if (num >= 1) {
+        foreach(const TargetModSkill *tarmod, tarmods) {
+            if (tarmod->getResidueNum(use.from, use.card) >= num) 
+                showResidueNum << tarmod->objectName();
         }
     }
 
-    //check ResidueNum
-    if (use.from->usedTimes(use.card->getClassName()) >= 2) {
+    //check DistanceLimit
+    int distance = 1;
+    foreach(ServerPlayer *p, use.to) {
+        if (use.from->distanceTo(p) > distance)
+            distance = use.from->distanceTo(p);
+    }
+    distance = distance - 1;
+    if (distance >= 1) {
         foreach(const TargetModSkill *tarmod, tarmods) {
-            if (tarmod->getResidueNum(use.from, use.card) > 0 && !shows.contains(tarmod->objectName()) ) {
-                shows << tarmod->objectName();
-            }
+            if (tarmod->getDistanceLimit(use.from, use.card) >= distance)
+                showDistanceLimit << tarmod->objectName();
         }
     }
-    return shows;
-    //return QStringList();
+    QSet<QString> shows = showExtraTarget.operator|(showDistanceLimit).operator|(showResidueNum);
+    return shows.toList();
 }
 
 

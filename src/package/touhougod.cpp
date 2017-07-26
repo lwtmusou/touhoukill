@@ -4679,7 +4679,7 @@ void AnyunDialog::popup()
     Self->tag.remove(object_name);
     exec();
 }
-
+#include "th09.h"
 void AnyunDialog::selectSkill(QAbstractButton *button)
 {
     const QString op = button->objectName();
@@ -4688,6 +4688,10 @@ void AnyunDialog::selectSkill(QAbstractButton *button)
         //object_name is "anyun", ops1 is selected skill, ops2 is cardname.
         Self->tag[object_name] = QVariant::fromValue(ops.first());
         Self->tag[ops.first()] = QVariant::fromValue(ops.last());
+        // #pragma message WARN("todo_lwtmusou: how to get classtype of specific dialog ")
+        const ViewAsSkill *s = Sanguosha->getViewAsSkill(ops.first());//like "nianli" "qiji"
+        NianliDialog::getInstance("nianli")->popup();
+        Self->tag.remove("nianli");
     }
     else
         Self->tag[object_name] = QVariant::fromValue(op);
@@ -4734,6 +4738,8 @@ public:
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
         if (!player->canShowHiddenSkill())
+            return false;
+        if (player->hasFlag("Global_viewasHidden_Failed"))
             return false;
         return hasHiddenViewas(player);
     }
@@ -4887,7 +4893,7 @@ public:
             banned << "nue_god" << "zun";
         QSet<QString> test;
         if (init)
-            test << "sanae" << "aya" << "yukari_god";
+            test << "flandre" << "youmu" << "renko_ndj";
         else
             test << "marisa" << "yukari" << "aya_sp";
         return test.toList();

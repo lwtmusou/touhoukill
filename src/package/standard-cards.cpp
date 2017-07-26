@@ -108,6 +108,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
                 room->setPlayerFlag(target, "-SlashAssignee");
     }
 
+    int num1 = use.to.length();
     if (((use.card->isVirtualCard() && use.card->subcardsLength() == 0) || use.card->hasFlag("pandu")) && !player->hasFlag("slashDisableExtraTarget")) {
         QList<ServerPlayer *> targets_ts;
         while (true) {
@@ -130,6 +131,26 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
             targets_const.clear();
         }
     }
+    //like dingfeng duanbing
+    if (player->canShowHiddenSkill()) {
+        int num2 = use.to.length() - num1;
+        QStringList skills;
+        if (num2 > 1) {
+            if (player->isHiddenSkill("kexue") && player->isChained())
+                skills << "kexue";
+        }
+        else if (num2 == 1) {
+            if (player->isHiddenSkill("kexue") && player->isChained())
+                skills << "kexue";
+            if (player->isHiddenSkill("shuangren"))
+                skills << "shuangren";
+        }
+        if (!skills.isEmpty()) {
+            QString to_show = room->askForChoice(player, "tarmod_show", skills.join("+"), QVariant::fromValue(use));
+            player->showHiddenSkill(to_show);
+        }
+    }
+    
 
     if (player->hasFlag("slashNoDistanceLimit"))
         room->setPlayerFlag(player, "-slashNoDistanceLimit");

@@ -107,6 +107,7 @@ public:
     QString getShownHiddenGeneral() const;
     void setShownHiddenGeneral(const QString &general);
     bool canShowHiddenSkill() const;
+    bool isHiddenSkill(const QString &skill_name) const;
 
     int getHp() const;
     int getRenHp() const; //for banling

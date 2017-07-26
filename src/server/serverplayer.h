@@ -124,7 +124,6 @@ public:
     void removeHiddenGenerals(const QStringList &generals);
     void gainAnExtraTurn();
 
-    bool isHiddenSkill(const QString &skill_name);
     void showHiddenSkill(const QString &skill_name);
     QStringList checkTargetModSkillShow(const CardUseStruct &use);
 

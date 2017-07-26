@@ -218,6 +218,19 @@ bool Player::canShowHiddenSkill() const
     return !hidden_generals.isEmpty();
 }
 
+bool Player::isHiddenSkill(const QString &skill_name) const
+{
+    if (hasSkill(skill_name, false, false))
+        return false;
+    QString name = getShownHiddenGeneral();
+    if (name != NULL) {
+        const General *hidden = Sanguosha->getGeneral(name);
+        if (hidden && hidden->hasSkill(skill_name))
+            return false;
+    }
+    return hasSkill(skill_name);
+}
+
 
 QString Player::getShownHiddenGeneral() const
 {

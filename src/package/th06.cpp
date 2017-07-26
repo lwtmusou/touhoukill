@@ -301,6 +301,8 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if (triggerEvent == Damaged) {
             room->setPlayerFlag(invoke->invoker, "SlashRecorder_yuxueSlash");
+            if (invoke->invoker->isHiddenSkill(objectName()))
+                room->setPlayerFlag(invoke->invoker, "Global_viewasHidden_Failed");//only for anyun
             const Card *c = room->askForUseCard(invoke->invoker, "slash", "@yuxue", -1, Card::MethodUse, false, objectName());
             room->setPlayerFlag(invoke->invoker, "-SlashRecorder_yuxueSlash");
             return c != NULL;
