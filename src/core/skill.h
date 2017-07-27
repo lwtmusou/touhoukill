@@ -11,6 +11,8 @@ class QDialog;
 #include "structs.h"
 
 #include <QObject>
+#include <QDialog>
+
 
 class Skill : public QObject
 {
@@ -223,7 +225,7 @@ class ProhibitSkill : public Skill
 public:
     ProhibitSkill(const QString &name);
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const = 0;
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>(), bool include_hidden = false) const = 0;
 };
 
 class DistanceSkill : public Skill
@@ -345,5 +347,4 @@ class TreasureSkill : public EquipSkill
 public:
     TreasureSkill(const QString &name);
 };
-
 #endif

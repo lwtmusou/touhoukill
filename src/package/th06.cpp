@@ -848,6 +848,7 @@ public:
     }
 };
 
+
 BeishuiCard::BeishuiCard()
 {
     will_throw = false;
@@ -1628,7 +1629,7 @@ public:
     {
     }
 
-    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &) const
+    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &, bool) const
     {
         return card->getSkillName() == "xiaoyin" && !to->hasFlag("Global_xiaoyinFailed") && !card->hasFlag("lure_" + to->objectName());
     }

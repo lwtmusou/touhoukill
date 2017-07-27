@@ -3,6 +3,7 @@
 
 #include "card.h"
 #include "package.h"
+#include "skill.h"
 
 #include <QAbstractButton>
 #include <QButtonGroup>
@@ -146,7 +147,7 @@ class AnyunDialog : public QDialog
 public:
     static AnyunDialog *getInstance(const QString &object);
 
-    public slots:
+public slots:
     void popup();
     void selectSkill(QAbstractButton *button);
 
@@ -161,34 +162,6 @@ private:
 signals:
     void onButtonClick();
 };
-/*
-class AnyunDialog : public QDialog
-{
-    Q_OBJECT
-
-public:
-    static AnyunDialog *getInstance(const QString &object, bool left = true, bool right = true);
-
-    public slots:
-    void popup();
-    void selectSkill(QAbstractButton *button);
-
-private:
-    explicit AnyunDialog(const QString &object, bool left = true, bool right = true);
-
-    QGroupBox *createLeft();
-    QGroupBox *createRight();
-    //QAbstractButton *createButton(const Card *card);
-    QHBoxLayout *layout;
-    QButtonGroup *group;
-    //QHash<QString, const Card *> map;
-
-    QString object_name;
-
-signals:
-    void onButtonClick();
-};*/
-
 
 class TouhouGodPackage : public Package
 {

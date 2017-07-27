@@ -4428,162 +4428,6 @@ public:
     }
 };
 
-/*
-AnyunDialog *AnyunDialog::getInstance(const QString &object, bool left, bool right)
-{
-    static AnyunDialog *instance;
-    if (instance == NULL || instance->objectName() != object) {
-        instance = new AnyunDialog(object, left, right);
-    }
-    return instance;
-}
-
-AnyunDialog::AnyunDialog(const QString &object, bool left, bool right)
-    : object_name(object)
-{
-    setObjectName(object);
-    setWindowTitle(Sanguosha->translate(object)); //need translate title?
-    group = new QButtonGroup(this);
-    layout = new QHBoxLayout;
-
-    connect(group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(selectSkill(QAbstractButton *)));
-}
-
-void AnyunDialog::popup()
-{
-
-    layout->addWidget(createLeft());
-    layout->addWidget(createRight());
-    setLayout(layout);
-
-    
-
-
-    Self->tag.remove(object_name);
-    exec();
-}
-
-void AnyunDialog::selectSkill(QAbstractButton *button)
-{
-    const QString op = button->objectName();
-    QStringList ops = op.split(":");
-    if (ops.length() > 1) {
-        //object_name is "anyun", ops1 is selected skill, ops2 is cardname.
-        Self->tag[object_name] = QVariant::fromValue(ops.first());
-        Self->tag[ops.first()] = QVariant::fromValue(ops.last());
-    }
-    else
-        Self->tag[object_name] = QVariant::fromValue(op);
-    emit onButtonClick();
-    accept();
-}
-
-QGroupBox *AnyunDialog::createLeft()
-{
-    QGroupBox *box = new QGroupBox;
-    box->setTitle(Sanguosha->translate("skill"));
-
-    QVBoxLayout *layout = new QVBoxLayout;
-    bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
-    QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-    foreach(QString hidden, Self->getHiddenGenerals()) {
-        const General *g = Sanguosha->getGeneral(hidden);
-        foreach(const Skill *skill, g->getSkillList()) {
-            const ViewAsSkill*vs = Sanguosha->getViewAsSkill(skill->objectName());
-            if (vs) {
-                QStringList ops = vs->getDialogCardOptions();
-                if (ops.isEmpty()) {
-                    QCommandLinkButton *button = new QCommandLinkButton;
-                    button->setText(Sanguosha->translate(vs->objectName()));
-                    button->setObjectName(vs->objectName());
-                    group->addButton(button);
-
-                    bool enable = false;
-                    if (play && vs->isEnabledAtPlay(Self))
-                        enable = true;
-                    else if (!play && vs->isEnabledAtResponse(Self, pattern))
-                        enable = true;
-
-                    button->setEnabled(enable);
-                    button->setToolTip(Sanguosha->getSkill(vs->objectName())->getDescription());
-                    layout->addWidget(button);
-                }
-            }
-        }
-    }
-
-    layout->addStretch();
-    box->setLayout(layout);
-    return box;
-}
-
-QGroupBox *AnyunDialog::createRight()
-{
-    QGroupBox *box = new QGroupBox(Sanguosha->translate("card"));
-    QHBoxLayout *layout = new QHBoxLayout;
-
-    QGroupBox *box1 = new QGroupBox(Sanguosha->translate("basic"));
-    QVBoxLayout *layout1 = new QVBoxLayout;
-
-    QGroupBox *box2 = new QGroupBox(Sanguosha->translate("trick"));
-    QVBoxLayout *layout2 = new QVBoxLayout;
-
-    bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
-    QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-    foreach(QString hidden, Self->getHiddenGenerals()) {
-        const General *g = Sanguosha->getGeneral(hidden);
-        foreach(const Skill *skill, g->getSkillList()) {
-            const ViewAsSkill*vs = Sanguosha->getViewAsSkill(skill->objectName());
-            if (vs) {
-                QStringList ops = vs->getDialogCardOptions();
-                if (ops.isEmpty())
-                    continue;
-
-                bool enable = false;
-                if (play && vs->isEnabledAtPlay(Self))
-                    enable = true;
-                else if (!play && vs->isEnabledAtResponse(Self, pattern))
-                    enable = true;
-
-                QString name1 = Sanguosha->translate(vs->objectName());
-                foreach(QString cardname, ops) {
-                    QCommandLinkButton *button = new QCommandLinkButton;
-                    QString name2 = Sanguosha->translate(cardname);
-                    button->setText(name1 + ":" + name2);
-                    button->setObjectName(vs->objectName() + ":" + cardname);
-                    group->addButton(button);
-
-                    Card *c = Sanguosha->cloneCard(cardname);
-                    c->setSkillName(vs->objectName());
-                    if (Self->isCardLimited(c, Card::MethodUse) || !c->isAvailable(Self))
-                        enable = false;
-
-                    button->setEnabled(enable);
-                    button->setToolTip(Sanguosha->getSkill(vs->objectName())->getDescription());
-                    QVBoxLayout *layout = (c->getTypeId() == Card::TypeBasic) ? layout1 : layout2;
-                    layout->addWidget(button);
-                    delete c;
-                }
-            }
-        }
-    }
-
-
-    box->setLayout(layout);
-    box1->setLayout(layout1);
-    box2->setLayout(layout2);
-
-    layout1->addStretch();
-    layout2->addStretch();
-
-    layout->addWidget(box1);
-    layout->addWidget(box2);
-    return box;
-}
-*/
-
-
-
 
 AnyunDialog *AnyunDialog::getInstance(const QString &object)
 {
@@ -4609,11 +4453,7 @@ AnyunDialog::AnyunDialog(const QString &object)
 
 void AnyunDialog::popup()
 {
-    //only test CARD_USE_REASON_PLAY;
     bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
-        //emit onButtonClick();
-        //return;
-    
 
     foreach(QAbstractButton *button, group->buttons()) {
         layout->removeWidget(button);
@@ -4625,7 +4465,6 @@ void AnyunDialog::popup()
     foreach(QString hidden, Self->getHiddenGenerals()) {
         const General *g = Sanguosha->getGeneral(hidden);
         foreach(const Skill *skill, g->getSkillList()) {
-            //if (skill->inherits("ViewAsSkill"))
             const ViewAsSkill*vs = Sanguosha->getViewAsSkill(skill->objectName());
             if (vs) {
                 bool add = false;
@@ -4637,8 +4476,16 @@ void AnyunDialog::popup()
                         add = true;
                 }
                 if (add) {
-                    QStringList ops = vs->getDialogCardOptions();
-                    if (ops.isEmpty()) {
+                    QCommandLinkButton *button = new QCommandLinkButton;
+                    button->setText(Sanguosha->translate(vs->objectName()));
+                    button->setObjectName(vs->objectName());
+                    group->addButton(button);
+
+                    button->setEnabled(true);
+                    button->setToolTip(Sanguosha->getSkill(vs->objectName())->getDescription());
+                    layout->addWidget(button);
+                    //QStringList ops = vs->getDialogCardOptions();
+                    /*if (ops.isEmpty()) {
                         QCommandLinkButton *button = new QCommandLinkButton;
                         button->setText(Sanguosha->translate(vs->objectName()));
                         button->setObjectName(vs->objectName());
@@ -4647,8 +4494,8 @@ void AnyunDialog::popup()
                         button->setEnabled(true);
                         button->setToolTip(Sanguosha->getSkill(vs->objectName())->getDescription());
                         layout->addWidget(button);
-                    }
-                    else {
+                    }*/
+                    /*else {
                         QString name1 = Sanguosha->translate(vs->objectName());
                         foreach(QString cardname, ops) {
                             QCommandLinkButton *button = new QCommandLinkButton;
@@ -4669,32 +4516,38 @@ void AnyunDialog::popup()
                             layout->addWidget(button);
                             delete c;
                         }
-                    }
+                    }*/
                 }
             }
         }
     }
 
-
     Self->tag.remove(object_name);
     exec();
 }
 #include "th09.h"
+#include "th10.h"
 void AnyunDialog::selectSkill(QAbstractButton *button)
 {
-    const QString op = button->objectName();
-    QStringList ops = op.split(":");
-    if (ops.length() > 1) {
-        //object_name is "anyun", ops1 is selected skill, ops2 is cardname.
-        Self->tag[object_name] = QVariant::fromValue(ops.first());
-        Self->tag[ops.first()] = QVariant::fromValue(ops.last());
+    const QString skillName = button->objectName();
+    //const ViewAsSkill*vs = Sanguosha->getViewAsSkill(skillName);
+    QStringList moreSlecet;
+    moreSlecet << "nianli" << "beishui"  << "qiji" << "xihua" << "huaxiang"; //<< "chuangshi"
+    if (moreSlecet.contains(skillName)) {
         // #pragma message WARN("todo_lwtmusou: how to get classtype of specific dialog ")
-        const ViewAsSkill *s = Sanguosha->getViewAsSkill(ops.first());//like "nianli" "qiji"
-        NianliDialog::getInstance("nianli")->popup();
-        Self->tag.remove("nianli");
+        //const ViewAsSkill *s = Sanguosha->getViewAsSkill(ops.first());//like "nianli" "qiji"
+        if (skillName == "nianli")
+            NianliDialog::getInstance("nianli")->popup();
+        else {
+            if (skillName == "beishui")
+                QijiDialog::getInstance(skillName, true, false)->popup();
+            else
+                QijiDialog::getInstance(skillName)->popup();
+        }
+            
     }
-    else
-        Self->tag[object_name] = QVariant::fromValue(op);
+
+    Self->tag[object_name] = QVariant::fromValue(skillName);
     emit onButtonClick();
     accept();
 }
@@ -4735,7 +4588,7 @@ public:
         return hasHiddenViewas(player);
     }
     
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    virtual bool isEnabledAtResponse(const Player *player, const QString &) const
     {
         if (!player->canShowHiddenSkill())
             return false;
@@ -4798,7 +4651,7 @@ public:
         return AnyunDialog::getInstance("anyun");
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
         QList<SkillInvokeDetail> d;
         if (triggerEvent == GameStart) {
@@ -4857,7 +4710,6 @@ public:
             zuoci->removeHiddenGenerals(deleteName);
     }
 
-
     static QStringList GetAvailableGenerals(ServerPlayer *zuoci, bool init)
     {
         QSet<QString> all = Sanguosha->getLimitedGeneralNames().toSet();
@@ -4893,7 +4745,7 @@ public:
             banned << "nue_god" << "zun";
         QSet<QString> test;
         if (init)
-            test << "flandre" << "youmu" << "renko_ndj";
+            test << "meirin" << "shirasawa" << "mamizou";
         else
             test << "marisa" << "yukari" << "aya_sp";
         return test.toList();
@@ -4976,6 +4828,83 @@ public:
         return false;
     }
 };
+
+class AnyunProhibit : public TriggerSkill
+{
+public:
+    AnyunProhibit() : TriggerSkill("#anyun_prohibit")
+    {
+        events << TargetConfirming;
+    }
+
+    static QStringList getProhibitSkills(ServerPlayer *nue,  CardUseStruct use, bool once = false) {
+        QStringList show;
+        QString shown = nue->getShownHiddenGeneral();
+        if (shown != NULL)
+            return show;
+        QStringList generals = nue->getHiddenGenerals();
+        foreach(QString name, generals) {
+            const General *p = Sanguosha->getGeneral(name);
+            foreach(const Skill *skill, p->getSkillList()) {
+                if (skill->inherits("ProhibitSkill")) {
+                    const ProhibitSkill * s = qobject_cast<const ProhibitSkill *>(skill);
+                    if (s->isProhibited(use.from, nue, use.card, QList<const Player*>(), true))
+                        show << s->objectName();
+                }
+                if (!show.isEmpty() && once)
+                    return show;
+            }
+        }
+        return show;
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        QList<SkillInvokeDetail> d;
+        CardUseStruct use = data.value<CardUseStruct>();
+        foreach(ServerPlayer *nue, use.to) {
+            if (nue->hasSkill("anyun")) {
+                QStringList show = getProhibitSkills(nue, use, true);
+                if (!show.isEmpty())
+                    d << SkillInvokeDetail(this, nue, nue);
+            }
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        ServerPlayer *nue = invoke->invoker;
+        QStringList skills = getProhibitSkills(nue, use);
+        skills << "cancel";
+        QString choice = room->askForChoice(invoke->invoker, objectName(), skills.join("+"), data);
+        if (choice == "cancel")
+            return false;
+
+        invoke->tag["anyun_prohibit"] = choice;
+        return true;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        use.to.removeAll(invoke->invoker);
+        data = QVariant::fromValue(use);
+        QString name = invoke->tag.value("anyun_prohibit").toString();
+        invoke->invoker->showHiddenSkill(name);
+
+        LogMessage log;
+        log.type = "#SkillAvoid";
+        log.from = invoke->invoker;
+        log.arg =  name;
+        log.arg2 = use.card->objectName();
+        room->sendLog(log);
+        return false;
+    }
+};
+
 
 class Benzun : public TriggerSkill
 {
@@ -5186,9 +5115,11 @@ TouhouGodPackage::TouhouGodPackage()
     General *nue_god = new General(this, "nue_god", "touhougod", 3, false);
     nue_god->addSkill(new Anyun);
     nue_god->addSkill(new AnyunShowStaticSkill);
+    nue_god->addSkill(new AnyunProhibit);
     nue_god->addSkill(new Benzun);
     related_skills.insertMulti("anyun", "#anyunShowStatic");
-
+    related_skills.insertMulti("anyun", "#anyun_prohibit");
+    
     General *marisa_god = new General(this, "marisa_god", "touhougod", 4, false, true, true);
     marisa_god->addSkill(new Huixing);
     marisa_god->addSkill(new Mofu);

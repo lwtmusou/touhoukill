@@ -759,9 +759,9 @@ public:
     {
     }
 
-    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &) const
+    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &, bool include_hidden) const
     {
-        if (to->hasSkill("yidan") && card->isKindOf("Slash")) {
+        if (to->hasSkill("yidan", false, include_hidden) && card->isKindOf("Slash")) {
             foreach (const Card *c, to->getEquips()) {
                 if (card->getSuit() == c->getSuit())
                     return true;

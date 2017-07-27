@@ -1426,11 +1426,11 @@ public:
         return !player->hasUsed("NianliCard");
     }
 
-    virtual QStringList getDialogCardOptions() const {
+    /*virtual QStringList getDialogCardOptions() const {
         QStringList options;
         options << "slash" << "snatch";
         return options;
-    }
+    }*/
 
     virtual const Card *viewAs() const
     {

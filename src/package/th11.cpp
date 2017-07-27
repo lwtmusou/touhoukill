@@ -199,9 +199,9 @@ public:
     {
     }
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &) const
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &, bool include_hidden) const
     {
-        return from != to && to->hasSkill(objectName()) && to->isWounded() && card->isKindOf("TrickCard");
+        return from != to && to->hasSkill(objectName(), false, include_hidden) && to->isWounded() && card->isKindOf("TrickCard");
     }
 };
 
@@ -833,9 +833,9 @@ public:
     {
     }
 
-    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &) const
+    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &, bool include_hidden) const
     {
-        return to->hasSkill(objectName()) && ((card->isKindOf("SavageAssault") || card->isKindOf("IronChain")) || card->isKindOf("ArcheryAttack"));
+        return to->hasSkill(objectName(), false, include_hidden) && ((card->isKindOf("SavageAssault") || card->isKindOf("IronChain")) || card->isKindOf("ArcheryAttack"));
     }
 };
 

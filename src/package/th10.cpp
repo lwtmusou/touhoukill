@@ -781,7 +781,7 @@ public:
         return player->getHandcardNum() == 1;
     }
 
-    virtual QStringList getDialogCardOptions() const {
+    /*virtual QStringList getDialogCardOptions() const {
         QStringList options;
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach(const Card *card, cards) {
@@ -790,7 +790,7 @@ public:
                 options << card->objectName();
         }
         return options;
-    }
+    }*/
 };
 
 class Qiji : public TriggerSkill

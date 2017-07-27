@@ -1677,6 +1677,7 @@ public:
     {
         ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), "chuangshi", "@chuangshi_target", true, true);
         if (target != NULL) {
+            player->showHiddenSkill("chuangshi");
             room->setPlayerMark(target, "chuangshi_user", 1);
             room->setPlayerProperty(player, "chuangshi_user", target->objectName());
             const Card *card = room->askForUseCard(player, "@@chuangshi", "@chuangshi_prompt:" + target->objectName());
@@ -2032,11 +2033,11 @@ public:
     {
     }
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &) const
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &, bool include_hidden) const
     {
-        if (card->isKindOf("Slash") && from->distanceTo(to) > 1) {
+        if (card->isKindOf("Slash") && from && from->distanceTo(to) > 1) {
             foreach (const Player *p, from->getAliveSiblings()) {
-                if (p->hasSkill(objectName()) && p->inMyAttackRange(from))
+                if (p->hasSkill(objectName(), false, include_hidden) && p->inMyAttackRange(from))
                     return true;
             }
         }
