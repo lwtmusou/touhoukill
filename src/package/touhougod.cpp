@@ -4743,13 +4743,13 @@ public:
         // ban nue and zun
         if (banned.isEmpty())
             banned << "nue_god" << "zun";
-        QSet<QString> test;
-        if (init)
-            test << "meirin" << "shirasawa" << "mamizou";
-        else
-            test << "marisa" << "yukari" << "aya_sp";
-        return test.toList();
-        //return (all - banned - huashen_set - room_set).toList();
+        //QSet<QString> test;
+        //if (init)
+        //    test << "meirin" << "shirasawa" << "yukari_god";
+        //else
+        //    test << "marisa" << "yukari" << "aya_sp";
+        //return test.toList();
+        return (all - banned - huashen_set - room_set).toList();
     }
 
 
