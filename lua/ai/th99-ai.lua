@@ -703,13 +703,13 @@ function SmartAI:touhouDamageTransfer(player)
 	if player:hasSkill("zheshe") and not player:isKongcheng() then
 		return true
 	end
-	if player:hasSkill("zhengti") then
+	--[[if player:hasSkill("zhengti") then
 		for _,p in sgs.qlist(self.room:getOtherPlayers(player))do
 			if p:getMark("@zhengti")>0 then
 				return true
 			end
 		end
-	end
+	end]]
 	return false
 end
 

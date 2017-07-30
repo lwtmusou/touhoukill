@@ -908,7 +908,7 @@ end
 
 sgs.ai_card_intention.BumingCard = 70
 
-
+--[[
 sgs.ai_skill_playerchosen.zhengti = function(self, targets)
 	target_table =sgs.QList2Table(targets)
 	for _,p in pairs (target_table) do
@@ -976,7 +976,7 @@ function SmartAI:zhengtiParse(from,to)
 	end
 	return result, target
 end
-
+]]
 sgs.ai_skill_invoke.qingyu = true
 sgs.ai_skill_cardask["@qingyu-discard"] = function(self, data)
 	local source=data:toPlayer()

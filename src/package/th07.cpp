@@ -1235,9 +1235,6 @@ QimenCard::QimenCard()
 
 bool QimenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
 {
-    
-
-    
     if (targets.isEmpty())
         return to_select->hasFlag("Global_qimenFailed");
     else {
@@ -1318,7 +1315,8 @@ public:
         DELETE_OVER_SCOPE(const Card, c)
         if (use.from->isCardLimited(c, Card::MethodUse))
            return tos;
-        c->setFlags("qimen");
+        use.from->getRoom()->setCardFlag(c, "qimen");
+        //c->setFlags("qimen");
         c->setFlags("IgnoreFailed");
         foreach(ServerPlayer *p, use.from->getRoom()->getOtherPlayers(use.to.first())) {
             if (use.from->inMyAttackRange(p) == use.from->inMyAttackRange(use.to.first()))
@@ -1332,6 +1330,7 @@ public:
                 
             if (!c->targetFilter(QList<const Player *>(), p, use.from))
                 continue;
+            p->gainMark("@w3");
             tos << p;
         }
         c->setFlags("-qimen");
@@ -1380,7 +1379,7 @@ class QimenDistance : public TargetModSkill
 {
 public:
     QimenDistance()
-        : TargetModSkill("qimen-dist")
+        : TargetModSkill("#qimen-dist")
     {
         pattern = "BasicCard,TrickCard+^DelayedTrick";
     }
@@ -2506,6 +2505,8 @@ TH07Package::TH07Package()
     General *chen = new General(this, "chen", "yym", 3, false);
     chen->addSkill(new Qimen);
     chen->addSkill(new Dunjia);
+    chen->addSkill(new QimenDistance);
+    related_skills.insertMulti("qimen", "#qimen-dist");
     //chen->addSkill(new Shishen);
     //chen->addSkill(new Yexing);
     //chen->addSkill(new YexingEffect);
@@ -2556,7 +2557,7 @@ TH07Package::TH07Package()
     addMetaObject<YujianCard>();
     addMetaObject<HuayinCard>();
 
-    skills << new ZhaoliaoVS << new QimenDistance;
+    skills << new ZhaoliaoVS;// << new QimenDistance;
 }
 
 ADD_PACKAGE(TH07)
