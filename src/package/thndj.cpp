@@ -664,7 +664,7 @@ public:
         switch (triggerEvent) {
         case DamageDone: {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.card->isKindOf("Slash") && damage.card->hasFlag("mengwei_extra"))
+            if (damage.card !=NULL && damage.card->isKindOf("Slash") && damage.card->hasFlag("mengwei_extra"))
                 room->setCardFlag(damage.card, "mengwei_damage");
             break;
         }
