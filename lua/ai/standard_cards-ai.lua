@@ -488,7 +488,7 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 	end
 
 	if to:hasSkill("xuying") and to:getHandcardNum() > 0 then return true end
-	if to:hasSkill("zhengti") then--严格来讲应该往后挪
+	--[[if to:hasSkill("zhengti") then--严格来讲应该往后挪
 		local zhengti, transfer_to = self:zhengtiParse(from,to)
 		if zhengti then
 			return false
@@ -499,7 +499,7 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 				to = transfer_to
 			end
 		end
-	end
+	end]]
 
 
 	-- 收到0伤害防止伤害时
