@@ -337,7 +337,7 @@ function SmartAI:slashProhibit(card, enemy, from)
 	end
 
 	if self:isFriend(enemy, from) then
-		if self:sidieEffect(from) then return false end
+		--if self:sidieEffect(from) then return false end
 		if from:hasSkill("dongjie") and not from:hasFlag("dongjie") and not enemy:faceUp() then return false end
 		if card:isKindOf("FireSlash") or from:hasWeapon("Fan") or from:hasSkill("zonghuo")  then
 			if enemy:hasArmorEffect("Vine") and not (enemy:isChained() and self:isGoodChainTarget(enemy, nil, nil, nil, card)) then return true end
@@ -546,7 +546,7 @@ function SmartAI:isPriorFriendOfSlash(friend, card, source)
 	--local lingxian = self.room:findPlayerBySkillName("huanshi")
 	--要求自己已经跳身份，且敌人数量不为0
 	--特定对象优先死蝶 不行么。。。
-	if self:sidieEffect(source) then
+	--[[if self:sidieEffect(source) then
 		local sidies = self:touhouSidieTarget(card,source)
 		if #sidies ~= 0 and not table.contains(sidies, friend:objectName()) then return false end
 		if sgs.ai_role[source:objectName()]  ~= "netural" then
@@ -559,7 +559,7 @@ function SmartAI:isPriorFriendOfSlash(friend, card, source)
 			local sidieTarget =getSidieVictim(self, sidieTargets,friend)
 			if sidieTarget then return true end
 		end
-	end
+	end]]
 
 
 	if not self:hasHeavySlashDamage(source, card, friend) and card:getSkillName() ~= "lihuo"
@@ -1068,7 +1068,7 @@ sgs.ai_card_intention.Slash = function(self, card, from, tos)
 	if sgs.ai_collateral then sgs.ai_collateral = false return end
 	if card:hasFlag("nosjiefan-slash") then return end
 	if card:getSkillName() =="shenshou" then return end
-	if card:getSkillName() =="sidie" then return end
+	--if card:getSkillName() =="sidie" then return end
 	if card:getSkillName() =="xiefa" then return end
 
 	local kosuzu = self.room:findPlayerBySkillName("bihuo")
@@ -1097,7 +1097,7 @@ sgs.ai_card_intention.Slash = function(self, card, from, tos)
 		end
 		if to:hasSkill("xunshi") and #tos > 1 then value = 0 end
 		if  from:hasSkill("dongjie") and not from:hasFlag("dongjie") and not to:faceUp() then value= 0 end --self:isFriend(from,to) and
-		if self:sidieEffect(from)  then value = 0 end
+		--if self:sidieEffect(from)  then value = 0 end
 		if from:hasSkill("lizhi") and self:isFriend(from,to) then value = 0 end
 		--if to:hasSkill("huanshi") and self:touhouCanHuanshi(card,from,to)>0 then
 		--  value = 0
@@ -1241,14 +1241,14 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 end
 sgs.ai_choicemade_filter.cardResponded["slash-jink"] = function(self, player, args)
 	--目前只有闪死蝶杀有仇恨
-	if args[#args] ~= "_nil_" then
+	--[[if args[#args] ~= "_nil_" then
 		local uuz = findPlayerByObjectName(self.room, (args[2]:split(":"))[2])
 		if uuz and uuz:isLord() and self:sidieEffect(uuz) then
 			if not player:hasSkill("xuying") then
 				sgs.updateIntention(player, uuz, 50)
 			end
 		end
-	end
+	end]]
 end
 sgs.dynamic_value.damage_card.Slash = true
 
@@ -1939,10 +1939,10 @@ sgs.ai_skill_invoke.EightDiagram = function(self, data)
 	if (s.prompt:split(":"))[1] == "slash-jink" then
 		local slash_source = findPlayerByObjectName(self.room, (s.prompt:split(":"))[2])
 		--幽幽子死蝶
-		if slash_source and self:isFriend(slash_source)
-		and self:sidieEffect(slash_source) then
-			return false
-		end
+		--if slash_source and self:isFriend(slash_source)
+		--and self:sidieEffect(slash_source) then
+		--	return false
+		--end
 	end
 
 

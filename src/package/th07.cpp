@@ -13,6 +13,117 @@ public:
     Sidie()
         : TriggerSkill("sidie")
     {
+        events << EventPhaseStart;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        ServerPlayer *uuz = data.value<ServerPlayer *>();
+        if (uuz->isAlive() && uuz->hasSkill(this) && uuz->getPhase() == Player::Start) {
+            foreach(ServerPlayer* p, room->getOtherPlayers(uuz)) {
+                if (uuz->getHandcardNum() > p->getHandcardNum() && uuz->canSlash(p, false))
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, uuz, uuz);
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *uuz = invoke->invoker;
+        QList<ServerPlayer *> targets;
+        if (uuz->isAlive() && uuz->hasSkill(this)) {
+            foreach(ServerPlayer* p, room->getOtherPlayers(uuz)) {
+                if (uuz->getHandcardNum() > p->getHandcardNum() && uuz->canSlash(p, false))
+                    targets << p;
+            }
+        }
+        ServerPlayer *target = room->askForPlayerChosen(uuz, targets, objectName(), "@sidie", true, true);
+        if (target)
+            invoke->targets << target;
+        return target != NULL;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        Slash *slash = new Slash(Card::NoSuit, 0);
+        slash->deleteLater();
+        slash->setSkillName(objectName());
+        room->useCard(CardUseStruct(slash, invoke->invoker, invoke->targets.first()), false);
+        return false;
+    }
+};
+
+
+class Moran : public TriggerSkill
+{
+public:
+    Moran()
+        : TriggerSkill("moran")
+    {
+        events << EventPhaseStart << EventPhaseChanging;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive && change.player->getMark("sidie") > 0) {
+                room->setPlayerMark(change.player, "sidie", 0);
+                room->handleAcquireDetachSkills(change.player, "-sidie", true);
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        if (triggerEvent != EventPhaseStart)
+            return QList<SkillInvokeDetail>();
+        QList<SkillInvokeDetail> d;
+        ServerPlayer *player = data.value<ServerPlayer *>();
+        if (player->getPhase() == Player::RoundStart) {
+            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                if (p != player && p->canDiscard(p, "e"))
+                    d << SkillInvokeDetail(this, p, p, NULL, false, player);
+            }
+        }
+        return d;
+    }
+
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        ServerPlayer *uuz = invoke->invoker;
+        ServerPlayer *target = invoke->targets.first();
+        QList<const Card*> cards;
+        foreach(const Card*c, uuz->getCards("e")) {
+            if (uuz->canDiscard(uuz, c->getId()))
+                cards << c;
+        }
+
+        if (!cards.isEmpty()) {
+            DummyCard dummy;
+            dummy.addSubcards(cards);
+            room->throwCard(&dummy, uuz, uuz);
+            uuz->drawCards(cards.length());
+            if (!target->hasSkill("sidie", true, false)) {
+                room->setPlayerMark(target, "sidie", 1);
+                room->handleAcquireDetachSkills(target, "sidie", true);
+            }
+        }
+        return false;
+    }
+};
+
+
+
+/*
+class Sidie : public TriggerSkill
+{
+public:
+    Sidie()
+        : TriggerSkill("sidie")
+    {
         events << DamageCaused << EventPhaseChanging;
     }
 
@@ -92,7 +203,7 @@ public:
         return false;
     }
 };
-
+*/
 class Wangxiang : public TriggerSkill
 {
 public:
@@ -1330,7 +1441,6 @@ public:
                 
             if (!c->targetFilter(QList<const Player *>(), p, use.from))
                 continue;
-            p->gainMark("@w3");
             tos << p;
         }
         c->setFlags("-qimen");
@@ -2480,6 +2590,7 @@ TH07Package::TH07Package()
 {
     General *yuyuko = new General(this, "yuyuko$", "yym", 4, false);
     yuyuko->addSkill(new Sidie);
+    yuyuko->addSkill(new Moran);
     yuyuko->addSkill(new Wangxiang);
 
     General *yukari = new General(this, "yukari", "yym", 4, false);

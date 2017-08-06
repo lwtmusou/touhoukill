@@ -1,4 +1,5 @@
 --different from sgs.ai_skill_playerchosen.zero_card_as_slash
+--[[
 sgs.ai_skill_playerchosen.sidie = function(self, targets)
 	local sidie =self.player:getTag("sidie_target"):toPlayer()
 	local victim,sidieType = getSidieVictim(self, targets,sidie)
@@ -20,7 +21,6 @@ sgs.ai_skill_playerchosen.sidie = function(self, targets)
 end
 sgs.ai_playerchosen_intention.sidie = 30
 function getSidieVictim(self, targets,sidie)
-	--local sidie =self.player:getTag("sidie_target"):toPlayer()
 	local slash = sgs.cloneCard("slash")
 	local targetlist = sgs.QList2Table(targets)
 	local arrBestHp, canAvoidSlash, forbidden = {}, {}, {}
@@ -42,19 +42,7 @@ function getSidieVictim(self, targets,sidie)
 			end
 		end
 	end
-	--[[for i=#targetlist, 1, -1 do
-		local target = targetlist[i]
-		if not self:slashProhibit(slash, target,sidie) then
-			if self:slashIsEffective(slash, target,sidie) then
-				if self:isFriend(target) and (self:needToLoseHp(target, sidie, true, true)
-					or self:getDamagedEffects(target, sidie, true) ) then --or self:needLeiji(target, self.player)
-						--return target,"goodfriend"
-				end
-			else
-				table.insert(canAvoidSlash, target)
-			end
-		end
-	end]]
+
 
 	if #canAvoidSlash > 0 then return canAvoidSlash[1], "canAvoid" end
 	if #arrBestHp > 0 then return arrBestHp[1], "bestHp" end
@@ -84,6 +72,33 @@ end
 sgs.sidie_keep_value = {
 	Slash = 7
 }
+]]
+
+
+
+sgs.ai_skill_playerchosen.sidie = function(self, targets)
+	local target = sgs.ai_skill_playerchosen.zero_card_as_slash(self, targets)
+	return target 
+end
+
+
+sgs.ai_skill_invoke.moran = function(self, data)
+	local current = self.room:getCurrent()	
+	if self:isFriend(current) then
+		for _,p in sgs.qlist(self.room:getOtherPlayers(current)) do
+			if (self:isEnemy(p) and  current:getHandcardNum() > p:getHandcardNum() and current:canSlash(p, false)) then
+				return true
+			end
+		end
+	end
+	return false
+end
+sgs.ai_choicemade_filter.skillInvoke.moran = function(self, player, promptlist)
+	local current = self.room:getCurrent()
+	if promptlist[#promptlist] == "yes" then
+		sgs.updateIntention(player, current, -60)
+	end
+end
 
 
 sgs.ai_skill_invoke.wangxiang = function(self, data)

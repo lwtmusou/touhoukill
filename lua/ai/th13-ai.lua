@@ -568,11 +568,11 @@ sgs.ai_skill_invoke.chuanbi = function(self,data)
 			end
 		end
 	end
-	if slash_source and self:isFriend(slash_source)
-	and slash_source:getPhase() == sgs.Player_Play
-	and slash_source:hasSkill("sidie")   then
-		return false
-	end
+	--if slash_source and self:isFriend(slash_source)
+	--and slash_source:getPhase() == sgs.Player_Play
+	--and slash_source:hasSkill("sidie")   then
+	--	return false
+	--end
 	return true
 end
 sgs.ai_slash_prohibit.chuanbi = function(self, from, to, card)

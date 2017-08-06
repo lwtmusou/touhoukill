@@ -7175,9 +7175,9 @@ function SmartAI:touhouDamageEffect(damage,from,to)
 			return true, willUse
 		end
 		if  damage.card:isKindOf("Slash") then
-			if self:sidieEffect(from) then
-				return true, willUse
-			end
+			--if self:sidieEffect(from) then
+			--	return true, willUse
+			--end
 			if from:hasWeapon("IceSword") and not to:isNude() then
 				return true, willUse
 			end
@@ -7382,7 +7382,7 @@ end
 --东方杀相关
 --【死蝶】
 --【白楼】【楼观】【怪力】【幻视】
-function SmartAI:touhouSidieTarget(card,from)
+--[[function SmartAI:touhouSidieTarget(card,from)
 	local targets={}
 	if from:getPhase() ~=sgs.Player_Play then
 		return targets
@@ -7395,7 +7395,7 @@ function SmartAI:touhouSidieTarget(card,from)
 		end
 	end
 	return targets
-end
+end]]
 
 --东方杀相关
 --所有补拍流 弃牌流都要注意的函数

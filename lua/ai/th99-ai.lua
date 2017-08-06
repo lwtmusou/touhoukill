@@ -1079,9 +1079,9 @@ sgs.ai_slash_prohibit.bihuo = function(self, from, to, card)
 	if self.player:hasSkill("lizhi") then
 		return false
 	end
-	if self.player:hasSkill("sidie") and self.player:getPhase() ==sgs.Player_Play then
-		return false
-	end
+	--if self.player:hasSkill("sidie") and self.player:getPhase() ==sgs.Player_Play then
+	--	return false
+	--end
 	for _,p in pairs (self.friends_noself)do
 		local fakeDamage=sgs.DamageStruct()
 		fakeDamage.card=card
