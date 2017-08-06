@@ -806,3 +806,43 @@ end
 	if choices:match("recover") then return "recover" end
 	return "draw"
 end]]
+
+sgs.ai_skill_use["@@baosi"] = function(self, prompt)
+	self:sort(self.enemies,"defense")
+	local enemies = {}
+	for _,p in pairs(self.enemies) do
+		if p:hasFlag("Global_baosiFailed") then
+			table.insert(enemies, p:objectName())
+		end
+	end
+	if #enemies==0 then return "." end
+	return "@BaosiCard=.->" .. table.concat(enemies, "+")
+end
+
+
+local ezhao_skill = {}
+ezhao_skill.name = "ezhao"
+table.insert(sgs.ai_skills, ezhao_skill)
+function ezhao_skill.getTurnUseCard(self)
+	if self.player:getMark("@ezhao")==0 then return nil end
+	return sgs.Card_Parse("@EzhaoCard=.")
+end
+sgs.ai_skill_use_func.EzhaoCard=function(card,use,self)
+	local targets = {}
+	for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if p:isWounded() then
+			table.insert(targets, p)
+		end
+	end
+	if #targets > 1 or ( #targets > 0 and sel.room:getAlivePlayers():length() == 2) then
+		use.card = card
+		if use.to then
+			for _,p in ipairs(targets) do
+				use.to:append(p)
+			end
+			return
+		end
+	end
+end
+sgs.ai_use_value.EzhaoCard = 2
+sgs.ai_use_priority.EzhaoCard = sgs.ai_use_priority.Slash + 0.2
