@@ -640,6 +640,49 @@ sgs.ai_skill_discard.buju = function(self,discard_num, min_num)
 end
 
 
+sgs.ai_skill_playerchosen.shouhu = function(self, targets)
+	local t = sgs.QList2Table(targets)
+	self:sort(t,"hp",true)
+	for _,p in ipairs(t) do
+	    if self:isFriend(p) then
+			return p 
+		end
+	end
+	return nil
+end
+
+sgs.ai_playerchosen_intention.shouhu = -60
+sgs.ai_no_playerchosen_intention.shouhu =function(self, from)
+	local lord =self.room:getLord()
+	if lord  and lord:isWounded()  and lord:getHp() < getBestHp(lord) and from:getHp() > lord:getHp() then
+		sgs.updateIntention(from, lord, 10)
+	end
+end
+
+sgs.ai_skill_invoke.shaojie = function(self, data)
+	if self.player:hasFlag("AI_shaojie") then
+		local current = self.room:getCurrent()	
+		if current and not self:isFriend(current) then
+			return true
+		end
+	else
+		return true
+	end
+	return false
+end
+sgs.ai_choicemade_filter.skillInvoke.shaojie = function(self, player, args)
+	if player:hasFlag("AI_shaojie") then
+		local current = self.room:getCurrent()
+		if args[#args] == "yes" then
+			sgs.updateIntention(player, current, 20)
+		end
+	end
+end
+
+
+
+
+
 local fengrang_skill = {}
 fengrang_skill.name = "fengrang"
 table.insert(sgs.ai_skills, fengrang_skill)

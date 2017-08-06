@@ -1440,10 +1440,14 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (triggerEvent == EventPhaseStart) {
-            return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget));
+            //this flag is only for AI
+            room->setPlayerFlag(invoke->invoker, "AI_shaojie");
+            bool show = invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget));
+            room->setPlayerFlag(invoke->invoker, "-AI_shaojie");
+            return show;
         } else {
             DamageStruct damage = data.value<DamageStruct>();
             QString prompt = "invoke:" + damage.from->objectName() + ":" + damage.card->objectName() + ":" + QString::number(damage.damage);
