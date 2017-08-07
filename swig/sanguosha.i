@@ -719,6 +719,29 @@ struct CardAskedStruct
     Card::HandlingMethod method;
 };
 
+struct BrokenEquipChangedStruct
+{
+    BrokenEquipChangedStruct();
+
+    ServerPlayer *player;
+    QList<int> ids;
+    bool broken;
+    bool moveFromEquip;
+};
+
+struct ShownCardChangedStruct
+{
+    ShownCardChangedStruct();
+
+    ServerPlayer *player;
+    QList<int> ids;
+    bool shown;
+    bool moveFromHand;
+};
+
+
+
+
 struct SkillInvokeDetail
 {
     explicit SkillInvokeDetail(const TriggerSkill *skill = NULL, ServerPlayer *owner = NULL, ServerPlayer *invoker = NULL, QList<ServerPlayer *> targets = QList<ServerPlayer *>(), bool isCompulsory = false, ServerPlayer *preferredTarget = NULL);

@@ -151,6 +151,22 @@ public:
         return $self->value<MarkChangeStruct>();
     }
 
+	void setValue(BrokenEquipChangedStruct *b) {
+        $self->setValue(QVariant::fromValue(*b));
+    }
+
+    BrokenEquipChangedStruct toBrokenEquipChange() const{
+        return $self->value<BrokenEquipChangedStruct>();
+    }
+
+	void setValue(ShownCardChangedStruct *s) {
+        $self->setValue(QVariant::fromValue(*s));
+    }
+
+    ShownCardChangedStruct toShownCardChange() const{
+        return $self->value<ShownCardChangedStruct>();
+    }
+
     void setValue(QList<int> intlist) {
         QVariantList varlist;
         for (int i = 0; i < intlist.length(); i++)

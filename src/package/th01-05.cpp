@@ -2811,6 +2811,7 @@ public:
         }
         QString cardsList = IntList2StringList(ids).join("+");
         room->setPlayerProperty(target, "liuzhuan", cardsList);
+        room->setTag("liuzhuan", data);
         room->askForUseCard(target, "@@liuzhuanVS", "liuzhuanuse");
         return false;
     }
