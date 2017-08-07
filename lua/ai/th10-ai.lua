@@ -483,16 +483,23 @@ end
 
 sgs.ai_skill_invoke.jie = function(self,data)
 	local damage = self.player:getTag("jie_damage"):toDamage()
-	if not self:isFriend(damage.to) then
-		return false
-	end
-	local nature = self:touhouDamageNature(damage.card, damage.from, self.player)
+	
+	local nature = damage.nature
+	if damage.card then nature = self:touhouDamageNature(damage.card, damage.from, self.player) end
+	--其实铁索问题上，存在各种需要细算伤害值的情况。目前对于这些情况暂时弃疗。
+	--比如1. 自己穿藤甲时，其实要考虑铁索上队友多还是敌人多，算总伤害值。
+	--2. 大家都是最后一滴血，谁先死谁后死。
+	--3. 受伤人自己承受时，能减伤
+	--4. 死欲中断
 	if nature  ~= sgs.DamageStruct_Normal  then
 		if self.player:isChained() and damage.to:isChained()  then
-			return false
+			return true
 		end
 	end
 
+    if not self:isFriend(damage.to) then
+		return false
+	end
 
 	local fakeDamage =  sgs.DamageStruct(damage.card, damage.from, self.player, damage.damage, nature)
 	fakeDamage.transfer = true
@@ -517,8 +524,10 @@ sgs.ai_choicemade_filter.skillInvoke.jie = function(self, player, args)
 	local damage = player:getTag("jie_damage"):toDamage()
 	local to=damage.to
 	if  to  then
-		if args[#args] == "yes" then
-			sgs.updateIntention(player, to, -50)
+	    if not (damage.nature  ~= sgs.DamageStruct_Normal  and player:isChained() and to:isChained())  then
+			if args[#args] == "yes" then
+				sgs.updateIntention(player, to, -50)
+			end
 		end
 	end
 end
@@ -552,8 +561,8 @@ end
 
 sgs.ai_skill_choice.liuxing = function(self, choices, data)
 	local hina = data:toPlayer()
-	if self:isFriend(hina) then return "recover" end
-	if self:touhouHpLocked(self.player) then
+	if not self:isEnemy(hina) then return "recover" end
+	if self:touhouHpLocked(self.player) or not self.player:isWounded() then
 		return "losehp"
 	end
 	return "recover"

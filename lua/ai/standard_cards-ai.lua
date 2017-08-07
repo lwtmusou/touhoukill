@@ -645,7 +645,6 @@ function SmartAI:useCardSlash(card, use)
 		if can and self.player:hasSkill("shuangren") and use.to:isEmpty() then
 			rangefix = -100
 		end
-		--self.player:gainMark("@aa", rangefix)
 		return can
 	end
 

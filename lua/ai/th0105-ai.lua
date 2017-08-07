@@ -385,6 +385,11 @@ end
 sgs.ai_skill_invoke.youyue = true
 
 
+
+sgs.ai_skill_invoke.xuxiang = true
+sgs.ai_skill_invoke.huanjue = true
+
+
 sgs.ai_skill_invoke.huantong = true
 local function  huantongValue(cards, self, damage, huantongDamage)
 	local tmp = damage
@@ -846,6 +851,58 @@ sgs.ai_skill_use_func.EzhaoCard=function(card,use,self)
 end
 sgs.ai_use_value.EzhaoCard = 2
 sgs.ai_use_priority.EzhaoCard = sgs.ai_use_priority.Slash + 0.2
+
+local zongjiu_skill = {}
+zongjiu_skill.name = "zongjiu"
+table.insert(sgs.ai_skills, zongjiu_skill)
+function zongjiu_skill.getTurnUseCard(self)
+    if self.player:getCards("s"):isEmpty() then return nil end
+	local slash = self:getCard("Slash")
+	if not slash or not self:shouldUseAnaleptic(self.player, slash) then return nil end
+	local ana = sgs.cloneCard("analeptic", sgs.Card_NoSuit, 0)
+	if not sgs.Analeptic_IsAvailable(self.player, ana) or self.player:isCardLimited(ana, sgs.Card_MethodUse) then	return nil 	end
+	local cards = self.player:getCards("s")
+	cards = sgs.QList2Table(cards)
+	self:sortByCardNeed(cards)
+	return sgs.Card_Parse("@ZongjiuCard=" .. cards[1]:getEffectiveId())
+end
+sgs.ai_skill_use_func.ZongjiuCard=function(card,use,self)
+	use.card = card
+end
+sgs.ai_use_priority.ZongjiuCard = sgs.ai_use_priority.Slash + 0.4
+sgs.ai_skill_cardask["@zongjiu"] = function(self, data)
+	local cards = self.player:getCards("h")
+	cards = sgs.QList2Table(cards)
+	self:sortByCardNeed(cards)
+	if #cards > 0 then
+		return "$" .. cards[1]:getId()
+	end
+	return "."
+end
+
+function sgs.ai_cardsview_valuable.zongjiu(self, class_name, player)
+	if class_name == "Analeptic" then --Peach
+		local dying = player:getRoom():getCurrentDyingPlayer()
+		if not dying then return nil end
+	    if self:isFriend(dying, player) then
+			local cards = self.player:getCards("s")
+	        cards = sgs.QList2Table(cards)
+			if #cards== 0 then return nil end
+			self:sortByCardNeed(cards)
+			return "@ZongjiuCard=" .. cards[1]:getEffectiveId()
+		end
+		return nil
+	end
+end
+
+
+sgs.ai_skill_invoke.xingyou = function(self, data)
+	local target = data:toPlayer()
+	if target and self:isFriend(target) then
+		return false
+	end
+	return true
+end
 
 
 sgs.ai_skill_invoke.jinduan = function(self, data)

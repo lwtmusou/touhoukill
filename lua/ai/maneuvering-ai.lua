@@ -128,7 +128,6 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 	if target:hasSkill("xuying") then return false end
 	--默认杀的effective 已经check过了？
 
-
 	--造伤估值  关联技能 例如冰魄
 	--还缺判断是否需要主动使用damageEffect 如神隐
 	local fakeDamage = sgs.DamageStruct(slash, self.player, target, 2, self:touhouDamageNature(slash,self.player,target))
@@ -224,7 +223,7 @@ function SmartAI:searchForAnaleptic(use, enemy, slash)
 			return ana
 		end
 	end
-
+	
 	local analeptic = self:getCard("Analeptic")
 	if not analeptic then return nil end
 
@@ -931,7 +930,6 @@ sgs.ai_skill_cardask["@fire_attack_show"] = function(self, data)
 			index = priority[card:getSuitString()]
 		end
 	end
-	self.player:gainMark("@nini")
 	return "$" .. result:getId()
 end
 
