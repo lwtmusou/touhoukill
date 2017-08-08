@@ -4144,6 +4144,7 @@ table.insert(sgs.ai_skills, wooden_ox_skill)
 wooden_ox_skill.getTurnUseCard = function(self)
 	if self.player:hasUsed("WoodenOxCard") or self.player:isKongcheng() or not self.player:hasTreasure("wooden_ox")
 	 then return end  --or self.player:getMark("@tianyi_Treasure") >0
+	 if not sgs.touhouCanWoodenOx(self.player) then return end
 	self.wooden_ox_assist = nil
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByUseValue(cards, true)--usevalue好不好？？尼玛留下一堆红桃给人摸

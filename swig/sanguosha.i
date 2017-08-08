@@ -83,6 +83,8 @@ public:
     void setChaoren(int chaoren);
     QList<int> getShownHandcards() const;
     bool isShownHandcard(int id);
+	QList<int> getBrokenEquips() const;
+	bool isBrokenEquip(int id) const;
     int getHp() const;
     int getRenHp() const;
     int getLingHp() const;

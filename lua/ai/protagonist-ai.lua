@@ -1501,3 +1501,53 @@ sgs.ai_no_playerchosen_intention.moli =function(self, from)
 		sgs.updateIntention(from, lord, 10)
 	end
 end
+
+
+local bodong_skill = {}
+bodong_skill.name = "bodong"
+table.insert(sgs.ai_skills, bodong_skill)
+function bodong_skill.getTurnUseCard(self)
+		if self.player:hasUsed("BodongCard") then return nil end
+		if not self.player:canDiscard(self.player, "hs") then return nil end
+		local cards = sgs.QList2Table(self.player:getCards("hs"))
+		self:sortByUseValue(cards)
+		return sgs.Card_Parse("@BodongCard="..cards[1]:getEffectiveId())
+end
+sgs.ai_skill_use_func.BodongCard = function(card, use, self)
+		self:sort(self.enemies, "defense")
+
+		if (use.to and use.to:length() < 3) then
+			for _, p in ipairs(self.enemies) do
+				if use.to:length() >= 3 then
+					break
+				end
+				local num = p:getCards("e"):length() - p:getBrokenEquips():length()
+				local available = math.min(num,3)
+				if num > 0 then 
+					use.card = card
+					for i=1, num  do
+						if use.to then
+							use.to:append(p)
+							if use.to:length() >= 3 then
+								break
+							end
+						end
+					end
+				end
+			end
+		end
+
+		use.card = card
+		if  use.to and use.to:length() >= 1 then return end
+end
+
+sgs.ai_use_value.BodongCard = 8
+sgs.ai_use_priority.BodongCard =7
+sgs.ai_card_intention.BodongCard = 20
+
+sgs.ai_skill_invoke.huanlong =function(self,data)
+	local target = data:toPlayer()
+	if target and self:isEnemy(target) then return true end
+	return  false
+end
+sgs.ai_choicemade_filter.cardChosen.huanlong = sgs.ai_choicemade_filter.cardChosen.dismantlement

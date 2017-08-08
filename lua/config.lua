@@ -176,6 +176,7 @@ config = {
 		"cirno_sp->cirno",
 		"mamizou_sp->mamizou",
 		"sakuya_sp->sakuya",
+		"reisen_gzz->reisen",
 		"reisen2->tewi",
 		"merry|merry_ndj|renko_ndj->renko",
 		"lunar|star->sunny",

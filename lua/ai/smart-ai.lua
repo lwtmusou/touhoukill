@@ -316,9 +316,10 @@ function sgs.getDefense(player, gameProcess)
 	if player:hasSkill("shanji") then
 		handcard = handcard+player:getPile("piao"):length()
 	end
-	--if  player:getMark("@tianyi_Treasure") ==0 then
+
+	if sgs.touhouCanWoodenOx(player) then
 		handcard = handcard+player:getPile("wooden_ox"):length()
-	--end
+	end
 	local defense = math.min(player:getHp() * 2 + handcard , player:getHp() * 3)
 
 	local attacker = global_room:getCurrent()
@@ -707,7 +708,7 @@ function SmartAI:adjustUsePriority(card, v)
 	end
 	if self.player:hasSkill("mingzhe") and card:isRed() then v = v + (self.player:getPhase() ~= sgs.Player_NotActive and 0.05 or -0.05) end
 	if card:isKindOf("Peach") and card:getSkillName() == "shende" then v = v + 0.21 end
-	if not self.player:getPile("wooden_ox"):isEmpty()  then  --and self.player:getMark("@tianyi_Treasure") ==0
+	if sgs.touhouCanWoodenOx(self.player) and not self.player:getPile("wooden_ox"):isEmpty()  then  --and self.player:getMark("@tianyi_Treasure") ==0
 		local id_table = {}
 		if not card:isVirtualCard() then id_table = { card:getEffectiveId() }
 		else id_table = sgs.QList2Table(card:getSubcards()) end
@@ -7691,11 +7692,11 @@ end
 
 --将木牛 票等id 加入 手牌的list中
 function SmartAI:touhouAppendExpandPileToList(player,cards)
-	--if player:getMark("@tianyi_Treasure") ==0 then
+	if sgs.touhouCanWoodenOx(player) then
 		for _, id in sgs.qlist(player:getPile("wooden_ox")) do
 			cards:prepend(sgs.Sanguosha:getCard(id))
 		end
-	--end
+	end
 	if player:hasSkill("shanji") then
 		for _, id in sgs.qlist(player:getPile("piao")) do
 			cards:prepend(sgs.Sanguosha:getCard(id))
@@ -7706,13 +7707,19 @@ function SmartAI:touhouAppendExpandPileToList(player,cards)
 	--end
 	return cards
 end
-
+function sgs.touhouCanWoodenOx(player)
+	local treasure = player:getTreasure()
+	if treasure and  treasure:isKindOf("WoodenOx") and not player:isBrokenEquip(treasure:getId()) then
+		return true
+	end
+	return false
+end
 function sgs.touhouAppendExpandPileToList(player,cards)
-	--if player:getMark("@tianyi_Treasure") ==0 then
+	if sgs.touhouCanWoodenOx(player) then
 		for _, id in sgs.qlist(player:getPile("wooden_ox")) do
 			cards:prepend(sgs.Sanguosha:getCard(id))
 		end
-	--end
+	end
 	if player:hasSkill("shanji") then
 		for _, id in sgs.qlist(player:getPile("piao")) do
 			cards:prepend(sgs.Sanguosha:getCard(id))
