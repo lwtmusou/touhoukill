@@ -223,6 +223,46 @@ sgs.ai_trick_prohibit.jinfa = function(self, from, to, card)
 	return true
 end
 
+sgs.ai_skill_cardask["@qiusuo"] = function(self, data)
+	local point_num = {}
+	for i = 1, 13 do
+	    local n = 0 
+		for _,id in sgs.qlist(self.player:getPile("zhenli"))do
+			if sgs.Sanguosha:getCard(id):getNumber() == i then
+				n = n + 1
+			end
+		end
+		local array={point =i, num=n}
+		table.insert(point_num,array)
+	end
+	local compare_func = function(a, b)
+		return a.num > b.num
+	end
+	table.sort(point_num, compare_func)
+	
+	
+	local point = 0
+	for _, t in ipairs(point_num) do
+		if t.num > 0 then 
+			point = t.point 
+			break		
+		end
+	end
+	
+	local ids = {}
+	for _,id in sgs.qlist(self.player:getPile("zhenli"))do
+			if sgs.Sanguosha:getCard(id):getNumber() == point then
+				table.insert(ids, id)
+			end
+	end
+	
+	if #ids > 0 then
+		return "$" .. table.concat(ids, "+")
+	end
+	return "."
+end
+
+
 --[[
 sgs.ai_skill_invoke.lubiao = function(self,data)
 	local current = self.room:getCurrent()

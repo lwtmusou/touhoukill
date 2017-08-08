@@ -2753,6 +2753,8 @@ public:
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const
     {
+        if (cards.isEmpty())
+            return NULL;
         LiuzhuanCard *card = new LiuzhuanCard();
         card->addSubcards(cards);
         return card;
