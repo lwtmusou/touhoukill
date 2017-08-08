@@ -186,5 +186,6 @@ config = {
 		"mystia_sp->mystia",
 		"momizi_sp->momizi",
 		"kyouko_sp->kyouko",
+		"nue_god->nue",
 	}
 }

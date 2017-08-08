@@ -615,6 +615,7 @@ public:
             if (!use.to.contains(t) && use.from->canSlash(t, use.card, false))
                 targets << t;
         }
+        room->setTag("liexi_extra", data);
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@liexi_extra");
         QString prompt = "target:" + use.from->objectName() + ":" + invoke->invoker->objectName() + ":" + use.card->objectName();
         if (target->askForSkillInvoke("liexi_extra", prompt)) {
@@ -715,7 +716,7 @@ public:
                 if (!use.to.contains(t) && use.from->canSlash(t, use.card, false))
                     targets << t;
             }
-
+            room->setTag("mengwei_extra", data);
             ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@mengwei:" + use.from->objectName(), true, true);
             if (target) {
                 invoke->targets << target;

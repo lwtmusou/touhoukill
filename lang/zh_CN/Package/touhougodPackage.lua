@@ -679,7 +679,7 @@ return{
     ["huashencard"] = "X化身",
     ["#anyunShowStatic"] = "暗云（状态技）",
 	["#anyun_prohibit"] = "暗云（非法目标）",
-    ["invoke_hidden_compulsory:compulsory"] = "你可以发动隐藏的锁定技 <font color=\"#FF8000\"><b>%src </b></font> 。",
+    ["invoke_hidden_compulsory:compulsory"] = "你可以发动隐藏的锁定技 <font color=\"#FF8000\"><b>%src </b></font>。",
     ["#RemoveHiddenGeneral"] = "%from 移除了明置的人物牌  %arg ",
 	["#ShowHiddenGeneral"] = "%from 公开了人物牌  %arg ",
     ["#GetHuashenDetail"] = "%from 获得了“化身牌” %arg",

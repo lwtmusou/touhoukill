@@ -178,6 +178,88 @@ sgs.ai_skill_choice.fanji= function(self, choices, data)
 end
 
 
+sgs.ai_skill_use["@@liexi"] = function(self, prompt)
+	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+	local card=sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
+	card:setSkillName("liexi")
+	local target
+
+    self:useBasicCard(card, dummy_use)
+	if not dummy_use.card then return false end
+	if dummy_use.to:isEmpty() then
+		return "."
+	else
+		local target_objectname = {}
+		
+		for _, p in sgs.qlist(dummy_use.to) do
+			if self:isEnemy(p) then
+				table.insert(target_objectname, p:objectName())
+				target=p
+				break
+			end
+		end
+		
+		if #target_objectname>0 then
+			return dummy_use.card:toString() .. "->" .. table.concat(target_objectname, "+")
+		end
+	end
+	return "."
+end
+
+
+sgs.ai_skill_playerchosen.liexi = function(self, targets)
+	local use = self.room:getTag("liexi_extra"):toCardUse()
+	for _,p in sgs.qlist(targets) do
+		if self:isFriend(p) then
+			if not self:slashIsEffective(use.card, p, use.from) then
+			return true
+			end
+			if getCardsNum("Jink", p, self.player) > 0  then return p end
+		end
+	end
+	return targets:first()
+end
+sgs.ai_skill_invoke.liexi_extra = function(self,data)
+	local use = self.room:getTag("liexi_extra"):toCardUse()
+	if (use.from and self:isFriend(use.from)) then
+		if not self:slashIsEffective(use.card, self.player, use.from) then
+			return true
+		end
+		if  self:getCardsNum("Jink") > 0  then return true end
+	end
+	return false
+end
+sgs.ai_skill_playerchosen.mengwei = function(self, targets)
+    local use = self.room:getTag("mengwei_extra"):toCardUse()
+    for _,p in sgs.qlist(targets) do
+		if self:playerGetRound(p) <= self:playerGetRound(self.player) and self:isFriend(p) then
+			if not self:slashIsEffective(use.card, p, use.from) then
+				return p
+			end
+			if  self:getCardsNum("Jink") > 0  then return p end
+		end
+	end
+	return targets:first()
+end
+sgs.ai_skill_invoke.mengwei_extra = function(self,data)
+	local use = self.room:getTag("mengwei_extra"):toCardUse()
+	local source
+	for _,p in sgs.qlist(use.to) do
+		if p:hasSkill("mengwei") then
+			source = p
+			break
+		end
+	end
+	if (source and self:isFriend(source)) then
+		if not self:slashIsEffective(use.card, self.player, use.from) then
+			return true
+		end
+		if  self:getCardsNum("Jink") > 0  then return true end
+		if self:playerGetRound(self.player) >= self:playerGetRound(source) then return true end
+	end
+	return false
+end
+
 sgs.ai_skill_invoke.zaiwu = function(self,data)
 	local target = self.player:getTag("zaiwu"):toPlayer()
 	if not target then return false end
