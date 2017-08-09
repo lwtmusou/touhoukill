@@ -29,14 +29,17 @@ yidan_skill.getTurnUseCard = function(self, inclusive)
 	    end
 	end
 	self:sortByUseValue(avail)
+	if #avail == 0 then return nil end
 	return sgs.Card_Parse("@YidanCard="..avail[1]:getEffectiveId())
 end
 sgs.ai_skill_use_func.YidanCard=function(card,use,self)
 	local target
+	local slash = sgs.cloneCard("slash", sgs.Card_SuitToBeDecided, -1)
+	slash:addSubcard(card)
 	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if self:isEnemy(p) then 
 			for _,c in sgs.qlist(p:getCards("es")) do
-				if  card:getSuit() == c:getSuit() then
+				if  card:getSuit() == c:getSuit() and not self.player:isProhibited(p, slash) then
 					target = p
 					break
 				end

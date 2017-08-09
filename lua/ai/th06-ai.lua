@@ -770,3 +770,27 @@ end
 
 
 
+sgs.ai_skill_invoke.xiaoyin = function(self, data)
+	local target = self.room:getCurrent()
+	return self:isEnemy(target) and self:isWeak(self.player)
+end
+sgs.ai_skill_use["@@xiaoyinVS!"] = function(self, prompt)
+	local targets = {}
+	for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if p:hasFlag("Global_xiaoyinFailed") then
+			table.insert( targets, p:objectName())
+			break
+		end
+	end
+	local cards = self.player:getCards("hs")
+	cards=self:touhouAppendExpandPileToList(self.player,cards)
+	cards = sgs.QList2Table(cards)
+	self:sortByKeepValue(cards)
+
+	local card = sgs.cloneCard("lure_tiger", sgs.Card_SuitToBeDecided, -1)
+	card:addSubcard(cards[1])
+	if #targets > 0 then
+	    return card:toString() .. "->" .. table.concat(targets, "+")
+	end
+	return "."
+end

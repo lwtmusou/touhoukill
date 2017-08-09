@@ -398,6 +398,13 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 	if self:canNizhuan(to, from) then
 		return false
 	end
+	if to:hasSkill("fenghua") then
+        for _, id in sgs.qlist(to:getPile("fenghua")) do	
+			if sgs.Sanguosha:getCard(id):getSuit() == slash:getSuit() then
+				return false
+			end
+		end
+	end
 	if to:hasSkill("zuixiang") and to:isLocked(slash) then return false end
 	if to:hasSkill("yizhong") and not to:getArmor() then
 		if slash:isBlack() then

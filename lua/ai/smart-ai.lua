@@ -6156,6 +6156,13 @@ function SmartAI:hasTrickEffective(card, to, from)
 	if self.room:isProhibited(from, to, card) then return false end
 	--if to:hasSkill("zhengyi")  and not card:isKindOf("DelayedTrick") and card:isBlack() then return false end
 	if to:hasSkill("yunshang") and from:objectName() ~= to:objectName()  and not from:inMyAttackRange(to) then return false end
+	if to:hasSkill("fenghua") then
+        for _, id in sgs.qlist(to:getPile("fenghua")) do
+			if sgs.Sanguosha:getCard(id):getSuit() == card:getSuit() then
+				return false
+			end
+		end
+	end
 	if to:hasSkill("jinfa") and not self:hasWeiya() then
 		local count = 0
 		for _,p in sgs.qlist(self.room:getAlivePlayers()) do
