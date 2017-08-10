@@ -596,6 +596,55 @@ sgs.ai_skill_use["@@yege"] = function(self, prompt)
 	return "."
 end
 
+local mingmuvs_skill = {}
+mingmuvs_skill.name = "mingmu_attach"
+table.insert(sgs.ai_skills, mingmuvs_skill)
+function mingmuvs_skill.getTurnUseCard(self)
+		local cards = self.player:getCards("hes") 
+		if cards:isEmpty() then return nil end
+		local source = self.room:findPlayerBySkillName("mingmu")
+		if not source or source:hasFlag("mingmuInvoked") or not self:isFriend(source) then return nil end
+		local give = self:getOverflow(self.player) > 0
+		if not give and sgs.Slash_IsAvailable(self.player) and source:inMyAttackRange(self.player) and self.player:getAttackRange() > 1  then
+			local slash = self:getCard("Slash")
+			--其实要比较距离1以内/以外的敌人的防御值。 先偷懒了。
+			if slash then 
+				for _,p in ipairs(self.enemies) do
+					if self.player:distanceTo(p) > 1 then
+						give = true
+						return 
+					end
+				end
+			end	
+		end
+		
+		if not give then return nil end
+		cards = sgs.QList2Table(cards)
+	    self:sortByKeepValue(cards)
+		local mingmu_cards={}
+        table.insert(mingmu_cards, cards[1]:getEffectiveId())
+		if #mingmu_cards>0 then
+			local card_str= "@MingmuCard=" .. table.concat(mingmu_cards, "+")
+			return sgs.Card_Parse(card_str)
+		end
+end
+sgs.ai_skill_use_func.MingmuCard = function(card, use, self)
+	local targets = {}
+	for _,friend in ipairs(self.friends_noself) do
+		if friend:hasSkill("mingmu") then
+			if not friend:hasFlag("mingmuInvoked") then
+				table.insert(targets, friend)
+			end
+		end
+	end
+	if #targets > 0 then
+		use.card = card
+		if use.to then
+			use.to:append(targets[1])
+			return
+		end
+	end
+end
 
 sgs.ai_skill_choice.mingmu = function(self, choices, data)
 	local choice_table = choices:split("+")

@@ -985,3 +985,94 @@ sgs.ai_skill_use["@@liuzhuanVS"] = function(self, prompt)
 	return "."
 end
 
+
+
+local qiren_skill = {}
+qiren_skill.name = "qiren"
+table.insert(sgs.ai_skills, qiren_skill)
+function qiren_skill.getTurnUseCard(self)
+	if self.player:hasFlag("qiren") then return nil end
+	local shows = {} 
+	local cards1 = self.player:getCards("s")
+	for _, c in sgs.qlist(cards1) do
+		if  not c:isKindOf("Jink") and not c:isKindOf("Nullification") then
+			table.insert(shows, c)
+		end
+	end
+    local hiddens = {}
+	local cards2 = self.player:getCards("h")
+	cards2 =self:touhouAppendExpandPileToList(self.player, cards2)
+	for _, c in sgs.qlist(cards2) do
+		if not c:isKindOf("EquipCard") and not c:isKindOf("Jink") and not c:isKindOf("Nullification") and not c:isKindOf("DelayedTrick") then
+			table.insert(hiddens, c)
+		end
+	end
+	if #shows == 0 or #hiddens == 0 then return nil end
+
+	--目前只考虑单目标变多目标
+	local use = {}
+	for _,c in ipairs(shows) do
+		if c:isKindOf("AOE") or c:isKindOf("GlobalEffect") or c:isKindOf("IronChain") or c:isKindOf("LureTiger") or c:isKindOf("KnownBoth") then
+			table.insert(use, c:getEffectiveId())
+			break
+		end
+	end
+	for _,c in ipairs(hiddens) do
+		if c:isKindOf("BaosiCard") then
+			table.insert(use, c:getEffectiveId())
+			break
+	    elseif not c:isKindOf("AOE") and not c:isKindOf("GlobalEffect") and not c:isKindOf("IronChain") 
+		and not c:isKindOf("LureTiger") and not c:isKindOf("KnownBoth") then
+			table.insert(use, c:getEffectiveId())
+			break
+		end
+	end
+	
+	if #use ~= 2 then return nil end
+	return sgs.Card_Parse("@QirenCard=" .. table.concat(use, "+"))
+end
+sgs.ai_skill_use_func.QirenCard=function(card,use,self)
+    local tmp = sgs.Sanguosha:getCard((card:getSubcards():first()))
+	local effect = sgs.Sanguosha:getCard((card:getSubcards():last()))
+	local targets = {}
+	if tmp:isKindOf("AOE") then
+		for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+			if not self.room:isProhibited(self.player, p, tmp) then
+				table.insert(targets, p)
+			end
+		end
+	elseif tmp:isKindOf("GlobalEffect") then
+		self.player:gainMark("@nima2")
+		for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+			if not self.room:isProhibited(self.player, p, tmp) then
+				table.insert(targets, p)
+			end
+		end
+	else
+		local init_num = 1
+		if tmp:isKindOf("IronChain") or tmp:isKindOf("LureTiger") or tmp:isKindOf("KnownBoth") then init_num =2 end
+		local total_num = init_num + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, tmp)
+		local positive = effect:isKindOf("Peach") or effect:isKindOf("Analeptic") or effect:isKindOf("ExNihilo")
+		for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+			if not self.room:isProhibited(self.player, p, tmp) and tmp:targetFilter(sgs.PlayerList(), p, self.player) then
+				if positive and self:isFriend(p) then
+					table.insert(targets, p)
+				elseif not positive and self:isEnemy(p)then
+					table.insert(targets, p)
+				end
+			end
+			if #targets >= total_num then break end
+		end
+	end
+	
+	if #targets > 0 then
+		use.card = card
+		if use.to then
+            for _, p in ipairs (targets) do			
+				use.to:append(p)
+			end
+			if use.to:length() >= 1 then return end
+		end
+	end
+end
+sgs.ai_use_priority.QirenCard = 10

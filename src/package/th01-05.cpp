@@ -2321,6 +2321,7 @@ public:
 QirenCard::QirenCard()
 {
     will_throw = false;
+    m_skillName = "qiren";
 }
 
 bool QirenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -2423,6 +2424,8 @@ void QirenCard::onUse(Room *room, const CardUseStruct &card_use) const
     QList<ServerPlayer *> targets;
     CardUseStruct use = card_use;
     use.card = card;
+
+    room->notifySkillInvoked(use.from, "qiren");
     //show hidden
     card_use.from->showHiddenSkill("qiren");
     //target_fixed
