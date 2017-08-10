@@ -14,9 +14,10 @@ SkltKexueCard::SkltKexueCard()
 {
     will_throw = false;
     target_fixed = true;
-    handling_method = Card::MethodNone;
+    handling_method = Card::MethodUse;
     m_skillName = "skltkexue_attach";
 }
+
 void SkltKexueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
 {
     ServerPlayer *who = room->getCurrentDyingPlayer();
@@ -32,6 +33,7 @@ void SkltKexueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> 
         room->recover(who, recover);
     }
 }
+
 
 class SkltKexueVS : public ZeroCardViewAsSkill
 {
