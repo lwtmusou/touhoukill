@@ -158,6 +158,7 @@ sgs.ai_skill_use["@@zhence"] = function(self, prompt)
 	if change.to == sgs.Player_Draw or (change.to == sgs.Player_Play and self:getOverflow(self.player) < 2) then
 		local card = sgs.cloneCard("fire_attack", sgs.Card_NoSuit, 0)
 		card:setSkillName("zhence")
+		card:deleteLater()
 		local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 		self:useTrickCard(card, dummy_use)
 		if not dummy_use.card then return "." end
@@ -535,7 +536,7 @@ sgs.ai_skill_invoke.mengyan = true
 sgs.ai_skill_use["@@lianmu"] = function(self, prompt)
 	local slash = sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
 	slash:setSkillName("lianmu");
-
+    slash:deleteLater()
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList()}
 	self:useBasicCard(slash, dummy_use)
 	local targets = {}
@@ -900,6 +901,7 @@ function zongjiu_skill.getTurnUseCard(self)
 	local slash = self:getCard("Slash")
 	if not slash or not self:shouldUseAnaleptic(self.player, slash) then return nil end
 	local ana = sgs.cloneCard("analeptic", sgs.Card_NoSuit, 0)
+	ana:deleteLater()
 	if not sgs.Analeptic_IsAvailable(self.player, ana) or self.player:isCardLimited(ana, sgs.Card_MethodUse) then	return nil 	end
 	local cards = self.player:getCards("s")
 	cards = sgs.QList2Table(cards)
@@ -921,7 +923,7 @@ sgs.ai_skill_cardask["@zongjiu"] = function(self, data)
 end
 
 function sgs.ai_cardsview_valuable.zongjiu(self, class_name, player)
-	if class_name == "Analeptic" then --Peach
+	if class_name == "Analeptic" then
 		local dying = player:getRoom():getCurrentDyingPlayer()
 		if not dying then return nil end
 	    if self:isFriend(dying, player) then

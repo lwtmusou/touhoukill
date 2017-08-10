@@ -308,6 +308,7 @@ sgs.ai_skill_invoke.henyi =function(self,data)
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 	local card = sgs.cloneCard("archery_attack", sgs.Card_NoSuit, 0)
 	card:setSkillName("henyi")
+	card:deleteLater()
 	self:useTrickCard(card, dummy_use)
 	if  dummy_use.card then return true end
 	return false

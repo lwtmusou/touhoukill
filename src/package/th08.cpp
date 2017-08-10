@@ -1583,15 +1583,6 @@ public:
         return false;
     }
 
-    void record(TriggerEvent e, Room *room, QVariant &) const
-    {
-        if (e == EventPhaseChanging) {
-            foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                if (p->hasFlag("chongqun"))
-                    room->setPlayerFlag(p, "-chongqun");
-            }
-        }
-    }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
     {
@@ -1603,7 +1594,7 @@ public:
 
         if (!move.shown_ids.isEmpty()) {
             ServerPlayer *invoker = qobject_cast<ServerPlayer *>(move.from);
-            if (invoker == NULL || invoker->hasFlag("chongqun") || !invoker->hasSkill(this) || invoker->isDead() || !hasChongqunTarget(invoker))
+            if (invoker == NULL || !invoker->hasSkill(this) || invoker->isDead() || !hasChongqunTarget(invoker))
                 return QList<SkillInvokeDetail>();
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, invoker, invoker);
         }
@@ -1629,7 +1620,6 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         //room->askForDiscard(invoke->targets.first(), objectName(), 1, 1, false, true, "chongqun_discard:" + invoke->invoker->objectName());
-        room->setPlayerFlag(invoke->invoker, "chongqun");
         int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hs", objectName());
         room->throwCard(id, invoke->targets.first(), invoke->invoker);
         return false;

@@ -613,14 +613,100 @@ sgs.ai_skill_cardask["@yinghuo"] = function(self, data)
 	end
 	return "."
 end
+
+
+
 sgs.ai_cardneed.yinghuo = function(to, card, self)
-	return getCardsNum("Jink", to, self.player) <1
-		and card:isKindOf("Jink")
+	return card:getTypeId() == sgs.Card_TypeBasic
 end
-sgs.yinghuo_keep_value = {
-	Jink = 7
-}
-sgs.ai_slash_prohibit.yinghuo = function(self, from, to, card)
+local yinghuo_skill = {}
+yinghuo_skill.name = "yinghuo"
+table.insert(sgs.ai_skills, yinghuo_skill)
+function yinghuo_skill.getTurnUseCard(self)
+	local slashes = {}
+	local anas = {}
+	for _, c in sgs.qlist(self.player:getCards("h")) do  
+		if c:isKindOf("Slash") then
+			table.insert(slashes, c)
+		elseif c:isKindOf("Analeptic") then
+			table.insert(anas, c)
+		end
+	end
+
+	local card
+	if #slashes>0 and #anas >0   then  --and self:shouldUseAnaleptic(self.player, slashes[1])
+		
+		if sgs.Analeptic_IsAvailable(self.player, anas[1]) and not self.player:isCardLimited(anas[1], sgs.Card_MethodUse) then
+			card = anas[1]
+		end
+    elseif #slashes>0 and sgs.Slash_IsAvailable(self.player) then
+		card = slashes[1]
+	end
+	if not card then return nil end
+	return sgs.Card_Parse("@YinghuoCard=" .. card:getEffectiveId())
+end
+sgs.ai_skill_use_func.YinghuoCard=function(card,use,self)
+	local tmp = sgs.Sanguosha:getCard((card:getSubcards():first()))
+	if (tmp:isKindOf("Analeptic")) then
+		use.card = card
+	else
+		local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+		local slash=sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
+		slash:setSkillName("yinghuo")
+		slash:deleteLater()
+		local target
+
+		self:useBasicCard(slash, dummy_use)
+		if not dummy_use.to:isEmpty() then
+			for _, p in sgs.qlist(dummy_use.to) do
+				if self:isEnemy(p) then
+					target = p
+					break
+				end
+			end
+		end
+		if target then
+			use.card = card
+			if use.to then 
+				use.to:append(target) 
+				if use.to:length() >= 1 then return end
+			end
+		end
+	end
+end
+
+sgs.ai_use_priority.YinghuoCard = sgs.ai_use_priority.Slash + 0.4
+function sgs.ai_cardsview_valuable.yinghuo(self, class_name, player)
+	local card
+	if class_name == "Analeptic"  or class_name == "Peach" then
+		local dying = player:getRoom():getCurrentDyingPlayer()
+		if not dying then return nil end
+	    if self:isFriend(dying, player) then
+			for _,c in sgs.qlist(self.player:getCards("h")) do
+				if c:isKindOf(class_name) then
+					card = c
+					break
+				end
+			end
+            if card then			
+				return "@YinghuoCard=" .. card:getEffectiveId()
+			end
+		end
+	elseif class_name == "Jink" or class_name == "Slash" then
+		for _,c in sgs.qlist(self.player:getCards("h")) do
+			if c:isKindOf(class_name) then
+				card = c
+				break
+			end
+		end
+		if card then
+			return "@YinghuoCard=" .. card:getEffectiveId()
+		end
+	end
+end
+
+
+--[[sgs.ai_slash_prohibit.yinghuo = function(self, from, to, card)
 	if self:isFriend(from,to) then
 		return false
 	end
@@ -631,13 +717,13 @@ sgs.ai_slash_prohibit.yinghuo = function(self, from, to, card)
 		return true
 	end
 	return false
-end
+end]]
 
 sgs.ai_skill_playerchosen.chongqun = function(self, targets)
 	targets=sgs.QList2Table(targets)
 	self:sort(targets,"handcard")
 	for _,p in pairs(targets)do
-		if self:isEnemy(p) and not self:touhouHandCardsFix(p) then
+		if self:isEnemy(p) and self.player:canDiscard(p, "hs") and not self:touhouHandCardsFix(p) then
 			return p
 		end
 	end

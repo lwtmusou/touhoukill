@@ -345,6 +345,7 @@ sgs.ai_skill_use["@@xiezou"] = function(self, prompt)
 	local cardname=self.player:property("xiezou_card"):toString()
 	local card=sgs.cloneCard(cardname, sgs.Card_NoSuit, 0)
 	card:setSkillName("xiezou")
+	card:deleteLater()
 	local target
 	if card:isKindOf("TrickCard") then
 		self:useTrickCard(card, dummy_use)
@@ -1216,6 +1217,7 @@ sgs.ai_skill_use_func.HuayinCard=function(card,use,self)
 		local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 		local peach = sgs.cloneCard("peach", sgs.Card_NoSuit, 0)
 		peach:setSkillName("huayin")
+		peach:deleteLater()
 		if self.player:isWounded() and not self.player:isCardLimited(peach, sgs.Card_MethodUse, true) then
 			use.card = card
 		end

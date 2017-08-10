@@ -1427,6 +1427,7 @@ sgs.ai_skill_use["@@toushi"] = function(self, prompt)
 	local card=sgs.cloneCard(cardname, cards[1]:getSuit(), cards[1]:getNumber())
 	card:addSubcard(cards[1])
 	card:setSkillName("toushi")
+	card:deleteLater()
 	local target
 	if card:isKindOf("TrickCard") then
 		self:useTrickCard(card, dummy_use)
