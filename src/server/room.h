@@ -272,7 +272,7 @@ public:
     }
     int getCardFromPile(const QString &card_name);
     ServerPlayer *findPlayer(const QString &general_name, bool include_dead = false) const;
-    QList<ServerPlayer *> findPlayersBySkillName(const QString &skill_name) const;
+    QList<ServerPlayer *> findPlayersBySkillName(const QString &skill_name,bool include_hidden = true) const;
     ServerPlayer *findPlayerBySkillName(const QString &skill_name) const;
     ServerPlayer *findPlayerByObjectName(const QString &name) const;
     void installEquip(ServerPlayer *player, const QString &equip_name);

@@ -82,7 +82,7 @@ sgs.ai_skill_playerchosen.sidie = function(self, targets)
 end
 
 
-sgs.ai_skill_invoke.moran = function(self, data)
+sgs.ai_skill_invoke.huaxu = function(self, data)
 	local current = self.room:getCurrent()	
 	if self:isFriend(current) then
 		for _,p in sgs.qlist(self.room:getOtherPlayers(current)) do
@@ -93,7 +93,7 @@ sgs.ai_skill_invoke.moran = function(self, data)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.moran = function(self, player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.huaxu = function(self, player, promptlist)
 	local current = self.room:getCurrent()
 	if promptlist[#promptlist] == "yes" then
 		sgs.updateIntention(player, current, -60)

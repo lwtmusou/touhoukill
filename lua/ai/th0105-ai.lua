@@ -427,7 +427,7 @@ sgs.ai_skill_invoke.youyue = true
 
 
 
-sgs.ai_skill_invoke.xuxiang = true
+--sgs.ai_skill_invoke.xuxiang = true
 sgs.ai_skill_invoke.huanjue = true
 
 

@@ -2275,11 +2275,11 @@ ServerPlayer *Room::findPlayer(const QString &general_name, bool include_dead) c
     return NULL;
 }
 
-QList<ServerPlayer *> Room::findPlayersBySkillName(const QString &skill_name) const
+QList<ServerPlayer *> Room::findPlayersBySkillName(const QString &skill_name, bool include_hidden) const
 {
     QList<ServerPlayer *> list;
     foreach (ServerPlayer *player, getAllPlayers()) {
-        if (player->hasSkill(skill_name))
+        if (player->hasSkill(skill_name, false, include_hidden))
             list << player;
     }
     return list;
