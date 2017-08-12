@@ -1537,9 +1537,10 @@ sgs.ai_skill_use_func.BodongCard = function(card, use, self)
 				end
 			end
 		end
-
-		use.card = card
-		if  use.to and use.to:length() >= 1 then return end
+		if use.to and not use.to:isEmpty() then 
+			use.card = card
+			if  use.to and use.to:length() >= 1 then return end
+		end
 end
 
 sgs.ai_use_value.BodongCard = 8

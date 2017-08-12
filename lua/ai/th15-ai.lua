@@ -39,7 +39,7 @@ sgs.ai_skill_use_func.YidanCard=function(card,use,self)
 	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if self:isEnemy(p) then 
 			for _,c in sgs.qlist(p:getCards("es")) do
-				if  card:getSuit() == c:getSuit() and not self.player:isProhibited(p, slash) then
+				if  slash:getSuit() == c:getSuit() and not self.player:isProhibited(p, slash) then
 					target = p
 					break
 				end
@@ -49,8 +49,8 @@ sgs.ai_skill_use_func.YidanCard=function(card,use,self)
 	
 	if target then
 		use.card = card
-			if use.to then 
-				use.to:append(target) 
+		if use.to then 
+			use.to:append(target) 
             if use.to:length() >= 1 then return end
 		end
 	end

@@ -2262,7 +2262,7 @@ public:
         if (use.card != NULL && use.card->isKindOf("Slash")) {
             QList<SkillInvokeDetail> d;
             foreach(ServerPlayer *p, use.to) {
-                if (p->isAlive()) {
+                if (p->isAlive() && p->dyingThreshold() == 1) {
                     if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
                         continue;
                     d << SkillInvokeDetail(this, use.from, use.from, NULL, false, p);

@@ -4748,11 +4748,10 @@ public:
         //only for test
         //QSet<QString> test;
         //if (init)
-        //    test << "flandre" << "kisume" << "yukari_god";
+        //    test << "kyouko_sp" << "yoshika" << "marisa_sp2";
         //else
         //    test << "marisa" << "yukari" << "aya_sp";
         //return test.toList();
-        //
     }
 
 

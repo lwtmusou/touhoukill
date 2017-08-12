@@ -1256,7 +1256,8 @@ int Engine::correctCardTarget(const TargetModSkill::ModType type, const Player *
             ExpPattern p(skill->getPattern());
             if (p.match(from, card)) {
                 int residue = skill->getResidueNum(from, card);
-                if (checkDoubleHidden && cardskill != skill->objectName() && from->isHiddenSkill(skill->objectName()))
+                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName())
+                    && cardskill != skill->objectName() && !skill->objectName().startsWith("#" + cardskill))
                     continue;
                 if (residue >= 998)
                     return residue;
@@ -1268,8 +1269,10 @@ int Engine::correctCardTarget(const TargetModSkill::ModType type, const Player *
             ExpPattern p(skill->getPattern());
             if (p.match(from, card)) {
                 int distance_limit = skill->getDistanceLimit(from, card);
-                if (checkDoubleHidden && cardskill != skill->objectName() && from->isHiddenSkill(skill->objectName()))
+                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName())
+                    && cardskill != skill->objectName() && !skill->objectName().startsWith("#"+cardskill))
                     continue;
+                    
                 if (distance_limit >= 998)
                     return distance_limit;
                 x += distance_limit;
@@ -1279,7 +1282,8 @@ int Engine::correctCardTarget(const TargetModSkill::ModType type, const Player *
         foreach (const TargetModSkill *skill, targetmod_skills) {
             ExpPattern p(skill->getPattern());
             if (p.match(from, card) && from->getMark("chuangshi_user") == 0) {
-                if (checkDoubleHidden && cardskill != skill->objectName() && from->isHiddenSkill(skill->objectName()))
+                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName())
+                    && cardskill != skill->objectName() && !skill->objectName().startsWith("#" + cardskill))
                     continue;
                 x += skill->getExtraTargetNum(from, card);
             }
