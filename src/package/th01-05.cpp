@@ -2059,10 +2059,16 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from && use.from->hasSkill(this)) {
             if (use.card->isKindOf("Slash") || (use.card->isBlack() && use.card->isNDTrick() && !use.card->isKindOf("Nullification"))) {
+                //use.from->getRoom()->setCardFlag(use.card, "baosi");
+                use.card->setFlags("baosi");
                 foreach (ServerPlayer *p, room->getOtherPlayers(use.from)) {
-                    if (!use.to.contains(p) && p->getHp() <= p->dyingThreshold() && !use.from->isProhibited(p, use.card))
+                    if (!use.to.contains(p) && p->getHp() <= p->dyingThreshold() && use.card->targetFilter(QList<const Player *>(), p, use.from)
+                        && !use.from->isProhibited(p, use.card)) {
+                        use.card->setFlags("-baosi");
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+                    }
                 }
+                use.card->setFlags("-baosi");
             }
         }
         return QList<SkillInvokeDetail>();
@@ -2071,10 +2077,13 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
+        use.card->setFlags("baosi");
         foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-            if (!use.to.contains(p) && p->getHp() <= p->dyingThreshold() && !use.from->isProhibited(p, use.card))
+            if (!use.to.contains(p) && p->getHp() <= p->dyingThreshold() && use.card->targetFilter(QList<const Player *>(), p, use.from)
+                && !use.from->isProhibited(p, use.card))
                 room->setPlayerFlag(p, "Global_baosiFailed");
         }
+        use.card->setFlags("-baosi");
         return room->askForUseCard(invoke->invoker, "@@baosi", "@baosi:" + use.card->objectName());
     }
 
@@ -2085,12 +2094,42 @@ public:
         invoke->invoker->tag.remove("baosi");
         foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
             bool add = baosi_list.value(p->objectName(), false).toBool();
-            if (add)
+            if (add) {
                 use.to << p;
+                if (use.card->isKindOf("Collateral")) {
+                    QList<const Player *> targets;
+                    targets << p;
+                    QList<ServerPlayer *> victims;
+                    foreach(ServerPlayer *t, room->getOtherPlayers(p)) {
+                        if (use.card->targetFilter(targets, t, use.from))
+                            victims << t;
+                    }
+                    ServerPlayer *victim = room->askForPlayerChosen(use.from, victims, "baosi_col", "@baosi_col:" + p->objectName());
+                    p->tag["collateralVictim"] = QVariant::fromValue((ServerPlayer *)victim);
+                }
+            }  
         }
+        
         room->sortByActionOrder(use.to);
         data = QVariant::fromValue(use);
         return false;
+    }
+};
+
+class BaosiDistance : public TargetModSkill
+{
+public:
+    BaosiDistance()
+        : TargetModSkill("#baosi-dist")
+    {
+        pattern = "Slash,TrickCard+^DelayedTrick";
+    }
+
+    int getDistanceLimit(const Player *, const Card *card) const
+    {
+        if (card->hasFlag("baosi"))
+            return 1000;
+        return 0;
     }
 };
 
@@ -2879,7 +2918,9 @@ TH0105Package::TH0105Package()
 
     General *sariel = new General(this, "sariel", "pc98", 4, false);
     sariel->addSkill(new Baosi);
+    sariel->addSkill(new BaosiDistance);
     sariel->addSkill(new Ezhao);
+    related_skills.insertMulti("baosi", "#baosi-dist");
 
     General *konngara = new General(this, "konngara", "pc98", 4, false);
     konngara->addSkill(new Zongjiu);
