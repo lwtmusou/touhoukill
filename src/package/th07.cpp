@@ -285,27 +285,65 @@ public:
     Shenyin()
         : TriggerSkill("shenyin")
     {
-        events << Damage << Damaged;
+        events << DamageInflicted << Damaged << EventPhaseStart;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->getMark("shenyin_disable") > 0 && player->getPhase() == Player::RoundStart)
+            {
+                room->setPlayerMark(player, "shenyin_disable", 0);
+                room->setPlayerSkillInvalidity(player, "shenyin", false);
+            }
+        }
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
     {
+        if (e != DamageInflicted && e != Damaged)
+            return QList<SkillInvokeDetail>();
         DamageStruct damage = data.value<DamageStruct>();
-        ServerPlayer *target = (e == Damaged) ? damage.to : damage.from;
+        ServerPlayer *current = room->getCurrent();
+        ServerPlayer *target = damage.to;
+        if (!target || !current || !target->isAlive() || target == current)
+            return QList<SkillInvokeDetail>();
+        if (e == Damaged && target->isRemoved())
+            return QList<SkillInvokeDetail>();
+        if (e == DamageInflicted && !target->isRemoved())
+            return QList<SkillInvokeDetail>();
         QList<SkillInvokeDetail> d;
-        if (target != NULL && target->isAlive() && !target->isCurrent() && !target->isRemoved()) {
-            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                d << SkillInvokeDetail(this, p, p, NULL, false, target);
-            }
-        }  
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName()))
+            d << SkillInvokeDetail(this, p, p, NULL, false, target);
+        
         return d;
     }
-
+    bool cost(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        QString prompt = e == DamageInflicted ? "target1:" : "target2:";
+        prompt =  prompt +invoke->preferredTarget->objectName();
+        return invoke->invoker->askForSkillInvoke(this, prompt);
+    }
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
-        room->setPlayerCardLimitation(invoke->targets.first(), "use", ".", false);
-        room->setPlayerProperty(invoke->targets.first(), "removed", true);
+        if (!invoke->targets.first()->isRemoved()) {
+            room->touhouLogmessage("#Shenyin1", invoke->targets.first(), objectName(), QList<ServerPlayer *>());
+            room->setPlayerCardLimitation(invoke->targets.first(), "use", ".", false);
+            room->setPlayerProperty(invoke->targets.first(), "removed", true);
+        }
+        else {
+            room->touhouLogmessage("#Shenyin2", invoke->targets.first(), objectName(), QList<ServerPlayer *>());
+            room->setPlayerProperty(invoke->targets.first(), "removed", false);
+            room->removePlayerCardLimitation(invoke->targets.first(), "use", ".$0");
+        }
+        ServerPlayer *current = room->getCurrent();
+        if (current != invoke->invoker && invoke->invoker != invoke->targets.first()) {
+            room->touhouLogmessage("#shenyin_disable", invoke->invoker, objectName());
+            room->setPlayerMark(invoke->invoker, "shenyin_disable", 1);
+            room->setPlayerSkillInvalidity(invoke->invoker, "shenyin", true);
+        }
         return false;
     }
 };
@@ -319,14 +357,16 @@ public:
         events << EventPhaseStart;
     }
 
-    static bool hasXijianPairs(const Player *target) {
+    static bool hasXijianPairs(const Player *yukari, const Player *target) {
         if (target->isRemoved())
             return false;
+        if (yukari != target && !yukari->inMyAttackRange(target))
+            return false;
         const Player *next = target->getNextAlive();
-        if (checkXijianMove(target, next))
+        if ((yukari == next || yukari->inMyAttackRange(next)) && checkXijianMove(target, next))
             return true;
         const Player *last = target->getLastAlive();
-        if (checkXijianMove(target, last))
+        if ((yukari == last || yukari->inMyAttackRange(last)) && checkXijianMove(target, last))
             return true;
         return false;
     }
@@ -335,16 +375,20 @@ public:
         const Player *next = target->getNextAlive();
         const Player *last = target->getLastAlive();
         if (dist && dist != target && (next == dist || last == dist)) {
-            if (!target->isKongcheng())
+            if (target->getHandcardNum() > dist->getHandcardNum())
                 return true;
-            foreach(const Card *card, target->getJudgingArea()) {
-                if (!dist->containsTrick(card->objectName()))
-                    return true;
+            if (target->getJudgingArea().length() > dist->getJudgingArea().length()) {
+                foreach(const Card *card, target->getJudgingArea()) {
+                    if (!dist->containsTrick(card->objectName()))
+                        return true;
+                }
             }
-            foreach(const Card *e, target->getEquips()) {
-                const EquipCard *equip = qobject_cast<const EquipCard *>(e->getRealCard());
-                if (!dist->getEquip(equip->location()))
-                    return true;
+            if (target->getEquips().length() > dist->getEquips().length()) {
+                foreach(const Card *e, target->getEquips()) {
+                    const EquipCard *equip = qobject_cast<const EquipCard *>(e->getRealCard());
+                    if (!dist->getEquip(equip->location()))
+                        return true;
+                }
             }
         }
         return false;
@@ -356,12 +400,12 @@ XijianCard::XijianCard()
     m_skillName = "xijian";
 }
 
-bool XijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+bool XijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *yukari) const
 {
     if (targets.length() == 0)
-        return !to_select->isAllNude() && !to_select->isRemoved();
+        return !to_select->isAllNude() && (yukari == to_select || yukari->inMyAttackRange(to_select));//!to_select->isRemoved();
     else if (targets.length() == 1)
-        return XijianFunc::checkXijianMove(targets.first(), to_select);
+        return (yukari == to_select || yukari->inMyAttackRange(to_select)) && XijianFunc::checkXijianMove(targets.first(), to_select);
     return false;
 }
 
@@ -372,23 +416,46 @@ bool XijianCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 
 void XijianCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
+    CardUseStruct use = card_use;
+    QVariant data = QVariant::fromValue(use);
+    RoomThread *thread = room->getThread();
+
+    thread->trigger(PreCardUsed, room, data);
+    
+    
     ServerPlayer *from = card_use.from;
     ServerPlayer *to1 = card_use.to.at(0);
     ServerPlayer *to2 = card_use.to.at(1);
+    LogMessage log;
+    log.from = card_use.from;
+    log.to << card_use.to;
+    log.type = "#UseCard";
+    log.card_str = toString();
+    room->sendLog(log);
 
     QList<int> disable;
-    foreach(const Card *card, to1->getJudgingArea()) {
-        if (to2->containsTrick(card->objectName()))
-            disable << card->getEffectiveId();
-    }
-    foreach(const Card *e, to1->getEquips()) {
-        const EquipCard *equip = qobject_cast<const EquipCard *>(e->getRealCard());
-        if (to2->getEquip(equip->location())) {
-            disable << e->getEffectiveId();
+    QString flag = "";
+    if (to1->getHandcardNum() > to2->getHandcardNum())
+        flag = flag + "hs";
+    if (to1->getJudgingArea().length() > to2->getJudgingArea().length()) {
+        flag = flag + "j";
+        foreach(const Card *card, to1->getJudgingArea()) {
+            if (to2->containsTrick(card->objectName()))
+                disable << card->getEffectiveId();
         }
     }
+    if (to1->getEquips().length() > to2->getEquips().length()) {
+        flag = flag + "e";
+        foreach(const Card *e, to1->getEquips()) {
+            const EquipCard *equip = qobject_cast<const EquipCard *>(e->getRealCard());
+            if (to2->getEquip(equip->location())) {
+                disable << e->getEffectiveId();
+            }
+        }
+    }
+    
 
-    int card_id = room->askForCardChosen(from, to1, "hejs", "xijian", false, Card::MethodNone, disable);
+    int card_id = room->askForCardChosen(from, to1, flag, "xijian", false, Card::MethodNone, disable);
     Player::Place place = room->getCardPlace(card_id);
     const Card *card = Sanguosha->getCard(card_id);
     card_use.from->showHiddenSkill("xijian");
@@ -407,7 +474,11 @@ void XijianCard::onUse(Room *room, const CardUseStruct &card_use) const
             room->getThread()->trigger(TargetConfirmed, room, _data);
         }
     }
+    
 
+    thread->trigger(CardUsed, room, data);
+    use = data.value<CardUseStruct>();
+    thread->trigger(CardFinished, room, data);
 }
 
 class XijianVS : public ZeroCardViewAsSkill
@@ -440,7 +511,7 @@ public:
         ServerPlayer *yukari = data.value<ServerPlayer *>();
         if (yukari && yukari->isAlive() && yukari->getPhase() == Player::Finish && yukari->hasSkill(this)) {
             foreach(ServerPlayer *p, room->getAlivePlayers()) {
-                if (XijianFunc::hasXijianPairs(p))
+                if (XijianFunc::hasXijianPairs(yukari, p))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yukari, yukari);
             }
         }
@@ -1693,19 +1764,25 @@ public:
         : TriggerSkill("dunjia")
     {
         events << DamageInflicted;
-        frequency = Compulsory;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.from == NULL || !damage.to->hasSkill(this))
+        if (damage.from == NULL || !damage.to->hasSkill(this) || !damage.to->canDiscard(damage.to, "hes"))
             return QList<SkillInvokeDetail>();
-        if (damage.from->inMyAttackRange(damage.to) && damage.nature != DamageStruct::Normal)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
-        else if (!damage.from->inMyAttackRange(damage.to) && damage.nature == DamageStruct::Normal)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
+        if (damage.from->inMyAttackRange(damage.to) && damage.nature == DamageStruct::Normal)
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
+        else if (!damage.from->inMyAttackRange(damage.to) && damage.nature != DamageStruct::Normal)
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
         return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        const Card *card = room->askForCard(invoke->invoker, ".|.|.|hand,equipped", "@dunjia:" + damage.from->objectName(), data, objectName());
+        return card != NULL;
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
@@ -2786,7 +2863,8 @@ TH07Package::TH07Package()
     ran->addSkill(new Huanzang);
     ran->addSkill(new HuanzangEffect);
     related_skills.insertMulti("huanzang", "#huanzang");
-
+    //ran_sp2->addSkill(new Zhaoliao);
+    //ran_sp2->addSkill(new Jiaoxia);
 
     General *youmu = new General(this, "youmu", "yym", 4, false);
     youmu->addSkill(new Shuangren);
@@ -2848,10 +2926,6 @@ TH07Package::TH07Package()
     General *leira = new General(this, "leira", "yym", 3, false);
     leira->addSkill(new Huayin);
     leira->addSkill(new Huanling);
-
-    General *ran_sp2 = new General(this, "ran_sp2", "yym", 3, false);
-    ran_sp2->addSkill(new Zhaoliao);
-    ran_sp2->addSkill(new Jiaoxia);
 
     addMetaObject<XijianCard>();
     addMetaObject<ShihuiCard>();

@@ -1883,6 +1883,7 @@ void LureTiger::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 void LureTiger::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
+    room->touhouLogmessage("#Shenyin1", effect.to, objectName(), QList<ServerPlayer *>());
 
     room->setPlayerCardLimitation(effect.to, "use", ".", false);
     room->setPlayerProperty(effect.to, "removed", true);
@@ -1906,6 +1907,7 @@ public:
         if (change.to == Player::NotActive) {
             foreach (ServerPlayer *p, room->getAllPlayers(true)) {
                 if (p->isRemoved()) {
+                    room->touhouLogmessage("#Shenyin2", p, objectName(), QList<ServerPlayer *>());
                     room->setPlayerProperty(p, "removed", false);
                     room->removePlayerCardLimitation(p, "use", ".$0");
                 }
