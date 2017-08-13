@@ -1516,30 +1516,32 @@ function bodong_skill.getTurnUseCard(self)
 end
 sgs.ai_skill_use_func.BodongCard = function(card, use, self)
 		self:sort(self.enemies, "defense")
-
-		if (use.to and use.to:length() < 3) then
+        local targets = {}
+		
 			for _, p in ipairs(self.enemies) do
-				if use.to:length() >= 3 then
+				if #targets >= 3 then
 					break
 				end
 				local num = p:getCards("e"):length() - p:getBrokenEquips():length()
 				local available = math.min(num,3)
 				if num > 0 then 
-					use.card = card
 					for i=1, num  do
-						if use.to then
-							use.to:append(p)
-							if use.to:length() >= 3 then
-								break
-							end
+						table.insert(targets, p)	
+						if #targets >= 3 then
+							break
 						end
 					end
 				end
 			end
-		end
-		if use.to and not use.to:isEmpty() then 
+		
+		if #targets > 0 then 
 			use.card = card
-			if  use.to and use.to:length() >= 1 then return end
+			if  use.to then
+				for _,p in ipairs (targets) do
+					use.to:append(p)
+				end
+				return 
+			end  --use.to:length() >= 1 
 		end
 end
 

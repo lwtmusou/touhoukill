@@ -161,7 +161,9 @@ void CardContainer::fillGeneralCards(const QList<CardItem *> &card_item, const Q
         //item->setOuterGlowEffectEnabled(true);
         item->show();
     }
-    close_button->setPos(boundingRect().center().x() - close_button->boundingRect().width() / 2, boundingRect().height() - 40);
+    
+    //close_button->setPos(boundingRect().center().x() - close_button->boundingRect().width() / 2, boundingRect().height() - 40);
+    close_button->setPos(boundingRect().topRight().x() - boundingRect().width() / 10, boundingRect().topRight().y() + boundingRect().height() / 10);
     close_button->show();
     //confirm_button->setPos(boundingRect().center().x() - confirm_button->boundingRect().width() / 2, boundingRect().height() - 40);
 }

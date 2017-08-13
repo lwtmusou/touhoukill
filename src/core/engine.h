@@ -130,6 +130,7 @@ public:
 
     QStringList SurprisingGenerals;
     QStringList LordBGMConvertList;
+    QStringList LordBackdropConvertList;
     int operationTimeRate(QSanProtocol::CommandType command, QVariant msg);
 
 private:

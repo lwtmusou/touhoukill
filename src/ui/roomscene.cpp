@@ -5152,9 +5152,27 @@ void RoomScene::setLordBackdrop(QString lord)
     QString lord_name = (lord == NULL) ? ClientInstance->lord_name : lord;
     if (lord_name == NULL)
         lord_name = Self->getGeneralName();
-    if (changeBackdrop)
+    //if (changeBackdrop)
+    //    image_path = "backdrop/" + lord_name + ".jpg";
+    if (changeBackdrop) {
         image_path = "backdrop/" + lord_name + ".jpg";
-
+        if ((image_path == NULL) || !QFile::exists(image_path)) {  
+            foreach(QString cv_pair, Sanguosha->LordBackdropConvertList) {
+                bool shouldBreak = false;
+                QStringList pairs = cv_pair.split("->");
+                QStringList cv_from = pairs.at(0).split("|");
+                foreach(QString from, cv_from) {
+                    if (from == lord_name) {
+                        image_path = "backdrop/" + pairs.at(1) + ".jpg";
+                        shouldBreak = true;
+                        break;
+                    }
+                }
+                if (shouldBreak)
+                    break;
+            }
+        }
+    }
     if ((image_path != NULL) && QFile::exists(image_path))
         changeTableBg(image_path);
 }

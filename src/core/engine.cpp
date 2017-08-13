@@ -76,6 +76,7 @@ Engine::Engine()
 
     SurprisingGenerals = GetConfigFromLuaState(lua, "surprising_generals").toStringList();
     LordBGMConvertList = GetConfigFromLuaState(lua, "bgm_convert_pairs").toStringList();
+    LordBackdropConvertList = GetConfigFromLuaState(lua, "backdrop_convert_pairs").toStringList();
 
     _loadMiniScenarios();
     _loadModScenarios();

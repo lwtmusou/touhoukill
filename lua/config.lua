@@ -155,6 +155,8 @@ config = {
 	convert_pairs = {
 	},
 
+	
+	
 	bgm_convert_pairs = {
 		--BGM： 由于开始尝试加入arrange代替原曲，曲目对应关系可能有变，以后转换列表还要重新整理。
 		"reimu_old->reimu_sp",
@@ -187,5 +189,11 @@ config = {
 		"momizi_sp->momizi",
 		"kyouko_sp->kyouko",
 		"nue_god->nue",
+	},
+	
+	backdrop_convert_pairs = {
+		"yukimai->shinki",
+		"lunar|star->sunny",
+		"reisen2|seiran->tewi",
 	}
 }
