@@ -101,13 +101,13 @@ sgs.ai_choicemade_filter.skillInvoke.huaxu = function(self, player, promptlist)
 end
 
 
-sgs.ai_skill_invoke.wangxiang = function(self, data)
+sgs.ai_skill_invoke.moran = function(self, data)
 	if not self:invokeTouhouJudge() then return false end
 	local to =data:toPlayer()
 	return self:isFriend(to)
 end
-sgs.ai_choicemade_filter.skillInvoke.wangxiang = function(self, player, promptlist)
-	local to=player:getTag("wangxiang-target"):toPlayer()
+sgs.ai_choicemade_filter.skillInvoke.moran = function(self, player, promptlist)
+	local to=player:getTag("moran-target"):toPlayer()
 	if to then
 		if promptlist[#promptlist] == "yes" then
 			sgs.updateIntention(player, to, -60)
