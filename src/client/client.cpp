@@ -261,7 +261,6 @@ void Client::setBrokenEquips(const QVariant &card_var)
     player->setBrokenEquips(card_ids);
 }
 
-
 void Client::setHiddenGenerals(const QVariant &arg)
 {
     JsonArray str = arg.value<JsonArray>();
@@ -412,7 +411,6 @@ bool Client::processServerRequest(const Packet &packet)
     CommandType command = packet.getCommandType();
     QVariant msg = packet.getMessageBody();
 
-    
     if (!replayer) {
         //process count max
         int rate = Sanguosha->operationTimeRate(command, msg);

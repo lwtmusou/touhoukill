@@ -19,9 +19,9 @@ struct LogMessage;
 #include "serverplayer.h"
 
 #include <QAtomicPointer>
+#include <QMutex>
 #include <QStack>
 #include <QWaitCondition>
-#include <qmutex.h>
 
 class Room : public QThread
 {
@@ -124,7 +124,7 @@ public:
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
     void retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge, const QString &skill_name, bool exchange = false);
-    
+
     // Ask a player to send a server request and returns the client response. Call is blocking until client
     // replies or server times out, whichever is earlier.
     // @param player
@@ -272,7 +272,7 @@ public:
     }
     int getCardFromPile(const QString &card_name);
     ServerPlayer *findPlayer(const QString &general_name, bool include_dead = false) const;
-    QList<ServerPlayer *> findPlayersBySkillName(const QString &skill_name,bool include_hidden = true) const;
+    QList<ServerPlayer *> findPlayersBySkillName(const QString &skill_name, bool include_hidden = true) const;
     ServerPlayer *findPlayerBySkillName(const QString &skill_name) const;
     ServerPlayer *findPlayerByObjectName(const QString &name) const;
     void installEquip(ServerPlayer *player, const QString &equip_name);

@@ -1483,7 +1483,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     }
 
     card = card->validateInResponse(player);
-    if (card !=NULL && player->isCardLimited(card, method))
+    if (card != NULL && player->isCardLimited(card, method))
         card = NULL;
     const Card *result = NULL;
     //card log
@@ -3566,9 +3566,9 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
                 if (!tarmod_detect.isEmpty()) {
                     QString to_show = askForChoice(card_use.from, "tarmod_show", tarmod_detect.join("+"), QVariant::fromValue(card_use));
                     card_use.from->showHiddenSkill(to_show);
-                }            
+                }
             }
-            
+
             if (card->isKindOf("DelayedTrick") && card->isVirtualCard() && card->subcardsLength() == 1) {
                 Card *trick = Sanguosha->cloneCard(card);
                 Q_ASSERT(trick != NULL);

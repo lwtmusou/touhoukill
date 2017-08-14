@@ -90,7 +90,7 @@ public:
     QList<const TargetModSkill *> getTargetModSkills() const;
     QList<const AttackRangeSkill *> getAttackRangeSkills() const;
     QList<const TriggerSkill *> getGlobalTriggerSkills() const;
-    QList<const ViewAsSkill*> getViewAsSkills() const;
+    QList<const ViewAsSkill *> getViewAsSkills() const;
     void addSkills(const QList<const Skill *> &skills);
 
     int getCardCount() const;

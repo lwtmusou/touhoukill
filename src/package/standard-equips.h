@@ -137,7 +137,6 @@ public:
     virtual void onUninstall(ServerPlayer *player) const;
 };
 
-
 class DeathSickle : public Weapon
 {
     Q_OBJECT

@@ -56,7 +56,6 @@ protected:
     int itemCount;
     static const int cardInterval = 3;
 
-
 private:
     QList<CardItem *> items;
     CloseButton *close_button;

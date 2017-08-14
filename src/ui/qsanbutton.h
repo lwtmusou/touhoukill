@@ -3,10 +3,10 @@
 
 #include "skill.h"
 #include <QGraphicsObject>
+#include <QList>
 #include <QPixmap>
+#include <QRect>
 #include <QRegion>
-#include <qlist.h>
-#include <qrect.h>
 
 class QSanButton : public QGraphicsObject
 {

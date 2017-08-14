@@ -355,17 +355,17 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
         pile = player->getShownHandcards();
     else if (pile_name == "huashencard") {
         int n = player->getHiddenGenerals().length();
-        if (n == 0) return;
+        if (n == 0)
+            return;
         for (int i = 0; i < n; i++) {
             pile.append(i + 1);
         }
     } else
         pile = player->getPile(pile_name);
-    
+
     QString shownpilename = RoomSceneInstance->getCurrentShownPileName();
     if (!shownpilename.isEmpty() && shownpilename == pile_name)
         hidePile();
-
 
     if (pile.size() == 0) {
         if (_m_privatePiles.contains(pile_name)) {
@@ -404,12 +404,11 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
 
         disconnect(button, &QPushButton::pressed, this, &PlayerCardContainer::showPile);
         connect(button, &QPushButton::pressed, this, &PlayerCardContainer::showPile);
-    
+
         if (pile_name != "huashencard") {
             disconnect(button, &QPushButton::released, this, &PlayerCardContainer::hidePile);
             connect(button, &QPushButton::released, this, &PlayerCardContainer::hidePile);
         }
-
     }
     //set treasure pile at first
     QPoint start = _m_layout->m_privatePileStartPos;
@@ -435,15 +434,17 @@ void PlayerCardContainer::showPile()
     QPushButton *button = qobject_cast<QPushButton *>(sender());
     if (button) {
         const ClientPlayer *player = getPlayer();
-        if (!player) return;
+        if (!player)
+            return;
         QList<int> card_ids = player->getPile(button->objectName());
         if (button->objectName() == "huashencard") {
             if (player == Self)
                 RoomSceneInstance->showPile(card_ids, button->objectName(), player);
             else
                 return;
-        } 
-        if (card_ids.isEmpty() || card_ids.contains(-1)) return;
+        }
+        if (card_ids.isEmpty() || card_ids.contains(-1))
+            return;
         RoomSceneInstance->showPile(card_ids, button->objectName(), player);
     }
 }
@@ -452,8 +453,6 @@ void PlayerCardContainer::hidePile()
 {
     RoomSceneInstance->hidePile();
 }
-
-
 
 void PlayerCardContainer::updateDrankState()
 {
@@ -906,7 +905,7 @@ PlayerCardContainer::PlayerCardContainer()
     m_player = NULL;
     _m_selectedFrame = NULL;
     _m_privatePileArea = new QGraphicsProxyWidget(this);
-    QWidget *pileArea = new QWidget(NULL, Qt::Tool);//It currently needn't to be visible. 
+    QWidget *pileArea = new QWidget(NULL, Qt::Tool); //It currently needn't to be visible.
     pileArea->setAttribute(Qt::WA_TranslucentBackground);
     pileArea->resize(1, 1);
     _m_privatePileArea->setWidget(pileArea);

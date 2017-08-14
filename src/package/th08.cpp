@@ -1232,14 +1232,14 @@ public:
     {
         ServerPlayer *target = invoke->targets.first();
         QList<int> disable;
-        foreach(const Card *c, target->getCards("j")) {
+        foreach (const Card *c, target->getCards("j")) {
             if ((e == DamageCaused && c->isRed()) || (e == DamageInflicted && c->isBlack()) || !invoke->invoker->canDiscard(target, c->getEffectiveId())) {
                 disable << c->getEffectiveId();
             }
         }
         int card_id = room->askForCardChosen(invoke->invoker, target, "j", objectName(), false, Card::MethodDiscard, disable);
         room->throwCard(card_id, (target->getJudgingAreaID().contains(card_id)) ? NULL : target, invoke->invoker);
-        
+
         DamageStruct damage = data.value<DamageStruct>();
         int record = damage.damage;
         QList<ServerPlayer *> logto;
@@ -1582,7 +1582,6 @@ public:
         }
         return false;
     }
-
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
     {

@@ -139,7 +139,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
 class AnyunDialog : public QDialog
 {
     Q_OBJECT

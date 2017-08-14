@@ -588,10 +588,10 @@ bool QijiCard::targetFilter(const QList<const Player *> &targets, const Player *
 {
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return false;
-    
+
     if (user_string == NULL)
         return false;
-        
+
     const Card *oc = Sanguosha->getCard(subcards.first());
     Card *card = Sanguosha->cloneCard(user_string.split("+").first());
     DELETE_OVER_SCOPE(Card, card)
@@ -606,7 +606,7 @@ bool QijiCard::targetFixed() const
         return true;
     if (user_string != NULL)
         return false;
-        
+
     const Card *oc = Sanguosha->getCard(subcards.first());
     Card *card = Sanguosha->cloneCard(user_string.split("+").first());
     DELETE_OVER_SCOPE(Card, card)
@@ -619,10 +619,10 @@ bool QijiCard::targetsFeasible(const QList<const Player *> &targets, const Playe
 {
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
-    
+
     if (user_string == NULL)
         return false;
-            
+
     const Card *oc = Sanguosha->getCard(subcards.first());
     Card *card = Sanguosha->cloneCard(user_string.split("+").first());
     DELETE_OVER_SCOPE(Card, card)

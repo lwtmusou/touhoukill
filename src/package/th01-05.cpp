@@ -757,13 +757,12 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         ServerPlayer *current = room->getCurrent();
         if (current->getPhase() == Player::Finish) {
             room->notifySkillInvoked(invoke->invoker, objectName());
 
-            
             int card_id = invoke->tag["mengxiao_id"].toInt();
             QString choice = invoke->tag.value("mengxiao_choice", QString()).toString();
 
@@ -786,11 +785,10 @@ public:
             move.to = invoke->invoker;
             move.to_place = Player::PlaceDelayedTrick;
             room->moveCardsAtomic(move, true);
-        }
-        else {
+        } else {
             QStringList trick_list = mengxiaoChoices(invoke->invoker, current);
             QList<int> disable;
-            foreach(const Card *trick, invoke->invoker->getJudgingArea()) {
+            foreach (const Card *trick, invoke->invoker->getJudgingArea()) {
                 if (!trick_list.contains(trick->objectName()))
                     disable << trick->getEffectiveId();
             }
@@ -798,8 +796,7 @@ public:
 
             const Card *card = Sanguosha->getCard(card_id);
             room->moveCardTo(card, invoke->invoker, current, Player::PlaceDelayedTrick,
-                CardMoveReason(CardMoveReason::S_REASON_TRANSFER, invoke->invoker->objectName(), objectName(), QString()));
-
+                             CardMoveReason(CardMoveReason::S_REASON_TRANSFER, invoke->invoker->objectName(), objectName(), QString()));
         }
         return false;
     }
@@ -821,7 +818,7 @@ public:
         if (damage.card == NULL || !damage.to->hasSkill(this))
             return QList<SkillInvokeDetail>();
         foreach (ServerPlayer *p, room->getAllPlayers()) {
-            foreach(const Card *c, p->getCards("j")) {
+            foreach (const Card *c, p->getCards("j")) {
                 if (!c->sameColorWith(damage.card))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
             }
@@ -1215,15 +1212,13 @@ public:
         if (triggerEvent == Pindian) {
             PindianStruct *pindian = data.value<PindianStruct *>();
             if (pindian->reason == "xuxiang" && pindian->from_number > pindian->to_number) {
-                if (pindian->from_card->isKindOf("Jink") || pindian->to_card->isKindOf("Jink") ||
-                    pindian->from_card->isKindOf("Slash") || pindian->to_card->isKindOf("Slash"))
+                if (pindian->from_card->isKindOf("Jink") || pindian->to_card->isKindOf("Jink") || pindian->from_card->isKindOf("Slash") || pindian->to_card->isKindOf("Slash"))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, pindian->from, pindian->from, NULL, true);
             }
         }
         return QList<SkillInvokeDetail>();
     }
-    
-    
+
     bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         PindianStruct *pindian = data.value<PindianStruct *>();
@@ -1241,7 +1236,6 @@ public:
         pindian->from->tag["xuxiang"] = QVariant::fromValue(damage);
         return false;
     }
-
 };
 
 class Huanjue : public TriggerSkill
@@ -2079,8 +2073,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         use.card->setFlags("baosi");
         foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-            if (!use.to.contains(p) && p->getHp() <= p->dyingThreshold() && use.card->targetFilter(QList<const Player *>(), p, use.from)
-                && !use.from->isProhibited(p, use.card))
+            if (!use.to.contains(p) && p->getHp() <= p->dyingThreshold() && use.card->targetFilter(QList<const Player *>(), p, use.from) && !use.from->isProhibited(p, use.card))
                 room->setPlayerFlag(p, "Global_baosiFailed");
         }
         use.card->setFlags("-baosi");
@@ -2100,16 +2093,16 @@ public:
                     QList<const Player *> targets;
                     targets << p;
                     QList<ServerPlayer *> victims;
-                    foreach(ServerPlayer *t, room->getOtherPlayers(p)) {
+                    foreach (ServerPlayer *t, room->getOtherPlayers(p)) {
                         if (use.card->targetFilter(targets, t, use.from))
                             victims << t;
                     }
                     ServerPlayer *victim = room->askForPlayerChosen(use.from, victims, "baosi_col", "@baosi_col:" + p->objectName());
                     p->tag["collateralVictim"] = QVariant::fromValue((ServerPlayer *)victim);
                 }
-            }  
+            }
         }
-        
+
         room->sortByActionOrder(use.to);
         data = QVariant::fromValue(use);
         return false;
@@ -2556,7 +2549,7 @@ void QirenCard::onUse(Room *room, const CardUseStruct &card_use) const
             return;
         }
     }
-    
+
     //do new use
     room->useCard(use);
 }
@@ -2673,8 +2666,6 @@ public:
     }
 };
 
-
-
 class Jinduan : public TriggerSkill
 {
 public:
@@ -2691,8 +2682,7 @@ public:
         if (e == CardUsed) {
             player = data.value<CardUseStruct>().from;
             card = data.value<CardUseStruct>().card;
-        }
-        else {
+        } else {
             CardResponseStruct response = data.value<CardResponseStruct>();
             player = response.m_from;
             if (response.m_isUse)
@@ -2712,21 +2702,18 @@ public:
         if (ids.isEmpty())
             return QList<SkillInvokeDetail>();
 
-        foreach(int id, ids) {
+        foreach (int id, ids) {
             if (room->getCardPlace(id) != Player::PlaceTable && e == CardUsed)
                 return QList<SkillInvokeDetail>();
             if (room->getCardPlace(id) != Player::DiscardPile && e == CardResponded)
                 return QList<SkillInvokeDetail>();
         }
 
-
         QList<SkillInvokeDetail> d;
-        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName()))
+        foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName()))
             d << SkillInvokeDetail(this, p, p, NULL, false, player);
         return d;
     }
-
-    
 
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
@@ -2739,9 +2726,9 @@ public:
             CardResponseStruct response = data.value<CardResponseStruct>();
             card = response.m_card;
         }
-        
+
         QList<int> ids;
-        foreach(const Card *c, target->getCards("e")) {
+        foreach (const Card *c, target->getCards("e")) {
             if (!target->isBrokenEquip(c->getEffectiveId()))
                 ids << c->getEffectiveId();
         }
@@ -2819,7 +2806,7 @@ public:
             if (b.player == NULL || b.player->isDead() || b.moveFromEquip)
                 return QList<SkillInvokeDetail>();
             QList<SkillInvokeDetail> d;
-            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (p == b.player || p->inMyAttackRange(b.player))
                     d << SkillInvokeDetail(this, p, p, NULL, false, b.player);
             }
@@ -2830,7 +2817,7 @@ public:
             if (s.player == NULL || s.player->isDead() || s.moveFromHand)
                 return QList<SkillInvokeDetail>();
             QList<SkillInvokeDetail> d;
-            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (p == s.player || p->inMyAttackRange(s.player))
                     d << SkillInvokeDetail(this, p, p, NULL, false, s.player);
             }
@@ -2838,8 +2825,6 @@ public:
         }
         return QList<SkillInvokeDetail>();
     }
-
-
 
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
@@ -2860,7 +2845,6 @@ public:
         return false;
     }
 };
-
 
 TH0105Package::TH0105Package()
     : Package("th0105")

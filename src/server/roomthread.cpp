@@ -682,9 +682,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room,
             // if cost returned false, we don't process with the skill's left trigger times(use the trick of set it as triggered)
             // if effect returned true, exit the whole loop.
             bool do_cost = true;
-            if (invoke->isCompulsory && invoke->showhidden && invoke->invoker
-                && invoke->invoker->isHiddenSkill(invoke->skill->objectName())) {
-                bool invoke_hidden_compulsory;
+            if (invoke->isCompulsory && invoke->showhidden && invoke->invoker && invoke->invoker->isHiddenSkill(invoke->skill->objectName())) {
                 if (invoke->invoker->canShowHiddenSkill()) {
                     do_cost = invoke->invoker->askForSkillInvoke("invoke_hidden_compulsory", QVariant::fromValue("compulsory:" + invoke->skill->objectName()));
                     if (do_cost)

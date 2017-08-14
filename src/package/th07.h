@@ -4,7 +4,6 @@
 #include "card.h"
 #include "package.h"
 
-
 class XijianCard : public SkillCard
 {
     Q_OBJECT
@@ -26,7 +25,6 @@ public:
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
-
 
 class QimenCard : public SkillCard
 {

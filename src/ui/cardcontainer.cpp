@@ -9,8 +9,9 @@
 #include <QGraphicsSceneMouseEvent>
 
 CardContainer::CardContainer()
-    : _m_background("image/system/card-container.png"),
-    scene_width(0), itemCount(0)
+    : _m_background("image/system/card-container.png")
+    , scene_width(0)
+    , itemCount(0)
 {
     setTransform(QTransform::fromTranslate(-_m_background.width() / 2, -_m_background.height() / 2), true);
     _m_boundingRect = QRectF(QPoint(0, 0), _m_background.size());
@@ -108,15 +109,13 @@ void CardContainer::fillGeneralCards(const QList<CardItem *> &card_item, const Q
     else if (card_item.isEmpty() && !items.isEmpty()) {
         card_items = items;
         items.clear();
-    }
-    else if (!items.isEmpty()) {
+    } else if (!items.isEmpty()) {
         retained_stack.push(retained());
         items_stack.push(items);
-        foreach(CardItem *item, items)
+        foreach (CardItem *item, items)
             item->hide();
         items.clear();
     }
-
 
     scene_width = RoomSceneInstance->sceneRect().width();
     //confirm_button->hide();
@@ -140,14 +139,12 @@ void CardContainer::fillGeneralCards(const QList<CardItem *> &card_item, const Q
         if (i < first_row) {
             pos.setX(25 + (card_width + cardInterval) * i);
             pos.setY(45);
-        }
-        else {
+        } else {
             if (itemCount % 2 == 1)
-                pos.setX(25 + card_width / 2 + cardInterval / 2
-                    + (card_width + cardInterval) * (i - first_row));
+                pos.setX(25 + card_width / 2 + cardInterval / 2 + (card_width + cardInterval) * (i - first_row));
             else
                 pos.setX(25 + (card_width + cardInterval) * (i - first_row));
-                pos.setY(45 + card_height + cardInterval);
+            pos.setY(45 + card_height + cardInterval);
         }
         CardItem *item = items[i];
         item->resetTransform();
@@ -161,13 +158,12 @@ void CardContainer::fillGeneralCards(const QList<CardItem *> &card_item, const Q
         //item->setOuterGlowEffectEnabled(true);
         item->show();
     }
-    
+
     //close_button->setPos(boundingRect().center().x() - close_button->boundingRect().width() / 2, boundingRect().height() - 40);
     close_button->setPos(boundingRect().topRight().x() - boundingRect().width() / 10, boundingRect().topRight().y() + boundingRect().height() / 10);
     close_button->show();
     //confirm_button->setPos(boundingRect().center().x() - confirm_button->boundingRect().width() / 2, boundingRect().height() - 40);
 }
-
 
 bool CardContainer::_addCardItems(QList<CardItem *> &, const CardsMoveStruct &)
 {

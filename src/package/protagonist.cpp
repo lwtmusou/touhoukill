@@ -23,7 +23,7 @@ public:
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
-        foreach(ServerPlayer *reimu, use.to) {
+        foreach (ServerPlayer *reimu, use.to) {
             if (reimu->hasSkill(this))
                 d << SkillInvokeDetail(this, reimu, reimu);
         }
@@ -1784,7 +1784,7 @@ public:
                     log.to << victim;
                     room->sendLog(log);
                     room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, extra->objectName(), victim->objectName());
-                    
+
                     //show hidden general
                     player->showHiddenSkill(objectName());
                 }

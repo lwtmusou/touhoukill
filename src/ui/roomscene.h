@@ -461,7 +461,6 @@ private slots:
 
     void doPindianAnimation();
 
-
     // 3v3 mode & 1v1 mode
     void fillGenerals(const QStringList &names);
     void takeGeneral(const QString &who, const QString &name, const QString &rule);

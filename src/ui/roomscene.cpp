@@ -10,6 +10,7 @@
 #include "choosetriggerorderbox.h"
 #include "distanceviewdialog.h"
 #include "engine.h"
+#include "generaloverview.h"
 #include "indicatoritem.h"
 #include "lightboxanimation.h"
 #include "pixmapanimation.h"
@@ -20,7 +21,6 @@
 #include "settings.h"
 #include "uiUtils.h"
 #include "window.h"
-#include "generaloverview.h"
 
 #include <QApplication>
 #include <QCheckBox>
@@ -205,7 +205,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
     pileContainer->hide();
     addItem(pileContainer);
     pileContainer->setZValue(9.0);
-
 
     connect(card_container, SIGNAL(item_chosen(int)), ClientInstance, SLOT(onPlayerChooseAG(int)));
     connect(card_container, SIGNAL(item_gongxined(int)), ClientInstance, SLOT(onPlayerReplyGongxin(int)));
@@ -1999,7 +1998,7 @@ GenericCardContainer *RoomScene::_getGenericCardContainer(Player::Place place, P
     // @todo: AG must be a pile with name rather than simply using the name special...
     else if (player == NULL && place == Player::PlaceSpecial)
         return pileContainer;
-        //return card_container;
+    //return card_container;
     else if (player == Self)
         return dashboard;
     else if (player != NULL)
@@ -3946,7 +3945,6 @@ void RoomScene::showPlayerCards()
     }
 }
 
-
 void RoomScene::showPile(const QList<int> &card_ids, const QString &name, const ClientPlayer *target)
 {
     pileContainer->clear();
@@ -3967,15 +3965,14 @@ void RoomScene::showPile(const QList<int> &card_ids, const QString &name, const 
         overview->show();
         return;*/
         QList<CardItem *> generals;
-        foreach(QString arg, huashens) {
+        foreach (QString arg, huashens) {
             CardItem *item = new CardItem(arg);
             addItem(item);
             item->setParentItem(pileContainer);
             generals.append(item);
         }
         pileContainer->fillGeneralCards(generals);
-    }
-    else {
+    } else {
         pileContainer->fillCards(card_ids);
     }
     pileContainer->setPos(m_tableCenterPos - QPointF(pileContainer->boundingRect().width() / 2, pileContainer->boundingRect().height() / 2));
@@ -3990,13 +3987,10 @@ QString RoomScene::getCurrentShownPileName()
         return NULL;
 }
 
-
 void RoomScene::hidePile()
 {
     pileContainer->clear();
 }
-
-
 
 KOFOrderBox::KOFOrderBox(bool self, QGraphicsScene *scene)
 {
@@ -5156,12 +5150,12 @@ void RoomScene::setLordBackdrop(QString lord)
     //    image_path = "backdrop/" + lord_name + ".jpg";
     if (changeBackdrop) {
         image_path = "backdrop/" + lord_name + ".jpg";
-        if ((image_path == NULL) || !QFile::exists(image_path)) {  
-            foreach(QString cv_pair, Sanguosha->LordBackdropConvertList) {
+        if ((image_path == NULL) || !QFile::exists(image_path)) {
+            foreach (QString cv_pair, Sanguosha->LordBackdropConvertList) {
                 bool shouldBreak = false;
                 QStringList pairs = cv_pair.split("->");
                 QStringList cv_from = pairs.at(0).split("|");
-                foreach(QString from, cv_from) {
+                foreach (QString from, cv_from) {
                     if (from == lord_name) {
                         image_path = "backdrop/" + pairs.at(1) + ".jpg";
                         shouldBreak = true;

@@ -534,12 +534,9 @@ public:
         if (e == Pindian) {
             int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName());
             room->obtainCard(invoke->invoker, id, room->getCardPlace(id) != Player::PlaceHand);
-        }
-        else
-        {
+        } else {
             invoke->invoker->pindian(invoke->preferredTarget, objectName());
         }
-
 
         return false;
     }
@@ -1644,7 +1641,7 @@ public:
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), prompt, true, true);
         if (target) {
             invoke->invoker->showHiddenSkill(objectName());
-            
+
             QVariantMap bihuo_list = target->tag.value("bihuo", QVariantMap()).toMap();
             int i = bihuo_list.value(invoke->invoker->objectName(), 0).toInt();
             i += invoke->invoker->getHandcardNum();

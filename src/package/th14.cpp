@@ -620,7 +620,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         return invoke->invoker->askForSkillInvoke(objectName(), data);
     }
@@ -629,7 +629,7 @@ public:
     {
         ServerPlayer *player = invoke->invoker;
         QList<int> equips;
-        foreach(const Card *e, (player->getEquips()))
+        foreach (const Card *e, (player->getEquips()))
             equips << e->getId();
 
         CardsMoveStruct move;
@@ -639,7 +639,7 @@ public:
         move.from = player;
         move.to = player;
         room->moveCardsAtomic(move, true);
-        
+
         Jink *card = new Jink(Card::NoSuit, 0);
         card->setSkillName("_langying");
         room->provide(card);
@@ -893,7 +893,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         return invoke->invoker->askForSkillInvoke(objectName(), data);
     }
@@ -903,7 +903,7 @@ public:
         ServerPlayer *source = invoke->invoker;
         QList<int> temp_ids;
         QVariantList shizhu_ids = room->getTag("shizhuPeach").toList();
-        foreach(QVariant card_data, shizhu_ids) {
+        foreach (QVariant card_data, shizhu_ids) {
             if (room->getCardPlace(card_data.toInt()) == Player::DiscardPile)
                 temp_ids << card_data.toInt();
         }
@@ -916,7 +916,7 @@ public:
             room->getThread()->delay(1000);
             room->clearAG();
             bool hand_peach = false;
-            foreach(const Card *card, source->getHandcards()) {
+            foreach (const Card *card, source->getHandcards()) {
                 if (card->isKindOf("Peach")) {
                     hand_peach = true;
                     break;

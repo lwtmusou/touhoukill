@@ -34,7 +34,6 @@ void SkltKexueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> 
     }
 }
 
-
 class SkltKexueVS : public ZeroCardViewAsSkill
 {
 public:
@@ -304,7 +303,7 @@ public:
         if (triggerEvent == Damaged) {
             room->setPlayerFlag(invoke->invoker, "SlashRecorder_yuxueSlash");
             if (invoke->invoker->isHiddenSkill(objectName()))
-                room->setPlayerFlag(invoke->invoker, "Global_viewasHidden_Failed");//only for anyun
+                room->setPlayerFlag(invoke->invoker, "Global_viewasHidden_Failed"); //only for anyun
             const Card *c = room->askForUseCard(invoke->invoker, "slash", "@yuxue", -1, Card::MethodUse, false, objectName());
             room->setPlayerFlag(invoke->invoker, "-SlashRecorder_yuxueSlash");
             return c != NULL;
@@ -850,7 +849,6 @@ public:
     }
 };
 
-
 BeishuiCard::BeishuiCard()
 {
     will_throw = false;
@@ -860,10 +858,10 @@ bool BeishuiCard::targetFilter(const QList<const Player *> &targets, const Playe
 {
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return false;
-    
+
     if (user_string == NULL)
         return false;
-            
+
     Card *card = Sanguosha->cloneCard(user_string.split("+").first());
     DELETE_OVER_SCOPE(Card, card)
     card->addSubcards(subcards);
@@ -877,7 +875,7 @@ bool BeishuiCard::targetFixed() const
         return true;
     if (user_string == NULL)
         return false;
-            
+
     Card *card = Sanguosha->cloneCard(user_string.split("+").first());
     DELETE_OVER_SCOPE(Card, card)
     card->addSubcards(subcards);
@@ -891,7 +889,7 @@ bool BeishuiCard::targetsFeasible(const QList<const Player *> &targets, const Pl
         return true;
     if (user_string == NULL)
         return false;
-            
+
     Card *card = Sanguosha->cloneCard(user_string.split("+").first());
     DELETE_OVER_SCOPE(Card, card)
     card->addSubcards(subcards);
@@ -1023,7 +1021,6 @@ public:
             card->addSubcards(cards);
             return card;
         }
-        
 
         QString name = Self->tag.value("beishui", QString()).toString();
         if (name != NULL) {
@@ -1031,8 +1028,7 @@ public:
             card->setUserString(name);
             card->addSubcards(cards);
             return card;
-        }
-        else
+        } else
             return NULL;
     }
 };

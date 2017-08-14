@@ -138,8 +138,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
         if (num2 > 1) {
             if (player->isHiddenSkill("kexue") && player->isChained())
                 skills << "kexue";
-        }
-        else if (num2 == 1) {
+        } else if (num2 == 1) {
             if (player->isHiddenSkill("kexue") && player->isChained())
                 skills << "kexue";
             if (player->isHiddenSkill("shuangren"))
@@ -150,7 +149,6 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
             player->showHiddenSkill(to_show);
         }
     }
-    
 
     if (player->hasFlag("slashNoDistanceLimit"))
         room->setPlayerFlag(player, "-slashNoDistanceLimit");
@@ -2227,7 +2225,6 @@ public:
     }
 };
 
-
 class DeathSickleSkill : public WeaponSkill
 {
 public:
@@ -2242,7 +2239,7 @@ public:
         if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
                     int mark = p->getMark("DeathSickle");
                     if (mark > 0) {
                         room->setPlayerMark(p, "DeathSickle", 0);
@@ -2263,7 +2260,7 @@ public:
 
         if (use.card != NULL && use.card->isKindOf("Slash")) {
             QList<SkillInvokeDetail> d;
-            foreach(ServerPlayer *p, use.to) {
+            foreach (ServerPlayer *p, use.to) {
                 if (p->isAlive() && p->dyingThreshold() == 1) {
                     if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
                         continue;
@@ -2300,13 +2297,6 @@ DeathSickle::DeathSickle(Card::Suit suit, int number)
 {
     setObjectName("DeathSickle");
 }
-
-
-
-
-
-
-
 
 StandardCardPackage::StandardCardPackage()
     : Package("standard_cards", Package::CardPack)

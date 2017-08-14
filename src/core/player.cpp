@@ -231,7 +231,6 @@ bool Player::isHiddenSkill(const QString &skill_name) const
     return hasSkill(skill_name);
 }
 
-
 QString Player::getShownHiddenGeneral() const
 {
     return shown_hidden_general;
@@ -644,14 +643,12 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
 
     QString skill_name = skill->objectName();
     //prevent infinite recursion
-    if (include_hidden && !isSkillInvalid("anyun")
-        && (skills.contains("anyun") || acquired_skills.contains("anyun"))
-        && !skill->isLordSkill() && !skill->isAttachedLordSkill() 
-        && skill->getFrequency() != Skill::Limited && skill->getFrequency() != Skill::Wake  && skill->getFrequency() != Skill::Eternal
+    if (include_hidden && !isSkillInvalid("anyun") && (skills.contains("anyun") || acquired_skills.contains("anyun")) && !skill->isLordSkill() && !skill->isAttachedLordSkill()
+        && skill->getFrequency() != Skill::Limited && skill->getFrequency() != Skill::Wake && skill->getFrequency() != Skill::Eternal
         && (skill->getShowType() != "static" || hasFlag("has_anyu_state"))) {
         QString shown = shown_hidden_general;
         if (shown == NULL) {
-            foreach(QString hidden, hidden_generals) {
+            foreach (QString hidden, hidden_generals) {
                 const General *g = Sanguosha->getGeneral(hidden);
                 if (g->hasSkill(skill_name))
                     return true;

@@ -177,8 +177,7 @@ void Engine::addSkills(const QList<const Skill *> &all_skills)
             const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
             if (trigger_skill && trigger_skill->isGlobal())
                 global_trigger_skills << trigger_skill;
-        }
-        else if (skill->inherits("ViewAsSkill"))
+        } else if (skill->inherits("ViewAsSkill"))
             viewas_skills << qobject_cast<const ViewAsSkill *>(skill);
     }
 }
@@ -208,7 +207,7 @@ QList<const TriggerSkill *> Engine::getGlobalTriggerSkills() const
     return global_trigger_skills;
 }
 
-QList<const ViewAsSkill*> Engine::getViewAsSkills() const
+QList<const ViewAsSkill *> Engine::getViewAsSkills() const
 {
     return viewas_skills;
 }
@@ -626,7 +625,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const
 
 QString Engine::getVersionNumber() const
 {
-    return "20170721";
+    return "20170814";
 }
 
 QString Engine::getVersion() const
@@ -636,12 +635,12 @@ QString Engine::getVersion() const
 
 QString Engine::getVersionName() const
 {
-    return "V0.8.5";
+    return "V0.8.6";
 }
 
 QVersionNumber Engine::getQVersionNumber() const
 {
-    return QVersionNumber(0, 8, 5);
+    return QVersionNumber(0, 8, 6);
 }
 
 QString Engine::getMODName() const
@@ -1251,14 +1250,13 @@ int Engine::correctCardTarget(const TargetModSkill::ModType type, const Player *
     bool checkDoubleHidden = false;
     if (cardskill != NULL)
         checkDoubleHidden = from->isHiddenSkill(cardskill);
-    
+
     if (type == TargetModSkill::Residue) {
         foreach (const TargetModSkill *skill, targetmod_skills) {
             ExpPattern p(skill->getPattern());
             if (p.match(from, card)) {
                 int residue = skill->getResidueNum(from, card);
-                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName())
-                    && cardskill != skill->objectName() && !skill->objectName().startsWith("#" + cardskill))
+                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName()) && cardskill != skill->objectName() && !skill->objectName().startsWith("#" + cardskill))
                     continue;
                 if (residue >= 998)
                     return residue;
@@ -1270,10 +1268,9 @@ int Engine::correctCardTarget(const TargetModSkill::ModType type, const Player *
             ExpPattern p(skill->getPattern());
             if (p.match(from, card)) {
                 int distance_limit = skill->getDistanceLimit(from, card);
-                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName())
-                    && cardskill != skill->objectName() && !skill->objectName().startsWith("#"+cardskill))
+                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName()) && cardskill != skill->objectName() && !skill->objectName().startsWith("#" + cardskill))
                     continue;
-                    
+
                 if (distance_limit >= 998)
                     return distance_limit;
                 x += distance_limit;
@@ -1283,8 +1280,7 @@ int Engine::correctCardTarget(const TargetModSkill::ModType type, const Player *
         foreach (const TargetModSkill *skill, targetmod_skills) {
             ExpPattern p(skill->getPattern());
             if (p.match(from, card) && from->getMark("chuangshi_user") == 0) {
-                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName())
-                    && cardskill != skill->objectName() && !skill->objectName().startsWith("#" + cardskill))
+                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName()) && cardskill != skill->objectName() && !skill->objectName().startsWith("#" + cardskill))
                     continue;
                 x += skill->getExtraTargetNum(from, card);
             }

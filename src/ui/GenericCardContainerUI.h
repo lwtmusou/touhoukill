@@ -237,7 +237,6 @@ protected:
     QMap<QString, QGraphicsProxyWidget *> _m_privatePiles;
     QGraphicsProxyWidget *_m_privatePileArea;
 
-
     // The frame that is maintained by roomscene. Items in this area has positions
     // or contents that cannot be decided based on the information of PlayerCardContainer
     // alone. It is relative to other components in the roomscene. One use case is

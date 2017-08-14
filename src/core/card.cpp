@@ -21,7 +21,7 @@ Card::Card(Suit suit, int number, bool target_fixed)
     , m_suit(suit)
     , m_number(number)
     , m_id(-1)
-    ,can_damage(false)
+    , can_damage(false)
 {
     handling_method = will_throw ? Card::MethodDiscard : Card::MethodUse;
 }
@@ -679,7 +679,6 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
     thread->trigger(PreCardUsed, room, data);
     card_use = data.value<CardUseStruct>();
 
-    
     if (card_use.card->getTypeId() != TypeSkill) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), card_use.card->getSkillName(), QString());
         if (card_use.to.size() == 1)
@@ -694,8 +693,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
         room->moveCardsAtomic(moves, true);
         // show general
         player->showHiddenSkill(card_use.card->getSkillName());
-    }
-    else {
+    } else {
         const SkillCard *skill_card = qobject_cast<const SkillCard *>(card_use.card);
         // show general
         player->showHiddenSkill(skill_card->getSkillName());

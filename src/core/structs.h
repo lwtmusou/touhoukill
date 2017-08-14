@@ -51,7 +51,7 @@ struct CardEffectStruct
     bool multiple; // helper to judge whether the card has multiple targets
     // does not make sense if the card inherits SkillCard
     bool nullified;
-    bool canceled;//for cancel process, like "yuyi"
+    bool canceled; //for cancel process, like "yuyi"
 };
 
 struct SlashEffectStruct
@@ -503,7 +503,8 @@ struct SkillInvokeDetail
 {
     explicit SkillInvokeDetail(const TriggerSkill *skill = NULL, ServerPlayer *owner = NULL, ServerPlayer *invoker = NULL, QList<ServerPlayer *> targets = QList<ServerPlayer *>(),
                                bool isCompulsory = false, ServerPlayer *preferredTarget = NULL, bool showHidden = true);
-    SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, bool isCompulsory = false, ServerPlayer *preferredTarget = NULL, bool showHidden = true);
+    SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, bool isCompulsory = false, ServerPlayer *preferredTarget = NULL,
+                      bool showHidden = true);
 
     const TriggerSkill *skill; // the skill
     ServerPlayer *owner; // skill owner. 2 structs with the same skill and skill owner are treated as of a same skill.
@@ -580,7 +581,6 @@ struct ShownCardChangedStruct
     bool shown;
     bool moveFromHand;
 };
-
 
 struct ChoiceMadeStruct
 {

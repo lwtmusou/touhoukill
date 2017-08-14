@@ -1329,7 +1329,8 @@ void NianliDialog::popup()
     }
 
     QStringList card_names;
-    card_names << "slash" << "snatch";
+    card_names << "slash"
+               << "snatch";
 
     foreach (QString card_name, card_names) {
         QCommandLinkButton *button = new QCommandLinkButton;

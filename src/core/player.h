@@ -334,7 +334,7 @@ protected:
     QStringList skill_invalid;
     QList<int> shown_handcards;
     QList<int> broken_equips;
-    QStringList hidden_generals;//for anyun
+    QStringList hidden_generals; //for anyun
     QString shown_hidden_general;
 
 private:

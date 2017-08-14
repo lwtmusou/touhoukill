@@ -1499,7 +1499,6 @@ void ServerPlayer::removeBrokenEquips(QList<int> card_ids, bool sendLog, bool mo
     room->getThread()->trigger(BrokenEquipChanged, room, bv);
 }
 
-
 void ServerPlayer::addHiddenGenerals(const QStringList &generals)
 {
     hidden_generals << generals;
@@ -1530,9 +1529,9 @@ void ServerPlayer::removeHiddenGenerals(const QStringList &generals)
     arg1 << QString();
     room->doBroadcastNotify(S_COMMAND_SET_SHOWN_HIDDEN_GENERAL, arg1);
 
-    foreach(QString name, generals) {
+    foreach (QString name, generals) {
         room->touhouLogmessage("#RemoveHiddenGeneral", this, name);
-        foreach(const Skill *skill, Sanguosha->getGeneral(name)->getVisibleSkillList()) {
+        foreach (const Skill *skill, Sanguosha->getGeneral(name)->getVisibleSkillList()) {
             room->handleAcquireDetachSkills(this, "-" + skill->objectName(), true);
         }
     }
@@ -1544,8 +1543,6 @@ void ServerPlayer::gainAnExtraTurn()
     room->getThread()->setNextExtraTurn(this);
 }
 
-
-
 void ServerPlayer::showHiddenSkill(const QString &skill_name)
 {
     if (skill_name == NULL)
@@ -1554,7 +1551,7 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
         return;
     if (hasSkill(skill_name)) {
         QString generalName;
-        foreach(QString name, hidden_generals) {
+        foreach (QString name, hidden_generals) {
             const General *hidden = Sanguosha->getGeneral(name);
             if (hidden->hasSkill(skill_name)) {
                 generalName = name;
@@ -1563,7 +1560,6 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
         }
         if (generalName != NULL) {
             room->touhouLogmessage("#ShowHiddenGeneral", this, generalName);
-
 
             JsonArray arg;
             arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
@@ -1579,10 +1575,10 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
             arg1 << generalName;
             room->doBroadcastNotify(S_COMMAND_SET_SHOWN_HIDDEN_GENERAL, arg1);
 
-            foreach(const Skill *skill, Sanguosha->getGeneral(generalName)->getVisibleSkillList()) {
-                if (!skill->isLordSkill() && !skill->isAttachedLordSkill()
-                    && skill->getFrequency() != Skill::Limited && skill->getFrequency() != Skill::Wake  && skill->getFrequency() != Skill::Eternal)
-                room->handleAcquireDetachSkills(this, skill->objectName(), true);
+            foreach (const Skill *skill, Sanguosha->getGeneral(generalName)->getVisibleSkillList()) {
+                if (!skill->isLordSkill() && !skill->isAttachedLordSkill() && skill->getFrequency() != Skill::Limited && skill->getFrequency() != Skill::Wake
+                    && skill->getFrequency() != Skill::Eternal)
+                    room->handleAcquireDetachSkills(this, skill->objectName(), true);
             }
             room->filterCards(this, this->getCards("hes"), true);
 
@@ -1601,9 +1597,9 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
         return QStringList();
 
     QList<const TargetModSkill *> tarmods;
-    foreach(QString hidden, getHiddenGenerals()) {
+    foreach (QString hidden, getHiddenGenerals()) {
         const General *g = Sanguosha->getGeneral(hidden);
-        foreach(const Skill *skill, g->getSkillList()) {
+        foreach (const Skill *skill, g->getSkillList()) {
             if (skill->inherits("TargetModSkill")) {
                 const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
                 tarmods << tarmod;
@@ -1613,37 +1609,36 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     if (tarmods.isEmpty())
         return QStringList();
 
-    
     QSet<QString> showExtraTarget;
     QSet<QString> showResidueNum;
     QSet<QString> showDistanceLimit;
     //check extra target
     int num = use.to.length() - 1;
     if (num >= 1) {
-        foreach(const TargetModSkill *tarmod, tarmods) {
+        foreach (const TargetModSkill *tarmod, tarmods) {
             if (tarmod->getExtraTargetNum(use.from, use.card) >= num)
                 showExtraTarget << tarmod->objectName();
         }
     }
-    
+
     //check ResidueNum
     num = use.from->usedTimes(use.card->getClassName()) - 1;
     if (num >= 1) {
-        foreach(const TargetModSkill *tarmod, tarmods) {
-            if (tarmod->getResidueNum(use.from, use.card) >= num) 
+        foreach (const TargetModSkill *tarmod, tarmods) {
+            if (tarmod->getResidueNum(use.from, use.card) >= num)
                 showResidueNum << tarmod->objectName();
         }
     }
 
     //check DistanceLimit
     int distance = 1;
-    foreach(ServerPlayer *p, use.to) {
+    foreach (ServerPlayer *p, use.to) {
         if (use.from->distanceTo(p) > distance)
             distance = use.from->distanceTo(p);
     }
     distance = distance - 1;
     if (distance >= 1) {
-        foreach(const TargetModSkill *tarmod, tarmods) {
+        foreach (const TargetModSkill *tarmod, tarmods) {
             if (tarmod->getDistanceLimit(use.from, use.card) >= distance)
                 showDistanceLimit << tarmod->objectName();
         }
@@ -1651,8 +1646,6 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     QSet<QString> shows = showExtraTarget.operator|(showDistanceLimit).operator|(showResidueNum);
     return shows.toList();
 }
-
-
 
 void ServerPlayer::copyFrom(ServerPlayer *sp)
 {

@@ -272,7 +272,7 @@ bool XihuaCard::targetFilter(const QList<const Player *> &targets, const Player 
 {
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return false;
-    
+
     if (user_string == NULL)
         return false;
     Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
@@ -281,7 +281,6 @@ bool XihuaCard::targetFilter(const QList<const Player *> &targets, const Player 
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && card->targetFixed())
         return false;
     return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
-
 }
 
 bool XihuaCard::targetFixed() const
@@ -290,7 +289,7 @@ bool XihuaCard::targetFixed() const
         return true;
     if (user_string == NULL)
         return false;
-    
+
     //return false defaultly
     //we need a confirming chance to pull back, since  this is a zero cards viewas Skill.
     return false;
@@ -300,7 +299,7 @@ bool XihuaCard::targetsFeasible(const QList<const Player *> &targets, const Play
 {
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
-    
+
     if (user_string == NULL)
         return false;
     Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
@@ -1373,18 +1372,17 @@ public:
         if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive && change.player->isAlive()) {
-                foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                     if (change.player != p && change.player->hasFlag("zhengti_" + p->objectName())
                         && change.player->getBrokenEquips().length() < change.player->getEquips().length())
                         d << SkillInvokeDetail(this, p, p, NULL, true, change.player);
                 }
             }
-        }
-        else if (e == DamageInflicted) {
+        } else if (e == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
             if (!damage.to->hasSkill(this))
                 return QList<SkillInvokeDetail>();
-            foreach(ServerPlayer *p, room->getOtherPlayers(damage.to)) {
+            foreach (ServerPlayer *p, room->getOtherPlayers(damage.to)) {
                 if (!p->getBrokenEquips().isEmpty())
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
             }
@@ -1393,7 +1391,7 @@ public:
     }
 
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {      
+    {
         if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
             QList<ServerPlayer *> targets;
@@ -1403,7 +1401,7 @@ public:
             }
             ServerPlayer *target = room->askForPlayerChosen(damage.to, targets, objectName(), "@zhengti-choose", false, true);
             QList<int> ids;
-            foreach(const Card *c, target->getCards("e")) {
+            foreach (const Card *c, target->getCards("e")) {
                 if (target->isBrokenEquip(c->getEffectiveId()))
                     ids << c->getEffectiveId();
             }
@@ -1423,7 +1421,7 @@ public:
             room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
             QList<int> ids;
-            foreach(const Card *c, target->getCards("e")) {
+            foreach (const Card *c, target->getCards("e")) {
                 if (!target->isBrokenEquip(c->getEffectiveId()))
                     ids << c->getEffectiveId();
             }
