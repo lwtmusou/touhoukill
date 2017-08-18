@@ -1301,7 +1301,7 @@ public:
     {
         DyingStruct dying = data.value<DyingStruct>();
 
-        if (dying.who->hasSkill(this) && dying.who->faceUp())
+        if (dying.who->hasSkill(this) && dying.who->faceUp() && dying.who->getHp() < dying.who->dyingThreshold())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dying.who, dying.who);
 
         return QList<SkillInvokeDetail>();

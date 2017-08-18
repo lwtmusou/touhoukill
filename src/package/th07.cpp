@@ -595,7 +595,7 @@ public:
         ServerPlayer *who = data.value<DyingStruct>().who;
         QList<ServerPlayer *> yukaris = room->findPlayersBySkillName(objectName());
         foreach (ServerPlayer *p, yukaris) {
-            if (who && p->getPile("jingjie").length() > 0 && p->canDiscard(who, "hes") && who->getHp() < 1)
+            if (who && p->getPile("jingjie").length() > 0 && p->canDiscard(who, "hes") && who->getHp() < who->dyingThreshold())
                 d << SkillInvokeDetail(this, p, p);
         }
         return d;
@@ -812,8 +812,10 @@ public:
             bool dying2 = dyingTag2.canConvert(QVariant::Bool) && dyingTag2.toBool();
             if (dying1 && !dying2) {
                 ServerPlayer *who = data.value<DyingStruct>().who;
-                foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName()))
-                    d << SkillInvokeDetail(this, p, p, NULL, false, who);
+                if (who->getHp() < who->dyingThreshold()) {
+                    foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName()))
+                        d << SkillInvokeDetail(this, p, p, NULL, false, who);
+                }
             }
         }
         return d;
@@ -958,7 +960,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *who = data.value<DyingStruct>().who;
-        if (who->hasSkill(this) && who->getEquips().length() == 0)
+        if (who->hasSkill(this) && who->getEquips().length() == 0 && who->getHp() < who->dyingThreshold())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, who, who);
         return QList<SkillInvokeDetail>();
     }

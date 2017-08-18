@@ -385,7 +385,7 @@ public:
             DyingStruct dying = data.value<DyingStruct>();
             if (dying.damage && dying.damage->from) {
                 ServerPlayer *killer = dying.damage->from;
-                if (killer->hasSkill(this) && killer != dying.who && killer->isAlive() && dying.who->getMark("@ice") == 0)
+                if (killer->hasSkill(this) && killer != dying.who && killer->isAlive() && dying.who->getMark("@ice") == 0 && dying.who->getHp() < dying.who->dyingThreshold())
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, killer, killer, NULL, true);
             }
         } else if (e == DamageCaused) {
@@ -837,7 +837,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *who = data.value<DyingStruct>().who;
-        if (who->isCurrent() || !who->hasSkill(this))
+        if (who->isCurrent() || !who->hasSkill(this) || who->getHp() >= who->dyingThreshold())
             return QList<SkillInvokeDetail>();
         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, who, who);
     }
@@ -2638,7 +2638,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *who = data.value<DyingStruct>().who;
-        if (who->hasSkill(this) && who->getMark("yizhi") == 0)
+        if (who->hasSkill(this) && who->getMark("yizhi") == 0 && who->getHp() < who->dyingThreshold())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, who, who, NULL, true);
         return QList<SkillInvokeDetail>();
     }
@@ -3380,7 +3380,7 @@ public:
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
         } else if (e == Dying) {
             ServerPlayer *who = data.value<DyingStruct>().who;
-            if (who->hasSkill(this))
+            if (who->hasSkill(this) && who->getHp() < who->dyingThreshold())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, who, who, NULL, true);
         }
         return QList<SkillInvokeDetail>();
