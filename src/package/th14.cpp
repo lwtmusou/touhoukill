@@ -346,55 +346,50 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        bool hasPeach = false;
-        ServerPlayer *player = invoke->targets.first();
-        ServerPlayer *victim = invoke->invoker;
-        Peach *dummy_peach = new Peach(Card::SuitToBeDecided, -1);
-        dummy_peach->deleteLater();
-        if (player->isCardLimited(dummy_peach, Card::MethodUse))
-            return false;
-
+    static int guizhaPeach(ServerPlayer *player, ServerPlayer *victim) {
         int peachId = -1; //force to use
-        foreach (const Card *card, player->getHandcards()) {
+        foreach(const Card *card, player->getHandcards()) {
             if (card->isKindOf("Peach")) {
-                hasPeach = true;
-                peachId = card->getEffectiveId();
-                break;
+                if (!player->isCardLimited(card, Card::MethodUse) && !player->isProhibited(victim,card)) {
+                    peachId = card->getEffectiveId();
+                    break;
+                }
+                
             }
         }
-        room->touhouLogmessage("#TriggerSkill", victim, objectName());
-        room->notifySkillInvoked(victim, objectName());
+        Room *room = player->getRoom();
+        room->touhouLogmessage("#TriggerSkill", victim, "guizha");
+        room->notifySkillInvoked(victim, "guizha");
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, victim->objectName(), player->objectName());
 
         room->showAllCards(player);
         room->getThread()->delay(1000);
         room->clearAG();
-        while (hasPeach && victim->getHp() < 1) {
-            const Card *supply_card = room->askForCard(player, "Peach|.|.|hand!", "@guizha:" + victim->objectName(), data, Card::MethodNone, victim, false, objectName(), false);
+        return peachId;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        bool hasPeach = false;
+        ServerPlayer *player = invoke->targets.first();
+        ServerPlayer *victim = invoke->invoker;
+
+        int peachId = guizhaPeach(player, victim);
+
+        while (peachId > -1 && victim->getHp() < victim->dyingThreshold()) {
+            const Card *supply_card = room->askForCard(player, "Peach|.|.|hand!", "@guizha:" + victim->objectName(), data, Card::MethodUse, victim, false, objectName(), false);
             //force to supply!
             peachId = (supply_card != NULL) ? supply_card->getEffectiveId() : peachId;
             Peach *peach = new Peach(Card::SuitToBeDecided, -1);
             peach->addSubcard(peachId);
             peach->setSkillName("_guizha");
             room->useCard(CardUseStruct(peach, player, victim), false);
-            if (victim->getHp() > 0) {
+            if (victim->getHp() >= victim->dyingThreshold()) {
                 room->setPlayerFlag(victim, "-Global_Dying");
                 return true; //avoid triggering askforpeach
             }
 
-            hasPeach = false;
-            foreach (const Card *card, player->getHandcards()) {
-                if (card->isKindOf("Peach")) {
-                    peachId = card->getEffectiveId();
-                    hasPeach = true;
-                    break;
-                }
-            }
-            room->showAllCards(player);
-            room->getThread()->delay(1000);
-            room->clearAG();
+            peachId = guizhaPeach(player, victim);
         }
 
         return false;
