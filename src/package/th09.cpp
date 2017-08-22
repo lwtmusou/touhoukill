@@ -177,6 +177,7 @@ public:
         : TriggerSkill("huiwu")
     {
         events << TargetConfirmed;
+        show_type = "static";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
