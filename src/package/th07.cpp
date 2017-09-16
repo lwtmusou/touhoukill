@@ -350,7 +350,7 @@ public:
         events << EventPhaseStart;
     }
 
-    static bool hasXijianPairs(const Player *yukari, const Player *target)
+    /*static bool hasXijianPairs(const Player *yukari, const Player *target)
     {
         if (target->isRemoved())
             return false;
@@ -363,9 +363,18 @@ public:
         if ((yukari == last || yukari->inMyAttackRange(last)) && checkXijianMove(target, last))
             return true;
         return false;
+    }*/
+
+    static bool isXijianPairs(const Player *target1, const Player *target2)
+    {
+        if (target1 == target2)
+            return false;
+        if (!target1->inMyAttackRange(target2) && !target2->inMyAttackRange(target1))
+            return checkXijianMove(target1, target2);
+        return false;
     }
 
-    static bool checkXijianMove(const Player *target, const Player *dist)
+    /*static bool checkXijianMove(const Player *target, const Player *dist)
     {
         const Player *next = target->getNextAlive();
         const Player *last = target->getLastAlive();
@@ -387,6 +396,26 @@ public:
             }
         }
         return false;
+    }*/
+
+    static bool checkXijianMove(const Player *src, const Player *dist)
+    {
+        if (src == dist)
+            return false;
+        if (!src->isKongcheng())
+            return true;
+  
+        foreach(const Card *card, src->getJudgingArea()) {
+            if (!dist->containsTrick(card->objectName()))
+                return true;
+        }
+       
+        foreach(const Card *e, src->getEquips()) {
+            const EquipCard *equip = qobject_cast<const EquipCard *>(e->getRealCard());
+            if (!dist->getEquip(equip->location()))
+                return true;
+        }   
+        return false;
     }
 };
 
@@ -397,10 +426,16 @@ XijianCard::XijianCard()
 
 bool XijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *yukari) const
 {
-    if (targets.length() == 0)
-        return !to_select->isAllNude() && (yukari == to_select || yukari->inMyAttackRange(to_select)); //!to_select->isRemoved();
+    if (targets.length() == 0) {
+        if (to_select->isAllNude())
+            return false;
+        foreach(const Player *p, to_select->getAliveSiblings()) {
+            if (XijianFunc::checkXijianMove(to_select, p))
+                return true;
+        }
+    }
     else if (targets.length() == 1)
-        return (yukari == to_select || yukari->inMyAttackRange(to_select)) && XijianFunc::checkXijianMove(targets.first(), to_select);
+        return XijianFunc::checkXijianMove(targets.first(), to_select);
     return false;
 }
 
@@ -429,16 +464,16 @@ void XijianCard::onUse(Room *room, const CardUseStruct &card_use) const
 
     QList<int> disable;
     QString flag = "";
-    if (to1->getHandcardNum() > to2->getHandcardNum())
+    if (to1->getHandcardNum() > 0)
         flag = flag + "hs";
-    if (to1->getJudgingArea().length() > to2->getJudgingArea().length()) {
+    if (to1->getJudgingArea().length() > 0) {
         flag = flag + "j";
         foreach (const Card *card, to1->getJudgingArea()) {
             if (to2->containsTrick(card->objectName()))
                 disable << card->getEffectiveId();
         }
     }
-    if (to1->getEquips().length() > to2->getEquips().length()) {
+    if (to1->getEquips().length() > 0) {
         flag = flag + "e";
         foreach (const Card *e, to1->getEquips()) {
             const EquipCard *equip = qobject_cast<const EquipCard *>(e->getRealCard());
@@ -502,8 +537,9 @@ public:
     {
         ServerPlayer *yukari = data.value<ServerPlayer *>();
         if (yukari && yukari->isAlive() && yukari->getPhase() == Player::Finish && yukari->hasSkill(this)) {
-            foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                if (XijianFunc::hasXijianPairs(yukari, p))
+            foreach (ServerPlayer *t1, room->getAlivePlayers()) {
+                foreach(ServerPlayer *t2, room->getOtherPlayers(t1))
+                if (XijianFunc::isXijianPairs(t1, t2))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yukari, yukari);
             }
         }

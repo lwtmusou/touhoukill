@@ -2078,7 +2078,7 @@ public:
             if (current && current->canDiscard(current, "hes"))
                 d << SkillInvokeDetail(this, p, p);
             else {
-                foreach (ServerPlayer *t, room->getOtherPlayers(p)) {
+               foreach (ServerPlayer *t, room->getOtherPlayers(p)) {
                     if (t->isChained() == p->isChained()) {
                         d << SkillInvokeDetail(this, p, p);
                         break;
@@ -2092,7 +2092,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         QList<ServerPlayer *> targets;
-        foreach (ServerPlayer *t, room->getOtherPlayers(invoke->invoker)) {
+        foreach (ServerPlayer *t, room->getAlivePlayers()) {
             if (t->isChained() == invoke->invoker->isChained() || (t->isCurrent() && t->canDiscard(t, "hes")))
                 targets << t;
         }
