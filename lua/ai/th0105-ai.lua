@@ -880,7 +880,7 @@ sgs.ai_skill_use_func.EzhaoCard=function(card,use,self)
 			table.insert(targets, p)
 		end
 	end
-	if #targets > 1 or ( #targets > 0 and sel.room:getAlivePlayers():length() == 2) then
+	if #targets > 1 or ( #targets > 0 and self.room:getAlivePlayers():length() == 2) then
 		use.card = card
 		if use.to then
 			for _,p in ipairs(targets) do

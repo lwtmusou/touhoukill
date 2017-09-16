@@ -345,7 +345,7 @@ return {
 	["yukimai"] = "雪 & 舞",
 	["&yukimai"] = "雪舞",
 	["#yukimai"] = "黑白双子" ,
-	["designer:yukimai"] = "dadwa",
+	["designer:yukimai"] = "dawda",
 
 	["jinduan"] = "禁断",
 	[":jinduan"] = "当一名角色于其回合外使用基本牌时，若其装备区有竖置的牌，你可以横置其装备区里所有的牌并令其获得此基本牌。",

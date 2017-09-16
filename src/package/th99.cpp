@@ -2055,9 +2055,8 @@ public:
         log.arg = objectName();
         room->sendLog(log);
 
-        room->setPlayerProperty(invoke->invoker, "chained", true);
-
         room->recover(invoke->invoker, RecoverStruct());
+        room->setPlayerProperty(invoke->invoker, "chained", true);
         return false;
     }
 };
@@ -2080,7 +2079,7 @@ public:
                 d << SkillInvokeDetail(this, p, p);
             else {
                 foreach (ServerPlayer *t, room->getOtherPlayers(p)) {
-                    if (t->isChained()) {
+                    if (t->isChained() == p->isChained()) {
                         d << SkillInvokeDetail(this, p, p);
                         break;
                     }
@@ -2094,7 +2093,7 @@ public:
     {
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *t, room->getOtherPlayers(invoke->invoker)) {
-            if (t->isChained() || (t->isCurrent() && t->canDiscard(t, "hes")))
+            if (t->isChained() == invoke->invoker->isChained() || (t->isCurrent() && t->canDiscard(t, "hes")))
                 targets << t;
         }
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@daoyao", true, true);
@@ -2109,7 +2108,7 @@ public:
         ServerPlayer *target = invoke->targets.first();
         if (target->isCurrent() && target->canDiscard(target, "hes"))
             choices << "discard";
-        if (target->isChained())
+        if (target->isChained() == invoke->invoker->isChained())
             choices << "draw";
         invoke->invoker->tag["daoyao-target"] = QVariant::fromValue(target);
         QString choice = room->askForChoice(invoke->invoker, objectName(), choices.join("+"), data);
