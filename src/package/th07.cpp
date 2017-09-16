@@ -430,12 +430,12 @@ bool XijianCard::targetFilter(const QList<const Player *> &targets, const Player
         if (to_select->isAllNude())
             return false;
         foreach(const Player *p, to_select->getAliveSiblings()) {
-            if (XijianFunc::checkXijianMove(to_select, p))
+            if (XijianFunc::isXijianPairs(to_select, p))
                 return true;
         }
     }
     else if (targets.length() == 1)
-        return XijianFunc::checkXijianMove(targets.first(), to_select);
+        return XijianFunc::isXijianPairs(targets.first(), to_select);
     return false;
 }
 
