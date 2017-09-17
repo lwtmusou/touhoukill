@@ -1418,7 +1418,7 @@ function rumoNum(player)
         if (role == "rebel") then
             rebel =rebel + 1
         elseif (role == "renegade") then
-            renegade = renegde + 1
+            renegade = renegade + 1
         elseif (role == "loyalist" or role == "lord") then
             loyalist = loyalist + 1
 		end
