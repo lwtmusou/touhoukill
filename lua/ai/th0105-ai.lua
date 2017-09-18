@@ -1042,7 +1042,6 @@ sgs.ai_skill_use_func.QirenCard=function(card,use,self)
 			end
 		end
 	elseif tmp:isKindOf("GlobalEffect") then
-		self.player:gainMark("@nima2")
 		for _, p in sgs.qlist(self.room:getAlivePlayers()) do
 			if not self.room:isProhibited(self.player, p, tmp) then
 				table.insert(targets, p)
