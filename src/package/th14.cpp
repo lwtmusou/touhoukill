@@ -346,15 +346,15 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    static int guizhaPeach(ServerPlayer *player, ServerPlayer *victim) {
+    static int guizhaPeach(ServerPlayer *player, ServerPlayer *victim)
+    {
         int peachId = -1; //force to use
-        foreach(const Card *card, player->getHandcards()) {
+        foreach (const Card *card, player->getHandcards()) {
             if (card->isKindOf("Peach")) {
-                if (!player->isCardLimited(card, Card::MethodUse) && !player->isProhibited(victim,card)) {
+                if (!player->isCardLimited(card, Card::MethodUse) && !player->isProhibited(victim, card)) {
                     peachId = card->getEffectiveId();
                     break;
                 }
-                
             }
         }
         Room *room = player->getRoom();
@@ -370,7 +370,6 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        bool hasPeach = false;
         ServerPlayer *player = invoke->targets.first();
         ServerPlayer *victim = invoke->invoker;
 

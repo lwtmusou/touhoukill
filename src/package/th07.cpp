@@ -341,100 +341,94 @@ public:
     }
 };
 
-class XijianFunc : public TriggerSkill
+namespace XijianFunc {
+
+//bool hasXijianPairs(const Player *yukari, const Player *target)
+//{
+//    if (target->isRemoved())
+//        return false;
+//    if (yukari != target && !yukari->inMyAttackRange(target))
+//        return false;
+//    const Player *next = target->getNextAlive();
+//    if ((yukari == next || yukari->inMyAttackRange(next)) && checkXijianMove(target, next))
+//        return true;
+//    const Player *last = target->getLastAlive();
+//    if ((yukari == last || yukari->inMyAttackRange(last)) && checkXijianMove(target, last))
+//        return true;
+//    return false;
+//}
+
+bool checkXijianMove(const Player *src, const Player *dist);
+
+bool isXijianPairs(const Player *target1, const Player *target2)
 {
-public:
-    XijianFunc()
-        : TriggerSkill("xijianFunc")
-    {
-        events << EventPhaseStart;
+    if (target1 == target2)
+        return false;
+    if (!target1->inMyAttackRange(target2) && !target2->inMyAttackRange(target1))
+        return checkXijianMove(target1, target2);
+    return false;
+}
+
+//bool checkXijianMove(const Player *target, const Player *dist)
+//{
+//    const Player *next = target->getNextAlive();
+//    const Player *last = target->getLastAlive();
+//    if (dist && dist != target && (next == dist || last == dist)) {
+//        if (target->getHandcardNum() > dist->getHandcardNum())
+//            return true;
+//        if (target->getJudgingArea().length() > dist->getJudgingArea().length()) {
+//            foreach (const Card *card, target->getJudgingArea()) {
+//                if (!dist->containsTrick(card->objectName()))
+//                    return true;
+//            }
+//        }
+//        if (target->getEquips().length() > dist->getEquips().length()) {
+//            foreach (const Card *e, target->getEquips()) {
+//                const EquipCard *equip = qobject_cast<const EquipCard *>(e->getRealCard());
+//                if (!dist->getEquip(equip->location()))
+//                    return true;
+//            }
+//        }
+//    }
+//    return false;
+//}
+
+bool checkXijianMove(const Player *src, const Player *dist)
+{
+    if (src == dist)
+        return false;
+    if (!src->isKongcheng())
+        return true;
+
+    foreach (const Card *card, src->getJudgingArea()) {
+        if (!dist->containsTrick(card->objectName()))
+            return true;
     }
 
-    /*static bool hasXijianPairs(const Player *yukari, const Player *target)
-    {
-        if (target->isRemoved())
-            return false;
-        if (yukari != target && !yukari->inMyAttackRange(target))
-            return false;
-        const Player *next = target->getNextAlive();
-        if ((yukari == next || yukari->inMyAttackRange(next)) && checkXijianMove(target, next))
+    foreach (const Card *e, src->getEquips()) {
+        const EquipCard *equip = qobject_cast<const EquipCard *>(e->getRealCard());
+        if (!dist->getEquip(equip->location()))
             return true;
-        const Player *last = target->getLastAlive();
-        if ((yukari == last || yukari->inMyAttackRange(last)) && checkXijianMove(target, last))
-            return true;
-        return false;
-    }*/
-
-    static bool isXijianPairs(const Player *target1, const Player *target2)
-    {
-        if (target1 == target2)
-            return false;
-        if (!target1->inMyAttackRange(target2) && !target2->inMyAttackRange(target1))
-            return checkXijianMove(target1, target2);
-        return false;
     }
-
-    /*static bool checkXijianMove(const Player *target, const Player *dist)
-    {
-        const Player *next = target->getNextAlive();
-        const Player *last = target->getLastAlive();
-        if (dist && dist != target && (next == dist || last == dist)) {
-            if (target->getHandcardNum() > dist->getHandcardNum())
-                return true;
-            if (target->getJudgingArea().length() > dist->getJudgingArea().length()) {
-                foreach (const Card *card, target->getJudgingArea()) {
-                    if (!dist->containsTrick(card->objectName()))
-                        return true;
-                }
-            }
-            if (target->getEquips().length() > dist->getEquips().length()) {
-                foreach (const Card *e, target->getEquips()) {
-                    const EquipCard *equip = qobject_cast<const EquipCard *>(e->getRealCard());
-                    if (!dist->getEquip(equip->location()))
-                        return true;
-                }
-            }
-        }
-        return false;
-    }*/
-
-    static bool checkXijianMove(const Player *src, const Player *dist)
-    {
-        if (src == dist)
-            return false;
-        if (!src->isKongcheng())
-            return true;
-  
-        foreach(const Card *card, src->getJudgingArea()) {
-            if (!dist->containsTrick(card->objectName()))
-                return true;
-        }
-       
-        foreach(const Card *e, src->getEquips()) {
-            const EquipCard *equip = qobject_cast<const EquipCard *>(e->getRealCard());
-            if (!dist->getEquip(equip->location()))
-                return true;
-        }   
-        return false;
-    }
-};
+    return false;
+}
+}
 
 XijianCard::XijianCard()
 {
     m_skillName = "xijian";
 }
 
-bool XijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *yukari) const
+bool XijianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
 {
     if (targets.length() == 0) {
         if (to_select->isAllNude())
             return false;
-        foreach(const Player *p, to_select->getAliveSiblings()) {
+        foreach (const Player *p, to_select->getAliveSiblings()) {
             if (XijianFunc::isXijianPairs(to_select, p))
                 return true;
         }
-    }
-    else if (targets.length() == 1)
+    } else if (targets.length() == 1)
         return XijianFunc::isXijianPairs(targets.first(), to_select);
     return false;
 }
@@ -538,9 +532,9 @@ public:
         ServerPlayer *yukari = data.value<ServerPlayer *>();
         if (yukari && yukari->isAlive() && yukari->getPhase() == Player::Finish && yukari->hasSkill(this)) {
             foreach (ServerPlayer *t1, room->getAlivePlayers()) {
-                foreach(ServerPlayer *t2, room->getOtherPlayers(t1))
-                if (XijianFunc::isXijianPairs(t1, t2))
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yukari, yukari);
+                foreach (ServerPlayer *t2, room->getOtherPlayers(t1))
+                    if (XijianFunc::isXijianPairs(t1, t2))
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yukari, yukari);
             }
         }
         return QList<SkillInvokeDetail>();
@@ -849,7 +843,7 @@ public:
             if (dying1 && !dying2) {
                 ServerPlayer *who = data.value<DyingStruct>().who;
                 if (who->getHp() < who->dyingThreshold()) {
-                    foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName()))
+                    foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName()))
                         d << SkillInvokeDetail(this, p, p, NULL, false, who);
                 }
             }

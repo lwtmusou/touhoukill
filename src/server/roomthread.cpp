@@ -471,8 +471,8 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
                 }
             }
             if (!isPreferredTargetSkill) {
-                std::sort(s.begin(), s.end(),
-                          [](const QSharedPointer<SkillInvokeDetail> &a1, const QSharedPointer<SkillInvokeDetail> &a2) { return a1->triggered && !a2->triggered; });
+                std::stable_sort(s.begin(), s.end(),
+                                 [](const QSharedPointer<SkillInvokeDetail> &a1, const QSharedPointer<SkillInvokeDetail> &a2) { return a1->triggered && !a2->triggered; });
                 // because these are of one single skill, so we can pick the invoke list using a trick like this
                 s.append(r);
                 r = s.mid(0, r.length());
@@ -485,6 +485,43 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
                 std::stable_sort(s.begin(), s.end(), preferredTargetLess);
 
                 {
+                    // we should mark the ones who passed the trigger order as triggered. Judging both r and s here
+                    // ASSUMING the values returned by TriggerSkill::triggerable are all with triggered == false
+                    QSharedPointer<SkillInvokeDetail> over_trigger_prefferedTarget;
+
+                    QListIterator<QSharedPointer<SkillInvokeDetail> > s_it(s);
+                    s_it.toBack();
+                    while (s_it.hasPrevious()) {
+                        const QSharedPointer<SkillInvokeDetail> p = s_it.previous();
+                        if (over_trigger_prefferedTarget.isNull() || !over_trigger_prefferedTarget->isValid()) {
+                            if (p->triggered) {
+                                over_trigger_prefferedTarget = p;
+                                break;
+                            }
+                        }
+                    }
+
+                    // find an over-triggered target, need to set all over-triggered items to triggered
+                    if (!over_trigger_prefferedTarget.isNull() && over_trigger_prefferedTarget->isValid()) {
+                        QListIterator<QSharedPointer<SkillInvokeDetail> > r_it(r);
+                        r_it.toBack();
+                        while (r_it.hasPrevious()) {
+                            const QSharedPointer<SkillInvokeDetail> p = r_it.previous();
+                            if (preferredTargetLess(p, over_trigger_prefferedTarget))
+                                p->triggered = true;
+                        }
+                        QListIterator<QSharedPointer<SkillInvokeDetail> > s_it(s);
+                        s_it.toBack();
+                        while (s_it.hasPrevious()) {
+                            const QSharedPointer<SkillInvokeDetail> p = s_it.previous();
+                            if (preferredTargetLess(p, over_trigger_prefferedTarget))
+                                p->triggered = true;
+                        }
+                    }
+                }
+
+                {
+                    // add new valid items to s and remove the invalid values from s, using r
                     QListIterator<QSharedPointer<SkillInvokeDetail> > r_it(r);
                     QMutableListIterator<QSharedPointer<SkillInvokeDetail> > s_it(s);
                     while (r_it.hasNext() && s_it.hasNext()) {
@@ -494,11 +531,12 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
                         if (r_now->preferredTarget == s_now->preferredTarget)
                             continue;
 
-                        // e.g. let r =  a b c d e f   h     k
+                        // e.g. let r =  a b c d e f   h
                         //      let s =  a b   d e f g h i j
                         // it pos:      *
 
-                        // the position of Qt's Java style iterator is between 2 items, we can use next() to get the next item and use previous() to get the previous item, and move the iterator according to the direction.
+                        // the position of Qt's Java style iterator is between 2 items,
+                        // we can use next() to get the next item and use previous() to get the previous item, and move the iterator according to the direction.
 
                         if (ServerPlayer::CompareByActionOrder(r_now->preferredTarget, s_now->preferredTarget)) {
                             // 1.the case that ServerPlayer::compareByActionOrder(r_now, s_now) == true, i.e. seat(r_now) < seat(s_now)
@@ -559,18 +597,6 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
 
                 // let the r become the invoke list.
                 r = s;
-
-                // we should mark the ones who passed the trigger order as triggered.
-                QListIterator<QSharedPointer<SkillInvokeDetail> > r_it(r);
-                r_it.toBack();
-                bool over_trigger = false;
-                while (r_it.hasPrevious()) {
-                    const QSharedPointer<SkillInvokeDetail> p = r_it.previous();
-                    if (p->triggered)
-                        over_trigger = true;
-                    else if (over_trigger)
-                        p->triggered = true;
-                }
             }
         }
 
@@ -590,7 +616,7 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
         // if over_trigger is valid, then mark the skills which missed the trigger timing as it has triggered.
         const QSharedPointer<SkillInvokeDetail> &detail = it.previous();
         if (over_trigger.isNull() || !over_trigger->isValid()) {
-            if (detail->triggered && !(*detail < *over_trigger))
+            if (detail->triggered)
                 over_trigger = detail;
         } else if (*detail < *over_trigger)
             detail->triggered = true;
@@ -599,14 +625,14 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
     detailsList = details;
 }
 
-bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room,
-                         QVariant &data) // player is deleted. a lot of things is able to put in data. make a struct for every triggerevent isn't absolutely unreasonable.
+// player is deleted. a lot of things is able to put in data. make a struct for every triggerevent isn't absolutely unreasonable.
+bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data)
 {
     EventTriplet triplet(triggerEvent, room);
     event_stack.push_back(triplet);
 
-    QList<const TriggerSkill *> skillList = skill_table
-        [triggerEvent]; // find all the skills, do the record first. it do the things only for record. it should not and must not interfere the procedure of other skills.
+    // find all the skills, do the record first. it do the things only for record. it should not and must not interfere the procedure of other skills.
+    QList<const TriggerSkill *> skillList = skill_table[triggerEvent];
     foreach (const TriggerSkill *skill, skillList)
         skill->record(triggerEvent, room, data);
 
@@ -628,7 +654,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room,
                     if (!ptr->isCompulsory)
                         sameTiming << ptr;
                     else {
-                        //For Compulsory Skill at the  same timing, just add the first one into sameTiming.  etc. like QinggangSword
+                        // For Compulsory Skill at the same timing, just add the first one into sameTiming. etc. like QinggangSword
                         bool sameTimingCompulsory = false;
                         foreach (const QSharedPointer<SkillInvokeDetail> &detail, sameTiming) {
                             if (detail->skill == ptr->skill) {
@@ -648,10 +674,9 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room,
 
             QSharedPointer<SkillInvokeDetail> invoke = sameTiming.first();
             // treat the invoker is NULL, if the triggered skill is some kind of gamerule
-            if (sameTiming.length() >= 2 && invoke->invoker != NULL
-                && (invoke->skill->getPriority() >= -5
-                    && invoke->skill->getPriority()
-                        <= 5)) { // if the priority is bigger than 5 or smaller than -5, that means it could be some kind of record skill, notify-client skill or fakemove skill, then no need to select the trigger order at this time
+            // if the priority is bigger than 5 or smaller than -5, that means it could be some kind of record skill,
+            //    notify-client skill or fakemove skill, then no need to select the trigger order at this time
+            if (sameTiming.length() >= 2 && invoke->invoker != NULL && (invoke->skill->getPriority() >= -5 && invoke->skill->getPriority() <= 5)) {
                 // select the triggerorder of same timing
                 // if there is a compulsory skill or compulsory effect, it shouldn't be able to cancel
                 bool has_compulsory = false;
@@ -675,7 +700,6 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room,
             }
 
             // if not cancelled, then we add the selected skill to triggeredList, and add the triggered times of the skill. then we process with the skill's cost and effect.
-
             invoke->triggered = true;
             triggered << invoke;
 
@@ -701,8 +725,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room,
                     interrupt = true;
                     break;
                 }
-            } else
-                invoke->triggered = true;
+            }
         }
 
         foreach (AI *ai, room->ais)
