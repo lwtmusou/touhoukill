@@ -991,7 +991,7 @@ local qiren_skill = {}
 qiren_skill.name = "qiren"
 table.insert(sgs.ai_skills, qiren_skill)
 function qiren_skill.getTurnUseCard(self)
-	if self.player:hasFlag("qiren") then return nil end
+	if self.player:hasFlag("qirenUsed") then return nil end
 	local shows = {} 
 	local cards1 = self.player:getCards("s")
 	for _, c in sgs.qlist(cards1) do
