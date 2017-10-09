@@ -4265,7 +4265,8 @@ function SmartAI:ableToSave(saver, dying)
 
 	local peach = sgs.cloneCard("peach", sgs.Card_NoSuitRed, 0)
 
-	if saver:isCardLimited(peach, sgs.Card_MethodUse, true) and not saver:hasSkills("jiuzhu|chunlao|nosjiefan|renxin") then return false end
+	if (saver:isCardLimited(peach, sgs.Card_MethodUse, true) or  self.room:isProhibited(saver, dying, peach))
+	  and not saver:hasSkills("jiuzhu|chunlao|nosjiefan|renxin") then return false end
 
 	return true
 end
@@ -4278,7 +4279,7 @@ function SmartAI:willUsePeachTo(dying)
 	local card_str
 	local forbid = sgs.cloneCard("peach")
 
-	if self.player:isLocked(forbid) or dying:isLocked(forbid) then
+	if self.player:isLocked(forbid) or dying:isLocked(forbid)  or self.room:isProhibited(self.player, dying, forbid)  then 
 		if not self:ableToSave(self.player, dying) then --【远吠】的问题
 			return "."
 		end
