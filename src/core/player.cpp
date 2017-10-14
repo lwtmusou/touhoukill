@@ -404,6 +404,8 @@ int Player::getAttackRange(bool include_weapon) const
 
 bool Player::inMyAttackRange(const Player *other) const
 {
+    if (other->isDead())
+        return false;
     if (distanceTo(other) == -1)
         return false;
     if (this == other)
