@@ -2093,7 +2093,8 @@ public:
     {
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *t, room->getAlivePlayers()) {
-            if (t->isChained() == invoke->invoker->isChained() || (t->isCurrent() && t->canDiscard(t, "hes")))
+            if ((t->isChained() == invoke->invoker->isChained() && t != invoke->invoker) || 
+                (t->isCurrent() && t->canDiscard(t, "hes")))
                 targets << t;
         }
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@daoyao", true, true);
@@ -2108,7 +2109,7 @@ public:
         ServerPlayer *target = invoke->targets.first();
         if (target->isCurrent() && target->canDiscard(target, "hes"))
             choices << "discard";
-        if (target->isChained() == invoke->invoker->isChained())
+        if (target != invoke->invoker && target->isChained() == invoke->invoker->isChained())
             choices << "draw";
         invoke->invoker->tag["daoyao-target"] = QVariant::fromValue(target);
         QString choice = room->askForChoice(invoke->invoker, objectName(), choices.join("+"), data);

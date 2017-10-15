@@ -410,7 +410,6 @@ bool Player::inMyAttackRange(const Player *other) const
         return false;
     if (this == other)
         return false;
-
     return distanceTo(other) <= getAttackRange();
 }
 
