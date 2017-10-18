@@ -2116,7 +2116,7 @@ void KnownBoth::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
         room->setTag("KnownBothUsed", true);
         foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
             if (p->getMark("KnownBoth_Limit") == 0) {
-                room->setPlayerCardLimitation(p, "use", ".|.|.|show", true);
+                room->setPlayerCardLimitation(p, "use,response", ".|.|.|show", true);
                 room->setPlayerMark(p, "KnownBoth_Limit", 1);
             }
         }
@@ -2148,7 +2148,7 @@ public:
             if (change.to == Player::NotActive) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getMark("KnownBoth_Limit") > 0) {
-                        room->removePlayerCardLimitation(p, "use", ".|.|.|show$1");
+                        room->removePlayerCardLimitation(p, "use,response", ".|.|.|show$1");
                         room->setPlayerMark(p, "KnownBoth_Limit", 0);
                     }
                 }
