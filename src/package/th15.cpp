@@ -389,6 +389,7 @@ public:
     }
 };
 
+/*
 class Yuyi : public TriggerSkill
 {
 public:
@@ -627,6 +628,153 @@ public:
     }
 };
 
+*/
+
+class Kuangluan : public TriggerSkill
+{
+public:
+    Kuangluan()
+        : TriggerSkill("kuangluan")
+    {
+        events << CardsMoveOneTime;
+        frequency = Skill::Compulsory;
+    }
+
+   
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        
+        if (room->getTag("FirstRound").toBool())
+            return QList<SkillInvokeDetail>();
+
+        QList<SkillInvokeDetail> d;
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *playerTo = qobject_cast<ServerPlayer *>(move.to);
+        if (playerTo != NULL && playerTo->isAlive() && move.to_place == Player::PlaceHand && playerTo->getPhase() != Player::Draw) {
+            bool trigger = false;
+            foreach(int id, move.card_ids) {
+                if (!playerTo->isShownHandcard(id) 
+                    && room->getCardPlace(id) == Player::PlaceHand && room->getCardOwner(id) == playerTo) {
+                    trigger = true;
+                    break;
+                }
+            }
+            if (!trigger)
+                return d;
+            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName()))
+                d << SkillInvokeDetail(this, p, playerTo, NULL, true);
+        }
+        
+        return d;
+    }
+
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        QList<int> ids;
+        foreach(int id, move.card_ids) {
+            if (!invoke->invoker->isShownHandcard(id)
+                && room->getCardPlace(id) == Player::PlaceHand && room->getCardOwner(id) == invoke->invoker) {
+                ids << id;
+            }
+        }
+        if (!ids.isEmpty()) {
+            if (invoke->owner != invoke->invoker)
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->owner->objectName(), invoke->invoker->objectName());
+            room->touhouLogmessage("#TriggerSkill", invoke->owner, objectName());
+            invoke->invoker->addToShownHandCards(ids);
+        }
+            
+        return false;
+    }
+};
+
+
+class Yuyi : public TriggerSkill
+{
+public:
+    Yuyi()
+        : TriggerSkill("yuyi")
+    {
+        events << EventPhaseStart << EventPhaseChanging;
+
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasFlag("yuyi_invalidity")) {
+                        room->setPlayerSkillInvalidity(p, NULL, false);
+                    }
+                }
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e != EventPhaseStart)
+            return QList<SkillInvokeDetail>();
+        ServerPlayer *current = data.value<ServerPlayer *>();
+        if (current->isDead() || current->getPhase() != Player::Play)
+            return QList<SkillInvokeDetail>();
+
+        QList<SkillInvokeDetail> d;
+        if (current->hasSkill(this)) {
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                if (!p->getShownHandcards().isEmpty()) {
+                    d << SkillInvokeDetail(this, current, current);
+                    break;
+                }
+            }
+        }
+        if (current->getShownHandcards().isEmpty()) {
+            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName()))
+                if (p != current)
+                    d << SkillInvokeDetail(this, p, p);
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        return invoke->invoker->askForSkillInvoke(this);
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (invoke->invoker->isCurrent()) {
+            QList<ServerPlayer *> targets;
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                if (!p->getShownHandcards().isEmpty())
+                    targets << p;
+            }
+            foreach(ServerPlayer *t, targets) {
+                t->drawCards(1);
+                if (!t->hasFlag("yuyi_invalidity")) {
+                    room->setPlayerFlag(t, "yuyi_invalidity");
+                    room->setPlayerSkillInvalidity(t, NULL, true);
+                }
+            }
+        }
+        else {
+            ServerPlayer *current = data.value<ServerPlayer *>();
+            current->drawCards(1);
+            if (!current->hasFlag("yuyi_invalidity")) {
+                room->setPlayerFlag(current, "yuyi_invalidity");
+                room->setPlayerSkillInvalidity(current, NULL, true);
+            }
+        }
+        return false;
+    }
+};
+
+
 YidanCard::YidanCard()
 {
     will_throw = false;
@@ -808,8 +956,9 @@ TH15Package::TH15Package()
     General *sagume = new General(this, "sagume", "gzz", 4, false, true, true);
     Q_UNUSED(sagume)
 
+
     addMetaObject<YidanCard>();
-    skills << new YuyiEffect << new ChunhuaFilter;
+    skills  << new ChunhuaFilter; //<< new YuyiEffect
 }
 
 ADD_PACKAGE(TH15)
