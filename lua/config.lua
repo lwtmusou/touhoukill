@@ -42,10 +42,9 @@ config = {
 		--卡牌包
 		"StandardCard",
 		"StandardExCard",
+		"TestCard",
 		"Maneuvering",
-
-		--"touhoucard",
-
+        
 		--武将包
 		"Protagonist",
 		"TH0105",
@@ -64,7 +63,7 @@ config = {
 		"TouhouGod",
 		"Standard", --此包内带pattern的定义 不能屏蔽。。。
 		"Test",
-
+        
 	},
 
 	surprising_generals = {

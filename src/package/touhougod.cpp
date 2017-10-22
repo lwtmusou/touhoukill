@@ -4747,8 +4747,8 @@ public:
 
         //only for test
         //QSet<QString> test;
-        //if (init)
-        //   test << "chen" << "yukari" << "marisa_sp2";
+        //if (true)
+        //   test << "youmu_slm" << "yukari" << "marisa_sp2";
         //else
         //    test << "marisa" << "yukari" << "aya_sp";
         //return test.toList();
