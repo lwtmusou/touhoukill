@@ -754,6 +754,7 @@ public:
                 if (!p->getShownHandcards().isEmpty())
                     targets << p;
             }
+            room->sortByActionOrder(targets);
             foreach(ServerPlayer *t, targets) {
                 t->drawCards(1);
                 if (!t->hasFlag("yuyi_invalidity")) {
