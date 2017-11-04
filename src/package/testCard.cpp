@@ -306,10 +306,16 @@ void SpellDuel::onEffect(const CardEffectStruct &effect) const
     if (effect.from->isKongcheng() || effect.to->isKongcheng())
         return;
     Room *room = effect.from->getRoom();
-    if (effect.from->pindian(effect.to, "diaoping", NULL))
-        room->damage(DamageStruct(objectName(), effect.from, effect.to));
-    else
-        room->damage(DamageStruct(objectName(), effect.to, effect.from));
+
+
+    if (effect.from->pindian(effect.to, "spell_duel", NULL)) {
+        DamageStruct damage(this, effect.from, effect.to);
+        room->damage(damage);
+    } else {
+        DamageStruct damage(this, effect.to, effect.from);
+        damage.by_user = false;
+        room->damage(damage);
+    }    
 }
 
 
