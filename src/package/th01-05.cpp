@@ -2846,6 +2846,147 @@ public:
     }
 };
 
+
+class Xunlun : public TriggerSkill
+{
+public:
+    Xunlun()
+        : TriggerSkill("xunlun")
+    {
+        events << CardUsed << CardResponded;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        ServerPlayer *player = NULL;
+        const Card *card = NULL;
+        if (e == CardUsed) {
+            player = data.value<CardUseStruct>().from;
+            card = data.value<CardUseStruct>().card;
+        }
+        else {
+            CardResponseStruct response = data.value<CardResponseStruct>();
+            player = response.m_from;
+            if (response.m_isUse)
+                card = response.m_card;
+        }
+        if (card == NULL || card->getTypeId() != Card::TypeBasic)
+            return QList<SkillInvokeDetail>();
+        if (player == NULL || player->isDead() || player->isCurrent() || player->getCards("h").isEmpty())
+            return QList<SkillInvokeDetail>();
+        
+
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName()))
+            d << SkillInvokeDetail(this, p, p, NULL, false, player);
+        return d;
+    }
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *target = invoke->targets.first();
+        if (target->getCards("h").isEmpty())
+            return false;
+
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
+        const Card *card = NULL;
+        if (e == CardUsed)
+            card = data.value<CardUseStruct>().card;
+        else {
+            CardResponseStruct response = data.value<CardResponseStruct>();
+            card = response.m_card;
+        }
+
+        int id = room->askForCardChosen(invoke->invoker, target, "h", objectName());
+        target->addToShownHandCards(QList<int>() << id);
+        if (Sanguosha->getCard(id)->getColor() != card->getColor())
+            target->drawCards(1);
+        return false;
+    }
+};
+
+class Chenjue : public TriggerSkill
+{
+public:
+    Chenjue()
+        : TriggerSkill("chenjue")
+    {
+        events << EventPhaseStart;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        ServerPlayer *current = data.value<ServerPlayer *>();
+        if (current->isDead() || current->getPhase() != Player::Finish)
+            return QList<SkillInvokeDetail>();
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            if (p != current && p->getHandcardNum() == current->getHandcardNum() && !current->isKongcheng())
+                d << SkillInvokeDetail(this, p, current);
+        }
+
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->owner))) {
+            room->broadcastSkillInvoke(objectName());
+            room->notifySkillInvoked(invoke->owner, objectName());
+            LogMessage log;
+            log.type = "#InvokeOthersSkill";
+            log.from = invoke->invoker;
+            log.to << invoke->owner;
+            log.arg = objectName();
+            room->sendLog(log);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        
+        const Card *card1 = room->askForCard(invoke->invoker, ".|.|.|hand!", "@chenjue:" + invoke->owner->objectName(), data, Card::MethodNone);
+        if (!card1) {
+            // force !!!
+            QList<const Card *> hc1 = invoke->invoker->getHandcards();
+            int x = qrand() % hc1.length();
+            card1 = hc1.value(x);
+        }
+        const Card *card2 = room->askForCard(invoke->owner, ".|.|.|hand!", "@chenjue:" + invoke->invoker->objectName(), data, Card::MethodNone);
+        if (!card2) {
+            // force !!!
+            QList<const Card *> hc2 = invoke->owner->getHandcards();
+            int y = qrand() % hc2.length();
+            card2 = hc2.value(y);
+        }
+
+
+        bool shown1 = invoke->invoker->isShownHandcard(card1->getId());
+        bool shown2 = invoke->owner->isShownHandcard(card2->getId());
+        QList<int>ids1;  ids1 << card1->getId();
+        QList<int>ids2;  ids2 << card2->getId();
+        QList<CardsMoveStruct> exchangeMove;
+        CardsMoveStruct move1(ids1, invoke->owner, Player::PlaceHand,
+            CardMoveReason(CardMoveReason::S_REASON_SWAP, invoke->invoker->objectName(), invoke->owner->objectName(), objectName(), QString()));
+        CardsMoveStruct move2(ids2, invoke->invoker, Player::PlaceHand,
+            CardMoveReason(CardMoveReason::S_REASON_SWAP, invoke->owner->objectName(), invoke->invoker->objectName(), objectName(), QString()));
+        exchangeMove.push_back(move1);
+        exchangeMove.push_back(move2);
+        room->moveCardsAtomic(exchangeMove, false);
+
+        if (shown1)
+            invoke->invoker->drawCards(1);
+        if (shown2)
+            invoke->owner->drawCards(1);
+
+        return false;
+    }
+};
+
 TH0105Package::TH0105Package()
     : Package("th0105")
 {
@@ -2915,8 +3056,8 @@ TH0105Package::TH0105Package()
     yumeko->addSkill(new Qiren);
 
     General *yukimai = new General(this, "yukimai", "pc98", 3, false);
-    yukimai->addSkill(new Jinduan);
-    yukimai->addSkill(new Liuzhuan);
+    yukimai->addSkill(new Xunlun);
+    yukimai->addSkill(new Chenjue);
 
     addMetaObject<ShiquCard>();
     addMetaObject<LianmuCard>();
