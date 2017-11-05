@@ -276,7 +276,7 @@ void AwaitExhausted::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.from->getRoom();
     effect.to->drawCards(2);
-    int num = qMin(2, effect.from->getCards("ehs").length());
+    int num = qMin(2, effect.to->getCards("ehs").length());
     if (num > 0)
         room->askForDiscard(effect.to, "AwaitExhausted", num, num, false, true);
 }
