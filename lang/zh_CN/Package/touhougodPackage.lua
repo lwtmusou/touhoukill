@@ -676,7 +676,7 @@ return{
 	["benzun"] = "本尊",
 	[":benzun"] = "<font color=\"blue\"><b>锁定技，</b></font>任意回合结束时，若你有明置的X，观看一张人物牌（回合外改为两张）并将其中一张扣置为X，移除明置的X。然后将体力上限调整为游戏开始时，并移除标记和人物牌上的牌。",
     ["#GetHuashen"] = "%from 获得了  %arg 张 X",
-    ["huashencard"] = "X化身",
+    ["huashencard"] = "X",
     ["#anyunShowStatic"] = "暗云（状态技）",
 	["#anyun_prohibit"] = "暗云（非法目标）",
     ["invoke_hidden_compulsory:compulsory"] = "你可以发动隐藏的锁定技 <font color=\"#FF8000\"><b>%src </b></font>。",

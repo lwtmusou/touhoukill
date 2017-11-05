@@ -4742,7 +4742,7 @@ public:
         // ban nue and zun
         if (banned.isEmpty())
             banned << "nue_god"
-                   << "zun";
+                   << "zun" << "koishi_god" << "seiga_god" << "youmu_god";
         return (all - banned - huashen_set - room_set).toList();
 
         //only for test
