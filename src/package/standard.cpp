@@ -69,6 +69,8 @@ bool EquipCard::targetFilter(const QList<const Player *> &targets, const Player 
     bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
     if (ignore)
         return targets.isEmpty();
+    if (Self->hasFlag("Global_shehuoInvokerFailed"))
+        return targets.isEmpty() && to_select->hasFlag("Global_shehuoFailed");
     return targets.isEmpty() && to_select == Self;
 }
 

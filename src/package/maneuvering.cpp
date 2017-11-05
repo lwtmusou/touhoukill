@@ -59,6 +59,8 @@ bool Analeptic::targetFilter(const QList<const Player *> &targets, const Player 
         if (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"))
             return true;
     }
+    if (Self->hasFlag("Global_shehuoInvokerFailed"))
+        return (to_select->hasFlag("Global_shehuoFailed") && IsAvailable(to_select, this));
     return false;
 }
 

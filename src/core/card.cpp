@@ -606,6 +606,8 @@ bool Card::targetFixed() const
     bool ignore = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
     if (ignore && !(isKindOf("SkillCard") || isKindOf("AOE") || isKindOf("GlobalEffect")))
         return false;
+    if (Self && Self->hasFlag("Global_shehuoInvokerFailed"))
+        return false;
     return target_fixed;
 }
 
@@ -702,7 +704,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
             room->moveCardTo(this, player, NULL, Player::DiscardPile, reason, true);
         }
     }
-
+    
     thread->trigger(CardUsed, room, data);
     thread->trigger(CardFinished, room, data);
 }
@@ -790,6 +792,11 @@ bool Card::isAvailable(const Player *player) const
     return !player->isCardLimited(this, handling_method) || (can_recast && !player->isCardLimited(this, Card::MethodRecast));
 }
 
+bool Card::ignoreCardValidty(const Player *player) const
+{
+    return false;
+}
+
 const Card *Card::validate(CardUseStruct &) const
 {
     return this;
@@ -834,6 +841,7 @@ Card::HandlingMethod Card::getHandlingMethod() const
 {
     return handling_method;
 }
+
 
 void Card::setFlags(const QString &flag) const
 {

@@ -175,7 +175,7 @@ CommonTranslationTable = {
 	["#GainMaxHp"] = "%from 增加了 %arg 点体力上限",
 	["#GetHp"] = "%from 当前体力为 %arg ，体力上限为 %arg2",
 	["#ChangeKingdom"] = "%from 把 %to 的势力由 %arg 改成了 %arg2",
-	["#AnalepticBuff"] = "%from 使用【<font color=\"yellow\"><b>酒</b></font>】，对 %to 造成的伤害从 %arg 点增加至 %arg2 点",
+	["#AnalepticBuff"] = "%from 因【<font color=\"yellow\"><b>酒</b></font>】的效果，对 %to 造成的伤害从 %arg 点增加至 %arg2 点",
 	["#GetMark"] = "%from 得到了 %arg2 枚 %arg 标记",
 	["#LoseMark"] = "%from 失去了 %arg2 枚 %arg 标记",
 	["$AddToPile"] = "%card 被作为 %arg 牌移出游戏",

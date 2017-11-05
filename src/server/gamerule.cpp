@@ -310,9 +310,13 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 if (card_use.card->isKindOf("Slash")) {
                     jink_list_backup = card_use.from->tag["Jink_" + card_use.card->toString()].toList();
                     QVariantList jink_list;
+                    int jink_num = 1;
+                    if (card_use.card->hasFlag("ZeroJink"))
+                        jink_num = 0;
                     for (int i = 0; i < card_use.to.length(); i++)
-                        jink_list.append(QVariant(1));
+                        jink_list.append(QVariant(jink_num));
                     card_use.from->tag["Jink_" + card_use.card->toString()] = QVariant::fromValue(jink_list);
+                    
                 }
                 if (card_use.from && !card_use.to.isEmpty()) {
                     thread->trigger(TargetSpecified, room, data);
@@ -502,8 +506,24 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     room->getThread()->trigger(TrickEffect, room, data);
                 }
             }
-            if (effect.to->isAlive() || effect.card->isKindOf("Slash"))
-                effect.card->onEffect(effect);
+            if (effect.to->isAlive() || effect.card->isKindOf("Slash")) {
+                //do chunhua effect
+                if (effect.card->hasFlag("chunhua") && !effect.card->isKindOf("Slash")) {
+                    room->touhouLogmessage("#Chunhua", effect.to, effect.card->objectName());
+                    if (effect.card->isBlack()) {
+                        DamageStruct d = DamageStruct(effect.card, effect.from, effect.to, 1, DamageStruct::Normal);
+                        room->damage(d);
+                    } else if (effect.card->isRed()) {
+                        RecoverStruct recover;
+                        recover.card = effect.card;
+                        recover.who = effect.from;
+                        room->recover(effect.to, recover);
+                    }
+                }
+                else
+                    effect.card->onEffect(effect);
+            }
+                
         }
 
         break;
@@ -574,7 +594,19 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
 
         if (effect.drank > 0)
             effect.to->setMark("SlashIsDrank", effect.drank);
-
+        //do chunhua effect
+        if (effect.slash->hasFlag("chunhua")) {
+            room->touhouLogmessage("#Chunhua", effect.to, effect.slash->objectName());
+            effect.nature = DamageStruct::Normal;
+            if (effect.slash->isRed()) {
+                RecoverStruct recover;
+                recover.card = effect.slash;
+                recover.who = effect.from;
+                room->recover(effect.to, recover);
+                break;
+            }
+        }
+            
         DamageStruct d = DamageStruct(effect.slash, effect.from, effect.to, 1, effect.nature);
         foreach (ServerPlayer *p, room->getAllPlayers(true)) {
             if (effect.slash->hasFlag("WushenDamage_" + p->objectName())) {

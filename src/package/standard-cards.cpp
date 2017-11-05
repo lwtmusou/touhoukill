@@ -368,6 +368,8 @@ bool Peach::targetFixed() const
                 return false;
         }
     }
+    if (Self && Self->hasFlag("Global_shehuoInvokerFailed"))
+        return false;
     return target_fixed;
 }
 
@@ -376,7 +378,6 @@ void Peach::onUse(Room *room, const CardUseStruct &card_use) const
     CardUseStruct use = card_use;
     if (use.to.isEmpty())
         use.to << use.from;
-
     BasicCard::onUse(room, use);
 }
 
@@ -396,6 +397,9 @@ bool Peach::targetFilter(const QList<const Player *> &targets, const Player *to_
 {
     if (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"))
         return true;
+    if (Self->hasFlag("Global_shehuoInvokerFailed"))
+        return (to_select->hasFlag("Global_shehuoFailed") && to_select->isWounded());
+
     if (targets.isEmpty() && to_select->isWounded()) {
         bool globalDying = false;
         QList<const Player *> players = Self->getSiblings();
