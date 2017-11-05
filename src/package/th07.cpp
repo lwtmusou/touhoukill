@@ -768,7 +768,7 @@ public:
         if (damage.from->hasSkill(this))
             d << SkillInvokeDetail(this, damage.from, damage.from);
         foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName(), false)) {
-            if (damage.from != p)
+            if (damage.from != p && p->hasSkill(this, false, false))//check hidden
                 d << SkillInvokeDetail(this, p, damage.from);
         }
         return d;
@@ -807,10 +807,10 @@ public:
     Huanzang()
         : TriggerSkill("huanzang")
     {
-        events << Dying << TurnStart;
+        events << Dying << TurnStart << EventPhaseChanging;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         switch (triggerEvent) {
         case Dying: {
@@ -825,6 +825,14 @@ public:
         case TurnStart: {
             room->setTag("huanzang_first", false);
             room->setTag("huanzang_second", false);
+            break;
+        }
+        case EventPhaseChanging: {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAllPlayers())
+                    room->setPlayerFlag(p, "-huanzang");
+            }
             break;
         }
         default:
@@ -853,6 +861,7 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
         RecoverStruct recover;
         recover.who = invoke->invoker;
         recover.reason = objectName();
