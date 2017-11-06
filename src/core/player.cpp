@@ -1044,9 +1044,27 @@ bool Player::hasArmorEffect(const QString &armor_name, bool selfOnly) const
 }
 
 // @todo: fit skill shenbao.
-bool Player::hasTreasure(const QString &treasure_name) const
+bool Player::hasTreasure(const QString &treasure_name, bool selfOnly) const
 {
-    if (!treasure || getMark("Equips_Nullified_to_Yourself") > 0 || isBrokenEquip(treasure->getEffectiveId()))
+    if (getMark("Equips_Nullified_to_Yourself") > 0)
+        return false;
+
+    if (hasSkill("shenbao") && !selfOnly && treasure_name != "wooden_ox") {
+        foreach(const Player *p, getAliveSiblings()) {
+            if (p->treasure) {
+                if (treasure_name == "shenbao")
+                    return true;
+                WrappedCard *ar = p->treasure;
+                if (ar->objectName() == treasure_name || ar->isKindOf(treasure_name.toStdString().c_str()))
+                    return true;
+                const Card *real_related_treasure = Sanguosha->getEngineCard(ar->getEffectiveId());
+                if (real_related_treasure->objectName() == treasure_name || real_related_treasure->isKindOf(treasure_name.toStdString().c_str()))
+                    return true;
+            }
+        }
+    }
+
+    if (!treasure || isBrokenEquip(treasure->getEffectiveId()))
         return false;
     if (treasure->objectName() == treasure_name || treasure->isKindOf(treasure_name.toStdString().c_str()))
         return true;

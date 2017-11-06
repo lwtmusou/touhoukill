@@ -246,7 +246,7 @@ public:
 
     bool hasWeapon(const QString &weapon_name, bool selfOnly = false) const;
     bool hasArmorEffect(const QString &armor_name, bool selfOnly = false) const;
-    bool hasTreasure(const QString &treasure_name) const;
+    bool hasTreasure(const QString &treasure_name, bool selfOnly = false) const;
 
     bool isKongcheng() const;
     bool isNude() const;

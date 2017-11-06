@@ -3206,6 +3206,90 @@ public:
     }
 };
 
+class ShenbaoPagoda : public OneCardViewAsSkill
+{
+public:
+    ShenbaoPagoda()
+        : OneCardViewAsSkill("shenbao_pagoda")
+    {
+        attached_lord_skill = true;
+        response_or_use = true;//only skill shenbao can use WoodenOx
+    }
+
+    virtual bool shouldBeVisible(const Player *Self) const
+    {
+        return Self;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        if (player->hasTreasure("Pagoda") && !player->hasTreasure("Pagoda", true)) {
+            const ViewAsSkill *skill = Sanguosha->getViewAsSkill("Pagoda");
+            return skill->isEnabledAtResponse(player, pattern);
+        }
+        return false;
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    {
+        return selected.isEmpty() && to_select->isBlack() && !to_select->isEquipped();
+    }
+
+    const Card *viewAs(const Card *originalCard) const
+    { 
+        Card *ncard = new Nullification(originalCard->getSuit(), originalCard->getNumber());
+        ncard->addSubcard(originalCard);
+        ncard->setSkillName("Pagoda");
+        return ncard;
+    }
+
+    bool isEnabledAtNullification(const ServerPlayer *player) const
+    {
+        if (!EquipSkill::equipAvailable(player, EquipCard::TreasureLocation, "Pagoda"))
+            return false;
+        if (player->hasFlag("Pagoda_used"))
+            return false;
+        return !player->isKongcheng() || !player->getHandPile().isEmpty();
+    }
+};
+
+class ShenbaoJadeSeal : public ZeroCardViewAsSkill
+{
+public:
+    ShenbaoJadeSeal()
+        : ZeroCardViewAsSkill("shenbao_jadeSeal")
+    {
+        attached_lord_skill = true;
+    }
+
+    virtual bool shouldBeVisible(const Player *Self) const
+    {
+        return Self;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        if (player->hasTreasure("JadeSeal") && !player->hasTreasure("JadeSeal", true)) {
+            const ViewAsSkill *skill = Sanguosha->getViewAsSkill("JadeSeal");
+            return skill->isEnabledAtPlay(player);
+        }
+        return false;
+    }
+
+    virtual const Card *viewAs() const
+    {
+        KnownBoth *card = new KnownBoth(Card::SuitToBeDecided, -1);
+        card->setSkillName("JadeSeal");
+        return card;
+    }
+};
+
+
 class ShenbaoHandler : public TriggerSkill
 {
 public:
@@ -3221,12 +3305,20 @@ public:
             foreach (ServerPlayer *p, room->getAllPlayers()) {
                 if (p->hasSkill("shenbao", true) && !p->hasSkill("shenbao_spear"))
                     room->attachSkillToPlayer(p, "shenbao_spear");
+                if (p->hasSkill("shenbao", true) && !p->hasSkill("shenbao_pagoda"))
+                    room->attachSkillToPlayer(p, "shenbao_pagoda");
+                if (p->hasSkill("shenbao", true) && !p->hasSkill("shenbao_jadeSeal"))
+                    room->attachSkillToPlayer(p, "shenbao_jadeSeal");
             }
         }
         if (triggerEvent == Death || triggerEvent == EventLoseSkill) {
             foreach (ServerPlayer *p, room->getAllPlayers()) {
                 if (!p->hasSkill("shenbao", true) && p->hasSkill("shenbao_spear"))
                     room->detachSkillFromPlayer(p, "shenbao_spear", true);
+                if (!p->hasSkill("shenbao", true) && p->hasSkill("shenbao_pagoda"))
+                    room->detachSkillFromPlayer(p, "shenbao_pagoda", true);
+                if (!p->hasSkill("shenbao", true) && p->hasSkill("shenbao_jadeSeal"))
+                    room->detachSkillFromPlayer(p, "shenbao_jadeSeal", true);
             }
         }
     }
@@ -5157,7 +5249,8 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<XinhuaCard>();
     addMetaObject<RumoCard>();
 
-    skills << new Ziwo << new Benwo << new Chaowo << new Wendao << new ShenbaoSpear << new RoleShownHandler;
+    skills << new Ziwo << new Benwo << new Chaowo << new Wendao << new ShenbaoSpear << new RoleShownHandler 
+        << new ShenbaoPagoda << new ShenbaoJadeSeal;
 }
 
 ADD_PACKAGE(TouhouGod)
