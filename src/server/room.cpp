@@ -1272,6 +1272,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     s.args << trick->getClassName() << to->objectName() << (positive ? "true" : "false");
     QVariant d = QVariant::fromValue(s);
     thread->trigger(ChoiceMade, this, d);
+    int pagoda = getTag("NullifyingTimes").toInt();
     setTag("NullifyingTimes", getTag("NullifyingTimes").toInt() + 1);
 
     bool result = true;
@@ -1285,12 +1286,29 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
         setPlayerFlag(repliedPlayer, "-nullifiationNul");
     }
 
+
     if (card->isCancelable(effect)) {
         if (result) {
             result = !_askForNullification(card, repliedPlayer, to, !positive, aiHelper);
         } else {
             result = _askForNullification(trick, from, to, positive, aiHelper);
         }
+    }
+    if (pagoda == 0 && result && EquipSkill::equipAvailable(repliedPlayer, EquipCard::TreasureLocation, "Pagoda")) {
+        bool isLastTarget = true;
+        foreach(QString flag, trick->getFlags()) {
+            if (flag.startsWith("LastTrickTarget_")) {
+                QStringList f = flag.split("_");
+                ServerPlayer *last = findPlayerByObjectName(f.at(1));
+                if (last) {
+                    if (last != to)
+                        isLastTarget = false;
+                    break;
+                }              
+            }
+        }
+        if (!isLastTarget && askForSkillInvoke(repliedPlayer,"Pagoda"))
+            setCardFlag(trick, "PagodaNullifiation");
     }
     return result;
 }

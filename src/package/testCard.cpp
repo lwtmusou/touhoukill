@@ -174,6 +174,113 @@ void JadeSeal::onUninstall(ServerPlayer *player) const
 }
 
 
+
+class PagodaSkill : public OneCardViewAsSkill
+{
+public:
+    PagodaSkill()
+        : OneCardViewAsSkill("Pagoda")
+    {
+        filter_pattern = ".|black|.|hand";
+        response_pattern = "nullification";
+        //response_or_use = true;//only skill shenbao can use WoodenOx
+    }
+
+
+    const Card *viewAs(const Card *originalCard) const
+    {
+        Card *ncard = new Nullification(originalCard->getSuit(), originalCard->getNumber());
+        ncard->addSubcard(originalCard);
+        ncard->setSkillName(objectName());
+        return ncard;
+    }
+
+    bool isEnabledAtNullification(const ServerPlayer *player) const
+    {
+        if (!EquipSkill::equipAvailable(player, EquipCard::TreasureLocation, objectName()))
+            return false;
+        if (player->hasFlag("Pagoda_used"))
+            return false;
+        return !player->isKongcheng();// || !player->getHandPile().isEmpty();
+    }
+
+};
+
+Pagoda::Pagoda(Suit suit, int number)
+    : Treasure(suit, number)
+{
+    setObjectName("Pagoda");
+}
+
+class PagodaTriggerSkill : public TreasureSkill
+{
+public:
+    PagodaTriggerSkill()
+        : TreasureSkill("Pagoda_trigger")
+    {
+        events << PreCardUsed << EventPhaseChanging << Cancel;
+        frequency = Compulsory;
+        global = true;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == PreCardUsed)
+        {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from && use.card && use.card->getSkillName() == "Pagoda")
+            {
+                room->setPlayerFlag(use.from, "Pagoda_used");
+            }
+        }
+        else if (e == EventPhaseChanging)
+        {
+            foreach(ServerPlayer *p, room->getAllPlayers())
+                room->setPlayerFlag(p, "-Pagoda_used");
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
+    {
+        if (e != Cancel)
+            return QList<SkillInvokeDetail>();
+        if (data.canConvert<CardEffectStruct>()) {
+            CardEffectStruct effect = data.value<CardEffectStruct>();
+            if (!effect.card->hasFlag("PagodaNullifiation"))
+                return QList<SkillInvokeDetail>();
+
+            if (effect.to->isAlive())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
+
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        effect.canceled = true;
+        data = QVariant::fromValue(effect);
+
+        LogMessage log;
+        log.type = "#PagodaNullified";
+        log.from = effect.to;
+        log.arg = effect.card->objectName();
+        log.arg2 = "Pagoda";
+        room->sendLog(log);
+        room->setEmotion(effect.to, "skill_nullify");
+        return true;
+    }
+};
+
+void Pagoda::onUninstall(ServerPlayer *player) const
+{
+    ServerPlayer *current = player->getRoom()->getCurrent();
+    if (current)
+        player->getRoom()->setPlayerFlag(current, "-Pagoda_used");
+    Treasure::onUninstall(player);
+}
+
 class CamouflageSkill : public ArmorSkill
 {
 public:
@@ -413,9 +520,10 @@ TestCardPackage::TestCardPackage()
 {
     QList<Card *> cards;
 
-    cards << new Camera(Card::Diamond, 11) 
-        << new Gun(Card::Club, 13) 
-        << new JadeSeal(Card::Heart, 13) 
+    cards << new Camera(Card::Diamond, 11)
+        << new Gun(Card::Club, 13)
+        << new JadeSeal(Card::Heart, 13)
+        << new Pagoda(Card::Spade, 12)
         << new Camouflage(Card::Spade, 1) 
 
         << new AwaitExhausted(Card::Diamond, 4) << new AwaitExhausted(Card::Heart, 10)
@@ -425,7 +533,8 @@ TestCardPackage::TestCardPackage()
     foreach(Card *card, cards)
         card->setParent(this);
 
-    skills << new CameraSkill << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill
+    skills << new CameraSkill << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill 
+        << new PagodaSkill << new PagodaTriggerSkill
         <<new CamouflageSkill;
 }
 

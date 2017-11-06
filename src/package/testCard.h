@@ -28,11 +28,23 @@ class JadeSeal : public Treasure
     Q_OBJECT
 
 public:
-    Q_INVOKABLE JadeSeal(Card::Suit suit = Diamond, int number = 4);
+    Q_INVOKABLE JadeSeal(Card::Suit suit, int number);
 
     virtual void onUninstall(ServerPlayer *player) const;
 
 };
+
+class Pagoda : public Treasure
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Pagoda(Card::Suit suit, int number);
+
+    virtual void onUninstall(ServerPlayer *player) const;
+
+};
+
 
 class Camouflage : public Armor
 {
