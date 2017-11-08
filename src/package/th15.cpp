@@ -1437,7 +1437,8 @@ public:
         ServerPlayer *target = invoke->targets.first();
         room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
-        target->drawCards(target->getShownHandcards().length());
+        int num = qMin(5, target->getShownHandcards().length());
+        target->drawCards(num);
         target->turnOver();
         return false;
     }
