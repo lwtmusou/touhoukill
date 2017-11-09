@@ -2045,7 +2045,7 @@ bool KnownBoth::targetsFeasible(const QList<const Player *> &targets, const Play
             }
         }
     }
-    if (this->getSkillName() == "guaiqi") //modian is not count as HandPile
+    if (this->getSkillName() == "guaiqi" || this->getSkillName() == "JadeSeal") //modian is not count as HandPile
         rec = false;
 
     if (rec && Self->isCardLimited(this, Card::MethodUse))
