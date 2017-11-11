@@ -2,7 +2,7 @@ To build QSanguosha with VS2015
 Tips: "~" stands for the folder where the repo is in.
 
 1. Install the Qt5Package addin for VS2015
-  Open VS2015, select Tools->Extensions and Updates, search for "Qt5Package" and install it.
+  Open VS2015, select Tools->Extensions and Updates, search for "QtPackage" and install it.
 
 2. Download and then install following packages: 
 (1) QT libraries for Windows (Visual Studio 2015, 5.6) http://download.qt.io/official_releases/qt/
