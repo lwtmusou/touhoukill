@@ -516,7 +516,7 @@ void Kusuri::onEffect(const CardEffectStruct &effect) const
 
 
 TestCardPackage::TestCardPackage()
-    : Package("testCard", Package::CardPack)
+    : Package("test_card", Package::CardPack)
 {
     QList<Card *> cards;
 

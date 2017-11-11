@@ -663,6 +663,7 @@ function SmartAI:getUsePriority(card)  --优先度 要考虑目标角色才合�
 		elseif card:isKindOf("Weapon") and not self.player:getWeapon() then v = (sgs.ai_use_priority[class_name] or 0) + 3
 		elseif card:isKindOf("DefensiveHorse") and not self.player:getDefensiveHorse() then v = 5.8
 		elseif card:isKindOf("OffensiveHorse") and not self.player:getOffensiveHorse() then v = 5.5
+		elseif card:isKindOf("Treasure") and not self.player:getTreasure() then v = (sgs.ai_use_priority[class_name] or 0) + 2
 		end
 		return v
 	end
@@ -2108,7 +2109,7 @@ sgs.ai_choicemade_filter.Nullification.general = function(self, player, args)
 		--开场无邪主公顺手跳明反
 		if  trick_class == "Snatch" then
 			local lord = getLord(player)
-			if self:playerGetRound(lord)==0 and lord:getPhase()==sgs.Player_Play then
+			if lord and self:playerGetRound(lord)==0 and lord:getPhase()==sgs.Player_Play then
 				sgs.updateIntention(player, lord, sgs.nullification_intention)
 			end
 		end
@@ -2791,7 +2792,8 @@ function SmartAI:filterEvent(event, player, data)
 				end
 
 				local zhanghe = self.room:findPlayerBySkillName("qiaobian")
-				if not (zhanghe and lord and self:playerGetRound(zhanghe) <= self:playerGetRound(lord) and self:isFriend(zhanghe, lord)) then
+				local consider_zhanghe = (zhanghe and lord and self:playerGetRound(zhanghe) <= self:playerGetRound(lord) and self:isFriend(zhanghe, lord))
+				if not consider_zhanghe then
 					if isCard("Indulgence", card, from) and lord and not lord:hasSkill("qiaobian") then
 						for _, target in sgs.qlist(self.room:getOtherPlayers(from)) do
 							if not (target:containsTrick("indulgence") or target:containsTrick("YanxiaoCard") or self:hasSkills("qiaobian", target)) then
@@ -5027,7 +5029,7 @@ local function prohibitUseDirectly(card, player)
 end
 
 local function getPlayerSkillList(player)
-	local skills = sgs.QList2Table(player:getVisibleSkillList())
+	local skills = sgs.QList2Table(player:getVisibleSkillList(true)) -- need check equip skill
 	if player:hasSkill("weidi") and not player:isLord() then
 		local lord = player:getRoom():getLord()
 		if lord then
@@ -6449,6 +6451,7 @@ function SmartAI:useEquipCard(card, use)
 	end
 	local canUseSlash = self:getCardId("Slash") and self:slashIsAvailable(self.player)
 	self:useCardByClassName(card, use)
+	
 	if use.card then return end
 	if card:isKindOf("Weapon") then
 		if self:needBear() then return end
@@ -6499,6 +6502,8 @@ function SmartAI:useEquipCard(card, use)
 			local wuguotai = self.room:findPlayerBySkillName("ganlu")
 			if (zhanghe and self:isEnemy(zhanghe)) or (wuguotai and self:isEnemy(wuguotai)) then return end
 			use.card = card
+		else
+		    use.card = card
 		end
 	elseif self:needBear() then return
 	elseif card:isKindOf("OffensiveHorse") then
@@ -8236,6 +8241,7 @@ dofile "lua/ai/debug-ai.lua"
 dofile "lua/ai/imagine-ai.lua"
 dofile "lua/ai/standard_cards-ai.lua"
 dofile "lua/ai/maneuvering-ai.lua"
+dofile "lua/ai/test_card-ai.lua"
 dofile "lua/ai/classical-ai.lua"
 --dofile "lua/ai/standard-ai.lua" (dofile "lua/ai/guanxing-ai.lua" in this)
 dofile "lua/ai/chat-ai.lua"
@@ -8244,7 +8250,7 @@ dofile "lua/ai/chat-ai.lua"
 --dofile "lua/ai/hulaoguan-ai.lua"
 dofile "lua/ai/guanxing-ai.lua"
 
-local loaded = "standard|standard_cards|maneuvering|sp"
+local loaded = "standard|standard_cards|maneuvering|test_card|sp"
 
 local files = table.concat(sgs.GetFileNames("lua/ai"), " ")
 local LUAExtensions = string.split(string.lower(sgs.GetConfig("LuaPackages", "")), "+")

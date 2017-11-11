@@ -1307,7 +1307,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
                 }              
             }
         }
-        if (!isLastTarget && askForSkillInvoke(repliedPlayer,"Pagoda"))
+        if (!isLastTarget && askForSkillInvoke(repliedPlayer,"Pagoda", data))
             setCardFlag(trick, "PagodaNullifiation");
     }
     return result;

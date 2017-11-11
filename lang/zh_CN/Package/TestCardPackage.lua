@@ -1,7 +1,7 @@
 -- translation for ManeuveringPackage
 
 return {
-	["testCard"] = "东方杀测试牌",
+	["test_card"] = "东方杀测试牌",
 
 
 	["Camera"] = "照相机",

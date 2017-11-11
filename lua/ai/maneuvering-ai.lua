@@ -328,8 +328,6 @@ function SmartAI:useCardSupplyShortage(card, use)
 	--东方杀中类张郃的角色
 	local mouko = self.room:findPlayerBySkillName("sidou")
 	local mouko_seat = mouko and mouko:faceUp() and not self:isFriend(mouko) and mouko:getSeat() or 0
-	local tiger = self.room:findPlayerBySkillName("jinghua")
-	local tiger_seat = tiger and tiger:faceUp()  and not self:isFriend(tiger) and tiger:getSeat() or 0
 	local marisa = self.room:findPlayerBySkillName("jiezou")
 	local marisa_seat = marisa and card:getSuit()==sgs.Card_Spade and marisa:faceUp()  and not self:isFriend(marisa) and marisa:getSeat() or 0
 
@@ -343,8 +341,6 @@ function SmartAI:useCardSupplyShortage(card, use)
 		if zhanghe_seat > 0 and (self:playerGetRound(zhanghe) <= self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 or not enemy:faceUp()) then
 			return - 100 end
 		if mouko_seat > 0 and (self:playerGetRound(mouko) <= self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 or not enemy:faceUp()) then
-			return - 100 end
-		if tiger_seat > 0 and (self:playerGetRound(tiger) <= self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 or not enemy:faceUp()) then
 			return - 100 end
 		if marisa_seat > 0 and (self:playerGetRound(marisa) < self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 or not enemy:faceUp()) then
 			return - 100 end
