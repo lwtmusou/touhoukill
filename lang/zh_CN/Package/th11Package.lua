@@ -32,7 +32,11 @@ return{
 	["huzhu_change"]= "护主",
 	["huzhu_change:slashtarget"]= "你可以响应 <font color=\"#00FF00\"><b>%dest </b></font> 的主公技“护主”，代替 <font color=\"#00FF00\"><b>%dest </b></font> 成为 <font color=\"#FF8000\"><b>%src </b></font> 使用的【%arg】的目标。",
 	["#huzhu_change"]= "%to 代替其成为 %from 使用的 %arg 的目标。",
-
+    
+	["youtong"]= "幽瞳",
+	[":youtong"]= "<font color=\"orange\"><b>主公技，</b></font>其他地势力角色选择另一名角色的牌时（使用除外），其可令你代为选择。",
+    ["@youtong"]= "你可令 主公技 “幽瞳” 的持有者 代替你选择  %src 的牌。",
+	
 --*********************************************
 	--dld002  势力：地 3血
 	["koishi"] = "古明地恋",

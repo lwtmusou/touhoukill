@@ -1322,6 +1322,31 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     static QChar handcard_flag('h');
     static QChar equip_flag('e');
     static QChar judging_flag('j');
+    
+    //lord skill: youtong
+    if (player != who && player->getKingdom() == "dld") {
+        QList<ServerPlayer *> targets;
+        foreach(ServerPlayer *p, getOtherPlayers(player)) {
+            if (p->hasLordSkill("youtong")) {
+                targets << p;
+            }
+        }
+        if (!targets.isEmpty()) {
+            ServerPlayer *lord = askForPlayerChosen(player, targets, "youtong", "@youtong:" + who->objectName(), true);
+            if (lord != NULL) {
+                LogMessage log;
+                log.type = "#InvokeOthersSkill";
+                log.from = player;
+                log.to << lord;
+                log.arg = "youtong";
+                sendLog(log);
+                
+                notifySkillInvoked(lord, "youtong");
+                doAnimate(S_ANIMATE_INDICATE, player->objectName(), lord->objectName());
+                player = lord;
+            }
+        }
+    }
 
     if (player->hasSkill("duxin")) {
         handcard_visible = true;

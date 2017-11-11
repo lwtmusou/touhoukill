@@ -209,6 +209,17 @@ sgs.ai_choicemade_filter.skillInvoke.huzhu_change = function(self, player, args)
 end
 
 
+sgs.ai_skill_playerchosen.youtong = function(self, targets)
+	for _,p in sgs.qlist(targets) do
+	    if self:isFriend(p) and p:hasSkill("duxin") then
+			return p 
+		end
+	end
+	return nil
+end
+sgs.ai_playerchosen_intention.youtong = -10
+
+
 local maihuo_skill = {}
 maihuo_skill.name = "maihuo"
 table.insert(sgs.ai_skills, maihuo_skill)
