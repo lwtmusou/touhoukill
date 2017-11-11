@@ -3,7 +3,7 @@
 #include "engine.h"
 #include "general.h"
 #include "room.h"
-
+#include "maneuvering.h"
 
 
 
@@ -519,17 +519,30 @@ TestCardPackage::TestCardPackage()
     : Package("test_card", Package::CardPack)
 {
     QList<Card *> cards;
-
-    cards << new Camera(Card::Diamond, 11)
+    //Equip
+    cards //<< new Camera(Card::Diamond, 11)
         << new Gun(Card::Club, 13)
         << new JadeSeal(Card::Heart, 13)
         << new Pagoda(Card::Spade, 12)
-        << new Camouflage(Card::Spade, 1) 
+        << new Camouflage(Card::Spade, 1)
 
+        //Trick
         << new AwaitExhausted(Card::Diamond, 4) << new AwaitExhausted(Card::Heart, 10)
-        << new SpellDuel(Card::Heart, 1) << new SpellDuel(Card::Diamond, 1)
-        << new Kusuri(Card::Diamond, 3) << new Kusuri(Card::Heart, 8) << new Kusuri(Card::Heart, 9);
+        //<< new SpellDuel(Card::Heart, 1) << new SpellDuel(Card::Diamond, 1)
 
+        << new Nullification(Card::Club, 12)
+        //Basic
+        //<< new Kusuri(Card::Diamond, 3) << new Kusuri(Card::Heart, 8) << new Kusuri(Card::Heart, 9)
+        << new Slash(Card::Spade, 7) << new Slash(Card::Spade, 9)
+        << new Slash(Card::Club, 7) << new Slash(Card::Club, 9)
+        << new Slash(Card::Heart, 8) << new Slash(Card::Diamond, 8)
+        << new ThunderSlash(Card::Spade, 8) << new ThunderSlash(Card::Club, 8)
+        << new FireSlash(Card::Heart, 9)
+
+
+        << new Analeptic(Card::Spade, 10)
+        << new Peach(Card::Heart, 4) << new Peach(Card::Diamond, 13)
+        << new Jink(Card::Heart, 5) << new Jink(Card::Heart, 6) << new Jink(Card::Diamond, 2) << new Jink(Card::Diamond, 11);
     foreach(Card *card, cards)
         card->setParent(this);
 
