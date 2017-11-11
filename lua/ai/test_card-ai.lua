@@ -50,3 +50,52 @@ sgs.ai_skill_invoke.Pagoda = function(self,data)
 	end
 	return false
 end
+
+
+
+function SmartAI:useCardAwaitExhausted(card, use)
+	
+	local targets = sgs.PlayerList()
+	local total_num = 2 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, card)
+
+	
+	self:sort(self.friends, "defense")
+	sgs.reverse(self.friends)
+	for _, friend in ipairs(self.friends) do
+		if card:targetFilter(targets, friend, self.player) and not targets:contains(friend)
+				and self:hasTrickEffective(card, friend, self.player) 
+				and not friend:isNude() 
+				and not (friend:hasSkill("gaoao") and not friend:isCurrent())then
+			use.card = card
+			targets:append(friend)
+			if use.to then 
+				use.to:append(friend)
+				if use.to:length() == total_num then return end
+			end
+		end
+	end
+	for _, enemy in ipairs(self.enemies) do
+		if card:targetFilter(targets, enemy, self.player) and not targets:contains(enemy)
+				and self:hasTrickEffective(card, enemy, self.player) 
+				and not enemy:isNude() 
+				and (enemy:hasSkill("gaoao") and not enemy:isCurrent())then
+			use.card = card
+			targets:append(enemy)
+			if use.to then
+				use.to:append(enemy)
+				if use.to:length() == total_num then return end
+			end
+		end
+	end
+end
+sgs.ai_use_priority.AwaitExhausted = sgs.ai_use_value.ExNihilo - 1
+sgs.ai_card_intention.AwaitExhausted = function(self, card, from, tos)
+	for _, to in ipairs(tos) do
+	    local gaoao = to:hasSkill("gaoao") and not to:isCurrent()
+		if not gaoao then
+			sgs.updateIntention(from, to, -10)
+		else
+			sgs.updateIntention(from, to, 40)
+		end
+	end
+end
