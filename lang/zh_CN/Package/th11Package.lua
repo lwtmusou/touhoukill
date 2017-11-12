@@ -222,6 +222,7 @@ return{
 	["cuiji_suit:red"] = "红色" ,
 	["cuiji_suit:black"] = "黑色",
 	["#cuiji_choice"]= "%from 发动了 “%arg”，选择了 “%arg2”。",
+	["#cuiji"] = "萃集" ,
 	["baigui"] = "百鬼" ,
 	[":baigui"] = "你可以将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌当【南蛮入侵】使用。" ,
 	["jiuchong"] = "酒虫" ,

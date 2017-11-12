@@ -244,4 +244,5 @@ return{
 	[":huisheng"] = "当其他角色使用的基本牌或普通锦囊牌结算后，若你为唯一目标，你可以视为对其使用同名同属性的牌。",
 	["~huisheng"] = "回声",
 	["@huisheng-use"] = "你可以发动“回声”，对 <font color=\"#00FF00\"><b>%src </b></font> 使用一张【%dest】。",
+	["#huisheng_effect"] = "回声",
 }

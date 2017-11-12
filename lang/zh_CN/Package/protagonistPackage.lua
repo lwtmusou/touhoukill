@@ -117,6 +117,7 @@ return {
 	["#shoucang_max"]= "本回合，%from的手牌上限+%arg2",
 	["@shoucang"] = "弃牌阶段，你可以发动“收藏”，展示任意数量的花色各不相同的手牌。",
 	["~shoucang"]= "选择展示的手牌→点击“确定”。",
+    ["#shoucang"] = "收藏（手牌上限）",
 
 --************************************************
  --zhu005  势力：主 4血
@@ -180,11 +181,16 @@ return {
 	["bllmwuyu"] = "五欲" ,
 	[":bllmwuyu"] = "准备阶段开始时，你可以将“欲”标记补至X+1枚（X为你已损失的体力值）。你可以弃一枚“欲”标记或一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，发动下列技能中的一个：<font color=\"blue\"><b>“名欲”</b></font>（你可以跳过判定阶段）<font color=\"blue\"><b>“财欲”</b></font>（摸牌阶段开始时，你可以摸一张牌）<font color=\"blue\"><b>“色欲”</b></font>（出牌阶段，你使用【杀】的额外次数上限+1）<font color=\"blue\"><b>“睡欲”</b></font>（弃牌阶段，你的手牌上限视为4）<font color=\"blue\"><b>“食欲”</b></font>（你可以将一张手牌当【酒】使用）" ,
 	["bllmcaiyu"] = "财欲" ,
+	["#bllmcaiyu"] = "财欲" ,
 	["bllmseyu"] = "色欲" ,
+	["#bllmseyu"] = "色欲" ,
 	["bllmmingyu"] = "名欲" ,
+	["#bllmmingyu"] = "名欲" ,
 	["bllmshiyu"] = "食欲" ,
+	["#bllmshiyu"] = "食欲" ,
 	["bllmshuiyu"] = "睡欲" ,
 	["#bllmshuiyu"] = "睡欲" ,
+	["#bllmshuiyu2"] = "睡欲" ,
 	["@bllm-discard"] = "你可以弃置一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，发动“%src”。" ,
 	["bllmwuyu:useyu"]= "你可以弃一枚“欲”标记，发动“%src”。" ,
 	["bllmwuyu:dismiss"] = "取消" ,
@@ -247,6 +253,7 @@ return {
 	["~qishu"] = "第一个目标为持有武器的角色，第二个目标为出杀的目标。",
 	["@qishu-add"] = "请选择【%arg】的额外目标",
 	["#QishuAdd"] = "%from 发动了“%arg2”为【%arg】增加了额外目标 %to",
+	["#qishu-mod"] = "奇术",
 
 --***********************************
 	--zhu010  势力：主 2血

@@ -118,7 +118,7 @@ return{
 	["@fengshen-discard"] = "请弃置一张【杀】，否则受到 <font color=\"#00FF00\"><b>%src </b></font> 对你造成的1点伤害",
 	["fengsu"] = "风速",
 	[":fengsu"] = "<font color=\"blue\"><b>锁定技，</b></font>你与其他角色的距离-X（X为你已损失的体力值），其他角色与你的距离+X。",
-
+	["#fengsu-effect"] = "风速",
 --************************************************
 	--fsl005  势力：风 3血
 	["nitori"] = "河城荷取",
@@ -141,6 +141,7 @@ return{
 	["xinshang"] = "心伤",
 	[":xinshang"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可令一名其他角色摸一张牌，然后其选择一项：将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌交给你，并令你于此回合内使用牌时无距离和使用次数限制；或令你依次弃置其两张牌。",
 	["@xinshang-spadecard"] = "请交给 <font color=\"#00FF00\"><b>%src </b></font> 一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌，否则将被 <font color=\"#00FF00\"><b>%src </b></font> 弃置两张牌。",
+	["#xinshang_effect"] = "心伤(后续)",
 	["micai"] = "迷彩",
 	[":micai"] = "<font color=\"blue\"><b>锁定技，</b></font>当你受到伤害时，若此伤害多于X点（X为你的手牌数），此伤害-1。",
 	["#micai01"]= "%from 的 “%arg” 被触发，防止了 %arg2 点伤害。",
@@ -193,7 +194,7 @@ return{
 	["@changshi"] = "常识",
 	["jinian"] = "纪念",
 	[":jinian"] = "当你失去的最后的手牌置入弃牌堆后，你可以获得之。<font color=\"green\"><b>每阶段限一次。</b></font>",
-
+    ["#jinian_clear"] = "纪念(后续)",
 --************************************************
 	--fsl008  势力：风 4血
 	["momizi"] = "犬走椛",

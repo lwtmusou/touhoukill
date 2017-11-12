@@ -59,7 +59,7 @@ return{
 	["xihua_skill_saveself"]= "戏画",
 	["#Xihua"] = "%from 发动了“%arg2”，声明此牌为 【%arg】，指定的目标为 %to",
 	["#XihuaNoTarget"] = "%from 发动了“%arg2”，声明此牌为 【%arg】",
-
+    ["#xihua_clear"]= "戏画(后续)",
 --*********************************************
 	--slm003  势力：灵 3血
 	["futo"] = "物部布都",
@@ -145,6 +145,7 @@ return{
 
 	["duzhua"]= "毒爪",
 	[":duzhua"]= "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一张红色手牌当【杀】使用，此【杀】不计入次数限制。",
+	["#duzhuaTargetMod"]= "毒爪",
 	["taotie"]= "饕餮",
 	[":taotie"]= "当其他角色使用【闪】时，若你已受伤，你可以判定，若结果为黑色，你回复1点体力。",
 

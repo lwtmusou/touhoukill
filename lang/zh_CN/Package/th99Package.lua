@@ -160,7 +160,7 @@ return{
 	["#pingyiLoseSkill"] = "<font color=\"#00FF00\"><b>%from</b></font> 的技能 “%arg” 因 凭依而失效",
 	["#pingyiReturnSkill"] = "<font color=\"#00FF00\"><b>%from</b></font> 的技能 “%arg” 重新生效",
 	["#pingyi_handle"] = "凭依(归还技能)",
-
+   
 --****************************
 	--wai008  势力：外 4血
 	["!sunny"] = "桑尼·米尔克",
@@ -264,7 +264,7 @@ return{
 	[":bihuo"] = "当你成为【杀】的目标时，你可以将所有手牌交给一名其他角色，将此【杀】转移给该角色。若如此做，此回合结束时，其将等量的手牌交给你。<font color=\"green\"><b>每回合限一次</b></font>",
 	["@bihuo-playerchosen"] = "<font color=\"#00FF00\"><b>%src </b></font> 对你使用了【杀】，你可以发动“避祸”，请指定一名其他角色。",
 	["@bihuo-return"]= "由于“避祸”的效果，请选择 %src 张手牌交给 <font color=\"#00FF00\"><b>%dest </b></font>。",
-
+    ["#bihuo"] = "避祸",
 
 
 --**************************************
