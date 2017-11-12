@@ -6260,6 +6260,7 @@ end
 function SmartAI:useTrickCard(card, use)
 	if not card then global_room:writeToConsole(debug.traceback()) return end
 	--handcardsNum will not reduce
+	if self.player:isLocked(card) then return end
 	if self:needBear() and not ("amazing_grace|ex_nihilo|snatch|iron_chain|collateral|lure_tiger"):match(card:objectName()) then return end
 	if self:touhouNeedBear(card) and not ("amazing_grace|ex_nihilo|snatch|iron_chain|collateral"):match(card:objectName()) then  return end
 	if self:needRende() and not card:isKindOf("ExNihilo") then return end
@@ -6406,7 +6407,8 @@ function SmartAI:useEquipCard(card, use)
 
 	if self:touhouNeedBear(card)  then  return end
 	--似乎应该分具体装备种类
-
+    if self.player:isLocked(card) then return end
+	
 	--除了藤甲外，还应该有 感应之于马匹，魔操等拆装流
 	if card:isKindOf("Vine") and not self.player:hasSkill("huanmeng") then
 		if self.player:hasSkills("here|yexing")  then return end
