@@ -1312,6 +1312,34 @@ function sgs.ai_cardsview.shenbao_spear(self, class_name, player)
 	end
 end
 
+local shenbao_jadeSeal_skill = {}
+shenbao_jadeSeal_skill.name = "shenbao_jadeSeal"
+table.insert(sgs.ai_skills, shenbao_jadeSeal)
+shenbao_spear_skill.getTurnUseCard = function(self, inclusive)
+	if not self.player:hasTreasure("JadeSeal") then return nil end
+	local treasure = self.player:getWeapon()
+	if treasure and treasure:isKindOf("JadeSeal") then return nil end
+	if self.player:hasFlag("JadeSeal_used") then
+		return nil
+	end
+	local c = sgs.cloneCard("known_both", sgs.Card_NoSuit, 0)
+	c:setSkillName("JadeSeal")
+	return c
+end
+
+sgs.ai_view_as.shenbao_pagoda = function(card, player, card_place)
+	if not player:hasFlag("Pagoda_used") then
+		local suit = card:getSuitString()
+		local number = card:getNumberString()
+		local card_id = card:getEffectiveId()
+		if card_place == sgs.Player_PlaceHand then
+			if card:isBlack() then
+				return ("nullification:Pagoda[%s:%s]=%d"):format(suit, number, card_id)
+			end
+		end
+	end
+end
+
 
 function SmartAI:executorRewardOrPunish(victim,damage)
 	local komachi = self.room:findPlayerBySkillName("yindu")
