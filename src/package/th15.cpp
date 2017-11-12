@@ -1010,6 +1010,7 @@ public:
             if (change.to == Player::NotActive) {
                 foreach(ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasFlag("yuyi_invalidity")) {
+                        room->setPlayerFlag(p, "-yuyi_invalidity");
                         room->setPlayerSkillInvalidity(p, NULL, false);
                     }
                 }
@@ -1056,8 +1057,10 @@ public:
                     targets << p;
             }
             room->sortByActionOrder(targets);
-            foreach(ServerPlayer *t, targets) {
+            foreach(ServerPlayer *t, targets)
                 t->drawCards(1);
+
+            foreach(ServerPlayer *t, targets) {
                 if (!t->hasFlag("yuyi_invalidity")) {
                     room->setPlayerFlag(t, "yuyi_invalidity");
                     room->setPlayerSkillInvalidity(t, NULL, true);
@@ -1296,10 +1299,9 @@ public:
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
                 foreach(ServerPlayer *p, room->getAllPlayers())
-                    room->setPlayerFlag(p, "shenyan_used");
+                    room->setPlayerFlag(p, "-shenyan_used");
             }
         }
-        
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
