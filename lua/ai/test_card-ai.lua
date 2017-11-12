@@ -2,6 +2,9 @@ local Jade_skill = {}
 Jade_skill.name = "JadeSeal"
 table.insert(sgs.ai_skills, Jade_skill)
 Jade_skill.getTurnUseCard = function(self, inclusive)
+    local treasure = self.player:getTreasure()
+	if not treasure then return nil end
+	if self.player:isBrokenEquip(treasure:getId()) then return nil end
 	if self.player:hasFlag("JadeSeal_used") then
 		return nil
 	end
