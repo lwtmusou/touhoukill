@@ -5085,80 +5085,80 @@ TouhouGodPackage::TouhouGodPackage()
     General *zun = new General(this, "zun", "touhougod", 1);
     zun->addSkill(new Chuanghuan);
 
-    General *yukari_god = new General(this, "yukari_god", "touhougod", 4, false);
+    General *yukari_god = new General(this, "yukari_god", "touhougod", 4);
     yukari_god->addSkill(new Jiexian);
 
-    General *remilia_god = new General(this, "remilia_god", "touhougod", 3, false);
+    General *remilia_god = new General(this, "remilia_god", "touhougod", 3);
     remilia_god->addSkill(new Zhouye);
     remilia_god->addSkill(new Hongwu);
     remilia_god->addSkill(new Shenqiang);
     remilia_god->addSkill(new Yewang);
 
-    General *cirno_god = new General(this, "cirno_god", "touhougod", 9, false);
+    General *cirno_god = new General(this, "cirno_god", "touhougod", 9);
     cirno_god->addSkill(new Bingfeng);
     cirno_god->addSkill(new Wushen);
 
-    General *utsuho_god = new General(this, "utsuho_god", "touhougod", 4, false);
+    General *utsuho_god = new General(this, "utsuho_god", "touhougod", 4);
     utsuho_god->addSkill(new Shikong);
     utsuho_god->addSkill(new Ronghui);
     utsuho_god->addSkill(new Jubian);
     utsuho_god->addSkill(new Hengxing);
 
-    General *suika_god = new General(this, "suika_god", "touhougod", 0, false);
+    General *suika_god = new General(this, "suika_god", "touhougod", 0);
     suika_god->addSkill(new Huanmeng);
     suika_god->addSkill(new Cuixiang);
     suika_god->addSkill(new Xuying);
 
-    General *flandre_god = new General(this, "flandre_god", "touhougod", 3, false);
+    General *flandre_god = new General(this, "flandre_god", "touhougod", 3);
     flandre_god->addSkill(new Kuangyan);
     flandre_god->addSkill(new Huimie);
     flandre_god->addSkill(new Jinguo);
 
-    General *sakuya_god = new General(this, "sakuya_god", "touhougod", 3, false);
+    General *sakuya_god = new General(this, "sakuya_god", "touhougod", 3);
     sakuya_god->addSkill(new Shicao);
     sakuya_god->addSkill(new Shiting);
     sakuya_god->addSkill(new Huanzai);
     sakuya_god->addSkill(new Shanghun);
 
-    General *youmu_god = new General(this, "youmu_god", "touhougod", 3, false);
+    General *youmu_god = new General(this, "youmu_god", "touhougod", 3);
     youmu_god->addSkill(new Banling);
     youmu_god->addSkill(new Rengui);
 
-    General *reisen_god = new General(this, "reisen_god", "touhougod", 4, false);
+    General *reisen_god = new General(this, "reisen_god", "touhougod", 4);
     reisen_god->addSkill(new Ningshi);
     reisen_god->addSkill(new Gaoao);
 
-    General *sanae_god = new General(this, "sanae_god", "touhougod", 4, false);
+    General *sanae_god = new General(this, "sanae_god", "touhougod", 4);
     sanae_god->addSkill(new Shenshou);
 
-    General *reimu_god = new General(this, "reimu_god", "touhougod", 4, false);
+    General *reimu_god = new General(this, "reimu_god", "touhougod", 4);
     reimu_god->addSkill(new Yibian);
     reimu_god->addSkill(new Fengyin);
     reimu_god->addSkill(new Huanxiang);
 
-    General *shikieiki_god = new General(this, "shikieiki_god", "touhougod", 4, false);
+    General *shikieiki_god = new General(this, "shikieiki_god", "touhougod", 4);
     shikieiki_god->addSkill(new Quanjie);
     shikieiki_god->addSkill(new Duanzui);
 
-    General *meirin_god = new General(this, "meirin_god", "touhougod", 4, false);
+    General *meirin_god = new General(this, "meirin_god", "touhougod", 4);
     meirin_god->addSkill(new Huaxiang);
     meirin_god->addSkill(new Caiyu);
     meirin_god->addSkill(new Xuanlan);
 
-    General *eirin_god = new General(this, "eirin_god", "touhougod", 4, false);
+    General *eirin_god = new General(this, "eirin_god", "touhougod", 4);
     eirin_god->addSkill(new Qiannian);
     eirin_god->addSkill(new QiannianMax);
     related_skills.insertMulti("qiannian", "#qiannian_max");
 
-    General *kanako_god = new General(this, "kanako_god", "touhougod", 4, false);
+    General *kanako_god = new General(this, "kanako_god", "touhougod", 4);
     kanako_god->addSkill(new Qinlue);
     kanako_god->addSkill(new QinlueEffect);
     related_skills.insertMulti("qinlue", "#qinlue_effect");
 
-    General *byakuren_god = new General(this, "byakuren_god", "touhougod", 4, false);
+    General *byakuren_god = new General(this, "byakuren_god", "touhougod", 4);
     byakuren_god->addSkill(new Chaoren);
 
-    General *koishi_god = new General(this, "koishi_god", "touhougod", 3, false);
+    General *koishi_god = new General(this, "koishi_god", "touhougod", 3);
     koishi_god->addSkill(new Biaoxiang);
     koishi_god->addSkill(new Shifang);
     koishi_god->addSkill(new Yizhi);
@@ -5166,52 +5166,52 @@ TouhouGodPackage::TouhouGodPackage()
     koishi_god->addRelateSkill("benwo");
     koishi_god->addRelateSkill("chaowo");
 
-    General *suwako_god = new General(this, "suwako_god", "touhougod", 5, false);
+    General *suwako_god = new General(this, "suwako_god", "touhougod", 5);
     suwako_god->addSkill(new Zuosui);
     suwako_god->addSkill(new Worao);
     suwako_god->addSkill(new Shenhua);
 
-    General *miko_god = new General(this, "miko_god", "touhougod", 4, false);
+    General *miko_god = new General(this, "miko_god", "touhougod", 4);
     miko_god->addSkill(new Hongfo);
     miko_god->addSkill(new Junwei);
     miko_god->addSkill(new Gaizong);
     miko_god->addRelateSkill("wendao");
 
-    General *kaguya_god = new General(this, "kaguya_god", "touhougod", 4, false);
+    General *kaguya_god = new General(this, "kaguya_god", "touhougod", 4);
     kaguya_god->addSkill(new Shenbao);
     kaguya_god->addSkill(new ShenbaoDistance);
     kaguya_god->addSkill(new ShenbaoHandler);
     related_skills.insertMulti("shenbao", "#shenbao_distance");
     related_skills.insertMulti("shenbao", "#shenbao");
 
-    General *komachi_god = new General(this, "komachi_god", "touhougod", 4, false);
+    General *komachi_god = new General(this, "komachi_god", "touhougod", 4);
     komachi_god->addSkill(new Yindu);
     komachi_god->addSkill(new Huanming);
     komachi_god->addSkill(new Chuanwu);
 
-    General *yuyuko_god = new General(this, "yuyuko_god", "touhougod", 1, false);
+    General *yuyuko_god = new General(this, "yuyuko_god", "touhougod", 1);
     yuyuko_god->addSkill(new Fanhun);
     yuyuko_god->addSkill(new Yousi);
     yuyuko_god->addSkill(new YousiUI);
     related_skills.insertMulti("yousi", "#yousi");
 
-    General *satori_god = new General(this, "satori_god", "touhougod", 3, false);
+    General *satori_god = new General(this, "satori_god", "touhougod", 3);
     satori_god->addSkill(new Kuixin);
     satori_god->addSkill(new Xinhua);
     satori_god->addSkill(new Cuimian);
     //satori_god->addSkill(new Dongcha);
     //satori_god->addSkill(new Zhuiyi);
 
-    General *aya_god = new General(this, "aya_god", "touhougod", 4, false);
+    General *aya_god = new General(this, "aya_god", "touhougod", 4);
     aya_god->addSkill(new Tianqu);
     aya_god->addSkill(new Fengmi);
 
-    General *seiga_god = new General(this, "seiga_god", "touhougod", 3, false);
+    General *seiga_god = new General(this, "seiga_god", "touhougod", 3);
     seiga_god->addSkill(new Huanhun);
     seiga_god->addSkill(new Tongling);
     seiga_god->addSkill(new Rumo);
 
-    General *nue_god = new General(this, "nue_god", "touhougod", 3, false);
+    General *nue_god = new General(this, "nue_god", "touhougod", 3);
     nue_god->addSkill(new Anyun);
     nue_god->addSkill(new AnyunShowStaticSkill);
     nue_god->addSkill(new AnyunProhibit);

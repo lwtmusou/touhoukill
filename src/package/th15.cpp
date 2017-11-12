@@ -1597,39 +1597,41 @@ public:
 TH15Package::TH15Package()
     : Package("th15")
 {
-    General *junko = new General(this, "junko$", "gzz", 4, false);
+    General *junko = new General(this, "junko$", "gzz", 4);
     junko->addSkill(new Xiahui);
     junko->addSkill(new Chunhua);
     junko->addSkill(new ChunhuaEffect);
     junko->addSkill(new Shayi);
     related_skills.insertMulti("chunhua", "#chunhua");
 
-    General *hecatia = new General(this, "hecatia", "gzz", 4, false);
+    General *hecatia = new General(this, "hecatia", "gzz", 4);
     hecatia->addSkill(new Santi);
     hecatia->addSkill(new SantiEffect);
     related_skills.insertMulti("santi", "#santi");
 
-    General *clownpiece = new General(this, "clownpiece", "gzz", 3, false);
+    General *clownpiece = new General(this, "clownpiece", "gzz", 3);
     clownpiece->addSkill(new Yuyi);
     clownpiece->addSkill(new Kuangluan);
 
-    General *sagume = new General(this, "sagume", "gzz", 4, false);
+    General *sagume = new General(this, "sagume", "gzz", 4);
     sagume->addSkill(new Shehuo);
     sagume->addSkill(new ShehuoEffect);
     sagume->addSkill(new Shenyan);
     related_skills.insertMulti("shehuo", "#shehuo");
 
-    General *doremy = new General(this, "doremy", "gzz", 3, false);
+    General *doremy = new General(this, "doremy", "gzz", 3);
     doremy->addSkill(new Meimeng);
     doremy->addSkill(new Emeng);
 
-    General *seiran = new General(this, "seiran", "gzz", 4, false);
+    General *ringo = new General(this, "ringo", "gzz", 4, false, true, true);
+    Q_UNUSED(ringo)
+
+    General *seiran = new General(this, "seiran", "gzz", 4);
     seiran->addSkill(new Yidan);
     seiran->addSkill(new YidanProhibit);
     related_skills.insertMulti("yidan", "#yidan");
 
-    General *ringo = new General(this, "ringo", "gzz", 4, false, true, true);
-    Q_UNUSED(ringo)
+
 
 
 

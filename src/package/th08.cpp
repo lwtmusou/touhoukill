@@ -2170,51 +2170,51 @@ public:
 TH08Package::TH08Package()
     : Package("th08")
 {
-    General *kaguya = new General(this, "kaguya$", "yyc", 4, false);
+    General *kaguya = new General(this, "kaguya$", "yyc", 4);
     kaguya->addSkill(new Yongheng);
     kaguya->addSkill(new Zhuqu);
 
-    General *eirin = new General(this, "eirin", "yyc", 4, false);
+    General *eirin = new General(this, "eirin", "yyc", 4);
     eirin->addSkill(new Ruizhi);
     eirin->addSkill(new Miyao);
 
-    General *mokou = new General(this, "mokou", "yyc", 4, false);
+    General *mokou = new General(this, "mokou", "yyc", 4);
     mokou->addSkill(new Kaifeng);
     mokou->addSkill(new Fengxiang);
 
-    General *reisen = new General(this, "reisen", "yyc", 4, false);
+    General *reisen = new General(this, "reisen", "yyc", 4);
     reisen->addSkill(new Kuangzao);
     reisen->addSkill(new Huanshi);
 
-    General *keine = new General(this, "keine", "yyc", 3, false);
+    General *keine = new General(this, "keine", "yyc", 3);
     keine->addSkill(new Xushi);
     keine->addSkill(new Xinyue);
 
-    General *tewi = new General(this, "tewi", "yyc", 3, false);
+    General *tewi = new General(this, "tewi", "yyc", 3);
     tewi->addSkill(new Buxian);
     tewi->addSkill(new BuxianEffect);
     tewi->addSkill(new Xingyun);
     related_skills.insertMulti("buxian", "#buxian");
 
-    General *mystia = new General(this, "mystia", "yyc", 3, false);
+    General *mystia = new General(this, "mystia", "yyc", 3);
     mystia->addSkill(new Yege);
     mystia->addSkill(new Laolong);
     //mystia->addSkill(new Gesheng);
     //mystia->addSkill(new Yemang);
 
-    General *wriggle = new General(this, "wriggle", "yyc", 3, false);
+    General *wriggle = new General(this, "wriggle", "yyc", 3);
     wriggle->addSkill(new Yinghuo);
     wriggle->addSkill(new Chongqun);
 
-    General *shirasawa = new General(this, "shirasawa", "yyc", 3, false);
+    General *shirasawa = new General(this, "shirasawa", "yyc", 3);
     shirasawa->addSkill(new Chuangshi);
     shirasawa->addSkill(new Wangyue);
 
-    General *mokou_sp = new General(this, "mokou_sp", "yyc", 4, false);
+    General *mokou_sp = new General(this, "mokou_sp", "yyc", 4);
     mokou_sp->addSkill(new Huwei);
     mokou_sp->addSkill(new Jinxi);
 
-    General *mystia_sp = new General(this, "mystia_sp", "yyc", 3, false);
+    General *mystia_sp = new General(this, "mystia_sp", "yyc", 3);
     mystia_sp->addSkill(new Yemang);
     mystia_sp->addSkill(new Mingmu);
 

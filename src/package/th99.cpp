@@ -2125,65 +2125,65 @@ public:
 TH99Package::TH99Package()
     : Package("th99")
 {
-    General *akyuu = new General(this, "akyuu$", "wai", 3, false);
+    General *akyuu = new General(this, "akyuu$", "wai", 3);
     akyuu->addSkill(new Qiuwen);
     akyuu->addSkill(new Zaozu);
     akyuu->addSkill(new Dangjia);
 
-    General *rinnosuke = new General(this, "rinnosuke", "wai");
+    General *rinnosuke = new General(this, "rinnosuke", "wai", 4, true);
     rinnosuke->addSkill(new XiufuDebug);
 
-    General *tokiko = new General(this, "tokiko", "wai", 3, false);
+    General *tokiko = new General(this, "tokiko", "wai", 3);
     tokiko->addSkill(new Fandu);
     tokiko->addSkill(new Taohuan);
 
-    General *renko = new General(this, "renko", "wai", 4, false);
+    General *renko = new General(this, "renko", "wai", 4);
     renko->addSkill(new Shitu);
 
-    General *merry = new General(this, "merry", "wai", 4, false);
+    General *merry = new General(this, "merry", "wai", 4);
     merry->addSkill("jingjie");
     merry->addSkill(new Mengxian);
     merry->addRelateSkill("luanying");
 
-    General *toyohime = new General(this, "toyohime", "wai", 3, false);
+    General *toyohime = new General(this, "toyohime", "wai", 3);
     toyohime->addSkill(new Lianxi);
     toyohime->addSkill(new Yueshi);
 
-    General *yorihime = new General(this, "yorihime", "wai", 4, false);
+    General *yorihime = new General(this, "yorihime", "wai", 4);
     yorihime->addSkill(new Pingyi);
     yorihime->addSkill(new PingyiHandler);
     related_skills.insertMulti("pingyi", "#pingyi_handle");
 
-    General *sunny = new General(this, "sunny", "wai", 4, false);
+    General *sunny = new General(this, "sunny", "wai", 4);
     sunny->addSkill(new Zheshe);
     sunny->addSkill(new Tanchi);
 
-    General *lunar = new General(this, "lunar", "wai", 4, false);
+    General *lunar = new General(this, "lunar", "wai", 4);
     lunar->addSkill(new Zhuonong);
     lunar->addSkill(new Jijing);
 
-    General *star = new General(this, "star", "wai", 4, false);
+    General *star = new General(this, "star", "wai", 4);
     star->addSkill(new Ganying);
 
-    General *kasen = new General(this, "kasen", "wai", 4, false);
+    General *kasen = new General(this, "kasen", "wai", 4);
     kasen->addSkill(new Zhujiu);
     kasen->addSkill(new Yushou);
 
-    General *kosuzu = new General(this, "kosuzu", "wai", 3, false);
+    General *kosuzu = new General(this, "kosuzu", "wai", 3);
     kosuzu->addSkill(new Pandu);
     kosuzu->addSkill(new Bihuo);
     kosuzu->addSkill(new BihuoReturn);
     related_skills.insertMulti("bihuo", "#bihuo");
 
-    General *cirno = new General(this, "cirno_sp", "wai", 3, false);
+    General *cirno = new General(this, "cirno_sp", "wai", 3);
     cirno->addSkill(new Xunshi);
     cirno->addSkill(new Jidong);
 
-    General *mamizou = new General(this, "mamizou_sp", "wai", 3, false);
+    General *mamizou = new General(this, "mamizou_sp", "wai", 3);
     mamizou->addSkill(new Zhangmu);
     mamizou->addSkill(new Liyou);
 
-    General *reisen2 = new General(this, "reisen2", "wai", 4, false);
+    General *reisen2 = new General(this, "reisen2", "wai", 4);
     reisen2->addSkill(new Sixiang);
     reisen2->addSkill(new Daoyao);
 

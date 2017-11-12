@@ -1709,51 +1709,51 @@ public:
 TH06Package::TH06Package()
     : Package("th06")
 {
-    General *remilia = new General(this, "remilia$", "hmx", 3, false);
+    General *remilia = new General(this, "remilia$", "hmx", 3);
     remilia->addSkill(new SkltKexue);
     remilia->addSkill(new Mingyun);
     remilia->addSkill(new Xueyi);
 
-    General *flandre = new General(this, "flandre", "hmx", 3, false);
+    General *flandre = new General(this, "flandre", "hmx", 3);
     flandre->addSkill(new Pohuai);
     flandre->addSkill(new Yuxue);
     flandre->addSkill(new YuxueSlashNdl);
     flandre->addSkill(new Shengyan);
     related_skills.insertMulti("yuxue", "#yuxue-slash-ndl");
 
-    General *sakuya = new General(this, "sakuya", "hmx", 4, false);
+    General *sakuya = new General(this, "sakuya", "hmx", 4);
     sakuya->addSkill(new Suoding);
     sakuya->addSkill(new Huisu);
 
-    General *patchouli = new General(this, "patchouli", "hmx", 3, false);
+    General *patchouli = new General(this, "patchouli", "hmx", 3);
     patchouli->addSkill(new Bolan);
     patchouli->addSkill(new Hezhou);
 
-    General *meirin = new General(this, "meirin", "hmx", 4, false);
+    General *meirin = new General(this, "meirin", "hmx", 4);
     meirin->addSkill(new Taiji);
     meirin->addSkill(new Beishui);
 
-    General *cirno = new General(this, "cirno", "hmx", 3, false);
+    General *cirno = new General(this, "cirno", "hmx", 3);
     cirno->addSkill(new Dongjie);
     cirno->addSkill(new Bingpo);
 
-    General *rumia = new General(this, "rumia", "hmx", 3, false);
+    General *rumia = new General(this, "rumia", "hmx", 3);
     rumia->addSkill(new Zhenye);
     rumia->addSkill(new Anyu);
 
-    General *koakuma = new General(this, "koakuma", "hmx", 3, false);
+    General *koakuma = new General(this, "koakuma", "hmx", 3);
     koakuma->addSkill(new Qiyue);
     koakuma->addSkill(new Moxue);
 
-    General *daiyousei = new General(this, "daiyousei", "hmx", 3, false);
+    General *daiyousei = new General(this, "daiyousei", "hmx", 3);
     daiyousei->addSkill(new Juxian);
     daiyousei->addSkill(new Banyue);
 
-    General *sakuya_sp = new General(this, "sakuya_sp", "hmx", 4, false);
+    General *sakuya_sp = new General(this, "sakuya_sp", "hmx", 4);
     sakuya_sp->addSkill(new Mizong);
     sakuya_sp->addSkill(new Yinren);
 
-    General *satsuki = new General(this, "satsuki", "hmx", 3, false);
+    General *satsuki = new General(this, "satsuki", "hmx", 3);
     satsuki->addSkill(new Xiaoyin);
     satsuki->addSkill(new XiaoyinProhibit);
     satsuki->addSkill(new Fenghua);

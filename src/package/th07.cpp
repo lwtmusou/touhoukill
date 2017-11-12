@@ -2912,28 +2912,28 @@ TH07Package::TH07Package()
     //chen->addSkill(new Yaoshu);
     //related_skills.insertMulti("yexing", "#yexing");
 
-    General *letty = new General(this, "letty", "yym", 4, false);
+    General *letty = new General(this, "letty", "yym", 4);
     letty->addSkill(new Jiyi);
     letty->addSkill(new Chunmian);
 
-    General *lilywhite = new General(this, "lilywhite", "yym", 3, false);
+    General *lilywhite = new General(this, "lilywhite", "yym", 3);
     lilywhite->addSkill(new Baochun);
     lilywhite->addSkill(new Chunyi);
 
-    General *shanghai = new General(this, "shanghai", "yym", 3, false);
+    General *shanghai = new General(this, "shanghai", "yym", 3);
     shanghai->addSkill(new Zhancao);
     shanghai->addSkill(new Mocao);
 
-    General *yukari_sp = new General(this, "yukari_sp", "yym", 3, false);
+    General *yukari_sp = new General(this, "yukari_sp", "yym", 3);
     yukari_sp->addSkill(new Jingjie);
     yukari_sp->addSkill(new Sisheng);
     yukari_sp->addSkill(new Jingdong);
 
-    General *yuyuko_sp = new General(this, "yuyuko_sp", "yym", 3, false);
+    General *yuyuko_sp = new General(this, "yuyuko_sp", "yym", 3);
     yuyuko_sp->addSkill(new Youqu);
     yuyuko_sp->addSkill(new Wangwu);
 
-    General *ran_sp = new General(this, "ran_sp", "yym", 4, false);
+    General *ran_sp = new General(this, "ran_sp", "yym", 4);
     ran_sp->addSkill(new Shizhao);
     ran_sp->addSkill(new Jixiong);
     ran_sp->addSkill(new Jixiong1);
@@ -2941,11 +2941,11 @@ TH07Package::TH07Package()
     related_skills.insertMulti("jixiong", "#jixiong1");
     related_skills.insertMulti("jixiong", "#jixiong2");
 
-    General *youki = new General(this, "youki", "yym", 4);
+    General *youki = new General(this, "youki", "yym", 4, true);
     youki->addSkill(new Shoushu);
     youki->addSkill(new Yujian);
 
-    General *leira = new General(this, "leira", "yym", 3, false);
+    General *leira = new General(this, "leira", "yym", 3);
     leira->addSkill(new Huayin);
     leira->addSkill(new Huanling);
 

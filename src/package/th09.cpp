@@ -1592,53 +1592,53 @@ public:
 TH09Package::TH09Package()
     : Package("th09")
 {
-    General *suika = new General(this, "suika$", "zhan", 3, false);
+    General *suika = new General(this, "suika$", "zhan", 3);
     suika->addSkill(new Zuiyue);
     suika->addSkill(new Doujiu);
     suika->addSkill(new Yanhui);
 
-    General *shikieiki = new General(this, "shikieiki$", "zhan", 3, false);
+    General *shikieiki = new General(this, "shikieiki$", "zhan", 3);
     shikieiki->addSkill(new Shenpan);
     shikieiki->addSkill(new Huiwu);
     shikieiki->addSkill(new Huazhong);
 
-    General *komachi = new General(this, "komachi", "zhan", 4, false);
+    General *komachi = new General(this, "komachi", "zhan", 4);
     komachi->addSkill(new Boming);
     komachi->addSkill(new Mingtu);
 
-    General *yuka = new General(this, "yuka", "zhan", 4, false);
+    General *yuka = new General(this, "yuka", "zhan", 4);
     yuka->addSkill(new Weiya);
 
-    General *medicine = new General(this, "medicine", "zhan", 3, false);
+    General *medicine = new General(this, "medicine", "zhan", 3);
     medicine->addSkill(new Judu);
     medicine->addSkill(new Henyi);
 
-    General *aya_sp = new General(this, "aya_sp", "zhan", 4, false);
+    General *aya_sp = new General(this, "aya_sp", "zhan", 4);
     aya_sp->addSkill(new Toupai);
     aya_sp->addSkill(new Qucai);
 
-    General *tenshi = new General(this, "tenshi$", "zhan", 4, false);
+    General *tenshi = new General(this, "tenshi$", "zhan", 4);
     tenshi->addSkill(new Feixiang);
     tenshi->addSkill(new Dizhen);
     tenshi->addSkill(new Tianren);
 
-    General *iku = new General(this, "iku", "zhan", 4, false);
+    General *iku = new General(this, "iku", "zhan", 4);
     iku->addSkill(new Jingdian);
     iku->addSkill(new Leiyun);
 
-    General *hatate = new General(this, "hatate", "zhan", 4, false);
+    General *hatate = new General(this, "hatate", "zhan", 4);
     hatate->addSkill(new Kuaizhao);
     hatate->addSkill(new KuaizhaoEffect);
     hatate->addSkill(new Duanjiao);
     related_skills.insertMulti("kuaizhao", "#kuaizhao");
 
-    General *kokoro = new General(this, "kokoro$", "zhan", 4, false);
+    General *kokoro = new General(this, "kokoro$", "zhan", 4);
     kokoro->addSkill(new Nengwu);
     kokoro->addSkill(new Nengwu2);
     related_skills.insertMulti("nengwu", "#nengwu2");
     kokoro->addSkill(new Xiwang);
 
-    General *sumireko = new General(this, "sumireko$", "zhan", 4, false);
+    General *sumireko = new General(this, "sumireko$", "zhan", 4);
     sumireko->addSkill(new Nianli);
     sumireko->addSkill(new NianliTargetMod);
     sumireko->addSkill(new Shenmi);

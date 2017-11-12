@@ -1668,55 +1668,55 @@ public:
 TH10Package::TH10Package()
     : Package("th10")
 {
-    General *kanako = new General(this, "kanako$", "fsl", 4, false);
+    General *kanako = new General(this, "kanako$", "fsl", 4);
     kanako->addSkill(new Shende);
     kanako->addSkill(new Qiankun);
     kanako->addSkill(new Gongfeng);
 
-    General *suwako = new General(this, "suwako", "fsl", 3, false);
+    General *suwako = new General(this, "suwako", "fsl", 3);
     suwako->addSkill(new Bushu);
     suwako->addSkill("qiankun");
     suwako->addSkill(new Chuancheng);
 
-    General *sanae = new General(this, "sanae", "fsl", 3, false);
+    General *sanae = new General(this, "sanae", "fsl", 3);
     sanae->addSkill(new DfgzmJiyi);
     sanae->addSkill(new Qiji);
 
-    General *aya = new General(this, "aya", "fsl", 3, false);
+    General *aya = new General(this, "aya", "fsl", 3);
     aya->addSkill(new Fengshen);
     aya->addSkill(new Fengsu);
     aya->addSkill(new FengsuEffect);
     related_skills.insertMulti("fengsu", "#fengsu-effect");
 
-    General *nitori = new General(this, "nitori", "fsl", 3, false);
+    General *nitori = new General(this, "nitori", "fsl", 3);
     nitori->addSkill(new Xinshang);
     nitori->addSkill(new XinshangTargetMod);
     nitori->addSkill(new Micai);
     related_skills.insertMulti("xinshang", "#xinshang_effect");
 
-    General *hina = new General(this, "hina", "fsl", 3, false);
+    General *hina = new General(this, "hina", "fsl", 3);
     hina->addSkill(new Jie);
     hina->addSkill(new Liuxing);
 
-    General *sanae_sp = new General(this, "sanae_sp", "fsl", 3, false);
+    General *sanae_sp = new General(this, "sanae_sp", "fsl", 3);
     sanae_sp->addSkill(new Changshi);
     sanae_sp->addSkill(new Jinian);
     sanae_sp->addSkill(new JinianClear);
     related_skills.insertMulti("jinian", "#jinian_clear");
 
-    General *momizi = new General(this, "momizi", "fsl", 4, false);
+    General *momizi = new General(this, "momizi", "fsl", 4);
     momizi->addSkill(new Shouhu);
     momizi->addSkill(new Shaojie);
 
-    General *minoriko = new General(this, "minoriko", "fsl", 4, false);
+    General *minoriko = new General(this, "minoriko", "fsl", 4);
     minoriko->addSkill(new Fengrang);
     minoriko->addSkill(new Shouhuo);
 
-    General *shizuha = new General(this, "shizuha", "fsl", 4, false);
+    General *shizuha = new General(this, "shizuha", "fsl", 4);
     shizuha->addSkill(new Jiliao);
     shizuha->addSkill(new Zhongyan);
 
-    General *momizi_sp = new General(this, "momizi_sp", "fsl", 4, false);
+    General *momizi_sp = new General(this, "momizi_sp", "fsl", 4);
     momizi_sp->addSkill(new Buju);
 
     addMetaObject<GongfengCard>();

@@ -1002,36 +1002,36 @@ public:
 THNDJPackage::THNDJPackage()
     : Package("thndj")
 {
-    General *mokou_ndj = new General(this, "mokou_ndj$", "zhu", 4, false);
+    General *mokou_ndj = new General(this, "mokou_ndj$", "zhu", 4);
     mokou_ndj->addSkill(new Rexue);
     mokou_ndj->addSkill(new Sidou);
     mokou_ndj->addSkill(new TymhWuyu);
 
-    General *kaguya_ndj = new General(this, "kaguya_ndj", "zhu", 3, false);
+    General *kaguya_ndj = new General(this, "kaguya_ndj", "zhu", 3);
     kaguya_ndj->addSkill(new Huanyue);
     kaguya_ndj->addSkill(new Sizhai);
 
-    General *yukari_ndj = new General(this, "yukari_ndj", "yym", 3, false);
+    General *yukari_ndj = new General(this, "yukari_ndj", "yym", 3);
     yukari_ndj->addSkill(new Yuanhu);
     yukari_ndj->addSkill(new Shouxie);
 
-    General *youmu_ndj = new General(this, "youmu_ndj", "yym", 4, false);
+    General *youmu_ndj = new General(this, "youmu_ndj", "yym", 4);
     youmu_ndj->addSkill(new Hunpo);
     youmu_ndj->addSkill(new Fanji);
 
-    General *merry_ndj = new General(this, "merry_ndj", "wai", 3, false);
+    General *merry_ndj = new General(this, "merry_ndj", "wai", 3);
     merry_ndj->addSkill(new Liexi);
     merry_ndj->addSkill(new LiexiTargetMod);
     merry_ndj->addSkill(new Mengwei);
     related_skills.insertMulti("liexi", "#liexi");
 
-    General *renko_ndj = new General(this, "renko_ndj", "wai", 4, false);
+    General *renko_ndj = new General(this, "renko_ndj", "wai", 4);
     renko_ndj->addSkill(new Liangzi);
     renko_ndj->addSkill(new Kexue);
     renko_ndj->addSkill(new KexueEffect);
     related_skills.insertMulti("kexue", "#kexue-effect");
 
-    General *sanae_ndj = new General(this, "sanae_ndj", "fsl", 4, false);
+    General *sanae_ndj = new General(this, "sanae_ndj", "fsl", 4);
     sanae_ndj->addSkill(new Xiubu);
     sanae_ndj->addSkill(new XiubuTargetMod);
     related_skills.insertMulti("xiubu", "#xiubu-mod");

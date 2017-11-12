@@ -972,36 +972,36 @@ public:
 TH14Package::TH14Package()
     : Package("th14")
 {
-    General *shinmyoumaru = new General(this, "shinmyoumaru$", "hzc", 3, false);
+    General *shinmyoumaru = new General(this, "shinmyoumaru$", "hzc", 3);
     shinmyoumaru->addSkill(new Baochui);
     shinmyoumaru->addSkill(new Yicun);
     shinmyoumaru->addSkill(new Moyi);
 
-    General *raiko = new General(this, "raiko", "hzc", 4, false);
+    General *raiko = new General(this, "raiko", "hzc", 4);
     raiko->addSkill(new Leiting);
 
-    General *seija = new General(this, "seija", "hzc", 3, false);
+    General *seija = new General(this, "seija", "hzc", 3);
     seija->addSkill(new Nizhuan);
     seija->addSkill(new Guizha);
 
-    General *benben = new General(this, "benben", "hzc", 3, false);
+    General *benben = new General(this, "benben", "hzc", 3);
     benben->addSkill(new Yuyin);
     benben->addSkill(new Wuchang);
 
-    General *yatsuhashi = new General(this, "yatsuhashi", "hzc", 3, false);
+    General *yatsuhashi = new General(this, "yatsuhashi", "hzc", 3);
     yatsuhashi->addSkill(new Canxiang);
     yatsuhashi->addSkill(new Juwang);
 
-    General *kagerou = new General(this, "kagerou", "hzc", 4, false);
+    General *kagerou = new General(this, "kagerou", "hzc", 4);
     kagerou->addSkill(new Langying);
     kagerou->addSkill(new Yuanfei);
 
-    General *sekibanki = new General(this, "sekibanki", "hzc", 4, false);
+    General *sekibanki = new General(this, "sekibanki", "hzc", 4);
     sekibanki->addSkill(new Feitou);
     sekibanki->addSkill(new FeitouTargetMod);
     related_skills.insertMulti("feitou", "#feitoumod");
 
-    General *wakasagihime = new General(this, "wakasagihime", "hzc", 3, false);
+    General *wakasagihime = new General(this, "wakasagihime", "hzc", 3);
     wakasagihime->addSkill(new Shizhu);
     wakasagihime->addSkill(new Liange);
 

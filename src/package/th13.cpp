@@ -1528,48 +1528,48 @@ public:
 TH13Package::TH13Package()
     : Package("th13")
 {
-    General *miko = new General(this, "miko$", "slm", 4, false);
+    General *miko = new General(this, "miko$", "slm", 4);
     miko->addSkill(new Shengge);
     miko->addSkill(new Qingting);
     miko->addSkill(new Chiling);
 
-    General *mamizou = new General(this, "mamizou", "slm", 4, false);
+    General *mamizou = new General(this, "mamizou", "slm", 4);
     mamizou->addSkill(new Xihua);
     mamizou->addSkill(new XihuaClear);
     related_skills.insertMulti("xihua", "#xihua_clear");
 
-    General *futo = new General(this, "futo", "slm", 3, false);
+    General *futo = new General(this, "futo", "slm", 3);
     futo->addSkill(new Shijie);
     futo->addSkill(new Fengshui);
 
-    General *toziko = new General(this, "toziko", "slm", 4, false);
+    General *toziko = new General(this, "toziko", "slm", 4);
     toziko->addSkill(new Leishi);
     toziko->addSkill(new Fenyuan);
 
-    General *seiga = new General(this, "seiga", "slm", 3, false);
+    General *seiga = new General(this, "seiga", "slm", 3);
     seiga->addSkill(new Xiefa);
     seiga->addSkill(new Chuanbi);
 
-    General *yoshika = new General(this, "yoshika", "slm", 4, false);
+    General *yoshika = new General(this, "yoshika", "slm", 4);
     yoshika->addSkill(new Duzhua);
     yoshika->addSkill(new DuzhuaTargetMod);
     ;
     yoshika->addSkill(new Taotie);
     related_skills.insertMulti("duzhua", "#duzhuaTargetMod");
 
-    General *kyouko = new General(this, "kyouko", "slm", 3, false);
+    General *kyouko = new General(this, "kyouko", "slm", 3);
     kyouko->addSkill(new Songjing);
     kyouko->addSkill(new Gongzhen);
 
-    General *yuyuko_slm = new General(this, "yuyuko_slm", "slm", 3, false);
+    General *yuyuko_slm = new General(this, "yuyuko_slm", "slm", 3);
     yuyuko_slm->addSkill(new Chuixue);
     yuyuko_slm->addSkill(new Wushou);
 
-    General *nue_slm = new General(this, "nue_slm", "slm", 3, false);
+    General *nue_slm = new General(this, "nue_slm", "slm", 3);
     nue_slm->addSkill(new Buming);
     nue_slm->addSkill(new Zhengti);
 
-    General *kogasa_slm = new General(this, "kogasa_slm", "slm", 3, false);
+    General *kogasa_slm = new General(this, "kogasa_slm", "slm", 3);
     kogasa_slm->addSkill(new Qingyu);
     kogasa_slm->addSkill(new Guoke);
 

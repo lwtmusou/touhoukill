@@ -1005,44 +1005,44 @@ public:
 TH11Package::TH11Package()
     : Package("th11")
 {
-    General *satori = new General(this, "satori$", "dld", 3, false);
+    General *satori = new General(this, "satori$", "dld", 3);
     satori->addSkill(new Xiangqi);
     //Room::askForCardChosen
     satori->addSkill(new Skill("duxin", Skill::Compulsory, "static"));
     //satori->addSkill(new Huzhu);
     satori->addSkill(new Skill("youtong$"));
 
-    General *koishi = new General(this, "koishi", "dld", 3, false);
+    General *koishi = new General(this, "koishi", "dld", 3);
     koishi->addSkill(new Maihuo);
     koishi->addSkill(new Wunian);
     koishi->addSkill(new WunianEffect);
     related_skills.insertMulti("wunian", "#wuniantr");
 
-    General *utsuho = new General(this, "utsuho", "dld", 4, false);
+    General *utsuho = new General(this, "utsuho", "dld", 4);
     utsuho->addSkill(new Yaoban);
     utsuho->addSkill(new Here);
 
-    General *rin = new General(this, "rin", "dld", 4, false);
+    General *rin = new General(this, "rin", "dld", 4);
     rin->addSkill(new Yuanling);
     rin->addSkill(new Songzang);
 
-    General *yugi = new General(this, "yugi", "dld", 4, false);
+    General *yugi = new General(this, "yugi", "dld", 4);
     yugi->addSkill(new Guaili);
     yugi->addSkill(new Jiuhao);
 
-    General *parsee = new General(this, "parsee", "dld", 3, false);
+    General *parsee = new General(this, "parsee", "dld", 3);
     parsee->addSkill(new Jidu);
     parsee->addSkill(new Gelong);
 
-    General *yamame = new General(this, "yamame", "dld", 4, false);
+    General *yamame = new General(this, "yamame", "dld", 4);
     yamame->addSkill(new Chuanran);
     yamame->addSkill(new Rebing);
 
-    General *kisume = new General(this, "kisume", "dld", 3, false);
+    General *kisume = new General(this, "kisume", "dld", 3);
     kisume->addSkill(new Diaoping);
     kisume->addSkill(new Tongju);
 
-    General *suika_sp = new General(this, "suika_sp", "dld", 3, false);
+    General *suika_sp = new General(this, "suika_sp", "dld", 3);
     suika_sp->addSkill(new Cuiji);
     suika_sp->addSkill(new CuijiEffect);
     suika_sp->addSkill(new Baigui);

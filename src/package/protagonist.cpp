@@ -2435,32 +2435,32 @@ public:
 ProtagonistPackage::ProtagonistPackage()
     : Package("protagonist")
 {
-    General *reimu = new General(this, "reimu$", "zhu", 4, false);
+    General *reimu = new General(this, "reimu$", "zhu", 4);
     reimu->addSkill(new Lingqi);
     reimu->addSkill(new Qixiang);
     reimu->addSkill(new Boli);
 
-    General *marisa = new General(this, "marisa$", "zhu", 4, false);
+    General *marisa = new General(this, "marisa$", "zhu", 4);
     marisa->addSkill(new Mofa);
     marisa->addSkill(new Wuyu);
 
-    General *reimu_sp = new General(this, "reimu_sp", "zhu", 4, false);
+    General *reimu_sp = new General(this, "reimu_sp", "zhu", 4);
     reimu_sp->addSkill(new Saiqian);
 
-    General *marisa_sp = new General(this, "marisa_sp", "zhu", 3, false);
+    General *marisa_sp = new General(this, "marisa_sp", "zhu", 3);
     marisa_sp->addSkill(new Jiezou);
     marisa_sp->addSkill(new Shoucang);
     marisa_sp->addSkill(new ShoucangMax);
     related_skills.insertMulti("shoucang", "#shoucang");
 
-    General *marisa_sp2 = new General(this, "marisa_sp2", "zhu", 4, false);
+    General *marisa_sp2 = new General(this, "marisa_sp2", "zhu", 4);
     marisa_sp2->addSkill(new Baoyi);
 
-    General *reimu_yym = new General(this, "reimu_yym", "zhu", 4, false);
+    General *reimu_yym = new General(this, "reimu_yym", "zhu", 4);
     reimu_yym->addSkill(new Zhize);
     reimu_yym->addSkill(new Chunxi);
 
-    General *reimu_slm = new General(this, "reimu_slm", "zhu", 4, false);
+    General *reimu_slm = new General(this, "reimu_slm", "zhu", 4);
     reimu_slm->addSkill(new BllmWuyu);
     reimu_slm->addSkill(new BllmCaiyu);
     reimu_slm->addSkill(new BllmSeyu);
@@ -2475,31 +2475,31 @@ ProtagonistPackage::ProtagonistPackage()
     related_skills.insertMulti("bllmwuyu", "#bllmshuiyu");
     related_skills.insertMulti("bllmwuyu", "#bllmshuiyu2");
 
-    General *marisa_slm = new General(this, "marisa_slm", "zhu", 3, false);
+    General *marisa_slm = new General(this, "marisa_slm", "zhu", 3);
     marisa_slm->addSkill(new Qiangyu);
     marisa_slm->addSkill(new Mokai);
     marisa_slm->addSkill(new Guangji);
     marisa_slm->addSkill(new Xinghui);
 
-    General *sanae_slm = new General(this, "sanae_slm", "zhu", 4, false);
+    General *sanae_slm = new General(this, "sanae_slm", "zhu", 4);
     sanae_slm->addSkill(new DfgzmSiyu);
     sanae_slm->addSkill(new Qishu);
     sanae_slm->addSkill(new QishuTargetMod);
     related_skills.insertMulti("qishu", "#qishu-mod");
 
-    General *youmu_slm = new General(this, "youmu_slm", "zhu", 2, false);
+    General *youmu_slm = new General(this, "youmu_slm", "zhu", 2);
     youmu_slm->addSkill(new HpymSiyu);
     youmu_slm->addSkill(new Juhe);
 
-    General *reimu_old = new General(this, "reimu_old", "zhu", 4, false);
+    General *reimu_old = new General(this, "reimu_old", "zhu", 4);
     reimu_old->addSkill(new Yinyang);
     reimu_old->addSkill(new Lingji);
 
-    General *marisa_old = new General(this, "marisa_old", "zhu", 4, false);
+    General *marisa_old = new General(this, "marisa_old", "zhu", 4);
     marisa_old->addSkill(new Toushi);
     marisa_old->addSkill(new Moli);
 
-    General *reisen_gzz = new General(this, "reisen_gzz", "zhu", 4, false);
+    General *reisen_gzz = new General(this, "reisen_gzz", "zhu", 4);
     reisen_gzz->addSkill(new Bodong);
     reisen_gzz->addSkill(new Huanlong);
 

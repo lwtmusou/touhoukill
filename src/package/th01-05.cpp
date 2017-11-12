@@ -2921,7 +2921,7 @@ public:
             return QList<SkillInvokeDetail>();
         QList<SkillInvokeDetail> d;
         foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            if (p != current && p->getHandcardNum() == current->getHandcardNum() && !current->isKongcheng())
+            if (p->hasSkill(this, false, false) && p != current && p->getHandcardNum() == current->getHandcardNum() && !current->isKongcheng())
                 d << SkillInvokeDetail(this, p, current);
         }
 
@@ -2990,33 +2990,33 @@ public:
 TH0105Package::TH0105Package()
     : Package("th0105")
 {
-    General *mima = new General(this, "mima$", "pc98", 4, false);
+    General *mima = new General(this, "mima$", "pc98", 4);
     mima->addSkill(new Meiling);
     mima->addSkill(new Fuchou);
 
-    General *yumemi = new General(this, "yumemi$", "pc98", 4, false);
+    General *yumemi = new General(this, "yumemi$", "pc98", 4);
     yumemi->addSkill(new Ciyuan);
     yumemi->addSkill(new Shigui);
     yumemi->addSkill(new Chongdong);
 
-    General *chiyuri = new General(this, "chiyuri", "pc98", 4, false);
+    General *chiyuri = new General(this, "chiyuri", "pc98", 4);
     chiyuri->addSkill(new Zhence);
     chiyuri->addSkill(new Shiqu);
 
-    General *rikako = new General(this, "rikako", "pc98", 4, false);
+    General *rikako = new General(this, "rikako", "pc98", 4);
     rikako->addSkill(new Zhenli);
     rikako->addSkill(new Qiusuo);
 
-    General *kana = new General(this, "kana", "pc98", 3, false);
+    General *kana = new General(this, "kana", "pc98", 3);
     kana->addSkill(new Mengxiao);
     kana->addSkill(new Lubiao);
 
-    General *yuka_old = new General(this, "yuka_old$", "pc98", 4, false);
+    General *yuka_old = new General(this, "yuka_old$", "pc98", 4);
     yuka_old->addSkill(new Yeyan);
     yuka_old->addSkill(new Youyue);
     yuka_old->addSkill(new Menghuan);
 
-    General *gengetsumugetsu = new General(this, "gengetsumugetsu", "pc98", 3, false);
+    General *gengetsumugetsu = new General(this, "gengetsumugetsu", "pc98", 3);
     //gengetsumugetsu->addSkill(new Huantong);
     //gengetsumugetsu->addSkill(new Mengyan);
     gengetsumugetsu->addSkill(new Xuxiang);
@@ -3024,7 +3024,7 @@ TH0105Package::TH0105Package()
     gengetsumugetsu->addSkill(new Huanjue);
     related_skills.insertMulti("xuxiang", "#xuxiang");
 
-    General *elly = new General(this, "elly", "pc98", 4, false);
+    General *elly = new General(this, "elly", "pc98", 4);
     elly->addSkill(new Lianmu);
     elly->addSkill(new LianmuTargetMod);
     elly->addSkill(new HuanweiEffect);
@@ -3032,30 +3032,30 @@ TH0105Package::TH0105Package()
     related_skills.insertMulti("lianmu", "#lianmu_mod");
     related_skills.insertMulti("huanwei", "#huanwei");
 
-    General *shinki = new General(this, "shinki$", "pc98", 4, false);
+    General *shinki = new General(this, "shinki$", "pc98", 4);
     shinki->addSkill(new SqChuangshi);
     shinki->addSkill(new Yuanfa);
     shinki->addSkill(new Shenwei);
 
-    General *alice_old = new General(this, "alice_old", "pc98", 3, false);
+    General *alice_old = new General(this, "alice_old", "pc98", 3);
     alice_old->addSkill(new Modian);
     alice_old->addSkill(new Guaiqi);
 
-    General *sariel = new General(this, "sariel", "pc98", 4, false);
+    General *sariel = new General(this, "sariel", "pc98", 4);
     sariel->addSkill(new Baosi);
     sariel->addSkill(new BaosiDistance);
     sariel->addSkill(new Ezhao);
     related_skills.insertMulti("baosi", "#baosi-dist");
 
-    General *konngara = new General(this, "konngara", "pc98", 4, false);
+    General *konngara = new General(this, "konngara", "pc98", 4);
     konngara->addSkill(new Zongjiu);
     konngara->addSkill(new Xingyou);
 
-    General *yumeko = new General(this, "yumeko", "pc98", 4, false);
+    General *yumeko = new General(this, "yumeko", "pc98", 4);
     yumeko->addSkill(new Huanshu);
     yumeko->addSkill(new Qiren);
 
-    General *yukimai = new General(this, "yukimai", "pc98", 3, false);
+    General *yukimai = new General(this, "yukimai", "pc98", 3);
     yukimai->addSkill(new Xunlun);
     yukimai->addSkill(new Chenjue);
 

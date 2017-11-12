@@ -1657,44 +1657,44 @@ public:
 TH12Package::TH12Package()
     : Package("th12")
 {
-    General *byakuren = new General(this, "byakuren$", "xlc", 4, false);
+    General *byakuren = new General(this, "byakuren$", "xlc", 4);
     byakuren->addSkill(new Pudu);
     byakuren->addSkill(new Jiushu);
     byakuren->addSkill(new Fahua);
 
-    General *nue = new General(this, "nue", "xlc", 3, false);
+    General *nue = new General(this, "nue", "xlc", 3);
     nue->addSkill(new Weizhi);
     nue->addSkill(new Weizhuang);
 
-    General *toramaru = new General(this, "toramaru", "xlc", 4, false);
+    General *toramaru = new General(this, "toramaru", "xlc", 4);
     toramaru->addSkill(new Jinghua);
     toramaru->addSkill(new Weiguang);
 
-    General *murasa = new General(this, "murasa", "xlc", 4, false);
+    General *murasa = new General(this, "murasa", "xlc", 4);
     murasa->addSkill(new Shuinan);
     murasa->addSkill(new Nihuo);
 
-    General *ichirin = new General(this, "ichirin", "xlc", 4, false);
+    General *ichirin = new General(this, "ichirin", "xlc", 4);
     ichirin->addSkill(new Lizhi);
     ichirin->addSkill(new Yunshang);
 
-    General *nazrin = new General(this, "nazrin", "xlc", 3, false);
+    General *nazrin = new General(this, "nazrin", "xlc", 3);
     nazrin->addSkill(new Xunbao);
     nazrin->addSkill(new Lingbai);
 
-    General *kogasa = new General(this, "kogasa", "xlc", 3, false);
+    General *kogasa = new General(this, "kogasa", "xlc", 3);
     kogasa->addSkill(new Yiwang);
     kogasa->addSkill(new Jingxia);
 
-    General *unzan = new General(this, "unzan", "xlc");
+    General *unzan = new General(this, "unzan", "xlc", 4, true);
     unzan->addSkill(new Bianhuan);
     unzan->addSkill(new Nuhuo);
 
-    General *myouren = new General(this, "myouren", "xlc");
+    General *myouren = new General(this, "myouren", "xlc", 4, true);
     myouren->addSkill(new Shanshi);
     myouren->addSkill(new Shuxin);
 
-    General *kyouko_sp = new General(this, "kyouko_sp", "xlc", 3, false);
+    General *kyouko_sp = new General(this, "kyouko_sp", "xlc", 3);
     kyouko_sp->addSkill(new Huisheng);
     kyouko_sp->addSkill(new HuishengTargetMod);
     kyouko_sp->addSkill(new Yexiang);
