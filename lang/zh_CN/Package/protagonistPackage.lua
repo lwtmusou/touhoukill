@@ -34,12 +34,16 @@ return {
 	["~lingqi"]= "选择一张牌→指定任意数量的角色→点击“确定” 或者取消发动",
 	["#LingqiAvoid"] = "“%arg2”效果被触发，【%arg】 对 %from 无效",
 	["qixiang"] = "绮想",
-	[":qixiang"] = "当一名角色的判定牌生效后，若其手牌数小于你的体力上限，你可令其摸一张牌。",
+	--[":qixiang"] = "当一名角色的判定牌生效后，若其手牌数小于你的体力上限，你可令其摸一张牌。",
 	["qixiang:target"] = "<font color=\"#00FF00\"><b>%src </b></font> 的 “%dest” 的判定牌已生效，你可以对其发动“绮想”，令其摸一牌。",
+	
+	[":qixiang"] = "当一名角色使用【闪】或【无懈可击】时，你可以指定另一名角色并判定，若结果为红色，本回合内后者不能使用或打出<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>以外的牌。",
+
 	["boli"] = "博丽",
-	[":boli"] = "<font color=\"orange\"><b>主公技，</b></font>当非<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>的判定牌生效前，你可令其他角色选择是否打出<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌代替之。",
+	--[":boli"] = "<font color=\"orange\"><b>主公技，</b></font>当非<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>的判定牌生效前，你可令其他角色选择是否打出<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌代替之。",
 	["@boli-retrial"]= "你可以响应 <font color=\"#00FF00\"><b>%dest </b></font> 的主公技“博丽”，打出一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌，代替 <font color=\"#FF8000\"><b>%src </b></font> 的 “%arg” 判定。",
 	["boli:judge"] = "<font color=\"#00FF00\"><b>%src </b></font> 的 “%dest” 判定结果不为<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>，你可以发动主公技“博丽”令其他角色选择是否打出一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌代替之。",
+    [":boli"] = "<font color=\"orange\"><b>主公技，</b></font>当非<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>的判定牌生效前，你可令其他角色选择是否打出<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌替换之。",
 
 
 --************************************************

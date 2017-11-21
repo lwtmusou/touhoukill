@@ -59,6 +59,7 @@ public:
     }
 };
 
+/*
 class Qixiang : public TriggerSkill
 {
 public:
@@ -100,6 +101,83 @@ public:
         return false;
     }
 };
+*/
+
+class Qixiang : public TriggerSkill
+{
+public:
+    Qixiang()
+        : TriggerSkill("qixiang")
+    {
+        events << EventPhaseChanging << CardResponded << CardUsed;
+    }
+    
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                    if (p->getMark("@qixiangPro") > 0) {
+                        room->setPlayerMark(p, "@qixiangPro", 0);
+                        room->removePlayerCardLimitation(p, "use,response", ".|^heart$1");
+                    }
+                }
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseChanging)
+            return QList<SkillInvokeDetail>();
+
+        QList<SkillInvokeDetail> d;
+        ServerPlayer *player = NULL;
+        const Card *card = NULL;
+        if (triggerEvent == CardUsed) {
+            player = data.value<CardUseStruct>().from;
+            card = data.value<CardUseStruct>().card;
+        }
+        else if (triggerEvent == CardResponded) {
+            CardResponseStruct response = data.value<CardResponseStruct>();
+            player = response.m_from;
+            if (response.m_isUse)
+                card = response.m_card;
+        }
+        if (player && card && (card->isKindOf("Jink") || card->isKindOf("Nullification"))) {
+            foreach(ServerPlayer *reimu, room->findPlayersBySkillName(objectName()))
+                d << SkillInvokeDetail(this, reimu, reimu, NULL, false, player);
+            
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->preferredTarget), objectName(), "@newqixiang", true, true);
+        if (target)
+            invoke->targets << target;
+        return target != NULL;
+    }
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        JudgeStruct judge;
+        judge.reason = "qixiang";
+        judge.who = invoke->invoker;
+        judge.good = true;
+        judge.pattern = ".|red";
+        room->judge(judge);
+
+        ServerPlayer*target = invoke->targets.first();
+        if (judge.isGood() && target->getMark("@qixiangPro") == 0) {
+            room->setPlayerMark(target, "@qixiangPro", 1);
+            room->setPlayerCardLimitation(target, "use,response", ".|^heart", true);
+        }
+        return false;
+    }
+};
+
 
 class Boli : public TriggerSkill
 {
@@ -151,7 +229,7 @@ public:
 
             const Card *heartcard = room->askForCard(p, ".H", prompts.join(":"), data, Card::MethodResponse, judge->who, true, objectName());
             if (heartcard) {
-                room->retrial(heartcard, p, judge, objectName(), false);
+                room->retrial(heartcard, p, judge, objectName(), true);
                 break;
             }
         }
@@ -2436,7 +2514,7 @@ ProtagonistPackage::ProtagonistPackage()
     : Package("protagonist")
 {
     General *reimu = new General(this, "reimu$", "zhu", 4);
-    reimu->addSkill(new Lingqi);
+    //reimu->addSkill(new Lingqi);
     reimu->addSkill(new Qixiang);
     reimu->addSkill(new Boli);
 
