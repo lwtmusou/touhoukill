@@ -3324,7 +3324,8 @@ void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only)
                 location.append("/");
             if (!QDir(location).exists())
                 QDir().mkdir(location);
-            location.append(QString("%1(%2)-").arg(Sanguosha->translate(Self->getGeneralName())).arg(Sanguosha->translate(Self->getRole())));
+            location.append(QString("%1 %2(%3)-").arg(Sanguosha->getVersionName())
+                .arg(Sanguosha->translate(Self->getGeneralName())).arg(Sanguosha->translate(Self->getRole())));
             //.arg(QString::number(human)).arg(QString::number(players)));
             location.append(QDateTime::currentDateTime().toString("yyyyMMddhhmmss"));
             location.append(".txt");
@@ -3559,7 +3560,7 @@ void RoomScene::viewGenerals(const QString &reason, const QStringList &names)
 
 void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players)
 {
-    table->setColumnCount(11);
+    table->setColumnCount(10);
     table->setRowCount(players.length());
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
@@ -3662,7 +3663,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         handcards.replace("<img src='image/system/log/club.png' height = 12/>", tr("Club"));
         handcards.replace("<img src='image/system/log/diamond.png' height = 12/>", tr("Diamond"));
         item->setText(handcards);
-        table->setItem(i, 10, item);
+        table->setItem(i, 9, item);
     }
 
     for (int i = 2; i <= 10; i++)
