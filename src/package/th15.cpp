@@ -1155,6 +1155,8 @@ public:
             pattern = "BasicCard+^Jink,TrickCard+^Nullification+^Lightning,EquipCard|.|.|shehuo";
         else
             pattern = "BasicCard+^Slash+^Jink,TrickCard+^Nullification,EquipCard|.|.|shehuo";
+        //for ai
+        invoke->invoker->tag["shehuo_target"] = QVariant::fromValue(invoke->preferredTarget);
         const Card *c = room->askForUseCard(invoke->invoker, pattern, prompt, -1, Card::MethodUse, false, objectName());
         room->setPlayerFlag(invoke->owner, "-shehuoOwner");// for record
         room->setPlayerFlag(invoke->invoker, "-shehuoInvoker");// for record
@@ -1271,7 +1273,7 @@ public:
     Shenyan()
         : TriggerSkill("shenyan")
     {
-        events << EventPhaseStart << CardUsed << CardResponded << EventPhaseChanging;
+        events << EventPhaseStart << CardUsed << CardResponded  << TargetConfirmed << EventPhaseChanging;
         view_as_skill = new ShenyanVS;
 
     }
@@ -1294,7 +1296,14 @@ public:
             if (card != NULL && player != NULL && !card->isKindOf("SkillCard"))
                 room->setPlayerFlag(player, "shenyan_used");
         
-        } 
+        }
+        if (e == TargetConfirmed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isKindOf("SkillCard"))
+                return;
+            foreach (ServerPlayer *p, use.to)
+                room->setPlayerFlag(p, "shenyan_used");
+        }
         if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
