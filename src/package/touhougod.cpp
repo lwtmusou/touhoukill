@@ -2434,6 +2434,39 @@ public:
     }
 };
 
+class ChaorenLog : public TriggerSkill
+{
+public:
+    ChaorenLog()
+        : TriggerSkill("#chaoren")
+    {
+        events << CardsMoveOneTime;
+        global = true;
+    }
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
+                || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE) {
+                if (move.card_ids.length() == 1 && !move.from && move.from_places.contains(Player::DrawPile)) {
+                    ServerPlayer *byakuren = room->findPlayerBySkillName("chaoren");
+                    if (byakuren) {
+                        room->notifySkillInvoked(byakuren, "chaoren");
+                        LogMessage mes;
+                        mes.type = "$chaoren";
+                        mes.from = byakuren;
+                        //mes.to << owner;
+                        mes.arg = "chaoren";
+                        mes.card_str = Sanguosha->getCard(move.card_ids.first())->toString();
+                        room->sendLog(mes);
+                    }
+                }
+            }
+        }
+    }
+};
+
 class Biaoxiang : public TriggerSkill
 {
 public:
@@ -3578,22 +3611,35 @@ public:
     Kuixin()
         : TriggerSkill("kuixin")
     {
-        events << TargetConfirmed << TargetSpecified;
+        events << CardFinished;// << TargetConfirmed << TargetSpecified;
+        frequency = Compulsory;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        QList<SkillInvokeDetail> d;
         if (use.card->isKindOf("SkillCard") || use.from == NULL || use.to.length() != 1 || use.from == use.to.first())
             return QList<SkillInvokeDetail>();
 
-        if (e == TargetSpecified && use.from->hasSkill(this) && use.to.first()->getCards("h").length() > 0)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, false, use.to.first());
-        else if (e == TargetConfirmed && use.to.first()->hasSkill(this) && use.from->getCards("h").length() > 0)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.to.first(), use.to.first(), NULL, false, use.from);
+        QList<SkillInvokeDetail> d;
+        QList<ServerPlayer *> satoris;
+        if (use.from->isAlive() && use.from->hasSkill(this) && !use.to.first()->isKongcheng() && use.to.first()->getShownHandcards().isEmpty())
+            satoris << use.from;
+        else if (use.to.first()->isAlive() && use.to.first()->hasSkill(this) && !use.from->isKongcheng() && use.from->getShownHandcards().isEmpty())
+            satoris << use.to.first();
 
-        return QList<SkillInvokeDetail>();
+        use.from->getRoom()->sortByActionOrder(satoris);
+        foreach(ServerPlayer *p, satoris)
+            if (p == use.from)
+                d << SkillInvokeDetail(this, use.from, use.from, NULL, true, use.to.first());
+            else
+                d << SkillInvokeDetail(this, use.to.first(), use.to.first(), NULL, true, use.from);
+        //if (e == TargetSpecified && use.from->hasSkill(this) && use.to.first()->getCards("h").length() > 0)
+       //     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, false, use.to.first());
+        //else if (e == TargetConfirmed && use.to.first()->hasSkill(this) && use.from->getCards("h").length() > 0)
+        //    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.to.first(), use.to.first(), NULL, false, use.from);
+
+        return d;
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
@@ -3606,7 +3652,7 @@ public:
         room->sendLog(log);
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
 
-        room->showAllCards(invoke->targets.first(), invoke->invoker);
+        /*room->showAllCards(invoke->targets.first(), invoke->invoker);
         room->getThread()->delay(1000);
         room->clearAG(invoke->invoker);
 
@@ -3625,7 +3671,9 @@ public:
             room->clearAG(invoke->invoker);
             if (id > -1)
                 invoke->targets.first()->addToShownHandCards(QList<int>() << id);
-        }
+        }*/
+        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "h", objectName());
+        invoke->targets.first()->addToShownHandCards(QList<int>() << id);
         return false;
     }
 };
@@ -3661,16 +3709,16 @@ const Card *XinhuaCard::validate(CardUseStruct &use) const
 {
     Room *room = use.from->getRoom();
     const Card *card = Sanguosha->getCard(subcards.first());
-    room->setPlayerFlag(use.from, "xinhua_used");
+    //room->setPlayerFlag(use.from, "xinhua_used");
 
-    room->notifySkillInvoked(use.from, "xinhua");
-    LogMessage mes;
+    //room->notifySkillInvoked(use.from, "xinhua");
+    /*LogMessage mes;
     mes.type = "$xinhua";
     mes.from = use.from;
     mes.to << room->getCardOwner(subcards.first());
     mes.arg = "xinhua";
     mes.card_str = card->toString();
-    room->sendLog(mes);
+    room->sendLog(mes); */
 
     return card;
 }
@@ -3679,16 +3727,16 @@ const Card *XinhuaCard::validateInResponse(ServerPlayer *user) const
 {
     Room *room = user->getRoom();
     const Card *card = Sanguosha->getCard(subcards.first());
-    room->setPlayerFlag(user, "xinhua_used");
+    //room->setPlayerFlag(user, "xinhua_used");
 
-    room->notifySkillInvoked(user, "xinhua");
-    LogMessage mes;
+    //room->notifySkillInvoked(user, "xinhua");
+    /*LogMessage mes;
     mes.type = "$xinhua";
     mes.from = user;
     mes.to << room->getCardOwner(subcards.first());
     mes.arg = "xinhua";
     mes.card_str = card->toString();
-    room->sendLog(mes);
+    room->sendLog(mes);*/
 
     return card;
 }
@@ -3746,12 +3794,12 @@ public:
 
     bool isEnabledAtPlay(const Player *player) const
     {
-        return hasShown(player) && !player->hasFlag("xinhua_used"); //
+        return hasShown(player); // && !player->hasFlag("xinhua_used")
     }
 
     bool isEnabledAtResponse(const Player *player, const QString &) const
     {
-        if (!hasShown(player) || player->hasFlag("xinhua_used"))
+        if (!hasShown(player))// || player->hasFlag("xinhua_used")
             return false;
         QStringList checkedPatterns = responsePatterns();
         if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0)
@@ -3812,14 +3860,36 @@ public:
     Xinhua()
         : TriggerSkill("xinhua")
     {
-        events << EventPhaseChanging;
+        events << CardsMoveOneTime << EventPhaseChanging;
         view_as_skill = new XinhuaVS;
     }
 
-    void record(TriggerEvent, Room *room, QVariant &) const
+    void record(TriggerEvent e, Room *room, QVariant &data) const
     {
-        foreach (ServerPlayer *p, room->getAlivePlayers())
-            room->setPlayerFlag(p, "-xinhua_used");
+        if (e == EventPhaseChanging) {
+            foreach(ServerPlayer *p, room->getAlivePlayers())
+                room->setPlayerFlag(p, "-xinhua_used");
+        }
+        if (e == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
+                || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE) {
+                if (move.shown_ids.length() == 1) {
+                    ServerPlayer *satori = room->findPlayerBySkillName(objectName());
+                    ServerPlayer *owner = qobject_cast<ServerPlayer *>(move.from);
+                    if (satori && owner && satori != owner) {
+                        room->notifySkillInvoked(satori, "xinhua");
+                        LogMessage mes;
+                        mes.type = "$xinhua";
+                        mes.from = satori;
+                        mes.to << owner;
+                        mes.arg = "xinhua";
+                        mes.card_str = Sanguosha->getCard(move.shown_ids.first())->toString();
+                        room->sendLog(mes);
+                    }
+                }
+            }
+        }
     }
 };
 
@@ -5198,7 +5268,7 @@ TouhouGodPackage::TouhouGodPackage()
     General *satori_god = new General(this, "satori_god", "touhougod", 3);
     satori_god->addSkill(new Kuixin);
     satori_god->addSkill(new Xinhua);
-    satori_god->addSkill(new Cuimian);
+    //satori_god->addSkill(new Cuimian);
     //satori_god->addSkill(new Dongcha);
     //satori_god->addSkill(new Zhuiyi);
 
@@ -5249,7 +5319,7 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<XinhuaCard>();
     addMetaObject<RumoCard>();
 
-    skills << new Ziwo << new Benwo << new Chaowo << new Wendao << new ShenbaoSpear << new RoleShownHandler 
+    skills <<new ChaorenLog << new Ziwo << new Benwo << new Chaowo << new Wendao << new ShenbaoSpear << new RoleShownHandler 
         << new ShenbaoPagoda << new ShenbaoJadeSeal;
 }
 
