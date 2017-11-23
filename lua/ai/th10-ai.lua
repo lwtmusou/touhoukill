@@ -688,7 +688,25 @@ sgs.ai_choicemade_filter.skillInvoke.shaojie = function(self, player, args)
 	end
 end
 
-
+sgs.ai_damageInflicted.shaojie =function(self, damage)
+	if damage.card  then
+	    
+		local can = damage.card:hasFlag("showncards")
+		if damage.from then
+			for _, id in sgs.qlist(damage.from:getShownHandcards()) do
+				local c = sgs.Sanguosha:getCard(id)
+				if damage.card:getColor() == c:getColor() then
+					can =true
+					break
+				end
+			end
+		end
+		if can then
+			damage.damage=0
+		end
+	end
+	return damage
+end
 
 
 

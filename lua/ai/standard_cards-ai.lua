@@ -393,7 +393,7 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 	if from:hasSkill("here") or to:hasSkill("here") then
 		slash= self:copyHereSlash(slash)
 	end
-
+    
 	if self:touhouEffectNullify(slash,from,to) then return false end
 	if self:canNizhuan(to, from) then
 		return false
@@ -405,6 +405,7 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 			end
 		end
 	end
+	
 	if to:hasSkill("zuixiang") and to:isLocked(slash) then return false end
 	if to:hasSkill("yizhong") and not to:getArmor() then
 		if slash:isBlack() then
@@ -468,6 +469,9 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 		return true
 	end
 
+	
+	
+	
 	local armor = to:getArmor()
 	if armor then
 		if armor:objectName() == "RenwangShield" then
@@ -490,10 +494,13 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 					can_convert = true
 				end
 			end
-			return nature ~= sgs.DamageStruct_Normal or (can_convert and (from:hasWeapon("Fan") or (from:hasSkill("lihuo") and not self:isWeak(from))))
+			local vine_effect =  (nature ~= sgs.DamageStruct_Normal or (can_convert and (from:hasWeapon("Fan"))))
+			if not vine_effect then
+				return false
+			end
 		end
 	end
-
+    
 	if to:hasSkill("xuying") and to:getHandcardNum() > 0 then return true end
 	--[[if to:hasSkill("zhengti") then--严格来讲应该往后挪
 		local zhengti, transfer_to = self:zhengtiParse(from,to)
@@ -508,11 +515,11 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 		end
 	end]]
 
-
 	-- 收到0伤害防止伤害时
 	local fakeDamage = sgs.DamageStruct(slash, from, to, 1, self:touhouDamageNature(slash, from, to))
 	if self:touhouDamage(fakeDamage,from,to).damage <= 0 then
 		local effect, willEffect = self:touhouDamageEffect(fakeDamage,from,to)
+		
 		if not effect then
 			return false
 		elseif not willEffect then
