@@ -7156,6 +7156,17 @@ function SmartAI:touhouDamageInflicted(damage,from,to)
 		if to:hasArmorEffect("SilverLion")  then
 			damage.damage=1
 		end
+		if to:hasArmorEffect("Camouflage") then
+			local camouflage = true
+			for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+				local armor = p:getArmor()
+				if armor and armor:objectName() ~= "Camouflage" then
+					camouflage = false
+					break
+				end
+			end
+			if camouflage then damage.damage = 0 end
+		end
 	end
 
 	if damage.damage<1 then
