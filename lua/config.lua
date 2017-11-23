@@ -188,11 +188,13 @@ config = {
 		"momizi_sp->momizi",
 		"kyouko_sp->kyouko",
 		"nue_god->nue",
+		"seija_sp->seija",
 	},
 	
 	backdrop_convert_pairs = {
 		"yukimai->shinki",
 		"lunar|star->sunny",
 		"reisen2|seiran->tewi",
+		"seija_sp->seija",
 	}
 }

@@ -1005,6 +1005,10 @@ TH14Package::TH14Package()
     wakasagihime->addSkill(new Shizhu);
     wakasagihime->addSkill(new Liange);
 
+    General *seija_sp = new General(this, "seija_sp", "hzc", 3);
+    seija_sp->addSkill(new Skill("tianxie"));
+    seija_sp->addSkill(new Skill("huobao"));
+
     addMetaObject<LeitingCard>();
     addMetaObject<YuanfeiCard>();
     addMetaObject<LiangeCard>();
