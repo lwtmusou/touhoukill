@@ -1,4 +1,75 @@
 
+function getChunhuaCard(player)
+	local damage = "snatch|dismantlement|amazing_grace|archery_attack|savage_assault|iron_chain|collateral|fire_attack|drowning|await_exhausted|known_both|duel|lure_tiger"
+	local recover = "slash|fire_slash|snatch|dismantlement|amazing_grace|archery_attack|savage_assault|iron_chain|collateral|fire_attack|drowning|await_exhausted|known_both|duel|lure_tiger"
+	local damages = damage:split("|")
+	local recovers = recover:split("|")
+	
+	for _,c in sgs.qlist(player:getCards("h")) do
+		local name = c:objectName()
+		if c:isBlack() and table.contains(damages, name) then
+			return c
+		elseif c:isRed() and table.contains(recovers, name) then
+			return c
+		end
+	end
+	return nil
+end
+
+sgs.ai_skill_playerchosen.xiahui = function(self,targets)
+	if (targets:contains(self.player) and self.player:hasSkill("chunhua")) then
+		local card = getChunhuaCard(self.player)
+		if card then return self.player end
+	end
+	for _,p in sgs.qlist(targets) do
+		if not self:isFriend(p) then return p end
+	end
+	return nil 
+end
+sgs.ai_skill_cardchosen.xiahui = function(self, who, flags)
+	if self.player:objectName() == who:objectName() then
+		local card = getChunhuaCard(self.player)
+		if card then return card end
+	end
+end
+
+sgs.ai_skill_invoke.chunhua = function(self, data)
+	local use = data:toCardUse()
+	local e, f = 0, 0
+	for _,p in sgs.qlist(use.to) do
+	    if use.card:isBlack() or (use.card:isRed() and p:isWounded()) then
+			if self:isFriend(p) then
+				f = f+1
+			elseif self:isEnemy(p) then
+				e = e+1
+			end
+		end
+	end
+	if use.card:isBlack() and e > f then return true end
+	if use.card:isRed() and f > e then return true end
+	return false
+end
+
+sgs.ai_skill_use["@@shayi"] = function(self, prompt)
+	
+	local ids=self.player:getTag("shayi"):toIntList()
+	for _,id in sgs.qlist(ids) do
+		local card = sgs.Sanguosha:getCard(id)
+		local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+		self:useBasicCard(card, dummy_use)
+		if dummy_use.card and not dummy_use.to:isEmpty() then
+			local target_objectname = {}
+			for _, p in sgs.qlist(dummy_use.to) do
+				if self:isEnemy(p) then
+					table.insert(target_objectname, p:objectName())
+					return dummy_use.card:toString() .. "->" .. table.concat(target_objectname, "+")
+				end
+			end
+		end
+	end
+	return "."
+end
+
 
 sgs.ai_skill_invoke.yuyi = function(self, data)
 	local current = self.room:getCurrent()
@@ -22,6 +93,8 @@ sgs.ai_skill_invoke.yuyi = function(self, data)
 	end
 	return false
 end
+
+
 
 
 sgs.ai_skill_use["BasicCard+^Jink,TrickCard+^Nullification+^Lightning,EquipCard|.|.|shehuo"] = function(self, prompt, method)
