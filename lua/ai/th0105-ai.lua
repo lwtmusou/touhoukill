@@ -947,45 +947,6 @@ sgs.ai_skill_invoke.xingyou = function(self, data)
 end
 
 
-sgs.ai_skill_invoke.jinduan = function(self, data)
-	local target = data:toPlayer()
-	if target and self:isFriend(target) then
-		return true
-	end
-	return false
-end
-
-sgs.ai_skill_invoke.liuzhuan = function(self, data)
-	local target = data:toPlayer()
-	if target and self:isFriend(target) then
-		return true
-	end
-	return false
-end
-
-sgs.ai_skill_use["@@liuzhuanVS"] = function(self, prompt)
-
-	local b = self.room:getTag("liuzhuan"):toBrokenEquipChange()
-	local ids
-    if not b.ids:isEmpty() then
-		ids = b.ids
-	else
-		local s = self.room:getTag("liuzhuan"):toShownCardChange()
-		ids = s.ids
-	end
-	--默认全制衡？
-    if not ids:isEmpty() then
-	    
-        local recast = {}
-		for _,id in sgs.qlist(ids) do
-			table.insert(recast, tostring(id))
-		end
-		return "@LiuzhuanCard=" ..table.concat(recast, "+").."->."
-	end
-	return "."
-end
-
-
 
 local qiren_skill = {}
 qiren_skill.name = "qiren"
@@ -1075,3 +1036,58 @@ sgs.ai_skill_use_func.QirenCard=function(card,use,self)
 	end
 end
 sgs.ai_use_priority.QirenCard = 10
+
+
+
+
+sgs.ai_skill_invoke.jinduan = function(self, data)
+	local target = data:toPlayer()
+	if target and self:isFriend(target) then
+		return true
+	end
+	return false
+end
+
+sgs.ai_skill_invoke.liuzhuan = function(self, data)
+	local target = data:toPlayer()
+	if target and self:isFriend(target) then
+		return true
+	end
+	return false
+end
+
+sgs.ai_skill_use["@@liuzhuanVS"] = function(self, prompt)
+
+	local b = self.room:getTag("liuzhuan"):toBrokenEquipChange()
+	local ids
+    if not b.ids:isEmpty() then
+		ids = b.ids
+	else
+		local s = self.room:getTag("liuzhuan"):toShownCardChange()
+		ids = s.ids
+	end
+	--默认全制衡？
+    if not ids:isEmpty() then
+	    
+        local recast = {}
+		for _,id in sgs.qlist(ids) do
+			table.insert(recast, tostring(id))
+		end
+		return "@LiuzhuanCard=" ..table.concat(recast, "+").."->."
+	end
+	return "."
+end
+
+sgs.ai_skill_invoke.chenjue = function(self, data)
+	local target = data:toPlayer()
+	return target and self:isFriend(target)
+end
+
+sgs.ai_skill_cardask["@chenjue"] = function(self, data)
+	local shown = self.player:getShownHandcards()
+	if not shown:isEmpty() then
+		return "$".. shown:first()
+	end
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	return "$" .. cards[1]:getId()
+end

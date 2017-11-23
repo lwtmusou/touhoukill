@@ -4911,15 +4911,15 @@ public:
         if (banned.isEmpty())
             banned << "nue_god"
                    << "zun" << "koishi_god" << "seiga_god" << "youmu_god";
-        //return (all - banned - huashen_set - room_set).toList();
+        return (all - banned - huashen_set - room_set).toList();
 
         //only for test
-        QSet<QString> test;
-        if (true)
-           test << "satori_god" << "meirin" << "marisa_sp2";
-        else
-            test << "marisa" << "yukari" << "aya_sp";
-        return test.toList();
+        //QSet<QString> test;
+        //if (true)
+        //   test << "satori_god" << "meirin" << "marisa_sp2";
+        //else
+        //    test << "marisa" << "yukari" << "aya_sp";
+        //return test.toList();
     }
 
     bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const

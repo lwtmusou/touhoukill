@@ -778,6 +778,7 @@ public:
     {
         if (invoke->owner != invoke->invoker) {
             QString prompt = "@shihui1:" + invoke->owner->objectName();
+            invoke->invoker->tag["shihui-target"] = QVariant::fromValue(invoke->owner);
             const Card *card = room->askForCard(invoke->invoker, "EquipCard", prompt, data, Card::MethodNone, NULL, false, objectName());
             if (card) {
                 room->broadcastSkillInvoke(objectName());
@@ -791,7 +792,7 @@ public:
 
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->owner->objectName());
                 invoke->owner->obtainCard(card);
-                return true;
+
             }
         } else {
             return room->askForUseCard(invoke->invoker, "@@shihui", "@shihui2", -1, Card::MethodNone, false, objectName());

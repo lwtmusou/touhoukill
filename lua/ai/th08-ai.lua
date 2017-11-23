@@ -489,7 +489,7 @@ sgs.ai_skill_use["@@buxian"] = function(self, prompt)
 	if #handcards==0 then return "." end
 
 	self:sort(self.enemies,"handcard")
-	targets={}
+	local targets={}
 	for _, p in ipairs(self.enemies) do
 		if not p:isKongcheng()  then
 			table.insert(targets,p:objectName())

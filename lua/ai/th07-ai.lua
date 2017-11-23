@@ -313,6 +313,79 @@ sgs.ai_need_bear.jiaoxia = function(self, card,from,tos)
 	return false
 end
 
+--式辉AI
+
+sgs.ai_skill_cardask["@shihui1"] = function(self, data)
+	local target = self.player:getTag("shihui-target"):toPlayer()
+	if  self:isFriend(target) then
+	    for _,c in sgs.qlist(self.player:getCards("hes")) do
+			for _,e in sgs.qlist(self.player:getCards("hes")) do
+				if (c:getId() ~= e:getId() and c:isKindOf("EquipCard") and e:isKindOf("EquipCard")) then
+					local equip1 = c:getRealCard():toEquipCard()
+					local equip2 = e:getRealCard():toEquipCard()
+					if (equip1:location() == equip2:location()) then
+						return "$" .. c:getId()
+					end
+				end
+			end
+		end
+	end
+	return "."
+end
+
+sgs.ai_choicemade_filter.cardResponded["@shihui1"] = function(self, player, args)
+	local who= player:getTag("shihui-target"):toPlayer()
+	if args[#args] ~= "_nil_"  and who then
+		sgs.updateIntention(player, who, -20)
+	end
+end
+
+sgs.ai_skill_use["@@shihui"] = function(self, prompt)
+	self:sort(self.friends_noself,"handcard")
+	local targets={}
+	local ecard
+	for _, p in ipairs(self.friends_noself) do
+		for _,c in sgs.qlist(self.player:getCards("hes")) do
+			for _,e in sgs.qlist(self.player:getCards("hes")) do
+				if (c:getId() ~= e:getId() and c:isKindOf("EquipCard") and e:isKindOf("EquipCard")) then
+					
+					local equip1 = c:getRealCard():toEquipCard()
+					local equip2 = e:getRealCard():toEquipCard()
+					if (equip1:location() == equip2:location() and not p:getEquip(equip1:location())) then
+						table.insert(targets, p:objectName())
+						ecard = c
+						break
+					end
+				end
+			end
+			if #targets >= 1 then
+				break
+			end
+		end
+		if #targets >= 1 then
+			break
+		end
+	end
+	if #targets == 1 then
+		return "@ShihuiCard=".. ecard:getId() .."->" .. table.concat(targets, "+")
+	end
+	return "."
+end
+sgs.ai_card_intention.ShihuiCard = -50
+
+
+
+sgs.ai_skill_invoke.huanzang = function(self, data)
+	local target = data:toPlayer()
+	return self:isFriend(target)
+end
+sgs.ai_choicemade_filter.skillInvoke.huanzang = function(self, player, args)
+	local target = self.room:getCurrentDyingPlayer()
+	if target and args[#args] == "yes" then
+		sgs.updateIntention(player, target, -60)
+	end
+end
+
 
 sgs.ai_skill_invoke.zhanwang = function(self)
 	local damage = self.player:getTag("zhanwang"):toDamage()

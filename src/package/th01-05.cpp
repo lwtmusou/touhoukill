@@ -2933,6 +2933,8 @@ public:
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->owner))) {
             room->broadcastSkillInvoke(objectName());
             room->notifySkillInvoked(invoke->owner, objectName());
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->owner->objectName());
+
             LogMessage log;
             log.type = "#InvokeOthersSkill";
             log.from = invoke->invoker;
