@@ -19,6 +19,7 @@ return {
     ["Camouflage"] = "光学迷彩",
 	[":Camouflage"] = "装备牌·防具\n\n技能：<font color=\"blue\"><b>锁定技，</b></font>当你受到伤害时，若场上仅有一张防具牌，防止此伤害，此牌因使用进入你的装备区后，你须弃置场上一张不同名的防具牌。",
     ["#Camouflage"] = "%from 的防具【%arg2】防止了 %arg 点伤害",
+	["@camouflage"] = "光学迷彩： 请选择一名角色，并弃置其装备区的【防具】",
 	
 	["await_exhausted"] = "以逸待劳",
 	[":await_exhausted"] = "锦囊牌\n\n使用时机：出牌阶段。\n使用目标：一至二名角色\n作用效果：目标角色摸两张牌，然后弃置两张牌。",

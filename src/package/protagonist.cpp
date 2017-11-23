@@ -7,6 +7,7 @@
 #include "skill.h"
 #include "standard.h"
 
+
 class Lingqi : public TriggerSkill
 {
 public:
@@ -59,7 +60,7 @@ public:
     }
 };
 
-/*
+
 class Qixiang : public TriggerSkill
 {
 public:
@@ -101,13 +102,13 @@ public:
         return false;
     }
 };
-*/
 
-class Qixiang : public TriggerSkill
+
+class Fengmo : public TriggerSkill
 {
 public:
-    Qixiang()
-        : TriggerSkill("qixiang")
+    Fengmo()
+        : TriggerSkill("fengmo")
     {
         events << EventPhaseChanging << CardResponded << CardUsed;
     }
@@ -118,8 +119,8 @@ public:
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
                 foreach(ServerPlayer *p, room->getAlivePlayers()) {
-                    if (p->getMark("@qixiangPro") > 0) {
-                        room->setPlayerMark(p, "@qixiangPro", 0);
+                    if (p->getMark("@fengmoPro") > 0) {
+                        room->setPlayerMark(p, "@fengmoPro", 0);
                         room->removePlayerCardLimitation(p, "use,response", ".|^heart$1");
                     }
                 }
@@ -155,7 +156,7 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->preferredTarget), objectName(), "@newqixiang", true, true);
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->preferredTarget), objectName(), "@fengmo", true, true);
         if (target)
             invoke->targets << target;
         return target != NULL;
@@ -163,15 +164,15 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         JudgeStruct judge;
-        judge.reason = "qixiang";
-        judge.who = invoke->invoker;
+        judge.reason = objectName();
+        judge.who = invoke->targets.first();
         judge.good = true;
         judge.pattern = ".|red";
         room->judge(judge);
 
         ServerPlayer*target = invoke->targets.first();
-        if (judge.isGood() && target->getMark("@qixiangPro") == 0) {
-            room->setPlayerMark(target, "@qixiangPro", 1);
+        if (judge.isGood() && target->getMark("@fengmoPro") == 0) {
+            room->setPlayerMark(target, "@fengmoPro", 1);
             room->setPlayerCardLimitation(target, "use,response", ".|^heart", true);
         }
         return false;
@@ -2515,6 +2516,7 @@ ProtagonistPackage::ProtagonistPackage()
 {
     General *reimu = new General(this, "reimu$", "zhu", 4);
     //reimu->addSkill(new Lingqi);
+    reimu->addSkill(new Fengmo);
     reimu->addSkill(new Qixiang);
     reimu->addSkill(new Boli);
 

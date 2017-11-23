@@ -116,6 +116,42 @@ sgs.ai_choicemade_filter.skillInvoke.qixiang = function(self, player, args)
 	end
 end
 
+function fengmoBenefit(self, target)
+	if not self.player:hasSkill("qixiang") then 
+		return false
+	end
+	return not target:isCurrent() and self.player:getMaxHp() > target:getHandcardNum() and self:isFriend(target)
+end
+
+sgs.ai_skill_playerchosen.fengmo = function(self, targets)
+	if not self:invokeTouhouJudge() then return nil end
+	
+	local current = self.room:getCurrent()
+	if not current then return nil end
+	
+	if targets:contains(current) then
+		if self:isEnemy(current) then
+			return current
+		else
+			for _,t in sgs.qlist(targets) do
+				if fengmoBenefit(self, t) then
+					return t
+				end
+			end
+		end
+	else
+		if (current:isFriend() and current:getHandcardNum() > current:getMaxCards()) then
+			for _,t in sgs.qlist(targets) do
+				if self:isEnemy(t) then
+					return target
+				end
+			end
+		end
+	end
+	return nil
+end
+
+
 table.insert(sgs.ai_global_flags, "bolisource")
 sgs.ai_skill_invoke.boli = function(self,data)
 	local judge=self.player:getTag("boli_judge"):toJudge()
