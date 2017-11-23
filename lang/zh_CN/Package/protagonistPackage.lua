@@ -39,7 +39,7 @@ return {
 	
 	["fengmo"] = "封魔",
 	[":fengmo"] = "当一名角色使用【闪】或【无懈可击】时，你可令另一名角色判定，若结果为红色，本回合内后者不能使用或打出<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>以外的牌。",
-    ["@fengmo"] = "你可以发动“封魔” 令一名角色判定，若结果为红色其不能使用或打出<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>以外的牌",
+    ["@fengmo-target"] = "你可以发动“封魔” 令一名角色判定，若结果为红色其不能使用或打出<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>以外的牌",
 
 	["boli"] = "博丽",
 	--[":boli"] = "<font color=\"orange\"><b>主公技，</b></font>当非<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>的判定牌生效前，你可令其他角色选择是否打出<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌代替之。",

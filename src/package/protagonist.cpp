@@ -119,8 +119,8 @@ public:
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
                 foreach(ServerPlayer *p, room->getAlivePlayers()) {
-                    if (p->getMark("@fengmoPro") > 0) {
-                        room->setPlayerMark(p, "@fengmoPro", 0);
+                    if (p->getMark("@fengmo") > 0) {
+                        room->setPlayerMark(p, "@fengmo", 0);
                         room->removePlayerCardLimitation(p, "use,response", ".|^heart$1");
                     }
                 }
@@ -156,7 +156,7 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->preferredTarget), objectName(), "@fengmo", true, true);
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->preferredTarget), objectName(), "@fengmo-target", true, true);
         if (target)
             invoke->targets << target;
         return target != NULL;
@@ -171,8 +171,8 @@ public:
         room->judge(judge);
 
         ServerPlayer*target = invoke->targets.first();
-        if (judge.isGood() && target->getMark("@fengmoPro") == 0) {
-            room->setPlayerMark(target, "@fengmoPro", 1);
+        if (judge.isGood() && target->getMark("@fengmo") == 0) {
+            room->setPlayerMark(target, "@fengmo", 1);
             room->setPlayerCardLimitation(target, "use,response", ".|^heart", true);
         }
         return false;
