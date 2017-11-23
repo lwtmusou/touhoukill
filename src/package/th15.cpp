@@ -1058,6 +1058,8 @@ public:
             }
             room->sortByActionOrder(targets);
             foreach(ServerPlayer *t, targets)
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), t->objectName());
+            foreach(ServerPlayer *t, targets)
                 t->drawCards(1);
 
             foreach(ServerPlayer *t, targets) {
@@ -1069,6 +1071,7 @@ public:
         }
         else {
             ServerPlayer *current = data.value<ServerPlayer *>();
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), current->objectName());
             current->drawCards(1);
             if (!current->hasFlag("yuyi_invalidity")) {
                 room->setPlayerFlag(current, "yuyi_invalidity");

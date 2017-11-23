@@ -1,3 +1,29 @@
+
+
+sgs.ai_skill_invoke.yuyi = function(self, data)
+	local current = self.room:getCurrent()
+	if self.player:isCurrent() then
+		local e , f = 0, 0
+		for _,p in sgs.qlist(self.room:getAllPlayers()) do
+			if not p:getShownHandcards():isEmpty() then
+				if self:isEnemy(p) then e = e+1 
+				elseif self:isFriend(p) then f = f+1 end
+			end
+		end
+		return f > 0 and f >= e
+	elseif current then
+		--回合外暂不考虑太多
+		if self:isFriend(current) and current:hasSkill("santi") then
+			return true
+		end
+		if self:isEnemy(current) and current:hasSkill("qiuwen") then
+			return true
+		end
+	end
+	return false
+end
+
+
 sgs.ai_skill_use["BasicCard+^Jink,TrickCard+^Nullification+^Lightning,EquipCard|.|.|shehuo"] = function(self, prompt, method)
 	local target = self.player:getTag("shehuo_target"):toPlayer()
 	if not target or not self:isEnemy(target) then return "." end 
