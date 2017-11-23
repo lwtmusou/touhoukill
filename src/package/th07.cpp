@@ -317,6 +317,7 @@ public:
     {
         QString prompt = e == DamageInflicted ? "target1:" : "target2:";
         prompt = prompt + invoke->preferredTarget->objectName();
+        invoke->invoker->tag["shenyin-target"] = QVariant::fromValue(invoke->preferredTarget);
         return invoke->invoker->askForSkillInvoke(this, prompt);
     }
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const

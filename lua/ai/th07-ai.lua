@@ -236,6 +236,54 @@ sgs.ai_choicemade_filter.cardResponded["@jingdong-target"] = function(self, play
 end
 
 
+sgs.ai_skill_invoke.shenyin = function(self, data)
+	local target = self.player:getTag("shenyin-target"):toPlayer()
+	return target:objectName() == self.player:objectName() or self.player:isCurrent()
+end
+sgs.ai_skill_use["@@xijian"] = function(self, prompt)
+	local targets={}
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if not self:isEnemy(p) then continue end
+		for _,t in sgs.qlist(self.room:getOtherPlayers(p)) do
+			if not self:isFriend(t) then continue end
+			if not t:inMyAttackRange(p) and not p:inMyAttackRange(t) then
+				if not p:isKongcheng() then
+					table.insert(targets, p:objectName())
+					table.insert(targets, t:objectName())
+					break
+				elseif not p:getCards("e"):isEmpty() then
+					local can_equip = false
+					for _,c in sgs.qlist(p:getCards("e")) do
+						local equip = c:getRealCard():toEquipCard()
+						if not t:getEquip(equip:location()) then
+							can_equip = true
+							break
+						end
+					end
+					if can_equip then
+						table.insert(targets, p:objectName())
+						table.insert(targets, t:objectName())
+						break
+					end
+				elseif not p:getCards("j"):isEmpty() then
+					--挪延时暂时不管。。。
+				end
+			end
+		end
+		if #targets >= 2 then
+			break
+		end
+	end
+	if #targets == 2 then
+		return "@XijianCard=.->" .. table.concat(targets, "+")
+	end
+end
+
+sgs.ai_card_intention.XijianCard = function(self, card, from, tos)
+	sgs.updateIntention(from, tos[2], -30)
+end
+
+
 sgs.ai_skill_discard.zhaoliao = function(self,discard_num, min_num)
 	local target = self.player:getTag("zhaoliao_target"):toPlayer()
 	local to_discard = {}
