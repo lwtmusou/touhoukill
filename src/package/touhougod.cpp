@@ -3707,8 +3707,9 @@ bool XinhuaCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 
 const Card *XinhuaCard::validate(CardUseStruct &use) const
 {
-    Room *room = use.from->getRoom();
+    //Room *room = use.from->getRoom();
     const Card *card = Sanguosha->getCard(subcards.first());
+    use.from->showHiddenSkill("xinhua");
     //room->setPlayerFlag(use.from, "xinhua_used");
 
     //room->notifySkillInvoked(use.from, "xinhua");
@@ -3725,8 +3726,9 @@ const Card *XinhuaCard::validate(CardUseStruct &use) const
 
 const Card *XinhuaCard::validateInResponse(ServerPlayer *user) const
 {
-    Room *room = user->getRoom();
+    //Room *room = user->getRoom();
     const Card *card = Sanguosha->getCard(subcards.first());
+    user->showHiddenSkill("xinhua");
     //room->setPlayerFlag(user, "xinhua_used");
 
     //room->notifySkillInvoked(user, "xinhua");
@@ -3879,6 +3881,10 @@ public:
                     ServerPlayer *owner = qobject_cast<ServerPlayer *>(move.from);
                     if (satori && owner && satori != owner) {
                         room->notifySkillInvoked(satori, "xinhua");
+                        //only for ai
+                        if (!satori->isOnline())
+                            satori->showHiddenSkill("xinhua");
+
                         LogMessage mes;
                         mes.type = "$xinhua";
                         mes.from = satori;
@@ -4905,15 +4911,15 @@ public:
         if (banned.isEmpty())
             banned << "nue_god"
                    << "zun" << "koishi_god" << "seiga_god" << "youmu_god";
-        return (all - banned - huashen_set - room_set).toList();
+        //return (all - banned - huashen_set - room_set).toList();
 
         //only for test
-        //QSet<QString> test;
-        //if (true)
-        //   test << "youmu_slm" << "yukari" << "marisa_sp2";
-        //else
-        //    test << "marisa" << "yukari" << "aya_sp";
-        //return test.toList();
+        QSet<QString> test;
+        if (true)
+           test << "satori_god" << "meirin" << "marisa_sp2";
+        else
+            test << "marisa" << "yukari" << "aya_sp";
+        return test.toList();
     }
 
     bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
