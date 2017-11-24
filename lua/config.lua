@@ -196,5 +196,8 @@ config = {
 		"lunar|star->sunny",
 		"reisen2|seiran->tewi",
 		"seija_sp->seija",
+	},
+	latest_generals = {
+		"reisen2",
 	}
 }

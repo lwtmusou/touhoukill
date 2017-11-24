@@ -2981,16 +2981,30 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign)
     const int choice_count = qMin(max_choice, max_available);
 
     QStringList choices = Sanguosha->getRandomGenerals(total - existed.size(), existed);
-
+    QStringList latest = Sanguosha->getLatestGenerals(existed);
+    bool assign_latest_general = Config.value("AssignLatestGeneral", true).toBool();
     foreach (ServerPlayer *player, to_assign) {
         player->clearSelected();
-
-        for (int i = 0; i < choice_count; i++) {
+        int i = 0;
+        if (assign_latest_general && !latest.isEmpty()) {
+            QString choice = player->findReasonable(latest, true);
+            if (!choice.isEmpty()) {
+                player->addToSelected(choice);
+                latest.removeOne(choice);
+                i++;
+                if (choices.contains(choice))
+                    choices.removeOne(choice);
+            }
+        }
+            
+        for (i; i < choice_count; i++) {
             QString choice = player->findReasonable(choices, true);
             if (choice.isEmpty())
                 break;
             player->addToSelected(choice);
             choices.removeOne(choice);
+            if (latest.contains(choice))
+                latest.removeOne(choice);
         }
     }
 }

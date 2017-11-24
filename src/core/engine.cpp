@@ -77,6 +77,7 @@ Engine::Engine()
     SurprisingGenerals = GetConfigFromLuaState(lua, "surprising_generals").toStringList();
     LordBGMConvertList = GetConfigFromLuaState(lua, "bgm_convert_pairs").toStringList();
     LordBackdropConvertList = GetConfigFromLuaState(lua, "backdrop_convert_pairs").toStringList();
+    LatestGeneralList  = GetConfigFromLuaState(lua, "latest_generals").toStringList();
 
     _loadMiniScenarios();
     _loadModScenarios();
@@ -898,6 +899,7 @@ QStringList Engine::getRandomLords() const
     QStringList lords;
     QStringList splords_package; //lords  in sp package will be not count as a lord.
     splords_package << "thndj";
+
     foreach (QString alord, getLords()) {
         if (banlist_ban.contains(alord))
             continue;
@@ -945,6 +947,16 @@ QStringList Engine::getRandomLords() const
 
     if (lord_num == 0 && extra == 0)
         extra = 1;
+    
+    bool assign_latest_general = Config.value("AssignLatestGeneral", true).toBool();
+    QStringList latest = getLatestGenerals(QSet<QString>());
+    if (assign_latest_general && !latest.isEmpty()) {
+        lords << latest.first();
+        if (nonlord_list.contains(latest.first()))
+            nonlord_list.removeOne(latest.first());
+        extra--;
+    }
+
     for (i = 0; addcount < extra; i++) {
         if (getGeneral(nonlord_list.at(i))->getKingdom() != "touhougod") {
             lords << nonlord_list.at(i);
@@ -1070,6 +1082,15 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
     //Q_ASSERT(general_list.count() == count);
 
     return general_list;
+}
+
+QStringList Engine::getLatestGenerals(const QSet<QString> &ban_set) const
+{
+    QSet<QString> general_set = LatestGeneralList.toSet();
+    QStringList latest_generals = general_set.subtract(ban_set).toList();
+    if (!latest_generals.isEmpty())
+        qShuffle(latest_generals);
+    return latest_generals;
 }
 
 QList<int> Engine::getRandomCards() const

@@ -71,6 +71,7 @@ void Settings::init()
     BanPackages = value("BanPackages").toStringList();
 
     RandomSeat = value("RandomSeat", true).toBool();
+    AssignLatestGeneral = value("AssignLatestGeneral", true).toBool();
     EnableCheat = value("EnableCheat", false).toBool();
     FreeChoose = EnableCheat && value("FreeChoose", false).toBool();
     ForbidSIMC = value("ForbidSIMC", false).toBool();

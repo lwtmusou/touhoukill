@@ -37,6 +37,7 @@ public:
     QString GameMode;
     QStringList BanPackages;
     bool RandomSeat;
+    bool AssignLatestGeneral;
     bool EnableCheat;
     bool FreeChoose;
     bool ForbidSIMC;

@@ -163,6 +163,9 @@ QWidget *ServerDialog::createAdvancedTab()
     random_seat_checkbox = new QCheckBox(tr("Arrange the seats randomly"));
     random_seat_checkbox->setChecked(Config.RandomSeat);
 
+    assign_latest_general_checkbox = new QCheckBox(tr("Assign Latest General"));
+    assign_latest_general_checkbox->setChecked(Config.AssignLatestGeneral);
+
     enable_cheat_checkbox = new QCheckBox(tr("Enable cheat"));
     enable_cheat_checkbox->setToolTip(tr("<font color=#FFFF33>This option enables the cheat menu</font>"));
     enable_cheat_checkbox->setChecked(Config.EnableCheat);
@@ -269,7 +272,8 @@ QWidget *ServerDialog::createAdvancedTab()
 
     layout->addWidget(forbid_same_ip_checkbox);
     layout->addWidget(disable_chat_checkbox);
-    layout->addWidget(random_seat_checkbox);
+    //layout->addWidget(random_seat_checkbox);
+    layout->addLayout(HLay(random_seat_checkbox, assign_latest_general_checkbox));
     layout->addWidget(enable_cheat_checkbox);
     layout->addWidget(free_choose_checkbox);
     layout->addLayout(HLay(free_assign_checkbox, free_assign_self_checkbox));
@@ -1044,6 +1048,7 @@ bool ServerDialog::config()
     Config.OperationTimeout = timeout_spinbox->value();
     Config.OperationNoLimit = nolimit_checkbox->isChecked();
     Config.RandomSeat = random_seat_checkbox->isChecked();
+    Config.AssignLatestGeneral = assign_latest_general_checkbox->isChecked();
     Config.EnableCheat = enable_cheat_checkbox->isChecked();
     Config.FreeChoose = Config.EnableCheat && free_choose_checkbox->isChecked();
     Config.FreeAssignSelf = Config.EnableCheat && free_assign_self_checkbox->isChecked() && free_assign_checkbox->isEnabled();
@@ -1095,6 +1100,7 @@ bool ServerDialog::config()
     Config.setValue("OperationTimeout", Config.OperationTimeout);
     Config.setValue("OperationNoLimit", Config.OperationNoLimit);
     Config.setValue("RandomSeat", Config.RandomSeat);
+    Config.setValue("AssignLatestGeneral", Config.AssignLatestGeneral);
     Config.setValue("EnableCheat", Config.EnableCheat);
     Config.setValue("FreeChoose", Config.FreeChoose);
     Config.setValue("FreeAssign", Config.EnableCheat && free_assign_checkbox->isChecked());

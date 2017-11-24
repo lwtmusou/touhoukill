@@ -103,6 +103,7 @@ public:
     QStringList getRandomLords() const;
     void banRandomGods() const;
     QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
+    QStringList getLatestGenerals(const QSet<QString> &ban_set = QSet<QString>()) const;
     QList<int> getRandomCards() const;
     QString getRandomGeneralName() const;
     QStringList getLimitedGeneralNames() const;
@@ -131,6 +132,7 @@ public:
     QStringList SurprisingGenerals;
     QStringList LordBGMConvertList;
     QStringList LordBackdropConvertList;
+    QStringList LatestGeneralList;
     int operationTimeRate(QSanProtocol::CommandType command, QVariant msg);
 
 private:
