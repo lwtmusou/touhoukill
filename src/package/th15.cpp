@@ -1438,7 +1438,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
-        if (use.card->hasFlag("showncards") && use.from->hasSkill(this)) {
+        if (use.card->hasFlag("showncards") && use.from->hasSkill(this) && use.to.length() == 1) {
             foreach(ServerPlayer *p, use.to) {
                 if (!p->getShownHandcards().isEmpty())
                     d << SkillInvokeDetail(this, use.from, use.from, NULL, true, p);
@@ -1451,7 +1451,7 @@ public:
         ServerPlayer *target = invoke->targets.first();
         room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
-        int num = qMin(5, target->getShownHandcards().length());
+        int num = qMin(3, target->getShownHandcards().length());
         target->drawCards(num);
         target->turnOver();
         return false;

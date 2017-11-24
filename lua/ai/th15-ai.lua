@@ -136,6 +136,20 @@ sgs.ai_skill_use["@@shenyan"] = function(self, prompt)
 end
 
 
+sgs.ai_skill_invoke.meimeng = function(self, data)
+	local from = data:toPlayer()
+	--from = findPlayerByObjectName(self.room, move.from:objectName(), true) 
+	return from and self:isFriend(from)
+end
+sgs.ai_choicemade_filter.skillInvoke.meimeng = function(self, player, args)
+	local move = player:getTag("meimeng"):toMoveOneTime()
+    local from = nil
+	if move.from then from = findPlayerByObjectName(self.room, move.from:objectName(), true) end
+	if from and args[#args] == "yes" then
+		sgs.updateIntention(player, from, -20)
+	end
+end
+
 
 
 local yidan_skill = {}
