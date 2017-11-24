@@ -1350,7 +1350,8 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
 
     if (player->hasSkill("duxin")) {
         handcard_visible = true;
-        notifySkillInvoked(player, "duxin");
+        if (flags.contains("h"))
+            notifySkillInvoked(player, "duxin");
         doAnimate(S_ANIMATE_INDICATE, player->objectName(), who->objectName());
     }
 

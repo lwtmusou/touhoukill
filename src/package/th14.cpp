@@ -969,6 +969,144 @@ public:
     }
 };
 
+
+class Tianxie : public TriggerSkill
+{
+public:
+    Tianxie()
+        : TriggerSkill("tianxie")
+    {
+        events << SlashHit  << PostCardEffected;  //<< CardFinished
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == SlashHit) {
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            room->setCardFlag(effect.slash, "tianxieEffected");
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
+    {
+        if (e != PostCardEffected)
+            return QList<SkillInvokeDetail>();
+        //CardUseStruct use = data.value<CardUseStruct>();
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        if (effect.card->isKindOf("EquipCard") || effect.card->isKindOf("SkillCard"))
+            return QList<SkillInvokeDetail>();
+        if (effect.to->hasSkill(this) && effect.to->isAlive()) {
+            if (effect.card->hasFlag("tianxieEffected")) {
+                if (effect.card->isKindOf("DelayedTrick") || !effect.from || !effect.from->canDiscard(effect.from, "hes"))
+                    return QList<SkillInvokeDetail>();
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to);
+            }else
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to);
+        }
+        return QList<SkillInvokeDetail>();
+
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        if (effect.card->hasFlag("tianxieEffected")) {
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), effect.from->objectName());
+            room->askForDiscard(effect.from, objectName(), 1, 1, false, true);
+        } else
+            invoke->invoker->drawCards(1);
+        return false;
+    }
+};
+
+class Huobao : public TriggerSkill
+{
+public:
+    Huobao()
+        : TriggerSkill("huobao")
+    {
+        events << EventPhaseStart << EventPhaseChanging << Damage;
+    }
+
+    static QList<int> huobaoProhibitCards(ServerPlayer *src, ServerPlayer *target) {
+
+        QList<int> cards;
+        foreach(const Card *e, target->getEquips()) {
+            const EquipCard *equip = qobject_cast<const EquipCard *>(e->getRealCard());
+            if (src->getEquip(equip->location()))
+                cards << e->getId();
+        }
+        return cards;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getOtherPlayers(change.player)) {
+                    if (p->hasFlag("huobao")) {
+                        room->setPlayerFlag(p, "-huobao");
+                        room->setFixedDistance(change.player, p, -1);
+                    }
+                }
+            }
+        }
+    
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->getPhase() != Player::Play)
+                return QList<SkillInvokeDetail>();
+
+            QList<SkillInvokeDetail> d;
+            foreach(ServerPlayer *src, room->findPlayersBySkillName(objectName())) {
+                if (!src->isCurrent() && src->getEquips().length() < player->getEquips().length() 
+                    && huobaoProhibitCards(src, player).length() <  player->getEquips().length())
+                    d << SkillInvokeDetail(this, src, src);
+            }
+            return d;
+        }
+        if (triggerEvent == Damage) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.card && damage.card->isKindOf("Slash") &&
+                damage.from && damage.from->isAlive() && damage.from->isCurrent()
+                && damage.to->isAlive() && damage.to->hasFlag("huobao") && !damage.to->getEquips().isEmpty())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.from, NULL, true);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+    
+    
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (e == EventPhaseStart) {
+            ServerPlayer *current = room->getCurrent();
+            QList<int> disable = huobaoProhibitCards(invoke->invoker, current);
+            int id = room->askForCardChosen(invoke->invoker, current, "e", objectName(), false, Card::MethodNone, disable);
+            const Card *card = Sanguosha->getCard(id);
+            if (!invoke->invoker->hasFlag("huobao")){
+                room->setPlayerFlag(invoke->invoker, "huobao");
+                room->setFixedDistance(current, invoke->invoker, 1);
+            }
+            room->moveCardTo(card, current, invoke->invoker, Player::PlaceEquip, CardMoveReason(CardMoveReason::S_REASON_TRANSFER, invoke->invoker->objectName(), objectName(), QString()));
+        } else if (e == Damage) {
+            DamageStruct damage = data.value<DamageStruct>();
+
+            room->touhouLogmessage("#TriggerSkill", damage.to, objectName());
+            room->notifySkillInvoked(damage.to, objectName());
+            int id = room->askForCardChosen(invoke->invoker, damage.to, "e", objectName());
+
+            room->obtainCard(invoke->invoker, id);
+        }
+        return false;    
+    }
+};
+
+
 TH14Package::TH14Package()
     : Package("th14")
 {
@@ -1006,8 +1144,8 @@ TH14Package::TH14Package()
     wakasagihime->addSkill(new Liange);
 
     General *seija_sp = new General(this, "seija_sp", "hzc", 3);
-    seija_sp->addSkill(new Skill("tianxie"));
-    seija_sp->addSkill(new Skill("huobao"));
+    seija_sp->addSkill(new Tianxie);
+    seija_sp->addSkill(new Huobao);
 
     addMetaObject<LeitingCard>();
     addMetaObject<YuanfeiCard>();

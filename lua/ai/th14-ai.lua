@@ -456,3 +456,27 @@ end
 sgs.ai_use_value.LiangeCard = 7
 sgs.ai_use_priority.LiangeCard = sgs.ai_use_priority.Peach + 0.2
 sgs.ai_card_intention.LiangeCard = -70
+
+sgs.ai_skill_invoke.tianxie =function(self,data)
+    local effect = data:toCardEffect()
+	if not effect.card:hasFlag("tianxieEffected") then 
+		return true 
+	else
+		if effect.from and   self:isEnemy(effect.from) then
+			return true
+		end
+	end	
+	return false
+end
+
+sgs.ai_skill_invoke.huobao =function(self,data)
+	local target = self.room:getCurrent()
+	return target and self:isEnemy(target)
+end
+sgs.ai_choicemade_filter.skillInvoke.huobao = function(self, player, args)
+	local target = self.room:getCurrent()
+	if target  and args[#args] == "yes" then
+		sgs.updateIntention(player, target, 50)
+	end
+end
+
