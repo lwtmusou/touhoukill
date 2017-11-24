@@ -198,6 +198,14 @@ config = {
 		"seija_sp->seija",
 	},
 	latest_generals = {
+	    "reimu","reisen_gzz",
+		"yukimai",
+		"yuyuko","yukari","ran","chen",
+		"wriggle",
+		"nue_slm", "seija_sp", 
+		"junko","hecatia","hecatia","clownpiece","sagume","doremy","seiran",
 		"reisen2",
+		"satori_god",
+		"nue_god",
 	}
 }

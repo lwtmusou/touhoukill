@@ -949,7 +949,7 @@ QStringList Engine::getRandomLords() const
         extra = 1;
     
     bool assign_latest_general = Config.value("AssignLatestGeneral", true).toBool();
-    QStringList latest = getLatestGenerals(QSet<QString>());
+    QStringList latest = getLatestGenerals(lords.toSet());
     if (assign_latest_general && !latest.isEmpty()) {
         lords << latest.first();
         if (nonlord_list.contains(latest.first()))
