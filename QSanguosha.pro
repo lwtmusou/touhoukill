@@ -114,7 +114,8 @@ SOURCES += \
     src/ui/choosetriggerorderbox.cpp \
     src/ui/graphicsbox.cpp \
     src/ui/lightboxanimation.cpp \
-    src/package/testCard.cpp
+    src/package/testCard.cpp \
+    src/package/th16.cpp
 
 HEADERS += \
     src/client/aux-skills.h \
@@ -219,7 +220,8 @@ HEADERS += \
     src/ui/choosetriggerorderbox.h \
     src/ui/graphicsbox.h \
     src/ui/lightboxanimation.h \
-    src/package/testCard.h
+    src/package/testCard.h \
+    src/package/th16.h
 
 
 FORMS += \
