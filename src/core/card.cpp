@@ -792,7 +792,7 @@ bool Card::isAvailable(const Player *player) const
     return !player->isCardLimited(this, handling_method) || (can_recast && !player->isCardLimited(this, Card::MethodRecast));
 }
 
-bool Card::ignoreCardValidty(const Player *player) const
+bool Card::ignoreCardValidty(const Player *) const
 {
     return false;
 }

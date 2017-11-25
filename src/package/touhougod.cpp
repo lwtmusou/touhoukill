@@ -3254,7 +3254,7 @@ public:
         return Self;
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const
+    virtual bool isEnabledAtPlay(const Player *) const
     {
         return false;
     }

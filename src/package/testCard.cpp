@@ -27,7 +27,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         ServerPlayer *target = invoke->targets.first();
         if (target->getCards("h").isEmpty())
@@ -76,7 +76,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         ServerPlayer *target = invoke->targets.first();
         QList<int> ids;
@@ -344,7 +344,7 @@ AwaitExhausted::AwaitExhausted(Card::Suit suit, int number)
     setObjectName("await_exhausted");
 }
 
-bool AwaitExhausted::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+bool AwaitExhausted::targetFilter(const QList<const Player *> &targets, const Player *, const Player *Self) const
 {
     int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     return targets.length() < total_num && !Self->isCardLimited(this, Card::MethodUse);
