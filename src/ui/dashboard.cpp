@@ -1048,7 +1048,6 @@ void Dashboard::startPending(const ViewAsSkill *skill)
     pendings.clear();
     unselectAll();
 
-    
     bool expand = (skill && skill->isResponseOrUse());
     if (!expand && skill && skill->inherits("ResponseSkill")) {
         const ResponseSkill *resp_skill = qobject_cast<const ResponseSkill *>(skill);
@@ -1078,7 +1077,6 @@ void Dashboard::startPending(const ViewAsSkill *skill)
             QString name = Self->tag.value("anyun", QString()).toString();
             if (name == "xinhua") {
                 expandPileCards("%shown_card");
-
             }
         }
     } else {
@@ -1091,7 +1089,6 @@ void Dashboard::startPending(const ViewAsSkill *skill)
             foreach (const QString &pile_name, skill->getExpandPile().split(","))
                 expandPileCards(pile_name);
         }
-        
     }
 
     for (int i = 0; i < 5; i++) {
@@ -1115,11 +1112,10 @@ void Dashboard::stopPending()
             retractPileCards(view_as_skill->getExpandPile());
         }
         if (view_as_skill->objectName() == "anyun") {
-                QString name = Self->tag.value("anyun", QString()).toString();
-                if (name == "xinhua") {
-                    retractPileCards("%shown_card");
-
-                }
+            QString name = Self->tag.value("anyun", QString()).toString();
+            if (name == "xinhua") {
+                retractPileCards("%shown_card");
+            }
         }
     }
 

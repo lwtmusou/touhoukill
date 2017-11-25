@@ -3246,7 +3246,7 @@ public:
         : OneCardViewAsSkill("shenbao_pagoda")
     {
         attached_lord_skill = true;
-        response_or_use = true;//only skill shenbao can use WoodenOx
+        response_or_use = true; //only skill shenbao can use WoodenOx
     }
 
     virtual bool shouldBeVisible(const Player *Self) const
@@ -3274,7 +3274,7 @@ public:
     }
 
     const Card *viewAs(const Card *originalCard) const
-    { 
+    {
         Card *ncard = new Nullification(originalCard->getSuit(), originalCard->getNumber());
         ncard->addSubcard(originalCard);
         ncard->setSkillName("Pagoda");
@@ -3321,7 +3321,6 @@ public:
         return card;
     }
 };
-
 
 class ShenbaoHandler : public TriggerSkill
 {
@@ -3611,7 +3610,7 @@ public:
     Kuixin()
         : TriggerSkill("kuixin")
     {
-        events << CardFinished;// << TargetConfirmed << TargetSpecified;
+        events << CardFinished; // << TargetConfirmed << TargetSpecified;
         frequency = Compulsory;
     }
 
@@ -3629,13 +3628,13 @@ public:
             satoris << use.to.first();
 
         use.from->getRoom()->sortByActionOrder(satoris);
-        foreach(ServerPlayer *p, satoris)
+        foreach (ServerPlayer *p, satoris)
             if (p == use.from)
                 d << SkillInvokeDetail(this, use.from, use.from, NULL, true, use.to.first());
             else
                 d << SkillInvokeDetail(this, use.to.first(), use.to.first(), NULL, true, use.from);
         //if (e == TargetSpecified && use.from->hasSkill(this) && use.to.first()->getCards("h").length() > 0)
-       //     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, false, use.to.first());
+        //     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, false, use.to.first());
         //else if (e == TargetConfirmed && use.to.first()->hasSkill(this) && use.from->getCards("h").length() > 0)
         //    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.to.first(), use.to.first(), NULL, false, use.from);
 
@@ -3801,7 +3800,7 @@ public:
 
     bool isEnabledAtResponse(const Player *player, const QString &) const
     {
-        if (!hasShown(player))// || player->hasFlag("xinhua_used")
+        if (!hasShown(player)) // || player->hasFlag("xinhua_used")
             return false;
         QStringList checkedPatterns = responsePatterns();
         if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0)
@@ -3869,7 +3868,7 @@ public:
     void record(TriggerEvent e, Room *room, QVariant &data) const
     {
         if (e == EventPhaseChanging) {
-            foreach(ServerPlayer *p, room->getAlivePlayers())
+            foreach (ServerPlayer *p, room->getAlivePlayers())
                 room->setPlayerFlag(p, "-xinhua_used");
         }
         if (e == CardsMoveOneTime) {
@@ -4910,7 +4909,10 @@ public:
         // ban nue and zun
         if (banned.isEmpty())
             banned << "nue_god"
-                   << "zun" << "koishi_god" << "seiga_god" << "youmu_god";
+                   << "zun"
+                   << "koishi_god"
+                   << "seiga_god"
+                   << "youmu_god";
         return (all - banned - huashen_set - room_set).toList();
 
         //only for test
@@ -5325,8 +5327,7 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<XinhuaCard>();
     addMetaObject<RumoCard>();
 
-    skills <<new ChaorenLog << new Ziwo << new Benwo << new Chaowo << new Wendao << new ShenbaoSpear << new RoleShownHandler 
-        << new ShenbaoPagoda << new ShenbaoJadeSeal;
+    skills << new ChaorenLog << new Ziwo << new Benwo << new Chaowo << new Wendao << new ShenbaoSpear << new RoleShownHandler << new ShenbaoPagoda << new ShenbaoJadeSeal;
 }
 
 ADD_PACKAGE(TouhouGod)

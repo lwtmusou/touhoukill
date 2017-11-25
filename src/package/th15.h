@@ -4,7 +4,6 @@
 #include "card.h"
 #include "package.h"
 
-
 class ShayiCard : public SkillCard
 {
     Q_OBJECT

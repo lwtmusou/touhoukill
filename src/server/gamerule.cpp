@@ -316,7 +316,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     for (int i = 0; i < card_use.to.length(); i++)
                         jink_list.append(QVariant(jink_num));
                     card_use.from->tag["Jink_" + card_use.card->toString()] = QVariant::fromValue(jink_list);
-                    
                 }
                 if (card_use.from && !card_use.to.isEmpty()) {
                     thread->trigger(TargetSpecified, room, data);
@@ -524,11 +523,9 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                         recover.who = effect.from;
                         room->recover(effect.to, recover);
                     }
-                }
-                else
+                } else
                     effect.card->onEffect(effect);
             }
-                
         }
 
         break;
@@ -611,7 +608,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 break;
             }
         }
-            
+
         DamageStruct d = DamageStruct(effect.slash, effect.from, effect.to, 1, effect.nature);
         foreach (ServerPlayer *p, room->getAllPlayers(true)) {
             if (effect.slash->hasFlag("WushenDamage_" + p->objectName())) {

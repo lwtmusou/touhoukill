@@ -7,7 +7,6 @@
 #include "skill.h"
 #include "standard.h"
 
-
 class Lingqi : public TriggerSkill
 {
 public:
@@ -60,7 +59,6 @@ public:
     }
 };
 
-
 class Qixiang : public TriggerSkill
 {
 public:
@@ -103,7 +101,6 @@ public:
     }
 };
 
-
 class Fengmo : public TriggerSkill
 {
 public:
@@ -112,13 +109,13 @@ public:
     {
         events << EventPhaseChanging << CardResponded << CardUsed;
     }
-    
+
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
-                foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                foreach (ServerPlayer *p, room->getAlivePlayers()) {
                     if (p->getMark("@fengmo") > 0) {
                         room->setPlayerMark(p, "@fengmo", 0);
                         room->removePlayerCardLimitation(p, "use,response", ".|^heart$1");
@@ -139,17 +136,15 @@ public:
         if (triggerEvent == CardUsed) {
             player = data.value<CardUseStruct>().from;
             card = data.value<CardUseStruct>().card;
-        }
-        else if (triggerEvent == CardResponded) {
+        } else if (triggerEvent == CardResponded) {
             CardResponseStruct response = data.value<CardResponseStruct>();
             player = response.m_from;
             if (response.m_isUse)
                 card = response.m_card;
         }
         if (player && card && (card->isKindOf("Jink") || card->isKindOf("Nullification"))) {
-            foreach(ServerPlayer *reimu, room->findPlayersBySkillName(objectName()))
+            foreach (ServerPlayer *reimu, room->findPlayersBySkillName(objectName()))
                 d << SkillInvokeDetail(this, reimu, reimu, NULL, false, player);
-            
         }
         return d;
     }
@@ -170,7 +165,7 @@ public:
         judge.pattern = ".|red";
         room->judge(judge);
 
-        ServerPlayer*target = invoke->targets.first();
+        ServerPlayer *target = invoke->targets.first();
         if (judge.isGood() && target->getMark("@fengmo") == 0) {
             room->setPlayerMark(target, "@fengmo", 1);
             room->setPlayerCardLimitation(target, "use,response", ".|^heart", true);
@@ -178,7 +173,6 @@ public:
         return false;
     }
 };
-
 
 class Boli : public TriggerSkill
 {

@@ -2846,7 +2846,6 @@ public:
     }
 };
 
-
 class Xunlun : public TriggerSkill
 {
 public:
@@ -2863,8 +2862,7 @@ public:
         if (e == CardUsed) {
             player = data.value<CardUseStruct>().from;
             card = data.value<CardUseStruct>().card;
-        }
-        else {
+        } else {
             CardResponseStruct response = data.value<CardResponseStruct>();
             player = response.m_from;
             if (response.m_isUse)
@@ -2874,10 +2872,9 @@ public:
             return QList<SkillInvokeDetail>();
         if (player == NULL || player->isDead() || player->isCurrent() || player->getCards("h").isEmpty())
             return QList<SkillInvokeDetail>();
-        
 
         QList<SkillInvokeDetail> d;
-        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName()))
+        foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName()))
             d << SkillInvokeDetail(this, p, p, NULL, false, player);
         return d;
     }
@@ -2920,7 +2917,7 @@ public:
         if (current->isDead() || current->getPhase() != Player::Finish)
             return QList<SkillInvokeDetail>();
         QList<SkillInvokeDetail> d;
-        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+        foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
             if (p->hasSkill(this, false, false) && p != current && p->getHandcardNum() == current->getHandcardNum() && !current->isKongcheng())
                 d << SkillInvokeDetail(this, p, current);
         }
@@ -2950,7 +2947,6 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        
         const Card *card1 = room->askForCard(invoke->invoker, ".|.|.|hand!", "@chenjue:" + invoke->owner->objectName(), data, Card::MethodNone);
         if (!card1) {
             // force !!!
@@ -2966,16 +2962,17 @@ public:
             card2 = hc2.value(y);
         }
 
-
         bool shown1 = invoke->invoker->isShownHandcard(card1->getId());
         bool shown2 = invoke->owner->isShownHandcard(card2->getId());
-        QList<int>ids1;  ids1 << card1->getId();
-        QList<int>ids2;  ids2 << card2->getId();
+        QList<int> ids1;
+        ids1 << card1->getId();
+        QList<int> ids2;
+        ids2 << card2->getId();
         QList<CardsMoveStruct> exchangeMove;
         CardsMoveStruct move1(ids1, invoke->owner, Player::PlaceHand,
-            CardMoveReason(CardMoveReason::S_REASON_SWAP, invoke->invoker->objectName(), invoke->owner->objectName(), objectName(), QString()));
+                              CardMoveReason(CardMoveReason::S_REASON_SWAP, invoke->invoker->objectName(), invoke->owner->objectName(), objectName(), QString()));
         CardsMoveStruct move2(ids2, invoke->invoker, Player::PlaceHand,
-            CardMoveReason(CardMoveReason::S_REASON_SWAP, invoke->owner->objectName(), invoke->invoker->objectName(), objectName(), QString()));
+                              CardMoveReason(CardMoveReason::S_REASON_SWAP, invoke->owner->objectName(), invoke->invoker->objectName(), objectName(), QString()));
         exchangeMove.push_back(move1);
         exchangeMove.push_back(move2);
         room->moveCardsAtomic(exchangeMove, false);

@@ -704,7 +704,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
             room->moveCardTo(this, player, NULL, Player::DiscardPile, reason, true);
         }
     }
-    
+
     thread->trigger(CardUsed, room, data);
     thread->trigger(CardFinished, room, data);
 }
@@ -841,7 +841,6 @@ Card::HandlingMethod Card::getHandlingMethod() const
 {
     return handling_method;
 }
-
 
 void Card::setFlags(const QString &flag) const
 {

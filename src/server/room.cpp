@@ -1286,7 +1286,6 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
         setPlayerFlag(repliedPlayer, "-nullifiationNul");
     }
 
-
     if (card->isCancelable(effect)) {
         if (result) {
             result = !_askForNullification(card, repliedPlayer, to, !positive, aiHelper);
@@ -1296,7 +1295,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     }
     if (pagoda == 0 && result && EquipSkill::equipAvailable(repliedPlayer, EquipCard::TreasureLocation, "Pagoda")) {
         bool isLastTarget = true;
-        foreach(QString flag, trick->getFlags()) {
+        foreach (QString flag, trick->getFlags()) {
             if (flag.startsWith("LastTrickTarget_")) {
                 QStringList f = flag.split("_");
                 ServerPlayer *last = findPlayerByObjectName(f.at(1));
@@ -1304,10 +1303,10 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
                     if (last != to)
                         isLastTarget = false;
                     break;
-                }              
+                }
             }
         }
-        if (!isLastTarget && askForSkillInvoke(repliedPlayer,"Pagoda", data))
+        if (!isLastTarget && askForSkillInvoke(repliedPlayer, "Pagoda", data))
             setCardFlag(trick, "PagodaNullifiation");
     }
     return result;
@@ -1322,11 +1321,11 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     static QChar handcard_flag('h');
     static QChar equip_flag('e');
     static QChar judging_flag('j');
-    
+
     //lord skill: youtong
     if (player != who && player->getKingdom() == "dld") {
         QList<ServerPlayer *> targets;
-        foreach(ServerPlayer *p, getOtherPlayers(player)) {
+        foreach (ServerPlayer *p, getOtherPlayers(player)) {
             if (p->hasLordSkill("youtong")) {
                 targets << p;
             }
@@ -1340,7 +1339,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
                 log.to << lord;
                 log.arg = "youtong";
                 sendLog(log);
-                
+
                 notifySkillInvoked(lord, "youtong");
                 doAnimate(S_ANIMATE_INDICATE, player->objectName(), lord->objectName());
                 player = lord;
@@ -2996,7 +2995,7 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign)
                     choices.removeOne(choice);
             }
         }
-            
+
         for (i; i < choice_count; i++) {
             QString choice = player->findReasonable(choices, true);
             if (choice.isEmpty())

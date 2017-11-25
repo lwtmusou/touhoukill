@@ -769,7 +769,7 @@ public:
         if (damage.from->hasSkill(this))
             d << SkillInvokeDetail(this, damage.from, damage.from);
         foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName(), false)) {
-            if (damage.from != p && p->hasSkill(this, false, false))//check hidden
+            if (damage.from != p && p->hasSkill(this, false, false)) //check hidden
                 d << SkillInvokeDetail(this, p, damage.from);
         }
         return d;
@@ -793,7 +793,6 @@ public:
 
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->owner->objectName());
                 invoke->owner->obtainCard(card);
-
             }
         } else {
             return room->askForUseCard(invoke->invoker, "@@shihui", "@shihui2", -1, Card::MethodNone, false, objectName());
@@ -832,7 +831,7 @@ public:
         case EventPhaseChanging: {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
-                foreach(ServerPlayer *p, room->getAllPlayers())
+                foreach (ServerPlayer *p, room->getAllPlayers())
                     room->setPlayerFlag(p, "-huanzang");
             }
             break;

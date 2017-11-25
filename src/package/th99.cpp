@@ -2078,7 +2078,7 @@ public:
             if (current && current->canDiscard(current, "hes"))
                 d << SkillInvokeDetail(this, p, p);
             else {
-               foreach (ServerPlayer *t, room->getOtherPlayers(p)) {
+                foreach (ServerPlayer *t, room->getOtherPlayers(p)) {
                     if (t->isChained() == p->isChained()) {
                         d << SkillInvokeDetail(this, p, p);
                         break;
@@ -2093,8 +2093,7 @@ public:
     {
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *t, room->getAlivePlayers()) {
-            if ((t->isChained() == invoke->invoker->isChained() && t != invoke->invoker) || 
-                (t->isCurrent() && t->canDiscard(t, "hes")))
+            if ((t->isChained() == invoke->invoker->isChained() && t != invoke->invoker) || (t->isCurrent() && t->canDiscard(t, "hes")))
                 targets << t;
         }
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@daoyao", true, true);

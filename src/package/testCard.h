@@ -3,10 +3,6 @@
 
 #include "standard.h"
 
-
-
-
-
 class Camera : public Weapon
 {
     Q_OBJECT
@@ -31,7 +27,6 @@ public:
     Q_INVOKABLE JadeSeal(Card::Suit suit, int number);
 
     virtual void onUninstall(ServerPlayer *player) const;
-
 };
 
 class Pagoda : public Treasure
@@ -42,9 +37,7 @@ public:
     Q_INVOKABLE Pagoda(Card::Suit suit, int number);
 
     virtual void onUninstall(ServerPlayer *player) const;
-
 };
-
 
 class Camouflage : public Armor
 {
@@ -52,10 +45,7 @@ class Camouflage : public Armor
 
 public:
     Q_INVOKABLE Camouflage(Card::Suit suit, int number);
-
 };
-
-
 
 class AwaitExhausted : public SingleTargetTrick
 {
@@ -79,8 +69,6 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-
-
 class Kusuri : public BasicCard
 {
     Q_OBJECT
@@ -94,10 +82,6 @@ public:
     virtual bool isAvailable(const Player *player) const;
     //virtual bool targetFixed() const;
 };
-
-
-
-
 
 class TestCardPackage : public Package
 {

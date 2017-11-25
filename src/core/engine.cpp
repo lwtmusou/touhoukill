@@ -77,7 +77,7 @@ Engine::Engine()
     SurprisingGenerals = GetConfigFromLuaState(lua, "surprising_generals").toStringList();
     LordBGMConvertList = GetConfigFromLuaState(lua, "bgm_convert_pairs").toStringList();
     LordBackdropConvertList = GetConfigFromLuaState(lua, "backdrop_convert_pairs").toStringList();
-    LatestGeneralList  = GetConfigFromLuaState(lua, "latest_generals").toStringList();
+    LatestGeneralList = GetConfigFromLuaState(lua, "latest_generals").toStringList();
 
     _loadMiniScenarios();
     _loadModScenarios();
@@ -947,7 +947,7 @@ QStringList Engine::getRandomLords() const
 
     if (lord_num == 0 && extra == 0)
         extra = 1;
-    
+
     bool assign_latest_general = Config.value("AssignLatestGeneral", true).toBool();
     QStringList latest = getLatestGenerals(lords.toSet());
     if (assign_latest_general && !latest.isEmpty()) {

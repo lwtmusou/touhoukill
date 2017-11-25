@@ -969,14 +969,13 @@ public:
     }
 };
 
-
 class Tianxie : public TriggerSkill
 {
 public:
     Tianxie()
         : TriggerSkill("tianxie")
     {
-        events << SlashHit  << PostCardEffected;  //<< CardFinished
+        events << SlashHit << PostCardEffected; //<< CardFinished
     }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const
@@ -1000,11 +999,10 @@ public:
                 if (effect.card->isKindOf("DelayedTrick") || !effect.from || !effect.from->canDiscard(effect.from, "hes"))
                     return QList<SkillInvokeDetail>();
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to);
-            }else
+            } else
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to);
         }
         return QList<SkillInvokeDetail>();
-
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
@@ -1028,10 +1026,10 @@ public:
         events << EventPhaseStart << EventPhaseChanging << Damage;
     }
 
-    static QList<int> huobaoProhibitCards(ServerPlayer *src, ServerPlayer *target) {
-
+    static QList<int> huobaoProhibitCards(ServerPlayer *src, ServerPlayer *target)
+    {
         QList<int> cards;
-        foreach(const Card *e, target->getEquips()) {
+        foreach (const Card *e, target->getEquips()) {
             const EquipCard *equip = qobject_cast<const EquipCard *>(e->getRealCard());
             if (src->getEquip(equip->location()))
                 cards << e->getId();
@@ -1044,7 +1042,7 @@ public:
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
-                foreach(ServerPlayer *p, room->getOtherPlayers(change.player)) {
+                foreach (ServerPlayer *p, room->getOtherPlayers(change.player)) {
                     if (p->hasFlag("huobao")) {
                         room->setPlayerFlag(p, "-huobao");
                         room->setFixedDistance(change.player, p, -1);
@@ -1052,7 +1050,6 @@ public:
                 }
             }
         }
-    
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
@@ -1063,24 +1060,21 @@ public:
                 return QList<SkillInvokeDetail>();
 
             QList<SkillInvokeDetail> d;
-            foreach(ServerPlayer *src, room->findPlayersBySkillName(objectName())) {
-                if (!src->isCurrent() && src->getEquips().length() < player->getEquips().length() 
-                    && huobaoProhibitCards(src, player).length() <  player->getEquips().length())
+            foreach (ServerPlayer *src, room->findPlayersBySkillName(objectName())) {
+                if (!src->isCurrent() && src->getEquips().length() < player->getEquips().length() && huobaoProhibitCards(src, player).length() < player->getEquips().length())
                     d << SkillInvokeDetail(this, src, src);
             }
             return d;
         }
         if (triggerEvent == Damage) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.card && damage.card->isKindOf("Slash") &&
-                damage.from && damage.from->isAlive() && damage.from->isCurrent()
-                && damage.to->isAlive() && damage.to->hasFlag("huobao") && !damage.to->getEquips().isEmpty())
+            if (damage.card && damage.card->isKindOf("Slash") && damage.from && damage.from->isAlive() && damage.from->isCurrent() && damage.to->isAlive()
+                && damage.to->hasFlag("huobao") && !damage.to->getEquips().isEmpty())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.from, NULL, true);
         }
         return QList<SkillInvokeDetail>();
     }
-    
-    
+
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (e == EventPhaseStart) {
@@ -1088,11 +1082,12 @@ public:
             QList<int> disable = huobaoProhibitCards(invoke->invoker, current);
             int id = room->askForCardChosen(invoke->invoker, current, "e", objectName(), false, Card::MethodNone, disable);
             const Card *card = Sanguosha->getCard(id);
-            if (!invoke->invoker->hasFlag("huobao")){
+            if (!invoke->invoker->hasFlag("huobao")) {
                 room->setPlayerFlag(invoke->invoker, "huobao");
                 room->setFixedDistance(current, invoke->invoker, 1);
             }
-            room->moveCardTo(card, current, invoke->invoker, Player::PlaceEquip, CardMoveReason(CardMoveReason::S_REASON_TRANSFER, invoke->invoker->objectName(), objectName(), QString()));
+            room->moveCardTo(card, current, invoke->invoker, Player::PlaceEquip,
+                             CardMoveReason(CardMoveReason::S_REASON_TRANSFER, invoke->invoker->objectName(), objectName(), QString()));
         } else if (e == Damage) {
             DamageStruct damage = data.value<DamageStruct>();
 
@@ -1102,10 +1097,9 @@ public:
 
             room->obtainCard(invoke->invoker, id);
         }
-        return false;    
+        return false;
     }
 };
-
 
 TH14Package::TH14Package()
     : Package("th14")

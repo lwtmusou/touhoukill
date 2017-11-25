@@ -1706,11 +1706,12 @@ void Client::askForSinglePeach(const QVariant &arg)
 
     // @todo: anti-cheating of askForSinglePeach is not done yet!!!
     QStringList pattern;
-    pattern << "peach" << "kusuri";
+    pattern << "peach"
+            << "kusuri";
     if (dying == Self) {
         prompt_doc->setHtml(tr("You are dying, please provide %1 peach(es)(or analeptic) to save yourself").arg(peaches));
         pattern << "analeptic";
-        
+
     } else {
         QString dying_general = getPlayerName(dying->objectName());
         if (dying->hasLordSkill("yanhui") && Self->getKingdom() == "zhan") {

@@ -1050,7 +1050,7 @@ bool Player::hasTreasure(const QString &treasure_name, bool selfOnly) const
         return false;
 
     if (hasSkill("shenbao") && !selfOnly && treasure_name != "wooden_ox") {
-        foreach(const Player *p, getAliveSiblings()) {
+        foreach (const Player *p, getAliveSiblings()) {
             if (p->treasure) {
                 if (treasure_name == "shenbao")
                     return true;

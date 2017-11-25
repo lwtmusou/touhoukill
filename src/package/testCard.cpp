@@ -2,11 +2,8 @@
 #include "client.h"
 #include "engine.h"
 #include "general.h"
-#include "room.h"
 #include "maneuvering.h"
-
-
-
+#include "room.h"
 
 class CameraSkill : public WeaponSkill
 {
@@ -23,8 +20,8 @@ public:
         if (!equipAvailable(damage.from, EquipCard::WeaponLocation, objectName(), damage.to))
             return QList<SkillInvokeDetail>();
 
-        if (damage.card && damage.card->isKindOf("Slash") && damage.from && damage.from->isAlive() && damage.to->isAlive() 
-            && damage.to != damage.from && damage.by_user && !damage.chain && !damage.transfer && damage.to->getCards("h").length() > 0 )
+        if (damage.card && damage.card->isKindOf("Slash") && damage.from && damage.from->isAlive() && damage.to->isAlive() && damage.to != damage.from && damage.by_user
+            && !damage.chain && !damage.transfer && damage.to->getCards("h").length() > 0)
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
 
         return QList<SkillInvokeDetail>();
@@ -54,7 +51,6 @@ Camera::Camera(Suit suit, int number)
     setObjectName("Camera");
 }
 
-
 class GunSkill : public WeaponSkill
 {
 public:
@@ -71,10 +67,8 @@ public:
         if (!equipAvailable(damage.from, EquipCard::WeaponLocation, objectName(), damage.to))
             return QList<SkillInvokeDetail>();
 
-        if (damage.card && damage.card->isKindOf("Slash") && damage.from && damage.from->isAlive() && damage.to->isAlive()
-            && damage.to != damage.from)
-        {
-            foreach(const Card *c, damage.to->getCards("e")) {
+        if (damage.card && damage.card->isKindOf("Slash") && damage.from && damage.from->isAlive() && damage.to->isAlive() && damage.to != damage.from) {
+            foreach (const Card *c, damage.to->getCards("e")) {
                 if (!damage.to->isBrokenEquip(c->getEffectiveId()))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true, damage.to);
             }
@@ -86,7 +80,7 @@ public:
     {
         ServerPlayer *target = invoke->targets.first();
         QList<int> ids;
-        foreach(const Card *c, target->getCards("e")) {
+        foreach (const Card *c, target->getCards("e")) {
             if (!target->isBrokenEquip(c->getEffectiveId()))
                 ids << c->getEffectiveId();
         }
@@ -95,18 +89,16 @@ public:
             room->touhouLogmessage("#Gun", invoke->invoker, objectName(), QList<ServerPlayer *>() << target);
             target->addBrokenEquips(ids);
         }
-        
+
         return false;
     }
 };
-
 
 Gun::Gun(Suit suit, int number)
     : Weapon(suit, number, 4)
 {
     setObjectName("Gun");
 }
-
 
 class JadeSealSkill : public ZeroCardViewAsSkill
 {
@@ -118,7 +110,7 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return  EquipSkill::equipAvailable(player, EquipCard::TreasureLocation, objectName()) && !player->hasFlag("JadeSeal_used");
+        return EquipSkill::equipAvailable(player, EquipCard::TreasureLocation, objectName()) && !player->hasFlag("JadeSeal_used");
         //return true;
     }
 
@@ -143,17 +135,13 @@ public:
 
     void record(TriggerEvent e, Room *room, QVariant &data) const
     {
-        if (e == PreCardUsed)
-        {
+        if (e == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from && use.card && use.card->getSkillName() == "JadeSeal")
-            {
+            if (use.from && use.card && use.card->getSkillName() == "JadeSeal") {
                 room->setPlayerFlag(use.from, "JadeSeal_used");
             }
-        }
-        else if (e == EventPhaseChanging)
-        {
-            foreach(ServerPlayer *p, room->getAllPlayers())
+        } else if (e == EventPhaseChanging) {
+            foreach (ServerPlayer *p, room->getAllPlayers())
                 room->setPlayerFlag(p, "-JadeSeal_used");
         }
     }
@@ -173,8 +161,6 @@ void JadeSeal::onUninstall(ServerPlayer *player) const
     Treasure::onUninstall(player);
 }
 
-
-
 class PagodaSkill : public OneCardViewAsSkill
 {
 public:
@@ -185,7 +171,6 @@ public:
         response_pattern = "nullification";
         //response_or_use = true;//only skill shenbao can use WoodenOx
     }
-
 
     const Card *viewAs(const Card *originalCard) const
     {
@@ -201,9 +186,8 @@ public:
             return false;
         if (player->hasFlag("Pagoda_used"))
             return false;
-        return !player->isKongcheng();// || !player->getHandPile().isEmpty();
+        return !player->isKongcheng(); // || !player->getHandPile().isEmpty();
     }
-
 };
 
 Pagoda::Pagoda(Suit suit, int number)
@@ -225,17 +209,13 @@ public:
 
     void record(TriggerEvent e, Room *room, QVariant &data) const
     {
-        if (e == PreCardUsed)
-        {
+        if (e == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from && use.card && use.card->getSkillName() == "Pagoda")
-            {
+            if (use.from && use.card && use.card->getSkillName() == "Pagoda") {
                 room->setPlayerFlag(use.from, "Pagoda_used");
             }
-        }
-        else if (e == EventPhaseChanging)
-        {
-            foreach(ServerPlayer *p, room->getAllPlayers())
+        } else if (e == EventPhaseChanging) {
+            foreach (ServerPlayer *p, room->getAllPlayers())
                 room->setPlayerFlag(p, "-Pagoda_used");
         }
     }
@@ -251,7 +231,6 @@ public:
 
             if (effect.to->isAlive())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
-
         }
         return QList<SkillInvokeDetail>();
     }
@@ -297,29 +276,24 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
             if (equipAvailable(damage.to, EquipCard::ArmorLocation, objectName())) {
                 int count = 0;
-                foreach(ServerPlayer *p, room->getAllPlayers())
-                {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getArmor())
                         count++;
                 }
-                if (count ==1)
+                if (count == 1)
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
             }
-        }
-        else {
+        } else {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.to && move.to_place == Player::PlaceEquip &&
-                (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE) {
-                
+            if (move.to && move.to_place == Player::PlaceEquip && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE) {
                 ServerPlayer *invoker = qobject_cast<ServerPlayer *>(move.to);
                 for (int i = 0; i < move.card_ids.size(); i++) {
                     const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
                     if (card->objectName() == objectName()) {
-                        foreach(ServerPlayer *p, room->getAllPlayers())
-                        {
+                        foreach (ServerPlayer *p, room->getAllPlayers()) {
                             if (p->getArmor() && p->getArmor()->objectName() != objectName()) {
                                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, invoker, invoker, NULL, true);
-                            }    
+                            }
                         }
                     }
                 }
@@ -333,7 +307,7 @@ public:
         if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
             room->setEmotion(invoke->invoker, "armor/silver_lion");
-            
+
             LogMessage log;
             log.type = "#Camouflage";
             log.from = invoke->invoker;
@@ -341,11 +315,9 @@ public:
             log.arg2 = objectName();
             room->sendLog(log);
             return true;
-        }
-        else {
+        } else {
             QList<ServerPlayer *> targets;
-            foreach(ServerPlayer *p, room->getAllPlayers())
-            {
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
                 if (p->getArmor() && p->getArmor()->objectName() != objectName()) {
                     targets << p;
                 }
@@ -365,7 +337,6 @@ Camouflage::Camouflage(Suit suit, int number)
 {
     setObjectName("Camouflage");
 }
-
 
 AwaitExhausted::AwaitExhausted(Card::Suit suit, int number)
     : SingleTargetTrick(suit, number)
@@ -414,7 +385,6 @@ void SpellDuel::onEffect(const CardEffectStruct &effect) const
         return;
     Room *room = effect.from->getRoom();
 
-
     if (effect.from->pindian(effect.to, "spell_duel", NULL)) {
         DamageStruct damage(this, effect.from, effect.to);
         room->damage(damage);
@@ -422,10 +392,8 @@ void SpellDuel::onEffect(const CardEffectStruct &effect) const
         DamageStruct damage(this, effect.to, effect.from);
         damage.by_user = false;
         room->damage(damage);
-    }    
+    }
 }
-
-
 
 Kusuri::Kusuri(Suit suit, int number)
     : BasicCard(suit, number)
@@ -449,9 +417,9 @@ bool Kusuri::isAvailable(const Player *player) const
     if (player->isWounded() && !player->isProhibited(player, this))
         return true;
 
-    QList <const Player *> targets = player->getAliveSiblings();
+    QList<const Player *> targets = player->getAliveSiblings();
     targets << player;
-    foreach(const Player *p, targets) {
+    foreach (const Player *p, targets) {
         if (!player->isProhibited(p, this)) {
             if (p->hasFlag("Global_Dying") && !isPlay)
                 return true;
@@ -462,31 +430,26 @@ bool Kusuri::isAvailable(const Player *player) const
     return false;
 }
 
-
-
 bool Kusuri::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    
-    
-        bool globalDying = false;
-        QList<const Player *> players = Self->getSiblings();
-        players << Self;
-        foreach(const Player *p, players) {
-            if (p->hasFlag("Global_Dying") && p->isAlive()) {
-                globalDying = true;
-                break;
-            }
+    bool globalDying = false;
+    QList<const Player *> players = Self->getSiblings();
+    players << Self;
+    foreach (const Player *p, players) {
+        if (p->hasFlag("Global_Dying") && p->isAlive()) {
+            globalDying = true;
+            break;
         }
+    }
 
-        if (globalDying && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-            return to_select->hasFlag("Global_Dying") && to_select->objectName() == Self->property("currentdying").toString();
-        }
-        else {
-            int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-            return targets.length() < total_num &&
-                (to_select->isChained() || !to_select->getShownHandcards().isEmpty() || !to_select->faceUp() || !to_select->getBrokenEquips().isEmpty());
-        }
-        return false;
+    if (globalDying && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+        return to_select->hasFlag("Global_Dying") && to_select->objectName() == Self->property("currentdying").toString();
+    } else {
+        int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+        return targets.length() < total_num
+            && (to_select->isChained() || !to_select->getShownHandcards().isEmpty() || !to_select->faceUp() || !to_select->getBrokenEquips().isEmpty());
+    }
+    return false;
 }
 
 void Kusuri::onEffect(const CardEffectStruct &effect) const
@@ -498,13 +461,12 @@ void Kusuri::onEffect(const CardEffectStruct &effect) const
         recover.card = this;
         recover.who = effect.from;
         room->recover(effect.to, recover);
-    }
-    else {
+    } else {
         if (!effect.to->faceUp())
             effect.to->turnOver();
         if (effect.to->isChained())
             room->setPlayerProperty(effect.to, "chained", false);
-        
+
         if (!effect.to->getBrokenEquips().isEmpty())
             effect.to->removeBrokenEquips(effect.to->getBrokenEquips(), true);
 
@@ -513,42 +475,53 @@ void Kusuri::onEffect(const CardEffectStruct &effect) const
     }
 }
 
-
-
 TestCardPackage::TestCardPackage()
     : Package("test_card", Package::CardPack)
 {
     QList<Card *> cards;
-    //Equip
-    cards //<< new Camera(Card::Diamond, 11)
+
+    // clang-format off
+
+    cards
+         // Equip
+        //<< new Camera(Card::Diamond, 11)
         << new Gun(Card::Club, 13)
         << new JadeSeal(Card::Heart, 13)
         << new Pagoda(Card::Spade, 12)
         << new Camouflage(Card::Spade, 1)
 
         //Trick
-        << new AwaitExhausted(Card::Diamond, 4) << new AwaitExhausted(Card::Heart, 10)
+        << new AwaitExhausted(Card::Diamond, 4)
+        << new AwaitExhausted(Card::Heart, 10)
         //<< new SpellDuel(Card::Heart, 1) << new SpellDuel(Card::Diamond, 1)
 
         << new Nullification(Card::Club, 12)
         //Basic
         //<< new Kusuri(Card::Diamond, 3) << new Kusuri(Card::Heart, 8) << new Kusuri(Card::Heart, 9)
-        << new Slash(Card::Spade, 7) << new Slash(Card::Spade, 9)
-        << new Slash(Card::Club, 7) << new Slash(Card::Club, 9)
-        << new Slash(Card::Heart, 8) << new Slash(Card::Diamond, 8)
-        << new ThunderSlash(Card::Spade, 8) << new ThunderSlash(Card::Club, 8)
+        << new Slash(Card::Spade, 7)
+        << new Slash(Card::Spade, 9)
+        << new Slash(Card::Club, 7)
+        << new Slash(Card::Club, 9)
+        << new Slash(Card::Heart, 8)
+        << new Slash(Card::Diamond, 8)
+        << new ThunderSlash(Card::Spade, 8)
+        << new ThunderSlash(Card::Club, 8)
         << new FireSlash(Card::Heart, 9)
 
-
         << new Analeptic(Card::Spade, 10)
-        << new Peach(Card::Heart, 4) << new Peach(Card::Diamond, 13)
-        << new Jink(Card::Heart, 5) << new Jink(Card::Heart, 6) << new Jink(Card::Diamond, 2) << new Jink(Card::Diamond, 11);
-    foreach(Card *card, cards)
+        << new Peach(Card::Heart, 4)
+        << new Peach(Card::Diamond, 13)
+        << new Jink(Card::Heart, 5)
+        << new Jink(Card::Heart, 6)
+        << new Jink(Card::Diamond, 2)
+        << new Jink(Card::Diamond, 11);
+
+    // clang-format on
+
+    foreach (Card *card, cards)
         card->setParent(this);
 
-    skills << new CameraSkill << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill 
-        << new PagodaSkill << new PagodaTriggerSkill
-        <<new CamouflageSkill;
+    skills << new CameraSkill << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill << new PagodaSkill << new PagodaTriggerSkill << new CamouflageSkill;
 }
 
 ADD_PACKAGE(TestCard)
