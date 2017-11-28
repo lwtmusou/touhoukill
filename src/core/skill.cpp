@@ -150,7 +150,8 @@ bool Skill::matchAvaliablePattern(QString avaliablePattern, QString askedPattern
         askedPattern = "peach,kusuri";
     if (askedPattern == "peach+kusuri+analeptic")
         askedPattern = "peach,kusuri,analeptic";
-
+    if (askedPattern == "peach+analeptic")
+        askedPattern = "peach,analeptic";
     //ignore spliting "#"
     QStringList factors = askedPattern.split('|');
     bool checkpoint = false;
