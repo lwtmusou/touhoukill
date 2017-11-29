@@ -4908,19 +4908,16 @@ public:
         static QSet<QString> banned;
         // ban nue and zun
         if (banned.isEmpty())
-            banned << "nue_god"
-                   << "zun"
-                   << "koishi_god"
-                   << "seiga_god"
-                   << "youmu_god";
+            banned << "nue_god" << "zun"
+                   << "koishi_god" << "seiga_god" << "youmu_god";
         return (all - banned - huashen_set - room_set).toList();
 
         //only for test
         //QSet<QString> test;
         //if (true)
-        //   test << "satori_god" << "meirin" << "marisa_sp2";
+        //   test << "satori_god" << "clownpiece" << "marisa_sp2";
         //else
-        //    test << "marisa" << "yukari" << "aya_sp";
+        //   test << "marisa" << "yukari" << "aya_sp";
         //return test.toList();
     }
 

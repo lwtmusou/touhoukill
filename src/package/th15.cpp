@@ -944,7 +944,8 @@ public:
         QList<SkillInvokeDetail> d;
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *playerTo = qobject_cast<ServerPlayer *>(move.to);
-        if (playerTo != NULL && playerTo->isAlive() && move.to_place == Player::PlaceHand && playerTo->getPhase() != Player::Draw) {
+        if (playerTo != NULL && playerTo->isAlive() && move.to_place == Player::PlaceHand && playerTo->getPhase() != Player::Draw 
+            && playerTo->getShownHandcards().isEmpty()) {
             bool trigger = false;
             foreach (int id, move.card_ids) {
                 if (!playerTo->isShownHandcard(id) && room->getCardPlace(id) == Player::PlaceHand && room->getCardOwner(id) == playerTo) {
@@ -954,8 +955,12 @@ public:
             }
             if (!trigger)
                 return d;
-            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName()))
-                d << SkillInvokeDetail(this, p, playerTo, NULL, true);
+            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                if (p == playerTo)
+                    d << SkillInvokeDetail(this, p, playerTo, NULL, true);
+                else if (p->hasSkill(this, false, false))
+                    d << SkillInvokeDetail(this, p, playerTo, NULL, true);
+            }    
         }
 
         return d;
