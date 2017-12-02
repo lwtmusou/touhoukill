@@ -1346,7 +1346,9 @@ public:
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
             ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-            if (player != NULL && player->isAlive() && move.to_place == Player::DiscardPile) {
+            ServerPlayer *thrower = room->findPlayerByObjectName(move.reason.m_playerId);
+            if (player != NULL && player->isAlive() && move.to_place == Player::DiscardPile
+                && thrower != NULL && player == thrower) {
                 QList<int> ids;
                 foreach (int id, move.card_ids) {
                     if (room->getCardPlace(id) == Player::DiscardPile)
