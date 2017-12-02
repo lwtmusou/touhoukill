@@ -996,13 +996,23 @@ public:
             return QList<SkillInvokeDetail>();
         if (effect.to->hasSkill(this) && effect.to->isAlive()) {
             if (effect.card->hasFlag("tianxieEffected")) {
-                if (effect.card->isKindOf("DelayedTrick") || !effect.from || !effect.from->canDiscard(effect.from, "hes"))
+                if (effect.card->isKindOf("DelayedTrick") || !effect.from || !effect.from->isAlive() || !effect.from->canDiscard(effect.from, "hes"))
                     return QList<SkillInvokeDetail>();
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to);
             } else
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to);
         }
         return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        QString prompt1 = "target1:" + effect.from->objectName();
+        QString prompt2 = "target2";
+        QString prompt = (effect.card->hasFlag("tianxieEffected")) ? prompt1 : prompt2;
+        invoke->invoker->tag[objectName()] = data;
+        return invoke->invoker->askForSkillInvoke(objectName(), prompt);
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
