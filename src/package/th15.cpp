@@ -1261,34 +1261,22 @@ public:
     Shenyan()
         : TriggerSkill("shenyan")
     {
-        events << EventPhaseStart << CardUsed << CardResponded << TargetConfirmed << EventPhaseChanging;
+        events << EventPhaseStart  << TargetConfirmed << EventPhaseChanging;//<< CardUsed << CardResponded
         view_as_skill = new ShenyanVS;
     }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const
     {
-        if (e == CardUsed || e == CardResponded) {
-            ServerPlayer *player = NULL;
-            const Card *card = NULL;
-            if (e == CardUsed) {
-                player = data.value<CardUseStruct>().from;
-                card = data.value<CardUseStruct>().card;
-            } else if (e == CardResponded) {
-                CardResponseStruct response = data.value<CardResponseStruct>();
-                player = response.m_from;
-                if (response.m_isUse)
-                    card = response.m_card;
-            }
-            if (card != NULL && player != NULL && !card->isKindOf("SkillCard"))
-                room->setPlayerFlag(player, "shenyan_used");
-        }
         if (e == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("SkillCard"))
+            if (use.card->isKindOf("SkillCard") || !use.from)
                 return;
-            foreach (ServerPlayer *p, use.to)
-                room->setPlayerFlag(p, "shenyan_used");
+            foreach(ServerPlayer *p, use.to) {
+                if (p != use.from)
+                    room->setPlayerFlag(use.from, "shenyan_used");
+            }    
         }
+
         if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
@@ -1303,20 +1291,39 @@ public:
         if (e != EventPhaseStart)
             return QList<SkillInvokeDetail>();
         ServerPlayer *current = data.value<ServerPlayer *>();
-        if (current->isDead() || current->getPhase() != Player::Discard)
+        if (current->isDead() || current->getPhase() != Player::Discard || current->hasFlag("shenyan_used"))
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            if (!p->hasFlag("shenyan_used"))
-                d << SkillInvokeDetail(this, p, p);
+            if (!p->hasFlag("shenyan_used")) {
+                AwaitExhausted *card = new AwaitExhausted(Card::NoSuit, 0);
+                card->deleteLater();
+                if (!p->isCardLimited(card, Card::MethodUse) && !p->isProhibited(p, card) && !p->isProhibited(current, card))
+                    d << SkillInvokeDetail(this, p, p);
+            }
         }
         return d;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    /*bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         room->askForUseCard(invoke->invoker, "@@shenyan", "@shenyan");
+        return false;
+    }*/
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        AwaitExhausted *card = new AwaitExhausted(Card::NoSuit, 0);
+        card->setSkillName(objectName());
+        CardUseStruct use;
+        use.card = card;
+        use.from = invoke->invoker;
+        ServerPlayer *current = room->getCurrent();
+        use.to << current;
+        if (current != invoke->invoker)
+            use.to << invoke->invoker;
+        room->useCard(use, false);
         return false;
     }
 };
@@ -1617,8 +1624,8 @@ TH15Package::TH15Package()
     doremy->addSkill(new Meimeng);
     doremy->addSkill(new Emeng);
 
-    General *ringo = new General(this, "ringo", "gzz", 4, false, true, true);
-    Q_UNUSED(ringo)
+    General *ringo = new General(this, "ringo", "gzz", 4);
+
 
     General *seiran = new General(this, "seiran", "gzz", 4);
     seiran->addSkill(new Yidan);

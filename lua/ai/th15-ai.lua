@@ -134,7 +134,10 @@ sgs.ai_skill_use["@@shenyan"] = function(self, prompt)
 	end
 	return "."
 end
-
+sgs.ai_skill_invoke.shenyan = function(self, data)
+	local current = self.room:getCurrent()
+	return current and self:isFriend(current)
+end
 
 sgs.ai_skill_invoke.meimeng = function(self, data)
 	local from = data:toPlayer()
