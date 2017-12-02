@@ -3698,7 +3698,6 @@ bool XinhuaCard::targetFixed() const
 bool XinhuaCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
     const Card *oc = Sanguosha->getCard(subcards.first());
-    //if (oc->isKindOf("IronChain") && targets.length() == 0)
     if (oc->canRecast() && targets.length() == 0)
         return false;
     return oc->targetsFeasible(targets, Self);
@@ -3706,38 +3705,38 @@ bool XinhuaCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 
 const Card *XinhuaCard::validate(CardUseStruct &use) const
 {
-    //Room *room = use.from->getRoom();
+    Room *room = use.from->getRoom();
     const Card *card = Sanguosha->getCard(subcards.first());
     use.from->showHiddenSkill("xinhua");
     //room->setPlayerFlag(use.from, "xinhua_used");
 
-    //room->notifySkillInvoked(use.from, "xinhua");
-    /*LogMessage mes;
+    room->notifySkillInvoked(use.from, "xinhua");
+    LogMessage mes;
     mes.type = "$xinhua";
     mes.from = use.from;
     mes.to << room->getCardOwner(subcards.first());
     mes.arg = "xinhua";
     mes.card_str = card->toString();
-    room->sendLog(mes); */
+    room->sendLog(mes); 
 
     return card;
 }
 
 const Card *XinhuaCard::validateInResponse(ServerPlayer *user) const
 {
-    //Room *room = user->getRoom();
+    Room *room = user->getRoom();
     const Card *card = Sanguosha->getCard(subcards.first());
     user->showHiddenSkill("xinhua");
     //room->setPlayerFlag(user, "xinhua_used");
 
-    //room->notifySkillInvoked(user, "xinhua");
-    /*LogMessage mes;
+    room->notifySkillInvoked(user, "xinhua");
+    LogMessage mes;
     mes.type = "$xinhua";
     mes.from = user;
     mes.to << room->getCardOwner(subcards.first());
     mes.arg = "xinhua";
     mes.card_str = card->toString();
-    room->sendLog(mes);*/
+    room->sendLog(mes);
 
     return card;
 }
@@ -3861,7 +3860,7 @@ public:
     Xinhua()
         : TriggerSkill("xinhua")
     {
-        events << CardsMoveOneTime << EventPhaseChanging;
+        events << EventPhaseChanging;
         view_as_skill = new XinhuaVS;
     }
 
@@ -3870,30 +3869,6 @@ public:
         if (e == EventPhaseChanging) {
             foreach (ServerPlayer *p, room->getAlivePlayers())
                 room->setPlayerFlag(p, "-xinhua_used");
-        }
-        if (e == CardsMoveOneTime) {
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
-                || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE) {
-                if (move.shown_ids.length() == 1) {
-                    ServerPlayer *satori = room->findPlayerBySkillName(objectName());
-                    ServerPlayer *owner = qobject_cast<ServerPlayer *>(move.from);
-                    if (satori && owner && satori != owner) {
-                        room->notifySkillInvoked(satori, "xinhua");
-                        //only for ai
-                        if (!satori->isOnline())
-                            satori->showHiddenSkill("xinhua");
-
-                        LogMessage mes;
-                        mes.type = "$xinhua";
-                        mes.from = satori;
-                        mes.to << owner;
-                        mes.arg = "xinhua";
-                        mes.card_str = Sanguosha->getCard(move.shown_ids.first())->toString();
-                        room->sendLog(mes);
-                    }
-                }
-            }
         }
     }
 };

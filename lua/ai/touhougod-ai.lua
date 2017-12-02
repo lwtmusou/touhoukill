@@ -1425,6 +1425,79 @@ sgs.ai_choicemade_filter.skillInvoke.huanming = function(self, player, args)
 end
 
 
+--心花
+local xinhua_skill = {}
+xinhua_skill.name = "xinhua"
+table.insert(sgs.ai_skills, xinhua_skill)
+xinhua_skill.getTurnUseCard = function(self)
+	local XinhuaCards = {}
+	for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		for _, id in sgs.qlist(p:getShownHandcards()) do
+		    local card = sgs.Sanguosha:getCard(id)
+			if not self.player:isLocked(card) then
+				table.insert(XinhuaCards, card)
+			end
+		end
+	end
+    if #XinhuaCards == 0 then return end
+
+	self:sortByUseValue(XinhuaCards, false)
+	for _,c in pairs (XinhuaCards) do
+		local dummyuse = { isDummy = true}
+		if c:isKindOf("BasicCard") then
+			self:useBasicCard(c, dummyuse)
+		elseif c:isKindOf("TrickCard") then
+			self:useTrickCard(c, dummyuse)
+		elseif c:isKindOf("EquipCard") then
+			self:useEquipCard(c, dummyuse)
+		end
+		if dummyuse.card then
+		    return sgs.Card_Parse("@XinhuaCard="..c:getEffectiveId())
+		end
+	end
+	return nil
+end
+sgs.ai_skill_use_func.XinhuaCard=function(card,use,self)
+	local xinhua = sgs.Sanguosha:getCard(card:getSubcards():first())
+	if xinhua:getTypeId() == sgs.Card_TypeBasic then 
+		self:useBasicCard(xinhua, use)
+	elseif xinhua:getTypeId() == sgs.Card_TypeTrick then
+			self:useTrickCard(xinhua, use)
+    elseif xinhua:getTypeId() == sgs.Card_TypeEquip then
+		self:useEquipCard(xinhua, use)
+	end
+	if not use.card then return end
+	use.card=card
+end
+
+
+sgs.ai_use_priority.XinhuaCard = 10
+function sgs.ai_cardsview_valuable.xinhua(self, class_name, player)
+	if (sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_UNKNOWN) then
+		return nil
+	end
+
+    local XinhuaCards = {}
+	for _, p in sgs.qlist(self.room:getOtherPlayers(player)) do
+		for _, id in sgs.qlist(p:getShownHandcards()) do
+		    local card = sgs.Sanguosha:getCard(id)
+			if card:isKindOf(class_name) then
+			    if sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE then
+					if not player:isCardLimited(card, sgs.Card_MethodResponse) then
+						table.insert(XinhuaCards, card)
+					end
+				else
+				    if not player:isLocked(card) then
+						table.insert(XinhuaCards, card)
+					end
+				end
+			end
+		end
+	end
+    if #XinhuaCards == 0 then return end
+	return "@XinhuaCard=" .. XinhuaCards[1]:getEffectiveId() .. ":" .. XinhuaCards[1]:objectName()
+end
+
 local badSkills={"mokai","guangji","xinghui","bendan","moxue","sisheng","jingdong","shishen","chunmian",
 "wangwu","shouye","zhouye","hongwu","shenqiang","yewang","jinguo","rengui","gaoao","caiyu","shenhua"}
 local key_skills={"feixiang","mingyun","yongheng","qiuwen","xiangqi","jiushu","hpymsiyu"}

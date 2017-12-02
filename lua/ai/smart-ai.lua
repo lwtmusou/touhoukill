@@ -7729,13 +7729,13 @@ function SmartAI:touhouAppendExpandPileToList(player,cards)
 			cards:prepend(sgs.Sanguosha:getCard(id))
 		end
 	end
-	if player:hasSkill("xinhua") then
+	--[[if player:hasSkill("xinhua") then
 		for _, p in sgs.qlist(self.room:getOtherPlayers(player)) do
 		    for _, id in sgs.qlist(p:getShownHandcards()) do
 				cards:prepend(sgs.Sanguosha:getCard(id))
 			end
 		end
-	end
+	end]]
 	--if player:hasSkill("chaoren") then
 	--  cards:prepend(sgs.Sanguosha:getCard(self.room:getDrawPile():first()))
 	--end
