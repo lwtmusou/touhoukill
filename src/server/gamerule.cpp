@@ -301,9 +301,12 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     CardMoveReason reason(CardMoveReason::S_REASON_USE, card_use.from->objectName(), QString(), card_use.card->getSkillName(), QString());
                     reason.m_extraData = QVariant::fromValue(card_use.card);
                     room->moveCardTo(card_use.card, card_use.from, NULL, Player::DiscardPile, reason, true);
-                    break;
+                    //break;
                 }
             }
+            //since use.to is empty, break the whole process
+            if (card_use.card && card_use.card->getTypeId() != Card::TypeSkill && card_use.to.isEmpty())
+                break;
 
             try {
                 QVariantList jink_list_backup;
@@ -323,7 +326,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 }
                 card_use = data.value<CardUseStruct>();
                 room->setTag("CardUseNullifiedList", QVariant::fromValue(card_use.nullified_list));
-                if (card_use.card->isNDTrick() && !card_use.card->isKindOf("Nullification"))
+                if (card_use.card->isNDTrick() && !card_use.card->isKindOf("Nullification"))// && !card_use.to.isEmpty()
                     room->setCardFlag(card_use.card, "LastTrickTarget_" + card_use.to.last()->objectName());
                 card_use.card->use(room, card_use.from, card_use.to);
                 if (!jink_list_backup.isEmpty())

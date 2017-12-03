@@ -458,7 +458,7 @@ sgs.ai_use_priority.LiangeCard = sgs.ai_use_priority.Peach + 0.2
 sgs.ai_card_intention.LiangeCard = -70
 
 sgs.ai_skill_invoke.tianxie =function(self,data)
-    local effect = data:toCardEffect()
+    local effect = self.player:getTag("tianxie"):toCardEffect()
 	if not effect.card:hasFlag("tianxieEffected") then 
 		return true 
 	else

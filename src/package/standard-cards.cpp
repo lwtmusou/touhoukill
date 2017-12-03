@@ -2235,21 +2235,28 @@ public:
     DeathSickleSkill()
         : WeaponSkill("DeathSickle")
     {
-        events << TargetSpecified << EventPhaseChanging;
+        events << TargetSpecified << CardFinished;//EventPhaseChanging
     }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const
     {
-        if (e == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive) {
-                foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    int mark = p->getMark("DeathSickle");
-                    if (mark > 0) {
-                        room->setPlayerMark(p, "DeathSickle", 0);
-                        room->setPlayerProperty(p, "dyingFactor", p->getDyingFactor() - mark);
-                    }
-                }
+        if (e == CardFinished) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (!use.card->isKindOf("Slash"))
+                return;
+
+            foreach (ServerPlayer *p, use.to) {
+                    //int mark = p->getMark("DeathSickle");
+                QStringList death = p->property("DeathSickle").toStringList();
+                if (!death.contains(use.card->toString()))
+                    continue;
+
+                death.removeOne(use.card->toString());
+                room->setPlayerProperty(p, "DeathSickle", death);
+
+                if (death.isEmpty() && p->getDyingFactor() > 0)
+                    room->setPlayerProperty(p, "dyingFactor", p->getDyingFactor() - 1);
+                    
             }
         }
     }
@@ -2286,12 +2293,19 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
+        CardUseStruct use = data.value<CardUseStruct>();
         ServerPlayer *target = invoke->targets.first();
         room->touhouLogmessage("#DeathSickle", target, QString::number(target->dyingThreshold() + 1), QList<ServerPlayer *>(), QString::number(1));
-        room->setPlayerMark(target, "DeathSickle", target->getMark("DeathSickle") + 1);
-        room->setPlayerProperty(target, "dyingFactor", target->getDyingFactor() + 1);
+        QStringList death = target->property("DeathSickle").toStringList();
+        if (!death.contains(use.card->toString())) {
+            death << use.card->toString();
+            room->setPlayerProperty(target, "DeathSickle", death);
+            //room->setPlayerMark(target, "DeathSickle", target->getMark("DeathSickle") + 1);
+            room->setPlayerProperty(target, "dyingFactor", target->getDyingFactor() + 1);
+        }
+        
         return false;
     }
 };
