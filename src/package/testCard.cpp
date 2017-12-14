@@ -110,6 +110,11 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
+        KnownBoth *card = new KnownBoth(Card::SuitToBeDecided, -1);
+        card->setSkillName(objectName());
+        card->deleteLater();
+        if (player->isCardLimited(card, Card::MethodUse))
+            return false;
         return EquipSkill::equipAvailable(player, EquipCard::TreasureLocation, objectName()) && !player->hasFlag("JadeSeal_used");
         //return true;
     }

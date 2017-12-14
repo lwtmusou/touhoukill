@@ -665,11 +665,11 @@ public:
             return QList<SkillInvokeDetail>();
         if (triggerEvent == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isRed() && use.from != player)
+            if (use.card->getTypeId() != Card::TypeSkill && use.card->isRed() && use.from != player)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         } else if (triggerEvent == CardResponded) {
             CardResponseStruct response = data.value<CardResponseStruct>();
-            if (response.m_from && player != response.m_from && response.m_isUse && response.m_card && response.m_card->isRed())
+            if (response.m_from && player != response.m_from && response.m_isUse && response.m_card && response.m_card->getTypeId() != Card::TypeSkill && response.m_card->isRed())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         } else if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
