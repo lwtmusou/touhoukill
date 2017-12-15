@@ -4890,7 +4890,7 @@ public:
         //only for test
         //QSet<QString> test;
         //if (true)
-        //   test << "satori_god" << "clownpiece" << "marisa_sp2";
+        //   test << "alice_old" << "clownpiece" << "marisa_sp2";
         //else
         //   test << "marisa" << "yukari" << "aya_sp";
         //return test.toList();

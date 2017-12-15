@@ -1703,6 +1703,9 @@ bool ModianCard::targetFilter(const QList<const Player *> &targets, const Player
 void ModianCard::use(Room *room, ServerPlayer *src, QList<ServerPlayer *> &targets) const
 {
     ServerPlayer *alice = targets.first();
+    if (src == alice)
+        src->showHiddenSkill("modian");
+    
     room->setPlayerFlag(alice, "modianInvoked");
     room->notifySkillInvoked(alice, "modian");
 
@@ -1822,7 +1825,7 @@ public:
     {
         events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Death << Debut << Revive;
         view_as_skill = new ModianSelfVS;
-        show_type = "static";
+        //show_type = "static";
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
@@ -1831,7 +1834,7 @@ public:
             QList<ServerPlayer *> alices;
             static QString attachName = "modian_attach";
             foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if (p->hasSkill(this, true))
+                if (p->hasSkill(this, true, false))
                     alices << p;
             }
 
