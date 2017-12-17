@@ -38,6 +38,7 @@ public:
         invoke->invoker->tag["xiangqi_to"] = QVariant::fromValue(damage.to);
         invoke->invoker->tag["xiangqi_card"] = QVariant::fromValue(damage.card);
         if (invoke->invoker->askForSkillInvoke("xiangqi", prompt)) {
+            invoke->invoker->showHiddenSkill(objectName());
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), damage.from->objectName());
             int id = room->askForCardChosen(invoke->invoker, damage.from, "hs", objectName());
             room->showCard(damage.from, id);

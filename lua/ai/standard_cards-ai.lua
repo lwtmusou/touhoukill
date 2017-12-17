@@ -4587,9 +4587,9 @@ function SmartAI:useCardSavingEnergy(card, use)
 		end
 		if friend:hasSkills("yongheng|zaozu") then return -100 end
 		local value = friend:getHandcardNum() - friend:getMaxCards()
-		if mouko_seat > 0 and (self:playerGetRound(mouko) <= self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 or not enemy:faceUp()) then
+		if mouko_seat > 0 and (self:playerGetRound(mouko) <= self:playerGetRound(friend) and self:enemiesContainsTrick() <= 1 or not friend:faceUp()) then
 			return - 100 end
-		if marisa_seat > 0 and (self:playerGetRound(marisa) < self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 or not enemy:faceUp()) then
+		if marisa_seat > 0 and (self:playerGetRound(marisa) < self:playerGetRound(friend) and self:enemiesContainsTrick() <= 1 or not friend:faceUp()) then
 			return - 100 end
 		
 		--可以在此列举各种吃进手牌比较多的技能。。。
