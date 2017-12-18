@@ -1443,7 +1443,7 @@ xinhua_skill.getTurnUseCard = function(self)
 
 	self:sortByUseValue(XinhuaCards, false)
 	for _,c in pairs (XinhuaCards) do
-		local dummyuse = { isDummy = true}
+		local dummyuse = { isDummy = true, to = sgs.SPlayerList()}
 		if c:isKindOf("BasicCard") then
 			self:useBasicCard(c, dummyuse)
 		elseif c:isKindOf("TrickCard") then
@@ -1452,6 +1452,10 @@ xinhua_skill.getTurnUseCard = function(self)
 			self:useEquipCard(c, dummyuse)
 		end
 		if dummyuse.card then
+		    --防止重铸
+		    if dummyuse.card:isKindOf("IronChain") or dummyuse.card:isKindOf("KnownBoth") then
+				if not dummyuse.to or dummyuse.to:isEmpty() then return nil end 
+			end
 		    return sgs.Card_Parse("@XinhuaCard="..c:getEffectiveId())
 		end
 	end

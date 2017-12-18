@@ -1310,6 +1310,15 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         room->notifyProperty(player, this, "linghp");
     }
 
+    if (this->hasSkill("anyun", true)) {
+        QString g = hidden_generals.join("|");
+        JsonArray arg;
+        arg << objectName();
+        arg << g;
+
+        room->doBroadcastNotify(S_COMMAND_SET_HIDDEN_GENERAL, arg);
+    }
+
     foreach (QString flag, flags)
         room->notifyProperty(player, this, "flags", flag);
 

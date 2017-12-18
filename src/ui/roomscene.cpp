@@ -3950,7 +3950,7 @@ void RoomScene::showPile(const QList<int> &card_ids, const QString &name, const 
     pileContainer->clear();
     bringToFront(pileContainer);
     pileContainer->setObjectName(name);
-    if (name == "huashencard" && target->hasSkill("anyun")) {
+    if (name == "huashencard" && target->hasSkill("anyun", true)) {
         QStringList huashens = target->getHiddenGenerals();
         //another method
         /*QList<const General*> hiddens;
