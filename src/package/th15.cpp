@@ -1261,19 +1261,35 @@ public:
     Shenyan()
         : TriggerSkill("shenyan")
     {
-        events << EventPhaseStart  << TargetConfirmed << EventPhaseChanging;//<< CardUsed << CardResponded
+        events << EventPhaseStart << TargetConfirmed << EventPhaseChanging << PreCardUsed << CardResponded;
         view_as_skill = new ShenyanVS;
     }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const
     {
+        if (e == PreCardUsed || e == CardResponded) {
+            ServerPlayer *player = NULL;
+            const Card *card = NULL;
+            if (e == PreCardUsed) {
+                player = data.value<CardUseStruct>().from;
+                card = data.value<CardUseStruct>().card;
+            }
+            else {
+                CardResponseStruct response = data.value<CardResponseStruct>();
+                player = response.m_from;
+                if (response.m_isUse)
+                    card = response.m_card;
+            }
+            if (player && card && !card->isKindOf("SkillCard") && card->getHandlingMethod() == Card::MethodUse)
+                room->setPlayerFlag(player, "shenyan_used");
+        }
+        
         if (e == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("SkillCard") || !use.from)
                 return;
             foreach(ServerPlayer *p, use.to) {
-                if (p != use.from)
-                    room->setPlayerFlag(use.from, "shenyan_used");
+                room->setPlayerFlag(p, "shenyan_used");
             }    
         }
 
@@ -1291,28 +1307,35 @@ public:
         if (e != EventPhaseStart)
             return QList<SkillInvokeDetail>();
         ServerPlayer *current = data.value<ServerPlayer *>();
-        if (current->isDead() || current->getPhase() != Player::Discard || current->hasFlag("shenyan_used"))
+        if (current->isDead() || current->getPhase() != Player::Discard)
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            if (!p->hasFlag("shenyan_used")) {
+            if (p != current) {
                 AwaitExhausted *card = new AwaitExhausted(Card::NoSuit, 0);
+                card->setSkillName(objectName());
                 card->deleteLater();
-                if (!p->isCardLimited(card, Card::MethodUse) && !p->isProhibited(p, card) && !p->isProhibited(current, card))
-                    d << SkillInvokeDetail(this, p, p);
+                if (p->isCardLimited(card, Card::MethodUse))
+                    continue;
+                foreach(ServerPlayer *t, room->getAlivePlayers()) {
+                    if (!p->isProhibited(t, card)) {
+                        d << SkillInvokeDetail(this, p, p);
+                        break;
+                    }
+                }
             }
         }
         return d;
     }
 
-    /*bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         room->askForUseCard(invoke->invoker, "@@shenyan", "@shenyan");
         return false;
-    }*/
+    }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    /*bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         AwaitExhausted *card = new AwaitExhausted(Card::NoSuit, 0);
         card->setSkillName(objectName());
@@ -1325,8 +1348,34 @@ public:
             use.to << invoke->invoker;
         room->useCard(use, false);
         return false;
+    }*/
+};
+
+class ShenyanProhibit : public ProhibitSkill
+{
+public:
+    ShenyanProhibit()
+        : ProhibitSkill("#shenyan")
+    {
+    }
+
+    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &, bool include_hidden) const
+    {
+        if (card->getSkillName() == "shenyan") {
+            if (to->hasFlag("shenyan_used"))
+                return true;
+            if (to->isCurrent())
+                return true;
+            foreach(const Player *p, to->getSiblings()) {
+                if (p->isCurrent()) {
+                    return p->isDead() || !p->inMyAttackRange(to);
+                }
+            }
+        }
+        return false;
     }
 };
+
 
 class Meimeng : public TriggerSkill
 {
@@ -1635,7 +1684,7 @@ TH15Package::TH15Package()
     addMetaObject<ShayiCard>();
     //addMetaObject<ShayiMoveCard>();
     addMetaObject<YidanCard>();
-    skills << new ShayiUse << new ShehuoProhibit << new ShehuoTargetMod; //<< new ChunhuaFilter << new YuyiEffect
+    skills << new ShayiUse << new ShehuoProhibit << new ShehuoTargetMod << new ShenyanProhibit; //<< new ChunhuaFilter << new YuyiEffect
 }
 
 ADD_PACKAGE(TH15)
