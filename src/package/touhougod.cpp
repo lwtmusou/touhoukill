@@ -4854,7 +4854,7 @@ public:
             zuoci->removeHiddenGenerals(deleteName);
     }
 
-    static QStringList GetAvailableGenerals(ServerPlayer *zuoci, bool)
+    static QStringList GetAvailableGenerals(ServerPlayer *zuoci, bool init)
     {
         QSet<QString> all = Sanguosha->getLimitedGeneralNames().toSet();
         Room *room = zuoci->getRoom();
@@ -4889,10 +4889,10 @@ public:
 
         //only for test
         //QSet<QString> test;
-        //if (true)
-        //   test << "satori" << "clownpiece" << "marisa_sp2";
+        //if (init)
+        //   test << "satori" << "yukari" << "marisa_sp2";
         //else
-        //   test << "marisa" << "yukari" << "aya_sp";
+        //   test << "renko" << "renko" << "renko";
         //return test.toList();
     }
 

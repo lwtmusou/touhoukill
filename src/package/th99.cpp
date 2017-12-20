@@ -549,6 +549,7 @@ public:
         : TriggerSkill("shitu")
     {
         events << EventPhaseChanging << DamageDone << TurnStart;
+        global = true;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
