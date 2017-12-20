@@ -1940,6 +1940,11 @@ Drowning::Drowning(Suit suit, int number)
 
 void Drowning::onUse(Room *room, const CardUseStruct &card_use) const
 {
+    if (!card_use.to.isEmpty()) {
+        TrickCard::onUse(room, card_use);
+        return;
+    }
+    
     ServerPlayer *source = card_use.from;
     QList<ServerPlayer *> targets, other_players = room->getOtherPlayers(source);
     foreach (ServerPlayer *player, other_players) {
