@@ -1601,7 +1601,10 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         s.args << pattern << prompt << QString("_%1_").arg(card->toString());
         QVariant d = QVariant::fromValue(s);
         thread->trigger(ChoiceMade, this, d);
-
+        //show hidden general
+        QString showskill = card->getSkillName();
+        player->showHiddenSkill(skill_name);
+        player->showHiddenSkill(card->getSkillName());
         if (method == Card::MethodUse) {
             CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, player->objectName(), QString(), card->getSkillName(), QString());
 
@@ -1627,12 +1630,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 moveCardTo(card, player, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason);
         }
 
-        //show hidden general
-        QString showskill = card->getSkillName();
-        //if (skill_name == "bllmwuyu")
-        //    showskill = skill_name;
-        player->showHiddenSkill(skill_name);
-        player->showHiddenSkill(card->getSkillName());
+
         if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial) {
             if (!card->getSkillName().isNull() && card->getSkillName(true) == card->getSkillName(false) && player->hasSkill(card->getSkillName()))
                 notifySkillInvoked(player, card->getSkillName());

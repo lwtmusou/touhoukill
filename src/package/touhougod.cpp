@@ -4890,7 +4890,7 @@ public:
         //only for test
         //QSet<QString> test;
         //if (init)
-        //   test << "satori" << "yukari" << "marisa_sp2";
+        //   test << "shinmyoumaru" << "kokoro" << "marisa_sp2";
         //else
         //   test << "renko" << "renko" << "renko";
         //return test.toList();
@@ -5089,8 +5089,8 @@ public:
         QString name = invoke->invoker->getShownHiddenGeneral();
         QStringList names;
         names << name;
-        int n = (invoke->invoker->isCurrent()) ? 1 : 2;
-        Anyun::AcquireGenerals(invoke->invoker, n, false, names);
+        //int n = (invoke->invoker->isCurrent()) ? 1 : 2;
+        Anyun::AcquireGenerals(invoke->invoker, 1, false, names);
 
         int maxhp = invoke->invoker->tag["init_MaxHp"].toInt();
         room->setPlayerProperty(invoke->invoker, "maxhp", maxhp);
