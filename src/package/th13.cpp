@@ -312,7 +312,7 @@ bool XihuaCard::targetsFeasible(const QList<const Player *> &targets, const Play
 const Card *XihuaCard::validate(CardUseStruct &card_use) const
 {
     ServerPlayer *xihua_general = card_use.from;
-
+    xihua_general->showHiddenSkill("xihua");
     Room *room = xihua_general->getRoom();
     QString to_use = user_string;
 
@@ -360,6 +360,7 @@ const Card *XihuaCard::validateInResponse(ServerPlayer *user) const
     room->sendLog(log);
 
     user->tag["xihua_choice"] = QVariant::fromValue(to_use);
+    user->showHiddenSkill("xihua");
     bool success = do_xihua(user);
     if (success) {
         Card *use_card = Sanguosha->cloneCard(to_use);
