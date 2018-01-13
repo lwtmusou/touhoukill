@@ -517,10 +517,11 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 //do chunhua effect
                 if (effect.card->hasFlag("chunhua") && !effect.card->isKindOf("Slash")) {
                     room->touhouLogmessage("#Chunhua", effect.to, effect.card->objectName());
-                    if (effect.card->isBlack()) {
+                    //if (effect.card->isBlack()) {
+                    if (effect.card->hasFlag("chunhua_black")) {
                         DamageStruct d = DamageStruct(effect.card, effect.from, effect.to, 1, DamageStruct::Normal);
                         room->damage(d);
-                    } else if (effect.card->isRed()) {
+                    } else if (effect.card->hasFlag("chunhua_red")) {
                         RecoverStruct recover;
                         recover.card = effect.card;
                         recover.who = effect.from;
@@ -596,14 +597,11 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
     }
     case SlashHit: {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-
-        if (effect.drank > 0)
-            effect.to->setMark("SlashIsDrank", effect.drank);
         //do chunhua effect
         if (effect.slash->hasFlag("chunhua")) {
             room->touhouLogmessage("#Chunhua", effect.to, effect.slash->objectName());
             effect.nature = DamageStruct::Normal;
-            if (effect.slash->isRed()) {
+            if (effect.slash->hasFlag("chunhua_red")) {
                 RecoverStruct recover;
                 recover.card = effect.slash;
                 recover.who = effect.from;
@@ -611,6 +609,9 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 break;
             }
         }
+        if (effect.drank > 0)
+            effect.to->setMark("SlashIsDrank", effect.drank);
+        
 
         DamageStruct d = DamageStruct(effect.slash, effect.from, effect.to, 1, effect.nature);
         foreach (ServerPlayer *p, room->getAllPlayers(true)) {

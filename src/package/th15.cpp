@@ -283,16 +283,67 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
-        if (!use.to.isEmpty() && use.card->hasFlag("showncards") && (use.card->isKindOf("BasicCard") || use.card->isNDTrick()) && (use.card->isRed() || use.card->isBlack())) {
+        if (use.from && use.from->isAlive() && !use.to.isEmpty() && use.card->hasFlag("showncards") 
+            && (use.card->isKindOf("BasicCard") || use.card->isNDTrick()) && (use.card->isRed() || use.card->isBlack())) {
             foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName()))
                 d << SkillInvokeDetail(this, p, p);
         }
         return d;
     }
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
+        QStringList select;
+        if (use.card->isBlack())
+            select << "black";
+        else {
+            QList<int> s = use.from->getShownHandcards();
+            foreach(int id, s) {
+                if (Sanguosha->getCard(id)->isBlack()) {
+                    select << "black";
+                    break;
+                }
+            }
+        }
+        if (use.card->isRed())
+            select << "red";
+        else {
+            QList<int> s = use.from->getShownHandcards();
+            foreach(int id, s) {
+                if (Sanguosha->getCard(id)->isRed()) {
+                    select << "red";
+                    break;
+                }
+            }
+        }
+        
+        select << "cancel";
+        QString choice = room->askForChoice(invoke->invoker, objectName(), select.join("+"), data);
+        invoke->tag["chunhua"] = choice;
+        return choice != "cancel";
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        CardUseStruct use = data.value<CardUseStruct>();
+        foreach(ServerPlayer *p, use.to)
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
+        
+        
+        QString choice = invoke->tag.value("chunhua").toString();
+        room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
+        if (!use.to.isEmpty()) {
+            if (choice == "red")
+                room->touhouLogmessage("$ChunhuaRed", use.from, use.card->objectName(), use.to);
+            else
+                room->touhouLogmessage("$ChunhuaBlack", use.from, use.card->objectName(), use.to);
+        }
+            
+        
         room->setCardFlag(use.card, "chunhua");
+        room->setCardFlag(use.card, "chunhua_" + choice);
 
         return false;
     }
@@ -314,14 +365,14 @@ public:
         if (e == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (effect.slash->hasFlag("chunhua")) {
-                if (effect.slash->isRed() && !effect.to->isWounded())
+                if (effect.slash->hasFlag("chunhua_red") && !effect.to->isWounded())
                     d << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
             }
         }
         if (e == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if (effect.card->hasFlag("chunhua") && !effect.card->isKindOf("Slash")) {
-                if (effect.card->isRed() && !effect.to->isWounded())
+                if (effect.card->hasFlag("chunhua_red") && !effect.to->isWounded())
                     d << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
             }
         }

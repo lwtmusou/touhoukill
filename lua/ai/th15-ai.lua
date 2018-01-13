@@ -33,6 +33,7 @@ sgs.ai_skill_cardchosen.xiahui = function(self, who, flags)
 	end
 end
 
+--[[
 sgs.ai_skill_invoke.chunhua = function(self, data)
 	local use = data:toCardUse()
 	local e, f = 0, 0
@@ -48,6 +49,23 @@ sgs.ai_skill_invoke.chunhua = function(self, data)
 	if use.card:isBlack() and e > f then return true end
 	if use.card:isRed() and f > e then return true end
 	return false
+end
+]]
+sgs.ai_skill_choice.chunhua= function(self,  choices, data)
+	local use = data:toCardUse()
+	local e, f = 0, 0
+	for _,p in sgs.qlist(use.to) do
+	    if choices:match("black") or (choices:match("red") and p:isWounded()) then
+			if self:isFriend(p) then
+				f = f+1
+			elseif self:isEnemy(p) then
+				e = e+1
+			end
+		end
+	end
+	if  e > f and choices:match("black") then return "black" end
+	if f > e and choices:match("red") then return "red" end
+	return "cancel"
 end
 
 sgs.ai_skill_use["@@shayi"] = function(self, prompt)
