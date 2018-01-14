@@ -1168,7 +1168,7 @@ public:
         if (e == PreCardUsed || e == EventPhaseChanging)
             return QList<SkillInvokeDetail>();
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.to.length() != 1 || use.from == NULL)
+        if (use.to.length() != 1 || use.from == NULL || use.from == use.to.first())
             return QList<SkillInvokeDetail>();
         if (use.card->isKindOf("Slash") || use.card->isNDTrick()) {
             if (e == TargetSpecifying && use.from->hasSkill(this))
@@ -1192,10 +1192,16 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         QString prompt = "@shehuo_use:" + invoke->preferredTarget->objectName() + ":" + use.card->objectName();
         QString pattern;
-        if (use.to.first() != use.from)
-            pattern = "BasicCard+^Jink,TrickCard+^Nullification+^Lightning,EquipCard|.|.|shehuo";
+        //if (use.to.first() != use.from)
+        //    pattern = "BasicCard+^Jink,TrickCard+^Nullification+^Lightning,EquipCard|.|.|shehuo";
+        //else
+        //    pattern = "BasicCard+^Slash+^Jink,TrickCard+^Nullification,EquipCard|.|.|shehuo";
+
+        if (use.card->isNDTrick())
+            pattern = "BasicCard+^Jink,EquipCard|.|.|shehuo";
         else
-            pattern = "BasicCard+^Slash+^Jink,TrickCard+^Nullification,EquipCard|.|.|shehuo";
+            pattern = "TrickCard+^Nullification,EquipCard|.|.|shehuo";
+
         //for ai
         invoke->invoker->tag["shehuo_target"] = QVariant::fromValue(invoke->preferredTarget);
         const Card *c = room->askForUseCard(invoke->invoker, pattern, prompt, -1, Card::MethodUse, false, objectName());

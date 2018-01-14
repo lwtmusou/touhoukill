@@ -113,9 +113,7 @@ sgs.ai_skill_invoke.yuyi = function(self, data)
 end
 
 
-
-
-sgs.ai_skill_use["BasicCard+^Jink,TrickCard+^Nullification+^Lightning,EquipCard|.|.|shehuo"] = function(self, prompt, method)
+sgs.ai_skill_use["BasicCard+^Jink,EquipCard|.|.|shehuo"] = function(self, prompt, method)
 	local target = self.player:getTag("shehuo_target"):toPlayer()
 	if not target or not self:isEnemy(target) then return "." end 
 	local cards =  self:getCards("Slash", "hs")
@@ -127,7 +125,19 @@ sgs.ai_skill_use["BasicCard+^Jink,TrickCard+^Nullification+^Lightning,EquipCard|
 	end
 	return "."		
 end
-
+--反手使用锦囊 （弃疗、、、）
+sgs.ai_skill_use["TrickCard+^Nullification,EquipCard|.|.|shehuo"] = function(self, prompt, method)
+	local target = self.player:getTag("shehuo_target"):toPlayer()
+	if not target or not self:isEnemy(target) then return "." end 
+	--local cards =  self:getCards("Slash", "hs")
+	--local target_objectname = {}
+	
+	--if #cards > 0 then
+	--    table.insert(target_objectname, target:objectName())
+	--	return cards[1]:toString() .. "->" .. table.concat(target_objectname, "+")
+	--end
+	return "."		
+end
 
 sgs.ai_skill_use["@@shenyan"] = function(self, prompt)
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
