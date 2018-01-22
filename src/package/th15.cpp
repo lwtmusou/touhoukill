@@ -1553,6 +1553,39 @@ public:
     }
 };
 
+
+class Yuejian : public TriggerSkill
+{
+public:
+	Yuejian()
+		: TriggerSkill("yuejian")
+	{
+		events << TargetSpecified;
+	}
+
+	QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+	{
+		CardUseStruct use = data.value<CardUseStruct>();
+		QList<SkillInvokeDetail> d;
+		if (!use.card->isKindOf("SkillCard") && use.from && use.from->hasSkill(this) && !use.to.isEmpty() && use.to.contains(use.from))
+			return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+		return QList<SkillInvokeDetail>();
+	}
+
+	bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+	{
+		invoke->invoker->drawCards(1);
+		if (!invoke->invoker->isKongcheng()) {
+			const Card *cards = room->askForExchange(invoke->invoker, objectName(), 1, 1, false, "yuejian-exchange");
+			DELETE_OVER_SCOPE(const Card, cards)
+				invoke->invoker->addToPile("dango", cards->getSubcards().first(), false);
+		}
+		return false;
+	}
+};
+
+
+
 YidanCard::YidanCard()
 {
     will_throw = false;
@@ -1731,7 +1764,7 @@ TH15Package::TH15Package()
     doremy->addSkill(new Emeng);
 
     General *ringo = new General(this, "ringo", "gzz", 4);
-
+	ringo->addSkill(new Yuejian);
 
     General *seiran = new General(this, "seiran", "gzz", 4);
     seiran->addSkill(new Yidan);
