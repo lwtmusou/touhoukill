@@ -1554,11 +1554,11 @@ public:
 };
 
 
-class Yuejian : public TriggerSkill
+class Jiangguo : public TriggerSkill
 {
 public:
-	Yuejian()
-		: TriggerSkill("yuejian")
+	Jiangguo()
+		: TriggerSkill("jiangguo")
 	{
 		events << TargetSpecified;
 	}
@@ -1567,7 +1567,7 @@ public:
 	{
 		CardUseStruct use = data.value<CardUseStruct>();
 		QList<SkillInvokeDetail> d;
-		if (!use.card->isKindOf("SkillCard") && use.from && use.from->hasSkill(this) && !use.to.isEmpty() && use.to.contains(use.from))
+		if (!use.card->isKindOf("SkillCard") && !use.card->isVirtualCard() && use.from && use.from->hasSkill(this) && !use.to.isEmpty() && use.to.contains(use.from))
 			return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
 		return QList<SkillInvokeDetail>();
 	}
@@ -1576,13 +1576,110 @@ public:
 	{
 		invoke->invoker->drawCards(1);
 		if (!invoke->invoker->isKongcheng()) {
-			const Card *cards = room->askForExchange(invoke->invoker, objectName(), 1, 1, false, "yuejian-exchange");
+			const Card *cards = room->askForExchange(invoke->invoker, objectName(), 1, 1, false, "jiangguo-exchange");
 			DELETE_OVER_SCOPE(const Card, cards)
-				invoke->invoker->addToPile("dango", cards->getSubcards().first(), false);
+				invoke->invoker->addToPile("dango", cards->getSubcards().first());
 		}
 		return false;
 	}
 };
+
+
+class YuejianVS : public OneCardViewAsSkill
+{
+public:
+    YuejianVS()
+        : OneCardViewAsSkill("yuejian")
+    {
+        filter_pattern = ".|.|.|dango";
+        expand_pile = "dango";
+        response_pattern = "@@yuejian";
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const
+    {
+        if (originalCard) {
+            if (!Self->hasFlag("Global_yuejianFailed")) {
+                KnownBoth *card = new KnownBoth(Card::SuitToBeDecided, -1);
+                card->setSkillName(objectName());
+                card->addSubcard(originalCard);
+                return card;
+            }  
+            else {
+                AwaitExhausted *card = new AwaitExhausted(Card::SuitToBeDecided, -1);
+                card->setSkillName(objectName());
+                card->addSubcard(originalCard);
+                return card;
+            }
+        }
+        return NULL;
+    }
+};
+
+class Yuejian : public TriggerSkill
+{
+public:
+	Yuejian()
+		: TriggerSkill("yuejian")
+	{
+		events << EventPhaseStart << Pindian;
+		view_as_skill = new YuejianVS;
+	}
+
+
+	QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+	{
+		if (triggerEvent == EventPhaseStart) {
+			ServerPlayer *player = data.value<ServerPlayer *>();
+			if (!player->getPile("dango").isEmpty() &&  player->getPhase() == Player::Play && player->hasSkill(this) && !player->isKongcheng()) {
+				foreach(ServerPlayer *t, room->getOtherPlayers(player)) {
+				    if (!t->isKongcheng())
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+				}
+			}	
+        } else if (triggerEvent == Pindian) {
+            PindianStruct *pindian = data.value<PindianStruct *>();
+            if (pindian->reason == objectName())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, pindian->from, pindian->from, NULL, true, NULL, false);
+        }
+		return QList<SkillInvokeDetail>();
+	}
+
+    bool cost(TriggerEvent event, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (event == EventPhaseStart)
+        {
+            QList<ServerPlayer *> targets;
+            foreach(ServerPlayer *t, room->getOtherPlayers(invoke->invoker)) {
+                if (!t->isKongcheng())
+                    targets << t;
+            }
+            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@yuejian-pindian", true, true);
+            if (target)
+                invoke->targets << target;
+            return target != NULL;
+        } else if (event == Pindian) {
+            PindianStruct *pindian = data.value<PindianStruct *>();
+            if (pindian->success)
+                room->askForUseCard(invoke->invoker, "@@yuejian", "@yuejian1");
+            else {
+                room->setPlayerFlag(invoke->invoker, "Global_yuejianFailed");
+                room->askForUseCard(invoke->invoker, "@@yuejian", "@yuejian2");
+            }
+        }
+
+        return false;
+	}
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+
+        invoke->invoker->pindian(invoke->targets.first(), objectName());
+        return false;
+    }
+
+};
+
 
 
 
@@ -1764,7 +1861,8 @@ TH15Package::TH15Package()
     doremy->addSkill(new Emeng);
 
     General *ringo = new General(this, "ringo", "gzz", 4);
-	ringo->addSkill(new Yuejian);
+	ringo->addSkill(new Jiangguo);
+    ringo->addSkill(new Yuejian);
 
     General *seiran = new General(this, "seiran", "gzz", 4);
     seiran->addSkill(new Yidan);
