@@ -1117,6 +1117,45 @@ public:
     }
 };
 
+
+
+class Duobao : public TriggerSkill
+{
+public:
+    Duobao()
+        : TriggerSkill("duobao")
+    {
+        events << Damage << Damaged;
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.card && damage.from && damage.from->isAlive() && damage.by_user && damage.to->isAlive()
+            && damage.from != damage.to && !damage.to->getEquips().isEmpty()
+            && (damage.from->hasSkill(this) || damage.to->hasSkill(this))) {
+            if (triggerEvent == Damage && damage.from->hasSkill(this))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
+            else if (triggerEvent == Damaged && damage.to->hasSkill(this))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.from, NULL, true);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+
+        room->touhouLogmessage("#TriggerSkill", invoke->owner, objectName());
+        room->notifySkillInvoked(invoke->owner, objectName());
+        int id = room->askForCardChosen(invoke->invoker, damage.to, "e", objectName());
+        room->obtainCard(invoke->invoker, id);
+        return false;
+    }
+};
+
+
 TH14Package::TH14Package()
     : Package("th14")
 {
@@ -1155,7 +1194,8 @@ TH14Package::TH14Package()
 
     General *seija_sp = new General(this, "seija_sp", "hzc", 3);
     seija_sp->addSkill(new Tianxie);
-    seija_sp->addSkill(new Huobao);
+    //seija_sp->addSkill(new Huobao);
+    seija_sp->addSkill(new Duobao);
 
     addMetaObject<LeitingCard>();
     addMetaObject<YuanfeiCard>();
