@@ -795,7 +795,13 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        invoke->invoker->addToPile("feitou", room->getNCards(1));
+        //invoke->invoker->addToPile("feitou", room->getNCards(1));
+        invoke->invoker->drawCards(1);
+        if (!invoke->invoker->isKongcheng()) {
+            const Card *cards = room->askForExchange(invoke->invoker, objectName(), 1, 1, false, "feitou-exchange");
+            DELETE_OVER_SCOPE(const Card, cards)
+                invoke->invoker->addToPile("feitou", cards->getSubcards().first());
+        }
         return false;
     }
 };
