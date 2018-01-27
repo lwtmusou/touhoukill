@@ -1126,6 +1126,7 @@ public:
         : TriggerSkill("duobao")
     {
         events << Damage << Damaged;
+        frequency = Skill::Compulsory;
     }
 
 
