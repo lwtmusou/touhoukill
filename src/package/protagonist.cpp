@@ -1472,7 +1472,8 @@ public:
     }
 };
 
-class Mokai : public TriggerSkill
+
+/*class Mokai : public TriggerSkill
 {
 public:
     Mokai()
@@ -1517,6 +1518,62 @@ public:
                 CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
                 room->throwCard(c, reason, NULL);
             }
+        }
+        return false;
+    }
+};*/
+
+
+class Mokai : public TriggerSkill
+{
+public:
+    Mokai()
+        : TriggerSkill("mokai")
+    {
+        events << CardUsed << CardsMoveOneTime;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *, const QVariant &data) const
+    {
+        if (event == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isKindOf("TrickCard") && use.from->hasSkill(this) && use.from->getPhase() == Player::Play
+                && use.from->getEquips().length() > use.from->getBrokenEquips().length())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+        
+        } else if (event == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
+            if (player && player->hasSkill(this) && !move.broken_ids.isEmpty()) {
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent event, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (event == CardUsed) {
+            if (invoke->invoker->askForSkillInvoke(this, data)) {
+                int id = room->askForCardChosen(invoke->invoker, invoke->invoker, "e", objectName(), false, Card::MethodNone, invoke->invoker->getBrokenEquips());
+                invoke->tag["mokai_id"] = QVariant::fromValue(id);
+                return true;
+            }
+        }  else if (event == CardsMoveOneTime) {
+            return invoke->invoker->askForSkillInvoke(this, data);
+        }
+
+        return false;
+    }
+
+    bool effect(TriggerEvent event, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (event == CardUsed) {
+            int id = invoke->tag["mokai_id"].toInt();
+            invoke->invoker->addBrokenEquips(QList<int>() << id);
+            invoke->invoker->skip(Player::Finish);
+        } else if (event == CardsMoveOneTime) {
+            invoke->invoker->drawCards(2);
         }
         return false;
     }
@@ -2552,8 +2609,8 @@ ProtagonistPackage::ProtagonistPackage()
     General *marisa_slm = new General(this, "marisa_slm", "zhu", 3);
     marisa_slm->addSkill(new Qiangyu);
     marisa_slm->addSkill(new Mokai);
-    marisa_slm->addSkill(new Guangji);
-    marisa_slm->addSkill(new Xinghui);
+    //marisa_slm->addSkill(new Guangji);
+    //marisa_slm->addSkill(new Xinghui);
 
     General *sanae_slm = new General(this, "sanae_slm", "zhu", 4);
     sanae_slm->addSkill(new DfgzmSiyu);
