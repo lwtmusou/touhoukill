@@ -1099,6 +1099,56 @@ public:
     }
 };
 
+
+class Yuyi : public TriggerSkill
+{
+public:
+    Yuyi()
+        : TriggerSkill("yuyi")
+    {
+        events << DamageInflicted;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.card && damage.card->isKindOf("Slash") &&  damage.to->isAlive() && damage.to->hasSkill(this) && damage.to->canDiscard(damage.to, "hs"))
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        const Card *card = room->askForCard(invoke->invoker, ".|.|.|hand", "@yuyi_discard", data, Card::MethodDiscard, NULL, false, objectName());
+        invoke->tag["yuyi"] = QVariant::fromValue(card);
+        return card != NULL;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (!damage.from || damage.from->isDead() || !invoke->invoker->canDiscard(damage.from, "hs"))
+            return false;
+
+        int id = room->askForCardChosen(invoke->invoker, damage.from, "hs", objectName());
+        room->throwCard(id, damage.from, invoke->invoker);
+        const Card *c = invoke->tag.value("yuyi").value<const Card *>();
+        if (c->getColor() == Sanguosha->getCard(id)->getColor()) {
+            room->touhouLogmessage("#YuyiTrigger", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(1));
+            damage.damage = damage.damage - 1;
+            data = QVariant::fromValue(damage);
+            if (damage.damage <= 0)
+                return true;
+
+        }
+
+        return false;
+    }
+
+};
+
+/*
 class Yuyi : public TriggerSkill
 {
 public:
@@ -1184,7 +1234,7 @@ public:
         }
         return false;
     }
-};
+};*/
 
 class Shehuo : public TriggerSkill
 {
