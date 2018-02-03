@@ -1668,16 +1668,32 @@ bool YidanCard::targetFilter(const QList<const Player *> &targets, const Player 
     int slash_targets = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, card);
     if (targets.length() >= slash_targets)
         return false;
+
+    /*bool has_specific_assignee = false;
+    foreach(const Player *p, Self->getAliveSiblings()) {
+        if (Slash::IsSpecificAssignee(p, Self, this)) {
+            has_specific_assignee = true;
+            break;
+        }
+    }*/
+    bool can = false;
     if (!Self->isProhibited(to_select, card, targets)) {
         foreach (const Card *c, to_select->getEquips()) {
-            if (card->getSuit() == c->getSuit())
-                return true;
+            if (card->getSuit() == c->getSuit()) {
+                can = true;
+                break;
+            }
+               
         }
-        foreach (int id, to_select->getShownHandcards()) {
-            if (card->getSuit() == Sanguosha->getCard(id)->getSuit())
-                return true;
+        if (!can) {
+            foreach(int id, to_select->getShownHandcards()) {
+                if (card->getSuit() == Sanguosha->getCard(id)->getSuit()) {
+                    can = true;
+                    break;
+                }
+            }
         }
-        return !targets.isEmpty() && card->targetFilter(targets, to_select, Self);
+        return can  && card->targetFilter(targets, to_select, Self); //&& !targets.isEmpty()
     }
     return false;
 }
@@ -1801,6 +1817,26 @@ public:
     }
 };
 
+class YidanTargetMod : public TargetModSkill
+{
+public:
+    YidanTargetMod()
+        : TargetModSkill("#yidanmod")
+    {
+        pattern = "Slash";
+    }
+
+    virtual int getDistanceLimit(const Player *, const Card *card) const
+    {
+        if (card->getSkillName() == "yidan")
+            return 1000;
+        else
+            return 0;
+    }
+
+};
+
+
 TH15Package::TH15Package()
     : Package("th15")
 {
@@ -1840,7 +1876,9 @@ TH15Package::TH15Package()
     General *seiran = new General(this, "seiran", "gzz", 4);
     seiran->addSkill(new Yidan);
     seiran->addSkill(new YidanProhibit);
+    seiran->addSkill(new YidanTargetMod);
     related_skills.insertMulti("yidan", "#yidan");
+    related_skills.insertMulti("yidan", "#yidanmod");
 
     addMetaObject<ShayiCard>();
     //addMetaObject<ShayiMoveCard>();
