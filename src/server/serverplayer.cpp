@@ -1409,7 +1409,7 @@ void ServerPlayer::addToShownHandCards(QList<int> card_ids)
     arg << objectName();
     arg << JsonUtils::toJsonArray(shown_handcards);
 
-    foreach (ServerPlayer *player, room->getAllPlayers())
+    foreach (ServerPlayer *player, room->getAllPlayers(true))
         room->doNotify(player, S_COMMAND_SET_SHOWN_HANDCARD, arg);
 
     LogMessage log;
@@ -1438,7 +1438,7 @@ void ServerPlayer::removeShownHandCards(QList<int> card_ids, bool sendLog, bool 
     arg << objectName();
     arg << JsonUtils::toJsonArray(shown_handcards);
 
-    foreach (ServerPlayer *player, room->getAllPlayers())
+    foreach (ServerPlayer *player, room->getAllPlayers(true))
         room->doNotify(player, S_COMMAND_SET_SHOWN_HANDCARD, arg);
 
     if (sendLog) {
