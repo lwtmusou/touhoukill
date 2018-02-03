@@ -4,6 +4,7 @@
 #include "general.h"
 #include "skill.h"
 
+
 class Xiahui : public TriggerSkill
 {
 public:
@@ -13,16 +14,6 @@ public:
         events << Damage << Damaged;
     }
 
-    /*static QList<ServerPlayer *> xiahuiTargets(const Room *room)
-    {
-        QList<ServerPlayer *> targets;
-        foreach (ServerPlayer *p, room->getAlivePlayers()) {
-            if (!p->getCards("h").isEmpty())
-                targets << p;
-        }
-        return targets;
-    }*/
-
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
@@ -30,38 +21,26 @@ public:
         if (e == Damage && damage.from && damage.from->isAlive() && damage.from->hasSkill(this)) {
             QList<ServerPlayer *> targets;
             if (!damage.from->getCards("h").isEmpty())
-                targets << damage.from;
+                d << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.from);
             if (damage.to != damage.from && damage.to->isAlive() && !damage.to->getCards("h").isEmpty())
-                targets << damage.to;
-            if (targets.isEmpty())
-                return d;
-            d << SkillInvokeDetail(this, damage.from, damage.from, targets);
+                 d << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
+           
         }
         if (e == Damaged && damage.to && damage.to->isAlive() && damage.to->hasSkill(this)) {
             QList<ServerPlayer *> targets;
             if (!damage.to->getCards("h").isEmpty())
-                targets << damage.to;
+                d << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.to);
             if (damage.from && damage.to != damage.from && damage.from->isAlive() && !damage.from->getCards("h").isEmpty())
-                targets << damage.from;
-            if (targets.isEmpty())
-                return d;
-            for (int i = 0; i < damage.damage; i++)
-                d << SkillInvokeDetail(this, damage.to, damage.to, targets);
+                d << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.from);
         }
         return d;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, invoke->targets, objectName(), "@xiahui", true, true);
-        if (target) {
-            invoke->targets.clear();
-            invoke->targets << target;
-        }
-        return target != NULL;
-    }
+
+
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
         int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "h", objectName());
         QList<int> ids;
         ids << id;
@@ -69,6 +48,8 @@ public:
         return false;
     }
 };
+
+
 
 /*
 class Chunhua : public TriggerSkill
@@ -284,7 +265,8 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
         if (use.from && use.from->isAlive() && !use.to.isEmpty() && use.card->hasFlag("showncards") 
-            && (use.card->isKindOf("BasicCard") || use.card->isNDTrick()) && (use.card->isRed() || use.card->isBlack())) {
+            && (use.card->isKindOf("BasicCard") || use.card->isNDTrick()) && 
+            ((use.card->isRed() || use.card->isBlack())  ||  !use.from->getShownHandcards().isEmpty()) ) {
             foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName()))
                 d << SkillInvokeDetail(this, p, p);
         }
@@ -1388,26 +1370,22 @@ public:
     Shenyan()
         : TriggerSkill("shenyan")
     {
-        events << EventPhaseStart << EventPhaseChanging << PreCardUsed << CardResponded;
+        events << EventPhaseStart << EventPhaseChanging << TargetSpecified;
     }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const
     {
-        if (e == PreCardUsed || e == CardResponded) {
-            ServerPlayer *player = NULL;
-            const Card *card = NULL;
-            if (e == PreCardUsed) {
-                player = data.value<CardUseStruct>().from;
-                card = data.value<CardUseStruct>().card;
-            }
-            else {
-                CardResponseStruct response = data.value<CardResponseStruct>();
-                player = response.m_from;
-                if (response.m_isUse)
-                    card = response.m_card;
-            }
-            if (player && player->isCurrent() && card && !card->isKindOf("SkillCard") && card->getHandlingMethod() == Card::MethodUse)
-                room->setPlayerFlag(player, "shenyan_used");
+        if (e == TargetSpecified) {
+            CardUseStruct use = data.value<CardUseStruct>();
+ 
+            if (use.from && use.from->isCurrent() && use.card && !use.card->isKindOf("SkillCard")) {
+                foreach(ServerPlayer *p, use.to) {
+                    if (p != use.from) {
+                        room->setPlayerFlag(use.from, "shenyan_used");
+                        break;
+                    }
+                }
+            }  
         }
 
         if (e == EventPhaseChanging) {
