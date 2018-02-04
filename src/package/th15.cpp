@@ -18,20 +18,32 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         QList<SkillInvokeDetail> d;
+        QList<ServerPlayer *> targets;
         if (e == Damage && damage.from && damage.from->isAlive() && damage.from->hasSkill(this)) {
-            QList<ServerPlayer *> targets;
+            
             if (!damage.from->getCards("h").isEmpty())
-                d << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.from);
+                targets << damage.from;
+
             if (damage.to != damage.from && damage.to->isAlive() && !damage.to->getCards("h").isEmpty())
-                 d << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
+                 targets << damage.to;
+            if (!targets.isEmpty()) {
+                damage.to->getRoom()->sortByActionOrder(targets);
+                foreach(ServerPlayer *t, targets)
+                    d << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, t);
+            }
            
         }
         if (e == Damaged && damage.to && damage.to->isAlive() && damage.to->hasSkill(this)) {
             QList<ServerPlayer *> targets;
             if (!damage.to->getCards("h").isEmpty())
-                d << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.to);
+                targets << damage.to;
             if (damage.from && damage.to != damage.from && damage.from->isAlive() && !damage.from->getCards("h").isEmpty())
-                d << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.from);
+                targets << damage.from;
+            if (!targets.isEmpty()) {
+                damage.to->getRoom()->sortByActionOrder(targets);
+                foreach(ServerPlayer *t, targets)
+                    d << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, t);
+            }
         }
         return d;
     }

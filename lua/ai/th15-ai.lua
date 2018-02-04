@@ -89,7 +89,7 @@ sgs.ai_skill_use["@@shayi"] = function(self, prompt)
 end
 
 
-sgs.ai_skill_invoke.yuyi = function(self, data)
+--[[sgs.ai_skill_invoke.yuyi = function(self, data)
 	local current = self.room:getCurrent()
 	if self.player:isCurrent() then
 		local e , f = 0, 0
@@ -110,7 +110,7 @@ sgs.ai_skill_invoke.yuyi = function(self, data)
 		end
 	end
 	return false
-end
+end]]
 
 
 sgs.ai_skill_use["BasicCard+^Jink,EquipCard|.|.|shehuo"] = function(self, prompt, method)
