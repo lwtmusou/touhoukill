@@ -6726,7 +6726,7 @@ void Room::saveWinnerTable(const QString &winner, bool isSurrender)
     if (!QDir(location).exists())
         QDir().mkdir(location);
     QDateTime time = QDateTime::currentDateTime();
-    location.append(time.toString("yyyyMMdd"));
+    location.append(time.toString("yyyyMM"));
     location.append(".txt");
     QFile file(location);
 
