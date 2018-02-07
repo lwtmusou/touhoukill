@@ -988,7 +988,7 @@ public:
     {
         if (e == SlashHit) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            room->setCardFlag(effect.slash, "tianxieEffected");
+            room->setCardFlag(effect.slash, "tianxieEffected_" + effect.to->objectName());
         }
     }
 
@@ -1001,7 +1001,7 @@ public:
         if (effect.card->isKindOf("EquipCard") || effect.card->isKindOf("SkillCard"))
             return QList<SkillInvokeDetail>();
         if (effect.to->hasSkill(this) && effect.to->isAlive()) {
-            if (effect.card->hasFlag("tianxieEffected")) {
+            if (effect.card->hasFlag("tianxieEffected_" + effect.to->objectName())) {
                 if (effect.card->isKindOf("DelayedTrick") || !effect.from || !effect.from->isAlive() || !effect.from->canDiscard(effect.from, "hes"))
                     return QList<SkillInvokeDetail>();
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to);
@@ -1016,7 +1016,7 @@ public:
         CardEffectStruct effect = data.value<CardEffectStruct>();
         QString prompt1 = "target1:" + effect.from->objectName();
         QString prompt2 = "target2";
-        QString prompt = (effect.card->hasFlag("tianxieEffected")) ? prompt1 : prompt2;
+        QString prompt = (effect.card->hasFlag("tianxieEffected_" + effect.to->objectName())) ? prompt1 : prompt2;
         invoke->invoker->tag[objectName()] = data;
         return invoke->invoker->askForSkillInvoke(objectName(), prompt);
     }
@@ -1024,7 +1024,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardEffectStruct effect = data.value<CardEffectStruct>();
-        if (effect.card->hasFlag("tianxieEffected")) {
+        if (effect.card->hasFlag("tianxieEffected_" + effect.to->objectName())) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), effect.from->objectName());
             room->askForDiscard(effect.from, objectName(), 1, 1, false, true);
         } else

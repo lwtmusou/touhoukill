@@ -386,6 +386,9 @@ void Peach::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     room->setEmotion(effect.from, "peach");
 
+    if (!effect.to->isWounded())
+        room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName());//only for skill tianxie
+
     // recover hp
     RecoverStruct recover;
     recover.card = this;
@@ -1131,7 +1134,8 @@ void GodSalvation::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
     if (!effect.to->isWounded())
-        ; //room->setEmotion(effect.to, "skill_nullify");
+        room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName());//only for skill tianxie
+        //room->setEmotion(effect.to, "skill_nullify");
     else {
         RecoverStruct recover;
         recover.card = this;
@@ -1267,6 +1271,7 @@ void Collateral::onEffect(const CardEffectStruct &effect) const
     effect.to->tag.remove("collateralVictim");
     if (!victim)
         return;
+   
     WrappedCard *weapon = killer->getWeapon();
 
     QString prompt = QString("collateral-slash:%1:%2").arg(victim->objectName()).arg(source->objectName());
@@ -1424,10 +1429,13 @@ bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *to
 
 void Snatch::onEffect(const CardEffectStruct &effect) const
 {
-    if (effect.from->isDead())
+    if (effect.from->isDead()) 
         return;
-    if (effect.to->isAllNude())
+    if (effect.to->isAllNude()) {
+        effect.to->getRoom()->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName());//only for skill tianxie
         return;
+    }
+        
 
     Room *room = effect.to->getRoom();
     bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical");
@@ -1461,8 +1469,11 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical");
     QString flag = using_2013 ? "hes" : "hejs";
-    if (!effect.from->canDiscard(effect.to, flag))
+    if (!effect.from->canDiscard(effect.to, flag)) {
+        room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName());//only for skill tianxie
         return;
+    }
+        
 
     bool isNeoqixi = (getSkillName() == "neo2013qixi");
 
@@ -1989,6 +2000,9 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
             }
         }
     }
+    else {
+        room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName());//only for skill tianxie
+    }
 }
 
 bool Drowning::isAvailable(const Player *player) const
@@ -2087,8 +2101,10 @@ void KnownBoth::onUse(Room *room, const CardUseStruct &card_use) const
 
 void KnownBoth::onEffect(const CardEffectStruct &effect) const
 {
-    if (effect.to->getCards("h").isEmpty())
+    if (effect.to->getCards("h").isEmpty()) {
+        effect.to->getRoom()->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName());//only for skill tianxie
         return;
+    }
 
     Room *room = effect.from->getRoom();
     int id = room->askForCardChosen(effect.from, effect.to, "h", objectName());
