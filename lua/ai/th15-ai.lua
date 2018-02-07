@@ -15,7 +15,9 @@ function getChunhuaCard(player)
 	end
 	return nil
 end
-
+sgs.ai_skill_invoke.xiahui = function(self, data)
+	return true
+end
 sgs.ai_skill_playerchosen.xiahui = function(self,targets)
 	if (targets:contains(self.player) and self.player:hasSkill("chunhua")) then
 		local card = getChunhuaCard(self.player)
@@ -88,6 +90,20 @@ sgs.ai_skill_use["@@shayi"] = function(self, prompt)
 	return "."
 end
 
+sgs.shownCard_skill = "chunhua|santi"
+sgs.ai_skill_invoke.kuangluan1 = function(self, data)
+	local target = data:toPlayer()
+	
+	if self:isEnemy(target) and  not self:hasSkills(sgs.shownCard_skill, target) then return true end
+    if self:isFriend(target) and  self:hasSkills(sgs.shownCard_skill, target) then return true end	
+	return false
+end
+sgs.ai_skill_invoke.kuangluan2 = function(self, data)
+	local target = data:toPlayer()
+	if self:isEnemy(target) and  not target:hasSkill("jinguo") then return true end
+    if self:isFriend(target) and  target:hasSkill("santi") then return true end	
+	return false
+end
 
 --[[sgs.ai_skill_invoke.yuyi = function(self, data)
 	local current = self.room:getCurrent()
@@ -167,20 +183,23 @@ sgs.ai_skill_invoke.shenyan = function(self, data)
 	return current and self:isFriend(current)
 end
 
-sgs.ai_skill_invoke.meimeng = function(self, data)
+sgs.ai_skill_invoke.bumeng = function(self, data)
 	local from = data:toPlayer()
 	--from = findPlayerByObjectName(self.room, move.from:objectName(), true) 
 	return from and self:isFriend(from)
 end
-sgs.ai_choicemade_filter.skillInvoke.meimeng = function(self, player, args)
-	local move = player:getTag("meimeng"):toMoveOneTime()
+sgs.ai_choicemade_filter.skillInvoke.bumeng = function(self, player, args)
+	local move = player:getTag("bumeng"):toMoveOneTime()
     local from = nil
 	if move.from then from = findPlayerByObjectName(self.room, move.from:objectName(), true) end
 	if from and args[#args] == "yes" then
 		sgs.updateIntention(player, from, -20)
 	end
 end
-
+sgs.ai_skill_invoke.rumeng = function(self, data)
+	local current = self.room:getCurrent()
+	return current and self:isEnemy(current)
+end
 
 
 local yidan_skill = {}
