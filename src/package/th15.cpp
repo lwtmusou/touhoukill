@@ -269,18 +269,31 @@ public:
     Chunhua()
         : TriggerSkill("chunhua")
     {
-        events << TargetSpecified;
+        events << TargetSpecified << EventPhaseChanging;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    void record(TriggerEvent e, Room *room, QVariant &) const
     {
+        if (e == EventPhaseChanging) {
+            foreach(ServerPlayer *p, room->getAllPlayers())
+                room->setPlayerFlag(p, "-chunhua");
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e != TargetSpecified)
+            return  QList<SkillInvokeDetail>();
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
         if (use.from && use.from->isAlive() && !use.to.isEmpty() && use.card->hasFlag("showncards") 
             && (use.card->isKindOf("BasicCard") || use.card->isNDTrick()) && 
             ((use.card->isRed() || use.card->isBlack())  ||  !use.from->getShownHandcards().isEmpty()) ) {
-            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName()))
-                d << SkillInvokeDetail(this, p, p);
+            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                if (!p->hasFlag("chunhua"))
+                    d << SkillInvokeDetail(this, p, p);
+            }
+
         }
         return d;
     }
@@ -321,6 +334,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         room->notifySkillInvoked(invoke->invoker, objectName());
+        room->setPlayerFlag(invoke->invoker,"chunhua");
         CardUseStruct use = data.value<CardUseStruct>();
         foreach(ServerPlayer *p, use.to)
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
@@ -1599,6 +1613,7 @@ public:
 
     void record(TriggerEvent e, Room *room, QVariant &data) const
     {
+        //prevent insert (like moveEvent)
         if (e == CardsMoveOneTime) {
             ServerPlayer *current = room->getCurrent();
             if (!current || !current->isAlive() || current->getPhase() != Player::Play)
@@ -1610,12 +1625,17 @@ public:
                 ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE)
                 ) {
                 if (!move.shown_ids.isEmpty() && from->getShownHandcards().isEmpty())
-                    room->setPlayerFlag(from, "rumeng");
+                    room->setPlayerFlag(from, "rumeng");//keep this flag till askForSkillInvoke, since some insert could generate new ShownHandcards
             }
         
         }
-        
-        
+        if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.from == Player::Play) {
+                foreach(ServerPlayer *p, room->getAllPlayers())
+                    room->setPlayerFlag(p, "-rumeng");
+            }
+        }
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
@@ -1635,11 +1655,19 @@ public:
             if (!move.shown_ids.isEmpty() && from->hasFlag("rumeng")) {
                 foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                     if (p != current)
-                        d << SkillInvokeDetail(this, p, p);
+                        d << SkillInvokeDetail(this, p, p, NULL, false, from);
                 }
             }
         }
         return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        bool can = invoke->invoker->askForSkillInvoke(this, data);
+        //clear flag
+        room->setPlayerFlag(invoke->preferredTarget, "-rumeng");
+        return can;
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
