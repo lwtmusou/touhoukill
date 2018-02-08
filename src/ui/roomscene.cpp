@@ -21,6 +21,7 @@
 #include "settings.h"
 #include "uiUtils.h"
 #include "window.h"
+#include "chooseoptionsbox.h"
 
 #include <QApplication>
 #include <QCheckBox>
@@ -184,6 +185,13 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     connect(ClientInstance, SIGNAL(guanxing(QList<int>, bool)), guanxing_box, SLOT(doGuanxing(QList<int>, bool)));
     guanxing_box->moveBy(-120, 0);
+
+    m_chooseOptionsBox = new ChooseOptionsBox;
+    m_chooseOptionsBox->hide();
+    addItem(m_chooseOptionsBox);
+    m_chooseOptionsBox->setZValue(30000.0);
+    m_chooseOptionsBox->moveBy(-120, 0);
+
 
     time_label_widget = new TimeLabel;
     time_label_widget->setObjectName("time_label");
@@ -1109,6 +1117,7 @@ void RoomScene::updateTable()
     pileContainer->setPos(m_tableCenterPos);
     //pileContainer->setPos(m_tableCenterPos - QPointF(pileContainer->boundingRect().width() / 2, pileContainer->boundingRect().height() / 2));
     guanxing_box->setPos(m_tableCenterPos);
+    m_chooseOptionsBox->setPos(m_tableCenterPos - QPointF(m_chooseOptionsBox->boundingRect().width() / 2, m_chooseOptionsBox->boundingRect().height() / 2));
     m_chooseTriggerOrderBox->setPos(m_tableCenterPos - QPointF(m_chooseTriggerOrderBox->boundingRect().width() / 2, m_chooseTriggerOrderBox->boundingRect().height() / 2));
     prompt_box->setPos(m_tableCenterPos);
     pausing_text->setPos(m_tableCenterPos - pausing_text->boundingRect().center());
@@ -1800,7 +1809,19 @@ void RoomScene::chooseKingdom(const QStringList &kingdoms)
     m_choiceDialog = dialog;
 }
 
+
 void RoomScene::chooseOption(const QString &skillName, const QStringList &options)
+{
+    QApplication::alert(main_window);
+    if (!main_window->isActiveWindow())
+        Sanguosha->playSystemAudioEffect("pop-up");
+
+    m_chooseOptionsBox->setSkillName(skillName);
+    m_chooseOptionsBox->chooseOption(options);
+
+}
+
+/*void RoomScene::chooseOption(const QString &skillName, const QStringList &options)
 {
     QDialog *dialog = new QDialog;
     QVBoxLayout *layout = new QVBoxLayout;
@@ -1850,7 +1871,7 @@ void RoomScene::chooseOption(const QString &skillName, const QStringList &option
     Sanguosha->playSystemAudioEffect("pop-up");
     delete m_choiceDialog;
     m_choiceDialog = dialog;
-}
+}*/
 
 void RoomScene::chooseCard(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids)
 {
@@ -2646,7 +2667,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                 button->setEnabled(false);
         }
     }
-
+        
     QString highlight_skill_name = ClientInstance->highlight_skill_name;
     if (isHighlightStatus(newStatus) && highlight_skill_name != NULL)
         highlightSkillButton(highlight_skill_name, true);
@@ -2666,7 +2687,9 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             //Do not clear AG of AmazingGrace after operating Guanxing. such case as Ruizhi and Fengshui
             //if (!card_container->retained())
             //    card_container->clear();
-        } else if (oldStatus == Client::AskForTriggerOrder) {
+        } else if (oldStatus == Client::AskForChoice)
+            m_chooseOptionsBox->clear();
+        else if (oldStatus == Client::AskForTriggerOrder) {
             m_chooseTriggerOrderBox->clear();
         }
 
@@ -2864,6 +2887,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         break;
     }
     case Client::AskForGeneralTaken:
+    case Client::AskForChoice:
     case Client::AskForTriggerOrder:
     case Client::AskForArrangement: {
         ok_button->setEnabled(false);
@@ -5077,6 +5101,9 @@ bool RoomScene::isHighlightStatus(Client::Status status)
         return true;
     }
     case Client::ExecDialog: {
+        return true;
+    }
+    case Client::AskForChoice: {
         return true;
     }
     case Client::RespondingUse: {

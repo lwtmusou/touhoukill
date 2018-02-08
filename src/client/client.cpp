@@ -1151,6 +1151,12 @@ void Client::onPlayerChoosePlayer(const Player *player)
     setStatus(NotActive);
 }
 
+void Client::onPlayerChooseOption(const QString &choice)
+{
+    replyToServer(S_COMMAND_MULTIPLE_CHOICE, choice);
+    setStatus(NotActive);
+}
+
 void Client::onPlayerChooseTriggerOrder(const QString &choice)
 {
     replyToServer(S_COMMAND_TRIGGER_ORDER, choice);
@@ -1545,7 +1551,8 @@ void Client::askForChoice(const QVariant &ask_str)
     highlight_skill_name = skill_name;
     QStringList options = ask[1].toString().split("+");
     emit options_got(skill_name, options);
-    setStatus(ExecDialog);
+    setStatus(AskForChoice);
+    //setStatus(ExecDialog);
 }
 
 void Client::askForCardChosen(const QVariant &ask_str)

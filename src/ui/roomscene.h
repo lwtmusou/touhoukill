@@ -21,6 +21,7 @@ class QSanButton;
 class QGroupBox;
 struct RoomLayout;
 class BubbleChatBox;
+class ChooseOptionsBox;
 class ChooseTriggerOrderBox;
 
 #include <QDialog>
@@ -300,6 +301,7 @@ private:
     QList<const Player *> selected_targets;
 
     GuanxingBox *guanxing_box;
+    ChooseOptionsBox *m_chooseOptionsBox;
     ChooseTriggerOrderBox *m_chooseTriggerOrderBox;
     QList<CardItem *> gongxin_items;
 
