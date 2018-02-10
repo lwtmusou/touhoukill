@@ -37,7 +37,7 @@ public:
     }
     void clear();
 
-    public slots:
+public slots:
     void chooseOption(const QStringList &options);
     void reply();
 

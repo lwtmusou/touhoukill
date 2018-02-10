@@ -3717,7 +3717,7 @@ const Card *XinhuaCard::validate(CardUseStruct &use) const
     mes.to << room->getCardOwner(subcards.first());
     mes.arg = "xinhua";
     mes.card_str = card->toString();
-    room->sendLog(mes); 
+    room->sendLog(mes);
 
     return card;
 }
@@ -4883,8 +4883,11 @@ public:
         static QSet<QString> banned;
         // ban nue and zun
         if (banned.isEmpty())
-            banned << "nue_god" << "zun"
-                   << "koishi_god" << "seiga_god" << "youmu_god";
+            banned << "nue_god"
+                   << "zun"
+                   << "koishi_god"
+                   << "seiga_god"
+                   << "youmu_god";
         return (all - banned - huashen_set - room_set).toList();
 
         //only for test

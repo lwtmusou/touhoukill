@@ -66,10 +66,11 @@ void RoomThread1v1::run()
         for (int i = 0; i < 4; i++)
             general_names[i + 6] = QString("x%1").arg(QString::number(i));
 
-        room->doBroadcastNotify(S_COMMAND_FILL_GENERAL, toJsonArray(known_list << "x0"
-                                                                               << "x1"
-                                                                               << "x2"
-                                                                               << "x3"));
+        room->doBroadcastNotify(S_COMMAND_FILL_GENERAL,
+                                toJsonArray(known_list << "x0"
+                                                       << "x1"
+                                                       << "x2"
+                                                       << "x3"));
     } else if (rule == "2013") {
         room->doBroadcastNotify(S_COMMAND_FILL_GENERAL, toJsonArray(general_names));
     } else if (rule == "OL") {
@@ -79,12 +80,13 @@ void RoomThread1v1::run()
         for (int i = 0; i < 6; i++)
             general_names[i + 6] = QString("x%1").arg(QString::number(i));
 
-        room->doBroadcastNotify(S_COMMAND_FILL_GENERAL, toJsonArray(known_list << "x0"
-                                                                               << "x1"
-                                                                               << "x2"
-                                                                               << "x3"
-                                                                               << "x4"
-                                                                               << "x5"));
+        room->doBroadcastNotify(S_COMMAND_FILL_GENERAL,
+                                toJsonArray(known_list << "x0"
+                                                       << "x1"
+                                                       << "x2"
+                                                       << "x3"
+                                                       << "x4"
+                                                       << "x5"));
     }
 
     int index = qrand() % 2;

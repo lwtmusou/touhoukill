@@ -800,7 +800,7 @@ public:
         if (!invoke->invoker->isKongcheng()) {
             const Card *cards = room->askForExchange(invoke->invoker, objectName(), 1, 1, false, "feitou-exchange");
             DELETE_OVER_SCOPE(const Card, cards)
-                invoke->invoker->addToPile("feitou", cards->getSubcards().first());
+            invoke->invoker->addToPile("feitou", cards->getSubcards().first());
         }
         return false;
     }
@@ -1117,8 +1117,6 @@ public:
     }
 };
 
-
-
 class Duobao : public TriggerSkill
 {
 public:
@@ -1129,12 +1127,10 @@ public:
         frequency = Skill::Compulsory;
     }
 
-
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.card && damage.from && damage.from->isAlive() && damage.by_user && damage.to->isAlive()
-            && damage.from != damage.to && !damage.to->getEquips().isEmpty()
+        if (damage.card && damage.from && damage.from->isAlive() && damage.by_user && damage.to->isAlive() && damage.from != damage.to && !damage.to->getEquips().isEmpty()
             && (damage.from->hasSkill(this) || damage.to->hasSkill(this))) {
             if (triggerEvent == Damage && damage.from->hasSkill(this))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
@@ -1155,7 +1151,6 @@ public:
         return false;
     }
 };
-
 
 TH14Package::TH14Package()
     : Package("th14")

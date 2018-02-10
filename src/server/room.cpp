@@ -1630,7 +1630,6 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 moveCardTo(card, player, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason);
         }
 
-
         if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial) {
             if (!card->getSkillName().isNull() && card->getSkillName(true) == card->getSkillName(false) && player->hasSkill(card->getSkillName()))
                 notifySkillInvoked(player, card->getSkillName());
@@ -2895,9 +2894,10 @@ void Room::addRobotCommand(ServerPlayer *player, const QVariant &)
 void Room::fillRobotsCommand(ServerPlayer *player, const QVariant &)
 {
     if (Config.LimitRobot && (m_players.length() <= player_count / 2 || player_count <= 4)) {
-        speakCommand(NULL, QString(tr("This server is limited to add robot. Please ensure that the number of players is more than 4 and there is more than a half human players.")
-                                       .toUtf8()
-                                       .toBase64()));
+        speakCommand(NULL,
+                     QString(tr("This server is limited to add robot. Please ensure that the number of players is more than 4 and there is more than a half human players.")
+                                 .toUtf8()
+                                 .toBase64()));
         return;
     }
     fill_robot = true;
@@ -4818,12 +4818,14 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                     break;
                 }
             }
-            cards_moves[i].open = forceVisible || cards_moves[i].isRelevant(player)
+            cards_moves[i].open = forceVisible
+                || cards_moves[i].isRelevant(player)
                 // forceVisible will override cards to be visible
                 || cards_moves[i].to_place == Player::PlaceEquip || cards_moves[i].from_place == Player::PlaceEquip || cards_moves[i].to_place == Player::PlaceDelayedTrick
                 || cards_moves[i].from_place == Player::PlaceDelayedTrick
                 // only cards moved to hand/special can be invisible
-                || cards_moves[i].from_place == Player::DiscardPile || cards_moves[i].to_place == Player::DiscardPile
+                || cards_moves[i].from_place == Player::DiscardPile
+                || cards_moves[i].to_place == Player::DiscardPile
                 // any card from/to discard pile should be visible
                 || cards_moves[i].from_place == Player::PlaceTable
                 || (cards_moves[i].to_place == Player::PlaceTable && ((cards_moves[i].reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_PINDIAN)

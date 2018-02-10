@@ -41,7 +41,6 @@ public:
         //AskForCardChosen = 0x0011,
         //AskForSuit = 0x0012,
 
-
         RespondingUse = 0x0101,
         RespondingForDiscard = 0x0201,
         RespondingNonTrigger = 0x0301,

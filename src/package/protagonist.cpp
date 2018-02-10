@@ -1472,7 +1472,6 @@ public:
     }
 };
 
-
 /*class Mokai : public TriggerSkill
 {
 public:
@@ -1523,7 +1522,6 @@ public:
     }
 };*/
 
-
 class Mokai : public TriggerSkill
 {
 public:
@@ -1540,7 +1538,7 @@ public:
             if (use.card->isKindOf("TrickCard") && use.from->hasSkill(this) && use.from->getPhase() == Player::Play
                 && use.from->getEquips().length() > use.from->getBrokenEquips().length())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
-        
+
         } else if (event == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
@@ -1559,7 +1557,7 @@ public:
                 invoke->tag["mokai_id"] = QVariant::fromValue(id);
                 return true;
             }
-        }  else if (event == CardsMoveOneTime) {
+        } else if (event == CardsMoveOneTime) {
             return invoke->invoker->askForSkillInvoke(this, data);
         }
 

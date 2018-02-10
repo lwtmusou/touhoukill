@@ -1705,7 +1705,7 @@ void ModianCard::use(Room *room, ServerPlayer *src, QList<ServerPlayer *> &targe
     ServerPlayer *alice = targets.first();
     if (src == alice)
         src->showHiddenSkill("modian");
-    
+
     room->setPlayerFlag(alice, "modianInvoked");
     room->notifySkillInvoked(alice, "modian");
 

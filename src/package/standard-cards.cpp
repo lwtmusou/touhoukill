@@ -387,7 +387,7 @@ void Peach::onEffect(const CardEffectStruct &effect) const
     room->setEmotion(effect.from, "peach");
 
     if (!effect.to->isWounded())
-        room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName());//only for skill tianxie
+        room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
 
     // recover hp
     RecoverStruct recover;
@@ -1134,8 +1134,8 @@ void GodSalvation::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
     if (!effect.to->isWounded())
-        room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName());//only for skill tianxie
-        //room->setEmotion(effect.to, "skill_nullify");
+        room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
+    //room->setEmotion(effect.to, "skill_nullify");
     else {
         RecoverStruct recover;
         recover.card = this;
@@ -1271,7 +1271,7 @@ void Collateral::onEffect(const CardEffectStruct &effect) const
     effect.to->tag.remove("collateralVictim");
     if (!victim)
         return;
-   
+
     WrappedCard *weapon = killer->getWeapon();
 
     QString prompt = QString("collateral-slash:%1:%2").arg(victim->objectName()).arg(source->objectName());
@@ -1429,13 +1429,12 @@ bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *to
 
 void Snatch::onEffect(const CardEffectStruct &effect) const
 {
-    if (effect.from->isDead()) 
+    if (effect.from->isDead())
         return;
     if (effect.to->isAllNude()) {
-        effect.to->getRoom()->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName());//only for skill tianxie
+        effect.to->getRoom()->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
         return;
     }
-        
 
     Room *room = effect.to->getRoom();
     bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical");
@@ -1470,10 +1469,9 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
     bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical");
     QString flag = using_2013 ? "hes" : "hejs";
     if (!effect.from->canDiscard(effect.to, flag)) {
-        room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName());//only for skill tianxie
+        room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
         return;
     }
-        
 
     bool isNeoqixi = (getSkillName() == "neo2013qixi");
 
@@ -1955,7 +1953,7 @@ void Drowning::onUse(Room *room, const CardUseStruct &card_use) const
         TrickCard::onUse(room, card_use);
         return;
     }
-    
+
     ServerPlayer *source = card_use.from;
     QList<ServerPlayer *> targets, other_players = room->getOtherPlayers(source);
     foreach (ServerPlayer *player, other_players) {
@@ -1999,9 +1997,8 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
                 room->throwCard(equips.value(x), effect.to);
             }
         }
-    }
-    else {
-        room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName());//only for skill tianxie
+    } else {
+        room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
     }
 }
 
@@ -2102,7 +2099,7 @@ void KnownBoth::onUse(Room *room, const CardUseStruct &card_use) const
 void KnownBoth::onEffect(const CardEffectStruct &effect) const
 {
     if (effect.to->getCards("h").isEmpty()) {
-        effect.to->getRoom()->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName());//only for skill tianxie
+        effect.to->getRoom()->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
         return;
     }
 
@@ -2256,7 +2253,7 @@ public:
     DeathSickleSkill()
         : WeaponSkill("DeathSickle")
     {
-        events << TargetSpecified << CardFinished;//EventPhaseChanging
+        events << TargetSpecified << CardFinished; //EventPhaseChanging
     }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const
@@ -2267,7 +2264,7 @@ public:
                 return;
 
             foreach (ServerPlayer *p, use.to) {
-                    //int mark = p->getMark("DeathSickle");
+                //int mark = p->getMark("DeathSickle");
                 QStringList death = p->property("DeathSickle").toStringList();
                 if (!death.contains(use.card->toString()))
                     continue;
@@ -2277,7 +2274,6 @@ public:
 
                 if (death.isEmpty() && p->getDyingFactor() > 0)
                     room->setPlayerProperty(p, "dyingFactor", p->getDyingFactor() - 1);
-                    
             }
         }
     }
@@ -2326,7 +2322,7 @@ public:
             //room->setPlayerMark(target, "DeathSickle", target->getMark("DeathSickle") + 1);
             room->setPlayerProperty(target, "dyingFactor", target->getDyingFactor() + 1);
         }
-        
+
         return false;
     }
 };

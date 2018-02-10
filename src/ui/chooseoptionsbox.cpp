@@ -23,8 +23,6 @@ Mogara
 
 #include <QGraphicsProxyWidget>
 
-
-
 ChooseOptionsBox::ChooseOptionsBox()
     : progressBar(NULL)
 {
@@ -45,13 +43,12 @@ ChooseOptionsBox::ChooseOptionsBox()
 
 QRectF ChooseOptionsBox::boundingRect() const
 {
-    const int width
-        = getButtonWidth() + outerBlankWidth * 2;
-        //= getButtonWidth() * (qMax(options.length(), 1)) + outerBlankWidth * 2 + (qMax(options.length(), 1) - 1) * interval;
+    const int width = getButtonWidth() + outerBlankWidth * 2;
+    //= getButtonWidth() * (qMax(options.length(), 1)) + outerBlankWidth * 2 + (qMax(options.length(), 1) - 1) * interval;
 
     //int max = 0;
     //foreach(const QString &str, options)
-   //     max = qMax(max, str.split("+").length());
+    //     max = qMax(max, str.split("+").length());
 
     //int height = topBlankWidth + max * defaultButtonHeight + (max - 1) * interval + bottomBlankWidth;
     int height = topBlankWidth + options.size() * defaultButtonHeight + (options.size() - 1) * interval + bottomBlankWidth;
@@ -74,10 +71,10 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
     QMap<Button *, QPoint> pos;
     int x = 0;
     int y = 0;
-    foreach(const QString &option, options) {
+    foreach (const QString &option, options) {
         y = 0;
         ++x;
-        foreach(const QString &choice, option.split("+")) {
+        foreach (const QString &choice, option.split("+")) {
             ++y;
             Button *button = new Button(translate(choice), QSizeF(buttonWidth, defaultButtonHeight));
             //Button *button = new Button(translate(choice), QSizeF(500, defaultButtonHeight));
@@ -116,10 +113,10 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
     }*/
 
     y = topBlankWidth;
-    for(int i = 0; i < buttons.length(); ++i) {
+    for (int i = 0; i < buttons.length(); ++i) {
         Button *button = buttons.at(i);
         QPoint p = pos[button];
-        
+
         QPointF pos;
         pos.setX(outerBlankWidth);
         pos.setY(y);
@@ -136,8 +133,7 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
             progressBar->setTimerEnabled(true);
             progressBarItem = new QGraphicsProxyWidget(this);
             progressBarItem->setWidget(progressBar);
-            progressBarItem->setPos(boundingRect().center().x() - progressBarItem->boundingRect().width() / 2,
-                boundingRect().height() - 20);
+            progressBarItem->setPos(boundingRect().center().x() - progressBarItem->boundingRect().width() / 2, boundingRect().height() - 20);
             connect(progressBar, &QSanCommandProgressBar::timedOut, this, &ChooseOptionsBox::reply);
         }
         progressBar->setCountdown(QSanProtocol::S_COMMAND_MULTIPLE_CHOICE);
@@ -155,7 +151,6 @@ void ChooseOptionsBox::reply()
     //ClientInstance->onPlayerMakeChoice();
 }
 
-
 int ChooseOptionsBox::getButtonWidth() const
 {
     if (options.isEmpty())
@@ -164,8 +159,8 @@ int ChooseOptionsBox::getButtonWidth() const
     //QFontMetrics fontMetrics(Config.UIFont);
     QFontMetrics fontMetrics(Config.SmallFont);
     int biggest = 0;
-    foreach(const QString &section, options) {
-        foreach(const QString &choice, section.split("+")) {
+    foreach (const QString &section, options) {
+        foreach (const QString &choice, section.split("+")) {
             const int width = fontMetrics.width(translate(choice));
             if (width > biggest)
                 biggest = width;
@@ -196,7 +191,7 @@ void ChooseOptionsBox::clear()
         progressBar = NULL;
     }
 
-    foreach(Button *button, buttons)
+    foreach (Button *button, buttons)
         button->deleteLater();
 
     buttons.clear();

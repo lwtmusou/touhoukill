@@ -7,6 +7,7 @@
 #include "carditem.h"
 #include "cardoverview.h"
 #include "choosegeneraldialog.h"
+#include "chooseoptionsbox.h"
 #include "choosetriggerorderbox.h"
 #include "distanceviewdialog.h"
 #include "engine.h"
@@ -21,7 +22,6 @@
 #include "settings.h"
 #include "uiUtils.h"
 #include "window.h"
-#include "chooseoptionsbox.h"
 
 #include <QApplication>
 #include <QCheckBox>
@@ -191,7 +191,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
     addItem(m_chooseOptionsBox);
     m_chooseOptionsBox->setZValue(30000.0);
     m_chooseOptionsBox->moveBy(-120, 0);
-
 
     time_label_widget = new TimeLabel;
     time_label_widget->setObjectName("time_label");
@@ -1352,8 +1351,9 @@ void RoomScene::enableTargets(const Card *card)
 
     Client::Status status = ClientInstance->getStatus();
 
-    if (card->targetFixed() || ((status & Client::ClientStatusBasicMask) == Client::Responding
-                                && (status == Client::Responding || (card->getTypeId() != Card::TypeSkill && status != Client::RespondingUse)))
+    if (card->targetFixed()
+        || ((status & Client::ClientStatusBasicMask) == Client::Responding
+            && (status == Client::Responding || (card->getTypeId() != Card::TypeSkill && status != Client::RespondingUse)))
         || ClientInstance->getStatus() == Client::AskForShowOrPindian) {
         foreach (PlayerCardContainer *item, item2player.keys()) {
             QGraphicsItem *animationTarget = item->getMouseClickReceiver();
@@ -1525,7 +1525,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
         setChatBoxVisible(!chat_box_widget->isVisible());
         break;
     }
-    /*case Qt::Key_F12: {
+        /*case Qt::Key_F12: {
                     if (Self->hasSkill("huashen")) {
                     const Skill *huashen_skill = Sanguosha->getSkill("huashen");
                     if (huashen_skill) {
@@ -1809,7 +1809,6 @@ void RoomScene::chooseKingdom(const QStringList &kingdoms)
     m_choiceDialog = dialog;
 }
 
-
 void RoomScene::chooseOption(const QString &skillName, const QStringList &options)
 {
     QApplication::alert(main_window);
@@ -1818,7 +1817,6 @@ void RoomScene::chooseOption(const QString &skillName, const QStringList &option
 
     m_chooseOptionsBox->setSkillName(skillName);
     m_chooseOptionsBox->chooseOption(options);
-
 }
 
 /*void RoomScene::chooseOption(const QString &skillName, const QStringList &options)
@@ -2366,8 +2364,9 @@ void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_na
 void RoomScene::updateSkillButtons()
 {
     foreach (const Skill *skill, Self->getVisibleSkillList()) {
-        if (skill->isLordSkill() && (Self->getRole() != "lord" || ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode" || ServerInfo.GameMode == "02_1v1"
-                                     || Config.value("WithoutLordskill", false).toBool()))
+        if (skill->isLordSkill()
+            && (Self->getRole() != "lord" || ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode" || ServerInfo.GameMode == "02_1v1"
+                || Config.value("WithoutLordskill", false).toBool()))
             continue;
 
         addSkillButton(skill);
@@ -2667,7 +2666,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                 button->setEnabled(false);
         }
     }
-        
+
     QString highlight_skill_name = ClientInstance->highlight_skill_name;
     if (isHighlightStatus(newStatus) && highlight_skill_name != NULL)
         highlightSkillButton(highlight_skill_name, true);
@@ -5115,9 +5114,9 @@ bool RoomScene::isHighlightStatus(Client::Status status)
     case Client::Discarding: {
         return true;
     }
-    //case Client::RespondingForDiscard: {
-    //        return true;
-    // }
+        //case Client::RespondingForDiscard: {
+        //        return true;
+        // }
 
     default:
         break;

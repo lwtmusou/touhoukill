@@ -1398,7 +1398,7 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
 void ServerPlayer::addToShownHandCards(QList<int> card_ids)
 {
     //check card_id
-    foreach(int id, card_ids)
+    foreach (int id, card_ids)
         if (shown_handcards.contains(id) || room->getCardOwner(id) != this)
             card_ids.removeOne(id);
     if (card_ids.isEmpty())
