@@ -1337,9 +1337,9 @@ public:
 
     bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
     {
-        if (to_select->isEquipped() && Self->isJilei(to_select))
+        if (to_select->isEquipped() || Self->isJilei(to_select))
             return false;
-        if (selected.length() == 2)
+        if (selected.length() >= 2)
             return false;
 
         return true;
