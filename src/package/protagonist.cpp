@@ -1542,7 +1542,7 @@ public:
         } else if (event == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-            if (player && player->hasSkill(this) && !move.broken_ids.isEmpty()) {
+            if (player && player->isAlive() && player->hasSkill(this) && !move.broken_ids.isEmpty()) {
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
             }
         }
