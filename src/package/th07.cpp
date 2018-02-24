@@ -273,7 +273,7 @@ public:
         return false;
     }
 };
-
+/*
 class Shenyin : public TriggerSkill
 {
 public:
@@ -341,23 +341,51 @@ public:
         return false;
     }
 };
+*/
+class Shenyin : public TriggerSkill
+{
+public:
+    Shenyin()
+        : TriggerSkill("shenyin")
+    {
+        events  << Damaged << Damage;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (!damage.to || !damage.to->isAlive() || damage.to->isCurrent() || damage.to->isRemoved())
+            return QList<SkillInvokeDetail>();
+        if (e == Damage && damage.from && damage.from->hasSkill(this))
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
+        
+        if (e == Damaged && damage.to->hasSkill(this))
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.to);
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent e, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        QString prompt =  "target:" + invoke->preferredTarget->objectName();
+        invoke->invoker->tag["shenyin-target"] = QVariant::fromValue(invoke->preferredTarget);
+        return invoke->invoker->askForSkillInvoke(this, prompt);
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        if (!invoke->targets.first()->isRemoved()) {
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
+            room->touhouLogmessage("#Shenyin1", invoke->targets.first(), objectName(), QList<ServerPlayer *>());
+            room->setPlayerCardLimitation(invoke->targets.first(), "use", ".", false);
+            room->setPlayerProperty(invoke->targets.first(), "removed", true);
+        }
+        return false;
+    }
+};
 
 namespace XijianFunc {
 
-//bool hasXijianPairs(const Player *yukari, const Player *target)
-//{
-//    if (target->isRemoved())
-//        return false;
-//    if (yukari != target && !yukari->inMyAttackRange(target))
-//        return false;
-//    const Player *next = target->getNextAlive();
-//    if ((yukari == next || yukari->inMyAttackRange(next)) && checkXijianMove(target, next))
-//        return true;
-//    const Player *last = target->getLastAlive();
-//    if ((yukari == last || yukari->inMyAttackRange(last)) && checkXijianMove(target, last))
-//        return true;
-//    return false;
-//}
 
 bool checkXijianMove(const Player *src, const Player *dist);
 
@@ -370,29 +398,6 @@ bool isXijianPairs(const Player *target1, const Player *target2)
     return false;
 }
 
-//bool checkXijianMove(const Player *target, const Player *dist)
-//{
-//    const Player *next = target->getNextAlive();
-//    const Player *last = target->getLastAlive();
-//    if (dist && dist != target && (next == dist || last == dist)) {
-//        if (target->getHandcardNum() > dist->getHandcardNum())
-//            return true;
-//        if (target->getJudgingArea().length() > dist->getJudgingArea().length()) {
-//            foreach (const Card *card, target->getJudgingArea()) {
-//                if (!dist->containsTrick(card->objectName()))
-//                    return true;
-//            }
-//        }
-//        if (target->getEquips().length() > dist->getEquips().length()) {
-//            foreach (const Card *e, target->getEquips()) {
-//                const EquipCard *equip = qobject_cast<const EquipCard *>(e->getRealCard());
-//                if (!dist->getEquip(equip->location()))
-//                    return true;
-//            }
-//        }
-//    }
-//    return false;
-//}
 
 bool checkXijianMove(const Player *src, const Player *dist)
 {
