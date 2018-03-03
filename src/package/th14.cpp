@@ -73,7 +73,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (use.card->isKindOf("Slash") && use.from->isAlive()) {
             foreach (ServerPlayer *p, use.to) {
-                if (p->hasSkill(this) && use.from->getHandcardNum() >= p->getHandcardNum())
+                if (p->hasSkill(this) && use.from->getHandcardNum() > p->getHandcardNum())
                     d << SkillInvokeDetail(this, p, p, NULL, true);
             }
         }

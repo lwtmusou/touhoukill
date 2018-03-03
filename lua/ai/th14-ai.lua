@@ -32,7 +32,7 @@ function SmartAI:yicunEffective(card, to, from)
 				minus = 1
 			end
 		end
-		if from:getHandcardNum() - minus >= to:getHandcardNum() then
+		if from:getHandcardNum() - minus > to:getHandcardNum() then
 			return true
 		end
 	end
