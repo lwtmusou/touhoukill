@@ -354,7 +354,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (!damage.to || !damage.to->isAlive() || damage.to->isCurrent() || damage.to->isRemoved())
+        if (!damage.to || !damage.to->isAlive() || damage.to->isRemoved())
             return QList<SkillInvokeDetail>();
         if (e == Damage && damage.from && damage.from->hasSkill(this))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);

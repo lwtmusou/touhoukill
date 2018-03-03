@@ -208,5 +208,6 @@ config = {
 		"reisen2",
 		"satori_god",
 		"nue_god",
+		"yukari_ndj",
 	}
 }
