@@ -2174,6 +2174,53 @@ public:
     }
 };
 
+MoyanCard::MoyanCard()
+{
+}
+
+bool MoyanCard::targetFilter(const QList<const Player *> & targets, const Player *to_select, const Player *Self) const
+{
+    return to_select != Self && Self->getLostHp() > targets.length();
+}
+
+void MoyanCard::onUse(Room *room, const CardUseStruct &card_use) const
+{
+    room->doLightbox("$moyanAnimate", 4000);
+    SkillCard::onUse(room, card_use);
+}
+
+void MoyanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
+    room->removePlayerMark(source, "@moyan");
+    foreach(ServerPlayer *p, targets) {
+        room->setPlayerProperty(p, "dyingFactor", p->getDyingFactor() + 1);
+    }
+
+}
+
+class Moyan : public ZeroCardViewAsSkill
+    {
+    public:
+        Moyan()
+    : ZeroCardViewAsSkill("moyan")
+    {
+        frequency = Limited;
+        limit_mark = "@moyan";
+    }
+
+    virtual const Card *viewAs() const
+    {
+         return new MoyanCard;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return player->getMark("@moyan") >= 1 && player->isWounded();
+    }
+};
+
+
+
 ZongjiuCard::ZongjiuCard()
 {
     will_throw = false;
@@ -3047,7 +3094,7 @@ TH0105Package::TH0105Package()
     General *sariel = new General(this, "sariel", "pc98", 4);
     sariel->addSkill(new Baosi);
     sariel->addSkill(new BaosiDistance);
-    sariel->addSkill(new Ezhao);
+    sariel->addSkill(new Moyan);
     related_skills.insertMulti("baosi", "#baosi-dist");
 
     General *konngara = new General(this, "konngara", "pc98", 4);
@@ -3068,6 +3115,7 @@ TH0105Package::TH0105Package()
     addMetaObject<ModianCard>();
     addMetaObject<BaosiCard>();
     addMetaObject<EzhaoCard>();
+    addMetaObject<MoyanCard>();
     addMetaObject<ZongjiuCard>();
     addMetaObject<QirenCard>();
     addMetaObject<LiuzhuanCard>();

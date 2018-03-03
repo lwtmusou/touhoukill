@@ -285,7 +285,9 @@ return {
 	["ezhao"] = "噩兆",
 	[":ezhao"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可选择至少一名已受伤的角色，这些角色各回复1点体力并加1点体力下限。",
 	["$ezhaoAnimate"]= "skill=sariel:ezhao",
-	
+	["moyan"] = "魔眼",
+	[":moyan"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可以令至多X名其他角色加1点体力下限（X为你已损失的体力值）。",
+	["$moyanAnimate"]= "skill=sariel:moyan",
 	
 	
 --************************************************
