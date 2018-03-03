@@ -1144,7 +1144,7 @@ public:
         int id = room->askForCardChosen(invoke->invoker, damage.from, "hs", objectName());
         room->throwCard(id, damage.from, invoke->invoker);
         const Card *c = invoke->tag.value("yuyi").value<const Card *>();
-        if (c->getColor() == Sanguosha->getCard(id)->getColor()) {
+        if (c->getColor() != Sanguosha->getCard(id)->getColor()) {
             room->touhouLogmessage("#YuyiTrigger", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(1));
             damage.damage = damage.damage - 1;
             data = QVariant::fromValue(damage);
