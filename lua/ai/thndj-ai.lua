@@ -103,6 +103,26 @@ sgs.ai_choicemade_filter.skillInvoke.yuanhu = function(self, player, args)
 		sgs.updateIntention(player, source, -30)
 	end
 end
+
+sgs.ai_skill_cardask["@yuanhu"] = function(self, data, pattern, target)
+	local yukari = self.player:getTag("yuanhu_drawers"):toPlayer()
+	if self:isFriend(yukari) then
+		local handcards = sgs.QList2Table(self.player:getHandcards())
+		if #handcards==0 then return "." end
+		self:sortByUseValue(handcards)
+		return "$" .. handcards[1]:getId()
+	end
+	return "."
+end
+
+sgs.ai_choicemade_filter.cardResponded["@yuanhu"] = function(self, player, args)
+	local source = player:getTag("yuanhu_drawers"):toPlayer()
+	if source and args[#args] == "yes" then
+		sgs.updateIntention(player, source, -30)
+	end
+end
+
+
 sgs.ai_skill_discard.yuanhu = function(self,discard_num, min_num)
 	local target = self.player:getTag("yuanhu_target"):toPlayer()
 	local to_discard = {}

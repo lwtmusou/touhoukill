@@ -199,11 +199,12 @@ config = {
 	},
 	latest_generals = {
 	    "reimu","reisen_gzz",
+		"sariel","konngara",
 		"yukimai",
 		"yuyuko","yukari","ran","chen",
 		"wriggle",
 		"nue_slm", "seija_sp", 
-		"junko","hecatia","hecatia","clownpiece","sagume","doremy","seiran",
+		"junko","hecatia","hecatia","clownpiece","sagume","doremy","ringo","seiran",
 		"reisen2",
 		"satori_god",
 		"nue_god",

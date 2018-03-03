@@ -284,6 +284,7 @@ public:
     }
 };
 
+/*
 class Yuanhu : public TriggerSkill
 {
 public:
@@ -366,6 +367,73 @@ public:
             }
         }
 
+        return false;
+    }
+};
+*/
+
+class Yuanhu : public TriggerSkill
+{
+public:
+    Yuanhu()
+        : TriggerSkill("yuanhu")
+    {
+        events << EventPhaseEnd;
+        show_type = "static";
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        ServerPlayer *current = data.value<ServerPlayer *>();
+        if (current->isDead() || current->getPhase() != Player::Draw || current->isKongcheng())
+            return QList<SkillInvokeDetail>();
+
+ 
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            if (p !=current)
+                d << SkillInvokeDetail(this, p, current);
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        
+        invoke->invoker->tag["yuanhu_drawers"] = QVariant::fromValue(invoke->owner);
+         const Card *c = room->askForCard(invoke->invoker, ".", "@yuanhu:"+ invoke->owner->objectName(), data, Card::MethodNone);
+                //(invoke->owner, objectName(), 2, 1, false, "@yuanhu-exchange:" + invoke->invoker->objectName(), true);
+        if (c) {
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->owner->objectName());
+                invoke->invoker->tag["yuanhu_id"] = QVariant::fromValue(c->getEffectiveId());
+                room->broadcastSkillInvoke(objectName());
+                room->notifySkillInvoked(invoke->owner, objectName());
+                LogMessage log;
+                log.type = "#InvokeOthersSkill";
+                log.from = invoke->invoker;
+                log.to << invoke->owner;
+                log.arg = objectName();
+                room->sendLog(log);
+
+                return true;
+        }
+           
+        return false;
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        int card_id = invoke->invoker->tag["yuanhu_id"].toInt();
+        bool visible = invoke->invoker->getShownHandcards().contains(card_id);
+        invoke->owner->obtainCard(Sanguosha->getCard(card_id), visible);
+        
+        
+        invoke->owner->tag["yuanhu_target"] = QVariant::fromValue(invoke->invoker);
+        const Card *c = room->askForExchange(invoke->owner, objectName(), 2, 1, false, "@yuanhu-exchange:" + invoke->invoker->objectName(), true);
+        if (c != NULL) {
+            CardMoveReason reason(CardMoveReason::S_REASON_GIVE, invoke->owner->objectName(), objectName(), QString());
+            room->obtainCard(invoke->invoker, c, reason, false);
+        }
         return false;
     }
 };
