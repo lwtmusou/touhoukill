@@ -1420,7 +1420,7 @@ void RoomScene::updateTargetsEnablity(const Card *card)
             continue;
 
         //=====================================
-        bool isCollateral = false;
+        /*bool isCollateral = false;
         if (card) {
             if (card->isKindOf("Collateral"))
                 isCollateral = true;
@@ -1428,11 +1428,12 @@ void RoomScene::updateTargetsEnablity(const Card *card)
                 const SkillCard *qice_card = qobject_cast<const SkillCard *>(card);
                 isCollateral = (qice_card->getUserString() == "collateral");
             }
-        }
-        bool weimuFailure = isCollateral && selected_targets.length() == 1;
+        }*/
+        //bool weimuFailure = isCollateral && selected_targets.length() == 1; //Collateral-Victim is weimu owner? 
         //=====================================
 
-        bool enabled = (card == NULL) || ((weimuFailure || !Sanguosha->isProhibited(Self, player, card, selected_targets)) && maxVotes > 0);
+        //bool enabled = (card == NULL) || ((weimuFailure || !Sanguosha->isProhibited(Self, player, card, selected_targets)) && maxVotes > 0);
+        bool enabled = (card == NULL) || (!Sanguosha->isProhibited(Self, player, card, selected_targets) && maxVotes > 0);
 
         QGraphicsItem *animationTarget = item->getMouseClickReceiver();
         if (enabled)

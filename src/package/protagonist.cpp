@@ -1739,7 +1739,7 @@ public:
     }
 };
 
-//for Collateral
+//for Collateral, but no need now!
 ExtraCollateralCard::ExtraCollateralCard()
 {
 }
@@ -1846,9 +1846,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         //for log
-        if (use.card->isKindOf("Collateral"))
-            return;
-        else if (use.to.length() > 1 && QishuTargetMod::isLastHandCard(use.from, use.card)) {
+        if (use.to.length() > 1 && QishuTargetMod::isLastHandCard(use.from, use.card)) {
             if (use.card->isKindOf("Slash") || use.card->isNDTrick()) {
                 if (isQishu(use.to, use.card))
                     room->notifySkillInvoked(use.from, "qishu");
@@ -1856,7 +1854,7 @@ public:
         }
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    /*QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (!use.from->hasSkill(this))
@@ -1924,7 +1922,7 @@ public:
             room->notifySkillInvoked(player, "qishu");
 
         return false;
-    }
+    }*/
 };
 
 // #pragma message WARN("todo_lwtmusou: rewrite siyu, notice that skill records (flag, tag, marks, etc.) should be updated while siyu TurnBroken")

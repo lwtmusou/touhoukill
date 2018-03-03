@@ -1773,7 +1773,7 @@ bool ChuangshiCard::targetsFeasible(const QList<const Player *> &targets, const 
     return new_card && new_card->targetsFeasible(targets, user);
 }
 
-void ChuangshiCard::onUse(Room *room, const CardUseStruct &card_use) const
+/*void ChuangshiCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
     card_use.from->setFlags("chuangshi");
     Card *card = Sanguosha->cloneCard(user_string);
@@ -1798,10 +1798,11 @@ void ChuangshiCard::onUse(Room *room, const CardUseStruct &card_use) const
         room->useCard(use);
     } else
         SkillCard::onUse(room, card_use);
-}
+}*/
 
 void ChuangshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
+    source->setFlags("chuangshi");
     ServerPlayer *user = Chuangshi::getChuangshiUser1(source);
     Card *use_card = Sanguosha->cloneCard(user_string);
 

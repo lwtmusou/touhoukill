@@ -3135,7 +3135,7 @@ function SmartAI:useCardCollateral(card, use)
 						self.room:setPlayerFlag(self.player, "needCrossbow")
 						use.card = card
 						if use.to then use.to:append(friend) end
-						if use.to then use.to:append(enemy) end
+						--if use.to then use.to:append(enemy) end
 						return
 					end
 				end
@@ -3197,7 +3197,7 @@ function SmartAI:useCardCollateral(card, use)
 			if n then
 				use.card = card
 				if use.to then use.to:append(enemy) end
-				if use.to then use.to:append(final_enemy) end
+				--if use.to then use.to:append(final_enemy) end
 				return
 			end
 		end
@@ -3216,7 +3216,7 @@ function SmartAI:useCardCollateral(card, use)
 						and sgs.isGoodTarget(enemy, self.enemies, self) and not self:slashProhibit(nil, enemy) then
 					use.card = card
 					if use.to then use.to:append(friend) end
-					if use.to then use.to:append(enemy) end
+					--if use.to then use.to:append(enemy) end
 					return
 				end
 			end
@@ -3237,12 +3237,26 @@ function SmartAI:useCardCollateral(card, use)
 				if friend:canSlash(enemy, nil) and friend:objectName() ~= enemy:objectName() then
 					use.card = card
 					if use.to then use.to:append(friend) end
-					if use.to then use.to:append(enemy) end
+					--if use.to then use.to:append(enemy) end
 					return
 				end
 			end
 		end
 	end
+end
+
+sgs.ai_skill_playerchosen.collateral = function(self, targets)
+	local killer = self.player:getTag("collateral-killer"):toPlayer()
+	local victims = self.room:getOtherPlayers(killer)
+	for _, p in sgs.qlist(victims) do
+		if killer:canSlash(p, nil) then
+		    if self:isEnemy(p) and sgs.isGoodTarget(p, self.enemies, self) and not self:slashProhibit(nil, p) then
+				return p
+			end
+		end
+	end
+					
+	return victims:first()
 end
 
 sgs.ai_use_value.Collateral = 5.8

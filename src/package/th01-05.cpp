@@ -2092,7 +2092,7 @@ public:
             bool add = baosi_list.value(p->objectName(), false).toBool();
             if (add) {
                 use.to << p;
-                if (use.card->isKindOf("Collateral")) {
+                /*if (use.card->isKindOf("Collateral")) {
                     QList<const Player *> targets;
                     targets << p;
                     QList<ServerPlayer *> victims;
@@ -2102,7 +2102,7 @@ public:
                     }
                     ServerPlayer *victim = room->askForPlayerChosen(use.from, victims, "baosi_col", "@baosi_col:" + p->objectName());
                     p->tag["collateralVictim"] = QVariant::fromValue((ServerPlayer *)victim);
-                }
+                }*/
             }
         }
 
@@ -2366,9 +2366,9 @@ bool QirenCard::targetFilter(const QList<const Player *> &targets, const Player 
     int id = (Self->getShownHandcards().contains(subcards.first())) ? subcards.last() : subcards.first();
 
     //do not consider extraTarget
-    if (oc->isKindOf("Collateral") && !targets.isEmpty()) {
-        return false;
-    }
+   // if (oc->isKindOf("Collateral") && !targets.isEmpty()) {
+    //    return false;
+    //}
     //only consider slashTargetFix
     if (Sanguosha->getCard(id)->isKindOf("Slash")) {
         if (Self->hasFlag("slashTargetFix")) {
@@ -2499,7 +2499,7 @@ void QirenCard::onUse(Room *room, const CardUseStruct &card_use) const
     log.arg2 = "qiren";
     room->sendLog(log);
 
-    if (card->isKindOf("Collateral")) {
+    /*if (card->isKindOf("Collateral")) {
         QList<ServerPlayer *> killers = use.to;
         ServerPlayer *killer = NULL;
         use.to.clear();
@@ -2551,7 +2551,7 @@ void QirenCard::onUse(Room *room, const CardUseStruct &card_use) const
             thread->trigger(CardFinished, room, data);
             return;
         }
-    }
+    }*/
 
     //do new use
     room->useCard(use);
@@ -2622,7 +2622,7 @@ public:
     Qiren()
         : TriggerSkill("qiren")
     {
-        events << EventPhaseChanging << PreCardUsed;
+        events << EventPhaseChanging;
         view_as_skill = new QirenVS;
     }
 
@@ -2633,7 +2633,8 @@ public:
                 if (p->hasFlag("qirenUsed"))
                     room->setPlayerFlag(p, "-qirenUsed");
             }
-        } else if (e == PreCardUsed) {
+        } 
+        /*if (e == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Collateral")) {
                 foreach (ServerPlayer *k, room->getAlivePlayers()) {
@@ -2665,7 +2666,7 @@ public:
                 }
                 data = QVariant::fromValue(use);
             }
-        }
+        }*/
     }
 };
 

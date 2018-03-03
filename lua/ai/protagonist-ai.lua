@@ -1497,7 +1497,7 @@ sgs.ai_skill_use["@@toushi"] = function(self, prompt)
 			end
 		end
 
-		if card:isKindOf("Collateral") then
+		--[[if card:isKindOf("Collateral") then
 			local victim
 			for _,p in sgs.qlist(self.room:getOtherPlayers(target))do
 				if self:isEnemy(p) and target:canSlash(p,nil,true) then
@@ -1509,7 +1509,7 @@ sgs.ai_skill_use["@@toushi"] = function(self, prompt)
 			if not victim then
 				return "."
 			end
-		end
+		end]]
 		if #target_objectname>0 then
 			return dummy_use.card:toString() .. "->" .. table.concat(target_objectname, "+")
 		end

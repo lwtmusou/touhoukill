@@ -1785,7 +1785,7 @@ public:
         room->sortByActionOrder(use.to);
         data = QVariant::fromValue(use);
 
-        if (use.card->isKindOf("Collateral")) {
+        /*if (use.card->isKindOf("Collateral")) {
             QList<ServerPlayer *> col_targets;
             foreach (ServerPlayer *t, room->getOtherPlayers(invoke->invoker)) {
                 if (invoke->invoker->canSlash(t))
@@ -1801,7 +1801,7 @@ public:
                 room->sendLog(log);
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), victim->objectName());
             }
-        }
+        }*/
         return false;
     }
 };

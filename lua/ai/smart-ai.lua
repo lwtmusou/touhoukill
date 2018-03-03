@@ -2644,7 +2644,8 @@ function SmartAI:filterEvent(event, player, data)
 		if card:isKindOf("Slash") and struct.from:objectName() == self.room:getCurrent():objectName() and struct.m_reason == sgs.CardUseStruct_CARD_USE_REASON_PLAY
 			and struct.m_addHistory then struct.from:setFlags("hasUsedSlash") end
 
-		if card:isKindOf("Collateral") then
+		--借刀仇恨判断。不过没见起过作用。 借刀调整后，暂时也用不上了
+		--[[if card:isKindOf("Collateral") then
 			local victim
 			local CollateralTargets={}
 			local dummySlash = sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
@@ -2665,7 +2666,7 @@ function SmartAI:filterEvent(event, player, data)
 				end
 			end
 			sgs.ai_collateral = false
-		end
+		end]]
 
 	elseif event == sgs.CardsMoveOneTime then
 		local move = data:toMoveOneTime()

@@ -951,8 +951,8 @@ sgs.ai_skill_use["@@huisheng"] = function(self, prompt)
 	end
 	if not needHuisheng then return "."  end
 
-	local victim
-	if card:isKindOf("Collateral") then
+	--local victim
+	--[[if card:isKindOf("Collateral") then
 		local others ={}
 		for _,p in sgs.qlist(self.room:getOtherPlayers(target)) do
 			if self:isEnemy(p) and target:canSlash(p) then
@@ -965,13 +965,13 @@ sgs.ai_skill_use["@@huisheng"] = function(self, prompt)
 		if not victim and #others>0 then
 			victim=others[1]
 		end
-	end
+	end]]
 
 	local targets={}
 	table.insert(targets,target:objectName())
-	if victim then
-		table.insert(targets,victim:objectName())
-	end
+	--if victim then
+	--	table.insert(targets,victim:objectName())
+	--end
 	return "@HuishengCard=.->" .. table.concat(targets, "+")
 end
 

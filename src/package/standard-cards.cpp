@@ -1206,42 +1206,28 @@ bool Collateral::isAvailable(const Player *player) const
     return canUse && SingleTargetTrick::isAvailable(player);
 }
 
+/*
 bool Collateral::targetsFeasible(const QList<const Player *> &targets, const Player *) const
 {
     return targets.length() == 2;
-}
+}*/
 
 bool Collateral::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    if (!targets.isEmpty()) {
-        // @todo: fix this. We should probably keep the codes here, but change the code in
-        // roomscene such that if it is collateral, then targetFilter's result is overriden
-        Q_ASSERT(targets.length() <= 2);
-        if (targets.length() == 2)
-            return false;
-        const Player *slashFrom = targets[0];
-        // @todo: develop a new mechanism of filtering targets
-        // to remove the coupling here and to fix the similar bugs caused by TongJi
-        if (to_select == Self && to_select->hasSkill("kongcheng") && Self->isLastHandCard(this, true))
-            return false;
-        return slashFrom->canSlash(to_select);
-    } else {
+    int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    if (targets.length() < total_num) {
         bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
         if (to_select == Self)
             return false;
-
         if (!to_select->getWeapon() && !ignore)
             return false;
-
-        foreach (const Player *p, to_select->getAliveSiblings()) {
-            if (to_select->canSlash(p) && (!(p == Self && p->hasSkill("kongcheng") && Self->isLastHandCard(this, true))))
-                return true;
-        }
+        return true;
+    
     }
     return false;
 }
 
-void Collateral::onUse(Room *room, const CardUseStruct &card_use) const
+/*void Collateral::onUse(Room *room, const CardUseStruct &card_use) const
 {
     Q_ASSERT(card_use.to.length() == 2);
     ServerPlayer *killer = card_use.to.at(0);
@@ -1252,7 +1238,7 @@ void Collateral::onUse(Room *room, const CardUseStruct &card_use) const
     killer->tag["collateralVictim"] = QVariant::fromValue((ServerPlayer *)victim);
 
     SingleTargetTrick::onUse(room, new_use);
-}
+}*/
 
 bool Collateral::doCollateral(Room *room, ServerPlayer *killer, ServerPlayer *victim, const QString &prompt) const
 {
@@ -1267,33 +1253,35 @@ void Collateral::onEffect(const CardEffectStruct &effect) const
     ServerPlayer *source = effect.from;
     Room *room = source->getRoom();
     ServerPlayer *killer = effect.to;
-    ServerPlayer *victim = effect.to->tag["collateralVictim"].value<ServerPlayer *>();
-    effect.to->tag.remove("collateralVictim");
-    if (!victim)
+    if (!source->isAlive() || !killer->isAlive())
         return;
 
-    WrappedCard *weapon = killer->getWeapon();
-
-    QString prompt = QString("collateral-slash:%1:%2").arg(victim->objectName()).arg(source->objectName());
-
-    if (victim->isDead()) {
-        if (source->isAlive() && killer->isAlive() && killer->getWeapon())
-            source->obtainCard(weapon);
-    } else if (source->isDead()) {
-        if (killer->isAlive())
-            doCollateral(room, killer, victim, prompt);
-    } else {
-        if (killer->isDead()) {
-            // do nothing
-        } else if (!killer->getWeapon()) {
-            doCollateral(room, killer, victim, prompt);
-        } else {
-            if (!doCollateral(room, killer, victim, prompt)) {
-                if (killer->getWeapon())
-                    source->obtainCard(weapon);
-            }
-        }
+    QList<ServerPlayer *> victims;
+    foreach(ServerPlayer *p, room->getOtherPlayers(killer)) {
+        if (killer->canSlash(p))
+            victims << p;
     }
+    //ServerPlayer *victim = effect.to->tag["collateralVictim"].value<ServerPlayer *>();
+    //effect.to->tag.remove("collateralVictim");
+    if (victims.isEmpty())
+        return;
+
+    QString prompt = QString("collateral-chooseVictim:%1").arg(killer->objectName());
+    source->tag["collateral-killer"] = QVariant::fromValue(killer);
+    ServerPlayer *victim = room->askForPlayerChosen(source, victims, "collateral", prompt);
+    LogMessage log;
+    log.type = "#CollateralSlash";
+    log.from = killer;
+    log.to << victim;
+    room->sendLog(log);
+    room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, killer->objectName(), victim->objectName());
+
+
+    WrappedCard *weapon = killer->getWeapon();
+    prompt = QString("collateral-slash:%1:%2").arg(victim->objectName()).arg(source->objectName());
+    bool doSlash = doCollateral(room, killer, victim, prompt);
+    if (!doSlash && killer->getWeapon())
+        source->obtainCard(weapon);
 }
 
 Nullification::Nullification(Suit suit, int number)

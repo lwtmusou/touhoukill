@@ -140,7 +140,7 @@ public:
                 logto.removeOne(invoke->invoker);
                 room->touhouLogmessage("#fahua_change", use.from, use.card->objectName(), logto);
 
-                if (use.card->isKindOf("Collateral")) {
+                /*if (use.card->isKindOf("Collateral")) {
                     QList<ServerPlayer *> listt;
                     foreach (ServerPlayer *victim, room->getOtherPlayers(p)) {
                         if (p->canSlash(victim))
@@ -157,7 +157,7 @@ public:
                     logto.removeOne(p);
                     logto << newVictim;
                     room->touhouLogmessage("#CollateralSlash", use.from, use.card->objectName(), logto);
-                }
+                }*/
 
                 break;
             }
