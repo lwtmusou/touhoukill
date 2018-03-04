@@ -535,6 +535,7 @@ FakeMoveSkill::FakeMoveSkill(const QString &name)
 {
     events << BeforeCardsMove << CardsMoveOneTime;
     frequency = Compulsory;
+    global = true;
 }
 
 int FakeMoveSkill::getPriority() const
@@ -560,7 +561,7 @@ QList<SkillInvokeDetail> FakeMoveSkill::triggerable(TriggerEvent, const Room *ro
     QString flag = QString("%1_InTempMoving").arg(name);
     foreach (ServerPlayer *p, room->getAllPlayers()) {
         if (p->hasFlag(flag))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, owner, p, NULL, true);
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, owner, p, NULL, true);  
     }
 
     return QList<SkillInvokeDetail>();

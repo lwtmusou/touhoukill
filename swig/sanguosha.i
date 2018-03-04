@@ -515,6 +515,7 @@ struct CardEffectStruct {
     bool multiple;
     bool nullified;
 	bool canceled;
+	int effectValue;
 };
 
 struct SlashEffectStruct {
@@ -534,6 +535,7 @@ struct SlashEffectStruct {
     bool multiple;
     bool nullified;
 	bool canceled;
+	int effectValue;
 };
 
 struct CardUseStruct {

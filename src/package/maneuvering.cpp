@@ -99,9 +99,10 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const
         RecoverStruct recover;
         recover.card = this;
         recover.who = effect.from;
+        recover.recover = 1 + effect.effectValue;
         room->recover(effect.to, recover);
     } else {
-        room->addPlayerMark(effect.to, "drank");
+        room->addPlayerMark(effect.to, "drank", 1+ effect.effectValue);
     }
 }
 

@@ -5132,6 +5132,36 @@ public:
     }
 };
 
+
+class Mopao : public TriggerSkill
+{
+public:
+    Mopao()
+        : TriggerSkill("mopao")
+    {
+        events << CardUsed;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.from && use.from->isAlive() && use.from->hasSkill(this)) {
+            if ((use.card->isKindOf("BasicCard") || use.card->isNDTrick()))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+            
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        room->setCardFlag(use.card, "mopao");
+        return false;
+    }
+};
+
+
 TouhouGodPackage::TouhouGodPackage()
     : Package("touhougod")
 {
@@ -5272,11 +5302,12 @@ TouhouGodPackage::TouhouGodPackage()
     related_skills.insertMulti("anyun", "#anyunShowStatic");
     related_skills.insertMulti("anyun", "#anyun_prohibit");
 
-    General *marisa_god = new General(this, "marisa_god", "touhougod", 4, false, true, true);
-    marisa_god->addSkill(new Huixing);
-    marisa_god->addSkill(new Mofu);
-    marisa_god->addSkill(new MofuTargetMod);
-    related_skills.insertMulti("mofu", "#mofu");
+    General *marisa_god = new General(this, "marisa_god", "touhougod", 4);
+    marisa_god->addSkill(new Mopao);
+    //marisa_god->addSkill(new Huixing);
+    //marisa_god->addSkill(new Mofu);
+    //marisa_god->addSkill(new MofuTargetMod);
+    //related_skills.insertMulti("mofu", "#mofu");
 
     General *alice_god = new General(this, "alice_god", "touhougod", 4, false, true, true);
     Q_UNUSED(alice_god);

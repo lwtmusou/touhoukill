@@ -612,7 +612,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         if (effect.drank > 0)
             effect.to->setMark("SlashIsDrank", effect.drank);
 
-        DamageStruct d = DamageStruct(effect.slash, effect.from, effect.to, 1, effect.nature);
+        DamageStruct d = DamageStruct(effect.slash, effect.from, effect.to, 1 + effect.effectValue, effect.nature);
         foreach (ServerPlayer *p, room->getAllPlayers(true)) {
             if (effect.slash->hasFlag("WushenDamage_" + p->objectName())) {
                 d.from = p->isAlive() ? p : NULL;

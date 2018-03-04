@@ -52,6 +52,7 @@ struct CardEffectStruct
     // does not make sense if the card inherits SkillCard
     bool nullified;
     bool canceled; //for cancel process, like "yuyi"
+    int effectValue;
 };
 
 struct SlashEffectStruct
@@ -72,6 +73,7 @@ struct SlashEffectStruct
     bool multiple;
     bool nullified;
     bool canceled;
+    int effectValue;
 };
 
 struct CardUseStruct

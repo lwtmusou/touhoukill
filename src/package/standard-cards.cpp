@@ -243,6 +243,7 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const
     effect.to = card_effect.to;
     effect.drank = drank;
     effect.nullified = card_effect.nullified;
+    effect.effectValue = card_effect.effectValue;
 
     QVariantList jink_list = effect.from->tag["Jink_" + toString()].toList();
     effect.jink_num = jink_list.takeFirst().toInt();
@@ -393,6 +394,7 @@ void Peach::onEffect(const CardEffectStruct &effect) const
     RecoverStruct recover;
     recover.card = this;
     recover.who = effect.from;
+    recover.recover = 1 + effect.effectValue;
     room->recover(effect.to, recover);
 }
 
@@ -1142,6 +1144,7 @@ void GodSalvation::onEffect(const CardEffectStruct &effect) const
         RecoverStruct recover;
         recover.card = this;
         recover.who = effect.from;
+        recover.recover = 1 + effect.effectValue;
         room->recover(effect.to, recover);
     }
 }
@@ -1163,7 +1166,7 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const
             room->setEmotion(effect.to, "weapon/spear");
         room->setEmotion(effect.to, "killer");
     } else {
-        room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to));
+        room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue));
         room->getThread()->delay();
     }
 }
@@ -1184,7 +1187,7 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const
         room->setEmotion(effect.to, "jink");
 
     if (!jink) {
-        room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to));
+        room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue));
         room->getThread()->delay();
     }
 }
@@ -1342,7 +1345,7 @@ void ExNihilo::onEffect(const CardEffectStruct &effect) const
         if (friend_num < enemy_num)
             extra = 1;
     }
-    effect.to->drawCards(2 + extra);
+    effect.to->drawCards(2 + extra + effect.effectValue);
 }
 
 Duel::Duel(Suit suit, int number)
@@ -1387,7 +1390,7 @@ void Duel::onEffect(const CardEffectStruct &effect) const
         qSwap(first, second);
     }
 
-    DamageStruct damage(this, second->isAlive() ? second : NULL, first);
+    DamageStruct damage(this, second->isAlive() ? second : NULL, first, 1 + effect.effectValue);
     if (second != effect.from)
         damage.by_user = false;
     room->damage(damage);
@@ -1466,12 +1469,33 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
     bool isNeoqixi = (getSkillName() == "neo2013qixi");
 
     int card_id = -1;
+    
+    QList<int> ids;
+    QList<Player::Place> places;
+    DummyCard *dummy = new DummyCard;
     AI *ai = effect.from->getAI();
     //for AI: sgs.ai_choicemade_filter.cardChosen.snatch
     //like Xunshi
     effect.from->tag["DismantlementCard"] = QVariant::fromValue(effect.card);
-    if ((!isNeoqixi && !using_2013) || ai)
-        card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName(), false, Card::MethodDiscard);
+    if ((!isNeoqixi && !using_2013) || ai) {
+        room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
+        for (int i = 0; i < (1 + effect.effectValue); i += 1) {
+            card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName(), false, Card::MethodDiscard);
+            ids << card_id;
+            places << room->getCardPlace(card_id);
+            dummy->addSubcard(card_id);
+            effect.to->addToPile("#dismantle", dummy, false);
+            if (!effect.from->canDiscard(effect.to, flag))
+                break;
+        }
+
+        //move the first card back temporarily
+        for (int i = 0; i < ids.length(); i += 1) {
+            room->moveCardTo(Sanguosha->getCard(ids.at(i)), effect.to, places.at(i), false);
+        }
+        room->setPlayerFlag(effect.to, "-dismantle_InTempMoving");
+
+    }
     else {
         if (!effect.to->getEquips().isEmpty())
             card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName(), false, Card::MethodDiscard);
@@ -1487,7 +1511,9 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
             //Fs: I want to use room->doGongxin here
         }
     }
-    room->throwCard(card_id, room->getCardPlace(card_id) == Player::PlaceDelayedTrick ? NULL : effect.to, effect.from);
+    //room->throwCard(card_id, room->getCardPlace(card_id) == Player::PlaceDelayedTrick ? NULL : effect.to, effect.from); // WHY NULL?
+    room->throwCard(dummy, effect.to, effect.from);
+    delete dummy;
 }
 
 Indulgence::Indulgence(Suit suit, int number)
@@ -2323,6 +2349,22 @@ DeathSickle::DeathSickle(Card::Suit suit, int number)
     setObjectName("DeathSickle");
 }
 
+
+
+/*class DismantleMove : public FakeMoveSkill
+{
+public:
+    DismantleMove()
+        : FakeMoveSkill("dismantle")
+    {
+        global = true;
+    }
+};*/
+
+
+
+
+
 StandardCardPackage::StandardCardPackage()
     : Package("standard_cards", Package::CardPack)
 {
@@ -2501,7 +2543,7 @@ StandardExCardPackage::StandardExCardPackage()
     // clang-format on
 
     skills << new RenwangShieldSkill << new IceSwordSkill << new WoodenOxSkill << new WoodenOxTriggerSkill << new LureTigerSkill << new LureTigerProhibit << new KnownBothSkill
-           << new SavingEnergySkill << new DeathSickleSkill;
+           << new SavingEnergySkill << new DeathSickleSkill << new FakeMoveSkill("dismantle");
     insertRelatedSkills("lure_tiger_effect", "#lure_tiger-prohibit");
 
     foreach (Card *card, cards)

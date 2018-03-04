@@ -136,6 +136,7 @@ CardEffectStruct::CardEffectStruct()
     , multiple(false)
     , nullified(false)
     , canceled(false)
+    , effectValue(0)
 {
 }
 
@@ -150,6 +151,7 @@ SlashEffectStruct::SlashEffectStruct()
     , multiple(false)
     , nullified(false)
     , canceled(false)
+    ,effectValue(0)
 {
 }
 
