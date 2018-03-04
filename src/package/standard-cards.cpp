@@ -1006,7 +1006,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.damage >= damage.to->getHp() && damage.to->isAlive() && !damage.to->isCurrent() && damage.to->getArmor() && damage.to->getArmor()->objectName() == objectName()
+        if (damage.damage >= damage.to->getHp() && damage.to->isAlive() && damage.to->getArmor() && damage.to->getArmor()->objectName() == objectName()
             && equipAvailable(damage.to, EquipCard::ArmorLocation, objectName())) {
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
         }
@@ -1015,7 +1015,9 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        room->obtainCard(invoke->invoker, invoke->invoker->getArmor()->getEffectiveId());
+        //room->obtainCard(invoke->invoker, invoke->invoker->getArmor()->getEffectiveId());
+        int id = invoke->invoker->getArmor()->getEffectiveId();
+        invoke->invoker->addBrokenEquips(QList<int>() << id);
         DamageStruct damage = data.value<DamageStruct>();
         LogMessage log;
         log.type = "#BreastPlate";
