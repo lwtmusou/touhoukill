@@ -1060,10 +1060,10 @@ public:
     {
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive) {
+            if (change.to == Player::NotActive || change.from == Player::NotActive) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->hasFlag("kuangluan_invalidity")) {
-                        room->setPlayerFlag(p, "-kuangluan_invalidity");
+                    if (p->getMark("kuangluan_invalidity") > 0) {
+                        room->setPlayerMark(p, "kuangluan_invalidity", 0);
                         room->setPlayerSkillInvalidity(p, NULL, false);
                     }
                 }
@@ -1078,7 +1078,8 @@ public:
             return d;
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *playerFrom = qobject_cast<ServerPlayer *>(move.from);
-        if (playerFrom != NULL && playerFrom->isAlive() && !move.shown_ids.isEmpty() && playerFrom->getShownHandcards().isEmpty() && !playerFrom->hasFlag("kuangluan_invalidity")) {
+        if (playerFrom != NULL && playerFrom->isAlive() && !move.shown_ids.isEmpty() && playerFrom->getShownHandcards().isEmpty()
+            && playerFrom->getMark("kuangluan_invalidity") == 0) {
             foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (p != playerFrom)
                     d << SkillInvokeDetail(this, p, p, NULL, false, playerFrom);
@@ -1102,7 +1103,8 @@ public:
     {
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
         if (!invoke->targets.first()->hasFlag("kuangluan_invalidity")) {
-            room->setPlayerFlag(invoke->targets.first(), "kuangluan_invalidity");
+            //room->setPlayerFlag(invoke->targets.first(), "kuangluan_invalidity");
+            room->setPlayerMark(invoke->targets.first(), "kuangluan_invalidity", 1);
             room->touhouLogmessage("#kuangluan_invalidity", invoke->targets.first(), "kuangluan");
             room->setPlayerSkillInvalidity(invoke->targets.first(), NULL, true);
         }
@@ -1499,11 +1501,16 @@ public:
         events << CardsMoveOneTime << EventPhaseChanging;
     }
 
-    void record(TriggerEvent e, Room *room, QVariant &) const
+    void record(TriggerEvent e, Room *room, QVariant &data) const
     {
         if (e == EventPhaseChanging) {
-            foreach (ServerPlayer *p, room->getAllPlayers())
-                room->setPlayerFlag(p, "-bumeng");
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive){
+                foreach(ServerPlayer *p, room->getAllPlayers())
+                    room->setPlayerFlag(p, "-bumeng");
+            
+            }
+
         }
     }
 
