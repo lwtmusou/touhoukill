@@ -11,7 +11,8 @@ return {
 
 	["analeptic"] = "酒",
 	[":analeptic"] = "基本牌<br />出牌时机：1、出牌阶段；2、当自己进入濒死阶段时<br />使用目标：1、包括你的一名角色 2、你<br />作用效果：1、令自己本阶段使用的下一张【杀】将要造成的伤害+1（每阶段限一次）；2、回复1点体力",
-	["#UnsetDrankEndOfTurn"] = "%from 的出牌阶段结束，【<font color=\"yellow\"><b>酒</b></font>】的效果消失",
+	--["#UnsetDrankEndOfTurn"] = "%from 的出牌阶段结束，【<font color=\"yellow\"><b>酒</b></font>】的效果消失",
+	["#UnsetDrankEndOfTurn"] = "%from 此阶段获得的 【<font color=\"yellow\"><b>酒</b></font>】的效果消失",
 
 	["Fan"] = "朱雀羽扇",
 	--[":Fan"] = "装备牌·武器<br />攻击范围：４<br />武器特效：你可以将一张普通【杀】当火【杀】使用",

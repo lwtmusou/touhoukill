@@ -497,8 +497,8 @@ QGroupBox *QijiDialog::createLeft()
 
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     QStringList ban_list; //no need to ban
-    if (object_name == "chuangshi")
-        ban_list << "Analeptic";
+    //if (object_name == "chuangshi")
+   //     ban_list << "Analeptic";
 
     foreach (const Card *card, cards) {
         if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName())
@@ -526,15 +526,20 @@ QGroupBox *QijiDialog::createRight()
     QVBoxLayout *layout2 = new QVBoxLayout;
 
     QStringList ban_list; //no need to ban
-    if (object_name == "chuangshi")
-        ban_list << "GodSalvation"
-                 << "ArcheryAttack"
-                 << "SavageAssault";
+    //if (object_name == "chuangshi")
+    //    ban_list << "GodSalvation"
+    //             << "ArcheryAttack"
+    //             << "SavageAssault";
     //    ban_list << "Drowning" << "BurningCamps" << "LureTiger";
 
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     foreach (const Card *card, cards) {
         if (card->isNDTrick() && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName()) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+            if (object_name == "chuangshi") {
+                if (!card->isNDTrick() || card->isKindOf("AOE") || card->isKindOf("GlobalEffect"))
+                    continue;
+            }
+
             Card *c = Sanguosha->cloneCard(card->objectName());
             c->setSkillName(object_name);
             c->setParent(this);

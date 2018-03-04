@@ -1654,7 +1654,7 @@ public:
     Chuangshi()
         : TriggerSkill("chuangshi")
     {
-        events << EventPhaseStart << DrawNCards << EventPhaseChanging;
+        events << DrawNCards;
         view_as_skill = new ChuangshiVS;
     }
 
@@ -1695,7 +1695,7 @@ public:
         return NULL;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
+    /*void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
     {
         if (triggerEvent == EventPhaseChanging) {
             foreach (ServerPlayer *player, room->getAllPlayers()) {
@@ -1703,31 +1703,27 @@ public:
                     player->setFlags("-chuangshi");
             }
         }
-    }
+    }*/
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
-        if (triggerEvent == EventPhaseStart) {
+        /*if (triggerEvent == EventPhaseStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->hasSkill(this) && player->getPhase() == Player::Draw) {
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
             }
-        } else if (triggerEvent == DrawNCards) {
+        }*/ 
+        if (triggerEvent == DrawNCards) {
             DrawNCardsStruct qnum = data.value<DrawNCardsStruct>();
-            if (qnum.player->hasFlag("chuangshi")) {
+            if (qnum.player->hasSkill(this) && qnum.n > 0)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, qnum.player, qnum.player, NULL, true);
-            }
         }
         return QList<SkillInvokeDetail>();
     }
 
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        if (triggerEvent == EventPhaseStart) {
-            use_chuangshi(room, invoke->invoker);
-        } else if (triggerEvent == DrawNCards)
-            return true;
-        return false;
+        return use_chuangshi(room, invoke->invoker);  
     }
 
     bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
@@ -1802,7 +1798,7 @@ bool ChuangshiCard::targetsFeasible(const QList<const Player *> &targets, const 
 
 void ChuangshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
-    source->setFlags("chuangshi");
+    //source->setFlags("chuangshi");
     ServerPlayer *user = Chuangshi::getChuangshiUser1(source);
     Card *use_card = Sanguosha->cloneCard(user_string);
 
