@@ -1435,9 +1435,36 @@ void Snatch::onEffect(const CardEffectStruct &effect) const
     //for AI: sgs.ai_choicemade_filter.cardChosen.snatch
     //like Liyou  Xunshi
     effect.from->tag["SnatchCard"] = QVariant::fromValue(effect.card);
-    int card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName());
+    
+    //int card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName());
+    //CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
+    //room->obtainCard(effect.from, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
+
+    QList<int> ids;
+    QList<Player::Place> places;
+    DummyCard *dummy = new DummyCard;
+    bool visible = false;
+    room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
+    for (int i = 0; i < (1 + effect.effectValue); i += 1) {
+        int card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName());
+        ids << card_id;
+        places << room->getCardPlace(card_id);
+        if (!visible && room->getCardPlace(card_id) != Player::PlaceHand)
+            visible = true;
+        dummy->addSubcard(card_id);
+        effect.to->addToPile("#dismantle", dummy, false);
+        if (effect.to->isNude())
+            break;
+    }
+
+    //move the first card back temporarily
+    for (int i = 0; i < ids.length(); i += 1) {
+        room->moveCardTo(Sanguosha->getCard(ids.at(i)), effect.to, places.at(i), false);
+    }
+    room->setPlayerFlag(effect.to, "-dismantle_InTempMoving");
     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
-    room->obtainCard(effect.from, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
+    room->obtainCard(effect.from, dummy, reason, visible);
+    delete dummy;
 }
 
 Dismantlement::Dismantlement(Suit suit, int number)
@@ -2120,8 +2147,14 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const
     }
 
     Room *room = effect.from->getRoom();
-    int id = room->askForCardChosen(effect.from, effect.to, "h", objectName());
-    effect.to->addToShownHandCards(QList<int>() << id);
+    QList<int> ids;
+    for (int i = 0; i < (1 + effect.effectValue); i += 1) {
+        int id = room->askForCardChosen(effect.from, effect.to, "h", objectName());
+        ids << id;
+        if (effect.to->getCards("h").isEmpty())
+            break;
+    }
+    effect.to->addToShownHandCards(ids);
 }
 
 void KnownBoth::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
