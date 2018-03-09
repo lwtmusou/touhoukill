@@ -693,7 +693,7 @@ public:
             user = use.from;
         } else if (triggerEvent == CardResponded) {
             CardResponseStruct resp = data.value<CardResponseStruct>();
-            if (!resp.m_isProvision && !resp.m_isRetrial) {
+            if (resp.m_isUse) {//!resp.m_isProvision && !resp.m_isRetrial
                 card = resp.m_card;
                 user = resp.m_from;
             }
@@ -733,10 +733,8 @@ public:
             user = use.from;
         } else if (triggerEvent == CardResponded) {
             CardResponseStruct resp = data.value<CardResponseStruct>();
-            if (!resp.m_isProvision && !resp.m_isRetrial) {
-                card = resp.m_card;
-                user = resp.m_from;
-            }
+            card = resp.m_card;
+            user = resp.m_from;
         }
 
         if (user == NULL || card == NULL)
