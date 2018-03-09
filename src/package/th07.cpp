@@ -813,7 +813,7 @@ public:
     Huanzang()
         : TriggerSkill("huanzang")
     {
-        events << Dying << TurnStart << EventPhaseChanging;
+        events << Dying << TurnStart;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
@@ -833,14 +833,6 @@ public:
             room->setTag("huanzang_second", false);
             break;
         }
-        case EventPhaseChanging: {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive) {
-                foreach (ServerPlayer *p, room->getAllPlayers())
-                    room->setPlayerFlag(p, "-huanzang");
-            }
-            break;
-        }
         default:
             break;
         }
@@ -856,7 +848,7 @@ public:
             bool dying2 = dyingTag2.canConvert(QVariant::Bool) && dyingTag2.toBool();
             if (dying1 && !dying2) {
                 ServerPlayer *who = data.value<DyingStruct>().who;
-                if (who->getHp() < who->dyingThreshold()) {
+                if (who->getHp() < who->dyingThreshold() && !who->isAllNude()) {
                     foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName()))
                         d << SkillInvokeDetail(this, p, p, NULL, false, who);
                 }
@@ -865,22 +857,72 @@ public:
         return d;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (invoke->invoker->askForSkillInvoke(this, data)) {
+            ServerPlayer *who = data.value<DyingStruct>().who;
+            QStringList places;
+            if (!who->getEquips().isEmpty())
+                places << "e";
+            if (!who->isKongcheng())
+                places << "hs";
+            if (!who->getJudgingArea().isEmpty())
+                places << "j";
+            QString choice = room->askForChoice(invoke->invoker, objectName(), places.join("+"), data);
+            invoke->tag["huanzang"] = choice;
+            return true;
+        }
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
-        RecoverStruct recover;
-        recover.who = invoke->invoker;
-        recover.reason = objectName();
-        room->recover(invoke->targets.first(), recover);
+        
+        QString flag = invoke->tag.value("huanzang").toString();
+        ServerPlayer *who = data.value<DyingStruct>().who;
+        QList<const Card *> cards = who->getCards(flag);
+        bool rec = false;
+        foreach(const Card *c, cards) {
+            if (!c->isKindOf("BasicCard")) {
+                rec = true;
+                break;
+            }
+        }
 
-        room->setPlayerFlag(invoke->targets.first(), "huanzang");
-        ServerPlayer *current = room->getCurrent();
-        if (current && current->isAlive())
-            current->drawCards(1);
+
+
+        DummyCard *dummy = new DummyCard;
+        dummy->addSubcards(cards);
+        dummy->deleteLater();
+
+        LogMessage log;
+        log.type = "#Card_Recast";
+        log.from = who;
+        log.card_str = IntList2StringList(dummy->getSubcards()).join("+");
+        room->sendLog(log);
+
+        CardMoveReason reason(CardMoveReason::S_REASON_RECAST, who->objectName());
+        reason.m_skillName = objectName();
+        
+        
+        
+        room->moveCardTo(dummy, who, NULL, Player::DiscardPile, reason);
+        who->broadcastSkillInvoke("@recast");
+
+        who->drawCards(cards.length());
+        
+        if (rec) {
+            RecoverStruct recover;
+            recover.who = invoke->invoker;
+            recover.reason = objectName();
+            room->recover(invoke->targets.first(), recover);
+        }
         return false;
     }
 };
 
+/*
 class HuanzangEffect : public TriggerSkill
 {
 public:
@@ -911,7 +953,7 @@ public:
         data = QVariant::fromValue(damage);
         return false;
     }
-};
+};*/
 
 class ZhaoliaoVS : public OneCardViewAsSkill
 {
@@ -2890,8 +2932,8 @@ TH07Package::TH07Package()
     General *ran = new General(this, "ran", "yym", 3, false);
     ran->addSkill(new Shihui);
     ran->addSkill(new Huanzang);
-    ran->addSkill(new HuanzangEffect);
-    related_skills.insertMulti("huanzang", "#huanzang");
+    //ran->addSkill(new HuanzangEffect);
+    //related_skills.insertMulti("huanzang", "#huanzang");
     //ran_sp2->addSkill(new Zhaoliao);
     //ran_sp2->addSkill(new Jiaoxia);
 
