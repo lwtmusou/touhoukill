@@ -257,8 +257,8 @@ public:
     bool isJilei(const Card *card) const;
     bool isLocked(const Card *card) const;
 
-    void setCardLimitation(const char *limit_list, const char *pattern, bool single_turn = false);
-    void removeCardLimitation(const char *limit_list, const char *pattern);
+    void setCardLimitation(const char *limit_list, const char *pattern, const char *reason, bool single_turn = false);
+    void removeCardLimitation(const char *limit_list, const char *pattern, const char *reason, bool clearReason = false);
     void clearCardLimitation(bool single_turn = false);
     bool isCardLimited(const Card *card, Card::HandlingMethod method, bool isHandcard = false) const;
 
@@ -1341,8 +1341,8 @@ public:
     void setPlayerMark(ServerPlayer *player, const char *mark, int value);
     void addPlayerMark(ServerPlayer *player, const char *mark, int add_num = 1);
     void removePlayerMark(ServerPlayer *player, const char *mark, int remove_num = 1);
-    void setPlayerCardLimitation(ServerPlayer *player, const char *limit_list, const char *pattern, bool single_turn);
-    void removePlayerCardLimitation(ServerPlayer *player, const char *limit_list, const char *pattern);
+    void setPlayerCardLimitation(ServerPlayer *player, const char *limit_list, const char *pattern, const char *reason,bool single_turn);
+    void removePlayerCardLimitation(ServerPlayer *player, const char *limit_list, const char *pattern,const char *reason, bool clearReason = false);
     void clearPlayerCardLimitation(ServerPlayer *player, bool single_turn);
     void setCardFlag(const Card *card, const char *flag, ServerPlayer *who = NULL);
     void setCardFlag(int card_id, const char *flag, ServerPlayer *who = NULL);

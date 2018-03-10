@@ -2098,9 +2098,9 @@ void Room::removePlayerMark(ServerPlayer *player, const QString &mark, int remov
     setPlayerMark(player, mark, value);
 }
 
-void Room::setPlayerCardLimitation(ServerPlayer *player, const QString &limit_list, const QString &pattern, bool single_turn)
+void Room::setPlayerCardLimitation(ServerPlayer *player, const QString &limit_list, const QString &pattern, const QString &reason, bool single_turn)
 {
-    player->setCardLimitation(limit_list, pattern, single_turn);
+    player->setCardLimitation(limit_list, pattern, reason,single_turn);
 
     JsonArray arg;
     arg << true;
@@ -2108,13 +2108,15 @@ void Room::setPlayerCardLimitation(ServerPlayer *player, const QString &limit_li
     arg << pattern;
     arg << single_turn;
     arg << player->objectName();
+    arg << reason;
+    arg << false;
     //doNotify(player, S_COMMAND_CARD_LIMITATION, arg);
     doBroadcastNotify(S_COMMAND_CARD_LIMITATION, arg);
 }
 
-void Room::removePlayerCardLimitation(ServerPlayer *player, const QString &limit_list, const QString &pattern)
+void Room::removePlayerCardLimitation(ServerPlayer *player, const QString &limit_list, const QString &pattern, const QString &reason, bool clearReason)
 {
-    player->removeCardLimitation(limit_list, pattern);
+    player->removeCardLimitation(limit_list, pattern, reason, clearReason);
 
     JsonArray arg;
     arg << false;
@@ -2122,6 +2124,8 @@ void Room::removePlayerCardLimitation(ServerPlayer *player, const QString &limit
     arg << pattern;
     arg << false;
     arg << player->objectName();
+    arg << reason;
+    arg << clearReason;
     //doNotify(player, S_COMMAND_CARD_LIMITATION, arg);
     doBroadcastNotify(S_COMMAND_CARD_LIMITATION, arg);
 }
@@ -2136,6 +2140,8 @@ void Room::clearPlayerCardLimitation(ServerPlayer *player, bool single_turn)
     arg << QVariant();
     arg << single_turn;
     arg << player->objectName();
+    arg << QString();
+    arg << true;
     //doNotify(player, S_COMMAND_CARD_LIMITATION, arg);
     doBroadcastNotify(S_COMMAND_CARD_LIMITATION, arg);
 }

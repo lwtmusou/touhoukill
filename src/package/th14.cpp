@@ -657,15 +657,14 @@ void YuanfeiCard::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
     ServerPlayer *target = effect.to;
-    room->setPlayerCardLimitation(target, "use,response", ".|.|.|.", true);
-    room->setPlayerFlag(target, "yuanfei");
+    room->setPlayerCardLimitation(target, "use,response", ".|.|.|.", "yuanfei", true);
     room->touhouLogmessage("#yuanfei", target, "yuanfei");
 }
 
-class YuanfeiVS : public ViewAsSkill
+class Yuanfei : public ViewAsSkill
 {
 public:
-    YuanfeiVS()
+    Yuanfei()
         : ViewAsSkill("yuanfei")
     {
     }
@@ -703,29 +702,6 @@ public:
     }
 };
 
-class Yuanfei : public TriggerSkill
-{
-public:
-    Yuanfei()
-        : TriggerSkill("yuanfei")
-    {
-        events << EventPhaseChanging;
-        view_as_skill = new YuanfeiVS;
-    }
-
-    void record(TriggerEvent, Room *room, QVariant &data) const
-    {
-        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if (change.to == Player::NotActive) {
-            foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if (p->hasFlag("yuanfei")) {
-                    p->setFlags("-yuanfei");
-                    room->removePlayerCardLimitation(p, "use,response", ".|.|.|.$1");
-                }
-            }
-        }
-    }
-};
 
 class FeitouVS : public OneCardViewAsSkill
 {

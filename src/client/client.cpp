@@ -640,7 +640,7 @@ void Client::onPlayerResponseCard(const Card *card, const QList<const Player *> 
 {
     if (Self->hasFlag("Client_PreventPeach")) {
         Self->setFlags("-Client_PreventPeach");
-        Self->removeCardLimitation("use", "Peach$0");
+        Self->removeCardLimitation("use", "Peach$0", "Global_PreventPeach");
     }
     if ((status & ClientStatusBasicMask) == Responding)
         _m_roomState.setCurrentCardUsePattern(QString());
@@ -803,7 +803,7 @@ Client::Status Client::getStatus() const
 void Client::cardLimitation(const QVariant &limit)
 {
     JsonArray args = limit.value<JsonArray>();
-    if (args.size() != 5)
+    if (args.size() != 7)
         return;
 
     QString object_name = args[4].toString();
@@ -816,14 +816,16 @@ void Client::cardLimitation(const QVariant &limit)
     if (args[1].isNull() && args[2].isNull()) {
         player->clearCardLimitation(single_turn);
     } else {
-        if (!JsonUtils::isString(args[1]) || !JsonUtils::isString(args[2]))
+        if (!JsonUtils::isString(args[1]) || !JsonUtils::isString(args[2]) || !JsonUtils::isString(args[5]))
             return;
         QString limit_list = args[1].toString();
         QString pattern = args[2].toString();
+        QString reason = args[5].toString();
+        bool clearReason = args[6].toBool();
         if (set)
-            player->setCardLimitation(limit_list, pattern, single_turn);
+            player->setCardLimitation(limit_list, pattern, reason, single_turn);
         else
-            player->removeCardLimitation(limit_list, pattern);
+            player->removeCardLimitation(limit_list, pattern, reason, clearReason);
     }
 }
 
@@ -1747,7 +1749,7 @@ void Client::askForSinglePeach(const QVariant &arg)
             }
         } else {
             Self->setFlags("Client_PreventPeach");
-            Self->setCardLimitation("use", "Peach");
+            Self->setCardLimitation("use", "Peach", "Global_PreventPeach");
         }
     }
 

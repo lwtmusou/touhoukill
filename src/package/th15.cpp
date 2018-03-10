@@ -656,36 +656,27 @@ public:
     static void removeSantiLimit(ServerPlayer *player)
     {
         Room *room = player->getRoom();
-        if (player->getMark("santi_limit_1") > 0) {
-            room->removePlayerCardLimitation(player, "use", "TrickCard,EquipCard$1");
-            room->setPlayerMark(player, "santi_limit_1", 0);
-        }
-        if (player->getMark("santi_limit_2") > 0) {
-            room->removePlayerCardLimitation(player, "use", "TrickCard,BasicCard$1");
-            room->setPlayerMark(player, "santi_limit_2", 0);
-        }
-        if (player->getMark("santi_limit_3") > 0) {
-            room->removePlayerCardLimitation(player, "use", "EquipCard,BasicCard$1");
-            room->setPlayerMark(player, "santi_limit_3", 0);
-        }
+        if (player->isCardLimited("use", "santi_limit_1"))
+            room->removePlayerCardLimitation(player, "use", "TrickCard,EquipCard$1", "santi_limit_1");
+        
+        if (player->isCardLimited("use", "santi_limit_2"))
+            room->removePlayerCardLimitation(player, "use", "TrickCard,BasicCard$1", "santi_limit_2");
+        
+        if (player->isCardLimited("use", "santi_limit_3"))
+            room->removePlayerCardLimitation(player, "use", "EquipCard,BasicCard$1", "santi_limit_3");
+        
     }
 
     static void setSantiLimit(ServerPlayer *player)
     {
         Room *room = player->getRoom();
         removeSantiLimit(player);
-        if (player->getMark("santi") == 1) {
-            room->setPlayerCardLimitation(player, "use", "TrickCard,EquipCard", true);
-            room->setPlayerMark(player, "santi_limit_1", 1);
-        }
-        if (player->getMark("santi") == 2) {
-            room->setPlayerCardLimitation(player, "use", "TrickCard,BasicCard", true);
-            room->setPlayerMark(player, "santi_limit_2", 1);
-        }
-        if (player->getMark("santi") == 3) {
-            room->setPlayerCardLimitation(player, "use", "EquipCard,BasicCard", true);
-            room->setPlayerMark(player, "santi_limit_3", 1);
-        }
+        if (player->getMark("santi") == 1)
+            room->setPlayerCardLimitation(player, "use", "TrickCard,EquipCard", "santi_limit_1", true);
+        else if (player->getMark("santi") == 2)
+            room->setPlayerCardLimitation(player, "use", "TrickCard,BasicCard", "santi_limit_2", true);
+        else if (player->getMark("santi") == 3)
+            room->setPlayerCardLimitation(player, "use", "EquipCard,BasicCard", "santi_limit_3", true);
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const

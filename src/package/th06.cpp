@@ -1501,7 +1501,7 @@ public:
                     if (p->hasFlag("yinren")) {
                         p->setFlags("-yinren");
                         room->setPlayerSkillInvalidity(p, NULL, false);
-                        room->removePlayerCardLimitation(p, "use,response", ".|red|.|.$1");
+                        room->removePlayerCardLimitation(p, "use,response", ".|red|.|.$1", objectName());
                     }
                 }
             }
@@ -1534,7 +1534,7 @@ public:
             invoke->targets.first()->setFlags(objectName());
             room->setPlayerSkillInvalidity(invoke->targets.first(), NULL, true);
             QString pattern = ".|red|.|.";
-            room->setPlayerCardLimitation(invoke->targets.first(), "use,response", pattern, true);
+            room->setPlayerCardLimitation(invoke->targets.first(), "use,response", pattern, objectName(), true);
         }
         return false;
     }

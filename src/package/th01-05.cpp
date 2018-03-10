@@ -2315,32 +2315,25 @@ public:
     }
 };
 
+
 class Xingyou : public TriggerSkill
 {
 public:
     Xingyou()
         : TriggerSkill("xingyou")
     {
-        events << CardUsed << SlashMissed;
+        events << CardUsed;
+        frequency = Compulsory;
     }
+
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
     {
-        if (e == CardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("Slash") && use.from->isAlive() && use.from->hasSkill(this)) {
-                foreach (int id, use.from->getShownHandcards()) {
-                    if (Sanguosha->getCard(id)->getSuit() == use.card->getSuit())
-                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
-                }
-            }
-        } else {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.from->isAlive() && effect.from->hasSkill(this) && effect.jink != NULL && effect.to->isAlive() && effect.from->canDiscard(effect.to, "hes")) {
-                foreach (int id, effect.from->getShownHandcards()) {
-                    if (Sanguosha->getCard(id)->getSuit() == effect.slash->getSuit())
-                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.from, effect.from, NULL, false, effect.to);
-                }
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->isKindOf("Slash") && use.from->isAlive() && use.from->hasSkill(this)) {
+            foreach(int id, use.from->getShownHandcards()) {
+                if (Sanguosha->getCard(id)->getSuit() == use.card->getSuit())
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
             }
         }
 
@@ -2349,14 +2342,62 @@ public:
 
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        if (e == CardUsed) {
-            invoke->invoker->drawCards(1);
-        } else {
-            int card_id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName(), false, Card::MethodDiscard);
-            room->throwCard(card_id, invoke->targets.first(), invoke->invoker);
-        }
+        invoke->invoker->drawCards(1);
         return false;
     }
+};
+
+
+class Xingyou2 : public TriggerSkill
+{
+public:
+    Xingyou2()
+        : TriggerSkill("#xingyou")
+    {
+        events << NumOfEvents;
+            CardUsed << ShownCardChanged << CardsMoveOneTime << EventPhaseChanging << EventAcquireSkill << EventLoseSkill << EventSkillInvalidityChange;//<< SlashMissed
+        frequency = Compulsory;
+        show_type = "static";
+    }
+
+    static QString xingyouPattern(ServerPlayer *current) {
+        QStringList suits;
+        foreach(int id, current->getShownHandcards()) {
+            QString suit = Sanguosha->getCard(id)->getSuitString();
+            if (!suits.contains(suit))
+                suits << suit;
+            
+        }
+        QString pattern = QString("Jink|%1|.|.").arg(suits.join(","));
+        return pattern;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to != Player::NotActive) {
+                return;
+            }
+        }
+        if (e == GameStart)
+            return;
+        ServerPlayer *current = room->getCurrent();
+        if (!current)
+            return;
+        QString pattern = xingyouPattern(current);
+        
+        foreach(ServerPlayer *p, room->getOtherPlayers(current)) {
+            room->removePlayerCardLimitation(p, "use", ".", "xingyou", true);
+            
+            if (e != EventPhaseChanging) {
+                if (current && current->isAlive() && current->hasSkill(this)) {
+                    room->setPlayerCardLimitation(p, "use", pattern, "xingyou", true);
+                }
+            }
+        }
+    }
+
 };
 
 class Huanshu : public TriggerSkill
@@ -3100,6 +3141,8 @@ TH0105Package::TH0105Package()
     General *konngara = new General(this, "konngara", "pc98", 4);
     konngara->addSkill(new Zongjiu);
     konngara->addSkill(new Xingyou);
+    konngara->addSkill(new Xingyou2);
+    related_skills.insertMulti("xingyou", "#xingyou");
 
     General *yumeko = new General(this, "yumeko", "pc98", 4);
     yumeko->addSkill(new Huanshu);

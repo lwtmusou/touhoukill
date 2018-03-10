@@ -351,7 +351,7 @@ public:
         events  << Damaged << Damage;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (!damage.to || !damage.to->isAlive() || damage.to->isRemoved())
@@ -377,7 +377,7 @@ public:
         if (!invoke->targets.first()->isRemoved()) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
             room->touhouLogmessage("#Shenyin1", invoke->targets.first(), objectName(), QList<ServerPlayer *>());
-            room->setPlayerCardLimitation(invoke->targets.first(), "use", ".", false);
+            room->setPlayerCardLimitation(invoke->targets.first(), "use", ".", "lure_tiger", true);
             room->setPlayerProperty(invoke->targets.first(), "removed", true);
         }
         return false;
@@ -1419,182 +1419,6 @@ public:
     }
 };
 
-class Shishen : public TriggerSkill
-{
-public:
-    Shishen()
-        : TriggerSkill("shishen")
-    {
-        events << EventPhaseStart << Damaged;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
-    {
-        ServerPlayer *player;
-        if (triggerEvent == EventPhaseStart)
-            player = data.value<ServerPlayer *>();
-        else
-            player = data.value<DamageStruct>().to;
-
-        if (!player->hasSkill(this))
-            return QList<SkillInvokeDetail>();
-
-        if ((triggerEvent == EventPhaseStart && player->getPhase() == Player::Start) || triggerEvent == Damaged) {
-            if (player->getMark("@shi") > 0 && player->isAlive())
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-        } else if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Play) {
-            if (player->getMark("@shi") == 0)
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-        }
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent triggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        ServerPlayer *player = invoke->invoker;
-        if (player->getMark("@shi") > 0) {
-            if (triggerEvent == Damaged)
-                player->setFlags("shishen_choice"); //for ai
-            bool invoke = player->askForSkillInvoke(objectName());
-            player->setFlags("-shishen_choice");
-            if (invoke)
-                return true;
-        } else if (player->getMark("@shi") == 0) {
-            return player->askForSkillInvoke(objectName());
-        }
-        return false;
-    }
-
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        if (invoke->invoker->getMark("@shi") > 0)
-            invoke->invoker->loseMark("@shi");
-        else
-            invoke->invoker->gainMark("@shi");
-
-        return false;
-    }
-};
-
-class Yexing : public AttackRangeSkill
-{
-public:
-    Yexing()
-        : AttackRangeSkill("yexing")
-    {
-    }
-
-    virtual int getExtra(const Player *target, bool) const
-    {
-        if (target->hasSkill(objectName()) && target->getMark("@shi") == 0)
-            return 1;
-        return 0;
-    }
-};
-
-class YexingEffect : public TriggerSkill
-{
-public:
-    YexingEffect()
-        : TriggerSkill("#yexing")
-    {
-        frequency = Compulsory;
-        events << GameStart << PreMarkChange << CardEffected << SlashEffected << EventAcquireSkill << EventLoseSkill << EventSkillInvalidityChange;
-    }
-
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
-    {
-        if (triggerEvent == CardEffected || triggerEvent == SlashEffected)
-            return;
-        ServerPlayer *player = NULL;
-        bool set = false;
-        bool remove = false;
-
-        if (triggerEvent == PreMarkChange) {
-            MarkChangeStruct change = data.value<MarkChangeStruct>();
-            player = change.player;
-            if (change.name != "@shi")
-                return;
-            if (!change.player->hasSkill("yexing"))
-                return;
-            int mark = change.player->getMark("@shi");
-            if (mark > 0 && (mark + change.num == 0) && change.player->hasSkill(this))
-                set = true;
-            else if (mark == 0 && (mark + change.num > 0))
-                remove = true;
-        } else if (triggerEvent == GameStart) {
-            player = data.value<ServerPlayer *>();
-            if (player && player->hasSkill("yexing"))
-                set = true;
-        } else if (triggerEvent == EventLoseSkill) {
-            SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
-            player = a.player;
-            if (a.skill->objectName() == "yexing")
-                remove = true;
-        } else if (triggerEvent == EventAcquireSkill) {
-            SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
-            player = a.player;
-            if (a.skill->objectName() == "yexing" && a.player->getMark("@shi") == 0)
-                set = true;
-        } else if (triggerEvent == EventSkillInvalidityChange) {
-            QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct> >();
-            foreach (SkillInvalidStruct v, invalids) {
-                if (!v.skill || v.skill->objectName() == "yexing") {
-                    player = v.player;
-                    if (!v.invalid && v.player->getMark("@shi") == 0 && v.player->hasSkill(this))
-                        set = true;
-                    else if (v.invalid)
-                        remove = true;
-                }
-            }
-        }
-
-        if (player != NULL) {
-            if (set && player->getMark("yexing_limit") == 0) {
-                room->setPlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick", false);
-                room->setPlayerMark(player, "yexing_limit", 1);
-            } else if (remove && player->getMark("yexing_limit") > 0) {
-                room->removePlayerCardLimitation(player, "use", "TrickCard+^DelayedTrick$0");
-                room->setPlayerMark(player, "yexing_limit", 0);
-            }
-        }
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
-    {
-        if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (effect.nature == DamageStruct::Normal && effect.to->getMark("@shi") == 0 && effect.to->hasSkill("yexing"))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
-        }
-        if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if ((effect.card->isKindOf("SavageAssault") || effect.card->isKindOf("ArcheryAttack")) && effect.to->getMark("@shi") == 0 && effect.to->hasSkill("yexing"))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
-        }
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
-    {
-        if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            room->touhouLogmessage("#LingqiAvoid", effect.to, effect.slash->objectName(), QList<ServerPlayer *>(), "yexing");
-            room->notifySkillInvoked(effect.to, "yexing");
-            //room->setEmotion(effect.to, "armor/vine");
-            return true;
-        }
-        if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            room->touhouLogmessage("#LingqiAvoid", effect.to, effect.card->objectName(), QList<ServerPlayer *>(), "yexing");
-            room->notifySkillInvoked(effect.to, "yexing");
-            //room->setEmotion(effect.to, "armor/vine");
-            return true;
-        }
-
-        return false;
-    }
-};
 
 class YaoshuVS : public ZeroCardViewAsSkill
 {

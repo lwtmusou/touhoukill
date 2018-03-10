@@ -1939,7 +1939,7 @@ void LureTiger::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     room->touhouLogmessage("#Shenyin1", effect.to, objectName(), QList<ServerPlayer *>());
 
-    room->setPlayerCardLimitation(effect.to, "use", ".", false);
+    room->setPlayerCardLimitation(effect.to, "use", ".", "lure_tiger", true);
     room->setPlayerProperty(effect.to, "removed", true);
     effect.from->setFlags("LureTigerUser");
 }
@@ -1963,7 +1963,7 @@ public:
                 if (p->isRemoved()) {
                     room->touhouLogmessage("#Shenyin2", p, objectName(), QList<ServerPlayer *>());
                     room->setPlayerProperty(p, "removed", false);
-                    room->removePlayerCardLimitation(p, "use", ".$0");
+                    room->removePlayerCardLimitation(p, "use", ".$1", "lure_tiger");
                 }
             }
         }
@@ -2187,7 +2187,7 @@ void KnownBoth::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
         room->setTag("KnownBothUsed", true);
         foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
             if (p->getMark("KnownBoth_Limit") == 0) {
-                room->setPlayerCardLimitation(p, "use,response", ".|.|.|show", true);
+                room->setPlayerCardLimitation(p, "use,response", ".|.|.|show", "known_both", true);
                 room->setPlayerMark(p, "KnownBoth_Limit", 1);
             }
         }
@@ -2219,7 +2219,7 @@ public:
             if (change.to == Player::NotActive) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getMark("KnownBoth_Limit") > 0) {
-                        room->removePlayerCardLimitation(p, "use,response", ".|.|.|show$1");
+                        room->removePlayerCardLimitation(p, "use,response", ".|.|.|show$1", "known_both");
                         room->setPlayerMark(p, "KnownBoth_Limit", 0);
                     }
                 }
@@ -2230,7 +2230,7 @@ public:
             if (knownBothTag.canConvert(QVariant::Bool) && knownBothTag.toBool() && room->getCurrent()) {
                 foreach (ServerPlayer *p, room->getOtherPlayers(room->getCurrent())) {
                     if (p->getMark("KnownBoth_Limit") == 0) {
-                        room->setPlayerCardLimitation(p, "use", ".|.|.|show", true);
+                        room->setPlayerCardLimitation(p, "use", ".|.|.|show", "known_both", true);
                         room->setPlayerMark(p, "KnownBoth_Limit", 1);
                     }
                 }

@@ -1292,6 +1292,11 @@ int Player::getMark(const QString &mark) const
     return marks.value(mark, 0);
 }
 
+QMap<QString, int> Player::getMarkMap() const
+{
+    return marks;
+}
+
 bool Player::canSlash(const Player *other, const Card *slash, bool distance_limit, int rangefix, const QList<const Player *> &others) const
 {
     if (other == this || !other->isAlive())
@@ -1541,7 +1546,7 @@ bool Player::canSlashWithoutCrossbow(const Card *slash) const
 #undef THIS_SLASH
 }
 
-void Player::setCardLimitation(const QString &limit_list, const QString &pattern, bool single_turn)
+void Player::setCardLimitation(const QString &limit_list, const QString &pattern, const QString reason, bool single_turn)
 {
     QStringList limit_type = limit_list.split(",");
     QString _pattern = pattern;
@@ -1551,11 +1556,12 @@ void Player::setCardLimitation(const QString &limit_list, const QString &pattern
     }
     foreach (QString limit, limit_type) {
         Card::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
-        card_limitation[method] << _pattern;
+        //card_limitation[method] << _pattern;
+        card_limitation[method][reason] << _pattern;
     }
 }
 
-void Player::removeCardLimitation(const QString &limit_list, const QString &pattern)
+void Player::removeCardLimitation(const QString &limit_list, const QString &pattern, const QString &reason, bool clearReason)
 {
     QStringList limit_type = limit_list.split(",");
     QString _pattern = pattern;
@@ -1563,7 +1569,10 @@ void Player::removeCardLimitation(const QString &limit_list, const QString &patt
         _pattern = _pattern + "$0";
     foreach (QString limit, limit_type) {
         Card::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
-        card_limitation[method].removeOne(_pattern);
+        card_limitation[method][reason].removeOne(_pattern);
+        if (card_limitation[method][reason].isEmpty() || _pattern.endsWith("$1") || clearReason)
+            card_limitation[method].remove(reason);
+        //card_limitation[method].removeOne(_pattern);
     }
 }
 
@@ -1572,11 +1581,21 @@ void Player::clearCardLimitation(bool single_turn)
     QList<Card::HandlingMethod> limit_type;
     limit_type << Card::MethodUse << Card::MethodResponse << Card::MethodDiscard << Card::MethodRecast << Card::MethodPindian;
     foreach (Card::HandlingMethod method, limit_type) {
-        QStringList limit_patterns = card_limitation[method];
-        foreach (QString pattern, limit_patterns) {
+        //QStringList limit_patterns = card_limitation[method];
+        QMap<QString, QStringList> map = card_limitation[method];
+        QMap<QString, QStringList>::iterator it;
+        for (it = map.begin(); it != map.end(); ++it) {
+            QString pattern = it.value().at(0);
+            if (!single_turn || pattern.endsWith("$1")) {
+                //card_limitation[method][it.key()].removeAll(pattern);
+                card_limitation[method].remove(it.key());
+            }
+            
+        }
+        /*foreach (QString pattern, limit_patterns) {
             if (!single_turn || pattern.endsWith("$1"))
                 card_limitation[method].removeAll(pattern);
-        }
+        }*/
     }
 }
 
@@ -1587,17 +1606,33 @@ bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool i
     if (card->getTypeId() == Card::TypeSkill && method == card->getHandlingMethod()) {
         foreach (int card_id, card->getSubcards()) {
             const Card *c = Sanguosha->getCard(card_id);
-            foreach (QString pattern, card_limitation[method]) {
+            QMap<QString, QStringList> map = card_limitation[method];
+            QMap<QString, QStringList>::iterator it;
+            for (it = map.begin(); it != map.end(); ++it) {
+                QString pattern = it.value().at(0);
                 QString _pattern = pattern.split("$").first();
                 if (isHandcard)
                     _pattern.replace("hand", ".");
                 ExpPattern p(_pattern);
                 if (p.match(this, c))
                     return true;
+                
             }
+
+            /*foreach (QString pattern, card_limitation[method]) {
+                QString _pattern = pattern.split("$").first();
+                if (isHandcard)
+                    _pattern.replace("hand", ".");
+                ExpPattern p(_pattern);
+                if (p.match(this, c))
+                    return true;
+            }*/
         }
     } else {
-        foreach (QString pattern, card_limitation[method]) {
+        QMap<QString, QStringList> map = card_limitation[method];
+        QMap<QString, QStringList>::iterator it;
+        for (it = map.begin(); it != map.end(); ++it) {
+            QString pattern = it.value().at(0);
             QString _pattern = pattern.split("$").first();
             if (isHandcard)
                 _pattern.replace("hand", ".");
@@ -1605,8 +1640,28 @@ bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool i
             if (p.match(this, card))
                 return true;
         }
+
+        /*foreach (QString pattern, card_limitation[method]) {
+            QString _pattern = pattern.split("$").first();
+            if (isHandcard)
+                _pattern.replace("hand", ".");
+            ExpPattern p(_pattern);
+            if (p.match(this, card))
+                return true;
+        }*/
     }
     //return removed;
+    return false;
+}
+
+bool Player::isCardLimited(const QString &limit_list, const QString &reason) const
+{
+    QStringList limit_type = limit_list.split(",");
+    foreach(QString limit, limit_type) {
+        Card::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
+        if (card_limitation[method].contains(reason))
+            return true;
+    }
     return false;
 }
 
@@ -1655,7 +1710,7 @@ void Player::copyFrom(Player *p)
     b->chained = a->chained;
     b->judging_area = QList<int>(a->judging_area);
     b->fixed_distance = QHash<const Player *, int>(a->fixed_distance);
-    b->card_limitation = QMap<Card::HandlingMethod, QStringList>(a->card_limitation);
+    b->card_limitation = QMap<Card::HandlingMethod,  QMap<QString, QStringList>>(a->card_limitation);
 
     b->tag = QVariantMap(a->tag);
 }

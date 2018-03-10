@@ -240,9 +240,19 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         ServerPlayer *player = change.player;
         if (change.to == Player::NotActive) {
             room->setPlayerFlag(player, ".");
-            room->clearPlayerCardLimitation(player, true);
+            //room->clearPlayerCardLimitation(player, true);
             room->setPlayerMark(player, "touhou-extra", 0);
+            
+            
             foreach (ServerPlayer *p, room->getAlivePlayers()) {
+                room->clearPlayerCardLimitation(p, true);
+                QMap<QString, int> marks = p->getMarkMap();
+                QMap<QString, int>::iterator it;
+                for (it = marks.begin(); it != marks.end(); ++it) {
+                    if ( it.value() > 0 && it.key().endsWith("_SingleTurn"))
+                        room->setPlayerMark(player, it.key(), 0);
+                }
+
                 foreach (QString flag, p->getFlagList()) {
                     if (flag.endsWith("Animate"))
                         room->setPlayerFlag(p, "-" + flag);

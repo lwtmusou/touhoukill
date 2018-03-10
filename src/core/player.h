@@ -259,6 +259,7 @@ public:
     void removeMark(const QString &mark, int remove_num = 1);
     virtual void setMark(const QString &mark, int value);
     int getMark(const QString &mark) const;
+    QMap<QString, int> getMarkMap() const;
 
     void setChained(bool chained);
     bool isChained() const;
@@ -307,10 +308,11 @@ public:
         return isCardLimited(card, Card::MethodUse);
     }
 
-    void setCardLimitation(const QString &limit_list, const QString &pattern, bool single_turn = false);
-    void removeCardLimitation(const QString &limit_list, const QString &pattern);
+    void setCardLimitation(const QString &limit_list, const QString &pattern, const QString reason, bool single_turn = false);
+    void removeCardLimitation(const QString &limit_list, const QString &pattern, const QString &reason, bool clearReason = false);
     void clearCardLimitation(bool single_turn = false);
     bool isCardLimited(const Card *card, Card::HandlingMethod method, bool isHandcard = false) const;
+    bool isCardLimited(const QString &limit_list, const QString &reason) const;
 
     // just for convenience
     void addQinggangTag(const Card *card);
@@ -364,7 +366,8 @@ private:
 
     QString next;
 
-    QMap<Card::HandlingMethod, QStringList> card_limitation;
+    //QMap<Card::HandlingMethod, QStringList> card_limitation;
+    QMap<Card::HandlingMethod, QMap<QString, QStringList>> card_limitation; //method, reason , pattern
 
 signals:
     void general_changed();

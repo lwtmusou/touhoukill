@@ -107,29 +107,12 @@ public:
     Fengmo()
         : TriggerSkill("fengmo")
     {
-        events << EventPhaseChanging << CardResponded << CardUsed;
+        events  << CardResponded << CardUsed;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
-    {
-        if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive) {
-                foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                    if (p->getMark("@fengmo") > 0) {
-                        room->setPlayerMark(p, "@fengmo", 0);
-                        room->removePlayerCardLimitation(p, "use,response", ".|^heart$1");
-                    }
-                }
-            }
-        }
-    }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
-        if (triggerEvent == EventPhaseChanging)
-            return QList<SkillInvokeDetail>();
-
         QList<SkillInvokeDetail> d;
         ServerPlayer *player = NULL;
         const Card *card = NULL;
@@ -166,9 +149,9 @@ public:
         room->judge(judge);
 
         ServerPlayer *target = invoke->targets.first();
-        if (judge.isGood() && target->getMark("@fengmo") == 0) {
-            room->setPlayerMark(target, "@fengmo", 1);
-            room->setPlayerCardLimitation(target, "use,response", ".|^heart", true);
+        if (judge.isGood()) {
+            room->setPlayerMark(target, "@fengmo_SingleTurn", 1);
+            room->setPlayerCardLimitation(target, "use,response", ".|^heart",  objectName(),true);
         }
         return false;
     }

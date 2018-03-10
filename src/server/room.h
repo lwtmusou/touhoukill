@@ -89,8 +89,8 @@ public:
     void setPlayerMark(ServerPlayer *player, const QString &mark, int value);
     void addPlayerMark(ServerPlayer *player, const QString &mark, int add_num = 1);
     void removePlayerMark(ServerPlayer *player, const QString &mark, int remove_num = 1);
-    void setPlayerCardLimitation(ServerPlayer *player, const QString &limit_list, const QString &pattern, bool single_turn);
-    void removePlayerCardLimitation(ServerPlayer *player, const QString &limit_list, const QString &pattern);
+    void setPlayerCardLimitation(ServerPlayer *player, const QString &limit_list, const QString &pattern, const QString &reason, bool single_turn);
+    void removePlayerCardLimitation(ServerPlayer *player, const QString &limit_list, const QString &pattern, const QString &reason, bool clearReason = false);
     void clearPlayerCardLimitation(ServerPlayer *player, bool single_turn);
     void setCardFlag(const Card *card, const QString &flag, ServerPlayer *who = NULL);
     void setCardFlag(int card_id, const QString &flag, ServerPlayer *who = NULL);

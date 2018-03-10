@@ -214,11 +214,11 @@ public:
         }
 
         if (player != NULL) {
-            if (set && player->getMark("zhouye_limit") == 0) {
-                room->setPlayerCardLimitation(player, "use", "Slash", false);
+            if (set && !player->isCardLimited("use", "zhouye")) {
+                room->setPlayerCardLimitation(player, "use", "Slash", objectName(), false);
                 room->setPlayerMark(player, "zhouye_limit", 1);
-            } else if (remove && player->getMark("zhouye_limit") > 0) {
-                room->removePlayerCardLimitation(player, "use", "Slash$0");
+            } else if (remove && player->isCardLimited("use", "zhouye")) {
+                room->removePlayerCardLimitation(player, "use", "Slash$0", objectName());
                 room->setPlayerMark(player, "zhouye_limit", 0);
             }
         }
@@ -1719,33 +1719,19 @@ public:
     Quanjie()
         : TriggerSkill("quanjie")
     {
-        events << EventPhaseStart << EventPhaseChanging;
+        events << EventPhaseStart;
     }
 
-    void record(TriggerEvent e, Room *room, QVariant &data) const
-    {
-        if (e == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive) {
-                foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->getMark("quanjie") > 0) {
-                        room->setPlayerMark(p, objectName(), 0);
-                    }
-                }
-            }
-        }
-    }
+
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
         QList<SkillInvokeDetail> d;
-        if (triggerEvent == EventPhaseStart) {
-            ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player->getPhase() == Player::Play) {
-                foreach (ServerPlayer *src, room->findPlayersBySkillName(objectName())) {
-                    if (player != src)
-                        d << SkillInvokeDetail(this, src, src);
-                }
+        ServerPlayer *player = data.value<ServerPlayer *>();
+        if (player->getPhase() == Player::Play) {
+            foreach (ServerPlayer *src, room->findPlayersBySkillName(objectName())) {
+                if (player != src)
+                    d << SkillInvokeDetail(this, src, src);
             }
         }
         return d;
@@ -1763,10 +1749,9 @@ public:
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), player->objectName());
 
         const Card *card = room->askForCard(player, "%slash,%thunder_slash,%fire_slash", "@quanjie-discard");
-        if (card == NULL && player->getMark(objectName()) == 0) {
-            player->drawCards(1);
-            room->setPlayerMark(player, objectName(), 1);
-            room->setPlayerCardLimitation(player, "use", "Slash", true);
+        if (card == NULL) {
+            player->drawCards(1); 
+            room->setPlayerCardLimitation(player, "use", "Slash", objectName(), true);
         }
         return false;
     }
@@ -3897,11 +3882,11 @@ public:
 
             if (p->isCurrent() && hasCuimian && p->getShownHandcards().length() <= p->getMaxCards()) {
                 if (p->getMark("cuimian_limit") == 0) {
-                    room->setPlayerCardLimitation(p, "use,response,discard", ".|.|.|show", true);
+                    room->setPlayerCardLimitation(p, "use,response,discard", ".|.|.|show", objectName(),true);
                     room->setPlayerMark(p, "cuimian_limit", 1);
                 }
             } else if (p->getMark("cuimian_limit") > 0) {
-                room->removePlayerCardLimitation(p, "use,response,discard", ".|.|.|show$1");
+                room->removePlayerCardLimitation(p, "use,response,discard", ".|.|.|show$1", objectName());
                 room->setPlayerMark(p, "cuimian_limit", 0);
             }
         }
