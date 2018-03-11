@@ -707,34 +707,60 @@ public:
     Xushi()
         : TriggerSkill("xushi")
     {
-        events << TargetSpecifying << EventPhaseChanging;
+        events << CardUsed << CardResponded << EventPhaseChanging;
     }
 
-    void record(TriggerEvent e, Room *room, QVariant &) const
+    void record(TriggerEvent e, Room *room, QVariant &data) const
     {
-        if (e == EventPhaseChanging) {
-            foreach (ServerPlayer *t, room->getAlivePlayers()) {
-                room->setPlayerFlag(t, "-xushi_used");
+        //record times of using card
+        if (e == CardUsed || e == CardResponded) {
+            ServerPlayer *player = NULL;
+            const Card *card = NULL;
+            if (e == CardUsed) {
+                player = data.value<CardUseStruct>().from;
+                card = data.value<CardUseStruct>().card;
+            }
+            else {
+                CardResponseStruct response = data.value<CardResponseStruct>();
+                player = response.m_from;
+                if (response.m_isUse)
+                    card = response.m_card;
+            }
+            if (player && player->getPhase() == Player::Play && card && card->getHandlingMethod() == Card::MethodUse && !card->isKindOf("SkillCard")) {
+                if (player->hasFlag("xushi_first"))
+                    player->setFlags("xushi_second");
+                else
+                    player->setFlags("xushi_first");
+            }
+        }
+        else if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.from == Player::Play) {
+                change.player->setFlags("-xushi_first");
+                change.player->setFlags("-xushi_second");
             }
         }
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
     {
-        if (e != TargetSpecifying)
+        if (e != CardUsed)
             return QList<SkillInvokeDetail>();
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->getTypeId() == Card::TypeEquip || use.card->getTypeId() == Card::TypeSkill || use.to.length() != 1 || use.from == NULL
-            || use.from->getPhase() != Player::Play)
+        if (use.card->getTypeId() == Card::TypeSkill || use.to.length() != 1 || use.from == NULL
+            || use.from->getPhase() != Player::Play || use.from->hasFlag("xushi_second"))
             return QList<SkillInvokeDetail>();
+        
+        //EquipCard  tianqu???
 
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            if (use.to.contains(p) || use.from == p || p->hasFlag("xushi_used"))
+            if (use.from == p)
                 continue;
-            foreach (ServerPlayer *t, room->getOtherPlayers(use.to.first())) {
-                if (!use.from->isProhibited(t, use.card) && use.card->targetFilter(QList<const Player *>(), t, use.from)
-                    && (!p->getCards("h").isEmpty() || !t->getCards("s").isEmpty())) {
+            foreach (ServerPlayer *t, room->getOtherPlayers(use.from)) {
+                if (use.to.contains(t))
+                    continue;
+                if (!use.from->isProhibited(t, use.card) && use.card->targetFilter(QList<const Player *>(), t, use.from)) {
                     d << SkillInvokeDetail(this, p, p);
                     break;
                 }
@@ -752,25 +778,12 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        invoke->invoker->setFlags("xushi_used");
+
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), use.from->objectName());
-        QList<ServerPlayer *> targets;
-        if (!invoke->invoker->getCards("h").isEmpty())
-            targets << invoke->invoker;
-
-        if (!use.to.first()->getCards("s").isEmpty())
-            targets << use.to.first();
-
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@xushi");
-        QString flag = (target == invoke->invoker) ? "h" : "s";
-        int card_id = room->askForCardChosen(invoke->invoker, target, flag, objectName());
-        if (flag == "h")
-            target->addToShownHandCards(QList<int>() << card_id);
-        else
-            target->removeShownHandCards(QList<int>() << card_id, true);
-
         QList<ServerPlayer *> victims;
-        foreach (ServerPlayer *t, room->getOtherPlayers(use.to.first())) {
+        foreach (ServerPlayer *t, room->getOtherPlayers(use.from)) {
+            if (use.to.contains(t))
+                continue;
             if (!use.from->isProhibited(t, use.card) && use.card->targetFilter(QList<const Player *>(), t, use.from))
                 victims << t;
         }
