@@ -1111,7 +1111,7 @@ public:
             if (triggerEvent == Damage && damage.from->hasSkill(this))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
             else if (triggerEvent == Damaged && damage.to->hasSkill(this))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.from, NULL, true);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
         }
         return QList<SkillInvokeDetail>();
     }
@@ -1122,8 +1122,8 @@ public:
 
         room->touhouLogmessage("#TriggerSkill", invoke->owner, objectName());
         room->notifySkillInvoked(invoke->owner, objectName());
-        int id = room->askForCardChosen(invoke->invoker, damage.to, "e", objectName());
-        room->obtainCard(invoke->invoker, id);
+        int id = room->askForCardChosen(damage.from, damage.to, "e", objectName());
+        room->obtainCard(damage.from, id);
         return false;
     }
 };
