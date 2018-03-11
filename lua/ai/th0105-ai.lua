@@ -1079,7 +1079,7 @@ sgs.ai_skill_use["@@liuzhuanVS"] = function(self, prompt)
 end
 
 sgs.ai_skill_invoke.chenjue = function(self, data)
-	local target = data:toPlayer()
+	local target = self.room:getCurrent()
 	return target and self:isFriend(target)
 end
 
