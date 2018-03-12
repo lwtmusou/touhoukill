@@ -67,7 +67,7 @@ return {
 
 	["mofa"] = "魔法",
 	[":mofa"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张手牌，若如此做，你于此回合内使用的【杀】或普通锦囊牌造成的伤害+1。若以此法弃置了<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，你摸一张牌。",
-	["#mofa_notice"]= "由于 %arg 的效果，此回合内 %from 使用的牌造成的伤害+1。",
+	["#mofa_notice"]= "由于 %arg 的效果，此回合内 %from 使用的【杀】或普通锦囊造成的伤害+1。",
 	["#mofa_damage"]= "%from 对 %to 的伤害由 %arg2 点增加到 %arg 点。",
 	["#TouhouBuff"]= "%from 的 %arg 效果被触发。",
 	["wuyu"] = "雾雨",
