@@ -733,6 +733,7 @@ void ShihuiCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets)
     room->obtainCard(targets.first(), this);
 }
 
+/*
 class ShihuiVS : public OneCardViewAsSkill
 {
 public:
@@ -753,8 +754,9 @@ public:
         card->addSubcard(c);
         return card;
     }
-};
+};*/
 
+/*
 class Shihui : public TriggerSkill
 {
 public:
@@ -805,6 +807,115 @@ public:
 
         return false;
     }
+};
+*/
+
+
+class ShihuiVS : public OneCardViewAsSkill
+{
+public:
+    ShihuiVS()
+        : OneCardViewAsSkill("shihuiVS")
+    {
+        response_pattern = "@@shihuiVS";
+        response_or_use = true;
+    }
+
+    virtual bool viewFilter(const Card *c) const
+    {
+        return !c->isEquipped();
+    }
+
+    virtual const Card *viewAs(const Card *c) const
+    {
+        ExNihilo *exnihilo = new ExNihilo(Card::SuitToBeDecided, 0);
+        exnihilo->addSubcard(c);
+        exnihilo->setSkillName("_shihui");
+        return exnihilo;
+    }
+};
+
+class Shihui : public TriggerSkill
+{
+public:
+    Shihui()
+        : TriggerSkill("shihui")
+    {
+        events << Damage << PreCardUsed << EventPhaseChanging;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        //record times of using card
+        if (e == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from && use.from->getPhase() == Player::Play && use.card && use.card->isKindOf("Slash")) {
+                if (!use.from->hasFlag("shihui")) {
+                    room->setCardFlag(use.card, "shihui");
+                    room->setPlayerFlag(use.from, "shihui");
+                }
+            }
+        }
+        else if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.from == Player::Play) {
+                change.player->setFlags("-shihui");
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e != Damage)
+            return QList<SkillInvokeDetail>();
+        DamageStruct damage = data.value<DamageStruct>();
+        if (!damage.from || damage.from->isDead())
+            return QList<SkillInvokeDetail>();
+        if (damage.chain || damage.transfer || !damage.by_user || !damage.from || !damage.card || !damage.card->hasFlag("shihui"))
+            return QList<SkillInvokeDetail>();
+
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            if (damage.from != p && !p->isNude())
+                d << SkillInvokeDetail(this, p, p, NULL, false, damage.from);
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *target = data.value<DamageStruct>().from;
+        ServerPlayer *ran = invoke->invoker;
+        ran->tag["shihui_target"] = QVariant::fromValue(target);
+        const Card *cards = room->askForExchange(ran, "shihui", ran->getCards("hes").length(), 1, true, "@shihui:" + target->objectName(), true);
+        ran->tag.remove("shihui_target");
+        if (cards) {
+            ran->showHiddenSkill("shihui");
+            room->notifySkillInvoked(ran, objectName());
+            QList<ServerPlayer *> logto;
+            logto << target;
+            room->touhouLogmessage("#ChoosePlayerWithSkill", ran, "shihui", logto);
+
+            room->obtainCard(target, cards, false);
+            delete cards;
+            cards = NULL;
+            return true;
+        }
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *target = data.value<DamageStruct>().from;
+        ServerPlayer *ran = invoke->invoker;
+        QString choice = room->askForChoice(ran, objectName(), "shihui1+shihui2");
+        if (choice == "shihui1")
+            ran->drawCards(1);
+        else
+            room->askForUseCard(target, "@@shihuiVS", "shihuiuse");
+        return false;
+    }
+
 };
 
 class Huanzang : public TriggerSkill
@@ -2828,7 +2939,7 @@ TH07Package::TH07Package()
     addMetaObject<YujianCard>();
     addMetaObject<HuayinCard>();
 
-    skills << new ZhaoliaoVS; // << new QimenDistance;
+    skills << new ZhaoliaoVS << new ShihuiVS; // << new QimenDistance;
 }
 
 ADD_PACKAGE(TH07)
