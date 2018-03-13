@@ -1771,6 +1771,74 @@ public:
         : TriggerSkill("dunjia")
     {
         events << DamageInflicted;
+        show_type = "static";
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        
+        if (damage.from && damage.from->isAlive() && damage.to->hasSkill(this, false, false)) {
+            QList<SkillInvokeDetail> d;
+            Dismantlement *dis = new Dismantlement(Card::NoSuit, 0);
+            dis->setSkillName("_dunjia");
+            dis->deleteLater();
+
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if (!p->getEquips().isEmpty()  &&  
+                    !damage.from->isCardLimited(dis, Card::MethodUse) && !damage.from->isProhibited(p, dis) && dis->targetFilter(QList<const Player *>(), p, damage.from)) {
+                   d << SkillInvokeDetail(this, damage.to, p);
+                }
+            }
+            return d;
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (invoke->invoker->askForSkillInvoke(objectName(), QVariant::fromValue(invoke->owner))) {
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->owner->objectName());
+
+            room->broadcastSkillInvoke(objectName());
+            room->notifySkillInvoked(invoke->owner, objectName());
+            LogMessage log;
+            log.type = "#InvokeOthersSkill";
+            log.from = invoke->invoker;
+            log.to << invoke->owner;
+            log.arg = objectName();
+            room->sendLog(log);
+
+            return true;
+        }
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        Dismantlement *dis = new Dismantlement(Card::NoSuit, 0);
+        dis->setSkillName("_dunjia");
+        CardUseStruct carduse;
+        carduse.card = dis;
+        carduse.from = damage.from;
+        carduse.to << invoke->invoker;
+
+        room->sortByActionOrder(carduse.to);
+        room->useCard(carduse);
+
+        return true;
+    }
+};
+
+/*
+class Dunjia : public TriggerSkill
+{
+public:
+    Dunjia()
+        : TriggerSkill("dunjia")
+    {
+        events << DamageInflicted;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -1807,7 +1875,7 @@ public:
 
         return false;
     }
-};
+};*/
 
 class Jiyi : public TriggerSkill
 {
