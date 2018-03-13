@@ -2262,7 +2262,7 @@ public:
         ServerPlayer *current = change.player;
 
         QString prompt = "@qinlue-discard:" + current->objectName();
-        const Card *card = room->askForCard(source, "Slash,EquipCard", prompt, QVariant::fromValue(current), Card::MethodDiscard, current, false, "qinlue");
+        const Card *card = room->askForCard(source, "Slash,Weapon", prompt, QVariant::fromValue(current), Card::MethodDiscard, current, false, "qinlue");//"Slash,EquipCard"
         return card != NULL;
     }
 
@@ -2278,7 +2278,7 @@ public:
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), current->objectName());
 
             QString prompt = "@qinlue-discard1:" + source->objectName();
-            const Card *card = room->askForCard(current, "Jink", prompt, QVariant::fromValue(source), Card::MethodDiscard);
+            const Card *card = room->askForCard(current, "Jink,Armor", prompt, QVariant::fromValue(source), Card::MethodDiscard);
             if (!card) {
                 //current->skip(Player::Play);
                 room->setPlayerFlag(current, "Global_TurnTerminated");

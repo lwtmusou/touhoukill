@@ -107,9 +107,17 @@ public:
     Fengmo()
         : TriggerSkill("fengmo")
     {
-        events  << CardResponded << CardUsed;
+        events  << CardResponded << CardUsed << EventPhaseChanging;
     }
 
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == EventPhaseChanging) {
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                room->setPlayerFlag(p, "-fengmo_used");
+            }
+        }
+    }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
@@ -126,15 +134,17 @@ public:
                 card = response.m_card;
         }
         if (player && card && (card->isKindOf("Jink") || card->isKindOf("Nullification"))) {
-            foreach (ServerPlayer *reimu, room->findPlayersBySkillName(objectName()))
-                d << SkillInvokeDetail(this, reimu, reimu, NULL, false, player);
+            foreach(ServerPlayer *reimu, room->findPlayersBySkillName(objectName())) {
+                if (!reimu->hasFlag("fengmo_used"))
+                    d << SkillInvokeDetail(this, reimu, reimu, NULL, false, player);
+            }    
         }
         return d;
     }
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->preferredTarget), objectName(), "@fengmo-target", true, true);
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getAlivePlayers(), objectName(), "@fengmo-target", true, true);
         if (target)
             invoke->targets << target;
         return target != NULL;
