@@ -841,25 +841,26 @@ public:
     Shihui()
         : TriggerSkill("shihui")
     {
-        events << Damage << PreCardUsed << EventPhaseChanging;
+        events << Damage << DamageDone << EventPhaseChanging;
     }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const
     {
         //record times of using card
-        if (e == PreCardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from && use.from->getPhase() == Player::Play && use.card && use.card->isKindOf("Slash")) {
-                if (!use.from->hasFlag("shihui")) {
-                    room->setCardFlag(use.card, "shihui");
-                    room->setPlayerFlag(use.from, "shihui");
-                }
+        if (e == DamageDone) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from && damage.from->getPhase() == Player::Play) {
+                if (!damage.from->hasFlag("shihui_first")) {
+                    room->setPlayerFlag(damage.from, "shihui_first");
+                } else
+                    room->setPlayerFlag(damage.from, "shihui_second");
             }
         }
         else if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.from == Player::Play) {
-                change.player->setFlags("-shihui");
+                change.player->setFlags("-shihui_first");
+                change.player->setFlags("-shihui_second");
             }
         }
     }
@@ -869,9 +870,7 @@ public:
         if (e != Damage)
             return QList<SkillInvokeDetail>();
         DamageStruct damage = data.value<DamageStruct>();
-        if (!damage.from || damage.from->isDead())
-            return QList<SkillInvokeDetail>();
-        if (damage.chain || damage.transfer || !damage.by_user || !damage.from || !damage.card || !damage.card->hasFlag("shihui"))
+        if (!damage.from || damage.from->isDead() || damage.from->hasFlag("shihui_second"))
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
@@ -887,7 +886,7 @@ public:
         ServerPlayer *target = data.value<DamageStruct>().from;
         ServerPlayer *ran = invoke->invoker;
         ran->tag["shihui_target"] = QVariant::fromValue(target);
-        const Card *cards = room->askForExchange(ran, "shihui", ran->getCards("hes").length(), 1, true, "@shihui:" + target->objectName(), true);
+        const Card *cards = room->askForExchange(ran, "shihui", 1, 1, true, "@shihui:" + target->objectName(), true); //ran->getCards("hes").length()
         ran->tag.remove("shihui_target");
         if (cards) {
             ran->showHiddenSkill("shihui");
