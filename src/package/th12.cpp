@@ -1517,70 +1517,43 @@ public:
     Huisheng()
         : TriggerSkill("huisheng")
     {
-        events << CardFinished << PreCardUsed;
+        events << CardFinished; // << PreCardUsed
         view_as_skill = new HuishengVS;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (triggerEvent == PreCardUsed && use.card->getSkillName() == "huisheng") { //change aoe target for huisheng
-            if (use.card->isKindOf("AOE") || use.card->isKindOf("GlobalEffect")) {
-                ServerPlayer *target = use.from->tag["huisheng_target"].value<ServerPlayer *>();
-                foreach (ServerPlayer *p, use.to) {
-                    if (p != target)
-                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
-                }
-            }
-        } else if (triggerEvent == CardFinished) {
-            if (use.card->isKindOf("Jink") || use.from->hasFlag("Global_ProcessBroken") || !use.from->isAlive())
-                return QList<SkillInvokeDetail>();
-            if (use.from && use.to.length() == 1 && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
-                ServerPlayer *source = use.to.first();
-                if (use.from != source && source->hasSkill(this) && source->isAlive() && use.from->isAlive()) {
-                    Card *card = Sanguosha->cloneCard(use.card->objectName());
-                    DELETE_OVER_SCOPE(Card, card)
-                    if (!source->isCardLimited(card, Card::MethodUse) && !source->isProhibited(use.from, card))
-                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, source, source);
-                }
+        if (use.card->isKindOf("Jink") || use.from->hasFlag("Global_ProcessBroken") || !use.from->isAlive())
+            return QList<SkillInvokeDetail>();
+        if (use.from && use.to.length() == 1 && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
+            ServerPlayer *source = use.to.first();
+            if (use.from != source && source->hasSkill(this) && source->isAlive() && use.from->isAlive()) {
+                Card *card = Sanguosha->cloneCard(use.card->objectName());
+                DELETE_OVER_SCOPE(Card, card)
+                if (!source->isCardLimited(card, Card::MethodUse) && !source->isProhibited(use.from, card))
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, source, source);
             }
         }
-
         return QList<SkillInvokeDetail>();
     }
 
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        if (triggerEvent == CardFinished) {
-            room->setTag("huisheng_use", data);
-            CardUseStruct use = data.value<CardUseStruct>();
-            Card *card = Sanguosha->cloneCard(use.card->objectName());
-
-            QString prompt = "@huisheng-use:" + use.from->objectName() + ":" + card->objectName();
-            room->setPlayerProperty(invoke->invoker, "huisheng_card", card->objectName());
-            delete card;
-            room->setPlayerProperty(invoke->invoker, "huisheng_target", use.from->objectName());
-            invoke->invoker->tag["huisheng_target"] = QVariant::fromValue(use.from);
-            room->askForUseCard(invoke->invoker, "@@huisheng", prompt);
-            room->setPlayerProperty(invoke->invoker, "huisheng_target", QVariant());
-            return false;
-        }
-
-        return true;
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
+        room->setTag("huisheng_use", data);
         CardUseStruct use = data.value<CardUseStruct>();
-        ServerPlayer *target = use.from->tag["huisheng_target"].value<ServerPlayer *>();
-        foreach (ServerPlayer *p, room->getAlivePlayers()) {
-            if (use.to.contains(p) && p != target)
-                use.to.removeOne(p);
-        }
-        invoke->invoker->tag.remove("huisheng_target");
-        data = QVariant::fromValue(use);
+        Card *card = Sanguosha->cloneCard(use.card->objectName());
+
+        QString prompt = "@huisheng-use:" + use.from->objectName() + ":" + card->objectName();
+        room->setPlayerProperty(invoke->invoker, "huisheng_card", card->objectName());
+        delete card;
+        room->setPlayerProperty(invoke->invoker, "huisheng_target", use.from->objectName());
+        invoke->invoker->tag["huisheng_target"] = QVariant::fromValue(use.from);
+        room->askForUseCard(invoke->invoker, "@@huisheng", prompt);
+        room->setPlayerProperty(invoke->invoker, "huisheng_target", QVariant());
         return false;
     }
+
 };
 
 class HuishengTargetMod : public TargetModSkill
