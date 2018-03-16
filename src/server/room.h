@@ -77,6 +77,7 @@ public:
     QStringList aliveRoles(ServerPlayer *except = NULL) const;
     void gameOver(const QString &winner, bool isSurrender = false);
     void saveWinnerTable(const QString &winner, bool isSurrender = false);
+    void countDescription();
     void slashEffect(const SlashEffectStruct &effect);
     void slashResult(const SlashEffectStruct &effect, const Card *jink);
     void attachSkillToPlayer(ServerPlayer *player, const QString &skill_name, bool is_other_attach = false);

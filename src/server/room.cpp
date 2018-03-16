@@ -6776,3 +6776,63 @@ void Room::saveWinnerTable(const QString &winner, bool isSurrender)
     stream << line;
     file.close();
 }
+
+#include <QTextCodec>
+void Room::countDescription()
+{
+
+    QString location = "etc/count.txt";
+    QFile file(location);
+    if (!file.open(QIODevice::ReadWrite))
+        return;
+
+    QTextStream stream(&file);
+    //stream.seek(file.size());
+    //QSet<QString> all = Sanguosha->getLimitedGeneralNames().toSet();
+    QList<QString> all = Sanguosha->getLimitedGeneralNames();
+    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+
+
+    QMultiMap<int, QString> map;
+    foreach(QString name, all) {
+        const General *gen = Sanguosha->getGeneral(name);
+        QString line = "";
+        foreach(const Skill *skill, gen->getVisibleSkillList()) {
+            QString skill_name = Sanguosha->translate(skill->objectName());
+           
+            
+            QString desc = Sanguosha->translate(":" + skill->objectName());
+            QRegExp rx("<[^>]*>");
+            desc.remove(rx);
+            QString skill_line = QString("%1:%2").arg(skill_name).arg(desc);
+            //des_src.replace("\n", "<br/>");
+            //des_src.replace("\n", "<br>");
+            line = line + skill_line;
+            
+        }
+        //QString desc = gen->getSkillDescription();
+        map.insert(line.length(), name);
+        //QString countString = "";
+        //countString.append(QString("%1: %2 ").arg(Sanguosha->translate(name)).arg(QString::number(line.length())));
+        //countString.append("\n");
+        //countString.append(line);
+        //countString.append("\n");
+        //QString str = QString::fromUtf8(countString);
+        
+       
+    }
+    QMultiMap<int, QString>::iterator it;
+    int num = 0;
+    for (it = map.begin(); it != map.end(); ++it) {
+        QString countString = "";
+        countString.append(QString("%1: %2 ").arg(Sanguosha->translate(it.value())).arg(QString::number(it.key())));
+        countString.append("\n");
+        stream << countString;
+        num += it.key();
+    }
+    QString count =  QString::number(num / map.size());
+    stream << count;
+    file.close();
+
+
+}
