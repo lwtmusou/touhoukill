@@ -3602,7 +3602,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->isKindOf("SkillCard") || use.from == NULL || use.to.length() != 1 || use.from == use.to.first())
+        if (use.card->isKindOf("SkillCard") || use.card->isKindOf("Jink") || use.from == NULL || use.to.length() != 1 || use.from == use.to.first())
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
@@ -3628,6 +3628,7 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
+
         LogMessage log;
         log.type = "#ChoosePlayerWithSkill";
         log.from = invoke->invoker;
