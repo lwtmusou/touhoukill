@@ -3997,7 +3997,18 @@ void RoomScene::showPile(const QList<int> &card_ids, const QString &name, const 
         }
         pileContainer->fillGeneralCards(generals);
     } else {
-        pileContainer->fillCards(card_ids);
+        if (name == "zhenli") {
+            QList<Card *> zhenlis;
+            foreach(int id, card_ids) {
+                zhenlis << Sanguosha->getCard(id);
+            }
+            std::sort(zhenlis.begin(), zhenlis.end(), Card::CompareByNumber);
+            QList<int> zhenids;
+            foreach(Card *c, zhenlis)
+                zhenids << c->getId();
+            pileContainer->fillCards(zhenids);
+        } else
+            pileContainer->fillCards(card_ids);
     }
     pileContainer->setPos(m_tableCenterPos - QPointF(pileContainer->boundingRect().width() / 2, pileContainer->boundingRect().height() / 2));
     pileContainer->show();

@@ -135,19 +135,6 @@ void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids
     else {
         if (add) {
             piles[name].append(card_ids);
-            if (name == "zhenli") {
-                QList<int> tmp = piles[name];
-                QList<Card *> zhenlis;
-                foreach (int id, tmp) {
-                    zhenlis << Sanguosha->getCard(id);
-                }
-                std::sort(zhenlis.begin(), zhenlis.end(), Card::CompareByNumber);
-                QList<int> zhenids;
-                foreach (Card *c, zhenlis) {
-                    zhenids << c->getId();
-                }
-                piles[name] = zhenids;
-            }
         } else {
             foreach (int card_id, card_ids) {
                 if (piles[name].isEmpty())

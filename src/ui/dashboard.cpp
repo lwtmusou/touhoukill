@@ -1167,11 +1167,13 @@ void Dashboard::expandPileCards(const QString &pile_name)
         return;
 
     QList<CardItem *> card_items = _createCards(pile);
+    if (pile_name == "zhenli")
+        std::sort(card_items.begin(), card_items.end(), CompareByNumber);
     foreach (CardItem *card_item, card_items) {
         card_item->setPos(mapFromScene(card_item->scenePos()));
         card_item->setParentItem(this);
     }
-
+    
     foreach (CardItem *card_item, card_items)
         _addHandCard(card_item, true, Sanguosha->translate(pile_name));
 
