@@ -3697,7 +3697,7 @@ void Room::loseHp(ServerPlayer *victim, int lose)
     if (lose <= 0)
         return;
 
-    if (victim->isDead())
+    if (victim->isDead() || victim->isRemoved())
         return;
     HpLostStruct l;
     l.player = victim;
@@ -3918,6 +3918,9 @@ void Room::damage(const DamageStruct &data)
 
         return;
     }
+    if (damage_data.to->isRemoved())
+        return;
+    
     QVariant qdata = QVariant::fromValue(damage_data);
 
     if (!damage_data.chain && !damage_data.transfer) {
