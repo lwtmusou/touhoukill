@@ -5,6 +5,7 @@
 #include "general.h"
 #include "skill.h"
 #include "standard.h"
+#include "maneuvering.h"
 
 class Rexue : public TriggerSkill
 {
@@ -1067,6 +1068,245 @@ public:
     }
 };
 
+
+class JinengVS : public OneCardViewAsSkill
+{
+public:
+    JinengVS()
+        : OneCardViewAsSkill("jineng")
+    {
+        //response_or_use = true;
+        expand_pile = "jinengPile";
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        //QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+        if (player->getPile("jinengPile").isEmpty())
+            return false;
+        return matchAvaliablePattern("slash", pattern) || matchAvaliablePattern("jink", pattern)
+            || matchAvaliablePattern("analeptic", pattern) || matchAvaliablePattern("known_both", pattern);
+        
+    }
+    
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->getPile("jinengPile").isEmpty();
+        //return Slash::IsAvailable(player) || Analeptic::IsAvailable(player);
+    }
+
+
+    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
+    {
+        if (!Self->getPile("jinengPile").contains(to_select->getEffectiveId()))
+            return false;
+
+        switch (Sanguosha->currentRoomState()->getCurrentCardUseReason()) {
+        case CardUseStruct::CARD_USE_REASON_PLAY: {
+            if (to_select->getSuit() == Card::Club)
+                return true;
+            else if (to_select->getSuit() == Card::Spade) {
+                Slash *slash = new Slash(Card::SuitToBeDecided, -1);
+                slash->addSubcard(to_select);
+                slash->deleteLater();
+                return slash->isAvailable(Self);
+            }
+            else if (to_select->getSuit() == Card::Diamond) {
+                Analeptic *ana = new Analeptic(Card::SuitToBeDecided, -1);
+                ana->addSubcard(to_select);
+                ana->deleteLater();
+                return ana->isAvailable(Self);
+            }
+            return false;
+        }
+        case CardUseStruct::CARD_USE_REASON_RESPONSE:
+        case CardUseStruct::CARD_USE_REASON_RESPONSE_USE: {
+            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+            if (matchAvaliablePattern("jink", pattern))
+                return to_select->getSuit() == Card::Heart;
+            else if (matchAvaliablePattern("slash", pattern))
+                return to_select->getSuit() == Card::Spade;
+            else if (matchAvaliablePattern("analeptic", pattern))
+                return to_select->getSuit() == Card::Diamond;
+            else if (matchAvaliablePattern("known_both", pattern))
+                return to_select->getSuit() == Card::Club;
+        }
+        default:
+            break;
+        }
+
+        return false;
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const
+    {
+
+        if (originalCard == NULL)
+            return NULL;
+
+
+        Card *new_card = NULL;
+
+        switch (originalCard->getSuit()) {
+        case Card::Spade: {
+            new_card = new Slash(Card::SuitToBeDecided, -1);
+            break;
+        }
+        case Card::Heart: {
+            new_card = new Jink(Card::SuitToBeDecided, -1);
+            break;
+        }
+        case Card::Club: {
+            new_card = new KnownBoth(Card::SuitToBeDecided, -1);
+            break;
+        }
+        case Card::Diamond: {
+            new_card = new Analeptic(Card::SuitToBeDecided, -1);
+            break;
+        }
+        default:
+            break;
+        }
+
+        if (new_card) {
+            new_card->setSkillName(objectName());
+            new_card->addSubcard(originalCard);
+        }
+        return new_card;
+    }
+};
+
+class Jineng : public TriggerSkill
+{
+public:
+    Jineng()
+        : TriggerSkill("jineng")
+    {
+        events << EventPhaseStart << Damage << FinishJudge;
+        view_as_skill = new JinengVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e == EventPhaseStart) {
+            ServerPlayer *aya = data.value<ServerPlayer *>();
+            if (aya->hasSkill(this) && aya->isAlive() && aya->getPhase() == Player::Start)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, aya, aya);
+        }
+        if (e == Damage) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from && damage.from->hasSkill(this) && damage.from->isAlive())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from);
+        }
+        if (e == FinishJudge) {
+            JudgeStruct *judge = data.value<JudgeStruct *>();
+            if (judge->reason == objectName()) {
+                ServerPlayer *aya = judge->who;
+                if (aya && aya->isAlive() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge) {
+                    bool can = true;
+                    foreach(int id, aya->getPile("jinengPile")) {
+                        if (judge->card->getSuit() == Sanguosha->getCard(id)->getSuit()) {
+                            can = false;
+                            break;
+                        }
+                    }
+                    if (can)
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, aya, aya, NULL, true);
+                }
+            }
+        }
+        
+        return QList<SkillInvokeDetail>();
+        
+    }
+
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (e == FinishJudge) {
+            JudgeStruct *judge = data.value<JudgeStruct *>();
+            invoke->invoker->addToPile("jinengPile", judge->card->getEffectiveId());
+        }
+        else {
+            ServerPlayer *aya = invoke->invoker;
+
+            JudgeStruct judge;
+            judge.who = aya;
+            judge.pattern = ".";
+            judge.good = false;
+            judge.reason = objectName();
+            room->judge(judge);
+
+        
+        }
+        return false;
+    }
+};
+
+class JinengTargetMod : public TargetModSkill
+{
+public:
+    JinengTargetMod()
+        : TargetModSkill("#jinengmod")
+    {
+        pattern = "Slash";
+    }
+
+    virtual int getDistanceLimit(const Player *, const Card *card) const
+    {
+        if (card->getSkillName() == "jineng")
+            return 1000;
+        else
+            return 0;
+    }
+};
+
+class Kuaibao : public TriggerSkill
+{
+public:
+    Kuaibao()
+        : TriggerSkill("kuaibao")
+    {
+        events << EventPhaseStart;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        QList<SkillInvokeDetail> d;
+        ServerPlayer *current = data.value<ServerPlayer *>();
+        if (current && current->getPhase() == Player::Start && current->isAlive()) {
+            foreach(ServerPlayer *aya, room->findPlayersBySkillName(objectName())) {
+                if (aya != current && !aya->getPile("jinengPile").isEmpty() && aya->getPile("jinengPile").length() > aya->getHp())
+                    d << SkillInvokeDetail(this, aya, aya);
+            }
+        }
+        return d;
+
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        QList<int> ids = invoke->invoker->getPile("jinengPile");
+        CardsMoveStruct move(ids, invoke->invoker, invoke->invoker, Player::PlaceSpecial, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()));
+        room->moveCardsAtomic(move, true);
+
+        LogMessage mes;
+        mes.type = "$Kuaibao";
+        mes.from = invoke->invoker;
+        mes.arg = objectName();
+        mes.card_str = IntList2StringList(ids).join("+");
+        room->sendLog(mes);
+        
+        ServerPlayer *current = data.value<ServerPlayer *>();
+        if (current->isAlive())
+            room->damage(DamageStruct(objectName(), invoke->invoker, current));
+
+        return false;
+    }
+};
+
+
+
 THNDJPackage::THNDJPackage()
     : Package("thndj")
 {
@@ -1103,6 +1343,12 @@ THNDJPackage::THNDJPackage()
     sanae_ndj->addSkill(new Xiubu);
     sanae_ndj->addSkill(new XiubuTargetMod);
     related_skills.insertMulti("xiubu", "#xiubu-mod");
+
+    General *aya_ndj = new General(this, "aya_ndj", "fsl", 3);
+    aya_ndj->addSkill(new Jineng);
+    aya_ndj->addSkill(new JinengTargetMod);
+    aya_ndj->addSkill(new Kuaibao);
+    related_skills.insertMulti("jineng", "#jinengmod");
 
     addMetaObject<HunpoCard>();
 }
