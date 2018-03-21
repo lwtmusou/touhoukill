@@ -706,8 +706,11 @@ public:
         QString prompt = "@jingdong-target:" + player->objectName();
         const Card *c = room->askForCard(yukari, "@@jingdong", prompt, QVariant::fromValue(player), Card::MethodNone, NULL, false, "jingdong");
         if (c != NULL) {
+            room->notifySkillInvoked(invoke->invoker, objectName());
+            room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
             CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
             room->throwCard(c, reason, NULL);
+            
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, yukari->objectName(), player->objectName());
             return true;
         }
