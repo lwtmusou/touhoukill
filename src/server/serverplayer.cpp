@@ -1468,7 +1468,7 @@ void ServerPlayer::addBrokenEquips(QList<int> card_ids)
     arg << objectName();
     arg << JsonUtils::toJsonArray(broken_equips);
 
-    foreach (ServerPlayer *player, room->getAllPlayers())
+    foreach (ServerPlayer *player, room->getAllPlayers(true))
         room->doNotify(player, S_COMMAND_SET_BROKEN_EQUIP, arg);
 
     LogMessage log;
@@ -1495,7 +1495,7 @@ void ServerPlayer::removeBrokenEquips(QList<int> card_ids, bool sendLog, bool mo
     arg << objectName();
     arg << JsonUtils::toJsonArray(broken_equips);
 
-    foreach (ServerPlayer *player, room->getAllPlayers())
+    foreach (ServerPlayer *player, room->getAllPlayers(true))
         room->doNotify(player, S_COMMAND_SET_BROKEN_EQUIP, arg);
 
     if (sendLog) {
