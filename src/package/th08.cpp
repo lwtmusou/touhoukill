@@ -750,8 +750,12 @@ public:
         if (use.card->getTypeId() == Card::TypeSkill || use.to.length() != 1 || use.from == NULL
             || use.from->getPhase() != Player::Play || use.from->hasFlag("xushi_second"))
             return QList<SkillInvokeDetail>();
-        
-        //EquipCard  tianqu???
+        //just for skill "tianqu"
+        bool ignore = (use.from && use.from->hasSkill("tianqu", false, false) 
+            && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !use.from->hasFlag("IgnoreFailed"));
+
+        if (!ignore && use.card->targetFixed())
+            return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
