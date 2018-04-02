@@ -616,7 +616,8 @@ public:
     {
         if (e == TargetSpecified) {
             CardUseStruct use = data.value<CardUseStruct>();
-            room->setCardFlag(use.card, "jidu_card");
+            use.card->setFlags("jidu_card");
+            //room->setCardFlag(use.card, "jidu_card");//why can not clear flag while skill"taiji" triggered firstly?
         } else if (e == ConfirmDamage) {
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.from) {

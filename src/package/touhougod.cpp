@@ -4746,12 +4746,12 @@ public:
         return (all - banned - huashen_set - room_set).toList();
 
         //only for test
-        //QSet<QString> test;
-        //if (init)
-        //   test << "shinmyoumaru" << "kokoro" << "marisa_sp2";
-        //else
-        //   test << "renko" << "renko" << "renko";
-        //return test.toList();
+        /*QSet<QString> test;
+        if (init)
+           test << "reimu_sp" << "shikieiki" << "marisa_sp2";
+        else
+           test << "renko" << "renko" << "renko";
+        return test.toList();*/
     }
 
     bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
