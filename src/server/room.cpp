@@ -3601,8 +3601,16 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
     else
         key = card->getClassName();
     int slash_count = card_use.from->getSlashCount();
+    bool showTMskill = false;
+    foreach(const Skill *skill, card_use.from->getSkillList(false, true)) {
+        if (skill->inherits("TargetModSkill")) {
+            card_use.from->gainMark("@" + skill->objectName());
+            const TargetModSkill *tm = qobject_cast<const TargetModSkill *>(skill);
+            if (tm->getResidueNum(card_use.from, card) > 500 ) showTMskill = true;  //&& card_use.from->isHiddenSkill()
+        }
+    }
     bool slash_not_record
-        = key.contains("Slash") && slash_count > 0 && (card_use.from->hasWeapon("Crossbow") || Sanguosha->correctCardTarget(TargetModSkill::Residue, card_use.from, card) > 500);
+        = key.contains("Slash") && slash_count > 0 && (card_use.from->hasWeapon("Crossbow") || showTMskill);
     
 
     card = card_use.card->validate(card_use);

@@ -1613,9 +1613,9 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
         return QStringList();
 
     QList<const TargetModSkill *> tarmods;
-    foreach (QString hidden, getHiddenGenerals()) {
+    foreach(QString hidden, getHiddenGenerals()) {
         const General *g = Sanguosha->getGeneral(hidden);
-        foreach (const Skill *skill, g->getSkillList()) {
+        foreach(const Skill *skill, g->getSkillList()) {
             if (skill->inherits("TargetModSkill")) {
                 const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
                 tarmods << tarmod;
@@ -1628,38 +1628,85 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     QSet<QString> showExtraTarget;
     QSet<QString> showResidueNum;
     QSet<QString> showDistanceLimit;
+    QSet<QString> showTargetFix;
+    QSet<QString> showTargetProhibit;
     //check extra target
     int num = use.to.length() - 1;
     if (num >= 1) {
-        foreach (const TargetModSkill *tarmod, tarmods) {
+        foreach(const TargetModSkill *tarmod, tarmods) {
             if (tarmod->getExtraTargetNum(use.from, use.card) >= num)
                 showExtraTarget << tarmod->objectName();
         }
     }
 
     //check ResidueNum
-    num = use.from->usedTimes(use.card->getClassName()) - 1;
-    if (num >= 1) {
-        foreach (const TargetModSkill *tarmod, tarmods) {
-            if (tarmod->getResidueNum(use.from, use.card) >= num)
-                showResidueNum << tarmod->objectName();
+    //only consider the folloing cards
+    if (use.card->isKindOf("Slash") || use.card->isKindOf("Analeptic")) {
+        num = use.from->usedTimes(use.card->getClassName()) - 1;
+        if (num >= 1) {
+            foreach(const TargetModSkill *tarmod, tarmods) {
+                if (tarmod->getResidueNum(use.from, use.card) >= num)
+                    showResidueNum << tarmod->objectName();
+            }
+        }
+    
+    }
+    
+
+    //check DistanceLimit
+    //only consider the folloing cards
+    if (use.card->isKindOf("Slash") || use.card->isKindOf("SupplyShortage") || use.card->isKindOf("Snatch")) {
+        int distance = 1;
+        foreach(ServerPlayer *p, use.to) {
+            if (use.from->distanceTo(p) > distance)
+                distance = use.from->distanceTo(p);
+        }
+        distance = distance - 1;
+        if (distance >= 1) {
+            foreach(const TargetModSkill *tarmod, tarmods) {
+                if (tarmod->getDistanceLimit(use.from, use.card) >= distance)
+                    showDistanceLimit << tarmod->objectName();
+            }
         }
     }
 
-    //check DistanceLimit
-    int distance = 1;
-    foreach (ServerPlayer *p, use.to) {
-        if (use.from->distanceTo(p) > distance)
-            distance = use.from->distanceTo(p);
+    //check TargetFix
+    //only consider the folloing cards
+    //Peach , EquipCard , ExNihilo, Analeptic, Lightning
+    
+    use.card->setFlags("IgnoreFailed");
+    if (use.card->targetFixed() && !use.to.contains(use.from) && !use.card->isKindOf("AOE") && !use.card->isKindOf("GlobalEffect")) {
+        if (isHiddenSkill("tianqu"))
+            showTargetFix << "tianqu";
     }
-    distance = distance - 1;
-    if (distance >= 1) {
-        foreach (const TargetModSkill *tarmod, tarmods) {
-            if (tarmod->getDistanceLimit(use.from, use.card) >= distance)
-                showDistanceLimit << tarmod->objectName();
+    use.card->setFlags("-IgnoreFailed");
+
+    //check prohibit
+    foreach(ServerPlayer *p, use.to) {
+        if (use.from->isProhibited(p, use.card)) {
+            showTargetProhibit << "tianqu";
+            break;
+        }
+        else if (use.card->isKindOf("Peach")) {
+            if (!p->isWounded()) {
+                showTargetProhibit << "tianqu";
+                break;
+            }
+            if (p != use.from && (!p->hasLordSkill("yanhui") || p->getKingdom() != "zhan")) {
+                showTargetProhibit << "tianqu";
+                break;
+            }
+        }
+        else if (use.card->isKindOf("DelayedTrick") && p->containsTrick(use.card->objectName())) {
+            showTargetProhibit << "tianqu";
+            break;
         }
     }
-    QSet<QString> shows = showExtraTarget.operator|(showDistanceLimit).operator|(showResidueNum);
+    
+
+    
+
+    QSet<QString> shows = showExtraTarget.operator|(showDistanceLimit).operator|(showResidueNum).operator|(showTargetFix).operator|(showTargetProhibit);
     return shows.toList();
 }
 
