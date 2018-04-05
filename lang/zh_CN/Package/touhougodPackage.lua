@@ -545,7 +545,7 @@ return{
 	["origin:kaguya_god_3"] = "p号：46207117，个人ID：2623593",
 
 	["shenbao"] = "神宝",
-	[":shenbao"] = "<font color=\"blue\"><b>锁定技，</b></font>视为你装备着场上的所有装备牌（武器牌的攻击范围取最长，名称不同的装备牌效果均叠加，你不能发动不在你装备区里的【木牛流马】的特效）。",
+	[":shenbao"] = "<font color=\"blue\"><b>锁定技，</b></font>视为你装备着场上的所有装备牌（武器牌的攻击范围取最长，名称不同的装备牌效果均叠加）。",
 	["#shenbao_distance"] = "神宝",
 	["shenbao_spear"] = "丈八蛇矛",
 	["shenbao_pagoda"] = "宝塔",
