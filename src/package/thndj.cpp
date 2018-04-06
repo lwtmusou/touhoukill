@@ -1039,13 +1039,19 @@ public:
         QList<int> subcards = card->getSubcards();
         if (subcards.length() == 0 || player->isKongcheng())
             return false;
-        QList<int> wood_ox = player->getHandPile(); //player->getPile("wooden_ox");
-        int wood_num = 0;
-        foreach (int id, subcards) {
-            if (wood_ox.contains(id))
-                wood_num++;
+        //QList<int> wood_ox = player->getHandPile(); //player->getPile("wooden_ox");
+        int handnum = 0;
+        foreach(const Card *c, player->getHandcards()) {
+            if (subcards.contains(c->getEffectiveId()))
+                handnum++;
+            else
+            {
+                handnum = 0;
+                break;
+            }
+
         }
-        if (subcards.length() - wood_num == player->getHandcardNum())
+        if (handnum >= player->getHandcardNum())
             return true;
         else
             return false;
