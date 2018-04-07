@@ -3604,7 +3604,6 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
     bool showTMskill = false;
     foreach(const Skill *skill, card_use.from->getSkillList(false, true)) {
         if (skill->inherits("TargetModSkill")) {
-            card_use.from->gainMark("@" + skill->objectName());
             const TargetModSkill *tm = qobject_cast<const TargetModSkill *>(skill);
             if (tm->getResidueNum(card_use.from, card) > 500 ) showTMskill = true;  //&& card_use.from->isHiddenSkill()
         }
