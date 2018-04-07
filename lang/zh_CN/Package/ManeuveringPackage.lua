@@ -4,13 +4,13 @@ return {
 	["maneuvering"] = "军争篇",
 
 	["fire_slash"] = "火杀",
-	[":fire_slash"] = "基本牌<br />出牌时机：出牌阶段<br />使用目标：攻击范围内的一名其他角色<br />作用效果：对目标角色造成1点火焰伤害",
+	[":fire_slash"] = "基本牌<br />出牌时机：出牌阶段<br />使用目标：攻击范围内的一名其他角色<br />作用效果：对目标角色造成<font color=\"green\"><b>1点</b></font>火焰伤害",
 
 	["thunder_slash"] = "雷杀",
-	[":thunder_slash"] = "基本牌<br />出牌时机：出牌阶段<br />使用目标：攻击范围内的一名其他角色<br />作用效果：对目标角色造成1点雷电伤害",
+	[":thunder_slash"] = "基本牌<br />出牌时机：出牌阶段<br />使用目标：攻击范围内的一名其他角色<br />作用效果：对目标角色造成<font color=\"green\"><b>1点</b></font>雷电伤害",
 
 	["analeptic"] = "酒",
-	[":analeptic"] = "基本牌<br />出牌时机：1、出牌阶段；2、当自己进入濒死阶段时<br />使用目标：1、包括你的一名角色 2、你<br />作用效果：1、令自己本阶段使用的下一张【杀】将要造成的伤害+1（每阶段限一次）；2、回复1点体力",
+	[":analeptic"] = "基本牌<br />出牌时机：1、出牌阶段；2、当自己进入濒死阶段时<br />使用目标：1、包括你的一名角色 2、你<br />作用效果：1、令自己本阶段使用的下一张【杀】将要造成的伤害<font color=\"green\"><b>+1</b></font>（每阶段限一次）；2、回复<font color=\"green\"><b>1点</b></font>体力",
 	--["#UnsetDrankEndOfTurn"] = "%from 的出牌阶段结束，【<font color=\"yellow\"><b>酒</b></font>】的效果消失",
 	["#UnsetDrankEndOfTurn"] = "%from 此阶段获得的 【<font color=\"yellow\"><b>酒</b></font>】的效果消失",
 
@@ -31,10 +31,10 @@ return {
 	["#SilverLion"] = "%from 的防具【%arg2】防止了 %arg 点伤害，减至 <font color=\"yellow\"><b>1</b></font> 点",
 
 	["fire_attack"] = "火攻",
-	[":fire_attack"] = "锦囊牌<br />出牌时机：出牌阶段<br />使用目标：一名有暗置手牌的角色。<br />作用效果：目标角色明置一张手牌。若你弃置一张与所明置的牌相同花色的手牌，该角色受到1点火焰伤害",
+	[":fire_attack"] = "锦囊牌<br />出牌时机：出牌阶段<br />使用目标：一名有暗置手牌的角色。<br />作用效果：目标角色明置<font color=\"green\"><b>一张</b></font>手牌。若你弃置一张与所明置的牌相同花色的手牌，该角色受到<font color=\"green\"><b>1点</b></font>火焰伤害",
 	["fire-attack-card"] = "您可以弃置一张与 %dest 所明置卡牌相同花色(%arg)的牌对 %dest 造成1点火焰伤害",
 	["@fire_attack_show"] = "因受到 火攻 的效果， 请明置一张手牌",
-	["@fire-attack"] = "%src 明置的牌的花色为 %arg，请弃置一张与其相同花色的手牌",
+	["@fire-attack"] = "明置的牌的花色为 <font color=\"green\"><b>%src %dest %arg %arg2</b></font>，请弃置一张与其相同花色的手牌",
 	--[":fire_attack"] = "锦囊牌<br />出牌时机：出牌阶段<br />使用目标：一名有手牌的角色。<br />作用效果：目标角色展示一张手牌。若你弃置一张与所展示牌相同花色的手牌，该角色受到1点火焰伤害",
 	--["fire-attack-card"] = "您可以弃置一张与 %dest 所展示卡牌相同花色(%arg)的牌对 %dest 造成1点火焰伤害",
 	--["@fire-attack"] = "%src 展示的牌的花色为 %arg，请弃置一张与其相同花色的手牌",

@@ -5002,7 +5002,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from && use.from->isAlive() && use.from->hasSkill(this)) {
-            if (use.card->getSuit() == Card::Spade)
+            if (use.card->getSuit() == Card::Spade && use.card->getTypeId() != Card::TypeSkill)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
 
         }
@@ -5166,7 +5166,15 @@ public:
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {      
         CardUseStruct use = data.value<CardUseStruct>();
-        room->setCardFlag(use.card, "mopao");
+        if (use.card->isKindOf("FireAttack") || use.card->isKindOf("Duel")
+            || use.card->isKindOf("SavageAssault") || use.card->isKindOf("ArcheryAttack")) {
+            QString choice = room->askForChoice(invoke->invoker, objectName(), "1+2");
+            if (choice == "2")
+                room->setCardFlag(use.card, "mopao2");
+            else
+                room->setCardFlag(use.card, "mopao");
+        } else
+            room->setCardFlag(use.card, "mopao");
         return false;
     }
 };

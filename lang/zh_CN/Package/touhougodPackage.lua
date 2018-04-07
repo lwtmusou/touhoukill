@@ -710,7 +710,9 @@ return{
 	["@huixing1"]= "你可将一张“星”置入弃牌堆，令你使用的<font color=\"#00FF00\"><b>%src</b></font> 效果基数+1",
 	["~huixing"]= "选择一张“星”--> 确定",	
 	["@huixing"]= "你可将一张“星”置入弃牌堆，视为对<font color=\"#00FF00\"><b>%src</b></font> 使用 %dest",
-
+    ["huixing:1"] = "效果中的第一个的效果基数" ,
+	["huixing:2"] = "效果中的最后一个效果基数" ,
+	
 	["alice_god"] = "神 爱丽丝",
 	["&alice_god"] = "神爱丽丝",
 	["#alice_god"] = "少女裁判",

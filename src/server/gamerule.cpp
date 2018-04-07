@@ -338,6 +338,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 room->setTag("CardUseNullifiedList", QVariant::fromValue(card_use.nullified_list));
                 if (card_use.card->isNDTrick() && !card_use.card->isKindOf("Nullification")) // && !card_use.to.isEmpty()
                     room->setCardFlag(card_use.card, "LastTrickTarget_" + card_use.to.last()->objectName());
+
                 card_use.card->use(room, card_use.from, card_use.to);
                 if (!jink_list_backup.isEmpty())
                     card_use.from->tag["Jink_" + card_use.card->toString()] = QVariant::fromValue(jink_list_backup);
@@ -529,12 +530,13 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     room->touhouLogmessage("#Chunhua", effect.to, effect.card->objectName());
                     //if (effect.card->isBlack()) {
                     if (effect.card->hasFlag("chunhua_black")) {
-                        DamageStruct d = DamageStruct(effect.card, effect.from, effect.to, 1, DamageStruct::Normal);
+                        DamageStruct d = DamageStruct(effect.card, effect.from, effect.to, 1 + effect.effectValue, DamageStruct::Normal);
                         room->damage(d);
                     } else if (effect.card->hasFlag("chunhua_red")) {
                         RecoverStruct recover;
                         recover.card = effect.card;
                         recover.who = effect.from;
+                        recover.recover = 1 + effect.effectValue;
                         room->recover(effect.to, recover);
                     }
                 } else
@@ -615,6 +617,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 RecoverStruct recover;
                 recover.card = effect.slash;
                 recover.who = effect.from;
+                recover.recover = 1 + effect.effectValue;
                 room->recover(effect.to, recover);
                 break;
             }

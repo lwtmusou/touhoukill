@@ -722,6 +722,7 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
         effect.nullified = (all_nullified || nullified_list.contains(target->objectName()));
         if (hasFlag("mopao"))
             effect.effectValue = effect.effectValue + 1;
+            
         room->cardEffect(effect);
     }
 

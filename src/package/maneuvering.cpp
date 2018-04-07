@@ -492,19 +492,51 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
     if (effect.to->getHandcardNum() <= effect.to->getShownHandcards().length())
         return;
 
-    const Card *card = room->askForCard(effect.to, ".|.|.|handOnly!", "@fire_attack_show", QVariant::fromValue(effect), Card::MethodNone);
-    if (!card) {
-        // force show!!!
-        QList<const Card *> hc = effect.to->getCards("h");
-        int x = qrand() % hc.length();
-        card = hc.value(x);
+    DummyCard *dummy = new DummyCard;
+    QList<int> ids;
+    QList<Player::Place> places;
+    room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
+    for (int i = 0; i < (1 + effect.effectValue); i += 1) {
+        const Card *card = room->askForCard(effect.to, ".|.|.|handOnly!", "@fire_attack_show", QVariant::fromValue(effect), Card::MethodNone);
+        if (!card) {
+            // force show!!!
+            QList<const Card *> hc = effect.to->getCards("h");
+            int x = qrand() % hc.length();
+            card = hc.value(x);
+        }
+        ids << card->getEffectiveId();
+        places << room->getCardPlace(card->getEffectiveId());
+        dummy->addSubcard(card);
+        effect.to->addToPile("#dismantle", card->getEffectiveId(), false);
+        if (effect.to->getCards("h").isEmpty())
+            break;
     }
-    room->showCard(effect.to, card->getEffectiveId());
-    effect.to->addToShownHandCards(QList<int>() << card->getEffectiveId());
+    
+    //move the first card back temporarily
+    for (int i = 0; i < ids.length(); i += 1) {
+        room->moveCardTo(Sanguosha->getCard(ids.at(i)), effect.to, places.at(i), false);
+    }
+    room->setPlayerFlag(effect.to, "-dismantle_InTempMoving");
+    foreach (int id, ids)
+        room->showCard(effect.to, id);
+    effect.to->addToShownHandCards(QList<int>() << ids);
 
-    QString suit_str = card->getSuitString();
-    QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
-    QString prompt = QString("@fire-attack:%1::%2").arg(effect.to->objectName()).arg(suit_str);
+    QString suit_str = Sanguosha->getCard(ids.first())->getSuitString();
+    QStringList suits;
+    foreach(int id, ids) {
+        QString suit = Sanguosha->getWrappedCard(id)->getSuitString();
+        if (!suits.contains(suit))
+            suits << suit;
+        if (suits.length() >= 4)
+            break;
+    }
+        
+    QString pattern = QString(".|%1|.|hand").arg(suits.join(","));
+    //QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
+    while (suits.length() < 4) {
+        suits << QString();
+    }
+    QString prompt = QString("@fire-attack:%1:%2:%3:%4").arg(suits[0]).arg(suits[1]).arg(suits[2]).arg(suits[3]);
     if (effect.from->isAlive()) {
         bool damage = false;
         if (effect.from->hasSkill("fengxiang")) {
@@ -522,13 +554,13 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
                 damage = true;
         }
         if (damage)
-            room->damage(DamageStruct(this, effect.from, effect.to, 1, DamageStruct::Fire));
+            room->damage(DamageStruct(this, effect.from, effect.to, 1 + effect.effectValue, DamageStruct::Fire));
         else
             effect.from->setFlags("FireAttackFailed_" + effect.to->objectName()); // For AI
     }
     //can show VirtualCard???
-    if (card->isVirtualCard())
-        delete card;
+    //if (card->isVirtualCard())
+    //    delete card;
 }
 
 IronChain::IronChain(Card::Suit suit, int number)
