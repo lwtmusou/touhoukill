@@ -727,15 +727,6 @@ public:
     virtual bool isEnabledAtPlay(const Player *player) const
     {
         bool avalilable = Slash::IsAvailable(player);
-        //consider targetmod skill like "xiubu" need check specific card with subcards
-        if (player->getMark("xiubu") && player->getHandcardNum() <= 2) {
-            Slash *slash = new Slash(Card::SuitToBeDecided, 0);
-            slash->setSkillName(objectName());
-            slash->addSubcards(player->getHandcards());
-            if (!player->isCardLimited(slash, Card::MethodUse))
-                avalilable = true;
-        }
-
         return avalilable && EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
     }
 

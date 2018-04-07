@@ -1037,24 +1037,10 @@ public:
     static bool isLastHandCard(const Player *player, const Card *card)
     {
         QList<int> subcards = card->getSubcards();
-        if (subcards.length() == 0 || player->isKongcheng())
+        if (subcards.length() != 1 || player->getHandcardNum() != 1)
             return false;
-        //QList<int> wood_ox = player->getHandPile(); //player->getPile("wooden_ox");
-        int handnum = 0;
-        foreach(const Card *c, player->getHandcards()) {
-            if (subcards.contains(c->getEffectiveId()))
-                handnum++;
-            else
-            {
-                handnum = 0;
-                break;
-            }
 
-        }
-        if (handnum >= player->getHandcardNum())
-            return true;
-        else
-            return false;
+        return subcards.contains(player->getHandcards().first()->getEffectiveId());
     }
 
     virtual int getDistanceLimit(const Player *from, const Card *card) const
