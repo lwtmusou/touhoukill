@@ -3247,8 +3247,8 @@ end
 
 sgs.ai_skill_playerchosen.collateral = function(self, targets)
 	local killer = self.player:getTag("collateral-killer"):toPlayer()
-	local victims = self.room:getOtherPlayers(killer)
-	for _, p in sgs.qlist(victims) do
+	--local victims = self.room:getOtherPlayers(killer)
+	for _, p in sgs.qlist(targets) do
 		if killer:canSlash(p, nil) then
 		    if self:isEnemy(p) and sgs.isGoodTarget(p, self.enemies, self) and not self:slashProhibit(nil, p) then
 				return p

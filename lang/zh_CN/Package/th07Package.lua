@@ -60,7 +60,7 @@ return
 
     ["shenyin"] = "神隐",
 	--[":shenyin"] = "一名角色于另一名角色的回合内受到伤害时/后，你可令其解除/进入神隐状态，然后若你不为两者之一，此技能失效直到你下个回合开始。",
-	[":shenyin"] = "你造成或受到伤害后，你可令受伤者进入神隐状态。",
+	[":shenyin"] = "你造成或受到伤害后，你可令受伤者进入神隐状态直到本回合结束。",
 	["shenyin:target"]= "神隐 ： 你可令  %src   <font color=\"red\"><b>进入神隐状态 </b></font>  。",
 	["shenyin:target1"]= "神隐 ： 你可令  %src   <font color=\"#00FF00\"><b>解除神隐状态 </b></font>  。",
     ["shenyin:target2"]= "神隐 ： 你可令  %src   <font color=\"red\"><b>进入神隐状态 </b></font>  。",

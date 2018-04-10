@@ -1291,33 +1291,43 @@ void Collateral::onEffect(const CardEffectStruct &effect) const
     ServerPlayer *killer = effect.to;
     if (!source->isAlive() || !killer->isAlive())
         return;
+    int times = 1 + effect.effectValue;
 
+    QList<ServerPlayer *> targets;
     QList<ServerPlayer *> victims;
     foreach(ServerPlayer *p, room->getOtherPlayers(killer)) {
         if (killer->canSlash(p))
-            victims << p;
+            targets << p;
     }
     //ServerPlayer *victim = effect.to->tag["collateralVictim"].value<ServerPlayer *>();
     //effect.to->tag.remove("collateralVictim");
-    if (victims.isEmpty())
+    if (targets.isEmpty())
         return;
-
     QString prompt = QString("collateral-chooseVictim:%1").arg(killer->objectName());
-    source->tag["collateral-killer"] = QVariant::fromValue(killer);
-    ServerPlayer *victim = room->askForPlayerChosen(source, victims, "collateral", prompt);
-    LogMessage log;
-    log.type = "#CollateralSlash";
-    log.from = killer;
-    log.to << victim;
-    room->sendLog(log);
-    room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, killer->objectName(), victim->objectName());
-
-
-    WrappedCard *weapon = killer->getWeapon();
-    prompt = QString("collateral-slash:%1:%2").arg(victim->objectName()).arg(source->objectName());
-    bool doSlash = doCollateral(room, killer, victim, prompt);
-    if (!doSlash && killer->getWeapon())
-        source->obtainCard(weapon);
+    for (int i = 0; i < times; i += 1) {
+        source->tag["collateral-killer"] = QVariant::fromValue(killer);
+        ServerPlayer *victim = room->askForPlayerChosen(source, targets, "collateral", prompt);
+        LogMessage log;
+        log.type = "#CollateralSlash";
+        log.from = killer;
+        log.to << victim;
+        room->sendLog(log);
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, killer->objectName(), victim->objectName());
+        victims << victim;
+        targets.removeOne(victim);
+        if (targets.isEmpty())
+            break;
+    }
+    room->sortByActionOrder(victims);
+    foreach(ServerPlayer *v, victims) {
+        WrappedCard *weapon = killer->getWeapon();
+        prompt = QString("collateral-slash:%1:%2").arg(v->objectName()).arg(source->objectName());
+        bool doSlash = doCollateral(room, killer, v, prompt);
+        if (!doSlash && killer->getWeapon())
+            source->obtainCard(weapon);
+        if (!doSlash)
+            break;
+    }
 }
 
 Nullification::Nullification(Suit suit, int number)
