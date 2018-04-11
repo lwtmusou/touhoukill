@@ -5112,7 +5112,7 @@ public:
         QStringList ban_list;
         ban_list << "Jink" << "Nullification";
         if (triggerEvent == TargetConfirmed)
-            ban_list << "LureTiger" << "IronChain" << "Collateral";
+            ban_list << "LureTiger" << "IronChain";
         
         if (use.from && use.from->isAlive() && use.from->hasSkill(this) && !use.from->getPile("stars").isEmpty()) {
             if ((use.card->isKindOf("BasicCard") || use.card->isNDTrick()) && !ban_list.contains(use.card->getClassName())) {

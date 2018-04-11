@@ -394,7 +394,7 @@ void Peach::onEffect(const CardEffectStruct &effect) const
     RecoverStruct recover;
     recover.card = this;
     recover.who = effect.from;
-    recover.recover = 1 + effect.effectValue;
+    recover.recover = 1 + effect.effectValue.first();
     room->recover(effect.to, recover);
 }
 
@@ -1099,7 +1099,7 @@ void AmazingGrace::onEffect(const CardEffectStruct &effect) const
     foreach (QVariant card_id, ag_list)
         card_ids << card_id.toInt();
 
-    int times = 1 + effect.effectValue;
+    int times = 1 + effect.effectValue.first();
     if (effect.to->hasSkill("shouhuo"))
         times++;
     for (int i = 0; i < times; i += 1) {
@@ -1149,7 +1149,7 @@ void GodSalvation::onEffect(const CardEffectStruct &effect) const
         RecoverStruct recover;
         recover.card = this;
         recover.who = effect.from;
-        recover.recover = 1 + effect.effectValue;
+        recover.recover = 1 + effect.effectValue.first();
         room->recover(effect.to, recover);
     }
 }
@@ -1164,7 +1164,7 @@ SavageAssault::SavageAssault(Suit suit, int number)
 void SavageAssault::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
-    int times = 1 + effect.effectValue;
+    int times = 1 + effect.effectValue.first();
     bool dodamage = false;
     for (int i = 0; i < times; i += 1) {
         QString prompt = QString("savage-assault-slash:%1:%2:%3").arg(effect.from->objectName()).arg(times).arg(i + 1);
@@ -1187,7 +1187,7 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const
         room->setEmotion(effect.to, "killer");
     } else*/
     if (dodamage){
-        room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue));
+        room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue.last()));
         room->getThread()->delay();
     }
 }
@@ -1202,7 +1202,7 @@ ArcheryAttack::ArcheryAttack(Card::Suit suit, int number)
 void ArcheryAttack::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
-    int times = 1 + effect.effectValue;
+    int times = 1 + effect.effectValue.first();
     bool dodamage = false;
     for (int i = 0; i < times; i += 1) {
         QString prompt = QString("archery-attack-jink:%1:%2:%3").arg(effect.from->objectName()).arg(times).arg(i + 1);
@@ -1218,7 +1218,7 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const
 
 
     if (dodamage) {
-        room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue));
+        room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue.last()));
         room->getThread()->delay();
     }
 }
@@ -1291,7 +1291,7 @@ void Collateral::onEffect(const CardEffectStruct &effect) const
     ServerPlayer *killer = effect.to;
     if (!source->isAlive() || !killer->isAlive())
         return;
-    int times = 1 + effect.effectValue;
+    int times = 1 + effect.effectValue.first();
 
     QList<ServerPlayer *> targets;
     QList<ServerPlayer *> victims;
@@ -1386,7 +1386,7 @@ void ExNihilo::onEffect(const CardEffectStruct &effect) const
         if (friend_num < enemy_num)
             extra = 1;
     }
-    effect.to->drawCards(2 + extra + effect.effectValue);
+    effect.to->drawCards(2 + extra + effect.effectValue.first());
 }
 
 Duel::Duel(Suit suit, int number)
@@ -1411,7 +1411,7 @@ void Duel::onEffect(const CardEffectStruct &effect) const
     room->setEmotion(first, "duel");
     room->setEmotion(second, "duel");
 
-    int times = 1 + effect.effectValue;
+    int times = 1 + effect.effectValue.first();
     bool dodamage = false;
     forever {
         if (!first->isAlive())
@@ -1440,7 +1440,7 @@ void Duel::onEffect(const CardEffectStruct &effect) const
         qSwap(first, second);
     }
 
-    DamageStruct damage(this, second->isAlive() ? second : NULL, first, 1 + effect.effectValue);
+    DamageStruct damage(this, second->isAlive() ? second : NULL, first, 1 + effect.effectValue.last());
     if (second != effect.from)
         damage.by_user = false;
     room->damage(damage);
@@ -1495,7 +1495,7 @@ void Snatch::onEffect(const CardEffectStruct &effect) const
     DummyCard *dummy = new DummyCard;
     bool visible = false;
     room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
-    for (int i = 0; i < (1 + effect.effectValue); i += 1) {
+    for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
         int card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName());
         ids << card_id;
         places << room->getCardPlace(card_id);
@@ -1556,7 +1556,7 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
 
     if (!using_2013 || ai) {
         room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
-        for (int i = 0; i < (1 + effect.effectValue); i += 1) {
+        for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
             card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName(), false, Card::MethodDiscard);
             ids << card_id;
             places << room->getCardPlace(card_id);
@@ -2086,7 +2086,7 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
     QList<int> ids;
     QList<Player::Place> places;
     room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
-    for (int i = 0; i < (1 + effect.effectValue); i += 1) {
+    for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
         if (!effect.to->canDiscard(effect.to, "e"))
             break;
         const Card *card = room->askForCard(effect.to, ".|.|.|equipped!", "@drowning", QVariant::fromValue(effect), Card::MethodNone);
@@ -2244,7 +2244,7 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const
     QList<Player::Place> places;
     room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
     
-    for (int i = 0; i < (1 + effect.effectValue); i += 1) {
+    for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
         int id = room->askForCardChosen(effect.from, effect.to, "h", objectName());
         ids << id;
         places << room->getCardPlace(id);
@@ -2282,7 +2282,7 @@ void KnownBoth::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
         //for HegNullification???
         room->setTag("targets" + this->toString(), QVariant::fromValue(players));
         if (hasFlag("mopao"))
-            effect.effectValue = effect.effectValue + 1;
+            effect.effectValue.first() = effect.effectValue.first() + 1;
         room->cardEffect(effect);
     }
 

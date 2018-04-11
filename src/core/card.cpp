@@ -721,7 +721,9 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
         effect.multiple = (targets.length() > 1);
         effect.nullified = (all_nullified || nullified_list.contains(target->objectName()));
         if (hasFlag("mopao"))
-            effect.effectValue = effect.effectValue + 1;
+            effect.effectValue.first() = effect.effectValue.first() + 1;
+        if (hasFlag("mopao2"))
+            effect.effectValue.last() = effect.effectValue.last() + 1;
             
         room->cardEffect(effect);
     }

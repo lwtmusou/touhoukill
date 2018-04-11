@@ -530,13 +530,13 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     room->touhouLogmessage("#Chunhua", effect.to, effect.card->objectName());
                     //if (effect.card->isBlack()) {
                     if (effect.card->hasFlag("chunhua_black")) {
-                        DamageStruct d = DamageStruct(effect.card, effect.from, effect.to, 1 + effect.effectValue, DamageStruct::Normal);
+                        DamageStruct d = DamageStruct(effect.card, effect.from, effect.to, 1 + effect.effectValue.first(), DamageStruct::Normal);
                         room->damage(d);
                     } else if (effect.card->hasFlag("chunhua_red")) {
                         RecoverStruct recover;
                         recover.card = effect.card;
                         recover.who = effect.from;
-                        recover.recover = 1 + effect.effectValue;
+                        recover.recover = 1 + effect.effectValue.first();
                         room->recover(effect.to, recover);
                     }
                 } else
@@ -617,7 +617,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 RecoverStruct recover;
                 recover.card = effect.slash;
                 recover.who = effect.from;
-                recover.recover = 1 + effect.effectValue;
+                recover.recover = 1 + effect.effectValue.first();
                 room->recover(effect.to, recover);
                 break;
             }
@@ -625,7 +625,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         if (effect.drank > 0)
             effect.to->setMark("SlashIsDrank", effect.drank);
 
-        DamageStruct d = DamageStruct(effect.slash, effect.from, effect.to, 1 + effect.effectValue, effect.nature);
+        DamageStruct d = DamageStruct(effect.slash, effect.from, effect.to, 1 + effect.effectValue.first(), effect.nature);
         foreach (ServerPlayer *p, room->getAllPlayers(true)) {
             if (effect.slash->hasFlag("WushenDamage_" + p->objectName())) {
                 d.from = p->isAlive() ? p : NULL;

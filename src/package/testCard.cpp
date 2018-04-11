@@ -358,8 +358,8 @@ bool AwaitExhausted::targetFilter(const QList<const Player *> &targets, const Pl
 void AwaitExhausted::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.from->getRoom();
-    effect.to->drawCards(2 + effect.effectValue);
-    int num = qMin(2, effect.to->getCards("ehs").length());
+    effect.to->drawCards(2 + effect.effectValue.first());
+    int num = qMin(2 + effect.effectValue.last(), effect.to->getCards("ehs").length());
     if (num > 0)
         room->askForDiscard(effect.to, "AwaitExhausted", num, num, false, true);
 }

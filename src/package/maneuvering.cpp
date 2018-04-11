@@ -99,10 +99,10 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const
         RecoverStruct recover;
         recover.card = this;
         recover.who = effect.from;
-        recover.recover = 1 + effect.effectValue;
+        recover.recover = 1 + effect.effectValue.first();
         room->recover(effect.to, recover);
     } else {
-        room->addPlayerMark(effect.to, "drank", 1+ effect.effectValue);
+        room->addPlayerMark(effect.to, "drank", 1+ effect.effectValue.first());
     }
 }
 
@@ -496,7 +496,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
     QList<int> ids;
     QList<Player::Place> places;
     room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
-    for (int i = 0; i < (1 + effect.effectValue); i += 1) {
+    for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
         const Card *card = room->askForCard(effect.to, ".|.|.|handOnly!", "@fire_attack_show", QVariant::fromValue(effect), Card::MethodNone);
         if (!card) {
             // force show!!!
@@ -554,7 +554,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
                 damage = true;
         }
         if (damage)
-            room->damage(DamageStruct(this, effect.from, effect.to, 1 + effect.effectValue, DamageStruct::Fire));
+            room->damage(DamageStruct(this, effect.from, effect.to, 1 + effect.effectValue.last(), DamageStruct::Fire));
         else
             effect.from->setFlags("FireAttackFailed_" + effect.to->objectName()); // For AI
     }
