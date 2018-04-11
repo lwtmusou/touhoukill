@@ -1489,21 +1489,29 @@ public:
     Yinren()
         : TriggerSkill("yinren")
     {
-        events << EventPhaseChanging << TargetSpecified;
+        events << CardFinished << TargetSpecified;//EventPhaseChanging
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-        if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive) {
-                foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->hasFlag("yinren")) {
-                        p->setFlags("-yinren");
-                        room->setPlayerSkillInvalidity(p, NULL, false);
-                        room->removePlayerCardLimitation(p, "use,response", ".|red|.|.$1", objectName());
-                    }
+        if (triggerEvent == CardFinished) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (!use.card->isKindOf("Slash"))
+                return;
+            foreach(ServerPlayer *p, use.to) {
+                QStringList yinren = p->property("YinrenInvalid").toStringList();
+                if (!yinren.contains(use.card->toString()))
+                    continue;
+
+                yinren.removeOne(use.card->toString());
+                room->setPlayerProperty(p, "YinrenInvalid", yinren);
+
+                if (yinren.isEmpty() && p->hasFlag("yinren")) {
+                    p->setFlags("-yinren");
+                    room->setPlayerSkillInvalidity(p, NULL, false);
+                    room->removePlayerCardLimitation(p, "use,response", ".|red|.|.$1", objectName());
                 }
+
             }
         }
     }
@@ -1528,13 +1536,20 @@ public:
         return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget));
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        if (!invoke->targets.first()->hasFlag(objectName())) {
-            invoke->targets.first()->setFlags(objectName());
-            room->setPlayerSkillInvalidity(invoke->targets.first(), NULL, true);
+        CardUseStruct use = data.value<CardUseStruct>();
+        ServerPlayer *target = invoke->targets.first();
+        QStringList yinren = target->property("YinrenInvalid").toStringList();
+        if (!yinren.contains(use.card->toString())) {
+            yinren << use.card->toString();
+            room->setPlayerProperty(target, "YinrenInvalid", yinren);
+        }
+        if (!target->hasFlag(objectName())) {
+            target->setFlags(objectName());
+            room->setPlayerSkillInvalidity(target, NULL, true);
             QString pattern = ".|red|.|.";
-            room->setPlayerCardLimitation(invoke->targets.first(), "use,response", pattern, objectName(), true);
+            room->setPlayerCardLimitation(target, "use,response", pattern, objectName(), true);
         }
         return false;
     }

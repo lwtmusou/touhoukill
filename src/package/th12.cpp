@@ -558,7 +558,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (!(use.from != NULL && use.card->isNDTrick()))
+        if (!(use.from != NULL && use.card->getTypeId() == Card::TypeTrick)) //use.card->isNDTrick()
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
