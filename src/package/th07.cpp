@@ -1622,9 +1622,9 @@ bool QimenCard::targetFilter(const QList<const Player *> &targets, const Player 
     if (targets.isEmpty())
         return new_card &&  to_select->getEquips().isEmpty() && !Self->isProhibited(to_select, new_card, targets)
         && (new_card->targetFilter(targets, to_select, Self) || (new_card->isKindOf("Peach") && to_select->isWounded()));
-    else
-        return new_card  && !Self->isProhibited(to_select, new_card, targets)
-        && (new_card->targetFilter(targets, to_select, Self) || (new_card->isKindOf("Peach") && to_select->isWounded()));
+    //else
+    //    return new_card  && !Self->isProhibited(to_select, new_card, targets)
+    //    && (new_card->targetFilter(targets, to_select, Self) || (new_card->isKindOf("Peach") && to_select->isWounded()));
     return false;
 }
 

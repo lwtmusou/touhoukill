@@ -163,17 +163,6 @@ signals:
 };
 
 
-class HuixingCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE HuixingCard();
-
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
-    virtual const Card *validate(CardUseStruct &card_use) const;
-};
 
 class TouhouGodPackage : public Package
 {
