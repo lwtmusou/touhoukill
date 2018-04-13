@@ -873,7 +873,7 @@ public:
         if (e != Damage)
             return QList<SkillInvokeDetail>();
         DamageStruct damage = data.value<DamageStruct>();
-        if (!damage.from || damage.from->isDead() || damage.from->hasFlag("shihui_second"))
+        if (!damage.from || damage.from->isDead() || damage.from->getPhase() != Player::Play || damage.from->hasFlag("shihui_second"))
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
