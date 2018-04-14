@@ -2983,11 +2983,13 @@ public:
 
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
         const Card *card = NULL;
-        if (e == CardUsed)
+        if (e == CardUsed) {
             card = data.value<CardUseStruct>().card;
+        }
         else {
             CardResponseStruct response = data.value<CardResponseStruct>();
-            card = response.m_card;
+            if (response.m_isUse)
+                card = response.m_card;
         }
 
         QString flag = target->getPhase() == Player::Play ? "s" : "h";
@@ -2999,8 +3001,10 @@ public:
             target->addToShownHandCards(QList<int>() << id);
         else
             target->removeShownHandCards(QList<int>() << id);
-
-        if (Sanguosha->getCard(id)->getColor() != card->getColor())
+        
+        if (target->getPhase() == Player::Play && Sanguosha->getCard(id)->getColor() != card->getColor())
+            target->drawCards(1);
+        else if (target->getPhase() != Player::Play  && Sanguosha->getCard(id)->getColor() == card->getColor())
             target->drawCards(1);
         return false;
     }
