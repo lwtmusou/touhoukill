@@ -5044,6 +5044,7 @@ public:
             invoke->invoker->gainMark("@star");
             use.to.removeAll(invoke->targets.first());
             data = QVariant::fromValue(use);
+            room->touhouLogmessage("$CancelTarget", use.from, use.card->objectName(), invoke->targets);
         } else {
             invoke->invoker->loseMark("@star");
             QString choice = "1";
@@ -5107,9 +5108,9 @@ public:
                     card->deleteLater();
                     if (next && next != target && !use.from->isCardLimited(card, Card::MethodUse) 
                         && !use.from->isProhibited(next, card)) {
-                        if (use.card->isKindOf("Peach") && next->isWounded())
+                        if (card->isKindOf("Peach") && next->isWounded())
                             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, false, next);
-                        else if (use.card->targetFilter(QList<const Player *>(), next, use.from))
+                        else if (card->targetFilter(QList<const Player *>(), next, use.from))
                             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, false, next);
                     }
                 }

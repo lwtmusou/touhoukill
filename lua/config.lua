@@ -206,7 +206,7 @@ config = {
 		"nue_slm", "seija_sp", 
 		"junko","hecatia","hecatia","clownpiece","sagume","doremy","ringo","seiran",
 		"reisen2",
-		"satori_god",
+		"satori_god","marisa_god",
 		"nue_god",
 		"yukari_ndj",
 	}
