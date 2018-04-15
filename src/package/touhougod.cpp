@@ -5049,7 +5049,7 @@ public:
             invoke->invoker->loseMark("@star");
             QString choice = "1";
             if (use.card->isKindOf("FireAttack") || use.card->isKindOf("Duel")
-                || use.card->isKindOf("SavageAssault") || use.card->isKindOf("ArcheryAttack")) {
+                || use.card->isKindOf("SavageAssault") || use.card->isKindOf("ArcheryAttack") || use.card->isKindOf("AwaitExhausted")) {
                 choice = room->askForChoice(invoke->invoker, objectName(), "1+2");
                 if (choice == "2")
                     room->setCardFlag(use.card, "mopao2");
