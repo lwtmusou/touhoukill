@@ -990,9 +990,9 @@ public:
     bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardEffectStruct effect = data.value<CardEffectStruct>();
-        QString prompt1 = "target1:" + effect.from->objectName();
-        QString prompt2 = "target2";
-        QString prompt = (effect.card->hasFlag("tianxieEffected_" + effect.to->objectName())) ? prompt1 : prompt2;
+        QString prompt = "target2";
+        if (effect.card->hasFlag("tianxieEffected_" + effect.to->objectName()))
+            prompt = "target1:" + effect.from->objectName();;
         invoke->invoker->tag[objectName()] = data;
         return invoke->invoker->askForSkillInvoke(objectName(), prompt);
     }
