@@ -845,9 +845,9 @@ bool FengshenCard::targetFilter(const QList<const Player *> &targets, const Play
     else if (targets.isEmpty())
         return Self->inMyAttackRange(to_select);
     else if (targets.length() == 1)
-        return Self->distanceTo(targets.first()) <= 1 && Self->distanceTo(to_select) <= 1;
+        return Self->distanceTo(targets.first()) == 1 && Self->distanceTo(to_select) == 1;
     else
-        return Self->distanceTo(to_select) <= 1;
+        return Self->distanceTo(to_select) == 1;
 }
 
 void FengshenCard::onEffect(const CardEffectStruct &effect) const
