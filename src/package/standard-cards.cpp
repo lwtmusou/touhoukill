@@ -1108,7 +1108,8 @@ void AmazingGrace::onEffect(const CardEffectStruct &effect) const
 
         room->takeAG(effect.to, card_id);
         ag_list.removeOne(card_id);
-    
+        if (ag_list.isEmpty())
+            break;
     }
 
     /*if (effect.to->hasSkill("shouhuo")) {
