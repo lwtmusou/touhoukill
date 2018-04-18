@@ -1754,8 +1754,14 @@ public:
             foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (use.from->isAlive() && p != use.from && !use.to.contains(p) && !use.to.isEmpty()
                     && (p->getHandcardNum() < use.from->getHandcardNum() || p->getHp() < use.from->getHp()) && !use.from->isProhibited(p, use.card)) {
-                    if (use.card->isKindOf("Peach") && p->isWounded())
-                        d << SkillInvokeDetail(this, p, p, NULL, true);
+                    if (use.card->isKindOf("Peach")) {
+                        if (p->isWounded())
+                            d << SkillInvokeDetail(this, p, p, NULL, true);
+                    }
+                    else if (use.card->isKindOf("Drowning")) {
+                        if (p->canDiscard(p, "e"))
+                            d << SkillInvokeDetail(this, p, p, NULL, true);
+                    }
                     else if (use.card->targetFilter(QList<const Player *>(), p, use.from))
                         d << SkillInvokeDetail(this, p, p, NULL, true);
                 }
