@@ -151,6 +151,7 @@ public:
     }
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
+        room->setPlayerFlag(invoke->invoker, "fengmo_used");
         JudgeStruct judge;
         judge.reason = objectName();
         judge.who = invoke->targets.first();
