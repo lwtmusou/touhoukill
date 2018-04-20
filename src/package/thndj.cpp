@@ -1114,14 +1114,10 @@ public:
         case CardUseStruct::CARD_USE_REASON_RESPONSE:
         case CardUseStruct::CARD_USE_REASON_RESPONSE_USE: {
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-            if (matchAvaliablePattern("jink", pattern))
-                return to_select->getSuit() == Card::Heart;
-            else if (matchAvaliablePattern("slash", pattern))
-                return to_select->getSuit() == Card::Spade;
-            else if (matchAvaliablePattern("analeptic", pattern))
-                return to_select->getSuit() == Card::Diamond;
-            else if (matchAvaliablePattern("known_both", pattern))
-                return to_select->getSuit() == Card::Club;
+            return (to_select->getSuit() == Card::Heart && matchAvaliablePattern("jink", pattern)) ||
+                (to_select->getSuit() == Card::Spade &&matchAvaliablePattern("slash", pattern) ) ||
+                (to_select->getSuit() == Card::Diamond && matchAvaliablePattern("analeptic", pattern)) ||
+                (to_select->getSuit() == Card::Club && matchAvaliablePattern("known_both", pattern));
         }
         default:
             break;
