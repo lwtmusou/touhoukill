@@ -95,6 +95,8 @@ public:
             //    continue;
             if (use.from->isProhibited(q, use.card))
                 continue;
+            if (use.card->isKindOf("Drowning") && !q->canDiscard(q, "e"))
+                continue;
             if (!use.card->targetFilter(QList<const Player *>(), q, use.from))
                 continue;
             invoke = true;
@@ -116,7 +118,9 @@ public:
         foreach (ServerPlayer *p, room->getLieges("xlc", invoke->invoker)) {
             if (use.to.contains(p) || use.from->isProhibited(p, use.card))
                 continue;
-
+            if (use.card->isKindOf("Drowning") && !p->canDiscard(p, "e"))
+                continue;
+                    
             if (!use.card->targetFilter(QList<const Player *>(), p, use.from))
                 continue;
             targets << p;
