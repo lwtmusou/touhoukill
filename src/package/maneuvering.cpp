@@ -549,7 +549,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
                 damage = true;
             }
         } else {
-            const Card *card_to_throw = room->askForCard(effect.from, pattern, prompt);
+            const Card *card_to_throw = room->askForCard(effect.from, pattern, prompt, QVariant::fromValue(effect));
             if (card_to_throw)
                 damage = true;
         }

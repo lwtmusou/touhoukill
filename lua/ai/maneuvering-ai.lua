@@ -703,6 +703,7 @@ sgs.ai_skill_cardask["@fire-attack"] = function(self, data, pattern, target)
 	local convert = { [".S"] = "spade", [".D"] = "diamond", [".H"] = "heart", [".C"] = "club"}
 	local card
 	--寻事被火攻砸惨了。先强行不砸队友。。。反正使用火攻本身现在也没考虑队友
+	target = data:toCardEffect().to
 	if target:objectName() ~= self.player:objectName() and self:isFriend(target) then return "." end
 
 	self:sortByUseValue(cards, true)
@@ -710,7 +711,7 @@ sgs.ai_skill_cardask["@fire-attack"] = function(self, data, pattern, target)
 	if sgs.GetConfig("EnableHegemony", false) then lord = nil end
 
 	for _, acard in ipairs(cards) do
-		if acard:getSuitString() == convert[pattern] then
+		if  pattern:find(acard:getSuitString())  then --or acard:getSuitString() == convert[pattern]
 			if not isCard("Peach", acard, self.player) then
 				card = acard
 				break
