@@ -1,3 +1,5 @@
+sgs.weapon_range.Gun = 4
+
 local Jade_skill = {}
 Jade_skill.name = "JadeSeal"
 table.insert(sgs.ai_skills, Jade_skill)
