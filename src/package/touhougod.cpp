@@ -4970,15 +4970,13 @@ public:
         }
         //@todo: find a standard method for confriming removable mark
         QStringList marks;
-        marks << "@clock"
-              << "@kinki"
-              << "@qiannian"
-              << "@shi"
+        marks << "@clock" << "@kinki"
+              << "@qiannian" << "@shi"
               << "@ye"
               << "@yu"
               << "@zhengti"
               << "@xinyang"
-              << "@ice";
+              << "@ice" << "@stars";
         foreach (QString m, marks) {
             if (invoke->invoker->getMark(m) > 0)
                 invoke->invoker->loseAllMarks(m);
