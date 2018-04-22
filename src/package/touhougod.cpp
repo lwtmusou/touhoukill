@@ -1814,9 +1814,9 @@ public:
                     }
                 }
             }
-        } else if (e == EventPhaseStart) {
+        } else if (e == EventPhaseStart ) {
             ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player->getMark("@duanzui-extra") > 0)
+            if (player && player->getPhase() == Player::RoundStart && player->getMark("@duanzui-extra") > 0)
                 d << SkillInvokeDetail(this, player, player, NULL, true);
         }
         return d;
