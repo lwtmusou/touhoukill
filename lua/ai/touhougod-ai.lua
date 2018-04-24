@@ -1003,7 +1003,7 @@ sgs.ai_skill_cardask["@qinlue-discard"] = function(self, data)
 	local cards={}
 
 	for _,c in sgs.qlist(self.player:getCards("hes")) do
-		if c:isKindOf("Slash") or c:isKindOf("EquipCard") then
+		if c:isKindOf("Slash") or c:isKindOf("Weapon") then
 			if self.player:canDiscard(self.player,c:getId()) then
 				table.insert(cards,c)
 			end
