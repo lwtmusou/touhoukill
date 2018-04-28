@@ -459,7 +459,7 @@ sgs.ai_card_intention.LiangeCard = -70
 
 sgs.ai_skill_invoke.tianxie =function(self,data)
     local effect = self.player:getTag("tianxie"):toCardEffect()
-	if not effect.card:hasFlag("tianxieEffected") then 
+	if not effect.card:hasFlag("tianxieEffected_".. effect.to:objectName()) then	
 		return true 
 	else
 		if effect.from and   self:isEnemy(effect.from) then
