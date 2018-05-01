@@ -397,6 +397,8 @@ int Engine::getGeneralCount(bool include_banned) const
         const General *general = itor.value();
         if (getBanPackages().contains(general->getPackage()))
             total--;
+        else if (isGeneralHidden(general->objectName()))
+            total--;
         else if ((isNormalGameMode(ServerInfo.GameMode) || ServerInfo.GameMode.contains("_mini_") || ServerInfo.GameMode == "custom_scenario")
                  && Config.value("Banlist/Roles").toStringList().contains(general->objectName()))
             total--;

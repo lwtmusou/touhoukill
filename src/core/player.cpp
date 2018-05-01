@@ -69,7 +69,7 @@ void Player::setShownRole(bool shown)
 
 void Player::setHp(int hp)
 {
-    bool changed;
+    bool changed = false;
     if (this->hp != hp) {
         this->hp = hp;
         changed = true;
