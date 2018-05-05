@@ -349,3 +349,126 @@ sgs.ai_cardneed.xiubu = function(to, card, self)
 		or (not to:getOffensiveHorse() and  getCardsNum("OffensiveHorse",to,self.player)<1 and card:isKindOf("OffensiveHorse"))
 	end
 end
+
+sgs.ai_skill_invoke.jineng =function(self,data)
+	--if not self:invokeTouhouJudge() then return false end
+	return true
+end
+local jineng_skill = {}
+jineng_skill.name = "jineng"
+table.insert(sgs.ai_skills, jineng_skill)
+jineng_skill.getTurnUseCard = function(self)
+
+	local current = self.room:getCurrent()
+	if not current or current:isDead() or current:getPhase() == sgs.Player_NotActive then return end
+
+	local ids = self.player:getPile("jinengPile")
+	local spade, heart, club, diamond -- = {}, {}, {}, {}
+	local jinengCards = {}
+	for _, id in sgs.qlist(ids) do
+		local forbid
+		local c = sgs.Sanguosha:getCard(id)
+		local suit = c:getSuit()
+		if  suit == sgs.Card_Spade then
+			forbid = sgs.cloneCard("slash")
+		elseif suit == sgs.Card_Club then
+			forbid = sgs.cloneCard("known_both")
+		elseif suit == sgs.Card_Diamond then
+			forbid = sgs.cloneCard("analeptic")
+		end
+		
+		
+		if forbid then
+			forbid:addSubcard(c)
+			forbid:setSkillName("jineng")
+			if not self.player:isLocked(forbid)  then
+				table.insert(jinengCards,forbid)
+			end
+		end
+	end
+
+
+	self:sortByUseValue(jinengCards, false)
+	for _,jinengCard in pairs (jinengCards) do
+		local dummyuse = { isDummy = true }
+		if jinengCard:isKindOf("BasicCard") then
+			self:useBasicCard(jinengCard, dummyuse)
+		else
+			self:useTrickCard(jinengCard, dummyuse)
+		end
+	
+		if dummyuse.card then
+			local suit = jinengCard:getSuitString()
+			local number = jinengCard:getNumberString()
+			local card_id = jinengCard:getEffectiveId()
+			local jineng_str = (jinengCard:objectName() .. ":jineng[%s:%s]=%d"):format(suit, number, card_id)
+			local jineng_card = sgs.Card_Parse(jineng_str)
+
+			assert(jineng_card)
+			return jineng_card
+		end
+	end
+
+	return nil
+end
+sgs.ai_skill_use_func.HuaxiangCard=function(card,use,self)
+	local userstring=card:toString()
+	userstring=(userstring:split(":"))[3]
+	local huaxiangcard=sgs.cloneCard(userstring)
+	huaxiangcard:setSkillName("huaxiang")
+	self:useBasicCard(huaxiangcard, use)
+	if not use.card then return end
+	use.card=card
+end
+
+
+
+function sgs.ai_cardsview_valuable.jineng(self, class_name, player)
+	if (sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_UNKNOWN) then
+		return nil
+	end
+
+	local ids = self.player:getPile("jinengPile")
+	local spade, heart, club, diamond -- = {}, {}, {}, {}
+	
+	for _, id in sgs.qlist(ids) do
+		local c = sgs.Sanguosha:getCard(id)
+		local suit = c:getSuit()
+		if  suit == sgs.Card_Spade then
+			spade =  c
+		elseif suit == sgs.Card_Heart then
+			heart = c
+		elseif suit == sgs.Card_Diamond then
+			diamond = c
+		end
+	end
+	
+	local cardname, card
+	if self:touhouClassMatch(class_name, "Analeptic") then
+		card = diamond
+		cardname = "analeptic"
+	elseif self:touhouClassMatch(class_name, "Jink") then
+		card = heart
+		cardname = "jink"
+	--elseif self:touhouClassMatch(class_name, "KnownBoth")  then
+	elseif self:touhouClassMatch(class_name, "Slash") then
+		card = spade
+		cardname = "slash"
+	end
+
+	if not card then return nil end
+	
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	return (cardname .. ":jineng[%s:%s]=%d"):format(suit, number, card_id)
+	
+end
+
+sgs.ai_skill_invoke.kuaibao =function(self,data)
+    local current = self.room:getCurrent()
+	if self:isEnemy(current) and not self:needToLoseHp(current, self.player, false, false) then
+		return true
+	end
+	return false
+end
