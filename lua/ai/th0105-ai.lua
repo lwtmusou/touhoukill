@@ -866,6 +866,36 @@ sgs.ai_skill_use["@@baosi"] = function(self, prompt)
 end
 
 
+local moyan_skill = {}
+moyan_skill.name = "moyan"
+table.insert(sgs.ai_skills, moyan_skill)
+function moyan_skill.getTurnUseCard(self)
+	if self.player:getMark("@moyan")==0 or not self.player:isWounded() then return nil end
+	return sgs.Card_Parse("@MoyanCard=.")
+end
+sgs.ai_skill_use_func.MoyanCard=function(card,use,self)
+	local targets = {}
+	for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if self:isEnemy(p) then
+			table.insert(targets, p)
+		end
+		if #targets >= self.player:getLostHp() then break end		
+	end
+	if #targets > 0 then
+		use.card = card
+		if use.to then
+			for _,p in ipairs(targets) do
+				use.to:append(p)
+			end
+			return
+		end
+	end
+end
+sgs.ai_use_value.MoyanCard = 2
+sgs.ai_use_priority.MoyanCard = sgs.ai_use_priority.ExNihilo - 0.2
+ sgs.ai_card_intention.MoyanCard = 50
+
+
 local ezhao_skill = {}
 ezhao_skill.name = "ezhao"
 table.insert(sgs.ai_skills, ezhao_skill)
