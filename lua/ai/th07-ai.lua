@@ -739,6 +739,67 @@ sgs.ai_cardneed.yaoshu = function(to, card, self)
 	return card:isNDTrick()
 end
 
+
+
+
+sgs.ai_skill_use["@@qimen"] = function(self, prompt)
+	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+	local cardname=self.player:property("qimen_card"):toString()
+	local card=sgs.cloneCard(cardname, sgs.Card_NoSuit, 0)
+	card:setSkillName("AIqimen")
+	card:deleteLater()
+	
+	
+	local f, e = sgs.SPlayerList(), sgs.SPlayerList()
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if p:getEquips():isEmpty() and not self.player:isProhibited(p, card)
+         then --card:targetFilter(sgs.SPlayerList(), p, self.player)
+			if (self:isFriend(p)) then
+				f:append(p)
+			end
+			if (self:isEnemy(p)) then
+				e:append(p)
+			end
+		end
+	end
+
+	--Dummyuse
+	local target_objectname = {}
+	if card:isKindOf("TrickCard") then
+		self:useTrickCard(card, dummy_use)
+	else
+		self:useBasicCard(card, dummy_use)
+	end
+
+	--if not dummy_use.card then return false end
+	if dummy_use.to:isEmpty() then
+		if card:isKindOf("IronChain") or card:isKindOf("KnownBoth") then
+			return "."
+		end
+		
+		if not f:isEmpty() and (card:isKindOf("Peach") or card:isKindOf("ExNihilo") or card:isKindOf("GlobalEffect")) then
+			table.insert(target_objectname, f:first():objectName())
+		elseif not e:isEmpty() 
+		and (card:isKindOf("AOE")) then
+			table.insert(target_objectname, e:first():objectName())
+		end
+	else
+	self.player:gainMark("@ddd")
+		table.insert(target_objectname, dummy_use.to:first():objectName())
+	end
+	if #target_objectname>0 then
+		card = sgs.cloneCard(cardname, sgs.Card_NoSuit, 0)
+		card:setSkillName("qimen")
+		return card:toString() .. "->" .. table.concat(target_objectname, "+")
+	end
+	return "."
+end
+
+sgs.ai_skill_invoke.dunjia=function(self, data)
+	local damage = self.player:getTag("dunjia"):toDamage()
+	return self:isFriend(damage.to)
+end
+
 sgs.ai_skill_invoke.jiyi = true
 sgs.ai_skill_askforyiji.jiyi = function(self, card_ids)
 	local available_friends = {}

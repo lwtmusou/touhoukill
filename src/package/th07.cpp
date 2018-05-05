@@ -1824,8 +1824,20 @@ public:
     }
 };
 
+//Only for AI dummy use
+class QimenProhibitAI : public ProhibitSkill
+{
+public:
+    QimenProhibitAI()
+        : ProhibitSkill("#qimen-prohibit")
+    {
+    }
 
-
+    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &, bool include_hidden) const
+    {
+        return card->getSkillName() == "AIqimen" && !to->getEquips().isEmpty();
+    }
+};
 
 class Dunjia : public TriggerSkill
 {
@@ -1864,6 +1876,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         QString prompt = QString("%1:%2:%3:%4").arg("invoke").arg(invoke->owner->objectName()).arg(damage.from->objectName()).arg(QString::number(damage.damage));
             //"tricktarget:" + use.from->objectName() + ":" + invoke->invoker->objectName() + ":" + use.card->objectName();
+        invoke->invoker->tag[objectName()] = data;
         if (invoke->invoker->askForSkillInvoke(objectName(), prompt)) {
             //QVariant::fromValue(invoke->owner)
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->owner->objectName());
@@ -3026,7 +3039,9 @@ TH07Package::TH07Package()
     chen->addSkill(new Qimen);
     chen->addSkill(new Dunjia);
     chen->addSkill(new QimenDistance);
+    chen->addSkill(new QimenProhibitAI);
     related_skills.insertMulti("qimen", "#qimen-dist");
+    related_skills.insertMulti("qimen", "#qimen-prohibit");
     //chen->addSkill(new Shishen);
     //chen->addSkill(new Yexing);
     //chen->addSkill(new YexingEffect);
