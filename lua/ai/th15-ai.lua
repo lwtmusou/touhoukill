@@ -105,6 +105,65 @@ sgs.ai_skill_invoke.kuangluan2 = function(self, data)
 	return false
 end
 
+sgs.ai_skill_cardask["@yuyi_discard"] = function(self, data)
+	local damage = data:toDamage()
+    if self:isFriend(damage.from) or not self.player:canDiscard(damage.from, "hs")
+        or not self.player:canDiscard(self.player, "hs") 	then 
+	    return "."
+	end
+	
+	local red, black = false, false
+    for _,c in sgs.qlist(damage.from:getCards("s")) do
+       if (c:isBlack()) then black = true end
+       if (c:isRed()) then red = true end
+	   if (black and red) then break end
+    end 	
+	local reds, blacks = {}, {}
+	local cards = sgs.QList2Table(self.player:getCards("hs"))
+	for _,c in ipairs(cards) do
+	   if (c:isBlack()) then table.insert(blacks, c) end
+       if (c:isRed()) then table.insert(reds, c) end
+	end
+	
+	local throw 
+	if red and #blacks > 0 then
+		self:sortByUseValue(blacks, true)		
+		throw = blacks[1]
+	elseif black and #reds > 0 then
+		self:sortByUseValue(reds, true)
+        throw = reds[1]
+    else
+		self:sortByUseValue(cards, true)
+		throw = cards[1]
+	end
+	if throw:isRed() then
+		self.player:setTag("yuyi_color",sgs.QVariant("red")) 
+	else
+		self.player:setTag("yuyi_color",sgs.QVariant("black"))
+	end
+	return "$" .. throw:getId()
+end
+
+sgs.ai_skill_cardchosen.yuyi = function(self, who, flags)
+    local color = self.player:getTag("yuyi_color"):toString()
+	self.player:removeTag("yuyi_color")
+	local reds, blacks = {}, {}
+	for _,c in sgs.qlist(who:getCards("s")) do
+	   if (c:isBlack()) then table.insert(blacks, c) end
+       if (c:isRed()) then table.insert(reds, c) end
+	end
+	if color == "red" and #blacks > 0 then
+		self:sortByUseValue(blacks, true)
+		return blacks[1]
+	elseif color == "black" and #reds > 0 then
+		self:sortByUseValue(reds, true)
+		return reds[1] 
+	end
+	
+	local id = self:askForCardChosen(who, "hs", "dismantlement", sgs.Card_MethodDiscard)
+    return sgs.Sanguosha:getCard(id)
+end
+
 --[[sgs.ai_skill_invoke.yuyi = function(self, data)
 	local current = self.room:getCurrent()
 	if self.player:isCurrent() then
