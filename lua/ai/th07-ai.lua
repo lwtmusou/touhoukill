@@ -1349,6 +1349,7 @@ sgs.ai_skill_use_func.YujianCard = function(card, use, self)
 		use.card = card
 		if use.to then
 			use.to:append(target)
+			self.yujian_card = self:getMaxCard():getEffectiveId()
 			if use.to:length() >= 1 then return end
 		end
 	end

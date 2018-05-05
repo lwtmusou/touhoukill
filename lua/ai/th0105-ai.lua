@@ -967,14 +967,14 @@ function sgs.ai_cardsview_valuable.zongjiu(self, class_name, player)
 	end
 end
 
-
-sgs.ai_skill_invoke.xingyou = function(self, data)
+--已经变锁定技
+--[[sgs.ai_skill_invoke.xingyou = function(self, data)
 	local target = data:toPlayer()
 	if target and self:isFriend(target) then
 		return false
 	end
 	return true
-end
+end]]
 
 
 
