@@ -2540,7 +2540,7 @@ public:
     Shifang()
         : TriggerSkill("shifang")
     {
-        events << CardsMoveOneTime << BeforeCardsMove;
+        events << CardsMoveOneTime ;//<< BeforeCardsMove
         frequency = Wake;
     }
     static void koishi_removeskill(Room *room, ServerPlayer *player)
@@ -2556,12 +2556,13 @@ public:
         }
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    /*void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         if (triggerEvent == BeforeCardsMove) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-            if (player != NULL && player->hasSkill(this) && player->getCards("e").length() == 1 && player->getMark("shifang") == 0) {
+            QList<int> ids;
+            if (player != NULL && player->hasSkill(this) && player->getMark("shifang") == 0) {
                 foreach (int id, move.card_ids) {
                     if (room->getCardPlace(id) == Player::PlaceEquip) {
                         room->setCardFlag(Sanguosha->getCard(id), "shifang");
@@ -2571,20 +2572,20 @@ public:
                 }
             }
         }
-    }
+    }*/
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
-        if (triggerEvent == CardsMoveOneTime) {
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-            if (player != NULL && player->isAlive() && player->hasSkill(this) && player->hasFlag("shifangInvoked") && player->getMark("shifang") == 0) {
-                foreach (int id, move.card_ids) {
-                    if (Sanguosha->getCard(id)->hasFlag("shifang")) {
-                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
-                    }
-                }
-            }
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
+        if (player != NULL && player->isAlive() && player->hasSkill(this) && player->getMark("shifang") == 0 && move.from_places.contains(Player::PlaceEquip)) {
+            bool can = false;
+            if (player->getEquips().isEmpty())
+                can = true;
+            else if (move.reason.m_reason == CardMoveReason::S_REASON_CHANGE_EQUIP && player->getEquips().length() == 1)
+                can = true;
+            if (can)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
         }
         return QList<SkillInvokeDetail>();
     }
@@ -2601,7 +2602,7 @@ public:
         int x = player->getMaxHp();
         if (room->changeMaxHpForAwakenSkill(player, 4 - x)) {
             room->handleAcquireDetachSkills(player, "benwo");
-            room->setPlayerFlag(player, "-shifangInvoked");
+            //room->setPlayerFlag(player, "-shifangInvoked");
         }
         return false;
     }
@@ -4748,7 +4749,7 @@ public:
         //only for test
         /*QSet<QString> test;
         if (init)
-           test << "reimu_sp" << "shikieiki" << "aya_god";
+           test << "reimu_sp" << "shikieiki_god" << "daiyousei";
         else
            test << "renko" << "renko" << "renko";
         return test.toList();*/
