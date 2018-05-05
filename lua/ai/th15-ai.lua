@@ -261,6 +261,41 @@ sgs.ai_skill_invoke.rumeng = function(self, data)
 end
 
 
+
+sgs.ai_skill_playerchosen.yuejian = function(self,targets)
+	if #self.enemies == 0 then return nil end
+	self:sort(self.enemies,"defense")
+	if self:isWeak(self.player) then
+		self.yuejian_card = self:getMinCard():getEffectiveId()
+	else
+		self.yuejian_card = self:getMaxCard():getEffectiveId()
+	end
+	return self.enemies[1]
+end
+sgs.ai_playerchosen_intention.yuejian = 10
+
+sgs.ai_skill_use["@@yuejian"] = function(self, prompt)
+	local cardname = "known_both"
+	if self.player:hasFlag("Global_yuejianFailed") then
+		cardname = "await_exhausted"
+	end
+	local card=sgs.cloneCard(cardname, sgs.Card_NoSuit, 0)
+	card:setSkillName("yuejian")
+	card:deleteLater()
+	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+	self:useTrickCard(card, dummy_use)
+	if dummy_use.card and not dummy_use.to:isEmpty() then
+		local target_objectname = {}
+		for _, p in sgs.qlist(dummy_use.to) do
+			table.insert(target_objectname, p:objectName())
+		end
+		if #target_objectname>0 then
+			return dummy_use.card:toString() .. "->" .. table.concat(target_objectname, "+")
+		end
+	end
+	return "."
+end
+
 local yidan_skill = {}
 yidan_skill.name = "yidan"
 table.insert(sgs.ai_skills, yidan_skill)
