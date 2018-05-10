@@ -1733,7 +1733,7 @@ public:
         if (triggerEvent == DrawNCards) {
             DrawNCardsStruct qnum = data.value<DrawNCardsStruct>();
             if (qnum.player->hasSkill(this) && qnum.n > 0)
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, qnum.player, qnum.player, NULL, true);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, qnum.player, qnum.player);
         }
         return QList<SkillInvokeDetail>();
     }
