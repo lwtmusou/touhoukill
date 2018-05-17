@@ -1063,7 +1063,7 @@ public:
         if (damage.from)
             prompt = "transfer1:" + damage.to->objectName() + ":" + damage.from->objectName() + ":" + QString::number(damage.damage) + ":" + nature;
         else
-            prompt = "transfer2:" + damage.to->objectName() + ":" + QString::number(damage.damage) + ":" + nature;
+            prompt = "transfer2:" + damage.to->objectName() + "::" + QString::number(damage.damage) + ":" + nature;
         invoke->invoker->tag["jie_damage"] = data;
         return room->askForSkillInvoke(invoke->invoker, objectName(), prompt);
     }
