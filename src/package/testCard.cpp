@@ -5,6 +5,30 @@
 #include "maneuvering.h"
 #include "room.h"
 
+
+NatureJink::NatureJink(Suit suit, int number)
+    : Jink(suit, number)
+{
+    //setObjectName("nature_jink");
+    //target_fixed = true;
+}
+
+bool NatureJink::match(const QString &pattern) const
+{
+    QStringList patterns = pattern.split("+");
+    if (patterns.contains("jink"))
+        return true;
+    else
+        return Jink::match(pattern);
+}
+
+AdvancedJink::AdvancedJink(Suit suit, int number)
+    : NatureJink(suit, number)
+{
+    setObjectName("advanced_jink");
+}
+
+
 class CameraSkill : public WeaponSkill
 {
 public:
@@ -516,10 +540,11 @@ TestCardPackage::TestCardPackage()
         << new Analeptic(Card::Spade, 10)
         << new Peach(Card::Heart, 4)
         << new Peach(Card::Diamond, 13)
-        << new Jink(Card::Heart, 5)
-        << new Jink(Card::Heart, 6)
-        << new Jink(Card::Diamond, 2)
-        << new Jink(Card::Diamond, 11);
+        
+        << new AdvancedJink(Card::Heart, 5)
+        << new AdvancedJink(Card::Heart, 6)
+        << new AdvancedJink(Card::Diamond, 2)
+        << new AdvancedJink(Card::Diamond, 11);
 
     // clang-format on
 

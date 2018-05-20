@@ -3,6 +3,24 @@
 
 #include "standard.h"
 
+
+class NatureJink : public Jink
+{
+    Q_OBJECT
+
+public:
+    NatureJink(Suit suit, int number);
+    virtual bool match(const QString &pattern) const;
+};
+
+class AdvancedJink : public NatureJink
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE AdvancedJink(Card::Suit suit, int number);
+};
+
 class Camera : public Weapon
 {
     Q_OBJECT
