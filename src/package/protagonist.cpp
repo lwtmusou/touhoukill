@@ -1162,6 +1162,7 @@ public:
         : TargetModSkill("#bllmseyu")
     {
         frequency = NotFrequent;
+        pattern = "Slash";
     }
 
     virtual int getResidueNum(const Player *from, const Card *) const
@@ -1250,6 +1251,7 @@ const Card *BllmShiyuCard::validate(CardUseStruct &cardUse) const
             foreach (int id, dummy->getSubcards())
                 ana->addSubcard(id);
             ana->setSkillName("bllmshiyu");
+            ana->setFlags("Add_History");//because the use reason is not equal CardUseStruct::CARD_USE_REASON_PLAY
             return ana;
         }
     }

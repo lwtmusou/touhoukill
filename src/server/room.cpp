@@ -3616,7 +3616,8 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
     if (card == NULL)
         return false;
 
-    if (card_use.from->getPhase() == Player::Play && add_history && card_use.m_reason == CardUseStruct::CARD_USE_REASON_PLAY) {
+    if (card_use.from->getPhase() == Player::Play && add_history && 
+        (card_use.m_reason == CardUseStruct::CARD_USE_REASON_PLAY || card->hasFlag("Add_History"))) {
         if (!slash_not_record) {
             card_use.m_addHistory = true;
             addPlayerHistory(card_use.from, key);
