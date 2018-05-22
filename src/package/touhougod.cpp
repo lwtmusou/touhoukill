@@ -1722,8 +1722,6 @@ public:
         events << EventPhaseStart;
     }
 
-
-
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
         QList<SkillInvokeDetail> d;
@@ -1750,7 +1748,7 @@ public:
 
         const Card *card = room->askForCard(player, "%slash,%thunder_slash,%fire_slash", "@quanjie-discard");
         if (card == NULL) {
-            player->drawCards(1); 
+            player->drawCards(1);
             room->setPlayerCardLimitation(player, "use", "Slash", objectName(), true);
         }
         return false;
@@ -1814,7 +1812,7 @@ public:
                     }
                 }
             }
-        } else if (e == EventPhaseStart ) {
+        } else if (e == EventPhaseStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player && player->getPhase() == Player::RoundStart && player->getMark("@duanzui-extra") > 0)
                 d << SkillInvokeDetail(this, player, player, NULL, true);
@@ -2262,7 +2260,7 @@ public:
         ServerPlayer *current = change.player;
 
         QString prompt = "@qinlue-discard:" + current->objectName();
-        const Card *card = room->askForCard(source, "Slash,Weapon", prompt, QVariant::fromValue(current), Card::MethodDiscard, current, false, "qinlue");//"Slash,EquipCard"
+        const Card *card = room->askForCard(source, "Slash,Weapon", prompt, QVariant::fromValue(current), Card::MethodDiscard, current, false, "qinlue"); //"Slash,EquipCard"
         return card != NULL;
     }
 
@@ -2540,7 +2538,7 @@ public:
     Shifang()
         : TriggerSkill("shifang")
     {
-        events << CardsMoveOneTime ;//<< BeforeCardsMove
+        events << CardsMoveOneTime; //<< BeforeCardsMove
         frequency = Wake;
     }
     static void koishi_removeskill(Room *room, ServerPlayer *player)
@@ -3629,7 +3627,6 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-
         LogMessage log;
         log.type = "#ChoosePlayerWithSkill";
         log.from = invoke->invoker;
@@ -3884,7 +3881,7 @@ public:
 
             if (p->isCurrent() && hasCuimian && p->getShownHandcards().length() <= p->getMaxCards()) {
                 if (p->getMark("cuimian_limit") == 0) {
-                    room->setPlayerCardLimitation(p, "use,response,discard", ".|.|.|show", objectName(),true);
+                    room->setPlayerCardLimitation(p, "use,response,discard", ".|.|.|show", objectName(), true);
                     room->setPlayerMark(p, "cuimian_limit", 1);
                 }
             } else if (p->getMark("cuimian_limit") > 0) {
@@ -4336,26 +4333,22 @@ RumoCard::RumoCard()
 {
 }
 
-static int rumoNum(const Player *seiga)
+static int rumoNum(const Player *Self)
 {
-    int loyalist = 0;
-    int rebel = 0;
-    int renegade = 0;
-    QList<const Player *> players = seiga->getAliveSiblings();
-    players.append(Self);
-    foreach (const Player *p, players) {
-        if (p->getRole() == "rebel")
-            rebel++;
-        else if (p->getRole() == "renegade")
-            renegade++;
-        else if (p->getRole() == "loyalist" || p->getRole() == "lord")
-            loyalist++;
+    QString roles = Sanguosha->getRoles(ServerInfo.GameMode);
+    QMap<QString, int> roles_map;
+    roles_map.insert("loyal", roles.count("Z") + roles.count("C"));
+    roles_map.insert("rebel", roles.count("F"));
+    foreach (const Player *p, Self->getSiblings()) {
+        if (p->isDead()) {
+            if (p->getRole() == "rebel")
+                --roles_map["rebel"];
+            else if (p->getRole() != "renegade")
+                --roles_map["loyal"];
+        }
     }
-    renegade = qMin(renegade, 1);
-    int num = qMax(renegade, loyalist);
-    num = qMax(num, rebel);
 
-    return num;
+    return qMax(roles_map["loyal"], roles_map["rebel"]);
 }
 
 bool RumoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -4424,8 +4417,6 @@ public:
         return player->getMark("@rumo") >= 1;
     }
 };
-
-
 
 AnyunDialog *AnyunDialog::getInstance(const QString &object)
 {
@@ -4971,13 +4962,16 @@ public:
         }
         //@todo: find a standard method for confriming removable mark
         QStringList marks;
-        marks << "@clock" << "@kinki"
-              << "@qiannian" << "@shi"
+        marks << "@clock"
+              << "@kinki"
+              << "@qiannian"
+              << "@shi"
               << "@ye"
               << "@yu"
               << "@zhengti"
               << "@xinyang"
-              << "@ice" << "@stars";
+              << "@ice"
+              << "@stars";
         foreach (QString m, marks) {
             if (invoke->invoker->getMark(m) > 0)
                 invoke->invoker->loseAllMarks(m);
@@ -4985,7 +4979,6 @@ public:
         return false;
     }
 };
-
 
 class Chongneng : public TriggerSkill
 {
@@ -4996,8 +4989,9 @@ public:
         events << TargetSpecifying;
     }
 
-    static bool can_add(CardUseStruct use) {
-        return use.from->getMark("@star") > 0 && use.card->getTypeId() != Card::TypeEquip  && !use.card->isKindOf("DelayedTrick")
+    static bool can_add(CardUseStruct use)
+    {
+        return use.from->getMark("@star") > 0 && use.card->getTypeId() != Card::TypeEquip && !use.card->isKindOf("DelayedTrick")
             && !(use.card->isKindOf("IronChain") || use.card->isKindOf("LureTiger"));
     }
 
@@ -5005,14 +4999,14 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QStringList ban_list;
-        ban_list << "Jink" << "Nullification";
+        ban_list << "Jink"
+                 << "Nullification";
         if (ban_list.contains(use.card->getClassName()))
             return QList<SkillInvokeDetail>();
 
         if (use.from && use.from->isAlive() && use.from->hasSkill(this)) {
             if (use.m_isHandcard && use.card->getTypeId() != Card::TypeSkill && !use.to.isEmpty())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
-
         }
         return QList<SkillInvokeDetail>();
     }
@@ -5033,8 +5027,6 @@ public:
         return false;
     }
 
-
-
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         int chongneng_choice = invoke->tag["chongneng"].toInt();
@@ -5047,15 +5039,14 @@ public:
         } else {
             invoke->invoker->loseMark("@star");
             QString choice = "1";
-            if (use.card->isKindOf("FireAttack") || use.card->isKindOf("Duel")
-                || use.card->isKindOf("SavageAssault") || use.card->isKindOf("ArcheryAttack") || use.card->isKindOf("AwaitExhausted")) {
+            if (use.card->isKindOf("FireAttack") || use.card->isKindOf("Duel") || use.card->isKindOf("SavageAssault") || use.card->isKindOf("ArcheryAttack")
+                || use.card->isKindOf("AwaitExhausted")) {
                 choice = room->askForChoice(invoke->invoker, objectName(), "1+2");
                 if (choice == "2")
                     room->setCardFlag(use.card, "mopao2");
                 else
                     room->setCardFlag(use.card, "mopao");
-            }
-            else
+            } else
                 room->setCardFlag(use.card, "mopao");
 
             LogMessage log;
@@ -5065,14 +5056,12 @@ public:
             log.arg2 = choice;
             room->sendLog(log);
         }
-        
+
         if (use.card->getSuit() == Card::Spade)
             invoke->invoker->drawCards(1);
         return false;
     }
 };
-
-
 
 class Huixing : public TriggerSkill
 {
@@ -5083,8 +5072,8 @@ public:
         events << CardFinished;
     }
 
-
-    static bool hasCardValue(CardUseStruct use) {
+    static bool hasCardValue(CardUseStruct use)
+    {
         //use.card->getTypeId() != Card::TypeEquip && !use.card->isKindOf("DelayedTrick")
         return !(use.card->isKindOf("IronChain") || use.card->isKindOf("LureTiger"));
     }
@@ -5093,11 +5082,11 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QStringList ban_list;
-        ban_list << "Jink" << "Nullification";
+        ban_list << "Jink"
+                 << "Nullification";
         if (ban_list.contains(use.card->getClassName()))
             return QList<SkillInvokeDetail>();
-        if (use.from && use.from->isAlive() && use.from->hasSkill(this) && use.from->getMark("@star") > 0
-            && use.to.length() == 1) {
+        if (use.from && use.from->isAlive() && use.from->hasSkill(this) && use.from->getMark("@star") > 0 && use.to.length() == 1) {
             if ((use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
                 ServerPlayer *target = use.to.first();
                 if (target->isAlive() && !target->isRemoved()) {
@@ -5105,8 +5094,7 @@ public:
                     Card *card = Sanguosha->cloneCard(use.card->objectName());
                     card->setSkillName("huixing");
                     card->deleteLater();
-                    if (next && next != target && !use.from->isCardLimited(card, Card::MethodUse) 
-                        && !use.from->isProhibited(next, card)) {
+                    if (next && next != target && !use.from->isCardLimited(card, Card::MethodUse) && !use.from->isProhibited(next, card)) {
                         if (card->isKindOf("Peach") && next->isWounded())
                             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, false, next);
                         else if (card->targetFilter(QList<const Player *>(), next, use.from))
@@ -5125,25 +5113,27 @@ public:
         return invoke->invoker->askForSkillInvoke(this, prompt);
     }
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {      
+    {
         invoke->invoker->loseMark("@star");
         CardUseStruct use = data.value<CardUseStruct>();
         Card *card = Sanguosha->cloneCard(use.card->objectName());
         //copy flag
         QStringList flags;
-        flags << "mopao" << "mopao2" << "jidu_card" << "chunhua_red" << "chunhua_black";//drank?
-        foreach(QString flag, flags) {
+        flags << "mopao"
+              << "mopao2"
+              << "jidu_card"
+              << "chunhua_red"
+              << "chunhua_black"; //drank?
+        foreach (QString flag, flags) {
             if (use.card->hasFlag(flag))
                 card->setFlags(flag);
         }
-        
 
         card->setSkillName("huixing");
         room->useCard(CardUseStruct(card, invoke->invoker, invoke->targets.first()), false);
         return false;
     }
 };
-
 
 class HuixingTargetMod : public TargetModSkill
 {
@@ -5308,7 +5298,6 @@ TouhouGodPackage::TouhouGodPackage()
     marisa_god->addSkill(new Huixing);
     marisa_god->addSkill(new HuixingTargetMod);
     related_skills.insertMulti("huixing", "#huixing_effect");
-
 
     General *alice_god = new General(this, "alice_god", "touhougod", 4, false, true, true);
     Q_UNUSED(alice_god);
