@@ -1619,9 +1619,10 @@ bool QimenCard::targetFilter(const QList<const Player *> &targets, const Player 
         Card *new_card = Sanguosha->cloneCard(cardname);
         DELETE_OVER_SCOPE(Card, new_card)
         new_card->setSkillName("qimen");
-    if (targets.isEmpty())
-        return new_card &&  to_select->getEquips().isEmpty() && !Self->isProhibited(to_select, new_card, targets)
-        && (new_card->targetFilter(targets, to_select, Self) || (new_card->isKindOf("Peach") && to_select->isWounded()));
+    if (targets.isEmpty() && new_card &&  to_select->getEquips().isEmpty() && !Self->isProhibited(to_select, new_card, targets))
+        return  (new_card->isKindOf("GlobalEffect") || new_card->targetFilter(targets, to_select, Self) || (new_card->isKindOf("Peach") && to_select->isWounded()));
+
+        
     //else
     //    return new_card  && !Self->isProhibited(to_select, new_card, targets)
     //    && (new_card->targetFilter(targets, to_select, Self) || (new_card->isKindOf("Peach") && to_select->isWounded()));
