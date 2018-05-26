@@ -2804,7 +2804,7 @@ public:
 HuayinCard::HuayinCard()
 {
     will_throw = false;
-    handling_method = Card::MethodNone;
+    handling_method = Card::MethodUse;
     m_skillName = "huayin";
 }
 
@@ -2824,6 +2824,10 @@ bool HuayinCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 
 const Card *HuayinCard::validate(CardUseStruct &use) const
 {
+    use.from->showHiddenSkill("huayin");
+    Room *room = use.from->getRoom();
+    room->notifySkillInvoked(use.from, "huayin");
+    room->touhouLogmessage("#InvokeSkill", use.from, "huayin");
     Peach *card = new Peach(Card::SuitToBeDecided, -1);
     foreach (int id, subcards) {
         use.from->getRoom()->showCard(use.from, id);
@@ -2836,12 +2840,17 @@ const Card *HuayinCard::validate(CardUseStruct &use) const
     } else {
         delete card;
         use.from->setFlags("Global_huayinFailed");
+        //room->setPlayerFlag(use.from ,"Global_huayinFailed");
         return NULL;
     }
 }
 
 const Card *HuayinCard::validateInResponse(ServerPlayer *user) const
 {
+    user->showHiddenSkill("huayin");
+    Room *room = user->getRoom();
+    room->notifySkillInvoked(user, "huayin");
+    room->touhouLogmessage("#InvokeSkill", user, "huayin");
     Peach *card = new Peach(Card::SuitToBeDecided, -1);
     foreach (int id, subcards) {
         user->getRoom()->showCard(user, id);
@@ -2854,6 +2863,7 @@ const Card *HuayinCard::validateInResponse(ServerPlayer *user) const
     } else {
         delete card;
         user->setFlags("Global_huayinFailed");
+        //room->setPlayerFlag(user, "Global_huayinFailed");
         return NULL;
     }
 }
