@@ -4740,7 +4740,7 @@ public:
         //only for test
         /*QSet<QString> test;
         if (init)
-           test << "reimu_sp" << "shikieiki_god" << "leira";
+           test << "reimu_sp" << "shikieiki_god" << "marisa_slm";
         else
            test << "renko" << "renko" << "renko";
         return test.toList();*/

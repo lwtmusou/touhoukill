@@ -1518,6 +1518,8 @@ public:
     }
 };*/
 
+//version 2: EquipBroken
+/*
 class Mokai : public TriggerSkill
 {
 public:
@@ -1569,6 +1571,55 @@ public:
         } else if (event == CardsMoveOneTime) {
             invoke->invoker->drawCards(2);
         }
+        return false;
+    }
+};
+*/
+
+//vesion 3: Throw Equip
+class Mokai : public TriggerSkill
+{
+public:
+    Mokai()
+        : TriggerSkill("mokai")
+    {
+        events << CardUsed << EventPhaseChanging;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.from == Player::Play) {
+                room->setPlayerMark(change.player, "mokai", 0);
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
+    {
+        if (e == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isKindOf("TrickCard") && use.card->isBlack() && use.from->hasSkill(this) && use.from->getPhase() == Player::Play
+                && use.from->getMark("mokai") < qMax(1, use.from->getHp()))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent event, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        
+        //int id = room->askForCardChosen(invoke->invoker, invoke->invoker, "e", objectName(), false, Card::MethodNone, invoke->invoker->getBrokenEquips());
+        return room->askForCard(invoke->invoker, "EquipCard", "@mokai", data, Card::MethodDiscard, NULL, false,
+            objectName());
+    }
+
+    bool effect(TriggerEvent event, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        room->setPlayerMark(invoke->invoker, "mokai", invoke->invoker->getMark("mokai") + 1);
+        room->touhouLogmessage("#mokai_count", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(invoke->invoker->getMark("mokai")));
+        invoke->invoker->drawCards(2);
         return false;
     }
 };
