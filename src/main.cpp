@@ -1,3 +1,20 @@
+#include <QDir>
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
+
+int main(int argc, char *argv[])
+{
+    QGuiApplication a(argc, argv);
+    QDir::setCurrent(a.applicationDirPath());
+
+    QQmlApplicationEngine appEngine;
+    appEngine.load(a.applicationDirPath() + "/qml/Dialog/MainWindow.qml");
+
+    return a.exec();
+}
+
+#if 0
+
 #include "audio.h"
 #include "legacyserver.h"
 #include "mainwindow.h"
@@ -95,3 +112,4 @@ int main(int argc, char *argv[])
     delete QCoreApplication::instance();
     return execResult;
 }
+#endif
