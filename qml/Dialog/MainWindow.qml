@@ -1,5 +1,6 @@
 import QtQuick 2.5
 import QtQuick.Controls 1.4
+import QtQuick.Dialogs 1.2
 
 ApplicationWindow {
     id: mainWindow
@@ -201,6 +202,28 @@ ApplicationWindow {
         Label {
             id: tester
             anchors.centerIn: parent
+        }
+    }
+
+    MessageDialog {
+        id: confirmExitDialog
+
+        title: qsTr("Confirm exit")
+        icon: StandardIcon.Question
+        text: qsTr("Exit TouhouSatsu?")
+        standardButtons: StandardButton.Yes | StandardButton.No
+        onYes: {
+            mainWindow.closeConfirmed = true;
+            mainWindow.close();
+        }
+    }
+
+    property bool closeConfirmed: false
+
+    onClosing: {
+        if (!closeConfirmed) {
+            close.accepted = false;
+            confirmExitDialog.open();
         }
     }
 
