@@ -29,6 +29,7 @@ Window {
 
     // Qt Creator report M16 error on onClosing, ignoring
     onClosing: {
-        configDialog.destroy()
+        console.log("configDialog onClosing");
+        configDialog.destroy();
     }
 }
