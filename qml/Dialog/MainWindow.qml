@@ -203,6 +203,18 @@ ApplicationWindow {
             id: tester
             anchors.centerIn: parent
         }
+
+        Component.onCompleted: {
+            var component = Qt.createComponent("ConfigDialog.qml")
+            if (component.status === Component.Ready) {
+                var item = component.createObject(sceneArea)
+            }
+
+//            var component = Qt.createComponent("StartScene.qml")
+//            if (component.status === Component.Ready) {
+//                var item = component.createObject(sceneArea)
+//            }
+        }
     }
 
     MessageDialog {
