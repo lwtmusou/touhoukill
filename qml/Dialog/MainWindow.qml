@@ -251,7 +251,12 @@ ApplicationWindow {
     }
 
     function configure() {
-        tester.text = "configure";
+        // tester.text = "configure";
+        var component = Qt.createComponent("ConfigDialog.qml")
+        if (component.status === Component.Ready) {
+            var item = component.createObject()
+            item.show()
+        }
     }
 
     function generalOverview() {
