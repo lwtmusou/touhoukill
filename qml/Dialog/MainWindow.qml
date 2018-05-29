@@ -205,15 +205,10 @@ ApplicationWindow {
         }
 
         Component.onCompleted: {
-            var component = Qt.createComponent("ConfigDialog.qml")
+            var component = Qt.createComponent("../Ui/StartScene.qml")
             if (component.status === Component.Ready) {
                 var item = component.createObject(sceneArea)
             }
-
-//            var component = Qt.createComponent("StartScene.qml")
-//            if (component.status === Component.Ready) {
-//                var item = component.createObject(sceneArea)
-//            }
         }
     }
 
