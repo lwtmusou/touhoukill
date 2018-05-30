@@ -1,4 +1,4 @@
-import QtQuick 2.5
+import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Dialogs 1.2
 
@@ -199,15 +199,12 @@ ApplicationWindow {
         id: sceneArea
         anchors.fill: parent
 
-        Label {
-            id: tester
-            anchors.centerIn: parent
-        }
-
         Component.onCompleted: {
-            var component = Qt.createComponent("../Ui/StartScene.qml")
+            var component = Qt.createComponent("StartScene.qml")
             if (component.status === Component.Ready) {
                 var item = component.createObject(sceneArea)
+            } else {
+                console.log(component.errorString())
             }
         }
     }
@@ -225,49 +222,50 @@ ApplicationWindow {
         }
     }
 
+    ConfigDialog {
+        id: configDialog
+    }
+
     property bool closeConfirmed: false
 
     onClosing: {
         if (!closeConfirmed) {
             close.accepted = false;
             confirmExitDialog.open();
+        } else {
+
         }
     }
 
     function startGame() {
-        tester.text = "startGame";
+        console.log("startGame")
     }
 
     function startServer() {
-        tester.text = "startServer";
+        console.log("startServer")
     }
 
     function pcConsoleStart() {
-        tester.text = "pcConsoleStart";
+        console.log("pcConsoleStart")
     }
 
     function replay() {
-        tester.text = "replay";
+        console.log("replay")
     }
 
     function configure() {
-        // tester.text = "configure";
-        var component = Qt.createComponent("ConfigDialog.qml")
-        if (component.status === Component.Ready) {
-            var item = component.createObject()
-            item.show()
-        }
+        configDialog.open();
     }
 
     function generalOverview() {
-        tester.text = "generalOverview";
+        console.log("generalOverview")
     }
 
     function cardOverview() {
-        tester.text = "cardOverview";
+        console.log("cardOverview")
     }
 
     function aboutUs() {
-        tester.text = "aboutUs";
+        console.log("aboutUs")
     }
 }
