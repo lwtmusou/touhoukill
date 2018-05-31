@@ -1554,27 +1554,40 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
     //for AI: sgs.ai_choicemade_filter.cardChosen.snatch
     //like Xunshi
     effect.from->tag["DismantlementCard"] = QVariant::fromValue(effect.card);
+    bool visible = false;
 
-    if (!using_2013 || ai) {
-        room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
-        for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
-            card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName(), false, Card::MethodDiscard);
-            ids << card_id;
-            places << room->getCardPlace(card_id);
-            dummy->addSubcard(card_id);
-            effect.to->addToPile("#dismantle", card_id, false);
-            if (!effect.from->canDiscard(effect.to, flag))
-                break;
+    room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
+    for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
+        if (using_2013 && !ai) {
+            if (effect.to->getEquips().isEmpty() || !effect.from->canDiscard(effect.to, "e") && effect.from->canDiscard(effect.to, "hs")) {
+                visible = true;
+                LogMessage log;
+                log.type = "$ViewAllCards";
+                log.from = effect.from;
+                log.to << effect.to;
+                log.card_str = IntList2StringList(effect.to->handCards()).join("+");
+                room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+            }
+            else
+                visible = false;
         }
-
-        //move the first card back temporarily
-        for (int i = 0; i < ids.length(); i += 1) {
-            room->moveCardTo(Sanguosha->getCard(ids.at(i)), effect.to, places.at(i), false);
-        }
-        room->setPlayerFlag(effect.to, "-dismantle_InTempMoving");
-
+        card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName(), visible, Card::MethodDiscard);
+        ids << card_id;
+        places << room->getCardPlace(card_id);
+        dummy->addSubcard(card_id);
+        effect.to->addToPile("#dismantle", card_id, false);
+        if (!effect.from->canDiscard(effect.to, flag))
+            break;
     }
-    else {
+
+    //move the first card back temporarily
+    for (int i = 0; i < ids.length(); i += 1) {
+        room->moveCardTo(Sanguosha->getCard(ids.at(i)), effect.to, places.at(i), false);
+    }
+    room->setPlayerFlag(effect.to, "-dismantle_InTempMoving");
+
+
+    /*else {
         if (!effect.to->getEquips().isEmpty())
             card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName(), false, Card::MethodDiscard);
         if (card_id == -1 || (!effect.to->isKongcheng() && effect.to->handCards().contains(card_id))) {
@@ -1588,7 +1601,7 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
             card_id = room->askForCardChosen(effect.from, effect.to, "hs", objectName(), true, Card::MethodDiscard);
             //Fs: I want to use room->doGongxin here
         }
-    }
+    }*/
     //room->throwCard(card_id, room->getCardPlace(card_id) == Player::PlaceDelayedTrick ? NULL : effect.to, effect.from); // WHY NULL?
     room->throwCard(dummy, effect.to, effect.from);
     delete dummy;
