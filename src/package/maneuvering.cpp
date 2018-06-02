@@ -102,7 +102,7 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const
         recover.recover = 1 + effect.effectValue.first();
         room->recover(effect.to, recover);
     } else {
-        room->addPlayerMark(effect.to, "drank", 1+ effect.effectValue.first());
+        room->addPlayerMark(effect.to, "drank", 1 + effect.effectValue.first());
     }
 }
 
@@ -511,7 +511,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
         if (effect.to->getCards("h").isEmpty())
             break;
     }
-    
+
     //move the first card back temporarily
     for (int i = 0; i < ids.length(); i += 1) {
         room->moveCardTo(Sanguosha->getCard(ids.at(i)), effect.to, places.at(i), false);
@@ -523,14 +523,14 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
 
     QString suit_str = Sanguosha->getCard(ids.first())->getSuitString();
     QStringList suits;
-    foreach(int id, ids) {
+    foreach (int id, ids) {
         QString suit = Sanguosha->getWrappedCard(id)->getSuitString();
         if (!suits.contains(suit))
             suits << suit;
         if (suits.length() >= 4)
             break;
     }
-        
+
     QString pattern = QString(".|%1|.|hand").arg(suits.join(","));
     //QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
     while (suits.length() < 4) {

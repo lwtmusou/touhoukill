@@ -658,13 +658,12 @@ public:
         Room *room = player->getRoom();
         if (player->isCardLimited("use", "santi_limit_1"))
             room->removePlayerCardLimitation(player, "use", "TrickCard,EquipCard$1", "santi_limit_1");
-        
+
         if (player->isCardLimited("use", "santi_limit_2"))
             room->removePlayerCardLimitation(player, "use", "TrickCard,BasicCard$1", "santi_limit_2");
-        
+
         if (player->isCardLimited("use", "santi_limit_3"))
             room->removePlayerCardLimitation(player, "use", "EquipCard,BasicCard$1", "santi_limit_3");
-        
     }
 
     static void setSantiLimit(ServerPlayer *player)
@@ -1496,12 +1495,10 @@ public:
     {
         if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive){
-                foreach(ServerPlayer *p, room->getAllPlayers())
+            if (change.to == Player::NotActive) {
+                foreach (ServerPlayer *p, room->getAllPlayers())
                     room->setPlayerFlag(p, "-bumeng");
-            
             }
-
         }
     }
 

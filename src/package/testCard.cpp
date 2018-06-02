@@ -5,7 +5,6 @@
 #include "maneuvering.h"
 #include "room.h"
 
-
 NatureJink::NatureJink(Suit suit, int number)
     : Jink(suit, number)
 {
@@ -27,7 +26,6 @@ AdvancedJink::AdvancedJink(Suit suit, int number)
 {
     setObjectName("advanced_jink");
 }
-
 
 class CameraSkill : public WeaponSkill
 {

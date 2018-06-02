@@ -498,7 +498,7 @@ QGroupBox *QijiDialog::createLeft()
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     QStringList ban_list; //no need to ban
     //if (object_name == "chuangshi")
-   //     ban_list << "Analeptic";
+    //     ban_list << "Analeptic";
 
     foreach (const Card *card, cards) {
         if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName())
@@ -1190,7 +1190,8 @@ public:
               << "@yu"
               << "@zhengti"
               << "@xinyang"
-              << "@ice" << "@stars";
+              << "@ice"
+              << "@stars";
         QStringList disablePiles;
         disablePiles << "wooden_ox";
         foreach (ServerPlayer *p, room->getAlivePlayers()) {

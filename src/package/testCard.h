@@ -3,7 +3,6 @@
 
 #include "standard.h"
 
-
 class NatureJink : public Jink
 {
     Q_OBJECT

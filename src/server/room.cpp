@@ -2100,7 +2100,7 @@ void Room::removePlayerMark(ServerPlayer *player, const QString &mark, int remov
 
 void Room::setPlayerCardLimitation(ServerPlayer *player, const QString &limit_list, const QString &pattern, const QString &reason, bool single_turn)
 {
-    player->setCardLimitation(limit_list, pattern, reason,single_turn);
+    player->setCardLimitation(limit_list, pattern, reason, single_turn);
 
     JsonArray arg;
     arg << true;
@@ -3602,22 +3602,20 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
         key = card->getClassName();
     int slash_count = card_use.from->getSlashCount();
     bool showTMskill = false;
-    foreach(const Skill *skill, card_use.from->getSkillList(false, true)) {
+    foreach (const Skill *skill, card_use.from->getSkillList(false, true)) {
         if (skill->inherits("TargetModSkill")) {
             const TargetModSkill *tm = qobject_cast<const TargetModSkill *>(skill);
-            if (tm->getResidueNum(card_use.from, card) > 500 ) showTMskill = true;  //&& card_use.from->isHiddenSkill()
+            if (tm->getResidueNum(card_use.from, card) > 500)
+                showTMskill = true; //&& card_use.from->isHiddenSkill()
         }
     }
-    bool slash_not_record
-        = key.contains("Slash") && slash_count > 0 && (card_use.from->hasWeapon("Crossbow") || showTMskill);
-    
+    bool slash_not_record = key.contains("Slash") && slash_count > 0 && (card_use.from->hasWeapon("Crossbow") || showTMskill);
 
     card = card_use.card->validate(card_use);
     if (card == NULL)
         return false;
 
-    if (card_use.from->getPhase() == Player::Play && add_history && 
-        (card_use.m_reason == CardUseStruct::CARD_USE_REASON_PLAY || card->hasFlag("Add_History"))) {
+    if (card_use.from->getPhase() == Player::Play && add_history && (card_use.m_reason == CardUseStruct::CARD_USE_REASON_PLAY || card->hasFlag("Add_History"))) {
         if (!slash_not_record) {
             card_use.m_addHistory = true;
             addPlayerHistory(card_use.from, key);
@@ -3925,7 +3923,7 @@ void Room::damage(const DamageStruct &data)
     }
     if (damage_data.to->isRemoved())
         return;
-    
+
     QVariant qdata = QVariant::fromValue(damage_data);
 
     if (!damage_data.chain && !damage_data.transfer) {
@@ -6788,7 +6786,6 @@ void Room::saveWinnerTable(const QString &winner, bool isSurrender)
 #include <QTextCodec>
 void Room::countDescription()
 {
-
     QString location = "etc/count.txt";
     QFile file(location);
     if (!file.open(QIODevice::ReadWrite))
@@ -6800,15 +6797,13 @@ void Room::countDescription()
     QList<QString> all = Sanguosha->getLimitedGeneralNames();
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
-
     QMultiMap<int, QString> map;
-    foreach(QString name, all) {
+    foreach (QString name, all) {
         const General *gen = Sanguosha->getGeneral(name);
         QString line = "";
-        foreach(const Skill *skill, gen->getVisibleSkillList()) {
+        foreach (const Skill *skill, gen->getVisibleSkillList()) {
             QString skill_name = Sanguosha->translate(skill->objectName());
-           
-            
+
             QString desc = Sanguosha->translate(":" + skill->objectName());
             QRegExp rx("<[^>]*>");
             desc.remove(rx);
@@ -6816,7 +6811,6 @@ void Room::countDescription()
             //des_src.replace("\n", "<br/>");
             //des_src.replace("\n", "<br>");
             line = line + skill_line;
-            
         }
         //QString desc = gen->getSkillDescription();
         map.insert(line.length(), name);
@@ -6826,8 +6820,6 @@ void Room::countDescription()
         //countString.append(line);
         //countString.append("\n");
         //QString str = QString::fromUtf8(countString);
-        
-       
     }
     QMultiMap<int, QString>::iterator it;
     int num = 0;
@@ -6838,9 +6830,7 @@ void Room::countDescription()
         stream << countString;
         num += it.key();
     }
-    QString count =  QString::number(num / map.size());
+    QString count = QString::number(num / map.size());
     stream << count;
     file.close();
-
-
 }

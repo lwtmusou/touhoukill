@@ -1173,7 +1173,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
         card_item->setPos(mapFromScene(card_item->scenePos()));
         card_item->setParentItem(this);
     }
-    
+
     foreach (CardItem *card_item, card_items)
         _addHandCard(card_item, true, Sanguosha->translate(pile_name));
 

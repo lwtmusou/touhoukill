@@ -85,7 +85,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
 class ZongjiuCard : public SkillCard
 {
     Q_OBJECT

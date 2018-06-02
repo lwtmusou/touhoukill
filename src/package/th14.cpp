@@ -702,7 +702,6 @@ public:
     }
 };
 
-
 class FeitouVS : public OneCardViewAsSkill
 {
 public:
@@ -992,7 +991,8 @@ public:
         CardEffectStruct effect = data.value<CardEffectStruct>();
         QString prompt = "target2";
         if (effect.card->hasFlag("tianxieEffected_" + effect.to->objectName()))
-            prompt = "target1:" + effect.from->objectName();;
+            prompt = "target1:" + effect.from->objectName();
+        ;
         invoke->invoker->tag[objectName()] = data;
         return invoke->invoker->askForSkillInvoke(objectName(), prompt);
     }
@@ -1103,7 +1103,7 @@ public:
         frequency = Skill::Compulsory;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.card && damage.from && damage.from->isAlive() && damage.by_user && damage.to->isAlive() && damage.from != damage.to && !damage.to->getEquips().isEmpty()
@@ -1116,7 +1116,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
 

@@ -1722,7 +1722,7 @@ public:
         events << EventPhaseStart;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         QList<SkillInvokeDetail> d;
         ServerPlayer *player = data.value<ServerPlayer *>();
@@ -3848,7 +3848,7 @@ public:
         view_as_skill = new XinhuaVS;
     }
 
-    void record(TriggerEvent e, Room *room, QVariant &data) const
+    void record(TriggerEvent e, Room *room, QVariant &) const
     {
         if (e == EventPhaseChanging) {
             foreach (ServerPlayer *p, room->getAlivePlayers())
@@ -4658,7 +4658,7 @@ public:
     {
         Room *room = zuoci->getRoom();
         QStringList huashens = zuoci->getHiddenGenerals();
-        QStringList list = GetAvailableGenerals(zuoci, init);
+        QStringList list = GetAvailableGenerals(zuoci);
         qShuffle(list);
         if (list.isEmpty())
             return;
@@ -4701,7 +4701,7 @@ public:
             zuoci->removeHiddenGenerals(deleteName);
     }
 
-    static QStringList GetAvailableGenerals(ServerPlayer *zuoci, bool init)
+    static QStringList GetAvailableGenerals(ServerPlayer *zuoci)
     {
         QSet<QString> all = Sanguosha->getLimitedGeneralNames().toSet();
         Room *room = zuoci->getRoom();
@@ -4995,7 +4995,7 @@ public:
             && !(use.card->isKindOf("IronChain") || use.card->isKindOf("LureTiger"));
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QStringList ban_list;
@@ -5078,7 +5078,7 @@ public:
         return !(use.card->isKindOf("IronChain") || use.card->isKindOf("LureTiger"));
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QStringList ban_list;
@@ -5106,13 +5106,13 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QString prompt = "target:" + objectName() + ":" + invoke->preferredTarget->objectName() + ":" + use.card->objectName();
         return invoke->invoker->askForSkillInvoke(this, prompt);
     }
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         invoke->invoker->loseMark("@star");
         CardUseStruct use = data.value<CardUseStruct>();

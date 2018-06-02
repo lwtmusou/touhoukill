@@ -107,13 +107,13 @@ public:
     Fengmo()
         : TriggerSkill("fengmo")
     {
-        events  << CardResponded << CardUsed << EventPhaseChanging;
+        events << CardResponded << CardUsed << EventPhaseChanging;
     }
 
-    void record(TriggerEvent e, Room *room, QVariant &data) const
+    void record(TriggerEvent e, Room *room, QVariant &) const
     {
         if (e == EventPhaseChanging) {
-            foreach(ServerPlayer *p, room->getAllPlayers()) {
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
                 room->setPlayerFlag(p, "-fengmo_used");
             }
         }
@@ -134,10 +134,10 @@ public:
                 card = response.m_card;
         }
         if (player && card && (card->isKindOf("Jink") || card->isKindOf("Nullification"))) {
-            foreach(ServerPlayer *reimu, room->findPlayersBySkillName(objectName())) {
+            foreach (ServerPlayer *reimu, room->findPlayersBySkillName(objectName())) {
                 if (!reimu->hasFlag("fengmo_used"))
                     d << SkillInvokeDetail(this, reimu, reimu, NULL, false, player);
-            }    
+            }
         }
         return d;
     }
@@ -162,7 +162,7 @@ public:
         ServerPlayer *target = invoke->targets.first();
         if (judge.isGood()) {
             room->setPlayerMark(target, "@fengmo_SingleTurn", 1);
-            room->setPlayerCardLimitation(target, "use,response", ".|^heart",  objectName(),true);
+            room->setPlayerCardLimitation(target, "use,response", ".|^heart", objectName(), true);
         }
         return false;
     }
@@ -1251,7 +1251,7 @@ const Card *BllmShiyuCard::validate(CardUseStruct &cardUse) const
             foreach (int id, dummy->getSubcards())
                 ana->addSubcard(id);
             ana->setSkillName("bllmshiyu");
-            ana->setFlags("Add_History");//because the use reason is not equal CardUseStruct::CARD_USE_REASON_PLAY
+            ana->setFlags("Add_History"); //because the use reason is not equal CardUseStruct::CARD_USE_REASON_PLAY
             return ana;
         }
     }
@@ -1607,15 +1607,13 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent event, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        
         //int id = room->askForCardChosen(invoke->invoker, invoke->invoker, "e", objectName(), false, Card::MethodNone, invoke->invoker->getBrokenEquips());
-        return room->askForCard(invoke->invoker, "EquipCard", "@mokai", data, Card::MethodDiscard, NULL, false,
-            objectName());
+        return room->askForCard(invoke->invoker, "EquipCard", "@mokai", data, Card::MethodDiscard, NULL, false, objectName());
     }
 
-    bool effect(TriggerEvent event, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         room->setPlayerMark(invoke->invoker, "mokai", invoke->invoker->getMark("mokai") + 1);
         room->touhouLogmessage("#mokai_count", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(invoke->invoker->getMark("mokai")));
@@ -1842,17 +1840,15 @@ public:
         if (subcards.length() == 0 || player->isKongcheng())
             return false;
         int handnum = 0;
-        foreach(const Card *c, player->getHandcards()) {
+        foreach (const Card *c, player->getHandcards()) {
             if (subcards.contains(c->getEffectiveId()))
                 handnum++;
-            else
-            {
+            else {
                 handnum = 0;
                 break;
             }
-
         }
-        if (handnum >=  player->getHandcardNum())
+        if (handnum >= player->getHandcardNum())
             return true;
         else
             return false;

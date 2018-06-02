@@ -1590,7 +1590,6 @@ void Player::clearCardLimitation(bool single_turn)
                 //card_limitation[method][it.key()].removeAll(pattern);
                 card_limitation[method].remove(it.key());
             }
-            
         }
         /*foreach (QString pattern, limit_patterns) {
             if (!single_turn || pattern.endsWith("$1"))
@@ -1616,7 +1615,6 @@ bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool i
                 ExpPattern p(_pattern);
                 if (p.match(this, c))
                     return true;
-                
             }
 
             /*foreach (QString pattern, card_limitation[method]) {
@@ -1657,7 +1655,7 @@ bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool i
 bool Player::isCardLimited(const QString &limit_list, const QString &reason) const
 {
     QStringList limit_type = limit_list.split(",");
-    foreach(QString limit, limit_type) {
+    foreach (QString limit, limit_type) {
         Card::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
         if (card_limitation[method].contains(reason))
             return true;
@@ -1710,7 +1708,7 @@ void Player::copyFrom(Player *p)
     b->chained = a->chained;
     b->judging_area = QList<int>(a->judging_area);
     b->fixed_distance = QHash<const Player *, int>(a->fixed_distance);
-    b->card_limitation = QMap<Card::HandlingMethod,  QMap<QString, QStringList>>(a->card_limitation);
+    b->card_limitation = QMap<Card::HandlingMethod, QMap<QString, QStringList> >(a->card_limitation);
 
     b->tag = QVariantMap(a->tag);
 }

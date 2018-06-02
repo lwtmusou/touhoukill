@@ -120,7 +120,7 @@ public:
                 continue;
             if (use.card->isKindOf("Drowning") && !p->canDiscard(p, "e"))
                 continue;
-                    
+
             if (!use.card->targetFilter(QList<const Player *>(), p, use.from))
                 continue;
             targets << p;
@@ -1525,7 +1525,7 @@ public:
         view_as_skill = new HuishengVS;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->isKindOf("Jink") || use.from->hasFlag("Global_ProcessBroken") || !use.from->isAlive())
@@ -1542,7 +1542,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         room->setTag("huisheng_use", data);
         CardUseStruct use = data.value<CardUseStruct>();
@@ -1557,7 +1557,6 @@ public:
         room->setPlayerProperty(invoke->invoker, "huisheng_target", QVariant());
         return false;
     }
-
 };
 
 class HuishengTargetMod : public TargetModSkill

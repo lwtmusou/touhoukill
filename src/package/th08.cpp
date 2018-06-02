@@ -710,7 +710,7 @@ public:
         events << CardUsed << CardResponded << EventPhaseChanging;
     }
 
-    void record(TriggerEvent e, Room *room, QVariant &data) const
+    void record(TriggerEvent e, Room *, QVariant &data) const
     {
         //record times of using card
         if (e == CardUsed || e == CardResponded) {
@@ -719,8 +719,7 @@ public:
             if (e == CardUsed) {
                 player = data.value<CardUseStruct>().from;
                 card = data.value<CardUseStruct>().card;
-            }
-            else {
+            } else {
                 CardResponseStruct response = data.value<CardResponseStruct>();
                 player = response.m_from;
                 if (response.m_isUse)
@@ -732,8 +731,7 @@ public:
                 else
                     player->setFlags("xushi_first");
             }
-        }
-        else if (e == EventPhaseChanging) {
+        } else if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.from == Player::Play) {
                 change.player->setFlags("-xushi_first");
@@ -747,12 +745,11 @@ public:
         if (e != CardUsed)
             return QList<SkillInvokeDetail>();
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->getTypeId() == Card::TypeSkill || use.to.length() != 1 || use.from == NULL
-            || use.from->getPhase() != Player::Play || use.from->hasFlag("xushi_second"))
+        if (use.card->getTypeId() == Card::TypeSkill || use.to.length() != 1 || use.from == NULL || use.from->getPhase() != Player::Play || use.from->hasFlag("xushi_second"))
             return QList<SkillInvokeDetail>();
         //just for skill "tianqu"
-        bool ignore = (use.from && use.from->hasSkill("tianqu", false, false) 
-            && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !use.from->hasFlag("IgnoreFailed"));
+        bool ignore = (use.from && use.from->hasSkill("tianqu", false, false) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
+                       && !use.from->hasFlag("IgnoreFailed"));
 
         if (!ignore && use.card->targetFixed())
             return QList<SkillInvokeDetail>();
@@ -1729,7 +1726,7 @@ public:
             if (player->hasSkill(this) && player->getPhase() == Player::Draw) {
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
             }
-        }*/ 
+        }*/
         if (triggerEvent == DrawNCards) {
             DrawNCardsStruct qnum = data.value<DrawNCardsStruct>();
             if (qnum.player->hasSkill(this) && qnum.n > 0)
@@ -1738,9 +1735,9 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        return use_chuangshi(room, invoke->invoker);  
+        return use_chuangshi(room, invoke->invoker);
     }
 
     bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const

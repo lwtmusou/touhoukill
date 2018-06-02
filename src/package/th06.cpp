@@ -1489,7 +1489,7 @@ public:
     Yinren()
         : TriggerSkill("yinren")
     {
-        events << CardFinished << TargetSpecified;//EventPhaseChanging
+        events << CardFinished << TargetSpecified; //EventPhaseChanging
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
@@ -1498,7 +1498,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (!use.card->isKindOf("Slash"))
                 return;
-            foreach(ServerPlayer *p, use.to) {
+            foreach (ServerPlayer *p, use.to) {
                 QStringList yinren = p->property("YinrenInvalid").toStringList();
                 if (!yinren.contains(use.card->toString()))
                     continue;
@@ -1511,7 +1511,6 @@ public:
                     room->setPlayerSkillInvalidity(p, NULL, false);
                     room->removePlayerCardLimitation(p, "use,response", ".|red|.|.$1", objectName());
                 }
-
             }
         }
     }

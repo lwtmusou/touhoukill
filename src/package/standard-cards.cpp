@@ -1169,14 +1169,12 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const
     bool dodamage = false;
     for (int i = 0; i < times; i += 1) {
         QString prompt = QString("savage-assault-slash:%1:%2:%3").arg(effect.from->objectName()).arg(times).arg(i + 1);
-        const Card *slash = room->askForCard(effect.to, "slash", prompt, QVariant::fromValue(effect), Card::MethodResponse,
-            effect.from->isAlive() ? effect.from : NULL);
+        const Card *slash = room->askForCard(effect.to, "slash", prompt, QVariant::fromValue(effect), Card::MethodResponse, effect.from->isAlive() ? effect.from : NULL);
         if (slash) {
             if (slash->getSkillName() == "spear")
                 room->setEmotion(effect.to, "weapon/spear");
             room->setEmotion(effect.to, "killer");
-        }
-        else {
+        } else {
             dodamage = true;
             break;
         }
@@ -1187,7 +1185,7 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const
             room->setEmotion(effect.to, "weapon/spear");
         room->setEmotion(effect.to, "killer");
     } else*/
-    if (dodamage){
+    if (dodamage) {
         room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue.last()));
         room->getThread()->delay();
     }
@@ -1207,8 +1205,7 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const
     bool dodamage = false;
     for (int i = 0; i < times; i += 1) {
         QString prompt = QString("archery-attack-jink:%1:%2:%3").arg(effect.from->objectName()).arg(times).arg(i + 1);
-        const Card *jink = room->askForCard(effect.to, "jink", prompt, QVariant::fromValue(effect), Card::MethodResponse,
-            effect.from->isAlive() ? effect.from : NULL);
+        const Card *jink = room->askForCard(effect.to, "jink", prompt, QVariant::fromValue(effect), Card::MethodResponse, effect.from->isAlive() ? effect.from : NULL);
         if (jink && jink->getSkillName() != "eight_diagram" && jink->getSkillName() != "bazhen")
             room->setEmotion(effect.to, "jink");
         if (!jink) {
@@ -1216,7 +1213,6 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const
             break;
         }
     }
-
 
     if (dodamage) {
         room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue.last()));
@@ -1259,7 +1255,6 @@ bool Collateral::targetFilter(const QList<const Player *> &targets, const Player
         if (!to_select->getWeapon() && !ignore)
             return false;
         return true;
-    
     }
     return false;
 }
@@ -1296,7 +1291,7 @@ void Collateral::onEffect(const CardEffectStruct &effect) const
 
     QList<ServerPlayer *> targets;
     QList<ServerPlayer *> victims;
-    foreach(ServerPlayer *p, room->getOtherPlayers(killer)) {
+    foreach (ServerPlayer *p, room->getOtherPlayers(killer)) {
         if (killer->canSlash(p))
             targets << p;
     }
@@ -1320,7 +1315,7 @@ void Collateral::onEffect(const CardEffectStruct &effect) const
             break;
     }
     room->sortByActionOrder(victims);
-    foreach(ServerPlayer *v, victims) {
+    foreach (ServerPlayer *v, victims) {
         WrappedCard *weapon = killer->getWeapon();
         prompt = QString("collateral-slash:%1:%2").arg(v->objectName()).arg(source->objectName());
         bool doSlash = doCollateral(room, killer, v, prompt);
@@ -1427,7 +1422,7 @@ void Duel::onEffect(const CardEffectStruct &effect) const
                 break;
         } else {
             for (int i = 0; i < times; i += 1) {
-                QString prompt = QString("duel-slash:%1:%2:%3").arg(second->objectName()).arg(times).arg(i+1);
+                QString prompt = QString("duel-slash:%1:%2:%3").arg(second->objectName()).arg(times).arg(i + 1);
                 const Card *slash = room->askForCard(first, "slash", prompt, QVariant::fromValue(effect), Card::MethodResponse, second);
                 if (slash == NULL) {
                     dodamage = true;
@@ -1486,7 +1481,7 @@ void Snatch::onEffect(const CardEffectStruct &effect) const
     //for AI: sgs.ai_choicemade_filter.cardChosen.snatch
     //like Liyou  Xunshi
     effect.from->tag["SnatchCard"] = QVariant::fromValue(effect.card);
-    
+
     //int card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName());
     //CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
     //room->obtainCard(effect.from, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
@@ -1544,9 +1539,8 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
         return;
     }
 
-
     int card_id = -1;
-    
+
     QList<int> ids;
     QList<Player::Place> places;
     DummyCard *dummy = new DummyCard;
@@ -1567,8 +1561,7 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
                 log.to << effect.to;
                 log.card_str = IntList2StringList(effect.to->handCards()).join("+");
                 room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
-            }
-            else
+            } else
                 visible = false;
         }
         card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName(), visible, Card::MethodDiscard);
@@ -1585,7 +1578,6 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
         room->moveCardTo(Sanguosha->getCard(ids.at(i)), effect.to, places.at(i), false);
     }
     room->setPlayerFlag(effect.to, "-dismantle_InTempMoving");
-
 
     /*else {
         if (!effect.to->getEquips().isEmpty())
@@ -2094,7 +2086,6 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
         room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
         return;
     }
-        
 
     DummyCard *dummy = new DummyCard;
     QList<int> ids;
@@ -2107,7 +2098,7 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
         // force discard!!!
         if (card == NULL) {
             QList<const Card *> equips = effect.to->getCards("e");
-            foreach(const Card *c, equips) {
+            foreach (const Card *c, equips) {
                 if (effect.to->isJilei(c))
                     equips.removeOne(c);
             }
@@ -2257,7 +2248,7 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const
     QList<int> ids;
     QList<Player::Place> places;
     room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
-    
+
     for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
         int id = room->askForCardChosen(effect.from, effect.to, "h", objectName());
         ids << id;
@@ -2272,7 +2263,7 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const
         room->moveCardTo(Sanguosha->getCard(ids.at(i)), effect.to, places.at(i), false);
     }
     room->setPlayerFlag(effect.to, "-dismantle_InTempMoving");
-    
+
     effect.to->addToShownHandCards(ids);
 }
 
@@ -2501,9 +2492,6 @@ DeathSickle::DeathSickle(Card::Suit suit, int number)
 {
     setObjectName("DeathSickle");
 }
-
-
-
 
 StandardCardPackage::StandardCardPackage()
     : Package("standard_cards", Package::CardPack)

@@ -7,9 +7,9 @@
 #include "roomscene.h"
 #include "settings.h"
 #include <QHBoxLayout>
+#include <QList>
 #include <QMessageBox>
 #include <QPushButton>
-#include <qlist.h>
 
 using namespace QSanProtocol;
 

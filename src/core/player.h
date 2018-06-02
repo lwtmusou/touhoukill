@@ -367,7 +367,7 @@ private:
     QString next;
 
     //QMap<Card::HandlingMethod, QStringList> card_limitation;
-    QMap<Card::HandlingMethod, QMap<QString, QStringList>> card_limitation; //method, reason , pattern
+    QMap<Card::HandlingMethod, QMap<QString, QStringList> > card_limitation; //method, reason , pattern
 
 signals:
     void general_changed();

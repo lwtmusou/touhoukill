@@ -162,8 +162,6 @@ signals:
     void onButtonClick();
 };
 
-
-
 class TouhouGodPackage : public Package
 {
     Q_OBJECT

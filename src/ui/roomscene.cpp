@@ -1429,7 +1429,7 @@ void RoomScene::updateTargetsEnablity(const Card *card)
                 isCollateral = (qice_card->getUserString() == "collateral");
             }
         }*/
-        //bool weimuFailure = isCollateral && selected_targets.length() == 1; //Collateral-Victim is weimu owner? 
+        //bool weimuFailure = isCollateral && selected_targets.length() == 1; //Collateral-Victim is weimu owner?
         //=====================================
 
         //bool enabled = (card == NULL) || ((weimuFailure || !Sanguosha->isProhibited(Self, player, card, selected_targets)) && maxVotes > 0);
@@ -3999,12 +3999,12 @@ void RoomScene::showPile(const QList<int> &card_ids, const QString &name, const 
     } else {
         if (name == "zhenli") {
             QList<Card *> zhenlis;
-            foreach(int id, card_ids) {
+            foreach (int id, card_ids) {
                 zhenlis << Sanguosha->getCard(id);
             }
             std::sort(zhenlis.begin(), zhenlis.end(), Card::CompareByNumber);
             QList<int> zhenids;
-            foreach(Card *c, zhenlis)
+            foreach (Card *c, zhenlis)
                 zhenids << c->getId();
             pileContainer->fillCards(zhenids);
         } else
