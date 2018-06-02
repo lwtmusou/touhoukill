@@ -1,9 +1,9 @@
 import QtQuick 2.6
 import QtQuick.Window 2.2
 
-Rectangle {
+Image {
     id: startScene
-    color: "green"
+    source: "../backdrop/hall/gensoukyou_1.jpg"
     anchors.fill: parent
 
     Grid {
