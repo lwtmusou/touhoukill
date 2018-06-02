@@ -4,7 +4,6 @@
 
 #include <QBuffer>
 #include <QFile>
-#include <QMessageBox>
 
 #include <cmath>
 

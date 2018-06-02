@@ -1136,10 +1136,10 @@ public:
         view_as_skill = new BeishuiVS;
     }
 
-    virtual QDialog *getDialog() const
-    {
-        return BeishuiDialog::getInstance("beishui", true, false);
-    }
+    //    virtual QDialog *getDialog() const
+    //    {
+    //        return QijiDialog::getInstance("beishui", true, false);
+    //    }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const
     {

@@ -2,8 +2,6 @@
 
 #include "settings.h"
 
-#include <QMessageBox>
-
 %}
 
 %native(GetFileNames) int GetFileNames(lua_State *lua);
@@ -147,8 +145,8 @@ static int GetProperty(lua_State *lua)
 static int Alert(lua_State *lua)
 {
     const char *msg = luaL_checkstring(lua, 1);
-
-    QMessageBox::warning(nullptr, "Lua warning", msg);
+	
+	qDebug("Lua Warning: %s", msg);
 
     return 0;
 }

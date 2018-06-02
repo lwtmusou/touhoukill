@@ -6,6 +6,8 @@
 #include "settings.h"
 #include "structs.h"
 
+#if 0
+
 #include <QCheckBox>
 #include <QFormLayout>
 #include <QJsonArray>
@@ -141,3 +143,5 @@ void ServerInfoWidget::clear()
     time_limit_label->clear();
     list_widget->clear();
 }
+
+#endif

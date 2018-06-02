@@ -2,9 +2,9 @@
 #define SERVERDIALOG_H__
 
 
-class QGroupBox;
-class QLabel;
-class QRadioButton;
+#include <QMultiHash>
+
+#if 0
 
 #include <QButtonGroup>
 #include <QCheckBox>
@@ -13,12 +13,10 @@ class QRadioButton;
 #include <QLayoutItem>
 #include <QLineEdit>
 #include <QListWidget>
-#include <QMultiHash>
 #include <QSpinBox>
 #include <QSplitter>
 #include <QTabWidget>
 
-class Package;
 
 class Select3v3GeneralDialog : public QDialog
 {
@@ -164,7 +162,10 @@ private slots:
 
     void checkCurrentBtnIsHegemonyMode(bool v);
 };
+#endif
 
+class Package;
+class Room;
 
 
 #endif

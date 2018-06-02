@@ -1,11 +1,15 @@
 #include "serverdialog.h"
 
-#include "SkinBank.h"
-#include "choosegeneraldialog.h"
 #include "engine.h"
 #include "general.h"
 #include "mode.h"
 #include "package.h"
+
+#include <QCoreApplication>
+#include <QHostInfo>
+using namespace QSanProtocol;
+
+#if 0
 
 #include <QAction>
 #include <QApplication>
@@ -943,3 +947,4 @@ bool ServerDialog::config()
 
     return true;
 }
+#endif

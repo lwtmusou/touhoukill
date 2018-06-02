@@ -3,14 +3,13 @@
 #include "engine.h"
 #include "general.h"
 
-#include <QApplication>
+#include <QCoreApplication>
 #include <QDateTime>
 #include <QFile>
 #include <QFontDatabase>
 #include <QGlobalStatic>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QMessageBox>
 #include <QNetworkInterface>
 #include <QRandomGenerator>
 #include <QStringList>
@@ -79,7 +78,7 @@ void Settings::init()
             SmallFont.setFamily(font_family);
             TinyFont.setFamily(font_family);
         } else
-            QMessageBox::warning(nullptr, tr("Warning"), tr("Font file %1 could not be loaded!").arg(font_path));
+            // QMessageBox::warning(nullptr, tr("Warning"), tr("Font file %1 could not be loaded!").arg(font_path));
 
         BigFont.setPixelSize(56);
         SmallFont.setPixelSize(27);
@@ -87,8 +86,8 @@ void Settings::init()
 
         SmallFont.setWeight(QFont::Bold);
 
-        AppFont = value(QStringLiteral("AppFont"), QApplication::font("QMainWindow")).value<QFont>();
-        UIFont = value(QStringLiteral("UIFont"), QApplication::font("QTextEdit")).value<QFont>();
+        // AppFont = value(QStringLiteral("AppFont"), QApplication::font("QMainWindow")).value<QFont>();
+        // UIFont = value(QStringLiteral("UIFont"), QApplication::font("QTextEdit")).value<QFont>();
         TextEditColor = QColor(value(QStringLiteral("TextEditColor"), QStringLiteral("white")).toString());
         ToolTipBackgroundColor = value(QStringLiteral("ToolTipBackgroundColor"), QStringLiteral("#000000")).toString();
     }

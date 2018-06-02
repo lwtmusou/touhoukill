@@ -21,7 +21,6 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QMessageBox>
 #include <QMetaEnum>
 #include <QStringList>
 #include <QTextStream>
@@ -7002,7 +7001,6 @@ void LegacyRoom::countDescription()
 
     QTextStream stream(&file);
     QSet<QString> all = Sanguosha->generalNames();
-
     QMultiMap<int, QString> map;
     foreach (QString name, all) {
         const General *gen = Sanguosha->general(name);
@@ -7031,7 +7029,6 @@ void LegacyRoom::countDescription()
     stream << count;
     file.close();
 }
-
 void LegacyRoom::transformGeneral(LegacyServerPlayer *player, const QString &general_name, int head)
 {
 #if 0
@@ -7049,7 +7046,6 @@ void LegacyRoom::transformGeneral(LegacyServerPlayer *player, const QString &gen
             thread->addTrigger(trigger);
         player->addSkill(skill->name(), head != 0);
     }
-
     if (head != 0) {
         changePlayerGeneral(player, QStringLiteral("anjiang"));
         notifyProperty(player, player, "general", general_name);
