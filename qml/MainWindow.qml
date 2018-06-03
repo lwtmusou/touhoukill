@@ -9,6 +9,8 @@ ApplicationWindow {
     minimumWidth: 1000
     minimumHeight: 550
 
+    title: qsTr("TouhouSatsu")
+
     menuBar: MenuBar {
         Menu {
             title: qsTr("Game")

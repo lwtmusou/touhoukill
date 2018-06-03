@@ -4,6 +4,8 @@ import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.2
 
 Dialog {
+    title: qsTr("Config dialog")
+
     FontMetrics {
         id: fontMetrics
     }
@@ -46,158 +48,150 @@ Dialog {
                 }
 
 
-                GridLayout {
-                    columns: 4
-
-                    Text {
-                        text: qsTr("Setup background")
-                    }
-
-                    TextField {
+                ColumnLayout {
+                    GroupBox {
+                        title: qsTr("Animation")
                         Layout.fillWidth: true
-                        id: backgroundEdit
-                    }
 
-                    Button {
-                        text: qsTr("Browse...")
-                    }
+                        RowLayout {
+                            CheckBox {
+                                id: noIndicatorCheckBox
+                                text: qsTr("No indicator")
+                            }
 
-                    Button {
-                        text: qsTr("Reset")
-                    }
+                            CheckBox {
+                                id: noEquipAnimCheckBox
+                                text: qsTr("No equip animation")
+                            }
 
-                    Text {
-                        text: qsTr("Setup tableBg")
-                    }
-
-                    TextField {
-                        Layout.fillWidth: true
-                        id: tableBgEdit
-                    }
-
-                    Button {
-                        text: qsTr("Browse...")
-                    }
-
-                    Button {
-                        text: qsTr("Reset")
-                    }
-
-                    RowLayout {
-                        Layout.columnSpan: 4
-                        CheckBox {
-                            Layout.fillWidth: true
-                            id: noIndicatorCheckBox
-                            text: qsTr("No indicator")
+                            CheckBox {
+                                id: noLordBackdropCheckBox
+                                text: qsTr("No lord backdrop")
+                            }
                         }
 
-                        CheckBox {
-                            Layout.fillWidth: true
-                            id: noEquipAnimCheckBox
-                            text: qsTr("No equip animation")
-                        }
-
-                        CheckBox {
-                            Layout.fillWidth: true
-                            id: noLordBackdropCheckBox
-                            text: qsTr("No lord backdrop")
-                        }
                     }
 
-                    Text {
-                        text: qsTr("Setup background music")
-                    }
-
-                    TextField {
+                    GroupBox {
+                        title: qsTr("Audio")
                         Layout.fillWidth: true
-                        id: bgmEdit
-                    }
 
-                    Button {
-                        text: qsTr("Browse...")
-                    }
+                        ColumnLayout {
+                            anchors.fill: parent
+                            RowLayout {
+                                Text {
+                                    text: qsTr("Setup background music")
+                                }
 
-                    Button {
-                        text: qsTr("Reset")
-                    }
+                                TextField {
+                                    Layout.fillWidth: true
+                                    id: bgmEdit
+                                }
 
-                    GridLayout {
-                        Layout.columnSpan: 4
-                        columns: 2
-                        CheckBox {
-                            Layout.fillWidth: true
-                            id: enableLastWordCheckBox
-                            text: qsTr("Enable last word")
+                                Button {
+                                    text: qsTr("Browse...")
+                                }
+
+                                Button {
+                                    text: qsTr("Reset")
+                                }
+                            }
+
+                            RowLayout {
+                                CheckBox {
+                                    id: enableLastWordCheckBox
+                                    text: qsTr("Enable last word")
+                                }
+
+                                CheckBox {
+                                    id: enableBackgroundMusicCheckBox
+                                    text: qsTr("Enable background music")
+                                }
+
+                                CheckBox {
+                                    id: enableEffectsCheckBox
+                                    text: qsTr("Enable effects")
+                                }
+
+                                CheckBox {
+                                    id: enableLordBackgroundMusicCheckBox
+                                    text: qsTr("Enable lord background music")
+                                }
+                            }
+
+
+                            RowLayout {
+                                Text {
+                                    text: "Bgm volume"
+                                }
+
+                                Slider {
+                                    Layout.fillWidth: true
+                                    id: bgmVolumeSlider
+
+                                    minimumValue: 0
+                                    maximumValue: 100
+                                }
+                            }
+
+                            RowLayout {
+                                Text {
+                                    text: "Effect volume"
+                                }
+
+                                Slider {
+                                    Layout.fillWidth: true
+                                    id: effectVolumeSlider
+
+                                    minimumValue: 0
+                                    maximumValue: 100
+                                }
+                            }
                         }
+                    }
 
-                        CheckBox {
-                            Layout.fillWidth: true
-                            id: enableBackgroundMusicCheckBox
-                            text: qsTr("Enable background music")
+                    GroupBox{
+                        title: qsTr("Font")
+                        Layout.fillWidth: true
+
+                        GridLayout {
+                            anchors.fill: parent
+                            columns: 4
+                            Text {
+                                text: qsTr("Application font")
+                            }
+
+                            TextField {
+                                Layout.fillWidth: true
+                                id: applicationFontTextEdit
+                            }
+
+                            Button {
+                                Layout.columnSpan: 2
+                                text: qsTr("Set application font")
+                            }
+
+                            Text {
+                                text: qsTr("Text edit font")
+                            }
+
+                            TextField {
+                                Layout.fillWidth: true
+                                id: textEditFontTextEdit
+                            }
+
+                            Button {
+                                text: qsTr("Font...")
+                            }
+
+                            Button {
+                                text: qsTr("Color...")
+                            }
                         }
-
-                        CheckBox {
-                            Layout.fillWidth: true
-                            id: enableEffectsCheckBox
-                            text: qsTr("Enable Effects")
-                        }
-
-                        CheckBox {
-                            Layout.fillWidth: true
-                            id: enableLordBackgroundMusicCheckBox
-                            text: qsTr("Enable lord background music")
-                        }
                     }
 
-                    Text {
-                        text: "Bgm volume"
-                    }
-
-                    Slider {
-                        Layout.columnSpan: 3
-                        Layout.fillWidth: true
-                        id: bgmVolumeSlider
-                    }
-
-                    Text {
-                        text: "Effect volume"
-                    }
-
-                    Slider {
-                        Layout.columnSpan: 3
-                        Layout.fillWidth: true
-                        id: effectVolumeSlider
-                    }
-
-                    Text {
-                        text: qsTr("Application font")
-                    }
-
-                    TextField {
-                        Layout.fillWidth: true
-                        id: applicationFontTextEdit
-                    }
-
-                    Button {
-                        Layout.columnSpan: 2
-                        text: qsTr("Set application font")
-                    }
-
-                    Text {
-                        text: qsTr("Text edit font")
-                    }
-
-                    TextField {
-                        Layout.fillWidth: true
-                        id: textEditFontTextEdit
-                    }
-
-                    Button {
-                        text: qsTr("Font...")
-                    }
-
-                    Button {
-                        text: qsTr("Color...")
+                    Item {
+                        Layout.fillHeight: true
                     }
                 }
 
@@ -240,8 +234,93 @@ Dialog {
                 }
 
 
-                GridLayout {
-                    // TODO: add items here
+                ColumnLayout {
+                    CheckBox {
+                        id: neverNullifyMyTrickCheckBox
+                        text: qsTr("Never nullify my signle target trick")
+                    }
+
+                    CheckBox {
+                        id: enableAutoTargetCheckBox
+                        text: qsTr("Enable auto target")
+                    }
+
+                    CheckBox {
+                        id: enableIntellectualSelectionCheckBox
+                        text: qsTr("Enable intellectual selection")
+                    }
+
+                    CheckBox {
+                        id: enableDoubleClickCheckBox
+                        text: qsTr("Enable double-click")
+                    }
+
+                    CheckBox {
+                        id: useDefaultHeroSkinCheckBox
+                        text: qsTr("Use default hero skin")
+                    }
+
+                    CheckBox {
+                        id: enableAutoUpdateCheckBox
+                        text: qsTr("Enable auto update")
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Label {
+                            text: qsTr("Bubble chat box delay(seconds)")
+                        }
+
+                        SpinBox {
+                            Layout.fillWidth: true
+                            id: bubbleChatBoxDelaySpinBox
+                            minimumValue: 0
+                            maximumValue: 5
+                        }
+                    }
+
+                    GroupBox {
+                        title: qsTr("Game record")
+                        Layout.fillWidth: true
+
+                        ColumnLayout {
+                            anchors.fill: parent
+
+                            CheckBox {
+                                id: enableAutoSaveCheckBox
+                                text: qsTr("Enable auto save")
+                            }
+
+                            CheckBox {
+                                id: networkGameOnlyCheckBox
+                                text: qsTr("Network game only")
+                                enabled: enableAutoSaveCheckBox.checked
+                            }
+
+                            RowLayout {
+                                Text {
+                                    text: qsTr("Setup record paths")
+                                }
+
+                                TextField {
+                                    Layout.fillWidth: true
+                                    id: recordPathTextEdit
+                                }
+
+                                Button {
+                                    text: qsTr("Browse...")
+                                }
+
+                                Button {
+                                    text: qsTr("Reset")
+                                }
+                            }
+                        }
+                    }
+
+                    Item {
+                        Layout.fillHeight: true
+                    }
                 }
 
                 Item {
