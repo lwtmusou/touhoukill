@@ -14,6 +14,7 @@ Image {
     property url disabledSource
 
     property string text
+    property font font
 
     signal clicked()
     signal doubleClicked()
@@ -76,6 +77,7 @@ Image {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: parent.text
+        font: parent.font
     }
 
     MouseArea {

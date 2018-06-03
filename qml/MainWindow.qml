@@ -6,6 +6,9 @@ ApplicationWindow {
     id: mainWindow
     visible: true
 
+    minimumWidth: 1000
+    minimumHeight: 550
+
     menuBar: MenuBar {
         Menu {
             title: qsTr("Game")
