@@ -768,7 +768,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QString &skill_
 
 bool Room::doRequest(ServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg, bool wait)
 {
-    time_t timeOut = ServerInfo.getCommandTimeout(command, S_SERVER_INSTANCE);
+    time_t timeOut = ServerInfo.getCommandTimeout(command, S_SERVER_INSTANCE, Sanguosha->operationTimeRate(command, arg));
     return doRequest(player, command, arg, timeOut, wait);
 }
 
