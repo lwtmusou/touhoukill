@@ -40,7 +40,7 @@ Image {
             width: (parent.width - parent.spacing) / 2
             height: (parent.height - parent.spacing * 3) / 4
 
-            text: "Start game"
+            text: qsTr("Start game")
             onClicked: mainWindow.startGame();
 
             upSource: "../image/system/button/button.png"
@@ -53,7 +53,7 @@ Image {
             width: (parent.width - parent.spacing) / 2
             height: (parent.height - parent.spacing * 3) / 4
 
-            text: "General overview"
+            text: qsTr("General overview")
             onClicked: mainWindow.generalOverview();
 
             upSource: "../image/system/button/button.png"
@@ -66,7 +66,7 @@ Image {
             width: (parent.width - parent.spacing) / 2
             height: (parent.height - parent.spacing * 3) / 4
 
-            text: "Start server"
+            text: qsTr("Start server")
             onClicked: mainWindow.startServer();
 
             upSource: "../image/system/button/button.png"
@@ -79,7 +79,7 @@ Image {
             width: (parent.width - parent.spacing) / 2
             height: (parent.height - parent.spacing * 3) / 4
 
-            text: "Card overview"
+            text: qsTr("Card overview")
             onClicked: mainWindow.cardOverview();
 
             upSource: "../image/system/button/button.png"
@@ -92,7 +92,7 @@ Image {
             width: (parent.width - parent.spacing) / 2
             height: (parent.height - parent.spacing * 3) / 4
 
-            text: "PC console start"
+            text: qsTr("PC console start")
             onClicked: mainWindow.pcConsoleStart();
 
             upSource: "../image/system/button/button.png"
@@ -105,7 +105,7 @@ Image {
             width: (parent.width - parent.spacing) / 2
             height: (parent.height - parent.spacing * 3) / 4
 
-            text: "Configure"
+            text: qsTr("Configure")
             onClicked: mainWindow.configure();
 
             upSource: "../image/system/button/button.png"
@@ -118,7 +118,7 @@ Image {
             width: (parent.width - parent.spacing) / 2
             height: (parent.height - parent.spacing * 3) / 4
 
-            text: "Replay"
+            text: qsTr("Replay")
             onClicked: mainWindow.replay();
 
             upSource: "../image/system/button/button.png"
@@ -131,7 +131,7 @@ Image {
             width: (parent.width - parent.spacing) / 2
             height: (parent.height - parent.spacing * 3) / 4
 
-            text: "About us"
+            text: qsTr("About us")
             onClicked: mainWindow.aboutUs();
 
             upSource: "../image/system/button/button.png"

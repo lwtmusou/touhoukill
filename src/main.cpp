@@ -1,11 +1,19 @@
 #include <QDir>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QTranslator>
 
 int main(int argc, char *argv[])
 {
     QGuiApplication a(argc, argv);
     // QDir::setCurrent(a.applicationDirPath());
+
+    QTranslator qtTranslator, qSgsTranslator;
+    qtTranslator.load("qt_zh_CN.qm");
+    qSgsTranslator.load("sanguosha.qm");
+
+    a.installTranslator(&qtTranslator);
+    a.installTranslator(&qSgsTranslator);
 
     QQmlApplicationEngine appEngine;
     appEngine.load("qml/MainWindow.qml");
