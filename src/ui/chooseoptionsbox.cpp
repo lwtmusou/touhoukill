@@ -21,8 +21,6 @@ Mogara
 #include "roomscene.h"
 #include "serverinfostruct.h"
 
-#include <QGraphicsProxyWidget>
-
 ChooseOptionsBox::ChooseOptionsBox()
     : progressBar(nullptr)
 {

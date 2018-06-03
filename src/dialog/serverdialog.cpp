@@ -65,7 +65,7 @@ QWidget *ServerDialog::createBasicTab()
     connect(nolimit_checkbox, &QAbstractButton::toggled, timeout_spinbox, &QWidget::setDisabled);
 
     // add 1v1 banlist edit button
-    QPushButton *edit_button = new QPushButton(tr("Banlist ..."));
+    QPushButton *edit_button = new QPushButton(tr("Banlist..."));
     edit_button->setFixedWidth(100);
     connect(edit_button, &QAbstractButton::clicked, this, &ServerDialog::edit1v1Banlist);
 
@@ -388,7 +388,7 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
         tab->addTab(apage, Sanguosha->translate(item));
     }
 
-    QPushButton *add = new QPushButton(tr("Add ..."));
+    QPushButton *add = new QPushButton(tr("Add..."));
     QPushButton *remove = new QPushButton(tr("Remove"));
     QPushButton *ok = new QPushButton(tr("OK"));
 
@@ -501,7 +501,7 @@ QGroupBox *ServerDialog::create3v3Box()
     QVBoxLayout *vlayout = new QVBoxLayout;
 
     QRadioButton *extend = new QRadioButton(tr("Extension mode"));
-    QPushButton *extend_edit_button = new QPushButton(tr("General selection ..."));
+    QPushButton *extend_edit_button = new QPushButton(tr("General selection..."));
     extend_edit_button->setEnabled(false);
     connect(extend, &QAbstractButton::toggled, extend_edit_button, &QWidget::setEnabled);
     connect(extend_edit_button, &QAbstractButton::clicked, this, &ServerDialog::select3v3Generals);

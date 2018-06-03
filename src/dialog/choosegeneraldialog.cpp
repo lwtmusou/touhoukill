@@ -203,7 +203,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     bool free_choose = ServerInfo.FreeChoose;
 
     if (!view_only && free_choose) {
-        QPushButton *free_choose_button = new QPushButton(tr("Free choose ..."));
+        QPushButton *free_choose_button = new QPushButton(tr("Free choose..."));
         connect(free_choose_button, &QAbstractButton::clicked, this, &ChooseGeneralDialog::freeChoose);
         last_layout->addWidget(free_choose_button);
     }

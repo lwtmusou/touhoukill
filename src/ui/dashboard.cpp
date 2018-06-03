@@ -178,7 +178,7 @@ void Dashboard::_createMiddle()
     button_widget->setParentItem(_m_middleFrame);
 
     trusting_item = new QGraphicsRectItem(this);
-    trusting_text = new QGraphicsSimpleTextItem(tr("Trusting ..."), this);
+    trusting_text = new QGraphicsSimpleTextItem(tr("Trusting..."), this);
     trusting_text->setPos(boundingRect().width() / 2, 50);
 
     QBrush trusting_brush(G_DASHBOARD_LAYOUT.m_trustEffectColor);

@@ -122,7 +122,7 @@ Dialog {
 
                             RowLayout {
                                 Text {
-                                    text: "Bgm volume"
+                                    text: qsTr("Bgm volume")
                                 }
 
                                 Slider {
@@ -136,7 +136,7 @@ Dialog {
 
                             RowLayout {
                                 Text {
-                                    text: "Effect volume"
+                                    text: qsTr("Effect volume")
                                 }
 
                                 Slider {

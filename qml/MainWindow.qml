@@ -103,7 +103,7 @@ ApplicationWindow {
             }
 
             MenuItem {
-                text: qsTr("Enable Hotkey")
+                text: qsTr("Enable hotkey")
                 checkable: true
             }
 
