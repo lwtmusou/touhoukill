@@ -9,7 +9,7 @@ ApplicationWindow {
     minimumWidth: 1000
     minimumHeight: 550
 
-    title: qsTr("TouhouSatsu")
+    title: qsTr("TouhouSatsu") + "      " + Sanguosha.getVersionNumber()
 
     menuBar: MenuBar {
         Menu {

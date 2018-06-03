@@ -1,7 +1,10 @@
 #include <QDir>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 #include <QTranslator>
+
+#include "engine.h"
 
 int main(int argc, char *argv[])
 {
@@ -15,7 +18,10 @@ int main(int argc, char *argv[])
     a.installTranslator(&qtTranslator);
     a.installTranslator(&qSgsTranslator);
 
+    Sanguosha = new Engine;
+
     QQmlApplicationEngine appEngine;
+    appEngine.rootContext()->setContextProperty("Sanguosha", Sanguosha);
     appEngine.load("qml/MainWindow.qml");
 
     return a.exec();
