@@ -307,7 +307,11 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
         }
     }
 
-    if (Self->hasSkill("shuangren") && distance_limit && targets.length() >= 1) {
+    if (Self->hasSkill("shuangren")  && targets.length() >= 1) { //&& distance_limit
+        foreach(const Player *p, targets) {
+            if (Self->distanceTo(p, rangefix) > Self->getAttackRange(true))  //double hidden, like shuangren + tianqu. since tianqu has be used, you can not use shuangren.
+                return false;
+        }
         if (isVirtualCard() && subcardsLength() == 0 && !Self->hasFlag("slashDisableExtraTarget"))
             distance_limit = false;
         else {

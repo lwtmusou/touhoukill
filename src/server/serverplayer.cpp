@@ -1625,17 +1625,19 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     if (tarmods.isEmpty())
         return QStringList();
 
-    QSet<QString> showExtraTarget;
-    QSet<QString> showResidueNum;
-    QSet<QString> showDistanceLimit;
-    QSet<QString> showTargetFix;
-    QSet<QString> showTargetProhibit;
+    QSet<QString> showExtraTarget; QSet<QString> disShowExtraTarget;
+    QSet<QString> showResidueNum; QSet<QString> disShowResidueNum;
+    QSet<QString> showDistanceLimit; //QSet<QString> disShowDistanceLimit;
+    QSet<QString> showTargetFix;// only for skill tianqu
+    QSet<QString> showTargetProhibit;//only for skill tianqu
     //check extra target
     int num = use.to.length() - 1;
     if (num >= 1) {
         foreach (const TargetModSkill *tarmod, tarmods) {
             if (tarmod->getExtraTargetNum(use.from, use.card) >= num)
                 showExtraTarget << tarmod->objectName();
+            else
+                disShowExtraTarget << tarmod->objectName();
         }
     }
 
@@ -1647,6 +1649,8 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
             foreach (const TargetModSkill *tarmod, tarmods) {
                 if (tarmod->getResidueNum(use.from, use.card) >= num)
                     showResidueNum << tarmod->objectName();
+                else
+                    disShowResidueNum << tarmod->objectName();
             }
         }
     }
@@ -1658,12 +1662,15 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
         foreach (ServerPlayer *p, use.to) {
             if (use.from->distanceTo(p) > distance)
                 distance = use.from->distanceTo(p);
-        }
-        distance = distance - 1;
-        if (distance >= 1) {
-            foreach (const TargetModSkill *tarmod, tarmods) {
-                if (tarmod->getDistanceLimit(use.from, use.card) >= distance)
-                    showDistanceLimit << tarmod->objectName();
+        
+            distance = distance - 1;
+            if (distance >= 1) {
+                foreach (const TargetModSkill *tarmod, tarmods) {
+                    if (tarmod->getDistanceLimit(use.from, use.card) >= distance)
+                        showDistanceLimit << tarmod->objectName();
+                    //else
+                    //    disShowDistanceLimit << tarmod->objectName();
+                }
             }
         }
     }
@@ -1698,8 +1705,9 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
             break;
         }
     }
-
+    
     QSet<QString> shows = showExtraTarget.operator|(showDistanceLimit).operator|(showResidueNum).operator|(showTargetFix).operator|(showTargetProhibit);
+    shows = shows.operator-(disShowExtraTarget).operator-(disShowResidueNum); //.operator-(disShowDistanceLimit)
     return shows.toList();
 }
 
