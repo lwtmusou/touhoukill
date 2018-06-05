@@ -306,30 +306,60 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
                 return false;
         }
     }
-
+    bool has_shuangren_target = false;
     if (Self->hasSkill("shuangren")  && targets.length() >= 1) { //&& distance_limit
         foreach(const Player *p, targets) {
-            if (Self->distanceTo(p, rangefix) > Self->getAttackRange(true))  //double hidden, like shuangren + tianqu. since tianqu has be used, you can not use shuangren.
-                return false;
+            if (Self->distanceTo(p, rangefix) > Self->getAttackRange(true)) { //double hidden, like shuangren + tianqu. since tianqu has be used, you can not use shuangren.
+                has_shuangren_target = true;
+                break;
+            }
         }
         if (isVirtualCard() && subcardsLength() == 0 && !Self->hasFlag("slashDisableExtraTarget"))
             distance_limit = false;
         else {
-            bool has_shuangren_target = false;
             foreach (const Player *p, targets) {
                 if (Self->distanceTo(p, rangefix) > Self->getAttackRange(true) && !Slash::IsSpecificAssignee(p, Self, this)) {
                     has_shuangren_target = true;
                     break;
                 }
             }
-            if (!has_shuangren_target)
-                distance_limit = false;
         }
+        if (!has_shuangren_target)
+            distance_limit = false;
     }
+    
     if (!Self->canSlash(to_select, this, distance_limit, rangefix, targets))
         return false;
+    else if (has_shuangren_target) {// slove the conflict of "hidden shuangren" + "hidden tianqu" + "Halberd" 
+        bool halberd = EquipSkill::equipAvailable(Self, EquipCard::WeaponLocation, "Halberd") && Self->isLastHandCard(this);//  TargetMod from Wepaon Skill
+        bool tianqu = Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed");
+        
+        QList<const Player *> over_distance_limit_targets;
+        foreach(const Player *p, targets) {
+            if (Self->distanceTo(p, rangefix) > Self->getAttackRange(true)) {
+                over_distance_limit_targets << p;
+            }
+        }
+        
+        if (over_distance_limit_targets.length() == 2 && targets.length() < slash_targets) {
+            if (halberd && tianqu) {
+                slash_targets = slash_targets - 1;//hidden tianqu has been used, so hidden shuangren will be not used.
+            }
+        }
+        else if (over_distance_limit_targets.length() == 1 && targets.length() < slash_targets) {
+            if (!halberd && tianqu) {
+                if (Self->distanceTo(to_select, rangefix) > Self->getAttackRange(true))
+                    return false;
+            } if (halberd && targets.length() == 3) {
+                if (Self->distanceTo(to_select, rangefix) > Self->getAttackRange(true))
+                    return false;
+            }
+        }
+    }
+
     if (targets.length() >= slash_targets)
         return false;
+
     return true;
 }
 
