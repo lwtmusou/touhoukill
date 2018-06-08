@@ -744,11 +744,12 @@ public:
         room->showCard(target, card_id);
         Card *card = Sanguosha->getCard(card_id);
         if (!target->isCardLimited(card, Card::MethodResponse))
-            room->retrial(card, target, judge, objectName());
+            room->retrial(card, target, judge, objectName(), true);
         return false;
     }
 };
 
+/*
 class Dizhen : public TriggerSkill
 {
 public:
@@ -787,6 +788,69 @@ public:
     {
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
         room->damage(DamageStruct(objectName(), invoke->invoker, invoke->targets.first(), 1, DamageStruct::Normal));
+        return false;
+    }
+};
+*/
+
+
+class Dizhen : public TriggerSkill
+{
+public:
+    Dizhen()
+        : TriggerSkill("dizhen")
+    {
+        events << TargetSpecified;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card != NULL && use.card->isKindOf("Slash")) {
+            QList<SkillInvokeDetail> d;
+            foreach(ServerPlayer *p, use.to)
+                d << SkillInvokeDetail(this, use.from, use.from, NULL, false, p);
+
+            return d;
+        }
+
+        return QList<SkillInvokeDetail>();
+    }
+
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        JudgeStruct judge;
+        judge.reason = objectName();
+        judge.who = invoke->invoker;
+        judge.good = true;
+        judge.pattern = ".|red";
+
+
+        room->judge(judge);
+        ServerPlayer *target = invoke->targets.first();
+        if (judge.isGood() && invoke->invoker->isAlive() && target->isAlive() && !target->isKongcheng()) {
+            QList<int> ids;
+            foreach(const Card *card, target->getHandcards())
+                ids << card->getEffectiveId();
+
+            int card_id = room->doGongxin(invoke->invoker, target, ids);
+            if (card_id == -1) 
+                return false;
+            QStringList select;
+            select << "put";
+            if (invoke->invoker->canDiscard(target, card_id))
+                select << "discard";
+            QString result = room->askForChoice(invoke->invoker, objectName(), select.join("+"));
+            if (result == "discard")
+                room->throwCard(card_id, target, invoke->invoker);
+            else {
+                invoke->invoker->setFlags("Global_GongxinOperator");
+                CardMoveReason reason(CardMoveReason::S_REASON_PUT, invoke->invoker->objectName(), QString(), objectName(), QString());
+                room->moveCardTo(Sanguosha->getCard(card_id), target, NULL, Player::DrawPile, reason, target->getShownHandcards().contains(card_id));
+                invoke->invoker->setFlags("-Global_GongxinOperator");
+            }
+        }
         return false;
     }
 };

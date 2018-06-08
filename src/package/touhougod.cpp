@@ -4737,6 +4737,7 @@ public:
                    << "youmu_god";
         return (all - banned - huashen_set - room_set).toList();
 
+        Q_UNUSED(init);
         //for test!!! do not remove
         /*QSet<QString> test;
         if (init)
