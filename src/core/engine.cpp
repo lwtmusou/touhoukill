@@ -420,7 +420,6 @@ void Engine::unregisterCardFace(const QString &name)
         delete handle;
     }
 }
-
 void Engine::registerTrigger(const Trigger *trigger)
 {
     if (trigger != nullptr)
@@ -467,13 +466,3 @@ HandlingMethod string2HandlingMethod(const QString &str)
     }
 }
 } // namespace QSanguosha
-#include <QtQml>
-
-namespace {
-void registerEngine()
-{
-    qmlRegisterUncreatableType<Engine, 1>("QSanguosha.Engine", 1, 0, "", "Use global Sanguosha variable instead");
-}
-}
-
-Q_COREAPP_STARTUP_FUNCTION(registerEngine)

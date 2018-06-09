@@ -5,6 +5,7 @@
 #include <QTranslator>
 
 #include "engine.h"
+#include "settings.h"
 
 int main(int argc, char *argv[])
 {
@@ -19,9 +20,11 @@ int main(int argc, char *argv[])
     a.installTranslator(&qSgsTranslator);
 
     Sanguosha = new Engine;
+    Config.init();
 
     QQmlApplicationEngine appEngine;
     appEngine.rootContext()->setContextProperty("Sanguosha", Sanguosha);
+    appEngine.rootContext()->setContextProperty("Config", &Config);
     appEngine.load("qml/MainWindow.qml");
 
     return a.exec();

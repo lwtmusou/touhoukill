@@ -5,6 +5,7 @@ import QtQuick.Dialogs 1.2
 
 Dialog {
     title: qsTr("Config dialog")
+    id: configDialog
 
     FontMetrics {
         id: fontMetrics
@@ -57,16 +58,43 @@ Dialog {
                             CheckBox {
                                 id: noIndicatorCheckBox
                                 text: qsTr("No indicator")
+
+                                checked: Config.jsValue("NoIndicator", false)
+
+                                Connections {
+                                    target: configDialog
+                                    onAccepted: {
+                                        Config.setJsValue("NoIndicator", noIndicatorCheckBox.checked)
+                                    }
+                                }
                             }
 
                             CheckBox {
                                 id: noEquipAnimCheckBox
                                 text: qsTr("No equip animation")
+
+                                checked: Config.jsValue("NoEquipAnim", false)
+
+                                Connections {
+                                    target: configDialog
+                                    onAccepted: {
+                                        Config.setJsValue("NoEquipAnim", noEquipAnimCheckBox.checked)
+                                    }
+                                }
                             }
 
                             CheckBox {
-                                id: noLordBackdropCheckBox
-                                text: qsTr("No lord backdrop")
+                                id: enableLordBackdropCheckBox
+                                text: qsTr("Enable lord backdrop")
+
+                                checked: Config.jsValue("UseLordBackdrop", true)
+
+                                Connections {
+                                    target: configDialog
+                                    onAccepted: {
+                                        Config.setJsValue("UseLordBackdrop", enableLordBackdropCheckBox.checked)
+                                    }
+                                }
                             }
                         }
 
@@ -86,6 +114,15 @@ Dialog {
                                 TextField {
                                     Layout.fillWidth: true
                                     id: bgmEdit
+
+                                    text: Config.jsValue("BackgroundMusic", "audio/title/main.ogg")
+
+                                    Connections {
+                                        target: configDialog
+                                        onAccepted: {
+                                            Config.setJsValue("BackgroundMusic", bgmEdit.text)
+                                        }
+                                    }
                                 }
 
                                 Button {
@@ -101,21 +138,57 @@ Dialog {
                                 CheckBox {
                                     id: enableLastWordCheckBox
                                     text: qsTr("Enable last word")
+
+                                    checked: Config.jsValue("EnableLastWord", true)
+
+                                    Connections {
+                                        target: configDialog
+                                        onAccepted: {
+                                            Config.setJsValue("EnableLastWord", enableLastWordCheckBox.checked)
+                                        }
+                                    }
                                 }
 
                                 CheckBox {
                                     id: enableBackgroundMusicCheckBox
                                     text: qsTr("Enable background music")
+
+                                    checked: Config.jsValue("EnableBgMusic", true)
+
+                                    Connections {
+                                        target: configDialog
+                                        onAccepted: {
+                                            Config.setJsValue("EnableBgMusic", enableBackgroundMusicCheckBox.checked)
+                                        }
+                                    }
                                 }
 
                                 CheckBox {
                                     id: enableEffectsCheckBox
                                     text: qsTr("Enable effects")
+
+                                    checked: Config.jsValue("EnableEffects", true)
+
+                                    Connections {
+                                        target: configDialog
+                                        onAccepted: {
+                                            Config.setJsValue("EnableEffects", enableEffectsCheckBox.checked)
+                                        }
+                                    }
                                 }
 
                                 CheckBox {
                                     id: enableLordBackgroundMusicCheckBox
                                     text: qsTr("Enable lord background music")
+
+                                    checked: Config.jsValue("UseLordBGM", true)
+
+                                    Connections {
+                                        target: configDialog
+                                        onAccepted: {
+                                            Config.setJsValue("UseLordBGM", enableLordBackgroundMusicCheckBox.checked)
+                                        }
+                                    }
                                 }
                             }
 
@@ -131,6 +204,15 @@ Dialog {
 
                                     minimumValue: 0
                                     maximumValue: 100
+
+                                    value: 100 * Config.jsValue("BGMVolume", 1.0)
+
+                                    Connections {
+                                        target: configDialog
+                                        onAccepted: {
+                                            Config.setJsValue("BGMVolume", bgmVolumeSlider.value)
+                                        }
+                                    }
                                 }
                             }
 
@@ -145,6 +227,15 @@ Dialog {
 
                                     minimumValue: 0
                                     maximumValue: 100
+
+                                    value: 100 * Config.jsValue("EffectVolume", 1.0)
+
+                                    Connections {
+                                        target: configDialog
+                                        onAccepted: {
+                                            Config.setJsValue("EffectVolume", effectVolumeSlider.value)
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -336,8 +427,6 @@ Dialog {
             }
         }
     }
-
-
 
     standardButtons: StandardButton.Ok | StandardButton.Cancel
 

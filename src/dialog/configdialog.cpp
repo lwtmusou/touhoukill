@@ -190,7 +190,6 @@ void ConfigDialog::saveConfig()
     Config.setValue(QStringLiteral("EnableEffects"), enabled);
 
     enabled = ui->enableLastWordCheckBox->isChecked();
-    Config.EnableLastWord = enabled;
     Config.setValue(QStringLiteral("EnableLastWord"), enabled);
 
     enabled = ui->enableBgMusicCheckBox->isChecked();
@@ -202,7 +201,6 @@ void ConfigDialog::saveConfig()
     Config.setValue(QStringLiteral("UseLordBGM"), enabled);
 
     enabled = ui->UseLordBackdropBox->isChecked();
-    Config.UseLordBackdrop = enabled;
     Config.setValue(QStringLiteral("UseLordBackdrop"), enabled);
 
     Config.setValue(QStringLiteral("NoIndicator"), ui->noIndicatorCheckBox->isChecked());
