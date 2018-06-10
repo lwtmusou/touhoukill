@@ -13,6 +13,9 @@ class Settings : public QSettings
 {
     Q_OBJECT
 
+private:
+    void loadSettingsFromConfigIni();
+
 public:
     explicit Settings();
     void init();
@@ -109,6 +112,7 @@ public:
     static const int S_JUDGE_LONG_DELAY;
 };
 
-extern Settings Config;
+Settings *configInstance();
+#define Config (*(configInstance()))
 
 #endif
