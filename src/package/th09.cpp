@@ -806,7 +806,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card != NULL && use.card->isKindOf("Slash")) {
+        if (use.card != NULL && use.card->isKindOf("Slash") && use.from->hasSkill(this)) {
             QList<SkillInvokeDetail> d;
             foreach(ServerPlayer *p, use.to)
                 d << SkillInvokeDetail(this, use.from, use.from, NULL, false, p);
