@@ -3,12 +3,12 @@
 #include "engine.h"
 #include "general.h"
 
-#include <QCoreApplication>
 #include <QDateTime>
 #include <QDebug>
 #include <QFile>
 #include <QFontDatabase>
 #include <QGlobalStatic>
+#include <QGuiApplication>
 #include <QJSEngine>
 #include <QJSValue>
 #include <QJsonDocument>

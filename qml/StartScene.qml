@@ -3,7 +3,7 @@ import QtQuick.Window 2.2
 
 Image {
     id: startScene
-    source: "../backdrop/hall/gensoukyou_1.jpg"
+    source: Sanguosha.getUrl(Config.jsValue("BackgroundImage", "")) //"../backdrop/hall/gensoukyou_1.jpg"
     anchors.fill: parent
 
     Grid {

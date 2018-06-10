@@ -29,6 +29,7 @@
 #include <QRegularExpressionMatchIterator>
 #include <QStringList>
 #include <QTextStream>
+#include <QUrl>
 #include <QVersionNumber>
 
 #include <random>
@@ -259,6 +260,14 @@ QString Engine::versionDate() const
 QString Engine::version() const
 {
     return QStringLiteral("%1:%2").arg(versionDate(), modName());
+}
+
+QUrl Engine::getUrl(const QString &str) const
+{
+    qDebug(QDir::currentPath().toLocal8Bit().constData());
+    qDebug(str.toLocal8Bit().constData());
+
+    return QUrl::fromLocalFile(QDir().absoluteFilePath(str));
 }
 
 const QVersionNumber &Engine::versionNumber() const

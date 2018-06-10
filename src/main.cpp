@@ -1,3 +1,4 @@
+#include <QDateTime>
 #include <QDir>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -11,6 +12,8 @@ int main(int argc, char *argv[])
 {
     QGuiApplication a(argc, argv);
     // QDir::setCurrent(a.applicationDirPath());
+
+    qsrand(QDateTime::currentMSecsSinceEpoch());
 
     QTranslator qtTranslator, qSgsTranslator;
     qtTranslator.load("qt_zh_CN.qm");

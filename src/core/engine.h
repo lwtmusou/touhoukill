@@ -58,6 +58,7 @@ public:
     QString version() const;
     const QVersionNumber &versionNumber() const;
     QString modName() const;
+    Q_INVOKABLE QUrl getUrl(const QString &str) const;
 
     // kingdoms (from configurations)
     QSet<QString> kingdoms() const;
