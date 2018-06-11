@@ -867,6 +867,8 @@ void PlayerCardContainer::stopHuaShen()
         delete _m_huashenItem;
         _m_huashenAnimation = NULL;
         _m_huashenItem = NULL;
+        _m_huashenGeneralName.clear();
+        _m_huashenSkillName.clear();
         _clearPixmap(_m_extraSkillBg);
         _clearPixmap(_m_extraSkillText);
     }
@@ -1490,4 +1492,9 @@ void PlayerCardContainer::setRoleShown(bool shown)
 {
     _m_roleShownIcon->setVisible(shown);
     refresh();
+}
+
+QString PlayerCardContainer::getHuashenSkillName()
+{
+    return _m_huashenGeneralName;
 }

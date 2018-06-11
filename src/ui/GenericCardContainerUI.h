@@ -126,6 +126,7 @@ public:
 
     void stopHeroSkinChangingAnimation();
     void showSkillName(const QString &skill_name, bool isSelf);
+    QString getHuashenSkillName();
 
 public slots:
     void updateAvatar();
