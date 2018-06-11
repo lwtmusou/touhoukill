@@ -1841,7 +1841,7 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
 
-        if (damage.from && damage.from->isAlive() && damage.to->hasSkill(this, false, false)) {
+        if (damage.from && damage.from->isAlive() && damage.nature == DamageStruct::Normal && damage.to->hasSkill(this, false, false)) {
             QList<SkillInvokeDetail> d;
             //Dismantlement *dis = new Dismantlement(Card::NoSuit, 0);
             //dis->setSkillName("_dunjia");
