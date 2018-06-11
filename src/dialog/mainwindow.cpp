@@ -144,8 +144,18 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::restoreFromConfig()
 {
-    resize(Config.value("WindowSize", QSize(1366, 706)).toSize());
-    move(Config.value("WindowPosition", QPoint(-8, -8)).toPoint());
+    int width = Config.value("WindowWidth", 1366).toInt();
+    int height = Config.value("WindowHeight", 706).toInt();
+    int x = Config.value("WindowX", -8).toInt();
+    int y = Config.value("WindowY", -8).toInt();
+    bool maximized = Config.value("WindowMaximized", false).toBool();
+
+    if (maximized)
+        setWindowState(Qt::WindowMaximized);
+    else {
+        resize(QSize(width, height));
+        move(x, y);
+    }
 
     QFont font;
     if (Config.UIFont != font)
@@ -168,8 +178,11 @@ void MainWindow::checkForUpdate()
 
 void MainWindow::closeEvent(QCloseEvent *)
 {
-    Config.setValue("WindowSize", size());
-    Config.setValue("WindowPosition", pos());
+    Config.setValue("WindowWidth", width());
+    Config.setValue("WindowHeight", height());
+    Config.setValue("WindowX", x());
+    Config.setValue("WindowY", y());
+    Config.setValue("WindowMaximized", bool(windowState() & Qt::WindowMaximized));
 }
 
 MainWindow::~MainWindow()
@@ -234,13 +247,14 @@ void MainWindow::on_actionStart_Server_triggered()
 
 void MainWindow::checkVersion(const QString &server_version, const QString &server_mod)
 {
+    Client *client = qobject_cast<Client *>(sender());
+
     QString client_mod = Sanguosha->getMODName();
     if (client_mod != server_mod) {
+        client->disconnectFromHost();
         QMessageBox::warning(this, tr("Warning"), tr("Client MOD name is not same as the server!"));
         return;
     }
-
-    Client *client = qobject_cast<Client *>(sender());
     QString client_version = Sanguosha->getVersionNumber();
 
     if (server_version == client_version) {
