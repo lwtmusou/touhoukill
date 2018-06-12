@@ -33,15 +33,9 @@ const int Settings::S_JUDGE_LONG_DELAY = 800;
 
 QJSValue Settings::jsValue(const QString &key, const QJSValue &defaultValue) const
 {
-    if (contains(key)) {
-        qDebug(value(key).typeName());
-        qDebug(value(key).toString().toLocal8Bit().constData());
-        if (value(key).type() == QMetaType::Bool) {
-            qDebug("%s: %s", key.toLocal8Bit().constData(), value(key).toBool() ? "true" : "false");
-        }
-
+    if (contains(key))
         return defaultValue.engine()->toScriptValue(value(key));
-    } else
+    else
         return defaultValue;
 }
 
@@ -52,10 +46,6 @@ QFont Settings::font() const
 
 void Settings::setJsValue(const QString &key, const QJSValue &value)
 {
-    qDebug(value.toVariant().typeName());
-    if (value.toVariant().type() == QMetaType::Bool) {
-        qDebug("%s: %s", key.toLocal8Bit().constData(), value.toVariant().toBool() ? "true" : "false");
-    }
     setValue(key, value.toVariant());
     
 }

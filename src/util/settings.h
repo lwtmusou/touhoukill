@@ -13,7 +13,7 @@
 class Settings : public QSettings
 {
     Q_OBJECT
-    Q_PROPERTY(QFont font READ font WRITE setFont NOTIFY fontChanged)
+    Q_PROPERTY(QFont font READ font WRITE setFont NOTIFY fontChanged STORED false)
 
     Q_PROPERTY(QColor TextEditColor MEMBER TextEditColor)
     Q_PROPERTY(QColor ToolTipBackgroundColor MEMBER ToolTipBackgroundColor)
