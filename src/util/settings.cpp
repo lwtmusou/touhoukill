@@ -31,7 +31,7 @@ const int Settings::S_MOVE_CARD_ANIMATION_DURATION = 600;
 const int Settings::S_JUDGE_ANIMATION_DURATION = 1200;
 const int Settings::S_JUDGE_LONG_DELAY = 800;
 
-QJSValue Settings::jsValue(const QString &key, const QJSValue &defaultValue)
+QJSValue Settings::jsValue(const QString &key, const QJSValue &defaultValue) const
 {
     if (contains(key)) {
         qDebug(value(key).typeName());
@@ -45,6 +45,11 @@ QJSValue Settings::jsValue(const QString &key, const QJSValue &defaultValue)
         return defaultValue;
 }
 
+QFont Settings::font() const
+{
+    return value("AppFont").value<QFont>();
+}
+
 void Settings::setJsValue(const QString &key, const QJSValue &value)
 {
     qDebug(value.toVariant().typeName());
@@ -53,6 +58,14 @@ void Settings::setJsValue(const QString &key, const QJSValue &value)
     }
     setValue(key, value.toVariant());
     
+}
+
+void Settings::setFont(const QFont &font)
+{
+    setValue("AppFont", QVariant::fromValue(font));
+    qApp->setFont(font);
+
+    emit fontChanged(font);
 }
 
 namespace {
@@ -100,18 +113,9 @@ void Settings::init()
         QString font_path = value(QStringLiteral("DefaultFontPath"), QStringLiteral("font/simli.ttf")).toString();
         int font_id = QFontDatabase::addApplicationFont(font_path);
         if (font_id != -1) {
-            QString font_family = QFontDatabase::applicationFontFamilies(font_id).first();
-            BigFont.setFamily(font_family);
-            SmallFont.setFamily(font_family);
-            TinyFont.setFamily(font_family);
+            // QString font_family = QFontDatabase::applicationFontFamilies(font_id).first();
         } else
             // QMessageBox::warning(nullptr, tr("Warning"), tr("Font file %1 could not be loaded!").arg(font_path));
-
-        BigFont.setPixelSize(56);
-        SmallFont.setPixelSize(27);
-        TinyFont.setPixelSize(18);
-
-        SmallFont.setWeight(QFont::Bold);
 
         // AppFont = value(QStringLiteral("AppFont"), QApplication::font("QMainWindow")).value<QFont>();
         // UIFont = value(QStringLiteral("UIFont"), QApplication::font("QTextEdit")).value<QFont>();

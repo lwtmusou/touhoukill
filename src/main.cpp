@@ -15,7 +15,8 @@ int main(int argc, char *argv[])
 
     qsrand(QDateTime::currentMSecsSinceEpoch());
 
-    QTranslator qtTranslator, qSgsTranslator;
+    QTranslator qtTranslator;
+    QTranslator qSgsTranslator;
     qtTranslator.load("qt_zh_CN.qm");
     qSgsTranslator.load("sanguosha.qm");
 
@@ -24,6 +25,8 @@ int main(int argc, char *argv[])
 
     Sanguosha = new Engine;
     Config.init();
+
+    a.setFont(Config.font());
 
     QQmlApplicationEngine appEngine;
     appEngine.rootContext()->setContextProperty("Sanguosha", Sanguosha);

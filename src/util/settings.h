@@ -13,12 +13,8 @@
 class Settings : public QSettings
 {
     Q_OBJECT
-    Q_PROPERTY(QFont BigFont MEMBER BigFont)
-    Q_PROPERTY(QFont SmallFont MEMBER SmallFont)
-    Q_PROPERTY(QFont TinyFont MEMBER TinyFont)
+    Q_PROPERTY(QFont font READ font WRITE setFont NOTIFY fontChanged)
 
-    Q_PROPERTY(QFont AppFont MEMBER AppFont)
-    Q_PROPERTY(QFont UIFont MEMBER UIFont)
     Q_PROPERTY(QColor TextEditColor MEMBER TextEditColor)
     Q_PROPERTY(QColor ToolTipBackgroundColor MEMBER ToolTipBackgroundColor)
 
@@ -85,21 +81,22 @@ class Settings : public QSettings
     Q_PROPERTY(QStringList KnownSurprisingGenerals MEMBER KnownSurprisingGenerals)
 
 public:
-    Q_INVOKABLE QJSValue jsValue(const QString &key, const QJSValue &defaultValue);
-    Q_INVOKABLE void setJsValue(const QString &key, const QJSValue &value);
-
     explicit Settings();
     void init();
 
+    Q_INVOKABLE QJSValue jsValue(const QString &key, const QJSValue &defaultValue = QJSValue()) const;
+    Q_INVOKABLE void setJsValue(const QString &key, const QJSValue &value);
+
+    QFont font() const;
+    void setFont(const QFont &font);
+
+signals:
+    void fontChanged(const QFont &font);
+
+public:
     const QRectF Rect;
 
     static const QString &getQSSFileContent();
-    QFont BigFont;
-    QFont SmallFont;
-    QFont TinyFont;
-
-    QFont AppFont;
-    QFont UIFont;
     QColor TextEditColor;
     QColor ToolTipBackgroundColor;
 

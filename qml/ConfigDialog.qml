@@ -9,6 +9,7 @@ Dialog {
 
     FontMetrics {
         id: fontMetrics
+        font: Config.font
     }
 
     TabView {
@@ -127,10 +128,21 @@ Dialog {
 
                                 Button {
                                     text: qsTr("Browse...")
+
+                                    FileDialog {
+                                        id: fileDialog
+                                        nameFilters: ["OGG files (*.ogg)"]
+                                        onAccepted: bgmEdit.text = fileUrl
+                                        modality: Qt.WindowModal
+                                    }
+
+                                    onClicked: fileDialog.open()
                                 }
 
                                 Button {
                                     text: qsTr("Reset")
+
+                                    onClicked: bgmEdit.text = "audio/title/main.ogg"
                                 }
                             }
 
@@ -247,7 +259,7 @@ Dialog {
 
                         GridLayout {
                             anchors.fill: parent
-                            columns: 4
+                            columns: 3
                             Text {
                                 text: qsTr("Application font")
                             }
@@ -255,28 +267,24 @@ Dialog {
                             TextField {
                                 Layout.fillWidth: true
                                 id: applicationFontTextEdit
+
+                                text:  Config.font.family + ", " + String(Config.font.pointSize)
                             }
 
                             Button {
-                                Layout.columnSpan: 2
+                                FontDialog {
+                                    id: fontDialog
+                                    modality: Qt.WindowModal
+
+                                    font: Config.font
+
+                                    onAccepted: {
+                                        Config.font = font;
+                                    }
+                                }
+
                                 text: qsTr("Set application font")
-                            }
-
-                            Text {
-                                text: qsTr("Text edit font")
-                            }
-
-                            TextField {
-                                Layout.fillWidth: true
-                                id: textEditFontTextEdit
-                            }
-
-                            Button {
-                                text: qsTr("Font...")
-                            }
-
-                            Button {
-                                text: qsTr("Color...")
+                                onClicked: fontDialog.open()
                             }
                         }
                     }

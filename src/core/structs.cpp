@@ -9,6 +9,7 @@
 #include "trigger.h"
 #include "util.h"
 
+#include <QCoreApplication>
 #include <functional>
 
 using namespace QSanguosha;
@@ -470,3 +471,68 @@ ExtraTurnStruct::ExtraTurnStruct(Player *player)
     : player(player)
 {
 }
+
+#if 0
+Q_DECLARE_METATYPE(DamageStruct)
+Q_DECLARE_METATYPE(CardEffectStruct)
+Q_DECLARE_METATYPE(SlashEffectStruct)
+Q_DECLARE_METATYPE(CardUseStruct)
+Q_DECLARE_METATYPE(CardsMoveStruct)
+Q_DECLARE_METATYPE(CardsMoveOneTimeStruct)
+Q_DECLARE_METATYPE(DyingStruct)
+Q_DECLARE_METATYPE(DeathStruct)
+Q_DECLARE_METATYPE(RecoverStruct)
+Q_DECLARE_METATYPE(PhaseChangeStruct)
+Q_DECLARE_METATYPE(CardResponseStruct)
+Q_DECLARE_METATYPE(MarkChangeStruct)
+Q_DECLARE_METATYPE(ChoiceMadeStruct)
+Q_DECLARE_METATYPE(SkillAcquireDetachStruct)
+Q_DECLARE_METATYPE(CardAskedStruct)
+Q_DECLARE_METATYPE(HpLostStruct)
+Q_DECLARE_METATYPE(JinkEffectStruct)
+Q_DECLARE_METATYPE(PhaseSkippingStruct)
+Q_DECLARE_METATYPE(DrawNCardsStruct)
+Q_DECLARE_METATYPE(QList<SkillInvalidStruct>)
+Q_DECLARE_METATYPE(const Card *)
+Q_DECLARE_METATYPE(ServerPlayer *)
+Q_DECLARE_METATYPE(JudgeStruct *)
+Q_DECLARE_METATYPE(PindianStruct *)
+Q_DECLARE_METATYPE(ExtraTurnStruct)
+Q_DECLARE_METATYPE(BrokenEquipChangedStruct)
+Q_DECLARE_METATYPE(ShownCardChangedStruct)
+#endif
+
+namespace {
+void registerStructsMetaType()
+{
+    qRegisterMetaType<DamageStruct>();
+    qRegisterMetaType<CardEffectStruct>();
+    qRegisterMetaType<SlashEffectStruct>();
+    qRegisterMetaType<CardUseStruct>();
+    qRegisterMetaType<CardsMoveStruct>();
+    qRegisterMetaType<CardsMoveOneTimeStruct>();
+    qRegisterMetaType<DyingStruct>();
+    qRegisterMetaType<DeathStruct>();
+    qRegisterMetaType<RecoverStruct>();
+    qRegisterMetaType<PhaseChangeStruct>();
+    qRegisterMetaType<CardResponseStruct>();
+    qRegisterMetaType<MarkChangeStruct>();
+    qRegisterMetaType<ChoiceMadeStruct>();
+    qRegisterMetaType<SkillAcquireDetachStruct>();
+    qRegisterMetaType<CardAskedStruct>();
+    qRegisterMetaType<HpLostStruct>();
+    qRegisterMetaType<JinkEffectStruct>();
+    qRegisterMetaType<PhaseSkippingStruct>();
+    qRegisterMetaType<DrawNCardsStruct>();
+    qRegisterMetaType<QList<SkillInvalidStruct> >();
+    qRegisterMetaType<const Card *>();
+    qRegisterMetaType<ServerPlayer *>();
+    qRegisterMetaType<JudgeStruct *>();
+    qRegisterMetaType<PindianStruct *>();
+    qRegisterMetaType<ExtraTurnStruct>();
+    qRegisterMetaType<BrokenEquipChangedStruct>();
+    qRegisterMetaType<ShownCardChangedStruct>();
+}
+}
+
+Q_COREAPP_STARTUP_FUNCTION(registerStructsMetaType)
