@@ -7,6 +7,8 @@ Image {
     anchors.fill: parent
 
     Grid {
+        id: btnGrid
+
         anchors.horizontalCenter: startScene.horizontalCenter
         anchors.top: startScene.top
         anchors.topMargin: (startScene.height * 5 - height * 4) / 8
@@ -141,5 +143,12 @@ Image {
         }
     }
 
+    Image {
+        anchors.horizontalCenter: startScene.horizontalCenter
+        anchors.bottom: btnGrid.top
+        anchors.bottomMargin: btnGrid.y / 2 - height / 2
+
+        source: "../image/logo/logo.png"
+    }
 
 }
