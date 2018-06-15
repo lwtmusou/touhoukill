@@ -3,7 +3,7 @@ import QtQuick.Window 2.2
 
 Image {
     id: startScene
-    source: Sanguosha.getUrl(Config.jsValue("BackgroundImage", "")) //"../backdrop/hall/gensoukyou_1.jpg"
+    source: Sanguosha.getUrl(Config.jsValue("BackgroundImage", ""))
     anchors.fill: parent
 
     Grid {
@@ -45,10 +45,7 @@ Image {
             text: qsTr("Start game")
             onClicked: mainWindow.startGame();
 
-            upSource: "../image/system/button/button.png"
-            upHoveredSource: "../image/system/state.png"
-            downSource: "../image/system/state.png"
-            downHoveredSource: "../image/system/state.png"
+            source: Sanguosha.getUrl("image/system/button/button.png")
         }
 
         QSanButton {
@@ -58,10 +55,7 @@ Image {
             text: qsTr("General overview")
             onClicked: mainWindow.generalOverview();
 
-            upSource: "../image/system/button/button.png"
-            upHoveredSource: "../image/system/state.png"
-            downSource: "../image/system/state.png"
-            downHoveredSource: "../image/system/state.png"
+            source: Sanguosha.getUrl("image/system/button/button.png")
         }
 
         QSanButton {
@@ -71,10 +65,7 @@ Image {
             text: qsTr("Start server")
             onClicked: mainWindow.startServer();
 
-            upSource: "../image/system/button/button.png"
-            upHoveredSource: "../image/system/state.png"
-            downSource: "../image/system/state.png"
-            downHoveredSource: "../image/system/state.png"
+            source: Sanguosha.getUrl("image/system/button/button.png")
         }
 
         QSanButton {
@@ -84,10 +75,7 @@ Image {
             text: qsTr("Card overview")
             onClicked: mainWindow.cardOverview();
 
-            upSource: "../image/system/button/button.png"
-            upHoveredSource: "../image/system/state.png"
-            downSource: "../image/system/state.png"
-            downHoveredSource: "../image/system/state.png"
+            source: Sanguosha.getUrl("image/system/button/button.png")
         }
 
         QSanButton {
@@ -97,10 +85,7 @@ Image {
             text: qsTr("PC console start")
             onClicked: mainWindow.pcConsoleStart();
 
-            upSource: "../image/system/button/button.png"
-            upHoveredSource: "../image/system/state.png"
-            downSource: "../image/system/state.png"
-            downHoveredSource: "../image/system/state.png"
+            source: Sanguosha.getUrl("image/system/button/button.png")
         }
 
         QSanButton {
@@ -110,10 +95,7 @@ Image {
             text: qsTr("Configure")
             onClicked: mainWindow.configure();
 
-            upSource: "../image/system/button/button.png"
-            upHoveredSource: "../image/system/state.png"
-            downSource: "../image/system/state.png"
-            downHoveredSource: "../image/system/state.png"
+            source: Sanguosha.getUrl("image/system/button/button.png")
         }
 
         QSanButton {
@@ -123,10 +105,7 @@ Image {
             text: qsTr("Replay")
             onClicked: mainWindow.replay();
 
-            upSource: "../image/system/button/button.png"
-            upHoveredSource: "../image/system/state.png"
-            downSource: "../image/system/state.png"
-            downHoveredSource: "../image/system/state.png"
+            source: Sanguosha.getUrl("image/system/button/button.png")
         }
 
         QSanButton {
@@ -136,10 +115,7 @@ Image {
             text: qsTr("About us")
             onClicked: mainWindow.aboutUs();
 
-            upSource: "../image/system/button/button.png"
-            upHoveredSource: "../image/system/state.png"
-            downSource: "../image/system/state.png"
-            downHoveredSource: "../image/system/state.png"
+            source: Sanguosha.getUrl("image/system/button/button.png")
         }
     }
 
@@ -151,4 +127,13 @@ Image {
         source: "../image/logo/logo.png"
     }
 
+    Text {
+        anchors.top: btnGrid.bottom
+        anchors.horizontalCenter: btnGrid.right
+
+        font.pixelSize: 20
+        color: "white"
+
+        text: qsTr("QQ qun: 384318315")
+    }
 }

@@ -51,6 +51,12 @@ public:
     // translations
     void loadTranslations(const QString &locale);
     void addTranslationEntry(const QString &key, const QString &value);
+    Q_INVOKABLE static QString getVersionName();
+    Q_INVOKABLE static QString getMODName();
+    static QVersionNumber getQVersionNumber();
+
+    Q_INVOKABLE static QUrl getUrl(const QString &str);
+
     QString translate(const QString &to_translate) const;
 
     // version related
@@ -58,7 +64,6 @@ public:
     QString version() const;
     const QVersionNumber &versionNumber() const;
     QString modName() const;
-    Q_INVOKABLE QUrl getUrl(const QString &str) const;
 
     // kingdoms (from configurations)
     QSet<QString> kingdoms() const;

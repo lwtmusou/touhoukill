@@ -116,7 +116,7 @@ Dialog {
                                     Layout.fillWidth: true
                                     id: bgmEdit
 
-                                    text: Config.jsValue("BackgroundMusic", "audio/title/main.ogg")
+                                    text: Config.jsValue("BackgroundMusic", Sanguosha.getUrl("audio/title/main.ogg"))
 
                                     Connections {
                                         target: configDialog
@@ -142,7 +142,7 @@ Dialog {
                                 Button {
                                     text: qsTr("Reset")
 
-                                    onClicked: bgmEdit.text = "audio/title/main.ogg"
+                                    onClicked: bgmEdit.text = Sanguosha.getUrl("audio/title/main.ogg")
                                 }
                             }
 

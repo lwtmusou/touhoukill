@@ -262,7 +262,7 @@ QString Engine::version() const
     return QStringLiteral("%1:%2").arg(versionDate(), modName());
 }
 
-QUrl Engine::getUrl(const QString &str) const
+QUrl Engine::getUrl(const QString &str)
 {
     qDebug(QDir::currentPath().toLocal8Bit().constData());
     qDebug(str.toLocal8Bit().constData());

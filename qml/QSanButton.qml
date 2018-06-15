@@ -7,12 +7,6 @@ Image {
 
     property bool enabled: true
 
-    property url upSource
-    property url upHoveredSource
-    property url downSource
-    property url downHoveredSource
-    property url disabledSource
-
     property string text
     property font font
 
@@ -30,36 +24,36 @@ Image {
         State {
             name: "exited"
             PropertyChanges {
-                target: qSanButton
-                source: qSanButton.upSource
+                target: hover
+                visible: false
             }
         },
         State {
             name: "entered"
             PropertyChanges {
-                target: qSanButton
-                source: qSanButton.upHoveredSource
+                target: hover
+                visible: true
             }
         },
         State {
             name: "downEntered"
             PropertyChanges {
-                target: qSanButton
-                source: qSanButton.downHoveredSource
+                target: hover
+                visible: true
             }
         },
         State {
             name: "downExited"
             PropertyChanges {
-                target: qSanButton
-                source: qSanButton.downSource
+                target: hover
+                visible: true
             }
         },
         State {
             name: "disabled"
             PropertyChanges {
-                target: qSanButton
-                source: qSanButton.disabledSource
+                target: hover
+                visible: true
             }
         }
     ]
@@ -71,13 +65,24 @@ Image {
             state = "exited"
     }
 
+    Rectangle {
+        id: hover
+        anchors.fill: parent
+        color: Qt.rgba(1, 1, 1, .25)
+        visible: false
+    }
+
     Text {
         anchors.fill: parent
         clip: true
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: parent.text
-        font: parent.font
+        font: {
+            var ret = parent.font
+            ret.pixelSize = Math.min(height * 0.7, (width / 5) * 0.7)
+            return ret
+        }
     }
 
     MouseArea {
