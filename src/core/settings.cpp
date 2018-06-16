@@ -37,7 +37,7 @@ bool JsonReadFunc(QIODevice &device, QSettings::SettingsMap &map)
         map = doc.object().toVariantMap();
         return true;
     } else {
-        qDebug("Json error %d: %s", err.error, err.errorString());
+        qDebug("Json error %d: %s", err.error, err.errorString().toLocal8Bit().constData());
         return false;
     }
 }
