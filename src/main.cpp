@@ -11,7 +11,22 @@
 int main(int argc, char *argv[])
 {
     QGuiApplication a(argc, argv);
+#if defined(Q_OS_WIN)
     // QDir::setCurrent(a.applicationDirPath());
+#elif defined(Q_OS_LINUX)
+#ifdef Q_OS_ANDROID
+    // TODO: copy all the files from qrc(or assets) to /sdcard
+    QDir::setCurrent("/sdcard/TouhouSatsu");
+#else
+    // TODO: in prefixed build, assets shoule be read from /usr/share/TouhouSatsu, configs should be written to /etc
+#endif
+#elif defined(Q_OS_MACOS)
+    // TODO: assets should be read from app bundle, configs should be written to the folder where the app bundle is lying
+#elif defined(Q_OS_IOS)
+    // wait for an expert in IOS
+#else
+#error "TouhouSatsu is not supperted on this platform."
+#endif
 
     qsrand(QDateTime::currentMSecsSinceEpoch());
 
