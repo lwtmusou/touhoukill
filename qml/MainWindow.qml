@@ -1,10 +1,10 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Dialogs 1.2
+import QtQuick.Window 2.3
 
 ApplicationWindow {
     id: mainWindow
-    visible: true
 
     minimumWidth: 1000
     minimumHeight: 550
@@ -178,9 +178,9 @@ ApplicationWindow {
                 text: qsTr("About Lua")
             }
 
-//            MenuItem {
-//                text: qsTr("About fmod")
-//            }
+            //            MenuItem {
+            //                text: qsTr("About fmod")
+            //            }
 
             MenuSeparator {
 
@@ -238,7 +238,11 @@ ApplicationWindow {
             close.accepted = false;
             confirmExitDialog.open();
         } else {
-
+            Config.setJsValue("WindowMaximized", visibility == Window.Maximized)
+            Config.setJsValue("WindowX", x)
+            Config.setJsValue("WindowY", y)
+            Config.setJsValue("WindowWidth", width)
+            Config.setJsValue("WindowHeight", height)
         }
     }
 
@@ -272,5 +276,20 @@ ApplicationWindow {
 
     function aboutUs() {
         console.log("aboutUs")
+    }
+
+    Component.onCompleted: {
+        console.log("0")
+        console.log("w")
+        console.log("e")
+        if (Config.jsValue("WindowMaximized", false)) {
+            showMaximized();
+        } else {
+            width = Config.jsValue("WindowWidth", minimumWidth)
+            height = Config.jsValue("WindowHeight", minimumHeight)
+            x = Config.jsValue("WindowX", -8)
+            y = Config.jsValue("WindowY", -8)
+            show();
+        }
     }
 }
