@@ -171,7 +171,7 @@ public:
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-        ServerPlayer *player;
+        ServerPlayer *player = NULL;
         bool set = false;
         bool remove = false;
 
