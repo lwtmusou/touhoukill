@@ -279,9 +279,6 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
-        console.log("0")
-        console.log("w")
-        console.log("e")
         if (Config.jsValue("WindowMaximized", false)) {
             showMaximized();
         } else {
