@@ -1324,6 +1324,7 @@ shenbao_spear_skill.getTurnUseCard = function(self, inclusive)
 	end
 	local c = sgs.cloneCard("known_both", sgs.Card_NoSuit, 0)
 	c:setSkillName("JadeSeal")
+	c:setCanRecast(false)
 	return c
 end
 
