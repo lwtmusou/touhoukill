@@ -100,6 +100,30 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
+class ShenbaoDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    static ShenbaoDialog *getInstance(const QString &object);
+    static QStringList getAvailableChoices(const Player *player, CardUseStruct::CardUseReason cardUseReason, const QString &cardUsePattern);
+    static QStringList getAvailableNullificationChoices(const ServerPlayer *player);
+
+public slots:
+    void popup();
+    void selectSkill(QAbstractButton *button);
+
+private:
+    explicit ShenbaoDialog(const QString &object);
+
+    QButtonGroup *group;
+
+    static const QStringList ShenbaoDialog::equipViewAsSkills;
+
+signals:
+    void onButtonClick();
+};
+
 class WendaoCard : public SkillCard
 {
     Q_OBJECT

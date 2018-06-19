@@ -547,13 +547,17 @@ return{
 
 	["shenbao"] = "神宝",
 	[":shenbao"] = "<font color=\"blue\"><b>锁定技，</b></font>视为你装备着场上的所有装备牌（武器牌的攻击范围取最长，名称不同的装备牌效果均叠加）。",
-	["#shenbao_distance"] = "神宝",
+--[[
 	["shenbao_spear"] = "丈八蛇矛",
 	["shenbao_pagoda"] = "宝塔",
 	["shenbao_jadeSeal"] = "玉玺",
 	[":shenbao_spear"] = "若其他角色装备有丈八蛇矛，你可以发动丈八蛇矛",
 	["：shenbao_pagoda"] = "若其他角色装备有宝塔，你可以发动宝塔",
 	["：shenbao_jadeSeal"] = "若其他角色装备有玉玺，你可以发动玉玺",
+]]
+	["shenbao_attach"] = "装备",
+	[":shenbao_attach"] = "你可以发动其他角色装备牌的技能。"
+
     ["#shenbao_distance"] = "神宝(距离)",
 	["#shenbao"] = "神宝",
 --*************************************

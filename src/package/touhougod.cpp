@@ -3106,6 +3106,167 @@ public:
     }
 };
 
+const QStringList ShenbaoDialog::equipViewAsSkills{"Spear", "Pagoda", "JadeSeal"};
+
+ShenbaoDialog *ShenbaoDialog::getInstance(const QString &object)
+{
+    static QPointer<ShenbaoDialog> instance;
+
+    if (!instance.isNull() && instance->objectName() != object)
+        delete instance;
+
+    if (instance.isNull()) {
+        instance = new ShenbaoDialog(object);
+        connect(qApp, &QCoreApplication::aboutToQuit, instance, &ShenbaoDialog::deleteLater);
+    }
+
+    return instance;
+}
+
+void ShenbaoDialog::popup()
+{
+    Self->tag.remove("shenbao_choice");
+
+    QStringList choices = getAvailableChoices(Self, Sanguosha->getCurrentCardUseReason(), Sanguosha->getCurrentCardUsePattern());
+
+    if (choices.isEmpty()) {
+        emit onButtonClick();
+    } else if (choices.length() == 1) {
+        Self->tag["shenbao_choice"] = choices.first();
+        emit onButtonClick();
+    } else {
+        QList<QAbstractButton *> btns = group->buttons();
+        foreach (QAbstractButton *btn, btns)
+            btn->setEnabled(choices.contains(btn->objectName()));
+
+        exec();
+    }
+}
+
+QStringList ShenbaoDialog::getAvailableChoices(const Player *player, CardUseStruct::CardUseReason cardUseReason, const QString &cardUsePattern)
+{
+    QStringList choices;
+
+    foreach (const QString &skillName, equipViewAsSkills) {
+        EquipCard *equipCard = qobject_cast<EquipCard *>(Sanguosha->cloneCard(skillName));
+        bool available = true;
+        if (equipCard != NULL) {
+            EquipCard::Location location = equipCard->location();
+            switch (location) {
+            case EquipCard::WeaponLocation:
+                if (!(player->hasWeapon(skillName) && !player->hasWeapon(skillName, true)))
+                    available = false;
+                break;
+            case EquipCard::ArmorLocation:
+                if (!(player->hasArmorEffect(skillName) && !player->hasArmorEffect(skillName, true)))
+                    available = false;
+                break;
+            case EquipCard::TreasureLocation:
+                if (!(player->hasTreasure(skillName) && !player->hasTreasure(skillName, true)))
+                    available = false;
+                break;
+            default:
+                available = false;
+                break;
+            }
+        } else
+            available = false;
+
+        delete equipCard;
+        const ViewAsSkill *skill = Sanguosha->getViewAsSkill(skillName);
+
+        if (available && skill != NULL) {
+            if (cardUseReason == CardUseStruct::CARD_USE_REASON_PLAY) {
+                if (skill->isEnabledAtPlay(player))
+                    choices << skillName;
+            } else {
+                if (skill->isEnabledAtResponse(player, cardUsePattern))
+                    choices << skillName;
+            }
+        }
+    }
+
+    return choices;
+}
+
+QStringList ShenbaoDialog::getAvailableNullificationChoices(const ServerPlayer *player)
+{
+    QStringList choices;
+
+    foreach (const QString &skillName, equipViewAsSkills) {
+        EquipCard *equipCard = qobject_cast<EquipCard *>(Sanguosha->cloneCard(skillName));
+        bool available = true;
+        if (equipCard != NULL) {
+            EquipCard::Location location = equipCard->location();
+            switch (location) {
+            case EquipCard::WeaponLocation:
+                if (!(player->hasWeapon(skillName) && !player->hasWeapon(skillName, true)))
+                    available = false;
+                break;
+            case EquipCard::ArmorLocation:
+                if (!(player->hasArmorEffect(skillName) && !player->hasArmorEffect(skillName, true)))
+                    available = false;
+                break;
+            case EquipCard::TreasureLocation:
+                if (!(player->hasTreasure(skillName) && !player->hasTreasure(skillName, true)))
+                    available = false;
+                break;
+            default:
+                available = false;
+                break;
+            }
+        } else
+            available = false;
+
+        delete equipCard;
+        const ViewAsSkill *skill = Sanguosha->getViewAsSkill(skillName);
+
+        if (available && skill != NULL) {
+            if (skill->isEnabledAtNullification(player))
+                choices << skillName;
+        }
+    }
+
+    return choices;
+}
+
+void ShenbaoDialog::selectSkill(QAbstractButton *button)
+{
+    if (button != NULL)
+        Self->tag["shenbao_choice"] = button->objectName();
+    else
+        Self->tag.remove("shenbao_choice");
+
+    emit onButtonClick();
+    accept();
+}
+
+ShenbaoDialog::ShenbaoDialog(const QString &object)
+{
+    setObjectName(object);
+    group = new QButtonGroup;
+
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    foreach (const QString &skillName, equipViewAsSkills) {
+        QCommandLinkButton *btn = new QCommandLinkButton(Sanguosha->translate(skillName));
+        btn->setObjectName(skillName);
+        const Card *equip = Sanguosha->cloneCard(skillName);
+        if (equip)
+            btn->setToolTip(equip->getDescription());
+
+        delete equip;
+
+        group->addButton(btn);
+        layout->addWidget(btn);
+    }
+
+    setLayout(layout);
+    //connect(group, (void (*)(QAbstractButton *))(&QButtonGroup::buttonClicked), this, &ShenbaoDialog::selectSkill);
+    connect(group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(selectSkill(QAbstractButton *)));
+    connect(this, &ShenbaoDialog::rejected, this, &ShenbaoDialog::onButtonClick);
+}
+
 class Shenbao : public AttackRangeSkill
 {
 public:
@@ -3171,6 +3332,75 @@ public:
     }
 };
 
+class ShenbaoAttach : public ViewAsSkill
+{
+public:
+    ShenbaoAttach()
+        : ViewAsSkill("shenbao_attach")
+    {
+        attached_lord_skill = true;
+        response_or_use = true;
+    }
+
+    virtual bool shouldBeVisible(const Player *Self) const
+    {
+        return Self;
+    }
+
+    virtual QDialog *getDialog() const
+    {
+        return ShenbaoDialog::getInstance("shenbao_attach");
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return !ShenbaoDialog::getAvailableChoices(player, CardUseStruct::CARD_USE_REASON_PLAY, Sanguosha->getCurrentCardUsePattern()).isEmpty();
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        return !ShenbaoDialog::getAvailableChoices(player, Sanguosha->getCurrentCardUseReason(), pattern).isEmpty();
+    }
+
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const
+    {
+        return !ShenbaoDialog::getAvailableNullificationChoices(player).isEmpty();
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    {
+        if (!Self->tag.contains("shenbao_choice"))
+            return false;
+
+        QString name = Self->tag.value("shenbao_choice").toString();
+        const ViewAsSkill *skill = Sanguosha->getViewAsSkill(name);
+        if (skill == NULL)
+            return false;
+
+        if (ShenbaoDialog::getAvailableChoices(Self, Sanguosha->getCurrentCardUseReason(), Sanguosha->getCurrentCardUsePattern()).contains(name))
+            return skill->viewFilter(selected, to_select);
+
+        return false;
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        if (!Self->tag.contains("shenbao_choice"))
+            return NULL;
+
+        QString name = Self->tag.value("shenbao_choice").toString();
+        const ViewAsSkill *skill = Sanguosha->getViewAsSkill(name);
+        if (skill == NULL)
+            return NULL;
+
+        if (ShenbaoDialog::getAvailableChoices(Self, Sanguosha->getCurrentCardUseReason(), Sanguosha->getCurrentCardUsePattern()).contains(name))
+            return skill->viewAs(cards);
+
+        return NULL;
+    }
+};
+
+#if 0
 class ShenbaoSpear : public ViewAsSkill
 {
 public:
@@ -3307,6 +3537,7 @@ public:
         return card;
     }
 };
+#endif
 
 class ShenbaoHandler : public TriggerSkill
 {
@@ -3321,22 +3552,28 @@ public:
     {
         if (triggerEvent == GameStart || triggerEvent == Debut || triggerEvent == EventAcquireSkill) {
             foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if (p->hasSkill("shenbao", true) && !p->hasSkill("shenbao_spear"))
-                    room->attachSkillToPlayer(p, "shenbao_spear");
-                if (p->hasSkill("shenbao", true) && !p->hasSkill("shenbao_pagoda"))
-                    room->attachSkillToPlayer(p, "shenbao_pagoda");
-                if (p->hasSkill("shenbao", true) && !p->hasSkill("shenbao_jadeSeal"))
-                    room->attachSkillToPlayer(p, "shenbao_jadeSeal");
+                //                if (p->hasSkill("shenbao", true) && !p->hasSkill("shenbao_spear"))
+                //                    room->attachSkillToPlayer(p, "shenbao_spear");
+                //                if (p->hasSkill("shenbao", true) && !p->hasSkill("shenbao_pagoda"))
+                //                    room->attachSkillToPlayer(p, "shenbao_pagoda");
+                //                if (p->hasSkill("shenbao", true) && !p->hasSkill("shenbao_jadeSeal"))
+                //                    room->attachSkillToPlayer(p, "shenbao_jadeSeal");
+
+                if (p->hasSkill("shenbao", true) && !p->hasSkill("shenbao_attach"))
+                    room->attachSkillToPlayer(p, "shenbao_attach");
             }
         }
         if (triggerEvent == Death || triggerEvent == EventLoseSkill) {
             foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if (!p->hasSkill("shenbao", true) && p->hasSkill("shenbao_spear"))
-                    room->detachSkillFromPlayer(p, "shenbao_spear", true);
-                if (!p->hasSkill("shenbao", true) && p->hasSkill("shenbao_pagoda"))
-                    room->detachSkillFromPlayer(p, "shenbao_pagoda", true);
-                if (!p->hasSkill("shenbao", true) && p->hasSkill("shenbao_jadeSeal"))
-                    room->detachSkillFromPlayer(p, "shenbao_jadeSeal", true);
+                //                if (!p->hasSkill("shenbao", true) && p->hasSkill("shenbao_spear"))
+                //                    room->detachSkillFromPlayer(p, "shenbao_spear", true);
+                //                if (!p->hasSkill("shenbao", true) && p->hasSkill("shenbao_pagoda"))
+                //                    room->detachSkillFromPlayer(p, "shenbao_pagoda", true);
+                //                if (!p->hasSkill("shenbao", true) && p->hasSkill("shenbao_jadeSeal"))
+                //                    room->detachSkillFromPlayer(p, "shenbao_jadeSeal", true);
+
+                if (!p->hasSkill("shenbao", true) && p->hasSkill("shenbao_attach"))
+                    room->detachSkillFromPlayer(p, "shenbao_attach", true);
             }
         }
     }
@@ -5331,7 +5568,8 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<XinhuaCard>();
     addMetaObject<RumoCard>();
 
-    skills << new ChaorenLog << new Ziwo << new Benwo << new Chaowo << new Wendao << new ShenbaoSpear << new RoleShownHandler << new ShenbaoPagoda << new ShenbaoJadeSeal;
+    skills << new ChaorenLog << new Ziwo << new Benwo << new Chaowo << new Wendao << new RoleShownHandler
+           << new ShenbaoAttach; // << new ShenbaoSpear << new ShenbaoPagoda << new ShenbaoJadeSeal;
 }
 
 ADD_PACKAGE(TouhouGod)

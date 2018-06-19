@@ -1293,17 +1293,35 @@ sgs.ai_skill_use["@@wendao"] = function(self, prompt)
 end
 
 
-local shenbao_spear_skill = {}
-shenbao_spear_skill.name = "shenbao_spear"
-table.insert(sgs.ai_skills, shenbao_spear_skill)
-shenbao_spear_skill.getTurnUseCard = function(self, inclusive)
-	if not self.player:hasWeapon("Spear") then return nil end
-	local weapon = self.player:getWeapon()
-	if weapon and weapon:isKindOf("Spear") then return nil end
-	return turnUse_spear(self, inclusive, "Spear")
+local shenbao_skill = {}
+shenbao_skill.name = "shenbao_attach"
+table.insert(sgs.ai_skills, shenbao_skill)
+
+shenbao_skill.getTurnUseCard = function(self, inclusive)
+	local spear = function(self, inclusive)
+		if not self.player:hasWeapon("Spear") then return nil end
+		local weapon = self.player:getWeapon()
+		if weapon and weapon:isKindOf("Spear") then return nil end
+		return turnUse_spear(self, inclusive, "Spear")
+	end
+	
+	local jadeSeal = function(self, inclusive)
+		if not self.player:hasTreasure("JadeSeal") then return nil end
+		local treasure = self.player:getWeapon()
+		if treasure and treasure:isKindOf("JadeSeal") then return nil end
+		if self.player:hasFlag("JadeSeal_used") then
+			return nil
+		end
+		local c = sgs.cloneCard("known_both", sgs.Card_NoSuit, 0)
+		c:setSkillName("JadeSeal")
+		c:setCanRecast(false)
+		return c
+	end
+	
+	return jadeSeal(self, inclusive) or spear(self, inclusive)
 end
 
-function sgs.ai_cardsview.shenbao_spear(self, class_name, player)
+function sgs.ai_cardsview.shenbao_attach(self, class_name, player)
 	if not self.player:hasWeapon("Spear") then return nil end
 	local weapon = self.player:getWeapon()
 	if weapon and weapon:isKindOf("Spear") then return nil end
@@ -1312,23 +1330,7 @@ function sgs.ai_cardsview.shenbao_spear(self, class_name, player)
 	end
 end
 
-local shenbao_jadeSeal_skill = {}
-shenbao_jadeSeal_skill.name = "shenbao_jadeSeal"
-table.insert(sgs.ai_skills, shenbao_jadeSeal)
-shenbao_spear_skill.getTurnUseCard = function(self, inclusive)
-	if not self.player:hasTreasure("JadeSeal") then return nil end
-	local treasure = self.player:getWeapon()
-	if treasure and treasure:isKindOf("JadeSeal") then return nil end
-	if self.player:hasFlag("JadeSeal_used") then
-		return nil
-	end
-	local c = sgs.cloneCard("known_both", sgs.Card_NoSuit, 0)
-	c:setSkillName("JadeSeal")
-	c:setCanRecast(false)
-	return c
-end
-
-sgs.ai_view_as.shenbao_pagoda = function(card, player, card_place)
+sgs.ai_view_as.shenbao_attach = function(card, player, card_place)
 	if not player:hasFlag("Pagoda_used") then
 		local suit = card:getSuitString()
 		local number = card:getNumberString()
@@ -1340,7 +1342,6 @@ sgs.ai_view_as.shenbao_pagoda = function(card, player, card_place)
 		end
 	end
 end
-
 
 function SmartAI:executorRewardOrPunish(victim,damage)
 	local komachi = self.room:findPlayerBySkillName("yindu")
