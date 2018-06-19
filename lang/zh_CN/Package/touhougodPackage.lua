@@ -556,7 +556,7 @@ return{
 	["：shenbao_jadeSeal"] = "若其他角色装备有玉玺，你可以发动玉玺",
 ]]
 	["shenbao_attach"] = "装备",
-	[":shenbao_attach"] = "你可以发动其他角色装备牌的技能。"
+	[":shenbao_attach"] = "你可以发动其他角色装备牌的技能。",
 
     ["#shenbao_distance"] = "神宝(距离)",
 	["#shenbao"] = "神宝",
