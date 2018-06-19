@@ -86,3 +86,4 @@ d3dcompiler_47.dll
 *.VC.db
 /image/mark/backup
 /config.json
+*.qmlc
