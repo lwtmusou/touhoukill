@@ -1,15 +1,17 @@
 #include "touhougod.h"
-#include "compiler-specific.h"
-
 #include "client.h"
+#include "compiler-specific.h"
 #include "engine.h"
 #include "general.h"
-#include "maneuvering.h" // for huaxiang
+#include "maneuvering.h"
 #include "settings.h"
 #include "skill.h"
 #include "standard.h"
-#include "th10.h" //for huaxiang
+#include "th09.h"
+#include "th10.h"
 #include <QCommandLinkButton>
+#include <QCoreApplication>
+#include <QPointer>
 
 class Chuanghuan : public TriggerSkill
 {
@@ -4420,10 +4422,16 @@ public:
 
 AnyunDialog *AnyunDialog::getInstance(const QString &object)
 {
-    static AnyunDialog *instance;
-    if (instance == NULL || instance->objectName() != object) {
+    static QPointer<AnyunDialog> instance;
+
+    if (!instance.isNull() && instance->objectName() != object)
+        delete instance;
+
+    if (instance.isNull()) {
         instance = new AnyunDialog(object);
+        connect(qApp, &QCoreApplication::aboutToQuit, instance, &AnyunDialog::deleteLater);
     }
+
     return instance;
 }
 
@@ -4514,8 +4522,7 @@ void AnyunDialog::popup()
     Self->tag.remove(object_name);
     exec();
 }
-#include "th09.h"
-#include "th10.h"
+
 void AnyunDialog::selectSkill(QAbstractButton *button)
 {
     const QString skillName = button->objectName();
@@ -4658,7 +4665,7 @@ public:
     {
         Room *room = zuoci->getRoom();
         QStringList huashens = zuoci->getHiddenGenerals();
-        QStringList list = GetAvailableGenerals(zuoci, init);   //do not remove parameter "init", which will be used for testing. 
+        QStringList list = GetAvailableGenerals(zuoci, init); //do not remove parameter "init", which will be used for testing.
         qShuffle(list);
         if (list.isEmpty())
             return;

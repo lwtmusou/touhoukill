@@ -17,16 +17,18 @@
 #include "structs.h"
 
 #include <QDateTime>
+#include <QDir>
+#include <QElapsedTimer>
 #include <QFile>
 #include <QHostAddress>
 #include <QMessageBox>
 #include <QMetaEnum>
 #include <QStringList>
+#include <QTextCodec>
 #include <QTextStream>
 #include <QTimer>
 #include <QTimerEvent>
 #include <ctime>
-
 #include <lua.hpp>
 
 #ifdef QSAN_UI_LIBRARY_AVAILABLE
@@ -5116,8 +5118,6 @@ void Room::setEmotion(ServerPlayer *target, const QString &emotion)
     doBroadcastNotify(S_COMMAND_SET_EMOTION, arg);
 }
 
-#include <QElapsedTimer>
-
 void Room::activate(ServerPlayer *player, CardUseStruct &card_use)
 {
     tryPause();
@@ -6706,8 +6706,6 @@ bool Room::roleStatusCommand(ServerPlayer *player)
     return true;
 }
 
-#include <QDir>
-#include <QFile>
 void Room::saveWinnerTable(const QString &winner, bool isSurrender)
 {
     //check gameMode
@@ -6783,7 +6781,6 @@ void Room::saveWinnerTable(const QString &winner, bool isSurrender)
     file.close();
 }
 
-#include <QTextCodec>
 void Room::countDescription()
 {
     QString location = "etc/count.txt";

@@ -1,5 +1,4 @@
 #include "th10.h"
-
 #include "client.h"
 #include "engine.h"
 #include "general.h"
@@ -8,6 +7,8 @@
 #include "standard.h"
 #include "th13.h"
 #include <QCommandLinkButton>
+#include <QCoreApplication>
+#include <QPointer>
 
 class ShendeVS : public ViewAsSkill
 {
@@ -364,10 +365,16 @@ public:
 
 QijiDialog *QijiDialog::getInstance(const QString &object, bool left, bool right)
 {
-    static QijiDialog *instance;
-    if (instance == NULL || instance->objectName() != object) {
+    static QPointer<QijiDialog> instance;
+
+    if (!instance.isNull() && instance->objectName() != object)
+        delete instance;
+
+    if (instance.isNull()) {
         instance = new QijiDialog(object, left, right);
+        connect(qApp, &QCoreApplication::aboutToQuit, instance, &QijiDialog::deleteLater);
     }
+
     return instance;
 }
 

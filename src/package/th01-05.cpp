@@ -1,10 +1,9 @@
 #include "th01-05.h"
+#include "clientplayer.h"
 #include "engine.h"
 #include "general.h"
 #include "maneuvering.h"
 #include "skill.h"
-
-#include "clientplayer.h"
 
 class Meiling : public TriggerSkill
 {

@@ -3,6 +3,7 @@
 #include "engine.h"
 #include "general.h"
 #include "skill.h"
+#include "testCard.h"
 
 class Xiahui : public TriggerSkill
 {
@@ -1410,7 +1411,6 @@ public:
     }
 };
 
-#include "testCard.h"
 class Shenyan : public TriggerSkill
 {
 public:

@@ -1,9 +1,8 @@
 #include "th14.h"
-
 #include "client.h"
 #include "engine.h"
 #include "general.h"
-#include "maneuvering.h" //for skill leiting
+#include "maneuvering.h"
 #include "skill.h"
 #include "standard.h"
 

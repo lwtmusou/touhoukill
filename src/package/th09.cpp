@@ -1,13 +1,13 @@
 #include "th09.h"
-
 #include "client.h"
 #include "engine.h"
 #include "general.h"
 #include "maneuvering.h"
 #include "skill.h"
 #include "standard.h"
-
 #include <QCommandLinkButton>
+#include <QCoreApplication>
+#include <QPointer>
 
 class ZuiyueVS : public ZeroCardViewAsSkill
 {
@@ -793,7 +793,6 @@ public:
 };
 */
 
-
 class Dizhen : public TriggerSkill
 {
 public:
@@ -808,7 +807,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card != NULL && use.card->isKindOf("Slash") && use.from->hasSkill(this)) {
             QList<SkillInvokeDetail> d;
-            foreach(ServerPlayer *p, use.to)
+            foreach (ServerPlayer *p, use.to)
                 d << SkillInvokeDetail(this, use.from, use.from, NULL, false, p);
 
             return d;
@@ -816,7 +815,6 @@ public:
 
         return QList<SkillInvokeDetail>();
     }
-
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
@@ -826,16 +824,15 @@ public:
         judge.good = true;
         judge.pattern = ".|red";
 
-
         room->judge(judge);
         ServerPlayer *target = invoke->targets.first();
         if (judge.isGood() && invoke->invoker->isAlive() && target->isAlive() && !target->isKongcheng()) {
             QList<int> ids;
-            foreach(const Card *card, target->getHandcards())
+            foreach (const Card *card, target->getHandcards())
                 ids << card->getEffectiveId();
 
             int card_id = room->doGongxin(invoke->invoker, target, ids);
-            if (card_id == -1) 
+            if (card_id == -1)
                 return false;
             QStringList select;
             select << "put";
@@ -1360,10 +1357,16 @@ public:
 
 NianliDialog *NianliDialog::getInstance(const QString &object)
 {
-    static NianliDialog *instance;
-    if (instance == NULL || instance->objectName() != object) {
+    static QPointer<NianliDialog> instance;
+
+    if (!instance.isNull() && instance->objectName() != object)
+        delete instance;
+
+    if (instance.isNull()) {
         instance = new NianliDialog(object);
+        connect(qApp, &QCoreApplication::aboutToQuit, instance, &NianliDialog::deleteLater);
     }
+
     return instance;
 }
 

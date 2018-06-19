@@ -1,13 +1,12 @@
 #include "th06.h"
-
 #include "client.h"
 #include "engine.h"
 #include "general.h"
-#include "maneuvering.h" // for beishui
+#include "maneuvering.h"
 #include "settings.h"
 #include "skill.h"
 #include "standard.h"
-#include "th10.h" //for beishui
+#include "th10.h"
 #include "util.h"
 
 SkltKexueCard::SkltKexueCard()

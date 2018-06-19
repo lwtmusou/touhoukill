@@ -4,6 +4,7 @@
 #include "protocol.h"
 #include "settings.h"
 #include "uiUtils.h"
+#include <QCoreApplication>
 #include <QFile>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsProxyWidget>
@@ -1027,6 +1028,8 @@ QSanSkinFactory &QSanSkinFactory::getInstance()
 #else
         _sm_singleton = new QSanSkinFactory("skins/skinListAlt.json");
 #endif
+
+        QObject::connect(qApp, &QCoreApplication::aboutToQuit, []() { _sm_singleton->destroyInstance(); });
     }
     return *_sm_singleton;
 }

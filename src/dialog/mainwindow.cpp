@@ -4,6 +4,7 @@
 #include "cardoverview.h"
 #include "client.h"
 #include "generaloverview.h"
+#include "lua.hpp"
 #include "pixmapanimation.h"
 #include "record-analysis.h"
 #include "recorder.h"
@@ -950,8 +951,6 @@ void MainWindow::updateInfoReceived()
     }
 }
 
-#include "audio.h"
-
 void MainWindow::on_actionAbout_fmod_triggered()
 {
     QString content = tr("FMOD is a proprietary audio library made by Firelight Technologies");
@@ -974,8 +973,6 @@ void MainWindow::on_actionAbout_fmod_triggered()
 
     window->appear();
 }
-
-#include "lua.hpp"
 
 void MainWindow::on_actionAbout_Lua_triggered()
 {

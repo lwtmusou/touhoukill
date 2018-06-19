@@ -1,12 +1,11 @@
 #include "th08.h"
-#include "th10.h"
-
 #include "client.h"
 #include "engine.h"
 #include "general.h"
 #include "maneuvering.h"
 #include "skill.h"
 #include "standard.h"
+#include "th10.h"
 
 class Yongheng : public TriggerSkill
 {

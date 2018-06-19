@@ -1,5 +1,4 @@
 #include "th07.h"
-
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
