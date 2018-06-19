@@ -616,7 +616,7 @@ bool QijiCard::targetFixed() const
 {
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
-    if (user_string != NULL)
+    if (user_string == NULL)
         return false;
 
     const Card *oc = Sanguosha->getCard(subcards.first());
