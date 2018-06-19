@@ -475,9 +475,9 @@ void RoomScene::handleGameEvent(const QVariant &args)
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
         QString huashenSkillName = container->getHuashenSkillName();
         if (huashenSkillName != NULL && !huashenSkillName.isEmpty() && huashenSkillName == skill_name)
-        //if (!player->hasSkill("pingyi"))
+            //if (!player->hasSkill("pingyi"))
             container->stopHuaShen();
-        
+
         container->updateAvatarTooltip();
         break;
     }
@@ -2347,7 +2347,7 @@ void RoomScene::addSkillButton(const Skill *skill, bool)
         connect(btn, SIGNAL(skill_deactivated()), dialog, SLOT(reject()));
         disconnect(btn, SIGNAL(skill_activated()), this, SLOT(onSkillActivated()));
         connect(dialog, SIGNAL(onButtonClick()), this, SLOT(onSkillActivated()));
-        if (dialog->objectName() == "qice")
+        if (dialog->objectName() == "qiji")
             connect(dialog, SIGNAL(onButtonClick()), dashboard, SLOT(selectAll()));
     }
 
