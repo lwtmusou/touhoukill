@@ -196,7 +196,7 @@ public:
     {
         filter_pattern = ".|black|.|hand";
         response_pattern = "nullification";
-        //response_or_use = true;//only skill shenbao can use WoodenOx
+        response_or_use = true;//only skill shenbao can use WoodenOx
     }
 
     const Card *viewAs(const Card *originalCard) const
