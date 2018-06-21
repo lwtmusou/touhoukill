@@ -5221,6 +5221,13 @@ public:
             if (invoke->invoker->getMark(m) > 0)
                 invoke->invoker->loseAllMarks(m);
         }
+
+        JsonArray arg;
+        arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+        arg << invoke->invoker->objectName();
+        arg << QString() << QString();
+        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+
         return false;
     }
 };

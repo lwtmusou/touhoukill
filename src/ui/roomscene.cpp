@@ -470,13 +470,15 @@ void RoomScene::handleGameEvent(const QVariant &args)
         player->detachSkill(skill_name);
         if (player == Self)
             detachSkill(skill_name);
-
+        
         // stop huashen animation
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        QString huashenSkillName = container->getHuashenSkillName();
-        if (huashenSkillName != NULL && !huashenSkillName.isEmpty() && huashenSkillName == skill_name)
-            //if (!player->hasSkill("pingyi"))
-            container->stopHuaShen();
+        //QString huashenSkillName = container->getHuashenSkillName();
+
+        //huashenSkillName is Empty...
+        //if (huashenSkillName != NULL && !huashenSkillName.isEmpty() && huashenSkillName == skill_name)
+        //if (!player->hasSkill("pingyi"))
+            //container->stopHuaShen();
 
         container->updateAvatarTooltip();
         break;
