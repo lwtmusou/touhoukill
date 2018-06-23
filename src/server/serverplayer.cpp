@@ -1294,15 +1294,18 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         arg_acquire << objectName();
         arg_acquire << skill_name;
         room->doNotify(player, S_COMMAND_LOG_EVENT, arg_acquire);
-
-        JsonArray arg_invailid;
-        arg_invailid << objectName() << skill_name << isSkillInvalid(skill_name);
-        room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_SKILL_INVALIDITY, arg_invailid);
     }
+
+    foreach (const QString &invalid_name, skill_invalid) {
+        JsonArray arg_invalid;
+        arg_invalid << objectName() << invalid_name << true;
+        room->doNotify(player, S_COMMAND_SET_SKILL_INVALIDITY, arg_invalid);
+    }
+
     //for AvatarTooltip
     JsonArray arg_tooltip;
     arg_tooltip << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
-    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg_tooltip);
+    room->doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, arg_tooltip);
 
     //since "banling", we should notify hp after notifying skill
     if (this->hasSkill("banling")) {
@@ -1316,7 +1319,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         arg << objectName();
         arg << g;
 
-        room->doBroadcastNotify(S_COMMAND_SET_HIDDEN_GENERAL, arg);
+        room->doNotify(player, S_COMMAND_SET_HIDDEN_GENERAL, arg);
     }
 
     foreach (QString flag, flags)
@@ -1347,7 +1350,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         huanshen_arg << objectName();
         huanshen_arg << huashen_target;
         huanshen_arg << huashen_skill;
-        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, huanshen_arg);
+        room->doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, huanshen_arg);
     }
 
     // for chaoren
@@ -1625,11 +1628,13 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     if (tarmods.isEmpty())
         return QStringList();
 
-    QSet<QString> showExtraTarget; QSet<QString> disShowExtraTarget;
-    QSet<QString> showResidueNum; QSet<QString> disShowResidueNum;
+    QSet<QString> showExtraTarget;
+    QSet<QString> disShowExtraTarget;
+    QSet<QString> showResidueNum;
+    QSet<QString> disShowResidueNum;
     QSet<QString> showDistanceLimit; //QSet<QString> disShowDistanceLimit;
-    QSet<QString> showTargetFix;// only for skill tianqu
-    QSet<QString> showTargetProhibit;//only for skill tianqu
+    QSet<QString> showTargetFix; // only for skill tianqu
+    QSet<QString> showTargetProhibit; //only for skill tianqu
     //check extra target
     int num = use.to.length() - 1;
     if (num >= 1) {
@@ -1662,7 +1667,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
         foreach (ServerPlayer *p, use.to) {
             if (use.from->distanceTo(p) > distance)
                 distance = use.from->distanceTo(p);
-        
+
             distance = distance - 1;
             if (distance >= 1) {
                 foreach (const TargetModSkill *tarmod, tarmods) {
@@ -1705,7 +1710,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
             break;
         }
     }
-    
+
     QSet<QString> shows = showExtraTarget.operator|(showDistanceLimit).operator|(showResidueNum).operator|(showTargetFix).operator|(showTargetProhibit);
     shows = shows.operator-(disShowExtraTarget).operator-(disShowResidueNum); //.operator-(disShowDistanceLimit)
     return shows.toList();
