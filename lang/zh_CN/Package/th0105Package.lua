@@ -179,7 +179,7 @@ return {
 	
 	["xuxiang"] = "虚像",
 	[":xuxiang"] = "当其他角色使用【杀】对目标角色造成伤害时，你可与其拼点：当你赢后，若拼点牌中有【闪】，你可令伤害值+1。若拼点牌中有【杀】，你可令伤害值-1。<font color=\"green\"><b>每阶段限一次。</b></font>",
-	["xuxiang:target"]= "<font color=\"#FF8000\"><b>%src </b></font> 使用【%arg】对  %dest 造成了 %arg2 点伤害。 你可发动“梦幻”与 <font color=\"#FF8000\"><b>%src </b></font> 拼点。",
+	["xuxiang:target"]= "<font color=\"#FF8000\"><b>%src </b></font> 使用【%arg】对  %dest 造成了 %arg2 点伤害。 你可发动“虚像”与 <font color=\"#FF8000\"><b>%src </b></font> 拼点。",
 	["#Xuxiang_minus"]= "%from 受到的伤害因 %arg效果 减少 %arg2 点。",
 	["#Xuxiang_plus"]= "%from 受到的伤害因 %arg效果 增加 %arg2 点。",
 	["#xuxiang_plus"] = "虚像加伤",
