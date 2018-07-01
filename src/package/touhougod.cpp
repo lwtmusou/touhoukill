@@ -5216,7 +5216,7 @@ public:
               << "@zhengti"
               << "@xinyang"
               << "@ice"
-              << "@stars";
+              << "@star";
         foreach (QString m, marks) {
             if (invoke->invoker->getMark(m) > 0)
                 invoke->invoker->loseAllMarks(m);
