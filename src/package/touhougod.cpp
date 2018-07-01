@@ -5551,6 +5551,10 @@ TouhouGodPackage::TouhouGodPackage()
     marisa_god->addSkill(new HuixingTargetMod);
     related_skills.insertMulti("huixing", "#huixing_effect");
 
+    General *patchouli_god = new General(this, "patchouli_god", "touhougod", 3);
+    patchouli_god->addSkill(new Skill("yuansu"));
+    patchouli_god->addSkill(new Skill("qiyao"));
+
     General *alice_god = new General(this, "alice_god", "touhougod", 4, false, true, true);
     Q_UNUSED(alice_god);
     General *shinmyoumaru_god = new General(this, "shinmyoumaru_god", "touhougod", 4, false, true, true);
