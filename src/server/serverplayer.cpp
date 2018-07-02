@@ -616,6 +616,8 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
             int card_id = card1->getEffectiveId();
             card1 = Sanguosha->getCard(card_id);
         }
+        CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, objectName(), target->objectName(), pindian_struct.reason, QString());
+        room->moveCardTo(card1, this, NULL, Player::PlaceTable, reason1, false);
 
         card2 = room->askForPindian(target, this, target, reason, pindian);
         CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, target->objectName());
@@ -1711,8 +1713,9 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
         }
     }
 
-    QSet<QString> shows = showExtraTarget.operator|(showDistanceLimit).operator|(showResidueNum).operator|(showTargetFix).operator|(showTargetProhibit);
-    shows = shows.operator-(disShowExtraTarget).operator-(disShowResidueNum); //.operator-(disShowDistanceLimit)
+    QSet<QString> shows = showExtraTarget | showDistanceLimit | showResidueNum | showTargetFix | showTargetProhibit;
+    shows = shows - disShowExtraTarget - disShowResidueNum;
+
     return shows.toList();
 }
 
