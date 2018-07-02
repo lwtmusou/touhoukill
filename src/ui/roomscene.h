@@ -24,6 +24,7 @@ class BubbleChatBox;
 class ChooseOptionsBox;
 class ChooseTriggerOrderBox;
 
+#include <QCommandLinkButton>
 #include <QDialog>
 #include <QGraphicsProxyWidget>
 #include <QGraphicsScene>
@@ -141,6 +142,23 @@ private:
     // Widget For Timer Label
     QLabel *time_label;
     QTimer *timer;
+};
+
+class CommandLinkDoubleClickButton : public QCommandLinkButton
+{
+    Q_OBJECT
+
+public:
+    explicit CommandLinkDoubleClickButton(QWidget *parent = Q_NULLPTR);
+    explicit CommandLinkDoubleClickButton(const QString &text, QWidget *parent = Q_NULLPTR);
+    explicit CommandLinkDoubleClickButton(const QString &text, const QString &description, QWidget *parent = Q_NULLPTR);
+    ~CommandLinkDoubleClickButton();
+
+signals:
+    void double_clicked(QPrivateSignal);
+
+protected:
+    void mouseDoubleClickEvent(QMouseEvent *event);
 };
 
 class RoomScene : public QGraphicsScene

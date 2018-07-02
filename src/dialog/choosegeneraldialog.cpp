@@ -37,9 +37,10 @@ OptionButton::OptionButton(QString icon_path, const QString &caption, QWidget *p
     }
 }
 
-void OptionButton::mouseDoubleClickEvent(QMouseEvent *)
+void OptionButton::mouseDoubleClickEvent(QMouseEvent *e)
 {
     emit double_clicked();
+    QToolButton::mouseDoubleClickEvent(e);
 }
 
 ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidget *parent, bool view_only, const QString &title)

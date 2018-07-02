@@ -25,7 +25,6 @@
 
 #include <QApplication>
 #include <QCheckBox>
-#include <QCommandLinkButton>
 #include <QCoreApplication>
 #include <QDesktopServices>
 #include <QFileDialog>
@@ -470,7 +469,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         player->detachSkill(skill_name);
         if (player == Self)
             detachSkill(skill_name);
-        
+
         // stop huashen animation
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
         //QString huashenSkillName = container->getHuashenSkillName();
@@ -478,7 +477,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         //huashenSkillName is Empty...
         //if (huashenSkillName != NULL && !huashenSkillName.isEmpty() && huashenSkillName == skill_name)
         //if (!player->hasSkill("pingyi"))
-            //container->stopHuaShen();
+        //container->stopHuaShen();
 
         container->updateAvatarTooltip();
         break;
@@ -1764,15 +1763,15 @@ void RoomScene::chooseSuit(const QStringList &suits)
     QVBoxLayout *layout = new QVBoxLayout;
 
     foreach (QString suit, suits) {
-        QCommandLinkButton *button = new QCommandLinkButton;
+        CommandLinkDoubleClickButton *button = new CommandLinkDoubleClickButton;
         button->setIcon(QIcon(QString("image/system/suit/%1.png").arg(suit)));
         button->setText(Sanguosha->translate(suit));
         button->setObjectName(suit);
 
         layout->addWidget(button);
 
-        connect(button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerChooseSuit()));
-        connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
+        connect(button, SIGNAL(double_clicked()), ClientInstance, SLOT(onPlayerChooseSuit()));
+        connect(button, SIGNAL(double_clicked()), dialog, SLOT(accept()));
     }
 
     connect(dialog, SIGNAL(rejected()), ClientInstance, SLOT(onPlayerChooseSuit()));
@@ -1790,7 +1789,7 @@ void RoomScene::chooseKingdom(const QStringList &kingdoms)
     QVBoxLayout *layout = new QVBoxLayout;
 
     foreach (QString kingdom, kingdoms) {
-        QCommandLinkButton *button = new QCommandLinkButton;
+        CommandLinkDoubleClickButton *button = new CommandLinkDoubleClickButton;
         QPixmap kingdom_pixmap(QString("image/kingdom/icon/%1.png").arg(kingdom));
         QIcon kingdom_icon(kingdom_pixmap);
 
@@ -1801,8 +1800,8 @@ void RoomScene::chooseKingdom(const QStringList &kingdoms)
 
         layout->addWidget(button);
 
-        connect(button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerChooseKingdom()));
-        connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
+        connect(button, SIGNAL(double_clicked()), ClientInstance, SLOT(onPlayerChooseKingdom()));
+        connect(button, SIGNAL(double_clicked()), dialog, SLOT(accept()));
     }
 
     dialog->setObjectName(".");
@@ -1910,10 +1909,10 @@ void RoomScene::chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand reason)
     layout->addLayout(hlayout);
     dialog->setLayout(layout);
 
-    connect(warm_button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerChooseOrder()));
-    connect(cool_button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerChooseOrder()));
-    connect(warm_button, SIGNAL(clicked()), dialog, SLOT(accept()));
-    connect(cool_button, SIGNAL(clicked()), dialog, SLOT(accept()));
+    connect(warm_button, SIGNAL(double_clicked()), ClientInstance, SLOT(onPlayerChooseOrder()));
+    connect(cool_button, SIGNAL(double_clicked()), ClientInstance, SLOT(onPlayerChooseOrder()));
+    connect(warm_button, SIGNAL(double_clicked()), dialog, SLOT(accept()));
+    connect(cool_button, SIGNAL(double_clicked()), dialog, SLOT(accept()));
     connect(dialog, SIGNAL(rejected()), ClientInstance, SLOT(onPlayerChooseOrder()));
     delete m_choiceDialog;
     m_choiceDialog = dialog;
@@ -1943,17 +1942,17 @@ void RoomScene::chooseRole(const QString &scheme, const QStringList &roles)
     }
 
     foreach (QString role, roles) {
-        QCommandLinkButton *button = new QCommandLinkButton(jargon[role]);
+        CommandLinkDoubleClickButton *button = new CommandLinkDoubleClickButton(jargon[role]);
         if (scheme == "AllRoles")
             button->setIcon(QIcon(QString("image/system/roles/%1.png").arg(role)));
         layout->addWidget(button);
         button->setObjectName(role);
-        connect(button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerChooseRole3v3()));
-        connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
+        connect(button, SIGNAL(double_clicked()), ClientInstance, SLOT(onPlayerChooseRole3v3()));
+        connect(button, SIGNAL(double_clicked()), dialog, SLOT(accept()));
     }
 
-    QCommandLinkButton *abstain_button = new QCommandLinkButton(tr("Abstain"));
-    connect(abstain_button, SIGNAL(clicked()), dialog, SLOT(reject()));
+    CommandLinkDoubleClickButton *abstain_button = new CommandLinkDoubleClickButton(tr("Abstain"));
+    connect(abstain_button, SIGNAL(double_clicked()), dialog, SLOT(reject()));
     layout->addWidget(abstain_button);
 
     dialog->setObjectName("abstain");
@@ -1987,10 +1986,10 @@ void RoomScene::chooseDirection()
     dialog->setLayout(layout);
 
     dialog->setObjectName("ccw");
-    connect(ccw_button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerMakeChoice()));
-    connect(ccw_button, SIGNAL(clicked()), dialog, SLOT(accept()));
-    connect(cw_button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerMakeChoice()));
-    connect(cw_button, SIGNAL(clicked()), dialog, SLOT(accept()));
+    connect(ccw_button, SIGNAL(double_clicked()), ClientInstance, SLOT(onPlayerMakeChoice()));
+    connect(ccw_button, SIGNAL(double_clicked()), dialog, SLOT(accept()));
+    connect(cw_button, SIGNAL(double_clicked()), ClientInstance, SLOT(onPlayerMakeChoice()));
+    connect(cw_button, SIGNAL(double_clicked()), dialog, SLOT(accept()));
     connect(dialog, SIGNAL(rejected()), ClientInstance, SLOT(onPlayerMakeChoice()));
     delete m_choiceDialog;
     m_choiceDialog = dialog;
@@ -3826,9 +3825,9 @@ void RoomScene::chooseSkillButton()
 
     foreach (QSanSkillButton *btn, enabled_buttons) {
         Q_ASSERT(btn->getSkill());
-        QCommandLinkButton *button = new QCommandLinkButton(Sanguosha->translate(btn->getSkill()->objectName()));
-        connect(button, SIGNAL(clicked()), btn, SLOT(click()));
-        connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
+        CommandLinkDoubleClickButton *button = new CommandLinkDoubleClickButton(Sanguosha->translate(btn->getSkill()->objectName()));
+        connect(button, SIGNAL(double_clicked()), btn, SLOT(click()));
+        connect(button, SIGNAL(double_clicked()), dialog, SLOT(accept()));
         layout->addWidget(button);
     }
 
@@ -5212,4 +5211,29 @@ void RoomScene::setLordBackdrop(QString lord)
     }
     if ((image_path != NULL) && QFile::exists(image_path))
         changeTableBg(image_path);
+}
+
+CommandLinkDoubleClickButton::CommandLinkDoubleClickButton(QWidget *parent)
+    : QCommandLinkButton(parent)
+{
+}
+
+CommandLinkDoubleClickButton::CommandLinkDoubleClickButton(const QString &text, QWidget *parent)
+    : QCommandLinkButton(text, parent)
+{
+}
+
+CommandLinkDoubleClickButton::CommandLinkDoubleClickButton(const QString &text, const QString &description, QWidget *parent)
+    : QCommandLinkButton(text, description, parent)
+{
+}
+
+CommandLinkDoubleClickButton::~CommandLinkDoubleClickButton()
+{
+}
+
+void CommandLinkDoubleClickButton::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    emit double_clicked(QPrivateSignal());
+    QCommandLinkButton::mouseDoubleClickEvent(event);
 }
