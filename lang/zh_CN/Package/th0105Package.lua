@@ -163,9 +163,9 @@ return {
 
 --************************************************
 	--pc98007 幻月/梦月 势力：旧 3血
-	["gengetsumugetsu"] = "梦月 & 幻月" ,
+	["gengetsumugetsu"] = "梦月 ＆ 幻月" ,
 	["&gengetsumugetsu"] = "梦月幻月" ,
-	["#gengetsumugetsu"] = "女仆 & 恶魔" ,
+	["#gengetsumugetsu"] = "女仆 ＆ 恶魔" ,
 	["designer:gengetsumugetsu"] = "辰焰天明",
 
 	["illustrator:gengetsumugetsu"] = " tengu ",
@@ -319,7 +319,7 @@ return {
 	["@qiren"] = "你发动“奇刃”对 %src 使用【借刀杀人】，请选择 %src 出杀的目标",
 	
 --************************************************	
-	["yukimai"] = "雪 & 舞",
+	["yukimai"] = "雪 ＆ 舞",
 	["&yukimai"] = "雪舞",
 	["#yukimai"] = "黑白双子" ,
 	["designer:yukimai"] = "dawda",
