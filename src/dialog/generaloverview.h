@@ -5,6 +5,7 @@ class General;
 class Skill;
 class QCommandLinkButton;
 
+#include <QAction>
 #include <QButtonGroup>
 #include <QCheckBox>
 #include <QDialog>
