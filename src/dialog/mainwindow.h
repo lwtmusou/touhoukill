@@ -87,8 +87,8 @@ private slots:
     void errPack();
 
 public slots:
-    void accept();
-    void reject();
+    void accept() override;
+    void reject() override;
 
 protected:
     void showEvent(QShowEvent *event) override;

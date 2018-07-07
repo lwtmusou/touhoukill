@@ -58,10 +58,9 @@ void RoomScene::resetPiles()
 }
 
 RoomScene::RoomScene(QMainWindow *main_window)
-    : main_window(main_window)
+    : m_skillButtonSank(false)
+    , main_window(main_window)
     , game_started(false)
-    , image_path(QString())
-    , bgm_path(QString())
 {
     m_choiceDialog = NULL;
     RoomSceneInstance = this;
@@ -73,9 +72,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
     _m_roomLayout = &(G_ROOM_SKIN.getRoomLayout());
     _m_photoLayout = &(G_ROOM_SKIN.getPhotoLayout());
     _m_commonLayout = &(G_ROOM_SKIN.getCommonLayout());
-
-    m_skillButtonSank = false;
-    guhuo_log = QString();
 
     // create photos
     for (int i = 0; i < player_count - 1; i++) {

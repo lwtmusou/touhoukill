@@ -283,6 +283,7 @@ winrt{
 macx{
     DEFINES += MAC
     LIBS += -L"$$_PRO_FILE_PWD_/lib/mac/lib"
+    DEFINES += LUA_USE_MACOSX
 }
 ios{
     DEFINES += IOS
@@ -309,6 +310,8 @@ linux{
             LIBS += -L"$$_PRO_FILE_PWD_/lib/linux/x64"
             QMAKE_LFLAGS += -Wl,--rpath=lib/linux/x64
         }
+        DEFINES += LUA_USE_LINUX
+        LIBS += -ldl -lreadline
     }
 }
 
@@ -411,3 +414,4 @@ INCLUDEPATH += $$_PRO_FILE_PWD_/include/freetype
 DEPENDPATH += $$_PRO_FILE_PWD_/include/freetype
 
 ANDROID_PACKAGE_SOURCE_DIR = $$_PRO_FILE_PWD_/resource/android
+

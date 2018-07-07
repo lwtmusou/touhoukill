@@ -19,12 +19,12 @@
     *********************************************************************/
 
 #include "choosetriggerorderbox.h"
+#include "SkinBank.h"
+#include "TimedProgressBar.h"
 #include "button.h"
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
-#include "skinbank.h"
-#include "timedprogressbar.h"
 
 #include <QGraphicsProxyWidget>
 #include <QGraphicsSceneMouseEvent>
@@ -131,8 +131,8 @@ QString SkillInvokeDetailForClient::toString() const
 
 TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QVariantMap &skillDetail, int width)
     : QGraphicsObject(parent)
-    , width(width)
     , times(1)
+    , width(width)
 {
     detail.tryParse(skillDetail);
     construct();
@@ -141,8 +141,8 @@ TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QVariant
 TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const SkillInvokeDetailForClient &skillDetail, int width)
     : QGraphicsObject(parent)
     , detail(skillDetail)
-    , width(width)
     , times(1)
+    , width(width)
 {
     construct();
 }

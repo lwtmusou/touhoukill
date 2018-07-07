@@ -236,7 +236,7 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
         bitmap = slot->bitmap;
         Q_ASSERT(bitmap.pitch == bitmap.width || bitmap.pitch == (bitmap.width - 1) / 8 + 1);
         bool mono = true;
-        if (bitmap.pitch == bitmap.width)
+        if ((unsigned int)(bitmap.pitch) == bitmap.width)
             mono = false;
 
         int fontRows = bitmap.rows;
@@ -431,7 +431,7 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QSt
         Q_ASSERT(bitmap.pitch == bitmap.width || bitmap.pitch == (bitmap.width - 1) / 8 + 1);
         //@todo put it back
         bool mono = true;
-        if (bitmap.pitch == bitmap.width)
+        if ((unsigned int)(bitmap.pitch) == bitmap.width)
             mono = false;
         // now paint the bitmap to the new region;
         Q_ASSERT(currentX >= 0 && currentY >= 0);

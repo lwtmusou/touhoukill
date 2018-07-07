@@ -51,7 +51,7 @@ QString SanFreeTypeFont::resolveFont(const QString &fontName)
     return "";
 }
 
-const int *const SanFreeTypeFont::loadFont(const QString &fontName)
+const int *SanFreeTypeFont::loadFont(const QString &fontName)
 {
     if (!m_ftLib) {
         return NULL;
@@ -186,7 +186,7 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text, 
         Q_ASSERT(bitmap.pitch == bitmap.width || bitmap.pitch == (bitmap.width - 1) / 8 + 1);
 
         bool mono = true;
-        if (bitmap.pitch == bitmap.width) {
+        if ((unsigned int)(bitmap.pitch) == bitmap.width) {
             mono = false;
         }
 
@@ -434,7 +434,7 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
 
         //@todo put it back
         bool mono = true;
-        if (bitmap.pitch == bitmap.width) {
+        if ((unsigned int)(bitmap.pitch) == bitmap.width) {
             mono = false;
         }
 

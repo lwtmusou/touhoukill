@@ -115,7 +115,6 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
     y = topBlankWidth;
     for (int i = 0; i < buttons.length(); ++i) {
         Button *button = buttons.at(i);
-        QPoint p = pos[button];
 
         QPointF pos;
         pos.setX(outerBlankWidth);

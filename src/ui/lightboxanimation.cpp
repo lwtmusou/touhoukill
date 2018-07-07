@@ -57,13 +57,12 @@ void RectObject::hide()
 }
 
 LightboxAnimation::LightboxAnimation(const QString &general_name, const QString &skill_name, const QRectF &rect)
-    : background(NULL)
+    : rect(rect)
+    , background(NULL)
     , generalPixmap(NULL)
     , flick(NULL)
-    , skillName(NULL)
     , general_name(general_name)
     , skill_name(skill_name)
-    , rect(rect)
 {
     hide();
 

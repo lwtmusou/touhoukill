@@ -26,7 +26,7 @@ void MiniSceneRule::assign(QStringList &generals, QStringList &roles) const
     }
 }
 
-bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
 {
     if (triggerEvent == EventPhaseStart) {
         ServerPlayer *player = data.value<ServerPlayer *>();

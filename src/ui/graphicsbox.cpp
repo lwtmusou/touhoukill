@@ -19,8 +19,8 @@
     *********************************************************************/
 
 #include "graphicsbox.h"
+#include "SkinBank.h"
 #include "roomscene.h"
-#include "skinbank.h"
 
 #include <QGraphicsDropShadowEffect>
 #include <QPainter>

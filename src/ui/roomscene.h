@@ -60,7 +60,8 @@ protected:
     virtual void accept();
 
 private:
-    QComboBox *killer, *victim;
+    QComboBox *killer;
+    QComboBox *victim;
 };
 
 class DamageMakerDialog : public QDialog
@@ -283,18 +284,24 @@ private:
     double _m_last_front_ZValue;
     GenericCardContainer *_getGenericCardContainer(Player::Place place, Player *player);
     QMap<int, QList<QList<CardItem *> > > _m_cardsMoveStash;
-    Button *add_robot, *fill_robots, *return_to_main_menu;
+    Button *add_robot;
+    Button *fill_robots;
+    Button *return_to_main_menu;
     QList<Photo *> photos;
     QMap<QString, Photo *> name2photo;
     Dashboard *dashboard;
     TablePile *m_tablePile;
     QMainWindow *main_window;
-    QSanButton *ok_button, *cancel_button, *discard_button;
+    QSanButton *ok_button;
+    QSanButton *cancel_button;
+    QSanButton *discard_button;
     QSanButton *trust_button;
-    QMenu *miscellaneous_menu, *change_general_menu;
+    QMenu *miscellaneous_menu;
+    QMenu *change_general_menu;
     Window *prompt_box;
     Window *pindian_box;
-    CardItem *pindian_from_card, *pindian_to_card;
+    CardItem *pindian_from_card;
+    CardItem *pindian_to_card;
     QGraphicsItem *control_panel;
     QMap<PlayerCardContainer *, const ClientPlayer *> item2player;
     QDialog *m_choiceDialog; // Dialog for choosing generals, suits, card/equip, or kingdoms
@@ -346,12 +353,15 @@ private:
 
     // for 3v3 & 1v1 mode
     QSanSelectableItem *selector_box;
-    QList<CardItem *> general_items, up_generals, down_generals;
+    QList<CardItem *> general_items;
+    QList<CardItem *> up_generals;
+    QList<CardItem *> down_generals;
     CardItem *to_change;
     QList<QGraphicsRectItem *> arrange_rects;
     QList<CardItem *> arrange_items;
     Button *arrange_button;
-    KOFOrderBox *enemy_box, *self_box;
+    KOFOrderBox *enemy_box;
+    KOFOrderBox *self_box;
     QPointF m_tableCenterPos;
     ReplayerControlBar *m_replayControl;
 

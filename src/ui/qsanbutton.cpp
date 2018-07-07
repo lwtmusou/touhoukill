@@ -468,8 +468,8 @@ void QSanInvokeSkillDock::update()
             }
         }
 
-        delete btnNum;
-        delete lordBtnNum;
+        delete[] btnNum;
+        delete[] lordBtnNum;
     }
     QGraphicsObject::update();
 }

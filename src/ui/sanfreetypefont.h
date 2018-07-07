@@ -17,13 +17,13 @@ class QRect;
 class SanFreeTypeFont
 {
 public:
-    static SanFreeTypeFont *const getInstance()
+    static SanFreeTypeFont *getInstance()
     {
         return m_instance;
     }
 
     QString resolveFont(const QString &fontName);
-    const int *const loadFont(const QString &fontName);
+    const int *loadFont(const QString &fontName);
 
     // @param painter
     //        Device to be painted on

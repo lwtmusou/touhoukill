@@ -1023,10 +1023,10 @@ UpdateDialog::UpdateDialog(QWidget *parent)
     , downloadManager(new QNetworkAccessManager(this))
     , scriptReply(NULL)
     , packReply(NULL)
-    , m_busy(false)
+    , taskbarButton(NULL)
     , m_finishedScript(false)
     , m_finishedPack(false)
-    , taskbarButton(NULL)
+    , m_busy(false)
 {
     setWindowTitle(tr("New Version Available"));
 

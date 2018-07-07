@@ -39,6 +39,7 @@ using namespace QSanProtocol;
 
 Room::Room(QObject *parent, const QString &mode)
     : QThread(parent)
+    , _m_lastMovementId(0)
     , mode(mode)
     , current(NULL)
     , pile1(Sanguosha->getRandomCards())
@@ -48,12 +49,14 @@ Room::Room(QObject *parent, const QString &mode)
     , game_finished(false)
     , game_paused(false)
     , L(NULL)
+    , fill_robot(false)
     , thread(NULL)
     , thread_3v3(NULL)
     , thread_xmode(NULL)
     , thread_1v1(NULL)
     , _m_semRaceRequest(0)
     , _m_semRoomMutex(1)
+    , _m_isFirstSurrenderRequest(false)
     , _m_raceStarted(false)
     , provided(NULL)
     , has_provided(false)
@@ -61,12 +64,10 @@ Room::Room(QObject *parent, const QString &mode)
     , m_surrenderRequestReceived(false)
     , _virtual(false)
     , _m_roomState(false)
-    , fill_robot(false)
     , m_fillAGWho(NULL)
 {
     static int s_global_room_id = 0;
     _m_Id = s_global_room_id++;
-    _m_lastMovementId = 0;
     player_count = Sanguosha->getPlayerCount(mode);
     scenario = Sanguosha->getScenario(mode);
 
@@ -3003,7 +3004,7 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign)
             }
         }
 
-        for (i; i < choice_count; i++) {
+        for (; i < choice_count; i++) {
             QString choice = player->findReasonable(choices, true);
             if (choice.isEmpty())
                 break;
@@ -4843,7 +4844,7 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                 || cards_moves[i].to_place == Player::DiscardPile
                 // any card from/to discard pile should be visible
                 || cards_moves[i].from_place == Player::PlaceTable
-                || (cards_moves[i].to_place == Player::PlaceTable && ((cards_moves[i].reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_PINDIAN)
+                || ((cards_moves[i].to_place == Player::PlaceTable && ((cards_moves[i].reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_PINDIAN))
                     || !cards_moves[i].shown_ids.isEmpty())
                 // any card from/to place table should be visible,except pindian
                 || (cards_moves[i].to_place == Player::PlaceSpecial && to && to->pileOpen(cards_moves[i].to_pile_name, player->objectName()))
@@ -5047,7 +5048,7 @@ void Room::filterCards(ServerPlayer *player, QList<const Card *> cards, bool ref
         }
     }
 
-    delete cardChanged;
+    delete[] cardChanged;
 }
 
 void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open)

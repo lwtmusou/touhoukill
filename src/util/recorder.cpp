@@ -32,7 +32,7 @@ void Recorder::recordLine(const QString &line)
 
 bool Recorder::save(const QString &filename) const
 {
-    qDebug(filename.toUtf8().data());
+    qDebug("%s", filename.toUtf8().data());
     if (filename.endsWith(".txt")) {
         QFile file(filename);
         if (file.open(QIODevice::WriteOnly | QIODevice::Text))

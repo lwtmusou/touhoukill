@@ -1462,7 +1462,7 @@ QPointF Dashboard::getHeroSkinContainerPosition() const
     return QPointF(avatarParentRect.left() - heroSkinContainerRect.width() - 120, avatarParentRect.bottom() - heroSkinContainerRect.height() - 5);
 }
 
-bool Dashboard::isItemUnderMouse(QGraphicsItem *item)
+bool Dashboard::isItemUnderMouse(QGraphicsItem *item) const
 {
     return (item->isUnderMouse() && !_m_skillDock->isUnderMouse()) || (_m_skillDock->isUnderMouse() && _m_screenNameItem->isVisible());
 }

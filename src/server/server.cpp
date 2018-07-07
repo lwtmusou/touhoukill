@@ -484,7 +484,6 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
 
     list = new QListWidget;
     list->setObjectName("Pairs");
-    this->list = list;
     foreach (QString banned, BanPair::getAllBanSet().toList())
         addGeneral(banned);
     foreach (QString banned, BanPair::getSecondBanSet().toList())
@@ -1246,12 +1245,6 @@ void Server::processNewConnection(ClientSocket *socket)
     emit server_message(tr("%1 connected").arg(socket->peerName()));
 
     connect(socket, SIGNAL(message_got(const char *)), this, SLOT(processRequest(const char *)));
-}
-
-static inline QString ConvertFromBase64(const QString &base64)
-{
-    QByteArray data = QByteArray::fromBase64(base64.toLatin1());
-    return QString::fromUtf8(data);
 }
 
 void Server::processRequest(const char *request)

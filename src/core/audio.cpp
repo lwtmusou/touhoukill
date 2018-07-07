@@ -87,8 +87,8 @@ public:
     explicit BackgroundMusicPlayList(const QStringList &fileNames, BackgroundMusicPlayList::PlayOrder order = Sequential, const QStringList openings = QStringList())
         : m_fileNames(fileNames)
         , m_order(order)
-        , m_openings(openings)
         , m_index(-1)
+        , m_openings(openings)
     {
     }
 

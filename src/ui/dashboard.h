@@ -291,7 +291,7 @@ protected slots:
         _m_screenNameItem->hide();
     }
 
-    virtual bool isItemUnderMouse(QGraphicsItem *item);
+    virtual bool isItemUnderMouse(QGraphicsItem *item) const;
 
 private slots:
     void onCardItemClicked();

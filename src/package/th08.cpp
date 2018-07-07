@@ -955,7 +955,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
     {
         PindianStruct *pindian = data.value<PindianStruct *>();
         ServerPlayer *bigger = NULL;
@@ -1224,7 +1224,7 @@ public:
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             foreach (const Card *c, p->getCards("j")) {
-                if (((e == DamageCaused && c->isBlack()) || e == DamageInflicted && c->isRed()) && invoke->invoker->canDiscard(p, c->getEffectiveId())) {
+                if (((e == DamageCaused && c->isBlack()) || (e == DamageInflicted && c->isRed())) && invoke->invoker->canDiscard(p, c->getEffectiveId())) {
                     targets << p;
                     break;
                 }
@@ -1739,7 +1739,7 @@ public:
         return use_chuangshi(room, invoke->invoker);
     }
 
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
     {
         DrawNCardsStruct qnum = data.value<DrawNCardsStruct>();
         qnum.n = qnum.n - 1;
