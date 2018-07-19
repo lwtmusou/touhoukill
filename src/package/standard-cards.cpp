@@ -2109,10 +2109,12 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
     QList<int> ids;
     QList<Player::Place> places;
     room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
-    for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
+    int times = 1 + effect.effectValue.first();
+    for (int i = 0; i < times; i += 1) {
         if (!effect.to->canDiscard(effect.to, "e"))
             break;
-        const Card *card = room->askForCard(effect.to, ".|.|.|equipped!", "@drowning", QVariant::fromValue(effect), Card::MethodNone);
+        QString prompt = QString("@drowning:%1:%2:%3").arg(effect.from->objectName()).arg(times).arg(i + 1);
+        const Card *card = room->askForCard(effect.to, ".|.|.|equipped!", prompt, QVariant::fromValue(effect), Card::MethodNone);
         // force discard!!!
         if (card == NULL) {
             QList<const Card *> equips = effect.to->getCards("e");
