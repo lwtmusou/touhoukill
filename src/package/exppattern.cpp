@@ -168,7 +168,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                                 checkpoint = true;
                                 break;
                             }
-                    } else if (p == "sqchuangshi" && card->getEffectiveId() >= 0 && !player->hasEquip(card)) {
+                    } else if ((p == "sqchuangshi" || p == "nuli") && card->getEffectiveId() >= 0 && !player->hasEquip(card)) {
                         checkpoint = true;
                     } else if (p == "shehuo" && card->getEffectiveId() >= 0 && !player->hasEquip(card)) {
                         checkpoint = true;
