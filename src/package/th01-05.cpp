@@ -3129,10 +3129,9 @@ public:
                     if (!yuki->hasFlag("xiewu") && yuki->getHandcardNum() == player->getHandcardNum())
                         d << SkillInvokeDetail(this, yuki, yuki, player);
                 }
-            }
-
-            return d;
+            } 
         }
+        return d;
     }
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const

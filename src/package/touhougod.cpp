@@ -2799,7 +2799,7 @@ public:
             damage.to->drawCards(x);
             room->loseHp(damage.to, x);
         } else {
-            int discardNum = damage.to->getCards("hes").length() > x ? damage.to->getCards("he").length() - x : 0;
+            int discardNum = qMax(damage.to->getCards("hes").length() - x, 0);
             if (discardNum > 0)
                 room->askForDiscard(damage.to, objectName(), discardNum, discardNum, false, true);
         }
