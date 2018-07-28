@@ -1117,7 +1117,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (damage.damage > 1) {
             foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                if (p->isWounded())
+                if (!p->getPile("dream").isEmpty())
                     d << SkillInvokeDetail(this, p, p, NULL);
             }
         }
