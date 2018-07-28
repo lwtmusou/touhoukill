@@ -1667,7 +1667,7 @@ public:
             QList<SkillInvokeDetail> d;
             if (use.card->isKindOf("Slash") || use.card->isNDTrick()) {
                 foreach (ServerPlayer *p, use.to) {
-                    if (!p->hasSkill(this))
+                    if (!p->hasSkill(this) || p == use.from)
                         continue;
                     foreach (int id, p->getPile(objectName())) {
                         if (Sanguosha->getCard(id)->getSuit() == use.card->getSuit()) {
