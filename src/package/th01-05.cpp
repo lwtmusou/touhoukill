@@ -1030,7 +1030,7 @@ public:
 
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            if (p->inMyAttackRange(damage.to))
+            if (p->inMyAttackRange(damage.to) || p == damage.to)
                 d << SkillInvokeDetail(this, p, p, NULL, false, damage.to);
         }
         return d;
@@ -3255,12 +3255,12 @@ TH0105Package::TH0105Package()
     yuka_old->addSkill(new Menghuan);
 
     General *gengetsumugetsu = new General(this, "gengetsumugetsu", "pc98", 3);
-    //gengetsumugetsu->addSkill(new Huantong);
-    //gengetsumugetsu->addSkill(new Mengyan);
-    gengetsumugetsu->addSkill(new Xuxiang);
-    gengetsumugetsu->addSkill(new XuxiangRecord);
-    gengetsumugetsu->addSkill(new Huanjue);
-    related_skills.insertMulti("xuxiang", "#xuxiang");
+    gengetsumugetsu->addSkill(new Huantong);
+    gengetsumugetsu->addSkill(new Mengyan);
+    //gengetsumugetsu->addSkill(new Xuxiang);
+    //gengetsumugetsu->addSkill(new XuxiangRecord);
+    //gengetsumugetsu->addSkill(new Huanjue);
+    //related_skills.insertMulti("xuxiang", "#xuxiang");
 
     General *elly = new General(this, "elly", "pc98", 4);
     elly->addSkill(new Lianmu);
