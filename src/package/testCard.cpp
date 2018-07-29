@@ -5,6 +5,111 @@
 #include "maneuvering.h"
 #include "room.h"
 
+
+DebuffSlash::DebuffSlash(Suit suit, int number)
+    : Slash(suit, number)
+{
+
+}
+
+bool DebuffSlash::match(const QString &pattern) const
+{
+    QStringList patterns = pattern.split("+");
+    if (patterns.contains("slash"))
+        return true;
+    else
+        return Slash::match(pattern);
+}
+
+
+
+IronSlash::IronSlash(Suit suit, int number)
+    : DebuffSlash(suit, number)
+{
+    setObjectName("iron_slash");
+}
+
+void IronSlash::debuffEffect(const SlashEffectStruct &effect)
+{
+    if (effect.to->isAlive() && !effect.to->isChained())
+        effect.to->getRoom()->setPlayerProperty(effect.to, "chained", !effect.to->isChained());
+}
+
+LightSlash::LightSlash(Suit suit, int number)
+    : DebuffSlash(suit, number)
+{
+    setObjectName("light_slash");
+}
+
+void LightSlash::debuffEffect(const SlashEffectStruct &effect)
+{
+
+    int num = qMin(1 + effect.effectValue.last(), effect.to->getCards("h").length());
+    if (num <= 0)
+        return;
+
+    QList<int> ids;
+    QList<Player::Place> places;
+
+    Room *room = effect.from->getRoom();
+    room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
+
+    for (int i = 0; i < num; i += 1) {
+        int id = room->askForCardChosen(effect.from, effect.to, "h", "light_slash");
+        ids << id;
+        places << room->getCardPlace(id);
+        effect.to->addToPile("#dismantle", id, false);
+        if (effect.to->getCards("h").isEmpty())
+            break;
+    }
+
+    //move the first card back temporarily
+    for (int i = 0; i < ids.length(); i += 1) {
+        room->moveCardTo(Sanguosha->getCard(ids.at(i)), effect.to, places.at(i), false);
+    }
+    room->setPlayerFlag(effect.to, "-dismantle_InTempMoving");
+
+    effect.to->addToShownHandCards(ids);
+}
+
+
+PowerSlash::PowerSlash(Suit suit, int number)
+    : DebuffSlash(suit, number)
+{
+    setObjectName("power_slash");
+}
+
+
+
+void PowerSlash::debuffEffect(const SlashEffectStruct &effect)
+{
+    Room *room = effect.from->getRoom();
+    QList<int> disable;
+    foreach(const Card *c, effect.to->getCards("e")) {
+        if (effect.to->isBrokenEquip(c->getEffectiveId()))
+            disable << c->getEffectiveId();
+    }
+    
+
+    int num = qMin(1 + effect.effectValue.last(), effect.to->getEquips().length() - disable.length());
+    if (num <= 0)
+        return;
+    
+    QList<int> ids;
+    for (int i = 0; i < num; i += 1) {
+        int id = room->askForCardChosen(effect.from, effect.to, "e", "power_slash", true, Card::MethodNone, disable);
+        ids << id;
+        disable << id;
+        if ((effect.to->getEquips().length() - disable.length()) <= 0)
+            break;
+    }
+    effect.to->addBrokenEquips(ids);
+}
+
+
+
+
+
 NatureJink::NatureJink(Suit suit, int number)
     : Jink(suit, number)
 {
@@ -21,11 +126,57 @@ bool NatureJink::match(const QString &pattern) const
         return Jink::match(pattern);
 }
 
-AdvancedJink::AdvancedJink(Suit suit, int number)
+ChainJink::ChainJink(Suit suit, int number)
     : NatureJink(suit, number)
 {
-    setObjectName("advanced_jink");
+    setObjectName("Chain_jink");
 }
+
+
+void ChainJink::onEffect(const CardEffectStruct &effect) const
+{
+    if (effect.to->isAlive() && !effect.to->isChained())
+        effect.to->getRoom()->setPlayerProperty(effect.to, "chained", !effect.to->isChained());
+}
+
+LightJink::LightJink(Suit suit, int number)
+    : NatureJink(suit, number)
+{
+    setObjectName("Light_jink");
+}
+
+
+void LightJink::onEffect(const CardEffectStruct &effect) const
+{
+    int num = qMin(1 + effect.effectValue.first(), effect.to->getCards("h").length());
+    if (num <= 0)
+        return;
+
+    QList<int> ids;
+    QList<Player::Place> places;
+
+    Room *room = effect.from->getRoom();
+    room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
+
+    for (int i = 0; i < num; i += 1) {
+        int id = room->askForCardChosen(effect.from, effect.to, "h", objectName());
+        ids << id;
+        places << room->getCardPlace(id);
+        effect.to->addToPile("#dismantle", id, false);
+        if (effect.to->getCards("h").isEmpty())
+            break;
+    }
+
+    //move the first card back temporarily
+    for (int i = 0; i < ids.length(); i += 1) {
+        room->moveCardTo(Sanguosha->getCard(ids.at(i)), effect.to, places.at(i), false);
+    }
+    room->setPlayerFlag(effect.to, "-dismantle_InTempMoving");
+
+    effect.to->addToShownHandCards(ids);
+}
+
+
 
 class CameraSkill : public WeaponSkill
 {
@@ -525,12 +676,12 @@ TestCardPackage::TestCardPackage()
         << new Nullification(Card::Club, 12)
         //Basic
         //<< new Kusuri(Card::Diamond, 3) << new Kusuri(Card::Heart, 8) << new Kusuri(Card::Heart, 9)
-        << new Slash(Card::Spade, 7)
-        << new Slash(Card::Spade, 9)
-        << new Slash(Card::Club, 6)
-        << new Slash(Card::Club, 9)
-        << new Slash(Card::Heart, 8)
-        << new Slash(Card::Diamond, 8)
+        << new IronSlash(Card::Spade, 7)
+        << new IronSlash(Card::Spade, 9)
+        << new LightSlash(Card::Club, 6)
+        << new LightSlash(Card::Club, 9)
+        << new PowerSlash(Card::Heart, 8)
+        << new PowerSlash(Card::Diamond, 8)
         << new ThunderSlash(Card::Spade, 8)
         << new ThunderSlash(Card::Club, 8)
         << new FireSlash(Card::Heart, 9)
@@ -539,10 +690,10 @@ TestCardPackage::TestCardPackage()
         << new Peach(Card::Heart, 4)
         << new Peach(Card::Diamond, 13)
         
-        << new AdvancedJink(Card::Heart, 5)
-        << new AdvancedJink(Card::Heart, 6)
-        << new AdvancedJink(Card::Diamond, 2)
-        << new AdvancedJink(Card::Diamond, 11);
+        << new ChainJink(Card::Heart, 5)
+        << new ChainJink(Card::Heart, 6)
+        << new LightJink(Card::Diamond, 2)
+        << new LightJink(Card::Diamond, 11);
 
     // clang-format on
 

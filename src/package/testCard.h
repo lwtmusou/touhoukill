@@ -3,6 +3,48 @@
 
 #include "standard.h"
 
+class DebuffSlash : public Slash
+{
+    Q_OBJECT
+
+public:
+    DebuffSlash(Suit suit, int number);
+    virtual bool match(const QString &pattern) const;
+};
+
+class IronSlash : public DebuffSlash
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE IronSlash(Card::Suit suit, int number);
+
+    static void debuffEffect(const SlashEffectStruct &effect);
+};
+
+class LightSlash : public DebuffSlash
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE LightSlash(Card::Suit suit, int number);
+
+    static void debuffEffect(const SlashEffectStruct &effect);
+};
+
+class PowerSlash : public DebuffSlash
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE PowerSlash(Card::Suit suit, int number);
+
+    static void debuffEffect(const SlashEffectStruct &effect);
+
+};
+
+
+
 class NatureJink : public Jink
 {
     Q_OBJECT
@@ -12,12 +54,25 @@ public:
     virtual bool match(const QString &pattern) const;
 };
 
-class AdvancedJink : public NatureJink
+class ChainJink : public NatureJink
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE AdvancedJink(Card::Suit suit, int number);
+    Q_INVOKABLE ChainJink(Card::Suit suit, int number);
+
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+
+class LightJink : public NatureJink
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE LightJink(Card::Suit suit, int number);
+
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class Camera : public Weapon

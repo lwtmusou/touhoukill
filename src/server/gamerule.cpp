@@ -1,6 +1,7 @@
 #include "gamerule.h"
 #include "engine.h"
 #include "maneuvering.h"
+#include "testCard.h"
 #include "room.h"
 #include "serverplayer.h"
 #include "settings.h"
@@ -612,9 +613,11 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             SlashEffectStruct effect = j.slashEffect;
             //process advanced_jink
             if (effect.from && effect.to && effect.from->isAlive() && effect.to->isAlive()) {
-                bool use = room->askForUseSlashTo(effect.from, effect.to, QString("advanced_jink:%1").arg(effect.to->objectName()), false, true);
-                if (!use)
-                    effect.to->gainMark("@test");
+                CardEffectStruct new_effect;
+                new_effect.card = j.jink;
+                new_effect.from = effect.to;
+                new_effect.to = effect.from;
+                j.jink->onEffect(new_effect);
             }
         }
 
@@ -635,6 +638,18 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 break;
             }
         }
+
+        //@todo: I want IronSlash to obtain function debuffEffect() from "Slash"  as an inheritance, But the variant slasheffect.slash is "Card".
+        //using dynamic_cast may bring some terrible troubles.
+        if (effect.slash->isKindOf("DebuffSlash")) {
+            if (effect.slash->isKindOf("IronSlash"))
+                IronSlash::debuffEffect(effect);
+            else if(effect.slash->isKindOf("LightSlash"))
+                LightSlash::debuffEffect(effect);
+            else if (effect.slash->isKindOf("PowerSlash"))
+                PowerSlash::debuffEffect(effect);
+        }
+
         if (effect.drank > 0)
             effect.to->setMark("SlashIsDrank", effect.drank);
 
