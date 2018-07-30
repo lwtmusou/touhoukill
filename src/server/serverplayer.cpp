@@ -1651,7 +1651,12 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     //check ResidueNum
     //only consider the folloing cards
     if (use.card->isKindOf("Slash") || use.card->isKindOf("Analeptic")) {
-        num = use.from->usedTimes(use.card->getClassName()) - 1;
+        num = 0;
+        if (use.card->isKindOf("Slash"))
+            num = use.from->getSlashCount() - 1;
+        else if (use.card->isKindOf("Analeptic"))
+            num = use.from->getAnalepticCount() - 1;
+
         if (num >= 1) {
             foreach (const TargetModSkill *tarmod, tarmods) {
                 if (tarmod->getResidueNum(use.from, use.card) >= num)
