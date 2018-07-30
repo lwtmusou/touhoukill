@@ -177,6 +177,42 @@ void LightJink::onEffect(const CardEffectStruct &effect) const
 }
 
 
+MagicAnaleptic::MagicAnaleptic(Card::Suit suit, int number)
+    : Analeptic(suit, number)
+{
+    setObjectName("magic_analeptic");
+}
+
+bool MagicAnaleptic::match(const QString &pattern) const
+{
+    QStringList patterns = pattern.split("+");
+    if (patterns.contains("analeptic"))
+        return true;
+    else
+        return Analeptic::match(pattern);
+}
+
+void MagicAnaleptic::onEffect(const CardEffectStruct &effect) const
+{
+    Room *room = effect.to->getRoom();
+    room->setEmotion(effect.to, "analeptic");
+
+    if (effect.to->hasFlag("Global_Dying") && Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY) {
+        // recover hp
+        RecoverStruct recover;
+        recover.card = this;
+        recover.who = effect.from;
+        recover.recover = 1 + effect.effectValue.first();
+        room->recover(effect.to, recover);
+    }
+    else {
+        room->addPlayerMark(effect.to, "magic_drank", 1 + effect.effectValue.first());
+    }
+}
+
+
+
+
 
 class CameraSkill : public WeaponSkill
 {
@@ -686,7 +722,7 @@ TestCardPackage::TestCardPackage()
         << new ThunderSlash(Card::Club, 8)
         << new FireSlash(Card::Heart, 9)
 
-        << new Analeptic(Card::Spade, 10)
+        << new MagicAnaleptic(Card::Spade, 10)
         << new Peach(Card::Heart, 4)
         << new Peach(Card::Diamond, 13)
         

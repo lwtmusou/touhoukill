@@ -221,7 +221,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         break;
     }
     case EventPhaseEnd: {
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
+        /*foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (p->getMark("drank") > 0) {
                 LogMessage log;
                 log.type = "#UnsetDrankEndOfTurn";
@@ -230,7 +230,15 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
 
                 room->setPlayerMark(p, "drank", 0);
             }
-        }
+            if (p->getMark("magic_drank") > 0) {
+                LogMessage log;
+                log.type = "#UnsetDrankEndOfTurn";
+                log.from = p;
+                room->sendLog(log);
+
+                room->setPlayerMark(p, "magic_drank", 0);
+            }
+        }*/
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->getPhase() == Player::Play)
             room->addPlayerHistory(player, ".");
@@ -240,6 +248,25 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         ServerPlayer *player = change.player;
         if (change.to == Player::NotActive) {
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if (p->getMark("drank") > 0) {
+                    LogMessage log;
+                    log.type = "#UnsetDrankEndOfTurn";
+                    log.from = p;
+                    room->sendLog(log);
+
+                    room->setPlayerMark(p, "drank", 0);
+                }
+                if (p->getMark("magic_drank") > 0) {
+                    LogMessage log;
+                    log.type = "#UnsetDrankEndOfTurn";
+                    log.from = p;
+                    room->sendLog(log);
+
+                    room->setPlayerMark(p, "magic_drank", 0);
+                }
+            }
+
             room->setPlayerFlag(player, ".");
             //room->clearPlayerCardLimitation(player, true);
             room->setPlayerMark(player, "touhou-extra", 0);
@@ -276,6 +303,12 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             if (!card_use.card->getSkillName().isNull() && card_use.card->getSkillName(true) == card_use.card->getSkillName(false) && card_use.m_isOwnerUse
                 && card_use.from->hasSkill(card_use.card->getSkillName()))
                 room->notifySkillInvoked(card_use.from, card_use.card->getSkillName());
+            //clear magic_drank while using Nullification
+            if (card_use.card->isKindOf("Nullification")) {
+                if (card_use.from->getMark("magic_drank") > 0)
+                    room->setPlayerMark(card_use.from, "magic_drank", 0);
+            }
+
         }
         break;
     }
@@ -514,11 +547,17 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 room->setEmotion(effect.to, "skill_nullify");
                 return true;
             } else if (effect.card->getTypeId() == Card::TypeTrick) {
+                if (effect.card->isNDTrick() && effect.from->getMark("magic_drank") > 0) {
+                    //room->setCardFlag(effect.card, "magic_drank");
+                    effect.effectValue.first() = effect.effectValue.first() + effect.from->getMark("magic_drank");
+                    room->setPlayerMark(effect.from, "magic_drank", 0);
+                }
                 if (room->isCanceled(effect)) {
                     effect.to->setFlags("Global_NonSkillNullify");
                     return true;
                 } else {
                     room->getThread()->trigger(TrickEffect, room, data);
+                    
                 }
             }
             if (effect.to->isAlive() || effect.card->isKindOf("Slash")) {

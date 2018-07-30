@@ -456,7 +456,7 @@ void PlayerCardContainer::hidePile()
 
 void PlayerCardContainer::updateDrankState()
 {
-    if (m_player->getMark("drank") > 0)
+    if (m_player->getMark("drank") > 0 || m_player->getMark("magic_drank") > 0)
         _m_avatarArea->setBrush(G_PHOTO_LAYOUT.m_drankMaskColor);
     else
         _m_avatarArea->setBrush(Qt::NoBrush);

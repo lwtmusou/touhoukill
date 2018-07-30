@@ -285,6 +285,7 @@ public:
     bool hasUsed(const QString &card_class) const;
     int usedTimes(const QString &card_class) const;
     int getSlashCount() const;
+    int getAnalepticCount() const;
 
     bool hasEquipSkill(const QString &skill_name) const;
     QSet<const TriggerSkill *> getTriggerSkills() const;

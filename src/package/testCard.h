@@ -2,6 +2,7 @@
 #define _TESTCARD_H
 
 #include "standard.h"
+#include "maneuvering.h"
 
 class DebuffSlash : public Slash
 {
@@ -74,6 +75,19 @@ public:
 
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
+
+
+class MagicAnaleptic : public Analeptic
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE MagicAnaleptic(Card::Suit suit, int number);
+    virtual bool match(const QString &pattern) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+
 
 class Camera : public Weapon
 {

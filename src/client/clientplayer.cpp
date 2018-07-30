@@ -196,7 +196,7 @@ void ClientPlayer::setMark(const QString &mark, int value)
         return;
     marks[mark] = value;
 
-    if (mark == "drank")
+    if (mark == "drank" || mark == "magic_drank")
         emit drank_changed();
 
     if (!mark.startsWith("@"))
