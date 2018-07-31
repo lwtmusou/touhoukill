@@ -5298,7 +5298,17 @@ public:
                     room->setCardFlag(use.card, "mopao2");
                 else
                     room->setCardFlag(use.card, "mopao");
-            } else
+            }
+            else if (use.card->isKindOf("Slash")) {
+                QString choice = "2";
+                if (use.card->isKindOf("LightSlash") || use.card->isKindOf("PowerSlash"))
+                    choice = room->askForChoice(invoke->invoker, objectName(), "1+2");
+                if (choice == "2")
+                    room->setCardFlag(use.card, "mopao2");
+                else
+                    room->setCardFlag(use.card, "mopao");
+            }
+            else
                 room->setCardFlag(use.card, "mopao");
 
             LogMessage log;

@@ -263,6 +263,7 @@ public:
 
     void setChained(bool chained);
     bool isChained() const;
+    bool isDebuffStatus() const;
 
     void setRemoved(bool removed);
     bool isRemoved() const;

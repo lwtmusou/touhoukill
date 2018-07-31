@@ -1244,6 +1244,11 @@ bool Player::isChained() const
     return chained;
 }
 
+bool Player::isDebuffStatus() const
+{
+    return chained || (!shown_handcards.isEmpty()) || (!broken_equips.isEmpty());
+}
+
 void Player::setChained(bool chained)
 {
     if (this->chained != chained) {

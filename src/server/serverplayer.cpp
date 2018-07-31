@@ -1437,6 +1437,9 @@ void ServerPlayer::addToShownHandCards(QList<int> card_ids)
 
 void ServerPlayer::removeShownHandCards(QList<int> card_ids, bool sendLog, bool moveFromHand)
 {
+    if (card_ids.isEmpty())
+        return;
+
     foreach (int id, card_ids)
         shown_handcards.removeOne(id);
 
@@ -1493,6 +1496,9 @@ void ServerPlayer::addBrokenEquips(QList<int> card_ids)
 
 void ServerPlayer::removeBrokenEquips(QList<int> card_ids, bool sendLog, bool moveFromEquip)
 {
+    if (card_ids.isEmpty())
+        return;
+
     foreach (int id, card_ids)
         broken_equips.removeOne(id);
 

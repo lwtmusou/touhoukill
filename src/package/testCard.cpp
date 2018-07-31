@@ -44,7 +44,7 @@ LightSlash::LightSlash(Suit suit, int number)
 void LightSlash::debuffEffect(const SlashEffectStruct &effect)
 {
 
-    int num = qMin(1 + effect.effectValue.last(), effect.to->getCards("h").length());
+    int num = qMin(1 + effect.effectValue.first(), effect.to->getCards("h").length());
     if (num <= 0)
         return;
 
@@ -91,7 +91,7 @@ void PowerSlash::debuffEffect(const SlashEffectStruct &effect)
     }
     
 
-    int num = qMin(1 + effect.effectValue.last(), effect.to->getEquips().length() - disable.length());
+    int num = qMin(1 + effect.effectValue.first(), effect.to->getEquips().length() - disable.length());
     if (num <= 0)
         return;
     
@@ -211,6 +211,104 @@ void MagicAnaleptic::onEffect(const CardEffectStruct &effect) const
 }
 
 
+SuperPeach::SuperPeach(Suit suit, int number)
+    : Peach(suit, number)
+{
+    setObjectName("super_peach");
+    target_fixed = true;
+}
+
+bool SuperPeach::match(const QString &pattern) const
+{
+    QStringList patterns = pattern.split("+");
+    if (patterns.contains("peach"))
+        return true;
+    else
+        return Peach::match(pattern);
+}
+
+bool SuperPeach::targetFixed() const
+{
+    return Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY;
+}
+
+void SuperPeach::onEffect(const CardEffectStruct &effect) const
+{
+    Room *room = effect.to->getRoom();
+    room->setEmotion(effect.from, "peach");
+
+    effect.to->removeShownHandCards(effect.to->getShownHandcards(), true);
+    effect.to->removeBrokenEquips(effect.to->getBrokenEquips(), true);
+    if (effect.to->isChained())
+        effect.to->getRoom()->setPlayerProperty(effect.to, "chained", !effect.to->isChained());
+
+    RecoverStruct recover;
+    recover.card = this;
+    recover.who = effect.from;
+    recover.recover = 1 + effect.effectValue.first();
+    room->recover(effect.to, recover);
+}
+
+bool SuperPeach::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    if (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"))
+        return true;
+    if (Self->hasFlag("Global_shehuoInvokerFailed"))
+        return (to_select->hasFlag("Global_shehuoFailed") && to_select->isDebuffStatus());
+
+    if (targets.isEmpty()) {
+        bool globalDying = false;
+        QList<const Player *> players = Self->getSiblings();
+        players << Self;
+        foreach(const Player *p, players) {
+            if (p->hasFlag("Global_Dying") && p->isAlive()) {
+                globalDying = true;
+                break;
+            }
+        }
+
+        if (globalDying && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+            return to_select->hasFlag("Global_Dying") && to_select->objectName() == Self->property("currentdying").toString();
+        }
+        else {
+            if (to_select->isDebuffStatus())
+                return true;
+            if (Self->getKingdom() == "zhan" && to_select->hasLordSkill("yanhui") && to_select->isWounded() && Self->getPhase() == Player::Play)
+                return true;
+        }
+    }
+    return false;
+}
+
+
+
+bool SuperPeach::isAvailable(const Player *player) const
+{
+    if (!BasicCard::isAvailable(player))
+        return false;
+    bool isPlay = Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY;
+    bool ignore = (player->hasSkill("tianqu") && isPlay && !hasFlag("IgnoreFailed"));
+    if (ignore)
+        return true;
+
+    if (player->isDebuffStatus() && !player->isProhibited(player, this))
+        return true;
+    foreach(const Player *p, player->getAliveSiblings()) {
+        if (p->isDebuffStatus() && !player->isProhibited(p, this))
+            return true;
+    }
+    
+
+    foreach(const Player *p, player->getAliveSiblings()) {
+        if (!player->isProhibited(p, this)) {
+            if (p->hasFlag("Global_Dying") && !isPlay)
+                return true;
+            if (p->hasLordSkill("yanhui") && (p->isWounded() || p->isDebuffStatus()) && player->getKingdom() == "zhan" && player->getPhase() == Player::Play)
+                return true;
+        }
+    }
+    return false;
+}
 
 
 
@@ -723,8 +821,8 @@ TestCardPackage::TestCardPackage()
         << new FireSlash(Card::Heart, 9)
 
         << new MagicAnaleptic(Card::Spade, 10)
-        << new Peach(Card::Heart, 4)
-        << new Peach(Card::Diamond, 13)
+        << new SuperPeach(Card::Heart, 4)
+        << new SuperPeach(Card::Diamond, 13)
         
         << new ChainJink(Card::Heart, 5)
         << new ChainJink(Card::Heart, 6)
