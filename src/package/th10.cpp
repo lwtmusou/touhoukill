@@ -435,8 +435,6 @@ void QijiDialog::popup()
         foreach (const Card *card, cards) {
             if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
                 QString name = card->objectName();
-                if (card->isKindOf("Slash"))
-                    name = "slash";
                 if (!validPatterns.contains(name))
                     validPatterns << card->objectName();
             }
@@ -453,7 +451,9 @@ void QijiDialog::popup()
         }
     }
     //while responsing, if only one pattern were checked, emit click()
-    if (object_name != "chuangshi" && !play && checkedPatterns.length() <= 1 && !checkedPatterns.contains("slash")) {
+
+    if (object_name != "chuangshi" && !play && checkedPatterns.length() <= 1) { 
+        //  !checkedPatterns.contains("slash")  @ todo: basic card
         emit onButtonClick();
         return;
     }
@@ -473,11 +473,13 @@ void QijiDialog::popup()
         if (user == NULL)
             user = Self;
 
-        bool avaliable = card->isAvailable(user);
+        bool avaliable =  (!play) || card->isAvailable(user);
+        if (card->isKindOf("Peach"))
+            avaliable = card->isAvailable(user);
         if (object_name == "qiji" && user->getMark("xiubu"))
             avaliable = true;
 
-        bool checked = (checkedPatterns.contains(card->objectName()) || (card->isKindOf("Slash") && checkedPatterns.contains("slash")));
+        bool checked =  checkedPatterns.contains(card->objectName());
         bool enabled = !user->isCardLimited(card, method, true) && avaliable && (checked || object_name == "chuangshi");
         button->setEnabled(enabled);
     }

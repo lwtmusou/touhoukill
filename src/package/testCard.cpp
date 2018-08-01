@@ -229,7 +229,21 @@ bool SuperPeach::match(const QString &pattern) const
 
 bool SuperPeach::targetFixed() const
 {
-    return Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY;
+    bool globalDying = false;
+    if (Self) {
+        QList<const Player *> players = Self->getSiblings();
+        players << Self;
+        foreach(const Player *p, players) {
+            if (p->hasFlag("Global_Dying") && p->isAlive()) {
+                globalDying = true;
+                break;
+            }
+        }
+    }
+    
+    if (globalDying && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
+        return true;
+    return false;//Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY;
 }
 
 void SuperPeach::onEffect(const CardEffectStruct &effect) const
@@ -291,7 +305,7 @@ bool SuperPeach::isAvailable(const Player *player) const
     if (ignore)
         return true;
 
-    if (player->isDebuffStatus() && !player->isProhibited(player, this))
+    if ((player->isDebuffStatus() || player->hasFlag("Global_Dying")) && !player->isProhibited(player, this))
         return true;
     foreach(const Player *p, player->getAliveSiblings()) {
         if (p->isDebuffStatus() && !player->isProhibited(p, this))

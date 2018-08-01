@@ -90,11 +90,8 @@ void Analeptic::onUse(Room *room, const CardUseStruct &card_use) const
     BasicCard::onUse(room, use);
 }
 
-//void Analeptic::onEffect(const CardEffectStruct &effect) const
-//{
-//}
 
-PowerAnaleptic::PowerAnaleptic(Card::Suit suit, int number)
+/*PowerAnaleptic::PowerAnaleptic(Card::Suit suit, int number)
     : Analeptic(suit, number)
 {
     setObjectName("power_analeptic");
@@ -107,9 +104,9 @@ bool PowerAnaleptic::match(const QString &pattern) const
         return true;
     else
         return Analeptic::match(pattern);
-}
+}*/
 
-void PowerAnaleptic::onEffect(const CardEffectStruct &effect) const
+void Analeptic::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
     room->setEmotion(effect.to, "analeptic");
@@ -711,13 +708,13 @@ ManeuveringPackage::ManeuveringPackage()
     cards << new GudingBlade(Card::Spade, 1)
           //<< new Vine(Card::Spade, 2)
           << new IronArmor(Card::Spade, 2)
-          << new PowerAnaleptic(Card::Spade, 3)
+          << new Analeptic(Card::Spade, 3)
           << new ThunderSlash(Card::Spade, 4)
           << new ThunderSlash(Card::Spade, 5)
           << new ThunderSlash(Card::Spade, 6)
           << new ThunderSlash(Card::Spade, 7)
           << new ThunderSlash(Card::Spade, 8)
-          << new PowerAnaleptic(Card::Spade, 9)
+          << new Analeptic(Card::Spade, 9)
           << new SupplyShortage(Card::Spade, 10)
           << new IronChain(Card::Spade, 11)
           << new IronChain(Card::Spade, 12)
@@ -725,13 +722,13 @@ ManeuveringPackage::ManeuveringPackage()
     // club
     cards << new SilverLion(Card::Club, 1)
           << new Vine(Card::Club, 2)
-          << new PowerAnaleptic(Card::Club, 3)
+          << new Analeptic(Card::Club, 3)
           << new SupplyShortage(Card::Club, 4)
           << new ThunderSlash(Card::Club, 5)
           << new ThunderSlash(Card::Club, 6)
           << new ThunderSlash(Card::Club, 7)
           << new ThunderSlash(Card::Club, 8)
-          << new PowerAnaleptic(Card::Club, 9)
+          << new Analeptic(Card::Club, 9)
           << new IronChain(Card::Club, 10)
           << new IronChain(Card::Club, 11)
           << new IronChain(Card::Club, 12)
@@ -761,7 +758,7 @@ ManeuveringPackage::ManeuveringPackage()
           << new Jink(Card::Diamond, 6)
           << new Jink(Card::Diamond, 7)
           << new Jink(Card::Diamond, 8)
-          << new PowerAnaleptic(Card::Diamond, 9)
+          << new Analeptic(Card::Diamond, 9)
           << new Jink(Card::Diamond, 10)
           << new Jink(Card::Diamond, 11)
           << new FireAttack(Card::Diamond, 12);

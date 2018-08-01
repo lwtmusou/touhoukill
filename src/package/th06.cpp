@@ -974,7 +974,9 @@ public:
             return true;
         Card *card = Sanguosha->cloneCard("peach", Card::NoSuit, 0);
         DELETE_OVER_SCOPE(Card, card)
-        return card->isAvailable(player);
+        Card *card1 = Sanguosha->cloneCard("super_peach", Card::NoSuit, 0);
+        DELETE_OVER_SCOPE(Card, card1)
+        return card->isAvailable(player) || card1->isAvailable(player);
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &) const
@@ -1003,23 +1005,24 @@ public:
         if (cards.length() != num)
             return NULL;
 
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-
-            QStringList checkedPatterns = responsePatterns();
-            if (checkedPatterns.length() > 1 || checkedPatterns.contains("slash")) {
+        /*if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+            //QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+            //QStringList checkedPatterns = responsePatterns();
+            //if (checkedPatterns.length() > 1 || checkedPatterns.contains("slash")) {
                 QString name = Self->tag.value("beishui", QString()).toString();
-                if (name != NULL)
-                    pattern = name;
+                if (name != NULL) {
+                    BeishuiCard *card = new BeishuiCard;
+                    card->setUserString(name);
+                    card->addSubcards(cards);
+                    return card;
+
+                }
                 else
                     return NULL;
-            } else
-                pattern = checkedPatterns.first();
-            BeishuiCard *card = new BeishuiCard;
-            card->setUserString(pattern);
-            card->addSubcards(cards);
-            return card;
-        }
+            //} else
+            //    pattern = checkedPatterns.first();
+            
+        }*/
 
         QString name = Self->tag.value("beishui", QString()).toString();
         if (name != NULL) {

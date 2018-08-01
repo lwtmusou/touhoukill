@@ -1423,7 +1423,7 @@ int Player::getSlashCount() const
 
 int Player::getAnalepticCount() const
 {
-    return history.value("PowerAnaleptic", 0) + history.value("MagicAnaleptic", 0);
+    return history.value("Analeptic", 0) + history.value("MagicAnaleptic", 0);
 }
 
 void Player::clearHistory()
