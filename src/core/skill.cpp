@@ -170,7 +170,9 @@ bool Skill::matchAvaliablePattern(QString avaliablePattern, QString askedPattern
                     name = name.mid(1);
                 }
 
-                if (name.contains(card->objectName()) || card->isKindOf(name.toLocal8Bit().data()) || ("%" + card->objectName() == name)
+                //sometimes, the first character need to Upper
+                QString kindOfName = name.left(1).toUpper() + name.right(name.length() - 1);
+                if (name.contains(card->objectName()) || card->isKindOf(kindOfName.toLocal8Bit().data()) || ("%" + card->objectName() == name)
                     || (card->getEffectiveId() == name.toInt(&isInt) && isInt))
                     checkpoint = positive;
                 else
