@@ -670,25 +670,8 @@ const Card *QijiCard::validate(CardUseStruct &use) const
 const Card *QijiCard::validateInResponse(ServerPlayer *user) const
 {
     Room *room = user->getRoom();
-
-    QString to_use;
-    // use_list is useless?
-    if (user_string == "peach+analeptic") {
-        QStringList use_list;
-        Card *peach = Sanguosha->cloneCard("peach");
-        DELETE_OVER_SCOPE(Card, peach)
-        if (!user->isCardLimited(peach, Card::MethodResponse, true))
-            use_list << "peach";
-        Card *ana = Sanguosha->cloneCard("analeptic");
-        DELETE_OVER_SCOPE(Card, ana)
-        if (!Config.BanPackages.contains("maneuvering") && !user->isCardLimited(ana, Card::MethodResponse, true))
-            use_list << "analeptic";
-        to_use = room->askForChoice(user, "qiji_skill_saveself", use_list.join("+"));
-    } else
-        to_use = user_string;
-
     const Card *card = Sanguosha->getCard(subcards.first());
-    Card *use_card = Sanguosha->cloneCard(to_use, card->getSuit(), card->getNumber());
+    Card *use_card = Sanguosha->cloneCard(user_string, card->getSuit(), card->getNumber());
     use_card->setSkillName("qiji");
     use_card->addSubcard(subcards.first());
     use_card->deleteLater();
@@ -714,23 +697,15 @@ public:
         else
             method = Card::MethodUse;
 
-        QStringList validPatterns;
+        QStringList checkedPatterns;
+        const Skill *skill = Sanguosha->getSkill("qiji");
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach (const Card *card, cards) {
             if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
                 QString p = card->objectName();
-                if (card->isKindOf("Slash"))
-                    p = "slash";
-                if (!validPatterns.contains(p))
-                    validPatterns << card->objectName();
+                if (!checkedPatterns.contains(p) && skill->matchAvaliablePattern(p, pattern) && !Self->isCardLimited(card, method))
+                    checkedPatterns << p;
             }
-        }
-
-        QStringList checkedPatterns;
-        foreach (QString str, validPatterns) {
-            const Skill *skill = Sanguosha->getSkill("qiji");
-            if (skill->matchAvaliablePattern(str, pattern))
-                checkedPatterns << str;
         }
         return checkedPatterns;
     }
@@ -746,11 +721,6 @@ public:
         if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0)
             return false;
         return !checkedPatterns.isEmpty();
-        /*for (int i = 0; i < pattern.length(); i++) {
-            QChar ch = pattern[i];
-            if (ch.isUpper() || ch.isDigit()) return false;
-        }*/
-
         return true;
     }
 
@@ -763,24 +733,16 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE
-            || Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-            QStringList checkedPatterns = responsePatterns();
-
-            if (checkedPatterns.length() > 1 || checkedPatterns.contains("slash")) {
-                QString name = Self->tag.value("qiji", QString()).toString();
-                if (name != NULL)
-                    pattern = name;
-                else
-                    return NULL;
-            } else
-                pattern = checkedPatterns.first();
+        
+        QStringList checkedPatterns = responsePatterns();
+        if (checkedPatterns.length() == 1) {
             QijiCard *card = new QijiCard;
-            card->setUserString(pattern);
+            card->setUserString(checkedPatterns.first());
             card->addSubcard(originalCard);
             return card;
         }
+        
+
         QString name = Self->tag.value("qiji", QString()).toString();
         if (name != NULL) {
             QijiCard *card = new QijiCard;
@@ -802,16 +764,6 @@ public:
         return player->getHandcardNum() == 1;
     }
 
-    /*virtual QStringList getDialogCardOptions() const {
-        QStringList options;
-        QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-        foreach(const Card *card, cards) {
-            if ((card->isNDTrick() || card->getTypeId() == Card::TypeBasic) 
-                && !options.contains(card->objectName()) && !ServerInfo.Extensions.contains("!" + card->getPackage()))
-                options << card->objectName();
-        }
-        return options;
-    }*/
 };
 
 class Qiji : public TriggerSkill
