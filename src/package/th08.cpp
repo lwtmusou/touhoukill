@@ -1708,24 +1708,9 @@ public:
         return NULL;
     }
 
-    /*void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
-    {
-        if (triggerEvent == EventPhaseChanging) {
-            foreach (ServerPlayer *player, room->getAllPlayers()) {
-                if (player->hasFlag("chuangshi"))
-                    player->setFlags("-chuangshi");
-            }
-        }
-    }*/
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
-        /*if (triggerEvent == EventPhaseStart) {
-            ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player->hasSkill(this) && player->getPhase() == Player::Draw) {
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-            }
-        }*/
         if (triggerEvent == DrawNCards) {
             DrawNCardsStruct qnum = data.value<DrawNCardsStruct>();
             if (qnum.player->hasSkill(this) && qnum.n > 0)
@@ -1782,32 +1767,6 @@ bool ChuangshiCard::targetsFeasible(const QList<const Player *> &targets, const 
     return new_card && new_card->targetsFeasible(targets, user);
 }
 
-/*void ChuangshiCard::onUse(Room *room, const CardUseStruct &card_use) const
-{
-    card_use.from->setFlags("chuangshi");
-    Card *card = Sanguosha->cloneCard(user_string);
-    DELETE_OVER_SCOPE(Card, card)
-    if (card->isKindOf("Collateral")) {
-        ServerPlayer *from = card_use.from; //ensure that the length of use.to should be 2.
-        ServerPlayer *to1 = card_use.to.at(0);
-        ServerPlayer *to2 = card_use.to.at(1);
-        QList<ServerPlayer *> logto;
-        logto << to1 << to2;
-
-        ServerPlayer *chuangshi_user = Chuangshi::getChuangshiUser1(from);
-
-        room->setPlayerMark(chuangshi_user, "chuangshi_user", 0);
-        room->touhouLogmessage("#ChoosePlayerWithSkill", from, "chuangshi", logto, "");
-        Card *use_card = Sanguosha->cloneCard(card->objectName());
-        use_card->setSkillName("_chuangshi");
-        CardUseStruct use;
-        use.from = chuangshi_user;
-        use.to = card_use.to;
-        use.card = use_card;
-        room->useCard(use);
-    } else
-        SkillCard::onUse(room, card_use);
-}*/
 
 void ChuangshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {

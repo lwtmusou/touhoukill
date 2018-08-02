@@ -489,6 +489,8 @@ void QijiDialog::popup()
         bool avaliable =  (!play) || card->isAvailable(user);
         if (card->isKindOf("Peach"))
             avaliable = card->isAvailable(user);
+        if (object_name == "chuangshi" && (card->isKindOf("Jink") || card->isKindOf("Nullification")))
+            avaliable = false;
         if (object_name == "qiji" && user->getMark("xiubu"))
             avaliable = true;
 
