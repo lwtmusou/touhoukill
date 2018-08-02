@@ -410,12 +410,19 @@ void QijiDialog::popup()
     //collect avaliable patterns for specific skill
     QStringList validPatterns;
     if (object_name == "huaxiang") {
-        validPatterns << "slash"
-                      << "analeptic";
-        if (Self->getMaxHp() <= 3)
-            validPatterns << "jink";
-        if (Self->getMaxHp() <= 2)
-            validPatterns << "peach";
+        QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+        foreach(const Card *card, cards) {
+            if (card->isKindOf("BasicCard") && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+                QString name = card->objectName();
+                if (!validPatterns.contains(name)) {
+                    if (name.contains("jink") && Self->getMaxHp() > 3)
+                        continue;
+                    else if (name.contains("peach") && Self->getMaxHp() > 2)
+                        continue;
+                    validPatterns << name;
+                }   
+            }
+       }
     } else if (object_name == "xihua") {
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach (const Card *card, cards) {
