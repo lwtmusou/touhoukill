@@ -185,14 +185,31 @@ public:
     {
         if (pattern.contains("slash"))
             pattern = "slash";
+        else if (pattern.contains("jink"))
+            pattern = "jink";
+        else if (pattern.contains("analeptic"))
+            pattern = "analeptic";
+        else if (pattern.contains("peach"))
+            pattern = "peach";
+
         QString markName = "xihua_record_" + pattern;
         room->setPlayerMark(player, markName, 1);
     }
     static bool xihua_choice_limit(const Player *player, QString pattern, Card::HandlingMethod method)
     {
-        QString markName = "xihua_record_" + pattern;
+        
         Card *c = Sanguosha->cloneCard(pattern);
         DELETE_OVER_SCOPE(Card, c)
+        if (pattern.contains("slash"))
+            pattern = "slash";
+        else if (pattern.contains("jink"))
+            pattern = "jink";
+        else if (pattern.contains("analeptic"))
+            pattern = "analeptic";
+        else if (pattern.contains("peach"))
+            pattern = "peach";
+        QString markName = "xihua_record_" + pattern;
+        
         if (method == Card::MethodNone)
             method = Card::MethodUse;
         if (player->getMark(markName) > 0 || player->isCardLimited(c, method, true))
@@ -208,13 +225,8 @@ public:
             QStringList patterns;
             QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
             foreach (const Card *card, cards) {
-                QString name;
-                if (card->isKindOf("Slash"))
-                    name = "slash";
-                else
-                    name = card->objectName();
-
-                patterns << name;
+                if (!patterns.contains(card->objectName()))
+                    patterns << card->objectName();
             }
 
             foreach (ServerPlayer *p, room->getAlivePlayers()) {
@@ -340,29 +352,18 @@ const Card *XihuaCard::validateInResponse(ServerPlayer *user) const
 {
     Room *room = user->getRoom();
 
-    QString to_use;
-    if (user_string == "peach+analeptic") {
-        QStringList use_list;
-        if (!XihuaClear::xihua_choice_limit(user, "peach", Card::MethodResponse))
-            use_list << "peach";
-        if (!Config.BanPackages.contains("maneuvering") && !XihuaClear::xihua_choice_limit(user, "analeptic", Card::MethodResponse))
-            use_list << "analeptic";
-        to_use = room->askForChoice(user, "xihua_skill_saveself", use_list.join("+"));
-    } else
-        to_use = user_string;
-
     LogMessage log;
     log.type = "#XihuaNoTarget";
     log.from = user;
-    log.arg = to_use;
+    log.arg = user_string;
     log.arg2 = "xihua";
     room->sendLog(log);
 
-    user->tag["xihua_choice"] = QVariant::fromValue(to_use);
+    user->tag["xihua_choice"] = QVariant::fromValue(user_string);
     user->showHiddenSkill("xihua");
     bool success = do_xihua(user);
     if (success) {
-        Card *use_card = Sanguosha->cloneCard(to_use);
+        Card *use_card = Sanguosha->cloneCard(user_string);
         use_card->setSkillName("xihua");
         use_card->addSubcard(user->tag["xihua_id"].toInt());
         use_card->deleteLater();
@@ -388,24 +389,17 @@ public:
         else
             method = Card::MethodUse;
 
-        QStringList validPatterns;
+        QStringList checkedPatterns;
+        const Skill *skill = Sanguosha->getSkill("xihua");
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach (const Card *card, cards) {
             if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
                 QString p = card->objectName();
-                if (card->isKindOf("Slash"))
-                    p = "slash";
-                if (!validPatterns.contains(p) && !XihuaClear::xihua_choice_limit(Self, p, method))
-                    validPatterns << card->objectName();
+                if (!checkedPatterns.contains(p)  && skill->matchAvaliablePattern(p, pattern)
+                    && !XihuaClear::xihua_choice_limit(Self, p, method))  //&& !Self->isCardLimited(card, method)
+                    checkedPatterns << p;
             }
-        }
-
-        QStringList checkedPatterns;
-        foreach (QString str, validPatterns) {
-            const Skill *skill = Sanguosha->getSkill("xihua");
-            if (skill->matchAvaliablePattern(str, pattern))
-                checkedPatterns << str;
-        }
+        }      
         return checkedPatterns;
     }
 
@@ -427,20 +421,10 @@ public:
 
     virtual const Card *viewAs() const
     {
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE
-            || Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-            QStringList checkedPatterns = responsePatterns();
-            if (checkedPatterns.length() > 1 || checkedPatterns.contains("slash")) {
-                QString name = Self->tag.value("xihua", QString()).toString();
-                if (name != NULL)
-                    pattern = name;
-                else
-                    return NULL;
-            } else
-                pattern = checkedPatterns.first();
+        QStringList checkedPatterns = responsePatterns();
+        if (checkedPatterns.length() == 1) {
             XihuaCard *card = new XihuaCard;
-            card->setUserString(pattern);
+            card->setUserString(checkedPatterns.first());
             return card;
         }
 

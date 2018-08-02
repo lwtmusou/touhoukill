@@ -428,15 +428,21 @@ void QijiDialog::popup()
         foreach (const Card *card, cards) {
             if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
                 QString name = card->objectName();
-                if (card->isKindOf("Slash"))
-                    name = "slash";
-                QString markName = "xihua_record_" + name;
+                QString pattern = card->objectName();
+                if (pattern.contains("slash"))
+                    pattern = "slash";
+                else if (pattern.contains("jink"))
+                    pattern = "jink";
+                else if (pattern.contains("analeptic"))
+                    pattern = "analeptic";
+                else if (pattern.contains("peach"))
+                    pattern = "peach";
+                QString markName = "xihua_record_" + pattern;
                 if (!validPatterns.contains(name) && Self->getMark(markName) == 0)
                     validPatterns << card->objectName();
             }
         }
     }
-    //if (object_name == "qiji") {
     else {
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach (const Card *card, cards) {
@@ -542,11 +548,6 @@ QGroupBox *QijiDialog::createRight()
     QVBoxLayout *layout2 = new QVBoxLayout;
 
     QStringList ban_list; //no need to ban
-    //if (object_name == "chuangshi")
-    //    ban_list << "GodSalvation"
-    //             << "ArcheryAttack"
-    //             << "SavageAssault";
-    //    ban_list << "Drowning" << "BurningCamps" << "LureTiger";
 
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     foreach (const Card *card, cards) {
