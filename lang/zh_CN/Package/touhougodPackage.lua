@@ -712,12 +712,34 @@ return{
 	["@star"] = "星",
 	["chongneng:1"] = "效果中的第一个的效果基值+1" ,
 	["chongneng:2"] = "效果中的最后一个效果值+1" ,
+	["chongneng:light_slash_first"] = "明置目标手牌数量+1" ,
+	["chongneng:light_slash_second"] = "此牌造成伤害+1" ,
+	["chongneng:power_slash_first"] = "横置目标手牌数量+1" ,
+	["chongneng:power_slash_second"] = "此牌造成伤害+1" ,
+	["chongneng:fire_attack_first"] = "目标需明置的手牌数量+1" ,
+	["chongneng:fire_attack_second"] = "此牌造成伤害+1" ,
+	["chongneng:await_exhausted_first"] = "目标摸牌数量+1" ,
+	["chongneng:await_exhausted_second"] = "目标弃牌数量+1" ,
+	["chongneng:duel_first"] = "目标需打出的【杀】数量+1" ,
+	["chongneng:duel_second"] = "此牌造成伤害+1" ,
+	["chongneng:savage_assault_first"] = "目标需打出的【杀】数量+1" ,
+	["chongneng:savage_assault_second"] = "此牌造成伤害+1" ,
+	["chongneng:archery_attack_first"] = "目标需打出的【闪】数量+1" ,
+	["chongneng:archery_attack_second"] = "此牌造成伤害+1" ,
+	
 	["#Chongneng"] = "%from 发动了 <font color=\"#00FF00\">充能</font>， 令【%arg】的 第 %arg2 个效果值+1" ,
 	["#ChongnengCacel"] = "当其他角色使用牌时，你可以暗置你的一张与此牌类别相同的明置手牌，取消所有目标。若此牌为明置手牌，你可以明置其一张手牌。",
 	
 	["huixing"] = "彗星",
 	[":huixing"] = "你使用基本牌或普通锦囊牌对唯一目标结算完毕后，你可弃一枚“星”标记，视为对其下家使用效果值不变的同名牌。",
     ["huixing:target"]= "你可发动 <font color=\"#00FF00\"><b>%src </b></font>, 视为对<font color=\"#00FF00\"><b>%dest</b></font> 使用<font color=\"#00FF00\"><b> 【%arg】</b></font> 。",
+
+	
+	
+	["patchouli_god"] = "神 帕秋莉",
+	["&patchouli_god"] = "神帕秋莉",
+	["#patchouli_god"] = "七曜的魔女",
+	["!patchouli_god"] = "神 帕秋莉·诺蕾姬",
 
 	
 	["alice_god"] = "神 爱丽丝",

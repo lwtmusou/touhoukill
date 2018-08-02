@@ -5265,20 +5265,24 @@ public:
             room->touhouLogmessage("$CancelTarget", use.from, use.card->objectName(), invoke->targets);
         } else {
             invoke->invoker->loseMark("@star");
-            QString choice = "1";
+            QString choice = "first";
             if (use.card->isKindOf("FireAttack") || use.card->isKindOf("Duel") || use.card->isKindOf("SavageAssault") || use.card->isKindOf("ArcheryAttack")
                 || use.card->isKindOf("AwaitExhausted")) {
-                choice = room->askForChoice(invoke->invoker, objectName(), "1+2");
-                if (choice == "2")
+                QString  choices = QString("%1_first+%2_second").arg(use.card->objectName()).arg(use.card->objectName());
+                choice = room->askForChoice(invoke->invoker, objectName(), choices);
+                if (choice == "second")
                     room->setCardFlag(use.card, "mopao2");
                 else
                     room->setCardFlag(use.card, "mopao");
             }
             else if (use.card->isKindOf("Slash")) {
-                QString choice = "2";
-                if (use.card->isKindOf("LightSlash") || use.card->isKindOf("PowerSlash"))
-                    choice = room->askForChoice(invoke->invoker, objectName(), "1+2");
-                if (choice == "2")
+                QString choice = "second";
+                if (use.card->isKindOf("LightSlash") || use.card->isKindOf("PowerSlash")) {
+                    QString  choices = QString("%1_first+%2_second").arg(use.card->objectName()).arg(use.card->objectName());
+                    choice = room->askForChoice(invoke->invoker, objectName(), choices);
+                }
+                    
+                if (choice.endsWith("second"))
                     room->setCardFlag(use.card, "mopao2");
                 else
                     room->setCardFlag(use.card, "mopao");
@@ -5290,7 +5294,10 @@ public:
             log.type = "#Chongneng";
             log.from = invoke->invoker;
             log.arg = use.card->objectName();
-            log.arg2 = choice;
+            if (choice.endsWith("second"))
+                log.arg2 = "2";
+            else
+                log.arg2 = "1";
             room->sendLog(log);
         }
 
