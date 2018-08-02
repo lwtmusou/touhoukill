@@ -2398,14 +2398,36 @@ public:
     Huanshu()
         : TriggerSkill("huanshu")
     {
-        events << PostCardEffected;
+        events << PostCardEffected << CardsMoveOneTime << EventPhaseChanging;
         frequency = Compulsory;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    void record(TriggerEvent e, Room *room, QVariant &data) const
     {
+        if (e == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
+            if (from && move.from_places.contains(Player::PlaceHand)) {
+                room->setPlayerFlag(from, "huanshu_disable");
+            }
+        }
+        if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAllPlayers())
+                    room->setPlayerFlag(p, "-huanshu_disable");
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e != PostCardEffected)
+            return QList<SkillInvokeDetail>();
+
         CardEffectStruct effect = data.value<CardEffectStruct>();
-        if (effect.from && effect.from != effect.to && effect.to->hasSkill(this) && effect.to->isAlive() && effect.to->getShownHandcards().length() < effect.to->getHp()
+        if (effect.from && effect.from != effect.to && effect.to->hasSkill(this) && effect.to->isAlive() 
+            && !effect.to->hasFlag("huanshu_disable")
             && (effect.card->isNDTrick() || effect.card->isKindOf("BasicCard"))) {
             QList<int> ids;
             if (effect.card->isVirtualCard())
