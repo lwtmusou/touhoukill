@@ -6,7 +6,11 @@
 #include "settings.h"
 #include "skill.h"
 #include "standard.h"
-#include "th10.h"
+//#include "th10.h"
+#include <QCommandLinkButton>
+#include <QCoreApplication>
+#include <QPointer>
+
 
 class Shengge : public TriggerSkill
 {
@@ -171,6 +175,210 @@ public:
         return false;
     }
 };
+
+
+XihuaDialog *XihuaDialog::getInstance(const QString &object, bool left, bool right)
+{
+    static QPointer<XihuaDialog> instance;
+
+    if (!instance.isNull() && instance->objectName() != object)
+        delete instance;
+
+    if (instance.isNull()) {
+        instance = new XihuaDialog(object, left, right);
+        connect(qApp, &QCoreApplication::aboutToQuit, instance, &XihuaDialog::deleteLater);
+    }
+
+    return instance;
+}
+
+XihuaDialog::XihuaDialog(const QString &object, bool left, bool right)
+    : object_name(object)
+{
+    setObjectName(object);
+    setWindowTitle(Sanguosha->translate(object)); //need translate title?
+    group = new QButtonGroup(this);
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    if (left)
+        layout->addWidget(createLeft());
+    if (right)
+        layout->addWidget(createRight());
+    setLayout(layout);
+
+    connect(group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(selectCard(QAbstractButton *)));
+}
+
+void XihuaDialog::popup()
+{
+    Card::HandlingMethod method;
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+        method = Card::MethodResponse;
+    else
+        method = Card::MethodUse;
+
+    QStringList checkedPatterns;
+    QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+    bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+
+    //collect avaliable patterns for specific skill
+    QStringList validPatterns;
+    QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+    foreach(const Card *card, cards) {
+        if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+            QString name = card->objectName();
+            QString pattern = card->objectName();
+            if (pattern.contains("slash"))
+                pattern = "slash";
+            else if (pattern.contains("jink"))
+                pattern = "jink";
+            else if (pattern.contains("analeptic"))
+                pattern = "analeptic";
+            else if (pattern.contains("peach"))
+                pattern = "peach";
+            QString markName = "xihua_record_" + pattern;
+            if (!validPatterns.contains(name) && Self->getMark(markName) == 0)
+                validPatterns << card->objectName();
+        }
+    }
+    
+    
+    //then match it and check "CardLimit"
+    foreach(QString str, validPatterns) {
+        const Skill *skill = Sanguosha->getSkill(object_name);
+        if (play || skill->matchAvaliablePattern(str, pattern)) {
+            Card *card = Sanguosha->cloneCard(str);
+            DELETE_OVER_SCOPE(Card, card)
+                if (!Self->isCardLimited(card, method))
+                    checkedPatterns << str;
+        }
+    }
+
+    //while responsing, if only one pattern were checked, emit click()
+    if (!play && checkedPatterns.length() <= 1) {
+        emit onButtonClick();
+        return;
+    }
+
+    foreach(QAbstractButton *button, group->buttons()) {
+        const Card *card = map[button->objectName()];
+        const Player *user =  Self;
+
+        bool avaliable = (!play) || card->isAvailable(user);
+        if (card->isKindOf("Peach"))
+            avaliable = card->isAvailable(user);
+        if (object_name == "chuangshi" && (card->isKindOf("Jink") || card->isKindOf("Nullification")))
+            avaliable = false;
+        if (object_name == "qiji" && user->getMark("xiubu"))
+            avaliable = true;
+
+        bool checked = checkedPatterns.contains(card->objectName());
+        bool enabled = !user->isCardLimited(card, method, true) && avaliable && (checked || object_name == "chuangshi");
+        button->setEnabled(enabled);
+    }
+
+    Self->tag.remove(object_name);
+    exec();
+}
+
+void XihuaDialog::selectCard(QAbstractButton *button)
+{
+    const Card *card = map.value(button->objectName());
+    Self->tag[object_name] = QVariant::fromValue(card->objectName());
+
+    emit onButtonClick();
+    accept();
+}
+
+QGroupBox *XihuaDialog::createLeft()
+{
+    QGroupBox *box = new QGroupBox;
+    box->setTitle(Sanguosha->translate("basic"));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+    QStringList ban_list; //no need to ban
+                          //if (object_name == "chuangshi")
+                          //     ban_list << "Analeptic";
+
+    foreach(const Card *card, cards) {
+        if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName())
+            && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+            Card *c = Sanguosha->cloneCard(card->objectName());
+            c->setParent(this);
+            layout->addWidget(createButton(c));
+        }
+    }
+
+    layout->addStretch();
+    box->setLayout(layout);
+    return box;
+}
+
+QGroupBox *XihuaDialog::createRight()
+{
+    QGroupBox *box = new QGroupBox(Sanguosha->translate("ndtrick"));
+    QHBoxLayout *layout = new QHBoxLayout;
+
+    QGroupBox *box1 = new QGroupBox(Sanguosha->translate("single_target_trick"));
+    QVBoxLayout *layout1 = new QVBoxLayout;
+
+    QGroupBox *box2 = new QGroupBox(Sanguosha->translate("multiple_target_trick"));
+    QVBoxLayout *layout2 = new QVBoxLayout;
+
+    QStringList ban_list; //no need to ban
+
+    QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+    foreach(const Card *card, cards) {
+        if (card->isNDTrick() && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName()) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+            Card *c = Sanguosha->cloneCard(card->objectName());
+            c->setSkillName(object_name);
+            c->setParent(this);
+
+            QVBoxLayout *layout = c->isKindOf("SingleTargetTrick") ? layout1 : layout2;
+            layout->addWidget(createButton(c));
+        }
+    }
+
+    box->setLayout(layout);
+    box1->setLayout(layout1);
+    box2->setLayout(layout2);
+
+    layout1->addStretch();
+    layout2->addStretch();
+
+    layout->addWidget(box1);
+    layout->addWidget(box2);
+    return box;
+}
+
+QAbstractButton *XihuaDialog::createButton(const Card *card)
+{
+    if (card->objectName() == "slash" && map.contains(card->objectName()) && !map.contains("normal_slash")) {
+        QCommandLinkButton *button = new QCommandLinkButton(Sanguosha->translate("normal_slash"));
+        button->setObjectName("normal_slash");
+        button->setToolTip(card->getDescription());
+
+        map.insert("normal_slash", card);
+        group->addButton(button);
+
+        return button;
+    }
+    else {
+        QCommandLinkButton *button = new QCommandLinkButton(Sanguosha->translate(card->objectName()));
+        button->setObjectName(card->objectName());
+        button->setToolTip(card->getDescription());
+
+        map.insert(card->objectName(), card);
+        group->addButton(button);
+
+        return button;
+    }
+}
+
+
+
 
 class XihuaClear : public TriggerSkill
 {
@@ -439,7 +647,7 @@ public:
 
     virtual QDialog *getDialog() const
     {
-        return QijiDialog::getInstance("xihua");
+        return XihuaDialog::getInstance("xihua");
     }
 
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const

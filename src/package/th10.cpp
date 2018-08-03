@@ -423,7 +423,7 @@ void QijiDialog::popup()
                 }   
             }
        }
-    } else if (object_name == "xihua") {
+    } /*else if (object_name == "xihua") {
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach (const Card *card, cards) {
             if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
@@ -442,7 +442,7 @@ void QijiDialog::popup()
                     validPatterns << card->objectName();
             }
         }
-    }
+    }*/
     else {
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach (const Card *card, cards) {
