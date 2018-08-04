@@ -11,6 +11,19 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
+class YanhuiCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE YanhuiCard();
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual const Card *validate(CardUseStruct &card_use) const;
+    virtual const Card *validateInResponse(ServerPlayer *user) const;
+};
+
+
 class ToupaiCard : public SkillCard
 {
     Q_OBJECT

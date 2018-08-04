@@ -287,8 +287,8 @@ bool SuperPeach::targetFilter(const QList<const Player *> &targets, const Player
         else {
             if (to_select->isDebuffStatus())
                 return true;
-            if (Self->getKingdom() == "zhan" && to_select->hasLordSkill("yanhui") && to_select->isWounded() && Self->getPhase() == Player::Play)
-                return true;
+            //if (Self->getKingdom() == "zhan" && to_select->hasLordSkill("yanhui") && to_select->isWounded() && Self->getPhase() == Player::Play)
+            //    return true;
         }
     }
     return false;

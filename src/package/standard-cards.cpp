@@ -397,12 +397,12 @@ bool Peach::targetFixed() const
     bool ignore = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
     if (ignore)
         return false;
-    if (Self && Self->getKingdom() == "zhan" && Self->getPhase() == Player::Play) {
+    /*if (Self && Self->getKingdom() == "zhan" && Self->getPhase() == Player::Play) {
         foreach (const Player *p, Self->getAliveSiblings()) {
             if (p->hasLordSkill("yanhui") && p->isWounded())
                 return false;
         }
-    }
+    }*/
     if (Self && Self->hasFlag("Global_shehuoInvokerFailed"))
         return false;
     return target_fixed;
@@ -476,8 +476,8 @@ bool Peach::isAvailable(const Player *player) const
         if (!player->isProhibited(p, this)) {
             if (p->hasFlag("Global_Dying") && !isPlay)
                 return true;
-            if (p->hasLordSkill("yanhui") && p->isWounded() && player->getKingdom() == "zhan" && player->getPhase() == Player::Play)
-                return true;
+            //if (p->hasLordSkill("yanhui") && p->isWounded() && player->getKingdom() == "zhan" && player->getPhase() == Player::Play)
+            //    return true;
         }
     }
     return false;
