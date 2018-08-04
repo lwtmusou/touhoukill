@@ -359,6 +359,7 @@ public:
         Room *room = player->getRoom();
         room->touhouLogmessage("#TriggerSkill", victim, "guizha");
         room->notifySkillInvoked(victim, "guizha");
+
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, victim->objectName(), player->objectName());
 
         room->showAllCards(player);
@@ -375,7 +376,7 @@ public:
         int peachId = guizhaPeach(player, victim);
 
         while (peachId > -1 && victim->getHp() < victim->dyingThreshold()) {
-            const Card *supply_card = room->askForCard(player, "Peach|.|.|hand!", "@guizha:" + victim->objectName(), data, Card::MethodUse, victim, false, objectName(), false);
+            const Card *supply_card = room->askForCard(player, "Peach|.|.|hand!", "@guizha:" + victim->objectName(), data, Card::MethodNone, victim, false, objectName(), false);
             //force to supply!
             peachId = (supply_card != NULL) ? supply_card->getEffectiveId() : peachId;
             Peach *peach = new Peach(Card::SuitToBeDecided, -1);
