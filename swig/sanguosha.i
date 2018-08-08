@@ -220,6 +220,7 @@ public:
 
     void setChained(bool chained);
     bool isChained() const;
+	bool isDebuffStatus() const;
 
     bool canSlash(const Player *other, const Card *slash, bool distance_limit = true,
                   int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
