@@ -1700,6 +1700,123 @@ public:
     }
 };
 
+
+
+class Shixue : public TriggerSkill
+{
+public:
+    Shixue()
+        : TriggerSkill("shixue")
+    {
+        events << PreHpRecover << Damage;
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        if (triggerEvent == PreHpRecover) {
+            RecoverStruct r = data.value<RecoverStruct>();
+            if (r.to->hasSkill(this) && r.reason != objectName() && !r.to->hasFlag("Global_Dying"))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, r.to, r.to, NULL, true);
+        }
+        if (triggerEvent == Damage) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from && damage.from->isAlive() && damage.from->isWounded() && damage.from->hasSkill(this)) {
+                QList<SkillInvokeDetail> d;
+                for (int i = 0; i < damage.damage; ++i)
+                    d << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
+
+                return d;
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        if (triggerEvent == PreHpRecover) {
+            RecoverStruct r = data.value<RecoverStruct>();
+            room->touhouLogmessage("#shixue1", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(r.recover));
+            return true;
+        }
+        if (invoke->invoker->isWounded()) {
+            RecoverStruct recover;
+            recover.who = invoke->invoker;
+            recover.reason = objectName();
+            room->recover(invoke->invoker, recover);
+        }
+        return false;
+    }
+};
+
+class Ziye : public TriggerSkill
+{
+public:
+    Ziye()
+        : TriggerSkill("ziye")
+    {
+        events << Death;
+        frequency = Wake;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        DeathStruct death = data.value<DeathStruct>();
+        if (death.damage && death.damage->from) {
+            ServerPlayer *player = death.damage->from;
+            if (player->hasSkill(this) && player->getMark(objectName()) == 0)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        room->addPlayerMark(invoke->invoker, objectName());
+        room->doLightbox("$ziyeAnimate", 4000);
+        room->touhouLogmessage("#ZiyeWake", invoke->invoker, objectName());
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        if (room->changeMaxHpForAwakenSkill(invoke->invoker))
+            room->handleAcquireDetachSkills(invoke->invoker, "anyue");
+        return false;
+    }
+};
+
+class Anyue : public TriggerSkill
+{
+public:
+    Anyue()
+        : TriggerSkill("anyue")
+    {
+        events << HpRecover;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        RecoverStruct r = data.value<RecoverStruct>();
+        if (r.to->hasFlag("Global_Dying"))
+            return QList<SkillInvokeDetail>();
+        
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            if (r.to->isAlive() && r.to != p && r.to->getHp() >= p->getHp() && p->canSlash(r.to, false))
+                d << SkillInvokeDetail(this, p, p, NULL, false, r.to);
+        }
+        return d;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        invoke->invoker->turnOver();
+        Slash *slash = new Slash(Card::NoSuit, 0);
+        slash->setSkillName("_anyue");
+        room->useCard(CardUseStruct(slash, invoke->invoker, invoke->targets.first()), false);
+        return false;
+    }
+};
+
 TH06Package::TH06Package()
     : Package("th06")
 {
@@ -1753,12 +1870,17 @@ TH06Package::TH06Package()
     satsuki->addSkill(new Fenghua);
     related_skills.insertMulti("xiaoyin", "#xiaoyin");
 
+    General *rumia_sp = new General(this, "rumia_sp", "hmx", 4);
+    rumia_sp->addSkill(new Shixue);
+    rumia_sp->addSkill(new Ziye);
+    rumia_sp->addRelateSkill("anyue");
+
     addMetaObject<SkltKexueCard>();
     addMetaObject<SuodingCard>();
     addMetaObject<BeishuiCard>();
     addMetaObject<BanyueCard>();
 
-    skills << new SkltKexueVS << new XiaoyinVS;
+    skills << new SkltKexueVS << new XiaoyinVS << new Anyue;
 }
 
 ADD_PACKAGE(TH06)
