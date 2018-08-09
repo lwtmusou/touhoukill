@@ -31,6 +31,49 @@ sgs.ai_keep_value.PowerSlash = 3.63
 sgs.ai_use_priority.PowerSlash = 2.5
 sgs.dynamic_value.damage_card.PowerSlash = true
 
+function SmartAI:shouldUseMagicAnaleptic(trick)
+	if sgs.turncount <= 1 and self.role == "renegade" and sgs.isLordHealthy() and self:getOverflow() < 2 then return false end
+
+	local nul_f, nul_e = 0, 0
+	for _, f in ipairs(self.friends)do
+		nul_f = nul_f + getCardsNum("Nullification", f)
+	end
+    for _, e in ipairs(self.enemies)do
+		nul_e = nul_e + getCardsNum("Nullification", e)
+	end
+	return nul_f >= nul_e
+end
+
+function SmartAI:searchForMagicAnaleptic(use, enemy, trick)
+
+	if not self.toUse then return nil end
+	if not use.to then return nil end
+	
+	local analeptic = self:getCard("MagicAnaleptic")
+	if not analeptic then return nil end
+
+
+	if not sgs.Analeptic_IsAvailable(self.player) then return nil end
+	--local shouldUse = false
+	--有一些防锦囊的技能需要判断
+	--if not shouldUse then return nil end
+
+	local cards = self.player:getHandcards()
+	cards = sgs.QList2Table(cards)
+	self:fillSkillCards(cards)
+
+	local card_str = self:getCardId("MagicAnaleptic")
+	if card_str then  return sgs.Card_Parse(card_str) end
+
+	for _, anal in ipairs(cards) do
+		if (anal:isKindOf("MagicAnaleptic")) and not (anal:getEffectiveId() == trick:getEffectiveId()) then
+			return anal
+		end
+	end
+end
+
+
+
 
 function SmartAI:useCardSuperPeach(card, use)
 	if self:cautionDoujiu(self.player,card) then

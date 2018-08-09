@@ -6166,6 +6166,17 @@ function SmartAI:useTrickCard(card, use)
 			use.card = card
 		end
 	else
+	    if card:isKindOf("Dismantlement") or card:isKindOf("Snatch") or card:isKindOf("AwaitExhausted") 
+      	   or card:isKindOf("ExNihilo") then
+			if not use.isDummy then
+			local analeptic = self:searchForMagicAnaleptic(use, target, card)
+			if analeptic and self:shouldUseMagicAnaleptic(use.card) and analeptic:getEffectiveId() ~= card:getEffectiveId() then
+				use.card = analeptic
+				if use.to then use.to = sgs.SPlayerList() end
+				return
+			end
+			end
+        end		
 		self:useCardByClassName(card, use)
 	end
 	if use.to then
