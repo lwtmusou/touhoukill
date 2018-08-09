@@ -129,7 +129,7 @@ bool NatureJink::match(const QString &pattern) const
 ChainJink::ChainJink(Suit suit, int number)
     : NatureJink(suit, number)
 {
-    setObjectName("Chain_jink");
+    setObjectName("chain_jink");
 }
 
 
@@ -142,7 +142,7 @@ void ChainJink::onEffect(const CardEffectStruct &effect) const
 LightJink::LightJink(Suit suit, int number)
     : NatureJink(suit, number)
 {
-    setObjectName("Light_jink");
+    setObjectName("light_jink");
 }
 
 
