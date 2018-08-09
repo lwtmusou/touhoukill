@@ -132,6 +132,12 @@ measure_xihua = function(self,card)
 	local pattern = card:objectName()
 	if card:isKindOf("Slash") then
 		pattern = "slash"
+	elseif card:isKindOf("Peach") then
+		pattern = "peach"
+	elseif card:isKindOf("Jink") then
+		pattern = "jink"
+	elseif card:isKindOf("Analeptic") then
+		pattern = "analeptic"	
 	end
 	local xihuaUsed = "xihua_record_" .. pattern
 	if self.player:getMark(xihuaUsed) > 0 then
@@ -191,6 +197,7 @@ xihua_skill.getTurnUseCard = function(self)
 	local guhuo = "slash|jink|peach|ex_nihilo|snatch|dismantlement|amazing_grace|archery_attack|savage_assault"
 	local ban = table.concat(sgs.Sanguosha:getBanPackages(), "|")
 	if not ban:match("maneuvering") then guhuo = guhuo .. "|fire_attack|analeptic|thunder_slash|fire_slash" end
+	if not ban:match("test_card") then guhuo = guhuo .. "|super_peach|magic_analeptic|light_slash|iron_slash|power_slash" end
 	local guhuos = guhuo:split("|")
 	for i = 1, #guhuos do
 		local forbidden = guhuos[i]
@@ -244,7 +251,9 @@ function sgs.ai_cardsview_valuable.xihua(self, class_name, player)
 		["Slash"] = "slash", ["Jink"] = "jink",
 		["Peach"] = "peach", ["Analeptic"] = "analeptic",
 		["Nullification"] = "nullification",
-		["FireSlash"] = "fire_slash", ["ThunderSlash"] = "thunder_slash"
+		["FireSlash"] = "fire_slash", ["ThunderSlash"] = "thunder_slash",
+		["ChainJink"] = "chain_jink", ["LightJink"] = "light_jink",
+		["MagicAnaleptic"] = "magic_analeptic",["SuperPeach"] = "super_peach"
 	}
 
 	if classname2objectname[class_name] then
@@ -263,7 +272,7 @@ function SmartAI:canUseXihuaCard(card, at_play)
 	local player = self.player
 	if at_play then
 		if card:isKindOf("Peach") and not player:isWounded() then return false
-		elseif card:isKindOf("Analeptic") and player:hasUsed("Analeptic") then return false
+		elseif card:isKindOf("Analeptic") and card:isAvailable(player) then return false
 		elseif card:isKindOf("Slash") and not self:slashIsAvailable(player) then return false
 		elseif card:isKindOf("Jink") or card:isKindOf("Nullification") then return false
 		end
@@ -306,16 +315,7 @@ sgs.ai_skill_cardchosen.xihua = function(self, who, flags)
 end
 
 
-sgs.ai_skill_choice.xihua_skill_saveself = function(self, choices)
-	if self.player:getMark("xihua_record_peach")>0 then
-		return "analeptic"
-	else
-		return "peach"
-	end
-end
-sgs.ai_skill_choice.xihua_skill_slash = function(self, choices)
-	return "slash"
-end
+
 
 sgs.ai_cardneed.xihua = function(to, card, self)
 	return card:getNumber() > 10

@@ -213,7 +213,7 @@ qiji_skill.getTurnUseCard = function(self)
 	end
 	local choices={}
 
-	local qiji = "peach|savage_assault|archery_attack|ex_nihilo|god_salvation|dismantlement"
+	local qiji = "peach|super_peach|savage_assault|archery_attack|ex_nihilo|god_salvation|dismantlement"
 	local qijis = qiji:split("|")
 	for i = 1, #qijis do
 		local forbiden = qijis[i]
@@ -228,8 +228,10 @@ qiji_skill.getTurnUseCard = function(self)
 	local card_id = card:getEffectiveId()
 
 	local choice
-	if  table.contains(choices,"peach") then
-		choice="peach"
+	if  table.contains(choices,"super_peach") then
+		choice = "super_peach"
+	elseif table.contains(choices,"peach") then
+		choice = "peach"
 	end
 	if not choice and table.contains(choices,"dismantlement") then
 		for _,p in pairs(self.friends_noself) do

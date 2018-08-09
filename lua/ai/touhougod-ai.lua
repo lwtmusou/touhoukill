@@ -818,7 +818,6 @@ local huaxiang_skill = {}
 huaxiang_skill.name = "huaxiang"
 table.insert(sgs.ai_skills, huaxiang_skill)
 huaxiang_skill.getTurnUseCard = function(self)
-
 	local current = self.room:getCurrent()
 	if not current or current:isDead() or current:getPhase() == sgs.Player_NotActive then return end
 
@@ -845,13 +844,16 @@ huaxiang_skill.getTurnUseCard = function(self)
 
 
 	local huaxiangCards = {}
-	local huaxiang = "slash|thunder_slash|fire_slash|analeptic"
+	local huaxiang = "slash|analeptic"
+	local ban = table.concat(sgs.Sanguosha:getBanPackages(), "|")
+	if not ban:match("maneuvering") then huaxiang = huaxiang .. "|analeptic|thunder_slash|fire_slash" end
+	if not ban:match("test_card") then huaxiang = huaxiang .. "|magic_analeptic|light_slash|iron_slash|power_slash" end
 	if self.player:getMaxHp() <= 2 then
 		huaxiang = huaxiang .. "|peach"
+		if not ban:match("test_card") then huaxiang = huaxiang .. "|super_peach" end
 	end
-	--local guhuo = "slash|jink|peach"
-	--local ban = table.concat(sgs.Sanguosha:getBanPackages(), "|")
-	--if not ban:match("maneuvering") then guhuo = guhuo .. "|analeptic|thunder_slash|fire_slash" end
+
+
 	local huaxiangs = huaxiang:split("|")
 	for i = 1, #huaxiangs do
 		local forbidden = huaxiangs[i]
@@ -914,14 +916,18 @@ function sgs.ai_cardsview_valuable.huaxiang(self, class_name, player)
 	self:sortByKeepValue(validCards)
 
 	local classname2objectname = {
-		["Slash"] = "slash",  ["Analeptic"] = "analeptic",
+		["Slash"] = "slash",  ["Analeptic"] = "analeptic", ["MagicAnaleptic"] = "magic_analeptic", 
 		["FireSlash"] = "fire_slash", ["ThunderSlash"] = "thunder_slash"
+		, ["LightSlash"] = "light_slash", ["PowerSlash"] = "power_slash", ["IronSlash"] = "iron_slash"
 	}
 	if self.player:getMaxHp() <= 3 then
 		classname2objectname["Jink"] = "jink"
+		classname2objectname["ChainJink"] = "chain_jink"
+		classname2objectname["LightJink"] = "light_jink"
 	end
 	if self.player:getMaxHp() <= 2 then
 		classname2objectname["Peach"] = "peach"
+		classname2objectname["SuperPeach"] = "super_peach"
 	end
 	if self.player:getMaxHp() <= 1 then
 		classname2objectname["Nullification"] = "nullification"
@@ -935,16 +941,7 @@ function sgs.ai_cardsview_valuable.huaxiang(self, class_name, player)
 	end
 end
 
-sgs.ai_skill_choice.huaxiang_skill_saveself = function(self, choices)
-	if choices:match("peach") then
-		return "peach"
-	else
-		return "analeptic"
-	end
-end
-sgs.ai_skill_choice.huaxiang_skill_slash = function(self, choices)
-	return "slash"
-end
+
 
 
 sgs.ai_skill_invoke.caiyu = function(self,data)
