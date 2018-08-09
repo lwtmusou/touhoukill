@@ -1718,12 +1718,12 @@ void ModianCard::use(Room *room, ServerPlayer *src, QList<ServerPlayer *> &targe
             break;
         }
     }
-    if (draw)
-        src->drawCards(1);
+
 
     CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, "", NULL, "modian", "");
     alice->addToPile("modian", subcards, true, reason);
-
+    if (draw)
+        src->drawCards(1);
     if (alice->getPile("modian").length() > alice->getHp()) {
         const Card *c = room->askForCard(alice, "@@modian!", "@modian", QVariant(), Card::MethodNone, NULL, false, "modian");
         // force discard!!!
