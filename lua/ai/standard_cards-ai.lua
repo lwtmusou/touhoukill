@@ -4022,7 +4022,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 				if enemy:hasArmorEffect("Vine") and FFFslash and self:slashIsEffective(FFFslash, enemy) and
 					self.player:getCardCount(true) >= 3 and self.player:canSlash(enemy, FFFslash, true, range_fix) then
 					return axe
-				elseif self:getCardsNum("Analeptic") > 0 and self.player:getCardCount(true) >= 4 and
+				elseif self:getCardsNum("Analeptic", "hs", true, "MagicAnaleptic") > 0 and self.player:getCardCount(true) >= 4 and
 					self:slashIsEffective(slash, enemy) and self.player:canSlash(enemy, slash, true, range_fix) then
 					return axe
 				end

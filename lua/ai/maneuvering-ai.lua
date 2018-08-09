@@ -196,8 +196,8 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 		return getCardsNum("Jink", target, self.player) < 2
 	end
 
-	if getKnownCard(target, self.player, "Jink", true, "hes") >= 1 and not (self:getOverflow() > 0 and self:getCardsNum("Analeptic") > 1) then return false end
-	return self:getCardsNum("Analeptic") > 1 or getCardsNum("Jink", target) < 1 or sgs.card_lack[target:objectName()]["Jink"] == 1
+	if getKnownCard(target, self.player, "Jink", true, "hes") >= 1 and not (self:getOverflow() > 0 and self:getCardsNum("Analeptic", nil, nil, "MagicAnaleptic") > 1) then return false end
+	return self:getCardsNum("Analeptic", nil, nil, "MagicAnaleptic") > 1 or getCardsNum("Jink", target) < 1 or sgs.card_lack[target:objectName()]["Jink"] == 1
 end
 
 function SmartAI:useCardAnaleptic(card, use)
@@ -224,7 +224,7 @@ function SmartAI:searchForAnaleptic(use, enemy, slash)
 		end
 	end
 	
-	local analeptic = self:getCard("Analeptic")
+	local analeptic = self:getCard("Analeptic", nil, "MagicAnaleptic")
 	if not analeptic then return nil end
 
 	local analepticAvail = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_Residue, self.player, analeptic)
@@ -249,38 +249,14 @@ function SmartAI:searchForAnaleptic(use, enemy, slash)
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)
 	self:fillSkillCards(cards)
-	local allcards = self.player:getCards("hes")
-	allcards = sgs.QList2Table(allcards)
 
-	if self.player:getPhase() == sgs.Player_Play then
-		if self.player:hasFlag("lexue") then
-			local lexuesrc = sgs.Sanguosha:getCard(self.player:getMark("lexue"))
-			if lexuesrc:isKindOf("Analeptic") then
-				local cards = sgs.QList2Table(self.player:getHandcards())
-				self:sortByUseValue(cards, true)
-				for _, hcard in ipairs(cards) do
-					if hcard:getSuit() == lexuesrc:getSuit() then
-						local lexue = sgs.cloneCard("analeptic", lexuesrc:getSuit(), lexuesrc:getNumber())
-						lexue:addSubcard(hcard:getId())
-						lexue:setSkillName("lexue")
-						if self:getUseValue(lexuesrc) > self:getUseValue(hcard) then
-							return lexue
-						end
-					end
-				end
-			end
-		end
 
-		if self.player:hasLordSkill("weidai") and not self.player:hasFlag("Global_WeidaiFailed") then
-			return sgs.Card_Parse("@WeidaiCard=.")
-		end
-	end
 
-	local card_str = self:getCardId("Analeptic")
+	local card_str = self:getCardId("Analeptic", nil, nil, "MagicAnaleptic")
 	if card_str then  return sgs.Card_Parse(card_str) end
 
 	for _, anal in ipairs(cards) do
-		if (anal:getClassName() == "Analeptic") and not (anal:getEffectiveId() == slash:getEffectiveId()) then
+		if (anal:getClassName() == "Analeptic" and not anal:isKindOf("MagicAnaleptic")) and not (anal:getEffectiveId() == slash:getEffectiveId()) then
 			return anal
 		end
 	end

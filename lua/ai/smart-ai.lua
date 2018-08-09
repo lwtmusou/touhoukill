@@ -10,8 +10,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = (require "middleclass").class("SmartAI")
 
---original_version = "QSanguosha AI 20140901 (V1.414213562 Alpha)"
-version = "TouhouSatsu AI 20170302"
+version = "TouhouSatsu AI 20180809"
 
 
 
@@ -704,8 +703,7 @@ function SmartAI:adjustUsePriority(card, v)
 		if card:getSkillName() == "fuhun" then v = v + (self.player:getPhase() == sgs.Player_Play and 0.21 or -0.1) end
 		if self.player:hasSkill("jiang") and card:isRed() then v = v + 0.21 end
 		--if self.player:hasSkill("guaili") and card:isRed() then v = v + 0.21 end
-		if self.player:hasSkill("wushen") and card:getSuit() == sgs.Card_Heart then v = v + 0.11 end
-		if self.player:hasSkill("jinjiu") and card:getEffectiveId() >= 0 and sgs.Sanguosha:getEngineCard(card:getEffectiveId()):isKindOf("Analeptic") then v = v + 0.11 end
+		if self.player:hasSkill("wushen") and card:getSuit() == sgs.Card_Heart then v = v + 0.11 end	
 	end
 	if self.player:hasSkill("mingzhe") and card:isRed() then v = v + (self.player:getPhase() ~= sgs.Player_NotActive and 0.05 or -0.05) end
 	if card:isKindOf("Peach") and card:getSkillName() == "shende" then v = v + 0.21 end
@@ -972,8 +970,6 @@ function SmartAI:sortByKeepValue(cards, inverse, kept, Write)
 			if self.player:hasSkill("jiang") and card:isRed() then v = v + 0.04 end
 			--if self.player:hasSkill("guaili") and card:isRed() then v = v + 0.04 end
 			if self.player:hasSkill("wushen") and card:getSuit() == sgs.Card_Heart then v = v + 0.03 end
-			if self.player:hasSkill("jinjiu") and card:getEffectiveId() >= 0 and
-				sgs.Sanguosha:getEngineCard(card:getEffectiveId()):isKindOf("Analeptic") then v = v - 0.1 end
 		end
 		if self.player:hasSkill("mingzhe") and card:isRed() then v = v + 0.05 end
 
@@ -3016,122 +3012,6 @@ sgs.ai_skill_discard.gamerule = function(self, discard_num, min_num)
 
 	return to_discard
 
-
-	--[[
-	local cards = sgs.QList2Table(self.player:getCards("hs"))
-	local to_discard = {}
-	local peaches, jinks, analeptics, nullifications, slashes = {}, {}, {}, {}, {}
-	local keeparr = {}
-	local debugprint = false
-
-	local keepdata = {"peach1", "peach2", "jink1", "peach3", "analeptic", "jink2", "nullification", "slash" }
-
-	if not self:isWeak() and (self.player:getHp() > getBestHp(self.player) or self:getDamagedEffects(self.player) or not sgs.isGoodTarget(self.player)) then
-		keepdata = {"peach1", "peach2", "analeptic","peach3", "nullification", "slash" }
-	end
-
-	for _, name in ipairs(keepdata) do  keeparr[name] = nil end
-
-	local compare_func = function(a, b)
-		local v1 = self:adjustUsePriority(a,1)
-		local v2 = self:adjustUsePriority(b,1)
-		if a:isKindOf("NatureSlash") then v1 = v1 - 0.1 end
-		if b:isKindOf("NatureSlash") then v2 = v2 - 0.1 end
-		return  v1 < v2
-	end
-
-	local resetCards = function(allcards, keepcards)
-		local result = {}
-		for _, acard in ipairs(allcards) do
-			local found = false
-			for _, keepcard in pairs(keepcards) do
-				if keepcard and keepcard:getEffectiveId() == acard:getEffectiveId() then
-					found = true
-					break
-				end
-			end
-			if not found then table.insert(result, acard) end
-		end
-		return result
-	end
-
-	for _, card in ipairs(cards) do
-		if isCard("Peach", card, self.player) then table.insert(peaches, card) end
-	end
-	table.sort(peaches, compare_func)
-	if #peaches >= 1 and table.contains(keepdata, "peach1") then keeparr.peach1 = peaches[1] end
-	if #peaches >= 2 and table.contains(keepdata, "peach2") then keeparr.peach2 = peaches[2] end
-	if #peaches >= 3 and table.contains(keepdata, "peach3") then keeparr.peach3 = peaches[3] end
-
-	cards = resetCards(cards, keeparr)
-	for _, card in ipairs(cards) do
-		if isCard("Jink", card, self.player) then table.insert(jinks, card) end
-	end
-	table.sort(jinks, compare_func)
-	if #jinks >= 1 and table.contains(keepdata, "jink1") then keeparr.jink1 = jinks[1] end
-	if #jinks >= 2 and table.contains(keepdata, "jink2") then keeparr.jink2 = jinks[2] end
-
-	cards = resetCards(cards, keeparr)
-	for _, card in ipairs(cards) do
-		if isCard("Analeptic", card, self.player) then table.insert(analeptics, card) end
-	end
-	table.sort(analeptics, compare_func)
-	if #analeptics >= 1 and table.contains(keepdata, "analeptic") then keeparr.analeptic = analeptics[1] end
-
-	cards = resetCards(cards, keeparr)
-	for _, card in ipairs(cards) do
-		if isCard("Nullification", card, self.player) then table.insert(nullifications, card) end
-	end
-	table.sort(nullifications, compare_func)
-	if #nullifications >= 1 and table.contains(keepdata, "nullification") then keeparr.nullification = nullifications[1] end
-
-	cards = resetCards(cards, keeparr)
-	for _, card in ipairs(cards) do
-		if isCard("Slash", card, self.player) then table.insert(slashes, card) end
-	end
-	table.sort(slashes, compare_func)
-	if #slashes >= 1 and table.contains(keepdata, "slash") then keeparr.slash = slashes[1] end
-
-	cards = resetCards(cards,keeparr)
-	self:sortByUseValue(cards)
-	self:sortByKeepValue(cards, true)
-
-	if debugprint then
-		logmsg("discard.html", "<meta charset='utf-8'/><pre>")
-		logmsg("discard.html", "========================="..self.player:getGeneralName().."=================================")
-		logmsg("discard.html", "")
-	end
-
-	local sortedCards = {}
-	for _, name in ipairs(keepdata) do
-		if keeparr[name] then
-			table.insert(sortedCards, keeparr[name])
-			if debugprint then logmsg("discard.html", "keep :  "  ..keeparr[name]:getLogName()) end
-		end
-	end
-
-	for _, card in ipairs(cards) do
-		table.insert(sortedCards, card)
-		if debugprint then logmsg("discard.html", "other :  "  ..card:getLogName()) end
-	end
-
-	if debugprint then logmsg("discard.html", ":::") end
-
-
-	local least = min_num
-	if discard_num - min_num > 1 then
-		least = discard_num -1
-	end
-
-	for i = #sortedCards, 1, -1 do
-		if not self.player:isJilei(sortedCards[i]) then
-			table.insert(to_discard, sortedCards[i]:getId())
-			if debugprint then logmsg("discard.html", "discard :  "  ..sortedCards[i]:getLogName()) end
-		end
-		if (self.player:hasSkill("qinyin") and #to_discard >= least) or #to_discard >= discard_num or self.player:isKongcheng() then break end
-	end
-	return to_discard
-	]]
 end
 
 
@@ -5267,7 +5147,7 @@ function getKnownCard(player, from, class_name, viewas, flags, pile)
 	return known
 end
 
-function SmartAI:getCardId(class_name, player, acard)
+function SmartAI:getCardId(class_name, player, acard, exclude_subclass_name)
 
 	player = player or self.player
 	local cards
@@ -5298,7 +5178,8 @@ function SmartAI:getCardId(class_name, player, acard)
 		local card_place = sgs.getCardPlace(self.room, card)
 		viewas = getSkillViewCard(card, class_name, player, card_place)
 		if viewas then table.insert(viewArr, viewas) end
-		if card:isKindOf(class_name) and not prohibitUseDirectly(card, player) and card_place ~= sgs.Player_PlaceSpecial then
+		if card:isKindOf(class_name) and ((not exclude_subclass_name) or not card:isKindOf(exclude_subclass_name))
+			and not prohibitUseDirectly(card, player) and card_place ~= sgs.Player_PlaceSpecial then
 			table.insert(cardArr, card:getEffectiveId())
 		end
 	end
@@ -5313,13 +5194,13 @@ function SmartAI:getCardId(class_name, player, acard)
 	return cardsView(self, class_name, player)
 end
 
-function SmartAI:getCard(class_name, player)
+function SmartAI:getCard(class_name, player, exclude_subclass_name)
 	player = player or self.player
-	local card_id = self:getCardId(class_name, player)
+	local card_id = self:getCardId(class_name, player, nil, exclude_subclass_name)
 	if card_id then return sgs.Card_Parse(card_id) end
 end
 
-function SmartAI:getCards(class_name, flag)
+function SmartAI:getCards(class_name, flag, exclude_subclass_name)
 	local player = self.player
 	local room = self.room
 	if flag and type(flag) ~= "string" then room:writeToConsole(debug.traceback()) return {} end
@@ -5352,7 +5233,8 @@ function SmartAI:getCards(class_name, flag)
 		card_place = sgs.getCardPlace(room, card)
 		if class_name == "." and card_place ~= sgs.Player_PlaceSpecial then table.insert(cards, card)
 		elseif class_name == "sqchuangshi"  and not prohibitUseDirectly(card, player) then table.insert(cards, card)
-		elseif card:isKindOf(class_name) and not prohibitUseDirectly(card, player) and card_place ~= sgs.Player_PlaceSpecial then table.insert(cards, card)
+		elseif card:isKindOf(class_name)  and ((not exclude_subclass_name) or not card:isKindOf(exclude_subclass_name)) 
+			and not prohibitUseDirectly(card, player) and card_place ~= sgs.Player_PlaceSpecial then table.insert(cards, card)
 		else
 			card_str = getSkillViewCard(card, class_name, player, card_place)
 			if card_str then
@@ -5373,7 +5255,7 @@ end
 
 --【荧火】【穿壁】
 --【七曜】？
-function getCardsNum(class_name, player, from)
+function getCardsNum(class_name, player, from, exclude_subclass_name)
 	if not player then
 		global_room:writeToConsole(debug.traceback())
 		return 0
@@ -5401,13 +5283,13 @@ function getCardsNum(class_name, player, from)
 	from = from or global_room:getCurrent()
 
 	if not player then
-		return #getCards(class_name, player)
+		return #getCards(class_name, player, from, exclude_subclass_name)
 	else
 		for _, card in ipairs(cards) do
 			local flag = string.format("%s_%s_%s", "visible", from:objectName(), player:objectName())
 			if card:hasFlag("visible") or card:hasFlag(flag) or from:objectName() == player:objectName() then
 				shownum = shownum + 1
-				if card:isKindOf(class_name) then
+				if card:isKindOf(class_name) and ((not exclude_subclass_name) or not card:isKindOf(exclude_subclass_name)) then
 					num = num + 1
 				end
 				if card:isKindOf("EquipCard") then
@@ -5532,14 +5414,6 @@ function getCardsNum(class_name, player, from)
 		else
 			return num
 		end
-	elseif class_name == "Analeptic" then
-		if player:hasSkill("jiuchi") then
-			return num + spadewine + (player:getHandcardNum() - shownum)*0.3
-		elseif player:hasSkill("jiushi") then
-			return num + 1
-		else
-			return num
-		end
 	elseif class_name == "Nullification" then
 		if player:hasSkill("kanpo") then
 			return num + blacknull + (player:getHandcardNum() - shownum)*0.5
@@ -5553,7 +5427,7 @@ function getCardsNum(class_name, player, from)
 	end
 end
 
-function SmartAI:getCardsNum(class_name, flag, selfonly)
+function SmartAI:getCardsNum(class_name, flag, selfonly, exclude_subclass_name)
 	local player = self.player
 	local n = 0
 	if type(class_name) == "table" then
@@ -5562,7 +5436,7 @@ function SmartAI:getCardsNum(class_name, flag, selfonly)
 		end
 		return n
 	end
-	n = #self:getCards(class_name, flag)
+	n = #self:getCards(class_name, flag, exclude_subclass_name)
 
 	card_str = cardsView(self, class_name, player)
 	if card_str then
@@ -5571,8 +5445,6 @@ function SmartAI:getCardsNum(class_name, flag, selfonly)
 			n = n + math.floor(player:getHandcardNum() / 2) - 1
 		elseif card_str:getSkillName() == "jiuzhu" then
 			n = math.max(n, math.max(0, math.min(player:getCardCount(), player:getHp() - 1)))
-		elseif card_str:getSkillName() == "chunlao" then
-			n = n + player:getPile("wine"):length() - 1
 		elseif card_str:getSkillName() == "renxin" then
 			n = n + 1
 		--elseif card_str:getSkillName() == "bllmwuyu" then
@@ -6336,7 +6208,7 @@ function SmartAI:evaluateWeapon(card, player)
 	end
 
 	local slash_num = player:objectName() == self.player:objectName() and self:getCardsNum("Slash") or getCardsNum("Slash", player, self.player)
-	local analeptic_num = player:objectName() == self.player:objectName() and self:getCardsNum("Analeptic") or getCardsNum("Analeptic", player, self.player)
+	local analeptic_num = player:objectName() == self.player:objectName() and self:getCardsNum("Analeptic", "hs", true, "MagicAnaleptic") or getCardsNum("Analeptic", player, self.player)
 	local peach_num = player:objectName() == self.player:objectName() and self:getCardsNum("Peach") or getCardsNum("Peach", player, self.player)
 	if card:isKindOf("Crossbow") and not player:hasSkill("paoxiao") and deltaSelfThreat ~= 0 then
 		deltaSelfThreat = deltaSelfThreat + slash_num * 3 - 2
@@ -7554,11 +7426,6 @@ function SmartAI:touhouDummyUse(player,card)
 		self:useTrickCard(card, dummy_use)
 		return not dummy_use.to:isEmpty()
 	end
-	--[[if card:isKindOf("Analeptic") and sgs.Analeptic_IsAvailable(player)  then
-		sgs.Slash_IsAvailable
-		:shouldUseAnaleptic(player, slash)
-		return not dummy_use.to:isEmpty()
-	end]]
 	return false
 end
 --东方规则下的判断雌雄剑
