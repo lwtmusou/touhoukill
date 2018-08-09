@@ -64,6 +64,39 @@ sgs.ai_cardneed.doujiu = function(to, card, self)
 	return card:getNumber() > 10
 end
 
+local yanhuivs_skill = {}
+yanhuivs_skill.name = "yanhui_attach"
+table.insert(sgs.ai_skills, yanhuivs_skill)
+function yanhuivs_skill.getTurnUseCard(self)
+		if self.player:isKongcheng() then return nil end
+		if self.player:getKingdom() ~="zhan" then return nil end
+		local handcards = {}
+		for _,c in sgs.qlist(self.player:getCards("hs")) do
+			if c:isKindOf("Peach") or c:isKindOf("Analeptic") then
+				table.insert(handcards, c)
+			end
+		end
+		if #handcards  ==0 then return nil end
+		self:sortByUseValue(handcards)
+
+		return sgs.Card_Parse("@YanhuiCard=" .. handcards[1]:getEffectiveId())
+end
+
+sgs.ai_skill_use_func.YanhuiCard = function(card, use, self)
+	local targets = {}
+	for _,friend in ipairs(self.friends_noself) do
+		if friend:hasLordSkill("yanhui") and friend:isWounded() then
+			table.insert(targets, friend)
+		end
+	end
+	if #targets > 0 then
+		use.card = card
+		if use.to then
+			use.to:append(targets[1])
+			return
+		end
+	end
+end
 
 
 

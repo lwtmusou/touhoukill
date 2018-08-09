@@ -1318,7 +1318,7 @@ end
 --【斗酒】
 function SmartAI:useCardPeach(card, use)
 	--对主公发动宴会使用桃
-	if (self.player:getKingdom() == "zhan") then
+	--[[if (self.player:getKingdom() == "zhan") then
 		local yanhuiTargets = {}
 		for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 			if p:hasLordSkill("yanhui") and p:isAlive() and p:isWounded() and p:getHp()<=self.player:getHp() then
@@ -1335,7 +1335,7 @@ function SmartAI:useCardPeach(card, use)
 				if use.to:length() >= 1 then return end
 			end
 		end
-	end
+	end]]
 
 
 	local mustusepeach = false
