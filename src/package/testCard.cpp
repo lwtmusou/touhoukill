@@ -835,6 +835,7 @@ TestCardPackage::TestCardPackage()
         << new FireSlash(Card::Heart, 9)
 
         << new MagicAnaleptic(Card::Spade, 10)
+        << new MagicAnaleptic(Card::Diamond, 6)
         << new SuperPeach(Card::Heart, 4)
         << new SuperPeach(Card::Diamond, 13)
         
