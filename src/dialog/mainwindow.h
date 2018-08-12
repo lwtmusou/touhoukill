@@ -56,7 +56,11 @@ class UpdateDialog : public QDialog
 
 public:
     UpdateDialog(QWidget *parent = 0);
+#if QT_VERSION >= 0x050600
     void setInfo(const QString &v, const QVersionNumber &vn, const QString &updateScript, const QString &updatePack, const QJsonObject &updateHash);
+#else
+    void setInfo(const QString &v, const QString &vn, const QString &updateScript, const QString &updatePack, const QJsonObject &updateHash);
+#endif
 
 private:
     QProgressBar *bar;
@@ -117,8 +121,12 @@ private:
 
     void restoreFromConfig();
     void checkForUpdate();
-    void parseUpdateInfo(const QString &v, const QVersionNumber &vn, const QJsonObject &ob);
 
+#if QT_VERSION >= 0x050600
+    void parseUpdateInfo(const QString &v, const QVersionNumber &vn, const QJsonObject &ob);
+#else
+    void parseUpdateInfo(const QString &v, const QString &vn, const QJsonObject &ob);
+#endif
 public slots:
     void startConnection();
 

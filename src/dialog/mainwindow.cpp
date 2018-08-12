@@ -40,12 +40,15 @@
 #include <QTime>
 #include <QToolButton>
 #include <QVariant>
-#include <QVersionNumber>
 #include <QtMath>
 
 #ifdef Q_OS_WIN
 #include <QWinTaskbarButton>
 #include <QWinTaskbarProgress>
+#endif
+
+#if QT_VERSION >= 0x050600
+#include <QVersionNumber>
 #endif
 
 class FitView : public QGraphicsView
@@ -170,7 +173,9 @@ void MainWindow::restoreFromConfig()
 void MainWindow::checkForUpdate()
 {
     QNetworkRequest req;
+#if QT_VERSION >= 0x050600
     req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
     req.setUrl(QUrl("http://fsu0413.github.io/TouhouKillUpdate.json"));
     QNetworkReply *reply = autoUpdateManager->get(req);
     connect(reply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &MainWindow::updateError);
@@ -883,7 +888,11 @@ void MainWindow::updateError(QNetworkReply::NetworkError)
         disconnect(reply, &QNetworkReply::finished, this, 0);
 }
 
+#if QT_VERSION >= 0x050600
 void MainWindow::parseUpdateInfo(const QString &v, const QVersionNumber &vn, const QJsonObject &ob)
+#else
+void MainWindow::parseUpdateInfo(const QString &v, const QString &vn, const QJsonObject &ob)
+#endif
 {
 #if defined(Q_OS_WIN)
     QJsonValue value = ob.value("Win");
@@ -900,7 +909,11 @@ void MainWindow::parseUpdateInfo(const QString &v, const QVersionNumber &vn, con
                                     "Please download the full package from <a href=\"%4\">Here</a>.")
                                      .arg(v)
                                      .arg(Sanguosha->getVersionNumber())
+#if QT_VERSION >= 0x050600
                                      .arg(vn.toString())
+#else
+                                     .arg(vn)
+#endif
                                      .arg(value.toString()));
     } else if (value.isObject()) {
         QJsonObject updateOb = value.toObject();
@@ -934,18 +947,24 @@ void MainWindow::updateInfoReceived()
     }
 
     QString latestVersion = ob.value("LatestVersion").toString();
+#if QT_VERSION >= 0x050600
     QVersionNumber ver = QVersionNumber::fromString(ob.value("LatestVersionNumber").toString());
+#else
+    QString ver = ob.value("LatestVersionNumber").toString();
+#endif
     if (latestVersion > Sanguosha->getVersionNumber()) {
         // there is a new version available now!!
         QString from = QString("From") + Sanguosha->getVersionNumber();
         if (ob.contains(from))
             parseUpdateInfo(latestVersion, ver, ob.value(from).toObject());
         else {
+#if QT_VERSION >= 0x050600
             QVersionNumber pref = QVersionNumber::commonPrefix(Sanguosha->getQVersionNumber(), ver);
             from = QString("From") + pref.toString();
             if (ob.contains(from))
                 parseUpdateInfo(latestVersion, ver, ob.value(from).toObject());
             else
+#endif
                 parseUpdateInfo(latestVersion, ver, ob.value("FullPack").toObject());
         }
     }
@@ -1055,14 +1074,22 @@ UpdateDialog::UpdateDialog(QWidget *parent)
     setLayout(layout);
 }
 
+#if QT_VERSION >= 0x050600
 void UpdateDialog::setInfo(const QString &v, const QVersionNumber &vn, const QString &updateScript, const QString &updatePack, const QJsonObject &updateHash)
+#else
+void UpdateDialog::setInfo(const QString &v, const QString &vn, const QString &updateScript, const QString &updatePack, const QJsonObject &updateHash)
+#endif
 {
     lbl->setText(tr("New Version %1(%3) available.\n"
                     "We support auto-updating from %2 to %1 on this platform.\n"
                     "Click 'Yes' to update now.")
                      .arg(v)
                      .arg(Sanguosha->getVersionNumber())
+#if QT_VERSION >= 0x050600
                      .arg(vn.toString()));
+#else
+                     .arg(vn));
+#endif
 
     m_updateScript = updateScript;
     m_updatePack = updatePack;
@@ -1119,7 +1146,9 @@ void UpdateDialog::startDownload()
     m_busy = true;
 
     QNetworkRequest reqPack;
+#if QT_VERSION >= 0x050600
     reqPack.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
     reqPack.setUrl(QUrl(m_updatePack));
     packReply = downloadManager->get(reqPack);
     connect(packReply, &QNetworkReply::downloadProgress, this, &UpdateDialog::downloadProgress);
@@ -1127,7 +1156,9 @@ void UpdateDialog::startDownload()
     connect(packReply, &QNetworkReply::finished, this, &UpdateDialog::finishedPack);
 
     QNetworkRequest reqScript;
+#if QT_VERSION >= 0x050600
     reqScript.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
     reqScript.setUrl(QUrl(m_updateScript));
     scriptReply = downloadManager->get(reqScript);
     connect(scriptReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errScript);

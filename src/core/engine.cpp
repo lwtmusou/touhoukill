@@ -19,7 +19,10 @@
 #include <QMessageBox>
 #include <QStringList>
 #include <QTextStream>
+
+#if QT_VERSION >= 0x050600
 #include <QVersionNumber>
+#endif
 
 Engine *Sanguosha = NULL;
 
@@ -641,10 +644,12 @@ QString Engine::getVersionName() const
     return "V0.8.9";
 }
 
+#if QT_VERSION >= 0x050600
 QVersionNumber Engine::getQVersionNumber() const
 {
     return QVersionNumber(0, 8, 9);
 }
+#endif
 
 QString Engine::getMODName() const
 {
