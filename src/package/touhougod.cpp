@@ -1944,7 +1944,7 @@ public:
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         const Skill *skill = Sanguosha->getSkill("huaxiang");
         QStringList checkedPatterns;
-        foreach(const Card *card, cards) {
+        foreach (const Card *card, cards) {
             if ((card->isKindOf("BasicCard") || card->isKindOf("Nullification")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
                 QString name = card->objectName();
                 if (!checkedPatterns.contains(name) && skill->matchAvaliablePattern(name, pattern) && !Self->isCardLimited(card, method)) {
@@ -1956,7 +1956,6 @@ public:
                         continue;
                     checkedPatterns << name;
                 }
-                    
             }
         }
         return checkedPatterns;
@@ -2020,7 +2019,6 @@ public:
             card->addSubcards(cards);
             return card;
         }
-        
 
         QString name = Self->tag.value("huaxiang", QString()).toString();
         if (name != NULL) {
@@ -3951,11 +3949,6 @@ public:
     static QStringList responsePatterns()
     {
         QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-        Card::HandlingMethod method;
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
-            method = Card::MethodResponse;
-        else
-            method = Card::MethodUse;
 
         QStringList validPatterns;
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
@@ -5268,26 +5261,24 @@ public:
             QString choice = "first";
             if (use.card->isKindOf("FireAttack") || use.card->isKindOf("Duel") || use.card->isKindOf("SavageAssault") || use.card->isKindOf("ArcheryAttack")
                 || use.card->isKindOf("AwaitExhausted")) {
-                QString  choices = QString("%1_first+%2_second").arg(use.card->objectName()).arg(use.card->objectName());
+                QString choices = QString("%1_first+%2_second").arg(use.card->objectName()).arg(use.card->objectName());
                 choice = room->askForChoice(invoke->invoker, objectName(), choices);
                 if (choice == "second")
                     room->setCardFlag(use.card, "mopao2");
                 else
                     room->setCardFlag(use.card, "mopao");
-            }
-            else if (use.card->isKindOf("Slash")) {
+            } else if (use.card->isKindOf("Slash")) {
                 QString choice = "second";
                 if (use.card->isKindOf("LightSlash") || use.card->isKindOf("PowerSlash")) {
-                    QString  choices = QString("%1_first+%2_second").arg(use.card->objectName()).arg(use.card->objectName());
+                    QString choices = QString("%1_first+%2_second").arg(use.card->objectName()).arg(use.card->objectName());
                     choice = room->askForChoice(invoke->invoker, objectName(), choices);
                 }
-                    
+
                 if (choice.endsWith("second"))
                     room->setCardFlag(use.card, "mopao2");
                 else
                     room->setCardFlag(use.card, "mopao");
-            }
-            else
+            } else
                 room->setCardFlag(use.card, "mopao");
 
             LogMessage log;

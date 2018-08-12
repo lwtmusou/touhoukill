@@ -1701,7 +1701,7 @@ const Card *Room::askForUseCard(ServerPlayer *player, const QString &pattern, co
         ask_str << notice_index;
         ask_str << QString(skill_name);
 
-        bool success = success = doRequest(player, S_COMMAND_RESPONSE_CARD, ask_str, true);
+        bool success = doRequest(player, S_COMMAND_RESPONSE_CARD, ask_str, true);
         if (success) {
             const QVariant &clientReply = player->getClientReply();
             isCardUsed = !clientReply.isNull();

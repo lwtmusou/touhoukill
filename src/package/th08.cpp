@@ -1496,11 +1496,6 @@ public:
     static QStringList responsePatterns()
     {
         QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-        Card::HandlingMethod method;
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
-            method = Card::MethodResponse;
-        else
-            method = Card::MethodUse;
 
         QStringList validPatterns;
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
@@ -1708,7 +1703,6 @@ public:
         return NULL;
     }
 
-
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
         if (triggerEvent == DrawNCards) {
@@ -1766,7 +1760,6 @@ bool ChuangshiCard::targetsFeasible(const QList<const Player *> &targets, const 
         return false;
     return new_card && new_card->targetsFeasible(targets, user);
 }
-
 
 void ChuangshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {

@@ -5,10 +5,10 @@
 #include "maneuvering.h"
 #include "skill.h"
 #include "standard.h"
+#include "testCard.h"
 #include <QCommandLinkButton>
 #include <QCoreApplication>
 #include <QPointer>
-#include "testCard.h"
 
 class ZuiyueVS : public ZeroCardViewAsSkill
 {
@@ -120,7 +120,7 @@ bool YanhuiCard::targetFilter(const QList<const Player *> &targets, const Player
     if (Self) {
         QList<const Player *> players = Self->getSiblings();
         players << Self;
-        foreach(const Player *p, players) {
+        foreach (const Player *p, players) {
             if (p->hasFlag("Global_Dying") && p->isAlive()) {
                 globalDying = true;
                 break;
@@ -130,11 +130,11 @@ bool YanhuiCard::targetFilter(const QList<const Player *> &targets, const Player
     if (globalDying) {
         return to_select->hasFlag("Global_Dying");
     }
-    
+
     return to_select->isWounded() || to_select->isDebuffStatus();
 }
 
-const Card *YanhuiCard::validate(CardUseStruct &use) const
+const Card *YanhuiCard::validate(CardUseStruct &) const
 {
     SuperPeach *use_card = new SuperPeach(Card::SuitToBeDecided, -1);
     use_card->setSkillName("_yanhui");
@@ -143,7 +143,7 @@ const Card *YanhuiCard::validate(CardUseStruct &use) const
     return use_card;
 }
 
-const Card *YanhuiCard::validateInResponse(ServerPlayer *user) const
+const Card *YanhuiCard::validateInResponse(ServerPlayer *) const
 {
     SuperPeach *use_card = new SuperPeach(Card::SuitToBeDecided, -1);
     use_card->setSkillName("_yanhui");
@@ -151,7 +151,6 @@ const Card *YanhuiCard::validateInResponse(ServerPlayer *user) const
     use_card->deleteLater();
     return use_card;
 }
-
 
 class YanhuiVS : public OneCardViewAsSkill
 {
@@ -165,13 +164,13 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        foreach(const Player *p, player->getAliveSiblings()) {
+        foreach (const Player *p, player->getAliveSiblings()) {
             if (p->hasLordSkill("yanhui") && (p->isWounded() || p->isDebuffStatus()))
                 return true;
         }
         return false;
     }
-    
+
     virtual bool isEnabledAtResponse(const Player *player, const QString &) const
     {
         QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
@@ -181,7 +180,7 @@ public:
         if (Self) {
             QList<const Player *> players = Self->getSiblings();
             players << Self;
-            foreach(const Player *p, players) {
+            foreach (const Player *p, players) {
                 if (p->hasFlag("Global_Dying") && p->isAlive()) {
                     globalDying = true;
                     break;
@@ -189,28 +188,26 @@ public:
             }
         }
         if (globalDying) {
-            foreach(const Player *p, player->getAliveSiblings()) {
+            foreach (const Player *p, player->getAliveSiblings()) {
                 if (p->hasLordSkill("yanhui") && p->hasFlag("Global_Dying"))
                     return true;
             }
-        }
-        else {
-            foreach(const Player *p, player->getAliveSiblings()) {
+        } else {
+            foreach (const Player *p, player->getAliveSiblings()) {
                 if (p->hasLordSkill("yanhui") && (p->isWounded() || p->isDebuffStatus()))
                     return true;
             }
         }
-        
+
         return false;
     }
-
 
     virtual bool shouldBeVisible(const Player *Self) const
     {
         return Self && Self->getKingdom() == "zhan";
     }
 
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
     {
         return to_select->isKindOf("Peach") || to_select->isKindOf("Analeptic");
     }
@@ -221,8 +218,7 @@ public:
             YanhuiCard *card = new YanhuiCard;
             card->addSubcard(originalCard);
             return card;
-        }
-        else
+        } else
             return NULL;
     }
 };
@@ -240,7 +236,7 @@ public:
     {
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            foreach(ServerPlayer *p, use.to) {
+            foreach (ServerPlayer *p, use.to) {
                 if (p->hasLordSkill("yanhui") && p != use.from) {
                     if ((use.card->getSkillName() == objectName())) {
                         QList<ServerPlayer *> logto;
@@ -250,41 +246,33 @@ public:
                     }
                 }
             }
-        }
-        else {
+        } else {
             static QString attachName = "yanhui_attach";
             QList<ServerPlayer *> lords;
-            foreach(ServerPlayer *p, room->getAllPlayers()) {
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
                 if (p->hasLordSkill(this, true))
                     lords << p;
             }
 
             if (lords.length() > 1) {
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (!p->hasLordSkill(attachName, true))
                         room->attachSkillToPlayer(p, attachName);
                 }
-            }
-            else if (lords.length() == 1) {
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
+            } else if (lords.length() == 1) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasLordSkill(this, true) && p->hasLordSkill(attachName, true))
                         room->detachSkillFromPlayer(p, attachName, true);
                     else if (!p->hasLordSkill(this, true) && !p->hasLordSkill(attachName, true))
                         room->attachSkillToPlayer(p, attachName);
                 }
-            }
-            else { // the case that lords is empty
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
+            } else { // the case that lords is empty
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasLordSkill(attachName, true))
                         room->detachSkillFromPlayer(p, attachName, true);
                 }
             }
-        
         }
-        
-        
-            
-        
     }
 };
 //related Peach::targetFilter

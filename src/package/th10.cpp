@@ -411,7 +411,7 @@ void QijiDialog::popup()
     QStringList validPatterns;
     if (object_name == "huaxiang") {
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-        foreach(const Card *card, cards) {
+        foreach (const Card *card, cards) {
             if (card->isKindOf("BasicCard") && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
                 QString name = card->objectName();
                 if (!validPatterns.contains(name)) {
@@ -420,9 +420,9 @@ void QijiDialog::popup()
                     else if (name.contains("peach") && Self->getMaxHp() > 2)
                         continue;
                     validPatterns << name;
-                }   
+                }
             }
-       }
+        }
     } /*else if (object_name == "xihua") {
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach (const Card *card, cards) {
@@ -465,7 +465,7 @@ void QijiDialog::popup()
     }
     //while responsing, if only one pattern were checked, emit click()
 
-    if (object_name != "chuangshi" && !play && checkedPatterns.length() <= 1) { 
+    if (object_name != "chuangshi" && !play && checkedPatterns.length() <= 1) {
         //  !checkedPatterns.contains("slash")  @ todo: basic card
         emit onButtonClick();
         return;
@@ -486,7 +486,7 @@ void QijiDialog::popup()
         if (user == NULL)
             user = Self;
 
-        bool avaliable =  (!play) || card->isAvailable(user);
+        bool avaliable = (!play) || card->isAvailable(user);
         if (card->isKindOf("Peach"))
             avaliable = card->isAvailable(user);
         if (object_name == "chuangshi" && (card->isKindOf("Jink") || card->isKindOf("Nullification")))
@@ -494,7 +494,7 @@ void QijiDialog::popup()
         if (object_name == "qiji" && user->getMark("xiubu"))
             avaliable = true;
 
-        bool checked =  checkedPatterns.contains(card->objectName());
+        bool checked = checkedPatterns.contains(card->objectName());
         bool enabled = !user->isCardLimited(card, method, true) && avaliable && (checked || object_name == "chuangshi");
         button->setEnabled(enabled);
     }
@@ -672,7 +672,6 @@ const Card *QijiCard::validate(CardUseStruct &use) const
 
 const Card *QijiCard::validateInResponse(ServerPlayer *user) const
 {
-    Room *room = user->getRoom();
     const Card *card = Sanguosha->getCard(subcards.first());
     Card *use_card = Sanguosha->cloneCard(user_string, card->getSuit(), card->getNumber());
     use_card->setSkillName("qiji");
@@ -736,7 +735,6 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
-        
         QStringList checkedPatterns = responsePatterns();
         if (checkedPatterns.length() == 1) {
             QijiCard *card = new QijiCard;
@@ -744,7 +742,6 @@ public:
             card->addSubcard(originalCard);
             return card;
         }
-        
 
         QString name = Self->tag.value("qiji", QString()).toString();
         if (name != NULL) {
@@ -766,7 +763,6 @@ public:
             return false;
         return player->getHandcardNum() == 1;
     }
-
 };
 
 class Qiji : public TriggerSkill
