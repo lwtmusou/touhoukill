@@ -713,6 +713,10 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
 {
     QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
     bool all_nullified = nullified_list.contains("_ALL_TARGETS");
+    int magic_drank = 0;
+    if (isNDTrick() && source && source->getMark("magic_drank") > 0)
+        magic_drank = source->getMark("magic_drank");
+
     foreach (ServerPlayer *target, targets) {
         CardEffectStruct effect;
         effect.card = this;
@@ -725,8 +729,13 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
         if (hasFlag("mopao2"))
             effect.effectValue.last() = effect.effectValue.last() + 1;
 
+        effect.effectValue.first() = effect.effectValue.first() + magic_drank;
+
         room->cardEffect(effect);
     }
+
+    if (magic_drank > 0)
+        room->setPlayerMark(source, "magic_drank", 0);
 
     if (room->getCardPlace(getEffectiveId()) == Player::PlaceTable) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), getSkillName(), QString());

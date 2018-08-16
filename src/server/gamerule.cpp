@@ -303,12 +303,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             if (!card_use.card->getSkillName().isNull() && card_use.card->getSkillName(true) == card_use.card->getSkillName(false) && card_use.m_isOwnerUse
                 && card_use.from->hasSkill(card_use.card->getSkillName()))
                 room->notifySkillInvoked(card_use.from, card_use.card->getSkillName());
-            //clear magic_drank while using Nullification
-            if (card_use.card->isKindOf("Nullification")) {
-                if (card_use.from->getMark("magic_drank") > 0)
-                    room->setPlayerMark(card_use.from, "magic_drank", 0);
-            }
-
         }
         break;
     }
@@ -348,8 +342,14 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 }
             }
             //since use.to is empty, break the whole process
-            if (card_use.card && card_use.card->getTypeId() != Card::TypeSkill && card_use.to.isEmpty())
+            if (card_use.card && card_use.card->getTypeId() != Card::TypeSkill && card_use.to.isEmpty()) {
+                if (card_use.card->isKindOf("Slash") && card_use.from->isAlive())
+                    room->setPlayerMark(card_use.from, "drank", 0);
+                if (card_use.card->isNDTrick() && card_use.from->isAlive())//clear magic_drank while using Nullification
+                    room->setPlayerMark(card_use.from, "magic_drank", 0);
                 break;
+            }
+                
 
             try {
                 QVariantList jink_list_backup;
@@ -547,11 +547,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 room->setEmotion(effect.to, "skill_nullify");
                 return true;
             } else if (effect.card->getTypeId() == Card::TypeTrick) {
-                if (effect.card->isNDTrick() && effect.from->getMark("magic_drank") > 0) {
-                    //room->setCardFlag(effect.card, "magic_drank");
-                    effect.effectValue.first() = effect.effectValue.first() + effect.from->getMark("magic_drank");
-                    room->setPlayerMark(effect.from, "magic_drank", 0);
-                }
                 if (room->isCanceled(effect)) {
                     effect.to->setFlags("Global_NonSkillNullify");
                     return true;

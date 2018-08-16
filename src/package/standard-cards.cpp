@@ -2291,6 +2291,10 @@ void KnownBoth::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 {
     QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
     bool all_nullified = nullified_list.contains("_ALL_TARGETS");
+    int magic_drank = 0;
+    if (source && source->getMark("magic_drank") > 0)
+        magic_drank = source->getMark("magic_drank");
+
     foreach (ServerPlayer *target, targets) {
         CardEffectStruct effect;
         effect.card = this;
@@ -2308,9 +2312,11 @@ void KnownBoth::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
         room->setTag("targets" + this->toString(), QVariant::fromValue(players));
         if (hasFlag("mopao"))
             effect.effectValue.first() = effect.effectValue.first() + 1;
+        effect.effectValue.first() = effect.effectValue.first() + magic_drank;
         room->cardEffect(effect);
     }
-
+    if (magic_drank > 0)
+        room->setPlayerMark(source, "magic_drank", 0);
     room->removeTag("targets" + this->toString());
 
     if (source->isAlive() && source->isCurrent()) {
