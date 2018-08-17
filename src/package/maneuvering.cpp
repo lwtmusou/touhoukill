@@ -509,31 +509,36 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
     if (effect.to->getHandcardNum() <= effect.to->getShownHandcards().length())
         return;
 
-    DummyCard *dummy = new DummyCard;
     QList<int> ids;
-    QList<Player::Place> places;
-    room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
+    QStringList prohibit;
+    QString subpattern = ".";
+    QVariantList tempmove;
     for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
-        const Card *card = room->askForCard(effect.to, ".|.|.|handOnly!", "@fire_attack_show", QVariant::fromValue(effect), Card::MethodNone);
+        QString pattern =  QString("%1|.|.|handOnly!").arg(subpattern);
+        const Card *card = room->askForCard(effect.to, pattern, "@fire_attack_show", QVariant::fromValue(effect), Card::MethodNone);
         if (!card) {
             // force show!!!
-            QList<const Card *> hc = effect.to->getCards("h");
+            QList<const Card *> hc;
+            foreach(const Card *c, effect.to->getCards("h")) {
+                if (!ids.contains(c->getEffectiveId()))
+                    hc << c;
+            }
             int x = qrand() % hc.length();
             card = hc.value(x);
         }
         ids << card->getEffectiveId();
-        places << room->getCardPlace(card->getEffectiveId());
-        dummy->addSubcard(card);
-        effect.to->addToPile("#dismantle", card->getEffectiveId(), false);
-        if (effect.to->getCards("h").isEmpty())
+        prohibit << ('^' + QString::number(card->getEffectiveId()));
+        subpattern = prohibit.join("+");
+        //for ai
+         //effect.to->tag["fireattack_tempmove"].toList();
+        tempmove << card->getEffectiveId();
+        effect.to->tag["fireattack_tempmove"] = tempmove;
+
+        if (effect.to->getCards("h").length() -  ids.length() <= 0)
             break;
     }
+    effect.to->tag.remove("fireattack_tempmove");
 
-    //move the first card back temporarily
-    for (int i = 0; i < ids.length(); i += 1) {
-        room->moveCardTo(Sanguosha->getCard(ids.at(i)), effect.to, places.at(i), false);
-    }
-    room->setPlayerFlag(effect.to, "-dismantle_InTempMoving");
     foreach (int id, ids)
         room->showCard(effect.to, id);
     effect.to->addToShownHandCards(QList<int>() << ids);

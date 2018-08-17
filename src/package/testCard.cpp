@@ -43,31 +43,18 @@ LightSlash::LightSlash(Suit suit, int number)
 
 void LightSlash::debuffEffect(const SlashEffectStruct &effect)
 {
-
     int num = qMin(1 + effect.effectValue.first(), effect.to->getCards("h").length());
     if (num <= 0)
         return;
 
     QList<int> ids;
-    QList<Player::Place> places;
-
     Room *room = effect.from->getRoom();
-    room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
-
     for (int i = 0; i < num; i += 1) {
-        int id = room->askForCardChosen(effect.from, effect.to, "h", "light_slash");
+        int id = room->askForCardChosen(effect.from, effect.to, "h", "light_slash", false, Card::MethodNone, ids);
         ids << id;
-        places << room->getCardPlace(id);
-        effect.to->addToPile("#dismantle", id, false);
-        if (effect.to->getCards("h").isEmpty())
+        if ((effect.to->getCards("h").length() - ids.length()) <= 0)
             break;
     }
-
-    //move the first card back temporarily
-    for (int i = 0; i < ids.length(); i += 1) {
-        room->moveCardTo(Sanguosha->getCard(ids.at(i)), effect.to, places.at(i), false);
-    }
-    room->setPlayerFlag(effect.to, "-dismantle_InTempMoving");
 
     effect.to->addToShownHandCards(ids);
 }
@@ -153,25 +140,14 @@ void LightJink::onEffect(const CardEffectStruct &effect) const
         return;
 
     QList<int> ids;
-    QList<Player::Place> places;
-
     Room *room = effect.from->getRoom();
-    room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
 
     for (int i = 0; i < num; i += 1) {
-        int id = room->askForCardChosen(effect.from, effect.to, "h", objectName());
+        int id = room->askForCardChosen(effect.from, effect.to, "h", objectName(), false, Card::MethodNone, ids);
         ids << id;
-        places << room->getCardPlace(id);
-        effect.to->addToPile("#dismantle", id, false);
-        if (effect.to->getCards("h").isEmpty())
+        if ((effect.to->getCards("h").length() - ids.length()) <= 0)
             break;
     }
-
-    //move the first card back temporarily
-    for (int i = 0; i < ids.length(); i += 1) {
-        room->moveCardTo(Sanguosha->getCard(ids.at(i)), effect.to, places.at(i), false);
-    }
-    room->setPlayerFlag(effect.to, "-dismantle_InTempMoving");
 
     effect.to->addToShownHandCards(ids);
 }

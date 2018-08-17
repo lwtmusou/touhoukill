@@ -886,11 +886,20 @@ sgs.ai_cardshow.fire_attack = function(self, requestor)
 	return result
 end
 sgs.ai_skill_cardask["@fire_attack_show"] = function(self, data)
-	local cards = sgs.QList2Table(self.player:getCards("h"))
+	local cards = {}
+	local card_ids = self.player:getTag("fireattack_tempmove"):toIntList()
+	
+	for _, c in sgs.qlist(self.player:getCards("h")) do
+		if not card_ids:contains(c:getEffectiveId()) then
+			table.insert(cards, c)
+		end
+	end
+
+	
 	requestor = data:toCardEffect().to
 	if requestor:objectName() == self.player:objectName() then
 		self:sortByUseValue(cards, true)
-		return cards[1]
+		return "$" .. cards[1]:getId()
 	end
 
 	local priority = { heart = 4, spade = 3, club = 2, diamond = 1 }
