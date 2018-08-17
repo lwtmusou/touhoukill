@@ -1574,7 +1574,8 @@ void Client::askForCardChosen(const QVariant &ask_str)
     QList<int> disabled_ids;
     JsonUtils::tryParse(ask[5], disabled_ids);
     emit cards_got(player, flags, reason, handcard_visible, method, disabled_ids);
-    setStatus(ExecDialog);
+    //setStatus(ExecDialog);
+    setStatus(AskForCardChosen);
 }
 
 void Client::askForOrder(const QVariant &arg)

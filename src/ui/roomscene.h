@@ -23,6 +23,7 @@ struct RoomLayout;
 class BubbleChatBox;
 class ChooseOptionsBox;
 class ChooseTriggerOrderBox;
+class PlayerCardBox;
 
 #include <QCommandLinkButton>
 #include <QDialog>
@@ -199,6 +200,11 @@ public:
         return m_tableRect;
     }
 
+    inline Dashboard *getDashboard()
+    {
+        return dashboard;
+    }
+
     void addHeroSkinContainer(ClientPlayer *player, HeroSkinContainer *heroSkinContainer);
     HeroSkinContainer *findHeroSkinContainer(const QString &generalName) const;
     QSet<HeroSkinContainer *> getHeroSkinContainers();
@@ -328,6 +334,7 @@ private:
     GuanxingBox *guanxing_box;
     ChooseOptionsBox *m_chooseOptionsBox;
     ChooseTriggerOrderBox *m_chooseTriggerOrderBox;
+    PlayerCardBox *m_playerCardBox;
     QList<CardItem *> gongxin_items;
 
     ClientLogBox *log_box;

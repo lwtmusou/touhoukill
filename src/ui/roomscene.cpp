@@ -16,6 +16,7 @@
 #include "lightboxanimation.h"
 #include "pixmapanimation.h"
 #include "playercarddialog.h"
+#include "playercardbox.h"
 #include "qsanbutton.h"
 #include "record-analysis.h"
 #include "recorder.h"
@@ -197,6 +198,13 @@ RoomScene::RoomScene(QMainWindow *main_window)
     addItem(m_chooseTriggerOrderBox);
     m_chooseTriggerOrderBox->setZValue(30000.0);
     m_chooseTriggerOrderBox->moveBy(-120, 0);
+
+    m_playerCardBox = new PlayerCardBox;
+    m_playerCardBox->hide();
+    addItem(m_playerCardBox);
+    m_playerCardBox->setZValue(30000.0);
+    m_playerCardBox->moveBy(-120, 0);
+
 
     card_container = new CardContainer;
     card_container->hide();
@@ -1118,6 +1126,7 @@ void RoomScene::updateTable()
     guanxing_box->setPos(m_tableCenterPos);
     m_chooseOptionsBox->setPos(m_tableCenterPos - QPointF(m_chooseOptionsBox->boundingRect().width() / 2, m_chooseOptionsBox->boundingRect().height() / 2));
     m_chooseTriggerOrderBox->setPos(m_tableCenterPos - QPointF(m_chooseTriggerOrderBox->boundingRect().width() / 2, m_chooseTriggerOrderBox->boundingRect().height() / 2));
+    m_playerCardBox->setPos(m_tableCenterPos - QPointF(m_playerCardBox->boundingRect().width() / 2, m_playerCardBox->boundingRect().height() / 2));
     prompt_box->setPos(m_tableCenterPos);
     pausing_text->setPos(m_tableCenterPos - pausing_text->boundingRect().center());
     pausing_item->setRect(sceneRect());
@@ -1874,12 +1883,18 @@ void RoomScene::chooseOption(const QString &skillName, const QStringList &option
 
 void RoomScene::chooseCard(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids)
 {
-    PlayerCardDialog *dialog = new PlayerCardDialog(player, flags, handcard_visible, method, disabled_ids);
+    /*PlayerCardDialog *dialog = new PlayerCardDialog(player, flags, handcard_visible, method, disabled_ids);
     dialog->setWindowTitle(Sanguosha->translate(reason));
     connect(dialog, SIGNAL(card_id_chosen(int)), ClientInstance, SLOT(onPlayerChooseCard(int)));
     connect(dialog, SIGNAL(rejected()), ClientInstance, SLOT(onPlayerChooseCard()));
     delete m_choiceDialog;
-    m_choiceDialog = dialog;
+    m_choiceDialog = dialog;*/
+
+    QApplication::alert(main_window);
+    if (!main_window->isActiveWindow())
+        Sanguosha->playSystemAudioEffect("pop-up");
+
+    m_playerCardBox->chooseCard(Sanguosha->translate(reason), player, flags, handcard_visible, method, disabled_ids);
 }
 
 void RoomScene::chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand reason)
@@ -2692,6 +2707,10 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         else if (oldStatus == Client::AskForTriggerOrder) {
             m_chooseTriggerOrderBox->clear();
         }
+        else if (oldStatus == Client::AskForCardChosen) {
+            m_playerCardBox->clear();
+        }
+            
 
         prompt_box->disappear();
         ClientInstance->getPromptDoc()->clear();
@@ -2889,6 +2908,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
     case Client::AskForGeneralTaken:
     case Client::AskForChoice:
     case Client::AskForTriggerOrder:
+    case Client::AskForCardChosen:
     case Client::AskForArrangement: {
         ok_button->setEnabled(false);
         cancel_button->setEnabled(false);

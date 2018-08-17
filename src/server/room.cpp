@@ -1420,8 +1420,13 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
             if (card_id == Card::S_UNKNOWN_CARD_ID) {
                 if (shownHandcards.isEmpty())
                     card_id = who->getRandomHandCardId();
-                else
+                else {
+                    foreach(int id, disabled_ids)
+                        unknownHandcards.removeOne(id);
+
                     card_id = unknownHandcards.at(qrand() % unknownHandcards.length());
+                }
+                    
             }
         }
 

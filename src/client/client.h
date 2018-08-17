@@ -38,7 +38,7 @@ public:
         AskForArrangement = 0x000E,
         AskForChoice = 0x000F,
         AskForTriggerOrder = 0x0010,
-        //AskForCardChosen = 0x0011,
+        AskForCardChosen = 0x0011,
         //AskForSuit = 0x0012,
 
         RespondingUse = 0x0101,
