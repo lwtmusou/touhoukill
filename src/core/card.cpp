@@ -223,7 +223,14 @@ bool Card::CompareByType(const Card *a, const Card *b)
                   << "fire_slash"
                   << "jink"
                   << "peach"
-                  << "analeptic";
+                  << "analeptic"
+                    << "light_jink"
+                    << "chain_jink"
+                    << "power_slash"
+                    << "iron_slash"
+                    << "light_slash"
+                    << "magic_analeptic"
+                    <<"super_peach";
         switch (a->getTypeId()) {
         case TypeBasic: {
             foreach (QString object_name, basic) {
