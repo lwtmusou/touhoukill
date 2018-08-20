@@ -1761,6 +1761,7 @@ public:
         frequency = Wake;
     }
 
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DeathStruct death = data.value<DeathStruct>();
@@ -1790,15 +1791,30 @@ public:
     Anyue()
         : TriggerSkill("anyue")
     {
-        events << HpRecover;
+        events << HpRecover << TargetSpecified;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    void record(TriggerEvent event, Room *room, QVariant &data) const
     {
+        if (event == TargetSpecified) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card != NULL && use.card->isKindOf("Slash") && use.card->getSkillName() == objectName()) {
+                foreach(ServerPlayer *p, use.to) {
+                    p->addQinggangTag(use.card);
+                }
+            }
+        }
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *room, const QVariant &data) const
+    {
+        if (event != HpRecover)
+            return QList<SkillInvokeDetail>();
         RecoverStruct r = data.value<RecoverStruct>();
         if (r.to->hasFlag("Global_Dying"))
             return QList<SkillInvokeDetail>();
-        
+
         QList<SkillInvokeDetail> d;
         foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
             if (r.to->isAlive() && r.to != p && r.to->getHp() >= p->getHp() && p->canSlash(r.to, false))
