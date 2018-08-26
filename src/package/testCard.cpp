@@ -661,6 +661,39 @@ void AwaitExhausted::onEffect(const CardEffectStruct &effect) const
         room->askForDiscard(effect.to, "AwaitExhausted", num, num, false, true);
 }
 
+AllianceFeast::AllianceFeast(Suit suit, int number)
+    : GlobalEffect(suit, number)
+{
+    setObjectName("alliance_feast");
+}
+
+bool AllianceFeast::isCancelable(const CardEffectStruct &effect) const
+{
+    return (effect.to->isChained() || !effect.to->getShownHandcards().isEmpty() || !effect.to->getBrokenEquips().isEmpty()) && TrickCard::isCancelable(effect);
+}
+
+void AllianceFeast::onEffect(const CardEffectStruct &effect) const
+{
+    Room *room = effect.to->getRoom();
+    if (!(effect.to->isChained() || !effect.to->getShownHandcards().isEmpty() || !effect.to->getBrokenEquips().isEmpty())) {
+        room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
+    } else {
+        effect.to->removeShownHandCards(effect.to->getShownHandcards(), true);
+        effect.to->removeBrokenEquips(effect.to->getBrokenEquips(), true);
+        if (effect.to->isChained())
+            effect.to->getRoom()->setPlayerProperty(effect.to, "chained", !effect.to->isChained());
+
+        int drawnum =  1 + effect.effectValue.first();
+        effect.to->drawCards(drawnum);
+    }
+}
+
+
+
+
+
+
+
 SpellDuel::SpellDuel(Card::Suit suit, int number)
     : SingleTargetTrick(suit, number)
 {
@@ -795,17 +828,21 @@ TestCardPackage::TestCardPackage()
         //Trick
         << new AwaitExhausted(Card::Diamond, 4)
         << new AwaitExhausted(Card::Heart, 10)
+        << new AllianceFeast(Card::Heart, 1)
         //<< new SpellDuel(Card::Heart, 1) << new SpellDuel(Card::Diamond, 1)
 
         << new Nullification(Card::Club, 12)
         //Basic
         //<< new Kusuri(Card::Diamond, 3) << new Kusuri(Card::Heart, 8) << new Kusuri(Card::Heart, 9)
-        << new IronSlash(Card::Spade, 7)
+        << new IronSlash(Card::Club, 7)
         << new IronSlash(Card::Spade, 9)
+        << new IronSlash(Card::Spade, 5)
         << new LightSlash(Card::Club, 6)
         << new LightSlash(Card::Club, 9)
-        << new PowerSlash(Card::Heart, 8)
+        << new LightSlash(Card::Club, 4)
+        << new PowerSlash(Card::Club, 10)
         << new PowerSlash(Card::Diamond, 8)
+        << new PowerSlash(Card::Spade, 6)
         << new ThunderSlash(Card::Spade, 8)
         << new ThunderSlash(Card::Club, 8)
         << new FireSlash(Card::Heart, 9)
@@ -814,11 +851,15 @@ TestCardPackage::TestCardPackage()
         << new MagicAnaleptic(Card::Diamond, 6)
         << new SuperPeach(Card::Heart, 4)
         << new SuperPeach(Card::Diamond, 13)
-        
+        << new SuperPeach(Card::Heart, 7)
+        << new SuperPeach(Card::Diamond, 3)
+
         << new ChainJink(Card::Heart, 5)
         << new ChainJink(Card::Heart, 6)
+        << new ChainJink(Card::Heart, 3)
         << new LightJink(Card::Diamond, 2)
-        << new LightJink(Card::Diamond, 11);
+        << new LightJink(Card::Diamond, 11)
+        << new LightJink(Card::Diamond, 7);
 
     // clang-format on
 

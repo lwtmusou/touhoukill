@@ -158,6 +158,17 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+
+class AllianceFeast : public GlobalEffect
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE AllianceFeast(Card::Suit suit, int number);
+    virtual bool isCancelable(const CardEffectStruct &effect) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
 class SpellDuel : public SingleTargetTrick
 {
     Q_OBJECT

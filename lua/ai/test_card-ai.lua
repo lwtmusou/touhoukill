@@ -278,3 +278,41 @@ sgs.ai_card_intention.AwaitExhausted = function(self, card, from, tos)
 		end
 	end
 end
+
+
+function SmartAI:willUseAllianceFeast(card)
+	if not card then self.room:writeToConsole(debug.traceback()) return false end
+	local good, bad = 0, 0
+
+	for _, friend in ipairs(self.friends) do
+		good = good + 10 * getCardsNum("Nullification", friend, self.player)
+		if self:hasTrickEffective(card, friend, self.player) then
+			if (friend:getShownHandcards():length() > 0 or  friend:getBrokenEquips():length() > 0 or friend:isChained()) then	
+				good = good + 10
+			elseif friend:hasSkill("huiwu") then good = good + 5
+			end
+		end
+	end
+
+	for _, enemy in ipairs(self.enemies) do
+		bad = bad + 10 * getCardsNum("Nullification", enemy, self.player)
+		if self:hasTrickEffective(card, enemy, self.player) then
+			if (enemy:getShownHandcards():length() > 0 or  enemy:getBrokenEquips():length() > 0 or enemy:isChained()) then
+				bad = bad + 10
+				--可以细化空城 永恒类
+			end
+		end
+	end
+	return (good - bad > 5)
+end
+
+function SmartAI:useCardAllianceFeast(card, use)
+	if self:willUseAllianceFeast(card) then
+		use.card = card
+	end
+end
+
+sgs.ai_use_priority.AllianceFeast = 7.1
+sgs.ai_keep_value.AllianceFeast = 3.32
+sgs.dynamic_value.benefit.AllianceFeast = true
+

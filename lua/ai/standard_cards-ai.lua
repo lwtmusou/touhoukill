@@ -4497,6 +4497,30 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 			return
 		end
 	end
+	
+	players = sgs.PlayerList()
+
+	card = self:getCard("AllianceFeast")
+	if card and card:isAvailable(self.player) then
+		self:sort(self.enemies, "hp")
+		for _, enemy in ipairs(self.enemies) do
+			if  (enemy:getShownHandcards():length() > 0 or  enemy:getBrokenEquips():length() > 0 or enemy:isChained())  
+			    and LureTiger:targetFilter(players, enemy, self.player) and self:hasTrickEffective(LureTiger, enemy, self.player) then
+				players:append(enemy)
+			end
+		end
+		if players:length() > 0 then
+			sgs.ai_use_priority.LureTiger = sgs.ai_use_priority.AllianceFeast + 0.1
+			use.card = LureTiger
+			if use.to then
+				for _, p in sgs.qlist(players) do
+					use.to:append(self.room:findPlayer(p:objectName()))
+				end
+			end
+			return
+		end
+	end
+	
 
 	players = sgs.PlayerList()
 
