@@ -794,3 +794,20 @@ sgs.ai_skill_use["@@xiaoyinVS!"] = function(self, prompt)
 	end
 	return "."
 end
+
+
+sgs.ai_skill_invoke.anyue = function(self, data)
+	local target = data:toPlayer()
+	if self:isEnemy(target) then
+		if self:isWeak(target)  then
+			return true
+		end
+		if not self.player:faceUp() then
+			return true
+		end
+		if self.player:hasSkill("shixue") and self:isWeak(self.player) then
+			return true
+		end
+	end
+	return false
+end
