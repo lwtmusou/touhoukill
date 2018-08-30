@@ -189,6 +189,7 @@ config = {
 		"kyouko_sp->kyouko",
 		"nue_god->nue",
 		"seija_sp->seija",
+		"rumia_sp->rumia",
 	},
 	
 	backdrop_convert_pairs = {
@@ -196,6 +197,7 @@ config = {
 		"lunar|star->sunny",
 		"reisen2|seiran->tewi",
 		"seija_sp->seija",
+		"rumia_sp->rumia",
 	},
 	latest_generals = {
 	    "reimu","reisen_gzz", "marisa_slm",

@@ -283,7 +283,10 @@ end
 function SmartAI:willUseAllianceFeast(card)
 	if not card then self.room:writeToConsole(debug.traceback()) return false end
 	local good, bad = 0, 0
-
+    --可以细化的机制判断  
+	--空城 永恒类
+	-- 明牌 或者横置的具体张数
+	--三种debuff各自价值
 	for _, friend in ipairs(self.friends) do
 		good = good + 10 * getCardsNum("Nullification", friend, self.player)
 		if self:hasTrickEffective(card, friend, self.player) then
@@ -299,7 +302,7 @@ function SmartAI:willUseAllianceFeast(card)
 		if self:hasTrickEffective(card, enemy, self.player) then
 			if (enemy:getShownHandcards():length() > 0 or  enemy:getBrokenEquips():length() > 0 or enemy:isChained()) then
 				bad = bad + 10
-				--可以细化空城 永恒类
+				
 			end
 		end
 	end
