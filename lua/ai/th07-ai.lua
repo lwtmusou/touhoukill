@@ -420,35 +420,41 @@ end
 
 sgs.ai_skill_invoke.huanzang = function(self, data)
 	local target = data:toDying().who
-	return self:isFriend(target)
+	if self:isFriend(target) then
+		if	not target:getCards("je"):isEmpty() then return true end
+		num = getCardsNum("Analeptic", target, self.player) + getCardsNum("Peach", target, self.player)
+		if num == 0 then return true end
+	end
+	if self:isEnemy(target) then
+		num = getCardsNum("Analeptic", target, self.player) + getCardsNum("Peach", target, self.player)
+		if num > 0 then return true end
+		--if target:getEquips():isEmpty() then
+		--for _,p in pairs(self.enemies) do
+		--getCardsNum("Peach", p, from)
+	end
+	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.huanzang = function(self, player, args)
+
+--[[sgs.ai_choicemade_filter.skillInvoke.huanzang = function(self, player, args)
 	local target = self.room:getCurrentDyingPlayer()
 	if target and args[#args] == "yes" then
 		sgs.updateIntention(player, target, -60)
 	end
-end
+end]]
 sgs.ai_skill_choice.huanzang=function(self, choices, data)
     local who = data:toDying().who
 	local choice_table = choices:split("+")
 	
-	if choices:match("j") then
-		return "j"
-	elseif choices:match("hs") then
-		local peach = 0
-		local can = false
-		local flag = "s"
-		if self.player:objectName() == who:objectName() then flag = "hs" end
-		for _,c in sgs.qlist(self.player:getCards(flag)) do
-			if not c:isKindOf("BasicCard") then
-				can = true
-			elseif c:isKindOf("Peach") then
-				peach = peach + 1
-			end
+	if self:isFriend(who) then
+		if choices:match("e") then return "e" end
+		if choices:match("hs") then
+			num = getCardsNum("Analeptic", target, self.player) + getCardsNum("Peach", target, self.player)
+			if num == 0 then return true end
 		end
-		if can and peach < 2 and who:getEquips():length() > 1 then
-			return "hs"
-		end
+		if choices:match("j") then return "j" end
+	end
+	if self:isEnemy(who) then--已经判定有桃酒
+		if choices:match("hs") then return "hs" end
 	end
 	return choice_table[1]
 end
