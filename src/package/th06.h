@@ -42,6 +42,18 @@ public:
     virtual const Card *validateInResponse(ServerPlayer *user) const;
 };
 
+class SishuCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE SishuCard();
+
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+
 class BanyueCard : public SkillCard
 {
     Q_OBJECT

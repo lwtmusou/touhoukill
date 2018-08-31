@@ -923,7 +923,7 @@ public:
         events << Dying;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         QList<SkillInvokeDetail> d;
         ServerPlayer *who = data.value<DyingStruct>().who;
@@ -1033,7 +1033,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {      
         RecoverStruct recover = data.value<RecoverStruct>();
         recover.recover = recover.recover + 1;

@@ -206,7 +206,7 @@ return{ ["th06"] = "红魔乡",
 	--hmx008  势力：红 3血
 	["koakuma"] = "小恶魔",
 	["#koakuma"] = "图书馆中的使魔",
-	["designer:koakuma"] = "星野梦美☆",
+	["designer:koakuma"] = "bullytou",
 
 	["illustrator:koakuma"] = "cercis",
 	["illustrator:koakuma_1"] = "ぎん太郎",
@@ -226,6 +226,15 @@ return{ ["th06"] = "红魔乡",
 	["moxue"] = "魔血",
 	[":moxue"] = "<font color=\"blue\"><b>锁定技，</b></font>当你的体力上限扣减至1时，你摸X张牌（X为你的手牌数且最少为1）。",
 	["$moxueAnimate"]= "skill=koakuma:moxue",
+	
+	["moqi"] = "魔契",
+	[":moqi"] = "其他角色的摸牌阶段，你可令其少摸一张牌，你摸一张牌。此阶段结束时，其选择： 视为使用果【酒】，或令你失去1点体力。",
+	["@moqi"] = "魔契(后续): 你可以选择发动魔契的角色，令其失去1点体力； \n 或者 点击取消视为使用果【酒】",
+
+	["sishu"] = "司书",
+	[":sishu"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可重复以下流程x次：检索一张锦囊牌并令一名角色获得之，若该角色不是你，你回复1点体力。（x为技能发动时的你已损失体力值+1）",
+	["$sishuAnimate"]= "skill=koakuma:sishu",
+	
 
 --************************************************
 	--hmx009  势力：红 3血
