@@ -193,6 +193,7 @@ public:
     static Card *Clone(const Card *card);
     static QString Suit2String(Suit suit);
     static const int S_UNKNOWN_CARD_ID;
+    static const int S_UNKNOWN_GENERAL_CARD_ID;
 
     static const Card *Parse(const QString &str);
     virtual QString toString(bool hidden = false) const;

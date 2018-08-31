@@ -173,7 +173,7 @@ void Player::setShownHandcards(QList<int> ids)
     emit showncards_changed();
 }
 
-bool Player::isShownHandcard(int id)
+bool Player::isShownHandcard(int id) const
 {
     if (shown_handcards.isEmpty() || id < 0)
         return false;

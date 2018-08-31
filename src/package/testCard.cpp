@@ -689,8 +689,198 @@ void AllianceFeast::onEffect(const CardEffectStruct &effect) const
 }
 
 
+FightTogether::FightTogether(Card::Suit suit, int number)
+    : TrickCard(suit, number)
+{
+    setObjectName("fight_together");
+}
+
+QString FightTogether::getSubtype() const
+{
+    return "damage_spread";
+}
+
+bool FightTogether::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+
+    //int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    return (to_select == Self || Self->distanceTo(to_select) == 1);
+}
+
+void FightTogether::onEffect(const CardEffectStruct &effect) const
+{
+    ServerPlayer *target = effect.to;
+    Room *room = effect.from->getRoom();
 
 
+    QStringList places;
+    if (target->getEquips().length() > target->getBrokenEquips().length())
+        places << "e";
+    if (target->getHandcardNum() > target->getShownHandcards().length())
+        places << "h";
+    if (!target->isChained())
+        places << "g";
+    if (places.isEmpty())
+        return;
+
+    
+
+    QList<int> disable;
+    if (places.contains("e")) {
+        disable << target->getBrokenEquips();
+    }
+
+    
+    int id = room->askForCardChosen(effect.from, target, places.join("+"), objectName(), false, Card::MethodNone, disable);
+
+    if (places.contains("g") && id == Card::S_UNKNOWN_GENERAL_CARD_ID) {
+        room->setPlayerFlag(target, "FightTogether_Chained");
+        room->setPlayerProperty(target, "chained", !target->isChained());
+        return;
+    }
+
+    if (id < 0)
+        return;
+
+    QList<int> ids;
+    ids << id;
+    QString flag = ""; //for second choice;
+    if (room->getCardPlace(id) == Player::PlaceHand)
+        flag = "h";
+    else if (room->getCardPlace(id) == Player::PlaceEquip)
+        flag = "e";
+
+    //do shown card
+    if (flag == "h" && effect.effectValue.first() > 0 && target->getCards("h").length() > 1) {
+        for (int i = 0; i < effect.effectValue.first(); i += 1) {
+            int showid = room->askForCardChosen(effect.from, effect.to, "h", objectName(), false, Card::MethodNone, ids);
+            ids << showid;
+            if ((effect.to->getCards("h").length() - ids.length()) <= 0)
+                break;
+        }
+    }
+
+    // do broken equip
+    disable << id;
+    if (flag == "e" && effect.effectValue.last() > 0 && target->getEquips().length() > disable.length()) {
+        for (int i = 0; i < effect.effectValue.last(); i += 1) {
+            int eid = room->askForCardChosen(effect.from, effect.to, "e", objectName(), true, Card::MethodNone, disable);
+            ids << eid;
+            disable << eid;
+            if ((effect.to->getEquips().length() - disable.length()) <= 0)
+                break;
+        }
+    }
+
+
+    if (flag == "h") {
+        room->setPlayerFlag(target, "FightTogether_ShownCard");
+        effect.to->addToShownHandCards(ids);
+    }
+    else if (flag == "e") {
+        room->setPlayerFlag(target, "FightTogether_BrokenEquip");
+        effect.to->addBrokenEquips(ids);
+    }
+}
+
+class FightTogetherSkill : public TriggerSkill
+{
+public:
+    FightTogetherSkill()
+        : TriggerSkill("fight_together_effect")
+    {
+        events << EventPhaseChanging << TargetConfirmed;
+        global = true;
+    }
+
+    static QString debuffFlag(ServerPlayer *player) {
+        QString flag = "esg";
+        if (player->hasFlag("FightTogether_Chained") || !player->isChained())
+            flag.remove("g");
+        if (player->hasFlag("FightTogether_ShownCard") || player->getShownHandcards().isEmpty())
+            flag.remove("s");
+        if (player->hasFlag("FightTogether_BrokenEquip") || player->getBrokenEquips().isEmpty())
+            flag.remove("e");
+        return flag;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == TargetConfirmed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card && use.card->isKindOf("FightTogether")) {
+                foreach(ServerPlayer *p, use.to)
+                    room->setPlayerFlag(p, "FightTogether_Used");    
+            }
+        }
+
+        if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasFlag("FightTogether_Used")) {
+                        QString flag = debuffFlag(p);
+                        if (flag == "") {
+                            room->setPlayerFlag(p, "-FightTogether_Used");
+                            room->setPlayerFlag(p, "-FightTogether_Chained");
+                            room->setPlayerFlag(p, "-FightTogether_ShownCard");
+                            room->setPlayerFlag(p, "-FightTogether_BrokenEquip");
+                        }   
+                    }
+                }
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasFlag("FightTogether_Used")) {
+                        QString flag = debuffFlag(p);
+                        if (flag != "") {
+                            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, p, p, NULL, true);
+                        }
+                    }
+                }
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        QString flag = debuffFlag(invoke->invoker);
+        room->setPlayerFlag(invoke->invoker, "-FightTogether_Used");
+        room->setPlayerFlag(invoke->invoker, "-FightTogether_Chained");
+        room->setPlayerFlag(invoke->invoker, "-FightTogether_ShownCard");
+        room->setPlayerFlag(invoke->invoker, "-FightTogether_BrokenEquip");
+
+        QList<int> disable;
+        if (flag.contains("e")) {
+            foreach(const Card *c, invoke->invoker->getCards("e")) {
+                if (!invoke->invoker->isBrokenEquip(c->getId()))
+                    disable << c->getId();
+            }
+            
+        }
+        room->touhouLogmessage("#FightTogetherEffect", invoke->invoker);
+        int id = room->askForCardChosen(invoke->invoker, invoke->invoker, flag, objectName(), false, Card::MethodNone, disable);
+
+        if (flag.contains("g") && id == Card::S_UNKNOWN_GENERAL_CARD_ID) {
+            room->setPlayerProperty(invoke->invoker, "chained", !invoke->invoker->isChained());
+            return false;
+        }
+        if (room->getCardPlace(id) == Player::PlaceHand)
+            invoke->invoker->removeShownHandCards(QList<int>() << id, true);
+        else if (room->getCardPlace(id) == Player::PlaceEquip)
+            invoke->invoker->removeBrokenEquips(QList<int>() << id);
+        
+        return false;
+    }
+};
 
 
 
@@ -829,6 +1019,8 @@ TestCardPackage::TestCardPackage()
         << new AwaitExhausted(Card::Diamond, 4)
         << new AwaitExhausted(Card::Heart, 10)
         << new AllianceFeast(Card::Heart, 1)
+        << new FightTogether(Card::Spade, 11)
+        << new FightTogether(Card::Club, 5)
         //<< new SpellDuel(Card::Heart, 1) << new SpellDuel(Card::Diamond, 1)
 
         << new Nullification(Card::Club, 12)
@@ -866,7 +1058,7 @@ TestCardPackage::TestCardPackage()
     foreach (Card *card, cards)
         card->setParent(this);
 
-    skills << new CameraSkill << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill << new PagodaSkill << new PagodaTriggerSkill << new CamouflageSkill;
+    skills << new CameraSkill << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill << new PagodaSkill << new PagodaTriggerSkill << new CamouflageSkill << new FightTogetherSkill;
 }
 
 ADD_PACKAGE(TestCard)

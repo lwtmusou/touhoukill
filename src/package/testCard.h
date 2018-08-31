@@ -169,6 +169,22 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class FightTogether : public TrickCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE FightTogether(Card::Suit suit, int number);
+
+    virtual QString getSubtype() const;
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    //virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
+
+    //virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
 class SpellDuel : public SingleTargetTrick
 {
     Q_OBJECT

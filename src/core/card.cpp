@@ -9,6 +9,8 @@
 #include <QFile>
 
 const int Card::S_UNKNOWN_CARD_ID = -1;
+const int Card::S_UNKNOWN_GENERAL_CARD_ID = -999;
+
 
 const Card::Suit Card::AllSuits[4] = {Card::Spade, Card::Club, Card::Heart, Card::Diamond};
 

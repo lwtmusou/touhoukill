@@ -82,7 +82,7 @@ public:
     int getChaoren() const;//for chaoren
     void setChaoren(int chaoren);
     QList<int> getShownHandcards() const;
-    bool isShownHandcard(int id);
+    bool isShownHandcard(int id) const;
 	QList<int> getBrokenEquips() const;
 	bool isBrokenEquip(int id) const;
     int getHp() const;

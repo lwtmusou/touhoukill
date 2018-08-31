@@ -57,4 +57,9 @@ return {
 	
 	["alliance_feast"] = "联军盛宴",
 	[":alliance_feast"] = "锦囊牌·全体性的普通锦囊牌<br />使用时机：出牌阶段。<br />使用目标：所有角色。<br />作用效果：若目标角色处于异常状态，其暗置所有手牌，重置所有装备区的牌，重置武将牌，然后摸<font color=\"green\"><b>一张</b></font>牌。<br />◆对未处于异常状态的角色无效。",
+
+	["fight_together"] = "勠力同心",
+	[":fight_together"] = "锦囊牌·非全体性的普通锦囊牌<br />使用时机：出牌阶段。<br />使用目标：距离1以内任意名角色。<br />作用效果：你选择： \n  1.明置目标角色的<font color=\"green\"><b>一张</b></font>手牌。   \n2.横置目标角色装备区的<font color=\"green\"><b>一张</b></font>牌 。   \n3.横置目标角色的角色牌。 <br />执行动作：此回合结束时，成为过此牌的目标的角色从其未执行过的选项中选择一项并执行相反效果。",
+	["fight_together_effect"] = "勠力同心(后续)",
+	["#FightTogetherEffect"] = "%from 执行 勠力同心(后续)",
 }

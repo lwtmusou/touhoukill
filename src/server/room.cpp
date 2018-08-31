@@ -1392,7 +1392,8 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     }*/
 
     //if (!needSelect)
-    if (who != player && !handcard_visible && knownCards.isEmpty())
+    //@todo lwtmusou: remove the auto random pre-chosen.
+    if (who != player && !handcard_visible && knownCards.isEmpty() && !flags.contains("g"))
         card_id = cards.at(qrand() % cards.length())->getId();
     //card_id = who->getRandomHandCardId();
     else {
@@ -1412,6 +1413,9 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
             //@todo: check if the card returned is valid
             const QVariant &clientReply = player->getClientReply();
             if (!success || !JsonUtils::isNumber(clientReply)) {
+                if (flags == "g")// choose general card 
+                    card_id = Card::S_UNKNOWN_GENERAL_CARD_ID;
+                else
                 // randomly choose a card
                 card_id = cards.at(qrand() % cards.length())->getId();
             } else
@@ -1430,7 +1434,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
             }
         }
 
-        if (!cards.contains(Sanguosha->getCard(card_id)))
+        if (card_id != Card::S_UNKNOWN_GENERAL_CARD_ID && !cards.contains(Sanguosha->getCard(card_id)))
             card_id = cards.at(qrand() % cards.length())->getId();
     }
 

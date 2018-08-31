@@ -5260,10 +5260,10 @@ public:
             invoke->invoker->loseMark("@star");
             QString choice = "first";
             if (use.card->isKindOf("FireAttack") || use.card->isKindOf("Duel") || use.card->isKindOf("SavageAssault") || use.card->isKindOf("ArcheryAttack")
-                || use.card->isKindOf("AwaitExhausted")) {
+                || use.card->isKindOf("AwaitExhausted") || use.card->isKindOf("FightTogether")) {
                 QString choices = QString("%1_first+%2_second").arg(use.card->objectName()).arg(use.card->objectName());
                 choice = room->askForChoice(invoke->invoker, objectName(), choices);
-                if (choice == "second")
+                if (choice.endsWith("second"))
                     room->setCardFlag(use.card, "mopao2");
                 else
                     room->setCardFlag(use.card, "mopao");
