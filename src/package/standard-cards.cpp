@@ -2055,6 +2055,11 @@ Drowning::Drowning(Suit suit, int number)
     setObjectName("drowning");
 }
 
+bool Drowning::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    return to_select->canDiscard(to_select, "e");
+}
+
 void Drowning::onUse(Room *room, const CardUseStruct &card_use) const
 {
     if (!card_use.to.isEmpty()) {

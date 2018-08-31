@@ -1757,9 +1757,6 @@ public:
                     if (use.card->isKindOf("Peach")) {
                         if (p->isWounded())
                             d << SkillInvokeDetail(this, p, p, NULL, true);
-                    } else if (use.card->isKindOf("Drowning")) {
-                        if (p->canDiscard(p, "e"))
-                            d << SkillInvokeDetail(this, p, p, NULL, true);
                     } else if (use.card->targetFilter(QList<const Player *>(), p, use.from))
                         d << SkillInvokeDetail(this, p, p, NULL, true);
                 }
