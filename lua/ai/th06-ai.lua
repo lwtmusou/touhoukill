@@ -673,6 +673,18 @@ sgs.ai_choicemade_filter.skillInvoke.qiyue = function(self, player, args)
 end
 
 
+sgs.ai_skill_playerchosen.moqi = function(self, targets)
+	for _,p in sgs.qlist(targets) do
+		if (self:isFriend(p)) then
+			return nil
+		end
+		if (self:isEnemy(p)) then
+			return p
+		end
+	end
+	return targets:first()
+end
+
 sgs.ai_skill_invoke.juxian = true
 
 sgs.string2suit = {
