@@ -773,10 +773,16 @@ sgs.ai_skill_use["@@qimen"] = function(self, prompt)
 	card:setSkillName("AIqimen")
 	card:deleteLater()
 	
+	maxNum = 0
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if (p:getEquips():length() > maxNum) then
+			maxNum = p:getEquips():length()
+		end
+	end
 	
 	local f, e = sgs.SPlayerList(), sgs.SPlayerList()
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if p:getEquips():isEmpty() and not self.player:isProhibited(p, card)
+		if p:getEquips():length() >= maxNum and not self.player:isProhibited(p, card)
          then --card:targetFilter(sgs.SPlayerList(), p, self.player)
 			if (self:isFriend(p)) then
 				f:append(p)
@@ -819,18 +825,30 @@ sgs.ai_skill_use["@@qimen"] = function(self, prompt)
 	return "."
 end
 
-sgs.ai_skill_invoke.dunjia=function(self, data)
-	local damage = self.player:getTag("dunjia"):toDamage()
-	return self:isFriend(damage.to)
+
+sgs.ai_skill_cardask["@dunjia1"] = function(self, data)
+	local damage = data:toDamage()
+	if not self:isFriend(damage.to) then return "." end
+	
+	local ecards = self.player:getCards("e")
+	ecards = sgs.QList2Table(ecards)
+	if #ecards > 0 then
+		self:sortByKeepValue(ecards, true)
+		return "$" .. ecards[1]:getId()
+	end
+	return "."
 end
 
-sgs.ai_choicemade_filter.skillInvoke.dunjia = function(self, player, args)
+sgs.ai_skill_cardask["@dunjia2"] = sgs.ai_skill_cardask["@dunjia1"]
+
+sgs.ai_choicemade_filter.cardResponded["@dunjia1"] = function(self, player, args)
 	local damage = player:getTag("dunjia"):toDamage()
-	if damage.to and args[#args] == "yes" then
-		sgs.updateIntention(player, from, -40)
+	if damage.to and args[#args] ~= "_nil_" then
+		sgs.updateIntention(player, damage.to, -80)
 	end
 end
 
+sgs.ai_choicemade_filter.cardResponded["@dunjia2"] = sgs.ai_choicemade_filter.cardResponded["@dunjia1"]
 
 sgs.ai_skill_invoke.jiyi = true
 sgs.ai_skill_askforyiji.jiyi = function(self, card_ids)

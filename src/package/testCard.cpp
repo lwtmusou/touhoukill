@@ -705,8 +705,8 @@ bool FightTogether::targetFilter(const QList<const Player *> &targets, const Pla
 
     //int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
-
-    return (to_select == Self || ignore || Self->distanceTo(to_select) == 1);
+    int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
+    return (to_select == Self || ignore || Self->distanceTo(to_select) <= distance_limit);
 }
 
 void FightTogether::onEffect(const CardEffectStruct &effect) const
