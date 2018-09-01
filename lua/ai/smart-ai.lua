@@ -5713,7 +5713,7 @@ end
 
 function SmartAI:getDistanceLimit(card, from)
 	from = from or self.player
-	if (card:isKindOf("Snatch") or card:isKindOf("SupplyShortage")) and card:getSkillName() ~= "qiaoshui" then
+	if (card:isKindOf("Snatch") or card:isKindOf("SupplyShortage") or card:isKindOf("FightTogether")) and card:getSkillName() ~= "qiaoshui" then
 		return 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, from, card)
 	end
 end

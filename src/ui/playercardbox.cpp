@@ -57,7 +57,7 @@ PlayerCardBox::PlayerCardBox()
 }
 
 void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player, const QString &flags, bool handcardVisible,
-    Card::HandlingMethod method, const QList<int> &disabledIds)
+    Card::HandlingMethod method, const QList<int> &disabledIds, bool enableEmptyCard)
 {
     nameRects.clear();
     rowCount = 0;
@@ -108,29 +108,20 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
 
     if (handcard) {
         QList<const Card *> handcards;
-        if (!flags.contains("s"))
-            this->disabledIds << player->getShownHandcards();
-
-        if (!flags.contains("h")) {
-            foreach(const Card  *c, player->getHandcards()) {
-                if (!player->isShownHandcard(c->getId()))
-                    this->disabledIds << c->getId();
-            }
-        }
- 
         if (!handcardVisible && Self != player) {
             foreach(int id, player->getShownHandcards()) {
                 const Card  *c = Sanguosha->getCard(id);
                 handcards << c;
             }
 
+            
             int hidden = player->getHandcardNum() - handcards.length();
             for (int i = 0; i < hidden; ++i)
                 handcards << NULL;
         }
         else
             handcards = player->getHandcards();
-        arrangeCards(handcards, QPoint(startX, nameRects.at(index).y()));
+        arrangeCards(handcards, QPoint(startX, nameRects.at(index).y()) , enableEmptyCard);
         ++index;
     }
 
@@ -270,7 +261,7 @@ void PlayerCardBox::updateNumbers(const int &cardNumber)
     nameRects << QRect(verticalBlankWidth, y, placeNameAreaWidth, height);
 }
 
-void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, const QPoint &topLeft)
+void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, const QPoint &topLeft, bool enableEmptyCard)
 {
     QList<CardItem *> areaItems;
     foreach(const Card *card, cards) {
@@ -283,7 +274,7 @@ void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, const QPoint 
             item->setEnabled(!disabledIds.contains(card->getEffectiveId())
                 && (method != Card::MethodDiscard || Self->canDiscard(player, card->getEffectiveId())));
         else
-            item->setEnabled(true);
+            item->setEnabled(enableEmptyCard);
         connect(item, &CardItem::clicked, this, &PlayerCardBox::reply);
         item->setAcceptedMouseButtons(Qt::LeftButton); //the source of hegemony has not set LeftButton???
         //connect(item, SIGNAL(clicked()), this, SLOT(reply()));

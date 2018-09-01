@@ -37,7 +37,7 @@ public:
     explicit PlayerCardBox();
 
     void chooseCard(const QString &reason, const ClientPlayer *player, const QString &flags = "hej", bool handcardVisible = false, Card::HandlingMethod method = Card::MethodNone,
-        const QList<int> &disabledIds = QList<int>());
+        const QList<int> &disabledIds = QList<int>(), bool enableEmptyCard = true);
     void clear();
     QRectF boundingRect() const;
 
@@ -49,7 +49,7 @@ private:
     void paintArea(const QString &name, QPainter *painter);
     int getRowCount(const int &cardNumber) const;
     void updateNumbers(const int &cardNumber);
-    void arrangeCards(const QList<const Card *> &cards, const QPoint &topLeft);
+    void arrangeCards(const QList<const Card *> &cards, const QPoint &topLeft, bool enableEmptyCard = true);
     void arrangeGenerals(const QPoint &topLeft);
 
     const ClientPlayer *player;

@@ -1363,11 +1363,27 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     foreach (int id, shownHandcards)
         unknownHandcards.removeOne(id);
 
+    //re-check disable id
+    QList<int> checked_disabled_ids;
+    checked_disabled_ids << disabled_ids;
+    bool EnableEmptyCard = false; //setting UI EmptyCard Enable
+    foreach(const Card  *c, who->getHandcards()) {
+        if (!checked_disabled_ids.contains(c->getId())) {
+            if (!flags.contains("h") && !who->isShownHandcard(c->getId()))
+                checked_disabled_ids << c->getId();
+            else if (!flags.contains("s") && player->isShownHandcard(c->getId()))
+                checked_disabled_ids << c->getId();
+        }
+        if (!EnableEmptyCard && !who->isShownHandcard(c->getId()) && !checked_disabled_ids.contains(c->getId()))
+            EnableEmptyCard = true;
+    }
+    
+
     //At first,collect selectable cards, and selectable knowncards
     QList<const Card *> cards = who->getCards(flags);
     QList<const Card *> knownCards = who->getCards(flags);
     foreach (const Card *card, cards) {
-        if ((method == Card::MethodDiscard && !player->canDiscard(who, card->getEffectiveId(), reason)) || disabled_ids.contains(card->getEffectiveId())) {
+        if ((method == Card::MethodDiscard && !player->canDiscard(who, card->getEffectiveId(), reason)) || checked_disabled_ids.contains(card->getEffectiveId())) {
             cards.removeOne(card);
             knownCards.removeOne(card);
         } else if (unknownHandcards.contains(card->getEffectiveId()))
@@ -1393,10 +1409,10 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
 
     //if (!needSelect)
     //@todo lwtmusou: remove the auto random pre-chosen.
-    if (who != player && !handcard_visible && knownCards.isEmpty() && !flags.contains("g"))
-        card_id = cards.at(qrand() % cards.length())->getId();
+    //if (who != player && !handcard_visible && knownCards.isEmpty() && !flags.contains("g"))
+    //    card_id = cards.at(qrand() % cards.length())->getId();
     //card_id = who->getRandomHandCardId();
-    else {
+    //else {
         AI *ai = player->getAI();
         if (ai) {
             thread->delay();
@@ -1408,7 +1424,9 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
             arg << reason;
             arg << handcard_visible;
             arg << (int)method;
-            arg << JsonUtils::toJsonArray(disabled_ids);
+            arg << JsonUtils::toJsonArray(checked_disabled_ids);
+            arg << EnableEmptyCard;
+
             bool success = doRequest(player, S_COMMAND_CHOOSE_CARD, arg, true);
             //@todo: check if the card returned is valid
             const QVariant &clientReply = player->getClientReply();
@@ -1421,22 +1439,21 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
             } else
                 card_id = clientReply.toInt();
 
-            if (card_id == Card::S_UNKNOWN_CARD_ID) {
-                if (shownHandcards.isEmpty())
-                    card_id = who->getRandomHandCardId();
-                else {
-                    foreach(int id, disabled_ids)
-                        unknownHandcards.removeOne(id);
 
-                    card_id = unknownHandcards.at(qrand() % unknownHandcards.length());
-                }
-                    
+            if (card_id == Card::S_UNKNOWN_CARD_ID) {
+                //if (shownHandcards.isEmpty())
+                //    card_id = who->getRandomHandCardId();
+                //else
+                    foreach(int id, checked_disabled_ids)
+                        unknownHandcards.removeOne(id);
+                    if (!unknownHandcards.isEmpty())
+                        card_id = unknownHandcards.at(qrand() % unknownHandcards.length());
             }
         }
 
         if (card_id != Card::S_UNKNOWN_GENERAL_CARD_ID && !cards.contains(Sanguosha->getCard(card_id)))
             card_id = cards.at(qrand() % cards.length())->getId();
-    }
+    //}
 
     Q_ASSERT(card_id != Card::S_UNKNOWN_CARD_ID);
 
