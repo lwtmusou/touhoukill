@@ -1170,9 +1170,9 @@ public:
         pattern = "Slash";
     }
 
-    virtual int getExtraTargetNum(const Player *player, const Card *) const
+    virtual int getExtraTargetNum(const Player *player, const Card *card) const
     {
-        if (player->hasSkill(objectName()))
+        if (card->isKindOf("Slash") && player->hasSkill(objectName()))
             return 1;
         else
             return 0;

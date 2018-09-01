@@ -203,6 +203,7 @@ config = {
 	    "reimu","reisen_gzz", "marisa_slm",
 		"sariel","konngara",
 		"yukimai", "gengetsumugetsu",
+		"koakuma", "rumia_sp", 
 		"yuyuko","yukari","ran","chen",
 		"wriggle", "keine",
 		"tenshi",
