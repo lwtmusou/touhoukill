@@ -1324,6 +1324,7 @@ public:
     {
         if (triggerEvent == DrawNCards) {
             DrawNCardsStruct qnum = data.value<DrawNCardsStruct>();
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), qnum.player->objectName());
             qnum.n = qnum.n - 1;
             data = QVariant::fromValue(qnum);
             room->setPlayerFlag(qnum.player, "moqi_effect");
@@ -1378,7 +1379,7 @@ static void do_sishu(ServerPlayer *player)
         room->getThread()->delay();
         Card *card = Sanguosha->getCard(id);
         if (card->getTypeId() == Card::TypeTrick) {
-            ServerPlayer *target = room->askForPlayerChosen(player, room->getAllPlayers(), "sishu");
+            ServerPlayer *target = room->askForPlayerChosen(player, room->getAllPlayers(), "sishu", QString(), false, true);
             acquired = acquired + 1;
             CardsMoveStruct move2(id, target, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_GOTBACK, target->objectName()));
             room->moveCardsAtomic(move2, false);

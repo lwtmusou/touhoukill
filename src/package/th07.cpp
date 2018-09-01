@@ -896,7 +896,9 @@ public:
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (e == Damage) {
+            
             ServerPlayer *target = data.value<DamageStruct>().from;
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
             int maxnum = qMax(target->getEquips().length(), 1);
             const Card *c = room->askForUseCard(target, "@@shihuiVS", "shihuiuse");
             if (c == NULL)

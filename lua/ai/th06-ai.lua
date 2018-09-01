@@ -672,6 +672,22 @@ sgs.ai_choicemade_filter.skillInvoke.qiyue = function(self, player, args)
 	end
 end
 
+sgs.ai_skill_invoke.moqi = function(self,data)
+	local current = self.room:getCurrent()
+	if self:isEnemy(current) then
+		if not self:isWeak(self.player) and self:isWeak(current) then return true end
+		local recover =  getCardsNum("Analeptic", self.player, self.player)
+		for _,p in ipairs(self.friends) do
+			recover = recover + getCardsNum("Peach", p, self.player)
+		end
+		return recover >= 2
+	else
+		if current:getHandcardNum() >= 5 and self:isWeak(self.player) then
+			return true
+		end
+	end
+	return false
+end
 
 sgs.ai_skill_playerchosen.moqi = function(self, targets)
 	for _,p in sgs.qlist(targets) do
@@ -684,6 +700,35 @@ sgs.ai_skill_playerchosen.moqi = function(self, targets)
 	end
 	return targets:first()
 end
+
+local sishu_skill = {}
+sishu_skill.name = "sishu"
+table.insert(sgs.ai_skills, sishu_skill)
+sishu_skill.getTurnUseCard = function(self)
+	if self.player:getMark("@sishu")==0 then return nil end
+	local value = self.player:getLostHp() + 1
+	if value >= 3 then
+		return sgs.Card_Parse("@SishuCard=.")
+	end
+	return nil
+end
+
+sgs.ai_skill_use_func.SishuCard=function(card,use,self)
+	use.card = card
+end
+sgs.ai_use_value.SishuCard = 7
+sgs.ai_use_priority.SishuCard = 7
+
+sgs.ai_skill_playerchosen.sishu = function(self, targets)
+	if not self.player:isWounded() then return self.player end
+	for _,p in ipairs (self.friends_noself) do
+		if (self:isFriend(p)) then
+			return p
+		end
+	end
+	return self.player
+end
+sgs.ai_playerchosen_intention.sishu = -20
 
 sgs.ai_skill_invoke.juxian = true
 
