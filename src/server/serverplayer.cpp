@@ -1577,14 +1577,22 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
     if (!canShowHiddenSkill() || !isHiddenSkill(skill_name))
         return;
     if (hasSkill(skill_name)) {
-        QString generalName;
+        QStringList generals;
         foreach (QString name, hidden_generals) {
             const General *hidden = Sanguosha->getGeneral(name);
             if (hidden->hasSkill(skill_name)) {
-                generalName = name;
-                break;
+                generals << name;
             }
         }
+        QString generalName;
+        if (generals.isEmpty())
+            return;
+        else if (generals.length() == 1)
+            generalName = generals.first();
+        else {
+            generalName = room->askForChoice(this, "showSameHiddenSkills", generals.join("+"));
+        }
+
         if (generalName != NULL) {
             room->touhouLogmessage("#ShowHiddenGeneral", this, generalName);
 

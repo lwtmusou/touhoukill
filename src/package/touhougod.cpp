@@ -4953,7 +4953,7 @@ public:
         //for test!!! do not remove
         /*QSet<QString> test;
         if (init)
-           test << "reimu_sp" << "youmu" << "aya_god";
+           test << "suwako" << "kanako" << "yukari_sp";
         else
            test << "renko" << "renko" << "renko";//test hidden general changing
         return test.toList();*/
@@ -5534,7 +5534,7 @@ TouhouGodPackage::TouhouGodPackage()
     marisa_god->addSkill(new HuixingTargetMod);
     related_skills.insertMulti("huixing", "#huixing_effect");
 
-    General *patchouli_god = new General(this, "patchouli_god", "touhougod", 3);
+    General *patchouli_god = new General(this, "patchouli_god", "touhougod", 3, false, true, true);
     patchouli_god->addSkill(new Skill("yuansu"));
     patchouli_god->addSkill(new Skill("qiyao"));
 

@@ -700,6 +700,8 @@ return{
     ["#RemoveHiddenGeneral"] = "%from 移除了明置的人物牌  %arg ",
 	["#ShowHiddenGeneral"] = "%from 公开了人物牌  %arg ",
     ["#GetHuashenDetail"] = "%from 获得了“化身牌” %arg",
+	["showSameHiddenSkills"] = "同名技能",
+	
 	
 	["marisa_god"] = "神 雾雨魔理沙",
 	["&marisa_god"] = "神雾雨魔理沙",
