@@ -362,7 +362,21 @@ sgs.ai_need_bear.jiaoxia = function(self, card,from,tos)
 end
 
 --式辉AI
-sgs.ai_skill_discard.shihui = function(self,discard_num, min_num)
+sgs.ai_skill_invoke.shihui = function(self, data)
+	local to =data:toPlayer()
+	local num = math.max(to:getEquips():length(), 1)
+	if self:isFriend(to) then
+		return num <= 2
+	end
+	if self:isEnemy(to) then
+		return num > 2
+	end
+	return false
+end
+
+
+
+--[[sgs.ai_skill_discard.shihui = function(self,discard_num, min_num)
 	local target = self.player:getTag("shihui_target"):toPlayer()
 	local to_discard = {}
 	if not self:isFriend(target) then return to_discard end
@@ -378,11 +392,11 @@ sgs.ai_skill_discard.shihui = function(self,discard_num, min_num)
 		table.insert(to_discard, cards[1]:getId())
 	end
 	return to_discard
-end
-sgs.ai_skill_choice.shihui=function(self)
+end]]
+--[[sgs.ai_skill_choice.shihui=function(self)
 	if self.player:isKongcheng() then return "shihui1" end
 	return "shihui2"
-end
+end]]
 
 sgs.ai_choicemade_filter.cardExchange.shihui = function(self, player, args)
 	local who= player:getTag("shihui_target"):toPlayer()
