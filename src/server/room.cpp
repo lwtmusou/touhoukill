@@ -1371,7 +1371,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
         if (!checked_disabled_ids.contains(c->getId())) {
             if (!flags.contains("h") && !who->isShownHandcard(c->getId()))
                 checked_disabled_ids << c->getId();
-            else if (!flags.contains("s") && player->isShownHandcard(c->getId()))
+            else if (!flags.contains("s") && who->isShownHandcard(c->getId()))
                 checked_disabled_ids << c->getId();
         }
         if (!EnableEmptyCard && !who->isShownHandcard(c->getId()) && !checked_disabled_ids.contains(c->getId()))
