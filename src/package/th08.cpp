@@ -2017,6 +2017,8 @@ void MingmuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), mystia->objectName(), "mingmu", QString());
     room->obtainCard(mystia, this, reason, false);
 
+    room->askForUseCard(mystia, "EquipCard|.|.|hand,wooden_ox", "@mingmu_equip");
+
     QStringList option;
     option << "mingmu_give"
            << "mingmu_disable";
@@ -2027,10 +2029,12 @@ void MingmuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
             if (card) {
                 CardMoveReason reason1(CardMoveReason::S_REASON_GIVE, mystia->objectName(), source->objectName(), "mingmu", QString());
                 room->obtainCard(source, card, reason1);
-                option << "cancel";
+                if (!option.contains("cancel"))
+                    option << "cancel";
             }
         } else if (choice == "mingmu_disable") {
-            option << "cancel";
+            if (!option.contains("cancel"))
+                option << "cancel";
             room->setPlayerFlag(mystia, "mingmuInvalid");
             room->touhouLogmessage("#mingmuInvalid", mystia, "yemang");
             const Skill *yemang = Sanguosha->getSkill("yemang");
@@ -2039,6 +2043,8 @@ void MingmuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
             break;
 
         option.removeOne(choice);
+        if (option.length() == 1 && option.first() == "cancel")
+            break;
     }
 }
 
