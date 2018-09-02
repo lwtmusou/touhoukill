@@ -407,7 +407,7 @@ end
 
 sgs.ai_skill_use["@@shihuiVS"] = function(self, prompt, method)
 
-	local cards = self.player:getHandcards()
+	local cards = self.player:getCards("hes")
 	cards=self:touhouAppendExpandPileToList(self.player, cards)
 	cards = sgs.QList2Table(cards)
 	if #cards == 0 then return "." end
@@ -415,10 +415,14 @@ sgs.ai_skill_use["@@shihuiVS"] = function(self, prompt, method)
 	self:sortByUseValue(cards, false)
 
 	local card = sgs.cloneCard("ex_nihilo", sgs.Card_SuitToBeDecided, -1)
-	card:addSubcard(cards[1])
+	local maxNum = math.max(self.player:getEquips():length(), 1)
+	--local ids = {}
+	for i = 1, maxNum, 1 do
+		card:addSubcard(cards[i])
+	end
 	card:deleteLater()
-	local ids = {}
-	table.insert(ids, cards[1]:getId())
+	
+	--table.insert(ids, cards[1]:getId())
 
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 	card:setSkillName("_shihui")
