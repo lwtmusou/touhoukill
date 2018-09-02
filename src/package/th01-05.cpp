@@ -1126,8 +1126,6 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        RecoverStruct recover;
-        room->recover(invoke->invoker, recover);
 
         CardsMoveStruct move;
         move.card_ids = invoke->invoker->getPile("dream");
@@ -1135,6 +1133,8 @@ public:
         move.to = invoke->invoker;
         room->moveCardsAtomic(move, false);
 
+        RecoverStruct recover;
+        room->recover(invoke->invoker, recover);
         return false;
     }
 };
