@@ -1025,8 +1025,8 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.damage != 1)
-            return QList<SkillInvokeDetail>();
+        //if (damage.damage != 1)
+        //    return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
@@ -1118,7 +1118,7 @@ public:
         if (damage.damage > 1) {
             foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (!p->getPile("dream").isEmpty())
-                    d << SkillInvokeDetail(this, p, p, NULL);
+                    d << SkillInvokeDetail(this, p, p, NULL, true);
             }
         }
         return d;
