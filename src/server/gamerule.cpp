@@ -1,11 +1,11 @@
 #include "gamerule.h"
 #include "engine.h"
 #include "maneuvering.h"
-#include "testCard.h"
 #include "room.h"
 #include "serverplayer.h"
 #include "settings.h"
 #include "standard.h"
+#include "testCard.h"
 #include <QTime>
 
 GameRule::GameRule(QObject *)
@@ -248,7 +248,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         ServerPlayer *player = change.player;
         if (change.to == Player::NotActive) {
-            foreach(ServerPlayer *p, room->getAllPlayers()) {
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
                 if (p->getMark("drank") > 0) {
                     LogMessage log;
                     log.type = "#UnsetDrankEndOfTurn";
@@ -345,11 +345,10 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             if (card_use.card && card_use.card->getTypeId() != Card::TypeSkill && card_use.to.isEmpty()) {
                 if (card_use.card->isKindOf("Slash") && card_use.from->isAlive())
                     room->setPlayerMark(card_use.from, "drank", 0);
-                if (card_use.card->isNDTrick() && card_use.from->isAlive())//clear magic_drank while using Nullification
+                if (card_use.card->isNDTrick() && card_use.from->isAlive()) //clear magic_drank while using Nullification
                     room->setPlayerMark(card_use.from, "magic_drank", 0);
                 break;
             }
-                
 
             try {
                 QVariantList jink_list_backup;
@@ -552,7 +551,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     return true;
                 } else {
                     room->getThread()->trigger(TrickEffect, room, data);
-                    
                 }
             }
             if (effect.to->isAlive() || effect.card->isKindOf("Slash")) {
@@ -678,7 +676,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         if (effect.slash->isKindOf("DebuffSlash")) {
             if (effect.slash->isKindOf("IronSlash"))
                 IronSlash::debuffEffect(effect);
-            else if(effect.slash->isKindOf("LightSlash"))
+            else if (effect.slash->isKindOf("LightSlash"))
                 LightSlash::debuffEffect(effect);
             else if (effect.slash->isKindOf("PowerSlash"))
                 PowerSlash::debuffEffect(effect);

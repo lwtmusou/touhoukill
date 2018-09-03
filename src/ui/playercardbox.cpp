@@ -56,8 +56,8 @@ PlayerCardBox::PlayerCardBox()
 {
 }
 
-void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player, const QString &flags, bool handcardVisible,
-    Card::HandlingMethod method, const QList<int> &disabledIds, bool enableEmptyCard)
+void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player, const QString &flags, bool handcardVisible, Card::HandlingMethod method,
+                               const QList<int> &disabledIds, bool enableEmptyCard)
 {
     nameRects.clear();
     rowCount = 0;
@@ -109,19 +109,17 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
     if (handcard) {
         QList<const Card *> handcards;
         if (!handcardVisible && Self != player) {
-            foreach(int id, player->getShownHandcards()) {
-                const Card  *c = Sanguosha->getCard(id);
+            foreach (int id, player->getShownHandcards()) {
+                const Card *c = Sanguosha->getCard(id);
                 handcards << c;
             }
 
-            
             int hidden = player->getHandcardNum() - handcards.length();
             for (int i = 0; i < hidden; ++i)
                 handcards << NULL;
-        }
-        else
+        } else
             handcards = player->getHandcards();
-        arrangeCards(handcards, QPoint(startX, nameRects.at(index).y()) , enableEmptyCard);
+        arrangeCards(handcards, QPoint(startX, nameRects.at(index).y()), enableEmptyCard);
         ++index;
     }
 
@@ -145,8 +143,7 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
             progressBar->setTimerEnabled(true);
             progressBarItem = new QGraphicsProxyWidget(this);
             progressBarItem->setWidget(progressBar);
-            progressBarItem->setPos(boundingRect().center().x() - progressBarItem->boundingRect().width() / 2,
-                boundingRect().height() - 20);
+            progressBarItem->setPos(boundingRect().center().x() - progressBarItem->boundingRect().width() / 2, boundingRect().height() - 20);
             connect(progressBar, &QSanCommandProgressBar::timedOut, this, &PlayerCardBox::reply);
         }
         progressBar->setCountdown(QSanProtocol::S_COMMAND_CHOOSE_CARD);
@@ -169,14 +166,12 @@ QRectF PlayerCardBox::boundingRect() const
 
     if (maxCardsInOneRow > maxCardNumberInOneRow / 2) {
         width += cardWidth * maxCardNumberInOneRow / 2 + intervalBetweenCards * (maxCardNumberInOneRow / 2 - 1);
-    }
-    else {
+    } else {
         width += cardWidth * maxCardsInOneRow + intervalBetweenCards * (maxCardsInOneRow - 1);
     }
 
     int areaInterval = intervalBetweenAreas;
-    int height = topBlankWidth + bottomBlankWidth + cardHeight * rowCount + intervalsBetweenAreas * qMax(areaInterval, 0)
-        + intervalsBetweenRows * intervalBetweenRows;
+    int height = topBlankWidth + bottomBlankWidth + cardHeight * rowCount + intervalsBetweenAreas * qMax(areaInterval, 0) + intervalsBetweenRows * intervalBetweenRows;
 
     if (ServerInfo.OperationTimeout != 0)
         height += 12;
@@ -189,7 +184,7 @@ void PlayerCardBox::paintLayout(QPainter *painter)
     if (nameRects.isEmpty())
         return;
 
-    foreach(const QRect &rect, nameRects)
+    foreach (const QRect &rect, nameRects)
         painter->drawRoundedRect(rect, 3, 3);
 
     // font
@@ -230,7 +225,7 @@ void PlayerCardBox::clear()
         progressBarItem->deleteLater();
     }
 
-    foreach(CardItem *item, items)
+    foreach (CardItem *item, items)
         item->deleteLater();
     items.clear();
 
@@ -249,8 +244,7 @@ void PlayerCardBox::updateNumbers(const int &cardNumber)
         maxCardsInOneRow = cardNumber;
 
     const int cardHeight = G_COMMON_LAYOUT.m_cardNormalHeight;
-    const int y = topBlankWidth + rowCount * cardHeight + intervalsBetweenAreas * intervalBetweenAreas
-        + intervalsBetweenRows * intervalBetweenRows;
+    const int y = topBlankWidth + rowCount * cardHeight + intervalsBetweenAreas * intervalBetweenAreas + intervalsBetweenRows * intervalBetweenRows;
 
     const int count = getRowCount(cardNumber);
     rowCount += count;
@@ -264,15 +258,14 @@ void PlayerCardBox::updateNumbers(const int &cardNumber)
 void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, const QPoint &topLeft, bool enableEmptyCard)
 {
     QList<CardItem *> areaItems;
-    foreach(const Card *card, cards) {
+    foreach (const Card *card, cards) {
         CardItem *item = new CardItem(card);
         item->setAutoBack(false);
         item->resetTransform();
         item->setParentItem(this);
         item->setFlag(ItemIsMovable, false);
         if (card)
-            item->setEnabled(!disabledIds.contains(card->getEffectiveId())
-                && (method != Card::MethodDiscard || Self->canDiscard(player, card->getEffectiveId())));
+            item->setEnabled(!disabledIds.contains(card->getEffectiveId()) && (method != Card::MethodDiscard || Self->canDiscard(player, card->getEffectiveId())));
         else
             item->setEnabled(enableEmptyCard);
         connect(item, &CardItem::clicked, this, &PlayerCardBox::reply);
@@ -308,7 +301,6 @@ void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, const QPoint 
     }
 }
 
-
 void PlayerCardBox::arrangeGenerals(const QPoint &topLeft)
 {
     QList<CardItem *> areaItems;
@@ -322,12 +314,11 @@ void PlayerCardBox::arrangeGenerals(const QPoint &topLeft)
 
     connect(item, &CardItem::clicked, this, &PlayerCardBox::reply);
     item->setAcceptedMouseButtons(Qt::LeftButton); //the source of hegemony has not set LeftButton???
-                                                   //connect(item, SIGNAL(clicked()), this, SLOT(reply()));
+        //connect(item, SIGNAL(clicked()), this, SLOT(reply()));
     connect(item, &CardItem::enter_hover, RoomSceneInstance->getDashboard(), &Dashboard::onCardItemHover);
     connect(item, &CardItem::leave_hover, RoomSceneInstance->getDashboard(), &Dashboard::onCardItemLeaveHover);
     items << item;
     areaItems << item;
-    
 
     int n = 1;
     const int rows = (n + maxCardNumberInOneRow - 1) / maxCardNumberInOneRow;
@@ -360,6 +351,6 @@ void PlayerCardBox::reply()
     if (this->flags.contains("g") && item && item->objectName() == this->player->getGeneralName()) {
         id = -999;
     }
-    
+
     ClientInstance->onPlayerChooseCard(id);
 }

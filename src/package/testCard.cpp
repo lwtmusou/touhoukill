@@ -5,11 +5,9 @@
 #include "maneuvering.h"
 #include "room.h"
 
-
 DebuffSlash::DebuffSlash(Suit suit, int number)
     : Slash(suit, number)
 {
-
 }
 
 bool DebuffSlash::match(const QString &pattern) const
@@ -20,8 +18,6 @@ bool DebuffSlash::match(const QString &pattern) const
     else
         return Slash::match(pattern);
 }
-
-
 
 IronSlash::IronSlash(Suit suit, int number)
     : DebuffSlash(suit, number)
@@ -59,29 +55,25 @@ void LightSlash::debuffEffect(const SlashEffectStruct &effect)
     effect.to->addToShownHandCards(ids);
 }
 
-
 PowerSlash::PowerSlash(Suit suit, int number)
     : DebuffSlash(suit, number)
 {
     setObjectName("power_slash");
 }
 
-
-
 void PowerSlash::debuffEffect(const SlashEffectStruct &effect)
 {
     Room *room = effect.from->getRoom();
     QList<int> disable;
-    foreach(const Card *c, effect.to->getCards("e")) {
+    foreach (const Card *c, effect.to->getCards("e")) {
         if (effect.to->isBrokenEquip(c->getEffectiveId()))
             disable << c->getEffectiveId();
     }
-    
 
     int num = qMin(1 + effect.effectValue.first(), effect.to->getEquips().length() - disable.length());
     if (num <= 0)
         return;
-    
+
     QList<int> ids;
     for (int i = 0; i < num; i += 1) {
         int id = room->askForCardChosen(effect.from, effect.to, "e", "power_slash", true, Card::MethodNone, disable);
@@ -92,10 +84,6 @@ void PowerSlash::debuffEffect(const SlashEffectStruct &effect)
     }
     effect.to->addBrokenEquips(ids);
 }
-
-
-
-
 
 NatureJink::NatureJink(Suit suit, int number)
     : Jink(suit, number)
@@ -119,7 +107,6 @@ ChainJink::ChainJink(Suit suit, int number)
     setObjectName("chain_jink");
 }
 
-
 void ChainJink::onEffect(const CardEffectStruct &effect) const
 {
     if (effect.to->isAlive() && !effect.to->isChained())
@@ -131,7 +118,6 @@ LightJink::LightJink(Suit suit, int number)
 {
     setObjectName("light_jink");
 }
-
 
 void LightJink::onEffect(const CardEffectStruct &effect) const
 {
@@ -151,7 +137,6 @@ void LightJink::onEffect(const CardEffectStruct &effect) const
 
     effect.to->addToShownHandCards(ids);
 }
-
 
 MagicAnaleptic::MagicAnaleptic(Card::Suit suit, int number)
     : Analeptic(suit, number)
@@ -180,12 +165,10 @@ void MagicAnaleptic::onEffect(const CardEffectStruct &effect) const
         recover.who = effect.from;
         recover.recover = 1 + effect.effectValue.first();
         room->recover(effect.to, recover);
-    }
-    else {
+    } else {
         room->addPlayerMark(effect.to, "magic_drank", 1 + effect.effectValue.first());
     }
 }
-
 
 SuperPeach::SuperPeach(Suit suit, int number)
     : Peach(suit, number)
@@ -209,17 +192,17 @@ bool SuperPeach::targetFixed() const
     if (Self) {
         QList<const Player *> players = Self->getSiblings();
         players << Self;
-        foreach(const Player *p, players) {
+        foreach (const Player *p, players) {
             if (p->hasFlag("Global_Dying") && p->isAlive()) {
                 globalDying = true;
                 break;
             }
         }
     }
-    
+
     if (globalDying && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
         return true;
-    return false;//Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY;
+    return false; //Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY;
 }
 
 void SuperPeach::onEffect(const CardEffectStruct &effect) const
@@ -250,7 +233,7 @@ bool SuperPeach::targetFilter(const QList<const Player *> &targets, const Player
         bool globalDying = false;
         QList<const Player *> players = Self->getSiblings();
         players << Self;
-        foreach(const Player *p, players) {
+        foreach (const Player *p, players) {
             if (p->hasFlag("Global_Dying") && p->isAlive()) {
                 globalDying = true;
                 break;
@@ -259,8 +242,7 @@ bool SuperPeach::targetFilter(const QList<const Player *> &targets, const Player
 
         if (globalDying && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
             return to_select->hasFlag("Global_Dying") && to_select->objectName() == Self->property("currentdying").toString();
-        }
-        else {
+        } else {
             if (to_select->isDebuffStatus())
                 return true;
             //if (Self->getKingdom() == "zhan" && to_select->hasLordSkill("yanhui") && to_select->isWounded() && Self->getPhase() == Player::Play)
@@ -269,8 +251,6 @@ bool SuperPeach::targetFilter(const QList<const Player *> &targets, const Player
     }
     return false;
 }
-
-
 
 bool SuperPeach::isAvailable(const Player *player) const
 {
@@ -283,13 +263,12 @@ bool SuperPeach::isAvailable(const Player *player) const
 
     if ((player->isDebuffStatus() || player->hasFlag("Global_Dying")) && !player->isProhibited(player, this))
         return true;
-    foreach(const Player *p, player->getAliveSiblings()) {
+    foreach (const Player *p, player->getAliveSiblings()) {
         if (p->isDebuffStatus() && !player->isProhibited(p, this))
             return true;
     }
-    
 
-    foreach(const Player *p, player->getAliveSiblings()) {
+    foreach (const Player *p, player->getAliveSiblings()) {
         if (!player->isProhibited(p, this)) {
             if (p->hasFlag("Global_Dying") && !isPlay)
                 return true;
@@ -299,8 +278,6 @@ bool SuperPeach::isAvailable(const Player *player) const
     }
     return false;
 }
-
-
 
 class CameraSkill : public WeaponSkill
 {
@@ -683,11 +660,10 @@ void AllianceFeast::onEffect(const CardEffectStruct &effect) const
         if (effect.to->isChained())
             effect.to->getRoom()->setPlayerProperty(effect.to, "chained", !effect.to->isChained());
 
-        int drawnum =  1 + effect.effectValue.first();
+        int drawnum = 1 + effect.effectValue.first();
         effect.to->drawCards(drawnum);
     }
 }
-
 
 FightTogether::FightTogether(Card::Suit suit, int number)
     : TrickCard(suit, number)
@@ -702,7 +678,6 @@ QString FightTogether::getSubtype() const
 
 bool FightTogether::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-
     //int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
     int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
@@ -714,7 +689,6 @@ void FightTogether::onEffect(const CardEffectStruct &effect) const
     ServerPlayer *target = effect.to;
     Room *room = effect.from->getRoom();
 
-
     QStringList places;
     if (target->getEquips().length() > target->getBrokenEquips().length())
         places << "e";
@@ -725,14 +699,11 @@ void FightTogether::onEffect(const CardEffectStruct &effect) const
     if (places.isEmpty())
         return;
 
-    
-
     QList<int> disable;
     if (places.contains("e")) {
         disable << target->getBrokenEquips();
     }
 
-    
     int id = room->askForCardChosen(effect.from, target, places.join("+"), objectName(), false, Card::MethodNone, disable);
 
     if (places.contains("g") && id == Card::S_UNKNOWN_GENERAL_CARD_ID) {
@@ -774,12 +745,10 @@ void FightTogether::onEffect(const CardEffectStruct &effect) const
         }
     }
 
-
     if (flag == "h") {
         room->setPlayerFlag(target, "FightTogether_ShownCard");
         effect.to->addToShownHandCards(ids);
-    }
-    else if (flag == "e") {
+    } else if (flag == "e") {
         room->setPlayerFlag(target, "FightTogether_BrokenEquip");
         effect.to->addBrokenEquips(ids);
     }
@@ -795,7 +764,8 @@ public:
         global = true;
     }
 
-    static QString debuffFlag(ServerPlayer *player) {
+    static QString debuffFlag(ServerPlayer *player)
+    {
         QString flag = "esg";
         if (player->hasFlag("FightTogether_Chained") || !player->isChained())
             flag.remove("g");
@@ -811,15 +781,15 @@ public:
         if (e == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card && use.card->isKindOf("FightTogether")) {
-                foreach(ServerPlayer *p, use.to)
-                    room->setPlayerFlag(p, "FightTogether_Used");    
+                foreach (ServerPlayer *p, use.to)
+                    room->setPlayerFlag(p, "FightTogether_Used");
             }
         }
 
         if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasFlag("FightTogether_Used")) {
                         QString flag = debuffFlag(p);
                         if (flag == "") {
@@ -827,7 +797,7 @@ public:
                             room->setPlayerFlag(p, "-FightTogether_Chained");
                             room->setPlayerFlag(p, "-FightTogether_ShownCard");
                             room->setPlayerFlag(p, "-FightTogether_BrokenEquip");
-                        }   
+                        }
                     }
                 }
             }
@@ -839,7 +809,7 @@ public:
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasFlag("FightTogether_Used")) {
                         QString flag = debuffFlag(p);
                         if (flag != "") {
@@ -862,11 +832,10 @@ public:
 
         QList<int> disable;
         if (flag.contains("e")) {
-            foreach(const Card *c, invoke->invoker->getCards("e")) {
+            foreach (const Card *c, invoke->invoker->getCards("e")) {
                 if (!invoke->invoker->isBrokenEquip(c->getId()))
                     disable << c->getId();
             }
-            
         }
         room->touhouLogmessage("#FightTogetherEffect", invoke->invoker);
         int id = room->askForCardChosen(invoke->invoker, invoke->invoker, flag, objectName(), false, Card::MethodNone, disable);
@@ -879,12 +848,10 @@ public:
             invoke->invoker->removeShownHandCards(QList<int>() << id, true);
         else if (room->getCardPlace(id) == Player::PlaceEquip)
             invoke->invoker->removeBrokenEquips(QList<int>() << id);
-        
+
         return false;
     }
 };
-
-
 
 SpellDuel::SpellDuel(Card::Suit suit, int number)
     : SingleTargetTrick(suit, number)
@@ -1060,7 +1027,8 @@ TestCardPackage::TestCardPackage()
     foreach (Card *card, cards)
         card->setParent(this);
 
-    skills << new CameraSkill << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill << new PagodaSkill << new PagodaTriggerSkill << new CamouflageSkill << new FightTogetherSkill;
+    skills << new CameraSkill << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill << new PagodaSkill << new PagodaTriggerSkill << new CamouflageSkill
+           << new FightTogetherSkill;
 }
 
 ADD_PACKAGE(TestCard)

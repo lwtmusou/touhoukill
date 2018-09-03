@@ -1,8 +1,8 @@
 #ifndef _TESTCARD_H
 #define _TESTCARD_H
 
-#include "standard.h"
 #include "maneuvering.h"
+#include "standard.h"
 
 class DebuffSlash : public Slash
 {
@@ -41,10 +41,7 @@ public:
     Q_INVOKABLE PowerSlash(Card::Suit suit, int number);
 
     static void debuffEffect(const SlashEffectStruct &effect);
-
 };
-
-
 
 class NatureJink : public Jink
 {
@@ -65,7 +62,6 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-
 class LightJink : public NatureJink
 {
     Q_OBJECT
@@ -76,7 +72,6 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-
 class MagicAnaleptic : public Analeptic
 {
     Q_OBJECT
@@ -86,7 +81,6 @@ public:
     virtual bool match(const QString &pattern) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
-
 
 class SuperPeach : public Peach
 {
@@ -101,7 +95,6 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual bool isAvailable(const Player *player) const;
 };
-
 
 class Camera : public Weapon
 {
@@ -157,7 +150,6 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
-
 
 class AllianceFeast : public GlobalEffect
 {

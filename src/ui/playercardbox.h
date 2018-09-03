@@ -37,7 +37,7 @@ public:
     explicit PlayerCardBox();
 
     void chooseCard(const QString &reason, const ClientPlayer *player, const QString &flags = "hej", bool handcardVisible = false, Card::HandlingMethod method = Card::MethodNone,
-        const QList<int> &disabledIds = QList<int>(), bool enableEmptyCard = true);
+                    const QList<int> &disabledIds = QList<int>(), bool enableEmptyCard = true);
     void clear();
     QRectF boundingRect() const;
 

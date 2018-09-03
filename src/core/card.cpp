@@ -11,7 +11,6 @@
 const int Card::S_UNKNOWN_CARD_ID = -1;
 const int Card::S_UNKNOWN_GENERAL_CARD_ID = -999;
 
-
 const Card::Suit Card::AllSuits[4] = {Card::Spade, Card::Club, Card::Heart, Card::Diamond};
 
 Card::Card(Suit suit, int number, bool target_fixed)
@@ -226,13 +225,13 @@ bool Card::CompareByType(const Card *a, const Card *b)
                   << "jink"
                   << "peach"
                   << "analeptic"
-                    << "light_jink"
-                    << "chain_jink"
-                    << "power_slash"
-                    << "iron_slash"
-                    << "light_slash"
-                    << "magic_analeptic"
-                    <<"super_peach";
+                  << "light_jink"
+                  << "chain_jink"
+                  << "power_slash"
+                  << "iron_slash"
+                  << "light_slash"
+                  << "magic_analeptic"
+                  << "super_peach";
         switch (a->getTypeId()) {
         case TypeBasic: {
             foreach (QString object_name, basic) {

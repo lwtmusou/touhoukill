@@ -307,8 +307,8 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
         }
     }
     bool has_shuangren_target = false;
-    if (Self->hasSkill("shuangren")  && targets.length() >= 1) { //&& distance_limit
-        foreach(const Player *p, targets) {
+    if (Self->hasSkill("shuangren") && targets.length() >= 1) { //&& distance_limit
+        foreach (const Player *p, targets) {
             if (Self->distanceTo(p, rangefix) > Self->getAttackRange(true)) { //double hidden, like shuangren + tianqu. since tianqu has be used, you can not use shuangren.
                 has_shuangren_target = true;
                 break;
@@ -327,30 +327,30 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
         if (!has_shuangren_target)
             distance_limit = false;
     }
-    
+
     if (!Self->canSlash(to_select, this, distance_limit, rangefix, targets))
         return false;
-    else if (has_shuangren_target) {// slove the conflict of "hidden shuangren" + "hidden tianqu" + "Halberd" 
-        bool halberd = EquipSkill::equipAvailable(Self, EquipCard::WeaponLocation, "Halberd") && Self->isLastHandCard(this);//  TargetMod from Wepaon Skill
+    else if (has_shuangren_target) { // slove the conflict of "hidden shuangren" + "hidden tianqu" + "Halberd"
+        bool halberd = EquipSkill::equipAvailable(Self, EquipCard::WeaponLocation, "Halberd") && Self->isLastHandCard(this); //  TargetMod from Wepaon Skill
         bool tianqu = Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed");
-        
+
         QList<const Player *> over_distance_limit_targets;
-        foreach(const Player *p, targets) {
+        foreach (const Player *p, targets) {
             if (Self->distanceTo(p, rangefix) > Self->getAttackRange(true)) {
                 over_distance_limit_targets << p;
             }
         }
-        
+
         if (over_distance_limit_targets.length() == 2 && targets.length() < slash_targets) {
             if (halberd && tianqu) {
-                slash_targets = slash_targets - 1;//hidden tianqu has been used, so hidden shuangren will be not used.
+                slash_targets = slash_targets - 1; //hidden tianqu has been used, so hidden shuangren will be not used.
             }
-        }
-        else if (over_distance_limit_targets.length() == 1 && targets.length() < slash_targets) {
+        } else if (over_distance_limit_targets.length() == 1 && targets.length() < slash_targets) {
             if (!halberd && tianqu) {
                 if (Self->distanceTo(to_select, rangefix) > Self->getAttackRange(true))
                     return false;
-            } if (halberd && targets.length() == 3) {
+            }
+            if (halberd && targets.length() == 3) {
                 if (Self->distanceTo(to_select, rangefix) > Self->getAttackRange(true))
                     return false;
             }
@@ -1526,13 +1526,13 @@ void Snatch::onEffect(const CardEffectStruct &effect) const
     bool move_visible = false;
     for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
         int card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName(), false, Card::MethodNone, disable);
-        
+
         if (!move_visible && room->getCardPlace(card_id) != Player::PlaceHand)
             move_visible = true;
 
         disable << card_id;
         dummy->addSubcard(card_id);
-        
+
         if (effect.to->getCards(flag).length() - disable.length() <= 0)
             break;
     }
@@ -1571,7 +1571,7 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
     int card_id = -1;
 
     QList<int> ids, disable;
-    foreach(const Card *c, effect.to->getCards(flag)) {
+    foreach (const Card *c, effect.to->getCards(flag)) {
         if (!effect.from->canDiscard(effect.to, c->getEffectiveId()))
             disable << c->getEffectiveId();
     }
@@ -1581,7 +1581,7 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
     //for AI: sgs.ai_choicemade_filter.cardChosen.snatch
     //like Xunshi
     effect.from->tag["DismantlementCard"] = QVariant::fromValue(effect.card);
-    
+
     for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
         bool visible = false;
         if (using_2013 && !ai) {
@@ -2131,7 +2131,6 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
         subpattern = prohibit.join("+");
 
         dummy->addSubcard(card);
-
     }
 
     if (!dummy->getSubcards().isEmpty())

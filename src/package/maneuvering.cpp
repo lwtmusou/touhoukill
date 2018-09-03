@@ -90,7 +90,6 @@ void Analeptic::onUse(Room *room, const CardUseStruct &card_use) const
     BasicCard::onUse(room, use);
 }
 
-
 /*PowerAnaleptic::PowerAnaleptic(Card::Suit suit, int number)
     : Analeptic(suit, number)
 {
@@ -514,12 +513,12 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
     QString subpattern = ".";
     QVariantList tempmove;
     for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
-        QString pattern =  QString("%1|.|.|handOnly!").arg(subpattern);
+        QString pattern = QString("%1|.|.|handOnly!").arg(subpattern);
         const Card *card = room->askForCard(effect.to, pattern, "@fire_attack_show", QVariant::fromValue(effect), Card::MethodNone);
         if (!card) {
             // force show!!!
             QList<const Card *> hc;
-            foreach(const Card *c, effect.to->getCards("h")) {
+            foreach (const Card *c, effect.to->getCards("h")) {
                 if (!ids.contains(c->getEffectiveId()))
                     hc << c;
             }
@@ -530,11 +529,11 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
         prohibit << ('^' + QString::number(card->getEffectiveId()));
         subpattern = prohibit.join("+");
         //for ai
-         //effect.to->tag["fireattack_tempmove"].toList();
+        //effect.to->tag["fireattack_tempmove"].toList();
         tempmove << card->getEffectiveId();
         effect.to->tag["fireattack_tempmove"] = tempmove;
 
-        if (effect.to->getCards("h").length() -  ids.length() <= 0)
+        if (effect.to->getCards("h").length() - ids.length() <= 0)
             break;
     }
     effect.to->tag.remove("fireattack_tempmove");

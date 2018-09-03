@@ -11,7 +11,6 @@
 #include <QCoreApplication>
 #include <QPointer>
 
-
 class Shengge : public TriggerSkill
 {
 public:
@@ -176,7 +175,6 @@ public:
     }
 };
 
-
 XihuaDialog *XihuaDialog::getInstance(const QString &object, bool left, bool right)
 {
     static QPointer<XihuaDialog> instance;
@@ -224,7 +222,7 @@ void XihuaDialog::popup()
     //collect avaliable patterns for specific skill
     QStringList validPatterns;
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-    foreach(const Card *card, cards) {
+    foreach (const Card *card, cards) {
         if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
             QString name = card->objectName();
             QString pattern = card->objectName();
@@ -241,16 +239,15 @@ void XihuaDialog::popup()
                 validPatterns << card->objectName();
         }
     }
-    
-    
+
     //then match it and check "CardLimit"
-    foreach(QString str, validPatterns) {
+    foreach (QString str, validPatterns) {
         const Skill *skill = Sanguosha->getSkill(object_name);
         if (play || skill->matchAvaliablePattern(str, pattern)) {
             Card *card = Sanguosha->cloneCard(str);
             DELETE_OVER_SCOPE(Card, card)
-                if (!Self->isCardLimited(card, method))
-                    checkedPatterns << str;
+            if (!Self->isCardLimited(card, method))
+                checkedPatterns << str;
         }
     }
 
@@ -260,9 +257,9 @@ void XihuaDialog::popup()
         return;
     }
 
-    foreach(QAbstractButton *button, group->buttons()) {
+    foreach (QAbstractButton *button, group->buttons()) {
         const Card *card = map[button->objectName()];
-        const Player *user =  Self;
+        const Player *user = Self;
 
         bool avaliable = (!play) || card->isAvailable(user);
         if (card->isKindOf("Peach"))
@@ -299,10 +296,10 @@ QGroupBox *XihuaDialog::createLeft()
 
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     QStringList ban_list; //no need to ban
-                          //if (object_name == "chuangshi")
-                          //     ban_list << "Analeptic";
+        //if (object_name == "chuangshi")
+        //     ban_list << "Analeptic";
 
-    foreach(const Card *card, cards) {
+    foreach (const Card *card, cards) {
         if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName())
             && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
             Card *c = Sanguosha->cloneCard(card->objectName());
@@ -330,7 +327,7 @@ QGroupBox *XihuaDialog::createRight()
     QStringList ban_list; //no need to ban
 
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-    foreach(const Card *card, cards) {
+    foreach (const Card *card, cards) {
         if (card->isNDTrick() && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName()) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
             Card *c = Sanguosha->cloneCard(card->objectName());
             c->setSkillName(object_name);
@@ -364,8 +361,7 @@ QAbstractButton *XihuaDialog::createButton(const Card *card)
         group->addButton(button);
 
         return button;
-    }
-    else {
+    } else {
         QCommandLinkButton *button = new QCommandLinkButton(Sanguosha->translate(card->objectName()));
         button->setObjectName(card->objectName());
         button->setToolTip(card->getDescription());
@@ -376,9 +372,6 @@ QAbstractButton *XihuaDialog::createButton(const Card *card)
         return button;
     }
 }
-
-
-
 
 class XihuaClear : public TriggerSkill
 {
@@ -405,7 +398,6 @@ public:
     }
     static bool xihua_choice_limit(const Player *player, QString pattern, Card::HandlingMethod method)
     {
-        
         Card *c = Sanguosha->cloneCard(pattern);
         DELETE_OVER_SCOPE(Card, c)
         if (pattern.contains("slash"))
@@ -417,7 +409,7 @@ public:
         else if (pattern.contains("peach"))
             pattern = "peach";
         QString markName = "xihua_record_" + pattern;
-        
+
         if (method == Card::MethodNone)
             method = Card::MethodUse;
         if (player->getMark(markName) > 0 || player->isCardLimited(c, method, true))
@@ -603,11 +595,11 @@ public:
         foreach (const Card *card, cards) {
             if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
                 QString p = card->objectName();
-                if (!checkedPatterns.contains(p)  && skill->matchAvaliablePattern(p, pattern)
-                    && !XihuaClear::xihua_choice_limit(Self, p, method))  //&& !Self->isCardLimited(card, method)
+                if (!checkedPatterns.contains(p) && skill->matchAvaliablePattern(p, pattern)
+                    && !XihuaClear::xihua_choice_limit(Self, p, method)) //&& !Self->isCardLimited(card, method)
                     checkedPatterns << p;
             }
-        }      
+        }
         return checkedPatterns;
     }
 

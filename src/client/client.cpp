@@ -1729,7 +1729,7 @@ void Client::askForSinglePeach(const QVariant &arg)
             prompt_doc->setHtml(tr("%1 is dying, please provide %2 peach(es)(or analeptic) to save him").arg(dying_general).arg(peaches));
             pattern << "analeptic";
         } else*/
-            prompt_doc->setHtml(tr("%1 is dying, please provide %2 peach(es) to save him").arg(dying_general).arg(peaches));
+        prompt_doc->setHtml(tr("%1 is dying, please provide %2 peach(es) to save him").arg(dying_general).arg(peaches));
     }
 
     Peach *temp_peach = new Peach(Card::NoSuit, 0);

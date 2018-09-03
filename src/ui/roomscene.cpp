@@ -15,8 +15,8 @@
 #include "indicatoritem.h"
 #include "lightboxanimation.h"
 #include "pixmapanimation.h"
-#include "playercarddialog.h"
 #include "playercardbox.h"
+#include "playercarddialog.h"
 #include "qsanbutton.h"
 #include "record-analysis.h"
 #include "recorder.h"
@@ -204,7 +204,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
     addItem(m_playerCardBox);
     m_playerCardBox->setZValue(30000.0);
     m_playerCardBox->moveBy(-120, 0);
-
 
     card_container = new CardContainer;
     card_container->hide();
@@ -1881,7 +1880,8 @@ void RoomScene::chooseOption(const QString &skillName, const QStringList &option
     m_choiceDialog = dialog;
 }*/
 
-void RoomScene::chooseCard(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids, bool enableEmptyCard)
+void RoomScene::chooseCard(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids,
+                           bool enableEmptyCard)
 {
     /*PlayerCardDialog *dialog = new PlayerCardDialog(player, flags, handcard_visible, method, disabled_ids);
     dialog->setWindowTitle(Sanguosha->translate(reason));
@@ -2706,11 +2706,9 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             m_chooseOptionsBox->clear();
         else if (oldStatus == Client::AskForTriggerOrder) {
             m_chooseTriggerOrderBox->clear();
-        }
-        else if (oldStatus == Client::AskForCardChosen) {
+        } else if (oldStatus == Client::AskForCardChosen) {
             m_playerCardBox->clear();
         }
-            
 
         prompt_box->disappear();
         ClientInstance->getPromptDoc()->clear();

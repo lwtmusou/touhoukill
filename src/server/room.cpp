@@ -1367,7 +1367,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     QList<int> checked_disabled_ids;
     checked_disabled_ids << disabled_ids;
     bool EnableEmptyCard = false; //setting UI EmptyCard Enable
-    foreach(const Card  *c, who->getHandcards()) {
+    foreach (const Card *c, who->getHandcards()) {
         if (!checked_disabled_ids.contains(c->getId())) {
             if (!flags.contains("h") && !who->isShownHandcard(c->getId()))
                 checked_disabled_ids << c->getId();
@@ -1377,7 +1377,6 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
         if (!EnableEmptyCard && !who->isShownHandcard(c->getId()) && !checked_disabled_ids.contains(c->getId()))
             EnableEmptyCard = true;
     }
-    
 
     //At first,collect selectable cards, and selectable knowncards
     QList<const Card *> cards = who->getCards(flags);
@@ -1413,46 +1412,45 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     //    card_id = cards.at(qrand() % cards.length())->getId();
     //card_id = who->getRandomHandCardId();
     //else {
-        AI *ai = player->getAI();
-        if (ai) {
-            thread->delay();
-            card_id = ai->askForCardChosen(who, flags, reason, method);
-        } else {
-            JsonArray arg;
-            arg << who->objectName();
-            arg << flags;
-            arg << reason;
-            arg << handcard_visible;
-            arg << (int)method;
-            arg << JsonUtils::toJsonArray(checked_disabled_ids);
-            arg << EnableEmptyCard;
+    AI *ai = player->getAI();
+    if (ai) {
+        thread->delay();
+        card_id = ai->askForCardChosen(who, flags, reason, method);
+    } else {
+        JsonArray arg;
+        arg << who->objectName();
+        arg << flags;
+        arg << reason;
+        arg << handcard_visible;
+        arg << (int)method;
+        arg << JsonUtils::toJsonArray(checked_disabled_ids);
+        arg << EnableEmptyCard;
 
-            bool success = doRequest(player, S_COMMAND_CHOOSE_CARD, arg, true);
-            //@todo: check if the card returned is valid
-            const QVariant &clientReply = player->getClientReply();
-            if (!success || !JsonUtils::isNumber(clientReply)) {
-                if (flags == "g")// choose general card 
-                    card_id = Card::S_UNKNOWN_GENERAL_CARD_ID;
-                else
+        bool success = doRequest(player, S_COMMAND_CHOOSE_CARD, arg, true);
+        //@todo: check if the card returned is valid
+        const QVariant &clientReply = player->getClientReply();
+        if (!success || !JsonUtils::isNumber(clientReply)) {
+            if (flags == "g") // choose general card
+                card_id = Card::S_UNKNOWN_GENERAL_CARD_ID;
+            else
                 // randomly choose a card
                 card_id = cards.at(qrand() % cards.length())->getId();
-            } else
-                card_id = clientReply.toInt();
+        } else
+            card_id = clientReply.toInt();
 
-
-            if (card_id == Card::S_UNKNOWN_CARD_ID) {
-                //if (shownHandcards.isEmpty())
-                //    card_id = who->getRandomHandCardId();
-                //else
-                    foreach(int id, checked_disabled_ids)
-                        unknownHandcards.removeOne(id);
-                    if (!unknownHandcards.isEmpty())
-                        card_id = unknownHandcards.at(qrand() % unknownHandcards.length());
-            }
+        if (card_id == Card::S_UNKNOWN_CARD_ID) {
+            //if (shownHandcards.isEmpty())
+            //    card_id = who->getRandomHandCardId();
+            //else
+            foreach (int id, checked_disabled_ids)
+                unknownHandcards.removeOne(id);
+            if (!unknownHandcards.isEmpty())
+                card_id = unknownHandcards.at(qrand() % unknownHandcards.length());
         }
+    }
 
-        if (card_id != Card::S_UNKNOWN_GENERAL_CARD_ID && !cards.contains(Sanguosha->getCard(card_id)))
-            card_id = cards.at(qrand() % cards.length())->getId();
+    if (card_id != Card::S_UNKNOWN_GENERAL_CARD_ID && !cards.contains(Sanguosha->getCard(card_id)))
+        card_id = cards.at(qrand() % cards.length())->getId();
     //}
 
     Q_ASSERT(card_id != Card::S_UNKNOWN_CARD_ID);

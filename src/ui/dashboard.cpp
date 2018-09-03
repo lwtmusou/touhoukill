@@ -1174,11 +1174,10 @@ void Dashboard::expandPileCards(const QString &pile_name)
         card_item->setParentItem(this);
     }
 
-    foreach(CardItem *card_item, card_items) {
-        
+    foreach (CardItem *card_item, card_items) {
         QString pile_string = pile_name;
         if (pile_name == "%shown_card") {
-            foreach(const Player *p, Self->getAliveSiblings()) {
+            foreach (const Player *p, Self->getAliveSiblings()) {
                 if (p->getPile("shown_card").contains(card_item->getId())) {
                     pile_string = ClientInstance->getPlayerName(p->objectName());
                     break;
@@ -1188,7 +1187,6 @@ void Dashboard::expandPileCards(const QString &pile_name)
 
         _addHandCard(card_item, true, Sanguosha->translate(pile_string));
     }
-        
 
     adjustCards();
     _playMoveCardsAnimation(card_items, false);

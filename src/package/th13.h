@@ -20,7 +20,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
 class XihuaDialog : public QDialog
 {
     Q_OBJECT
@@ -28,7 +27,7 @@ class XihuaDialog : public QDialog
 public:
     static XihuaDialog *getInstance(const QString &object, bool left = true, bool right = true);
 
-    public slots:
+public slots:
     void popup();
     void selectCard(QAbstractButton *button);
 
@@ -46,9 +45,6 @@ private:
 signals:
     void onButtonClick();
 };
-
-
-
 
 class XihuaCard : public SkillCard
 {
