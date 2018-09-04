@@ -1,0 +1,15 @@
+To Fs：
+1、新界面尽快完工，使用QtQuickControls2。
+2、移植Qt5.9（QtQuickControls2支持桌面端），等Qt下一个LTS出来之后移植Qt5.12（QtQuickControls2支持移动端）
+3、程序拆分为：
+QSanguoshaCore 动态库，包含各种核心内容，算法等
+QSanguoshaServer 动态库，包含服务器相关处理
+QSanguoshaClient 动态库，包含客户端相关处理
+QSanguoshaPackage 动态库，包含武将包和卡牌包
+QSanguosha.exe（.apk） GUI版可执行程序，桌面版可以启动服务器，移动端不可
+QSanguoshaServer.exe 命令行版可执行程序，服务器
+QSanguoshaAI.exe 命令行版可执行程序，由服务器启动然后连接服务器，AI客户端
+4、从源码中干掉双将
+
+To lwtmusou：
+1、TH16。。。。
