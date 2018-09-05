@@ -200,7 +200,7 @@ void General::lastWord() const
     if (!fileExists) {
         QStringList origin_generals = objectName().split("_");
         if (origin_generals.length() > 1)
-            filename = QString("audio/death/%1.ogg").arg(origin_generals.last());
+            filename = QString("audio/death/%1.ogg").arg(origin_generals.first());
     }
     Sanguosha->playAudioEffect(filename);
 }
