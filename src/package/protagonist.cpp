@@ -400,7 +400,7 @@ public:
                         room->detachSkillFromPlayer(p, attachName, true);
                 }
             }
-        } else if (triggerEvent == EventPhaseChanging) {
+        } else {
             PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
             if (phase_change.from == Player::Play) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
@@ -531,7 +531,7 @@ public:
                 }
             }
 
-        } else if (triggerEvent == EventPhaseChanging) {
+        } else {
             PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
             if (phase_change.from == Player::Play) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
@@ -1454,7 +1454,7 @@ public:
 class SlmMolishaDiscardTianyi : public OneCardViewAsSkill
 {
 public:
-    SlmMolishaDiscardTianyi(const QString &name)
+    explicit SlmMolishaDiscardTianyi(const QString &name)
         : OneCardViewAsSkill(name)
     {
         expand_pile = "tianyi";

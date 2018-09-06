@@ -1849,7 +1849,7 @@ public:
                 }
             }
 
-        } else if (triggerEvent == EventPhaseChanging) {
+        } else {
             PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
             if (phase_change.from == Player::Play) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
@@ -2382,7 +2382,7 @@ public:
             room->removePlayerCardLimitation(p, "use", ".", "xingyou", true);
 
             if (e != EventPhaseChanging) {
-                if (current && current->isAlive() && current->hasSkill(this)) {
+                if (current->isAlive() && current->hasSkill(this)) {
                     room->setPlayerCardLimitation(p, "use", pattern, "xingyou", true);
                 }
             }

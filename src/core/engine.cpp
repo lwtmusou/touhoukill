@@ -432,9 +432,8 @@ void Engine::unregisterRoom()
 
 QObject *Engine::currentRoomObject()
 {
-    QObject *room = NULL;
     m_mutex.lock();
-    room = m_rooms[QThread::currentThread()];
+    QObject *room = m_rooms[QThread::currentThread()];
     Q_ASSERT(room);
     m_mutex.unlock();
     return room;

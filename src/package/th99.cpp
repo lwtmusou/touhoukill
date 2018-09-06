@@ -1050,9 +1050,11 @@ public:
             PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
             if (phase_change.to == Player::NotActive) {
                 ServerPlayer *yori = phase_change.player;
-                ServerPlayer *who = yori->tag.value("pingyi_originalOwner").value<ServerPlayer *>();
-                if (yori != NULL && who != NULL)
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, true);
+                if (yori != NULL) {
+                    ServerPlayer *who = yori->tag.value("pingyi_originalOwner").value<ServerPlayer *>();
+                    if (who != NULL)
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, true);
+                }
             }
         }
         return QList<SkillInvokeDetail>();

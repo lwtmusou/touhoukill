@@ -22,7 +22,8 @@ class AI : public QObject
     Q_ENUMS(Relation)
 
 public:
-    AI(ServerPlayer *player);
+    explicit AI(ServerPlayer *player);
+    virtual ~AI();
 
     enum Relation
     {
@@ -68,7 +69,8 @@ class TrustAI : public AI
     Q_OBJECT
 
 public:
-    TrustAI(ServerPlayer *player);
+    explicit TrustAI(ServerPlayer *player);
+    virtual ~TrustAI();
 
     virtual void activate(CardUseStruct &card_use);
     virtual Card::Suit askForSuit(const QString &);
@@ -99,7 +101,7 @@ class LuaAI : public TrustAI
     Q_OBJECT
 
 public:
-    LuaAI(ServerPlayer *player);
+    explicit LuaAI(ServerPlayer *player);
 
     virtual const Card *askForCardShow(ServerPlayer *requestor, const QString &reason);
     virtual bool askForSkillInvoke(const QString &skill_name, const QVariant &data);

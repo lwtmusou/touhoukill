@@ -17,7 +17,7 @@ class ConnectionDialog : public QDialog
     Q_OBJECT
 
 public:
-    ConnectionDialog(QWidget *parent);
+    explicit ConnectionDialog(QWidget *parent);
     ~ConnectionDialog();
     void hideAvatarList();
     void showAvatarList();
@@ -38,7 +38,7 @@ class UdpDetectorDialog : public QDialog
     Q_OBJECT
 
 public:
-    UdpDetectorDialog(QDialog *parent);
+    explicit UdpDetectorDialog(QDialog *parent);
 
 private:
     QListWidget *list;

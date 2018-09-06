@@ -91,7 +91,6 @@ QWidget *PlayerCardDialog::createHandcardButton(QString flags)
             PlayerCardButton *button2 = NULL;
             if (i < selectableIds.length() - 1) {
                 card = Sanguosha->getEngineCard(selectableIds.at(i + 1));
-                ;
                 button2 = new PlayerCardButton(card->getFullName());
                 button2->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
 
@@ -129,7 +128,6 @@ QWidget *PlayerCardDialog::createHandcardButton(QString flags)
             PlayerCardButton *button2 = NULL;
             if (i < shownIds.length() - 1) {
                 card = Sanguosha->getEngineCard(shownIds.at(i + 1));
-                ;
                 button2 = new PlayerCardButton(card->getFullName());
                 button2->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
                 button2->setEnabled(!disabled_ids.contains(shownIds.at(i + 1)) && (method != Card::MethodDiscard || Self->canDiscard(player, shownIds.at(i + 1))));

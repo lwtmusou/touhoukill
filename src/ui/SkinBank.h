@@ -418,7 +418,7 @@ public:
     QString S_COMPACT_SKIN_NAME;
 
 protected:
-    QSanSkinFactory(const char *fileName);
+    explicit QSanSkinFactory(const char *fileName);
     static QSanSkinFactory *_sm_singleton;
     QSanSkinScheme _sm_currentSkin;
     JsonObject _m_skinList;

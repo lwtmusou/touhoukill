@@ -4749,7 +4749,6 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids, bool forceVisible)
                 cards_move.to->addCard(card, cards_move.to_place);
 
             m_drawPile->append(card_id);
-            break;
             doBroadcastNotify(S_COMMAND_UPDATE_PILE, QVariant(m_drawPile->length()));
         }
     }
@@ -5029,8 +5028,10 @@ void Room::filterCards(ServerPlayer *player, QList<const Card *> cards, bool ref
             filterSkills.append(filter);
         }
     }
-    if (filterSkills.size() == 0)
+    if (filterSkills.size() == 0) {
+        delete[] cardChanged;
         return;
+    }
 
     for (int i = 0; i < cards.size(); i++) {
         const Card *card = cards[i];
@@ -6105,10 +6106,8 @@ void Room::makeDamage(const QString &source, const QString &target, QSanProtocol
 
 void Room::makeKilling(const QString &killerName, const QString &victimName)
 {
-    ServerPlayer *killer = NULL, *victim = NULL;
-
-    killer = findChild<ServerPlayer *>(killerName);
-    victim = findChild<ServerPlayer *>(victimName);
+    ServerPlayer *killer = findChild<ServerPlayer *>(killerName);
+    ServerPlayer *victim = findChild<ServerPlayer *>(victimName);
 
     if (victim == NULL)
         return;

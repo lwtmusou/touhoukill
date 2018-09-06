@@ -12,7 +12,7 @@ class DistanceViewDialog : public QDialog
     Q_OBJECT
 
 public:
-    DistanceViewDialog(QWidget *parent = 0);
+    explicit DistanceViewDialog(QWidget *parent = 0);
     ~DistanceViewDialog();
 
 private:

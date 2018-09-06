@@ -24,6 +24,7 @@ ServerPlayer::ServerPlayer(Room *room)
     , trust_ai(new TrustAI(this))
     , recorder(NULL)
     , _m_phases_index(0)
+    , m_expectedReplySerial(0)
 //, next(NULL)
 {
     semas = new QSemaphore *[S_NUM_SEMAPHORES];
@@ -304,6 +305,7 @@ qint64 ServerPlayer::endNetworkDelayTest()
 
 void ServerPlayer::startRecord()
 {
+    delete recorder;
     recorder = new Recorder(this);
 }
 

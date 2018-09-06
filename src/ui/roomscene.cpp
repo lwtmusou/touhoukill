@@ -1143,6 +1143,7 @@ void RoomScene::updateTable()
         seatToRegion = regularSeatIndex[photos.length() - 1];
     }
     QList<Photo *> photosInRegion[C_NUM_REGIONS];
+    // TODO: out of bounds when regionIndex == 9
     int n = photos.length();
     for (int i = 0; i < n; i++) {
         int regionIndex = seatToRegion[i];
@@ -1164,7 +1165,7 @@ void RoomScene::updateTable()
         int hDist = G_ROOM_LAYOUT.m_photoHDistance;
         QRect floatingArea(0, 0, hDist, G_PHOTO_LAYOUT.m_normalHeight);
         // if the photo is on the right edge of table
-        if (i == 0 || i == 3 || i == 5 || i == 8)
+        if (i == 0 || i == 3 || i == 5)
             floatingArea.moveRight(0);
         else
             floatingArea.moveLeft(G_PHOTO_LAYOUT.m_normalWidth);
@@ -2543,7 +2544,7 @@ void RoomScene::selectTarget(int order, bool multiple)
 
     if (!to_select)
         return;
-    if (!(to_select->isSelected() || (!to_select->isSelected() && (to_select->flags() & QGraphicsItem::ItemIsSelectable))))
+    if (!(to_select->isSelected() || (to_select->flags() & QGraphicsItem::ItemIsSelectable)))
         return;
 
     to_select->setSelected(!to_select->isSelected());

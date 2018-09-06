@@ -55,7 +55,7 @@ class UpdateDialog : public QDialog
     Q_OBJECT
 
 public:
-    UpdateDialog(QWidget *parent = 0);
+    explicit UpdateDialog(QWidget *parent = 0);
 #if QT_VERSION >= 0x050600
     void setInfo(const QString &v, const QVersionNumber &vn, const QString &updateScript, const QString &updatePack, const QJsonObject &updateHash);
 #else
@@ -103,7 +103,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void setBackgroundBrush(bool center_as_origin);
 

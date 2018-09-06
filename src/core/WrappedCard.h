@@ -23,7 +23,7 @@ class WrappedCard : public Card
     Q_OBJECT
 
 public:
-    Q_INVOKABLE WrappedCard(Card *card);
+    Q_INVOKABLE explicit WrappedCard(Card *card);
     ~WrappedCard();
 
     inline virtual void setId(int id)

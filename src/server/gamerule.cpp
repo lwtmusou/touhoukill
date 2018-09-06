@@ -1140,7 +1140,6 @@ bool HulaoPassMode::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer
             }
 
             return false;
-            break;
         }
     }
     case GameOverJudge: {

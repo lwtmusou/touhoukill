@@ -54,7 +54,7 @@
 class FitView : public QGraphicsView
 {
 public:
-    FitView(QGraphicsScene *scene)
+    explicit FitView(QGraphicsScene *scene)
         : QGraphicsView(scene)
     {
         setSceneRect(Config.Rect);

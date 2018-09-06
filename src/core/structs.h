@@ -335,7 +335,7 @@ struct CardsMoveStruct
 
     bool tryParse(const QVariant &arg);
     QVariant toVariant() const;
-    inline bool isRelevant(const Player *player)
+    inline bool isRelevant(const Player *player) const
     {
         return player != NULL && (from == player || (to == player && to_place != Player::PlaceSpecial));
     }

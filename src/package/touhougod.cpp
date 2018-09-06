@@ -1649,11 +1649,8 @@ public:
         //step2: compare renegades
         bool find_shown_renegde = false;
         bool find_hide_renegde = false;
-        int renegde_num = 0;
-        QStringList roles;
         foreach (ServerPlayer *p1, room->getAlivePlayers()) {
             if (p1->getRole() == "renegade") {
-                renegde_num++;
                 if (p1->hasShownRole())
                     find_shown_renegde = true;
                 else

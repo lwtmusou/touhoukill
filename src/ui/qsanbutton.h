@@ -13,7 +13,7 @@ class QSanButton : public QGraphicsObject
     Q_OBJECT
 
 public:
-    QSanButton(QGraphicsItem *parent);
+    explicit QSanButton(QGraphicsItem *parent);
     QSanButton(const QString &groupName, const QString &buttonName, QGraphicsItem *parent);
     enum ButtonState
     {
@@ -132,7 +132,7 @@ public:
             return;
         QSanButton::setEnabled(enabled);
     }
-    QSanSkillButton(QGraphicsItem *parent = NULL);
+    explicit QSanSkillButton(QGraphicsItem *parent = NULL);
     inline const ViewAsSkill *getViewAsSkill() const
     {
         return _m_viewAsSkill;
@@ -165,7 +165,7 @@ class QSanInvokeSkillButton : public QSanSkillButton
     Q_OBJECT
 
 public:
-    inline QSanInvokeSkillButton(QGraphicsItem *parent = NULL)
+    explicit inline QSanInvokeSkillButton(QGraphicsItem *parent = NULL)
         : QSanSkillButton(parent)
     {
         _m_enumWidth = S_WIDTH_NARROW;
@@ -200,9 +200,10 @@ class QSanInvokeSkillDock : public QGraphicsObject
     Q_OBJECT
 
 public:
-    QSanInvokeSkillDock(QGraphicsItem *parent)
+    explicit QSanInvokeSkillDock(QGraphicsItem *parent)
         : QGraphicsObject(parent)
     {
+        _m_width = 0;
     }
     int width() const;
     int height() const;

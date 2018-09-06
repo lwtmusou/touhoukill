@@ -54,6 +54,7 @@ RoomThread::RoomThread(Room *room)
     : room(room)
     , nextExtraTurn(NULL)
     , extraTurnReturn(NULL)
+    , game_rule(NULL)
 {
 }
 

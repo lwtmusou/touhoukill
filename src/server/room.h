@@ -414,14 +414,14 @@ protected:
 private:
     struct _MoveSourceClassifier
     {
-        inline _MoveSourceClassifier(const CardsMoveStruct &move)
+        explicit inline _MoveSourceClassifier(const CardsMoveStruct &move)
         {
             m_from = move.from;
             m_from_place = move.from_place;
             m_from_pile_name = move.from_pile_name;
             m_from_player_name = move.from_player_name;
         }
-        inline void copyTo(CardsMoveStruct &move)
+        inline void copyTo(CardsMoveStruct &move) const
         {
             move.from = m_from;
             move.from_place = m_from_place;
@@ -444,7 +444,7 @@ private:
 
     struct _MoveMergeClassifier
     {
-        inline _MoveMergeClassifier(const CardsMoveStruct &move)
+        explicit inline _MoveMergeClassifier(const CardsMoveStruct &move)
         {
             m_from = move.from;
             m_to = move.to;

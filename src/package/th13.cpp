@@ -169,7 +169,7 @@ public:
         }
 
         int can_slash = invoke->invoker->tag["chiling_showslash"].toInt();
-        if (can_slash && can_slash > 0)
+        if (can_slash > 0)
             room->askForUseCard(target, "slash", "@chiling:" + invoke->invoker->objectName(), -1, Card::MethodUse, false);
         return false;
     }

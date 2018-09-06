@@ -253,7 +253,7 @@ class DummyCard : public SkillCard
 
 public:
     DummyCard();
-    DummyCard(const QList<int> &subcards);
+    explicit DummyCard(const QList<int> &subcards);
 
     virtual QString getSubtype() const;
     virtual QString getType() const;
