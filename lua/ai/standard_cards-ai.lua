@@ -145,21 +145,8 @@ function sgs.getDefenseSlash(player, self)
 
 	if hasEightDiagram then
 		defense = defense + 1.3
-		if player:hasSkill("tiandu") then defense = defense + 0.6 end
-		if player:hasSkill("leiji") then defense = defense + 0.4 end
 	end
 
-	if player:hasSkill("mingzhe") and getCardsNum("Jink", player) >= 1 then
-		defense = defense + 0.2
-	end
-
-
-	if player:hasSkill("tuntian") and player:hasSkill("zaoxian") and getCardsNum("Jink", player) >= 1 then
-		defense = defense + 1.5
-	end
-
-	if player:hasSkill("aocai") and player:getPhase() == sgs.Player_NotActive then defense = defense + 0.5 end
-	if player:hasSkill("wanrong") and not hasManjuanEffect(player) then defense = defense + 0.5 end
 
 
 
@@ -231,10 +218,6 @@ function sgs.getDefenseSlash(player, self)
 
 	if not sgs.isGoodTarget(player) then defense = defense + 10 end
 
-	if player:hasSkills("nosrende|rende") and player:getHp() > 2 then defense = defense + 1 end
-	if player:hasSkill("kuanggu") and player:getHp() > 1 then defense = defense + 0.2 end
-	if player:hasSkill("zaiqi") and player:getHp() > 1 then defense = defense + 0.35 end
-	if player:hasSkill("tianming") then defense = defense + 0.1 end
 
 	if player:getHp() > getBestHp(player) then defense = defense + 0.8 end
 	if player:getHp() <= 2 then defense = defense - 0.4 end
@@ -249,8 +232,7 @@ function sgs.getDefenseSlash(player, self)
 	--压根不懂集火理论  只要没牌就能扣减了大把防御值。。。 2血忠或者空城忠 帮1血主挡刀不要不要的
 	 --if player:getHandcardNum() == 0 and player:getPile("wooden_ox"):isEmpty()
 	 if sgs.card_lack[player:objectName()]["Jink"] == 1 and knownJink == 0
-	 and hujiaJink == 0  and tianrenJink==0
-	 and not player:hasSkill("kongcheng") then
+	 and hujiaJink == 0  and tianrenJink==0 then
 		if player:getHp() <= 1 then defense = defense - 2.5 end
 		if player:getHp() == 2 then defense = defense - 1.5 end
 		if not hasEightDiagram then defense = defense - 1 end
@@ -290,9 +272,6 @@ function sgs.getDefenseSlash(player, self)
 	if player:containsTrick("indulgence") and not player:containsTrick("YanxiaoCard") then defense = defense - 0.15 end
 	if player:containsTrick("supply_shortage") and not player:containsTrick("YanxiaoCard") then defense = defense - 0.15 end
 
-	if (attacker:hasSkill("roulin") and player:isFemale()) or (attacker:isFemale() and player:hasSkill("roulin")) then
-		defense = defense - 2.4
-	end
 
 	if not hasEightDiagram then
 		if player:hasSkill("jijiu") then defense = defense - 3 end
@@ -2251,7 +2230,7 @@ function SmartAI:willUseGodSalvation(card)
 
 
 	if self.player:hasSkills("nosjizhi|jizhi") then good = good + 6 end
-	if (self.player:hasSkill("kongcheng") and self.player:getHandcardNum() == 1) or not self:hasLoseHandcardEffective() then good = good + 5 end
+	if not self:hasLoseHandcardEffective() then good = good + 5 end
 
 	for _, friend in ipairs(self.friends) do
 		good = good + 10 * getCardsNum("Nullification", friend, self.player)

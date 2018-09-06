@@ -741,12 +741,7 @@ function SmartAI:getDynamicUsePriority(card)
 	local dynamic_value
 
 	-- direct control
-	if card:isKindOf("AmazingGrace") or card:isKindOf("FengrangCard") then
-		local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
-		if zhugeliang and self:isEnemy(zhugeliang) and zhugeliang:isKongcheng() then
-			return math.max(sgs.ai_use_priority.Slash, sgs.ai_use_priority.Duel) + 0.1
-		end
-	end
+
 	if card:isKindOf("Peach") and self.player:hasSkills("kuanggu|kofkuanggu") then return 1.01 end
 	if card:isKindOf("YanxiaoCard") and self.player:containsTrick("YanxiaoCard") then return 0.1 end
 	if card:isKindOf("DelayedTrick") and not card:isKindOf("YanxiaoCard") and #card:getSkillName() > 0 then
@@ -3100,10 +3095,7 @@ function SmartAI:askForNullification(trick, from, to, positive) --尼玛一把�
 		end
 
 		if from and self:isEnemy(from) and (sgs.evaluatePlayerRole(from) ~= "neutral" or sgs.isRolePredictable()) then
-			--使用者是敌方，自己有技能“空城”且无懈可击为最后一张手牌->命中
-			if self.player:hasSkill("kongcheng") and self.player:getHandcardNum() == 1 and self.player:isLastHandCard(null_card) and trick:isKindOf("SingleTargetTrick") then
-				return null_card
-			end
+			
 			 --敌方在虚弱、需牌技、漫卷中使用无中生有->命中
 			if trick:isKindOf("ExNihilo") and (self:isWeak(from) or self:hasSkills(sgs.cardneed_skill, from) or from:hasSkill("manjuan")) then return null_card end
 			--铁索连环的目标没有藤甲->不管
@@ -3686,9 +3678,6 @@ end
 
 function SmartAI:needKongcheng(player, keep)
 	player = player or self.player
-	if keep then
-		return player:isKongcheng() and (player:hasSkill("kongcheng") or (player:hasSkill("zhiji") and player:getMark("zhiji") == 0))
-	end
 
 	if not player:hasFlag("stack_overflow_xiangle") then
 		if player:hasSkill("beifa") and not player:isKongcheng() then
@@ -3704,8 +3693,6 @@ function SmartAI:needKongcheng(player, keep)
 	end
 
 	if not self:hasLoseHandcardEffective(player) and not player:isKongcheng() then return true end
-	if player:hasSkill("zhiji") and player:getMark("zhiji") == 0 then return true end
-	if player:hasSkill("shude") and player:getPhase() == sgs.Player_Play then return true end
 	return self:hasSkills(sgs.need_kongcheng, player)
 end
 
@@ -3983,17 +3970,6 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 	end
 
 
-	-- kongcheng
-	self:sort(self.enemies, "defense")
-	if #self.enemies > 0 and self.enemies[1]:isKongcheng() and self.enemies[1]:hasSkill("kongcheng")
-		and not hasManjuanEffect(self.enemies[1]) then
-		for _, acard in ipairs(cardtogive) do
-			if acard:isKindOf("Lightning") or acard:isKindOf("Collateral") or (acard:isKindOf("Slash") and self.player:getPhase() == sgs.Player_Play)
-				or acard:isKindOf("OffensiveHorse") or acard:isKindOf("Weapon") or acard:isKindOf("AmazingGrace") then
-				return acard, self.enemies[1]
-			end
-		end
-	end
 
 	if AssistTarget then
 		for _, hcard in ipairs(cardtogive) do
@@ -6464,7 +6440,7 @@ function SmartAI:damageMinusHp(self, enemy, type)
 					analepticpowerup = analepticpowerup + 1
 				end
 				if self.player:hasWeapon("GudingBlade")
-					and (enemy:isKongcheng() or (self.player:hasSkill("lihun") and enemy:isMale() and not enemy:hasSkill("kongcheng")))
+					and (enemy:isKongcheng())
 					and not (enemy:hasArmorEffect("SilverLion") and not IgnoreArmor(self.player, enemy)) then
 					slash_damagenum = slash_damagenum + 1
 				end
@@ -6749,13 +6725,6 @@ function SmartAI:findPlayerToDiscard(flags, include_self, isDiscard, players, re
 		end
 	end
 
-	if flags:match("h") then
-		local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
-		if zhugeliang and self:isFriend(zhugeliang) and zhugeliang:getHandcardNum() == 1 and self:getEnemyNumBySeat(self.player, zhugeliang) > 0
-			and zhugeliang:getHp() <= 2 and (not isDiscard or self.player:canDiscard(zhugeliang, "hs")) then
-			table.insert(player_table, zhugeliang)
-		end
-	end
 	if return_table then return player_table
 	else
 		if #player_table == 0 then return nil else return player_table[1] end
@@ -6767,8 +6736,7 @@ function SmartAI:findPlayerToDraw(include_self, drawnum)
 	local players = sgs.QList2Table(include_self and self.room:getAllPlayers() or self.room:getOtherPlayers(self.player))
 	local friends = {}
 	for _, player in ipairs(players) do
-		if self:isFriend(player) and not hasManjuanEffect(player)
-			and not (player:hasSkill("kongcheng") and player:isKongcheng() and drawnum <= 2) then
+		if self:isFriend(player)  then
 			table.insert(friends, player)
 		end
 	end
