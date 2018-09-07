@@ -1896,6 +1896,7 @@ public:
         if (triggerEvent == PreHpRecover) {
             RecoverStruct r = data.value<RecoverStruct>();
             room->touhouLogmessage("#shixue1", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(r.recover));
+            invoke->invoker->drawCards(2);
             return true;
         }
         if (invoke->invoker->isWounded()) {
@@ -1914,16 +1915,17 @@ public:
     Ziye()
         : TriggerSkill("ziye")
     {
-        events << Death;
+        events << Dying;// << Death;
         frequency = Wake;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
-        DeathStruct death = data.value<DeathStruct>();
-        if (death.damage && death.damage->from) {
-            ServerPlayer *player = death.damage->from;
-            if (player->hasSkill(this) && player->getMark(objectName()) == 0)
+        //DeathStruct death = data.value<DeathStruct>();
+        DyingStruct dying = data.value<DyingStruct>();
+        if (dying.damage && dying.damage->from) {
+            ServerPlayer *player = dying.damage->from;
+            if (player->hasSkill(this) && player->getMark(objectName()) == 0 && player != dying.who)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
         }
         return QList<SkillInvokeDetail>();
