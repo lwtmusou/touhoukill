@@ -10,7 +10,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = (require "middleclass").class("SmartAI")
 
-version = "TouhouSatsu AI 20180809"
+version = "TouhouSatsu AI 20180908"
 
 
 
