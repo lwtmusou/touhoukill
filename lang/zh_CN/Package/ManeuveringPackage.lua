@@ -34,12 +34,12 @@ return {
 	["#SilverLion"] = "%from 的防具【%arg2】将 %arg 点伤害的伤害值改为了 <font color=\"yellow\"><b>1</b></font> 点",
 
 	["fire_attack"] = "火攻",
-	[":fire_attack"] = "锦囊牌·非全体性的普通锦囊牌<br />使用时机：出牌阶段。<br />使用目标：一名有暗置手牌的角色。<br />作用效果：目标角色明置<font color=\"green\"><b>一张</b></font>手牌。然后你可弃置一张与其所明置的一种花色相同的手牌，若如此做，其受到你造成的<font color=\"green\"><b>1点</b></font>火焰伤害",
-	["fire-attack-card"] = "你可弃置一张与 %dest 所明置的牌中一种花色(%arg)相同的牌，对 %dest 造成1点火焰伤害",
-	["@fire_attack_show"] = "你因受到【火攻】的作用效果， 请明置一张手牌",
-	["@fire-attack"] = "%src 所明置的牌的花色为 <font color=\"green\"><b>%src %dest %arg %arg2</b></font>，请弃置一张与其中一种花色相同的手牌",
-	--[":fire_attack"] = "锦囊牌<br />使用时机：出牌阶段<br />使用目标：一名有手牌的角色。<br />作用效果：目标角色展示一张手牌。若你弃置一张与所展示牌相同花色的手牌，该角色受到1点火焰伤害",
-	--["fire-attack-card"] = "您可以弃置一张与 %dest 所展示卡牌相同花色(%arg)的牌对 %dest 造成1点火焰伤害",
+	--[":fire_attack"] = "锦囊牌·非全体性的普通锦囊牌<br />使用时机：出牌阶段。<br />使用目标：一名有暗置手牌的角色。<br />作用效果：目标角色明置<font color=\"green\"><b>一张</b></font>手牌。然后你可弃置一张与其所明置的一种花色相同的手牌，若如此做，其受到你造成的<font color=\"green\"><b>1点</b></font>火焰伤害",
+	--["fire-attack-card"] = "你可弃置一张与 %dest 所明置的牌中一种花色(%arg)相同的牌，对 %dest 造成1点火焰伤害",
+	["@fire_attack_show"] = "你因受到【火攻】的作用效果， 请展示 %src 张手牌",
+	["@fire-attack"] = "展示的牌的花色为 <font color=\"green\"><b>%src %dest %arg %arg2</b></font>，请弃置一张与其中一种花色相同的手牌",
+    [":fire_attack"] = "锦囊牌<br />使用时机：出牌阶段<br />使用目标：一名有手牌的角色。<br />作用效果：目标角色展示<font color=\"green\"><b>一张</b></font>手牌。若你弃置一张与所展示牌相同花色的手牌，对其造成<font color=\"green\"><b>1点</b></font>火焰伤害",
+	["fire-attack-card"] = "您可以弃置一张与 %dest 所展示卡牌相同花色(%arg)的牌对 %dest 造成1点火焰伤害",
 	--["@fire-attack"] = "%src 展示的牌的花色为 %arg，请弃置一张与其相同花色的手牌",
 
 	["iron_chain"] = "铁索连环",

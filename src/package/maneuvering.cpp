@@ -460,7 +460,7 @@ FireAttack::FireAttack(Card::Suit suit, int number)
     can_damage = true;
 }
 
-bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+/*bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
@@ -498,8 +498,74 @@ bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player
         return checkHand;
     }
     return false;
+}*/
+
+bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    if (targets.length() >= total_num)
+        return false;
+    bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+    if (to_select->isKongcheng() && !ignore)
+        return false;
+    return true;
+    //(to_select != Self || !Self->isLastHandCard(this, true))
 }
 
+
+void FireAttack::onEffect(const CardEffectStruct &effect) const
+{
+    Room *room = effect.from->getRoom();
+    if (effect.to->isKongcheng())
+        return;
+
+    int num = qMin(1 + effect.effectValue.first(), effect.to->getHandcardNum());
+    
+    const Card *cards = room->askForExchange(effect.to, objectName(), num, num, false, "@fire_attack_show:" + QString::number(num));
+    DELETE_OVER_SCOPE(const Card, cards)
+        foreach(int id, cards->getSubcards())
+            room->showCard(effect.to, id);
+
+    QString suit_str = Sanguosha->getCard(cards->getSubcards().first())->getSuitString();
+    QStringList suits;
+    foreach(int id, cards->getSubcards()) {
+        QString suit = Sanguosha->getWrappedCard(id)->getSuitString();
+        if (!suits.contains(suit))
+            suits << suit;
+        if (suits.length() >= 4)
+            break;
+    }
+    QString pattern = QString(".|%1|.|hand").arg(suits.join(","));
+    while (suits.length() < 4) {
+        suits << QString();
+    }
+    QString prompt = QString("@fire-attack:%1:%2:%3:%4").arg(suits[0]).arg(suits[1]).arg(suits[2]).arg(suits[3]);
+    if (effect.from->isAlive()) {
+        bool damage = false;
+        if (effect.from->hasSkill("fengxiang")) {
+            const Card *card_to_throw = room->askForCard(effect.from, pattern, prompt, QVariant::fromValue(effect), Card::MethodNone);
+            if (card_to_throw) {
+                if (!effect.from->isShownHandcard(card_to_throw->getId()) && effect.from->askForSkillInvoke("fengxiang_show", "show"))
+                    effect.from->addToShownHandCards(QList<int>() << card_to_throw->getEffectiveId());
+                else
+                    room->throwCard(card_to_throw, effect.from, effect.from);
+                damage = true;
+            }
+        }
+        else {
+            const Card *card_to_throw = room->askForCard(effect.from, pattern, prompt, QVariant::fromValue(effect));
+            if (card_to_throw)
+                damage = true;
+        }
+        if (damage)
+            room->damage(DamageStruct(this, effect.from, effect.to, 1 + effect.effectValue.last(), DamageStruct::Fire));
+        else
+            effect.from->setFlags("FireAttackFailed_" + effect.to->objectName()); // For AI
+    }
+
+}
+
+/*
 void FireAttack::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.from->getRoom();
@@ -582,7 +648,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
     //can show VirtualCard???
     //if (card->isVirtualCard())
     //    delete card;
-}
+}*/
 
 IronChain::IronChain(Card::Suit suit, int number)
     : TrickCard(suit, number)
