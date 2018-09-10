@@ -853,6 +853,48 @@ public:
     }
 };
 
+BoneHealing::BoneHealing(Card::Suit suit, int number)
+    : SingleTargetTrick(suit, number)
+{
+    setObjectName("bone_healing");
+}
+
+bool BoneHealing::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    if (targets.length() >= total_num || to_select == Self)
+        return false;
+    bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+    if (!to_select->isDebuffStatus() && !ignore)
+        return false;
+    
+    int rangefix = 0;
+    if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
+        rangefix += 1;
+    int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
+    
+    
+    if (Self->distanceTo(to_select, rangefix) > distance_limit)
+        return false;
+    
+    return true;
+}
+
+void BoneHealing::onEffect(const CardEffectStruct &effect) const
+{
+    Room *room = effect.to->getRoom();
+    DamageStruct damage(this, effect.from, effect.to);
+    room->damage(damage);
+
+    effect.to->removeShownHandCards(effect.to->getShownHandcards(), true);
+    effect.to->removeBrokenEquips(effect.to->getBrokenEquips(), true);
+    if (effect.to->isChained())
+        effect.to->getRoom()->setPlayerProperty(effect.to, "chained", !effect.to->isChained());
+}
+
+
+
+
 SpellDuel::SpellDuel(Card::Suit suit, int number)
     : SingleTargetTrick(suit, number)
 {
@@ -969,6 +1011,9 @@ void Kusuri::onEffect(const CardEffectStruct &effect) const
     }
 }
 
+
+
+
 TestCardPackage::TestCardPackage()
     : Package("test_card", Package::CardPack)
 {
@@ -988,11 +1033,15 @@ TestCardPackage::TestCardPackage()
         << new AwaitExhausted(Card::Diamond, 4)
         << new AwaitExhausted(Card::Heart, 10)
         << new AllianceFeast(Card::Heart, 1)
-        << new FightTogether(Card::Spade, 11)
-        << new FightTogether(Card::Club, 5)
+        //<< new FightTogether(Card::Spade, 11)
+        //<< new FightTogether(Card::Club, 5)
         //<< new SpellDuel(Card::Heart, 1) << new SpellDuel(Card::Diamond, 1)
+        << new BoneHealing(Card::Spade, 7)
+        << new BoneHealing(Card::Spade, 11)
+        << new BoneHealing(Card::Club, 5)
 
         << new Nullification(Card::Club, 12)
+        << new Nullification(Card::Club, 11)
         //Basic
         //<< new Kusuri(Card::Diamond, 3) << new Kusuri(Card::Heart, 8) << new Kusuri(Card::Heart, 9)
         << new IronSlash(Card::Club, 7)

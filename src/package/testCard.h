@@ -177,6 +177,18 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class BoneHealing : public SingleTargetTrick
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE BoneHealing(Card::Suit suit, int number);
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+
 class SpellDuel : public SingleTargetTrick
 {
     Q_OBJECT
