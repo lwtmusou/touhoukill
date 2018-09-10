@@ -463,9 +463,9 @@ function SmartAI:isPriorFriendOfSlash(friend, card, source)
 	end]]
 
 
-	if not self:hasHeavySlashDamage(source, card, friend) then
-		return true
-	end
+	--if not self:hasHeavySlashDamage(source, card, friend) then
+	--	return true
+	--end
 	if card:isKindOf("NatureSlash") and friend:isChained() and self:isGoodChainTarget(friend, source, nil, nil, card) then return true end
 	return
 end
@@ -531,7 +531,7 @@ function SmartAI:useCardSlash(card, use)
 			rangefix = rangefix + 1
 		end
 	end
-
+    
 	local function canAppendTarget(target)
 		if use.to:contains(target) then return false end
 		local targets = sgs.PlayerList()
@@ -584,7 +584,6 @@ function SmartAI:useCardSlash(card, use)
 	end]]
 
 
-
 	for _, friend in ipairs(self.friends_noself) do
 		local slash_prohibit = false
 		slash_prohibit = self:slashProhibit(card, friend)
@@ -603,9 +602,6 @@ function SmartAI:useCardSlash(card, use)
 			end
 		end
 	end
-
-
-
 
 	local targets = {}
 	local forbidden = {}
