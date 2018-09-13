@@ -749,7 +749,7 @@ function SmartAI:useCardFireAttack(fire_attack, use) --尼玛 吃酒+火攻+丢�
 
 	for _, enemy in ipairs(enemies) do
 		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName())) and enemy:getHandcardNum() == 1 then
-			local handcards = sgs.QList2Table(enemy:getCards("h"))--enemy:getHandcards()
+			local handcards = sgs.QList2Table(enemy:getHandcards())--enemy:getCards("h")
 			local flag = string.format("%s_%s_%s", "visible", self.player:objectName(), enemy:objectName())
 			if (handcards[1]:hasFlag("visible") or handcards[1]:hasFlag(flag)) then
 				local suitstring = handcards[1]:getSuitString()
