@@ -7,7 +7,7 @@ function SmartAI:canAttack(enemy, attacker, nature)
 	end
 	if #self.enemies == 1 then return true end
 	if self:getDamagedEffects(enemy, attacker) or (self:needToLoseHp(enemy, attacker, false, true) and #self.enemies > 1) or not sgs.isGoodTarget(enemy, self.enemies, self) then return false end
-	if self:objectiveLevel(enemy) <= 2 or self:cantbeHurt(enemy, self.player, damage) or not self:damageIsEffective(enemy, nature, attacker) then return false end
+	if self:objectiveLevel(enemy) <= 2 or not self:damageIsEffective(enemy, nature, attacker) then return false end
 	if nature ~= sgs.DamageStruct_Normal and enemy:isChained() and not self:isGoodChainTarget(enemy, self.player, nature) then return false end
 	return true
 end
@@ -46,7 +46,7 @@ function sgs.isGoodTarget(player, targets, self, isSlash)
 		if #targets == 1 then return true end
 		local foundtarget = false
 		for i = 1, #targets, 1 do
-			if sgs.isGoodTarget(targets[i]) and not self:cantbeHurt(targets[i]) then
+			if sgs.isGoodTarget(targets[i]) then
 				foundtarget = true
 				break
 			end
@@ -815,8 +815,7 @@ sgs.ai_skill_use.slash = function(self, prompt)
 			if not self:hasHeavySlashDamage(self.player, card, friend)
 				and self.player:canSlash(friend, slash, not no_distance, range_fix) and not self:slashProhibit(slash, friend)
 				and self:slashIsEffective(slash, friend)
-				and (self:findLeijiTarget(friend, 50, self.player)
-					or (friend:isLord() and self.player:hasSkill("guagu") and friend:getLostHp() >= 1 and getCardsNum("Jink", friend, self.player) == 0)
+				and ((friend:isLord() and self.player:hasSkill("guagu") and friend:getLostHp() >= 1 and getCardsNum("Jink", friend, self.player) == 0)
 					)
 				and not (self.player:hasFlag("slashTargetFix") and not friend:hasFlag("SlashAssignee"))
 				 then
@@ -877,7 +876,7 @@ sgs.ai_skill_playerchosen.zero_card_as_slash = function(self, targets)
 	for _, target in ipairs(targetlist) do
 		if self:isEnemy(target) and not self:slashProhibit(slash ,target) and sgs.isGoodTarget(target, targetlist, self) then
 			if self:slashIsEffective(slash, target) then
-				if self:getDamagedEffects(target, self.player, true) or self:needLeiji(target, self.player) then
+				if self:getDamagedEffects(target, self.player, true) then
 					table.insert(forbidden, target)
 				elseif self:needToLoseHp(target, self.player, true, true) then
 					table.insert(arrBestHp, target)
@@ -894,7 +893,7 @@ sgs.ai_skill_playerchosen.zero_card_as_slash = function(self, targets)
 		if not self:slashProhibit(slash, target) then
 			if self:slashIsEffective(slash, target) then
 				if self:isFriend(target) and (self:needToLoseHp(target, self.player, true, true)
-					or self:getDamagedEffects(target, self.player, true) or self:needLeiji(target, self.player)) then
+					or self:getDamagedEffects(target, self.player, true)) then
 						return target
 				end
 			else
@@ -1061,7 +1060,6 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 		--      or (self.player:getHp() == 1 and #self.friends_noself == 0) then
 		--  elseif (self:getCardsNum("Jink") <= getCardsNum("Slash", target, self.player) or self.player:hasSkill("qingnang")) and self.player:getHp() > 1
 		--          or self.player:hasSkill("jijiu") and getKnownCard(self.player, self.player, "red") > 0
-		--          or self:canUseJieyuanDecrease(target)
 		--      then
 		--      return "."
 		--  end
@@ -1093,7 +1091,6 @@ function SmartAI:canHit(to, from, conservative)
 	to = to or self.player
 	local jink = sgs.cloneCard("jink")
 	if to:isCardLimited(jink, sgs.Card_MethodUse) then return true end
-	if self:canLiegong(to, from) then return true end
 	if not self:isFriend(to, from) then
 		if from:hasWeapon("Axe") and from:getCards("hes"):length() > 2 then return true end
 		--if from:hasWeapon("Blade") and getCardsNum("Jink", to, from) <= getCardsNum("Slash", from, from) then return true end
@@ -1238,8 +1235,8 @@ function SmartAI:useCardPeach(card, use)
 			table.insert(friends,self.friends[i])
 		end
 	end
-	if #friends > 1 and ((not hasBuquEffect(friends[2]) and friends[2]:getHp() < 3 and self:getOverflow() < 2)
-								or (not hasBuquEffect(friends[1]) and friends[1]:getHp() < 2 and peaches <= 1 and self:getOverflow() < 3)) then
+	if #friends > 1 and ((friends[2]:getHp() < 3 and self:getOverflow() < 2)
+								or ( friends[1]:getHp() < 2 and peaches <= 1 and self:getOverflow() < 3)) then
 		return
 	end
 	--为队友留桃子
@@ -1353,7 +1350,6 @@ sgs.ai_skill_cardask["double-sword-card"] = function(self, data, pattern, target
 		end
 	end
 	if target and self:isFriend(target) then return "." end
-	if self:needBear() then return "." end
 	if target and self:needKongcheng(target, true) then return "." end
 	local cards = self.player:getHandcards()
 	for _, card in sgs.qlist(cards) do
@@ -1574,7 +1570,7 @@ sgs.ai_skill_invoke.Blade = function(self)
 	return self:invokeTouhouJudge()
 end
 --[[sgs.ai_skill_cardask["blade-slash"] = function(self, data, pattern, target)
-	if target and self:isFriend(target) and not self:findLeijiTarget(target, 50, self.player) then
+	if target and self:isFriend(target) then
 		return "."
 	end
 	for _, slash in ipairs(self:getCards("Slash")) do
@@ -2151,7 +2147,7 @@ function SmartAI:useCardDuel(duel, use)
 					or self:getDamagedEffects(self.player, enemy) or (n2 < 1 and sgs.isGoodHp(self.player))
 
 		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName()))
-			and self:objectiveLevel(enemy) > 3 and canUseDuelTo(enemy) and not self:cantbeHurt(enemy) and useduel and sgs.isGoodTarget(enemy, enemies, self) then
+			and self:objectiveLevel(enemy) > 3 and canUseDuelTo(enemy) and useduel and sgs.isGoodTarget(enemy, enemies, self) then
 			if not table.contains(targets, enemy) then table.insert(targets, enemy) end
 		end
 	end
@@ -2227,8 +2223,6 @@ sgs.ai_skill_cardask["duel-slash"] = function(self, data, pattern, target)
 
 	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
 	if self.player:hasFlag("AIGlobal_NeedToWake") and self.player:getHp() > 1 then return "." end
-	
-	if self:cantbeHurt(target) then return "." end
 
 	if self:isEnemy(target) and not self:isWeak() and self:getDamagedEffects(self.player, target) then return "." end
 
@@ -2506,7 +2500,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 		if self:slashIsAvailable() then
 			for _, slash in ipairs(self:getCards("Slash")) do
 				if not self:slashProhibit(slash, enemy) and enemy:getHandcardNum() == 1 and enemy:getHp() == 1 and self:hasLoseHandcardEffective(enemy)
-					and self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) 
+					and self:objectiveLevel(enemy) > 3
 					and self.player:canSlash(enemy, slash) and self:hasTrickEffective(card, enemy)
 					and (not enemy:isChained() or self:isGoodChainTarget(enemy, nil, nil, nil, slash))
 					and (not self:hasEightDiagramEffect(enemy) or IgnoreArmor(self.player, enemy)) then
@@ -2984,13 +2978,6 @@ sgs.ai_skill_cardask["collateral-slash"] = function(self, data, pattern, target2
 		return "."
 	end
 
-	if self:isFriend(target2) and self:needLeiji(target2, self.player) then
-		for _, slash in ipairs(slashes) do
-			if  self:slashIsEffective(slash, target2) then
-				return slash:toString()
-			end
-		end
-	end
 
 	if target2 and (self:getDamagedEffects(target2, self.player, true) or self:needToLoseHp(target2, self.player, true)) then
 		for _, slash in ipairs(slashes) do
@@ -3131,7 +3118,6 @@ function SmartAI:useCardIndulgence(card, use)
 		if self:objectiveLevel(enemy) < 3 then value = value - 10 end
 		if not enemy:faceUp() then value = value - 10 end
 		
-		if self:needBear(enemy) then value = value - 20 end
 		--if self:needChuixue(enemy) then
 		if self:touhouNeedBear(card) then value = value - 20 end
 		if not sgs.isGoodTarget(enemy, self.enemies, self) then value = value - 1 end
@@ -4199,7 +4185,6 @@ function SmartAI:useCardSavingEnergy(card, use)
 		if friend:isLord() then value = value + 3 end
 		if self:objectiveLevel(friend) < 3 then value = value - 10 end
 		if not friend:faceUp() then value = value - 10 end
-		if self:needBear(friend) then value = value - 20 end
 		value = value + (self.room:alivePlayerCount() - self:playerGetRound(friend)) / 2
 		return value
 	end

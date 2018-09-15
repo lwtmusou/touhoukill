@@ -14,4 +14,5 @@ To Fs
 3、发布macOS版
 
 To lwtmusou
-1、清理与原三国杀有关的AI部分
+1、二神将
+2 新牌的ai

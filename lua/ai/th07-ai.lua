@@ -873,9 +873,7 @@ sgs.ai_skill_askforyiji.jiyi = function(self, card_ids)
 	local available_friends = {}
 	if #self.friends_noself==0 then return nil, -1 end
 	for _, friend in ipairs(self.friends_noself) do
-		--if not friend:hasSkill("manjuan") and not self:isLihunTarget(friend) then
 		table.insert(available_friends, friend)
-		--end
 	end
 	if self.player:getHandcardNum()<=2 then  return nil, -1 end
 	local toGive, allcards = {}, {}

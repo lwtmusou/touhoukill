@@ -433,7 +433,6 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 		if dmg and nature == sgs.DamageStruct_Fire then
 			if target:hasArmorEffect("Vine") then dmg = dmg + 1 end
 		end
-		if self:cantbeHurt(target, source, damagecount) then newvalue = newvalue - 100 end
 		if damagecount + (dmg or 0) >= target:getHp() then
 			newvalue = newvalue - 2
 			if target:isLord() and not self:isEnemy(target, source) then killlord = true end
@@ -505,7 +504,6 @@ function SmartAI:useCardIronChain(card, use)
 				return
 			end
 		end
-		if self:needBear() then return end
 	end
 
 	local friendtargets = {}
@@ -709,7 +707,7 @@ function SmartAI:useCardFireAttack(fire_attack, use) --尼玛 吃酒+火攻+丢�
 		return self:objectiveLevel(enemy) > 3 and damage > 0 --and not fire_Kongcheng(enemy) 
 				and not enemy:isKongcheng() 
 				and not self.room:isProhibited(self.player, enemy, fire_attack)
-				and self:damageIsEffective(enemy, sgs.DamageStruct_Fire, self.player) and not self:cantbeHurt(enemy, self.player, damage)
+				and self:damageIsEffective(enemy, sgs.DamageStruct_Fire, self.player)
 				and self:hasTrickEffective(fire_attack, enemy)
 				and sgs.isGoodTarget(enemy, self.enemies, self)
 				and (not (self:getDamagedEffects(enemy, self.player))
@@ -739,7 +737,7 @@ function SmartAI:useCardFireAttack(fire_attack, use) --尼玛 吃酒+火攻+丢�
 		--and	fire_Kongcheng(self.player)--
 		and self.player:getHandcardNum() > 1
 		and not self.room:isProhibited(self.player, self.player, fire_attack)
-		and self:damageIsEffective(self.player, sgs.DamageStruct_Fire, self.player) and not self:cantbeHurt(self.player)
+		and self:damageIsEffective(self.player, sgs.DamageStruct_Fire, self.player)
 		and self:hasTrickEffective(fire_attack, self.player)
 		and (self.player:getHp() > 1 or self:getCardsNum("Peach") >= 1 or self:getCardsNum("Analeptic") >= 1 or self.player:hasSkill("buqu")
 			) then

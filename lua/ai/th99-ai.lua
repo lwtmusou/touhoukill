@@ -21,7 +21,7 @@ dangjiavs_skill.name = "dangjia_attach"
 table.insert(sgs.ai_skills, dangjiavs_skill)
 dangjiavs_skill.getTurnUseCard = function(self)
 	if self.player:getKingdom()~="wai" then return nil end
-	if self.player:isKongcheng() or self:needBear()  or self.player:hasFlag("Forbiddangjia") then return nil end
+	if self.player:isKongcheng() or self.player:hasFlag("Forbiddangjia") then return nil end
 	return sgs.Card_Parse("@DangjiaCard=.")
 end
 sgs.ai_skill_use_func.DangjiaCard = function(card, use, self)
