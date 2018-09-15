@@ -867,17 +867,31 @@ bool BoneHealing::targetFilter(const QList<const Player *> &targets, const Playe
     bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
     if (!to_select->isDebuffStatus() && !ignore)
         return false;
-    
-    int rangefix = 0;
-    if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
-        rangefix += 1;
-    int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
-    
-    
-    if (Self->distanceTo(to_select, rangefix) > distance_limit)
-        return false;
-    
-    return true;
+
+    int chained = 0;
+    int showncard = 0;
+    int brokenequip = 0;
+
+    if (Self->isChained() != to_select->isChained()) {
+        if (Self->isChained())
+            chained = -1;
+        else
+            chained = 1;
+    }
+    if (Self->getShownHandcards().isEmpty() != to_select->getShownHandcards().isEmpty()) {
+        if (!Self->getShownHandcards().isEmpty())
+            showncard = -1;
+        else
+            showncard = 1;
+    }
+    if (Self->getBrokenEquips().isEmpty() != to_select->getBrokenEquips().isEmpty()) {
+        if (!Self->getBrokenEquips().isEmpty())
+            brokenequip = -1;
+        else
+            brokenequip = 1;
+    }
+
+    return (chained +  showncard + brokenequip) > 0;
 }
 
 void BoneHealing::onEffect(const CardEffectStruct &effect) const
