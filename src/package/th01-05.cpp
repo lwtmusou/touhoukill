@@ -1036,7 +1036,7 @@ public:
         return d;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    /*bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
             if (invoke->invoker->getPile("dream").length() >= 2) {
@@ -1052,52 +1052,56 @@ public:
             return true;
         }
         return false;
-    }
+    }*/
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        QVariantList ids = invoke->invoker->tag["huantong"].toList();
-        invoke->invoker->tag.remove("huantong");
-        if (ids.isEmpty()) {
-            CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, "", NULL, "dream", "");
-            invoke->invoker->addToPile("dream", room->getNCards(1), false, reason);
-        } else {
-            DamageStruct damage = data.value<DamageStruct>();
+        //QVariantList ids = invoke->invoker->tag["huantong"].toList();
+        //invoke->invoker->tag.remove("huantong");
+        //if (ids.isEmpty()) {} else {
+        CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, "", NULL, "dream", "");
+        invoke->invoker->addToPile("dream", room->getNCards(1), false, reason);
+        if (invoke->invoker->getPile("dream").length() >= 2) {
+            const Card *c = room->askForCard(invoke->invoker, "@@huantong", "@huantong:" + invoke->targets.first()->objectName(), data, Card::MethodNone, NULL, false, objectName());
+            if (c) {
+                QList<int> ids = c->getSubcards();
+                //do damage
+                DamageStruct damage = data.value<DamageStruct>();
 
-            QList<int> get_ids;
-            QList<int> throw_ids;
-            foreach (QVariant card_data, ids) {
-                int id = card_data.toInt();
-                room->showCard(invoke->invoker, id);
-                if (Sanguosha->getCard(id)->isKindOf("BasicCard"))
-                    get_ids << id;
-                else
-                    throw_ids << id;
+                QList<int> get_ids;
+                QList<int> throw_ids;
+                foreach(QVariant card_data, ids) {
+                    int id = card_data.toInt();
+                    room->showCard(invoke->invoker, id);
+                    if (Sanguosha->getCard(id)->isKindOf("BasicCard"))
+                        get_ids << id;
+                    else
+                        throw_ids << id;
+                }
+                if (!get_ids.isEmpty()) {
+                    DummyCard dummy(get_ids);
+                    damage.to->obtainCard(&dummy);
+                }
+
+                if (!throw_ids.isEmpty()) {
+                    DummyCard dummy(throw_ids);
+                    CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
+                    room->throwCard(&dummy, reason, NULL);
+                }
+
+                LogMessage log;
+                log.type = "#HuantongDamage";
+                log.from = damage.to;
+                log.arg = objectName();
+                log.arg2 = QString::number(get_ids.length());
+                room->sendLog(log);
+
+                if (get_ids.isEmpty())
+                    return true;
+                damage.damage = get_ids.length();
+                data = QVariant::fromValue(damage);
             }
-            if (!get_ids.isEmpty()) {
-                DummyCard dummy(get_ids);
-                damage.to->obtainCard(&dummy);
-            }
-
-            if (!throw_ids.isEmpty()) {
-                DummyCard dummy(throw_ids);
-                CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
-                room->throwCard(&dummy, reason, NULL);
-            }
-
-            LogMessage log;
-            log.type = "#HuantongDamage";
-            log.from = damage.to;
-            log.arg = objectName();
-            log.arg2 = QString::number(get_ids.length());
-            room->sendLog(log);
-
-            if (get_ids.isEmpty())
-                return true;
-            damage.damage = get_ids.length();
-            data = QVariant::fromValue(damage);
         }
-
         return false;
     }
 };
