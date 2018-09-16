@@ -4665,7 +4665,7 @@ void AnyunDialog::popup()
         const General *g = Sanguosha->getGeneral(hidden);
         foreach (const Skill *skill, g->getSkillList()) {
             const ViewAsSkill *vs = Sanguosha->getViewAsSkill(skill->objectName());
-            if (vs) {
+            if (vs && !vs->inherits("FilterSkill")) {
                 bool add = false;
                 if (play && vs->isEnabledAtPlay(Self))
                     add = true;
@@ -4950,7 +4950,7 @@ public:
         //for test!!! do not remove
         /*QSet<QString> test;
         if (init)
-           test << "suwako" << "kanako" << "yukari_sp";
+           test << "elly" << "marisa" << "yukari_sp";
         else
            test << "renko" << "renko" << "renko";//test hidden general changing
         return test.toList();*/
