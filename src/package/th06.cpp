@@ -1382,7 +1382,7 @@ static void do_sishu(ServerPlayer *player)
             if (target != player)
                 room->recover(player, RecoverStruct());
             if (!throwIds.isEmpty()) {
-                CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), "cuiji", QString());
+                CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), "sishu", QString());
                 DummyCard dummy(throwIds);
                 room->throwCard(&dummy, reason, NULL);
                 throwIds.clear();

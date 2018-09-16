@@ -857,6 +857,7 @@ BoneHealing::BoneHealing(Card::Suit suit, int number)
     : SingleTargetTrick(suit, number)
 {
     setObjectName("bone_healing");
+    can_damage = true;
 }
 
 bool BoneHealing::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
