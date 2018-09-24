@@ -899,6 +899,7 @@ void BoneHealing::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
     DamageStruct damage(this, effect.from, effect.to);
+    damage.damage = 1 + effect.effectValue.first();
     room->damage(damage);
 
     effect.to->removeShownHandCards(effect.to->getShownHandcards(), true);
