@@ -866,10 +866,11 @@ bool BoneHealing::targetFilter(const QList<const Player *> &targets, const Playe
     if (targets.length() >= total_num || to_select == Self)
         return false;
     bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
-    if (!to_select->isDebuffStatus() && !ignore)
-        return false;
+    if (ignore)
+        return true;
 
-    int chained = 0;
+    return to_select->isDebuffStatus();
+    /*int chained = 0;
     int showncard = 0;
     int brokenequip = 0;
 
@@ -892,7 +893,7 @@ bool BoneHealing::targetFilter(const QList<const Player *> &targets, const Playe
             brokenequip = 1;
     }
 
-    return (chained +  showncard + brokenequip) > 0;
+    return (chained +  showncard + brokenequip) > 0;*/
 }
 
 void BoneHealing::onEffect(const CardEffectStruct &effect) const
