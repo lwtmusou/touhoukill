@@ -605,7 +605,22 @@ function mingmuvs_skill.getTurnUseCard(self)
 		local source = self.room:findPlayerBySkillName("mingmu")
 		if not source or source:hasFlag("mingmuInvoked") or not self:isFriend(source) then return nil end
 		local give = self:getOverflow(self.player) > 0
-		if not give and sgs.Slash_IsAvailable(self.player) and source:inMyAttackRange(self.player) and self.player:getAttackRange() > 1  then
+		
+		if not give and sgs.Slash_IsAvailable(self.player) then
+			local slash = self:getCard("Slash")
+			--攻击范围+1后能否够到敌人
+			if slash then
+			    local new_range = self.player:getAttackRange() +1
+				for _,p in ipairs(self.enemies) do
+					if new_range == self.player:distanceTo(p) then
+						give = true
+						return 
+					end
+				end
+			end
+		end
+		--老版本：不能对距离1以外的角色使用杀
+		--[[if not give and sgs.Slash_IsAvailable(self.player) and source:inMyAttackRange(self.player) and self.player:getAttackRange() > 1  then
 			local slash = self:getCard("Slash")
 			--其实要比较距离1以内/以外的敌人的防御值。 先偷懒了。
 			if slash then 
@@ -616,7 +631,7 @@ function mingmuvs_skill.getTurnUseCard(self)
 					end
 				end
 			end	
-		end
+		end]]
 		
 		if not give then return nil end
 		cards = sgs.QList2Table(cards)
