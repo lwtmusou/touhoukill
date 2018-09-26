@@ -2953,6 +2953,7 @@ function SmartAI:askForNullification(trick, from, to, positive) --尼玛一把�
 				else
 					if trick:isKindOf("Snatch") then return null_card end
 					if trick:isKindOf("Duel") and self:isWeak(to) then return null_card end
+					if  trick:isKindOf("BoneHealing") and self:isWeak(to) then return null_card end
 					if trick:isKindOf("FireAttack") and from:objectName() ~= to:objectName() then
 						if from:getHandcardNum() > 2
 							or self:isWeak(to)

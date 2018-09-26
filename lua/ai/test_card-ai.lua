@@ -333,3 +333,34 @@ function SmartAI:useCardFightTogether(card, use)
 end
 sgs.ai_use_priority.FightTogether = 6.1
 sgs.ai_keep_value.FightTogether = 1.5
+
+
+function SmartAI:useCardBoneHealing(card, use)
+	local total_num = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, card)
+	
+	local enemies = self:exclude(self.enemies, card)
+	local targets = {}
+	
+	for _,e in ipairs(enemies) do
+		if e:isDebuffStatus() then
+			table.insert(targets, e)
+			
+		end
+	end
+	if #targets > 0 then
+	    self:sort(targets, "hp")
+		
+		for _,t in ipairs(enemies) do
+			use.card = card
+			if use.to then
+				use.to:append(t)
+			end
+			if not use.to or total_num <= use.to:length() then return end
+		end
+	end
+end
+sgs.ai_use_priority.BoneHealing = sgs.ai_use_priority.ThunderSlash + 0.1
+sgs.ai_keep_value.BoneHealing = 2.5
+sgs.dynamic_value.damage_card.BoneHealing = true
+--仇恨由伤害事件更新好了
+--sgs.ai_card_intention.BoneHealing = 30
