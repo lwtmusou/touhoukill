@@ -1822,6 +1822,7 @@ HuweiCard::HuweiCard()
 
 const Card *HuweiCard::validate(CardUseStruct &cardUse) const
 {
+    cardUse.from->showHiddenSkill("huwei");
     Room *room = cardUse.from->getRoom();
     room->touhouLogmessage("#InvokeSkill", cardUse.from, "huwei");
     room->notifySkillInvoked(cardUse.from, "huwei");

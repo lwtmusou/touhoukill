@@ -1898,6 +1898,7 @@ bool HuaxiangCard::targetsFeasible(const QList<const Player *> &targets, const P
 
 const Card *HuaxiangCard::validate(CardUseStruct &card_use) const
 {
+    card_use.from->showHiddenSkill("huaxiang");
     QString to_use = user_string;
     card_use.from->getRoom()->touhouLogmessage("#InvokeSkill", card_use.from, "huaxiang");
     card_use.from->addToPile("rainbow", subcards.first());
@@ -1910,6 +1911,7 @@ const Card *HuaxiangCard::validate(CardUseStruct &card_use) const
 
 const Card *HuaxiangCard::validateInResponse(ServerPlayer *user) const
 {
+    user->showHiddenSkill("huaxiang");
     Room *room = user->getRoom();
     room->touhouLogmessage("#InvokeSkill", user, "huaxiang");
     user->addToPile("rainbow", subcards.first());
@@ -4950,7 +4952,7 @@ public:
         //for test!!! do not remove
         /*QSet<QString> test;
         if (init)
-           test << "elly" << "marisa" << "yukari_sp";
+           test << "toyohime" << "marisa" << "kokoro";
         else
            test << "renko" << "renko" << "renko";//test hidden general changing
         return test.toList();*/
@@ -5531,7 +5533,7 @@ TouhouGodPackage::TouhouGodPackage()
     marisa_god->addSkill(new HuixingTargetMod);
     related_skills.insertMulti("huixing", "#huixing_effect");
 
-    General *patchouli_god = new General(this, "patchouli_god", "touhougod", 3, false, true, true);
+    General *patchouli_god = new General(this, "patchouli_god", "touhougod", 3);
     patchouli_god->addSkill(new Skill("yuansu"));
     patchouli_god->addSkill(new Skill("qiyao"));
 
