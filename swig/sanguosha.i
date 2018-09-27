@@ -502,6 +502,7 @@ struct DamageStruct {
     bool by_user;
     QString reason;
 	bool trigger_chain;
+	QString trigger_info;
 
     QString getReason() const;
 };

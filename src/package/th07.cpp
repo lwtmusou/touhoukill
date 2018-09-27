@@ -858,14 +858,14 @@ public:
             if (damage.from && damage.from->getPhase() == Player::Play) {
                 if (!damage.from->hasFlag("shihui_first")) {
                     room->setPlayerFlag(damage.from, "shihui_first");
-                } else
-                    room->setPlayerFlag(damage.from, "shihui_second");
+                    damage.trigger_info = "shihui_first";
+                    data = QVariant::fromValue(damage);
+                }
             }
         } else if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.from == Player::Play) {
                 change.player->setFlags("-shihui_first");
-                change.player->setFlags("-shihui_second");
             }
         }
     }
@@ -874,7 +874,7 @@ public:
     {
         if (e == Damage) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (!damage.from || damage.from->isDead() || damage.from->getPhase() != Player::Play || damage.from->hasFlag("shihui_second"))
+            if (!damage.from || damage.from->isDead() || damage.from->getPhase() != Player::Play || damage.trigger_info != "shihui_first")
                 return QList<SkillInvokeDetail>();
 
             //int maxnum = qMax(damage.from->getEquips().length(), 1);
