@@ -439,6 +439,6 @@ Dialog {
     standardButtons: StandardButton.Ok | StandardButton.Cancel
 
     onAccepted: {
-
+        // TODO: save config!!!
     }
 }
