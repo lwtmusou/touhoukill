@@ -23,7 +23,6 @@ public:
     virtual const Card *validateInResponse(ServerPlayer *user) const;
 };
 
-
 class ToupaiCard : public SkillCard
 {
     Q_OBJECT

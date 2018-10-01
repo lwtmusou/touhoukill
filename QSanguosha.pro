@@ -66,6 +66,7 @@ SOURCES += src/main.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
+    src/ui/playercardbox.cpp \
     src/package/testCard.cpp \
     src/package/th16.cpp
 
@@ -227,6 +228,7 @@ HEADERS += \
     src/ui/graphicsbox.h \
     src/ui/lightboxanimation.h \
     src/ui/chooseoptionsbox.h \
+    src/ui/playercardbox.h \
 
 
 FORMS += \

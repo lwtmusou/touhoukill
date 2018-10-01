@@ -1050,9 +1050,11 @@ public:
             PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
             if (phase_change.to == Player::NotActive) {
                 ServerPlayer *yori = phase_change.player;
-                ServerPlayer *who = yori->tag.value("pingyi_originalOwner").value<ServerPlayer *>();
-                if (yori != NULL && who != NULL)
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, true);
+                if (yori != NULL) {
+                    ServerPlayer *who = yori->tag.value("pingyi_originalOwner").value<ServerPlayer *>();
+                    if (who != NULL)
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori, NULL, true);
+                }
             }
         }
         return QList<SkillInvokeDetail>();
@@ -1756,9 +1758,6 @@ public:
                     && (p->getHandcardNum() < use.from->getHandcardNum() || p->getHp() < use.from->getHp()) && !use.from->isProhibited(p, use.card)) {
                     if (use.card->isKindOf("Peach")) {
                         if (p->isWounded())
-                            d << SkillInvokeDetail(this, p, p, NULL, true);
-                    } else if (use.card->isKindOf("Drowning")) {
-                        if (p->canDiscard(p, "e"))
                             d << SkillInvokeDetail(this, p, p, NULL, true);
                     } else if (use.card->targetFilter(QList<const Player *>(), p, use.from))
                         d << SkillInvokeDetail(this, p, p, NULL, true);

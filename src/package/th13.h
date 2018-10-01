@@ -23,7 +23,6 @@ public:
 //class XihuaDialog : public QDialog
 //{
 //    Q_OBJECT
-
 //public:
 //    static XihuaDialog *getInstance(const QString &object, bool left = true, bool right = true);
 
@@ -39,13 +38,10 @@ public:
 //    QAbstractButton *createButton(const Card *card);
 //    QButtonGroup *group;
 //    QHash<QString, const Card *> map;
-
 //    QString object_name;
-
 //signals:
 //    void onButtonClick();
 //};
-
 class XihuaCard : public SkillCard
 {
     Q_OBJECT

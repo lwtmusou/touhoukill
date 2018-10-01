@@ -169,7 +169,7 @@ public:
         }
 
         int can_slash = invoke->invoker->tag["chiling_showslash"].toInt();
-        if (can_slash && can_slash > 0)
+        if (can_slash > 0)
             room->askForUseCard(target, "slash", "@chiling:" + invoke->invoker->objectName(), -1, Card::MethodUse, false);
         return false;
     }
@@ -178,7 +178,6 @@ public:
 //XihuaDialog *XihuaDialog::getInstance(const QString &object, bool left, bool right)
 //{
 //    static QPointer<XihuaDialog> instance;
-
 //    if (!instance.isNull() && instance->objectName() != object)
 //        delete instance;
 
@@ -366,14 +365,11 @@ public:
 //        QCommandLinkButton *button = new QCommandLinkButton(Sanguosha->translate(card->objectName()));
 //        button->setObjectName(card->objectName());
 //        button->setToolTip(card->getDescription());
-
 //        map.insert(card->objectName(), card);
 //        group->addButton(button);
-
 //        return button;
 //    }
 //}
-
 class XihuaClear : public TriggerSkill
 {
 public:

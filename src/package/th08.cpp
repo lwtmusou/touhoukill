@@ -1822,6 +1822,7 @@ HuweiCard::HuweiCard()
 
 const Card *HuweiCard::validate(CardUseStruct &cardUse) const
 {
+    cardUse.from->showHiddenSkill("huwei");
     Room *room = cardUse.from->getRoom();
     room->touhouLogmessage("#InvokeSkill", cardUse.from, "huwei");
     room->notifySkillInvoked(cardUse.from, "huwei");
@@ -1977,6 +1978,7 @@ public:
     }
 };
 
+/*
 class Yemang : public ProhibitSkill
 {
 public:
@@ -1994,6 +1996,84 @@ public:
             }
         }
         return false;
+    }
+};*/
+
+class Yemang : public TriggerSkill
+{
+public:
+    Yemang()
+        : TriggerSkill("yemang")
+    {
+        events << EventPhaseChanging << EventPhaseStart;
+        frequency = Compulsory;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
+            if (phase_change.from == Player::Play)
+                room->setPlayerMark(phase_change.player, "yemang", 0);
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        QList<SkillInvokeDetail> d;
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *current = data.value<ServerPlayer *>();
+            if (current && current->isAlive() && current->getPhase() == Player::Play) {
+                foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                    if (p->inMyAttackRange(current))
+                        d << SkillInvokeDetail(this, p, p, NULL, true, current);
+                }
+                
+            }
+            
+        }
+        return d;
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *player = invoke->targets.first();
+        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), player->objectName());
+
+        room->touhouLogmessage("#yemangRange", player, "yemang");
+        room->setPlayerMark(player, "yemang", player->getMark("yemang") +1);
+        return false;
+    }
+};
+
+
+class YemangRange : public AttackRangeSkill
+{
+public:
+    YemangRange()
+        : AttackRangeSkill("yemang_range")
+    {
+    }
+
+    virtual int getExtra(const Player *target, bool) const
+    {
+        return -target->getMark("yemang");
+    }
+};
+
+class MingmuRange : public AttackRangeSkill
+{
+public:
+    MingmuRange()
+        : AttackRangeSkill("mingmu_range")
+    {
+    }
+
+    virtual int getExtra(const Player *target, bool) const
+    {
+        return target->getMark("mingmu");
     }
 };
 
@@ -2017,6 +2097,8 @@ void MingmuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), mystia->objectName(), "mingmu", QString());
     room->obtainCard(mystia, this, reason, false);
 
+    room->askForUseCard(mystia, "EquipCard|.|.|hand,wooden_ox", "@mingmu_equip");
+
     QStringList option;
     option << "mingmu_give"
            << "mingmu_disable";
@@ -2027,18 +2109,24 @@ void MingmuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
             if (card) {
                 CardMoveReason reason1(CardMoveReason::S_REASON_GIVE, mystia->objectName(), source->objectName(), "mingmu", QString());
                 room->obtainCard(source, card, reason1);
-                option << "cancel";
+                if (!option.contains("cancel"))
+                    option << "cancel";
             }
         } else if (choice == "mingmu_disable") {
-            option << "cancel";
-            room->setPlayerFlag(mystia, "mingmuInvalid");
+            if (!option.contains("cancel"))
+                option << "cancel";
+            room->setPlayerMark(source, "mingmu", source->getMark("mingmu") +1);
+            room->touhouLogmessage("#mingmuRange", source, "mingmu");
+            /*room->setPlayerFlag(mystia, "mingmuInvalid");
             room->touhouLogmessage("#mingmuInvalid", mystia, "yemang");
             const Skill *yemang = Sanguosha->getSkill("yemang");
-            room->setPlayerSkillInvalidity(mystia, yemang, true);
+            room->setPlayerSkillInvalidity(mystia, yemang, true);*/
         } else if (choice == "cancel")
             break;
 
         option.removeOne(choice);
+        if (option.length() == 1 && option.first() == "cancel")
+            break;
     }
 }
 
@@ -2117,13 +2205,15 @@ public:
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
             if (phase_change.from == Player::Play) {
+                room->setPlayerMark(phase_change.player, "mingmu", 0);
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasFlag("mingmuInvoked"))
                         room->setPlayerFlag(p, "-mingmuInvoked");
-                    if (p->hasFlag("mingmuInvalid")) {
+                    
+                    /*if (p->hasFlag("mingmuInvalid")) {
                         const Skill *yemang = Sanguosha->getSkill("yemang");
                         room->setPlayerSkillInvalidity(p, yemang, false);
-                    }
+                    }*/
                 }
             }
         }
@@ -2193,7 +2283,7 @@ TH08Package::TH08Package()
     addMetaObject<JinxiCard>();
     addMetaObject<MingmuCard>();
 
-    skills << new MingmuVS;
+    skills << new MingmuVS << new YemangRange << new MingmuRange;
 }
 
 ADD_PACKAGE(TH08)

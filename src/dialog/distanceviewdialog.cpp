@@ -52,6 +52,9 @@ public:
     QList<QLineEdit *> distance_edits;
     QLineEdit *in_attack;
     QLineEdit *final;
+
+private:
+    Q_DISABLE_COPY(DistanceViewDialogUI)
 };
 
 DistanceViewDialog::DistanceViewDialog(QWidget *parent)

@@ -278,3 +278,89 @@ sgs.ai_card_intention.AwaitExhausted = function(self, card, from, tos)
 		end
 	end
 end
+
+
+function SmartAI:willUseAllianceFeast(card)
+	if not card then self.room:writeToConsole(debug.traceback()) return false end
+	local good, bad = 0, 0
+    --可以细化的机制判断  
+	--空城 永恒类
+	-- 明牌 或者横置的具体张数
+	--三种debuff各自价值
+	for _, friend in ipairs(self.friends) do
+		good = good + 10 * getCardsNum("Nullification", friend, self.player)
+		if self:hasTrickEffective(card, friend, self.player) then
+			if (friend:getShownHandcards():length() > 0 or  friend:getBrokenEquips():length() > 0 or friend:isChained()) then	
+				good = good + 10
+			elseif friend:hasSkill("huiwu") then good = good + 5
+			end
+		end
+	end
+
+	for _, enemy in ipairs(self.enemies) do
+		bad = bad + 10 * getCardsNum("Nullification", enemy, self.player)
+		if self:hasTrickEffective(card, enemy, self.player) then
+			if (enemy:getShownHandcards():length() > 0 or  enemy:getBrokenEquips():length() > 0 or enemy:isChained()) then
+				bad = bad + 10
+				
+			end
+		end
+	end
+	return (good - bad > 5)
+end
+
+function SmartAI:useCardAllianceFeast(card, use)
+	if self:willUseAllianceFeast(card) then
+		use.card = card
+	end
+end
+
+sgs.ai_use_priority.AllianceFeast = 7.1
+sgs.ai_keep_value.AllianceFeast = 3.32
+sgs.dynamic_value.benefit.AllianceFeast = true
+
+--仅仅让ai能用这张牌  具体细节太多了
+function SmartAI:useCardFightTogether(card, use)
+	local enemies = self:exclude(self.enemies, card)
+	if #enemies > 0 then
+		use.card = card
+		if use.to then
+			for _,s in pairs(enemies) do
+				use.to:append(s)
+			end
+		end
+	end
+end
+sgs.ai_use_priority.FightTogether = 6.1
+sgs.ai_keep_value.FightTogether = 1.5
+
+
+function SmartAI:useCardBoneHealing(card, use)
+	local total_num = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, card)
+	
+	local enemies = self:exclude(self.enemies, card)
+	local targets = {}
+	
+	for _,e in ipairs(enemies) do
+		if e:isDebuffStatus() then
+			table.insert(targets, e)
+			
+		end
+	end
+	if #targets > 0 then
+	    self:sort(targets, "hp")
+		
+		for _,t in ipairs(enemies) do
+			use.card = card
+			if use.to then
+				use.to:append(t)
+			end
+			if not use.to or total_num <= use.to:length() then return end
+		end
+	end
+end
+sgs.ai_use_priority.BoneHealing = sgs.ai_use_priority.ThunderSlash + 0.1
+sgs.ai_keep_value.BoneHealing = 2.5
+sgs.dynamic_value.damage_card.BoneHealing = true
+--仇恨由伤害事件更新好了
+--sgs.ai_card_intention.BoneHealing = 30

@@ -307,8 +307,8 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
         }
     }
     bool has_shuangren_target = false;
-    if (Self->hasSkill("shuangren")  && targets.length() >= 1) { //&& distance_limit
-        foreach(const Player *p, targets) {
+    if (Self->hasSkill("shuangren") && targets.length() >= 1) { //&& distance_limit
+        foreach (const Player *p, targets) {
             if (Self->distanceTo(p, rangefix) > Self->getAttackRange(true)) { //double hidden, like shuangren + tianqu. since tianqu has be used, you can not use shuangren.
                 has_shuangren_target = true;
                 break;
@@ -327,30 +327,30 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
         if (!has_shuangren_target)
             distance_limit = false;
     }
-    
+
     if (!Self->canSlash(to_select, this, distance_limit, rangefix, targets))
         return false;
-    else if (has_shuangren_target) {// slove the conflict of "hidden shuangren" + "hidden tianqu" + "Halberd" 
-        bool halberd = EquipSkill::equipAvailable(Self, EquipCard::WeaponLocation, "Halberd") && Self->isLastHandCard(this);//  TargetMod from Wepaon Skill
+    else if (has_shuangren_target) { // slove the conflict of "hidden shuangren" + "hidden tianqu" + "Halberd"
+        bool halberd = EquipSkill::equipAvailable(Self, EquipCard::WeaponLocation, "Halberd") && Self->isLastHandCard(this); //  TargetMod from Wepaon Skill
         bool tianqu = Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed");
-        
+
         QList<const Player *> over_distance_limit_targets;
-        foreach(const Player *p, targets) {
+        foreach (const Player *p, targets) {
             if (Self->distanceTo(p, rangefix) > Self->getAttackRange(true)) {
                 over_distance_limit_targets << p;
             }
         }
-        
+
         if (over_distance_limit_targets.length() == 2 && targets.length() < slash_targets) {
             if (halberd && tianqu) {
-                slash_targets = slash_targets - 1;//hidden tianqu has been used, so hidden shuangren will be not used.
+                slash_targets = slash_targets - 1; //hidden tianqu has been used, so hidden shuangren will be not used.
             }
-        }
-        else if (over_distance_limit_targets.length() == 1 && targets.length() < slash_targets) {
+        } else if (over_distance_limit_targets.length() == 1 && targets.length() < slash_targets) {
             if (!halberd && tianqu) {
                 if (Self->distanceTo(to_select, rangefix) > Self->getAttackRange(true))
                     return false;
-            } if (halberd && targets.length() == 3) {
+            }
+            if (halberd && targets.length() == 3) {
                 if (Self->distanceTo(to_select, rangefix) > Self->getAttackRange(true))
                     return false;
             }
@@ -1520,30 +1520,25 @@ void Snatch::onEffect(const CardEffectStruct &effect) const
     //CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
     //room->obtainCard(effect.from, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
 
-    QList<int> ids;
-    QList<Player::Place> places;
+    QList<int> disable;
+    //QList<Player::Place> places;
     DummyCard *dummy = new DummyCard;
-    bool visible = false;
-    room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
+    bool move_visible = false;
     for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
-        int card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName());
-        ids << card_id;
-        places << room->getCardPlace(card_id);
-        if (!visible && room->getCardPlace(card_id) != Player::PlaceHand)
-            visible = true;
+        int card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName(), false, Card::MethodNone, disable);
+
+        if (!move_visible && room->getCardPlace(card_id) != Player::PlaceHand)
+            move_visible = true;
+
+        disable << card_id;
         dummy->addSubcard(card_id);
-        effect.to->addToPile("#dismantle", card_id, false);
-        if (effect.to->isNude())
+
+        if (effect.to->getCards(flag).length() - disable.length() <= 0)
             break;
     }
 
-    //move the first card back temporarily
-    for (int i = 0; i < ids.length(); i += 1) {
-        room->moveCardTo(Sanguosha->getCard(ids.at(i)), effect.to, places.at(i), false);
-    }
-    room->setPlayerFlag(effect.to, "-dismantle_InTempMoving");
     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
-    room->obtainCard(effect.from, dummy, reason, visible);
+    room->obtainCard(effect.from, dummy, reason, move_visible);
     delete dummy;
 }
 
@@ -1575,15 +1570,18 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
 
     int card_id = -1;
 
-    QList<int> ids;
-    QList<Player::Place> places;
+    QList<int> ids, disable;
+    foreach (const Card *c, effect.to->getCards(flag)) {
+        if (!effect.from->canDiscard(effect.to, c->getEffectiveId()))
+            disable << c->getEffectiveId();
+    }
+
     DummyCard *dummy = new DummyCard;
     AI *ai = effect.from->getAI();
     //for AI: sgs.ai_choicemade_filter.cardChosen.snatch
     //like Xunshi
     effect.from->tag["DismantlementCard"] = QVariant::fromValue(effect.card);
-    
-    room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
+
     for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
         bool visible = false;
         if (using_2013 && !ai) {
@@ -1598,20 +1596,13 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
             } else
                 visible = false;
         }
-        card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName(), visible, Card::MethodDiscard);
-        ids << card_id;
-        places << room->getCardPlace(card_id);
+        card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName(), visible, Card::MethodDiscard, disable);
+        disable << card_id;
         dummy->addSubcard(card_id);
-        effect.to->addToPile("#dismantle", card_id, false);// move card to private pile temporarily
-        if (!effect.from->canDiscard(effect.to, flag))
+
+        if (effect.to->getCards(flag).length() - disable.length() <= 0)
             break;
     }
-
-    //return temporarily moved cards to original  place, then do throwCard.
-    for (int i = 0; i < ids.length(); i += 1) {
-        room->moveCardTo(Sanguosha->getCard(ids.at(i)), effect.to, places.at(i), false);
-    }
-    room->setPlayerFlag(effect.to, "-dismantle_InTempMoving");
 
     room->throwCard(dummy, effect.to, effect.from);
     delete dummy;
@@ -2064,6 +2055,11 @@ Drowning::Drowning(Suit suit, int number)
     setObjectName("drowning");
 }
 
+bool Drowning::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    return to_select->canDiscard(to_select, "e");
+}
+
 void Drowning::onUse(Room *room, const CardUseStruct &card_use) const
 {
     if (!card_use.to.isEmpty()) {
@@ -2107,19 +2103,21 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
 
     DummyCard *dummy = new DummyCard;
     QList<int> ids;
-    QList<Player::Place> places;
-    room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
+    QStringList prohibit;
+    QVariantList tempmove;
+    QString subpattern = ".";
     int times = 1 + effect.effectValue.first();
     for (int i = 0; i < times; i += 1) {
         if (!effect.to->canDiscard(effect.to, "e"))
             break;
         QString prompt = QString("@drowning:%1:%2:%3").arg(effect.from->objectName()).arg(times).arg(i + 1);
-        const Card *card = room->askForCard(effect.to, ".|.|.|equipped!", prompt, QVariant::fromValue(effect), Card::MethodNone);
+        QString pattern = QString("%1|.|.|equipped!").arg(subpattern);
+        const Card *card = room->askForCard(effect.to, pattern, prompt, QVariant::fromValue(effect), Card::MethodNone);
         // force discard!!!
         if (card == NULL) {
             QList<const Card *> equips = effect.to->getCards("e");
             foreach (const Card *c, equips) {
-                if (effect.to->isJilei(c))
+                if (effect.to->isJilei(c) || ids.contains(c->getEffectiveId()))
                     equips.removeOne(c);
             }
             if (!equips.isEmpty()) {
@@ -2129,16 +2127,12 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
         }
 
         ids << card->getEffectiveId();
-        places << room->getCardPlace(card->getEffectiveId());
+        prohibit << ('^' + QString::number(card->getEffectiveId()));
+        subpattern = prohibit.join("+");
+
         dummy->addSubcard(card);
-        effect.to->addToPile("#dismantle", card->getEffectiveId(), false);
     }
 
-    //move the first card back temporarily
-    for (int i = 0; i < ids.length(); i += 1) {
-        room->moveCardTo(Sanguosha->getCard(ids.at(i)), effect.to, places.at(i), false);
-    }
-    room->setPlayerFlag(effect.to, "-dismantle_InTempMoving");
     if (!dummy->getSubcards().isEmpty())
         room->throwCard(dummy, effect.to, effect.to);
     delete dummy;
@@ -2264,25 +2258,14 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const
     }
 
     Room *room = effect.from->getRoom();
-    //DummyCard *dummy = new DummyCard;
     QList<int> ids;
-    QList<Player::Place> places;
-    room->setPlayerFlag(effect.to, "dismantle_InTempMoving");
 
     for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
-        int id = room->askForCardChosen(effect.from, effect.to, "h", objectName());
+        int id = room->askForCardChosen(effect.from, effect.to, "h", objectName(), false, Card::MethodNone, ids);
         ids << id;
-        places << room->getCardPlace(id);
-        effect.to->addToPile("#dismantle", id, false);
-        if (effect.to->getCards("h").isEmpty())
+        if ((effect.to->getCards("h").length() - ids.length()) <= 0)
             break;
     }
-
-    //move the first card back temporarily
-    for (int i = 0; i < ids.length(); i += 1) {
-        room->moveCardTo(Sanguosha->getCard(ids.at(i)), effect.to, places.at(i), false);
-    }
-    room->setPlayerFlag(effect.to, "-dismantle_InTempMoving");
 
     effect.to->addToShownHandCards(ids);
 }
@@ -2291,6 +2274,10 @@ void KnownBoth::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 {
     QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
     bool all_nullified = nullified_list.contains("_ALL_TARGETS");
+    int magic_drank = 0;
+    if (source && source->getMark("magic_drank") > 0)
+        magic_drank = source->getMark("magic_drank");
+
     foreach (ServerPlayer *target, targets) {
         CardEffectStruct effect;
         effect.card = this;
@@ -2308,9 +2295,11 @@ void KnownBoth::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
         room->setTag("targets" + this->toString(), QVariant::fromValue(players));
         if (hasFlag("mopao"))
             effect.effectValue.first() = effect.effectValue.first() + 1;
+        effect.effectValue.first() = effect.effectValue.first() + magic_drank;
         room->cardEffect(effect);
     }
-
+    if (magic_drank > 0)
+        room->setPlayerMark(source, "magic_drank", 0);
     room->removeTag("targets" + this->toString());
 
     if (source->isAlive() && source->isCurrent()) {
@@ -2682,7 +2671,7 @@ StandardExCardPackage::StandardExCardPackage()
         << new LureTiger(Card::Heart, 2)
         << new LureTiger(Card::Diamond, 10)
         << new Drowning(Card::Spade, 13)
-        << new Drowning(Card::Club, 7)
+        //<< new Drowning(Card::Club, 7)
         << new KnownBoth(Card::Club, 3)
         << new KnownBoth(Card::Spade, 4)
         << new SavingEnergy(Card::Diamond, 9)

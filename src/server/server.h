@@ -26,7 +26,7 @@ class Select3v3GeneralDialog : public QDialog
     Q_OBJECT
 
 public:
-    Select3v3GeneralDialog(QDialog *parent);
+    explicit Select3v3GeneralDialog(QDialog *parent);
 
 private:
     QTabWidget *tab_widget;
@@ -71,7 +71,7 @@ class ServerDialog : public QDialog
     Q_OBJECT
 
 public:
-    ServerDialog(QWidget *parent);
+    explicit ServerDialog(QWidget *parent);
     bool config();
 
 private:

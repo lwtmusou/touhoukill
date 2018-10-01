@@ -462,7 +462,7 @@ sgs.ai_skill_use_func.NihuoCard=function(card,use,self)
 					or ((self:hasSkill("jianxiong") or self.player:getMark("shuangxiong") > 0) and sgs.isGoodHp(self.player))
 		-- 需要仇恨达到3么。。。
 		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName()))
-			and self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and useduel and sgs.isGoodTarget(enemy, enemies, self) then
+			and self:objectiveLevel(enemy) > 3 and useduel and sgs.isGoodTarget(enemy, enemies, self) then
 			if not table.contains(nihuo_targets, enemy) then table.insert(nihuo_targets, enemy) end
 		end
 	end

@@ -430,9 +430,8 @@ void Engine::unregisterRoom()
 
 QObject *Engine::currentRoomObject()
 {
-    QObject *room = NULL;
     m_mutex.lock();
-    room = m_rooms[QThread::currentThread()];
+    QObject *room = m_rooms[QThread::currentThread()];
     Q_ASSERT(room);
     m_mutex.unlock();
     return room;
@@ -629,7 +628,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const
 
 QString Engine::getVersionNumber()
 {
-    return "20180415";
+    return "20180903";
 }
 
 QString Engine::getVersion()
@@ -639,7 +638,7 @@ QString Engine::getVersion()
 
 QString Engine::getVersionName()
 {
-    return "V0.8.9";
+    return "V0.8.10";
 }
 
 QUrl Engine::getUrl(const QString &str)
@@ -652,7 +651,7 @@ QUrl Engine::getUrl(const QString &str)
 
 QVersionNumber Engine::getQVersionNumber()
 {
-    return QVersionNumber(0, 8, 9);
+    return QVersionNumber(0, 8, 10);
 }
 
 QString Engine::getMODName()

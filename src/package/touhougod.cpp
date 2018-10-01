@@ -1648,11 +1648,8 @@ public:
         //step2: compare renegades
         bool find_shown_renegde = false;
         bool find_hide_renegde = false;
-        int renegde_num = 0;
-        QStringList roles;
         foreach (ServerPlayer *p1, room->getAlivePlayers()) {
             if (p1->getRole() == "renegade") {
-                renegde_num++;
                 if (p1->hasShownRole())
                     find_shown_renegde = true;
                 else
@@ -1900,6 +1897,7 @@ bool HuaxiangCard::targetsFeasible(const QList<const Player *> &targets, const P
 
 const Card *HuaxiangCard::validate(CardUseStruct &card_use) const
 {
+    card_use.from->showHiddenSkill("huaxiang");
     QString to_use = user_string;
     card_use.from->getRoom()->touhouLogmessage("#InvokeSkill", card_use.from, "huaxiang");
     card_use.from->addToPile("rainbow", subcards.first());
@@ -1912,6 +1910,7 @@ const Card *HuaxiangCard::validate(CardUseStruct &card_use) const
 
 const Card *HuaxiangCard::validateInResponse(ServerPlayer *user) const
 {
+    user->showHiddenSkill("huaxiang");
     Room *room = user->getRoom();
     room->touhouLogmessage("#InvokeSkill", user, "huaxiang");
     user->addToPile("rainbow", subcards.first());
@@ -4952,7 +4951,7 @@ public:
         //for test!!! do not remove
         /*QSet<QString> test;
         if (init)
-           test << "reimu_sp" << "youmu" << "aya_god";
+           test << "toyohime" << "marisa" << "kokoro";
         else
            test << "renko" << "renko" << "renko";//test hidden general changing
         return test.toList();*/
@@ -5259,10 +5258,10 @@ public:
             invoke->invoker->loseMark("@star");
             QString choice = "first";
             if (use.card->isKindOf("FireAttack") || use.card->isKindOf("Duel") || use.card->isKindOf("SavageAssault") || use.card->isKindOf("ArcheryAttack")
-                || use.card->isKindOf("AwaitExhausted")) {
+                || use.card->isKindOf("AwaitExhausted") || use.card->isKindOf("FightTogether")) {
                 QString choices = QString("%1_first+%2_second").arg(use.card->objectName()).arg(use.card->objectName());
                 choice = room->askForChoice(invoke->invoker, objectName(), choices);
-                if (choice == "second")
+                if (choice.endsWith("second"))
                     room->setCardFlag(use.card, "mopao2");
                 else
                     room->setCardFlag(use.card, "mopao");

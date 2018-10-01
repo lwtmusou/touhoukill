@@ -43,9 +43,11 @@ CardItem *GenericCardContainer::_createCard(int card_id)
 
 void GenericCardContainer::_destroyCard()
 {
-    CardItem *card = (CardItem *)sender();
-    card->setVisible(false);
-    card->deleteLater();
+    CardItem *card = qobject_cast<CardItem *>(sender());
+    if (card) {
+        card->setVisible(false);
+        card->deleteLater();
+    }
 }
 
 bool GenericCardContainer::_horizontalPosLessThan(const CardItem *card1, const CardItem *card2)
@@ -1318,13 +1320,14 @@ void PlayerCardContainer::heroSkinBtnMouseOutsideClicked()
         //else {
         //    heroSKinBtn = m_changeSecondaryHeroSkinBtn;
         //}
+        if (heroSKinBtn != NULL) {
+            QGraphicsItem *parent = heroSKinBtn->parentItem();
+            if (NULL != parent && !parent->isUnderMouse()) {
+                heroSKinBtn->hide();
 
-        QGraphicsItem *parent = heroSKinBtn->parentItem();
-        if (NULL != parent && !parent->isUnderMouse()) {
-            heroSKinBtn->hide();
-
-            if (Self == m_player && NULL != _m_screenNameItem && _m_screenNameItem->isVisible()) {
-                _m_screenNameItem->hide();
+                if (Self == m_player && NULL != _m_screenNameItem && _m_screenNameItem->isVisible()) {
+                    _m_screenNameItem->hide();
+                }
             }
         }
     }
@@ -1406,7 +1409,8 @@ void PlayerCardContainer::onSkinChangingStart()
     //    generalName = m_player->getGeneral2Name();
     //}
 
-    heroSKinBtn->hide();
+    if (heroSKinBtn != NULL)
+        heroSKinBtn->hide();
 
     if (generalName == "zuoci" && _m_huashenAnimation != NULL) {
         stopHuaShen();

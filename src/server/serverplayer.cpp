@@ -24,6 +24,7 @@ ServerPlayer::ServerPlayer(Room *room)
     , trust_ai(new TrustAI(this))
     , recorder(NULL)
     , _m_phases_index(0)
+    , m_expectedReplySerial(0)
 //, next(NULL)
 {
     semas = new QSemaphore *[S_NUM_SEMAPHORES];
@@ -304,6 +305,7 @@ qint64 ServerPlayer::endNetworkDelayTest()
 
 void ServerPlayer::startRecord()
 {
+    delete recorder;
     recorder = new Recorder(this);
 }
 
@@ -1577,14 +1579,22 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
     if (!canShowHiddenSkill() || !isHiddenSkill(skill_name))
         return;
     if (hasSkill(skill_name)) {
-        QString generalName;
+        QStringList generals;
         foreach (QString name, hidden_generals) {
             const General *hidden = Sanguosha->getGeneral(name);
             if (hidden->hasSkill(skill_name)) {
-                generalName = name;
-                break;
+                generals << name;
             }
         }
+        QString generalName;
+        if (generals.isEmpty())
+            return;
+        else if (generals.length() == 1)
+            generalName = generals.first();
+        else {
+            generalName = room->askForChoice(this, "showSameHiddenSkills", generals.join("+"));
+        }
+
         if (generalName != NULL) {
             room->touhouLogmessage("#ShowHiddenGeneral", this, generalName);
 

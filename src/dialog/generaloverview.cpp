@@ -323,7 +323,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
 
         QString nickname = Sanguosha->translate("#" + general_name);
         if (nickname.startsWith("#") && general_name.contains("_"))
-            nickname = Sanguosha->translate("#" + general_name.split("_").last());
+            nickname = Sanguosha->translate("#" + general_name.split("_").first());
         QTableWidgetItem *nickname_item;
         if (!nickname.startsWith("#"))
             nickname_item = new QTableWidgetItem(nickname);
@@ -546,7 +546,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
 
     QString last_word = Sanguosha->translate("~" + general->objectName());
     if (last_word.startsWith("~") && general->objectName().contains("_"))
-        last_word = Sanguosha->translate(("~") + general->objectName().split("_").last());
+        last_word = Sanguosha->translate(("~") + general->objectName().split("_").first());
 
     if (!last_word.startsWith("~")) {
         QCommandLinkButton *death_button = new QCommandLinkButton(tr("Death"), last_word);
@@ -560,7 +560,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     QString declaration_title = Sanguosha->translate("lord_declaration");
     QString declaration = Sanguosha->translate("$" + general->objectName());
     if (declaration.startsWith("$") && general->objectName().contains("_"))
-        declaration = Sanguosha->translate(("$") + general->objectName().split("_").last());
+        declaration = Sanguosha->translate(("$") + general->objectName().split("_").first());
 
     if (!declaration.startsWith("$")) {
         QCommandLinkButton *declaration_button = new QCommandLinkButton(declaration_title, declaration);
@@ -595,7 +595,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
 
     QString cv_text = Sanguosha->translate("cv:" + general->objectName());
     if (cv_text.startsWith("cv:"))
-        cv_text = Sanguosha->translate("cv:" + general->objectName().split("_").last());
+        cv_text = Sanguosha->translate("cv:" + general->objectName().split("_").first());
     if (!cv_text.startsWith("cv:"))
         ui->cvLineEdit->setText(cv_text);
     else
@@ -683,7 +683,7 @@ void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, 
 
             QString g_nickname = Sanguosha->translate("#" + general_name);
             if (g_nickname.startsWith("#"))
-                g_nickname = Sanguosha->translate("#" + general_name.split("_").last());
+                g_nickname = Sanguosha->translate("#" + general_name.split("_").first());
             if (!rx.exactMatch(g_nickname))
                 continue;
         }

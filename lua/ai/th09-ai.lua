@@ -806,7 +806,6 @@ sgs.ai_skill_cardask["@tianren-jink"] = function(self)
 	if not sgs.tianrenjinksource and not yuanshu then sgs.tianrenjinksource = self.room:getLord() end
 	if not sgs.tianrenjinksource then return "." end
 	if not self:isFriend(sgs.tianrenjinksource) then return "." end
-	if self:needBear() then return "." end
 	return self:getCardId("Jink") or "."
 end
 

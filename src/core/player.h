@@ -98,7 +98,7 @@ public:
     void setChaoren(int chaoren);
     QList<int> getShownHandcards() const;
     void setShownHandcards(QList<int> ids);
-    bool isShownHandcard(int id);
+    bool isShownHandcard(int id) const;
     QList<int> getBrokenEquips() const;
     void setBrokenEquips(QList<int> ids);
     bool isBrokenEquip(int id) const;

@@ -189,6 +189,7 @@ config = {
 		"kyouko_sp->kyouko",
 		"nue_god->nue",
 		"seija_sp->seija",
+		"rumia_sp->rumia",
 	},
 	
 	backdrop_convert_pairs = {
@@ -196,14 +197,16 @@ config = {
 		"lunar|star->sunny",
 		"reisen2|seiran->tewi",
 		"seija_sp->seija",
+		"rumia_sp->rumia",
 	},
 	latest_generals = {
 	    "reimu","reisen_gzz", "marisa_slm",
 		"sariel","konngara",
 		"yukimai", "gengetsumugetsu",
+		"koakuma", "rumia_sp", 
 		"yuyuko","yukari","ran","chen",
-		"wriggle", "keine",
-		"tenshi",
+		"wriggle", "keine", "mystia_sp",
+		"suika","tenshi",
 		"nue_slm", "seija_sp", 
 		"junko","hecatia","clownpiece","sagume","doremy","ringo","seiran",
 		"reisen2",

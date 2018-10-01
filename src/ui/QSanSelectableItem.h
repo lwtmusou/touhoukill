@@ -10,7 +10,7 @@ class QSanSelectableItem : public QGraphicsObject
 
 public:
     QSanSelectableItem(const QString &filename, bool center_as_origin = false);
-    QSanSelectableItem(bool center_as_origin = false);
+    explicit QSanSelectableItem(bool center_as_origin = false);
     virtual QRectF boundingRect() const;
     bool load(const QString &filename, bool center_as_origin = false);
     bool load(const QString &filename, QSize newSize, bool center_as_origin = false);

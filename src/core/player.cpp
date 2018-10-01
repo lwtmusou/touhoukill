@@ -173,7 +173,7 @@ void Player::setShownHandcards(QList<int> ids)
     emit showncards_changed();
 }
 
-bool Player::isShownHandcard(int id)
+bool Player::isShownHandcard(int id) const
 {
     if (shown_handcards.isEmpty() || id < 0)
         return false;
@@ -1417,8 +1417,8 @@ void Player::addHistory(const QString &name, int times)
 
 int Player::getSlashCount() const
 {
-    return history.value("Slash", 0) + history.value("ThunderSlash", 0) + history.value("FireSlash", 0) 
-        + history.value("PowerSlash", 0) + history.value("IronSlash", 0) + history.value("LightSlash", 0);
+    return history.value("Slash", 0) + history.value("ThunderSlash", 0) + history.value("FireSlash", 0) + history.value("PowerSlash", 0) + history.value("IronSlash", 0)
+        + history.value("LightSlash", 0);
 }
 
 int Player::getAnalepticCount() const

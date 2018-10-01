@@ -12,7 +12,7 @@
 class RoomState
 {
 public:
-    inline RoomState(bool isClient)
+    explicit inline RoomState(bool isClient)
     {
         m_isClient = isClient;
     }

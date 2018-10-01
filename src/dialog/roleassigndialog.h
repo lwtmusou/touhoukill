@@ -12,7 +12,7 @@ class RoleAssignDialog : public QDialog
     Q_OBJECT
 
 public:
-    RoleAssignDialog(QWidget *parent);
+    explicit RoleAssignDialog(QWidget *parent);
 
 protected:
     virtual void accept();

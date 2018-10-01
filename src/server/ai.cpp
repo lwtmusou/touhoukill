@@ -14,6 +14,10 @@ AI::AI(ServerPlayer *player)
     room = player->getRoom();
 }
 
+AI::~AI()
+{
+}
+
 typedef QPair<QString, QString> RolePair;
 
 struct RoleMapping : public QMap<RolePair, AI::Relation>
@@ -167,6 +171,11 @@ TrustAI::TrustAI(ServerPlayer *player)
 {
     response_skill = new ResponseSkill;
     response_skill->setParent(this);
+}
+
+TrustAI::~TrustAI()
+{
+    delete response_skill;
 }
 
 void TrustAI::activate(CardUseStruct &card_use)

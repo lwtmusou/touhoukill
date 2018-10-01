@@ -18,8 +18,8 @@ class CardItem : public QSanSelectableItem
     Q_OBJECT
 
 public:
-    CardItem(const Card *card);
-    CardItem(const QString &general_name);
+    explicit CardItem(const Card *card);
+    explicit CardItem(const QString &general_name);
     ~CardItem();
 
     virtual QRectF boundingRect() const;

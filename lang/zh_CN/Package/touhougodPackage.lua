@@ -700,6 +700,8 @@ return{
     ["#RemoveHiddenGeneral"] = "%from 移除了明置的人物牌  %arg ",
 	["#ShowHiddenGeneral"] = "%from 公开了人物牌  %arg ",
     ["#GetHuashenDetail"] = "%from 获得了“化身牌” %arg",
+	["showSameHiddenSkills"] = "同名技能",
+	
 	
 	["marisa_god"] = "神 雾雨魔理沙",
 	["&marisa_god"] = "神雾雨魔理沙",
@@ -726,6 +728,8 @@ return{
 	["chongneng:savage_assault_second"] = "此牌造成伤害+1" ,
 	["chongneng:archery_attack_first"] = "目标需打出的【闪】数量+1" ,
 	["chongneng:archery_attack_second"] = "此牌造成伤害+1" ,
+	["chongneng:fight_together_first"] = "明置目标手牌数量+1" ,
+	["chongneng:fight_together_second"] = "横置目标装备区牌数量+1" ,
 	
 	["#Chongneng"] = "%from 发动了 <font color=\"#00FF00\">充能</font>， 令【%arg】的 第 %arg2 个效果值+1" ,
 	["#ChongnengCacel"] = "当其他角色使用牌时，你可以暗置你的一张与此牌类别相同的明置手牌，取消所有目标。若此牌为明置手牌，你可以明置其一张手牌。",

@@ -12,7 +12,7 @@ class GeneralSelector : public QObject
     Q_OBJECT
 
 public:
-    GeneralSelector(Room *room);
+    explicit GeneralSelector(Room *room);
 
     QString selectFirst(ServerPlayer *player, const QStringList &candidates);
     QString selectSecond(ServerPlayer *player, const QStringList &candidates);

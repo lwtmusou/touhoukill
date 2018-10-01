@@ -20,6 +20,7 @@ bool NativeServerSocket::listen()
 
 void NativeServerSocket::daemonize()
 {
+    delete daemon;
     daemon = new QUdpSocket(this);
     daemon->bind(Config.ServerPort, QUdpSocket::ShareAddress);
     connect(daemon, SIGNAL(readyRead()), this, SLOT(processNewDatagram()));
