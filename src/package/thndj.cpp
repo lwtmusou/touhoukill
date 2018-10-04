@@ -647,7 +647,7 @@ public:
         invoke->owner->obtainCard(Sanguosha->getCard(card_id), visible);
 
         invoke->owner->tag["yuanhu_target"] = QVariant::fromValue(invoke->invoker);
-        const Card *c = room->askForExchange(invoke->owner, objectName(), 2, 1, false, "@yuanhu-exchange:" + invoke->invoker->objectName(), true);
+        const Card *c = room->askForExchange(invoke->owner, objectName(), 2, 1, true, "@yuanhu-exchange:" + invoke->invoker->objectName(), true);
         if (c != NULL) {
             CardMoveReason reason(CardMoveReason::S_REASON_GIVE, invoke->owner->objectName(), objectName(), QString());
             room->obtainCard(invoke->invoker, c, reason, false);

@@ -493,9 +493,12 @@ void QijiDialog::popup()
             avaliable = false;
         if (object_name == "qiji" && user->getMark("xiubu"))
             avaliable = true;
-
+       
         bool checked = checkedPatterns.contains(card->objectName());
-        bool enabled = !user->isCardLimited(card, method, true) && avaliable && (checked || object_name == "chuangshi");
+        //bool enabled = !user->isCardLimited(card, method, true) && avaliable && (checked || object_name == "chuangshi");
+        //check isCardLimited  
+        //bool cardlimit = user->isCardLimited(card, method, true);
+        bool enabled = avaliable && (checked || object_name == "chuangshi");
         button->setEnabled(enabled);
     }
 

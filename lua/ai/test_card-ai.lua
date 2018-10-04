@@ -344,13 +344,12 @@ function SmartAI:useCardBoneHealing(card, use)
 	for _,e in ipairs(enemies) do
 		if e:isDebuffStatus() then
 			table.insert(targets, e)
-			
 		end
 	end
 	if #targets > 0 then
 	    self:sort(targets, "hp")
 		
-		for _,t in ipairs(enemies) do
+		for _,t in ipairs(targets) do
 			use.card = card
 			if use.to then
 				use.to:append(t)

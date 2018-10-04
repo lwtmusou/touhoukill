@@ -2795,6 +2795,7 @@ public:
         slash->addSubcard(pindian->from_card);
         slash->addSubcard(pindian->to_card);
         slash->setSkillName("yujian");
+        room->setCardFlag(slash, "chosenExtraSlashTarget");
         room->useCard(CardUseStruct(slash, pindian->from, pindian->to));
         return false;
     }

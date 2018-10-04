@@ -109,7 +109,9 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
     }
 
     int num1 = use.to.length();
-    if (((use.card->isVirtualCard() && use.card->subcardsLength() == 0) || use.card->hasFlag("pandu")) && !player->hasFlag("slashDisableExtraTarget")) {
+    //if (((use.card->isVirtualCard() && use.card->subcardsLength() == 0) || use.card->hasFlag("pandu")) && !player->hasFlag("slashDisableExtraTarget")) {
+    if (((use.card->isVirtualCard() && use.card->subcardsLength() == 0) || use.card->hasFlag("chosenExtraSlashTarget")) && !player->hasFlag("slashDisableExtraTarget")) {
+
         QList<ServerPlayer *> targets_ts;
         while (true) {
             QList<const Player *> targets_const;
