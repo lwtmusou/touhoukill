@@ -799,8 +799,9 @@ bool LianxiCard::targetsFeasible(const QList<const Player *> &targets, const Pla
     int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, card);
     return targets.length() <= total_num;
 }
-const Card *LianxiCard::validate(CardUseStruct &) const
+const Card *LianxiCard::validate(CardUseStruct &card_use) const
 {
+    card_use.from->showHiddenSkill("lianxi");
     IronChain *card = new IronChain(Card::NoSuit, 0);
     card->setSkillName("lianxi");
     return card;

@@ -1331,6 +1331,7 @@ bool LianmuCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 
 const Card *LianmuCard::validate(CardUseStruct &use) const
 {
+    use.from->showHiddenSkill("lianmu");
     Slash *card = new Slash(Card::NoSuit, 0);
     card->setSkillName("lianmu");
     use.from->getRoom()->setPlayerFlag(use.from, "lianmu_used");

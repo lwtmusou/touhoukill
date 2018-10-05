@@ -1620,6 +1620,7 @@ bool QimenCard::targetsFeasible(const QList<const Player *> &targets, const Play
 
 const Card *QimenCard::validate(CardUseStruct &card_use) const
 {
+    card_use.from->showHiddenSkill("qimen");
     QString cardname = card_use.from->property("qimen_card").toString();
     Card *card = Sanguosha->cloneCard(cardname);
     card->setSkillName("qimen");

@@ -1106,6 +1106,7 @@ bool YegeCard::targetFilter(const QList<const Player *> &targets, const Player *
 
 const Card *YegeCard::validate(CardUseStruct &cardUse) const
 {
+    cardUse.from->showHiddenSkill("yege");
     ServerPlayer *to = cardUse.to.first();
     if (!to->containsTrick("indulgence")) {
         Indulgence *indulgence = new Indulgence(getSuit(), getNumber());
@@ -1295,6 +1296,7 @@ bool GeshengCard::targetFilter(const QList<const Player *> &targets, const Playe
 
 const Card *GeshengCard::validate(CardUseStruct &cardUse) const
 {
+    cardUse.from->showHiddenSkill("gesheng");
     ServerPlayer *to = cardUse.to.first();
     if (!to->containsTrick("indulgence")) {
         Indulgence *indulgence = new Indulgence(getSuit(), getNumber());
@@ -1467,6 +1469,7 @@ bool YinghuoCard::targetsFeasible(const QList<const Player *> &targets, const Pl
 
 const Card *YinghuoCard::validate(CardUseStruct &use) const
 {
+    use.from->showHiddenSkill("yinghuo");
     const Card *card = Sanguosha->getCard(subcards.first());
     Card *use_card = Sanguosha->cloneCard(card->objectName());
     use_card->setSkillName("yinghuo");
