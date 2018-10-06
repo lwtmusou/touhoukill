@@ -117,7 +117,7 @@ sgs.ai_choicemade_filter.skillInvoke.qixiang = function(self, player, args)
 end
 
 function fengmoBenefit(self, target)
-	if not self.player:hasSkill("qixiang") then 
+	if not self.player:hasSkill("qixiang") then
 		return false
 	end
 	return not target:isCurrent() and self.player:getMaxHp() > target:getHandcardNum() and self:isFriend(target)
@@ -125,10 +125,10 @@ end
 
 sgs.ai_skill_playerchosen.fengmo = function(self, targets)
 	if not self:invokeTouhouJudge() then return nil end
-	
+
 	local current = self.room:getCurrent()
 	if not current then return nil end
-	
+
 	if targets:contains(current) then
 		if self:isEnemy(current) then
 			return current
@@ -1552,32 +1552,32 @@ function bodong_skill.getTurnUseCard(self)
 end
 sgs.ai_skill_use_func.BodongCard = function(card, use, self)
 		self:sort(self.enemies, "defense")
-        local targets = {}
-		
+		local targets = {}
+
 			for _, p in ipairs(self.enemies) do
 				if #targets >= 3 then
 					break
 				end
 				local num = p:getCards("e"):length() - p:getBrokenEquips():length()
 				local available = math.min(num,3)
-				if num > 0 then 
+				if num > 0 then
 					for i=1, num  do
-						table.insert(targets, p)	
+						table.insert(targets, p)
 						if #targets >= 3 then
 							break
 						end
 					end
 				end
 			end
-		
-		if #targets > 0 then 
+
+		if #targets > 0 then
 			use.card = card
 			if  use.to then
 				for _,p in ipairs (targets) do
 					use.to:append(p)
 				end
-				return 
-			end  --use.to:length() >= 1 
+				return
+			end  --use.to:length() >= 1
 		end
 end
 

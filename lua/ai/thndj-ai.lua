@@ -204,13 +204,13 @@ sgs.ai_skill_use["@@liexi"] = function(self, prompt)
 	card:setSkillName("liexi")
 	local target
 
-    self:useBasicCard(card, dummy_use)
+	self:useBasicCard(card, dummy_use)
 	if not dummy_use.card then return false end
 	if dummy_use.to:isEmpty() then
 		return "."
 	else
 		local target_objectname = {}
-		
+
 		for _, p in sgs.qlist(dummy_use.to) do
 			if self:isEnemy(p) then
 				table.insert(target_objectname, p:objectName())
@@ -218,7 +218,7 @@ sgs.ai_skill_use["@@liexi"] = function(self, prompt)
 				break
 			end
 		end
-		
+
 		if #target_objectname>0 then
 			return dummy_use.card:toString() .. "->" .. table.concat(target_objectname, "+")
 		end
@@ -250,8 +250,8 @@ sgs.ai_skill_invoke.liexi_extra = function(self,data)
 	return false
 end
 sgs.ai_skill_playerchosen.mengwei = function(self, targets)
-    local use = self.room:getTag("mengwei_extra"):toCardUse()
-    for _,p in sgs.qlist(targets) do
+	local use = self.room:getTag("mengwei_extra"):toCardUse()
+	for _,p in sgs.qlist(targets) do
 		if self:playerGetRound(p) <= self:playerGetRound(self.player) and self:isFriend(p) then
 			if not self:slashIsEffective(use.card, p, use.from) then
 				return p
@@ -376,8 +376,8 @@ jineng_skill.getTurnUseCard = function(self)
 		elseif suit == sgs.Card_Diamond then
 			forbid = sgs.cloneCard("analeptic")
 		end
-		
-		
+
+
 		if forbid then
 			forbid:addSubcard(c)
 			forbid:setSkillName("jineng")
@@ -396,7 +396,7 @@ jineng_skill.getTurnUseCard = function(self)
 		else
 			self:useTrickCard(jinengCard, dummyuse)
 		end
-	
+
 		if dummyuse.card then
 			local suit = jinengCard:getSuitString()
 			local number = jinengCard:getNumberString()
@@ -430,7 +430,7 @@ function sgs.ai_cardsview_valuable.jineng(self, class_name, player)
 
 	local ids = self.player:getPile("jinengPile")
 	local spade, heart, club, diamond -- = {}, {}, {}, {}
-	
+
 	for _, id in sgs.qlist(ids) do
 		local c = sgs.Sanguosha:getCard(id)
 		local suit = c:getSuit()
@@ -442,7 +442,7 @@ function sgs.ai_cardsview_valuable.jineng(self, class_name, player)
 			diamond = c
 		end
 	end
-	
+
 	local cardname, card
 	if self:touhouClassMatch(class_name, "Analeptic") then
 		card = diamond
@@ -457,16 +457,16 @@ function sgs.ai_cardsview_valuable.jineng(self, class_name, player)
 	end
 
 	if not card then return nil end
-	
+
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
 	return (cardname .. ":jineng[%s:%s]=%d"):format(suit, number, card_id)
-	
+
 end
 
 sgs.ai_skill_invoke.kuaibao =function(self,data)
-    local current = self.room:getCurrent()
+	local current = self.room:getCurrent()
 	if self:isEnemy(current) and not self:needToLoseHp(current, self.player, false, false) then
 		return true
 	end

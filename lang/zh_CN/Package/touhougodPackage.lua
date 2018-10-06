@@ -85,8 +85,8 @@ return{
 	["ice_slash"] = "冰杀",
 	["#Bingfeng"] = "%from 的“%arg”被触发， 减少了 %arg2 点 对 %to 的伤害",
 	["#BingfengWin"] = "%from 的 身份是 “%arg”， 其阵营获胜",
-    ["$WushenChange"] = "%from 的“%arg”被触发， 其将成为 %card 的伤害来源。",
-	
+	["$WushenChange"] = "%from 的“%arg”被触发， 其将成为 %card 的伤害来源。",
+
 --*************************************
 	--shen004  势力：神 4血
 	["utsuho_god"] = "神 灵乌路空",
@@ -110,9 +110,6 @@ return{
 	[":jubian"] = "<font color=\"blue\"><b>锁定技，</b></font>当你使用牌结算结束后，若此牌对至少两名角色造成过伤害，你回复1点体力。",
 	["hengxing"] = "恒星",
 	[":hengxing"] = "<font color=\"blue\"><b>锁定技，</b></font>结束阶段开始时，你失去1点体力，然后摸三张牌。",
-	--[":shikong"] = "<font color=\"blue\"><b>锁定技，</b></font>你于出牌阶段空闲时间点使用【杀】时指定你攻击范围内的所有角色为目标。",
-	--[":ronghui"] = "<font color=\"blue\"><b>锁定技，</b></font>当你于出牌阶段内使用【杀】对目标角色造成伤害时，你弃置其装备区里的所有牌。",
-	--[":jubian"] = "<font color=\"blue\"><b>锁定技，</b></font>当你于出牌阶段内使用牌结算后，若此牌对不少于两名角色造成过伤害，你须回复1点体力。",
 
 --*************************************
 	--shen005  势力：神 0血
@@ -216,7 +213,6 @@ return{
 	["origin:youmu_god_3"] = "p号：50353497，个人ID：1508165",
 
 	["banling"] = "半灵",
-	--[":banling"] = "<font color=\"#808080\"><b>永久技，</b></font>你拥有人体力和灵体力。你的体力值与其中较少的那种相同。若你的体力或体力上限将发生1点改变，你选择两种体力中的一种进行结算。",
 	[":banling"] = "<font color=\"#808080\"><b>永久技，</b></font>你拥有人体力和灵体力。你的体力值视为其中的较小值。当你的体力或你的体力上限将发生1点改变时，你选择一种体力进行结算。",
 	["#lingtilidamage"] = "%from 的 %arg 被触发， %from 选择了扣减 %arg2 点 “灵”体力。",
 	["#rentilidamage"] = "%from 的 %arg 被触发， %from 选择了扣减 %arg2 点 “人”体力。",
@@ -403,13 +399,11 @@ return{
 
 	["qinlue"] = "侵略" ,
 	[":qinlue"] = "其他角色的出牌阶段开始前，你可以弃置一张【杀】或武器牌，令其选择一项：弃置一张【闪】或防具牌；或结束此回合，令你翻至正面朝上，然后你获得一个仅有出牌阶段的额外的回合，且此额外回合开始时与回合结束时，你与其交换手牌。",
-	--[":qinlue"] = "其他角色的出牌阶段开始前，你可以弃置一张【杀】或装备牌，令其选择一项：弃置一张【闪】，或跳过此出牌阶段。若其以此法跳过出牌阶段，此回合结束后，你将所有手牌面朝下置于你的人物牌上，称为“战备”，然后获得其所有手牌，你翻至正面朝上，进行一个仅有出牌阶段的额外回合。此额外回合结束时，你将所有手牌交给其，然后获得所有“战备”。",
-	--["zhanbei"] = "战备" ,
 	["#Qinlue"] = "%from (原来 %arg 手牌) 与 %to (原来 %arg2 手牌) 交换了手牌",
 	["@qinlue-discard"]= "你可以对 <font color=\"#00FF00\"><b>%src </b></font> 发动“侵略”。";
 	["@qinlue-discard1"]= "<font color=\"#00FF00\"><b>%src </b></font> 发动了“侵略”，请弃置一张【闪】或防具牌，否则你将结束此回合（跳过未执行的阶段），其于回合结束后进行一个仅有出牌阶段的额外的回合。";
-    ["#qinlue_effect"] = "侵略(后续)" ,
-	
+	["#qinlue_effect"] = "侵略(后续)" ,
+
 --*************************************
 	--shen016  势力：神 4血
 	["byakuren_god"] = "神 圣白莲" ,
@@ -429,7 +423,7 @@ return{
 	["chaoren"] = "超人" ,
 	[":chaoren"] = "牌堆顶的牌对你可见。你可以使用或打出此牌。",
 	["$chaorendrawpile"] = "牌堆顶的牌为： %card" ,
-    ["$chaoren"] = "%from 发动“%arg” 使用/打出 牌堆顶 的 %card ",
+	["$chaoren"] = "%from 发动“%arg” 使用/打出 牌堆顶 的 %card ",
 --*************************************
 	--shen017  势力：神 3血
 	["koishi_god"] = "神 古明地恋",
@@ -547,18 +541,10 @@ return{
 
 	["shenbao"] = "神宝",
 	[":shenbao"] = "<font color=\"blue\"><b>锁定技，</b></font>你视为装备着场上的所有装备牌（武器牌的攻击范围取最长，技能描述不同的装备技能均能发动，你不能发动不在你装备区里的【木牛流马】的装备技能）。",
---[[
-	["shenbao_spear"] = "丈八蛇矛",
-	["shenbao_pagoda"] = "宝塔",
-	["shenbao_jadeSeal"] = "玉玺",
-	[":shenbao_spear"] = "若其他角色装备有丈八蛇矛，你可以发动丈八蛇矛",
-	["：shenbao_pagoda"] = "若其他角色装备有宝塔，你可以发动宝塔",
-	["：shenbao_jadeSeal"] = "若其他角色装备有玉玺，你可以发动玉玺",
-]]
 	["shenbao_attach"] = "装备",
 	[":shenbao_attach"] = "你可以发动场上任意一张装备牌的技能（除【木牛流马】外）。",
 
-    ["#shenbao_distance"] = "神宝(距离)",
+	["#shenbao_distance"] = "神宝(距离)",
 	["#shenbao"] = "神宝",
 --*************************************
 	--shen021  势力：神 4血
@@ -601,7 +587,7 @@ return{
 	[":fanhun"] = "<font color=\"#808080\"><b>永久技，</b></font>当你进入濒死状态时，加1点体力上限，然后将体力值回复至体力上限，摸X张牌（X为你的体力上限）；结束阶段开始时，若X大于4，你死亡。",
 	["yousi"] = "诱死",
 	[":yousi"] = "<font color=\"blue\"><b>锁定技，</b></font>其他角色的体力下限于你的回合内视为Y（Y为你的体力值）。",
-    ["#yousi"] = "诱死",
+	["#yousi"] = "诱死",
 --*************************************
 		--shen023  势力：神 3血
 	["satori_god"] = "神 古明地觉",
@@ -613,33 +599,23 @@ return{
 	["origin:satori_god"] = "p号：17281878,个人ID:12945",
 	["illustrator:satori_god_1"] = "hitsu ",
 	["origin:satori_god_1"] = "p号：47473508,个人ID:671593",
-		["illustrator:satori_god_2"] = "皆村",
+	["illustrator:satori_god_2"] = "皆村",
 	["origin:satori_god_2"] = "p号：28695491，个人ID：6098",
 
-	--["xinhua"] = "心花",
-	--[":xinhua"] = "当你成为其他角色使用牌的目标后或当你使用牌指定其他角色为目标后，你可以选择你和该角色的各一张手牌，交换之并依次明置之。",
-	--["dongcha"] = "洞察",
-	--[":dongcha"] = "当其他角色使用牌时，你可以暗置你的一张与此牌类别相同的明置手牌，取消所有目标。若此牌为明置手牌，你可以明置其一张手牌。",
-	--["@dongcha"] = "“洞察”： 你可以将一张明置的 %arg 暗置， 取消 %dest 使用的 %src 的所有目标 ",
-	--["zhuiyi"] = "追忆",
-	--[":zhuiyi"] = "<font color=\"blue\"><b>锁定技，</b></font>当其他角色的明置手牌因弃置而置入弃牌堆后，你获得并明置之。",
 	["shown_card"] = "明牌",
 	["%shown_card"] = "他人的明牌",
-	
-	["kuixin"] = "窥心",
-	--[":kuixin"] = "当你使用牌指定其他角色为唯一目标后或当你成为其他角色使用牌的唯一目标后，你可以观看其手牌，你可以明置其中一张暗置牌。",
-	[":kuixin"] = "<font color=\"blue\"><b>锁定技，</b></font>当你使用牌对其他角色或其他角色使用牌对你结算结束后，若目标数为1且该角色没有明置的手牌，你明置其一张手牌。",
-	
-	["xinhua"] = "心花",
-	--[":xinhua"] = "你可以使用或打出其他角色的明置手牌。<font color=\"green\"><b>每阶段限一次。</b></font>",
 
+	["kuixin"] = "窥心",
+	[":kuixin"] = "<font color=\"blue\"><b>锁定技，</b></font>当你使用牌对其他角色或其他角色使用牌对你结算结束后，若目标数为1且该角色没有明置的手牌，你明置其一张手牌。",
+
+	["xinhua"] = "心花",
 	[":xinhua"] = "你可以使用或打出一名其他角色的明置手牌。",
-	
+
 	["cuimian"] = "催眠",
 	[":cuimian"] = "<font color=\"blue\"><b>锁定技，</b></font>若其他角色的明置手牌数不大于其手牌上限，其于其回合内不能使用、打出或弃置明置手牌。",
 	["$xinhua"] = "%from 发动“%arg” 使用/打出 %to 的 %card ",
 --*************************************
-		--shen024  势力：神 4血
+	--shen024  势力：神 4血
 	["aya_god"] = "神 射命丸文" ,
 	["&aya_god"] = "神射命丸文" ,
 	["#aya_god"] = "风雨之鸦" ,
@@ -680,34 +656,32 @@ return{
 	[":rumo"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可以令你和至多X-1名其他角色横置，然后你摸X张牌（X为角色数最多的阵营的角色数）。",
 	["$rumoAnimate"]= "skill=seiga_god:rumo",
 
-
-
 --*************************************
 	["nue_god"]= "神 封兽鵺",
 	["&nue_god"] = "神封兽鵺",
 	["#nue_god"]= "真相不明的未知Ｘ ",
 	["designer:nue_god"] = "三国有单",
-	
-    ["anyun"] = "暗云",
+
+	["anyun"] = "暗云",
 	[":anyun"] = "游戏开始时，你随机将三张游戏外的人物牌扣置于一旁，称为“ X ”；若你没有明置的“X”，你可以公开一张“X”并发动或触发其上的技能，并于移除此“X”之前拥有其上所有技能（你不能发动、触发、拥有永久技、限定技、觉醒技）。",
 	["benzun"] = "本尊",
 	[":benzun"] = "<font color=\"blue\"><b>锁定技，</b></font>一名角色的回合结束时，若你有明置的“X”，随机将游戏外的一张人物牌扣置于一旁，称为“X”，移除明置的“X”，然后将体力上限调整至游戏开始时，弃相应的标记和将人物牌上的牌置入弃牌堆。",
-    ["#GetHuashen"] = "%from 获得了  %arg 张 X",
-    ["huashencard"] = "X",
-    ["#anyunShowStatic"] = "暗云（状态技）",
+	["#GetHuashen"] = "%from 获得了  %arg 张 X",
+	["huashencard"] = "X",
+	["#anyunShowStatic"] = "暗云（状态技）",
 	["#anyun_prohibit"] = "暗云（非法目标）",
-    ["invoke_hidden_compulsory:compulsory"] = "你可以发动隐藏的锁定技 <font color=\"#FF8000\"><b>%src </b></font>。",
-    ["#RemoveHiddenGeneral"] = "%from 移除了明置的人物牌  %arg ",
+	["invoke_hidden_compulsory:compulsory"] = "你可以发动隐藏的锁定技 <font color=\"#FF8000\"><b>%src </b></font>。",
+	["#RemoveHiddenGeneral"] = "%from 移除了明置的人物牌  %arg ",
 	["#ShowHiddenGeneral"] = "%from 公开了人物牌  %arg ",
-    ["#GetHuashenDetail"] = "%from 获得了“化身牌” %arg",
+	["#GetHuashenDetail"] = "%from 获得了“化身牌” %arg",
 	["showSameHiddenSkills"] = "同名技能",
-	
-	
+
+
 	["marisa_god"] = "神 雾雨魔理沙",
 	["&marisa_god"] = "神雾雨魔理沙",
 	["#marisa_god"] = "奇妙的魔法使",
 	["designer:marisa_god"] = "三国有单",
-	
+
 	["chongneng"] = "充能",
 	[":chongneng"] = "当你使用手牌里的牌指定角色为目标时，你可以选择一项：取消一个目标并获得1枚“星”标记；或（若此牌存在效果值且不为延时类锦囊牌）弃1枚“星”标记，若如此做，你令此牌效果中的一个效果值+1。然后若此牌的花色为<font size=\"5\", color=\"#808080\"><b>♠</b></font>，你摸一张牌。<br />♦游戏牌描述中用 <font color=\"green\"><b>绿色</b></font> 写出的 文字 即为 效果值；效果值 加减实为该文字的 数字 加减。",
 	["@chongneng"] = "你发动了<font color=\"#00FF00\"><b>充能</b></font> ，请选择要取消的一名目标角色并点击<font color=\"#FF3C00\"><b>确定</b></font>。<br/>或者点击<font color=\"#7AC930\"><b>取消</b></font>来弃1枚“星”标记并令此牌的一个<font color=\"#81AD72\"><b>效果值+1</b></font>。",
@@ -730,41 +704,39 @@ return{
 	["chongneng:archery_attack_second"] = "此牌伤害值基数+1" ,
 	["chongneng:fight_together_first"] = "明置目标手牌的牌数+1" ,
 	["chongneng:fight_together_second"] = "横置目标装备区里的牌数+1" ,
-	
+
 	["#Chongneng"] = "%from 发动了 <font color=\"#00FF00\">充能</font>， 令【%arg】的 第 %arg2 个效果值+1" ,
 	["#ChongnengCacel"] = "当其他角色使用牌时，你可以暗置你的一张与此牌类别相同的明置手牌，取消所有目标。若此牌为明置手牌，你可以明置其一张手牌。",
-	
+
 	["huixing"] = "彗星",
 	[":huixing"] = "当你使用基本牌或普通锦囊牌对唯一角色目标结算完毕后，若此牌存在效果值，你可以弃1枚“星”标记，视为对其下家使用牌名、属性、效果、效果值均相同的牌。",
-    ["huixing:target"]= "你可以发动 <font color=\"#00FF00\"><b>%src </b></font>, 视为对<font color=\"#00FF00\"><b>%dest</b></font> 使用<font color=\"#00FF00\"><b> 【%arg】</b></font> 。",
+	["huixing:target"]= "你可以发动 <font color=\"#00FF00\"><b>%src </b></font>, 视为对<font color=\"#00FF00\"><b>%dest</b></font> 使用<font color=\"#00FF00\"><b> 【%arg】</b></font> 。",
 
-	
-	
 	["patchouli_god"] = "神 帕秋莉",
 	["&patchouli_god"] = "神帕秋莉",
 	["#patchouli_god"] = "七曜的魔女",
 	["!patchouli_god"] = "神 帕秋莉·诺蕾姬",
 
-	
+
 	["alice_god"] = "神 爱丽丝",
 	["&alice_god"] = "神爱丽丝",
 	["#alice_god"] = "少女裁判",
-	
-	
+
+
 	["shinmyoumaru_god"] = "神 少名针妙丸",
 	["&shinmyoumaru_god"] = "神少名针妙丸",
 	["#shinmyoumaru_god"] = "辉光之针的利立浦特",
-	
-	
+
+
 	["tenshi_god"] = "神 比那名居天子",
 	["&tenshi_god"] = "神比那名居天子",
 	["#tenshi_god"] = "有顶天变",
-	
+
 	["yuyuko_1v3"] = "西行寺幽幽子",
 	["!yuyuko_1v3"] = "神 西行寺幽幽子-1v3",
 	["#yuyuko_1v3"] = "天衣无缝的亡灵" ,
-	
-	
+
+
 	["kaguya_1v3"] = "蓬莱山辉夜",
 	["!kaguya_1v3"] = "神 蓬莱山辉夜-1v3",
 	["yueji"] = "月姬",

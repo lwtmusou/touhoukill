@@ -59,7 +59,7 @@ return{
 	["xihua_skill_saveself"]= "戏画",
 	["#Xihua"] = "%from 发动了“%arg2”，声明此牌为 【%arg】，选择的目标为 %to",
 	["#XihuaNoTarget"] = "%from 发动了“%arg2”，声明此牌为 【%arg】",
-    ["#xihua_clear"]= "戏画(后续)",
+	["#xihua_clear"]= "戏画(后续)",
 --*********************************************
 	--slm003  势力：灵 3血
 	["futo"] = "物部布都",
@@ -162,11 +162,6 @@ return{
 	["illustrator:kyouko_2"] = "ideolo",
 	["origin:kyouko_2"] = "个人ID：61513",
 
-	--["huisheng"] = "回声",
-	--[":huisheng"] = "当其他角色使用的基本牌或普通锦囊牌结算后，若你为此牌的唯一目标，你可以视为对其使用一张与此牌名称相同且属性相同的牌。",
-	--[":huisheng"] = "当其他角色使用的基本牌或普通锦囊牌结算后，若你为唯一目标，你可以视为对其使用同名同属性的牌。",
-	--["~huisheng"] = "回声",
-	--["@huisheng-use"] = "你可以发动“回声”，对 <font color=\"#00FF00\"><b>%src </b></font> 使用一张【%dest】。",
 	["songjing"] = "诵经",
 	[":songjing"] = "当一名角色使用延时类锦囊牌时，你可以摸两张牌。",
 	["songjing:use"] = "<font color=\"#00FF00\"><b>%src </b></font>使用了延时类锦囊【%dest】，你可以发动“诵经”",

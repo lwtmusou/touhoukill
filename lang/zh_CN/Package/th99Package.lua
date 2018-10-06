@@ -108,13 +108,11 @@ return{
 	["origin:merry_3"] = "个人ID：173876",
 
 	["mengxian"] = "梦现",
-	--[":mengxian"] = "<font color=\"purple\"><b>觉醒技，</b></font>准备阶段开始时，若“境界”数不小于3，你失去1点体力上限，回复1点体力，获得技能“乱影”（当其他角色使用或打出基本牌时（代替判定牌时除外），你可以交给其一张颜色相同的“境界”，令此牌无效）。",
 	[":mengxian"] = "<font color=\"purple\"><b>觉醒技，</b></font>准备阶段开始时，若“境界”数不小于3，你减1点体力上限，然后回复1点体力并获得“乱影”（当其他角色使用基本牌时，你可以将一张与此牌颜色相同的“境界”交给其，令此牌无效）。",
 
 	["#MengxianWake"] = "%from 的人物牌上的“境界”为 %arg2 张，触发“%arg”觉醒。",
 	["$mengxianAnimate"]= "skill=merry:mengxian",
 	["luanying"] = "乱影",
-	--[":luanying"] = "当其他角色使用或打出基本牌时（代替判定牌时除外），你可以交给其一张颜色相同的“境界”，令此牌无效。",
 	[":luanying"] = "当其他角色使用基本牌时，你可以将一张与此牌颜色相同的“境界”交给其，令此牌无效。",
 	["@luanying-invoke"]= "<font color=\"#00FF00\"><b>%src</b></font> 使用【%dest】，你可以发动“乱影”。",
 	["~luanying"] = "选择一张“境界” -> 确定",
@@ -163,7 +161,7 @@ return{
 	["#pingyiLoseSkill"] = "<font color=\"#00FF00\"><b>%from</b></font> 的 “%arg” 因 “凭依”而无效",
 	["#pingyiReturnSkill"] = "<font color=\"#00FF00\"><b>%from</b></font> 的 “%arg” 重新有效",
 	["#pingyi_handle"] = "凭依(归还技能)",
-   
+
 --****************************
 	--wai008  势力：外 4血
 	["!sunny"] = "桑尼·米尔克",
@@ -267,7 +265,7 @@ return{
 	[":bihuo"] = "当你成为【杀】的目标时，你可以将所有手牌交给一名其他角色，将此【杀】转移给其。若如此做，此回合结束时，其将等量的手牌交给你。<font color=\"green\"><b>每回合限一次</b></font>",
 	["@bihuo-playerchosen"] = "<font color=\"#00FF00\"><b>%src </b></font> 对你使用了【杀】，你可以发动“避祸”，选择一名其他角色。",
 	["@bihuo-return"]= "由于“避祸”的效果，请选择 %src 张手牌交给 <font color=\"#00FF00\"><b>%dest </b></font>。",
-    ["#bihuo"] = "避祸",
+	["#bihuo"] = "避祸",
 
 
 --**************************************

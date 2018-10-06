@@ -117,7 +117,7 @@ sgs.ai_skill_cardask["@chongdong"] = function(self, data)
 	local current = self.room:getCurrent()
 	local lord = self.room:getLord()
 	if current and lord and current:isAlive() and self:isFriend(lord) and self:isEnemy(current) then
-		local cards = {} 
+		local cards = {}
 		for _,c in sgs.qlist(self.player:getCards("hs")) do
 			if c:isRed() then
 				table.insert(cards, c)
@@ -227,7 +227,7 @@ end
 sgs.ai_skill_cardask["@qiusuo"] = function(self, data)
 	local point_num = {}
 	for i = 1, 13 do
-	    local n = 0 
+		local n = 0
 		for _,id in sgs.qlist(self.player:getPile("zhenli"))do
 			if sgs.Sanguosha:getCard(id):getNumber() == i then
 				n = n + 1
@@ -240,23 +240,23 @@ sgs.ai_skill_cardask["@qiusuo"] = function(self, data)
 		return a.num > b.num
 	end
 	table.sort(point_num, compare_func)
-	
-	
+
+
 	local point = 0
 	for _, t in ipairs(point_num) do
-		if t.num > 0 then 
-			point = t.point 
-			break		
+		if t.num > 0 then
+			point = t.point
+			break
 		end
 	end
-	
+
 	local ids = {}
 	for _,id in sgs.qlist(self.player:getPile("zhenli"))do
 			if sgs.Sanguosha:getCard(id):getNumber() == point then
 				table.insert(ids, id)
 			end
 	end
-	
+
 	if #ids > 0 then
 		return "$" .. table.concat(ids, "+")
 	end
@@ -298,11 +298,11 @@ sgs.ai_skill_choice.mengxiao = function(self, choices, data)
 			if self:getOverflow(p) > 1 then
 				return "indulgence"
 			end
-		end		
+		end
 	end
 	if choices:match("supply_shortage") then
 		return "supply_shortage"
-	elseif choices:match("indulgence") then 
+	elseif choices:match("indulgence") then
 		return "indulgence"
 	end
 	return "cancel"
@@ -368,7 +368,7 @@ end
 end]]
 sgs.ai_damageInflicted.lubiao =function(self, damage)
 	if damage.card and lubiaoInvoke(self, damage.card)then
-		damage.damage= damage.damage - 1 
+		damage.damage= damage.damage - 1
 	end
 	return damage
 end
@@ -536,7 +536,7 @@ sgs.ai_skill_invoke.mengyan = true
 sgs.ai_skill_use["@@lianmu"] = function(self, prompt)
 	local slash = sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
 	slash:setSkillName("lianmu");
-    slash:deleteLater()
+	slash:deleteLater()
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList()}
 	self:useBasicCard(slash, dummy_use)
 	local targets = {}
@@ -662,8 +662,8 @@ function turnUse_guaiqi(self)
 		table.insert(guaiqis, "slash")
 	end
 	if #guaiqis == 0 then return nil end
-	
-	
+
+
 
 	local choices={}
 	for i = 1, #guaiqis do
@@ -712,7 +712,7 @@ function turnUse_guaiqi(self)
 	if not choice then
 		choice = choices[1]
 	end
-	
+
 	local str  = (choice..":guaiqi[%s:%s]="):format("to_be_decided", -1)
 	if (choice == "slash") then
 		self:sortByUseValue(tricks, true)
@@ -738,7 +738,7 @@ function sgs.ai_cardsview_valuable.guaiqi(self, class_name, player)
 	if class_name == "sqchuangshi" then
 		return turnUse_guaiqi(self)
 	end
-	
+
 	if (sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE) then
 		return nil
 	end
@@ -758,9 +758,9 @@ function sgs.ai_cardsview_valuable.guaiqi(self, class_name, player)
 		local card_id = modians[1]:getEffectiveId()
 		return ("slash:guaiqi[%s:%s]=%d"):format(suit, number, card_id)
 	end
-	
 
-	if class_name == "Nullification" then 
+
+	if class_name == "Nullification" then
 		local hasNul = false
 		local piles = self.player:getPile("modian")
 		local modians = {}
@@ -879,7 +879,7 @@ sgs.ai_skill_use_func.MoyanCard=function(card,use,self)
 		if self:isEnemy(p) then
 			table.insert(targets, p)
 		end
-		if #targets >= self.player:getLostHp() then break end		
+		if #targets >= self.player:getLostHp() then break end
 	end
 	if #targets > 0 then
 		use.card = card
@@ -927,12 +927,12 @@ local zongjiu_skill = {}
 zongjiu_skill.name = "zongjiu"
 table.insert(sgs.ai_skills, zongjiu_skill)
 function zongjiu_skill.getTurnUseCard(self)
-    if self.player:getCards("s"):isEmpty() then return nil end
+	if self.player:getCards("s"):isEmpty() then return nil end
 	local slash = self:getCard("Slash")
 	if not slash or not self:shouldUseAnaleptic(self.player, slash) then return nil end
 	local ana = sgs.cloneCard("analeptic", sgs.Card_NoSuit, 0)
 	ana:deleteLater()
-	if not sgs.Analeptic_IsAvailable(self.player, ana) or self.player:isCardLimited(ana, sgs.Card_MethodUse) then	return nil 	end
+	if not sgs.Analeptic_IsAvailable(self.player, ana) or self.player:isCardLimited(ana, sgs.Card_MethodUse) then   return nil  end
 	local cards = self.player:getCards("s")
 	cards = sgs.QList2Table(cards)
 	self:sortByCardNeed(cards)
@@ -956,9 +956,9 @@ function sgs.ai_cardsview_valuable.zongjiu(self, class_name, player)
 	if class_name == "Analeptic" then
 		local dying = player:getRoom():getCurrentDyingPlayer()
 		if not dying then return nil end
-	    if self:isFriend(dying, player) then
+		if self:isFriend(dying, player) then
 			local cards = self.player:getCards("s")
-	        cards = sgs.QList2Table(cards)
+			cards = sgs.QList2Table(cards)
 			if #cards== 0 then return nil end
 			self:sortByCardNeed(cards)
 			return "@ZongjiuCard=" .. cards[1]:getEffectiveId()
@@ -983,14 +983,14 @@ qiren_skill.name = "qiren"
 table.insert(sgs.ai_skills, qiren_skill)
 function qiren_skill.getTurnUseCard(self)
 	if self.player:hasFlag("qirenUsed") then return nil end
-	local shows = {} 
+	local shows = {}
 	local cards1 = self.player:getCards("s")
 	for _, c in sgs.qlist(cards1) do
 		if  not c:isKindOf("Jink") and not c:isKindOf("Nullification") then
 			table.insert(shows, c)
 		end
 	end
-    local hiddens = {}
+	local hiddens = {}
 	local cards2 = self.player:getCards("h")
 	cards2 =self:touhouAppendExpandPileToList(self.player, cards2)
 	for _, c in sgs.qlist(cards2) do
@@ -1012,18 +1012,18 @@ function qiren_skill.getTurnUseCard(self)
 		if c:isKindOf("BaosiCard") then
 			table.insert(use, c:getEffectiveId())
 			break
-	    elseif not c:isKindOf("AOE") and not c:isKindOf("GlobalEffect") and not c:isKindOf("IronChain") 
+		elseif not c:isKindOf("AOE") and not c:isKindOf("GlobalEffect") and not c:isKindOf("IronChain")
 		and not c:isKindOf("LureTiger") and not c:isKindOf("KnownBoth") then
 			table.insert(use, c:getEffectiveId())
 			break
 		end
 	end
-	
+
 	if #use ~= 2 then return nil end
 	return sgs.Card_Parse("@QirenCard=" .. table.concat(use, "+"))
 end
 sgs.ai_skill_use_func.QirenCard=function(card,use,self)
-    local tmp = sgs.Sanguosha:getCard((card:getSubcards():first()))
+	local tmp = sgs.Sanguosha:getCard((card:getSubcards():first()))
 	local effect = sgs.Sanguosha:getCard((card:getSubcards():last()))
 	local targets = {}
 	if tmp:isKindOf("AOE") then
@@ -1054,11 +1054,11 @@ sgs.ai_skill_use_func.QirenCard=function(card,use,self)
 			if #targets >= total_num then break end
 		end
 	end
-	
+
 	if #targets > 0 then
 		use.card = card
 		if use.to then
-            for _, p in ipairs (targets) do			
+			for _, p in ipairs (targets) do
 				use.to:append(p)
 			end
 			if use.to:length() >= 1 then return end
@@ -1090,16 +1090,16 @@ sgs.ai_skill_use["@@liuzhuanVS"] = function(self, prompt)
 
 	local b = self.room:getTag("liuzhuan"):toBrokenEquipChange()
 	local ids
-    if not b.ids:isEmpty() then
+	if not b.ids:isEmpty() then
 		ids = b.ids
 	else
 		local s = self.room:getTag("liuzhuan"):toShownCardChange()
 		ids = s.ids
 	end
 	--默认全制衡？
-    if not ids:isEmpty() then
-	    
-        local recast = {}
+	if not ids:isEmpty() then
+
+		local recast = {}
 		for _,id in sgs.qlist(ids) do
 			table.insert(recast, tostring(id))
 		end
@@ -1140,8 +1140,7 @@ end
 
 sgs.ai_skill_playerchosen.anliu = function(self, targets)
 	--slash数量默认为1 好了， 不取求转化杀的子卡了
-	
-	
+
 	for _, target in sgs.qlist(targets) do
 		if self:isEnemy(target) then
 			for _,id in sgs.qlist(target:getShownHandcards()) do
@@ -1149,7 +1148,7 @@ sgs.ai_skill_playerchosen.anliu = function(self, targets)
 					return target
 				end
 			end
-			
+
 			basic = getKnownCard(target, self.player, "Basic") + 1
 			total = target:getHandcardNum() + 1
 			if basic/ total >= 0.5 then
@@ -1157,12 +1156,12 @@ sgs.ai_skill_playerchosen.anliu = function(self, targets)
 			end
 		end
 	end
-	
+
 	for _, target in ipairs(targets) do
 		if self:isFriend(target) then
 			return target
 		end
 	end
-	
+
 	return nil
 end

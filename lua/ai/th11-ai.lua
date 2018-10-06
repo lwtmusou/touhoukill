@@ -211,8 +211,8 @@ end
 
 sgs.ai_skill_playerchosen.youtong = function(self, targets)
 	for _,p in sgs.qlist(targets) do
-	    if self:isFriend(p) and p:hasSkill("duxin") then
-			return p 
+		if self:isFriend(p) and p:hasSkill("duxin") then
+			return p
 		end
 	end
 	return nil
@@ -288,7 +288,7 @@ sgs.ai_skill_use["@@yaoban"] = function(self, prompt)
 			fakeDamage.from=self.player
 			fakeDamage.to=p
 			local yaoban_effect = self:touhouNeedAvoidAttack(fakeDamage, self.player, p)
-			if   yaoban_effect then  
+			if   yaoban_effect then
 				table.insert(targets,p)
 			end
 		end

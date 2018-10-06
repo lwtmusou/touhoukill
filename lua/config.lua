@@ -44,7 +44,7 @@ config = {
 		"StandardExCard",
 		"TestCard",
 		"Maneuvering",
-        
+
 		--武将包
 		"Protagonist",
 		"TH0105",
@@ -63,7 +63,7 @@ config = {
 		"TouhouGod",
 		"Standard", --此包内带pattern的定义 不能屏蔽。。。
 		"Test",
-        
+
 	},
 
 	surprising_generals = {
@@ -154,8 +154,8 @@ config = {
 	convert_pairs = {
 	},
 
-	
-	
+
+
 	bgm_convert_pairs = {
 		--BGM： 由于开始尝试加入arrange代替原曲，曲目对应关系可能有变，以后转换列表还要重新整理。
 		"reimu_old->reimu_sp",
@@ -191,7 +191,7 @@ config = {
 		"seija_sp->seija",
 		"rumia_sp->rumia",
 	},
-	
+
 	backdrop_convert_pairs = {
 		"yukimai->shinki",
 		"lunar|star->sunny",
@@ -200,14 +200,14 @@ config = {
 		"rumia_sp->rumia",
 	},
 	latest_generals = {
-	    "reimu","reisen_gzz", "marisa_slm",
+		"reimu","reisen_gzz", "marisa_slm",
 		"sariel","konngara",
 		"yukimai", "gengetsumugetsu",
-		"koakuma", "rumia_sp", 
+		"koakuma", "rumia_sp",
 		"yuyuko","yukari","ran","chen",
 		"wriggle", "keine", "mystia_sp",
 		"suika","tenshi",
-		"nue_slm", "seija_sp", 
+		"nue_slm", "seija_sp",
 		"junko","hecatia","clownpiece","sagume","doremy","ringo","seiran",
 		"reisen2",
 		"satori_god","marisa_god",

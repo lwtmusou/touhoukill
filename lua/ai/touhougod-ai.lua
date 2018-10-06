@@ -916,7 +916,7 @@ function sgs.ai_cardsview_valuable.huaxiang(self, class_name, player)
 	self:sortByKeepValue(validCards)
 
 	local classname2objectname = {
-		["Slash"] = "slash",  ["Analeptic"] = "analeptic", ["MagicAnaleptic"] = "magic_analeptic", 
+		["Slash"] = "slash",  ["Analeptic"] = "analeptic", ["MagicAnaleptic"] = "magic_analeptic",
 		["FireSlash"] = "fire_slash", ["ThunderSlash"] = "thunder_slash"
 		, ["LightSlash"] = "light_slash", ["PowerSlash"] = "power_slash", ["IronSlash"] = "iron_slash"
 	}
@@ -1301,7 +1301,7 @@ shenbao_skill.getTurnUseCard = function(self, inclusive)
 		if weapon and weapon:isKindOf("Spear") then return nil end
 		return turnUse_spear(self, inclusive, "Spear")
 	end
-	
+
 	local jadeSeal = function(self, inclusive)
 		if not self.player:hasTreasure("JadeSeal") then return nil end
 		local treasure = self.player:getWeapon()
@@ -1314,7 +1314,7 @@ shenbao_skill.getTurnUseCard = function(self, inclusive)
 		c:setCanRecast(false)
 		return c
 	end
-	
+
 	return jadeSeal(self, inclusive) or spear(self, inclusive)
 end
 
@@ -1432,13 +1432,13 @@ xinhua_skill.getTurnUseCard = function(self)
 	local XinhuaCards = {}
 	for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		for _, id in sgs.qlist(p:getShownHandcards()) do
-		    local card = sgs.Sanguosha:getCard(id)
+			local card = sgs.Sanguosha:getCard(id)
 			if not self.player:isLocked(card) then
 				table.insert(XinhuaCards, card)
 			end
 		end
 	end
-    if #XinhuaCards == 0 then return end
+	if #XinhuaCards == 0 then return end
 
 	self:sortByUseValue(XinhuaCards, false)
 	for _,c in pairs (XinhuaCards) do
@@ -1451,22 +1451,22 @@ xinhua_skill.getTurnUseCard = function(self)
 			self:useEquipCard(c, dummyuse)
 		end
 		if dummyuse.card then
-		    --防止重铸
-		    if dummyuse.card:isKindOf("IronChain") or dummyuse.card:isKindOf("KnownBoth") then
-				if not dummyuse.to or dummyuse.to:isEmpty() then return nil end 
+			--防止重铸
+			if dummyuse.card:isKindOf("IronChain") or dummyuse.card:isKindOf("KnownBoth") then
+				if not dummyuse.to or dummyuse.to:isEmpty() then return nil end
 			end
-		    return sgs.Card_Parse("@XinhuaCard="..c:getEffectiveId())
+			return sgs.Card_Parse("@XinhuaCard="..c:getEffectiveId())
 		end
 	end
 	return nil
 end
 sgs.ai_skill_use_func.XinhuaCard=function(card,use,self)
 	local xinhua = sgs.Sanguosha:getCard(card:getSubcards():first())
-	if xinhua:getTypeId() == sgs.Card_TypeBasic then 
+	if xinhua:getTypeId() == sgs.Card_TypeBasic then
 		self:useBasicCard(xinhua, use)
 	elseif xinhua:getTypeId() == sgs.Card_TypeTrick then
 			self:useTrickCard(xinhua, use)
-    elseif xinhua:getTypeId() == sgs.Card_TypeEquip then
+	elseif xinhua:getTypeId() == sgs.Card_TypeEquip then
 		self:useEquipCard(xinhua, use)
 	end
 	if not use.card then return end
@@ -1480,24 +1480,24 @@ function sgs.ai_cardsview_valuable.xinhua(self, class_name, player)
 		return nil
 	end
 
-    local XinhuaCards = {}
+	local XinhuaCards = {}
 	for _, p in sgs.qlist(self.room:getOtherPlayers(player)) do
 		for _, id in sgs.qlist(p:getShownHandcards()) do
-		    local card = sgs.Sanguosha:getCard(id)
+			local card = sgs.Sanguosha:getCard(id)
 			if card:isKindOf(class_name) then
-			    if sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE then
+				if sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE then
 					if not player:isCardLimited(card, sgs.Card_MethodResponse) then
 						table.insert(XinhuaCards, card)
 					end
 				else
-				    if not player:isLocked(card) then
+					if not player:isLocked(card) then
 						table.insert(XinhuaCards, card)
 					end
 				end
 			end
 		end
 	end
-    if #XinhuaCards == 0 then return end
+	if #XinhuaCards == 0 then return end
 	return "@XinhuaCard=" .. XinhuaCards[1]:getEffectiveId() .. ":" .. XinhuaCards[1]:objectName()
 end
 
@@ -1517,19 +1517,19 @@ sgs.ai_skill_choice.tongling = function(self, choices)
 end
 
 function rumoNum(player)
-    local loyalist, rebel, renegade = 0, 0 , 0
-    for _,role in ipairs(player:getRoom():aliveRoles()) do
-        if (role == "rebel") then
-            rebel =rebel + 1
-        elseif (role == "renegade") then
-            renegade = renegade + 1
-        elseif (role == "loyalist" or role == "lord") then
-            loyalist = loyalist + 1
+	local loyalist, rebel, renegade = 0, 0 , 0
+	for _,role in ipairs(player:getRoom():aliveRoles()) do
+		if (role == "rebel") then
+			rebel =rebel + 1
+		elseif (role == "renegade") then
+			renegade = renegade + 1
+		elseif (role == "loyalist" or role == "lord") then
+			loyalist = loyalist + 1
 		end
-    end
-    renegade = math.min(renegade, 1)
-    local num = math.max(renegade, loyalist);
-    num = math.max(num, rebel)
+	end
+	renegade = math.min(renegade, 1)
+	local num = math.max(renegade, loyalist);
+	num = math.max(num, rebel)
 	return num
 end
 

@@ -38,7 +38,7 @@ function SmartAI:shouldUseMagicAnaleptic(trick)
 	for _, f in ipairs(self.friends)do
 		nul_f = nul_f + getCardsNum("Nullification", f)
 	end
-    for _, e in ipairs(self.enemies)do
+	for _, e in ipairs(self.enemies)do
 		nul_e = nul_e + getCardsNum("Nullification", e)
 	end
 	return nul_f >= nul_e
@@ -48,7 +48,7 @@ function SmartAI:searchForMagicAnaleptic(use, enemy, trick)
 
 	if not self.toUse then return nil end
 	if not use.to then return nil end
-	
+
 	local analeptic = self:getCard("MagicAnaleptic")
 	if not analeptic then return nil end
 
@@ -79,24 +79,24 @@ function SmartAI:useCardSuperPeach(card, use)
 	if self:cautionDoujiu(self.player,card) then
 		return
 	end
-	
-    local targets = {}
+
+	local targets = {}
 	local good_targets = {}
 	for _,f in ipairs (self.friends) do
 		if f:isDebuffStatus() then
 			table.insert(targets, f)
 			if f:isWounded() then
-                table.insert(good_targets, f)			
+				table.insert(good_targets, f)
 			end
 		end
 	end
-    	
+
 	if #targets <= 0 then return end
 
 	local lord= getLord(self.player)
 
-    
-	if self.player:isDebuffStatus() and self.player:isWounded() then 
+
+	if self.player:isDebuffStatus() and self.player:isWounded() then
 		if self.player:hasArmorEffect("SilverLion") then
 			for _, card in sgs.qlist(self.player:getHandcards()) do
 				if card:isKindOf("Armor") and self:evaluateArmor(card) > 0 then
@@ -115,15 +115,15 @@ function SmartAI:useCardSuperPeach(card, use)
 				OtherArmor = true
 			end
 		end
-		
+
 		if SilverLion and OtherArmor then
 			use.card = SilverLion
 			return
 		end
-    end
+	end
 
-	
-    
+
+
 	if #good_targets > 0 then
 		self:sort(good_targets, "hp")
 		for _,p in ipairs(good_targets) do
@@ -131,13 +131,13 @@ function SmartAI:useCardSuperPeach(card, use)
 				use.card = card
 				if use.to then
 					use.to:append(p)
-					return 
+					return
 				end
 			end
 		end
 	end
 
-	
+
 	local mustusepeach = false
 	for _, enemy in ipairs(self.enemies) do
 		if self.player:getHandcardNum() < 3 and
@@ -155,14 +155,14 @@ function SmartAI:useCardSuperPeach(card, use)
 	if self.player:getHp() == 1 and not (lord and self:isFriend(lord) and lord:getHp() < 2 and self:isWeak(lord)) then
 		mustusepeach = true
 	end
-	if mustusepeach then	
+	if mustusepeach then
 		self:sort(targets, "hp")
 		for _,p in ipairs(targets) do
-			if not self:needToLoseHp(p, nil, nil, nil, true) then 
+			if not self:needToLoseHp(p, nil, nil, nil, true) then
 				use.card = card
 				if use.to then
 					use.to:append(p)
-					return 
+					return
 				end
 			end
 		end
@@ -208,7 +208,7 @@ local Jade_skill = {}
 Jade_skill.name = "JadeSeal"
 table.insert(sgs.ai_skills, Jade_skill)
 Jade_skill.getTurnUseCard = function(self, inclusive)
-    local treasure = self.player:getTreasure()
+	local treasure = self.player:getTreasure()
 	if not treasure then return nil end
 	if self.player:isBrokenEquip(treasure:getId()) then return nil end
 	if self.player:hasFlag("JadeSeal_used") then
@@ -235,7 +235,7 @@ sgs.ai_view_as.Pagoda = function(card, player, card_place)
 	end
 end
 sgs.ai_skill_invoke.Pagoda = function(self,data)
-    local effect = data:toCardEffect()
+	local effect = data:toCardEffect()
 	local card =  effect.card
 	local target = effect.to
 	if card:isKindOf("IronChain") or card:isKindOf("LureTiger") or card:isKindOf("AwaitExhausted") then
@@ -264,21 +264,21 @@ end
 
 
 function SmartAI:useCardAwaitExhausted(card, use)
-	
+
 	local targets = sgs.PlayerList()
 	local total_num = 2 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, card)
 
-	
+
 	self:sort(self.friends, "defense")
 	sgs.reverse(self.friends)
 	for _, friend in ipairs(self.friends) do
 		if card:targetFilter(targets, friend, self.player) and not targets:contains(friend)
-				and self:hasTrickEffective(card, friend, self.player) 
-				and not friend:isNude() 
+				and self:hasTrickEffective(card, friend, self.player)
+				and not friend:isNude()
 				and not (friend:hasSkill("gaoao") and not friend:isCurrent())then
 			use.card = card
 			targets:append(friend)
-			if use.to then 
+			if use.to then
 				use.to:append(friend)
 				if use.to:length() == total_num then return end
 			end
@@ -286,8 +286,8 @@ function SmartAI:useCardAwaitExhausted(card, use)
 	end
 	for _, enemy in ipairs(self.enemies) do
 		if card:targetFilter(targets, enemy, self.player) and not targets:contains(enemy)
-				and self:hasTrickEffective(card, enemy, self.player) 
-				and not enemy:isNude() 
+				and self:hasTrickEffective(card, enemy, self.player)
+				and not enemy:isNude()
 				and (enemy:hasSkill("gaoao") and not enemy:isCurrent())then
 			use.card = card
 			targets:append(enemy)
@@ -301,7 +301,7 @@ end
 sgs.ai_use_priority.AwaitExhausted = sgs.ai_use_value.ExNihilo - 1
 sgs.ai_card_intention.AwaitExhausted = function(self, card, from, tos)
 	for _, to in ipairs(tos) do
-	    local gaoao = to:hasSkill("gaoao") and not to:isCurrent()
+		local gaoao = to:hasSkill("gaoao") and not to:isCurrent()
 		if not gaoao then
 			sgs.updateIntention(from, to, -10)
 		else
@@ -314,14 +314,14 @@ end
 function SmartAI:willUseAllianceFeast(card)
 	if not card then self.room:writeToConsole(debug.traceback()) return false end
 	local good, bad = 0, 0
-    --可以细化的机制判断  
+	--可以细化的机制判断
 	--空城 永恒类
 	-- 明牌 或者横置的具体张数
 	--三种debuff各自价值
 	for _, friend in ipairs(self.friends) do
 		good = good + 10 * getCardsNum("Nullification", friend, self.player)
 		if self:hasTrickEffective(card, friend, self.player) then
-			if (friend:getShownHandcards():length() > 0 or  friend:getBrokenEquips():length() > 0 or friend:isChained()) then	
+			if (friend:getShownHandcards():length() > 0 or  friend:getBrokenEquips():length() > 0 or friend:isChained()) then
 				good = good + 10
 			elseif friend:hasSkill("huiwu") then good = good + 5
 			end
@@ -333,7 +333,7 @@ function SmartAI:willUseAllianceFeast(card)
 		if self:hasTrickEffective(card, enemy, self.player) then
 			if (enemy:getShownHandcards():length() > 0 or  enemy:getBrokenEquips():length() > 0 or enemy:isChained()) then
 				bad = bad + 10
-				
+
 			end
 		end
 	end
@@ -368,18 +368,18 @@ sgs.ai_keep_value.FightTogether = 1.5
 
 function SmartAI:useCardBoneHealing(card, use)
 	local total_num = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, card)
-	
+
 	local enemies = self:exclude(self.enemies, card)
 	local targets = {}
-	
+
 	for _,e in ipairs(enemies) do
 		if e:isDebuffStatus() then
 			table.insert(targets, e)
 		end
 	end
 	if #targets > 0 then
-	    self:sort(targets, "hp")
-		
+		self:sort(targets, "hp")
+
 		for _,t in ipairs(targets) do
 			use.card = card
 			if use.to then

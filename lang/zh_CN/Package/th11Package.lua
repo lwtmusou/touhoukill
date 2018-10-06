@@ -27,16 +27,11 @@ return{
 	["xiangqi:show"]= "<font color=\"#FF8000\"><b>%src </b></font> 使用【%arg】对 <font color=\"#00FF00\"><b>%dest </b></font> 造成了伤害，你可以发动“想起”。",
 	["duxin"] = "读心",
 	[":duxin"] = "<font color=\"blue\"><b>锁定技，</b></font>你选择其他角色的手牌时，其手牌对你可见。",
-	--["huzhu"] = "护主",
-	--[":huzhu"] = "<font color=\"orange\"><b>主公技，</b></font>当你成为【杀】的唯一目标时，你可以令其他地势力角色依次选择是否将此【杀】转移给该角色。",
-	--["huzhu_change"]= "护主",
-	--["huzhu_change:slashtarget"]= "你可以响应 <font color=\"#00FF00\"><b>%dest </b></font> 的主公技“护主”，代替 <font color=\"#00FF00\"><b>%dest </b></font> 成为 <font color=\"#FF8000\"><b>%src </b></font> 使用的【%arg】的目标。",
-	--["#huzhu_change"]= "%to 代替其成为 %from 使用的 %arg 的目标。",
-    
+
 	["youtong"]= "幽瞳",
 	[":youtong"]= "<font color=\"orange\"><b>主公技，</b></font>其他地势力角色选择另一名角色的牌时（除使用选择牌外），其可以令你代为选择。",
-    ["@youtong"]= "你可以令 拥有主公技 “幽瞳” 的角色 代替你选择  %src 的牌。",
-	
+	["@youtong"]= "你可以令 拥有主公技 “幽瞳” 的角色 代替你选择  %src 的牌。",
+
 --*********************************************
 	--dld002  势力：地 3血
 	["koishi"] = "古明地恋",
@@ -142,8 +137,6 @@ return{
 
 	["illustrator:parsee"] = "東天紅",
 	["origin:parsee"] = "p号：48906838， 个人ID：3757061",
-	--["illustrator:parsee"] = "岩本ゼロゴ",
-	--["origin:parsee"] = "个人ID：3080",
 	["illustrator:parsee_1"] = "みきぷらす",
 	["origin:parsee_1"] = "p号：14442359，个人ID：626832",
 	["illustrator:parsee_2"] = "あとき",

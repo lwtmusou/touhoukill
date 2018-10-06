@@ -115,7 +115,7 @@ sgs.ai_skill_playerchosen.shenpan = function(self, targets)
 			local damage=sgs.DamageStruct("shenpan", self.player, target, 1, sgs.DamageStruct_Thunder)
 
 			local final_damage=self:touhouDamage(damage,self.player,target)
-			if not (final_damage.damage <=0) then  
+			if not (final_damage.damage <=0) then
 				x,y=self:touhouChainDamage(damage,self.player,target)
 				if x>y then
 					table.insert(chain_targets,target)
@@ -505,7 +505,7 @@ sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 		local array={player= target, value= e_value}
 		table.insert(retrial_targets,array)
 
-		if not (e_value > 0  or self:touhouHandCardsFix(target) or target:isKongcheng()) then  
+		if not (e_value > 0  or self:touhouHandCardsFix(target) or target:isKongcheng()) then
 			--手牌判断
 			if ex_id == -1 then
 				if self:isEnemy(target) then

@@ -149,9 +149,9 @@ sgs.ai_need_bear.bumie = function(self, card,from,tos)
 end
 sgs.ai_skill_invoke.kaifeng = true
 sgs.ai_benefitBySlashed.kaifeng = function(self, card,source,target)
-	if card:isKindOf("FireSlash")  and  target:getHp() < source:getHp() 
-	and  target:getHp() > target:dyingThreshold() then 
-		return true 
+	if card:isKindOf("FireSlash")  and  target:getHp() < source:getHp()
+	and  target:getHp() > target:dyingThreshold() then
+		return true
 	end
 	return false
 end
@@ -159,7 +159,7 @@ sgs.ai_slash_prohibit.kaifeng = function(self, from, to, card)
 	if self:isFriend(from,to) then
 		return false
 	end
-	if card:isKindOf("FireSlash")  and  to:getHp() < from:getHp() 
+	if card:isKindOf("FireSlash")  and  to:getHp() < from:getHp()
 	and  to:getHp() > to:dyingThreshold() then
 		return true
 	end
@@ -442,7 +442,7 @@ end
 sgs.ai_need_damaged.xinyue = function(self, attacker, player)
 	if not self:getDamageSource(attacker) then return false end
 	if  self:isEnemy(attacker,player) then
-		if not self:isWeak(self.player) and (attacker:getHandcardNum() - player:getCards("s"):length()) >= 3  
+		if not self:isWeak(self.player) and (attacker:getHandcardNum() - player:getCards("s"):length()) >= 3
 			and not self:touhouDrawCardsInNotActive(attacker) then
 			return true
 		end
@@ -590,7 +590,7 @@ sgs.ai_skill_use["@@yege"] = function(self, prompt)
 		cards=self:touhouAppendExpandPileToList(self.player,cards)
 		cards = sgs.QList2Table(cards)
 		self:sortByUseValue(cards)
-		if #cards == 0 then return "." end	
+		if #cards == 0 then return "." end
 		return "@YegeCard=".. cards[1]:getId() .."->" .. current:objectName()
 	end
 	return "."
@@ -600,21 +600,21 @@ local mingmuvs_skill = {}
 mingmuvs_skill.name = "mingmu_attach"
 table.insert(sgs.ai_skills, mingmuvs_skill)
 function mingmuvs_skill.getTurnUseCard(self)
-		local cards = self.player:getCards("hes") 
+		local cards = self.player:getCards("hes")
 		if cards:isEmpty() then return nil end
 		local source = self.room:findPlayerBySkillName("mingmu")
 		if not source or source:hasFlag("mingmuInvoked") or not self:isFriend(source) then return nil end
 		local give = self:getOverflow(self.player) > 0
-		
+
 		if not give and sgs.Slash_IsAvailable(self.player) then
 			local slash = self:getCard("Slash")
 			--攻击范围+1后能否够到敌人
 			if slash then
-			    local new_range = self.player:getAttackRange() +1
+				local new_range = self.player:getAttackRange() +1
 				for _,p in ipairs(self.enemies) do
 					if new_range == self.player:distanceTo(p) then
 						give = true
-						return 
+						return
 					end
 				end
 			end
@@ -623,21 +623,21 @@ function mingmuvs_skill.getTurnUseCard(self)
 		--[[if not give and sgs.Slash_IsAvailable(self.player) and source:inMyAttackRange(self.player) and self.player:getAttackRange() > 1  then
 			local slash = self:getCard("Slash")
 			--其实要比较距离1以内/以外的敌人的防御值。 先偷懒了。
-			if slash then 
+			if slash then
 				for _,p in ipairs(self.enemies) do
 					if self.player:distanceTo(p) > 1 then
 						give = true
-						return 
+						return
 					end
 				end
-			end	
+			end
 		end]]
-		
+
 		if not give then return nil end
 		cards = sgs.QList2Table(cards)
-	    self:sortByKeepValue(cards)
+		self:sortByKeepValue(cards)
 		local mingmu_cards={}
-        table.insert(mingmu_cards, cards[1]:getEffectiveId())
+		table.insert(mingmu_cards, cards[1]:getEffectiveId())
 		if #mingmu_cards>0 then
 			local card_str= "@MingmuCard=" .. table.concat(mingmu_cards, "+")
 			return sgs.Card_Parse(card_str)
@@ -689,7 +689,7 @@ table.insert(sgs.ai_skills, yinghuo_skill)
 function yinghuo_skill.getTurnUseCard(self)
 	local slashes = {}
 	local anas = {}
-	for _, c in sgs.qlist(self.player:getCards("h")) do  
+	for _, c in sgs.qlist(self.player:getCards("h")) do
 		if c:isKindOf("Slash") then
 			table.insert(slashes, c)
 		elseif c:isKindOf("Analeptic") then
@@ -699,11 +699,11 @@ function yinghuo_skill.getTurnUseCard(self)
 
 	local card
 	if #slashes>0 and #anas >0   then  --and self:shouldUseAnaleptic(self.player, slashes[1])
-		
+
 		if sgs.Analeptic_IsAvailable(self.player, anas[1]) and not self.player:isCardLimited(anas[1], sgs.Card_MethodUse) then
 			card = anas[1]
 		end
-    elseif #slashes>0 and sgs.Slash_IsAvailable(self.player) then
+	elseif #slashes>0 and sgs.Slash_IsAvailable(self.player) then
 		card = slashes[1]
 	end
 	if not card then return nil end
@@ -731,8 +731,8 @@ sgs.ai_skill_use_func.YinghuoCard=function(card,use,self)
 		end
 		if target then
 			use.card = card
-			if use.to then 
-				use.to:append(target) 
+			if use.to then
+				use.to:append(target)
 				if use.to:length() >= 1 then return end
 			end
 		end
@@ -745,14 +745,14 @@ function sgs.ai_cardsview_valuable.yinghuo(self, class_name, player)
 	if class_name == "Analeptic"  or class_name == "Peach" then
 		local dying = player:getRoom():getCurrentDyingPlayer()
 		if not dying then return nil end
-	    if self:isFriend(dying, player) then
+		if self:isFriend(dying, player) then
 			for _,c in sgs.qlist(self.player:getCards("h")) do
 				if c:isKindOf(class_name) then
 					card = c
 					break
 				end
 			end
-            if card then			
+			if card then
 				return "@YinghuoCard=" .. card:getEffectiveId()
 			end
 		end

@@ -78,12 +78,12 @@ sgs.sidie_keep_value = {
 
 sgs.ai_skill_playerchosen.sidie = function(self, targets)
 	local target = sgs.ai_skill_playerchosen.zero_card_as_slash(self, targets)
-	return target 
+	return target
 end
 
 
 sgs.ai_skill_invoke.huaxu = function(self, data)
-	local current = self.room:getCurrent()	
+	local current = self.room:getCurrent()
 	if self:isFriend(current) then
 		for _,p in sgs.qlist(self.room:getOtherPlayers(current)) do
 			if (self:isEnemy(p) and  current:getHandcardNum() > p:getHandcardNum() and current:canSlash(p, false)) then
@@ -421,7 +421,7 @@ sgs.ai_skill_use["@@shihuiVS"] = function(self, prompt, method)
 		card:addSubcard(cards[i])
 	end
 	card:deleteLater()
-	
+
 	--table.insert(ids, cards[1]:getId())
 
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
@@ -439,7 +439,7 @@ end
 sgs.ai_skill_invoke.huanzang = function(self, data)
 	local target = data:toDying().who
 	if self:isFriend(target) then
-		if	not target:getCards("je"):isEmpty() then return true end
+		if  not target:getCards("je"):isEmpty() then return true end
 		num = getCardsNum("Analeptic", target, self.player) + getCardsNum("Peach", target, self.player)
 		if num == 0 then return true end
 	end
@@ -460,9 +460,9 @@ end
 	end
 end]]
 sgs.ai_skill_choice.huanzang=function(self, choices, data)
-    local who = data:toDying().who
+	local who = data:toDying().who
 	local choice_table = choices:split("+")
-	
+
 	if self:isFriend(who) then
 		if choices:match("e") then return "e" end
 		if choices:match("hs") then
@@ -790,18 +790,18 @@ sgs.ai_skill_use["@@qimen"] = function(self, prompt)
 	local card=sgs.cloneCard(cardname, sgs.Card_NoSuit, 0)
 	card:setSkillName("AIqimen")
 	card:deleteLater()
-	
+
 	maxNum = 0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
 		if (p:getEquips():length() > maxNum) then
 			maxNum = p:getEquips():length()
 		end
 	end
-	
+
 	local f, e = sgs.SPlayerList(), sgs.SPlayerList()
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
 		if p:getEquips():length() >= maxNum and not self.player:isProhibited(p, card)
-         then --card:targetFilter(sgs.SPlayerList(), p, self.player)
+		 then --card:targetFilter(sgs.SPlayerList(), p, self.player)
 			if (self:isFriend(p)) then
 				f:append(p)
 			end
@@ -824,10 +824,10 @@ sgs.ai_skill_use["@@qimen"] = function(self, prompt)
 		if card:isKindOf("IronChain") or card:isKindOf("KnownBoth") then
 			return "."
 		end
-		
+
 		if not f:isEmpty() and (card:isKindOf("Peach") or card:isKindOf("ExNihilo") or card:isKindOf("GlobalEffect")) then
 			table.insert(target_objectname, f:first():objectName())
-		elseif not e:isEmpty() 
+		elseif not e:isEmpty()
 		and (card:isKindOf("AOE")) then
 			table.insert(target_objectname, e:first():objectName())
 		end
@@ -847,7 +847,7 @@ end
 sgs.ai_skill_cardask["@dunjia1"] = function(self, data)
 	local damage = data:toDamage()
 	if not self:isFriend(damage.to) then return "." end
-	
+
 	local ecards = self.player:getCards("e")
 	ecards = sgs.QList2Table(ecards)
 	if #ecards > 0 then
@@ -974,7 +974,7 @@ end
 	return false
 end]]
 sgs.ai_skill_cardask["@zhancao-discard"] = function(self, data)
-    local use = data:toCardUse()
+	local use = data:toCardUse()
 	local target =self.player:getTag("zhancao_target"):toPlayer()
 	if not self:isFriend(target) then return "." end
 	if not self:slashIsEffective(use.card, target, use.from) then return "." end
@@ -989,7 +989,7 @@ sgs.ai_skill_cardask["@zhancao-discard"] = function(self, data)
 		if not self:touhouNeedAvoidAttack(fakeDamage, use.from,target) then  return "."  end
 	end
 
-	
+
 	local cards =self.player:getCards("hes")
 	cards=sgs.QList2Table(cards)
 	local ecards={}

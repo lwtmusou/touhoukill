@@ -143,7 +143,7 @@ end
 function SmartAI:pohuaiBenefit(player)
 	local value=0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if not (player:distanceTo(p) > 1) then  
+		if not (player:distanceTo(p) > 1) then
 			local damage=sgs.DamageStruct("pohuai", player, p, 1, sgs.DamageStruct_Normal)
 			local final_damage=self:touhouDamage(damage,player, p)
 			if final_damage.damage>0 then
@@ -847,7 +847,7 @@ sgs.ai_skill_use["@@xiaoyinVS!"] = function(self, prompt)
 	local card = sgs.cloneCard("lure_tiger", sgs.Card_SuitToBeDecided, -1)
 	card:addSubcard(cards[1])
 	if #targets > 0 then
-	    return card:toString() .. "->" .. table.concat(targets, "+")
+		return card:toString() .. "->" .. table.concat(targets, "+")
 	end
 	return "."
 end

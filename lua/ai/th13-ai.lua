@@ -57,7 +57,7 @@ sgs.ai_skill_discard.qingting = function(self)
 		end
 	end
 
-	
+
 	if target:hasSkill("chunxi") or target:hasSkill("xingyun") then
 		local redcard
 		for _,c in sgs.qlist(self.player:getHandcards())do
@@ -78,7 +78,7 @@ sgs.ai_skill_discard.qingting = function(self)
 			return to_discard
 		end
 	end
-	
+
 
 	local cards={}
 	if self.player:getHandcards():length() > need_give then
@@ -137,7 +137,7 @@ measure_xihua = function(self,card)
 	elseif card:isKindOf("Jink") then
 		pattern = "jink"
 	elseif card:isKindOf("Analeptic") then
-		pattern = "analeptic"	
+		pattern = "analeptic"
 	end
 	local xihuaUsed = "xihua_record_" .. pattern
 	if self.player:getMark(xihuaUsed) > 0 then
@@ -388,7 +388,7 @@ sgs.ai_skill_use_func.LeishiCard = function(card, use, self)
 		local slash = sgs.cloneCard("thunder_slash", sgs.Card_NoSuit, 0)
 		local targets={}
 		for _, p in ipairs(self.enemies) do
-			if not p:hasSkill("jingdian") then  
+			if not p:hasSkill("jingdian") then
 				if not p:isKongcheng() and  self.player:canSlash(p,slash,false) then
 					if getCardsNum("Jink", p, self.player) < 1
 					or sgs.card_lack[p:objectName()]["Jink"] == 1 or self:isWeak(p)  then
@@ -491,7 +491,7 @@ sgs.ai_skill_use_func.XiefaCard = function(card, use, self)
 		if  #good_targets>0 then
 			for _, p in ipairs(good_targets) do
 				for _,a in pairs (self.friends_noself) do
-					if  a:inMyAttackRange(p) then  
+					if  a:inMyAttackRange(p) then
 						if a:canSlash(p,slash,true) then
 							if self:slashIsEffective(slash, p, a) then
 								local fakeDamage=sgs.DamageStruct()
@@ -517,7 +517,7 @@ sgs.ai_skill_use_func.XiefaCard = function(card, use, self)
 
 			for _, p in ipairs(nojink_targets) do
 				for _,a in pairs (self.friends_noself) do
-					if  a:inMyAttackRange(p) then  
+					if  a:inMyAttackRange(p) then
 						if a:canSlash(p,slash,true) then
 							attacker=a
 							victim=p
@@ -531,7 +531,7 @@ sgs.ai_skill_use_func.XiefaCard = function(card, use, self)
 		if not attacker  and #bad_targets>0 then
 			for _,p in ipairs(bad_targets) do
 				for _,a in pairs (self.enemies) do
-					if  a:inMyAttackRange(p) then  
+					if  a:inMyAttackRange(p) then
 					if a:canSlash(p,slash,true) and self:slashIsEffective(slash, p, a) then
 						attacker=a
 						victim=p
@@ -571,7 +571,7 @@ sgs.ai_skill_invoke.chuanbi = function(self,data)
 	--if slash_source and self:isFriend(slash_source)
 	--and slash_source:getPhase() == sgs.Player_Play
 	--and slash_source:hasSkill("sidie")   then
-	--	return false
+	--  return false
 	--end
 	return true
 end
@@ -699,7 +699,7 @@ sgs.ai_skill_invoke.songjing = true
 sgs.ai_skill_cardask["@gongzhen"] = function(self, data, pattern, target)
 	local damage =data:toDamage()
 	if not self:isEnemy(damage.to) then return "." end
-	
+
 	local convert = { [".S"] = "spade", [".D"] = "diamond", [".H"] = "heart", [".C"] = "club"}
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	local card
@@ -841,7 +841,7 @@ local function findBumingTarget(self,card)
 
 		if inBumingRange(bumingType,self.player,p) then
 			--if p:hasSkill("yemang") and bumingType==2 then
-			--	rangefix=rangefix+1
+			--  rangefix=rangefix+1
 			--end
 			local slash = sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
 			local duel = sgs.cloneCard("duel", sgs.Card_NoSuit, 0)

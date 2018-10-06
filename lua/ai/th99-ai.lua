@@ -45,7 +45,7 @@ sgs.ai_skill_use_func.DangjiaCard = function(card, use, self)
 	local max_num = 0, max_card
 	local min_num = 14, min_card
 	for _, hcard in sgs.qlist(cards) do
-		if not hcard:isKindOf("Peach") then  
+		if not hcard:isKindOf("Peach") then
 			if hcard:getNumber() > max_num then
 				max_num = hcard:getNumber()
 				max_card = hcard
@@ -1080,7 +1080,7 @@ sgs.ai_slash_prohibit.bihuo = function(self, from, to, card)
 		return false
 	end
 	--if self.player:hasSkill("sidie") and self.player:getPhase() ==sgs.Player_Play then
-	--	return false
+	--  return false
 	--end
 	for _,p in pairs (self.friends_noself)do
 		local fakeDamage=sgs.DamageStruct()
@@ -1291,8 +1291,8 @@ sgs.ai_skill_playerchosen.daoyao = function(self, targets)
 	local target_table = sgs.QList2Table(targets)
 	self:sort(target_table, "handcard")
 	for _,p in ipairs(target_table) do
-		if self:isFriend(p) and self.player:objectName() ~= p:objectName() 
-		    and (p:isChained() == self.player:isChained()) then
+		if self:isFriend(p) and self.player:objectName() ~= p:objectName()
+			and (p:isChained() == self.player:isChained()) then
 			return p
 		elseif p:isCurrent() and  self:isEnemy(p) and p:canDiscard(p, "hes") then
 			return p

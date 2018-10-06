@@ -554,7 +554,7 @@ table.insert(sgs.ai_skills, lingbai_skill)
 lingbai_skill.getTurnUseCard = function(self, inclusive)
 	if not sgs.Slash_IsAvailable(self.player)  then return false end
 	if self.player:getMark("@lingbai") == 0 then return false end
-	
+
 	local cards=self.player:getCards("hs")
 	cards=self:touhouAppendExpandPileToList(self.player,cards)
 	cards = sgs.QList2Table(cards)
@@ -970,7 +970,7 @@ sgs.ai_skill_use["@@huisheng"] = function(self, prompt)
 	local targets={}
 	table.insert(targets,target:objectName())
 	--if victim then
-	--	table.insert(targets,victim:objectName())
+	--  table.insert(targets,victim:objectName())
 	--end
 	return "@HuishengCard=.->" .. table.concat(targets, "+")
 end

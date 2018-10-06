@@ -326,7 +326,7 @@ sgs.ai_skill_use_func.FengshenCard = function(card, use, self)
 		for _, p in ipairs(self.enemies) do
 			if self.player:inMyAttackRange(p)  then
 				if not self:getDamagedEffects(p, self.player) then
-					
+
 					local fakeDamage=sgs.DamageStruct()
 					fakeDamage.card=nil
 					fakeDamage.nature= sgs.DamageStruct_Normal
@@ -334,7 +334,7 @@ sgs.ai_skill_use_func.FengshenCard = function(card, use, self)
 					fakeDamage.from=self.player
 					fakeDamage.to=p
 					local fengshen_effect= self:touhouNeedAvoidAttack(fakeDamage,self.player, p)
-					if   fengshen_effect then  
+					if   fengshen_effect then
 						table.insert(targetsInAttackRange,p)
 
 						if self.player:distanceTo(p) == 1 then
@@ -485,7 +485,7 @@ end
 
 sgs.ai_skill_invoke.jie = function(self,data)
 	local damage = self.player:getTag("jie_damage"):toDamage()
-	
+
 	local nature = damage.nature
 	if damage.card then nature = self:touhouDamageNature(damage.card, damage.from, self.player) end
 	--其实铁索问题上，存在各种需要细算伤害值的情况。目前对于这些情况暂时弃疗。
@@ -499,7 +499,7 @@ sgs.ai_skill_invoke.jie = function(self,data)
 		end
 	end
 
-    if not self:isFriend(damage.to) then
+	if not self:isFriend(damage.to) then
 		return false
 	end
 
@@ -526,7 +526,7 @@ sgs.ai_choicemade_filter.skillInvoke.jie = function(self, player, args)
 	local damage = player:getTag("jie_damage"):toDamage()
 	local to=damage.to
 	if  to  then
-	    if not (damage.nature  ~= sgs.DamageStruct_Normal  and player:isChained() and to:isChained())  then
+		if not (damage.nature  ~= sgs.DamageStruct_Normal  and player:isChained() and to:isChained())  then
 			if args[#args] == "yes" then
 				sgs.updateIntention(player, to, -50)
 			end
@@ -655,8 +655,8 @@ sgs.ai_skill_playerchosen.shouhu = function(self, targets)
 	local t = sgs.QList2Table(targets)
 	self:sort(t,"hp",true)
 	for _,p in ipairs(t) do
-	    if self:isFriend(p) then
-			return p 
+		if self:isFriend(p) then
+			return p
 		end
 	end
 	return nil
@@ -672,7 +672,7 @@ end
 
 sgs.ai_skill_invoke.shaojie = function(self, data)
 	if self.player:hasFlag("AI_shaojie") then
-		local current = self.room:getCurrent()	
+		local current = self.room:getCurrent()
 		if current and not self:isFriend(current) then
 			return true
 		end
@@ -692,7 +692,7 @@ end
 
 sgs.ai_damageInflicted.shaojie =function(self, damage)
 	if damage.card  then
-	    
+
 		local can = damage.card:hasFlag("showncards")
 		if damage.from then
 			for _, id in sgs.qlist(damage.from:getShownHandcards()) do

@@ -51,7 +51,7 @@ sgs.ai_skill_invoke.Fan = function(self, data)
 			if target:hasArmorEffect("Vine") then
 				return true
 			end
-			
+
 		end
 	end
 	return false
@@ -102,10 +102,10 @@ function sgs.ai_armor_value.Vine(player, self)
 	if self:needKongcheng(player) and player:getHandcardNum() == 1 then
 		return 3.8
 	end
-	
+
 	if self:hasSkills(sgs.lose_equip_skill, player) then return 3.8 end
 	if not self:damageIsEffective(player, sgs.DamageStruct_Fire) then return 6 end
-	
+
 	local fslash = sgs.cloneCard("fire_slash")
 	local tslash = sgs.cloneCard("thunder_slash")
 	if player:isChained() and (not self:isGoodChainTarget(player, self.player, nil, nil, fslash) or not self:isGoodChainTarget(player, self.player, nil, nil, tslash)) then return -2 end
@@ -142,7 +142,7 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 	--【战操对策】
 	local shrx=self.room:findPlayerBySkillName("zhancao")
 	if shrx and self:isEnemy(shrx) then
-		if self:isFriend(shrx,target) and (shrx:inMyAttackRange(target) or shrx:objectName() == target:objectName()) 
+		if self:isFriend(shrx,target) and (shrx:inMyAttackRange(target) or shrx:objectName() == target:objectName())
 		and shrx:canDiscard(shrx, "e") then
 			return false
 		end
@@ -161,7 +161,7 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 		return false
 	end
 	if target:hasSkill("zheshe") and target:canDiscard(target, "hs") then return false end
-	
+
 	if target:hasSkill("junwei") and target:getKingdom() ~=self.player:getKingdom() then
 		local blacknum = self:getSuitNum("black", true)
 		if blacknum < 3 then return false end
@@ -210,7 +210,7 @@ function SmartAI:searchForAnaleptic(use, enemy, slash)
 			return ana
 		end
 	end
-	
+
 	local analeptic = self:getCard("Analeptic", nil, "MagicAnaleptic")
 	if not analeptic then return nil end
 
@@ -224,7 +224,7 @@ function SmartAI:searchForAnaleptic(use, enemy, slash)
 
 	if analepticAvail > 1 and analepticAvail < slashAvail then return nil end
 	if not sgs.Analeptic_IsAvailable(self.player) then return nil end
-	
+
 
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)
@@ -250,7 +250,7 @@ sgs.ai_use_priority.Analeptic = 3.0
 
 sgs.ai_card_intention.Analeptic = function(self, card, from, tos)
 	for _, to in ipairs(tos) do
-		if to:hasFlag("Global_Dying") then 
+		if to:hasFlag("Global_Dying") then
 			sgs.updateIntention(from, to, -120)
 		end
 	end
@@ -273,7 +273,7 @@ function SmartAI:useCardSupplyShortage(card, use)
 		end
 	end
 
-	
+
 	--东方杀中类张郃的角色
 	local mouko = self.room:findPlayerBySkillName("sidou")
 	local mouko_seat = mouko and mouko:faceUp() and not self:isFriend(mouko) and mouko:getSeat() or 0
@@ -286,7 +286,7 @@ function SmartAI:useCardSupplyShortage(card, use)
 		if enemy:containsTrick("supply_shortage") then return -100 end
 		if self:touhouDelayTrickBadTarget(card, enemy, self.player) then return -100 end
 		if enemy:getMark("juao") > 0 then return -100 end
-		
+
 		if mouko_seat > 0 and (self:playerGetRound(mouko) <= self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 or not enemy:faceUp()) then
 			return - 100 end
 		if marisa_seat > 0 and (self:playerGetRound(marisa) < self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 or not enemy:faceUp()) then
@@ -299,13 +299,13 @@ function SmartAI:useCardSupplyShortage(card, use)
 		if self:hasSkills(sgs.cardneed_skill,enemy) --tianxiang
 			then value = value + 5
 		end
-		
+
 		if self:isWeak(enemy) then value = value + 5 end
 		if enemy:isLord() then value = value + 3 end
 		--这一句作何解。。。我根本不相信现在的objectivelevel。。。。
 		if self:objectiveLevel(enemy) < 3 then value = value - 10 end
 		if not enemy:faceUp() then value = value - 10 end
-				
+
 		if not sgs.isGoodTarget(enemy, self.enemies, self) then value = value - 1 end
 		if self:needKongcheng(enemy) then value = value - 1 end
 		return value
@@ -675,11 +675,11 @@ function SmartAI:useCardFireAttack(fire_attack, use) --尼玛 吃酒+火攻+丢�
 
 
 	self:sort(self.enemies, "defense")
-    --明置手牌的版本需要这个函数
+	--明置手牌的版本需要这个函数
 	--[[local fire_Kongcheng = function(enemy)
 		if (enemy:objectName() == self.player:objectName())  then
 			local unShowns = enemy:getCards("h")
-            if (fire_attack:isVirtualCard()) then
+			if (fire_attack:isVirtualCard()) then
 				local num = 0
 				for _, id in sgs.qlist(fire_attack:getSubcards()) do
 					local card = sgs.sanguosha:getCard(id)
@@ -693,7 +693,7 @@ function SmartAI:useCardFireAttack(fire_attack, use) --尼玛 吃酒+火攻+丢�
 					return true
 				end
 			end
-        end
+		end
 		return enemy:getCards("h"):length() == 0
 	end]]
 	local can_attack = function(enemy)
@@ -704,8 +704,8 @@ function SmartAI:useCardFireAttack(fire_attack, use) --尼玛 吃酒+火攻+丢�
 		if not enemy:hasArmorEffect("SilverLion") then
 			if enemy:hasArmorEffect("Vine") then damage = damage + 1 end
 		end
-		return self:objectiveLevel(enemy) > 3 and damage > 0 --and not fire_Kongcheng(enemy) 
-				and not enemy:isKongcheng() 
+		return self:objectiveLevel(enemy) > 3 and damage > 0 --and not fire_Kongcheng(enemy)
+				and not enemy:isKongcheng()
 				and not self.room:isProhibited(self.player, enemy, fire_attack)
 				and self:damageIsEffective(enemy, sgs.DamageStruct_Fire, self.player)
 				and self:hasTrickEffective(fire_attack, enemy)
@@ -734,7 +734,7 @@ function SmartAI:useCardFireAttack(fire_attack, use) --尼玛 吃酒+火攻+丢�
 
 	if (not use.current_targets or not table.contains(use.current_targets, self.player:objectName()))
 		and self.role ~= "renegade" and can_FireAttack_self and self.player:isChained() and self:isGoodChainTarget(self.player)
-		--and	fire_Kongcheng(self.player)--
+		--and   fire_Kongcheng(self.player)--
 		and self.player:getHandcardNum() > 1
 		and not self.room:isProhibited(self.player, self.player, fire_attack)
 		and self:damageIsEffective(self.player, sgs.DamageStruct_Fire, self.player)
@@ -823,14 +823,14 @@ end
 sgs.ai_skill_cardask["@fire_attack_show"] = function(self, data)
 	local cards = {}
 	local card_ids = self.player:getTag("fireattack_tempmove"):toIntList()
-	
+
 	for _, c in sgs.qlist(self.player:getCards("h")) do
 		if not card_ids:contains(c:getEffectiveId()) then
 			table.insert(cards, c)
 		end
 	end
 
-	
+
 	requestor = data:toCardEffect().to
 	if requestor:objectName() == self.player:objectName() then
 		self:sortByUseValue(cards, true)
@@ -851,7 +851,7 @@ end
 sgs.ai_skill_discard.fire_attack = function(self,discard_num, min_num)
 	local to_discard  = {}
 	local cards = sgs.QList2Table(self.player:getHandcards())
-	
+
 	self:sortByUseValue(cards, true)
 	for _, c in ipairs(cards) do
 		table.insert(to_discard, c:getId())

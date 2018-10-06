@@ -252,7 +252,7 @@ sgs.ai_skill_invoke.langying =function(self,data)
 	--if slash_source and self:isFriend(slash_source)
 	--and slash_source:getPhase() == sgs.Player_Play
 	--and slash_source:hasSkill("sidie")   then
-	--	return false
+	--  return false
 	--end
 
 	local hasDenfense=self.player:getArmor() or self.player:getDefensiveHorse()
@@ -458,14 +458,14 @@ sgs.ai_use_priority.LiangeCard = sgs.ai_use_priority.Peach + 0.2
 sgs.ai_card_intention.LiangeCard = -70
 
 sgs.ai_skill_invoke.tianxie =function(self,data)
-    local effect = self.player:getTag("tianxie"):toCardEffect()
-	if not effect.card:hasFlag("tianxieEffected_".. effect.to:objectName()) then	
-		return true 
+	local effect = self.player:getTag("tianxie"):toCardEffect()
+	if not effect.card:hasFlag("tianxieEffected_".. effect.to:objectName()) then
+		return true
 	else
 		if effect.from and   self:isEnemy(effect.from) then
 			return true
 		end
-	end	
+	end
 	return false
 end
 
