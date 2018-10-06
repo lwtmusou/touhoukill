@@ -167,7 +167,7 @@ return{
 	["jie:transfer1"]= " <font color=\"#FF8000\"><b>%src </b></font> 将受到来自 <font color=\"#00FF00\"><b>%dest </b></font> 的%arg点伤害[%arg2]，你是否发动“集厄”。",
 	["jie:transfer2"]= " <font color=\"#FF8000\"><b>%src </b></font> 将受到无来源的%arg点伤害[%arg2]，你是否发动“集厄”。",
 	["liuxing"] = "流刑",
-	[":liuxing"] = "其他角色的结束阶段开始时，若你已受伤，你可以将一张黑色手牌交给其，令其选择一项：失去1点体力，或令你回复1点体力。",
+	[":liuxing"] = "其他角色的结束阶段开始时，若你已受伤，你可以将一张黑色手牌交给其，令其选择一项：失去1点体力；或令你回复1点体力。",
 	["@liuxing"] = "你可以发动“流刑”，交给 <font color=\"#00FF00\"><b>%src </b></font> 一张黑色手牌，" ,
 	["liuxing:losehp"] = "失去1点体力",
 	["liuxing:recover"] = "令发动“流刑”的角色回复1点体力",
