@@ -899,6 +899,7 @@ bool BeishuiCard::targetsFeasible(const QList<const Player *> &targets, const Pl
 
 const Card *BeishuiCard::validate(CardUseStruct &card_use) const
 {
+    card_use.from->showHiddenSkill("beishui");
     QString to_use = user_string;
     Card *use_card = Sanguosha->cloneCard(to_use);
     use_card->setSkillName("beishui");
@@ -910,6 +911,7 @@ const Card *BeishuiCard::validate(CardUseStruct &card_use) const
 
 const Card *BeishuiCard::validateInResponse(ServerPlayer *user) const
 {
+    user->showHiddenSkill("beishui");
     Card *use_card = Sanguosha->cloneCard(user_string);
     use_card->setSkillName("beishui");
     use_card->addSubcards(subcards);

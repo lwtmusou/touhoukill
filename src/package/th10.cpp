@@ -493,9 +493,12 @@ void QijiDialog::popup()
             avaliable = false;
         if (object_name == "qiji" && user->getMark("xiubu"))
             avaliable = true;
-
+       
         bool checked = checkedPatterns.contains(card->objectName());
-        bool enabled = !user->isCardLimited(card, method, true) && avaliable && (checked || object_name == "chuangshi");
+        //bool enabled = !user->isCardLimited(card, method, true) && avaliable && (checked || object_name == "chuangshi");
+        //check isCardLimited  
+        //bool cardlimit = user->isCardLimited(card, method, true);
+        bool enabled = avaliable && (checked || object_name == "chuangshi");
         button->setEnabled(enabled);
     }
 
@@ -660,7 +663,7 @@ bool QijiCard::targetsFeasible(const QList<const Player *> &targets, const Playe
 const Card *QijiCard::validate(CardUseStruct &use) const
 {
     QString to_use = user_string;
-
+    use.from->showHiddenSkill("qiji");
     const Card *card = Sanguosha->getCard(subcards.first());
     Card *use_card = Sanguosha->cloneCard(to_use, card->getSuit(), card->getNumber());
     use_card->setSkillName("qiji");
@@ -672,6 +675,7 @@ const Card *QijiCard::validate(CardUseStruct &use) const
 
 const Card *QijiCard::validateInResponse(ServerPlayer *user) const
 {
+    user->showHiddenSkill("qiji");
     const Card *card = Sanguosha->getCard(subcards.first());
     Card *use_card = Sanguosha->cloneCard(user_string, card->getSuit(), card->getNumber());
     use_card->setSkillName("qiji");

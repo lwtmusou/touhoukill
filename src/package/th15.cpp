@@ -1838,8 +1838,9 @@ bool YidanCard::targetsFeasible(const QList<const Player *> &targets, const Play
     return yidan && card->targetsFeasible(targets, Self);
 }
 
-const Card *YidanCard::validate(CardUseStruct &) const
+const Card *YidanCard::validate(CardUseStruct &card_use) const
 {
+    card_use.from->showHiddenSkill("yidan");
     Slash *card = new Slash(Card::SuitToBeDecided, 0);
     card->addSubcards(subcards);
     card->setSkillName("yidan");

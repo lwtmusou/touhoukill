@@ -1620,6 +1620,7 @@ bool QimenCard::targetsFeasible(const QList<const Player *> &targets, const Play
 
 const Card *QimenCard::validate(CardUseStruct &card_use) const
 {
+    card_use.from->showHiddenSkill("qimen");
     QString cardname = card_use.from->property("qimen_card").toString();
     Card *card = Sanguosha->cloneCard(cardname);
     card->setSkillName("qimen");
@@ -2795,6 +2796,7 @@ public:
         slash->addSubcard(pindian->from_card);
         slash->addSubcard(pindian->to_card);
         slash->setSkillName("yujian");
+        room->setCardFlag(slash, "chosenExtraSlashTarget");
         room->useCard(CardUseStruct(slash, pindian->from, pindian->to));
         return false;
     }
