@@ -2581,8 +2581,8 @@ public:
 
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            if (p->canDiscard(player, "hs")) //p != player &&
-                d << SkillInvokeDetail(this, p, p, NULL, false, player);
+            //if (p->canDiscard(player, "hs")) //p != player &&
+            d << SkillInvokeDetail(this, p, p, NULL, false, player);
         }
         return d;
     }
@@ -2597,11 +2597,11 @@ public:
         }
         int id1 = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "e", objectName(), false, Card::MethodNone, disable);
         invoke->targets.first()->removeBrokenEquips(QList<int>() << id1);
-
-        if (invoke->invoker->canDiscard(invoke->targets.first(), "hs")) {
+        invoke->invoker->drawCards(1);
+        /*if (invoke->invoker->canDiscard(invoke->targets.first(), "hs")) {
             int id2 = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hs", objectName(), false, Card::MethodDiscard);
             room->throwCard(id2, invoke->targets.first(), invoke->invoker);
-        }
+        }*/
         return false;
     }
 };

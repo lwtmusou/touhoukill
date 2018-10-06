@@ -374,6 +374,78 @@ Gun::Gun(Suit suit, int number)
     setObjectName("Gun");
 }
 
+
+class PillarSkillVS : public OneCardViewAsSkill
+{
+public:
+    PillarSkillVS()
+        : OneCardViewAsSkill("Pillar")
+    {
+        response_pattern = "@@Pillar";
+        response_or_use = true;
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    {
+        if (selected.length() == 0 && to_select->getTypeId() == Card::TypeBasic)
+            return true;
+        return false;
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const
+    {
+        if (originalCard != NULL) {
+            Slash *slash = new Slash(Card::SuitToBeDecided, -1);
+            slash->addSubcard(originalCard);
+            slash->setSkillName("_Pillar");
+            return slash;
+        }
+        return NULL;
+    }
+};
+
+class PillarSkill : public WeaponSkill
+{
+public:
+    PillarSkill()
+        : WeaponSkill("Pillar")
+    {
+        events << EventPhaseChanging;
+        frequency = Compulsory;
+        view_as_skill = new PillarSkillVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        
+         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+         if (!equipAvailable(change.player, EquipCard::WeaponLocation, objectName()))
+             return QList<SkillInvokeDetail>();
+
+        if (change.to == Player::NotActive && change.player->isAlive())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        const Card *c = room->askForUseCard(invoke->invoker, "@@Pillar", "@Pillar", -1, Card::MethodUse, false, objectName());
+        if (c == NULL && invoke->invoker->getWeapon() && invoke->invoker->getWeapon()->objectName() == objectName()) {
+            int id = invoke->invoker->getWeapon()->getId();
+            invoke->invoker->addBrokenEquips(QList<int>() << id);
+        }
+        return false;
+    }
+};
+
+Pillar::Pillar(Suit suit, int number)
+    : Weapon(suit, number, 3)
+{
+    setObjectName("Pillar");
+}
+
+
 class JadeSealSkill : public ZeroCardViewAsSkill
 {
 public:
@@ -616,6 +688,9 @@ Camouflage::Camouflage(Suit suit, int number)
 {
     setObjectName("Camouflage");
 }
+
+
+
 
 AwaitExhausted::AwaitExhausted(Card::Suit suit, int number)
     : SingleTargetTrick(suit, number)
@@ -1042,6 +1117,7 @@ TestCardPackage::TestCardPackage()
          // Equip
         //<< new Camera(Card::Diamond, 11)
         << new Gun(Card::Club, 13)
+        << new Pillar(Card::Diamond, 1)
         << new JadeSeal(Card::Heart, 13)
         << new Pagoda(Card::Spade, 12)
         << new Camouflage(Card::Spade, 1)
@@ -1094,7 +1170,7 @@ TestCardPackage::TestCardPackage()
         card->setParent(this);
 
     skills << new CameraSkill << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill << new PagodaSkill << new PagodaTriggerSkill << new CamouflageSkill
-           << new FightTogetherSkill;
+           << new FightTogetherSkill << new PillarSkill;
 }
 
 ADD_PACKAGE(TestCard)

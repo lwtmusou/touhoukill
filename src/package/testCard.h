@@ -112,6 +112,14 @@ public:
     Q_INVOKABLE Gun(Card::Suit suit, int number);
 };
 
+class Pillar : public Weapon
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Pillar(Card::Suit suit, int number);
+};
+
 class JadeSeal : public Treasure
 {
     Q_OBJECT
