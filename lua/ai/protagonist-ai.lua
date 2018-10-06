@@ -1585,9 +1585,6 @@ sgs.ai_use_value.BodongCard = 8
 sgs.ai_use_priority.BodongCard =7
 sgs.ai_card_intention.BodongCard = 20
 
-sgs.ai_skill_invoke.huanlong =function(self,data)
-	local target = data:toPlayer()
-	if target and self:isEnemy(target) then return true end
-	return  false
-end
-sgs.ai_choicemade_filter.cardChosen.huanlong = sgs.ai_choicemade_filter.cardChosen.dismantlement
+--幻胧现在无脑摸好了
+sgs.ai_skill_invoke.huanlong =  true
+--sgs.ai_choicemade_filter.cardChosen.huanlong = sgs.ai_choicemade_filter.cardChosen.dismantlement
