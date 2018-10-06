@@ -600,8 +600,8 @@ end
 
 
 sgs.ai_skill_invoke.dizhen =function(self,data)
-	local target=self.player:getTag("dizhen_judge"):toJudge().who
-	if self:isEnemy(target) then
+	local target= data:toPlayer()
+	if target and self:isEnemy(target) then
 		return true
 	end
 end
