@@ -3303,7 +3303,7 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         invoke->targets.first()->obtainCard(damage.card);
-
+        invoke->invoker->tag["anliu-target"] = QVariant::fromValue(invoke->targets.first());
         if (!invoke->targets.first()->isKongcheng() && invoke->invoker->askForSkillInvoke(this, data)) {
             int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hs", objectName());
             room->showCard(invoke->targets.first(), id);

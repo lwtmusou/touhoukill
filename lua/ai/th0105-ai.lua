@@ -1121,3 +1121,48 @@ sgs.ai_skill_cardask["@chenjue"] = function(self, data)
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	return "$" .. cards[1]:getId()
 end
+
+sgs.ai_skill_invoke.anliu = function(self, data)
+	local target =self.player:getTag("anliu-target"):toPlayer()
+	return self:isEnemy(target)
+end
+
+sgs.ai_choicemade_filter.skillInvoke.anliu = function(self, player, args)
+	local target =player:getTag("anliu-target"):toPlayer()
+	if target then
+		if args[#args] == "yes" then
+			sgs.updateIntention(player, target, 50)
+		else
+			sgs.updateIntention(player, target, -10)
+		end
+	end
+end
+
+sgs.ai_skill_playerchosen.anliu = function(self, targets)
+	--slash数量默认为1 好了， 不取求转化杀的子卡了
+	
+	
+	for _, target in sgs.qlist(targets) do
+		if self:isEnemy(target) then
+			for _,id in sgs.qlist(target:getShownHandcards()) do
+				if sgs.Sanguosha:getCard(id):isKindOf("BasicCard") then
+					return target
+				end
+			end
+			
+			basic = getKnownCard(target, self.player, "Basic") + 1
+			total = target:getHandcardNum() + 1
+			if basic/ total >= 0.5 then
+				return target
+			end
+		end
+	end
+	
+	for _, target in ipairs(targets) do
+		if self:isFriend(target) then
+			return target
+		end
+	end
+	
+	return nil
+end
