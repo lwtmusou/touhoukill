@@ -9,6 +9,7 @@
 #include "standard.h"
 #include "th09.h"
 #include "th10.h"
+#include "th15.h"
 #include <QCommandLinkButton>
 #include <QCoreApplication>
 #include <QPointer>
@@ -4733,6 +4734,7 @@ void AnyunDialog::selectSkill(QAbstractButton *button)
     //const ViewAsSkill*vs = Sanguosha->getViewAsSkill(skillName);
     QStringList moreSlecet;
     moreSlecet << "nianli"
+                << "yidan"
                << "beishui"
                << "qiji"
                << "xihua"
@@ -4742,6 +4744,8 @@ void AnyunDialog::selectSkill(QAbstractButton *button)
         //const ViewAsSkill *s = Sanguosha->getViewAsSkill(ops.first());//like "nianli" "qiji"
         if (skillName == "nianli")
             NianliDialog::getInstance("nianli")->popup();
+        else if (skillName == "yidan")
+            YidanDialog::getInstance("yidan")->popup();
         else {
             if (skillName == "beishui")
                 QijiDialog::getInstance(skillName, true, false)->popup();
@@ -4952,7 +4956,7 @@ public:
         //for test!!! do not remove
         /*QSet<QString> test;
         if (init)
-           test << "toyohime" << "marisa" << "kokoro";
+           test << "seiran" << "kaguya" << "kokoro";
         else
            test << "renko" << "renko" << "renko";//test hidden general changing
         return test.toList();*/
@@ -5534,8 +5538,10 @@ TouhouGodPackage::TouhouGodPackage()
     related_skills.insertMulti("huixing", "#huixing_effect");
 
     General *patchouli_god = new General(this, "patchouli_god", "touhougod", 3);
-    patchouli_god->addSkill(new Skill("yuansu"));
-    patchouli_god->addSkill(new Skill("qiyao"));
+    patchouli_god->addSkill(new Skill("xianshi"));
+    patchouli_god->addSkill(new Skill("riyao"));
+    patchouli_god->addSkill(new Skill("yueyao"));
+    //patchouli_god->addSkill(new Skill("qiyao"));
 
     General *alice_god = new General(this, "alice_god", "touhougod", 4, false, true, true);
     Q_UNUSED(alice_god);
