@@ -172,6 +172,37 @@ end
 sgs.ai_card_intention.SuperPeach = sgs.ai_card_intention.Peach
 
 sgs.weapon_range.Gun = 4
+sgs.weapon_range.Pillar = 3
+sgs.ai_skill_use["@@Pillar"] = function(self, prompt, method)
+
+	local cards = self.player:getCards("hs")
+	cards=self:touhouAppendExpandPileToList(self.player, cards)
+	local basic_cards =  {}  --sgs.QList2Table(cards)
+	for _,c in sgs.qlist(cards) do
+		if (c:isKindOf("BasicCard")) then
+			table.insert(basic_cards, c)
+		end
+	end
+	if #basic_cards == 0 then return "." end
+
+	self:sortByUseValue(basic_cards, false)
+
+	local card = sgs.cloneCard("slash", sgs.Card_SuitToBeDecided, -1)
+	card:addSubcard(basic_cards[1])
+	card:deleteLater()
+
+	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+	card:setSkillName("_Pillar")
+
+	self:useBasicCard(card, dummy_use)
+
+	if not dummy_use.card or dummy_use.to:isEmpty() then return "." end
+	local target_objectname = {}
+	for _, p in sgs.qlist(dummy_use.to) do
+		table.insert(target_objectname, p:objectName())
+	end
+	return dummy_use.card:toString() .. "->" .. table.concat(target_objectname, "+")
+end
 
 local Jade_skill = {}
 Jade_skill.name = "JadeSeal"
