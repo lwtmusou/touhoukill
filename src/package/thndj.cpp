@@ -1357,6 +1357,7 @@ public:
         }
         case Card::Club: {
             new_card = new KnownBoth(Card::SuitToBeDecided, -1);
+            new_card->setCanRecast(false);
             break;
         }
         case Card::Diamond: {
