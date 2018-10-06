@@ -2063,10 +2063,22 @@ bool YidanCard::targetFilter(const QList<const Player *> &targets, const Player 
 const Card *YidanCard::validate(CardUseStruct &card_use) const
 {
     card_use.from->showHiddenSkill("yidan");
-
+    card_use.from->getRoom()->setPlayerFlag(card_use.from, "yidan_" + user_string);
+    /*if (user_string == "light_slash") {
+        LightSlash *card = new LightSlash(Card::SuitToBeDecided, -1);
+        card->setSkillName("yidan");
+        card->addSubcards(subcards);
+        return card;
+    }
+    else {
+        IronSlash *card = new IronSlash(Card::SuitToBeDecided, -1);
+        card->setSkillName("yidan");
+        card->addSubcards(subcards);
+        return card;
+    }*/
     Card *card = Sanguosha->cloneCard(user_string);
     card->setSkillName("yidan");
-    card_use.from->getRoom()->setPlayerFlag(card_use.from, "yidan_" + user_string);
+    //card_use.from->getRoom()->setPlayerFlag(card_use.from, "yidan_" + user_string);
     //Slash *card = new Slash(Card::SuitToBeDecided, 0);
     card->addSubcards(subcards);
     //card->setSkillName("yidan");
@@ -2136,6 +2148,9 @@ public:
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->getSkillName() == objectName()) {
+                //for AI
+                room->setPlayerFlag(use.from, "yidan_" + use.card->objectName());
+
                 if (use.m_addHistory) {
                     room->addPlayerHistory(use.from, use.card->getClassName(), -1);
                     use.m_addHistory = false;

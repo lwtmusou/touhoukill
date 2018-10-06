@@ -542,6 +542,9 @@ function SmartAI:useCardSlash(card, use)
 		if can and self.player:hasSkill("shuangren") and use.to:isEmpty() then
 			rangefix = -100
 		end
+		if card:getSkillName() == "yidan" and target:isDebuffStatus() then 
+			can = false
+		end
 		return can
 	end
 
