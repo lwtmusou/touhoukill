@@ -20,7 +20,9 @@ return {
 	["$ChunhuaBlack"] = "%from 对 %to 使用的【%arg】的效果改为 “你对目标角色造成1点伤害”",
 	
 	["shayi"] = "杀意",
-	[":shayi"] = "<font color=\"orange\"><b>主公技，</b></font>其他绀势力角色的弃牌阶段结束时，你可以使用于此阶段内置入弃牌堆的一张【杀】。",
+	--[":shayi"] = "<font color=\"orange\"><b>主公技，</b></font>其他绀势力角色的弃牌阶段结束时，你可以使用于此阶段内置入弃牌堆的一张【杀】。",
+	[":shayi"] = "<font color=\"orange\"><b>主公技，</b></font>其他绀势力角色使用具有伤害效果的牌时，其可令你选择是否成为此牌的使用者。",
+	
 	["shayi_change"] = "杀意（主公技）",
     ["$Shayi"] = "%from 发动 %arg 成为了 %card 的使用者",
 	["#shayi_temp"] = "杀意",

@@ -11,6 +11,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
+/*
 class ShayiCard : public SkillCard
 {
     Q_OBJECT
@@ -23,7 +24,7 @@ public:
 private:
     static bool putToPile(Room *room, ServerPlayer *mori);
     static void cleanUp(Room *room, ServerPlayer *mori);
-};
+};*/
 
 class YuejianCard : public SkillCard
 {

@@ -203,7 +203,7 @@ public:
     }
 };*/
 
-/*
+
 class Shayi : public TriggerSkill
 {
 public:
@@ -260,7 +260,7 @@ public:
         room->sendLog(log);
         return false;
     }
-};*/
+};
 
 class Chunhua : public TriggerSkill
 {
@@ -401,6 +401,7 @@ public:
     }
 };
 
+/*
 ShayiCard::ShayiCard()
 {
     target_fixed = true;
@@ -607,7 +608,7 @@ public:
         invoke->invoker->tag.remove("shayi");
         return false;
     }
-};
+};*/
 
 class Santi : public TriggerSkill
 {
@@ -2246,11 +2247,11 @@ TH15Package::TH15Package()
     //related_skills.insertMulti("yidan", "#yidan");
     related_skills.insertMulti("yidan", "#yidanmod");
 
-    addMetaObject<ShayiCard>();
+    //addMetaObject<ShayiCard>();
     //addMetaObject<ShayiMoveCard>();
     addMetaObject<YuejianCard>();
     addMetaObject<YidanCard>();
-    skills << new ShayiUse << new ShehuoProhibit << new ShehuoTargetMod; //<< new ChunhuaFilter << new YuyiEffect
+    skills  << new ShehuoProhibit << new ShehuoTargetMod; // << new ShayiUse << new ChunhuaFilter << new YuyiEffect
 }
 
 ADD_PACKAGE(TH15)
