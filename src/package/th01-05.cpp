@@ -3244,6 +3244,77 @@ public:
     }
 };
 
+
+class Anliu : public TriggerSkill
+{
+public:
+    Anliu()
+        : TriggerSkill("anliu")
+    {
+        events << Damage << Damaged;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (!damage.card || !damage.card->isKindOf("Slash") || damage.to->isDead())
+            return QList<SkillInvokeDetail>();
+        
+        if ((e == Damage &&  damage.from->hasSkill(this))
+            || e == Damaged &&  damage.to->hasSkill(this)) {
+            QList<int> ids;
+            if (damage.card->isVirtualCard())
+                ids = damage.card->getSubcards();
+            else
+                ids << damage.card->getEffectiveId();
+
+            if (ids.isEmpty())
+                return QList<SkillInvokeDetail>();
+            foreach(int id, ids) {
+                if (room->getCardPlace(id) != Player::PlaceTable)
+                    return QList<SkillInvokeDetail>();
+            }
+            ServerPlayer *meira = (e == Damage) ? damage.from : damage.to;
+            
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, meira, meira);
+        
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        QList<ServerPlayer *> targets;
+        DamageStruct damage = data.value<DamageStruct>();
+        foreach(ServerPlayer *p, room->getAlivePlayers()) {
+            if (damage.to->distanceTo(p) <=1 && !p->isRemoved())
+                targets << p;
+        }
+        if (targets.isEmpty())
+            return false;
+
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@anliu", true, true);
+        if (target)
+            invoke->targets << target;
+        return target != NULL;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        invoke->targets.first()->obtainCard(damage.card);
+
+        if (!invoke->targets.first()->isKongcheng() && invoke->invoker->askForSkillInvoke(this, data)) {
+            int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hs", objectName());
+            room->showCard(invoke->targets.first(), id);
+            if (Sanguosha->getCard(id)->getTypeId() == Card::TypeBasic)
+                room->loseHp(invoke->targets.first(), 1);
+        }
+        return false;
+    }
+};
+
+
 TH0105Package::TH0105Package()
     : Package("th0105")
 {
@@ -3317,6 +3388,10 @@ TH0105Package::TH0105Package()
     General *yukimai = new General(this, "yukimai", "pc98", 3);
     yukimai->addSkill(new Xiewu);
     yukimai->addSkill(new Nuli);
+
+
+    General *meira = new General(this, "meira", "pc98", 4);
+    meira->addSkill(new Anliu);
 
     addMetaObject<ShiquCard>();
     addMetaObject<LianmuCard>();
