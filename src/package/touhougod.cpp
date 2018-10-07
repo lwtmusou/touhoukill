@@ -3080,7 +3080,7 @@ public:
     }
 };
 
-const QStringList ShenbaoDialog::equipViewAsSkills{"Spear", "Pagoda", "JadeSeal"};
+const QStringList ShenbaoDialog::equipViewAsSkills {"Spear", "Pagoda", "JadeSeal"};
 
 ShenbaoDialog *ShenbaoDialog::getInstance(const QString &object)
 {
@@ -4735,7 +4735,7 @@ void AnyunDialog::selectSkill(QAbstractButton *button)
     //const ViewAsSkill*vs = Sanguosha->getViewAsSkill(skillName);
     QStringList moreSlecet;
     moreSlecet << "nianli"
-                << "yidan"
+               << "yidan"
                << "beishui"
                << "qiji"
                << "xihua"
