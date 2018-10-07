@@ -1192,7 +1192,8 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const
     }
 
     if (dodamage) {
-        room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue.last()));
+        //room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue.last()));
+        room->damage(DamageStruct(effect.card, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue.last()));
         room->getThread()->delay();
     }
 }
@@ -1221,7 +1222,8 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const
     }
 
     if (dodamage) {
-        room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue.last()));
+        room->damage(DamageStruct(effect.card, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue.last()));
+        //room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue.last()));
         room->getThread()->delay();
     }
 }
@@ -1416,8 +1418,8 @@ void Duel::onEffect(const CardEffectStruct &effect) const
 
         qSwap(first, second);
     }
-
-    DamageStruct damage(this, second->isAlive() ? second : NULL, first, 1 + effect.effectValue.last());
+    //DamageStruct damage(this, second->isAlive() ? second : NULL, first, 1 + effect.effectValue.last());
+    DamageStruct damage(effect.card, second->isAlive() ? second : NULL, first, 1 + effect.effectValue.last());
     if (second != effect.from)
         damage.by_user = false;
     room->damage(damage);

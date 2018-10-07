@@ -946,7 +946,8 @@ bool BoneHealing::targetFilter(const QList<const Player *> &targets, const Playe
 void BoneHealing::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
-    DamageStruct damage(this, effect.from, effect.to);
+    DamageStruct damage(effect.card, effect.from, effect.to);
+    //DamageStruct damage(this, effect.from, effect.to);
     damage.damage = 1 + effect.effectValue.first();
     room->damage(damage);
 
