@@ -719,7 +719,7 @@ return{
 	["designer:patchouli_god"] = "三国有单",
 	["xianshi"] = "贤石",
 	[":xianshi"] = "出牌阶段，若本阶段你上一张指定目标的牌为【杀】/普通锦囊牌，你使用手牌的普通锦囊/【杀】的效果可为“上一张牌效果+此牌效果”。",
-	["#Xianshi"] = "%from 发动 <font color=\"#00FF00\">贤石</font>， 令下一张牌【%arg】效果为 【%arg】 + 【%arg2】 " ,
+	["#Xianshi"] = "%from 发动 <font color=\"#00FF00\">贤石</font>， 令下一张牌【%arg】效果为 【%arg2】 + 【%arg】 " ,
 	["riyao"] = "日曜",
 	[":riyao"] = "你使用火焰伤害效果的牌可额外指定任意名目标(无视距离)。",
 	["yueyao"] = "月曜",
