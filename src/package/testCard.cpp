@@ -371,7 +371,6 @@ Gun::Gun(Suit suit, int number)
     setObjectName("Gun");
 }
 
-
 class PillarSkillVS : public OneCardViewAsSkill
 {
 public:
@@ -414,9 +413,9 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
-         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-         if (!equipAvailable(change.player, EquipCard::WeaponLocation, objectName()))
-             return QList<SkillInvokeDetail>();
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (!equipAvailable(change.player, EquipCard::WeaponLocation, objectName()))
+            return QList<SkillInvokeDetail>();
 
         if (change.to == Player::NotActive && change.player->isAlive())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
@@ -440,7 +439,6 @@ Pillar::Pillar(Suit suit, int number)
 {
     setObjectName("Pillar");
 }
-
 
 class JadeSealSkill : public ZeroCardViewAsSkill
 {
@@ -559,6 +557,7 @@ public:
         if (e == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.from && use.card && use.card->getSkillName() == "Pagoda") {
+                room->setEmotion(use.from, "treasure/pagoda");
                 room->setPlayerFlag(use.from, "Pagoda_used");
             }
         } else if (e == EventPhaseChanging) {
@@ -684,9 +683,6 @@ Camouflage::Camouflage(Suit suit, int number)
 {
     setObjectName("Camouflage");
 }
-
-
-
 
 AwaitExhausted::AwaitExhausted(Card::Suit suit, int number)
     : SingleTargetTrick(suit, number)
@@ -893,7 +889,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent , Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         QString flag = debuffFlag(invoke->invoker);
         room->setPlayerFlag(invoke->invoker, "-FightTogether_Used");
@@ -955,9 +951,6 @@ void BoneHealing::onEffect(const CardEffectStruct &effect) const
     if (effect.to->isChained())
         effect.to->getRoom()->setPlayerProperty(effect.to, "chained", !effect.to->isChained());
 }
-
-
-
 
 SpellDuel::SpellDuel(Card::Suit suit, int number)
     : SingleTargetTrick(suit, number)
@@ -1074,9 +1067,6 @@ void Kusuri::onEffect(const CardEffectStruct &effect) const
             effect.to->removeShownHandCards(effect.to->getShownHandcards(), true);
     }
 }
-
-
-
 
 TestCardPackage::TestCardPackage()
     : Package("test_card", Package::CardPack)

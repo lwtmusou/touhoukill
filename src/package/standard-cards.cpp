@@ -267,10 +267,6 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     }
 
     if (has_specific_assignee) {
-        if (Self->getWeapon() && Self->getWeapon()->isKindOf("Blade") && Self->getWeapon()->hasFlag("using")) { //flag baldeuse didnot work..
-            if (subcards.contains(Self->getWeapon()->getId()))
-                return false;
-        }
         if (targets.isEmpty())
             return Slash::IsSpecificAssignee(to_select, Self, this) && Self->canSlash(to_select, this, distance_limit, rangefix);
         else {
@@ -704,6 +700,8 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
+        room->setEmotion(invoke->invoker, "weapon/blade");
+
         JudgeStruct judge;
         judge.pattern = ".|red";
         judge.good = true;
@@ -1021,14 +1019,9 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        room->setEmotion(invoke->invoker, "armor/breast_plate");
-        return ArmorSkill::cost(triggerEvent, room, invoke, data);
-    }
-
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
+        room->setEmotion(invoke->invoker, "armor/breast_plate");
         int id = invoke->invoker->getArmor()->getEffectiveId();
         invoke->invoker->addBrokenEquips(QList<int>() << id);
         DamageStruct damage = data.value<DamageStruct>();
@@ -1321,9 +1314,6 @@ Nullification::Nullification(Suit suit, int number)
 
 void Nullification::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
 {
-    if (getSkillName() == "Pagoda")
-        room->setEmotion(source, "treasure/pagoda");
-
     // does nothing, just throw it
     if (room->getCardPlace(getEffectiveId()) == Player::PlaceTable) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName());
