@@ -3536,7 +3536,7 @@ void DamageMakerDialog::accept()
 
 void RoomScene::makeDamage()
 {
-    if (Self->getPhase() != Player::Play) {
+    if (ClientInstance->getStatus() != Client::Playing) {
         QMessageBox::warning(main_window, tr("Warning"), tr("This function is only allowed at your play phase!"));
         return;
     }
@@ -3547,7 +3547,7 @@ void RoomScene::makeDamage()
 
 void RoomScene::makeKilling()
 {
-    if (Self->getPhase() != Player::Play) {
+    if (ClientInstance->getStatus() != Client::Playing) {
         QMessageBox::warning(main_window, tr("Warning"), tr("This function is only allowed at your play phase!"));
         return;
     }
@@ -3558,7 +3558,7 @@ void RoomScene::makeKilling()
 
 void RoomScene::makeReviving()
 {
-    if (Self->getPhase() != Player::Play) {
+    if (ClientInstance->getStatus() != Client::Playing) {
         QMessageBox::warning(main_window, tr("Warning"), tr("This function is only allowed at your play phase!"));
         return;
     }
@@ -3588,6 +3588,11 @@ void RoomScene::makeReviving()
 
 void RoomScene::doScript()
 {
+    if (ClientInstance->getStatus() != Client::Playing) {
+        QMessageBox::warning(main_window, tr("Warning"), tr("This function is only allowed at your play phase!"));
+        return;
+    }
+
     ScriptExecutor *dialog = new ScriptExecutor(main_window);
     dialog->exec();
 }
@@ -4488,7 +4493,7 @@ void RoomScene::showServerInformation()
 
 void RoomScene::surrender()
 {
-    if (Self->getPhase() != Player::Play) {
+    if (ClientInstance->getStatus() != Client::Playing) {
         QMessageBox::warning(main_window, tr("Warning"), tr("You can only initiate a surrender poll at your play phase!"));
         return;
     }

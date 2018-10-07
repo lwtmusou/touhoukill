@@ -56,12 +56,10 @@ Room::Room(QObject *parent, const QString &mode)
     , thread_1v1(NULL)
     , _m_semRaceRequest(0)
     , _m_semRoomMutex(1)
-    , _m_isFirstSurrenderRequest(false)
     , _m_raceStarted(false)
     , provided(NULL)
     , has_provided(false)
     , provider(NULL)
-    , m_surrenderRequestReceived(false)
     , _virtual(false)
     , _m_roomState(false)
     , m_fillAGWho(NULL)
@@ -99,10 +97,6 @@ void Room::initCallbacks()
     m_requestResponsePair[S_COMMAND_EXCHANGE_CARD] = S_COMMAND_DISCARD_CARD;
     m_requestResponsePair[S_COMMAND_CHOOSE_DIRECTION] = S_COMMAND_MULTIPLE_CHOICE;
     m_requestResponsePair[S_COMMAND_LUCK_CARD] = S_COMMAND_INVOKE_SKILL;
-
-    // client request handlers
-    m_callbacks[S_COMMAND_SURRENDER] = &Room::processRequestSurrender;
-    m_callbacks[S_COMMAND_CHEAT] = &Room::processRequestCheat;
 
     // Client notifications
     m_callbacks[S_COMMAND_TOGGLE_READY] = &Room::toggleReadyCommand;
@@ -2754,16 +2748,16 @@ void Room::pauseCommand(ServerPlayer *player, const QVariant &arg)
     }
 }
 
-void Room::processRequestCheat(ServerPlayer *player, const QVariant &arg)
+void Room::cheat(ServerPlayer *player, const QVariant &args)
 {
     player->m_cheatArgs = QVariant();
     if (!Config.EnableCheat)
         return;
-    if (!arg.canConvert<JsonArray>() || !arg.value<JsonArray>().value(0).canConvert(QVariant::Int))
+    if (!args.canConvert<JsonArray>() || !args.value<JsonArray>().value(0).canConvert(QVariant::Int))
         return;
     //@todo: synchronize this
-    player->m_cheatArgs = arg;
-    player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
+    player->m_cheatArgs = args;
+    makeCheat(player);
 }
 
 bool Room::makeSurrender(ServerPlayer *initiator)
@@ -2835,26 +2829,9 @@ bool Room::makeSurrender(ServerPlayer *initiator)
             gameOver(renegadeAlive >= loyalAlive ? "renegade" : "loyalist+lord", true);
     }
 
-    m_surrenderRequestReceived = false;
-
     initiator->setFlags("Global_ForbidSurrender");
     doNotify(initiator, S_COMMAND_ENABLE_SURRENDER, QVariant(false));
     return true;
-}
-
-void Room::processRequestSurrender(ServerPlayer *player, const QVariant &)
-{
-    //@todo: Strictly speaking, the client must be in the PLAY phase
-    //@todo: return false for 3v3 and 1v1!!!
-    if (player == NULL || !player->m_isWaitingReply)
-        return;
-    if (!_m_isFirstSurrenderRequest && _m_timeSinceLastSurrenderRequest.elapsed() <= Config.S_SURRENDER_REQUEST_MIN_INTERVAL)
-        return; //@todo: warn client here after new protocol has been enacted on the warn request
-
-    _m_isFirstSurrenderRequest = false;
-    _m_timeSinceLastSurrenderRequest.restart();
-    m_surrenderRequestReceived = true;
-    player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
 }
 
 void Room::processClientPacket(const QString &request)
@@ -5181,18 +5158,6 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use)
     } else {
         bool success = doRequest(player, S_COMMAND_PLAY_CARD, player->objectName(), true);
         const QVariant &clientReply = player->getClientReply();
-
-        if (m_surrenderRequestReceived) {
-            makeSurrender(player);
-            if (!game_finished)
-                return activate(player, card_use);
-        } else {
-            if (Config.EnableCheat && makeCheat(player)) {
-                if (player->isAlive())
-                    return activate(player, card_use);
-                return;
-            }
-        }
 
         if (!success || clientReply.isNull())
             return;

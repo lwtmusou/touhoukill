@@ -180,6 +180,24 @@ private:
     QHash<QString, const LuaTreasure *> luaTreasures;
 };
 
+class SurrenderCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE SurrenderCard();
+    void onUse(Room *room, const CardUseStruct &use) const;
+};
+
+class CheatCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE CheatCard();
+    void onUse(Room *room, const CardUseStruct &use) const;
+};
+
 static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key)
 {
     return GetValueFromLuaState(L, "config", key);

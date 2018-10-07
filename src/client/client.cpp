@@ -574,22 +574,39 @@ void Client::onPlayerChooseGeneral(const QString &item_name)
 
 void Client::requestCheatRunScript(const QString &script)
 {
+    if (getStatus() != Playing)
+        return;
+
     JsonArray cheatReq;
     cheatReq << (int)S_CHEAT_RUN_SCRIPT;
     cheatReq << script;
-    requestServer(S_COMMAND_CHEAT, cheatReq);
+    JsonDocument doc(cheatReq);
+    QString cheatStr = QString::fromUtf8(doc.toJson());
+    CheatCard *card = new CheatCard;
+    card->setUserString(cheatStr);
+    onPlayerResponseCard(card);
 }
 
 void Client::requestCheatRevive(const QString &name)
 {
+    if (getStatus() != Playing)
+        return;
+
     JsonArray cheatReq;
     cheatReq << (int)S_CHEAT_REVIVE_PLAYER;
     cheatReq << name;
-    requestServer(S_COMMAND_CHEAT, cheatReq);
+    JsonDocument doc(cheatReq);
+    QString cheatStr = QString::fromUtf8(doc.toJson());
+    CheatCard *card = new CheatCard;
+    card->setUserString(cheatStr);
+    onPlayerResponseCard(card);
 }
 
 void Client::requestCheatDamage(const QString &source, const QString &target, DamageStruct::Nature nature, int points)
 {
+    if (getStatus() != Playing)
+        return;
+
     JsonArray cheatReq, cheatArg;
     cheatArg << source;
     cheatArg << target;
@@ -598,32 +615,57 @@ void Client::requestCheatDamage(const QString &source, const QString &target, Da
 
     cheatReq << (int)S_CHEAT_MAKE_DAMAGE;
     cheatReq << QVariant(cheatArg);
-    requestServer(S_COMMAND_CHEAT, cheatReq);
+    JsonDocument doc(cheatReq);
+    QString cheatStr = QString::fromUtf8(doc.toJson());
+    CheatCard *card = new CheatCard;
+    card->setUserString(cheatStr);
+    onPlayerResponseCard(card);
 }
 
 void Client::requestCheatKill(const QString &killer, const QString &victim)
 {
-    JsonArray cheatArg;
-    cheatArg << (int)S_CHEAT_KILL_PLAYER;
-    cheatArg << QVariant(JsonArray() << killer << victim);
-    requestServer(S_COMMAND_CHEAT, cheatArg);
+    if (getStatus() != Playing)
+        return;
+
+    JsonArray cheatReq;
+    cheatReq << (int)S_CHEAT_KILL_PLAYER;
+    cheatReq << QVariant(JsonArray() << killer << victim);
+    JsonDocument doc(cheatReq);
+    QString cheatStr = QString::fromUtf8(doc.toJson());
+    CheatCard *card = new CheatCard;
+    card->setUserString(cheatStr);
+    onPlayerResponseCard(card);
 }
 
 void Client::requestCheatGetOneCard(int card_id)
 {
-    JsonArray cheatArg;
-    cheatArg << (int)S_CHEAT_GET_ONE_CARD;
-    cheatArg << card_id;
-    requestServer(S_COMMAND_CHEAT, cheatArg);
+    if (getStatus() != Playing)
+        return;
+
+    JsonArray cheatReq;
+    cheatReq << (int)S_CHEAT_GET_ONE_CARD;
+    cheatReq << card_id;
+    JsonDocument doc(cheatReq);
+    QString cheatStr = QString::fromUtf8(doc.toJson());
+    CheatCard *card = new CheatCard;
+    card->setUserString(cheatStr);
+    onPlayerResponseCard(card);
 }
 
 void Client::requestCheatChangeGeneral(const QString &name, bool isSecondaryHero)
 {
-    JsonArray cheatArg;
-    cheatArg << (int)S_CHEAT_CHANGE_GENERAL;
-    cheatArg << name;
-    cheatArg << isSecondaryHero;
-    requestServer(S_COMMAND_CHEAT, cheatArg);
+    if (getStatus() != Playing)
+        return;
+
+    JsonArray cheatReq;
+    cheatReq << (int)S_CHEAT_CHANGE_GENERAL;
+    cheatReq << name;
+    cheatReq << isSecondaryHero;
+    JsonDocument doc(cheatReq);
+    QString cheatStr = QString::fromUtf8(doc.toJson());
+    CheatCard *card = new CheatCard;
+    card->setUserString(cheatStr);
+    onPlayerResponseCard(card);
 }
 
 void Client::addRobot()
@@ -1179,8 +1221,10 @@ void Client::trust()
 
 void Client::requestSurrender()
 {
-    requestServer(S_COMMAND_SURRENDER);
-    setStatus(NotActive);
+    if (getStatus() != Playing)
+        return;
+
+    onPlayerResponseCard(new SurrenderCard);
 }
 
 void Client::speakToServer(const QString &text)

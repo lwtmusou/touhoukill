@@ -77,6 +77,9 @@ Engine::Engine()
     foreach (QString name, package_names)
         addPackage(name);
 
+    metaobjects.insert(SurrenderCard::staticMetaObject.className(), &SurrenderCard::staticMetaObject);
+    metaobjects.insert(CheatCard::staticMetaObject.className(), &CheatCard::staticMetaObject);
+
     SurprisingGenerals = GetConfigFromLuaState(lua, "surprising_generals").toStringList();
     LordBGMConvertList = GetConfigFromLuaState(lua, "bgm_convert_pairs").toStringList();
     LordBackdropConvertList = GetConfigFromLuaState(lua, "backdrop_convert_pairs").toStringList();
@@ -1349,4 +1352,31 @@ int Engine::operationTimeRate(QSanProtocol::CommandType command, QVariant msg)
             rate = 3;
     }
     return rate;
+}
+
+SurrenderCard::SurrenderCard()
+{
+    target_fixed = true;
+    mute = true;
+    handling_method = Card::MethodNone;
+}
+
+void SurrenderCard::onUse(Room *room, const CardUseStruct &use) const
+{
+    room->makeSurrender(use.from);
+}
+
+CheatCard::CheatCard()
+{
+    target_fixed = true;
+    mute = true;
+    handling_method = Card::MethodNone;
+}
+
+void CheatCard::onUse(Room *room, const CardUseStruct &use) const
+{
+    QString cheatString = getUserString();
+    JsonDocument doc = JsonDocument::fromJson(cheatString.toUtf8().constData());
+    if (doc.isValid())
+        room->cheat(use.from, doc.toVariant());
 }

@@ -407,6 +407,9 @@ public:
         return m_generalSelector;
     }
 
+    void cheat(ServerPlayer *player, const QVariant &args);
+    bool makeSurrender(ServerPlayer *player);
+
 protected:
     virtual void run();
     int _m_Id;
@@ -545,9 +548,6 @@ private:
     QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair;
     // Stores the expected client response for each server request, any unmatched client response will be discarded.
 
-    QTime _m_timeSinceLastSurrenderRequest; // Timer used to ensure that surrender polls are not initiated too frequently
-    bool _m_isFirstSurrenderRequest; // We allow the first surrender poll to go through regardless of the timer.
-
     //helper variables for race request function
     bool _m_raceStarted;
     QAtomicPointer<ServerPlayer> _m_raceWinner;
@@ -562,7 +562,6 @@ private:
     QVariantMap tag;
     const Scenario *scenario;
 
-    bool m_surrenderRequestReceived;
     bool _virtual;
     RoomState _m_roomState;
 
@@ -588,10 +587,7 @@ private:
     QString askForRole(ServerPlayer *player, const QStringList &roles, const QString &scheme);
 
     //process client requests
-    void processRequestCheat(ServerPlayer *player, const QVariant &packet);
-    void processRequestSurrender(ServerPlayer *player, const QVariant &packet);
 
-    bool makeSurrender(ServerPlayer *player);
     bool makeCheat(ServerPlayer *player);
     void makeDamage(const QString &source, const QString &target, QSanProtocol::CheatCategory nature, int point);
     void makeKilling(const QString &killer, const QString &victim);
