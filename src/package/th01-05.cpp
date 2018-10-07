@@ -1062,7 +1062,8 @@ public:
         CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, "", NULL, "dream", "");
         invoke->invoker->addToPile("dream", room->getNCards(1), false, reason);
         if (invoke->invoker->getPile("dream").length() >= 2) {
-            const Card *c = room->askForCard(invoke->invoker, "@@huantong", "@huantong:" + invoke->targets.first()->objectName(), data, Card::MethodNone, NULL, false, objectName());
+            const Card *c
+                = room->askForCard(invoke->invoker, "@@huantong", "@huantong:" + invoke->targets.first()->objectName(), data, Card::MethodNone, NULL, false, objectName());
             if (c) {
                 QList<int> ids = c->getSubcards();
                 //do damage
@@ -1070,7 +1071,7 @@ public:
 
                 QList<int> get_ids;
                 QList<int> throw_ids;
-                foreach(QVariant card_data, ids) {
+                foreach (QVariant card_data, ids) {
                     int id = card_data.toInt();
                     room->showCard(invoke->invoker, id);
                     if (Sanguosha->getCard(id)->isKindOf("BasicCard"))
@@ -1954,6 +1955,7 @@ public:
                             if (c->isKindOf("Slash")) {
                                 card->addSubcard(c);
                                 card->setSkillName(objectName());
+                                card->setCanRecast(false);
                                 return card;
                             }
                         }
@@ -1975,6 +1977,7 @@ public:
                             if (c->isKindOf("Slash")) {
                                 card->addSubcard(c);
                                 card->setSkillName(objectName());
+                                card->setCanRecast(false);
                                 return card;
                             }
                         }
@@ -2470,10 +2473,6 @@ bool QirenCard::targetFilter(const QList<const Player *> &targets, const Player 
     Card *oc = Sanguosha->getCard(shownId);
     int id = (Self->getShownHandcards().contains(subcards.first())) ? subcards.last() : subcards.first();
 
-    //do not consider extraTarget
-    // if (oc->isKindOf("Collateral") && !targets.isEmpty()) {
-    //    return false;
-    //}
     //only consider slashTargetFix
     if (Sanguosha->getCard(id)->isKindOf("Slash")) {
         if (Self->hasFlag("slashTargetFix")) {
@@ -2604,60 +2603,6 @@ void QirenCard::onUse(Room *room, const CardUseStruct &card_use) const
     log.arg2 = "qiren";
     room->sendLog(log);
 
-    /*if (card->isKindOf("Collateral")) {
-        QList<ServerPlayer *> killers = use.to;
-        ServerPlayer *killer = NULL;
-        use.to.clear();
-        foreach (ServerPlayer *k, killers) {
-            QList<ServerPlayer *> victims;
-            foreach (ServerPlayer *p, room->getOtherPlayers(k)) {
-                if (k->canSlash(p)) {
-                    victims << p;
-                }
-            }
-            if (!victims.isEmpty() && killer == NULL) {
-                killer = k;
-                use.to << killer;
-                ServerPlayer *victim = room->askForPlayerChosen(use.from, victims, "qiren", "@qiren:" + killer->objectName());
-                use.to << victim;
-            } else {
-                room->setCardFlag(card, "qirenCollater_" + k->objectName());
-            }
-        }
-        //if Collateral has no effect, do use directly for moving this card.
-        if (use.to.length() != 2) {
-            use.to = killers;
-            QList<CardsMoveStruct> moves;
-
-            QVariant data = QVariant::fromValue(use);
-            RoomThread *thread = room->getThread();
-
-            thread->trigger(PreCardUsed, room, data);
-            use = data.value<CardUseStruct>();
-
-            LogMessage log;
-            log.from = use.from;
-            log.to << use.to;
-            log.type = "#UseCard";
-            log.card_str = use.card->toString();
-            room->sendLog(log);
-
-            CardMoveReason reason(CardMoveReason::S_REASON_USE, use.from->objectName(), QString(), use.card->getSkillName(), QString());
-            if (use.to.size() == 1)
-                reason.m_targetId = use.to.first()->objectName();
-
-            reason.m_extraData = QVariant::fromValue(use.card);
-            CardsMoveStruct move(use.card->getEffectiveId(), NULL, Player::PlaceTable, reason);
-            moves.append(move);
-            room->moveCardsAtomic(moves, true);
-
-            thread->trigger(CardUsed, room, data);
-            use = data.value<CardUseStruct>();
-            thread->trigger(CardFinished, room, data);
-            return;
-        }
-    }*/
-
     //do new use
     room->useCard(use);
 }
@@ -2675,6 +2620,7 @@ public:
     {
         return !player->getShownHandcards().isEmpty() && !player->hasFlag("qirenUsed");
     }
+
     virtual bool isEnabledAtResponse(const Player *player, const QString &) const
     {
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
@@ -2739,39 +2685,6 @@ public:
                     room->setPlayerFlag(p, "-qirenUsed");
             }
         }
-        /*if (e == PreCardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("Collateral")) {
-                foreach (ServerPlayer *k, room->getAlivePlayers()) {
-                    if (use.card->hasFlag("qirenCollater_" + k->objectName())) {
-                        QList<ServerPlayer *> victims;
-                        foreach (ServerPlayer *p, room->getOtherPlayers(k)) {
-                            if (k->canSlash(p))
-                                victims << p;
-                        }
-                        if (!victims.isEmpty()) {
-                            use.to << k;
-                            ServerPlayer *victim = room->askForPlayerChosen(use.from, victims, "qiren", "@qiren:" + k->objectName());
-                            k->tag["collateralVictim"] = QVariant::fromValue((ServerPlayer *)victim);
-                            LogMessage log;
-                            log.type = "#QishuAdd";
-                            log.from = use.from;
-                            log.to << k;
-                            log.arg = use.card->objectName();
-                            log.arg2 = "qiren";
-                            room->sendLog(log);
-
-                            LogMessage log1;
-                            log1.type = "#CollateralSlash";
-                            log1.from = use.from;
-                            log1.to << victim;
-                            room->sendLog(log1);
-                        }
-                    }
-                }
-                data = QVariant::fromValue(use);
-            }
-        }*/
     }
 };
 
@@ -3244,7 +3157,6 @@ public:
     }
 };
 
-
 class Anliu : public TriggerSkill
 {
 public:
@@ -3259,9 +3171,8 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if (!damage.card || !damage.card->isKindOf("Slash") || damage.to->isDead())
             return QList<SkillInvokeDetail>();
-        
-        if ((e == Damage &&  damage.from->hasSkill(this))
-            || e == Damaged &&  damage.to->hasSkill(this)) {
+
+        if ((e == Damage && damage.from->hasSkill(this)) || e == Damaged && damage.to->hasSkill(this)) {
             QList<int> ids;
             if (damage.card->isVirtualCard())
                 ids = damage.card->getSubcards();
@@ -3270,14 +3181,13 @@ public:
 
             if (ids.isEmpty())
                 return QList<SkillInvokeDetail>();
-            foreach(int id, ids) {
+            foreach (int id, ids) {
                 if (room->getCardPlace(id) != Player::PlaceTable)
                     return QList<SkillInvokeDetail>();
             }
             ServerPlayer *meira = (e == Damage) ? damage.from : damage.to;
-            
+
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, meira, meira);
-        
         }
         return QList<SkillInvokeDetail>();
     }
@@ -3286,8 +3196,8 @@ public:
     {
         QList<ServerPlayer *> targets;
         DamageStruct damage = data.value<DamageStruct>();
-        foreach(ServerPlayer *p, room->getAlivePlayers()) {
-            if (damage.to->distanceTo(p) <=1 && !p->isRemoved())
+        foreach (ServerPlayer *p, room->getAlivePlayers()) {
+            if (damage.to->distanceTo(p) <= 1 && !p->isRemoved())
                 targets << p;
         }
         if (targets.isEmpty())
@@ -3313,7 +3223,6 @@ public:
         return false;
     }
 };
-
 
 TH0105Package::TH0105Package()
     : Package("th0105")
@@ -3388,7 +3297,6 @@ TH0105Package::TH0105Package()
     General *yukimai = new General(this, "yukimai", "pc98", 3);
     yukimai->addSkill(new Xiewu);
     yukimai->addSkill(new Nuli);
-
 
     General *meira = new General(this, "meira", "pc98", 4);
     meira->addSkill(new Anliu);

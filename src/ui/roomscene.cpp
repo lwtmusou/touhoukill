@@ -4183,7 +4183,7 @@ void RoomScene::setEmotion(const QString &who, const QString &emotion)
 
 void RoomScene::setEmotion(const QString &who, const QString &emotion, bool permanent)
 {
-    if (emotion.startsWith("weapon/") || emotion.startsWith("armor/")) {
+    if (emotion.startsWith("weapon/") || emotion.startsWith("armor/") || emotion.startsWith("treasure/")) {
         if (Config.value("NoEquipAnim", false).toBool())
             return;
         QString name = emotion.split("/").last();

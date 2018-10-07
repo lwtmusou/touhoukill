@@ -1685,99 +1685,12 @@ public:
     }
 };
 
-/*
-class YuejianVS : public ZeroCardViewAsSkill
-{
-public:
-    YuejianVS()
-        : ZeroCardViewAsSkill("yuejian")
-    {
-        response_pattern = "@@yuejian";
-    }
-
-    virtual const Card *viewAs() const
-    {
-        if (!Self->hasFlag("Global_yuejianFailed")) {
-            KnownBoth *card = new KnownBoth(Card::SuitToBeDecided, -1);
-            card->setSkillName(objectName());
-            return card;
-        } else {
-            AwaitExhausted *card = new AwaitExhausted(Card::SuitToBeDecided, -1);
-            card->setSkillName(objectName());
-            return card;
-        }
-
-        return NULL;
-    }
-};
-
-class Yuejian : public TriggerSkill
-{
-public:
-    Yuejian()
-        : TriggerSkill("yuejian")
-    {
-        events << CardFinished << Pindian;
-        view_as_skill = new YuejianVS;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
-    {
-        if (triggerEvent == CardFinished) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (!use.card->isKindOf("SkillCard") && !use.card->isVirtualCard() && use.from && use.from->hasSkill(this) && !use.to.isEmpty() && use.to.contains(use.from)
-                && !use.from->isKongcheng()) {
-                foreach (ServerPlayer *t, room->getOtherPlayers(use.from)) {
-                    if (!t->isKongcheng())
-                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
-                }
-            }
-        } else if (triggerEvent == Pindian) {
-            PindianStruct *pindian = data.value<PindianStruct *>();
-            if (pindian->reason == objectName())
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, pindian->from, pindian->from, NULL, true, NULL, false);
-        }
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent event, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        if (event == CardFinished) {
-            QList<ServerPlayer *> targets;
-            foreach (ServerPlayer *t, room->getOtherPlayers(invoke->invoker)) {
-                if (!t->isKongcheng())
-                    targets << t;
-            }
-            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@yuejian-pindian", true, true);
-            if (target)
-                invoke->targets << target;
-            return target != NULL;
-        } else if (event == Pindian) {
-            PindianStruct *pindian = data.value<PindianStruct *>();
-            if (pindian->success)
-                room->askForUseCard(invoke->invoker, "@@yuejian", "@yuejian1");
-            else {
-                room->setPlayerFlag(invoke->invoker, "Global_yuejianFailed");
-                room->askForUseCard(invoke->invoker, "@@yuejian", "@yuejian2");
-            }
-        }
-
-        return false;
-    }
-
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        invoke->invoker->pindian(invoke->targets.first(), objectName());
-        return false;
-    }
-};*/
-
 YuejianCard::YuejianCard()
 {
     will_throw = false;
 }
 
-bool YuejianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+bool YuejianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
 {
     return targets.isEmpty() && !to_select->isKongcheng() && !to_select->hasFlag("yuejianInvoked");
 }
@@ -1847,7 +1760,7 @@ public:
         view_as_skill = new YuejianVS;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
     {
         if (triggerEvent == EventPhaseChanging) {
             foreach(ServerPlayer *p, room->getAlivePlayers()) {
@@ -1858,7 +1771,7 @@ public:
         }
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
         if (triggerEvent == Pindian) {
             PindianStruct *pindian = data.value<PindianStruct *>();
@@ -1885,7 +1798,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent event, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent , Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         
         PindianStruct *pindian = data.value<PindianStruct *>();
@@ -1894,16 +1807,12 @@ public:
             room->askForUseCard(invoke->invoker, "@@yuejian!", "@yuejian1");
         } 
         else {
-            //room->setPlayerFlag(invoke->invoker, "Global_yuejianFailed");
             room->askForUseCard(invoke->invoker, "@@yuejian!", "@yuejian2");
         }
         
         return false;
     }
 };
-
-
-
 
 YidanDialog *YidanDialog::getInstance(const QString &object)
 {
@@ -1974,16 +1883,11 @@ void YidanDialog::popup()
 
 void YidanDialog::selectCard(QAbstractButton *button)
 {
-    //const Card *card = map.value(button->objectName());
     Self->tag[object_name] = QVariant::fromValue(button->objectName());
 
     emit onButtonClick();
     accept();
 }
-
-
-
-
 
 YidanCard::YidanCard()
 {
@@ -1996,92 +1900,16 @@ bool YidanCard::targetFilter(const QList<const Player *> &targets, const Player 
     DELETE_OVER_SCOPE(Card, card)
         card->addSubcards(subcards);
     card->setSkillName("yidan");
-    return card && !to_select->isDebuffStatus() &&  card->targetFilter(targets, to_select, Self) 
-        && !Self->isProhibited(to_select, card, targets);
-
-    //old version
-    /*Slash *card = new Slash(Card::SuitToBeDecided, 0);
-    card->addSubcards(subcards);
-    card->setSkillName("yidan");
-    card->deleteLater();
-
-    int slash_targets = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, card);
-    if (targets.length() >= slash_targets)
-        return false;
-
-    
-    bool can = false;
-    if (!Self->isProhibited(to_select, card, targets)) {
-        foreach (const Card *c, to_select->getEquips()) {
-            if (card->getSuit() == c->getSuit()) {
-                can = true;
-                break;
-            }
-        }
-        if (!can) {
-            foreach (int id, to_select->getShownHandcards()) {
-                if (card->getSuit() == Sanguosha->getCard(id)->getSuit()) {
-                    can = true;
-                    break;
-                }
-            }
-        }
-        return can && card->targetFilter(targets, to_select, Self); //&& !targets.isEmpty()
-    }
-    return false;*/
+    return card && !to_select->isDebuffStatus() &&  card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
 }
-
-/*bool YidanCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
-{
-    Slash *card = new Slash(Card::SuitToBeDecided, 0);
-    card->addSubcards(subcards);
-    card->setSkillName("yidan");
-    card->deleteLater();
-
-    bool yidan = false;
-    foreach (const Player *p, targets) {
-        foreach (const Card *c, p->getEquips()) {
-            if (card->getSuit() == c->getSuit()) {
-                yidan = true;
-                break;
-            }
-        }
-        if (yidan)
-            break;
-        foreach (int id, p->getShownHandcards()) {
-            if (card->getSuit() == Sanguosha->getCard(id)->getSuit()) {
-                yidan = true;
-                break;
-            }
-        }
-        if (yidan)
-            break;
-    }
-    return yidan && card->targetsFeasible(targets, Self);
-}*/
 
 const Card *YidanCard::validate(CardUseStruct &card_use) const
 {
     card_use.from->showHiddenSkill("yidan");
     card_use.from->getRoom()->setPlayerFlag(card_use.from, "yidan_" + user_string);
-    /*if (user_string == "light_slash") {
-        LightSlash *card = new LightSlash(Card::SuitToBeDecided, -1);
-        card->setSkillName("yidan");
-        card->addSubcards(subcards);
-        return card;
-    }
-    else {
-        IronSlash *card = new IronSlash(Card::SuitToBeDecided, -1);
-        card->setSkillName("yidan");
-        card->addSubcards(subcards);
-        return card;
-    }*/
     Card *card = Sanguosha->cloneCard(user_string);
     card->setSkillName("yidan");
-    //card_use.from->getRoom()->setPlayerFlag(card_use.from, "yidan_" + user_string);
-    //Slash *card = new Slash(Card::SuitToBeDecided, 0);
     card->addSubcards(subcards);
-    //card->setSkillName("yidan");
     return card;
 }
 
@@ -2100,13 +1928,6 @@ public:
         return !player->hasFlag("yidan_iron_slash") || !player->hasFlag("yidan_light_slash");
     }
 
-    /*virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
-    {
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
-            return false;
-        return matchAvaliablePattern("slash", pattern);
-    }*/
-
     virtual const Card *viewAs(const Card *originalCard) const
     {
         if (originalCard != NULL) {
@@ -2120,8 +1941,6 @@ public:
             }
             else
                 return NULL;
-
-           
         }
         return NULL;
     }
@@ -2169,30 +1988,6 @@ public:
     }
 };
 
-/*class YidanProhibit : public ProhibitSkill
-{
-public:
-    YidanProhibit()
-        : ProhibitSkill("#yidan")
-    {
-    }
-
-    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &, bool include_hidden) const
-    {
-        if (to->hasSkill("yidan", false, include_hidden) && card->isKindOf("Slash")) {
-            foreach (const Card *c, to->getEquips()) {
-                if (card->getSuit() == c->getSuit())
-                    return true;
-            }
-            foreach (int id, to->getShownHandcards()) {
-                if (card->getSuit() == Sanguosha->getCard(id)->getSuit())
-                    return true;
-            }
-        }
-        return false;
-    }
-};*/
-
 class YidanTargetMod : public TargetModSkill
 {
 public:
@@ -2210,7 +2005,7 @@ public:
             return 0;
     }
 
-    virtual int getResidueNum(const Player *from, const Card *card) const
+    virtual int getResidueNum(const Player *, const Card *card) const
     {
         if (card->getSkillName() == "yidan")
             return 1000;
@@ -2257,13 +2052,9 @@ TH15Package::TH15Package()
 
     General *seiran = new General(this, "seiran", "gzz", 4);
     seiran->addSkill(new Yidan);
-    //seiran->addSkill(new YidanProhibit);
     seiran->addSkill(new YidanTargetMod);
-    //related_skills.insertMulti("yidan", "#yidan");
     related_skills.insertMulti("yidan", "#yidanmod");
 
-    //addMetaObject<ShayiCard>();
-    //addMetaObject<ShayiMoveCard>();
     addMetaObject<YuejianCard>();
     addMetaObject<YidanCard>();
     skills  << new ShehuoProhibit << new ShehuoTargetMod; // << new ShayiUse << new ChunhuaFilter << new YuyiEffect

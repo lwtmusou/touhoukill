@@ -88,8 +88,6 @@ void PowerSlash::debuffEffect(const SlashEffectStruct &effect)
 NatureJink::NatureJink(Suit suit, int number)
     : Jink(suit, number)
 {
-    //setObjectName("nature_jink");
-    //target_fixed = true;
 }
 
 bool NatureJink::match(const QString &pattern) const
@@ -202,7 +200,7 @@ bool SuperPeach::targetFixed() const
 
     if (globalDying && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
         return true;
-    return false; //Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY;
+    return false;
 }
 
 void SuperPeach::onEffect(const CardEffectStruct &effect) const
@@ -245,8 +243,6 @@ bool SuperPeach::targetFilter(const QList<const Player *> &targets, const Player
         } else {
             if (to_select->isDebuffStatus())
                 return true;
-            //if (Self->getKingdom() == "zhan" && to_select->hasLordSkill("yanhui") && to_select->isWounded() && Self->getPhase() == Player::Play)
-            //    return true;
         }
     }
     return false;
@@ -361,6 +357,7 @@ public:
         if (!ids.isEmpty()) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
             room->touhouLogmessage("#Gun", invoke->invoker, objectName(), QList<ServerPlayer *>() << target);
+            room->setEmotion(invoke->invoker, "weapon/gun");
             target->addBrokenEquips(ids);
         }
 
@@ -417,7 +414,6 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
-        
          PhaseChangeStruct change = data.value<PhaseChangeStruct>();
          if (!equipAvailable(change.player, EquipCard::WeaponLocation, objectName()))
              return QList<SkillInvokeDetail>();
@@ -462,13 +458,13 @@ public:
         if (player->isCardLimited(card, Card::MethodUse))
             return false;
         return EquipSkill::equipAvailable(player, EquipCard::TreasureLocation, objectName()) && !player->hasFlag("JadeSeal_used");
-        //return true;
     }
 
     virtual const Card *viewAs() const
     {
         KnownBoth *card = new KnownBoth(Card::SuitToBeDecided, -1);
         card->setSkillName(objectName());
+        card->setCanRecast(false);
         return card;
     }
 };
@@ -537,7 +533,7 @@ public:
             return false;
         if (player->hasFlag("Pagoda_used"))
             return false;
-        return !player->isKongcheng(); // || !player->getHandPile().isEmpty();
+        return !player->isKongcheng();
     }
 };
 
@@ -657,7 +653,7 @@ public:
     {
         if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
-            room->setEmotion(invoke->invoker, "armor/silver_lion");
+            room->setEmotion(invoke->invoker, "armor/camouflage");
 
             LogMessage log;
             log.type = "#Camouflage";
@@ -751,7 +747,7 @@ QString FightTogether::getSubtype() const
     return "damage_spread";
 }
 
-bool FightTogether::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+bool FightTogether::targetFilter(const QList<const Player *> &, const Player *to_select, const Player *Self) const
 {
     //int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
@@ -897,7 +893,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent , Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         QString flag = debuffFlag(invoke->invoker);
         room->setPlayerFlag(invoke->invoker, "-FightTogether_Used");
@@ -945,30 +941,6 @@ bool BoneHealing::targetFilter(const QList<const Player *> &targets, const Playe
         return true;
 
     return to_select->isDebuffStatus();
-    /*int chained = 0;
-    int showncard = 0;
-    int brokenequip = 0;
-
-    if (Self->isChained() != to_select->isChained()) {
-        if (Self->isChained())
-            chained = -1;
-        else
-            chained = 1;
-    }
-    if (Self->getShownHandcards().isEmpty() != to_select->getShownHandcards().isEmpty()) {
-        if (!Self->getShownHandcards().isEmpty())
-            showncard = -1;
-        else
-            showncard = 1;
-    }
-    if (Self->getBrokenEquips().isEmpty() != to_select->getBrokenEquips().isEmpty()) {
-        if (!Self->getBrokenEquips().isEmpty())
-            brokenequip = -1;
-        else
-            brokenequip = 1;
-    }
-
-    return (chained +  showncard + brokenequip) > 0;*/
 }
 
 void BoneHealing::onEffect(const CardEffectStruct &effect) const
@@ -1114,8 +1086,7 @@ TestCardPackage::TestCardPackage()
     // clang-format off
 
     cards
-         // Equip
-        //<< new Camera(Card::Diamond, 11)
+        // Equip
         << new Gun(Card::Club, 13)
         << new Pillar(Card::Diamond, 1)
         << new JadeSeal(Card::Heart, 13)
@@ -1126,17 +1097,14 @@ TestCardPackage::TestCardPackage()
         << new AwaitExhausted(Card::Diamond, 4)
         << new AwaitExhausted(Card::Heart, 10)
         << new AllianceFeast(Card::Heart, 1)
-        //<< new FightTogether(Card::Spade, 11)
-        //<< new FightTogether(Card::Club, 5)
-        //<< new SpellDuel(Card::Heart, 1) << new SpellDuel(Card::Diamond, 1)
         << new BoneHealing(Card::Spade, 7)
         << new BoneHealing(Card::Spade, 11)
         << new BoneHealing(Card::Club, 5)
 
         << new Nullification(Card::Club, 12)
         << new Nullification(Card::Club, 11)
+
         //Basic
-        //<< new Kusuri(Card::Diamond, 3) << new Kusuri(Card::Heart, 8) << new Kusuri(Card::Heart, 9)
         << new IronSlash(Card::Club, 7)
         << new IronSlash(Card::Spade, 9)
         << new IronSlash(Card::Spade, 5)

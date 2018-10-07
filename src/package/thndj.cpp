@@ -127,7 +127,7 @@ public:
                 disable << target->getWeapon()->getId();
 #pragma message WARN("todo_Fs: split this askforcardchosen. this skill is \"put the cards in judge area to the discard pile\"")
             int card_id = room->askForCardChosen(mokou, target, "je", objectName(), false, Card::MethodDiscard, disable);
-            mokou->showHiddenSkill(objectName());
+            mokou->showHiddenSkill(objectName()); // ??????????????????????????????????
             room->throwCard(card_id, (target->getJudgingAreaID().contains(card_id)) ? NULL : target, mokou);
             return true;
         }
@@ -177,54 +177,6 @@ public:
         return false;
     }
 };
-
-/*class Huanyue : public TriggerSkill
-{
-public:
-    Huanyue()
-        : TriggerSkill("huanyue")
-    {
-        events << DamageInflicted;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {
-        DamageStruct damage = data.value<DamageStruct>();
-        if (damage.card == NULL || !damage.card->isNDTrick())
-            return QList<SkillInvokeDetail>();
-
-        QList<SkillInvokeDetail> d;
-        foreach (ServerPlayer *p, room->getOtherPlayers(damage.to)) {
-            if (p->hasSkill(this) && damage.to->canDiscard(p, "hs"))
-                d << SkillInvokeDetail(this, p, p, NULL, false, damage.to);
-        }
-        return d;
-    }
-
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        DamageStruct damage = data.value<DamageStruct>();
-        QString prompt = "target:" + damage.to->objectName() + ":" + damage.card->objectName();
-        invoke->invoker->tag["huanyue_damage"] = data;
-        return invoke->invoker->askForSkillInvoke(this, prompt);
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        DamageStruct damage = data.value<DamageStruct>();
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), damage.to->objectName());
-        int card_id = room->askForCardChosen(damage.to, invoke->invoker, "hs", objectName(), false, Card::MethodDiscard);
-        room->throwCard(card_id, invoke->invoker, damage.to);
-        if (Sanguosha->getCard(card_id)->isBlack()) {
-            QList<ServerPlayer *> logto;
-            logto << damage.to;
-            room->touhouLogmessage("#huanyue_log", damage.from, QString::number(damage.damage), logto, QString::number(damage.damage + 1));
-            damage.damage = damage.damage + 1;
-            data = QVariant::fromValue(damage);
-        }
-        return false;
-    }
-};*/
 
 
 class HuanyueVS : public OneCardViewAsSkill
@@ -397,9 +349,8 @@ public:
             move.reason.m_skillName = "sishu";
             room->moveCardsAtomic(move, true);
             room->getThread()->delay();
-            card = Sanguosha->getCard(id);//need const Card*
-            
-            //if (card->canDamage())
+            card = Sanguosha->getCard(id);
+
             bool get = false;       
             if (card->isKindOf("Slash") || card->isKindOf("FireAttack") || card->isKindOf("ArcheryAttack") || card->isKindOf("SavageAssault")
                 || card->isKindOf("Duel") || card->isKindOf("Lightning") || card->isKindOf("BoneHealing"))
@@ -428,7 +379,7 @@ public:
         }
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent , const Room *, const QVariant &data) const
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player && player->getPhase() == Player::Play && player->isAlive() && player->hasSkill(this))  
@@ -436,8 +387,6 @@ public:
         
         return QList<SkillInvokeDetail>();
     }
-
-  
 
     bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
