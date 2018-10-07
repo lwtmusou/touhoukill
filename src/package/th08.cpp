@@ -2027,18 +2027,16 @@ public:
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *current = data.value<ServerPlayer *>();
             if (current && current->isAlive() && current->getPhase() == Player::Play) {
-                foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                     if (p->inMyAttackRange(current))
                         d << SkillInvokeDetail(this, p, p, NULL, true, current);
                 }
-                
             }
-            
         }
         return d;
     }
 
-    bool effect(TriggerEvent , Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         ServerPlayer *player = invoke->targets.first();
         room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
@@ -2046,11 +2044,10 @@ public:
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), player->objectName());
 
         room->touhouLogmessage("#yemangRange", player, "yemang");
-        room->setPlayerMark(player, "yemang", player->getMark("yemang") +1);
+        room->setPlayerMark(player, "yemang", player->getMark("yemang") + 1);
         return false;
     }
 };
-
 
 class YemangRange : public AttackRangeSkill
 {
@@ -2118,7 +2115,7 @@ void MingmuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
         } else if (choice == "mingmu_disable") {
             if (!option.contains("cancel"))
                 option << "cancel";
-            room->setPlayerMark(source, "mingmu", source->getMark("mingmu") +1);
+            room->setPlayerMark(source, "mingmu", source->getMark("mingmu") + 1);
             room->touhouLogmessage("#mingmuRange", source, "mingmu");
             /*room->setPlayerFlag(mystia, "mingmuInvalid");
             room->touhouLogmessage("#mingmuInvalid", mystia, "yemang");
@@ -2212,7 +2209,7 @@ public:
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasFlag("mingmuInvoked"))
                         room->setPlayerFlag(p, "-mingmuInvoked");
-                    
+
                     /*if (p->hasFlag("mingmuInvalid")) {
                         const Skill *yemang = Sanguosha->getSkill("yemang");
                         room->setPlayerSkillInvalidity(p, yemang, false);

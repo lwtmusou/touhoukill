@@ -478,15 +478,15 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
         return;
 
     int num = qMin(1 + effect.effectValue.first(), effect.to->getHandcardNum());
-    
+
     const Card *cards = room->askForExchange(effect.to, objectName(), num, num, false, "@fire_attack_show:" + QString::number(num));
     DELETE_OVER_SCOPE(const Card, cards)
-        foreach(int id, cards->getSubcards())
-            room->showCard(effect.to, id);
+    foreach (int id, cards->getSubcards())
+        room->showCard(effect.to, id);
 
     QString suit_str = Sanguosha->getCard(cards->getSubcards().first())->getSuitString();
     QStringList suits;
-    foreach(int id, cards->getSubcards()) {
+    foreach (int id, cards->getSubcards()) {
         QString suit = Sanguosha->getWrappedCard(id)->getSuitString();
         if (!suits.contains(suit))
             suits << suit;
@@ -509,8 +509,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
                     room->throwCard(card_to_throw, effect.from, effect.from);
                 damage = true;
             }
-        }
-        else {
+        } else {
             const Card *card_to_throw = room->askForCard(effect.from, pattern, prompt, QVariant::fromValue(effect));
             if (card_to_throw)
                 damage = true;
@@ -520,7 +519,6 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
         else
             effect.from->setFlags("FireAttackFailed_" + effect.to->objectName()); // For AI
     }
-
 }
 
 IronChain::IronChain(Card::Suit suit, int number)

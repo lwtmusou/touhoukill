@@ -178,7 +178,6 @@ public:
     }
 };
 
-
 class HuanyueVS : public OneCardViewAsSkill
 {
 public:
@@ -204,7 +203,6 @@ public:
     }
 };
 
-
 class Huanyue : public TriggerSkill
 {
 public:
@@ -229,7 +227,7 @@ public:
 
             if (ids.isEmpty())
                 return QList<SkillInvokeDetail>();
-            foreach(int id, ids) {
+            foreach (int id, ids) {
                 if (room->getCardPlace(id) != Player::PlaceTable)
                     return QList<SkillInvokeDetail>();
             }
@@ -246,7 +244,7 @@ public:
 
             if (ids.isEmpty())
                 return QList<SkillInvokeDetail>();
-            foreach(int id, ids) {
+            foreach (int id, ids) {
                 if (room->getCardPlace(id) != Player::PlaceTable)
                     return QList<SkillInvokeDetail>();
             }
@@ -257,17 +255,16 @@ public:
             if (damage.card == NULL)
                 return QList<SkillInvokeDetail>();
 
-
             QList<SkillInvokeDetail> d;
-            foreach(ServerPlayer *p, room->getOtherPlayers(damage.to)) {
+            foreach (ServerPlayer *p, room->getOtherPlayers(damage.to)) {
                 if (p->hasSkill(this)) {
-                    foreach(int id, p->getPile("huanyue_pile")) {
+                    foreach (int id, p->getPile("huanyue_pile")) {
                         if (Sanguosha->getCard(id)->getTypeId() != damage.card->getTypeId()) {
                             d << SkillInvokeDetail(this, p, p, NULL, false, damage.to);
                             break;
                         }
                     }
-                }     
+                }
             }
             return d;
         }
@@ -281,11 +278,10 @@ public:
             QString prompt = "target:" + damage.to->objectName() + ":" + damage.card->objectName();
             invoke->invoker->tag["huanyue_damage"] = data;
             return invoke->invoker->askForSkillInvoke(this, prompt);
-        }
-        else {
+        } else {
             QString prompt = QString("@huanyue:%1:%2").arg(damage.to->objectName()).arg(damage.card->objectName());
             invoke->invoker->setProperty("huanyue", damage.card->getType());
-            const Card *c = room->askForCard(invoke->invoker, "@@huanyue", prompt, data, Card::MethodNone, NULL, false, "huanyue");          
+            const Card *c = room->askForCard(invoke->invoker, "@@huanyue", prompt, data, Card::MethodNone, NULL, false, "huanyue");
             if (c) {
                 room->notifySkillInvoked(invoke->invoker, objectName());
                 room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
@@ -315,9 +311,7 @@ public:
                 room->throwCard(dc, reason, NULL);
                 room->clearAG(invoke->invoker);
             }
-        }
-        else {
-                
+        } else {
             QList<ServerPlayer *> logto;
             logto << damage.to;
             room->touhouLogmessage("#huanyue_log", damage.from, QString::number(damage.damage), logto, QString::number(damage.damage + 1));
@@ -351,24 +345,23 @@ public:
             room->getThread()->delay();
             card = Sanguosha->getCard(id);
 
-            bool get = false;       
-            if (card->isKindOf("Slash") || card->isKindOf("FireAttack") || card->isKindOf("ArcheryAttack") || card->isKindOf("SavageAssault")
-                || card->isKindOf("Duel") || card->isKindOf("Lightning") || card->isKindOf("BoneHealing"))
+            bool get = false;
+            if (card->isKindOf("Slash") || card->isKindOf("FireAttack") || card->isKindOf("ArcheryAttack") || card->isKindOf("SavageAssault") || card->isKindOf("Duel")
+                || card->isKindOf("Lightning") || card->isKindOf("BoneHealing"))
                 get = true;
 
             if (get) {
                 acquired = acquired + 1;
                 CardsMoveStruct move2(id, player, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_GOTBACK, player->objectName()));
                 room->moveCardsAtomic(move2, false);
-                
+
                 if (!throwIds.isEmpty()) {
                     CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), "wanggou", QString());
                     DummyCard dummy(throwIds);
                     room->throwCard(&dummy, reason, NULL);
                     throwIds.clear();
                 }
-            }
-            else
+            } else
                 throwIds << id;
         }
         if (card->isKindOf("Slash") && !card->isKindOf("NatureSlash") && !card->isKindOf("DebuffSlash")) {
@@ -379,12 +372,12 @@ public:
         }
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent , const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player && player->getPhase() == Player::Play && player->isAlive() && player->hasSkill(this))  
+        if (player && player->getPhase() == Player::Play && player->isAlive() && player->hasSkill(this))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-        
+
         return QList<SkillInvokeDetail>();
     }
 
@@ -394,7 +387,6 @@ public:
         return false;
     }
 };
-
 
 class Sizhai : public TriggerSkill
 {

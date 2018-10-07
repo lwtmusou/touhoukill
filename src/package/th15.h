@@ -35,10 +35,7 @@ public:
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-
 };
-
-
 
 class YidanDialog : public QDialog
 {
@@ -47,7 +44,7 @@ class YidanDialog : public QDialog
 public:
     static YidanDialog *getInstance(const QString &object);
 
-    public slots:
+public slots:
     void popup();
     void selectCard(QAbstractButton *button);
 

@@ -1917,7 +1917,7 @@ public:
     Ziye()
         : TriggerSkill("ziye")
     {
-        events << Dying;// << Death;
+        events << Dying; // << Death;
         frequency = Wake;
     }
 
