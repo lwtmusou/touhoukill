@@ -70,6 +70,12 @@ sgs.ai_skill_choice.chunhua= function(self,  choices, data)
 	return "cancel"
 end
 
+sgs.ai_skill_invoke.shayi = true
+sgs.ai_skill_invoke.shayi_change = function(self, data)
+	local lord = self.room:getLord()
+	return self:isFriend(lord)
+end
+
 sgs.ai_skill_use["@@shayi"] = function(self, prompt)
 
 	local ids=self.player:getTag("shayi"):toIntList()
