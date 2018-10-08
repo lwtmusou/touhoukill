@@ -405,6 +405,9 @@ jineng_skill.getTurnUseCard = function(self)
 			local jineng_card = sgs.Card_Parse(jineng_str)
 
 			assert(jineng_card)
+			if (jinengCard:isKindOf("KnownBoth")) then--known_both
+				jineng_card:setCanRecast(false)
+			end
 			return jineng_card
 		end
 	end

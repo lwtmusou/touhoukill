@@ -190,6 +190,7 @@ config = {
 		"nue_god->nue",
 		"seija_sp->seija",
 		"rumia_sp->rumia",
+		"patchouli_god->patchouli",
 	},
 
 	backdrop_convert_pairs = {

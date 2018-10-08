@@ -1974,13 +1974,23 @@ public:
         if (r.to->hasFlag("Global_Dying"))
             return QList<SkillInvokeDetail>();
 
+        bool can = false;
+        foreach (ServerPlayer *p, room->getOtherPlayers(r.to)) {
+            if (p->getHp() <= r.to->getHp()) {
+                can = true;
+                break;
+            }
+        }
+        if (!can)
+            return QList<SkillInvokeDetail>();
+
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
             Slash *newslash = new Slash(Card::NoSuit, 0);
             newslash->deleteLater();
             if (p->isCardLimited(newslash, Card::MethodUse))
                 continue;
-            if (r.to->isAlive() && r.to != p && r.to->getHp() >= p->getHp() && p->canSlash(r.to, false))
+            if (r.to->isAlive() && r.to != p && p->canSlash(r.to, false))
                 d << SkillInvokeDetail(this, p, p, NULL, false, r.to);
         }
         return d;

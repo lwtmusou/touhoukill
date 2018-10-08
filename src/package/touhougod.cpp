@@ -5439,8 +5439,7 @@ bool XianshiCard::targetsFeasible(const QList<const Player *> &targets, const Pl
 
 const Card *XianshiCard::validate(CardUseStruct &use) const
 {
-    
-    QString to_use = user_string;
+    QString xianshi_name = use.from->property("xianshi_card").toString();
     use.from->showHiddenSkill("xianshi");
     const Card *card = Sanguosha->getCard(subcards.first());
     Card *use_card = Sanguosha->cloneCard(card->objectName(), card->getSuit(), card->getNumber());
@@ -5448,22 +5447,10 @@ const Card *XianshiCard::validate(CardUseStruct &use) const
     
     use_card->addSubcard(subcards.first());
     use_card->deleteLater();
-    //need log
+    //log
+    use.from->getRoom()->touhouLogmessage("#Xianshi", use.from, use_card->objectName(), QList<ServerPlayer *>(), xianshi_name);
     return use_card;
 }
-
-/*
-const Card *XianshiCard::validateInResponse(ServerPlayer *user) const
-{
-    user->showHiddenSkill("xianshi");
-    const Card *card = Sanguosha->getCard(subcards.first());
-    Card *use_card = Sanguosha->cloneCard(card->objectName(), card->getSuit(), card->getNumber());
-    use_card->setSkillName("xianshi");
-    use_card->addSubcard(subcards.first());
-    use_card->deleteLater();
-
-    return use_card;
-}*/
 
 class XianshiVS : public OneCardViewAsSkill
 {
@@ -5528,7 +5515,7 @@ public:
                 && use.card && !use.to.isEmpty()) {
                 if (use.card->isNDTrick() || use.card->isKindOf("Slash"))
                     room->setPlayerProperty(use.from, "xianshi_card", use.card->objectName());
-                else if (use.card->getTypeId() == Card::TypeEquip)
+                else if (use.card->getTypeId() != Card::TypeSkill)
                     room->setPlayerProperty(use.from, "xianshi_card", QVariant());
             }   
         } else if (e == EventPhaseChanging) {
@@ -5545,54 +5532,6 @@ public:
             }
         }
     }
-
-    /*QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
-    {
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from && use.from->hasSkill(this)) {
-            if (use.card->isKindOf("FireAttack"))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
-        }
-
-
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        CardUseStruct use = data.value<CardUseStruct>();
-        QList<ServerPlayer *> targets;
-        foreach(ServerPlayer *p, room->getAlivePlayers()) {
-            if (use.to.contains(p) || use.from->isProhibited(p, use.card))
-                continue;
-
-            if (!use.card->targetFilter(QList<const Player *>(), p, use.from))
-                continue;
-            targets << p;
-        }
-        return false;
-    }
-
-    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        if (e == CardAsked) {
-            Jink *jink = new Jink(Card::NoSuit, 0);
-            jink->setSkillName("_yueyao");
-            room->provide(jink);
-            return true;
-        }
-        else if (e == CardFinished) {
-            AllianceFeast *card = new AllianceFeast(Card::NoSuit, 0);
-            card->setSkillName("_yueyao");
-            CardUseStruct carduse;
-            carduse.card = card;
-            carduse.from = invoke->invoker;
-
-            room->useCard(carduse, true);
-        }
-
-        return false;
-    }*/
 };
 
 
@@ -5609,14 +5548,14 @@ public:
     {
         if (!player->hasSkill(this))
             return 0;
-
+        if (card->isKindOf("FireAttack") || card->isKindOf("FireSlash"))
+            return 1000;
         if (card->getSkillName() == "xianshi") {
             QString cardname = Self->property("xianshi_card").toString();
             if (cardname.contains("fire"))
                 return 1000;
         }   
-        else if (card->isKindOf("FireAttack") || card->isKindOf("FireSlash"))
-            return 1000;
+
         
         return 0;
     }
@@ -5626,13 +5565,13 @@ public:
     {
         if (!player->hasSkill(this))
             return 0;
+        if (card->isKindOf("FireAttack") || card->isKindOf("FireSlash"))
+            return 1000;
         if (card->getSkillName() == "xianshi") {
             QString cardname = Self->property("xianshi_card").toString();
             if (cardname.contains("fire"))
                 return 1000;
         }
-        else if (card->isKindOf("FireAttack") || card->isKindOf("FireSlash"))
-            return 1000;
 
         return 0;
     }
@@ -5852,7 +5791,6 @@ TouhouGodPackage::TouhouGodPackage()
     patchouli_god->addSkill(new Xianshi);
     patchouli_god->addSkill(new Riyao);
     patchouli_god->addSkill(new Yueyao);
-    //patchouli_god->addSkill(new Skill("qiyao"));
 
     General *alice_god = new General(this, "alice_god", "touhougod", 4, false, true, true);
     Q_UNUSED(alice_god);
