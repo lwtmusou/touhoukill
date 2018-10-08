@@ -5515,7 +5515,7 @@ public:
                 && use.card && !use.to.isEmpty()) {
                 if (use.card->isNDTrick() || use.card->isKindOf("Slash"))
                     room->setPlayerProperty(use.from, "xianshi_card", use.card->objectName());
-                else if (use.card->getTypeId() == Card::TypeEquip)
+                else if (use.card->getTypeId() != Card::TypeSkill)
                     room->setPlayerProperty(use.from, "xianshi_card", QVariant());
             }   
         } else if (e == EventPhaseChanging) {
@@ -5548,14 +5548,14 @@ public:
     {
         if (!player->hasSkill(this))
             return 0;
-
+        if (card->isKindOf("FireAttack") || card->isKindOf("FireSlash"))
+            return 1000;
         if (card->getSkillName() == "xianshi") {
             QString cardname = Self->property("xianshi_card").toString();
             if (cardname.contains("fire"))
                 return 1000;
         }   
-        else if (card->isKindOf("FireAttack") || card->isKindOf("FireSlash"))
-            return 1000;
+
         
         return 0;
     }
@@ -5565,13 +5565,13 @@ public:
     {
         if (!player->hasSkill(this))
             return 0;
+        if (card->isKindOf("FireAttack") || card->isKindOf("FireSlash"))
+            return 1000;
         if (card->getSkillName() == "xianshi") {
             QString cardname = Self->property("xianshi_card").toString();
             if (cardname.contains("fire"))
                 return 1000;
         }
-        else if (card->isKindOf("FireAttack") || card->isKindOf("FireSlash"))
-            return 1000;
 
         return 0;
     }
