@@ -20,7 +20,7 @@ return {
 	["$ChunhuaBlack"] = "%from 对 %to 使用的【%arg】的效果改为 “你对目标角色造成1点伤害”",
 
 	["shayi"] = "杀意",
-	[":shayi"] = "<font color=\"orange\"><b>主公技，</b></font>当其他绀势力角色使用效果里有“伤害”的牌时，其可以令你选择是否成为此牌的使用者。",
+	[":shayi"] = "<font color=\"orange\"><b>主公技，</b></font>当其他绀势力角色使用效果里有“伤害”的牌时（除【酒】外），其可以令你选择是否成为此牌的使用者。",
 
 	["shayi_change"] = "杀意（主公技）",
 	["$Shayi"] = "%from 发动 %arg 成为了 %card 的使用者",
