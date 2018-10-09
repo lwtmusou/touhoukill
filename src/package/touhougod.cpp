@@ -2794,7 +2794,7 @@ public:
     {
         QList<SkillInvokeDetail> d;
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from && use.from->isAlive() && (use.card->isKindOf("Slash") || use.card->isNDTrick())) {
+        if (use.from && use.from->isAlive() && (use.card->isKindOf("Slash") || use.card->isNDTrick()) && !use.card->isVirtualCard()) {
             foreach (ServerPlayer *p, use.to) {
                 if (p->hasSkill(this) && p != use.from)
                     d << SkillInvokeDetail(this, p, p, NULL, false, use.from);
