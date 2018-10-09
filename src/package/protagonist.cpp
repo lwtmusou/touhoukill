@@ -1935,7 +1935,7 @@ public:
     bool cost(TriggerEvent triggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         if (triggerEvent == EventPhaseChanging)
-            invoke->invoker->removeMark("siyuinvoke");
+            invoke->invoker->setMark("siyuinvoke", 0);
 
         return true;
     }
