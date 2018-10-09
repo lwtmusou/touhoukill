@@ -3163,16 +3163,28 @@ public:
     Anliu()
         : TriggerSkill("anliu")
     {
-        events << Damage << Damaged;
+        events << EventPhaseChanging << Damage << Damaged;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            foreach(ServerPlayer *p, room->getAllPlayers())
+                room->setPlayerFlag(p, "-anliu_used");
+        }
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
     {
+        if (e == EventPhaseChanging)
+            return QList<SkillInvokeDetail>();
+        
         DamageStruct damage = data.value<DamageStruct>();
         if (!damage.card || !damage.card->isKindOf("Slash") || damage.to->isDead())
             return QList<SkillInvokeDetail>();
 
-        if ((e == Damage && damage.from->hasSkill(this)) || e == Damaged && damage.to->hasSkill(this)) {
+        if ((e == Damage && damage.from->hasSkill(this) && !damage.from->hasFlag("anliu_used")) ||
+            (e == Damaged && damage.to->hasSkill(this) && !damage.to->hasFlag("anliu_used"))) {
             QList<int> ids;
             if (damage.card->isVirtualCard())
                 ids = damage.card->getSubcards();
@@ -3211,6 +3223,7 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
+        room->setPlayerFlag(invoke->invoker, "anliu_used");
         DamageStruct damage = data.value<DamageStruct>();
         invoke->targets.first()->obtainCard(damage.card);
         invoke->invoker->tag["anliu-target"] = QVariant::fromValue(invoke->targets.first());
