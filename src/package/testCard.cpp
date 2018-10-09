@@ -406,21 +406,20 @@ public:
     PillarSkill()
         : WeaponSkill("Pillar")
     {
-        events << EventPhaseChanging;
+        events << EventPhaseEnd;
         frequency = Compulsory;
         view_as_skill = new PillarSkillVS;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
-        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if (!equipAvailable(change.player, EquipCard::WeaponLocation, objectName()))
+        ServerPlayer *player = data.value<ServerPlayer *>();
+        if (player->isDead() || player->getPhase() != Player::Finish)
+            return QList<SkillInvokeDetail>();
+        if (!equipAvailable(player, EquipCard::WeaponLocation, objectName()))
             return QList<SkillInvokeDetail>();
 
-        if (change.to == Player::NotActive && change.player->isAlive())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
-
-        return QList<SkillInvokeDetail>();
+        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
