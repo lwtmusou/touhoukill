@@ -5412,9 +5412,6 @@ bool XianshiCard::targetFilter(const QList<const Player *> &targets, const Playe
 bool XianshiCard::targetFixed() const
 {
     QString cardname = Self->property("xianshi_card").toString();
-    if (user_string == NULL)
-        return false;
-
     const Card *oc = Sanguosha->getCard(subcards.first());
     Card *card = Sanguosha->cloneCard(oc->objectName());
     DELETE_OVER_SCOPE(Card, card)
