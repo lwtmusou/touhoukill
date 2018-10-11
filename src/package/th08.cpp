@@ -700,41 +700,59 @@ public:
     }
 };
 
+
+
 class Xushi : public TriggerSkill
 {
 public:
     Xushi()
         : TriggerSkill("xushi")
     {
-        events << CardUsed << CardResponded << EventPhaseChanging;
+        events << CardUsed<< EventPhaseChanging; // << CardResponded 
     }
 
-    void record(TriggerEvent e, Room *, QVariant &data) const
+    void record(TriggerEvent e, Room *room, QVariant &data) const
     {
         //record times of using card
-        if (e == CardUsed || e == CardResponded) {
-            ServerPlayer *player = NULL;
-            const Card *card = NULL;
-            if (e == CardUsed) {
-                player = data.value<CardUseStruct>().from;
-                card = data.value<CardUseStruct>().card;
-            } else {
-                CardResponseStruct response = data.value<CardResponseStruct>();
-                player = response.m_from;
-                if (response.m_isUse)
-                    card = response.m_card;
-            }
-            if (player && player->getPhase() == Player::Play && card && card->getHandlingMethod() == Card::MethodUse && !card->isKindOf("SkillCard")) {
-                if (player->hasFlag("xushi_first"))
-                    player->setFlags("xushi_second");
-                else
+        if (e == CardUsed) { // || e == CardResponded
+            CardUseStruct use = data.value<CardUseStruct>();
+            ServerPlayer *player = use.from;
+            
+            if (player && player->getPhase() == Player::Play && !player->hasFlag("xushi_first")
+                && use.card  && use.card->getHandlingMethod() == Card::MethodUse && !use.card->isKindOf("SkillCard")) {
+                
+                bool ignore = (use.from && use.from->hasSkill("tianqu", false, false) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
+                    && !use.from->hasFlag("IgnoreFailed"));
+
+                if (!ignore && use.card->targetFixed())
+                    return;
+
+                bool invoke = false;
+                foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                    if (use.from == p)
+                        continue;
+                    foreach(ServerPlayer *t, room->getAlivePlayers()) {
+                        if (use.to.contains(t))
+                            continue;
+
+                        if (!use.from->isProhibited(t, use.card) && use.card->targetFilter(QList<const Player *>(), t, use.from)) {
+                            invoke = true;
+                        }
+
+                    }
+                }
+                
+                if (invoke){
                     player->setFlags("xushi_first");
+                    room->setCardFlag(use.card, "xushi_first");
+                }
+                    
             }
         } else if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.from == Player::Play) {
                 change.player->setFlags("-xushi_first");
-                change.player->setFlags("-xushi_second");
+                //change.player->setFlags("-xushi_second");
             }
         }
     }
@@ -744,7 +762,7 @@ public:
         if (e != CardUsed)
             return QList<SkillInvokeDetail>();
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->getTypeId() == Card::TypeSkill || use.to.length() != 1 || use.from == NULL || use.from->getPhase() != Player::Play || use.from->hasFlag("xushi_second"))
+        if (use.card->getTypeId() == Card::TypeSkill || use.from == NULL || use.from->getPhase() != Player::Play || !use.card->hasFlag("xushi_first"))
             return QList<SkillInvokeDetail>();
         //just for skill "tianqu"
         bool ignore = (use.from && use.from->hasSkill("tianqu", false, false) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
@@ -760,10 +778,12 @@ public:
             foreach (ServerPlayer *t, room->getAlivePlayers()) {
                 if (use.to.contains(t))
                     continue;
+                    
                 if (!use.from->isProhibited(t, use.card) && use.card->targetFilter(QList<const Player *>(), t, use.from)) {
                     d << SkillInvokeDetail(this, p, p);
                     break;
                 }
+                
             }
         }
         return d;
@@ -778,23 +798,40 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), use.from->objectName());
-        QList<ServerPlayer *> victims;
-        foreach (ServerPlayer *t, room->getAlivePlayers()) {
-            if (use.to.contains(t))
-                continue;
-            if (!use.from->isProhibited(t, use.card) && use.card->targetFilter(QList<const Player *>(), t, use.from))
-                victims << t;
-        }
-        if (!victims.isEmpty()) {
-            ServerPlayer *newTarget = room->askForPlayerChosen(use.from, victims, objectName(), "@xushi_newTarget:" + use.card->objectName());
-            use.to.clear();
-            use.to << newTarget;
-            room->touhouLogmessage("#xushi_newTarget", use.from, use.card->objectName(), QList<ServerPlayer *>() << newTarget);
+        QList<const Player *> victims;
+        QList<ServerPlayer *> tmpTargets;
+        QList<ServerPlayer *> targets;
+        bool option = false;
+        while (true) {
+            foreach(ServerPlayer *t, room->getAlivePlayers()) {
+                if (use.to.contains(t) || victims.contains(t))
+                    continue;
+                if (!use.from->isProhibited(t, use.card) && use.card->targetFilter(victims, t, use.from))
+                    tmpTargets << t;
+            }
+
+            if (tmpTargets.isEmpty())
+                break;
+            
+            ServerPlayer *newTarget = room->askForPlayerChosen(use.from, tmpTargets, objectName(), "@xushi_newTarget:" + use.card->objectName(), option);
+            option = true;
+            if (newTarget == NULL)
+                break;
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, use.from->objectName(), newTarget->objectName());
+            room->touhouLogmessage("#xushi_newTarget", use.from, use.card->objectName(), QList<ServerPlayer *> () << newTarget);
+            targets << newTarget;
+            victims << newTarget;
+            tmpTargets.clear();
+        }
+
+
+        if (!victims.isEmpty()) {
+            use.to.clear();
+            use.to << targets;   
             data = QVariant::fromValue(use);
         }
+        
         return false;
     }
 };
