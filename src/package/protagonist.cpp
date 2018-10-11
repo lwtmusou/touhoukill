@@ -1921,7 +1921,7 @@ public:
     {
         if (triggerEvent == EnterDying) {
             DyingStruct dying = data.value<DyingStruct>();
-            if (dying.who->hasSkill(this) && !dying.who->isCurrent())
+            if (dying.who->hasSkill(this) && !dying.who->isCurrent() && dying.who->getMark("siyuinvoke") == 0)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dying.who, dying.who, NULL, true);
         } else {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
