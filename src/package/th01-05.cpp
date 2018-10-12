@@ -3170,7 +3170,7 @@ public:
         if (targets.isEmpty())
             return false;
 
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@anliu", true, true);
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@anliu:" + damage.to->objectName(), true, true);
         if (target)
             invoke->targets << target;
         return target != NULL;
