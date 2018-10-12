@@ -799,6 +799,33 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), use.from->objectName());
+          
+        QList<ServerPlayer *> targets;
+        foreach(ServerPlayer *t, room->getAlivePlayers()) {
+            if (use.to.contains(t))
+                continue;
+            if (!use.from->isProhibited(t, use.card) && use.card->targetFilter(QList<const Player *>(), t, use.from))
+                targets << t;
+        }
+
+        if (!targets.isEmpty()) {
+            
+            ServerPlayer *newTarget = room->askForPlayerChosen(use.from, targets, objectName(), "@xushi_newTarget:" + use.card->objectName());
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, use.from->objectName(), newTarget->objectName());
+            room->touhouLogmessage("#xushi_newTarget", use.from, use.card->objectName(), QList<ServerPlayer *> () << newTarget);
+           
+            use.to.clear();
+            use.to << newTarget;
+            data = QVariant::fromValue(use);
+        }
+        
+        return false;
+    }
+
+    /*bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), use.from->objectName());
         QList<const Player *> victims;
         QList<ServerPlayer *> tmpTargets;
         QList<ServerPlayer *> targets;
@@ -813,13 +840,13 @@ public:
 
             if (tmpTargets.isEmpty())
                 break;
-            
+
             ServerPlayer *newTarget = room->askForPlayerChosen(use.from, tmpTargets, objectName(), "@xushi_newTarget:" + use.card->objectName(), option);
             option = true;
             if (newTarget == NULL)
                 break;
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, use.from->objectName(), newTarget->objectName());
-            room->touhouLogmessage("#xushi_newTarget", use.from, use.card->objectName(), QList<ServerPlayer *> () << newTarget);
+            room->touhouLogmessage("#xushi_newTarget", use.from, use.card->objectName(), QList<ServerPlayer *>() << newTarget);
             targets << newTarget;
             victims << newTarget;
             tmpTargets.clear();
@@ -828,12 +855,12 @@ public:
 
         if (!victims.isEmpty()) {
             use.to.clear();
-            use.to << targets;   
+            use.to << targets;
             data = QVariant::fromValue(use);
         }
-        
+
         return false;
-    }
+    }*/
 };
 
 class Xinyue : public MasochismSkill
