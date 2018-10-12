@@ -1468,115 +1468,6 @@ public:
     }
 };
 
-/*class Mokai : public TriggerSkill
-{
-public:
-    Mokai()
-        : TriggerSkill("mokai")
-    {
-        events << CardUsed;
-        view_as_skill = new SlmMolishaDiscardTianyi("mokai");
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
-    {
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->isKindOf("TrickCard") && use.from->hasSkill(this))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        ServerPlayer *marisa = invoke->invoker;
-        const Card *pilecard = room->askForCard(marisa, ".Equip", "@mokai", data, Card::MethodNone, NULL, false, objectName());
-        if (pilecard) {
-            int id = pilecard->getSubcards().first();
-            marisa->tag["tianyi"] = id;
-            return true;
-        }
-        return false;
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        ServerPlayer *marisa = invoke->invoker;
-        bool ok = false;
-        int id = marisa->tag.value("tianyi", -1).toInt(&ok);
-        if (!ok || id < 0)
-            return false;
-
-        marisa->addToPile("tianyi", id);
-        if (marisa->getPile("tianyi").length() > marisa->getHp()) {
-            const Card *c = room->askForCard(marisa, "@@mokai", "@mokai-dis", data, Card::MethodNone, NULL, false, "mokai");
-            if (c != NULL) {
-                CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
-                room->throwCard(c, reason, NULL);
-            }
-        }
-        return false;
-    }
-};*/
-
-//version 2: EquipBroken
-/*
-class Mokai : public TriggerSkill
-{
-public:
-    Mokai()
-        : TriggerSkill("mokai")
-    {
-        events << CardUsed << CardsMoveOneTime;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *, const QVariant &data) const
-    {
-        if (event == CardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("TrickCard") && use.from->hasSkill(this) && use.from->getPhase() == Player::Play
-                && use.from->getEquips().length() > use.from->getBrokenEquips().length())
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
-
-        } else if (event == CardsMoveOneTime) {
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-            if (player && player->isAlive() && player->hasSkill(this) && !move.broken_ids.isEmpty()) {
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-            }
-        }
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent event, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        if (event == CardUsed) {
-            if (invoke->invoker->askForSkillInvoke(this, data)) {
-                int id = room->askForCardChosen(invoke->invoker, invoke->invoker, "e", objectName(), false, Card::MethodNone, invoke->invoker->getBrokenEquips());
-                invoke->tag["mokai_id"] = QVariant::fromValue(id);
-                return true;
-            }
-        } else if (event == CardsMoveOneTime) {
-            return invoke->invoker->askForSkillInvoke(this, data);
-        }
-
-        return false;
-    }
-
-    bool effect(TriggerEvent event, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        if (event == CardUsed) {
-            int id = invoke->tag["mokai_id"].toInt();
-            invoke->invoker->addBrokenEquips(QList<int>() << id);
-            invoke->invoker->skip(Player::Finish);
-        } else if (event == CardsMoveOneTime) {
-            invoke->invoker->drawCards(2);
-        }
-        return false;
-    }
-};
-*/
-
-//vesion 3: Throw Equip
 class Mokai : public TriggerSkill
 {
 public:
@@ -1609,7 +1500,6 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        //int id = room->askForCardChosen(invoke->invoker, invoke->invoker, "e", objectName(), false, Card::MethodNone, invoke->invoker->getBrokenEquips());
         return room->askForCard(invoke->invoker, "EquipCard", "@mokai", data, Card::MethodDiscard, NULL, false, objectName());
     }
 
@@ -2528,10 +2418,6 @@ public:
         int id1 = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "e", objectName(), false, Card::MethodNone, disable);
         invoke->targets.first()->removeBrokenEquips(QList<int>() << id1);
         invoke->invoker->drawCards(1);
-        /*if (invoke->invoker->canDiscard(invoke->targets.first(), "hs")) {
-            int id2 = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hs", objectName(), false, Card::MethodDiscard);
-            room->throwCard(id2, invoke->targets.first(), invoke->invoker);
-        }*/
         return false;
     }
 };

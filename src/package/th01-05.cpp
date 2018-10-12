@@ -1025,8 +1025,6 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        //if (damage.damage != 1)
-        //    return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
@@ -1036,29 +1034,8 @@ public:
         return d;
     }
 
-    /*bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
-            if (invoke->invoker->getPile("dream").length() >= 2) {
-                const Card *c
-                    = room->askForCard(invoke->invoker, "@@huantong", "@huantong:" + invoke->preferredTarget->objectName(), data, Card::MethodNone, NULL, false, objectName());
-                if (c) {
-                    QVariantList ids;
-                    foreach (int card_id, c->getSubcards())
-                        ids << card_id;
-                    invoke->invoker->tag["huantong"] = ids;
-                }
-            }
-            return true;
-        }
-        return false;
-    }*/
-
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        //QVariantList ids = invoke->invoker->tag["huantong"].toList();
-        //invoke->invoker->tag.remove("huantong");
-        //if (ids.isEmpty()) {} else {
         CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, "", NULL, "dream", "");
         invoke->invoker->addToPile("dream", room->getNCards(1), false, reason);
         if (invoke->invoker->getPile("dream").length() >= 2) {
@@ -1302,8 +1279,6 @@ public:
             room->showCard(invoke->invoker, id);
             data = QVariant::fromValue(pindian);
             CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, invoke->invoker->objectName(), invoke->targets.first()->objectName(), pindian->reason, QString());
-            //room->moveCardTo(c, invoke->invoker, NULL, Player::PlaceTable, reason1, false);
-            //room->moveCardTo(c, invoke->invoker, NULL, Player::PlaceWuGu, reason1, false);
         }
         return false;
     }
@@ -2961,26 +2936,6 @@ public:
         return d;
     }
 
-    /*bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->owner))) {
-            room->broadcastSkillInvoke(objectName());
-            room->notifySkillInvoked(invoke->owner, objectName());
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->owner->objectName());
-
-            LogMessage log;
-            log.type = "#InvokeOthersSkill";
-            log.from = invoke->invoker;
-            log.to << invoke->owner;
-            log.arg = objectName();
-            room->sendLog(log);
-
-            return true;
-        }
-
-        return false;
-    }*/
-
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         ServerPlayer *current = data.value<ServerPlayer *>();
@@ -3169,7 +3124,7 @@ public:
     void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
     {
         if (triggerEvent == EventPhaseChanging) {
-            foreach(ServerPlayer *p, room->getAllPlayers())
+            foreach (ServerPlayer *p, room->getAllPlayers())
                 room->setPlayerFlag(p, "-anliu_used");
         }
     }
@@ -3178,13 +3133,13 @@ public:
     {
         if (e == EventPhaseChanging)
             return QList<SkillInvokeDetail>();
-        
+
         DamageStruct damage = data.value<DamageStruct>();
         if (!damage.card || !damage.card->isKindOf("Slash") || damage.to->isDead())
             return QList<SkillInvokeDetail>();
 
-        if ((e == Damage && damage.from->hasSkill(this) && !damage.from->hasFlag("anliu_used")) ||
-            (e == Damaged && damage.to->hasSkill(this) && !damage.to->hasFlag("anliu_used"))) {
+        if ((e == Damage && damage.from->hasSkill(this) && !damage.from->hasFlag("anliu_used"))
+            || (e == Damaged && damage.to->hasSkill(this) && !damage.to->hasFlag("anliu_used"))) {
             QList<int> ids;
             if (damage.card->isVirtualCard())
                 ids = damage.card->getSubcards();
@@ -3269,10 +3224,6 @@ TH0105Package::TH0105Package()
     General *gengetsumugetsu = new General(this, "gengetsumugetsu", "pc98", 3);
     gengetsumugetsu->addSkill(new Huantong);
     gengetsumugetsu->addSkill(new Mengyan);
-    //gengetsumugetsu->addSkill(new Xuxiang);
-    //gengetsumugetsu->addSkill(new XuxiangRecord);
-    //gengetsumugetsu->addSkill(new Huanjue);
-    //related_skills.insertMulti("xuxiang", "#xuxiang");
 
     General *elly = new General(this, "elly", "pc98", 4);
     elly->addSkill(new Lianmu);
