@@ -5580,7 +5580,17 @@ public:
     Yueyao()
         : TriggerSkill("yueyao")
     {
-        events << CardAsked << CardFinished;
+        events << CardAsked << CardFinished << EventPhaseChanging;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == EventPhaseChanging) {
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                if (p->hasFlag("yueyao_used"))
+                    room->setPlayerFlag(p, "-yueyao_used");
+            }
+        }
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
@@ -5591,7 +5601,7 @@ public:
                 return QList<SkillInvokeDetail>();
             if (matchAvaliablePattern("jink", s.pattern)) {
                 ServerPlayer *current = room->getCurrent();
-                if (!s.player->hasSkill(this) || !current || !current->isAlive() || !current->isDebuffStatus())
+                if (!s.player->hasSkill(this) || s.player->hasFlag("yueyao_used") || !current || !current->isAlive() || !current->isDebuffStatus())
                     return QList<SkillInvokeDetail>();
 
                 Jink *jink = new Jink(Card::NoSuit, 0);
@@ -5602,6 +5612,9 @@ public:
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, s.player, s.player);
             }
         
+        }
+        else if (e == EventPhaseEnd) {
+            
         }
         else if (e == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
@@ -5616,6 +5629,7 @@ public:
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         if (e == CardAsked) {
+            room->setPlayerFlag(invoke->invoker, "yueyao_used");
             Jink *jink = new Jink(Card::NoSuit, 0);
             jink->setSkillName("_yueyao");
             room->provide(jink);
