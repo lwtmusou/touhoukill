@@ -612,8 +612,10 @@ return{
 	[":xinhua"] = "你可以使用或打出一名其他角色的明置手牌。",
 
 	["cuimian"] = "催眠",
-	[":cuimian"] = "<font color=\"blue\"><b>锁定技，</b></font>若其他角色的明置手牌数不大于其手牌上限，其于其回合内不能使用、打出或弃置明置手牌。",
+	[":cuimian"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可以选择： 你使用牌无次数和距离限制且获得技能“读心”直到本阶段结束。",
+	--[":cuimian"] = "<font color=\"blue\"><b>锁定技，</b></font>若其他角色的明置手牌数不大于其手牌上限，其于其回合内不能使用、打出或弃置明置手牌。",
 	["$xinhua"] = "%from 发动“%arg” 使用/打出 %to 的 %card ",
+    ["$cuimianAnimate"]= "skill=satori_god:cuimian",
 --*************************************
 	--shen024  势力：神 4血
 	["aya_god"] = "神 射命丸文" ,

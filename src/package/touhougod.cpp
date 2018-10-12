@@ -4065,6 +4065,101 @@ public:
     }
 };
 
+
+CuimianCard::CuimianCard()
+{
+    target_fixed = true;
+}
+
+void CuimianCard::onUse(Room *room, const CardUseStruct &card_use) const
+{
+    room->doLightbox("$cuimianAnimate", 4000);
+    SkillCard::onUse(room, card_use);
+}
+
+void CuimianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
+    room->removePlayerMark(source, "@cuimian");
+    //room->touhouLogmessage("#InvokeSkill", source, "cuimian");
+    //room->notifySkillInvoked(source, "cuimian");
+
+    room->handleAcquireDetachSkills(source, "duxin");
+    room->setPlayerFlag(source, "cuimian_used");
+}
+
+class CuimianVS : public ZeroCardViewAsSkill
+{
+public:
+    CuimianVS()
+        : ZeroCardViewAsSkill("cuimian")
+    {
+    }
+
+    virtual const Card *viewAs() const
+    {
+        return new CuimianCard;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return player->getMark("@cuimian") >= 1;
+    }
+    
+};
+
+
+class CuimianTargetMod : public TargetModSkill
+{
+public:
+    CuimianTargetMod()
+        : TargetModSkill("#cuimian")
+    {
+        pattern = "BasicCard,TrickCard";
+    }
+
+    virtual int getResidueNum(const Player *player, const Card *) const
+    {
+        if (!player->hasFlag("cuimian_used"))
+            return 0;
+
+        return 1000;
+    }
+
+
+    int getDistanceLimit(const Player *player, const Card *) const
+    {
+        if (!player->hasFlag("cuimian_used"))
+            return 0;
+
+        return 1000;
+    }
+};
+
+class Cuimian : public TriggerSkill
+{
+public:
+    Cuimian()
+        : TriggerSkill("cuimian")
+    {
+        frequency = Limited;
+        events << EventPhaseChanging;
+        limit_mark = "@cuimian";
+        view_as_skill = new CuimianVS;
+    }
+
+    void record(TriggerEvent, Room *room, QVariant &) const
+    {
+        foreach(ServerPlayer *p, room->getAlivePlayers()) {
+            if (p->hasFlag("cuimian_used")) {
+                room->setPlayerFlag(p, "-cuimian_used");
+                if (p->hasSkill("duxin", true, false))
+                    room->handleAcquireDetachSkills(p, "-duxin");
+            }
+            
+        }
+    }
+};
+/*
 class Cuimian : public TriggerSkill
 {
 public:
@@ -4098,7 +4193,7 @@ public:
             }
         }
     }
-};
+};*/
 
 class Dongcha : public TriggerSkill
 {
@@ -5771,9 +5866,11 @@ TouhouGodPackage::TouhouGodPackage()
     General *satori_god = new General(this, "satori_god", "touhougod", 3);
     satori_god->addSkill(new Kuixin);
     satori_god->addSkill(new Xinhua);
-    //satori_god->addSkill(new Cuimian);
+    satori_god->addSkill(new Cuimian);
+    satori_god->addSkill(new CuimianTargetMod);
     //satori_god->addSkill(new Dongcha);
     //satori_god->addSkill(new Zhuiyi);
+    related_skills.insertMulti("cuimian", "#cuimian");
 
     General *aya_god = new General(this, "aya_god", "touhougod", 4);
     aya_god->addSkill(new Tianqu);
@@ -5825,6 +5922,7 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<ChaowoCard>();
     addMetaObject<WendaoCard>();
     addMetaObject<XinhuaCard>();
+    addMetaObject<CuimianCard>();
     addMetaObject<RumoCard>();
     addMetaObject<XianshiCard>();
 

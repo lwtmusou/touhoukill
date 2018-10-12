@@ -150,6 +150,18 @@ public:
     virtual const Card *validateInResponse(ServerPlayer *user) const;
 };
 
+class CuimianCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE CuimianCard();
+
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+
 class RumoCard : public SkillCard
 {
     Q_OBJECT
