@@ -659,8 +659,6 @@ sgs.ai_skill_use["@@zheshe"] = function(self, data, method)
 				return "@ZhesheCard=" ..card_id.. "->" .. friend:objectName()
 				elseif dmg.card and dmg.card:getTypeId() == sgs.Card_TypeTrick and friend:hasSkill("wuyan") and friend:getLostHp() > 1 then
 					return "@ZhesheCard=" ..card_id.. "->" .. friend:objectName()
-			elseif hasBuquEffect(friend) then
-				return "@ZhesheCard=" ..card_id.. "->" .. friend:objectName()
 			end
 		end
 	end
@@ -691,8 +689,7 @@ sgs.ai_card_intention.ZhesheCard = function(self, card, from, tos)
 	local to = tos[1]
 	if self:getDamagedEffects(to) or self:needToLoseHp(to) then return end
 	local intention = 10
-	if hasBuquEffect(to) then intention = 0
-	elseif (to:getHp() >= 2 and self:hasSkills("yiji|shuangxiong|zaiqi|yinghun|jianxiong|fangzhu", to))
+	if (to:getHp() >= 2 and self:hasSkills("yiji|shuangxiong|zaiqi|yinghun|jianxiong|fangzhu", to))
 		or (to:getHandcardNum() < 3 and (to:hasSkill("nosrende") or (to:hasSkill("rende") and not to:hasUsed("RendeCard")))) then
 		intention = -10
 	end
