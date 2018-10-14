@@ -2237,9 +2237,9 @@ TH08Package::TH08Package()
     wriggle->addSkill(new Yinghuo);
     wriggle->addSkill(new Chongqun);
 
-    General *shirasawa = new General(this, "shirasawa", "yyc", 3);
-    shirasawa->addSkill(new Chuangshi);
-    shirasawa->addSkill(new Wangyue);
+    General *keine_sp = new General(this, "keine_sp", "yyc", 3);
+    keine_sp->addSkill(new Chuangshi);
+    keine_sp->addSkill(new Wangyue);
 
     General *mokou_sp = new General(this, "mokou_sp", "yyc", 4);
     mokou_sp->addSkill(new Huwei);

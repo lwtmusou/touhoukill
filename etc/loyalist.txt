@@ -71,8 +71,8 @@ kaguya                                  remilia_xwm                             
 kaguya                                  suika_god                                  1.0
 kaguya                                  youmu_god                                  -1.0
 mokou                                  miko                                   -0.4
-shirasawa                                  mokou_sp                                  1.0
-mokou_sp                                  shirasawa                                  1.0
+keine_sp                                  mokou_sp                                  1.0
+mokou_sp                                  keine_sp                                  1.0
 shikieiki                                 komachi                                  1.2
 shikieiki                                 medicine                                  1.2
 shikieiki                                 tenshi                                  1.1
@@ -105,7 +105,7 @@ iku                                  toziko                                  0.6
 kokoro                                  koishi                                  0.7
 kokoro                                  miko                                  0.7
 kanako                                  yuyuko                                   0.7
-kanako                                  shirasawa                                   1.0
+kanako                                  keine_sp                                   1.0
 kanako                                  suwako                                   1.0
 kanako                                  sanae                                   1.0
 kanako                                  hina                                   0.7

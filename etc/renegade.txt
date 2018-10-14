@@ -9,7 +9,7 @@ _               kaguya          0.6
 _               eirin           -0.6
 _           mokou           1.1
 _           keine           -0.8
-_           shirasawa           -0.6
+_           keine_sp           -0.6
 _           mokou_sp            -0.6
 _           suwako          -1.2
 _           hina            -0.9

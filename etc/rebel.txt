@@ -66,7 +66,7 @@ kaguya                                  yukari_sp                               
 kaguya                                  mokou                                  -0.8
 kaguya                                  tewi                                  -0.3
 kaguya                                  wriggle                                  -1.2
-kaguya                                  shirasawa                                  -0.6
+kaguya                                  keine_sp                                  -0.6
 kaguya                                  shikieiki                                  0.4
 kaguya                                  aya_sp                                  -1.0
 kaguya                                  suika                                  -0.2
@@ -146,7 +146,7 @@ satori_xwm                                  reimu_yym                           
 satori_xwm                                 kaguya                                   -0.6
 satori_xwm                               mokou                                  0.6
 satori_xwm                                 wriggle                                  -0.6
-satori_xwm                                 shirasawa                                  -0.6
+satori_xwm                                 keine_sp                                  -0.6
 satori_xwm                                  shikieiki                                  0.4
 satori_xwm                                aya_sp                                  0.2
 satori_xwm                                 suwako                                  -0.2

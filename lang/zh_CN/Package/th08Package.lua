@@ -204,19 +204,19 @@ return
 
 --*********************************************
 	--yyc009  势力：永 3血
-	["shirasawa"] = "白泽",
-	["#shirasawa"] = "治世之兆",
-	["designer:shirasawa"] = "星野梦美☆",
+	["keine_sp"] = "白泽",
+	["#keine_sp"] = "治世之兆",
+	["designer:keine_sp"] = "星野梦美☆",
 
-	["illustrator:shirasawa"] = "六羽田トモエ",
-	["illustrator:shirasawa_1"] = "ria:ごった煮",
-	["origin:shirasawa_1"] = "p号：18128870，个人ID：18691",
-	["illustrator:shirasawa_2"] = "東天紅",
-	["origin:shirasawa_2"] = "p号：42363199，个人ID：3757061",
-	["illustrator:shirasawa_3"] = "kaze",
-	["origin:shirasawa_3"] = "p号：41073789，个人ID：2579204",
-	["illustrator:shirasawa_4"] = "いちやん",
-	["origin:shirasawa_4"] = "p号：28601583，个人ID：3096443",
+	["illustrator:keine_sp"] = "六羽田トモエ",
+	["illustrator:keine_sp_1"] = "ria:ごった煮",
+	["origin:keine_sp_1"] = "p号：18128870，个人ID：18691",
+	["illustrator:keine_sp_2"] = "東天紅",
+	["origin:keine_sp_2"] = "p号：42363199，个人ID：3757061",
+	["illustrator:keine_sp_3"] = "kaze",
+	["origin:keine_sp_3"] = "p号：41073789，个人ID：2579204",
+	["illustrator:keine_sp_4"] = "いちやん",
+	["origin:keine_sp_4"] = "p号：28601583，个人ID：3096443",
 
 	["chuangshi"] = "创史",
 	[":chuangshi"] = "摸牌阶段，你可以令一名其他角色视为使用由你声明的任意基本牌或任意非全体性的普通锦囊牌（由你选择此牌的合法目标），若如此做，此牌结算结束后，你少摸一张牌。",
