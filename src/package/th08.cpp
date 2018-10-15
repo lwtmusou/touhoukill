@@ -233,10 +233,10 @@ public:
         if (damage.nature != DamageStruct::Fire || !damage.from || damage.from == damage.to)
             return QList<SkillInvokeDetail>();
         if (triggerEvent == DamageCaused) {
-            if (damage.from->hasSkill(this) && damage.from->getHp() < damage.to->getHp())
+            if (damage.from->hasSkill(this) && damage.from->getHp() < damage.to->getHp() && !damage.from->isDead())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
         } else if (triggerEvent == Damaged) {
-            if (damage.to->hasSkill(this) && damage.to->getHp() < damage.from->getHp())
+            if (damage.to->hasSkill(this) && damage.to->getHp() < damage.from->getHp() && !damage.to->isDead())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.from);
         }
         return QList<SkillInvokeDetail>();
