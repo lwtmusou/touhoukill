@@ -958,14 +958,6 @@ SpellDuel::SpellDuel(Card::Suit suit, int number)
 
 bool SpellDuel::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    QList<int> ids;
-    if (isVirtualCard())
-        ids = getSubcards();
-    else
-        ids << getEffectiveId();
-    if (ids.length() >= Self->getHandcardNum())
-        return false;
-
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     return targets.length() < total_num && to_select != Self;
 }
