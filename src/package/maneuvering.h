@@ -51,16 +51,6 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-/*class PowerAnaleptic : public Analeptic
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE PowerAnaleptic(Card::Suit suit, int number);
-    virtual bool match(const QString &pattern) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
-};*/
-
 class Fan : public Weapon
 {
     Q_OBJECT

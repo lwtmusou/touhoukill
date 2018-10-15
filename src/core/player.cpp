@@ -92,8 +92,6 @@ int Player::getHp() const
 {
     if (hasSkill("huanmeng"))
         return 0;
-    //if (hasSkill("banling"))
-    //    return qMin(linghp, renhp);
     return hp;
 }
 
@@ -451,7 +449,6 @@ int Player::distanceTo(const Player *other, int distance_fix) const
     }
 
     int right = originalRightDistanceTo(other);
-    //int right = qAbs(this->seat - other->seat);
     int left = aliveCount(false) - right;
     int distance = qMin(left, right);
 
@@ -779,12 +776,6 @@ void Player::detachSkill(const QString &skill_name)
 
 void Player::detachAllSkills()
 {
-    /*QStringList list = acquired_skills.toList();
-    foreach(QString skill_name, list) {
-        const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
-        if (skill && skill->getFrequency() != Skill::Eternal)
-            acquired_skills.remove(skill_name);
-    }*/
     acquired_skills.clear();
 }
 
@@ -1044,7 +1035,6 @@ bool Player::hasArmorEffect(const QString &armor_name, bool selfOnly) const
     return real_armor->objectName() == armor_name || real_armor->isKindOf(armor_name.toStdString().c_str());
 }
 
-// @todo: fit skill shenbao.
 bool Player::hasTreasure(const QString &treasure_name, bool selfOnly) const
 {
     if (getMark("Equips_Nullified_to_Yourself") > 0)
@@ -1567,7 +1557,6 @@ void Player::setCardLimitation(const QString &limit_list, const QString &pattern
     }
     foreach (QString limit, limit_type) {
         Card::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
-        //card_limitation[method] << _pattern;
         card_limitation[method][reason] << _pattern;
     }
 }
@@ -1583,7 +1572,6 @@ void Player::removeCardLimitation(const QString &limit_list, const QString &patt
         card_limitation[method][reason].removeOne(_pattern);
         if (card_limitation[method][reason].isEmpty() || _pattern.endsWith("$1") || clearReason)
             card_limitation[method].remove(reason);
-        //card_limitation[method].removeOne(_pattern);
     }
 }
 
@@ -1592,20 +1580,14 @@ void Player::clearCardLimitation(bool single_turn)
     QList<Card::HandlingMethod> limit_type;
     limit_type << Card::MethodUse << Card::MethodResponse << Card::MethodDiscard << Card::MethodRecast << Card::MethodPindian;
     foreach (Card::HandlingMethod method, limit_type) {
-        //QStringList limit_patterns = card_limitation[method];
         QMap<QString, QStringList> map = card_limitation[method];
         QMap<QString, QStringList>::iterator it;
         for (it = map.begin(); it != map.end(); ++it) {
             QString pattern = it.value().at(0);
             if (!single_turn || pattern.endsWith("$1")) {
-                //card_limitation[method][it.key()].removeAll(pattern);
                 card_limitation[method].remove(it.key());
             }
         }
-        /*foreach (QString pattern, limit_patterns) {
-            if (!single_turn || pattern.endsWith("$1"))
-                card_limitation[method].removeAll(pattern);
-        }*/
     }
 }
 
@@ -1627,15 +1609,6 @@ bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool i
                 if (p.match(this, c))
                     return true;
             }
-
-            /*foreach (QString pattern, card_limitation[method]) {
-                QString _pattern = pattern.split("$").first();
-                if (isHandcard)
-                    _pattern.replace("hand", ".");
-                ExpPattern p(_pattern);
-                if (p.match(this, c))
-                    return true;
-            }*/
         }
     } else {
         QMap<QString, QStringList> map = card_limitation[method];
@@ -1649,17 +1622,8 @@ bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool i
             if (p.match(this, card))
                 return true;
         }
-
-        /*foreach (QString pattern, card_limitation[method]) {
-            QString _pattern = pattern.split("$").first();
-            if (isHandcard)
-                _pattern.replace("hand", ".");
-            ExpPattern p(_pattern);
-            if (p.match(this, card))
-                return true;
-        }*/
     }
-    //return removed;
+
     return false;
 }
 

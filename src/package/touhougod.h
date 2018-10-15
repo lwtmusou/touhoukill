@@ -161,7 +161,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
 class RumoCard : public SkillCard
 {
     Q_OBJECT
@@ -198,8 +197,6 @@ signals:
     void onButtonClick();
 };
 
-
-
 class XianshiCard : public SkillCard
 {
     Q_OBJECT
@@ -213,12 +210,6 @@ public:
 
     virtual const Card *validate(CardUseStruct &card_use) const;
 };
-
-
-
-
-
-
 
 class TouhouGodPackage : public Package
 {

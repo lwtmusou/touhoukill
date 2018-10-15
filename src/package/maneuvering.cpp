@@ -90,21 +90,6 @@ void Analeptic::onUse(Room *room, const CardUseStruct &card_use) const
     BasicCard::onUse(room, use);
 }
 
-/*PowerAnaleptic::PowerAnaleptic(Card::Suit suit, int number)
-    : Analeptic(suit, number)
-{
-    setObjectName("power_analeptic");
-}
-
-bool PowerAnaleptic::match(const QString &pattern) const
-{
-    QStringList patterns = pattern.split("+");
-    if (patterns.contains("analeptic"))
-        return true;
-    else
-        return Analeptic::match(pattern);
-}*/
-
 void Analeptic::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();

@@ -571,17 +571,15 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                         recover.recover = 1 + effect.effectValue.first();
                         room->recover(effect.to, recover);
                     }
-                }
-                else if (effect.card->getSkillName() == "xianshi") {
+                } else if (effect.card->getSkillName() == "xianshi") {
                     QString xianshi_name;
                     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-                    foreach(const Card *card, cards) {
+                    foreach (const Card *card, cards) {
                         if (card->isNDTrick() || card->isKindOf("Slash")) {
                             if (effect.card->hasFlag("xianshi_" + card->objectName())) {
                                 xianshi_name = card->objectName();
                                 break;
                             }
-                                
                         }
                     }
 
@@ -610,11 +608,9 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                                 LightSlash::debuffEffect(extraEffect);
                             else if (extraCard->isKindOf("PowerSlash"))
                                 PowerSlash::debuffEffect(extraEffect);
-
                         }
 
-                        if (!extraCard->isKindOf("LightSlash") && !extraCard->isKindOf("PowerSlash"))
-                        {
+                        if (!extraCard->isKindOf("LightSlash") && !extraCard->isKindOf("PowerSlash")) {
                             damageValue = damageValue + effect.effectValue.first();
                         }
 
@@ -623,10 +619,9 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                         if (effect.effectValue.first() > 0)
                             effect.effectValue.first() = 0;
                     }
-                    
+
                     effect.card->onEffect(effect);
-                }
-                else
+                } else
                     effect.card->onEffect(effect);
             }
         }
@@ -724,17 +719,15 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 room->recover(effect.to, recover);
                 break;
             }
-        }
-        else if (effect.slash->getSkillName() == "xianshi") {
+        } else if (effect.slash->getSkillName() == "xianshi") {
             QString xianshi_name;
             QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-            foreach(const Card *card, cards) {
+            foreach (const Card *card, cards) {
                 if (card->isNDTrick() || card->isKindOf("Slash")) {
                     if (effect.slash->hasFlag("xianshi_" + card->objectName())) {
                         xianshi_name = card->objectName();
                         break;
                     }
-
                 }
             }
             CardEffectStruct extraEffect;
@@ -754,10 +747,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             }
             extraCard->onEffect(extraEffect);
         }
-        
-
-
-
 
         //@todo: I want IronSlash to obtain function debuffEffect() from "Slash"  as an inheritance, But the variant slasheffect.slash is "Card".
         //using dynamic_cast may bring some terrible troubles.
@@ -1121,72 +1110,26 @@ QString GameRule::getWinner(ServerPlayer *victim) const
                 winner = "renegade+rebel";
         }
     } else {
-        if (victim->getMark("tianxiang") > 0) { //lord skill tianxiang need change gameover judge
-            QStringList alive_roles = room->aliveRoles(victim);
-            switch (victim->getRoleEnum()) {
-            case Player::Lord: {
-                if (!alive_roles.contains("loyalist") && !alive_roles.contains("renegade"))
-                    winner = "rebel";
-                if (!alive_roles.contains("loyalist") && !alive_roles.contains("rebel")) {
-                    if (alive_roles.length() == 1)
-                        winner = room->getAlivePlayers().first()->objectName();
-                }
-                break;
+        QStringList alive_roles = room->aliveRoles(victim);
+        switch (victim->getRoleEnum()) {
+        case Player::Lord: {
+            if (alive_roles.length() == 1 && alive_roles.first() == "renegade")
+                winner = room->getAlivePlayers().first()->objectName();
+            else
+                winner = "rebel";
+            break;
+        }
+        case Player::Rebel:
+        case Player::Renegade: {
+            if (!alive_roles.contains("rebel") && !alive_roles.contains("renegade")) {
+                winner = "lord+loyalist";
+                if (victim->getRole() == "renegade" && !alive_roles.contains("loyalist"))
+                    room->setTag("RenegadeInFinalPK", true);
             }
-            case Player::Rebel: {
-                if (!alive_roles.contains("renegade") && !alive_roles.contains("rebel"))
-                    winner = "lord+loyalist";
-                if (!alive_roles.contains("loyalist") && !alive_roles.contains("rebel") && !alive_roles.contains("lord")) {
-                    if (alive_roles.length() == 1)
-                        winner = room->getAlivePlayers().first()->objectName();
-                }
-                break;
-            }
-            case Player::Renegade: {
-                if (!alive_roles.contains("rebel") && !alive_roles.contains("renegade"))
-                    winner = "lord+loyalist";
-                if (!alive_roles.contains("lord") && !alive_roles.contains("loyalist"))
-                    winner = "rebel";
-                if (!alive_roles.contains("loyalist") && !alive_roles.contains("rebel") && !alive_roles.contains("lord")) {
-                    if (alive_roles.length() == 1)
-                        winner = room->getAlivePlayers().first()->objectName();
-                }
-                break;
-            }
-            case Player::Loyalist: {
-                if (!alive_roles.contains("loyalist") && !alive_roles.contains("rebel") && !alive_roles.contains("lord")) {
-                    if (alive_roles.length() == 1)
-                        winner = room->getAlivePlayers().first()->objectName();
-                }
-                if (!alive_roles.contains("lord") && !alive_roles.contains("loyalist") && !alive_roles.contains("renegade"))
-                    winner = "rebel";
-                break;
-            }
-            default:
-                break;
-            }
-        } else { //normal case (without the effect of lord skill tianxiang)
-            QStringList alive_roles = room->aliveRoles(victim);
-            switch (victim->getRoleEnum()) {
-            case Player::Lord: {
-                if (alive_roles.length() == 1 && alive_roles.first() == "renegade")
-                    winner = room->getAlivePlayers().first()->objectName();
-                else
-                    winner = "rebel";
-                break;
-            }
-            case Player::Rebel:
-            case Player::Renegade: {
-                if (!alive_roles.contains("rebel") && !alive_roles.contains("renegade")) {
-                    winner = "lord+loyalist";
-                    if (victim->getRole() == "renegade" && !alive_roles.contains("loyalist"))
-                        room->setTag("RenegadeInFinalPK", true);
-                }
-                break;
-            }
-            default:
-                break;
-            }
+            break;
+        }
+        default:
+            break;
         }
     }
 

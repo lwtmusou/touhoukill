@@ -13,7 +13,6 @@
 #include "th15.h"
 #include <QCommandLinkButton>
 #include <QCoreApplication>
-#include <QMetaMethod>
 #include <QMetaObject>
 #include <QPointer>
 
@@ -543,8 +542,7 @@ public:
         if (damage.chain || damage.transfer || !damage.by_user)
             return QList<SkillInvokeDetail>();
 
-        if (damage.from && damage.from != damage.to && damage.from->hasSkill(this) && damage.card //&& damage.from->getPhase() == Player::Play
-            && damage.card->isKindOf("Slash") && damage.from->canDiscard(damage.to, "e"))
+        if (damage.from && damage.from != damage.to && damage.from->hasSkill(this) && damage.card && damage.card->isKindOf("Slash") && damage.from->canDiscard(damage.to, "e"))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
         return QList<SkillInvokeDetail>();
     }
@@ -582,7 +580,7 @@ public:
     {
         if (triggerEvent == Damage) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.card != NULL && damage.from) { //&& damage.from->getPhase() == Player::Play
+            if (damage.card != NULL && damage.from) {
                 if (damage.card->hasFlag("jubian_card")) {
                     if (!damage.card->hasFlag("jubian_used"))
                         damage.card->setFlags("jubian_used");

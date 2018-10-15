@@ -447,8 +447,6 @@ bool Peach::isAvailable(const Player *player) const
         if (!player->isProhibited(p, this)) {
             if (p->hasFlag("Global_Dying") && !isPlay)
                 return true;
-            //if (p->hasLordSkill("yanhui") && p->isWounded() && player->getKingdom() == "zhan" && player->getPhase() == Player::Play)
-            //    return true;
         }
     }
     return false;
