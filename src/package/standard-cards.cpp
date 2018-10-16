@@ -836,7 +836,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         room->slashResult(effect, NULL);

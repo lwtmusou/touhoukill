@@ -1025,7 +1025,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
     {
         RecoverStruct recover = data.value<RecoverStruct>();
         recover.recover = recover.recover + 1;

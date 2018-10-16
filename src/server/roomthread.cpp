@@ -52,9 +52,9 @@ QString EventTriplet::toString() const
 
 RoomThread::RoomThread(Room *room)
     : room(room)
+    , game_rule(NULL)
     , nextExtraTurn(NULL)
     , extraTurnReturn(NULL)
-    , game_rule(NULL)
 {
 }
 
