@@ -515,6 +515,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                         DamageStruct chain_damage = damage;
                         chain_damage.to = chained_player;
                         chain_damage.chain = true;
+                        chain_damage.trigger_info = QString();//clear trigger_info.  eg. shihui
 
                         room->damage(chain_damage);
                     }
