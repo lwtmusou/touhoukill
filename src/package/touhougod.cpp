@@ -3920,13 +3920,13 @@ public:
         return 1000;
     }
 
-    int getDistanceLimit(const Player *player, const Card *) const
+    /*int getDistanceLimit(const Player *player, const Card *) const
     {
         if (!player->hasFlag("cuimian_used"))
             return 0;
 
         return 1000;
-    }
+    }*/
 };
 
 class Cuimian : public TriggerSkill
