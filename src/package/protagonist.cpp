@@ -1815,19 +1815,11 @@ public:
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dying.who, dying.who, NULL, true);
         } else {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.player->getMark("siyuinvoke") > 0 && change.to == Player::NotActive && change.player->getHp() < change.player->dyingThreshold())
+            if (change.player->getMark("siyuinvoke") > 0 && change.to == Player::NotActive)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
         }
 
         return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent triggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        if (triggerEvent == EventPhaseChanging)
-            invoke->invoker->setMark("siyuinvoke", 0);
-
-        return true;
     }
 
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
@@ -1885,8 +1877,11 @@ public:
             Q_UNREACHABLE();
             //return true; // prevent enterdying
         } else if (triggerEvent == EventPhaseChanging) {
-            room->notifySkillInvoked(invoke->invoker, "hpymsiyu");
-            room->enterDying(invoke->invoker, NULL);
+            invoke->invoker->setMark("siyuinvoke", 0);
+            if (change.player->getHp() < change.player->dyingThreshold()) {
+                room->notifySkillInvoked(invoke->invoker, "hpymsiyu");
+                room->enterDying(invoke->invoker, NULL);
+            }
         }
 
         return false;
