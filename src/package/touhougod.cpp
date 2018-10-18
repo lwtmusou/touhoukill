@@ -2575,7 +2575,7 @@ public:
             foreach (int id, player->handCards()) {
                 const Card *card = Sanguosha->getCard(id);
                 // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!!
-                if (Sanguosha->matchExpPattern(usePattern, player, card) && card->isAvailable(player)) {
+                if (Sanguosha->matchExpPattern(pattern, player, card) && card->isAvailable(player)) {
                     canUse = true;
                     break;
                 }
@@ -2592,7 +2592,7 @@ public:
                     foreach (int id, player->handCards()) {
                         const Card *card = Sanguosha->getCard(id);
                         // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!!
-                        if (Sanguosha->matchExpPattern(usePattern, player, card) && card->isAvailable(player)) {
+                        if (Sanguosha->matchExpPattern(pattern, player, card) && card->isAvailable(player)) {
                             useCard = card;
                             break;
                         }
