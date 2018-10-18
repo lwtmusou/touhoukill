@@ -2523,6 +2523,113 @@ public:
     }
 };
 
+class Benwo : public TriggerSkill
+{
+    static bool hasLimitedSkill(const Player *player)
+    {
+        foreach (const Skill *skill, player->getVisibleSkillList()) {
+            if (skill != NULL && skill->getFrequency() == Limited && !skill->inherits("EquipSkill"))
+                return true;
+        }
+        return false;
+    }
+
+public:
+    Benwo()
+        : TriggerSkill("benwo")
+    {
+        events << EventPhaseStart << CardUsed;
+        frequency = Compulsory;
+    }
+
+    static QString usePattern;
+    static QString usePatternWithoutSlash;
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->hasSkill(this) && player->isAlive() && player->getPhase() == Player::Finish) {
+                SkillInvokeDetail d(this, player, player, NULL, true);
+                QString pattern = usePatternWithoutSlash;
+                foreach (const Skill *skill, player->getVisibleSkillList()) {
+                    if (skill != NULL && skill->getFrequency() == Skill::Eternal && !skill->inherits("EquipSkill")) {
+                        pattern = usePattern;
+                        break;
+                    }
+                }
+                bool canUse = false;
+                foreach (int id, player->handCards()) {
+                    const Card *card = Sanguosha->getCard(id);
+                    // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!!
+                    if (Sanguosha->matchExpPattern(usePattern, player, card) && card->isAvailable(player)) {
+                        canUse = true;
+                        break;
+                    }
+                }
+
+                d.tag["canUse"] = canUse;
+                d.tag["pattern"] = pattern;
+                return QList<SkillInvokeDetail>() << d;
+            }
+        } else {
+            CardUseStruct use = data.value<CardUseStruct>();
+
+            if (use.from->getMark("benwouse") > 0 && !use.card->isKindOf("SkillCard"))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (!invoke->tag["canUse"].toBool())
+                room->showAllCards(player);
+            else {
+                QString pattern = invoke->tag["pattern"].toString();
+                if (hasLimitedSkill(player))
+                    player->setMark("benwouse", 1);
+
+                if (!room->askForUseCard(player, pattern + "!", "benwo-use")) {
+                    const Card *useCard = NULL;
+                    foreach (int id, player->handCards()) {
+                        const Card *card = Sanguosha->getCard(id);
+                        // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!!
+                        if (Sanguosha->matchExpPattern(usePattern, player, card) && card->isAvailable(player)) {
+                            useCard = card;
+                            break;
+                        }
+                    }
+                    if (useCard == NULL) { // IMPOSSIBLE!!!!
+                        player->setMark("benwouse", 0);
+                        room->showAllCards(player);
+                    } else {
+                        CardUseStruct use;
+                        use.from = player;
+                        use.card = useCard;
+                        // TODO: fill use.to
+                        room->useCard(use);
+                    }
+                }
+            }
+        } else {
+            CardUseStruct use = data.value<CardUseStruct>();
+            use.from->setMark("benwouse", 0);
+            if (hasLimitedSkill(use.from)) {
+                use.from->drawCards(1, "benwo");
+                if (use.card->isKindOf("Slash"))
+                    room->recover(use.from, RecoverStruct());
+            }
+        }
+
+        return false;
+    }
+};
+
+QString Benwo::usePattern = "BasicCard+^Jink,TrickCard+^Nullification,EquipCard|.|.|hand,benwo";
+QString Benwo::usePatternWithoutSlash = "BasicCard+^Jink+^Slash,TrickCard+^Nullification,EquipCard|.|.|hand,benwo";
 
 class Ziwo : public TriggerSkill
 {
@@ -5946,15 +6053,14 @@ TouhouGodPackage::TouhouGodPackage()
 
     General *alice_god = new General(this, "alice_god", "touhougod", 4, false, true, true);
     Q_UNUSED(alice_god);
-    General *shinmyoumaru_god = new General(this, "shinmyoumaru_god", "touhougod", 4, false, true, true);
-    Q_UNUSED(shinmyoumaru_god);
-    General *tenshi_god = new General(this, "tenshi_god", "touhougod", 3, false, true, true);
-    Q_UNUSED(tenshi_god);
-    General *uuz13 = new General(this, "yuyuko_1v3", "touhougod", 1, false, true, true);
-    Q_UNUSED(uuz13);
-
-    General *kaguya13 = new General(this, "kaguya_1v3", "touhougod", 1, false, true, true);
-    Q_UNUSED(kaguya13);
+    //    General *shinmyoumaru_god = new General(this, "shinmyoumaru_god", "touhougod", 4, false, true, true);
+    //    Q_UNUSED(shinmyoumaru_god);
+    //    General *tenshi_god = new General(this, "tenshi_god", "touhougod", 3, false, true, true);
+    //    Q_UNUSED(tenshi_god);
+    //    General *uuz13 = new General(this, "yuyuko_1v3", "touhougod", 1, false, true, true);
+    //    Q_UNUSED(uuz13);
+    //    General *kaguya13 = new General(this, "kaguya_1v3", "touhougod", 1, false, true, true);
+    //    Q_UNUSED(kaguya13);
 
     addMetaObject<HongwuCard>();
     addMetaObject<ShenqiangCard>();

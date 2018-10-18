@@ -1419,6 +1419,18 @@ Snatch::Snatch(Suit suit, int number)
     setObjectName("snatch");
 }
 
+bool Snatch::isAvailable(const Player *player) const
+{
+    auto siblings = player->getAliveSiblings();
+
+    foreach (const Player *p, siblings) {
+        if (targetFilter(QList<const Player *>(), p, player))
+            return SingleTargetTrick::isAvailable(player);
+    }
+
+    return false;
+}
+
 bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
@@ -1478,6 +1490,18 @@ Dismantlement::Dismantlement(Suit suit, int number)
     : SingleTargetTrick(suit, number)
 {
     setObjectName("dismantlement");
+}
+
+bool Dismantlement::isAvailable(const Player *player) const
+{
+    auto siblings = player->getAliveSiblings();
+
+    foreach (const Player *p, siblings) {
+        if (targetFilter(QList<const Player *>(), p, player))
+            return SingleTargetTrick::isAvailable(player);
+    }
+
+    return false;
 }
 
 bool Dismantlement::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
