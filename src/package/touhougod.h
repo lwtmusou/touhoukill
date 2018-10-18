@@ -79,6 +79,15 @@ public:
     virtual const Card *validateInResponse(ServerPlayer *user) const;
 };
 
+class ChaowoCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ChaowoCard();
+
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
 
 #if 0
 class ZiwoCard : public SkillCard

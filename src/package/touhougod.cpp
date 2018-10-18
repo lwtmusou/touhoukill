@@ -4,6 +4,7 @@
 #include "engine.h"
 #include "general.h"
 #include "maneuvering.h"
+#include "roomthread.h"
 #include "settings.h"
 #include "skill.h"
 #include "standard.h"
@@ -2539,9 +2540,11 @@ public:
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         else if (player->getMark("ziwoInvalid") > 0 && player->getPhase() == Player::NotActive)
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player->hasSkill(this) ? player : NULL, player, NULL, true);
+
+        return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         if (invoke->invoker->getPhase() == Player::RoundStart) {
             invoke->invoker->setMark("ziwoInvalid", 1);
@@ -2550,9 +2553,219 @@ public:
             invoke->invoker->setMark("ziwoInvalid", 0);
             room->setPlayerSkillInvalidity(invoke->invoker, NULL, false);
         }
+
+        return false;
     }
 };
 
+class Chaowo : public ZeroCardViewAsSkill
+{
+public:
+    static void changeHero(Room *room, ServerPlayer *source, const QString &to_general)
+    {
+        const General *fromGeneral = source->getGeneral();
+        RoomThread *thread = room->getThread();
+        JsonArray arg;
+        arg << (int)QSanProtocol::S_GAME_EVENT_CHANGE_HERO;
+        arg << source->objectName();
+        arg << to_general;
+        arg << false;
+        arg << true;
+        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+
+        room->changePlayerGeneral(source, to_general);
+
+        bool game_start = false;
+        const General *toGeneral = Sanguosha->getGeneral(to_general);
+        if (toGeneral != NULL) {
+            foreach (const Skill *skill, toGeneral->getSkillList()) {
+                if (skill->inherits("TriggerSkill")) {
+                    const TriggerSkill *trigger = qobject_cast<const TriggerSkill *>(skill);
+                    thread->addTriggerSkill(trigger);
+                    if (trigger->getTriggerEvents().contains(GameStart))
+                        game_start = true;
+                }
+                if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
+                    room->setPlayerMark(source, skill->getLimitMark(), 1);
+                SkillAcquireDetachStruct s;
+                s.isAcquire = true;
+                s.player = source;
+                s.skill = skill;
+                QVariant _skillobjectName = QVariant::fromValue(s);
+                thread->trigger(EventAcquireSkill, room, _skillobjectName);
+            }
+        }
+
+        room->resetAI(source);
+
+        // TODO set hp and maxhp and kingdom
+        if (toGeneral != NULL) {
+            if (!toGeneral->hasSkill("huanmeng")) {
+                int hp = source->getHp();
+                int maxHp = source->getMaxHp();
+                if (fromGeneral->hasSkill("huanmeng")) {
+                    maxHp = toGeneral->getMaxHp();
+                    hp = toGeneral->getMaxHp();
+                } else {
+                    int maxHpMinus = toGeneral->getMaxHp() - fromGeneral->getMaxHp();
+                    hp += maxHpMinus;
+                    maxHp += maxHpMinus;
+                }
+                hp = qMax(hp, maxHp);
+
+                source->setMaxHp(maxHp);
+                room->broadcastProperty(source, "maxhp");
+
+                if (toGeneral->hasSkill("banling")) {
+                    source->setRenHp(hp);
+                    source->setLingHp(hp);
+                    room->broadcastProperty(source, "renhp");
+                    room->broadcastProperty(source, "linghp");
+                }
+
+                source->setHp(hp);
+                room->broadcastProperty(source, "hp");
+
+                if (source->getMaxHp() < source->dyingThreshold()) {
+                    room->killPlayer(source);
+                    return;
+                } else if (source->getHp() < source->dyingThreshold()) {
+                    room->enterDying(source, NULL);
+                    if (source->isDead())
+                        return;
+                }
+            } else {
+                source->setMaxHp(0);
+                source->setHp(0);
+                room->broadcastProperty(source, "maxhp");
+                room->broadcastProperty(source, "hp");
+            }
+
+            if (toGeneral->getKingdom() != "zhu" && toGeneral->getKingdom() != "touhougod")
+                room->setPlayerProperty(source, "kingdom", toGeneral->getKingdom());
+        }
+
+        if (game_start) {
+            QVariant v = QVariant::fromValue(source);
+            thread->trigger(GameStart, room, v);
+        }
+    }
+
+    Chaowo()
+        : ZeroCardViewAsSkill("chaowo")
+    {
+        frequency = Limited;
+        limit_mark = "@chaowo";
+    }
+
+    bool isEnabledAtPlay(const Player *player) const
+    {
+        if (player->hasFlag("ChaowoNoGeneral"))
+            return false;
+        if (player->getMark("@chaowo") == 0)
+            return false;
+
+        QList<const General *> sameNameGenerals;
+
+        const General *sourceGeneral = player->getGeneral();
+        QString sourceGeneralName = sourceGeneral->objectName().split("_").first();
+        foreach (const QString &name, Sanguosha->getLimitedGeneralNames()) {
+            if (name.split("_").first() == sourceGeneralName)
+                sameNameGenerals << Sanguosha->getGeneral(name);
+        }
+
+        // remove used general from list
+        auto copy = sameNameGenerals;
+        auto sib = player->getSiblings();
+        sib << player;
+
+        foreach (const General *general, copy) {
+            foreach (const Player *p, sib) {
+                if (p->getGeneral() == general)
+                    sameNameGenerals.removeAll(general);
+            }
+        }
+
+        return !sameNameGenerals.isEmpty();
+    }
+
+    const Card *viewAs() const
+    {
+        return new ChaowoCard;
+    }
+};
+
+ChaowoCard::ChaowoCard()
+{
+    target_fixed = true;
+    handling_method = Card::MethodNone;
+}
+
+void ChaowoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+{
+    QList<const General *> sameNameGenerals;
+
+    const General *sourceGeneral = source->getGeneral();
+    QString sourceGeneralName = sourceGeneral->objectName().split("_").first();
+    foreach (const QString &name, Sanguosha->getLimitedGeneralNames()) {
+        if (name.split("_").first() == sourceGeneralName)
+            sameNameGenerals << Sanguosha->getGeneral(name);
+    }
+
+    // remove used general from list
+    auto copy = sameNameGenerals;
+    foreach (const General *general, copy) {
+        foreach (ServerPlayer *p, room->getAllPlayers(true)) {
+            if (p->getGeneral() == general)
+                sameNameGenerals.removeAll(general);
+        }
+    }
+
+    // remove generals in X from list
+    copy = sameNameGenerals;
+    foreach (ServerPlayer *p, room->getAllPlayers(true)) {
+        if (p->hasSkill("anyun", true)) {
+            QStringList X = p->getHiddenGenerals();
+            foreach (const QString &g, X) {
+                foreach (const General *general, copy) {
+                    if (Sanguosha->getGeneral(g) == general)
+                        sameNameGenerals.removeAll(general);
+                }
+            }
+        }
+    }
+
+    // kill nullptr in General list
+    sameNameGenerals.removeAll(NULL);
+
+    if (sameNameGenerals.isEmpty()) {
+        LogMessage log;
+        log.type = "#ChaowoNoAvailableGeneral";
+        log.from = source;
+        room->doNotify(source, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+
+        room->setPlayerFlag(source, "ChaowoNoGeneral");
+        return;
+    }
+
+    room->setPlayerMark(source, "@chaowo", 0);
+    room->doLightbox("$chaowoAnimate", 4000);
+
+    QString toChange = sameNameGenerals.first()->objectName();
+    QStringList sameNameGeneralNames;
+    foreach (const General *general, sameNameGenerals)
+        sameNameGeneralNames << general->objectName();
+
+    if (sameNameGenerals.length() > 1) {
+        if (source->isOnline())
+            toChange = room->askForGeneral(source, sameNameGeneralNames, toChange);
+        else
+            toChange = room->askForChoice(source, "chaowo", sameNameGeneralNames.join("+"));
+    }
+
+    // Different from Room::changeHero, must be written seprately
+    Chaowo::changeHero(room, source, toChange);
+}
 
 #if 0
 class Biaoxiang : public TriggerSkill
@@ -5657,12 +5870,13 @@ TouhouGodPackage::TouhouGodPackage()
     byakuren_god->addSkill(new Chaoren);
 
     General *koishi_god = new General(this, "koishi_god", "touhougod", 3);
+    koishi_god->addSkill(new Renge);
     //    koishi_god->addSkill(new Biaoxiang);
     //    koishi_god->addSkill(new Shifang);
     //    koishi_god->addSkill(new Yizhi);
-    //    koishi_god->addRelateSkill("ziwo");
+    koishi_god->addRelateSkill("ziwo");
     //    koishi_god->addRelateSkill("benwo");
-    //    koishi_god->addRelateSkill("chaowo");
+    koishi_god->addRelateSkill("chaowo");
 
     General *suwako_god = new General(this, "suwako_god", "touhougod", 5);
     suwako_god->addSkill(new Zuosui);
@@ -5756,7 +5970,7 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<RumoCard>();
     addMetaObject<XianshiCard>();
 
-    skills << new ChaorenLog << new Wendao << new RoleShownHandler << new ShenbaoAttach; //<< new Ziwo << new Benwo << new Chaowo
+    skills << new ChaorenLog << new Wendao << new RoleShownHandler << new ShenbaoAttach << new Ziwo /*<< new Benwo*/ << new Chaowo;
 }
 
 ADD_PACKAGE(TouhouGod)
