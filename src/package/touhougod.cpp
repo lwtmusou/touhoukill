@@ -2523,6 +2523,37 @@ public:
 };
 
 
+class Ziwo : public TriggerSkill
+{
+public:
+    Ziwo()
+        : TriggerSkill("ziwo")
+    {
+        events << EventPhaseStart;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        ServerPlayer *player = data.value<ServerPlayer *>();
+        if (player->hasSkill(this) && player->getPhase() == Player::RoundStart && player->isAlive())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+        else if (player->getMark("ziwoInvalid") > 0 && player->getPhase() == Player::NotActive)
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player->hasSkill(this) ? player : NULL, player, NULL, true);
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (invoke->invoker->getPhase() == Player::RoundStart) {
+            invoke->invoker->setMark("ziwoInvalid", 1);
+            room->setPlayerSkillInvalidity(invoke->invoker, NULL, true);
+        } else {
+            invoke->invoker->setMark("ziwoInvalid", 0);
+            room->setPlayerSkillInvalidity(invoke->invoker, NULL, false);
+        }
+    }
+};
+
+
 #if 0
 class Biaoxiang : public TriggerSkill
 {
