@@ -2424,6 +2424,106 @@ public:
     }
 };
 
+class Renge : public TriggerSkill
+{
+public:
+    Renge()
+        : TriggerSkill("renge")
+    {
+        events << GameStart << Revive << EventPhaseStart << GameOverJudge;
+        frequency = Eternal;
+    }
+
+    // todo: kill Same General Mode
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        QList<SkillInvokeDetail> ret;
+        if (triggerEvent == GameStart) {
+            if (!data.isNull()) {
+                ServerPlayer *p = data.value<ServerPlayer *>();
+                if (room->getTag("renge").isNull()) {
+                    if (p->hasSkill(this) && p->isAlive())
+                        ret << SkillInvokeDetail(this, p, p, NULL, true);
+                } else {
+                    ServerPlayer *koi = room->getTag("renge").value<ServerPlayer *>();
+                    if (p == koi && (!p->hasSkill(this) || p->isDead()))
+                        ret << SkillInvokeDetail(this, NULL, koi, NULL, true);
+                }
+            }
+        } else if (triggerEvent == Revive) {
+            ServerPlayer *p = data.value<ServerPlayer *>();
+            if (!room->getTag("renge").isNull()) {
+                ServerPlayer *koi = room->getTag("renge").value<ServerPlayer *>();
+                if (koi->isAlive())
+                    ret << SkillInvokeDetail(this, koi, koi, p, true);
+            } else if (p->hasSkill(this) && p->isAlive())
+                ret << SkillInvokeDetail(this, p, p, NULL, true);
+        } else if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *p = data.value<ServerPlayer *>();
+            if (p->hasSkill(this) && p->isAlive() && p->getPhase() == Player::Start)
+                ret << SkillInvokeDetail(this, p, p, NULL, true);
+        } else if (triggerEvent == Death) {
+            DeathStruct death = data.value<DeathStruct>();
+            ServerPlayer *koi = room->getTag("renge").value<ServerPlayer *>();
+            if (death.who == koi && (!death.who->hasSkill(this) || death.who->isDead()))
+                ret << SkillInvokeDetail(this, NULL, koi, NULL, true);
+        }
+
+        return ret;
+    }
+
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseStart) {
+            QList<ServerPlayer *> ret;
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
+                if (!p->hasSkill("chaowo", true))
+                    ret << p;
+            }
+            if (!ret.isEmpty()) {
+                ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, ret, "renge", "@renge", true, true);
+                if (target != NULL)
+                    invoke->targets << target;
+            }
+        }
+
+        return TriggerSkill::cost(triggerEvent, room, invoke, data);
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        if (triggerEvent == EventPhaseStart) {
+            if (!invoke->targets.isEmpty()) {
+                ServerPlayer *target = invoke->targets.first();
+                room->acquireSkill(target, "chaowo");
+            }
+        } else {
+            if (invoke->owner == NULL) {
+                room->removeTag("renge");
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                    room->detachSkillFromPlayer(p, "benwo", false, true, false);
+                    room->detachSkillFromPlayer(p, "ziwo", false, true, false);
+                }
+            } else if (invoke->targets.isEmpty()) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                    room->acquireSkill(p, "benwo", false);
+                    if (p != invoke->invoker)
+                        room->acquireSkill(p, "ziwo", false);
+                }
+                room->setTag("renge", QVariant::fromValue(invoke->invoker));
+            } else {
+                room->acquireSkill(invoke->targets.first(), "benwo", false);
+                if (invoke->targets.first() != invoke->owner)
+                    room->acquireSkill(invoke->targets.first(), "ziwo", false);
+            }
+        }
+
+        return false;
+    }
+};
+
+
+#if 0
 class Biaoxiang : public TriggerSkill
 {
 public:
@@ -2462,6 +2562,8 @@ public:
     }
 };
 
+#endif
+#if 0
 ZiwoCard::ZiwoCard()
 {
     will_throw = true;
@@ -2506,6 +2608,8 @@ public:
     }
 };
 
+#endif
+#if 0
 class Shifang : public TriggerSkill
 {
 public:
@@ -2562,6 +2666,8 @@ public:
     }
 };
 
+#endif
+#if 0
 class Benwo : public TriggerSkill
 {
 public:
@@ -2598,6 +2704,8 @@ public:
     }
 };
 
+#endif
+#if 0
 class Yizhi : public TriggerSkill
 {
 public:
@@ -2640,6 +2748,8 @@ public:
     }
 };
 
+#endif
+#if 0
 ChaowoCard::ChaowoCard()
 {
     will_throw = true;
@@ -2702,6 +2812,7 @@ public:
         return false;
     }
 };
+#endif
 
 class Zuosui : public TriggerSkill
 {
@@ -4517,7 +4628,6 @@ void AnyunDialog::popup()
         delete button;
     }
 
-    QStringList skill_names;
     foreach (QString hidden, Self->getHiddenGenerals()) {
         const General *g = Sanguosha->getGeneral(hidden);
         foreach (const Skill *skill, g->getSkillList()) {
@@ -5516,12 +5626,12 @@ TouhouGodPackage::TouhouGodPackage()
     byakuren_god->addSkill(new Chaoren);
 
     General *koishi_god = new General(this, "koishi_god", "touhougod", 3);
-    koishi_god->addSkill(new Biaoxiang);
-    koishi_god->addSkill(new Shifang);
-    koishi_god->addSkill(new Yizhi);
-    koishi_god->addRelateSkill("ziwo");
-    koishi_god->addRelateSkill("benwo");
-    koishi_god->addRelateSkill("chaowo");
+    //    koishi_god->addSkill(new Biaoxiang);
+    //    koishi_god->addSkill(new Shifang);
+    //    koishi_god->addSkill(new Yizhi);
+    //    koishi_god->addRelateSkill("ziwo");
+    //    koishi_god->addRelateSkill("benwo");
+    //    koishi_god->addRelateSkill("chaowo");
 
     General *suwako_god = new General(this, "suwako_god", "touhougod", 5);
     suwako_god->addSkill(new Zuosui);
@@ -5607,15 +5717,15 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<ShenshouCard>();
     addMetaObject<FengyinCard>();
     addMetaObject<HuaxiangCard>();
-    addMetaObject<ZiwoCard>();
-    addMetaObject<ChaowoCard>();
+    //    addMetaObject<ZiwoCard>();
+    //    addMetaObject<ChaowoCard>();
     addMetaObject<WendaoCard>();
     addMetaObject<XinhuaCard>();
     addMetaObject<CuimianCard>();
     addMetaObject<RumoCard>();
     addMetaObject<XianshiCard>();
 
-    skills << new ChaorenLog << new Ziwo << new Benwo << new Chaowo << new Wendao << new RoleShownHandler << new ShenbaoAttach;
+    skills << new ChaorenLog << new Wendao << new RoleShownHandler << new ShenbaoAttach; //<< new Ziwo << new Benwo << new Chaowo
 }
 
 ADD_PACKAGE(TouhouGod)

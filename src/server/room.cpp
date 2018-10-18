@@ -632,7 +632,7 @@ void Room::attachSkillToPlayer(ServerPlayer *player, const QString &skill_name, 
     doNotify(player, S_COMMAND_ATTACH_SKILL, QVariant(skill_name));
 }
 
-void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name, bool is_equip, bool acquire_only)
+void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name, bool is_equip, bool acquire_only, bool open)
 {
     if (!player->hasSkill(skill_name, true))
         return;
@@ -653,11 +653,13 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
         doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
         if (!is_equip) {
-            LogMessage log;
-            log.type = "#LoseSkill";
-            log.from = player;
-            log.arg = skill_name;
-            sendLog(log);
+            if (open) {
+                LogMessage log;
+                log.type = "#LoseSkill";
+                log.from = player;
+                log.arg = skill_name;
+                sendLog(log);
+            }
 
             SkillAcquireDetachStruct s;
             s.player = player;
