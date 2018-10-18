@@ -440,6 +440,7 @@ public:
     }
 };
 
+/*
 class Wuchang : public TriggerSkill
 {
 public:
@@ -503,6 +504,69 @@ public:
         return false;
     }
 };
+*/
+
+class Wuchang : public TriggerSkill
+{
+public:
+    Wuchang()
+        : TriggerSkill("wuchang")
+    {
+        events << EventPhaseStart << EventPhaseChanging;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.from == Player::Discard) {
+                if (change.player->getMark("wuchang_limit") > 0) {
+                    room->removePlayerCardLimitation(change.player, "discard", ".|.|.|show$1", objectName());
+                    room->setPlayerMark(change.player, "wuchang_limit", 0);
+                }
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        QList<SkillInvokeDetail> d;
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *current = data.value<ServerPlayer *>();
+            if (!current || current->getPhase() != Player::Discard || current->getCards("h").isEmpty())
+                return d;
+
+            foreach(ServerPlayer *src, room->findPlayersBySkillName(objectName())) {
+                if (src != current)
+                    d << SkillInvokeDetail(this, src, src, NULL, false, current);
+            }
+            
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        QString prompt = "target:" + invoke->preferredTarget->objectName();
+        return room->askForSkillInvoke(invoke->invoker, objectName(), prompt);
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
+        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "h", objectName());
+        if (id > -1) {
+            invoke->targets.first()->addToShownHandCards(QList<int>() << id);
+            if (invoke->targets.first()->getMark("wuchang_limit") == 0) {
+                room->setPlayerCardLimitation(invoke->targets.first(), "discard", ".|.|.|show", objectName(), true);
+                room->setPlayerMark(invoke->targets.first(), "wuchang_limit", 1);
+            }
+        }
+        return false;
+    }
+};
+
+
 
 class Canxiang : public TriggerSkill
 {
