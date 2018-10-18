@@ -146,10 +146,6 @@ bool Skill::matchAvaliablePattern(QString avaliablePattern, QString askedPattern
     //avaliablePattern specifying to a real card
     Card *card = Sanguosha->cloneCard(avaliablePattern);
     //for askForPeach
-    if (askedPattern == "peach+kusuri")
-        askedPattern = "peach,kusuri";
-    if (askedPattern == "peach+kusuri+analeptic")
-        askedPattern = "peach,kusuri,analeptic";
     if (askedPattern == "peach+analeptic")
         askedPattern = "peach,analeptic";
     //ignore spliting "#"

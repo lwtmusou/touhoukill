@@ -606,8 +606,7 @@ StandardPackage::StandardPackage()
     patterns["peach"] = new ExpPattern("Peach");
     patterns["nullification"] = new ExpPattern("Nullification");
     patterns["peach+analeptic"] = new ExpPattern("Peach,Analeptic");
-    patterns["peach+kusuri"] = new ExpPattern("Peach,Kusuri");
-    patterns["peach+kusuri+analeptic"] = new ExpPattern("Peach,Kusuri,Analeptic");
+
 }
 
 ADD_PACKAGE(Standard)
