@@ -2074,10 +2074,10 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
         thread->trigger(RemoveStateChanged, this, pv);
     }
     if (strcmp(property_name, "role_shown") == 0) {
-        setPlayerMark(player, "AI_RoleShown", value.toBool() ? 1 : 0);
+        player->setMark("AI_RoleShown", value.toBool() ? 1 : 0);
         roleStatusCommand(player);
         if (value.toBool())
-            setPlayerMark(player, "AI_RolePredicted", 1);
+            player->setMark("AI_RolePredicted", 1);
     }
 
     if (strcmp(property_name, "kingdom") == 0) {

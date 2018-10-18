@@ -1320,7 +1320,10 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         QString g = hidden_generals.join("|");
         JsonArray arg;
         arg << objectName();
-        arg << g;
+        if (this == player)
+            arg << g;
+        else
+            arg << (int)hidden_generals.length();
 
         room->doNotify(player, S_COMMAND_SET_HIDDEN_GENERAL, arg);
     }
@@ -1536,8 +1539,9 @@ void ServerPlayer::addHiddenGenerals(const QStringList &generals)
     arg << objectName();
     arg << g;
 
-    room->doBroadcastNotify(S_COMMAND_SET_HIDDEN_GENERAL, arg);
-    //room->doNotify(this, S_COMMAND_SET_HIDDEN_GENERAL, arg);
+    room->doNotify(this, S_COMMAND_SET_HIDDEN_GENERAL, arg);
+    arg[1] = (int)hidden_generals.length();
+    room->doBroadcastNotify(room->getOtherPlayers(this, true), S_COMMAND_SET_HIDDEN_GENERAL, arg);
 }
 
 void ServerPlayer::removeHiddenGenerals(const QStringList &generals)
@@ -1549,7 +1553,10 @@ void ServerPlayer::removeHiddenGenerals(const QStringList &generals)
     JsonArray arg;
     arg << objectName();
     arg << g;
-    room->doBroadcastNotify(S_COMMAND_SET_HIDDEN_GENERAL, arg);
+
+    room->doNotify(this, S_COMMAND_SET_HIDDEN_GENERAL, arg);
+    arg[1] = (int)hidden_generals.length();
+    room->doBroadcastNotify(room->getOtherPlayers(this, true), S_COMMAND_SET_HIDDEN_GENERAL, arg);
 
     shown_hidden_general = QString();
     JsonArray arg1;

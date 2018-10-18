@@ -268,9 +268,15 @@ void Client::setHiddenGenerals(const QVariant &arg)
         return;
 
     QString who = str[0].toString();
-    QString generalString = str[1].toString();
-    QStringList names = generalString.split("|");
-
+    QStringList names;
+    if (JsonUtils::isString(str[1])) {
+        QString generalString = str[1].toString();
+        names = generalString.split("|");
+    } else {
+        int n = str[1].toInt();
+        while (n-- > 0)
+            names << "sujiangf";
+    }
     ClientPlayer *player = getPlayer(who);
     player->setHiddenGenerals(names);
     player->changePile("huashencard", false, QList<int>());
