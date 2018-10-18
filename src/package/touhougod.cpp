@@ -2549,29 +2549,8 @@ public:
     {
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player->hasSkill(this) && player->isAlive() && player->getPhase() == Player::Finish) {
-                SkillInvokeDetail d(this, player, player, NULL, true);
-                QString pattern = usePatternWithoutSlash;
-                foreach (const Skill *skill, player->getVisibleSkillList()) {
-                    if (skill != NULL && skill->getFrequency() == Skill::Eternal && !skill->inherits("EquipSkill")) {
-                        pattern = usePattern;
-                        break;
-                    }
-                }
-                bool canUse = false;
-                foreach (int id, player->handCards()) {
-                    const Card *card = Sanguosha->getCard(id);
-                    // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!!
-                    if (Sanguosha->matchExpPattern(usePattern, player, card) && card->isAvailable(player)) {
-                        canUse = true;
-                        break;
-                    }
-                }
-
-                d.tag["canUse"] = canUse;
-                d.tag["pattern"] = pattern;
-                return QList<SkillInvokeDetail>() << d;
-            }
+            if (player->hasSkill(this) && player->isAlive() && player->getPhase() == Player::Finish && !player->isKongcheng())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
         } else {
             CardUseStruct use = data.value<CardUseStruct>();
 
@@ -2581,37 +2560,39 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
     {
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
-            if (!invoke->tag["canUse"].toBool())
+            QString pattern = usePatternWithoutSlash;
+            foreach (const Skill *skill, player->getVisibleSkillList()) {
+                if (skill != NULL && skill->getFrequency() == Skill::Eternal && !skill->inherits("EquipSkill")) {
+                    pattern = usePattern;
+                    break;
+                }
+            }
+            bool canUse = false;
+            foreach (int id, player->handCards()) {
+                const Card *card = Sanguosha->getCard(id);
+                // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!!
+                if (Sanguosha->matchExpPattern(usePattern, player, card) && card->isAvailable(player)) {
+                    canUse = true;
+                    break;
+                }
+            }
+
+            if (!canUse)
                 room->showAllCards(player);
             else {
-                QString pattern = invoke->tag["pattern"].toString();
                 if (hasLimitedSkill(player))
                     player->setMark("benwouse", 1);
 
                 if (!room->askForUseCard(player, pattern + "!", "benwo-use")) {
-                    const Card *useCard = NULL;
-                    foreach (int id, player->handCards()) {
-                        const Card *card = Sanguosha->getCard(id);
-                        // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!!
-                        if (Sanguosha->matchExpPattern(usePattern, player, card) && card->isAvailable(player)) {
-                            useCard = card;
-                            break;
-                        }
-                    }
-                    if (useCard == NULL) { // IMPOSSIBLE!!!!
-                        player->setMark("benwouse", 0);
-                        room->showAllCards(player);
-                    } else {
-                        CardUseStruct use;
-                        use.from = player;
-                        use.card = useCard;
-                        // TODO: fill use.to
-                        room->useCard(use);
-                    }
+                    CardUseStruct use;
+                    use.from = player;
+                    use.card = useCard;
+                    // TODO: fill use.to
+                    room->useCard(use);
                 }
             }
         } else {
