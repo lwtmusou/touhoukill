@@ -1878,7 +1878,7 @@ public:
             //return true; // prevent enterdying
         } else if (triggerEvent == EventPhaseChanging) {
             invoke->invoker->setMark("siyuinvoke", 0);
-            if (change.player->getHp() < change.player->dyingThreshold()) {
+            if (invoke->invoker->getHp() < invoke->invoker->dyingThreshold()) {
                 room->notifySkillInvoked(invoke->invoker, "hpymsiyu");
                 room->enterDying(invoke->invoker, NULL);
             }
