@@ -5982,7 +5982,7 @@ TouhouGodPackage::TouhouGodPackage()
     //    koishi_god->addSkill(new Shifang);
     //    koishi_god->addSkill(new Yizhi);
     koishi_god->addRelateSkill("ziwo");
-    //    koishi_god->addRelateSkill("benwo");
+    koishi_god->addRelateSkill("benwo");
     koishi_god->addRelateSkill("chaowo");
 
     General *suwako_god = new General(this, "suwako_god", "touhougod", 5);
@@ -6069,14 +6069,14 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<FengyinCard>();
     addMetaObject<HuaxiangCard>();
     //    addMetaObject<ZiwoCard>();
-    //    addMetaObject<ChaowoCard>();
+    addMetaObject<ChaowoCard>();
     addMetaObject<WendaoCard>();
     addMetaObject<XinhuaCard>();
     addMetaObject<CuimianCard>();
     addMetaObject<RumoCard>();
     addMetaObject<XianshiCard>();
 
-    skills << new ChaorenLog << new Wendao << new RoleShownHandler << new ShenbaoAttach << new Ziwo /*<< new Benwo*/ << new Chaowo;
+    skills << new ChaorenLog << new Wendao << new RoleShownHandler << new ShenbaoAttach << new Ziwo << new Benwo << new Chaowo;
 }
 
 ADD_PACKAGE(TouhouGod)
