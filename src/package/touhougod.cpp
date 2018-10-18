@@ -2588,11 +2588,25 @@ public:
                     player->setMark("benwouse", 1);
 
                 if (!room->askForUseCard(player, pattern + "!", "benwo-use")) {
-                    CardUseStruct use;
-                    use.from = player;
-                    use.card = useCard;
-                    // TODO: fill use.to
-                    room->useCard(use);
+                    const Card *useCard = NULL;
+                    foreach (int id, player->handCards()) {
+                        const Card *card = Sanguosha->getCard(id);
+                        // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!!
+                        if (Sanguosha->matchExpPattern(usePattern, player, card) && card->isAvailable(player)) {
+                            useCard = card;
+                            break;
+                        }
+                    }
+                    if (useCard == NULL) { // IMPOSSIBLE!!!!
+                        player->setMark("benwouse", 0);
+                        room->showAllCards(player);
+                    } else {
+                        CardUseStruct use;
+                        use.from = player;
+                        use.card = useCard;
+                        // TODO: fill use.to
+                        room->useCard(use);
+                    }
                 }
             }
         } else {
