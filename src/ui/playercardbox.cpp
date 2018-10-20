@@ -19,15 +19,13 @@ Mogara
 *********************************************************************/
 
 #include "playercardbox.h"
+#include "SkinBank.h"
+#include "TimedProgressBar.h"
 #include "carditem.h"
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
 #include "roomscene.h"
-//#include "skin-bank.h"
-#include "SkinBank.h"
-//#include "timed-progressbar.h"
-#include "TimedProgressBar.h"
 
 #include <QGraphicsProxyWidget>
 

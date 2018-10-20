@@ -3,8 +3,8 @@
 
 #include <QColor>
 #include <QImage>
-#include <qpainter.h>
-#include <qrect.h>
+#include <QPainter>
+#include <QRect>
 
 namespace QSanUiUtils {
 // This is in no way a generic diation fuction. It is some dirty trick that

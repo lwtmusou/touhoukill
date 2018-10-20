@@ -8,9 +8,10 @@ CONFIG += audio
 win32: QT += winextras
 
 CONFIG += c++11
-
-
 CONFIG += lua
+
+CONFIG += precompiled_header
+PRECOMPILED_HEADER = src/pch.h
 
 SOURCES += \
     swig/sanguosha_wrap.cxx \
@@ -225,8 +226,8 @@ HEADERS += \
     src/ui/chooseoptionsbox.h \
     src/ui/playercardbox.h \
     src/package/testCard.h \
-    src/package/th16.h
-
+    src/package/th16.h \
+    src/pch.h
 
 FORMS += \
     src/dialog/cardoverview.ui \

@@ -5,6 +5,7 @@
 #include "engine.h"
 #include "gamerule.h"
 #include "generalselector.h"
+#include "lua.hpp"
 #include "miniscenarios.h"
 #include "roomthread1v1.h"
 #include "roomthread3v3.h"
@@ -29,7 +30,6 @@
 #include <QTimer>
 #include <QTimerEvent>
 #include <ctime>
-#include <lua.hpp>
 
 #ifdef QSAN_UI_LIBRARY_AVAILABLE
 #pragma message WARN("UI elements detected in server side!!!")
@@ -393,8 +393,6 @@ void Room::updateStateItem()
 void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason)
 {
     ServerPlayer *killer = reason ? reason->from : NULL;
-
-    QList<ServerPlayer *> players_with_victim = getAllPlayers();
 
     victim->setAlive(false);
 

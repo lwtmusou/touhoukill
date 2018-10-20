@@ -1,9 +1,9 @@
 #include "record-analysis.h"
 #include "engine.h"
+#include "json.h"
 #include "recorder.h"
 #include "settings.h"
 
-#include "json.h"
 #include <QFile>
 #include <QMessageBox>
 

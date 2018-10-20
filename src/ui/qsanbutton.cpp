@@ -4,11 +4,11 @@
 #include "engine.h"
 //#include "client.h"
 
+#include <QBitmap>
 #include <QGraphicsSceneHoverEvent>
 #include <QGraphicsView>
 #include <QPainter>
 #include <QPixmap>
-#include <qbitmap.h>
 
 QSanButton::QSanButton(QGraphicsItem *parent)
     : QGraphicsObject(parent)
