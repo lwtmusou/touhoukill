@@ -3,7 +3,6 @@
 
 #ifdef __cplusplus
 
-#include <QDateTime>
 #include <algorithm>
 #include <cmath>
 #include <ctime>
