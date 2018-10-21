@@ -107,6 +107,7 @@ void Room::initCallbacks()
     m_callbacks[S_COMMAND_TRUST] = &Room::trustCommand;
     m_callbacks[S_COMMAND_PAUSE] = &Room::pauseCommand;
     m_callbacks[S_COMMAND_SKIN_CHANGE] = &Room::skinChangeCommand;
+    m_callbacks[S_COMMAND_HEARTBEAT] = &Room::heartbeatCommand;
 
     //Client request
     m_callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Room::networkDelayTestCommand;
@@ -6680,6 +6681,11 @@ void Room::skinChangeCommand(ServerPlayer *player, const QVariant &packet)
     val << arg[1].toInt();
 
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
+}
+
+void Room::heartbeatCommand(ServerPlayer *player, const QVariant &)
+{
+    doNotify(player, QSanProtocol::S_COMMAND_HEARTBEAT, QVariant());
 }
 
 bool Room::roleStatusCommand(ServerPlayer *player)

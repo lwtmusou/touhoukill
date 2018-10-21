@@ -117,6 +117,7 @@ public:
     void showCard(const QVariant &show_str);
     void log(const QVariant &log_str);
     void speak(const QVariant &speak_data);
+    void heartbeat(const QVariant &);
     void addHistory(const QVariant &history);
     void moveFocus(const QVariant &focus);
     void setEmotion(const QVariant &set_str);
@@ -262,6 +263,7 @@ private:
     QStringList ban_packages;
     Recorder *recorder;
     Replayer *replayer;
+    QTimer *heartbeatTimer;
     QTextDocument *lines_doc, *prompt_doc;
     int pile_num;
     QString skill_to_invoke;

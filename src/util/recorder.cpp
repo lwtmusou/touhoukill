@@ -193,7 +193,7 @@ void Replayer::run()
     int last = 0;
 
     QList<CommandType> nondelays;
-    nondelays << S_COMMAND_ADD_PLAYER << S_COMMAND_REMOVE_PLAYER << S_COMMAND_SPEAK;
+    nondelays << S_COMMAND_ADD_PLAYER << S_COMMAND_REMOVE_PLAYER << S_COMMAND_SPEAK << S_COMMAND_HEARTBEAT;
 
     foreach (Pair pair, pairs) {
         int delay = qMin(pair.elapsed - last, 2500);
