@@ -1,7 +1,14 @@
 #ifndef PCH_H
 #define PCH_H
 
-#ifdef __cplusplus
+#ifndef __cplusplus
+
+#include <math.h>
+#include <time.h>
+
+#include <qglobal.h>
+
+#else
 
 #include <algorithm>
 #include <cmath>
@@ -9,8 +16,9 @@
 #include <functional>
 #include <sstream>
 
-#include <Qt>
 #include <QtGlobal>
+
+#include <Qt>
 #include <QtMath>
 
 #include <QAbstractAnimation>
