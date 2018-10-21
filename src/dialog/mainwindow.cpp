@@ -176,7 +176,15 @@ void MainWindow::checkForUpdate()
 #if QT_VERSION >= 0x050600
     req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 #endif
-    req.setUrl(QUrl("http://fsu0413.github.io/TouhouKillUpdate.json"));
+#if QT_VERSION >= 0x50600
+    if (QVersionNumber(0, 8).isPrefixOf(Sanguosha->getQVersionNumber()))
+#else
+    if (Sanguosha->getVersionName().startsWith("V0.8.")
+#endif
+        req.setUrl(QUrl("http://fsu0413.github.io/TouhouKillUpdate.json"));
+    else
+        req.setUrl(QUrl("http://fsu0413.github.io/TouhouKillUpdate0.9.json"));
+
     QNetworkReply *reply = autoUpdateManager->get(req);
     connect(reply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &MainWindow::updateError);
     connect(reply, &QNetworkReply::finished, this, &MainWindow::updateInfoReceived);
