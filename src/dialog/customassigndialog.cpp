@@ -81,7 +81,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
         list->addItem(item_map[i]);
     list->setCurrentItem(item_map[0]);
 
-    player_draw = new QSpinBox();
+    player_draw = new QSpinBox;
     player_draw->setRange(0, Sanguosha->getCardCount());
     player_draw->setValue(4);
     player_draw->setEnabled(true);
@@ -95,12 +95,12 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     marks_ComboBox = new QComboBox;
     marks_ComboBox->addItem(tr("None"));
     QString path = "image/mark";
-    QDir *dir = new QDir(path);
+    QDir dir(path);
     QStringList filter;
     filter << "*.png";
-    dir->setNameFilters(filter);
-    QList<QFileInfo> file_info(dir->entryInfoList(filter));
-    foreach (QFileInfo file, file_info) {
+    dir.setNameFilters(filter);
+    QList<QFileInfo> file_info(dir.entryInfoList(filter));
+    foreach (const QFileInfo &file, file_info) {
         QString mark_name = file.fileName().split(".").first();
         QString mark_translate = Sanguosha->translate(mark_name);
         if (!mark_translate.startsWith("@")) {
@@ -117,7 +117,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     marks_count->setRange(0, 999);
     marks_count->setEnabled(false);
 
-    QVBoxLayout *starter_lay = new QVBoxLayout();
+    QVBoxLayout *starter_lay = new QVBoxLayout;
     starter_group->setLayout(starter_lay);
     starter_lay->addWidget(starter_box);
     starter_lay->addLayout(HLay(draw_text, player_draw));
@@ -138,7 +138,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     general_label->setFixedSize(G_COMMON_LAYOUT.m_tinyAvatarSize);
     QGroupBox *general_box = new QGroupBox(tr("General"));
     general_box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    QVBoxLayout *general_lay = new QVBoxLayout();
+    QVBoxLayout *general_lay = new QVBoxLayout;
     general_box->setLayout(general_lay);
     general_lay->addWidget(general_label);
 
@@ -147,7 +147,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     general_label2->setFixedSize(G_COMMON_LAYOUT.m_tinyAvatarSize);
     QGroupBox *general_box2 = new QGroupBox(tr("General2"));
     general_box2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    QVBoxLayout *general_lay2 = new QVBoxLayout();
+    QVBoxLayout *general_lay2 = new QVBoxLayout;
     general_box2->setLayout(general_lay2);
     general_lay2->addWidget(general_label2);
 
@@ -161,8 +161,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 
     max_hp_prompt = new QCheckBox(tr("Max Hp"));
     max_hp_prompt->setChecked(false);
-    max_hp_spin = new QSpinBox();
-    max_hp_spin->setRange(2, 10);
+    max_hp_spin = new QSpinBox;
+    max_hp_spin->setRange(0, 10);
     max_hp_spin->setValue(4);
     max_hp_spin->setEnabled(false);
 
@@ -193,7 +193,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 
     ended_by_pile_text = new QLabel(tr("When pile ends"));
     ended_by_pile_text2 = new QLabel(tr("win"));
-    ended_by_pile_box = new QComboBox();
+    ended_by_pile_box = new QComboBox;
     ended_by_pile = new QCheckBox(tr("Ended by pile ends"));
     ended_by_pile->setEnabled(set_pile.length() > 0);
     ended_by_pile_box->addItem(tr("Lord"), "lord+loyalist");
@@ -202,7 +202,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 
     single_turn_text = new QLabel(tr("After this turn "));
     single_turn_text2 = new QLabel(tr("win"));
-    single_turn_box = new QComboBox();
+    single_turn_box = new QComboBox;
     single_turn = new QCheckBox(tr("After this turn you lose"));
     single_turn_box->addItem(tr("Lord"), "lord+loyalist");
     single_turn_box->addItem(tr("Renegade"), "renegade");
@@ -210,7 +210,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
 
     before_next_text = new QLabel(tr("Before next turn "));
     before_next_text2 = new QLabel(tr("win"));
-    before_next_box = new QComboBox();
+    before_next_box = new QComboBox;
     before_next = new QCheckBox(tr("Before next turn begin player lose"));
     before_next_box->addItem(tr("Lord"), "lord+loyalist");
     before_next_box->addItem(tr("Renegade"), "renegade");
@@ -264,7 +264,11 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     hand_list = new QListWidget;
     judge_list = new QListWidget;
     pile_list = new QListWidget;
-    QVBoxLayout *info_lay = new QVBoxLayout(), *equip_lay = new QVBoxLayout(), *hand_lay = new QVBoxLayout(), *judge_lay = new QVBoxLayout(), *pile_lay = new QVBoxLayout();
+    QVBoxLayout *info_lay = new QVBoxLayout;
+    QVBoxLayout *equip_lay = new QVBoxLayout;
+    QVBoxLayout *hand_lay = new QVBoxLayout;
+    QVBoxLayout *judge_lay = new QVBoxLayout;
+    QVBoxLayout *pile_lay = new QVBoxLayout;
 
     move_list_up_button = new QPushButton(tr("Move Up"));
     move_list_down_button = new QPushButton(tr("Move Down"));
@@ -316,11 +320,11 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     pile_lay->addLayout(HLay(pileAssign, removePileButton));
     info_lay->addLayout(HLay(judge_group, pile_group));
 
-    QHBoxLayout *layout = new QHBoxLayout();
+    QHBoxLayout *layout = new QHBoxLayout;
     layout->addLayout(info_lay);
     layout->addLayout(vlayout);
     layout->addLayout(vlayout2);
-    QVBoxLayout *mainlayout = new QVBoxLayout();
+    QVBoxLayout *mainlayout = new QVBoxLayout;
     mainlayout->addLayout(layout);
     setLayout(mainlayout);
 
@@ -378,10 +382,19 @@ void CustomAssignDialog::exchangePlayersInfo(QListWidgetItem *first, QListWidget
     QString first_name = first->data(Qt::UserRole).toString();
     QString second_name = second->data(Qt::UserRole).toString();
 
-    QString role = role_mapping[first_name], general = general_mapping[first_name], general2 = general2_mapping[first_name];
-    QList<int> judges(player_judges[first_name]), equips(player_equips[first_name]), hands(player_handcards[first_name]);
-    int hp = player_hp[first_name], maxhp = player_maxhp[first_name], start_draw = player_start_draw[first_name];
-    bool turned = player_turned[first_name], chained = player_chained[first_name], free_general = free_choose_general[first_name], free_general2 = free_choose_general2[first_name];
+    QString role = role_mapping[first_name];
+    QString general = general_mapping[first_name];
+    QString general2 = general2_mapping[first_name];
+    QList<int> judges(player_judges[first_name]);
+    QList<int> equips(player_equips[first_name]);
+    QList<int> hands(player_handcards[first_name]);
+    int hp = player_hp[first_name];
+    int maxhp = player_maxhp[first_name];
+    int start_draw = player_start_draw[first_name];
+    bool turned = player_turned[first_name];
+    bool chained = player_chained[first_name];
+    bool free_general = free_choose_general[first_name];
+    bool free_general2 = free_choose_general2[first_name];
     QStringList ex_skills(player_exskills[first_name]);
     QMap<QString, int> marks(player_marks[first_name]);
     bool setting_nationality = set_nationality.value(first_name, false);
