@@ -3245,16 +3245,9 @@ void RoomScene::onGameOver()
     bool victory = Self->property("win").toBool();
 #ifdef AUDIO_SUPPORT
     QString win_effect;
-    if (victory) {
+    if (victory)
         win_effect = "win";
-        foreach (const Player *player, ClientInstance->getPlayers()) {
-            if (player->property("win").toBool() && player->getGeneralName().contains("caocao")) {
-                Audio::stopAll();
-                win_effect = "win-cc";
-                break;
-            }
-        }
-    } else
+    else
         win_effect = "lose";
 
     Sanguosha->playSystemAudioEffect(win_effect);
