@@ -1025,6 +1025,8 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
+        if (damage.damage != 1)
+            return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
@@ -1108,11 +1110,20 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        CardsMoveStruct move;
+        /*CardsMoveStruct move;
         move.card_ids = invoke->invoker->getPile("dream");
         move.to_place = Player::PlaceHand;
         move.to = invoke->invoker;
-        room->moveCardsAtomic(move, false);
+        room->moveCardsAtomic(move, false);*/
+
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, invoke->invoker->objectName(), NULL, objectName(), "");
+        CardsMoveStruct move(invoke->invoker->getPile("dream"), invoke->invoker, Player::DiscardPile, reason);
+        room->moveCardsAtomic(move, true);
+
+        
+        invoke->invoker->drawCards(2);
 
         RecoverStruct recover;
         room->recover(invoke->invoker, recover);
