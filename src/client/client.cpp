@@ -496,6 +496,8 @@ void Client::removePlayer(const QVariant &player_name)
         player->setParent(NULL);
         alive_count--;
         emit player_removed(name);
+        players.removeOne(player);
+        connect(this, &Client::destroyed, player, &ClientPlayer::deleteLater);
     }
 }
 
@@ -799,7 +801,6 @@ void Client::startGame(const QVariant &arg)
     JsonArray arr = arg.value<JsonArray>();
     lord_name = arr[0].toString();
 
-    QList<ClientPlayer *> players = findChildren<ClientPlayer *>();
     alive_count = players.count();
 
     emit game_started();
