@@ -5,6 +5,7 @@
 #include "engine.h"
 #include "gamerule.h"
 #include "generalselector.h"
+#include "lua.hpp"
 #include "miniscenarios.h"
 #include "roomthread1v1.h"
 #include "roomthread3v3.h"
@@ -29,7 +30,6 @@
 #include <QTimer>
 #include <QTimerEvent>
 #include <ctime>
-#include <lua.hpp>
 
 #ifdef QSAN_UI_LIBRARY_AVAILABLE
 #pragma message WARN("UI elements detected in server side!!!")
@@ -107,6 +107,7 @@ void Room::initCallbacks()
     m_callbacks[S_COMMAND_TRUST] = &Room::trustCommand;
     m_callbacks[S_COMMAND_PAUSE] = &Room::pauseCommand;
     m_callbacks[S_COMMAND_SKIN_CHANGE] = &Room::skinChangeCommand;
+    m_callbacks[S_COMMAND_HEARTBEAT] = &Room::heartbeatCommand;
 
     //Client request
     m_callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Room::networkDelayTestCommand;
@@ -393,8 +394,6 @@ void Room::updateStateItem()
 void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason)
 {
     ServerPlayer *killer = reason ? reason->from : NULL;
-
-    QList<ServerPlayer *> players_with_victim = getAllPlayers();
 
     victim->setAlive(false);
 
@@ -6682,6 +6681,11 @@ void Room::skinChangeCommand(ServerPlayer *player, const QVariant &packet)
     val << arg[1].toInt();
 
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
+}
+
+void Room::heartbeatCommand(ServerPlayer *player, const QVariant &)
+{
+    doNotify(player, QSanProtocol::S_COMMAND_HEARTBEAT, QVariant());
 }
 
 bool Room::roleStatusCommand(ServerPlayer *player)

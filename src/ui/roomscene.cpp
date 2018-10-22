@@ -3879,56 +3879,55 @@ void RoomScene::viewDistance()
 
 void RoomScene::speak()
 {
-    if (game_started && ServerInfo.DisableChat)
-        chat_box->append(tr("This room does not allow chatting!"));
-    else {
-        bool broadcast = true;
-        QString text = chat_edit->text();
-        if (text == ".StartBgMusic") {
-            broadcast = false;
-            Config.EnableBgMusic = true;
-            Config.setValue("EnableBgMusic", true);
+    bool broadcast = true;
+    QString text = chat_edit->text();
+    if (text == ".StartBgMusic") {
+        broadcast = false;
+        Config.EnableBgMusic = true;
+        Config.setValue("EnableBgMusic", true);
 #ifdef AUDIO_SUPPORT
-            Audio::stopBGM();
-            QString bgmusic_path = Config.value("BackgroundMusic", "audio/title/main.ogg").toString();
-            Audio::playBGM(bgmusic_path);
-            Audio::setBGMVolume(Config.BGMVolume);
+        Audio::stopBGM();
+        QString bgmusic_path = Config.value("BackgroundMusic", "audio/title/main.ogg").toString();
+        Audio::playBGM(bgmusic_path);
+        Audio::setBGMVolume(Config.BGMVolume);
 #endif
-        } else if (text.startsWith(".StartBgMusic=")) {
-            broadcast = false;
-            Config.EnableBgMusic = true;
-            Config.setValue("EnableBgMusic", true);
-            QString path = text.mid(14);
-            if (path.startsWith("|")) {
-                path = path.mid(1);
-                Config.setValue("BackgroundMusic", path);
-            }
-#ifdef AUDIO_SUPPORT
-            Audio::stopBGM();
-            Audio::playBGM(path);
-            Audio::setBGMVolume(Config.BGMVolume);
-#endif
-        } else if (text == ".StopBgMusic") {
-            broadcast = false;
-            Config.EnableBgMusic = false;
-            Config.setValue("EnableBgMusic", false);
-#ifdef AUDIO_SUPPORT
-            Audio::stopBGM();
-#endif
+    } else if (text.startsWith(".StartBgMusic=")) {
+        broadcast = false;
+        Config.EnableBgMusic = true;
+        Config.setValue("EnableBgMusic", true);
+        QString path = text.mid(14);
+        if (path.startsWith("|")) {
+            path = path.mid(1);
+            Config.setValue("BackgroundMusic", path);
         }
-        if (broadcast)
+#ifdef AUDIO_SUPPORT
+        Audio::stopBGM();
+        Audio::playBGM(path);
+        Audio::setBGMVolume(Config.BGMVolume);
+#endif
+    } else if (text == ".StopBgMusic") {
+        broadcast = false;
+        Config.EnableBgMusic = false;
+        Config.setValue("EnableBgMusic", false);
+#ifdef AUDIO_SUPPORT
+        Audio::stopBGM();
+#endif
+    }
+    if (broadcast) {
+        if (game_started && ServerInfo.DisableChat)
+            chat_box->append(tr("This room does not allow chatting!"));
+        else
             ClientInstance->speakToServer(text);
-        else {
-            QString title;
-            if (Self) {
-                title = Self->getGeneralName();
-                title = Sanguosha->translate(title);
-                title.append(QString("(%1)").arg(Self->screenName()));
-                title = QString("<b>%1</b>").arg(title);
-            }
-            QString line = tr("<font color='%1'>[%2] said: %3 </font>").arg(Config.TextEditColor.name()).arg(title).arg(text);
-            appendChatBox(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
+    } else {
+        QString title;
+        if (Self) {
+            title = Self->getGeneralName();
+            title = Sanguosha->translate(title);
+            title.append(QString("(%1)").arg(Self->screenName()));
+            title = QString("<b>%1</b>").arg(title);
         }
+        QString line = tr("<font color='%1'>[%2] said: %3 </font>").arg(Config.TextEditColor.name()).arg(title).arg(text);
+        appendChatBox(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
     }
     chat_edit->clear();
 }

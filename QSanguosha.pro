@@ -8,9 +8,12 @@ CONFIG += audio
 win32: QT += winextras
 
 CONFIG += c++11
-
-
 CONFIG += lua
+
+VERSION = 0.8.11
+
+CONFIG += precompiled_header
+PRECOMPILED_HEADER = src/pch.h
 
 SOURCES += \
     swig/sanguosha_wrap.cxx \
@@ -116,8 +119,7 @@ SOURCES += \
     src/ui/lightboxanimation.cpp \
     src/ui/chooseoptionsbox.cpp \
     src/ui/playercardbox.cpp \
-    src/package/testCard.cpp \
-    src/package/th16.cpp
+    src/package/testCard.cpp
 
 HEADERS += \
     src/client/aux-skills.h \
@@ -225,8 +227,7 @@ HEADERS += \
     src/ui/chooseoptionsbox.h \
     src/ui/playercardbox.h \
     src/package/testCard.h \
-    src/package/th16.h
-
+    src/pch.h
 
 FORMS += \
     src/dialog/cardoverview.ui \
@@ -247,7 +248,9 @@ INCLUDEPATH += src/util
 INCLUDEPATH += src/jsoncpp/include
 
 win32{
-    RC_FILE += resource/icon.rc
+    CONFIG += skip_target_version_ext
+    RC_ICONS += resource/icon/sgs.ico
+    QMAKE_TARGET_DESCRIPTION = "TouhouSatsu Main Program"
 }
 
 macx{

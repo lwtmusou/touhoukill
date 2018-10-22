@@ -176,7 +176,15 @@ void MainWindow::checkForUpdate()
 #if QT_VERSION >= 0x050600
     req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 #endif
-    req.setUrl(QUrl("http://fsu0413.github.io/TouhouKillUpdate.json"));
+#if QT_VERSION >= 0x50600
+    if (QVersionNumber(0, 8).isPrefixOf(Sanguosha->getQVersionNumber()))
+#else
+    if (Sanguosha->getVersionName().startsWith("V0.8.")
+#endif
+        req.setUrl(QUrl("http://fsu0413.github.io/TouhouKillUpdate.json"));
+    else
+        req.setUrl(QUrl("http://fsu0413.github.io/TouhouKillUpdate0.9.json"));
+
     QNetworkReply *reply = autoUpdateManager->get(req);
     connect(reply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &MainWindow::updateError);
     connect(reply, &QNetworkReply::finished, this, &MainWindow::updateInfoReceived);
@@ -902,19 +910,23 @@ void MainWindow::parseUpdateInfo(const QString &v, const QString &vn, const QJso
     QJsonValue value = ob.value("Oth");
 #endif
     if (value.isString()) {
-        // fullpack
-        QMessageBox::information(this, tr("New Version Avaliable"),
-                                 tr("New Version %1(%3) available.\n"
-                                    "But we don\'t support auto-updating from %2 to %1 on this platform.\n"
-                                    "Please download the full package from <a href=\"%4\">Here</a>.")
-                                     .arg(v)
-                                     .arg(Sanguosha->getVersionNumber())
+        QMessageBox mbox(this);
+        mbox.setTextFormat(Qt::RichText);
+        mbox.setText(tr("New Version %1(%3) available.<br/>"
+                        "But we don\'t support auto-updating from %2 to %1 on this platform.<br/>"
+                        "Please download the full package from <a href=\"%4\">Here</a>.")
+                         .arg(v)
+                         .arg(Sanguosha->getVersionNumber())
 #if QT_VERSION >= 0x050600
-                                     .arg(vn.toString())
+                         .arg(vn.toString())
 #else
-                                     .arg(vn)
+                         .arg(vn)
 #endif
-                                     .arg(value.toString()));
+                         .arg(value.toString()));
+        mbox.setWindowTitle(tr("New Version Avaliable"));
+        mbox.setIcon(QMessageBox::Information);
+        mbox.setStandardButtons(QMessageBox::Ok);
+        mbox.exec();
     } else if (value.isObject()) {
         QJsonObject updateOb = value.toObject();
         QString updateScript = updateOb.value("UpdateScript").toString();
@@ -947,11 +959,27 @@ void MainWindow::updateInfoReceived()
     }
 
     QString latestVersion = ob.value("LatestVersion").toString();
+
 #if QT_VERSION >= 0x050600
     QVersionNumber ver = QVersionNumber::fromString(ob.value("LatestVersionNumber").toString());
 #else
     QString ver = ob.value("LatestVersionNumber").toString();
 #endif
+
+    QString versionTo09 = ob.value("VersionTo09").toString();
+    if (versionTo09 == Sanguosha->getVersionNumber()) {
+        QString latestVersion09 = ob.value("LatestVersion09").toString();
+
+        if (!latestVersion09.isEmpty()) {
+            latestVersion = latestVersion09;
+#if QT_VERSION >= 0x050600
+            ver = QVersionNumber::fromString(ob.value("LatestVersionNumber09").toString());
+#else
+            ver = ob.value("LatestVersionNumber09").toString();
+#endif
+        }
+    }
+
     if (latestVersion > Sanguosha->getVersionNumber()) {
         // there is a new version available now!!
         QString from = QString("From") + Sanguosha->getVersionNumber();
@@ -1120,8 +1148,8 @@ void UpdateDialog::startUpdate()
 
 bool UpdateDialog::packHashVerify(const QByteArray &arr)
 {
-    static const QMap<QString, QCryptographicHash::Algorithm> algorithms{std::make_pair<QString, QCryptographicHash::Algorithm>("MD5", QCryptographicHash::Md5),
-                                                                         std::make_pair<QString, QCryptographicHash::Algorithm>("SHA1", QCryptographicHash::Sha1)};
+    static const QMap<QString, QCryptographicHash::Algorithm> algorithms {std::make_pair<QString, QCryptographicHash::Algorithm>("MD5", QCryptographicHash::Md5),
+                                                                          std::make_pair<QString, QCryptographicHash::Algorithm>("SHA1", QCryptographicHash::Sha1)};
 
     foreach (const QString &str, algorithms.keys()) {
         if (m_updateHash.contains(str)) {

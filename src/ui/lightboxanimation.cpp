@@ -1,18 +1,15 @@
 #include "lightboxanimation.h"
-
-#include <QGraphicsTextItem>
-
-#include <QParallelAnimationGroup>
-#include <QPauseAnimation>
-#include <QPropertyAnimation>
-#include <QSequentialAnimationGroup>
-
-#include <QBrush>
-#include <QPen>
-
 #include "QSanSelectableItem.h"
 #include "SkinBank.h"
 #include "engine.h"
+
+#include <QBrush>
+#include <QGraphicsTextItem>
+#include <QParallelAnimationGroup>
+#include <QPauseAnimation>
+#include <QPen>
+#include <QPropertyAnimation>
+#include <QSequentialAnimationGroup>
 
 RectObject::RectObject(const QBrush &brush /*= QBrush()*/, QGraphicsItem *parent /*= NULL*/)
     : QGraphicsObject(parent)

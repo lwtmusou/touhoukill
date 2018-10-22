@@ -595,6 +595,7 @@ private:
     void doScript(const QString &script);
 
     void skinChangeCommand(ServerPlayer *player, const QVariant &packet);
+    void heartbeatCommand(ServerPlayer *player, const QVariant &packet);
 
     //helper functions and structs
     struct _NullificationAiHelper

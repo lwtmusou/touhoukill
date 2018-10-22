@@ -31,6 +31,7 @@ Client::Client(QObject *parent, const QString &filename)
     , alive_count(1)
     , swap_pile(0)
     , _m_roomState(true)
+    , heartbeatTimer(NULL)
 {
     ClientInstance = this;
     m_isGameOver = false;
@@ -44,6 +45,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_ARRANGE_SEATS] = &Client::arrangeSeats;
     m_callbacks[S_COMMAND_WARN] = &Client::warn;
     m_callbacks[S_COMMAND_SPEAK] = &Client::speak;
+    m_callbacks[S_COMMAND_HEARTBEAT] = &Client::heartbeat;
 
     m_callbacks[S_COMMAND_GAME_START] = &Client::startGame;
     m_callbacks[S_COMMAND_GAME_OVER] = &Client::gameOver;
@@ -371,6 +373,13 @@ void Client::setup(const QVariant &setup_json)
 
     if (ServerInfo.parse(setup_str)) {
         emit server_connected();
+
+        heartbeatTimer = new QTimer(this);
+        connect(heartbeatTimer, &QTimer::timeout, [this]() -> void { notifyServer(S_COMMAND_HEARTBEAT); });
+        heartbeatTimer->setSingleShot(false);
+        heartbeatTimer->setInterval(60000);
+        heartbeatTimer->start();
+
         notifyServer(S_COMMAND_TOGGLE_READY);
     } else {
         QMessageBox::warning(NULL, tr("Warning"), tr("Setup string can not be parsed: %1").arg(setup_str));
@@ -2126,6 +2135,10 @@ void Client::speak(const QVariant &speak)
     QString line = tr("<font color='%1'>[%2] said: %3 </font>").arg(Config.TextEditColor.name()).arg(title).arg(text);
 
     emit line_spoken(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
+}
+
+void Client::heartbeat(const QVariant &)
+{
 }
 
 void Client::moveFocus(const QVariant &focus)

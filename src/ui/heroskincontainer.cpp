@@ -2,14 +2,13 @@
 #include "GenericCardContainerUI.h"
 #include "engine.h"
 #include "qsanbutton.h"
+#include "sanshadowtextfont.h"
 #include "settings.h"
 #include "skinitem.h"
 
-#include "sanshadowtextfont.h"
-#include <QGraphicsProxyWidget>
-
 #include <QCursor>
 #include <QDir>
+#include <QGraphicsProxyWidget>
 #include <QGraphicsSceneWheelEvent>
 #include <QPainter>
 #include <QScrollBar>
