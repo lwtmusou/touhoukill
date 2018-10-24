@@ -17,7 +17,7 @@ CardContainer::CardContainer()
     _m_boundingRect = QRectF(QPoint(0, 0), _m_background.size());
     setFlag(ItemIsFocusable);
     setFlag(ItemIsMovable);
-    close_button = new CloseButton;
+    close_button = new SanCloseButton;
     close_button->setParentItem(this);
     close_button->setPos(517, 21);
     close_button->hide();
@@ -294,19 +294,19 @@ void CardContainer::gongxinItem()
     }
 }
 
-CloseButton::CloseButton()
+SanCloseButton::SanCloseButton()
     : QSanSelectableItem("image/system/close.png", false)
 {
     setFlag(ItemIsFocusable);
     setAcceptedMouseButtons(Qt::LeftButton);
 }
 
-void CloseButton::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void SanCloseButton::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     event->accept();
 }
 
-void CloseButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
+void SanCloseButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
 {
     emit clicked();
 }
