@@ -1314,10 +1314,6 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
 {
     tryPause();
     notifyMoveFocus(player, S_COMMAND_CHOOSE_CARD);
-    //flags
-    static QChar handcard_flag('h');
-    static QChar equip_flag('e');
-    static QChar judging_flag('j');
 
     //lord skill: youtong
     if (player != who && player->getKingdom() == "dld") {

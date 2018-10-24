@@ -1149,7 +1149,6 @@ bool Player::isAllNude() const
 
 bool Player::canDiscard(const Player *to, const QString &flags, QString reason) const
 {
-    static QChar handcard_flag('h');
     static QChar equip_flag('e');
     static QChar judging_flag('j');
 

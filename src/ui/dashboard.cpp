@@ -4,7 +4,6 @@
 #include "engine.h"
 #include "graphicspixmaphoveritem.h"
 #include "heroskincontainer.h"
-#include "playercarddialog.h"
 #include "roomscene.h"
 #include "settings.h"
 #include "standard.h"

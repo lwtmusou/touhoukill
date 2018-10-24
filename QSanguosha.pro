@@ -45,7 +45,6 @@ SOURCES += \
     src/dialog/distanceviewdialog.cpp \
     src/dialog/generaloverview.cpp \
     src/dialog/mainwindow.cpp \
-    src/dialog/playercarddialog.cpp \
     src/dialog/roleassigndialog.cpp \
     src/package/exppattern.cpp \
     src/package/maneuvering.cpp \
@@ -152,7 +151,6 @@ HEADERS += \
     src/dialog/distanceviewdialog.h \
     src/dialog/generaloverview.h \
     src/dialog/mainwindow.h \
-    src/dialog/playercarddialog.h \
     src/dialog/roleassigndialog.h \
     src/package/exppattern.h \
     src/package/maneuvering.h \

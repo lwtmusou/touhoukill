@@ -16,7 +16,6 @@
 #include "lightboxanimation.h"
 #include "pixmapanimation.h"
 #include "playercardbox.h"
-#include "playercarddialog.h"
 #include "qsanbutton.h"
 #include "record-analysis.h"
 #include "recorder.h"
