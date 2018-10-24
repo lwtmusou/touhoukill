@@ -145,6 +145,7 @@
 #include <QStatusBar>
 #include <QString>
 #include <QStringList>
+#include <QStyleFactory>
 #include <QStyleOptionGraphicsItem>
 #include <QSystemTrayIcon>
 #include <QTabWidget>
