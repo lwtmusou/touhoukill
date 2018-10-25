@@ -4091,7 +4091,9 @@ void KOFOrderBox::killPlayer(const QString &general_name)
 
 void RoomScene::onGameStart()
 {
+#ifdef AUDIO_SUPPORT
     Audio::stopBGM();
+#endif
     main_window->activateWindow();
     if (Config.GameMode.contains("_mini_")) {
         QString id = Config.GameMode;
