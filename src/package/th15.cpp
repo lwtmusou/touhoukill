@@ -1811,7 +1811,7 @@ YidanDialog *YidanDialog::getInstance(const QString &object)
 
     if (instance.isNull()) {
         instance = new YidanDialog(object);
-        connect(qApp, &QCoreApplication::aboutToQuit, instance, &YidanDialog::deleteLater);
+        connect(qApp, &QCoreApplication::aboutToQuit, instance.data(), &YidanDialog::deleteLater);
     }
 
     return instance;
