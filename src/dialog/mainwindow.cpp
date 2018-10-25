@@ -114,15 +114,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     StartScene *start_scene = new StartScene;
     //play title BGM
+#ifdef AUDIO_SUPPORT
     if (Config.EnableBgMusic) {
         QString bgm = "audio/title/main.ogg";
-        //if (QFile::exists(bgm)) {
         Audio::stopBGM();
         Audio::playBGM(bgm, true, true);
         Audio::setBGMVolume(Config.BGMVolume);
-        //}
     }
-
+#endif
     QList<QAction *> actions;
     actions << ui->actionStart_Game << ui->actionStart_Server << ui->actionPC_Console_Start << ui->actionReplay << ui->actionGeneral_Overview << ui->actionCard_Overview
             << ui->actionConfigure << ui->actionAbout_Us;
@@ -215,11 +214,13 @@ void MainWindow::gotoScene(QGraphicsScene *scene)
     QResizeEvent e(QSize(view->size().width(), view->size().height()), view->size());
     view->resizeEvent(&e);
     //play BGM
+#ifdef AUDIO_SUPPORT
     if (Config.EnableBgMusic && !Audio::isBackgroundMusicPlaying()) {
         Audio::stopBGM();
         Audio::playBGM("audio/title/main.ogg", true, true);
         Audio::setBGMVolume(Config.BGMVolume);
     }
+#endif
     changeBackground();
 }
 
@@ -390,12 +391,13 @@ void MainWindow::enterRoom()
 void MainWindow::gotoStartScene()
 {
     //play BGM
+#ifdef AUDIO_SUPPORT
     if (Config.EnableBgMusic && !Audio::isBackgroundMusicPlaying()) {
         Audio::stopBGM();
         Audio::playBGM("audio/title/main.ogg", true, true);
         Audio::setBGMVolume(Config.BGMVolume);
     }
-
+#endif
     ServerInfo.DuringGame = false;
     QList<Server *> servers = findChildren<Server *>();
     if (!servers.isEmpty())
