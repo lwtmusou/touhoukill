@@ -1542,6 +1542,9 @@ public:
         if (Self->isShownHandcard(card->getId()) || !card->isKindOf("BasicCard"))
             return false;
 
+        if (card->isKindOf("SuperPeach"))
+            return false;
+
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE
             || Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
