@@ -178,7 +178,7 @@ public:
     {
     }
 
-    void play(const QString &fileNames, bool random, bool playFolder = false)
+    void play(const QString &fileNames, bool random, bool playAll = false, bool isGeneralName = false)
     {
         if (m_timer != 0) {
             return;
@@ -187,11 +187,14 @@ public:
         {
             BackgroundMusicPlayList::PlayOrder playOrder = random ? BackgroundMusicPlayList::Shuffle : BackgroundMusicPlayList::Sequential;
 
-            QStringList all = fileNames.split(";");
+            QStringList all;
+            if (fileNames.endsWith(".ogg"))
+                all = fileNames.split(";");
             QStringList openings;
-            if (playFolder) {
+            
+            if (isGeneralName) {//fileNames is  generalName
                 //just support title only
-                QString path = "audio/title/";
+                QString path = "audio/bgm/";
                 QDir *dir = new QDir(path);
                 QStringList filter;
                 filter << "*.ogg";
@@ -199,6 +202,21 @@ public:
                 QList<QFileInfo> file_info(dir->entryInfoList(filter));
 
                 foreach (QFileInfo file, file_info) {
+                    QString fileName = path + file.fileName();
+                    if (file.fileName().startsWith(fileNames + "_") && !all.contains(fileName))
+                        all << fileName;
+                }
+            }
+            
+            if (all.isEmpty() || playAll) {
+                QString path = "audio/title/";
+                QDir *dir = new QDir(path);
+                QStringList filter;
+                filter << "*.ogg";
+                dir->setNameFilters(filter);
+                QList<QFileInfo> file_info(dir->entryInfoList(filter));
+
+                foreach(QFileInfo file, file_info) {
                     QString fileName = path + file.fileName();
                     if ((file.fileName().startsWith("main") || file.fileName().startsWith("opening")))
                         openings << fileName;
@@ -322,13 +340,13 @@ void Audio::setBGMVolume(float volume)
     FMOD_SoundGroup_SetVolume(BackgroundMusicGroup, volume);
 }
 
-void Audio::playBGM(const QString &fileNames, bool random /* = false*/, bool playFolder)
+void Audio::playBGM(const QString &fileNames, bool random /* = false*/, bool playAll, bool isGeneralName)
 {
     if (NULL != System) {
         if (!m_customBackgroundMusicFileName.isEmpty()) {
-            backgroundMusicPlayer.play(m_customBackgroundMusicFileName, random, playFolder);
+            backgroundMusicPlayer.play(m_customBackgroundMusicFileName, random, playAll, isGeneralName);
         } else {
-            backgroundMusicPlayer.play(fileNames, random, playFolder);
+            backgroundMusicPlayer.play(fileNames, random, playAll, isGeneralName);
         }
     }
 }

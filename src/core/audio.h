@@ -16,7 +16,7 @@ public:
     static void setEffectVolume(float volume);
     static void setBGMVolume(float volume);
 
-    static void playBGM(const QString &fileNames, bool random = false, bool playFolder = false);
+    static void playBGM(const QString &fileNames, bool random = false, bool playAll = false, bool isGeneranlName = false);
     static void stopBGM();
     static bool isBackgroundMusicPlaying();
 
