@@ -212,8 +212,6 @@ void PlayerCardContainer::updateAvatar()
     if (general != NULL) {
         _m_avatarArea->setToolTip(m_player->getSkillDescription());
         QString name = general->objectName();
-        if (name == "luboyan" && m_player->isFemale())
-            name = "luboyanf";
         QPixmap avatarIcon = _getAvatarIcon(name);
         QGraphicsPixmapItem *avatarIconTmp = _m_avatarIcon;
         _paintPixmap(avatarIconTmp, _m_layout->m_avatarArea, avatarIcon, _getAvatarParent());

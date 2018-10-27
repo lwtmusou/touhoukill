@@ -16,7 +16,6 @@
 #include "lightboxanimation.h"
 #include "pixmapanimation.h"
 #include "playercardbox.h"
-#include "playercarddialog.h"
 #include "qsanbutton.h"
 #include "record-analysis.h"
 #include "recorder.h"
@@ -3245,16 +3244,9 @@ void RoomScene::onGameOver()
     bool victory = Self->property("win").toBool();
 #ifdef AUDIO_SUPPORT
     QString win_effect;
-    if (victory) {
+    if (victory)
         win_effect = "win";
-        foreach (const Player *player, ClientInstance->getPlayers()) {
-            if (player->property("win").toBool() && player->getGeneralName().contains("caocao")) {
-                Audio::stopAll();
-                win_effect = "win-cc";
-                break;
-            }
-        }
-    } else
+    else
         win_effect = "lose";
 
     Sanguosha->playSystemAudioEffect(win_effect);
@@ -4099,7 +4091,9 @@ void KOFOrderBox::killPlayer(const QString &general_name)
 
 void RoomScene::onGameStart()
 {
+#ifdef AUDIO_SUPPORT
     Audio::stopBGM();
+#endif
     main_window->activateWindow();
     if (Config.GameMode.contains("_mini_")) {
         QString id = Config.GameMode;

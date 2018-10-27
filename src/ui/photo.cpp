@@ -5,7 +5,6 @@
 #include "clientplayer.h"
 #include "engine.h"
 #include "pixmapanimation.h"
-#include "playercarddialog.h"
 #include "rolecombobox.h"
 #include "roomscene.h"
 #include "settings.h"

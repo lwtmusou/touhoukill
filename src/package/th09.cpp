@@ -1535,7 +1535,7 @@ NianliDialog *NianliDialog::getInstance(const QString &object)
 
     if (instance.isNull()) {
         instance = new NianliDialog(object);
-        connect(qApp, &QCoreApplication::aboutToQuit, instance, &NianliDialog::deleteLater);
+        connect(qApp, &QCoreApplication::aboutToQuit, instance.data(), &NianliDialog::deleteLater);
     }
 
     return instance;

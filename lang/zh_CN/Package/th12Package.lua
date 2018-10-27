@@ -50,7 +50,7 @@ return{
 	["origin:nue_3"] = "p号：32592124，个人ID：18484",
 
 	["weizhi"]= "未知",
-	[":weizhi"]= "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置至少一张非锦囊牌，摸X+1张牌（X为你以此法弃置的牌的数量）。",
+	[":weizhi"]= "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置至少一张非锦囊牌，摸X张牌（X为你以此法弃置的牌的数量+1）。",
 	["weizhuang"]= "伪装",
 	[":weizhuang"]= "<font color=\"blue\"><b>锁定技，</b></font>当你成为其他角色使用普通锦囊牌的目标后，其选择一项：弃置一张基本牌；或令此牌对你无效。",
 	["@weizhuang-discard"]= "<font color=\"#00FF00\"><b>%src </b></font> 的“伪装”被触发，请弃置一张基本牌，否则【%dest】对其无效。",

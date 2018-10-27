@@ -1,15 +1,15 @@
-#include <QApplication>
-
-#include <QCoreApplication>
-#include <QDateTime>
-#include <QDir>
-#include <QTranslator>
-
 #include "audio.h"
 #include "banpair.h"
 #include "mainwindow.h"
 #include "server.h"
 #include "settings.h"
+
+#include <QApplication>
+#include <QCoreApplication>
+#include <QDateTime>
+#include <QDir>
+#include <QStyleFactory>
+#include <QTranslator>
 
 int main(int argc, char *argv[])
 {
@@ -18,6 +18,11 @@ int main(int argc, char *argv[])
     } else {
         new QApplication(argc, argv);
         QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins");
+
+#ifdef Q_OS_OSX
+        if (QStyleFactory::keys().contains("Fusion"))
+            qApp->setStyle(QStyleFactory::create("Fusion"));
+#endif
     }
 
     QDir::setCurrent(qApp->applicationDirPath());
@@ -43,7 +48,6 @@ int main(int argc, char *argv[])
 
     Sanguosha = new Engine;
     Config.init();
-    qApp->setFont(Config.AppFont);
     BanPair::loadBanPairs();
 
     if (qApp->arguments().contains("-server")) {
@@ -57,6 +61,8 @@ int main(int argc, char *argv[])
 
         return qApp->exec();
     }
+
+    qApp->setFont(Config.AppFont);
 
     QFile file("sanguosha.qss");
     if (file.open(QIODevice::ReadOnly)) {

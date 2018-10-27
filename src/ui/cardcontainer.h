@@ -10,12 +10,12 @@ class ClientPlayer;
 
 #include <QStack>
 
-class CloseButton : public QSanSelectableItem
+class SanCloseButton : public QSanSelectableItem
 {
     Q_OBJECT
 
 public:
-    CloseButton();
+    SanCloseButton();
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -58,7 +58,7 @@ protected:
 
 private:
     QList<CardItem *> items;
-    CloseButton *close_button;
+    SanCloseButton *close_button;
     QPixmap _m_background;
     QStack<QList<CardItem *> > items_stack;
     QStack<bool> retained_stack;
