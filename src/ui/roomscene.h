@@ -445,7 +445,7 @@ private:
     QSet<HeroSkinContainer *> m_heroSkinContainers;
 
 private slots:
-    void fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids = QList<int>());
+    void fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids = QList<int>(), const QList<int> &shownHandcard_ids = QList<int>());
     void updateSkillButtons();
     void acquireSkill(const ClientPlayer *player, const QString &skill_name);
     void updateSelectedTargets();
@@ -493,7 +493,7 @@ private slots:
     void attachSkill(const QString &skill_name, bool from_left);
     void detachSkill(const QString &skill_name);
 
-    void doGongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids);
+    void doGongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids, QList<int> shownHandcard_ids = QList<int>());
 
     void startAssign();
 

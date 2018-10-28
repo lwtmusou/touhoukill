@@ -34,7 +34,7 @@ QRectF CardContainer::boundingRect() const
     return _m_boundingRect;
 }
 
-void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids)
+void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids, const QList<int> &shownHandcard_ids)
 {
     QList<CardItem *> card_items;
     if (card_ids.isEmpty() && items.isEmpty())
@@ -94,6 +94,12 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
         item->setAcceptedMouseButtons(Qt::LeftButton);
         if (disabled_ids.contains(item->getCard()->getEffectiveId()))
             item->setEnabled(false);
+
+        if (shownHandcard_ids.contains(item->getId())) {
+            item->setFootnote(Sanguosha->translate("shown_card"));
+            item->showFootnote();
+        }
+
         item->show();
     }
 }
@@ -253,10 +259,12 @@ void CardContainer::startGongxin(const QList<int> &enabled_ids)
 {
     if (enabled_ids.isEmpty())
         return;
+
     foreach (CardItem *item, items) {
         const Card *card = item->getCard();
-        if (card && enabled_ids.contains(card->getEffectiveId()))
+        if (card && enabled_ids.contains(card->getEffectiveId())) {
             connect(item, SIGNAL(double_clicked()), this, SLOT(gongxinItem()));
+        }
         else
             item->setEnabled(false);
     }

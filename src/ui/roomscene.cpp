@@ -149,7 +149,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(player_revived(QString)), this, SLOT(revivePlayer(QString)));
     connect(ClientInstance, SIGNAL(dashboard_death(QString)), this, SLOT(setDashboardShadow(QString)));
     connect(ClientInstance, SIGNAL(card_shown(QString, int)), this, SLOT(showCard(QString, int)));
-    connect(ClientInstance, SIGNAL(gongxin(QList<int>, bool, QList<int>)), this, SLOT(doGongxin(QList<int>, bool, QList<int>)));
+    connect(ClientInstance, SIGNAL(gongxin(QList<int>, bool, QList<int>, QList<int>)), this, SLOT(doGongxin(QList<int>, bool, QList<int>, QList<int>)));
     connect(ClientInstance, SIGNAL(focus_moved(QStringList, QSanProtocol::Countdown)), this, SLOT(moveFocus(QStringList, QSanProtocol::Countdown)));
     connect(ClientInstance, SIGNAL(emotion_set(QString, QString)), this, SLOT(setEmotion(QString, QString)));
     connect(ClientInstance, SIGNAL(skill_invoked(QString, QString)), this, SLOT(showSkillInvocation(QString, QString)));
@@ -217,7 +217,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(card_container, SIGNAL(item_chosen(int)), ClientInstance, SLOT(onPlayerChooseAG(int)));
     connect(card_container, SIGNAL(item_gongxined(int)), ClientInstance, SLOT(onPlayerReplyGongxin(int)));
 
-    connect(ClientInstance, SIGNAL(ag_filled(QList<int>, QList<int>)), this, SLOT(fillCards(QList<int>, QList<int>)));
+    connect(ClientInstance, SIGNAL(ag_filled(QList<int>, QList<int>, QList<int>)), this, SLOT(fillCards(QList<int>, QList<int>, QList<int>)));
     connect(ClientInstance, SIGNAL(ag_taken(ClientPlayer *, int, bool)), this, SLOT(takeAmazingGrace(ClientPlayer *, int, bool)));
     connect(ClientInstance, SIGNAL(ag_cleared()), card_container, SLOT(clear()));
 
@@ -3924,16 +3924,16 @@ void RoomScene::speak()
     chat_edit->clear();
 }
 
-void RoomScene::fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids)
+void RoomScene::fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids, const QList<int> &shownHandcard_ids)
 {
     bringToFront(card_container);
-    card_container->fillCards(card_ids, disabled_ids);
+    card_container->fillCards(card_ids, disabled_ids, shownHandcard_ids);
     card_container->show();
 }
 
-void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids)
+void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids, QList<int> shownHandcard_ids)
 {
-    fillCards(card_ids);
+    fillCards(card_ids, QList<int>(), shownHandcard_ids);
     if (enable_heart)
         card_container->startGongxin(enabled_ids);
     else

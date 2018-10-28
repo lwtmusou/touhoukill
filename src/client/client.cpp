@@ -1727,12 +1727,13 @@ void Client::onPlayerDiscardCards(const Card *cards)
 void Client::fillAG(const QVariant &cards_str)
 {
     JsonArray cards = cards_str.value<JsonArray>();
-    if (cards.size() != 2)
+    if (cards.size() != 3)
         return;
-    QList<int> card_ids, disabled_ids;
+    QList<int> card_ids, disabled_ids, shownHandcard_ids;
     JsonUtils::tryParse(cards[0], card_ids);
     JsonUtils::tryParse(cards[1], disabled_ids);
-    emit ag_filled(card_ids, disabled_ids);
+    JsonUtils::tryParse(cards[2], shownHandcard_ids);
+    emit ag_filled(card_ids, disabled_ids, shownHandcard_ids);
 }
 
 void Client::takeAG(const QVariant &take_var)
@@ -1933,7 +1934,7 @@ void Client::showAllCards(const QVariant &arg)
     if (who)
         who->setCards(card_ids);
 
-    emit gongxin(card_ids, false, QList<int>());
+    emit gongxin(card_ids, false, QList<int>(), who->getShownHandcards());
 }
 
 void Client::askForGongxin(const QVariant &args)
@@ -1954,7 +1955,7 @@ void Client::askForGongxin(const QVariant &args)
 
     who->setCards(card_ids);
 
-    emit gongxin(card_ids, enable_heart, enabled_ids);
+    emit gongxin(card_ids, enable_heart, enabled_ids, who->getShownHandcards());
     setStatus(AskForGongxin);
 }
 
