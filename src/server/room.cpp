@@ -1371,7 +1371,8 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     QList<const Card *> cards = who->getCards(flags);
     QList<const Card *> knownCards = who->getCards(flags);
     foreach (const Card *card, cards) {
-        if ((method == Card::MethodDiscard && !player->canDiscard(who, card->getEffectiveId(), reason)) || checked_disabled_ids.contains(card->getEffectiveId())) {
+        if ((method == Card::MethodDiscard && !player->canDiscard(who, card->getEffectiveId(), reason)) 
+                || checked_disabled_ids.contains(card->getEffectiveId())) {
             cards.removeOne(card);
             knownCards.removeOne(card);
         } else if (unknownHandcards.contains(card->getEffectiveId()))

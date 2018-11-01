@@ -113,6 +113,15 @@ public:
     Q_INVOKABLE Pillar(Card::Suit suit, int number);
 };
 
+
+class Hakkero : public Weapon
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Hakkero(Card::Suit suit, int number);
+};
+
 class JadeSeal : public Treasure
 {
     Q_OBJECT

@@ -395,6 +395,61 @@ Pillar::Pillar(Suit suit, int number)
     setObjectName("Pillar");
 }
 
+
+class HakkeroSkill : public WeaponSkill
+{
+public:
+    HakkeroSkill()
+        : WeaponSkill("Hakkero")
+    {
+        events << SlashMissed;
+        //view_as_skill = new PillarSkillVS;
+    }
+    
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        if (!equipAvailable(effect.from, EquipCard::WeaponLocation, objectName()))
+            return QList<SkillInvokeDetail>();
+        if (effect.from->isAlive() && effect.to->isAlive() && effect.jink != NULL && effect.from->canDiscard(effect.to, "hes"))
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.from, effect.from);
+        return QList<SkillInvokeDetail>();
+    }
+
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        int damage_value = 1 +  effect.drank + effect.effectValue.last();
+        DummyCard *dummy = new DummyCard;
+        int card_id = -1;
+        QList<int> ids, disable;
+        foreach(const Card *c, effect.to->getCards("hes")) {
+            if (!effect.from->canDiscard(effect.to, c->getEffectiveId()))
+                disable << c->getEffectiveId();
+        }
+        for (int i = 0; i < damage_value; i += 1) {
+            card_id = room->askForCardChosen(effect.from, effect.to, "hes", objectName(), false, Card::MethodDiscard, disable);
+            disable << card_id;
+            dummy->addSubcard(card_id);
+
+            if (effect.to->getCards("hes").length() - disable.length() <= 0)
+                break;
+        }
+
+        room->throwCard(dummy, effect.to, effect.from);
+        delete dummy;
+        return false;
+    }
+};
+
+Hakkero::Hakkero(Suit suit, int number)
+    : Weapon(suit, number, 3)
+{
+    setObjectName("Hakkero");
+}
+
 class JadeSealSkill : public ZeroCardViewAsSkill
 {
 public:
@@ -917,7 +972,8 @@ TestCardPackage::TestCardPackage()
     cards
         // Equip
         << new Gun(Card::Club, 13)
-        << new Pillar(Card::Diamond, 1)
+        //<< new Pillar(Card::Diamond, 1)
+        << new Hakkero(Card::Spade, 11)
         << new JadeSeal(Card::Heart, 13)
         << new Pagoda(Card::Spade, 12)
         << new Camouflage(Card::Spade, 1)
@@ -927,7 +983,7 @@ TestCardPackage::TestCardPackage()
         << new AwaitExhausted(Card::Heart, 10)
         << new AllianceFeast(Card::Heart, 1)
         << new BoneHealing(Card::Spade, 7)
-        << new BoneHealing(Card::Spade, 11)
+        << new BoneHealing(Card::Spade, 3)
         << new BoneHealing(Card::Club, 5)
 
         << new Nullification(Card::Club, 12)
@@ -967,7 +1023,7 @@ TestCardPackage::TestCardPackage()
         card->setParent(this);
 
     skills << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill << new PagodaSkill << new PagodaTriggerSkill << new CamouflageSkill
-           << new FightTogetherSkill << new PillarSkill;
+           << new FightTogetherSkill << new PillarSkill << new HakkeroSkill;
 }
 
 ADD_PACKAGE(TestCard)
