@@ -403,7 +403,6 @@ public:
         : WeaponSkill("Hakkero")
     {
         events << SlashMissed;
-        //view_as_skill = new PillarSkillVS;
     }
     
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
