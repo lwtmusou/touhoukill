@@ -204,6 +204,15 @@ sgs.ai_skill_use["@@Pillar"] = function(self, prompt, method)
 	return dummy_use.card:toString() .. "->" .. table.concat(target_objectname, "+")
 end
 
+
+sgs.weapon_range.Hakkero = 3
+sgs.ai_skill_invoke.Hakkero = function(self, data)
+	local effect = data:toSlashEffect()
+	return  effect.to and self:isEnemy(effect.to)
+end
+
+
+
 local Jade_skill = {}
 Jade_skill.name = "JadeSeal"
 table.insert(sgs.ai_skills, Jade_skill)
