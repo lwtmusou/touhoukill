@@ -421,6 +421,13 @@ public:
         
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         int damage_value = 1 +  effect.drank + effect.effectValue.last();
+
+        QStringList damage_flags;
+        damage_flags << "jidu_card" << "mofa_card" << "yuxueSlash";
+        foreach(const QString &flag, effect.slash->getFlags())
+            if (damage_flags.contains(flag))
+                damage_value++;
+
         DummyCard *dummy = new DummyCard;
         int card_id = -1;
         QList<int> ids, disable;
