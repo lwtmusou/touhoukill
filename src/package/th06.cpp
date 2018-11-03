@@ -1376,7 +1376,7 @@ static void do_sishu(ServerPlayer *player)
         room->moveCardsAtomic(move, true);
         room->getThread()->delay();
         Card *card = Sanguosha->getCard(id);
-        if (card->getTypeId() == Card::TypeTrick) {
+        if (card->isNDTrick()) {
             ServerPlayer *target = room->askForPlayerChosen(player, room->getAllPlayers(), "sishu", QString(), false, true);
             acquired = acquired + 1;
             CardsMoveStruct move2(id, target, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_GOTBACK, target->objectName()));
