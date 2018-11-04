@@ -64,8 +64,8 @@ return {
 	["#mofa_damage"]= "%from 对 %to 的伤害由 %arg2 点增加到 %arg 点。",
 	["#TouhouBuff"]= "%from 的 %arg 效果被触发。",
 	["wuyu"] = "雾雨",
-	[":wuyu"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"green\"><b>其他角色的出牌阶段限一次，</b></font>其可以将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌交给你。",
-	[":wuyu_attach"]= "出牌阶段，你可以将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>手牌交给拥有主公技“雾雨”的角色。每阶段限一次。",
+	[":wuyu"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"green\"><b>其他角色的出牌阶段限一次，</b></font>其可以将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌交给你。",
+	[":wuyu_attach"]= "出牌阶段，你可以将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌交给拥有主公技“雾雨”的角色。每阶段限一次。",
 	["wuyu_attach"]= "雾雨送牌",
 
 --************************************************
