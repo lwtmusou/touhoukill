@@ -967,6 +967,35 @@ void BoneHealing::onEffect(const CardEffectStruct &effect) const
         effect.to->getRoom()->setPlayerProperty(effect.to, "chained", !effect.to->isChained());
 }
 
+SpringBreath::SpringBreath(Suit suit, int number)
+    : DelayedTrick(suit, number, false, true)
+{
+    setObjectName("spring_breath");
+
+    judge.pattern = ".|heart|2~9";
+    judge.good = true;
+    judge.negative = false;
+    judge.reason = objectName();
+}
+
+QString SpringBreath::getSubtype() const
+{
+    return "unmovable_delayed_trick";
+}
+
+bool SpringBreath::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    bool ignore
+        = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+    return targets.isEmpty() && (!to_select->containsTrick(objectName()) || ignore);
+}
+
+void SpringBreath::takeEffect(ServerPlayer *target) const
+{
+    target->drawCards(6);
+}
+
+
 
 TestCardPackage::TestCardPackage()
     : Package("test_card", Package::CardPack)
@@ -994,6 +1023,8 @@ TestCardPackage::TestCardPackage()
 
         << new Nullification(Card::Club, 12)
         << new Nullification(Card::Club, 11)
+
+        << new SpringBreath(Card::Heart, 8)
 
         //Basic
         << new IronSlash(Card::Club, 7)

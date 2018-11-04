@@ -271,9 +271,10 @@ bool SingleTargetTrick::targetFilter(const QList<const Player *> &targets, const
     return true;
 }
 
-DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
+DelayedTrick::DelayedTrick(Suit suit, int number, bool movable, bool returnable)
     : TrickCard(suit, number)
     , movable(movable)
+    , returnable(returnable)
 {
     judge.negative = true;
 }
@@ -358,7 +359,24 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const
         }
     } else if (movable) {
         onNullified(effect.to);
-    } else {
+    } else if (returnable && effect.to->isAlive()) {
+        if (room->getCardOwner(getEffectiveId()) == NULL) {
+            if (isVirtualCard()) {
+                Card *delayTrick = Sanguosha->cloneCard(objectName());
+                WrappedCard *vs_card = Sanguosha->getWrappedCard(getEffectiveId());
+                vs_card->setSkillName(getSkillName());
+                vs_card->takeOver(delayTrick);
+                room->broadcastUpdateCard(room->getAlivePlayers(), vs_card->getId(), vs_card);
+            }
+           
+            CardsMoveStruct move;
+            move.card_ids << getEffectiveId();
+            move.to = effect.to;
+            move.to_place = Player::PlaceDelayedTrick;
+            room->moveCardsAtomic(move, true);
+        }
+    }
+    else {
         if (room->getCardOwner(getEffectiveId()) == NULL) {
             CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
             room->throwCard(this, reason, NULL);

@@ -196,6 +196,18 @@ public:
 };
 
 
+class SpringBreath : public DelayedTrick
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE SpringBreath(Card::Suit suit, int number);
+
+    virtual QString getSubtype() const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void takeEffect(ServerPlayer *target) const;
+};
+
 
 
 class TestCardPackage : public Package
