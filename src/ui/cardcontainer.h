@@ -10,12 +10,12 @@ class ClientPlayer;
 
 #include <QStack>
 
-class CloseButton : public QSanSelectableItem
+class SanCloseButton : public QSanSelectableItem
 {
     Q_OBJECT
 
 public:
-    CloseButton();
+    SanCloseButton();
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -43,7 +43,7 @@ public:
     bool retained();
 
 public slots:
-    void fillCards(const QList<int> &card_ids = QList<int>(), const QList<int> &disabled_ids = QList<int>());
+    void fillCards(const QList<int> &card_ids = QList<int>(), const QList<int> &disabled_ids = QList<int>(), const QList<int> &showHandcard_ids = QList<int>());
     void clear();
     void freezeCards(bool is_disable);
     void fillGeneralCards(const QList<CardItem *> &card_items = QList<CardItem *>(), const QList<CardItem *> &disabled_item = QList<CardItem *>());
@@ -58,7 +58,7 @@ protected:
 
 private:
     QList<CardItem *> items;
-    CloseButton *close_button;
+    SanCloseButton *close_button;
     QPixmap _m_background;
     QStack<QList<CardItem *> > items_stack;
     QStack<bool> retained_stack;

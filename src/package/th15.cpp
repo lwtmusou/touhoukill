@@ -1690,18 +1690,19 @@ YuejianCard::YuejianCard()
 
 bool YuejianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
 {
-    return targets.isEmpty() && !to_select->isKongcheng() && !to_select->hasFlag("yuejianInvoked");
+    return targets.isEmpty() && !to_select->isKongcheng();//&& !to_select->hasFlag("yuejianInvoked")
 }
 
 void YuejianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     ServerPlayer *target = targets.first();
-    room->setPlayerFlag(target, "yuejianInvoked");
+    //room->setPlayerFlag(target, "yuejianInvoked");
 
     //room->notifySkillInvoked(source, "yuejian");
     source->pindian(target, "yuejian");
 }
 
+/*
 class YuejianVS : public ZeroCardViewAsSkill
 {
 public:
@@ -1741,6 +1742,38 @@ public:
         }
         return NULL;
     }
+};*/
+
+
+class YuejianVS : public ZeroCardViewAsSkill
+{
+public:
+    YuejianVS()
+        : ZeroCardViewAsSkill("yuejian")
+    {
+        response_pattern = "@@yuejian!";
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        if (player->isKongcheng() || player->hasUsed("YuejianCard"))
+            return false;
+        return true;
+    }
+
+    virtual const Card *viewAs() const
+    {
+        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+            YuejianCard *c = new YuejianCard;
+            return c;
+        }
+        else {
+            AwaitExhausted *card = new AwaitExhausted(Card::SuitToBeDecided, -1);
+            card->setSkillName(objectName());
+            return card;
+        }
+        return NULL;
+    }
 };
 
 class Yuejian : public TriggerSkill
@@ -1749,11 +1782,11 @@ public:
     Yuejian()
         : TriggerSkill("yuejian")
     {
-        events << EventPhaseChanging << Pindian;
+        events << Pindian; //<< EventPhaseChanging
         view_as_skill = new YuejianVS;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
+    /*void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
     {
         if (triggerEvent == EventPhaseChanging) {
             foreach (ServerPlayer *p, room->getAlivePlayers()) {
@@ -1761,7 +1794,7 @@ public:
                 room->setPlayerFlag(p, "-yuejianSuccess");
             }
         }
-    }
+    }*/
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
@@ -1769,11 +1802,11 @@ public:
             PindianStruct *pindian = data.value<PindianStruct *>();
             if (pindian->reason == objectName() && pindian->from->isAlive()) {
                 if (!pindian->success) {
-                    MagicAnaleptic *ana = new MagicAnaleptic(Card::NoSuit, 0);
-                    ana->setSkillName(objectName());
-                    ana->deleteLater();
-                    if (pindian->from->isCardLimited(ana, Card::MethodUse) || pindian->from->isProhibited(pindian->from, ana))
-                        return QList<SkillInvokeDetail>();
+                    //MagicAnaleptic *ana = new MagicAnaleptic(Card::NoSuit, 0);
+                    //ana->setSkillName(objectName());
+                    //ana->deleteLater();
+                    //if (pindian->from->isCardLimited(ana, Card::MethodUse) || pindian->from->isProhibited(pindian->from, ana))
+                    //    return QList<SkillInvokeDetail>();
                 } else {
                     AwaitExhausted *card = new AwaitExhausted(Card::SuitToBeDecided, -1);
                     card->setSkillName(objectName());
@@ -1788,19 +1821,66 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         PindianStruct *pindian = data.value<PindianStruct *>();
         if (pindian->success) {
             room->setPlayerFlag(invoke->invoker, "yuejianSuccess");
             room->askForUseCard(invoke->invoker, "@@yuejian!", "@yuejian1");
-        } else {
-            room->askForUseCard(invoke->invoker, "@@yuejian!", "@yuejian2");
         }
-
+        else  {
+            //room->askForUseCard(invoke->invoker, "@@yuejian!", "@yuejian2");
+            invoke->invoker->addToPile("dango", pindian->from_card);
+        }
         return false;
     }
 };
+
+
+class Jiangguo : public OneCardViewAsSkill
+{
+public:
+    Jiangguo()
+        : OneCardViewAsSkill("jiangguo")
+    {
+        expand_pile = "dango";
+        filter_pattern = ".|.|.|dango";
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return player->getPile("dango").length() > 0  && MagicAnaleptic::IsAvailable(player);
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        return player->getPile("dango").length() > 0 && matchAvaliablePattern("magic_analeptic", pattern);
+    }
+
+    const Card *viewAs(const Card *originalCard) const
+    {
+        MagicAnaleptic *ana = new MagicAnaleptic(Card::SuitToBeDecided, -1);
+        ana->addSubcard(originalCard);
+        ana->setSkillName(objectName());
+        return ana;
+    }
+
+    virtual const Card *viewAs() const
+    {
+        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+            YuejianCard *c = new YuejianCard;
+            return c;
+        }
+        else {
+            AwaitExhausted *card = new AwaitExhausted(Card::SuitToBeDecided, -1);
+            card->setSkillName(objectName());
+            return card;
+        }
+        return NULL;
+    }
+};
+
+
 
 YidanDialog *YidanDialog::getInstance(const QString &object)
 {
@@ -1811,7 +1891,7 @@ YidanDialog *YidanDialog::getInstance(const QString &object)
 
     if (instance.isNull()) {
         instance = new YidanDialog(object);
-        connect(qApp, &QCoreApplication::aboutToQuit, instance, &YidanDialog::deleteLater);
+        connect(qApp, &QCoreApplication::aboutToQuit, instance.data(), &YidanDialog::deleteLater);
     }
 
     return instance;
@@ -2033,6 +2113,7 @@ TH15Package::TH15Package()
 
     General *ringo = new General(this, "ringo", "gzz", 4);
     ringo->addSkill(new Yuejian);
+    ringo->addSkill(new Jiangguo);
 
     General *seiran = new General(this, "seiran", "gzz", 4);
     seiran->addSkill(new Yidan);

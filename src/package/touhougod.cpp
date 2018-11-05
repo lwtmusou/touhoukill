@@ -3528,7 +3528,7 @@ ShenbaoDialog *ShenbaoDialog::getInstance(const QString &object)
 
     if (instance.isNull()) {
         instance = new ShenbaoDialog(object);
-        connect(qApp, &QCoreApplication::aboutToQuit, instance, &ShenbaoDialog::deleteLater);
+        connect(qApp, &QCoreApplication::aboutToQuit, instance.data(), &ShenbaoDialog::deleteLater);
     }
 
     return instance;
@@ -4945,7 +4945,7 @@ AnyunDialog *AnyunDialog::getInstance(const QString &object)
 
     if (instance.isNull()) {
         instance = new AnyunDialog(object);
-        connect(qApp, &QCoreApplication::aboutToQuit, instance, &AnyunDialog::deleteLater);
+        connect(qApp, &QCoreApplication::aboutToQuit, instance.data(), &AnyunDialog::deleteLater);
     }
 
     return instance;

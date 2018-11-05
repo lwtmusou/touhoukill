@@ -19,15 +19,13 @@ Mogara
 *********************************************************************/
 
 #include "playercardbox.h"
+#include "SkinBank.h"
+#include "TimedProgressBar.h"
 #include "carditem.h"
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
 #include "roomscene.h"
-//#include "skin-bank.h"
-#include "SkinBank.h"
-//#include "timed-progressbar.h"
-#include "TimedProgressBar.h"
 
 #include <QGraphicsProxyWidget>
 
@@ -108,18 +106,25 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
 
     if (handcard) {
         QList<const Card *> handcards;
+        QList<const Card *> shownHandcards;
+        foreach(int id, player->getShownHandcards()) {
+            const Card *c = Sanguosha->getCard(id);
+            shownHandcards << c;
+        }
+
         if (!handcardVisible && Self != player) {
-            foreach (int id, player->getShownHandcards()) {
+            foreach(int id, player->getShownHandcards()) {
                 const Card *c = Sanguosha->getCard(id);
                 handcards << c;
             }
-
             int hidden = player->getHandcardNum() - handcards.length();
             for (int i = 0; i < hidden; ++i)
                 handcards << NULL;
-        } else
+        }
+        else
             handcards = player->getHandcards();
-        arrangeCards(handcards, QPoint(startX, nameRects.at(index).y()), enableEmptyCard);
+            
+        arrangeCards(handcards, QPoint(startX, nameRects.at(index).y()), enableEmptyCard, shownHandcards);
         ++index;
     }
 
@@ -255,7 +260,7 @@ void PlayerCardBox::updateNumbers(const int &cardNumber)
     nameRects << QRect(verticalBlankWidth, y, placeNameAreaWidth, height);
 }
 
-void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, const QPoint &topLeft, bool enableEmptyCard)
+void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, const QPoint &topLeft, bool enableEmptyCard, const QList<const Card *> &shownCards)
 {
     QList<CardItem *> areaItems;
     foreach (const Card *card, cards) {
@@ -264,10 +269,18 @@ void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, const QPoint 
         item->resetTransform();
         item->setParentItem(this);
         item->setFlag(ItemIsMovable, false);
-        if (card)
+        if (card) {
             item->setEnabled(!disabledIds.contains(card->getEffectiveId()) && (method != Card::MethodDiscard || Self->canDiscard(player, card->getEffectiveId())));
+            if (shownCards.contains(card)) {
+                item->setFootnote(Sanguosha->translate("shown_card"));
+                item->showFootnote();
+            }
+        }
         else
             item->setEnabled(enableEmptyCard);
+
+        
+
         connect(item, &CardItem::clicked, this, &PlayerCardBox::reply);
         item->setAcceptedMouseButtons(Qt::LeftButton); //the source of hegemony has not set LeftButton???
         //connect(item, SIGNAL(clicked()), this, SLOT(reply()));

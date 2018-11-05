@@ -275,51 +275,7 @@ bool SuperPeach::isAvailable(const Player *player) const
     return false;
 }
 
-class CameraSkill : public WeaponSkill
-{
-public:
-    CameraSkill()
-        : WeaponSkill("Camera")
-    {
-        events << Damage;
-    }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
-    {
-        DamageStruct damage = data.value<DamageStruct>();
-        if (!equipAvailable(damage.from, EquipCard::WeaponLocation, objectName(), damage.to))
-            return QList<SkillInvokeDetail>();
-
-        if (damage.card && damage.card->isKindOf("Slash") && damage.from && damage.from->isAlive() && damage.to->isAlive() && damage.to != damage.from && damage.by_user
-            && !damage.chain && !damage.transfer && damage.to->getCards("h").length() > 0)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
-
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        ServerPlayer *target = invoke->targets.first();
-        if (target->getCards("h").isEmpty())
-            return false;
-
-        int id = room->askForCardChosen(invoke->invoker, target, "h", objectName());
-        target->addToShownHandCards(QList<int>() << id);
-
-        if (target->getCards("h").isEmpty())
-            return false;
-        int id2 = room->askForCardChosen(invoke->invoker, target, "h", objectName());
-        target->addToShownHandCards(QList<int>() << id2);
-
-        return false;
-    }
-};
-
-Camera::Camera(Suit suit, int number)
-    : Weapon(suit, number, 4)
-{
-    setObjectName("Camera");
-}
 
 class GunSkill : public WeaponSkill
 {
@@ -437,6 +393,67 @@ Pillar::Pillar(Suit suit, int number)
     : Weapon(suit, number, 3)
 {
     setObjectName("Pillar");
+}
+
+
+class HakkeroSkill : public WeaponSkill
+{
+public:
+    HakkeroSkill()
+        : WeaponSkill("Hakkero")
+    {
+        events << SlashMissed;
+    }
+    
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        if (!equipAvailable(effect.from, EquipCard::WeaponLocation, objectName()))
+            return QList<SkillInvokeDetail>();
+        if (effect.from->isAlive() && effect.to->isAlive() && effect.jink != NULL && effect.from->canDiscard(effect.to, "hes"))
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.from, effect.from);
+        return QList<SkillInvokeDetail>();
+    }
+
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        int damage_value = 1 +  effect.drank + effect.effectValue.last();
+
+        QStringList damage_flags;
+        damage_flags << "jidu_card" << "mofa_card" << "yuxueSlash";
+        foreach(const QString &flag, effect.slash->getFlags())
+            if (damage_flags.contains(flag))
+                damage_value++;
+
+        DummyCard *dummy = new DummyCard;
+        int card_id = -1;
+        QList<int> ids, disable;
+        foreach(const Card *c, effect.to->getCards("hes")) {
+            if (!effect.from->canDiscard(effect.to, c->getEffectiveId()))
+                disable << c->getEffectiveId();
+        }
+        for (int i = 0; i < damage_value; i += 1) {
+            card_id = room->askForCardChosen(effect.from, effect.to, "hes", objectName(), false, Card::MethodDiscard, disable);
+            disable << card_id;
+            dummy->addSubcard(card_id);
+
+            if (effect.to->getCards("hes").length() - disable.length() <= 0)
+                break;
+        }
+
+        room->throwCard(dummy, effect.to, effect.from);
+        delete dummy;
+        return false;
+    }
+};
+
+Hakkero::Hakkero(Suit suit, int number)
+    : Weapon(suit, number, 3)
+{
+    setObjectName("Hakkero");
 }
 
 class JadeSealSkill : public ZeroCardViewAsSkill
@@ -962,10 +979,10 @@ void BoneHealing::onEffect(const CardEffectStruct &effect) const
         effect.to->getRoom()->setPlayerProperty(effect.to, "chained", !effect.to->isChained());
 }
 
-SpellDuel::SpellDuel(Card::Suit suit, int number)
-    : SingleTargetTrick(suit, number)
+SpringBreath::SpringBreath(Suit suit, int number)
+    : DelayedTrick(suit, number, false, true)
 {
-    setObjectName("spell_duel");
+    setObjectName("spring_breath");
 }
 
 bool SpellDuel::isAvailable(const Player *player) const
@@ -978,109 +995,31 @@ bool SpellDuel::isAvailable(const Player *player) const
     }
 
     return false;
+
+    judge.pattern = ".|heart|2~9";
+    judge.good = true;
+    judge.negative = false;
+    judge.reason = objectName();
 }
 
-bool SpellDuel::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+QString SpringBreath::getSubtype() const
 {
-    int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    return targets.length() < total_num && to_select != Self;
+    return "unmovable_delayed_trick";
 }
 
-void SpellDuel::onEffect(const CardEffectStruct &effect) const
+bool SpringBreath::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    if (effect.from->isKongcheng() || effect.to->isKongcheng())
-        return;
-    Room *room = effect.from->getRoom();
-
-    if (effect.from->pindian(effect.to, "spell_duel", NULL)) {
-        DamageStruct damage(this, effect.from, effect.to);
-        room->damage(damage);
-    } else {
-        DamageStruct damage(this, effect.to, effect.from);
-        damage.by_user = false;
-        room->damage(damage);
-    }
+    bool ignore
+        = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+    return targets.isEmpty() && (!to_select->containsTrick(objectName()) || ignore);
 }
 
-Kusuri::Kusuri(Suit suit, int number)
-    : BasicCard(suit, number)
+void SpringBreath::takeEffect(ServerPlayer *target) const
 {
-    setObjectName("kusuri");
+    target->drawCards(6);
 }
 
-QString Kusuri::getSubtype() const
-{
-    return "recover_card";
-}
 
-bool Kusuri::isAvailable(const Player *player) const
-{
-    if (!BasicCard::isAvailable(player))
-        return false;
-    bool isPlay = Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY;
-    bool ignore = (player->hasSkill("tianqu") && isPlay && !hasFlag("IgnoreFailed"));
-    if (ignore)
-        return true;
-    if (player->isWounded() && !player->isProhibited(player, this))
-        return true;
-
-    QList<const Player *> targets = player->getAliveSiblings();
-    targets << player;
-    foreach (const Player *p, targets) {
-        if (!player->isProhibited(p, this)) {
-            if (p->hasFlag("Global_Dying") && !isPlay)
-                return true;
-            if (p->isChained() || !p->getShownHandcards().isEmpty() || !p->faceUp() || !p->getBrokenEquips().isEmpty())
-                return true;
-        }
-    }
-    return false;
-}
-
-bool Kusuri::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
-{
-    bool globalDying = false;
-    QList<const Player *> players = Self->getSiblings();
-    players << Self;
-    foreach (const Player *p, players) {
-        if (p->hasFlag("Global_Dying") && p->isAlive()) {
-            globalDying = true;
-            break;
-        }
-    }
-
-    if (globalDying && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-        return to_select->hasFlag("Global_Dying") && to_select->objectName() == Self->property("currentdying").toString();
-    } else {
-        int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-        return targets.length() < total_num
-            && (to_select->isChained() || !to_select->getShownHandcards().isEmpty() || !to_select->faceUp() || !to_select->getBrokenEquips().isEmpty());
-    }
-    return false;
-}
-
-void Kusuri::onEffect(const CardEffectStruct &effect) const
-{
-    Room *room = effect.to->getRoom();
-    if (effect.to->hasFlag("Global_Dying") && Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY) {
-        // recover hp
-        RecoverStruct recover;
-        recover.card = this;
-        recover.who = effect.from;
-        room->recover(effect.to, recover);
-    } else {
-        if (!effect.to->faceUp())
-            effect.to->turnOver();
-        if (effect.to->isChained())
-            room->setPlayerProperty(effect.to, "chained", false);
-
-        if (!effect.to->getBrokenEquips().isEmpty())
-            effect.to->removeBrokenEquips(effect.to->getBrokenEquips(), true);
-
-        if (!effect.to->getShownHandcards().isEmpty())
-            effect.to->removeShownHandCards(effect.to->getShownHandcards(), true);
-    }
-}
 
 TestCardPackage::TestCardPackage()
     : Package("test_card", Package::CardPack)
@@ -1092,7 +1031,8 @@ TestCardPackage::TestCardPackage()
     cards
         // Equip
         << new Gun(Card::Club, 13)
-        << new Pillar(Card::Diamond, 1)
+        //<< new Pillar(Card::Diamond, 1)
+        << new Hakkero(Card::Spade, 11)
         << new JadeSeal(Card::Heart, 13)
         << new Pagoda(Card::Spade, 12)
         << new Camouflage(Card::Spade, 1)
@@ -1102,11 +1042,13 @@ TestCardPackage::TestCardPackage()
         << new AwaitExhausted(Card::Heart, 10)
         << new AllianceFeast(Card::Heart, 1)
         << new BoneHealing(Card::Spade, 7)
-        << new BoneHealing(Card::Spade, 11)
+        << new BoneHealing(Card::Spade, 3)
         << new BoneHealing(Card::Club, 5)
 
         << new Nullification(Card::Club, 12)
         << new Nullification(Card::Club, 11)
+
+        << new SpringBreath(Card::Heart, 8)
 
         //Basic
         << new IronSlash(Card::Club, 7)
@@ -1141,8 +1083,8 @@ TestCardPackage::TestCardPackage()
     foreach (Card *card, cards)
         card->setParent(this);
 
-    skills << new CameraSkill << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill << new PagodaSkill << new PagodaTriggerSkill << new CamouflageSkill
-           << new FightTogetherSkill << new PillarSkill;
+    skills << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill << new PagodaSkill << new PagodaTriggerSkill << new CamouflageSkill
+           << new FightTogetherSkill << new PillarSkill << new HakkeroSkill;
 }
 
 ADD_PACKAGE(TestCard)

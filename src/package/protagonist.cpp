@@ -342,7 +342,7 @@ public:
         : OneCardViewAsSkill("wuyu_attach")
     {
         attached_lord_skill = true;
-        filter_pattern = ".|spade|.|hand";
+        filter_pattern = ".|spade|.|.";//".|spade|.|hand"
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const

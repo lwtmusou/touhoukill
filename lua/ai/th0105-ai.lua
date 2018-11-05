@@ -1157,7 +1157,7 @@ sgs.ai_skill_playerchosen.anliu = function(self, targets)
 		end
 	end
 
-	for _, target in ipairs(targets) do
+	for _, target in sgs.qlist(targets) do
 		if self:isFriend(target) then
 			return target
 		end

@@ -31,6 +31,7 @@ Client::Client(QObject *parent, const QString &filename)
     , alive_count(1)
     , swap_pile(0)
     , _m_roomState(true)
+    , heartbeatTimer(NULL)
 {
     ClientInstance = this;
     m_isGameOver = false;
@@ -44,6 +45,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_ARRANGE_SEATS] = &Client::arrangeSeats;
     m_callbacks[S_COMMAND_WARN] = &Client::warn;
     m_callbacks[S_COMMAND_SPEAK] = &Client::speak;
+    m_callbacks[S_COMMAND_HEARTBEAT] = &Client::heartbeat;
 
     m_callbacks[S_COMMAND_GAME_START] = &Client::startGame;
     m_callbacks[S_COMMAND_GAME_OVER] = &Client::gameOver;
@@ -268,9 +270,15 @@ void Client::setHiddenGenerals(const QVariant &arg)
         return;
 
     QString who = str[0].toString();
-    QString generalString = str[1].toString();
-    QStringList names = generalString.split("|");
-
+    QStringList names;
+    if (JsonUtils::isString(str[1])) {
+        QString generalString = str[1].toString();
+        names = generalString.split("|");
+    } else {
+        int n = str[1].toInt();
+        while (n-- > 0)
+            names << "sujiangf";
+    }
     ClientPlayer *player = getPlayer(who);
     player->setHiddenGenerals(names);
     player->changePile("huashencard", false, QList<int>());
@@ -365,6 +373,13 @@ void Client::setup(const QVariant &setup_json)
 
     if (ServerInfo.parse(setup_str)) {
         emit server_connected();
+
+        heartbeatTimer = new QTimer(this);
+        connect(heartbeatTimer, &QTimer::timeout, [this]() -> void { notifyServer(S_COMMAND_HEARTBEAT); });
+        heartbeatTimer->setSingleShot(false);
+        heartbeatTimer->setInterval(60000);
+        heartbeatTimer->start();
+
         notifyServer(S_COMMAND_TOGGLE_READY);
     } else {
         QMessageBox::warning(NULL, tr("Warning"), tr("Setup string can not be parsed: %1").arg(setup_str));
@@ -481,6 +496,8 @@ void Client::removePlayer(const QVariant &player_name)
         player->setParent(NULL);
         alive_count--;
         emit player_removed(name);
+        players.removeOne(player);
+        connect(this, &Client::destroyed, player, &ClientPlayer::deleteLater);
     }
 }
 
@@ -784,7 +801,6 @@ void Client::startGame(const QVariant &arg)
     JsonArray arr = arg.value<JsonArray>();
     lord_name = arr[0].toString();
 
-    QList<ClientPlayer *> players = findChildren<ClientPlayer *>();
     alive_count = players.count();
 
     emit game_started();
@@ -1711,12 +1727,13 @@ void Client::onPlayerDiscardCards(const Card *cards)
 void Client::fillAG(const QVariant &cards_str)
 {
     JsonArray cards = cards_str.value<JsonArray>();
-    if (cards.size() != 2)
+    if (cards.size() != 3)
         return;
-    QList<int> card_ids, disabled_ids;
+    QList<int> card_ids, disabled_ids, shownHandcard_ids;
     JsonUtils::tryParse(cards[0], card_ids);
     JsonUtils::tryParse(cards[1], disabled_ids);
-    emit ag_filled(card_ids, disabled_ids);
+    JsonUtils::tryParse(cards[2], shownHandcard_ids);
+    emit ag_filled(card_ids, disabled_ids, shownHandcard_ids);
 }
 
 void Client::takeAG(const QVariant &take_var)
@@ -1917,7 +1934,7 @@ void Client::showAllCards(const QVariant &arg)
     if (who)
         who->setCards(card_ids);
 
-    emit gongxin(card_ids, false, QList<int>());
+    emit gongxin(card_ids, false, QList<int>(), who->getShownHandcards());
 }
 
 void Client::askForGongxin(const QVariant &args)
@@ -1938,7 +1955,7 @@ void Client::askForGongxin(const QVariant &args)
 
     who->setCards(card_ids);
 
-    emit gongxin(card_ids, enable_heart, enabled_ids);
+    emit gongxin(card_ids, enable_heart, enabled_ids, who->getShownHandcards());
     setStatus(AskForGongxin);
 }
 
@@ -2120,6 +2137,10 @@ void Client::speak(const QVariant &speak)
     QString line = tr("<font color='%1'>[%2] said: %3 </font>").arg(Config.TextEditColor.name()).arg(title).arg(text);
 
     emit line_spoken(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
+}
+
+void Client::heartbeat(const QVariant &)
+{
 }
 
 void Client::moveFocus(const QVariant &focus)

@@ -117,6 +117,7 @@ public:
     void showCard(const QVariant &show_str);
     void log(const QVariant &log_str);
     void speak(const QVariant &speak_data);
+    void heartbeat(const QVariant &);
     void addHistory(const QVariant &history);
     void moveFocus(const QVariant &focus);
     void setEmotion(const QVariant &set_str);
@@ -262,6 +263,7 @@ private:
     QStringList ban_packages;
     Recorder *recorder;
     Replayer *replayer;
+    QTimer *heartbeatTimer;
     QTextDocument *lines_doc, *prompt_doc;
     int pile_num;
     QString skill_to_invoke;
@@ -319,7 +321,7 @@ signals:
     void card_shown(const QString &player_name, int card_id);
     void log_received(const QStringList &log_str);
     void guanxing(const QList<int> &card_ids, bool single_side);
-    void gongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids);
+    void gongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids, QList<int> shownHandcard_ids);
     void focus_moved(const QStringList &focus, QSanProtocol::Countdown countdown);
     void emotion_set(const QString &target, const QString &emotion);
     void skill_invoked(const QString &who, const QString &skill_name);
@@ -347,7 +349,7 @@ signals:
     void nullification_asked(bool asked);
     void surrender_enabled(bool enabled);
 
-    void ag_filled(const QList<int> &card_ids, const QList<int> &disabled_ids);
+    void ag_filled(const QList<int> &card_ids, const QList<int> &disabled_ids, const QList<int> &shownHandcard_ids);
     void ag_taken(ClientPlayer *taker, int card_id, bool move_cards);
     void ag_cleared();
 

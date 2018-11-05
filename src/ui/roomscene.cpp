@@ -16,7 +16,6 @@
 #include "lightboxanimation.h"
 #include "pixmapanimation.h"
 #include "playercardbox.h"
-#include "playercarddialog.h"
 #include "qsanbutton.h"
 #include "record-analysis.h"
 #include "recorder.h"
@@ -150,7 +149,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(player_revived(QString)), this, SLOT(revivePlayer(QString)));
     connect(ClientInstance, SIGNAL(dashboard_death(QString)), this, SLOT(setDashboardShadow(QString)));
     connect(ClientInstance, SIGNAL(card_shown(QString, int)), this, SLOT(showCard(QString, int)));
-    connect(ClientInstance, SIGNAL(gongxin(QList<int>, bool, QList<int>)), this, SLOT(doGongxin(QList<int>, bool, QList<int>)));
+    connect(ClientInstance, SIGNAL(gongxin(QList<int>, bool, QList<int>, QList<int>)), this, SLOT(doGongxin(QList<int>, bool, QList<int>, QList<int>)));
     connect(ClientInstance, SIGNAL(focus_moved(QStringList, QSanProtocol::Countdown)), this, SLOT(moveFocus(QStringList, QSanProtocol::Countdown)));
     connect(ClientInstance, SIGNAL(emotion_set(QString, QString)), this, SLOT(setEmotion(QString, QString)));
     connect(ClientInstance, SIGNAL(skill_invoked(QString, QString)), this, SLOT(showSkillInvocation(QString, QString)));
@@ -218,7 +217,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(card_container, SIGNAL(item_chosen(int)), ClientInstance, SLOT(onPlayerChooseAG(int)));
     connect(card_container, SIGNAL(item_gongxined(int)), ClientInstance, SLOT(onPlayerReplyGongxin(int)));
 
-    connect(ClientInstance, SIGNAL(ag_filled(QList<int>, QList<int>)), this, SLOT(fillCards(QList<int>, QList<int>)));
+    connect(ClientInstance, SIGNAL(ag_filled(QList<int>, QList<int>, QList<int>)), this, SLOT(fillCards(QList<int>, QList<int>, QList<int>)));
     connect(ClientInstance, SIGNAL(ag_taken(ClientPlayer *, int, bool)), this, SLOT(takeAmazingGrace(ClientPlayer *, int, bool)));
     connect(ClientInstance, SIGNAL(ag_cleared()), card_container, SLOT(clear()));
 
@@ -3252,16 +3251,9 @@ void RoomScene::onGameOver()
     bool victory = Self->property("win").toBool();
 #ifdef AUDIO_SUPPORT
     QString win_effect;
-    if (victory) {
+    if (victory)
         win_effect = "win";
-        foreach (const Player *player, ClientInstance->getPlayers()) {
-            if (player->property("win").toBool() && player->getGeneralName().contains("caocao")) {
-                Audio::stopAll();
-                win_effect = "win-cc";
-                break;
-            }
-        }
-    } else
+    else
         win_effect = "lose";
 
     Sanguosha->playSystemAudioEffect(win_effect);
@@ -3886,70 +3878,69 @@ void RoomScene::viewDistance()
 
 void RoomScene::speak()
 {
-    if (game_started && ServerInfo.DisableChat)
-        chat_box->append(tr("This room does not allow chatting!"));
-    else {
-        bool broadcast = true;
-        QString text = chat_edit->text();
-        if (text == ".StartBgMusic") {
-            broadcast = false;
-            Config.EnableBgMusic = true;
-            Config.setValue("EnableBgMusic", true);
+    bool broadcast = true;
+    QString text = chat_edit->text();
+    if (text == ".StartBgMusic") {
+        broadcast = false;
+        Config.EnableBgMusic = true;
+        Config.setValue("EnableBgMusic", true);
 #ifdef AUDIO_SUPPORT
-            Audio::stopBGM();
-            QString bgmusic_path = Config.value("BackgroundMusic", "audio/title/main.ogg").toString();
-            Audio::playBGM(bgmusic_path);
-            Audio::setBGMVolume(Config.BGMVolume);
+        Audio::stopBGM();
+        QString bgmusic_path = Config.value("BackgroundMusic", "audio/title/main.ogg").toString();
+        Audio::playBGM(bgmusic_path);
+        Audio::setBGMVolume(Config.BGMVolume);
 #endif
-        } else if (text.startsWith(".StartBgMusic=")) {
-            broadcast = false;
-            Config.EnableBgMusic = true;
-            Config.setValue("EnableBgMusic", true);
-            QString path = text.mid(14);
-            if (path.startsWith("|")) {
-                path = path.mid(1);
-                Config.setValue("BackgroundMusic", path);
-            }
-#ifdef AUDIO_SUPPORT
-            Audio::stopBGM();
-            Audio::playBGM(path);
-            Audio::setBGMVolume(Config.BGMVolume);
-#endif
-        } else if (text == ".StopBgMusic") {
-            broadcast = false;
-            Config.EnableBgMusic = false;
-            Config.setValue("EnableBgMusic", false);
-#ifdef AUDIO_SUPPORT
-            Audio::stopBGM();
-#endif
+    } else if (text.startsWith(".StartBgMusic=")) {
+        broadcast = false;
+        Config.EnableBgMusic = true;
+        Config.setValue("EnableBgMusic", true);
+        QString path = text.mid(14);
+        if (path.startsWith("|")) {
+            path = path.mid(1);
+            Config.setValue("BackgroundMusic", path);
         }
-        if (broadcast)
+#ifdef AUDIO_SUPPORT
+        Audio::stopBGM();
+        Audio::playBGM(path);
+        Audio::setBGMVolume(Config.BGMVolume);
+#endif
+    } else if (text == ".StopBgMusic") {
+        broadcast = false;
+        Config.EnableBgMusic = false;
+        Config.setValue("EnableBgMusic", false);
+#ifdef AUDIO_SUPPORT
+        Audio::stopBGM();
+#endif
+    }
+    if (broadcast) {
+        if (game_started && ServerInfo.DisableChat)
+            chat_box->append(tr("This room does not allow chatting!"));
+        else
             ClientInstance->speakToServer(text);
-        else {
-            QString title;
-            if (Self) {
-                title = Self->getGeneralName();
-                title = Sanguosha->translate(title);
-                title.append(QString("(%1)").arg(Self->screenName()));
-                title = QString("<b>%1</b>").arg(title);
-            }
-            QString line = tr("<font color='%1'>[%2] said: %3 </font>").arg(Config.TextEditColor.name()).arg(title).arg(text);
-            appendChatBox(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
+    } else {
+        QString title;
+        if (Self) {
+            title = Self->getGeneralName();
+            title = Sanguosha->translate(title);
+            title.append(QString("(%1)").arg(Self->screenName()));
+            title = QString("<b>%1</b>").arg(title);
         }
+        QString line = tr("<font color='%1'>[%2] said: %3 </font>").arg(Config.TextEditColor.name()).arg(title).arg(text);
+        appendChatBox(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
     }
     chat_edit->clear();
 }
 
-void RoomScene::fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids)
+void RoomScene::fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids, const QList<int> &shownHandcard_ids)
 {
     bringToFront(card_container);
-    card_container->fillCards(card_ids, disabled_ids);
+    card_container->fillCards(card_ids, disabled_ids, shownHandcard_ids);
     card_container->show();
 }
 
-void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids)
+void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids, QList<int> shownHandcard_ids)
 {
-    fillCards(card_ids);
+    fillCards(card_ids, QList<int>(), shownHandcard_ids);
     if (enable_heart)
         card_container->startGongxin(enabled_ids);
     else
@@ -4095,7 +4086,9 @@ void KOFOrderBox::killPlayer(const QString &general_name)
 
 void RoomScene::onGameStart()
 {
+#ifdef AUDIO_SUPPORT
     Audio::stopBGM();
+#endif
     main_window->activateWindow();
     if (Config.GameMode.contains("_mini_")) {
         QString id = Config.GameMode;

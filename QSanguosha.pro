@@ -8,9 +8,12 @@ CONFIG += audio
 win32: QT += winextras
 
 CONFIG += c++11
-
-
 CONFIG += lua
+
+VERSION = 0.8.11
+
+CONFIG += precompiled_header
+PRECOMPILED_HEADER = src/pch.h
 
 SOURCES += \
     swig/sanguosha_wrap.cxx \
@@ -42,7 +45,6 @@ SOURCES += \
     src/dialog/distanceviewdialog.cpp \
     src/dialog/generaloverview.cpp \
     src/dialog/mainwindow.cpp \
-    src/dialog/playercarddialog.cpp \
     src/dialog/roleassigndialog.cpp \
     src/package/exppattern.cpp \
     src/package/maneuvering.cpp \
@@ -116,8 +118,7 @@ SOURCES += \
     src/ui/lightboxanimation.cpp \
     src/ui/chooseoptionsbox.cpp \
     src/ui/playercardbox.cpp \
-    src/package/testCard.cpp \
-    src/package/th16.cpp
+    src/package/testCard.cpp
 
 HEADERS += \
     src/client/aux-skills.h \
@@ -150,7 +151,6 @@ HEADERS += \
     src/dialog/distanceviewdialog.h \
     src/dialog/generaloverview.h \
     src/dialog/mainwindow.h \
-    src/dialog/playercarddialog.h \
     src/dialog/roleassigndialog.h \
     src/package/exppattern.h \
     src/package/maneuvering.h \
@@ -225,8 +225,7 @@ HEADERS += \
     src/ui/chooseoptionsbox.h \
     src/ui/playercardbox.h \
     src/package/testCard.h \
-    src/package/th16.h
-
+    src/pch.h
 
 FORMS += \
     src/dialog/cardoverview.ui \
@@ -247,7 +246,9 @@ INCLUDEPATH += src/util
 INCLUDEPATH += src/jsoncpp/include
 
 win32{
-    RC_FILE += resource/icon.rc
+    CONFIG += skip_target_version_ext
+    RC_ICONS += resource/icon/sgs.ico
+    QMAKE_TARGET_DESCRIPTION = "TouhouSatsu Main Program"
 }
 
 macx{
@@ -399,7 +400,7 @@ android:DEFINES += "\"getlocaledecpoint()='.'\""
 
 
 !build_pass{
-    system("lrelease $$_PRO_FILE_PWD_/builds/sanguosha.ts -qm $$_PRO_FILE_PWD_/sanguosha.qm")
+    system("$$dirname(QMAKE_QMAKE)/lrelease $$_PRO_FILE_PWD_/builds/sanguosha.ts -qm $$_PRO_FILE_PWD_/sanguosha.qm")
 
     SWIG_bin = "swig"
     contains(QMAKE_HOST.os, "Windows"): SWIG_bin = "$$_PRO_FILE_PWD_/tools/swig/swig.exe"

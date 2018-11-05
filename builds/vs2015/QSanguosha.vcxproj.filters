@@ -909,6 +909,7 @@
     <ClCompile Include="..\..\src\ui\playercardbox.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\pch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -1287,6 +1288,7 @@
     <ClInclude Include="..\..\src\core\json.h">
       <Filter>core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\pch.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\sanguosha.ts">

@@ -372,7 +372,7 @@ QijiDialog *QijiDialog::getInstance(const QString &object, bool left, bool right
 
     if (instance.isNull()) {
         instance = new QijiDialog(object, left, right);
-        connect(qApp, &QCoreApplication::aboutToQuit, instance, &QijiDialog::deleteLater);
+        connect(qApp, &QCoreApplication::aboutToQuit, instance.data(), &QijiDialog::deleteLater);
     }
 
     return instance;

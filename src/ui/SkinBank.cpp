@@ -4,6 +4,7 @@
 #include "protocol.h"
 #include "settings.h"
 #include "uiUtils.h"
+
 #include <QCoreApplication>
 #include <QFile>
 #include <QGraphicsPixmapItem>

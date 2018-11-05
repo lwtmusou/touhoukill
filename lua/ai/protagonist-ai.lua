@@ -319,7 +319,7 @@ wuyuvs_skill.getTurnUseCard = function(self)
 	if self.player:hasFlag("Forbidwuyu") then return nil end
 
 
-	local cards = self.player:getCards("hs")
+	local cards = self.player:getCards("hes") --"hs"
 	cards = sgs.QList2Table(cards)
 	local card
 	self:sortByUseValue(cards,true)

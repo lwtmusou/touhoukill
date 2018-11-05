@@ -761,7 +761,7 @@ void ToupaiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
                     disable << id;
             }
             if (!able.isEmpty()) {
-                room->fillAG(ids, source, disable);
+                room->fillAG(ids, source, disable, p->getShownHandcards());
                 int id = room->askForAG(source, able, true, objectName());
                 room->clearAG(source);
                 if (id > -1)
@@ -1535,7 +1535,7 @@ NianliDialog *NianliDialog::getInstance(const QString &object)
 
     if (instance.isNull()) {
         instance = new NianliDialog(object);
-        connect(qApp, &QCoreApplication::aboutToQuit, instance, &NianliDialog::deleteLater);
+        connect(qApp, &QCoreApplication::aboutToQuit, instance.data(), &NianliDialog::deleteLater);
     }
 
     return instance;

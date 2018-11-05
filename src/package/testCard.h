@@ -96,13 +96,6 @@ public:
     virtual bool isAvailable(const Player *player) const;
 };
 
-class Camera : public Weapon
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE Camera(Card::Suit suit, int number);
-};
 
 class Gun : public Weapon
 {
@@ -118,6 +111,15 @@ class Pillar : public Weapon
 
 public:
     Q_INVOKABLE Pillar(Card::Suit suit, int number);
+};
+
+
+class Hakkero : public Weapon
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Hakkero(Card::Suit suit, int number);
 };
 
 class JadeSeal : public Treasure
@@ -195,32 +197,22 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class SpellDuel : public SingleTargetTrick
+
+class SpringBreath : public DelayedTrick
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE SpellDuel(Card::Suit suit, int number);
+    Q_INVOKABLE SpringBreath(Card::Suit suit, int number);
 
     virtual bool isAvailable(const Player *player) const;
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
-};
-
-class Kusuri : public BasicCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE Kusuri(Card::Suit suit, int number);
     virtual QString getSubtype() const;
-
-    virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual bool isAvailable(const Player *player) const;
-    //virtual bool targetFixed() const;
+    virtual void takeEffect(ServerPlayer *target) const;
 };
+
+
 
 class TestCardPackage : public Package
 {

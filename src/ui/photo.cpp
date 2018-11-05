@@ -4,7 +4,7 @@
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
-#include "playercarddialog.h"
+#include "pixmapanimation.h"
 #include "rolecombobox.h"
 #include "roomscene.h"
 #include "settings.h"
@@ -21,8 +21,6 @@
 #include <QPropertyAnimation>
 #include <QPushButton>
 #include <QTimer>
-
-#include "pixmapanimation.h"
 
 using namespace QSanProtocol;
 

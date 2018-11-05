@@ -5,6 +5,7 @@
 #include "engine.h"
 #include "gamerule.h"
 #include "generalselector.h"
+#include "lua.hpp"
 #include "miniscenarios.h"
 #include "roomthread1v1.h"
 #include "roomthread3v3.h"
@@ -29,7 +30,6 @@
 #include <QTimer>
 #include <QTimerEvent>
 #include <ctime>
-#include <lua.hpp>
 
 #ifdef QSAN_UI_LIBRARY_AVAILABLE
 #pragma message WARN("UI elements detected in server side!!!")
@@ -107,6 +107,7 @@ void Room::initCallbacks()
     m_callbacks[S_COMMAND_TRUST] = &Room::trustCommand;
     m_callbacks[S_COMMAND_PAUSE] = &Room::pauseCommand;
     m_callbacks[S_COMMAND_SKIN_CHANGE] = &Room::skinChangeCommand;
+    m_callbacks[S_COMMAND_HEARTBEAT] = &Room::heartbeatCommand;
 
     //Client request
     m_callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Room::networkDelayTestCommand;
@@ -393,8 +394,6 @@ void Room::updateStateItem()
 void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason)
 {
     ServerPlayer *killer = reason ? reason->from : NULL;
-
-    QList<ServerPlayer *> players_with_victim = getAllPlayers();
 
     victim->setAlive(false);
 
@@ -1317,10 +1316,6 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
 {
     tryPause();
     notifyMoveFocus(player, S_COMMAND_CHOOSE_CARD);
-    //flags
-    static QChar handcard_flag('h');
-    static QChar equip_flag('e');
-    static QChar judging_flag('j');
 
     //lord skill: youtong
     if (player != who && player->getKingdom() == "dld") {
@@ -1378,7 +1373,8 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     QList<const Card *> cards = who->getCards(flags);
     QList<const Card *> knownCards = who->getCards(flags);
     foreach (const Card *card, cards) {
-        if ((method == Card::MethodDiscard && !player->canDiscard(who, card->getEffectiveId(), reason)) || checked_disabled_ids.contains(card->getEffectiveId())) {
+        if ((method == Card::MethodDiscard && !player->canDiscard(who, card->getEffectiveId(), reason)) 
+                || checked_disabled_ids.contains(card->getEffectiveId())) {
             cards.removeOne(card);
             knownCards.removeOne(card);
         } else if (unknownHandcards.contains(card->getEffectiveId()))
@@ -2076,10 +2072,10 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
         thread->trigger(RemoveStateChanged, this, pv);
     }
     if (strcmp(property_name, "role_shown") == 0) {
-        setPlayerMark(player, "AI_RoleShown", value.toBool() ? 1 : 0);
+        player->setMark("AI_RoleShown", value.toBool() ? 1 : 0);
         roleStatusCommand(player);
         if (value.toBool())
-            setPlayerMark(player, "AI_RolePredicted", 1);
+            player->setMark("AI_RolePredicted", 1);
     }
 
     if (strcmp(property_name, "kingdom") == 0) {
@@ -6094,11 +6090,12 @@ void Room::makeReviving(const QString &name)
     setPlayerProperty(player, "hp", player->getMaxHp());
 }
 
-void Room::fillAG(const QList<int> &card_ids, ServerPlayer *who, const QList<int> &disabled_ids)
+void Room::fillAG(const QList<int> &card_ids, ServerPlayer *who, const QList<int> &disabled_ids, const QList<int> &shownHandcard_ids)
 {
     JsonArray arg;
     arg << JsonUtils::toJsonArray(card_ids);
     arg << JsonUtils::toJsonArray(disabled_ids);
+    arg << JsonUtils::toJsonArray(shownHandcard_ids);
 
     m_fillAGarg = arg;
     m_fillAGWho = who;
@@ -6684,6 +6681,11 @@ void Room::skinChangeCommand(ServerPlayer *player, const QVariant &packet)
     val << arg[1].toInt();
 
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
+}
+
+void Room::heartbeatCommand(ServerPlayer *player, const QVariant &)
+{
+    doNotify(player, QSanProtocol::S_COMMAND_HEARTBEAT, QVariant());
 }
 
 bool Room::roleStatusCommand(ServerPlayer *player)

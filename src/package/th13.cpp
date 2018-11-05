@@ -184,7 +184,7 @@ XihuaDialog *XihuaDialog::getInstance(const QString &object, bool left, bool rig
 
     if (instance.isNull()) {
         instance = new XihuaDialog(object, left, right);
-        connect(qApp, &QCoreApplication::aboutToQuit, instance, &XihuaDialog::deleteLater);
+        connect(qApp, &QCoreApplication::aboutToQuit, instance.data(), &XihuaDialog::deleteLater);
     }
 
     return instance;
