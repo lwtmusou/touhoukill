@@ -655,35 +655,54 @@ public:
         : TriggerSkill("#santi")
     {
         frequency = Compulsory;
-        events << EventPhaseStart << EventPhaseChanging << EventAcquireSkill << EventLoseSkill << EventSkillInvalidityChange;
+        events << EventPhaseChanging << CardUsed << CardResponded;//<< EventPhaseStart << EventAcquireSkill << EventLoseSkill << EventSkillInvalidityChange;
     }
 
     static void removeSantiLimit(ServerPlayer *player)
     {
         Room *room = player->getRoom();
-        if (player->isCardLimited("use", "santi_limit_1"))
-            room->removePlayerCardLimitation(player, "use", "TrickCard,EquipCard$1", "santi_limit_1");
+        if (player->isCardLimited("use", "santi_limit_basic"))
+            room->removePlayerCardLimitation(player, "use", "TrickCard,EquipCard$1", "santi_limit_basic");
 
-        if (player->isCardLimited("use", "santi_limit_2"))
-            room->removePlayerCardLimitation(player, "use", "TrickCard,BasicCard$1", "santi_limit_2");
+        if (player->isCardLimited("use", "santi_limit_equip"))
+            room->removePlayerCardLimitation(player, "use", "TrickCard,BasicCard$1", "santi_limit_equip");
 
-        if (player->isCardLimited("use", "santi_limit_3"))
-            room->removePlayerCardLimitation(player, "use", "EquipCard,BasicCard$1", "santi_limit_3");
+        if (player->isCardLimited("use", "santi_limit_trick"))
+            room->removePlayerCardLimitation(player, "use", "EquipCard,BasicCard$1", "santi_limit_trick");
+
+        if (player->isCardLimited("use", "santi_limit_basic_used"))
+            room->removePlayerCardLimitation(player, "use", "BasicCard$1", "santi_limit_basic_used");
+
+        if (player->isCardLimited("use", "santi_limit_equip_used"))
+            room->removePlayerCardLimitation(player, "use", "EquipCard$1", "santi_limit_equip_used");
+
+        if (player->isCardLimited("use", "santi_limit_trick_used"))
+            room->removePlayerCardLimitation(player, "use", "TrickCard$1", "santi_limit_trick_used");
     }
 
-    static void setSantiLimit(ServerPlayer *player)
+    static void setSantiLimit(ServerPlayer *player, bool limit_used)
     {
         Room *room = player->getRoom();
         removeSantiLimit(player);
-        if (player->getMark("santi") == 1)
-            room->setPlayerCardLimitation(player, "use", "TrickCard,EquipCard", "santi_limit_1", true);
-        else if (player->getMark("santi") == 2)
-            room->setPlayerCardLimitation(player, "use", "TrickCard,BasicCard", "santi_limit_2", true);
-        else if (player->getMark("santi") == 3)
-            room->setPlayerCardLimitation(player, "use", "EquipCard,BasicCard", "santi_limit_3", true);
+        if (player->getMark("santi_basic") > 0)
+            room->setPlayerCardLimitation(player, "use", "TrickCard,EquipCard", "santi_limit_basic", true);
+        else if (player->getMark("santi_equip") > 0)
+            room->setPlayerCardLimitation(player, "use", "TrickCard,BasicCard", "santi_limit_equip", true);
+        else if (player->getMark("santi_trick") >0)
+            room->setPlayerCardLimitation(player, "use", "EquipCard,BasicCard", "santi_limit_trick", true);
+
+
+        if (limit_used) {
+            if (player->getMark("santi_basic_used") > 0)
+                room->setPlayerCardLimitation(player, "use", "BasicCard", "santi_limit_basic_used", true);
+            if (player->getMark("santi_equip_used") > 0)
+                room->setPlayerCardLimitation(player, "use", "EquipCard", "santi_limit_equip_used", true);
+            if (player->getMark("santi_trick_used") >0)
+                room->setPlayerCardLimitation(player, "use", "TrickCard", "santi_limit_trick_used", true);
+        }
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    /*void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         //mark record at first
         if (triggerEvent == EventPhaseStart) {
@@ -725,6 +744,92 @@ public:
             if (current->getPhase() == Player::Play && current->hasSkill("santi", false, false))
                 setSantiLimit(current);
         }
+    }*/
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        //mark record at first
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            
+        }
+
+        //set or remove limitation
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.from == Player::Play) {
+                
+                room->setPlayerMark(change.player, "santi_trick", 0);
+                room->setPlayerMark(change.player, "santi_basic", 0);
+                room->setPlayerMark(change.player, "santi_equip", 0);
+
+                removeSantiLimit(change.player);
+            }
+            if (change.to == Player::NotActive) {
+                room->setPlayerMark(change.player, "santi_trick_used", 0);
+                room->setPlayerMark(change.player, "santi_basic_used", 0);
+                room->setPlayerMark(change.player, "santi_equip_used", 0);
+            }
+            if (change.to == Player::Play) {
+                setSantiLimit(change.player, true);
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e == CardUsed || e == CardResponded) {
+            ServerPlayer *player = NULL;
+            const Card *card = NULL;
+            if (e == CardUsed) {
+                player = data.value<CardUseStruct>().from;
+                card = data.value<CardUseStruct>().card;
+            }
+            else {
+                CardResponseStruct response = data.value<CardResponseStruct>();
+                player = response.m_from;
+                if (response.m_isUse)
+                    card = response.m_card;
+            }
+            if (player && player->getPhase() == Player::Play && card && !card->isKindOf("SkillCard") && card->getHandlingMethod() == Card::MethodUse) {
+                if (card->isKindOf("EquipCard") && player->getMark("santi_equip") == 0)
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+                
+                if (card->isKindOf("BasicCard") && player->getMark("santi_basic") == 0)
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+               
+                if (card->isKindOf("TrickCard") && player->getMark("santi_trick") == 0)
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+
+            
+         const Card *card = NULL;
+        if (e == CardUsed)
+            card = data.value<CardUseStruct>().card;
+        else
+            card = data.value<CardResponseStruct>().m_card;
+            
+        if (card->isKindOf("EquipCard")) {
+            room->setPlayerMark(invoke->invoker, "santi_equip", 1);
+            room->setPlayerMark(invoke->invoker, "santi_equip_used", 1);
+        }   
+        else if (card->isKindOf("BasicCard")) {
+            room->setPlayerMark(invoke->invoker, "santi_basic", 1);
+            room->setPlayerMark(invoke->invoker, "santi_basic_used", 1);
+        }
+             
+        else if (card->isKindOf("TrickCard")) {
+            room->setPlayerMark(invoke->invoker, "santi_trick", 1);
+            room->setPlayerMark(invoke->invoker, "santi_trick_used", 1);
+        }
+        setSantiLimit(invoke->invoker, false);
+        return false;
     }
 };
 
