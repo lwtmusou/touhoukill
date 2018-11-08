@@ -140,11 +140,10 @@ function sgs.ai_skill_pindian.bushu(minusecard, self, requestor, maxcard)
 	end
 	return self:getMaxCard()
 end
-sgs.ai_choicemade_filter.skillInvoke.bushu = function(self, player, args)
+sgs.ai_choicemade_filter.skillInvoke.bushu = function(self, player, args, data)
 	local damage = player:getTag("bushu_damage"):toDamage()
 	local to =damage.to
 	local from =damage.from
-
 	if from and to and from:objectName()~= to:objectName() then
 		if args[#args] == "yes" then
 				sgs.updateIntention(player, to, -50)

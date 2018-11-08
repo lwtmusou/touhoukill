@@ -373,7 +373,6 @@ end
 	end
 	local slash = sgs.cloneCard(card_name, sgs.Card_SuitToBeDecided, -1)
 	slash:addSubcard(card)
-	self.player:gainMark("@nini")
 	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if self:isEnemy(p) and not p:isDebuffStatus() then
 			target = p

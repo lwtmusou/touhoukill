@@ -1122,6 +1122,32 @@ sgs.ai_skill_cardask["@chenjue"] = function(self, data)
 	return "$" .. cards[1]:getId()
 end
 
+
+sgs.ai_skill_choice.xiewu = function(self, choices, data)
+	local target = data:toCardUse().from
+	if not target then
+		target = data:toCardResponse().m_from
+	end
+	if self:isFriend(target) then return "draw" end
+	if self:isEnemy(target) and choices:match("discard") then return "discard" end
+	return "cancel"
+end
+
+sgs.ai_choicemade_filter.skillChoice.xiewu = function(self, player, args, data)
+	local target = data:toCardUse().from
+	if not target then
+		target = data:toCardResponse().m_from
+	end
+	local choice = args[#args]
+	
+	if  choice == "draw" then
+		sgs.updateIntention(player, target, -40)
+	elseif choice == "discard" then
+		sgs.updateIntention(player, target, 40)
+	end
+
+end
+
 sgs.ai_skill_invoke.anliu = function(self, data)
 	local target =self.player:getTag("anliu-target"):toPlayer()
 	return self:isEnemy(target)

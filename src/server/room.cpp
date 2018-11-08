@@ -1051,6 +1051,7 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
     s.player = player;
     s.type = ChoiceMadeStruct::SkillInvoke;
     s.args << skill_name << (invoked ? "yes" : "no");
+    s.m_extraData = data;
     QVariant d = QVariant::fromValue(s);
     thread->trigger(ChoiceMade, this, d);
     return invoked;
@@ -1097,6 +1098,7 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
     s.player = player;
     s.type = ChoiceMadeStruct::SkillChoice;
     s.args << skill_name << answer;
+    s.m_extraData = data;
     QVariant d = QVariant::fromValue(s);
     thread->trigger(ChoiceMade, this, d);
     return answer;
@@ -1538,6 +1540,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         s.player = player;
         s.type = ChoiceMadeStruct::CardResponded;
         s.args << pattern << prompt << "_nil_";
+        s.m_extraData = data;
         QVariant d = QVariant::fromValue(s);
         thread->trigger(ChoiceMade, this, d);
         return NULL;
@@ -1617,6 +1620,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         s.player = player;
         s.type = ChoiceMadeStruct::CardResponded;
         s.args << pattern << prompt << QString("_%1_").arg(card->toString());
+        s.m_extraData = data;
         QVariant d = QVariant::fromValue(s);
         thread->trigger(ChoiceMade, this, d);
         //show hidden general

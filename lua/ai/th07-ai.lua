@@ -78,7 +78,10 @@ sgs.sidie_keep_value = {
 
 sgs.ai_skill_playerchosen.sidie = function(self, targets)
 	local target = sgs.ai_skill_playerchosen.zero_card_as_slash(self, targets)
-	return target
+	if (target and self:isEnemy(target)) then
+		return target
+	end
+	return nil
 end
 
 

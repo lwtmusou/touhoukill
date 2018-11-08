@@ -864,6 +864,7 @@ struct ChoiceMadeStruct
     ServerPlayer *player;
     ChoiceType type;
     QStringList args;
+    QVariant m_extraData;
 };
 
 enum TriggerEvent
