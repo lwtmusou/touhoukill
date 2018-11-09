@@ -1205,7 +1205,6 @@ bool ZhuonongCard::targetFilter(const QList<const Player *> &targets, const Play
 void ZhuonongCard::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
-    effect.from->tag["zhuonong_target"] = QVariant::fromValue(effect.to);
     QString choice = room->askForChoice(effect.from, "zhuonong", "rd+dr", QVariant::fromValue(effect.to));
     RecoverStruct recover;
     recover.who = effect.from;
@@ -2113,8 +2112,7 @@ public:
             choices << "discard";
         if (target != invoke->invoker && target->isChained() == invoke->invoker->isChained())
             choices << "draw";
-        invoke->invoker->tag["daoyao-target"] = QVariant::fromValue(target);
-        QString choice = room->askForChoice(invoke->invoker, objectName(), choices.join("+"), data);
+        QString choice = room->askForChoice(invoke->invoker, objectName(), choices.join("+"), QVariant::fromValue(target));
         if (choice == "discard")
             room->askForDiscard(target, objectName(), 1, 1, false, true, "daoyao_discard:" + invoke->invoker->objectName());
         else

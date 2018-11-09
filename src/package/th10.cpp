@@ -1093,10 +1093,7 @@ public:
     {
         ServerPlayer *hina = invoke->invoker;
         ServerPlayer *player = invoke->targets.first();
-        //need add player information to help ai  make decision
-        player->tag["liuxing_source"] = QVariant::fromValue(hina);
         QString choice = room->askForChoice(player, objectName(), "losehp+recover", QVariant::fromValue(hina));
-        player->tag.remove("liuxing_source");
         if (choice == "losehp")
             room->loseHp(player, 1);
         else

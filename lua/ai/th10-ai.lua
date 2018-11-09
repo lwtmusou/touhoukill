@@ -568,8 +568,8 @@ sgs.ai_skill_choice.liuxing = function(self, choices, data)
 	end
 	return "recover"
 end
-sgs.ai_choicemade_filter.skillChoice.liuxing = function(self, player, args)
-	local hina  = player:getTag("liuxing_source"):toPlayer()
+sgs.ai_choicemade_filter.skillChoice.liuxing = function(self, player, args, data)
+	local hina  =  data:toPlayer()
 	if hina then
 		if args[#args] == "losehp" then
 			sgs.updateIntention(player, hina, 50)

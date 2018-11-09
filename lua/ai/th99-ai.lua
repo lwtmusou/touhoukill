@@ -808,8 +808,8 @@ sgs.ai_skill_use_func.ZhuonongCard = function(card, use, self)
 		if use.to then use.to:append(target) end
 	end
 end
-sgs.ai_skill_choice.zhuonong=function(self, choices)
-	local target=self.player:getTag("zhuonong_target"):toPlayer()
+sgs.ai_skill_choice.zhuonong=function(self, choices, data)
+	local target= data:toPlayer()
 	if self:isFriend(target) then
 		if target:isWounded() and target:getHp()<2 then
 			return "rd"
@@ -825,9 +825,9 @@ sgs.ai_skill_choice.zhuonong=function(self, choices)
 	end
 end
 sgs.ai_use_value.ZhuonongCard = sgs.ai_use_value.Slash+0.5
-sgs.ai_choicemade_filter.skillChoice.zhuonong = function(self, player, args)
+sgs.ai_choicemade_filter.skillChoice.zhuonong = function(self, player, args, data)
 	local choice = args[#args]
-	local target =player:getTag("zhuonong_target"):toPlayer()
+	local target = data:toPlayer()
 	if not target then return end
 	local friendly =false
 	if self:isFriend(player,target) then
@@ -1265,7 +1265,7 @@ sgs.ai_slash_prohibit.sixiang = function(self, from, to, card)
 end
 
 sgs.ai_skill_choice.daoyao= function(self, choices, data)
-	local target=self.player:getTag("daoyao-target"):toPlayer()
+	local target= data:toPlayer()
 	if choices:match("discard") and self:isEnemy(target) then
 		return "discard"
 	end
@@ -1275,9 +1275,9 @@ sgs.ai_skill_choice.daoyao= function(self, choices, data)
 	local invokes = choices:split("+")
 	return invokes[1]
 end
-sgs.ai_choicemade_filter.skillChoice.daoyao = function(self, player, args)
+sgs.ai_choicemade_filter.skillChoice.daoyao = function(self, player, args, data)
 	local choice = args[#args]
-	local target=self.player:getTag("daoyao-target"):toPlayer()
+	local target= data:toPlayer()
 	if  choice == "discard"  and target then
 		sgs.updateIntention(player, target, 40)
 	elseif choice == "draw" and target then
