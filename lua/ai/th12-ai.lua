@@ -95,8 +95,8 @@ sgs.ai_skill_invoke.fahua_change = function(self,data)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.fahua_change = function(self, player, args)
-	local target=self.room:getTag("fahua_target"):toPlayer()
+sgs.ai_choicemade_filter.skillInvoke.fahua_change = function(self, player, args, data)
+	local target=data:toPlayer()
 	if target then
 		if args[#args] == "yes" then
 			sgs.updateIntention(player, target, -60)
@@ -391,11 +391,11 @@ sgs.ai_skill_invoke.shuinan = function(self,data)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.shuinan = function(self, player, args)
-	local use = player:getTag("shuinan_use"):toCardUse()
-	if use and use.from then
+sgs.ai_choicemade_filter.skillInvoke.shuinan = function(self, player, args, data)
+	local target = data:toPlayer()
+	if target then
 		if args[#args] == "yes" then
-			sgs.updateIntention(player, use.from, 40)
+			sgs.updateIntention(player, target, 40)
 		end
 	end
 end
@@ -822,8 +822,8 @@ sgs.ai_skill_invoke.shanshi = function(self, data)
 	local target = data:toPlayer()
 	return target and self:isFriend(target)
 end
-sgs.ai_choicemade_filter.skillInvoke.shanshi = function(self, player, args)
-	local target = player:getTag("shanshi"):toPlayer()
+sgs.ai_choicemade_filter.skillInvoke.shanshi = function(self, player, args, data)
+	local target = data:toPlayer()
 	if target  and args[#args] == "yes" then
 		sgs.updateIntention(player,  target, -30)
 	end

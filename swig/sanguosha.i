@@ -319,7 +319,7 @@ public:
     void clearOnePrivatePile(const char *pile_name);
     void clearPrivatePiles();
     void drawCards(int n, const char *reason = NULL);
-    bool askForSkillInvoke(const char *skill_name, const QVariant &data = QVariant());
+    bool askForSkillInvoke(const char *skill_name, const QVariant &data = QVariant(), const char *prompt = NULL);
     QList<int> forceToDiscard(int discard_num, bool include_equip, bool is_discard = true);
     QList<int> handCards() const;
     virtual QList<const Card *> getHandcards() const;
@@ -1478,7 +1478,7 @@ public:
     void askForLuckCard();
     Card::Suit askForSuit(ServerPlayer *player, const char *reason);
     QString askForKingdom(ServerPlayer *player);
-    bool askForSkillInvoke(ServerPlayer *player, const char *skill_name, const QVariant &data = QVariant());
+    bool askForSkillInvoke(ServerPlayer *player, const char *skill_name, const QVariant &data = QVariant(), const char *prompt = NULL);
     QString askForChoice(ServerPlayer *player, const char *skill_name, const char *choices, const QVariant &data = QVariant());
     bool askForDiscard(ServerPlayer *target, const char *reason, int discard_num, int min_num,
                        bool optional = false, bool include_equip = false, const char *prompt = NULL);

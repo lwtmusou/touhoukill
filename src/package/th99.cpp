@@ -522,8 +522,6 @@ public:
         if (triggerEvent == Pindian)
             return true;
         else {
-            //for intention ai
-            invoke->invoker->tag["taohuantarget"] = QVariant::fromValue(invoke->preferredTarget);
             return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget));
         }
         return false;

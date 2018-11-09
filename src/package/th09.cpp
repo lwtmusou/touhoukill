@@ -82,7 +82,6 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         QVariant _data = QVariant::fromValue(invoke->preferredTarget);
-        invoke->invoker->tag["doujiu_target"] = _data;
         return room->askForSkillInvoke(invoke->invoker, objectName(), _data);
     }
 
@@ -437,7 +436,6 @@ public:
     bool cost(TriggerEvent event, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         if (event == Damage) {
-            invoke->invoker->tag["huazhong-target"] = QVariant::fromValue(invoke->owner);
             return invoke->invoker->askForSkillInvoke(objectName(), QVariant::fromValue(invoke->owner));
         } else
             return true;

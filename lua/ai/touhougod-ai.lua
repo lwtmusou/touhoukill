@@ -1411,9 +1411,8 @@ sgs.ai_skill_invoke.huanming = function(self,data)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.huanming = function(self, player, args)
-	local damage = player:getTag("huanming_damage"):toDamage()
-	local to=damage.to
+sgs.ai_choicemade_filter.skillInvoke.huanming = function(self, player, args, data)
+	local to = data:toPlayer()
 	if  to  and args[#args] == "yes" then
 		if player:getHp()> to:getHp() then
 			sgs.updateIntention(player, to, -50)

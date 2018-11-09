@@ -45,8 +45,8 @@ sgs.ai_skill_invoke.moyi = function(self, data)
 		local to =data:toPlayer()
 		return self:isFriend(to)
 end
-sgs.ai_choicemade_filter.skillInvoke.moyi = function(self, player, args)
-	local to=player:getTag("moyi-target"):toPlayer()
+sgs.ai_choicemade_filter.skillInvoke.moyi = function(self, player, args, data)
+	local to=data:toPlayer()
 	if to then
 		if args[#args] == "yes" then
 			sgs.updateIntention(player, to, -60)

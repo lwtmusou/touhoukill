@@ -253,9 +253,8 @@ public:
     {
         if (triggerEvent == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
-            invoke->invoker->tag["bushu_damage"] = data;
             QString prompt = "damage:" + damage.from->objectName() + ":" + damage.to->objectName();
-            return invoke->invoker->askForSkillInvoke(objectName(), prompt);
+            return invoke->invoker->askForSkillInvoke(objectName(), data, prompt);
         }
         invoke->invoker->tag.remove("suwako_bushu");
         return true;
@@ -1035,8 +1034,7 @@ public:
             prompt = "transfer1:" + damage.to->objectName() + ":" + damage.from->objectName() + ":" + QString::number(damage.damage) + ":" + nature;
         else
             prompt = "transfer2:" + damage.to->objectName() + "::" + QString::number(damage.damage) + ":" + nature;
-        invoke->invoker->tag["jie_damage"] = data;
-        return room->askForSkillInvoke(invoke->invoker, objectName(), prompt);
+        return room->askForSkillInvoke(invoke->invoker, objectName(), data, prompt);
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
@@ -1417,15 +1415,11 @@ public:
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (triggerEvent == EventPhaseStart) {
-            //this flag is only for AI
-            room->setPlayerFlag(invoke->invoker, "AI_shaojie");
-            bool show = invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget));
-            room->setPlayerFlag(invoke->invoker, "-AI_shaojie");
-            return show;
+            return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget));
         } else {
             DamageStruct damage = data.value<DamageStruct>();
             QString prompt = "invoke:" + damage.from->objectName() + ":" + damage.card->objectName() + ":" + QString::number(damage.damage);
-            return invoke->invoker->askForSkillInvoke(this, prompt);
+            return invoke->invoker->askForSkillInvoke(this, data, prompt);
         }
         return false;
     }
@@ -1529,7 +1523,7 @@ void JiliaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     room->moveCardsAtomic(move, true);
     if (target->getHandcardNum() <= target->getMaxCards() || !source->canDiscard(target, "hs"))
         return;
-    if (room->askForSkillInvoke(source, "jiliao", "throwcard:" + target->objectName())) {
+    if (room->askForSkillInvoke(source, "jiliao", QVariant::fromValue(target), "throwcard:" + target->objectName())) {
         if (target == source)
             room->askForDiscard(source, "jiliao", 1, 1, false, false);
         else {
@@ -1583,7 +1577,7 @@ public:
         room->setTag("zhongyan_damage", data);
         int n = qMax(1, damage.from->getLostHp());
         QString prompt = "target:" + damage.from->objectName() + ":" + QString::number(n);
-        return room->askForSkillInvoke(invoke->invoker, objectName(), prompt);
+        return room->askForSkillInvoke(invoke->invoker, objectName(), data, prompt);
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const

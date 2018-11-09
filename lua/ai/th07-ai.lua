@@ -109,8 +109,8 @@ sgs.ai_skill_invoke.moran = function(self, data)
 	local to =data:toPlayer()
 	return self:isFriend(to)
 end
-sgs.ai_choicemade_filter.skillInvoke.moran = function(self, player, promptlist)
-	local to=player:getTag("moran-target"):toPlayer()
+sgs.ai_choicemade_filter.skillInvoke.moran = function(self, player, promptlist, data)
+	local to=data:toPlayer()
 	if to then
 		if promptlist[#promptlist] == "yes" then
 			sgs.updateIntention(player, to, -60)

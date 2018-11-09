@@ -339,8 +339,8 @@ end
 function sgs.ai_skill_pindian.taohuan(minusecard, self, requestor, maxcard)
 	return self:getMaxCard()
 end
-sgs.ai_choicemade_filter.skillInvoke.taohuan = function(self, player, args)
-	local to = player:getTag("taohuantarget"):toPlayer()
+sgs.ai_choicemade_filter.skillInvoke.taohuan = function(self, player, args, data)
+	local to = data:toPlayer()
 	if  to and player:objectName()~= to:objectName() then
 		if args[#args] == "yes" then
 			sgs.updateIntention(player, to, 50)

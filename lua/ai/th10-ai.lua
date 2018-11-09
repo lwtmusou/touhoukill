@@ -111,7 +111,7 @@ function findBushuCard(self,from)
 	end
 end
 sgs.ai_skill_invoke.bushu =function(self,data)
-	local damage=self.player:getTag("bushu_damage"):toDamage()
+	local damage=data:toDamage()
 	local from=damage.from
 	local to=damage.to
 	if self:isFriend(from) then return false end
@@ -141,7 +141,7 @@ function sgs.ai_skill_pindian.bushu(minusecard, self, requestor, maxcard)
 	return self:getMaxCard()
 end
 sgs.ai_choicemade_filter.skillInvoke.bushu = function(self, player, args, data)
-	local damage = player:getTag("bushu_damage"):toDamage()
+	local damage = data:toDamage()
 	local to =damage.to
 	local from =damage.from
 	if from and to and from:objectName()~= to:objectName() then
@@ -483,7 +483,7 @@ end
 
 
 sgs.ai_skill_invoke.jie = function(self,data)
-	local damage = self.player:getTag("jie_damage"):toDamage()
+	local damage = data:toDamage()
 
 	local nature = damage.nature
 	if damage.card then nature = self:touhouDamageNature(damage.card, damage.from, self.player) end
@@ -521,8 +521,8 @@ sgs.ai_skill_invoke.jie = function(self,data)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.jie = function(self, player, args)
-	local damage = player:getTag("jie_damage"):toDamage()
+sgs.ai_choicemade_filter.skillInvoke.jie = function(self, player, args, data)
+	local damage = data:toDamage()
 	local to=damage.to
 	if  to  then
 		if not (damage.nature  ~= sgs.DamageStruct_Normal  and player:isChained() and to:isChained())  then
@@ -670,19 +670,20 @@ sgs.ai_no_playerchosen_intention.shouhu =function(self, from)
 end
 
 sgs.ai_skill_invoke.shaojie = function(self, data)
-	if self.player:hasFlag("AI_shaojie") then
-		local current = self.room:getCurrent()
-		if current and not self:isFriend(current) then
+	local current = data:toPlayer()
+	if current then
+		if not self:isFriend(current) then
 			return true
 		end
 	else
+		--local damage = data:toDamage() --data有两个类型
 		return true
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.shaojie = function(self, player, args)
-	if player:hasFlag("AI_shaojie") then
-		local current = self.room:getCurrent()
+sgs.ai_choicemade_filter.skillInvoke.shaojie = function(self, player, args, data)
+	local current = data:toPlayer()
+	if current then
 		if args[#args] == "yes" then
 			sgs.updateIntention(player, current, 20)
 		end
@@ -805,15 +806,15 @@ sgs.ai_skill_use_func.JiliaoCard = function(card, use, self)
 	end
 end
 sgs.ai_skill_invoke.jiliao = function(self,data)
-	local strs = data:toStringList()
-	local name= (strs[1]:split(":"))[2]
-	local target
-	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if p:objectName() == name then
-			target=p
-			break
-		end
-	end
+	--local strs = data:toStringList()
+	--local name= (strs[1]:split(":"))[2]
+	local target = data:toPlayer()
+	--for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+	--	if p:objectName() == name then
+	--		target=p
+	--		break
+	--	end
+	--end
 	if target and self:isEnemy(target) then
 		return true
 	end
@@ -829,7 +830,7 @@ sgs.ai_card_intention.JiliaoCard = function(self, card, from, tos)
 end
 
 sgs.ai_skill_invoke.zhongyan = function(self,data)
-	local damage = self.room:getTag("zhongyan_damage"):toDamage()
+	local damage = data:toDamage()
 	local target=damage.from
 	local t=false
 
@@ -849,8 +850,8 @@ sgs.ai_skill_invoke.zhongyan = function(self,data)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.zhongyan = function(self, player, args)
-	local from=self.room:getTag("zhongyan_damage"):toDamage().from
+sgs.ai_choicemade_filter.skillInvoke.zhongyan = function(self, player, args,data)
+	local from=data:toDamage().from
 
 	if from then
 		if args[#args] == "yes" and from:getLostHp()>0 then

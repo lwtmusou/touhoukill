@@ -7,8 +7,8 @@ sgs.ai_skill_invoke.zhuqu = function(self, data)
 		local to =data:toPlayer()
 		return self:isFriend(to)
 end
-sgs.ai_choicemade_filter.skillInvoke.zhuqu = function(self, player, args)
-	local to=player:getTag("zhuqu-target"):toPlayer()
+sgs.ai_choicemade_filter.skillInvoke.zhuqu = function(self, player, args, data)
+	local to=data:toPlayer()
 	if to then
 		if args[#args] == "yes" then
 			sgs.updateIntention(player, to, -60)
@@ -452,14 +452,14 @@ end
 ]]
 
 sgs.ai_skill_invoke.xinyue =function(self,data)
-	local target=self.player:getTag("xinyue_target"):toPlayer()
+	local target=data:toDamage().from
 	if target and self:isEnemy(target) then
 		return true
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.xinyue = function(self, player, args)
-	local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
+sgs.ai_choicemade_filter.skillInvoke.xinyue = function(self, player, args, data)
+	local damage = data:toDamage()
 	local from=damage.from
 	if from:getHandcardNum()>player:getHp() then
 		if args[#args] == "yes" then
