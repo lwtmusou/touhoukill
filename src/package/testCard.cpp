@@ -985,22 +985,6 @@ SpringBreath::SpringBreath(Suit suit, int number)
     setObjectName("spring_breath");
 }
 
-bool SpellDuel::isAvailable(const Player *player) const
-{
-    auto siblings = player->getAliveSiblings();
-
-    foreach (const Player *p, siblings) {
-        if (targetFilter(QList<const Player *>(), p, player))
-            return SingleTargetTrick::isAvailable(player);
-    }
-
-    return false;
-
-    judge.pattern = ".|heart|2~9";
-    judge.good = true;
-    judge.negative = false;
-    judge.reason = objectName();
-}
 
 QString SpringBreath::getSubtype() const
 {
