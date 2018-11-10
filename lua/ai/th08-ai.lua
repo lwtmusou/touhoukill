@@ -689,16 +689,21 @@ table.insert(sgs.ai_skills, yinghuo_skill)
 function yinghuo_skill.getTurnUseCard(self)
 	local slashes = {}
 	local anas = {}
+	local peaches = {}
 	for _, c in sgs.qlist(self.player:getCards("h")) do
 		if c:isKindOf("Slash") then
 			table.insert(slashes, c)
 		elseif c:isKindOf("Analeptic") then
 			table.insert(anas, c)
+		elseif c:isKindOf("Peach") and self.player:isWounded() and c:isAvailable(self.player) then
+			table.insert(peaches, c)
 		end
 	end
 
 	local card
-	if #slashes>0 and #anas >0   then  --and self:shouldUseAnaleptic(self.player, slashes[1])
+	if #peaches > 0 then
+		card = peaches[1]
+	elseif #slashes>0 and #anas >0   then  --and self:shouldUseAnaleptic(self.player, slashes[1])
 
 		if sgs.Analeptic_IsAvailable(self.player, anas[1]) and not self.player:isCardLimited(anas[1], sgs.Card_MethodUse) then
 			card = anas[1]
@@ -711,7 +716,7 @@ function yinghuo_skill.getTurnUseCard(self)
 end
 sgs.ai_skill_use_func.YinghuoCard=function(card,use,self)
 	local tmp = sgs.Sanguosha:getCard((card:getSubcards():first()))
-	if (tmp:isKindOf("Analeptic")) then
+	if (tmp:isKindOf("Analeptic") or tmp:isKindOf("Peach")) then
 		use.card = card
 	else
 		local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
