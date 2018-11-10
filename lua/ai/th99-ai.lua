@@ -848,7 +848,7 @@ end
 
 
 sgs.ai_skill_playerchosen.ganying = function(self, targets)
-	if self:isWeak(self.player) then return self.player end
+	--if self:isWeak(self.player) then return self.player end
 	for _,p in sgs.qlist(targets) do
 		if self:isEnemy(p)  then
 			return p
@@ -858,12 +858,12 @@ sgs.ai_skill_playerchosen.ganying = function(self, targets)
 end
 sgs.ai_playerchosen_intention.ganying = 60
 sgs.ai_skill_invoke.ganying = true
-sgs.ai_cardneed.ganying = function(to, card, self)
+--[[sgs.ai_cardneed.ganying = function(to, card, self)
 	if not self:willSkipPlayPhase(to) then
 		return  (not to:getDefensiveHorse() and  getCardsNum("DefensiveHorse",to,self.player)<1 and card:isKindOf("DefensiveHorse"))
 		or (not to:getOffensiveHorse() and  getCardsNum("OffensiveHorse",to,self.player)<1 and card:isKindOf("OffensiveHorse"))
 	end
-end
+end]]
 
 
 
