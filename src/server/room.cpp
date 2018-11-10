@@ -631,7 +631,7 @@ void Room::attachSkillToPlayer(ServerPlayer *player, const QString &skill_name, 
     doNotify(player, S_COMMAND_ATTACH_SKILL, QVariant(skill_name));
 }
 
-void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name, bool is_equip, bool acquire_only, bool open)
+void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name, bool is_equip, bool acquire_only, bool sendlog)
 {
     if (!player->hasSkill(skill_name, true))
         return;
@@ -652,7 +652,7 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
         doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
         if (!is_equip) {
-            if (open) {
+            if (sendlog) {
                 LogMessage log;
                 log.type = "#LoseSkill";
                 log.from = player;
@@ -1373,8 +1373,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     QList<const Card *> cards = who->getCards(flags);
     QList<const Card *> knownCards = who->getCards(flags);
     foreach (const Card *card, cards) {
-        if ((method == Card::MethodDiscard && !player->canDiscard(who, card->getEffectiveId(), reason)) 
-                || checked_disabled_ids.contains(card->getEffectiveId())) {
+        if ((method == Card::MethodDiscard && !player->canDiscard(who, card->getEffectiveId(), reason)) || checked_disabled_ids.contains(card->getEffectiveId())) {
             cards.removeOne(card);
             knownCards.removeOne(card);
         } else if (unknownHandcards.contains(card->getEffectiveId()))

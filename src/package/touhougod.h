@@ -89,32 +89,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-#if 0
-class ZiwoCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE ZiwoCard();
-
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-};
-
-#endif
-#if 0
-
-class ChaowoCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE ChaowoCard();
-
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-};
-#endif
-
 class ShenbaoDialog : public QDialog
 {
     Q_OBJECT

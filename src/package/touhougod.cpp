@@ -2431,7 +2431,7 @@ public:
     Renge()
         : TriggerSkill("renge")
     {
-        events << GameStart << Revive << EventPhaseStart << GameOverJudge;
+        events << GameStart << Revive << EventPhaseStart << GameOverJudge << EventLoseSkill;
         frequency = Eternal;
     }
 
@@ -2455,7 +2455,7 @@ public:
             ServerPlayer *p = data.value<ServerPlayer *>();
             if (!room->getTag("renge").isNull()) {
                 ServerPlayer *koi = room->getTag("renge").value<ServerPlayer *>();
-                if (koi->isAlive())
+                if (koi->hasSkill(this) && koi->isAlive())
                     ret << SkillInvokeDetail(this, koi, koi, p, true);
             } else if (p->hasSkill(this) && p->isAlive())
                 ret << SkillInvokeDetail(this, p, p, NULL, true);
@@ -2465,9 +2465,22 @@ public:
                 ret << SkillInvokeDetail(this, p, p, NULL, true);
         } else if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
-            ServerPlayer *koi = room->getTag("renge").value<ServerPlayer *>();
-            if (death.who == koi && (!death.who->hasSkill(this) || death.who->isDead()))
-                ret << SkillInvokeDetail(this, NULL, koi, NULL, true);
+            if (!room->getTag("renge").isNull()) {
+                ServerPlayer *koi = room->getTag("renge").value<ServerPlayer *>();
+                if (death.who == koi && (!death.who->hasSkill(this) || death.who->isDead()))
+                    ret << SkillInvokeDetail(this, NULL, koi, NULL, true);
+            }
+        } else if (triggerEvent == EventLoseSkill) {
+            if (!room->getTag("renge").isNull()) {
+                ServerPlayer *koi = room->getTag("renge").value<ServerPlayer *>();
+                if (koi->hasSkill(this) && koi->isAlive()) {
+                    SkillAcquireDetachStruct st = data.value<SkillAcquireDetachStruct>();
+                    if (st.skill->objectName() == "benwo")
+                        ret << SkillInvokeDetail(this, koi, koi, st.player, true);
+                    else if (st.skill->objectName() == "ziwo" && st.player != koi)
+                        ret << SkillInvokeDetail(this, koi, koi, st.player, true);
+                }
+            }
         }
 
         return ret;
@@ -2491,13 +2504,22 @@ public:
         return TriggerSkill::cost(triggerEvent, room, invoke, data);
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (triggerEvent == EventPhaseStart) {
             if (!invoke->targets.isEmpty()) {
                 ServerPlayer *target = invoke->targets.first();
                 room->acquireSkill(target, "chaowo");
             }
+        } else if (triggerEvent == EventLoseSkill) {
+            SkillAcquireDetachStruct st = data.value<SkillAcquireDetachStruct>();
+            LogMessage l;
+            l.type = "#AcquireSkill";
+            l.from = invoke->targets.first();
+            l.arg = st.skill->objectName();
+            room->sendLog(l);
+
+            room->acquireSkill(invoke->targets.first(), st.skill);
         } else {
             if (invoke->owner == NULL) {
                 room->removeTag("renge");
@@ -2507,15 +2529,15 @@ public:
                 }
             } else if (invoke->targets.isEmpty()) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    room->acquireSkill(p, "benwo", false);
+                    room->acquireSkill(p, "benwo");
                     if (p != invoke->invoker)
-                        room->acquireSkill(p, "ziwo", false);
+                        room->acquireSkill(p, "ziwo");
                 }
                 room->setTag("renge", QVariant::fromValue(invoke->invoker));
             } else {
-                room->acquireSkill(invoke->targets.first(), "benwo", false);
+                room->acquireSkill(invoke->targets.first(), "benwo");
                 if (invoke->targets.first() != invoke->owner)
-                    room->acquireSkill(invoke->targets.first(), "ziwo", false);
+                    room->acquireSkill(invoke->targets.first(), "ziwo");
             }
         }
 
@@ -2868,297 +2890,6 @@ void ChaowoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
     // Different from Room::changeHero, must be written seprately
     Chaowo::changeHero(room, source, toChange);
 }
-
-#if 0
-class Biaoxiang : public TriggerSkill
-{
-public:
-    Biaoxiang()
-        : TriggerSkill("biaoxiang")
-    {
-        events << EventPhaseStart;
-        frequency = Wake;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
-    {
-        ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->hasSkill(this) && player->getMark("biaoxiang") == 0 && player->getPhase() == Player::Start && player->getHandcardNum() < 2)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
-    {
-        ServerPlayer *player = data.value<ServerPlayer *>();
-        room->doLightbox("$biaoxiangAnimate", 4000);
-        room->touhouLogmessage("#BiaoxiangWake", player, objectName());
-        room->notifySkillInvoked(player, objectName());
-        room->addPlayerMark(player, objectName());
-        int x = player->getMaxHp();
-        int y;
-        if (x > 3)
-            y = 3 - x;
-        else
-            y = 4 - x;
-
-        if (room->changeMaxHpForAwakenSkill(player, y))
-            room->handleAcquireDetachSkills(player, "ziwo");
-        return false;
-    }
-};
-
-#endif
-#if 0
-ZiwoCard::ZiwoCard()
-{
-    will_throw = true;
-    target_fixed = true;
-}
-
-void ZiwoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
-{
-    RecoverStruct recov;
-    recov.recover = 1;
-    recov.who = source;
-    room->recover(source, recov);
-}
-
-class Ziwo : public ViewAsSkill
-{
-public:
-    Ziwo()
-        : ViewAsSkill("ziwo")
-    {
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const
-    {
-        return player->isWounded();
-    }
-
-    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
-    {
-        return !to_select->isEquipped() && !Self->isJilei(to_select);
-    }
-
-    virtual const Card *viewAs(const QList<const Card *> &cards) const
-    {
-        if (cards.length() == 2) {
-            ZiwoCard *card = new ZiwoCard;
-            card->addSubcards(cards);
-
-            return card;
-        } else
-            return NULL;
-    }
-};
-
-#endif
-#if 0
-class Shifang : public TriggerSkill
-{
-public:
-    Shifang()
-        : TriggerSkill("shifang")
-    {
-        events << CardsMoveOneTime;
-        frequency = Wake;
-    }
-    static void koishi_removeskill(Room *room, ServerPlayer *player)
-    {
-        foreach (const Skill *skill, player->getVisibleSkillList()) {
-            if (skill->getFrequency() == Skill::Wake || skill->isAttachedLordSkill() || skill->getFrequency() == Skill::Eternal)
-                continue;
-            else {
-                QString skill_name = skill->objectName();
-
-                room->handleAcquireDetachSkills(player, "-" + skill_name);
-            }
-        }
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
-    {
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-        if (player != NULL && player->isAlive() && player->hasSkill(this) && player->getMark("shifang") == 0 && move.from_places.contains(Player::PlaceEquip)) {
-            bool can = false;
-            if (player->getEquips().isEmpty())
-                can = true;
-            else if (move.reason.m_reason == CardMoveReason::S_REASON_CHANGE_EQUIP && player->getEquips().length() == 1)
-                can = true;
-            if (can)
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
-        }
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        ServerPlayer *player = invoke->invoker;
-        room->doLightbox("$shifangAnimate", 4000);
-        room->touhouLogmessage("#ShifangWake", player, objectName());
-        koishi_removeskill(room, player);
-
-        room->notifySkillInvoked(player, objectName());
-        room->addPlayerMark(player, objectName());
-        int x = player->getMaxHp();
-        if (room->changeMaxHpForAwakenSkill(player, 4 - x)) {
-            room->handleAcquireDetachSkills(player, "benwo");
-            //room->setPlayerFlag(player, "-shifangInvoked");
-        }
-        return false;
-    }
-};
-
-#endif
-#if 0
-class Benwo : public TriggerSkill
-{
-public:
-    Benwo()
-        : TriggerSkill("benwo")
-    {
-        events << DamageInflicted;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
-    {
-        DamageStruct damage = data.value<DamageStruct>();
-        if (damage.to->hasSkill(this) && damage.to->isWounded() && damage.from != NULL && damage.from->isAlive())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.from);
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        invoke->invoker->tag["benwo_target"] = QVariant::fromValue(invoke->preferredTarget);
-        int x = invoke->invoker->getLostHp();
-        QString prompt = "invoke:" + invoke->preferredTarget->objectName() + ":" + QString::number(x);
-        return invoke->invoker->askForSkillInvoke(objectName(), QVariant::fromValue(invoke->preferredTarget));
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        int x = invoke->invoker->getLostHp();
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
-
-        invoke->invoker->drawCards(x);
-        room->askForDiscard(invoke->targets.first(), objectName(), x, x, false, true);
-        return false;
-    }
-};
-
-#endif
-#if 0
-class Yizhi : public TriggerSkill
-{
-public:
-    Yizhi()
-        : TriggerSkill("yizhi")
-    {
-        events << Dying;
-        frequency = Wake;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
-    {
-        ServerPlayer *who = data.value<DyingStruct>().who;
-        if (who->hasSkill(this) && who->getMark("yizhi") == 0 && who->getHp() < who->dyingThreshold())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, who, who, NULL, true);
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        ServerPlayer *player = invoke->invoker;
-        room->doLightbox("$yizhiAnimate", 4000);
-        room->touhouLogmessage("#YizhiWake", player, objectName());
-        room->notifySkillInvoked(player, objectName());
-        room->addPlayerMark(player, objectName());
-
-        int x = player->dyingThreshold() - player->getHp();
-        RecoverStruct recov;
-        recov.recover = x;
-        recov.who = player;
-        room->recover(player, recov);
-
-        x = player->getMaxHp();
-        if (room->changeMaxHpForAwakenSkill(player, 3 - x)) {
-            Shifang::koishi_removeskill(room, player);
-            room->handleAcquireDetachSkills(player, "chaowo");
-        }
-
-        return false;
-    }
-};
-
-#endif
-#if 0
-ChaowoCard::ChaowoCard()
-{
-    will_throw = true;
-}
-
-bool ChaowoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
-{
-    return (targets.isEmpty() && to_select->getMaxHp() >= Self->getMaxHp());
-}
-
-void ChaowoCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &targets) const
-{
-    targets.first()->drawCards(2);
-    if (targets.first()->getMaxHp() == 3)
-        source->drawCards(2);
-}
-
-class ChaowoVS : public OneCardViewAsSkill
-{
-public:
-    ChaowoVS()
-        : OneCardViewAsSkill("chaowo")
-    {
-        filter_pattern = ".|.|.|hand!";
-        response_pattern = "@@chaowo";
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const
-    {
-        if (originalCard != NULL) {
-            ChaowoCard *card = new ChaowoCard;
-            card->addSubcard(originalCard);
-            return card;
-        } else
-            return NULL;
-    }
-};
-
-class Chaowo : public TriggerSkill
-{
-public:
-    Chaowo()
-        : TriggerSkill("chaowo")
-    {
-        events << EventPhaseStart;
-        view_as_skill = new ChaowoVS;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
-    {
-        ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->hasSkill(this) && player->getPhase() == Player::Finish)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        room->askForUseCard(invoke->invoker, "@@chaowo", "@chaowo");
-        return false;
-    }
-};
-#endif
 
 class Zuosui : public TriggerSkill
 {
