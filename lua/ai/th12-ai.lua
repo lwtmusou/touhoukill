@@ -530,7 +530,7 @@ sgs.ai_skill_invoke.xunbao = true
 end]]
 function sgs.ai_cardsview_valuable.lingbai(self, class_name, player)
 	if class_name == "Slash"  or  class_name == "Jink" then
-		if self.player:getMark("@lingbai") == 0 then return nil end
+		if self.player:getMark("lingbai") == 0 then return nil end
 		local cards=self.player:getCards("hs")
 		cards = self:touhouAppendExpandPileToList(self.player,cards)
 		cards = sgs.QList2Table(cards)
@@ -553,7 +553,7 @@ lingbai_skill.name = "lingbai"
 table.insert(sgs.ai_skills, lingbai_skill)
 lingbai_skill.getTurnUseCard = function(self, inclusive)
 	if not sgs.Slash_IsAvailable(self.player)  then return false end
-	if self.player:getMark("@lingbai") == 0 then return false end
+	if self.player:getMark("lingbai") == 0 then return false end
 
 	local cards=self.player:getCards("hs")
 	cards=self:touhouAppendExpandPileToList(self.player,cards)
