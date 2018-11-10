@@ -63,7 +63,7 @@ sgs.ai_skillProperty.tymhwuyu = function(self)
 end
 
 
-sgs.ai_skill_invoke.huanyue = function(self,data)
+--[[sgs.ai_skill_invoke.huanyue = function(self,data)
 	local damage = self.player:getTag("huanyue_damage"):toDamage()
 	if not self:isEnemy(damage.to) then return false end
 	local tempDamage = damage.damage
@@ -92,6 +92,24 @@ sgs.ai_choicemade_filter.skillInvoke.huanyue = function(self, player, args)
 end
 
 sgs.ai_skill_invoke.sizhai = true
+]]
+
+sgs.ai_skill_invoke.huanyue = true
+sgs.ai_skill_invoke.wanggou = true
+sgs.ai_skill_cardask["@huanyue"] = function(self, data)
+	local damage = data:toDamage()
+	if self:isEnemy(damage.to) then
+		return "$" .. self.player:getPile("huanyue_pile"):first()
+	end
+	return "."
+end
+sgs.ai_choicemade_filter.cardResponded["@huanyue"] = function(self, player, args, data)
+	if args[#args] ~= "_nil_" then
+		local target =data:toDamage().to
+		if not target then return end
+		sgs.updateIntention(player, target, 80)
+	end
+end
 
 sgs.ai_skill_invoke.yuanhu = function(self,data)
 	local source = self.player:getTag("yuanhu"):toPlayer()
