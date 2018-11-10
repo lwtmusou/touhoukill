@@ -403,3 +403,18 @@ sgs.ai_keep_value.BoneHealing = 2.5
 sgs.dynamic_value.damage_card.BoneHealing = true
 --仇恨由伤害事件更新好了
 --sgs.ai_card_intention.BoneHealing = 30
+
+function SmartAI:useCardSpringBreath(card, use)
+	local friends = self:exclude(self.friends, card)
+	if #friends == 0 then return end
+	--local target = self:touhouFindPlayerToDraw(false, 6)
+	
+	local target  = friends[1]
+	if target then
+		use.card = card
+		if use.to then use.to:append(target) end
+		return
+	end
+end
+sgs.ai_use_priority.SpringBreath = sgs.ai_use_priority.SavingEnergy
+sgs.ai_card_intention.SpringBreath = -20
