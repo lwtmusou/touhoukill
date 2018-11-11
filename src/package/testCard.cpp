@@ -983,6 +983,11 @@ SpringBreath::SpringBreath(Suit suit, int number)
     : DelayedTrick(suit, number, false, true)
 {
     setObjectName("spring_breath");
+
+    judge.pattern = ".|heart|2~9";
+    judge.good = true;
+    judge.negative = false;
+    judge.reason = objectName();
 }
 
 
