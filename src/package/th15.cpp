@@ -655,7 +655,7 @@ public:
         : TriggerSkill("#santi")
     {
         frequency = Compulsory;
-        events << EventPhaseChanging << CardUsed << CardResponded;//<< EventPhaseStart << EventAcquireSkill << EventLoseSkill << EventSkillInvalidityChange;
+        events << EventPhaseChanging << CardUsed << CardResponded; //<< EventPhaseStart << EventAcquireSkill << EventLoseSkill << EventSkillInvalidityChange;
     }
 
     static void removeSantiLimit(ServerPlayer *player)
@@ -688,16 +688,15 @@ public:
             room->setPlayerCardLimitation(player, "use", "TrickCard,EquipCard", "santi_limit_basic", true);
         else if (player->getMark("santi_equip") > 0)
             room->setPlayerCardLimitation(player, "use", "TrickCard,BasicCard", "santi_limit_equip", true);
-        else if (player->getMark("santi_trick") >0)
+        else if (player->getMark("santi_trick") > 0)
             room->setPlayerCardLimitation(player, "use", "EquipCard,BasicCard", "santi_limit_trick", true);
-
 
         if (limit_used) {
             if (player->getMark("santi_basic_used") > 0)
                 room->setPlayerCardLimitation(player, "use", "BasicCard", "santi_limit_basic_used", true);
             if (player->getMark("santi_equip_used") > 0)
                 room->setPlayerCardLimitation(player, "use", "EquipCard", "santi_limit_equip_used", true);
-            if (player->getMark("santi_trick_used") >0)
+            if (player->getMark("santi_trick_used") > 0)
                 room->setPlayerCardLimitation(player, "use", "TrickCard", "santi_limit_trick_used", true);
         }
     }
@@ -751,14 +750,12 @@ public:
         //mark record at first
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            
         }
 
         //set or remove limitation
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.from == Player::Play) {
-                
                 room->setPlayerMark(change.player, "santi_trick", 0);
                 room->setPlayerMark(change.player, "santi_basic", 0);
                 room->setPlayerMark(change.player, "santi_equip", 0);
@@ -776,7 +773,7 @@ public:
         }
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
     {
         if (e == CardUsed || e == CardResponded) {
             ServerPlayer *player = NULL;
@@ -784,8 +781,7 @@ public:
             if (e == CardUsed) {
                 player = data.value<CardUseStruct>().from;
                 card = data.value<CardUseStruct>().card;
-            }
-            else {
+            } else {
                 CardResponseStruct response = data.value<CardResponseStruct>();
                 player = response.m_from;
                 if (response.m_isUse)
@@ -794,10 +790,10 @@ public:
             if (player && player->hasSkill(this) && player->getPhase() == Player::Play && card && !card->isKindOf("SkillCard") && card->getHandlingMethod() == Card::MethodUse) {
                 if (card->isKindOf("EquipCard") && player->getMark("santi_equip") == 0)
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
-                
+
                 if (card->isKindOf("BasicCard") && player->getMark("santi_basic") == 0)
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
-               
+
                 if (card->isKindOf("TrickCard") && player->getMark("santi_trick") == 0)
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
             }
@@ -807,23 +803,20 @@ public:
 
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-
-            
-         const Card *card = NULL;
+        const Card *card = NULL;
         if (e == CardUsed)
             card = data.value<CardUseStruct>().card;
         else
             card = data.value<CardResponseStruct>().m_card;
-            
+
         if (card->isKindOf("EquipCard")) {
             room->setPlayerMark(invoke->invoker, "santi_equip", 1);
             room->setPlayerMark(invoke->invoker, "santi_equip_used", 1);
-        }   
-        else if (card->isKindOf("BasicCard")) {
+        } else if (card->isKindOf("BasicCard")) {
             room->setPlayerMark(invoke->invoker, "santi_basic", 1);
             room->setPlayerMark(invoke->invoker, "santi_basic_used", 1);
         }
-             
+
         else if (card->isKindOf("TrickCard")) {
             room->setPlayerMark(invoke->invoker, "santi_trick", 1);
             room->setPlayerMark(invoke->invoker, "santi_trick_used", 1);
@@ -1795,60 +1788,14 @@ YuejianCard::YuejianCard()
 
 bool YuejianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
 {
-    return targets.isEmpty() && !to_select->isKongcheng();//&& !to_select->hasFlag("yuejianInvoked")
+    return targets.isEmpty() && !to_select->isKongcheng();
 }
 
-void YuejianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void YuejianCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     ServerPlayer *target = targets.first();
-    //room->setPlayerFlag(target, "yuejianInvoked");
-
-    //room->notifySkillInvoked(source, "yuejian");
     source->pindian(target, "yuejian");
 }
-
-/*
-class YuejianVS : public ZeroCardViewAsSkill
-{
-public:
-    YuejianVS()
-        : ZeroCardViewAsSkill("yuejian")
-    {
-        response_pattern = "@@yuejian!";
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const
-    {
-        if (player->isKongcheng() || player->hasFlag("yuejianSuccess"))
-            return false;
-
-        foreach (const Player *p, player->getAliveSiblings()) {
-            if (!p->isKongcheng() && !p->hasFlag("yuejianInvoked"))
-                return true;
-        }
-        return false;
-    }
-
-    virtual const Card *viewAs() const
-    {
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
-            YuejianCard *c = new YuejianCard;
-            return c;
-        } else {
-            if (Self->hasFlag("yuejianSuccess")) {
-                AwaitExhausted *card = new AwaitExhausted(Card::SuitToBeDecided, -1);
-                card->setSkillName(objectName());
-                return card;
-            } else {
-                MagicAnaleptic *ana = new MagicAnaleptic(Card::NoSuit, 0);
-                ana->setSkillName(objectName());
-                return ana;
-            }
-        }
-        return NULL;
-    }
-};*/
-
 
 class YuejianVS : public ZeroCardViewAsSkill
 {
@@ -1871,8 +1818,7 @@ public:
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             YuejianCard *c = new YuejianCard;
             return c;
-        }
-        else {
+        } else {
             AwaitExhausted *card = new AwaitExhausted(Card::SuitToBeDecided, -1);
             card->setSkillName(objectName());
             return card;
@@ -1887,32 +1833,16 @@ public:
     Yuejian()
         : TriggerSkill("yuejian")
     {
-        events << Pindian; //<< EventPhaseChanging
+        events << Pindian;
         view_as_skill = new YuejianVS;
     }
-
-    /*void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
-    {
-        if (triggerEvent == EventPhaseChanging) {
-            foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                room->setPlayerFlag(p, "-yuejianInvoked");
-                room->setPlayerFlag(p, "-yuejianSuccess");
-            }
-        }
-    }*/
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
         if (triggerEvent == Pindian) {
             PindianStruct *pindian = data.value<PindianStruct *>();
             if (pindian->reason == objectName() && pindian->from->isAlive()) {
-                if (!pindian->success) {
-                    //MagicAnaleptic *ana = new MagicAnaleptic(Card::NoSuit, 0);
-                    //ana->setSkillName(objectName());
-                    //ana->deleteLater();
-                    //if (pindian->from->isCardLimited(ana, Card::MethodUse) || pindian->from->isProhibited(pindian->from, ana))
-                    //    return QList<SkillInvokeDetail>();
-                } else {
+                if (pindian->success) {
                     AwaitExhausted *card = new AwaitExhausted(Card::SuitToBeDecided, -1);
                     card->setSkillName(objectName());
                     card->deleteLater();
@@ -1932,15 +1862,12 @@ public:
         if (pindian->success) {
             room->setPlayerFlag(invoke->invoker, "yuejianSuccess");
             room->askForUseCard(invoke->invoker, "@@yuejian!", "@yuejian1");
-        }
-        else  {
-            //room->askForUseCard(invoke->invoker, "@@yuejian!", "@yuejian2");
+        } else {
             invoke->invoker->addToPile("dango", pindian->from_card);
         }
         return false;
     }
 };
-
 
 class Jiangguo : public OneCardViewAsSkill
 {
@@ -1954,7 +1881,7 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return player->getPile("dango").length() > 0  && MagicAnaleptic::IsAvailable(player);
+        return player->getPile("dango").length() > 0 && MagicAnaleptic::IsAvailable(player);
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
@@ -1975,8 +1902,7 @@ public:
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             YuejianCard *c = new YuejianCard;
             return c;
-        }
-        else {
+        } else {
             AwaitExhausted *card = new AwaitExhausted(Card::SuitToBeDecided, -1);
             card->setSkillName(objectName());
             return card;
@@ -1984,8 +1910,6 @@ public:
         return NULL;
     }
 };
-
-
 
 YidanDialog *YidanDialog::getInstance(const QString &object)
 {
