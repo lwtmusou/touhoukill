@@ -407,6 +407,7 @@ struct JudgeStruct
     bool time_consuming;
     bool negative;
     bool play_animation;
+    bool is_showncard;
     ServerPlayer *retrial_by_response; // record whether the current judge card is provided by a response retrial
     ServerPlayer *relative_player; // record relative player like skill owner of "huazhong", for processing the case like "huazhong -> dizhen -> huazhong"
 private:

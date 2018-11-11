@@ -884,7 +884,10 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             if (judge->retrial_by_response) {
                 reason.m_extraData = QVariant::fromValue(judge->retrial_by_response);
             }
-            room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);
+            if (judge->is_showncard)
+                room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true, QList<int>() << judge->card->getEffectiveId());
+            else
+                room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);   
         }
 
         break;
@@ -909,7 +912,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             }
             if (!shownIds.isEmpty()) {
                 player->removeShownHandCards(shownIds, false, true);
-                move.shown_ids = shownIds;
+                move.shown_ids.append(shownIds);
                 data = QVariant::fromValue(move);
             }
 
@@ -920,7 +923,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             }
             if (!brokenIds.isEmpty()) {
                 player->removeBrokenEquips(brokenIds, false, true);
-                move.broken_ids = brokenIds;
+                move.broken_ids.append(brokenIds);
                 data = QVariant::fromValue(move);
             }
         }

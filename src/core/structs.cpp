@@ -206,6 +206,7 @@ JudgeStruct::JudgeStruct()
     , retrial_by_response(NULL)
     , relative_player(NULL)
     , _m_result(TRIAL_RESULT_UNKNOWN)
+    ,is_showncard(false)
 {
 }
 
