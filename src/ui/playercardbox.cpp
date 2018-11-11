@@ -275,6 +275,10 @@ void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, const QPoint 
                 item->setFootnote(Sanguosha->translate("shown_card"));
                 item->showFootnote();
             }
+            if (this->player->getJudgingArea().contains(card)) {
+                item->setFootnote(Sanguosha->translate(card->objectName()));
+                item->showFootnote();
+            }
         }
         else
             item->setEnabled(enableEmptyCard);

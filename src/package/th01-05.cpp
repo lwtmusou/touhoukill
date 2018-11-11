@@ -3064,11 +3064,11 @@ public:
     }
 };
 
-class Nuli : public TriggerSkill
+class Luli : public TriggerSkill
 {
 public:
-    Nuli()
-        : TriggerSkill("nuli")
+    Luli()
+        : TriggerSkill("luli")
     {
         events << EventPhaseStart;
     }
@@ -3097,7 +3097,7 @@ public:
         if (targets.isEmpty())
             return false;
 
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@nuli", true, true);
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@luli", true, true);
         if (target)
             invoke->targets << target;
         return target != NULL;
@@ -3110,15 +3110,15 @@ public:
         bool visible = room->getCardPlace(card_id) != Player::PlaceHand || target->isShownHandcard(card_id);
         room->obtainCard(invoke->invoker, card_id, visible);
 
-        const Card *card = room->askForExchange(invoke->invoker, objectName(), 1, 1, true, "nuliReturn:" + target->objectName());
+        const Card *card = room->askForExchange(invoke->invoker, objectName(), 1, 1, true, "luliReturn:" + target->objectName());
         DELETE_OVER_SCOPE(const Card, card)
 
         int id2 = card->getEffectiveId();
         visible = room->getCardPlace(id2) != Player::PlaceHand || target->isShownHandcard(id2);
         target->obtainCard(card, visible);
 
-        room->askForUseCard(invoke->invoker, "BasicCard+^Jink,TrickCard+^Nullification,EquipCard|.|.|nuli", "@nuli_use", -1, Card::MethodUse, false, objectName());
-        room->askForUseCard(target, "BasicCard+^Jink,TrickCard+^Nullification,EquipCard|.|.|nuli", "@nuli_use", -1, Card::MethodUse, false, objectName());
+        room->askForUseCard(invoke->invoker, "BasicCard+^Jink,TrickCard+^Nullification,EquipCard|.|.|luli", "@luli_use", -1, Card::MethodUse, false, objectName());
+        room->askForUseCard(target, "BasicCard+^Jink,TrickCard+^Nullification,EquipCard|.|.|luli", "@luli_use", -1, Card::MethodUse, false, objectName());
         return false;
     }
 };
@@ -3271,7 +3271,7 @@ TH0105Package::TH0105Package()
 
     General *yukimai = new General(this, "yukimai", "pc98", 3);
     yukimai->addSkill(new Xiewu);
-    yukimai->addSkill(new Nuli);
+    yukimai->addSkill(new Luli);
 
     General *meira = new General(this, "meira", "pc98", 4);
     meira->addSkill(new Anliu);

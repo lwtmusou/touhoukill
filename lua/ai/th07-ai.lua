@@ -78,7 +78,10 @@ sgs.sidie_keep_value = {
 
 sgs.ai_skill_playerchosen.sidie = function(self, targets)
 	local target = sgs.ai_skill_playerchosen.zero_card_as_slash(self, targets)
-	return target
+	if (target and self:isEnemy(target)) then
+		return target
+	end
+	return nil
 end
 
 
@@ -106,8 +109,8 @@ sgs.ai_skill_invoke.moran = function(self, data)
 	local to =data:toPlayer()
 	return self:isFriend(to)
 end
-sgs.ai_choicemade_filter.skillInvoke.moran = function(self, player, promptlist)
-	local to=player:getTag("moran-target"):toPlayer()
+sgs.ai_choicemade_filter.skillInvoke.moran = function(self, player, promptlist, data)
+	local to=data:toPlayer()
 	if to then
 		if promptlist[#promptlist] == "yes" then
 			sgs.updateIntention(player, to, -60)

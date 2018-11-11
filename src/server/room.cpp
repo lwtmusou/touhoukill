@@ -1009,7 +1009,7 @@ bool Room::notifyMoveFocus(const QList<ServerPlayer *> &players, CommandType com
     return doBroadcastNotify(S_COMMAND_MOVE_FOCUS, arg);
 }
 
-bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data)
+bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data, const QString &prompt)
 {
     tryPause();
     notifyMoveFocus(player, S_COMMAND_INVOKE_SKILL);
@@ -1023,7 +1023,9 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
             thread->delay();
     } else {
         JsonArray skillCommand;
-        if (data.type() == QVariant::String)
+        if (prompt != NULL)
+            skillCommand << skill_name << prompt;
+        else if (data.type() == QVariant::String)
             skillCommand << skill_name << data.toString();
         else {
             ServerPlayer *player = data.value<ServerPlayer *>();
@@ -1053,17 +1055,18 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
     s.player = player;
     s.type = ChoiceMadeStruct::SkillInvoke;
     s.args << skill_name << (invoked ? "yes" : "no");
+    s.m_extraData = data;
     QVariant d = QVariant::fromValue(s);
     thread->trigger(ChoiceMade, this, d);
     return invoked;
 }
 
-bool Room::askForSkillInvoke(ServerPlayer *player, const Skill *skill, const QVariant &data /* = QVariant() */)
+bool Room::askForSkillInvoke(ServerPlayer *player, const Skill *skill, const QVariant &data /* = QVariant() */, const QString &prompt)
 {
     if (skill == NULL)
         return false;
 
-    return askForSkillInvoke(player, skill->objectName(), data);
+    return askForSkillInvoke(player, skill->objectName(), data, prompt);
 }
 
 QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices, const QVariant &data)
@@ -1099,6 +1102,7 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
     s.player = player;
     s.type = ChoiceMadeStruct::SkillChoice;
     s.args << skill_name << answer;
+    s.m_extraData = data;
     QVariant d = QVariant::fromValue(s);
     thread->trigger(ChoiceMade, this, d);
     return answer;
@@ -1539,6 +1543,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         s.player = player;
         s.type = ChoiceMadeStruct::CardResponded;
         s.args << pattern << prompt << "_nil_";
+        s.m_extraData = data;
         QVariant d = QVariant::fromValue(s);
         thread->trigger(ChoiceMade, this, d);
         return NULL;
@@ -1618,6 +1623,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         s.player = player;
         s.type = ChoiceMadeStruct::CardResponded;
         s.args << pattern << prompt << QString("_%1_").arg(card->toString());
+        s.m_extraData = data;
         QVariant d = QVariant::fromValue(s);
         thread->trigger(ChoiceMade, this, d);
         //show hidden general

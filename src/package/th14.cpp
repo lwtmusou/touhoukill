@@ -151,7 +151,6 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        invoke->invoker->tag["moyi-target"] = QVariant::fromValue(invoke->owner);
         if (invoke->invoker->askForSkillInvoke(objectName(), QVariant::fromValue(invoke->owner))) {
             room->broadcastSkillInvoke(objectName());
             room->notifySkillInvoked(invoke->owner, objectName());

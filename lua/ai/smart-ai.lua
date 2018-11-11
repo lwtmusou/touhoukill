@@ -2167,7 +2167,6 @@ function SmartAI:filterEvent(event, player, data)
 
 	if event == sgs.ChoiceMade and self == sgs.recorder then
 		local s = data:toChoiceMade()
-
 		if (s.type == sgs.ChoiceMadeStruct_Activate or s.type == sgs.ChoiceMadeStruct_CardUsed) then
 			local carduse =sgs.CardUseStruct()
 			local carduse_str = s.args[#s.args]
@@ -2240,7 +2239,7 @@ function SmartAI:filterEvent(event, player, data)
 				end
 				local callback = callbacktable[(s.args[index]:split(":"))[1]] or callbacktable.general
 				if type(callback) == "function" then
-					callback(self, s.player, s.args)
+					callback(self, s.player, s.args, s.m_extraData)
 				end
 			end
 			--[[if data:toString() == "skillInvoke:fenxin:yes" then

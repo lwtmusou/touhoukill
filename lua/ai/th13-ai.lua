@@ -705,7 +705,7 @@ sgs.ai_skill_cardask["@gongzhen"] = function(self, data, pattern, target)
 	local card
 	self:sortByUseValue(cards, true)
 	for _, acard in ipairs(cards) do
-		if acard:getSuitString() == convert[pattern]  and not sel.player:isJilei(acard) then
+		if acard:getSuitString() == convert[pattern]  and not self.player:isJilei(acard) then
 			if not isCard("Peach", acard, self.player) then
 				card = acard
 				break

@@ -279,12 +279,10 @@ end
 	return self.enemies[1]
 end
 sgs.ai_playerchosen_intention.yuejian = 10
+]]
 
-sgs.ai_skill_use["@@yuejian"] = function(self, prompt)
-	local cardname = "known_both"
-	if self.player:hasFlag("Global_yuejianFailed") then
-		cardname = "await_exhausted"
-	end
+sgs.ai_skill_use["@@yuejian!"] = function(self, prompt)
+	local cardname = "await_exhausted"
 	local card=sgs.cloneCard(cardname, sgs.Card_NoSuit, 0)
 	card:setSkillName("yuejian")
 	card:deleteLater()
@@ -301,7 +299,79 @@ sgs.ai_skill_use["@@yuejian"] = function(self, prompt)
 	end
 	return "."
 end
-]]
+
+
+local yuejian_skill = {}
+yuejian_skill.name = "yuejian"
+table.insert(sgs.ai_skills, yuejian_skill)
+yuejian_skill.getTurnUseCard = function(self)
+	if self.player:isKongcheng() or self.player:hasUsed("YuejianCard") then return nil end
+	return sgs.Card_Parse("@YuejianCard=.")
+end
+sgs.ai_skill_use_func.YuejianCard = function(card, use, self)
+	local yuejian_card1 = self:getMaxCard()
+	local point1 = yuejian_card1:getNumber()
+	local yuejian_card2
+	local point2 = 6
+	local target
+	self:sort(self.enemies, "defenseSlash")
+	for _,p in ipairs (self.enemies) do
+		if not p:isKongcheng() then
+		    if not target then target = p end
+			yuejian_card2 = self:getMaxCard(target)
+			if yuejian_card2 then point2 = yuejian_card2:getNumber() end
+			if point2 < point1 then
+				target = p
+			end
+		end
+	end
+	
+	if target then		
+		if point2 < point1 then
+			if self.player:hasSkill("jiangguo") and sgs.Analeptic_IsAvailable(self.player) then
+				local dango = self.player:getPile("dango")
+				if not use.isDummy  and dango:length() > 0 then
+					local ana = sgs.cloneCard("magic_analeptic", sgs.Card_SuitToBeDecided, -1)
+					ana:setSkillName("jiangguo")
+					ana:addSubcard(dango:first())
+					
+					ana:deleteLater()
+					use.card = ana
+					if use.to then use.to = sgs.SPlayerList() end
+					return
+				end
+			--self:useCardByClassName(card, use)
+			end
+		else
+			yuejian_card1 = self:getMinCard()
+		end
+		
+		use.card = card
+		if use.to then
+			use.to:append(target)
+			self.yuejian_card = yuejian_card1:getEffectiveId()
+			if use.to:length() >= 1 then return end
+		end
+	end
+end
+sgs.ai_use_priority.YuejianCard = sgs.ai_use_priority.AwaitExhausted - 0.2
+
+function sgs.ai_cardsview_valuable.jiangguo(self, class_name, player)
+	if class_name == "Analeptic" then
+	    local dying = self.room:getCurrentDyingPlayer() 
+		if dying and dying:objectName() == self.player:objectName() then  
+			local dango = self.player:getPile("dango")
+			if dango:isEmpty() then return nil end
+			local card = sgs.Sanguosha:getCard(dango:first())
+		
+			local suit = card:getSuitString()
+			local number = card:getNumberString()
+			local card_id = card:getEffectiveId()
+			return ("magic_analeptic:jiangguo[%s:%s]=%d"):format(suit, number, card_id)
+		end
+	end
+end
+
 
 local yidan_skill = {}
 yidan_skill.name = "yidan"
@@ -373,7 +443,6 @@ end
 	end
 	local slash = sgs.cloneCard(card_name, sgs.Card_SuitToBeDecided, -1)
 	slash:addSubcard(card)
-	self.player:gainMark("@nini")
 	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if self:isEnemy(p) and not p:isDebuffStatus() then
 			target = p

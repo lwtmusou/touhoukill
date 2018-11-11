@@ -103,7 +103,6 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        invoke->invoker->tag["zhuqu-target"] = QVariant::fromValue(invoke->owner);
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->owner))) {
             room->broadcastSkillInvoke(objectName());
             room->notifySkillInvoked(invoke->owner, objectName());
@@ -835,9 +834,8 @@ public:
     bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        invoke->invoker->tag["xinyue_target"] = QVariant::fromValue(damage.from);
         QString prompt = "target:" + damage.from->objectName() + "::" + QString::number(invoke->invoker->getHp());
-        return invoke->invoker->askForSkillInvoke(objectName(), prompt);
+        return invoke->invoker->askForSkillInvoke(objectName(), data, prompt);
     }
 
     void onDamaged(Room *room, QSharedPointer<SkillInvokeDetail> invoke, const DamageStruct &) const

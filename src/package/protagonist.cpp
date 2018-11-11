@@ -33,10 +33,9 @@ public:
     bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         ServerPlayer *reimu = invoke->invoker;
-        reimu->tag["lingqicarduse"] = data;
         CardUseStruct use = data.value<CardUseStruct>();
         QString prompt = "target:" + use.from->objectName() + ":" + use.card->objectName();
-        return reimu->askForSkillInvoke(objectName(), prompt);
+        return reimu->askForSkillInvoke(objectName(), data, prompt);
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
@@ -87,9 +86,8 @@ public:
     {
         ServerPlayer *reimu = invoke->invoker;
         JudgeStruct *judge = data.value<JudgeStruct *>();
-        reimu->tag["qixiang_judge"] = data;
         QString prompt = "target:" + judge->who->objectName() + ":" + judge->reason;
-        return room->askForSkillInvoke(reimu, objectName(), prompt);
+        return room->askForSkillInvoke(reimu, objectName(), data, prompt);
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
@@ -201,9 +199,8 @@ public:
     {
         ServerPlayer *reimu = invoke->invoker;
         JudgeStruct *judge = data.value<JudgeStruct *>();
-        reimu->tag["boli_judge"] = data;
         QString prompt = "judge:" + judge->who->objectName() + ":" + judge->reason;
-        return room->askForSkillInvoke(reimu, "boli", prompt);
+        return room->askForSkillInvoke(reimu, "boli", data, prompt);
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const

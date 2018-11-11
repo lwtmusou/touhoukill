@@ -204,14 +204,14 @@ void ServerPlayer::drawCards(int n, const QString &reason)
     room->drawCards(this, n, reason);
 }
 
-bool ServerPlayer::askForSkillInvoke(const QString &skill_name, const QVariant &data)
+bool ServerPlayer::askForSkillInvoke(const QString &skill_name, const QVariant &data, const QString &prompt)
 {
-    return room->askForSkillInvoke(this, skill_name, data);
+    return room->askForSkillInvoke(this, skill_name, data, prompt);
 }
 
-bool ServerPlayer::askForSkillInvoke(const Skill *skill, const QVariant &data)
+bool ServerPlayer::askForSkillInvoke(const Skill *skill, const QVariant &data, const QString &prompt)
 {
-    return room->askForSkillInvoke(this, skill, data);
+    return room->askForSkillInvoke(this, skill, data, prompt);
 }
 
 QList<int> ServerPlayer::forceToDiscard(int discard_num, bool include_equip, bool is_discard)

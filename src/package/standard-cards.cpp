@@ -2417,7 +2417,6 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        invoke->invoker->tag["DeathSickleTarget"] = QVariant::fromValue(invoke->preferredTarget);
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
             room->setEmotion(invoke->invoker, "weapon/death_sickle");
             return true;

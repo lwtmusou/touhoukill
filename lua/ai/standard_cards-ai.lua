@@ -4232,8 +4232,8 @@ function sgs.ai_weapon_value.DoubleSword(self, enemy, player)
 end
 sgs.ai_use_priority.DeathSickle = 2.673
 
-sgs.ai_choicemade_filter.skillInvoke.DeathSickle = function(self, player, args)
-	local target = player:getTag("DeathSickleTarget"):toPlayer()
+sgs.ai_choicemade_filter.skillInvoke.DeathSickle = function(self, player, args, data)
+	local target = data:toPlayer()
 	if target and args[#args] == "yes" then
 		sgs.updateIntention(player, target, 60)
 	end

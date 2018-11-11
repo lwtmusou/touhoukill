@@ -123,11 +123,10 @@ public:
         use.card->setFlags("-fahua");
         use.card->setFlags("-IgnoreFailed");
 
-        room->setTag("fahua_target", QVariant::fromValue(invoke->invoker));
         room->setTag("fahua_use", data);
         foreach (ServerPlayer *p, targets) {
             QString prompt = "tricktarget:" + use.from->objectName() + ":" + invoke->invoker->objectName() + ":" + use.card->objectName();
-            if (p->askForSkillInvoke("fahua_change", prompt)) {
+            if (p->askForSkillInvoke("fahua_change", QVariant::fromValue(invoke->invoker), prompt)) {
                 use.to << p;
                 use.to.removeOne(invoke->invoker);
                 data = QVariant::fromValue(use);
@@ -572,7 +571,6 @@ public:
     bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        invoke->invoker->tag["shuinan_use"] = data;
         return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(use.from));
     }
 
@@ -1341,7 +1339,6 @@ public:
 
     bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        invoke->invoker->tag["shanshi"] = QVariant::fromValue(invoke->preferredTarget);
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
             invoke->invoker->setMark("shanshi_invoke", 1);
             return true;

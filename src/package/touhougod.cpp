@@ -3629,7 +3629,6 @@ public:
     bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        invoke->invoker->tag["huanming_damage"] = data;
         return invoke->invoker->askForSkillInvoke(objectName(), QVariant::fromValue(damage.to));
     }
 

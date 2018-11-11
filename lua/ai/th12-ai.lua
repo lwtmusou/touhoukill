@@ -95,8 +95,8 @@ sgs.ai_skill_invoke.fahua_change = function(self,data)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.fahua_change = function(self, player, args)
-	local target=self.room:getTag("fahua_target"):toPlayer()
+sgs.ai_choicemade_filter.skillInvoke.fahua_change = function(self, player, args, data)
+	local target=data:toPlayer()
 	if target then
 		if args[#args] == "yes" then
 			sgs.updateIntention(player, target, -60)
@@ -391,11 +391,11 @@ sgs.ai_skill_invoke.shuinan = function(self,data)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.shuinan = function(self, player, args)
-	local use = player:getTag("shuinan_use"):toCardUse()
-	if use and use.from then
+sgs.ai_choicemade_filter.skillInvoke.shuinan = function(self, player, args, data)
+	local target = data:toPlayer()
+	if target then
 		if args[#args] == "yes" then
-			sgs.updateIntention(player, use.from, 40)
+			sgs.updateIntention(player, target, 40)
 		end
 	end
 end
@@ -530,7 +530,7 @@ sgs.ai_skill_invoke.xunbao = true
 end]]
 function sgs.ai_cardsview_valuable.lingbai(self, class_name, player)
 	if class_name == "Slash"  or  class_name == "Jink" then
-		if self.player:getMark("@lingbai") == 0 then return nil end
+		if self.player:getMark("lingbai") == 0 then return nil end
 		local cards=self.player:getCards("hs")
 		cards = self:touhouAppendExpandPileToList(self.player,cards)
 		cards = sgs.QList2Table(cards)
@@ -553,7 +553,7 @@ lingbai_skill.name = "lingbai"
 table.insert(sgs.ai_skills, lingbai_skill)
 lingbai_skill.getTurnUseCard = function(self, inclusive)
 	if not sgs.Slash_IsAvailable(self.player)  then return false end
-	if self.player:getMark("@lingbai") == 0 then return false end
+	if self.player:getMark("lingbai") == 0 then return false end
 
 	local cards=self.player:getCards("hs")
 	cards=self:touhouAppendExpandPileToList(self.player,cards)
@@ -822,8 +822,8 @@ sgs.ai_skill_invoke.shanshi = function(self, data)
 	local target = data:toPlayer()
 	return target and self:isFriend(target)
 end
-sgs.ai_choicemade_filter.skillInvoke.shanshi = function(self, player, args)
-	local target = player:getTag("shanshi"):toPlayer()
+sgs.ai_choicemade_filter.skillInvoke.shanshi = function(self, player, args, data)
+	local target = data:toPlayer()
 	if target  and args[#args] == "yes" then
 		sgs.updateIntention(player,  target, -30)
 	end

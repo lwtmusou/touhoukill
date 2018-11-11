@@ -235,9 +235,7 @@ public:
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         if (triggerEvent == Damaged) {
-            invoke->invoker->tag["moran-target"] = QVariant::fromValue(invoke->owner);
             bool doJudge = invoke->invoker->askForSkillInvoke(objectName(), QVariant::fromValue(invoke->owner));
-            invoke->invoker->tag.remove("moran-target");
             if (doJudge) {
                 room->broadcastSkillInvoke(objectName());
                 room->notifySkillInvoked(invoke->owner, objectName());

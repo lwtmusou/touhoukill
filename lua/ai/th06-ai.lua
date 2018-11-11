@@ -129,8 +129,8 @@ sgs.ai_skill_invoke.xueyi = function(self, data)
 	local to =data:toPlayer()
 	return self:isFriend(to)
 end
-sgs.ai_choicemade_filter.skillInvoke.xueyi = function(self, player, promptlist)
-	local to = player:getTag("xueyi-target"):toPlayer()
+sgs.ai_choicemade_filter.skillInvoke.xueyi = function(self, player, promptlist, data)
+	local to = data:toPlayer()
 	if to then
 		if promptlist[#promptlist] == "yes" then
 			sgs.updateIntention(player, to, -60)
@@ -513,8 +513,8 @@ sgs.ai_skill_invoke.dongjie = function(self, data)
 		end
 		return self:isFriend(to) ~= to:faceUp()
 end
-sgs.ai_choicemade_filter.skillInvoke.dongjie = function(self, player, args)
-	local to=player:getTag("dongjie_damage"):toDamage().to
+sgs.ai_choicemade_filter.skillInvoke.dongjie = function(self, player, args ,data)
+	local to=player:getTag("dongjie"):toDamage().to
 	if to then
 		if to:faceUp() then
 			if args[#args] == "yes" then
@@ -818,8 +818,8 @@ end
 sgs.ai_cardneed.yinren = function(to, card, self)
 	return card:isKindOf("Slash") and card:isBlack()
 end
-sgs.ai_choicemade_filter.skillInvoke.yinren = function(self, player, promptlist)
-	local to = player:getTag("yinren-target"):toPlayer()
+sgs.ai_choicemade_filter.skillInvoke.yinren = function(self, player, promptlist,data)
+	local to = data:toPlayer()
 	if to and promptlist[#promptlist] == "yes" then
 		sgs.updateIntention(player, to, 60)
 	end

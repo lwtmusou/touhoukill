@@ -49,8 +49,8 @@ sgs.ai_skill_invoke.doujiu =function(self,data)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.doujiu = function(self, player, args)
-	local target =player:getTag("doujiu_target"):toPlayer()
+sgs.ai_choicemade_filter.skillInvoke.doujiu = function(self, player, args, data)
+	local target =data:toPlayer()
 	if target then
 		if args[#args] == "yes" then
 			sgs.updateIntention(player, target, 50)
@@ -221,7 +221,7 @@ sgs.ai_skill_invoke.huiwu =function(self,data)
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.huiwu = function(self, player, args)
+sgs.ai_choicemade_filter.skillInvoke.huiwu = function(self, player, args, data)
 	local card=self.room:getTag("huiwu_use"):toCardUse().card
 	local to=player:getTag("huiwu"):toPlayer()
 	res=huiwu_judge(self,to,card)
@@ -250,8 +250,8 @@ sgs.ai_skill_invoke.huazhong = function(self, data)
 	local to =data:toPlayer()
 	return self:isFriend(to)
 end
-sgs.ai_choicemade_filter.skillInvoke.huazhong = function(self, player, args)
-	local to=player:getTag("huazhong-target"):toPlayer()
+sgs.ai_choicemade_filter.skillInvoke.huazhong = function(self, player, args, data)
+	local to=data:toPlayer()
 	if to then
 		if args[#args] == "yes" then
 			sgs.updateIntention(player, to, -60)
@@ -326,10 +326,10 @@ sgs.ai_skill_invoke.judu =function(self,data)
 		return true
 	end
 end
-sgs.ai_choicemade_filter.skillInvoke.judu = function(self, player, args)
-	local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
+sgs.ai_choicemade_filter.skillInvoke.judu = function(self, player, args, data)
+	local target = data:toPlayer()
 	if args[#args] == "yes" then
-		sgs.updateIntention(damage.from, damage.to, 70)
+		sgs.updateIntention(player, target, 70)
 	end
 end
 sgs.ai_skillProperty.judu = function(self)

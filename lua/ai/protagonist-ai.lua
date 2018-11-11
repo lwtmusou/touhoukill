@@ -1,7 +1,7 @@
 
 --SmartAI:needRetrial(judge)
-function SmartAI:lingqiParse(self,target,use)
-	use = use or self.player:getTag("lingqicarduse"):toCardUse()
+function SmartAI:lingqiParse(self,target, data)
+	use = data:toCardUse()
 	--if not use or not use.card  or not use.from then return 3 end
 	if not use or not use.card   then return 3 end
 	local card=use.card
@@ -82,7 +82,7 @@ end
 sgs.ai_skill_invoke.lingqi =function(self,data)
 	if not self:invokeTouhouJudge() then return false end
 
-	local parse=self:lingqiParse(self,self.player)
+	local parse=self:lingqiParse(self,self.player, data)
 	if parse==2 then
 		return true
 	end
@@ -93,14 +93,14 @@ sgs.ai_skillProperty.lingqi = function(self)
 end
 
 sgs.ai_skill_invoke.qixiang =function(self,data)
-	local target=self.player:getTag("qixiang_judge"):toJudge().who
+	local target= data:toJudge().who
 	if target and self:isFriend(target) then
 		return true
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.qixiang = function(self, player, args)
-	local target=player:getTag("qixiang_judge"):toJudge().who
+sgs.ai_choicemade_filter.skillInvoke.qixiang = function(self, player, args, data)
+	local target=data:toJudge().who
 	if target then
 		if args[#args] == "yes" then
 			sgs.updateIntention(player, target, -50)
@@ -154,7 +154,7 @@ end
 
 table.insert(sgs.ai_global_flags, "bolisource")
 sgs.ai_skill_invoke.boli = function(self,data)
-	local judge=self.player:getTag("boli_judge"):toJudge()
+	local judge=data:toJudge()
 	--防止没有队友时ai还无聊地发动技能
 	local onlyEnemy = true
 	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
@@ -985,6 +985,8 @@ sgs.ai_skill_cardask["@bllmshiyu-basics"] = function(self, data)
 	return "$" .. anals[1]:getId()
 end
 sgs.ai_skill_invoke.bllmwuyu = function(self,data)
+	--local strs = data:toStringList()
+	--local prompt =  (strs[1]:split(":"))[2]
 	local prompt=self.player:getTag("wuyu_prompt"):toString()
 
 	if prompt=="bllmcaiyu" or prompt=="bllmwuyu" then
