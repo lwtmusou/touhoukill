@@ -643,13 +643,13 @@ QString Engine::getVersion() const
 
 QString Engine::getVersionName() const
 {
-    return "V0.8.11";
+    return "V0.8.12";
 }
 
 #if QT_VERSION >= 0x050600
 QVersionNumber Engine::getQVersionNumber() const
 {
-    return QVersionNumber(0, 8, 11);
+    return QVersionNumber(0, 8, 12);
 }
 #endif
 

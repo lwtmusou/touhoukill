@@ -2173,7 +2173,7 @@
     <message>
         <location filename="../src/dialog/mainwindow.cpp" line="917"/>
         <source>New Version %1(%3) available.&lt;br/&gt;But we don&apos;t support auto-updating from %2 to %1 on this platform.&lt;br/&gt;Please download the full package from &lt;a href=&quot;%4&quot;&gt;Here&lt;/a&gt;.</source>
-        <translation type="unfinished">新版本 %1（%3）可用。&lt;br /&gt;
+        <translation>新版本 %1（%3）可用。&lt;br /&gt;
 但是在此平台上我们不支持从 %2 到 %1 的自动更新。&lt;br /&gt;
 请从&lt;a href=&quot;%4&quot;&gt;这里&lt;/a&gt;下载完整包。</translation>
     </message>
