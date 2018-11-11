@@ -180,9 +180,9 @@ void MainWindow::checkForUpdate()
 #else
     if (Sanguosha->getVersionName().startsWith("V0.8.")
 #endif
-        req.setUrl(QUrl("http://fsu0413.github.io/TouhouKillUpdate.json"));
+        req.setUrl(QUrl("https://fsu0413.coding.me/TouhouSatsuUpdate/TouhouKillUpdate.json"));
     else
-        req.setUrl(QUrl("http://fsu0413.github.io/TouhouKillUpdate0.9.json"));
+        req.setUrl(QUrl("https://fsu0413.coding.me/TouhouSatsuUpdate/TouhouKillUpdate0.9.json"));
 
     QNetworkReply *reply = autoUpdateManager->get(req);
     connect(reply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &MainWindow::updateError);
@@ -508,7 +508,7 @@ void MainWindow::on_actionAbout_triggered()
     const char *time = __TIME__;
     content.append(tr("Compilation time: %1 %2 <br/>").arg(date).arg(time));
 
-    QString project_url = "https://github.com/lwtmusou/touhoukill";
+    QString project_url = "https://qcloud.coding.net/u/Fsu0413/p/TouhouSatsu";
     content.append(tr("Source code: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(project_url));
 
     QString forum_url = "http://qsanguosha.org";
