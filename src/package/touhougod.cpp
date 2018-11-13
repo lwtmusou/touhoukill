@@ -2703,6 +2703,8 @@ public:
         const General *toGeneral = Sanguosha->getGeneral(to_general);
         if (toGeneral != NULL) {
             foreach (const Skill *skill, toGeneral->getSkillList()) {
+                if (skill->isLordSkill() && !source->isLord())
+                    continue;
                 if (skill->inherits("TriggerSkill")) {
                     const TriggerSkill *trigger = qobject_cast<const TriggerSkill *>(skill);
                     thread->addTriggerSkill(trigger);

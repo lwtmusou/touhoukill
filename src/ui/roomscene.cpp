@@ -587,8 +587,11 @@ void RoomScene::handleGameEvent(const QVariant &args)
         }
 
         if (newHero) {
-            foreach (const Skill *skill, newHero->getVisibleSkills())
+            foreach(const Skill *skill, newHero->getVisibleSkills()) {
+                if (skill->isLordSkill() && !player->isLord())
+                    continue;
                 attachSkill(skill->objectName(), false);
+            }
             if (!newHero->isVisible()) {
                 Config.KnownSurprisingGenerals.append(newHeroName);
                 Config.setValue("KnownSurprisingGenerals", Config.KnownSurprisingGenerals);
