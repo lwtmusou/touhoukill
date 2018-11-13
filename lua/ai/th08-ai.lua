@@ -679,7 +679,7 @@ sgs.ai_skill_cardask["@yinghuo"] = function(self, data)
 end
 
 
-
+sgs.ai_skill_invoke.yinghuo  = true
 sgs.ai_cardneed.yinghuo = function(to, card, self)
 	return card:getTypeId() == sgs.Card_TypeBasic
 end
