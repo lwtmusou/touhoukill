@@ -2747,7 +2747,7 @@ public:
                     hp += maxHpMinus;
                     maxHp += maxHpMinus;
                 }
-                hp = qMax(hp, maxHp);
+                hp = qMin(hp, maxHp);
 
                 source->setMaxHp(maxHp);
                 room->broadcastProperty(source, "maxhp");
