@@ -45,6 +45,8 @@ public:
     void playAudioEffect(int index = -1) const;
     Frequency getFrequency() const;
     QString getLimitMark() const;
+    QString getRelatedMark() const;
+    QString getRelatedPileName() const;
     QStringList getSources() const;
     bool matchAvaliablePattern(QString avaliablePattern, QString askedPattern) const;
     QString getShowType() const;
@@ -52,6 +54,8 @@ public:
 protected:
     Frequency frequency;
     QString limit_mark;
+    QString related_mark;//while changing hero, this will be removed
+    QString related_pile;
     bool attached_lord_skill;
     QString show_type;
 

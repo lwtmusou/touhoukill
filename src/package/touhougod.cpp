@@ -173,6 +173,7 @@ public:
     {
         events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseStart << PreMarkChange << EventSkillInvalidityChange;
         frequency = Compulsory;
+        related_mark = "@ye";
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
@@ -280,6 +281,7 @@ public:
     Hongwu()
         : ViewAsSkill("hongwu")
     {
+        related_mark = "@ye";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
@@ -321,6 +323,7 @@ public:
     Shenqiang()
         : OneCardViewAsSkill("shenqiang")
     {
+        related_mark = "@ye";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
@@ -350,6 +353,7 @@ public:
     {
         events << DamageInflicted;
         frequency = Compulsory;
+        related_mark = "@ye";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -837,6 +841,7 @@ public:
         : TriggerSkill("kuangyan")
     {
         events << Dying;
+        related_mark = "@kinki";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -889,6 +894,7 @@ public:
     Huimie()
         : ZeroCardViewAsSkill("huimie")
     {
+        related_mark = "@kinki";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
@@ -910,6 +916,7 @@ public:
     {
         events << EventPhaseEnd;
         frequency = Compulsory;
+        related_mark = "@kinki";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -960,6 +967,7 @@ public:
     {
         events << EventPhaseStart;
         frequency = Compulsory;
+        related_mark = "@clock";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
@@ -988,6 +996,7 @@ public:
         : TriggerSkill("shiting")
     {
         events << EventPhaseChanging;
+        related_mark = "@clock";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
@@ -1931,6 +1940,7 @@ public:
     Huaxiang()
         : ViewAsSkill("huaxiang")
     {
+        related_pile = "rainbow";
     }
 
     static QStringList responsePatterns()
@@ -2149,6 +2159,7 @@ public:
     {
         events << GameStart << DrawNCards << DrawPileSwaped;
         frequency = Compulsory;
+        related_mark = "@qiannian";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
@@ -2723,7 +2734,6 @@ public:
         }
 
         room->resetAI(source);
-
         // TODO set hp and maxhp and kingdom
         if (toGeneral != NULL) {
             if (!toGeneral->hasSkill("huanmeng")) {
@@ -2769,6 +2779,26 @@ public:
 
             if (toGeneral->getKingdom() != "zhu" && toGeneral->getKingdom() != "touhougod")
                 room->setPlayerProperty(source, "kingdom", toGeneral->getKingdom());
+        }
+
+        //remove piles and marks
+        QList<int> idlist;
+        if (fromGeneral != NULL) {
+            foreach(const Skill *skill, fromGeneral->getSkillList()) {
+                QString mark = skill->getRelatedMark();
+                if (mark != NULL)
+                    source->loseAllMarks(mark);
+
+
+                QString pile = skill->getRelatedPileName();
+                if (pile != NULL)
+                    idlist.append(source->getPile(pile));
+            }
+        }
+        if (!idlist.isEmpty()) {
+            CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, source->objectName(), NULL, "chaowo", QString());
+            CardsMoveStruct move(idlist, source, Player::DiscardPile, reason);
+            room->moveCardsAtomic(move, true);
         }
 
         if (game_start) {
@@ -2900,6 +2930,7 @@ public:
         : TriggerSkill("zuosui")
     {
         events << DamageCaused;
+        related_mark = "@xinyang";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -2958,6 +2989,7 @@ public:
         : TriggerSkill("worao")
     {
         events << TargetConfirmed;
+        related_mark = "@xinyang";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -3005,6 +3037,7 @@ public:
     {
         events << EventPhaseStart;
         frequency = Compulsory;
+        related_mark = "@xinyang";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -5152,36 +5185,26 @@ public:
         int maxhp = invoke->invoker->tag["init_MaxHp"].toInt();
         room->setPlayerProperty(invoke->invoker, "maxhp", maxhp);
 
-        QStringList disablePiles;
-        disablePiles << "wooden_ox"
-                     << "suoding_cards"
-                     << "saving_energy";
-        //throw cards in special place
+
+        //remove piles and marks
+        const General *fromGeneral = Sanguosha->getGeneral(name);
         QList<int> idlist;
-        foreach (QString pile, invoke->invoker->getPileNames()) {
-            if (!disablePiles.contains(pile))
-                idlist << invoke->invoker->getPile(pile);
+        if (fromGeneral != NULL) {
+            foreach(const Skill *skill, fromGeneral->getSkillList()) {
+                QString mark = skill->getRelatedMark();
+                if (mark != NULL)
+                    invoke->invoker->loseAllMarks(mark);
+
+
+                QString pile = skill->getRelatedPileName();
+                if (pile != NULL)
+                    idlist.append(invoke->invoker->getPile(pile));
+            }
         }
-        if (idlist.length() > 0) {
-            CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, invoke->invoker->objectName(), NULL, "benzun", "");
+        if (!idlist.isEmpty()) {
+            CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, invoke->invoker->objectName(), NULL, "benzun", QString());
             CardsMoveStruct move(idlist, invoke->invoker, Player::DiscardPile, reason);
             room->moveCardsAtomic(move, true);
-        }
-        //@todo: find a standard method for confriming removable mark
-        QStringList marks;
-        marks << "@clock"
-              << "@kinki"
-              << "@qiannian"
-              << "@shi"
-              << "@ye"
-              << "@yu"
-              << "@zhengti"
-              << "@xinyang"
-              << "@ice"
-              << "@star";
-        foreach (QString m, marks) {
-            if (invoke->invoker->getMark(m) > 0)
-                invoke->invoker->loseAllMarks(m);
         }
 
         JsonArray arg;
@@ -5201,6 +5224,7 @@ public:
         : TriggerSkill("chongneng")
     {
         events << TargetSpecifying;
+        related_mark = "@star";
     }
 
     static bool can_add(CardUseStruct use)
@@ -5299,6 +5323,7 @@ public:
         : TriggerSkill("huixing")
     {
         events << CardFinished;
+        related_mark = "@star";
     }
 
     static bool hasCardValue(CardUseStruct use)

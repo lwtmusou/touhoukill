@@ -806,6 +806,7 @@ public:
     {
         events << EventPhaseStart << PreCardUsed;
         view_as_skill = new FeitouVS;
+        related_pile = "feitou";
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const

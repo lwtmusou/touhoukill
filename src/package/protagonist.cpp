@@ -1054,6 +1054,7 @@ public:
         : PhaseChangeSkill("bllmwuyu")
     {
         view_as_skill = new BllmWuyuVS;
+        related_mark = "@yu";
     }
 
     static bool BllmWuyuCost(Room *room, ServerPlayer *bllm, QString prompt)
