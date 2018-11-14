@@ -1519,22 +1519,15 @@ public:
     Shenyan()
         : TriggerSkill("shenyan")
     {
-        events << EventPhaseStart << EventPhaseChanging << TargetSpecified;
+        events << EventPhaseStart << EventPhaseChanging << DamageDone;
     }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const
     {
-        if (e == TargetSpecified) {
-            CardUseStruct use = data.value<CardUseStruct>();
-
-            if (use.from && use.from->isCurrent() && use.card && !use.card->isKindOf("SkillCard")) {
-                foreach (ServerPlayer *p, use.to) {
-                    if (p != use.from) {
-                        room->setPlayerFlag(use.from, "shenyan_used");
-                        break;
-                    }
-                }
-            }
+        if (e == DamageDone) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from && damage.from->isCurrent())
+                room->setPlayerFlag(damage.from, "shenyan_used");
         }
 
         if (e == EventPhaseChanging) {
