@@ -2608,11 +2608,17 @@ public:
             bool canUse = false;
             foreach (int id, player->handCards()) {
                 const Card *card = Sanguosha->getCard(id);
-                // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!!
-                if (Sanguosha->matchExpPattern(pattern, player, card) && card->isAvailable(player)) {
-                    canUse = true;
-                    break;
+                // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!! // && card->isAvailable(player)
+                if (Sanguosha->matchExpPattern(pattern, player, card) && !player->isCardLimited(card, Card::MethodUse)) {
+                    foreach(ServerPlayer *t, room->getAlivePlayers()) {
+                        if (card->targetFilter(QList<const Player *>(), t, player) && !player->isProhibited(t, card)) {
+                            canUse = true;
+                            break;
+                        }
+                    }
                 }
+                if (canUse)
+                    break;
             }
 
             if (!canUse)
@@ -2623,12 +2629,18 @@ public:
 
                 if (!room->askForUseCard(player, pattern + "!", "benwo-use")) {
                     const Card *useCard = NULL;
+                    ServerPlayer *target = NULL;
                     foreach (int id, player->handCards()) {
                         const Card *card = Sanguosha->getCard(id);
                         // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!!
-                        if (Sanguosha->matchExpPattern(pattern, player, card) && card->isAvailable(player)) {
-                            useCard = card;
-                            break;
+                        if (Sanguosha->matchExpPattern(pattern, player, card) && !player->isCardLimited(card, Card::MethodUse)) {
+                            foreach(ServerPlayer *t, room->getAlivePlayers()) {
+                                if (card->targetFilter(QList<const Player *>(), t, player) && !player->isProhibited(t, card)) {
+                                    useCard = card;
+                                    target = t;
+                                    break;
+                                }
+                            }
                         }
                     }
                     if (useCard == NULL) { // IMPOSSIBLE!!!!
@@ -2639,6 +2651,8 @@ public:
                         use.from = player;
                         use.card = useCard;
                         // TODO: fill use.to
+                        if (!use.card->targetFixed())
+                            use.to << target;
                         room->useCard(use);
                     }
                 }
