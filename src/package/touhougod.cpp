@@ -1112,8 +1112,9 @@ public:
         if (triggerEvent == GameStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player && player->hasSkill(this)) {
-                room->setPlayerProperty(player, "renhp", player->getMaxHp());
-                room->setPlayerProperty(player, "linghp", player->getMaxHp());
+                int initHp = player->getHp();
+                room->setPlayerProperty(player, "renhp", initHp);//player->getMaxHp()
+                room->setPlayerProperty(player, "linghp", initHp); //player->getMaxHp()
             }
         }
     }
@@ -2713,7 +2714,7 @@ public:
         bool game_start = false;
         const General *toGeneral = Sanguosha->getGeneral(to_general);
         if (toGeneral != NULL) {
-            foreach (const Skill *skill, toGeneral->getSkillList()) {
+            foreach(const Skill *skill, toGeneral->getSkillList()) {
                 if (skill->isLordSkill() && !source->isLord())
                     continue;
                 if (skill->inherits("TriggerSkill")) {
@@ -2738,11 +2739,13 @@ public:
         if (toGeneral != NULL) {
             if (!toGeneral->hasSkill("huanmeng")) {
                 int hp = source->getHp();
+                int record_hp = source->getHp();
                 int maxHp = source->getMaxHp();
                 if (fromGeneral->hasSkill("huanmeng")) {
                     maxHp = toGeneral->getMaxHp();
                     hp = toGeneral->getMaxHp();
-                } else {
+                }
+                else {
                     int maxHpMinus = toGeneral->getMaxHp() - fromGeneral->getMaxHp();
                     hp += maxHpMinus;
                     maxHp += maxHpMinus;
@@ -2762,23 +2765,46 @@ public:
                 source->setHp(hp);
                 room->broadcastProperty(source, "hp");
 
-                if (source->getMaxHp() < source->dyingThreshold()) {
-                    room->killPlayer(source);
-                    return;
-                } else if (source->getHp() < source->dyingThreshold()) {
-                    room->enterDying(source, NULL);
+                //while PostHpReduced, deal "kill player"  or "enterdying".
+                if (record_hp > hp) {
+                    HpLostStruct l;
+                    l.player = source;
+                    l.num = record_hp - hp;
+                    QVariant lv = QVariant::fromValue(l);
+                    room->getThread()->trigger(PostHpReduced, room, lv);
                     if (source->isDead())
                         return;
                 }
-            } else {
+               
+                /*if (source->getMaxHp() < source->dyingThreshold()) {
+                    room->killPlayer(source);
+                    return;
+                }
+                else if (source->getHp() < source->dyingThreshold()) {
+                    room->enterDying(source, NULL);
+                    if (source->isDead())
+                        return;
+                }*/
+            }
+            else {
                 source->setMaxHp(0);
                 source->setHp(0);
                 room->broadcastProperty(source, "maxhp");
                 room->broadcastProperty(source, "hp");
             }
 
-            if (toGeneral->getKingdom() != "zhu" && toGeneral->getKingdom() != "touhougod")
-                room->setPlayerProperty(source, "kingdom", toGeneral->getKingdom());
+
+            QString kingdom = toGeneral->getKingdom();
+            if (kingdom == "zhu" || kingdom == "touhougod") {
+                kingdom = room->askForKingdom(source);
+
+                LogMessage log;
+                log.type = "#ChooseKingdom";
+                log.from = source;
+                log.arg = kingdom;
+                room->sendLog(log);
+            }
+            room->setPlayerProperty(source, "kingdom", kingdom);
         }
 
         //remove piles and marks
