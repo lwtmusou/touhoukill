@@ -5165,8 +5165,9 @@ void RoomScene::setLordBGM(QString lord)
     QString lord_name = (lord == NULL) ? ClientInstance->lord_name : lord;
     if (lord_name == NULL)
         lord_name = Self->getGeneralName();
-    if (changeBGM) {
-        bgm_path = "audio/bgm/" + lord_name + ".ogg";
+    lord_name = lord_name.split("_").at(0);
+    if (changeBGM) {//change BGMpath to lordName        
+        bgm_path = "audio/bgm/" + lord_name + "_1.ogg";
         if ((bgm_path == NULL) || !QFile::exists(bgm_path)) {
             foreach (QString cv_pair, Sanguosha->LordBGMConvertList) {
                 bool shouldBreak = false;
@@ -5174,7 +5175,8 @@ void RoomScene::setLordBGM(QString lord)
                 QStringList cv_from = pairs.at(0).split("|");
                 foreach (QString from, cv_from) {
                     if (from == lord_name) {
-                        bgm_path = "audio/bgm/" + pairs.at(1) + ".ogg";
+                        lord_name = pairs.at(1).split("_").at(0);
+                        bgm_path = "audio/bgm/" + lord_name + "_1.ogg";
                         shouldBreak = true;
                         break;
                     }
@@ -5184,10 +5186,11 @@ void RoomScene::setLordBGM(QString lord)
             }
         }
     }
+
     if (!QFile::exists(bgm_path))
         Audio::playBGM("audio/title/main.ogg", true, true);
     else
-        Audio::playBGM(bgm_path);
+        Audio::playBGM(lord_name, true, false, true);
     Audio::setBGMVolume(Config.BGMVolume);
 
 #endif
