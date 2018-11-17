@@ -79,16 +79,6 @@ public:
     virtual const Card *validateInResponse(ServerPlayer *user) const;
 };
 
-class ZiwoCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE ZiwoCard();
-
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-};
-
 class ChaowoCard : public SkillCard
 {
     Q_OBJECT
@@ -96,7 +86,6 @@ class ChaowoCard : public SkillCard
 public:
     Q_INVOKABLE ChaowoCard();
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 

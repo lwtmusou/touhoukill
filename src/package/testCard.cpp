@@ -943,6 +943,18 @@ BoneHealing::BoneHealing(Card::Suit suit, int number)
     can_damage = true;
 }
 
+bool BoneHealing::isAvailable(const Player *player) const
+{
+    auto siblings = player->getAliveSiblings();
+
+    foreach (const Player *p, siblings) {
+        if (targetFilter(QList<const Player *>(), p, player))
+            return SingleTargetTrick::isAvailable(player);
+    }
+
+    return false;
+}
+
 bool BoneHealing::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
@@ -977,6 +989,7 @@ SpringBreath::SpringBreath(Suit suit, int number)
     judge.negative = false;
     judge.reason = objectName();
 }
+
 
 QString SpringBreath::getSubtype() const
 {

@@ -555,6 +555,7 @@ public:
     {
         frequency = Frequent;
         events << Damaged << AfterDrawNCards;
+        related_pile = "jingjie";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
@@ -2343,6 +2344,7 @@ public:
     {
         frequency = Compulsory;
         events << EventPhaseStart;
+        related_pile = "siling";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const

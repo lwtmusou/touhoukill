@@ -62,6 +62,7 @@ public:
     {
         events << CardUsed << CardResponded;
         view_as_skill = new ShendeVS;
+        related_pile = "shende";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
@@ -1146,39 +1147,31 @@ public:
             p->setFlags("changshiInvoked");
         }
 
-        //deal with mark and private pile
-        QStringList marks;
-        marks << "@clock"
-              << "@kinki"
-              << "@qiannian"
-              << "@shi"
-              << "@ye"
-              << "@yu"
-              << "@zhengti"
-              << "@xinyang"
-              << "@ice"
-              << "@star";
-        QStringList disablePiles;
-        disablePiles << "wooden_ox";
-        foreach (ServerPlayer *p, room->getAlivePlayers()) {
-            //throw cards in special place
+        //remove piles and marks
+        QStringList marks; //special mark
+        marks << "@ice";
+        foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
             QList<int> idlist;
-            foreach (QString pile, p->getPileNames()) {
-                if (disablePiles.contains(pile))
-                    continue;
-                foreach (int card, p->getPile(pile))
-                    idlist << card;
+            foreach(const Skill *skill, p->getSkillList()) {
+                QString mark = skill->getRelatedMark();
+                if (mark != NULL)
+                    p->loseAllMarks(mark);
+                foreach(QString m, marks) {
+                    if (p->getMark(m) > 0)
+                        p->loseAllMarks(m);
+                }
+
+                QString pile = skill->getRelatedPileName();
+                if (pile != NULL)
+                    idlist.append(p->getPile(pile));
             }
-            if (idlist.length() > 0) {
-                CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, p->objectName(), NULL, "changshi", "");
+            if (!idlist.isEmpty()) {
+                CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, p->objectName(), NULL, "changshi", QString());
                 CardsMoveStruct move(idlist, p, Player::DiscardPile, reason);
                 room->moveCardsAtomic(move, true);
             }
-            foreach (QString m, marks) {
-                if (p->getMark(m) > 0)
-                    p->loseAllMarks(m);
-            }
         }
+
         return false;
     }
 };

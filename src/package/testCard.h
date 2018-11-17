@@ -191,6 +191,8 @@ class BoneHealing : public SingleTargetTrick
 public:
     Q_INVOKABLE BoneHealing(Card::Suit suit, int number);
 
+    virtual bool isAvailable(const Player *player) const;
+
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
@@ -202,6 +204,8 @@ class SpringBreath : public DelayedTrick
 
 public:
     Q_INVOKABLE SpringBreath(Card::Suit suit, int number);
+
+    //virtual bool isAvailable(const Player *player) const;
 
     virtual QString getSubtype() const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;

@@ -116,6 +116,8 @@ class FireAttack : public SingleTargetTrick
 public:
     Q_INVOKABLE FireAttack(Card::Suit suit, int number);
 
+    virtual bool isAvailable(const Player *player) const;
+
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
@@ -126,6 +128,8 @@ class SupplyShortage : public DelayedTrick
 
 public:
     Q_INVOKABLE SupplyShortage(Card::Suit suit, int number);
+
+    virtual bool isAvailable(const Player *player) const;
 
     virtual QString getSubtype() const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;

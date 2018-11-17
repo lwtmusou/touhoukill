@@ -1828,6 +1828,7 @@ public:
     {
         events << Pindian;
         view_as_skill = new YuejianVS;
+        related_pile = "dango";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
@@ -1870,6 +1871,7 @@ public:
     {
         expand_pile = "dango";
         filter_pattern = ".|.|.|dango";
+        related_pile = "dango";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const

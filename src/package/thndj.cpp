@@ -211,6 +211,7 @@ public:
     {
         events << DamageInflicted << Damage << Damaged;
         view_as_skill = new HuanyueVS;
+        related_pile = "huanyue_pile";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
@@ -1325,6 +1326,7 @@ public:
     {
         events << EventPhaseStart << Damage << FinishJudge;
         view_as_skill = new JinengVS;
+        related_pile = "jinengPile";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const

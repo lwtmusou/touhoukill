@@ -4,6 +4,7 @@
 #include "engine.h"
 #include "general.h"
 #include "maneuvering.h"
+#include "roomthread.h"
 #include "settings.h"
 #include "skill.h"
 #include "standard.h"
@@ -172,6 +173,7 @@ public:
     {
         events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseStart << PreMarkChange << EventSkillInvalidityChange;
         frequency = Compulsory;
+        related_mark = "@ye";
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
@@ -279,6 +281,7 @@ public:
     Hongwu()
         : ViewAsSkill("hongwu")
     {
+        related_mark = "@ye";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
@@ -320,6 +323,7 @@ public:
     Shenqiang()
         : OneCardViewAsSkill("shenqiang")
     {
+        related_mark = "@ye";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
@@ -349,6 +353,7 @@ public:
     {
         events << DamageInflicted;
         frequency = Compulsory;
+        related_mark = "@ye";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -836,6 +841,7 @@ public:
         : TriggerSkill("kuangyan")
     {
         events << Dying;
+        related_mark = "@kinki";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -888,6 +894,7 @@ public:
     Huimie()
         : ZeroCardViewAsSkill("huimie")
     {
+        related_mark = "@kinki";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
@@ -909,6 +916,7 @@ public:
     {
         events << EventPhaseEnd;
         frequency = Compulsory;
+        related_mark = "@kinki";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -959,6 +967,7 @@ public:
     {
         events << EventPhaseStart;
         frequency = Compulsory;
+        related_mark = "@clock";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
@@ -987,6 +996,7 @@ public:
         : TriggerSkill("shiting")
     {
         events << EventPhaseChanging;
+        related_mark = "@clock";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
@@ -1102,8 +1112,9 @@ public:
         if (triggerEvent == GameStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player && player->hasSkill(this)) {
-                room->setPlayerProperty(player, "renhp", player->getMaxHp());
-                room->setPlayerProperty(player, "linghp", player->getMaxHp());
+                int initHp = player->getHp();
+                room->setPlayerProperty(player, "renhp", initHp);//player->getMaxHp()
+                room->setPlayerProperty(player, "linghp", initHp); //player->getMaxHp()
             }
         }
     }
@@ -1930,6 +1941,7 @@ public:
     Huaxiang()
         : ViewAsSkill("huaxiang")
     {
+        related_pile = "rainbow";
     }
 
     static QStringList responsePatterns()
@@ -2148,6 +2160,7 @@ public:
     {
         events << GameStart << DrawNCards << DrawPileSwaped;
         frequency = Compulsory;
+        related_mark = "@qiannian";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
@@ -2424,284 +2437,531 @@ public:
     }
 };
 
-class Biaoxiang : public TriggerSkill
+class Renge : public TriggerSkill
 {
 public:
-    Biaoxiang()
-        : TriggerSkill("biaoxiang")
+    Renge()
+        : TriggerSkill("renge")
     {
-        events << EventPhaseStart;
-        frequency = Wake;
+        events << GameStart << Revive << EventPhaseStart << GameOverJudge << EventLoseSkill;
+        frequency = Eternal;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    // todo: kill Same General Mode
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
-        ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->hasSkill(this) && player->getMark("biaoxiang") == 0 && player->getPhase() == Player::Start && player->getHandcardNum() < 2)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
-    {
-        ServerPlayer *player = data.value<ServerPlayer *>();
-        room->doLightbox("$biaoxiangAnimate", 4000);
-        room->touhouLogmessage("#BiaoxiangWake", player, objectName());
-        room->notifySkillInvoked(player, objectName());
-        room->addPlayerMark(player, objectName());
-        int x = player->getMaxHp();
-        int y;
-        if (x > 3)
-            y = 3 - x;
-        else
-            y = 4 - x;
-
-        if (room->changeMaxHpForAwakenSkill(player, y))
-            room->handleAcquireDetachSkills(player, "ziwo");
-        return false;
-    }
-};
-
-ZiwoCard::ZiwoCard()
-{
-    will_throw = true;
-    target_fixed = true;
-}
-
-void ZiwoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
-{
-    RecoverStruct recov;
-    recov.recover = 1;
-    recov.who = source;
-    room->recover(source, recov);
-}
-
-class Ziwo : public ViewAsSkill
-{
-public:
-    Ziwo()
-        : ViewAsSkill("ziwo")
-    {
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const
-    {
-        return player->isWounded();
-    }
-
-    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
-    {
-        return !to_select->isEquipped() && !Self->isJilei(to_select);
-    }
-
-    virtual const Card *viewAs(const QList<const Card *> &cards) const
-    {
-        if (cards.length() == 2) {
-            ZiwoCard *card = new ZiwoCard;
-            card->addSubcards(cards);
-
-            return card;
-        } else
-            return NULL;
-    }
-};
-
-class Shifang : public TriggerSkill
-{
-public:
-    Shifang()
-        : TriggerSkill("shifang")
-    {
-        events << CardsMoveOneTime;
-        frequency = Wake;
-    }
-    static void koishi_removeskill(Room *room, ServerPlayer *player)
-    {
-        foreach (const Skill *skill, player->getVisibleSkillList()) {
-            if (skill->getFrequency() == Skill::Wake || skill->isAttachedLordSkill() || skill->getFrequency() == Skill::Eternal)
-                continue;
-            else {
-                QString skill_name = skill->objectName();
-
-                room->handleAcquireDetachSkills(player, "-" + skill_name);
+        QList<SkillInvokeDetail> ret;
+        if (triggerEvent == GameStart) {
+            if (!data.isNull()) {
+                ServerPlayer *p = data.value<ServerPlayer *>();
+                if (room->getTag("renge").isNull()) {
+                    if (p->hasSkill(this) && p->isAlive())
+                        ret << SkillInvokeDetail(this, p, p, NULL, true);
+                } else {
+                    ServerPlayer *koi = room->getTag("renge").value<ServerPlayer *>();
+                    if (p == koi && (!p->hasSkill(this) || p->isDead()))
+                        ret << SkillInvokeDetail(this, NULL, koi, NULL, true);
+                }
+            }
+        } else if (triggerEvent == Revive) {
+            ServerPlayer *p = data.value<ServerPlayer *>();
+            if (!room->getTag("renge").isNull()) {
+                ServerPlayer *koi = room->getTag("renge").value<ServerPlayer *>();
+                if (koi->hasSkill(this) && koi->isAlive())
+                    ret << SkillInvokeDetail(this, koi, koi, p, true);
+            } else if (p->hasSkill(this) && p->isAlive())
+                ret << SkillInvokeDetail(this, p, p, NULL, true);
+        } else if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *p = data.value<ServerPlayer *>();
+            if (p->hasSkill(this) && p->isAlive() && p->getPhase() == Player::Start)
+                ret << SkillInvokeDetail(this, p, p, NULL, true);
+        } else if (triggerEvent == Death) {
+            DeathStruct death = data.value<DeathStruct>();
+            if (!room->getTag("renge").isNull()) {
+                ServerPlayer *koi = room->getTag("renge").value<ServerPlayer *>();
+                if (death.who == koi && (!death.who->hasSkill(this) || death.who->isDead()))
+                    ret << SkillInvokeDetail(this, NULL, koi, NULL, true);
+            }
+        } else if (triggerEvent == EventLoseSkill) {
+            if (!room->getTag("renge").isNull()) {
+                ServerPlayer *koi = room->getTag("renge").value<ServerPlayer *>();
+                if (koi->hasSkill(this) && koi->isAlive()) {
+                    SkillAcquireDetachStruct st = data.value<SkillAcquireDetachStruct>();
+                    if (st.skill->objectName() == "benwo")
+                        ret << SkillInvokeDetail(this, koi, koi, st.player, true);
+                    else if (st.skill->objectName() == "ziwo" && st.player != koi)
+                        ret << SkillInvokeDetail(this, koi, koi, st.player, true);
+                }
             }
         }
+
+        return ret;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-        if (player != NULL && player->isAlive() && player->hasSkill(this) && player->getMark("shifang") == 0 && move.from_places.contains(Player::PlaceEquip)) {
-            bool can = false;
-            if (player->getEquips().isEmpty())
-                can = true;
-            else if (move.reason.m_reason == CardMoveReason::S_REASON_CHANGE_EQUIP && player->getEquips().length() == 1)
-                can = true;
-            if (can)
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+        if (triggerEvent == EventPhaseStart) {
+            QList<ServerPlayer *> ret;
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
+                if (!p->hasSkill("chaowo", true))
+                    ret << p;
+            }
+            if (!ret.isEmpty()) {
+                ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, ret, "renge", "@renge", true, true);
+                if (target != NULL)
+                    invoke->targets << target;
+            }
         }
-        return QList<SkillInvokeDetail>();
+
+        return TriggerSkill::cost(triggerEvent, room, invoke, data);
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        ServerPlayer *player = invoke->invoker;
-        room->doLightbox("$shifangAnimate", 4000);
-        room->touhouLogmessage("#ShifangWake", player, objectName());
-        koishi_removeskill(room, player);
+        if (triggerEvent == EventPhaseStart) {
+            if (!invoke->targets.isEmpty()) {
+                ServerPlayer *target = invoke->targets.first();
+                room->acquireSkill(target, "chaowo");
+            }
+        } else if (triggerEvent == EventLoseSkill) {
+            SkillAcquireDetachStruct st = data.value<SkillAcquireDetachStruct>();
+            LogMessage l;
+            l.type = "#AcquireSkill";
+            l.from = invoke->targets.first();
+            l.arg = st.skill->objectName();
+            room->sendLog(l);
 
-        room->notifySkillInvoked(player, objectName());
-        room->addPlayerMark(player, objectName());
-        int x = player->getMaxHp();
-        if (room->changeMaxHpForAwakenSkill(player, 4 - x)) {
-            room->handleAcquireDetachSkills(player, "benwo");
-            //room->setPlayerFlag(player, "-shifangInvoked");
+            room->acquireSkill(invoke->targets.first(), st.skill);
+        } else {
+            if (invoke->owner == NULL) {
+                room->removeTag("renge");
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                    room->detachSkillFromPlayer(p, "benwo", false, true, false);
+                    room->detachSkillFromPlayer(p, "ziwo", false, true, false);
+                }
+            } else if (invoke->targets.isEmpty()) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                    room->acquireSkill(p, "benwo");
+                    if (p != invoke->invoker)
+                        room->acquireSkill(p, "ziwo");
+                }
+                room->setTag("renge", QVariant::fromValue(invoke->invoker));
+            } else {
+                room->acquireSkill(invoke->targets.first(), "benwo");
+                if (invoke->targets.first() != invoke->owner)
+                    room->acquireSkill(invoke->targets.first(), "ziwo");
+            }
         }
+
         return false;
     }
 };
 
 class Benwo : public TriggerSkill
 {
+    static bool hasLimitedSkill(const Player *player)
+    {
+        foreach (const Skill *skill, player->getVisibleSkillList()) {
+            if (skill != NULL && skill->getFrequency() == Limited && !skill->inherits("EquipSkill"))
+                return true;
+        }
+        return false;
+    }
+
 public:
     Benwo()
         : TriggerSkill("benwo")
     {
-        events << DamageInflicted;
+        events << EventPhaseStart << CardUsed;
+        frequency = Compulsory;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    static QString usePattern;
+    static QString usePatternWithoutSlash;
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
-        DamageStruct damage = data.value<DamageStruct>();
-        if (damage.to->hasSkill(this) && damage.to->isWounded() && damage.from != NULL && damage.from->isAlive())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.from);
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->hasSkill(this) && player->isAlive() && player->getPhase() == Player::Finish && !player->isKongcheng())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+        } else {
+            CardUseStruct use = data.value<CardUseStruct>();
+
+            if (use.from->getMark("benwouse") > 0 && !use.card->isKindOf("SkillCard"))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
+        }
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
     {
-        invoke->invoker->tag["benwo_target"] = QVariant::fromValue(invoke->preferredTarget);
-        int x = invoke->invoker->getLostHp();
-        QString prompt = "invoke:" + invoke->preferredTarget->objectName() + ":" + QString::number(x);
-        return invoke->invoker->askForSkillInvoke(objectName(), QVariant::fromValue(invoke->preferredTarget));
-    }
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            QString pattern = usePatternWithoutSlash;
+            foreach (const Skill *skill, player->getVisibleSkillList()) {
+                if (skill != NULL && skill->getFrequency() == Skill::Eternal && !skill->inherits("EquipSkill")) {
+                    pattern = usePattern;
+                    break;
+                }
+            }
+            bool canUse = false;
+            foreach (int id, player->handCards()) {
+                const Card *card = Sanguosha->getCard(id);
+                // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!! // && card->isAvailable(player)
+                if (Sanguosha->matchExpPattern(pattern, player, card) && !player->isCardLimited(card, Card::MethodUse)) {
+                    foreach(ServerPlayer *t, room->getAlivePlayers()) {
+                        if (card->targetFilter(QList<const Player *>(), t, player) && !player->isProhibited(t, card)) {
+                            canUse = true;
+                            break;
+                        }
+                    }
+                }
+                if (canUse)
+                    break;
+            }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        int x = invoke->invoker->getLostHp();
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
+            if (!canUse)
+                room->showAllCards(player);
+            else {
+                if (hasLimitedSkill(player))
+                    player->setMark("benwouse", 1);
 
-        invoke->invoker->drawCards(x);
-        room->askForDiscard(invoke->targets.first(), objectName(), x, x, false, true);
-        return false;
-    }
-};
-
-class Yizhi : public TriggerSkill
-{
-public:
-    Yizhi()
-        : TriggerSkill("yizhi")
-    {
-        events << Dying;
-        frequency = Wake;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
-    {
-        ServerPlayer *who = data.value<DyingStruct>().who;
-        if (who->hasSkill(this) && who->getMark("yizhi") == 0 && who->getHp() < who->dyingThreshold())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, who, who, NULL, true);
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        ServerPlayer *player = invoke->invoker;
-        room->doLightbox("$yizhiAnimate", 4000);
-        room->touhouLogmessage("#YizhiWake", player, objectName());
-        room->notifySkillInvoked(player, objectName());
-        room->addPlayerMark(player, objectName());
-
-        int x = player->dyingThreshold() - player->getHp();
-        RecoverStruct recov;
-        recov.recover = x;
-        recov.who = player;
-        room->recover(player, recov);
-
-        x = player->getMaxHp();
-        if (room->changeMaxHpForAwakenSkill(player, 3 - x)) {
-            Shifang::koishi_removeskill(room, player);
-            room->handleAcquireDetachSkills(player, "chaowo");
+                if (!room->askForUseCard(player, pattern + "!", "benwo-use")) {
+                    const Card *useCard = NULL;
+                    ServerPlayer *target = NULL;
+                    foreach (int id, player->handCards()) {
+                        const Card *card = Sanguosha->getCard(id);
+                        // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!!
+                        if (Sanguosha->matchExpPattern(pattern, player, card) && !player->isCardLimited(card, Card::MethodUse)) {
+                            foreach(ServerPlayer *t, room->getAlivePlayers()) {
+                                if (card->targetFilter(QList<const Player *>(), t, player) && !player->isProhibited(t, card)) {
+                                    useCard = card;
+                                    target = t;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (useCard == NULL) { // IMPOSSIBLE!!!!
+                        player->setMark("benwouse", 0);
+                        room->showAllCards(player);
+                    } else {
+                        CardUseStruct use;
+                        use.from = player;
+                        use.card = useCard;
+                        // TODO: fill use.to
+                        if (!use.card->targetFixed())
+                            use.to << target;
+                        room->useCard(use);
+                    }
+                }
+            }
+        } else {
+            CardUseStruct use = data.value<CardUseStruct>();
+            use.from->setMark("benwouse", 0);
+            if (hasLimitedSkill(use.from)) {
+                use.from->drawCards(1, "benwo");
+                if (use.card->isKindOf("Slash"))
+                    room->recover(use.from, RecoverStruct());
+            }
         }
 
         return false;
     }
 };
 
-ChaowoCard::ChaowoCard()
-{
-    will_throw = true;
-}
+QString Benwo::usePattern = "BasicCard+^Jink,TrickCard+^Nullification,EquipCard|.|.|hand,benwo";
+QString Benwo::usePatternWithoutSlash = "BasicCard+^Jink+^Slash,TrickCard+^Nullification,EquipCard|.|.|hand,benwo";
 
-bool ChaowoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
-{
-    return (targets.isEmpty() && to_select->getMaxHp() >= Self->getMaxHp());
-}
-
-void ChaowoCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &targets) const
-{
-    targets.first()->drawCards(2);
-    if (targets.first()->getMaxHp() == 3)
-        source->drawCards(2);
-}
-
-class ChaowoVS : public OneCardViewAsSkill
+class Ziwo : public TriggerSkill
 {
 public:
-    ChaowoVS()
-        : OneCardViewAsSkill("chaowo")
-    {
-        filter_pattern = ".|.|.|hand!";
-        response_pattern = "@@chaowo";
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const
-    {
-        if (originalCard != NULL) {
-            ChaowoCard *card = new ChaowoCard;
-            card->addSubcard(originalCard);
-            return card;
-        } else
-            return NULL;
-    }
-};
-
-class Chaowo : public TriggerSkill
-{
-public:
-    Chaowo()
-        : TriggerSkill("chaowo")
+    Ziwo()
+        : TriggerSkill("ziwo")
     {
         events << EventPhaseStart;
-        view_as_skill = new ChaowoVS;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->hasSkill(this) && player->getPhase() == Player::Finish)
+        if (player->hasSkill(this) && player->getPhase() == Player::RoundStart && player->isAlive())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+        else if (player->getMark("ziwoInvalid") > 0 && player->getPhase() == Player::NotActive)
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player->hasSkill(this) ? player : NULL, player, NULL, true);
+
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        room->askForUseCard(invoke->invoker, "@@chaowo", "@chaowo");
+        if (invoke->invoker->getPhase() == Player::RoundStart) {
+            invoke->invoker->setMark("ziwoInvalid", 1);
+            room->setPlayerSkillInvalidity(invoke->invoker, NULL, true);
+        } else {
+            invoke->invoker->setMark("ziwoInvalid", 0);
+            room->setPlayerSkillInvalidity(invoke->invoker, NULL, false);
+        }
+
         return false;
     }
 };
+
+class Chaowo : public ZeroCardViewAsSkill
+{
+public:
+    static void changeHero(Room *room, ServerPlayer *source, const QString &to_general)
+    {
+        const General *fromGeneral = source->getGeneral();
+        RoomThread *thread = room->getThread();
+        JsonArray arg;
+        arg << (int)QSanProtocol::S_GAME_EVENT_CHANGE_HERO;
+        arg << source->objectName();
+        arg << to_general;
+        arg << false;
+        arg << true;
+        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+
+        room->changePlayerGeneral(source, to_general);
+
+        bool game_start = false;
+        const General *toGeneral = Sanguosha->getGeneral(to_general);
+        if (toGeneral != NULL) {
+            foreach(const Skill *skill, toGeneral->getSkillList()) {
+                if (skill->isLordSkill() && !source->isLord())
+                    continue;
+                if (skill->inherits("TriggerSkill")) {
+                    const TriggerSkill *trigger = qobject_cast<const TriggerSkill *>(skill);
+                    thread->addTriggerSkill(trigger);
+                    if (trigger->getTriggerEvents().contains(GameStart))
+                        game_start = true;
+                }
+                if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
+                    room->setPlayerMark(source, skill->getLimitMark(), 1);
+                SkillAcquireDetachStruct s;
+                s.isAcquire = true;
+                s.player = source;
+                s.skill = skill;
+                QVariant _skillobjectName = QVariant::fromValue(s);
+                thread->trigger(EventAcquireSkill, room, _skillobjectName);
+            }
+        }
+
+        room->resetAI(source);
+        // TODO set hp and maxhp and kingdom
+        if (toGeneral != NULL) {
+            if (!toGeneral->hasSkill("huanmeng")) {
+                int hp = source->getHp();
+                int record_hp = source->getHp();
+                int maxHp = source->getMaxHp();
+                if (fromGeneral->hasSkill("huanmeng")) {
+                    maxHp = toGeneral->getMaxHp();
+                    hp = toGeneral->getMaxHp();
+                }
+                else {
+                    int maxHpMinus = toGeneral->getMaxHp() - fromGeneral->getMaxHp();
+                    hp += maxHpMinus;
+                    maxHp += maxHpMinus;
+                }
+                hp = qMin(hp, maxHp);
+
+                source->setMaxHp(maxHp);
+                room->broadcastProperty(source, "maxhp");
+
+                if (toGeneral->hasSkill("banling")) {
+                    source->setRenHp(hp);
+                    source->setLingHp(hp);
+                    room->broadcastProperty(source, "renhp");
+                    room->broadcastProperty(source, "linghp");
+                }
+
+                source->setHp(hp);
+                room->broadcastProperty(source, "hp");
+
+                //while PostHpReduced, deal "kill player"  or "enterdying".
+                if (record_hp > hp) {
+                    HpLostStruct l;
+                    l.player = source;
+                    l.num = record_hp - hp;
+                    QVariant lv = QVariant::fromValue(l);
+                    room->getThread()->trigger(PostHpReduced, room, lv);
+                    if (source->isDead())
+                        return;
+                }
+               
+                /*if (source->getMaxHp() < source->dyingThreshold()) {
+                    room->killPlayer(source);
+                    return;
+                }
+                else if (source->getHp() < source->dyingThreshold()) {
+                    room->enterDying(source, NULL);
+                    if (source->isDead())
+                        return;
+                }*/
+            }
+            else {
+                source->setMaxHp(0);
+                source->setHp(0);
+                room->broadcastProperty(source, "maxhp");
+                room->broadcastProperty(source, "hp");
+            }
+
+
+            QString kingdom = toGeneral->getKingdom();
+            if (kingdom == "zhu" || kingdom == "touhougod") {
+                kingdom = room->askForKingdom(source);
+
+                LogMessage log;
+                log.type = "#ChooseKingdom";
+                log.from = source;
+                log.arg = kingdom;
+                room->sendLog(log);
+            }
+            room->setPlayerProperty(source, "kingdom", kingdom);
+        }
+
+        //remove piles and marks
+        QList<int> idlist;
+        if (fromGeneral != NULL) {
+            foreach(const Skill *skill, fromGeneral->getSkillList()) {
+                QString mark = skill->getRelatedMark();
+                if (mark != NULL)
+                    source->loseAllMarks(mark);
+
+
+                QString pile = skill->getRelatedPileName();
+                if (pile != NULL)
+                    idlist.append(source->getPile(pile));
+            }
+        }
+        if (!idlist.isEmpty()) {
+            CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, source->objectName(), NULL, "chaowo", QString());
+            CardsMoveStruct move(idlist, source, Player::DiscardPile, reason);
+            room->moveCardsAtomic(move, true);
+        }
+
+        if (game_start) {
+            QVariant v = QVariant::fromValue(source);
+            thread->trigger(GameStart, room, v);
+        }
+    }
+
+    Chaowo()
+        : ZeroCardViewAsSkill("chaowo")
+    {
+        frequency = Limited;
+        limit_mark = "@chaowo";
+    }
+
+    bool isEnabledAtPlay(const Player *player) const
+    {
+        if (player->hasFlag("ChaowoNoGeneral"))
+            return false;
+        if (player->getMark("@chaowo") == 0)
+            return false;
+
+        QList<const General *> sameNameGenerals;
+
+        const General *sourceGeneral = player->getGeneral();
+        QString sourceGeneralName = sourceGeneral->objectName().split("_").first();
+        foreach (const QString &name, Sanguosha->getLimitedGeneralNames()) {
+            if (name.split("_").first() == sourceGeneralName)
+                sameNameGenerals << Sanguosha->getGeneral(name);
+        }
+
+        // remove used general from list
+        auto copy = sameNameGenerals;
+        auto sib = player->getSiblings();
+        sib << player;
+
+        foreach (const General *general, copy) {
+            foreach (const Player *p, sib) {
+                if (p->getGeneral() == general)
+                    sameNameGenerals.removeAll(general);
+            }
+        }
+
+        return !sameNameGenerals.isEmpty();
+    }
+
+    const Card *viewAs() const
+    {
+        return new ChaowoCard;
+    }
+};
+
+ChaowoCard::ChaowoCard()
+{
+    target_fixed = true;
+    handling_method = Card::MethodNone;
+}
+
+void ChaowoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+{
+    QList<const General *> sameNameGenerals;
+
+    const General *sourceGeneral = source->getGeneral();
+    QString sourceGeneralName = sourceGeneral->objectName().split("_").first();
+    foreach (const QString &name, Sanguosha->getLimitedGeneralNames()) {
+        if (name.split("_").first() == sourceGeneralName)
+            sameNameGenerals << Sanguosha->getGeneral(name);
+    }
+
+    // remove used general from list
+    auto copy = sameNameGenerals;
+    foreach (const General *general, copy) {
+        foreach (ServerPlayer *p, room->getAllPlayers(true)) {
+            if (p->getGeneral() == general)
+                sameNameGenerals.removeAll(general);
+        }
+    }
+
+    // remove generals in X from list
+    copy = sameNameGenerals;
+    foreach (ServerPlayer *p, room->getAllPlayers(true)) {
+        if (p->hasSkill("anyun", true)) {
+            QStringList X = p->getHiddenGenerals();
+            foreach (const QString &g, X) {
+                foreach (const General *general, copy) {
+                    if (Sanguosha->getGeneral(g) == general)
+                        sameNameGenerals.removeAll(general);
+                }
+            }
+        }
+    }
+
+    // kill nullptr in General list
+    sameNameGenerals.removeAll(NULL);
+
+    if (sameNameGenerals.isEmpty()) {
+        LogMessage log;
+        log.type = "#ChaowoNoAvailableGeneral";
+        log.from = source;
+        room->doNotify(source, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+
+        room->setPlayerFlag(source, "ChaowoNoGeneral");
+        return;
+    }
+
+    room->setPlayerMark(source, "@chaowo", 0);
+    room->doLightbox("$chaowoAnimate", 4000);
+
+    QString toChange = sameNameGenerals.first()->objectName();
+    QStringList sameNameGeneralNames;
+    foreach (const General *general, sameNameGenerals)
+        sameNameGeneralNames << general->objectName();
+
+    if (sameNameGenerals.length() > 1) {
+        if (source->isOnline())
+            toChange = room->askForGeneral(source, sameNameGeneralNames, toChange);
+        else
+            toChange = room->askForChoice(source, "chaowo", sameNameGeneralNames.join("+"));
+    }
+
+    // Different from Room::changeHero, must be written seprately
+    Chaowo::changeHero(room, source, toChange);
+}
 
 class Zuosui : public TriggerSkill
 {
@@ -2710,6 +2970,7 @@ public:
         : TriggerSkill("zuosui")
     {
         events << DamageCaused;
+        related_mark = "@xinyang";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -2768,6 +3029,7 @@ public:
         : TriggerSkill("worao")
     {
         events << TargetConfirmed;
+        related_mark = "@xinyang";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -2815,6 +3077,7 @@ public:
     {
         events << EventPhaseStart;
         frequency = Compulsory;
+        related_mark = "@xinyang";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -4516,7 +4779,6 @@ void AnyunDialog::popup()
         delete button;
     }
 
-    QStringList skill_names;
     foreach (QString hidden, Self->getHiddenGenerals()) {
         const General *g = Sanguosha->getGeneral(hidden);
         foreach (const Skill *skill, g->getSkillList()) {
@@ -4963,36 +5225,26 @@ public:
         int maxhp = invoke->invoker->tag["init_MaxHp"].toInt();
         room->setPlayerProperty(invoke->invoker, "maxhp", maxhp);
 
-        QStringList disablePiles;
-        disablePiles << "wooden_ox"
-                     << "suoding_cards"
-                     << "saving_energy";
-        //throw cards in special place
+
+        //remove piles and marks
+        const General *fromGeneral = Sanguosha->getGeneral(name);
         QList<int> idlist;
-        foreach (QString pile, invoke->invoker->getPileNames()) {
-            if (!disablePiles.contains(pile))
-                idlist << invoke->invoker->getPile(pile);
+        if (fromGeneral != NULL) {
+            foreach(const Skill *skill, fromGeneral->getSkillList()) {
+                QString mark = skill->getRelatedMark();
+                if (mark != NULL)
+                    invoke->invoker->loseAllMarks(mark);
+
+
+                QString pile = skill->getRelatedPileName();
+                if (pile != NULL)
+                    idlist.append(invoke->invoker->getPile(pile));
+            }
         }
-        if (idlist.length() > 0) {
-            CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, invoke->invoker->objectName(), NULL, "benzun", "");
+        if (!idlist.isEmpty()) {
+            CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, invoke->invoker->objectName(), NULL, "benzun", QString());
             CardsMoveStruct move(idlist, invoke->invoker, Player::DiscardPile, reason);
             room->moveCardsAtomic(move, true);
-        }
-        //@todo: find a standard method for confriming removable mark
-        QStringList marks;
-        marks << "@clock"
-              << "@kinki"
-              << "@qiannian"
-              << "@shi"
-              << "@ye"
-              << "@yu"
-              << "@zhengti"
-              << "@xinyang"
-              << "@ice"
-              << "@star";
-        foreach (QString m, marks) {
-            if (invoke->invoker->getMark(m) > 0)
-                invoke->invoker->loseAllMarks(m);
         }
 
         JsonArray arg;
@@ -5012,6 +5264,7 @@ public:
         : TriggerSkill("chongneng")
     {
         events << TargetSpecifying;
+        related_mark = "@star";
     }
 
     static bool can_add(CardUseStruct use)
@@ -5110,6 +5363,7 @@ public:
         : TriggerSkill("huixing")
     {
         events << CardFinished;
+        related_mark = "@star";
     }
 
     static bool hasCardValue(CardUseStruct use)
@@ -5515,9 +5769,10 @@ TouhouGodPackage::TouhouGodPackage()
     byakuren_god->addSkill(new Chaoren);
 
     General *koishi_god = new General(this, "koishi_god", "touhougod", 3);
-    koishi_god->addSkill(new Biaoxiang);
-    koishi_god->addSkill(new Shifang);
-    koishi_god->addSkill(new Yizhi);
+    koishi_god->addSkill(new Renge);
+    //    koishi_god->addSkill(new Biaoxiang);
+    //    koishi_god->addSkill(new Shifang);
+    //    koishi_god->addSkill(new Yizhi);
     koishi_god->addRelateSkill("ziwo");
     koishi_god->addRelateSkill("benwo");
     koishi_god->addRelateSkill("chaowo");
@@ -5590,15 +5845,14 @@ TouhouGodPackage::TouhouGodPackage()
 
     General *alice_god = new General(this, "alice_god", "touhougod", 4, false, true, true);
     Q_UNUSED(alice_god);
-    General *shinmyoumaru_god = new General(this, "shinmyoumaru_god", "touhougod", 4, false, true, true);
-    Q_UNUSED(shinmyoumaru_god);
-    General *tenshi_god = new General(this, "tenshi_god", "touhougod", 3, false, true, true);
-    Q_UNUSED(tenshi_god);
-    General *uuz13 = new General(this, "yuyuko_1v3", "touhougod", 1, false, true, true);
-    Q_UNUSED(uuz13);
-
-    General *kaguya13 = new General(this, "kaguya_1v3", "touhougod", 1, false, true, true);
-    Q_UNUSED(kaguya13);
+    //    General *shinmyoumaru_god = new General(this, "shinmyoumaru_god", "touhougod", 4, false, true, true);
+    //    Q_UNUSED(shinmyoumaru_god);
+    //    General *tenshi_god = new General(this, "tenshi_god", "touhougod", 3, false, true, true);
+    //    Q_UNUSED(tenshi_god);
+    //    General *uuz13 = new General(this, "yuyuko_1v3", "touhougod", 1, false, true, true);
+    //    Q_UNUSED(uuz13);
+    //    General *kaguya13 = new General(this, "kaguya_1v3", "touhougod", 1, false, true, true);
+    //    Q_UNUSED(kaguya13);
 
     addMetaObject<HongwuCard>();
     addMetaObject<ShenqiangCard>();
@@ -5606,7 +5860,7 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<ShenshouCard>();
     addMetaObject<FengyinCard>();
     addMetaObject<HuaxiangCard>();
-    addMetaObject<ZiwoCard>();
+    //    addMetaObject<ZiwoCard>();
     addMetaObject<ChaowoCard>();
     addMetaObject<WendaoCard>();
     addMetaObject<XinhuaCard>();
@@ -5614,7 +5868,7 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<RumoCard>();
     addMetaObject<XianshiCard>();
 
-    skills << new ChaorenLog << new Ziwo << new Benwo << new Chaowo << new Wendao << new RoleShownHandler << new ShenbaoAttach;
+    skills << new ChaorenLog << new Wendao << new RoleShownHandler << new ShenbaoAttach << new Ziwo << new Benwo << new Chaowo;
 }
 
 ADD_PACKAGE(TouhouGod)

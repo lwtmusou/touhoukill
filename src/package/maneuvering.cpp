@@ -445,6 +445,19 @@ FireAttack::FireAttack(Card::Suit suit, int number)
     can_damage = true;
 }
 
+bool FireAttack::isAvailable(const Player *player) const
+{
+    auto siblings = player->getAliveSiblings();
+    siblings << player;
+
+    foreach (const Player *p, siblings) {
+        if (targetFilter(QList<const Player *>(), p, player) && !player->isProhibited(p, this))
+            return SingleTargetTrick::isAvailable(player);
+    }
+
+    return false;
+}
+
 bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
@@ -593,6 +606,16 @@ SupplyShortage::SupplyShortage(Card::Suit suit, int number)
     judge.pattern = ".|club";
     judge.good = true;
     judge.reason = objectName();
+}
+
+bool SupplyShortage::isAvailable(const Player *player) const
+{
+    foreach (const Player *p, player->getSiblings()) {
+        if (targetFilter(QList<const Player *>(), p, player) && !player->isProhibited(p, this))
+            return DelayedTrick::isAvailable(player);
+    }
+
+    return false;
 }
 
 QString SupplyShortage::getSubtype() const

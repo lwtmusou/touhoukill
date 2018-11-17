@@ -534,6 +534,7 @@ public:
     {
         frequency = Compulsory;
         events << CardsMoveOneTime << AfterDrawInitialCards;
+        related_pile = "zhenli";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
@@ -1020,6 +1021,7 @@ public:
     {
         events << DamageInflicted;
         view_as_skill = new HuantongVS;
+        related_pile = "dream";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
@@ -1816,6 +1818,7 @@ public:
         events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Death << Debut << Revive;
         view_as_skill = new ModianSelfVS;
         //show_type = "static";
+        related_pile = "modian";
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const

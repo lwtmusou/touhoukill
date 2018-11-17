@@ -1943,6 +1943,7 @@ public:
         : TriggerSkill("zhangmu")
     {
         events << TargetConfirmed << CardFinished;
+        related_pile = "zhang";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const

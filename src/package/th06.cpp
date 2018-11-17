@@ -1795,6 +1795,7 @@ public:
     {
         events << GameStart << CardsMoveOneTime << TargetConfirmed << Debut;
         frequency = Compulsory;
+        related_pile = "fenghua";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const

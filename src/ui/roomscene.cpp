@@ -495,6 +495,8 @@ void RoomScene::handleGameEvent(const QVariant &args)
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
         container->updateAvatarTooltip();
         dashboard->expandSpecialCard(); //for chaoren
+        if (skill_name == "banling")
+            container->updateHp();
         break;
     }
     case S_GAME_EVENT_ADD_SKILL: {
@@ -506,6 +508,9 @@ void RoomScene::handleGameEvent(const QVariant &args)
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
         container->updateAvatarTooltip();
+        dashboard->expandSpecialCard(); //for chaoren
+        if (skill_name == "banling")
+            container->updateHp();
         break;
     }
     case S_GAME_EVENT_LOSE_SKILL: {
@@ -518,6 +523,8 @@ void RoomScene::handleGameEvent(const QVariant &args)
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
         container->updateAvatarTooltip();
         dashboard->expandSpecialCard(); //for chaoren
+        if (skill_name == "banling")
+            container->updateHp();
         break;
     }
     case S_GAME_EVENT_PREPARE_SKILL:
@@ -580,8 +587,11 @@ void RoomScene::handleGameEvent(const QVariant &args)
         }
 
         if (newHero) {
-            foreach (const Skill *skill, newHero->getVisibleSkills())
+            foreach(const Skill *skill, newHero->getVisibleSkills()) {
+                if (skill->isLordSkill() && !player->isLord())
+                    continue;
                 attachSkill(skill->objectName(), false);
+            }
             if (!newHero->isVisible()) {
                 Config.KnownSurprisingGenerals.append(newHeroName);
                 Config.setValue("KnownSurprisingGenerals", Config.KnownSurprisingGenerals);
@@ -3991,18 +4001,6 @@ void RoomScene::showPile(const QList<int> &card_ids, const QString &name, const 
     pileContainer->setObjectName(name);
     if (name == "huashencard" && target->hasSkill("anyun", true)) {
         QStringList huashens = target->getHiddenGenerals();
-        //another method
-        /*QList<const General*> hiddens;
-        foreach(QString arg, huashens) {
-            const General*g = Sanguosha->getGeneral(arg);
-            if (g)
-                hiddens << g;
-        }
-        
-        GeneralOverview *overview = GeneralOverview::getInstance(main_window);
-        overview->fillGenerals(hiddens);
-        overview->show();
-        return;*/
         QList<CardItem *> generals;
         foreach (QString arg, huashens) {
             CardItem *item = new CardItem(arg);

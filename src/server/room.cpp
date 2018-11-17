@@ -631,7 +631,7 @@ void Room::attachSkillToPlayer(ServerPlayer *player, const QString &skill_name, 
     doNotify(player, S_COMMAND_ATTACH_SKILL, QVariant(skill_name));
 }
 
-void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name, bool is_equip, bool acquire_only)
+void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name, bool is_equip, bool acquire_only, bool sendlog)
 {
     if (!player->hasSkill(skill_name, true))
         return;
@@ -652,11 +652,13 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
         doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
         if (!is_equip) {
-            LogMessage log;
-            log.type = "#LoseSkill";
-            log.from = player;
-            log.arg = skill_name;
-            sendLog(log);
+            if (sendlog) {
+                LogMessage log;
+                log.type = "#LoseSkill";
+                log.from = player;
+                log.arg = skill_name;
+                sendLog(log);
+            }
 
             SkillAcquireDetachStruct s;
             s.player = player;
@@ -1375,8 +1377,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     QList<const Card *> cards = who->getCards(flags);
     QList<const Card *> knownCards = who->getCards(flags);
     foreach (const Card *card, cards) {
-        if ((method == Card::MethodDiscard && !player->canDiscard(who, card->getEffectiveId(), reason)) 
-                || checked_disabled_ids.contains(card->getEffectiveId())) {
+        if ((method == Card::MethodDiscard && !player->canDiscard(who, card->getEffectiveId(), reason)) || checked_disabled_ids.contains(card->getEffectiveId())) {
             cards.removeOne(card);
             knownCards.removeOne(card);
         } else if (unknownHandcards.contains(card->getEffectiveId()))
@@ -4968,8 +4969,12 @@ void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
     setPlayerProperty(player, "general", new_general);
     Q_ASSERT(player->getGeneral() != NULL);
     player->setGender(player->getGeneral()->getGender());
-    foreach (const Skill *skill, player->getGeneral()->getSkillList())
+    foreach(const Skill *skill, player->getGeneral()->getSkillList()) {
+        if (skill->isLordSkill() && !player->isLord()) {
+            continue;
+        }       
         player->addSkill(skill->objectName());
+    }
     filterCards(player, player->getCards("hes"), true);
 }
 
@@ -4982,8 +4987,11 @@ void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general
     setPlayerProperty(player, "general2", new_general);
     Q_ASSERT(player->getGeneral2() != NULL);
     if (player->getGeneral2()) {
-        foreach (const Skill *skill, player->getGeneral2()->getSkillList())
+        foreach(const Skill *skill, player->getGeneral2()->getSkillList()) {
+            if (skill->isLordSkill() && !player->isLord())
+                continue;
             player->addSkill(skill->objectName());
+        }     
     }
     filterCards(player, player->getCards("he"), true);
 }
