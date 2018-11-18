@@ -90,7 +90,7 @@ void TablePile::clear(bool delayRequest)
 
 void TablePile::_fadeOutCardsLocked(const QList<CardItem *> &cards)
 {
-    QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
+    QParallelAnimationGroup *group = new QParallelAnimationGroup;
     foreach (CardItem *toRemove, cards) {
         toRemove->setZValue(0.0);
         toRemove->setHomeOpacity(0.0);
@@ -177,5 +177,5 @@ void TablePile::adjustCards()
     QParallelAnimationGroup *animation = new QParallelAnimationGroup;
     foreach (CardItem *card_item, m_visibleCards)
         animation->addAnimation(card_item->getGoBackAnimation(true));
-    animation->start(QAbstractAnimation::DeleteWhenStopped);
+    animation->start();
 }

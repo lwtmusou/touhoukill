@@ -587,7 +587,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         }
 
         if (newHero) {
-            foreach (const Skill *skill, newHero->getVisibleSkills()) {
+            foreach(const Skill *skill, newHero->getVisibleSkills()) {
                 if (skill->isLordSkill() && !player->isLord())
                     continue;
                 attachSkill(skill->objectName(), false);
@@ -1226,7 +1226,10 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats)
         }
     }
     game_started = true;
+    QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
     updateTable();
+
+    group->start(QAbstractAnimation::DeleteWhenStopped);
 
     // set item to player mapping
     if (item2player.isEmpty()) {
@@ -4252,7 +4255,7 @@ void RoomScene::doMovingAnimation(const QString &name, const QStringList &args)
     if (toItem == dashboard)
         to.setX(toItem->boundingRect().width() / 2);
 
-    QSequentialAnimationGroup *group = new QSequentialAnimationGroup(item);
+    QSequentialAnimationGroup *group = new QSequentialAnimationGroup;
 
     QPropertyAnimation *move = new QPropertyAnimation(item, "pos");
     move->setStartValue(from);
@@ -4267,6 +4270,7 @@ void RoomScene::doMovingAnimation(const QString &name, const QStringList &args)
     group->addAnimation(disappear);
 
     group->start(QAbstractAnimation::DeleteWhenStopped);
+    connect(group, SIGNAL(finished()), item, SLOT(deleteLater()));
 }
 
 void RoomScene::doAppearingAnimation(const QString &name, const QStringList &args)
@@ -4277,11 +4281,12 @@ void RoomScene::doAppearingAnimation(const QString &name, const QStringList &arg
     QPointF from = getAnimationObject(args.at(0))->scenePos();
     item->setPos(from);
 
-    QPropertyAnimation *disappear = new QPropertyAnimation(item, "opacity", item);
+    QPropertyAnimation *disappear = new QPropertyAnimation(item, "opacity");
     disappear->setEndValue(0.0);
     disappear->setDuration(1000);
 
     disappear->start(QAbstractAnimation::DeleteWhenStopped);
+    connect(disappear, SIGNAL(finished()), item, SLOT(deleteLater()));
 }
 
 void RoomScene::doLightboxAnimation(const QString &, const QStringList &args)
@@ -4305,7 +4310,7 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args)
         line->setParentItem(lightbox);
         line->setPos(m_tableCenterPos - line_rect.center());
 
-        QPropertyAnimation *appear = new QPropertyAnimation(line, "opacity", line);
+        QPropertyAnimation *appear = new QPropertyAnimation(line, "opacity");
         appear->setStartValue(0.0);
         appear->setKeyValueAt(0.7, 1.0);
         appear->setEndValue(0.0);
@@ -4314,6 +4319,8 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args)
         appear->setDuration(duration);
 
         appear->start(QAbstractAnimation::DeleteWhenStopped);
+
+        connect(appear, SIGNAL(finished()), line, SLOT(deleteLater()));
         connect(appear, SIGNAL(finished()), this, SLOT(removeLightBox()));
     } else if (word.startsWith("anim=")) {
         QGraphicsRectItem *lightbox = addRect(rect);
@@ -4349,7 +4356,7 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args)
         line->setParentItem(lightbox);
         line->setPos(m_tableCenterPos - line_rect.center());
 
-        QPropertyAnimation *appear = new QPropertyAnimation(line, "opacity", line);
+        QPropertyAnimation *appear = new QPropertyAnimation(line, "opacity");
         appear->setStartValue(0.0);
         appear->setKeyValueAt(0.7, 1.0);
         appear->setEndValue(0.0);
@@ -5157,7 +5164,7 @@ void RoomScene::setLordBGM(QString lord)
     if (lord_name == NULL)
         lord_name = Self->getGeneralName();
     lord_name = lord_name.split("_").at(0);
-    if (changeBGM) { //change BGMpath to lordName
+    if (changeBGM) {//change BGMpath to lordName        
         bgm_path = "audio/bgm/" + lord_name + "_1.ogg";
         if ((bgm_path == NULL) || !QFile::exists(bgm_path)) {
             foreach (QString cv_pair, Sanguosha->LordBGMConvertList) {

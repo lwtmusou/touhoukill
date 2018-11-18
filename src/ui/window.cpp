@@ -122,7 +122,7 @@ void Window::appear()
     QPropertyAnimation *scale_x = new QPropertyAnimation(scaleTransform, "xScale");
     QPropertyAnimation *scale_y = new QPropertyAnimation(scaleTransform, "yScale");
     QPropertyAnimation *opacity = new QPropertyAnimation(this, "opacity");
-    QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
+    QParallelAnimationGroup *group = new QParallelAnimationGroup();
 
     scale_x->setEndValue(1);
     scale_y->setEndValue(1);
@@ -139,7 +139,7 @@ void Window::disappear()
     QPropertyAnimation *scale_x = new QPropertyAnimation(scaleTransform, "xScale");
     QPropertyAnimation *scale_y = new QPropertyAnimation(scaleTransform, "yScale");
     QPropertyAnimation *opacity = new QPropertyAnimation(this, "opacity");
-    QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
+    QParallelAnimationGroup *group = new QParallelAnimationGroup();
 
     scale_x->setEndValue(1.05);
     scale_y->setEndValue(0.95);

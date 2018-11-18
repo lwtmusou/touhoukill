@@ -123,7 +123,7 @@ void Photo::setEmotion(const QString &emotion, bool permanent)
         emotion_item->setPos((G_PHOTO_LAYOUT.m_normalWidth - pixmap.width()) / 2, (G_PHOTO_LAYOUT.m_normalHeight - pixmap.height()) / 2);
         _layBetween(emotion_item, _m_chainIcon, _m_roleComboBox);
 
-        QPropertyAnimation *appear = new QPropertyAnimation(emotion_item, "opacity", this);
+        QPropertyAnimation *appear = new QPropertyAnimation(emotion_item, "opacity");
         appear->setStartValue(0.0);
         if (permanent) {
             appear->setEndValue(1.0);
@@ -185,7 +185,7 @@ void Photo::tremble()
 
 void Photo::hideEmotion()
 {
-    QPropertyAnimation *disappear = new QPropertyAnimation(emotion_item, "opacity", this);
+    QPropertyAnimation *disappear = new QPropertyAnimation(emotion_item, "opacity");
     disappear->setStartValue(1.0);
     disappear->setEndValue(0.0);
     disappear->setDuration(500);
@@ -346,12 +346,12 @@ QPointF Photo::getHeroSkinContainerPosition() const
 
 QPropertyAnimation *Photo::initializeBlurEffect(GraphicsPixmapHoverItem *icon)
 {
-    QGraphicsBlurEffect *effect = new QGraphicsBlurEffect(this);
+    QGraphicsBlurEffect *effect = new QGraphicsBlurEffect;
     effect->setBlurHints(QGraphicsBlurEffect::AnimationHint);
     effect->setBlurRadius(0);
     icon->setGraphicsEffect(effect);
 
-    QPropertyAnimation *animation = new QPropertyAnimation(effect, "blurRadius", effect);
+    QPropertyAnimation *animation = new QPropertyAnimation(effect, "blurRadius");
     animation->setEasingCurve(QEasingCurve::OutInBounce);
     animation->setDuration(2000);
     animation->setStartValue(0);
