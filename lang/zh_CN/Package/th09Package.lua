@@ -111,7 +111,7 @@ return
 	--zhan005  势力：战 3血
 	["medicine"]="梅蒂欣",
 	["#medicine"]= "小小的甜蜜毒药",
-	["!medicine"]="梅蒂欣·梅兰可以莉",
+	["!medicine"]="梅蒂欣·梅兰可莉",
 	["designer:medicine"] = "星野梦美☆",
 
 	["illustrator:medicine"] = "フカヒレ",
