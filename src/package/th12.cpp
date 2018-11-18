@@ -1236,6 +1236,9 @@ void NuhuoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     ServerPlayer *target = targets.first();
     room->damage(DamageStruct("nuhuo", target, source));
 
+    if (source->isDead())
+        return;
+
     QList<ServerPlayer *> all;
     foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
         if (source->canSlash(p, NULL, true))
