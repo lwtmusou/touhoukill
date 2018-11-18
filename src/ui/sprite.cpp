@@ -107,7 +107,7 @@ EmphasizeEffect::EmphasizeEffect(bool stay)
     setObjectName("emphasizer");
     index = 0;
     this->stay = stay;
-    QPropertyAnimation *anim = new QPropertyAnimation(this, "index");
+    QPropertyAnimation *anim = new QPropertyAnimation(this, "index", this);
     connect(anim, SIGNAL(valueChanged(QVariant)), this, SLOT(update()));
     anim->setEndValue(40);
     anim->setDuration((40 - index) * 5);
@@ -141,7 +141,7 @@ void QAnimatedEffect::setStay(bool stay)
 {
     this->stay = stay;
     if (!stay) {
-        QPropertyAnimation *anim = new QPropertyAnimation(this, "index");
+        QPropertyAnimation *anim = new QPropertyAnimation(this, "index", this);
         anim->setEndValue(0);
         anim->setDuration(index * 5);
 
@@ -158,7 +158,7 @@ SentbackEffect::SentbackEffect(bool stay)
     index = 0;
     this->stay = stay;
 
-    QPropertyAnimation *anim = new QPropertyAnimation(this, "index");
+    QPropertyAnimation *anim = new QPropertyAnimation(this, "index", this);
     connect(anim, SIGNAL(valueChanged(QVariant)), this, SLOT(update()));
     anim->setEndValue(40);
     anim->setDuration((40 - index) * 5);
@@ -210,7 +210,7 @@ FadeEffect::FadeEffect(bool stay)
     index = 0;
     this->stay = stay;
 
-    QPropertyAnimation *anim = new QPropertyAnimation(this, "index");
+    QPropertyAnimation *anim = new QPropertyAnimation(this, "index", this);
     connect(anim, SIGNAL(valueChanged(QVariant)), this, SLOT(update()));
     anim->setEndValue(40);
     anim->setDuration((40 - index) * 5);

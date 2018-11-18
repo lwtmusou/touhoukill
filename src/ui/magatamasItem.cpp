@@ -161,7 +161,7 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp)
 
         connect(fade, SIGNAL(finished()), aniMaga, SLOT(deleteLater()));
 
-        QParallelAnimationGroup *group = new QParallelAnimationGroup;
+        QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
         group->addAnimation(fade);
         group->addAnimation(grow);
 

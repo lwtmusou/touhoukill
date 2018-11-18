@@ -34,8 +34,6 @@ void IndicatorItem::doAnimation()
     group->addAnimation(pause);
 
     group->start(QAbstractAnimation::DeleteWhenStopped);
-
-    connect(group, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 QPointF IndicatorItem::getFinish() const

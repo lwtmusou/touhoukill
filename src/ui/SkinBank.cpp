@@ -708,7 +708,7 @@ QAbstractAnimation *QSanRoomSkin::createHuaShenAnimation(QPixmap &huashenAvatar,
     widget->setWidget(avatar);
     widget->setPos(topLeft);
 
-    QPropertyAnimation *animation = new QPropertyAnimation(widget, "opacity");
+    QPropertyAnimation *animation = new QPropertyAnimation(widget, "opacity", widget);
     animation->setLoopCount(2000);
     JsonArray huashenConfig = _m_animationConfig["huashen"].value<JsonArray>();
     int duration;

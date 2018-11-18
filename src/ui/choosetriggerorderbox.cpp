@@ -208,7 +208,7 @@ void TriggerOptionButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
 
 void TriggerOptionButton::hoverEnterEvent(QGraphicsSceneHoverEvent *)
 {
-    QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity");
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity", this);
     animation->setEndValue(1.0);
     animation->setDuration(100);
     animation->start(QAbstractAnimation::DeleteWhenStopped);
@@ -217,7 +217,7 @@ void TriggerOptionButton::hoverEnterEvent(QGraphicsSceneHoverEvent *)
 
 void TriggerOptionButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 {
-    QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity");
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity", this);
     animation->setEndValue(initialOpacity);
     animation->setDuration(100);
     animation->start(QAbstractAnimation::DeleteWhenStopped);
@@ -249,12 +249,12 @@ bool TriggerOptionButton::isPreferentialSkillOf(const TriggerOptionButton *other
 void TriggerOptionButton::needDisabled(bool disabled)
 {
     if (disabled) {
-        QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity");
+        QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity", this);
         animation->setEndValue(0.2);
         animation->setDuration(100);
         animation->start(QAbstractAnimation::DeleteWhenStopped);
     } else {
-        QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity");
+        QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity", this);
         animation->setEndValue(initialOpacity);
         animation->setDuration(100);
         animation->start(QAbstractAnimation::DeleteWhenStopped);

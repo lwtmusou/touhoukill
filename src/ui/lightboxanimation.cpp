@@ -142,7 +142,7 @@ LightboxAnimation::LightboxAnimation(const QString &general_name, const QString 
 
     QPauseAnimation *step7 = new QPauseAnimation(1700);
 
-    QSequentialAnimationGroup *animation = new QSequentialAnimationGroup;
+    QSequentialAnimationGroup *animation = new QSequentialAnimationGroup(this);
     animation->addAnimation(step1);
     animation->addAnimation(step2);
     animation->addAnimation(step3);
