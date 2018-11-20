@@ -596,13 +596,13 @@ return{
 	["%shown_card"] = "他人的明牌",
 
 	["kuixin"] = "窥心",
-	[":kuixin"] = "<font color=\"blue\"><b>锁定技，</b></font>当你使用牌对其他角色或其他角色使用牌对你结算结束后，若目标数为1且该角色没有明置的手牌，你明置其一张手牌。",
+	[":kuixin"] = "<font color=\"blue\"><b>锁定技，</b></font>当你使用牌对其他角色或其他角色使用牌对你结算结束后，若目标数为1且该角色的明置手牌数小于x，你明置其一张手牌。（x为你已损失体力+1）",
 
 	["xinhua"] = "心花",
 	[":xinhua"] = "你可以使用或打出一名其他角色的明置手牌。",
 
-	["cuimian"] = "催眠",
-	[":cuimian"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可以于此阶段内获得“读心”且你使用牌无次数限制。",
+	--["cuimian"] = "催眠",
+	--[":cuimian"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可以于此阶段内获得“读心”且你使用牌无次数限制。",
 	--[":cuimian"] = "<font color=\"blue\"><b>锁定技，</b></font>若其他角色的明置手牌数不大于其手牌上限，其于其回合内不能使用、打出或弃置明置手牌。",
 	["$xinhua"] = "%from 发动“%arg” 使用/打出 %to 的 %card ",
     ["$cuimianAnimate"]= "skill=satori_god:cuimian",
