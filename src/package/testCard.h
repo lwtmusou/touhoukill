@@ -150,6 +150,15 @@ public:
     Q_INVOKABLE Camouflage(Card::Suit suit, int number);
 };
 
+class Hagoromo : public Armor
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Hagoromo(Card::Suit suit, int number);
+};
+
+
 class AwaitExhausted : public SingleTargetTrick
 {
     Q_OBJECT
