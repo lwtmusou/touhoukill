@@ -134,7 +134,7 @@ return
 	--zhan006  势力：战 4血
 	["aya_sp"]="文花帖SP文",
 	["&aya_sp"]="文花帖文",
-	["#aya_sp"]= "捏造新闻记者",
+	["#aya_sp"]= "捏造新闻的记者",
 	["designer:aya_sp"] = "星野梦美☆",
 
 	["illustrator:aya_sp"] = "An2A",
