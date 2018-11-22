@@ -700,6 +700,59 @@ Camouflage::Camouflage(Suit suit, int number)
     setObjectName("Camouflage");
 }
 
+
+class HagoromoSkill : public ArmorSkill
+{
+public:
+    HagoromoSkill()
+        : ArmorSkill("Hagoromo")
+    {
+        events << CardAsked;
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        ServerPlayer *current = room->getCurrent();
+        if (!current || current->isDead() || current->isChained())
+            return QList<SkillInvokeDetail>();
+        
+        CardAskedStruct ask = data.value<CardAskedStruct>();
+        if (!matchAvaliablePattern("jink", ask.pattern))
+            return QList<SkillInvokeDetail>();
+
+        ServerPlayer *player = ask.player;
+        if (equipAvailable(player, EquipCard::ArmorLocation, objectName()) && player->getArmor() && player->getArmor()->objectName() == objectName()) {
+            Card *jink = Sanguosha->cloneCard("chain_jink");
+            DELETE_OVER_SCOPE(Card, jink)
+                if (player->isCardLimited(jink, ask.method))
+                    return QList<SkillInvokeDetail>();
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+        
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        room->setEmotion(invoke->invoker, "armor/hagoromo");
+        int id = invoke->invoker->getArmor()->getEffectiveId();
+        invoke->invoker->addBrokenEquips(QList<int>() << id);
+
+        ChainJink *jink = new ChainJink(Card::NoSuit, 0);
+        jink->setSkillName(objectName());
+        room->provide(jink);
+        return true;
+    }
+};
+
+Hagoromo::Hagoromo(Suit suit, int number)
+    : Armor(suit, number)
+{
+    setObjectName("Hagoromo");
+}
+
+
 AwaitExhausted::AwaitExhausted(Card::Suit suit, int number)
     : SingleTargetTrick(suit, number)
 {
@@ -1019,13 +1072,13 @@ TestCardPackage::TestCardPackage()
 
     cards
         // Equip
-        << new Gun(Card::Club, 13)
+        << new Gun(Card::Diamond, 1)//Card::Club, 13
         //<< new Pillar(Card::Diamond, 1)
         << new Hakkero(Card::Spade, 11)
         << new JadeSeal(Card::Heart, 13)
         << new Pagoda(Card::Spade, 12)
         << new Camouflage(Card::Spade, 1)
-
+        << new Hagoromo(Card::Club, 1)
         //Trick
         << new AwaitExhausted(Card::Diamond, 4)
         << new AwaitExhausted(Card::Heart, 10)
@@ -1073,7 +1126,7 @@ TestCardPackage::TestCardPackage()
         card->setParent(this);
 
     skills << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill << new PagodaSkill << new PagodaTriggerSkill << new CamouflageSkill
-           << new FightTogetherSkill << new PillarSkill << new HakkeroSkill;
+           << new FightTogetherSkill << new PillarSkill << new HakkeroSkill << new HagoromoSkill;
 }
 
 ADD_PACKAGE(TestCard)

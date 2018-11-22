@@ -3907,9 +3907,13 @@ public:
 
         QList<SkillInvokeDetail> d;
         QList<ServerPlayer *> satoris;
-        if (use.from->isAlive() && use.from->hasSkill(this) && !use.to.first()->isKongcheng() && use.to.first()->getShownHandcards().isEmpty())
+        int fromHP = use.from->getLostHp() + 1;
+        int toHP = use.to.first()->getLostHp() + 1;
+        if (use.from->isAlive() && use.from->hasSkill(this) && use.to.first()->getCards("h").length() > 0
+                && (use.to.first()->getShownHandcards().length() < fromHP))
             satoris << use.from;
-        else if (use.to.first()->isAlive() && use.to.first()->hasSkill(this) && !use.from->isKongcheng() && use.from->getShownHandcards().isEmpty())
+        else if (use.to.first()->isAlive() && use.to.first()->hasSkill(this) && use.from->getCards("h").length() > 0
+                &&  use.from->getShownHandcards().length() < toHP)
             satoris << use.to.first();
 
         use.from->getRoom()->sortByActionOrder(satoris);
@@ -3924,6 +3928,9 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
+        if (invoke->targets.first()->getCards("h").isEmpty())
+            return false;
+
         LogMessage log;
         log.type = "#ChoosePlayerWithSkill";
         log.from = invoke->invoker;
@@ -5809,11 +5816,11 @@ TouhouGodPackage::TouhouGodPackage()
     General *satori_god = new General(this, "satori_god", "touhougod", 3);
     satori_god->addSkill(new Kuixin);
     satori_god->addSkill(new Xinhua);
-    satori_god->addSkill(new Cuimian);
-    satori_god->addSkill(new CuimianTargetMod);
+    //satori_god->addSkill(new Cuimian);
+    //satori_god->addSkill(new CuimianTargetMod);
     //satori_god->addSkill(new Dongcha);
     //satori_god->addSkill(new Zhuiyi);
-    related_skills.insertMulti("cuimian", "#cuimian");
+    //related_skills.insertMulti("cuimian", "#cuimian");
 
     General *aya_god = new General(this, "aya_god", "touhougod", 4);
     aya_god->addSkill(new Tianqu);

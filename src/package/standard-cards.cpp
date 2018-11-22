@@ -2619,7 +2619,7 @@ StandardExCardPackage::StandardExCardPackage()
         << new KnownBoth(Card::Spade, 4)
         << new SavingEnergy(Card::Diamond, 9)
         << new SavingEnergy(Card::Heart, 11)
-        << new DeathSickle(Card::Club, 1);
+        << new DeathSickle(Card::Club, 13);
     // clang-format on
 
     skills << new RenwangShieldSkill << new IceSwordSkill << new WoodenOxSkill << new WoodenOxTriggerSkill << new LureTigerSkill << new LureTigerProhibit << new KnownBothSkill
