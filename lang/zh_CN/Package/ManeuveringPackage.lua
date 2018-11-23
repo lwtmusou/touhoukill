@@ -44,5 +44,5 @@ return {
 	["HuaLiu"] = "骅骝",
 
 	["IronArmor"] = "明光铠",
-	[":IronArmor"] = "装备牌·防具<br /><b>装备技能</b>：<font color=\"blue\"><b>锁定技，</b></font>属性【杀】或【火攻】或【铁索连环】对你无效。",
+	[":IronArmor"] = "装备牌·防具<br /><b>装备技能</b>：<font color=\"blue\"><b>锁定技，</b></font>属性【杀】、【火攻】和【铁索连环】对你无效。",
 }
