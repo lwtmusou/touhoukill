@@ -1367,9 +1367,14 @@ public:
         }
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
         if (triggerEvent == CardFinished) {
+            ServerPlayer *current = room->getCurrent();
+            if (current == NULL || !current->isInMainPhase())
+                return QList<SkillInvokeDetail>();
+
+
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.from && use.from->isAlive() && use.from->hasSkill(this) && !use.from->hasFlag("lianmu_used") && use.card->isKindOf("Slash")
                 && !use.card->hasFlag("lianmu_damage"))
@@ -2614,6 +2619,21 @@ public:
     {
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             return false;
+        //check main phase
+        if (player->isCurrent()) {
+            if (!player->isInMainPhase())
+                return false;
+        }
+        else {
+            foreach(const Player *p, player->getSiblings()) {
+                if (p->isCurrent()) {
+                    if (!p->isInMainPhase())
+                        return false;
+                    break;
+                }
+            }
+        }
+
         return !player->getShownHandcards().isEmpty() && !player->hasFlag("qirenUsed");
     }
 
@@ -3146,6 +3166,10 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
     {
         if (e == EventPhaseChanging)
+            return QList<SkillInvokeDetail>();
+
+        ServerPlayer *current = room->getCurrent();
+        if (current == NULL || !current->isInMainPhase())
             return QList<SkillInvokeDetail>();
 
         DamageStruct damage = data.value<DamageStruct>();

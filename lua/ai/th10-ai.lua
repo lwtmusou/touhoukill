@@ -274,6 +274,23 @@ function sgs.ai_cardsview_valuable.qiji(self, class_name, player)
 	if player:getHandcardNum()~=1 or player:getMark("qiji")>0 then
 		return nil
 	end
+
+	if player:isCurrent() then
+        if not player:isInMainPhase() then
+            return nil
+		end
+    else
+        for _,p in  sgs.qlist(player:getSiblings()) do
+            if p:isCurrent() then
+                if not p:isInMainPhase() then
+                    return nil
+				end
+				break
+            end
+        end
+    end
+	
+	
 	local acard
 	for _,c in sgs.qlist(player:getCards("hs"))do
 				acard=c

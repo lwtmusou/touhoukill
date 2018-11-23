@@ -724,6 +724,23 @@ public:
         //if (player->getHandcardNum() != 1 || pattern.startsWith(".") || pattern.startsWith("@")) return false;
         if (player->getMark("qiji") > 0)
             return false;
+        //check main phase
+        if (player->isCurrent()) {
+            if (!player->isInMainPhase())
+                return false;
+        }
+        else {
+            foreach(const Player *p, player->getSiblings()) {
+                if (p->isCurrent()) {
+                    if (!p->isInMainPhase())
+                        return false;
+                    break;
+                }
+            }
+        }
+
+
+
         QStringList checkedPatterns = responsePatterns();
         if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0)
             return false;
@@ -762,6 +779,21 @@ public:
     {
         if (player->getMark("qiji") > 0)
             return false;
+        //check main phase
+        if (player->isCurrent()) {
+            if (!player->isInMainPhase())
+                return false;
+        }
+        else {
+            foreach(const Player *p, player->getSiblings()) {
+                if (p->isCurrent()) {
+                    if (!p->isInMainPhase())
+                        return false;
+                    break;
+                }
+            }
+        }
+
         Nullification *nul = new Nullification(Card::NoSuit, 0);
         DELETE_OVER_SCOPE(Nullification, nul)
         if (player->isCardLimited(nul, Card::MethodUse, true))
@@ -1171,7 +1203,7 @@ public:
                 p->setFlags("changshiInvoked");
             }
         }
-        else {
+        else if (choice == "debuff") {
             CardUseStruct carduse;
             carduse.card = card;
             carduse.from = invoke->invoker;
@@ -1203,7 +1235,7 @@ public:
                     p->setFlags("changshiInvoked");
                 }
             }
-            else {
+            else if (choice == "debuff") {
                 CardUseStruct carduse;
                 carduse.card = card;
                 carduse.from = invoke->invoker;
@@ -1289,8 +1321,12 @@ public:
         sanae->tag["jinianTemp"] = record_ids;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
+        ServerPlayer *current = room->getCurrent();
+        if (current == NULL || !current->isInMainPhase())
+            return QList<SkillInvokeDetail>();
+        
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
         if (move.reason.m_extraData.value<ServerPlayer *>() != NULL)
