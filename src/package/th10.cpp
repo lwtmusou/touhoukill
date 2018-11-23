@@ -6,6 +6,7 @@
 #include "skill.h"
 #include "standard.h"
 #include "th13.h"
+#include "testCard.h"
 #include <QCommandLinkButton>
 #include <QCoreApplication>
 #include <QPointer>
@@ -1109,7 +1110,7 @@ public:
         : TriggerSkill("changshi")
     {
         events << EventPhaseStart << EventPhaseChanging;
-        frequency = Eternal;
+        //frequency = Eternal;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
@@ -1131,47 +1132,86 @@ public:
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->getPhase() == Player::RoundStart && player->hasSkill(this))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL);
         }
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        room->touhouLogmessage("#changshi01", invoke->invoker, "changshi");
-        room->notifySkillInvoked(invoke->invoker, objectName());
+        QStringList select;
+        select << "skillInvalid";
 
-        foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
-            room->setPlayerSkillInvalidity(p, NULL, true);
-            p->setFlags("changshiInvoked");
+        AllianceFeast *card = new AllianceFeast(Card::NoSuit, 0);
+        card->setSkillName(objectName());
+        card->deleteLater();
+
+        if (!invoke->invoker->isCardLimited(card, Card::MethodUse) && card->isAvailable(invoke->invoker))
+            select << "debuff";
+
+        select << "cancel";
+        QString choice = room->askForChoice(invoke->invoker, objectName(), select.join("+"), data);
+        invoke->tag["changshi"] = choice;
+        return choice != "cancel";
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        QString choice = invoke->tag.value("changshi").toString();
+        AllianceFeast *card = new AllianceFeast(Card::NoSuit, 0);
+        card->setSkillName(objectName());
+        card->deleteLater();
+        if (choice == "skillInvalid") {
+            room->touhouLogmessage("#changshi01", invoke->invoker, "changshi");
+            room->notifySkillInvoked(invoke->invoker, objectName());
+
+            foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
+                room->setPlayerSkillInvalidity(p, NULL, true);
+                p->setFlags("changshiInvoked");
+            }
         }
+        else {
+            CardUseStruct carduse;
+            carduse.card = card;
+            carduse.from = invoke->invoker;
 
-        //remove piles and marks
-        QStringList marks; //special mark
-        marks << "@ice";
-        foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-            QList<int> idlist;
-            foreach(const Skill *skill, p->getSkillList()) {
-                QString mark = skill->getRelatedMark();
-                if (mark != NULL)
-                    p->loseAllMarks(mark);
-                foreach(QString m, marks) {
-                    if (p->getMark(m) > 0)
-                        p->loseAllMarks(m);
+            room->useCard(carduse, true);
+            
+        }
+        
+        
+        QStringList select;
+        if (choice == "skillInvalid") {
+            if (!invoke->invoker->isCardLimited(card, Card::MethodUse) && card->isAvailable(invoke->invoker))
+                select << "debuff";
+        }
+        else {
+            select << "skillInvalid";
+        }
+        select << "cancel";
+
+        if (select.length() > 1) {
+            QString choice = room->askForChoice(invoke->invoker, objectName(), select.join("+"), data);
+            if (choice == "skillInvalid") {
+                room->touhouLogmessage("#changshi01", invoke->invoker, "changshi");
+                room->notifySkillInvoked(invoke->invoker, objectName());
+
+                foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+                    room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
+                    room->setPlayerSkillInvalidity(p, NULL, true);
+                    p->setFlags("changshiInvoked");
                 }
-
-                QString pile = skill->getRelatedPileName();
-                if (pile != NULL)
-                    idlist.append(p->getPile(pile));
             }
-            if (!idlist.isEmpty()) {
-                CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, p->objectName(), NULL, "changshi", QString());
-                CardsMoveStruct move(idlist, p, Player::DiscardPile, reason);
-                room->moveCardsAtomic(move, true);
+            else {
+                CardUseStruct carduse;
+                carduse.card = card;
+                carduse.from = invoke->invoker;
+
+                room->useCard(carduse, true);
+
             }
         }
-
         return false;
     }
 };
