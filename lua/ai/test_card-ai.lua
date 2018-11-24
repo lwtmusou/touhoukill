@@ -211,7 +211,7 @@ sgs.ai_skill_invoke.Hakkero = function(self, data)
 	return  effect.to and self:isEnemy(effect.to)
 end
 
-
+sgs.ai_skill_invoke.Hagoromo = true
 
 local Jade_skill = {}
 Jade_skill.name = "JadeSeal"
