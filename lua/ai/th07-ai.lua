@@ -212,7 +212,7 @@ sgs.ai_skill_cardask["@jingdong-target"] = function(self, data)
 			return getReturn()
 		end
 		if num > 1 then
-			if self:cautionChangshi() or self.player:getPile("jingjie"):length() > 3 then
+			if  self.player:getPile("jingjie"):length() > 3 then --self:cautionChangshi() or
 				return getReturn()
 			else
 				if num > 3 then
