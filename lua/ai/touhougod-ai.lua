@@ -396,7 +396,7 @@ sgs.ai_skill_invoke.shiting = function(self,data)
 	local current = self.room:getCurrent()
 	local nexter =  self.room:nextPlayer(current) --current:getNextAlive()
 	--shicao_find_adjacent(self.room,self.player)
-	if nexter:hasSkill("changshi") then return true end
+	--if nexter:hasSkill("changshi") then return true end
 	if self.player:objectName()== nexter:objectName() then
 		return true
 	end
