@@ -533,6 +533,29 @@ public:
         response_or_use = true; //only skill shenbao can use WoodenOx
     }
 
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        if (!EquipSkill::equipAvailable(player, EquipCard::TreasureLocation, objectName()))
+            return false;
+        if (player->hasFlag("Pagoda_used"))
+            return false;
+        //check main phase
+        if (player->isCurrent()) {
+            if (!player->isInMainPhase())
+                return false;
+        }
+        else {
+            foreach(const Player *p, player->getSiblings()) {
+                if (p->isCurrent()) {
+                    if (!p->isInMainPhase())
+                        return false;
+                    break;
+                }
+            }
+        }
+        return pattern == response_pattern;
+    }
+
     const Card *viewAs(const Card *originalCard) const
     {
         Card *ncard = new Nullification(originalCard->getSuit(), originalCard->getNumber());
@@ -547,6 +570,22 @@ public:
             return false;
         if (player->hasFlag("Pagoda_used"))
             return false;
+
+        //check main phase
+        if (player->isCurrent()) {
+            if (!player->isInMainPhase())
+                return false;
+        }
+        else {
+            foreach(const Player *p, player->getSiblings()) {
+                if (p->isCurrent()) {
+                    if (!p->isInMainPhase())
+                        return false;
+                    break;
+                }
+            }
+        }
+
         return !player->isKongcheng();
     }
 };

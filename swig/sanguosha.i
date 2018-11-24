@@ -134,6 +134,8 @@ public:
     void setPhaseString(const char *phase_str);
     Phase getPhase() const;
     void setPhase(Phase phase);
+	bool isInMainPhase() const;
+
 
     int getAttackRange(bool include_weapon = true) const;
     bool inMyAttackRange(const Player *other) const;

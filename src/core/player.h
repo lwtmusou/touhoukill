@@ -163,6 +163,7 @@ public:
     void setPhaseString(const QString &phase_str);
     Phase getPhase() const;
     void setPhase(Phase phase);
+    bool isInMainPhase() const;
 
     int getAttackRange(bool include_weapon = true) const;
     bool inMyAttackRange(const Player *other) const;

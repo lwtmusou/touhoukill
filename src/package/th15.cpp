@@ -281,6 +281,11 @@ public:
     {
         if (e != TargetSpecified)
             return QList<SkillInvokeDetail>();
+
+        ServerPlayer *current = room->getCurrent();
+        if (current == NULL || !current->isInMainPhase())
+            return QList<SkillInvokeDetail>();
+
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
         if (use.from && use.from->isAlive() && !use.to.isEmpty() && use.card->hasFlag("showncards") && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())

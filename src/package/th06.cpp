@@ -978,6 +978,21 @@ public:
         if (player->getMark("beishui") > 0)
             return false;
 
+        //check main phase
+        if (player->isCurrent()) {
+            if (!player->isInMainPhase())
+                return false;
+        }
+        else {
+            foreach(const Player *p, player->getSiblings()) {
+                if (p->isCurrent()) {
+                    if (!p->isInMainPhase())
+                        return false;
+                    break;
+                }
+            }
+        }
+
         QStringList checkedPatterns = responsePatterns();
         if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0)
             return false;
@@ -1070,8 +1085,12 @@ public:
         }
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
     {
+        ServerPlayer *current = room->getCurrent();
+        if (current == NULL || !current->isInMainPhase())
+            return QList<SkillInvokeDetail>();
+        
         if (e != DamageCaused)
             return QList<SkillInvokeDetail>();
         DamageStruct damage = data.value<DamageStruct>();

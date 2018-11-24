@@ -120,6 +120,11 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
         QList<SkillInvokeDetail> d;
+        ServerPlayer *current = room->getCurrent();
+        if (current == NULL || !current->isInMainPhase())
+            return d;
+
+
         ServerPlayer *player = NULL;
         const Card *card = NULL;
         if (triggerEvent == CardUsed) {

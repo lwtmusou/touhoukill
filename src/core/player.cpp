@@ -1087,6 +1087,11 @@ void Player::setPhase(Phase phase)
     emit phase_changed();
 }
 
+bool Player::isInMainPhase() const
+{
+    return phase == Start || phase == Judge || phase == Draw || phase == Play || phase == Discard || phase == Finish;
+}
+
 bool Player::faceUp() const
 {
     return face_up;

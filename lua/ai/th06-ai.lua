@@ -465,6 +465,23 @@ function sgs.ai_cardsview_valuable.beishui(self, class_name, player)
 		return nil
 	end
 	if self.player:getMark("beishui") > 0 then return nil end
+	if player:isCurrent() then
+        if not player:isInMainPhase() then
+            return nil
+		end
+    else
+        for _,p in  sgs.qlist(player:getSiblings()) do
+            if p:isCurrent() then
+                if not p:isInMainPhase() then
+                    return nil
+				end
+				break
+            end
+        end
+    end
+	
+	
+	
 	local x = math.max(self.player:getHp(), 1)
 	local cards = self.player:getCards("hes")
 	cards=self:touhouAppendExpandPileToList(self.player,cards)

@@ -232,7 +232,22 @@ end
 sgs.ai_use_priority.JadeSeal = 7
 
 sgs.ai_view_as.Pagoda = function(card, player, card_place)
-	if not player:hasFlag("Pagoda_used") then
+    local isMainPhase = true
+	if player:isCurrent() then
+        if not player:isInMainPhase() then
+            isMainPhase = false
+		end
+    else
+        for _,p in  sgs.qlist(player:getSiblings()) do
+            if p:isCurrent() then
+                if not p:isInMainPhase() then
+                    isMainPhase = false
+				end
+				break
+            end
+        end
+    end
+	if isMainPhase and not player:hasFlag("Pagoda_used")  then
 		local suit = card:getSuitString()
 		local number = card:getNumberString()
 		local card_id = card:getEffectiveId()
