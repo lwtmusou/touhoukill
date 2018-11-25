@@ -539,20 +539,7 @@ public:
             return false;
         if (player->hasFlag("Pagoda_used"))
             return false;
-        //check main phase
-        if (player->isCurrent()) {
-            if (!player->isInMainPhase())
-                return false;
-        }
-        else {
-            foreach(const Player *p, player->getSiblings()) {
-                if (p->isCurrent()) {
-                    if (!p->isInMainPhase())
-                        return false;
-                    break;
-                }
-            }
-        }
+        
         return pattern == response_pattern;
     }
 
@@ -570,21 +557,6 @@ public:
             return false;
         if (player->hasFlag("Pagoda_used"))
             return false;
-
-        //check main phase
-        if (player->isCurrent()) {
-            if (!player->isInMainPhase())
-                return false;
-        }
-        else {
-            foreach(const Player *p, player->getSiblings()) {
-                if (p->isCurrent()) {
-                    if (!p->isInMainPhase())
-                        return false;
-                    break;
-                }
-            }
-        }
 
         return !player->isKongcheng();
     }
@@ -616,8 +588,12 @@ public:
                 room->setPlayerFlag(use.from, "Pagoda_used");
             }
         } else if (e == EventPhaseChanging) {
-            foreach (ServerPlayer *p, room->getAllPlayers())
-                room->setPlayerFlag(p, "-Pagoda_used");
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAllPlayers())
+                    room->setPlayerFlag(p, "-Pagoda_used");
+            }
+
         }
     }
 

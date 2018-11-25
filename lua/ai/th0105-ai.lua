@@ -485,9 +485,9 @@ sgs.ai_skill_cardask["@huantong"] = function(self, data)
 	end
 	local inverse = self:isFriend(damage.to)
 	self:sortByUseValue(basics, inverse)
-	if self:cautionChangshi() then --有千年紫敌人，早点清除有价值的牌
-		self:sortByUseValue(others, true)
-	end
+	--if self:cautionChangshi() then --有千年紫敌人，早点清除有价值的牌
+	--	self:sortByUseValue(others, true)
+	--end
 
 	local combines = {}
 	if #basics >=2 then

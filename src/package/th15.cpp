@@ -1784,9 +1784,9 @@ YuejianCard::YuejianCard()
     will_throw = false;
 }
 
-bool YuejianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+bool YuejianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    return targets.isEmpty() && !to_select->isKongcheng();
+    return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
 }
 
 void YuejianCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &targets) const

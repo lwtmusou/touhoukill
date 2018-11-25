@@ -667,7 +667,7 @@ sgs.ai_skill_choice.mingmu = function(self, choices, data)
 end
 
 
-sgs.ai_skill_cardask["@yinghuo"] = function(self, data)
+--[[sgs.ai_skill_cardask["@yinghuo"] = function(self, data)
 	local ecards=self.player:getCards("hs")
 	if ecards:length()==0 then return "." end
 	for _,c in sgs.qlist(ecards) do
@@ -676,14 +676,16 @@ sgs.ai_skill_cardask["@yinghuo"] = function(self, data)
 		end
 	end
 	return "."
-end
+end]]
 
 
 sgs.ai_skill_invoke.yinghuo  = true
 sgs.ai_cardneed.yinghuo = function(to, card, self)
 	return card:getTypeId() == sgs.Card_TypeBasic
 end
-local yinghuo_skill = {}
+
+--视为技的萤火
+--[[local yinghuo_skill = {}
 yinghuo_skill.name = "yinghuo"
 table.insert(sgs.ai_skills, yinghuo_skill)
 function yinghuo_skill.getTurnUseCard(self)
@@ -773,7 +775,7 @@ function sgs.ai_cardsview_valuable.yinghuo(self, class_name, player)
 		end
 	end
 end
-
+]]
 
 --[[sgs.ai_slash_prohibit.yinghuo = function(self, from, to, card)
 	if self:isFriend(from,to) then

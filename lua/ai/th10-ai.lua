@@ -21,9 +21,9 @@ function shende_skill.getTurnUseCard(self)
 	if not self.player:isWounded() then return nil end
 	if self:hasWeiya() then return nil end
 	local need_useshende=false
-	if self:cautionChangshi()  then
-		need_useshende=true
-	end
+	--if self:cautionChangshi()  then
+	--	need_useshende=true
+	--end
 	if  (self:isWeak(self.player) or self:getOverflow() >0) then
 		need_useshende=true
 	end
@@ -594,14 +594,30 @@ sgs.ai_choicemade_filter.skillChoice.liuxing = function(self, player, args, data
 	end
 end
 
-function SmartAI:cautionChangshi()
+--[[function SmartAI:cautionChangshi()
 	local sanae = self.room:findPlayerBySkillName("changshi")
 	if sanae then return true end
 	--local yukari = self.room:findPlayerBySkillName("xijian")
 	--if yukari and not self:isFriend(yukari) then return true end
 	return false
-end
+end]]
+sgs.ai_skill_choice.changshi= function(self, choices, data)
+	if choices:match("skillInvalid") then 
+		return "skillInvalid"
+	end
+	if choices:match("debuff") then
+		local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+		local card=sgs.cloneCard("alliance_feast", sgs.Card_NoSuit, 0)
+		card:setSkillName("changshi")
+		card:deleteLater()
+		self:useTrickCard(card, dummy_use)
+		if dummy_use.card then
+			return "debuff"
+		end
+	end
 
+	return "cancel"
+end
 
 sgs.ai_skill_invoke.jinian = true
 
