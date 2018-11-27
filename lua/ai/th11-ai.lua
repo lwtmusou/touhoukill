@@ -218,7 +218,12 @@ sgs.ai_skill_playerchosen.youtong = function(self, targets)
 	return nil
 end
 sgs.ai_playerchosen_intention.youtong = -10
-
+sgs.ai_no_playerchosen_intention.youtong =function(self, from)
+	local lord =self.room:getLord()
+	if lord and lord:hasSkill("duxin") then
+		sgs.updateIntention(from, lord, 10)
+	end
+end
 
 local maihuo_skill = {}
 maihuo_skill.name = "maihuo"
