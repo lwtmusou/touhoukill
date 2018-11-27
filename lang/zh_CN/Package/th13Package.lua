@@ -35,7 +35,7 @@ return{
 --*********************************************
 	--slm002  势力：灵 4血
 	["mamizou"] = "二岩猯藏",
-	["#mamizou"] = "狸猫怪十变化",
+	["#mamizou"] = "狸猫怪的十大变化",
 	["designer:mamizou"] = "星野梦美☆",
 
 	["illustrator:mamizou"] = "ideolo",
