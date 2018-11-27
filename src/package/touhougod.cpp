@@ -5696,6 +5696,194 @@ public:
     }
 };
 
+
+class Wenyue : public TriggerSkill
+{
+public:
+    Wenyue()
+        : TriggerSkill("wenyue")
+    {
+        events << CardsMoveOneTime << EventPhaseChanging;
+        frequency = Compulsory;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                    if (p->hasFlag("wenyue_target")) {
+                        room->setPlayerFlag(p, "-wenyue_target");
+                        room->handleAcquireDetachSkills(p, "-qianqiang");
+                    }
+
+                }
+            }
+            
+        }
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        QList<SkillInvokeDetail> d;
+        if (e == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
+            if (move.reason.m_extraData.value<ServerPlayer *>() != NULL)
+                player = move.reason.m_extraData.value<ServerPlayer *>();
+            if (player != NULL && move.to_place == Player::DiscardPile) {
+                QList<int> equip_ids;
+                foreach(int id, move.card_ids) {
+                    if (Sanguosha->getCard(id)->getTypeId() == Card::TypeEquip && room->getCardPlace(id) == Player::DiscardPile)
+                        equip_ids << id;   
+                }
+                if (equip_ids.isEmpty())
+                    return QList<SkillInvokeDetail>();
+                foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                    if (p != player)
+                        d << SkillInvokeDetail(this, p, p, NULL, true);
+                }
+            }
+        } 
+        if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.player->isAlive() && change.to == Player::Draw && !change.player->isSkipped(change.to)) {
+                foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                    if (p != change.player)
+                        d << SkillInvokeDetail(this, p, p, NULL, true, change.player);
+                }
+            }
+        }
+        
+        return d;
+    }
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        if (e == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            QList<int> equip_ids;
+            foreach(int id, move.card_ids) {
+                if (Sanguosha->getCard(id)->getTypeId() == Card::TypeEquip && room->getCardPlace(id) == Player::DiscardPile)
+                    equip_ids << id;
+            }
+
+            QList<CardsMoveStruct> exchangeMove1;
+            //QList<CardsMoveStruct> exchangeMove2;
+            QList<int> pile_ids;
+            foreach(int id, equip_ids) {
+                const EquipCard *equip = qobject_cast<const EquipCard *>(Sanguosha->getCard(id)->getRealCard());
+                if (!invoke->invoker->getEquip(equip->location())) {
+                    //room->moveCardTo(Sanguosha->getCard(id), NULL, invoke->invoker, Player::PlaceEquip, CardMoveReason(CardMoveReason::S_REASON_TRANSFER, QString(), "wenyue", QString()));
+                    CardsMoveStruct move1(id, invoke->invoker, Player::PlaceEquip, CardMoveReason(CardMoveReason::S_REASON_TRANSFER, invoke->invoker->objectName()));
+                    exchangeMove1.push_back(move1);
+                    LogMessage zhijian;
+                    zhijian.type = "$ZhijianEquip";
+                    zhijian.from = invoke->invoker;
+                    zhijian.card_str = QString::number(equip->getId());
+                    room->sendLog(zhijian);
+                }
+                else {
+                    pile_ids << id;
+                }
+            }
+            if (!exchangeMove1.isEmpty())
+                room->moveCardsAtomic(exchangeMove1, true);
+            if (!pile_ids.isEmpty())
+                invoke->invoker->addToPile("renou", pile_ids, true);
+            //if (!exchangeMove2.isEmpty())
+            //    room->moveCardsAtomic(exchangeMove2, true);
+        }
+        else if (e == EventPhaseChanging) {
+            ServerPlayer * target = invoke->targets.first();
+            if (target->getEquips().isEmpty() && !invoke->invoker->getPile("renou").isEmpty()) {
+                target->skip(Player::Draw);
+                QList<int> card_ids = invoke->invoker->getPile("renou");
+                //int num = qMin(2, card_ids.length());
+                QList<int> ids;
+                for (int i = 0; i < 2; i += 1) {
+                    room->fillAG(card_ids, target);
+                    int card_id = room->askForAG(target, card_ids, false, objectName());
+                    room->clearAG(target);
+                    card_ids.removeOne(card_id);
+                    ids << card_id;
+                    if (card_ids.isEmpty())
+                        break;
+                }
+                CardsMoveStruct move(ids, invoke->invoker, target, Player::PlaceSpecial, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()));
+                room->moveCardsAtomic(move, true);
+            }
+            else {
+                room->setPlayerFlag(target, "wenyue_target");
+                room->handleAcquireDetachSkills(target, "qianqiang");
+            }
+        }
+
+        return false;
+    }
+    
+};
+
+
+QianqiangCard::QianqiangCard()
+{
+    //m_skillName = "yushou";
+    will_throw = false;
+}
+
+bool QianqiangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+{
+    if (targets.length() == 0) {
+        const EquipCard *equip = qobject_cast<const EquipCard *>(Sanguosha->getCard(subcards.first())->getRealCard());
+        if (!to_select->getEquip(equip->location()))
+            return true;
+    }
+    return false;
+}
+
+
+void QianqiangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
+    int card_id = subcards.first();
+    const Card *card = Sanguosha->getCard(card_id);
+    room->moveCardTo(card, source, targets.first(), Player::PlaceEquip, CardMoveReason(CardMoveReason::S_REASON_TRANSFER, source->objectName(), "qianqiang", QString()));
+    Slash *slash = new Slash(Card::NoSuit, 0);
+    slash->setSkillName("_qianqiang");
+    room->useCard(CardUseStruct(slash, source, targets.first()), true);
+}
+
+class Qianqiang : public OneCardViewAsSkill
+{
+public:
+    Qianqiang()
+        : OneCardViewAsSkill("qianqiang")
+    {
+        response_or_use = true;
+        filter_pattern = "EquipCard|.|.|hand,equipped";
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return  Slash::IsAvailable(player);
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const
+    {
+        if (originalCard != NULL) {
+            QianqiangCard *card = new QianqiangCard;
+            card->addSubcard(originalCard);
+            return card;
+        }
+        else
+            return NULL;
+    }
+};
+
+
 TouhouGodPackage::TouhouGodPackage()
     : Package("touhougod")
 {
@@ -5850,8 +6038,11 @@ TouhouGodPackage::TouhouGodPackage()
     patchouli_god->addSkill(new Riyao);
     patchouli_god->addSkill(new Yueyao);
 
-    General *alice_god = new General(this, "alice_god", "touhougod", 4, false, true, true);
-    Q_UNUSED(alice_god);
+    General *alice_god = new General(this, "alice_god", "touhougod", 4);
+    alice_god->addSkill(new Wenyue);
+    alice_god->addSkill(new Qianqiang);
+    alice_god->addSkill(new Skill("diaoou"));
+
     //    General *shinmyoumaru_god = new General(this, "shinmyoumaru_god", "touhougod", 4, false, true, true);
     //    Q_UNUSED(shinmyoumaru_god);
     //    General *tenshi_god = new General(this, "tenshi_god", "touhougod", 3, false, true, true);
@@ -5874,6 +6065,7 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<CuimianCard>();
     addMetaObject<RumoCard>();
     addMetaObject<XianshiCard>();
+    addMetaObject<QianqiangCard>();
 
     skills << new ChaorenLog << new Wendao << new RoleShownHandler << new ShenbaoAttach << new Ziwo << new Benwo << new Chaowo;
 }

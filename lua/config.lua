@@ -196,7 +196,8 @@ config = {
 	backdrop_convert_pairs = {
 		"yukimai->shinki",
 		"lunar|star->sunny",
-		"reisen2|seiran->tewi",
+		"reisen2->tewi",
+		"seiran->ringo",
 		"seija_sp->seija",
 		"rumia_sp->rumia",
 	},

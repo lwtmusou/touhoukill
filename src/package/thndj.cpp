@@ -341,7 +341,7 @@ public:
         while (acquired < 1) {
             int id = room->drawCard();
             CardsMoveStruct move(id, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, player->objectName()));
-            move.reason.m_skillName = "sishu";
+            move.reason.m_skillName = "wanggou";
             room->moveCardsAtomic(move, true);
             room->getThread()->delay();
             card = Sanguosha->getCard(id);

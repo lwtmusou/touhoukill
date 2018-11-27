@@ -1212,7 +1212,7 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (e == DamageCaused) {
-            if (damage.from && damage.to && damage.to != damage.from && damage.from->hasSkill(this) && damage.from->isAlive()) {
+            if (damage.from && damage.to && damage.from->hasSkill(this) && damage.from->isAlive()) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     foreach (const Card *c, p->getCards("j")) {
                         if (c->isBlack() && damage.from->canDiscard(p, c->getEffectiveId()))
@@ -1222,7 +1222,7 @@ public:
             }
         }
         if (e == DamageInflicted) {
-            if (damage.from && damage.to && damage.to != damage.from && damage.to->hasSkill(this) && damage.to->isAlive()) {
+            if (damage.to && damage.to->hasSkill(this) && damage.to->isAlive()) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     foreach (const Card *c, p->getCards("j")) {
                         if (c->isRed() && damage.to->canDiscard(p, c->getEffectiveId()))
@@ -1247,7 +1247,7 @@ public:
         }
         DamageStruct damage = data.value<DamageStruct>();
         QString prompt = (e == DamageCaused) ? ("@laolong1:" + damage.to->objectName() + ":" + QString::number(damage.damage))
-                                             : ("@laolong2:" + damage.from->objectName() + ":" + QString::number(damage.damage));
+                                             : ("@laolong2:" + QString::number(damage.damage));
 
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), prompt, true, true);
         if (target) {
@@ -1271,14 +1271,14 @@ public:
 
         DamageStruct damage = data.value<DamageStruct>();
         int record = damage.damage;
-        QList<ServerPlayer *> logto;
-        logto << damage.to;
+
         if (e == DamageInflicted)
             damage.damage = damage.damage - 1;
 
         if (e == DamageCaused)
             damage.damage = damage.damage + 1;
-        room->touhouLogmessage("#laolong_damage", damage.from, QString::number(damage.damage), logto, QString::number(record));
+        //room->touhouLogmessage("#laolong_damage", damage.from, QString::number(damage.damage), logto, QString::number(record));
+        room->touhouLogmessage("#laolong_damage", damage.to, QString::number(damage.damage), QList<ServerPlayer *>(), QString::number(record));
         data = QVariant::fromValue(damage);
         if (damage.damage == 0)
             return true;
