@@ -32,7 +32,7 @@ return{
 --****************************
 	--wai002  势力：外 4血
 	["rinnosuke"] = "森近霖之助",
-	["#rinnosuke"] = "古道具店主" ,
+	["#rinnosuke"] = "古道具店店主" ,
 	["designer:rinnosuke"] = "星野梦美☆",
 
 	["illustrator:rinnosuke"] = "会帆",
