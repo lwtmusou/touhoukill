@@ -265,7 +265,7 @@ return{
 	["origin:shizuha_3"] = "p号：34359840，个人ID：4103725",
 
 	["jiliao"] = "寂寥",
-	[":jiliao"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以令一名角色获得其装备区里的所有牌，然后若其手牌数大于其手牌上限，你可以弃置其一张手牌。",
+	[":jiliao"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以令一名角色获得其装备区里的所有牌（可以为零），然后若其手牌数大于其手牌上限，你可以弃置其一张手牌。",
 	["jiliao:throwcard"] = "“寂寥”：<font color=\"#00FF00\"><b>%src </b></font> 的手牌数大于其手牌上限，你可以弃置其一张手牌。" ,
 	["zhongyan"] = "终焉",
 	["@zhongyan"] = "终焉",
