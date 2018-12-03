@@ -1078,32 +1078,39 @@ sgs.ai_skill_invoke.jinduan = function(self, data)
 	return false
 end
 
-sgs.ai_skill_invoke.liuzhuan = function(self, data)
-	local target = data:toPlayer()
-	if target and self:isFriend(target) then
-		return true
-	end
-	return false
-end
 
-sgs.ai_skill_use["@@liuzhuanVS"] = function(self, prompt)
 
-	local b = self.room:getTag("liuzhuan"):toBrokenEquipChange()
-	local ids
-	if not b.ids:isEmpty() then
-		ids = b.ids
-	else
-		local s = self.room:getTag("liuzhuan"):toShownCardChange()
-		ids = s.ids
+sgs.ai_skill_use["@@luliVS"] = function(self, prompt)
+
+	local num = self.player:getMark("luli")
+	local ids = sgs.IntList()
+    --简单制衡
+	for _,c in sgs.qlist(self.player:getCards("hs")) do
+	    if c:isKindOf("TrickCard") and not c:isKindOf("Nullification") then
+			ids:append(c:getEffectiveId())
+		elseif c:isKindOf("EquipCard") then
+			ids:append(c:getEffectiveId())
+		end
+		if ids:length() >= num then break end
 	end
+	
+	if (num - ids:length()) >= 3 then
+		for _,c in sgs.qlist(self.player:getCards("e")) do
+			ids:append(c:getEffectiveId())
+			if ids:length() >= num then break end
+		end
+	end
+
+	
+	
 	--默认全制衡？
 	if not ids:isEmpty() then
-
+        
 		local recast = {}
 		for _,id in sgs.qlist(ids) do
 			table.insert(recast, tostring(id))
 		end
-		return "@LiuzhuanCard=" ..table.concat(recast, "+").."->."
+		return "@LuliCard=" ..table.concat(recast, "+").."->."
 	end
 	return "."
 end

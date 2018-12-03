@@ -111,12 +111,12 @@ public:
     virtual bool isAvailable(const Player *player) const;
 };
 
-class LiuzhuanCard : public SkillCard
+class LuliCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE LiuzhuanCard();
+    Q_INVOKABLE LuliCard();
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };

@@ -2770,14 +2770,14 @@ public:
     }
 };
 
-LiuzhuanCard::LiuzhuanCard()
+LuliCard::LuliCard()
 {
     target_fixed = true;
     will_throw = false;
     handling_method = Card::MethodNone;
 }
 
-void LiuzhuanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void LuliCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
 {
     LogMessage log;
     log.type = "#Card_Recast";
@@ -2795,85 +2795,82 @@ void LiuzhuanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
     source->drawCards(subcards.length());
 }
 
-class LiuzhuanVS : public ViewAsSkill
+class LuliVS : public ViewAsSkill
 {
 public:
-    LiuzhuanVS()
-        : ViewAsSkill("liuzhuanVS")
+    LuliVS()
+        : ViewAsSkill("luli")
     {
-        response_pattern = "@@liuzhuanVS";
+        response_pattern = "@@luliVS";
     }
 
-    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
     {
-        QStringList l = Self->property("liuzhuan").toString().split("+");
-        QList<int> ids = StringList2IntList(l);
-        return ids.contains(to_select->getId());
+        int num = Self->getMark("luli");
+        /*foreach(const Player *p, Self->getSiblings()) {
+            if (p->isCurrent()) {
+                num = p->getMark("luli");
+                break;
+            }
+        }*/
+        return selected.length() < num;
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const
     {
         if (cards.isEmpty())
             return NULL;
-        LiuzhuanCard *card = new LiuzhuanCard();
+        LuliCard *card = new LuliCard();
         card->addSubcards(cards);
         return card;
     }
 };
 
-class Liuzhuan : public TriggerSkill
+class Luli : public TriggerSkill
 {
 public:
-    Liuzhuan()
-        : TriggerSkill("liuzhuan")
+    Luli()
+        : TriggerSkill("luli")
     {
-        events << BrokenEquipChanged << ShownCardChanged;
+        events << PreCardUsed << TargetConfirmed << EventPhaseChanging;
+        view_as_skill = new LuliVS;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from && use.from->isCurrent())
+                room->setPlayerMark(use.from, "luli", use.from->getMark("luli") + 1 );
+        }
+        else if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                room->setPlayerMark(change.player, "luli", 0);
+            }
+        }
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
     {
-        if (e == BrokenEquipChanged) {
-            BrokenEquipChangedStruct b = data.value<BrokenEquipChangedStruct>();
-            if (b.player == NULL || b.player->isDead() || b.moveFromEquip)
+        if (e == TargetConfirmed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from == NULL || !use.from->isCurrent() || use.from->isDead())
                 return QList<SkillInvokeDetail>();
             QList<SkillInvokeDetail> d;
-            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                if (p == b.player || p->inMyAttackRange(b.player))
-                    d << SkillInvokeDetail(this, p, p, NULL, false, b.player);
-            }
-            return d;
-        }
-        if (e == ShownCardChanged) {
-            ShownCardChangedStruct s = data.value<ShownCardChangedStruct>();
-            if (s.player == NULL || s.player->isDead() || s.moveFromHand)
-                return QList<SkillInvokeDetail>();
-            QList<SkillInvokeDetail> d;
-            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                if (p == s.player || p->inMyAttackRange(s.player))
-                    d << SkillInvokeDetail(this, p, p, NULL, false, s.player);
+            foreach(ServerPlayer *p, use.to) {
+                if (p->hasSkill(this) && use.from != p && !p->isAllNude())
+                    d << SkillInvokeDetail(this, p, p, NULL, false, use.from);
             }
             return d;
         }
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        ServerPlayer *target = invoke->targets.first();
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
-        QList<int> ids;
-        if (e == BrokenEquipChanged) {
-            BrokenEquipChangedStruct b = data.value<BrokenEquipChangedStruct>();
-            ids = b.ids;
-        } else {
-            ShownCardChangedStruct s = data.value<ShownCardChangedStruct>();
-            ids = s.ids;
-        }
-        QString cardsList = IntList2StringList(ids).join("+");
-        room->setPlayerProperty(target, "liuzhuan", cardsList);
-        room->setTag("liuzhuan", data);
-        room->askForUseCard(target, "@@liuzhuanVS", "liuzhuanuse");
-        return false;
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {        
+        room->setPlayerMark(invoke->invoker, "luli", invoke->preferredTarget->getMark("luli"));
+        return room->askForUseCard(invoke->invoker, "@@luliVS", "luliuse");
     }
 };
 
@@ -3087,6 +3084,7 @@ public:
     }
 };
 
+/*
 class Luli : public TriggerSkill
 {
 public:
@@ -3144,7 +3142,7 @@ public:
         room->askForUseCard(target, "BasicCard+^Jink,TrickCard+^Nullification,EquipCard|.|.|luli", "@luli_use", -1, Card::MethodUse, false, objectName());
         return false;
     }
-};
+};*/
 
 class Anliu : public TriggerSkill
 {
@@ -3312,9 +3310,9 @@ TH0105Package::TH0105Package()
     addMetaObject<MoyanCard>();
     addMetaObject<ZongjiuCard>();
     addMetaObject<QirenCard>();
-    addMetaObject<LiuzhuanCard>();
+    addMetaObject<LuliCard>();
 
-    skills << new ModianVS << new LiuzhuanVS;
+    skills << new ModianVS;
 }
 
 ADD_PACKAGE(TH0105)
