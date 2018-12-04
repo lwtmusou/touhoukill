@@ -2846,7 +2846,9 @@ public:
         else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
-                room->setPlayerMark(change.player, "luli", 0);
+                foreach(ServerPlayer *p, room->getAllPlayers(true)) {
+                    room->setPlayerMark(p, "luli", 0);
+                }
             }
         }
     }
