@@ -1436,7 +1436,123 @@ public:
     }
 };
 
-/*
+
+
+class YinghuoClear : public TriggerSkill
+{
+public:
+    YinghuoClear()
+        : TriggerSkill("#yinghuo")
+    {
+        events << EventPhaseChanging;
+    }
+
+
+    static void yinghuo_record(Room *room, ServerPlayer *player, QString pattern)
+    {
+        if (pattern.contains("slash"))
+            pattern = "slash";
+        else if (pattern.contains("jink"))
+            pattern = "jink";
+        else if (pattern.contains("analeptic"))
+            pattern = "analeptic";
+        else if (pattern.contains("peach"))
+            pattern = "peach";
+
+        QString markName = "yinghuo_record_" + pattern;
+        room->setPlayerMark(player, markName, 1);
+    }
+
+    static bool yinghuo_choice_limit(const Player *player, QString pattern)
+    {
+        Card *c = Sanguosha->cloneCard(pattern);
+        DELETE_OVER_SCOPE(Card, c)
+            if (pattern.contains("slash"))
+                pattern = "slash";
+            else if (pattern.contains("jink"))
+                pattern = "jink";
+            else if (pattern.contains("analeptic"))
+                pattern = "analeptic";
+            else if (pattern.contains("peach"))
+                pattern = "peach";
+        QString markName = "yinghuo_record_" + pattern;
+
+        if (player->getMark(markName) > 0)
+            return true;
+        else
+            return false;
+    }
+
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+
+        if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to != Player::NotActive)
+                return;
+            QStringList patterns;
+            QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+            foreach(const Card *card, cards) {
+                if (!patterns.contains(card->objectName()))
+                    patterns << card->objectName();
+            }
+
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                foreach(QString pattern, patterns) {
+                    QString markName = "yinghuo_record_" + pattern;
+                    if (p->getMark(markName) > 0)
+                        room->setPlayerMark(p, markName, 0);
+                }
+            }
+        }
+    }
+
+
+
+    /*QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+    CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+    ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
+    if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile
+    && (((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE)
+    || ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE))) {
+    const Card *card = move.reason.m_extraData.value<const Card *>();
+    if (card && card->getTypeId() == Card::TypeBasic) {
+    foreach (int id, move.card_ids) { //move.card_ids =  card->subcards
+    if (room->getCardPlace(id) != Player::DiscardPile || card->hasFlag("showncards") || move.shown_ids.contains(id)) //
+    return QList<SkillInvokeDetail>();
+    }
+    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+    }
+    } else if (move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE) {
+    player = move.reason.m_extraData.value<ServerPlayer *>();
+    if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile) {
+    int id = move.card_ids.first();
+    if (Sanguosha->getCard(id)->getTypeId() == Card::TypeBasic && room->getCardPlace(id) == Player::DiscardPile && !move.shown_ids.contains(id)) {
+    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+    }
+    }
+    }
+    return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+    CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+    if (move.reason.m_reason == CardMoveReason::S_REASON_OVERRIDE || move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE) {
+    invoke->invoker->obtainCard(Sanguosha->getCard(move.card_ids.first()));
+    } else {
+    const Card *card = move.reason.m_extraData.value<const Card *>();
+    invoke->invoker->obtainCard(card);
+    }
+
+    invoke->invoker->addToShownHandCards(move.card_ids);
+    return false;
+    }*/
+};
+
+
 YinghuoCard::YinghuoCard()
 {
     will_throw = false;
@@ -1485,7 +1601,10 @@ bool YinghuoCard::targetsFeasible(const QList<const Player *> &targets, const Pl
 const Card *YinghuoCard::validate(CardUseStruct &use) const
 {
     use.from->showHiddenSkill("yinghuo");
+    Room *room = use.from->getRoom();
+    
     const Card *card = Sanguosha->getCard(subcards.first());
+    YinghuoClear::yinghuo_record(room, use.from, card->objectName());
     Card *use_card = Sanguosha->cloneCard(card->objectName());
     use_card->setSkillName("yinghuo");
     use_card->deleteLater();
@@ -1495,7 +1614,9 @@ const Card *YinghuoCard::validate(CardUseStruct &use) const
 
 const Card *YinghuoCard::validateInResponse(ServerPlayer *user) const
 {
+    Room *room = user->getRoom();
     const Card *card = Sanguosha->getCard(subcards.first());
+    YinghuoClear::yinghuo_record(room, user, card->objectName());
     Card *use_card = Sanguosha->cloneCard(card->objectName());
     use_card->setSkillName("yinghuo");
     use_card->deleteLater();
@@ -1530,7 +1651,7 @@ public:
         QStringList checkedPatterns;
         foreach (QString str, validPatterns) {
             const Skill *skill = Sanguosha->getSkill("yinghuo");
-            if (skill->matchAvaliablePattern(str, pattern))
+            if (skill->matchAvaliablePattern(str, pattern) && !YinghuoClear::yinghuo_choice_limit(Self, str))
                 checkedPatterns << str;
         }
         return checkedPatterns;
@@ -1541,7 +1662,7 @@ public:
         if (Self->isShownHandcard(card->getId()) || !card->isKindOf("BasicCard"))
             return false;
 
-        if (card->isKindOf("SuperPeach"))
+        if (YinghuoClear::yinghuo_choice_limit(Self, card->objectName()))
             return false;
 
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE
@@ -1577,11 +1698,14 @@ public:
         if (player->getShownHandcards().length() >= player->getHandcardNum())
             return false;
 
-        if (Analeptic::IsAvailable(player) || Slash::IsAvailable(player))
+        if (Analeptic::IsAvailable(player) && !YinghuoClear::yinghuo_choice_limit(player, "analeptic"))
+            return true;
+
+        if (Slash::IsAvailable(player) && !YinghuoClear::yinghuo_choice_limit(player, "slash"))
             return true;
         Card *card = Sanguosha->cloneCard("peach", Card::NoSuit, 0);
         DELETE_OVER_SCOPE(Card, card)
-        return card->isAvailable(player);
+        return card->isAvailable(player) && !YinghuoClear::yinghuo_choice_limit(player, "peach");
     }
 
     virtual const Card *viewAs(const Card *originalCard) const
@@ -1592,57 +1716,6 @@ public:
             return card;
         } else
             return NULL;
-    }
-};*/
-
-class Yinghuo : public TriggerSkill
-{
-public:
-    Yinghuo()
-        : TriggerSkill("yinghuo")
-    {
-        events << CardsMoveOneTime;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-        if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile
-                && (((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE)
-                        || ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE))) {
-            const Card *card = move.reason.m_extraData.value<const Card *>();
-            if (card && card->getTypeId() == Card::TypeBasic) {
-                foreach (int id, move.card_ids) { //move.card_ids =  card->subcards
-                    if (room->getCardPlace(id) != Player::DiscardPile || card->hasFlag("showncards") || move.shown_ids.contains(id)) //
-                        return QList<SkillInvokeDetail>();
-                }
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-            }
-        } else if (move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE) {
-            player = move.reason.m_extraData.value<ServerPlayer *>();
-            if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile) {
-                int id = move.card_ids.first();
-                if (Sanguosha->getCard(id)->getTypeId() == Card::TypeBasic && room->getCardPlace(id) == Player::DiscardPile && !move.shown_ids.contains(id)) {
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-                }
-            }
-        }
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (move.reason.m_reason == CardMoveReason::S_REASON_OVERRIDE || move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE) {
-            invoke->invoker->obtainCard(Sanguosha->getCard(move.card_ids.first()));
-        } else {
-            const Card *card = move.reason.m_extraData.value<const Card *>();
-            invoke->invoker->obtainCard(card);
-        }
-
-        invoke->invoker->addToShownHandCards(move.card_ids);
-        return false;
     }
 };
 
@@ -2288,7 +2361,9 @@ TH08Package::TH08Package()
 
     General *wriggle = new General(this, "wriggle", "yyc", 3);
     wriggle->addSkill(new Yinghuo);
+    wriggle->addSkill(new YinghuoClear);
     wriggle->addSkill(new Chongqun);
+    related_skills.insertMulti("yinghuo", "#yinghuo");
 
     General *keine_sp = new General(this, "keine_sp", "yyc", 3);
     keine_sp->addSkill(new Chuangshi);
@@ -2308,7 +2383,7 @@ TH08Package::TH08Package()
     addMetaObject<XingyunCard>();
     addMetaObject<YegeCard>();
     addMetaObject<GeshengCard>();
-    //addMetaObject<YinghuoCard>();
+    addMetaObject<YinghuoCard>();
     addMetaObject<ChuangshiCard>();
     addMetaObject<HuweiCard>();
     addMetaObject<JinxiCard>();

@@ -685,7 +685,7 @@ sgs.ai_cardneed.yinghuo = function(to, card, self)
 end
 
 --视为技的萤火
---[[local yinghuo_skill = {}
+local yinghuo_skill = {}
 yinghuo_skill.name = "yinghuo"
 table.insert(sgs.ai_skills, yinghuo_skill)
 function yinghuo_skill.getTurnUseCard(self)
@@ -693,11 +693,11 @@ function yinghuo_skill.getTurnUseCard(self)
 	local anas = {}
 	local peaches = {}
 	for _, c in sgs.qlist(self.player:getCards("h")) do
-		if c:isKindOf("Slash") then
+		if c:isKindOf("Slash") and self.player:getMark("yinghuo_record_slash") == 0 then
 			table.insert(slashes, c)
-		elseif c:isKindOf("Analeptic") then
+		elseif c:isKindOf("Analeptic") and self.player:getMark("yinghuo_record_analeptic") == 0 then
 			table.insert(anas, c)
-		elseif c:isKindOf("Peach") and self.player:isWounded() and c:isAvailable(self.player) then
+		elseif c:isKindOf("Peach") and self.player:getMark("yinghuo_record_peach") == 0 and self.player:isWounded() and c:isAvailable(self.player) then
 			table.insert(peaches, c)
 		end
 	end
@@ -749,7 +749,8 @@ end
 sgs.ai_use_priority.YinghuoCard = sgs.ai_use_priority.Slash + 0.4
 function sgs.ai_cardsview_valuable.yinghuo(self, class_name, player)
 	local card
-	if class_name == "Analeptic"  or class_name == "Peach" then
+	if  (class_name == "Analeptic"  and player:getMark("yinghuo_record_analeptic") == 0 )
+	or (class_name == "Peach" and player:getMark("yinghuo_record_peach") == 0) then
 		local dying = player:getRoom():getCurrentDyingPlayer()
 		if not dying then return nil end
 		if self:isFriend(dying, player) then
@@ -763,7 +764,8 @@ function sgs.ai_cardsview_valuable.yinghuo(self, class_name, player)
 				return "@YinghuoCard=" .. card:getEffectiveId()
 			end
 		end
-	elseif class_name == "Jink" or class_name == "Slash" then
+	elseif (class_name == "Jink" and player:getMark("yinghuo_record_jink") == 0)
+	or (class_name == "Slash" and player:getMark("yinghuo_record_slash") == 0) then
 		for _,c in sgs.qlist(self.player:getCards("h")) do
 			if c:isKindOf(class_name) then
 				card = c
@@ -775,7 +777,7 @@ function sgs.ai_cardsview_valuable.yinghuo(self, class_name, player)
 		end
 	end
 end
-]]
+
 
 --[[sgs.ai_slash_prohibit.yinghuo = function(self, from, to, card)
 	if self:isFriend(from,to) then
