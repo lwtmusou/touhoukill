@@ -272,6 +272,8 @@ return {
 	["#sariel"] = "死之天使" ,
 	["designer:sariel"] = "辰焰天明",
 
+	["illustrator:sariel"] = "昙竹九月",
+	["origin:sariel"] = "p号：57699329,个人ID:14176578",
 	["illustrator:sariel_1"] = "未知",
 	["origin:sariel_1"] = "东方手游 大家的幻想乡",
 
@@ -292,6 +294,10 @@ return {
 	["#konngara"] = "星幽剑士" ,
 	["designer:konngara"] = "辰焰天明",
 
+	["illustrator:konngara"] = "Culter",
+	["origin:konngara"] = "p号：40459277,个人ID:542147",
+	
+	
 	["zongjiu"] = "纵酒",
 	[":zongjiu"] = "当一名角色使用【桃】时，你可以明置一张手牌；当你需要使用【酒】时，你可以暗置一张手牌，视为使用【酒】。",
 	["@zongjiu"] = "你可以发动“纵酒”， 明置一张手牌",
@@ -306,6 +312,10 @@ return {
 	["#yumeko"] = "魔界女仆" ,
 	["designer:yumeko"] = "名和行年",
 
+	
+	["illustrator:yumeko"] = "ちもち",
+	["origin:yumeko"] = "p号：8322824",
+	
 	["huanshu"] = "幻术",
 	[":huanshu"] = "<font color=\"blue\"><b>锁定技，</b></font>当其他角色使用的基本牌或普通锦囊牌对你结算结束后，若你本回合未失去过手牌，你获得此牌并明置之。",
 	["qiren"] = "奇刃",
@@ -322,6 +332,10 @@ return {
 	["#yukimai"] = "黑白双子" ,
 	["designer:yukimai"] = "dawda",
 
+	["illustrator:yukimai"] = "Vima",
+	["origin:yukimai"] = "p号：46982048,个人ID:546819",
+	
+	
 	["xiewu"] = "协舞",
 	[":xiewu"] = "当一名角色使用基本牌时，若其手牌数等于你，你可以选择一项：令其摸一张牌；或令其弃置一张牌。<font color=\"green\"><b>每回合限一次。</b></font>",
 	["xiewu_discard"]= "%src 发动“协舞” 令你弃置一张牌。",
@@ -337,6 +351,9 @@ return {
 	["#meira"] = "黑暗的力量" ,
 	["designer:meira"] = "223",
 
+	["illustrator:meira"] = "dairi",
+	["origin:meira"] = "",
+	
 	["anliu"] = "暗流",
 	[":anliu"] = "当你使用【杀】造成或受到【杀】造成的伤害后，你可以令受到伤害的角色距离不大于1的一名角色获得之，若如此做，你可以展示其一张手牌，若此牌为基本牌，其失去1点体力。<font color=\"green\"><b>每阶段限一次。</b></font>",
 	["@anliu"] = "当你可发动“暗流”，令<font color=\"#FF8000\"><b>%src </b></font> 距离不大于1的一名角色获得对其造成伤害的【杀】",

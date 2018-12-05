@@ -320,6 +320,10 @@ return {
 	["&reisen_gzz"] = "绀珠传铃仙",
 	["#reisen_gzz"] = "地上的月兔",
 	["designer:reisen_gzz"] = "蔚海幽浮",
+	
+	["illustrator:reisen_gzz"] = "まさる.jp",
+	["origin:reisen_gzz"] = "p号：59883222，个人ID：6547201",
+	
 	["bodong"] = "波动" ,
 	[":bodong"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张手牌并选择场上一至三张装备牌，依次横置之。",
 	["huanlong"] = "幻胧",

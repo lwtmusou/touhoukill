@@ -170,6 +170,10 @@ return{
 	["&seija_sp"] = "天邪鬼正邪",
 	["designer:seija_sp"] = "bullytou",
 
+	["illustrator:seija_sp"] = "BoboMaster",
+	["origin:seija_sp"] = "p号：43810270",
+	
+	
 	["tianxie"] = "天邪",
 	[":tianxie"] = "当一张基本牌或普通锦囊牌对你结算结束后，若此牌未对你生效，你可以摸一张牌，否则你可以令此牌的使用者弃置一张牌。",
 	["tianxie:target1"] = "你可以发动“天邪”令<font color=\"#00FF00\"><b>%src </b></font>弃置一张牌",

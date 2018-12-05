@@ -70,6 +70,8 @@ return
 	["#ran"]= "境界妖怪的式神",
 	["designer:ran"] = "三国有单",
 
+	["illustrator:ran"] = "粗茶",
+	["origin:ran"] = "p号：49351680，个人ID：10210",
 	["illustrator:ran_1"] = "akeboshi kagayo (p号:)",
 	["illustrator:ran_2"] = "ryosios",
 	["origin:ran_2"] = "p号：19945874，个人ID：1508165",

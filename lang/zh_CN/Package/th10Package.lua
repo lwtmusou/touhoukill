@@ -206,8 +206,8 @@ return{
 	["#momizi"] = "下端哨戒的天狗",
 	["designer:momizi"] = "辰焰天明",
 
-	["illustrator:momizi"] = "unkonwn",
-	["origin:momizi"] = "unkonwn",
+	["illustrator:momizi"] = "啓々",
+	["origin:momizi"] = "p号：37339009，个人ID：30974",
 	["illustrator:momizi_1"] = "みや",
 	["origin:momizi_1"] = "p号：16407016，个人ID：41977",
 	["illustrator:momizi_2"] = "kirero",
@@ -281,8 +281,8 @@ return{
 	["#momizi_sp"] = "钻研棋技的天狗",
 	["designer:momizi_sp"] = "星野梦美☆",
 
-	["illustrator:momizi"] = "啓々",
-	["origin:momizi"] = "p号：4742307，个人ID：30974",
+	["illustrator:momizi_sp"] = "啓々",
+	["origin:momizi_sp"] = "p号：4742307，个人ID：30974",
 
 	["buju"] = "布局",
 	[":buju"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以摸X张牌（X为角色数且至多为4），然后将X张牌以任意顺序置于牌堆顶。",

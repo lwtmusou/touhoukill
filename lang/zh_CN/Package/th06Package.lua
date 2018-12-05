@@ -270,6 +270,10 @@ return{ ["th06"] = "红魔乡",
 	["satsuki"] = "冴月麟" ,
 	["#satsuki"] = "丛云蔽月" ,
 	["designer:satsuki"] = "辰焰天明",
+	
+	["illustrator:satsuki"] = "kaze",
+	["origin:satsuki"] = "p号：46647754 个人ID：2579204",
+	
 	["xiaoyin"]= "消隐",
 	[":xiaoyin"]= "其他角色的出牌阶段开始时，若你在其攻击范围内且其有手牌，你可以令其将一张手牌当【调虎离山】对你使用（其他角色不是此牌的合法目标）。",
 	["xiaoyinuse"]= "你须将一张手牌当【调虎离山】对 <font color=\"#FF8000\"><b>%src </b></font> 使用。",
@@ -286,6 +290,9 @@ return{ ["th06"] = "红魔乡",
 	["#rumia_sp"] = "食人妖怪" ,
 	["designer:rumia_sp"] = "三国有单",
 
+	["illustrator:rumia_sp"] = "Koissa",
+	["origin:rumia_sp"] = "p号：68459580 个人ID：2845504",
+	
 	["shixue"]= "嗜血",
 	[":shixue"]= "<font color=\"blue\"><b>锁定技，</b></font>当你造成1点伤害后，你回复1点体力；当你不以此法回复体力时，若你不处于濒死状态，防止此体力回复效果并摸两张牌。",
 	["#shixue1"]= "由于“%arg”的效果，%from 回复的 %arg2 点体力效果被防止了",

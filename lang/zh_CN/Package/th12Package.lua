@@ -221,6 +221,9 @@ return{
 	["&kyouko_sp"] = "命莲寺响子",
 	["designer:kyouko_sp"] = "星野梦美☆",
 
+	["illustrator:kyouko_sp"] = "さな",
+	["origin:kyouko_sp"] = "p号：49675337，个人ID：11749824",
+	
 	["yexiang"] = "夜响",
 	[":yexiang"] = "当一次性的延时类锦囊牌从其他角色的判定区移至另一个区域后，你可以依次弃置其两张手牌。",
 	["huisheng"] = "回声",

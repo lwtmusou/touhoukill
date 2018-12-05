@@ -265,6 +265,9 @@ return
 	["&mystia_sp"] = "老板娘夜雀",
 	["designer:mystia_sp"] = "辰焰天明",
 
+	["illustrator:mystia_sp"] = "めぶら",
+	["origin:mystia_sp"] = "p号：53551952，个人ID：6762438",
+	
 	["yemang"] = "夜盲",
 	[":yemang"] = "<font color=\"blue\"><b>锁定技，</b></font>其他角色的出牌阶段开始时，若其在你的攻击范围内，其攻击范围于此阶段内-1。",
 	["#yemangRange"] = " %from 因 “%arg” 的效果 于此阶段内攻击范围-1。",

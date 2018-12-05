@@ -7,6 +7,13 @@ return {
 	["junko"] = "纯狐" ,
 	["#junko"] = "无名之恨" ,
 	["designer:junko"] = "三国有单",
+	
+	["illustrator:junko"] = "ルリア",
+	["origin:junko"] = "p号：58277323， 个人ID：997454",
+	["illustrator:junko_1"] = "久賀フーナ",
+	["origin:junko_1"] = "p号：54259284， 个人ID：2636363",
+	
+	
 	["xiahui"] = "瑕秽",
 	[":xiahui"] = "当你造成或受到伤害后，你可以明置来源和受到伤害的角色中一至两名角色的各一张手牌。",
 	["@xiahui"] = "你可以发动“瑕秽”，明置 受伤者 和 来源 中一名或两名角色的 各一张手牌（先选择当前回合角色后选择另一名角色，为明置两者各一张牌，否则只明置不是当前回合的角色的一张牌）。",
@@ -35,6 +42,10 @@ return {
 	["!hecatia"] = "赫卡提亚·拉碧斯拉祖利" ,
 	["#hecatia"] = "地狱的女神" ,
 	["designer:hecatia"] = "辰焰天明",
+	
+	["illustrator:hecatia"] = "もりもり",
+	["origin:hecatia"] = "p号：56930159，　个人ID：3099070",
+	
 	["santi"] = "三体",
 	[":santi"] = "<font color=\"blue\"><b>锁定技，</b></font>非额外回合开始时，你令此回合执行阶段为“准备-判定-（摸牌-出牌-弃牌） x3 -结束”；当你于此回合的出牌阶段内使用牌时，你令此阶段内/余下的出牌阶段内不能使用与之类型不同/相同的牌。",
 	--[":santi"] = "<font color=\"blue\"><b>锁定技，</b></font>非额外回合开始时，你令你于此回合内的判定阶段结束后和非额外的弃牌阶段结束后各依次执行一个额外的摸牌阶段、出牌阶段和弃牌阶段；你于回合内的第一/二/三个出牌阶段内，只能使用基本牌/装备牌/锦囊牌。",
@@ -45,6 +56,10 @@ return {
 	["clownpiece"] = "克劳恩皮斯" ,
 	["#clownpiece"] = "地狱的妖精" ,
 	["designer:clownpiece"] = "三国有单",
+	
+	["illustrator:clownpiece"] = "ルリア",
+	["origin:clownpiece"] = "个人ID：997454",
+	
 	["kuangluan"] = "狂乱",
 	["#kuangluan1"] = "狂乱",
 	["#kuangluan2"] = "狂乱",
@@ -63,6 +78,10 @@ return {
 	["sagume"] = "稀神探女" ,
 	["#sagume"] = "招来口舌之祸的女神" ,
 	["designer:sagume"] = "三国有单",
+	
+	["illustrator:sagume"] = "菊月",
+	["origin:sagume"] = "p号：58197052，个人ID：429883",
+	
 	["shehuo"] = "舌祸",
 	[":shehuo"] = "当一名角色使用【杀】或普通锦囊牌指定另一名角色为唯一目标时，若你为两者之一，你可以令目标角色选择一项：取消其并对此牌的使用者使用与之类别不同的牌（无距离限制）；或令此牌不能被所有角色使用牌响应。",
 	["@shehuo_use"] = "舌祸: <font color=\"#00FF00\"><b>%src </b></font>对你使用了【%dest】, 你是否对<font color=\"#00FF00\"><b>%src </b></font>使用一张类别不同的牌，并取消你。",
@@ -79,6 +98,10 @@ return {
 	["#doremy"] = "梦之支配者" ,
 	["&doremy"] = "哆来咪",
 	["designer:doremy"] = "三国有单",
+	
+	["illustrator:doremy"] = "あぶそる",
+	["origin:doremy"] = "p号：52317687，个人ID：3202270",
+	
 	["bumeng"] = "捕梦",
 	[":bumeng"] = "当其他角色的牌因其弃置而进入弃牌堆后，你可以令其获得其中的一张牌，明置之，然后你可以获得其中的一张牌并明置之。<font color=\"green\"><b>每回合限一次，</b></font>",
 	["rumeng"] = "入梦",
@@ -91,6 +114,10 @@ return {
 	["ringo"] = "铃瑚" ,
 	["#ringo"] = "橘色的月兔" ,
 	["designer:ringo"] = "三国有单",
+	
+	["illustrator:ringo"] = "りひと",
+	["origin:ringo"] = "p号：56703160，个人ID：1463626",
+	
 	["yuejian"] = "月见";
 	[":yuejian"] = "<font color=\"green\"><b>出牌段限一次，</b></font>你可以与一名角色拼点：当你赢后，你视为使用【以逸待劳】；当你没赢后，你将你的拼点牌置于人物牌上，称为“团子”。";
 
@@ -112,5 +139,7 @@ return {
 	["yidan"] = "异弹",
 	[":yidan"] = "出牌阶段，你可以将一张手牌当缚【杀】或秽【杀】使用（无距离与次数限制，但处于异常状态的角色不是合法目标；这两种【杀】于此阶段内各限转化一次）。",
 	["#yidan"] = "异弹",
-
+	
+	["illustrator:seiran"] = "minusT",
+	["origin:seiran"] = "p号：56472774，个人ID：15772166",
 }
