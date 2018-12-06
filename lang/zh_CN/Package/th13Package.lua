@@ -24,7 +24,7 @@ return{
 	["$shenggeAnimate"]= "skill=miko:shengge",
 	["#ShenggeWake"] = "%from 没有手牌，触发“%arg”觉醒",
 	["qingting"] = "倾听",
-	[":qingting"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以选择所有有手牌的其他角色，令这些角色各将一张手牌交给你（“圣格”发动后，改为你获得这些角色的各一张手牌），然后你交给这些角色各一张牌。",
+	[":qingting"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以令所有其他角色依次将一张手牌交给你（“圣格”觉醒后，改为你获得其一张手牌），然后你依次将一张手牌交给以此法失去过手牌的角色。",
 	["qingtingGive"]= "<font color=\"#00FF00\"><b>%src </b></font> 发动了“倾听”，请将一张手牌交给 <font color=\"#00FF00\"><b>%src </b></font>。",
 	["qingtingReturn"]= "请将一张手牌交给被“倾听”的角色 <font color=\"#00FF00\"><b>%src </b></font>。",
 	["chiling"] = "敕令",
