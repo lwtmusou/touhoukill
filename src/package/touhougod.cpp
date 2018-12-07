@@ -5875,6 +5875,9 @@ public:
         QList<SkillInvokeDetail> d;
         if (e == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            
+            
+
             ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
             if (move.reason.m_extraData.value<ServerPlayer *>() != NULL)
                 player = move.reason.m_extraData.value<ServerPlayer *>();
@@ -5886,6 +5889,7 @@ public:
                 }
                 if (equip_ids.isEmpty())
                     return QList<SkillInvokeDetail>();
+                //if (move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE)
 
                 bool canMove = false;
                 foreach(int id, equip_ids) {
@@ -5902,7 +5906,7 @@ public:
                 }
 
                 foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                    if (p->canDiscard(p, "hes"))
+                    if (p->canDiscard(p, "hs"))
                         d << SkillInvokeDetail(this, p, p);
                 }
             }
@@ -5919,6 +5923,7 @@ public:
             player = move.reason.m_extraData.value<ServerPlayer *>();
 
         while (true) {
+            
             QList<int> equip_ids;
             foreach(int id, move.card_ids) {
                 if (Sanguosha->getCard(id)->getTypeId() == Card::TypeEquip && room->getCardPlace(id) == Player::DiscardPile)
@@ -5928,8 +5933,11 @@ public:
                 return false;
 
             ServerPlayer *alice = invoke->invoker;
+            if (!alice->canDiscard(alice, "hs"))
+                return false;
             if (!putToPile(room, alice, equip_ids))
                 return false;
+            
 
             room->setPlayerFlag(player, "Global_wenyueFailed");
             alice->tag["wenyueOwner"] = QVariant::fromValue(player);
