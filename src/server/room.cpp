@@ -32,8 +32,6 @@
 #include <QTimerEvent>
 #include <ctime>
 
-
-
 #ifdef QSAN_UI_LIBRARY_AVAILABLE
 #pragma message WARN("UI elements detected in server side!!!")
 #endif
@@ -1151,8 +1149,8 @@ bool Room::isCanceled(const CardEffectStruct &effect)
 
     bool result = askForNullification(effect.card, effect.from, effect.to, true);
     //deal xianshi
-    foreach(ServerPlayer *p, getAlivePlayers()) {
-        ServerPlayer *target =  p->tag["xianshi_nullification_target"].value<ServerPlayer *>();
+    foreach (ServerPlayer *p, getAlivePlayers()) {
+        ServerPlayer *target = p->tag["xianshi_nullification_target"].value<ServerPlayer *>();
         p->tag.remove("xianshi_nullification_target");
         const Card *xianshi_nullification = p->tag.value("xianshi_nullification").value<const Card *>();
         p->tag.remove("xianshi_nullification");
@@ -1194,9 +1192,8 @@ bool Room::isCanceled(const CardEffectStruct &effect)
 
                         DamageStruct d = DamageStruct(xianshi_nullification, p, target, damageValue, nature);
                         damage(d);
-                        
-                    }
-                    else if (extraCard->isKindOf("Peach")) {
+
+                    } else if (extraCard->isKindOf("Peach")) {
                         CardEffectStruct extraEffect;
                         extraCard->deleteLater();
 
@@ -1205,18 +1202,14 @@ bool Room::isCanceled(const CardEffectStruct &effect)
                         extraEffect.to = target;
                         extraEffect.multiple = effect.multiple;
                         extraCard->onEffect(extraEffect);
-                    }
-                    else if (extraCard->isKindOf("Analeptic"))
-                    {
+                    } else if (extraCard->isKindOf("Analeptic")) {
                         RecoverStruct re;
                         re.card = xianshi_nullification;
                         re.who = p;
                         recover(target, re);
                     }
-                   
                 }
             }
-
         }
     }
 
@@ -1371,7 +1364,6 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
         else
             repliedPlayer->tag["xianshi_nullification_result"] = QVariant::fromValue(1);
     }
-
 
     if (card->isCancelable(effect)) {
         if (result) {

@@ -186,8 +186,6 @@ signals:
     void onButtonClick();
 };
 
-
-
 class XianshiDialog : public QDialog
 {
     Q_OBJECT
@@ -195,7 +193,7 @@ class XianshiDialog : public QDialog
 public:
     static XianshiDialog *getInstance(const QString &object, bool left = true, bool right = true);
 
-    public slots:
+public slots:
     void popup();
     void selectCard(QAbstractButton *button);
 
@@ -214,7 +212,6 @@ signals:
     void onButtonClick();
 };
 
-
 class XianshiCard : public SkillCard
 {
     Q_OBJECT
@@ -229,9 +226,6 @@ public:
     virtual const Card *validate(CardUseStruct &card_use) const;
     virtual const Card *validateInResponse(ServerPlayer *user) const;
 };
-
-
-
 
 class WenyueCard : public SkillCard
 {
