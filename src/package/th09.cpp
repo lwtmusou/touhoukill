@@ -1353,15 +1353,18 @@ public:
         events << HpRecover << CardsMoveOneTime;
     }
 
-    static QList<ServerPlayer *> nengwuTargets(ServerPlayer *player, bool draw)
+    static QList<ServerPlayer *> nengwuTargets(ServerPlayer *player, bool draw, TriggerEvent e)
     {
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, player->getRoom()->getOtherPlayers(player)) {
-            if (player->inMyAttackRange(p) && draw) {
+            if (e == CardsMoveOneTime && draw && player->getHandcardNum() > p->getHandcardNum())
                 targets << p;
-            } else if (player->inMyAttackRange(p) && !draw && player->canDiscard(p, "hs")) {
+            else if (e == HpRecover && draw && player->getHp() > p->getHp())
                 targets << p;
-            }
+            else if (e == CardsMoveOneTime && !draw && player->getHandcardNum() < p->getHandcardNum() && player->canDiscard(p, "hs"))
+                targets << p;
+            else if (e == Damaged && !draw && player->getHp() < p->getHp() && player->canDiscard(p, "hs"))
+                targets << p;
         }
         return targets;
     }
@@ -1371,24 +1374,24 @@ public:
         QList<SkillInvokeDetail> d;
         if (triggerEvent == HpRecover) {
             RecoverStruct r = data.value<RecoverStruct>();
-            if (r.to->hasSkill(this) && r.to->getPhase() != Player::Draw && !nengwuTargets(r.to, true).isEmpty())
+            if (r.to->hasSkill(this) && !r.to->isCurrent() && !nengwuTargets(r.to, true, triggerEvent).isEmpty())
                 d << SkillInvokeDetail(this, r.to, r.to);
         } else if (triggerEvent == CardsMoveOneTime) {
             if (room->getTag("FirstRound").toBool())
                 return QList<SkillInvokeDetail>();
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *playerTo = qobject_cast<ServerPlayer *>(move.to);
-            if (playerTo != NULL && playerTo->isAlive() && playerTo->hasSkill(this) && move.to_place == Player::PlaceHand && playerTo->getPhase() != Player::Draw
-                && !nengwuTargets(playerTo, true).isEmpty()) {
+            if (playerTo != NULL && playerTo->isAlive() && playerTo->hasSkill(this) && move.to_place == Player::PlaceHand && !playerTo->isCurrent()
+                && !nengwuTargets(playerTo, true, triggerEvent).isEmpty()) {
                 d << SkillInvokeDetail(this, playerTo, playerTo);
             }
         }
         return d;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        QList<ServerPlayer *> targets = nengwuTargets(invoke->invoker, true);
+        QList<ServerPlayer *> targets = nengwuTargets(invoke->invoker, true, triggerEvent);
 
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, "nengwudraw", "@nengwu-draw", true, true);
         if (target) {
@@ -1420,7 +1423,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (triggerEvent == Damaged) {
             ServerPlayer *player = data.value<DamageStruct>().to;
-            if (player->hasSkill("nengwu") && player->isAlive() && player->getPhase() != Player::Play && !Nengwu::nengwuTargets(player, false).isEmpty())
+            if (player->hasSkill("nengwu") && player->isAlive() && !player->isCurrent() && !Nengwu::nengwuTargets(player, false, triggerEvent).isEmpty())
                 d << SkillInvokeDetail(this, player, player);
         } else if (triggerEvent == CardsMoveOneTime) {
             if (room->getTag("FirstRound").toBool())
@@ -1428,16 +1431,16 @@ public:
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *playerFrom = qobject_cast<ServerPlayer *>(move.from);
             if (playerFrom != NULL && playerFrom->isAlive() && playerFrom->hasSkill("nengwu") && move.from_places.contains(Player::PlaceHand)
-                && playerFrom->getPhase() != Player::Play && !Nengwu::nengwuTargets(playerFrom, false).isEmpty()) {
+                && !playerFrom->isCurrent() && !Nengwu::nengwuTargets(playerFrom, false, triggerEvent).isEmpty()) {
                 d << SkillInvokeDetail(this, playerFrom, playerFrom);
             }
         }
         return d;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        QList<ServerPlayer *> targets = Nengwu::nengwuTargets(invoke->invoker, false);
+        QList<ServerPlayer *> targets = Nengwu::nengwuTargets(invoke->invoker, false, triggerEvent);
 
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, "nengwudiscard", "@nengwu-discard", true, true);
         if (target) {
