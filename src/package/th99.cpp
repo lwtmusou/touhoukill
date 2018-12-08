@@ -1291,7 +1291,6 @@ public:
     }
 };
 
-
 /*
 class Ganying;
 namespace {
@@ -1427,20 +1426,19 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.to->isDead())
                 return QList<SkillInvokeDetail>();
-            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (p != damage.to && damage.to->getHp() == p->getHp())
                     d << SkillInvokeDetail(this, p, p, NULL, false, damage.to);
             }
         }
 
         if (e == HpRecover) {
-            RecoverStruct recover  = data.value<RecoverStruct>();
+            RecoverStruct recover = data.value<RecoverStruct>();
             //recover.to
-            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (p != recover.to && recover.to->getHp() == p->getHp())
                     d << SkillInvokeDetail(this, p, p, NULL, false, recover.to);
             }
-                  
         }
 
         return d;
@@ -1460,7 +1458,6 @@ public:
         return false;
     }
 };
-
 
 class Zhujiu : public TriggerSkill
 {
@@ -2248,7 +2245,7 @@ TH99Package::TH99Package()
     addMetaObject<ZhuonongCard>();
     addMetaObject<YushouCard>();
     addMetaObject<PanduCard>();
-    skills << new DangjiaVS << new Luanying  << new XiufuMove << new XunshiDistance << new LiyouDistance;//<< new GanyingHandler
+    skills << new DangjiaVS << new Luanying << new XiufuMove << new XunshiDistance << new LiyouDistance; //<< new GanyingHandler
 }
 
 ADD_PACKAGE(TH99)

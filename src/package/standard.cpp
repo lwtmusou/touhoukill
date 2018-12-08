@@ -368,15 +368,14 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const
                 vs_card->takeOver(delayTrick);
                 room->broadcastUpdateCard(room->getAlivePlayers(), vs_card->getId(), vs_card);
             }
-           
+
             CardsMoveStruct move;
             move.card_ids << getEffectiveId();
             move.to = effect.to;
             move.to_place = Player::PlaceDelayedTrick;
             room->moveCardsAtomic(move, true);
         }
-    }
-    else {
+    } else {
         if (room->getCardOwner(getEffectiveId()) == NULL) {
             CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
             room->throwCard(this, reason, NULL);
@@ -624,7 +623,6 @@ StandardPackage::StandardPackage()
     patterns["peach"] = new ExpPattern("Peach");
     patterns["nullification"] = new ExpPattern("Nullification");
     patterns["peach+analeptic"] = new ExpPattern("Peach,Analeptic");
-
 }
 
 ADD_PACKAGE(Standard)

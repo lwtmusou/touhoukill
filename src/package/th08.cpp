@@ -1246,8 +1246,7 @@ public:
             }
         }
         DamageStruct damage = data.value<DamageStruct>();
-        QString prompt = (e == DamageCaused) ? ("@laolong1:" + damage.to->objectName() + ":" + QString::number(damage.damage))
-                                             : ("@laolong2:" + QString::number(damage.damage));
+        QString prompt = (e == DamageCaused) ? ("@laolong1:" + damage.to->objectName() + ":" + QString::number(damage.damage)) : ("@laolong2:" + QString::number(damage.damage));
 
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), prompt, true, true);
         if (target) {
@@ -1436,8 +1435,6 @@ public:
     }
 };
 
-
-
 class YinghuoClear : public TriggerSkill
 {
 public:
@@ -1446,7 +1443,6 @@ public:
     {
         events << EventPhaseChanging;
     }
-
 
     static void yinghuo_record(Room *room, ServerPlayer *player, QString pattern)
     {
@@ -1467,14 +1463,14 @@ public:
     {
         Card *c = Sanguosha->cloneCard(pattern);
         DELETE_OVER_SCOPE(Card, c)
-            if (pattern.contains("slash"))
-                pattern = "slash";
-            else if (pattern.contains("jink"))
-                pattern = "jink";
-            else if (pattern.contains("analeptic"))
-                pattern = "analeptic";
-            else if (pattern.contains("peach"))
-                pattern = "peach";
+        if (pattern.contains("slash"))
+            pattern = "slash";
+        else if (pattern.contains("jink"))
+            pattern = "jink";
+        else if (pattern.contains("analeptic"))
+            pattern = "analeptic";
+        else if (pattern.contains("peach"))
+            pattern = "peach";
         QString markName = "yinghuo_record_" + pattern;
 
         if (player->getMark(markName) > 0)
@@ -1483,23 +1479,21 @@ public:
             return false;
     }
 
-
     void record(TriggerEvent e, Room *room, QVariant &data) const
     {
-
         if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to != Player::NotActive)
                 return;
             QStringList patterns;
             QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-            foreach(const Card *card, cards) {
+            foreach (const Card *card, cards) {
                 if (!patterns.contains(card->objectName()))
                     patterns << card->objectName();
             }
 
-            foreach(ServerPlayer *p, room->getAlivePlayers()) {
-                foreach(QString pattern, patterns) {
+            foreach (ServerPlayer *p, room->getAlivePlayers()) {
+                foreach (QString pattern, patterns) {
                     QString markName = "yinghuo_record_" + pattern;
                     if (p->getMark(markName) > 0)
                         room->setPlayerMark(p, markName, 0);
@@ -1507,8 +1501,6 @@ public:
             }
         }
     }
-
-
 
     /*QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
@@ -1551,7 +1543,6 @@ public:
     return false;
     }*/
 };
-
 
 YinghuoCard::YinghuoCard()
 {
@@ -1602,7 +1593,7 @@ const Card *YinghuoCard::validate(CardUseStruct &use) const
 {
     use.from->showHiddenSkill("yinghuo");
     Room *room = use.from->getRoom();
-    
+
     const Card *card = Sanguosha->getCard(subcards.first());
     YinghuoClear::yinghuo_record(room, use.from, card->objectName());
     Card *use_card = Sanguosha->cloneCard(card->objectName());

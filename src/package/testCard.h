@@ -96,7 +96,6 @@ public:
     virtual bool isAvailable(const Player *player) const;
 };
 
-
 class Gun : public Weapon
 {
     Q_OBJECT
@@ -112,7 +111,6 @@ class Pillar : public Weapon
 public:
     Q_INVOKABLE Pillar(Card::Suit suit, int number);
 };
-
 
 class Hakkero : public Weapon
 {
@@ -157,7 +155,6 @@ class Hagoromo : public Armor
 public:
     Q_INVOKABLE Hagoromo(Card::Suit suit, int number);
 };
-
 
 class AwaitExhausted : public SingleTargetTrick
 {
@@ -206,7 +203,6 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-
 class SpringBreath : public DelayedTrick
 {
     Q_OBJECT
@@ -220,8 +216,6 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void takeEffect(ServerPlayer *target) const;
 };
-
-
 
 class TestCardPackage : public Package
 {

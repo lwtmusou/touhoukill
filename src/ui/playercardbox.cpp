@@ -107,23 +107,22 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
     if (handcard) {
         QList<const Card *> handcards;
         QList<const Card *> shownHandcards;
-        foreach(int id, player->getShownHandcards()) {
+        foreach (int id, player->getShownHandcards()) {
             const Card *c = Sanguosha->getCard(id);
             shownHandcards << c;
         }
 
         if (!handcardVisible && Self != player) {
-            foreach(int id, player->getShownHandcards()) {
+            foreach (int id, player->getShownHandcards()) {
                 const Card *c = Sanguosha->getCard(id);
                 handcards << c;
             }
             int hidden = player->getHandcardNum() - handcards.length();
             for (int i = 0; i < hidden; ++i)
                 handcards << NULL;
-        }
-        else
+        } else
             handcards = player->getHandcards();
-            
+
         arrangeCards(handcards, QPoint(startX, nameRects.at(index).y()), enableEmptyCard, shownHandcards);
         ++index;
     }
@@ -279,11 +278,8 @@ void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, const QPoint 
                 item->setFootnote(Sanguosha->translate(card->objectName()));
                 item->showFootnote();
             }
-        }
-        else
+        } else
             item->setEnabled(enableEmptyCard);
-
-        
 
         connect(item, &CardItem::clicked, this, &PlayerCardBox::reply);
         item->setAcceptedMouseButtons(Qt::LeftButton); //the source of hegemony has not set LeftButton???

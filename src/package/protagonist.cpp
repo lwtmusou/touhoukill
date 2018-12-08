@@ -76,7 +76,7 @@ public:
         QList<SkillInvokeDetail> d;
         QList<ServerPlayer *> reimus = room->findPlayersBySkillName(objectName());
         foreach (ServerPlayer *reimu, reimus)
-                d << SkillInvokeDetail(this, reimu, reimu, NULL, false, judge->who);
+            d << SkillInvokeDetail(this, reimu, reimu, NULL, false, judge->who);
         return d;
     }
 
@@ -124,7 +124,7 @@ public:
         }
         if (player && !player->isCurrent() && card && (card->isKindOf("Jink") || card->isKindOf("Nullification"))) {
             foreach (ServerPlayer *reimu, room->findPlayersBySkillName(objectName()))
-                    d << SkillInvokeDetail(this, reimu, reimu, NULL, false, player);
+                d << SkillInvokeDetail(this, reimu, reimu, NULL, false, player);
         }
         return d;
     }
@@ -139,7 +139,6 @@ public:
     }
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        
         const Card *card = invoke->tag.value("fengmo").value<const Card *>();
         JudgeStruct judge;
         judge.reason = objectName();
@@ -147,12 +146,10 @@ public:
         judge.good = true;
         //judge.pattern = ".|red";
         judge.play_animation = false;
-        
 
         ServerPlayer *target = invoke->preferredTarget;
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
         room->judge(judge);
-
 
         ServerPlayer *current = room->getCurrent();
 
@@ -167,11 +164,9 @@ public:
             if (choice == "card") {
                 room->setPlayerMark(current, "@fengmo_SingleTurn", 1);
                 room->setPlayerCardLimitation(current, "use,response", ".|^heart", objectName(), true);
-            }
-            else {
+            } else {
                 room->damage(DamageStruct(objectName(), target, current, 1, DamageStruct::Normal));
             }
-            
         }
         return false;
     }
@@ -350,7 +345,7 @@ public:
         : OneCardViewAsSkill("wuyu_attach")
     {
         attached_lord_skill = true;
-        filter_pattern = ".|spade|.|.";//".|spade|.|hand"
+        filter_pattern = ".|spade|.|."; //".|spade|.|hand"
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const

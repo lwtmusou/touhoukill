@@ -1307,7 +1307,7 @@ public:
     {
         if (triggerEvent != CardsMoveOneTime)
             return QList<SkillInvokeDetail>();
-        
+
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.from == NULL || move.from->isDead())
             return QList<SkillInvokeDetail>();
@@ -1319,7 +1319,7 @@ public:
                 ServerPlayer *current = room->getCurrent();
                 if (current == NULL || !current->isCurrent() || current->isDead() || !current->isInMainPhase())
                     return QList<SkillInvokeDetail>();
-                
+
                 ServerPlayer *myo = qobject_cast<ServerPlayer *>(move.from);
                 if (myo == NULL || myo == current || myo->getMark("shanshi_invoke") > 0)
                     return QList<SkillInvokeDetail>();

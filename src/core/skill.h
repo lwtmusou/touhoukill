@@ -54,7 +54,7 @@ public:
 protected:
     Frequency frequency;
     QString limit_mark;
-    QString related_mark;//while changing hero, this will be removed
+    QString related_mark; //while changing hero, this will be removed
     QString related_pile;
     bool attached_lord_skill;
     QString show_type;

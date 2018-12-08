@@ -179,7 +179,6 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->owner))) {
             room->broadcastSkillInvoke(objectName());
             room->notifySkillInvoked(invoke->owner, objectName());
@@ -982,9 +981,8 @@ public:
         if (player->isCurrent()) {
             if (!player->isInMainPhase())
                 return false;
-        }
-        else {
-            foreach(const Player *p, player->getSiblings()) {
+        } else {
+            foreach (const Player *p, player->getSiblings()) {
                 if (p->isCurrent()) {
                     if (!p->isInMainPhase())
                         return false;
@@ -1090,7 +1088,7 @@ public:
         ServerPlayer *current = room->getCurrent();
         if (current == NULL || !current->isInMainPhase())
             return QList<SkillInvokeDetail>();
-        
+
         if (e != DamageCaused)
             return QList<SkillInvokeDetail>();
         DamageStruct damage = data.value<DamageStruct>();

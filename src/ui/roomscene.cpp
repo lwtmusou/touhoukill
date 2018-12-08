@@ -587,7 +587,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         }
 
         if (newHero) {
-            foreach(const Skill *skill, newHero->getVisibleSkills()) {
+            foreach (const Skill *skill, newHero->getVisibleSkills()) {
                 if (skill->isLordSkill() && !player->isLord())
                     continue;
                 attachSkill(skill->objectName(), false);
@@ -5164,7 +5164,7 @@ void RoomScene::setLordBGM(QString lord)
     if (lord_name == NULL)
         lord_name = Self->getGeneralName();
     lord_name = lord_name.split("_").at(0);
-    if (changeBGM) {//change BGMpath to lordName        
+    if (changeBGM) { //change BGMpath to lordName
         bgm_path = "audio/bgm/" + lord_name + "_1.ogg";
         if ((bgm_path == NULL) || !QFile::exists(bgm_path)) {
             foreach (QString cv_pair, Sanguosha->LordBGMConvertList) {

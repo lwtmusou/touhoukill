@@ -191,8 +191,8 @@ public:
             if (fileNames.endsWith(".ogg"))
                 all = fileNames.split(";");
             QStringList openings;
-            
-            if (isGeneralName) {//fileNames is  generalName
+
+            if (isGeneralName) { //fileNames is  generalName
                 //just support title only
                 QString path = "audio/bgm/";
                 QDir *dir = new QDir(path);
@@ -207,7 +207,7 @@ public:
                         all << fileName;
                 }
             }
-            
+
             if (all.isEmpty() || playAll) {
                 QString path = "audio/title/";
                 QDir *dir = new QDir(path);
@@ -216,7 +216,7 @@ public:
                 dir->setNameFilters(filter);
                 QList<QFileInfo> file_info(dir->entryInfoList(filter));
 
-                foreach(QFileInfo file, file_info) {
+                foreach (QFileInfo file, file_info) {
                     QString fileName = path + file.fileName();
                     if ((file.fileName().startsWith("main") || file.fileName().startsWith("opening")))
                         openings << fileName;
