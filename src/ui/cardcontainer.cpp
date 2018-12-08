@@ -264,8 +264,7 @@ void CardContainer::startGongxin(const QList<int> &enabled_ids)
         const Card *card = item->getCard();
         if (card && enabled_ids.contains(card->getEffectiveId())) {
             connect(item, SIGNAL(double_clicked()), this, SLOT(gongxinItem()));
-        }
-        else
+        } else
             item->setEnabled(false);
     }
 }

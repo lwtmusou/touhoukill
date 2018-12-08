@@ -515,7 +515,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                         DamageStruct chain_damage = damage;
                         chain_damage.to = chained_player;
                         chain_damage.chain = true;
-                        chain_damage.trigger_info = QString();//clear trigger_info.  eg. shihui
+                        chain_damage.trigger_info = QString(); //clear trigger_info.  eg. shihui
 
                         room->damage(chain_damage);
                     }
@@ -941,7 +941,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             if (judge->is_showncard)
                 room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true, QList<int>() << judge->card->getEffectiveId());
             else
-                room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);   
+                room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);
         }
 
         break;

@@ -1715,13 +1715,13 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         QString showskill = card->getSkillName();
         player->showHiddenSkill(skill_name);
         player->showHiddenSkill(card->getSkillName());
-       
+
         //Before move1, record the shown ids for move2;
-       QList<int> shown_ids;
-       foreach(int id, card->getSubcards()) {
-           ServerPlayer *owner = getCardOwner(id);
-           if (owner && owner->isShownHandcard(id))
-               shown_ids << id;
+        QList<int> shown_ids;
+        foreach (int id, card->getSubcards()) {
+            ServerPlayer *owner = getCardOwner(id);
+            if (owner && owner->isShownHandcard(id))
+                shown_ids << id;
         }
         //move1
         if (method == Card::MethodUse) {
@@ -4446,7 +4446,8 @@ void Room::moveCardTo(const Card *card, ServerPlayer *dstPlayer, Player::Place d
     moveCardTo(card, NULL, dstPlayer, dstPlace, QString(), reason, forceMoveVisible, inherit_shown_ids);
 }
 
-void Room::moveCardTo(const Card *card, ServerPlayer *srcPlayer, ServerPlayer *dstPlayer, Player::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible, QList<int> inherit_shown_ids)
+void Room::moveCardTo(const Card *card, ServerPlayer *srcPlayer, ServerPlayer *dstPlayer, Player::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible,
+                      QList<int> inherit_shown_ids)
 {
     moveCardTo(card, srcPlayer, dstPlayer, dstPlace, QString(), reason, forceMoveVisible, inherit_shown_ids);
 }
@@ -4659,7 +4660,7 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             ++i;
             continue;
         }
-        
+
         QVariant data = QVariant::fromValue(moveOneTime);
         thread->trigger(BeforeCardsMove, this, data);
         moveOneTime = data.value<CardsMoveOneTimeStruct>();
@@ -5054,10 +5055,10 @@ void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
     setPlayerProperty(player, "general", new_general);
     Q_ASSERT(player->getGeneral() != NULL);
     player->setGender(player->getGeneral()->getGender());
-    foreach(const Skill *skill, player->getGeneral()->getSkillList()) {
+    foreach (const Skill *skill, player->getGeneral()->getSkillList()) {
         if (skill->isLordSkill() && !player->isLord()) {
             continue;
-        }       
+        }
         player->addSkill(skill->objectName());
     }
     filterCards(player, player->getCards("hes"), true);
@@ -5072,11 +5073,11 @@ void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general
     setPlayerProperty(player, "general2", new_general);
     Q_ASSERT(player->getGeneral2() != NULL);
     if (player->getGeneral2()) {
-        foreach(const Skill *skill, player->getGeneral2()->getSkillList()) {
+        foreach (const Skill *skill, player->getGeneral2()->getSkillList()) {
             if (skill->isLordSkill() && !player->isLord())
                 continue;
             player->addSkill(skill->objectName());
-        }     
+        }
     }
     filterCards(player, player->getCards("he"), true);
 }
@@ -6420,9 +6421,6 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge, c
     judge->card = Sanguosha->getCard(card->getEffectiveId());
     ServerPlayer *rebyre = judge->retrial_by_response; //old judge provider
     judge->retrial_by_response = player;
-
-
-    
 
     CardsMoveStruct move1(QList<int>(), judge->who, Player::PlaceJudge, CardMoveReason(CardMoveReason::S_REASON_RETRIAL, player->objectName(), skill_name, QString()));
 

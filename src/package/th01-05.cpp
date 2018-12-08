@@ -1124,7 +1124,6 @@ public:
         CardsMoveStruct move(invoke->invoker->getPile("dream"), invoke->invoker, Player::DiscardPile, reason);
         room->moveCardsAtomic(move, true);
 
-        
         invoke->invoker->drawCards(2);
 
         RecoverStruct recover;
@@ -1373,7 +1372,6 @@ public:
             ServerPlayer *current = room->getCurrent();
             if (current == NULL || !current->isInMainPhase())
                 return QList<SkillInvokeDetail>();
-
 
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.from && use.from->isAlive() && use.from->hasSkill(this) && !use.from->hasFlag("lianmu_used") && use.card->isKindOf("Slash")
@@ -2623,9 +2621,8 @@ public:
         if (player->isCurrent()) {
             if (!player->isInMainPhase())
                 return false;
-        }
-        else {
-            foreach(const Player *p, player->getSiblings()) {
+        } else {
+            foreach (const Player *p, player->getSiblings()) {
                 if (p->isCurrent()) {
                     if (!p->isInMainPhase())
                         return false;
@@ -2804,15 +2801,9 @@ public:
         response_pattern = "@@luliVS";
     }
 
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *) const
     {
         int num = Self->getMark("luli");
-        /*foreach(const Player *p, Self->getSiblings()) {
-            if (p->isCurrent()) {
-                num = p->getMark("luli");
-                break;
-            }
-        }*/
         return selected.length() < num;
     }
 
@@ -2841,26 +2832,25 @@ public:
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.from && use.from->isCurrent())
-                room->setPlayerMark(use.from, "luli", use.from->getMark("luli") + 1 );
-        }
-        else if (triggerEvent == EventPhaseChanging) {
+                room->setPlayerMark(use.from, "luli", use.from->getMark("luli") + 1);
+        } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
-                foreach(ServerPlayer *p, room->getAllPlayers(true)) {
+                foreach (ServerPlayer *p, room->getAllPlayers(true)) {
                     room->setPlayerMark(p, "luli", 0);
                 }
             }
         }
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
     {
         if (e == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.from == NULL || !use.from->isCurrent() || use.from->isDead())
                 return QList<SkillInvokeDetail>();
             QList<SkillInvokeDetail> d;
-            foreach(ServerPlayer *p, use.to) {
+            foreach (ServerPlayer *p, use.to) {
                 if (p->hasSkill(this) && use.from != p && !p->isAllNude())
                     d << SkillInvokeDetail(this, p, p, NULL, false, use.from);
             }
@@ -2869,8 +2859,8 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {        
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
         room->setPlayerMark(invoke->invoker, "luli", invoke->preferredTarget->getMark("luli"));
         return room->askForUseCard(invoke->invoker, "@@luliVS", "luliuse");
     }

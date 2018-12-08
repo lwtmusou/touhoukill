@@ -5,8 +5,8 @@
 #include "settings.h"
 #include "skill.h"
 #include "standard.h"
-#include "th13.h"
 #include "testCard.h"
+#include "th13.h"
 #include <QCommandLinkButton>
 #include <QCoreApplication>
 #include <QPointer>
@@ -728,9 +728,8 @@ public:
         if (player->isCurrent()) {
             if (!player->isInMainPhase())
                 return false;
-        }
-        else {
-            foreach(const Player *p, player->getSiblings()) {
+        } else {
+            foreach (const Player *p, player->getSiblings()) {
                 if (p->isCurrent()) {
                     if (!p->isInMainPhase())
                         return false;
@@ -738,8 +737,6 @@ public:
                 }
             }
         }
-
-
 
         QStringList checkedPatterns = responsePatterns();
         if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0)
@@ -783,9 +780,8 @@ public:
         if (player->isCurrent()) {
             if (!player->isInMainPhase())
                 return false;
-        }
-        else {
-            foreach(const Player *p, player->getSiblings()) {
+        } else {
+            foreach (const Player *p, player->getSiblings()) {
                 if (p->isCurrent()) {
                     if (!p->isInMainPhase())
                         return false;
@@ -1197,28 +1193,24 @@ public:
             room->touhouLogmessage("#changshi01", invoke->invoker, "changshi");
             room->notifySkillInvoked(invoke->invoker, objectName());
 
-            foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+            foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
                 room->setPlayerSkillInvalidity(p, NULL, true);
                 p->setFlags("changshiInvoked");
             }
-        }
-        else if (choice == "debuff") {
+        } else if (choice == "debuff") {
             CardUseStruct carduse;
             carduse.card = card;
             carduse.from = invoke->invoker;
 
             room->useCard(carduse, true);
-            
         }
-        
-        
+
         QStringList select;
         if (choice == "skillInvalid") {
             if (!invoke->invoker->isCardLimited(card, Card::MethodUse) && card->isAvailable(invoke->invoker))
                 select << "debuff";
-        }
-        else {
+        } else {
             select << "skillInvalid";
         }
         select << "cancel";
@@ -1229,19 +1221,17 @@ public:
                 room->touhouLogmessage("#changshi01", invoke->invoker, "changshi");
                 room->notifySkillInvoked(invoke->invoker, objectName());
 
-                foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+                foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
                     room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
                     room->setPlayerSkillInvalidity(p, NULL, true);
                     p->setFlags("changshiInvoked");
                 }
-            }
-            else if (choice == "debuff") {
+            } else if (choice == "debuff") {
                 CardUseStruct carduse;
                 carduse.card = card;
                 carduse.from = invoke->invoker;
 
                 room->useCard(carduse, true);
-
             }
         }
         return false;
@@ -1326,7 +1316,7 @@ public:
         ServerPlayer *current = room->getCurrent();
         if (current == NULL || !current->isInMainPhase())
             return QList<SkillInvokeDetail>();
-        
+
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
         if (move.reason.m_extraData.value<ServerPlayer *>() != NULL)

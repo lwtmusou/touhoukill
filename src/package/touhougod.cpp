@@ -1113,7 +1113,7 @@ public:
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player && player->hasSkill(this)) {
                 int initHp = player->getHp();
-                room->setPlayerProperty(player, "renhp", initHp);//player->getMaxHp()
+                room->setPlayerProperty(player, "renhp", initHp); //player->getMaxHp()
                 room->setPlayerProperty(player, "linghp", initHp); //player->getMaxHp()
             }
         }
@@ -2610,7 +2610,7 @@ public:
                 const Card *card = Sanguosha->getCard(id);
                 // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!! // && card->isAvailable(player)
                 if (Sanguosha->matchExpPattern(pattern, player, card) && !player->isCardLimited(card, Card::MethodUse)) {
-                    foreach(ServerPlayer *t, room->getAlivePlayers()) {
+                    foreach (ServerPlayer *t, room->getAlivePlayers()) {
                         if (card->targetFilter(QList<const Player *>(), t, player) && !player->isProhibited(t, card)) {
                             canUse = true;
                             break;
@@ -2634,7 +2634,7 @@ public:
                         const Card *card = Sanguosha->getCard(id);
                         // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!!
                         if (Sanguosha->matchExpPattern(pattern, player, card) && !player->isCardLimited(card, Card::MethodUse)) {
-                            foreach(ServerPlayer *t, room->getAlivePlayers()) {
+                            foreach (ServerPlayer *t, room->getAlivePlayers()) {
                                 if (card->targetFilter(QList<const Player *>(), t, player) && !player->isProhibited(t, card)) {
                                     useCard = card;
                                     target = t;
@@ -2728,7 +2728,7 @@ public:
         bool game_start = false;
         const General *toGeneral = Sanguosha->getGeneral(to_general);
         if (toGeneral != NULL) {
-            foreach(const Skill *skill, toGeneral->getSkillList()) {
+            foreach (const Skill *skill, toGeneral->getSkillList()) {
                 if (skill->isLordSkill() && !source->isLord())
                     continue;
                 if (skill->inherits("TriggerSkill")) {
@@ -2758,8 +2758,7 @@ public:
                 if (fromGeneral->hasSkill("huanmeng")) {
                     maxHp = toGeneral->getMaxHp();
                     hp = toGeneral->getMaxHp();
-                }
-                else {
+                } else {
                     int maxHpMinus = toGeneral->getMaxHp() - fromGeneral->getMaxHp();
                     hp += maxHpMinus;
                     maxHp += maxHpMinus;
@@ -2789,7 +2788,7 @@ public:
                     if (source->isDead())
                         return;
                 }
-               
+
                 /*if (source->getMaxHp() < source->dyingThreshold()) {
                     room->killPlayer(source);
                     return;
@@ -2799,14 +2798,12 @@ public:
                     if (source->isDead())
                         return;
                 }*/
-            }
-            else {
+            } else {
                 source->setMaxHp(0);
                 source->setHp(0);
                 room->broadcastProperty(source, "maxhp");
                 room->broadcastProperty(source, "hp");
             }
-
 
             QString kingdom = toGeneral->getKingdom();
             if (kingdom == "zhu" || kingdom == "touhougod") {
@@ -2824,11 +2821,10 @@ public:
         //remove piles and marks
         QList<int> idlist;
         if (fromGeneral != NULL) {
-            foreach(const Skill *skill, fromGeneral->getSkillList()) {
+            foreach (const Skill *skill, fromGeneral->getSkillList()) {
                 QString mark = skill->getRelatedMark();
                 if (mark != NULL)
                     source->loseAllMarks(mark);
-
 
                 QString pile = skill->getRelatedPileName();
                 if (pile != NULL)
@@ -3909,11 +3905,9 @@ public:
         QList<ServerPlayer *> satoris;
         int fromHP = use.from->getLostHp() + 1;
         int toHP = use.to.first()->getLostHp() + 1;
-        if (use.from->isAlive() && use.from->hasSkill(this) && use.to.first()->getCards("h").length() > 0
-                && (use.to.first()->getShownHandcards().length() < fromHP))
+        if (use.from->isAlive() && use.from->hasSkill(this) && use.to.first()->getCards("h").length() > 0 && (use.to.first()->getShownHandcards().length() < fromHP))
             satoris << use.from;
-        else if (use.to.first()->isAlive() && use.to.first()->hasSkill(this) && use.from->getCards("h").length() > 0
-                &&  use.from->getShownHandcards().length() < toHP)
+        else if (use.to.first()->isAlive() && use.to.first()->hasSkill(this) && use.from->getCards("h").length() > 0 && use.from->getShownHandcards().length() < toHP)
             satoris << use.to.first();
 
         use.from->getRoom()->sortByActionOrder(satoris);
@@ -5232,16 +5226,14 @@ public:
         int maxhp = invoke->invoker->tag["init_MaxHp"].toInt();
         room->setPlayerProperty(invoke->invoker, "maxhp", maxhp);
 
-
         //remove piles and marks
         const General *fromGeneral = Sanguosha->getGeneral(name);
         QList<int> idlist;
         if (fromGeneral != NULL) {
-            foreach(const Skill *skill, fromGeneral->getSkillList()) {
+            foreach (const Skill *skill, fromGeneral->getSkillList()) {
                 QString mark = skill->getRelatedMark();
                 if (mark != NULL)
                     invoke->invoker->loseAllMarks(mark);
-
 
                 QString pile = skill->getRelatedPileName();
                 if (pile != NULL)
@@ -6009,8 +6001,6 @@ public:
     }
 };
 
-
-
 WenyueCard::WenyueCard()
 {
     will_throw = false;
@@ -6021,7 +6011,7 @@ bool WenyueCard::targetFilter(const QList<const Player *> &targets, const Player
     if (to_select->hasFlag("Global_wenyueFailed"))
         return false;
     if (targets.length() == 0) {
-        foreach(int id, subcards) {
+        foreach (int id, subcards) {
             if (Sanguosha->getCard(id)->getTypeId() == Card::TypeEquip) {
                 const EquipCard *equip = qobject_cast<const EquipCard *>(Sanguosha->getCard(id)->getRealCard());
                 if (!to_select->getEquip(equip->location()))
@@ -6032,11 +6022,10 @@ bool WenyueCard::targetFilter(const QList<const Player *> &targets, const Player
     return false;
 }
 
-
 void WenyueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     int throw_id, card_id;
-    foreach(int id, subcards) {
+    foreach (int id, subcards) {
         if (Sanguosha->getCard(id)->getTypeId() == Card::TypeEquip)
             card_id = id;
         else
@@ -6047,23 +6036,22 @@ void WenyueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     room->throwCard(&dummy, source, source);
     const Card *card = Sanguosha->getCard(card_id);
     //if (room->getCardPlace(card_id) != Player::PlaceEquip) {
-        LogMessage zhijian;
-        zhijian.type = "$ZhijianEquip";
-        zhijian.from = targets.first();
-        zhijian.card_str = QString::number(card_id);
-        room->sendLog(zhijian);
+    LogMessage zhijian;
+    zhijian.type = "$ZhijianEquip";
+    zhijian.from = targets.first();
+    zhijian.card_str = QString::number(card_id);
+    room->sendLog(zhijian);
     //}
     room->moveCardTo(card, source, targets.first(), Player::PlaceEquip, CardMoveReason(CardMoveReason::S_REASON_TRANSFER, source->objectName(), "qianqiang", QString()));
 
     //deal skill qianqiang or xianji;
     if (source->getGeneralName().startsWith("alice")) {
-        
         QList<ServerPlayer *> skill_targets;
         ServerPlayer *owner = source->tag["wenyueOwner"].value<ServerPlayer *>();
-        if (owner->isAlive()  && (!owner->hasSkill("qianqiang") || !owner->hasSkill("xianji")))
+        if (owner->isAlive() && (!owner->hasSkill("qianqiang") || !owner->hasSkill("xianji")))
             skill_targets << owner;
-        
-        if (targets.first()->isAlive() &&  (!targets.first()->hasSkill("qianqiang") || !targets.first()->hasSkill("xianji")))
+
+        if (targets.first()->isAlive() && (!targets.first()->hasSkill("qianqiang") || !targets.first()->hasSkill("xianji")))
             skill_targets << targets.first();
         if (skill_targets.isEmpty())
             return;
@@ -6078,7 +6066,7 @@ void WenyueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
 
             source->tag["wenyue_obtainer"] = QVariant::fromValue(obtainer);
             QString skillname = room->askForChoice(source, "wenyue", select.join("+"), QVariant::fromValue(obtainer));
-            foreach(ServerPlayer *p, room->getOtherPlayers(obtainer)) {
+            foreach (ServerPlayer *p, room->getOtherPlayers(obtainer)) {
                 if (p->hasSkill(skillname, false, false)) {
                     room->handleAcquireDetachSkills(p, "-" + skillname);
                     break;
@@ -6086,7 +6074,6 @@ void WenyueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
             }
             room->handleAcquireDetachSkills(obtainer, skillname);
         }
-        
     }
 }
 
@@ -6104,10 +6091,8 @@ public:
     {
         QList<int> temp = Self->getPile("#wenyue_temp");
         if (selected.isEmpty()) {
-            return temp.contains(to_select->getId()) 
-                || (to_select->getTypeId() != Card::TypeEquip && !Self->isJilei(to_select));
-        }
-        else if (selected.length() == 1) {
+            return temp.contains(to_select->getId()) || (to_select->getTypeId() != Card::TypeEquip && !Self->isJilei(to_select));
+        } else if (selected.length() == 1) {
             if (temp.contains(selected.first()->getId()))
                 return to_select->getTypeId() != Card::TypeEquip && !Self->isJilei(to_select);
             else if (selected.first()->getTypeId() != Card::TypeEquip)
@@ -6122,8 +6107,7 @@ public:
             WenyueCard *card = new WenyueCard;
             card->addSubcards(cards);
             return card;
-        }
-        else
+        } else
             return NULL;
     }
 };
@@ -6138,7 +6122,8 @@ public:
         view_as_skill = new WenyueVS;
     }
 
-    static bool putToPile(Room *room, ServerPlayer *alice, QList<int> ids) {
+    static bool putToPile(Room *room, ServerPlayer *alice, QList<int> ids)
+    {
         CardsMoveStruct move;
         move.from_place = Player::DiscardPile;
         move.to = alice;
@@ -6189,47 +6174,44 @@ public:
         QList<SkillInvokeDetail> d;
         if (e == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            
-            
 
             ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
             if (move.reason.m_extraData.value<ServerPlayer *>() != NULL)
                 player = move.reason.m_extraData.value<ServerPlayer *>();
             if (player != NULL && move.to_place == Player::DiscardPile) {
                 QList<int> equip_ids;
-                foreach(int id, move.card_ids) {
+                foreach (int id, move.card_ids) {
                     if (Sanguosha->getCard(id)->getTypeId() == Card::TypeEquip && room->getCardPlace(id) == Player::DiscardPile)
-                        equip_ids << id;   
+                        equip_ids << id;
                 }
                 if (equip_ids.isEmpty())
                     return QList<SkillInvokeDetail>();
                 //if (move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE)
 
                 bool canMove = false;
-                foreach(int id, equip_ids) {
-                    const EquipCard *equip = qobject_cast<const EquipCard *>(Sanguosha->getCard(id)->getRealCard());               
-                    foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+                foreach (int id, equip_ids) {
+                    const EquipCard *equip = qobject_cast<const EquipCard *>(Sanguosha->getCard(id)->getRealCard());
+                    foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
                         if (!p->getEquip(equip->location())) {
                             canMove = true;
                             break;
                         }
-
                     }
                     if (canMove)
                         break;
                 }
 
-                foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                     if (p->canDiscard(p, "hs"))
                         d << SkillInvokeDetail(this, p, p);
                 }
             }
-        } 
-        
+        }
+
         return d;
     }
 
-    bool cost(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
@@ -6237,9 +6219,8 @@ public:
             player = move.reason.m_extraData.value<ServerPlayer *>();
 
         while (true) {
-            
             QList<int> equip_ids;
-            foreach(int id, move.card_ids) {
+            foreach (int id, move.card_ids) {
                 if (Sanguosha->getCard(id)->getTypeId() == Card::TypeEquip && room->getCardPlace(id) == Player::DiscardPile)
                     equip_ids << id;
             }
@@ -6251,7 +6232,6 @@ public:
                 return false;
             if (!putToPile(room, alice, equip_ids))
                 return false;
-            
 
             room->setPlayerFlag(player, "Global_wenyueFailed");
             alice->tag["wenyueOwner"] = QVariant::fromValue(player);
@@ -6261,14 +6241,10 @@ public:
             cleanUp(room, alice);
             if (usecard == NULL)
                 return false;
-            
         }
         return false;
     }
-
-    
 };
-
 
 QianqiangCard::QianqiangCard()
 {
@@ -6285,7 +6261,6 @@ bool QianqiangCard::targetFilter(const QList<const Player *> &targets, const Pla
     return false;
 }
 
-
 void QianqiangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     int card_id = subcards.first();
@@ -6299,8 +6274,6 @@ void QianqiangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> 
     }
     room->moveCardTo(card, source, targets.first(), Player::PlaceEquip, CardMoveReason(CardMoveReason::S_REASON_TRANSFER, source->objectName(), "qianqiang", QString()));
 
-        
-    
     Slash *slash = new Slash(Card::NoSuit, 0);
     slash->setSkillName("_qianqiang");
     room->useCard(CardUseStruct(slash, source, targets.first()), true);
@@ -6318,7 +6291,7 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return  !player->hasUsed("QianqiangCard");
+        return !player->hasUsed("QianqiangCard");
     }
 
     virtual const Card *viewAs(const Card *originalCard) const
@@ -6327,12 +6300,10 @@ public:
             QianqiangCard *card = new QianqiangCard;
             card->addSubcard(originalCard);
             return card;
-        }
-        else
+        } else
             return NULL;
     }
 };
-
 
 class Xianji : public TriggerSkill
 {
@@ -6349,17 +6320,17 @@ public:
         if (!who->hasSkill(this) || who->getHp() >= who->dyingThreshold())
             return QList<SkillInvokeDetail>();
 
-        foreach(ServerPlayer *p, room->getOtherPlayers(who)) {
+        foreach (ServerPlayer *p, room->getOtherPlayers(who)) {
             if (!p->getEquips().isEmpty())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, who, who);
-        }           
+        }
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         QList<ServerPlayer *> targets;
-        foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+        foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
             if (!p->getEquips().isEmpty())
                 targets << p;
         }
@@ -6378,8 +6349,7 @@ public:
         QString choice = room->askForChoice(invoke->invoker, objectName(), "loseHP+recoverHP");
         if (choice == "loseHP") {
             room->loseHp(invoke->targets.first(), num);
-        }
-        else {
+        } else {
             RecoverStruct recover;
             recover.who = invoke->invoker;
             recover.recover = num;
@@ -6388,8 +6358,6 @@ public:
         return false;
     }
 };
-
-
 
 TouhouGodPackage::TouhouGodPackage()
     : Package("touhougod")

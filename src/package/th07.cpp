@@ -2578,7 +2578,7 @@ public:
         if (move.to_place != Player::DiscardPile)
             return QList<SkillInvokeDetail>();
         ServerPlayer *current = room->getCurrent();
-        if (current == NULL || current->isDead()  || !current->isInMainPhase() ||  current->getPhase() == Player::Discard || !current->isWounded())
+        if (current == NULL || current->isDead() || !current->isInMainPhase() || current->getPhase() == Player::Discard || !current->isWounded())
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
@@ -2627,8 +2627,7 @@ public:
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {    
-        
+    {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.to_place != Player::DiscardPile)
             return QList<SkillInvokeDetail>();
@@ -2638,7 +2637,7 @@ public:
             return QList<SkillInvokeDetail>();
 
         ServerPlayer *current = room->getCurrent();
-        if (current == NULL || current->isDead() || !current->isCurrent() || !current->isInMainPhase()  || current->getPhase() == Player::Discard)
+        if (current == NULL || current->isDead() || !current->isCurrent() || !current->isInMainPhase() || current->getPhase() == Player::Discard)
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;

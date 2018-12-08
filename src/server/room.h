@@ -321,8 +321,10 @@ public:
     void throwCard(const Card *card, const CardMoveReason &reason, ServerPlayer *who, ServerPlayer *thrower = NULL, bool notifyLog = true);
 
     void moveCardTo(const Card *card, ServerPlayer *dstPlayer, Player::Place dstPlace, bool forceMoveVisible = false, QList<int> inherit_shown_ids = QList<int>());
-    void moveCardTo(const Card *card, ServerPlayer *dstPlayer, Player::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible = false, QList<int> inherit_shown_ids = QList<int>());
-    void moveCardTo(const Card *card, ServerPlayer *srcPlayer, ServerPlayer *dstPlayer, Player::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible = false, QList<int> inherit_shown_ids = QList<int>());
+    void moveCardTo(const Card *card, ServerPlayer *dstPlayer, Player::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible = false,
+                    QList<int> inherit_shown_ids = QList<int>());
+    void moveCardTo(const Card *card, ServerPlayer *srcPlayer, ServerPlayer *dstPlayer, Player::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible = false,
+                    QList<int> inherit_shown_ids = QList<int>());
     void moveCardTo(const Card *card, ServerPlayer *srcPlayer, ServerPlayer *dstPlayer, Player::Place dstPlace, const QString &pileName, const CardMoveReason &reason,
                     bool forceMoveVisible = false, QList<int> inherit_shown_ids = QList<int>());
     void moveCardsAtomic(QList<CardsMoveStruct> cards_move, bool forceMoveVisible);

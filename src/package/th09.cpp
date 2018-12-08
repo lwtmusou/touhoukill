@@ -1430,8 +1430,8 @@ public:
                 return QList<SkillInvokeDetail>();
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *playerFrom = qobject_cast<ServerPlayer *>(move.from);
-            if (playerFrom != NULL && playerFrom->isAlive() && playerFrom->hasSkill("nengwu") && move.from_places.contains(Player::PlaceHand)
-                && !playerFrom->isCurrent() && !Nengwu::nengwuTargets(playerFrom, false, triggerEvent).isEmpty()) {
+            if (playerFrom != NULL && playerFrom->isAlive() && playerFrom->hasSkill("nengwu") && move.from_places.contains(Player::PlaceHand) && !playerFrom->isCurrent()
+                && !Nengwu::nengwuTargets(playerFrom, false, triggerEvent).isEmpty()) {
                 d << SkillInvokeDetail(this, playerFrom, playerFrom);
             }
         }

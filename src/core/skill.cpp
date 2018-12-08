@@ -14,7 +14,7 @@ Skill::Skill(const QString &name, Frequency frequency, const QString &showType)
     , limit_mark(QString())
     , attached_lord_skill(false)
     , show_type(showType)
-    ,related_mark(QString())
+    , related_mark(QString())
     , related_pile(QString())
 {
     static QChar lord_symbol('$');

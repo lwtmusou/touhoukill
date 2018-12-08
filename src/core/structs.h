@@ -35,7 +35,7 @@ struct DamageStruct
     bool by_user;
     QString reason;
     bool trigger_chain;
-    QString trigger_info;//keep addtion info while record. since this damage event may be triggered lately by insertion of new damage event.
+    QString trigger_info; //keep addtion info while record. since this damage event may be triggered lately by insertion of new damage event.
 
     QString getReason() const;
 };

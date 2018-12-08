@@ -275,8 +275,6 @@ bool SuperPeach::isAvailable(const Player *player) const
     return false;
 }
 
-
-
 class GunSkill : public WeaponSkill
 {
 public:
@@ -395,7 +393,6 @@ Pillar::Pillar(Suit suit, int number)
     setObjectName("Pillar");
 }
 
-
 class HakkeroSkill : public WeaponSkill
 {
 public:
@@ -404,7 +401,7 @@ public:
     {
         events << SlashMissed;
     }
-    
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
@@ -415,23 +412,23 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        int damage_value = 1 +  effect.drank + effect.effectValue.last();
+        int damage_value = 1 + effect.drank + effect.effectValue.last();
 
         QStringList damage_flags;
-        damage_flags << "jidu_card" << "mofa_card" << "yuxueSlash";
-        foreach(const QString &flag, effect.slash->getFlags())
+        damage_flags << "jidu_card"
+                     << "mofa_card"
+                     << "yuxueSlash";
+        foreach (const QString &flag, effect.slash->getFlags())
             if (damage_flags.contains(flag))
                 damage_value++;
 
         DummyCard *dummy = new DummyCard;
         int card_id = -1;
         QList<int> ids, disable;
-        foreach(const Card *c, effect.to->getCards("hes")) {
+        foreach (const Card *c, effect.to->getCards("hes")) {
             if (!effect.from->canDiscard(effect.to, c->getEffectiveId()))
                 disable << c->getEffectiveId();
         }
@@ -539,7 +536,7 @@ public:
             return false;
         if (player->hasFlag("Pagoda_used"))
             return false;
-        
+
         return pattern == response_pattern;
     }
 
@@ -590,10 +587,9 @@ public:
         } else if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
-                foreach(ServerPlayer *p, room->getAllPlayers())
+                foreach (ServerPlayer *p, room->getAllPlayers())
                     room->setPlayerFlag(p, "-Pagoda_used");
             }
-
         }
     }
 
@@ -715,7 +711,6 @@ Camouflage::Camouflage(Suit suit, int number)
     setObjectName("Camouflage");
 }
 
-
 class HagoromoSkill : public ArmorSkill
 {
 public:
@@ -731,7 +726,7 @@ public:
         ServerPlayer *current = room->getCurrent();
         if (!current || current->isDead() || current->isChained())
             return QList<SkillInvokeDetail>();
-        
+
         CardAskedStruct ask = data.value<CardAskedStruct>();
         if (!matchAvaliablePattern("jink", ask.pattern))
             return QList<SkillInvokeDetail>();
@@ -740,15 +735,14 @@ public:
         if (equipAvailable(player, EquipCard::ArmorLocation, objectName()) && player->getArmor() && player->getArmor()->objectName() == objectName()) {
             Card *jink = Sanguosha->cloneCard("chain_jink");
             DELETE_OVER_SCOPE(Card, jink)
-                if (player->isCardLimited(jink, ask.method))
-                    return QList<SkillInvokeDetail>();
+            if (player->isCardLimited(jink, ask.method))
+                return QList<SkillInvokeDetail>();
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-        
         }
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         room->setEmotion(invoke->invoker, "armor/hagoromo");
         int id = invoke->invoker->getArmor()->getEffectiveId();
@@ -766,7 +760,6 @@ Hagoromo::Hagoromo(Suit suit, int number)
 {
     setObjectName("Hagoromo");
 }
-
 
 AwaitExhausted::AwaitExhausted(Card::Suit suit, int number)
     : SingleTargetTrick(suit, number)
@@ -1058,7 +1051,6 @@ SpringBreath::SpringBreath(Suit suit, int number)
     judge.reason = objectName();
 }
 
-
 QString SpringBreath::getSubtype() const
 {
     return "unmovable_delayed_trick";
@@ -1075,8 +1067,6 @@ void SpringBreath::takeEffect(ServerPlayer *target) const
 {
     target->drawCards(6);
 }
-
-
 
 TestCardPackage::TestCardPackage()
     : Package("test_card", Package::CardPack)
@@ -1140,8 +1130,8 @@ TestCardPackage::TestCardPackage()
     foreach (Card *card, cards)
         card->setParent(this);
 
-    skills << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill << new PagodaSkill << new PagodaTriggerSkill << new CamouflageSkill
-           << new FightTogetherSkill << new PillarSkill << new HakkeroSkill << new HagoromoSkill;
+    skills << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill << new PagodaSkill << new PagodaTriggerSkill << new CamouflageSkill << new FightTogetherSkill
+           << new PillarSkill << new HakkeroSkill << new HagoromoSkill;
 }
 
 ADD_PACKAGE(TestCard)

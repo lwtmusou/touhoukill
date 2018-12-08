@@ -535,11 +535,10 @@ public:
             if (!current || current->getPhase() != Player::Discard || current->getCards("h").isEmpty())
                 return d;
 
-            foreach(ServerPlayer *src, room->findPlayersBySkillName(objectName())) {
+            foreach (ServerPlayer *src, room->findPlayersBySkillName(objectName())) {
                 if (src != current)
                     d << SkillInvokeDetail(this, src, src, NULL, false, current);
             }
-            
         }
         return d;
     }
@@ -564,8 +563,6 @@ public:
         return false;
     }
 };
-
-
 
 class Canxiang : public TriggerSkill
 {
