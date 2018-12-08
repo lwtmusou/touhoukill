@@ -123,32 +123,26 @@ function fengmoBenefit(self, target)
 	return not target:isCurrent() and self.player:getMaxHp() > target:getHandcardNum() and self:isFriend(target)
 end
 
-sgs.ai_skill_playerchosen.fengmo = function(self, targets)
+sgs.ai_skill_cardask["@fengmo"] = function(self, data)
 	if not self:invokeTouhouJudge() then return nil end
-
+    local target = self.player:getTag("fengmo_target"):toPlayer()
 	local current = self.room:getCurrent()
 	if not current then return nil end
+	
+	if self:isEnemy(current) and self:getOverflow(current, true) > 0 then
+		local cards={}
+		for _,card in pairs(self,player:getCards("hs")) do
+			if card:getSuit() ~=sgs.Card_Heart then
+				table.insert(cards, card)
+			end
+		end
+		local judge = data:toJudge()
 
-	if targets:contains(current) then
-		if self:isEnemy(current) then
-			return current
-		else
-			for _,t in sgs.qlist(targets) do
-				if fengmoBenefit(self, t) then
-					return t
-				end
-			end
-		end
-	else
-		if (current:isFriend() and current:getHandcardNum() > current:getMaxCards()) then
-			for _,t in sgs.qlist(targets) do
-				if self:isEnemy(t) then
-					return target
-				end
-			end
-		end
+		if #cards ==0 then return "." end
+		return "$" .. cards[1]:getId()
 	end
-	return nil
+	return "."
+	
 end
 
 

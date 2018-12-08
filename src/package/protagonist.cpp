@@ -70,15 +70,13 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         JudgeStruct *judge = data.value<JudgeStruct *>();
-        if (!judge->who || !judge->who->isAlive())
+        if (!judge->who || !judge->who->isAlive() || judge->card->isBlack())
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
         QList<ServerPlayer *> reimus = room->findPlayersBySkillName(objectName());
-        foreach (ServerPlayer *reimu, reimus) {
-            if (judge->who->getHandcardNum() < reimu->getMaxHp())
+        foreach (ServerPlayer *reimu, reimus)
                 d << SkillInvokeDetail(this, reimu, reimu, NULL, false, judge->who);
-        }
         return d;
     }
 
@@ -94,7 +92,8 @@ public:
     {
         JudgeStruct *judge = data.value<JudgeStruct *>();
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), judge->who->objectName());
-        judge->who->drawCards(1);
+        //judge->who->drawCards(1);
+        room->recover(judge->who, RecoverStruct());
         return false;
     }
 };
@@ -105,25 +104,12 @@ public:
     Fengmo()
         : TriggerSkill("fengmo")
     {
-        events << CardResponded << CardUsed << EventPhaseChanging;
-    }
-
-    void record(TriggerEvent e, Room *room, QVariant &) const
-    {
-        if (e == EventPhaseChanging) {
-            foreach (ServerPlayer *p, room->getAllPlayers()) {
-                room->setPlayerFlag(p, "-fengmo_used");
-            }
-        }
+        events << CardResponded << CardUsed;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
         QList<SkillInvokeDetail> d;
-        ServerPlayer *current = room->getCurrent();
-        if (current == NULL || !current->isInMainPhase())
-            return d;
-
 
         ServerPlayer *player = NULL;
         const Card *card = NULL;
@@ -136,36 +122,56 @@ public:
             if (response.m_isUse)
                 card = response.m_card;
         }
-        if (player && card && (card->isKindOf("Jink") || card->isKindOf("Nullification"))) {
-            foreach (ServerPlayer *reimu, room->findPlayersBySkillName(objectName())) {
-                if (!reimu->hasFlag("fengmo_used"))
+        if (player && !player->isCurrent() && card && (card->isKindOf("Jink") || card->isKindOf("Nullification"))) {
+            foreach (ServerPlayer *reimu, room->findPlayersBySkillName(objectName()))
                     d << SkillInvokeDetail(this, reimu, reimu, NULL, false, player);
-            }
         }
         return d;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getAlivePlayers(), objectName(), "@fengmo-target", true, true);
-        if (target)
-            invoke->targets << target;
-        return target != NULL;
+        invoke->invoker->tag["fengmo_target"] = QVariant::fromValue(invoke->preferredTarget);
+        const Card *card = room->askForCard(invoke->invoker, ".|.|.|hand", "@fengmo", data, Card::MethodDiscard, NULL, false, objectName());
+        if (card)
+            invoke->tag["fengmo"] = QVariant::fromValue(card);
+        return card != NULL;
     }
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        room->setPlayerFlag(invoke->invoker, "fengmo_used");
+        
+        const Card *card = invoke->tag.value("fengmo").value<const Card *>();
         JudgeStruct judge;
         judge.reason = objectName();
         judge.who = invoke->targets.first();
         judge.good = true;
-        judge.pattern = ".|red";
+        //judge.pattern = ".|red";
+        judge.play_animation = false;
+        
+
+        ServerPlayer *target = invoke->preferredTarget;
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
         room->judge(judge);
 
-        ServerPlayer *target = invoke->targets.first();
-        if (judge.isGood()) {
-            room->setPlayerMark(target, "@fengmo_SingleTurn", 1);
-            room->setPlayerCardLimitation(target, "use,response", ".|^heart", objectName(), true);
+
+        ServerPlayer *current = room->getCurrent();
+
+        if (judge.card->getSuit() != card->getSuit() && current && current->isAlive()) {
+            QStringList select;
+            select << "card";
+            if (target && target->isAlive())
+                select << "damage";
+
+            QString choice = room->askForChoice(current, objectName(), select.join("+"));
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), current->objectName());
+            if (choice == "card") {
+                room->setPlayerMark(current, "@fengmo_SingleTurn", 1);
+                room->setPlayerCardLimitation(current, "use,response", ".|^heart", objectName(), true);
+            }
+            else {
+                room->damage(DamageStruct(objectName(), target, current, 1, DamageStruct::Normal));
+            }
+            
         }
         return false;
     }
