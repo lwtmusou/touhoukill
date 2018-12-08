@@ -5763,6 +5763,7 @@ void WenyueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
             if (!obtainer->hasSkill("xianji"))
                 select << "xianji";
 
+            source->tag["wenyue_obtainer"] = QVariant::fromValue(obtainer);
             QString skillname = room->askForChoice(source, "wenyue", select.join("+"), QVariant::fromValue(obtainer));
             foreach(ServerPlayer *p, room->getOtherPlayers(obtainer)) {
                 if (p->hasSkill(skillname, false, false)) {
@@ -5941,6 +5942,8 @@ public:
 
             room->setPlayerFlag(player, "Global_wenyueFailed");
             alice->tag["wenyueOwner"] = QVariant::fromValue(player);
+            QVariantList listc = IntList2VariantList(equip_ids);
+            invoke->invoker->tag["wenyue_cards"] = listc;
             const Card *usecard = room->askForUseCard(alice, "@@wenyue", "@wenyue");
             cleanUp(room, alice);
             if (usecard == NULL)
@@ -6058,6 +6061,7 @@ public:
         room->killPlayer(invoke->invoker);
         int num = invoke->targets.first()->getEquips().length();
 
+        invoke->invoker->tag["xianji_target"] = QVariant::fromValue(invoke->targets.first());
         QString choice = room->askForChoice(invoke->invoker, objectName(), "loseHP+recoverHP");
         if (choice == "loseHP") {
             room->loseHp(invoke->targets.first(), num);

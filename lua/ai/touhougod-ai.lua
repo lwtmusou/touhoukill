@@ -1563,3 +1563,153 @@ sgs.ai_skill_use_func.RumoCard=function(card,use,self)
 		end
 	end
 end
+
+
+sgs.ai_skill_use["@@wenyue"] = function(self, prompt)
+	local cards = {}
+	for _,c  in sgs.qlist(self.player:getCards("hs")) do
+		if not c:isKindOf("EquipCard") then
+			table.insert(cards, c)
+		end
+	end
+	if #cards == 0 then return "." end
+	
+	
+	local tmp = self.player:getTag("wenyue_cards"):toIntList()
+	--self.player:getPile("#wenyue_temp")
+	local target
+	local ids = {}
+	for _,p in pairs(self.friends) do
+		if not p:hasFlag("Global_wenyueFailed") then	
+			for _,id  in sgs.qlist(tmp) do
+				local equip = sgs.Sanguosha:getCard(id):getRealCard():toEquipCard()
+				if  not p:getEquip(equip:location()) then
+					target = p
+					table.insert(ids, id)
+					break
+				end	
+			end
+		end
+	end
+
+	if not target then return "." end
+
+	self:sortByUseValue(cards)
+	table.insert(ids, cards[1]:getId()) 
+	return "@WenyueCard=".. table.concat(ids, "+") .."->" .. target:objectName()
+end
+
+sgs.ai_skill_playerchosen.wenyue = function(self, targets)
+	for _,p  in sgs.qlist(targets) do
+		if self:isFriend(p) and not p:hasSkills("qianqiang|xianji") then
+			return p
+		end
+	end
+	return nil
+end
+
+sgs.ai_skill_choice.wenyue = function(self, choices, data)
+	local target = self.player:getTag("wenyue_obtainer"):toPlayer()
+	if self:isWeak(target) and choices:match("xianji") then
+		return "xianji"
+	end
+	if choices:match("qianqiang") then
+		return "qianqiang"
+	end
+	return choices:first()
+end
+sgs.ai_playerchosen_intention.wenyue = -20
+
+
+local qianqiang_skill = {}
+qianqiang_skill.name = "qianqiang"
+table.insert(sgs.ai_skills, qianqiang_skill)
+qianqiang_skill.getTurnUseCard = function(self)
+	if self.player:hasUsed("QianqiangCard") then return nil end
+	if #self.enemies==0 then return nil end
+	self:sort(self.enemies, "hp")
+
+	local card
+	for _,p in pairs(self.enemies) do
+		for _,c  in sgs.qlist(self.player:getCards("hes")) do
+		    if c:isKindOf("EquipCard") and not c:isKindOf("Armor") then
+				local equip = c:getRealCard():toEquipCard()
+				if  not p:getEquip(equip:location()) then
+					card = c
+					break
+				end
+			end
+		end
+	end
+	if not card then return nil end
+	return sgs.Card_Parse("@QianqiangCard="..card:getEffectiveId())
+end
+sgs.ai_skill_use_func.QianqiangCard = function(card, use, self)
+	local target
+	for _,p in pairs (self.enemies) do
+		local card = sgs.Sanguosha:getCard(card:getEffectiveId())
+		local equip = card:getRealCard():toEquipCard()
+		if not p:getEquip(equip:location()) then
+			target = p
+			break
+		end
+	end
+	
+	if target then
+		use.card = card
+		if use.to then
+			use.to:append(target)
+			if use.to:length() >= 1 then return end
+		end
+	end
+end
+
+--爱丽丝文乐捞回来的数量
+local function xianji_num(self, alice, p)
+	local self_num = 0
+	for _,c  in sgs.qlist(self.player:getCards("hes")) do
+		if c:isKindOf("EquipCard")then
+			local equip = c:getRealCard():toEquipCard()
+			if  not p:getEquip(equip:location()) then
+				self_num = self_num + 1
+				if self_num >= alice:getHandcardNum() then break end
+			end
+		end			
+	end
+	return self_num 
+end
+sgs.ai_skill_playerchosen.xianji = function(self, targets)
+	local can_save = self:getAllPeachNum(self.player)+ self:getCardsNum("Analeptic")+self.player:getHp() >= 1
+	if can_save then return nil end
+	
+	local alice = self.room:findPlayerBySkillName("wenyue")
+	self:sort(self.enemies, "hp")
+	for _,p  in pairs(self.enemies) do
+		local target_num = p:getEquips():length()
+		local self_num = 0
+        if alice and not alice:isKongcheng() 
+			and alice:objectName() ~= self.player:objectName() and self:isFriend(alice) then
+			self_num = xianji_num(self, alice, p)
+		end
+		local num = math.min(5, target_num + self_num)
+		
+		if num > 4 or target_num >=2 then return p end
+	end
+	
+	self:sort(self.friends_noself, "hp")
+	for _,p  in pairs(self.friends_noself) do
+		local target_num = p:getEquips():length()	
+		if target_num > 0 then return p end
+	end
+	return nil
+end
+
+sgs.ai_skill_choice.saiqian= function(self, choices, data)
+	local target = self.player:getTag("xianji_target"):toPlayer()
+	
+	if self:isFriend(target) then
+		return "recoverHP"
+	end
+	return "loseHP"
+end
+

@@ -131,7 +131,7 @@ sgs.ai_skill_cardask["@fengmo"] = function(self, data)
 	
 	if self:isEnemy(current) and self:getOverflow(current, true) > 0 then
 		local cards={}
-		for _,card in pairs(self,player:getCards("hs")) do
+		for _,card in sgs.qlist(self.player:getCards("hs")) do
 			if card:getSuit() ~=sgs.Card_Heart then
 				table.insert(cards, card)
 			end
@@ -144,6 +144,11 @@ sgs.ai_skill_cardask["@fengmo"] = function(self, data)
 	return "."
 	
 end
+
+sgs.ai_skill_choice.fengmo = function(self, choices, data)
+	return "card"
+end
+
 
 
 table.insert(sgs.ai_global_flags, "bolisource")
