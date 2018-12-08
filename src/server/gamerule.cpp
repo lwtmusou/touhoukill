@@ -619,21 +619,18 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                             DamageStruct d = DamageStruct(effect.card, effect.from, effect.to, damageValue, nature);
                             room->damage(d);
 
-                        }
-                        else if (extraCard->isKindOf("Peach")) {
+                        } else if (extraCard->isKindOf("Peach")) {
                             CardEffectStruct extraEffect;
                             extraCard->addSubcards(effect.card->getSubcards());
                             extraCard->deleteLater();
-                            
+
                             extraEffect.card = effect.card;
                             extraEffect.from = effect.to;
                             extraEffect.to = effect.from;
                             extraEffect.multiple = effect.multiple;
                             extraEffect.effectValue.first() = effect.effectValue.first();
                             extraCard->onEffect(extraEffect);
-                        }
-                        else if (extraCard->isKindOf("Analeptic"))
-                        {
+                        } else if (extraCard->isKindOf("Analeptic")) {
                             RecoverStruct recover;
                             recover.card = effect.card;
                             recover.who = effect.from;
@@ -643,9 +640,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                         //xianshi_extra effect will use magic_drank(first effect)
                         if (effect.effectValue.first() > 0)
                             effect.effectValue.first() = 0;
-                    
-                    }
-                    else if (effect.card->isKindOf("Peach") || effect.card->isKindOf("Analeptic")) {
+
+                    } else if (effect.card->isKindOf("Peach") || effect.card->isKindOf("Analeptic")) {
                         CardEffectStruct extraEffect;
                         extraCard->addSubcards(effect.card->getSubcards());
                         extraCard->deleteLater();
@@ -654,10 +650,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                         extraEffect.to = effect.to;
                         extraEffect.multiple = effect.multiple;
                         extraCard->onEffect(extraEffect);
-                    
                     }
 
-                    
                     effect.card->onEffect(effect);
                 } else
                     effect.card->onEffect(effect);
@@ -731,7 +725,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         JinkEffectStruct j = data.value<JinkEffectStruct>();
         if (j.jink != NULL && j.jink->getSkillName() == "xianshi") {
             SlashEffectStruct effect = j.slashEffect;
-            
+
             QString xianshi_name = effect.to->property("xianshi_card").toString();
             if (xianshi_name != NULL && effect.from && effect.to && effect.from->isAlive() && effect.to->isAlive()) {
                 CardEffectStruct extraEffect;
