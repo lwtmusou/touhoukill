@@ -143,7 +143,7 @@ public:
         const Card *card = invoke->tag.value("fengmo").value<const Card *>();
         JudgeStruct judge;
         judge.reason = objectName();
-        judge.who = invoke->targets.first();
+        judge.who = invoke->invoker;// invoke->targets.first();
         judge.good = true;
         //judge.pattern = ".|red";
         judge.play_animation = false;

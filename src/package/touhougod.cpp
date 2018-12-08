@@ -5453,6 +5453,188 @@ public:
     }
 };
 
+
+XianshiDialog *XianshiDialog::getInstance(const QString &object, bool left, bool right)
+{
+    static QPointer<XianshiDialog> instance;
+
+    if (!instance.isNull() && instance->objectName() != object)
+        delete instance;
+
+    if (instance.isNull()) {
+        instance = new XianshiDialog(object, left, right);
+        connect(qApp, &QCoreApplication::aboutToQuit, instance.data(), &XianshiDialog::deleteLater);
+    }
+
+    return instance;
+}
+
+XianshiDialog::XianshiDialog(const QString &object, bool left, bool right)
+    : object_name(object)
+{
+    setObjectName(object);
+    setWindowTitle(Sanguosha->translate(object)); //need translate title?
+    group = new QButtonGroup(this);
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    if (left)
+        layout->addWidget(createLeft());
+    if (right)
+        layout->addWidget(createRight());
+    setLayout(layout);
+
+    connect(group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(selectCard(QAbstractButton *)));
+}
+
+void XianshiDialog::popup()
+{
+    Card::HandlingMethod method;
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+        method = Card::MethodResponse;
+    else
+        method = Card::MethodUse;
+
+    QStringList checkedPatterns;
+    QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+    bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    QString xianshi_record = Self->property("xianshi_record").toString();
+
+    if (play)
+        checkedPatterns = xianshi_record.split("+");
+    else {
+        const Skill *skill = Sanguosha->getSkill(object_name);
+        QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+        bool basic_pattern = false;
+        bool trick_pattern = false;
+        foreach(const Card *card, cards) {
+            if (card->isKindOf("BasicCard") && !basic_pattern && skill->matchAvaliablePattern(card->objectName(), pattern))
+                basic_pattern = true;
+            else if (card->isKindOf("TrickCard") && !trick_pattern && skill->matchAvaliablePattern(card->objectName(), pattern))
+                trick_pattern = true;
+            if (trick_pattern && basic_pattern)
+                break;
+        }
+        foreach(QString name, xianshi_record.split("+")) {
+            if (skill->matchAvaliablePattern(name, "BasicCard") && trick_pattern)
+                checkedPatterns << name;
+            else if(skill->matchAvaliablePattern(name, "TrickCard") && basic_pattern)
+                checkedPatterns << name;   
+        }
+    }
+
+    
+    //while responsing, if only one pattern were checked, emit click()
+    //if (!play && checkedPatterns.length() <= 1) {
+    //    emit onButtonClick();
+    //    return;
+    //}
+
+    foreach(QAbstractButton *button, group->buttons()) {
+        const Card *card = map[button->objectName()];
+        bool enabled = checkedPatterns.contains(card->objectName());
+        
+        button->setEnabled(enabled);
+    }
+
+    Self->tag.remove(object_name);
+    exec();
+}
+
+
+void XianshiDialog::selectCard(QAbstractButton *button)
+{
+    const Card *card = map.value(button->objectName());
+    Self->tag[object_name] = QVariant::fromValue(card->objectName());
+
+    emit onButtonClick();
+    accept();
+}
+
+QGroupBox *XianshiDialog::createLeft()
+{
+    QGroupBox *box = new QGroupBox;
+    box->setTitle(Sanguosha->translate("basic"));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+    QStringList ban_list;
+
+    foreach(const Card *card, cards) {
+        if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName())
+            && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+            Card *c = Sanguosha->cloneCard(card->objectName());
+            c->setParent(this);
+            layout->addWidget(createButton(c));
+        }
+    }
+
+    layout->addStretch();
+    box->setLayout(layout);
+    return box;
+}
+
+QGroupBox *XianshiDialog::createRight()
+{
+    QGroupBox *box = new QGroupBox(Sanguosha->translate("ndtrick"));
+    QHBoxLayout *layout = new QHBoxLayout;
+
+    QGroupBox *box1 = new QGroupBox(Sanguosha->translate("single_target_trick"));
+    QVBoxLayout *layout1 = new QVBoxLayout;
+
+    QGroupBox *box2 = new QGroupBox(Sanguosha->translate("multiple_target_trick"));
+    QVBoxLayout *layout2 = new QVBoxLayout;
+
+    QStringList ban_list; //no need to ban
+
+    QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+    foreach(const Card *card, cards) {
+        if (card->isNDTrick() && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName()) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+            Card *c = Sanguosha->cloneCard(card->objectName());
+            c->setSkillName(object_name);
+            c->setParent(this);
+
+            QVBoxLayout *layout = c->isKindOf("SingleTargetTrick") ? layout1 : layout2;
+            layout->addWidget(createButton(c));
+        }
+    }
+
+    box->setLayout(layout);
+    box1->setLayout(layout1);
+    box2->setLayout(layout2);
+
+    layout1->addStretch();
+    layout2->addStretch();
+
+    layout->addWidget(box1);
+    layout->addWidget(box2);
+    return box;
+}
+
+QAbstractButton *XianshiDialog::createButton(const Card *card)
+{
+    if (card->objectName() == "slash" && map.contains(card->objectName()) && !map.contains("normal_slash")) {
+        QCommandLinkButton *button = new QCommandLinkButton(Sanguosha->translate("normal_slash"));
+        button->setObjectName("normal_slash");
+        button->setToolTip(card->getDescription());
+
+        map.insert("normal_slash", card);
+        group->addButton(button);
+
+        return button;
+    }
+    else {
+        QCommandLinkButton *button = new QCommandLinkButton(Sanguosha->translate(card->objectName()));
+        button->setObjectName(card->objectName());
+        button->setToolTip(card->getDescription());
+
+        map.insert(card->objectName(), card);
+        group->addButton(button);
+
+        return button;
+    }
+}
+
 XianshiCard::XianshiCard()
 {
     will_throw = false;
@@ -5460,7 +5642,6 @@ XianshiCard::XianshiCard()
 
 bool XianshiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    QString cardname = Self->property("xianshi_card").toString();
     const Card *oc = Sanguosha->getCard(subcards.first());
     Card *card = Sanguosha->cloneCard(oc->objectName());
     DELETE_OVER_SCOPE(Card, card)
@@ -5471,7 +5652,6 @@ bool XianshiCard::targetFilter(const QList<const Player *> &targets, const Playe
 
 bool XianshiCard::targetFixed() const
 {
-    QString cardname = Self->property("xianshi_card").toString();
     const Card *oc = Sanguosha->getCard(subcards.first());
     Card *card = Sanguosha->cloneCard(oc->objectName());
     DELETE_OVER_SCOPE(Card, card)
@@ -5482,7 +5662,6 @@ bool XianshiCard::targetFixed() const
 
 bool XianshiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    QString cardname = Self->property("xianshi_card").toString();
 
     const Card *oc = Sanguosha->getCard(subcards.first());
     Card *card = Sanguosha->cloneCard(oc->objectName());
@@ -5496,7 +5675,7 @@ bool XianshiCard::targetsFeasible(const QList<const Player *> &targets, const Pl
 
 const Card *XianshiCard::validate(CardUseStruct &use) const
 {
-    QString xianshi_name = use.from->property("xianshi_card").toString();
+    QString xianshi_name = user_string;  //use.from->property("xianshi_card").toString();
     use.from->showHiddenSkill("xianshi");
     const Card *card = Sanguosha->getCard(subcards.first());
     Card *use_card = Sanguosha->cloneCard(card->objectName(), card->getSuit(), card->getNumber());
@@ -5506,8 +5685,30 @@ const Card *XianshiCard::validate(CardUseStruct &use) const
     use_card->deleteLater();
     //log
     use.from->getRoom()->touhouLogmessage("#Xianshi", use.from, use_card->objectName(), QList<ServerPlayer *>(), xianshi_name);
+    //record selected effect
+    use.from->getRoom()->setPlayerProperty(use.from, "xianshi_card", xianshi_name);
     return use_card;
 }
+
+const Card *XianshiCard::validateInResponse(ServerPlayer *user) const
+{
+    Room *room = user->getRoom();
+
+    QString xianshi_name = user_string;
+    user->showHiddenSkill("xianshi");
+
+    const Card *card = Sanguosha->getCard(subcards.first());
+    Card *use_card = Sanguosha->cloneCard(card->objectName(), card->getSuit(), card->getNumber());
+    use_card->setSkillName("xianshi");
+    use_card->addSubcard(subcards.first());
+    use_card->deleteLater();
+    //log
+    room->touhouLogmessage("#Xianshi", user, use_card->objectName(), QList<ServerPlayer *>(), xianshi_name);
+    //record selected effect
+    room->setPlayerProperty(user, "xianshi_card", xianshi_name);
+    return use_card;
+}
+
 
 class XianshiVS : public OneCardViewAsSkill
 {
@@ -5520,37 +5721,119 @@ public:
 
     virtual bool viewFilter(const Card *c) const
     {
-        QString cardname = Self->property("xianshi_card").toString();
-        if (cardname.contains("slash"))
-            return c->isNDTrick() && !c->isKindOf("Nullification");
-        else
-            return c->isKindOf("Slash");
+        QString selected_effect = Self->tag.value("xianshi", QString()).toString();
+        bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+        if (play) {
+            if (matchAvaliablePattern(selected_effect, "BasicCard"))
+                return c->isNDTrick() && c->isAvailable(Self);
+            else
+                return c->isKindOf("BasicCard") && c->isAvailable(Self);
+        }
+        else {
+            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+            if (matchAvaliablePattern(selected_effect, "BasicCard"))
+                return c->isNDTrick() && matchAvaliablePattern(c->objectName(), pattern);
+            else
+                return c->isKindOf("BasicCard") && matchAvaliablePattern(c->objectName(), pattern);
+        }
+        
         return false;
+    }
+
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+            return false;
+        if (player->hasFlag("xianshi_used"))
+            return false;
+        QString xianshi_record = player->property("xianshi_record").toString();
+        if (xianshi_record == NULL)
+            return false;
+
+        QStringList checkedPatterns;
+        QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+        bool basic_pattern = false;
+        bool trick_pattern = false;
+        foreach(const Card *card, cards) {
+            if (card->isKindOf("BasicCard") && !basic_pattern && matchAvaliablePattern(card->objectName(), pattern))
+                basic_pattern = true;
+            else if (card->isKindOf("TrickCard") && !trick_pattern && matchAvaliablePattern(card->objectName(), pattern))
+                trick_pattern = true;
+            if (trick_pattern && basic_pattern)
+                break;
+        }
+
+        foreach(QString name, xianshi_record.split("+")) {
+            if (matchAvaliablePattern(name, "BasicCard") && trick_pattern)
+                return true;
+            else if (matchAvaliablePattern(name, "TrickCard") && basic_pattern)
+                return true;
+        }
+
+        return !checkedPatterns.isEmpty();
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        QString cardname = Self->property("xianshi_card").toString();
-        Card *card = Sanguosha->cloneCard(cardname);
-        if (card == NULL)
+        if (player->hasFlag("xianshi_used"))
             return false;
-        delete card;
-
-        if (!cardname.contains("slash"))
-            return Slash::IsAvailable(player);
-
+        
+        QString xianshi_record = player->property("xianshi_record").toString();
+        if (xianshi_record == NULL)
+            return false;
+       
         return true;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
         if (originalCard != NULL) {
-            XianshiCard *card = new XianshiCard;
-            card->addSubcard(originalCard);
-            return card;
+            QString name = Self->tag.value("xianshi", QString()).toString();
+            if (name != NULL) {
+                XianshiCard *card = new XianshiCard;
+                card->setUserString(name);
+                card->addSubcard(originalCard);
+                return card;
+            }
+            else
+                return NULL;
         } else
             return NULL;
     }
+
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const
+    {
+        if (player->hasFlag("xianshi_used"))
+            return false;
+        bool record = false;
+        QString xianshi_record = player->property("xianshi_record").toString();
+        if (xianshi_record == NULL)
+            return false;
+        foreach(QString name, xianshi_record.split("+")) {
+            if (matchAvaliablePattern(name, "BasicCard")) {
+                record = true;
+                break;
+            }
+        }
+        if (!record)
+            return false;
+
+        foreach(const Card *card, player->getHandcards()) {
+            if (card->objectName() == "nullification")
+                return true;
+        }
+
+        if (player->hasTreasure("wooden_ox")) {
+            foreach(int id, player->getPile("wooden_ox")) {
+                if (Sanguosha->getCard(id)->objectName() == "nullification")
+                    return true;
+            }
+        }
+        return false;
+    }
+
+ 
 };
 
 class Xianshi : public TriggerSkill
@@ -5559,30 +5842,60 @@ public:
     Xianshi()
         : TriggerSkill("xianshi")
     {
-        events << TargetConfirmed << EventPhaseChanging << PreCardUsed;
+        events << TargetSpecified << EventPhaseChanging << PreCardUsed << CardResponded;
         view_as_skill = new XianshiVS;
+    }
+
+    virtual QDialog *getDialog() const
+    {
+        return XianshiDialog::getInstance("xianshi");
     }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const
     {
-        if (e == TargetConfirmed) {
+        if (e == TargetSpecified) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.from && use.from->getPhase() == Player::Play && use.card && !use.to.isEmpty()) {
-                if (use.card->isNDTrick() || use.card->isKindOf("Slash"))
-                    room->setPlayerProperty(use.from, "xianshi_card", use.card->objectName());
-                else if (use.card->getTypeId() != Card::TypeSkill)
-                    room->setPlayerProperty(use.from, "xianshi_card", QVariant());
+                //if (use.card->isKindOf("Nullification") || use.card->isKindOf("Jink"))
+                //    return;
+                if (use.card->isNDTrick() || use.card->isKindOf("BasicCard")) {
+                    foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                        QString xianshi_record = p->property("xianshi_record").toString();
+                        QStringList cards;
+                        if (xianshi_record != NULL)
+                            cards = xianshi_record.split("+");
+                        
+                        if (!cards.contains(use.card->objectName())) {
+                            cards.append(use.card->objectName());
+                            xianshi_record = cards.join("+");
+                            room->setPlayerProperty(p, "xianshi_record", xianshi_record);
+                        }
+                    }
+                }
             }
         } else if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.from == Player::Play) {
-                room->setPlayerProperty(change.player, "xianshi_card", QVariant());
+            if (change.from == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                    room->setPlayerFlag(p, "-xianshi_used");
+                    room->setPlayerProperty(p, "xianshi_record", QString());
+                    room->setPlayerProperty(p, "xianshi_card", QString());
+                }
             }
         } else if (e == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card && use.card->getSkillName() == objectName()) {
+                room->setPlayerFlag(use.from, "xianshi_used");
                 QString cardname = use.from->property("xianshi_card").toString();
                 room->setCardFlag(use.card, "xianshi_" + cardname);
+            }
+        }
+        else if (e == CardResponded) { //only for jink with extra effect
+            CardResponseStruct response = data.value<CardResponseStruct>();
+            if (response.m_from && response.m_isUse && response.m_card && response.m_card->isKindOf("Jink") && response.m_card->getSkillName() == objectName()){
+                room->setPlayerFlag(response.m_from, "xianshi_used");
+                //QString cardname = response.m_from->property("xianshi_card").toString();
+                //room->setCardFlag(use.card, "xianshi_" + cardname);
             }
         }
     }

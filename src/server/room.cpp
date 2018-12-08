@@ -16,6 +16,7 @@
 #include "settings.h"
 #include "standard.h"
 #include "structs.h"
+#include "testCard.h"
 
 #include <QDateTime>
 #include <QDir>
@@ -30,6 +31,8 @@
 #include <QTimer>
 #include <QTimerEvent>
 #include <ctime>
+
+
 
 #ifdef QSAN_UI_LIBRARY_AVAILABLE
 #pragma message WARN("UI elements detected in server side!!!")
@@ -1145,7 +1148,79 @@ bool Room::isCanceled(const CardEffectStruct &effect)
     decisionData = QVariant::fromValue(effect.card);
     setTag("NullifyingCard", decisionData);
     setTag("NullifyingTimes", 0);
-    return askForNullification(effect.card, effect.from, effect.to, true);
+
+    bool result = askForNullification(effect.card, effect.from, effect.to, true);
+    //deal xianshi
+    foreach(ServerPlayer *p, getAlivePlayers()) {
+        ServerPlayer *target =  p->tag["xianshi_nullification_target"].value<ServerPlayer *>();
+        p->tag.remove("xianshi_nullification_target");
+        const Card *xianshi_nullification = p->tag.value("xianshi_nullification").value<const Card *>();
+        p->tag.remove("xianshi_nullification");
+
+        if (target && xianshi_nullification) {
+            int xianshi_result = p->tag["xianshi_nullification_result"].toInt();
+            p->tag.remove("xianshi_nullification_result");
+
+            if ((xianshi_result == 0 && !result) || (xianshi_result == 1 && result)) {
+                QString xianshi_name = p->property("xianshi_card").toString();
+                if (xianshi_name != NULL && p->isAlive() && target->isAlive()) {
+                    CardEffectStruct extraEffect;
+                    Card *extraCard = Sanguosha->cloneCard(xianshi_name);
+                    if (extraCard->isKindOf("Slash")) {
+                        DamageStruct::Nature nature = DamageStruct::Normal;
+                        if (extraCard->isKindOf("FireSlash"))
+                            nature = DamageStruct::Fire;
+                        else if (extraCard->isKindOf("ThunderSlash"))
+                            nature = DamageStruct::Thunder;
+                        int damageValue = 1;
+
+                        if (extraCard->isKindOf("DebuffSlash")) {
+                            SlashEffectStruct extraEffect;
+                            extraEffect.from = p;
+                            extraEffect.slash = extraCard;
+                            extraEffect.to = target;
+
+                            if (extraCard->isKindOf("IronSlash"))
+                                IronSlash::debuffEffect(extraEffect);
+                            else if (extraCard->isKindOf("LightSlash"))
+                                LightSlash::debuffEffect(extraEffect);
+                            else if (extraCard->isKindOf("PowerSlash"))
+                                PowerSlash::debuffEffect(extraEffect);
+                        }
+
+                        if (!extraCard->isKindOf("LightSlash") && !extraCard->isKindOf("PowerSlash")) {
+                            damageValue = damageValue + effect.effectValue.first();
+                        }
+
+                        DamageStruct d = DamageStruct(xianshi_nullification, p, target, damageValue, nature);
+                        damage(d);
+                        
+                    }
+                    else if (extraCard->isKindOf("Peach")) {
+                        CardEffectStruct extraEffect;
+                        extraCard->deleteLater();
+
+                        extraEffect.card = xianshi_nullification;
+                        extraEffect.from = p;
+                        extraEffect.to = target;
+                        extraEffect.multiple = effect.multiple;
+                        extraCard->onEffect(extraEffect);
+                    }
+                    else if (extraCard->isKindOf("Analeptic"))
+                    {
+                        RecoverStruct re;
+                        re.card = xianshi_nullification;
+                        re.who = p;
+                        recover(target, re);
+                    }
+                   
+                }
+            }
+
+        }
+    }
+
+    return result;
 }
 
 bool Room::verifyNullificationResponse(ServerPlayer *player, const QVariant &response, void *)
@@ -1287,6 +1362,16 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
         result = false;
         setPlayerFlag(repliedPlayer, "-nullifiationNul");
     }
+    //deal xianshi
+    if (result && card->getSkillName() == "xianshi") {
+        repliedPlayer->tag["xianshi_nullification_target"] = QVariant::fromValue(from);
+        repliedPlayer->tag["xianshi_nullification"] = QVariant::fromValue(card);
+        if (!positive)
+            repliedPlayer->tag["xianshi_nullification_result"] = QVariant::fromValue(0);
+        else
+            repliedPlayer->tag["xianshi_nullification_result"] = QVariant::fromValue(1);
+    }
+
 
     if (card->isCancelable(effect)) {
         if (result) {

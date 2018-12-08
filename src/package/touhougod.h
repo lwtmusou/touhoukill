@@ -186,6 +186,35 @@ signals:
     void onButtonClick();
 };
 
+
+
+class XianshiDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    static XianshiDialog *getInstance(const QString &object, bool left = true, bool right = true);
+
+    public slots:
+    void popup();
+    void selectCard(QAbstractButton *button);
+
+private:
+    explicit XianshiDialog(const QString &object, bool left = true, bool right = true);
+
+    QGroupBox *createLeft();
+    QGroupBox *createRight();
+    QAbstractButton *createButton(const Card *card);
+    QButtonGroup *group;
+    QHash<QString, const Card *> map;
+
+    QString object_name;
+
+signals:
+    void onButtonClick();
+};
+
+
 class XianshiCard : public SkillCard
 {
     Q_OBJECT
@@ -198,7 +227,11 @@ public:
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
 
     virtual const Card *validate(CardUseStruct &card_use) const;
+    virtual const Card *validateInResponse(ServerPlayer *user) const;
 };
+
+
+
 
 class WenyueCard : public SkillCard
 {
