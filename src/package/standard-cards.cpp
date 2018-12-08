@@ -2019,12 +2019,12 @@ Drowning::Drowning(Suit suit, int number)
     setObjectName("drowning");
 }
 
-bool Drowning::targetFilter(const QList<const Player *> &, const Player *to_select, const Player *) const
+/*bool Drowning::targetFilter(const QList<const Player *> &, const Player *to_select, const Player *) const
 {
     return to_select->canDiscard(to_select, "e");
-}
+}*/
 
-void Drowning::onUse(Room *room, const CardUseStruct &card_use) const
+/*void Drowning::onUse(Room *room, const CardUseStruct &card_use) const
 {
     if (!card_use.to.isEmpty()) {
         TrickCard::onUse(room, card_use);
@@ -2046,8 +2046,8 @@ void Drowning::onUse(Room *room, const CardUseStruct &card_use) const
             if (player->hasSkill(skill))
                 room->notifySkillInvoked(player, skill->objectName());
             room->broadcastSkillInvoke(skill->objectName());
-        } else if (!player->canDiscard(player, "e"))
-            continue;
+        } //else if (!player->canDiscard(player, "e"))
+        //    continue;
         else
             targets << player;
     }
@@ -2055,6 +2055,11 @@ void Drowning::onUse(Room *room, const CardUseStruct &card_use) const
     CardUseStruct use = card_use;
     use.to = targets;
     TrickCard::onUse(room, use);
+}*/
+
+bool Drowning::isCancelable(const CardEffectStruct &effect) const
+{
+    return !effect.to->getEquips().isEmpty() && TrickCard::isCancelable(effect);
 }
 
 void Drowning::onEffect(const CardEffectStruct &effect) const
@@ -2102,7 +2107,7 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
     delete dummy;
 }
 
-bool Drowning::isAvailable(const Player *player) const
+/*bool Drowning::isAvailable(const Player *player) const
 {
     bool canUse = false;
     QList<const Player *> players = player->getAliveSiblings();
@@ -2115,7 +2120,7 @@ bool Drowning::isAvailable(const Player *player) const
     }
 
     return canUse && TrickCard::isAvailable(player);
-}
+}*/
 
 KnownBoth::KnownBoth(Card::Suit suit, int number)
     : TrickCard(suit, number)
