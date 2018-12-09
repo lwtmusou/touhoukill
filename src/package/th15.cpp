@@ -211,10 +211,27 @@ public:
         events << CardUsed;
     }
 
+    static bool canShayiDamage(CardUseStruct use) {
+        if (use.card->canDamage()) return true;
+        if (use.card->getSkillName() == "xianshi") {
+            QString cardname = use.from->property("xianshi_card").toString();
+            if (cardname != NULL) {
+                Card *card = Sanguosha->cloneCard(cardname);
+                if (card != NULL && card->canDamage())
+                    return true;
+                
+                DELETE_OVER_SCOPE(Card, card)
+
+            }
+
+        }
+        return false;
+    }
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card == NULL || !use.card->canDamage() || !use.from || use.from->isDead() || use.from->getKingdom() != "gzz")
+        if (use.card == NULL || !canShayiDamage(use) || !use.from || use.from->isDead() || use.from->getKingdom() != "gzz")
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;

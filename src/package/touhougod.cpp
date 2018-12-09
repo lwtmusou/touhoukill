@@ -5836,7 +5836,8 @@ public:
     {
         if (e == TargetSpecified) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from && use.from->getPhase() == Player::Play && use.card && !use.to.isEmpty()) {
+            ServerPlayer *current = room->getCurrent();
+            if (use.from && current && current->getPhase() == Player::Play && use.card && !use.to.isEmpty()) {
                 //if (use.card->isKindOf("Nullification") || use.card->isKindOf("Jink"))
                 //    return;
                 if (use.card->isNDTrick() || use.card->isKindOf("BasicCard")) {

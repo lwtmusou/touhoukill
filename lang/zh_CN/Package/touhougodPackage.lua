@@ -450,7 +450,8 @@ return{
 
 	["chaowo"] = "超我",
 	[":chaowo"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可将人物牌替换为游戏外的一张同名人物牌。",
-
+    ["$chaowoAnimate"]= "skill=koishi_god:chaowo",
+	
 --*************************************
 	--shen018  势力：神 5血
 	["suwako_god"] = "神 泄矢诹访子",
