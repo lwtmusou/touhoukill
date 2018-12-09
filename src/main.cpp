@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
         QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins");
 
 #ifdef Q_OS_OSX
-        if (QStyleFactory::keys().contains("Fusion"))
+        if (QStyleFactory::keys().contains("Fusion", Qt::CaseInsensitive))
             qApp->setStyle(QStyleFactory::create("Fusion"));
 #endif
     }
