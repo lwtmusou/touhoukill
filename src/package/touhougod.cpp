@@ -5881,61 +5881,65 @@ public:
     }
 };
 
-class Riyao : public TargetModSkill
+
+
+class Riyue : public TargetModSkill
 {
 public:
-    Riyao()
-        : TargetModSkill("riyao")
+    Riyue()
+        : TargetModSkill("riyue")
     {
         pattern = "Slash,TrickCard";
     }
 
     virtual int getExtraTargetNum(const Player *player, const Card *card) const
     {
-        if (!player->hasSkill(this))
+        if (!player->hasSkill(this) || !Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
             return 0;
-        if (card->isKindOf("FireAttack") || card->isKindOf("FireSlash"))
-            return 1000;
-        if (card->getSkillName() == "xianshi") {
-            QString cardname = Self->property("xianshi_card").toString();
-            if (cardname.contains("fire"))
+
+        if (card->isRed()) {
+            if (card->isKindOf("FireAttack") || card->isKindOf("FireSlash"))
                 return 1000;
+            if (card->getSkillName() == "xianshi") {
+                //QString cardname = player->property("xianshi_card").toString();
+                QString selected_effect = Self->tag.value("xianshi", QString()).toString();
+                if (selected_effect !=NULL &&  selected_effect.contains("fire"))
+                    return 1000;
+            }
+        
+        }
+        else if (card->isBlack()) {
+            if (card->isKindOf("Peach"))
+                return 1000;
+            if (card->getSkillName() == "xianshi") {
+                QString selected_effect = Self->tag.value("xianshi", QString()).toString();
+                if (selected_effect != NULL &&  (selected_effect.contains("peach") || selected_effect.contains("analeptic")))
+                    return 1000;
+            }
+
         }
 
         return 0;
     }
 
-    int getDistanceLimit(const Player *player, const Card *card) const
-    {
-        if (!player->hasSkill(this))
-            return 0;
-        if (card->isKindOf("FireAttack") || card->isKindOf("FireSlash"))
-            return 1000;
-        if (card->getSkillName() == "xianshi") {
-            QString cardname = Self->property("xianshi_card").toString();
-            if (cardname.contains("fire"))
-                return 1000;
-        }
-
-        return 0;
-    }
 };
 
-class Yueyao : public TriggerSkill
+/*
+class Riyue : public TriggerSkill
 {
 public:
-    Yueyao()
-        : TriggerSkill("yueyao")
+    Riyue()
+        : TriggerSkill("riyue")
     {
-        events << CardAsked << CardFinished << EventPhaseChanging;
+        events << TargetConfirmed << EventPhaseChanging;
     }
 
     void record(TriggerEvent e, Room *room, QVariant &) const
     {
         if (e == EventPhaseChanging) {
             foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                if (p->hasFlag("yueyao_used"))
-                    room->setPlayerFlag(p, "-yueyao_used");
+                if (p->hasFlag("riyue_prohibit"))
+                    room->setPlayerFlag(p, "-riyue_prohibit");
             }
         }
     }
@@ -5967,27 +5971,8 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        if (e == CardAsked) {
-            room->setPlayerFlag(invoke->invoker, "yueyao_used");
-            Jink *jink = new Jink(Card::NoSuit, 0);
-            jink->setSkillName("_yueyao");
-            room->provide(jink);
-            return true;
-        } else if (e == CardFinished) {
-            AllianceFeast *card = new AllianceFeast(Card::NoSuit, 0);
-            card->setSkillName("_yueyao");
-            CardUseStruct carduse;
-            carduse.card = card;
-            carduse.from = invoke->invoker;
 
-            room->useCard(carduse, true);
-        }
-
-        return false;
-    }
-};
+};*/
 
 WenyueCard::WenyueCard()
 {
@@ -6056,10 +6041,12 @@ void WenyueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
             QString skillname = room->askForChoice(source, "wenyue", select.join("+"), QVariant::fromValue(obtainer));
             foreach (ServerPlayer *p, room->getOtherPlayers(obtainer)) {
                 if (p->hasSkill(skillname, false, false)) {
+                    room->setPlayerMark(p, "@" + skillname, 0);
                     room->handleAcquireDetachSkills(p, "-" + skillname);
                     break;
                 }
             }
+            room->setPlayerMark(obtainer, "@" + skillname, 1);
             room->handleAcquireDetachSkills(obtainer, skillname);
         }
     }
@@ -6106,7 +6093,7 @@ public:
     Wenyue()
         : TriggerSkill("wenyue")
     {
-        events << CardsMoveOneTime;
+        events << CardsMoveOneTime << GameStart;
         view_as_skill = new WenyueVS;
     }
 
@@ -6155,6 +6142,17 @@ public:
         room->notifyMoveCards(true, _moves, true, _alice);
         room->notifyMoveCards(false, _moves, true, _alice);
         room->setPlayerFlag(alice, "-wenyue_InTempMoving");
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == GameStart) {
+            ServerPlayer *alice = data.value<ServerPlayer *>();
+            if (alice && alice->hasSkill(this)) {
+                room->setPlayerMark(alice, "@qianqiang", 1);
+                room->setPlayerMark(alice, "@xianji", 1);
+            }
+        }
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
@@ -6322,7 +6320,7 @@ public:
             if (!p->getEquips().isEmpty())
                 targets << p;
         }
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, "xianji", "@xianji", true, true);
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, "xianji", "@xianji_target", true, true);
         if (target)
             invoke->targets << target;
         return target != NULL;
@@ -6498,9 +6496,7 @@ TouhouGodPackage::TouhouGodPackage()
 
     General *patchouli_god = new General(this, "patchouli_god", "touhougod", 3);
     patchouli_god->addSkill(new Xianshi);
-    //patchouli_god->addSkill(new Riyao);
-    //patchouli_god->addSkill(new Yueyao);
-    patchouli_god->addSkill(new Skill("riyue"));
+    patchouli_god->addSkill(new Riyue);
 
     General *alice_god = new General(this, "alice_god", "touhougod", 4);
     alice_god->addSkill(new Wenyue);
