@@ -896,6 +896,8 @@ void MainWindow::parseUpdateInfo(const QString &v, const QString &vn, const QJso
 {
 #if defined(Q_OS_WIN)
     QJsonValue value = ob.value("Win");
+#elif defined(Q_OS_ANDROID)
+    QJsonValue value = ob.value("And");
 #elif defined(Q_OS_MACOS)
     QJsonValue value = ob.value("Mac");
 #else
@@ -917,7 +919,11 @@ void MainWindow::parseUpdateInfo(const QString &v, const QString &vn, const QJso
                                      .arg(value.toString()));
     } else if (value.isObject()) {
         QJsonObject updateOb = value.toObject();
+#ifndef Q_OS_ANDROID
         QString updateScript = updateOb.value("UpdateScript").toString();
+#else
+        QString updateScript = "jni";
+#endif
         QString updatePack = updateOb.value("UpdatePack").toString();
         QJsonObject updateHash = updateOb.value("UpdatePackHash").toObject();
         if (!updateScript.isEmpty() && !updatePack.isEmpty() && !updateHash.isEmpty()) {
@@ -1110,8 +1116,8 @@ void UpdateDialog::startUpdate()
 // call JNI to install the package
 #else
     QStringList arg;
-    arg << QString::number(QCoreApplication::applicationPid());
-    QProcess::startDetached("UpdateScript.sh", arg, QCoreApplication::applicationDirPath());
+    arg << "-c" << ("\"./UpdateScript.sh " + QString::number(QCoreApplication::applicationPid()) + "\"");
+    QProcess::startDetached("sh", arg, QCoreApplication::applicationDirPath());
 #endif
 
     QCoreApplication::exit(0);
@@ -1120,8 +1126,8 @@ void UpdateDialog::startUpdate()
 
 bool UpdateDialog::packHashVerify(const QByteArray &arr)
 {
-    static const QMap<QString, QCryptographicHash::Algorithm> algorithms{std::make_pair<QString, QCryptographicHash::Algorithm>("MD5", QCryptographicHash::Md5),
-                                                                         std::make_pair<QString, QCryptographicHash::Algorithm>("SHA1", QCryptographicHash::Sha1)};
+    static const QMap<QString, QCryptographicHash::Algorithm> algorithms {std::make_pair<QString, QCryptographicHash::Algorithm>("MD5", QCryptographicHash::Md5),
+                                                                          std::make_pair<QString, QCryptographicHash::Algorithm>("SHA1", QCryptographicHash::Sha1)};
 
     foreach (const QString &str, algorithms.keys()) {
         if (m_updateHash.contains(str)) {
@@ -1155,6 +1161,7 @@ void UpdateDialog::startDownload()
     connect(packReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errPack);
     connect(packReply, &QNetworkReply::finished, this, &UpdateDialog::finishedPack);
 
+#ifndef Q_OS_ANDROID
     QNetworkRequest reqScript;
 #if QT_VERSION >= 0x050600
     reqScript.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
@@ -1163,6 +1170,9 @@ void UpdateDialog::startDownload()
     scriptReply = downloadManager->get(reqScript);
     connect(scriptReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errScript);
     connect(scriptReply, &QNetworkReply::finished, this, &UpdateDialog::finishedScript);
+#else
+    m_finishedScript = true;
+#endif
 
 #ifdef Q_OS_WIN
     taskbarButton->progress()->reset();
@@ -1245,10 +1255,6 @@ void UpdateDialog::finishedPack()
     file.open(QIODevice::WriteOnly | QIODevice::Truncate);
     file.write(arr);
     file.close();
-
-#ifdef Q_OS_WIN
-    file.setPermissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner | QFile::ReadGroup | QFile::ExeGroup | QFile::ReadOther | QFile::ExeOther);
-#endif
 
     m_finishedPack = true;
 

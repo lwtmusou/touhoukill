@@ -3,6 +3,8 @@
 
 #ifdef AUDIO_SUPPORT
 
+#include <QString>
+
 class Audio
 {
 public:
