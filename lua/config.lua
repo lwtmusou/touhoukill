@@ -33,7 +33,7 @@ config = {
 		xlc = "#3dcccc",
 		slm ="#66cc99",
 		hzc ="#aacc66",
-		gzz = "#202020" ,
+		gzz = "#005AD7" ,
 		wai = "#cc7014",
 		touhougod = "#96943D",
 	},
