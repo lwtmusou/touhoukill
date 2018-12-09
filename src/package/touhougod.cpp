@@ -5412,10 +5412,10 @@ public:
         //copy flag
         QStringList flags;
         flags << "mopao"
-              << "mopao2"
-              << "jidu_card"
-              << "chunhua_red"
-              << "chunhua_black"; //drank?
+            << "mopao2"
+            << "jidu_card";
+              //<< "chunhua_red"
+              //<< "chunhua_black"; //drank?
         foreach (QString flag, flags) {
             if (use.card->hasFlag(flag))
                 card->setFlags(flag);
