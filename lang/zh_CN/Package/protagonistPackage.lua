@@ -235,10 +235,10 @@ return {
 	["#sanae_slm"] = "私欲的巫女",
 	["designer:sanae_slm"] = "星野梦美☆",
 
-	["illustrator:sanae_slm"] = "小強",
-	["origin:sanae_slm"] = "p号：19757581，个人ID：1754781",
-	["illustrator:sanae_slm_1"] = "An2A",
-	["origin:sanae_slm_1"] = "p号：27724528，个人ID：173876",
+	["illustrator:sanae_slm"] = "An2A",
+	["origin:sanae_slm"] = "p号：27724528，个人ID：173876",
+	["illustrator:sanae_slm_1"] = "小強",
+	["origin:sanae_slm_1"] = "p号：19757581，个人ID：1754781",
 	["illustrator:sanae_slm_2"] = "木shiyo",
 	["origin:sanae_slm_2"] = "p号：34431982，个人ID：40222",
 
