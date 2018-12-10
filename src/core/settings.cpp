@@ -585,11 +585,6 @@ void Settings::loadSettingsFromConfigIni()
 
 Settings::Settings()
     : QSettings("config.json", QSettings::CustomFormat1)
-    //#ifdef Q_OS_WIN32
-    //    : QSettings("config.ini", QSettings::IniFormat)
-    //#else
-    //    : QSettings("QSanguosha.org", "QSanguosha")
-    //#endif
     , Rect(-ViewWidth / 2, -ViewHeight / 2, ViewWidth, ViewHeight)
 {
     if (!QFile::exists("config.json"))
@@ -788,6 +783,9 @@ void Settings::init()
 
     Config.ExtraHiddenGenerals = GetConfigFromLuaState(lua, "extra_hidden_generals").toStringList();
     Config.RemovedHiddenGenerals = GetConfigFromLuaState(lua, "removed_hidden_generals").toStringList();
+
+    if (!contains("AutoUpdateChannel"))
+        setValue("AutoUpdateChannel", QStringLiteral("Global"));
 }
 
 const QString &Settings::getQSSFileContent()

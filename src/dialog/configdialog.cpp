@@ -47,6 +47,7 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->defaultHeroskinCheckBox->setChecked(Config.DefaultHeroSkin);
     ui->doubleClickCheckBox->setChecked(Config.EnableDoubleClick);
     ui->autoUpdateCheckBox->setChecked(Config.EnableAutoUpdate);
+    ui->autoUpdateChannelLineEdit->setText(Config.value("AutoUpdateChannel", QStringLiteral("Global")).toString());
     ui->bubbleChatBoxDelaySpinBox->setSuffix(tr(" second"));
     ui->bubbleChatBoxDelaySpinBox->setValue(Config.BubbleChatBoxDelaySeconds);
 
@@ -230,6 +231,8 @@ void ConfigDialog::saveConfig()
 
     Config.setValue("EnableAutoUpdate", ui->autoUpdateCheckBox->isChecked());
     Config.EnableAutoUpdate = ui->autoUpdateCheckBox->isChecked();
+
+    Config.setValue("AutoUpdateChannel", ui->autoUpdateChannelLineEdit->text());
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked()
