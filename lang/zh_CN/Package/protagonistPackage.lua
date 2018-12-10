@@ -80,12 +80,13 @@ return {
 	["&reimu_sp"] = "无节操灵梦",
 	["designer:reimu_sp"] = "星野梦美☆",
 
-	["illustrator:reimu_sp"] = "しがらき",
-	["origin:reimu_sp"] = "p号：19597658，个人ID：1004274",
+	["illustrator:reimu_sp"] = "唯",
+	["origin:reimu_sp"] = "p号：35756906，个人ID：230943",
 	["illustrator:reimu_sp_1"] = "あめろ",
 	["origin:reimu_sp_1"] = "p号：31824198，个人ID：37336",
-	["illustrator:reimu_sp_2"] = "唯",
-	["origin:reimu_sp_2"] = "p号：35756906，个人ID：230943",
+	["illustrator:reimu_sp_2"] = "しがらき",
+	["origin:reimu_sp_2"] = "p号：19597658，个人ID：1004274",
+
 
 	["saiqian"] = "赛钱",
 	[":saiqian"] = "<font color=\"green\"><b>其他角色的出牌阶段限一次，</b></font>其可以将一至三张手牌交给你，若如此做，你可以选择一至两项：1.弃置一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌；2.失去1点体力。每当你选择一项后，其回复1点体力。",
@@ -151,10 +152,10 @@ return {
 	["#reimu_yym"]= "春巫女",
 	["designer:reimu_yym"] = "星野梦美☆",
 
-	["illustrator:reimu_yym"] = "みゃけ",
-	["origin:reimu_yym"] = "p号：9705615，个人ID：60103",
-	["illustrator:reimu_yym_1"] = "萩原",
-	["origin:reimu_yym_1"] = "p号：16215731，个人ID：37062",
+	["illustrator:reimu_yym"] = "萩原",
+	["origin:reimu_yym"] = "p号：16215731，个人ID：37062",
+	["illustrator:reimu_yym_1"] = "みゃけ",
+	["origin:reimu_yym_1"] = "p号：9705615，个人ID：60103",
 	["illustrator:reimu_yym_2"] = "かがよ",
 	["origin:reimu_yym_2"] = "p号：9056340，个人ID：693172",
 

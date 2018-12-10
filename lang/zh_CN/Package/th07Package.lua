@@ -133,8 +133,8 @@ return
 	["#prismriver"]= "骚灵乐团",
 	["designer:prismriver"] = "星野梦美☆",
 
-	["illustrator:prismriver"] = "桜井天智",
-	["origin:prismriver"] = "p号：6753458，个人ID：1218861",
+	["illustrator:prismriver"] = "ふーぷ",
+	["origin:prismriver"] = "p号：54085300",
 	["illustrator:prismriver_1"] = "ke-ta",
 	["origin:prismriver_1"] = "p号：29533619，个人ID：3104565",
 	["illustrator:prismriver_2"] = "雪月想",
@@ -143,7 +143,10 @@ return
 	["origin:prismriver_3"] = "p号：23504639，个人ID：10210",
 	["illustrator:prismriver_4"] = "風太郎",
 	["origin:prismriver_4"] = "p号：16810088，个人ID：1808291",
-
+	["illustrator:prismriver_5"] = "桜井天智",
+	["origin:prismriver_5"] = "p号：6753458，个人ID：1218861",
+	
+	
 	["xiezou"] = "协奏",
 	[":xiezou"] = "出牌阶段结束时，若你于此阶段内使用的最后的牌为【杀】或普通锦囊牌，你可以视为使用与之牌名、属性、效果均相同的牌。",
 	["@xiezou"]= "此阶段内你使用的最后的牌为【%src】，你可以发动“协奏”，视为使用【%src】（有距离限制）。",
@@ -378,11 +381,14 @@ return
 	["#leira"] = "魔法歌唱家",
 	["designer:leira"] = "辰焰天明",
 
-	["illustrator:leira"] = " ふぇっちー ",
-	["origin:leira"] = "p号：8628466,个人ID:32142",
+	["illustrator:leira"] = "  Jenevan ",
+	["origin:leira"] = "p号：25866611,个人ID:32142",
+	
 	["illustrator:leira_1"] = " kaoru ",
 	["origin:leira_1"] = "p号：22577448 ,个人ID:743845",
-
+	["illustrator:leira_2"] = " ふぇっちー ",
+	["origin:leira_2"] = "p号：8628466,个人ID:32142",
+	
 	["huayin"] = "华音" ,
 	[":huayin"] = "当你需要使用【桃】时，你可以展示所有手牌，将其中的所有非基本牌当【桃】使用，若如此做，当此【桃】结算结束后，你将所有手牌当【无中生有】使用。" ,
 	["huanling"] = "唤灵",
