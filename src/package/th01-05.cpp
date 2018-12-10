@@ -2831,7 +2831,7 @@ public:
     {
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from && use.from->isCurrent())
+            if (use.from && use.from->isCurrent() && use.card && use.card->getTypeId() != Card::TypeSkill)
                 room->setPlayerMark(use.from, "luli", use.from->getMark("luli") + 1);
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();

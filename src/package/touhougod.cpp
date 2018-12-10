@@ -5899,13 +5899,18 @@ public:
             return 0;
 
         if (card->isRed()) {
-            if (card->isKindOf("FireAttack") || card->isKindOf("FireSlash"))
+            if (card->canDamage())
                 return 1000;
             if (card->getSkillName() == "xianshi") {
                 //QString cardname = player->property("xianshi_card").toString();
                 QString selected_effect = Self->tag.value("xianshi", QString()).toString();
-                if (selected_effect !=NULL &&  selected_effect.contains("fire"))
-                    return 1000;
+                if (selected_effect != NULL)  //selected_effect.contains("fire")
+                {
+                    Card* extracard = Sanguosha->cloneCard(selected_effect);
+                    extracard->deleteLater();
+                    if (extracard->canDamage())
+                        return 1000;
+                }    
             }
         
         }
