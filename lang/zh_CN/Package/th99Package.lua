@@ -123,15 +123,18 @@ return{
 	["#toyohime"] = "连系海与山的月之公主",
 	["designer:toyohime"] = "星野梦美☆",
 
-	["illustrator:toyohime"] = "シネカ",
-	["origin:toyohime"] = "p号：13173842，个人ID：1154113",
+	["illustrator:toyohime"] = "60枚",
+	["origin:toyohime"] = "p号：31676552",
+	
 	["illustrator:toyohime_1"] = "砂雲",
 	["origin:toyohime_1"] = "p号：36536382，个人ID：295604",
 	["illustrator:toyohime_2"] = "Sui.",
 	["origin:toyohime_2"] = "p号：39062984，个人ID：304123",
 	["illustrator:toyohime_3"] = "s-syago",
 	["origin:toyohime_3"] = "p号：46344470，个人ID：380709",
-
+	["illustrator:toyohime_4"] = "シネカ",
+	["origin:toyohime_4"] = "p号：13173842，个人ID：1154113",
+	
 	["lianxi"] = "连系",
 	[":lianxi"] = "当你使用或打出【杀】时，你可以视为使用或重铸【铁索连环】。",
 	["@lianxi"]= "<font color=\"orange\"><b>连系：</b></font>你可以使用或重铸【铁索连环】。",
@@ -169,13 +172,17 @@ return{
 	["designer:sunny"] = "星野梦美☆",
 
 	["#sunny"] = "闪耀的日之光",
-	["illustrator:sunny"] = "Sui.",
-	["origin:sunny"] = "p号：19453374，个人ID：304123",
+	
+	["illustrator:sunny"] = "鏡 Area",
+	["origin:sunny"] = "p号：62118590",
+	
 	["illustrator:sunny_1"] = "NAbyssor",
 	["origin:sunny_1"] = "p号：13854664，个人ID：467511",
 	["illustrator:sunny_2"] = "Sui.",
 	["origin:sunny_2"] = "p号：16739718，个人ID：304123",
-
+	["illustrator:sunny_3"] = "Sui.",
+	["origin:sunny_3"] = "p号：19453374，个人ID：304123",
+	
 	["zheshe"] = "折射",
 	[":zheshe"] = "当你受到伤害时，若来源不是你，你可以弃置一张手牌并选择一名角色，防止此伤害，然后对其造成1点伤害，若如此做，当其因此而受到伤害进行的伤害结算结束时，其摸X张牌（X为其已损失的体力值）。",
 	["@zheshe"] = "请弃置一张手牌并选择一名角色，发动“折射”，防止此伤害，并对其造成1点伤害。",
@@ -190,13 +197,15 @@ return{
 	["#lunar"] = "寂静的月之光",
 	["designer:lunar"] = "星野梦美☆",
 
-	["illustrator:lunar"] = "yucke",
-	["origin:lunar"] = "p号：16951942，个人ID：183590",
+	["illustrator:lunar"] = "鏡 Area",
+	["origin:lunar"] = "p号：62887113",
 	["illustrator:lunar_1"] = "NEKO",
 	["origin:lunar_1"] = "p号：28822375，个人ID：2600911",
 	["illustrator:lunar_2"] = "ke-ta",
 	["origin:lunar_2"] = "个人ID：3104565",
-
+	["illustrator:lunar_3"] = "yucke",
+	["origin:lunar_3"] = "p号：16951942，个人ID：183590",
+	
 	["zhuonong"] = "捉弄",
 	[":zhuonong"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以选择一名角色并选择一项：对其造成1点火焰伤害，然后令其回复1点体力；或令其回复1点体力，然后对其造成1点火焰伤害。",
 	["zhuonong:dr"] = "对其造成1点火焰伤害，然后令其回复1点体力",
@@ -215,14 +224,17 @@ return{
 	["#star"] = "照射的星之光",
 	["designer:star"] = "三国有单",
 
-	["illustrator:star"] = "綾瀬 みどり",
+	["illustrator:star"] = "鏡 Area",
+	["origin:star"] = "p号：64175769",
+	
 	["illustrator:star_1"] = "和茶",
 	["origin:star_1"] = "p号：38503262，个人ID：3312169",
 	["illustrator:star_2"] = "よぬりぬ",
 	["origin:star_2"] = "p号：38836967，个人ID：111793",
 	["illustrator:star_3"] = "べにたま",
 	["origin:star_3"] = "p号：35650634，个人ID：17902",
-
+	["illustrator:star_4"] = "綾瀬 みどり",
+	
 	["ganying"] = "感应",
 	--[":ganying"] = "当你与至少一名角色的距离或至少一名角色与你的距离发生一次改变后，你可以摸一张牌，然后你可以弃置其中的一名其他角色的一张手牌。",
 	[":ganying"] = "当其他角色回复体力后或受到伤害后，若其与你的体力值相同，你可以摸一张牌，然后你可以弃置其一张手牌。",

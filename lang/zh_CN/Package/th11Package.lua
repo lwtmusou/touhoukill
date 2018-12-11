@@ -88,11 +88,13 @@ return{
 	["rin"] = "火焰猫燐",
 	["#rin"] = "地狱的车祸",
 	["designer:rin"] = "星野梦美☆",
+	
+	
+	["illustrator:rin"] = "リリア",
+	["origin:rin"] = "p号：12490103，个人ID：997454",
+	["illustrator:rin_1"] = "まるかた",
+	["origin:rin_1"] = "p号：5227566，个人ID：6359",
 
-	["illustrator:rin"] = "まるかた",
-	["origin:rin"] = "p号：5227566，个人ID：6359",
-	["illustrator:rin_1"] = "リリア",
-	["origin:rin_1"] = "p号：12490103，个人ID：997454",
 	["illustrator:rin_2"] = "NAbyssor",
 	["origin:rin_2"] = "p号：30521004，个人ID：467511",
 	["illustrator:rin_3"] = "Capura.L",
@@ -161,12 +163,13 @@ return{
 	["#yamame"] = "黑暗洞窟中明亮的网",
 	["designer:yamame"] = "三国有单",
 
-	["illustrator:yamame"] = "ともかつ治臣",
-	["origin:yamame"] = "p号：11886525，个人ID：230418",
+	["illustrator:yamame"] = "紅緒",
+	["origin:yamame"] = "p号：35615127，个人ID：644229",
+
 	["illustrator:yamame_1"] = "銀児",
 	["origin:yamame_1"] = "p号：35228783，个人ID：1043393",
-	["illustrator:yamame_2"] = "紅緒",
-	["origin:yamame_2"] = "p号：35615127，个人ID：644229",
+	["illustrator:yamame_2"] = "ともかつ治臣",
+	["origin:yamame_2"] = "p号：11886525，个人ID：230418",
 
 	["chuanran"] = "传染",
 	[":chuanran"] = "<font color=\"blue\"><b>锁定技，</b></font>当你或处于连环状态的角色对另一名其他角色造成非属性伤害后，你令后者横置。",

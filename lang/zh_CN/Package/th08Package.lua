@@ -162,10 +162,10 @@ return
 	["!mystia"] = "米斯蒂娅·萝蕾拉",
 	["designer:mystia"] = "辰焰天明",
 
-	["illustrator:mystia"] = "とらこ",
-	["origin:mystia"] = "p号：25455215，个人ID：36615",
-	["illustrator:mystia_1"] = "ヨシノリョウ",
-	["origin:mystia_1"] = "p号：10648930，个人ID：5202",
+	["illustrator:mystia"] = "ヨシノリョウ",
+	["origin:mystia"] = "p号：10648930，个人ID：5202",
+	["illustrator:mystia_1"] = "とらこ",
+	["origin:mystia_1"] = "p号：25455215，个人ID：36615",
 	["illustrator:mystia_2"] = "祭唄",
 	["origin:mystia_2"] = "p号：4633013，个人ID：70822",
 
@@ -241,12 +241,12 @@ return
 	["#mokou_sp"] = "红之自警队",
 	["designer:mokou_sp"] = "星野梦美☆",
 
-	["illustrator:mokou_sp"] = "しろし",
-	["origin:mokou_sp"] = "p号：24380429，个人ID：76048",
+	["illustrator:mokou_sp"] = "藍空",
+	["origin:mokou_sp"] = "p号：22011676，个人ID：74414",
 	["illustrator:mokou_sp_1"] = "ふゆきおじさん",
 	["origin:mokou_sp_1"] = "p号：17461431，个人ID：286217",
-	["illustrator:mokou_sp_2"] = "藍空",
-	["origin:mokou_sp_2"] = "p号：22011676，个人ID：74414",
+	["illustrator:mokou_sp_2"] = "しろし",
+	["origin:mokou_sp_2"] = "p号：24380429，个人ID：76048",
 	["illustrator:mokou_sp_3"] = "Lowlight.K ",
 	["origin:mokou_sp_3"] = "(p号: 10738620)",
 

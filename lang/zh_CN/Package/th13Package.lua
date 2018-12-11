@@ -37,15 +37,16 @@ return{
 	["mamizou"] = "二岩猯藏",
 	["#mamizou"] = "狸猫怪的十大变化",
 	["designer:mamizou"] = "星野梦美☆",
-
-	["illustrator:mamizou"] = "ideolo",
-	["origin:mamizou"] = "p号：27366760，个人ID：61513",
+	
+	["illustrator:mamizou"] = "茹でピー",
+	["origin:mamizou"] = "p号：33663902，个人ID：264281",
+	
 	["illustrator:mamizou_1"] = "ふーえん",
 	["origin:mamizou_1"] = "p号：36315798，个人ID：131669",
 	["illustrator:mamizou_2"] = "まくわうに",
 	["origin:mamizou_2"] = "p号：33687206，个人ID：941624",
-	["illustrator:mamizou_3"] = "茹でピー",
-	["origin:mamizou_3"] = "p号：33663902，个人ID：264281",
+	["illustrator:mamizou_3"] = "ideolo",
+	["origin:mamizou_3"] = "p号：27366760，个人ID：61513",
 	["illustrator:mamizou_4"] = "7",
 	["origin:mamizou_4"] = "p号：46198301，个人ID：547647",
 
@@ -174,11 +175,11 @@ return{
 	["&yuyuko_slm"] = "神灵庙幽幽子" ,
 	["#yuyuko_slm"] = "不再彷徨的亡灵" ,
 	["designer:yuyuko_slm"] = "星野梦美☆",
-
-	["illustrator:yuyuko_slm"] = "meola",
-	["origin:yuyuko_slm"] = "p号：11911124，个人ID：31990",
-	["illustrator:yuyuko_slm_1"] = "みや",
-	["origin:yuyuko_slm_1"] = "p号：22766094，个人ID：41977",
+	
+	["illustrator:yuyuko_slm"] = "みや",
+	["origin:yuyuko_slm"] = "p号：22766094，个人ID：41977",
+	["illustrator:yuyuko_slm_1"] = "meola",
+	["origin:yuyuko_slm_1"] = "p号：11911124，个人ID：31990",
 	["illustrator:yuyuko_slm_2"] = "一葉モカ",
 	["origin:yuyuko_slm_2"] = "p号：17232914，个人ID：464525",
 	["illustrator:yuyuko_slm_3"] = "はいばね",

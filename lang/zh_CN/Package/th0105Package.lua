@@ -294,8 +294,10 @@ return {
 	["#konngara"] = "星幽剑士" ,
 	["designer:konngara"] = "辰焰天明",
 
-	["illustrator:konngara"] = "Culter",
-	["origin:konngara"] = "p号：40459277,个人ID:542147",
+	["illustrator:konngara"] = "カタケイ",
+	["origin:konngara"] = "p号：40023503",
+	["illustrator:konngara_1"] = "Culter",
+	["origin:konngara_1"] = "p号：40459277,个人ID:542147",
 	
 	
 	["zongjiu"] = "纵酒",
@@ -351,8 +353,10 @@ return {
 	["#meira"] = "黑暗的力量" ,
 	["designer:meira"] = "223",
 
-	["illustrator:meira"] = "dairi",
-	["origin:meira"] = "",
+	["illustrator:meira"] = "c7肘",
+	["origin:meira"] = "p号：7668162",
+	["illustrator:meira_1"] = "dairi",
+	["origin:meira_1"] = "",
 	
 	["anliu"] = "暗流",
 	[":anliu"] = "当你使用【杀】造成或受到【杀】造成的伤害后，你可以令受到伤害的角色距离不大于1的一名角色获得之，若如此做，你可以展示其一张手牌，若此牌为基本牌，其失去1点体力。<font color=\"green\"><b>每阶段限一次。</b></font>",

@@ -66,12 +66,12 @@ return
 	["#komachi"] = "三途河的领路人",
 	["designer:komachi"] = "星野梦美☆",
 
-	["illustrator:komachi"] = "赤りんご",
-	["origin:komachi"] = "p号：1377034，个人ID：164813",
+	["illustrator:komachi"] = "牛",
+	["origin:komachi"] = "p号：23773957，个人ID：964140",
 	["illustrator:komachi_1"] = "七々しう",
 	["origin:komachi_1"] = "p号：10420340，个人ID：236979",
-	["illustrator:komachi_2"] = "牛",
-	["origin:komachi_2"] = "p号：23773957，个人ID：964140",
+	["illustrator:komachi_2"] = "赤りんご",
+	["origin:komachi_2"] = "p号：1377034，个人ID：164813",
 	["illustrator:komachi_3"] = "pico",
 	["origin:komachi_3"] = "p号：14285106，个人ID：347929",
 
@@ -190,9 +190,9 @@ return
 	["designer:iku"] = "星野梦美☆",
 
 	["illustrator:iku"] = "しろさ",
-	["origin:iku"] = "p号：3805501，个人ID：374262",
+	["origin:iku"] = "p号：28342536，个人ID：374262",
 	["illustrator:iku_1"] = "しろさ",
-	["origin:iku_1"] = "p号：28342536，个人ID：374262",
+	["origin:iku_1"] = "p号：3805501，个人ID：374262",
 	["illustrator:iku_2"] = "ながれ",
 	["origin:iku_2"] = "p号：39033688，个人ID：91059",
 	["illustrator:iku_3"] = "爽希",
