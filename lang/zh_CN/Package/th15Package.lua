@@ -45,6 +45,8 @@ return {
 	
 	["illustrator:hecatia"] = "もりもり",
 	["origin:hecatia"] = "p号：56930159，　个人ID：3099070",
+	["illustrator:hecatia_1"] = "ひよすけ",
+	["origin:hecatia_1"] = "p号：52369022",
 	
 	["santi"] = "三体",
 	[":santi"] = "<font color=\"blue\"><b>锁定技，</b></font>非额外回合开始时，你令此回合执行阶段为“准备-判定-（摸牌-出牌-弃牌） x3 -结束”；当你于此回合的出牌阶段内使用牌时，你令此阶段内/余下的出牌阶段内不能使用与之类型不同/相同的牌。",
@@ -59,6 +61,8 @@ return {
 	
 	["illustrator:clownpiece"] = "ルリア",
 	["origin:clownpiece"] = "个人ID：997454",
+	["illustrator:clownpiece_1"] = "さな",
+	["origin:clownpiece_1"] = "个人ID：58171953",	
 	
 	["kuangluan"] = "狂乱",
 	["#kuangluan1"] = "狂乱",
@@ -81,6 +85,9 @@ return {
 	
 	["illustrator:sagume"] = "菊月",
 	["origin:sagume"] = "p号：58197052，个人ID：429883",
+	["illustrator:sagume_1"] = " りひと",
+	["origin:sagume_1"] = "p号：58254093",
+	
 	
 	["shehuo"] = "舌祸",
 	[":shehuo"] = "当一名角色使用【杀】或普通锦囊牌指定另一名角色为唯一目标时，若你为两者之一，你可以令目标角色选择一项：取消其并对此牌的使用者使用与之类别不同的牌（无距离限制）；或令此牌不能被所有角色使用牌响应。",
@@ -101,6 +108,9 @@ return {
 	
 	["illustrator:doremy"] = "あぶそる",
 	["origin:doremy"] = "p号：52317687，个人ID：3202270",
+	 
+	["illustrator:doremy_1"] = "CUBY",
+	["origin:doremy_1"] = "p号：50318152",
 	
 	["bumeng"] = "捕梦",
 	[":bumeng"] = "当其他角色的牌因其弃置而进入弃牌堆后，你可以令其获得其中的一张牌，明置之，然后你可以获得其中的一张牌并明置之。<font color=\"green\"><b>每回合限一次，</b></font>",
@@ -117,6 +127,8 @@ return {
 	
 	["illustrator:ringo"] = "りひと",
 	["origin:ringo"] = "p号：56703160，个人ID：1463626",
+	["illustrator:ringo_1"] = "CUBY",
+	["origin:ringo_1"] = "p号：50411353",
 	
 	["yuejian"] = "月见";
 	[":yuejian"] = "<font color=\"green\"><b>出牌段限一次，</b></font>你可以与一名角色拼点：当你赢后，你视为使用【以逸待劳】；当你没赢后，你将你的拼点牌置于人物牌上，称为“团子”。";
@@ -136,10 +148,15 @@ return {
 	["seiran"] = "清兰" ,
 	["#seiran"] = "浅葱色的月兔",
 	["designer:seiran"] = "辰焰天明",
-	["yidan"] = "异弹",
-	[":yidan"] = "出牌阶段，你可以将一张手牌当缚【杀】或秽【杀】使用（无距离与次数限制，但处于异常状态的角色不是合法目标；这两种【杀】于此阶段内各限转化一次）。",
-	["#yidan"] = "异弹",
 	
 	["illustrator:seiran"] = "minusT",
 	["origin:seiran"] = "p号：56472774，个人ID：15772166",
+	
+	["illustrator:seiran_1"] = "りひと",
+	["origin:seiran_1"] = "p号：57754046",
+	
+	
+	["yidan"] = "异弹",
+	[":yidan"] = "出牌阶段，你可以将一张手牌当缚【杀】或秽【杀】使用（无距离与次数限制，但处于异常状态的角色不是合法目标；这两种【杀】于此阶段内各限转化一次）。",
+	["#yidan"] = "异弹",
 }

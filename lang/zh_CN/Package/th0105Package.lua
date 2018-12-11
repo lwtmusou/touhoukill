@@ -274,9 +274,11 @@ return {
 
 	["illustrator:sariel"] = "昙竹九月",
 	["origin:sariel"] = "p号：57699329,个人ID:14176578",
-	["illustrator:sariel_1"] = "未知",
-	["origin:sariel_1"] = "东方手游 大家的幻想乡",
+	["illustrator:sariel_1"] = "撸姬姬",
+	["origin:sariel_1"] = "p号：59006234",
 
+	
+	
 	["baosi"] = "报死",
 	[":baosi"] = "当你使用【杀】或黑色普通锦囊牌指定一名角色为目标时，你可以令任意名体力值不大于其体力下限的其他角色成为此牌的额外目标。",
 	["@baosi"] = "你可以发动“报死”，令至少一名不是此牌目标且体力值不大于其体力下限 的其他角色 成为 你使用的 【<font color=\"#FF8000\"><b>%src </b></font>】 的 额外目标",
@@ -314,9 +316,11 @@ return {
 	["#yumeko"] = "魔界女仆" ,
 	["designer:yumeko"] = "名和行年",
 
-	
+	 
 	["illustrator:yumeko"] = "ちもち",
 	["origin:yumeko"] = "p号：8322824",
+	["illustrator:yumeko_1"] = "Culter",
+	["origin:yumeko_1"] = "p号：40382592",
 	
 	["huanshu"] = "幻术",
 	[":huanshu"] = "<font color=\"blue\"><b>锁定技，</b></font>当其他角色使用的基本牌或普通锦囊牌对你结算结束后，若你本回合未失去过手牌，你获得此牌并明置之。",
@@ -336,7 +340,10 @@ return {
 
 	["illustrator:yukimai"] = "Vima",
 	["origin:yukimai"] = "p号：46982048,个人ID:546819",
-	
+	["illustrator:yukimai_1"] = " 葉山",
+	["origin:yukimai_1"] = "p号：45046858",
+	["illustrator:yukimai_2"] = " 葉山",
+	["origin:yukimai_2"] = "p号：45046858",
 	
 	["xiewu"] = "协舞",
 	[":xiewu"] = "当一名角色使用基本牌时，若其手牌数等于你，你可以选择一项：令其摸一张牌；或令其弃置一张牌。<font color=\"green\"><b>每回合限一次。</b></font>",
