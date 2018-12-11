@@ -60,7 +60,7 @@ return{
 	["@nizhuan-self"] = "<font color=\"#00FF00\"><b>%src </b></font>使用【杀】指定了你，你可以弃置一张手牌发动“逆转”。",
 	["nizhuan:target"] = "<font color=\"#00FF00\"><b>%src </b></font>使用【杀】指定了<font color=\"#FF8000\"><b>%dest </b></font>，你是否发动“逆转”" ,
 	["guizha"]= "诡诈",
-	[":guizha"] = "<font color=\"blue\"><b>锁定技，</b></font>当处于濒死状态的你向其他角色求【桃】时，其展示所有手牌，若其中有【桃】，其须对你使用【桃】。",
+	[":guizha"] = "<font color=\"blue\"><b>锁定技，</b></font>当你向其他角色求【桃】时，其展示所有手牌，若其中有【桃】，其须对你使用【桃】。",
 	["@guizha"] = "由于“诡诈”的效果，你必须对 <font color=\"#00FF00\"><b>%src </b></font> 使用一张【桃】。",
 
  --****************************
