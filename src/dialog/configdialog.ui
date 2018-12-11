@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>509</width>
-    <height>616</height>
+    <height>629</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -26,7 +26,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="envTab">
       <attribute name="title">
@@ -509,6 +509,27 @@
               <bool>true</bool>
              </property>
             </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>AutoUpdateChannel</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="autoUpdateChannelLineEdit">
+               <property name="text">
+                <string>Global</string>
+               </property>
+               <property name="placeholderText">
+                <string>DO NOT EDIT THIS UNLESS YOU KNOW WHAT YOU ARE DOING</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="0,1">

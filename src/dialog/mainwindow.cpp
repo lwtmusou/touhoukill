@@ -178,7 +178,7 @@ void MainWindow::checkForUpdate()
 #if QT_VERSION >= 0x50600
     if (QVersionNumber(0, 8).isPrefixOf(Sanguosha->getQVersionNumber()))
 #else
-    if (Sanguosha->getVersionName().startsWith("V0.8.")
+    if (Sanguosha->getVersionName().startsWith("V0.8."))
 #endif
         req.setUrl(QUrl("https://fsu0413.coding.me/TouhouSatsuUpdate/TouhouKillUpdate.json"));
     else
@@ -960,7 +960,26 @@ void MainWindow::updateInfoReceived()
         return;
     }
 
-    QJsonObject ob = doc.object();
+    QJsonObject ob;
+#if QT_VERSION >= 0x50600
+    if (QVersionNumber(0, 8).isPrefixOf(Sanguosha->getQVersionNumber()))
+#else
+    if (Sanguosha->getVersionName().startsWith("V0.8."))
+#endif
+        ob = doc.object();
+    else {
+        QJsonObject fullOb = doc.object();
+        QString channel = Config.value("AutoUpdateChannel", QStringLiteral("Global")).toString();
+        if (!fullOb.contains(channel)) {
+            qDebug() << "Ob doesn't contain the update channel: " << channel;
+            return;
+        } else if (!fullOb.value(channel).isObject()) {
+            qDebug() << "the Channel of Ob is not an object: " << channel;
+            return;
+        }
+        ob = fullOb.value(channel).toObject();
+    }
+
     if (!ob.contains("LatestVersion") || !ob.value("LatestVersion").isString()) {
         qDebug() << "LatestVersion field is incorrect";
         return;
@@ -974,17 +993,23 @@ void MainWindow::updateInfoReceived()
     QString ver = ob.value("LatestVersionNumber").toString();
 #endif
 
-    QString versionTo09 = ob.value("VersionTo09").toString();
-    if (versionTo09 == Sanguosha->getVersionNumber()) {
-        QString latestVersion09 = ob.value("LatestVersion09").toString();
-
-        if (!latestVersion09.isEmpty()) {
-            latestVersion = latestVersion09;
-#if QT_VERSION >= 0x050600
-            ver = QVersionNumber::fromString(ob.value("LatestVersionNumber09").toString());
+#if QT_VERSION >= 0x50600
+    if (QVersionNumber(0, 8).isPrefixOf(Sanguosha->getQVersionNumber())) {
 #else
-            ver = ob.value("LatestVersionNumber09").toString();
+    if (Sanguosha->getVersionName().startsWith("V0.8.")) {
 #endif
+        QString versionTo09 = ob.value("VersionTo09").toString();
+        if (versionTo09 == Sanguosha->getVersionNumber()) {
+            QString latestVersion09 = ob.value("LatestVersion09").toString();
+
+            if (!latestVersion09.isEmpty()) {
+                latestVersion = latestVersion09;
+#if QT_VERSION >= 0x050600
+                ver = QVersionNumber::fromString(ob.value("LatestVersionNumber09").toString());
+#else
+                ver = ob.value("LatestVersionNumber09").toString();
+#endif
+            }
         }
     }
 
