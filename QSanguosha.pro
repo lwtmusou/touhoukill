@@ -10,7 +10,7 @@ win32: QT += winextras
 CONFIG += c++11
 CONFIG += lua
 
-VERSION = 0.8.12
+VERSION = 0.9.0
 
 CONFIG += precompiled_header
 PRECOMPILED_HEADER = src/pch.h
