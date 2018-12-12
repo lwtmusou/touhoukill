@@ -522,7 +522,7 @@
              <item>
               <widget class="QLineEdit" name="autoUpdateChannelLineEdit">
                <property name="text">
-                <string>Global</string>
+                <string notr="true">Global</string>
                </property>
                <property name="placeholderText">
                 <string>DO NOT EDIT THIS UNLESS YOU KNOW WHAT YOU ARE DOING</string>
