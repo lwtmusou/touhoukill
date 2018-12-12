@@ -2426,8 +2426,8 @@ ProtagonistPackage::ProtagonistPackage()
 {
     General *reimu = new General(this, "reimu$", "zhu", 4);
     //reimu->addSkill(new Lingqi);
-    reimu->addSkill(new Fengmo);
     reimu->addSkill(new Qixiang);
+    reimu->addSkill(new Fengmo);
     reimu->addSkill(new Boli);
 
     General *marisa = new General(this, "marisa$", "zhu", 4);
