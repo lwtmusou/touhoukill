@@ -1950,13 +1950,13 @@
     </message>
     <message>
         <location filename="../src/dialog/mainwindow.ui" line="339"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1046"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1057"/>
         <source>About fmod</source>
         <translation>关于 fmod</translation>
     </message>
     <message>
         <location filename="../src/dialog/mainwindow.ui" line="344"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1068"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1079"/>
         <source>About Lua</source>
         <translation>关于 Lua</translation>
     </message>
@@ -1973,7 +1973,7 @@
     </message>
     <message>
         <location filename="../src/dialog/mainwindow.ui" line="359"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1088"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1099"/>
         <source>About GPLv3</source>
         <translation>关于 GPLv3</translation>
     </message>
@@ -2104,9 +2104,9 @@
         <location filename="../src/dialog/mainwindow.cpp" line="522"/>
         <location filename="../src/dialog/mainwindow.cpp" line="666"/>
         <location filename="../src/dialog/mainwindow.cpp" line="720"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1050"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1072"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1092"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1061"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1083"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1103"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
@@ -2193,7 +2193,7 @@
         <translation>新版本可用</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1081"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1092"/>
         <source>The GNU General Public License is the most widely used free software license, which guarantees end users the freedoms to use, study, share, and modify the software.</source>
         <translation>GNU 通用公共许可协议（简称GNU GPL或GPL），是一个广泛被使用的自由软件许可证条款，它确保了广大用户自由地使用、学习、共享或修改软件。</translation>
     </message>
@@ -2204,8 +2204,8 @@
     </message>
     <message>
         <location filename="../src/dialog/mainwindow.cpp" line="289"/>
-        <source>please check the Qun file of QQ Qun 384318415 for update packages.</source>
-        <translation>请在QQ群 384318415 的群文件里检查更新。</translation>
+        <source>please check the Qun file of QQ Qun 384318315 for update packages.</source>
+        <translation>请在QQ群 384318315 的群文件里检查更新。</translation>
     </message>
     <message>
         <location filename="../src/dialog/mainwindow.cpp" line="827"/>
@@ -2233,19 +2233,19 @@
         <translation>游戏模式：</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1036"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1047"/>
         <source>FMOD is a proprietary audio library made by Firelight Technologies</source>
         <translation>FMOD 是由 Firelight Technologies 出品的专有音频库</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1040"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1063"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1086"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1051"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1074"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1097"/>
         <source>Official site: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
         <translation>官方网站: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1059"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1070"/>
         <source>Lua is a powerful, fast, lightweight, embeddable scripting language.</source>
         <translation>Lua 是一种强大的，快速的，轻量级，可嵌入的脚本语言.</translation>
     </message>
@@ -2275,8 +2275,8 @@
         <translation>聊天信息：</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1043"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1065"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1054"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1076"/>
         <source>Current versionn %1 &lt;br/&gt;</source>
         <translation>当前版本 %1&lt;br/&gt;</translation>
     </message>
@@ -2407,7 +2407,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/core/util.cpp" line="78"/>
+        <location filename="../src/core/util.cpp" line="83"/>
         <location filename="../src/server/generalselector.cpp" line="16"/>
         <source>Lua script error</source>
         <translation>Lua 脚本错误</translation>
@@ -3825,22 +3825,22 @@ P = 你自己, R = 你所在的房间</translation>
 <context>
     <name>UpdateDialog</name>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1111"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1122"/>
         <source>New Version Available</source>
         <translation>新版本可用</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1120"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1131"/>
         <source>Yes</source>
         <translation>是</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1123"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1134"/>
         <source>No</source>
         <translation>否</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1144"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1155"/>
         <source>New Version %1(%3) available.
 We support auto-updating from %2 to %1 on this platform.
 Click &apos;Yes&apos; to update now.</source>
@@ -3849,36 +3849,36 @@ Click &apos;Yes&apos; to update now.</source>
 点击“是”开始更新。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1202"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1284"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1300"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1335"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1213"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1295"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1311"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1346"/>
         <source>Update Error</source>
         <translation>更新错误</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1202"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1213"/>
         <source>An error occurred when downloading packages.
 URL is empty.</source>
         <translation>下载更新包失败。
 路径为空。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1284"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1295"/>
         <source>An error occurred when downloading packages.
 Cannot download the update script.</source>
         <translation>下载更新包失败。
 无法下载更新脚本。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1300"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1311"/>
         <source>An error occurred when downloading packages.
 Download pack checksum mismatch.</source>
         <translation>下载更新包失败。
 更新包校验码不匹配。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1335"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1346"/>
         <source>An error occurred when downloading packages.
 Cannot download the update pack.</source>
         <translation>下载更新包失败。

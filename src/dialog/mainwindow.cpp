@@ -286,7 +286,7 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
     else
         text.append(tr("The server version is older than your client version, please ask the server to update<br/>"));
 
-    text.append(tr("please check the Qun file of QQ Qun 384318415 for update packages."));
+    text.append(tr("please check the Qun file of QQ Qun 384318315 for update packages."));
     QMessageBox::warning(this, tr("Warning"), text);
 }
 
