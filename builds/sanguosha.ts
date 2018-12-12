@@ -513,7 +513,7 @@
         <location filename="../src/dialog/configdialog.ui" line="85"/>
         <location filename="../src/dialog/configdialog.ui" line="141"/>
         <location filename="../src/dialog/configdialog.ui" line="227"/>
-        <location filename="../src/dialog/configdialog.ui" line="614"/>
+        <location filename="../src/dialog/configdialog.ui" line="635"/>
         <source>Browse ...</source>
         <translation>浏览 ...</translation>
     </message>
@@ -521,7 +521,7 @@
         <location filename="../src/dialog/configdialog.ui" line="92"/>
         <location filename="../src/dialog/configdialog.ui" line="148"/>
         <location filename="../src/dialog/configdialog.ui" line="234"/>
-        <location filename="../src/dialog/configdialog.ui" line="624"/>
+        <location filename="../src/dialog/configdialog.ui" line="645"/>
         <source>Reset</source>
         <translation>重置</translation>
     </message>
@@ -626,22 +626,22 @@
         <translation>游戏</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.ui" line="539"/>
+        <location filename="../src/dialog/configdialog.ui" line="560"/>
         <source>Game Record</source>
         <translation>游戏录像</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.ui" line="580"/>
+        <location filename="../src/dialog/configdialog.ui" line="601"/>
         <source>Setup Record Paths</source>
         <translation>设置录像保存路径</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.ui" line="563"/>
+        <location filename="../src/dialog/configdialog.ui" line="584"/>
         <source>Network Game Only</source>
         <translation>只保存联机游戏</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.ui" line="547"/>
+        <location filename="../src/dialog/configdialog.ui" line="568"/>
         <source>Enable Auto Save</source>
         <translation>启用自动保存</translation>
     </message>
@@ -677,42 +677,52 @@
     </message>
     <message>
         <location filename="../src/dialog/configdialog.ui" line="518"/>
+        <source>AutoUpdateChannel</source>
+        <translation>自动更新频道</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/configdialog.ui" line="528"/>
+        <source>DO NOT EDIT THIS UNLESS YOU KNOW WHAT YOU ARE DOING</source>
+        <translation>如果你不知道你在做什么，请不要修改</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/configdialog.ui" line="539"/>
         <source>Bubble chat box delay(seconds)</source>
         <translation>气泡聊天框显示时间</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.cpp" line="50"/>
+        <location filename="../src/dialog/configdialog.cpp" line="51"/>
         <source> second</source>
         <translation>秒</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.cpp" line="99"/>
+        <location filename="../src/dialog/configdialog.cpp" line="100"/>
         <source>Select a background image</source>
         <translation>请选择一张背景图片</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.cpp" line="99"/>
-        <location filename="../src/dialog/configdialog.cpp" line="129"/>
+        <location filename="../src/dialog/configdialog.cpp" line="100"/>
+        <location filename="../src/dialog/configdialog.cpp" line="130"/>
         <source>Images (*.png *.bmp *.jpg)</source>
         <translation>图片 (*.png *.bmp *.jpg)</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.cpp" line="129"/>
+        <location filename="../src/dialog/configdialog.cpp" line="130"/>
         <source>Select a tableBg image</source>
         <translation>请选择一张游戏时背景图片</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.cpp" line="154"/>
+        <location filename="../src/dialog/configdialog.cpp" line="155"/>
         <source>Select a Record Paths</source>
         <translation>选择一个回放路径</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.cpp" line="237"/>
+        <location filename="../src/dialog/configdialog.cpp" line="240"/>
         <source>Select a background music</source>
         <translation>请选择背景音乐文件</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.cpp" line="237"/>
+        <location filename="../src/dialog/configdialog.cpp" line="240"/>
         <source>Audio files (*.wav *.mp3 *.ogg)</source>
         <translation>音频文件 (*.wav *.mp3 *.ogg)</translation>
     </message>
@@ -1940,13 +1950,13 @@
     </message>
     <message>
         <location filename="../src/dialog/mainwindow.ui" line="339"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1015"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1046"/>
         <source>About fmod</source>
         <translation>关于 fmod</translation>
     </message>
     <message>
         <location filename="../src/dialog/mainwindow.ui" line="344"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1037"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1068"/>
         <source>About Lua</source>
         <translation>关于 Lua</translation>
     </message>
@@ -1963,7 +1973,7 @@
     </message>
     <message>
         <location filename="../src/dialog/mainwindow.ui" line="359"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1057"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1088"/>
         <source>About GPLv3</source>
         <translation>关于 GPLv3</translation>
     </message>
@@ -2094,9 +2104,9 @@
         <location filename="../src/dialog/mainwindow.cpp" line="522"/>
         <location filename="../src/dialog/mainwindow.cpp" line="666"/>
         <location filename="../src/dialog/mainwindow.cpp" line="720"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1019"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1041"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1061"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1050"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1072"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1092"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
@@ -2171,19 +2181,19 @@
         <translation>击杀</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="917"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="919"/>
         <source>New Version %1(%3) available.&lt;br/&gt;But we don&apos;t support auto-updating from %2 to %1 on this platform.&lt;br/&gt;Please download the full package from &lt;a href=&quot;%4&quot;&gt;Here&lt;/a&gt;.</source>
         <translation>新版本 %1（%3）可用。&lt;br /&gt;
 但是在此平台上我们不支持从 %2 到 %1 的自动更新。&lt;br /&gt;
 请从&lt;a href=&quot;%4&quot;&gt;这里&lt;/a&gt;下载完整包。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="928"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="930"/>
         <source>New Version Avaliable</source>
         <translation>新版本可用</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1050"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1081"/>
         <source>The GNU General Public License is the most widely used free software license, which guarantees end users the freedoms to use, study, share, and modify the software.</source>
         <translation>GNU 通用公共许可协议（简称GNU GPL或GPL），是一个广泛被使用的自由软件许可证条款，它确保了广大用户自由地使用、学习、共享或修改软件。</translation>
     </message>
@@ -2223,19 +2233,19 @@
         <translation>游戏模式：</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1005"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1036"/>
         <source>FMOD is a proprietary audio library made by Firelight Technologies</source>
         <translation>FMOD 是由 Firelight Technologies 出品的专有音频库</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1009"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1032"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1055"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1040"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1063"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1086"/>
         <source>Official site: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
         <translation>官方网站: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1028"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1059"/>
         <source>Lua is a powerful, fast, lightweight, embeddable scripting language.</source>
         <translation>Lua 是一种强大的，快速的，轻量级，可嵌入的脚本语言.</translation>
     </message>
@@ -2265,8 +2275,8 @@
         <translation>聊天信息：</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1012"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1034"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1043"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1065"/>
         <source>Current versionn %1 &lt;br/&gt;</source>
         <translation>当前版本 %1&lt;br/&gt;</translation>
     </message>
@@ -3587,24 +3597,24 @@ P = 你自己, R = 你所在的房间</translation>
 <context>
     <name>Settings</name>
     <message>
-        <location filename="../src/core/settings.cpp" line="610"/>
+        <location filename="../src/core/settings.cpp" line="605"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../src/core/settings.cpp" line="610"/>
+        <location filename="../src/core/settings.cpp" line="605"/>
         <source>Font file %1 could not be loaded!</source>
         <translation>不能载入字体文件 %1 !</translation>
     </message>
     <message>
         <location filename="../src/core/settings.cpp" line="544"/>
-        <location filename="../src/core/settings.cpp" line="664"/>
+        <location filename="../src/core/settings.cpp" line="659"/>
         <source>Sanguosha-fans</source>
         <translation>三国杀fans</translation>
     </message>
     <message>
         <location filename="../src/core/settings.cpp" line="551"/>
-        <location filename="../src/core/settings.cpp" line="665"/>
+        <location filename="../src/core/settings.cpp" line="660"/>
         <source>%1&apos;s server</source>
         <translation>%1的服务器</translation>
     </message>
@@ -3815,22 +3825,22 @@ P = 你自己, R = 你所在的房间</translation>
 <context>
     <name>UpdateDialog</name>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1080"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1111"/>
         <source>New Version Available</source>
         <translation>新版本可用</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1089"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1120"/>
         <source>Yes</source>
         <translation>是</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1092"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1123"/>
         <source>No</source>
         <translation>否</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1113"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1144"/>
         <source>New Version %1(%3) available.
 We support auto-updating from %2 to %1 on this platform.
 Click &apos;Yes&apos; to update now.</source>
@@ -3839,36 +3849,36 @@ Click &apos;Yes&apos; to update now.</source>
 点击“是”开始更新。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1171"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1249"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1265"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1304"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1202"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1284"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1300"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1335"/>
         <source>Update Error</source>
         <translation>更新错误</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1171"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1202"/>
         <source>An error occurred when downloading packages.
 URL is empty.</source>
         <translation>下载更新包失败。
 路径为空。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1249"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1284"/>
         <source>An error occurred when downloading packages.
 Cannot download the update script.</source>
         <translation>下载更新包失败。
 无法下载更新脚本。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1265"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1300"/>
         <source>An error occurred when downloading packages.
 Download pack checksum mismatch.</source>
         <translation>下载更新包失败。
 更新包校验码不匹配。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1304"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1335"/>
         <source>An error occurred when downloading packages.
 Cannot download the update pack.</source>
         <translation>下载更新包失败。
