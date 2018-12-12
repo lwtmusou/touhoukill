@@ -4,6 +4,9 @@
 config = {
 	developers = {
 	},
+	
+	withHeroSkin = false,
+	withBgm = false,
 
 	kingdoms = {
 		"zhu",

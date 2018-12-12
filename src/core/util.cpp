@@ -26,6 +26,11 @@ QVariant GetValueFromLuaState(lua_State *L, const char *table_name, const char *
         lua_pop(L, 1);
         break;
     }
+    case LUA_TBOOLEAN: {
+        data = lua_toboolean(L, -1);
+        lua_pop(L, 1);
+        break;
+    }
     case LUA_TTABLE: {
         lua_rawgeti(L, -1, 1);
         bool isArray = !lua_isnil(L, -1);
