@@ -938,8 +938,19 @@ void MainWindow::parseUpdateInfo(const QString &v, const QString &vn, const QJso
 #else
         QString updateScript = "jni";
 #endif
-        QString updatePack = updateOb.value("UpdatePack").toString();
-        QJsonObject updateHash = updateOb.value("UpdatePackHash").toObject();
+        QString packKey = "UpdatePack";
+        QString hashKey = "UpdatePackHash";
+        if (GetConfigFromLuaState(Sanguosha->getLuaState(), "withBgm").toBool()) {
+            packKey.append("B");
+            hashKey.append("B");
+        }
+        if (GetConfigFromLuaState(Sanguosha->getLuaState(), "withHeroSkin").toBool()) {
+            packKey.append("H");
+            hashKey.append("H");
+        }
+
+        QString updatePack = updateOb.value(packKey).toString();
+        QJsonObject updateHash = updateOb.value(hashKey).toObject();
         if (!updateScript.isEmpty() && !updatePack.isEmpty() && !updateHash.isEmpty()) {
             UpdateDialog upd;
             upd.setInfo(v, vn, updateScript, updatePack, updateHash);
