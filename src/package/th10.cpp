@@ -1137,19 +1137,30 @@ public:
     Changshi()
         : TriggerSkill("changshi")
     {
-        events << EventPhaseStart << EventPhaseChanging;
+        events << EventPhaseStart;// << EventPhaseChanging
         //frequency = Eternal;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-        if (triggerEvent == EventPhaseChanging) {
+        /*if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasFlag("changshiInvoked")) {
                         room->setPlayerSkillInvalidity(p, NULL, false);
                     }
+                }
+            }
+        }*/
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player && player->getPhase() == Player::NotActive)
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                //if (p->hasFlag("changshiInvoked"))
+                if (p->getMark("changshiInvoked") > 0) {
+                    room->setPlayerMark(p, "changshiInvoked", 0);
+                    room->setPlayerSkillInvalidity(p, NULL, false);
                 }
             }
         }
@@ -1159,7 +1170,7 @@ public:
     {
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player->getPhase() == Player::RoundStart && player->hasSkill(this))
+            if (player && player->getPhase() == Player::RoundStart && player->hasSkill(this))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL);
         }
         return QList<SkillInvokeDetail>();
@@ -1196,7 +1207,8 @@ public:
             foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
                 room->setPlayerSkillInvalidity(p, NULL, true);
-                p->setFlags("changshiInvoked");
+                room->setPlayerMark(p, "changshiInvoked", 1);
+                //p->setFlags("changshiInvoked");
             }
         } else if (choice == "debuff") {
             CardUseStruct carduse;
@@ -1224,7 +1236,8 @@ public:
                 foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
                     room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
                     room->setPlayerSkillInvalidity(p, NULL, true);
-                    p->setFlags("changshiInvoked");
+                    room->setPlayerMark(p, "changshiInvoked", 1);
+                    //p->setFlags("changshiInvoked");
                 }
             } else if (choice == "debuff") {
                 CardUseStruct carduse;
