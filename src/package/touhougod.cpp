@@ -2443,7 +2443,7 @@ public:
     Renge()
         : TriggerSkill("renge")
     {
-        events << GameStart << Revive << EventPhaseStart << GameOverJudge << EventLoseSkill;
+        events << GameStart << Revive << EventPhaseStart << Death << EventLoseSkill;
         frequency = Eternal;
     }
 
@@ -2484,13 +2484,16 @@ public:
             }
         } else if (triggerEvent == EventLoseSkill) {
             if (!room->getTag("renge").isNull()) {
+                SkillAcquireDetachStruct st = data.value<SkillAcquireDetachStruct>();
                 ServerPlayer *koi = room->getTag("renge").value<ServerPlayer *>();
-                if (koi->hasSkill(this) && koi->isAlive()) {
-                    SkillAcquireDetachStruct st = data.value<SkillAcquireDetachStruct>();
+                if (koi->hasSkill(this) && koi->isAlive() && st.skill->objectName() != "renge") {
                     if (st.skill->objectName() == "benwo")
                         ret << SkillInvokeDetail(this, koi, koi, st.player, true);
                     else if (st.skill->objectName() == "ziwo" && st.player != koi)
                         ret << SkillInvokeDetail(this, koi, koi, st.player, true);
+                } else if (koi == st.player && st.skill->objectName() == "renge") {
+                    // assume that koi has lose this skill
+                    ret << SkillInvokeDetail(this, NULL, koi, NULL, true);
                 }
             }
         }
@@ -2523,7 +2526,7 @@ public:
                 ServerPlayer *target = invoke->targets.first();
                 room->acquireSkill(target, "chaowo");
             }
-        } else if (triggerEvent == EventLoseSkill) {
+        } else if (triggerEvent == EventLoseSkill && data.value<SkillAcquireDetachStruct>().skill->objectName() != "renge") {
             SkillAcquireDetachStruct st = data.value<SkillAcquireDetachStruct>();
             LogMessage l;
             l.type = "#AcquireSkill";
@@ -2714,6 +2717,7 @@ public:
     static void changeHero(Room *room, ServerPlayer *source, const QString &to_general)
     {
         const General *fromGeneral = source->getGeneral();
+
         RoomThread *thread = room->getThread();
         JsonArray arg;
         arg << (int)QSanProtocol::S_GAME_EVENT_CHANGE_HERO;
@@ -2724,6 +2728,21 @@ public:
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 
         room->changePlayerGeneral(source, to_general);
+
+        if (fromGeneral != NULL) {
+            foreach (const Skill *skill, toGeneral->getSkillList()) {
+                if (skill->isLordSkill() && !source->isLord())
+                    continue;
+                if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
+                    room->setPlayerMark(source, skill->getLimitMark(), 0);
+                SkillAcquireDetachStruct s;
+                s.isAcquire = true;
+                s.player = source;
+                s.skill = skill;
+                QVariant _skillobjectName = QVariant::fromValue(s);
+                thread->trigger(EventLoseSkill, room, _skillobjectName);
+            }
+        }
 
         bool game_start = false;
         const General *toGeneral = Sanguosha->getGeneral(to_general);
@@ -5412,10 +5431,10 @@ public:
         //copy flag
         QStringList flags;
         flags << "mopao"
-            << "mopao2"
-            << "jidu_card";
-              //<< "chunhua_red"
-              //<< "chunhua_black"; //drank?
+              << "mopao2"
+              << "jidu_card";
+        //<< "chunhua_red"
+        //<< "chunhua_black"; //drank?
         foreach (QString flag, flags) {
             if (use.card->hasFlag(flag))
                 card->setFlags(flag);
@@ -5882,8 +5901,6 @@ public:
     }
 };
 
-
-
 class Riyue : public TargetModSkill
 {
 public:
@@ -5904,30 +5921,27 @@ public:
             if (card->getSkillName() == "xianshi") {
                 //QString cardname = player->property("xianshi_card").toString();
                 QString selected_effect = Self->tag.value("xianshi", QString()).toString();
-                if (selected_effect != NULL)  //selected_effect.contains("fire")
+                if (selected_effect != NULL) //selected_effect.contains("fire")
                 {
-                    Card* extracard = Sanguosha->cloneCard(selected_effect);
+                    Card *extracard = Sanguosha->cloneCard(selected_effect);
                     extracard->deleteLater();
                     if (extracard->canDamage())
                         return 1000;
-                }    
+                }
             }
-        
-        }
-        else if (card->isBlack()) {
+
+        } else if (card->isBlack()) {
             if (card->isKindOf("Peach"))
                 return 1000;
             if (card->getSkillName() == "xianshi") {
                 QString selected_effect = Self->tag.value("xianshi", QString()).toString();
-                if (selected_effect != NULL &&  (selected_effect.contains("peach") || selected_effect.contains("analeptic")))
+                if (selected_effect != NULL && (selected_effect.contains("peach") || selected_effect.contains("analeptic")))
                     return 1000;
             }
-
         }
 
         return 0;
     }
-
 };
 
 /*

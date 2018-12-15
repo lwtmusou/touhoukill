@@ -438,20 +438,19 @@ return{
 	["illustrator:koishi_god_2"] = "月本葵",
 	["origin:koishi_god_2"] = "p号：45610081，个人ID：246176",
 
-	
+
 	["renge"] = "人格",
-	[":renge"] = "<font color=\"#808080\"><b>永久技，</b></font>所有角色拥有“本我”；其他角色拥有“自我”；准备阶段开始时，你选择至多一名没有“超我”的角色，令其获得“超我”。",
-	["@renge"] = "你需指定一名角色，令其获得“超我”。",
+	[":renge"] = "<font color=\"#808080\"><b>永久技，</b></font>若你存活，所有角色拥有“本我”；若你存活，其他角色拥有“自我”；准备阶段开始时，若你存活，你选择至多一名没有“超我”的角色，令其获得“超我”。",
+	["@renge"] = "你选择至少一名角色，令被选择的角色获得“超我”。",
 	["ziwo"] = "自我",
 	[":ziwo"] = "回合开始时， 你可令你所有技能于此回合无效。",
 	["benwo"] = "本我",
 	[":benwo"] = "<font color=\"blue\"><b>锁定技，</b></font>结束阶段开始时，你选择一项：使用一张非转化的手牌，或展示均不能使用的所有手牌。若你没有永久技，你不能以此法使用【杀】；若你拥有限定技，你以此法使用牌时，你摸一张牌，且若此牌为【杀】，你回复1点体力。",
 	["benwo-use"] = "因“本我”效果，你须使用一张手牌。",
-
 	["chaowo"] = "超我",
 	[":chaowo"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可将人物牌替换为游戏外的一张同名人物牌。",
-    ["$chaowoAnimate"]= "skill=koishi_god:chaowo",
-	
+	["$chaowoAnimate"]= "skill=koishi_god:chaowo",
+
 --*************************************
 	--shen018  势力：神 5血
 	["suwako_god"] = "神 泄矢诹访子",
@@ -606,7 +605,7 @@ return{
 	--[":cuimian"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可以于此阶段内获得“读心”且你使用牌无次数限制。",
 	--[":cuimian"] = "<font color=\"blue\"><b>锁定技，</b></font>若其他角色的明置手牌数不大于其手牌上限，其于其回合内不能使用、打出或弃置明置手牌。",
 	["$xinhua"] = "%from 发动“%arg” 使用/打出 %to 的 %card ",
-    ["$cuimianAnimate"]= "skill=satori_god:cuimian",
+	["$cuimianAnimate"]= "skill=satori_god:cuimian",
 --*************************************
 	--shen024  势力：神 4血
 	["aya_god"] = "神 射命丸文" ,
@@ -657,12 +656,12 @@ return{
 
 	["illustrator:nue_god"] = "ルリア",
 	["origin:nue_god"] = "p号：12490153, 个人ID：997454",
-	
+
 	["illustrator:nue_god_1"] = " UGUME",
 	["origin:nue_god_1"] = "p号： 3112588",
 	["illustrator:nue_god_2"] = " 朱シオ",
 	["origin:nue_god_2"] = "p号：10977869",
-	
+
 	["anyun"] = "暗云",
 	[":anyun"] = "游戏开始时，你随机将三张游戏外的人物牌扣置于一旁，称为“ X ”；若你没有明置的“X”，你可以公开一张“X”并发动或触发其上的技能，并于移除此“X”之前拥有其上所有技能（你不能发动、触发、拥有永久技、限定技、觉醒技）。",
 	["benzun"] = "本尊",
@@ -682,7 +681,7 @@ return{
 	["&marisa_god"] = "神雾雨魔理沙",
 	["#marisa_god"] = "奇妙的魔法使",
 	["designer:marisa_god"] = "三国有单",
-	
+
 	["illustrator:marisa_god"] = "SIRO",
 	["origin:marisa_god"] = "p号：32422143, 个人ID：54020",
 	["illustrator:marisa_god_1"] = "りひと",
@@ -690,7 +689,7 @@ return{
 	["illustrator:marisa_god_2"] = " 菊月",
 	["origin:marisa_god_2"] = "p号：47314009",
 
-	
+
 	["chongneng"] = "充能",
 	[":chongneng"] = "当你使用手牌里的牌指定角色为目标时，你可以选择一项：取消一个目标并获得1枚“星”标记；或（若此牌存在效果值且不为延时类锦囊牌）弃1枚“星”标记，若如此做，你令此牌效果中的一个效果值+1。然后若此牌的花色为<font size=\"5\", color=\"#808080\"><b>♠</b></font>，你摸一张牌。<br />♦游戏牌描述中用 <font color=\"green\"><b>绿色</b></font> 写出的 文字 即为 效果值；效果值 加减实为该文字的 数字 加减。",
 	["@chongneng"] = "你发动了<font color=\"#00FF00\"><b>充能</b></font> ，请选择要取消的一名目标角色并点击<font color=\"#FF3C00\"><b>确定</b></font>。<br/>或者点击<font color=\"#7AC930\"><b>取消</b></font>来弃1枚“星”标记并令此牌的一个<font color=\"#81AD72\"><b>效果值+1</b></font>。",
@@ -728,17 +727,17 @@ return{
 	["#patchouli_god"] = "七曜的魔女",
 	["!patchouli_god"] = "神 帕秋莉·诺蕾姬",
 	["designer:patchouli_god"] = "三国有单",
-	
+
 	["illustrator:patchouli_god"] = "ryosios",
 	["origin:patchouli_god"] = "p号：41382219, 个人ID：1508165",
 	["illustrator:patchouli_god_1"] = " NEKO",
 	["origin:patchouli_god_1"] = "p号：34477857",
-	
-	
+
+
 	["xianshi"] = "贤石",
-	--[":xianshi"] = "你于出牌阶段的空闲时间点使用手牌里的普通锦囊牌/【杀】选择目标时，若你于此阶段内使用的上一张指定角色为目标的牌为【杀】/普通锦囊牌，你可以将此牌的效果改为“上一张牌的原效果+此牌的效果”。",	
+	--[":xianshi"] = "你于出牌阶段的空闲时间点使用手牌里的普通锦囊牌/【杀】选择目标时，若你于此阶段内使用的上一张指定角色为目标的牌为【杀】/普通锦囊牌，你可以将此牌的效果改为“上一张牌的原效果+此牌的效果”。",
 	[":xianshi"] = "你可将一张基本牌/锦囊牌当作效果为“本回合指定过目标角色的普通锦囊/基本牌原效果 + 本牌效果”的同名牌使用。（【闪】【无懈可击】的追加效果结算对象为目标牌的使用者。追加【酒】的原效果固定为回复体力）<font color=\"green\"><b>每回合限一次</b></font>",
-	
+
 	["#Xianshi"] = "%from 发动 <font color=\"#00FF00\">贤石</font>， 令【%arg】 的效果为 【%arg2】 + 【%arg】 " ,
 	["riyue"] = "日月",
 	[":riyue"] = "你于出牌阶段空闲点使用具有伤害效果的红色牌或具有回复效果的黑色牌可额外指定任意名目标。",
@@ -749,21 +748,21 @@ return{
 	--[":yueyao"] = "当你需要使用【闪】时，若当前回合角色处于异常状态，你可以视为使用【闪】。此【闪】结算结束后，你视为使用【联军盛宴】。<font color=\"green\"><b>每阶段限一次。</b></font>",
 	--[":riyao"] = "<font color=\"red\"><b>限定技，</b></font>你使用具有伤害效果的牌时，你可添加所有合法目标成为额外目标。若如此做，此牌造成的伤害属性改为火属性。且此牌被抵消后，重置“月曜”。",
 	--[":yueyao"] = "<font color=\"red\"><b>限定技，</b></font>你使用具有回复效果的牌时，你可添加所有合法目标成为额外目标。此牌结算后，若有目标角色死亡，你重置“日曜”。",
-	
-	
+
+
 --*************************************
 	["alice_god"] = "神 爱丽丝",
 	["&alice_god"] = "神爱丽丝",
 	["!alice_god"] = "神 爱丽丝•玛格特罗依德",
 	["#alice_god"] = "人形裁判",
 	["designer:alice_god"] = "三国有单",
-	
+
 	["illustrator:alice_god"] = "藤原",
 	["origin:alice_god"] = "p号：58024611，个人ID：27517",
 	["illustrator:alice_god_1"] = " こぞう",
 	["origin:alice_god_1"] = "p号：37256385",
 
-	
+
 	["wenyue"] = "文乐",
 	[":wenyue"] = "一名角色的装备牌(含判定牌)进入弃牌堆后，你可弃置一张非装备牌，将之置入另一名角色的装备区。若如此做，你可将“千枪”或“献祭”转移给其中一名角色。",
 	["#wenyue_temp"] = "文乐",
@@ -777,7 +776,7 @@ return{
 	["@xianji_target"] = "你可以对一名装备区有牌的角色发动“献祭”。",
 	["xianji:loseHP"] = "失去体力" ,
 	["xianji:recoverHP"] = "回复体力" ,
-	
+
 	["shinmyoumaru_god"] = "神 少名针妙丸",
 	["&shinmyoumaru_god"] = "神少名针妙丸",
 	["#shinmyoumaru_god"] = "辉光之针的利立浦特",
