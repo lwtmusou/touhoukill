@@ -2730,7 +2730,7 @@ public:
         room->changePlayerGeneral(source, to_general);
 
         if (fromGeneral != NULL) {
-            foreach (const Skill *skill, toGeneral->getSkillList()) {
+            foreach (const Skill *skill, fromGeneral->getSkillList()) {
                 if (skill->isLordSkill() && !source->isLord())
                     continue;
                 if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
