@@ -377,6 +377,40 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             } catch (TriggerEvent triggerEvent) {
                 if (triggerEvent == TurnBroken)
                     card_use.from->tag.remove("Jink_" + card_use.card->toString());
+
+                
+                //copy from Room::useCard()
+                if (triggerEvent == TurnBroken) {
+                    if (room->getCardPlace(card_use.card->getEffectiveId()) == Player::PlaceTable) {
+                        CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, card_use.from->objectName(), QString(), card_use.card->getSkillName(), QString());
+                        if (card_use.to.size() == 1)
+                            reason.m_targetId = card_use.to.first()->objectName();
+                        room->moveCardTo(card_use.card, card_use.from, NULL, Player::DiscardPile, reason, true);
+                    }
+                    QVariant data = QVariant::fromValue(card_use);
+                    card_use.from->setFlags("Global_ProcessBroken");
+                    thread->trigger(CardFinished, room, data);
+                    card_use.from->setFlags("-Global_ProcessBroken");
+
+                    foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                        p->tag.remove("Qinggang");
+
+                        foreach(QString flag, p->getFlagList()) {
+                            if (flag == "Global_GongxinOperator")
+                                p->setFlags("-" + flag);
+                            else if (flag.endsWith("_InTempMoving"))
+                                room->setPlayerFlag(p, "-" + flag);
+                        }
+                    }
+
+                    foreach(int id, Sanguosha->getRandomCards()) {
+                        if (room->getCardPlace(id) == Player::PlaceTable || room->getCardPlace(id) == Player::PlaceJudge)
+                            room->moveCardTo(Sanguosha->getCard(id), NULL, Player::DiscardPile, true);
+                        if (Sanguosha->getCard(id)->hasFlag("using"))
+                            room->setCardFlag(id, "-using");
+                    }
+                }
+
                 throw triggerEvent;
             }
         }
