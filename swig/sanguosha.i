@@ -84,7 +84,7 @@ public:
     QList<int> getShownHandcards() const;
     bool isShownHandcard(int id) const;
 	QList<int> getBrokenEquips() const;
-	bool isBrokenEquip(int id) const;
+	bool isBrokenEquip(int id, bool consider_shenbao = false) const;
     int getHp() const;
     int getRenHp() const;
     int getLingHp() const;

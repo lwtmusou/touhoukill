@@ -1761,12 +1761,12 @@ public:
         const Horse *horse = NULL;
         if (from->getOffensiveHorse() && from->getMark("Equips_Nullified_to_Yourself") == 0) {
             horse = qobject_cast<const Horse *>(from->getOffensiveHorse()->getRealCard());
-            if (horse && !from->isBrokenEquip(horse->getEffectiveId()))
+            if (horse && !from->isBrokenEquip(horse->getEffectiveId(), true))
                 correct += horse->getCorrect();
         }
         if (to->getDefensiveHorse() && to->getMark("Equips_Nullified_to_Yourself") == 0) {
             horse = qobject_cast<const Horse *>(to->getDefensiveHorse()->getRealCard());
-            if (horse && !to->isBrokenEquip(horse->getEffectiveId()))
+            if (horse && !to->isBrokenEquip(horse->getEffectiveId(), true))
                 correct += horse->getCorrect();
         }
         return correct;

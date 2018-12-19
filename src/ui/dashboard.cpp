@@ -1286,7 +1286,7 @@ void Dashboard::updateHandPile()
 {
     WrappedCard *t = Self->getTreasure();
     if (t) {
-        if (Self->isBrokenEquip(t->getEffectiveId()))
+        if (Self->isBrokenEquip(t->getEffectiveId(), true))
             retractPileCards("wooden_ox");
     }
 }

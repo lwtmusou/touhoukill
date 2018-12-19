@@ -101,7 +101,7 @@ public:
     bool isShownHandcard(int id) const;
     QList<int> getBrokenEquips() const;
     void setBrokenEquips(QList<int> ids);
-    bool isBrokenEquip(int id) const;
+    bool isBrokenEquip(int id, bool consider_shenbao = false) const;
     QStringList getHiddenGenerals() const;
     void setHiddenGenerals(const QStringList &generals);
     QString getShownHiddenGeneral() const;

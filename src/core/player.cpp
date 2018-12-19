@@ -189,10 +189,13 @@ void Player::setBrokenEquips(QList<int> ids)
     emit brokenEquips_changed();
 }
 
-bool Player::isBrokenEquip(int id) const
+bool Player::isBrokenEquip(int id, bool consider_shenbao) const
 {
     if (broken_equips.isEmpty() || id < 0)
         return false;
+
+    if (consider_shenbao)
+        return broken_equips.contains(id) && !hasSkill("shenbao", false, false);
     return broken_equips.contains(id);
 }
 
@@ -388,7 +391,7 @@ int Player::getAttackRange(bool include_weapon) const
     if (include_weapon) {
         const Weapon *card = qobject_cast<const Weapon *>(weapon->getRealCard());
         Q_ASSERT(card);
-        if (!isBrokenEquip(card->getEffectiveId()))
+        if (!isBrokenEquip(card->getEffectiveId(), true))
             weapon_range = card->getRange();
     }
 
@@ -999,7 +1002,7 @@ bool Player::hasWeapon(const QString &weapon_name, bool selfOnly) const
         }
     }
 
-    if (!weapon || isBrokenEquip(weapon->getEffectiveId()))
+    if (!weapon || isBrokenEquip(weapon->getEffectiveId(), true))
         return false;
     if (weapon->objectName() == weapon_name || weapon->isKindOf(weapon_name.toStdString().c_str()))
         return true;
@@ -1027,7 +1030,7 @@ bool Player::hasArmorEffect(const QString &armor_name, bool selfOnly) const
         }
     }
 
-    if (!armor || isBrokenEquip(armor->getEffectiveId()))
+    if (!armor || isBrokenEquip(armor->getEffectiveId(), true))
         return false;
     if (armor->objectName() == armor_name || armor->isKindOf(armor_name.toStdString().c_str()))
         return true;
@@ -1055,7 +1058,7 @@ bool Player::hasTreasure(const QString &treasure_name, bool selfOnly) const
         }
     }
 
-    if (!treasure || isBrokenEquip(treasure->getEffectiveId()))
+    if (!treasure || isBrokenEquip(treasure->getEffectiveId(), true))
         return false;
     if (treasure->objectName() == treasure_name || treasure->isKindOf(treasure_name.toStdString().c_str()))
         return true;
