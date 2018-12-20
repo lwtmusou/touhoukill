@@ -132,7 +132,7 @@ sgs.ai_slash_prohibit.xiangqi = function(self, from, to, card)
 	fakeDamage.card=card
 	fakeDamage.nature= self:touhouDamageNature(card,from,to)
 	fakeDamage.damage=1
-	fakeDamage.from=slash
+	fakeDamage.from=from
 	fakeDamage.to=to
 	local final_damage=self:touhouDamage(fakeDamage,from, to)
 	if final_damage.damage >= to:getHp() then
@@ -271,6 +271,20 @@ sgs.ai_skill_property.maihuo = { effect = {{"DrawEffect"},{"DrawEffect"}},
 	trigger =       {{"NotActive"}, {"Unkown"}},
 	target =        {{"OtherAlivePlayers"}, {"SkillOwner"}},
 }
+
+--麻痹，filter event 居然是比gamerule还慢的
+--[[function SmartAI:maihuoIntention(player)
+    if player:hasSkill("maihuo", false, false) and not player:hasUsed("MaihuoCard") and not player:hasFlag("PlayPhaseTerminated") then
+		local lord=self.room:getLord()
+		if lord  then
+			local overflow  =self:getOverflow(player)>0
+			if overflow then
+				sgs.updateIntention(player, lord, 30)
+			end
+		end
+	end
+end]]
+
 
 
 function SmartAI:getDamageSource(attacker)
