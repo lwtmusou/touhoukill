@@ -466,7 +466,7 @@ end]]
 --sgs.ai_skill_askforag.toupai = function(self, card_ids)
 sgs.ai_skill_invoke.qucai = true
 
-
+--[[
 sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 	local judge=self.player:getTag("feixiang_judge"):toJudge()
 	local cards={}
@@ -578,8 +578,81 @@ sgs.ai_skill_cardchosen.feixiang = function(self, who, flags)
 	local cards2 = sgs.QList2Table(who:getCards("hes"))
 	return cards2[math.random(1, #cards2)]
 end
+]]
+--sgs.ai_playerchosen_intention.feixiang = 50
+sgs.ai_skill_playerchosen.feixiang = function(self, targets)
+	local judge=self.player:getTag("feixiang_judge"):toJudge()
+	local cards={}
+	table.insert(cards,judge.card)
+	local ex_id = self:getRetrialCardId(cards, judge)
 
-sgs.ai_playerchosen_intention.feixiang = 50
+    local judgecard_value = self:getUseValue(judge.card)
+	--ex_id 不为-1 则代表 此牌作为判定牌生效的话，对天子而言是个好结果
+	local retrial_targets={}
+	for _,target in sgs.qlist(targets) do
+        local flag = "es"
+        if target:objectName() == self.player:objectName() then flag = "hes" end
+		local cards1 = sgs.QList2Table(target:getCards(flag))
+		local self_card =  target:objectName()== self.player:objectName()
+		local new_id = self:getRetrialCardId(cards1, judge,self_card)
+		--new_id 不为-1 代表 装备区的id去改判，可以得到好结果
+
+		--牌的基础使用价值
+        local new_value = self:getUseValue(sgs.Sanguosha:getCard(new_id))
+        local diff = judgecard_value - new_value
+        if not self:isEnemy(target) then
+			diff = 0 - diff
+        end
+                
+        --改判结果的价值修正
+        if ex_id == -1 and new_id ~= -1 then
+			diff = diff + 15
+        elseif  new_id == -1 then
+			if ex_id ~= -1 then
+              	diff = diff - 15
+			else
+				diff = diff - 3
+			end
+        end
+        --还需要计算拔装备的价值？
+
+		local array={player= target, value= diff}
+		table.insert(retrial_targets,array)
+	end
+	
+	
+	local compare_func = function(a, b)
+		return a.value > b.value
+	end
+
+    if #retrial_targets>0 then
+		table.sort(retrial_targets, compare_func)
+        for _, t in ipairs(retrial_targets) do
+			if t.value >= 5 then return t.player end
+        end
+    end
+	return nil
+end
+
+sgs.ai_skill_cardchosen.feixiang = function(self, who, flags)
+	local flag = "es"
+	local judge=self.player:getTag("feixiang_judge"):toJudge()
+	local cards={}
+	table.insert(cards,judge.card)
+	--local ex_id = self:getRetrialCardId(cards, judge)
+	
+	if who:objectName() == self.player:objectName() or self.player:hasSkill("duxin") then
+		flag  = "hes"
+	end
+	local cards1 = sgs.QList2Table(who:getCards(flag))
+	local self_card =  who:objectName()== self.player:objectName()
+	local new_id=self:getRetrialCardId(cards1, judge, self_card)
+	if new_id ~= -1 then
+		return sgs.Sanguosha:getCard(new_id)
+	end
+
+	return cards1[math.random(1, #cards1)]
+end
 
 sgs.ai_slash_prohibit.feixiang = function(self, from, to, card)
 	if to:hasArmorEffect("EightDiagram")
@@ -599,12 +672,8 @@ sgs.ai_skillProperty.feixiang = function(self)
 end
 
 
-sgs.ai_skill_invoke.dizhen =function(self,data)
-	local target= data:toPlayer()
-	if target and self:isEnemy(target) then
-		return true
-	end
-end
+sgs.ai_skill_invoke.dizhen  = true
+
 
 
 table.insert(sgs.ai_global_flags, "tianrenslashsource")
