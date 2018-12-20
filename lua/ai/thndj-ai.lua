@@ -3,6 +3,36 @@ sgs.ai_skill_playerchosen.sidou = function(self, targets)
 	if self.player:getHp()== 1 then
 		return nil
 	end
+	
+	local fakeDamage=sgs.DamageStruct()
+	fakeDamage.nature= sgs.DamageStruct_Fire
+	fakeDamage.damage=1
+	fakeDamage.from = self.player
+	fakeDamage.to = self.player
+	local final_damage=self:touhouDamage(fakeDamage,self.player, self.player)
+        local friend_damage = final_damage.damage
+        local enemy_damage = 0
+        if self.player:isChained() then
+        	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+				if p:isChained() then
+					fakeDamage.to = p
+					local tmp_damage=self:touhouDamage(fakeDamage,self.player, self.player)
+					if self:isEnemy(p) then
+						enemy_damage = enemy_damage  + tmp_damage.damage
+					elseif self:isFriend(p) then
+						friend_damage = friend_damage  + tmp_damage.damage
+				end
+            end		
+	    end
+	end
+
+
+
+	if friend_damage > enemy_damage and friend_damage >=2 then
+		return nil
+    end
+	
+	
 	local wizzard=self:invokeTouhouJudge()
 	for _,p in sgs.qlist(targets) do
 		if not wizzard and p:containsTrick("lightning") then
