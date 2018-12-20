@@ -380,7 +380,26 @@ sgs.ai_playerchosen_intention.huanshi = function(self, from, to)
 	end
 end
 
+sgs.ai_skill_invoke.xushi =function(self,data)
+	local use=self.player:getTag("xushi_use"):toCardUse()
+	--对敌无脑true
+        if self:isEnemy(use.from) then
+		return true
+	end
+	return false
+end
 
+--只指定一个？
+sgs.ai_skill_playerchosen.xushi = function(self, targets)
+	local use=self.player:getTag("xushi_use"):toCardUse()    
+    for _,p in sgs.qlist(targets) do 
+        	if self:isEnemy(p) == self:isEnemy(use.to:first()) then
+			return p
+        end
+	end
+	
+	return targets:first()
+end
 sgs.ai_skill_invoke.shishi =function(self,data)
 	local use=self.player:getTag("shishi_use"):toCardUse()
 	if self:isEnemy(use.from) then

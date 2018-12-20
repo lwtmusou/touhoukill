@@ -784,6 +784,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QString prompt = "use:" + use.from->objectName() + ":" + use.to.first()->objectName() + ":" + use.card->objectName();
+        invoke->invoker->tag["xushi_use"] = data;
         return invoke->invoker->askForSkillInvoke(objectName(), prompt);
     }
 
@@ -801,6 +802,7 @@ public:
         }
 
         if (!targets.isEmpty()) {
+            use.from->tag["xushi_use"] = data;
             ServerPlayer *newTarget = room->askForPlayerChosen(use.from, targets, objectName(), "@xushi_newTarget:" + use.card->objectName());
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, use.from->objectName(), newTarget->objectName());
             room->touhouLogmessage("#xushi_newTarget", use.from, use.card->objectName(), QList<ServerPlayer *>() << newTarget);
