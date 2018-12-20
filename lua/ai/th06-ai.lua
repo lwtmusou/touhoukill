@@ -420,20 +420,7 @@ beishui_skill.getTurnUseCard = function(self)
 	if self.player:getMark("beishui") >0 then return nil end
 	local x = math.max(self.player:getHp(), 1)
 
-	local cards = self.player:getCards("hes")
-	cards=self:touhouAppendExpandPileToList(self.player,cards)
-	cards = sgs.QList2Table(cards)
-	if #cards < x then return nil end
-	self:sortByKeepValue(cards)
-	local ids = {}
-	local count = 0
-	for _,c in pairs(cards) do
-		table.insert(ids, c:getEffectiveId())
-		count = count + 1
-		if (count >= x) then break end
-	end
-
-	local beishuiCards = {}
+        local beishuiCards = {}
 	local pattern = "slash|peach" --|analeptic
 	local patterns = pattern:split("|")
 	for i = 1, #patterns do
@@ -443,10 +430,26 @@ beishui_skill.getTurnUseCard = function(self)
 			table.insert(beishuiCards,forbid)
 		end
 	end
-
-	if #beishuiCards < 1 then return nil end
+    if #beishuiCards < 1 then return nil end
 	self:sortByUseValue(beishuiCards, false)
-	local choice = beishuiCards[1]:objectName()
+    local choice = beishuiCards[1]:objectName()
+
+	local cards = self.player:getCards("hes")
+	cards=self:touhouAppendExpandPileToList(self.player,cards)
+	cards = sgs.QList2Table(cards)
+	if #cards < x then return nil end
+	for _,c in pairs(cards) do
+        if c:objectName():contains(choice) then	return nil end
+	end
+	self:sortByKeepValue(cards)
+	local ids = {}
+	local count = 0
+	for _,c in pairs(cards) do
+		table.insert(ids, c:getEffectiveId())
+		count = count + 1
+		if (count >= x) then break end
+	end
+	
 	local card_str = (choice..":%s[%s:%s]="):format("beishui", "to_be_decided", -1)
 	for _,id in pairs(ids) do
 		if id == ids[#ids] then
@@ -460,33 +463,24 @@ beishui_skill.getTurnUseCard = function(self)
 	local parsed_card = sgs.Card_Parse(card_str)
 	return parsed_card
 end
+
 function sgs.ai_cardsview_valuable.beishui(self, class_name, player)
 	if (sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE) then
 		return nil
 	end
 	if self.player:getMark("beishui") > 0 then return nil end
-	if player:isCurrent() then
-        if not player:isInMainPhase() then
-            return nil
-		end
-    else
-        for _,p in  sgs.qlist(player:getSiblings()) do
-            if p:isCurrent() then
-                if not p:isInMainPhase() then
-                    return nil
-				end
-				break
-            end
-        end
-    end
-	
-	
-	
+    --不考虑酒
+    if class_name ~= "Peach"  and class_name ~= "Jink" and class_name ~= "Slash" then return nil end 
+
 	local x = math.max(self.player:getHp(), 1)
 	local cards = self.player:getCards("hes")
 	cards=self:touhouAppendExpandPileToList(self.player,cards)
 	cards = sgs.QList2Table(cards)
 	if #cards < x then return nil end
+	for _,c in pairs(cards) do
+		if c:isKindOf(class_name) then return nil end
+	end
+	
 	self:sortByKeepValue(cards)
 	local ids = {}
 	local count = 0
@@ -518,8 +512,6 @@ function sgs.ai_cardsview_valuable.beishui(self, class_name, player)
 	end
 	return card_str
 end
-
-
 sgs.ai_skill_invoke.dongjie = function(self, data)
 		local damage =self.player:getTag("dongjie"):toDamage()
 		local to = damage.to
