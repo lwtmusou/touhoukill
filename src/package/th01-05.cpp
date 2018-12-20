@@ -2847,7 +2847,7 @@ public:
     {
         if (e == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from == NULL || !use.from->isCurrent() || use.from->isDead())
+            if (use.from == NULL || !use.from->isCurrent() || use.from->isDead() || use.card->getTypeId() == Card::TypeSkill)
                 return QList<SkillInvokeDetail>();
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, use.to) {
