@@ -3637,10 +3637,10 @@ public:
     ShenbaoHandler()
         : TriggerSkill("#shenbao")
     {
-        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut;
+        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut << EventSkillInvalidityChange;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         if (triggerEvent == GameStart || triggerEvent == Debut || triggerEvent == EventAcquireSkill) {
             foreach (ServerPlayer *p, room->getAllPlayers()) {
@@ -3652,6 +3652,38 @@ public:
             foreach (ServerPlayer *p, room->getAllPlayers()) {
                 if (!p->hasSkill("shenbao", true) && p->hasSkill("shenbao_attach"))
                     room->detachSkillFromPlayer(p, "shenbao_attach", true);
+            }
+        }
+        //deal with broken wood_ox
+        if (triggerEvent == EventLoseSkill || triggerEvent == EventAcquireSkill) {
+            SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
+            if (a.skill->objectName() == "shenbao") {
+                QList<int> broken_equips = a.player->getBrokenEquips();
+                if (!broken_equips.isEmpty()) {
+                    JsonArray arg;
+                    arg << a.player->objectName();
+                    arg << JsonUtils::toJsonArray(broken_equips);
+                    room->doNotify(a.player, QSanProtocol::S_COMMAND_SET_BROKEN_EQUIP, arg);
+                
+                }
+                
+            }
+            
+        }
+        if (triggerEvent == EventSkillInvalidityChange) {
+            QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct> >();
+            foreach(SkillInvalidStruct v, invalids) {
+                if (!v.skill || v.skill->objectName() == "shenbao") {
+                    QList<int> broken_equips = v.player->getBrokenEquips();
+                    if (!broken_equips.isEmpty()) {
+                        JsonArray arg;
+                        arg << v.player->objectName();
+                        arg << JsonUtils::toJsonArray(broken_equips);
+                        
+                        room->doNotify(v.player, QSanProtocol::S_COMMAND_SET_BROKEN_EQUIP, arg);
+
+                    }
+                }
             }
         }
     }
@@ -6470,6 +6502,7 @@ TouhouGodPackage::TouhouGodPackage()
     kaguya_god->addSkill(new ShenbaoHandler);
     related_skills.insertMulti("shenbao", "#shenbao_distance");
     related_skills.insertMulti("shenbao", "#shenbao");
+    kaguya_god->addSkill("bodong");
 
     General *komachi_god = new General(this, "komachi_god", "touhougod", 4);
     komachi_god->addSkill(new Yindu);
