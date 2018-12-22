@@ -439,7 +439,7 @@ beishui_skill.getTurnUseCard = function(self)
 	cards = sgs.QList2Table(cards)
 	if #cards < x then return nil end
 	for _,c in pairs(cards) do
-        if c:objectName():contains(choice) then	return nil end
+        if c:objectName():match(choice) then	return nil end
 	end
 	self:sortByKeepValue(cards)
 	local ids = {}
