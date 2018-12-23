@@ -627,7 +627,7 @@ public:
         ServerPlayer *who = data.value<DyingStruct>().who;
         QList<ServerPlayer *> yukaris = room->findPlayersBySkillName(objectName());
         foreach (ServerPlayer *p, yukaris) {
-            if (who && p->getPile("jingjie").length() > 0 && p->canDiscard(who, "hes") && who->getHp() < who->dyingThreshold())
+            if (who && p->getPile("jingjie").length() > 0 && p->canDiscard(who, "hes") && who->getHp() < who->dyingThreshold() && who->isAlive())
                 d << SkillInvokeDetail(this, p, p);
         }
         return d;
@@ -918,7 +918,7 @@ public:
     {
         QList<SkillInvokeDetail> d;
         ServerPlayer *who = data.value<DyingStruct>().who;
-        if (who->getHp() < who->dyingThreshold() && !who->isAllNude()) {
+        if (who->getHp() < who->dyingThreshold() && who->isAlive() && !who->isAllNude()) {
             foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName()))
                 d << SkillInvokeDetail(this, p, p, NULL, false, who);
         }
