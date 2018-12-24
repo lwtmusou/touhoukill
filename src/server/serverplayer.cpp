@@ -1445,7 +1445,8 @@ void ServerPlayer::removeShownHandCards(QList<int> card_ids, bool sendLog, bool 
         return;
 
     foreach (int id, card_ids)
-        shown_handcards.removeOne(id);
+        if (shown_handcards.contains(id))
+            shown_handcards.removeOne(id);
 
     JsonArray arg;
     arg << objectName();
