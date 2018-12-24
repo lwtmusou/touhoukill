@@ -2224,7 +2224,20 @@ void RoomScene::keepLoseCardLog(const CardsMoveStruct &move)
     if (move.from && move.to_place == Player::DrawPile) {
         if (move.reason.m_reason == CardMoveReason::S_REASON_PUT && move.reason.m_skillName == "luck_card")
             return;
-        bool hidden = false;
+        QString from_general = move.from->objectName();
+        QList<int> open_ids = move.card_ids;
+        open_ids.removeAll(Card::S_UNKNOWN_CARD_ID);
+        int hidden_num = move.card_ids.length() - open_ids.length();
+        if (hidden_num == move.card_ids.length())
+            log_box->appendLog("#PutCard", from_general, QStringList(), QString(), QString::number(hidden_num));
+        else if (hidden_num == 0)
+            log_box->appendLog("$PutCard", from_general, QStringList(), IntList2StringList(open_ids).join("+"));
+        else
+            log_box->appendLog("$PutNCards", from_general, QStringList(), IntList2StringList(open_ids).join("+"), QString::number(hidden_num));
+
+
+        //old version
+        /*bool hidden = false;
         foreach (int id, move.card_ids) {
             if (id == Card::S_UNKNOWN_CARD_ID) {
                 hidden = true;
@@ -2237,7 +2250,7 @@ void RoomScene::keepLoseCardLog(const CardsMoveStruct &move)
         if (hidden)
             log_box->appendLog(type, from_general, QStringList(), QString(), QString::number(move.card_ids.length()));
         else
-            log_box->appendLog(type, from_general, QStringList(), IntList2StringList(move.card_ids).join("+"));
+            log_box->appendLog(type, from_general, QStringList(), IntList2StringList(move.card_ids).join("+"));*/
     }
 }
 
@@ -2253,11 +2266,22 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
 
     // private pile
     if (move.to_place == Player::PlaceSpecial && !move.to_pile_name.isNull() && !move.to_pile_name.startsWith('#')) {
-        bool hidden = (move.card_ids.contains(Card::S_UNKNOWN_CARD_ID));
+        QList<int> open_ids = move.card_ids;
+        open_ids.removeAll(Card::S_UNKNOWN_CARD_ID);
+        int hidden_num = move.card_ids.length() - open_ids.length();
+        if (hidden_num == move.card_ids.length())
+            log_box->appendLog("#RemoveFromGame", QString(), QStringList(), QString(), move.to_pile_name, QString::number(hidden_num));
+        else if (hidden_num == 0)
+            log_box->appendLog("$AddToPile", QString(), QStringList(), IntList2StringList(open_ids).join("+"), move.to_pile_name);
+        else
+            log_box->appendLog("$RemoveNCardsFromGame", QString(), QStringList(), IntList2StringList(open_ids).join("+"), move.to_pile_name, QString::number(hidden_num));
+        
+        //old version
+        /*bool hidden = (move.card_ids.contains(Card::S_UNKNOWN_CARD_ID));
         if (hidden)
             log_box->appendLog("#RemoveFromGame", QString(), QStringList(), QString(), move.to_pile_name, QString::number(move.card_ids.length()));
         else
-            log_box->appendLog("$AddToPile", QString(), QStringList(), IntList2StringList(move.card_ids).join("+"), move.to_pile_name);
+            log_box->appendLog("$AddToPile", QString(), QStringList(), IntList2StringList(move.card_ids).join("+"), move.to_pile_name);*/
     }
     if (move.from_place == Player::PlaceSpecial && move.to && move.reason.m_reason == CardMoveReason::S_REASON_EXCHANGE_FROM_PILE) {
         bool hidden = (move.card_ids.contains(Card::S_UNKNOWN_CARD_ID));
@@ -2295,25 +2319,44 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
         QString from_general = move.from->objectName();
         QStringList tos;
         tos << move.to->objectName();
-        QList<int> ids = move.card_ids;
-        ids.removeAll(Card::S_UNKNOWN_CARD_ID);
-        int hide = move.card_ids.length() - ids.length();
-        if (!ids.isEmpty()) {
+        QList<int> open_ids = move.card_ids;
+        open_ids.removeAll(Card::S_UNKNOWN_CARD_ID);
+        int hidden_num = move.card_ids.length() - open_ids.length();
+        if (hidden_num == move.card_ids.length())
+            log_box->appendLog("#MoveNCards", from_general, tos, QString(), QString::number(hidden_num));
+        else if (hidden_num == 0)
+            log_box->appendLog("$MoveCard", from_general, tos, IntList2StringList(open_ids).join("+"));
+        else
+            log_box->appendLog("$MoveNCards", from_general, tos, IntList2StringList(open_ids).join("+"), QString::number(hidden_num));
+        //old version
+        /*if (!ids.isEmpty()) {
             QString card_str = IntList2StringList(ids).join("+");
             log_box->appendLog("$MoveCard", from_general, tos, card_str);
         }
         if (hide > 0)
-            log_box->appendLog("#MoveNCards", from_general, tos, QString(), QString::number(hide));
+            log_box->appendLog("#MoveNCards", from_general, tos, QString(), QString::number(hide));*/
     }
     if (move.from_place == Player::PlaceHand && move.to_place == Player::PlaceHand) {
         QString from_general = move.from->objectName();
         QStringList tos;
         tos << move.to->objectName();
-        bool hidden = (move.card_ids.contains(Card::S_UNKNOWN_CARD_ID));
+        QList<int> open_ids = move.card_ids;
+        open_ids.removeAll(Card::S_UNKNOWN_CARD_ID);
+        int hidden_num = move.card_ids.length() - open_ids.length();
+        
+        if (hidden_num == move.card_ids.length())
+            log_box->appendLog("#MoveNCards", from_general, tos, QString(), QString::number(hidden_num));
+        else if (hidden_num == 0)
+            log_box->appendLog("$MoveCard", from_general, tos, IntList2StringList(open_ids).join("+"));
+        else
+            log_box->appendLog("$MoveNCards", from_general, tos, IntList2StringList(open_ids).join("+"), QString::number(hidden_num));
+        //old version
+        /*bool hidden = (move.card_ids.contains(Card::S_UNKNOWN_CARD_ID));
         if (hidden)
             log_box->appendLog("#MoveNCards", from_general, tos, QString(), QString::number(move.card_ids.length()));
         else
-            log_box->appendLog("$MoveCard", from_general, tos, IntList2StringList(move.card_ids).join("+"));
+            log_box->appendLog("$MoveCard", from_general, tos, IntList2StringList(move.card_ids).join("+"));*/
+
     }
     if (move.from && move.to) {
         // both src and dest are player

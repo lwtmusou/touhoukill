@@ -586,6 +586,9 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     log.to << target;
     room->sendLog(log);
 
+    LogMessage log2;
+    bool card1_result_logged = false;
+
     const Card *card2 = NULL;
     PindianStruct pindian_struct;
     pindian_struct.from = this;
@@ -596,15 +599,15 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
 
     PindianStruct *pindian = &pindian_struct; //for tmp record.
     if (card1 == NULL) {
-        //QList<const Card *> cards = room->askForPindianRace(this, target, reason);
-        //card1 = cards.first();
-        //card2 = cards.last();
-
         card1 = room->askForPindian(this, this, target, reason, pindian);
-        //@todo: fix UI and log
-        //if (targets.first()->isShownHandcard(card1->getEffectiveId()))
-        //    need_reveal = false;
-        //room->showCard(targets.first(), card1->getEffectiveId());
+        if (card1 && isShownHandcard(card1->getEffectiveId())) {
+            log2.type = "$PindianResult";
+            log2.from = pindian_struct.from;
+            log2.card_str = QString::number(card1->getEffectiveId());
+            room->sendLog(log2);
+            card1_result_logged = true;
+        }
+
         CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, objectName(), target->objectName(), pindian_struct.reason, QString());
         room->moveCardTo(card1, this, NULL, Player::PlaceTable, reason1, false);
 
@@ -617,6 +620,14 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
             int card_id = card1->getEffectiveId();
             card1 = Sanguosha->getCard(card_id);
         }
+        if (card1 && isShownHandcard(card1->getEffectiveId())) {
+            log2.type = "$PindianResult";
+            log2.from = pindian_struct.from;
+            log2.card_str = QString::number(card1->getEffectiveId());
+            room->sendLog(log2);
+            card1_result_logged = true;
+        }
+
         CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, objectName(), target->objectName(), pindian_struct.reason, QString());
         room->moveCardTo(card1, this, NULL, Player::PlaceTable, reason1, false);
 
@@ -644,11 +655,13 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     //CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, pindian_struct.to->objectName());
     //room->moveCardTo(pindian_struct.to_card, pindian_struct.to, NULL, Player::PlaceTable, reason2, false);
 
-    LogMessage log2;
-    log2.type = "$PindianResult";
-    log2.from = pindian_struct.from;
-    log2.card_str = QString::number(pindian_struct.from_card->getEffectiveId());
-    room->sendLog(log2);
+    if (!card1_result_logged) {
+        log2.type = "$PindianResult";
+        log2.from = pindian_struct.from;
+        log2.card_str = QString::number(pindian_struct.from_card->getEffectiveId());
+        room->sendLog(log2);
+    }
+    
 
     log2.type = "$PindianResult";
     log2.from = pindian_struct.to;
@@ -1445,7 +1458,8 @@ void ServerPlayer::removeShownHandCards(QList<int> card_ids, bool sendLog, bool 
         return;
 
     foreach (int id, card_ids)
-        shown_handcards.removeOne(id);
+        if (shown_handcards.contains(id))
+            shown_handcards.removeOne(id);
 
     JsonArray arg;
     arg << objectName();

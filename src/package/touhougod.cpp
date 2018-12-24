@@ -847,7 +847,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *who = data.value<DyingStruct>().who;
-        if (who->isCurrent() || !who->hasSkill(this) || who->getHp() >= who->dyingThreshold())
+        if (who->isCurrent() || !who->hasSkill(this) || who->isDead() || who->getHp() >= who->dyingThreshold())
             return QList<SkillInvokeDetail>();
         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, who, who);
     }
@@ -3836,7 +3836,7 @@ public:
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
         } else if (e == Dying) {
             ServerPlayer *who = data.value<DyingStruct>().who;
-            if (who->hasSkill(this) && who->getHp() < who->dyingThreshold())
+            if (who->hasSkill(this) && who->isAlive() && who->getHp() < who->dyingThreshold())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, who, who, NULL, true);
         }
         return QList<SkillInvokeDetail>();
@@ -6355,7 +6355,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         ServerPlayer *who = data.value<DyingStruct>().who;
-        if (!who->hasSkill(this) || who->getHp() >= who->dyingThreshold())
+        if (!who->hasSkill(this) || who->getHp() >= who->dyingThreshold() || who->isDead())
             return QList<SkillInvokeDetail>();
 
         foreach (ServerPlayer *p, room->getOtherPlayers(who)) {

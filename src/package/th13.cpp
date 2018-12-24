@@ -872,7 +872,7 @@ public:
     {
         ServerPlayer *current = room->getCurrent();
         ServerPlayer *who = data.value<DyingStruct>().who;
-        if (!who->hasSkill(this) || !current || !current->isAlive() || current == who || who->getHp() >= who->dyingThreshold())
+        if (!who->hasSkill(this) || !current || !current->isAlive() || who->isDead() || current == who || who->getHp() >= who->dyingThreshold())
             return QList<SkillInvokeDetail>();
         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, who, who, NULL, false, current);
     }

@@ -994,7 +994,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             }
             if (!shownIds.isEmpty()) {
                 player->removeShownHandCards(shownIds, false, true);
-                move.shown_ids.append(shownIds);
+                move.shown_ids = shownIds;
                 data = QVariant::fromValue(move);
             }
 
@@ -1005,7 +1005,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             }
             if (!brokenIds.isEmpty()) {
                 player->removeBrokenEquips(brokenIds, false, true);
-                move.broken_ids.append(brokenIds);
+                move.broken_ids = brokenIds;
                 data = QVariant::fromValue(move);
             }
         }
