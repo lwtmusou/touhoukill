@@ -354,7 +354,7 @@ public:
             if (get) {
                 acquired = acquired + 1;
                 CardsMoveStruct move2(id, player, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_GOTBACK, player->objectName()));
-                room->moveCardsAtomic(move2, false);
+                room->moveCardsAtomic(move2, true);
 
                 if (!throwIds.isEmpty()) {
                     CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), "wanggou", QString());
