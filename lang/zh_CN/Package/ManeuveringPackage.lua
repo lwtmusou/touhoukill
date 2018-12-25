@@ -32,7 +32,7 @@ return {
 	["fire_attack"] = "火攻",
 	["@fire_attack_show"] = "你因受到【火攻】的作用效果， 请展示 %src 张手牌",
 	["@fire-attack"] = "目标展示的牌的花色有 <font color=\"green\"><b>%src %dest %arg %arg2</b></font>，请弃置一张与其中一种花色相同的手牌",
-	[":fire_attack"] = "锦囊牌·非全体性的普通锦囊牌<br />使用时机：出牌阶段。<br />使用目标：一名有手牌的角色。<br />作用效果：目标角色展示<font color=\"green\"><b>一张</b></font>手牌，然后你可以弃置一张与其中一种花色相同的手牌，若你如此做，你对其造成<font color=\"green\"><b>1点</b></font>火焰伤害。",
+	[":fire_attack"] = "锦囊牌·非全体性的普通锦囊牌<br />使用时机：出牌阶段。<br />使用目标：有手牌的一名角色。<br />作用效果：目标角色展示<font color=\"green\"><b>一张</b></font>手牌，然后你可以弃置一张与其中一种花色相同的手牌，若你如此做，你对其造成<font color=\"green\"><b>1点</b></font>火焰伤害。",
 	["fire-attack-card"] = "您可以弃置一张与 %dest 所展示的牌中一种花色相同的手牌，对 %dest 造成1点火焰伤害",
 
 	["iron_chain"] = "铁索连环",
