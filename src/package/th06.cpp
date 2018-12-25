@@ -2059,8 +2059,6 @@ TH06Package::TH06Package()
     rumia->addSkill(new Anyu);
 
     General *koakuma = new General(this, "koakuma", "hmx", 3);
-    //koakuma->addSkill(new Qiyue);
-    //koakuma->addSkill(new Moxue);
     koakuma->addSkill(new Moqi);
     koakuma->addSkill(new Sishu);
 

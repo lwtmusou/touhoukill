@@ -140,7 +140,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 }
                 foreach (const Skill *skill, player->getVisibleSkillList()) {
                     if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
-                        //room->addPlayerMark(player, skill->getLimitMark());
                         room->setPlayerMark(player, skill->getLimitMark(), 1);
                 }
             }
@@ -221,24 +220,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         break;
     }
     case EventPhaseEnd: {
-        /*foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (p->getMark("drank") > 0) {
-                LogMessage log;
-                log.type = "#UnsetDrankEndOfTurn";
-                log.from = p;
-                room->sendLog(log);
-
-                room->setPlayerMark(p, "drank", 0);
-            }
-            if (p->getMark("magic_drank") > 0) {
-                LogMessage log;
-                log.type = "#UnsetDrankEndOfTurn";
-                log.from = p;
-                room->sendLog(log);
-
-                room->setPlayerMark(p, "magic_drank", 0);
-            }
-        }*/
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->getPhase() == Player::Play)
             room->addPlayerHistory(player, ".");
@@ -268,7 +249,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             }
 
             room->setPlayerFlag(player, ".");
-            //room->clearPlayerCardLimitation(player, true);
             room->setPlayerMark(player, "touhou-extra", 0);
 
             foreach (ServerPlayer *p, room->getAlivePlayers()) {
@@ -324,13 +304,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 card_use = data.value<CardUseStruct>();
             }
 
-            /*if (card_use.card && !(card_use.card->isVirtualCard() && card_use.card->getSubcards().isEmpty()) && !card_use.card->targetFixed() && card_use.to.isEmpty()) {
-                    if (room->getCardPlace(card_use.card->getEffectiveId()) == Player::PlaceTable) {
-                        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
-                        room->throwCard(card_use.card, reason, NULL);
-                        break;
-                    }
-                }*/
             //1) exclude SkillCard 2)changed move reason (USE) 3)keep extraData
             if (card_use.card && card_use.card->getTypeId() != Card::TypeSkill && !(card_use.card->isVirtualCard() && card_use.card->getSubcards().isEmpty())
                 && card_use.to.isEmpty()) {
@@ -368,7 +341,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 }
                 card_use = data.value<CardUseStruct>();
                 room->setTag("CardUseNullifiedList", QVariant::fromValue(card_use.nullified_list));
-                if (card_use.card->isNDTrick() && !card_use.card->isKindOf("Nullification")) // && !card_use.to.isEmpty()
+                if (card_use.card->isNDTrick() && !card_use.card->isKindOf("Nullification"))
                     room->setCardFlag(card_use.card, "LastTrickTarget_" + card_use.to.last()->objectName());
 
                 card_use.card->use(room, card_use.from, card_use.to);
@@ -378,7 +351,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 if (triggerEvent == TurnBroken)
                     card_use.from->tag.remove("Jink_" + card_use.card->toString());
 
-                
                 //copy from Room::useCard()
                 if (triggerEvent == TurnBroken) {
                     if (room->getCardPlace(card_use.card->getEffectiveId()) == Player::PlaceTable) {
@@ -392,10 +364,10 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     thread->trigger(CardFinished, room, data);
                     card_use.from->setFlags("-Global_ProcessBroken");
 
-                    foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                    foreach (ServerPlayer *p, room->getAlivePlayers()) {
                         p->tag.remove("Qinggang");
 
-                        foreach(QString flag, p->getFlagList()) {
+                        foreach (QString flag, p->getFlagList()) {
                             if (flag == "Global_GongxinOperator")
                                 p->setFlags("-" + flag);
                             else if (flag.endsWith("_InTempMoving"))
@@ -403,7 +375,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                         }
                     }
 
-                    foreach(int id, Sanguosha->getRandomCards()) {
+                    foreach (int id, Sanguosha->getRandomCards()) {
                         if (room->getCardPlace(id) == Player::PlaceTable || room->getCardPlace(id) == Player::PlaceJudge)
                             room->moveCardTo(Sanguosha->getCard(id), NULL, Player::DiscardPile, true);
                         if (Sanguosha->getCard(id)->hasFlag("using"))
@@ -595,7 +567,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 //do chunhua effect
                 if (effect.card->hasFlag("chunhua") && !effect.card->isKindOf("Slash")) {
                     room->touhouLogmessage("#Chunhua", effect.to, effect.card->objectName());
-                    //if (effect.card->isBlack()) {
                     if (effect.card->hasFlag("chunhua_black")) {
                         DamageStruct d = DamageStruct(effect.card, effect.from, effect.to, 1 + effect.effectValue.first(), DamageStruct::Normal);
                         room->damage(d);
@@ -707,10 +678,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         }
 
         QVariant data = QVariant::fromValue(effect);
-        //if (effect.jink_num > 0)
         room->getThread()->trigger(SlashProceed, room, data);
-        //else
-        //    room->slashResult(effect, NULL);
         break;
     }
     case SlashProceed: {
@@ -854,7 +822,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             }
         }
         room->damage(d);
-        //room->damage(DamageStruct(effect.slash, effect.from, effect.to, 1, effect.nature));
 
         break;
     }

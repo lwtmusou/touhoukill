@@ -34,13 +34,13 @@ bool CardsMoveStruct::tryParse(const QVariant &arg)
 }
 
 QVariant CardsMoveStruct::toVariant() const
-{//notify Client
-    JsonArray arg; 
+{
+    //notify Client
+    JsonArray arg;
     if (open) {
         arg << JsonUtils::toJsonArray(card_ids);
     } else {
-
-        int num = card_ids .length() - shown_ids.length();
+        int num = card_ids.length() - shown_ids.length();
         QList<int> notify_ids;
         notify_ids << shown_ids;
         if (num > 0) {
@@ -48,7 +48,6 @@ QVariant CardsMoveStruct::toVariant() const
                 notify_ids.append(Card::S_UNKNOWN_CARD_ID);
         }
         arg << JsonUtils::toJsonArray(notify_ids);
-        //arg << card_ids.size();
     }
 
     arg << (int)from_place;

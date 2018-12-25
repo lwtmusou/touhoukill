@@ -1461,18 +1461,12 @@ void Snatch::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical");
     QString flag = using_2013 ? "hes" : "hejs";
-    //for AI: sgs.ai_choicemade_filter.cardChosen.snatch
-    //like Liyou  Xunshi
     effect.from->tag["SnatchCard"] = QVariant::fromValue(effect.card);
 
     QList<int> disable;
     DummyCard *dummy = new DummyCard;
-    //bool move_visible = false;
     for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
         int card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName(), false, Card::MethodNone, disable);
-
-        //if (!move_visible && room->getCardPlace(card_id) != Player::PlaceHand)
-        //    move_visible = true;
 
         disable << card_id;
         dummy->addSubcard(card_id);
@@ -2019,44 +2013,6 @@ Drowning::Drowning(Suit suit, int number)
     setObjectName("drowning");
 }
 
-/*bool Drowning::targetFilter(const QList<const Player *> &, const Player *to_select, const Player *) const
-{
-    return to_select->canDiscard(to_select, "e");
-}*/
-
-/*void Drowning::onUse(Room *room, const CardUseStruct &card_use) const
-{
-    if (!card_use.to.isEmpty()) {
-        TrickCard::onUse(room, card_use);
-        return;
-    }
-
-    ServerPlayer *source = card_use.from;
-    QList<ServerPlayer *> targets, other_players = room->getOtherPlayers(source);
-    foreach (ServerPlayer *player, other_players) {
-        const ProhibitSkill *skill = room->isProhibited(source, player, this);
-        if (skill) {
-            LogMessage log;
-            log.type = "#SkillAvoid";
-            log.from = player;
-            log.arg = skill->objectName();
-            log.arg2 = objectName();
-            room->sendLog(log);
-
-            if (player->hasSkill(skill))
-                room->notifySkillInvoked(player, skill->objectName());
-            room->broadcastSkillInvoke(skill->objectName());
-        } //else if (!player->canDiscard(player, "e"))
-        //    continue;
-        else
-            targets << player;
-    }
-
-    CardUseStruct use = card_use;
-    use.to = targets;
-    TrickCard::onUse(room, use);
-}*/
-
 bool Drowning::isCancelable(const CardEffectStruct &effect) const
 {
     return !effect.to->getEquips().isEmpty() && TrickCard::isCancelable(effect);
@@ -2106,21 +2062,6 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
         room->throwCard(dummy, effect.to, effect.to);
     delete dummy;
 }
-
-/*bool Drowning::isAvailable(const Player *player) const
-{
-    bool canUse = false;
-    QList<const Player *> players = player->getAliveSiblings();
-    foreach (const Player *p, players) {
-        if (player->isProhibited(p, this) || !p->canDiscard(p, "e"))
-            continue;
-
-        canUse = true;
-        break;
-    }
-
-    return canUse && TrickCard::isAvailable(player);
-}*/
 
 KnownBoth::KnownBoth(Card::Suit suit, int number)
     : TrickCard(suit, number)

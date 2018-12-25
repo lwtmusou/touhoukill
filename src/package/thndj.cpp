@@ -447,94 +447,6 @@ public:
     }
 };
 
-/*
-class Yuanhu : public TriggerSkill
-{
-public:
-    Yuanhu()
-        : TriggerSkill("yuanhu")
-    {
-        events << DrawNCards << AfterDrawNCards;
-        show_type = "static";
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
-    {
-        DrawNCardsStruct dc = data.value<DrawNCardsStruct>();
-        if (triggerEvent == DrawNCards) {
-            if (dc.n <= 0)
-                return QList<SkillInvokeDetail>();
-
-            QList<SkillInvokeDetail> d;
-            foreach (ServerPlayer *p, room->getOtherPlayers(dc.player)) {
-                if (p->hasSkill(this))
-                    d << SkillInvokeDetail(this, p, dc.player);
-            }
-            return d;
-        } else {
-            if (dc.player->hasFlag("yuanhu_draw")) {
-                QStringList drawer = dc.player->tag.value("yuanhu_drawers", QStringList()).toStringList();
-                if (drawer.isEmpty())
-                    return QList<SkillInvokeDetail>();
-
-                QList<SkillInvokeDetail> d;
-                foreach (const QString &s, drawer.toSet()) {
-                    ServerPlayer *p = room->findPlayerByObjectName(s);
-                    if (p == NULL)
-                        continue;
-
-                    d << SkillInvokeDetail(this, p, dc.player, NULL, true);
-                }
-                return d;
-            }
-        }
-
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent triggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        if (triggerEvent == DrawNCards) {
-            QString prompt = "invoke:" + invoke->owner->objectName();
-            invoke->invoker->tag["yuanhu"] = QVariant::fromValue(invoke->owner);
-            if (invoke->invoker->askForSkillInvoke(this, prompt)) {
-                DrawNCardsStruct dc = data.value<DrawNCardsStruct>();
-                --dc.n;
-                data = QVariant::fromValue(dc);
-                return true;
-            }
-        } else {
-            QStringList drawer = invoke->invoker->tag.value("yuanhu_drawers", QStringList()).toStringList();
-            drawer.removeOne(invoke->owner->objectName());
-            invoke->invoker->tag["yuanhu_drawers"] = QVariant::fromValue(drawer);
-            return true;
-        }
-
-        return false;
-    }
-
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        if (triggerEvent == DrawNCards) {
-            invoke->invoker->setFlags("yuanhu_draw");
-            QStringList drawer = invoke->invoker->tag.value("yuanhu_drawers", QStringList()).toStringList();
-            drawer << invoke->owner->objectName();
-            invoke->invoker->tag["yuanhu_drawers"] = QVariant::fromValue(drawer);
-        } else {
-            invoke->owner->drawCards(1, objectName());
-            invoke->owner->tag["yuanhu_target"] = QVariant::fromValue(invoke->invoker);
-            const Card *c = room->askForExchange(invoke->owner, objectName(), 2, 1, false, "@yuanhu-exchange:" + invoke->invoker->objectName(), true);
-            if (c != NULL) {
-                CardMoveReason reason(CardMoveReason::S_REASON_GIVE, invoke->owner->objectName(), objectName(), QString());
-                room->obtainCard(invoke->invoker, c, reason, false);
-            }
-        }
-
-        return false;
-    }
-};
-*/
-
 class Yuanhu : public TriggerSkill
 {
 public:
@@ -563,7 +475,6 @@ public:
     {
         invoke->invoker->tag["yuanhu_drawers"] = QVariant::fromValue(invoke->owner);
         const Card *c = room->askForCard(invoke->invoker, ".", "@yuanhu:" + invoke->owner->objectName(), data, Card::MethodNone);
-        //(invoke->owner, objectName(), 2, 1, false, "@yuanhu-exchange:" + invoke->invoker->objectName(), true);
         if (c) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->owner->objectName());
             invoke->invoker->tag["yuanhu_id"] = QVariant::fromValue(c->getEffectiveId());
@@ -1225,13 +1136,11 @@ public:
     JinengVS()
         : OneCardViewAsSkill("jineng")
     {
-        //response_or_use = true;
         expand_pile = "jinengPile";
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        //QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
         if (player->getPile("jinengPile").isEmpty())
             return false;
         return matchAvaliablePattern("slash", pattern) || matchAvaliablePattern("jink", pattern) || matchAvaliablePattern("analeptic", pattern)
@@ -1241,7 +1150,6 @@ public:
     virtual bool isEnabledAtPlay(const Player *player) const
     {
         return !player->getPile("jinengPile").isEmpty();
-        //return Slash::IsAvailable(player) || Analeptic::IsAvailable(player);
     }
 
     virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
@@ -1453,7 +1361,6 @@ THNDJPackage::THNDJPackage()
     General *kaguya_ndj = new General(this, "kaguya_ndj", "zhu", 3);
     kaguya_ndj->addSkill(new Huanyue);
     kaguya_ndj->addSkill(new Wanggou);
-    //kaguya_ndj->addSkill(new Sizhai);
 
     General *yukari_ndj = new General(this, "yukari_ndj", "yym", 3);
     yukari_ndj->addSkill(new Yuanhu);

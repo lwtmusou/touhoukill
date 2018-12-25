@@ -531,7 +531,7 @@ public:
     {
         if (e == Pindian) {
             int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName());
-            room->obtainCard(invoke->invoker, id, false);// room->getCardPlace(id) != Player::PlaceHand
+            room->obtainCard(invoke->invoker, id, false);
         } else {
             invoke->invoker->pindian(invoke->preferredTarget, objectName());
         }
@@ -1291,125 +1291,6 @@ public:
     }
 };
 
-/*
-class Ganying;
-namespace {
-Ganying *ganying_instance;
-}
-
-class Ganying : public TriggerSkill
-{
-public:
-    Ganying()
-        : TriggerSkill("ganying")
-    {
-        ganying_instance = this;
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        invoke->invoker->drawCards(1, objectName());
-        if (invoke->targets.isEmpty())
-            return false;
-
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, invoke->targets, "ganying", "@ganying", true);
-        if (target == NULL)
-            return false;
-
-        int id = room->askForCardChosen(invoke->invoker, target, "hs", "ganying", false, Card::MethodDiscard);
-        room->throwCard(id, target, invoke->invoker == target ? NULL : invoke->invoker);
-
-        return false;
-    }
-};
-
-class GanyingHandler : public TriggerSkill
-{
-public:
-    GanyingHandler()
-        : TriggerSkill("ganying_handle")
-    {
-        events << NumOfEvents;
-        global = true;
-    }
-
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
-    {
-        if (triggerEvent == GameStart) {
-            foreach (ServerPlayer *p, room->getAllPlayers()) {
-                QVariantMap distance_map;
-                foreach (ServerPlayer *q, room->getOtherPlayers(p))
-                    distance_map[q->objectName()] = p->distanceTo(q);
-
-                p->tag["distance_map"] = distance_map;
-            }
-            return;
-        }
-
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
-            p->tag.remove("distance_changed_" + QString::number(triggerEvent));
-            QVariantMap distance_map;
-            foreach (ServerPlayer *q, room->getOtherPlayers(p))
-                distance_map[q->objectName()] = p->distanceTo(q);
-
-            QStringList distance_changed;
-            QVariantMap distance_map_old = p->tag.value("distance_map", QVariantMap()).toMap();
-
-            foreach (const QString &key, distance_map_old.keys()) {
-                bool ok = false;
-                if (distance_map.value(key).toInt(&ok) != -1 && ok) {
-                    int old_distance = distance_map_old.value(key).toInt();
-                    int new_distance = distance_map.value(key).toInt();
-                    if (old_distance != new_distance)
-                        distance_changed << key;
-                } else
-                    distance_map[key] = -1;
-            }
-
-            p->tag["distance_changed_" + QString::number(triggerEvent)] = distance_changed;
-            p->tag["distance_map"] = distance_map;
-        }
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &) const
-    {
-        QList<SkillInvokeDetail> d;
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (!p->hasSkill("ganying"))
-                continue;
-            bool invoke = false;
-            QList<ServerPlayer *> targets;
-            //case1: distance changed (self to other)
-            QStringList from_distance_changed = p->tag.value("distance_changed_" + QString::number(triggerEvent), QStringList()).toStringList();
-            if (!from_distance_changed.isEmpty()) {
-                invoke = true;
-                foreach (const QString &c, from_distance_changed) {
-                    ServerPlayer *target = room->findPlayerByObjectName(c);
-                    if (target != NULL && p->canDiscard(target, "hs") && !targets.contains(target))
-                        targets << target;
-                }
-            }
-            //case2:distance changed(other to self)
-            foreach (ServerPlayer *q, room->getOtherPlayers(p)) {
-                QStringList to_distance_changed = q->tag.value("distance_changed_" + QString::number(triggerEvent), QStringList()).toStringList();
-                foreach (const QString &c, to_distance_changed) {
-                    ServerPlayer *to = room->findPlayerByObjectName(c);
-                    if (to != NULL && p == to)
-                        invoke = true;
-                    if (to != NULL && p == to && p->canDiscard(q, "hs") && !targets.contains(q)) {
-                        targets << q;
-                        break;
-                    }
-                }
-            }
-
-            if (invoke)
-                d << SkillInvokeDetail(ganying_instance, p, p, targets);
-        }
-        return d;
-    }
-};*/
-
 class Ganying : public TriggerSkill
 {
 public:
@@ -1492,7 +1373,7 @@ public:
         if (c) {
             invoke->owner->showHiddenSkill(objectName());
             CardMoveReason r(CardMoveReason::S_REASON_GIVE, invoke->owner->objectName(), objectName(), QString());
-            room->obtainCard(invoke->invoker, c, r, false);//room->getCardPlace(c->getEffectiveId()) != Player::PlaceHand
+            room->obtainCard(invoke->invoker, c, r, false); //room->getCardPlace(c->getEffectiveId()) != Player::PlaceHand
 
             return true;
         }
@@ -1755,7 +1636,6 @@ public:
                         continue;
 
                     SkillInvokeDetail s(this, kos, p, NULL, true);
-                    //s.tag["n"] = n;
                     d << s;
                 }
             }
@@ -1834,23 +1714,6 @@ public:
         room->sortByActionOrder(use.to);
         data = QVariant::fromValue(use);
 
-        /*if (use.card->isKindOf("Collateral")) {
-            QList<ServerPlayer *> col_targets;
-            foreach (ServerPlayer *t, room->getOtherPlayers(invoke->invoker)) {
-                if (invoke->invoker->canSlash(t))
-                    col_targets << t;
-            }
-            ServerPlayer *victim = room->askForPlayerChosen(use.from, col_targets, objectName(), "@xunshi_col:" + invoke->invoker->objectName(), false);
-            invoke->invoker->tag["collateralVictim"] = QVariant::fromValue(victim);
-            if (victim) {
-                LogMessage log;
-                log.type = "#CollateralSlash";
-                log.from = use.from;
-                log.to << victim;
-                room->sendLog(log);
-                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), victim->objectName());
-            }
-        }*/
         return false;
     }
 };

@@ -424,27 +424,7 @@ void QijiDialog::popup()
                 }
             }
         }
-    } /*else if (object_name == "xihua") {
-        QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-        foreach (const Card *card, cards) {
-            if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
-                QString name = card->objectName();
-                QString pattern = card->objectName();
-                if (pattern.contains("slash"))
-                    pattern = "slash";
-                else if (pattern.contains("jink"))
-                    pattern = "jink";
-                else if (pattern.contains("analeptic"))
-                    pattern = "analeptic";
-                else if (pattern.contains("peach"))
-                    pattern = "peach";
-                QString markName = "xihua_record_" + pattern;
-                if (!validPatterns.contains(name) && Self->getMark(markName) == 0)
-                    validPatterns << card->objectName();
-            }
-        }
-    }*/
-    else {
+    } else {
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach (const Card *card, cards) {
             if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
@@ -467,7 +447,7 @@ void QijiDialog::popup()
     //while responsing, if only one pattern were checked, emit click()
 
     if (object_name != "chuangshi" && !play && checkedPatterns.length() <= 1) {
-        //  !checkedPatterns.contains("slash")  @ todo: basic card
+        // @ todo: basic card
         emit onButtonClick();
         return;
     }
@@ -496,9 +476,7 @@ void QijiDialog::popup()
             avaliable = true;
 
         bool checked = checkedPatterns.contains(card->objectName());
-        //bool enabled = !user->isCardLimited(card, method, true) && avaliable && (checked || object_name == "chuangshi");
         //check isCardLimited
-        //bool cardlimit = user->isCardLimited(card, method, true);
         bool enabled = avaliable && (checked || object_name == "chuangshi");
         button->setEnabled(enabled);
     }
@@ -524,9 +502,7 @@ QGroupBox *QijiDialog::createLeft()
     QVBoxLayout *layout = new QVBoxLayout;
 
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-    QStringList ban_list; //no need to ban
-    //if (object_name == "chuangshi")
-    //     ban_list << "Analeptic";
+    QStringList ban_list;
 
     foreach (const Card *card, cards) {
         if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName())
@@ -721,7 +697,6 @@ public:
     {
         if (player->getHandcardNum() != 1)
             return false;
-        //if (player->getHandcardNum() != 1 || pattern.startsWith(".") || pattern.startsWith("@")) return false;
         if (player->getMark("qiji") > 0)
             return false;
         //check main phase
@@ -1137,32 +1112,20 @@ public:
     Changshi()
         : TriggerSkill("changshi")
     {
-        events << EventPhaseStart;// << EventPhaseChanging
-        //frequency = Eternal;
+        events << EventPhaseStart;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-        /*if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive) {
-                foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->hasFlag("changshiInvoked")) {
-                        room->setPlayerSkillInvalidity(p, NULL, false);
-                    }
-                }
-            }
-        }*/
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player && player->getPhase() == Player::NotActive)
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
-                //if (p->hasFlag("changshiInvoked"))
-                if (p->getMark("changshiInvoked") > 0) {
-                    room->setPlayerMark(p, "changshiInvoked", 0);
-                    room->setPlayerSkillInvalidity(p, NULL, false);
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->getMark("changshiInvoked") > 0) {
+                        room->setPlayerMark(p, "changshiInvoked", 0);
+                        room->setPlayerSkillInvalidity(p, NULL, false);
+                    }
                 }
-            }
         }
     }
 
@@ -1208,7 +1171,6 @@ public:
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
                 room->setPlayerSkillInvalidity(p, NULL, true);
                 room->setPlayerMark(p, "changshiInvoked", 1);
-                //p->setFlags("changshiInvoked");
             }
         } else if (choice == "debuff") {
             CardUseStruct carduse;
@@ -1237,7 +1199,6 @@ public:
                     room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
                     room->setPlayerSkillInvalidity(p, NULL, true);
                     room->setPlayerMark(p, "changshiInvoked", 1);
-                    //p->setFlags("changshiInvoked");
                 }
             } else if (choice == "debuff") {
                 CardUseStruct carduse;

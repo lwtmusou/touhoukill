@@ -90,8 +90,6 @@ public:
         use.card->setFlags("IgnoreFailed");
         bool invoke = false;
         foreach (ServerPlayer *q, room->getLieges("xlc", use.to.first())) {
-            //if (q == use.from)
-            //    continue;
             if (use.from->isProhibited(q, use.card))
                 continue;
             if (!use.card->targetFilter(QList<const Player *>(), q, use.from))
@@ -137,25 +135,6 @@ public:
                 logto << p;
                 logto.removeOne(invoke->invoker);
                 room->touhouLogmessage("#fahua_change", use.from, use.card->objectName(), logto);
-
-                /*if (use.card->isKindOf("Collateral")) {
-                    QList<ServerPlayer *> listt;
-                    foreach (ServerPlayer *victim, room->getOtherPlayers(p)) {
-                        if (p->canSlash(victim))
-                            listt << victim;
-                    }
-                    //the list will not be empty since we utilizing targetFilter
-                    ServerPlayer *newVictim = room->askForPlayerChosen(use.from, listt, objectName(), "@fahuaCollateral:" + p->objectName(), false, false);
-                    CardUseStruct new_use;
-                    new_use.from = use.from;
-                    new_use.to << p;
-                    new_use.card = use.card;
-                    p->tag["collateralVictim"] = QVariant::fromValue((ServerPlayer *)newVictim);
-                    data = QVariant::fromValue(new_use);
-                    logto.removeOne(p);
-                    logto << newVictim;
-                    room->touhouLogmessage("#CollateralSlash", use.from, use.card->objectName(), logto);
-                }*/
 
                 break;
             }
@@ -360,10 +339,6 @@ public:
         else
             ids << effect.card->getEffectiveId();
 
-        //CardsMoveStruct move;
-        //move.to_place = Player::DrawPile;
-        //move.card_ids << ids;
-        //room->moveCardsAtomic(move, false);
         room->moveCardsToEndOfDrawpile(ids, true);
 
         LogMessage l;
@@ -372,10 +347,9 @@ public:
         l.card_str = IntList2StringList(ids).join("+");
         room->sendLog(l);
 
-        if (ids.length() > 1) {
-            //QList<int> card_ids = room->getNCards(ids.length(), false, true);
+        if (ids.length() > 1)
             room->askForGuanxing(invoke->invoker, ids, Room::GuanxingDownOnly, objectName());
-        }
+
         return false;
     }
 };
@@ -556,7 +530,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (!(use.from != NULL && use.card->getTypeId() == Card::TypeTrick)) //use.card->isNDTrick()
+        if (!(use.from != NULL && use.card->getTypeId() == Card::TypeTrick))
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
@@ -1514,7 +1488,7 @@ public:
     Huisheng()
         : TriggerSkill("huisheng")
     {
-        events << CardFinished; // << PreCardUsed
+        events << CardFinished;
         view_as_skill = new HuishengVS;
     }
 

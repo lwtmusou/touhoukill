@@ -274,37 +274,6 @@ public:
         }
     }
 };
-//related Peach::targetFilter
-/*class Yanhui : public TriggerSkill
-{
-public:
-    Yanhui()
-        : TriggerSkill("yanhui$")
-    {
-        events << PreCardUsed;
-    }
-
-    //just for broadcasting skillInvoked
-    void record(TriggerEvent, Room *room, QVariant &data) const
-    {
-        CardUseStruct use = data.value<CardUseStruct>();
-        foreach (ServerPlayer *p, use.to) {
-            if (p->hasLordSkill("yanhui") && p != use.from) {
-                if ((use.card->isKindOf("Analeptic") && p->hasFlag("Global_Dying")) || (use.card->isKindOf("Peach") && use.m_reason == CardUseStruct::CARD_USE_REASON_PLAY)) {
-                    QList<ServerPlayer *> logto;
-                    logto << p;
-                    room->touhouLogmessage("#InvokeOthersSkill", use.from, objectName(), logto);
-                    room->notifySkillInvoked(p, objectName());
-                }
-            }
-        }
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &) const
-    {
-        return QList<SkillInvokeDetail>();
-    }
-};*/
 
 class Shenpan : public TriggerSkill
 {
@@ -730,8 +699,6 @@ public:
 
 ToupaiCard::ToupaiCard()
 {
-    //will_throw = false;
-    //handling_method = Card::MethodNone;
 }
 
 bool ToupaiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -917,50 +884,6 @@ public:
         return false;
     }
 };
-
-/*
-class Dizhen : public TriggerSkill
-{
-public:
-    Dizhen()
-        : TriggerSkill("dizhen")
-    {
-        events << FinishJudge;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {
-        JudgeStruct *judge = data.value<JudgeStruct *>();
-        if (!judge->who || !judge->who->isAlive())
-            return QList<SkillInvokeDetail>();
-        ServerPlayer *dying = room->getCurrentDyingPlayer();
-        if (dying != NULL && dying->isAlive())
-            return QList<SkillInvokeDetail>();
-
-        QList<SkillInvokeDetail> d;
-        foreach (ServerPlayer *tenshi, room->findPlayersBySkillName(objectName())) {
-            if (judge->card->isRed() && judge->who->getHp() > 0)
-                d << SkillInvokeDetail(this, tenshi, tenshi, NULL, false, judge->who);
-        }
-        return d;
-    }
-
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        JudgeStruct *judge = data.value<JudgeStruct *>();
-        invoke->invoker->tag["dizhen_judge"] = data;
-        QString prompt = "target:" + judge->who->objectName() + ":" + judge->reason;
-        return invoke->invoker->askForSkillInvoke(objectName(), prompt);
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
-        room->damage(DamageStruct(objectName(), invoke->invoker, invoke->targets.first(), 1, DamageStruct::Normal));
-        return false;
-    }
-};
-*/
 
 class Dizhen : public TriggerSkill
 {
@@ -1522,7 +1445,7 @@ public:
         ServerPlayer *lord = invoke->owner;
         int card_id = invoke->invoker->tag["xiwang_id"].toInt();
         invoke->invoker->tag.remove("xiwang_id");
-        room->obtainCard(lord, card_id, false);//room->getCardPlace(card_id) != Player::PlaceHand
+        room->obtainCard(lord, card_id, false); //room->getCardPlace(card_id) != Player::PlaceHand
         return false;
     }
 };
@@ -1588,12 +1511,6 @@ void NianliDialog::popup()
         button->setToolTip(c->getDescription());
         layout->addWidget(button);
         delete c;
-
-        /*if (!map.contains(card_name)) {
-            Card *c = Sanguosha->cloneCard(card_name);
-            c->setParent(this);
-            map.insert(card_name, c);
-        }*/
     }
 
     Self->tag.remove(object_name);
@@ -1602,9 +1519,7 @@ void NianliDialog::popup()
 
 void NianliDialog::selectCard(QAbstractButton *button)
 {
-    //const Card *card = map.value(button->objectName());
     Self->tag[object_name] = QVariant::fromValue(button->objectName());
-
     emit onButtonClick();
     accept();
 }
@@ -1630,7 +1545,6 @@ bool NianliCard::targetFixed() const
     Card *new_card = Sanguosha->cloneCard(user_string, Card::SuitToBeDecided, 0);
     DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("nianli");
-    //return false;
     return new_card && new_card->targetFixed();
 }
 
@@ -1666,12 +1580,6 @@ public:
     {
         return !player->hasUsed("NianliCard");
     }
-
-    /*virtual QStringList getDialogCardOptions() const {
-        QStringList options;
-        options << "slash" << "snatch";
-        return options;
-    }*/
 
     virtual const Card *viewAs() const
     {
