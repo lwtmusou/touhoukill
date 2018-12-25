@@ -434,7 +434,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName());
-        room->obtainCard(invoke->invoker, id, room->getCardPlace(id) != Player::PlaceHand);
+        room->obtainCard(invoke->invoker, id, false);//room->getCardPlace(id) != Player::PlaceHand
         return false;
     }
 };
@@ -604,7 +604,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName());
-        room->obtainCard(invoke->invoker, id, room->getCardPlace(id) != Player::PlaceHand);
+        room->obtainCard(invoke->invoker, id, false);//room->getCardPlace(id) != Player::PlaceHand
         return false;
     }
 };

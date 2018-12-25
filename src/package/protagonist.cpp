@@ -557,7 +557,7 @@ void JiezouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
 {
     ServerPlayer *target = targets.first();
     int id = room->askForCardChosen(source, target, "hejs", "jiezou");
-    room->obtainCard(source, id, room->getCardPlace(id) != Player::PlaceHand);
+    room->obtainCard(source, id, false);//room->getCardPlace(id) != Player::PlaceHand
     const Card *spade = room->askForCard(source, ".|spade", "@jiezou_spadecard", QVariant(), Card::MethodDiscard, NULL, false, "jiezou", false);
     if (spade == NULL) {
         room->loseHp(source);

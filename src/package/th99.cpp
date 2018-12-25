@@ -531,7 +531,7 @@ public:
     {
         if (e == Pindian) {
             int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName());
-            room->obtainCard(invoke->invoker, id, room->getCardPlace(id) != Player::PlaceHand);
+            room->obtainCard(invoke->invoker, id, false);// room->getCardPlace(id) != Player::PlaceHand
         } else {
             invoke->invoker->pindian(invoke->preferredTarget, objectName());
         }
@@ -1492,7 +1492,7 @@ public:
         if (c) {
             invoke->owner->showHiddenSkill(objectName());
             CardMoveReason r(CardMoveReason::S_REASON_GIVE, invoke->owner->objectName(), objectName(), QString());
-            room->obtainCard(invoke->invoker, c, r, room->getCardPlace(c->getEffectiveId()) != Player::PlaceHand);
+            room->obtainCard(invoke->invoker, c, r, false);//room->getCardPlace(c->getEffectiveId()) != Player::PlaceHand
 
             return true;
         }

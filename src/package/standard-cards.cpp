@@ -1467,12 +1467,12 @@ void Snatch::onEffect(const CardEffectStruct &effect) const
 
     QList<int> disable;
     DummyCard *dummy = new DummyCard;
-    bool move_visible = false;
+    //bool move_visible = false;
     for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
         int card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName(), false, Card::MethodNone, disable);
 
-        if (!move_visible && room->getCardPlace(card_id) != Player::PlaceHand)
-            move_visible = true;
+        //if (!move_visible && room->getCardPlace(card_id) != Player::PlaceHand)
+        //    move_visible = true;
 
         disable << card_id;
         dummy->addSubcard(card_id);
@@ -1482,7 +1482,7 @@ void Snatch::onEffect(const CardEffectStruct &effect) const
     }
 
     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
-    room->obtainCard(effect.from, dummy, reason, move_visible);
+    room->obtainCard(effect.from, dummy, reason, false);
     delete dummy;
 }
 

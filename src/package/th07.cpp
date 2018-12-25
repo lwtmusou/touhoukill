@@ -483,7 +483,7 @@ void XijianCard::onUse(Room *room, const CardUseStruct &card_use) const
     const Card *card = Sanguosha->getCard(card_id);
     card_use.from->showHiddenSkill("xijian");
     if (place == Player::PlaceHand)
-        to2->obtainCard(card, to1->isShownHandcard(card_id));
+        to2->obtainCard(card, false);//to1->isShownHandcard(card_id)
     else {
         room->moveCardTo(card, to1, to2, place, CardMoveReason(CardMoveReason::S_REASON_TRANSFER, from->objectName(), "xijian", QString()));
         if (place == Player::PlaceDelayedTrick) {

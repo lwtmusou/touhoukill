@@ -763,7 +763,7 @@ public:
         QString prompt = "@rebing-slash:" + invoke->invoker->objectName() + ":" + invoke->targets.first()->objectName();
         if (!room->askForUseSlashTo(current, invoke->targets.first(), prompt)) {
             int id = room->askForCardChosen(invoke->invoker, current, "hes", objectName());
-            room->obtainCard(invoke->invoker, id, room->getCardPlace(id) != Player::PlaceHand);
+            room->obtainCard(invoke->invoker, id, false);//room->getCardPlace(id) != Player::PlaceHand
         }
         return false;
     }

@@ -1522,7 +1522,7 @@ public:
         ServerPlayer *lord = invoke->owner;
         int card_id = invoke->invoker->tag["xiwang_id"].toInt();
         invoke->invoker->tag.remove("xiwang_id");
-        room->obtainCard(lord, card_id, room->getCardPlace(card_id) != Player::PlaceHand);
+        room->obtainCard(lord, card_id, false);//room->getCardPlace(card_id) != Player::PlaceHand
         return false;
     }
 };
