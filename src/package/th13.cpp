@@ -6,7 +6,6 @@
 #include "settings.h"
 #include "skill.h"
 #include "standard.h"
-//#include "th10.h"
 #include <QCommandLinkButton>
 #include <QCoreApplication>
 #include <QPointer>
@@ -295,9 +294,7 @@ QGroupBox *XihuaDialog::createLeft()
     QVBoxLayout *layout = new QVBoxLayout;
 
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-    QStringList ban_list; //no need to ban
-        //if (object_name == "chuangshi")
-        //     ban_list << "Analeptic";
+    QStringList ban_list;
 
     foreach (const Card *card, cards) {
         if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName())
@@ -1393,7 +1390,6 @@ public:
 BumingCard::BumingCard()
 {
     will_throw = true;
-    //handling_method = Card::MethodUse;
     m_skillName = "buming";
 }
 
@@ -1471,65 +1467,6 @@ public:
         return card;
     }
 };
-/*
-class Zhengti : public TriggerSkill
-{
-public:
-    Zhengti()
-        : TriggerSkill("zhengti")
-    {
-        events << DamageInflicted << Damaged;
-        frequency = Compulsory;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
-    {
-        DamageStruct damage = data.value<DamageStruct>();
-        if (!damage.to->hasSkill(this))
-            return QList<SkillInvokeDetail>();
-
-        if (triggerEvent == Damaged) {
-            if (damage.from && damage.from != damage.to && damage.to->isAlive())
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
-        }
-        else if (triggerEvent == DamageInflicted) {
-            foreach(ServerPlayer *p, room->getOtherPlayers(damage.to)) {
-                if (p->getMark("@zhengti") > 0)
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
-            }
-        }
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        DamageStruct damage = data.value<DamageStruct>();
-        if (triggerEvent == DamageInflicted) {
-            QList<ServerPlayer *> targets;
-            foreach(ServerPlayer *p, room->getOtherPlayers(damage.to)) {
-                if (p->getMark("@zhengti") > 0)
-                    targets << p;
-            }
-            ServerPlayer *target = room->askForPlayerChosen(damage.to, targets, objectName(), "@zhengti-choose", false, true);
-            target->loseMark("@zhengti", 1);
-
-            damage.to = target;
-            damage.transfer = true;
-            room->damage(damage);
-            return true;
-        }
-        else if (triggerEvent == Damaged) {
-            room->notifySkillInvoked(damage.to, objectName());
-            room->touhouLogmessage("#TriggerSkill", damage.to, objectName());
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, damage.to->objectName(), damage.from->objectName());
-
-            damage.from->gainMark("@zhengti", 1);
-            room->setTag("zhengti_target", QVariant::fromValue(damage.from));
-        }
-        return false;
-    }
-};
-*/
 
 class Zhengti : public TriggerSkill
 {
@@ -1737,7 +1674,6 @@ TH13Package::TH13Package()
     General *yoshika = new General(this, "yoshika", "slm", 4);
     yoshika->addSkill(new Duzhua);
     yoshika->addSkill(new DuzhuaTargetMod);
-    ;
     yoshika->addSkill(new Taotie);
     related_skills.insertMulti("duzhua", "#duzhuaTargetMod");
 

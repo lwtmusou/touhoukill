@@ -1397,7 +1397,7 @@ static void do_sishu(ServerPlayer *player)
             ServerPlayer *target = room->askForPlayerChosen(player, room->getAllPlayers(), "sishu", QString(), false, true);
             acquired = acquired + 1;
             CardsMoveStruct move2(id, target, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_GOTBACK, target->objectName()));
-            room->moveCardsAtomic(move2, false);
+            room->moveCardsAtomic(move2, true);
             if (target != player)
                 room->recover(player, RecoverStruct());
             if (!throwIds.isEmpty()) {
@@ -2059,8 +2059,6 @@ TH06Package::TH06Package()
     rumia->addSkill(new Anyu);
 
     General *koakuma = new General(this, "koakuma", "hmx", 3);
-    //koakuma->addSkill(new Qiyue);
-    //koakuma->addSkill(new Moxue);
     koakuma->addSkill(new Moqi);
     koakuma->addSkill(new Sishu);
 

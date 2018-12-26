@@ -238,7 +238,6 @@ public:
 YaobanCard::YaobanCard()
 {
     will_throw = true;
-    //handling_method = Card::MethodUse;
     m_skillName = "yaoban";
 }
 
@@ -503,7 +502,6 @@ const Card *JiuhaoCard::validate(CardUseStruct &use) const
     Slash *card = new Slash(Card::NoSuit, 0);
     use.from->getRoom()->setCardFlag(card, "jiuhao");
     card->setSkillName("jiuhao");
-    //use.from->getRoom()->setPlayerFlag(use.from, "jiuhaoused");
     return card;
 }
 
@@ -616,7 +614,6 @@ public:
         if (e == TargetSpecified) {
             CardUseStruct use = data.value<CardUseStruct>();
             use.card->setFlags("jidu_card");
-            //room->setCardFlag(use.card, "jidu_card");//why can not clear flag while skill"taiji" triggered firstly?
         } else if (e == ConfirmDamage) {
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.from) {
@@ -763,7 +760,7 @@ public:
         QString prompt = "@rebing-slash:" + invoke->invoker->objectName() + ":" + invoke->targets.first()->objectName();
         if (!room->askForUseSlashTo(current, invoke->targets.first(), prompt)) {
             int id = room->askForCardChosen(invoke->invoker, current, "hes", objectName());
-            room->obtainCard(invoke->invoker, id, room->getCardPlace(id) != Player::PlaceHand);
+            room->obtainCard(invoke->invoker, id, false);
         }
         return false;
     }
@@ -868,7 +865,7 @@ public:
             if (card->isRed() == isred) {
                 acquired = acquired + 1;
                 CardsMoveStruct move2(id, player, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_GOTBACK, player->objectName()));
-                room->moveCardsAtomic(move2, false);
+                room->moveCardsAtomic(move2, true);
 
                 if (!throwIds.isEmpty()) {
                     CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), "cuiji", QString());
@@ -1010,7 +1007,6 @@ TH11Package::TH11Package()
     satori->addSkill(new Xiangqi);
     //Room::askForCardChosen
     satori->addSkill(new Skill("duxin", Skill::Compulsory, "static"));
-    //satori->addSkill(new Huzhu);
     satori->addSkill(new Skill("youtong$"));
 
     General *koishi = new General(this, "koishi", "dld", 3);

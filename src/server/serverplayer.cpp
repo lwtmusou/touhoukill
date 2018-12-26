@@ -237,7 +237,6 @@ QList<int> ServerPlayer::forceToDiscard(int discard_num, bool include_equip, boo
 
 int ServerPlayer::aliveCount(bool includeRemoved) const
 {
-    //return room->alivePlayerCount();
     int n = room->alivePlayerCount();
     if (!includeRemoved) {
         foreach (ServerPlayer *p, room->getAllPlayers()) {
@@ -639,21 +638,10 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     if (card1 == NULL || card2 == NULL)
         return false;
 
-    //PindianStruct pindian_struct;
-    //pindian_struct.from = this;
-    //pindian_struct.to = target;
     pindian_struct.from_card = card1;
     pindian_struct.to_card = card2;
     pindian_struct.from_number = card1->getNumber();
     pindian_struct.to_number = card2->getNumber();
-    //pindian_struct.askedPlayer = NULL;
-    //pindian_struct.reason = reason;
-
-    //CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, pindian_struct.from->objectName(), pindian_struct.to->objectName(), pindian_struct.reason, QString());
-    //room->moveCardTo(pindian_struct.from_card, pindian_struct.from, NULL, Player::PlaceTable, reason1, false);
-
-    //CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, pindian_struct.to->objectName());
-    //room->moveCardTo(pindian_struct.to_card, pindian_struct.to, NULL, Player::PlaceTable, reason2, false);
 
     if (!card1_result_logged) {
         log2.type = "$PindianResult";
@@ -661,7 +649,6 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
         log2.card_str = QString::number(pindian_struct.from_card->getEffectiveId());
         room->sendLog(log2);
     }
-    
 
     log2.type = "$PindianResult";
     log2.from = pindian_struct.to;
@@ -854,7 +841,6 @@ void ServerPlayer::skip(Player::Phase phase, bool isCost, bool sendLog)
             }
             _m_phases_state[i].skipped = (isCost ? -1 : 1);
             //defaultly skip all phases even someone has same pahses.
-            //break;
         }
     }
 
@@ -888,12 +874,7 @@ void ServerPlayer::insertPhases(QList<Player::Phase> new_phases, int index)
         _phase.phase = new_phases[i];
         phases.insert(index + i, new_phases[i]);
         _m_phases_state.insert(index + i, _phase);
-        //_m_phases_state << _phase;
     }
-    //PhaseStruct _phase;
-    //_phase.phase = phase;
-    //phases.insert(index, phase);
-    //_m_phases_state.insert(index, _phase);
 }
 
 void ServerPlayer::exchangePhases(Player::Phase phase1, Player::Phase phase2)
@@ -1077,30 +1058,6 @@ QList<ServerPlayer *> ServerPlayer::getVictims() const
 {
     return victims;
 }
-/*
-void ServerPlayer::setNext(ServerPlayer *next)
-{
-    this->next = next;
-}
-
-ServerPlayer *ServerPlayer::getNext() const
-{
-    return next;
-}
-
-ServerPlayer *ServerPlayer::getNextAlive(int n) const
-{
-    bool hasAlive = (room->getAlivePlayers().length() > 0);
-    ServerPlayer *next = const_cast<ServerPlayer *>(this);
-    if (!hasAlive)
-        return next;
-    for (int i = 0; i < n; i++) {
-        do
-            next = next->next;
-        while (next->isDead());
-    }
-    return next;
-}*/
 
 int ServerPlayer::getGeneralMaxHp() const
 {
@@ -1419,7 +1376,6 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
 
 void ServerPlayer::addToShownHandCards(QList<int> card_ids)
 {
-    //check card_id
     foreach (int id, card_ids)
         if (shown_handcards.contains(id) || room->getCardOwner(id) != this)
             card_ids.removeOne(id);
@@ -1448,8 +1404,6 @@ void ServerPlayer::addToShownHandCards(QList<int> card_ids)
     s.shown = true;
     QVariant v = QVariant::fromValue(s);
     room->getThread()->trigger(ShownCardChanged, room, v);
-    //need set Konwn cards?
-    //room->doNotify(player, S_COMMAND_SET_KNOWN_CARDS, arg1);
 }
 
 void ServerPlayer::removeShownHandCards(QList<int> card_ids, bool sendLog, bool moveFromHand)
@@ -1670,7 +1624,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     QSet<QString> disShowExtraTarget;
     QSet<QString> showResidueNum;
     QSet<QString> disShowResidueNum;
-    QSet<QString> showDistanceLimit; //QSet<QString> disShowDistanceLimit;
+    QSet<QString> showDistanceLimit;
     QSet<QString> showTargetFix; // only for skill tianqu
     QSet<QString> showTargetProhibit; //only for skill tianqu
     //check extra target

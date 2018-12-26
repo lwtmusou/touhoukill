@@ -1256,21 +1256,6 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     trickEffect.to = to;
     QVariant data = QVariant::fromValue(trickEffect);
 
-    //for skill "jinfa"
-    /*if (to->hasSkill("jinfa") && !trick->isKindOf("Nullification")) {
-        Nullification *nul = new Nullification(Card::NoSuit, 0);
-        nul->setSkillName("jinfa");
-        if (to->isCardLimited(nul, Card::MethodUse))
-            delete nul;
-        else {
-            useCard(CardUseStruct(nul, to, QList<ServerPlayer *>()));
-            //process effect like "weiya"
-            if (to->hasFlag("nullifiationNul"))
-                setPlayerFlag(to, "-nullifiationNul");
-            else
-                return !_askForNullification(nul, to, to, !positive, aiHelper);
-        }
-    }*/
     setTag("NullifiationTarget", data);
 
     foreach (ServerPlayer *player, m_alivePlayers) {
@@ -1386,7 +1371,6 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
             }
         }
         if (!isLastTarget && askForSkillInvoke(repliedPlayer, "Pagoda", data))
-            //setCardFlag(trick, "PagodaNullifiation");
             trick->setFlags("PagodaNullifiation");
     }
     return result;
@@ -1472,18 +1456,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
 
     //secondly, if can not choose visible(known) cards, then randomly choose a card.
     int card_id = Card::S_UNKNOWN_CARD_ID;
-    /*bool needSelect = false;
-    if (knownCards.length() < cards.length() && cards.length() > 1) {
-        if (who == player || handcard_visible)
-            needSelect = true;
-    }*/
 
-    //if (!needSelect)
-    //@todo lwtmusou: remove the auto random pre-chosen.
-    //if (who != player && !handcard_visible && knownCards.isEmpty() && !flags.contains("g"))
-    //    card_id = cards.at(qrand() % cards.length())->getId();
-    //card_id = who->getRandomHandCardId();
-    //else {
     AI *ai = player->getAI();
     if (ai) {
         thread->delay();
@@ -1511,9 +1484,6 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
             card_id = clientReply.toInt();
 
         if (card_id == Card::S_UNKNOWN_CARD_ID) {
-            //if (shownHandcards.isEmpty())
-            //    card_id = who->getRandomHandCardId();
-            //else
             foreach (int id, checked_disabled_ids)
                 unknownHandcards.removeOne(id);
             if (!unknownHandcards.isEmpty())
@@ -1523,7 +1493,6 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
 
     if (card_id != Card::S_UNKNOWN_GENERAL_CARD_ID && !cards.contains(Sanguosha->getCard(card_id)))
         card_id = cards.at(qrand() % cards.length())->getId();
-    //}
 
     Q_ASSERT(card_id != Card::S_UNKNOWN_CARD_ID);
 
@@ -2221,7 +2190,6 @@ void Room::setPlayerCardLimitation(ServerPlayer *player, const QString &limit_li
     arg << player->objectName();
     arg << reason;
     arg << false;
-    //doNotify(player, S_COMMAND_CARD_LIMITATION, arg);
     doBroadcastNotify(S_COMMAND_CARD_LIMITATION, arg);
 }
 
@@ -2237,7 +2205,6 @@ void Room::removePlayerCardLimitation(ServerPlayer *player, const QString &limit
     arg << player->objectName();
     arg << reason;
     arg << clearReason;
-    //doNotify(player, S_COMMAND_CARD_LIMITATION, arg);
     doBroadcastNotify(S_COMMAND_CARD_LIMITATION, arg);
 }
 
@@ -2253,7 +2220,6 @@ void Room::clearPlayerCardLimitation(ServerPlayer *player, bool single_turn)
     arg << player->objectName();
     arg << QString();
     arg << true;
-    //doNotify(player, S_COMMAND_CARD_LIMITATION, arg);
     doBroadcastNotify(S_COMMAND_CARD_LIMITATION, arg);
 }
 
@@ -2524,7 +2490,6 @@ void Room::changeHero(ServerPlayer *player, const QString &new_general, bool ful
             }
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
                 setPlayerMark(player, skill->getLimitMark(), 1);
-            //addPlayerMark(player, skill->getLimitMark());
             SkillAcquireDetachStruct s;
             s.isAcquire = true;
             s.player = player;
@@ -3575,27 +3540,6 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
             body << ".";
         body << arg;
         doBroadcastNotify(S_COMMAND_SPEAK, body);
-#if 0
-        if (game_started && Config.EnableSurprisingGenerals) {
-            QString real_str = QString::fromUtf8(QByteArray::fromBase64(arg.toString().toLatin1()));
-            //-----------------@SurprisingGeneral:Rara---------------------
-            if (real_str.contains(tr("Rara")) && player->getGeneralName() != "Rara")
-                changeHero(player, "Rara", false);
-            //-----------------@SurprisingGeneral:Fs---------------------
-            else if (real_str.contains("Fs") && player->getGeneralName() != "Fsu0413")
-                changeHero(player, "Fsu0413", false);
-            //-----------------@SurprisingGeneral:lzxqqqq---------------------
-            else if (real_str.contains(tr("lzxqqqq")) && !player->getGeneralName().contains("lzxqqqq"))
-                changeHero(player, "lzxqqqq1", false);
-            //-----------------@SurprisingGeneral:Your Sister Big God---------------------
-            else if (real_str.contains(tr("LT-Y")) && player->getGeneralName() != "jiaoshenmeanimei")
-                changeHero(player, "jiaoshenmeanimei", false);
-            //-----------------@SurprisingGeneral:funima---------------------
-            else if (real_str.contains(tr("nima")) && player->getGeneralName() != "funima")
-                changeHero(player, "funima", false);
-            //----------------------------------------------------------------
-        }
-#endif
     }
 
 #undef _NO_BROADCAST_SPEAKING
@@ -4764,7 +4708,6 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids, bool forceVisible)
     }
     cards_moves = _separateMoves(moveOneTimes);
 
-    //notifyMoveCards(true, cards_moves, false);
     notifyMoveCards(true, cards_moves, forceVisible);
     // First, process remove card
     for (int i = 0; i < cards_moves.size(); i++) {
@@ -4805,7 +4748,6 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids, bool forceVisible)
     }
     foreach (CardsMoveStruct move, cards_moves)
         updateCardsOnGet(move);
-    //notifyMoveCards(false, cards_moves, false);
     notifyMoveCards(false, cards_moves, forceVisible);
     // Now, process add cards
     for (int i = 0; i < cards_moves.size(); i++) {
@@ -4936,14 +4878,12 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                 || cards_moves[i].to_place == Player::DiscardPile
                 // any card from/to discard pile should be visible
                 || cards_moves[i].from_place == Player::PlaceTable
-                //|| ((cards_moves[i].to_place == Player::PlaceTable && ((cards_moves[i].reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_PINDIAN))
-                //    || !cards_moves[i].shown_ids.isEmpty())
                 // any card from/to place table should be visible,except pindian
                 || (cards_moves[i].to_place == Player::PlaceSpecial && to && to->pileOpen(cards_moves[i].to_pile_name, player->objectName()))
                 // pile open to specific players
                 || player->hasFlag("Global_GongxinOperator");
             // the player put someone's cards to the drawpile
-                
+
             arg << cards_moves[i].toVariant();
         }
         doNotify(player, isLostPhase ? S_COMMAND_LOSE_CARD : S_COMMAND_GET_CARD, arg);
@@ -6752,12 +6692,10 @@ void Room::defaultHeroSkin()
 {
     if (Config.DefaultHeroSkin) {
         QStringList all = Sanguosha->getLimitedGeneralNames();
-        //all.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
         Config.beginGroup("HeroSkin");
-        foreach (QString general_name, all) {
-            //Config.setValue(general_name, 1);
+        foreach (QString general_name, all)
             Config.remove(general_name);
-        }
+
         Config.endGroup();
     }
 }
@@ -6813,7 +6751,6 @@ void Room::saveWinnerTable(const QString &winner, bool isSurrender)
     QString mode = Config.GameMode;
     if (mode.endsWith("1v1") || mode.endsWith("1v3") || mode == "06_XMode")
         return;
-    //mode.contains("_mini_")  mode == "custom_scenario"
 
     //check human players and check Surrender
     int count = 0;
@@ -6890,8 +6827,6 @@ void Room::countDescription()
         return;
 
     QTextStream stream(&file);
-    //stream.seek(file.size());
-    //QSet<QString> all = Sanguosha->getLimitedGeneralNames().toSet();
     QList<QString> all = Sanguosha->getLimitedGeneralNames();
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
@@ -6906,18 +6841,9 @@ void Room::countDescription()
             QRegExp rx("<[^>]*>");
             desc.remove(rx);
             QString skill_line = QString("%1:%2").arg(skill_name).arg(desc);
-            //des_src.replace("\n", "<br/>");
-            //des_src.replace("\n", "<br>");
             line = line + skill_line;
         }
-        //QString desc = gen->getSkillDescription();
         map.insert(line.length(), name);
-        //QString countString = "";
-        //countString.append(QString("%1: %2 ").arg(Sanguosha->translate(name)).arg(QString::number(line.length())));
-        //countString.append("\n");
-        //countString.append(line);
-        //countString.append("\n");
-        //QString str = QString::fromUtf8(countString);
     }
     QMultiMap<int, QString>::iterator it;
     int num = 0;

@@ -92,7 +92,6 @@ public:
     {
         JudgeStruct *judge = data.value<JudgeStruct *>();
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), judge->who->objectName());
-        //judge->who->drawCards(1);
         room->recover(judge->who, RecoverStruct());
         return false;
     }
@@ -142,9 +141,8 @@ public:
         const Card *card = invoke->tag.value("fengmo").value<const Card *>();
         JudgeStruct judge;
         judge.reason = objectName();
-        judge.who = invoke->invoker; // invoke->targets.first();
+        judge.who = invoke->invoker;
         judge.good = true;
-        //judge.pattern = ".|red";
         judge.play_animation = false;
 
         ServerPlayer *target = invoke->preferredTarget;
@@ -557,7 +555,7 @@ void JiezouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
 {
     ServerPlayer *target = targets.first();
     int id = room->askForCardChosen(source, target, "hejs", "jiezou");
-    room->obtainCard(source, id, room->getCardPlace(id) != Player::PlaceHand);
+    room->obtainCard(source, id, false); //room->getCardPlace(id) != Player::PlaceHand
     const Card *spade = room->askForCard(source, ".|spade", "@jiezou_spadecard", QVariant(), Card::MethodDiscard, NULL, false, "jiezou", false);
     if (spade == NULL) {
         room->loseHp(source);

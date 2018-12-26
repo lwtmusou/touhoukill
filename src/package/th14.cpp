@@ -434,76 +434,10 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName());
-        room->obtainCard(invoke->invoker, id, room->getCardPlace(id) != Player::PlaceHand);
+        room->obtainCard(invoke->invoker, id, false);
         return false;
     }
 };
-
-/*
-class Wuchang : public TriggerSkill
-{
-public:
-    Wuchang()
-        : TriggerSkill("wuchang")
-    {
-        events << EventPhaseEnd << CardsMoveOneTime << EventPhaseChanging;
-    }
-
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
-    {
-        if (triggerEvent == CardsMoveOneTime) {
-            ServerPlayer *current = room->getCurrent();
-            if (!current || current->getPhase() != Player::Discard)
-                return;
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.from == current && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
-                foreach (int id, move.card_ids) {
-                    if ((move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand) && Sanguosha->getCard(id)->isRed()) {
-                        room->setTag("wuchang", false);
-                        break;
-                    }
-                }
-            }
-        } else if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.from == Player::Discard)
-                room->setTag("wuchang", true);
-            if (change.to == Player::Discard)
-                room->setTag("wuchang", true);
-        }
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
-    {
-        QList<SkillInvokeDetail> d;
-        if (triggerEvent == EventPhaseEnd) {
-            ServerPlayer *current = data.value<ServerPlayer *>();
-            if (!current || current->getPhase() != Player::Discard || !room->getTag("wuchang").toBool())
-                return d;
-            if (current->canDiscard(current, "hs")) {
-                foreach (ServerPlayer *src, room->findPlayersBySkillName(objectName())) {
-                    if (src != current)
-                        d << SkillInvokeDetail(this, src, src, NULL, false, current);
-                }
-            }
-        }
-        return d;
-    }
-
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        QString prompt = "target:" + invoke->preferredTarget->objectName();
-        return room->askForSkillInvoke(invoke->invoker, objectName(), prompt);
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
-        room->askForDiscard(invoke->targets.first(), objectName(), 1, 1, false, false, "wuchang_discard");
-        return false;
-    }
-};
-*/
 
 class Wuchang : public TriggerSkill
 {
@@ -604,7 +538,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName());
-        room->obtainCard(invoke->invoker, id, room->getCardPlace(id) != Player::PlaceHand);
+        room->obtainCard(invoke->invoker, id, false); //room->getCardPlace(id) != Player::PlaceHand
         return false;
     }
 };
@@ -831,7 +765,6 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        //invoke->invoker->addToPile("feitou", room->getNCards(1));
         invoke->invoker->drawCards(1);
         if (!invoke->invoker->isKongcheng()) {
             const Card *cards = room->askForExchange(invoke->invoker, objectName(), 1, 1, false, "feitou-exchange");
@@ -1053,7 +986,7 @@ public:
         QString prompt = "target2";
         if (effect.card->hasFlag("tianxieEffected_" + effect.to->objectName()))
             prompt = "target1:" + effect.from->objectName();
-        ;
+
         invoke->invoker->tag[objectName()] = data;
         return invoke->invoker->askForSkillInvoke(objectName(), prompt);
     }
@@ -1227,7 +1160,6 @@ TH14Package::TH14Package()
 
     General *seija_sp = new General(this, "seija_sp", "hzc", 3);
     seija_sp->addSkill(new Tianxie);
-    //seija_sp->addSkill(new Huobao);
     seija_sp->addSkill(new Duobao);
 
     addMetaObject<LeitingCard>();

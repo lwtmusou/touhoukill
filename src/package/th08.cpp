@@ -1278,7 +1278,7 @@ public:
 
         if (e == DamageCaused)
             damage.damage = damage.damage + 1;
-        //room->touhouLogmessage("#laolong_damage", damage.from, QString::number(damage.damage), logto, QString::number(record));
+
         room->touhouLogmessage("#laolong_damage", damage.to, QString::number(damage.damage), QList<ServerPlayer *>(), QString::number(record));
         data = QVariant::fromValue(damage);
         if (damage.damage == 0)
@@ -1503,47 +1503,6 @@ public:
             }
         }
     }
-
-    /*QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {
-    CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-    ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-    if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile
-    && (((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE)
-    || ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE))) {
-    const Card *card = move.reason.m_extraData.value<const Card *>();
-    if (card && card->getTypeId() == Card::TypeBasic) {
-    foreach (int id, move.card_ids) { //move.card_ids =  card->subcards
-    if (room->getCardPlace(id) != Player::DiscardPile || card->hasFlag("showncards") || move.shown_ids.contains(id)) //
-    return QList<SkillInvokeDetail>();
-    }
-    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-    }
-    } else if (move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE) {
-    player = move.reason.m_extraData.value<ServerPlayer *>();
-    if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile) {
-    int id = move.card_ids.first();
-    if (Sanguosha->getCard(id)->getTypeId() == Card::TypeBasic && room->getCardPlace(id) == Player::DiscardPile && !move.shown_ids.contains(id)) {
-    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-    }
-    }
-    }
-    return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-    CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-    if (move.reason.m_reason == CardMoveReason::S_REASON_OVERRIDE || move.reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE) {
-    invoke->invoker->obtainCard(Sanguosha->getCard(move.card_ids.first()));
-    } else {
-    const Card *card = move.reason.m_extraData.value<const Card *>();
-    invoke->invoker->obtainCard(card);
-    }
-
-    invoke->invoker->addToShownHandCards(move.card_ids);
-    return false;
-    }*/
 };
 
 YinghuoCard::YinghuoCard()

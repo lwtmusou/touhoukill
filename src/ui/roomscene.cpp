@@ -2235,7 +2235,6 @@ void RoomScene::keepLoseCardLog(const CardsMoveStruct &move)
         else
             log_box->appendLog("$PutNCards", from_general, QStringList(), IntList2StringList(open_ids).join("+"), QString::number(hidden_num));
 
-
         //old version
         /*bool hidden = false;
         foreach (int id, move.card_ids) {
@@ -2275,7 +2274,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
             log_box->appendLog("$AddToPile", QString(), QStringList(), IntList2StringList(open_ids).join("+"), move.to_pile_name);
         else
             log_box->appendLog("$RemoveNCardsFromGame", QString(), QStringList(), IntList2StringList(open_ids).join("+"), move.to_pile_name, QString::number(hidden_num));
-        
+
         //old version
         /*bool hidden = (move.card_ids.contains(Card::S_UNKNOWN_CARD_ID));
         if (hidden)
@@ -2343,7 +2342,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
         QList<int> open_ids = move.card_ids;
         open_ids.removeAll(Card::S_UNKNOWN_CARD_ID);
         int hidden_num = move.card_ids.length() - open_ids.length();
-        
+
         if (hidden_num == move.card_ids.length())
             log_box->appendLog("#MoveNCards", from_general, tos, QString(), QString::number(hidden_num));
         else if (hidden_num == 0)
@@ -2356,7 +2355,6 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
             log_box->appendLog("#MoveNCards", from_general, tos, QString(), QString::number(move.card_ids.length()));
         else
             log_box->appendLog("$MoveCard", from_general, tos, IntList2StringList(move.card_ids).join("+"));*/
-
     }
     if (move.from && move.to) {
         // both src and dest are player

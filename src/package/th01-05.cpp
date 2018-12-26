@@ -3076,66 +3076,6 @@ public:
     }
 };
 
-/*
-class Luli : public TriggerSkill
-{
-public:
-    Luli()
-        : TriggerSkill("luli")
-    {
-        events << EventPhaseStart;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {
-        ServerPlayer *player = data.value<ServerPlayer *>();
-        if (!player->hasSkill(this) || player->isDead() || player->getPhase() != Player::Finish)
-            return QList<SkillInvokeDetail>();
-
-        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (!p->isNude() && p->getHandcardNum() >= player->getHandcardNum())
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-        }
-
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        QList<ServerPlayer *> targets;
-        foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-            if (!p->isNude() && p->getHandcardNum() >= invoke->invoker->getHandcardNum())
-                targets << p;
-        }
-        if (targets.isEmpty())
-            return false;
-
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@luli", true, true);
-        if (target)
-            invoke->targets << target;
-        return target != NULL;
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        ServerPlayer *target = invoke->targets.first();
-        int card_id = room->askForCardChosen(invoke->invoker, target, "hes", objectName());
-        bool visible = room->getCardPlace(card_id) != Player::PlaceHand || target->isShownHandcard(card_id);
-        room->obtainCard(invoke->invoker, card_id, visible);
-
-        const Card *card = room->askForExchange(invoke->invoker, objectName(), 1, 1, true, "luliReturn:" + target->objectName());
-        DELETE_OVER_SCOPE(const Card, card)
-
-        int id2 = card->getEffectiveId();
-        visible = room->getCardPlace(id2) != Player::PlaceHand || target->isShownHandcard(id2);
-        target->obtainCard(card, visible);
-
-        room->askForUseCard(invoke->invoker, "BasicCard+^Jink,TrickCard+^Nullification,EquipCard|.|.|luli", "@luli_use", -1, Card::MethodUse, false, objectName());
-        room->askForUseCard(target, "BasicCard+^Jink,TrickCard+^Nullification,EquipCard|.|.|luli", "@luli_use", -1, Card::MethodUse, false, objectName());
-        return false;
-    }
-};*/
-
 class Anliu : public TriggerSkill
 {
 public:

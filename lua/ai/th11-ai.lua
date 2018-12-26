@@ -635,7 +635,7 @@ sgs.ai_skill_playerchosen.rebing = function(self, targets)
 		--没有具体的slash 无法考证slashEffective
 		if not hasSlash then
 			return target
-		elseif not target:isWeak() and current:getHandcardNum() <=2 then
+		elseif not self:isWeak(target) and current:getHandcardNum() <=2 then
 			return target
 		end
 	end
