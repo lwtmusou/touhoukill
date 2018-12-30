@@ -1704,7 +1704,7 @@ sgs.ai_skill_playerchosen.xianji = function(self, targets)
 	return nil
 end
 
-sgs.ai_skill_choice.saiqian= function(self, choices, data)
+sgs.ai_skill_choice.xianji= function(self, choices, data)
 	local target = self.player:getTag("xianji_target"):toPlayer()
 	
 	if self:isFriend(target) then
