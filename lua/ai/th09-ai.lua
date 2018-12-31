@@ -596,7 +596,7 @@ sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 		local self_card =  target:objectName()== self.player:objectName()
 		local new_id = self:getRetrialCardId(cards1, judge,self_card)
 		--new_id 不为-1 代表 装备区的id去改判，可以得到好结果
-
+        if new_id == -1 then continue end
 		--牌的基础使用价值
         local new_value = self:getUseValue(sgs.Sanguosha:getCard(new_id))
         local diff = judgecard_value - new_value

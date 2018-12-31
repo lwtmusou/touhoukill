@@ -4403,7 +4403,7 @@ void Room::moveCardTo(const Card *card, ServerPlayer *srcPlayer, ServerPlayer *d
     move.to_pile_name = pileName;
     move.from = srcPlayer;
     move.reason = reason;
-    move.shown_ids = inherit_shown_ids;
+    //move.shown_ids = inherit_shown_ids;
     QList<CardsMoveStruct> moves;
     moves.append(move);
     moveCardsAtomic(moves, forceMoveVisible);
