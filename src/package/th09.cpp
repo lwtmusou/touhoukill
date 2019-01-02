@@ -1142,9 +1142,16 @@ public:
         filter_pattern = ".|spade,heart|.|hand";
     }
 
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
+    virtual bool isEnabledAtResponse(const Player *p, const QString &pattern) const
     {
-        return matchAvaliablePattern("lightning", pattern);
+        Lightning l(Card::SuitToBeDecided, -1);
+        return l.isAvailable(p) && matchAvaliablePattern("lightning", pattern);
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        Lightning l(Card::SuitToBeDecided, -1);
+        return l.isAvailable(player);
     }
 
     virtual const Card *viewAs(const Card *originalCard) const
