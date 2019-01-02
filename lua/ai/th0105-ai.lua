@@ -1080,7 +1080,7 @@ end
 
 
 
-sgs.ai_skill_use["@@luliVS"] = function(self, prompt)
+sgs.ai_skill_use["@@luli"] = function(self, prompt)
 
 	local num = self.player:getMark("luli")
 	local ids = sgs.IntList()
