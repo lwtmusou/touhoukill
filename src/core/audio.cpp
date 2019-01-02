@@ -84,7 +84,7 @@ public:
         Shuffle = 2,
     };
 
-    explicit BackgroundMusicPlayList(const QStringList &fileNames, BackgroundMusicPlayList::PlayOrder order = Sequential, const QStringList openings = QStringList())
+    explicit BackgroundMusicPlayList(const QStringList &fileNames, BackgroundMusicPlayList::PlayOrder order = Sequential, const QStringList &openings = QStringList())
         : m_fileNames(fileNames)
         , m_order(order)
         , m_index(-1)

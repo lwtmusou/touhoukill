@@ -200,7 +200,7 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer
             QStringList equips = str.split(",");
             foreach (QString equip, equips) {
                 bool ok;
-                equip.toInt(&ok);
+                (void)equip.toInt(&ok);
                 if (!ok)
                     room->installEquip(sp, equip);
                 else

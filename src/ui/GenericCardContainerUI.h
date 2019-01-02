@@ -305,7 +305,10 @@ protected slots:
     }
     virtual bool isItemUnderMouse(QGraphicsItem *item) const
     {
-        return item->isUnderMouse();
+        if (item != NULL)
+            return item->isUnderMouse();
+
+        return false;
     }
 
 private:

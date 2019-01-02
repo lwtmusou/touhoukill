@@ -1695,7 +1695,7 @@ void GeneralAssignDialog::clearGeneral()
 
 //------------------------------
 
-CardAssignDialog::CardAssignDialog(QWidget *parent, QString card_type, QString class_name, QList<int> excluded)
+CardAssignDialog::CardAssignDialog(QWidget *parent, const QString &card_type, const QString &class_name, const QList<int> &excluded)
     : QDialog(parent)
     , card_type(card_type)
     , class_name(class_name)

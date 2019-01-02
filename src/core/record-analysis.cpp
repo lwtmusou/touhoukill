@@ -9,14 +9,14 @@
 
 using namespace QSanProtocol;
 
-RecAnalysis::RecAnalysis(QString dir)
+RecAnalysis::RecAnalysis(const QString &dir)
     : m_recordPlayers(0)
     , m_currentPlayer(NULL)
 {
     initialize(dir);
 }
 
-void RecAnalysis::initialize(QString dir)
+void RecAnalysis::initialize(const QString &dir)
 {
     QList<QByteArray> records_line;
     if (dir.isEmpty()) {

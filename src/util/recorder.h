@@ -19,7 +19,7 @@ public:
     explicit Recorder(QObject *parent = NULL);
 
     static QImage TXT2PNG(QByteArray data);
-    static QByteArray PNG2TXT(const QString filename);
+    static QByteArray PNG2TXT(const QString &filename);
 
     bool save(const QString &filename) const;
     void recordLine(const QString &line);

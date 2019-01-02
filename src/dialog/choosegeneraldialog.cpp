@@ -18,7 +18,7 @@
 
 using namespace QSanProtocol;
 
-OptionButton::OptionButton(QString icon_path, const QString &caption, QWidget *parent)
+OptionButton::OptionButton(const QString &icon_path, const QString &caption, QWidget *parent)
     : QToolButton(parent)
 {
     QPixmap pixmap(icon_path);

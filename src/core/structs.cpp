@@ -265,7 +265,7 @@ CardUseStruct::CardUseStruct()
 {
 }
 
-CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, QList<ServerPlayer *> to, bool isOwnerUse)
+CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, const QList<ServerPlayer *> &to, bool isOwnerUse)
 {
     this->card = card;
     this->from = from;
@@ -451,7 +451,7 @@ bool SkillInvokeDetail::sameTimingWith(const SkillInvokeDetail &arg2) const
 }
 
 SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill /*= NULL*/, ServerPlayer *owner /*= NULL*/, ServerPlayer *invoker /*= NULL*/,
-                                     QList<ServerPlayer *> targets /*= QList<ServerPlayer *>()*/, bool isCompulsory /*= false*/, ServerPlayer *preferredTarget /*= NULL*/,
+                                     const QList<ServerPlayer *> &targets /*= QList<ServerPlayer *>()*/, bool isCompulsory /*= false*/, ServerPlayer *preferredTarget /*= NULL*/,
                                      bool showHidden)
     : skill(skill)
     , owner(owner)
