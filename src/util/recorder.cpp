@@ -69,7 +69,7 @@ QImage Recorder::TXT2PNG(QByteArray txtData)
     return image;
 }
 
-QByteArray Recorder::PNG2TXT(const QString filename)
+QByteArray Recorder::PNG2TXT(const QString &filename)
 {
     QImage image(filename);
     image = image.convertToFormat(QImage::Format_ARGB32);

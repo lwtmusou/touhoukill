@@ -2798,7 +2798,7 @@ public:
     LuliVS()
         : ViewAsSkill("luli")
     {
-        response_pattern = "@@luliVS";
+        response_pattern = "@@luli";
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *) const
@@ -2862,7 +2862,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         room->setPlayerMark(invoke->invoker, "luli", invoke->preferredTarget->getMark("luli"));
-        return room->askForUseCard(invoke->invoker, "@@luliVS", "luliuse");
+        return room->askForUseCard(invoke->invoker, "@@luli", "luliuse", -1, Card::MethodRecast);
     }
 };
 

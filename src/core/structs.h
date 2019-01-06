@@ -88,7 +88,7 @@ struct CardUseStruct
     } m_reason;
 
     CardUseStruct();
-    CardUseStruct(const Card *card, ServerPlayer *from, QList<ServerPlayer *> to = QList<ServerPlayer *>(), bool isOwnerUse = true);
+    CardUseStruct(const Card *card, ServerPlayer *from, const QList<ServerPlayer *> &to = QList<ServerPlayer *>(), bool isOwnerUse = true);
     CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer *target, bool isOwnerUse = true);
     bool isValid(const QString &pattern) const;
     void parse(const QString &str, Room *room);
@@ -124,13 +124,13 @@ public:
     {
         m_reason = S_REASON_UNKNOWN;
     }
-    inline CardMoveReason(int moveReason, QString playerId)
+    inline CardMoveReason(int moveReason, const QString &playerId)
     {
         m_reason = moveReason;
         m_playerId = playerId;
     }
 
-    inline CardMoveReason(int moveReason, QString playerId, QString skillName, QString eventName)
+    inline CardMoveReason(int moveReason, const QString &playerId, const QString &skillName, const QString &eventName)
     {
         m_reason = moveReason;
         m_playerId = playerId;
@@ -138,7 +138,7 @@ public:
         m_eventName = eventName;
     }
 
-    inline CardMoveReason(int moveReason, QString playerId, QString targetId, QString skillName, QString eventName)
+    inline CardMoveReason(int moveReason, const QString &playerId, const QString &targetId, const QString &skillName, const QString &eventName)
     {
         m_reason = moveReason;
         m_playerId = playerId;
@@ -253,7 +253,7 @@ struct CardsMoveStruct
         is_last_handcard = false;
     }
 
-    inline CardsMoveStruct(const QList<int> &ids, Player *from, Player *to, Player::Place from_place, Player::Place to_place, CardMoveReason reason)
+    inline CardsMoveStruct(const QList<int> &ids, Player *from, Player *to, Player::Place from_place, Player::Place to_place, const CardMoveReason &reason)
     {
         this->card_ids = ids;
         this->from_place = from_place;
@@ -268,7 +268,7 @@ struct CardsMoveStruct
             to_player_name = to->objectName();
     }
 
-    inline CardsMoveStruct(const QList<int> &ids, Player *to, Player::Place to_place, CardMoveReason reason)
+    inline CardsMoveStruct(const QList<int> &ids, Player *to, Player::Place to_place, const CardMoveReason &reason)
     {
         this->card_ids = ids;
         this->from_place = Player::PlaceUnknown;
@@ -281,7 +281,7 @@ struct CardsMoveStruct
             to_player_name = to->objectName();
     }
 
-    inline CardsMoveStruct(int id, Player *from, Player *to, Player::Place from_place, Player::Place to_place, CardMoveReason reason)
+    inline CardsMoveStruct(int id, Player *from, Player *to, Player::Place from_place, Player::Place to_place, const CardMoveReason &reason)
     {
         this->card_ids << id;
         this->from_place = from_place;
@@ -296,7 +296,7 @@ struct CardsMoveStruct
             to_player_name = to->objectName();
     }
 
-    inline CardsMoveStruct(int id, Player *to, Player::Place to_place, CardMoveReason reason)
+    inline CardsMoveStruct(int id, Player *to, Player::Place to_place, const CardMoveReason &reason)
     {
         this->card_ids << id;
         this->from_place = Player::PlaceUnknown;
@@ -505,8 +505,9 @@ struct CardAskedStruct
 
 struct SkillInvokeDetail
 {
-    explicit SkillInvokeDetail(const TriggerSkill *skill = NULL, ServerPlayer *owner = NULL, ServerPlayer *invoker = NULL, QList<ServerPlayer *> targets = QList<ServerPlayer *>(),
-                               bool isCompulsory = false, ServerPlayer *preferredTarget = NULL, bool showHidden = true);
+    explicit SkillInvokeDetail(const TriggerSkill *skill = NULL, ServerPlayer *owner = NULL, ServerPlayer *invoker = NULL,
+                               const QList<ServerPlayer *> &targets = QList<ServerPlayer *>(), bool isCompulsory = false, ServerPlayer *preferredTarget = NULL,
+                               bool showHidden = true);
     SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, bool isCompulsory = false, ServerPlayer *preferredTarget = NULL,
                       bool showHidden = true);
 

@@ -2330,7 +2330,7 @@ void Client::clearHighlightSkillName()
     highlight_skill_name = "";
 }
 
-void Client::changeSkin(QString name, int index)
+void Client::changeSkin(const QString &name, int index)
 {
     JsonArray skinInfo;
     skinInfo << name << index;

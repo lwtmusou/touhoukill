@@ -242,7 +242,7 @@ public slots:
     void fillRobots();
 
     void onPlayerReplyGongxin(int card_id = -1);
-    void changeSkin(QString name, int index);
+    void changeSkin(const QString &name, int index);
 
 protected:
     // operation countdown

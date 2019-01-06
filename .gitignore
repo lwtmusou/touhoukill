@@ -89,3 +89,4 @@ d3dcompiler_47.dll
 *.qmlc
 /libeay32.dll
 /ssleay32.dll
+/ths.cppcheck

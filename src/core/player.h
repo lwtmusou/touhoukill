@@ -97,10 +97,10 @@ public:
     int getChaoren() const; //for chaoren
     void setChaoren(int chaoren);
     QList<int> getShownHandcards() const;
-    void setShownHandcards(QList<int> ids);
+    void setShownHandcards(QList<int> &ids);
     bool isShownHandcard(int id) const;
     QList<int> getBrokenEquips() const;
-    void setBrokenEquips(QList<int> ids);
+    void setBrokenEquips(QList<int> &ids);
     bool isBrokenEquip(int id, bool consider_shenbao = false) const;
     QStringList getHiddenGenerals() const;
     void setHiddenGenerals(const QStringList &generals);
@@ -253,8 +253,8 @@ public:
     bool isNude() const;
     bool isAllNude() const;
 
-    bool canDiscard(const Player *to, const QString &flags, QString reason = "") const;
-    bool canDiscard(const Player *to, int card_id, QString reason = "") const;
+    bool canDiscard(const Player *to, const QString &flags, const QString &reason = "") const;
+    bool canDiscard(const Player *to, int card_id, const QString &reason = "") const;
 
     void addMark(const QString &mark, int add_num = 1);
     void removeMark(const QString &mark, int remove_num = 1);
@@ -311,7 +311,7 @@ public:
         return isCardLimited(card, Card::MethodUse);
     }
 
-    void setCardLimitation(const QString &limit_list, const QString &pattern, const QString reason, bool single_turn = false);
+    void setCardLimitation(const QString &limit_list, const QString &pattern, const QString &reason, bool single_turn = false);
     void removeCardLimitation(const QString &limit_list, const QString &pattern, const QString &reason, bool clearReason = false);
     void clearCardLimitation(bool single_turn = false);
     bool isCardLimited(const Card *card, Card::HandlingMethod method, bool isHandcard = false) const;

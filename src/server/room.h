@@ -244,7 +244,7 @@ public:
     void doLightbox(const QString &lightboxName, int duration = 2000);
     void doAnimate(QSanProtocol::AnimateType type, const QString &arg1 = QString(), const QString &arg2 = QString(), QList<ServerPlayer *> players = QList<ServerPlayer *>());
 
-    inline void doAnimate(int type, const QString &arg1 = QString(), const QString &arg2 = QString(), QList<ServerPlayer *> players = QList<ServerPlayer *>())
+    inline void doAnimate(int type, const QString &arg1 = QString(), const QString &arg2 = QString(), const QList<ServerPlayer *> &players = QList<ServerPlayer *>())
     {
         doAnimate((QSanProtocol::AnimateType)type, arg1, arg2, players);
     }
@@ -294,8 +294,8 @@ public:
 
     void sortByActionOrder(QList<ServerPlayer *> &players);
     void defaultHeroSkin();
-    void touhouLogmessage(const QString logtype, ServerPlayer *logfrom, const QString logarg = NULL, const QList<ServerPlayer *> &logto = QList<ServerPlayer *>(),
-                          const QString logarg2 = NULL);
+    void touhouLogmessage(const QString &logtype, ServerPlayer *logfrom, const QString &logarg = QString(), const QList<ServerPlayer *> &logto = QList<ServerPlayer *>(),
+                          const QString &logarg2 = QString());
 
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
 

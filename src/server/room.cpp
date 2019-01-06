@@ -6700,7 +6700,7 @@ void Room::defaultHeroSkin()
     }
 }
 
-void Room::touhouLogmessage(const QString logtype, ServerPlayer *logfrom, const QString logarg, const QList<ServerPlayer *> &logto, const QString logarg2)
+void Room::touhouLogmessage(const QString &logtype, ServerPlayer *logfrom, const QString &logarg, const QList<ServerPlayer *> &logto, const QString &logarg2)
 {
     LogMessage alog;
 

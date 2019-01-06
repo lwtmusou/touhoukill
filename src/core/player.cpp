@@ -165,7 +165,7 @@ QList<int> Player::getShownHandcards() const
     return shown_handcards;
 }
 
-void Player::setShownHandcards(QList<int> ids)
+void Player::setShownHandcards(QList<int> &ids)
 {
     this->shown_handcards = ids;
     emit showncards_changed();
@@ -183,7 +183,7 @@ QList<int> Player::getBrokenEquips() const
     return broken_equips;
 }
 
-void Player::setBrokenEquips(QList<int> ids)
+void Player::setBrokenEquips(QList<int> &ids)
 {
     this->broken_equips = ids;
     emit brokenEquips_changed();
@@ -1155,7 +1155,7 @@ bool Player::isAllNude() const
     return isNude() && judging_area.isEmpty();
 }
 
-bool Player::canDiscard(const Player *to, const QString &flags, QString reason) const
+bool Player::canDiscard(const Player *to, const QString &flags, const QString &reason) const
 {
     static QChar equip_flag('e');
     static QChar judging_flag('j');
@@ -1200,7 +1200,7 @@ bool Player::canDiscard(const Player *to, const QString &flags, QString reason) 
     return false;
 }
 
-bool Player::canDiscard(const Player *to, int card_id, QString reason) const
+bool Player::canDiscard(const Player *to, int card_id, const QString &reason) const
 {
     if (reason == "sidou") {
         if (to->getWeapon() && card_id == to->getWeapon()->getEffectiveId())
@@ -1554,7 +1554,7 @@ bool Player::canSlashWithoutCrossbow(const Card *slash) const
 #undef THIS_SLASH
 }
 
-void Player::setCardLimitation(const QString &limit_list, const QString &pattern, const QString reason, bool single_turn)
+void Player::setCardLimitation(const QString &limit_list, const QString &pattern, const QString &reason, bool single_turn)
 {
     QStringList limit_type = limit_list.split(",");
     QString _pattern = pattern;

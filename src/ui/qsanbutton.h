@@ -31,7 +31,7 @@ public:
     void setSize(QSize size);
     void setStyle(ButtonStyle style);
     void setState(ButtonState state, bool ignore_change = false);
-    inline void setButtonName(QString buttonName)
+    inline void setButtonName(const QString &buttonName)
     {
         _m_buttonName = buttonName;
     }
