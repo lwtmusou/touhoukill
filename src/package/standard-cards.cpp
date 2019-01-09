@@ -2031,9 +2031,18 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
     QStringList prohibit;
     QVariantList tempmove;
     QString subpattern = ".";
-    int times = 1 + effect.effectValue.first();
+    int times = qMin(1 + effect.effectValue.first(), effect.to->getEquips().length());
     for (int i = 0; i < times; i += 1) {
-        if (!effect.to->canDiscard(effect.to, "e"))
+        bool candiscard = false;
+        foreach(const Card *c, effect.to->getEquips()) {
+            if (!ids.contains(c->getEffectiveId()) && effect.to->canDiscard(effect.to, c->getId())){
+                candiscard = true;
+                break;
+            }
+        }
+
+
+        if (!candiscard)
             break;
         QString prompt = QString("@drowning:%1:%2:%3").arg(effect.from->objectName()).arg(times).arg(i + 1);
         QString pattern = QString("%1|.|.|equipped!").arg(subpattern);
