@@ -6332,7 +6332,6 @@ TouhouGodPackage::TouhouGodPackage()
     kaguya_god->addSkill(new ShenbaoHandler);
     related_skills.insertMulti("shenbao", "#shenbao_distance");
     related_skills.insertMulti("shenbao", "#shenbao");
-    kaguya_god->addSkill("bodong");
 
     General *komachi_god = new General(this, "komachi_god", "touhougod", 4);
     komachi_god->addSkill(new Yindu);

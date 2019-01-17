@@ -15,7 +15,6 @@ Slash::Slash(Suit suit, int number)
 {
     setObjectName("slash");
     nature = DamageStruct::Normal;
-    drank = 0;
     can_damage = true;
 }
 
@@ -209,6 +208,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
 
 void Slash::onEffect(const CardEffectStruct &card_effect) const
 {
+    int drank = 0;
     Room *room = card_effect.from->getRoom();
     if (card_effect.from->getMark("drank") > 0) {
         room->setCardFlag(this, "drank");
@@ -2031,9 +2031,18 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
     QStringList prohibit;
     QVariantList tempmove;
     QString subpattern = ".";
-    int times = 1 + effect.effectValue.first();
+    int times = qMin(1 + effect.effectValue.first(), effect.to->getEquips().length());
     for (int i = 0; i < times; i += 1) {
-        if (!effect.to->canDiscard(effect.to, "e"))
+        bool candiscard = false;
+        foreach(const Card *c, effect.to->getEquips()) {
+            if (!ids.contains(c->getEffectiveId()) && effect.to->canDiscard(effect.to, c->getId())){
+                candiscard = true;
+                break;
+            }
+        }
+
+
+        if (!candiscard)
             break;
         QString prompt = QString("@drowning:%1:%2:%3").arg(effect.from->objectName()).arg(times).arg(i + 1);
         QString pattern = QString("%1|.|.|equipped!").arg(subpattern);
