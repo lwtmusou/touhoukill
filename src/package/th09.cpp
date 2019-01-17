@@ -548,6 +548,12 @@ public:
                 weiya_pattern = use.card->objectName();
                 if (use.card->isKindOf("Slash"))
                     weiya_pattern = "slash";
+                else if (use.card->isKindOf("Jink"))
+                    weiya_pattern = "jink";
+                else if (use.card->isKindOf("Analeptic"))
+                    weiya_pattern = "analeptic";
+                else if (use.card->isKindOf("Peach"))
+                    weiya_pattern = "peach";
                 room->notifySkillInvoked(current, objectName());
                 room->touhouLogmessage("#weiya_ask", use.from, objectName(), QList<ServerPlayer *>(), use.card->objectName());
                 if (room->askForCard(use.from, weiya_pattern, "@weiya:" + use.card->objectName(), data, Card::MethodDiscard))
@@ -562,6 +568,12 @@ public:
             weiya_pattern = card_star->objectName();
             if (card_star->isKindOf("Slash"))
                 weiya_pattern = "slash";
+            else if (card_star->isKindOf("Jink"))
+                weiya_pattern = "jink";
+            else if (card_star->isKindOf("Analeptic"))
+                weiya_pattern = "analeptic";
+            else if (card_star->isKindOf("Peach"))
+                weiya_pattern = "peach";
             room->notifySkillInvoked(current, objectName());
             room->touhouLogmessage("#weiya_ask", resp.m_from, objectName(), QList<ServerPlayer *>(), card_star->objectName());
             if (room->askForCard(resp.m_from, weiya_pattern, "@weiya:" + card_star->objectName(), data, Card::MethodDiscard))
