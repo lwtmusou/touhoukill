@@ -2029,18 +2029,16 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
     DummyCard *dummy = new DummyCard;
     QList<int> ids;
     QStringList prohibit;
-    QVariantList tempmove;
     QString subpattern = ".";
     int times = qMin(1 + effect.effectValue.first(), effect.to->getEquips().length());
     for (int i = 0; i < times; i += 1) {
         bool candiscard = false;
-        foreach(const Card *c, effect.to->getEquips()) {
-            if (!ids.contains(c->getEffectiveId()) && effect.to->canDiscard(effect.to, c->getId())){
+        foreach (const Card *c, effect.to->getEquips()) {
+            if (!ids.contains(c->getEffectiveId()) && effect.to->canDiscard(effect.to, c->getId())) {
                 candiscard = true;
                 break;
             }
         }
-
 
         if (!candiscard)
             break;
