@@ -43,8 +43,8 @@ return
 	["origin:shikieiki_1"] = "p号：41261013，个人ID：61513",
 	["illustrator:shikieiki_2"] = "DomotoLain",
 	["origin:shikieiki_2"] = "p号：27397315，个人ID：38674",--（国人 貌似可以）
-	["illustrator:shikieiki_3"] = "飛鳥士郎",
-	["origin:shikieiki_3"] = "p号：8978341，个人ID：319018", --（貌似可以）
+	["illustrator:shikieiki_3"] = "もねてぃ",
+	["origin:shikieiki_3"] = "p号：59554554，个人ID：3066815", 
 	["illustrator:shikieiki_4"] = "カズ",
 	["origin:shikieiki_4"] = "p号：4734540，个人ID：137496",
 	["illustrator:shikieiki_5"] = " 偽造光 ",
@@ -91,8 +91,8 @@ return
 	["origin:yuka"] = "p号：7593428，个人ID：309664",
 	["illustrator:yuka_1"] = "Cloudy.R",
 	["origin:yuka_1"] = "p号：42739088，个人ID：800504",
-	["illustrator:yuka_2"] = "平坂イネ",
-	["origin:yuka_2"] = "p号：18480142，个人ID：1605711",
+	["illustrator:yuka_2"] = "ふらすこ@お仕事募集なう",
+	["origin:yuka_2"] = "p号：34199511，个人ID：848557",
 	["illustrator:yuka_3"] = "An2A",
 	["origin:yuka_3"] = "个人ID：173876",
 	["illustrator:yuka_4"] = "赤シオ",
@@ -197,6 +197,10 @@ return
 	["origin:iku_2"] = "p号：39033688，个人ID：91059",
 	["illustrator:iku_3"] = "爽希",
 	["origin:iku_3"] = "p号：38916055，个人ID：2318975",
+	["illustrator:iku_4"] = "HxxG / ホン",
+	["origin:iku_4"] = "p号：44536005，个人ID：1193139",
+	["illustrator:iku_5"] = "kirero",
+	["origin:iku_5"] = "p号：4385046，个人ID：35490",
 
 	["jingdian"] = "静电",
 	[":jingdian"] = "<font color=\"blue\"><b>锁定技，</b></font>当你受到雷电伤害时，你防止此伤害并摸3X张牌（X为伤害值）。",
@@ -242,6 +246,8 @@ return
 	["origin:kokoro_2"] = "p号：38589315",
 	["illustrator:kokoro_3"] = "ゾウノセ",
 	["origin:kokoro_3"] = "p号：39419401",
+	["illustrator:kokoro_4"] = "NEKO♨BFG1 II",
+	["origin:kokoro_4"] = "p号：38162749，个人ID：2600911",
 
 	["nengwu"] = "能舞",
 	--[":nengwu"] = "当你于摸牌阶段外回复体力后或获得牌后，你可以令你攻击范围内的一名角色摸一张牌；当你于出牌阶段外受到伤害后或失去手牌后，你可以弃置你攻击范围内一名角色的一张手牌。",

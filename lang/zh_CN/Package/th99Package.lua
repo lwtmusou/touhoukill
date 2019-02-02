@@ -13,8 +13,8 @@ return{
 	["origin:akyuu_1"] = "p号：17813885，个人ID：1225738",
 	["illustrator:akyuu_2"] = "しろきつね",
 	["origin:akyuu_2"] = "p号：35832104，个人ID：146135",
-	["illustrator:akyuu_3"] = "蘇我サクラ",
-	["origin:akyuu_3"] = "p号：34578652，个人ID：809115",
+	["illustrator:akyuu_3"] = "ZYANNA",
+	["origin:akyuu_3"] = "p号：53868539，个人ID：3860956",
 	["illustrator:akyuu_4"] = "猫杉",
 	["origin:akyuu_4"] = "p号：22930694，个人ID：453278",
 	["illustrator:akyuu_5"] = "カズ",
@@ -80,8 +80,8 @@ return{
 
 	["illustrator:renko"] = "ideolo",
 	["origin:renko"] = "个人ID：61513",
-	["illustrator:renko_1"] = "orga",
-	["origin:renko_1"] = "p号：12702079，个人ID：29933",
+	["illustrator:renko_1"] = "60枚",
+	["origin:renko_1"] = "p号：56551460，个人ID：3322006",
 	["illustrator:renko_2"] = "DomotoLain",
 	["origin:renko_2"] = "p号：21521777，个人ID：38674",
 	["illustrator:renko_3"] = "An2A",
@@ -100,8 +100,8 @@ return{
 
 	["illustrator:merry"] = "shigureru",
 	["origin:merry"] = "p号：47417381，个人ID：145972",
-	["illustrator:merry_1"] = "asagi",
-	["origin:merry_1"] = "p号：27597188，个人ID：9638",
+	["illustrator:merry_1"] = "60枚",
+	["origin:merry_1"] = "p号：58351799，个人ID：3322006",
 	["illustrator:merry_2"] = "くろねこネーロ",
 	["origin:merry_2"] = "p号：33908738，个人ID：335493",
 	["illustrator:merry_3"] = "An2A",
@@ -156,6 +156,8 @@ return{
 	["origin:yorihime_1"] = "p号：8345313，个人ID：6539",
 	["illustrator:yorihime_2"] = "ideolo",
 	["origin:yorihime_2"] = "个人ID：61513",
+	["illustrator:yorihime_3"] = "Sui.",
+	["origin:yorihime_3"] = "p号：47768817，个人ID：304123",
 
 	["pingyi"] = "凭依",
 	[":pingyi"] = "当你对其他角色造成伤害后或当你受到其他角色造成的伤害后，若其存活，你可以声明其人物牌上除主公技、限定技、觉醒技和永久技外的一项有效的技能，你与其于你的下回合结束之前或你死亡时或下一次你发动“凭依”时之前分别拥有此技能和令此技能无效。<font color=\"green\"><b>每回合限一次。</b></font>",
@@ -292,7 +294,10 @@ return{
 	["illustrator:cirno_sp"] = "隂宅",
 	["origin:cirno_sp"] = "p号：无,个人ID:979179",
 	["illustrator:cirno_sp_1"] = "ゆき",
-	["origin:cirno_sp_1"] = "p号：20341828,个人ID:20341828",
+	["origin:cirno_sp_1"] = "p号：20341828，个人ID：20341828",
+	["illustrator:cirno_sp_2"] = "玉之けだま",
+	["origin:cirno_sp_2"] = "p号：64265128，个人ID：16731",
+	
 
 	["xunshi"] = "寻事",
 	[":xunshi"] = "<font color=\"blue\"><b>锁定技，</b></font>当其他角色使用【杀】或【桃】或普通锦囊牌指定目标时，若其体力值或手牌数大于你，你摸一张牌并成为额外目标。",
@@ -314,6 +319,8 @@ return{
 	["origin:mamizou_sp"] = "p号：44181708,个人ID:9838093",
 	["illustrator:mamizou_sp_1"] = "りひと",
 	["origin:mamizou_sp_1"] = "p号：53048830,个人ID:1463626",
+	["illustrator:mamizou_sp_2"] = "Cube85",
+	["origin:mamizou_sp_2"] = "p号：56868591，个人ID：1490102",
 
 	["zhangmu"] = "障目",
 	[":zhangmu"] = "当你成为【杀】或【过河拆桥】或【顺手牵羊】的目标后，你可以将手牌补至三张，然后将两张手牌扣置于人物牌上，称为“障”。若如此做，此牌结算结束后：若你没有手牌，你获得所有“障”，否则将所有“障”置入弃牌堆。",

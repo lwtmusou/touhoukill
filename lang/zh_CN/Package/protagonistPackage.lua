@@ -62,6 +62,8 @@ return {
 	["origin:marisa_3"] = "个人ID：173876",
 	["illustrator:marisa_4"] = "shinia",
 	["origin:marisa_4"] = "p号：20443348，个人ID：44778",
+	["illustrator:marisa_5"] = "popuru/ ポプル",
+	["origin:marisa_5"] = "p号：58341511，个人ID：12929463",
 
 	["mofa"] = "魔法",
 	[":mofa"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张手牌，令你于此回合内使用的【杀】或普通锦囊牌的伤害值基数+1，然后若此牌花色为<font size=\"5\", color=\"#808080\"><b>♠</b></font>，你摸一张牌。",
@@ -262,8 +264,8 @@ return {
 
 	["illustrator:youmu_slm"] = "alcd",
 	["origin:youmu_slm"] = "p号：14362406，个人ID：2334059",
-	["illustrator:youmu_slm_1"] = "竜徹",
-	["origin:youmu_slm_1"] = "p号：5976425，个人ID：63354",
+	["illustrator:youmu_slm_1"] = "ぎヴちょこcomifuro12",
+	["origin:youmu_slm_1"] = "p号：62642216，个人ID：745461",
 	["illustrator:youmu_slm_2"] = "さざなみみぉ",
 	["origin:youmu_slm_2"] = "p号：13635722，个人ID：1092517",
 	["illustrator:youmu_slm_3"] = " 60枚 ",

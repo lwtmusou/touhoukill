@@ -24,7 +24,9 @@ return{
 	["illustrator:yukari_god_2"] = "鈴蘭",
 	["origin:yukari_god_2"] = "p号:26157977，个人ID：1086157" ,
 	["illustrator:yukari_god_3"] = "stari ",
-	["origin:yukari_god_3"] = "",
+	["origin:yukari_god_3"] = "未知",
+	["illustrator:yukari_god_4"] = "シンゴ",
+	["origin:yukari_god_4"] = "p号：42790954，个人ID：6527",
 
 	["jiexian"] = "界线",
 	[":jiexian"] = "当一名角色受到伤害时，你可以弃置一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，防止此伤害，令其回复1点体力；当一名角色回复体力时，你可以弃置一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，防止此体力回复效果，令其受到无来源的1点伤害。",
@@ -49,6 +51,10 @@ return{
 	["origin:remilia_god_2"] = "p号:37458038，个人ID：19068" ,
 	["illustrator:remilia_god_2"] = "UGUME",
 	["origin:remilia_god_2"] = "p号:53998812，个人ID：1457830" ,
+	["illustrator:remilia_god_3"] = "未知",
+	["origin:remilia_god_3"] = "未知" ,
+	["illustrator:remilia_god_4"] = "こぞう",
+	["origin:remilia_god_4"] = "p号：43386917，个人ID：5626224" ,
 
 	["zhouye"] = "昼夜",
 	[":zhouye"] = "<font color=\"blue\"><b>锁定技，</b></font>准备阶段开始时，你弃所有“夜”标记，然后将牌堆顶的一张牌置入弃牌堆，若为黑色，你获得1枚“夜”标记；若你没有“夜”标记，你不能使用【杀】。",
@@ -74,6 +80,8 @@ return{
 	["origin:cirno_god_1"] = "p号:23560857，个人ID：1791682" ,
 	["illustrator:cirno_god_2"] = "きぃら",
 	["origin:cirno_god_2"] = "p号:28253966，个人ID：3725" ,
+	["illustrator:cirno_god_3"] = "racer",
+	["origin:cirno_god_3"] = "p号:47590972，个人ID：71407" ,
 
 
 	["bingfeng"] = "冰封",
@@ -179,6 +187,8 @@ return{
 	["origin:sakuya_god_2"] = "p号：16104268，个人ID：52449",
 	["illustrator:sakuya_god_3"] = " c7肘 ",
 	["origin:sakuya_god_3"] = "p号：44808875，个人ID：217707",
+	["illustrator:sakuya_god_4"] = " ぎヴちょこcomifuro12 ",
+	["origin:sakuya_god_4"] = "p号：60306690，个人ID：745461",
 
 	["shicao"] = "时操",
 	[":shicao"] = "<font color=\"blue\"><b>锁定技，</b></font>非额外的回合的准备阶段开始时，你获得1枚“时”标记。",
@@ -251,6 +261,8 @@ return{
 	["origin:reisen_god_1"] = "p号：20807866，个人ID：1557409",
 	["illustrator:reisen_god_2"] = "赤りんご",
 	["origin:reisen_god_2"] = "p号：1438991，个人ID：164813",
+	["illustrator:reisen_god_3"] = "河CY",
+	["origin:reisen_god_3"] = "p号：67844926，个人ID：3869665",
 
 	["ningshi"] = "凝视",
 	[":ningshi"] = "<font color=\"blue\"><b>锁定技，</b></font>当你于出牌阶段内使用【杀】或锦囊牌指定其他角色为唯一目标后，其失去1点体力。",
@@ -294,6 +306,10 @@ return{
 	["origin:reimu_god_1"] = "p号：5490342，个人ID：12081",
 	["illustrator:reimu_god_2"] = "えふぇ",
 	["origin:reimu_god_2"] = "p号：34544357，个人ID：292644",
+	["illustrator:reimu_god_3"] = "鏡 Area",
+	["origin:reimu_god_3"] = "p号：49391295，个人ID：2623593",
+	["illustrator:reimu_god_4"] = "こぞう",
+	["origin:reimu_god_4"] = "p号：40076871，个人ID：5626224",
 
 	["yibian"] = "异变",
 	[":yibian"] = "一名角色的准备阶段开始时，若其身份牌：暗置，其可以明置其身份牌，然后令与其阵营不同的一名角色摸一张牌；明置，其可以将一张牌交给与其阵营相同的一名其他角色。",
@@ -419,6 +435,8 @@ return{
 	["origin:byakuren_god_2"] = "p号：36099374，个人ID：838019",
 	["illustrator:byakuren_god_3"] = "ゾウノセ",
 	["origin:byakuren_god_3"] = "p号：54089405",
+	["illustrator:byakuren_god_4"] = "c7肘",
+	["origin:byakuren_god_4"] = "p号：55304797，个人ID：217707",
 
 	["chaoren"] = "超人" ,
 	[":chaoren"] = "牌堆顶的牌对你可见。你可以使用或打出此牌。",
@@ -572,6 +590,8 @@ return{
 	["origin:yuyuko_god_1"] = "p号：32219109,个人ID:164813",
 	["illustrator:yuyuko_god_2"] = "RAN",
 	["origin:yuyuko_god_2"] = "p号：60095372,个人ID:2957827",
+	["illustrator:yuyuko_god_3"] = "薯子Imoko",
+	["origin:yuyuko_god_3"] = "p号：41374820，个人ID：1950701",
 
 	["fanhun"] = "反魂",
 	[":fanhun"] = "<font color=\"#808080\"><b>永久技，</b></font>当你进入濒死状态时，加1点体力上限，然后将体力值回复至体力上限，摸X张牌（X为你的体力上限）；结束阶段开始时，若X大于4，你死亡。",
@@ -638,6 +658,8 @@ return{
 	["origin:seiga_god"] = "p号：54003676,个人ID:5860132",
 	["illustrator:seiga_god_1"] = "ゾウノセ",
 	["origin:seiga_god_1"] = "p号：35834843,个人ID:2622803",
+	["illustrator:seiga_god_2"] = "c7肘",
+	["origin:seiga_god_2"] = "p号：42826533，个人ID：217707",
 
 	["huanhun"] = "还魂",
 	[":huanhun"] = "<font color=\"#808080\"><b>永久技，</b></font>当其他角色死亡后，若你已死亡且不属于现存人数最多的阵营，你以游戏开始时的状态重新加入游戏。",
@@ -761,6 +783,8 @@ return{
 	["origin:alice_god"] = "p号：58024611，个人ID：27517",
 	["illustrator:alice_god_1"] = " こぞう",
 	["origin:alice_god_1"] = "p号：37256385",
+	["illustrator:alice_god_2"] = " 60枚",
+	["origin:alice_god_2"] = "p号：43066179，个人ID：3322006",
 
 
 	["wenyue"] = "文乐",

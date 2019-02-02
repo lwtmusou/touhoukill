@@ -162,10 +162,15 @@ return{
 	["origin:hina_1"] = "p号：16162682，个人ID：195891",
 	["illustrator:hina_2"] = "vima",
 	["origin:hina_2"] = "p号：31240062，个人ID：546819",
-	["illustrator:hina_3"] = "pico",
-	["origin:hina_3"] = "p号：2984616，个人ID：347929",
+	["illustrator:hina_3"] = "伊吹のつ",
+	["origin:hina_3"] = "p号：42499012，个人ID：7013",
 	["illustrator:hina_4"] = "その",
 	["origin:hina_4"] = "p号：29887849，个人ID：375767",
+	["illustrator:hina_5"] = "不在",
+	["origin:hina_5"] = "p号：41982562，个人ID：260156",
+	["illustrator:hina_6"] = "遠坂あさぎ",
+	["origin:hina_6"] = "p号：25504583，个人ID：3302692",
+	
 	["jie"] = "集厄",
 	[":jie"] = "当其他角色受到伤害时，你可以摸一张牌，将此伤害转移给你。",
 	["jie:transfer1"]= " <font color=\"#FF8000\"><b>%src </b></font> 将受到来自 <font color=\"#00FF00\"><b>%dest </b></font> 的%arg点伤害[%arg2]，你是否发动“集厄”。",
@@ -191,6 +196,8 @@ return{
 	["origin:sanae_sp_2"] = "p号：29225835，个人ID：1035047",
 	["illustrator:sanae_sp_3"] = "yamasan",
 	["origin:sanae_sp_3"] = "p号：27578964",
+	["illustrator:sanae_sp_4"] = "tucana",
+	["origin:sanae_sp_4"] = "p号：28943095，个人ID：1593245",
 
 	["changshi"] = "常识",
 	--[":changshi"] = "<font color=\"#808080\"><b>永久技，</b></font>回合开始时，你令所有其他角色的技能于此回合内无效（除永久技外），将所有置于人物牌上、人物牌旁和移出游戏的游戏牌置入弃牌堆，弃所有标记。",
@@ -290,6 +297,10 @@ return{
 
 	["illustrator:momizi_sp"] = "啓々",
 	["origin:momizi_sp"] = "p号：4742307，个人ID：30974",
+	["illustrator:momizi_sp_1"] = "桜＠3日目東4メ38b",
+	["origin:momizi_sp_1"] = "p号：39722229，个人ID：308630",
+	["illustrator:momizi_sp_2"] = "啓々",
+	["origin:momizi_sp_2"] = "p号：22093408，个人ID：30974",
 
 	["buju"] = "布局",
 	[":buju"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以摸X张牌（X为角色数且至多为4），然后将X张牌以任意顺序置于牌堆顶。",

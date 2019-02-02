@@ -9,8 +9,8 @@ return{
 
 	["illustrator:satori"] = "かめ",
 	["origin:satori"] = "p号：2776523，个人ID：87447",
-	["illustrator:satori_1"] = "ななしな",
-	["origin:satori_1"] = "p号：26084258，个人ID：274594",
+	["illustrator:satori_1"] = "ke-ta",
+	["origin:satori_1"] = "p号：60566361，个人ID：3104565",
 	["illustrator:satori_2"] = "爽希",
 	["origin:satori_2"] = "p号：38729388，个人ID：2318975",
 	["illustrator:satori_3"] = "栗",
@@ -19,6 +19,8 @@ return{
 	["origin:satori_4"] = "p号：16474477，个人ID：7154",
 	["illustrator:satori_5"] = "ぎん太郎",
 	["origin:satori_5"] = "p号：16388840，个人ID：95886",
+	["illustrator:satori_6"] = "ke-ta",
+	["origin:satori_6"] = "p号：56906181，个人ID：3104565",
 
 
 
@@ -43,8 +45,8 @@ return{
 	--个人ID：
 	["illustrator:koishi_1"] = "bon",
 	["origin:koishi_1"] = "p号：21914911，个人ID：1225738",
-	["illustrator:koishi_2"] = "navio*",
-	["origin:koishi_2"] = "p号：16403339，个人ID：585267",
+	["illustrator:koishi_2"] = "60枚*",
+	["origin:koishi_2"] = "p号：42082049，个人ID：3322006",
 	["illustrator:koishi_3"] = "その",
 	["origin:koishi_3"] = "p号：28280279，个人ID：375767",
 	["illustrator:koishi_4"] = "ばじりす9",

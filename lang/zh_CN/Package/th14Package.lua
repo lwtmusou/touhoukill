@@ -112,6 +112,8 @@ return{
 	["origin:kagerou"] = "p号：38562704",
 	["illustrator:kagerou_1"] = "kirero",
 	["origin:kagerou_1"] = "p号：40434726",
+	["illustrator:kagerou_2"] = "伊吹のつ",
+	["origin:kagerou_2"] = "p号：43453443，个人ID：7013",
 
 	["langying"] = "狼影",
 	[":langying"] = "当你需要使用/打出【闪】时，你可以获得你装备区里的所有牌，视为使用/打出【闪】。",
@@ -132,6 +134,8 @@ return{
 	["origin:sekibanki_1"] = "p号：37343098",
 	["illustrator:sekibanki_2"] = "キメラ キライ",
 	["origin:sekibanki_2"] = "p号：35991964",
+	["illustrator:sekibanki_3"] = "60枚",
+	["origin:sekibanki_3"] = "p号：45067831，个人ID：3322006",
 
 	["feitou"] = "飞头",
 	["#feitou_slash"]= "飞头",
