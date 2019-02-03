@@ -157,7 +157,7 @@ return
 	--zhan007  势力：战 4血
 	["tenshi"] = "比那名居天子",
 	["#tenshi"] = "非想非非想天的少女",
-	["designer:tenshi"] = "星野梦美☆",
+	["designer:tenshi"] = "dawda",
 
 	["illustrator:tenshi"] = "ななしな",
 	["origin:tenshi"] = "p号：23718711，个人ID：274594",
