@@ -15,6 +15,7 @@ Slash::Slash(Suit suit, int number)
 {
     setObjectName("slash");
     nature = DamageStruct::Normal;
+    drank = 0;
     can_damage = true;
 }
 
@@ -208,7 +209,6 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
 
 void Slash::onEffect(const CardEffectStruct &card_effect) const
 {
-    int drank = 0;
     Room *room = card_effect.from->getRoom();
     if (card_effect.from->getMark("drank") > 0) {
         room->setCardFlag(this, "drank");

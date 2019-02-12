@@ -389,6 +389,7 @@ public:
 
 protected:
     DamageStruct::Nature nature;
+    mutable int drank;
 };
 
 class Jink : public BasicCard
