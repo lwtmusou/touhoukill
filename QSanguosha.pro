@@ -10,7 +10,7 @@ win32: QT += winextras
 CONFIG += c++11
 CONFIG += lua
 
-VERSION = 0.9.1
+VERSION = 0.9.2
 
 CONFIG += precompiled_header
 PRECOMPILED_HEADER = src/pch.h
@@ -243,7 +243,6 @@ INCLUDEPATH += src/scenario
 INCLUDEPATH += src/server
 INCLUDEPATH += src/ui
 INCLUDEPATH += src/util
-INCLUDEPATH += src/jsoncpp/include
 
 win32{
     CONFIG += skip_target_version_ext

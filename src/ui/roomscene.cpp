@@ -5295,10 +5295,9 @@ void CommandLinkDoubleClickButton::mouseDoubleClickEvent(QMouseEvent *event)
     QCommandLinkButton::mouseDoubleClickEvent(event);
 }
 
-
 void RoomScene::anyunSelectSkill()
 {
-    static QStringList selectAllList{ "mizhao", "huayin", "qiji" };
+    static QStringList selectAllList {"mizhao", "huayin", "qiji"};
     QString skillName = Self->tag["anyun"].toString();
     if (selectAllList.contains(skillName))
         dashboard->selectAll();

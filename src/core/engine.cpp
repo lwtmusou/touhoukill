@@ -633,7 +633,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const
 
 QString Engine::getVersionNumber() const
 {
-    return "20181225";
+    return "20190203";
 }
 
 QString Engine::getVersion() const
@@ -643,13 +643,13 @@ QString Engine::getVersion() const
 
 QString Engine::getVersionName() const
 {
-    return "V0.9.1";
+    return "V0.9.2";
 }
 
 #if QT_VERSION >= 0x050600
 QVersionNumber Engine::getQVersionNumber() const
 {
-    return QVersionNumber(0, 9, 1);
+    return QVersionNumber(0, 9, 2);
 }
 #endif
 
@@ -1007,14 +1007,6 @@ QStringList Engine::getLimitedGeneralNames() const
                 general_names << itor.key();
         }
     }
-
-    /*
-        if (!getBanPackages().contains("sp") && !getBanPackages().contains("assassins")) {
-        general_names.removeOne("liuxie");
-        general_names.removeOne("lingju");
-        general_names.removeOne("fuwan");
-        }
-        */
 
     return general_names;
 }
