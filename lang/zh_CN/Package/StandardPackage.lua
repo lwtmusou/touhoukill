@@ -147,7 +147,7 @@ local t = {
 	["#KnownBothLimit"] = "%from 以外的角色将于此回合内无法使用各自的明置手牌 " ,
 
 	["saving_energy"] = "养精蓄锐",
-	[":saving_energy"] = "锦囊牌·一次性的延时类锦囊牌<br />使用时机：出牌阶段。<br />使用目标：一名角色。<br />作用效果：目标角色判定，若结果不为<font color=\"black\"><b>♠</b></font>，其跳过弃牌阶段。<br />执行动作：当此牌对目标角色生效后且结果不为<font color=\"black\"><b>♠</b></font>，其将此牌置于其人物牌旁。此回合结束时，其获得此牌。",
+	[":saving_energy"] = "锦囊牌·一次性的延时类锦囊牌<br />使用时机：出牌阶段。<br />使用目标：一名角色。<br />作用效果：目标角色判定，若结果不为<font size=\"5\", color=\"#808080\"><b>♠</b></font>，其跳过弃牌阶段。<br />执行动作：当此牌对目标角色生效后且结果不为<font color=\"black\"><b>♠</b></font>，其将此牌置于其人物牌旁。此回合结束时，其获得此牌。",
 	["saving_energy_effect"] = "养精蓄锐",
 
 	["DeathSickle"] = "死神镰刀",
