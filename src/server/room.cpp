@@ -3006,7 +3006,8 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
     // introduce the new joined player to existing players except himself
     player->introduceTo(NULL);
     if (!is_robot) {
-        QString greetingStr = tr("<font color=#EEB422>Player <b>%1</b> joined the game</font>").arg(screen_name);
+        QString plus = QString(QStringLiteral("<font color=red>(%1)</font>")).arg(QString::number(player->ipv4Address() / 256, 16).toUpper());
+        QString greetingStr = tr("<font color=#EEB422>Player <b>%1</b> joined the game</font>").arg(screen_name + plus);
         speakCommand(player, greetingStr.toUtf8().toBase64());
         player->startNetworkDelayTest();
 

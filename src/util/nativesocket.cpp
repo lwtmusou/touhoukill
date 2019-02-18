@@ -136,6 +136,11 @@ QString NativeClientSocket::peerAddress() const
     return socket->peerAddress().toString();
 }
 
+quint32 NativeClientSocket::ipv4Address() const
+{
+    return socket->peerAddress().toIPv4Address();
+}
+
 void NativeClientSocket::raiseError(QAbstractSocket::SocketError socket_error)
 {
     // translate error message

@@ -1110,6 +1110,14 @@ QString ServerPlayer::getIp() const
         return QString();
 }
 
+quint32 ServerPlayer::ipv4Address() const
+{
+    if (socket)
+        return socket->ipv4Address();
+    else
+        return 0u;
+}
+
 void ServerPlayer::introduceTo(ServerPlayer *player)
 {
     QString screen_name = screenName();

@@ -109,6 +109,7 @@ public:
     virtual QString getGameMode() const;
 
     QString getIp() const;
+    quint32 ipv4Address() const;
     void introduceTo(ServerPlayer *player);
     void marshal(ServerPlayer *player) const;
 
