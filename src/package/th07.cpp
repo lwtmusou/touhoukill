@@ -2228,73 +2228,64 @@ public:
 HuayinCard::HuayinCard()
 {
     will_throw = false;
-    handling_method = Card::MethodUse;
+    handling_method = Card::MethodNone;
     m_skillName = "huayin";
+}
+
+bool HuayinCard::targetFixed() const
+{
+    Peach *card = new Peach(Card::NoSuit, 0);
+    DELETE_OVER_SCOPE(Peach, card)
+    return card->targetFixed();
 }
 
 bool HuayinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     Peach *card = new Peach(Card::NoSuit, 0);
-    card->deleteLater();
+    DELETE_OVER_SCOPE(Peach, card)
     return card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
 }
 
 bool HuayinCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
     Peach *card = new Peach(Card::NoSuit, 0);
-    card->deleteLater();
+    DELETE_OVER_SCOPE(Peach, card)
     return card->targetsFeasible(targets, Self);
 }
 
-const Card *HuayinCard::validate(CardUseStruct &use) const
+void HuayinCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
-    use.from->showHiddenSkill("huayin");
-    Room *room = use.from->getRoom();
-    room->notifySkillInvoked(use.from, "huayin");
-    room->touhouLogmessage("#InvokeSkill", use.from, "huayin");
+    room->showAllCards(source);
     Peach *card = new Peach(Card::SuitToBeDecided, -1);
-    foreach (int id, subcards) {
-        use.from->getRoom()->showCard(use.from, id);
+    foreach (int id, source->handCards()) {
+        // room->showCard(source, id);
         if (!Sanguosha->getCard(id)->isKindOf("BasicCard"))
             card->addSubcard(id);
     }
-    if (!card->getSubcards().isEmpty() && !use.from->isCardLimited(card, Card::MethodUse, true)) {
+    QList<const Player *> playerTargets;
+    foreach (auto *p, targets)
+        playerTargets << p;
+
+    if (!card->getSubcards().isEmpty() && !source->isCardLimited(card, Card::MethodUse, true)
+        && (Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY || card->isAvailable(source))
+        && (card->targetFixed() || card->targetsFeasible(playerTargets, source))) {
         card->setSkillName("huayin");
-        return card;
+        CardUseStruct use;
+        use.from = source;
+        use.card = card;
+        use.to = targets;
+        room->useCard(use);
     } else {
         delete card;
-        use.from->setFlags("Global_huayinFailed");
-        return NULL;
+        room->setPlayerFlag(source, "Global_huayinFailed");
     }
 }
 
-const Card *HuayinCard::validateInResponse(ServerPlayer *user) const
-{
-    user->showHiddenSkill("huayin");
-    Room *room = user->getRoom();
-    room->notifySkillInvoked(user, "huayin");
-    room->touhouLogmessage("#InvokeSkill", user, "huayin");
-    Peach *card = new Peach(Card::SuitToBeDecided, -1);
-    foreach (int id, subcards) {
-        user->getRoom()->showCard(user, id);
-        if (!Sanguosha->getCard(id)->isKindOf("BasicCard"))
-            card->addSubcard(id);
-    }
-    if (!card->getSubcards().isEmpty() && !user->isCardLimited(card, Card::MethodUse, true)) {
-        card->setSkillName("huayin");
-        return card;
-    } else {
-        delete card;
-        user->setFlags("Global_huayinFailed");
-        return NULL;
-    }
-}
-
-class HuayinVS : public ViewAsSkill
+class HuayinVS : public ZeroCardViewAsSkill
 {
 public:
     HuayinVS()
-        : ViewAsSkill("huayin")
+        : ZeroCardViewAsSkill("huayin")
     {
     }
 
@@ -2311,14 +2302,7 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        Peach *card = new Peach(Card::NoSuit, 0);
-        card->deleteLater();
-        return !player->isKongcheng() && card->isAvailable(player) && !player->hasFlag("Global_huayinFailed");
-    }
-
-    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
-    {
-        return !to_select->isEquipped();
+        return !player->isKongcheng() && !player->hasFlag("Global_huayinFailed");
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
@@ -2327,15 +2311,9 @@ public:
             && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) && !player->hasFlag("Global_huayinFailed");
     }
 
-    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    virtual const Card *viewAs() const
     {
-        if (cards.length() < Self->getHandcardNum())
-            return NULL;
-        if (cardLimit(Self))
-            return NULL;
-        HuayinCard *card = new HuayinCard;
-        card->addSubcards(cards);
-        return card;
+        return new HuayinCard;
     }
 };
 
@@ -2349,7 +2327,7 @@ public:
         view_as_skill = new HuayinVS;
     }
 
-    void record(TriggerEvent e, Room *, QVariant &data) const
+    void record(TriggerEvent e, Room *r, QVariant &data) const
     {
         if (e != CardsMoveOneTime)
             return;
@@ -2357,12 +2335,12 @@ public:
         if (move.from_places.contains(Player::PlaceHand)) {
             ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
             if (from != NULL && from->hasFlag("Global_huayinFailed"))
-                from->setFlags("-Global_huayinFailed");
+                r->setPlayerFlag(from, "-Global_huayinFailed");
         }
         if (move.to_place == Player::PlaceHand) {
             ServerPlayer *to = qobject_cast<ServerPlayer *>(move.to);
             if (to != NULL && to->hasFlag("Global_huayinFailed"))
-                to->setFlags("-Global_huayinFailed");
+                r->setPlayerFlag(to, "-Global_huayinFailed");
         }
     }
 

@@ -2399,8 +2399,6 @@ void RoomScene::addSkillButton(const Skill *skill, bool)
         connect(btn, SIGNAL(skill_deactivated()), this, SLOT(onSkillDeactivated()));
         if (btn->getViewAsSkill()->objectName() == "mizhao")
             connect(btn, SIGNAL(skill_activated()), dashboard, SLOT(selectAll()));
-        if (btn->getViewAsSkill()->objectName() == "huayin")
-            connect(btn, SIGNAL(skill_activated()), dashboard, SLOT(selectAll()));
     }
 
     QDialog *dialog = skill->getDialog();
@@ -5297,7 +5295,7 @@ void CommandLinkDoubleClickButton::mouseDoubleClickEvent(QMouseEvent *event)
 
 void RoomScene::anyunSelectSkill()
 {
-    static QStringList selectAllList {"mizhao", "huayin", "qiji"};
+    static QStringList selectAllList {"mizhao", "qiji"};
     QString skillName = Self->tag["anyun"].toString();
     if (selectAllList.contains(skillName))
         dashboard->selectAll();

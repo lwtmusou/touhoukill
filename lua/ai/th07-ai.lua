@@ -1424,11 +1424,7 @@ end
 function turnUse_huayin(self)
 	if self.player:getMark("Global_PreventPeach")>0  or self.player:hasFlag("Global_huayinFailed") then return nil end
 	if self:canHuayin(self.player) then
-		local ids = {}
-		for _, c in sgs.qlist(self.player:getHandcards()) do
-			table.insert(ids, c:getId())
-		end
-		return "@HuayinCard=" .. table.concat(ids, "+")
+		return "@HuayinCard=." 
 	end
 	return nil
 end
@@ -1453,11 +1449,7 @@ function sgs.ai_cardsview_valuable.huayin(self, class_name, player)
 		if self.player:getMark("Global_PreventPeach")>0  or player:hasFlag("Global_huayinFailed") then return nil end
 		local dying = player:getRoom():getCurrentDyingPlayer()
 		if self:canHuayin(player) and dying and self:isFriend(dying, player)  then
-			local ids = {}
-			for _, c in sgs.qlist(player:getHandcards()) do
-				table.insert(ids, c:getId())
-			end
-			return "@HuayinCard=" .. table.concat(ids, "+")
+			return "@HuayinCard=."
 		end
 		--if not dying or dying:objectName() == player:objectName() then return nil end
 		return nil
