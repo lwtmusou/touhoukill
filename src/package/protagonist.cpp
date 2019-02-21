@@ -1874,6 +1874,8 @@ public:
             currentdying.removeOne(invoke->invoker->objectName());
             room->setTag("CurrentDying", QVariant::fromValue(currentdying));
 
+            setPlayerFlag(invoke->invoker, "-Global_Dying");
+
             throw TurnBroken;
 
             Q_UNREACHABLE();
