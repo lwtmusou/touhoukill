@@ -870,7 +870,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *toyo = data.value<ServerPlayer *>();
-        if (toyo->hasSkill(this) && toyo->getPhase() == Player::Start && toyo->isAlive() && toyo->isChained() && toyo->getMark("yueshi") == 0)
+        if (toyo->hasSkill(this) && toyo->getPhase() == Player::Start && toyo->isAlive() && toyo->isDebuffStatus() && toyo->getMark("yueshi") == 0)
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, toyo, toyo, NULL, true);
 
         return QList<SkillInvokeDetail>();
