@@ -732,8 +732,7 @@ return{
 	["chongneng:savage_assault_second"] = "此牌伤害值基数+1" ,
 	["chongneng:archery_attack_first"] = "目标需打出【闪】的牌数+1" ,
 	["chongneng:archery_attack_second"] = "此牌伤害值基数+1" ,
-	["chongneng:fight_together_first"] = "明置目标手牌的牌数+1" ,
-	["chongneng:fight_together_second"] = "横置目标装备区里的牌数+1" ,
+
 
 	["#Chongneng"] = "%from 发动了 <font color=\"#00FF00\">充能</font>， 令【%arg】的 第 %arg2 个效果值+1" ,
 	["#ChongnengCacel"] = "当其他角色使用牌时，你可以暗置你的一张与此牌类别相同的明置手牌，取消所有目标。若此牌为明置手牌，你可以明置其一张手牌。",

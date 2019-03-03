@@ -1475,11 +1475,8 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
         //@todo: check if the card returned is valid
         const QVariant &clientReply = player->getClientReply();
         if (!success || !JsonUtils::isNumber(clientReply)) {
-            if (flags == "g") // choose general card
-                card_id = Card::S_UNKNOWN_GENERAL_CARD_ID;
-            else
-                // randomly choose a card
-                card_id = cards.at(qrand() % cards.length())->getId();
+            // randomly choose a card
+            card_id = cards.at(qrand() % cards.length())->getId();
         } else
             card_id = clientReply.toInt();
 
@@ -1491,7 +1488,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
         }
     }
 
-    if (card_id != Card::S_UNKNOWN_GENERAL_CARD_ID && !cards.contains(Sanguosha->getCard(card_id)))
+    if (!cards.contains(Sanguosha->getCard(card_id)))
         card_id = cards.at(qrand() % cards.length())->getId();
 
     Q_ASSERT(card_id != Card::S_UNKNOWN_CARD_ID);

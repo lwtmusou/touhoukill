@@ -3145,10 +3145,6 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 		end
 	end
 
-	--AI 默认选择目标的武将牌
-	if flags:match("g") then
-		return -999
-	end
 
 	if ("snatch|dismantlement|yinling"):match(reason)  then
 		local flag = "AIGlobal_SDCardChosen_" .. reason

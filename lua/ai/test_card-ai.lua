@@ -359,20 +359,6 @@ sgs.ai_use_priority.AllianceFeast = 7.1
 sgs.ai_keep_value.AllianceFeast = 3.32
 sgs.dynamic_value.benefit.AllianceFeast = true
 
---仅仅让ai能用这张牌  具体细节太多了
-function SmartAI:useCardFightTogether(card, use)
-	local enemies = self:exclude(self.enemies, card)
-	if #enemies > 0 then
-		use.card = card
-		if use.to then
-			for _,s in pairs(enemies) do
-				use.to:append(s)
-			end
-		end
-	end
-end
-sgs.ai_use_priority.FightTogether = 6.1
-sgs.ai_keep_value.FightTogether = 1.5
 
 
 function SmartAI:useCardBoneHealing(card, use)

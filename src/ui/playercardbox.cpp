@@ -84,9 +84,7 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
         updateNumbers(player->getJudgingArea().length());
         judging = true;
     }
-    if (flags.contains("g")) {
-        updateNumbers(1);
-    }
+
 
     int max = maxCardsInOneRow;
     int maxNumber = maxCardNumberInOneRow;
@@ -135,9 +133,6 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
     if (judging)
         arrangeCards(player->getJudgingArea(), QPoint(startX, nameRects.at(index).y()));
 
-    if (flags.contains("g")) {
-        arrangeGenerals(QPoint(startX, nameRects.at(index).y()));
-    }
 
     if (ServerInfo.OperationTimeout != 0) {
         if (!progressBar) {
@@ -214,9 +209,7 @@ void PlayerCardBox::paintLayout(QPainter *painter)
         font.paintText(painter, nameRects.at(index), Qt::AlignCenter, tr("Judging area"));
         ++index;
     }
-    if (flags.contains("g")) {
-        font.paintText(painter, nameRects.at(index), Qt::AlignCenter, tr("General area"));
-    }
+
 }
 
 void PlayerCardBox::clear()
@@ -314,7 +307,7 @@ void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, const QPoint 
     }
 }
 
-void PlayerCardBox::arrangeGenerals(const QPoint &topLeft)
+/*void PlayerCardBox::arrangeGenerals(const QPoint &topLeft)
 {
     QList<CardItem *> areaItems;
 
@@ -352,7 +345,7 @@ void PlayerCardBox::arrangeGenerals(const QPoint &topLeft)
             item->setPos(x, y);
         }
     }
-}
+}*/
 
 void PlayerCardBox::reply()
 {
@@ -361,9 +354,6 @@ void PlayerCardBox::reply()
     int id = -2;
     if (item)
         id = item->getId();
-    if (this->flags.contains("g") && item && item->objectName() == this->player->getGeneralName()) {
-        id = -999;
-    }
 
     ClientInstance->onPlayerChooseCard(id);
 }
