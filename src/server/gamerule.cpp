@@ -933,10 +933,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             if (judge->retrial_by_response) {
                 reason.m_extraData = QVariant::fromValue(judge->retrial_by_response);
             }
-            if (judge->is_showncard)
-                room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true, QList<int>() << judge->card->getEffectiveId());
-            else
-                room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);
+            
+            room->moveCardTo(judge->card, judge->who, NULL, Player::DiscardPile, reason, true);
         }
 
         break;
