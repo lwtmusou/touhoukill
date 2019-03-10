@@ -1674,13 +1674,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         player->showHiddenSkill(skill_name);
         player->showHiddenSkill(card->getSkillName());
 
-        //Before move1, record the shown ids for move2;
-        QList<int> shown_ids;
-        foreach (int id, card->getSubcards()) {
-            ServerPlayer *owner = getCardOwner(id);
-            if (owner && owner->isShownHandcard(id))
-                shown_ids << id;
-        }
+        
         //move1
         if (method == Card::MethodUse) {
             CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, player->objectName(), QString(), card->getSkillName(), QString());
@@ -1723,7 +1717,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                     if (theProvider != NULL)
                         moveCardTo(card, theProvider, NULL, Player::DiscardPile, reason, true);
                     else
-                        moveCardTo(card, player, NULL, Player::DiscardPile, reason, true, shown_ids);
+                        moveCardTo(card, player, NULL, Player::DiscardPile, reason, true);
                 }
                 CardUseStruct card_use;
                 card_use.card = card;
@@ -4370,24 +4364,23 @@ RoomThread *Room::getThread() const
     return thread;
 }
 
-void Room::moveCardTo(const Card *card, ServerPlayer *dstPlayer, Player::Place dstPlace, bool forceMoveVisible, QList<int> inherit_shown_ids)
+void Room::moveCardTo(const Card *card, ServerPlayer *dstPlayer, Player::Place dstPlace, bool forceMoveVisible)
 {
-    moveCardTo(card, dstPlayer, dstPlace, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()), forceMoveVisible, inherit_shown_ids);
+    moveCardTo(card, dstPlayer, dstPlace, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()), forceMoveVisible);
 }
 
-void Room::moveCardTo(const Card *card, ServerPlayer *dstPlayer, Player::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible, QList<int> inherit_shown_ids)
+void Room::moveCardTo(const Card *card, ServerPlayer *dstPlayer, Player::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible)
 {
-    moveCardTo(card, NULL, dstPlayer, dstPlace, QString(), reason, forceMoveVisible, inherit_shown_ids);
+    moveCardTo(card, NULL, dstPlayer, dstPlace, QString(), reason, forceMoveVisible);
 }
 
-void Room::moveCardTo(const Card *card, ServerPlayer *srcPlayer, ServerPlayer *dstPlayer, Player::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible,
-                      QList<int> inherit_shown_ids)
+void Room::moveCardTo(const Card *card, ServerPlayer *srcPlayer, ServerPlayer *dstPlayer, Player::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible)
 {
-    moveCardTo(card, srcPlayer, dstPlayer, dstPlace, QString(), reason, forceMoveVisible, inherit_shown_ids);
+    moveCardTo(card, srcPlayer, dstPlayer, dstPlace, QString(), reason, forceMoveVisible);
 }
 
 void Room::moveCardTo(const Card *card, ServerPlayer *srcPlayer, ServerPlayer *dstPlayer, Player::Place dstPlace, const QString &pileName, const CardMoveReason &reason,
-                      bool forceMoveVisible, QList<int> inherit_shown_ids)
+                      bool forceMoveVisible)
 {
     CardsMoveStruct move;
     if (card->isVirtualCard()) {
@@ -4401,7 +4394,6 @@ void Room::moveCardTo(const Card *card, ServerPlayer *srcPlayer, ServerPlayer *d
     move.to_pile_name = pileName;
     move.from = srcPlayer;
     move.reason = reason;
-    //move.shown_ids = inherit_shown_ids;
     QList<CardsMoveStruct> moves;
     moves.append(move);
     moveCardsAtomic(moves, forceMoveVisible);
@@ -6364,12 +6356,6 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge, c
 
     CardsMoveStruct move2(QList<int>(), judge->who, exchange ? player : NULL, Player::PlaceUnknown, exchange ? Player::PlaceHand : Player::DiscardPile, reason);
     move2.card_ids.append(oldJudge->getEffectiveId());
-    if (judge->is_showncard)
-        move2.shown_ids.append(oldJudge->getEffectiveId());
-
-    //update showncard
-    ServerPlayer *owner = getCardOwner(card->getEffectiveId());
-    judge->is_showncard = owner && owner->isShownHandcard(card->getEffectiveId());
 
     LogMessage log;
     log.type = "$ChangedJudge";
