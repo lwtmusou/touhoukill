@@ -91,8 +91,8 @@ return {
 	
 	["shehuo"] = "舌祸",
 	[":shehuo"] = "当一名角色使用【杀】或普通锦囊牌指定另一名角色为唯一目标时，若你为两者之一，你可以令目标角色选择一项：取消其并对此牌的使用者使用与之类别不同的牌（无距离限制）；或令此牌不能被所有角色使用牌响应。",
-	["@shehuo_use"] = "舌祸: <font color=\"#00FF00\"><b>%src </b></font>对你使用了【%dest】, 你是否对<font color=\"#00FF00\"><b>%src </b></font>使用一张类别不同的牌，并取消你（即取消目标）。",
-	["shehuo:target"]= "<font color=\"#FF8000\"><b>%src </b></font> 使用【%arg】 指定了 <font color=\"#00FF00\"><b>%dest </b></font> ，你是否“舌祸”？",
+	["@shehuo_use"] = "舌祸: <font color=\"#00FF00\"><b>%src </b></font>对你使用了【%dest】, 你是否对<font color=\"#00FF00\"><b>%src </b></font>使用类别不同的一张牌，并取消你（即取消目标）。",
+	["shehuo:target"]= "<font color=\"#FF8000\"><b>%src </b></font> 使用【%arg】 指定了 <font color=\"#00FF00\"><b>%dest </b></font> ，你是否发动“舌祸”？",
 
 	["#shehuo"] = "舌祸",
 	["shenyan"] = "慎言",
