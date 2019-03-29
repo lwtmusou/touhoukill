@@ -284,4 +284,27 @@ return
 	["liqun"] = "离群",
 	[":liqun"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"blue\"><b>锁定技，</b></font>攻击范围内有其他战势力角色的其他角色与你的距离+1。",
 
+
+--**********************************************
+	--zhan013  势力：战 4血
+	["yorigamis"] = "依神女苑&紫苑",
+	["#yorigamis"] = "凭依华", --TODO 天子请修改称号
+	["designer:yorigamis"] = "bullytou",
+
+	["illustrator:yorigamis"] = "",
+	["origin:yorigamis"] = "", --TODO 天子请添加将图
+
+	["jianshe"] = "俭奢",
+	[":jianshe"] = "其他角色的结束阶段开始时，你可以弃置一张手牌，令其选择一项：将手牌弃置至一张，然后回复一点体力；或摸一张牌，然后失去一点体力。",
+	["@jianshe-discard"] = "你可以弃置一张手牌，对【%src】发动“俭奢”。",
+	["jianshe_jian"] = "摸一张牌，然后失去一点体力",
+	["jianshe_she"] = "将手牌弃置至一张，然后回复一点体力",
+	["@jianshe-hint"] = "请将手牌弃置至一张，否则将摸一张牌并失去一点体力。",
+
+	["ysjie"] = "极厄",
+	[":ysjie"] = "<font color=\"blue\"><b>锁定技，</b></font>你的回合内，手牌数小于已损失体力值的其他角色不能使用或打出牌。",
+
+	["yishen"] = "依神",
+	[":yishen"] = "<font color=\"orange\"><b>主公技，</b></font>你与其他战势力角色攻击范围内的其他角色的距离-1。",
+	
 }
