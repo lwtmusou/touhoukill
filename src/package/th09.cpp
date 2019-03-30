@@ -2021,6 +2021,10 @@ public:
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
     {
         if (Self->hasFlag("Global_mengxiangFailed")) {
+            if ((to_select->isKindOf("Jink") || to_select->isKindOf("Nullification")))
+                return false;
+            if (to_select->isKindOf("Peach") && !to_select->isAvailable(Self))
+                return false;
             return selected.isEmpty() && Self->getPile("#mengxiang_temp").contains(to_select->getId());
         }
         return false;
@@ -2248,31 +2252,28 @@ public:
         view_as_skill = new JishiVS;
     }
 
-    /*void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
-    {
-        //clear histroy
-        if (triggerEvent == PreCardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.m_addHistory && use.card->getSkillName() == objectName()) {
-                room->addPlayerHistory(use.from, use.card->getClassName(), -1);
-                use.m_addHistory = false;
-                data = QVariant::fromValue(use);
-            }
-        }
-    }*/
-
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-            if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile
-                && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_USE) {
-                
+            ServerPlayer *current = room->getCurrent();
+            if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_USE && move.to_place == Player::DiscardPile) {
                 foreach(int id, move.card_ids) {
-                    if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand && room->getCardPlace(move.card_ids.first()) == Player::DiscardPile)
-                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-                }   
+                    if (room->getCardPlace(move.card_ids.first()) != Player::DiscardPile)
+                        continue;
+
+                    if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand) {
+                        ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
+                        if (player != NULL && player->isAlive() && player->hasSkill(this))
+                            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+                    }
+                    else if (move.origin_from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand) {
+                        ServerPlayer *player = qobject_cast<ServerPlayer *>(move.origin_from);
+                        if (player != NULL && player->isAlive() && player->hasSkill(this))
+                            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+                    
+                    } 
+                }  
             }
         
         }
@@ -2284,7 +2285,12 @@ public:
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         QList<int> ids;
         foreach(int id, move.card_ids) {
-            if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand && room->getCardPlace(move.card_ids.first()) == Player::DiscardPile)
+            if (room->getCardPlace(move.card_ids.first()) != Player::DiscardPile)
+                continue;
+
+            if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand)
+                ids << id;
+            else if (move.origin_from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand)
                 ids << id;
         }
         if (ids.isEmpty())
