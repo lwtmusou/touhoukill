@@ -1942,6 +1942,411 @@ public:
     }
 };
 
+
+
+
+
+MengxiangTargetCard::MengxiangTargetCard()
+{
+}
+
+bool MengxiangTargetCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    return targets.length() < Self->getMark("mengxiang") && !to_select->isKongcheng();//
+}
+
+void MengxiangTargetCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
+    room->notifySkillInvoked(source, "mengxiang");
+    foreach(ServerPlayer *p, targets)
+        room->setPlayerMark(p, "mengxiangtarget", 1);
+}
+
+
+MengxiangCard::MengxiangCard()
+{
+    will_throw = false;
+}
+
+bool MengxiangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    const Card *oc = Sanguosha->getCard(subcards.first());
+    return oc->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, oc, targets);
+    ;
+}
+
+bool MengxiangCard::targetFixed() const
+{
+    const Card *oc = Sanguosha->getCard(subcards.first());
+    return oc->targetFixed();
+}
+
+bool MengxiangCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+    const Card *oc = Sanguosha->getCard(subcards.first());
+    if (oc->canRecast() && targets.length() == 0)
+        return false;
+    return oc->targetsFeasible(targets, Self);
+}
+
+const Card *MengxiangCard::validate(CardUseStruct &use) const
+{
+    Room *room = use.from->getRoom();
+    const Card *card = Sanguosha->getCard(subcards.first());
+    use.from->showHiddenSkill("mengxiang");
+
+    room->notifySkillInvoked(use.from, "mengxiang");
+    LogMessage mes;
+    mes.type = "$mengxiang";
+    mes.from = use.from;
+    mes.to << room->getCardOwner(subcards.first());
+    mes.arg = "mengxiang";
+    mes.card_str = card->toString();
+    room->sendLog(mes);
+
+    return card;
+}
+
+
+class MengxiangVS : public ViewAsSkill
+{
+public:
+    MengxiangVS()
+        : ViewAsSkill("mengxiang")
+    {
+        response_pattern = "@@mengxiang";
+        expand_pile = "#mengxiang_temp";
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    {
+        if (Self->hasFlag("Global_mengxiangFailed")) {
+            return selected.isEmpty() && Self->getPile("#mengxiang_temp").contains(to_select->getId());
+        }
+        return false;
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const //
+    {
+        if (cards.length() > 1)
+            return NULL;
+
+        if (Self->hasFlag("Global_mengxiangFailed")) {
+            MengxiangCard *card = new MengxiangCard;
+            card->addSubcards(cards);
+            return card;
+        }
+        else {
+            MengxiangTargetCard *card = new MengxiangTargetCard;
+            return card;
+        }  
+    }
+};
+
+class Mengxiang : public TriggerSkill
+{
+public:
+    Mengxiang()
+        : TriggerSkill("mengxiang")
+    {
+        events << EventPhaseChanging << EventPhaseEnd << CardsMoveOneTime << CardUsed;
+        view_as_skill = new MengxiangVS;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.from != NULL) {
+                ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
+                if (player->getPhase() == Player::Discard && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) && move.to_place == Player::DiscardPile) {
+                    room->setPlayerMark(player, objectName(),  player->getMark(objectName()) + move.card_ids.length());
+                }
+            }
+        } 
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
+            if (phase_change.from == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    room->setPlayerMark(p, objectName(), 0);
+                }
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.player->hasSkill(this) && change.to == Player::Play && !change.player->isSkipped(change.to)) {
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player);
+            }
+        }
+        else if (triggerEvent == EventPhaseEnd) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->isAlive() && player->hasFlag(objectName())  && player->getMark(objectName()) > 0 && player->getPhase() == Player::Discard) {
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            return invoke->invoker->askForSkillInvoke(this);
+        }
+        else if (triggerEvent == EventPhaseEnd) {
+            room->askForUseCard(invoke->invoker, "@@mengxiang", "@mengxiang");
+
+            foreach(ServerPlayer *player, room->getAlivePlayers()) {
+                if (player->getMark("mengxiangtarget") == 1) {
+                    invoke->targets << player;
+                    player->removeMark("mengxiangtarget");
+                }
+            }
+            return !invoke->targets.isEmpty();
+        }
+        return false;
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            invoke->invoker->skip(Player::Play);
+            invoke->invoker->setFlags(objectName());
+        }
+        else if (triggerEvent == EventPhaseEnd) {
+            foreach(ServerPlayer *p, invoke->targets) {
+                
+                QList<int> ids;
+                foreach(const Card *c, p->getHandcards())
+                    ids << c->getEffectiveId();
+
+                if (!ids.isEmpty()) {
+                    putToPile(room, invoke->invoker, ids);
+
+                    room->setPlayerFlag(invoke->invoker, "Global_mengxiangFailed");//viewas Mod flag
+                    //Flag  mengxiangtarget is only for DashBoard UI
+                    foreach(ServerPlayer *t, room->getAllPlayers()) {
+                        if (t == p)
+                            room->setPlayerFlag(t, "mengxiangtarget");
+                        else
+                            room->setPlayerFlag(t, "-mengxiangtarget");
+                    }
+
+                    room->askForUseCard(invoke->invoker, "@@mengxiang", "@mengxiang_use:" + p->objectName());
+                    cleanUp(room, invoke->invoker);
+                }
+            }
+        }
+        return false;
+    }
+
+    static bool putToPile(Room *room, ServerPlayer *player, QList<int> ids)
+    {
+        CardsMoveStruct move;
+        move.from_place = Player::DiscardPile;
+        move.to = player;
+        move.to_player_name = player->objectName();
+        move.to_pile_name = "#mengxiang_temp";
+        move.card_ids = ids;
+        move.to_place = Player::PlaceSpecial;
+        move.open = true;
+
+        QList<CardsMoveStruct> _moves = QList<CardsMoveStruct>() << move;
+        QList<ServerPlayer *> _player = QList<ServerPlayer *>() << player;
+        room->setPlayerFlag(player, "mengxiang_InTempMoving");
+        room->notifyMoveCards(true, _moves, true, _player);
+        room->notifyMoveCards(false, _moves, true, _player);
+        room->setPlayerFlag(player, "-mengxiang_InTempMoving");
+
+        QVariantList tag = IntList2VariantList(ids);
+        player->tag["mengxiang_tempcards"] = tag;
+        return true;
+    }
+
+    static void cleanUp(Room *room, ServerPlayer *player)
+    {
+        QList<int> hands = VariantList2IntList(player->tag.value("mengxiang_tempcards", QVariantList()).toList());
+        player->tag.remove("mengxiang_tempcards");
+        if (hands.isEmpty())
+            return;
+
+        CardsMoveStruct move;
+        move.from = player;
+        move.from_player_name = player->objectName();
+        move.from_place = Player::PlaceSpecial;
+        move.from_pile_name = "#mengxiang_temp";
+        move.to_place = Player::DiscardPile;
+        move.open = true;
+        move.card_ids = hands;
+
+        QList<CardsMoveStruct> _moves = QList<CardsMoveStruct>() << move;
+        QList<ServerPlayer *> _player = QList<ServerPlayer *>() << player;
+        room->setPlayerFlag(player, "mengxiang_InTempMoving");
+        room->notifyMoveCards(true, _moves, true, _player);
+        room->notifyMoveCards(false, _moves, true, _player);
+        room->setPlayerFlag(player, "-mengxiang_InTempMoving");
+    }
+
+};
+
+
+JishiCard::JishiCard()
+{
+    target_fixed = true;
+    will_throw = false;
+}
+
+void JishiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+{
+    int x = subcards.length();
+    CardsMoveStruct move;
+    move.card_ids = subcards;
+    //move.from = source;
+    move.to_place = Player::DrawPile;
+    room->moveCardsAtomic(move, false);
+    if (x > 1)
+        room->askForGuanxing(source, room->getNCards(x), Room::GuanxingUpOnly, "jishi");
+}
+
+class JishiVS : public ViewAsSkill
+{
+public:
+    JishiVS()
+        : ViewAsSkill("jishi")
+    {
+        response_pattern = "@@jishi";
+        expand_pile = "#jishi_temp";
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    {
+        return Self->getPile("#jishi_temp").contains(to_select->getId());
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const //
+    {
+        if (cards.isEmpty())
+            return NULL;
+
+        JishiCard *card = new JishiCard;
+        card->addSubcards(cards);
+        return card;
+        
+    }
+};
+
+class Jishi : public TriggerSkill
+{
+public:
+    Jishi()
+        : TriggerSkill("jishi")
+    {
+        events << CardsMoveOneTime;
+        view_as_skill = new JishiVS;
+    }
+
+    /*void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        //clear histroy
+        if (triggerEvent == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.m_addHistory && use.card->getSkillName() == objectName()) {
+                room->addPlayerHistory(use.from, use.card->getClassName(), -1);
+                use.m_addHistory = false;
+                data = QVariant::fromValue(use);
+            }
+        }
+    }*/
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        if (triggerEvent == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
+            if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile
+                && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_USE) {
+                
+                foreach(int id, move.card_ids) {
+                    if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand && room->getCardPlace(move.card_ids.first()) == Player::DiscardPile)
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+                }   
+            }
+        
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>invoke, QVariant &data) const
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        QList<int> ids;
+        foreach(int id, move.card_ids) {
+            if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand && room->getCardPlace(move.card_ids.first()) == Player::DiscardPile)
+                ids << id;
+        }
+        if (ids.isEmpty())
+            return false;
+
+        putToPile(room, invoke->invoker, ids);
+        room->askForUseCard(invoke->invoker, "@@jishi", "@jishi");
+        cleanUp(room, invoke->invoker);
+
+        return false;
+    }
+
+    static bool putToPile(Room *room, ServerPlayer *player, QList<int> ids)
+    {
+        CardsMoveStruct move;
+        move.from_place = Player::DiscardPile;
+        move.to = player;
+        move.to_player_name = player->objectName();
+        move.to_pile_name = "#jishi_temp";
+        move.card_ids = ids;
+        move.to_place = Player::PlaceSpecial;
+        move.open = true;
+
+        QList<CardsMoveStruct> _moves = QList<CardsMoveStruct>() << move;
+        QList<ServerPlayer *> _player = QList<ServerPlayer *>() << player;
+        room->setPlayerFlag(player, "jishi_InTempMoving");
+        room->notifyMoveCards(true, _moves, true, _player);
+        room->notifyMoveCards(false, _moves, true, _player);
+        room->setPlayerFlag(player, "-jishi_InTempMoving");
+
+        QVariantList tag = IntList2VariantList(ids);
+        player->tag["jishi_tempcards"] = tag;
+        return true;
+    }
+
+    static void cleanUp(Room *room, ServerPlayer *player)
+    {
+        QList<int> cards = VariantList2IntList(player->tag.value("jishi_tempcards", QVariantList()).toList());
+        player->tag.remove("jishi_tempcards");
+        if (cards.isEmpty())
+            return;
+
+        CardsMoveStruct move;
+        move.from = player;
+        move.from_player_name = player->objectName();
+        move.from_place = Player::PlaceSpecial;
+        move.from_pile_name = "#jishi_temp";
+        move.to_place = Player::DiscardPile;
+        move.open = true;
+        move.card_ids = cards;
+
+        QList<CardsMoveStruct> _moves = QList<CardsMoveStruct>() << move;
+        QList<ServerPlayer *> _player = QList<ServerPlayer *>() << player;
+        room->setPlayerFlag(player, "jishi_InTempMoving");
+        room->notifyMoveCards(true, _moves, true, _player);
+        room->notifyMoveCards(false, _moves, true, _player);
+        room->setPlayerFlag(player, "-jishi_InTempMoving");
+    }
+
+};
+
+
 TH09Package::TH09Package()
     : Package("th09")
 {
@@ -2004,10 +2409,17 @@ TH09Package::TH09Package()
     yorigamis->addSkill(new YsJie);
     yorigamis->addSkill(new Yishen);
 
+    General *sumireko_sp = new General(this, "sumireko_sp", "zhan", 4);
+    sumireko_sp->addSkill(new Mengxiang);
+    sumireko_sp->addSkill(new Jishi);
+
     addMetaObject<YanhuiCard>();
     addMetaObject<ToupaiCard>();
     addMetaObject<TianrenCard>();
     addMetaObject<NianliCard>();
+    addMetaObject<MengxiangCard>();
+    addMetaObject<MengxiangTargetCard>();
+    addMetaObject<JishiCard>();
 
     skills << new YanhuiVS;
 }

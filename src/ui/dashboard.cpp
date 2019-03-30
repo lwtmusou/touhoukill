@@ -1183,7 +1183,18 @@ void Dashboard::expandPileCards(const QString &pile_name)
                 }
             }
         }
-
+        if (pile_name == "#mengxiang_temp") {
+            QString target_name = "";//Self->tag.value("mengxiang_target", QString()).toString();
+            foreach(const Player *p, Self->getAliveSiblings()) {
+                if (p->hasFlag("mengxiangtarget")) {
+                    target_name = p->objectName();
+                    break;
+                }
+            }
+            if (target_name == "")
+                target_name = Self->objectName();
+            pile_string = ClientInstance->getPlayerName(target_name);
+        }
         _addHandCard(card_item, true, Sanguosha->translate(pile_string));
     }
 
