@@ -530,7 +530,7 @@ public:
     {
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive || change.from == Player::NotActive) {
+            if (change.from == Player::NotActive) {//change.to == Player::NotActive || 
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getMark("kuangluan_invalidity") > 0) {
                         room->setPlayerMark(p, "kuangluan_invalidity", 0);
