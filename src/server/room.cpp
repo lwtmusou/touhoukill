@@ -4448,9 +4448,9 @@ QList<CardsMoveOneTimeStruct> Room::_mergeMoves(QList<CardsMoveStruct> cards_mov
             moveOneTime.shown_ids.append(move.shown_ids);
             for (int i = 0; i < move.card_ids.size(); i++) {
                 moveOneTime.from_places.append(move.from_place);
-                moveOneTime.origin_from_places.append(move.from_place);
+                moveOneTime.origin_from_places.append(move.from_place);//move.origin_from_place??
                 moveOneTime.from_pile_names.append(move.from_pile_name);
-                moveOneTime.origin_from_pile_names.append(move.from_pile_name);
+                moveOneTime.origin_from_pile_names.append(move.from_pile_name);//move.origin_from_pile_name??
                 moveOneTime.open.append(move.open);
             }
             if (move.is_last_handcard)
