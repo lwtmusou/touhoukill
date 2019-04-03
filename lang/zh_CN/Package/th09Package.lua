@@ -290,8 +290,8 @@ return
 	[":sumireko_sp"] = "往返两界的梦魂", 
 	["designer:sumireko_sp"] = "bullytou",
 
-	["illustrator:sumireko_sp"] = "",
-	["origin:sumireko_sp"] = "", --TODO 天子请添加将图
+	["illustrator:sumireko_sp"] = "EO@例大祭ひ19ab",
+	["origin:sumireko_sp"] = "p号：50349017；个人id：3261838",
 
 	["mengxiang"] = "梦乡",
 	[":mengxiang"] = "你可以跳过出牌阶段，若如此做，此回合的弃牌阶段结束时，你可以选择X名角色（X为你于此阶段内弃置的牌的牌数），观看这些角色各的手牌并可以使用各的一张手牌，以此法失去牌的角色摸一张牌。",
@@ -303,7 +303,7 @@ return
 	["mengxiangtarget"] = "梦乡",
 	
 	["jishi"] = "记事",
-	[":jishi"] = "当你的手牌因非使用而失去并置入弃牌堆时，你可以将其中至少一张牌以任意顺序置于牌堆顶。",
+	[":jishi"] = "当你的手牌不因使用而失去并置入弃牌堆时，你可以将其中至少一张牌以任意顺序置于牌堆顶。",
 	["#jishi_temp"] = "记事",
 	["@jishi"] = "你可以发动“记事”，将所需的牌置于牌堆顶",
 	["~jishi"] = "选择要放置的牌 -> 确定 -> 调整顺序 -> 确定",
@@ -311,12 +311,12 @@ return
 	
 --**********************************************
 	--zhan013  势力：战 4血
-	["yorigamis"] = "依神女苑&紫苑",
+	["yorigamis"] = "依神女苑&依神紫苑",
 	["#yorigamis"] = "最凶最恶的双子", 
 	["designer:yorigamis"] = "bullytou",
 
-	["illustrator:yorigamis"] = "",
-	["origin:yorigamis"] = "", --TODO 天子请添加将图
+	["illustrator:yorigamis"] = "ひそな",
+	["origin:yorigamis"] = "p号：66714217；个人id：173260",
 
 	["jianshe"] = "俭奢",
 	[":jianshe"] = "其他角色的结束阶段开始时，你可以弃置一张手牌，令其选择一项：将手牌弃置至一张，若如此做，其回复1点体力；或摸一张牌，然后失去1点体力。",
