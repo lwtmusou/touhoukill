@@ -2139,7 +2139,8 @@ public:
                             room->setPlayerFlag(t, "-mengxiangtarget");
                     }
 
-                    room->askForUseCard(invoke->invoker, "@@mengxiang", "@mengxiang_use:" + p->objectName());
+                    if (room->askForUseCard(invoke->invoker, "@@mengxiang", "@mengxiang_use:" + p->objectName()) && p->isAlive())
+                        p->drawCards(1);
                     cleanUp(room, invoke->invoker);
                 }
             }
