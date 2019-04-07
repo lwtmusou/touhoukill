@@ -1384,13 +1384,14 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
 
 void ServerPlayer::addToShownHandCards(QList<int> card_ids)
 {
+    QList<int> add_ids;
     foreach (int id, card_ids)
-        if (shown_handcards.contains(id) || room->getCardOwner(id) != this)
-            card_ids.removeOne(id);
-    if (card_ids.isEmpty())
+        if (!shown_handcards.contains(id) && room->getCardOwner(id) == this)
+            add_ids.append(id);
+    if (add_ids.isEmpty())
         return;
 
-    shown_handcards.append(card_ids);
+    shown_handcards.append(add_ids);
 
     JsonArray arg;
     arg << objectName();
@@ -1402,12 +1403,12 @@ void ServerPlayer::addToShownHandCards(QList<int> card_ids)
     LogMessage log;
     log.type = "$AddShownHand";
     log.from = this;
-    log.card_str = IntList2StringList(card_ids).join("+");
+    log.card_str = IntList2StringList(add_ids).join("+");
     room->sendLog(log);
     room->getThread()->delay();
 
     ShownCardChangedStruct s;
-    s.ids = card_ids;
+    s.ids = add_ids;
     s.player = this;
     s.shown = true;
     QVariant v = QVariant::fromValue(s);
