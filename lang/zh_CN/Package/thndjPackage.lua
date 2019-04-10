@@ -144,7 +144,7 @@ return{
 	
 	["tenshi_ndj"] = "年代记SP天子" ,
 	["&tenshi_ndj"] = "年代记天子",
-	["#tenshi_ndj"] = "xxxx" ,
+	["#tenshi_ndj"] = "勇者代行者" ,
 	["designer:tenshi_ndj"] = "辰焰天明",
 	
 	["youle"]= "忧乐",
