@@ -15,11 +15,11 @@ bool CardsMoveStruct::tryParse(const QVariant &arg)
     if ((!JsonUtils::isNumber(args[0]) && !args[0].canConvert<JsonArray>()) || !JsonUtils::isNumberArray(args, 1, 2) || !JsonUtils::isStringArray(args, 3, 6))
         return false;
 
-    if (JsonUtils::isNumber(args[0])) {
+    /*if (JsonUtils::isNumber(args[0])) {
         int size = args[0].toInt();
         for (int i = 0; i < size; i++)
             card_ids.append(Card::S_UNKNOWN_CARD_ID);
-    } else if (!JsonUtils::tryParse(args[0], card_ids)) {
+    } else */if (!JsonUtils::tryParse(args[0], card_ids)) {
         return false;
     }
 
@@ -40,13 +40,23 @@ QVariant CardsMoveStruct::toVariant() const
     if (open) {
         arg << JsonUtils::toJsonArray(card_ids);
     } else {
-        int num = card_ids.length() - shown_ids.length();
+        
+
         QList<int> notify_ids;
+        //keep original order?
+        foreach(int id, card_ids) {
+            if (shown_ids.contains(id))
+                notify_ids << id;
+            else
+                notify_ids.append(Card::S_UNKNOWN_CARD_ID);
+        }
+        /*
+        int num = card_ids.length() - shown_ids.length();
         notify_ids << shown_ids;
         if (num > 0) {
             for (int i = 0; i < num; i++)
                 notify_ids.append(Card::S_UNKNOWN_CARD_ID);
-        }
+        }*/
         arg << JsonUtils::toJsonArray(notify_ids);
     }
 
