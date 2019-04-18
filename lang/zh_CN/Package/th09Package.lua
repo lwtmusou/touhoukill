@@ -329,6 +329,6 @@ return
 	[":ysjie"] = "<font color=\"blue\"><b>锁定技，</b></font>手牌数小于其已损失的体力值的其他角色于你的回合内不能使用或打出牌。",
 
 	["yishen"] = "依神",
-	[":yishen"] = "<font color=\"orange\"><b>主公技，</b></font>你与在其他战势力角色攻击范围内的其他角色的距离-1。",
+	[":yishen"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"blue\"><b>锁定技，</b></font>你与在其他战势力角色攻击范围内的其他角色的距离-1。",
 	
 }
