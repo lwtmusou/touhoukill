@@ -292,7 +292,7 @@ QRectF ChooseTriggerOrderBox::boundingRect() const
 {
     int width = m_minimumWidth + m_leftBlankWidth * 2;
 
-    int height = m_topBlankWidth + options.size() * optionButtonHeight + (options.size() - 1) * interval + bottom_blank_width;
+    int height = m_topBlankWidth + optionButtons.size() * optionButtonHeight + (optionButtons.size() - 1) * interval + bottom_blank_width;
 
     if (ServerInfo.OperationTimeout != 0)
         height += 12;
@@ -309,9 +309,7 @@ void ChooseTriggerOrderBox::chooseOption(const QVariantList &options, bool optio
     this->optional = optional;
     title = tr("Please Select Trigger Order");
 
-    storeMinimumWidth();
 
-    prepareGeometryChange();
 
     foreach (const QVariant &option, options) {
         QVariantMap map = option.toMap();
@@ -339,8 +337,11 @@ void ChooseTriggerOrderBox::chooseOption(const QVariantList &options, bool optio
         }
         optionButtons << button;
     }
+    
+	storeMinimumWidth();
 
-    moveToCenter();
+    prepareGeometryChange();
+	moveToCenter();
     show();
 
     int y = m_topBlankWidth;
