@@ -1998,11 +1998,10 @@ public:
     MengxiangVS()
         : ViewAsSkill("mengxiang")
     {
-        response_pattern = "@@mengxiang";
         expand_pile = "#mengxiang_temp";
     }
 
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
     {
         if (Self->hasFlag("Global_mengxiangFailed")) {
             if ((to_select->isKindOf("Jink") || to_select->isKindOf("Nullification")))
@@ -2014,12 +2013,22 @@ public:
         return false;
     }
 
-    virtual const Card *viewAs(const QList<const Card *> &cards) const //
+    bool isEnabledAtPlay(const Player *) const
+    {
+        return false;
+    }
+
+    bool isEnabledAtResponse(const Player *, const QString &pattern) const
+    {
+        return pattern.startsWith("@@mengxiang");
+    }
+
+    const Card *viewAs(const QList<const Card *> &cards) const
     {
         if (cards.length() > 1)
             return NULL;
 
-        if (Self->hasFlag("Global_mengxiangFailed")) {
+        if (Sanguosha->getCurrentCardUsePattern() == "@@mengxiang2") {
             MengxiangCard *card = new MengxiangCard;
             card->addSubcards(cards);
             return card;
@@ -2083,7 +2092,7 @@ public:
         if (triggerEvent == EventPhaseChanging) {
             return invoke->invoker->askForSkillInvoke(this);
         } else if (triggerEvent == EventPhaseEnd) {
-            room->askForUseCard(invoke->invoker, "@@mengxiang", "@mengxiang");
+            room->askForUseCard(invoke->invoker, "@@mengxiang1", "@mengxiang");
 
             foreach (ServerPlayer *player, room->getAlivePlayers()) {
                 if (player->getMark("mengxiangtarget") == 1) {
@@ -2110,7 +2119,6 @@ public:
                 if (!ids.isEmpty()) {
                     putToPile(room, invoke->invoker, ids);
 
-                    room->setPlayerFlag(invoke->invoker, "Global_mengxiangFailed"); //viewas Mod flag
                     //Flag  mengxiangtarget is only for DashBoard UI
                     foreach (ServerPlayer *t, room->getAllPlayers()) {
                         if (t == p)
@@ -2119,7 +2127,7 @@ public:
                             room->setPlayerFlag(t, "-mengxiangtarget");
                     }
 
-                    if (room->askForUseCard(invoke->invoker, "@@mengxiang", "@mengxiang_use:" + p->objectName()) && p->isAlive())
+                    if (room->askForUseCard(invoke->invoker, "@@mengxiang2", "@mengxiang_use:" + p->objectName()) && p->isAlive())
                         p->drawCards(1);
                     cleanUp(room, invoke->invoker);
                 }
