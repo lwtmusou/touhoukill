@@ -85,7 +85,6 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
         judging = true;
     }
 
-
     int max = maxCardsInOneRow;
     int maxNumber = maxCardNumberInOneRow;
     maxCardsInOneRow = qMin(max, maxNumber);
@@ -132,7 +131,6 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
 
     if (judging)
         arrangeCards(player->getJudgingArea(), QPoint(startX, nameRects.at(index).y()));
-
 
     if (ServerInfo.OperationTimeout != 0) {
         if (!progressBar) {
@@ -209,7 +207,6 @@ void PlayerCardBox::paintLayout(QPainter *painter)
         font.paintText(painter, nameRects.at(index), Qt::AlignCenter, tr("Judging area"));
         ++index;
     }
-
 }
 
 void PlayerCardBox::clear()

@@ -177,7 +177,6 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-
 class BoneHealing : public SingleTargetTrick
 {
     Q_OBJECT

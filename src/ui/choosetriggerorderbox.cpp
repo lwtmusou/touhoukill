@@ -309,8 +309,6 @@ void ChooseTriggerOrderBox::chooseOption(const QVariantList &options, bool optio
     this->optional = optional;
     title = tr("Please Select Trigger Order");
 
-
-
     foreach (const QVariant &option, options) {
         QVariantMap map = option.toMap();
         SkillInvokeDetailForClient detail;
@@ -337,11 +335,10 @@ void ChooseTriggerOrderBox::chooseOption(const QVariantList &options, bool optio
         }
         optionButtons << button;
     }
-    
-	storeMinimumWidth();
 
+    storeMinimumWidth();
     prepareGeometryChange();
-	moveToCenter();
+    moveToCenter();
     show();
 
     int y = m_topBlankWidth;

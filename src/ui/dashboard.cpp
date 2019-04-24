@@ -1184,8 +1184,8 @@ void Dashboard::expandPileCards(const QString &pile_name)
             }
         }
         if (pile_name == "#mengxiang_temp") {
-            QString target_name = "";//Self->tag.value("mengxiang_target", QString()).toString();
-            foreach(const Player *p, Self->getAliveSiblings()) {
+            QString target_name = ""; //Self->tag.value("mengxiang_target", QString()).toString();
+            foreach (const Player *p, Self->getAliveSiblings()) {
                 if (p->hasFlag("mengxiangtarget")) {
                     target_name = p->objectName();
                     break;

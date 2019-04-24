@@ -1368,24 +1368,22 @@ public:
                     damage.from->setFlags("youle");
             }
         }
-            
+
         else if (triggerEvent == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.to && damage.to->isAlive()) {
                 if (!damage.to->hasFlag("youle"))
                     damage.to->setFlags("youle");
             }
-        }
-        else if (triggerEvent == EventPhaseChanging) {
+        } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
             if (phase_change.from == Player::NotActive) { //Player::Play
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasFlag("youle"))
                         p->setFlags("-youle");
                 }
             }
         }
-            
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
@@ -1394,12 +1392,12 @@ public:
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive && !change.player->tag.value("touhou-extra", false).toBool()) {
                 QList<SkillInvokeDetail> d;
-                foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                     if (p->hasFlag("youle"))
                         d << SkillInvokeDetail(this, p, p);
-                }    
+                }
                 return d;
-            }   
+            }
         }
 
         return QList<SkillInvokeDetail>();
@@ -1408,8 +1406,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         QList<ServerPlayer *> targets;
-        foreach(ServerPlayer *p, room->getAllPlayers()) {
-            
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (!p->isAllNude())
                 targets << p;
         }
@@ -1435,7 +1432,6 @@ public:
         return false;
     }
 
-
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         ServerPlayer *target = invoke->targets.first();
@@ -1444,8 +1440,8 @@ public:
 
         QList<const Card *> cards;
         //throw card
-        if (flag == "e" || flag  == "j") {
-            foreach(const Card *c, target->getCards(flag)) {
+        if (flag == "e" || flag == "j") {
+            foreach (const Card *c, target->getCards(flag)) {
                 if (target->canDiscard(target, c->getId()))
                     cards << c;
             }
@@ -1455,12 +1451,10 @@ public:
                 dummy.addSubcards(cards);
                 room->throwCard(&dummy, target, target);
             }
-        }
-        else {
-            int x = qMin(5, target->getHandcardNum());// has not considered "jilei" yet.
+        } else {
+            int x = qMin(5, target->getHandcardNum()); // has not considered "jilei" yet.
             room->askForDiscard(target, objectName(), x, x, false, false, "@youle-discard");
         }
-            
 
         //gain Extra Turn
         if (!room->getThread()->hasExtraTurn())
@@ -1475,8 +1469,6 @@ public:
         return false;
     }
 };
-
-
 
 THNDJPackage::THNDJPackage()
     : Package("thndj")
@@ -1520,7 +1512,6 @@ THNDJPackage::THNDJPackage()
     aya_ndj->addSkill(new JinengTargetMod);
     aya_ndj->addSkill(new Kuaibao);
     related_skills.insertMulti("jineng", "#jinengmod");
-
 
     General *tenshi_ndj = new General(this, "tenshi_ndj", "zhan", 4);
     tenshi_ndj->addSkill(new Youle);

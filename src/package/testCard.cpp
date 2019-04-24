@@ -809,7 +809,6 @@ void AllianceFeast::onEffect(const CardEffectStruct &effect) const
     }
 }
 
-
 BoneHealing::BoneHealing(Card::Suit suit, int number)
     : SingleTargetTrick(suit, number)
 {
@@ -943,8 +942,8 @@ TestCardPackage::TestCardPackage()
     foreach (Card *card, cards)
         card->setParent(this);
 
-    skills << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill << new PagodaSkill << new PagodaTriggerSkill << new CamouflageSkill
-           << new PillarSkill << new HakkeroSkill << new HagoromoSkill;
+    skills << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill << new PagodaSkill << new PagodaTriggerSkill << new CamouflageSkill << new PillarSkill
+           << new HakkeroSkill << new HagoromoSkill;
 }
 
 ADD_PACKAGE(TestCard)
