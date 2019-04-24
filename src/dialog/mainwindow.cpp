@@ -175,14 +175,8 @@ void MainWindow::checkForUpdate()
 #if QT_VERSION >= 0x050600
     req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 #endif
-#if QT_VERSION >= 0x50600
-    if (QVersionNumber(0, 8).isPrefixOf(Sanguosha->getQVersionNumber()))
-#else
-    if (Sanguosha->getVersionName().startsWith("V0.8."))
-#endif
-        req.setUrl(QUrl("https://fsu0413.coding.me/TouhouSatsuUpdate/TouhouKillUpdate.json"));
-    else
-        req.setUrl(QUrl("https://fsu0413.coding.me/TouhouSatsuUpdate/TouhouKillUpdate0.9.json"));
+
+    req.setUrl(QUrl("https://www.touhousatsu.rocks/TouhouKillUpdate0.9.json"));
 
     QNetworkReply *reply = autoUpdateManager->get(req);
     connect(reply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &MainWindow::updateError);
@@ -965,31 +959,29 @@ void MainWindow::updateInfoReceived()
     if (reply == NULL)
         return;
     QByteArray arr = reply->readAll();
-    QJsonDocument doc = QJsonDocument::fromJson(arr);
+
+    QJsonParseError err;
+    QJsonDocument doc = QJsonDocument::fromJson(arr, &err);
+
+    if (err.error != QJsonParseError::NoError) {
+        return;
+    }
     if (!doc.isObject()) {
         qDebug() << "error document when parsing update data";
         return;
     }
 
     QJsonObject ob;
-#if QT_VERSION >= 0x50600
-    if (QVersionNumber(0, 8).isPrefixOf(Sanguosha->getQVersionNumber()))
-#else
-    if (Sanguosha->getVersionName().startsWith("V0.8."))
-#endif
-        ob = doc.object();
-    else {
-        QJsonObject fullOb = doc.object();
-        QString channel = Config.value("AutoUpdateChannel", QStringLiteral("Global")).toString();
-        if (!fullOb.contains(channel)) {
-            qDebug() << "Ob doesn't contain the update channel: " << channel;
-            return;
-        } else if (!fullOb.value(channel).isObject()) {
-            qDebug() << "the Channel of Ob is not an object: " << channel;
-            return;
-        }
-        ob = fullOb.value(channel).toObject();
+    QJsonObject fullOb = doc.object();
+    QString channel = Config.value("AutoUpdateChannel", QStringLiteral("Global")).toString();
+    if (!fullOb.contains(channel)) {
+        qDebug() << "Ob doesn't contain the update channel: " << channel;
+        return;
+    } else if (!fullOb.value(channel).isObject()) {
+        qDebug() << "the Channel of Ob is not an object: " << channel;
+        return;
     }
+    ob = fullOb.value(channel).toObject();
 
     if (!ob.contains("LatestVersion") || !ob.value("LatestVersion").isString()) {
         qDebug() << "LatestVersion field is incorrect";
@@ -1003,26 +995,6 @@ void MainWindow::updateInfoReceived()
 #else
     QString ver = ob.value("LatestVersionNumber").toString();
 #endif
-
-#if QT_VERSION >= 0x50600
-    if (QVersionNumber(0, 8).isPrefixOf(Sanguosha->getQVersionNumber())) {
-#else
-    if (Sanguosha->getVersionName().startsWith("V0.8.")) {
-#endif
-        QString versionTo09 = ob.value("VersionTo09").toString();
-        if (versionTo09 == Sanguosha->getVersionNumber()) {
-            QString latestVersion09 = ob.value("LatestVersion09").toString();
-
-            if (!latestVersion09.isEmpty()) {
-                latestVersion = latestVersion09;
-#if QT_VERSION >= 0x050600
-                ver = QVersionNumber::fromString(ob.value("LatestVersionNumber09").toString());
-#else
-                ver = ob.value("LatestVersionNumber09").toString();
-#endif
-            }
-        }
-    }
 
     if (latestVersion > Sanguosha->getVersionNumber()) {
         // there is a new version available now!!
