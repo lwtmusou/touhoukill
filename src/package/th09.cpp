@@ -2003,7 +2003,8 @@ public:
 
     bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
     {
-        if (Self->hasFlag("Global_mengxiangFailed")) {
+        //if (Self->hasFlag("Global_mengxiangFailed")) {
+        if (Sanguosha->getCurrentCardUsePattern() == "@@mengxiang-card2") {
             if ((to_select->isKindOf("Jink") || to_select->isKindOf("Nullification")))
                 return false;
             if (to_select->isKindOf("Peach") && !to_select->isAvailable(Self))
@@ -2028,7 +2029,7 @@ public:
         if (cards.length() > 1)
             return NULL;
 
-        if (Sanguosha->getCurrentCardUsePattern() == "@@mengxiang2") {
+        if (Sanguosha->getCurrentCardUsePattern() == "@@mengxiang-card2") {
             MengxiangCard *card = new MengxiangCard;
             card->addSubcards(cards);
             return card;
@@ -2092,7 +2093,7 @@ public:
         if (triggerEvent == EventPhaseChanging) {
             return invoke->invoker->askForSkillInvoke(this);
         } else if (triggerEvent == EventPhaseEnd) {
-            room->askForUseCard(invoke->invoker, "@@mengxiang1", "@mengxiang");
+            room->askForUseCard(invoke->invoker, "@@mengxiang-card1", "@mengxiang");
 
             foreach (ServerPlayer *player, room->getAlivePlayers()) {
                 if (player->getMark("mengxiangtarget") == 1) {
@@ -2127,7 +2128,7 @@ public:
                             room->setPlayerFlag(t, "-mengxiangtarget");
                     }
 
-                    if (room->askForUseCard(invoke->invoker, "@@mengxiang2", "@mengxiang_use:" + p->objectName()) && p->isAlive())
+                    if (room->askForUseCard(invoke->invoker, "@@mengxiang-card2", "@mengxiang_use:" + p->objectName()) && p->isAlive())
                         p->drawCards(1);
                     cleanUp(room, invoke->invoker);
                 }
