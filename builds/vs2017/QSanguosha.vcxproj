@@ -53,8 +53,8 @@
     <IntermediateDirectory>release\</IntermediateDirectory>
     <PrimaryOutput>QSanguosha</PrimaryOutput>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v141</PlatformToolset>
     <WindowsAppContainer>false</WindowsAppContainer>
-    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <OutputDirectory>release\</OutputDirectory>
