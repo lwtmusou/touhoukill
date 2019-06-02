@@ -586,34 +586,34 @@ sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 	table.insert(cards,judge.card)
 	local ex_id = self:getRetrialCardId(cards, judge)
 
-    local judgecard_value = self:getUseValue(judge.card)
+	local judgecard_value = self:getUseValue(judge.card)
 	--ex_id 不为-1 则代表 此牌作为判定牌生效的话，对天子而言是个好结果
 	local retrial_targets={}
 	for _,target in sgs.qlist(targets) do
-        local flag = "es"
-        if target:objectName() == self.player:objectName() then flag = "hes" end
+        	local flag = "es"
+        	if target:objectName() == self.player:objectName() then flag = "hes" end
 		local cards1 = sgs.QList2Table(target:getCards(flag))
 		local self_card =  target:objectName()== self.player:objectName()
 		local new_id = self:getRetrialCardId(cards1, judge,self_card)
 		--new_id 不为-1 代表 装备区的id去改判，可以得到好结果
-        if new_id == -1 then continue end
+        	if new_id == -1 then continue end
 		--牌的基础使用价值
-        local new_value = self:getUseValue(sgs.Sanguosha:getCard(new_id))
-        local diff = judgecard_value - new_value
-        if not self:isEnemy(target) then
+        	local new_value = self:getUseValue(sgs.Sanguosha:getCard(new_id))
+        	local diff = judgecard_value - new_value
+        	if not self:isEnemy(target) then
 			diff = 0 - diff
-        end
+        	end
                 
-        --改判结果的价值修正
-        if ex_id == -1 and new_id ~= -1 then
+        	--改判结果的价值修正
+        	if ex_id == -1 and new_id ~= -1 then
 			diff = diff + 15
-        elseif  new_id == -1 then
+        	elseif  new_id == -1 then
 			if ex_id ~= -1 then
-              	diff = diff - 15
+              			diff = diff - 15
 			else
 				diff = diff - 3
 			end
-        end
+        	end
         --还需要计算拔装备的价值？
 
 		local array={player= target, value= diff}
@@ -1033,6 +1033,7 @@ function SmartAI:nianliColor(cards)
 	end
 end
 
+--念力: 使用念力技能卡
 local nianli_skill = {}
 nianli_skill.name = "nianli"
 table.insert(sgs.ai_skills, nianli_skill)
@@ -1067,7 +1068,7 @@ nianli_skill.getTurnUseCard = function(self)
 	end
 	return nil
 end
-
+--念力: 念力技能卡选择目标
 sgs.ai_skill_use_func.NianliCard=function(card,use,self)
 	local userstring=card:toString()
 	userstring=(userstring:split(":"))[3]
@@ -1085,3 +1086,44 @@ end
 
 
 sgs.ai_use_priority.NianliCard = 9
+
+
+--依神女苑&依神紫苑
+--俭奢:其他角色的结束阶段开始时，你可以弃置一张手牌，令其选择一项：将手牌弃置至一张，若如此做，其回复1点体力；或摸一张牌，然后失去1点体力。
+--俭奢: 弃牌发动
+sgs.ai_skill_cardask["@jianshe-discard"] = function(self, data)
+	if not self.player:canDiscard(self.player, "hs") then return "." end
+	local target = self.room:getCurrent()
+	if not target or target:isDead() then return "." end
+	local effect=false
+	local num =  target:getHandcardNum() - 1
+ 
+	if self:isEnemy(target) and (num > 2 or num <=0) then
+		effect=true
+	elseif self:isFriend(target) and num <= 2 and num > 0  and target:isWounded() then
+		effect=true
+	end
+	if not effect then return "." end
+
+
+	local cards = sgs.QList2Table(self.player:getCards("hs"))
+	if #cards ==0 then return "." end
+	self:sortByCardNeed(cards)
+
+	return "$" .. cards[1]:getId()
+end
+
+--俭奢: 执行选项
+sgs.ai_skill_choice.jianshe = function(self, choices, data)
+	if self:isWeak(self.player) then
+		return "jianshe_jian"
+	end	
+	local num =  self.player:getHandcardNum() - 1  
+	
+	if num > 2 then
+		return "jianshe_she"
+	else
+		return "jianshe_jian"
+	end
+	return choices[1]
+end

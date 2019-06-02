@@ -1423,6 +1423,7 @@ public:
             if (!target->getCards("hs").isEmpty())
                 flags.append("h");
 
+            invoke->invoker->tag[objectName()] = QVariant::fromValue(target);
             QString choice = room->askForChoice(invoke->invoker, objectName(), flags.join("+"), data);
             room->notifySkillInvoked(invoke->invoker, objectName());
             invoke->targets << target;
