@@ -1941,12 +1941,17 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
 
         card = Card::Parse(clientReply[0].toString());
     }
-
-    if (card && player->isCardLimited(card, Card::MethodUse))
+    
+    if (card && player->isCardLimited(card, card->getHandlingMethod()))
         card = NULL;
     if (card != NULL) {
-        card = card->validateInResponse(player);
-        if (card && player->isCardLimited(card, Card::MethodUse))
+        card = card->validateInResponse(player);    
+        Card::HandlingMethod method = Card::MethodUse;
+        if (card && card->getTypeId() == Card::TypeSkill) {//keep TypeSkill after validateInResponse
+            method = card->getHandlingMethod();
+        }
+            
+        if (card && player->isCardLimited(card, method))
             card = NULL;
     } else
         return NULL;
@@ -3620,7 +3625,6 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
         if (!card_use.m_showncards.isEmpty())
             setCardFlag(card_use.card, "showncards");
     }
-
     if (card_use.from->isCardLimited(card, card->getHandlingMethod()) && (!card->canRecast() || card_use.from->isCardLimited(card, Card::MethodRecast)))
         return true;
 

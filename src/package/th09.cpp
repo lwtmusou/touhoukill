@@ -1848,9 +1848,10 @@ public:
                 foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
                     if (p->getHandcardNum() < p->getLostHp())
                         targets << p;
-                    if (!targets.isEmpty())
-                        setYsJieLimit(player, targets);
+                    
                 }
+                if (!targets.isEmpty())
+                    setYsJieLimit(player, targets);
             }
         } else if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();

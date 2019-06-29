@@ -904,7 +904,6 @@ const Card *BeishuiCard::validate(CardUseStruct &card_use) const
     use_card->setSkillName("beishui");
     use_card->addSubcards(subcards);
 
-    card_use.from->getRoom()->setPlayerMark(card_use.from, "beishui", 1);
     return use_card;
 }
 
@@ -915,7 +914,7 @@ const Card *BeishuiCard::validateInResponse(ServerPlayer *user) const
     use_card->setSkillName("beishui");
     use_card->addSubcards(subcards);
     use_card->deleteLater();
-    user->getRoom()->setPlayerMark(user, "beishui", 1);
+
     return use_card;
 }
 
