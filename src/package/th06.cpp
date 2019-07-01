@@ -848,75 +848,7 @@ public:
     }
 };
 
-BeishuiCard::BeishuiCard()
-{
-    will_throw = false;
-}
 
-bool BeishuiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
-{
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
-        return false;
-
-    if (user_string == NULL)
-        return false;
-
-    Card *card = Sanguosha->cloneCard(user_string.split("+").first());
-    DELETE_OVER_SCOPE(Card, card)
-    card->addSubcards(subcards);
-    card->setSkillName("beishui");
-    return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
-}
-
-bool BeishuiCard::targetFixed() const
-{
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
-        return true;
-    if (user_string == NULL)
-        return false;
-
-    Card *card = Sanguosha->cloneCard(user_string.split("+").first());
-    DELETE_OVER_SCOPE(Card, card)
-    card->addSubcards(subcards);
-    card->setSkillName("beishui");
-    return card && card->targetFixed();
-}
-
-bool BeishuiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
-{
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
-        return true;
-    if (user_string == NULL)
-        return false;
-
-    Card *card = Sanguosha->cloneCard(user_string.split("+").first());
-    DELETE_OVER_SCOPE(Card, card)
-    card->addSubcards(subcards);
-    card->setSkillName("beishui");
-    return card && card->targetsFeasible(targets, Self);
-}
-
-const Card *BeishuiCard::validate(CardUseStruct &card_use) const
-{
-    card_use.from->showHiddenSkill("beishui");
-    QString to_use = user_string;
-    Card *use_card = Sanguosha->cloneCard(to_use);
-    use_card->setSkillName("beishui");
-    use_card->addSubcards(subcards);
-
-    return use_card;
-}
-
-const Card *BeishuiCard::validateInResponse(ServerPlayer *user) const
-{
-    user->showHiddenSkill("beishui");
-    Card *use_card = Sanguosha->cloneCard(user_string);
-    use_card->setSkillName("beishui");
-    use_card->addSubcards(subcards);
-    use_card->deleteLater();
-
-    return use_card;
-}
 
 class BeishuiVS : public ViewAsSkill
 {
@@ -944,15 +876,6 @@ public:
             }
         }
 
-        /*foreach (QString str, validPatterns) {
-            const Skill *skill = Sanguosha->getSkill("beishui");
-            if (skill->matchAvaliablePattern(str, pattern)) {
-                Card *card = Sanguosha->cloneCard(str);
-                DELETE_OVER_SCOPE(Card, card)
-                if (!Self->isCardLimited(card, method))
-                    checkedPatterns << str;
-            }
-        }*/
         return checkedPatterns;
     }
 
@@ -1009,18 +932,11 @@ public:
         if (cards.length() != num)
             return NULL;
 
-        /*QStringList checkedPatterns = responsePatterns();
-        if (checkedPatterns.length() == 1) {
-            BeishuiCard *card = new BeishuiCard;
-            card->setUserString(checkedPatterns.first());
-            card->addSubcards(cards);
-            return card;
-        }*/
 
         QString name = Self->tag.value("beishui", QString()).toString();
         if (name != NULL) {
-            BeishuiCard *card = new BeishuiCard;
-            card->setUserString(name);
+            Card *card = Sanguosha->cloneCard(name);
+            card->setSkillName(objectName());
             card->addSubcards(cards);
             return card;
         } else
@@ -2082,7 +1998,6 @@ TH06Package::TH06Package()
 
     addMetaObject<SkltKexueCard>();
     addMetaObject<SuodingCard>();
-    addMetaObject<BeishuiCard>();
     addMetaObject<SishuCard>();
     addMetaObject<BanyueCard>();
 
