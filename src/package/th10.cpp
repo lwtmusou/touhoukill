@@ -583,84 +583,6 @@ QAbstractButton *QijiDialog::createButton(const Card *card)
     }
 }
 
-QijiCard::QijiCard()
-{
-    will_throw = false;
-}
-
-bool QijiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
-{
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
-        return false;
-
-    if (user_string == NULL)
-        return false;
-
-    const Card *oc = Sanguosha->getCard(subcards.first());
-    Card *card = Sanguosha->cloneCard(user_string.split("+").first());
-    DELETE_OVER_SCOPE(Card, card)
-    card->addSubcard(oc);
-    card->setSkillName("qiji");
-    return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
-}
-
-bool QijiCard::targetFixed() const
-{
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
-        return true;
-    if (user_string == NULL)
-        return false;
-
-    const Card *oc = Sanguosha->getCard(subcards.first());
-    Card *card = Sanguosha->cloneCard(user_string.split("+").first());
-    DELETE_OVER_SCOPE(Card, card)
-    card->addSubcard(oc);
-    card->setSkillName("qiji");
-    return card && card->targetFixed();
-}
-
-bool QijiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
-{
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
-        return true;
-
-    if (user_string == NULL)
-        return false;
-
-    const Card *oc = Sanguosha->getCard(subcards.first());
-    Card *card = Sanguosha->cloneCard(user_string.split("+").first());
-    DELETE_OVER_SCOPE(Card, card)
-    card->addSubcard(oc);
-    card->setSkillName("qiji");
-    if (card->canRecast() && targets.length() == 0)
-        return false;
-    return card && card->targetsFeasible(targets, Self);
-}
-
-const Card *QijiCard::validate(CardUseStruct &use) const
-{
-    QString to_use = user_string;
-    use.from->showHiddenSkill("qiji");
-    const Card *card = Sanguosha->getCard(subcards.first());
-    Card *use_card = Sanguosha->cloneCard(to_use, card->getSuit(), card->getNumber());
-    use_card->setSkillName("qiji");
-    use_card->addSubcard(subcards.first());
-    use_card->deleteLater();
-    use.from->getRoom()->setPlayerMark(use.from, "qiji", 1);
-    return use_card;
-}
-
-const Card *QijiCard::validateInResponse(ServerPlayer *user) const
-{
-    user->showHiddenSkill("qiji");
-    const Card *card = Sanguosha->getCard(subcards.first());
-    Card *use_card = Sanguosha->cloneCard(user_string, card->getSuit(), card->getNumber());
-    use_card->setSkillName("qiji");
-    use_card->addSubcard(subcards.first());
-    use_card->deleteLater();
-    user->getRoom()->setPlayerMark(user, "qiji", 1);
-    return use_card;
-}
 
 class QijiVS : public OneCardViewAsSkill
 {
@@ -731,17 +653,19 @@ public:
     {
         QStringList checkedPatterns = responsePatterns();
         if (checkedPatterns.length() == 1) {
-            QijiCard *card = new QijiCard;
-            card->setUserString(checkedPatterns.first());
+            Card *card = Sanguosha->cloneCard(checkedPatterns.first());
+            card->setSkillName(objectName());
             card->addSubcard(originalCard);
+            card->setCanRecast(false);
             return card;
         }
 
         QString name = Self->tag.value("qiji", QString()).toString();
         if (name != NULL) {
-            QijiCard *card = new QijiCard;
-            card->setUserString(name);
+            Card *card = Sanguosha->cloneCard(name);
+            card->setSkillName(objectName());
             card->addSubcard(originalCard);
+            card->setCanRecast(false);
             return card;
         } else
             return NULL;
@@ -779,7 +703,7 @@ public:
     Qiji()
         : TriggerSkill("qiji")
     {
-        events << EventPhaseChanging << PreCardUsed;
+        events << EventPhaseChanging << PreCardUsed << CardResponded;
         view_as_skill = new QijiVS;
     }
 
@@ -803,6 +727,11 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->getSkillName() == objectName())
                 room->setPlayerMark(use.from, "qiji", 1);
+        }
+        if (e == CardResponded) {
+            CardResponseStruct response = data.value<CardResponseStruct>();
+            if (response.m_from && response.m_card && response.m_card->getSkillName() == objectName())
+                room->setPlayerMark(response.m_from, "qiji", 1);
         }
     }
 };
@@ -1721,7 +1650,6 @@ TH10Package::TH10Package()
     momizi_sp->addSkill(new Buju);
 
     addMetaObject<GongfengCard>();
-    addMetaObject<QijiCard>();
     addMetaObject<FengshenCard>();
     addMetaObject<XinshangCard>();
     addMetaObject<FengrangCard>();
