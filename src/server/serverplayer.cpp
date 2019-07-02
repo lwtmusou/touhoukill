@@ -1615,6 +1615,9 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
         return QStringList();
     if (!canShowHiddenSkill())
         return QStringList();
+    QString cardskill = use.card->getSkillName();//check double hidden skill
+    if (cardskill !=NULL && use.from->isHiddenSkill(cardskill))
+        return QStringList();
 
     QList<const TargetModSkill *> tarmods;
     foreach (QString hidden, getHiddenGenerals()) {
