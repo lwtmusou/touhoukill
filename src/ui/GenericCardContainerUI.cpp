@@ -88,6 +88,12 @@ void GenericCardContainer::_disperseCards(QList<CardItem *> &cards, QRectF fillR
 
 void GenericCardContainer::onAnimationFinished()
 {
+    QParallelAnimationGroup *animationGroup = qobject_cast<QParallelAnimationGroup *>(sender());
+    if (animationGroup) {
+        animationGroup->clear();
+        animationGroup->deleteLater();
+    }
+
 }
 
 void GenericCardContainer::_doUpdate()
