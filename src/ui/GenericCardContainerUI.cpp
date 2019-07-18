@@ -103,7 +103,7 @@ void GenericCardContainer::_doUpdate()
 
 void GenericCardContainer::_playMoveCardsAnimation(QList<CardItem *> &cards, bool destroyCards)
 {
-    QParallelAnimationGroup *animation = new QParallelAnimationGroup;
+    QParallelAnimationGroup *animation = new QParallelAnimationGroup(this);
     foreach (CardItem *card_item, cards) {
         if (destroyCards)
             connect(card_item, SIGNAL(movement_animation_finished()), this, SLOT(_destroyCard()));
@@ -111,8 +111,11 @@ void GenericCardContainer::_playMoveCardsAnimation(QList<CardItem *> &cards, boo
     }
 
     connect(animation, SIGNAL(finished()), this, SLOT(_doUpdate()));
-    connect(animation, SIGNAL(finished()), this, SLOT(onAnimationFinished()));
-    animation->start();
+    if (!destroyCards) {
+        connect(animation, SIGNAL(finished()), this, SLOT(onAnimationFinished()));
+    }
+    
+    animation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void GenericCardContainer::addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo)

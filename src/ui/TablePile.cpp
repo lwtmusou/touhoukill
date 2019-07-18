@@ -174,9 +174,9 @@ void TablePile::adjustCards()
     if (m_visibleCards.length() == 0)
         return;
     _disperseCards(m_visibleCards, m_cardsDisplayRegion, Qt::AlignCenter, true, true);
-    QParallelAnimationGroup *animation = new QParallelAnimationGroup;
+    QParallelAnimationGroup *animation = new QParallelAnimationGroup(this);
     foreach (CardItem *card_item, m_visibleCards)
         animation->addAnimation(card_item->getGoBackAnimation(true));
     connect(animation, SIGNAL(finished()), this, SLOT(onAnimationFinished()));
-    animation->start();
+    animation->start(QAbstractAnimation::DeleteWhenStopped);
 }
