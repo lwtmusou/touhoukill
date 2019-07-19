@@ -861,7 +861,7 @@ public:
         }
         if (e == CardResponded) {
             CardResponseStruct response = data.value<CardResponseStruct>();
-            if (response.m_isUse && response.m_from && response.m_from->isAlive() && response.m_from->hasSkill(this))
+            if (response.m_from && response.m_from->isAlive() && response.m_from->hasSkill(this))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, response.m_from, response.m_from);
         }
         return QList<SkillInvokeDetail>();
