@@ -1817,8 +1817,7 @@ public:
         : TriggerSkill("ysjie")
     {
         events << EventPhaseStart << EventAcquireSkill << EventLoseSkill << Death << EventSkillInvalidityChange << HpChanged << CardsMoveOneTime;
-        //TurnStart
-        frequency = Compulsory;
+        show_type = "static";
     }
 
     static void removeYsJieLimit(ServerPlayer *player, QList<ServerPlayer *> targets)
@@ -1835,7 +1834,7 @@ public:
         Room *room = player->getRoom();
         foreach (ServerPlayer *p, targets) {
             if (!p->isCardLimited("use,response", "ysjie"))
-                room->setPlayerCardLimitation(player, "use,response", ".|.|.|.", "ysjie", true);
+                room->setPlayerCardLimitation(p, "use,response", ".|.|.|.", "ysjie", true);
         }
     }
 
@@ -1866,7 +1865,12 @@ public:
         } else if (triggerEvent == EventAcquireSkill) {
             SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
             if (a.player && a.player->isCurrent() && a.skill->objectName() == objectName()) {
-                setYsJieLimit(a.player, room->getOtherPlayers(a.player));
+                QList<ServerPlayer *> targets;
+                foreach(ServerPlayer *p, room->getOtherPlayers(a.player)) {
+                    if (p->getHandcardNum() < p->getLostHp())
+                        targets << p;  
+                }
+                setYsJieLimit(a.player, targets);
             }
         } else if (triggerEvent == EventSkillInvalidityChange) {
             QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct> >();
@@ -1875,8 +1879,14 @@ public:
                     continue;
 
                 if (!v.skill || v.skill->objectName() == objectName()) {
-                    if (!v.invalid && v.player->hasSkill(this))
-                        setYsJieLimit(v.player, room->getOtherPlayers(v.player));
+                    if (!v.invalid && v.player->hasSkill(this)) {
+                        QList<ServerPlayer *> targets;
+                        foreach(ServerPlayer *p, room->getOtherPlayers(v.player)) {
+                            if (p->getHandcardNum() < p->getLostHp())
+                                targets << p;
+                        }
+                        setYsJieLimit(v.player, targets);
+                    }   
                     else if (v.invalid)
                         removeYsJieLimit(v.player, room->getOtherPlayers(v.player));
                 }
