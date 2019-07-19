@@ -1833,9 +1833,10 @@ void RoomScene::chooseOption(const QString &skillName, const QStringList &option
     QApplication::alert(main_window);
     if (!main_window->isActiveWindow())
         Sanguosha->playSystemAudioEffect("pop-up");
-
+   
     m_chooseOptionsBox->setSkillName(skillName);
     m_chooseOptionsBox->chooseOption(options);
+
 }
 
 /*void RoomScene::chooseOption(const QString &skillName, const QStringList &options)
@@ -2742,6 +2743,9 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         ClientInstance->clearHighlightSkillName();
     }
 
+    if (oldStatus == Client::AskForChoice)//regardless of newStatus
+        m_chooseOptionsBox->clear();
+
     switch (newStatus & Client::ClientStatusBasicMask) {
     case Client::NotActive: {
         if (oldStatus == Client::ExecDialog) {
@@ -2753,8 +2757,8 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             //Do not clear AG of AmazingGrace after operating Guanxing. such case as Ruizhi and Fengshui
             //if (!card_container->retained())
             //    card_container->clear();
-        } else if (oldStatus == Client::AskForChoice)
-            m_chooseOptionsBox->clear();
+        } //else if (oldStatus == Client::AskForChoice)
+        //    m_chooseOptionsBox->clear();
         else if (oldStatus == Client::AskForTriggerOrder) {
             m_chooseTriggerOrderBox->clear();
         } else if (oldStatus == Client::AskForCardChosen) {
