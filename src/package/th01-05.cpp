@@ -250,7 +250,7 @@ public:
     }
 };
 
-class Chongdong : public TriggerSkill
+/*class Chongdong : public TriggerSkill
 {
 public:
     Chongdong()
@@ -290,6 +290,54 @@ public:
                 }
             }
         }
+        return false;
+    }
+};*/
+
+
+class Chongdong : public TriggerSkill
+{
+public:
+    Chongdong()
+        : TriggerSkill("chongdong$")
+    {
+        events << EventPhaseSkipping;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {   
+        PhaseSkippingStruct s = data.value<PhaseSkippingStruct>();
+        if (s.player == NULL || s.player->isDead() || s.player->getKingdom() != "pc98")
+            return QList<SkillInvokeDetail>();
+
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->getOtherPlayers(s.player)) {
+            if (p->hasLordSkill(objectName())) {
+                d << SkillInvokeDetail(this, p, s.player);
+            }
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->owner));
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        room->broadcastSkillInvoke(objectName());
+        room->notifySkillInvoked(invoke->owner, objectName());
+
+        LogMessage log;
+        log.type = "#InvokeOthersSkill";
+        log.from = invoke->invoker;
+        log.to << invoke->owner;
+        log.arg = objectName();
+        room->sendLog(log);
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->owner->objectName());
+
+        invoke->owner->drawCards(1);
         return false;
     }
 };

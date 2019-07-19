@@ -112,7 +112,7 @@ sgs.ai_need_bear.shigui = function(self, card,from,tos)
 	return false
 end
 
-sgs.ai_skill_invoke.chongdong = true
+--[[sgs.ai_skill_invoke.chongdong = true
 sgs.ai_skill_cardask["@chongdong"] = function(self, data)
 	local current = self.room:getCurrent()
 	local lord = self.room:getLord()
@@ -150,7 +150,22 @@ sgs.ai_choicemade_filter.cardResponded["@chongdong"] = function(self, player, ar
 		end
 	end
 end
-
+]]
+sgs.ai_skill_invoke.chongdong =function(self,data)
+	local target= data:toPlayer()
+	if not target then  return false end
+	return self:isFriend(target)
+end
+sgs.ai_choicemade_filter.skillInvoke.chongdong = function(self, player, args, data)
+	local target =data:toPlayer()
+	if target then
+		if args[#args] == "yes" then
+			sgs.updateIntention(player, target, -30)
+		else
+			sgs.updateIntention(player, target, 10)
+		end
+	end
+end
 
 
 sgs.ai_skill_use["@@zhence"] = function(self, prompt)
