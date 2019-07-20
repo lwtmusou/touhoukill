@@ -56,8 +56,9 @@ return {
 	["shigui_draw"] = "时轨(摸牌)",
 	["shigui_play"] = "时轨(弃牌)",
 	["shigui_discard"] = "你发动“时轨(弃牌)”，请弃置%src张手牌。",
-	["shigui:draw_notice"]= "你可以发动 “时轨(摸牌)”， 目前进行的阶段数为<font color=\"#FF8000\"><b>%src </b></font> 。",
-	["shigui:play_notice"]= "你可以发动 “时轨(弃牌)”， 目前进行的阶段数为<font color=\"#FF8000\"><b>%src </b></font> 。",
+	["shigui:draw_notice"] = "你可以发动 “时轨(摸牌)”， 目前进行的阶段数为<font color=\"#FF8000\"><b>%src </b></font> 。",
+	["shigui:play_notice"] = "你可以发动 “时轨(弃牌)”， 目前进行的阶段数为<font color=\"#FF8000\"><b>%src </b></font> 。",
+	["#shigui_log"] = "时轨: 进入 <font color=\"#FF8000\"><b>%arg2 </b></font> 阶段， 目前进行的本回合阶段数为 <font color=\"#FF8000\"><b>%arg </b></font> 。",
 
 	["chongdong"] = "虫洞",
 	--[":chongdong"] = "<font color=\"orange\"><b>主公技，</b></font>当你于其他角色的出牌阶段内受到伤害后，你可以令其他旧势力角色选择是否弃置一张红色手牌，若其选择是，你结束此回合。",
@@ -351,11 +352,9 @@ return {
 	["xiewu_discard"]= "%src 发动“协舞” 令你弃置一张牌。",
 	["luli"] = "戮力",
 	[":luli"] = "当你于回合外成为当前回合角色使用牌的目标时，你可以重铸一至X张牌（X为其于此回合内使用过的牌数）。",
-	["luliuse"] = "“戮力”： 你可以重铸一至X张牌。";
+	["luliuse"] = "“戮力”： 你可以重铸至多<font color=\"#00FF00\"><b>%src </b></font>张牌。";
 	["~luli"]= "选择牌 -> 确定",
-	--["@luli"] = "你可以发动“戮力”，获得一名手牌数不小于你的其他角色的一张牌，然后将一张牌交给其，最后你与其各可以使用牌。",
-	--["luliReturn"]= "请将一张牌交给“戮力”的目标角色 <font color=\"#00FF00\"><b>%src </b></font>。",
-	--["@luli_use"] = "“戮力”： 你可以使用一张牌。";
+
 
 --************************************************
 	["meira"] = "明罗",

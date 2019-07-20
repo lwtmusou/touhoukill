@@ -202,8 +202,22 @@ public:
             Player::Phase phase = current->getPhase();
             QList<Player::Phase> phases;
             phases << Player::Start << Player::Judge << Player::Draw << Player::Play << Player::Discard << Player::Finish;
-            if (phases.contains(phase))
+
+            if (phases.contains(phase)) {
                 room->setPlayerMark(current, "shigui", current->getMark("shigui") + 1);
+                if (current->hasSkill(objectName())) {
+                    LogMessage log;
+                    log.type = "#shigui_log";
+                    log.from = current;
+                    log.to << current;
+                    log.arg = QString::number(current->getMark("shigui"));
+                    log.arg2 = current->getPhaseString();
+                    room->doNotify(current, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+                    //considering hiddenskill and losed skill, regardless of  doBroadcastNotify()
+                    //room->touhouLogmessage("#shigui_log", current, QString::number(current->getMark("shigui")), QList<ServerPlayer *>() << current);
+                }
+            }
+                
         } else if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
@@ -2909,8 +2923,9 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        room->setPlayerMark(invoke->invoker, "luli", invoke->preferredTarget->getMark("luli"));
-        return room->askForUseCard(invoke->invoker, "@@luli", "luliuse", -1, Card::MethodRecast);
+        int num = invoke->preferredTarget->getMark("luli");
+        room->setPlayerMark(invoke->invoker, "luli", num);
+        return room->askForUseCard(invoke->invoker, "@@luli", "luliuse:" + QString::number(num), -1, Card::MethodRecast);
     }
 };
 
