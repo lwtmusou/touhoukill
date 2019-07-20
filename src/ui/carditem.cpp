@@ -114,7 +114,7 @@ void CardItem::goBack(bool playAnimation, bool doFade)
     if (playAnimation) {
         getGoBackAnimation(doFade);
         if (m_currentAnimation != NULL)
-            m_currentAnimation->start();
+            m_currentAnimation->start(QAbstractAnimation::DeleteWhenStopped);
     } else {
         m_animationMutex.lock();
         if (m_currentAnimation != NULL) {
@@ -135,14 +135,14 @@ QAbstractAnimation *CardItem::getGoBackAnimation(bool doFade, bool smoothTransit
         delete m_currentAnimation;
         m_currentAnimation = NULL;
     }
-    QPropertyAnimation *goback = new QPropertyAnimation(this, "pos");
+    QPropertyAnimation *goback = new QPropertyAnimation(this, "pos", this);
     goback->setEndValue(home_pos);
     goback->setEasingCurve(QEasingCurve::OutQuad);
     goback->setDuration(duration);
 
     if (doFade) {
-        QParallelAnimationGroup *group = new QParallelAnimationGroup;
-        QPropertyAnimation *disappear = new QPropertyAnimation(this, "opacity");
+        QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
+        QPropertyAnimation *disappear = new QPropertyAnimation(this, "opacity", this);
         double middleOpacity = qMax(opacity(), m_opacityAtHome);
         if (middleOpacity == 0)
             middleOpacity = 1.0;
@@ -162,7 +162,8 @@ QAbstractAnimation *CardItem::getGoBackAnimation(bool doFade, bool smoothTransit
     }
     m_animationMutex.unlock();
     connect(m_currentAnimation, SIGNAL(finished()), this, SIGNAL(movement_animation_finished()));
-    connect(m_currentAnimation, SIGNAL(destroyed()), this, SLOT(currentAnimationDestroyed()));
+    connect(m_currentAnimation, SIGNAL(finished()), this, SLOT(animationFinished()));
+    connect(m_currentAnimation, SIGNAL(destroyed()), this, SLOT(currentAnimationDestroyed()));//client will be crashed without this line
     return m_currentAnimation;
 }
 
