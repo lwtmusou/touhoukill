@@ -5304,3 +5304,9 @@ void RoomScene::anyunSelectSkill()
     if (selectAllList.contains(skillName))
         dashboard->selectAll();
 }
+//for client test log
+void RoomScene::addlog(QStringList log)
+{
+    //log_box->appendLog(type, player->objectName(), QStringList(), QString(), newHeroName, arg2);
+    log_box->appendLog(log);
+}

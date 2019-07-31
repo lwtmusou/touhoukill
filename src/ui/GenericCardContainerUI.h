@@ -317,7 +317,7 @@ private:
     int _lastZ;
     bool _allZAdjusted;
 
-    void showHeroSkinListHelper(const General *general, GraphicsPixmapHoverItem *avatarIcon, HeroSkinContainer *&heroSkinContainer);
+    void showHeroSkinListHelper(const General *general, GraphicsPixmapHoverItem *avatarIcon);//, HeroSkinContainer *&heroSkinContainer
 
 signals:
     void selected_changed();

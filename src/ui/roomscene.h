@@ -257,7 +257,7 @@ public slots:
     void setLordBGM(QString lord = QString());
     void setLordBackdrop(QString lord = QString());
     void anyunSelectSkill(); //for anyun
-
+    void addlog(QStringList l);//for client test 
     void doSkinChange(const QString &generalName, int skinIndex);
     inline QPointF tableCenterPos()
     {

@@ -1270,7 +1270,7 @@ void PlayerCardContainer::showHeroSkinList()
     }
     if (NULL != m_player) {
         if (sender() == m_changePrimaryHeroSKinBtn) {
-            showHeroSkinListHelper(m_player->getGeneral(), _m_avatarIcon, m_primaryHeroSkinContainer);
+            showHeroSkinListHelper(m_player->getGeneral(), _m_avatarIcon);//, m_primaryHeroSkinContainer
         }
         /*else {
             showHeroSkinListHelper(m_player->getGeneral2(), _m_smallAvatarIcon,
@@ -1279,17 +1279,18 @@ void PlayerCardContainer::showHeroSkinList()
     }
 }
 
-void PlayerCardContainer::showHeroSkinListHelper(const General *general, GraphicsPixmapHoverItem *avatarIcon, HeroSkinContainer *&heroSkinContainer)
+void PlayerCardContainer::showHeroSkinListHelper(const General *general, GraphicsPixmapHoverItem *avatarIcon)//, HeroSkinContainer *&heroSkinContainer
 {
     if (NULL == general) {
         return;
     }
-
+    
+    
     QString generalName = general->objectName();
-    if (NULL == heroSkinContainer) {
-        heroSkinContainer = RoomSceneInstance->findHeroSkinContainer(generalName);
-    }
-
+    //find  heroSkinContainer every time. exclude m_primaryHeroSkinContainer
+    //if (NULL == heroSkinContainer) {
+    HeroSkinContainer  *heroSkinContainer = RoomSceneInstance->findHeroSkinContainer(generalName);
+    //}
     if (NULL == heroSkinContainer) {
         heroSkinContainer = new HeroSkinContainer(generalName, general->getKingdom());
 
@@ -1313,7 +1314,6 @@ void PlayerCardContainer::showHeroSkinListHelper(const General *general, Graphic
     if (!heroSkinContainer->isVisible()) {
         heroSkinContainer->show();
     }
-
     heroSkinContainer->bringToTopMost();
 }
 
