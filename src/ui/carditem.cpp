@@ -288,6 +288,11 @@ void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 
 void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
+    //check painter?
+    if (NULL == painter) {
+        return;
+    }
+
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
     if (!_m_frameType.isEmpty())
