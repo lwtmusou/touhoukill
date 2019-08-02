@@ -2123,7 +2123,7 @@ public:
 
     virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
     {
-        return to_select->getSuit() == Card::Spade || to_select->isKindOf("BasicCard");
+        return !to_select->isKindOf("TrickCard");
     }
 
     virtual const Card *viewAs(const Card *originalCard) const
@@ -2145,7 +2145,7 @@ public:
     Toushi()
         : TriggerSkill("toushi")
     {
-        events << EventPhaseEnd << PreCardUsed << CardResponded << EventPhaseChanging;
+        events << EventPhaseEnd << PreCardUsed << CardResponded << EventPhaseChanging << CardUsed;
         view_as_skill = new ToushiVS;
     }
 
@@ -2194,11 +2194,20 @@ public:
                 }
             }
         }
+        else if (triggerEvent == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->getSkillName() == objectName() && use.card->getSuit() == Card::Spade && use.from && use.from->isAlive())
+                d << SkillInvokeDetail(this, use.from, use.from, NULL, true);
+        }
         return d;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
+        if (triggerEvent == CardUsed) {
+            return true;
+        }
+
         ServerPlayer *current = data.value<ServerPlayer *>();
         QString cardname = current->property("toushi_card").toString();
         Card *card = Sanguosha->cloneCard(cardname);
@@ -2209,6 +2218,13 @@ public:
         room->askForUseCard(invoke->invoker, "@@toushi", prompt);
         return false;
     }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        invoke->invoker->drawCards(1);
+        return false;
+    }
+
 };
 
 class Moli : public TriggerSkill

@@ -1451,12 +1451,12 @@ sgs.lingji_suit_value = {
 sgs.ai_skill_use["@@toushi"] = function(self, prompt)
 	local cards = {}
 	for _,c in sgs.qlist(self:touhouAppendExpandPileToList(self.player, self.player:getCards("hes"))) do
-		if c:isKindOf("BasicCard") or c:getSuit() == sgs.Card_Spade then
+		if not c:isKindOf("TrickCard") then --or c:getSuit() == sgs.Card_Spade 
 			table.insert(cards, c)
 		end
 	end
 	if #cards == 0 then return "." end
-	self:sortByUseValue(cards)
+	self:sortByUseValue(cards, true)
 
 
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
