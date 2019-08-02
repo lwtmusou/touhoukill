@@ -73,12 +73,13 @@ void CardItem::setEnabled(bool enabled)
 
 CardItem::~CardItem()
 {
-    m_animationMutex.lock();
+    QMutexLocker locker(&m_animationMutex);
+    //m_animationMutex.lock();
     if (m_currentAnimation != NULL) {
         m_currentAnimation->deleteLater();
         m_currentAnimation = NULL;
     }
-    m_animationMutex.unlock();
+    //m_animationMutex.unlock();
 }
 
 void CardItem::changeGeneral(const QString &general_name)
@@ -116,20 +117,22 @@ void CardItem::goBack(bool playAnimation, bool doFade)
         if (m_currentAnimation != NULL)
             m_currentAnimation->start();
     } else {
-        m_animationMutex.lock();
+        QMutexLocker locker(&m_animationMutex);
+        //m_animationMutex.lock();
         if (m_currentAnimation != NULL) {
             m_currentAnimation->stop();
             delete m_currentAnimation;
             m_currentAnimation = NULL;
         }
         setPos(homePos());
-        m_animationMutex.unlock();
+        //m_animationMutex.unlock();
     }
 }
 
 QAbstractAnimation *CardItem::getGoBackAnimation(bool doFade, bool smoothTransition, int duration)
 {
-    m_animationMutex.lock();
+    QMutexLocker locker(&m_animationMutex);
+    //m_animationMutex.lock();
     if (m_currentAnimation != NULL) {
         m_currentAnimation->stop();
         delete m_currentAnimation;
@@ -160,9 +163,11 @@ QAbstractAnimation *CardItem::getGoBackAnimation(bool doFade, bool smoothTransit
     } else {
         m_currentAnimation = goback;
     }
-    m_animationMutex.unlock();
+    //m_animationMutex.unlock();
     connect(m_currentAnimation, SIGNAL(finished()), this, SIGNAL(movement_animation_finished()));
-    connect(m_currentAnimation, SIGNAL(destroyed()), this, SLOT(currentAnimationDestroyed()));
+    //connect(m_currentAnimation, SIGNAL(destroyed()), this, SLOT(currentAnimationDestroyed()));
+    connect(m_currentAnimation, SIGNAL(finished()), this, SLOT(animationFinished()));
+
     return m_currentAnimation;
 }
 
@@ -171,6 +176,13 @@ void CardItem::currentAnimationDestroyed()
     QObject *ca = sender();
     if (m_currentAnimation == ca)
         m_currentAnimation = NULL;
+}
+
+
+void CardItem::animationFinished()
+{
+    QMutexLocker locker(&m_animationMutex);
+    m_currentAnimation = NULL;
 }
 
 void CardItem::showFrame(const QString &result)

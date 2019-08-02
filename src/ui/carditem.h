@@ -97,15 +97,16 @@ public:
 
 private slots:
     void currentAnimationDestroyed();
+    void animationFinished();
 
 protected:
     void _initialize();
-    QAbstractAnimation *m_currentAnimation;
+    
     QImage _m_footnoteImage;
     bool _m_showFootnote;
     QString footnote;
     // QGraphicsPixmapItem *_m_footnoteItem;
-    QMutex m_animationMutex;
+    
     double m_opacityAtHome;
     bool m_isSelected;
     bool _m_isUnknownGeneral;
@@ -121,6 +122,9 @@ protected:
     //virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *);
 
 private:
+    QAbstractAnimation *m_currentAnimation;
+    QMutex m_animationMutex;
+
     int m_cardId;
     QString _m_frameType, _m_avatarName;
     QPointF home_pos;
