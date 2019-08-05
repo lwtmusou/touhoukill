@@ -53,6 +53,8 @@ public:
     void hideControlButtons();
     void showControlButtons();
 
+    void showSeat();
+
     virtual void showProgressBar(QSanProtocol::Countdown countdown);
     virtual void hideProgressBar();
 

@@ -151,6 +151,8 @@ public:
     QString getGeneral2Name() const;
     const General *getGeneral2() const;
 
+    QString getFootnoteName() const;
+
     void setState(const QString &state);
     QString getState() const;
 

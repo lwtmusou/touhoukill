@@ -139,6 +139,7 @@ public slots:
     void updatePile(const QString &pile_name);
     virtual void showPile();
     virtual void hidePile();
+    virtual void showSeat();
     void updateRole(const QString &role);
     void updateMarks();
     void updateVotes(bool need_select = true, bool display_1 = false);
@@ -149,6 +150,7 @@ public slots:
 
     void updateBrokenEquips();
     void onRemovedChanged();
+    
 
 protected:
     // overrider parent functions
@@ -288,6 +290,9 @@ protected:
 
     QSanButton *m_changePrimaryHeroSKinBtn;
     HeroSkinContainer *m_primaryHeroSkinContainer;
+
+    // The following stuffs for showing seat
+    QGraphicsPixmapItem *_m_seatItem;
 
 protected slots:
     virtual void _onEquipSelectChanged();

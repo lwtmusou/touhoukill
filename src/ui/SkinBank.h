@@ -188,6 +188,7 @@ public:
         QRect m_chainedIconRegion;
         AnchoredRect m_deathIconRegion;
         QRect m_votesIconRegion;
+        QRect m_seatIconRegion;
         QColor m_drankMaskColor;
         QColor m_duanchangMaskColor;
         QColor m_deathEffectColor;
@@ -354,6 +355,7 @@ public:
     static const char *S_SKIN_KEY_KINGDOM_COLOR_MASK;
     static const char *S_SKIN_KEY_DASHBOARD_KINGDOM_COLOR_MASK;
     static const char *S_SKIN_KEY_VOTES_NUMBER;
+    static const char *S_SKIN_KEY_SEAT_NUMBER;
     static const char *S_SKIN_KEY_HAND_CARD_BACK;
     static const char *S_SKIN_KEY_HAND_CARD_SUIT;
     static const char *S_SKIN_KEY_CARD_TIANYI;

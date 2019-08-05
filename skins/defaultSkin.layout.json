@@ -138,7 +138,8 @@
     "deathEffectColor": [50, 50, 50, 255],
     "extraSkillArea": [32, 116, 56, 20],
     "extraSkillFont": ["simli", [16, 16, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
-    "extraSkillTextArea": [32, 113, 56, 20]
+    "extraSkillTextArea": [32, 113, 56, 20],
+	"seatIconRegion": [4, 1, 23, 16]
 },
 "dashboard":
 {
@@ -238,7 +239,8 @@
     "cancelButtonArea": [1, 112, 75, 90],
     "discardButtonArea": [67, 60, 77, 95],
     "trustButtonArea": [62, 162, 70, 70],
-    "trustEffectColor": [38, 26, 66]
+    "trustEffectColor": [38, 26, 66],
+	"seatIconRegion": [-32, 118, 30, 30]
 },
 "skillButton":
 {

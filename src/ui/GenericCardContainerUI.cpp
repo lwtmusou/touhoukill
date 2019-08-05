@@ -577,6 +577,12 @@ void PlayerCardContainer::repaintAll()
     if (NULL != m_changePrimaryHeroSKinBtn) {
         m_changePrimaryHeroSKinBtn->setPos(_m_layout->m_changePrimaryHeroSkinBtnPos);
     }
+
+    if (_m_seatItem != NULL)
+        _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegion,
+            _getPixmap(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER, QString::number(m_player->property("UI_Seat").toInt())),
+            _getAvatarParent());
+
     if (_m_roleComboBox != NULL)
         _m_roleComboBox->setPos(_m_layout->m_roleComboBoxPos);
 
@@ -932,6 +938,8 @@ PlayerCardContainer::PlayerCardContainer()
     _m_extraSkillBg = NULL;
     _m_extraSkillText = NULL;
 
+    
+
     _m_floatingArea = NULL;
     _m_votesGot = 0;
     _m_maxVotes = 1;
@@ -948,6 +956,7 @@ PlayerCardContainer::PlayerCardContainer()
     //m_changeSecondaryHeroSkinBtn = NULL;
     m_primaryHeroSkinContainer = NULL;
     //m_secondaryHeroSkinContainer = NULL;
+    _m_seatItem = NULL;
 }
 
 void PlayerCardContainer::hideAvatars()
@@ -1508,4 +1517,15 @@ void PlayerCardContainer::setRoleShown(bool shown)
 QString PlayerCardContainer::getHuashenSkillName()
 {
     return _m_huashenGeneralName;
+}
+
+
+void PlayerCardContainer::showSeat()
+{
+    _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegion,
+        _getPixmap(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER, QString::number(m_player->getSeat())),
+        _getAvatarParent());
+    //save the seat number for later use
+    m_player->setProperty("UI_Seat", m_player->getSeat());
+    _m_seatItem->setZValue(1.1);
 }
