@@ -1721,6 +1721,9 @@ public:
 
     void record(TriggerEvent, Room *room, QVariant &) const
     {
+        if (ServerInfo.GameMode == "hegemony")
+            return;
+
         foreach (ServerPlayer *p, room->getAlivePlayers())
             room->setPlayerProperty(p, "role_shown", p->isLord() ? true : false);
     }

@@ -111,6 +111,7 @@ Engine::Engine()
     modes["10pd"] = tr("10 players");
     modes["10p"] = tr("10 players (1 renegade)");
     modes["10pz"] = tr("10 players (0 renegade)");
+    modes["hegemony"] = tr("hegemony");
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
@@ -325,7 +326,10 @@ int Engine::getRoleIndex() const
 {
     if (ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode") {
         return 4;
-    } else
+    }
+    else if (ServerInfo.GameMode == "hegemony")
+        return 5;
+    else
         return 1;
 }
 
@@ -768,6 +772,8 @@ QString Engine::getModeName(const QString &mode) const
 
 int Engine::getPlayerCount(const QString &mode) const
 {
+    if (mode == "hegemony")
+        return 4;
     if (modes.contains(mode)) {
         QRegExp rx("(\\d+)");
         int index = rx.indexIn(mode);

@@ -1074,7 +1074,6 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
 {
     tryPause();
     notifyMoveFocus(player, S_COMMAND_MULTIPLE_CHOICE);
-
     QStringList validChoices = choices.split("+");
     Q_ASSERT(!validChoices.isEmpty());
 
@@ -1098,7 +1097,6 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
 
     if (!validChoices.contains(answer))
         answer = validChoices.at(qrand() % validChoices.length());
-
     ChoiceMadeStruct s;
     s.player = player;
     s.type = ChoiceMadeStruct::SkillChoice;
@@ -2612,7 +2610,12 @@ void Room::prepareForStart()
         }
     } else if (mode == "06_3v3" || mode == "06_XMode" || mode == "02_1v1") {
         return;
-    } else if (Config.EnableCheat && Config.value("FreeAssign", false).toBool()) {
+    } 
+    else if (mode == "hegemony") {
+        if (Config.RandomSeat)
+            qShuffle(m_players);
+    }
+    else if (Config.EnableCheat && Config.value("FreeAssign", false).toBool()) {
         ServerPlayer *owner = getOwner();
         notifyMoveFocus(owner, S_COMMAND_CHOOSE_ROLE);
         if (owner && owner->isOnline()) {
@@ -3137,6 +3140,53 @@ void Room::chooseGenerals()
     Config.setValue("Banlist/Roles", ban_list);
 }
 
+
+void Room::chooseHegemonyGenerals()
+{
+    QStringList ban_list = Config.value("Banlist/Roles").toStringList();
+
+    //int num = 6; // Config.value("NonLordMaxChoice", 6).toInt();
+    //if (num == 0)
+    //    num = 1;
+
+    //for others without lord
+    QList<ServerPlayer *> to_assign = m_players;
+    //to_assign.removeOne(getLord());
+
+    assignGeneralsForPlayers(to_assign);
+    foreach(ServerPlayer *player, to_assign)
+        _setupChooseGeneralRequestArgs(player);
+
+    doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
+    foreach(ServerPlayer *player, to_assign) {
+        if (player->getGeneral() != NULL)
+            continue;
+        QString generalName = player->getClientReply().toString();
+        if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, true))
+            _setPlayerGeneral(player, _chooseDefaultGeneral(player), true);
+    }
+
+    if (Config.Enable2ndGeneral) {
+        QList<ServerPlayer *> to_assign = m_players;
+        assignGeneralsForPlayers(to_assign);
+        foreach(ServerPlayer *player, to_assign)
+            _setupChooseGeneralRequestArgs(player);
+
+        doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
+        foreach(ServerPlayer *player, to_assign) {
+            if (player->getGeneral2() != NULL)
+                continue;
+            QString generalName = player->getClientReply().toString();
+            if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, false))
+                _setPlayerGeneral(player, _chooseDefaultGeneral(player), false);
+        }
+    }
+
+    Config.setValue("Banlist/Roles", ban_list);
+}
+
+
+
 void Room::run()
 {
     // initialize random seed for later use
@@ -3224,7 +3274,13 @@ void Room::run()
         }
 
         startGame();
-    } else {
+    } 
+    else if (mode == "hegemony") {
+        chooseHegemonyGenerals();
+
+        startGame();
+    }
+    else {
         chooseGenerals();
 
         startGame();
@@ -4210,6 +4266,8 @@ void Room::startGame()
             server->signupPlayer(player);
     }
 
+
+    
     current = m_players.first();
 
     // initialize the place_map and owner_map;
@@ -4219,6 +4277,22 @@ void Room::startGame()
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, QVariant(m_drawPile->length()));
 
     thread = new RoomThread(this);
+    if (mode == "hegemony") {
+        QStringList roles;
+        roles << "wei" << "shu" << "wu" << "qun";
+        QMap<QString, QString> rolemap;
+        rolemap["wei"] = "lord";
+        rolemap["shu"] = "loyalist";
+        rolemap["wu"] = "rebel";
+        rolemap["qun"] = "renegade";
+        foreach(ServerPlayer *player, m_players) {
+            QString choice = askForChoice(player, "hegemony_choice_role", roles.join("+"), QVariant());
+            QString role_choice = rolemap[choice];
+            player->setRole(role_choice);
+            notifyProperty(player, player, "role");
+        }
+    }
+
     if (mode != "02_1v1" && mode != "06_3v3" && mode != "06_XMode")
         _m_roomState.reset();
     connect(thread, SIGNAL(started()), this, SIGNAL(game_start()));
