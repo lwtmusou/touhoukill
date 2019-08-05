@@ -102,7 +102,7 @@ public:
     void retractSpecialCard();
     inline const QStringList &getPileExpanded() const
     {
-        return _m_pile_expanded;
+        return _m_pile_expanded.keys();
     }
 
     void selectCard(CardItem *item, bool isSelected);
@@ -254,8 +254,10 @@ protected:
     const Card *pending_card;
     const ViewAsSkill *view_as_skill;
     const FilterSkill *filter;
-    QStringList _m_pile_expanded;
+    //QStringList _m_pile_expanded;
+    QMap<QString, QList<int> > _m_pile_expanded;
     QList<int> _m_id_expanded; //just for chaoren
+    
 
     // for equip skill/selections
     PixmapAnimation *_m_equipBorders[5];

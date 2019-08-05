@@ -38,7 +38,7 @@ Dashboard::Dashboard(QGraphicsItem *widget) //QGraphicsPixmapItem *widget
     _m_rightFrameBg = NULL;
     animations = new EffectAnimation();
     pending_card = NULL;
-    _m_pile_expanded = QStringList();
+    _m_pile_expanded = QMap<QString, QList<int> >();//QStringList();
     for (int i = 0; i < 5; i++) {
         _m_equipSkillBtns[i] = NULL;
         _m_isEquipsAnimOn[i] = false;
@@ -862,6 +862,7 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
 {
     CardItem *card_item = NULL;
     QList<CardItem *> result;
+    bool pileNeedAdjust = false;
     if (place == Player::PlaceHand)
         result = removeHandCards(card_ids);
     else if (place == Player::PlaceEquip)
@@ -873,6 +874,27 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
             card_item = _createCard(card_id);
             card_item->setOpacity(0.0);
             result.push_back(card_item);
+
+            foreach(const QList<int> &expanded, _m_pile_expanded) {
+                if (expanded.contains(card_id)) {
+                    QString key = _m_pile_expanded.key(expanded);
+                    if (key.isEmpty())
+                        continue;
+
+                    _m_pile_expanded[key].removeOne(card_id);
+
+                    CardItem *card_item = CardItem::FindItem(m_handCards, card_id);
+                    if (card_item == selected) selected = NULL;
+                    Q_ASSERT(card_item);
+                    if (card_item) {
+                        m_handCards.removeOne(card_item);
+                        card_item->disconnect(this);
+                        delete card_item;
+                        card_item = NULL;
+                    }
+                    pileNeedAdjust = true;
+                }
+            }
         }
     } else
         Q_ASSERT(false);
@@ -897,6 +919,9 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
             Q_ASSERT(false);
         rect.moveCenter(center.toPoint());
         _disperseCards(result, rect, Qt::AlignCenter, false, false);
+
+        if (place == Player::PlaceSpecial && pileNeedAdjust)
+            adjustCards();
     }
     update();
     return result;
@@ -1057,7 +1082,7 @@ void Dashboard::startPending(const ViewAsSkill *skill)
     if (Self->hasFlag("Global_expandpileFailed"))
         expand = true;
 
-    foreach (const QString &pileName, _m_pile_expanded) {
+    foreach (const QString &pileName, _m_pile_expanded.keys()) {
         if (!(pileName.startsWith("&") || pileName == "wooden_ox"))
             retractPileCards(pileName);
     }
@@ -1151,7 +1176,6 @@ void Dashboard::expandPileCards(const QString &pile_name)
 {
     if (_m_pile_expanded.contains(pile_name))
         return;
-    _m_pile_expanded << pile_name;
 
     QString new_name = pile_name;
     QList<int> pile;
@@ -1203,6 +1227,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
     foreach (CardItem *card_item, card_items)
         card_item->setAcceptedMouseButtons(Qt::LeftButton);
     update();
+    _m_pile_expanded[pile_name] = pile;
 }
 
 void Dashboard::expandSpecialCard()
@@ -1237,17 +1262,10 @@ void Dashboard::retractPileCards(const QString &pile_name)
 {
     if (!_m_pile_expanded.contains(pile_name))
         return;
-    _m_pile_expanded.removeOne(pile_name);
 
     QString new_name = pile_name;
-    QList<int> pile;
-    if (new_name.startsWith("%")) {
-        new_name = new_name.mid(1);
-        foreach (const Player *p, Self->getAliveSiblings())
-            pile += p->getPile(new_name);
-    } else {
-        pile = Self->getPile(new_name);
-    }
+    QList<int> pile = _m_pile_expanded.value(new_name);
+    _m_pile_expanded.remove(pile_name);
 
     if (pile.isEmpty())
         return;
