@@ -1413,6 +1413,8 @@ void ServerPlayer::addToShownHandCards(QList<int> card_ids)
     s.shown = true;
     QVariant v = QVariant::fromValue(s);
     room->getThread()->trigger(ShownCardChanged, room, v);
+
+    room->filterCards(this, this->getCards("hs"), true);
 }
 
 void ServerPlayer::removeShownHandCards(QList<int> card_ids, bool sendLog, bool moveFromHand)

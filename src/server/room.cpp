@@ -5089,7 +5089,7 @@ void Room::filterCards(ServerPlayer *player, QList<const Card *> cards, bool ref
             if (card->isModified()) {
                 int cardId = card->getId();
                 resetCard(cardId);
-                if (getCardPlace(cardId) != Player::PlaceHand)
+                if (getCardPlace(cardId) != Player::PlaceHand || player->isShownHandcard(cardId))
                     broadcastResetCard(m_players, cardId);
                 else
                     notifyResetCard(player, cardId);
@@ -5139,7 +5139,7 @@ void Room::filterCards(ServerPlayer *player, QList<const Card *> cards, bool ref
         Player::Place place = getCardPlace(cardId);
         if (!cardChanged[i])
             continue;
-        if (place == Player::PlaceHand)
+        if (place == Player::PlaceHand && !player->isShownHandcard(cardId))
             notifyUpdateCard(player, cardId, cards[i]);
         else {
             broadcastUpdateCard(getPlayers(), cardId, cards[i]);
