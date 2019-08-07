@@ -1173,6 +1173,7 @@ public:
     QString getMODName() const;
     QStringList getExtensions() const;
     QStringList getKingdoms() const;
+	QStringList getHegemonyKingdoms() const;
     QString getSetupString() const;
 
     QString getModeName(const char *mode) const;

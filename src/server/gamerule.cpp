@@ -128,7 +128,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         if (data.isNull()) {
             foreach (ServerPlayer *player, room->getPlayers()) {
                 Q_ASSERT(player->getGeneral() != NULL);
-                if ((player->getGeneral()->getKingdom() == "zhu" || player->getGeneral()->getKingdom() == "touhougod") && player->getGeneralName() != "anjiang") {
+                if (room->getMode() != "hegemony" 
+                    && (player->getGeneral()->getKingdom() == "zhu" || player->getGeneral()->getKingdom() == "touhougod") && player->getGeneralName() != "anjiang") {
                     QString new_kingdom = room->askForKingdom(player);
                     room->setPlayerProperty(player, "kingdom", new_kingdom);
 

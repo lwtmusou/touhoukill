@@ -39,6 +39,7 @@ public:
     Dashboard(QGraphicsItem *button_widget);
     //Dashboard(QGraphicsPixmapItem *button_widget);
     virtual QRectF boundingRect() const;
+    //void repaintAll();
     void setWidth(int width);
     int getMiddleWidth();
     inline QRectF getAvatarArea()

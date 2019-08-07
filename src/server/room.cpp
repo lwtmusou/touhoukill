@@ -4287,9 +4287,19 @@ void Room::startGame()
         rolemap["qun"] = "renegade";
         foreach(ServerPlayer *player, m_players) {
             QString choice = askForChoice(player, "hegemony_choice_role", roles.join("+"), QVariant());
-            QString role_choice = rolemap[choice];
-            player->setRole(role_choice);
-            notifyProperty(player, player, "role");
+            //QString role_choice = rolemap[choice];
+            //player->setRole(role_choice);
+            //notifyProperty(player, player, "role");
+
+            //broadcast 
+            //setPlayerProperty(player, "kingdom", choice);
+            //setPlayerProperty(player, "role", choice);
+
+            //notify
+            player->setKingdom(choice);
+            notifyProperty(player, player, "kingdom");
+            player->setRole(choice);
+            notifyProperty(player, player, "role", choice);
         }
     }
 

@@ -112,6 +112,7 @@ public:
         QSize m_maximumSceneSize;
         QSize m_minimumSceneSize10Player;
         QSize m_maximumSceneSize10Player;
+        double scale;
     };
 
     struct PlayerCardContainerLayout
@@ -264,6 +265,12 @@ public:
         // avatar size
         QSize m_tinyAvatarSize;
 
+        //role combo box (hegemony)
+        QSize m_roleNormalBgSize;
+        QHash<QString, QRect> m_rolesRect;
+        QHash<QString, QColor> m_rolesColor;
+        QColor m_roleDarkColor;
+
         //Graphics Box
         QColor graphicsBoxBackgroundColor;
         QColor graphicsBoxBorderColor;
@@ -324,6 +331,10 @@ public:
     static const char *S_SKIN_KEY_COMMON;
     static const char *S_SKIN_KEY_ROOM;
 
+    // role box (hegemony)
+    static const char *S_SKIN_KEY_ROLE_BOX_RECT;
+    static const char *S_SKIN_KEY_ROLE_BOX_COLOR;
+
     //bg
     static const char *S_SKIN_KEY_TABLE_BG;
 
@@ -383,6 +394,11 @@ public:
     // Animations
     static const char *S_SKIN_KEY_ANIMATIONS;
     static const char *S_SKIN_KEY_LIGHTBOX;
+
+    // RoleComboBox (hegemony)
+    static const char *S_SKIN_KEY_EXPANDING_ROLE_BOX;
+    static const char *S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK;
+
 
     static const char *S_HERO_SKIN_KEY_GENERAL_ICON;
 

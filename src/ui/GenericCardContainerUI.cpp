@@ -583,8 +583,11 @@ void PlayerCardContainer::repaintAll()
             _getPixmap(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER, QString::number(m_player->property("UI_Seat").toInt())),
             _getAvatarParent());
 
-    if (_m_roleComboBox != NULL)
+    if (ServerInfo.GameMode != "hegemony" && _m_roleComboBox != NULL)
         _m_roleComboBox->setPos(_m_layout->m_roleComboBoxPos);
+
+    if (ServerInfo.GameMode == "hegemony" && _m_hegemonyroleComboBox != NULL)
+        _m_hegemonyroleComboBox->setPos(_m_layout->m_roleComboBoxPos);
 
     _m_hpBox->setIconSize(_m_layout->m_magatamaSize);
     _m_hpBox->setOrientation(_m_layout->m_magatamasHorizontal ? Qt::Horizontal : Qt::Vertical);
@@ -610,7 +613,11 @@ void PlayerCardContainer::repaintAll()
 
 void PlayerCardContainer::_createRoleComboBox()
 {
-    _m_roleComboBox = new RoleComboBox(_getRoleComboBoxParent());
+    if (ServerInfo.GameMode == "hegemony")
+        _m_hegemonyroleComboBox = new HegemonyRoleComboBox(_getRoleComboBoxParent());
+    else
+        _m_roleComboBox = new RoleComboBox(_getRoleComboBoxParent());
+    
 }
 
 void PlayerCardContainer::setPlayer(ClientPlayer *player)
@@ -628,7 +635,10 @@ void PlayerCardContainer::setPlayer(ClientPlayer *player)
         connect(player, &ClientPlayer::drank_changed, this, &PlayerCardContainer::updateDrankState);
         connect(player, &ClientPlayer::action_taken, this, &PlayerCardContainer::refresh);
         connect(player, &ClientPlayer::pile_changed, this, &PlayerCardContainer::updatePile);
-        connect(player, &ClientPlayer::role_changed, _m_roleComboBox, &RoleComboBox::fix);
+        if (ServerInfo.GameMode == "hegemony")
+            connect(player, &ClientPlayer::kingdom_changed, _m_hegemonyroleComboBox, &HegemonyRoleComboBox::fix);
+        else
+            connect(player, &ClientPlayer::role_changed, _m_roleComboBox, &RoleComboBox::fix);
         connect(player, &ClientPlayer::hp_changed, this, &PlayerCardContainer::updateHp);
         connect(player, &ClientPlayer::removedChanged, this, &PlayerCardContainer::onRemovedChanged);
 
@@ -918,6 +928,7 @@ PlayerCardContainer::PlayerCardContainer()
     _m_phaseIcon = NULL;
     _m_markItem = NULL;
     _m_roleComboBox = NULL;
+    _m_hegemonyroleComboBox = NULL;
     _m_roleShownIcon = NULL;
     m_player = NULL;
     _m_selectedFrame = NULL;
@@ -1016,7 +1027,10 @@ void PlayerCardContainer::_adjustComponentZValues(bool killed)
     _layUnder(_m_markItem);
     _layUnder(_m_progressBarItem);
     _layUnder(_m_roleShownIcon);
-    _layUnder(_m_roleComboBox);
+    if (ServerInfo.GameMode == "hegemony")
+        _layUnder(_m_hegemonyroleComboBox);
+    else
+        _layUnder(_m_roleComboBox);
     // _layUnder(_m_chainIcon);
     _layUnder(_m_hpBox);
     _layUnder(_m_sub_hpBox);
@@ -1055,7 +1069,13 @@ void PlayerCardContainer::_adjustComponentZValues(bool killed)
 
 void PlayerCardContainer::updateRole(const QString &role)
 {
-    _m_roleComboBox->fix(role);
+    //if (ServerInfo.GameMode == "hegemony")
+        _m_roleComboBox->fix(role);
+}
+
+void PlayerCardContainer::updateKingdom(const QString &kingdom)
+{
+    _m_hegemonyroleComboBox->fix(kingdom);
 }
 
 void PlayerCardContainer::_updateProgressBar()
@@ -1145,8 +1165,15 @@ void PlayerCardContainer::_updateDeathIcon()
 
 void PlayerCardContainer::killPlayer()
 {
-    _m_roleComboBox->fix(m_player->getRole());
-    _m_roleComboBox->setEnabled(false);
+    if (ServerInfo.GameMode == "hegemony") {
+        _m_hegemonyroleComboBox->fix(m_player->getRole() == "careerist" ? "careerist" : m_player->getKingdom());
+        _m_hegemonyroleComboBox->setEnabled(false);
+    }
+    else {
+        _m_roleComboBox->fix(m_player->getRole());
+        _m_roleComboBox->setEnabled(false);
+    }
+    
     _updateDeathIcon();
     _m_saveMeIcon->hide();
     if (_m_votesItem)

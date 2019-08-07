@@ -678,10 +678,20 @@ QStringList Engine::getExtensions() const
 QStringList Engine::getKingdoms() const
 {
     static QStringList kingdoms;
-    if (kingdoms.isEmpty())
-        kingdoms = GetConfigFromLuaState(lua, "kingdoms").toStringList();
-
+    
+    if (kingdoms.isEmpty()){
+        kingdoms = GetConfigFromLuaState(lua, "kingdoms").toStringList();    
+    }
     return kingdoms;
+}
+
+QStringList Engine::getHegemonyKingdoms() const
+{
+    static QStringList hegemony_kingdoms;
+    if (hegemony_kingdoms.isEmpty()) {
+        hegemony_kingdoms = GetConfigFromLuaState(lua, "hegemony_kingdoms").toStringList();
+    }
+    return hegemony_kingdoms;
 }
 
 QColor Engine::getKingdomColor(const QString &kingdom) const
@@ -773,7 +783,7 @@ QString Engine::getModeName(const QString &mode) const
 int Engine::getPlayerCount(const QString &mode) const
 {
     if (mode == "hegemony")
-        return 4;
+        return 2;
     if (modes.contains(mode)) {
         QRegExp rx("(\\d+)");
         int index = rx.indexIn(mode);
@@ -1377,4 +1387,19 @@ void CheatCard::onUse(Room *room, const CardUseStruct &use) const
     JsonDocument doc = JsonDocument::fromJson(cheatString.toUtf8().constData());
     if (doc.isValid())
         room->cheat(use.from, doc.toVariant());
+}
+
+
+QString Engine::GetMappedKingdom(const QString &role)
+{
+    static QMap<QString, QString> kingdoms;
+    if (kingdoms.isEmpty()) {
+        kingdoms["lord"] = "wei";
+        kingdoms["loyalist"] = "shu";
+        kingdoms["rebel"] = "wu";
+        kingdoms["renegade"] = "qun";
+    }
+    if (kingdoms[role].isEmpty())
+        return role;
+    return kingdoms[role];
 }

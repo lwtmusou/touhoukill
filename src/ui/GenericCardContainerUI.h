@@ -10,6 +10,7 @@
 #include "magatamasItem.h"
 #include "player.h"
 #include "rolecombobox.h"
+#include "hegemonyrolecombobox.h"
 
 #include <QGraphicsEffect>
 #include <QGraphicsItem>
@@ -124,6 +125,16 @@ public:
         return _m_smallAvatarIcon;
     }
 
+    inline RoleComboBox *getRoleComboBox() const
+    {
+        return _m_roleComboBox;
+    }
+
+    inline HegemonyRoleComboBox *getHegemonyRoleComboBox() const
+    {
+        return _m_hegemonyroleComboBox;
+    }
+
     void stopHeroSkinChangingAnimation();
     void showSkillName(const QString &skill_name, bool isSelf);
     QString getHuashenSkillName();
@@ -137,6 +148,7 @@ public slots:
     void updateDrankState();
     virtual void updateDuanchang();
     void updatePile(const QString &pile_name);
+    void updateKingdom(const QString &kingdom);
     virtual void showPile();
     virtual void hidePile();
     virtual void showSeat();
@@ -260,6 +272,8 @@ protected:
     MagatamasBoxItem *_m_hpBox;
     MagatamasBoxItem *_m_sub_hpBox;
     RoleComboBox *_m_roleComboBox;
+    HegemonyRoleComboBox *_m_hegemonyroleComboBox;
+
     QGraphicsPixmapItem *_m_roleShownIcon;
     QSanCommandProgressBar *_m_progressBar;
     QGraphicsProxyWidget *_m_progressBarItem;

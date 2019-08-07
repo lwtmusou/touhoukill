@@ -55,6 +55,7 @@ public:
     QString getMODName() const;
     QStringList getExtensions() const;
     QStringList getKingdoms() const;
+    QStringList getHegemonyKingdoms() const;
     QColor getKingdomColor(const QString &kingdom) const;
     QStringList getChattingEasyTexts() const;
     QString getSetupString() const;
@@ -134,6 +135,8 @@ public:
     QStringList LordBackdropConvertList;
     QStringList LatestGeneralList;
     int operationTimeRate(QSanProtocol::CommandType command, QVariant msg);
+
+    QString GetMappedKingdom(const QString &role);//hegemony
 
 private:
     void _loadMiniScenarios();

@@ -6,6 +6,7 @@
 #include "engine.h"
 #include "pixmapanimation.h"
 #include "rolecombobox.h"
+#include "hegemonyrolecombobox.h"
 #include "roomscene.h"
 #include "settings.h"
 #include "standard.h"
@@ -104,8 +105,16 @@ void Photo::_adjustComponentZValues(bool killed)
 {
     PlayerCardContainer::_adjustComponentZValues(killed);
     _layBetween(_m_mainFrame, _m_faceTurnedIcon, _m_equipRegions[3]);
-    _layBetween(emotion_item, _m_chainIcon, _m_roleComboBox);
-    _layBetween(_m_skillNameItem, _m_chainIcon, _m_roleComboBox);
+    if (ServerInfo.GameMode == "hegemony") {
+        _layBetween(emotion_item, _m_chainIcon, _m_hegemonyroleComboBox);
+        _layBetween(_m_skillNameItem, _m_chainIcon, _m_hegemonyroleComboBox);
+    }
+    else
+    {
+        _layBetween(emotion_item, _m_chainIcon, _m_roleComboBox);
+        _layBetween(_m_skillNameItem, _m_chainIcon, _m_roleComboBox);
+    }
+    
     _m_progressBarItem->setZValue(_m_groupMain->zValue() + 1);
 }
 
@@ -121,7 +130,11 @@ void Photo::setEmotion(const QString &emotion, bool permanent)
         QPixmap pixmap = QPixmap(path);
         emotion_item->setPixmap(pixmap);
         emotion_item->setPos((G_PHOTO_LAYOUT.m_normalWidth - pixmap.width()) / 2, (G_PHOTO_LAYOUT.m_normalHeight - pixmap.height()) / 2);
-        _layBetween(emotion_item, _m_chainIcon, _m_roleComboBox);
+
+        if (ServerInfo.GameMode == "hegemony")
+            _layBetween(emotion_item, _m_chainIcon, _m_hegemonyroleComboBox);
+        else 
+            _layBetween(emotion_item, _m_chainIcon, _m_roleComboBox);
 
         QPropertyAnimation *appear = new QPropertyAnimation(emotion_item, "opacity");
         appear->setStartValue(0.0);

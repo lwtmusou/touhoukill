@@ -24,6 +24,9 @@ config = {
 		"wai",
 		"touhougod"
 	},
+	hegemony_kingdoms = { 
+	"wei", "qun", "shu", "wu"
+	},
 	kingdom_colors = {
 		pc98 = "#a699cc";
 		zhu ="#853dcc",
@@ -39,6 +42,12 @@ config = {
 		gzz = "#005AD7" ,
 		wai = "#cc7014",
 		touhougod = "#96943D",
+		
+		wei = "#547998",
+		shu = "#D0796C",
+		wu = "#4DB873",
+		qun = "#8A807A",
+		god = "#96943D"
 	},
 
 	package_names = {

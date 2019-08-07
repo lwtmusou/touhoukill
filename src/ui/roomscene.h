@@ -519,6 +519,7 @@ private slots:
 signals:
     void restart();
     void return_to_start();
+    void cancel_role_box_expanding();
 };
 
 extern RoomScene *RoomSceneInstance;

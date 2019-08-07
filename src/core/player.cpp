@@ -607,6 +607,12 @@ void Player::setRole(const QString &role)
     if (this->role != role) {
         this->role = role;
         emit role_changed(role);
+        if (ServerInfo.GameMode == "hegemony") {
+            if (role == "careerist")
+                emit kingdom_changed("careerist");
+            else
+                emit kingdom_changed(Sanguosha->GetMappedKingdom(role));
+        }
     }
 }
 
@@ -1158,7 +1164,13 @@ void Player::setKingdom(const QString &kingdom)
 {
     if (this->kingdom != kingdom) {
         this->kingdom = kingdom;
-        emit kingdom_changed();
+        if (ServerInfo.GameMode == "hegemony" && role == "careerist") return;
+        if (ServerInfo.GameMode == "hegemony") {
+            QStringList kingdoms = Sanguosha->getHegemonyKingdoms();
+            if (!kingdoms.contains(kingdom))
+                return;
+        }
+        emit kingdom_changed(kingdom);
     }
 }
 

@@ -195,7 +195,10 @@ void Dashboard::_adjustComponentZValues(bool killed)
     _layUnder(_m_rightFrame);
     _layUnder(_m_leftFrame);
     _layUnder(_m_middleFrame);
-    _layBetween(button_widget, _m_middleFrame, _m_roleComboBox);
+    if (ServerInfo.GameMode == "hegmony")
+        _layBetween(button_widget, _m_middleFrame, _m_hegemonyroleComboBox);
+    else
+        _layBetween(button_widget, _m_middleFrame, _m_roleComboBox);
     _layBetween(_m_rightFrameBg, _m_faceTurnedIcon, _m_equipRegions[3]);
 }
 
@@ -242,8 +245,15 @@ void Dashboard::killPlayer()
 {
     trusting_item->hide();
     trusting_text->hide();
-    _m_roleComboBox->fix(m_player->getRole());
-    _m_roleComboBox->setEnabled(false);
+    if (ServerInfo.GameMode == "hegemony") {
+        _m_hegemonyroleComboBox->fix(m_player->getRole() == "careerist" ? "careerist" : m_player->getKingdom());
+        _m_hegemonyroleComboBox->setEnabled(false);
+    }
+    else {
+        _m_roleComboBox->fix(m_player->getRole());
+        _m_roleComboBox->setEnabled(false);
+    }
+    
     _updateDeathIcon();
     _m_saveMeIcon->hide();
     if (_m_votesItem)
@@ -1562,3 +1572,36 @@ void Dashboard::showSeat()
     m_player->setProperty("UI_Seat", m_player->getSeat());
     _m_seatItem->setZValue(1.1);
 }
+
+
+//only for hegemony??
+/*void Dashboard::_createRoleComboBox()
+{
+    _m_roleComboBox = new RoleComboBox(rightFrame, true);
+}*/
+
+// for battle arry
+/*void Dashboard::repaintAll()
+{
+    PlayerCardContainer::repaintAll();
+    if (NULL != m_changeHeadHeroSkinButton) {
+        m_changeHeadHeroSkinButton->setPos(layout->m_changeHeadHeroSkinButtonPos);
+    }
+    if (NULL != m_changeDeputyHeroSkinButton) {
+        m_changeDeputyHeroSkinButton->setPos(layout->m_changeDeputyHeroSkinButtonPos);
+    }
+
+    QStringList kingdoms = Sanguosha->getKingdoms();
+    kingdoms.removeAll("god");
+    foreach(const QString &kingdom, kingdoms) {
+        _m_frameBorders[kingdom]->setSize(QSize(_dlayout->m_avatarArea.width() * 2 * 1.1, _dlayout->m_normalHeight * 1.2));
+        _m_frameBorders[kingdom]->setPos(-_dlayout->m_avatarArea.width() * 0.1, -_dlayout->m_normalHeight * 0.1);
+        double scale = G_ROOM_LAYOUT.scale;
+        QPixmap pix;
+        pix.load("image/system/roles/careerist.png");
+        int w = pix.width() * scale;
+        int h = pix.height() * scale;
+        _m_roleBorders[kingdom]->setPos(G_DASHBOARD_LAYOUT.m_roleComboBoxPos
+            - QPoint((_m_roleBorders[kingdom]->boundingRect().width() - w) / 2, (_m_roleBorders[kingdom]->boundingRect().height() - h) / 2));
+    }
+}*/

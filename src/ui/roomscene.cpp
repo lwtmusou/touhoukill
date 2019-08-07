@@ -103,7 +103,10 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(Self, SIGNAL(pile_changed(QString)), dashboard, SLOT(updatePile(QString)));
 
     // add role ComboBox
-    connect(Self, SIGNAL(role_changed(QString)), dashboard, SLOT(updateRole(QString)));
+    if (ServerInfo.GameMode == "hegemony")
+        connect(Self, &ClientPlayer::kingdom_changed, dashboard, &Dashboard::updateKingdom);
+    else
+        connect(Self, SIGNAL(role_changed(QString)), dashboard, SLOT(updateRole(QString)));
 
     m_replayControl = NULL;
     if (ClientInstance->getReplayer()) {
@@ -1269,6 +1272,24 @@ void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
         _m_isMouseButtonDown = true;
         _m_isInDragAndUseMode = false;
         */
+
+    if (ServerInfo.GameMode == "hegemony") {
+        //m_mousePressed = true;    super drag??
+        bool changed = false;
+        QPoint point(event->pos().x(), event->pos().y());
+        foreach(Photo *photo, photos) {
+            HegemonyRoleComboBox *box = photo->getHegemonyRoleComboBox();
+            if (!box->boundingRect().contains(point) && box->isExpanding())
+                changed = true;
+        }
+        HegemonyRoleComboBox *box = dashboard->getHegemonyRoleComboBox();
+        if (!box->boundingRect().contains(point) && box->isExpanding())
+            changed = true;
+        if (changed)
+            emit cancel_role_box_expanding();
+    
+    }
+
 }
 
 void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)

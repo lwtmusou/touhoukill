@@ -14,6 +14,7 @@
 
 class ClientPlayer;
 class RoleComboBox;
+class HegemonyRoleComboBox;
 class QPushButton;
 
 class QPropertyAnimation;
