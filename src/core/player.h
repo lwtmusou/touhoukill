@@ -35,6 +35,7 @@ class Player : public QObject
     Q_PROPERTY(QString state READ getState WRITE setState)
     Q_PROPERTY(int handcard_num READ getHandcardNum)
     Q_PROPERTY(int seat READ getSeat WRITE setSeat)
+    Q_PROPERTY(int inital_seat READ getInitialSeat WRITE setInitialSeat)
     Q_PROPERTY(QString phase READ getPhaseString WRITE setPhaseString)
     Q_PROPERTY(bool faceup READ faceUp WRITE setFaceUp)
     Q_PROPERTY(bool alive READ isAlive WRITE setAlive)

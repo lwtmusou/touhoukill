@@ -570,10 +570,14 @@ const General *Player::getGeneral2() const
 QString Player::getFootnoteName() const
 {
     if (ServerInfo.GameMode == "hegemony") {
-        if (Self->objectName() == objectName())
+        if (Self->objectName() == objectName())// || (general && general->objectName() != "anjiang"
             return getGeneralName();
-        else if (property("UI_Seat").toInt())
-            return Sanguosha->translate(QString("SEAT(%1)").arg(QString::number(property("UI_Seat").toInt())));
+        else {
+            
+            //if (property("UI_Seat").toInt())
+                return Sanguosha->translate(QString("SEAT(%1)").arg(QString::number(getInitialSeat())));
+        
+        } 
 
     }
     return getGeneralName();

@@ -3414,8 +3414,10 @@ void Room::adjustSeats()
 
     //record initial seat
     foreach (ServerPlayer *player, m_players) {
-        if (player->getInitialSeat() == 0)
+        if (player->getInitialSeat() == 0) {
             player->setInitialSeat(player->getSeat());
+            broadcastProperty(player, "inital_seat");
+        }
     }
 }
 

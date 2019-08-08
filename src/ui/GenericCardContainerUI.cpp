@@ -225,6 +225,8 @@ void PlayerCardContainer::updateAvatar()
         QGraphicsPixmapItem *avatarIconTmp = _m_avatarIcon;
         _paintPixmap(avatarIconTmp, _m_layout->m_avatarArea, avatarIcon, _getAvatarParent());
         // this is just avatar general, perhaps game has not started yet.
+
+
         if (m_player->getGeneral() != NULL) {
             QString kingdom = m_player->getKingdom();
             _paintPixmap(_m_kingdomIcon, _m_layout->m_kingdomIconArea, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON, kingdom), _getAvatarParent());
@@ -580,7 +582,7 @@ void PlayerCardContainer::repaintAll()
 
     if (_m_seatItem != NULL)
         _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegion,
-            _getPixmap(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER, QString::number(m_player->property("UI_Seat").toInt())),
+            _getPixmap(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER, QString::number(m_player->getInitialSeat())),
             _getAvatarParent());
 
     if (ServerInfo.GameMode != "hegemony" && _m_roleComboBox != NULL)
@@ -1553,6 +1555,6 @@ void PlayerCardContainer::showSeat()
         _getPixmap(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER, QString::number(m_player->getSeat())),
         _getAvatarParent());
     //save the seat number for later use
-    m_player->setProperty("UI_Seat", m_player->getSeat());
+    //m_player->setProperty("UI_Seat", m_player->getSeat());
     _m_seatItem->setZValue(1.1);
 }

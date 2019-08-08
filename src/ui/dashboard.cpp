@@ -1569,7 +1569,7 @@ void Dashboard::showSeat()
         _getPixmap(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER, QString::number(m_player->getSeat())),
         _m_rightFrame);
     //save the seat number for later use
-    m_player->setProperty("UI_Seat", m_player->getSeat());
+    //m_player->setProperty("UI_Seat", m_player->getSeat()); //use InitalSeat instead
     _m_seatItem->setZValue(1.1);
 }
 
