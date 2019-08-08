@@ -999,7 +999,10 @@ void ServerPlayer::addSkill(const QString &skill_name)
     args << QSanProtocol::S_GAME_EVENT_ADD_SKILL;
     args << objectName();
     args << skill_name;
-    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+    if (room->getMode() == "hegemony")
+        room->doNotify(this, QSanProtocol::S_COMMAND_LOG_EVENT, args);
+    else
+        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 }
 
 void ServerPlayer::loseSkill(const QString &skill_name)

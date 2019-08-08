@@ -3179,6 +3179,30 @@ void Room::chooseHegemonyGenerals()
         //notifyProperty(player, player, "general");
     }*/
     
+    foreach(ServerPlayer *player, m_players) {
+        QStringList names;
+        if (player->getGeneral()) {
+            QString name = player->getGeneralName();
+            QString role = "wei";
+
+            names.append(name);
+            //player->setActualGeneral1Name(name);
+            player->setRole(role);
+            player->setGeneralName("anjiang");
+            //notifyProperty(player, player, "actual_general1");
+            foreach(ServerPlayer *p, getOtherPlayers(player))
+                notifyProperty(p, player, "general");
+            //player->setGeneralName(name);//?? no need?
+            notifyProperty(player, player, "general", name);
+            notifyProperty(player, player, "role", role);
+        }
+        //if (player->getGeneral2())
+           
+        this->setTag(player->objectName(), QVariant::fromValue(names));
+    }
+
+
+
     if (Config.Enable2ndGeneral) {
         QList<ServerPlayer *> to_assign = m_players;
         assignGeneralsForPlayers(to_assign);
@@ -4292,7 +4316,7 @@ void Room::startGame()
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, QVariant(m_drawPile->length()));
 
     thread = new RoomThread(this);
-    if (mode == "hegemony") {
+    /*if (mode == "hegemony") {
         QStringList roles;
         roles << "wei" << "shu" << "wu" << "qun";
         QMap<QString, QString> rolemap;
@@ -4316,7 +4340,7 @@ void Room::startGame()
             player->setRole(choice);
             notifyProperty(player, player, "role", choice);
         }
-    }
+    }*/
 
     if (mode != "02_1v1" && mode != "06_3v3" && mode != "06_XMode")
         _m_roomState.reset();
@@ -5053,21 +5077,47 @@ void Room::doAnimate(QSanProtocol::AnimateType type, const QString &arg1, const 
 
 void Room::preparePlayers()
 {
-    foreach (ServerPlayer *player, m_players) {
-        QList<const Skill *> skills = player->getGeneral()->getSkillList();
-        foreach (const Skill *skill, skills)
-            player->addSkill(skill->objectName());
-        if (player->getGeneral2()) {
-            skills = player->getGeneral2()->getSkillList();
-            foreach (const Skill *skill, skills)
+    if (mode == "hegemony") {
+        foreach(ServerPlayer *player, m_players) {
+            QString general1_name = tag[player->objectName()].toStringList().at(0);
+            //if (!player->property("Duanchang").toString().split(",").contains("head")) {
+                //foreach(const Skill *skill, Sanguosha->getGeneral(general1_name)->getVisibleSkillList(true, true))
+            QList<const Skill *> skills = Sanguosha->getGeneral(general1_name)->getVisibleSkillList();
+            foreach(const Skill *skill, skills)
                 player->addSkill(skill->objectName());
-        }
-        player->setGender(player->getGeneral()->getGender());
-    }
+            //}
+            
 
-    JsonArray args;
-    args << (int)QSanProtocol::S_GAME_EVENT_PREPARE_SKILL;
-    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+            JsonArray args;
+            args << (int)QSanProtocol::S_GAME_EVENT_PREPARE_SKILL; //(int)QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+            doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, args);
+
+            //notifyProperty(player, player, "flags", "AutoPreshowAvailable");
+            //player->notifyPreshow();
+            //notifyProperty(player, player, "flags", "-AutoPreshowAvailable");
+
+            //player->setGender(General::Sexless);
+        }
+    
+    
+    }
+    else {
+        foreach(ServerPlayer *player, m_players) {
+            QList<const Skill *> skills = player->getGeneral()->getSkillList();
+            foreach(const Skill *skill, skills)
+                player->addSkill(skill->objectName());
+            if (player->getGeneral2()) {
+                skills = player->getGeneral2()->getSkillList();
+                foreach(const Skill *skill, skills)
+                    player->addSkill(skill->objectName());
+            }
+            player->setGender(player->getGeneral()->getGender());
+        }
+
+        JsonArray args;
+        args << (int)QSanProtocol::S_GAME_EVENT_PREPARE_SKILL;
+        doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+    }
 }
 
 void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
