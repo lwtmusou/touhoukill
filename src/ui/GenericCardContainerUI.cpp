@@ -631,7 +631,7 @@ void PlayerCardContainer::setPlayer(ClientPlayer *player)
         connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
         connect(player, &ClientPlayer::general2_changed, this, &PlayerCardContainer::updateSmallAvatar);
         //connect(player, &ClientPlayer::kingdom_changed, this, &PlayerCardContainer::updateAvatar);
-        connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
+        connect(player, SIGNAL(kingdom_changed(QString)), this, SLOT(updateAvatar()));
         connect(player, &ClientPlayer::state_changed, this, &PlayerCardContainer::refresh);
         connect(player, &ClientPlayer::phase_changed, this, &PlayerCardContainer::updatePhase);
         connect(player, &ClientPlayer::drank_changed, this, &PlayerCardContainer::updateDrankState);
