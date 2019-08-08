@@ -41,8 +41,6 @@ RoleComboBox::RoleComboBox(QGraphicsItem *parent)
     m_currentRole->setParentItem(this);
     connect(m_currentRole, SIGNAL(clicked()), this, SLOT(expand()));
 
-    if (ServerInfo.GameMode == "hegemony")
-        items << new RoleComboBoxItem("lord", index, size);
 
     items << new RoleComboBoxItem("loyalist", index, size) << new RoleComboBoxItem("rebel", index, size) << new RoleComboBoxItem("renegade", index, size);
     for (int i = 0; i < items.length(); i++) {
