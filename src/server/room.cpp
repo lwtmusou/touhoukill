@@ -3164,8 +3164,21 @@ void Room::chooseHegemonyGenerals()
         QString generalName = player->getClientReply().toString();
         if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, true))
             _setPlayerGeneral(player, _chooseDefaultGeneral(player), true);
+
+        
     }
 
+    //@todo
+    /*foreach(ServerPlayer *player, m_players) {
+        QString name = player->getGeneralName();
+        player->setGeneralName("anjiang");
+        foreach(ServerPlayer *p, getOtherPlayers(player))
+            notifyProperty(p, player, "general");
+        //player->setGeneralName(name);
+        notifyProperty(player, player, "general", name);
+        //notifyProperty(player, player, "general");
+    }*/
+    
     if (Config.Enable2ndGeneral) {
         QList<ServerPlayer *> to_assign = m_players;
         assignGeneralsForPlayers(to_assign);
@@ -4294,10 +4307,10 @@ void Room::startGame()
             //broadcast 
             //setPlayerProperty(player, "kingdom", choice);
             //setPlayerProperty(player, "role", choice);
-
+            
             //notify
-            player->setKingdom(choice);
-            notifyProperty(player, player, "kingdom");
+            //player->setKingdom(choice);
+            //notifyProperty(player, player, "kingdom");
             player->setRole(choice);
             notifyProperty(player, player, "role", choice);
         }
@@ -6505,7 +6518,7 @@ int Room::askForRende(ServerPlayer *liubei, QList<int> &cards, const QString &sk
             JsonArray arg;
             arg << JsonUtils::toJsonArray(remain_cards);
             arg << optional;
-            arg << max_num;
+            arg << num; //max_num;
             JsonArray player_names;
             foreach (ServerPlayer *player, players)
                 player_names << player->objectName();
