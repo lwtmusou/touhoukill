@@ -49,7 +49,9 @@ public:
     QString getRelatedPileName() const;
     QStringList getSources() const;
     bool matchAvaliablePattern(QString avaliablePattern, QString askedPattern) const;
-    QString getShowType() const;
+    QString getShowType() const;//nue_god
+    virtual bool canPreshow() const;//hegemony
+
 
 protected:
     Frequency frequency;

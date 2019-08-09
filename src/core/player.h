@@ -336,7 +336,7 @@ protected:
     QMap<QString, QList<int> > piles;
     QMap<QString, QStringList> pile_open;
     QSet<QString> acquired_skills;
-    QStringList skills;
+    QMap<QString, bool> skills;//QStringList skills;
     QSet<QString> flags;
     QHash<QString, int> history;
     QStringList skill_invalid;

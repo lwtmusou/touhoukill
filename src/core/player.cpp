@@ -675,6 +675,31 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
         return false;
 
     QString skill_name = skill->objectName();
+
+    //@todo: need check
+    if (ServerInfo.GameMode == "hegemony"){
+        //const TriggerSkill *trigger = Sanguosha->getTriggerSkill(skill_name);
+        //if (trigger && trigger->isGlobal()) return true;
+
+        /*if (!skill->isVisible()) {
+            const Skill *main_skill = Sanguosha->getMainSkill(skill_name);
+            if (main_skill != NULL)
+                return hasSkill(main_skill);
+        }*/
+
+        //if (!include_lose && !hasEquipSkill(skill_name) && !getAcquiredSkills().contains(skill_name) && ownSkill(skill_name) && !canShowGeneral(inHeadSkills(skill_name) ? "h" : "d"))
+        //    return false;
+        if (!include_lose && !hasEquipSkill(skill_name) && skill->getFrequency() != Skill::Eternal) {
+            if (isSkillInvalid(skill_name))
+                return false;
+        }
+        //if (Sanguosha->ViewHas(this, skill_name, "skill")) return true;
+
+        return skills.value(skill_name, false)
+            || acquired_skills.contains(skill_name);
+    }
+
+    //Other modes
     //prevent infinite recursion
     if (include_hidden && !isSkillInvalid("anyun") && (skills.contains("anyun") || acquired_skills.contains("anyun")) && !skill->isLordSkill() && !skill->isAttachedLordSkill()
         && skill->getFrequency() != Skill::Limited && skill->getFrequency() != Skill::Wake && skill->getFrequency() != Skill::Eternal
@@ -816,12 +841,20 @@ void Player::detachAllSkills()
 
 void Player::addSkill(const QString &skill_name)
 {
-    skills << skill_name;
+    const Skill *skill = Sanguosha->getSkill(skill_name);
+    Q_ASSERT(skill);
+    skills[skill_name] = !skill->canPreshow();
+
+    /*if (head_skill)
+        head_skills[skill_name] = !skill->canPreshow() || general1_showed;
+    else
+        deputy_skills[skill_name] = !skill->canPreshow() || general2_showed;*/
 }
 
 void Player::loseSkill(const QString &skill_name)
 {
-    skills.removeOne(skill_name);
+    //skills.removeOne(skill_name);
+    skills.remove(skill_name);
 }
 
 QString Player::getPhaseString() const
@@ -1510,7 +1543,7 @@ QSet<const TriggerSkill *> Player::getTriggerSkills() const
 {
     QSet<const TriggerSkill *> skillList;
 
-    foreach (QString skill_name, skills + acquired_skills.toList()) {
+    foreach (QString skill_name, skills.keys() + acquired_skills.toList()) {
         const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
         if (skill && !hasEquipSkill(skill->objectName()))
             skillList << skill;
@@ -1528,7 +1561,7 @@ QList<const Skill *> Player::getSkillList(bool include_equip, bool visible_only)
 {
     QList<const Skill *> skillList;
 
-    foreach (QString skill_name, skills + acquired_skills.toList()) {
+    foreach (QString skill_name, skills.keys() + acquired_skills.toList()) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (skill && (include_equip || !hasEquipSkill(skill->objectName())) && (!visible_only || skill->isVisible()))
             skillList << skill;

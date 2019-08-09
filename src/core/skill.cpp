@@ -197,6 +197,19 @@ bool Skill::matchAvaliablePattern(QString avaliablePattern, QString askedPattern
     return checkpoint;
 }
 
+bool Skill::canPreshow() const
+{
+    if (inherits("TriggerSkill")) {
+        const TriggerSkill *triskill = qobject_cast<const TriggerSkill *>(this);
+        return triskill->getViewAsSkill() == NULL;
+    }
+
+    return false;
+}
+
+
+
+
 ViewAsSkill::ViewAsSkill(const QString &name)
     : Skill(name, Skill::NotFrequent, "viewas")
     , response_pattern(QString())
