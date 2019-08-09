@@ -1885,3 +1885,14 @@ bool Player::isHidden() const
     }
     return count != skills.length();
 }
+
+bool Player::hasShownGeneral() const
+{
+    return general_showed;
+}
+
+void Player::setGeneralShowed(bool showed)
+{
+    this->general_showed = showed;
+    emit head_state_changed();
+}

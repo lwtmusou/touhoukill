@@ -45,6 +45,8 @@ class Player : public QObject
     Q_PROPERTY(bool owner READ isOwner WRITE setOwner)
     Q_PROPERTY(bool role_shown READ hasShownRole WRITE setShownRole)
 
+    Q_PROPERTY(bool general_showed READ hasShownGeneral WRITE setGeneralShowed)
+
     Q_PROPERTY(QString next READ getNextName WRITE setNext)
 
     Q_PROPERTY(bool kongcheng READ isKongcheng)
@@ -338,6 +340,9 @@ public:
     bool hasPreshowedSkill(const Skill *skill) const;
     bool isHidden() const;
 
+    bool hasShownGeneral() const;
+    void setGeneralShowed(bool showed);
+
     QVariantMap tag;
 
 
@@ -403,6 +408,8 @@ signals:
     void showncards_changed();
     void removedChanged();
     void brokenEquips_changed();
+
+    void head_state_changed();//hegemony
 };
 
 #endif
