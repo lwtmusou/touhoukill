@@ -73,6 +73,7 @@ const char *QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_DYINGLINE = "magatamasDying%1";
 const char *QSanRoomSkin::S_SKIN_KEY_PROGRESS_BAR_IMAGE = "progressBar";
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_IMAGE = "generalCircleImage-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_MASK = "generalCircleMask-%1";
+const char *QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK = "hiddenMark";
 
 const char *QSanRoomSkin::S_HERO_SKIN_KEY_GENERAL_ICON = "heroSkinContainerGeneralIcon-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_HEAD_ICON = "headIcon";
@@ -930,10 +931,13 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
         tryParse(playerConfig["chainedIconRegion"], layout->m_chainedIconRegion);
         layout->m_deathIconRegion.tryParse(playerConfig["deathIconRegion"]);
         tryParse(playerConfig["votesIconRegion"], layout->m_votesIconRegion);
+        tryParse(playerConfig["hiddenMarkRegion"], layout->m_hiddenMarkRegion1);
+        tryParse(playerConfig["hiddenMarkRegion2"], layout->m_hiddenMarkRegion2);
         tryParse(playerConfig["seatIconRegion"], layout->m_seatIconRegion);
         tryParse(playerConfig["drankMaskColor"], layout->m_drankMaskColor);
         tryParse(playerConfig["duanchangMaskColor"], layout->m_duanchangMaskColor);
         tryParse(playerConfig["deathEffectColor"], layout->m_deathEffectColor);
+        tryParse(playerConfig["generalShadowColor"], layout->m_generalShadowColor);
         tryParse(playerConfig["extraSkillArea"], layout->m_extraSkillArea);
         layout->m_extraSkillFont.tryParse(playerConfig["extraSkillFont"]);
         tryParse(playerConfig["extraSkillTextArea"], layout->m_extraSkillTextArea);

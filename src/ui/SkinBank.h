@@ -189,10 +189,13 @@ public:
         QRect m_chainedIconRegion;
         AnchoredRect m_deathIconRegion;
         QRect m_votesIconRegion;
-        QRect m_seatIconRegion;
+        QRect m_hiddenMarkRegion1, m_hiddenMarkRegion2;//hegemony
+        QRect m_seatIconRegion;//hegemony
         QColor m_drankMaskColor;
         QColor m_duanchangMaskColor;
         QColor m_deathEffectColor;
+        QColor m_generalShadowColor;//hegemony
+
 
         QRect m_extraSkillArea;
         QSanShadowTextFont m_extraSkillFont;
@@ -390,6 +393,7 @@ public:
     static const char *S_SKIN_KEY_HEAD_ICON;
     static const char *S_SKIN_KEY_DEPUTY_ICON;
     static const char *S_SKIN_KEY_ROLE_SHOWN;
+    static const char *S_SKIN_KEY_HIDDEN_MARK;
 
     // Animations
     static const char *S_SKIN_KEY_ANIMATIONS;
