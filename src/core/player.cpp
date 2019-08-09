@@ -22,6 +22,7 @@ Player::Player(QObject *parent)
     , seat(0)
     , initialSeat(0)
     , alive(true)
+    , general_showed(true)
     , phase(NotActive)
     , weapon(NULL)
     , armor(NULL)
@@ -30,7 +31,7 @@ Player::Player(QObject *parent)
     , treasure(NULL)
     , face_up(true)
     , chained(false)
-    , removed(false)
+    , removed(false) 
 {
 }
 
@@ -1784,4 +1785,103 @@ QList<const Player *> Player::getAliveSiblings() const
             siblings.removeOne(p);
     }
     return siblings;
+}
+
+bool Player::hasShownSkill(const Skill *skill) const
+{
+    if (skill == NULL)
+        return false;
+
+    //QStringList InvalidSkill = property("invalid_skill_shown").toString().split("+");
+    //if (InvalidSkill.contains(skill->objectName())) return false;
+
+    if (acquired_skills.contains(skill->objectName())) // deputy
+        return true;
+
+    if (skill->inherits("ArmorSkill") || skill->inherits("WeaponSkill") || skill->inherits("TreasureSkill"))
+        return true;
+
+    if (skill->inherits("TriggerSkill")) {
+        const TriggerSkill *tr_skill = qobject_cast<const TriggerSkill *>(skill);
+        if (tr_skill && tr_skill->isGlobal())
+            return true;
+    }
+
+    if (!skill->isVisible()) {
+        const Skill *main_skill = Sanguosha->getMainSkill(skill->objectName());
+        if (main_skill != NULL)
+            return hasShownSkill(main_skill);
+        else
+            return false;
+    }
+
+    if (general_showed && skills.contains(skill->objectName()))
+        return true;
+    //else if (general2_showed && deputy_skills.contains(skill->objectName()))
+    //    return true;
+
+    /*const ViewHasSkill *vhskill = Sanguosha->ViewHas(this, skill->objectName(), "skill");
+    if (vhskill) {
+        if (vhskill->isGlobal())                                                                //isGlobal do not need to show general
+            return true;
+        else {
+            if (ownSkill(vhskill)) {
+                if (general1_showed && head_skills.contains(vhskill->objectName()))
+                    return true;
+                else if (general2_showed && deputy_skills.contains(vhskill->objectName()))
+                    return true;
+            }
+            else
+                return hasShownOneGeneral();                                                    //if player doesnt own it, then must showOneGeneral
+        }
+    }*/
+    return false;
+}
+
+bool Player::hasShownSkill(const QString &skill_name) const
+{
+    const Skill *skill = Sanguosha->getSkill(skill_name);
+    if (skill == NULL) {
+        QObject *roomObject = Sanguosha->currentRoomObject();
+        if (roomObject != NULL && roomObject->inherits("Room")) {
+            Room *room = Sanguosha->currentRoom();
+            room->output("no such skill " + skill_name);
+            qWarning("%s", QString("no such skill " + skill_name).toStdString().c_str());
+        }
+        return false;
+    }
+    return hasShownSkill(skill);
+}
+
+void Player::setSkillPreshowed(const QString &skill, bool preshowed)
+{
+    if (skills.contains(skill))
+        skills[skill] = preshowed;
+    
+}
+
+
+bool Player::hasPreshowedSkill(const QString &name) const
+{
+    return skills.value(name, false);
+}
+
+bool Player::hasPreshowedSkill(const Skill *skill) const
+{
+    return hasPreshowedSkill(skill->objectName());
+}
+
+bool Player::isHidden() const
+{
+    //if (head_general ? general1_showed : general2_showed) return false;
+    //const QList<const Skill *> skills = head_general ? getHeadSkillList() : getDeputySkillList();
+    const QList<const Skill *> skills = getSkillList();
+    int count = 0;
+    foreach(const Skill *skill, skills) {
+        if (skill->canPreshow() && hasPreshowedSkill(skill->objectName()))
+            return false;
+        else if (!skill->canPreshow())
+            ++count;
+    }
+    return count != skills.length();
 }

@@ -276,6 +276,14 @@ public:
     QList<const Player *> getSiblings() const;
     QList<const Player *> getAliveSiblings() const;
 
+	bool hasShownSkill(const Skill *skill) const;
+    bool hasShownSkill(const char *skill_name) const;
+
+	void setSkillPreshowed(const char *skill, bool preshowed = true);
+	bool hasPreshowedSkill(const char *name) const;
+    bool hasPreshowedSkill(const Skill *skill) const;
+    bool isHidden() const;
+
 
 	void setNext(Player *next);
     void setNext(const char *next);
@@ -389,6 +397,8 @@ public:
     void gainAnExtraTurn();
 
     void copyFrom(ServerPlayer *sp);
+
+	void notifyPreshow();
 };
 
 %extend ServerPlayer {

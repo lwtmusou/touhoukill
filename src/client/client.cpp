@@ -1241,6 +1241,24 @@ void Client::trust()
     setStatus(NotActive);
 }
 
+void Client::preshow(const QString &skill_name, const bool isPreshowed)
+{
+    JsonArray arg;
+    arg << skill_name;
+    arg << isPreshowed;
+    //arg << head;
+    requestServer(S_COMMAND_PRESHOW, arg);
+    //notifyServer(S_COMMAND_SKIN_CHANGE, skinInfo);
+    Self->setSkillPreshowed(skill_name, isPreshowed);
+
+    emit head_preshowed();
+    //if (head)
+    //    emit head_preshowed();
+    //else
+    //    emit deputy_preshowed();
+}
+
+
 void Client::requestSurrender()
 {
     if (getStatus() != Playing)

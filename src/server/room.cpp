@@ -112,6 +112,8 @@ void Room::initCallbacks()
 
     //Client request
     m_callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Room::networkDelayTestCommand;
+    m_callbacks[S_COMMAND_PRESHOW] = &Room::processRequestPreshow;
+
 }
 
 ServerPlayer *Room::getCurrent() const
@@ -2886,6 +2888,25 @@ bool Room::makeSurrender(ServerPlayer *initiator)
     return true;
 }
 
+
+void Room::processRequestPreshow(ServerPlayer *player, const QVariant &arg)
+{
+    if (player == NULL)
+        return;
+
+    JsonArray args = arg.value<JsonArray>();
+    //if (args.size() != 3 || !JsonUtils::isString(args[0]) || !JsonUtils::isBool(args[1]) || !JsonUtils::isBool(args[2])) return;
+    if (args.size() != 2 || !JsonUtils::isString(args[0]) || !JsonUtils::isBool(args[1])) return;
+    player->acquireLock(ServerPlayer::SEMA_MUTEX);
+
+    const QString skill_name = args[0].toString();
+    const bool isPreshowed = args[1].toBool();
+    //const bool head = args[2].toBool();
+    player->setSkillPreshowed(skill_name, isPreshowed);
+    
+    player->releaseLock(ServerPlayer::SEMA_MUTEX);
+}
+
 void Room::processClientPacket(const QString &request)
 {
     Packet packet;
@@ -3168,23 +3189,12 @@ void Room::chooseHegemonyGenerals()
         
     }
 
-    //@todo
-    /*foreach(ServerPlayer *player, m_players) {
-        QString name = player->getGeneralName();
-        player->setGeneralName("anjiang");
-        foreach(ServerPlayer *p, getOtherPlayers(player))
-            notifyProperty(p, player, "general");
-        //player->setGeneralName(name);
-        notifyProperty(player, player, "general", name);
-        //notifyProperty(player, player, "general");
-    }*/
-    
+    //@todo  
     foreach(ServerPlayer *player, m_players) {
         QStringList names;
         if (player->getGeneral()) {
             QString name = player->getGeneralName();
-            QString role = "wei";
-
+            QString role = "wu";
             names.append(name);
             //player->setActualGeneral1Name(name);
             player->setRole(role);
@@ -4169,7 +4179,7 @@ bool Room::hasWelfare(const ServerPlayer *player) const
 {
     if (mode == "06_3v3")
         return player->isLord() || player->getRole() == "renegade";
-    else if (mode == "06_XMode")
+    else if (mode == "06_XMode" || mode == "hegemony")
         return false;
     else
         return player->isLord() && player_count > 4;
@@ -4315,7 +4325,7 @@ void Room::startGame()
         setCardMapping(card_id, NULL, Player::DrawPile);
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, QVariant(m_drawPile->length()));
 
-    thread = new RoomThread(this);
+    thread = new RoomThread(this); 
     /*if (mode == "hegemony") {
         QStringList roles;
         roles << "wei" << "shu" << "wu" << "qun";
@@ -5082,7 +5092,7 @@ void Room::preparePlayers()
             QString general1_name = tag[player->objectName()].toStringList().at(0);
             //if (!player->property("Duanchang").toString().split(",").contains("head")) {
                 //foreach(const Skill *skill, Sanguosha->getGeneral(general1_name)->getVisibleSkillList(true, true))
-            QList<const Skill *> skills = Sanguosha->getGeneral(general1_name)->getVisibleSkillList();
+            QList<const Skill *> skills = Sanguosha->getGeneral(general1_name)->getSkillList();
             foreach(const Skill *skill, skills)
                 player->addSkill(skill->objectName());
             //}
@@ -5092,10 +5102,12 @@ void Room::preparePlayers()
             args << (int)QSanProtocol::S_GAME_EVENT_PREPARE_SKILL; //(int)QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
             doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
-            //notifyProperty(player, player, "flags", "AutoPreshowAvailable");
-            //player->notifyPreshow();
-            //notifyProperty(player, player, "flags", "-AutoPreshowAvailable");
-
+            notifyProperty(player, player, "flags", "AutoPreshowAvailable");
+            //setPlayerFlag(player, "AutoPreshowAvailable");
+            player->notifyPreshow();
+           //setPlayerFlag(player, "-AutoPreshowAvailable");
+            notifyProperty(player, player, "flags", "-AutoPreshowAvailable");
+            
             //player->setGender(General::Sexless);
         }
     

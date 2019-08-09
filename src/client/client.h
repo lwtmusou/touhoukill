@@ -243,6 +243,8 @@ public slots:
 
     void onPlayerReplyGongxin(int card_id = -1);
     void changeSkin(const QString &name, int index);
+    void preshow(const QString &skill_name, const bool isPreshowed);
+
 
 protected:
     // operation countdown
@@ -365,6 +367,9 @@ signals:
 
     void assign_asked();
     void start_in_xs();
+
+
+    void head_preshowed();//hegemony
 };
 
 extern Client *ClientInstance;

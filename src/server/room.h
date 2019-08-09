@@ -597,6 +597,8 @@ private:
 
     void skinChangeCommand(ServerPlayer *player, const QVariant &packet);
     void heartbeatCommand(ServerPlayer *player, const QVariant &packet);
+    void processRequestPreshow(ServerPlayer *player, const QVariant &arg); //hegemony
+
 
     //helper functions and structs
     struct _NullificationAiHelper

@@ -1749,3 +1749,20 @@ bool ServerPlayer::CompareByActionOrder(ServerPlayer *a, ServerPlayer *b)
     Room *room = a->getRoom();
     return room->getFront(a, b) == a;
 }
+
+
+void ServerPlayer::notifyPreshow()
+{
+    JsonArray args;
+    args << (int)S_GAME_EVENT_UPDATE_PRESHOW;
+    JsonObject args1;
+    foreach(const QString skill, skills.keys()) {
+        args1.insert(skill, skills.value(skill, false));//deputy 
+    }
+    args << args1;
+    room->doNotify(this, S_COMMAND_LOG_EVENT, args);
+
+    JsonArray args2;
+    args2 << (int)QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+    room->doNotify(this, QSanProtocol::S_COMMAND_LOG_EVENT, args2);
+}

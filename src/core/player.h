@@ -329,7 +329,19 @@ public:
     QList<const Player *> getSiblings() const;
     QList<const Player *> getAliveSiblings() const;
 
+    bool hasShownSkill(const Skill *skill) const; //hegemony
+    bool hasShownSkill(const QString &skill_name) const; //hegemony
+
+
+    void setSkillPreshowed(const QString &skill, bool preshowed = true);//hegemony
+    bool hasPreshowedSkill(const QString &name) const;
+    bool hasPreshowedSkill(const Skill *skill) const;
+    bool isHidden() const;
+
     QVariantMap tag;
+
+
+
 
 protected:
     QMap<QString, int> marks;
@@ -361,6 +373,9 @@ private:
     int seat;
     int initialSeat; //for record
     bool alive;
+
+    bool general_showed; //general2_showed;//hegemony
+
 
     Phase phase;
     WrappedCard *weapon, *armor, *defensive_horse, *offensive_horse, *treasure;

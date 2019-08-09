@@ -192,6 +192,9 @@ public:
     // static function
     static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b);
 
+
+    void notifyPreshow();//hegemony
+
 protected:
     //Synchronization helpers
     QSemaphore **semas;
