@@ -39,6 +39,7 @@ public:
     Dashboard(QGraphicsItem *button_widget);
     //Dashboard(QGraphicsPixmapItem *button_widget);
     virtual QRectF boundingRect() const;
+    void refresh();
     //void repaintAll();
     void setWidth(int width);
     int getMiddleWidth();
@@ -54,7 +55,9 @@ public:
     void hideControlButtons();
     void showControlButtons();
 
-    void showSeat();
+
+    void setPlayer(ClientPlayer *player);//hegemony
+    void showSeat();//hegemony
 
     virtual void showProgressBar(QSanProtocol::Countdown countdown);
     virtual void hideProgressBar();
@@ -131,6 +134,8 @@ public slots:
     virtual void updateAvatar();
     void updateChaoren();
     void updateShown();
+    void updateHiddenMark(); //hegemony
+
 
     void sortCards();
     void beginSorting();
@@ -246,6 +251,10 @@ protected:
     //for animated effects
     EffectAnimation *animations;
 
+    
+    QGraphicsRectItem *_m_shadow_layer1, *_m_shadow_layer2;//hegemony  //for avatar shadow layer
+    QGraphicsPixmapItem *leftHiddenMark;//hegemony
+
     // for parts creation
     void _createLeft();
     void _createRight();
@@ -309,6 +318,7 @@ private slots:
     void onCardItemThrown();
 
     void onMarkChanged();
+    void onHeadStateChanged();
 
 signals:
     void card_selected(const Card *card);

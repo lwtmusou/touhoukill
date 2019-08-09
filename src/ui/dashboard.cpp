@@ -38,6 +38,9 @@ Dashboard::Dashboard(QGraphicsItem *widget) //QGraphicsPixmapItem *widget
     _m_rightFrameBg = NULL;
     animations = new EffectAnimation();
     pending_card = NULL;
+    
+    leftHiddenMark = NULL;//?? intialization?
+
     _m_pile_expanded = QMap<QString, QList<int> >();//QStringList();
     for (int i = 0; i < 5; i++) {
         _m_equipSkillBtns[i] = NULL;
@@ -200,6 +203,9 @@ void Dashboard::_adjustComponentZValues(bool killed)
     else
         _layBetween(button_widget, _m_middleFrame, _m_roleComboBox);
     _layBetween(_m_rightFrameBg, _m_faceTurnedIcon, _m_equipRegions[3]);
+    //hegemony
+    _layUnder(leftHiddenMark);
+    _layUnder(_m_shadow_layer1);
 }
 
 int Dashboard::width()
@@ -218,6 +224,15 @@ void Dashboard::_createRight()
     QRect avatar = G_DASHBOARD_LAYOUT.m_avatarArea;
     _m_skillDock->setPos(avatar.left() + 25, avatar.bottom() + G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height() - 25);
     _m_skillDock->setWidth(avatar.width() - 50);
+    
+    //hegemony
+    _m_shadow_layer1 = new QGraphicsRectItem(_m_rightFrame);
+    _m_shadow_layer1->setRect(G_DASHBOARD_LAYOUT.m_avatarArea);
+
+    _paintPixmap(leftHiddenMark, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion1, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), _m_rightFrame);
+    
+
+    connect(ClientInstance, &Client::head_preshowed, this, &Dashboard::updateHiddenMark);
 }
 
 void Dashboard::_updateFrames()
@@ -535,6 +550,9 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName)
         _m_button_recycle.append(_m_skillDock->getSkillButtonByName(skillName));
         return NULL;
     }
+    //hegemony
+    updateHiddenMark();
+
     return _m_skillDock->addSkillButtonByName(skillName);
 }
 
@@ -939,6 +957,57 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
 
 void Dashboard::updateAvatar()
 {
+    /*if (_m_avatarIcon == NULL) {
+        _m_avatarIcon = new GraphicsPixmapHoverItem(this, _getAvatarParent());
+        _m_avatarIcon->setTransformationMode(Qt::SmoothTransformation);
+    }
+
+    const General *general = NULL;
+    if (m_player) {
+        general = m_player->getAvatarGeneral();
+        
+    } 
+    
+    QGraphicsPixmapItem *avatarIconTmp = _m_avatarIcon;
+    if (general != NULL) {
+        _m_avatarArea->setToolTip(m_player->getSkillDescription());
+        QString name = general->objectName();
+        QPixmap avatarIcon = _getAvatarIcon(name);
+        QRect area = _m_layout->m_avatarArea;
+        area = QRect(area.left() + 2, area.top() + 1, area.width() - 2, area.height() - 3);
+        _paintPixmap(avatarIconTmp, area, avatarIcon, _getAvatarParent());
+        // this is just avatar general, perhaps game has not started yet.
+        if (m_player->getGeneral() != NULL) {
+            QString kingdom = m_player->getKingdom();
+            _paintPixmap(_m_kingdomColorMaskIcon, _m_layout->m_kingdomMaskArea,
+                G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK, kingdom), this->_getAvatarParent());
+            _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea,
+                _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, kingdom), this->_getAvatarParent());
+            QString name = Sanguosha->translate("&" + general->objectName());
+            if (name.startsWith("&"))
+                name = Sanguosha->translate(general->objectName());
+            _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem,
+                _m_layout->m_avatarNameArea,
+                Qt::AlignLeft | Qt::AlignJustify, name);
+        }
+        else {
+            _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea,
+                _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, QSanRoomSkin::S_SKIN_KEY_DEFAULT_SECOND),
+                _getAvatarParent());
+        }
+    }
+    else {
+        _paintPixmap(avatarIconTmp, _m_layout->m_avatarArea,
+            QSanRoomSkin::S_SKIN_KEY_BLANK_GENERAL, _getAvatarParent());
+        _clearPixmap(_m_kingdomColorMaskIcon);
+        _clearPixmap(_m_kingdomIcon);
+        _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea,
+            _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, QSanRoomSkin::S_SKIN_KEY_DEFAULT_SECOND),
+            _getAvatarParent());
+        _m_avatarArea->setToolTip(QString());
+    }
+    _m_avatarIcon->show();
+    _adjustComponentZValues();*/
     PlayerCardContainer::updateAvatar();
     _m_skillDock->update();
 }
@@ -1605,3 +1674,45 @@ void Dashboard::showSeat()
             - QPoint((_m_roleBorders[kingdom]->boundingRect().width() - w) / 2, (_m_roleBorders[kingdom]->boundingRect().height() - h) / 2));
     }
 }*/
+
+
+void Dashboard::updateHiddenMark()
+{
+    if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral())
+        leftHiddenMark->setVisible(m_player->isHidden());
+    else
+        leftHiddenMark->setVisible(false);
+}
+
+void Dashboard::setPlayer(ClientPlayer *player)
+{
+    PlayerCardContainer::setPlayer(player);
+    connect(player, &ClientPlayer::head_state_changed, this, &Dashboard::onHeadStateChanged);
+    //connect(player, &ClientPlayer::deputy_state_changed, this, &Dashboard::onDeputyStateChanged);
+}
+
+void Dashboard::onHeadStateChanged()
+{
+    if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral())
+        _m_shadow_layer1->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
+    else
+        _m_shadow_layer1->setBrush(Qt::NoBrush);
+    updateHiddenMark();
+}
+
+void Dashboard::refresh()
+{
+    PlayerCardContainer::refresh();
+    if (!m_player || !m_player->getGeneral() || !m_player->isAlive()) {
+        _m_shadow_layer1->setBrush(Qt::NoBrush);
+        _m_shadow_layer2->setBrush(Qt::NoBrush);
+        leftHiddenMark->setVisible(false);
+        //rightHiddenMark->setVisible(false);
+    }
+    else if (m_player) {
+        _m_shadow_layer1->setBrush(m_player->hasShownGeneral() ? Qt::transparent : G_DASHBOARD_LAYOUT.m_generalShadowColor);
+        //_m_shadow_layer2->setBrush(m_player->hasShownGeneral2() ? Qt::transparent : G_DASHBOARD_LAYOUT.m_generalShadowColor);
+        leftHiddenMark->setVisible(m_player->isHidden());
+        //rightHiddenMark->setVisible(m_player->isHidden(false));
+    }
+}

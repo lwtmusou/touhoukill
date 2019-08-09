@@ -76,7 +76,7 @@ public:
         return m_player;
     }
 
-    void setPlayer(ClientPlayer *player);
+    virtual void setPlayer(ClientPlayer *player);
     inline int getVotes()
     {
         return _m_votesGot;
