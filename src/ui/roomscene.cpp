@@ -540,6 +540,45 @@ void RoomScene::handleGameEvent(const QVariant &args)
         dashboard->expandSpecialCard(); //for chaoren
         break;
     }
+    case S_GAME_EVENT_UPDATE_PRESHOW: {
+        //Q_ASSERT(arg[1].isObject());
+        bool auto_preshow_available = Self->hasFlag("AutoPreshowAvailable");
+        JsonObject preshow_map = arg[1].value<JsonObject>();
+        QList<QString> skill_names = preshow_map.keys();
+        foreach(const QString &skill, skill_names) {
+            bool showed = preshow_map[skill].toBool();
+
+            //if (Config.EnableAutoPreshow && auto_preshow_available) {
+            if (auto_preshow_available) {
+                
+                const Skill *s = Sanguosha->getSkill(skill);
+                if (s != NULL && s->canPreshow()) {
+                    ClientInstance->preshow(skill, true);
+                    
+                }
+            }
+            else {
+                
+                Self->setSkillPreshowed(skill, showed);
+                /*if (!showed) {
+                    foreach(QSanSkillButton *btn, m_skillButtons) {
+                        if (btn->getSkill()->objectName() == skill) {
+                            btn->QGraphicsObject::setEnabled(true);
+                            btn->setState(QSanButton::S_STATE_CANPRESHOW);
+                            break;
+                        }
+                    }
+                }*/
+                dashboard->updateHiddenMark();
+                //if (Self->inHeadSkills(skill))
+                //    dashboard->updateLeftHiddenMark();
+                //else
+                //    dashboard->updateRightHiddenMark();
+            }
+        }
+        break;
+    }
+
     case S_GAME_EVENT_CHANGE_GENDER: {
         QString player_name = arg[1].toString();
         General::Gender gender = (General::Gender)arg[2].toInt();

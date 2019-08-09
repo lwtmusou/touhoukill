@@ -209,6 +209,8 @@ public:
     HeroSkinContainer *findHeroSkinContainer(const QString &generalName) const;
     QSet<HeroSkinContainer *> getHeroSkinContainers();
 
+    bool game_started;// from private to public
+
 public slots:
     void addPlayer(ClientPlayer *player);
     void removePlayer(const QString &player_name);
@@ -434,7 +436,7 @@ private:
     bool pindian_success;
 
     // re-layout attempts
-    bool game_started;
+   
     void _dispersePhotos(QList<Photo *> &photos, QRectF disperseRegion, Qt::Orientation orientation, Qt::Alignment align);
 
     void _cancelAllFocus();
