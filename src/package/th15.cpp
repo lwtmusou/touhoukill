@@ -1386,7 +1386,7 @@ TH15Package::TH15Package()
     doremy->addSkill(new Bumeng);
     doremy->addSkill(new Rumeng);
 
-    General *ringo = new General(this, "ringo", "gzz", 4);
+    General *ringo = new General(this, "ringo", "gzz", 3);
     ringo->addSkill(new Yuejian);
     ringo->addSkill(new Jiangguo);
 
