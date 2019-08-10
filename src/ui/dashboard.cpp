@@ -1705,7 +1705,7 @@ void Dashboard::refresh()
     PlayerCardContainer::refresh();
     if (!m_player || !m_player->getGeneral() || !m_player->isAlive()) {
         _m_shadow_layer1->setBrush(Qt::NoBrush);
-        _m_shadow_layer2->setBrush(Qt::NoBrush);
+        //_m_shadow_layer2->setBrush(Qt::NoBrush);
         leftHiddenMark->setVisible(false);
         //rightHiddenMark->setVisible(false);
     }
