@@ -1023,8 +1023,8 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
         }
 
         JsonArray subconfig = config[key].value<JsonArray>();
-        for (int j = 0; j < 4 && j < subconfig.size(); j++) {
-            int index = i * 4 + j;
+        for (int j = 0; j < QSanButton::S_NUM_BUTTON_STATES && j < subconfig.size(); j++) {
+            int index = i * QSanButton::S_NUM_BUTTON_STATES + j;
             JsonArray config = subconfig[j].value<JsonArray>();
             if (config.size() < 2)
                 continue;
