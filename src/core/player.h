@@ -342,6 +342,9 @@ public:
 
     bool hasShownGeneral() const;
     void setGeneralShowed(bool showed);
+    bool ownSkill(const QString &skill_name) const;
+    bool ownSkill(const Skill *skill) const;
+
 
     QVariantMap tag;
 

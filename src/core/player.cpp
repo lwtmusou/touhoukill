@@ -1896,3 +1896,13 @@ void Player::setGeneralShowed(bool showed)
     this->general_showed = showed;
     emit head_state_changed();
 }
+
+bool Player::ownSkill(const QString &skill_name) const
+{
+    return skills.contains(skill_name);
+}
+
+bool Player::ownSkill(const Skill *skill) const
+{
+    return ownSkill(skill->objectName());
+}
