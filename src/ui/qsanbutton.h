@@ -14,12 +14,13 @@ class QSanButton : public QGraphicsObject
 
 public:
     explicit QSanButton(QGraphicsItem *parent);
-    QSanButton(const QString &groupName, const QString &buttonName, QGraphicsItem *parent);
+    QSanButton(const QString &groupName, const QString &buttonName, QGraphicsItem *parent, const bool &multi_state = false);
     enum ButtonState
     {
         S_STATE_UP,
         S_STATE_HOVER,
         S_STATE_DOWN,
+        S_STATE_CANPRESHOW,
         S_STATE_DISABLED,
         S_NUM_BUTTON_STATES
     };
@@ -30,7 +31,7 @@ public:
     };
     void setSize(QSize size);
     void setStyle(ButtonStyle style);
-    void setState(ButtonState state, bool ignore_change = false);
+    virtual void setState(ButtonState state, bool ignore_change = false);
     inline void setButtonName(const QString &buttonName)
     {
         _m_buttonName = buttonName;
@@ -50,7 +51,7 @@ public:
     void setRect(QRect rect);
     virtual QRectF boundingRect() const;
     bool insideButton(QPointF pos) const;
-    void setEnabled(bool enabled);
+    virtual void setEnabled(bool enabled);
     bool isDown();
     bool isMouseInside() const;
 public slots:
@@ -74,6 +75,9 @@ protected:
     // get rid of it.
     bool _m_mouseEntered;
     QPixmap _m_bgPixmap[S_NUM_BUTTON_STATES];
+    //for trustbutton, duet to hegemony
+    bool multi_state;
+    //bool m_isFirstState;
 
 private:
     bool _isMouseInside(const QPointF &pos) const
@@ -124,19 +128,21 @@ public:
     {
         return _m_skill;
     }
-    inline virtual void setEnabled(bool enabled)
+    /*inline virtual void setEnabled(bool enabled)
     {
         if (!_m_canEnable && enabled)
             return;
         if (!_m_canDisable && !enabled)
             return;
         QSanButton::setEnabled(enabled);
-    }
+    }*/
     explicit QSanSkillButton(QGraphicsItem *parent = NULL);
     inline const ViewAsSkill *getViewAsSkill() const
     {
         return _m_viewAsSkill;
     }
+    void setState(ButtonState state, bool ignore_change = false);
+    void setEnabled(bool enabled);
 
 protected:
     virtual void _setSkillType(SkillType type);

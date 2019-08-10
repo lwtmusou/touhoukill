@@ -2500,9 +2500,31 @@ void RoomScene::updateSkillButtons()
         addSkillButton(skill);
     }
 
-    // disable all skill buttons
-    foreach (QSanSkillButton *button, m_skillButtons)
-        button->setEnabled(false);
+
+    if (ServerInfo.GameMode == "hegemony") {
+        foreach(QSanSkillButton *button, m_skillButtons) {
+            const Skill *skill = button->getSkill();
+            bool head = button->objectName() == "left";
+            button->setEnabled(skill->canPreshow()
+                && !Self->hasShownSkill(skill));
+            if (skill->canPreshow() && Self->ownSkill(skill) && !Self->hasShownGeneral()) {
+                if (Self->hasPreshowedSkill(skill->objectName()))
+                    button->setState(QSanButton::S_STATE_DISABLED);
+                else
+                    button->setState(QSanButton::S_STATE_CANPRESHOW);
+            }
+        }
+    }
+    else {
+        // disable all skill buttons
+        foreach(QSanSkillButton *button, m_skillButtons)
+            button->setEnabled(false);
+
+    }
+    
+
+
+    
 }
 
 void RoomScene::useSelectedCard()
@@ -5198,6 +5220,8 @@ QRect RoomScene::getBubbleChatBoxShowArea(const QString &who) const
 
 void RoomScene::highlightSkillButton(QString skill_name, bool highlight)
 {
+    if (ServerInfo.GameMode == "hegemony")
+        return;
     if (skill_name == NULL || skill_name == "")
         return;
     foreach (QSanSkillButton *button, m_skillButtons) {

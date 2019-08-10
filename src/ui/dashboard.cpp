@@ -226,13 +226,16 @@ void Dashboard::_createRight()
     _m_skillDock->setWidth(avatar.width() - 50);
     
     //hegemony
-    _m_shadow_layer1 = new QGraphicsRectItem(_m_rightFrame);
-    _m_shadow_layer1->setRect(G_DASHBOARD_LAYOUT.m_avatarArea);
+    if (ServerInfo.GameMode == "hegemony") {
+        _m_shadow_layer1 = new QGraphicsRectItem(_m_rightFrame);
+        _m_shadow_layer1->setRect(G_DASHBOARD_LAYOUT.m_avatarArea);
 
-    _paintPixmap(leftHiddenMark, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion1, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), _m_rightFrame);
+        _paintPixmap(leftHiddenMark, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion1, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), _m_rightFrame);
+
+
+        connect(ClientInstance, &Client::head_preshowed, this, &Dashboard::updateHiddenMark);
+    }
     
-
-    connect(ClientInstance, &Client::head_preshowed, this, &Dashboard::updateHiddenMark);
 }
 
 void Dashboard::_updateFrames()
@@ -599,7 +602,7 @@ void Dashboard::_createExtraButtons()
 {
     m_btnReverseSelection = new QSanButton("handcard", "reverse-selection", this);
     m_btnSortHandcard = new QSanButton("handcard", "sort", this);
-    m_btnNoNullification = new QSanButton("handcard", "nullification", this);
+    m_btnNoNullification = new QSanButton("handcard", "nullification", this, true);
 
     m_btnReverseSelection->hide();
 
@@ -1678,6 +1681,7 @@ void Dashboard::showSeat()
 
 void Dashboard::updateHiddenMark()
 {
+    if (ServerInfo.GameMode != "hegemony") return;
     if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral())
         leftHiddenMark->setVisible(m_player->isHidden());
     else
@@ -1693,6 +1697,7 @@ void Dashboard::setPlayer(ClientPlayer *player)
 
 void Dashboard::onHeadStateChanged()
 {
+    if (ServerInfo.GameMode != "hegemony") return;
     if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral())
         _m_shadow_layer1->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
     else
@@ -1703,6 +1708,7 @@ void Dashboard::onHeadStateChanged()
 void Dashboard::refresh()
 {
     PlayerCardContainer::refresh();
+    if (ServerInfo.GameMode != "hegemony") return;
     if (!m_player || !m_player->getGeneral() || !m_player->isAlive()) {
         _m_shadow_layer1->setBrush(Qt::NoBrush);
         //_m_shadow_layer2->setBrush(Qt::NoBrush);
