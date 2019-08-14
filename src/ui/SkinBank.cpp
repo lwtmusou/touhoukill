@@ -231,6 +231,8 @@ QString QSanRoomSkin::getButtonPixmapPath(const QString &groupName, const QStrin
         stateKey = "hover";
     else if (state == QSanButton::S_STATE_UP)
         stateKey = "normal";
+    else if (state == QSanButton::S_STATE_CANPRESHOW)
+        stateKey = "disabled";//use codes to make button lighter than other states
     else
         return QString();
     return path.arg(buttonName).arg(stateKey);
