@@ -610,7 +610,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         }
 
         //change bgm and backgroud
-        if (player->isLord()) {
+        if (ServerInfo.GameMode != "hegemony" &&  player->isLord()) {
             ClientInstance->lord_name = newHeroName;
             setLordBGM(newHeroName);
             setLordBackdrop(newHeroName);
