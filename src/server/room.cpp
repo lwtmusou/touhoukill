@@ -3198,12 +3198,12 @@ void Room::chooseHegemonyGenerals()
             names.append(name);
             //player->setActualGeneral1Name(name);
             player->setRole(role);
-            player->setGeneralName("anjiang");
+            //player->setGeneralName("anjiang");
             //notifyProperty(player, player, "actual_general1");
-            foreach(ServerPlayer *p, getOtherPlayers(player))
-                notifyProperty(p, player, "general");
+            //foreach(ServerPlayer *p, getOtherPlayers(player))
+            //    notifyProperty(p, player, "general");
             //player->setGeneralName(name);//?? no need?
-            notifyProperty(player, player, "general", name);
+            //notifyProperty(player, player, "general", name);
             notifyProperty(player, player, "role", role);
         }
         //if (player->getGeneral2())

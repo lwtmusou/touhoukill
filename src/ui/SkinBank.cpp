@@ -933,8 +933,6 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
         tryParse(playerConfig["chainedIconRegion"], layout->m_chainedIconRegion);
         layout->m_deathIconRegion.tryParse(playerConfig["deathIconRegion"]);
         tryParse(playerConfig["votesIconRegion"], layout->m_votesIconRegion);
-        tryParse(playerConfig["hiddenMarkRegion"], layout->m_hiddenMarkRegion1);
-        tryParse(playerConfig["hiddenMarkRegion2"], layout->m_hiddenMarkRegion2);
         tryParse(playerConfig["seatIconRegion"], layout->m_seatIconRegion);
         tryParse(playerConfig["drankMaskColor"], layout->m_drankMaskColor);
         tryParse(playerConfig["duanchangMaskColor"], layout->m_duanchangMaskColor);
@@ -943,6 +941,8 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
         tryParse(playerConfig["extraSkillArea"], layout->m_extraSkillArea);
         layout->m_extraSkillFont.tryParse(playerConfig["extraSkillFont"]);
         tryParse(playerConfig["extraSkillTextArea"], layout->m_extraSkillTextArea);
+        tryParse(playerConfig["hiddenMarkRegion"], layout->m_hiddenMarkRegion1);
+        tryParse(playerConfig["hiddenMarkRegion2"], layout->m_hiddenMarkRegion2);
     }
 
     config = layoutConfig[S_SKIN_KEY_PHOTO].value<JsonObject>();

@@ -22,7 +22,7 @@ Player::Player(QObject *parent)
     , seat(0)
     , initialSeat(0)
     , alive(true)
-    , general_showed(true)
+    , general_showed(false) //hegemony
     , phase(NotActive)
     , weapon(NULL)
     , armor(NULL)

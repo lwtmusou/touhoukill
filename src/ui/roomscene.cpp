@@ -549,7 +549,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
             bool showed = preshow_map[skill].toBool();
 
             //if (Config.EnableAutoPreshow && auto_preshow_available) {
-            if (auto_preshow_available) {
+            if (!auto_preshow_available) {
                 
                 const Skill *s = Sanguosha->getSkill(skill);
                 if (s != NULL && s->canPreshow()) {
