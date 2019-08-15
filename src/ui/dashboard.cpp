@@ -602,7 +602,7 @@ void Dashboard::_createExtraButtons()
 {
     m_btnReverseSelection = new QSanButton("handcard", "reverse-selection", this);
     m_btnSortHandcard = new QSanButton("handcard", "sort", this);
-    m_btnNoNullification = new QSanButton("handcard", "nullification", this, true);
+    m_btnNoNullification = new QSanButton("handcard", "nullification", this);
 
     m_btnReverseSelection->hide();
 

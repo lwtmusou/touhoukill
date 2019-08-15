@@ -14,7 +14,7 @@ class QSanButton : public QGraphicsObject
 
 public:
     explicit QSanButton(QGraphicsItem *parent);
-    QSanButton(const QString &groupName, const QString &buttonName, QGraphicsItem *parent, const bool &multi_state = false);
+    QSanButton(const QString &groupName, const QString &buttonName, QGraphicsItem *parent);
     enum ButtonState
     {
         S_STATE_UP,
@@ -76,7 +76,7 @@ protected:
     bool _m_mouseEntered;
     QPixmap _m_bgPixmap[S_NUM_BUTTON_STATES];
     //for trustbutton, duet to hegemony
-    bool multi_state;
+    //bool multi_state;
     //bool m_isFirstState;
 
 private:

@@ -19,13 +19,13 @@ QSanButton::QSanButton(QGraphicsItem *parent)
     setSize(QSize(0, 0));
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton);
-    multi_state = false;
+    //multi_state = false;
     //m_isFirstState = true;
 }
 
-QSanButton::QSanButton(const QString &groupName, const QString &buttonName, QGraphicsItem *parent, const bool &multi_state)
-    : QGraphicsObject(parent),
-    multi_state(multi_state)
+QSanButton::QSanButton(const QString &groupName, const QString &buttonName, QGraphicsItem *parent)
+    : QGraphicsObject(parent)
+    //multi_state(multi_state)
     //, m_isFirstState(true)
 {
     _m_state = S_STATE_UP;
@@ -34,15 +34,10 @@ QSanButton::QSanButton(const QString &groupName, const QString &buttonName, QGra
     _m_buttonName = buttonName;
     _m_mouseEntered = false;
 
-    const int state_count = multi_state ? (int)S_NUM_BUTTON_STATES * 2 : (int)S_NUM_BUTTON_STATES;
-    for (int i = 0; i < state_count; i++) {
-        const bool state1 = i < S_NUM_BUTTON_STATES;
+    
+    for (int i = 0; i < (int)S_NUM_BUTTON_STATES; i++)
         _m_bgPixmap[i] = G_ROOM_SKIN.getButtonPixmap(groupName, buttonName, (QSanButton::ButtonState)i);
-        //_m_bgPixmap[i] = G_ROOM_SKIN.getButtonPixmap(groupName, buttonName, (QSanButton::ButtonState)(state1 ? i : (i - S_NUM_BUTTON_STATES)), state1);
-    }
-    //for (int i = 0; i < (int)S_NUM_BUTTON_STATES; i++)
-    //    _m_bgPixmap[i] = G_ROOM_SKIN.getButtonPixmap(groupName, buttonName, (QSanButton::ButtonState)i);
-    //setSize(_m_bgPixmap[0].size());
+    setSize(_m_bgPixmap[0].size());
 
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton);
@@ -171,7 +166,7 @@ void QSanButton::mousePressEvent(QGraphicsSceneMouseEvent *event)
     //Q_ASSERT(_m_state != S_STATE_DISABLED);
     //if (_m_style == S_STYLE_TOGGLE)
     //    return;
-    if ((_m_style == S_STYLE_TOGGLE && !multi_state)
+    if ((_m_style == S_STYLE_TOGGLE )//&& !multi_state
         || _m_state == S_STATE_DISABLED
         || _m_state == S_STATE_CANPRESHOW) return;
     setState(S_STATE_DOWN);
