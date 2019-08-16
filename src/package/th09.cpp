@@ -319,7 +319,12 @@ public:
         show_type = "static";
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    bool Huiwu::canPreshow() const
+    {
+        return false;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->isKindOf("Slash") || (use.card->isNDTrick())) {
@@ -328,7 +333,7 @@ public:
 
             QList<SkillInvokeDetail> details;
             foreach (ServerPlayer *to, use.to) {
-                if (to->hasSkill(objectName()) && to != use.from)
+                if (to->hasSkill(objectName()) && to->hasShownSkill(objectName()) && to != use.from)
                     details << SkillInvokeDetail(this, to, use.from);
             }
             return details;

@@ -1490,6 +1490,12 @@ public:
         : TriggerSkill("dunjia")
     {
         events << DamageInflicted;
+        show_type = "static";
+    }
+
+    bool Dunjia::canPreshow() const
+    {
+        return false;
     }
 
     static QList<ServerPlayer *> dunjiaInvokers(ServerPlayer *chen)
@@ -1507,10 +1513,12 @@ public:
         return invokers;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.nature != DamageStruct::Normal || !damage.to->hasSkill(this))
+            return QList<SkillInvokeDetail>();
+        if (room->getMode() == "hegemony" && !damage.to->hasShownSkill(this))
             return QList<SkillInvokeDetail>();
 
         QList<ServerPlayer *> invokers = dunjiaInvokers(damage.to);
