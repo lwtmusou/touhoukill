@@ -2596,14 +2596,14 @@
         <translation>玩家序号应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="5363"/>
+        <location filename="../src/server/room.cpp" line="5366"/>
         <source>Card cannot be parsed:
  %1</source>
         <translation>卡牌字符串无法解析:
  %1</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="6831"/>
+        <location filename="../src/server/room.cpp" line="6834"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>
@@ -3609,7 +3609,7 @@ P = 你自己, R = 你所在的房间</translation>
     <message>
         <location filename="../src/core/skill.cpp" line="59"/>
         <source>this skill cannot preshow</source>
-        <translation>(此技能不可预亮)</translation>
+        <translation type="unfinished">此技能不可预亮</translation>
     </message>
 </context>
 <context>
