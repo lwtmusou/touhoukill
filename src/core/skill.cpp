@@ -54,7 +54,10 @@ QString Skill::getDescription(bool yellow) const
         des_src = Sanguosha->translate(":" + objectName());
     if (des_src.startsWith(":"))
         return QString();
-    return QString("<font color=%1>%2</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(des_src);
+    QString desc = QString("<font color=%1>%2</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(des_src);
+    if (ServerInfo.GameMode == "hegemony" && !canPreshow())
+        desc.prepend(QString("<font color=gray>(%1)</font><br/>").arg(tr("this skill cannot preshow")));
+    return desc;
 }
 
 QString Skill::getNotice(int index) const
