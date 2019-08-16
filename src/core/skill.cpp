@@ -270,6 +270,12 @@ const ViewAsSkill *ViewAsSkill::parseViewAsSkill(const Skill *skill)
         if (view_as_skill != NULL)
             return view_as_skill;
     }
+    if (skill->inherits("DistanceSkill")) {
+        const DistanceSkill *trigger_skill = qobject_cast<const DistanceSkill *>(skill);
+        Q_ASSERT(trigger_skill != NULL);
+        const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
+        if (view_as_skill != NULL) return view_as_skill;
+    }
     return NULL;
 }
 
@@ -490,7 +496,37 @@ ProhibitSkill::ProhibitSkill(const QString &name)
 DistanceSkill::DistanceSkill(const QString &name)
     : Skill(name, Skill::Compulsory, "static")
 {
+    view_as_skill = new ShowDistanceSkill(objectName());
 }
+
+const ViewAsSkill *DistanceSkill::getViewAsSkill() const
+{
+    return view_as_skill;
+}
+
+ShowDistanceSkill::ShowDistanceSkill(const QString &name)
+    : ZeroCardViewAsSkill(name)
+{
+}
+
+const Card *ShowDistanceSkill::viewAs() const
+{
+    SkillCard *card = Sanguosha->cloneSkillCard("ShowFengsu");
+    card->setUserString(objectName());
+    return card;
+}
+
+bool ShowDistanceSkill::isEnabledAtPlay(const Player *player) const
+{
+    if (ServerInfo.GameMode != "hegemony") return false;
+    const DistanceSkill *skill = qobject_cast<const DistanceSkill *>(Sanguosha->getSkill(objectName()));
+    if (skill) {
+        if (!player->hasShownSkill(skill->objectName())) return true;
+    }
+    return false;
+}
+
+
 
 MaxCardsSkill::MaxCardsSkill(const QString &name)
     : Skill(name, Skill::Compulsory, "static")

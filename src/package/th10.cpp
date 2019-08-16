@@ -787,6 +787,11 @@ public:
     }
 };
 
+ShowFengsu::ShowFengsu()
+    : ShowDistanceCard()
+{
+}
+
 class Fengsu : public DistanceSkill
 {
 public:
@@ -798,11 +803,23 @@ public:
     virtual int getCorrect(const Player *from, const Player *to) const
     {
         int correct = 0;
-        if (from->hasSkill("fengsu"))
-            correct = correct - (from->getLostHp());
+        if (ServerInfo.GameMode == "hegemony") {
+            if (from->hasSkill("fengsu") && from->hasShownSkill("fengsu"))
+                correct = correct - (from->getLostHp());
 
-        if (to->hasSkill("fengsu"))
-            correct = correct + to->getLostHp();
+            if (to->hasSkill("fengsu") && to->hasShownSkill("fengsu"))
+                correct = correct + to->getLostHp();
+        }
+        else {
+            if (from->hasSkill("fengsu"))
+                correct = correct - (from->getLostHp());
+
+            if (to->hasSkill("fengsu"))
+                correct = correct + to->getLostHp();
+        
+        }
+
+
         return correct;
     }
 };
@@ -1651,6 +1668,7 @@ TH10Package::TH10Package()
 
     addMetaObject<GongfengCard>();
     addMetaObject<FengshenCard>();
+    addMetaObject<ShowFengsu>();// for hegemony
     addMetaObject<XinshangCard>();
     addMetaObject<FengrangCard>();
     addMetaObject<JiliaoCard>();

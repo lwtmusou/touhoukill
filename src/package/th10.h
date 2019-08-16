@@ -61,6 +61,15 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+
+class ShowFengsu : public ShowDistanceCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ShowFengsu();
+};
+
 class XinshangCard : public SkillCard
 {
     Q_OBJECT

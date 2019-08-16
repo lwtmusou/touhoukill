@@ -240,9 +240,27 @@ class DistanceSkill : public Skill
 
 public:
     explicit DistanceSkill(const QString &name);
-
+    
     virtual int getCorrect(const Player *from, const Player *to) const = 0;
+    const ViewAsSkill *getViewAsSkill() const;
+
+protected:
+    const ViewAsSkill *view_as_skill;
 };
+
+class ShowDistanceSkill : public ZeroCardViewAsSkill
+{
+    Q_OBJECT
+
+public:
+
+    ShowDistanceSkill(const QString &name);
+
+    const Card *viewAs() const;
+    virtual bool isEnabledAtPlay(const Player *player) const;
+};
+
+
 
 class MaxCardsSkill : public Skill
 {

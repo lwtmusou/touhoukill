@@ -969,7 +969,7 @@ QString DummyCard::toString(bool) const
     return "$" + subcardString();
 }
 
-/*
+
 ShowDistanceCard::ShowDistanceCard()
     : SkillCard()
 {
@@ -983,7 +983,7 @@ const Card *ShowDistanceCard::validate(CardUseStruct &card_use) const
     QString c = toString().split(":").last();   //damn it again!
     const DistanceSkill *skill = qobject_cast<const DistanceSkill *>(Sanguosha->getSkill(c));
     if (skill) {
-        card_use.from->showGeneral(card_use.from->inHeadSkills(skill));
+        card_use.from->showGeneral();
     }
     return NULL;
-}*/
+}
