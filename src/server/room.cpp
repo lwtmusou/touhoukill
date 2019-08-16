@@ -3165,14 +3165,7 @@ void Room::chooseGenerals()
 void Room::chooseHegemonyGenerals()
 {
     QStringList ban_list = Config.value("Banlist/Roles").toStringList();
-
-    //int num = 6; // Config.value("NonLordMaxChoice", 6).toInt();
-    //if (num == 0)
-    //    num = 1;
-
-    //for others without lord
     QList<ServerPlayer *> to_assign = m_players;
-    //to_assign.removeOne(getLord());
 
     assignGeneralsForPlayers(to_assign);
     foreach(ServerPlayer *player, to_assign)
@@ -3198,12 +3191,11 @@ void Room::chooseHegemonyGenerals()
             names.append(name);
             //player->setActualGeneral1Name(name);
             player->setRole(role);
-            //player->setGeneralName("anjiang");
-            //notifyProperty(player, player, "actual_general1");
-            //foreach(ServerPlayer *p, getOtherPlayers(player))
-            //    notifyProperty(p, player, "general");
-            //player->setGeneralName(name);//?? no need?
-            //notifyProperty(player, player, "general", name);
+            player->setGeneralName("anjiang");
+            notifyProperty(player, player, "actual_general1");
+            foreach(ServerPlayer *p, getOtherPlayers(player))
+                notifyProperty(p, player, "general");
+            notifyProperty(player, player, "general", name);
             notifyProperty(player, player, "role", role);
         }
         //if (player->getGeneral2())
@@ -4269,7 +4261,16 @@ void Room::startGame()
 
     foreach (ServerPlayer *player, m_players) {
         Q_ASSERT(player->getGeneral());
-        player->setMaxHp(player->getGeneralMaxHp());
+        if (mode == "hegemony") {
+            QStringList generals = getTag(player->objectName()).toStringList();
+            const General *general1 = Sanguosha->getGeneral(generals.first());
+            Q_ASSERT(general1);
+            int max_hp = general1->getMaxHp();
+            player->setMaxHp(max_hp);
+        }
+        else
+            player->setMaxHp(player->getGeneralMaxHp());
+
         player->setHp(player->getMaxHp());
         // setup AI
         AI *ai = cloneAI(player);
@@ -4278,7 +4279,8 @@ void Room::startGame()
     }
 
     foreach (ServerPlayer *player, m_players) {
-        if (mode == "06_3v3" || mode == "02_1v1" || mode == "06_XMode" || !player->isLord())
+        if (mode == "06_3v3" || mode == "02_1v1" || mode == "06_XMode" || 
+             (mode != "hegemony"  && !player->isLord())) // hegemony has already notified "general"
             broadcastProperty(player, "general");
 
         if (mode == "02_1v1")
