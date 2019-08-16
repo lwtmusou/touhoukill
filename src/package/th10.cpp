@@ -66,6 +66,11 @@ public:
         related_pile = "shende";
     }
 
+    bool Shende::canPreshow() const
+    {
+        return true;
+    }
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
         if (triggerEvent == CardResponded) {
