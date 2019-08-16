@@ -740,6 +740,11 @@ public:
         related_pile = "feitou";
     }
 
+    bool Feitou::canPreshow() const
+    {
+        return true;
+    }
+
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         //clear histroy
