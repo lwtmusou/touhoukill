@@ -1492,6 +1492,11 @@ public:
         view_as_skill = new HuishengVS;
     }
 
+    bool Huisheng::canPreshow() const
+    {
+        return true;
+    }
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
