@@ -1279,7 +1279,11 @@ public:
 
     virtual int getFixed(const Player *target, bool) const
     {
-        if (target->hasSkill("duanjiao"))
+        if (ServerInfo.GameMode == "hegemony") {
+            if (target->hasSkill("duanjiao") && target->hasShownSkill("duanjiao"))
+                return 3;
+        }
+        else if (target->hasSkill("duanjiao"))
             return 3;
         else
             return -1;

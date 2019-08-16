@@ -981,7 +981,8 @@ ShowDistanceCard::ShowDistanceCard()
 const Card *ShowDistanceCard::validate(CardUseStruct &card_use) const
 {
     QString c = toString().split(":").last();   //damn it again!
-    const DistanceSkill *skill = qobject_cast<const DistanceSkill *>(Sanguosha->getSkill(c));
+    //const DistanceSkill *skill = qobject_cast<const DistanceSkill *>(Sanguosha->getSkill(c));
+    const Skill *skill = Sanguosha->getSkill(c);
     if (skill) {
         card_use.from->showGeneral();
     }

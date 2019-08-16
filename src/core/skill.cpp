@@ -276,6 +276,12 @@ const ViewAsSkill *ViewAsSkill::parseViewAsSkill(const Skill *skill)
         const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
         if (view_as_skill != NULL) return view_as_skill;
     }
+    if (skill->inherits("AttackRangeSkill")) {
+        const AttackRangeSkill *trigger_skill = qobject_cast<const AttackRangeSkill *>(skill);
+        Q_ASSERT(trigger_skill != NULL);
+        const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
+        if (view_as_skill != NULL) return view_as_skill;
+    }
     return NULL;
 }
 
@@ -519,7 +525,8 @@ const Card *ShowDistanceSkill::viewAs() const
 bool ShowDistanceSkill::isEnabledAtPlay(const Player *player) const
 {
     if (ServerInfo.GameMode != "hegemony") return false;
-    const DistanceSkill *skill = qobject_cast<const DistanceSkill *>(Sanguosha->getSkill(objectName()));
+    //const DistanceSkill *skill = qobject_cast<const DistanceSkill *>(Sanguosha->getSkill(objectName()));
+    const Skill *skill = Sanguosha->getSkill(objectName());
     if (skill) {
         if (!player->hasShownSkill(skill->objectName())) return true;
     }
@@ -562,6 +569,12 @@ int TargetModSkill::getExtraTargetNum(const Player *, const Card *) const
 AttackRangeSkill::AttackRangeSkill(const QString &name)
     : Skill(name, Skill::Compulsory, "static")
 {
+    view_as_skill = new ShowDistanceSkill(objectName()); //also use ShowDistanceSkill
+}
+
+const ViewAsSkill *AttackRangeSkill::getViewAsSkill() const
+{
+    return view_as_skill;
 }
 
 int AttackRangeSkill::getExtra(const Player *, bool) const

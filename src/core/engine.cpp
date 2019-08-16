@@ -1234,9 +1234,12 @@ const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const
     } else if (skill->inherits("DistanceSkill")) {
         const DistanceSkill *distance_skill = qobject_cast<const DistanceSkill *>(skill);
         return distance_skill->getViewAsSkill();
+    } else if (skill->inherits("AttackRangeSkill")) {
+        const AttackRangeSkill *distance_skill = qobject_cast<const AttackRangeSkill *>(skill);
+        return distance_skill->getViewAsSkill();
     }
     else
-        return NULL;
+        return NULL; 
 }
 
 const ProhibitSkill *Engine::isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others) const

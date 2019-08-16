@@ -306,6 +306,11 @@ public:
 
     virtual int getExtra(const Player *target, bool include_weapon) const;
     virtual int getFixed(const Player *target, bool include_weapon) const;
+    const ViewAsSkill *getViewAsSkill() const;
+
+protected:
+    const ViewAsSkill *view_as_skill;
+
 };
 
 class SlashNoDistanceLimitSkill : public TargetModSkill
