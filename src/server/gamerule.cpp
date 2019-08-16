@@ -224,6 +224,10 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->getPhase() == Player::Play)
             room->addPlayerHistory(player, ".");
+        if (player->getPhase() == Player::Finish) {
+            foreach(ServerPlayer *p, room->getAllPlayers())
+                room->setPlayerMark(p, "multi_kill_count", 0);
+        }
         break;
     }
     case EventPhaseChanging: {
@@ -856,6 +860,13 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             killer = death.viewAsKiller;
         else if (death.damage)
             killer = death.damage->from;
+
+        if (killer) {
+            room->setPlayerMark(killer, "multi_kill_count", killer->getMark("multi_kill_count") + 1);
+            int kill_count = killer->getMark("multi_kill_count");
+            if (kill_count > 1 && kill_count < 8)
+                room->setEmotion(killer, QString("multi_kill%1").arg(QString::number(kill_count)));
+        }
 
         if (killer && !skipRewardAndPunish)
             rewardAndPunish(killer, death.who);
