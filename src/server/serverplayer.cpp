@@ -1628,22 +1628,40 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
 {
     if (use.card == NULL || use.card->getTypeId() == Card::TypeSkill)
         return QStringList();
-    if (!canShowHiddenSkill())
-        return QStringList();
-    QString cardskill = use.card->getSkillName();//check double hidden skill
-    if (cardskill !=NULL && use.from->isHiddenSkill(cardskill))
-        return QStringList();
+    if (room->getMode() != "hegemony") {
+        if (!canShowHiddenSkill())
+            return QStringList();
+        QString cardskill = use.card->getSkillName();//check double hidden skill
+        if (cardskill != NULL && use.from->isHiddenSkill(cardskill))
+            return QStringList();
+    
+    }
+
+    
 
     QList<const TargetModSkill *> tarmods;
-    foreach (QString hidden, getHiddenGenerals()) {
-        const General *g = Sanguosha->getGeneral(hidden);
-        foreach (const Skill *skill, g->getSkillList()) {
-            if (skill->inherits("TargetModSkill")) {
+    if (room->getMode() == "hegemony") {
+        foreach(const Skill *skill, use.from->getSkillList(false, false)) {
+            if (skill->inherits("TargetModSkill") &&  use.from->hasSkill(skill) && !use.from->hasShownSkill(skill)) {//main_skill??
                 const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
                 tarmods << tarmod;
             }
         }
     }
+    else {
+        foreach(QString hidden, getHiddenGenerals()) {
+            const General *g = Sanguosha->getGeneral(hidden);
+            foreach(const Skill *skill, g->getSkillList()) {
+                if (skill->inherits("TargetModSkill")) {
+                    const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
+                    tarmods << tarmod;
+                }
+            }
+        }
+    }
+
+
+    
     if (tarmods.isEmpty())
         return QStringList();
 
