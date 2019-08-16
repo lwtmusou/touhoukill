@@ -237,6 +237,8 @@ CommonTranslationTable = {
 	["SEAT(10)"] = "十号位",
 	
 	["#HegemonyReveal"] = "%from 展示了武将，主将为 %arg",
+	["FirstShowReward"] = "首亮奖励（摸两张牌）",
+	["#FirstShowReward"] = "%from 执行首亮摸牌奖励",
 }
 
 return CommonTranslationTable

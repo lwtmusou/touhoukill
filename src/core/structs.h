@@ -745,6 +745,9 @@ enum TriggerEvent
     AfterGuanXing,
     KingdomChanged,
 
+
+    GeneralShown, // For Official Hegemony mode
+
     NumOfEvents
 };
 

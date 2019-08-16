@@ -1871,11 +1871,12 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         room->sendLog(log);
     }
 
-    //if (trigger_event) {
-    //    Q_ASSERT(room->getThread() != NULL);
-    //    QVariant _head = head_general;
-    //    room->getThread()->trigger(GeneralShown, room, this, _head);
-    //}
+    if (trigger_event) {
+        Q_ASSERT(room->getThread() != NULL);
+        QVariant _head = QVariant::fromValue(this); //head_general;
+        //room->getThread()->trigger(GeneralShown, room, this, _head);
+        room->getThread()->trigger(GeneralShown, room, _head);
+    }
 
     room->filterCards(this, getCards("hes"), true);
 }

@@ -18,7 +18,7 @@ GameRule::GameRule(QObject *)
 
     events << GameStart << TurnStart << EventPhaseProceeding << EventPhaseEnd << EventPhaseChanging << PreCardUsed << CardUsed << CardFinished << CardEffected << PostHpReduced
            << EventLoseSkill << EventAcquireSkill << AskForPeaches << AskForPeachesDone << BuryVictim << GameOverJudge << SlashHit << SlashEffected << SlashProceed << ConfirmDamage
-           << DamageDone << DamageComplete << StartJudge << FinishRetrial << FinishJudge << ChoiceMade << BeforeCardsMove << EventPhaseStart << JinkEffect;
+           << DamageDone << DamageComplete << StartJudge << FinishRetrial << FinishJudge << ChoiceMade << BeforeCardsMove << EventPhaseStart << JinkEffect << GeneralShown;
 }
 
 int GameRule::getPriority() const
@@ -960,6 +960,58 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         }
         break;
     }
+    case GeneralShown: {
+        ServerPlayer *player = data.value<ServerPlayer *>();
+        /*QString winner = getWinner(player);
+        if (!winner.isNull()) {
+            room->gameOver(winner); // if all hasShownGenreal, and they are all friend, game over.
+            return true;
+        }*/
+        if (room->getTag("TheFirstToShowRewarded").isNull() && room->getScenario() == NULL) {//Config.RewardTheFirstShowingPlayer && 
+            LogMessage log;
+            log.type = "#FirstShowReward";
+            log.from = player;
+            room->sendLog(log);
+            if (player->askForSkillInvoke("FirstShowReward"))
+                player->drawCards(2);
+            room->setTag("TheFirstToShowRewarded", true);
+        }
+        //CompanionEffect  and  HalfMaxHpLeft
+        /*if (player->isAlive() && player->hasShownAllGenerals()) {
+            if (player->getMark("CompanionEffect") > 0) {
+                QStringList choices;
+                if (player->isWounded())
+                    choices << "recover";
+                choices << "draw" << "cancel";
+                LogMessage log;
+                log.type = "#CompanionEffect";
+                log.from = player;
+                room->sendLog(log);
+                QString choice = room->askForChoice(player, "CompanionEffect", choices.join("+"));
+                if (choice == "recover") {
+                    RecoverStruct recover;
+                    recover.who = player;
+                    recover.recover = 1;
+                    room->recover(player, recover);
+                }
+                else if (choice == "draw")
+                    player->drawCards(2);
+                room->removePlayerMark(player, "CompanionEffect");
+
+                room->setEmotion(player, "companion");
+            }
+            if (player->getMark("HalfMaxHpLeft") > 0) {
+                LogMessage log;
+                log.type = "#HalfMaxHpLeft";
+                log.from = player;
+                room->sendLog(log);
+                if (player->askForSkillInvoke("userdefine:halfmaxhp"))
+                    player->drawCards(1);
+                room->removePlayerMark(player, "HalfMaxHpLeft");
+            }
+        }*/
+    }
+
     case BeforeCardsMove: { //to be record? not effect
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
