@@ -336,6 +336,7 @@ public:
 
 
     void setSkillPreshowed(const QString &skill, bool preshowed = true);//hegemony
+    void setSkillsPreshowed( bool preshowed = true);
     bool hasPreshowedSkill(const QString &name) const;
     bool hasPreshowedSkill(const Skill *skill) const;
     bool isHidden() const;

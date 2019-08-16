@@ -211,9 +211,13 @@ void Dashboard::_adjustComponentZValues(bool killed)
     if (ServerInfo.GameMode == "hegmony") {
         _layUnder(leftHiddenMark);
         _layUnder(_m_shadow_layer1);
-        _layUnder(_m_avatarIcon);
+        //_layUnder(_m_avatarIcon);
 
-       
+        //_layUnder(_m_avatarIcon);
+        //_layUnder(_m_shadow_layer1);
+        //_layUnder(leftHiddenMark);
+        
+        
     }
 
     
@@ -972,7 +976,7 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
 
 void Dashboard::updateAvatar()
 {
-    if (ServerInfo.GameMode == "hegemony") {
+    /*if (ServerInfo.GameMode == "hegemony") {
         if (_m_avatarIcon == NULL) {
             _m_avatarIcon = new GraphicsPixmapHoverItem(this, _getAvatarParent());
             _m_avatarIcon->setTransformationMode(Qt::SmoothTransformation);
@@ -1026,13 +1030,13 @@ void Dashboard::updateAvatar()
         _adjustComponentZValues();
     
     
-    }
+    }*/
     
-    else {
+    //else {
         PlayerCardContainer::updateAvatar();
         _m_skillDock->update();
         //_adjustComponentZValues();
-    }
+    //}
     
 }
 

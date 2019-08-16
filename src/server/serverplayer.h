@@ -194,6 +194,8 @@ public:
 
 
     void notifyPreshow();//hegemony
+    void showGeneral(bool head_general = true, bool trigger_event = true, bool sendLog = true, bool ignore_rule = true);
+    void sendSkillsToOthers();
 
 protected:
     //Synchronization helpers

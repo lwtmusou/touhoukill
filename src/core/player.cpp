@@ -571,10 +571,9 @@ const General *Player::getGeneral2() const
 QString Player::getFootnoteName() const
 {
     if (ServerInfo.GameMode == "hegemony") {
-        if (Self->objectName() == objectName())// || (general && general->objectName() != "anjiang"
+        if (general && general->objectName() != "anjiang")// || (
             return getGeneralName();
         else {
-            
             //if (property("UI_Seat").toInt())
                 return Sanguosha->translate(QString("SEAT(%1)").arg(QString::number(getInitialSeat())));
         
@@ -1859,6 +1858,15 @@ void Player::setSkillPreshowed(const QString &skill, bool preshowed)
         skills[skill] = preshowed;
     
 }
+
+void Player::setSkillsPreshowed(bool preshowed)
+{
+    foreach(const QString &skill, skills.keys()) {
+        if (!Sanguosha->getSkill(skill)->canPreshow()) continue;
+        skills[skill] = preshowed;
+    }
+}
+
 
 
 bool Player::hasPreshowedSkill(const QString &name) const

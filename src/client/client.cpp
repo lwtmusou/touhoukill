@@ -972,7 +972,7 @@ QString Client::getPlayerName(const QString &str)
         if (ServerInfo.EnableSame || player->getGeneralName() == "anjiang")
             general_name = QString("%1[%2]").arg(general_name).arg(player->getSeat());
 
-        if (ServerInfo.GameMode == "hegemony" && Self != player) {
+        if (ServerInfo.GameMode == "hegemony" && player->getGeneralName() == "anjiang") {// Self != player
         //if (player->getGeneralName() == "anjiang")// && player->getGeneral2() != NULL && player->getGeneral2Name() == "anjiang"
             general_name = Sanguosha->translate(QString("SEAT(%1)").arg(QString::number(player->getInitialSeat())));
         }
