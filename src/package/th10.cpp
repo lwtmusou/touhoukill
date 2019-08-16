@@ -841,7 +841,7 @@ public:
     void record(TriggerEvent, Room *room, QVariant &data) const
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->hasSkill("fengsu"))
+        if (player->hasSkill("fengsu") && player->hasShownSkill("fengsu"))
             room->notifySkillInvoked(player, "fengsu");
     }
 };

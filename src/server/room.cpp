@@ -4296,6 +4296,9 @@ void Room::startGame()
             broadcastProperty(player, "role");
             setPlayerProperty(player, "role_shown", true);
         }
+
+        if (mode != "hegemony")
+            setPlayerProperty(player, "general_showed", true);
     }
 
     preparePlayers();
