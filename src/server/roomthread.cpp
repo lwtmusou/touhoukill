@@ -707,21 +707,24 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data)
             // if cost returned false, we don't process with the skill's left trigger times(use the trick of set it as triggered)
             // if effect returned true, exit the whole loop.
             bool do_cost = true;
-            if (invoke->isCompulsory && invoke->showhidden && invoke->invoker && invoke->invoker->isHiddenSkill(invoke->skill->objectName())) {
-                if (invoke->invoker->canShowHiddenSkill()) {
+            if (invoke->isCompulsory && invoke->showhidden && invoke->invoker){//show hidden Compulsory skill
+                bool invoke_hidden_compulsory = false;
+                if (room->getMode() == "hegemony")
+                    invoke_hidden_compulsory = invoke->owner->ownSkill(invoke->skill) && !invoke->owner->hasShownSkill(invoke->skill);
+                else
+                    invoke_hidden_compulsory = invoke->invoker->isHiddenSkill(invoke->skill->objectName()) && invoke->invoker->canShowHiddenSkill();
+
+                if (invoke_hidden_compulsory) {
                     do_cost = invoke->invoker->askForSkillInvoke("invoke_hidden_compulsory", QVariant::fromValue("compulsory:" + invoke->skill->objectName()));
                     if (do_cost)
                         invoke->invoker->showHiddenSkill(invoke->skill->objectName());
                 }
             }
+
             if (do_cost && invoke->skill->cost(triggerEvent, room, invoke, data)) {
                 //show hidden skill firstly
                 if (!invoke->isCompulsory && invoke->invoker) {
-                
-                    if (room->getMode() == "hegemony")
-                        invoke->invoker->showGeneral();
-                    else
-                        invoke->invoker->showHiddenSkill(invoke->skill->objectName());
+                        invoke->owner->showHiddenSkill(invoke->skill->objectName());
                 }
                     
                 // if we don't insert the target in the cost and there is a preferred target, we set the preferred target as the only target of the skill

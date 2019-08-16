@@ -1564,53 +1564,63 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
 {
     if (skill_name == NULL)
         return;
-    if (!canShowHiddenSkill() || !isHiddenSkill(skill_name))
-        return;
-    if (hasSkill(skill_name)) {
-        QStringList generals;
-        foreach (QString name, hidden_generals) {
-            const General *hidden = Sanguosha->getGeneral(name);
-            if (hidden->hasSkill(skill_name)) {
-                generals << name;
-            }
-        }
-        QString generalName;
-        if (generals.isEmpty())
+
+
+    if (room->getMode() == "hegemony") {
+        if (!hasShownGeneral() && ownSkill(skill_name))
+            showGeneral();
+    }
+    else { // for anyun
+        if (!canShowHiddenSkill() || !isHiddenSkill(skill_name))
             return;
-        else if (generals.length() == 1)
-            generalName = generals.first();
-        else {
-            generalName = room->askForChoice(this, "showSameHiddenSkills", generals.join("+"));
-        }
-
-        if (generalName != NULL) {
-            room->touhouLogmessage("#ShowHiddenGeneral", this, generalName);
-
-            JsonArray arg;
-            arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
-            arg << objectName();
-            arg << generalName;
-            arg << skill_name;
-
-            room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
-
-            shown_hidden_general = generalName;
-            JsonArray arg1;
-            arg1 << objectName();
-            arg1 << generalName;
-            room->doBroadcastNotify(S_COMMAND_SET_SHOWN_HIDDEN_GENERAL, arg1);
-
-            foreach (const Skill *skill, Sanguosha->getGeneral(generalName)->getVisibleSkillList()) {
-                if (!skill->isLordSkill() && !skill->isAttachedLordSkill() && skill->getFrequency() != Skill::Limited && skill->getFrequency() != Skill::Wake
-                    && skill->getFrequency() != Skill::Eternal)
-                    room->handleAcquireDetachSkills(this, skill->objectName(), true);
+        if (hasSkill(skill_name)) {
+            QStringList generals;
+            foreach(QString name, hidden_generals) {
+                const General *hidden = Sanguosha->getGeneral(name);
+                if (hidden->hasSkill(skill_name)) {
+                    generals << name;
+                }
             }
-            room->filterCards(this, this->getCards("hes"), true);
+            QString generalName;
+            if (generals.isEmpty())
+                return;
+            else if (generals.length() == 1)
+                generalName = generals.first();
+            else {
+                generalName = room->askForChoice(this, "showSameHiddenSkills", generals.join("+"));
+            }
 
-            //keep showing huashen for a short time
-            if (getPhase() == Player::Finish)
-                room->getThread()->delay(1000);
+            if (generalName != NULL) {
+                room->touhouLogmessage("#ShowHiddenGeneral", this, generalName);
+
+                JsonArray arg;
+                arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+                arg << objectName();
+                arg << generalName;
+                arg << skill_name;
+
+                room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+
+                shown_hidden_general = generalName;
+                JsonArray arg1;
+                arg1 << objectName();
+                arg1 << generalName;
+                room->doBroadcastNotify(S_COMMAND_SET_SHOWN_HIDDEN_GENERAL, arg1);
+
+                foreach(const Skill *skill, Sanguosha->getGeneral(generalName)->getVisibleSkillList()) {
+                    if (!skill->isLordSkill() && !skill->isAttachedLordSkill() && skill->getFrequency() != Skill::Limited && skill->getFrequency() != Skill::Wake
+                        && skill->getFrequency() != Skill::Eternal)
+                        room->handleAcquireDetachSkills(this, skill->objectName(), true);
+                }
+                room->filterCards(this, this->getCards("hes"), true);
+
+                //keep showing huashen for a short time
+                if (getPhase() == Player::Finish)
+                    room->getThread()->delay(1000);
+            }
         }
+    
+    
     }
 }
 

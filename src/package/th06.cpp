@@ -222,6 +222,18 @@ public:
     }
 
     // compulsory effect, cost omitted
+    /*bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (ServerInfo.GameMode == "hegemony") {
+            if (invoke->invoker->hasShownSkill(this) || invoke->invoker->askForSkillInvoke(this, data)) {
+                return true;
+            }
+        }
+        return false;
+    }*/
+
+
+
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
     {
