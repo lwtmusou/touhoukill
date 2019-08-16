@@ -1412,6 +1412,11 @@ public:
         view_as_skill = new QimenVS;
     }
 
+    bool Qimen::canPreshow() const
+    {
+        return true;
+    }
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
