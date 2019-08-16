@@ -139,10 +139,26 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     log.arg = new_kingdom;
                     room->sendLog(log);
                 }
-                foreach (const Skill *skill, player->getVisibleSkillList()) {
-                    if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
-                        room->setPlayerMark(player, skill->getLimitMark(), 1);
+                if (room->getMode() == "hegemony") {
+                    foreach(const Skill *skill, player->getVisibleSkillList()) {
+                        if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName()))) {
+                            JsonArray arg;
+                            arg << player->objectName();
+                            arg << skill->getLimitMark();
+                            arg << 1;
+                            room->doNotify(player, QSanProtocol::S_COMMAND_SET_MARK, arg);
+                            player->setMark(skill->getLimitMark(), 1);
+                        }
+                    }
                 }
+                else {
+                    foreach(const Skill *skill, player->getVisibleSkillList()) {
+                        if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
+                            room->setPlayerMark(player, skill->getLimitMark(), 1);
+                    }
+                }
+
+                
             }
             room->setTag("FirstRound", true);
             bool kof_mode = room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical";
