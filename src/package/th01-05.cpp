@@ -2111,6 +2111,12 @@ public:
         view_as_skill = new BaosiVS;
     }
 
+    bool Baosi::canPreshow() const
+    {
+        return true;
+    }
+
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
