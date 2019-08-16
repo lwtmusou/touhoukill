@@ -830,6 +830,11 @@ public:
         view_as_skill = new LianxiVS;
     }
 
+    bool Lianxi::canPreshow() const
+    {
+        return true;
+    }
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *user = NULL;
