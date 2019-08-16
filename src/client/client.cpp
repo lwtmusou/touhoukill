@@ -2112,7 +2112,7 @@ void Client::log(const QVariant &log_str)
     if (!JsonUtils::tryParse(log_str, log) || log.size() != 6)
         emit log_received(QStringList() << QString());
     else {
-        if (log.first().contains("#BasaraReveal"))
+        if (log.first().contains("#HegemonyReveal"))
             Sanguosha->playSystemAudioEffect("choose-item");
         else if (log.first() == "#Zombify") {
             ClientPlayer *from = getPlayer(log.at(1));

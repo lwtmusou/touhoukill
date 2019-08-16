@@ -235,6 +235,8 @@ CommonTranslationTable = {
 	["SEAT(8)"] = "八号位",
 	["SEAT(9)"] = "九号位",
 	["SEAT(10)"] = "十号位",
+	
+	["#HegemonyReveal"] = "%from 展示了武将，主将为 %arg",
 }
 
 return CommonTranslationTable

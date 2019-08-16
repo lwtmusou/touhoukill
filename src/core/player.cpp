@@ -1591,8 +1591,11 @@ QString Player::getSkillDescription(bool yellow) const
     QString color = yellow ? "#FFFF33" : "#FF0080";
 
     foreach (const Skill *skill, getVisibleSkillList()) {
-        if (skill->isAttachedLordSkill() || !hasSkill(skill->objectName()))
+        if (skill->isAttachedLordSkill())
             continue;
+        if (ServerInfo.GameMode != "hegemony" && !hasSkill(skill->objectName()))
+            continue;
+
         //remove lord skill Description
         if (skill->isLordSkill() && !hasLordSkill(skill->objectName()))
             continue;
@@ -1881,7 +1884,7 @@ bool Player::hasPreshowedSkill(const Skill *skill) const
 
 bool Player::isHidden() const
 {
-    //if (head_general ? general1_showed : general2_showed) return false;
+    if (general_showed) return false;
     //const QList<const Skill *> skills = head_general ? getHeadSkillList() : getDeputySkillList();
     const QList<const Skill *> skills = getSkillList();
     int count = 0;

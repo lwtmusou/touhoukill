@@ -1854,10 +1854,10 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
 
     if (sendLog) {
         LogMessage log;
-        log.type = "#BasaraReveal";
+        log.type = "#HegemonyReveal";
         log.from = this;
         log.arg = getGeneralName();
-        log.arg2 = getGeneral2Name();
+        //log.arg2 = getGeneral2Name();
         room->sendLog(log);
     }
 
