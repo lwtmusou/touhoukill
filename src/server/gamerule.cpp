@@ -1216,12 +1216,28 @@ void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const
     if (killer->isDead() || room->getMode() == "06_XMode")
         return;
 
+    if (isHegemonyGameMode(room->getMode()) && !killer->hasShownGeneral())
+        return;
+
     if (killer->getRoom()->getMode() == "06_3v3") {
         if (Config.value("3v3/OfficialRule", "2013").toString().startsWith("201"))
             killer->drawCards(2);
         else
             killer->drawCards(3);
-    } else {
+    }
+    else if (isHegemonyGameMode(room->getMode())) {
+        if (!killer->isFriendWith(victim)) {
+            int n = 1;
+            foreach(ServerPlayer *p, room->getOtherPlayers(victim)) {
+                if (victim->isFriendWith(p))
+                    ++n;
+            }
+            killer->drawCards(n);
+        }
+        else
+            killer->throwAllHandCardsAndEquips();
+    }
+    else {
         if (victim->getRole() == "rebel" && killer != victim)
             killer->drawCards(3);
         else if (victim->getRole() == "loyalist" && killer->getRole() == "lord")

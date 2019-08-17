@@ -1935,7 +1935,8 @@ bool Player::isFriendWith(const Player *player) const
     if (role == "careerist" || player->role == "careerist")
         return false;
 
-    return kingdom == player->kingdom;
+    return role == player->role;
+    //return kingdom == player->kingdom;
 }
 
 bool Player::willBeFriendWith(const Player *player) const
