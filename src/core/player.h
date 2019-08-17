@@ -345,7 +345,8 @@ public:
     void setGeneralShowed(bool showed);
     bool ownSkill(const QString &skill_name) const;
     bool ownSkill(const Skill *skill) const;
-
+    bool isFriendWith(const Player *player) const;
+    bool willBeFriendWith(const Player *player) const;
 
     QVariantMap tag;
 

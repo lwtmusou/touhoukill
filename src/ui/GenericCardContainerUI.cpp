@@ -1171,7 +1171,7 @@ void PlayerCardContainer::_updateDeathIcon()
 void PlayerCardContainer::killPlayer()
 {
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
-        _m_hegemonyroleComboBox->fix(m_player->getRole() == "careerist" ? "careerist" : m_player->getKingdom());
+        _m_hegemonyroleComboBox->fix(m_player->getRole() == "careerist" ? "careerist" : m_player->getRole());//m_player->getKingdom()
         _m_hegemonyroleComboBox->setEnabled(false);
     }
     else {

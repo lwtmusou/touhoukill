@@ -17,7 +17,7 @@ GameRule::GameRule(QObject *)
     //setParent(parent);
 
     events << GameStart << TurnStart << EventPhaseProceeding << EventPhaseEnd << EventPhaseChanging << PreCardUsed << CardUsed << CardFinished << CardEffected << PostHpReduced
-           << EventLoseSkill << EventAcquireSkill << AskForPeaches << AskForPeachesDone << BuryVictim << GameOverJudge << SlashHit << SlashEffected << SlashProceed << ConfirmDamage
+           << EventLoseSkill << EventAcquireSkill << AskForPeaches << AskForPeachesDone << BuryVictim << BeforeGameOverJudge << GameOverJudge << SlashHit << SlashEffected << SlashProceed << ConfirmDamage
            << DamageDone << DamageComplete << StartJudge << FinishRetrial << FinishJudge << ChoiceMade << BeforeCardsMove << EventPhaseStart << JinkEffect << GeneralShown;
 }
 
@@ -845,6 +845,18 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         room->damage(d);
 
         break;
+    }    
+    case BeforeGameOverJudge: {
+        DeathStruct death = data.value<DeathStruct>();
+        ServerPlayer *player = death.who;
+        if (isHegemonyGameMode(room->getMode())) {
+            if (!player->hasShownGeneral())
+                player->showGeneral(true, false, false);
+            //if (!player->hasShownGeneral2())
+            //    player->showGeneral(false, false, false);
+        }
+
+        break;
     }
     case GameOverJudge: {
         DeathStruct death = data.value<DeathStruct>();
@@ -886,6 +898,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
 
         if (killer && !skipRewardAndPunish)
             rewardAndPunish(killer, death.who);
+
+        //if lord dead in hegemony mode?
 
         if (room->getMode() == "02_1v1") {
             QStringList list = death.who->tag["1v1Arrange"].toStringList();
@@ -978,11 +992,11 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
     }
     case GeneralShown: {
         ServerPlayer *player = data.value<ServerPlayer *>();
-        /*QString winner = getWinner(player);
+        QString winner = getWinner(player);
         if (!winner.isNull()) {
             room->gameOver(winner); // if all hasShownGenreal, and they are all friend, game over.
             return true;
-        }*/
+        }
         if (room->getTag("TheFirstToShowRewarded").isNull() && room->getScenario() == NULL) {//Config.RewardTheFirstShowingPlayer && 
             LogMessage log;
             log.type = "#FirstShowReward";
@@ -1240,7 +1254,24 @@ QString GameRule::getWinner(ServerPlayer *victim) const
             else
                 winner = "renegade+rebel";
         }
-    } else {
+    }
+    else if (isHegemonyGameMode(room->getMode())) {
+        QStringList winners;
+        QList<ServerPlayer *> players = room->getAlivePlayers();
+        ServerPlayer *win_player = players.first();
+        if (players.length() == 1) {
+            if (!win_player->hasShownGeneral())
+                win_player->showGeneral(true, false, false);
+            
+            foreach(ServerPlayer *p, room->getPlayers()) {
+                if (win_player->isFriendWith(p))
+                    winners << p->objectName();
+            }
+            winner = winners.join("+");
+        }
+        
+    }
+    else {
         QStringList alive_roles = room->aliveRoles(victim);
         switch (victim->getRoleEnum()) {
         case Player::Lord: {

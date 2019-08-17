@@ -1919,3 +1919,59 @@ bool Player::ownSkill(const Skill *skill) const
 {
     return ownSkill(skill->objectName());
 }
+
+bool Player::isFriendWith(const Player *player) const
+{
+    Q_ASSERT(player);
+    if (player == NULL || !isHegemonyGameMode(ServerInfo.GameMode))
+        return false;
+    //if (!hasShownOneGeneral() || !player->hasShownOneGeneral())
+    if (!hasShownGeneral() || !player->hasShownGeneral())
+        return false;
+
+    if (this == player)
+        return true;
+
+    if (role == "careerist" || player->role == "careerist")
+        return false;
+
+    return kingdom == player->kingdom;
+}
+
+bool Player::willBeFriendWith(const Player *player) const
+{
+    if (this == player)
+        return true;
+    if (isFriendWith(player))
+        return true;
+    if (player == NULL)
+        return false;
+    //if (!player->hasShownOneGeneral())
+    if (!player->hasShownGeneral())
+        return false;
+    //if (!hasShownOneGeneral()) 
+    /*if (!hasShownGeneral()) {
+        QString kingdom = getActualGeneral1()->getKingdom();
+        int i = 1;
+        bool has_lord = isAlive() && isLord();
+
+        if (!has_lord) {
+            foreach(const Player *p, getSiblings()) {
+                if (p->getKingdom() == kingdom) {
+                    if (p->isAlive() && p->isLord()) {
+                        has_lord = true;
+                        break;
+                    }
+                    if (p->hasShownOneGeneral() && p->getRole() != "careerist")
+                        ++i;
+                }
+            }
+        }
+
+        if (!has_lord && i > (parent()->findChildren<const Player *>().length() / 2))
+            return false;
+        else if (kingdom == player->getKingdom())
+            return true;
+    }*/
+    return false;
+}
