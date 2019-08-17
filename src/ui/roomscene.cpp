@@ -4335,11 +4335,13 @@ void RoomScene::setEmotion(const QString &who, const QString &emotion, bool perm
 void RoomScene::showSkillInvocation(const QString &who, const QString &skill_name)
 {
     const ClientPlayer *player = ClientInstance->findChild<const ClientPlayer *>(who);
-    //hegemony??
-    //if (!player->ownSkill(skill_name) && !player->hasEquipSkill(skill_name)) return;
-    if (!player->hasSkill(skill_name) && !player->hasEquipSkill(skill_name))
+    //for hegemony gamemode: invoke hidden skill before showskill
+    QStringList skills = Sanguosha->getSkillNames();
+
+    if (!isHegemonyGameMode(ServerInfo.GameMode) && !player->hasSkill(skill_name) && !player->hasEquipSkill(skill_name))
         return;
-    
+    else if (isHegemonyGameMode(ServerInfo.GameMode) && !skills.contains(skill_name)  && !player->hasEquipSkill(skill_name))
+        return;
     
     QString type = "#InvokeSkill";
     QString from_general = player->objectName();
