@@ -844,7 +844,8 @@ void Player::addSkill(const QString &skill_name)
     const Skill *skill = Sanguosha->getSkill(skill_name);
     Q_ASSERT(skill);
     skills[skill_name] = !skill->canPreshow();
-
+    if (!skills_originalOrder.contains(skill_name))
+        skills_originalOrder << skill_name;
     /*if (head_skill)
         head_skills[skill_name] = !skill->canPreshow() || general1_showed;
     else
@@ -853,8 +854,8 @@ void Player::addSkill(const QString &skill_name)
 
 void Player::loseSkill(const QString &skill_name)
 {
-    //skills.removeOne(skill_name);
     skills.remove(skill_name);
+    skills_originalOrder.removeOne(skill_name);
 }
 
 QString Player::getPhaseString() const
@@ -1561,7 +1562,8 @@ QList<const Skill *> Player::getSkillList(bool include_equip, bool visible_only)
 {
     QList<const Skill *> skillList;
 
-    foreach (QString skill_name, skills.keys() + acquired_skills.toList()) {
+    //foreach (QString skill_name, skills.keys() + acquired_skills.toList()) {
+    foreach(QString skill_name, skills_originalOrder + acquired_skills.toList()) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (skill && (include_equip || !hasEquipSkill(skill->objectName())) && (!visible_only || skill->isVisible()))
             skillList << skill;

@@ -357,7 +357,7 @@ protected:
     QMap<QString, QList<int> > piles;
     QMap<QString, QStringList> pile_open;
     QSet<QString> acquired_skills;
-    QMap<QString, bool> skills;//QStringList skills;
+    QMap<QString, bool> skills;  QStringList skills_originalOrder;//equals  skills.keys().  unlike QMap, QStringList will keep originalOrder
     QSet<QString> flags;
     QHash<QString, int> history;
     QStringList skill_invalid;
