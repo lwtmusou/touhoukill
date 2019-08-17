@@ -1408,16 +1408,46 @@
     </message>
     <message>
         <location filename="../src/core/engine.cpp" line="114"/>
-        <source>hegemony</source>
-        <translation>国战</translation>
+        <source>hegemony 2 players</source>
+        <translation>国战2人局</translation>
     </message>
     <message>
-        <location filename="../src/core/engine.cpp" line="170"/>
+        <location filename="../src/core/engine.cpp" line="115"/>
+        <source>hegemony 3 players</source>
+        <translation>国战3人局</translation>
+    </message>
+    <message>
+        <location filename="../src/core/engine.cpp" line="116"/>
+        <source>hegemony 4 players</source>
+        <translation>国战4人局</translation>
+    </message>
+    <message>
+        <location filename="../src/core/engine.cpp" line="117"/>
+        <source>hegemony 5 players</source>
+        <translation>国战5人局</translation>
+    </message>
+    <message>
+        <location filename="../src/core/engine.cpp" line="118"/>
+        <source>hegemony 6 players</source>
+        <translation>国战6人局</translation>
+    </message>
+    <message>
+        <location filename="../src/core/engine.cpp" line="119"/>
+        <source>hegemony 7 players</source>
+        <translation>国战7人局</translation>
+    </message>
+    <message>
+        <location filename="../src/core/engine.cpp" line="120"/>
+        <source>hegemony 8 players</source>
+        <translation>国战8人局</translation>
+    </message>
+    <message>
+        <location filename="../src/core/engine.cpp" line="176"/>
         <source>Duplicated skill : %1</source>
         <translation>重复技能: %1</translation>
     </message>
     <message>
-        <location filename="../src/core/engine.cpp" line="780"/>
+        <location filename="../src/core/engine.cpp" line="789"/>
         <source>%1 [Scenario mode]</source>
         <translation>%1 【剧情模式】</translation>
     </message>
@@ -2381,7 +2411,7 @@
 <context>
     <name>Player</name>
     <message>
-        <location filename="../src/core/player.cpp" line="1610"/>
+        <location filename="../src/core/player.cpp" line="1612"/>
         <source>&lt;font color=%1&gt;No skills&lt;/font&gt;</source>
         <translation>&lt;font color=%1&gt;无技能&lt;/font&gt;</translation>
     </message>
@@ -3609,7 +3639,7 @@ P = 你自己, R = 你所在的房间</translation>
     <message>
         <location filename="../src/core/skill.cpp" line="59"/>
         <source>this skill cannot preshow</source>
-        <translation type="unfinished">此技能不可预亮</translation>
+        <translation>此技能不可预亮</translation>
     </message>
 </context>
 <context>
