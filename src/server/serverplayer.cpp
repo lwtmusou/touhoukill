@@ -1823,6 +1823,14 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral(this, general_name);
 
+        //change skinhero
+        int skin_id = room->getTag(general_name + "_skin_id").toInt();
+        JsonArray val;
+        val << (int)QSanProtocol::S_GAME_EVENT_SKIN_CHANGED;
+        val << objectName();
+        val << general_name;
+        val << skin_id;
+        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
 
         if (!property("Duanchang").toString().split(",").contains("head")) {
             sendSkillsToOthers();

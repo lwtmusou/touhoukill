@@ -6880,7 +6880,8 @@ void Room::skinChangeCommand(ServerPlayer *player, const QVariant &packet)
     val << player->objectName();
     val << generalName;
     val << arg[1].toInt();
-
+    
+    setTag(generalName + "_skin_id", arg[1].toInt());
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
 }
 
