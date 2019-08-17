@@ -157,9 +157,39 @@ config = {
 	basara_ban = {
 	},
 
-	hegemony_ban = {
+	hegemony_ban = {		
+	"zun",
+    "yukari_god",
+    "remilia_god",
+    "cirno_god",
+    "utsuho_god",
+    "suika_god",
+    "flandre_god",
+    "sakuya_god",
+    "youmu_god",
+    "reisen_god",
+    "sanae_god",
+    "reimu_god",
+    "shikieiki_god",
+    "meirin_god",
+    "eirin_god",
+	"kanako_god",
+    "byakuren_god",
+	"koishi_god",
+	"suwako_god",
+	"miko_god",
+	"kaguya_god",
+	"komachi_god",
+	"yuyuko_god",
+	"satori_god",
+    "aya_god",
+	"seiga_god",
+	"nue_god",
+	"marisa_god",
+	"patchouli_god",
+	"alice_god",
 	},
-
+	
 	pairs_ban = {
 	},
 
