@@ -33,6 +33,7 @@ QVariantList IntList2VariantList(const QList<int> &intlist);
 QList<int> VariantList2IntList(const QVariantList &variantlist);
 
 bool isNormalGameMode(const QString &mode);
+bool isHegemonyGameMode(const QString &mode);
 
 // cannot use do...while false here......
 #define DELETE_OVER_SCOPE(type, var)            \

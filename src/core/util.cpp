@@ -131,3 +131,8 @@ bool isNormalGameMode(const QString &mode)
 {
     return mode.endsWith("p") || mode.endsWith("pd") || mode.endsWith("pz");
 }
+
+bool isHegemonyGameMode(const QString &mode)
+{
+    return mode.startsWith("hegemony");
+}

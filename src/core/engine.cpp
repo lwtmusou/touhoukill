@@ -416,8 +416,11 @@ int Engine::getGeneralCount(bool include_banned) const
             total--;
         else if (ServerInfo.GameMode == "06_XMode" && Config.value("Banlist/XMode").toStringList().contains(general->objectName()))
             total--;
+        else if (isHegemonyGameMode(ServerInfo.GameMode) && Config.value("Banlist/Hegemony", "").toStringList().contains(general->objectName()))
+            total--;
         else if (ServerInfo.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
             total--;
+
     }
 
     return total;
@@ -1072,6 +1075,8 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
         general_set.subtract(Config.value("Banlist/HulaoPass", "").toStringList().toSet());
     else if (ServerInfo.GameMode == "06_XMode")
         general_set.subtract(Config.value("Banlist/XMode", "").toStringList().toSet());
+    else if (isHegemonyGameMode(ServerInfo.GameMode))
+        general_set.subtract(Config.value("Banlist/Hegemony", "").toStringList().toSet());
 
     all_generals = general_set.subtract(ban_set).toList();
 
@@ -1104,6 +1109,15 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 QStringList Engine::getLatestGenerals(const QSet<QString> &ban_set) const
 {
     QSet<QString> general_set = LatestGeneralList.toSet();
+    if (isNormalGameMode(ServerInfo.GameMode) || ServerInfo.GameMode.contains("_mini_") || ServerInfo.GameMode == "custom_scenario")
+        general_set.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
+    else if (ServerInfo.GameMode == "04_1v3")
+        general_set.subtract(Config.value("Banlist/HulaoPass", "").toStringList().toSet());
+    else if (ServerInfo.GameMode == "06_XMode")
+        general_set.subtract(Config.value("Banlist/XMode", "").toStringList().toSet());
+    else if (isHegemonyGameMode(ServerInfo.GameMode))
+        general_set.subtract(Config.value("Banlist/Hegemony", "").toStringList().toSet());
+
     QStringList latest_generals = general_set.subtract(ban_set).toList();
     if (!latest_generals.isEmpty())
         qShuffle(latest_generals);
