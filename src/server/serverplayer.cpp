@@ -1841,32 +1841,33 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         //    room->notifyProperty(p, this, "head_skin_id");
 
         //count careerist
-        room->setPlayerProperty(this, "role", "wu");
-        /*if (!hasShownGeneral2()) {
-        QString kingdom = "wu";// getKingdom() != getGeneral()->getKingdom() ? getKingdom() : getGeneral()->getKingdom();
-            room->setPlayerProperty(this, "kingdom", kingdom);
+        //room->setPlayerProperty(this, "role", "wu");
+        //if (!hasShownGeneral2()) {
+        //QString kingdom = "wu";// getKingdom() != getGeneral()->getKingdom() ? getKingdom() : getGeneral()->getKingdom();
+        //    room->setPlayerProperty(this, "kingdom", kingdom);
 
-            QString role = "rebel";// HegemonyMode::GetMappedRole(kingdom);
+        QString role = getRole(); //"rebel";// HegemonyMode::GetMappedRole(kingdom);
             int i = 1;
-            bool has_lord = isAlive() && getGeneral()->isLord();
-            if (!has_lord) {
+            //bool has_lord = false; //isAlive() && getGeneral()->isLord();
+            //if (!has_lord) {
                 foreach(ServerPlayer *p, room->getOtherPlayers(this, true)) {
-                    if (p->getKingdom() == kingdom) {
-                        if (p->getGeneral()->isLord()) {
-                            has_lord = true;
-                            break;
-                        }
-                        if (p->hasShownOneGeneral() && p->getRole() != "careerist")
+                    if (p->getRole() == role) {
+                        //if (p->getGeneral()->isLord()) {
+                        //    has_lord = true;
+                        //    break;
+                        //}
+                        if (p->hasShownGeneral() && p->getRole() != "careerist")
                             ++i;
                     }
                 }
-            }
+            //}
 
             //if ((!has_lord && i > (room->getPlayers().length() / 2)) || (has_lord && getLord(true)->isDead()))
-            //    role = "careerist";
+                if (i > (room->getPlayers().length() / 2))
+                    role = "careerist";
 
             room->setPlayerProperty(this, "role", role);
-        }*/
+        //}
 
         /*if (isLord()) {
             QString kingdom = getKingdom();
