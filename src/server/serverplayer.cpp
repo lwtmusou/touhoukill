@@ -999,7 +999,7 @@ void ServerPlayer::addSkill(const QString &skill_name)
     args << QSanProtocol::S_GAME_EVENT_ADD_SKILL;
     args << objectName();
     args << skill_name;
-    if (room->getMode() == "hegemony")
+    if (isHegemonyGameMode(room->getMode()))
         room->doNotify(this, QSanProtocol::S_COMMAND_LOG_EVENT, args);
     else
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
@@ -1566,7 +1566,7 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
         return;
 
 
-    if (room->getMode() == "hegemony") {
+    if (isHegemonyGameMode(room->getMode())) {
         if (!hasShownGeneral() && ownSkill(skill_name))
             showGeneral();
     }
@@ -1628,7 +1628,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
 {
     if (use.card == NULL || use.card->getTypeId() == Card::TypeSkill)
         return QStringList();
-    if (room->getMode() != "hegemony") {
+    if (!isHegemonyGameMode(room->getMode())) {
         if (!canShowHiddenSkill())
             return QStringList();
         QString cardskill = use.card->getSkillName();//check double hidden skill
@@ -1640,7 +1640,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     
 
     QList<const TargetModSkill *> tarmods;
-    if (room->getMode() == "hegemony") {
+    if (isHegemonyGameMode(room->getMode())) {
         foreach(const Skill *skill, use.from->getSkillList(false, false)) {
             if (skill->inherits("TargetModSkill") &&  use.from->hasSkill(skill) && !use.from->hasShownSkill(skill)) {//main_skill??
                 const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);

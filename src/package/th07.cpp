@@ -1544,7 +1544,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.nature != DamageStruct::Normal || !damage.to->hasSkill(this))
             return QList<SkillInvokeDetail>();
-        if (room->getMode() == "hegemony" && !damage.to->hasShownSkill(this))
+        if (isHegemonyGameMode(room->getMode()) && !damage.to->hasShownSkill(this))
             return QList<SkillInvokeDetail>();
 
         QList<ServerPlayer *> invokers = dunjiaInvokers(damage.to);

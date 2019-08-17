@@ -709,7 +709,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data)
             bool do_cost = true;
             if (invoke->isCompulsory && invoke->showhidden && invoke->invoker){//show hidden Compulsory skill
                 bool invoke_hidden_compulsory = false;
-                if (room->getMode() == "hegemony")
+                if (isHegemonyGameMode(room->getMode()))
                     invoke_hidden_compulsory = invoke->owner->ownSkill(invoke->skill) && !invoke->owner->hasShownSkill(invoke->skill);
                 else
                     invoke_hidden_compulsory = invoke->invoker->isHiddenSkill(invoke->skill->objectName()) && invoke->invoker->canShowHiddenSkill();

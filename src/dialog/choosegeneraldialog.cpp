@@ -167,7 +167,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     dialog_layout->addLayout(layout);
 
     if (!view_only) {
-        if (ServerInfo.GameMode == "hegemony") {
+        if (isHegemonyGameMode(ServerInfo.GameMode)) {
             //need a seat prompt
             QLabel *seat_label = new QLabel(tr("Your seat is %1").arg(Sanguosha->translate("CAPITAL(" + QString::number(Self->getSeat()) + ")")));
             dialog_layout->addWidget(seat_label);

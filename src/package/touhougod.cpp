@@ -1721,7 +1721,7 @@ public:
 
     void record(TriggerEvent, Room *room, QVariant &) const
     {
-        if (ServerInfo.GameMode == "hegemony")
+        if (isHegemonyGameMode(ServerInfo.GameMode))
             return;
 
         foreach (ServerPlayer *p, room->getAlivePlayers())

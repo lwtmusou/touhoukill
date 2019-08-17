@@ -174,7 +174,7 @@ void QSanButton::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void QSanButton::_onMouseClick(bool inside)
 {
-    if (ServerInfo.GameMode == "hegemony") {
+    if (isHegemonyGameMode(ServerInfo.GameMode)) {
         bool changeState = true;
         if (inherits("QSanSkillButton")) {
             const Skill * skill = qobject_cast<const QSanSkillButton *>(this)->getSkill();
@@ -330,7 +330,7 @@ void QSanSkillButton::setSkill(const Skill *skill)
         _m_canEnable = true;
         _m_canDisable = true;
     } else if (freq == Skill::Compulsory || freq == Skill::Eternal || freq == Skill::NotCompulsory) { //  we have to set it in such way for WeiDi
-        if (ServerInfo.GameMode == "hegemony")
+        if (isHegemonyGameMode(ServerInfo.GameMode))
             setState(QSanButton::S_STATE_DISABLED);
         else
             setState(QSanButton::S_STATE_UP);
@@ -344,7 +344,7 @@ void QSanSkillButton::setSkill(const Skill *skill)
         Q_ASSERT(false);
     setToolTip(skill->getDescription());
 
-    if (ServerInfo.GameMode == "hegemony") {
+    if (isHegemonyGameMode(ServerInfo.GameMode)) {
         if (!Self->hasShownSkill(skill) && skill->canPreshow())
             setState(QSanButton::S_STATE_CANPRESHOW);
     }
@@ -380,7 +380,7 @@ void QSanSkillButton::setState(ButtonState state, bool ignore_change)
 void QSanSkillButton::setEnabled(bool enabled)
 {
     
-    if (ServerInfo.GameMode == "hegemony") {
+    if (isHegemonyGameMode(ServerInfo.GameMode)) {
         //bool head = objectName() == "left";
         if (!enabled && _m_skill->canPreshow()
             && (!Self->hasShownSkill(_m_skill) || Self->hasFlag("hiding"))) {

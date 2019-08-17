@@ -2613,7 +2613,7 @@ void Room::prepareForStart()
     } else if (mode == "06_3v3" || mode == "06_XMode" || mode == "02_1v1") {
         return;
     } 
-    else if (mode == "hegemony") {
+    else if (isHegemonyGameMode(mode)) {
         if (Config.RandomSeat)
             qShuffle(m_players);
     }
@@ -3314,7 +3314,7 @@ void Room::run()
 
         startGame();
     } 
-    else if (mode == "hegemony") {
+    else if (isHegemonyGameMode(mode)) {
         chooseHegemonyGenerals();
 
         startGame();
@@ -4171,7 +4171,7 @@ bool Room::hasWelfare(const ServerPlayer *player) const
 {
     if (mode == "06_3v3")
         return player->isLord() || player->getRole() == "renegade";
-    else if (mode == "06_XMode" || mode == "hegemony")
+    else if (mode == "06_XMode" || isHegemonyGameMode(mode))
         return false;
     else
         return player->isLord() && player_count > 4;
@@ -4261,7 +4261,7 @@ void Room::startGame()
 
     foreach (ServerPlayer *player, m_players) {
         Q_ASSERT(player->getGeneral());
-        if (mode == "hegemony") {
+        if (isHegemonyGameMode(mode)) {
             QStringList generals = getTag(player->objectName()).toStringList();
             const General *general1 = Sanguosha->getGeneral(generals.first());
             Q_ASSERT(general1);
@@ -4280,7 +4280,7 @@ void Room::startGame()
 
     foreach (ServerPlayer *player, m_players) {
         if (mode == "06_3v3" || mode == "02_1v1" || mode == "06_XMode" || 
-             (mode != "hegemony"  && !player->isLord())) // hegemony has already notified "general"
+             (!isHegemonyGameMode(mode) && !player->isLord())) // hegemony has already notified "general"
             broadcastProperty(player, "general");
 
         if (mode == "02_1v1")
@@ -4297,7 +4297,7 @@ void Room::startGame()
             setPlayerProperty(player, "role_shown", true);
         }
 
-        if (mode != "hegemony")
+        if (!isHegemonyGameMode(mode))
             setPlayerProperty(player, "general_showed", true);
     }
 
@@ -5092,7 +5092,7 @@ void Room::doAnimate(QSanProtocol::AnimateType type, const QString &arg1, const 
 
 void Room::preparePlayers()
 {
-    if (mode == "hegemony") {
+    if (isHegemonyGameMode(mode)) {
         foreach(ServerPlayer *player, m_players) {
             QString general1_name = tag[player->objectName()].toStringList().at(0);
             //if (!player->property("Duanchang").toString().split(",").contains("head")) {

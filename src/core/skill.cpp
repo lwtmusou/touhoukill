@@ -55,7 +55,7 @@ QString Skill::getDescription(bool yellow) const
     if (des_src.startsWith(":"))
         return QString();
     QString desc = QString("<font color=%1>%2</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(des_src);
-    if (ServerInfo.GameMode == "hegemony" && !canPreshow())
+    if (isHegemonyGameMode(ServerInfo.GameMode) && !canPreshow())
         desc.prepend(QString("<font color=gray>(%1)</font><br/>").arg(tr("this skill cannot preshow")));
     return desc;
 }
@@ -527,7 +527,7 @@ const Card *ShowDistanceSkill::viewAs() const
 
 bool ShowDistanceSkill::isEnabledAtPlay(const Player *player) const
 {
-    if (ServerInfo.GameMode != "hegemony") return false;
+    if (!isHegemonyGameMode(ServerInfo.GameMode)) return false;
     //const DistanceSkill *skill = qobject_cast<const DistanceSkill *>(Sanguosha->getSkill(objectName()));
     const Skill *skill = Sanguosha->getSkill(objectName());
     if (skill) {

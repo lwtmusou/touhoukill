@@ -103,7 +103,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(Self, SIGNAL(pile_changed(QString)), dashboard, SLOT(updatePile(QString)));
 
     // add role ComboBox
-    if (ServerInfo.GameMode == "hegemony")
+    if (isHegemonyGameMode(ServerInfo.GameMode))
         connect(Self, &ClientPlayer::kingdom_changed, dashboard, &Dashboard::updateKingdom);
     else
         connect(Self, SIGNAL(role_changed(QString)), dashboard, SLOT(updateRole(QString)));
@@ -610,7 +610,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         }
 
         //change bgm and backgroud
-        if (ServerInfo.GameMode != "hegemony" &&  player->isLord()) {
+        if (!isHegemonyGameMode(ServerInfo.GameMode) &&  player->isLord()) {
             ClientInstance->lord_name = newHeroName;
             setLordBGM(newHeroName);
             setLordBackdrop(newHeroName);
@@ -1312,7 +1312,7 @@ void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
         _m_isInDragAndUseMode = false;
         */
 
-    if (ServerInfo.GameMode == "hegemony") {
+    if (isHegemonyGameMode(ServerInfo.GameMode)) {
         //m_mousePressed = true;    super drag??
         bool changed = false;
         QPoint point(event->pos().x(), event->pos().y());
@@ -2501,7 +2501,7 @@ void RoomScene::updateSkillButtons()
     }
 
 
-    if (ServerInfo.GameMode == "hegemony") {
+    if (isHegemonyGameMode(ServerInfo.GameMode)) {
         foreach(QSanSkillButton *button, m_skillButtons) {
             const Skill *skill = button->getSkill();
             bool head = button->objectName() == "left";
@@ -4251,7 +4251,7 @@ void RoomScene::onGameStart()
 
     game_started = true;
 
-    if (ServerInfo.GameMode == "hegemony") {
+    if (isHegemonyGameMode(ServerInfo.GameMode)) {
         dashboard->refresh();
         dashboard->showSeat();
         foreach(Photo *photo, photos)
@@ -5224,7 +5224,7 @@ QRect RoomScene::getBubbleChatBoxShowArea(const QString &who) const
 
 void RoomScene::highlightSkillButton(QString skill_name, bool highlight)
 {
-    if (ServerInfo.GameMode == "hegemony")
+    if (isHegemonyGameMode(ServerInfo.GameMode))
         return;
     if (skill_name == NULL || skill_name == "")
         return;

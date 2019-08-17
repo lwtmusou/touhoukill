@@ -111,7 +111,13 @@ Engine::Engine()
     modes["10pd"] = tr("10 players");
     modes["10p"] = tr("10 players (1 renegade)");
     modes["10pz"] = tr("10 players (0 renegade)");
-    modes["hegemony"] = tr("hegemony");
+    modes["hegemony_2"] = tr("hegemony 2 players");
+    modes["hegemony_3"] = tr("hegemony 3 players");
+    modes["hegemony_4"] = tr("hegemony 4 players");
+    modes["hegemony_5"] = tr("hegemony 5 players");
+    modes["hegemony_6"] = tr("hegemony 6 players");
+    modes["hegemony_7"] = tr("hegemony 7 players");
+    modes["hegemony_8"] = tr("hegemony 8 players");
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
@@ -327,7 +333,7 @@ int Engine::getRoleIndex() const
     if (ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode") {
         return 4;
     }
-    else if (ServerInfo.GameMode == "hegemony")
+    else if (isHegemonyGameMode(ServerInfo.GameMode))
         return 5;
     else
         return 1;
@@ -785,8 +791,11 @@ QString Engine::getModeName(const QString &mode) const
 
 int Engine::getPlayerCount(const QString &mode) const
 {
-    if (mode == "hegemony")
-        return 2;
+    if (isHegemonyGameMode(mode)) {
+        QStringList modestrings = mode.split("_");
+        return modestrings.last().toInt(); //return 2;
+    }
+        
     if (modes.contains(mode)) {
         QRegExp rx("(\\d+)");
         int index = rx.indexIn(mode);

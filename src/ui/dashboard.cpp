@@ -243,7 +243,7 @@ void Dashboard::_createRight()
     _m_skillDock->setWidth(avatar.width() - 50);
     
     //hegemony
-    if (ServerInfo.GameMode == "hegemony") {
+    if (isHegemonyGameMode(ServerInfo.GameMode)) {
         _m_shadow_layer1 = new QGraphicsRectItem(_m_rightFrame);
         _m_shadow_layer1->setRect(G_DASHBOARD_LAYOUT.m_avatarArea);
 
@@ -279,7 +279,7 @@ void Dashboard::killPlayer()
 {
     trusting_item->hide();
     trusting_text->hide();
-    if (ServerInfo.GameMode == "hegemony") {
+    if (isHegemonyGameMode(ServerInfo.GameMode)) {
         _m_hegemonyroleComboBox->fix(m_player->getRole() == "careerist" ? "careerist" : m_player->getKingdom());
         _m_hegemonyroleComboBox->setEnabled(false);
     }
@@ -1706,7 +1706,7 @@ void Dashboard::showSeat()
 
 void Dashboard::updateHiddenMark()
 {
-    if (ServerInfo.GameMode != "hegemony") return;
+    if (!isHegemonyGameMode(ServerInfo.GameMode)) return;
     //for test
     /*QStringList log; 
     if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral()) {
@@ -1735,7 +1735,7 @@ void Dashboard::setPlayer(ClientPlayer *player)
 
 void Dashboard::onHeadStateChanged()
 {
-    if (ServerInfo.GameMode != "hegemony") return;
+    if (!isHegemonyGameMode(ServerInfo.GameMode)) return;
     if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral())
         _m_shadow_layer1->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
     else
@@ -1746,7 +1746,7 @@ void Dashboard::onHeadStateChanged()
 void Dashboard::refresh()
 {
     PlayerCardContainer::refresh();
-    if (ServerInfo.GameMode != "hegemony") return;
+    if (!isHegemonyGameMode(ServerInfo.GameMode)) return;
     if (!m_player || !m_player->getGeneral() || !m_player->isAlive()) {
         _m_shadow_layer1->setBrush(Qt::NoBrush);
         //_m_shadow_layer2->setBrush(Qt::NoBrush);

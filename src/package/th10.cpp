@@ -808,7 +808,7 @@ public:
     virtual int getCorrect(const Player *from, const Player *to) const
     {
         int correct = 0;
-        if (ServerInfo.GameMode == "hegemony") {
+        if (isHegemonyGameMode(ServerInfo.GameMode)) {
             if (from->hasSkill("fengsu") && from->hasShownSkill("fengsu"))
                 correct = correct - (from->getLostHp());
 

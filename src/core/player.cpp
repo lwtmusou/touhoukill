@@ -570,7 +570,7 @@ const General *Player::getGeneral2() const
 
 QString Player::getFootnoteName() const
 {
-    if (ServerInfo.GameMode == "hegemony") {
+    //if (isHegemonyGameMode(ServerInfo.GameMode)) {
         if (general && general->objectName() != "anjiang")// || (
             return getGeneralName();
         else {
@@ -579,7 +579,7 @@ QString Player::getFootnoteName() const
         
         } 
 
-    }
+    //}
     return getGeneralName();
     //backup
     /*if (general && general->objectName() != "anjiang" && !general->objectName().contains("sujiang"))
@@ -611,7 +611,7 @@ void Player::setRole(const QString &role)
     if (this->role != role) {
         this->role = role;
         emit role_changed(role);
-        if (ServerInfo.GameMode == "hegemony") {
+        if (isHegemonyGameMode(ServerInfo.GameMode)) {
             if (role == "careerist")
                 emit kingdom_changed("careerist");
             else
@@ -677,7 +677,7 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
     QString skill_name = skill->objectName();
 
     //@todo: need check
-    if (ServerInfo.GameMode == "hegemony"){
+    if (isHegemonyGameMode(ServerInfo.GameMode)){
         //const TriggerSkill *trigger = Sanguosha->getTriggerSkill(skill_name);
         //if (trigger && trigger->isGlobal()) return true;
 
@@ -1202,8 +1202,8 @@ void Player::setKingdom(const QString &kingdom)
 {
     if (this->kingdom != kingdom) {
         this->kingdom = kingdom;
-        if (ServerInfo.GameMode == "hegemony" && role == "careerist") return;
-        if (ServerInfo.GameMode == "hegemony") {
+        if (isHegemonyGameMode(ServerInfo.GameMode) && role == "careerist") return;
+        if (isHegemonyGameMode(ServerInfo.GameMode)) {
             QStringList kingdoms = Sanguosha->getHegemonyKingdoms();
             if (!kingdoms.contains(kingdom))
                 return;
@@ -1595,7 +1595,7 @@ QString Player::getSkillDescription(bool yellow) const
     foreach (const Skill *skill, getVisibleSkillList()) {
         if (skill->isAttachedLordSkill())
             continue;
-        if (ServerInfo.GameMode != "hegemony" && !hasSkill(skill->objectName()))
+        if (!isHegemonyGameMode(ServerInfo.GameMode) && !hasSkill(skill->objectName()))
             continue;
 
         //remove lord skill Description
