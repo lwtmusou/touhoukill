@@ -1272,10 +1272,11 @@ QString GameRule::getWinner(ServerPlayer *victim) const
         }
     }
     else if (isHegemonyGameMode(room->getMode())) {
-        QStringList winners;
+        
         QList<ServerPlayer *> players = room->getAlivePlayers();
         ServerPlayer *win_player = players.first();
         if (players.length() == 1) {
+            QStringList winners;
             if (!win_player->hasShownGeneral())
                 win_player->showGeneral(true, false, false);
             
@@ -1285,6 +1286,85 @@ QString GameRule::getWinner(ServerPlayer *victim) const
             }
             winner = winners.join("+");
         }
+        else {
+            QList<ServerPlayer *> winners;
+            int careerist_threshold = (room->getPlayers().length() / 2);
+            QMap<QString, QList<ServerPlayer *>> role_count;
+            QMap<QString, QList<ServerPlayer *>> dead_role_count;
+            QMap<QString, QString> role_judge;
+            foreach(ServerPlayer *p, room->getAllPlayers(true)) {
+                QString role = p->getRole();
+                if (role_count.contains(role)) {
+                    QList<ServerPlayer *> players = role_count[role];
+                    players.append(p);
+                    role_count[role] = players; 
+                }  
+                else {
+                    QList<ServerPlayer *> players;
+                    players.append(p);
+                    role_count[role] = players;
+                }
+
+                if (p->isDead()) {
+                    if (dead_role_count.contains(role)) {
+                        QList<ServerPlayer *> players = dead_role_count[role];
+                        players.append(p);
+                        dead_role_count[role] = players;
+                    }
+                    else {
+                        QList<ServerPlayer *> players;
+                        players.append(p);
+                        dead_role_count[role] = players;
+                    }
+                
+                }
+            }
+
+            QList<QString> roles = role_count.keys();
+            foreach(QString role, roles) {
+                QList<ServerPlayer *> players = role_count[role];
+                if (players.length() == dead_role_count[role].length()) //all dead
+                {
+                    role_count.remove(role);
+                }
+            }
+
+
+            if (role_count.keys().length() == 1) {
+                QString role = role_count.keys().first();
+                if (role == "careerist") {
+                    foreach(ServerPlayer *p, role_count[role]) {
+                        if (p->isAlive())
+                            winners << p;
+                    }
+                    if (winners.length() > 1)
+                        winners.clear();
+                }
+                else {
+                    if (role_count[role].length() <= careerist_threshold)
+                            winners = role_count[role];
+                    else { //for hidden careerist
+                        if (dead_role_count[role].length() >= careerist_threshold
+                            && (role_count[role].length() - dead_role_count[role].length()) == 1) {
+                            foreach(ServerPlayer *p, role_count[role]) {
+                                if (p->isAlive())
+                                    winners << p;
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            QStringList winner_names;
+            foreach(ServerPlayer *p, winners) {
+                winner_names << p->objectName();
+                if (!p->hasShownGeneral())
+                    p->showGeneral(true, false, false);
+            }
+            winner = winner_names.join("+");
+        }
+
         
     }
     else {

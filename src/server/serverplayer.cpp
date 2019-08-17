@@ -1863,9 +1863,21 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
             //}
 
             //if ((!has_lord && i > (room->getPlayers().length() / 2)) || (has_lord && getLord(true)->isDead()))
+                if (role != "careerist") {
+                    if ((i + 1) > (room->getPlayers().length() / 2)) {// set hidden careerist
+                        foreach(ServerPlayer *p, room->getOtherPlayers(this, true)) {
+                            if (p->isAlive() && !p->hasShownGeneral() && role == p->getRole()) {
+                                p->setRole("careerist");
+                                room->notifyProperty(p, p, "role", "careerist");
+                            }
+                        }
+                    }
+                
+                }
+                
                 if (i > (room->getPlayers().length() / 2))
                     role = "careerist";
-
+                
             room->setPlayerProperty(this, "role", role);
         //}
 

@@ -1951,28 +1951,29 @@ bool Player::willBeFriendWith(const Player *player) const
     if (!player->hasShownGeneral())
         return false;
     //if (!hasShownOneGeneral()) 
-    /*if (!hasShownGeneral()) {
-        QString kingdom = getActualGeneral1()->getKingdom();
+    if (!hasShownGeneral()) {
+        QString role = getRole(); //getActualGeneral1()->getKingdom();
         int i = 1;
-        bool has_lord = isAlive() && isLord();
+        //bool has_lord = isAlive() && isLord();
 
-        if (!has_lord) {
+        //if (!has_lord) {
             foreach(const Player *p, getSiblings()) {
-                if (p->getKingdom() == kingdom) {
-                    if (p->isAlive() && p->isLord()) {
-                        has_lord = true;
-                        break;
-                    }
-                    if (p->hasShownOneGeneral() && p->getRole() != "careerist")
+                if (p->getRole() == role) {
+                    //if (p->isAlive() && p->isLord()) {
+                    //    has_lord = true;
+                    //    break;
+                    //}
+                    if (p->hasShownGeneral() && p->getRole() != "careerist")
                         ++i;
                 }
             }
-        }
+        //}
 
-        if (!has_lord && i > (parent()->findChildren<const Player *>().length() / 2))
+        //if (!has_lord && i > (parent()->findChildren<const Player *>().length() / 2))
+        if (i > (parent()->findChildren<const Player *>().length() / 2))
             return false;
-        else if (kingdom == player->getKingdom())
+        else if (role == player->getRole())
             return true;
-    }*/
+    }
     return false;
 }

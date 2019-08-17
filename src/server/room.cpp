@@ -426,7 +426,8 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason)
 
     broadcastProperty(victim, "alive");
     broadcastProperty(victim, "role");
-    setPlayerProperty(victim, "role_shown", true);
+    if (isNormalGameMode(mode))
+        setPlayerProperty(victim, "role_shown", true);
 
     doBroadcastNotify(S_COMMAND_KILL_PLAYER, QVariant(victim->objectName()));
 
@@ -3182,12 +3183,13 @@ void Room::chooseHegemonyGenerals()
         
     }
 
-    //@todo  
+    //@todo
+    int i = 1;
     foreach(ServerPlayer *player, m_players) {
         QStringList names;
         if (player->getGeneral()) {
             QString name = player->getGeneralName();
-            QString role = "wu";
+            QString role = (i < 10) ?   "wei" :  "wu";
             names.append(name);
             //player->setActualGeneral1Name(name);
             player->setRole(role);
@@ -3197,6 +3199,7 @@ void Room::chooseHegemonyGenerals()
                 notifyProperty(p, player, "general");
             notifyProperty(player, player, "general", name);
             notifyProperty(player, player, "role", role);
+            i++;
         }
         //if (player->getGeneral2())
            
