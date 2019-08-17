@@ -505,8 +505,13 @@ void QSanInvokeSkillDock::setWidth(int width)
 void QSanInvokeSkillDock::update()
 {
     if (!_m_buttons.isEmpty()) {
+        
         QList<QSanInvokeSkillButton *> regular_buttons, lordskill_buttons, all_buttons;
+        
         foreach (QSanInvokeSkillButton *btn, _m_buttons) {
+            /*QStringList log;
+            log << btn->getSkill()->objectName();
+            RoomSceneInstance->addlog(log);*/
             if (!btn->getSkill()->shouldBeVisible(Self)) {
                 btn->setVisible(false);
                 continue;

@@ -138,6 +138,11 @@ end
 
 --version 1: read table from etc folder
 selectFirst = function(player, candidates) -- string
+	--暂时性的测试用国战选将ai
+    if player:getRoom():getMode():find("hegemony") then
+		return candidates[1]
+	end
+
 	local values = {}
 	local role = player:getRole()
 	local lord = player:getRoom():getLord()
