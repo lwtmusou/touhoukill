@@ -280,6 +280,11 @@ public:
         events << Damaged;
     }
 
+    bool Yaoban::canPreshow() const
+    {
+        return true;
+    }
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();

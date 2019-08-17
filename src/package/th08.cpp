@@ -922,6 +922,11 @@ public:
         view_as_skill = new BuxianVS;
     }
 
+    bool Buxian::canPreshow() const
+    {
+        return true;
+    }
+
     static bool hasBuxianTarget(ServerPlayer *player)
     {
         int n = 0;
@@ -1035,6 +1040,11 @@ public:
     {
         events << CardsMoveOneTime;
         view_as_skill = new XingyunVS;
+    }
+
+    bool Xingyun::canPreshow() const
+    {
+        return true;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
@@ -1164,6 +1174,11 @@ public:
     {
         events << EventPhaseStart;
         view_as_skill = new YegeVS;
+    }
+
+    bool Yege::canPreshow() const
+    {
+        return true;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
@@ -1353,6 +1368,11 @@ public:
     {
         events << EventPhaseChanging << EventPhaseStart << EventPhaseEnd;
         view_as_skill = new GeshengVS;
+    }
+
+    bool Gesheng::canPreshow() const
+    {
+        return true;
     }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const
@@ -1762,6 +1782,11 @@ public:
         view_as_skill = new ChuangshiVS;
     }
 
+    bool Chuangshi::canPreshow() const
+    {
+        return true;
+    }
+
     virtual QDialog *getDialog() const
     {
         return QijiDialog::getInstance("chuangshi");
@@ -1965,6 +1990,11 @@ public:
     {
         events << CardAsked << CardUsed << CardsMoveOneTime << CardResponded;
         view_as_skill = new HuweiVS;
+    }
+
+    bool Huwei::canPreshow() const
+    {
+        return true;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const

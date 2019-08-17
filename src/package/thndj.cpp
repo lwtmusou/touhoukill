@@ -714,6 +714,11 @@ public:
         view_as_skill = new LiexiVS;
     }
 
+    bool Liexi::canPreshow() const
+    {
+        return true;
+    }
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
     {
         if (e == EventPhaseEnd) {
@@ -1235,6 +1240,11 @@ public:
         events << EventPhaseStart << Damage << FinishJudge;
         view_as_skill = new JinengVS;
         related_pile = "jinengPile";
+    }
+
+    bool Jineng::canPreshow() const
+    {
+        return true;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const

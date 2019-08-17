@@ -373,6 +373,12 @@ public:
         view_as_skill = new XijianVS;
     }
 
+    bool Xijian::canPreshow() const
+    {
+        return true;
+    }
+
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         ServerPlayer *yukari = data.value<ServerPlayer *>();
@@ -466,6 +472,11 @@ public:
         view_as_skill = new BayunziDiscardJingjie("sisheng");
     }
 
+    bool Sisheng::canPreshow() const
+    {
+        return true;
+    }
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         QList<SkillInvokeDetail> d;
@@ -524,6 +535,11 @@ public:
     {
         events << EventPhaseChanging;
         view_as_skill = new BayunziDiscardJingjie("jingdong");
+    }
+
+    bool Jingdong::canPreshow() const
+    {
+        return true;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
@@ -1002,6 +1018,11 @@ public:
         view_as_skill = new XiezouVS;
     }
 
+    bool Xiezou::canPreshow() const
+    {
+        return true;
+    }
+
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         if (triggerEvent == PreCardUsed || triggerEvent == CardResponded) {
@@ -1150,6 +1171,11 @@ public:
     {
         events << CardsMoveOneTime;
         view_as_skill = new ZhanzhenVS;
+    }
+
+    bool Zhanzhen::canPreshow() const
+    {
+        return true;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const

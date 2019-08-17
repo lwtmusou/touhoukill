@@ -645,6 +645,12 @@ public:
         view_as_skill = new ShoucangVS;
     }
 
+    bool Shoucang::canPreshow() const
+    {
+        return true;
+    }
+
+
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         if (triggerEvent == EventPhaseChanging) {
@@ -749,6 +755,11 @@ public:
     {
         events << EventPhaseStart;
         view_as_skill = new BaoyiVS;
+    }
+
+    bool Baoyi::canPreshow() const
+    {
+        return true;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -899,6 +910,11 @@ public:
     {
         events << CardsMoveOneTime;
         view_as_skill = new ChunxiVS;
+    }
+
+    bool Chunxi::canPreshow() const
+    {
+        return true;
     }
 
     static QList<ServerPlayer *> chunxi_targets(ServerPlayer *player)
@@ -1059,6 +1075,11 @@ public:
     {
         view_as_skill = new BllmWuyuVS;
         related_mark = "@yu";
+    }
+
+    bool BllmWuyu::canPreshow() const
+    {
+        return true;
     }
 
     static bool BllmWuyuCost(Room *room, ServerPlayer *bllm, QString prompt)
@@ -1376,6 +1397,11 @@ public:
     {
         events << CardsMoveOneTime << BeforeCardsMove;
         view_as_skill = new QiangyuVS;
+    }
+
+    bool Qiangyu::canPreshow() const
+    {
+        return true;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
@@ -2147,6 +2173,11 @@ public:
     {
         events << EventPhaseEnd << PreCardUsed << CardResponded << EventPhaseChanging << CardUsed;
         view_as_skill = new ToushiVS;
+    }
+
+    bool Toushi::canPreshow() const
+    {
+        return true;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const

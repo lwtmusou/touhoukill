@@ -778,6 +778,11 @@ public:
         view_as_skill = new ToupaiVS;
     }
 
+    bool Toupai::canPreshow() const
+    {
+        return true;
+    }
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         ServerPlayer *aya = data.value<ServerPlayer *>();
@@ -1290,8 +1295,8 @@ public:
         }
         else if (target->hasSkill("duanjiao"))
             return 3;
-        else
-            return -1;
+        
+        return -1;
     }
 };
 
@@ -2070,6 +2075,11 @@ public:
         view_as_skill = new MengxiangVS;
     }
 
+    bool Mengxiang::canPreshow() const
+    {
+        return true;
+    }
+
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         if (triggerEvent == CardsMoveOneTime) {
@@ -2257,6 +2267,11 @@ public:
     {
         events << CardsMoveOneTime;
         view_as_skill = new JishiVS;
+    }
+
+    bool Jishi::canPreshow() const
+    {
+        return true;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const

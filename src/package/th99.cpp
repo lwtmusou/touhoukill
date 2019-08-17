@@ -681,6 +681,11 @@ public:
         view_as_skill = new LuanyingVS;
     }
 
+    bool Luanying::canPreshow() const
+    {
+        return true;
+    }
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
         ServerPlayer *user = NULL;
@@ -1113,6 +1118,11 @@ public:
     {
         events << DamageInflicted << DamageComplete;
         view_as_skill = new ZhesheVS;
+    }
+
+    bool Zheshe::canPreshow() const
+    {
+        return true;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const

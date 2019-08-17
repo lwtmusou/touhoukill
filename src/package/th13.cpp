@@ -735,6 +735,11 @@ public:
         view_as_skill = new ShijieVS;
     }
 
+    bool Shijie::canPreshow() const
+    {
+        return true;
+    }
+
     void record(TriggerEvent, Room *, QVariant &data) const
     {
         JudgeStruct *judge = data.value<JudgeStruct *>();

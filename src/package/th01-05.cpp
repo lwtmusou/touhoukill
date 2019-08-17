@@ -383,6 +383,11 @@ public:
         view_as_skill = new ZhenceVS;
     }
 
+    bool Zhence::canPreshow() const
+    {
+        return true;
+    }
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
         if (triggerEvent == EventPhaseChanging) {
@@ -496,6 +501,11 @@ public:
     {
         events << EventPhaseStart << EventPhaseChanging;
         view_as_skill = new ShiquVS;
+    }
+
+    bool Shiqu::canPreshow() const
+    {
+        return true;
     }
 
     static QStringList shiquChoices(ServerPlayer *player)
@@ -681,6 +691,11 @@ public:
     {
         events << EventPhaseStart << DamageDone << TurnStart;
         view_as_skill = new QiusuoVS;
+    }
+
+    bool Qiusuo::canPreshow() const
+    {
+        return true;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
@@ -1086,6 +1101,11 @@ public:
         related_pile = "dream";
     }
 
+    bool Huantong::canPreshow() const
+    {
+        return true;
+    }
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
@@ -1414,6 +1434,11 @@ public:
         view_as_skill = new LianmuVS;
     }
 
+    bool Lianmu::canPreshow() const
+    {
+        return true;
+    }
+
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         if (triggerEvent == DamageDone) {
@@ -1611,6 +1636,11 @@ public:
     {
         events << EventPhaseStart << EventPhaseChanging;
         view_as_skill = new SqChuangshiVS;
+    }
+
+    bool SqChuangshi::canPreshow() const
+    {
+        return true;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
@@ -2893,6 +2923,11 @@ public:
     {
         events << PreCardUsed << TargetConfirmed << EventPhaseChanging;
         view_as_skill = new LuliVS;
+    }
+
+    bool Luli::canPreshow() const
+    {
+        return true;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
