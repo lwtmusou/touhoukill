@@ -4219,11 +4219,31 @@ void Room::marshal(ServerPlayer *player)
     doNotify(player, S_COMMAND_START_IN_X_SECONDS, QVariant(0));
 
     foreach (ServerPlayer *p, m_players) {
-        notifyProperty(player, p, "general");
 
-        if (p->getGeneral2())
-            notifyProperty(player, p, "general2");
+        if (isHegemonyGameMode(mode) && p == player && !p->hasShownGeneral()) {
+            QString general1_name = tag[player->objectName()].toStringList().at(0);
+            notifyProperty(player, p, "general", general1_name);
+        }
+        else
+        {
+            notifyProperty(player, p, "general");
+
+            if (p->getGeneral2())
+                notifyProperty(player, p, "general2");
+        }
+        
     }
+    
+    foreach(const Skill *skill, player->getVisibleSkillList()) {
+        JsonArray args1;
+        args1 << (int)S_GAME_EVENT_ADD_SKILL;
+        args1 << player->objectName();
+        args1 << skill->objectName();
+        //args1 << player->inHeadSkills(skill->objectName());
+        doNotify(player, S_COMMAND_LOG_EVENT, args1);
+    }
+    //player->setSkillsPreshowed();
+    player->notifyPreshow();
 
     if (game_started) {
         ServerPlayer *lord = getLord();

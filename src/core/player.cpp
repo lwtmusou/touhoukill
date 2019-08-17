@@ -843,7 +843,7 @@ void Player::addSkill(const QString &skill_name)
 {
     const Skill *skill = Sanguosha->getSkill(skill_name);
     Q_ASSERT(skill);
-    skills[skill_name] = !skill->canPreshow();
+    skills[skill_name] = !skill->canPreshow() || general_showed;
     if (!skills_originalOrder.contains(skill_name))
         skills_originalOrder << skill_name;
     /*if (head_skill)

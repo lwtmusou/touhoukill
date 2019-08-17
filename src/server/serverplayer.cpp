@@ -1136,6 +1136,32 @@ void ServerPlayer::introduceTo(ServerPlayer *player)
         players.removeOne(this);
         room->doBroadcastNotify(players, S_COMMAND_ADD_PLAYER, introduce_str);
     }
+
+    /*if (!isHegemonyGameMode(room->getMode())) return;
+    if (hasShownGeneral()) {
+        foreach(const QString skill_name, skills_originalOrder) {//skills.keys()
+            if (Sanguosha->getSkill(skill_name)->isVisible()) {
+                JsonArray args1;
+                args1 << (int)S_GAME_EVENT_ADD_SKILL;
+                args1 << objectName();
+                args1 << skill_name;
+                args1 << true;
+                room->doNotify(player, S_COMMAND_LOG_EVENT, args1);
+            }
+
+            foreach(const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)) {
+                if (!related_skill->isVisible()) {
+                    JsonArray args2;
+                    args2 << (int)S_GAME_EVENT_ADD_SKILL;
+                    args2 << objectName();
+                    args2 << related_skill->objectName();
+                    args2 << true;
+                    room->doNotify(player, S_COMMAND_LOG_EVENT, args2);
+                }
+            }
+        }
+    }*/
+
 }
 
 void ServerPlayer::marshal(ServerPlayer *player) const
@@ -1143,9 +1169,23 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     room->notifyProperty(player, this, "maxhp");
     room->notifyProperty(player, this, "hp");
     room->notifyProperty(player, this, "dyingFactor");
+    room->notifyProperty(player, this, "general_showed");
 
-    if (getKingdom() != getGeneral()->getKingdom())
-        room->notifyProperty(player, this, "kingdom");
+    if (isHegemonyGameMode(room->getMode())) {
+        if (player == this || hasShownGeneral()) {
+            room->notifyProperty(player, this, "kingdom");
+            room->notifyProperty(player, this, "role");
+        }
+        else {
+            room->notifyProperty(player, this, "kingdom", "god");
+        }
+    }
+    else {
+        if (getKingdom() != getGeneral()->getKingdom())
+            room->notifyProperty(player, this, "kingdom");
+    }
+
+    
 
     if (isAlive()) {
         room->notifyProperty(player, this, "seat");
@@ -1164,6 +1204,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         room->notifyProperty(player, this, "chained");
 
     room->notifyProperty(player, this, "removed");
+    room->notifyProperty(player, this, "gender");
 
     QList<ServerPlayer *> players;
     players << player;
@@ -1255,8 +1296,17 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     arg_brokenIds << JsonUtils::toJsonArray(broken_equips);
     room->doNotify(player, S_COMMAND_SET_BROKEN_EQUIP, arg_brokenIds);
 
+    //need remove mark of hidden limit skill
+    QStringList hegemony_limitmarks;
+    if (isHegemonyGameMode(room->getMode())) {
+        foreach(const Skill *skill, getSkillList(false, false))
+            if (skill->getFrequency() == Skill::Limited && getMark(skill->getLimitMark()) > 0 && !hasShownSkill(skill))
+                hegemony_limitmarks.append(skill->getLimitMark());
+    }
+    
+
     foreach (QString mark_name, marks.keys()) {
-        if (mark_name.startsWith("@")) {
+        if (mark_name.startsWith("@") && !hegemony_limitmarks.contains(mark_name)) {
             int value = getMark(mark_name);
             if (value > 0) {
                 JsonArray arg_mark;
@@ -1268,17 +1318,20 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         }
     }
 
-    foreach (const Skill *skill, getVisibleSkillList(true)) {
-        //should not nofity the lord skill
-        if (skill->isLordSkill() && !hasLordSkill(skill->objectName()))
-            continue;
-        QString skill_name = skill->objectName();
-        JsonArray arg_acquire;
-        arg_acquire << S_GAME_EVENT_ACQUIRE_SKILL;
-        arg_acquire << objectName();
-        arg_acquire << skill_name;
-        room->doNotify(player, S_COMMAND_LOG_EVENT, arg_acquire);
+    if (this == player || !isHegemonyGameMode(room->getMode()) || hasShownGeneral()) {
+        foreach(const Skill *skill, getVisibleSkillList(true)) {
+            //should not nofity the lord skill
+            if (skill->isLordSkill() && !hasLordSkill(skill->objectName()))
+                continue;
+            QString skill_name = skill->objectName();
+            JsonArray arg_acquire;
+            arg_acquire << S_GAME_EVENT_ACQUIRE_SKILL;
+            arg_acquire << objectName();
+            arg_acquire << skill_name;
+            room->doNotify(player, S_COMMAND_LOG_EVENT, arg_acquire);
+        }
     }
+    
 
     foreach (const QString &invalid_name, skill_invalid) {
         JsonArray arg_invalid;
@@ -1290,6 +1343,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     JsonArray arg_tooltip;
     arg_tooltip << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
     room->doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, arg_tooltip);
+
 
     //since "banling", we should notify hp after notifying skill
     if (this->hasSkill("banling")) {
@@ -1323,7 +1377,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         }
     }
 
-    if (hasShownRole()) {
+    if (!isHegemonyGameMode(room->getMode()) && hasShownRole()) {
         room->notifyProperty(player, this, "role");
         room->notifyProperty(player, this, "role_shown"); // notify client!!
     }
