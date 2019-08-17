@@ -9,7 +9,6 @@ QSanguoshaPackage 动态库，包含武将包和卡牌包
 QSanguosha.exe（.apk） GUI版可执行程序，桌面版可以启动服务器，移动端不可
 QSanguoshaServer.exe 命令行版可执行程序，服务器
 QSanguoshaAI.exe 命令行版可执行程序，由服务器启动然后连接服务器，AI客户端
-4、从GUI侧源码中干掉双将
 
 To lwtmusou：
 1、TH16。。。。
