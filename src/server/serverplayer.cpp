@@ -1300,7 +1300,8 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     QStringList hegemony_limitmarks;
     if (isHegemonyGameMode(room->getMode())) {
         foreach(const Skill *skill, getSkillList(false, false))
-            if (skill->getFrequency() == Skill::Limited && getMark(skill->getLimitMark()) > 0 && !hasShownSkill(skill))
+            if (skill->getFrequency() == Skill::Limited && getMark(skill->getLimitMark()) > 0 
+                && (this != player  && !hasShownSkill(skill)))
                 hegemony_limitmarks.append(skill->getLimitMark());
     }
     
