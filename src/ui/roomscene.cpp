@@ -535,7 +535,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         foreach (Photo *photo, photos)
             photo->updateAvatarTooltip();
         dashboard->updateAvatarTooltip();
-        if (eventType == S_GAME_EVENT_PREPARE_SKILL)
+        //if (eventType == S_GAME_EVENT_PREPARE_SKILL)
             updateSkillButtons();
         dashboard->expandSpecialCard(); //for chaoren
         break;
@@ -549,7 +549,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
             bool showed = preshow_map[skill].toBool();
 
             //if (Config.EnableAutoPreshow && auto_preshow_available) {
-            if (!auto_preshow_available) {
+            /*if (!auto_preshow_available) {
                 
                 const Skill *s = Sanguosha->getSkill(skill);
                 if (s != NULL && s->canPreshow()) {
@@ -557,7 +557,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
                     
                 }
             }
-            else {
+            else {*/
                 
                 Self->setSkillPreshowed(skill, showed);
                 /*if (!showed) {
@@ -574,7 +574,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
                 //    dashboard->updateLeftHiddenMark();
                 //else
                 //    dashboard->updateRightHiddenMark();
-            }
+            //}
         }
         break;
     }

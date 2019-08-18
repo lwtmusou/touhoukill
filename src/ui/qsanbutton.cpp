@@ -259,12 +259,12 @@ void QSanSkillButton::_setSkillType(SkillType type)
     _m_skillType = type;
 }
 
+
 void QSanSkillButton::onMouseClick()
 {
     if (_m_skill == NULL)
         return;
 
-    //bool head = objectName() == "left";
     if (!Self->hasPreshowedSkill(_m_skill) && _m_state == QSanButton::S_STATE_CANPRESHOW) {
         setState(S_STATE_DISABLED);
         ClientInstance->preshow(_m_skill->objectName(), true);
@@ -296,6 +296,8 @@ void QSanSkillButton::setSkill(const Skill *skill)
     _m_viewAsSkill = ViewAsSkill::parseViewAsSkill(_m_skill);
     if (skill == NULL)
         skill = _m_skill;
+
+    
 
     Skill::Frequency freq = skill->getFrequency();
     if (freq == Skill::Frequent || (freq == Skill::NotFrequent && skill->inherits("TriggerSkill") && !skill->inherits("EquipSkill") && _m_viewAsSkill == NULL)) {
@@ -348,6 +350,7 @@ void QSanSkillButton::setSkill(const Skill *skill)
         if (!Self->hasShownSkill(skill) && skill->canPreshow())
             setState(QSanButton::S_STATE_CANPRESHOW);
     }
+    
     
 
     Q_ASSERT((int)_m_skillType <= 5 && _m_state <= 4);
@@ -501,7 +504,7 @@ void QSanInvokeSkillDock::setWidth(int width)
     _m_width = width;
 }
 
-#include "roomscene.h"
+
 void QSanInvokeSkillDock::update()
 {
     if (!_m_buttons.isEmpty()) {
@@ -509,9 +512,6 @@ void QSanInvokeSkillDock::update()
         QList<QSanInvokeSkillButton *> regular_buttons, lordskill_buttons, all_buttons;
         
         foreach (QSanInvokeSkillButton *btn, _m_buttons) {
-            /*QStringList log;
-            log << btn->getSkill()->objectName();
-            RoomSceneInstance->addlog(log);*/
             if (!btn->getSkill()->shouldBeVisible(Self)) {
                 btn->setVisible(false);
                 continue;

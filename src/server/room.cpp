@@ -2027,6 +2027,7 @@ QSharedPointer<SkillInvokeDetail> Room::askForTriggerOrder(ServerPlayer *player,
             const QVariant &clientReply = player->getClientReply();
             if (success && JsonUtils::isString(clientReply))
                 reply = clientReply.toString();
+
         }
 
         if (reply != "cancel") {
@@ -3189,7 +3190,10 @@ void Room::chooseHegemonyGenerals()
         QStringList names;
         if (player->getGeneral()) {
             QString name = player->getGeneralName();
-            QString role = (i < 10) ?   "wei" :  "wu";
+            QStringList roles;
+            roles << "wei" << "shu" << "wu" << "qun";
+            int role_idx = qrand() % roles.length();
+            QString role = roles[role_idx];
             names.append(name);
             //player->setActualGeneral1Name(name);
             player->setRole(role);
@@ -4234,16 +4238,20 @@ void Room::marshal(ServerPlayer *player)
         
     }
     
-    foreach(const Skill *skill, player->getVisibleSkillList()) {
-        JsonArray args1;
-        args1 << (int)S_GAME_EVENT_ADD_SKILL;
-        args1 << player->objectName();
-        args1 << skill->objectName();
-        //args1 << player->inHeadSkills(skill->objectName());
-        doNotify(player, S_COMMAND_LOG_EVENT, args1);
+    if (isHegemonyGameMode(mode)) {
+        foreach(const Skill *skill, player->getVisibleSkillList()) {
+            JsonArray args1;
+            args1 << (int)S_GAME_EVENT_ADD_SKILL;
+            args1 << player->objectName();
+            args1 << skill->objectName();
+            //args1 << player->inHeadSkills(skill->objectName());
+
+            doNotify(player, S_COMMAND_LOG_EVENT, args1);
+        }
+
+        player->notifyPreshow();
     }
-    //player->setSkillsPreshowed();
-    player->notifyPreshow();
+    
 
     if (game_started) {
         ServerPlayer *lord = getLord();

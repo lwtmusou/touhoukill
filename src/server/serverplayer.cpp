@@ -1319,7 +1319,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         }
     }
 
-    if (this == player || !isHegemonyGameMode(room->getMode()) || hasShownGeneral()) {
+    if (!isHegemonyGameMode(room->getMode())) {
         foreach(const Skill *skill, getVisibleSkillList(true)) {
             //should not nofity the lord skill
             if (skill->isLordSkill() && !hasLordSkill(skill->objectName()))

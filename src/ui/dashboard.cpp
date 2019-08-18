@@ -1707,17 +1707,6 @@ void Dashboard::showSeat()
 void Dashboard::updateHiddenMark()
 {
     if (!isHegemonyGameMode(ServerInfo.GameMode)) return;
-    //for test
-    /*QStringList log; 
-    if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral()) {
-        if (m_player->isHidden())
-            log << "Hidden";
-        else
-            log << "Not Hidden";
-    }
-    else
-        log << "General Showed";
-    RoomSceneInstance->addlog(log);*/
     if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral()) {
         leftHiddenMark->setVisible(m_player->isHidden());
     }
