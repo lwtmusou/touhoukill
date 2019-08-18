@@ -2616,6 +2616,7 @@ void Room::prepareForStart()
         return;
     } 
     else if (isHegemonyGameMode(mode)) {
+        assignRoles();
         if (Config.RandomSeat)
             qShuffle(m_players);
     }
@@ -3190,19 +3191,19 @@ void Room::chooseHegemonyGenerals()
         QStringList names;
         if (player->getGeneral()) {
             QString name = player->getGeneralName();
-            QStringList roles;
-            roles << "wei" << "shu" << "wu" << "qun";
-            int role_idx = qrand() % roles.length();
-            QString role = roles[role_idx];
+            //QStringList roles;
+            //roles << "wei" << "shu" << "wu" << "qun";
+            //int role_idx = qrand() % roles.length();
+            //QString role = roles[role_idx];
             names.append(name);
             //player->setActualGeneral1Name(name);
-            player->setRole(role);
+            //player->setRole(role);
             player->setGeneralName("anjiang");
             notifyProperty(player, player, "actual_general1");
             foreach(ServerPlayer *p, getOtherPlayers(player))
                 notifyProperty(p, player, "general");
             notifyProperty(player, player, "general", name);
-            notifyProperty(player, player, "role", role);
+            //notifyProperty(player, player, "role", role);
             i++;
         }
         //if (player->getGeneral2())

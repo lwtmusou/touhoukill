@@ -3,12 +3,15 @@
 #include "clientplayer.h"
 #include "engine.h"
 #include "client.h"
+#include "roomscene.h"
 
 #include <QBitmap>
 #include <QGraphicsSceneHoverEvent>
 #include <QGraphicsView>
 #include <QPainter>
 #include <QPixmap>
+
+
 
 QSanButton::QSanButton(QGraphicsItem *parent)
     : QGraphicsObject(parent)

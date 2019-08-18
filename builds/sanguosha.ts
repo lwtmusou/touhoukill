@@ -193,8 +193,8 @@
     </message>
     <message>
         <location filename="../src/dialog/choosegeneraldialog.cpp" line="172"/>
-        <source>Your seat is %1</source>
-        <translation>你是 %1 号位</translation>
+        <source>Your seat is %1. role is %2</source>
+        <translation>你是 %1号位，你的阵营是 %2</translation>
     </message>
     <message>
         <location filename="../src/dialog/choosegeneraldialog.cpp" line="177"/>
@@ -2571,69 +2571,69 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="../src/server/room.cpp" line="2708"/>
+        <location filename="../src/server/room.cpp" line="2711"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2968"/>
+        <location filename="../src/server/room.cpp" line="2971"/>
         <source>Computer %1</source>
         <translation>电脑 %1</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2731"/>
+        <location filename="../src/server/room.cpp" line="2734"/>
         <source>&lt;font color=#000000&gt;Player &lt;b&gt;%1&lt;/b&gt; left the game&lt;/font&gt;</source>
         <translation>&lt;font color=#000000&gt;玩家 %1 离开了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2945"/>
+        <location filename="../src/server/room.cpp" line="2948"/>
         <source>This server is limited to add robot. YOU CAN ONLY ADD ROBOT USING &quot;Fill Robots&quot;.</source>
         <translation>这个服务器启用了限制添加电脑。&lt;b&gt;只允许使用“补全所有电脑”来添加电脑&lt;/b&gt;。</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2972"/>
+        <location filename="../src/server/room.cpp" line="2975"/>
         <source>Hello, I&apos;m a robot</source>
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2982"/>
+        <location filename="../src/server/room.cpp" line="2985"/>
         <source>This server is limited to add robot. Please ensure that the number of players is more than 4 and there is more than a half human players.</source>
         <translation>这个服务器启用了限制添加电脑。请确定本模式人数大于4并且存在一半以上的真人玩家。</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3029"/>
+        <location filename="../src/server/room.cpp" line="3032"/>
         <source>&lt;font color=#EEB422&gt;Player &lt;b&gt;%1&lt;/b&gt; joined the game&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 加入了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3646"/>
+        <location filename="../src/server/room.cpp" line="3654"/>
         <source>Unable to parse player</source>
         <translation>不可分析的玩家</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3648"/>
+        <location filename="../src/server/room.cpp" line="3656"/>
         <source>Server is not waiting for reply from %1</source>
         <translation>服务器无法获取 %1 的响应</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3650"/>
+        <location filename="../src/server/room.cpp" line="3658"/>
         <source>Reply command should be %1 instead of %2</source>
         <translation>应答指令应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3652"/>
+        <location filename="../src/server/room.cpp" line="3660"/>
         <source>Reply serial should be %1 instead of %2</source>
         <translation>玩家序号应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="5366"/>
+        <location filename="../src/server/room.cpp" line="5398"/>
         <source>Card cannot be parsed:
  %1</source>
         <translation>卡牌字符串无法解析:
  %1</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="6834"/>
+        <location filename="../src/server/room.cpp" line="6866"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>
@@ -2653,7 +2653,7 @@
         <location filename="../src/ui/roomscene.cpp" line="3691"/>
         <location filename="../src/ui/roomscene.cpp" line="3706"/>
         <location filename="../src/ui/roomscene.cpp" line="3721"/>
-        <location filename="../src/ui/roomscene.cpp" line="4627"/>
+        <location filename="../src/ui/roomscene.cpp" line="4629"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -2694,7 +2694,7 @@
     </message>
     <message>
         <location filename="../src/ui/roomscene.cpp" line="395"/>
-        <location filename="../src/ui/roomscene.cpp" line="5024"/>
+        <location filename="../src/ui/roomscene.cpp" line="5026"/>
         <source>pindian</source>
         <translation>拼点</translation>
     </message>
@@ -3016,27 +3016,27 @@
         <translation>&lt;font color=&apos;%1&apos;&gt;---------- 游戏开始 ----------&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../src/ui/roomscene.cpp" line="4613"/>
+        <location filename="../src/ui/roomscene.cpp" line="4615"/>
         <source>Server information</source>
         <translation>服务器信息</translation>
     </message>
     <message>
-        <location filename="../src/ui/roomscene.cpp" line="4627"/>
+        <location filename="../src/ui/roomscene.cpp" line="4629"/>
         <source>You can only initiate a surrender poll at your play phase!</source>
         <translation>只有在你的出牌阶段才能请求投降!</translation>
     </message>
     <message>
-        <location filename="../src/ui/roomscene.cpp" line="4632"/>
+        <location filename="../src/ui/roomscene.cpp" line="4634"/>
         <source>Surrender</source>
         <translation>投降</translation>
     </message>
     <message>
-        <location filename="../src/ui/roomscene.cpp" line="4632"/>
+        <location filename="../src/ui/roomscene.cpp" line="4634"/>
         <source>Are you sure to surrender ?</source>
         <translation>您真的要投降吗 ?</translation>
     </message>
     <message>
-        <location filename="../src/ui/roomscene.cpp" line="4937"/>
+        <location filename="../src/ui/roomscene.cpp" line="4939"/>
         <source>Complete</source>
         <translation>完成</translation>
     </message>

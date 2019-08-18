@@ -820,6 +820,18 @@ QString Engine::getRoles(const QString &mode) const
     } else if (mode == "04_1v3") {
         return "ZFFF";
     }
+    if (isHegemonyGameMode(mode)) {
+        QString role;
+        int num = getPlayerCount(mode);
+        QStringList roles;
+        roles << "W" << "S" << "G" << "Q";//wei shu wu qun
+        for (int i = 0; i < num; ++i) {
+            int role_idx = qrand() % roles.length();
+            role = role + roles[role_idx];
+        }
+        return role;
+    }
+
 
     if (modes.contains(mode)) {
         static const char *table1[] = {
@@ -888,6 +900,18 @@ QStringList Engine::getRoleList(const QString &mode) const
             break;
         case 'F':
             role = "rebel";
+            break;
+        case 'W':
+            role = "wei";
+            break;
+        case 'S':
+            role = "shu";
+            break;
+        case 'G':
+            role = "wu";
+            break;
+        case 'Q':
+            role = "qun";
             break;
         }
         role_list << role;
