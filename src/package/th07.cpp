@@ -1173,10 +1173,6 @@ public:
         view_as_skill = new ZhanzhenVS;
     }
 
-    bool Zhanzhen::canPreshow() const
-    {
-        return true;
-    }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
@@ -1964,8 +1960,9 @@ public:
         : TriggerSkill("shizhao")
     {
         events << EventPhaseStart;
-        frequency = Frequent;
+        //frequency = Frequent;
     }
+
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
