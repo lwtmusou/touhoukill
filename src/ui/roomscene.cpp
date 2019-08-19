@@ -2165,6 +2165,17 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
         for (int j = 0; j < cards.size(); j++) {
             CardItem *card = cards[j];
             card->setFlag(QGraphicsItem::ItemIsMovable, false);
+            CardMoveReason reason = movement.reason;
+            if (!reason.m_skillName.isEmpty() && movement.from && movement.to_place != Player::PlaceHand && movement.to_place != Player::PlaceSpecial
+                && movement.to_place != Player::PlaceEquip && movement.to_place != Player::PlaceDelayedTrick) {
+                ClientPlayer *target = ClientInstance->getPlayer(movement.from->objectName());               
+                if (!reason.m_playerId.isEmpty() && reason.m_playerId != movement.from->objectName()) target = ClientInstance->getPlayer(reason.m_playerId);
+
+                if (target && target->hasShownSkill(reason.m_skillName))
+                    card->showAvatar(target->getGeneral());//, reason.m_skillName
+            }
+
+
             int card_id = card->getId();
             if (!card_moves[i].card_ids.contains(card_id)) {
                 card->setVisible(false);
